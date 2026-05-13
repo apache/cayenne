@@ -32,7 +32,7 @@ import org.apache.cayenne.testdo.enum_test.EnumEntity;
 import org.apache.cayenne.testdo.enum_test.EnumEntity2;
 import org.apache.cayenne.testdo.enum_test.EnumEntity3;
 import org.apache.cayenne.unit.di.runtime.CayenneProjects;
-import org.apache.cayenne.unit.di.runtime.CayenneTestsExt;
+import org.apache.cayenne.unit.di.runtime.CayenneTestsEnv;
 import org.junit.jupiter.api.extension.RegisterExtension;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.BeforeEach;
@@ -44,7 +44,7 @@ import static org.junit.jupiter.api.Assertions.assertSame;
 public class EnumIT {
 
     @RegisterExtension
-    static final CayenneTestsExt env = CayenneTestsExt.forProject(CayenneProjects.ENUM_PROJECT);
+    static final CayenneTestsEnv env = CayenneTestsEnv.forProject(CayenneProjects.ENUM_PROJECT);
 
     private ObjectContext context;
     private DBHelper dbHelper;

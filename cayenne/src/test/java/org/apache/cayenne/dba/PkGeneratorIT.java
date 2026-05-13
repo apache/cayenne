@@ -23,7 +23,7 @@ import org.apache.cayenne.access.DataNode;
 import org.apache.cayenne.map.DbEntity;
 import org.apache.cayenne.unit.UnitDbAdapter;
 import org.apache.cayenne.unit.di.runtime.CayenneProjects;
-import org.apache.cayenne.unit.di.runtime.CayenneTestsExt;
+import org.apache.cayenne.unit.di.runtime.CayenneTestsEnv;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.RegisterExtension;
@@ -38,7 +38,7 @@ import static org.junit.jupiter.api.Assertions.assertTrue;
 public class PkGeneratorIT {
 
     @RegisterExtension
-    static final CayenneTestsExt env = CayenneTestsExt.forProject(CayenneProjects.TESTMAP_PROJECT);
+    static final CayenneTestsEnv env = CayenneTestsEnv.forProject(CayenneProjects.TESTMAP_PROJECT);
 
     private UnitDbAdapter accessStackAdapter;
     private DataNode node;

@@ -23,7 +23,7 @@ import org.apache.cayenne.ObjectContext;
 import org.apache.cayenne.runtime.CayenneRuntime;
 import org.apache.cayenne.testdo.testmap.Artist;
 import org.apache.cayenne.unit.di.runtime.CayenneProjects;
-import org.apache.cayenne.unit.di.runtime.CayenneTestsExt;
+import org.apache.cayenne.unit.di.runtime.CayenneTestsEnv;
 import org.junit.jupiter.api.extension.RegisterExtension;
 import org.apache.cayenne.validation.ValidationException;
 import org.junit.jupiter.api.Test;
@@ -36,7 +36,7 @@ import static org.junit.jupiter.api.Assertions.assertTrue;
 public class NestedDataContextValidationIT {
 
     @RegisterExtension
-    static final CayenneTestsExt env = CayenneTestsExt.forProject(CayenneProjects.TESTMAP_PROJECT);
+    static final CayenneTestsEnv env = CayenneTestsEnv.forProject(CayenneProjects.TESTMAP_PROJECT);
 
     protected CayenneRuntime runtime;
     private DataContext context;

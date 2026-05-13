@@ -30,7 +30,7 @@ import org.apache.cayenne.test.jdbc.TableHelper;
 import org.apache.cayenne.testdo.uuid.UuidPkEntity;
 import org.apache.cayenne.testdo.uuid.UuidTestEntity;
 import org.apache.cayenne.unit.di.runtime.CayenneProjects;
-import org.apache.cayenne.unit.di.runtime.CayenneTestsExt;
+import org.apache.cayenne.unit.di.runtime.CayenneTestsEnv;
 import org.junit.jupiter.api.extension.RegisterExtension;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -41,7 +41,7 @@ import static org.junit.jupiter.api.Assertions.assertNotNull;
 public class UUIDIT {
 
     @RegisterExtension
-    static final CayenneTestsExt env = CayenneTestsExt.forProject(CayenneProjects.UUID_PROJECT);
+    static final CayenneTestsEnv env = CayenneTestsEnv.forProject(CayenneProjects.UUID_PROJECT);
 
     private ObjectContext context;
     private DBHelper dbHelper;

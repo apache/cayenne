@@ -27,7 +27,7 @@ import org.apache.cayenne.dbsync.model.DetectedDbEntity;
 import org.apache.cayenne.runtime.CayenneRuntime;
 import org.apache.cayenne.unit.UnitDbAdapter;
 import org.apache.cayenne.unit.di.runtime.CayenneProjects;
-import org.apache.cayenne.unit.di.runtime.CayenneTestsExt;
+import org.apache.cayenne.unit.di.runtime.CayenneTestsEnv;
 import org.apache.cayenne.unit.di.runtime.RuntimeCaseDataSourceFactory;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
@@ -38,7 +38,7 @@ import static org.junit.jupiter.api.Assertions.assertTrue;
 public class BaseLoaderIT {
 
     @RegisterExtension
-    protected static final CayenneTestsExt env = CayenneTestsExt.forProject(CayenneProjects.TESTMAP_PROJECT);
+    protected static final CayenneTestsEnv env = CayenneTestsEnv.forProject(CayenneProjects.TESTMAP_PROJECT);
 
     static final DbLoaderConfiguration EMPTY_CONFIG = new DbLoaderConfiguration();
 

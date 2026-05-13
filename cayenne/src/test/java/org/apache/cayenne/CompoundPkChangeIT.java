@@ -22,7 +22,7 @@ import org.apache.cayenne.access.DataContext;
 import org.apache.cayenne.query.ObjectIdQuery;
 import org.apache.cayenne.testdo.compound.CompoundPkTestEntity;
 import org.apache.cayenne.unit.di.runtime.CayenneProjects;
-import org.apache.cayenne.unit.di.runtime.CayenneTestsExt;
+import org.apache.cayenne.unit.di.runtime.CayenneTestsEnv;
 import org.junit.jupiter.api.extension.RegisterExtension;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.BeforeEach;
@@ -32,7 +32,7 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 public class CompoundPkChangeIT {
 
     @RegisterExtension
-    static final CayenneTestsExt env = CayenneTestsExt.forProject(CayenneProjects.COMPOUND_PROJECT);
+    static final CayenneTestsEnv env = CayenneTestsEnv.forProject(CayenneProjects.COMPOUND_PROJECT);
 
 
     private static final String key1v1 = "-key1-v1-";

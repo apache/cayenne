@@ -25,7 +25,7 @@ import org.apache.cayenne.access.DataContext;
 import org.apache.cayenne.testdo.testmap.Artist;
 import org.apache.cayenne.unit.di.DataChannelInterceptor;
 import org.apache.cayenne.unit.di.runtime.CayenneProjects;
-import org.apache.cayenne.unit.di.runtime.CayenneTestsExt;
+import org.apache.cayenne.unit.di.runtime.CayenneTestsEnv;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.RegisterExtension;
@@ -37,7 +37,7 @@ import static org.junit.jupiter.api.Assertions.assertSame;
 public class DeepMergeOperationIT {
 
     @RegisterExtension
-    static final CayenneTestsExt env = CayenneTestsExt.forProject(CayenneProjects.TESTMAP_PROJECT);
+    static final CayenneTestsEnv env = CayenneTestsEnv.forProject(CayenneProjects.TESTMAP_PROJECT);
 
     private DataChannelInterceptor queryInterceptor;
     private DataContext context;

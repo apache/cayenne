@@ -45,7 +45,7 @@ import org.apache.cayenne.runtime.CayenneRuntime;
 import org.apache.cayenne.test.jdbc.DBHelper;
 import org.apache.cayenne.unit.UnitDbAdapter;
 import org.apache.cayenne.unit.di.runtime.CayenneProjects;
-import org.apache.cayenne.unit.di.runtime.CayenneTestsExt;
+import org.apache.cayenne.unit.di.runtime.CayenneTestsEnv;
 import org.apache.cayenne.unit.di.runtime.DBCleaner;
 import org.apache.cayenne.unit.di.runtime.RuntimeCaseDataSourceFactory;
 import org.slf4j.Logger;
@@ -67,7 +67,7 @@ public abstract class MergeCase {
     // disable auto-clean: we null out ARTGROUP.PARENT_GROUP_ID before cleanup
     // to avoid FK violations on databases with strict FK enforcement (e.g. Postgres)
     @RegisterExtension
-    protected static final CayenneTestsExt env = CayenneTestsExt
+    protected static final CayenneTestsEnv env = CayenneTestsEnv
             .forProject(CayenneProjects.TESTMAP_PROJECT)
             .withExtraModules(DbSyncModule.class)
             .withoutAutoClean();

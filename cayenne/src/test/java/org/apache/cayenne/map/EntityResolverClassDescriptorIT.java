@@ -28,7 +28,7 @@ import org.apache.cayenne.runtime.CayenneRuntime;
 import org.apache.cayenne.testdo.mt.MtTable1;
 import org.apache.cayenne.testdo.mt.MtTable2;
 import org.apache.cayenne.unit.di.runtime.CayenneProjects;
-import org.apache.cayenne.unit.di.runtime.CayenneTestsExt;
+import org.apache.cayenne.unit.di.runtime.CayenneTestsEnv;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.RegisterExtension;
@@ -44,7 +44,7 @@ import static org.mockito.Mockito.when;
 public class EntityResolverClassDescriptorIT {
 
     @RegisterExtension
-    static final CayenneTestsExt env = CayenneTestsExt.forProject(CayenneProjects.MULTI_TIER_PROJECT);
+    static final CayenneTestsEnv env = CayenneTestsEnv.forProject(CayenneProjects.MULTI_TIER_PROJECT);
 
     private CayenneRuntime runtime;
 

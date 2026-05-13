@@ -29,7 +29,7 @@ import org.apache.cayenne.testdo.cay_2641.ArtistLazy;
 import org.apache.cayenne.testdo.cay_2641.DatamapLazy;
 import org.apache.cayenne.testdo.cay_2641.PaintingLazy;
 import org.apache.cayenne.unit.di.runtime.CayenneProjects;
-import org.apache.cayenne.unit.di.runtime.CayenneTestsExt;
+import org.apache.cayenne.unit.di.runtime.CayenneTestsEnv;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.RegisterExtension;
@@ -47,7 +47,7 @@ import static org.junit.jupiter.api.Assertions.*;
 public class Cay2641IT {
 
     @RegisterExtension
-    static final CayenneTestsExt env = CayenneTestsExt.forProject(CayenneProjects.CAY_2641);
+    static final CayenneTestsEnv env = CayenneTestsEnv.forProject(CayenneProjects.CAY_2641);
 
     private ObjectContext context;
     private DbAdapter adapter;

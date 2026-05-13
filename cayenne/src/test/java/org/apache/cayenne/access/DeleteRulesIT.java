@@ -32,7 +32,7 @@ import org.apache.cayenne.testdo.relationships_delete_rules.DeleteRuleTest1;
 import org.apache.cayenne.testdo.relationships_delete_rules.DeleteRuleTest2;
 import org.apache.cayenne.testdo.relationships_delete_rules.DeleteRuleTest3;
 import org.apache.cayenne.unit.di.runtime.CayenneProjects;
-import org.apache.cayenne.unit.di.runtime.CayenneTestsExt;
+import org.apache.cayenne.unit.di.runtime.CayenneTestsEnv;
 import org.junit.jupiter.api.extension.RegisterExtension;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.BeforeEach;
@@ -50,7 +50,7 @@ import static org.junit.jupiter.api.Assertions.fail;
 public class DeleteRulesIT {
 
     @RegisterExtension
-    static final CayenneTestsExt env = CayenneTestsExt.forProject(CayenneProjects.RELATIONSHIPS_DELETE_RULES_PROJECT);
+    static final CayenneTestsEnv env = CayenneTestsEnv.forProject(CayenneProjects.RELATIONSHIPS_DELETE_RULES_PROJECT);
 
     private DataContext context;
 

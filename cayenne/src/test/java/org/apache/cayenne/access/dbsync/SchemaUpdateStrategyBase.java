@@ -25,7 +25,7 @@ import org.apache.cayenne.dba.DbAdapter;
 import org.apache.cayenne.map.DataMap;
 import org.apache.cayenne.query.SQLTemplate;
 import org.apache.cayenne.unit.di.runtime.CayenneProjects;
-import org.apache.cayenne.unit.di.runtime.CayenneTestsExt;
+import org.apache.cayenne.unit.di.runtime.CayenneTestsEnv;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.extension.RegisterExtension;
 
@@ -43,7 +43,7 @@ public class SchemaUpdateStrategyBase {
 	// disable auto-clean: this test class drops/creates schema objects itself
 	// (the SUS DataMap is not registered with the global SchemaBuilder)
 	@RegisterExtension
-	protected static final CayenneTestsExt env = CayenneTestsExt
+	protected static final CayenneTestsEnv env = CayenneTestsEnv
 			.forProject(CayenneProjects.SUS_PROJECT)
 			.withoutAutoClean();
 

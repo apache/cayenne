@@ -42,7 +42,7 @@ import org.apache.cayenne.testdo.numeric_types.SmallintTestEntity;
 import org.apache.cayenne.testdo.numeric_types.TinyintTestEntity;
 import org.apache.cayenne.unit.di.CommitStats;
 import org.apache.cayenne.unit.di.runtime.CayenneProjects;
-import org.apache.cayenne.unit.di.runtime.CayenneTestsExt;
+import org.apache.cayenne.unit.di.runtime.CayenneTestsEnv;
 import org.junit.jupiter.api.extension.RegisterExtension;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
@@ -56,7 +56,7 @@ import static org.junit.jupiter.api.Assertions.*;
 public class NumericTypesIT {
 
     @RegisterExtension
-    static final CayenneTestsExt env = CayenneTestsExt.forProject(CayenneProjects.NUMERIC_TYPES_PROJECT);
+    static final CayenneTestsEnv env = CayenneTestsEnv.forProject(CayenneProjects.NUMERIC_TYPES_PROJECT);
 
     protected DataContext context;
     protected DataContext context1;

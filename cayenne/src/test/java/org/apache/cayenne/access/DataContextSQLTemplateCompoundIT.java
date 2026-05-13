@@ -27,7 +27,7 @@ import org.apache.cayenne.test.jdbc.TableHelper;
 import org.apache.cayenne.testdo.compound.CompoundFkTestEntity;
 import org.apache.cayenne.testdo.compound.CompoundPkTestEntity;
 import org.apache.cayenne.unit.di.runtime.CayenneProjects;
-import org.apache.cayenne.unit.di.runtime.CayenneTestsExt;
+import org.apache.cayenne.unit.di.runtime.CayenneTestsEnv;
 import org.junit.jupiter.api.extension.RegisterExtension;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -42,7 +42,7 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 public class DataContextSQLTemplateCompoundIT {
 
     @RegisterExtension
-    static final CayenneTestsExt env = CayenneTestsExt.forProject(CayenneProjects.COMPOUND_PROJECT);
+    static final CayenneTestsEnv env = CayenneTestsEnv.forProject(CayenneProjects.COMPOUND_PROJECT);
 
     protected DataContext context;
     protected DBHelper dbHelper;

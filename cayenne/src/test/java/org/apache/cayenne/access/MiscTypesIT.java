@@ -28,7 +28,7 @@ import org.apache.cayenne.testdo.misc_types.CharacterEntity;
 import org.apache.cayenne.testdo.misc_types.SerializableEntity;
 import org.apache.cayenne.unit.UnitDbAdapter;
 import org.apache.cayenne.unit.di.runtime.CayenneProjects;
-import org.apache.cayenne.unit.di.runtime.CayenneTestsExt;
+import org.apache.cayenne.unit.di.runtime.CayenneTestsEnv;
 import org.junit.jupiter.api.extension.RegisterExtension;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.BeforeEach;
@@ -40,7 +40,7 @@ import static org.junit.jupiter.api.Assertions.fail;
 public class MiscTypesIT {
 
     @RegisterExtension
-    static final CayenneTestsExt env = CayenneTestsExt.forProject(CayenneProjects.MISC_TYPES_PROJECT);
+    static final CayenneTestsEnv env = CayenneTestsEnv.forProject(CayenneProjects.MISC_TYPES_PROJECT);
 
     private ObjectContext context;
     private UnitDbAdapter accessStackAdapter;

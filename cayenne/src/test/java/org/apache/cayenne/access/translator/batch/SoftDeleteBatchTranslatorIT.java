@@ -40,7 +40,7 @@ import org.apache.cayenne.test.parallel.ParallelTestContainer;
 import org.apache.cayenne.testdo.soft_delete.SoftDelete;
 import org.apache.cayenne.unit.UnitDbAdapter;
 import org.apache.cayenne.unit.di.runtime.CayenneProjects;
-import org.apache.cayenne.unit.di.runtime.CayenneTestsExt;
+import org.apache.cayenne.unit.di.runtime.CayenneTestsEnv;
 import org.junit.jupiter.api.extension.RegisterExtension;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.BeforeEach;
@@ -51,7 +51,7 @@ import static org.junit.jupiter.api.Assertions.assertNotNull;
 public class SoftDeleteBatchTranslatorIT {
 
     @RegisterExtension
-    static final CayenneTestsExt env = CayenneTestsExt.forProject(CayenneProjects.SOFT_DELETE_PROJECT);
+    static final CayenneTestsEnv env = CayenneTestsEnv.forProject(CayenneProjects.SOFT_DELETE_PROJECT);
 
     private ObjectContext context;
     protected DbAdapter adapter;

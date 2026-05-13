@@ -25,7 +25,6 @@ import org.apache.cayenne.dbsync.naming.NoStemStemmer;
 import org.apache.cayenne.dbsync.reverse.dbimport.ExcludeColumn;
 import org.apache.cayenne.dbsync.reverse.dbimport.IncludeTable;
 import org.apache.cayenne.dbsync.reverse.dbimport.ReverseEngineering;
-import org.apache.cayenne.dbsync.reverse.dbimport.Schema;
 import org.apache.cayenne.dbsync.reverse.filters.FiltersConfig;
 import org.apache.cayenne.dbsync.reverse.filters.FiltersConfigBuilder;
 import org.apache.cayenne.map.DataMap;
@@ -35,7 +34,7 @@ import org.apache.cayenne.map.DbRelationship;
 import org.apache.cayenne.runtime.CayenneRuntime;
 import org.apache.cayenne.unit.UnitDbAdapter;
 import org.apache.cayenne.unit.di.runtime.CayenneProjects;
-import org.apache.cayenne.unit.di.runtime.CayenneTestsExt;
+import org.apache.cayenne.unit.di.runtime.CayenneTestsEnv;
 import org.apache.cayenne.unit.di.runtime.RuntimeCaseDataSourceFactory;
 import java.sql.Connection;
 
@@ -56,7 +55,7 @@ import static org.junit.jupiter.api.Assertions.assertTrue;
 public class DbLoaderIT {
 
     @RegisterExtension
-    static final CayenneTestsExt env = CayenneTestsExt.forProject(CayenneProjects.TESTMAP_PROJECT);
+    static final CayenneTestsEnv env = CayenneTestsEnv.forProject(CayenneProjects.TESTMAP_PROJECT);
 
     private static final DbLoaderConfiguration CONFIG = new DbLoaderConfiguration();
 

@@ -30,7 +30,7 @@ import org.apache.cayenne.testdo.testmap.Artist;
 import org.apache.cayenne.testdo.testmap.ArtistExhibit;
 import org.apache.cayenne.testdo.testmap.Painting;
 import org.apache.cayenne.unit.di.runtime.CayenneProjects;
-import org.apache.cayenne.unit.di.runtime.CayenneTestsExt;
+import org.apache.cayenne.unit.di.runtime.CayenneTestsEnv;
 import org.junit.jupiter.api.extension.RegisterExtension;
 import org.apache.cayenne.unit.util.TstBean;
 import org.junit.jupiter.api.Test;
@@ -39,7 +39,7 @@ import org.junit.jupiter.api.BeforeEach;
 public class CayennePersistentObjectIT {
 
 	@RegisterExtension
-	static final CayenneTestsExt env = CayenneTestsExt.forProject(CayenneProjects.TESTMAP_PROJECT);
+	static final CayenneTestsEnv env = CayenneTestsEnv.forProject(CayenneProjects.TESTMAP_PROJECT);
 
 	private ObjectContext context;
 

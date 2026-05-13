@@ -28,7 +28,7 @@ import org.apache.cayenne.testdo.inheritance_flat.User;
 import org.apache.cayenne.testdo.inheritance_flat.UserProperties;
 import org.apache.cayenne.testdo.testmap.annotations.Tag2;
 import org.apache.cayenne.unit.di.runtime.CayenneProjects;
-import org.apache.cayenne.unit.di.runtime.CayenneTestsExt;
+import org.apache.cayenne.unit.di.runtime.CayenneTestsEnv;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.RegisterExtension;
@@ -38,7 +38,7 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 public class LifecycleCallbackRegistry_InheritanceIT {
 
     @RegisterExtension
-    static final CayenneTestsExt env = CayenneTestsExt.forProject(CayenneProjects.INHERITANCE_SINGLE_TABLE1_PROJECT);
+    static final CayenneTestsEnv env = CayenneTestsEnv.forProject(CayenneProjects.INHERITANCE_SINGLE_TABLE1_PROJECT);
 
     private ObjectContext context;
 

@@ -31,7 +31,7 @@ import org.apache.cayenne.test.jdbc.TableHelper;
 import org.apache.cayenne.testdo.primitive.PrimitivesTestEntity;
 import org.apache.cayenne.unit.UnitDbAdapter;
 import org.apache.cayenne.unit.di.runtime.CayenneProjects;
-import org.apache.cayenne.unit.di.runtime.CayenneTestsExt;
+import org.apache.cayenne.unit.di.runtime.CayenneTestsEnv;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.RegisterExtension;
@@ -46,7 +46,7 @@ import static org.junit.jupiter.api.Assertions.assertFalse;
 public class ObjectSelect_PrimitiveColumnsIT {
 
     @RegisterExtension
-    static final CayenneTestsExt env = CayenneTestsExt.forProject(CayenneProjects.PRIMITIVE_PROJECT);
+    static final CayenneTestsEnv env = CayenneTestsEnv.forProject(CayenneProjects.PRIMITIVE_PROJECT);
 
     private DataContext context;
     private DBHelper dbHelper;

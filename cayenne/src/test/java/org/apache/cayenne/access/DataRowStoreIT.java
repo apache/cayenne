@@ -25,9 +25,8 @@ import org.apache.cayenne.configuration.Constants;
 import org.apache.cayenne.configuration.DefaultRuntimeProperties;
 import org.apache.cayenne.testdo.testmap.Artist;
 import org.apache.cayenne.unit.di.runtime.CayenneProjects;
-import org.apache.cayenne.unit.di.runtime.CayenneTestsExt;
+import org.apache.cayenne.unit.di.runtime.CayenneTestsEnv;
 import org.junit.jupiter.api.extension.RegisterExtension;
-import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.Test;
 
 import java.util.Collections;
@@ -47,7 +46,7 @@ import static org.junit.jupiter.api.Assertions.assertTrue;
 public class DataRowStoreIT {
 
     @RegisterExtension
-    static final CayenneTestsExt env = CayenneTestsExt.forProject(CayenneProjects.TESTMAP_PROJECT);
+    static final CayenneTestsEnv env = CayenneTestsEnv.forProject(CayenneProjects.TESTMAP_PROJECT);
 
 
     private DataRowStore cache;

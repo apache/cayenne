@@ -21,7 +21,7 @@ package org.apache.cayenne.map;
 import org.apache.cayenne.GenericPersistentObject;
 import org.apache.cayenne.CayenneRuntimeException;
 import org.apache.cayenne.unit.di.runtime.CayenneProjects;
-import org.apache.cayenne.unit.di.runtime.CayenneTestsExt;
+import org.apache.cayenne.unit.di.runtime.CayenneTestsEnv;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.RegisterExtension;
@@ -36,7 +36,7 @@ import static org.junit.jupiter.api.Assertions.assertThrows;
 public class EntityResolverGenericStackIT {
 
     @RegisterExtension
-    static final CayenneTestsExt env = CayenneTestsExt.forProject(CayenneProjects.GENERIC_PROJECT);
+    static final CayenneTestsEnv env = CayenneTestsEnv.forProject(CayenneProjects.GENERIC_PROJECT);
 
     private EntityResolver resolver;
 

@@ -30,7 +30,7 @@ import org.apache.cayenne.testdo.oneway.OnewayTable2;
 import org.apache.cayenne.testdo.oneway.OnewayTable3;
 import org.apache.cayenne.testdo.oneway.OnewayTable4;
 import org.apache.cayenne.unit.di.runtime.CayenneProjects;
-import org.apache.cayenne.unit.di.runtime.CayenneTestsExt;
+import org.apache.cayenne.unit.di.runtime.CayenneTestsEnv;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.RegisterExtension;
@@ -43,7 +43,7 @@ import static org.junit.jupiter.api.Assertions.assertTrue;
 public class OneWayRelationshipsIT {
 
 	@RegisterExtension
-	static final CayenneTestsExt env = CayenneTestsExt.forProject(CayenneProjects.ONEWAY_PROJECT);
+	static final CayenneTestsEnv env = CayenneTestsEnv.forProject(CayenneProjects.ONEWAY_PROJECT);
 
 	private ObjectContext context;
 	private DBHelper dbHelper;

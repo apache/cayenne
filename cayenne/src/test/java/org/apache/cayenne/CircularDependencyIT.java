@@ -27,7 +27,7 @@ import org.apache.cayenne.testdo.relationships.ReflexiveAndToOne;
 import org.apache.cayenne.unit.OracleUnitDbAdapter;
 import org.apache.cayenne.unit.UnitDbAdapter;
 import org.apache.cayenne.unit.di.runtime.CayenneProjects;
-import org.apache.cayenne.unit.di.runtime.CayenneTestsExt;
+import org.apache.cayenne.unit.di.runtime.CayenneTestsEnv;
 import org.junit.jupiter.api.extension.RegisterExtension;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.Test;
@@ -41,7 +41,7 @@ import static org.junit.jupiter.api.Assertions.*;
 public class CircularDependencyIT {
 
     @RegisterExtension
-    static final CayenneTestsExt env = CayenneTestsExt.forProject(CayenneProjects.RELATIONSHIPS_PROJECT);
+    static final CayenneTestsEnv env = CayenneTestsEnv.forProject(CayenneProjects.RELATIONSHIPS_PROJECT);
 
     private UnitDbAdapter unitDbAdapter;
     private ObjectContext context;

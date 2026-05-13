@@ -24,7 +24,7 @@ import org.apache.cayenne.log.JdbcEventLogger;
 import org.apache.cayenne.map.DbEntity;
 import org.apache.cayenne.map.DbKeyGenerator;
 import org.apache.cayenne.unit.di.runtime.CayenneProjects;
-import org.apache.cayenne.unit.di.runtime.CayenneTestsExt;
+import org.apache.cayenne.unit.di.runtime.CayenneTestsEnv;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.RegisterExtension;
@@ -34,7 +34,7 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 public class OraclePkGeneratorIT {
 
     @RegisterExtension
-    static final CayenneTestsExt env = CayenneTestsExt.forProject(CayenneProjects.TESTMAP_PROJECT);
+    static final CayenneTestsEnv env = CayenneTestsEnv.forProject(CayenneProjects.TESTMAP_PROJECT);
 
     protected JdbcEventLogger logger;
     protected AdhocObjectFactory objectFactory;

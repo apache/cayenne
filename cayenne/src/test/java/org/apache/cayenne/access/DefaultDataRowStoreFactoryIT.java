@@ -49,7 +49,7 @@ import org.apache.cayenne.tx.DefaultTransactionManager;
 import org.apache.cayenne.tx.TransactionFactory;
 import org.apache.cayenne.tx.TransactionManager;
 import org.apache.cayenne.unit.di.runtime.CayenneProjects;
-import org.apache.cayenne.unit.di.runtime.CayenneTestsExt;
+import org.apache.cayenne.unit.di.runtime.CayenneTestsEnv;
 import org.junit.jupiter.api.extension.RegisterExtension;
 import org.junit.jupiter.api.Test;
 
@@ -60,7 +60,7 @@ import static org.junit.jupiter.api.Assertions.assertNull;
 public class DefaultDataRowStoreFactoryIT {
 
     @RegisterExtension
-    static final CayenneTestsExt env = CayenneTestsExt.forProject(CayenneProjects.MULTI_TIER_PROJECT);
+    static final CayenneTestsEnv env = CayenneTestsEnv.forProject(CayenneProjects.MULTI_TIER_PROJECT);
 
 
     @Test

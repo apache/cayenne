@@ -31,7 +31,7 @@ import org.apache.cayenne.query.Query;
 import org.apache.cayenne.query.SQLTemplate;
 import org.apache.cayenne.testdo.testmap.Artist;
 import org.apache.cayenne.unit.di.runtime.CayenneProjects;
-import org.apache.cayenne.unit.di.runtime.CayenneTestsExt;
+import org.apache.cayenne.unit.di.runtime.CayenneTestsEnv;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.RegisterExtension;
 
@@ -44,7 +44,7 @@ import static org.junit.jupiter.api.Assertions.assertSame;
 public class DataContextDecoratedStackIT {
 
     @RegisterExtension
-    static final CayenneTestsExt env = CayenneTestsExt.forProject(CayenneProjects.TESTMAP_PROJECT);
+    static final CayenneTestsEnv env = CayenneTestsEnv.forProject(CayenneProjects.TESTMAP_PROJECT);
 
     @Test
     public void commitDecorated() {

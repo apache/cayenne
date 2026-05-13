@@ -24,14 +24,14 @@ import org.apache.cayenne.testdo.db2.CrossdbM2E1;
 import org.apache.cayenne.testdo.db2.CrossdbM2E2;
 import org.apache.cayenne.unit.UnitDbAdapter;
 import org.apache.cayenne.unit.di.runtime.CayenneProjects;
-import org.apache.cayenne.unit.di.runtime.CayenneTestsExt;
+import org.apache.cayenne.unit.di.runtime.CayenneTestsEnv;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.RegisterExtension;
 
 public class DataContextCrossDBIT {
 
     @RegisterExtension
-    static final CayenneTestsExt env = CayenneTestsExt.forProject(CayenneProjects.MULTINODE_PROJECT);
+    static final CayenneTestsEnv env = CayenneTestsEnv.forProject(CayenneProjects.MULTINODE_PROJECT);
 
     @Test
     public void multiDBUpdate() {

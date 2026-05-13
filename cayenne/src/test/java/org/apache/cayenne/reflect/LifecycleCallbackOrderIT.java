@@ -28,7 +28,7 @@ import org.apache.cayenne.annotation.PreRemove;
 import org.apache.cayenne.annotation.PreUpdate;
 import org.apache.cayenne.testdo.lifecycle_callbacks_order.Lifecycle;
 import org.apache.cayenne.unit.di.runtime.CayenneProjects;
-import org.apache.cayenne.unit.di.runtime.CayenneTestsExt;
+import org.apache.cayenne.unit.di.runtime.CayenneTestsEnv;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.RegisterExtension;
@@ -38,7 +38,7 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 public class LifecycleCallbackOrderIT {
 
     @RegisterExtension
-    static final CayenneTestsExt env = CayenneTestsExt.forProject(CayenneProjects.LIFECYCLE_CALLBACKS_ORDER_PROJECT);
+    static final CayenneTestsEnv env = CayenneTestsEnv.forProject(CayenneProjects.LIFECYCLE_CALLBACKS_ORDER_PROJECT);
 
     private ObjectContext context;
 

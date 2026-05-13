@@ -25,7 +25,7 @@ import org.apache.cayenne.query.ObjectSelect;
 import org.apache.cayenne.testdo.testmap.Artist;
 import org.apache.cayenne.testdo.testmap.Painting;
 import org.apache.cayenne.unit.di.runtime.CayenneProjects;
-import org.apache.cayenne.unit.di.runtime.CayenneTestsExt;
+import org.apache.cayenne.unit.di.runtime.CayenneTestsEnv;
 import org.junit.jupiter.api.extension.RegisterExtension;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.BeforeEach;
@@ -38,7 +38,7 @@ import static org.junit.jupiter.api.Assertions.*;
 public class DefaultObjectSelectTranslatorIT {
 
     @RegisterExtension
-    static final CayenneTestsExt env = CayenneTestsExt.forProject(CayenneProjects.TESTMAP_PROJECT);
+    static final CayenneTestsEnv env = CayenneTestsEnv.forProject(CayenneProjects.TESTMAP_PROJECT);
 
     DataContext context;
     DbAdapter adapter;

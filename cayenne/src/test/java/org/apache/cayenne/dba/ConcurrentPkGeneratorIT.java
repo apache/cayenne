@@ -29,7 +29,7 @@ import org.apache.cayenne.testdo.qualified.Qualified1;
 import org.apache.cayenne.unit.DerbyUnitDbAdapter;
 import org.apache.cayenne.unit.UnitDbAdapter;
 import org.apache.cayenne.unit.di.runtime.CayenneProjects;
-import org.apache.cayenne.unit.di.runtime.CayenneTestsExt;
+import org.apache.cayenne.unit.di.runtime.CayenneTestsEnv;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.RegisterExtension;
@@ -48,7 +48,7 @@ import static org.junit.jupiter.api.Assertions.fail;
 public class ConcurrentPkGeneratorIT {
 
 	@RegisterExtension
-	static final CayenneTestsExt env = CayenneTestsExt.forProject(CayenneProjects.QUALIFIED_PROJECT);
+	static final CayenneTestsEnv env = CayenneTestsEnv.forProject(CayenneProjects.QUALIFIED_PROJECT);
 
 	private CayenneRuntime runtime;
 	private UnitDbAdapter unitDbAdapter;

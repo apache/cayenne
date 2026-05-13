@@ -31,7 +31,7 @@ import org.apache.cayenne.testdo.embeddable.EmbedEntity2;
 import org.apache.cayenne.testdo.embeddable.EmbedRoot;
 import org.apache.cayenne.testdo.embeddable.Embeddable1;
 import org.apache.cayenne.unit.di.runtime.CayenneProjects;
-import org.apache.cayenne.unit.di.runtime.CayenneTestsExt;
+import org.apache.cayenne.unit.di.runtime.CayenneTestsEnv;
 import org.junit.jupiter.api.extension.RegisterExtension;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -45,7 +45,7 @@ import static org.junit.jupiter.api.Assertions.assertTrue;
 public class EmbeddingIT {
 
     @RegisterExtension
-    static final CayenneTestsExt env = CayenneTestsExt.forProject(CayenneProjects.EMBEDDABLE_PROJECT);
+    static final CayenneTestsEnv env = CayenneTestsEnv.forProject(CayenneProjects.EMBEDDABLE_PROJECT);
 
     protected ObjectContext context;
     protected DBHelper dbHelper;

@@ -29,7 +29,7 @@ import org.apache.cayenne.reflect.SingletonFaultFactory;
 import org.apache.cayenne.reflect.ToManyProperty;
 import org.apache.cayenne.reflect.ToOneProperty;
 import org.apache.cayenne.unit.di.runtime.CayenneProjects;
-import org.apache.cayenne.unit.di.runtime.CayenneTestsExt;
+import org.apache.cayenne.unit.di.runtime.CayenneTestsEnv;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.RegisterExtension;
@@ -39,7 +39,7 @@ import static org.mockito.Mockito.mock;
 public class PersistentObjectDescriptorFactory_InheritanceMapsIT {
 
     @RegisterExtension
-    static final CayenneTestsExt env = CayenneTestsExt.forProject(CayenneProjects.INHERITANCE_SINGLE_TABLE1_PROJECT);
+    static final CayenneTestsEnv env = CayenneTestsEnv.forProject(CayenneProjects.INHERITANCE_SINGLE_TABLE1_PROJECT);
 
     private EntityResolver resolver;
 

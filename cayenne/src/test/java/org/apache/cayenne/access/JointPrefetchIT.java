@@ -38,7 +38,7 @@ import org.apache.cayenne.testdo.testmap.Gallery;
 import org.apache.cayenne.testdo.testmap.Painting;
 import org.apache.cayenne.unit.di.DataChannelInterceptor;
 import org.apache.cayenne.unit.di.runtime.CayenneProjects;
-import org.apache.cayenne.unit.di.runtime.CayenneTestsExt;
+import org.apache.cayenne.unit.di.runtime.CayenneTestsEnv;
 import org.junit.jupiter.api.extension.RegisterExtension;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -58,7 +58,7 @@ import static org.junit.jupiter.api.Assertions.*;
 public class JointPrefetchIT {
 
     @RegisterExtension
-    static final CayenneTestsExt env = CayenneTestsExt.forProject(CayenneProjects.TESTMAP_PROJECT);
+    static final CayenneTestsEnv env = CayenneTestsEnv.forProject(CayenneProjects.TESTMAP_PROJECT);
 
     protected DataContext context;
     protected CayenneRuntime runtime;

@@ -24,7 +24,7 @@ import org.apache.cayenne.testdo.relationships_to_many_fk.ToManyFkDep;
 import org.apache.cayenne.testdo.relationships_to_many_fk.ToManyFkRoot;
 import org.apache.cayenne.testdo.relationships_to_many_fk.ToManyRoot2;
 import org.apache.cayenne.unit.di.runtime.CayenneProjects;
-import org.apache.cayenne.unit.di.runtime.CayenneTestsExt;
+import org.apache.cayenne.unit.di.runtime.CayenneTestsEnv;
 import org.junit.jupiter.api.extension.RegisterExtension;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.BeforeEach;
@@ -37,7 +37,7 @@ import static org.junit.jupiter.api.Assertions.assertSame;
 public class CDOOneToManyFKIT {
 
     @RegisterExtension
-    static final CayenneTestsExt env = CayenneTestsExt.forProject(CayenneProjects.RELATIONSHIPS_TO_MANY_FK_PROJECT);
+    static final CayenneTestsEnv env = CayenneTestsEnv.forProject(CayenneProjects.RELATIONSHIPS_TO_MANY_FK_PROJECT);
 
     protected DataContext context;
 

@@ -31,7 +31,7 @@ import org.apache.cayenne.test.jdbc.TableHelper;
 import org.apache.cayenne.testdo.locking.RelLockingTestEntity;
 import org.apache.cayenne.testdo.locking.SimpleLockingTestEntity;
 import org.apache.cayenne.unit.di.runtime.CayenneProjects;
-import org.apache.cayenne.unit.di.runtime.CayenneTestsExt;
+import org.apache.cayenne.unit.di.runtime.CayenneTestsEnv;
 import org.junit.jupiter.api.extension.RegisterExtension;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -44,7 +44,7 @@ import static org.junit.jupiter.api.Assertions.assertThrows;
 public class OptimisticLockingIT {
 
     @RegisterExtension
-    static final CayenneTestsExt env = CayenneTestsExt.forProject(CayenneProjects.LOCKING_PROJECT);
+    static final CayenneTestsEnv env = CayenneTestsEnv.forProject(CayenneProjects.LOCKING_PROJECT);
 
     protected DataContext context;
     protected DBHelper dbHelper;

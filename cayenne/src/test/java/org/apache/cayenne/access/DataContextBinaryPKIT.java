@@ -25,7 +25,7 @@ import org.apache.cayenne.testdo.binary_pk.BinaryPKTest1;
 import org.apache.cayenne.testdo.binary_pk.BinaryPKTest2;
 import org.apache.cayenne.unit.UnitDbAdapter;
 import org.apache.cayenne.unit.di.runtime.CayenneProjects;
-import org.apache.cayenne.unit.di.runtime.CayenneTestsExt;
+import org.apache.cayenne.unit.di.runtime.CayenneTestsEnv;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.RegisterExtension;
 
@@ -35,7 +35,7 @@ import static org.junit.jupiter.api.Assertions.assertNotNull;
 public class DataContextBinaryPKIT {
 
     @RegisterExtension
-    static final CayenneTestsExt env = CayenneTestsExt.forProject(CayenneProjects.BINARY_PK_PROJECT);
+    static final CayenneTestsEnv env = CayenneTestsEnv.forProject(CayenneProjects.BINARY_PK_PROJECT);
 
     @Test
     public void insertBinaryPK() throws Exception {

@@ -36,7 +36,7 @@ import org.apache.cayenne.testdo.testmap.Artist;
 import org.apache.cayenne.testdo.testmap.Painting;
 import org.apache.cayenne.unit.UnitDbAdapter;
 import org.apache.cayenne.unit.di.runtime.CayenneProjects;
-import org.apache.cayenne.unit.di.runtime.CayenneTestsExt;
+import org.apache.cayenne.unit.di.runtime.CayenneTestsEnv;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Disabled;
@@ -52,7 +52,7 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 public class ObjectSelect_AggregateIT {
 
     @RegisterExtension
-    static final CayenneTestsExt env = CayenneTestsExt.forProject(CayenneProjects.TESTMAP_PROJECT);
+    static final CayenneTestsEnv env = CayenneTestsEnv.forProject(CayenneProjects.TESTMAP_PROJECT);
 
     private DataContext context;
     private DBHelper dbHelper;

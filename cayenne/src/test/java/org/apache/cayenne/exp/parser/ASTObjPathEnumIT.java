@@ -22,7 +22,7 @@ import org.apache.cayenne.ObjectContext;
 import org.apache.cayenne.testdo.enum_test.Enum1;
 import org.apache.cayenne.testdo.enum_test.EnumEntity;
 import org.apache.cayenne.unit.di.runtime.CayenneProjects;
-import org.apache.cayenne.unit.di.runtime.CayenneTestsExt;
+import org.apache.cayenne.unit.di.runtime.CayenneTestsEnv;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.RegisterExtension;
@@ -34,7 +34,7 @@ import static org.junit.jupiter.api.Assertions.assertThrows;
 public class ASTObjPathEnumIT {
 
     @RegisterExtension
-    static final CayenneTestsExt env = CayenneTestsExt.forProject(CayenneProjects.ENUM_PROJECT);
+    static final CayenneTestsEnv env = CayenneTestsEnv.forProject(CayenneProjects.ENUM_PROJECT);
 
     private ObjectContext context;
 

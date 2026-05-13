@@ -26,7 +26,7 @@ import org.apache.cayenne.testdo.inheritance.DirectToSubEntity;
 import org.apache.cayenne.testdo.inheritance.RelatedEntity;
 import org.apache.cayenne.testdo.inheritance.SubEntity;
 import org.apache.cayenne.unit.di.runtime.CayenneProjects;
-import org.apache.cayenne.unit.di.runtime.CayenneTestsExt;
+import org.apache.cayenne.unit.di.runtime.CayenneTestsEnv;
 import org.junit.jupiter.api.extension.RegisterExtension;
 import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.Test;
@@ -37,7 +37,7 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 public class EntityInheritanceIT {
 
     @RegisterExtension
-    static final CayenneTestsExt env = CayenneTestsExt.forProject(CayenneProjects.INHERITANCE_PROJECT);
+    static final CayenneTestsEnv env = CayenneTestsEnv.forProject(CayenneProjects.INHERITANCE_PROJECT);
 
     private DataContext context;
 

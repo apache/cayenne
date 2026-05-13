@@ -25,7 +25,7 @@ import org.apache.cayenne.testdo.testmap.Artist;
 import org.apache.cayenne.tx.Transaction;
 import org.apache.cayenne.tx.TransactionListener;
 import org.apache.cayenne.unit.di.runtime.CayenneProjects;
-import org.apache.cayenne.unit.di.runtime.CayenneTestsExt;
+import org.apache.cayenne.unit.di.runtime.CayenneTestsEnv;
 import org.apache.cayenne.validation.ValidationException;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -40,7 +40,7 @@ import static org.mockito.Mockito.*;
 public class CayenneRuntimeIT {
 
     @RegisterExtension
-    static final CayenneTestsExt env = CayenneTestsExt.forProject(CayenneProjects.TESTMAP_PROJECT);
+    static final CayenneTestsEnv env = CayenneTestsEnv.forProject(CayenneProjects.TESTMAP_PROJECT);
 
     private CayenneRuntime runtime;
     private ObjectContext context;

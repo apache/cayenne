@@ -30,7 +30,7 @@ import org.apache.cayenne.test.jdbc.DBHelper;
 import org.apache.cayenne.test.jdbc.TableHelper;
 import org.apache.cayenne.testdo.inheritance_vertical.*;
 import org.apache.cayenne.unit.di.runtime.CayenneProjects;
-import org.apache.cayenne.unit.di.runtime.CayenneTestsExt;
+import org.apache.cayenne.unit.di.runtime.CayenneTestsEnv;
 import org.junit.jupiter.api.extension.RegisterExtension;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
@@ -51,7 +51,7 @@ import static org.junit.jupiter.api.Assertions.assertThrows;
 public class VerticalInheritanceIT {
 
 	@RegisterExtension
-	static final CayenneTestsExt env = CayenneTestsExt.forProject(CayenneProjects.INHERITANCE_VERTICAL_PROJECT)
+	static final CayenneTestsEnv env = CayenneTestsEnv.forProject(CayenneProjects.INHERITANCE_VERTICAL_PROJECT)
 	        .withExtraModules(GraphSorterModule.class);
 
 	protected ObjectContext context;

@@ -29,7 +29,7 @@ import org.apache.cayenne.tx.BaseTransaction;
 import org.apache.cayenne.tx.ExternalTransaction;
 import org.apache.cayenne.unit.UnitDbAdapter;
 import org.apache.cayenne.unit.di.runtime.CayenneProjects;
-import org.apache.cayenne.unit.di.runtime.CayenneTestsExt;
+import org.apache.cayenne.unit.di.runtime.CayenneTestsEnv;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.RegisterExtension;
@@ -44,7 +44,7 @@ import static org.junit.jupiter.api.Assertions.*;
 public class ProcedureCallIT {
 
     @RegisterExtension
-    static final CayenneTestsExt env = CayenneTestsExt.forProject(CayenneProjects.TESTMAP_PROJECT);
+    static final CayenneTestsEnv env = CayenneTestsEnv.forProject(CayenneProjects.TESTMAP_PROJECT);
 
     public static final String UPDATE_STORED_PROCEDURE = "cayenne_tst_upd_proc";
     public static final String UPDATE_STORED_PROCEDURE_NOPARAM = "cayenne_tst_upd_proc2";

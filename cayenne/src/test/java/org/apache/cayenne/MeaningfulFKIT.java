@@ -23,7 +23,7 @@ import org.apache.cayenne.query.SelectById;
 import org.apache.cayenne.testdo.relationships.MeaningfulFK;
 import org.apache.cayenne.testdo.relationships.RelationshipHelper;
 import org.apache.cayenne.unit.di.runtime.CayenneProjects;
-import org.apache.cayenne.unit.di.runtime.CayenneTestsExt;
+import org.apache.cayenne.unit.di.runtime.CayenneTestsEnv;
 import org.apache.cayenne.validation.ValidationResult;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -34,7 +34,7 @@ import static org.junit.jupiter.api.Assertions.*;
 public class MeaningfulFKIT {
 
     @RegisterExtension
-    static final CayenneTestsExt env = CayenneTestsExt.forProject(CayenneProjects.RELATIONSHIPS_PROJECT);
+    static final CayenneTestsEnv env = CayenneTestsEnv.forProject(CayenneProjects.RELATIONSHIPS_PROJECT);
 
     private ObjectContext context;
 

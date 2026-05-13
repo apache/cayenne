@@ -24,7 +24,7 @@ import org.apache.cayenne.query.SQLTemplate;
 import org.apache.cayenne.test.parallel.ParallelTestContainer;
 import org.apache.cayenne.testdo.testmap.Artist;
 import org.apache.cayenne.unit.di.runtime.CayenneProjects;
-import org.apache.cayenne.unit.di.runtime.WeakReferenceStrategyTestsExt;
+import org.apache.cayenne.unit.di.runtime.WeakReferenceStrategyTestsEnv;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.RegisterExtension;
@@ -34,7 +34,7 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 public class ObjectStoreGCIT {
 
     @RegisterExtension
-    static final WeakReferenceStrategyTestsExt env = WeakReferenceStrategyTestsExt.forProject(CayenneProjects.TESTMAP_PROJECT);
+    static final WeakReferenceStrategyTestsEnv env = WeakReferenceStrategyTestsEnv.forProject(CayenneProjects.TESTMAP_PROJECT);
 
     private DataContext context;
 

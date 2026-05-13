@@ -26,7 +26,7 @@ import org.apache.cayenne.testdo.lob.ClobTestEntity;
 import org.apache.cayenne.testdo.lob.ClobTestRelation;
 import org.apache.cayenne.unit.UnitDbAdapter;
 import org.apache.cayenne.unit.di.runtime.CayenneProjects;
-import org.apache.cayenne.unit.di.runtime.CayenneTestsExt;
+import org.apache.cayenne.unit.di.runtime.CayenneTestsEnv;
 import org.junit.jupiter.api.extension.RegisterExtension;
 import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.Test;
@@ -39,7 +39,7 @@ import static org.junit.jupiter.api.Assertions.assertNotNull;
 public class SelectActionIT {
 
     @RegisterExtension
-    static final CayenneTestsExt env = CayenneTestsExt.forProject(CayenneProjects.LOB_PROJECT);
+    static final CayenneTestsEnv env = CayenneTestsEnv.forProject(CayenneProjects.LOB_PROJECT);
 
     private DataContext context;
     private UnitDbAdapter accessStackAdapter;

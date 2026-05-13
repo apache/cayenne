@@ -27,7 +27,7 @@ import org.apache.cayenne.query.ObjectSelect;
 import org.apache.cayenne.test.jdbc.TableHelper;
 import org.apache.cayenne.testdo.cay_2666.CAY2666;
 import org.apache.cayenne.unit.di.runtime.CayenneProjects;
-import org.apache.cayenne.unit.di.runtime.CayenneTestsExt;
+import org.apache.cayenne.unit.di.runtime.CayenneTestsEnv;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.RegisterExtension;
 
@@ -43,7 +43,7 @@ import static org.junit.jupiter.api.Assertions.assertNotEquals;
 public class Cay2666IT {
 
     @RegisterExtension
-    static final CayenneTestsExt env = CayenneTestsExt.forProject(CayenneProjects.CAY_2666);
+    static final CayenneTestsEnv env = CayenneTestsEnv.forProject(CayenneProjects.CAY_2666);
 
     @Test
     public void exp_Path() {

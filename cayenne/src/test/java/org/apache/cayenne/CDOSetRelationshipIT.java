@@ -25,7 +25,7 @@ import org.apache.cayenne.test.jdbc.TableHelper;
 import org.apache.cayenne.testdo.relationships_set_to_many.SetToMany;
 import org.apache.cayenne.testdo.relationships_set_to_many.SetToManyTarget;
 import org.apache.cayenne.unit.di.runtime.CayenneProjects;
-import org.apache.cayenne.unit.di.runtime.CayenneTestsExt;
+import org.apache.cayenne.unit.di.runtime.CayenneTestsEnv;
 import org.junit.jupiter.api.extension.RegisterExtension;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -42,7 +42,7 @@ import static org.junit.jupiter.api.Assertions.assertTrue;
 public class CDOSetRelationshipIT {
 
     @RegisterExtension
-    static final CayenneTestsExt env = CayenneTestsExt.forProject(CayenneProjects.RELATIONSHIPS_SET_TO_MANY_PROJECT);
+    static final CayenneTestsEnv env = CayenneTestsEnv.forProject(CayenneProjects.RELATIONSHIPS_SET_TO_MANY_PROJECT);
 
     protected ObjectContext context;
     protected DBHelper dbHelper;

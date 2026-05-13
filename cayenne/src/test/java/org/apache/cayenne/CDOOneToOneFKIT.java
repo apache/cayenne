@@ -24,7 +24,7 @@ import org.apache.cayenne.query.ObjectIdQuery;
 import org.apache.cayenne.testdo.relationships_to_one_fk.ToOneFK1;
 import org.apache.cayenne.testdo.relationships_to_one_fk.ToOneFK2;
 import org.apache.cayenne.unit.di.runtime.CayenneProjects;
-import org.apache.cayenne.unit.di.runtime.CayenneTestsExt;
+import org.apache.cayenne.unit.di.runtime.CayenneTestsEnv;
 import org.junit.jupiter.api.extension.RegisterExtension;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.BeforeEach;
@@ -41,7 +41,7 @@ import static org.junit.jupiter.api.Assertions.assertTrue;
 public class CDOOneToOneFKIT {
 
     @RegisterExtension
-    static final CayenneTestsExt env = CayenneTestsExt.forProject(CayenneProjects.RELATIONSHIPS_TO_ONE_FK_PROJECT);
+    static final CayenneTestsEnv env = CayenneTestsEnv.forProject(CayenneProjects.RELATIONSHIPS_TO_ONE_FK_PROJECT);
 
     private DataContext context;
     private DataContext context1;

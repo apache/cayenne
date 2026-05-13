@@ -27,7 +27,7 @@ import org.apache.cayenne.test.jdbc.TableHelper;
 import org.apache.cayenne.testdo.mixed_persistence_strategy.MixedPersistenceStrategy;
 import org.apache.cayenne.testdo.mixed_persistence_strategy.MixedPersistenceStrategy2;
 import org.apache.cayenne.unit.di.runtime.CayenneProjects;
-import org.apache.cayenne.unit.di.runtime.CayenneTestsExt;
+import org.apache.cayenne.unit.di.runtime.CayenneTestsEnv;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.RegisterExtension;
@@ -41,7 +41,7 @@ import static org.junit.jupiter.api.Assertions.assertTrue;
 public class MixedPersistenceStrategyIT {
 
     @RegisterExtension
-    static final CayenneTestsExt env = CayenneTestsExt.forProject(CayenneProjects.MIXED_PERSISTENCE_STRATEGY_PROJECT);
+    static final CayenneTestsEnv env = CayenneTestsEnv.forProject(CayenneProjects.MIXED_PERSISTENCE_STRATEGY_PROJECT);
 
     protected ObjectContext context;
     protected DBHelper dbHelper;

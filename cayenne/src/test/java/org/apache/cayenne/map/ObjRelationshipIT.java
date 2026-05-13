@@ -34,7 +34,7 @@ import org.apache.cayenne.resource.URLResource;
 import org.apache.cayenne.runtime.CayenneRuntime;
 import org.apache.cayenne.testdo.inheritance_vertical.Iv2Sub1;
 import org.apache.cayenne.unit.di.runtime.CayenneProjects;
-import org.apache.cayenne.unit.di.runtime.CayenneTestsExt;
+import org.apache.cayenne.unit.di.runtime.CayenneTestsEnv;
 import org.apache.cayenne.util.Util;
 import org.apache.cayenne.util.XMLEncoder;
 import org.junit.jupiter.api.BeforeEach;
@@ -46,7 +46,7 @@ import static org.junit.jupiter.api.Assertions.*;
 public class ObjRelationshipIT {
 
     @RegisterExtension
-    static final CayenneTestsExt env = CayenneTestsExt.forProject(CayenneProjects.TESTMAP_PROJECT);
+    static final CayenneTestsEnv env = CayenneTestsEnv.forProject(CayenneProjects.TESTMAP_PROJECT);
 
     private CayenneRuntime runtime;
 

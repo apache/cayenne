@@ -24,7 +24,7 @@ import java.sql.SQLException;
 import org.apache.cayenne.configuration.DataSourceDescriptor;
 import org.apache.cayenne.di.AdhocObjectFactory;
 import org.apache.cayenne.unit.di.runtime.CayenneProjects;
-import org.apache.cayenne.unit.di.runtime.CayenneTestsExt;
+import org.apache.cayenne.unit.di.runtime.CayenneTestsEnv;
 import org.junit.jupiter.api.extension.RegisterExtension;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
@@ -32,7 +32,7 @@ import org.junit.jupiter.api.BeforeEach;
 public class BasePoolingDataSourceIT {
 
 	@RegisterExtension
-	static final CayenneTestsExt env = CayenneTestsExt.forProject(CayenneProjects.TESTMAP_PROJECT);
+	static final CayenneTestsEnv env = CayenneTestsEnv.forProject(CayenneProjects.TESTMAP_PROJECT);
 
 
 	protected static final long QUEUE_WAIT_TIME = 1000L;

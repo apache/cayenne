@@ -22,7 +22,7 @@ package org.apache.cayenne;
 import org.apache.cayenne.testdo.testmap.Artist;
 import org.apache.cayenne.testdo.testmap.Painting1;
 import org.apache.cayenne.unit.di.runtime.CayenneProjects;
-import org.apache.cayenne.unit.di.runtime.CayenneTestsExt;
+import org.apache.cayenne.unit.di.runtime.CayenneTestsEnv;
 import org.junit.jupiter.api.extension.RegisterExtension;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.BeforeEach;
@@ -34,7 +34,7 @@ import static org.junit.jupiter.api.Assertions.assertSame;
 public class CDOMany2OneNoRevIT {
 
     @RegisterExtension
-    static final CayenneTestsExt env = CayenneTestsExt.forProject(CayenneProjects.TESTMAP_PROJECT);
+    static final CayenneTestsEnv env = CayenneTestsEnv.forProject(CayenneProjects.TESTMAP_PROJECT);
 
     private ObjectContext context;
 

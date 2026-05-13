@@ -26,7 +26,7 @@ import org.apache.cayenne.query.ObjectSelect;
 import org.apache.cayenne.testdo.inheritance_vertical.IvBase;
 import org.apache.cayenne.testdo.inheritance_vertical.IvOther;
 import org.apache.cayenne.unit.di.runtime.CayenneProjects;
-import org.apache.cayenne.unit.di.runtime.CayenneTestsExt;
+import org.apache.cayenne.unit.di.runtime.CayenneTestsEnv;
 import org.junit.jupiter.api.extension.RegisterExtension;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.BeforeEach;
@@ -39,7 +39,7 @@ import static org.junit.jupiter.api.Assertions.*;
 public class VerticalInheritanceJoinOrderIT {
 
     @RegisterExtension
-    static final CayenneTestsExt env = CayenneTestsExt.forProject(CayenneProjects.INHERITANCE_VERTICAL_PROJECT);
+    static final CayenneTestsEnv env = CayenneTestsEnv.forProject(CayenneProjects.INHERITANCE_VERTICAL_PROJECT);
 
     private DataNode dataNode;
 

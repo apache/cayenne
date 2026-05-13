@@ -29,7 +29,7 @@ import org.apache.cayenne.test.jdbc.TableHelper;
 import org.apache.cayenne.testdo.embeddable.EmbedEntity1;
 import org.apache.cayenne.testdo.embeddable.Embeddable1;
 import org.apache.cayenne.unit.di.runtime.CayenneProjects;
-import org.apache.cayenne.unit.di.runtime.CayenneTestsExt;
+import org.apache.cayenne.unit.di.runtime.CayenneTestsEnv;
 import org.junit.jupiter.api.extension.RegisterExtension;
 import org.apache.cayenne.util.Util;
 import org.junit.jupiter.api.BeforeEach;
@@ -42,7 +42,7 @@ import static org.junit.jupiter.api.Assertions.assertNotNull;
 public class EmbeddingSerializeIT {
 
     @RegisterExtension
-    static final CayenneTestsExt env = CayenneTestsExt.forProject(CayenneProjects.EMBEDDABLE_PROJECT);
+    static final CayenneTestsEnv env = CayenneTestsEnv.forProject(CayenneProjects.EMBEDDABLE_PROJECT);
 
     protected ObjectContext context;
     protected DBHelper dbHelper;

@@ -23,7 +23,7 @@ import org.apache.cayenne.runtime.CayenneRuntime;
 import org.apache.cayenne.testdo.reflexive.Other;
 import org.apache.cayenne.testdo.reflexive.Reflexive;
 import org.apache.cayenne.unit.di.runtime.CayenneProjects;
-import org.apache.cayenne.unit.di.runtime.CayenneTestsExt;
+import org.apache.cayenne.unit.di.runtime.CayenneTestsEnv;
 import org.junit.jupiter.api.extension.RegisterExtension;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.BeforeEach;
@@ -33,7 +33,7 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 public class CayennePersistentObjectReflexiveIT {
 
     @RegisterExtension
-    static final CayenneTestsExt env = CayenneTestsExt.forProject(CayenneProjects.REFLEXIVE_PROJECT);
+    static final CayenneTestsEnv env = CayenneTestsEnv.forProject(CayenneProjects.REFLEXIVE_PROJECT);
 
     private ObjectContext context;
     private CayenneRuntime runtime;

@@ -20,6 +20,7 @@ package org.apache.cayenne.unit.di.runtime;
 
 import org.apache.cayenne.ObjectContext;
 import org.apache.cayenne.access.DataContext;
+import org.apache.cayenne.di.DIBootstrap;
 import org.apache.cayenne.di.Injector;
 import org.apache.cayenne.di.spi.DefaultScope;
 import org.apache.cayenne.runtime.CayenneRuntime;
@@ -42,15 +43,17 @@ import org.junit.jupiter.api.extension.ExtensionContext;
  *     ObjectContext ctx = env.context();
  * }
  * }</pre>
- *
- * @since 5.0
  */
-public class CayenneTestsExt implements BeforeEachCallback, AfterEachCallback {
+public class CayenneTestsEnv implements BeforeEachCallback, AfterEachCallback {
 
-    // Reuse RuntimeCase's shared injector and scope — schema is built exactly once.
-    // Referencing RuntimeCase here triggers its static initialization if not yet done.
-    private static final DefaultScope testScope = RuntimeCase.testScope;
-    private static final Injector injector = RuntimeCase.injector;
+    private static final DefaultScope TEST_SCOPE;
+    private static final Injector INJECTOR;
+
+    static {
+        TEST_SCOPE = new DefaultScope();
+        INJECTOR = DIBootstrap.createInjector(new RuntimeCaseModule(TEST_SCOPE));
+        INJECTOR.getInstance(SchemaBuilder.class).rebuildSchema();
+    }
 
     private final String project;
     private final Class<?>[] extraModules;
@@ -61,18 +64,18 @@ public class CayenneTestsExt implements BeforeEachCallback, AfterEachCallback {
     private DBHelper dbHelper;
     private CayenneRuntime runtime;
 
-    private CayenneTestsExt(String project, Class<?>[] extraModules, boolean autoClean) {
+    private CayenneTestsEnv(String project, Class<?>[] extraModules, boolean autoClean) {
         this.project = project;
         this.extraModules = extraModules;
         this.autoClean = autoClean;
     }
 
-    public static CayenneTestsExt forProject(String project) {
-        return new CayenneTestsExt(project, new Class<?>[0], true);
+    public static CayenneTestsEnv forProject(String project) {
+        return new CayenneTestsEnv(project, new Class<?>[0], true);
     }
 
-    public CayenneTestsExt withExtraModules(Class<?>... modules) {
-        return new CayenneTestsExt(project, modules, autoClean);
+    public CayenneTestsEnv withExtraModules(Class<?>... modules) {
+        return new CayenneTestsEnv(project, modules, autoClean);
     }
 
     /**
@@ -82,22 +85,22 @@ public class CayenneTestsExt implements BeforeEachCallback, AfterEachCallback {
      * responsible for invoking {@code env.getInstance(DBCleaner.class).clean()}
      * from its own {@code @BeforeEach}.
      */
-    public CayenneTestsExt withoutAutoClean() {
-        return new CayenneTestsExt(project, extraModules, false);
+    public CayenneTestsEnv withoutAutoClean() {
+        return new CayenneTestsEnv(project, extraModules, false);
     }
 
     @Override
     public void beforeEach(ExtensionContext ctx) throws Exception {
-        injector.getInstance(RuntimeCaseProperties.class).setConfigurationLocation(project);
-        injector.getInstance(RuntimeCaseExtraModules.class).setExtraModules(extraModules);
+        INJECTOR.getInstance(RuntimeCaseProperties.class).setConfigurationLocation(project);
+        INJECTOR.getInstance(RuntimeCaseExtraModules.class).setExtraModules(extraModules);
 
-        runtime     = injector.getInstance(CayenneRuntime.class);
-        context     = injector.getInstance(ObjectContext.class);
-        dataContext = injector.getInstance(DataContext.class);
-        dbHelper    = injector.getInstance(DBHelper.class);
+        runtime = INJECTOR.getInstance(CayenneRuntime.class);
+        context = INJECTOR.getInstance(ObjectContext.class);
+        dataContext = INJECTOR.getInstance(DataContext.class);
+        dbHelper = INJECTOR.getInstance(DBHelper.class);
 
         if (autoClean) {
-            DBCleaner dbCleaner = injector.getInstance(DBCleaner.class);
+            DBCleaner dbCleaner = INJECTOR.getInstance(DBCleaner.class);
             try {
                 dbCleaner.clean();
             } catch (Exception ex) {
@@ -108,11 +111,11 @@ public class CayenneTestsExt implements BeforeEachCallback, AfterEachCallback {
 
     @Override
     public void afterEach(ExtensionContext ctx) {
-        testScope.shutdown();
-        context     = null;
+        TEST_SCOPE.shutdown();
+        context = null;
         dataContext = null;
-        dbHelper    = null;
-        runtime     = null;
+        dbHelper = null;
+        runtime = null;
     }
 
     public ObjectContext context() {
@@ -131,8 +134,10 @@ public class CayenneTestsExt implements BeforeEachCallback, AfterEachCallback {
         return runtime;
     }
 
-    /** Access to less-common injectable types (DataChannelInterceptor, UnitDbAdapter, etc.). */
+    /**
+     * Access to less-common injectable types (DataChannelInterceptor, UnitDbAdapter, etc.).
+     */
     public <T> T getInstance(Class<T> type) {
-        return injector.getInstance(type);
+        return INJECTOR.getInstance(type);
     }
 }

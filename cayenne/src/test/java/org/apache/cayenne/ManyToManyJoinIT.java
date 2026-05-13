@@ -25,7 +25,7 @@ import org.apache.cayenne.testdo.relationships_many_to_many_join.SelfRelationshi
 import org.apache.cayenne.testdo.relationships_many_to_many_join.SelfRelationshipSub;
 import org.apache.cayenne.testdo.relationships_many_to_many_join.Song;
 import org.apache.cayenne.unit.di.runtime.CayenneProjects;
-import org.apache.cayenne.unit.di.runtime.CayenneTestsExt;
+import org.apache.cayenne.unit.di.runtime.CayenneTestsEnv;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.RegisterExtension;
@@ -33,7 +33,7 @@ import org.junit.jupiter.api.extension.RegisterExtension;
 public class ManyToManyJoinIT {
 
     @RegisterExtension
-    static final CayenneTestsExt env = CayenneTestsExt.forProject(CayenneProjects.RELATIONSHIPS_MANY_TO_MANY_JOIN_PROJECT);
+    static final CayenneTestsEnv env = CayenneTestsEnv.forProject(CayenneProjects.RELATIONSHIPS_MANY_TO_MANY_JOIN_PROJECT);
 
     private ObjectContext context;
 

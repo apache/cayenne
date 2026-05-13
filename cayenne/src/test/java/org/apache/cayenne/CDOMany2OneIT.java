@@ -30,7 +30,7 @@ import org.apache.cayenne.testdo.testmap.Gallery;
 import org.apache.cayenne.testdo.testmap.Painting;
 import org.apache.cayenne.testdo.testmap.ROPainting;
 import org.apache.cayenne.unit.di.runtime.CayenneProjects;
-import org.apache.cayenne.unit.di.runtime.CayenneTestsExt;
+import org.apache.cayenne.unit.di.runtime.CayenneTestsEnv;
 import org.junit.jupiter.api.extension.RegisterExtension;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -47,7 +47,7 @@ import static org.junit.jupiter.api.Assertions.assertTrue;
 public class CDOMany2OneIT {
 
     @RegisterExtension
-    static final CayenneTestsExt env = CayenneTestsExt.forProject(CayenneProjects.TESTMAP_PROJECT);
+    static final CayenneTestsEnv env = CayenneTestsEnv.forProject(CayenneProjects.TESTMAP_PROJECT);
 
     private CayenneRuntime runtime;
     private ObjectContext context;

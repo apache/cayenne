@@ -21,14 +21,13 @@ package org.apache.cayenne.unit.di.runtime;
 import java.sql.Types;
 
 import org.apache.cayenne.test.jdbc.DBHelper;
-import org.apache.cayenne.unit.di.runtime.DBCleaner;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.extension.RegisterExtension;
 
 public class PeopleProjectCase {
 
 	@RegisterExtension
-	protected static final CayenneTestsExt env = CayenneTestsExt
+	protected static final CayenneTestsEnv env = CayenneTestsEnv
 			.forProject(CayenneProjects.PEOPLE_PROJECT)
 			.withoutAutoClean();
 

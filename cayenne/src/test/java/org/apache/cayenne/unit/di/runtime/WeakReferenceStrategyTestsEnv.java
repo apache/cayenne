@@ -30,21 +30,21 @@ import org.junit.jupiter.api.extension.BeforeEachCallback;
 import org.junit.jupiter.api.extension.ExtensionContext;
 
 /**
- * Sibling of {@link CayenneTestsExt} that wires its own injector via
+ * Sibling of {@link CayenneTestsEnv} that wires its own injector via
  * {@link WeakReferenceStrategyRuntimeCaseModule}. Use it for tests that need
  * a runtime configured with the weak-reference object-tracking strategy.
- *
- * @since 5.0
  */
-public class WeakReferenceStrategyTestsExt implements BeforeEachCallback, AfterEachCallback {
+// TODO: merge with CayenneTestsEnv
+@Deprecated(forRemoval = true)
+public class WeakReferenceStrategyTestsEnv implements BeforeEachCallback, AfterEachCallback {
 
-    private static final DefaultScope testScope;
-    private static final Injector injector;
+    private static final DefaultScope TEST_SCOPE;
+    private static final Injector INJECTOR;
 
     static {
-        testScope = new DefaultScope();
-        injector = DIBootstrap.createInjector(new WeakReferenceStrategyRuntimeCaseModule(testScope));
-        injector.getInstance(SchemaBuilder.class).rebuildSchema();
+        TEST_SCOPE = new DefaultScope();
+        INJECTOR = DIBootstrap.createInjector(new WeakReferenceStrategyRuntimeCaseModule(TEST_SCOPE));
+        INJECTOR.getInstance(SchemaBuilder.class).rebuildSchema();
     }
 
     private final String project;
@@ -55,30 +55,30 @@ public class WeakReferenceStrategyTestsExt implements BeforeEachCallback, AfterE
     private DBHelper dbHelper;
     private CayenneRuntime runtime;
 
-    private WeakReferenceStrategyTestsExt(String project, Class<?>[] extraModules) {
+    private WeakReferenceStrategyTestsEnv(String project, Class<?>[] extraModules) {
         this.project = project;
         this.extraModules = extraModules;
     }
 
-    public static WeakReferenceStrategyTestsExt forProject(String project) {
-        return new WeakReferenceStrategyTestsExt(project, new Class<?>[0]);
+    public static WeakReferenceStrategyTestsEnv forProject(String project) {
+        return new WeakReferenceStrategyTestsEnv(project, new Class<?>[0]);
     }
 
-    public WeakReferenceStrategyTestsExt withExtraModules(Class<?>... modules) {
-        return new WeakReferenceStrategyTestsExt(project, modules);
+    public WeakReferenceStrategyTestsEnv withExtraModules(Class<?>... modules) {
+        return new WeakReferenceStrategyTestsEnv(project, modules);
     }
 
     @Override
     public void beforeEach(ExtensionContext ctx) throws Exception {
-        injector.getInstance(RuntimeCaseProperties.class).setConfigurationLocation(project);
-        injector.getInstance(RuntimeCaseExtraModules.class).setExtraModules(extraModules);
+        INJECTOR.getInstance(RuntimeCaseProperties.class).setConfigurationLocation(project);
+        INJECTOR.getInstance(RuntimeCaseExtraModules.class).setExtraModules(extraModules);
 
-        runtime     = injector.getInstance(CayenneRuntime.class);
-        context     = injector.getInstance(ObjectContext.class);
-        dataContext = injector.getInstance(DataContext.class);
-        dbHelper    = injector.getInstance(DBHelper.class);
+        runtime = INJECTOR.getInstance(CayenneRuntime.class);
+        context = INJECTOR.getInstance(ObjectContext.class);
+        dataContext = INJECTOR.getInstance(DataContext.class);
+        dbHelper = INJECTOR.getInstance(DBHelper.class);
 
-        DBCleaner dbCleaner = injector.getInstance(DBCleaner.class);
+        DBCleaner dbCleaner = INJECTOR.getInstance(DBCleaner.class);
         try {
             dbCleaner.clean();
         } catch (Exception ex) {
@@ -88,11 +88,11 @@ public class WeakReferenceStrategyTestsExt implements BeforeEachCallback, AfterE
 
     @Override
     public void afterEach(ExtensionContext ctx) {
-        testScope.shutdown();
-        context     = null;
+        TEST_SCOPE.shutdown();
+        context = null;
         dataContext = null;
-        dbHelper    = null;
-        runtime     = null;
+        dbHelper = null;
+        runtime = null;
     }
 
     public ObjectContext context() {
@@ -112,6 +112,6 @@ public class WeakReferenceStrategyTestsExt implements BeforeEachCallback, AfterE
     }
 
     public <T> T getInstance(Class<T> type) {
-        return injector.getInstance(type);
+        return INJECTOR.getInstance(type);
     }
 }

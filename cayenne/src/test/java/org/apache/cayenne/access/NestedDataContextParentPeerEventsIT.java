@@ -26,7 +26,7 @@ import org.apache.cayenne.test.parallel.ParallelTestContainer;
 import org.apache.cayenne.testdo.relationships_child_master.Child;
 import org.apache.cayenne.testdo.relationships_child_master.Master;
 import org.apache.cayenne.unit.di.runtime.CayenneProjects;
-import org.apache.cayenne.unit.di.runtime.CayenneTestsExt;
+import org.apache.cayenne.unit.di.runtime.CayenneTestsEnv;
 import org.junit.jupiter.api.extension.RegisterExtension;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.BeforeEach;
@@ -40,7 +40,7 @@ import static org.junit.jupiter.api.Assertions.assertTrue;
 public class NestedDataContextParentPeerEventsIT {
 
     @RegisterExtension
-    static final CayenneTestsExt env = CayenneTestsExt.forProject(CayenneProjects.RELATIONSHIPS_CHILD_MASTER_PROJECT)
+    static final CayenneTestsEnv env = CayenneTestsEnv.forProject(CayenneProjects.RELATIONSHIPS_CHILD_MASTER_PROJECT)
             .withExtraModules(RuntimeCaseSyncModule.class);
 
     private CayenneRuntime runtime;

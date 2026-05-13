@@ -23,7 +23,7 @@ import org.apache.cayenne.testdo.meaningful_pk.MeaningfulPKDep;
 import org.apache.cayenne.testdo.meaningful_pk.MeaningfulPKTest1;
 import org.apache.cayenne.testdo.meaningful_pk.MeaningfulPk;
 import org.apache.cayenne.unit.di.runtime.CayenneProjects;
-import org.apache.cayenne.unit.di.runtime.CayenneTestsExt;
+import org.apache.cayenne.unit.di.runtime.CayenneTestsEnv;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.RegisterExtension;
@@ -31,7 +31,7 @@ import org.junit.jupiter.api.extension.RegisterExtension;
 public class DataContextEntityWithMeaningfulPKAndCustomDbRowOpSorterIT {
 
     @RegisterExtension
-    static final CayenneTestsExt env = CayenneTestsExt
+    static final CayenneTestsEnv env = CayenneTestsEnv
             .forProject(CayenneProjects.MEANINGFUL_PK_PROJECT)
             .withExtraModules(GraphSorterModule.class);
 

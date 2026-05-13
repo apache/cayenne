@@ -35,7 +35,7 @@ import org.apache.cayenne.testdo.meaningful_pk.MeaningfulPkBigintGenerated;
 import org.apache.cayenne.testdo.meaningful_pk.MeaningfulPkDep2;
 import org.apache.cayenne.testdo.meaningful_pk.MeaningfulPkTest2;
 import org.apache.cayenne.unit.di.runtime.CayenneProjects;
-import org.apache.cayenne.unit.di.runtime.CayenneTestsExt;
+import org.apache.cayenne.unit.di.runtime.CayenneTestsEnv;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.Test;
@@ -49,7 +49,7 @@ import static org.junit.jupiter.api.Assertions.*;
 public class DataContextEntityWithMeaningfulPKIT {
 
     @RegisterExtension
-    static final CayenneTestsExt env = CayenneTestsExt.forProject(CayenneProjects.MEANINGFUL_PK_PROJECT);
+    static final CayenneTestsEnv env = CayenneTestsEnv.forProject(CayenneProjects.MEANINGFUL_PK_PROJECT);
 
     private DataContext context;
     private CayenneRuntime runtime;

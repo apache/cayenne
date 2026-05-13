@@ -21,7 +21,7 @@ package org.apache.cayenne;
 import org.apache.cayenne.testdo.relationships_activity.Activity;
 import org.apache.cayenne.testdo.relationships_activity.ActivityResult;
 import org.apache.cayenne.unit.di.runtime.CayenneProjects;
-import org.apache.cayenne.unit.di.runtime.CayenneTestsExt;
+import org.apache.cayenne.unit.di.runtime.CayenneTestsEnv;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.RegisterExtension;
@@ -31,7 +31,7 @@ import java.sql.Date;
 public class ManyToManyNoJoinIT {
 
     @RegisterExtension
-    static final CayenneTestsExt env = CayenneTestsExt.forProject(CayenneProjects.RELATIONSHIPS_ACTIVITY_PROJECT);
+    static final CayenneTestsEnv env = CayenneTestsEnv.forProject(CayenneProjects.RELATIONSHIPS_ACTIVITY_PROJECT);
 
     private ObjectContext context;
 
