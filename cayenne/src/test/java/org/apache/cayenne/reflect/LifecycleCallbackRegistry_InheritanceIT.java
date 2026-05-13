@@ -29,7 +29,6 @@ import org.apache.cayenne.testdo.inheritance_flat.UserProperties;
 import org.apache.cayenne.testdo.testmap.annotations.Tag2;
 import org.apache.cayenne.unit.di.runtime.CayenneProjects;
 import org.apache.cayenne.unit.di.runtime.CayenneTestsEnv;
-import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.RegisterExtension;
 
@@ -40,35 +39,28 @@ public class LifecycleCallbackRegistry_InheritanceIT {
     @RegisterExtension
     static final CayenneTestsEnv env = CayenneTestsEnv.forProject(CayenneProjects.INHERITANCE_SINGLE_TABLE1_PROJECT);
 
-    private ObjectContext context;
-
-    @BeforeEach
-    public void setUp() {
-        context = env.context();
-    }
-
     @Test
     public void addListener_PostAdd_EntityInheritance() {
-        LifecycleCallbackRegistry registry = new LifecycleCallbackRegistry(context
+        LifecycleCallbackRegistry registry = new LifecycleCallbackRegistry(env.context()
                 .getEntityResolver());
 
-        context.getEntityResolver().setCallbackRegistry(registry);
+        env.context().getEntityResolver().setCallbackRegistry(registry);
 
         PostAddListenerInherited listener = new PostAddListenerInherited();
         registry.addListener(listener);
 
         assertEquals(1, registry.getHandler(LifecycleEvent.POST_ADD).listenersSize());
 
-        context.newObject(User.class);
+        env.context().newObject(User.class);
         assertEquals("a:User;", listener.getAndReset());
 
-        context.newObject(Group.class);
+        env.context().newObject(Group.class);
         assertEquals("a:Group;", listener.getAndReset());
 
-        context.newObject(Role.class);
+        env.context().newObject(Role.class);
         assertEquals("", listener.getAndReset());
 
-        context.newObject(UserProperties.class);
+        env.context().newObject(UserProperties.class);
         assertEquals("", listener.getAndReset());
     }
 }

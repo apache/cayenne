@@ -26,7 +26,6 @@ import org.apache.cayenne.map.ObjEntity;
 import org.apache.cayenne.testdo.testmap.Artist;
 import org.apache.cayenne.unit.di.runtime.CayenneProjects;
 import org.apache.cayenne.unit.di.runtime.CayenneTestsEnv;
-import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.RegisterExtension;
 
@@ -35,18 +34,11 @@ public class ASTObjPathIT {
 	@RegisterExtension
 	static final CayenneTestsEnv env = CayenneTestsEnv.forProject(CayenneProjects.TESTMAP_PROJECT);
 
-	private ObjectContext context;
-
-	@BeforeEach
-	public void setUp() {
-		context = env.context();
-	}
-
 	@Test
 	public void evaluate_ObjEntity() {
 		ASTObjPath node = new ASTObjPath("paintingArray.paintingTitle");
 
-		ObjEntity ae = context.getEntityResolver().getObjEntity(Artist.class);
+		ObjEntity ae = env.context().getEntityResolver().getObjEntity(Artist.class);
 
 		Object target = node.evaluate(ae);
 		assertTrue(target instanceof ObjAttribute);
@@ -56,7 +48,7 @@ public class ASTObjPathIT {
 	public void evaluate_ObjEntity_Outer() {
 		ASTObjPath node = new ASTObjPath("paintingArray+.paintingTitle");
 
-		ObjEntity ae = context.getEntityResolver().getObjEntity(Artist.class);
+		ObjEntity ae = env.context().getEntityResolver().getObjEntity(Artist.class);
 
 		Object target = node.evaluate(ae);
 		assertTrue(target instanceof ObjAttribute);

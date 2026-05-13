@@ -26,7 +26,6 @@ import org.apache.cayenne.unit.UnitDbAdapter;
 import org.apache.cayenne.unit.di.runtime.CayenneProjects;
 import org.apache.cayenne.unit.di.runtime.CayenneTestsEnv;
 import org.apache.cayenne.unit.di.runtime.RuntimeCaseDataSourceFactory;
-import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.RegisterExtension;
 
@@ -40,29 +39,18 @@ public class SQLServerSnifferIT {
 	@RegisterExtension
 	static final CayenneTestsEnv env = CayenneTestsEnv.forProject(CayenneProjects.TESTMAP_PROJECT);
 
-	private RuntimeCaseDataSourceFactory dataSourceFactory;
-	private UnitDbAdapter accessStackAdapter;
-	private AdhocObjectFactory objectFactory;
-
-	@BeforeEach
-	public void setUp() {
-		dataSourceFactory = env.getInstance(RuntimeCaseDataSourceFactory.class);
-		accessStackAdapter = env.getInstance(UnitDbAdapter.class);
-		objectFactory = env.getInstance(AdhocObjectFactory.class);
-	}
-
 	@Test
 	public void createAdapter() throws Exception {
 
-		SQLServerSniffer sniffer = new SQLServerSniffer(objectFactory);
+		SQLServerSniffer sniffer = new SQLServerSniffer(env.getInstance(AdhocObjectFactory.class));
 
 		DbAdapter adapter;
 
-		try (Connection c = dataSourceFactory.getSharedDataSource().getConnection()) {
+		try (Connection c = env.getInstance(RuntimeCaseDataSourceFactory.class).getSharedDataSource().getConnection()) {
 			adapter = sniffer.createAdapter(c.getMetaData());
 		}
 
-		if (accessStackAdapter instanceof SQLServerUnitDbAdapter) {
+		if (env.getInstance(UnitDbAdapter.class) instanceof SQLServerUnitDbAdapter) {
 			assertNotNull(adapter);
 		} else {
 			assertNull(adapter);

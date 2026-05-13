@@ -27,8 +27,6 @@ import org.apache.cayenne.unit.di.runtime.CayenneProjects;
 import org.apache.cayenne.unit.di.runtime.CayenneTestsEnv;
 import org.junit.jupiter.api.extension.RegisterExtension;
 import org.junit.jupiter.api.Test;
-import org.junit.jupiter.api.BeforeEach;
-
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.junit.jupiter.api.Assertions.assertSame;
@@ -39,42 +37,34 @@ public class CDOOneToManyFKIT {
     @RegisterExtension
     static final CayenneTestsEnv env = CayenneTestsEnv.forProject(CayenneProjects.RELATIONSHIPS_TO_MANY_FK_PROJECT);
 
-    protected DataContext context;
-
-
-    @BeforeEach
-    public void setUp() {
-        context = env.dataContext();
-    }
-
     @Test
     public void readRelationship() {
 
-        ToManyRoot2 src2 = context.newObject(ToManyRoot2.class);
-        ToManyFkRoot src = context.newObject(ToManyFkRoot.class);
+        ToManyRoot2 src2 = env.dataContext().newObject(ToManyRoot2.class);
+        ToManyFkRoot src = env.dataContext().newObject(ToManyFkRoot.class);
 
         // this should go away when such mapping becomes fully supported
         src.setDepId(1);
-        ToManyFkDep target = context.newObject(ToManyFkDep.class);
+        ToManyFkDep target = env.dataContext().newObject(ToManyFkDep.class);
 
         // this should go away when such mapping becomes fully supported
         target.setDepId(1);
         target.setRoot2(src2);
 
         src.addToDeps(target);
-        context.commitChanges();
+        env.dataContext().commitChanges();
 
-        context.invalidateObjects(src, target, src2);
+        env.dataContext().invalidateObjects(src, target, src2);
 
-        ToManyFkRoot src1 = (ToManyFkRoot) Cayenne.objectForPK(context, src.getObjectId());
+        ToManyFkRoot src1 = (ToManyFkRoot) Cayenne.objectForPK(env.dataContext(), src.getObjectId());
         assertNotNull(src1.getDeps());
         assertEquals(1, src1.getDeps().size());
         // resolve HOLLOW
         assertSame(src1, src1.getDeps().get(0).getRoot());
 
-        context.invalidateObjects(src1, src1.getDeps().get(0));
+        env.dataContext().invalidateObjects(src1, src1.getDeps().get(0));
 
-        ToManyFkDep target2 = (ToManyFkDep) Cayenne.objectForPK(context, target.getObjectId());
+        ToManyFkDep target2 = (ToManyFkDep) Cayenne.objectForPK(env.dataContext(), target.getObjectId());
         assertNotNull(target2.getRoot());
 
         // resolve HOLLOW

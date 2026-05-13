@@ -26,7 +26,6 @@ import org.apache.cayenne.map.DbAttribute;
 import org.apache.cayenne.map.DbEntity;
 import org.apache.cayenne.unit.di.runtime.CayenneProjects;
 import org.apache.cayenne.unit.di.runtime.CayenneTestsEnv;
-import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.RegisterExtension;
 
@@ -38,16 +37,9 @@ public class MySQLAdapterIT {
     @RegisterExtension
     static final CayenneTestsEnv env = CayenneTestsEnv.forProject(CayenneProjects.TESTMAP_PROJECT);
 
-    private AdhocObjectFactory objectFactory;
-
-    @BeforeEach
-    public void setUp() {
-        objectFactory = env.getInstance(AdhocObjectFactory.class);
-    }
-
     @Test
     public void createTableAppendPKClause() {
-        MySQLAdapter adapter = objectFactory.newInstance(
+        MySQLAdapter adapter = env.getInstance(AdhocObjectFactory.class).newInstance(
                 MySQLAdapter.class, 
                 MySQLAdapter.class.getName());
 
@@ -79,7 +71,7 @@ public class MySQLAdapterIT {
 
     @Test
     public void createTableAppendColumnWithTimeAndTimestamp() {
-        MySQLAdapter adapter = objectFactory.newInstance(
+        MySQLAdapter adapter = env.getInstance(AdhocObjectFactory.class).newInstance(
                 MySQLAdapter.class,
                 MySQLAdapter.class.getName());
 
@@ -104,7 +96,7 @@ public class MySQLAdapterIT {
 
     @Test
     public void createTableAppendColumnWithTimeAndTimestampWihoutScale() {
-        MySQLAdapter adapter = objectFactory.newInstance(
+        MySQLAdapter adapter = env.getInstance(AdhocObjectFactory.class).newInstance(
                 MySQLAdapter.class,
                 MySQLAdapter.class.getName());
 

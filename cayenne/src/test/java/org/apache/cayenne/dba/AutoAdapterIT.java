@@ -27,7 +27,6 @@ import org.apache.cayenne.query.SQLTemplate;
 import org.apache.cayenne.testdo.testmap.Artist;
 import org.apache.cayenne.unit.di.runtime.CayenneProjects;
 import org.apache.cayenne.unit.di.runtime.CayenneTestsEnv;
-import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.RegisterExtension;
 
@@ -41,37 +40,30 @@ public class AutoAdapterIT {
     @RegisterExtension
     static final CayenneTestsEnv env = CayenneTestsEnv.forProject(CayenneProjects.TESTMAP_PROJECT);
 
-    private DataNode dataNode;
-
-    @BeforeEach
-    public void setUp() {
-        dataNode = env.getInstance(DataNode.class);
-    }
-
     @Test
     public void getAdapter_Proxy() {
-        AutoAdapter adapter = new AutoAdapter(() -> dataNode.getAdapter(), NoopJdbcEventLogger.getInstance());
+        AutoAdapter adapter = new AutoAdapter(() -> env.getInstance(DataNode.class).getAdapter(), NoopJdbcEventLogger.getInstance());
         DbAdapter detected = adapter.getAdapter();
-        assertSame(dataNode.getAdapter(), detected);
+        assertSame(env.getInstance(DataNode.class).getAdapter(), detected);
     }
 
     @Test
     public void createSQLTemplateAction() {
-        AutoAdapter autoAdapter = new AutoAdapter(() -> dataNode.getAdapter(), NoopJdbcEventLogger.getInstance());
+        AutoAdapter autoAdapter = new AutoAdapter(() -> env.getInstance(DataNode.class).getAdapter(), NoopJdbcEventLogger.getInstance());
 
         SQLTemplateAction action = (SQLTemplateAction) autoAdapter.getAction(new SQLTemplate(Artist.class,
-                "select * from artist"), dataNode);
+                "select * from artist"), env.getInstance(DataNode.class));
 
         // it is important for SQLTemplateAction to be used with unwrapped adapter,
         // as the adapter class name is used as a key to the correct SQL template.
         assertNotNull(action.getAdapter());
         assertFalse(action.getAdapter() instanceof AutoAdapter);
-        assertSame(dataNode.getAdapter(), action.getAdapter());
+        assertSame(env.getInstance(DataNode.class).getAdapter(), action.getAdapter());
     }
 
     @Test
     public void correctProxyMethods() {
-        DbAdapter adapter = dataNode.getAdapter();
+        DbAdapter adapter = env.getInstance(DataNode.class).getAdapter();
         AutoAdapter autoAdapter = new AutoAdapter(() -> adapter, NoopJdbcEventLogger.getInstance());
 
         ObjectSelect<Artist> select = ObjectSelect.query(Artist.class);
@@ -97,9 +89,8 @@ public class AutoAdapterIT {
         assertSame(adapter.getEjbqlTranslatorFactory(),
                 autoAdapter.getEjbqlTranslatorFactory());
         // returns a new instance for each call
-        assertSame(adapter.getSelectTranslator(select, dataNode.getEntityResolver()).getClass(),
-                autoAdapter.getSelectTranslator(select, dataNode.getEntityResolver()).getClass());
-
+        assertSame(adapter.getSelectTranslator(select, env.getInstance(DataNode.class).getEntityResolver()).getClass(),
+                autoAdapter.getSelectTranslator(select, env.getInstance(DataNode.class).getEntityResolver()).getClass());
 
         // reverse engineering related methods
         assertEquals(adapter.supportsCatalogsOnReverseEngineering(),

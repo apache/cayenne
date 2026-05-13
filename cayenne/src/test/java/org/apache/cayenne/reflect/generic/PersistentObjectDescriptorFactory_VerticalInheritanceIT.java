@@ -25,7 +25,6 @@ import org.apache.cayenne.reflect.ClassDescriptor;
 import org.apache.cayenne.reflect.SingletonFaultFactory;
 import org.apache.cayenne.unit.di.runtime.CayenneProjects;
 import org.apache.cayenne.unit.di.runtime.CayenneTestsEnv;
-import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.RegisterExtension;
 
@@ -37,18 +36,11 @@ public class PersistentObjectDescriptorFactory_VerticalInheritanceIT {
     @RegisterExtension
     static final CayenneTestsEnv env = CayenneTestsEnv.forProject(CayenneProjects.INHERITANCE_VERTICAL_PROJECT);
 
-    private EntityResolver resolver;
-
-    @BeforeEach
-    public void setUp() {
-        resolver = env.getInstance(EntityResolver.class);
-    }
-
     @Test
     public void visitProperties_IterationOrder() {
 
         PersistentObjectDescriptorFactory factory = new PersistentObjectDescriptorFactory(
-                resolver.getClassDescriptorMap(),
+                env.getInstance(EntityResolver.class).getClassDescriptorMap(),
                 new SingletonFaultFactory(),
                 new DefaultValueComparisonStrategyFactory(mock(ValueObjectTypeRegistry.class))
         );

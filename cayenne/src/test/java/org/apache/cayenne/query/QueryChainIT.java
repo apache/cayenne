@@ -23,7 +23,6 @@ import org.apache.cayenne.runtime.CayenneRuntime;
 import org.apache.cayenne.testdo.testmap.Artist;
 import org.apache.cayenne.unit.di.runtime.CayenneProjects;
 import org.apache.cayenne.unit.di.runtime.CayenneTestsEnv;
-import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.RegisterExtension;
 
@@ -36,13 +35,6 @@ public class QueryChainIT {
     @RegisterExtension
     static final CayenneTestsEnv env = CayenneTestsEnv.forProject(CayenneProjects.TESTMAP_PROJECT);
 
-    private CayenneRuntime runtime;
-
-    @BeforeEach
-    public void setUp() {
-        runtime = env.runtime();
-    }
-
     @Test
     public void selectQuery() {
 
@@ -50,7 +42,7 @@ public class QueryChainIT {
         chain.addQuery(ObjectSelect.query(Artist.class));
         chain.addQuery(ObjectSelect.query(Artist.class));
 
-        QueryMetadata md = chain.getMetaData(runtime.getDataDomain().getEntityResolver());
+        QueryMetadata md = chain.getMetaData(env.runtime().getDataDomain().getEntityResolver());
 
         assertNotNull(md);
         assertTrue(md.isFetchingDataRows());
@@ -67,7 +59,7 @@ public class QueryChainIT {
         ObjectSelect<DataRow> q2 = ObjectSelect.dataRowQuery(Artist.class);
         chain.addQuery(q2);
 
-        QueryMetadata md = chain.getMetaData(runtime.getDataDomain().getEntityResolver());
+        QueryMetadata md = chain.getMetaData(env.runtime().getDataDomain().getEntityResolver());
 
         assertNotNull(md);
         assertTrue(md.isFetchingDataRows());

@@ -28,7 +28,6 @@ import org.apache.cayenne.testdo.testmap.Painting;
 import org.apache.cayenne.testdo.testmap.PaintingInfo;
 import org.apache.cayenne.unit.di.runtime.CayenneProjects;
 import org.apache.cayenne.unit.di.runtime.CayenneTestsEnv;
-import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.RegisterExtension;
 
@@ -42,9 +41,6 @@ public class DataContextPrefetchExtras1IT  {
 
     @RegisterExtension
     static final CayenneTestsEnv env = CayenneTestsEnv.forProject(CayenneProjects.TESTMAP_PROJECT);
-
-        protected ObjectContext context;
-
 
     protected void createDataSet() throws Exception {
 
@@ -60,11 +56,6 @@ public class DataContextPrefetchExtras1IT  {
         }
     }
 
-    @BeforeEach
-    public void setUp() {
-        context = env.context();
-    }
-
     @Test
     public void prefetchToOne() throws Exception {
         createDataSet();
@@ -72,7 +63,7 @@ public class DataContextPrefetchExtras1IT  {
         ObjectSelect<Painting> query = ObjectSelect.query(Painting.class)
                 .prefetch(Painting.TO_PAINTING_INFO.disjoint());
 
-        List<Painting> objects = query.select(context);
+        List<Painting> objects = query.select(env.context());
         assertFalse(objects.isEmpty());
         for (Painting p : objects) {
             PaintingInfo pi = p.getToPaintingInfo();

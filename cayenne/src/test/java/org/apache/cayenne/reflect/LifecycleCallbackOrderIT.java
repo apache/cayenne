@@ -29,7 +29,6 @@ import org.apache.cayenne.annotation.PreUpdate;
 import org.apache.cayenne.testdo.lifecycle_callbacks_order.Lifecycle;
 import org.apache.cayenne.unit.di.runtime.CayenneProjects;
 import org.apache.cayenne.unit.di.runtime.CayenneTestsEnv;
-import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.RegisterExtension;
 
@@ -40,32 +39,25 @@ public class LifecycleCallbackOrderIT {
     @RegisterExtension
     static final CayenneTestsEnv env = CayenneTestsEnv.forProject(CayenneProjects.LIFECYCLE_CALLBACKS_ORDER_PROJECT);
 
-    private ObjectContext context;
-
-    @BeforeEach
-    public void setUp() {
-        context = env.context();
-    }
-
     @Test
     public void lifecycleCallbackOrder() {
-        LifecycleCallbackRegistry registry = new LifecycleCallbackRegistry(context.getEntityResolver());
-        context.getEntityResolver().setCallbackRegistry(registry);
+        LifecycleCallbackRegistry registry = new LifecycleCallbackRegistry(env.context().getEntityResolver());
+        env.context().getEntityResolver().setCallbackRegistry(registry);
 
         LifecycleEventListener eventListener = new LifecycleEventListener();
         registry.addListener(eventListener);
 
-        Lifecycle lifecycle = context.newObject(Lifecycle.class);
-        context.commitChanges();
+        Lifecycle lifecycle = env.context().newObject(Lifecycle.class);
+        env.context().commitChanges();
         assertEquals("validateForInsert;PrePersist;PostPersist;", lifecycle.getCallbackBufferValueAndReset());
 
         lifecycle.setName("CallbackOrderTest");
-        context.commitChanges();
+        env.context().commitChanges();
         assertEquals("validateForUpdate;PreUpdate;PostUpdate;", lifecycle.getCallbackBufferValueAndReset());
 
-        context.deleteObject(lifecycle);
+        env.context().deleteObject(lifecycle);
         assertEquals("PreRemove;", lifecycle.getCallbackBuffer().toString());
-        context.commitChanges();
+        env.context().commitChanges();
         assertEquals("PreRemove;validateForDelete;PostRemove;", lifecycle.getCallbackBufferValueAndReset());
     }
 

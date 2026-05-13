@@ -31,8 +31,6 @@ import org.apache.cayenne.unit.di.runtime.CayenneProjects;
 import org.apache.cayenne.unit.di.runtime.CayenneTestsEnv;
 import org.junit.jupiter.api.extension.RegisterExtension;
 import org.junit.jupiter.api.Test;
-import org.junit.jupiter.api.BeforeEach;
-
 import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.mockito.Mockito.mock;
 
@@ -41,19 +39,9 @@ public class BatchActionIT {
     @RegisterExtension
     static final CayenneTestsEnv env = CayenneTestsEnv.forProject(CayenneProjects.TESTMAP_PROJECT);
 
-    private CayenneRuntime runtime;
-    private AdhocObjectFactory objectFactory;
-
-
-    @BeforeEach
-    public void setUp() {
-        runtime = env.runtime();
-        objectFactory = env.getInstance(AdhocObjectFactory.class);
-    }
-
     @Test
     public void hasGeneratedKeys1() throws Exception {
-        EntityResolver resolver = runtime.getChannel().getEntityResolver();
+        EntityResolver resolver = env.runtime().getChannel().getEntityResolver();
 
         // test with adapter that supports keys
         JdbcAdapter adapter = buildAdapter(true);
@@ -69,7 +57,7 @@ public class BatchActionIT {
 
     @Test
     public void hasGeneratedKeys2() throws Exception {
-        EntityResolver resolver = runtime.getChannel().getEntityResolver();
+        EntityResolver resolver = env.runtime().getChannel().getEntityResolver();
 
         // test with adapter that does not support keys...
         JdbcAdapter adapter = buildAdapter(false);
@@ -84,7 +72,7 @@ public class BatchActionIT {
     }
 
     JdbcAdapter buildAdapter(boolean supportGeneratedKeys) {
-        JdbcAdapter adapter = objectFactory.newInstance(JdbcAdapter.class, JdbcAdapter.class.getName());
+        JdbcAdapter adapter = env.getInstance(AdhocObjectFactory.class).newInstance(JdbcAdapter.class, JdbcAdapter.class.getName());
         adapter.setSupportsGeneratedKeys(supportGeneratedKeys);
         return adapter;
     }

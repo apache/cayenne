@@ -28,8 +28,6 @@ import org.apache.cayenne.unit.di.runtime.CayenneProjects;
 import org.apache.cayenne.unit.di.runtime.CayenneTestsEnv;
 import org.junit.jupiter.api.extension.RegisterExtension;
 import org.junit.jupiter.api.Test;
-import org.junit.jupiter.api.BeforeEach;
-
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
@@ -41,29 +39,19 @@ public class NestedDataContextParentEventsIT {
     static final CayenneTestsEnv env = CayenneTestsEnv.forProject(CayenneProjects.TESTMAP_PROJECT)
             .withExtraModules(RuntimeCaseSyncModule.class);
 
-    protected CayenneRuntime runtime;
-    private DataContext context;
-
-    @BeforeEach
-    public void setUp() {
-        runtime = env.runtime();
-        context = env.dataContext();
-    }
-
-
     @Test
     public void parentUpdatedId() throws Exception {
-        ObjectContext child1 = runtime.newContext(context);
+        ObjectContext child1 = env.runtime().newContext(env.dataContext());
 
         final Artist ac = child1.newObject(Artist.class);
         ac.setArtistName("X");
         child1.commitChangesToParent();
 
-        final Artist ap = (Artist) context.getGraphManager().getNode(ac.getObjectId());
+        final Artist ap = (Artist) env.dataContext().getGraphManager().getNode(ac.getObjectId());
         assertNotNull(ap);
 
         assertTrue(ap.getObjectId().isTemporary());
-        context.commitChanges();
+        env.dataContext().commitChanges();
 
         new ParallelTestContainer() {
 

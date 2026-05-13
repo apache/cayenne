@@ -34,7 +34,6 @@ import org.apache.cayenne.testdo.return_types.ReturnTypesMap1;
 import org.apache.cayenne.unit.UnitDbAdapter;
 import org.apache.cayenne.unit.di.runtime.CayenneProjects;
 import org.apache.cayenne.unit.di.runtime.CayenneTestsEnv;
-import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.RegisterExtension;
 
@@ -46,15 +45,6 @@ public class SelectQueryReturnTypesIT {
 
     @RegisterExtension
     static final CayenneTestsEnv env = CayenneTestsEnv.forProject(CayenneProjects.RETURN_TYPES_PROJECT);
-
-    private ObjectContext context;
-    private UnitDbAdapter accessStackAdapter;
-
-    @BeforeEach
-    public void setUp() {
-        context = env.context();
-        accessStackAdapter = env.getInstance(UnitDbAdapter.class);
-    }
 
     protected void createNumericsDataSet() throws Exception {
         TableHelper tNumerics = env.table("TYPES_MAPPING_TEST1");
@@ -70,7 +60,7 @@ public class SelectQueryReturnTypesIT {
     @Test
     public void selectBitwiseNot() throws Exception {
 
-        if (!accessStackAdapter.supportsBitwiseOps()) {
+        if (!env.getInstance(UnitDbAdapter.class).supportsBitwiseOps()) {
             return;
         }
 
@@ -83,14 +73,14 @@ public class SelectQueryReturnTypesIT {
         greater.setOperand(0, left);
         greater.setOperand(1, right);
 
-        List<ReturnTypesMap1> objects = ObjectSelect.query(ReturnTypesMap1.class, greater).select(context);
+        List<ReturnTypesMap1> objects = ObjectSelect.query(ReturnTypesMap1.class, greater).select(env.context());
         assertEquals(2, objects.size());
     }
 
     @Test
     public void selectBitwiseOr() throws Exception {
 
-        if (!accessStackAdapter.supportsBitwiseOps()) {
+        if (!env.getInstance(UnitDbAdapter.class).supportsBitwiseOps()) {
             return;
         }
 
@@ -104,14 +94,14 @@ public class SelectQueryReturnTypesIT {
         equal.setOperand(0, left);
         equal.setOperand(1, right);
 
-        List<ReturnTypesMap1> objects = ObjectSelect.query(ReturnTypesMap1.class, equal).select(context);
+        List<ReturnTypesMap1> objects = ObjectSelect.query(ReturnTypesMap1.class, equal).select(env.context());
         assertEquals(2, objects.size());
     }
 
     @Test
     public void selectBitwiseAnd() throws Exception {
 
-        if (!accessStackAdapter.supportsBitwiseOps()) {
+        if (!env.getInstance(UnitDbAdapter.class).supportsBitwiseOps()) {
             return;
         }
 
@@ -125,14 +115,14 @@ public class SelectQueryReturnTypesIT {
         equal.setOperand(0, left);
         equal.setOperand(1, right);
 
-        List<ReturnTypesMap1> objects = ObjectSelect.query(ReturnTypesMap1.class, equal).select(context);
+        List<ReturnTypesMap1> objects = ObjectSelect.query(ReturnTypesMap1.class, equal).select(env.context());
         assertEquals(3, objects.size());
     }
 
     @Test
     public void selectBitwiseXor() throws Exception {
 
-        if (!accessStackAdapter.supportsBitwiseOps()) {
+        if (!env.getInstance(UnitDbAdapter.class).supportsBitwiseOps()) {
             return;
         }
 
@@ -146,7 +136,7 @@ public class SelectQueryReturnTypesIT {
         equal.setOperand(0, left);
         equal.setOperand(1, right);
 
-        List<ReturnTypesMap1> objects = ObjectSelect.query(ReturnTypesMap1.class, equal).select(context);
+        List<ReturnTypesMap1> objects = ObjectSelect.query(ReturnTypesMap1.class, equal).select(env.context());
         assertEquals(1, objects.size());
         assertEquals(4, objects.get(0).getIntegerColumn().intValue());
     }

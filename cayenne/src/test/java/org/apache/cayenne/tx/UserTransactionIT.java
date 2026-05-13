@@ -24,7 +24,6 @@ import org.apache.cayenne.log.JdbcEventLogger;
 import org.apache.cayenne.testdo.testmap.Artist;
 import org.apache.cayenne.unit.di.runtime.CayenneProjects;
 import org.apache.cayenne.unit.di.runtime.CayenneTestsEnv;
-import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.RegisterExtension;
 
@@ -40,26 +39,17 @@ public class UserTransactionIT {
     @RegisterExtension
     static final CayenneTestsEnv env = CayenneTestsEnv.forProject(CayenneProjects.TESTMAP_PROJECT);
 
-    private ObjectContext context;
-    private JdbcEventLogger logger;
-
-    @BeforeEach
-    public void setUp() {
-        context = env.context();
-        logger = env.getInstance(JdbcEventLogger.class);
-    }
-
     @Test
     public void commit() throws Exception {
 
-        Artist a = context.newObject(Artist.class);
+        Artist a = env.context().newObject(Artist.class);
         a.setArtistName("AAA");
 
-        TxWrapper t = new TxWrapper(new CayenneTransaction(logger));
+        TxWrapper t = new TxWrapper(new CayenneTransaction(env.getInstance(JdbcEventLogger.class)));
         BaseTransaction.bindThreadTransaction(t);
 
         try {
-            context.commitChanges();
+            env.context().commitChanges();
         } finally {
             t.rollback();
             BaseTransaction.bindThreadTransaction(null);

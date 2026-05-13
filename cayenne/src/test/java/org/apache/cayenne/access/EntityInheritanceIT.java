@@ -30,8 +30,6 @@ import org.apache.cayenne.unit.di.runtime.CayenneTestsEnv;
 import org.junit.jupiter.api.extension.RegisterExtension;
 import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.Test;
-import org.junit.jupiter.api.BeforeEach;
-
 import static org.junit.jupiter.api.Assertions.assertEquals;
 
 public class EntityInheritanceIT {
@@ -39,28 +37,21 @@ public class EntityInheritanceIT {
     @RegisterExtension
     static final CayenneTestsEnv env = CayenneTestsEnv.forProject(CayenneProjects.INHERITANCE_PROJECT);
 
-    private DataContext context;
-
-    @BeforeEach
-    public void setUp() {
-        context = env.dataContext();
-    }
-
     /**
      * Test for CAY-1008: Reverse relationships may not be correctly set if inheritance is used.
      */
     @Disabled("This test fails")
     @Test
     public void cAY1008() {
-        RelatedEntity related = context.newObject(RelatedEntity.class);
+        RelatedEntity related = env.dataContext().newObject(RelatedEntity.class);
 
-        BaseEntity base = context.newObject(BaseEntity.class);
+        BaseEntity base = env.dataContext().newObject(BaseEntity.class);
         base.setToRelatedEntity(related);
 
         assertEquals(1, related.getBaseEntities().size());
         assertEquals(0, related.getSubEntities().size());
 
-        SubEntity sub = context.newObject(SubEntity.class);
+        SubEntity sub = env.dataContext().newObject(SubEntity.class);
         sub.setToRelatedEntity(related);
 
         assertEquals(2, related.getBaseEntities().size());
@@ -76,37 +67,37 @@ public class EntityInheritanceIT {
     @Test
     public void cAY1009() {
         // We should have only one relationship. DirectToSubEntity -> SubEntity.
-        assertEquals(1, context
+        assertEquals(1, env.dataContext()
                 .getEntityResolver()
                 .getObjEntity("DirectToSubEntity")
                 .getRelationships()
                 .size());
 
-        DirectToSubEntity direct = context.newObject(DirectToSubEntity.class);
+        DirectToSubEntity direct = env.dataContext().newObject(DirectToSubEntity.class);
 
-        SubEntity sub = context.newObject(SubEntity.class);
+        SubEntity sub = env.dataContext().newObject(SubEntity.class);
         sub.setToDirectToSubEntity(direct);
 
         assertEquals(1, direct.getSubEntities().size());
 
-        context.deleteObject(sub);
+        env.dataContext().deleteObject(sub);
 
         assertEquals(0, direct.getSubEntities().size());
     }
 
     @Test
     public void cAY2091() {
-        RelatedEntity related = context.newObject(RelatedEntity.class);
-        SubEntity subEntity = context.newObject(SubEntity.class);
+        RelatedEntity related = env.dataContext().newObject(RelatedEntity.class);
+        SubEntity subEntity = env.dataContext().newObject(SubEntity.class);
         subEntity.setToRelatedEntity(related);
-        context.commitChanges();
+        env.dataContext().commitChanges();
 
         int subEntityId = Cayenne.intPKForObject(subEntity);
 
-        BaseEntity forPkLoadedEntity = Cayenne.objectForPK(context, BaseEntity.class, subEntityId);
+        BaseEntity forPkLoadedEntity = Cayenne.objectForPK(env.dataContext(), BaseEntity.class, subEntityId);
         assertEquals(forPkLoadedEntity.getClass(), SubEntity.class);
 
-        BaseEntity selectLoadedEntity = SelectById.query(BaseEntity.class, subEntityId).selectOne(context);
+        BaseEntity selectLoadedEntity = SelectById.query(BaseEntity.class, subEntityId).selectOne(env.dataContext());
         assertEquals(selectLoadedEntity.getClass(), SubEntity.class);
     }
 }

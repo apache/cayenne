@@ -31,8 +31,6 @@ import org.apache.cayenne.unit.di.runtime.CayenneProjects;
 import org.apache.cayenne.unit.di.runtime.CayenneTestsEnv;
 import org.junit.jupiter.api.extension.RegisterExtension;
 import org.junit.jupiter.api.Test;
-import org.junit.jupiter.api.BeforeEach;
-
 import java.util.Collections;
 import java.util.Date;
 
@@ -46,35 +44,27 @@ public class ObjectStoreIT {
     @RegisterExtension
     static final CayenneTestsEnv env = CayenneTestsEnv.forProject(CayenneProjects.TESTMAP_PROJECT);
 
-    private DataContext context;
-
-    @BeforeEach
-    public void setUp() {
-        context = env.dataContext();
-    }
-
-
     @Test
     public void registeredObjectsCount() throws Exception {
 
-        assertEquals(0, context.getObjectStore().registeredObjectsCount());
+        assertEquals(0, env.dataContext().getObjectStore().registeredObjectsCount());
 
         Persistent o1 = new MockPersistentObject();
         o1.setObjectId(ObjectId.of("T", "key1", "v1"));
-        context.getObjectStore().registerNode(o1.getObjectId(), o1);
-        assertEquals(1, context.getObjectStore().registeredObjectsCount());
+        env.dataContext().getObjectStore().registerNode(o1.getObjectId(), o1);
+        assertEquals(1, env.dataContext().getObjectStore().registeredObjectsCount());
 
         // test object with same id
         Persistent o2 = new MockPersistentObject();
         o2.setObjectId(ObjectId.of("T", "key1", "v1"));
-        context.getObjectStore().registerNode(o2.getObjectId(), o2);
-        assertEquals(1, context.getObjectStore().registeredObjectsCount());
+        env.dataContext().getObjectStore().registerNode(o2.getObjectId(), o2);
+        assertEquals(1, env.dataContext().getObjectStore().registeredObjectsCount());
 
         // test new object
         Persistent o3 = new MockPersistentObject();
         o3.setObjectId(ObjectId.of("T", "key3", "v3"));
-        context.getObjectStore().registerNode(o3.getObjectId(), o3);
-        assertEquals(2, context.getObjectStore().registeredObjectsCount());
+        env.dataContext().getObjectStore().registerNode(o3.getObjectId(), o3);
+        assertEquals(2, env.dataContext().getObjectStore().registeredObjectsCount());
     }
 
     @Test
@@ -84,36 +74,36 @@ public class ObjectStoreIT {
         row.put("ARTIST_ID", 1);
         row.put("ARTIST_NAME", "ArtistXYZ");
         row.put("DATE_OF_BIRTH", new Date());
-        Persistent object = context.objectFromDataRow(Artist.class, row);
+        Persistent object = env.dataContext().objectFromDataRow(Artist.class, row);
         ObjectId oid = object.getObjectId();
 
         // insert object into the ObjectStore
-        context.getObjectStore().registerNode(oid, object);
-        assertSame(object, context.getObjectStore().getNode(oid));
-        assertNotNull(context.getObjectStore().getCachedSnapshot(oid));
+        env.dataContext().getObjectStore().registerNode(oid, object);
+        assertSame(object, env.dataContext().getObjectStore().getNode(oid));
+        assertNotNull(env.dataContext().getObjectStore().getCachedSnapshot(oid));
 
-        context.getObjectStore().objectsUnregistered(Collections.singletonList(object));
+        env.dataContext().getObjectStore().objectsUnregistered(Collections.singletonList(object));
 
         assertEquals(oid, object.getObjectId());
-        assertNull(context.getObjectStore().getNode(oid));
+        assertNull(env.dataContext().getObjectStore().getNode(oid));
 
         // in the future this may not be the case
-        assertNull(context.getObjectStore().getCachedSnapshot(oid));
+        assertNull(env.dataContext().getObjectStore().getCachedSnapshot(oid));
     }
 
     @Test
     public void unregisterThenRegister() throws Exception {
 
         // Create a gallery.
-        Gallery g = context.newObject(Gallery.class);
+        Gallery g = env.dataContext().newObject(Gallery.class);
         g.setGalleryName("Test Gallery");
 
         // Create an artist in the same context.
-        Artist a = context.newObject(Artist.class);
+        Artist a = env.dataContext().newObject(Artist.class);
         a.setArtistName("Test Artist");
 
         // Create a painting in the same context.
-        Painting p = context.newObject(Painting.class);
+        Painting p = env.dataContext().newObject(Painting.class);
         p.setPaintingTitle("Test Painting");
 
         // Set the painting's gallery.
@@ -121,7 +111,7 @@ public class ObjectStoreIT {
         assertEquals(g, p.getToGallery());
 
         // Unregister the painting from the context.
-        context.unregisterObjects(Collections.singletonList(p));
+        env.dataContext().unregisterObjects(Collections.singletonList(p));
 
         // Make sure that even though the painting has been removed from the context's
         // object graph that the reference to the gallery is the same.
@@ -132,7 +122,7 @@ public class ObjectStoreIT {
         p.setToArtist(a);
 
         // Now commit the gallery, artist, & painting.
-        context.commitChanges();
+        env.dataContext().commitChanges();
 
         // Check one last time that the painting's gallery is set to what we expect.
         assertEquals(g, p.getToGallery());
@@ -144,7 +134,7 @@ public class ObjectStoreIT {
         //
         // The full object graph is not being re-registered during auto-registration
         // with the context.
-        Painting newP = (Painting) Cayenne.objectForPK(context, p.getObjectId());
+        Painting newP = (Painting) Cayenne.objectForPK(env.dataContext(), p.getObjectId());
         assertNotNull(newP.getToGallery());
     }
 }

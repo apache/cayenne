@@ -28,7 +28,6 @@ import org.apache.cayenne.unit.di.runtime.CayenneProjects;
 import org.apache.cayenne.unit.di.runtime.CayenneTestsEnv;
 import org.junit.jupiter.api.extension.RegisterExtension;
 import org.junit.jupiter.api.Test;
-import org.junit.jupiter.api.BeforeEach;
 import org.mockito.Mockito;
 
 import java.util.List;
@@ -41,8 +40,6 @@ public class DescriptorColumnExtractorIT {
     @RegisterExtension
     static final CayenneTestsEnv env = CayenneTestsEnv.forProject(CayenneProjects.TESTMAP_PROJECT);
 
-    private ObjectContext context;
-
     private final List<String> expectedFlattenedDbFields = List.of(
             "toArtist.ARTIST_ID",
             "toArtist.ARTIST_NAME",
@@ -51,16 +48,10 @@ public class DescriptorColumnExtractorIT {
             "toPaintingInfo.PAINTING_ID",
             "toPaintingInfo.TEXT_REVIEW");
 
-
-    @BeforeEach
-    public void setUp() {
-        context = env.context();
-    }
-
     @Test
     public void entityResultAddDbFieldsForFlattenedAttributes() {
 
-        EntityResolver resolver = context.getEntityResolver();
+        EntityResolver resolver = env.context().getEntityResolver();
         ClassDescriptor classDescriptor = resolver.getClassDescriptor("CompoundPaintingLongNames");
 
         TranslatorContext translatorContext = new TranslatorContext(

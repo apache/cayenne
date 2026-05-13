@@ -23,9 +23,7 @@ import org.apache.cayenne.di.Binder;
 import org.apache.cayenne.di.Module;
 import org.apache.cayenne.di.spi.DefaultScope;
 import org.apache.cayenne.gen.mock.CustomPropertyDescriptor;
-import org.apache.cayenne.unit.di.UnitTestLifecycleManager;
 import org.apache.cayenne.unit.di.runtime.RuntimeCaseExtraModules;
-import org.apache.cayenne.unit.di.runtime.RuntimeCaseLifecycleManager;
 import org.apache.cayenne.unit.di.runtime.RuntimeCaseProperties;
 
 /**
@@ -40,7 +38,6 @@ public class CgenCaseModule implements Module {
     }
     @Override
     public void configure(Binder binder) {
-        binder.bind(UnitTestLifecycleManager.class).toInstance(new RuntimeCaseLifecycleManager(testScope));
         binder.bind(RuntimeCaseProperties.class).to(RuntimeCaseProperties.class).in(testScope);
         binder.bind(RuntimeCaseExtraModules.class).to(RuntimeCaseExtraModules.class).in(testScope);
 

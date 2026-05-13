@@ -26,24 +26,12 @@ import org.apache.cayenne.unit.di.runtime.CayenneProjects;
 import org.apache.cayenne.unit.di.runtime.CayenneTestsEnv;
 import org.junit.jupiter.api.extension.RegisterExtension;
 import org.junit.jupiter.api.Test;
-import org.junit.jupiter.api.BeforeEach;
-
 import static org.junit.jupiter.api.Assertions.assertEquals;
 
 public class CayennePersistentObjectReflexiveIT {
 
     @RegisterExtension
     static final CayenneTestsEnv env = CayenneTestsEnv.forProject(CayenneProjects.REFLEXIVE_PROJECT);
-
-    private ObjectContext context;
-    private CayenneRuntime runtime;
-
-
-    @BeforeEach
-    public void setUp() {
-        context = env.context();
-        runtime = env.runtime();
-    }
 
     @Test
     public void addReflexiveParentAndChild() {
@@ -52,24 +40,24 @@ public class CayennePersistentObjectReflexiveIT {
         int errors = 0;
 
         for (int i = 0; i < attempts; i++) {
-            final Reflexive parent = context.newObject(Reflexive.class);
+            final Reflexive parent = env.context().newObject(Reflexive.class);
             parent.setName("parentA"+i);
 
             // and child is created and associated to "Parent"
-            final Reflexive child = context.newObject(Reflexive.class);
+            final Reflexive child = env.context().newObject(Reflexive.class);
             child.setName("childA"+i);
             child.setToParent(parent);
 
             try {
-                context.commitChanges();
+                env.context().commitChanges();
 
                 // unset parent so that DBCleaner.clean() will work correctly
                 child.setToParent(null);
-                context.commitChanges();
+                env.context().commitChanges();
             } catch (final Exception e) {
                 errors++;
                 e.printStackTrace();
-                context.rollbackChanges();
+                env.context().rollbackChanges();
             }
         }
 
@@ -83,9 +71,9 @@ public class CayennePersistentObjectReflexiveIT {
         // we will do this 100 times, because it randomly does it correctly/incorrectly
 
         // given some "other" Object
-        final Other other = context.newObject(Other.class);
+        final Other other = env.context().newObject(Other.class);
         other.setName("OtherB");
-        context.commitChanges();
+        env.context().commitChanges();
 
         final int attempts = 100;
         int errors = 0;
@@ -93,25 +81,25 @@ public class CayennePersistentObjectReflexiveIT {
         for (int i = 0; i < attempts; i++) {
             // when parent is created and associated to "Other"
 
-            final Reflexive parent = context.newObject(Reflexive.class);
+            final Reflexive parent = env.context().newObject(Reflexive.class);
             parent.setName("parentB"+i);
             parent.setToOther(other);
 
             // and child is created and associated to "Parent"
-            final Reflexive child = context.newObject(Reflexive.class);
+            final Reflexive child = env.context().newObject(Reflexive.class);
             child.setName("childB"+i);
             child.setToParent(parent);
 
             try {
-                context.commitChanges();
+                env.context().commitChanges();
 
                 // unset parent so that DBCleaner.clean() will work correctly
                 child.setToParent(null);
-                context.commitChanges();
+                env.context().commitChanges();
             } catch (final Exception e) {
                 errors++;
                 e.printStackTrace();
-                context.rollbackChanges();
+                env.context().rollbackChanges();
             }
         }
 

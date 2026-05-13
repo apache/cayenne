@@ -29,8 +29,6 @@ import org.apache.cayenne.unit.di.runtime.CayenneTestsEnv;
 import org.junit.jupiter.api.extension.RegisterExtension;
 import org.apache.cayenne.unit.di.runtime.RuntimeCaseDataSourceFactory;
 import org.junit.jupiter.api.Test;
-import org.junit.jupiter.api.BeforeEach;
-
 import java.lang.reflect.Method;
 import java.util.Collections;
 
@@ -41,15 +39,6 @@ public class DataNodeQueryExceptionsIT {
 
     @RegisterExtension
     static final CayenneTestsEnv env = CayenneTestsEnv.forProject(CayenneProjects.TESTMAP_PROJECT);
-
-    protected DataNode node;
-    protected RuntimeCaseDataSourceFactory dataSourceFactory;
-
-    @BeforeEach
-    public void setUp() {
-        node = env.getInstance(DataNode.class);
-        dataSourceFactory = env.getInstance(RuntimeCaseDataSourceFactory.class);
-    }
 
     @Test
     public void queryException() {
@@ -62,7 +51,7 @@ public class DataNodeQueryExceptionsIT {
         };
 
         assertEquals(0, activeConnections());
-        assertThrows(CayenneRuntimeException.class, () -> node.performQueries(
+        assertThrows(CayenneRuntimeException.class, () -> env.getInstance(DataNode.class).performQueries(
                 Collections.singletonList(throwingSS),
                 new MockOperationObserver()));
 
@@ -80,7 +69,7 @@ public class DataNodeQueryExceptionsIT {
         };
 
         assertEquals(0, activeConnections());
-        assertThrows(Error.class, () -> node.performQueries(
+        assertThrows(Error.class, () -> env.getInstance(DataNode.class).performQueries(
                 Collections.singletonList(throwingSS),
                 new MockOperationObserver()));
 
@@ -89,7 +78,7 @@ public class DataNodeQueryExceptionsIT {
 
     int activeConnections() {
         try {
-            UnmanagedPoolingDataSource ds = dataSourceFactory.getSharedDataSource().unwrap(UnmanagedPoolingDataSource.class);
+            UnmanagedPoolingDataSource ds = env.getInstance(RuntimeCaseDataSourceFactory.class).getSharedDataSource().unwrap(UnmanagedPoolingDataSource.class);
 
             Method poolSize = UnmanagedPoolingDataSource.class.getDeclaredMethod("poolSize");
             poolSize.setAccessible(true);

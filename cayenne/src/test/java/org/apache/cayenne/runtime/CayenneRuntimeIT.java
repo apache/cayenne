@@ -27,7 +27,6 @@ import org.apache.cayenne.tx.TransactionListener;
 import org.apache.cayenne.unit.di.runtime.CayenneProjects;
 import org.apache.cayenne.unit.di.runtime.CayenneTestsEnv;
 import org.apache.cayenne.validation.ValidationException;
-import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.RegisterExtension;
 
@@ -41,15 +40,6 @@ public class CayenneRuntimeIT {
 
     @RegisterExtension
     static final CayenneTestsEnv env = CayenneTestsEnv.forProject(CayenneProjects.TESTMAP_PROJECT);
-
-    private CayenneRuntime runtime;
-    private ObjectContext context;
-
-    @BeforeEach
-    public void setUp() {
-        runtime = env.runtime();
-        context = env.context();
-    }
 
     static class DefaultListenerImpl implements TransactionListener {
 
@@ -72,8 +62,8 @@ public class CayenneRuntimeIT {
         TransactionListener callback = mock(DefaultListenerImpl.class);
         when(callback.decorateConnection(any(Transaction.class), any(Connection.class))).thenCallRealMethod();
 
-        Artist a = runtime.performInTransaction(() -> {
-            Artist localArtist = runtime.newContext().newObject(Artist.class);
+        Artist a = env.runtime().performInTransaction(() -> {
+            Artist localArtist = env.runtime().newContext().newObject(Artist.class);
             localArtist.setArtistName("A1");
             localArtist.getObjectContext().commitChanges();
             return localArtist;
@@ -94,8 +84,8 @@ public class CayenneRuntimeIT {
         when(callback.decorateConnection(any(Transaction.class), any(Connection.class))).thenCallRealMethod();
 
         try {
-            runtime.performInTransaction(() -> {
-                Artist localArtist = runtime.newContext().newObject(Artist.class);
+            env.runtime().performInTransaction(() -> {
+                Artist localArtist = env.runtime().newContext().newObject(Artist.class);
                 localArtist.getObjectContext().commitChanges();
                 return localArtist;
             }, callback);
@@ -108,25 +98,25 @@ public class CayenneRuntimeIT {
 
     @Test
     public void rollbackTransaction() {
-        assertEquals(0, ObjectSelect.query(Artist.class).selectCount(context));
+        assertEquals(0, ObjectSelect.query(Artist.class).selectCount(env.context()));
 
         try {
-            runtime.performInTransaction(() -> {
+            env.runtime().performInTransaction(() -> {
                 // Default PK batch size is 20
                 for (int i = 0; i < 30; i++) {
-                    Artist artist = context.newObject(Artist.class);
+                    Artist artist = env.context().newObject(Artist.class);
                     artist.setArtistName("test" + i);
-                    context.commitChanges();
+                    env.context().commitChanges();
                 }
 
                 // this should fail with validation error
-                context.newObject(Artist.class);
-                context.commitChanges();
+                env.context().newObject(Artist.class);
+                env.context().commitChanges();
                 return null;
             });
         } catch (Exception ignored) {
         }
 
-        assertEquals(0, ObjectSelect.query(Artist.class).selectCount(context));
+        assertEquals(0, ObjectSelect.query(Artist.class).selectCount(env.context()));
     }
 }

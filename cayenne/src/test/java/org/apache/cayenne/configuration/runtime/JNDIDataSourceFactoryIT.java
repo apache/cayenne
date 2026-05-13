@@ -26,8 +26,6 @@ import org.apache.cayenne.unit.di.runtime.CayenneProjects;
 import org.apache.cayenne.unit.di.runtime.CayenneTestsEnv;
 import org.junit.jupiter.api.extension.RegisterExtension;
 import org.junit.jupiter.api.Test;
-import org.junit.jupiter.api.BeforeEach;
-
 import javax.naming.InitialContext;
 import javax.naming.NameNotFoundException;
 
@@ -39,14 +37,6 @@ public class JNDIDataSourceFactoryIT {
 
     @RegisterExtension
     static final CayenneTestsEnv env = CayenneTestsEnv.forProject(CayenneProjects.TESTMAP_PROJECT);
-
-    private Injector injector;
-
-
-    @BeforeEach
-    public void setUp() {
-        injector = env.getInstance(Injector.class);
-    }
 
     @Test
     public void getDataSource_NameBound() throws Exception {
@@ -63,7 +53,7 @@ public class JNDIDataSourceFactoryIT {
         try {
 
             JNDIDataSourceFactory factory = new JNDIDataSourceFactory();
-            injector.injectMembers(factory);
+            env.getInstance(Injector.class).injectMembers(factory);
             assertSame(dataSource, factory.getDataSource(descriptor));
         }
         finally {
@@ -87,7 +77,7 @@ public class JNDIDataSourceFactoryIT {
         try {
 
             JNDIDataSourceFactory factory = new JNDIDataSourceFactory();
-            injector.injectMembers(factory);
+            env.getInstance(Injector.class).injectMembers(factory);
             assertSame(dataSource, factory.getDataSource(descriptor));
         }
         finally {
@@ -105,7 +95,7 @@ public class JNDIDataSourceFactoryIT {
         JNDISetup.doSetup();
 
         JNDIDataSourceFactory factory = new JNDIDataSourceFactory();
-        injector.injectMembers(factory);
+        env.getInstance(Injector.class).injectMembers(factory);
 
         assertThrows(NameNotFoundException.class, () -> factory.getDataSource(descriptor));
     }

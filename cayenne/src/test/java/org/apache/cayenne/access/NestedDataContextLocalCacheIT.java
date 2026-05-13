@@ -29,8 +29,6 @@ import org.apache.cayenne.unit.di.runtime.CayenneProjects;
 import org.apache.cayenne.unit.di.runtime.CayenneTestsEnv;
 import org.junit.jupiter.api.extension.RegisterExtension;
 import org.junit.jupiter.api.Test;
-import org.junit.jupiter.api.BeforeEach;
-
 import static org.junit.jupiter.api.Assertions.assertNull;
 import static org.junit.jupiter.api.Assertions.assertSame;
 
@@ -39,35 +37,25 @@ public class NestedDataContextLocalCacheIT {
     @RegisterExtension
     static final CayenneTestsEnv env = CayenneTestsEnv.forProject(CayenneProjects.TESTMAP_PROJECT);
 
-    protected CayenneRuntime runtime;
-    private DataContext context;
-
-    @BeforeEach
-    public void setUp() {
-        runtime = env.runtime();
-        context = env.dataContext();
-    }
-
-
     @Test
     public void localCacheStaysLocal() {
 
         ObjectSelect<Artist> query = ObjectSelect.query(Artist.class)
                 .cacheStrategy(QueryCacheStrategy.LOCAL_CACHE);
 
-        ObjectContext child1 = runtime.newContext(context);
+        ObjectContext child1 = env.runtime().newContext(env.dataContext());
 
         assertNull(((DataContext) child1).getQueryCache().get(
                 query.getMetaData(child1.getEntityResolver())));
 
-        assertNull(context.getQueryCache().get(
-                query.getMetaData(context.getEntityResolver())));
+        assertNull(env.dataContext().getQueryCache().get(
+                query.getMetaData(env.dataContext().getEntityResolver())));
 
         List<?> results = child1.performQuery(query);
         assertSame(results, ((DataContext) child1).getQueryCache().get(
                 query.getMetaData(child1.getEntityResolver())));
 
-        assertNull(context.getQueryCache().get(
-                query.getMetaData(context.getEntityResolver())));
+        assertNull(env.dataContext().getQueryCache().get(
+                query.getMetaData(env.dataContext().getEntityResolver())));
     }
 }

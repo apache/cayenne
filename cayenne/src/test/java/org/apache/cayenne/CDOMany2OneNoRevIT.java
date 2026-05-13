@@ -25,8 +25,6 @@ import org.apache.cayenne.unit.di.runtime.CayenneProjects;
 import org.apache.cayenne.unit.di.runtime.CayenneTestsEnv;
 import org.junit.jupiter.api.extension.RegisterExtension;
 import org.junit.jupiter.api.Test;
-import org.junit.jupiter.api.BeforeEach;
-
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.junit.jupiter.api.Assertions.assertSame;
@@ -36,20 +34,12 @@ public class CDOMany2OneNoRevIT {
     @RegisterExtension
     static final CayenneTestsEnv env = CayenneTestsEnv.forProject(CayenneProjects.TESTMAP_PROJECT);
 
-    private ObjectContext context;
-
-
-    @BeforeEach
-    public void setUp() {
-        context = env.context();
-    }
-
     @Test
     public void newAdd() throws Exception {
 
-        Artist a1 = context.newObject(Artist.class);
+        Artist a1 = env.context().newObject(Artist.class);
         a1.setArtistName("a");
-        Painting1 p1 = context.newObject(Painting1.class);
+        Painting1 p1 = env.context().newObject(Painting1.class);
         p1.setPaintingTitle("p");
 
         // TESTING THIS
@@ -57,12 +47,12 @@ public class CDOMany2OneNoRevIT {
 
         assertSame(a1, p1.getToArtist());
 
-        context.commitChanges();
+        env.context().commitChanges();
         ObjectId aid = a1.getObjectId();
         ObjectId pid = p1.getObjectId();
-        context.invalidateObjects(a1, p1);
+        env.context().invalidateObjects(a1, p1);
 
-        Painting1 p2 = (Painting1) Cayenne.objectForPK(context, pid);
+        Painting1 p2 = (Painting1) Cayenne.objectForPK(env.context(), pid);
         Artist a2 = p2.getToArtist();
         assertNotNull(a2);
         assertEquals(aid, a2.getObjectId());

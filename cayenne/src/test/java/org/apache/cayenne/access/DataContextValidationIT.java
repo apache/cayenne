@@ -27,8 +27,6 @@ import org.apache.cayenne.unit.di.runtime.CayenneTestsEnv;
 import org.junit.jupiter.api.extension.RegisterExtension;
 import org.apache.cayenne.unit.util.ValidationDelegate;
 import org.junit.jupiter.api.Test;
-import org.junit.jupiter.api.BeforeEach;
-
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertTrue;
@@ -40,36 +38,29 @@ public class DataContextValidationIT {
     @RegisterExtension
     static final CayenneTestsEnv env = CayenneTestsEnv.forProject(CayenneProjects.TESTMAP_PROJECT);
 
-    private DataContext context;
-
-    @BeforeEach
-    public void setUp() {
-        context = env.dataContext();
-    }
-
     @Test
     public void validatingObjectsOnCommitProperty() throws Exception {
-        context.setValidatingObjectsOnCommit(true);
-        assertTrue(context.isValidatingObjectsOnCommit());
+        env.dataContext().setValidatingObjectsOnCommit(true);
+        assertTrue(env.dataContext().isValidatingObjectsOnCommit());
 
-        context.setValidatingObjectsOnCommit(false);
-        assertFalse(context.isValidatingObjectsOnCommit());
+        env.dataContext().setValidatingObjectsOnCommit(false);
+        assertFalse(env.dataContext().isValidatingObjectsOnCommit());
     }
 
     @Test
     public void validatingObjectsOnCommit() throws Exception {
         // test that validation is called properly
 
-        context.setValidatingObjectsOnCommit(true);
-        Artist a1 = context.newObject(Artist.class);
+        env.dataContext().setValidatingObjectsOnCommit(true);
+        Artist a1 = env.dataContext().newObject(Artist.class);
         a1.setArtistName("a1");
-        context.commitChanges();
+        env.dataContext().commitChanges();
         assertTrue(a1.isValidateForSaveCalled());
 
-        context.setValidatingObjectsOnCommit(false);
-        Artist a2 = context.newObject(Artist.class);
+        env.dataContext().setValidatingObjectsOnCommit(false);
+        Artist a2 = env.dataContext().newObject(Artist.class);
         a2.setArtistName("a2");
-        context.commitChanges();
+        env.dataContext().commitChanges();
         assertFalse(a2.isValidateForSaveCalled());
     }
 
@@ -84,18 +75,18 @@ public class DataContextValidationIT {
             p.setToArtist(a);
         };
 
-        context.setValidatingObjectsOnCommit(true);
-        Artist a1 = context.newObject(Artist.class);
+        env.dataContext().setValidatingObjectsOnCommit(true);
+        Artist a1 = env.dataContext().newObject(Artist.class);
         a1.setValidationDelegate(delegate);
         a1.setArtistName("a1");
 
         // add another artist to ensure that modifying context works when more than one
         // object is committed
-        Artist a2 = context.newObject(Artist.class);
+        Artist a2 = env.dataContext().newObject(Artist.class);
         a2.setValidationDelegate(delegate);
         a2.setArtistName("a2");
-        context.commitChanges();
+        env.dataContext().commitChanges();
 
-        assertEquals(2, ObjectSelect.query(Painting.class).select(context).size());
+        assertEquals(2, ObjectSelect.query(Painting.class).select(env.dataContext()).size());
     }
 }

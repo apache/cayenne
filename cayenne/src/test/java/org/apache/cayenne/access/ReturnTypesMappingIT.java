@@ -36,8 +36,6 @@ import org.apache.cayenne.unit.di.runtime.CayenneProjects;
 import org.apache.cayenne.unit.di.runtime.CayenneTestsEnv;
 import org.junit.jupiter.api.extension.RegisterExtension;
 import org.junit.jupiter.api.Test;
-import org.junit.jupiter.api.BeforeEach;
-
 import static org.junit.jupiter.api.Assertions.assertArrayEquals;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
@@ -52,33 +50,23 @@ public class ReturnTypesMappingIT {
     @RegisterExtension
     static final CayenneTestsEnv env = CayenneTestsEnv.forProject(CayenneProjects.RETURN_TYPES_PROJECT);
 
-    private DataContext context;
-    private UnitDbAdapter unitDbAdapter;
-
     /*
      * TODO: olga: We need divided TYPES_MAPPING_TES2 to 2 schemas with lobs columns and not lobs columns
      */
 
-
-    @BeforeEach
-    public void setUp() {
-        context = env.dataContext();
-        unitDbAdapter = env.getInstance(UnitDbAdapter.class);
-    }
-
     @Test
     public void bigint() throws Exception {
         String columnName = "BIGINT_COLUMN";
-        ReturnTypesMap1 test = context.newObject(ReturnTypesMap1.class);
+        ReturnTypesMap1 test = env.dataContext().newObject(ReturnTypesMap1.class);
 
         Long bigintValue = 5326457654783454355L;
         test.setBigintColumn(bigintValue);
-        context.commitChanges();
+        env.dataContext().commitChanges();
 
-        DataRow testRead = (DataRow) context.performQuery(MappedSelect.query("SelectReturnTypesMap1")).get(0);
+        DataRow testRead = (DataRow) env.dataContext().performQuery(MappedSelect.query("SelectReturnTypesMap1")).get(0);
         Object columnValue = testRead.get(columnName);
         assertNotNull(columnValue);
-        if(unitDbAdapter.onlyGenericNumberType()) {
+        if(env.getInstance(UnitDbAdapter.class).onlyGenericNumberType()) {
             assertEquals(BigDecimal.class, columnValue.getClass());
             assertEquals(BigDecimal.valueOf(bigintValue), columnValue);
         } else {
@@ -89,15 +77,15 @@ public class ReturnTypesMappingIT {
 
     @Test
     public void bigint2() throws Exception {
-       ReturnTypesMap1 test = context.newObject(ReturnTypesMap1.class);
+       ReturnTypesMap1 test = env.dataContext().newObject(ReturnTypesMap1.class);
 
         Long bigintValue = 5326457654783454355L;
         test.setBigintColumn(bigintValue);
-        context.commitChanges();
+        env.dataContext().commitChanges();
 
         ReturnTypesMap1 testRead = ObjectSelect
                 .query(ReturnTypesMap1.class)
-                .selectFirst(context);
+                .selectFirst(env.dataContext());
         Long columnValue = testRead.getBigintColumn();
         assertNotNull(columnValue);
         assertEquals(Long.class, columnValue.getClass());
@@ -106,17 +94,17 @@ public class ReturnTypesMappingIT {
 
     @Test
     public void binary() throws Exception {
-        if (unitDbAdapter.supportsLobs()) {
+        if (env.getInstance(UnitDbAdapter.class).supportsLobs()) {
             String columnName = "BINARY_COLUMN";
-            ReturnTypesMap2 test = context.newObject(ReturnTypesMap2.class);
+            ReturnTypesMap2 test = env.dataContext().newObject(ReturnTypesMap2.class);
 
             byte[] binaryValue = {
                     3, 4, 5, -6, 7, 0, 2, 9, 45, 64, 3, 127, -128, -60
             };
             test.setBinaryColumn(binaryValue);
-            context.commitChanges();
+            env.dataContext().commitChanges();
 
-            DataRow testRead = (DataRow) context.performQuery(MappedSelect.query("SelectReturnTypesMap2")).get(0);
+            DataRow testRead = (DataRow) env.dataContext().performQuery(MappedSelect.query("SelectReturnTypesMap2")).get(0);
             Object columnValue = testRead.get(columnName);
             assertNotNull(columnValue);
             assertEquals(byte[].class, columnValue.getClass());
@@ -126,18 +114,18 @@ public class ReturnTypesMappingIT {
 
     @Test
     public void binary2() throws Exception {
-        if (unitDbAdapter.supportsLobs()) {
-            ReturnTypesMap2 test = context.newObject(ReturnTypesMap2.class);
+        if (env.getInstance(UnitDbAdapter.class).supportsLobs()) {
+            ReturnTypesMap2 test = env.dataContext().newObject(ReturnTypesMap2.class);
 
             byte[] binaryValue = {
                     3, 4, 5, -6, 7, 0, 2, 9, 45, 64, 3, 127, -128, -60
             };
             test.setBinaryColumn(binaryValue);
-            context.commitChanges();
+            env.dataContext().commitChanges();
 
             ReturnTypesMap2 testRead = ObjectSelect
                     .query(ReturnTypesMap2.class)
-                    .selectFirst(context);
+                    .selectFirst(env.dataContext());
             byte[] columnValue = testRead.getBinaryColumn();
             assertNotNull(columnValue);
             assertEquals(byte[].class, columnValue.getClass());
@@ -148,13 +136,13 @@ public class ReturnTypesMappingIT {
     @Test
     public void bit() throws Exception {
         String columnName = "BIT_COLUMN";
-        ReturnTypesMap1 test = context.newObject(ReturnTypesMap1.class);
+        ReturnTypesMap1 test = env.dataContext().newObject(ReturnTypesMap1.class);
 
         Boolean bitValue = true;
         test.setBitColumn(bitValue);
-        context.commitChanges();
+        env.dataContext().commitChanges();
 
-        DataRow testRead = (DataRow) context.performQuery(MappedSelect.query("SelectReturnTypesMap1")).get(0);
+        DataRow testRead = (DataRow) env.dataContext().performQuery(MappedSelect.query("SelectReturnTypesMap1")).get(0);
         Object columnValue = testRead.get(columnName);
         assertNotNull(columnValue);
         assertTrue(Boolean.class.equals(columnValue.getClass())
@@ -165,15 +153,15 @@ public class ReturnTypesMappingIT {
 
     @Test
     public void bit2() throws Exception {
-        ReturnTypesMap1 test = context.newObject(ReturnTypesMap1.class);
+        ReturnTypesMap1 test = env.dataContext().newObject(ReturnTypesMap1.class);
 
         Boolean bitValue = true;
         test.setBitColumn(bitValue);
-        context.commitChanges();
+        env.dataContext().commitChanges();
 
         ReturnTypesMap1 testRead = ObjectSelect
                 .query(ReturnTypesMap1.class)
-                .selectFirst(context);
+                .selectFirst(env.dataContext());
         Boolean columnValue = testRead.getBitColumn();
         assertNotNull(columnValue);
         assertEquals(Boolean.class, columnValue.getClass());
@@ -182,20 +170,20 @@ public class ReturnTypesMappingIT {
 
     @Test
     public void blob() throws Exception {
-        assumeTrue(!(unitDbAdapter instanceof PostgresUnitDbAdapter),
+        assumeTrue(!(env.getInstance(UnitDbAdapter.class) instanceof PostgresUnitDbAdapter),
                 "In postresql blob_column has OID type, but in JAVA it converts into long not into byte.");
 
-        if (unitDbAdapter.supportsLobs()) {
+        if (env.getInstance(UnitDbAdapter.class).supportsLobs()) {
             String columnName = "BLOB_COLUMN";
-            ReturnTypesMap2 test = context.newObject(ReturnTypesMap2.class);
+            ReturnTypesMap2 test = env.dataContext().newObject(ReturnTypesMap2.class);
 
             byte[] blobValue = {
                     3, 4, 5, -6, 7, 0, 2, 9, 45, 64, 3, 127, -128, -60
             };
             test.setBlobColumn(blobValue);
-            context.commitChanges();
+            env.dataContext().commitChanges();
 
-            DataRow testRead = (DataRow) context.performQuery(MappedSelect.query("SelectReturnTypesMap2")).get(0);
+            DataRow testRead = (DataRow) env.dataContext().performQuery(MappedSelect.query("SelectReturnTypesMap2")).get(0);
             Object columnValue = testRead.get(columnName);
             assertNotNull(columnValue);
             assertEquals(byte[].class, columnValue.getClass());
@@ -205,18 +193,18 @@ public class ReturnTypesMappingIT {
 
     @Test
     public void blob2() throws Exception {
-        if (unitDbAdapter.supportsLobs()) {
-            ReturnTypesMap2 test = context.newObject(ReturnTypesMap2.class);
+        if (env.getInstance(UnitDbAdapter.class).supportsLobs()) {
+            ReturnTypesMap2 test = env.dataContext().newObject(ReturnTypesMap2.class);
 
             byte[] blobValue = {
                     3, 4, 5, -6, 7, 0, 2, 9, 45, 64, 3, 127, -128, -60
             };
             test.setBlobColumn(blobValue);
-            context.commitChanges();
+            env.dataContext().commitChanges();
 
             ReturnTypesMap2 testRead = ObjectSelect
                     .query(ReturnTypesMap2.class)
-                    .selectFirst(context);
+                    .selectFirst(env.dataContext());
             byte[] columnValue = testRead.getBlobColumn();
             assertNotNull(columnValue);
             assertEquals(byte[].class, columnValue.getClass());
@@ -227,13 +215,13 @@ public class ReturnTypesMappingIT {
     @Test
     public void booleanType() throws Exception {
         String columnName = "BOOLEAN_COLUMN";
-        ReturnTypesMap1 test = context.newObject(ReturnTypesMap1.class);
+        ReturnTypesMap1 test = env.dataContext().newObject(ReturnTypesMap1.class);
 
         Boolean booleanValue = true;
         test.setBooleanColumn(booleanValue);
-        context.commitChanges();
+        env.dataContext().commitChanges();
 
-        DataRow testRead = (DataRow) context.performQuery(MappedSelect.query("SelectReturnTypesMap1")).get(0);
+        DataRow testRead = (DataRow) env.dataContext().performQuery(MappedSelect.query("SelectReturnTypesMap1")).get(0);
         Object columnValue = testRead.get(columnName);
         assertNotNull(columnValue);
         assertTrue(Boolean.class.equals(columnValue.getClass())
@@ -245,15 +233,15 @@ public class ReturnTypesMappingIT {
 
     @Test
     public void booleanType2() throws Exception {
-        ReturnTypesMap1 test = context.newObject(ReturnTypesMap1.class);
+        ReturnTypesMap1 test = env.dataContext().newObject(ReturnTypesMap1.class);
 
         Boolean booleanValue = true;
         test.setBooleanColumn(booleanValue);
-        context.commitChanges();
+        env.dataContext().commitChanges();
 
         ReturnTypesMap1 testRead = ObjectSelect
                 .query(ReturnTypesMap1.class)
-                .selectFirst(context);
+                .selectFirst(env.dataContext());
         Boolean columnValue = testRead.getBooleanColumn();
         assertNotNull(columnValue);
         assertEquals(Boolean.class, columnValue.getClass());
@@ -263,13 +251,13 @@ public class ReturnTypesMappingIT {
     @Test
     public void charType() throws Exception {
         String columnName = "CHAR_COLUMN";
-        ReturnTypesMap1 test = context.newObject(ReturnTypesMap1.class);
+        ReturnTypesMap1 test = env.dataContext().newObject(ReturnTypesMap1.class);
 
         String charValue = "Char string for tests!";
         test.setCharColumn(charValue);
-        context.commitChanges();
+        env.dataContext().commitChanges();
 
-        DataRow testRead = (DataRow) context.performQuery(MappedSelect.query("SelectReturnTypesMap1")).get(0);
+        DataRow testRead = (DataRow) env.dataContext().performQuery(MappedSelect.query("SelectReturnTypesMap1")).get(0);
         Object columnValue = testRead.get(columnName);
         assertNotNull(columnValue);
         assertEquals(String.class, columnValue.getClass());
@@ -279,13 +267,13 @@ public class ReturnTypesMappingIT {
     @Test
     public void nchar() throws Exception {
         String columnName = "NCHAR_COLUMN";
-        ReturnTypesMap1 test = context.newObject(ReturnTypesMap1.class);
+        ReturnTypesMap1 test = env.dataContext().newObject(ReturnTypesMap1.class);
 
         String charValue = "درخت‌های جستجوی متوازن، نیازی ندارد که به صورت!";
         test.setNcharColumn(charValue);
-        context.commitChanges();
+        env.dataContext().commitChanges();
 
-        DataRow testRead = (DataRow) context.performQuery(MappedSelect.query("SelectReturnTypesMap1")).get(0);
+        DataRow testRead = (DataRow) env.dataContext().performQuery(MappedSelect.query("SelectReturnTypesMap1")).get(0);
         Object columnValue = testRead.get(columnName);
         assertNotNull(columnValue);
         assertEquals(String.class, columnValue.getClass());
@@ -294,15 +282,15 @@ public class ReturnTypesMappingIT {
 
     @Test
     public void charType2() throws Exception {
-        ReturnTypesMap1 test = context.newObject(ReturnTypesMap1.class);
+        ReturnTypesMap1 test = env.dataContext().newObject(ReturnTypesMap1.class);
 
         String charValue = "Char string for tests!";
         test.setCharColumn(charValue);
-        context.commitChanges();
+        env.dataContext().commitChanges();
 
         ReturnTypesMap1 testRead = ObjectSelect
                 .query(ReturnTypesMap1.class)
-                .selectFirst(context);
+                .selectFirst(env.dataContext());
         String columnValue = testRead.getCharColumn();
         assertNotNull(columnValue);
         assertEquals(String.class, columnValue.getClass());
@@ -311,9 +299,9 @@ public class ReturnTypesMappingIT {
 
     @Test
     public void clob() throws Exception {
-        if (unitDbAdapter.supportsLobs()) {
+        if (env.getInstance(UnitDbAdapter.class).supportsLobs()) {
             String columnName = "CLOB_COLUMN";
-            ReturnTypesMapLobs1 test = context.newObject(ReturnTypesMapLobs1.class);
+            ReturnTypesMapLobs1 test = env.dataContext().newObject(ReturnTypesMapLobs1.class);
 
             StringBuffer buffer = new StringBuffer();
             for (int i = 0; i < 10000; i++) {
@@ -321,9 +309,9 @@ public class ReturnTypesMappingIT {
             }
             String clobValue = buffer.toString();
             test.setClobColumn(clobValue);
-            context.commitChanges();
+            env.dataContext().commitChanges();
 
-            DataRow testRead = (DataRow) context.performQuery(MappedSelect.query("SelectReturnTypesLobsMap1")).get(0);
+            DataRow testRead = (DataRow) env.dataContext().performQuery(MappedSelect.query("SelectReturnTypesLobsMap1")).get(0);
             Object columnValue = testRead.get(columnName);
             if (columnValue == null && testRead.containsKey(columnName.toLowerCase())) {
                 columnValue = testRead.get(columnName.toLowerCase());
@@ -336,9 +324,9 @@ public class ReturnTypesMappingIT {
 
     @Test
     public void nclob() throws Exception {
-        if (unitDbAdapter.supportsLobs()) {
+        if (env.getInstance(UnitDbAdapter.class).supportsLobs()) {
             String columnName = "NCLOB_COLUMN";
-            ReturnTypesMapLobs1 test = context.newObject(ReturnTypesMapLobs1.class);
+            ReturnTypesMapLobs1 test = env.dataContext().newObject(ReturnTypesMapLobs1.class);
 
             StringBuilder buffer = new StringBuilder();
             for (int i = 0; i < 1000; i++) {
@@ -347,9 +335,9 @@ public class ReturnTypesMappingIT {
             }
             String clobValue = buffer.toString();
             test.setNclobColumn(clobValue);
-            context.commitChanges();
+            env.dataContext().commitChanges();
 
-            DataRow testRead = (DataRow) context.performQuery(MappedSelect.query("SelectReturnTypesLobsMap1")).get(0);
+            DataRow testRead = (DataRow) env.dataContext().performQuery(MappedSelect.query("SelectReturnTypesLobsMap1")).get(0);
             Object columnValue = testRead.get(columnName);
             if (columnValue == null && testRead.containsKey(columnName.toLowerCase())) {
                 columnValue = testRead.get(columnName.toLowerCase());
@@ -362,8 +350,8 @@ public class ReturnTypesMappingIT {
 
     @Test
     public void clob2() throws Exception {
-        if (unitDbAdapter.supportsLobs()) {
-            ReturnTypesMapLobs1 test = context.newObject(ReturnTypesMapLobs1.class);
+        if (env.getInstance(UnitDbAdapter.class).supportsLobs()) {
+            ReturnTypesMapLobs1 test = env.dataContext().newObject(ReturnTypesMapLobs1.class);
 
             StringBuffer buffer = new StringBuffer();
             for (int i = 0; i < 10000; i++) {
@@ -371,11 +359,11 @@ public class ReturnTypesMappingIT {
             }
             String clobValue = buffer.toString();
             test.setClobColumn(clobValue);
-            context.commitChanges();
+            env.dataContext().commitChanges();
 
             ReturnTypesMapLobs1 testRead = ObjectSelect
                     .query(ReturnTypesMapLobs1.class)
-                    .selectFirst(context);
+                    .selectFirst(env.dataContext());
             String columnValue = testRead.getClobColumn();
             assertNotNull(columnValue);
             assertEquals(String.class, columnValue.getClass());
@@ -386,16 +374,16 @@ public class ReturnTypesMappingIT {
     @Test
     public void date() throws Exception {
         String columnName = "DATE_COLUMN";
-        ReturnTypesMap1 test = context.newObject(ReturnTypesMap1.class);
+        ReturnTypesMap1 test = env.dataContext().newObject(ReturnTypesMap1.class);
 
         Calendar cal = Calendar.getInstance();
         cal.clear();
         cal.set(2002, 1, 1);
         Date dateValue = cal.getTime();
         test.setDateColumn(dateValue);
-        context.commitChanges();
+        env.dataContext().commitChanges();
 
-        DataRow testRead = (DataRow) context.performQuery(MappedSelect.query("SelectReturnTypesMap1")).get(0);
+        DataRow testRead = (DataRow) env.dataContext().performQuery(MappedSelect.query("SelectReturnTypesMap1")).get(0);
         Object columnValue = testRead.get(columnName);
         assertNotNull(columnValue);
         assertEquals(Date.class, columnValue.getClass());
@@ -404,19 +392,18 @@ public class ReturnTypesMappingIT {
 
     @Test
     public void date2() throws Exception {
-        ReturnTypesMap1 test = context.newObject(ReturnTypesMap1.class);
+        ReturnTypesMap1 test = env.dataContext().newObject(ReturnTypesMap1.class);
 
         Calendar cal = Calendar.getInstance();
         cal.clear();
         cal.set(2002, 1, 1);
         Date dateValue = cal.getTime();
         test.setDateColumn(dateValue);
-        context.commitChanges();
-
+        env.dataContext().commitChanges();
 
         ReturnTypesMap1 testRead = ObjectSelect
                 .query(ReturnTypesMap1.class)
-                .selectFirst(context);
+                .selectFirst(env.dataContext());
         Date columnValue = testRead.getDateColumn();
         assertNotNull(columnValue);
         assertEquals(Date.class, columnValue.getClass());
@@ -426,13 +413,13 @@ public class ReturnTypesMappingIT {
     @Test
     public void decimal() throws Exception {
         String columnName = "DECIMAL_COLUMN";
-        ReturnTypesMap1 test = context.newObject(ReturnTypesMap1.class);
+        ReturnTypesMap1 test = env.dataContext().newObject(ReturnTypesMap1.class);
 
         BigDecimal decimalValue = new BigDecimal("578438.57843");
         test.setDecimalColumn(decimalValue);
-        context.commitChanges();
+        env.dataContext().commitChanges();
 
-        DataRow testRead = (DataRow) context.performQuery(MappedSelect.query("SelectReturnTypesMap1")).get(0);
+        DataRow testRead = (DataRow) env.dataContext().performQuery(MappedSelect.query("SelectReturnTypesMap1")).get(0);
         Object columnValue = testRead.get(columnName);
         assertNotNull(columnValue);
         assertEquals(BigDecimal.class, columnValue.getClass());
@@ -441,15 +428,15 @@ public class ReturnTypesMappingIT {
 
     @Test
     public void decimal2() throws Exception {
-        ReturnTypesMap1 test = context.newObject(ReturnTypesMap1.class);
+        ReturnTypesMap1 test = env.dataContext().newObject(ReturnTypesMap1.class);
 
         BigDecimal decimalValue = new BigDecimal("578438.57843");
         test.setDecimalColumn(decimalValue);
-        context.commitChanges();
+        env.dataContext().commitChanges();
 
         ReturnTypesMap1 testRead = ObjectSelect
                 .query(ReturnTypesMap1.class)
-                .selectFirst(context);
+                .selectFirst(env.dataContext());
         BigDecimal columnValue = testRead.getDecimalColumn();
         assertNotNull(columnValue);
         assertEquals(BigDecimal.class, columnValue.getClass());
@@ -459,16 +446,16 @@ public class ReturnTypesMappingIT {
     @Test
     public void doubleType() throws Exception {
         String columnName = "DOUBLE_COLUMN";
-        ReturnTypesMap1 test = context.newObject(ReturnTypesMap1.class);
+        ReturnTypesMap1 test = env.dataContext().newObject(ReturnTypesMap1.class);
 
         Double doubleValue = 3298.4349783d;
         test.setDoubleColumn(doubleValue);
-        context.commitChanges();
+        env.dataContext().commitChanges();
 
-        DataRow testRead = (DataRow) context.performQuery(MappedSelect.query("SelectReturnTypesMap1")).get(0);
+        DataRow testRead = (DataRow) env.dataContext().performQuery(MappedSelect.query("SelectReturnTypesMap1")).get(0);
         Object columnValue = testRead.get(columnName);
         assertNotNull(columnValue);
-        if(unitDbAdapter.onlyGenericNumberType()) {
+        if(env.getInstance(UnitDbAdapter.class).onlyGenericNumberType()) {
             assertEquals(BigDecimal.class, columnValue.getClass());
             assertEquals(BigDecimal.valueOf(doubleValue), columnValue);
         } else {
@@ -479,15 +466,15 @@ public class ReturnTypesMappingIT {
 
     @Test
     public void doubleType2() throws Exception {
-        ReturnTypesMap1 test = context.newObject(ReturnTypesMap1.class);
+        ReturnTypesMap1 test = env.dataContext().newObject(ReturnTypesMap1.class);
 
         Double doubleValue = 3298.4349783d;
         test.setDoubleColumn(doubleValue);
-        context.commitChanges();
+        env.dataContext().commitChanges();
 
         ReturnTypesMap1 testRead = ObjectSelect
                 .query(ReturnTypesMap1.class)
-                .selectFirst(context);
+                .selectFirst(env.dataContext());
         Double columnValue = testRead.getDoubleColumn();
         assertNotNull(columnValue);
         assertEquals(Double.class, columnValue.getClass());
@@ -497,16 +484,16 @@ public class ReturnTypesMappingIT {
     @Test
     public void floatType() throws Exception {
         String columnName = "FLOAT_COLUMN";
-        ReturnTypesMap1 test = context.newObject(ReturnTypesMap1.class);
+        ReturnTypesMap1 test = env.dataContext().newObject(ReturnTypesMap1.class);
 
         Float floatValue = 375.437f;
         test.setFloatColumn(floatValue);
-        context.commitChanges();
+        env.dataContext().commitChanges();
 
-        DataRow testRead = (DataRow) context.performQuery(MappedSelect.query("SelectReturnTypesMap1")).get(0);
+        DataRow testRead = (DataRow) env.dataContext().performQuery(MappedSelect.query("SelectReturnTypesMap1")).get(0);
         Object columnValue = testRead.get(columnName);
         assertNotNull(columnValue);
-        if(unitDbAdapter.onlyGenericNumberType()) {
+        if(env.getInstance(UnitDbAdapter.class).onlyGenericNumberType()) {
             assertEquals(BigDecimal.class, columnValue.getClass());
         } else {
             assertTrue(Float.class.equals(columnValue.getClass())
@@ -517,15 +504,15 @@ public class ReturnTypesMappingIT {
 
     @Test
     public void floatType2() throws Exception {
-        ReturnTypesMap1 test = context.newObject(ReturnTypesMap1.class);
+        ReturnTypesMap1 test = env.dataContext().newObject(ReturnTypesMap1.class);
 
         Float floatValue = 375.437f;
         test.setFloatColumn(floatValue);
-        context.commitChanges();
+        env.dataContext().commitChanges();
 
         ReturnTypesMap1 testRead = ObjectSelect
                 .query(ReturnTypesMap1.class)
-                .selectFirst(context);
+                .selectFirst(env.dataContext());
         Float columnValue = testRead.getFloatColumn();
         assertNotNull(columnValue);
         assertEquals(Float.class, columnValue.getClass());
@@ -535,13 +522,13 @@ public class ReturnTypesMappingIT {
     @Test
     public void integer() throws Exception {
         String columnName = "INTEGER_COLUMN";
-        ReturnTypesMap1 test = context.newObject(ReturnTypesMap1.class);
+        ReturnTypesMap1 test = env.dataContext().newObject(ReturnTypesMap1.class);
 
         Integer integerValue = 54235;
         test.setIntegerColumn(integerValue);
-        context.commitChanges();
+        env.dataContext().commitChanges();
 
-        DataRow testRead = (DataRow) context.performQuery(MappedSelect.query("SelectReturnTypesMap1")).get(0);
+        DataRow testRead = (DataRow) env.dataContext().performQuery(MappedSelect.query("SelectReturnTypesMap1")).get(0);
         Object columnValue = testRead.get(columnName);
         assertNotNull(columnValue);
         assertEquals(Integer.class, columnValue.getClass());
@@ -550,15 +537,15 @@ public class ReturnTypesMappingIT {
 
     @Test
     public void integer2() throws Exception {
-        ReturnTypesMap1 test = context.newObject(ReturnTypesMap1.class);
+        ReturnTypesMap1 test = env.dataContext().newObject(ReturnTypesMap1.class);
 
         Integer integerValue = 54235;
         test.setIntegerColumn(integerValue);
-        context.commitChanges();
+        env.dataContext().commitChanges();
 
         ReturnTypesMap1 testRead = ObjectSelect
                 .query(ReturnTypesMap1.class)
-                .selectFirst(context);
+                .selectFirst(env.dataContext());
         Integer columnValue = testRead.getIntegerColumn();
         assertNotNull(columnValue);
         assertEquals(Integer.class, columnValue.getClass());
@@ -567,17 +554,17 @@ public class ReturnTypesMappingIT {
 
     @Test
     public void longVarBinary() throws Exception {
-        if (unitDbAdapter.supportsLobs()) {
+        if (env.getInstance(UnitDbAdapter.class).supportsLobs()) {
             String columnName = "LONGVARBINARY_COLUMN";
-            ReturnTypesMap2 test = context.newObject(ReturnTypesMap2.class);
+            ReturnTypesMap2 test = env.dataContext().newObject(ReturnTypesMap2.class);
 
             byte[] longvarbinaryValue = {
                     3, 4, 5, -6, 7, 0, 2, 9, 45, 64, 3, 127, -128, -60
             };
             test.setLongvarbinaryColumn(longvarbinaryValue);
-            context.commitChanges();
+            env.dataContext().commitChanges();
 
-            DataRow testRead = (DataRow) context.performQuery(MappedSelect.query("SelectReturnTypesMap2")).get(0);
+            DataRow testRead = (DataRow) env.dataContext().performQuery(MappedSelect.query("SelectReturnTypesMap2")).get(0);
             Object columnValue = testRead.get(columnName);
             assertNotNull(columnValue);
             assertEquals(byte[].class, columnValue.getClass());
@@ -587,18 +574,18 @@ public class ReturnTypesMappingIT {
 
     @Test
     public void longVarBinary2() throws Exception {
-        if (unitDbAdapter.supportsLobs()) {
-            ReturnTypesMap2 test = context.newObject(ReturnTypesMap2.class);
+        if (env.getInstance(UnitDbAdapter.class).supportsLobs()) {
+            ReturnTypesMap2 test = env.dataContext().newObject(ReturnTypesMap2.class);
 
             byte[] longvarbinaryValue = {
                     3, 4, 5, -6, 7, 0, 2, 9, 45, 64, 3, 127, -128, -60
             };
             test.setLongvarbinaryColumn(longvarbinaryValue);
-            context.commitChanges();
+            env.dataContext().commitChanges();
 
             ReturnTypesMap2 testRead = ObjectSelect
                     .query(ReturnTypesMap2.class)
-                    .selectFirst(context);
+                    .selectFirst(env.dataContext());
             byte[] columnValue = testRead.getLongvarbinaryColumn();
             assertNotNull(columnValue);
             assertEquals(byte[].class, columnValue.getClass());
@@ -609,7 +596,7 @@ public class ReturnTypesMappingIT {
     @Test
     public void longVarChar() throws Exception {
         String columnName = "LONGVARCHAR_COLUMN";
-        ReturnTypesMap1 test = context.newObject(ReturnTypesMap1.class);
+        ReturnTypesMap1 test = env.dataContext().newObject(ReturnTypesMap1.class);
 
         StringBuffer buffer = new StringBuffer();
         for (int i = 0; i < 500; i++) {
@@ -617,9 +604,9 @@ public class ReturnTypesMappingIT {
         }
         String longvarcharValue = buffer.toString();
         test.setLongvarcharColumn(longvarcharValue);
-        context.commitChanges();
+        env.dataContext().commitChanges();
 
-        DataRow testRead = (DataRow) context.performQuery(MappedSelect.query("SelectReturnTypesMap1")).get(0);
+        DataRow testRead = (DataRow) env.dataContext().performQuery(MappedSelect.query("SelectReturnTypesMap1")).get(0);
         Object columnValue = testRead.get(columnName);
         assertNotNull(columnValue);
         assertEquals(String.class, columnValue.getClass());
@@ -629,7 +616,7 @@ public class ReturnTypesMappingIT {
     @Test
     public void longNVarChar() throws Exception {
         String columnName = "LONGNVARCHAR_COLUMN";
-        ReturnTypesMap1 test = context.newObject(ReturnTypesMap1.class);
+        ReturnTypesMap1 test = env.dataContext().newObject(ReturnTypesMap1.class);
 
         StringBuffer buffer = new StringBuffer();
         for (int i = 0; i < 500; i++) {
@@ -637,9 +624,9 @@ public class ReturnTypesMappingIT {
         }
         String longnvarcharValue = buffer.toString();
         test.setLongnvarcharColumn(longnvarcharValue);
-        context.commitChanges();
+        env.dataContext().commitChanges();
 
-        DataRow testRead = (DataRow) context.performQuery(MappedSelect.query("SelectReturnTypesMap1")).get(0);
+        DataRow testRead = (DataRow) env.dataContext().performQuery(MappedSelect.query("SelectReturnTypesMap1")).get(0);
         Object columnValue = testRead.get(columnName);
         assertNotNull(columnValue);
         assertEquals(String.class, columnValue.getClass());
@@ -648,7 +635,7 @@ public class ReturnTypesMappingIT {
 
     @Test
     public void longVarChar2() throws Exception {
-        ReturnTypesMap1 test = context.newObject(ReturnTypesMap1.class);
+        ReturnTypesMap1 test = env.dataContext().newObject(ReturnTypesMap1.class);
 
         StringBuffer buffer = new StringBuffer();
         for (int i = 0; i < 500; i++) {
@@ -656,11 +643,11 @@ public class ReturnTypesMappingIT {
         }
         String longvarcharValue = buffer.toString();
         test.setLongvarcharColumn(longvarcharValue);
-        context.commitChanges();
+        env.dataContext().commitChanges();
 
         ReturnTypesMap1 testRead = ObjectSelect
                 .query(ReturnTypesMap1.class)
-                .selectFirst(context);
+                .selectFirst(env.dataContext());
         String columnValue = testRead.getLongvarcharColumn();
         assertNotNull(columnValue);
         assertEquals(String.class, columnValue.getClass());
@@ -670,13 +657,13 @@ public class ReturnTypesMappingIT {
     @Test
     public void numeric() throws Exception {
         String columnName = "NUMERIC_COLUMN";
-        ReturnTypesMap1 test = context.newObject(ReturnTypesMap1.class);
+        ReturnTypesMap1 test = env.dataContext().newObject(ReturnTypesMap1.class);
 
         BigDecimal numericValue = new BigDecimal("578438.57843");
         test.setNumericColumn(numericValue);
-        context.commitChanges();
+        env.dataContext().commitChanges();
 
-        DataRow testRead = (DataRow) context.performQuery(MappedSelect.query("SelectReturnTypesMap1")).get(0);
+        DataRow testRead = (DataRow) env.dataContext().performQuery(MappedSelect.query("SelectReturnTypesMap1")).get(0);
         Object columnValue = testRead.get(columnName);
         assertNotNull(columnValue);
         assertEquals(BigDecimal.class, columnValue.getClass());
@@ -685,15 +672,15 @@ public class ReturnTypesMappingIT {
 
     @Test
     public void numeric2() throws Exception {
-        ReturnTypesMap1 test = context.newObject(ReturnTypesMap1.class);
+        ReturnTypesMap1 test = env.dataContext().newObject(ReturnTypesMap1.class);
 
         BigDecimal numericValue = new BigDecimal("578438.57843");
         test.setNumericColumn(numericValue);
-        context.commitChanges();
+        env.dataContext().commitChanges();
 
         ReturnTypesMap1 testRead = ObjectSelect
                 .query(ReturnTypesMap1.class)
-                .selectFirst(context);
+                .selectFirst(env.dataContext());
         BigDecimal columnValue = testRead.getNumericColumn();
         assertNotNull(columnValue);
         assertEquals(BigDecimal.class, columnValue.getClass());
@@ -703,22 +690,22 @@ public class ReturnTypesMappingIT {
     @Test
     public void real() throws Exception {
         String columnName = "REAL_COLUMN";
-        ReturnTypesMap1 test = context.newObject(ReturnTypesMap1.class);
+        ReturnTypesMap1 test = env.dataContext().newObject(ReturnTypesMap1.class);
 
         Float realValue = 5788.57843f;
         test.setRealColumn(realValue);
-        context.commitChanges();
+        env.dataContext().commitChanges();
 
-        DataRow testRead = (DataRow) context.performQuery(MappedSelect.query("SelectReturnTypesMap1")).get(0);
+        DataRow testRead = (DataRow) env.dataContext().performQuery(MappedSelect.query("SelectReturnTypesMap1")).get(0);
         Object columnValue = testRead.get(columnName);
         assertNotNull(columnValue);
 
         // MySQL can treat REAL as either DOUBLE or FLOAT depending on the
         // engine settings
-        if(unitDbAdapter.onlyGenericNumberType()) {
+        if(env.getInstance(UnitDbAdapter.class).onlyGenericNumberType()) {
             assertEquals(BigDecimal.class, columnValue.getClass());
         } else {
-            if (unitDbAdapter.realAsDouble()) {
+            if (env.getInstance(UnitDbAdapter.class).realAsDouble()) {
                 assertEquals(Double.class, columnValue.getClass());
                 assertEquals(Double.valueOf(realValue), (Double) columnValue, 0.0001);
             } else {
@@ -730,15 +717,15 @@ public class ReturnTypesMappingIT {
 
     @Test
     public void real2() throws Exception {
-        ReturnTypesMap1 test = context.newObject(ReturnTypesMap1.class);
+        ReturnTypesMap1 test = env.dataContext().newObject(ReturnTypesMap1.class);
 
         Float realValue = 5788.57843f;
         test.setRealColumn(realValue);
-        context.commitChanges();
+        env.dataContext().commitChanges();
 
         ReturnTypesMap1 testRead = ObjectSelect
                 .query(ReturnTypesMap1.class)
-                .selectFirst(context);
+                .selectFirst(env.dataContext());
         Float columnValue = testRead.getRealColumn();
         assertNotNull(columnValue);
         assertEquals(Float.class, columnValue.getClass());
@@ -748,17 +735,17 @@ public class ReturnTypesMappingIT {
     @Test
     public void smallint() throws Exception {
         String columnName = "SMALLINT_COLUMN";
-        ReturnTypesMap1 test = context.newObject(ReturnTypesMap1.class);
+        ReturnTypesMap1 test = env.dataContext().newObject(ReturnTypesMap1.class);
 
         Short smallintValue = 32564;
         Integer intValue = 32564;
         test.setSmallintColumn(smallintValue);
-        context.commitChanges();
+        env.dataContext().commitChanges();
 
-        DataRow testRead = (DataRow) context.performQuery(MappedSelect.query("SelectReturnTypesMap1")).get(0);
+        DataRow testRead = (DataRow) env.dataContext().performQuery(MappedSelect.query("SelectReturnTypesMap1")).get(0);
         Object columnValue = testRead.get(columnName);
         assertNotNull(columnValue);
-        if(unitDbAdapter.onlyGenericNumberType()) {
+        if(env.getInstance(UnitDbAdapter.class).onlyGenericNumberType()) {
             assertEquals(Integer.class, columnValue.getClass());
             assertEquals(intValue, columnValue);
         } else {
@@ -769,15 +756,15 @@ public class ReturnTypesMappingIT {
 
     @Test
     public void smallint2() throws Exception {
-        ReturnTypesMap1 test = context.newObject(ReturnTypesMap1.class);
+        ReturnTypesMap1 test = env.dataContext().newObject(ReturnTypesMap1.class);
 
         Short smallintValue = 32564;
         test.setSmallintColumn(smallintValue);
-        context.commitChanges();
+        env.dataContext().commitChanges();
 
         ReturnTypesMap1 testRead = ObjectSelect
                 .query(ReturnTypesMap1.class)
-                .selectFirst(context);
+                .selectFirst(env.dataContext());
         Short columnValue = testRead.getSmallintColumn();
         assertNotNull(columnValue);
         assertEquals(Short.class, columnValue.getClass());
@@ -787,16 +774,16 @@ public class ReturnTypesMappingIT {
     @Test
     public void time() throws Exception {
         String columnName = "TIME_COLUMN";
-        ReturnTypesMap1 test = context.newObject(ReturnTypesMap1.class);
+        ReturnTypesMap1 test = env.dataContext().newObject(ReturnTypesMap1.class);
 
         Calendar cal = Calendar.getInstance();
         cal.clear();
         cal.set(2003, Calendar.FEBRUARY, 1, 1, 20, 30);
         Date timeValue = new Time(cal.getTime().getTime());
         test.setTimeColumn(timeValue);
-        context.commitChanges();
+        env.dataContext().commitChanges();
 
-        DataRow testRead = (DataRow) context.performQuery(MappedSelect.query("SelectReturnTypesMap1")).get(0);
+        DataRow testRead = (DataRow) env.dataContext().performQuery(MappedSelect.query("SelectReturnTypesMap1")).get(0);
         Object columnValue = testRead.get(columnName);
         assertNotNull(columnValue);
         assertEquals(Date.class, columnValue.getClass());
@@ -806,18 +793,18 @@ public class ReturnTypesMappingIT {
 
     @Test
     public void time2() throws Exception {
-        ReturnTypesMap1 test = context.newObject(ReturnTypesMap1.class);
+        ReturnTypesMap1 test = env.dataContext().newObject(ReturnTypesMap1.class);
 
         Calendar cal = Calendar.getInstance();
         cal.clear();
         cal.set(2003, Calendar.FEBRUARY, 1, 1, 20, 30);
         Date timeValue = new Time(cal.getTime().getTime());
         test.setTimeColumn(timeValue);
-        context.commitChanges();
+        env.dataContext().commitChanges();
 
         ReturnTypesMap1 testRead =ObjectSelect
                 .query(ReturnTypesMap1.class)
-                .selectOne(context);
+                .selectOne(env.dataContext());
         Date columnValue = testRead.getTimeColumn();
         assertNotNull(columnValue);
         assertEquals(Date.class, columnValue.getClass());
@@ -827,13 +814,13 @@ public class ReturnTypesMappingIT {
     @Test
     public void timestamp() throws Exception {
         String columnName = "TIMESTAMP_COLUMN";
-        ReturnTypesMap1 test = context.newObject(ReturnTypesMap1.class);
+        ReturnTypesMap1 test = env.dataContext().newObject(ReturnTypesMap1.class);
 
         Date timestampValue = Calendar.getInstance().getTime();
         test.setTimestampColumn(timestampValue);
-        context.commitChanges();
+        env.dataContext().commitChanges();
 
-        DataRow testRead = (DataRow) context.performQuery(MappedSelect.query("SelectReturnTypesMap1")).get(0);
+        DataRow testRead = (DataRow) env.dataContext().performQuery(MappedSelect.query("SelectReturnTypesMap1")).get(0);
         Object columnValue = testRead.get(columnName);
         assertNotNull(columnValue);
         assertEquals(Date.class, columnValue.getClass());
@@ -846,15 +833,15 @@ public class ReturnTypesMappingIT {
 
     @Test
     public void timestamp2() throws Exception {
-        ReturnTypesMap1 test = context.newObject(ReturnTypesMap1.class);
+        ReturnTypesMap1 test = env.dataContext().newObject(ReturnTypesMap1.class);
 
         Date timestampValue = Calendar.getInstance().getTime();
         test.setTimestampColumn(timestampValue);
-        context.commitChanges();
+        env.dataContext().commitChanges();
 
         ReturnTypesMap1 testRead = ObjectSelect
                 .query(ReturnTypesMap1.class)
-                .selectFirst(context);
+                .selectFirst(env.dataContext());
         Date columnValue = testRead.getTimestampColumn();
         assertNotNull(columnValue);
         assertEquals(Date.class, columnValue.getClass());
@@ -867,17 +854,17 @@ public class ReturnTypesMappingIT {
     @Test
     public void tinyint() throws Exception {
         String columnName = "TINYINT_COLUMN";
-        ReturnTypesMap1 test = context.newObject(ReturnTypesMap1.class);
+        ReturnTypesMap1 test = env.dataContext().newObject(ReturnTypesMap1.class);
 
         Byte tinyintValue = 89;
         Integer intValue = 89;
         test.setTinyintColumn(tinyintValue);
-        context.commitChanges();
+        env.dataContext().commitChanges();
 
-        DataRow testRead = (DataRow) context.performQuery(MappedSelect.query("SelectReturnTypesMap1")).get(0);
+        DataRow testRead = (DataRow) env.dataContext().performQuery(MappedSelect.query("SelectReturnTypesMap1")).get(0);
         Object columnValue = testRead.get(columnName);
         assertNotNull(columnValue);
-        if(unitDbAdapter.onlyGenericNumberType()) {
+        if(env.getInstance(UnitDbAdapter.class).onlyGenericNumberType()) {
             assertEquals(Integer.class, columnValue.getClass());
         } else {
             assertEquals(Short.class, columnValue.getClass());
@@ -887,15 +874,15 @@ public class ReturnTypesMappingIT {
 
     @Test
     public void tinyint2() throws Exception {
-        ReturnTypesMap1 test = context.newObject(ReturnTypesMap1.class);
+        ReturnTypesMap1 test = env.dataContext().newObject(ReturnTypesMap1.class);
 
         Byte tinyintValue = 89;
         test.setTinyintColumn(tinyintValue);
-        context.commitChanges();
+        env.dataContext().commitChanges();
 
         ReturnTypesMap1 testRead = ObjectSelect
                 .query(ReturnTypesMap1.class)
-                .selectFirst(context);
+                .selectFirst(env.dataContext());
         Byte columnValue = testRead.getTinyintColumn();
         assertNotNull(columnValue);
         assertEquals(Byte.class, columnValue.getClass());
@@ -904,17 +891,17 @@ public class ReturnTypesMappingIT {
 
     @Test
     public void varBinary() throws Exception {
-        if (unitDbAdapter.supportsLobs()) {
+        if (env.getInstance(UnitDbAdapter.class).supportsLobs()) {
             String columnName = "VARBINARY_COLUMN";
-            ReturnTypesMap2 test = context.newObject(ReturnTypesMap2.class);
+            ReturnTypesMap2 test = env.dataContext().newObject(ReturnTypesMap2.class);
 
             byte[] varbinaryValue = {
                     3, 4, 5, -6, 7, 0, 2, 9, 45, 64, 3, 127, -128, -60
             };
             test.setVarbinaryColumn(varbinaryValue);
-            context.commitChanges();
+            env.dataContext().commitChanges();
 
-            DataRow testRead = (DataRow) context.performQuery(MappedSelect.query("SelectReturnTypesMap2")).get(0);
+            DataRow testRead = (DataRow) env.dataContext().performQuery(MappedSelect.query("SelectReturnTypesMap2")).get(0);
             Object columnValue = testRead.get(columnName);
             assertNotNull(columnValue);
             assertEquals(byte[].class, columnValue.getClass());
@@ -924,18 +911,18 @@ public class ReturnTypesMappingIT {
 
     @Test
     public void varBinary2() throws Exception {
-        if (unitDbAdapter.supportsLobs()) {
-            ReturnTypesMap2 test = context.newObject(ReturnTypesMap2.class);
+        if (env.getInstance(UnitDbAdapter.class).supportsLobs()) {
+            ReturnTypesMap2 test = env.dataContext().newObject(ReturnTypesMap2.class);
 
             byte[] varbinaryValue = {
                     3, 4, 5, -6, 7, 0, 2, 9, 45, 64, 3, 127, -128, -60
             };
             test.setVarbinaryColumn(varbinaryValue);
-            context.commitChanges();
+            env.dataContext().commitChanges();
 
             ReturnTypesMap2 testRead = ObjectSelect
                     .query(ReturnTypesMap2.class)
-                    .selectFirst(context);
+                    .selectFirst(env.dataContext());
             byte[] columnValue = testRead.getVarbinaryColumn();
             assertNotNull(columnValue);
             assertEquals(byte[].class, columnValue.getClass());
@@ -946,13 +933,13 @@ public class ReturnTypesMappingIT {
     @Test
     public void varChar() throws Exception {
         String columnName = "VARCHAR_COLUMN";
-        ReturnTypesMap1 test = context.newObject(ReturnTypesMap1.class);
+        ReturnTypesMap1 test = env.dataContext().newObject(ReturnTypesMap1.class);
 
         String varcharValue = "VARChar string for tests!";
         test.setVarcharColumn(varcharValue);
-        context.commitChanges();
+        env.dataContext().commitChanges();
 
-        DataRow testRead = (DataRow) context.performQuery(MappedSelect.query("SelectReturnTypesMap1")).get(0);
+        DataRow testRead = (DataRow) env.dataContext().performQuery(MappedSelect.query("SelectReturnTypesMap1")).get(0);
         Object columnValue = testRead.get(columnName);
         assertNotNull(columnValue);
         assertEquals(String.class, columnValue.getClass());
@@ -962,13 +949,13 @@ public class ReturnTypesMappingIT {
     @Test
     public void nVarChar() throws Exception {
         String columnName = "NVARCHAR_COLUMN";
-        ReturnTypesMap1 test = context.newObject(ReturnTypesMap1.class);
+        ReturnTypesMap1 test = env.dataContext().newObject(ReturnTypesMap1.class);
 
         String varcharValue = "ی متوازن، نیازی ندارد که ب";
         test.setNvarcharColumn(varcharValue);
-        context.commitChanges();
+        env.dataContext().commitChanges();
 
-        DataRow testRead = (DataRow) context.performQuery(MappedSelect.query("SelectReturnTypesMap1")).get(0);
+        DataRow testRead = (DataRow) env.dataContext().performQuery(MappedSelect.query("SelectReturnTypesMap1")).get(0);
         Object columnValue = testRead.get(columnName);
         assertNotNull(columnValue);
         assertEquals(String.class, columnValue.getClass());
@@ -977,15 +964,15 @@ public class ReturnTypesMappingIT {
 
     @Test
     public void varChar2() throws Exception {
-        ReturnTypesMap1 test = context.newObject(ReturnTypesMap1.class);
+        ReturnTypesMap1 test = env.dataContext().newObject(ReturnTypesMap1.class);
 
         String varcharValue = "VARChar string for tests!";
         test.setVarcharColumn(varcharValue);
-        context.commitChanges();
+        env.dataContext().commitChanges();
 
         ReturnTypesMap1 testRead = ObjectSelect
                 .query(ReturnTypesMap1.class)
-                .selectFirst(context);
+                .selectFirst(env.dataContext());
         String columnValue = testRead.getVarcharColumn();
         assertNotNull(columnValue);
         assertEquals(String.class, columnValue.getClass());

@@ -35,8 +35,6 @@ import org.apache.cayenne.unit.di.runtime.CayenneProjects;
 import org.apache.cayenne.unit.di.runtime.CayenneTestsEnv;
 import org.junit.jupiter.api.extension.RegisterExtension;
 import org.junit.jupiter.api.Test;
-import org.junit.jupiter.api.BeforeEach;
-
 import java.util.ArrayList;
 import java.util.Collection;
 
@@ -52,47 +50,40 @@ public class DeleteRulesIT {
     @RegisterExtension
     static final CayenneTestsEnv env = CayenneTestsEnv.forProject(CayenneProjects.RELATIONSHIPS_DELETE_RULES_PROJECT);
 
-    private DataContext context;
-
-    @BeforeEach
-    public void setUp() {
-        context = env.dataContext();
-    }
-
     @Test
     public void denyToOne() {
 
-        DeleteRuleTest1 test1 = context.newObject(DeleteRuleTest1.class);
-        DeleteRuleTest2 test2 = context.newObject(DeleteRuleTest2.class);
+        DeleteRuleTest1 test1 = env.dataContext().newObject(DeleteRuleTest1.class);
+        DeleteRuleTest2 test2 = env.dataContext().newObject(DeleteRuleTest2.class);
         test1.setTest2(test2);
-        context.commitChanges();
+        env.dataContext().commitChanges();
 
-        assertThrows(Exception.class, () -> context.deleteObjects(test1));
-        context.commitChanges();
+        assertThrows(Exception.class, () -> env.dataContext().deleteObjects(test1));
+        env.dataContext().commitChanges();
 
     }
 
     @Test
     public void noActionToOne() {
-        DeleteRuleTest2 test2 = context.newObject(DeleteRuleTest2.class);
-        DeleteRuleTest3 test3 = context.newObject(DeleteRuleTest3.class);
+        DeleteRuleTest2 test2 = env.dataContext().newObject(DeleteRuleTest2.class);
+        DeleteRuleTest3 test3 = env.dataContext().newObject(DeleteRuleTest3.class);
         test3.setToDeleteRuleTest2(test2);
-        context.commitChanges();
+        env.dataContext().commitChanges();
 
         // must go on without exceptions...
-        context.deleteObjects(test3);
-        context.commitChanges();
+        env.dataContext().deleteObjects(test3);
+        env.dataContext().commitChanges();
     }
 
     @Test
     public void noActionToMany() {
-        DeleteRuleTest2 test2 = context.newObject(DeleteRuleTest2.class);
-        DeleteRuleTest3 test3 = context.newObject(DeleteRuleTest3.class);
+        DeleteRuleTest2 test2 = env.dataContext().newObject(DeleteRuleTest2.class);
+        DeleteRuleTest3 test3 = env.dataContext().newObject(DeleteRuleTest3.class);
         test3.setToDeleteRuleTest2(test2);
-        context.commitChanges();
+        env.dataContext().commitChanges();
 
         // must go on without exceptions...
-        context.deleteObjects(test2);
+        env.dataContext().deleteObjects(test2);
 
         // don't commit, since this will cause a constraint exception
     }
@@ -103,21 +94,21 @@ public class DeleteRulesIT {
         int oldRule = changeDeleteRule(DeleteRule.NO_ACTION);
 
         try {
-            DeleteRuleFlatA a = context.newObject(DeleteRuleFlatA.class);
-            DeleteRuleFlatB b = context.newObject(DeleteRuleFlatB.class);
+            DeleteRuleFlatA a = env.dataContext().newObject(DeleteRuleFlatA.class);
+            DeleteRuleFlatB b = env.dataContext().newObject(DeleteRuleFlatB.class);
 
             a.addToFlatB(b);
-            context.commitChanges();
+            env.dataContext().commitChanges();
 
             // must go on without exceptions...
-            context.deleteObjects(a);
+            env.dataContext().deleteObjects(a);
 
             // assert that join is deleted
             assertJoinDeleted(a, b);
             assertEquals(PersistenceState.DELETED, a.getPersistenceState());
             assertEquals(PersistenceState.COMMITTED, b.getPersistenceState());
             assertTrue(b.getUntitledRel().contains(a));
-            context.commitChanges();
+            env.dataContext().commitChanges();
 
         } finally {
             changeDeleteRule(oldRule);
@@ -131,20 +122,20 @@ public class DeleteRulesIT {
         ObjRelationship reverse = unsetReverse();
 
         try {
-            DeleteRuleFlatA a = context.newObject(DeleteRuleFlatA.class);
-            DeleteRuleFlatB b = context.newObject(DeleteRuleFlatB.class);
+            DeleteRuleFlatA a = env.dataContext().newObject(DeleteRuleFlatA.class);
+            DeleteRuleFlatB b = env.dataContext().newObject(DeleteRuleFlatB.class);
 
             a.addToFlatB(b);
-            context.commitChanges();
+            env.dataContext().commitChanges();
 
             // must go on without exceptions...
-            context.deleteObjects(a);
+            env.dataContext().deleteObjects(a);
 
             // assert that join is deleted
             assertJoinDeleted(a, b);
             assertEquals(PersistenceState.DELETED, a.getPersistenceState());
             assertEquals(PersistenceState.COMMITTED, b.getPersistenceState());
-            context.commitChanges();
+            env.dataContext().commitChanges();
         } finally {
             changeDeleteRule(oldRule);
             restoreReverse(reverse);
@@ -157,17 +148,17 @@ public class DeleteRulesIT {
         int oldRule = changeDeleteRule(DeleteRule.CASCADE);
 
         try {
-            DeleteRuleFlatA a = context.newObject(DeleteRuleFlatA.class);
-            DeleteRuleFlatB b = context.newObject(DeleteRuleFlatB.class);
+            DeleteRuleFlatA a = env.dataContext().newObject(DeleteRuleFlatA.class);
+            DeleteRuleFlatB b = env.dataContext().newObject(DeleteRuleFlatB.class);
             a.addToFlatB(b);
-            context.commitChanges();
+            env.dataContext().commitChanges();
 
             // must go on without exceptions...
-            context.deleteObjects(a);
+            env.dataContext().deleteObjects(a);
 
             // assert that join is deleted
             assertJoinDeleted(a, b);
-            context.commitChanges();
+            env.dataContext().commitChanges();
 
             assertEquals(PersistenceState.TRANSIENT, a.getPersistenceState());
             assertEquals(PersistenceState.TRANSIENT, b.getPersistenceState());
@@ -183,17 +174,17 @@ public class DeleteRulesIT {
         ObjRelationship reverse = unsetReverse();
 
         try {
-            DeleteRuleFlatA a = context.newObject(DeleteRuleFlatA.class);
-            DeleteRuleFlatB b = context.newObject(DeleteRuleFlatB.class);
+            DeleteRuleFlatA a = env.dataContext().newObject(DeleteRuleFlatA.class);
+            DeleteRuleFlatB b = env.dataContext().newObject(DeleteRuleFlatB.class);
             a.addToFlatB(b);
-            context.commitChanges();
+            env.dataContext().commitChanges();
 
             // must go on without exceptions...
-            context.deleteObjects(a);
+            env.dataContext().deleteObjects(a);
 
             // assert that join is deleted
             assertJoinDeleted(a, b);
-            context.commitChanges();
+            env.dataContext().commitChanges();
             assertEquals(PersistenceState.TRANSIENT, a.getPersistenceState());
             assertEquals(PersistenceState.TRANSIENT, b.getPersistenceState());
         } finally {
@@ -208,20 +199,20 @@ public class DeleteRulesIT {
         int oldRule = changeDeleteRule(DeleteRule.NULLIFY);
 
         try {
-            DeleteRuleFlatA a = context.newObject(DeleteRuleFlatA.class);
-            DeleteRuleFlatB b = context.newObject(DeleteRuleFlatB.class);
+            DeleteRuleFlatA a = env.dataContext().newObject(DeleteRuleFlatA.class);
+            DeleteRuleFlatB b = env.dataContext().newObject(DeleteRuleFlatB.class);
             a.addToFlatB(b);
-            context.commitChanges();
+            env.dataContext().commitChanges();
 
             // must go on without exceptions...
-            context.deleteObjects(a);
+            env.dataContext().deleteObjects(a);
 
             // assert that join is deleted
             assertJoinDeleted(a, b);
             assertEquals(PersistenceState.DELETED, a.getPersistenceState());
             assertEquals(PersistenceState.MODIFIED, b.getPersistenceState());
             assertFalse(b.getUntitledRel().contains(a));
-            context.commitChanges();
+            env.dataContext().commitChanges();
         } finally {
             changeDeleteRule(oldRule);
         }
@@ -234,19 +225,19 @@ public class DeleteRulesIT {
         ObjRelationship reverse = unsetReverse();
 
         try {
-            DeleteRuleFlatA a = context.newObject(DeleteRuleFlatA.class);
-            DeleteRuleFlatB b = context.newObject(DeleteRuleFlatB.class);
+            DeleteRuleFlatA a = env.dataContext().newObject(DeleteRuleFlatA.class);
+            DeleteRuleFlatB b = env.dataContext().newObject(DeleteRuleFlatB.class);
             a.addToFlatB(b);
-            context.commitChanges();
+            env.dataContext().commitChanges();
 
             // must go on without exceptions...
-            context.deleteObjects(a);
+            env.dataContext().deleteObjects(a);
 
             // assert that join is deleted
             assertJoinDeleted(a, b);
             assertEquals(PersistenceState.DELETED, a.getPersistenceState());
             assertEquals(PersistenceState.COMMITTED, b.getPersistenceState());
-            context.commitChanges();
+            env.dataContext().commitChanges();
         } finally {
             changeDeleteRule(oldRule);
             restoreReverse(reverse);
@@ -259,12 +250,12 @@ public class DeleteRulesIT {
         int oldRule = changeDeleteRule(DeleteRule.DENY);
 
         try {
-            DeleteRuleFlatA a = context.newObject(DeleteRuleFlatA.class);
-            DeleteRuleFlatB b = context.newObject(DeleteRuleFlatB.class);
+            DeleteRuleFlatA a = env.dataContext().newObject(DeleteRuleFlatA.class);
+            DeleteRuleFlatB b = env.dataContext().newObject(DeleteRuleFlatB.class);
             a.addToFlatB(b);
-            context.commitChanges();
+            env.dataContext().commitChanges();
 
-            assertThrows(DeleteDenyException.class, () -> context.deleteObjects(a));
+            assertThrows(DeleteDenyException.class, () -> env.dataContext().deleteObjects(a));
             assertJoinNotDeleted(a, b);
         } finally {
             changeDeleteRule(oldRule);
@@ -278,12 +269,12 @@ public class DeleteRulesIT {
         ObjRelationship reverse = unsetReverse();
 
         try {
-            DeleteRuleFlatA a = context.newObject(DeleteRuleFlatA.class);
-            DeleteRuleFlatB b = context.newObject(DeleteRuleFlatB.class);
+            DeleteRuleFlatA a = env.dataContext().newObject(DeleteRuleFlatA.class);
+            DeleteRuleFlatB b = env.dataContext().newObject(DeleteRuleFlatB.class);
             a.addToFlatB(b);
-            context.commitChanges();
+            env.dataContext().commitChanges();
 
-            assertThrows(DeleteDenyException.class, () -> context.deleteObjects(a));
+            assertThrows(DeleteDenyException.class, () -> env.dataContext().deleteObjects(a));
             assertJoinNotDeleted(a, b);
         } finally {
             changeDeleteRule(oldRule);
@@ -292,7 +283,7 @@ public class DeleteRulesIT {
     }
 
     private int changeDeleteRule(int deleteRule) {
-        ObjEntity entity = context.getEntityResolver().getObjEntity(DeleteRuleFlatA.class);
+        ObjEntity entity = env.dataContext().getEntityResolver().getObjEntity(DeleteRuleFlatA.class);
 
         ObjRelationship relationship = entity.getRelationship(DeleteRuleFlatA.FLAT_B.getName());
         int oldRule = relationship.getDeleteRule();
@@ -301,32 +292,32 @@ public class DeleteRulesIT {
     }
 
     private ObjRelationship unsetReverse() {
-        ObjEntity entity = context.getEntityResolver().getObjEntity(DeleteRuleFlatA.class);
+        ObjEntity entity = env.dataContext().getEntityResolver().getObjEntity(DeleteRuleFlatA.class);
 
         ObjRelationship relationship = entity.getRelationship(DeleteRuleFlatA.FLAT_B.getName());
         ObjRelationship reverse = relationship.getReverseRelationship();
 
         if (reverse != null) {
             reverse.getSourceEntity().removeRelationship(reverse.getName());
-            context.getEntityResolver().getClassDescriptorMap().removeDescriptor("DeleteRuleFlatA");
-            context.getEntityResolver().getClassDescriptorMap().removeDescriptor("DeleteRuleFlatB");
+            env.dataContext().getEntityResolver().getClassDescriptorMap().removeDescriptor("DeleteRuleFlatA");
+            env.dataContext().getEntityResolver().getClassDescriptorMap().removeDescriptor("DeleteRuleFlatB");
         }
 
         return reverse;
     }
 
     private void restoreReverse(ObjRelationship reverse) {
-        ObjEntity entity = context.getEntityResolver().getObjEntity(DeleteRuleFlatA.class);
+        ObjEntity entity = env.dataContext().getEntityResolver().getObjEntity(DeleteRuleFlatA.class);
 
         ObjRelationship relationship = entity.getRelationship(DeleteRuleFlatA.FLAT_B.getName());
         relationship.getTargetEntity().addRelationship(reverse);
-        context.getEntityResolver().getClassDescriptorMap().removeDescriptor("DeleteRuleFlatA");
-        context.getEntityResolver().getClassDescriptorMap().removeDescriptor("DeleteRuleFlatB");
+        env.dataContext().getEntityResolver().getClassDescriptorMap().removeDescriptor("DeleteRuleFlatA");
+        env.dataContext().getEntityResolver().getClassDescriptorMap().removeDescriptor("DeleteRuleFlatB");
     }
 
     private void assertJoinDeleted(DeleteRuleFlatA a, DeleteRuleFlatB b) {
 
-        ObjectDiff changes = context.getObjectStore().changes.get(a.getObjectId());
+        ObjectDiff changes = env.dataContext().getObjectStore().changes.get(a.getObjectId());
 
         assertNotNull(changes);
         Collection<NodeDiff> diffs = new ArrayList<>();
@@ -347,7 +338,7 @@ public class DeleteRulesIT {
     }
 
     private void assertJoinNotDeleted(DeleteRuleFlatA a, DeleteRuleFlatB b) {
-        ObjectDiff changes = context.getObjectStore().changes.get(a.getObjectId());
+        ObjectDiff changes = env.dataContext().getObjectStore().changes.get(a.getObjectId());
 
         if (changes != null) {
             Collection<NodeDiff> diffs = new ArrayList<>();

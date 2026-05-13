@@ -27,7 +27,6 @@ import org.apache.cayenne.unit.UnitDbAdapter;
 import org.apache.cayenne.unit.di.runtime.CayenneProjects;
 import org.apache.cayenne.unit.di.runtime.CayenneTestsEnv;
 import org.apache.cayenne.value.Json;
-import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.RegisterExtension;
 
@@ -38,15 +37,6 @@ public class JsonTypeIT {
 
     @RegisterExtension
     static final CayenneTestsEnv env = CayenneTestsEnv.forProject(CayenneProjects.JSON_PROJECT);
-
-    private DataContext context;
-    private UnitDbAdapter unitDbAdapter;
-
-    @BeforeEach
-    public void setUp() {
-        context = env.dataContext();
-        unitDbAdapter = env.getInstance(UnitDbAdapter.class);
-    }
 
     @Test
     public void jsonBasic() {
@@ -662,26 +652,26 @@ public class JsonTypeIT {
 
     private void testJson(String jsonString) {
         testJsonVarchar(jsonString);
-        if (unitDbAdapter.supportsJsonType()) {
+        if (env.getInstance(UnitDbAdapter.class).supportsJsonType()) {
             testJsonOther(jsonString);
         }
     }
 
     private void testJsonOther(String jsonString) {
-        JsonOther jsonInsert = context.newObject(JsonOther.class);
+        JsonOther jsonInsert = env.dataContext().newObject(JsonOther.class);
         jsonInsert.setData(new Json(jsonString));
-        context.commitChanges();
+        env.dataContext().commitChanges();
 
-        JsonOther jsonSelect = context.selectOne(SelectById.query(JsonOther.class, jsonInsert.getObjectId()));
+        JsonOther jsonSelect = env.dataContext().selectOne(SelectById.query(JsonOther.class, jsonInsert.getObjectId()));
         assertEquals(jsonInsert.getData(), jsonSelect.getData());
     }
 
     private void testJsonVarchar(String jsonString) {
-        JsonVarchar jsonInsert = context.newObject(JsonVarchar.class);
+        JsonVarchar jsonInsert = env.dataContext().newObject(JsonVarchar.class);
         jsonInsert.setData(new Json(jsonString));
-        context.commitChanges();
+        env.dataContext().commitChanges();
 
-        JsonVarchar jsonSelect = context.selectOne(SelectById.query(JsonVarchar.class, jsonInsert.getObjectId()));
+        JsonVarchar jsonSelect = env.dataContext().selectOne(SelectById.query(JsonVarchar.class, jsonInsert.getObjectId()));
         assertEquals(jsonInsert.getData(), jsonSelect.getData());
     }
 }

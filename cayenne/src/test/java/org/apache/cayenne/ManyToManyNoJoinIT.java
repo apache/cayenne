@@ -22,7 +22,6 @@ import org.apache.cayenne.testdo.relationships_activity.Activity;
 import org.apache.cayenne.testdo.relationships_activity.ActivityResult;
 import org.apache.cayenne.unit.di.runtime.CayenneProjects;
 import org.apache.cayenne.unit.di.runtime.CayenneTestsEnv;
-import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.RegisterExtension;
 
@@ -33,26 +32,19 @@ public class ManyToManyNoJoinIT {
     @RegisterExtension
     static final CayenneTestsEnv env = CayenneTestsEnv.forProject(CayenneProjects.RELATIONSHIPS_ACTIVITY_PROJECT);
 
-    private ObjectContext context;
-
-    @BeforeEach
-    public void setUp() {
-        context = env.context();
-    }
-
     @Test
     public void validateForSave1() throws Exception {
-        ActivityResult result = context.newObject(ActivityResult.class);
+        ActivityResult result = env.context().newObject(ActivityResult.class);
         result.setAppointDate(new Date(System.currentTimeMillis()));
         result.setAppointNo(1);
         result.setField("xx");
 
-        Activity activity = context.newObject(Activity.class);
+        Activity activity = env.context().newObject(Activity.class);
         activity.setAppointmentDate(result.getAppointDate());
         activity.setAppointmentNo(result.getAppointNo());
 
         activity.addToResults(result);
-        context.commitChanges();
+        env.context().commitChanges();
     }
 
 }

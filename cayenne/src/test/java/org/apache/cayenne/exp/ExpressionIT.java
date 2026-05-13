@@ -33,7 +33,6 @@ import org.apache.cayenne.testdo.testmap.Painting;
 import org.apache.cayenne.unit.UnitDbAdapter;
 import org.apache.cayenne.unit.di.runtime.CayenneProjects;
 import org.apache.cayenne.unit.di.runtime.CayenneTestsEnv;
-import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.RegisterExtension;
 
@@ -53,33 +52,22 @@ public class ExpressionIT {
 	@RegisterExtension
 	static final CayenneTestsEnv env = CayenneTestsEnv.forProject(CayenneProjects.TESTMAP_PROJECT);
 
-	private ObjectContext context;
-	private CayenneRuntime runtime;
-	private UnitDbAdapter adapter;
-
-	@BeforeEach
-	public void setUp() {
-		context = env.context();
-		runtime = env.runtime();
-		adapter = env.getInstance(UnitDbAdapter.class);
-	}
-
     @Test
 	public void match() {
 
-		assertTrue(context instanceof DataContext);
+		assertTrue(env.context() instanceof DataContext);
 
-		DataContext context2 = (DataContext) runtime.newContext();
+		DataContext context2 = (DataContext) env.runtime().newContext();
 
-		Artist a1 = context.newObject(Artist.class);
+		Artist a1 = env.context().newObject(Artist.class);
 		a1.setArtistName("Equals");
-		Painting p1 = context.newObject(Painting.class);
+		Painting p1 = env.context().newObject(Painting.class);
 		p1.setToArtist(a1);
 		p1.setPaintingTitle("painting1");
 
-		context.commitChanges();
+		env.context().commitChanges();
 
-		assertNotSame(context2, context);
+		assertNotSame(context2, env.context());
 
 		List<Painting> objects = ObjectSelect.query(Painting.class, Painting.TO_ARTIST.eq(a1)).select(context2);
 		assertEquals(1, objects.size());
@@ -93,10 +81,10 @@ public class ExpressionIT {
 
 		assertTrue(Painting.TO_ARTIST.eq(a1).match(objects.get(0)));
 
-		Artist a2 = context.newObject(Artist.class);
+		Artist a2 = env.context().newObject(Artist.class);
 		a2.setArtistName("Equals");
 
-		context.commitChanges();
+		env.context().commitChanges();
 
 		// 2 different objects in different contexts
 		assertFalse(Painting.TO_ARTIST.eq(a2).match(objects.get(0)));
@@ -105,15 +93,15 @@ public class ExpressionIT {
     @Test
 	public void first() {
 		List<Painting> paintingList = new ArrayList<>();
-		Painting p1 = context.newObject(Painting.class);
+		Painting p1 = env.context().newObject(Painting.class);
 		p1.setPaintingTitle("x1");
 		paintingList.add(p1);
 
-		Painting p2 = context.newObject(Painting.class);
+		Painting p2 = env.context().newObject(Painting.class);
 		p2.setPaintingTitle("x2");
 		paintingList.add(p2);
 
-		Painting p3 = context.newObject(Painting.class);
+		Painting p3 = env.context().newObject(Painting.class);
 		p3.setPaintingTitle("x3");
 		paintingList.add(p3);
 
@@ -129,15 +117,15 @@ public class ExpressionIT {
 
 	@Test
 	public void lessThanNull() {
-		Artist a1 = context.newObject(Artist.class);
+		Artist a1 = env.context().newObject(Artist.class);
 		a1.setArtistName("Picasso");
-		context.commitChanges();
+		env.context().commitChanges();
 
         List<Artist> artists;
 		try {
-            artists = ObjectSelect.query(Artist.class, Artist.ARTIST_NAME.lt((String) null)).select(context);
+            artists = ObjectSelect.query(Artist.class, Artist.ARTIST_NAME.lt((String) null)).select(env.context());
         } catch (CayenneRuntimeException ex) {
-		    if(adapter.supportsNullComparison()) {
+		    if(env.getInstance(UnitDbAdapter.class).supportsNullComparison()) {
 		        throw ex;
             } else {
 		        return;
@@ -149,15 +137,15 @@ public class ExpressionIT {
 
 	@Test
 	public void inNull() {
-		Artist a1 = context.newObject(Artist.class);
+		Artist a1 = env.context().newObject(Artist.class);
 		a1.setArtistName("Picasso");
-		context.commitChanges();
+		env.context().commitChanges();
 
         List<Artist> artists;
         try {
-            artists = ObjectSelect.query(Artist.class, Artist.ARTIST_NAME.in("Picasso", (String) null)).select(context);
+            artists = ObjectSelect.query(Artist.class, Artist.ARTIST_NAME.in("Picasso", (String) null)).select(env.context());
         } catch (CayenneRuntimeException ex) {
-            if(adapter.supportsNullComparison()) {
+            if(env.getInstance(UnitDbAdapter.class).supportsNullComparison()) {
                 throw ex;
             } else {
                 return;
@@ -168,33 +156,33 @@ public class ExpressionIT {
 
 	@Test
 	public void inEmpty() {
-		Artist a1 = context.newObject(Artist.class);
+		Artist a1 = env.context().newObject(Artist.class);
 		a1.setArtistName("Picasso");
-		context.commitChanges();
+		env.context().commitChanges();
 
-		List<Artist> artists = ObjectSelect.query(Artist.class, Artist.ARTIST_NAME.in(List.of())).select(context);
+		List<Artist> artists = ObjectSelect.query(Artist.class, Artist.ARTIST_NAME.in(List.of())).select(env.context());
 		assertTrue(artists.isEmpty());
 	}
 
 	@Test
 	public void explicitInEmpty() {
-		Artist a1 = context.newObject(Artist.class);
+		Artist a1 = env.context().newObject(Artist.class);
 		a1.setArtistName("Picasso");
-		context.commitChanges();
+		env.context().commitChanges();
 
 		ASTIn in = new ASTIn((SimpleNode) Artist.ARTIST_NAME.getExpression(), new ASTList(List.of()));
-		List<Artist> artists = ObjectSelect.query(Artist.class, in).select(context);
+		List<Artist> artists = ObjectSelect.query(Artist.class, in).select(env.context());
 		assertTrue(artists.isEmpty());
 	}
 
 	@Test
 	public void explicitNotInEmpty() {
-		Artist a1 = context.newObject(Artist.class);
+		Artist a1 = env.context().newObject(Artist.class);
 		a1.setArtistName("Picasso");
-		context.commitChanges();
+		env.context().commitChanges();
 
 		ASTNotIn notIn = new ASTNotIn((SimpleNode) Artist.ARTIST_NAME.getExpression(), new ASTList(List.of()));
-		List<Artist> artists = ObjectSelect.query(Artist.class, notIn).select(context);
+		List<Artist> artists = ObjectSelect.query(Artist.class, notIn).select(env.context());
 		assertEquals(1, artists.size());
 		assertEquals("Picasso", artists.get(0).getArtistName());
 	}
@@ -206,11 +194,11 @@ public class ExpressionIT {
 	 */
 	@Test
 	public void selectWithScalarAsWhereCondition() {
-		if (adapter.supportScalarAsExpression()){
+		if (env.getInstance(UnitDbAdapter.class).supportScalarAsExpression()){
 			return;
 		}
 		ObjectSelect<Artist> objectSelect = ObjectSelect.query(Artist.class).where(ExpressionFactory.wrapScalarValue("abc"));
-		CayenneRuntimeException exception = assertThrows(CayenneRuntimeException.class, () -> objectSelect.select(context));
+		CayenneRuntimeException exception = assertThrows(CayenneRuntimeException.class, () -> objectSelect.select(env.context()));
 		assertTrue(exception.getMessage().contains("Query exception."));
 	}
 

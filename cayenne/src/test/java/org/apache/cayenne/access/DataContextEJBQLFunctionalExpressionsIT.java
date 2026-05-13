@@ -28,7 +28,6 @@ import org.apache.cayenne.testdo.testmap.Painting;
 import org.apache.cayenne.unit.UnitDbAdapter;
 import org.apache.cayenne.unit.di.runtime.CayenneProjects;
 import org.apache.cayenne.unit.di.runtime.CayenneTestsEnv;
-import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.RegisterExtension;
 
@@ -43,32 +42,23 @@ public class DataContextEJBQLFunctionalExpressionsIT {
     @RegisterExtension
     static final CayenneTestsEnv env = CayenneTestsEnv.forProject(CayenneProjects.TESTMAP_PROJECT);
 
-    private ObjectContext context;
-    private UnitDbAdapter accessStackAdapter;
-
-    @BeforeEach
-    public void setUp() {
-        context = env.context();
-        accessStackAdapter = env.getInstance(UnitDbAdapter.class);
-    }
-
     @Test
     public void sIZE() {
 
-        Artist a1 = context.newObject(Artist.class);
+        Artist a1 = env.context().newObject(Artist.class);
         a1.setArtistName("a1");
 
-        Artist a2 = context.newObject(Artist.class);
+        Artist a2 = env.context().newObject(Artist.class);
         a2.setArtistName("a2");
 
-        Painting p12 = context.newObject(Painting.class);
+        Painting p12 = env.context().newObject(Painting.class);
         p12.setPaintingTitle("p12");
         a2.addToPaintingArray(p12);
-        Painting p22 = context.newObject(Painting.class);
+        Painting p22 = env.context().newObject(Painting.class);
         p22.setPaintingTitle("p22");
         a2.addToPaintingArray(p22);
 
-        context.commitChanges();
+        env.context().commitChanges();
 
         // this fails:
         // EJBQLQuery query = new EJBQLQuery(
@@ -87,16 +77,16 @@ public class DataContextEJBQLFunctionalExpressionsIT {
     @Test
     public void cONCAT() {
 
-        Painting a1 = context.newObject(Painting.class);
+        Painting a1 = env.context().newObject(Painting.class);
         a1.setPaintingTitle("a1");
 
-        Painting a2 = context.newObject(Painting.class);
+        Painting a2 = env.context().newObject(Painting.class);
         a2.setPaintingTitle("a2");
-        context.commitChanges();
+        env.context().commitChanges();
 
         EJBQLQuery query = new EJBQLQuery(
                 "SELECT a FROM Painting a WHERE CONCAT(a.paintingTitle, a.paintingTitle) = 'a1a1'");
-        List<?> objects = context.performQuery(query);
+        List<?> objects = env.context().performQuery(query);
         assertEquals(1, objects.size());
         assertTrue(objects.contains(a1));
     }
@@ -104,16 +94,16 @@ public class DataContextEJBQLFunctionalExpressionsIT {
     @Test
     public void sUBSTRING() {
 
-        Artist a1 = context.newObject(Artist.class);
+        Artist a1 = env.context().newObject(Artist.class);
         a1.setArtistName("12345678");
 
-        Artist a2 = context.newObject(Artist.class);
+        Artist a2 = env.context().newObject(Artist.class);
         a2.setArtistName("abcdefg");
-        context.commitChanges();
+        env.context().commitChanges();
 
         EJBQLQuery query = new EJBQLQuery(
                 "SELECT a FROM Artist a WHERE SUBSTRING(a.artistName, 2, 3) = 'bcd'");
-        List<?> objects = context.performQuery(query);
+        List<?> objects = env.context().performQuery(query);
         assertEquals(1, objects.size());
         assertTrue(objects.contains(a2));
     }
@@ -121,20 +111,20 @@ public class DataContextEJBQLFunctionalExpressionsIT {
     @Test
     public void lOWER() {
 
-        Artist a1 = context.newObject(Artist.class);
+        Artist a1 = env.context().newObject(Artist.class);
         a1.setArtistName("ABCDEFG");
 
-        Artist a2 = context.newObject(Artist.class);
+        Artist a2 = env.context().newObject(Artist.class);
         a2.setArtistName("abcdefg");
-        context.commitChanges();
+        env.context().commitChanges();
 
-        Artist a3 = context.newObject(Artist.class);
+        Artist a3 = env.context().newObject(Artist.class);
         a3.setArtistName("Xabcdefg");
-        context.commitChanges();
+        env.context().commitChanges();
 
         EJBQLQuery query = new EJBQLQuery(
                 "SELECT a FROM Artist a WHERE LOWER(a.artistName) = 'abcdefg'");
-        List<?> objects = context.performQuery(query);
+        List<?> objects = env.context().performQuery(query);
         assertEquals(2, objects.size());
         assertTrue(objects.contains(a1));
         assertTrue(objects.contains(a2));
@@ -143,20 +133,20 @@ public class DataContextEJBQLFunctionalExpressionsIT {
     @Test
     public void uPPER() {
 
-        Artist a1 = context.newObject(Artist.class);
+        Artist a1 = env.context().newObject(Artist.class);
         a1.setArtistName("ABCDEFG");
 
-        Artist a2 = context.newObject(Artist.class);
+        Artist a2 = env.context().newObject(Artist.class);
         a2.setArtistName("abcdefg");
-        context.commitChanges();
+        env.context().commitChanges();
 
-        Artist a3 = context.newObject(Artist.class);
+        Artist a3 = env.context().newObject(Artist.class);
         a3.setArtistName("Xabcdefg");
-        context.commitChanges();
+        env.context().commitChanges();
 
         EJBQLQuery query = new EJBQLQuery(
                 "SELECT a FROM Artist a WHERE UPPER(a.artistName) = UPPER('abcdefg')");
-        List<?> objects = context.performQuery(query);
+        List<?> objects = env.context().performQuery(query);
         assertEquals(2, objects.size());
         assertTrue(objects.contains(a1));
         assertTrue(objects.contains(a2));
@@ -165,19 +155,19 @@ public class DataContextEJBQLFunctionalExpressionsIT {
     @Test
     public void lENGTH() {
 
-        Artist a1 = context.newObject(Artist.class);
+        Artist a1 = env.context().newObject(Artist.class);
         a1.setArtistName("1234567");
 
-        Artist a2 = context.newObject(Artist.class);
+        Artist a2 = env.context().newObject(Artist.class);
         a2.setArtistName("1234567890");
 
-        Artist a3 = context.newObject(Artist.class);
+        Artist a3 = env.context().newObject(Artist.class);
         a3.setArtistName("1234567890-=");
-        context.commitChanges();
+        env.context().commitChanges();
 
         EJBQLQuery query = new EJBQLQuery(
                 "SELECT a FROM Artist a WHERE LENGTH(a.artistName) > 7");
-        List<?> objects = context.performQuery(query);
+        List<?> objects = env.context().performQuery(query);
         assertEquals(2, objects.size());
         assertTrue(objects.contains(a3));
         assertTrue(objects.contains(a2));
@@ -186,16 +176,16 @@ public class DataContextEJBQLFunctionalExpressionsIT {
     @Test
     public void lOCATE() {
 
-        Artist a1 = context.newObject(Artist.class);
+        Artist a1 = env.context().newObject(Artist.class);
         a1.setArtistName("___A___");
 
-        Artist a2 = context.newObject(Artist.class);
+        Artist a2 = env.context().newObject(Artist.class);
         a2.setArtistName("_A_____");
-        context.commitChanges();
+        env.context().commitChanges();
 
         EJBQLQuery query = new EJBQLQuery(
                 "SELECT a FROM Artist a WHERE LOCATE('A', a.artistName) = 2");
-        List<?> objects = context.performQuery(query);
+        List<?> objects = env.context().performQuery(query);
         assertEquals(1, objects.size());
         assertTrue(objects.contains(a2));
     }
@@ -211,34 +201,34 @@ public class DataContextEJBQLFunctionalExpressionsIT {
         inserts.addQuery(new SQLTemplate(
                 Artist.class,
                 "INSERT INTO ARTIST (ARTIST_ID,ARTIST_NAME) VALUES(2, 'A  ')"));
-        context.performGenericQuery(inserts);
+        env.context().performGenericQuery(inserts);
 
-        Artist a1 = Cayenne.objectForPK(context, Artist.class, 1);
-        Artist a2 = Cayenne.objectForPK(context, Artist.class, 2);
+        Artist a1 = Cayenne.objectForPK(env.context(), Artist.class, 1);
+        Artist a2 = Cayenne.objectForPK(env.context(), Artist.class, 2);
 
         EJBQLQuery query = new EJBQLQuery(
                 "SELECT a FROM Artist a WHERE TRIM(a.artistName) = 'A'");
-        List<?> objects = context.performQuery(query);
+        List<?> objects = env.context().performQuery(query);
         assertEquals(2, objects.size());
         assertTrue(objects.contains(a1));
         assertTrue(objects.contains(a2));
 
         query = new EJBQLQuery(
                 "SELECT a FROM Artist a WHERE TRIM(LEADING FROM a.artistName) = 'A'");
-        objects = context.performQuery(query);
+        objects = env.context().performQuery(query);
         // this is fuzzy cause some DB trim trailing data by default
         assertTrue(objects.size() == 1 || objects.size() == 2);
         assertTrue(objects.contains(a1));
 
         query = new EJBQLQuery(
                 "SELECT a FROM Artist a WHERE TRIM(TRAILING FROM a.artistName) = 'A'");
-        objects = context.performQuery(query);
+        objects = env.context().performQuery(query);
         assertEquals(1, objects.size());
         assertTrue(objects.contains(a2));
 
         query = new EJBQLQuery(
                 "SELECT a FROM Artist a WHERE TRIM(BOTH FROM a.artistName) = 'A'");
-        objects = context.performQuery(query);
+        objects = env.context().performQuery(query);
         assertEquals(2, objects.size());
         assertTrue(objects.contains(a1));
         assertTrue(objects.contains(a2));
@@ -248,39 +238,39 @@ public class DataContextEJBQLFunctionalExpressionsIT {
     @Test
     public void tRIMChar() {
 
-        if (!accessStackAdapter.supportsTrimChar()) {
+        if (!env.getInstance(UnitDbAdapter.class).supportsTrimChar()) {
             return;
         }
 
-        Artist a1 = context.newObject(Artist.class);
+        Artist a1 = env.context().newObject(Artist.class);
         a1.setArtistName("XXXA");
 
-        Artist a2 = context.newObject(Artist.class);
+        Artist a2 = env.context().newObject(Artist.class);
         a2.setArtistName("AXXX");
-        context.commitChanges();
+        env.context().commitChanges();
 
         EJBQLQuery query = new EJBQLQuery(
                 "SELECT a FROM Artist a WHERE TRIM('X' FROM a.artistName) = 'A'");
-        List<?> objects = context.performQuery(query);
+        List<?> objects = env.context().performQuery(query);
         assertEquals(2, objects.size());
         assertTrue(objects.contains(a1));
         assertTrue(objects.contains(a2));
 
         query = new EJBQLQuery(
                 "SELECT a FROM Artist a WHERE TRIM(LEADING 'X' FROM a.artistName) = 'A'");
-        objects = context.performQuery(query);
+        objects = env.context().performQuery(query);
         assertEquals(1, objects.size());
         assertTrue(objects.contains(a1));
 
         query = new EJBQLQuery(
                 "SELECT a FROM Artist a WHERE TRIM(TRAILING 'X' FROM a.artistName) = 'A'");
-        objects = context.performQuery(query);
+        objects = env.context().performQuery(query);
         assertEquals(1, objects.size());
         assertTrue(objects.contains(a2));
 
         query = new EJBQLQuery(
                 "SELECT a FROM Artist a WHERE TRIM(BOTH 'X' FROM a.artistName) = 'A'");
-        objects = context.performQuery(query);
+        objects = env.context().performQuery(query);
         assertEquals(2, objects.size());
         assertTrue(objects.contains(a1));
         assertTrue(objects.contains(a2));

@@ -25,8 +25,6 @@ import org.apache.cayenne.unit.di.runtime.CayenneTestsEnv;
 import org.junit.jupiter.api.extension.RegisterExtension;
 import org.apache.cayenne.util.Util;
 import org.junit.jupiter.api.Test;
-import org.junit.jupiter.api.BeforeEach;
-
 import java.util.List;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
@@ -37,19 +35,12 @@ public class IncrementalFaultListIT {
 	@RegisterExtension
 	static final CayenneTestsEnv env = CayenneTestsEnv.forProject(CayenneProjects.TESTMAP_PROJECT);
 
-	protected DataContext context;
-
-	@BeforeEach
-	public void setUp() {
-		context = env.dataContext();
-	}
-
     @Test
 	public void serialization() throws Exception {
 		ObjectSelect<Artist> query = ObjectSelect.query(Artist.class)
 				.pageSize(10);
 
-		IncrementalFaultList<Artist> i1 = new IncrementalFaultList<Artist>(context, query, 10, List.of());
+		IncrementalFaultList<Artist> i1 = new IncrementalFaultList<Artist>(env.dataContext(), query, 10, List.of());
 		IncrementalFaultList<Artist> i2 = Util.cloneViaSerialization(i1);
 
 		assertNotNull(i2);

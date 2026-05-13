@@ -34,20 +34,10 @@ import org.apache.cayenne.unit.di.runtime.CayenneTestsEnv;
 import org.junit.jupiter.api.extension.RegisterExtension;
 import org.apache.cayenne.unit.util.TstBean;
 import org.junit.jupiter.api.Test;
-import org.junit.jupiter.api.BeforeEach;
-
 public class CayennePersistentObjectIT {
 
 	@RegisterExtension
 	static final CayenneTestsEnv env = CayenneTestsEnv.forProject(CayenneProjects.TESTMAP_PROJECT);
-
-	private ObjectContext context;
-
-
-	@BeforeEach
-	public void setUp() {
-		context = env.context();
-	}
 
 	@Test
 	public void setObjectId() throws Exception {
@@ -111,10 +101,10 @@ public class CayennePersistentObjectIT {
 	@Test
 	public void readNestedPropertyToManyInMiddle() throws Exception {
 
-		Artist a = context.newObject(Artist.class);
-		ArtistExhibit ex = context.newObject(ArtistExhibit.class);
-		Painting p1 = context.newObject(Painting.class);
-		Painting p2 = context.newObject(Painting.class);
+		Artist a = env.context().newObject(Artist.class);
+		ArtistExhibit ex = env.context().newObject(ArtistExhibit.class);
+		Painting p1 = env.context().newObject(Painting.class);
+		Painting p2 = env.context().newObject(Painting.class);
 		p1.setPaintingTitle("p1");
 		p2.setPaintingTitle("p2");
 		a.addToPaintingArray(p1);
@@ -134,10 +124,10 @@ public class CayennePersistentObjectIT {
 	@Test
 	public void readNestedPropertyToManyInMiddle1() throws Exception {
 
-		Artist a = context.newObject(Artist.class);
-		ArtistExhibit ex = context.newObject(ArtistExhibit.class);
-		Painting p1 = context.newObject(Painting.class);
-		Painting p2 = context.newObject(Painting.class);
+		Artist a = env.context().newObject(Artist.class);
+		ArtistExhibit ex = env.context().newObject(ArtistExhibit.class);
+		Painting p1 = env.context().newObject(Painting.class);
+		Painting p2 = env.context().newObject(Painting.class);
 		p1.setPaintingTitle("p1");
 		p2.setPaintingTitle("p2");
 		a.addToPaintingArray(p1);
@@ -157,8 +147,8 @@ public class CayennePersistentObjectIT {
 	public void filterObjects() {
 
 		List<Painting> paintingList = new ArrayList<Painting>();
-		Painting p1 = context.newObject(Painting.class);
-		Artist a1 = context.newObject(Artist.class);
+		Painting p1 = env.context().newObject(Painting.class);
+		Artist a1 = env.context().newObject(Artist.class);
 		a1.setArtistName("dddAd");
 		p1.setToArtist(a1);
 
@@ -173,7 +163,7 @@ public class CayennePersistentObjectIT {
 	public void filterObjectsResultIsMutable() {
 
 		List<Artist> artistList = new ArrayList<Artist>();
-		Artist a = context.newObject(Artist.class);
+		Artist a = env.context().newObject(Artist.class);
 		a.setArtistName("Pablo");
 
 		Expression exp = ExpressionFactory.matchExp("artistName", "Mismatch");

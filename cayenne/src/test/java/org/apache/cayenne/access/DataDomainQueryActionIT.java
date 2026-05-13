@@ -33,7 +33,6 @@ import org.apache.cayenne.unit.di.runtime.CayenneProjects;
 import org.apache.cayenne.unit.di.runtime.CayenneTestsEnv;
 import org.junit.jupiter.api.extension.RegisterExtension;
 import org.junit.jupiter.api.AfterEach;
-import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
 import static org.junit.jupiter.api.Assertions.assertTrue;
@@ -43,27 +42,17 @@ public class DataDomainQueryActionIT {
     @RegisterExtension
     static final CayenneTestsEnv env = CayenneTestsEnv.forProject(CayenneProjects.TESTMAP_PROJECT);
 
-    private DataContext context;
-    private CayenneRuntime runtime;
-
-    
     @AfterEach
     public void tearDown() {
-        runtime.getDataDomain().resetProperties();
-    }
-
-    @BeforeEach
-    public void setUp() {
-        context = env.dataContext();
-        runtime = env.runtime();
+        env.runtime().getDataDomain().resetProperties();
     }
 
     @Test
     public void cachedQuery() {
 
-        DataDomain domain = runtime.getDataDomain();
+        DataDomain domain = env.runtime().getDataDomain();
 
-        Painting p = context.newObject(Painting.class);
+        Painting p = env.dataContext().newObject(Painting.class);
         p.setPaintingTitle("sample");
 
         ObjectSelect<Painting> query = ObjectSelect.query(Painting.class)
@@ -92,7 +81,7 @@ public class DataDomainQueryActionIT {
             }
         };
 
-        DataDomainQueryAction action = new DataDomainQueryAction(context, domain, query);
+        DataDomainQueryAction action = new DataDomainQueryAction(env.dataContext(), domain, query);
         action.execute();
 
         domain.queryCache = cache;

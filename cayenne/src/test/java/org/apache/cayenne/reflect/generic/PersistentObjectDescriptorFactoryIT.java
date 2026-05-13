@@ -31,7 +31,6 @@ import org.apache.cayenne.reflect.ToManyProperty;
 import org.apache.cayenne.reflect.ToOneProperty;
 import org.apache.cayenne.unit.di.runtime.CayenneProjects;
 import org.apache.cayenne.unit.di.runtime.CayenneTestsEnv;
-import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.RegisterExtension;
 
@@ -44,22 +43,15 @@ public class PersistentObjectDescriptorFactoryIT {
     @RegisterExtension
     static final CayenneTestsEnv env = CayenneTestsEnv.forProject(CayenneProjects.TESTMAP_PROJECT);
 
-    private EntityResolver resolver;
-
-    @BeforeEach
-    public void setUp() {
-        resolver = env.getInstance(EntityResolver.class);
-    }
-
     @Test
     public void visitDeclaredProperties_IterationOrder() {
 
         PersistentObjectDescriptorFactory factory = new PersistentObjectDescriptorFactory(
-                resolver.getClassDescriptorMap(),
+                env.getInstance(EntityResolver.class).getClassDescriptorMap(),
                 new SingletonFaultFactory(),
                 new DefaultValueComparisonStrategyFactory(mock(ValueObjectTypeRegistry.class)));
 
-        for (ObjEntity e : resolver.getObjEntities()) {
+        for (ObjEntity e : env.getInstance(EntityResolver.class).getObjEntities()) {
             ClassDescriptor descriptor = factory.getDescriptor(e.getName());
 
             final PropertyDescriptor[] lastProcessed = new PropertyDescriptor[1];
@@ -94,11 +86,11 @@ public class PersistentObjectDescriptorFactoryIT {
     public void visitProperties_IterationOrder() {
 
         PersistentObjectDescriptorFactory factory = new PersistentObjectDescriptorFactory(
-                resolver.getClassDescriptorMap(),
+                env.getInstance(EntityResolver.class).getClassDescriptorMap(),
                 new SingletonFaultFactory(),
                 new DefaultValueComparisonStrategyFactory(mock(ValueObjectTypeRegistry.class)));
 
-        for (ObjEntity e : resolver.getObjEntities()) {
+        for (ObjEntity e : env.getInstance(EntityResolver.class).getObjEntities()) {
             ClassDescriptor descriptor = factory.getDescriptor(e.getName());
 
             final PropertyDescriptor[] lastProcessed = new PropertyDescriptor[1];

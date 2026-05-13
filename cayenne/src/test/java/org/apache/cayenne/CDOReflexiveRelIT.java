@@ -24,8 +24,6 @@ import org.apache.cayenne.unit.di.runtime.CayenneProjects;
 import org.apache.cayenne.unit.di.runtime.CayenneTestsEnv;
 import org.junit.jupiter.api.extension.RegisterExtension;
 import org.junit.jupiter.api.Test;
-import org.junit.jupiter.api.BeforeEach;
-
 /**
  * Some more tests regarding reflexive relationships, especially related to delete rules
  * etc. The implementation is hairy, and so needs a really good workout.
@@ -35,116 +33,108 @@ public class CDOReflexiveRelIT {
     @RegisterExtension
     static final CayenneTestsEnv env = CayenneTestsEnv.forProject(CayenneProjects.TESTMAP_PROJECT);
 
-    private ObjectContext context;
-
-
-    @BeforeEach
-    public void setUp() {
-        context = env.context();
-    }
-
     @Test
     public void addDeleteNoCommit() {
-        ArtGroup parentGroup = context.newObject(ArtGroup.class);
+        ArtGroup parentGroup = env.context().newObject(ArtGroup.class);
         parentGroup.setName("parent");
 
-        ArtGroup childGroup1 = context.newObject(ArtGroup.class);
+        ArtGroup childGroup1 = env.context().newObject(ArtGroup.class);
         childGroup1.setName("child1");
         childGroup1.setToParentGroup(parentGroup);
 
-        context.deleteObjects(parentGroup);
+        env.context().deleteObjects(parentGroup);
     }
 
     @Test
     public void add() {
-        ArtGroup parentGroup = context.newObject(ArtGroup.class);
+        ArtGroup parentGroup = env.context().newObject(ArtGroup.class);
         parentGroup.setName("parent");
 
-        ArtGroup childGroup1 = context.newObject(ArtGroup.class);
+        ArtGroup childGroup1 = env.context().newObject(ArtGroup.class);
         childGroup1.setName("child1");
         childGroup1.setToParentGroup(parentGroup);
 
-        context.commitChanges();
+        env.context().commitChanges();
     }
 
     @Test
     public void addDeleteWithCommit() {
-        ArtGroup parentGroup = context.newObject(ArtGroup.class);
+        ArtGroup parentGroup = env.context().newObject(ArtGroup.class);
         parentGroup.setName("parent");
 
-        ArtGroup childGroup1 = context.newObject(ArtGroup.class);
+        ArtGroup childGroup1 = env.context().newObject(ArtGroup.class);
         childGroup1.setName("child1");
         childGroup1.setToParentGroup(parentGroup);
-        context.commitChanges();
+        env.context().commitChanges();
 
-        context.deleteObjects(parentGroup);
-        context.commitChanges();
+        env.context().deleteObjects(parentGroup);
+        env.context().commitChanges();
     }
 
     @Test
     public void replaceDeleteNoCommit() {
-        ArtGroup parentGroup1 = context.newObject(ArtGroup.class);
+        ArtGroup parentGroup1 = env.context().newObject(ArtGroup.class);
         parentGroup1.setName("parent1");
-        ArtGroup parentGroup2 = context.newObject(ArtGroup.class);
+        ArtGroup parentGroup2 = env.context().newObject(ArtGroup.class);
         parentGroup2.setName("parent2");
 
-        ArtGroup childGroup1 = context.newObject(ArtGroup.class);
+        ArtGroup childGroup1 = env.context().newObject(ArtGroup.class);
         childGroup1.setName("child1");
         childGroup1.setToParentGroup(parentGroup1);
 
         childGroup1.setToParentGroup(parentGroup2);
 
-        context.deleteObjects(parentGroup1);
-        context.deleteObjects(parentGroup2);
+        env.context().deleteObjects(parentGroup1);
+        env.context().deleteObjects(parentGroup2);
     }
 
     @Test
     public void replaceDeleteWithCommit() {
-        ArtGroup parentGroup1 = context.newObject(ArtGroup.class);
+        ArtGroup parentGroup1 = env.context().newObject(ArtGroup.class);
         parentGroup1.setName("parent1");
-        ArtGroup parentGroup2 = context.newObject(ArtGroup.class);
+        ArtGroup parentGroup2 = env.context().newObject(ArtGroup.class);
         parentGroup2.setName("parent2");
 
-        ArtGroup childGroup1 = context.newObject(ArtGroup.class);
+        ArtGroup childGroup1 = env.context().newObject(ArtGroup.class);
         childGroup1.setName("child1");
         childGroup1.setToParentGroup(parentGroup1);
         childGroup1.setToParentGroup(parentGroup2);
-        context.commitChanges();
+        env.context().commitChanges();
 
-        context.deleteObjects(parentGroup1);
-        context.deleteObjects(parentGroup2);
-        context.commitChanges();
+        env.context().deleteObjects(parentGroup1);
+        env.context().deleteObjects(parentGroup2);
+        env.context().commitChanges();
     }
 
     @Test
     public void commitReplaceCommit() {
-        ArtGroup parentGroup1 = context.newObject(ArtGroup.class);
+        ArtGroup parentGroup1 = env.context().newObject(ArtGroup.class);
         parentGroup1.setName("parent1");
-        ArtGroup parentGroup2 = context.newObject(ArtGroup.class);
+        ArtGroup parentGroup2 = env.context().newObject(ArtGroup.class);
         parentGroup2.setName("parent2");
 
-        ArtGroup childGroup1 = context.newObject(ArtGroup.class);
+        ArtGroup childGroup1 = env.context().newObject(ArtGroup.class);
         childGroup1.setName("child1");
         childGroup1.setToParentGroup(parentGroup1);
-        context.commitChanges();
+        env.context().commitChanges();
         childGroup1.setToParentGroup(parentGroup2);
-        context.commitChanges();
+        env.context().commitChanges();
     }
 
     @Test
     public void complexInsertUpdateOrdering() {
-        ArtGroup parentGroup = context.newObject(ArtGroup.class);
+        ArtGroup parentGroup = env.context().newObject(ArtGroup.class);
         parentGroup.setName("parent");
-        context.commitChanges();
+        env.context().commitChanges();
 
         // Check that the update and insert both work write
-        ArtGroup childGroup1 = context.newObject(ArtGroup.class);
+        ArtGroup childGroup1 = env.context().newObject(ArtGroup.class);
         childGroup1.setName("child1");
         childGroup1.setToParentGroup(parentGroup);
-        context.commitChanges();
+        env.context().commitChanges();
 
         childGroup1.setToParentGroup(null);
-        context.commitChanges();
+        env.context().commitChanges();
     }
 
 }

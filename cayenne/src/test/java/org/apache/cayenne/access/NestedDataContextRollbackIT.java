@@ -25,8 +25,6 @@ import org.apache.cayenne.unit.di.runtime.CayenneProjects;
 import org.apache.cayenne.unit.di.runtime.CayenneTestsEnv;
 import org.junit.jupiter.api.extension.RegisterExtension;
 import org.junit.jupiter.api.Test;
-import org.junit.jupiter.api.BeforeEach;
-
 import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
@@ -35,49 +33,39 @@ public class NestedDataContextRollbackIT {
     @RegisterExtension
     static final CayenneTestsEnv env = CayenneTestsEnv.forProject(CayenneProjects.TESTMAP_PROJECT);
 
-    protected CayenneRuntime runtime;
-    private DataContext context;
-
-    @BeforeEach
-    public void setUp() {
-        runtime = env.runtime();
-        context = env.dataContext();
-    }
-
-
     @Test
     public void rollbackChanges() {
-        ObjectContext child1 = runtime.newContext(context);
+        ObjectContext child1 = env.runtime().newContext(env.dataContext());
 
-        assertFalse(context.hasChanges());
+        assertFalse(env.dataContext().hasChanges());
         assertFalse(child1.hasChanges());
 
-        context.newObject(Artist.class);
+        env.dataContext().newObject(Artist.class);
         child1.newObject(Artist.class);
 
-        assertTrue(context.hasChanges());
+        assertTrue(env.dataContext().hasChanges());
         assertTrue(child1.hasChanges());
 
         child1.rollbackChanges();
-        assertFalse(context.hasChanges());
+        assertFalse(env.dataContext().hasChanges());
         assertFalse(child1.hasChanges());
     }
 
     @Test
     public void rollbackChangesLocally() {
-        ObjectContext child1 = runtime.newContext(context);
+        ObjectContext child1 = env.runtime().newContext(env.dataContext());
 
-        assertFalse(context.hasChanges());
+        assertFalse(env.dataContext().hasChanges());
         assertFalse(child1.hasChanges());
 
-        context.newObject(Artist.class);
+        env.dataContext().newObject(Artist.class);
         child1.newObject(Artist.class);
 
-        assertTrue(context.hasChanges());
+        assertTrue(env.dataContext().hasChanges());
         assertTrue(child1.hasChanges());
 
         child1.rollbackChangesLocally();
-        assertTrue(context.hasChanges());
+        assertTrue(env.dataContext().hasChanges());
         assertFalse(child1.hasChanges());
     }
 }

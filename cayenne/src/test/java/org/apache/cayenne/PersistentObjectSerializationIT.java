@@ -24,7 +24,6 @@ import org.apache.cayenne.testdo.testmap.Artist;
 import org.apache.cayenne.unit.di.runtime.CayenneProjects;
 import org.apache.cayenne.unit.di.runtime.CayenneTestsEnv;
 import org.apache.cayenne.util.Util;
-import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.RegisterExtension;
 
@@ -41,13 +40,6 @@ public class PersistentObjectSerializationIT {
     @RegisterExtension
     static final CayenneTestsEnv env = CayenneTestsEnv.forProject(CayenneProjects.TESTMAP_PROJECT);
 
-    private ObjectContext context;
-
-    @BeforeEach
-    public void setUp() {
-        context = env.context();
-    }
-
     @Test
     public void testSerializeTransient() throws Exception {
         Artist artist = new Artist();
@@ -63,7 +55,7 @@ public class PersistentObjectSerializationIT {
 
     @Test
     public void testSerializeNew() throws Exception {
-        Artist artist = context.newObject(Artist.class);
+        Artist artist = env.context().newObject(Artist.class);
         artist.setArtistName("artist1");
         // resolve relationship fault
         artist.getPaintingArray();
@@ -87,7 +79,7 @@ public class PersistentObjectSerializationIT {
 
     @Test
     public void testSerializeNewWithFaults() throws Exception {
-        Artist artist = context.newObject(Artist.class);
+        Artist artist = env.context().newObject(Artist.class);
         artist.setArtistName("artist1");
 
         Artist deserialized = Util.cloneViaSerialization(artist);
@@ -110,9 +102,9 @@ public class PersistentObjectSerializationIT {
     @Test
     public void testSerializeCommitted() throws Exception {
 
-        Artist artist = context.newObject(Artist.class);
+        Artist artist = env.context().newObject(Artist.class);
         artist.setArtistName("artist1");
-        context.commitChanges();
+        env.context().commitChanges();
 
         assertEquals(PersistenceState.COMMITTED, artist.getPersistenceState());
 
@@ -141,7 +133,7 @@ public class PersistentObjectSerializationIT {
         ObjectId objectId = ObjectId.of("test", "id", 42);
 
         GenericPersistentObject persistentObject = new GenericPersistentObject();
-        persistentObject.setObjectContext(context);
+        persistentObject.setObjectContext(env.context());
         persistentObject.setObjectId(objectId);
         persistentObject.writePropertyDirectly("test", 123);
         persistentObject.setPersistenceState(PersistenceState.MODIFIED);
@@ -158,7 +150,7 @@ public class PersistentObjectSerializationIT {
         ObjectId objectId = ObjectId.of("test", "id", 42);
 
         GenericPersistentObject persistentObject = new GenericPersistentObject();
-        persistentObject.setObjectContext(context);
+        persistentObject.setObjectContext(env.context());
         persistentObject.setObjectId(objectId);
         persistentObject.writePropertyDirectly("test", 123);
         persistentObject.setPersistenceState(PersistenceState.COMMITTED);

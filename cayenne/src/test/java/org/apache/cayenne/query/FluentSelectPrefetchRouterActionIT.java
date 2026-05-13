@@ -27,7 +27,6 @@ import org.apache.cayenne.testdo.testmap.Gallery;
 import org.apache.cayenne.testdo.testmap.Painting;
 import org.apache.cayenne.unit.di.runtime.CayenneProjects;
 import org.apache.cayenne.unit.di.runtime.CayenneTestsEnv;
-import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.RegisterExtension;
 
@@ -39,16 +38,9 @@ public class FluentSelectPrefetchRouterActionIT {
     @RegisterExtension
     static final CayenneTestsEnv env = CayenneTestsEnv.forProject(CayenneProjects.TESTMAP_PROJECT);
 
-    private EntityResolver resolver;
-
-    @BeforeEach
-    public void setUp() {
-        resolver = env.getInstance(EntityResolver.class);
-    }
-
     @Test
     public void paintings1() {
-        ObjEntity paintingEntity = resolver.getObjEntity(Painting.class);
+        ObjEntity paintingEntity = env.getInstance(EntityResolver.class).getObjEntity(Painting.class);
 
         ObjectSelect<Artist> query = ObjectSelect.query(Artist.class, Artist.ARTIST_NAME.eq("abc"))
                 .prefetch(Artist.PAINTING_ARRAY.disjoint());
@@ -56,7 +48,7 @@ public class FluentSelectPrefetchRouterActionIT {
         FluentSelectPrefetchRouterAction action = new FluentSelectPrefetchRouterAction();
 
         MockQueryRouter router = new MockQueryRouter();
-        action.route(query, router, resolver);
+        action.route(query, router, env.getInstance(EntityResolver.class));
         assertEquals(1, router.getQueryCount());
 
         PrefetchSelectQuery prefetch = (PrefetchSelectQuery) router.getQueries().get(0);
@@ -67,7 +59,7 @@ public class FluentSelectPrefetchRouterActionIT {
 
     @Test
     public void prefetchPaintings2() {
-        ObjEntity paintingEntity = resolver.getObjEntity(Painting.class);
+        ObjEntity paintingEntity = env.getInstance(EntityResolver.class).getObjEntity(Painting.class);
 
         ObjectSelect<Artist> query = ObjectSelect.query(Artist.class)
                 .where(Artist.ARTIST_NAME.eq("abc"))
@@ -77,7 +69,7 @@ public class FluentSelectPrefetchRouterActionIT {
         FluentSelectPrefetchRouterAction action = new FluentSelectPrefetchRouterAction();
 
         MockQueryRouter router = new MockQueryRouter();
-        action.route(query, router, resolver);
+        action.route(query, router, env.getInstance(EntityResolver.class));
         assertEquals(1, router.getQueryCount());
 
         PrefetchSelectQuery prefetch = (PrefetchSelectQuery) router.getQueries().get(0);
@@ -88,14 +80,14 @@ public class FluentSelectPrefetchRouterActionIT {
 
     @Test
     public void galleries() {
-        ObjEntity galleryEntity = resolver.getObjEntity(Gallery.class);
+        ObjEntity galleryEntity = env.getInstance(EntityResolver.class).getObjEntity(Gallery.class);
 
         ObjectSelect<Artist> query = ObjectSelect.query(Artist.class, Artist.ARTIST_NAME.eq("abc"))
                 .prefetch(Artist.PAINTING_ARRAY.dot(Painting.TO_GALLERY).disjoint());
         FluentSelectPrefetchRouterAction action = new FluentSelectPrefetchRouterAction();
 
         MockQueryRouter router = new MockQueryRouter();
-        action.route(query, router, resolver);
+        action.route(query, router, env.getInstance(EntityResolver.class));
         assertEquals(1, router.getQueryCount());
 
         PrefetchSelectQuery prefetch = (PrefetchSelectQuery) router.getQueries().get(0);

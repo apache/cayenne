@@ -23,7 +23,6 @@ import org.apache.cayenne.ObjectId;
 import org.apache.cayenne.testdo.testmap.Artist;
 import org.apache.cayenne.unit.di.runtime.CayenneProjects;
 import org.apache.cayenne.unit.di.runtime.CayenneTestsEnv;
-import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.RegisterExtension;
 
@@ -34,21 +33,14 @@ public class StatementFetchSizeIT {
     @RegisterExtension
     static final CayenneTestsEnv env = CayenneTestsEnv.forProject(CayenneProjects.TESTMAP_PROJECT);
 
-    private ObjectContext context;
-
-    @BeforeEach
-    public void setUp() {
-        context = env.context();
-    }
-
     @Test
     public void objectSelect() {
         ObjectSelect<Artist> query = ObjectSelect.query(Artist.class).statementFetchSize(10);
 
         assertEquals(10, query
-                .getMetaData(context.getEntityResolver())
+                .getMetaData(env.context().getEntityResolver())
                 .getStatementFetchSize());
-        context.performQuery(query);
+        env.context().performQuery(query);
     }
 
     @Test
@@ -59,9 +51,9 @@ public class StatementFetchSizeIT {
         template.setStatementFetchSize(10);
 
         assertEquals(10, template
-                .getMetaData(context.getEntityResolver())
+                .getMetaData(env.context().getEntityResolver())
                 .getStatementFetchSize());
-        context.performQuery(template);
+        env.context().performQuery(template);
     }
 
     @Test
@@ -70,9 +62,9 @@ public class StatementFetchSizeIT {
         ejbql.setStatementFetchSize(10);
 
         assertEquals(10, ejbql
-                .getMetaData(context.getEntityResolver())
+                .getMetaData(env.context().getEntityResolver())
                 .getStatementFetchSize());
-        context.performQuery(ejbql);
+        env.context().performQuery(ejbql);
     }
 
     @Test
@@ -85,8 +77,8 @@ public class StatementFetchSizeIT {
         relationshipQuery.setStatementFetchSize(10);
 
         assertEquals(10, relationshipQuery
-                .getMetaData(context.getEntityResolver())
+                .getMetaData(env.context().getEntityResolver())
                 .getStatementFetchSize());
-        context.performQuery(relationshipQuery);
+        env.context().performQuery(relationshipQuery);
     }
 }

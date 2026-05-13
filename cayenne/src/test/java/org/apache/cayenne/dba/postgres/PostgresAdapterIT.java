@@ -23,7 +23,6 @@ import org.apache.cayenne.map.DbAttribute;
 import org.apache.cayenne.map.DbEntity;
 import org.apache.cayenne.unit.di.runtime.CayenneProjects;
 import org.apache.cayenne.unit.di.runtime.CayenneTestsEnv;
-import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.RegisterExtension;
 
@@ -37,16 +36,9 @@ public class PostgresAdapterIT {
     @RegisterExtension
     static final CayenneTestsEnv env = CayenneTestsEnv.forProject(CayenneProjects.TESTMAP_PROJECT);
 
-    private AdhocObjectFactory objectFactory;
-
-    @BeforeEach
-    public void setUp() {
-        objectFactory = env.getInstance(AdhocObjectFactory.class);
-    }
-
     @Test
     public void createTableWithFloatAttributeWithScale() {
-        PostgresAdapter adapter = objectFactory.newInstance(
+        PostgresAdapter adapter = env.getInstance(AdhocObjectFactory.class).newInstance(
                 PostgresAdapter.class, 
                 PostgresAdapter.class.getName());
         DbEntity e = new DbEntity("Test");

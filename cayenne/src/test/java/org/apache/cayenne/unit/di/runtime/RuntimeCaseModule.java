@@ -106,7 +106,6 @@ import org.apache.cayenne.unit.SybaseUnitDbAdapter;
 import org.apache.cayenne.unit.UnitDataSourceDescriptor;
 import org.apache.cayenne.unit.UnitDbAdapter;
 import org.apache.cayenne.unit.di.DataChannelInterceptor;
-import org.apache.cayenne.unit.di.UnitTestLifecycleManager;
 import org.apache.cayenne.unit.testcontainers.Db2ContainerProvider;
 import org.apache.cayenne.unit.testcontainers.MariaDbContainerProvider;
 import org.apache.cayenne.unit.testcontainers.MysqlContainerProvider;
@@ -212,9 +211,6 @@ public class RuntimeCaseModule implements Module {
         binder.bind(JdbcEventLogger.class).to(Slf4jJdbcEventLogger.class);
         binder.bind(RuntimeProperties.class).to(DefaultRuntimeProperties.class);
         binder.bind(ObjectMapRetainStrategy.class).to(DefaultObjectMapRetainStrategy.class);
-
-        // singleton objects
-        binder.bind(UnitTestLifecycleManager.class).toInstance(new RuntimeCaseLifecycleManager(testScope));
 
         binder.bindMap(TestContainerProvider.class)
                 .put("mysql", MysqlContainerProvider.class)

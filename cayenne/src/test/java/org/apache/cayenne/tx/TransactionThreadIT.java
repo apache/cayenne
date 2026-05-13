@@ -25,7 +25,6 @@ import org.apache.cayenne.query.ObjectSelect;
 import org.apache.cayenne.testdo.testmap.Artist;
 import org.apache.cayenne.unit.di.runtime.CayenneProjects;
 import org.apache.cayenne.unit.di.runtime.CayenneTestsEnv;
-import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.RegisterExtension;
 
@@ -36,27 +35,18 @@ public class TransactionThreadIT {
     @RegisterExtension
     static final CayenneTestsEnv env = CayenneTestsEnv.forProject(CayenneProjects.TESTMAP_PROJECT);
 
-    private DataContext context;
-    private JdbcEventLogger logger;
-
-    @BeforeEach
-    public void setUp() {
-        context = env.dataContext();
-        logger = env.getInstance(JdbcEventLogger.class);
-    }
-
     @Test
     public void threadConnectionReuseOnSelect() throws Exception {
 
-        Transaction t = new CayenneTransaction(logger);
+        Transaction t = new CayenneTransaction(env.getInstance(JdbcEventLogger.class));
         BaseTransaction.bindThreadTransaction(t);
 
         try {
-            ObjectSelect.query(Artist.class).select(context);
+            ObjectSelect.query(Artist.class).select(env.dataContext());
             assertEquals(1, t.getConnections().size());
 
             // delegate will fail if the second query opens a new connection
-            ObjectSelect.query(Artist.class).select(context);
+            ObjectSelect.query(Artist.class).select(env.dataContext());
 
             assertEquals(1, t.getConnections().size());
 

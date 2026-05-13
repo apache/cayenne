@@ -30,7 +30,6 @@ import org.apache.cayenne.tx.ExternalTransaction;
 import org.apache.cayenne.unit.UnitDbAdapter;
 import org.apache.cayenne.unit.di.runtime.CayenneProjects;
 import org.apache.cayenne.unit.di.runtime.CayenneTestsEnv;
-import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.RegisterExtension;
 
@@ -51,20 +50,9 @@ public class ProcedureCallIT {
     public static final String SELECT_STORED_PROCEDURE = "cayenne_tst_select_proc";
     public static final String OUT_STORED_PROCEDURE = "cayenne_tst_out_proc";
 
-    private DataContext context;
-    private UnitDbAdapter accessStackAdapter;
-    private JdbcEventLogger jdbcEventLogger;
-
-    @BeforeEach
-    public void setUp() {
-        context = env.dataContext();
-        accessStackAdapter = env.getInstance(UnitDbAdapter.class);
-        jdbcEventLogger = env.getInstance(JdbcEventLogger.class);
-    }
-
     @Test
     public void update() throws Exception {
-        if (!accessStackAdapter.supportsStoredProcedures()) {
+        if (!env.getInstance(UnitDbAdapter.class).supportsStoredProcedures()) {
             return;
         }
 
@@ -74,7 +62,7 @@ public class ProcedureCallIT {
         runProcedureSelect(ProcedureCall.query(UPDATE_STORED_PROCEDURE).param("paintingPrice", 3000));
 
         // check that price have doubled
-        List<Artist> artists = ObjectSelect.query(Artist.class).prefetch(Artist.PAINTING_ARRAY.disjoint()).select(context);
+        List<Artist> artists = ObjectSelect.query(Artist.class).prefetch(Artist.PAINTING_ARRAY.disjoint()).select(env.dataContext());
         assertEquals(1, artists.size());
 
         Artist a = artists.get(0);
@@ -84,7 +72,7 @@ public class ProcedureCallIT {
 
     @Test
     public void updateNoParam() throws Exception {
-        if (!accessStackAdapter.supportsStoredProcedures()) {
+        if (!env.getInstance(UnitDbAdapter.class).supportsStoredProcedures()) {
             return;
         }
 
@@ -94,7 +82,7 @@ public class ProcedureCallIT {
         runProcedureSelect(ProcedureCall.query(UPDATE_STORED_PROCEDURE_NOPARAM));
 
         // check that price have doubled
-        List<Artist> artists = ObjectSelect.query(Artist.class).prefetch(Artist.PAINTING_ARRAY.disjoint()).select(context);
+        List<Artist> artists = ObjectSelect.query(Artist.class).prefetch(Artist.PAINTING_ARRAY.disjoint()).select(env.dataContext());
         assertEquals(1, artists.size());
 
         Artist a = artists.get(0);
@@ -104,7 +92,7 @@ public class ProcedureCallIT {
 
     @Test
     public void select() throws Exception {
-        if (!accessStackAdapter.supportsStoredProcedures()) {
+        if (!env.getInstance(UnitDbAdapter.class).supportsStoredProcedures()) {
             return;
         }
 
@@ -121,17 +109,17 @@ public class ProcedureCallIT {
         assertNotNull(artists, "Null result from StoredProcedure.");
         assertEquals(1, artists.size());
         DataRow artistRow = (DataRow) artists.get(0);
-        Artist a = context.objectFromDataRow(Artist.class, uppercaseConverter(artistRow));
+        Artist a = env.dataContext().objectFromDataRow(Artist.class, uppercaseConverter(artistRow));
         Painting p = a.getPaintingArray().get(0);
 
         // invalidate painting, it may have been updated in the proc
-        context.invalidateObjects(p);
+        env.dataContext().invalidateObjects(p);
         assertEquals(2000, p.getEstimatedPrice().intValue());
     }
 
     @Test
     public void fetchLimit() throws Exception {
-        if (!accessStackAdapter.supportsStoredProcedures()) {
+        if (!env.getInstance(UnitDbAdapter.class).supportsStoredProcedures()) {
             return;
         }
 
@@ -152,7 +140,7 @@ public class ProcedureCallIT {
 
     @Test
     public void fetchOffset() throws Exception {
-        if (!accessStackAdapter.supportsStoredProcedures()) {
+        if (!env.getInstance(UnitDbAdapter.class).supportsStoredProcedures()) {
             return;
         }
 
@@ -173,7 +161,7 @@ public class ProcedureCallIT {
 
     @Test
     public void columnNameCapitalization() throws Exception {
-        if (!accessStackAdapter.supportsStoredProcedures()) {
+        if (!env.getInstance(UnitDbAdapter.class).supportsStoredProcedures()) {
             return;
         }
 
@@ -201,7 +189,7 @@ public class ProcedureCallIT {
 
     @Test
     public void outParams() throws Exception {
-        if (!accessStackAdapter.supportsStoredProcedures()) {
+        if (!env.getInstance(UnitDbAdapter.class).supportsStoredProcedures()) {
             return;
         }
 
@@ -216,11 +204,11 @@ public class ProcedureCallIT {
 
     @Test
     public void selectPersistentObject() throws Exception {
-        if (!accessStackAdapter.supportsStoredProcedures()) {
+        if (!env.getInstance(UnitDbAdapter.class).supportsStoredProcedures()) {
             return;
         }
 
-        if (!accessStackAdapter.canMakeObjectsOutOfProcedures()) {
+        if (!env.getInstance(UnitDbAdapter.class).canMakeObjectsOutOfProcedures()) {
             return;
         }
 
@@ -238,13 +226,13 @@ public class ProcedureCallIT {
         Painting p = a.getPaintingArray().get(0);
 
         // invalidate painting, it may have been updated in the proc
-        context.invalidateObjects(p);
+        env.dataContext().invalidateObjects(p);
         assertEquals(1101.01, p.getEstimatedPrice().doubleValue(), 0.02);
     }
 
     @Test
     public void selectWithRowDescriptor() throws Exception {
-        if (!accessStackAdapter.supportsStoredProcedures()) {
+        if (!env.getInstance(UnitDbAdapter.class).supportsStoredProcedures()) {
             return;
         }
 
@@ -290,11 +278,11 @@ public class ProcedureCallIT {
         // e.g.
         // http://stackoverflow.com/questions/16921942/porting-apache-cayenne-from-oracle-to-postgresql
 
-        BaseTransaction t = new ExternalTransaction(jdbcEventLogger);
+        BaseTransaction t = new ExternalTransaction(env.getInstance(JdbcEventLogger.class));
         BaseTransaction.bindThreadTransaction(t);
 
         try {
-            return q.call(context);
+            return q.call(env.dataContext());
         } finally {
             BaseTransaction.bindThreadTransaction(null);
             t.commit();
@@ -302,16 +290,16 @@ public class ProcedureCallIT {
     }
 
     private void createArtist(double paintingPrice) {
-        Artist a = context.newObject(Artist.class);
+        Artist a = env.dataContext().newObject(Artist.class);
         a.setArtistName("An Artist");
 
-        Painting p = context.newObject(Painting.class);
+        Painting p = env.dataContext().newObject(Painting.class);
         p.setPaintingTitle("A Painting");
         // converting double to string prevents rounding weirdness...
         p.setEstimatedPrice(new BigDecimal("" + paintingPrice));
         a.addToPaintingArray(p);
 
-        context.commitChanges();
+        env.dataContext().commitChanges();
     }
 
     /**

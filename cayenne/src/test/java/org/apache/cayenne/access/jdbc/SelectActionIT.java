@@ -30,8 +30,6 @@ import org.apache.cayenne.unit.di.runtime.CayenneTestsEnv;
 import org.junit.jupiter.api.extension.RegisterExtension;
 import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.Test;
-import org.junit.jupiter.api.BeforeEach;
-
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
 
@@ -41,26 +39,16 @@ public class SelectActionIT {
     @RegisterExtension
     static final CayenneTestsEnv env = CayenneTestsEnv.forProject(CayenneProjects.LOB_PROJECT);
 
-    private DataContext context;
-    private UnitDbAdapter accessStackAdapter;
-
-
-    @BeforeEach
-    public void setUp() {
-        context = env.dataContext();
-        accessStackAdapter = env.getInstance(UnitDbAdapter.class);
-    }
-
     @Test
     public void fetchLimit_DistinctResultIterator() {
-        if (accessStackAdapter.supportsLobs()) {
+        if (env.getInstance(UnitDbAdapter.class).supportsLobs()) {
 
             insertClobDb();
 
             List<ClobTestEntity> resultRows = ObjectSelect.query(ClobTestEntity.class)
                     .where(ClobTestEntity.CLOB_VALUE.dot(ClobTestRelation.VALUE).eq(100))
                     .limit(25)
-                    .select(context);
+                    .select(env.dataContext());
 
             assertNotNull(resultRows);
             assertEquals(25, resultRows.size());
@@ -69,14 +57,14 @@ public class SelectActionIT {
 
     @Test
     public void columnSelect_DistinctResultIterator() {
-        if (accessStackAdapter.supportsLobs()) {
+        if (env.getInstance(UnitDbAdapter.class).supportsLobs()) {
 
             insertClobDb();
 
             List<String> result = ObjectSelect.query(ClobTestEntity.class)
                     .column(ClobTestEntity.CLOB_COL)
                     .where(ClobTestEntity.CLOB_VALUE.dot(ClobTestRelation.VALUE).eq(100))
-                    .select(context);
+                    .select(env.dataContext());
 
             // this should be 80, but we got only single values and we forcing distinct on them
             // so here will be only 21 elements that are unique
@@ -86,7 +74,7 @@ public class SelectActionIT {
 
     protected void insertClobDb() {
         for (int i = 0; i < 80; i++) {
-            ClobTestEntity obj = context.newObject(ClobTestEntity.class);
+            ClobTestEntity obj = env.dataContext().newObject(ClobTestEntity.class);
             if (i < 20) {
                 obj.setClobCol("a1" + i);
             } else {
@@ -94,12 +82,12 @@ public class SelectActionIT {
             }
             insertClobRel(obj);
         }
-        context.commitChanges();
+        env.dataContext().commitChanges();
     }
 
     protected void insertClobRel(ClobTestEntity clobId) {
         for (int i = 0; i < 20; i++) {
-            ClobTestRelation obj = context.newObject(ClobTestRelation.class);
+            ClobTestRelation obj = env.dataContext().newObject(ClobTestRelation.class);
             obj.setValue(100);
             obj.setClobId(clobId);
         }

@@ -28,7 +28,6 @@ import org.apache.cayenne.query.ObjectSelect;
 import org.apache.cayenne.query.SQLTemplate;
 import org.apache.cayenne.unit.di.runtime.CayenneProjects;
 import org.apache.cayenne.unit.di.runtime.CayenneTestsEnv;
-import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.RegisterExtension;
 
@@ -41,69 +40,62 @@ public class GenericMappingIT {
     @RegisterExtension
     static final CayenneTestsEnv env = CayenneTestsEnv.forProject(CayenneProjects.GENERIC_PROJECT);
 
-    private DataContext context;
-
-    @BeforeEach
-    public void setUp() {
-        context = env.dataContext();
-    }
-
     @Test
     public void testInsertSingle() {
-        Persistent g1 = context.newObject("Generic1");
+        Persistent g1 = env.dataContext().newObject("Generic1");
         g1.writeProperty("name", "G1 Name");
 
-        context.commitChanges();
+        env.dataContext().commitChanges();
     }
 
     @Test
     public void testInsertRelated() {
-        Persistent g1 = context.newObject("Generic1");
+        Persistent g1 = env.dataContext().newObject("Generic1");
         g1.writeProperty("name", "G1 Name");
 
-        Persistent g2 = context.newObject("Generic2");
+        Persistent g2 = env.dataContext().newObject("Generic2");
         g2.writeProperty("name", "G2 Name");
         g2.setToOneTarget("toGeneric1", g1, true);
 
-        context.commitChanges();
+        env.dataContext().commitChanges();
     }
 
     @Test
     public void testSelect() {
-        context.performNonSelectingQuery(new SQLTemplate(
+        env.dataContext().performNonSelectingQuery(new SQLTemplate(
                 "Generic1",
                 "INSERT INTO GENERIC1 (ID, NAME) VALUES (1, 'AAAA')"));
-        context.performNonSelectingQuery(new SQLTemplate(
+        env.dataContext().performNonSelectingQuery(new SQLTemplate(
                 "Generic1",
                 "INSERT INTO GENERIC1 (ID, NAME) VALUES (2, 'BBBB')"));
-        context.performNonSelectingQuery(new SQLTemplate(
+        env.dataContext().performNonSelectingQuery(new SQLTemplate(
                 "Generic1",
                 "INSERT INTO GENERIC2 (GENERIC1_ID, ID, NAME) VALUES (1, 1, 'CCCCC')"));
 
         Expression qual = ExpressionFactory.matchExp("name", "AAAA");
-        List<?> result = ObjectSelect.query(Object.class, "Generic1").where(qual).select(context);
+        List<?> result = ObjectSelect.query(Object.class, "Generic1").where(qual).select(env.dataContext());
         assertEquals(1, result.size());
     }
 
     @Test
     public void testUpdateRelated() {
-        Persistent g1 = context.newObject("Generic1");
+        Persistent g1 = env.dataContext().newObject("Generic1");
         g1.writeProperty("name", "G1 Name");
 
-        Persistent g2 = context.newObject("Generic2");
+        Persistent g2 = env.dataContext().newObject("Generic2");
         g2.writeProperty("name", "G2 Name");
         g2.setToOneTarget("toGeneric1", g1, true);
 
-        context.commitChanges();
+        env.dataContext().commitChanges();
 
         List<?> r1 = (List<?>) g1.readProperty("generic2s");
         assertTrue(r1.contains(g2));
 
-        Persistent g11 = context.newObject("Generic1");
+        Persistent g11 = env.dataContext().newObject("Generic1");
         g11.writeProperty("name", "G11 Name");
         g2.setToOneTarget("toGeneric1", g11, true);
 
-        context.commitChanges();
+        env.dataContext().commitChanges();
 
         List<?> r11 = (List<?>) g11.readProperty("generic2s");
         assertTrue(r11.contains(g2));

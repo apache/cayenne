@@ -31,8 +31,6 @@ import org.apache.cayenne.unit.di.runtime.CayenneProjects;
 import org.apache.cayenne.unit.di.runtime.CayenneTestsEnv;
 import org.junit.jupiter.api.extension.RegisterExtension;
 import org.junit.jupiter.api.Test;
-import org.junit.jupiter.api.BeforeEach;
-
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.junit.jupiter.api.Assertions.fail;
@@ -42,133 +40,124 @@ public class MiscTypesIT {
     @RegisterExtension
     static final CayenneTestsEnv env = CayenneTestsEnv.forProject(CayenneProjects.MISC_TYPES_PROJECT);
 
-    private ObjectContext context;
-    private UnitDbAdapter accessStackAdapter;
-
-    @BeforeEach
-    public void setUp() {
-        context = env.context();
-        accessStackAdapter = env.getInstance(UnitDbAdapter.class);
-    }
-
     @Test
     public void serializable() throws Exception {
 
         // this test requires BLOB support
-        if(!accessStackAdapter.supportsLobs()) {
+        if(!env.getInstance(UnitDbAdapter.class).supportsLobs()) {
             return;
         }
 
-        SerializableEntity test = context
+        SerializableEntity test = env.context()
                 .newObject(SerializableEntity.class);
 
         MockSerializable i = new MockSerializable("abc");
         test.setSerializableField(i);
-        context.commitChanges();
+        env.context().commitChanges();
 
         SerializableEntity testRead = ObjectSelect
                 .query(SerializableEntity.class)
-                .selectFirst(context);
+                .selectFirst(env.context());
         assertNotNull(testRead.getSerializableField());
         assertEquals(i.getName(), testRead.getSerializableField().getName());
 
         test.setSerializableField(null);
-        context.commitChanges();
+        env.context().commitChanges();
     }
 
     @Test
     public void byteArray() {
-        ArraysEntity test = context.newObject(ArraysEntity.class);
+        ArraysEntity test = env.context().newObject(ArraysEntity.class);
 
         byte[] a = new byte[] {
                 1, 2, 3
         };
         test.setByteArray(a);
-        context.commitChanges();
+        env.context().commitChanges();
 
         ArraysEntity testRead = ObjectSelect
                 .query(ArraysEntity.class)
-                .selectFirst(context);
+                .selectFirst(env.context());
         assertNotNull(testRead.getByteArray());
         assertArraysEqual(a, testRead.getByteArray());
 
         test.setByteArray(null);
-        context.commitChanges();
+        env.context().commitChanges();
     }
 
     @Test
     public void charArray() {
-        ArraysEntity test = context.newObject(ArraysEntity.class);
+        ArraysEntity test = env.context().newObject(ArraysEntity.class);
 
         char[] a = new char[] {
                 'x', 'y', 'z'
         };
         test.setCharArray(a);
-        context.commitChanges();
+        env.context().commitChanges();
 
         ArraysEntity testRead = ObjectSelect.query(ArraysEntity.class)
-                .selectFirst(context);
+                .selectFirst(env.context());
         assertNotNull(testRead.getCharArray());
         assertArraysEqual(a, testRead.getCharArray());
 
         test.setCharArray(null);
-        context.commitChanges();
+        env.context().commitChanges();
     }
 
     @Test
     public void characterArray() {
-        ArraysEntity test = context.newObject(ArraysEntity.class);
+        ArraysEntity test = env.context().newObject(ArraysEntity.class);
 
         Character[] a = new Character[] {
                 'x', 'y', 'z'
         };
         test.setCharWrapperArray(a);
-        context.commitChanges();
+        env.context().commitChanges();
 
         ArraysEntity testRead = ObjectSelect.query(ArraysEntity.class)
-                .selectFirst(context);
+                .selectFirst(env.context());
         assertNotNull(testRead.getCharWrapperArray());
         assertArraysEqual(a, testRead.getCharWrapperArray());
 
         test.setCharWrapperArray(null);
-        context.commitChanges();
+        env.context().commitChanges();
     }
 
     @Test
     public void character() {
-        CharacterEntity test = context.newObject(CharacterEntity.class);
+        CharacterEntity test = env.context().newObject(CharacterEntity.class);
 
         test.setCharacterField('c');
-        context.commitChanges();
+        env.context().commitChanges();
 
         CharacterEntity testRead = ObjectSelect
                 .query(CharacterEntity.class)
-                .selectFirst(context);
+                .selectFirst(env.context());
         assertNotNull(testRead.getCharacterField());
         assertEquals((Character) 'c', testRead.getCharacterField());
 
         test.setCharacterField(null);
-        context.commitChanges();
+        env.context().commitChanges();
     }
 
     @Test
     public void byteWrapperArray() {
-        ArraysEntity test = context.newObject(ArraysEntity.class);
+        ArraysEntity test = env.context().newObject(ArraysEntity.class);
 
         Byte[] a = new Byte[] {
                 (byte) 1, (byte) 2, (byte) 3
         };
         test.setByteWrapperArray(a);
-        context.commitChanges();
+        env.context().commitChanges();
 
         ArraysEntity testRead = ObjectSelect
                 .query(ArraysEntity.class)
-                .selectFirst(context);
+                .selectFirst(env.context());
         assertNotNull(testRead.getByteWrapperArray());
         assertArraysEqual(a, testRead.getByteWrapperArray());
 
         test.setByteWrapperArray(null);
-        context.commitChanges();
+        env.context().commitChanges();
     }
 
     private void assertArraysEqual(Object a1, Object a2) {

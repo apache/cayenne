@@ -31,7 +31,6 @@ import org.apache.cayenne.unit.di.runtime.CayenneTestsEnv;
 import org.junit.jupiter.api.extension.RegisterExtension;
 import org.apache.cayenne.util.Util;
 import org.junit.jupiter.api.Test;
-import org.junit.jupiter.api.BeforeEach;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -45,15 +44,7 @@ public class DataContextConcurrencyIT {
     @RegisterExtension
     static final CayenneTestsEnv env = CayenneTestsEnv.forProject(CayenneProjects.TESTMAP_PROJECT);
 
-
     private static final Logger logger = LoggerFactory.getLogger(DataContextConcurrencyIT.class);
-    private ObjectContext context;
-
-
-    @BeforeEach
-    public void setUp() {
-        context = env.context();
-    }
 
     /**
      * see https://issues.apache.org/jira/browse/CAY-2382
@@ -66,7 +57,7 @@ public class DataContextConcurrencyIT {
 
         // add some content to context, so it will be serializing slowly
         for(int i=0; i<1000; i++) {
-            Artist artist = context.newObject(Artist.class);
+            Artist artist = env.context().newObject(Artist.class);
             artist.setArtistName("name " + i);
         }
 
@@ -86,8 +77,8 @@ public class DataContextConcurrencyIT {
                 return false;
             }
             for(int i=0; i<1000; i++) {
-                Artist artist = context.newObject(Artist.class);
-                context.deleteObject(artist);
+                Artist artist = env.context().newObject(Artist.class);
+                env.context().deleteObject(artist);
             }
             return true;
         });
@@ -103,7 +94,7 @@ public class DataContextConcurrencyIT {
             for(int i=0; i<100; i++) {
                 try {
                     // make one serialization, before starting modifying thread
-                    Util.cloneViaSerialization(context);
+                    Util.cloneViaSerialization(env.context());
                     if(i == 0) {
                         serializationStartSignal.countDown();
                     }

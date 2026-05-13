@@ -26,7 +26,6 @@ import org.apache.cayenne.unit.di.runtime.CayenneProjects;
 import org.apache.cayenne.unit.di.runtime.CayenneTestsEnv;
 import org.apache.cayenne.util.CayenneMapEntry;
 import org.apache.cayenne.util.Util;
-import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.RegisterExtension;
 
@@ -45,13 +44,6 @@ public class EntityIT {
 
     @RegisterExtension
     static final CayenneTestsEnv env = CayenneTestsEnv.forProject(CayenneProjects.TESTMAP_PROJECT);
-
-    private CayenneRuntime runtime;
-
-    @BeforeEach
-    public void setUp() {
-        runtime = env.runtime();
-    }
 
     @Test
     public void serializability() throws Exception {
@@ -157,7 +149,7 @@ public class EntityIT {
 
         // itertator should be returned, but when trying to read 1st component,
         // it should throw an exception....
-        ObjEntity galleryEnt = runtime.getDataDomain().getEntityResolver().getObjEntity("Gallery");
+        ObjEntity galleryEnt = env.runtime().getDataDomain().getEntityResolver().getObjEntity("Gallery");
         Iterator<CayenneMapEntry> it = galleryEnt.resolvePathComponents(pathExpr);
         assertTrue(it.hasNext());
 
@@ -169,7 +161,7 @@ public class EntityIT {
         // test invalid expression type
         Expression badPathExpr = ExpressionFactory.expressionOfType(Expression.IN);
         badPathExpr.setOperand(0, "a.b.c");
-        ObjEntity galleryEnt = runtime.getDataDomain().getEntityResolver().getObjEntity("Gallery");
+        ObjEntity galleryEnt = env.runtime().getDataDomain().getEntityResolver().getObjEntity("Gallery");
 
         assertThrows(Exception.class, () -> galleryEnt.resolvePathComponents(badPathExpr));
     }
@@ -179,7 +171,7 @@ public class EntityIT {
         Expression pathExpr = ExpressionFactory.expressionOfType(Expression.OBJ_PATH);
         pathExpr.setOperand(0, "galleryName");
 
-        ObjEntity galleryEnt = runtime.getDataDomain().getEntityResolver().getObjEntity("Gallery");
+        ObjEntity galleryEnt = env.runtime().getDataDomain().getEntityResolver().getObjEntity("Gallery");
         Iterator<CayenneMapEntry> it = galleryEnt.resolvePathComponents(pathExpr);
 
         // iterator must contain a single ObjAttribute

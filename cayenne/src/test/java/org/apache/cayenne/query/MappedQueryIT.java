@@ -31,7 +31,6 @@ import org.apache.cayenne.tx.ExternalTransaction;
 import org.apache.cayenne.unit.UnitDbAdapter;
 import org.apache.cayenne.unit.di.runtime.CayenneProjects;
 import org.apache.cayenne.unit.di.runtime.CayenneTestsEnv;
-import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.RegisterExtension;
 
@@ -44,17 +43,6 @@ public class MappedQueryIT {
 
     @RegisterExtension
     static final CayenneTestsEnv env = CayenneTestsEnv.forProject(CayenneProjects.TESTMAP_PROJECT);
-
-    private DataContext context;
-    private UnitDbAdapter accessStackAdapter;
-    private JdbcEventLogger jdbcEventLogger;
-
-    @BeforeEach
-    public void setUp() {
-        context = env.dataContext();
-        accessStackAdapter = env.getInstance(UnitDbAdapter.class);
-        jdbcEventLogger = env.getInstance(JdbcEventLogger.class);
-    }
 
     protected void createArtistsDataSet() throws Exception {
         TableHelper tArtist = env.table("ARTIST");
@@ -72,7 +60,7 @@ public class MappedQueryIT {
         createArtistsDataSet();
 
         Artist a = MappedSelect.query("ParameterizedQueryWithLocalCache", Artist.class)
-                .param("name", "artist14").select(context).get(0);
+                .param("name", "artist14").select(env.dataContext()).get(0);
         assertNotNull(a);
         assertEquals("artist14", a.getArtistName());
     }
@@ -84,7 +72,7 @@ public class MappedQueryIT {
         try (ResultBatchIterator<Artist> iterator = MappedSelect
                 .query("ParameterizedQueryWithSharedCache", Artist.class)
                 .param("name", "artist14")
-                .batchIterator(context, 1)) {
+                .batchIterator(env.dataContext(), 1)) {
             int count = 0;
             while (iterator.hasNext()) {
                 count++;
@@ -104,43 +92,43 @@ public class MappedQueryIT {
     public void sqlTemplateSelect() throws Exception {
         createArtistsDataSet();
 
-        List<DataRow> result = MappedSelect.query("SelectTestLower", DataRow.class).select(context);
+        List<DataRow> result = MappedSelect.query("SelectTestLower", DataRow.class).select(env.dataContext());
         assertEquals(20, result.size());
         assertInstanceOf(DataRow.class, result.get(0));
     }
 
     @Test
     public void sqlTemplateUpdate() throws Exception {
-        int updated = MappedExec.query("NonSelectingQuery").update(context)[0];
+        int updated = MappedExec.query("NonSelectingQuery").update(env.dataContext())[0];
 
         assertEquals(1, updated);
 
-        Painting painting = ObjectSelect.query(Painting.class).selectOne(context);
+        Painting painting = ObjectSelect.query(Painting.class).selectOne(env.dataContext());
         assertEquals("No Painting Like This", painting.getPaintingTitle());
         assertEquals(12.5, painting.getEstimatedPrice().doubleValue(), 0);
     }
 
     @Test
     public void procedureQuery() throws Exception {
-        if (!accessStackAdapter.supportsStoredProcedures()) {
+        if (!env.getInstance(UnitDbAdapter.class).supportsStoredProcedures()) {
             return;
         }
 
-        if (!accessStackAdapter.canMakeObjectsOutOfProcedures()) {
+        if (!env.getInstance(UnitDbAdapter.class).canMakeObjectsOutOfProcedures()) {
             return;
         }
 
         // create an artist with painting in the database
-        Artist a = context.newObject(Artist.class);
+        Artist a = env.dataContext().newObject(Artist.class);
         a.setArtistName("An Artist");
 
-        Painting p = context.newObject(Painting.class);
+        Painting p = env.dataContext().newObject(Painting.class);
         p.setPaintingTitle("A Painting");
         // converting double to string prevents rounding weirdness...
         p.setEstimatedPrice(new BigDecimal(1000));
         a.addToPaintingArray(p);
 
-        context.commitChanges();
+        env.dataContext().commitChanges();
 
         List<?> artists = runProcedureSelect(MappedSelect.query("ProcedureQuery", Artist.class)
                 .param("aName", "An Artist")
@@ -157,7 +145,7 @@ public class MappedQueryIT {
     public void ejbqlQuery() throws Exception {
         createArtistsDataSet();
 
-        List result = MappedSelect.query("EjbqlQueryTest").select(context);
+        List result = MappedSelect.query("EjbqlQueryTest").select(env.dataContext());
         assertEquals(20, result.size());
         assertInstanceOf(DataRow.class, result.get(0));
     }
@@ -173,11 +161,11 @@ public class MappedQueryIT {
                 .query("ParameterizedQueryWithLocalCache", Artist.class).param("name", "artist2");
 
         assertNotEquals(
-                query1.getMetaData(context.getEntityResolver()).getCacheKey(),
-                query2.getMetaData(context.getEntityResolver()).getCacheKey());
+                query1.getMetaData(env.dataContext().getEntityResolver()).getCacheKey(),
+                query2.getMetaData(env.dataContext().getEntityResolver()).getCacheKey());
         assertEquals(
-                query2.getMetaData(context.getEntityResolver()).getCacheKey(),
-                query3.getMetaData(context.getEntityResolver()).getCacheKey());
+                query2.getMetaData(env.dataContext().getEntityResolver()).getCacheKey(),
+                query3.getMetaData(env.dataContext().getEntityResolver()).getCacheKey());
     }
 
     protected QueryResponse runProcedureSelect(AbstractMappedQuery q) throws Exception {
@@ -190,11 +178,11 @@ public class MappedQueryIT {
         // e.g.
         // http://stackoverflow.com/questions/16921942/porting-apache-cayenne-from-oracle-to-postgresql
 
-        BaseTransaction t = new ExternalTransaction(jdbcEventLogger);
+        BaseTransaction t = new ExternalTransaction(env.getInstance(JdbcEventLogger.class));
         BaseTransaction.bindThreadTransaction(t);
 
         try {
-            return context.performGenericQuery(q);
+            return env.dataContext().performGenericQuery(q);
         } finally {
             BaseTransaction.bindThreadTransaction(null);
             t.commit();

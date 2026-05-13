@@ -28,7 +28,6 @@ import org.apache.cayenne.testdo.extended_type.ExtendedTypeEntity;
 import org.apache.cayenne.testdo.extended_type.StringET1;
 import org.apache.cayenne.unit.di.runtime.CayenneProjects;
 import org.apache.cayenne.unit.di.runtime.CayenneTestsEnv;
-import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.RegisterExtension;
 
@@ -39,16 +38,9 @@ public class DataContextExtendedTypeOperationsIT {
     @RegisterExtension
     static final CayenneTestsEnv env = CayenneTestsEnv.forProject(CayenneProjects.EXTENDED_TYPE_PROJECT);
 
-    protected ObjectContext context;
-
-    @BeforeEach
-    public void setUp() {
-        context = env.context();
-    }
-
     @Test
     public void storeExtendedType() {
-        ExtendedTypeEntity e1 = context.newObject(ExtendedTypeEntity.class);
+        ExtendedTypeEntity e1 = env.context().newObject(ExtendedTypeEntity.class);
         e1.setName(new StringET1("X"));
         e1.getObjectContext().commitChanges();
 
@@ -62,7 +54,7 @@ public class DataContextExtendedTypeOperationsIT {
 
     @Test
     public void inExpressionExtendedTypeArray() {
-        ExtendedTypeEntity e1 = context.newObject(ExtendedTypeEntity.class);
+        ExtendedTypeEntity e1 = env.context().newObject(ExtendedTypeEntity.class);
         e1.setName(new StringET1("X"));
 
         ExtendedTypeEntity e2 = e1.getObjectContext().newObject(ExtendedTypeEntity.class);
@@ -80,7 +72,7 @@ public class DataContextExtendedTypeOperationsIT {
 
     @Test
     public void inExpressionExtendedTypeList() {
-        ExtendedTypeEntity e1 = context.newObject(ExtendedTypeEntity.class);
+        ExtendedTypeEntity e1 = env.context().newObject(ExtendedTypeEntity.class);
         e1.setName(new StringET1("X"));
 
         ExtendedTypeEntity e2 = e1.getObjectContext().newObject(ExtendedTypeEntity.class);

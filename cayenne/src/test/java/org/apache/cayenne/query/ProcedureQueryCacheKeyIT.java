@@ -23,7 +23,6 @@ import org.apache.cayenne.runtime.CayenneRuntime;
 import org.apache.cayenne.testdo.testmap.Artist;
 import org.apache.cayenne.unit.di.runtime.CayenneProjects;
 import org.apache.cayenne.unit.di.runtime.CayenneTestsEnv;
-import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.RegisterExtension;
 
@@ -36,17 +35,10 @@ public class ProcedureQueryCacheKeyIT {
     @RegisterExtension
     static final CayenneTestsEnv env = CayenneTestsEnv.forProject(CayenneProjects.TESTMAP_PROJECT);
 
-    private CayenneRuntime runtime;
-
-    @BeforeEach
-    public void setUp() {
-        runtime = env.runtime();
-    }
-
     @Test
     public void noCache() {
 
-        EntityResolver resolver = runtime.getDataDomain().getEntityResolver();
+        EntityResolver resolver = env.runtime().getDataDomain().getEntityResolver();
 
         ProcedureQuery query = new ProcedureQuery("ABC", Artist.class);
 
@@ -62,7 +54,7 @@ public class ProcedureQueryCacheKeyIT {
     @Test
     public void localCache() {
 
-        EntityResolver resolver = runtime.getDataDomain().getEntityResolver();
+        EntityResolver resolver = env.runtime().getDataDomain().getEntityResolver();
 
         ProcedureQuery query = new ProcedureQuery("ABC", Artist.class);
 
@@ -76,7 +68,7 @@ public class ProcedureQueryCacheKeyIT {
     @Test
     public void sharedCache() {
 
-        EntityResolver resolver = runtime.getDataDomain().getEntityResolver();
+        EntityResolver resolver = env.runtime().getDataDomain().getEntityResolver();
 
         ProcedureQuery query = new ProcedureQuery("ABC", Artist.class);
 
@@ -90,7 +82,7 @@ public class ProcedureQueryCacheKeyIT {
     @Test
     public void namedQuery() {
 
-        EntityResolver resolver = runtime.getDataDomain().getEntityResolver();
+        EntityResolver resolver = env.runtime().getDataDomain().getEntityResolver();
 
         ProcedureQuery query = new ProcedureQuery("ABC", Artist.class);
 
@@ -103,7 +95,7 @@ public class ProcedureQueryCacheKeyIT {
 
     @Test
     public void cacheFetchOffsetAndLimit() {
-        EntityResolver resolver = runtime.getDataDomain().getEntityResolver();
+        EntityResolver resolver = env.runtime().getDataDomain().getEntityResolver();
         
         ProcedureQuery q1 = new ProcedureQuery("ABC", Artist.class);
         q1.setCacheStrategy(QueryCacheStrategy.SHARED_CACHE);

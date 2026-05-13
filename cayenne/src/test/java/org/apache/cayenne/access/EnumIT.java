@@ -34,8 +34,6 @@ import org.apache.cayenne.unit.di.runtime.CayenneProjects;
 import org.apache.cayenne.unit.di.runtime.CayenneTestsEnv;
 import org.junit.jupiter.api.extension.RegisterExtension;
 import org.junit.jupiter.api.Test;
-import org.junit.jupiter.api.BeforeEach;
-
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.junit.jupiter.api.Assertions.assertSame;
@@ -45,8 +43,6 @@ public class EnumIT {
     @RegisterExtension
     static final CayenneTestsEnv env = CayenneTestsEnv.forProject(CayenneProjects.ENUM_PROJECT);
 
-    private ObjectContext context;
-
     private void createDataSet() throws Exception {
         TableHelper tEnumEntity = env.table("ENUM_ENTITY");
         tEnumEntity.setColumns("ID", "ENUM_ATTRIBUTE");
@@ -55,16 +51,11 @@ public class EnumIT {
         tEnumEntity.insert(2, "one");
     }
 
-    @BeforeEach
-    public void setUp() {
-        context = env.context();
-    }
-
     @Test
     public void insert() {
-        EnumEntity e = context.newObject(EnumEntity.class);
+        EnumEntity e = env.context().newObject(EnumEntity.class);
         e.setEnumAttribute(Enum1.one);
-        context.commitChanges();
+        env.context().commitChanges();
     }
 
     @Test
@@ -73,7 +64,7 @@ public class EnumIT {
 
         EnumEntity e = ObjectSelect.query(EnumEntity.class)
                 .where(EnumEntity.ENUM_ATTRIBUTE.eq(Enum1.one))
-                .selectOne(context);
+                .selectOne(env.context());
 
         assertNotNull(e);
         assertSame(Enum1.one, e.getEnumAttribute());
@@ -88,27 +79,27 @@ public class EnumIT {
                 "SELECT * FROM ENUM_ENTITY WHERE ENUM_ATTRIBUTE = 'one'");
         q.setColumnNamesCapitalization(CapsStrategy.UPPER);
 
-        EnumEntity e = (EnumEntity) Cayenne.objectForQuery(context, q);
+        EnumEntity e = (EnumEntity) Cayenne.objectForQuery(env.context(), q);
         assertNotNull(e);
         assertSame(Enum1.one, e.getEnumAttribute());
     }
 
     @Test
     public void createObjectWithEnumQualifier() {
-        EnumEntity2 test = context.newObject(EnumEntity2.class);
-        context.commitChanges();
+        EnumEntity2 test = env.context().newObject(EnumEntity2.class);
+        env.context().commitChanges();
 
         assertEquals(Enum1.two, test.getEnumAttribute());
     }
 
     @Test
     public void enumMappedToChar() {
-        EnumEntity3 enumEntity3 = context.newObject(EnumEntity3.class);
+        EnumEntity3 enumEntity3 = env.context().newObject(EnumEntity3.class);
         enumEntity3.setEnumAttribute(Enum1.two);
-        context.commitChanges();
+        env.context().commitChanges();
 
         List<EnumEntity3> enumEntity3s = ObjectSelect.query(EnumEntity3.class)
-                .select(context);
+                .select(env.context());
         assertEquals(1, enumEntity3s.size());
         assertEquals(Enum1.two, enumEntity3s.get(0).getEnumAttribute());
     }

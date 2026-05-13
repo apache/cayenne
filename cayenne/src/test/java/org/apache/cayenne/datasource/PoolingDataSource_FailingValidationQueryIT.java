@@ -25,7 +25,6 @@ import org.apache.cayenne.configuration.DataSourceDescriptor;
 import org.apache.cayenne.di.AdhocObjectFactory;
 import org.apache.cayenne.unit.di.runtime.CayenneProjects;
 import org.apache.cayenne.unit.di.runtime.CayenneTestsEnv;
-import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.RegisterExtension;
 
@@ -35,15 +34,6 @@ public class PoolingDataSource_FailingValidationQueryIT {
 
 	@RegisterExtension
 	static final CayenneTestsEnv env = CayenneTestsEnv.forProject(CayenneProjects.TESTMAP_PROJECT);
-
-	private DataSourceDescriptor dataSourceInfo;
-	private AdhocObjectFactory objectFactory;
-
-	@BeforeEach
-	public void setUp() {
-		dataSourceInfo = env.getInstance(DataSourceDescriptor.class);
-		objectFactory = env.getInstance(AdhocObjectFactory.class);
-	}
 
 	protected PoolingDataSourceParameters createParameters() {
 		PoolingDataSourceParameters poolParameters = new PoolingDataSourceParameters();
@@ -57,9 +47,9 @@ public class PoolingDataSource_FailingValidationQueryIT {
 	@Test
 	public void constructor() {
 		assertThrows(CayenneRuntimeException.class, () -> {
-			Driver driver = objectFactory.newInstance(Driver.class, dataSourceInfo.getJdbcDriver());
-			DriverDataSource nonPooling = new DriverDataSource(driver, dataSourceInfo.getDataSourceUrl(),
-					dataSourceInfo.getUserName(), dataSourceInfo.getPassword());
+			Driver driver = env.getInstance(AdhocObjectFactory.class).newInstance(Driver.class, env.getInstance(DataSourceDescriptor.class).getJdbcDriver());
+			DriverDataSource nonPooling = new DriverDataSource(driver, env.getInstance(DataSourceDescriptor.class).getDataSourceUrl(),
+					env.getInstance(DataSourceDescriptor.class).getUserName(), env.getInstance(DataSourceDescriptor.class).getPassword());
 
 			PoolingDataSourceParameters poolParameters = createParameters();
 			UnmanagedPoolingDataSource ds = new UnmanagedPoolingDataSource(nonPooling, poolParameters);

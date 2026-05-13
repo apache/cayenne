@@ -27,7 +27,6 @@ import org.apache.cayenne.testdo.testmap.Artist;
 import org.apache.cayenne.testdo.testmap.Painting;
 import org.apache.cayenne.unit.di.runtime.CayenneProjects;
 import org.apache.cayenne.unit.di.runtime.CayenneTestsEnv;
-import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.RegisterExtension;
 
@@ -39,38 +38,31 @@ public class DataContextOrderingIT  {
     @RegisterExtension
     static final CayenneTestsEnv env = CayenneTestsEnv.forProject(CayenneProjects.TESTMAP_PROJECT);
 
-        private DataContext context;
-
-    @BeforeEach
-    public void setUp() {
-        context = env.dataContext();
-    }
-
     @Test
     public void multipleOrdering() {
 
         Calendar c = Calendar.getInstance();
 
-        Artist a1 = context.newObject(Artist.class);
+        Artist a1 = env.dataContext().newObject(Artist.class);
         a1.setArtistName("2");
         a1.setDateOfBirth(c.getTime());
 
         c.add(Calendar.DAY_OF_MONTH, -1);
-        Artist a2 = context.newObject(Artist.class);
+        Artist a2 = env.dataContext().newObject(Artist.class);
         a2.setArtistName("3");
         a2.setDateOfBirth(c.getTime());
 
         c.add(Calendar.DAY_OF_MONTH, -1);
-        Artist a3 = context.newObject(Artist.class);
+        Artist a3 = env.dataContext().newObject(Artist.class);
         a3.setArtistName("3");
         a3.setDateOfBirth(c.getTime());
 
-        context.commitChanges();
+        env.dataContext().commitChanges();
 
         ObjectSelect<Artist> query = ObjectSelect.query(Artist.class)
                 .orderBy(Artist.ARTIST_NAME.desc(), Artist.DATE_OF_BIRTH.desc());
 
-        List<Artist> list = query.select(context);
+        List<Artist> list = query.select(env.dataContext());
         assertEquals(3, list.size());
         assertSame(a2, list.get(0));
         assertSame(a3, list.get(1));
@@ -82,38 +74,38 @@ public class DataContextOrderingIT  {
 
         Calendar c = Calendar.getInstance();
 
-        Artist a1 = context.newObject(Artist.class);
+        Artist a1 = env.dataContext().newObject(Artist.class);
         a1.setArtistName("2");
         a1.setDateOfBirth(c.getTime());
 
         c.add(Calendar.DAY_OF_MONTH, -1);
-        Artist a2 = context.newObject(Artist.class);
+        Artist a2 = env.dataContext().newObject(Artist.class);
         a2.setArtistName("3");
         a2.setDateOfBirth(c.getTime());
 
         c.add(Calendar.DAY_OF_MONTH, -1);
-        Artist a3 = context.newObject(Artist.class);
+        Artist a3 = env.dataContext().newObject(Artist.class);
         a3.setArtistName("3");
         a3.setDateOfBirth(c.getTime());
 
-        Painting p1 = context.newObject(Painting.class);
+        Painting p1 = env.dataContext().newObject(Painting.class);
         p1.setEstimatedPrice(new BigDecimal(1));
         p1.setPaintingTitle("Y");
         a1.addToPaintingArray(p1);
 
-        Painting p2 = context.newObject(Painting.class);
+        Painting p2 = env.dataContext().newObject(Painting.class);
         p2.setEstimatedPrice(new BigDecimal(2));
         p2.setPaintingTitle("X");
         a2.addToPaintingArray(p2);
 
-        context.commitChanges();
+        env.dataContext().commitChanges();
 
         ObjectSelect<Artist> query1 = ObjectSelect.query(Artist.class)
                 // per CAY-1074, adding a to-many join to expression messes up the ordering
                 .and(Artist.PAINTING_ARRAY.ne((List<Painting>) null))
                 .orderBy(Artist.ARTIST_NAME.desc(), (Artist.DATE_OF_BIRTH.desc()));
 
-        List<Artist> list1 = query1.select(context);
+        List<Artist> list1 = query1.select(env.dataContext());
         assertEquals(2, list1.size());
     }
 
@@ -121,26 +113,26 @@ public class DataContextOrderingIT  {
     public void customPropertySort() throws Exception {
         Calendar c = Calendar.getInstance();
 
-        Artist a1 = context.newObject(Artist.class);
+        Artist a1 = env.dataContext().newObject(Artist.class);
         a1.setArtistName("31");
         a1.setDateOfBirth(c.getTime());
 
         c.add(Calendar.DAY_OF_MONTH, -1);
-        Artist a2 = context.newObject(Artist.class);
+        Artist a2 = env.dataContext().newObject(Artist.class);
         a2.setArtistName("22");
         a2.setDateOfBirth(c.getTime());
 
         c.add(Calendar.DAY_OF_MONTH, -1);
-        Artist a3 = context.newObject(Artist.class);
+        Artist a3 = env.dataContext().newObject(Artist.class);
         a3.setArtistName("13");
         a3.setDateOfBirth(c.getTime());
 
-        context.commitChanges();
+        env.dataContext().commitChanges();
 
         ObjectSelect<Artist> query = ObjectSelect.query(Artist.class)
                 .orderBy(Artist.ARTIST_NAME.substring(2, 1).desc());
 
-        List<Artist> list = query.select(context);
+        List<Artist> list = query.select(env.dataContext());
         assertEquals(3, list.size());
         assertSame(a3, list.get(0));
         assertSame(a2, list.get(1));

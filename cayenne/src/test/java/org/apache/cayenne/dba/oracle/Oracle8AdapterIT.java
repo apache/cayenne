@@ -22,7 +22,6 @@ package org.apache.cayenne.dba.oracle;
 import org.apache.cayenne.di.AdhocObjectFactory;
 import org.apache.cayenne.unit.di.runtime.CayenneProjects;
 import org.apache.cayenne.unit.di.runtime.CayenneTestsEnv;
-import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.RegisterExtension;
 
@@ -38,17 +37,10 @@ public class Oracle8AdapterIT {
     @RegisterExtension
     static final CayenneTestsEnv env = CayenneTestsEnv.forProject(CayenneProjects.TESTMAP_PROJECT);
 
-    private AdhocObjectFactory objectFactory;
-
-    @BeforeEach
-    public void setUp() {
-        objectFactory = env.getInstance(AdhocObjectFactory.class);
-    }
-
     @Test
     public void timestampMapping() throws Exception {
         
-        Oracle8Adapter adapter = objectFactory.newInstance(
+        Oracle8Adapter adapter = env.getInstance(AdhocObjectFactory.class).newInstance(
                 Oracle8Adapter.class, 
                 Oracle8Adapter.class.getName());
 
@@ -61,7 +53,7 @@ public class Oracle8AdapterIT {
     @Test
     public void findAdapterResource() throws Exception {
         
-        Oracle8Adapter adapter = objectFactory.newInstance(
+        Oracle8Adapter adapter = env.getInstance(AdhocObjectFactory.class).newInstance(
                 Oracle8Adapter.class, 
                 Oracle8Adapter.class.getName());
 

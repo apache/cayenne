@@ -39,8 +39,6 @@ import org.apache.cayenne.unit.di.runtime.CayenneProjects;
 import org.apache.cayenne.unit.di.runtime.CayenneTestsEnv;
 import org.junit.jupiter.api.extension.RegisterExtension;
 import org.junit.jupiter.api.Test;
-import org.junit.jupiter.api.BeforeEach;
-
 import java.util.Arrays;
 import java.util.Collection;
 import java.util.Collections;
@@ -57,21 +55,9 @@ public class BatchActionLockingIT {
 	@RegisterExtension
 	static final CayenneTestsEnv env = CayenneTestsEnv.forProject(CayenneProjects.LOCKING_PROJECT);
 
-	protected CayenneRuntime runtime;
-	private Injector injector;
-	private AdhocObjectFactory objectFactory;
-
-
-	@BeforeEach
-	public void setUp() {
-		runtime = env.runtime();
-		injector = env.getInstance(Injector.class);
-		objectFactory = env.getInstance(AdhocObjectFactory.class);
-	}
-
 	@Test
 	public void runAsIndividualQueriesSuccess() throws Exception {
-		EntityResolver resolver = runtime.getDataDomain().getEntityResolver();
+		EntityResolver resolver = env.runtime().getDataDomain().getEntityResolver();
 
 		// test with adapter that supports keys...
 		JdbcAdapter adapter = buildAdapter(true);
@@ -113,7 +99,7 @@ public class BatchActionLockingIT {
 
 	@Test
 	public void runAsIndividualQueriesOptimisticLockingFailure() throws Exception {
-		EntityResolver resolver = runtime.getDataDomain().getEntityResolver();
+		EntityResolver resolver = env.runtime().getDataDomain().getEntityResolver();
 
 		// test with adapter that supports keys...
 		JdbcAdapter adapter = buildAdapter(true);
@@ -154,9 +140,9 @@ public class BatchActionLockingIT {
 	}
 
 	JdbcAdapter buildAdapter(boolean supportGeneratedKeys) {
-		JdbcAdapter adapter = objectFactory.newInstance(JdbcAdapter.class, JdbcAdapter.class.getName());
+		JdbcAdapter adapter = env.getInstance(AdhocObjectFactory.class).newInstance(JdbcAdapter.class, JdbcAdapter.class.getName());
 		adapter.setSupportsGeneratedKeys(supportGeneratedKeys);
-		injector.injectMembers(adapter);
+		env.getInstance(Injector.class).injectMembers(adapter);
 		return adapter;
 	}
 }

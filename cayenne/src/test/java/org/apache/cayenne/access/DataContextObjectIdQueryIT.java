@@ -25,7 +25,6 @@ import org.apache.cayenne.query.SQLTemplate;
 import org.apache.cayenne.testdo.testmap.Artist;
 import org.apache.cayenne.unit.di.runtime.CayenneProjects;
 import org.apache.cayenne.unit.di.runtime.CayenneTestsEnv;
-import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.RegisterExtension;
 
@@ -41,23 +40,16 @@ public class DataContextObjectIdQueryIT  {
     @RegisterExtension
     static final CayenneTestsEnv env = CayenneTestsEnv.forProject(CayenneProjects.TESTMAP_PROJECT);
 
-        private DataContext context;
-
-    @BeforeEach
-    public void setUp() {
-        context = env.dataContext();
-    }
-
     @Test
     public void refreshNullifiedValuesNew() {
 
-        Artist a = context.newObject(Artist.class);
+        Artist a = env.dataContext().newObject(Artist.class);
         a.setArtistName("X");
         a.setDateOfBirth(new Date());
 
-        context.commitChanges();
+        env.dataContext().commitChanges();
 
-        context.performGenericQuery(new SQLTemplate(
+        env.dataContext().performGenericQuery(new SQLTemplate(
                 Artist.class,
                 "UPDATE ARTIST SET DATE_OF_BIRTH = NULL"));
 
@@ -67,7 +59,7 @@ public class DataContextObjectIdQueryIT  {
                 Artist.ARTIST_ID_PK_COLUMN,
                 id), false, ObjectIdQuery.CACHE_REFRESH);
 
-        Artist a1 = (Artist) Cayenne.objectForQuery(context, query);
+        Artist a1 = (Artist) Cayenne.objectForQuery(env.dataContext(), query);
         assertNull(a1.getDateOfBirth());
         assertEquals("X", a1.getArtistName());
     }
@@ -75,12 +67,12 @@ public class DataContextObjectIdQueryIT  {
     @Test
     public void noRefreshValuesNew() {
 
-        Artist a = context.newObject(Artist.class);
+        Artist a = env.dataContext().newObject(Artist.class);
         a.setArtistName("X");
 
-        context.commitChanges();
+        env.dataContext().commitChanges();
 
-        context.performGenericQuery(new SQLTemplate(
+        env.dataContext().performGenericQuery(new SQLTemplate(
                 Artist.class,
                 "UPDATE ARTIST SET ARTIST_NAME = 'Y'"));
 
@@ -90,7 +82,7 @@ public class DataContextObjectIdQueryIT  {
                 Artist.ARTIST_ID_PK_COLUMN,
                 id), false, ObjectIdQuery.CACHE);
 
-        Artist a1 = (Artist) Cayenne.objectForQuery(context, query);
+        Artist a1 = (Artist) Cayenne.objectForQuery(env.dataContext(), query);
         assertEquals("X", a1.getArtistName());
     }
 
@@ -102,13 +94,13 @@ public class DataContextObjectIdQueryIT  {
                 "INSERT INTO ARTIST (ARTIST_ID, ARTIST_NAME, DATE_OF_BIRTH) VALUES (44, 'X', #bind($date 'DATE'))");
         insert.setParameters(Collections.singletonMap("date", new Date()));
 
-        context.performGenericQuery(insert);
+        env.dataContext().performGenericQuery(insert);
 
-        Artist a = Cayenne.objectForPK(context, Artist.class, 44L);
+        Artist a = Cayenne.objectForPK(env.dataContext(), Artist.class, 44L);
         assertNotNull(a.getDateOfBirth());
         assertEquals("X", a.getArtistName());
 
-        context.performGenericQuery(new SQLTemplate(
+        env.dataContext().performGenericQuery(new SQLTemplate(
                 Artist.class,
                 "UPDATE ARTIST SET DATE_OF_BIRTH = NULL"));
 
@@ -117,7 +109,7 @@ public class DataContextObjectIdQueryIT  {
                 Artist.ARTIST_ID_PK_COLUMN,
                 44L), false, ObjectIdQuery.CACHE_REFRESH);
 
-        Artist a1 = (Artist) Cayenne.objectForQuery(context, query);
+        Artist a1 = (Artist) Cayenne.objectForQuery(env.dataContext(), query);
         assertNull(a1.getDateOfBirth());
         assertEquals("X", a1.getArtistName());
     }

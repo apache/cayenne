@@ -24,7 +24,6 @@ import org.apache.cayenne.reflect.LifecycleCallbackRegistry;
 import org.apache.cayenne.testdo.annotation.ArtistAnnotation;
 import org.apache.cayenne.unit.di.runtime.CayenneProjects;
 import org.apache.cayenne.unit.di.runtime.CayenneTestsEnv;
-import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.RegisterExtension;
 
@@ -38,17 +37,10 @@ public class AnnotationIT {
     @RegisterExtension
     static final CayenneTestsEnv env = CayenneTestsEnv.forProject(CayenneProjects.ANNOTATION);
 
-    private ObjectContext objectContext;
-
-    @BeforeEach
-    public void setUp() {
-        objectContext = env.context();
-    }
-
     @Test
     public void availableCallback() {
 
-        LifecycleCallbackRegistry lifecycleCallbackRegistry = objectContext.getEntityResolver().getCallbackRegistry();
+        LifecycleCallbackRegistry lifecycleCallbackRegistry = env.context().getEntityResolver().getCallbackRegistry();
 
         assertFalse(lifecycleCallbackRegistry.isEmpty(LifecycleEvent.POST_ADD));
         assertFalse(lifecycleCallbackRegistry.isEmpty(LifecycleEvent.PRE_PERSIST));
@@ -62,25 +54,25 @@ public class AnnotationIT {
 
     @Test
     public void workCallback() {
-        ArtistAnnotation artist = objectContext.newObject(ArtistAnnotation.class);
+        ArtistAnnotation artist = env.context().newObject(ArtistAnnotation.class);
         assertEquals(artist.getPostCallback(), "testPostAdd");
         assertNull(artist.getPreCallback());
 
-        objectContext.commitChanges();
+        env.context().commitChanges();
         assertEquals(artist.getPostCallback(), "testPostPersist");
         assertEquals(artist.getPreCallback(), "testPrePersist");
 
-        artist = ObjectSelect.query(ArtistAnnotation.class).selectFirst(objectContext);
+        artist = ObjectSelect.query(ArtistAnnotation.class).selectFirst(env.context());
         assertEquals(artist.getPostCallback(), "testPostLoad");
 
         artist.setPostCallback(null);
-        objectContext.commitChanges();
+        env.context().commitChanges();
         assertEquals(artist.getPostCallback(), "testPostUpdate");
         assertEquals(artist.getPreCallback(), "testPreUpdate");
 
-        objectContext.deleteObject(artist);
+        env.context().deleteObject(artist);
         assertEquals(artist.getPreCallback(), "testPreRemove");
-        objectContext.commitChanges();
+        env.context().commitChanges();
         assertEquals(artist.getPostCallback(), "testPostRemove");
     }
 

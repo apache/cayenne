@@ -45,7 +45,6 @@ import org.apache.cayenne.test.jdbc.TableHelper;
 import org.apache.cayenne.testdo.testmap.Artist;
 import org.apache.cayenne.unit.di.runtime.CayenneProjects;
 import org.apache.cayenne.unit.di.runtime.CayenneTestsEnv;
-import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.RegisterExtension;
 
@@ -61,19 +60,6 @@ public class BindDirectiveIT {
 			+ "VALUES (#bind($id), #bind($name), #bind($dob))";
 	private static String INSERT_TEMPLATE_WITH_TYPES = "INSERT INTO ARTIST (ARTIST_ID, ARTIST_NAME, DATE_OF_BIRTH) "
 			+ "VALUES (#bind($id), #bind($name), #bind($dob 'DATE'))";
-
-	private JdbcAdapter adapter;
-	private ObjectContext context;
-	private JdbcEventLogger logger;
-	private DataNode node;
-
-	@BeforeEach
-	public void setUp() {
-		adapter = env.getInstance(JdbcAdapter.class);
-		context = env.context();
-		logger = env.getInstance(JdbcEventLogger.class);
-		node = env.getInstance(DataNode.class);
-	}
 
 	@Test
 	public void bind_Timestamp() throws Exception {
@@ -152,7 +138,7 @@ public class BindDirectiveIT {
 
 		query.setColumnNamesCapitalization(CapsStrategy.UPPER);
 		query.setParams(Collections.singletonMap("ARTISTNAMES", artistNames));
-		List<?> result = context.performQuery(query);
+		List<?> result = env.context().performQuery(query);
 		assertEquals(2, result.size());
 	}
 
@@ -231,8 +217,8 @@ public class BindDirectiveIT {
 		SQLTemplate template = new SQLTemplate(Object.class, templateString);
 		template.setParams(parameters);
 		MockOperationObserver observer = new MockOperationObserver();
-		node.performQueries(Collections.singletonList(template), observer);
+		env.getInstance(DataNode.class).performQueries(Collections.singletonList(template), observer);
 
-		return ObjectSelect.dataRowQuery(Artist.class).selectOne(context);
+		return ObjectSelect.dataRowQuery(Artist.class).selectOne(env.context());
 	}
 }

@@ -26,7 +26,6 @@ import org.apache.cayenne.testdo.relationships_many_to_many_join.SelfRelationshi
 import org.apache.cayenne.testdo.relationships_many_to_many_join.Song;
 import org.apache.cayenne.unit.di.runtime.CayenneProjects;
 import org.apache.cayenne.unit.di.runtime.CayenneTestsEnv;
-import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.RegisterExtension;
 
@@ -35,36 +34,29 @@ public class ManyToManyJoinIT {
     @RegisterExtension
     static final CayenneTestsEnv env = CayenneTestsEnv.forProject(CayenneProjects.RELATIONSHIPS_MANY_TO_MANY_JOIN_PROJECT);
 
-    private ObjectContext context;
-
-    @BeforeEach
-    public void setUp() {
-        context = env.context();
-    }
-
     @Test
     public void testManyToManyJoinWithFlattenedRelationship() throws Exception {
-    	Author author = context.newObject(Author.class);
+    	Author author = env.context().newObject(Author.class);
     	author.setName("Bob Dylan");
     	
-        Song song = context.newObject(Song.class);
+        Song song = env.context().newObject(Song.class);
         song.setName("House of the Rising Sun");
 
         song.addToAuthors(author);
         
-        context.commitChanges();
+        env.context().commitChanges();
         assertEquals(author, song.getAuthors().iterator().next());
     }
 
     @Test
     public void testManyToManySelfRelationship() {
-        SelfRelationship parent1 = context.newObject(SelfRelationship.class);
+        SelfRelationship parent1 = env.context().newObject(SelfRelationship.class);
         parent1.setName("parent1");
 
-        SelfRelationshipSub child1 = context.newObject(SelfRelationshipSub.class);
+        SelfRelationshipSub child1 = env.context().newObject(SelfRelationshipSub.class);
         child1.setName("child1");
 
-        SelfRelationshipSub child2 = context.newObject(SelfRelationshipSub.class);
+        SelfRelationshipSub child2 = env.context().newObject(SelfRelationshipSub.class);
         child2.setName("child2");
 
         // this sets both forward and reverse relationships
@@ -73,7 +65,7 @@ public class ManyToManyJoinIT {
         // this still couldn't set reverse relationship, as it present in the Subclass only
         parent1.addToSelfChildren(child1);
 
-        context.commitChanges();
+        env.context().commitChanges();
 
         assertEquals(2, parent1.getSelfChildren().size());
 

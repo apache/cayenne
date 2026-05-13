@@ -29,8 +29,6 @@ import org.apache.cayenne.unit.di.runtime.CayenneProjects;
 import org.apache.cayenne.unit.di.runtime.CayenneTestsEnv;
 import org.junit.jupiter.api.extension.RegisterExtension;
 import org.junit.jupiter.api.Test;
-import org.junit.jupiter.api.BeforeEach;
-
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.Map;
@@ -43,16 +41,13 @@ public class EJBQLSelectTranslatorIT {
     @RegisterExtension
     static final CayenneTestsEnv env = CayenneTestsEnv.forProject(CayenneProjects.TESTMAP_PROJECT);
 
-    private CayenneRuntime runtime;
-    private DbAdapter adapter;
-
     private SQLTemplate translateSelect(String ejbql) {
         return translateSelect(ejbql, Collections.EMPTY_MAP);
     }
 
     private SQLTemplate translateSelect(String ejbql, final Map<Integer, Object> queryParameters) {
         EJBQLParser parser = EJBQLParserFactory.getParser();
-        EJBQLCompiledExpression select = parser.compile(ejbql, runtime.getDataDomain().getEntityResolver());
+        EJBQLCompiledExpression select = parser.compile(ejbql, env.runtime().getDataDomain().getEntityResolver());
         EJBQLQuery query = new EJBQLQuery(ejbql) {
 
             @Override
@@ -61,17 +56,10 @@ public class EJBQLSelectTranslatorIT {
             }
         };
 
-        EJBQLTranslationContext tr = new EJBQLTranslationContext(runtime.getDataDomain().getEntityResolver(), query,
-                select, new JdbcEJBQLTranslatorFactory(), adapter.getQuotingStrategy());
+        EJBQLTranslationContext tr = new EJBQLTranslationContext(env.runtime().getDataDomain().getEntityResolver(), query,
+                select, new JdbcEJBQLTranslatorFactory(), env.getInstance(DbAdapter.class).getQuotingStrategy());
         select.getExpression().visit(new EJBQLSelectTranslator(tr));
         return tr.getQuery();
-    }
-
-
-    @BeforeEach
-    public void setUp() {
-        runtime = env.runtime();
-        adapter = env.getInstance(DbAdapter.class);
     }
 
     @Test
@@ -316,12 +304,12 @@ public class EJBQLSelectTranslatorIT {
     public void equalsNullParameter() {
         String ejbql = "select p from Painting p WHERE p.toArtist=:x";
         EJBQLParser parser = EJBQLParserFactory.getParser();
-        EJBQLCompiledExpression select = parser.compile(ejbql, runtime.getDataDomain().getEntityResolver());
+        EJBQLCompiledExpression select = parser.compile(ejbql, env.runtime().getDataDomain().getEntityResolver());
         EJBQLQuery query = new EJBQLQuery(ejbql);
         query.setParameter("x", null);
 
-        EJBQLTranslationContext tr = new EJBQLTranslationContext(runtime.getDataDomain().getEntityResolver(), query,
-                select, new JdbcEJBQLTranslatorFactory(), adapter.getQuotingStrategy());
+        EJBQLTranslationContext tr = new EJBQLTranslationContext(env.runtime().getDataDomain().getEntityResolver(), query,
+                select, new JdbcEJBQLTranslatorFactory(), env.getInstance(DbAdapter.class).getQuotingStrategy());
         select.getExpression().visit(new EJBQLSelectTranslator(tr));
         String sql = tr.getQuery().getDefaultTemplate();
         assertTrue(sql.endsWith("t0.ARTIST_ID IS NULL"), sql);
@@ -332,13 +320,13 @@ public class EJBQLSelectTranslatorIT {
     public void equalsNullAndNotNullParameter() {
         String ejbql = "select p from Painting p WHERE p.toArtist=:x OR p.toArtist.artistName=:b";
         EJBQLParser parser = EJBQLParserFactory.getParser();
-        EJBQLCompiledExpression select = parser.compile(ejbql, runtime.getDataDomain().getEntityResolver());
+        EJBQLCompiledExpression select = parser.compile(ejbql, env.runtime().getDataDomain().getEntityResolver());
         EJBQLQuery query = new EJBQLQuery(ejbql);
         query.setParameter("x", null);
         query.setParameter("b", "Y");
 
-        EJBQLTranslationContext tr = new EJBQLTranslationContext(runtime.getDataDomain().getEntityResolver(), query,
-                select, new JdbcEJBQLTranslatorFactory(), adapter.getQuotingStrategy());
+        EJBQLTranslationContext tr = new EJBQLTranslationContext(env.runtime().getDataDomain().getEntityResolver(), query,
+                select, new JdbcEJBQLTranslatorFactory(), env.getInstance(DbAdapter.class).getQuotingStrategy());
         select.getExpression().visit(new EJBQLSelectTranslator(tr));
         String sql = tr.getQuery().getDefaultTemplate();
         assertTrue(sql.endsWith("t0.ARTIST_ID IS NULL OR t1.ARTIST_NAME = #bind($id0)"), sql);

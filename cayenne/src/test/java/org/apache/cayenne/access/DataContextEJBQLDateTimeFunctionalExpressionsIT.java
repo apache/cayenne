@@ -25,7 +25,6 @@ import org.apache.cayenne.testdo.legacy_datetime.DateTestEntity;
 import org.apache.cayenne.unit.UnitDbAdapter;
 import org.apache.cayenne.unit.di.runtime.CayenneProjects;
 import org.apache.cayenne.unit.di.runtime.CayenneTestsEnv;
-import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.RegisterExtension;
 
@@ -40,34 +39,25 @@ public class DataContextEJBQLDateTimeFunctionalExpressionsIT {
     @RegisterExtension
     static final CayenneTestsEnv env = CayenneTestsEnv.forProject(CayenneProjects.LEGACY_DATE_TIME_PROJECT);
 
-    private ObjectContext context;
-    private UnitDbAdapter unitDbAdapter;
-
-    @BeforeEach
-    public void setUp() {
-        context = env.context();
-        unitDbAdapter = env.getInstance(UnitDbAdapter.class);
-    }
-
     @Test
     public void cURRENT_DATE() {
 
         Calendar cal = Calendar.getInstance();
         int year = cal.get(Calendar.YEAR);
 
-        DateTestEntity o1 = context.newObject(DateTestEntity.class);
+        DateTestEntity o1 = env.context().newObject(DateTestEntity.class);
         cal.set(year - 3, 1, 1);
         o1.setDateColumn(cal.getTime());
 
-        DateTestEntity o2 = context.newObject(DateTestEntity.class);
+        DateTestEntity o2 = env.context().newObject(DateTestEntity.class);
         cal.set(year + 3, 1, 1);
         o2.setDateColumn(cal.getTime());
 
-        context.commitChanges();
+        env.context().commitChanges();
 
         EJBQLQuery query = new EJBQLQuery(
                 "SELECT d FROM DateTestEntity d WHERE d.dateColumn > CURRENT_DATE");
-        List<?> objects = context.performQuery(query);
+        List<?> objects = env.context().performQuery(query);
         assertEquals(1, objects.size());
         assertTrue(objects.contains(o2));
     }
@@ -80,20 +70,20 @@ public class DataContextEJBQLDateTimeFunctionalExpressionsIT {
         int month = cal.get(Calendar.MONTH);
         int day = cal.get(Calendar.DAY_OF_MONTH);
 
-        DateTestEntity o1 = context.newObject(DateTestEntity.class);
+        DateTestEntity o1 = env.context().newObject(DateTestEntity.class);
         cal.set(year, month, day, 0, 0, 0);
         o1.setTimeColumn(cal.getTime());
 
-        DateTestEntity o2 = context.newObject(DateTestEntity.class);
+        DateTestEntity o2 = env.context().newObject(DateTestEntity.class);
         cal.set(year, month, day, 23, 59, 59);
         o2.setTimeColumn(cal.getTime());
 
-        context.commitChanges();
+        env.context().commitChanges();
 
         EJBQLQuery query = new EJBQLQuery(
                 "SELECT d FROM DateTestEntity d WHERE d.timeColumn < CURRENT_TIME");
-        List<?> objects = context.performQuery(query);
-        if(!unitDbAdapter.supportsTimeSqlType()) {
+        List<?> objects = env.context().performQuery(query);
+        if(!env.getInstance(UnitDbAdapter.class).supportsTimeSqlType()) {
             // check only that query is executed without error
             // result will be invalid most likely as DB doesn't support TIME data type
             return;
@@ -110,19 +100,19 @@ public class DataContextEJBQLDateTimeFunctionalExpressionsIT {
         int month = cal.get(Calendar.MONTH);
         int date = cal.get(Calendar.DATE);
 
-        DateTestEntity o1 = context.newObject(DateTestEntity.class);
+        DateTestEntity o1 = env.context().newObject(DateTestEntity.class);
         cal.set(year, month, date, 0, 0, 0);
         o1.setTimestampColumn(cal.getTime());
 
-        DateTestEntity o2 = context.newObject(DateTestEntity.class);
+        DateTestEntity o2 = env.context().newObject(DateTestEntity.class);
         cal.set(year, month, date, 23, 59, 59);
         o2.setTimestampColumn(cal.getTime());
 
-        context.commitChanges();
+        env.context().commitChanges();
 
         EJBQLQuery query = new EJBQLQuery(
                 "SELECT d FROM DateTestEntity d WHERE d.timestampColumn < CURRENT_TIMESTAMP");
-        List<?> objects = context.performQuery(query);
+        List<?> objects = env.context().performQuery(query);
         assertEquals(1, objects.size());
         assertTrue(objects.contains(o1));
     }

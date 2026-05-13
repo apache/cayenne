@@ -25,8 +25,6 @@ import org.apache.cayenne.unit.di.runtime.CayenneProjects;
 import org.apache.cayenne.unit.di.runtime.CayenneTestsEnv;
 import org.junit.jupiter.api.extension.RegisterExtension;
 import org.junit.jupiter.api.Test;
-import org.junit.jupiter.api.BeforeEach;
-
 import static org.junit.jupiter.api.Assertions.assertEquals;
 
 public class CompoundPkChangeIT {
@@ -34,32 +32,24 @@ public class CompoundPkChangeIT {
     @RegisterExtension
     static final CayenneTestsEnv env = CayenneTestsEnv.forProject(CayenneProjects.COMPOUND_PROJECT);
 
-
     private static final String key1v1 = "-key1-v1-";
     private static final String key2v1 = "-key2-v1-";
     private static final String key1v2 = "-key1-v2-";
     private static final String key2v2 = "-key2-v2-";
     private static final String key1v3 = "-key1-v3-";
     private static final String key2v3 = "-key2-v3-";
-    private DataContext context;
-
-
-    @BeforeEach
-    public void setUp() {
-        context = env.dataContext();
-    }
 
     @Test
     public void compoundPkChangeSingleElement() throws Exception {
 
-        CompoundPkTestEntity object = context.newObject(CompoundPkTestEntity.class);
+        CompoundPkTestEntity object = env.dataContext().newObject(CompoundPkTestEntity.class);
         CompoundPkTestEntity refreshedObject = null;
 
         object.setKey1(key1v1);
         object.setKey2(key2v1);
         object.setName("testing testing");
 
-        context.commitChanges();
+        env.dataContext().commitChanges();
         assertEquals(key1v1, object.getObjectId().getIdSnapshot().get(
                 CompoundPkTestEntity.KEY1_PK_COLUMN));
         assertEquals(key2v1, object.getObjectId().getIdSnapshot().get(
@@ -69,12 +59,12 @@ public class CompoundPkChangeIT {
                 object.getObjectId(),
                 false,
                 ObjectIdQuery.CACHE_REFRESH);
-        refreshedObject = (CompoundPkTestEntity) Cayenne.objectForQuery(context, refetch);
+        refreshedObject = (CompoundPkTestEntity) Cayenne.objectForQuery(env.dataContext(), refetch);
         assertEquals(object.getObjectId(), refreshedObject.getObjectId());
 
         object.setKey2(key2v2);
 
-        context.commitChanges();
+        env.dataContext().commitChanges();
         assertEquals(key1v1, object.getObjectId().getIdSnapshot().get(
                 CompoundPkTestEntity.KEY1_PK_COLUMN));
         assertEquals(key2v2, object.getObjectId().getIdSnapshot().get(
@@ -85,12 +75,12 @@ public class CompoundPkChangeIT {
                 false,
                 ObjectIdQuery.CACHE_REFRESH);
         refreshedObject = (CompoundPkTestEntity) Cayenne
-                .objectForQuery(context, refetch1);
+                .objectForQuery(env.dataContext(), refetch1);
         assertEquals(object.getObjectId(), refreshedObject.getObjectId());
 
         object.setKey2(key2v3);
 
-        context.commitChanges();
+        env.dataContext().commitChanges();
         assertEquals(key1v1, object.getObjectId().getIdSnapshot().get(
                 CompoundPkTestEntity.KEY1_PK_COLUMN));
         assertEquals(key2v3, object.getObjectId().getIdSnapshot().get(
@@ -101,21 +91,21 @@ public class CompoundPkChangeIT {
                 false,
                 ObjectIdQuery.CACHE_REFRESH);
         refreshedObject = (CompoundPkTestEntity) Cayenne
-                .objectForQuery(context, refetch2);
+                .objectForQuery(env.dataContext(), refetch2);
         assertEquals(object.getObjectId(), refreshedObject.getObjectId());
     }
 
     @Test
     public void compoundPkChangeAllElements() throws Exception {
 
-        CompoundPkTestEntity object = context.newObject(CompoundPkTestEntity.class);
+        CompoundPkTestEntity object = env.dataContext().newObject(CompoundPkTestEntity.class);
         CompoundPkTestEntity refreshedObject = null;
 
         object.setKey1(key1v1);
         object.setKey2(key2v1);
         object.setName("testing testing");
 
-        context.commitChanges();
+        env.dataContext().commitChanges();
         assertEquals(key1v1, object.getObjectId().getIdSnapshot().get(
                 CompoundPkTestEntity.KEY1_PK_COLUMN));
         assertEquals(key2v1, object.getObjectId().getIdSnapshot().get(
@@ -125,13 +115,13 @@ public class CompoundPkChangeIT {
                 object.getObjectId(),
                 false,
                 ObjectIdQuery.CACHE_REFRESH);
-        refreshedObject = (CompoundPkTestEntity) Cayenne.objectForQuery(context, refetch);
+        refreshedObject = (CompoundPkTestEntity) Cayenne.objectForQuery(env.dataContext(), refetch);
         assertEquals(object.getObjectId(), refreshedObject.getObjectId());
 
         object.setKey1(key1v2);
         object.setKey2(key2v2);
 
-        context.commitChanges();
+        env.dataContext().commitChanges();
         assertEquals(key1v2, object.getObjectId().getIdSnapshot().get(
                 CompoundPkTestEntity.KEY1_PK_COLUMN));
         assertEquals(key2v2, object.getObjectId().getIdSnapshot().get(
@@ -142,13 +132,13 @@ public class CompoundPkChangeIT {
                 false,
                 ObjectIdQuery.CACHE_REFRESH);
         refreshedObject = (CompoundPkTestEntity) Cayenne
-                .objectForQuery(context, refetch1);
+                .objectForQuery(env.dataContext(), refetch1);
         assertEquals(object.getObjectId(), refreshedObject.getObjectId());
 
         object.setKey1(key1v3);
         object.setKey2(key2v3);
 
-        context.commitChanges();
+        env.dataContext().commitChanges();
         assertEquals(key1v3, object.getObjectId().getIdSnapshot().get(
                 CompoundPkTestEntity.KEY1_PK_COLUMN));
         assertEquals(key2v3, object.getObjectId().getIdSnapshot().get(
@@ -159,7 +149,7 @@ public class CompoundPkChangeIT {
                 false,
                 ObjectIdQuery.CACHE_REFRESH);
         refreshedObject = (CompoundPkTestEntity) Cayenne
-                .objectForQuery(context, refetch2);
+                .objectForQuery(env.dataContext(), refetch2);
         assertEquals(object.getObjectId(), refreshedObject.getObjectId());
     }
 }

@@ -25,8 +25,6 @@ import org.apache.cayenne.unit.di.runtime.CayenneProjects;
 import org.apache.cayenne.unit.di.runtime.CayenneTestsEnv;
 import org.junit.jupiter.api.extension.RegisterExtension;
 import org.junit.jupiter.api.Test;
-import org.junit.jupiter.api.BeforeEach;
-
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNull;
 import static org.junit.jupiter.api.Assertions.assertSame;
@@ -35,13 +33,6 @@ public class DataNodeIT {
 
     @RegisterExtension
     static final CayenneTestsEnv env = CayenneTestsEnv.forProject(CayenneProjects.TESTMAP_PROJECT);
-
-    private AdhocObjectFactory objectFactory;
-
-    @BeforeEach
-    public void setUp() {
-        objectFactory = env.getInstance(AdhocObjectFactory.class);
-    }
 
     @Test
     public void name() throws Exception {
@@ -77,14 +68,14 @@ public class DataNodeIT {
 
         assertNull(node.getAdapter());
 
-        JdbcAdapter a1 = objectFactory.newInstance(
+        JdbcAdapter a1 = env.getInstance(AdhocObjectFactory.class).newInstance(
                 JdbcAdapter.class, 
                 JdbcAdapter.class.getName());
         node.setAdapter(a1);
 
         assertSame(a1, node.getAdapter());
 
-        JdbcAdapter a2 = objectFactory.newInstance(
+        JdbcAdapter a2 = env.getInstance(AdhocObjectFactory.class).newInstance(
                 JdbcAdapter.class, 
                 JdbcAdapter.class.getName());
         node.setAdapter(a2);

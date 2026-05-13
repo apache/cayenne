@@ -27,7 +27,6 @@ import org.apache.cayenne.map.DbEntity;
 import org.apache.cayenne.map.DbKeyGenerator;
 import org.apache.cayenne.unit.di.runtime.CayenneProjects;
 import org.apache.cayenne.unit.di.runtime.CayenneTestsEnv;
-import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.RegisterExtension;
 
@@ -41,15 +40,6 @@ public class JdbcAdapterIT {
     @RegisterExtension
     static final CayenneTestsEnv env = CayenneTestsEnv.forProject(CayenneProjects.TESTMAP_PROJECT);
 
-    private DbAdapter dbAdapter;
-    private AdhocObjectFactory objectFactory;
-
-    @BeforeEach
-    public void setUp() {
-        dbAdapter = env.getInstance(DbAdapter.class);
-        objectFactory = env.getInstance(AdhocObjectFactory.class);
-    }
-
     @Test
     public void externalTypesForJdbcType() throws Exception {
         // check a few types
@@ -60,7 +50,7 @@ public class JdbcAdapterIT {
     }
 
     private void checkType(int type) throws java.lang.Exception {
-        JdbcAdapter adapter = objectFactory.newInstance(
+        JdbcAdapter adapter = env.getInstance(AdhocObjectFactory.class).newInstance(
                 JdbcAdapter.class, 
                 JdbcAdapter.class.getName());
 
@@ -73,7 +63,7 @@ public class JdbcAdapterIT {
     @Test
     public void createTableQuoteSqlIdentifiers() {
 
-        if (dbAdapter instanceof MySQLAdapter) {
+        if (env.getInstance(DbAdapter.class) instanceof MySQLAdapter) {
 
             DbEntity entity = new DbEntity();
             DbAttribute attr = new DbAttribute();
@@ -89,7 +79,7 @@ public class JdbcAdapterIT {
             entity.setDataMap(dm);
             entity.setName("name table");
 
-            MySQLAdapter adaptMySQL = (MySQLAdapter) dbAdapter;
+            MySQLAdapter adaptMySQL = (MySQLAdapter) env.getInstance(DbAdapter.class);
             String str = "CREATE TABLE `name table` (`name column` CHAR NULL) ENGINE=InnoDB";
             assertEquals(str, adaptMySQL.createTable(entity));
         }

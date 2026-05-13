@@ -27,8 +27,6 @@ import org.apache.cayenne.unit.di.runtime.CayenneProjects;
 import org.apache.cayenne.unit.di.runtime.CayenneTestsEnv;
 import org.junit.jupiter.api.extension.RegisterExtension;
 import org.junit.jupiter.api.Test;
-import org.junit.jupiter.api.BeforeEach;
-
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
 /**
@@ -39,24 +37,16 @@ public class SingleTableInheritance1IT {
     @RegisterExtension
     static final CayenneTestsEnv env = CayenneTestsEnv.forProject(CayenneProjects.INHERITANCE_SINGLE_TABLE1_PROJECT);
 
-    private ObjectContext context;
-
-    @BeforeEach
-    public void setUp() {
-        context = env.context();
-    }
-
-
     @Test
     public void groupActions() throws Exception {
 
-        User user = context.newObject(User.class);
+        User user = env.context().newObject(User.class);
         user.setName("test_user");
 
-        Group group1 = context.newObject(Group.class);
+        Group group1 = env.context().newObject(Group.class);
         group1.setName("test_group1");
 
-        Group group2 = context.newObject(Group.class);
+        Group group2 = env.context().newObject(Group.class);
         group2.setName("test_group2");
 
         group1.addToGroupMembers(user);
@@ -68,33 +58,33 @@ public class SingleTableInheritance1IT {
         group1.removeFromGroupMembers(user);
         ObjectSelect<Group> query = ObjectSelect.query(Group.class)
                 .where(Role.ROLE_GROUPS.contains(group2));
-        context.performQuery(query);
-        context.commitChanges();
+        env.context().performQuery(query);
+        env.context().commitChanges();
 
-        context.deleteObjects(group1);
-        context.deleteObjects(group2);
-        context.deleteObjects(user);
-        context.commitChanges();
+        env.context().deleteObjects(group1);
+        env.context().deleteObjects(group2);
+        env.context().deleteObjects(user);
+        env.context().commitChanges();
     }
 
     @Test
     public void flattenedNullifyNullifyDeleteRules() throws Exception {
 
-        User user = context.newObject(User.class);
+        User user = env.context().newObject(User.class);
         user.setName("test_user");
-        Group group = context.newObject(Group.class);
+        Group group = env.context().newObject(Group.class);
         group.setName("test_group");
         group.addToGroupMembers(user);
-        context.commitChanges();
+        env.context().commitChanges();
 
-        context.deleteObjects(user);
+        env.context().deleteObjects(user);
         assertTrue(group.getGroupMembers().isEmpty());
 
-        context.commitChanges();
+        env.context().commitChanges();
 
         // here Cayenne would throw per CAY-1378 on an attempt to delete a previously
         // related transient object
-        context.deleteObjects(group);
-        context.commitChanges();
+        env.context().deleteObjects(group);
+        env.context().commitChanges();
     }
 }

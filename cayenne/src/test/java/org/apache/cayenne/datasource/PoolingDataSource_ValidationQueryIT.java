@@ -18,15 +18,12 @@
  ****************************************************************/
 package org.apache.cayenne.datasource;
 
-import static org.junit.jupiter.api.Assertions.assertEquals;
+import org.junit.jupiter.api.Test;
 
 import java.sql.Connection;
 
-import org.apache.cayenne.unit.di.runtime.CayenneProjects;
-import org.apache.cayenne.unit.di.runtime.UseCayenneRuntime;
-import org.junit.jupiter.api.Test;
+import static org.junit.jupiter.api.Assertions.assertEquals;
 
-@UseCayenneRuntime(CayenneProjects.TESTMAP_PROJECT)
 public class PoolingDataSource_ValidationQueryIT extends BasePoolingDataSourceIT {
 
 	@Override

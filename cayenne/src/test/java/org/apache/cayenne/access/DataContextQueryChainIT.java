@@ -27,7 +27,6 @@ import org.apache.cayenne.query.QueryChain;
 import org.apache.cayenne.testdo.testmap.Artist;
 import org.apache.cayenne.unit.di.runtime.CayenneProjects;
 import org.apache.cayenne.unit.di.runtime.CayenneTestsEnv;
-import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.RegisterExtension;
 
@@ -39,24 +38,17 @@ public class DataContextQueryChainIT  {
     @RegisterExtension
     static final CayenneTestsEnv env = CayenneTestsEnv.forProject(CayenneProjects.TESTMAP_PROJECT);
 
-        private DataContext context;
-
-    @BeforeEach
-    public void setUp() {
-        context = env.dataContext();
-    }
-
     @Test
     public void selectQuery() {
-        Artist a1 = context.newObject(Artist.class);
+        Artist a1 = env.dataContext().newObject(Artist.class);
         a1.setArtistName("X");
-        context.commitChanges();
+        env.dataContext().commitChanges();
 
         QueryChain chain = new QueryChain();
         chain.addQuery(ObjectSelect.query(Artist.class));
         chain.addQuery(ObjectSelect.query(Artist.class));
 
-        QueryResponse r = context.performGenericQuery(chain);
+        QueryResponse r = env.dataContext().performGenericQuery(chain);
 
         // data comes back as datarows
         assertEquals(2, r.size());

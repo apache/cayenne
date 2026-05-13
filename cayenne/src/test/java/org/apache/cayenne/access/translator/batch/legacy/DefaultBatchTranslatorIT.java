@@ -31,8 +31,6 @@ import org.apache.cayenne.unit.di.runtime.CayenneProjects;
 import org.apache.cayenne.unit.di.runtime.CayenneTestsEnv;
 import org.junit.jupiter.api.extension.RegisterExtension;
 import org.junit.jupiter.api.Test;
-import org.junit.jupiter.api.BeforeEach;
-
 import java.sql.Types;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
@@ -45,17 +43,9 @@ public class DefaultBatchTranslatorIT {
     @RegisterExtension
     static final CayenneTestsEnv env = CayenneTestsEnv.forProject(CayenneProjects.TESTMAP_PROJECT);
 
-    private AdhocObjectFactory objectFactory;
-
-
-    @BeforeEach
-    public void setUp() {
-        objectFactory = env.getInstance(AdhocObjectFactory.class);
-    }
-
     @Test
     public void constructor() throws Exception {
-        DbAdapter adapter = objectFactory.newInstance(DbAdapter.class, JdbcAdapter.class.getName());
+        DbAdapter adapter = env.getInstance(AdhocObjectFactory.class).newInstance(DbAdapter.class, JdbcAdapter.class.getName());
         DefaultBatchTranslator builder = new DefaultBatchTranslator(mock(BatchQuery.class), adapter, null) {
             @Override
             protected String createSql() {
@@ -78,7 +68,7 @@ public class DefaultBatchTranslatorIT {
 
     @Test
     public void appendDbAttribute1() throws Exception {
-        DbAdapter adapter = objectFactory.newInstance(DbAdapter.class, JdbcAdapter.class.getName());
+        DbAdapter adapter = env.getInstance(AdhocObjectFactory.class).newInstance(DbAdapter.class, JdbcAdapter.class.getName());
         String trimFunction = "testTrim";
 
         DefaultBatchTranslator builder = new DefaultBatchTranslator(mock(BatchQuery.class), adapter, trimFunction) {
@@ -115,7 +105,7 @@ public class DefaultBatchTranslatorIT {
 
     @Test
     public void appendDbAttribute2() throws Exception {
-        DbAdapter adapter = objectFactory.newInstance(DbAdapter.class, JdbcAdapter.class.getName());
+        DbAdapter adapter = env.getInstance(AdhocObjectFactory.class).newInstance(DbAdapter.class, JdbcAdapter.class.getName());
 
         DefaultBatchTranslator builder = new DefaultBatchTranslator(mock(BatchQuery.class), adapter, null) {
             @Override

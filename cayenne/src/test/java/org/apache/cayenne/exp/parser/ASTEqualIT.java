@@ -28,7 +28,6 @@ import org.apache.cayenne.testdo.testmap.Artist;
 import org.apache.cayenne.testdo.testmap.Painting;
 import org.apache.cayenne.unit.di.runtime.CayenneProjects;
 import org.apache.cayenne.unit.di.runtime.CayenneTestsEnv;
-import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.RegisterExtension;
 
@@ -37,20 +36,13 @@ public class ASTEqualIT {
 	@RegisterExtension
 	static final CayenneTestsEnv env = CayenneTestsEnv.forProject(CayenneProjects.TESTMAP_PROJECT);
 
-	private ObjectContext context;
-
-	@BeforeEach
-	public void setUp() {
-		context = env.context();
-	}
-
 	@Test
 	public void evaluate_PersistentObject() {
-		Artist a1 = context.newObject(Artist.class);
-		Artist a2 = context.newObject(Artist.class);
-		Painting p1 = context.newObject(Painting.class);
-		Painting p2 = context.newObject(Painting.class);
-		Painting p3 = context.newObject(Painting.class);
+		Artist a1 = env.context().newObject(Artist.class);
+		Artist a2 = env.context().newObject(Artist.class);
+		Painting p1 = env.context().newObject(Painting.class);
+		Painting p2 = env.context().newObject(Painting.class);
+		Painting p3 = env.context().newObject(Painting.class);
 
 		a1.setArtistName("a1");
 		a2.setArtistName("a2");
@@ -58,7 +50,7 @@ public class ASTEqualIT {
 		p2.setPaintingTitle("p2");
 		p3.setPaintingTitle("p3");
 
-		context.commitChanges();
+		env.context().commitChanges();
 
 		p1.setToArtist(a1);
 		p2.setToArtist(a2);
@@ -72,11 +64,11 @@ public class ASTEqualIT {
 
 	@Test
 	public void evaluate_TempId() {
-		Artist a1 = context.newObject(Artist.class);
-		Artist a2 = context.newObject(Artist.class);
-		Painting p1 = context.newObject(Painting.class);
-		Painting p2 = context.newObject(Painting.class);
-		Painting p3 = context.newObject(Painting.class);
+		Artist a1 = env.context().newObject(Artist.class);
+		Artist a2 = env.context().newObject(Artist.class);
+		Painting p1 = env.context().newObject(Painting.class);
+		Painting p2 = env.context().newObject(Painting.class);
+		Painting p3 = env.context().newObject(Painting.class);
 
 		p1.setToArtist(a1);
 		p2.setToArtist(a2);
@@ -91,11 +83,11 @@ public class ASTEqualIT {
 	@Test
 	public void evaluate_Id() throws Exception {
 
-		Artist a1 = context.newObject(Artist.class);
-		Artist a2 = context.newObject(Artist.class);
-		Painting p1 = context.newObject(Painting.class);
-		Painting p2 = context.newObject(Painting.class);
-		Painting p3 = context.newObject(Painting.class);
+		Artist a1 = env.context().newObject(Artist.class);
+		Artist a2 = env.context().newObject(Artist.class);
+		Painting p1 = env.context().newObject(Painting.class);
+		Painting p2 = env.context().newObject(Painting.class);
+		Painting p3 = env.context().newObject(Painting.class);
 
 		a1.setArtistName("a1");
 		a2.setArtistName("a2");
@@ -106,7 +98,7 @@ public class ASTEqualIT {
 		p1.setToArtist(a1);
 		p2.setToArtist(a2);
 
-		context.commitChanges();
+		env.context().commitChanges();
 
 		Expression e = new ASTEqual(new ASTObjPath("toArtist"), Cayenne.longPKForObject(a1));
 

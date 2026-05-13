@@ -38,8 +38,6 @@ import org.apache.cayenne.unit.di.runtime.CayenneTestsEnv;
 import org.junit.jupiter.api.extension.RegisterExtension;
 import org.apache.cayenne.util.ListResponse;
 import org.junit.jupiter.api.Test;
-import org.junit.jupiter.api.BeforeEach;
-
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.junit.jupiter.api.Assertions.assertSame;
@@ -49,19 +47,10 @@ public class DataDomainFiltersIT {
     @RegisterExtension
     static final CayenneTestsEnv env = CayenneTestsEnv.forProject(CayenneProjects.TESTMAP_PROJECT);
 
-    private ObjectContext context;
-    private CayenneRuntime runtime;
-
-    @BeforeEach
-    public void setUp() {
-        context = env.context();
-        runtime = env.runtime();
-    }
-
     @Test
     public void defaultFilters() {
         // There is a default TransactionFilter
-        DataDomain domain = runtime.getDataDomain();
+        DataDomain domain = env.runtime().getDataDomain();
         assertEquals(0, domain.queryFilters.size());
         assertEquals(1, domain.syncFilters.size());
     }
@@ -69,7 +58,7 @@ public class DataDomainFiltersIT {
     @Test
     public void onQuery_FilterOrdering() {
 
-        DataDomain domain = runtime.getDataDomain();
+        DataDomain domain = env.runtime().getDataDomain();
         List<String> results = new ArrayList<>();
 
         DataChannelQueryFilter f1 = (originatingContext, query, filterChain) -> {
@@ -90,7 +79,7 @@ public class DataDomainFiltersIT {
         domain.queryFilters.add(f2);
 
         ObjectSelect<Artist> query = ObjectSelect.query(Artist.class);
-        QueryResponse response = domain.onQuery(context, query);
+        QueryResponse response = domain.onQuery(env.context(), query);
         assertNotNull(response);
         assertEquals(4, results.size());
         assertEquals("f2start", results.get(0));
@@ -102,7 +91,7 @@ public class DataDomainFiltersIT {
     @Test
     public void onSync_FilterOrdering() {
 
-        DataDomain domain = runtime.getDataDomain();
+        DataDomain domain = env.runtime().getDataDomain();
         List<String> results = new ArrayList<>();
 
         DataChannelSyncFilter f1 = (originatingContext, changes, syncType, filterChain) -> {
@@ -122,11 +111,11 @@ public class DataDomainFiltersIT {
         domain.syncFilters.add(f1);
         domain.syncFilters.add(f2);
 
-        Artist a = context.newObject(Artist.class);
+        Artist a = env.context().newObject(Artist.class);
         a.setArtistName("AAA");
 
         // testing domain.onSync indirectly
-        context.commitChanges();
+        env.context().commitChanges();
 
         assertEquals(4, results.size());
         assertEquals("f2start", results.get(0));
@@ -138,7 +127,7 @@ public class DataDomainFiltersIT {
     @Test
     public void onQuery_Blocking() {
 
-        DataDomain domain = runtime.getDataDomain();
+        DataDomain domain = env.runtime().getDataDomain();
 
         QueryResponse r1 = new ListResponse();
         QueryResponse r2 = new ListResponse();
@@ -150,7 +139,7 @@ public class DataDomainFiltersIT {
         domain.queryFilters.add(f2);
 
         ObjectSelect<Artist> query = ObjectSelect.query(Artist.class);
-        QueryResponse response = domain.onQuery(context, query);
+        QueryResponse response = domain.onQuery(env.context(), query);
 
         assertSame(r2, response);
     }
@@ -158,16 +147,16 @@ public class DataDomainFiltersIT {
     @Test
     public void syncAndQueryFilter() {
         ComplexFilter complexFilter = new ComplexFilter();
-        DataDomain domain = runtime.getDataDomain();
+        DataDomain domain = env.runtime().getDataDomain();
 
         domain.addQueryFilter(complexFilter);
         domain.addSyncFilter(complexFilter);
 
-        Artist a = context.newObject(Artist.class);
+        Artist a = env.context().newObject(Artist.class);
         a.setArtistName("AAA");
 
         // testing domain.onSync indirectly
-        context.commitChanges();
+        env.context().commitChanges();
 
         assertEquals(2, complexFilter.results.size());
         assertEquals("onSync", complexFilter.results.get(0));

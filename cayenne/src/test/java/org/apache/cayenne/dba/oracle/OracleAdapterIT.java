@@ -25,7 +25,6 @@ import org.apache.cayenne.query.InsertBatchQuery;
 import org.apache.cayenne.runtime.CayenneRuntime;
 import org.apache.cayenne.unit.di.runtime.CayenneProjects;
 import org.apache.cayenne.unit.di.runtime.CayenneTestsEnv;
-import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.RegisterExtension;
 
@@ -41,18 +40,9 @@ public class OracleAdapterIT {
     @RegisterExtension
     static final CayenneTestsEnv env = CayenneTestsEnv.forProject(CayenneProjects.LOB_PROJECT);
 
-    private CayenneRuntime runtime;
-    private AdhocObjectFactory objectFactory;
-
-    @BeforeEach
-    public void setUp() {
-        runtime = env.runtime();
-        objectFactory = env.getInstance(AdhocObjectFactory.class);
-    }
-
     @Test
     public void updatesLOBColumns() throws Exception {
-        DataMap map = runtime.getDataDomain().getDataMap("lob");
+        DataMap map = env.runtime().getDataDomain().getDataMap("lob");
         assertTrue(OracleAdapter.updatesLOBColumns(new InsertBatchQuery(map
                 .getDbEntity("BLOB_TEST"), 1)));
         assertTrue(OracleAdapter.updatesLOBColumns(new InsertBatchQuery(map
@@ -64,7 +54,7 @@ public class OracleAdapterIT {
     @Test
     public void timestampMapping() throws Exception {
         
-        OracleAdapter adapter = objectFactory.newInstance(
+        OracleAdapter adapter = env.getInstance(AdhocObjectFactory.class).newInstance(
                 OracleAdapter.class, 
                 OracleAdapter.class.getName());
 

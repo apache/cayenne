@@ -30,8 +30,6 @@ import org.apache.cayenne.validation.BeanValidationFailure;
 import org.apache.cayenne.validation.ValidationFailure;
 import org.apache.cayenne.validation.ValidationResult;
 import org.junit.jupiter.api.Test;
-import org.junit.jupiter.api.BeforeEach;
-
 import java.util.Date;
 import java.util.List;
 
@@ -44,18 +42,10 @@ public class CayennePersistentObjectValidationIT {
     @RegisterExtension
     static final CayenneTestsEnv env = CayenneTestsEnv.forProject(CayenneProjects.TESTMAP_PROJECT);
 
-    private ObjectContext context;
-
-
-    @BeforeEach
-    public void setUp() {
-        context = env.context();
-    }
-
     @Test
     public void validateForSaveMandatoryToOneMissing() throws Exception {
 
-        Exhibit exhibit = context.newObject(Exhibit.class);
+        Exhibit exhibit = env.context().newObject(Exhibit.class);
         exhibit.setOpeningDate(new Date());
         exhibit.setClosingDate(new Date());
 
@@ -72,7 +62,7 @@ public class CayennePersistentObjectValidationIT {
         assertEquals(Exhibit.TO_GALLERY.getName(), failure.getProperty());
 
         // fix the problem and see if it goes away
-        Gallery gallery = context.newObject(Gallery.class);
+        Gallery gallery = env.context().newObject(Gallery.class);
         exhibit.setToGallery(gallery);
         result = new ValidationResult();
         exhibit.validateForSave(result);
@@ -82,7 +72,7 @@ public class CayennePersistentObjectValidationIT {
     @Test
     public void validateForSaveMandatoryAttributeMissing() throws Exception {
 
-        Artist artist = context.newObject(Artist.class);
+        Artist artist = env.context().newObject(Artist.class);
 
         ValidationResult result = new ValidationResult();
         artist.validateForSave(result);
@@ -106,9 +96,9 @@ public class CayennePersistentObjectValidationIT {
     @Test
     public void validateForSaveAttributeTooLong() throws Exception {
 
-        Artist artist = context.newObject(Artist.class);
+        Artist artist = env.context().newObject(Artist.class);
 
-        DbEntity entity = context.getEntityResolver().getObjEntity(artist).getDbEntity();
+        DbEntity entity = env.context().getEntityResolver().getObjEntity(artist).getDbEntity();
         int len = entity.getAttribute("ARTIST_NAME").getMaxLength();
         StringBuffer buf = new StringBuffer(len);
         for (int i = 0; i < len + 1; i++) {

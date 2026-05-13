@@ -24,7 +24,6 @@ import org.apache.cayenne.map.DbAttribute;
 import org.apache.cayenne.map.DbEntity;
 import org.apache.cayenne.unit.di.runtime.CayenneProjects;
 import org.apache.cayenne.unit.di.runtime.CayenneTestsEnv;
-import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.RegisterExtension;
 
@@ -38,16 +37,9 @@ public class HSQLDBAdapterIT {
     @RegisterExtension
     static final CayenneTestsEnv env = CayenneTestsEnv.forProject(CayenneProjects.TESTMAP_PROJECT);
 
-    private AdhocObjectFactory objectFactory;
-
-    @BeforeEach
-    public void setUp() {
-        objectFactory = env.getInstance(AdhocObjectFactory.class);
-    }
-
     @Test
     public void createTableIgnoresDoublePrecision() {
-        HSQLDBAdapter adapter = objectFactory.newInstance(
+        HSQLDBAdapter adapter = env.getInstance(AdhocObjectFactory.class).newInstance(
                 HSQLDBAdapter.class, 
                 HSQLDBAdapter.class.getName());
         DbEntity e = new DbEntity("Test");
@@ -66,7 +58,7 @@ public class HSQLDBAdapterIT {
 
     @Test
     public void createTableAddsCachedKeyword() {
-        HSQLDBAdapter adapter = objectFactory.newInstance(
+        HSQLDBAdapter adapter = env.getInstance(AdhocObjectFactory.class).newInstance(
                 HSQLDBAdapter.class, 
                 HSQLDBAdapter.class.getName());
         DbEntity e = new DbEntity("Test");

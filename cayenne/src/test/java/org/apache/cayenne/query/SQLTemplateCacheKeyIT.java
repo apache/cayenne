@@ -22,7 +22,6 @@ import org.apache.cayenne.map.EntityResolver;
 import org.apache.cayenne.testdo.testmap.Artist;
 import org.apache.cayenne.unit.di.runtime.CayenneProjects;
 import org.apache.cayenne.unit.di.runtime.CayenneTestsEnv;
-import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.RegisterExtension;
 
@@ -36,23 +35,16 @@ public class SQLTemplateCacheKeyIT {
     @RegisterExtension
     static final CayenneTestsEnv env = CayenneTestsEnv.forProject(CayenneProjects.TESTMAP_PROJECT);
 
-    private EntityResolver resolver;
-
-    @BeforeEach
-    public void setUp() {
-        resolver = env.getInstance(EntityResolver.class);
-    }
-
     @Test
     public void noCache() {
 
         SQLTemplate query = new SQLTemplate(Artist.class, "SELECT ME");
 
-        QueryMetadata md1 = query.getMetaData(resolver);
+        QueryMetadata md1 = query.getMetaData(env.getInstance(EntityResolver.class));
         assertEquals(QueryCacheStrategy.NO_CACHE, md1.getCacheStrategy());
         assertNull(md1.getCacheKey());
 
-        QueryMetadata md2 = query.getMetaData(resolver);
+        QueryMetadata md2 = query.getMetaData(env.getInstance(EntityResolver.class));
         assertEquals(QueryCacheStrategy.NO_CACHE, md2.getCacheStrategy());
         assertNull(md2.getCacheKey());
     }
@@ -64,7 +56,7 @@ public class SQLTemplateCacheKeyIT {
 
         query.setCacheStrategy(QueryCacheStrategy.LOCAL_CACHE);
 
-        QueryMetadata md1 = query.getMetaData(resolver);
+        QueryMetadata md1 = query.getMetaData(env.getInstance(EntityResolver.class));
         assertEquals(QueryCacheStrategy.LOCAL_CACHE, md1.getCacheStrategy());
         assertNotNull(md1.getCacheKey());
     }
@@ -76,7 +68,7 @@ public class SQLTemplateCacheKeyIT {
 
         query.setCacheStrategy(QueryCacheStrategy.SHARED_CACHE);
 
-        QueryMetadata md1 = query.getMetaData(resolver);
+        QueryMetadata md1 = query.getMetaData(env.getInstance(EntityResolver.class));
         assertEquals(QueryCacheStrategy.SHARED_CACHE, md1.getCacheStrategy());
         assertNotNull(md1.getCacheKey());
     }
@@ -88,7 +80,7 @@ public class SQLTemplateCacheKeyIT {
 
         query.setCacheStrategy(QueryCacheStrategy.SHARED_CACHE);
 
-        QueryMetadata md1 = query.getMetaData(resolver);
+        QueryMetadata md1 = query.getMetaData(env.getInstance(EntityResolver.class));
         assertEquals(QueryCacheStrategy.SHARED_CACHE, md1.getCacheStrategy());
         assertFalse("XYZ".equals(md1.getCacheKey()));
     }
@@ -105,8 +97,8 @@ public class SQLTemplateCacheKeyIT {
         q2.setFetchLimit(10);
         q2.setCacheStrategy(QueryCacheStrategy.SHARED_CACHE);
 
-        assertEquals(q1.getMetaData(resolver).getCacheKey(), q2
-                .getMetaData(resolver)
+        assertEquals(q1.getMetaData(env.getInstance(EntityResolver.class)).getCacheKey(), q2
+                .getMetaData(env.getInstance(EntityResolver.class))
                 .getCacheKey());
     }
 }

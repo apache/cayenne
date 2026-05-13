@@ -26,7 +26,6 @@ import org.apache.cayenne.testdo.lob.ClobTestEntity;
 import org.apache.cayenne.unit.UnitDbAdapter;
 import org.apache.cayenne.unit.di.runtime.CayenneProjects;
 import org.apache.cayenne.unit.di.runtime.CayenneTestsEnv;
-import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.RegisterExtension;
 
@@ -38,15 +37,6 @@ public class SelectQueryClobIT {
 
     @RegisterExtension
     static final CayenneTestsEnv env = CayenneTestsEnv.forProject(CayenneProjects.LOB_PROJECT);
-
-    private ObjectContext context;
-    private UnitDbAdapter accessStackAdapter;
-
-    @BeforeEach
-    public void setUp() {
-        context = env.context();
-        accessStackAdapter = env.getInstance(UnitDbAdapter.class);
-    }
 
     private void createClobDataSet() throws Exception {
         TableHelper tClobTest = env.table("CLOB_TEST");
@@ -63,18 +53,18 @@ public class SelectQueryClobIT {
      */
     @Test
     public void selectLikeIgnoreCaseClob() throws Exception {
-        if (accessStackAdapter.supportsLobs()) {
+        if (env.getInstance(UnitDbAdapter.class).supportsLobs()) {
             createClobDataSet();
             List<?> objects = ObjectSelect.query(ClobTestEntity.class)
                     .where(ClobTestEntity.CLOB_COL.likeIgnoreCase("clob%"))
-                    .select(context);
+                    .select(env.context());
             assertEquals(2, objects.size());
         }
     }
 
     @Test
     public void selectFetchLimit_Offset_DistinctClob() throws Exception {
-        if (accessStackAdapter.supportsLobs()) {
+        if (env.getInstance(UnitDbAdapter.class).supportsLobs()) {
             createClobDataSet();
 
             // see CAY-1539... CLOB column causes suppression of DISTINCT in
@@ -83,7 +73,7 @@ public class SelectQueryClobIT {
                     .orderBy("db:" + ClobTestEntity.CLOB_TEST_ID_PK_COLUMN, SortOrder.ASCENDING)
                     .limit(1)
                     .offset(1)
-                    .select(context);
+                    .select(env.context());
             assertEquals(1, objects.size());
             assertEquals(2, Cayenne.intPKForObject(objects.get(0)));
         }
@@ -91,33 +81,33 @@ public class SelectQueryClobIT {
 
     @Test
     public void selectEqualsClob() throws Exception {
-        if (accessStackAdapter.supportsLobComparisons()) {
+        if (env.getInstance(UnitDbAdapter.class).supportsLobComparisons()) {
             createClobDataSet();
             List<?> objects = ObjectSelect.query(ClobTestEntity.class)
                     .where(ClobTestEntity.CLOB_COL.eq("clob1"))
-                    .select(context);
+                    .select(env.context());
             assertEquals(1, objects.size());
         }
     }
 
     @Test
     public void selectNotEqualsClob() throws Exception {
-        if (accessStackAdapter.supportsLobComparisons()) {
+        if (env.getInstance(UnitDbAdapter.class).supportsLobComparisons()) {
             createClobDataSet();
             List<?> objects = ObjectSelect.query(ClobTestEntity.class)
                     .where(ClobTestEntity.CLOB_COL.ne("clob1"))
-                    .select(context);
+                    .select(env.context());
             assertEquals(1, objects.size());
         }
     }
 
     @Test
     public void selectNotEqualsEmptyClob() throws Exception {
-        if (accessStackAdapter.supportsLobComparisons()) {
+        if (env.getInstance(UnitDbAdapter.class).supportsLobComparisons()) {
             createClobDataSet();
             List<?> objects = ObjectSelect.query(ClobTestEntity.class)
                     .where(ClobTestEntity.CLOB_COL.ne(""))
-                    .select(context);
+                    .select(env.context());
             assertEquals(2, objects.size());
         }
     }

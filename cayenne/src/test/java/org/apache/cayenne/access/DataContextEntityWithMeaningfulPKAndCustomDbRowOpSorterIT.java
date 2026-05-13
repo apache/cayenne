@@ -24,7 +24,6 @@ import org.apache.cayenne.testdo.meaningful_pk.MeaningfulPKTest1;
 import org.apache.cayenne.testdo.meaningful_pk.MeaningfulPk;
 import org.apache.cayenne.unit.di.runtime.CayenneProjects;
 import org.apache.cayenne.unit.di.runtime.CayenneTestsEnv;
-import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.RegisterExtension;
 
@@ -35,75 +34,68 @@ public class DataContextEntityWithMeaningfulPKAndCustomDbRowOpSorterIT {
             .forProject(CayenneProjects.MEANINGFUL_PK_PROJECT)
             .withExtraModules(GraphSorterModule.class);
 
-    private DataContext context;
-
-    @BeforeEach
-    public void setUp() {
-        context = env.dataContext();
-    }
-
     @Test
     public void insertDelete() {
-        MeaningfulPk pkObj = context.newObject(MeaningfulPk.class);
+        MeaningfulPk pkObj = env.dataContext().newObject(MeaningfulPk.class);
         pkObj.setPk("123");
-        context.commitChanges();
+        env.dataContext().commitChanges();
 
-        context.deleteObject(pkObj);
+        env.dataContext().deleteObject(pkObj);
 
-        MeaningfulPk pkObj2 = context.newObject(MeaningfulPk.class);
+        MeaningfulPk pkObj2 = env.dataContext().newObject(MeaningfulPk.class);
         pkObj2.setPk("123");
-        context.commitChanges();
+        env.dataContext().commitChanges();
     }
 
     @Test
     public void test_MeaningfulPkInsertDeleteCascade() {
         // setup
-        MeaningfulPKTest1 obj = context.newObject(MeaningfulPKTest1.class);
+        MeaningfulPKTest1 obj = env.dataContext().newObject(MeaningfulPKTest1.class);
         obj.setPkAttribute(1000);
         obj.setDescr("aaa");
-        context.commitChanges();
+        env.dataContext().commitChanges();
 
         // must be able to set reverse relationship
-        MeaningfulPKDep dep = context.newObject(MeaningfulPKDep.class);
+        MeaningfulPKDep dep = env.dataContext().newObject(MeaningfulPKDep.class);
         dep.setToMeaningfulPK(obj);
         dep.setPk(10);
-        context.commitChanges();
+        env.dataContext().commitChanges();
 
         // test
-        context.deleteObject(obj);
+        env.dataContext().deleteObject(obj);
 
-        MeaningfulPKTest1 obj2 = context.newObject(MeaningfulPKTest1.class);
+        MeaningfulPKTest1 obj2 = env.dataContext().newObject(MeaningfulPKTest1.class);
         obj2.setPkAttribute(1000);
         obj2.setDescr("bbb");
 
-        MeaningfulPKDep dep2 = context.newObject(MeaningfulPKDep.class);
+        MeaningfulPKDep dep2 = env.dataContext().newObject(MeaningfulPKDep.class);
         dep2.setToMeaningfulPK(obj2);
         dep2.setPk(10);
-        context.commitChanges();
+        env.dataContext().commitChanges();
     }
 
     @Test
     public void test_MeaningfulPkWithFkUpdate() {
         // setup
-        MeaningfulPKTest1 obj = context.newObject(MeaningfulPKTest1.class);
+        MeaningfulPKTest1 obj = env.dataContext().newObject(MeaningfulPKTest1.class);
         obj.setPkAttribute(1001);
         obj.setDescr("aaa");
-        context.commitChanges();
+        env.dataContext().commitChanges();
 
-        MeaningfulPKDep dep = context.newObject(MeaningfulPKDep.class);
+        MeaningfulPKDep dep = env.dataContext().newObject(MeaningfulPKDep.class);
         dep.setToMeaningfulPK(obj);
         dep.setPk(10);
-        context.commitChanges();
+        env.dataContext().commitChanges();
 
         // check that operations are sorted correctly
         dep.setToMeaningfulPK(null);
         obj.setPkAttribute(1002);
-        context.commitChanges();
+        env.dataContext().commitChanges();
 
         // set relationship with a new PK
         dep.setDescr("test");
         dep.setToMeaningfulPK(obj);
-        context.commitChanges();
+        env.dataContext().commitChanges();
     }
 
 }

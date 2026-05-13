@@ -30,8 +30,6 @@ import org.apache.cayenne.unit.di.runtime.CayenneTestsEnv;
 import org.junit.jupiter.api.extension.RegisterExtension;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.Test;
-import org.junit.jupiter.api.BeforeEach;
-
 import java.sql.SQLException;
 import java.sql.Types;
 
@@ -41,9 +39,6 @@ public class CircularDependencyIT {
 
     @RegisterExtension
     static final CayenneTestsEnv env = CayenneTestsEnv.forProject(CayenneProjects.RELATIONSHIPS_PROJECT);
-
-    private UnitDbAdapter unitDbAdapter;
-    private ObjectContext context;
 
     @AfterEach
     public void cleanUp() throws SQLException {
@@ -63,17 +58,10 @@ public class CircularDependencyIT {
         reflexive.deleteAll();
     }
 
-
-    @BeforeEach
-    public void setUp() {
-        unitDbAdapter = env.getInstance(UnitDbAdapter.class);
-        context = env.context();
-    }
-
     @Test
     public void cycle() {
-        E1 e1 = context.newObject(E1.class);
-        E2 e2 = context.newObject(E2.class);
+        E1 e1 = env.context().newObject(E1.class);
+        E2 e2 = env.context().newObject(E2.class);
 
         e1.setText("e1 #" + 1);
         e2.setText("e2 #" + 2);
@@ -81,9 +69,9 @@ public class CircularDependencyIT {
         e1.setE2(e2);
         e2.setE1(e1);
 
-        CayenneRuntimeException ex = assertThrows(CayenneRuntimeException.class, () -> context.commitChanges());
+        CayenneRuntimeException ex = assertThrows(CayenneRuntimeException.class, () -> env.context().commitChanges());
         // TODO: Oracle adapter still does not fully support key generation.
-        if (unitDbAdapter instanceof OracleUnitDbAdapter) {
+        if (env.getInstance(UnitDbAdapter.class) instanceof OracleUnitDbAdapter) {
             assertTrue(ex.getCause().getMessage().contains("parent key not found"));
         } else {
             assertTrue(ex.getMessage().contains("PK is not generated"),
@@ -95,32 +83,32 @@ public class CircularDependencyIT {
 
     @Test
     public void update() {
-        E1 e1 = context.newObject(E1.class);
-        E2 e2 = context.newObject(E2.class);
+        E1 e1 = env.context().newObject(E1.class);
+        E2 e2 = env.context().newObject(E2.class);
 
         e1.setText("e1 #" + 1);
         e2.setText("e2 #" + 2);
-        context.commitChanges();
+        env.context().commitChanges();
 
         e1.setE2(e2);
-        context.commitChanges();
+        env.context().commitChanges();
 
         e2.setE1(e1);
-        context.commitChanges();
+        env.context().commitChanges();
     }
 
     @Test
     public void updateSelfRelationship() {
-        ReflexiveAndToOne e1 = context.newObject(ReflexiveAndToOne.class);
-        ReflexiveAndToOne e2 = context.newObject(ReflexiveAndToOne.class);
+        ReflexiveAndToOne e1 = env.context().newObject(ReflexiveAndToOne.class);
+        ReflexiveAndToOne e2 = env.context().newObject(ReflexiveAndToOne.class);
 
         e1.setName("e1 #" + 1);
         e2.setName("e2 #" + 2);
 
         e1.setToParent(e2);
-        context.commitChanges();
+        env.context().commitChanges();
 
         e2.setToParent(e1);
-        context.commitChanges();
+        env.context().commitChanges();
     }
 }

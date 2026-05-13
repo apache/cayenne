@@ -30,7 +30,6 @@ import org.apache.cayenne.unit.OracleUnitDbAdapter;
 import org.apache.cayenne.unit.UnitDbAdapter;
 import org.apache.cayenne.unit.di.runtime.CayenneProjects;
 import org.apache.cayenne.unit.di.runtime.CayenneTestsEnv;
-import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.RegisterExtension;
 
@@ -46,20 +45,11 @@ public class ASTFunctionCallStringIT {
     @RegisterExtension
     static final CayenneTestsEnv env = CayenneTestsEnv.forProject(CayenneProjects.TESTMAP_PROJECT);
 
-    private UnitDbAdapter unitDbAdapter;
-    private ObjectContext context;
-
-    @BeforeEach
-    public void setUp() {
-        unitDbAdapter = env.getInstance(UnitDbAdapter.class);
-        context = env.context();
-    }
-
     private Artist createArtist(String name) throws Exception {
-        Artist a1 = context.newObject(Artist.class);
+        Artist a1 = env.context().newObject(Artist.class);
         a1.setArtistName(name);
         a1.setDateOfBirth(new Date());
-        context.commitChanges();
+        env.context().commitChanges();
         return a1;
     }
 
@@ -67,7 +57,7 @@ public class ASTFunctionCallStringIT {
     public void aSTTrimInWhere() throws Exception {
         Artist a1 = createArtist("  name  ");
         Artist a2 = ObjectSelect.query(Artist.class)
-                .where(Artist.ARTIST_NAME.trim().eq("name")).selectOne(context);
+                .where(Artist.ARTIST_NAME.trim().eq("name")).selectOne(env.context());
         assertEquals(a1, a2);
     }
 
@@ -76,10 +66,10 @@ public class ASTFunctionCallStringIT {
         // TODO: This will fail for Oracle, so skip for now.
         //       It is necessary to provide connection with "fixedString=true" property somehow.
         //       Also see CAY-1470.
-        assumeFalse(unitDbAdapter instanceof OracleUnitDbAdapter);
+        assumeFalse(env.getInstance(UnitDbAdapter.class) instanceof OracleUnitDbAdapter);
         Artist a1 = createArtist("name");
         Artist a2 = ObjectSelect.query(Artist.class)
-                .where(Artist.ARTIST_NAME.upper().eq("NAME")).selectOne(context);
+                .where(Artist.ARTIST_NAME.upper().eq("NAME")).selectOne(env.context());
         assertEquals(a1, a2);
     }
 
@@ -88,10 +78,10 @@ public class ASTFunctionCallStringIT {
         // TODO: This will fail for Oracle, so skip for now.
         //       It is necessary to provide connection with "fixedString=true" property somehow.
         //       Also see CAY-1470.
-        assumeFalse(unitDbAdapter instanceof OracleUnitDbAdapter);
+        assumeFalse(env.getInstance(UnitDbAdapter.class) instanceof OracleUnitDbAdapter);
         Artist a1 = createArtist("NAME");
         Artist a2 = ObjectSelect.query(Artist.class)
-                .where(Artist.ARTIST_NAME.lower().eq("name")).selectOne(context);
+                .where(Artist.ARTIST_NAME.lower().eq("name")).selectOne(env.context());
         assertEquals(a1, a2);
     }
 
@@ -99,7 +89,7 @@ public class ASTFunctionCallStringIT {
     public void aSTSubstringInWhere() throws Exception {
         Artist a1 = createArtist("1234567890xyz");
         Artist a2 = ObjectSelect.query(Artist.class)
-                .where(Artist.ARTIST_NAME.substring(2, 8).eq("23456789")).selectOne(context);
+                .where(Artist.ARTIST_NAME.substring(2, 8).eq("23456789")).selectOne(env.context());
         assertEquals(a1, a2);
     }
 
@@ -107,7 +97,7 @@ public class ASTFunctionCallStringIT {
     public void aSTConcat() throws Exception {
         Artist a1 = createArtist("Pablo");
         Artist a2 = ObjectSelect.query(Artist.class)
-                .where(Artist.ARTIST_NAME.trim().concat(" ", "Picasso").eq("Pablo Picasso")).selectOne(context);
+                .where(Artist.ARTIST_NAME.trim().concat(" ", "Picasso").eq("Pablo Picasso")).selectOne(env.context());
         assertEquals(a1, a2);
     }
 
@@ -115,10 +105,10 @@ public class ASTFunctionCallStringIT {
     public void aSTLength() throws Exception {
         Artist a1 = createArtist("123456");
 
-        Artist a2 = ObjectSelect.query(Artist.class).where(Artist.ARTIST_NAME.length().gt(5)).selectOne(context);
+        Artist a2 = ObjectSelect.query(Artist.class).where(Artist.ARTIST_NAME.length().gt(5)).selectOne(env.context());
         assertEquals(a1, a2);
 
-        Artist a3 = ObjectSelect.query(Artist.class).where(Artist.ARTIST_NAME.length().lt(5)).selectOne(context);
+        Artist a3 = ObjectSelect.query(Artist.class).where(Artist.ARTIST_NAME.length().lt(5)).selectOne(env.context());
         assertNull(a3);
     }
 
@@ -126,7 +116,7 @@ public class ASTFunctionCallStringIT {
     public void aSTLocate() throws Exception {
         Artist a1 = createArtist("1267834567890abc");
         Artist a2 = ObjectSelect.query(Artist.class)
-                .where(Artist.ARTIST_NAME.locate("678").eq(3)).selectOne(context);
+                .where(Artist.ARTIST_NAME.locate("678").eq(3)).selectOne(env.context());
         assertEquals(a1, a2);
     }
 
@@ -135,7 +125,7 @@ public class ASTFunctionCallStringIT {
         Artist a1 = createArtist("absdefghij  klmnopq"); // substring with length 10 from 3 is "sdefghij  "
         Artist a2 = ObjectSelect.query(Artist.class)
                 .where(Artist.ARTIST_NAME.substring(3, 10).trim().upper().concat(" ", "test").eq("SDEFGHIJ test"))
-                .selectOne(context);
+                .selectOne(env.context());
         assertEquals(a1, a2);
     }
 

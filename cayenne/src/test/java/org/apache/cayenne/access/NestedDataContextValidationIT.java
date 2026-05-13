@@ -27,8 +27,6 @@ import org.apache.cayenne.unit.di.runtime.CayenneTestsEnv;
 import org.junit.jupiter.api.extension.RegisterExtension;
 import org.apache.cayenne.validation.ValidationException;
 import org.junit.jupiter.api.Test;
-import org.junit.jupiter.api.BeforeEach;
-
 import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.junit.jupiter.api.Assertions.assertTrue;
@@ -38,21 +36,11 @@ public class NestedDataContextValidationIT {
     @RegisterExtension
     static final CayenneTestsEnv env = CayenneTestsEnv.forProject(CayenneProjects.TESTMAP_PROJECT);
 
-    protected CayenneRuntime runtime;
-    private DataContext context;
-
-    @BeforeEach
-    public void setUp() {
-        runtime = env.runtime();
-        context = env.dataContext();
-    }
-
-
     @Test
     public void validateOnCommitToParent() {
-        context.setValidatingObjectsOnCommit(true);
+        env.dataContext().setValidatingObjectsOnCommit(true);
 
-        ObjectContext childContext = runtime.newContext(context);
+        ObjectContext childContext = env.runtime().newContext(env.dataContext());
         assertTrue(
                 ((DataContext) childContext).isValidatingObjectsOnCommit(),
                 "Child context must have inherited the validation flag from parent");
@@ -60,7 +48,7 @@ public class NestedDataContextValidationIT {
         Artist a1 = childContext.newObject(Artist.class);
         assertThrows(ValidationException.class, childContext::commitChangesToParent);
 
-        assertFalse(context.hasChanges());
+        assertFalse(env.dataContext().hasChanges());
 
         a1.setArtistName("T");
         childContext.commitChangesToParent();

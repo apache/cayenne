@@ -29,8 +29,6 @@ import org.apache.cayenne.unit.di.runtime.CayenneProjects;
 import org.apache.cayenne.unit.di.runtime.CayenneTestsEnv;
 import org.junit.jupiter.api.extension.RegisterExtension;
 import org.junit.jupiter.api.Test;
-import org.junit.jupiter.api.BeforeEach;
-
 import java.sql.Time;
 import java.util.Calendar;
 import java.util.Date;
@@ -45,48 +43,40 @@ public class LegacyDateTimeTypesIT {
     @RegisterExtension
     static final CayenneTestsEnv env = CayenneTestsEnv.forProject(CayenneProjects.LEGACY_DATE_TIME_PROJECT);
 
-    private DataContext context;
-
-
-    @BeforeEach
-    public void setUp() {
-        context = env.dataContext();
-    }
-
     @Test
     public void calendar() {
 
-        CalendarEntity test = context.newObject(CalendarEntity.class);
+        CalendarEntity test = env.dataContext().newObject(CalendarEntity.class);
 
         Calendar cal = Calendar.getInstance();
         cal.clear();
         cal.set(2002, Calendar.FEBRUARY, 1);
 
         test.setCalendarField(cal);
-        context.commitChanges();
+        env.dataContext().commitChanges();
 
         CalendarEntity testRead = ObjectSelect.query(CalendarEntity.class)
-                .selectFirst(context);
+                .selectFirst(env.dataContext());
         assertNotNull(testRead.getCalendarField());
         assertEquals(cal, testRead.getCalendarField());
 
         test.setCalendarField(null);
-        context.commitChanges();
+        env.dataContext().commitChanges();
     }
 
     @Test
     public void date() {
-        DateTestEntity test = context.newObject(DateTestEntity.class);
+        DateTestEntity test = env.dataContext().newObject(DateTestEntity.class);
 
         Calendar cal = Calendar.getInstance();
         cal.clear();
         cal.set(2002, Calendar.FEBRUARY, 1);
         Date nowDate = cal.getTime();
         test.setDateColumn(nowDate);
-        context.commitChanges();
+        env.dataContext().commitChanges();
 
         DateTestEntity testRead = ObjectSelect.query(DateTestEntity.class)
-                .selectFirst(context);
+                .selectFirst(env.dataContext());
         assertNotNull(testRead.getDateColumn());
         assertEquals(nowDate, testRead.getDateColumn());
         assertEquals(Date.class, testRead.getDateColumn().getClass());
@@ -94,17 +84,17 @@ public class LegacyDateTimeTypesIT {
 
     @Test
     public void time() {
-        DateTestEntity test = context.newObject(DateTestEntity.class);
+        DateTestEntity test = env.dataContext().newObject(DateTestEntity.class);
 
         Calendar cal = Calendar.getInstance();
         cal.clear();
         cal.set(1970, Calendar.JANUARY, 1, 1, 20, 30);
         Date nowTime = cal.getTime();
         test.setTimeColumn(nowTime);
-        context.commitChanges();
+        env.dataContext().commitChanges();
 
         DateTestEntity testRead = ObjectSelect.query(DateTestEntity.class)
-                .selectFirst(context);
+                .selectFirst(env.dataContext());
         assertNotNull(testRead.getTimeColumn());
         assertEquals(Date.class, testRead.getTimeColumn().getClass());
 
@@ -119,7 +109,7 @@ public class LegacyDateTimeTypesIT {
 
     @Test
     public void timestamp() {
-        DateTestEntity test = context.newObject(DateTestEntity.class);
+        DateTestEntity test = env.dataContext().newObject(DateTestEntity.class);
 
         Calendar cal = Calendar.getInstance();
         cal.clear();
@@ -130,17 +120,17 @@ public class LegacyDateTimeTypesIT {
 
         Date now = cal.getTime();
         test.setTimestampColumn(now);
-        context.commitChanges();
+        env.dataContext().commitChanges();
 
         DateTestEntity testRead = ObjectSelect.query(DateTestEntity.class)
-                .selectFirst(context);
+                .selectFirst(env.dataContext());
         assertNotNull(testRead.getTimestampColumn());
         assertEquals(now, testRead.getTimestampColumn());
     }
 
     @Test
     public void sQLTemplateTimestamp() {
-        DateTestEntity test = context.newObject(DateTestEntity.class);
+        DateTestEntity test = env.dataContext().newObject(DateTestEntity.class);
 
         Calendar cal = Calendar.getInstance();
         cal.clear();
@@ -151,9 +141,9 @@ public class LegacyDateTimeTypesIT {
 
         Date now = cal.getTime();
         test.setTimestampColumn(now);
-        context.commitChanges();
+        env.dataContext().commitChanges();
 
-        DataRow testRead = (DataRow) context.performQuery(MappedSelect.query("SelectDateTest")).get(0);
+        DataRow testRead = (DataRow) env.dataContext().performQuery(MappedSelect.query("SelectDateTest")).get(0);
         Date columnValue = (Date) testRead.get("TIMESTAMP_COLUMN");
         assertNotNull(columnValue);
         assertEquals(now, columnValue);
@@ -161,7 +151,7 @@ public class LegacyDateTimeTypesIT {
 
     @Test
     public void sQLTemplateDate() {
-        DateTestEntity test = (DateTestEntity) context.newObject("DateTestEntity");
+        DateTestEntity test = (DateTestEntity) env.dataContext().newObject("DateTestEntity");
 
         Calendar cal = Calendar.getInstance();
         cal.clear();
@@ -172,9 +162,9 @@ public class LegacyDateTimeTypesIT {
 
         java.sql.Date now = new java.sql.Date(cal.getTime().getTime());
         test.setDateColumn(now);
-        context.commitChanges();
+        env.dataContext().commitChanges();
 
-        DataRow testRead = (DataRow) context.performQuery(MappedSelect.query("SelectDateTest")).get(0);
+        DataRow testRead = (DataRow) env.dataContext().performQuery(MappedSelect.query("SelectDateTest")).get(0);
         Date columnValue = (Date) testRead.get("DATE_COLUMN");
         assertNotNull(columnValue);
         assertEquals(now.toString(), new java.sql.Date(columnValue.getTime()).toString());
@@ -182,7 +172,7 @@ public class LegacyDateTimeTypesIT {
 
     @Test
     public void sQLTemplateTime() {
-        DateTestEntity test = (DateTestEntity) context.newObject("DateTestEntity");
+        DateTestEntity test = (DateTestEntity) env.dataContext().newObject("DateTestEntity");
 
         Calendar cal = Calendar.getInstance();
         cal.clear();
@@ -193,9 +183,9 @@ public class LegacyDateTimeTypesIT {
 
         Time now = new Time(cal.getTime().getTime());
         test.setTimeColumn(now);
-        context.commitChanges();
+        env.dataContext().commitChanges();
 
-        DataRow testRead = (DataRow) context.performQuery(MappedSelect.query("SelectDateTest")).get(0);
+        DataRow testRead = (DataRow) env.dataContext().performQuery(MappedSelect.query("SelectDateTest")).get(0);
         Date columnValue = (Date) testRead.get("TIME_COLUMN");
         assertNotNull(columnValue, testRead.toString());
         assertNotNull(columnValue);

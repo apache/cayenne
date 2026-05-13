@@ -29,7 +29,6 @@ import org.apache.cayenne.testdo.mt.MtTable1;
 import org.apache.cayenne.testdo.mt.MtTable2;
 import org.apache.cayenne.unit.di.runtime.CayenneProjects;
 import org.apache.cayenne.unit.di.runtime.CayenneTestsEnv;
-import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.RegisterExtension;
 
@@ -46,16 +45,9 @@ public class EntityResolverClassDescriptorIT {
     @RegisterExtension
     static final CayenneTestsEnv env = CayenneTestsEnv.forProject(CayenneProjects.MULTI_TIER_PROJECT);
 
-    private CayenneRuntime runtime;
-
-    @BeforeEach
-    public void setUp() {
-        runtime = env.runtime();
-    }
-
     @Test
     public void testDescriptorCaching() {
-        EntityResolver resolver = runtime.getDataDomain().getEntityResolver();
+        EntityResolver resolver = env.runtime().getDataDomain().getEntityResolver();
         resolver.getClassDescriptorMap().clearDescriptors();
 
         ClassDescriptor descriptor = resolver.getClassDescriptor("MtTable1");
@@ -70,7 +62,7 @@ public class EntityResolverClassDescriptorIT {
 
     @Test
     public void testDescriptorFactory() {
-        EntityResolver resolver = runtime.getDataDomain().getEntityResolver();
+        EntityResolver resolver = env.runtime().getDataDomain().getEntityResolver();
         resolver.getClassDescriptorMap().clearDescriptors();
 
         ClassDescriptor descriptor = mock(ClassDescriptor.class);
@@ -91,7 +83,7 @@ public class EntityResolverClassDescriptorIT {
 
     @Test
     public void testArcProperties() {
-        EntityResolver resolver = runtime.getDataDomain().getEntityResolver();
+        EntityResolver resolver = env.runtime().getDataDomain().getEntityResolver();
         resolver.getClassDescriptorMap().clearDescriptors();
 
         ClassDescriptor descriptor = resolver.getClassDescriptor("MtTable1");

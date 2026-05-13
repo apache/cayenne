@@ -19,8 +19,6 @@
 
 package org.apache.cayenne.datasource;
 
-import org.apache.cayenne.unit.di.runtime.CayenneProjects;
-import org.apache.cayenne.unit.di.runtime.UseCayenneRuntime;
 import org.junit.jupiter.api.Test;
 
 import java.sql.Connection;
@@ -36,7 +34,6 @@ import java.util.concurrent.atomic.AtomicInteger;
 
 import static org.junit.jupiter.api.Assertions.*;
 
-@UseCayenneRuntime(CayenneProjects.TESTMAP_PROJECT)
 public class PoolingDataSourceIT extends BasePoolingDataSourceIT {
 
 	@Test

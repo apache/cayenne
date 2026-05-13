@@ -23,7 +23,6 @@ import org.apache.cayenne.ObjectContext;
 import org.apache.cayenne.testdo.testmap.Artist;
 import org.apache.cayenne.unit.di.runtime.CayenneProjects;
 import org.apache.cayenne.unit.di.runtime.CayenneTestsEnv;
-import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.RegisterExtension;
 
@@ -34,21 +33,14 @@ public class QueryTimeoutIT {
     @RegisterExtension
     static final CayenneTestsEnv env = CayenneTestsEnv.forProject(CayenneProjects.TESTMAP_PROJECT);
 
-    private ObjectContext context;
-
-    @BeforeEach
-    public void setUp() {
-        context = env.context();
-    }
-
     @Test
     public void objectSelect() {
         ObjectSelect<Artist> objectSelect = ObjectSelect.query(Artist.class)
                 .queryTimeout(10);
         assertEquals(10, objectSelect
-                .getMetaData(context.getEntityResolver())
+                .getMetaData(env.context().getEntityResolver())
                 .getQueryTimeout());
-        objectSelect.select(context);
+        objectSelect.select(env.context());
     }
 
     @Test
@@ -57,9 +49,9 @@ public class QueryTimeoutIT {
         sqlTemplate.setDefaultTemplate("SELECT * FROM ARTIST");
         sqlTemplate.setQueryTimeout(10);
         assertEquals(10, sqlTemplate
-                .getMetaData(context.getEntityResolver())
+                .getMetaData(env.context().getEntityResolver())
                 .getQueryTimeout());
-        context.performQuery(sqlTemplate);
+        env.context().performQuery(sqlTemplate);
     }
 
     @Test
@@ -68,9 +60,9 @@ public class QueryTimeoutIT {
                 .columnQuery(Artist.class, Artist.ARTIST_NAME)
                 .queryTimeout(10);
         assertEquals(10, columnSelect
-                .getMetaData(context.getEntityResolver())
+                .getMetaData(env.context().getEntityResolver())
                 .getQueryTimeout());
-        context.performQuery(columnSelect);
+        env.context().performQuery(columnSelect);
     }
 
     @Test
@@ -78,9 +70,9 @@ public class QueryTimeoutIT {
         EJBQLQuery ejbqlQuery = new EJBQLQuery("select a from Artist a");
         ejbqlQuery.setQueryTimeout(10);
         assertEquals(10, ejbqlQuery
-                .getMetaData(context.getEntityResolver())
+                .getMetaData(env.context().getEntityResolver())
                 .getQueryTimeout());
-        context.performQuery(ejbqlQuery);
+        env.context().performQuery(ejbqlQuery);
     }
 
     @Test
@@ -89,9 +81,9 @@ public class QueryTimeoutIT {
                 .query(Artist.class, "SELECT * FROM ARTIST")
                 .queryTimeout(10);
         assertEquals(10, sqlSelect
-                .getMetaData(context.getEntityResolver())
+                .getMetaData(env.context().getEntityResolver())
                 .getQueryTimeout());
-        context.performQuery(sqlSelect);
+        env.context().performQuery(sqlSelect);
     }
 
     @Test
@@ -100,9 +92,9 @@ public class QueryTimeoutIT {
                 .query("SELECT * FROM ARTIST")
                 .queryTimeout(10);
         assertEquals(10, sqlExec
-                .getMetaData(context.getEntityResolver())
+                .getMetaData(env.context().getEntityResolver())
                 .getQueryTimeout());
-        context.performQuery(sqlExec);
+        env.context().performQuery(sqlExec);
     }
 
     @Test
@@ -110,10 +102,10 @@ public class QueryTimeoutIT {
         MappedSelect<Artist> mappedSelect = MappedSelect
                 .query("SelectTestUpper", Artist.class)
                 .queryTimeout(10);
-        Query replacementQuery = mappedSelect.createReplacementQuery(context.getEntityResolver());
+        Query replacementQuery = mappedSelect.createReplacementQuery(env.context().getEntityResolver());
         assertEquals(10, replacementQuery
-                .getMetaData(context.getEntityResolver())
+                .getMetaData(env.context().getEntityResolver())
                 .getQueryTimeout());
-        context.performQuery(replacementQuery);
+        env.context().performQuery(replacementQuery);
     }
 }

@@ -27,7 +27,6 @@ import org.apache.cayenne.runtime.CayenneRuntime;
 import org.apache.cayenne.unit.di.runtime.CayenneProjects;
 import org.apache.cayenne.unit.di.runtime.CayenneTestsEnv;
 import org.apache.cayenne.util.Util;
-import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.RegisterExtension;
 
@@ -37,13 +36,6 @@ public class DbEntityIT {
 
     @RegisterExtension
     static final CayenneTestsEnv env = CayenneTestsEnv.forProject(CayenneProjects.TESTMAP_PROJECT);
-
-    private CayenneRuntime runtime;
-
-    @BeforeEach
-    public void setUp() {
-        runtime = env.runtime();
-    }
 
     @Test
     public void serializability() throws Exception {
@@ -231,7 +223,7 @@ public class DbEntityIT {
 
     @Test
     public void translateToRelatedEntityIndependentPath() {
-        DbEntity artistE = runtime.getDataDomain().getEntityResolver().getDbEntity("ARTIST");
+        DbEntity artistE = env.runtime().getDataDomain().getEntityResolver().getDbEntity("ARTIST");
 
         Expression e1 = ExpressionFactory.exp("db:paintingArray");
         Expression translated = artistE.translateToRelatedEntity(e1, "artistExhibitArray");
@@ -240,7 +232,7 @@ public class DbEntityIT {
 
     @Test
     public void translateToRelatedEntityTrimmedPath() {
-        DbEntity artistE = runtime.getDataDomain().getEntityResolver().getDbEntity("ARTIST");
+        DbEntity artistE = env.runtime().getDataDomain().getEntityResolver().getDbEntity("ARTIST");
 
         Expression e1 = ExpressionFactory.exp("db:artistExhibitArray.toExhibit");
         Expression translated = artistE.translateToRelatedEntity(e1, "artistExhibitArray");
@@ -250,7 +242,7 @@ public class DbEntityIT {
 
     @Test
     public void translateToRelatedEntitySplitHalfWay() {
-        DbEntity artistE = runtime.getDataDomain().getEntityResolver().getDbEntity("ARTIST");
+        DbEntity artistE = env.runtime().getDataDomain().getEntityResolver().getDbEntity("ARTIST");
 
         Expression e1 = ExpressionFactory.exp("db:paintingArray.toPaintingInfo.TEXT_REVIEW");
         Expression translated = artistE.translateToRelatedEntity(e1, "paintingArray.toGallery");
@@ -261,7 +253,7 @@ public class DbEntityIT {
 
     @Test
     public void translateToRelatedEntityMatchingPath() {
-        DbEntity artistE = runtime.getDataDomain().getEntityResolver().getDbEntity("ARTIST");
+        DbEntity artistE = env.runtime().getDataDomain().getEntityResolver().getDbEntity("ARTIST");
 
         Expression e1 = ExpressionFactory.exp("db:artistExhibitArray.toExhibit");
         Expression translated = artistE.translateToRelatedEntity(e1, "artistExhibitArray.toExhibit");
@@ -273,7 +265,7 @@ public class DbEntityIT {
 
     @Test
     public void translateToRelatedEntityToOne() {
-        DbEntity paintingE = runtime.getDataDomain().getEntityResolver().getDbEntity("PAINTING");
+        DbEntity paintingE = env.runtime().getDataDomain().getEntityResolver().getDbEntity("PAINTING");
 
         Expression e1 = ExpressionFactory.exp("db:toArtist.ARTIST_NAME = 'aa'");
         Expression translated = paintingE.translateToRelatedEntity(e1, "toArtist");

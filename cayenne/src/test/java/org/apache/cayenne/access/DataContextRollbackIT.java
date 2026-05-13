@@ -29,7 +29,6 @@ import org.apache.cayenne.testdo.testmap.Artist;
 import org.apache.cayenne.testdo.testmap.Painting;
 import org.apache.cayenne.unit.di.runtime.CayenneProjects;
 import org.apache.cayenne.unit.di.runtime.CayenneTestsEnv;
-import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.RegisterExtension;
 
@@ -42,30 +41,20 @@ public class DataContextRollbackIT  {
     @RegisterExtension
     static final CayenneTestsEnv env = CayenneTestsEnv.forProject(CayenneProjects.TESTMAP_PROJECT);
 
-        private DataContext context;
-
-        private CayenneRuntime runtime;
-
-    @BeforeEach
-    public void setUp() {
-        context = env.dataContext();
-        runtime = env.runtime();
-    }
-
     @Test
     public void rollbackNew() {
-        Artist artist = (Artist) context.newObject("Artist");
+        Artist artist = (Artist) env.dataContext().newObject("Artist");
         artist.setArtistName("a");
 
-        Painting p1 = (Painting) context.newObject("Painting");
+        Painting p1 = (Painting) env.dataContext().newObject("Painting");
         p1.setPaintingTitle("p1");
         p1.setToArtist(artist);
 
-        Painting p2 = (Painting) context.newObject("Painting");
+        Painting p2 = (Painting) env.dataContext().newObject("Painting");
         p2.setPaintingTitle("p2");
         p2.setToArtist(artist);
 
-        Painting p3 = (Painting) context.newObject("Painting");
+        Painting p3 = (Painting) env.dataContext().newObject("Painting");
         p3.setPaintingTitle("p3");
         p3.setToArtist(artist);
 
@@ -73,7 +62,7 @@ public class DataContextRollbackIT  {
         assertEquals(artist, p1.getToArtist());
         assertEquals(3, artist.getPaintingArray().size());
 
-        context.rollbackChanges();
+        env.dataContext().rollbackChanges();
 
         // after:
         assertEquals(PersistenceState.TRANSIENT, artist.getPersistenceState());
@@ -82,18 +71,18 @@ public class DataContextRollbackIT  {
     @Test
     public void rollbackNewObject() {
         String artistName = "revertTestArtist";
-        Artist artist = (Artist) context.newObject("Artist");
+        Artist artist = (Artist) env.dataContext().newObject("Artist");
         artist.setArtistName(artistName);
 
-        context.rollbackChanges();
+        env.dataContext().rollbackChanges();
 
         assertEquals(PersistenceState.TRANSIENT, artist.getPersistenceState());
-        context.commitChanges();
+        env.dataContext().commitChanges();
         // The commit should have made no changes, so
         // perform a fetch to ensure that this artist hasn't been persisted to the db
 
-        DataContext freshContext = (DataContext) runtime.newContext();
-        assertNotSame(this.context, freshContext);
+        DataContext freshContext = (DataContext) env.runtime().newContext();
+        assertNotSame(env.dataContext(), freshContext);
 
         ObjectSelect<Artist> query = ObjectSelect.query(Artist.class)
                 .where(Artist.ARTIST_NAME.eq(artistName));
@@ -109,23 +98,23 @@ public class DataContextRollbackIT  {
     public void rollbackWithMultipleNewObjects() {
         String artistName = "rollbackTestArtist";
         String paintingTitle = "rollbackTestPainting";
-        Artist artist = (Artist) context.newObject("Artist");
+        Artist artist = (Artist) env.dataContext().newObject("Artist");
         artist.setArtistName(artistName);
 
-        Painting painting = (Painting) context.newObject("Painting");
+        Painting painting = (Painting) env.dataContext().newObject("Painting");
         painting.setPaintingTitle(paintingTitle);
         painting.setToArtist(artist);
 
-        context.rollbackChanges();
+        env.dataContext().rollbackChanges();
 
         assertEquals(PersistenceState.TRANSIENT, artist.getPersistenceState());
-        context.commitChanges();
+        env.dataContext().commitChanges();
 
         // The commit should have made no changes, so
         // perform a fetch to ensure that this artist hasn't been persisted to the db
 
-        DataContext freshContext = (DataContext) runtime.newContext();
-        assertNotSame(this.context, freshContext);
+        DataContext freshContext = (DataContext) env.runtime().newContext();
+        assertNotSame(env.dataContext(), freshContext);
 
         List<?> queryResults = ObjectSelect.query(Artist.class)
                 .where(Artist.ARTIST_NAME.eq(artistName))
@@ -138,16 +127,16 @@ public class DataContextRollbackIT  {
     public void rollbackRelationshipModification() {
         String artistName = "relationshipModArtist";
         String paintingTitle = "relationshipTestPainting";
-        Artist artist = (Artist) context.newObject("Artist");
+        Artist artist = (Artist) env.dataContext().newObject("Artist");
         artist.setArtistName(artistName);
-        Painting painting = (Painting) context.newObject("Painting");
+        Painting painting = (Painting) env.dataContext().newObject("Painting");
         painting.setPaintingTitle(paintingTitle);
         painting.setToArtist(artist);
-        context.commitChanges();
+        env.dataContext().commitChanges();
 
         painting.setToArtist(null);
         assertEquals(0, artist.getPaintingArray().size());
-        context.rollbackChanges();
+        env.dataContext().rollbackChanges();
 
         assertTrue(((ValueHolder) artist.getPaintingArray()).isFault());
         assertEquals(1, artist.getPaintingArray().size());
@@ -155,10 +144,10 @@ public class DataContextRollbackIT  {
 
         // Check that the reverse relationship was handled
         assertEquals(1, artist.getPaintingArray().size());
-        context.commitChanges();
+        env.dataContext().commitChanges();
 
-        DataContext freshContext = (DataContext) runtime.newContext();
-        assertNotSame(this.context, freshContext);
+        DataContext freshContext = (DataContext) env.runtime().newContext();
+        assertNotSame(env.dataContext(), freshContext);
 
         List<?> queryResults = ObjectSelect.query(Painting.class)
                 .where(Painting.PAINTING_TITLE.eq(paintingTitle))
@@ -174,26 +163,26 @@ public class DataContextRollbackIT  {
     @Test
     public void rollbackDeletedObject() {
         String artistName = "deleteTestArtist";
-        Artist artist = (Artist) context.newObject("Artist");
+        Artist artist = (Artist) env.dataContext().newObject("Artist");
         artist.setArtistName(artistName);
-        context.commitChanges();
+        env.dataContext().commitChanges();
 
-        context.deleteObjects(artist);
-        context.rollbackChanges();
+        env.dataContext().deleteObjects(artist);
+        env.dataContext().rollbackChanges();
 
         // Now check everything is as it should be
         assertEquals(PersistenceState.HOLLOW, artist.getPersistenceState());
 
-        context.commitChanges();
+        env.dataContext().commitChanges();
         // The commit should have made no changes, so
         // perform a fetch to ensure that this artist hasn't been deleted from the db
 
-        DataContext freshContext = (DataContext) runtime.newContext();
-        assertNotSame(this.context, freshContext);
+        DataContext freshContext = (DataContext) env.runtime().newContext();
+        assertNotSame(env.dataContext(), freshContext);
 
         List<?> queryResults = ObjectSelect.query(Artist.class)
                 .where(Artist.ARTIST_NAME.eq(artistName))
-                .select(context);
+                .select(env.dataContext());
 
         assertEquals(1, queryResults.size());
     }
@@ -201,23 +190,23 @@ public class DataContextRollbackIT  {
     @Test
     public void rollbackModifiedObject() {
         String artistName = "initialTestArtist";
-        Artist artist = (Artist) context.newObject("Artist");
+        Artist artist = (Artist) env.dataContext().newObject("Artist");
         artist.setArtistName(artistName);
-        context.commitChanges();
+        env.dataContext().commitChanges();
 
         artist.setArtistName("a new value");
 
-        context.rollbackChanges();
+        env.dataContext().rollbackChanges();
 
         // Make sure the inmemory changes have been rolled back
         assertEquals(artistName, artist.getArtistName());
 
         // Commit what's in memory...
-        context.commitChanges();
+        env.dataContext().commitChanges();
 
         // .. and ensure that the correct data is in the db
-        DataContext freshContext = (DataContext) runtime.newContext();
-        assertNotSame(this.context, freshContext);
+        DataContext freshContext = (DataContext) env.runtime().newContext();
+        assertNotSame(env.dataContext(), freshContext);
 
         List<?> queryResults = ObjectSelect.query(Artist.class)
                 .where(Artist.ARTIST_NAME.eq(artistName))

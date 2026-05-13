@@ -27,7 +27,6 @@ import org.apache.cayenne.testdo.testmap.Artist;
 import org.apache.cayenne.testdo.testmap.Painting;
 import org.apache.cayenne.unit.di.runtime.CayenneProjects;
 import org.apache.cayenne.unit.di.runtime.CayenneTestsEnv;
-import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.RegisterExtension;
 
@@ -37,9 +36,6 @@ public class DataContextPrefetchQualifierOverlapIT  {
 
     @RegisterExtension
     static final CayenneTestsEnv env = CayenneTestsEnv.forProject(CayenneProjects.TESTMAP_PROJECT);
-
-        private DataContext context;
-
 
     private void createTwoArtistsThreePaintingsDataSet() throws Exception {
         TableHelper tArtist = env.table("ARTIST");
@@ -56,11 +52,6 @@ public class DataContextPrefetchQualifierOverlapIT  {
         tPainting.insert(3, "ACC", 1);
     }
 
-    @BeforeEach
-    public void setUp() {
-        context = env.dataContext();
-    }
-
     @Test
     public void toManyDisjointOverlappingQualifierWithInnerJoin() throws Exception {
         createTwoArtistsThreePaintingsDataSet();
@@ -69,7 +60,7 @@ public class DataContextPrefetchQualifierOverlapIT  {
                 .and(Artist.PAINTING_ARRAY.dot(Painting.PAINTING_TITLE).like("AB%"))
                 .prefetch(Artist.PAINTING_ARRAY.disjoint());
 
-        List<Artist> result = query.select(context);
+        List<Artist> result = query.select(env.dataContext());
         assertEquals(1, result.size());
 
         Artist a = result.get(0);
@@ -84,7 +75,7 @@ public class DataContextPrefetchQualifierOverlapIT  {
                 .and(Artist.PAINTING_ARRAY.dot(Painting.PAINTING_TITLE).like("AB%"))
                 .prefetch(Artist.PAINTING_ARRAY.joint());
 
-        List<Artist> result = query.select(context);
+        List<Artist> result = query.select(env.dataContext());
         assertEquals(1, result.size());
 
         Artist a = result.get(0);
@@ -101,7 +92,7 @@ public class DataContextPrefetchQualifierOverlapIT  {
                 .or(Artist.ARTIST_NAME.like("A%"))
                 .orderBy(Artist.ARTIST_NAME.asc());
 
-        List<Artist> result = query.select(context);
+        List<Artist> result = query.select(env.dataContext());
         assertEquals(2, result.size());
 
         Artist a = result.get(0);

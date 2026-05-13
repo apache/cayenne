@@ -25,7 +25,6 @@ import org.apache.cayenne.testdo.relationships.RelationshipHelper;
 import org.apache.cayenne.unit.di.runtime.CayenneProjects;
 import org.apache.cayenne.unit.di.runtime.CayenneTestsEnv;
 import org.apache.cayenne.validation.ValidationResult;
-import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.RegisterExtension;
 
@@ -36,16 +35,9 @@ public class MeaningfulFKIT {
     @RegisterExtension
     static final CayenneTestsEnv env = CayenneTestsEnv.forProject(CayenneProjects.RELATIONSHIPS_PROJECT);
 
-    private ObjectContext context;
-
-    @BeforeEach
-    public void setUp() {
-        context = env.context();
-    }
-
     @Test
     public void validateForSave1() throws Exception {
-        MeaningfulFK testObject = context.newObject(MeaningfulFK.class);
+        MeaningfulFK testObject = env.context().newObject(MeaningfulFK.class);
 
         ValidationResult validation = new ValidationResult();
         testObject.validateForSave(validation);
@@ -60,9 +52,9 @@ public class MeaningfulFKIT {
 
     @Test
     public void validateForSave2() throws Exception {
-        MeaningfulFK testObject = context.newObject(MeaningfulFK.class);
+        MeaningfulFK testObject = env.context().newObject(MeaningfulFK.class);
 
-        RelationshipHelper related = context.newObject(RelationshipHelper.class);
+        RelationshipHelper related = env.context().newObject(RelationshipHelper.class);
         testObject.setToRelationshipHelper(related);
 
         ValidationResult validation = new ValidationResult();
@@ -72,14 +64,14 @@ public class MeaningfulFKIT {
 
     @Test
     public void testMeaningfulFKSet() {
-        MeaningfulFK testObject = context.newObject(MeaningfulFK.class);
+        MeaningfulFK testObject = env.context().newObject(MeaningfulFK.class);
 
-        RelationshipHelper related = context.newObject(RelationshipHelper.class);
+        RelationshipHelper related = env.context().newObject(RelationshipHelper.class);
         testObject.setToRelationshipHelper(related);
 
-        context.commitChanges();
+        env.context().commitChanges();
 
-        MeaningfulFK testObject2 = SelectById.query(MeaningfulFK.class, testObject.getObjectId()).selectOne(context);
+        MeaningfulFK testObject2 = SelectById.query(MeaningfulFK.class, testObject.getObjectId()).selectOne(env.context());
         assertNotEquals(0, testObject2.getRelationshipHelperID());
     }
 }

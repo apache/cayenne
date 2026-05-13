@@ -38,8 +38,6 @@ import org.apache.cayenne.unit.di.runtime.CayenneProjects;
 import org.apache.cayenne.unit.di.runtime.CayenneTestsEnv;
 import org.junit.jupiter.api.extension.RegisterExtension;
 import org.junit.jupiter.api.Test;
-import org.junit.jupiter.api.BeforeEach;
-
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.Map;
@@ -56,15 +54,6 @@ public class DataDomainIT {
 
     @RegisterExtension
     static final CayenneTestsEnv env = CayenneTestsEnv.forProject(CayenneProjects.TESTMAP_PROJECT);
-
-    private CayenneRuntime runtime;
-    private JdbcEventLogger logger;
-
-    @BeforeEach
-    public void setUp() {
-        runtime = env.runtime();
-        logger = env.getInstance(JdbcEventLogger.class);
-    }
 
     @Test
     public void name() throws Exception {
@@ -122,11 +111,11 @@ public class DataDomainIT {
         DataDomain domain = new DataDomain("dom1");
         assertEquals(0, domain.getDataNodes().size());
         DataNode node = new DataNode("1");
-        node.setJdbcEventLogger(logger);
+        node.setJdbcEventLogger(env.getInstance(JdbcEventLogger.class));
         domain.addNode(node);
         assertEquals(1, domain.getDataNodes().size());
         node = new DataNode("2");
-        node.setJdbcEventLogger(logger);
+        node.setJdbcEventLogger(env.getInstance(JdbcEventLogger.class));
         domain.addNode(node);
         assertEquals(2, domain.getDataNodes().size());
     }
@@ -137,7 +126,7 @@ public class DataDomainIT {
         assertNull(domain.getDataMap("map"));
 
         DataNode node = new DataNode("1");
-        node.setJdbcEventLogger(logger);
+        node.setJdbcEventLogger(env.getInstance(JdbcEventLogger.class));
         node.addDataMap(new DataMap("map"));
 
         domain.addNode(node);
@@ -173,7 +162,7 @@ public class DataDomainIT {
 
     @Test
     public void entityResolver() {
-        assertNotNull(runtime.getDataDomain().getEntityResolver());
+        assertNotNull(env.runtime().getDataDomain().getEntityResolver());
 
         DataDomain domain = new DataDomain("dom1");
         assertNotNull(domain.getEntityResolver());
@@ -248,11 +237,11 @@ public class DataDomainIT {
     @Test
     public void addListener() {
 
-        DataDomain domain = runtime.getDataDomain();
+        DataDomain domain = env.runtime().getDataDomain();
         PostAddListener listener = new PostAddListener();
         domain.addListener(listener);
 
-        ObjectContext context = runtime.newContext();
+        ObjectContext context = env.runtime().newContext();
 
         context.newObject(Gallery.class);
         assertEquals("e:Gallery;", listener.getAndReset());

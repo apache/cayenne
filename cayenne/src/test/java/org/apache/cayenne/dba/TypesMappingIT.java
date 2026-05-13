@@ -24,7 +24,6 @@ import org.apache.cayenne.map.DbAttribute;
 import org.apache.cayenne.unit.di.runtime.CayenneProjects;
 import org.apache.cayenne.unit.di.runtime.CayenneTestsEnv;
 import org.apache.cayenne.unit.di.runtime.RuntimeCaseDataSourceFactory;
-import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.RegisterExtension;
 
@@ -45,13 +44,6 @@ public class TypesMappingIT {
 
     @RegisterExtension
     static final CayenneTestsEnv env = CayenneTestsEnv.forProject(CayenneProjects.EMPTY_PROJECT);
-
-    private RuntimeCaseDataSourceFactory dataSourceFactory;
-
-    @BeforeEach
-    public void setUp() {
-        dataSourceFactory = env.getInstance(RuntimeCaseDataSourceFactory.class);
-    }
 
     @Test
     public void getSqlTypeByJava() throws Exception {
@@ -139,7 +131,7 @@ public class TypesMappingIT {
         // check counts
         // since more then 1 database type can map to a single JDBC type
         int len = 0;
-        try (Connection conn = dataSourceFactory.getSharedDataSource().getConnection()) {
+        try (Connection conn = env.getInstance(RuntimeCaseDataSourceFactory.class).getSharedDataSource().getConnection()) {
             DatabaseMetaData md = conn.getMetaData();
             try (ResultSet rs = md.getTypeInfo()) {
                 while (rs.next()) {
@@ -162,7 +154,7 @@ public class TypesMappingIT {
     }
 
     private TypesMapping createTypesMapping() throws Exception {
-        try (Connection conn = dataSourceFactory.getSharedDataSource().getConnection()) {
+        try (Connection conn = env.getInstance(RuntimeCaseDataSourceFactory.class).getSharedDataSource().getConnection()) {
             DatabaseMetaData md = conn.getMetaData();
             return new TypesMapping(md);
         }

@@ -29,8 +29,6 @@ import org.apache.cayenne.unit.di.runtime.CayenneProjects;
 import org.apache.cayenne.unit.di.runtime.CayenneTestsEnv;
 import org.junit.jupiter.api.extension.RegisterExtension;
 import org.junit.jupiter.api.Test;
-import org.junit.jupiter.api.BeforeEach;
-
 import static org.junit.jupiter.api.Assertions.*;
 
 /**
@@ -40,14 +38,6 @@ public class VerticalInheritanceJoinOrderIT {
 
     @RegisterExtension
     static final CayenneTestsEnv env = CayenneTestsEnv.forProject(CayenneProjects.INHERITANCE_VERTICAL_PROJECT);
-
-    private DataNode dataNode;
-
-
-    @BeforeEach
-    public void setUp() {
-        dataNode = env.getInstance(DataNode.class);
-    }
 
     /**
      * Tests that INNER joins from WHERE clause relationships are added before
@@ -77,8 +67,8 @@ public class VerticalInheritanceJoinOrderIT {
     }
 
     private String translateToSql(ObjectSelect<?> query) {
-        DbAdapter adapter = dataNode.getAdapter();
-        EntityResolver resolver = dataNode.getEntityResolver();
+        DbAdapter adapter = env.getInstance(DataNode.class).getAdapter();
+        EntityResolver resolver = env.getInstance(DataNode.class).getEntityResolver();
         return new DefaultSelectTranslator(query, adapter, resolver).getSql();
     }
 }

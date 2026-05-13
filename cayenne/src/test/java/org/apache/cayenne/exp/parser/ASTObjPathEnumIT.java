@@ -23,7 +23,6 @@ import org.apache.cayenne.testdo.enum_test.Enum1;
 import org.apache.cayenne.testdo.enum_test.EnumEntity;
 import org.apache.cayenne.unit.di.runtime.CayenneProjects;
 import org.apache.cayenne.unit.di.runtime.CayenneTestsEnv;
-import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.RegisterExtension;
 
@@ -36,18 +35,11 @@ public class ASTObjPathEnumIT {
     @RegisterExtension
     static final CayenneTestsEnv env = CayenneTestsEnv.forProject(CayenneProjects.ENUM_PROJECT);
 
-    private ObjectContext context;
-
-    @BeforeEach
-    public void setUp() {
-        context = env.context();
-    }
-
     @Test
     public void injectEnumByName() {
         ASTObjPath node = new ASTObjPath("enumAttribute");
 
-        EnumEntity enumEntity = context.newObject(EnumEntity.class);
+        EnumEntity enumEntity = env.context().newObject(EnumEntity.class);
         assertNull(enumEntity.getEnumAttribute());
 
         node.injectValue(enumEntity, "one");
@@ -61,7 +53,7 @@ public class ASTObjPathEnumIT {
 
             ASTObjPath node = new ASTObjPath("enumAttribute");
 
-            EnumEntity enumEntity = context.newObject(EnumEntity.class);
+            EnumEntity enumEntity = env.context().newObject(EnumEntity.class);
             assertNull(enumEntity.getEnumAttribute());
 
             node.injectValue(enumEntity, "four");
