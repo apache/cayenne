@@ -55,9 +55,7 @@ import java.util.Collection;
 import java.util.Collections;
 import java.util.List;
 import java.util.ListIterator;
-import java.util.Map;
 import java.util.Set;
-import java.util.TreeMap;
 
 /**
  * Default implementation of the AccessStack that has a single DataNode per DataMap.
@@ -244,24 +242,16 @@ public class SchemaBuilder {
 	 * and returns an ordered list.
 	 */
 	private List<DbEntity> dbEntitiesInInsertOrder(DataMap map) {
-		TreeMap<String, DbEntity> dbEntityMap = new TreeMap<>(map.getDbEntityMap());
-		List<DbEntity> entities = new ArrayList<>(dbEntityMap.values());
-		List<DbEntity> excludedEntities = excludeEntities(entities);
-		entities.removeAll(excludedEntities);
+		DataMap localMap = domain.getDataMap(map.getName());
+		List<DbEntity> entities = new ArrayList<>(localMap.getDbEntities());
+		entities.removeAll(excludeEntities(entities));
 
 		domain.getEntitySorter().sortDbEntities(entities, false);
 		return entities;
 	}
 
-	protected List<DbEntity> dbEntitiesInDeleteOrder(DataMap dataMap) {
-		DataMap map = domain.getDataMap(dataMap.getName());
-		Map<String, DbEntity> dbEntityMap = new TreeMap<>(map.getDbEntityMap());
-		List<DbEntity> entities = new ArrayList<>(dbEntityMap.values());
-		List<DbEntity> excludedEntities = excludeEntities(entities);
-		entities.removeAll(excludedEntities);
-
-		domain.getEntitySorter().sortDbEntities(entities, true);
-		return entities;
+	public List<DbEntity> dbEntitiesInDeleteOrder(DataMap map) {
+		return dbEntitiesInInsertOrder(map).reversed();
 	}
 
 	private List<DbEntity> excludeEntities(Collection<DbEntity> entities) {

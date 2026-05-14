@@ -253,7 +253,6 @@ public class RuntimeCaseModule implements Module {
         binder.bind(RuntimeCaseExtraModules.class).to(RuntimeCaseExtraModules.class).in(testScope);
         binder.bind(CayenneRuntime.class).toProvider(CayenneRuntimeProvider.class).in(testScope);
         binder.bind(DBHelper.class).toProvider(FlavoredDBHelperProvider.class).in(testScope);
-        binder.bind(DBCleaner.class).toProvider(DBCleanerProvider.class).in(testScope);
     }
 
     // this class exists so that ToolsModule can call "initAllExtensions()" that is protected in CoreModuleExtender.

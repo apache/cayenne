@@ -63,6 +63,7 @@ public class CayenneTestsEnv implements BeforeEachCallback, AfterEachCallback {
 
     private DataContext context;
     private DBHelper dbHelper;
+    private DBCleaner dbCleaner;
     private CayenneRuntime runtime;
 
     private CayenneTestsEnv(String project, Class<?>[] extraModules, boolean autoClean, boolean weakReferenceStrategy) {
@@ -116,13 +117,16 @@ public class CayenneTestsEnv implements BeforeEachCallback, AfterEachCallback {
         this.runtime = INJECTOR.getInstance(CayenneRuntime.class);
         this.context = (DataContext) runtime.newContext();
         this.dbHelper = INJECTOR.getInstance(DBHelper.class);
+        this.dbCleaner = new DBCleaner(
+                (FlavoredDBHelper) dbHelper,
+                INJECTOR.getInstance(SchemaBuilder.class),
+                runtime.getDataDomain().getDataMaps());
 
         if (autoClean) {
-            DBCleaner cleaner = dbCleaner();
             try {
-                cleaner.clean();
+                dbCleaner.clean();
             } catch (Exception ex) {
-                cleaner.clean();
+                dbCleaner.clean();
             }
         }
     }
@@ -132,6 +136,7 @@ public class CayenneTestsEnv implements BeforeEachCallback, AfterEachCallback {
         TEST_SCOPE.shutdown();
         this.context = null;
         this.dbHelper = null;
+        this.dbCleaner = null;
         this.runtime = null;
     }
 
@@ -181,7 +186,7 @@ public class CayenneTestsEnv implements BeforeEachCallback, AfterEachCallback {
     }
 
     public DBCleaner dbCleaner() {
-        return INJECTOR.getInstance(DBCleaner.class);
+        return dbCleaner;
     }
 
     public DataSourceDescriptor dataSourceDescriptor() {

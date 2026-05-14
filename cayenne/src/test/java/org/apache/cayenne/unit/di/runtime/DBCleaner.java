@@ -19,45 +19,28 @@
 
 package org.apache.cayenne.unit.di.runtime;
 
-import org.apache.cayenne.configuration.ConfigurationTree;
-import org.apache.cayenne.configuration.DataChannelDescriptor;
-import org.apache.cayenne.configuration.xml.XMLDataChannelDescriptorLoader;
-import org.apache.cayenne.di.Inject;
-import org.apache.cayenne.di.Injector;
 import org.apache.cayenne.map.DataMap;
 import org.apache.cayenne.map.DbEntity;
-import org.apache.cayenne.resource.URLResource;
 
-import java.net.URL;
 import java.sql.SQLException;
+import java.util.Collection;
 import java.util.List;
 
 public class DBCleaner {
 
-    private FlavoredDBHelper dbHelper;
-    private String location;
+    private final FlavoredDBHelper dbHelper;
+    private final SchemaBuilder schemaBuilder;
+    private final Collection<DataMap> dataMaps;
 
-    @Inject
-    private SchemaBuilder schemaBuilder;
-
-    @Inject
-    private Injector injector;
-
-    public DBCleaner(FlavoredDBHelper dbHelper, String location) {
+    public DBCleaner(FlavoredDBHelper dbHelper, SchemaBuilder schemaBuilder, Collection<DataMap> dataMaps) {
         this.dbHelper = dbHelper;
-        this.location = location;
+        this.schemaBuilder = schemaBuilder;
+        this.dataMaps = dataMaps;
     }
 
     public void clean() throws SQLException {
-        XMLDataChannelDescriptorLoader loader = new XMLDataChannelDescriptorLoader();
-        injector.injectMembers(loader);
-
-        URL url = getClass().getClassLoader().getResource(location);
-        ConfigurationTree<DataChannelDescriptor> tree = loader.load(new URLResource(url));
-
-        for (DataMap map : tree.getRootNode().getDataMaps()) {
+        for (DataMap map : dataMaps) {
             List<DbEntity> entities = schemaBuilder.dbEntitiesInDeleteOrder(map);
-
             for (DbEntity entity : entities) {
                 dbHelper.deleteAll(entity.getName());
             }
