@@ -30,16 +30,13 @@ import org.apache.cayenne.test.jdbc.TableHelper;
 import org.apache.cayenne.testdo.testmap.Artist;
 import org.apache.cayenne.testdo.testmap.Painting;
 import org.apache.cayenne.unit.di.DataChannelInterceptor;
-import org.apache.cayenne.unit.di.UnitTestClosure;
 import org.apache.cayenne.unit.di.runtime.CayenneProjects;
 import org.apache.cayenne.unit.di.runtime.CayenneTestsEnv;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.RegisterExtension;
 
-import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertNotNull;
-import static org.junit.jupiter.api.Assertions.assertSame;
+import static org.junit.jupiter.api.Assertions.*;
 
 public class ShallowMergeOperationIT {
 
@@ -69,7 +66,7 @@ public class ShallowMergeOperationIT {
     }
 
     @Test
-    public void merge_Relationship() throws Exception {
+    public void merge_Relationship() {
 
         ObjectContext childContext = runtime.newContext(context);
         final ShallowMergeOperation op = new ShallowMergeOperation(childContext);
@@ -78,17 +75,14 @@ public class ShallowMergeOperationIT {
         final Painting _newP = context.newObject(Painting.class);
         _new.addToPaintingArray(_newP);
 
-        queryInterceptor.runWithQueriesBlocked(new UnitTestClosure() {
+        queryInterceptor.runWithQueriesBlocked(() -> {
+            Painting painting = op.merge(_newP);
 
-            public void execute() {
-                Painting painting = op.merge(_newP);
-
-                assertEquals(PersistenceState.COMMITTED, painting.getPersistenceState());
-                assertNotNull(painting.getToArtist());
-                assertEquals(PersistenceState.COMMITTED, painting
-                        .getToArtist()
-                        .getPersistenceState());
-            }
+            assertEquals(PersistenceState.COMMITTED, painting.getPersistenceState());
+            assertNotNull(painting.getToArtist());
+            assertEquals(PersistenceState.COMMITTED, painting
+                    .getToArtist()
+                    .getPersistenceState());
         });
     }
 
@@ -119,17 +113,14 @@ public class ShallowMergeOperationIT {
         assertEquals(PersistenceState.MODIFIED, modified.getPersistenceState());
         assertEquals(PersistenceState.MODIFIED, peerModified.getPersistenceState());
 
-        queryInterceptor.runWithQueriesBlocked(new UnitTestClosure() {
-
-            public void execute() {
-                Persistent peerModified2 = op.merge(modified);
-                assertSame(peerModified, peerModified2);
-                assertEquals(
-                        PersistenceState.MODIFIED,
-                        peerModified2.getPersistenceState());
-                assertEquals("M2", peerModified.getArtistName());
-                assertEquals("M1", modified.getArtistName());
-            }
+        queryInterceptor.runWithQueriesBlocked(() -> {
+            Persistent peerModified2 = op.merge(modified);
+            assertSame(peerModified, peerModified2);
+            assertEquals(
+                    PersistenceState.MODIFIED,
+                    peerModified2.getPersistenceState());
+            assertEquals("M2", peerModified.getArtistName());
+            assertEquals("M1", modified.getArtistName());
         });
     }
 
@@ -160,49 +151,46 @@ public class ShallowMergeOperationIT {
         assertEquals(PersistenceState.NEW, _new.getPersistenceState());
 
         // now check how objects in different state behave
-        queryInterceptor.runWithQueriesBlocked(new UnitTestClosure() {
+        queryInterceptor.runWithQueriesBlocked(() -> {
+            Persistent newPeer = op.merge(_new);
 
-            public void execute() {
-                Persistent newPeer = op.merge(_new);
+            assertEquals(_new.getObjectId(), newPeer.getObjectId());
+            assertEquals(PersistenceState.COMMITTED, newPeer.getPersistenceState());
 
-                assertEquals(_new.getObjectId(), newPeer.getObjectId());
-                assertEquals(PersistenceState.COMMITTED, newPeer.getPersistenceState());
+            assertSame(childContext, newPeer.getObjectContext());
+            assertSame(context, _new.getObjectContext());
 
-                assertSame(childContext, newPeer.getObjectContext());
-                assertSame(context, _new.getObjectContext());
+            Persistent hollowPeer = op.merge(hollow);
+            assertEquals(PersistenceState.HOLLOW, hollowPeer.getPersistenceState());
+            assertEquals(hollow.getObjectId(), hollowPeer.getObjectId());
+            assertSame(childContext, hollowPeer.getObjectContext());
+            assertSame(context, hollow.getObjectContext());
 
-                Persistent hollowPeer = op.merge(hollow);
-                assertEquals(PersistenceState.HOLLOW, hollowPeer.getPersistenceState());
-                assertEquals(hollow.getObjectId(), hollowPeer.getObjectId());
-                assertSame(childContext, hollowPeer.getObjectContext());
-                assertSame(context, hollow.getObjectContext());
+            Persistent committedPeer = op.merge(committed);
+            assertEquals(
+                    PersistenceState.COMMITTED,
+                    committedPeer.getPersistenceState());
+            assertEquals(committed.getObjectId(), committedPeer.getObjectId());
+            assertSame(childContext, committedPeer.getObjectContext());
+            assertSame(context, committed.getObjectContext());
 
-                Persistent committedPeer = op.merge(committed);
-                assertEquals(
-                        PersistenceState.COMMITTED,
-                        committedPeer.getPersistenceState());
-                assertEquals(committed.getObjectId(), committedPeer.getObjectId());
-                assertSame(childContext, committedPeer.getObjectContext());
-                assertSame(context, committed.getObjectContext());
+            Artist modifiedPeer = op.merge(modified);
+            assertEquals(
+                    PersistenceState.COMMITTED,
+                    modifiedPeer.getPersistenceState());
+            assertEquals(modified.getObjectId(), modifiedPeer.getObjectId());
+            assertEquals("M1", modifiedPeer.getArtistName());
+            assertSame(childContext, modifiedPeer.getObjectContext());
+            assertSame(context, modified.getObjectContext());
 
-                Artist modifiedPeer = op.merge(modified);
-                assertEquals(
-                        PersistenceState.COMMITTED,
-                        modifiedPeer.getPersistenceState());
-                assertEquals(modified.getObjectId(), modifiedPeer.getObjectId());
-                assertEquals("M1", modifiedPeer.getArtistName());
-                assertSame(childContext, modifiedPeer.getObjectContext());
-                assertSame(context, modified.getObjectContext());
+            Persistent deletedPeer = op.merge(deleted);
+            assertEquals(
+                    PersistenceState.COMMITTED,
+                    deletedPeer.getPersistenceState());
+            assertEquals(deleted.getObjectId(), deletedPeer.getObjectId());
+            assertSame(childContext, deletedPeer.getObjectContext());
+            assertSame(context, deleted.getObjectContext());
 
-                Persistent deletedPeer = op.merge(deleted);
-                assertEquals(
-                        PersistenceState.COMMITTED,
-                        deletedPeer.getPersistenceState());
-                assertEquals(deleted.getObjectId(), deletedPeer.getObjectId());
-                assertSame(childContext, deletedPeer.getObjectContext());
-                assertSame(context, deleted.getObjectContext());
-
-            }
         });
     }
 }

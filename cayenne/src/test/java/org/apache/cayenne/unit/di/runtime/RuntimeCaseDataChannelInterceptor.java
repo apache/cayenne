@@ -22,7 +22,6 @@ import org.apache.cayenne.access.UnitTestDomain;
 import org.apache.cayenne.di.Provider;
 import org.apache.cayenne.runtime.CayenneRuntime;
 import org.apache.cayenne.unit.di.DataChannelInterceptor;
-import org.apache.cayenne.unit.di.UnitTestClosure;
 
 public class RuntimeCaseDataChannelInterceptor implements DataChannelInterceptor {
 
@@ -33,7 +32,7 @@ public class RuntimeCaseDataChannelInterceptor implements DataChannelInterceptor
     }
 
     @Override
-    public void runWithQueriesBlocked(UnitTestClosure closure) {
+    public void runWithQueriesBlocked(Runnable task) {
 
         UnitTestDomain channel = (UnitTestDomain) runtimeProvider
                 .get()
@@ -41,7 +40,7 @@ public class RuntimeCaseDataChannelInterceptor implements DataChannelInterceptor
 
         channel.setBlockingQueries(true);
         try {
-            closure.execute();
+            task.run();
         }
         finally {
             channel.setBlockingQueries(false);
@@ -49,14 +48,14 @@ public class RuntimeCaseDataChannelInterceptor implements DataChannelInterceptor
     }
 
     @Override
-    public int runWithQueryCounter(UnitTestClosure closure) {
+    public int runWithQueryCounter(Runnable task) {
         UnitTestDomain channel = (UnitTestDomain) runtimeProvider.get().getChannel();
         RuntimeCaseDataNode node = (RuntimeCaseDataNode)channel.getDataNodes().iterator().next();
 
         int start = node.getQueriesCount();
         int end;
         try {
-            closure.execute();
+            task.run();
         } finally {
             end = node.getQueriesCount();
         }

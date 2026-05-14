@@ -24,7 +24,7 @@ package org.apache.cayenne.unit.di;
  */
 public interface DataChannelInterceptor {
 
-    void runWithQueriesBlocked(UnitTestClosure closure);
+    void runWithQueriesBlocked(Runnable task);
 
-    int runWithQueryCounter(UnitTestClosure closure);
+    int runWithQueryCounter(Runnable task);
 }

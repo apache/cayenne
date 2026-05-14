@@ -26,18 +26,13 @@ import org.apache.cayenne.runtime.CayenneRuntime;
 import org.apache.cayenne.test.jdbc.TableHelper;
 import org.apache.cayenne.testdo.testmap.Artist;
 import org.apache.cayenne.unit.di.DataChannelInterceptor;
-import org.apache.cayenne.unit.di.UnitTestClosure;
 import org.apache.cayenne.unit.di.runtime.CayenneProjects;
 import org.apache.cayenne.unit.di.runtime.CayenneTestsEnv;
 import org.junit.jupiter.api.BeforeEach;
-import org.junit.jupiter.api.extension.RegisterExtension;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.RegisterExtension;
 
-import static org.junit.jupiter.api.Assertions.assertThrows;
-import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertNotNull;
-import static org.junit.jupiter.api.Assertions.assertNotSame;
-import static org.junit.jupiter.api.Assertions.assertSame;
+import static org.junit.jupiter.api.Assertions.*;
 
 public class DataContextLocalObjectIT  {
 
@@ -72,13 +67,10 @@ public class DataContextLocalObjectIT  {
         final Artist a1 = Cayenne.objectForPK(context1, Artist.class, 456);
         final Artist a2 = Cayenne.objectForPK(context2, Artist.class, 456);
 
-        interceptor.runWithQueriesBlocked(new UnitTestClosure() {
-
-            public void execute() {
-                Artist a3 = context2.localObject(a1);
-                assertSame(a3, a2);
-                assertSame(context2, a3.getObjectContext());
-            }
+        interceptor.runWithQueriesBlocked(() -> {
+            Artist a3 = context2.localObject(a1);
+            assertSame(a3, a2);
+            assertSame(context2, a3.getObjectContext());
         });
     }
 
@@ -88,12 +80,9 @@ public class DataContextLocalObjectIT  {
 
         final Artist a1 = Cayenne.objectForPK(context1, Artist.class, 456);
 
-        interceptor.runWithQueriesBlocked(new UnitTestClosure() {
-
-            public void execute() {
-                Artist a2 = context1.localObject(a1);
-                assertSame(a2, a1);
-            }
+        interceptor.runWithQueriesBlocked(() -> {
+            Artist a2 = context1.localObject(a1);
+            assertSame(a2, a1);
         });
     }
 
@@ -103,14 +92,11 @@ public class DataContextLocalObjectIT  {
 
         final Artist a1 = Cayenne.objectForPK(context1, Artist.class, 456);
 
-        interceptor.runWithQueriesBlocked(new UnitTestClosure() {
-
-            public void execute() {
-                Artist a3 = context2.localObject(a1);
-                assertNotSame(a3, a1);
-                assertEquals(a3.getObjectId(), a1.getObjectId());
-                assertSame(context2, a3.getObjectContext());
-            }
+        interceptor.runWithQueriesBlocked(() -> {
+            Artist a3 = context2.localObject(a1);
+            assertNotSame(a3, a1);
+            assertEquals(a3.getObjectId(), a1.getObjectId());
+            assertSame(context2, a3.getObjectContext());
         });
     }
 
@@ -133,40 +119,34 @@ public class DataContextLocalObjectIT  {
     }
 
     @Test
-    public void localObject_TempId() throws Exception {
+    public void localObject_TempId() {
 
         final Artist a1 = context1.newObject(Artist.class);
 
-        interceptor.runWithQueriesBlocked(new UnitTestClosure() {
+        interceptor.runWithQueriesBlocked(() -> {
 
-            public void execute() {
+            Artist a = context2.localObject(a1);
+            assertNotNull(a);
+            assertEquals(a1.getObjectId(), a.getObjectId());
 
-                Artist a = context2.localObject(a1);
-                assertNotNull(a);
-                assertEquals(a1.getObjectId(), a.getObjectId());
-
-                // FFE must be thrown on attempt to read non-existing temp ID
-                assertThrows(FaultFailureException.class, a::getArtistName);
-            }
+            // FFE must be thrown on attempt to read non-existing temp ID
+            assertThrows(FaultFailureException.class, a::getArtistName);
         });
     }
 
     @Test
-    public void localObject_TempId_NestedContext() throws Exception {
+    public void localObject_TempId_NestedContext() {
 
         final Artist a1 = context1.newObject(Artist.class);
 
         final ObjectContext nestedContext = runtime.newContext(context1);
 
-        interceptor.runWithQueriesBlocked(new UnitTestClosure() {
+        interceptor.runWithQueriesBlocked(() -> {
 
-            public void execute() {
-
-                Artist a3 = nestedContext.localObject(a1);
-                assertNotSame(a3, a1);
-                assertEquals(a3.getObjectId(), a1.getObjectId());
-                assertSame(nestedContext, a3.getObjectContext());
-            }
+            Artist a3 = nestedContext.localObject(a1);
+            assertNotSame(a3, a1);
+            assertEquals(a3.getObjectId(), a1.getObjectId());
+            assertSame(nestedContext, a3.getObjectContext());
         });
     }
 }
