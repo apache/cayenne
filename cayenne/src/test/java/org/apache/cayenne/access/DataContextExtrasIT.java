@@ -28,7 +28,6 @@ import org.apache.cayenne.Persistent;
 import org.apache.cayenne.dba.JdbcAdapter;
 import org.apache.cayenne.dba.JdbcPkGenerator;
 import org.apache.cayenne.dba.PkGenerator;
-import org.apache.cayenne.di.AdhocObjectFactory;
 import org.apache.cayenne.map.DbAttribute;
 import org.apache.cayenne.query.ObjectSelect;
 import org.apache.cayenne.query.SQLTemplate;
@@ -52,16 +51,14 @@ public class DataContextExtrasIT {
     @RegisterExtension
     static final CayenneTestsEnv env = CayenneTestsEnv.forProject(CayenneProjects.TESTMAP_PROJECT);
 
-    protected DataContext context;
-    protected AdhocObjectFactory objectFactory;
+    private DataContext context;
 
-    protected TableHelper tArtist;
-    protected TableHelper tPainting;
+    private TableHelper tArtist;
+    private TableHelper tPainting;
 
     @BeforeEach
     public void setUp() throws Exception {
         context = env.context();
-        objectFactory = env.adhocObjectFactory();
         tArtist = env.table("ARTIST", "ARTIST_ID", "ARTIST_NAME");
 
         tPainting = env.table("PAINTING").setColumns(
@@ -96,7 +93,7 @@ public class DataContextExtrasIT {
     }
 
     @Test
-    public void manualIdProcessingOnCommit() throws Exception {
+    public void manualIdProcessingOnCommit() {
 
         Artist object = context.newObject(Artist.class);
         object.setArtistName("ABC");
@@ -182,7 +179,7 @@ public class DataContextExtrasIT {
     @Test
     public void hasChangesNew() {
 
-        assertTrue(!context.hasChanges(), "No changes expected in context");
+        assertFalse(context.hasChanges(), "No changes expected in context");
         context.newObject("Artist");
         assertTrue(context.hasChanges(), "Object added to context, expected to report changes");
     }
@@ -251,13 +248,11 @@ public class DataContextExtrasIT {
 
         // setup mockup PK generator that will blow on PK request
         // to emulate an exception
-        JdbcAdapter jdbcAdapter = objectFactory.newInstance(
-                JdbcAdapter.class,
-                JdbcAdapter.class.getName());
+        JdbcAdapter jdbcAdapter = env.adhocObjectFactory().newInstance(JdbcAdapter.class, JdbcAdapter.class.getName());
         PkGenerator newGenerator = new JdbcPkGenerator(jdbcAdapter) {
 
             @Override
-            public Object generatePk(DataNode node, DbAttribute pk) throws Exception {
+            public Object generatePk(DataNode node, DbAttribute pk) {
                 throw new CayenneRuntimeException("Intentional");
             }
         };
@@ -342,7 +337,7 @@ public class DataContextExtrasIT {
         createPhantomModificationsValidateToOneDataSet();
 
         List<Painting> objects = ObjectSelect.query(Painting.class).select(context);
-        Painting p1 = objects.get(0);
+        Painting p1 = objects.getFirst();
 
         p1.setPaintingTitle(p1.getPaintingTitle());
         p1.resetValidationFlags();
@@ -357,7 +352,7 @@ public class DataContextExtrasIT {
         createValidateOnToManyChangeDataSet();
 
         List<Artist> objects = ObjectSelect.query(Artist.class).select(context);
-        Artist a1 = objects.get(0);
+        Artist a1 = objects.getFirst();
 
         Painting p1 = context.newObject(Painting.class);
         p1.setPaintingTitle("XXX");
@@ -374,7 +369,7 @@ public class DataContextExtrasIT {
         createPhantomModificationDataSet();
 
         List<Artist> objects = ObjectSelect.query(Artist.class).select(context);
-        Artist a1 = objects.get(0);
+        Artist a1 = objects.getFirst();
 
         String oldName = a1.getArtistName();
 
@@ -393,7 +388,7 @@ public class DataContextExtrasIT {
         List<Painting> objects = ObjectSelect.query(Painting.class).select(context);
         assertEquals(1, objects.size());
 
-        Painting p1 = objects.get(0);
+        Painting p1 = objects.getFirst();
 
         Artist oldArtist = p1.getToArtist();
         Artist newArtist = Cayenne.objectForPK(context, Artist.class, 33002);
@@ -418,7 +413,7 @@ public class DataContextExtrasIT {
         List<Painting> objects = ObjectSelect.query(Painting.class).select(context);
         assertEquals(1, objects.size());
 
-        Painting p1 = objects.get(0);
+        Painting p1 = objects.getFirst();
 
         Artist oldArtist = p1.getToArtist();
         Artist newArtist = Cayenne.objectForPK(context, Artist.class, 33002);
