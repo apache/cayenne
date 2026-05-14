@@ -19,14 +19,15 @@
 
 package org.apache.cayenne.access;
 
-import java.math.BigDecimal;
-import java.math.BigInteger;
-import java.util.List;
-
+import org.apache.cayenne.DataChannel;
+import org.apache.cayenne.DataChannelSyncFilter;
+import org.apache.cayenne.DataChannelSyncFilterChain;
+import org.apache.cayenne.ObjectContext;
 import org.apache.cayenne.ObjectId;
 import org.apache.cayenne.exp.ExpressionFactory;
 import org.apache.cayenne.exp.property.NumericProperty;
 import org.apache.cayenne.exp.property.PropertyFactory;
+import org.apache.cayenne.graph.GraphDiff;
 import org.apache.cayenne.query.ObjectSelect;
 import org.apache.cayenne.runtime.CayenneRuntime;
 import org.apache.cayenne.test.jdbc.TableHelper;
@@ -39,19 +40,20 @@ import org.apache.cayenne.testdo.numeric_types.DecimalPKTestEntity;
 import org.apache.cayenne.testdo.numeric_types.LongEntity;
 import org.apache.cayenne.testdo.numeric_types.SmallintTestEntity;
 import org.apache.cayenne.testdo.numeric_types.TinyintTestEntity;
-import org.apache.cayenne.unit.di.CommitStats;
 import org.apache.cayenne.unit.di.runtime.CayenneProjects;
 import org.apache.cayenne.unit.di.runtime.CayenneTestsEnv;
-import org.junit.jupiter.api.extension.RegisterExtension;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.RegisterExtension;
+
+import java.math.BigDecimal;
+import java.math.BigInteger;
+import java.util.List;
+import java.util.function.Supplier;
 
 import static org.junit.jupiter.api.Assertions.*;
 
-/**
- *
- */
 public class NumericTypesIT {
 
     @RegisterExtension
@@ -370,5 +372,44 @@ public class NumericTypesIT {
         BigInteger readValue2 = ObjectSelect.query(BigIntegerEntity.class)
                 .column(calculated).selectOne(context);
         assertEquals(i.add(BigInteger.ONE), readValue2);
+    }
+
+    static class CommitStats implements DataChannelSyncFilter {
+
+        private int commitCount;
+        private final Supplier<DataDomain> dataDomain;
+
+        public CommitStats(Supplier<DataDomain> dataDomain) {
+            this.dataDomain = dataDomain;
+        }
+
+        public void before() {
+            dataDomain.get().addSyncFilter(this);
+            commitCount = 0;
+        }
+
+        public void after() {
+            dataDomain.get().removeSyncFilter(this);
+        }
+
+        @Override
+        public GraphDiff onSync(
+                ObjectContext originatingContext,
+                GraphDiff changes,
+                int syncType,
+                DataChannelSyncFilterChain filterChain) {
+
+            switch (syncType) {
+                case DataChannel.FLUSH_CASCADE_SYNC:
+                    commitCount++;
+                    break;
+            }
+
+            return filterChain.onSync(originatingContext, changes, syncType);
+        }
+
+        public int getCommitCount() {
+            return commitCount;
+        }
     }
 }

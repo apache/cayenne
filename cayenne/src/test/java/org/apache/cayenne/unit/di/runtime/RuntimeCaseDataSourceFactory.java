@@ -18,6 +18,12 @@
  ****************************************************************/
 package org.apache.cayenne.unit.di.runtime;
 
+import org.apache.cayenne.configuration.DataSourceDescriptor;
+import org.apache.cayenne.datasource.DataSourceBuilder;
+import org.apache.cayenne.di.AdhocObjectFactory;
+import org.apache.cayenne.di.Inject;
+
+import javax.sql.DataSource;
 import java.sql.Driver;
 import java.util.Arrays;
 import java.util.HashMap;
@@ -25,20 +31,13 @@ import java.util.HashSet;
 import java.util.Map;
 import java.util.Set;
 
-import javax.sql.DataSource;
-
-import org.apache.cayenne.configuration.DataSourceDescriptor;
-import org.apache.cayenne.datasource.DataSourceBuilder;
-import org.apache.cayenne.di.AdhocObjectFactory;
-import org.apache.cayenne.di.Inject;
-
 public class RuntimeCaseDataSourceFactory {
 
-	private DataSource sharedDataSource;
-	private DataSourceDescriptor dataSourceInfo;
-	private Map<String, DataSource> dataSources;
-	private Set<String> mapsWithDedicatedDataSource;
-	private AdhocObjectFactory objectFactory;
+	private final DataSource sharedDataSource;
+	private final DataSourceDescriptor dataSourceInfo;
+	private final Map<String, DataSource> dataSources;
+	private final Set<String> mapsWithDedicatedDataSource;
+	private final AdhocObjectFactory objectFactory;
 
 	public RuntimeCaseDataSourceFactory(@Inject DataSourceDescriptor dataSourceInfo, @Inject AdhocObjectFactory objectFactory) {
 
