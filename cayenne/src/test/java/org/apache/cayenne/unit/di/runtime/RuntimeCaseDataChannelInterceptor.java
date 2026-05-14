@@ -19,7 +19,6 @@
 package org.apache.cayenne.unit.di.runtime;
 
 import org.apache.cayenne.access.UnitTestDomain;
-import org.apache.cayenne.di.Inject;
 import org.apache.cayenne.di.Provider;
 import org.apache.cayenne.runtime.CayenneRuntime;
 import org.apache.cayenne.unit.di.DataChannelInterceptor;
@@ -28,9 +27,11 @@ import org.apache.cayenne.unit.di.UnitTestClosure;
 
 public class RuntimeCaseDataChannelInterceptor implements DataChannelInterceptor {
 
-    @Inject
-    // injecting provider to make this provider independent from scoping of CayenneRuntime
-    protected Provider<CayenneRuntime> runtimeProvider;
+    private final Provider<CayenneRuntime> runtimeProvider;
+
+    public RuntimeCaseDataChannelInterceptor(Provider<CayenneRuntime> runtimeProvider) {
+        this.runtimeProvider = runtimeProvider;
+    }
 
     public void runWithQueriesBlocked(UnitTestClosure closure) {
 

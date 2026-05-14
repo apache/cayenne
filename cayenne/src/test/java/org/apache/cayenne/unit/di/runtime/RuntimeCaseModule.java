@@ -76,14 +76,12 @@ import org.apache.cayenne.di.Module;
 import org.apache.cayenne.di.Provider;
 import org.apache.cayenne.di.spi.DefaultAdhocObjectFactory;
 import org.apache.cayenne.di.spi.DefaultClassLoaderManager;
-import org.apache.cayenne.di.spi.DefaultScope;
 import org.apache.cayenne.log.JdbcEventLogger;
 import org.apache.cayenne.log.Slf4jJdbcEventLogger;
 import org.apache.cayenne.reflect.generic.DefaultValueComparisonStrategyFactory;
 import org.apache.cayenne.reflect.generic.ValueComparisonStrategyFactory;
 import org.apache.cayenne.resource.ClassLoaderResourceLocator;
 import org.apache.cayenne.resource.ResourceLocator;
-import org.apache.cayenne.runtime.CayenneRuntime;
 import org.apache.cayenne.unit.DB2UnitDbAdapter;
 import org.apache.cayenne.unit.DerbyUnitDbAdapter;
 import org.apache.cayenne.unit.FirebirdUnitDbAdapter;
@@ -99,7 +97,6 @@ import org.apache.cayenne.unit.SQLiteUnitDbAdapter;
 import org.apache.cayenne.unit.SybaseUnitDbAdapter;
 import org.apache.cayenne.unit.UnitDataSourceDescriptor;
 import org.apache.cayenne.unit.UnitDbAdapter;
-import org.apache.cayenne.unit.di.DataChannelInterceptor;
 import org.apache.cayenne.unit.testcontainers.Db2ContainerProvider;
 import org.apache.cayenne.unit.testcontainers.MariaDbContainerProvider;
 import org.apache.cayenne.unit.testcontainers.MysqlContainerProvider;
@@ -115,19 +112,9 @@ import java.util.GregorianCalendar;
 
 public class RuntimeCaseModule implements Module {
 
-    protected DefaultScope testScope;
-
-    public RuntimeCaseModule(DefaultScope testScope) {
-        this.testScope = testScope;
-    }
-
     public void configure(Binder binder) {
 
-        // these are the objects injectable in unit tests that subclass from
-        // RuntimeCase. Note that CayenneRuntimeProvider creates CayenneRuntime
-        // instances complete with their own DI injectors, independent of the
-        // unit test injector. CayenneRuntime injector contents are customized
-        // inside CayenneRuntimeProvider.
+        // these are the objects injectable in unit tests that subclass from RuntimeCase.
 
         binder.bindMap(String.class, UnitDbAdapterProvider.TEST_ADAPTERS_MAP)
                 .put(FirebirdAdapter.class.getName(), FirebirdUnitDbAdapter.class.getName())
@@ -231,7 +218,6 @@ public class RuntimeCaseModule implements Module {
         // server runtime... BatchQueryBuilderFactory is hardcoded and whatever is placed
         // in the CoreModule is ignored
         binder.bind(BatchTranslatorFactory.class).toProvider(RuntimeCaseBatchQueryBuilderFactoryProvider.class);
-        binder.bind(DataChannelInterceptor.class).to(RuntimeCaseDataChannelInterceptor.class);
         binder.bind(SQLTemplateCustomizer.class).toProvider(SQLTemplateCustomizerProvider.class);
         binder.bind(RuntimeCaseDataSourceFactory.class).to(RuntimeCaseDataSourceFactory.class);
         binder.bind(ClassLoaderManager.class).to(DefaultClassLoaderManager.class);
@@ -245,11 +231,6 @@ public class RuntimeCaseModule implements Module {
         binder.bind(DataChannelMetaData.class).to(NoopDataChannelMetaData.class);
 
         binder.bind(XMLReader.class).toProviderInstance(new XMLReaderProvider(false)).withoutScope();
-
-        // test-scoped objects
-        binder.bind(RuntimeCaseProperties.class).to(RuntimeCaseProperties.class).in(testScope);
-        binder.bind(RuntimeCaseExtraModules.class).to(RuntimeCaseExtraModules.class).in(testScope);
-        binder.bind(CayenneRuntime.class).toProvider(CayenneRuntimeProvider.class).in(testScope);
     }
 
     // this class exists so that ToolsModule can call "initAllExtensions()" that is protected in CoreModuleExtender.
