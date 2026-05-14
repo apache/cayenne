@@ -128,7 +128,14 @@ public class CayenneTestsEnv implements BeforeEachCallback, AfterEachCallback {
 
         this.runtime = INJECTOR.getInstance(CayenneRuntime.class);
         this.context = (DataContext) runtime.newContext();
-        this.dbHelper = INJECTOR.getInstance(DbHelper.class);
+
+        DataNode node = runtime.getDataDomain().getDataNodes().iterator().next();
+        DataMap firstMap = context.getEntityResolver().getDataMaps().iterator().next();
+        this.dbHelper = new FlavoredDbHelper(
+                INJECTOR.getInstance(RuntimeCaseDataSourceFactory.class).getSharedDataSource(),
+                node.getAdapter().getQuotingStrategy(),
+                firstMap);
+
         this.dbCleaner = new DbCleaner(
                 SCHEMA_MANAGER,
                 dbHelper,
