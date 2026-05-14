@@ -45,7 +45,7 @@ class ConnectionProperties {
 	private static final String URL_KEY = "jdbc.url";
 	private static final String DRIVER_KEY = "jdbc.driver";
 
-	private Map<String, UnitDataSourceDescriptor> connectionDescriptors;
+	private final Map<String, UnitDataSourceDescriptor> connectionDescriptors;
 
 	/**
 	 * Constructor for ConnectionProperties.

@@ -22,7 +22,6 @@ import org.apache.cayenne.access.UnitTestDomain;
 import org.apache.cayenne.di.Provider;
 import org.apache.cayenne.runtime.CayenneRuntime;
 import org.apache.cayenne.unit.di.DataChannelInterceptor;
-import org.apache.cayenne.unit.di.DataChannelSyncStats;
 import org.apache.cayenne.unit.di.UnitTestClosure;
 
 public class RuntimeCaseDataChannelInterceptor implements DataChannelInterceptor {
@@ -33,6 +32,7 @@ public class RuntimeCaseDataChannelInterceptor implements DataChannelInterceptor
         this.runtimeProvider = runtimeProvider;
     }
 
+    @Override
     public void runWithQueriesBlocked(UnitTestClosure closure) {
 
         UnitTestDomain channel = (UnitTestDomain) runtimeProvider
@@ -48,6 +48,7 @@ public class RuntimeCaseDataChannelInterceptor implements DataChannelInterceptor
         }
     }
 
+    @Override
     public int runWithQueryCounter(UnitTestClosure closure) {
         UnitTestDomain channel = (UnitTestDomain) runtimeProvider.get().getChannel();
         RuntimeCaseDataNode node = (RuntimeCaseDataNode)channel.getDataNodes().iterator().next();
@@ -60,9 +61,5 @@ public class RuntimeCaseDataChannelInterceptor implements DataChannelInterceptor
             end = node.getQueriesCount();
         }
         return end - start;
-    }
-
-    public DataChannelSyncStats runWithSyncStatsCollection(UnitTestClosure closure) {
-        throw new UnsupportedOperationException("TODO... so far unused");
     }
 }

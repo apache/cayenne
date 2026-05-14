@@ -27,6 +27,4 @@ public interface DataChannelInterceptor {
     void runWithQueriesBlocked(UnitTestClosure closure);
 
     int runWithQueryCounter(UnitTestClosure closure);
-
-    DataChannelSyncStats runWithSyncStatsCollection(UnitTestClosure closure);
 }
