@@ -43,7 +43,6 @@ import org.apache.cayenne.unit.UnitDbAdapter;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import java.net.URL;
 import java.sql.Connection;
 import java.sql.DatabaseMetaData;
 import java.sql.ResultSet;
@@ -56,6 +55,7 @@ import java.util.Collections;
 import java.util.List;
 import java.util.ListIterator;
 import java.util.Set;
+import java.util.stream.Stream;
 
 public class AllTestsSchemaManager {
 
@@ -84,67 +84,40 @@ public class AllTestsSchemaManager {
 
     // hardcoded dependent entities that should be excluded if LOBs are not supported
     private static final Set<String> EXTRA_EXCLUDED_FOR_NO_LOB = Set.of("CLOB_DETAIL");
-
     private static final Set<String> EXTRA_EXCLUDED_FOR_NO_NATIVE_JSON = Set.of("JSON_OTHER");
 
     private final RuntimeCaseDataSourceFactory dataSourceFactory;
     private final UnitDbAdapter unitDbAdapter;
-    private final DbAdapter dbAdapter;
     private final JdbcEventLogger jdbcEventLogger;
-    private final DataMapLoader loader;
+    private final DataDomain domain;
 
-    private DataDomain domain;
+    public AllTestsSchemaManager(
+            @Inject RuntimeCaseDataSourceFactory dataSourceFactory,
+            @Inject UnitDbAdapter unitDbAdapter,
+            @Inject DbAdapter dbAdapter,
+            @Inject JdbcEventLogger jdbcEventLogger,
+            @Inject DataMapLoader loader) {
 
-    public AllTestsSchemaManager(@Inject RuntimeCaseDataSourceFactory dataSourceFactory, @Inject UnitDbAdapter unitDbAdapter,
-                                 @Inject DbAdapter dbAdapter, @Inject JdbcEventLogger jdbcEventLogger, @Inject DataMapLoader loader) {
         this.dataSourceFactory = dataSourceFactory;
         this.unitDbAdapter = unitDbAdapter;
-        this.dbAdapter = dbAdapter;
         this.jdbcEventLogger = jdbcEventLogger;
-        this.loader = loader;
+        this.domain = initDomain(loader, dbAdapter);
     }
 
-    /**
-     * Completely rebuilds test schema.
-     */
-    // TODO - this method changes the internal state of the object ... refactor
-    public void rebuildSchema() {
-
-        // generate schema combining all DataMaps that require schema support.
-        // Schema generation is done like that instead of per DataMap on demand
-        // to avoid conflicts when dropping and generating PK objects.
-
-        DataMap[] maps = new DataMap[MAPS_FOR_SCHEMA_SETUP.length];
-
-        for (int i = 0; i < maps.length; i++) {
-            URL mapURL = getClass().getClassLoader().getResource(MAPS_FOR_SCHEMA_SETUP[i]);
-            maps[i] = loader.load(new URLResource(mapURL));
-        }
-
-        this.domain = new DataDomain("temp");
+    private DataDomain initDomain(DataMapLoader loader, DbAdapter dbAdapter) {
+        DataDomain domain = new DataDomain("temp");
         domain.setEventManager(new DefaultEventManager(2));
         domain.setEntitySorter(new AshwoodEntitySorter());
         domain.setQueryCache(new MapQueryCache(50));
 
-        try {
-            for (DataMap map : maps) {
-                initNode(map);
-            }
+        Stream.of(MAPS_FOR_SCHEMA_SETUP).map(m -> getClass().getClassLoader().getResource(m))
+                .map(u -> loader.load(new URLResource(u)))
+                .forEach(m -> domain.addNode(initNode(m, dbAdapter)));
 
-            if ("true".equalsIgnoreCase(System.getProperty(SKIP_SCHEMA_PROPERTY))) {
-                LOGGER.info("skipping schema generation... ");
-            } else {
-                dropSchema();
-                dropPKSupport();
-                createSchema();
-                createPKSupport();
-            }
-        } catch (Exception e) {
-            throw new RuntimeException("Error rebuilding schema", e);
-        }
+        return domain;
     }
 
-    private void initNode(DataMap map) {
+    private DataNode initNode(DataMap map, DbAdapter dbAdapter) {
 
         DataNode node = new DataNode(map.getName());
         node.setJdbcEventLogger(jdbcEventLogger);
@@ -166,7 +139,30 @@ public class AllTestsSchemaManager {
         node.setRowReaderFactory(new DefaultRowReaderFactory());
         node.setBatchTranslatorFactory(new DefaultBatchTranslatorFactory());
         node.setSelectTranslatorFactory(new DefaultSelectTranslatorFactory());
-        domain.addNode(node);
+        return node;
+    }
+
+    /**
+     * Completely rebuilds the test schema.
+     */
+    public void rebuildSchema() {
+
+        // Generate schema combining all DataMaps that require schema support. Schema generation is done like that
+        // instead of per DataMap on demand to avoid conflicts when dropping and generating PK objects.
+
+        if ("true".equalsIgnoreCase(System.getProperty(SKIP_SCHEMA_PROPERTY))) {
+            LOGGER.info("skipping schema generation... ");
+            return;
+        }
+
+        try {
+            dropSchema();
+            dropPKSupport();
+            createSchema();
+            createPKSupport();
+        } catch (Exception e) {
+            throw new RuntimeException("Error rebuilding schema", e);
+        }
     }
 
     private void filterDataMap(DataMap map) {
