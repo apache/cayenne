@@ -19,11 +19,6 @@
 
 package org.apache.cayenne.access.translator.batch;
 
-import java.util.Arrays;
-import java.util.Collection;
-import java.util.Collections;
-import java.util.List;
-
 import org.apache.cayenne.dba.DbAdapter;
 import org.apache.cayenne.dba.JdbcAdapter;
 import org.apache.cayenne.di.AdhocObjectFactory;
@@ -35,13 +30,16 @@ import org.apache.cayenne.testdo.locking.SimpleLockingTestEntity;
 import org.apache.cayenne.unit.UnitDbAdapter;
 import org.apache.cayenne.unit.di.runtime.CayenneProjects;
 import org.apache.cayenne.unit.di.runtime.CayenneTestsEnv;
-import org.junit.jupiter.api.extension.RegisterExtension;
-import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.RegisterExtension;
 
-import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertNotNull;
-import static org.junit.jupiter.api.Assertions.assertSame;
+import java.util.Arrays;
+import java.util.Collection;
+import java.util.Collections;
+import java.util.List;
+
+import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.Mockito.mock;
 
 public class DeleteBatchTranslatorIT {
@@ -58,7 +56,7 @@ public class DeleteBatchTranslatorIT {
     @BeforeEach
     public void setUp() {
         runtime = env.runtime();
-        adapter = env.dbAdapter();
+        adapter = env.dataNode().getAdapter();
         unitAdapter = env.unitDbAdapter();
         objectFactory = env.adhocObjectFactory();
     }

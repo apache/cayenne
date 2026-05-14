@@ -25,9 +25,9 @@ import org.apache.cayenne.di.Inject;
 import org.apache.cayenne.di.Provider;
 import org.apache.cayenne.map.DataMap;
 import org.apache.cayenne.runtime.CayenneRuntime;
-import org.apache.cayenne.test.jdbc.DBHelper;
+import org.apache.cayenne.test.jdbc.DbHelper;
 
-public class FlavoredDBHelperProvider implements Provider<DBHelper> {
+public class FlavoredDBHelperProvider implements Provider<DbHelper> {
 
     @Inject
     protected RuntimeCaseDataSourceFactory dataSourceFactory;
@@ -39,9 +39,9 @@ public class FlavoredDBHelperProvider implements Provider<DBHelper> {
     @Inject
     protected DbAdapter adapter;
 
-    public DBHelper get() throws ConfigurationException {
+    public DbHelper get() throws ConfigurationException {
         DataChannel channel = runtimeProvider.get().getChannel();
         DataMap firstMap = channel.getEntityResolver().getDataMaps().iterator().next();
-        return new FlavoredDBHelper(dataSourceFactory.getSharedDataSource(), adapter.getQuotingStrategy(), firstMap);
+        return new FlavoredDbHelper(dataSourceFactory.getSharedDataSource(), adapter.getQuotingStrategy(), firstMap);
     }
 }

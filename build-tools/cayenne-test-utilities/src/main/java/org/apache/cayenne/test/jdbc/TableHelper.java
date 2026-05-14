@@ -29,12 +29,12 @@ import java.util.List;
  */
 public class TableHelper {
 
-    private final DBHelper dbHelper;
+    private final DbHelper dbHelper;
     private final String tableName;
     private String[] columns;
     private int[] columnTypes;
 
-    public TableHelper(DBHelper dbHelper, String tableName, String... columns) {
+    public TableHelper(DbHelper dbHelper, String tableName, String... columns) {
         this.dbHelper = dbHelper;
         this.tableName = tableName;
         this.columns = columns;

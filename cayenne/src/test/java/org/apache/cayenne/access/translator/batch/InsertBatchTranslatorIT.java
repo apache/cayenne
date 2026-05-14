@@ -51,7 +51,7 @@ public class InsertBatchTranslatorIT {
     @BeforeEach
     public void setUp() {
         runtime = env.runtime();
-        adapter = env.dbAdapter();
+        adapter = env.dataNode().getAdapter();
         unitAdapter = env.unitDbAdapter();
         objectFactory = env.adhocObjectFactory();
     }

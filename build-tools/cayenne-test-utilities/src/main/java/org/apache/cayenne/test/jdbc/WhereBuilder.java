@@ -24,8 +24,8 @@ public class WhereBuilder extends SQLBuilder {
 
     protected int whereCount;
 
-    protected WhereBuilder(DBHelper dbHelper, StringBuilder sqlBuffer,
-            Collection<Object> bindings, Collection<Integer> bindingTypes) {
+    protected WhereBuilder(DbHelper dbHelper, StringBuilder sqlBuffer,
+                           Collection<Object> bindings, Collection<Integer> bindingTypes) {
         super(dbHelper, sqlBuffer, bindings, bindingTypes);
         sqlBuffer.append(" where ");
     }

@@ -33,6 +33,7 @@ import org.junit.jupiter.api.extension.RegisterExtension;
 
 import java.util.Collections;
 
+import static org.junit.jupiter.api.Assertions.assertInstanceOf;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
 public class JdbcPkGeneratorIT {
@@ -40,36 +41,34 @@ public class JdbcPkGeneratorIT {
     @RegisterExtension
     static final CayenneTestsEnv env = CayenneTestsEnv.forProject(CayenneProjects.TESTMAP_PROJECT);
 
-    private DbAdapter adapter;
     private DataNode node;
-    private AllTestsSchemaManager schemaBuilder;
+    private AllTestsSchemaManager schemaManager;
 
     @BeforeEach
     public void setUp() throws Exception {
-        adapter = env.dbAdapter();
         node = env.dataNode();
-        schemaBuilder = env.schemaBuilder();
-        schemaBuilder.dropPKSupport();
+        schemaManager = env.schemaManager();
+        schemaManager.dropPKSupport();
     }
     
     @AfterEach
     public void tearDown() throws Exception {
 
-        if (JdbcPkGenerator.class.isAssignableFrom(adapter.getPkGenerator().getClass())) {
+        if (JdbcPkGenerator.class.isAssignableFrom(node.getAdapter().getPkGenerator().getClass())) {
             // reset PK gen properly before updating PKs in DB
-            JdbcPkGenerator pkGenerator = (JdbcPkGenerator) adapter.getPkGenerator();
+            JdbcPkGenerator pkGenerator = (JdbcPkGenerator) node.getAdapter().getPkGenerator();
 
             pkGenerator.setPkStartValue(JdbcPkGenerator.DEFAULT_PK_START_VALUE);
 
-            schemaBuilder.dropPKSupport();
-            schemaBuilder.createPKSupport();
+            schemaManager.dropPKSupport();
+            schemaManager.createPKSupport();
         }
     }
 
     @Test
     public void longPk() throws Exception {
 
-        if (!JdbcPkGenerator.class.isAssignableFrom(adapter.getPkGenerator().getClass())) {
+        if (!JdbcPkGenerator.class.isAssignableFrom(node.getAdapter().getPkGenerator().getClass())) {
             return;
         }
 
@@ -77,18 +76,18 @@ public class JdbcPkGeneratorIT {
 
         DbAttribute pkAttribute = artistEntity.getAttribute(Artist.ARTIST_ID_PK_COLUMN);
 
-        JdbcPkGenerator pkGenerator = (JdbcPkGenerator) adapter.getPkGenerator();
+        JdbcPkGenerator pkGenerator = (JdbcPkGenerator) node.getAdapter().getPkGenerator();
 
         pkGenerator.setPkStartValue(Integer.MAX_VALUE * 2L);
-        if (!JdbcPkGenerator.class.equals(adapter.getPkGenerator().getClass()) &&
-        		!DerbyPkGenerator.class.equals(adapter.getPkGenerator().getClass())) { // AUTO_PK_SUPPORT doesn't allow dropping PK support for a single entity
+        if (!JdbcPkGenerator.class.equals(node.getAdapter().getPkGenerator().getClass()) &&
+        		!DerbyPkGenerator.class.equals(node.getAdapter().getPkGenerator().getClass())) { // AUTO_PK_SUPPORT doesn't allow dropping PK support for a single entity
             pkGenerator.dropAutoPk(node, Collections.singletonList(artistEntity));
         }
         pkGenerator.createAutoPk(node, Collections.singletonList(artistEntity));
         pkGenerator.reset();
         
         Object pk = pkGenerator.generatePk(node, pkAttribute);
-        assertTrue(pk instanceof Long);
-        assertTrue(((Long) pk).longValue() > Integer.MAX_VALUE, "PK is too small: " + pk);
+        assertInstanceOf(Long.class, pk);
+        assertTrue((Long) pk > Integer.MAX_VALUE, "PK is too small: " + pk);
     }
 }

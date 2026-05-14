@@ -36,18 +36,14 @@ import org.apache.cayenne.unit.UnitDbAdapter;
 import org.apache.cayenne.unit.di.runtime.CayenneProjects;
 import org.apache.cayenne.unit.di.runtime.CayenneTestsEnv;
 import org.apache.cayenne.unit.di.runtime.RuntimeCaseDataSourceFactory;
-import java.sql.Connection;
-
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.RegisterExtension;
 
-import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertFalse;
-import static org.junit.jupiter.api.Assertions.assertNotNull;
-import static org.junit.jupiter.api.Assertions.assertNull;
-import static org.junit.jupiter.api.Assertions.assertTrue;
+import java.sql.Connection;
+
+import static org.junit.jupiter.api.Assertions.*;
 
 /**
  * All tests have been moved to corresponding loaders tests.
@@ -150,7 +146,7 @@ public class DbLoaderIT {
     @BeforeEach
     public void before() throws Exception {
         runtime = env.runtime();
-        adapter = env.dbAdapter();
+        adapter = env.dataNode().getAdapter();
         dataSourceFactory = env.dataSourceFactory();
         accessStackAdapter = env.unitDbAdapter();
         this.connection = dataSourceFactory.getSharedDataSource().getConnection();

@@ -21,7 +21,7 @@ package org.apache.cayenne.crypto;
 import org.apache.cayenne.crypto.key.JceksKeySourceTest;
 import org.apache.cayenne.di.Module;
 import org.apache.cayenne.runtime.CayenneRuntime;
-import org.apache.cayenne.test.jdbc.DBHelper;
+import org.apache.cayenne.test.jdbc.DbHelper;
 import org.apache.cayenne.test.jdbc.TableHelper;
 
 import java.net.URL;
@@ -40,10 +40,10 @@ public class Runtime_AES128_Base {
         Module crypto = createCryptoModule(compress, useHMAC);
         this.runtime = createRuntime(crypto);
 
-        setupTestTables(new DBHelper(runtime.getDataSource(null)));
+        setupTestTables(new DbHelper(runtime.getDataSource(null)));
     }
 
-    protected void setupTestTables(DBHelper dbHelper) throws SQLException {
+    protected void setupTestTables(DbHelper dbHelper) throws SQLException {
 
         this.table2 = new TableHelper(dbHelper, "TABLE2").setColumns("ID", "PLAIN_BYTES", "CRYPTO_BYTES");
         table2.deleteAll();

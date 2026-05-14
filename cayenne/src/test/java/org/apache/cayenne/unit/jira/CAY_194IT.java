@@ -21,7 +21,7 @@ package org.apache.cayenne.unit.jira;
 
 import org.apache.cayenne.access.DataContext;
 import org.apache.cayenne.query.ObjectSelect;
-import org.apache.cayenne.test.jdbc.DBHelper;
+import org.apache.cayenne.test.jdbc.DbHelper;
 import org.apache.cayenne.test.jdbc.TableHelper;
 import org.apache.cayenne.testdo.relationships.ReflexiveAndToOne;
 import org.apache.cayenne.unit.di.runtime.CayenneProjects;
@@ -47,7 +47,7 @@ public class CAY_194IT {
     static final CayenneTestsEnv env = CayenneTestsEnv.forProject(CayenneProjects.RELATIONSHIPS_PROJECT);
 
     protected DataContext context;
-    private DBHelper dbHelper;
+    private DbHelper dbHelper;
 
     @BeforeEach
     public void setUp() throws Exception {

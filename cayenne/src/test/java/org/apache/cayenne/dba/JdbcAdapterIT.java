@@ -20,7 +20,6 @@
 package org.apache.cayenne.dba;
 
 import org.apache.cayenne.dba.mysql.MySQLAdapter;
-import org.apache.cayenne.di.AdhocObjectFactory;
 import org.apache.cayenne.map.DataMap;
 import org.apache.cayenne.map.DbAttribute;
 import org.apache.cayenne.map.DbEntity;
@@ -63,7 +62,7 @@ public class JdbcAdapterIT {
     @Test
     public void createTableQuoteSqlIdentifiers() {
 
-        if (env.dbAdapter() instanceof MySQLAdapter) {
+        if (env.dataNode().getAdapter() instanceof MySQLAdapter mySQLAdapter) {
 
             DbEntity entity = new DbEntity();
             DbAttribute attr = new DbAttribute();
@@ -79,9 +78,8 @@ public class JdbcAdapterIT {
             entity.setDataMap(dm);
             entity.setName("name table");
 
-            MySQLAdapter adaptMySQL = (MySQLAdapter) env.dbAdapter();
             String str = "CREATE TABLE `name table` (`name column` CHAR NULL) ENGINE=InnoDB";
-            assertEquals(str, adaptMySQL.createTable(entity));
+            assertEquals(str, mySQLAdapter.createTable(entity));
         }
     }
 }

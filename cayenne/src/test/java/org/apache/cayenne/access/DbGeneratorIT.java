@@ -43,7 +43,7 @@ public class DbGeneratorIT {
     
     @BeforeEach
     public void setUp() throws Exception {
-        adapter = env.dbAdapter();
+        adapter = env.dataNode().getAdapter();
         runtime = env.runtime();
         generator = new DbGenerator(adapter, runtime
                 .getDataDomain()
@@ -56,7 +56,7 @@ public class DbGeneratorIT {
     }
 
     @Test
-    public void pkFilteringLogic() throws Exception {
+    public void pkFilteringLogic() {
         DataMap map = runtime.getDataDomain().getDataMap("testmap");
         DbEntity artistExhibit = map.getDbEntity("ARTIST_EXHIBIT");
         DbEntity exhibit = map.getDbEntity("EXHIBIT");
@@ -72,7 +72,7 @@ public class DbGeneratorIT {
     }
 
     @Test
-    public void createPkSupport() throws Exception {
+    public void createPkSupport() {
         assertTrue(generator.shouldCreatePKSupport());
         generator.setShouldCreatePKSupport(false);
         assertFalse(generator.shouldCreatePKSupport());
@@ -80,14 +80,14 @@ public class DbGeneratorIT {
     }
 
     @Test
-    public void shouldCreateTables() throws Exception {
+    public void shouldCreateTables() {
         assertTrue(generator.shouldCreateTables());
         generator.setShouldCreateTables(false);
         assertFalse(generator.shouldCreateTables());
     }
 
     @Test
-    public void dropPkSupport() throws Exception {
+    public void dropPkSupport() {
 
         assertFalse(generator.shouldDropPKSupport());
         generator.setShouldDropPKSupport(true);
@@ -95,7 +95,7 @@ public class DbGeneratorIT {
     }
 
     @Test
-    public void shouldDropTables() throws Exception {
+    public void shouldDropTables() {
         assertFalse(generator.shouldDropTables());
         generator.setShouldDropTables(true);
         assertTrue(generator.shouldDropTables());

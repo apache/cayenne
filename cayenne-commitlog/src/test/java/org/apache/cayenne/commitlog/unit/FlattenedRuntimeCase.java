@@ -20,7 +20,7 @@ package org.apache.cayenne.commitlog.unit;
 
 import org.apache.cayenne.runtime.CayenneRuntime;
 import org.apache.cayenne.runtime.CayenneRuntimeBuilder;
-import org.apache.cayenne.test.jdbc.DBHelper;
+import org.apache.cayenne.test.jdbc.DbHelper;
 import org.apache.cayenne.test.jdbc.TableHelper;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
@@ -37,7 +37,7 @@ public class FlattenedRuntimeCase {
 	public void startCayenne() throws Exception {
 		this.runtime = configureCayenne().build();
 
-		DBHelper dbHelper = new DBHelper(runtime.getDataSource());
+		DbHelper dbHelper = new DbHelper(runtime.getDataSource());
 
 		this.e3 = new TableHelper(dbHelper, "E3").setColumns("ID");
 		this.e4 = new TableHelper(dbHelper, "E4").setColumns("ID");

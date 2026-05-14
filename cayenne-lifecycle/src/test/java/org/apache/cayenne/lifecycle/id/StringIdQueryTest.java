@@ -21,7 +21,7 @@ package org.apache.cayenne.lifecycle.id;
 import org.apache.cayenne.DataRow;
 import org.apache.cayenne.QueryResponse;
 import org.apache.cayenne.runtime.CayenneRuntime;
-import org.apache.cayenne.test.jdbc.DBHelper;
+import org.apache.cayenne.test.jdbc.DbHelper;
 import org.apache.cayenne.test.jdbc.TableHelper;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
@@ -44,7 +44,7 @@ public class StringIdQueryTest {
     @BeforeEach
     public void setUp() {
         runtime = CayenneRuntime.builder().addConfig("cayenne-lifecycle.xml").build();
-        DBHelper dbHelper = new DBHelper(runtime.getDataSource("lifecycle-db"));
+        DbHelper dbHelper = new DbHelper(runtime.getDataSource("lifecycle-db"));
         e1Helper = new TableHelper(dbHelper, "E1", "ID");
         e2Helper = new TableHelper(dbHelper, "E2", "ID");
     }

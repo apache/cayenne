@@ -25,9 +25,9 @@ import java.util.Collection;
 
 class UpdateTemplate {
 
-	DBHelper parent;
+	DbHelper parent;
 
-	public UpdateTemplate(DBHelper parent) {
+	public UpdateTemplate(DbHelper parent) {
 		this.parent = parent;
 	}
 

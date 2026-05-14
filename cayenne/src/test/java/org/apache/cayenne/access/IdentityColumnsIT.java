@@ -19,12 +19,9 @@
 
 package org.apache.cayenne.access;
 
-import java.util.List;
-
 import org.apache.cayenne.Cayenne;
 import org.apache.cayenne.ObjectId;
 import org.apache.cayenne.Persistent;
-import org.apache.cayenne.dba.DbAdapter;
 import org.apache.cayenne.map.DbAttribute;
 import org.apache.cayenne.map.DbEntity;
 import org.apache.cayenne.query.ObjectSelect;
@@ -39,29 +36,24 @@ import org.apache.cayenne.testdo.generated.GeneratedF2;
 import org.apache.cayenne.testdo.generated.GeneratedReflexive;
 import org.apache.cayenne.unit.di.runtime.CayenneProjects;
 import org.apache.cayenne.unit.di.runtime.CayenneTestsEnv;
-import org.junit.jupiter.api.extension.RegisterExtension;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.RegisterExtension;
 
-import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertFalse;
-import static org.junit.jupiter.api.Assertions.assertNotNull;
-import static org.junit.jupiter.api.Assertions.assertTrue;
+import java.util.List;
+
+import static org.junit.jupiter.api.Assertions.*;
 
 public class IdentityColumnsIT {
 
     @RegisterExtension
     static final CayenneTestsEnv env = CayenneTestsEnv.forProject(CayenneProjects.GENERATED_PROJECT);
 
-    protected DbAdapter adapter;
-    protected DataNode node;
-
-    protected TableHelper joinTable;
-
+    private DataNode node;
+    private TableHelper joinTable;
     
     @BeforeEach
     public void setUp() throws Exception {
-        adapter = env.dbAdapter();
         node = env.dataNode();
         joinTable = env.table("GENERATED_JOIN");
     }
@@ -122,7 +114,7 @@ public class IdentityColumnsIT {
         // for comparison
         DbEntity joinTableEntity = env.context().getEntityResolver().getDbEntity(joinTable.getTableName());
         DbAttribute pkAttribute = joinTableEntity.getAttribute("ID");
-        Number pk = (Number) adapter.getPkGenerator().generatePk(node, pkAttribute);
+        Number pk = (Number) node.getAdapter().getPkGenerator().generatePk(node, pkAttribute);
 
         GeneratedF1 f1 = env.context().newObject(GeneratedF1.class);
         GeneratedF2 f2 = env.context().newObject(GeneratedF2.class);
@@ -137,7 +129,7 @@ public class IdentityColumnsIT {
         // PkGenertor provided ids... This sorta works though if pk generator
         // has a 200
         // base value
-        if (adapter.supportsGeneratedKeys()) {
+        if (node.getAdapter().supportsGeneratedKeys()) {
             assertFalse(id == pk.intValue() + 1, "Looks like auto-increment wasn't used for the join table. ID: " + id);
         } else {
             assertEquals(id, pk.intValue() + 1);
@@ -219,7 +211,7 @@ public class IdentityColumnsIT {
 
     @Test
     public void compoundPKWithGeneratedColumn() throws Exception {
-        if (adapter.supportsGeneratedKeys()) {
+        if (node.getAdapter().supportsGeneratedKeys()) {
             // only works for generated keys, as the entity tested has one
             // Cayenne
             // auto-pk and one generated key

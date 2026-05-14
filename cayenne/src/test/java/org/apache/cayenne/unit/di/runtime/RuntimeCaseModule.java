@@ -84,7 +84,7 @@ import org.apache.cayenne.reflect.generic.ValueComparisonStrategyFactory;
 import org.apache.cayenne.resource.ClassLoaderResourceLocator;
 import org.apache.cayenne.resource.ResourceLocator;
 import org.apache.cayenne.runtime.CayenneRuntime;
-import org.apache.cayenne.test.jdbc.DBHelper;
+import org.apache.cayenne.test.jdbc.DbHelper;
 import org.apache.cayenne.unit.DB2UnitDbAdapter;
 import org.apache.cayenne.unit.DerbyUnitDbAdapter;
 import org.apache.cayenne.unit.FirebirdUnitDbAdapter;
@@ -252,7 +252,7 @@ public class RuntimeCaseModule implements Module {
         binder.bind(RuntimeCaseProperties.class).to(RuntimeCaseProperties.class).in(testScope);
         binder.bind(RuntimeCaseExtraModules.class).to(RuntimeCaseExtraModules.class).in(testScope);
         binder.bind(CayenneRuntime.class).toProvider(CayenneRuntimeProvider.class).in(testScope);
-        binder.bind(DBHelper.class).toProvider(FlavoredDBHelperProvider.class).in(testScope);
+        binder.bind(DbHelper.class).toProvider(FlavoredDBHelperProvider.class).in(testScope);
     }
 
     // this class exists so that ToolsModule can call "initAllExtensions()" that is protected in CoreModuleExtender.

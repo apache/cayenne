@@ -26,12 +26,12 @@ public abstract class SQLBuilder {
 
     static final int NO_TYPE = Integer.MIN_VALUE;
 
-    protected final DBHelper dbHelper;
+    protected final DbHelper dbHelper;
     protected final Collection<Object> bindings;
     protected final Collection<Integer> bindingTypes;
     protected final StringBuilder sqlBuffer;
 
-    protected SQLBuilder(DBHelper dbHelper) {
+    protected SQLBuilder(DbHelper dbHelper) {
         this(
                 dbHelper,
                 new StringBuilder(),
@@ -40,7 +40,7 @@ public abstract class SQLBuilder {
     }
 
     protected SQLBuilder(
-            DBHelper dbHelper,
+            DbHelper dbHelper,
             StringBuilder sqlBuffer,
             Collection<Object> bindings,
             Collection<Integer> bindingTypes) {

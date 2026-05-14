@@ -25,9 +25,9 @@ import java.sql.SQLException;
 
 abstract class ResultSetTemplate<T> {
 
-	DBHelper parent;
+	DbHelper parent;
 
-	public ResultSetTemplate(DBHelper parent) {
+	public ResultSetTemplate(DbHelper parent) {
 		this.parent = parent;
 	}
 

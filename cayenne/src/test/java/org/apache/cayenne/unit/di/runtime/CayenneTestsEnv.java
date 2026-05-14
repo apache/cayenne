@@ -24,16 +24,16 @@ import org.apache.cayenne.access.DataNode;
 import org.apache.cayenne.configuration.Constants;
 import org.apache.cayenne.configuration.DataSourceDescriptor;
 import org.apache.cayenne.configuration.runtime.CoreModule;
-import org.apache.cayenne.dba.DbAdapter;
 import org.apache.cayenne.di.AdhocObjectFactory;
 import org.apache.cayenne.di.Binder;
 import org.apache.cayenne.di.DIBootstrap;
 import org.apache.cayenne.di.Injector;
 import org.apache.cayenne.di.Module;
 import org.apache.cayenne.di.spi.DefaultScope;
+import org.apache.cayenne.map.DataMap;
 import org.apache.cayenne.map.EntityResolver;
 import org.apache.cayenne.runtime.CayenneRuntime;
-import org.apache.cayenne.test.jdbc.DBHelper;
+import org.apache.cayenne.test.jdbc.DbHelper;
 import org.apache.cayenne.test.jdbc.TableHelper;
 import org.apache.cayenne.unit.UnitDbAdapter;
 import org.apache.cayenne.unit.di.DataChannelInterceptor;
@@ -41,6 +41,8 @@ import org.apache.cayenne.unit.util.SQLTemplateCustomizer;
 import org.junit.jupiter.api.extension.AfterEachCallback;
 import org.junit.jupiter.api.extension.BeforeEachCallback;
 import org.junit.jupiter.api.extension.ExtensionContext;
+
+import java.util.stream.Collectors;
 
 /**
  * JUnit 5 extension that wires a Cayenne test environment.
@@ -62,8 +64,8 @@ public class CayenneTestsEnv implements BeforeEachCallback, AfterEachCallback {
     private final boolean weakReferenceStrategy;
 
     private DataContext context;
-    private DBHelper dbHelper;
-    private DBCleaner dbCleaner;
+    private DbHelper dbHelper;
+    private DbCleaner dbCleaner;
     private CayenneRuntime runtime;
 
     private CayenneTestsEnv(String project, Class<?>[] extraModules, boolean autoClean, boolean weakReferenceStrategy) {
@@ -103,7 +105,7 @@ public class CayenneTestsEnv implements BeforeEachCallback, AfterEachCallback {
     }
 
     @Override
-    public void beforeEach(ExtensionContext ctx) throws Exception {
+    public void beforeEach(ExtensionContext ctx) {
         INJECTOR.getInstance(RuntimeCaseProperties.class).setConfigurationLocation(project);
 
         Class<?>[] effectiveExtras = extraModules;
@@ -116,18 +118,14 @@ public class CayenneTestsEnv implements BeforeEachCallback, AfterEachCallback {
 
         this.runtime = INJECTOR.getInstance(CayenneRuntime.class);
         this.context = (DataContext) runtime.newContext();
-        this.dbHelper = INJECTOR.getInstance(DBHelper.class);
-        this.dbCleaner = new DBCleaner(
-                (FlavoredDBHelper) dbHelper,
+        this.dbHelper = INJECTOR.getInstance(DbHelper.class);
+        this.dbCleaner = new DbCleaner(
                 INJECTOR.getInstance(AllTestsSchemaManager.class),
-                runtime.getDataDomain().getDataMaps());
+                dbHelper,
+                context.getEntityResolver().getDataMaps().stream().map(DataMap::getName).collect(Collectors.toSet()));
 
         if (autoClean) {
-            try {
-                dbCleaner.clean();
-            } catch (Exception ex) {
-                dbCleaner.clean();
-            }
+            dbCleaner.clean();
         }
     }
 
@@ -144,7 +142,7 @@ public class CayenneTestsEnv implements BeforeEachCallback, AfterEachCallback {
         return context;
     }
 
-    public DBHelper dbHelper() {
+    public DbHelper dbHelper() {
         return dbHelper;
     }
 
@@ -158,10 +156,6 @@ public class CayenneTestsEnv implements BeforeEachCallback, AfterEachCallback {
 
     public UnitDbAdapter unitDbAdapter() {
         return INJECTOR.getInstance(UnitDbAdapter.class);
-    }
-
-    public DbAdapter dbAdapter() {
-        return INJECTOR.getInstance(DbAdapter.class);
     }
 
     public EntityResolver entityResolver() {
@@ -185,7 +179,7 @@ public class CayenneTestsEnv implements BeforeEachCallback, AfterEachCallback {
         return INJECTOR.getInstance(RuntimeCaseDataSourceFactory.class);
     }
 
-    public DBCleaner dbCleaner() {
+    public DbCleaner dbCleaner() {
         return dbCleaner;
     }
 
@@ -197,7 +191,7 @@ public class CayenneTestsEnv implements BeforeEachCallback, AfterEachCallback {
         return INJECTOR.getInstance(SQLTemplateCustomizer.class);
     }
 
-    public AllTestsSchemaManager schemaBuilder() {
+    public AllTestsSchemaManager schemaManager() {
         return INJECTOR.getInstance(AllTestsSchemaManager.class);
     }
 

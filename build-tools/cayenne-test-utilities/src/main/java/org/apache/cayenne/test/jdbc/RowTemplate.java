@@ -26,7 +26,7 @@ import java.sql.SQLException;
  */
 abstract class RowTemplate<T> extends ResultSetTemplate<T> {
 
-    public RowTemplate(DBHelper parent) {
+    public RowTemplate(DbHelper parent) {
         super(parent);
     }
 

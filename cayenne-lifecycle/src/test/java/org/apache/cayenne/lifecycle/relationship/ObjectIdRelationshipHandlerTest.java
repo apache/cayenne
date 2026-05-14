@@ -25,7 +25,7 @@ import org.apache.cayenne.lifecycle.db.UuidRoot1;
 import org.apache.cayenne.lifecycle.id.IdCoder;
 import org.apache.cayenne.query.ObjectSelect;
 import org.apache.cayenne.runtime.CayenneRuntime;
-import org.apache.cayenne.test.jdbc.DBHelper;
+import org.apache.cayenne.test.jdbc.DbHelper;
 import org.apache.cayenne.test.jdbc.TableHelper;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
@@ -51,7 +51,7 @@ public class ObjectIdRelationshipHandlerTest {
         runtime.getDataDomain().addQueryFilter(filter);
         runtime.getDataDomain().getEntityResolver().getCallbackRegistry().addListener(filter);
 
-        DBHelper dbHelper = new DBHelper(runtime.getDataSource(null));
+        DbHelper dbHelper = new DbHelper(runtime.getDataSource(null));
 
         rootTable = new TableHelper(dbHelper, "UUID_ROOT1").setColumns("ID", "UUID");
         rootTable.deleteAll();

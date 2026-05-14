@@ -33,11 +33,11 @@ import java.util.List;
  * JDBC utility class for setting up and analyzing the DB data sets. DBHelper
  * intentionally bypasses Cayenne stack.
  */
-public class DBHelper {
+public class DbHelper {
 
 	protected final DataSource dataSource;
 
-	public DBHelper(DataSource dataSource) {
+	public DbHelper(DataSource dataSource) {
 		this.dataSource = dataSource;
 	}
 

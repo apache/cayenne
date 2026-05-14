@@ -228,16 +228,20 @@ public class AllTestsSchemaManager {
         }
     }
 
-    public List<DbEntity> dbEntitiesInInsertOrder(DataMap map) {
-        return sortedDbEntities(map, false);
+    public List<DbEntity> dbEntitiesInInsertOrder(String mapName) {
+        return sortedDbEntities(mapName, false);
     }
 
-    public List<DbEntity> dbEntitiesInDeleteOrder(DataMap map) {
-        return sortedDbEntities(map, true);
+    public List<DbEntity> dbEntitiesInDeleteOrder(String mapName) {
+        return sortedDbEntities(mapName, true);
     }
 
-    private List<DbEntity> sortedDbEntities(DataMap map, boolean deleteOrder) {
-        DataMap localMap = domain.getDataMap(map.getName());
+    private List<DbEntity> sortedDbEntities(String mapName, boolean deleteOrder) {
+
+        // intentionally taking "mapName", not a "map", as we need to resolve the corresponding map in our private
+        // namespace defined by "domain"
+
+        DataMap localMap = domain.getDataMap(mapName);
         List<DbEntity> entities = new ArrayList<>(localMap.getDbEntities());
         entities.removeAll(excludeEntities(entities));
 
@@ -309,7 +313,7 @@ public class AllTestsSchemaManager {
 
     private void dropSchema(DataNode node, DataMap map) throws Exception {
 
-        List<DbEntity> list = dbEntitiesInInsertOrder(map);
+        List<DbEntity> list = dbEntitiesInInsertOrder(map.getName());
 
         try (Connection conn = dataSourceFactory.getSharedDataSource().getConnection()) {
 
@@ -355,12 +359,12 @@ public class AllTestsSchemaManager {
     }
 
     private void dropPKSupport(DataNode node, DataMap map) throws Exception {
-        List<DbEntity> filteredEntities = dbEntitiesInInsertOrder(map);
+        List<DbEntity> filteredEntities = dbEntitiesInInsertOrder(map.getName());
         node.getAdapter().getPkGenerator().dropAutoPk(node, filteredEntities);
     }
 
     private void createPKSupport(DataNode node, DataMap map) throws Exception {
-        List<DbEntity> filteredEntities = dbEntitiesInInsertOrder(map);
+        List<DbEntity> filteredEntities = dbEntitiesInInsertOrder(map.getName());
         node.getAdapter().getPkGenerator().createAutoPk(node, filteredEntities);
     }
 
@@ -385,7 +389,7 @@ public class AllTestsSchemaManager {
     private Collection<String> tableCreateQueries(DataNode node, DataMap map) {
         DbAdapter adapter = node.getAdapter();
 
-        List<DbEntity> orderedEntities = dbEntitiesInInsertOrder(map);
+        List<DbEntity> orderedEntities = dbEntitiesInInsertOrder(map.getName());
         List<DbEntity> excludedEntities = excludeEntities(map.getDbEntities());
         DbGenerator gen = new DbGenerator(adapter, map, excludedEntities, domain, jdbcEventLogger);
         List<String> queries = new ArrayList<>();

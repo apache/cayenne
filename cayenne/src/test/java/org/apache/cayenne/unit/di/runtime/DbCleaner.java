@@ -16,31 +16,39 @@
  *  specific language governing permissions and limitations
  *  under the License.
  ****************************************************************/
+
 package org.apache.cayenne.unit.di.runtime;
 
-import org.apache.cayenne.dba.QuotingStrategy;
-import org.apache.cayenne.map.DataMap;
-import org.apache.cayenne.test.jdbc.DBHelper;
+import org.apache.cayenne.map.DbEntity;
+import org.apache.cayenne.test.jdbc.DbHelper;
 
-import javax.sql.DataSource;
+import java.sql.SQLException;
+import java.util.Set;
 
 /**
- * A DbHelper that understands various supported DB flavors.
+ * Cleans up test data in the scope of a given test DataMaps.
  */
-public class FlavoredDBHelper extends DBHelper {
+public class DbCleaner {
 
-    private final QuotingStrategy quotingStrategy;
-    private final DataMap dataMap;
+    private final DbHelper dbHelper;
+    private final AllTestsSchemaManager parentSchemaManager;
+    private final Set<String> dataMaps;
 
-    public FlavoredDBHelper(DataSource dataSource, QuotingStrategy quotingStrategy, DataMap dataMap) {
-        super(dataSource);
-        this.dataMap = dataMap;
-        this.quotingStrategy = quotingStrategy;
+    public DbCleaner(AllTestsSchemaManager parentSchemaManager, DbHelper dbHelper, Set<String> dataMaps) {
+        this.parentSchemaManager = parentSchemaManager;
+        this.dbHelper = dbHelper;
+        this.dataMaps = dataMaps;
     }
 
-    @Override
-    protected String quote(String sqlIdentifier) {
-        return quotingStrategy.quotedIdentifier(dataMap, sqlIdentifier);
+    public void clean() {
+        for (String map : dataMaps) {
+            for (DbEntity entity : parentSchemaManager.dbEntitiesInDeleteOrder(map)) {
+                try {
+                    dbHelper.deleteAll(entity.getName());
+                } catch (SQLException e) {
+                    throw new RuntimeException(e);
+                }
+            }
+        }
     }
-
 }

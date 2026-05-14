@@ -21,7 +21,6 @@ package org.apache.cayenne.access.dbsync;
 import org.apache.cayenne.CayenneRuntimeException;
 import org.apache.cayenne.ObjectContext;
 import org.apache.cayenne.access.DataNode;
-import org.apache.cayenne.dba.DbAdapter;
 import org.apache.cayenne.map.DataMap;
 import org.apache.cayenne.query.SQLTemplate;
 import org.apache.cayenne.unit.di.runtime.CayenneProjects;
@@ -49,17 +48,15 @@ public class SchemaUpdateStrategyBase {
 
 	protected ObjectContext context;
 	protected DataNode node;
-	protected DbAdapter adapter;
 
 	@BeforeEach
 	public void cleanUpDB() {
 		context = env.context();
 		node = env.dataNode();
-		adapter = env.dbAdapter();
 		DataMap map = node.getEntityResolver().getDataMap("sus-map");
 		for (String name : existingTables()) {
 
-			for (String drop : adapter.dropTableStatements(map.getDbEntity(name))) {
+			for (String drop : node.getAdapter().dropTableStatements(map.getDbEntity(name))) {
 				context.performGenericQuery(new SQLTemplate(Object.class, drop));
 			}
 		}
@@ -82,7 +79,7 @@ public class SchemaUpdateStrategyBase {
 
 	protected void createOneTable(String entityName) {
 		DataMap map = node.getEntityResolver().getDataMap("sus-map");
-		String createTable = adapter.createTable(map.getDbEntity(entityName));
+		String createTable = node.getAdapter().createTable(map.getDbEntity(entityName));
 		context.performGenericQuery(new SQLTemplate(Object.class, createTable));
 	}
 

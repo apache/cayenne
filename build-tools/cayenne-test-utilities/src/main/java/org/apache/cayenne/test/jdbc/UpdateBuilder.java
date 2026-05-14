@@ -22,7 +22,7 @@ public class UpdateBuilder extends SQLBuilder {
 
     protected int setCount;
 
-    protected UpdateBuilder(DBHelper dbHelper, String tableName) {
+    protected UpdateBuilder(DbHelper dbHelper, String tableName) {
         super(dbHelper);
         sqlBuffer.append("update ").append(dbHelper.quote(tableName)).append(" set ");
     }

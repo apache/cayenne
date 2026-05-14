@@ -18,10 +18,6 @@
  ****************************************************************/
 package org.apache.cayenne.access.translator.batch;
 
-import java.util.Arrays;
-import java.util.Collection;
-import java.util.Collections;
-import java.util.List;
 import org.apache.cayenne.PersistenceState;
 import org.apache.cayenne.access.DataNode;
 import org.apache.cayenne.dba.DbAdapter;
@@ -39,9 +35,14 @@ import org.apache.cayenne.testdo.soft_delete.SoftDelete;
 import org.apache.cayenne.unit.UnitDbAdapter;
 import org.apache.cayenne.unit.di.runtime.CayenneProjects;
 import org.apache.cayenne.unit.di.runtime.CayenneTestsEnv;
-import org.junit.jupiter.api.extension.RegisterExtension;
-import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.RegisterExtension;
+
+import java.util.Arrays;
+import java.util.Collection;
+import java.util.Collections;
+import java.util.List;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
@@ -51,24 +52,22 @@ public class SoftDeleteBatchTranslatorIT {
     @RegisterExtension
     static final CayenneTestsEnv env = CayenneTestsEnv.forProject(CayenneProjects.SOFT_DELETE_PROJECT);
 
-    protected DbAdapter adapter;
-    private DataNode dataNode;
+    private DataNode node;
     private UnitDbAdapter unitAdapter;
     private AdhocObjectFactory objectFactory;
 
     private DeleteBatchTranslator createTranslator(DeleteBatchQuery query) {
-        JdbcAdapter adapter = objectFactory.newInstance(JdbcAdapter.class, JdbcAdapter.class.getName());
+        DbAdapter adapter = objectFactory.newInstance(JdbcAdapter.class, JdbcAdapter.class.getName());
         return createTranslator(query, adapter);
     }
 
-    private DeleteBatchTranslator createTranslator(DeleteBatchQuery query, JdbcAdapter adapter) {
+    private DeleteBatchTranslator createTranslator(DeleteBatchQuery query, DbAdapter adapter) {
         return (DeleteBatchTranslator) new SoftDeleteTranslatorFactory().translator(query, adapter, null);
     }
 
     @BeforeEach
     public void setUp() {
-        adapter = env.dbAdapter();
-        dataNode = env.dataNode();
+        node = env.dataNode();
         unitAdapter = env.unitDbAdapter();
         objectFactory = env.adhocObjectFactory();
     }
@@ -111,7 +110,7 @@ public class SoftDeleteBatchTranslatorIT {
             List<DbAttribute> idAttributes = Collections.singletonList(entity.getAttribute("ID"));
 
             DeleteBatchQuery deleteQuery = new DeleteBatchQuery(entity, idAttributes, Collections.emptySet(), 1);
-            JdbcAdapter adapter = (JdbcAdapter) this.adapter;
+            DbAdapter adapter = node.getAdapter();
             DeleteBatchTranslator builder = createTranslator(deleteQuery, adapter);
             String generatedSql = builder.getSql();
 
@@ -130,11 +129,11 @@ public class SoftDeleteBatchTranslatorIT {
     @Test
     public void update() throws Exception {
 
-        final DbEntity entity = env.context().getEntityResolver().getObjEntity(SoftDelete.class).getDbEntity();
+        DbEntity entity = env.context().getEntityResolver().getObjEntity(SoftDelete.class).getDbEntity();
 
-        BatchTranslatorFactory oldFactory = dataNode.getBatchTranslatorFactory();
+        BatchTranslatorFactory oldFactory = node.getBatchTranslatorFactory();
         try {
-            dataNode.setBatchTranslatorFactory(new SoftDeleteTranslatorFactory());
+            node.setBatchTranslatorFactory(new SoftDeleteTranslatorFactory());
 
             final SoftDelete test = env.context().newObject(SoftDelete.class);
             test.setName("SoftDeleteBatchQueryBuilderTest");
@@ -170,7 +169,7 @@ public class SoftDeleteBatchTranslatorIT {
             }.runTest(200);
         } finally {
             env.context().performQuery(new SQLTemplate(entity, "DELETE FROM SOFT_DELETE"));
-            dataNode.setBatchTranslatorFactory(oldFactory);
+            node.setBatchTranslatorFactory(oldFactory);
         }
     }
 

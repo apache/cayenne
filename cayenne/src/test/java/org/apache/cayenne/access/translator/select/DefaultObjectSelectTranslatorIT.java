@@ -19,15 +19,14 @@
 
 package org.apache.cayenne.access.translator.select;
 
-import org.apache.cayenne.access.DataContext;
-import org.apache.cayenne.dba.DbAdapter;
 import org.apache.cayenne.query.ObjectSelect;
 import org.apache.cayenne.testdo.testmap.Artist;
 import org.apache.cayenne.testdo.testmap.Painting;
 import org.apache.cayenne.unit.di.runtime.CayenneProjects;
 import org.apache.cayenne.unit.di.runtime.CayenneTestsEnv;
-import org.junit.jupiter.api.extension.RegisterExtension;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.RegisterExtension;
+
 import static org.junit.jupiter.api.Assertions.*;
 
 public class DefaultObjectSelectTranslatorIT {
@@ -38,7 +37,7 @@ public class DefaultObjectSelectTranslatorIT {
     @Test
     public void simpleSql() {
         ObjectSelect<Artist> select = ObjectSelect.query(Artist.class);
-        DefaultSelectTranslator translator = new DefaultSelectTranslator(select, env.dbAdapter(), env.context().getEntityResolver());
+        DefaultSelectTranslator translator = new DefaultSelectTranslator(select, env.dataNode().getAdapter(), env.context().getEntityResolver());
 
         String sql = translator.getSql();
         assertTrue(sql.startsWith("SELECT "));
@@ -61,7 +60,7 @@ public class DefaultObjectSelectTranslatorIT {
         ObjectSelect<Artist> select = ObjectSelect.query(Artist.class, Artist.ARTIST_NAME.eq("artist")
                 .andExp(Artist.PAINTING_ARRAY.dot(Painting.PAINTING_TITLE).eq("painting")));
 
-        DefaultSelectTranslator translator = new DefaultSelectTranslator(select, env.dbAdapter(), env.context().getEntityResolver());
+        DefaultSelectTranslator translator = new DefaultSelectTranslator(select, env.dataNode().getAdapter(), env.context().getEntityResolver());
 
         String sql = translator.getSql();
         assertTrue(sql.startsWith("SELECT DISTINCT"));
@@ -89,7 +88,7 @@ public class DefaultObjectSelectTranslatorIT {
     public void selectWithJointPrefetch() {
         ObjectSelect<Painting> select = ObjectSelect.query(Painting.class).prefetch(Painting.TO_ARTIST.joint());
 
-        DefaultSelectTranslator translator = new DefaultSelectTranslator(select, env.dbAdapter(), env.context().getEntityResolver());
+        DefaultSelectTranslator translator = new DefaultSelectTranslator(select, env.dataNode().getAdapter(), env.context().getEntityResolver());
 
         String sql = translator.getSql();
 

@@ -20,7 +20,7 @@ package org.apache.cayenne.test.jdbc;
 
 public class DeleteBuilder extends SQLBuilder {
 
-    protected DeleteBuilder(DBHelper dbHelper, String tableName) {
+    protected DeleteBuilder(DbHelper dbHelper, String tableName) {
         super(dbHelper);
         sqlBuffer.append("delete from ").append(dbHelper.quote(tableName));
     }

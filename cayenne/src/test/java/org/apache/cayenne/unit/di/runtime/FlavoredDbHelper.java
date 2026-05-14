@@ -16,34 +16,31 @@
  *  specific language governing permissions and limitations
  *  under the License.
  ****************************************************************/
-
 package org.apache.cayenne.unit.di.runtime;
 
+import org.apache.cayenne.dba.QuotingStrategy;
 import org.apache.cayenne.map.DataMap;
-import org.apache.cayenne.map.DbEntity;
+import org.apache.cayenne.test.jdbc.DbHelper;
 
-import java.sql.SQLException;
-import java.util.Collection;
-import java.util.List;
+import javax.sql.DataSource;
 
-public class DBCleaner {
+/**
+ * A DbHelper that understands various supported DB flavors.
+ */
+public class FlavoredDbHelper extends DbHelper {
 
-    private final FlavoredDBHelper dbHelper;
-    private final AllTestsSchemaManager schemaBuilder;
-    private final Collection<DataMap> dataMaps;
+    private final QuotingStrategy quotingStrategy;
+    private final DataMap dataMap;
 
-    public DBCleaner(FlavoredDBHelper dbHelper, AllTestsSchemaManager schemaBuilder, Collection<DataMap> dataMaps) {
-        this.dbHelper = dbHelper;
-        this.schemaBuilder = schemaBuilder;
-        this.dataMaps = dataMaps;
+    public FlavoredDbHelper(DataSource dataSource, QuotingStrategy quotingStrategy, DataMap dataMap) {
+        super(dataSource);
+        this.dataMap = dataMap;
+        this.quotingStrategy = quotingStrategy;
     }
 
-    public void clean() throws SQLException {
-        for (DataMap map : dataMaps) {
-            List<DbEntity> entities = schemaBuilder.dbEntitiesInDeleteOrder(map);
-            for (DbEntity entity : entities) {
-                dbHelper.deleteAll(entity.getName());
-            }
-        }
+    @Override
+    protected String quote(String sqlIdentifier) {
+        return quotingStrategy.quotedIdentifier(dataMap, sqlIdentifier);
     }
+
 }

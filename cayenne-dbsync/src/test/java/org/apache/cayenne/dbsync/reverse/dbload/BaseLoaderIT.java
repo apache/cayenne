@@ -19,11 +19,9 @@
 
 package org.apache.cayenne.dbsync.reverse.dbload;
 
-import java.sql.Connection;
-
 import org.apache.cayenne.dba.DbAdapter;
-import org.apache.cayenne.map.DbEntity;
 import org.apache.cayenne.dbsync.model.DetectedDbEntity;
+import org.apache.cayenne.map.DbEntity;
 import org.apache.cayenne.runtime.CayenneRuntime;
 import org.apache.cayenne.unit.UnitDbAdapter;
 import org.apache.cayenne.unit.di.runtime.CayenneProjects;
@@ -32,6 +30,8 @@ import org.apache.cayenne.unit.di.runtime.RuntimeCaseDataSourceFactory;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.extension.RegisterExtension;
+
+import java.sql.Connection;
 
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
@@ -53,7 +53,7 @@ public class BaseLoaderIT {
 
     @BeforeEach
     public void before() throws Exception {
-        adapter = env.dbAdapter();
+        adapter = env.dataNode().getAdapter();
         runtime = env.runtime();
         dataSourceFactory = env.dataSourceFactory();
         accessStackAdapter = env.unitDbAdapter();

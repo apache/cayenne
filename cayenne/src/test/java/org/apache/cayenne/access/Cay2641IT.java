@@ -49,7 +49,7 @@ public class Cay2641IT {
 
     @BeforeEach
     public void setup() throws Exception {
-        adapter = env.dbAdapter();
+        adapter = env.dataNode().getAdapter();
 
         TableHelper th = env.table("ArtistLazy")
                 .setColumns("ID", "NAME", "SURNAME")
@@ -85,10 +85,10 @@ public class Cay2641IT {
     public void typeAttributes() {
         List<ArtistLazy> artists = ObjectSelect.query(ArtistLazy.class).select(env.context());
 
-        Object object = artists.get(0).readPropertyDirectly("name");
-        assertTrue(object instanceof Fault);
+        Object object = artists.getFirst().readPropertyDirectly("name");
+        assertInstanceOf(Fault.class, object);
 
-        object = artists.get(0).readPropertyDirectly("surname");
+        object = artists.getFirst().readPropertyDirectly("surname");
         assertEquals("artist2", object);
     }
 
@@ -97,7 +97,7 @@ public class Cay2641IT {
         ArtistLazy artist = ObjectSelect.query(ArtistLazy.class).selectFirst(env.context());
 
         Object object = artist.readPropertyDirectly("name");
-        assertTrue(object instanceof Fault);
+        assertInstanceOf(Fault.class, object);
 
         artist.getName();
         object = artist.readPropertyDirectly("name");
@@ -122,22 +122,22 @@ public class Cay2641IT {
                 .prefetch(PaintingLazy.ARTIST.joint())
                 .select(env.context());
 
-        Object object = paintingLazyList.get(0).readPropertyDirectly("name");
-        assertTrue(object instanceof Fault);
+        Object object = paintingLazyList.getFirst().readPropertyDirectly("name");
+        assertInstanceOf(Fault.class, object);
 
-        object = paintingLazyList.get(0).getName();
-        assertTrue(object instanceof String);
+        object = paintingLazyList.getFirst().getName();
+        assertInstanceOf(String.class, object);
         assertEquals("painting1", object);
 
-        ArtistLazy artist = (ArtistLazy) paintingLazyList.get(0).readPropertyDirectly("artist");
+        ArtistLazy artist = (ArtistLazy) paintingLazyList.getFirst().readPropertyDirectly("artist");
         object = artist.readPropertyDirectly("name");
-        assertTrue(object instanceof Fault);
+        assertInstanceOf(Fault.class, object);
 
         object = artist.readPropertyDirectly("surname");
         assertEquals("artist2", object);
 
         object = artist.getName();
-        assertTrue(object instanceof String);
+        assertInstanceOf(String.class, object);
         assertEquals("artist1", object);
     }
 
@@ -146,11 +146,11 @@ public class Cay2641IT {
         DatamapLazy optimistic = DatamapLazy.getInstance();
         List<ArtistLazy> artistLazies = optimistic.performSimpleSelect(env.context());
 
-        Object object = artistLazies.get(0).readPropertyDirectly("name");
-        assertTrue(object instanceof Fault);
+        Object object = artistLazies.getFirst().readPropertyDirectly("name");
+        assertInstanceOf(Fault.class, object);
 
-        object = artistLazies.get(0).readPropertyDirectly("surname");
-        assertTrue(object instanceof String);
+        object = artistLazies.getFirst().readPropertyDirectly("surname");
+        assertInstanceOf(String.class, object);
         assertEquals("artist2", object);
     }
 
@@ -159,11 +159,11 @@ public class Cay2641IT {
         DatamapLazy optimistic = DatamapLazy.getInstance();
         List<PaintingLazy> paintingLazies = optimistic.performPrefetchSelect(env.context());
 
-        Object object = paintingLazies.get(0).readPropertyDirectly("name");
-        assertTrue(object instanceof Fault);
+        Object object = paintingLazies.getFirst().readPropertyDirectly("name");
+        assertInstanceOf(Fault.class, object);
 
-        ArtistLazy artist = (ArtistLazy) paintingLazies.get(0).readPropertyDirectly("artist");
+        ArtistLazy artist = (ArtistLazy) paintingLazies.getFirst().readPropertyDirectly("artist");
         object = artist.readPropertyDirectly("name");
-        assertTrue(object instanceof Fault);
+        assertInstanceOf(Fault.class, object);
     }
 }

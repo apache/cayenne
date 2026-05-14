@@ -20,7 +20,7 @@ package org.apache.cayenne.unit.di.runtime;
 
 import java.sql.Types;
 
-import org.apache.cayenne.test.jdbc.DBHelper;
+import org.apache.cayenne.test.jdbc.DbHelper;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.extension.RegisterExtension;
 
@@ -31,7 +31,7 @@ public class PeopleProjectCase {
 			.forProject(CayenneProjects.PEOPLE_PROJECT)
 			.withoutAutoClean();
 
-	protected DBHelper dbHelper;
+	protected DbHelper dbHelper;
 
 	@BeforeEach
 	public void cleanUpDB() throws Exception {
