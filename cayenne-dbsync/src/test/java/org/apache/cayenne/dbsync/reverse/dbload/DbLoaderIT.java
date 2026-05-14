@@ -31,11 +31,8 @@ import org.apache.cayenne.map.DataMap;
 import org.apache.cayenne.map.DbAttribute;
 import org.apache.cayenne.map.DbEntity;
 import org.apache.cayenne.map.DbRelationship;
-import org.apache.cayenne.runtime.CayenneRuntime;
-import org.apache.cayenne.unit.dba.UnitDbAdapter;
-import org.apache.cayenne.unit.runtime.CayenneProjects;
 import org.apache.cayenne.unit.CayenneTestsEnv;
-import org.apache.cayenne.unit.TestDataSources;
+import org.apache.cayenne.unit.runtime.CayenneProjects;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -55,13 +52,8 @@ public class DbLoaderIT {
 
     private static final DbLoaderConfiguration CONFIG = new DbLoaderConfiguration();
 
-    private CayenneRuntime runtime;
     private DbAdapter adapter;
-    private TestDataSources dataSourceFactory;
-    private UnitDbAdapter accessStackAdapter;
-
     private Connection connection;
-
 
     @Test
     public void loadingOrder() throws Exception {
@@ -100,7 +92,7 @@ public class DbLoaderIT {
      */
     @Test
     public void simpleLoad() throws Exception {
-        DbLoader loader = createDbLoader(true, true);
+        DbLoader loader = createDbLoader();
         DataMap loaded = loader.load();
         assertNotNull(loaded);
         assertEquals("__generated_by_dbloader__", loaded.getName());
@@ -145,14 +137,11 @@ public class DbLoaderIT {
 
     @BeforeEach
     public void before() throws Exception {
-        runtime = env.runtime();
         adapter = env.dataNode().getAdapter();
-        dataSourceFactory = env.dataSourceFactory();
-        accessStackAdapter = env.unitDbAdapter();
-        this.connection = dataSourceFactory.getSharedDataSource().getConnection();
+        this.connection = CayenneTestsEnv.DATA_SOURCES.sharedDataSource().getConnection();
     }
 
-    private DbLoader createDbLoader(boolean meaningfulPK, boolean meaningfulFK) {
+    private DbLoader createDbLoader() {
         return new DbLoader(adapter, connection, CONFIG, null, new DefaultObjectNameGenerator(NoStemStemmer.getInstance()));
     }
 

@@ -40,13 +40,12 @@ import org.apache.cayenne.testdo.testmap.Exhibit;
 import org.apache.cayenne.testdo.testmap.NullTestEntity;
 import org.apache.cayenne.testdo.testmap.Painting;
 import org.apache.cayenne.testdo.testmap.ROArtist;
+import org.apache.cayenne.unit.CayenneTestsEnv;
 import org.apache.cayenne.unit.dba.UnitDbAdapter;
 import org.apache.cayenne.unit.runtime.CayenneProjects;
-import org.apache.cayenne.unit.CayenneTestsEnv;
-import org.apache.cayenne.unit.TestDataSources;
 import org.junit.jupiter.api.BeforeEach;
-import org.junit.jupiter.api.extension.RegisterExtension;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.RegisterExtension;
 
 import java.math.BigDecimal;
 import java.sql.Timestamp;
@@ -67,7 +66,6 @@ public class DataContextIT {
 
 	protected DataContext context;
 	protected UnitDbAdapter accessStackAdapter;
-	protected TestDataSources dataSourceFactory;
 
 	protected TableHelper tArtist;
 	protected TableHelper tExhibit;
@@ -78,7 +76,6 @@ public class DataContextIT {
 	public void setUp() throws Exception {
 		context = env.context();
 		accessStackAdapter = env.unitDbAdapter();
-		dataSourceFactory = env.dataSourceFactory();
 		tArtist = env.table("ARTIST", "ARTIST_ID", "ARTIST_NAME");
 
 		tExhibit = env.table("EXHIBIT", "EXHIBIT_ID", "GALLERY_ID", "OPENING_DATE", "CLOSING_DATE");

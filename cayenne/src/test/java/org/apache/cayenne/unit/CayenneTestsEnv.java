@@ -63,7 +63,7 @@ import java.util.stream.Collectors;
 public class CayenneTestsEnv implements BeforeEachCallback, AfterEachCallback {
 
     private static final Injector INJECTOR;
-    private static final TestDataSources DATA_SOURCES;
+    public static final TestDataSources DATA_SOURCES;
     public static final AllTestsSchemaManager SCHEMAS;
 
     static {
@@ -126,7 +126,7 @@ public class CayenneTestsEnv implements BeforeEachCallback, AfterEachCallback {
         DataNode node = runtime.getDataDomain().getDataNodes().iterator().next();
         DataMap firstMap = context.getEntityResolver().getDataMaps().iterator().next();
         this.dbHelper = new FlavoredDbHelper(
-                DATA_SOURCES.getSharedDataSource(),
+                DATA_SOURCES.sharedDataSource(),
                 node.getAdapter().getQuotingStrategy(),
                 firstMap);
 
@@ -194,7 +194,7 @@ public class CayenneTestsEnv implements BeforeEachCallback, AfterEachCallback {
             node.setRowReaderFactory(rowReaderFactory);
             node.setBatchTranslatorFactory(batchTranslatorFactory);
             node.setSelectTranslatorFactory(selectTranslatorFactory);
-            node.setDataSource(DATA_SOURCES.getDataSource(dataMap.getName()));
+            node.setDataSource(DATA_SOURCES.dataSource(dataMap.getName()));
             node.setAdapter(adapter);
             node.setSchemaUpdateStrategy(new SkipSchemaUpdateStrategy());
             node.setSqlTemplateProcessor(sqlTemplateProcessor);
@@ -261,10 +261,6 @@ public class CayenneTestsEnv implements BeforeEachCallback, AfterEachCallback {
 
     public AdhocObjectFactory adhocObjectFactory() {
         return runtime.getInjector().getInstance(AdhocObjectFactory.class);
-    }
-
-    public TestDataSources dataSourceFactory() {
-        return DATA_SOURCES;
     }
 
     public DbCleaner dbCleaner() {

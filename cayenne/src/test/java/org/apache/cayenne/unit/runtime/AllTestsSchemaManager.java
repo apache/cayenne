@@ -123,7 +123,7 @@ public class AllTestsSchemaManager {
         DataNode node = new DataNode(map.getName());
         node.setJdbcEventLogger(jdbcEventLogger);
         node.setAdapter(dbAdapter);
-        node.setDataSource(dataSourceFactory.getSharedDataSource());
+        node.setDataSource(dataSourceFactory.sharedDataSource());
 
         // setup test extended types
         node.getAdapter().getExtendedTypes().registerType(new StringET1ExtendedType());
@@ -315,7 +315,7 @@ public class AllTestsSchemaManager {
 
         List<DbEntity> list = dbEntitiesInInsertOrder(map.getName());
 
-        try (Connection conn = dataSourceFactory.getSharedDataSource().getConnection()) {
+        try (Connection conn = dataSourceFactory.sharedDataSource().getConnection()) {
 
             DatabaseMetaData md = conn.getMetaData();
             List<String> allTables = new ArrayList<>();
@@ -370,7 +370,7 @@ public class AllTestsSchemaManager {
 
     private void createSchema(DataNode node, DataMap map) throws Exception {
 
-        try (Connection conn = dataSourceFactory.getSharedDataSource().getConnection()) {
+        try (Connection conn = dataSourceFactory.sharedDataSource().getConnection()) {
             unitDbAdapter.willCreateTables(conn, map);
             try (Statement stmt = conn.createStatement()) {
 

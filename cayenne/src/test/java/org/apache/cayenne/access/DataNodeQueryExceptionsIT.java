@@ -77,7 +77,7 @@ public class DataNodeQueryExceptionsIT {
 
     int activeConnections() {
         try {
-            UnmanagedPoolingDataSource ds = env.dataSourceFactory().getSharedDataSource().unwrap(UnmanagedPoolingDataSource.class);
+            UnmanagedPoolingDataSource ds = CayenneTestsEnv.DATA_SOURCES.sharedDataSource().unwrap(UnmanagedPoolingDataSource.class);
 
             Method poolSize = UnmanagedPoolingDataSource.class.getDeclaredMethod("poolSize");
             poolSize.setAccessible(true);

@@ -34,6 +34,6 @@ public class RuntimeCaseSharedDataSourceFactory implements DataSourceFactory {
     }
 
     public DataSource getDataSource(DataNodeDescriptor nodeDescriptor) throws Exception {
-        return factory.getSharedDataSource();
+        return factory.sharedDataSource();
     }
 }

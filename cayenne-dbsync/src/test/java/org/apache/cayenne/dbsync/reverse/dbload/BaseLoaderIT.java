@@ -23,10 +23,9 @@ import org.apache.cayenne.dba.DbAdapter;
 import org.apache.cayenne.dbsync.model.DetectedDbEntity;
 import org.apache.cayenne.map.DbEntity;
 import org.apache.cayenne.runtime.CayenneRuntime;
+import org.apache.cayenne.unit.CayenneTestsEnv;
 import org.apache.cayenne.unit.dba.UnitDbAdapter;
 import org.apache.cayenne.unit.runtime.CayenneProjects;
-import org.apache.cayenne.unit.CayenneTestsEnv;
-import org.apache.cayenne.unit.TestDataSources;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.extension.RegisterExtension;
@@ -44,7 +43,6 @@ public class BaseLoaderIT {
 
     protected DbAdapter adapter;
     protected CayenneRuntime runtime;
-    protected TestDataSources dataSourceFactory;
     protected UnitDbAdapter accessStackAdapter;
 
     Connection connection;
@@ -55,11 +53,10 @@ public class BaseLoaderIT {
     public void before() throws Exception {
         adapter = env.dataNode().getAdapter();
         runtime = env.runtime();
-        dataSourceFactory = env.dataSourceFactory();
         accessStackAdapter = env.unitDbAdapter();
         store = new DbLoadDataStore();
         assertTrue(store.getDbEntities().isEmpty(), "Store is not empty");
-        this.connection = dataSourceFactory.getSharedDataSource().getConnection();
+        this.connection = CayenneTestsEnv.DATA_SOURCES.sharedDataSource().getConnection();
     }
 
     @AfterEach

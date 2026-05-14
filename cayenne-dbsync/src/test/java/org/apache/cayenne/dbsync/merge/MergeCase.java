@@ -26,8 +26,8 @@ import org.apache.cayenne.dbsync.DbSyncModule;
 import org.apache.cayenne.dbsync.merge.context.MergerContext;
 import org.apache.cayenne.dbsync.merge.factory.MergerTokenFactory;
 import org.apache.cayenne.dbsync.merge.factory.MergerTokenFactoryProvider;
-import org.apache.cayenne.dbsync.merge.token.db.AbstractToDbToken;
 import org.apache.cayenne.dbsync.merge.token.MergerToken;
+import org.apache.cayenne.dbsync.merge.token.db.AbstractToDbToken;
 import org.apache.cayenne.dbsync.merge.token.db.SetColumnTypeToDb;
 import org.apache.cayenne.dbsync.naming.DefaultObjectNameGenerator;
 import org.apache.cayenne.dbsync.naming.NoStemStemmer;
@@ -43,13 +43,12 @@ import org.apache.cayenne.map.DbEntity;
 import org.apache.cayenne.map.EntityResolver;
 import org.apache.cayenne.runtime.CayenneRuntime;
 import org.apache.cayenne.test.jdbc.DbHelper;
+import org.apache.cayenne.unit.CayenneTestsEnv;
 import org.apache.cayenne.unit.dba.UnitDbAdapter;
 import org.apache.cayenne.unit.runtime.CayenneProjects;
-import org.apache.cayenne.unit.CayenneTestsEnv;
-import org.apache.cayenne.unit.TestDataSources;
-import org.slf4j.Logger;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.extension.RegisterExtension;
+import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import java.sql.Connection;
@@ -78,7 +77,6 @@ public abstract class MergeCase {
     private DbHelper dbHelper;
     private CayenneRuntime runtime;
     protected UnitDbAdapter accessStackAdapter;
-    private TestDataSources dataSourceFactory;
 
     @BeforeEach
     public void setUp() throws Exception {
@@ -87,7 +85,6 @@ public abstract class MergeCase {
         dbHelper = env.dbHelper();
         runtime = env.runtime();
         accessStackAdapter = env.unitDbAdapter();
-        dataSourceFactory = env.dataSourceFactory();
 
         // break circular FK before DBCleaner.clean()
         dbHelper.update("ARTGROUP").set("PARENT_GROUP_ID", null, Types.INTEGER).execute();
@@ -234,7 +231,7 @@ public abstract class MergeCase {
 
     private void executeSql(String sql) throws Exception {
 
-        try (Connection conn = dataSourceFactory.getSharedDataSource().getConnection();) {
+        try (Connection conn = CayenneTestsEnv.DATA_SOURCES.sharedDataSource().getConnection();) {
 
             try (Statement st = conn.createStatement();) {
                 st.execute(sql);

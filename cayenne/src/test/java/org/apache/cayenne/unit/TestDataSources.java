@@ -48,11 +48,11 @@ public class TestDataSources {
 		this.sharedDataSource = createDataSource();
 	}
 
-	public DataSource getSharedDataSource() {
+	public DataSource sharedDataSource() {
 		return sharedDataSource;
 	}
 
-	public DataSource getDataSource(String dataMapName) {
+	public DataSource dataSource(String dataMapName) {
 		DataSource ds = dataSources.get(dataMapName);
 		if (ds == null) {
 
