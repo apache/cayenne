@@ -20,7 +20,6 @@ package org.apache.cayenne.unit;
 
 import org.apache.cayenne.access.DataNode;
 import org.apache.cayenne.runtime.CayenneRuntime;
-import org.apache.cayenne.unit.runtime.CayenneTestDataNode;
 
 import java.util.Collection;
 
@@ -38,7 +37,7 @@ class RuntimeTelemetry {
     }
 
     public static int runWithQueryCounter(CayenneRuntime runtime, Runnable task) {
-        CayenneTestDataNode node = (CayenneTestDataNode) runtime.getDataDomain().getDataNodes().iterator().next();
+        RuntimeTelemetryDataNode node = (RuntimeTelemetryDataNode) runtime.getDataDomain().getDataNodes().iterator().next();
 
         int start = node.getQueriesCount();
         int end;
@@ -52,7 +51,7 @@ class RuntimeTelemetry {
 
     private static void setBlockingQueries(Collection<DataNode> nodes, boolean blocking) {
         for (DataNode node : nodes) {
-            ((CayenneTestDataNode) node).setBlockingQueries(blocking);
+            ((RuntimeTelemetryDataNode) node).setBlockingQueries(blocking);
         }
     }
 }

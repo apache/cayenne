@@ -21,12 +21,15 @@ package org.apache.cayenne.unit;
 import org.apache.cayenne.access.DataContext;
 import org.apache.cayenne.access.DataDomain;
 import org.apache.cayenne.access.DataNode;
+import org.apache.cayenne.access.dbsync.SkipSchemaUpdateStrategy;
+import org.apache.cayenne.access.jdbc.SQLTemplateProcessor;
+import org.apache.cayenne.access.jdbc.reader.RowReaderFactory;
+import org.apache.cayenne.access.translator.batch.BatchTranslatorFactory;
+import org.apache.cayenne.access.translator.select.SelectTranslatorFactory;
 import org.apache.cayenne.configuration.Constants;
 import org.apache.cayenne.configuration.DataMapLoader;
-import org.apache.cayenne.configuration.DataNodeDescriptor;
 import org.apache.cayenne.configuration.DataSourceDescriptor;
 import org.apache.cayenne.configuration.runtime.CoreModule;
-import org.apache.cayenne.configuration.runtime.DataNodeFactory;
 import org.apache.cayenne.dba.DbAdapter;
 import org.apache.cayenne.di.AdhocObjectFactory;
 import org.apache.cayenne.di.Binder;
@@ -44,7 +47,6 @@ import org.apache.cayenne.unit.dba.UnitDbAdapter;
 import org.apache.cayenne.unit.runtime.AllTestsSchemaManager;
 import org.apache.cayenne.unit.runtime.DbCleaner;
 import org.apache.cayenne.unit.runtime.FlavoredDbHelper;
-import org.apache.cayenne.unit.runtime.CayenneTestDataNodeFactory;
 import org.apache.cayenne.unit.runtime.RuntimeCaseDataSourceFactory;
 import org.apache.cayenne.unit.runtime.RuntimeCaseModule;
 import org.apache.cayenne.unit.util.SQLTemplateCustomizer;
@@ -176,18 +178,28 @@ public class CayenneTestsEnv implements BeforeEachCallback, AfterEachCallback {
 
         UnitDbAdapter unitDbAdapter = unitDbAdapter();
         DataDomain domain = runtime.getDataDomain();
-        DataNodeFactory dataNodeFactory = runtime.getInjector().getInstance(DataNodeFactory.class);
+        Injector runtimeInjector = runtime.getInjector();
+
+        JdbcEventLogger jdbcEventLogger = runtimeInjector.getInstance(JdbcEventLogger.class);
+        RowReaderFactory rowReaderFactory = runtimeInjector.getInstance(RowReaderFactory.class);
+        BatchTranslatorFactory batchTranslatorFactory = runtimeInjector.getInstance(BatchTranslatorFactory.class);
+        SelectTranslatorFactory selectTranslatorFactory = runtimeInjector.getInstance(SelectTranslatorFactory.class);
+        SQLTemplateProcessor sqlTemplateProcessor = runtimeInjector.getInstance(SQLTemplateProcessor.class);
+        DbAdapter adapter = runtimeInjector.getInstance(DbAdapter.class);
 
         DataNode lastNode = null;
         for (DataMap dataMap : domain.getDataMaps()) {
-            DataNodeDescriptor descriptor = new DataNodeDescriptor(dataMap.getName());
+            DataNode node = new RuntimeTelemetryDataNode(dataMap.getName());
 
-            DataNode node;
-            try {
-                node = dataNodeFactory.createDataNode(descriptor);
-            } catch (Exception e) {
-                throw new RuntimeException("Failed to create test DataNode for map " + dataMap.getName(), e);
-            }
+            node.setJdbcEventLogger(jdbcEventLogger);
+            node.setRowReaderFactory(rowReaderFactory);
+            node.setBatchTranslatorFactory(batchTranslatorFactory);
+            node.setSelectTranslatorFactory(selectTranslatorFactory);
+            node.setDataSource(DATA_SOURCE_FACTORY.getDataSource(dataMap.getName()));
+            node.setAdapter(adapter);
+            node.setSchemaUpdateStrategy(new SkipSchemaUpdateStrategy());
+            node.setSqlTemplateProcessor(sqlTemplateProcessor);
+
             node.addDataMap(dataMap);
 
             for (Procedure proc : dataMap.getProcedures()) {
@@ -284,7 +296,6 @@ public class CayenneTestsEnv implements BeforeEachCallback, AfterEachCallback {
             // a fresh DbAdapter per call — RuntimeCaseDbAdapterProvider is unscoped in the test injector
             binder.bind(DbAdapter.class).toProviderInstance(() -> INJECTOR.getInstance(DbAdapter.class));
 
-            binder.bind(DataNodeFactory.class).to(CayenneTestDataNodeFactory.class);
             binder.bind(UnitDbAdapter.class).toInstance(INJECTOR.getInstance(UnitDbAdapter.class));
             binder.bind(RuntimeCaseDataSourceFactory.class).toInstance(DATA_SOURCE_FACTORY);
 

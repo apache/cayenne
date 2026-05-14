@@ -16,7 +16,7 @@
  *  specific language governing permissions and limitations
  *  under the License.
  ****************************************************************/
-package org.apache.cayenne.unit.runtime;
+package org.apache.cayenne.unit;
 
 import org.apache.cayenne.access.DataNode;
 import org.apache.cayenne.access.OperationObserver;
@@ -26,12 +26,12 @@ import org.junit.jupiter.api.Assertions;
 import java.util.Collection;
 import java.util.concurrent.atomic.AtomicInteger;
 
-public class CayenneTestDataNode extends DataNode {
+class RuntimeTelemetryDataNode extends DataNode {
 
     private final AtomicInteger queryCounter = new AtomicInteger();
     private volatile boolean blockingQueries;
 
-    public CayenneTestDataNode(String name) {
+    public RuntimeTelemetryDataNode(String name) {
         super(name);
     }
 
