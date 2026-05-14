@@ -18,27 +18,27 @@
  ****************************************************************/
 package org.apache.cayenne.unit;
 
-import org.apache.cayenne.access.DataDomain;
-import org.apache.cayenne.access.UnitTestDomain;
+import org.apache.cayenne.access.DataNode;
 import org.apache.cayenne.runtime.CayenneRuntime;
-import org.apache.cayenne.unit.runtime.RuntimeCaseDataNode;
+import org.apache.cayenne.unit.runtime.CayenneTestDataNode;
+
+import java.util.Collection;
 
 class RuntimeTelemetry {
 
     public static void runWithQueriesBlocked(CayenneRuntime runtime, Runnable task) {
 
-        UnitTestDomain channel = (UnitTestDomain) runtime.getChannel();
-        channel.setBlockingQueries(true);
+        Collection<DataNode> nodes = runtime.getDataDomain().getDataNodes();
+        setBlockingQueries(nodes, true);
         try {
             task.run();
         } finally {
-            channel.setBlockingQueries(false);
+            setBlockingQueries(nodes, false);
         }
     }
 
     public static int runWithQueryCounter(CayenneRuntime runtime, Runnable task) {
-        DataDomain channel = (DataDomain) runtime.getChannel();
-        RuntimeCaseDataNode node = (RuntimeCaseDataNode) channel.getDataNodes().iterator().next();
+        CayenneTestDataNode node = (CayenneTestDataNode) runtime.getDataDomain().getDataNodes().iterator().next();
 
         int start = node.getQueriesCount();
         int end;
@@ -48,5 +48,11 @@ class RuntimeTelemetry {
             end = node.getQueriesCount();
         }
         return end - start;
+    }
+
+    private static void setBlockingQueries(Collection<DataNode> nodes, boolean blocking) {
+        for (DataNode node : nodes) {
+            ((CayenneTestDataNode) node).setBlockingQueries(blocking);
+        }
     }
 }

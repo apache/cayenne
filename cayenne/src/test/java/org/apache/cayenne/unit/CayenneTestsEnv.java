@@ -42,7 +42,7 @@ import org.apache.cayenne.unit.dba.UnitDbAdapter;
 import org.apache.cayenne.unit.runtime.AllTestsSchemaManager;
 import org.apache.cayenne.unit.runtime.DbCleaner;
 import org.apache.cayenne.unit.runtime.FlavoredDbHelper;
-import org.apache.cayenne.unit.runtime.RuntimeCaseDataNodeFactory;
+import org.apache.cayenne.unit.runtime.CayenneTestDataNodeFactory;
 import org.apache.cayenne.unit.runtime.RuntimeCaseDataSourceFactory;
 import org.apache.cayenne.unit.runtime.RuntimeCaseModule;
 import org.apache.cayenne.unit.util.SQLTemplateCustomizer;
@@ -265,7 +265,7 @@ public class CayenneTestsEnv implements BeforeEachCallback, AfterEachCallback {
             binder.bind(DbAdapter.class).toProviderInstance(() -> INJECTOR.getInstance(DbAdapter.class));
 
             binder.bind(DataDomain.class).toProviderInstance(new RuntimeCaseDataDomainProvider(unitDbAdapter));
-            binder.bind(DataNodeFactory.class).to(RuntimeCaseDataNodeFactory.class);
+            binder.bind(DataNodeFactory.class).to(CayenneTestDataNodeFactory.class);
             binder.bind(UnitDbAdapter.class).toInstance(unitDbAdapter);
             binder.bind(RuntimeCaseDataSourceFactory.class).toInstance(DATA_SOURCE_FACTORY);
 

@@ -20,7 +20,6 @@ package org.apache.cayenne.unit;
 
 import org.apache.cayenne.access.DataDomain;
 import org.apache.cayenne.access.DataNode;
-import org.apache.cayenne.access.UnitTestDomain;
 import org.apache.cayenne.configuration.DataNodeDescriptor;
 import org.apache.cayenne.configuration.runtime.DataDomainProvider;
 import org.apache.cayenne.configuration.runtime.DataNodeFactory;
@@ -36,11 +35,6 @@ class RuntimeCaseDataDomainProvider extends DataDomainProvider {
         this.unitDbAdapter = unitDbAdapter;
 
         // super fields are initialized via injection
-    }
-
-    @Override
-    protected DataDomain createDataDomain(String name) {
-        return new UnitTestDomain(name);
     }
 
     @Override

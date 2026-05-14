@@ -30,7 +30,7 @@ import org.apache.cayenne.dba.DbAdapter;
 import org.apache.cayenne.di.Inject;
 import org.apache.cayenne.log.JdbcEventLogger;
 
-public class RuntimeCaseDataNodeFactory implements DataNodeFactory {
+public class CayenneTestDataNodeFactory implements DataNodeFactory {
 
 	@Inject
 	private JdbcEventLogger jdbcEventLogger;
@@ -54,8 +54,8 @@ public class RuntimeCaseDataNodeFactory implements DataNodeFactory {
 	protected SQLTemplateProcessor sqlTemplateProcessor;
 
 	@Override
-	public DataNode createDataNode(DataNodeDescriptor nodeDescriptor) throws Exception {
-		DataNode dataNode = new RuntimeCaseDataNode(nodeDescriptor.getName());
+	public DataNode createDataNode(DataNodeDescriptor nodeDescriptor) {
+		DataNode dataNode = new CayenneTestDataNode(nodeDescriptor.getName());
 
 		dataNode.setJdbcEventLogger(jdbcEventLogger);
 		dataNode.setRowReaderFactory(rowReaderFactory);

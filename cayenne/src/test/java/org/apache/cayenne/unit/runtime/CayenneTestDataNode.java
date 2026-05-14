@@ -16,45 +16,39 @@
  *  specific language governing permissions and limitations
  *  under the License.
  ****************************************************************/
+package org.apache.cayenne.unit.runtime;
 
-package org.apache.cayenne.access;
+import org.apache.cayenne.access.DataNode;
+import org.apache.cayenne.access.OperationObserver;
+import org.apache.cayenne.query.Query;
+import org.junit.jupiter.api.Assertions;
 
 import java.util.Collection;
-import java.util.Collections;
+import java.util.concurrent.atomic.AtomicInteger;
 
-import org.opentest4j.AssertionFailedError;
+public class CayenneTestDataNode extends DataNode {
 
-import org.apache.cayenne.ObjectContext;
-import org.apache.cayenne.QueryResponse;
-import org.apache.cayenne.query.Query;
+    private final AtomicInteger queryCounter = new AtomicInteger();
+    private volatile boolean blockingQueries;
 
-/**
- * A DataDomainQueryAction that can be configured to block queries that are not run from
- * cache.
- */
-public class UnitTestDomainQueryAction extends DataDomainQueryAction {
-
-    public UnitTestDomainQueryAction(ObjectContext context, UnitTestDomain domain,
-            Query query) {
-        super(context, domain, query);
-    }
-
-    /**
-     * Exposing super as a public method.
-     */
-    @Override
-    public QueryResponse execute() {
-        return super.execute();
+    public CayenneTestDataNode(String name) {
+        super(name);
     }
 
     @Override
-    void runQueryInTransaction() {
-        checkQueryAllowed(Collections.singleton(query));
-        super.runQueryInTransaction();
+    public void performQueries(Collection<? extends Query> queries, OperationObserver callback) {
+        if (blockingQueries) {
+            Assertions.fail("Query is unexpected: " + queries);
+        }
+        super.performQueries(queries, callback);
+        queryCounter.addAndGet(queries.size());
     }
 
-    protected void checkQueryAllowed(Collection<? extends Query> queries)
-            throws AssertionFailedError {
-        ((UnitTestDomain) domain).checkQueryAllowed(queries);
+    public int getQueriesCount() {
+        return queryCounter.get();
+    }
+
+    public void setBlockingQueries(boolean blockingQueries) {
+        this.blockingQueries = blockingQueries;
     }
 }
