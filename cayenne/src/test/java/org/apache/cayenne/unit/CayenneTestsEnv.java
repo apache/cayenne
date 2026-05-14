@@ -255,8 +255,7 @@ public class CayenneTestsEnv implements BeforeEachCallback, AfterEachCallback {
         }
     }
 
-    private record TestRuntimeOverridesModule(
-            UnitDbAdapter unitDbAdapter) implements Module {
+    private record TestRuntimeOverridesModule(UnitDbAdapter unitDbAdapter) implements Module {
 
         @Override
         public void configure(Binder binder) {
@@ -265,7 +264,7 @@ public class CayenneTestsEnv implements BeforeEachCallback, AfterEachCallback {
             // a fresh DbAdapter per call — RuntimeCaseDbAdapterProvider is unscoped in the test injector
             binder.bind(DbAdapter.class).toProviderInstance(() -> INJECTOR.getInstance(DbAdapter.class));
 
-            binder.bind(DataDomain.class).toProvider(RuntimeCaseDataDomainProvider.class);
+            binder.bind(DataDomain.class).toProviderInstance(new RuntimeCaseDataDomainProvider(unitDbAdapter));
             binder.bind(DataNodeFactory.class).to(RuntimeCaseDataNodeFactory.class);
             binder.bind(UnitDbAdapter.class).toInstance(unitDbAdapter);
             binder.bind(RuntimeCaseDataSourceFactory.class).toInstance(DATA_SOURCE_FACTORY);

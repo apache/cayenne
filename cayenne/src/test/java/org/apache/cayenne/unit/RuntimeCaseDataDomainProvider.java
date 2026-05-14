@@ -24,18 +24,19 @@ import org.apache.cayenne.access.UnitTestDomain;
 import org.apache.cayenne.configuration.DataNodeDescriptor;
 import org.apache.cayenne.configuration.runtime.DataDomainProvider;
 import org.apache.cayenne.configuration.runtime.DataNodeFactory;
-import org.apache.cayenne.di.Inject;
 import org.apache.cayenne.map.DataMap;
 import org.apache.cayenne.map.Procedure;
 import org.apache.cayenne.unit.dba.UnitDbAdapter;
 
 class RuntimeCaseDataDomainProvider extends DataDomainProvider {
 
-    @Inject
-    private UnitDbAdapter unitDbAdapter;
+    private final UnitDbAdapter unitDbAdapter;
 
-    @Inject
-    protected DataNodeFactory dataNodeFactory;
+    RuntimeCaseDataDomainProvider(UnitDbAdapter unitDbAdapter) {
+        this.unitDbAdapter = unitDbAdapter;
+
+        // super fields are initialized via injection
+    }
 
     @Override
     protected DataDomain createDataDomain(String name) {
@@ -47,6 +48,7 @@ class RuntimeCaseDataDomainProvider extends DataDomainProvider {
 
         DataDomain domain = super.createAndInitDataDomain();
         DataNode node = null;
+        DataNodeFactory dataNodeFactory = injector.getInstance(DataNodeFactory.class);
 
         for (DataMap dataMap : domain.getDataMaps()) {
 
@@ -61,16 +63,6 @@ class RuntimeCaseDataDomainProvider extends DataDomainProvider {
             for (Procedure proc : dataMap.getProcedures()) {
                 unitDbAdapter.tweakProcedure(proc);
             }
-
-            // customizations from SimpleAccessStackAdapter that are not yet
-            // ported...
-            // those can be done better now
-
-            // node
-            // .getAdapter()
-            // .getExtendedTypes()
-            // .registerType(new StringET1ExtendedType());
-            //
 
             domain.addNode(node);
         }
