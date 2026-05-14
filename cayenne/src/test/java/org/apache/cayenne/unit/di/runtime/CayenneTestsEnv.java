@@ -32,7 +32,6 @@ import org.apache.cayenne.di.Binder;
 import org.apache.cayenne.di.DIBootstrap;
 import org.apache.cayenne.di.Injector;
 import org.apache.cayenne.di.Module;
-import org.apache.cayenne.di.Provider;
 import org.apache.cayenne.log.JdbcEventLogger;
 import org.apache.cayenne.map.DataMap;
 import org.apache.cayenne.map.EntityResolver;
@@ -55,12 +54,16 @@ import java.util.stream.Collectors;
 public class CayenneTestsEnv implements BeforeEachCallback, AfterEachCallback {
 
     private static final Injector INJECTOR;
+    static final RuntimeCaseDataSourceFactory DATA_SOURCE_FACTORY;
     public static final AllTestsSchemaManager SCHEMA_MANAGER;
 
     static {
         INJECTOR = DIBootstrap.createInjector(new RuntimeCaseModule());
+        DATA_SOURCE_FACTORY = new RuntimeCaseDataSourceFactory(
+                INJECTOR.getInstance(DataSourceDescriptor.class),
+                INJECTOR.getInstance(AdhocObjectFactory.class));
         SCHEMA_MANAGER = new AllTestsSchemaManager(
-                INJECTOR.getInstance(RuntimeCaseDataSourceFactory.class),
+                DATA_SOURCE_FACTORY,
                 INJECTOR.getInstance(UnitDbAdapter.class),
                 INJECTOR.getInstance(DbAdapter.class),
                 INJECTOR.getInstance(JdbcEventLogger.class),
@@ -127,7 +130,7 @@ public class CayenneTestsEnv implements BeforeEachCallback, AfterEachCallback {
         DataNode node = runtime.getDataDomain().getDataNodes().iterator().next();
         DataMap firstMap = context.getEntityResolver().getDataMaps().iterator().next();
         this.dbHelper = new FlavoredDbHelper(
-                INJECTOR.getInstance(RuntimeCaseDataSourceFactory.class).getSharedDataSource(),
+                DATA_SOURCE_FACTORY.getSharedDataSource(),
                 node.getAdapter().getQuotingStrategy(),
                 firstMap);
 
@@ -153,16 +156,17 @@ public class CayenneTestsEnv implements BeforeEachCallback, AfterEachCallback {
     }
 
     private CayenneRuntime buildRuntime() {
-        RuntimeCaseDataSourceFactory dataSourceFactory = INJECTOR.getInstance(RuntimeCaseDataSourceFactory.class);
         UnitDbAdapter unitDbAdapter = INJECTOR.getInstance(UnitDbAdapter.class);
-        // a fresh DbAdapter per call — RuntimeCaseDbAdapterProvider is unscoped in the test injector
-        Provider<DbAdapter> dbAdapterProvider = () -> INJECTOR.getInstance(DbAdapter.class);
+
 
         List<Module> modules = new ArrayList<>();
-        modules.add(new TestRuntimeOverridesModule(dataSourceFactory, unitDbAdapter, dbAdapterProvider));
+
+        modules.add(new TestRuntimeOverridesModule(unitDbAdapter));
+
         for (Class<?> moduleType : extraModules) {
             modules.add(instantiateModule(moduleType));
         }
+
         if (weakReferenceStrategy) {
             modules.add(new WeakReferenceStrategyModule());
         }
@@ -223,7 +227,7 @@ public class CayenneTestsEnv implements BeforeEachCallback, AfterEachCallback {
     }
 
     public RuntimeCaseDataSourceFactory dataSourceFactory() {
-        return INJECTOR.getInstance(RuntimeCaseDataSourceFactory.class);
+        return DATA_SOURCE_FACTORY;
     }
 
     public DbCleaner dbCleaner() {
@@ -245,33 +249,20 @@ public class CayenneTestsEnv implements BeforeEachCallback, AfterEachCallback {
         }
     }
 
-    /**
-     * Wires test-specific overrides into the per-test {@link CayenneRuntime} injector:
-     * shares the {@link RuntimeCaseDataSourceFactory} and {@link UnitDbAdapter} held by the
-     * static test injector, swaps in the test {@link DbAdapter} and data-domain/node
-     * implementations, and sets the soft-reference retain strategy.
-     */
-    private static class TestRuntimeOverridesModule implements Module {
-
-        private final RuntimeCaseDataSourceFactory dataSourceFactory;
-        private final UnitDbAdapter unitDbAdapter;
-        private final Provider<DbAdapter> dbAdapterProvider;
-
-        TestRuntimeOverridesModule(RuntimeCaseDataSourceFactory dataSourceFactory,
-                                   UnitDbAdapter unitDbAdapter,
-                                   Provider<DbAdapter> dbAdapterProvider) {
-            this.dataSourceFactory = dataSourceFactory;
-            this.unitDbAdapter = unitDbAdapter;
-            this.dbAdapterProvider = dbAdapterProvider;
-        }
+    private record TestRuntimeOverridesModule(
+            UnitDbAdapter unitDbAdapter) implements Module {
 
         @Override
         public void configure(Binder binder) {
-            binder.bind(DbAdapter.class).toProviderInstance(dbAdapterProvider);
+
+            // TODO: factor it out of INJECTOR
+            // a fresh DbAdapter per call — RuntimeCaseDbAdapterProvider is unscoped in the test injector
+            binder.bind(DbAdapter.class).toProviderInstance(() -> INJECTOR.getInstance(DbAdapter.class));
+
             binder.bind(DataDomain.class).toProvider(RuntimeCaseDataDomainProvider.class);
             binder.bind(DataNodeFactory.class).to(RuntimeCaseDataNodeFactory.class);
             binder.bind(UnitDbAdapter.class).toInstance(unitDbAdapter);
-            binder.bind(RuntimeCaseDataSourceFactory.class).toInstance(dataSourceFactory);
+            binder.bind(RuntimeCaseDataSourceFactory.class).toInstance(DATA_SOURCE_FACTORY);
 
             CoreModule.extend(binder)
                     // Soft refs instead of weak — avoids GC-sensitive test flakiness.

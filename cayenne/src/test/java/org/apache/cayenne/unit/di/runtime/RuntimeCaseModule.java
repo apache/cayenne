@@ -219,7 +219,6 @@ public class RuntimeCaseModule implements Module {
         // in the CoreModule is ignored
         binder.bind(BatchTranslatorFactory.class).toProvider(RuntimeCaseBatchQueryBuilderFactoryProvider.class);
         binder.bind(SQLTemplateCustomizer.class).toProvider(SQLTemplateCustomizerProvider.class);
-        binder.bind(RuntimeCaseDataSourceFactory.class).to(RuntimeCaseDataSourceFactory.class);
         binder.bind(ClassLoaderManager.class).to(DefaultClassLoaderManager.class);
         binder.bind(AdhocObjectFactory.class).to(DefaultAdhocObjectFactory.class);
         binder.bind(ResourceLocator.class).to(ClassLoaderResourceLocator.class);
