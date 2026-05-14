@@ -21,14 +21,15 @@ package org.apache.cayenne.unit.runtime;
 import org.apache.cayenne.configuration.DataNodeDescriptor;
 import org.apache.cayenne.configuration.runtime.DataSourceFactory;
 import org.apache.cayenne.di.Inject;
+import org.apache.cayenne.unit.TestDataSources;
 
 import javax.sql.DataSource;
 
 public class RuntimeCaseSharedDataSourceFactory implements DataSourceFactory {
 
-    private RuntimeCaseDataSourceFactory factory;
+    private TestDataSources factory;
 
-    public RuntimeCaseSharedDataSourceFactory(@Inject RuntimeCaseDataSourceFactory factory) {
+    public RuntimeCaseSharedDataSourceFactory(@Inject TestDataSources factory) {
         this.factory = factory;
     }
 

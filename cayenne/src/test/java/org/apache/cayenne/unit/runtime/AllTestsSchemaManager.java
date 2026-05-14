@@ -38,6 +38,7 @@ import org.apache.cayenne.map.DbEntity;
 import org.apache.cayenne.map.Procedure;
 import org.apache.cayenne.resource.URLResource;
 import org.apache.cayenne.testdo.extended_type.StringET1ExtendedType;
+import org.apache.cayenne.unit.TestDataSources;
 import org.apache.cayenne.unit.dba.UnitDbAdapter;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -86,13 +87,13 @@ public class AllTestsSchemaManager {
     private static final Set<String> EXTRA_EXCLUDED_FOR_NO_LOB = Set.of("CLOB_DETAIL");
     private static final Set<String> EXTRA_EXCLUDED_FOR_NO_NATIVE_JSON = Set.of("JSON_OTHER");
 
-    private final RuntimeCaseDataSourceFactory dataSourceFactory;
+    private final TestDataSources dataSourceFactory;
     private final UnitDbAdapter unitDbAdapter;
     private final JdbcEventLogger jdbcEventLogger;
     private final DataDomain domain;
 
     public AllTestsSchemaManager(
-            RuntimeCaseDataSourceFactory dataSourceFactory,
+            TestDataSources dataSourceFactory,
             UnitDbAdapter unitDbAdapter,
             DbAdapter dbAdapter,
             JdbcEventLogger jdbcEventLogger,

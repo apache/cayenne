@@ -47,7 +47,6 @@ import org.apache.cayenne.unit.dba.UnitDbAdapter;
 import org.apache.cayenne.unit.runtime.AllTestsSchemaManager;
 import org.apache.cayenne.unit.runtime.DbCleaner;
 import org.apache.cayenne.unit.runtime.FlavoredDbHelper;
-import org.apache.cayenne.unit.runtime.RuntimeCaseDataSourceFactory;
 import org.apache.cayenne.unit.runtime.RuntimeCaseModule;
 import org.apache.cayenne.unit.util.SQLTemplateCustomizer;
 import org.junit.jupiter.api.extension.AfterEachCallback;
@@ -64,21 +63,21 @@ import java.util.stream.Collectors;
 public class CayenneTestsEnv implements BeforeEachCallback, AfterEachCallback {
 
     private static final Injector INJECTOR;
-    static final RuntimeCaseDataSourceFactory DATA_SOURCE_FACTORY;
-    public static final AllTestsSchemaManager SCHEMA_MANAGER;
+    private static final TestDataSources DATA_SOURCES;
+    public static final AllTestsSchemaManager SCHEMAS;
 
     static {
         INJECTOR = DIBootstrap.createInjector(new RuntimeCaseModule());
-        DATA_SOURCE_FACTORY = new RuntimeCaseDataSourceFactory(
+        DATA_SOURCES = new TestDataSources(
                 INJECTOR.getInstance(DataSourceDescriptor.class),
                 INJECTOR.getInstance(AdhocObjectFactory.class));
-        SCHEMA_MANAGER = new AllTestsSchemaManager(
-                DATA_SOURCE_FACTORY,
+        SCHEMAS = new AllTestsSchemaManager(
+                DATA_SOURCES,
                 INJECTOR.getInstance(UnitDbAdapter.class),
                 INJECTOR.getInstance(DbAdapter.class),
                 INJECTOR.getInstance(JdbcEventLogger.class),
                 INJECTOR.getInstance(DataMapLoader.class));
-        SCHEMA_MANAGER.rebuildSchema();
+        SCHEMAS.rebuildSchema();
     }
 
     private final String project;
@@ -127,12 +126,12 @@ public class CayenneTestsEnv implements BeforeEachCallback, AfterEachCallback {
         DataNode node = runtime.getDataDomain().getDataNodes().iterator().next();
         DataMap firstMap = context.getEntityResolver().getDataMaps().iterator().next();
         this.dbHelper = new FlavoredDbHelper(
-                DATA_SOURCE_FACTORY.getSharedDataSource(),
+                DATA_SOURCES.getSharedDataSource(),
                 node.getAdapter().getQuotingStrategy(),
                 firstMap);
 
         this.dbCleaner = new DbCleaner(
-                SCHEMA_MANAGER,
+                SCHEMAS,
                 dbHelper,
                 context.getEntityResolver().getDataMaps().stream().map(DataMap::getName).collect(Collectors.toSet()));
 
@@ -189,13 +188,13 @@ public class CayenneTestsEnv implements BeforeEachCallback, AfterEachCallback {
 
         DataNode lastNode = null;
         for (DataMap dataMap : domain.getDataMaps()) {
-            DataNode node = new RuntimeTelemetryDataNode(dataMap.getName());
+            DataNode node = new TestTelemetryDataNode(dataMap.getName());
 
             node.setJdbcEventLogger(jdbcEventLogger);
             node.setRowReaderFactory(rowReaderFactory);
             node.setBatchTranslatorFactory(batchTranslatorFactory);
             node.setSelectTranslatorFactory(selectTranslatorFactory);
-            node.setDataSource(DATA_SOURCE_FACTORY.getDataSource(dataMap.getName()));
+            node.setDataSource(DATA_SOURCES.getDataSource(dataMap.getName()));
             node.setAdapter(adapter);
             node.setSchemaUpdateStrategy(new SkipSchemaUpdateStrategy());
             node.setSqlTemplateProcessor(sqlTemplateProcessor);
@@ -253,19 +252,19 @@ public class CayenneTestsEnv implements BeforeEachCallback, AfterEachCallback {
     }
 
     public void runWithQueriesBlocked(Runnable task) {
-        RuntimeTelemetry.runWithQueriesBlocked(runtime, task);
+        TestTelemetry.runWithQueriesBlocked(runtime, task);
     }
 
     public int runWithQueryCounter(Runnable task) {
-        return RuntimeTelemetry.runWithQueryCounter(runtime, task);
+        return TestTelemetry.runWithQueryCounter(runtime, task);
     }
 
     public AdhocObjectFactory adhocObjectFactory() {
         return runtime.getInjector().getInstance(AdhocObjectFactory.class);
     }
 
-    public RuntimeCaseDataSourceFactory dataSourceFactory() {
-        return DATA_SOURCE_FACTORY;
+    public TestDataSources dataSourceFactory() {
+        return DATA_SOURCES;
     }
 
     public DbCleaner dbCleaner() {
@@ -297,7 +296,7 @@ public class CayenneTestsEnv implements BeforeEachCallback, AfterEachCallback {
             binder.bind(DbAdapter.class).toProviderInstance(() -> INJECTOR.getInstance(DbAdapter.class));
 
             binder.bind(UnitDbAdapter.class).toInstance(INJECTOR.getInstance(UnitDbAdapter.class));
-            binder.bind(RuntimeCaseDataSourceFactory.class).toInstance(DATA_SOURCE_FACTORY);
+            binder.bind(TestDataSources.class).toInstance(DATA_SOURCES);
 
             CoreModule.extend(binder)
                     // Soft refs instead of weak — avoids GC-sensitive test flakiness.

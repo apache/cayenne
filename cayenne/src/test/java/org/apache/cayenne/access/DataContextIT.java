@@ -43,7 +43,7 @@ import org.apache.cayenne.testdo.testmap.ROArtist;
 import org.apache.cayenne.unit.dba.UnitDbAdapter;
 import org.apache.cayenne.unit.runtime.CayenneProjects;
 import org.apache.cayenne.unit.CayenneTestsEnv;
-import org.apache.cayenne.unit.runtime.RuntimeCaseDataSourceFactory;
+import org.apache.cayenne.unit.TestDataSources;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.extension.RegisterExtension;
 import org.junit.jupiter.api.Test;
@@ -67,7 +67,7 @@ public class DataContextIT {
 
 	protected DataContext context;
 	protected UnitDbAdapter accessStackAdapter;
-	protected RuntimeCaseDataSourceFactory dataSourceFactory;
+	protected TestDataSources dataSourceFactory;
 
 	protected TableHelper tArtist;
 	protected TableHelper tExhibit;

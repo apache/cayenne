@@ -33,7 +33,7 @@ import org.apache.cayenne.testdo.testmap.Artist;
 import org.apache.cayenne.unit.dba.UnitDbAdapter;
 import org.apache.cayenne.unit.runtime.CayenneProjects;
 import org.apache.cayenne.unit.CayenneTestsEnv;
-import org.apache.cayenne.unit.runtime.RuntimeCaseDataSourceFactory;
+import org.apache.cayenne.unit.TestDataSources;
 import org.apache.cayenne.unit.util.SQLTemplateCustomizer;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -54,7 +54,7 @@ public class SQLTemplateActionIT {
     @RegisterExtension
     static final CayenneTestsEnv env = CayenneTestsEnv.forProject(CayenneProjects.TESTMAP_PROJECT);
 
-    private RuntimeCaseDataSourceFactory dataSourceFactory;
+    private TestDataSources dataSourceFactory;
     private DataNode node;
     private UnitDbAdapter unitDbAdapter;
     private ObjectContext context;

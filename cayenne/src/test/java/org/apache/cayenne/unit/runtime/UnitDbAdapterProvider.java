@@ -18,12 +18,8 @@
  ****************************************************************/
 package org.apache.cayenne.unit.runtime;
 
-import java.lang.reflect.Constructor;
-import java.util.Map;
-
 import org.apache.cayenne.CayenneRuntimeException;
 import org.apache.cayenne.ConfigurationException;
-import org.apache.cayenne.configuration.DataSourceDescriptor;
 import org.apache.cayenne.dba.DbAdapter;
 import org.apache.cayenne.di.Inject;
 import org.apache.cayenne.di.Injector;
@@ -31,20 +27,21 @@ import org.apache.cayenne.di.Provider;
 import org.apache.cayenne.unit.dba.UnitDbAdapter;
 import org.apache.cayenne.util.Util;
 
+import java.lang.reflect.Constructor;
+import java.util.Map;
+
 public class UnitDbAdapterProvider implements Provider<UnitDbAdapter> {
 
     static final String TEST_ADAPTERS_MAP = "org.apache.cayenne.unit.di.server.CayenneResourcesAccessStackAdapterProvider.adapters";
 
-    private Injector injector;
-    private DbAdapter adapter;
-    private DataSourceDescriptor dataSourceInfo;
-    private Map<String, String> adapterTypesMap;
+    private final Injector injector;
+    private final DbAdapter adapter;
+    private final Map<String, String> adapterTypesMap;
 
     public UnitDbAdapterProvider(
             @Inject(TEST_ADAPTERS_MAP) Map<String, String> adapterTypesMap,
-            @Inject DataSourceDescriptor dataSourceInfo, @Inject DbAdapter adapter,
+            @Inject DbAdapter adapter,
             @Inject Injector injector) {
-        this.dataSourceInfo = dataSourceInfo;
         this.adapterTypesMap = adapterTypesMap;
         this.adapter = adapter;
         this.injector = injector;

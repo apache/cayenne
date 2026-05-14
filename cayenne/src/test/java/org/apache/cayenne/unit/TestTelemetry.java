@@ -19,36 +19,39 @@
 package org.apache.cayenne.unit;
 
 import org.apache.cayenne.access.DataNode;
-import org.apache.cayenne.access.OperationObserver;
-import org.apache.cayenne.query.Query;
-import org.junit.jupiter.api.Assertions;
+import org.apache.cayenne.runtime.CayenneRuntime;
 
 import java.util.Collection;
-import java.util.concurrent.atomic.AtomicInteger;
 
-class RuntimeTelemetryDataNode extends DataNode {
+class TestTelemetry {
 
-    private final AtomicInteger queryCounter = new AtomicInteger();
-    private volatile boolean blockingQueries;
+    public static void runWithQueriesBlocked(CayenneRuntime runtime, Runnable task) {
 
-    public RuntimeTelemetryDataNode(String name) {
-        super(name);
-    }
-
-    @Override
-    public void performQueries(Collection<? extends Query> queries, OperationObserver callback) {
-        if (blockingQueries) {
-            Assertions.fail("Query is unexpected: " + queries);
+        Collection<DataNode> nodes = runtime.getDataDomain().getDataNodes();
+        setBlockingQueries(nodes, true);
+        try {
+            task.run();
+        } finally {
+            setBlockingQueries(nodes, false);
         }
-        super.performQueries(queries, callback);
-        queryCounter.addAndGet(queries.size());
     }
 
-    public int getQueriesCount() {
-        return queryCounter.get();
+    public static int runWithQueryCounter(CayenneRuntime runtime, Runnable task) {
+        TestTelemetryDataNode node = (TestTelemetryDataNode) runtime.getDataDomain().getDataNodes().iterator().next();
+
+        int start = node.getQueriesCount();
+        int end;
+        try {
+            task.run();
+        } finally {
+            end = node.getQueriesCount();
+        }
+        return end - start;
     }
 
-    public void setBlockingQueries(boolean blockingQueries) {
-        this.blockingQueries = blockingQueries;
+    private static void setBlockingQueries(Collection<DataNode> nodes, boolean blocking) {
+        for (DataNode node : nodes) {
+            ((TestTelemetryDataNode) node).setBlockingQueries(blocking);
+        }
     }
 }

@@ -26,7 +26,7 @@ import org.apache.cayenne.runtime.CayenneRuntime;
 import org.apache.cayenne.unit.dba.UnitDbAdapter;
 import org.apache.cayenne.unit.runtime.CayenneProjects;
 import org.apache.cayenne.unit.CayenneTestsEnv;
-import org.apache.cayenne.unit.runtime.RuntimeCaseDataSourceFactory;
+import org.apache.cayenne.unit.TestDataSources;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.extension.RegisterExtension;
@@ -44,7 +44,7 @@ public class BaseLoaderIT {
 
     protected DbAdapter adapter;
     protected CayenneRuntime runtime;
-    protected RuntimeCaseDataSourceFactory dataSourceFactory;
+    protected TestDataSources dataSourceFactory;
     protected UnitDbAdapter accessStackAdapter;
 
     Connection connection;

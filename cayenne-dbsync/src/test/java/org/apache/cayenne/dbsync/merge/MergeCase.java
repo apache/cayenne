@@ -46,7 +46,7 @@ import org.apache.cayenne.test.jdbc.DbHelper;
 import org.apache.cayenne.unit.dba.UnitDbAdapter;
 import org.apache.cayenne.unit.runtime.CayenneProjects;
 import org.apache.cayenne.unit.CayenneTestsEnv;
-import org.apache.cayenne.unit.runtime.RuntimeCaseDataSourceFactory;
+import org.apache.cayenne.unit.TestDataSources;
 import org.slf4j.Logger;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.extension.RegisterExtension;
@@ -78,7 +78,7 @@ public abstract class MergeCase {
     private DbHelper dbHelper;
     private CayenneRuntime runtime;
     protected UnitDbAdapter accessStackAdapter;
-    private RuntimeCaseDataSourceFactory dataSourceFactory;
+    private TestDataSources dataSourceFactory;
 
     @BeforeEach
     public void setUp() throws Exception {

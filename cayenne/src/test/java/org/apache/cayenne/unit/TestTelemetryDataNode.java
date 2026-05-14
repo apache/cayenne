@@ -19,39 +19,36 @@
 package org.apache.cayenne.unit;
 
 import org.apache.cayenne.access.DataNode;
-import org.apache.cayenne.runtime.CayenneRuntime;
+import org.apache.cayenne.access.OperationObserver;
+import org.apache.cayenne.query.Query;
+import org.junit.jupiter.api.Assertions;
 
 import java.util.Collection;
+import java.util.concurrent.atomic.AtomicInteger;
 
-class RuntimeTelemetry {
+class TestTelemetryDataNode extends DataNode {
 
-    public static void runWithQueriesBlocked(CayenneRuntime runtime, Runnable task) {
+    private final AtomicInteger queryCounter = new AtomicInteger();
+    private volatile boolean blockingQueries;
 
-        Collection<DataNode> nodes = runtime.getDataDomain().getDataNodes();
-        setBlockingQueries(nodes, true);
-        try {
-            task.run();
-        } finally {
-            setBlockingQueries(nodes, false);
-        }
+    public TestTelemetryDataNode(String name) {
+        super(name);
     }
 
-    public static int runWithQueryCounter(CayenneRuntime runtime, Runnable task) {
-        RuntimeTelemetryDataNode node = (RuntimeTelemetryDataNode) runtime.getDataDomain().getDataNodes().iterator().next();
-
-        int start = node.getQueriesCount();
-        int end;
-        try {
-            task.run();
-        } finally {
-            end = node.getQueriesCount();
+    @Override
+    public void performQueries(Collection<? extends Query> queries, OperationObserver callback) {
+        if (blockingQueries) {
+            Assertions.fail("Query is unexpected: " + queries);
         }
-        return end - start;
+        super.performQueries(queries, callback);
+        queryCounter.addAndGet(queries.size());
     }
 
-    private static void setBlockingQueries(Collection<DataNode> nodes, boolean blocking) {
-        for (DataNode node : nodes) {
-            ((RuntimeTelemetryDataNode) node).setBlockingQueries(blocking);
-        }
+    public int getQueriesCount() {
+        return queryCounter.get();
+    }
+
+    public void setBlockingQueries(boolean blockingQueries) {
+        this.blockingQueries = blockingQueries;
     }
 }

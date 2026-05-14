@@ -16,12 +16,11 @@
  *  specific language governing permissions and limitations
  *  under the License.
  ****************************************************************/
-package org.apache.cayenne.unit.runtime;
+package org.apache.cayenne.unit;
 
 import org.apache.cayenne.configuration.DataSourceDescriptor;
 import org.apache.cayenne.datasource.DataSourceBuilder;
 import org.apache.cayenne.di.AdhocObjectFactory;
-import org.apache.cayenne.di.Inject;
 
 import javax.sql.DataSource;
 import java.sql.Driver;
@@ -31,7 +30,7 @@ import java.util.HashSet;
 import java.util.Map;
 import java.util.Set;
 
-public class RuntimeCaseDataSourceFactory {
+public class TestDataSources {
 
 	private final DataSource sharedDataSource;
 	private final DataSourceDescriptor dataSourceInfo;
@@ -39,7 +38,7 @@ public class RuntimeCaseDataSourceFactory {
 	private final Set<String> mapsWithDedicatedDataSource;
 	private final AdhocObjectFactory objectFactory;
 
-	public RuntimeCaseDataSourceFactory(@Inject DataSourceDescriptor dataSourceInfo, @Inject AdhocObjectFactory objectFactory) {
+	public TestDataSources(DataSourceDescriptor dataSourceInfo, AdhocObjectFactory objectFactory) {
 
 		this.objectFactory = objectFactory;
 		this.dataSourceInfo = dataSourceInfo;
