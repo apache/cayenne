@@ -52,6 +52,7 @@ import java.sql.Types;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
+import java.util.Comparator;
 import java.util.List;
 import java.util.ListIterator;
 import java.util.Set;
@@ -227,21 +228,31 @@ public class AllTestsSchemaManager {
         }
     }
 
-    /**
-     * Helper method that orders DbEntities to satisfy referential constraints
-     * and returns an ordered list.
-     */
-    private List<DbEntity> dbEntitiesInInsertOrder(DataMap map) {
+    public List<DbEntity> dbEntitiesInInsertOrder(DataMap map) {
+        return sortedDbEntities(map, false);
+    }
+
+    public List<DbEntity> dbEntitiesInDeleteOrder(DataMap map) {
+        return sortedDbEntities(map, true);
+    }
+
+    private List<DbEntity> sortedDbEntities(DataMap map, boolean deleteOrder) {
         DataMap localMap = domain.getDataMap(map.getName());
         List<DbEntity> entities = new ArrayList<>(localMap.getDbEntities());
         entities.removeAll(excludeEntities(entities));
 
-        domain.getEntitySorter().sortDbEntities(entities, false);
-        return entities;
-    }
+        // Deterministic tiebreaker for entities AshwoodEntitySorter cannot distinguish
+        // (members of a strongly connected component compare as equal).
+        // List.sort is stable, so this name order survives sortDbEntities
+        // for any pair the comparator returns 0 for.
+        // TODO:
+        //  1. this should really be fixed in AshwoodEntitySorter that should have a deterministic tiebreaker
+        //  2. Also, alpha order of entities only works by incident. It may likely break on different combinations
+        //  of circular relationships
+        entities.sort(Comparator.comparing(DbEntity::getName));
 
-    public List<DbEntity> dbEntitiesInDeleteOrder(DataMap map) {
-        return dbEntitiesInInsertOrder(map).reversed();
+        domain.getEntitySorter().sortDbEntities(entities, deleteOrder);
+        return entities;
     }
 
     private List<DbEntity> excludeEntities(Collection<DbEntity> entities) {
