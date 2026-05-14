@@ -26,7 +26,6 @@ import org.apache.cayenne.Persistent;
 import org.apache.cayenne.runtime.CayenneRuntime;
 import org.apache.cayenne.test.jdbc.TableHelper;
 import org.apache.cayenne.testdo.testmap.Artist;
-import org.apache.cayenne.unit.di.DataChannelInterceptor;
 import org.apache.cayenne.unit.di.runtime.CayenneProjects;
 import org.apache.cayenne.unit.di.runtime.CayenneTestsEnv;
 import org.junit.jupiter.api.BeforeEach;
@@ -46,25 +45,19 @@ import static org.junit.jupiter.api.Assertions.assertSame;
  * Tests objects registration in DataContext, transferring objects between contexts and
  * such.
  */
-public class DataContextObjectTrackingIT  {
+public class DataContextObjectTrackingIT {
 
     @RegisterExtension
     static final CayenneTestsEnv env = CayenneTestsEnv.forProject(CayenneProjects.TESTMAP_PROJECT);
 
-        protected DataChannelInterceptor queryInterceptor;
-
-        protected DataContext context;
-
-
-        protected CayenneRuntime runtime;
-
+    protected DataContext context;
+    protected CayenneRuntime runtime;
     protected TableHelper tArtist;
     protected TableHelper tPainting;
 
-    
+
     @BeforeEach
     public void setUp() throws Exception {
-        queryInterceptor = env.dataChannelInterceptor();
         context = env.context();
         runtime = env.runtime();
         tArtist = env.table("ARTIST", "ARTIST_ID", "ARTIST_NAME");

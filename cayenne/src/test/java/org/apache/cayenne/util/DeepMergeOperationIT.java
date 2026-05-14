@@ -23,7 +23,6 @@ import org.apache.cayenne.Cayenne;
 import org.apache.cayenne.PersistenceState;
 import org.apache.cayenne.access.DataContext;
 import org.apache.cayenne.testdo.testmap.Artist;
-import org.apache.cayenne.unit.di.DataChannelInterceptor;
 import org.apache.cayenne.unit.di.runtime.CayenneProjects;
 import org.apache.cayenne.unit.di.runtime.CayenneTestsEnv;
 import org.junit.jupiter.api.BeforeEach;
@@ -39,13 +38,11 @@ public class DeepMergeOperationIT {
     @RegisterExtension
     static final CayenneTestsEnv env = CayenneTestsEnv.forProject(CayenneProjects.TESTMAP_PROJECT);
 
-    private DataChannelInterceptor queryInterceptor;
     private DataContext context;
     private DataContext context1;
 
     @BeforeEach
     public void setUp() {
-        queryInterceptor = env.dataChannelInterceptor();
         context = env.context();
         context1 = (DataContext) env.runtime().newContext();
     }
@@ -59,7 +56,7 @@ public class DeepMergeOperationIT {
 
         final DeepMergeOperation op = new DeepMergeOperation(context1);
 
-        queryInterceptor.runWithQueriesBlocked(() -> {
+        env.runWithQueriesBlocked(() -> {
             Artist a2 = op.merge(a);
             assertNotNull(a2);
             assertEquals(PersistenceState.COMMITTED, a2.getPersistenceState());
@@ -78,7 +75,7 @@ public class DeepMergeOperationIT {
         a1.setArtistName("BBB");
         final DeepMergeOperation op = new DeepMergeOperation(context1);
 
-        queryInterceptor.runWithQueriesBlocked(() -> {
+        env.runWithQueriesBlocked(() -> {
             Artist a2 = op.merge(a);
             assertNotNull(a2);
             assertEquals(PersistenceState.MODIFIED, a2.getPersistenceState());

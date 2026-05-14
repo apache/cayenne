@@ -19,50 +19,40 @@
 
 package org.apache.cayenne.access;
 
-import java.sql.Types;
-import java.util.Date;
-import java.util.List;
-
 import org.apache.cayenne.PersistenceState;
 import org.apache.cayenne.query.ObjectSelect;
 import org.apache.cayenne.test.jdbc.TableHelper;
 import org.apache.cayenne.testdo.testmap.Artist;
 import org.apache.cayenne.testdo.testmap.Painting;
-import org.apache.cayenne.unit.di.DataChannelInterceptor;
 import org.apache.cayenne.unit.di.runtime.CayenneProjects;
 import org.apache.cayenne.unit.di.runtime.CayenneTestsEnv;
 import org.junit.jupiter.api.BeforeEach;
-import org.junit.jupiter.api.extension.RegisterExtension;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.RegisterExtension;
 
-import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertNotNull;
-import static org.junit.jupiter.api.Assertions.assertNotSame;
-import static org.junit.jupiter.api.Assertions.assertNull;
+import java.sql.Types;
+import java.util.Date;
+import java.util.List;
+
+import static org.junit.jupiter.api.Assertions.*;
 
 /**
  * Test suite covering possible scenarios of refreshing updated objects. This includes
  * refreshing relationships and attributes changed outside of Cayenne with and without
  * prefetching.
  */
-public class DataContextRefreshingIT  {
+public class DataContextRefreshingIT {
 
     @RegisterExtension
     static final CayenneTestsEnv env = CayenneTestsEnv.forProject(CayenneProjects.TESTMAP_PROJECT);
 
-        protected DataContext context;
-
-
-        protected DataChannelInterceptor queryInterceptor;
-
+    protected DataContext context;
     protected TableHelper tArtist;
     protected TableHelper tPainting;
 
-    
     @BeforeEach
     public void setUp() throws Exception {
         context = env.context();
-        queryInterceptor = env.dataChannelInterceptor();
         tArtist = env.table("ARTIST", "ARTIST_ID", "ARTIST_NAME");
 
         tPainting = env.table("PAINTING").setColumns(
@@ -337,7 +327,7 @@ public class DataContextRefreshingIT  {
         context.invalidateObjects(artist);
         assertEquals(PersistenceState.HOLLOW, artist.getPersistenceState());
 
-        int queries = queryInterceptor.runWithQueryCounter(() -> {
+        int queries = env.runWithQueryCounter(() -> {
             // this must trigger a fetch
             artist.setArtistName("new name");
         });
@@ -357,7 +347,7 @@ public class DataContextRefreshingIT  {
         assertEquals(PersistenceState.HOLLOW, artist.getPersistenceState());
         assertNull(artist.readPropertyDirectly("artistName"));
 
-        int queries = queryInterceptor.runWithQueryCounter(() -> {
+        int queries = env.runWithQueryCounter(() -> {
             // this must trigger a fetch
             artist.setDateOfBirth(new Date());
         });

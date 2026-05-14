@@ -25,7 +25,6 @@ import org.apache.cayenne.runtime.CayenneRuntime;
 import org.apache.cayenne.test.jdbc.TableHelper;
 import org.apache.cayenne.testdo.testmap.ArtGroup;
 import org.apache.cayenne.testdo.testmap.Artist;
-import org.apache.cayenne.unit.di.DataChannelInterceptor;
 import org.apache.cayenne.unit.di.runtime.CayenneProjects;
 import org.apache.cayenne.unit.di.runtime.CayenneTestsEnv;
 import org.junit.jupiter.api.BeforeEach;
@@ -43,7 +42,6 @@ public class CayennePersistentObjectFlattenedRelIT {
     static final CayenneTestsEnv env = CayenneTestsEnv.forProject(CayenneProjects.TESTMAP_PROJECT);
 
     private CayenneRuntime runtime;
-    private DataChannelInterceptor queryInterceptor;
 
     private TableHelper tArtist;
     private TableHelper tArtGroup;
@@ -52,7 +50,6 @@ public class CayennePersistentObjectFlattenedRelIT {
     @BeforeEach
     public void setUp() throws Exception {
         runtime = env.runtime();
-        queryInterceptor = env.dataChannelInterceptor();
         env.dbHelper().update("ARTGROUP").set("PARENT_GROUP_ID", null, Types.INTEGER).execute();
         env.dbCleaner().clean();
 
@@ -207,7 +204,7 @@ public class CayennePersistentObjectFlattenedRelIT {
         a1.addToGroupArray(group);
         group.removeFromArtistArray(a1);
 
-        queryInterceptor.runWithQueriesBlocked(() -> env.context().commitChanges());
+        env.runWithQueriesBlocked(() -> env.context().commitChanges());
     }
 
     @Test

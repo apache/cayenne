@@ -26,7 +26,6 @@ import org.apache.cayenne.testdo.things.Bag;
 import org.apache.cayenne.testdo.things.Ball;
 import org.apache.cayenne.testdo.things.Box;
 import org.apache.cayenne.testdo.things.Thing;
-import org.apache.cayenne.unit.di.DataChannelInterceptor;
 import org.apache.cayenne.unit.di.runtime.CayenneProjects;
 import org.apache.cayenne.unit.di.runtime.CayenneTestsEnv;
 import org.junit.jupiter.api.BeforeEach;
@@ -45,9 +44,6 @@ public class DataContextDisjointByIdPrefetch_ExtrasIT {
 
     protected DataContext context;
 
-
-    protected DataChannelInterceptor queryInterceptor;
-
     protected TableHelper tBag;
     protected TableHelper tBall;
     protected TableHelper tBox;
@@ -58,7 +54,6 @@ public class DataContextDisjointByIdPrefetch_ExtrasIT {
     @BeforeEach
     public void setUp() throws Exception {
         context = env.context();
-        queryInterceptor = env.dataChannelInterceptor();
         tBag = env.table("BAG", "ID", "NAME");
 
         tBall = env.table("BALL", "ID", "BOX_ID", "THING_VOLUME", "THING_WEIGHT");
@@ -113,7 +108,7 @@ public class DataContextDisjointByIdPrefetch_ExtrasIT {
                 .prefetch(Bag.BALLS.disjointById())
                 .select(context);
 
-        queryInterceptor.runWithQueriesBlocked(() -> {
+        env.runWithQueriesBlocked(() -> {
             assertFalse(result.isEmpty());
             Bag b1 = result.get(0);
             @SuppressWarnings("unchecked")
@@ -139,7 +134,7 @@ public class DataContextDisjointByIdPrefetch_ExtrasIT {
                 .prefetch(Box.THINGS.disjointById())
                 .select(context);
 
-        queryInterceptor.runWithQueriesBlocked(() -> {
+        env.runWithQueriesBlocked(() -> {
             assertFalse(result.isEmpty());
             List<Integer> volumes = new ArrayList<>();
             for (Box box : result) {
@@ -165,7 +160,7 @@ public class DataContextDisjointByIdPrefetch_ExtrasIT {
                 .prefetch(Box.THINGS.disjointById())
                 .select(context);
 
-        queryInterceptor.runWithQueriesBlocked(() -> {
+        env.runWithQueriesBlocked(() -> {
             assertFalse(result.isEmpty());
             Bag b1 = result.get(0);
             @SuppressWarnings("unchecked")
@@ -193,7 +188,7 @@ public class DataContextDisjointByIdPrefetch_ExtrasIT {
                 .prefetch(Ball.THING.disjointById())
                 .select(context);
 
-        queryInterceptor.runWithQueriesBlocked(() -> {
+        env.runWithQueriesBlocked(() -> {
             assertEquals(2, balls.size());
             for(Ball next : balls) {
                 assertNotNull(balls.get(0).getThing());
@@ -211,7 +206,7 @@ public class DataContextDisjointByIdPrefetch_ExtrasIT {
                 .prefetch(Box.BALLS.dot(Ball.THING).disjointById())
                 .select(context);
 
-        queryInterceptor.runWithQueriesBlocked(() -> {
+        env.runWithQueriesBlocked(() -> {
             assertFalse(result.isEmpty());
             List<Integer> volumes = new ArrayList<>();
             for (Box box : result) {
@@ -240,7 +235,7 @@ public class DataContextDisjointByIdPrefetch_ExtrasIT {
                 .prefetch(Bag.BOXES.dot(Box.BALLS).joint())
                 .select(context);
 
-        queryInterceptor.runWithQueriesBlocked(() -> {
+        env.runWithQueriesBlocked(() -> {
             assertFalse(result.isEmpty());
 
             Bag bag = result.get(0);

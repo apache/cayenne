@@ -33,7 +33,6 @@ import org.apache.cayenne.runtime.CayenneRuntime;
 import org.apache.cayenne.test.jdbc.TableHelper;
 import org.apache.cayenne.testdo.testmap.Artist;
 import org.apache.cayenne.testdo.testmap.Painting;
-import org.apache.cayenne.unit.di.DataChannelInterceptor;
 import org.apache.cayenne.unit.di.runtime.CayenneProjects;
 import org.apache.cayenne.unit.di.runtime.CayenneTestsEnv;
 import org.apache.cayenne.util.XMLEncoder;
@@ -55,7 +54,6 @@ public class EJBQLQueryIT {
 
     private DataContext context;
     private CayenneRuntime runtime;
-    protected DataChannelInterceptor queryInterceptor;
 
     private TableHelper tArtist;
     private TableHelper tPainting;
@@ -64,7 +62,6 @@ public class EJBQLQueryIT {
     public void setUp() throws Exception {
         context = env.context();
         runtime = env.runtime();
-        queryInterceptor = env.dataChannelInterceptor();
         tArtist = env.table("ARTIST", "ARTIST_ID", "ARTIST_NAME");
 
         tPainting = env.table("PAINTING", "PAINTING_ID", "ARTIST_ID", "PAINTING_TITLE");
@@ -137,7 +134,7 @@ public class EJBQLQueryIT {
         query.setCacheStrategy(QueryCacheStrategy.LOCAL_CACHE);
         final List<Artist> artist1 = context.performQuery(query);
 
-        queryInterceptor.runWithQueriesBlocked(() -> {
+        env.runWithQueriesBlocked(() -> {
             List<Artist> artist2;
             EJBQLQuery query1 = new EJBQLQuery(ejbql);
             query1.setCacheStrategy(QueryCacheStrategy.LOCAL_CACHE);
@@ -425,7 +422,7 @@ public class EJBQLQueryIT {
     }
 
     @Test
-    public void relationshipWhereClause2() throws Exception {
+    public void relationshipWhereClause2() {
         Expression exp = Painting.TO_GALLERY.isNull();
         EJBQLQuery query = new EJBQLQuery("select p.toArtist from Painting p where "
                 + exp.toEJBQL("p"));
@@ -434,7 +431,7 @@ public class EJBQLQueryIT {
     }
 
     @Test
-    public void orBrackets() throws Exception {
+    public void orBrackets() {
         Artist a = context.newObject(Artist.class);
         a.setArtistName("testOrBrackets");
         context.commitChanges();
@@ -603,8 +600,8 @@ public class EJBQLQueryIT {
         assertEquals(3, result2.size());
         for(Object[] next : result2) {
             assertNull(next[0]); // Gallery
-            assertTrue(next[1] instanceof Artist);
-            assertTrue(next[2] instanceof Painting);
+            assertInstanceOf(Artist.class, next[1]);
+            assertInstanceOf(Painting.class, next[2]);
         }
     }
 
@@ -664,8 +661,8 @@ public class EJBQLQueryIT {
         List<Object[]> result = nested.performQuery(query);
         assertEquals(2, result.size());
         for(Object[] next : result) {
-            assertTrue(next[0] instanceof Artist);
-            assertTrue(next[1] instanceof Number);
+            assertInstanceOf(Artist.class, next[0]);
+            assertInstanceOf(Number.class, next[1]);
         }
 
     }

@@ -41,7 +41,6 @@ import org.apache.cayenne.testdo.testmap.NullTestEntity;
 import org.apache.cayenne.testdo.testmap.Painting;
 import org.apache.cayenne.testdo.testmap.ROArtist;
 import org.apache.cayenne.unit.UnitDbAdapter;
-import org.apache.cayenne.unit.di.DataChannelInterceptor;
 import org.apache.cayenne.unit.di.runtime.CayenneProjects;
 import org.apache.cayenne.unit.di.runtime.CayenneTestsEnv;
 import org.apache.cayenne.unit.di.runtime.RuntimeCaseDataSourceFactory;
@@ -68,7 +67,6 @@ public class DataContextIT {
 
 	protected DataContext context;
 	protected UnitDbAdapter accessStackAdapter;
-	protected DataChannelInterceptor queryInterceptor;
 	protected RuntimeCaseDataSourceFactory dataSourceFactory;
 
 	protected TableHelper tArtist;
@@ -80,7 +78,6 @@ public class DataContextIT {
 	public void setUp() throws Exception {
 		context = env.context();
 		accessStackAdapter = env.unitDbAdapter();
-		queryInterceptor = env.dataChannelInterceptor();
 		dataSourceFactory = env.dataSourceFactory();
 		tArtist = env.table("ARTIST", "ARTIST_ID", "ARTIST_NAME");
 
@@ -471,7 +468,7 @@ public class DataContextIT {
 		assertNotNull(objects);
 		assertTrue(objects instanceof IncrementalFaultList<?>);
 
-		queryInterceptor.runWithQueriesBlocked(() -> assertEquals(7, objects.size()));
+		env.runWithQueriesBlocked(() -> assertEquals(7, objects.size()));
 	}
 
 	@Test

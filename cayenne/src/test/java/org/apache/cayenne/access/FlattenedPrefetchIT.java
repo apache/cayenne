@@ -19,9 +19,6 @@
 
 package org.apache.cayenne.access;
 
-import java.util.HashSet;
-import java.util.List;
-import java.util.Set;
 import org.apache.cayenne.PersistenceState;
 import org.apache.cayenne.ValueHolder;
 import org.apache.cayenne.query.ObjectSelect;
@@ -29,24 +26,22 @@ import org.apache.cayenne.test.jdbc.TableHelper;
 import org.apache.cayenne.testdo.testmap.ArtGroup;
 import org.apache.cayenne.testdo.testmap.Artist;
 import org.apache.cayenne.testdo.testmap.Painting;
-import org.apache.cayenne.unit.di.DataChannelInterceptor;
 import org.apache.cayenne.unit.di.runtime.CayenneProjects;
 import org.apache.cayenne.unit.di.runtime.CayenneTestsEnv;
-import org.junit.jupiter.api.extension.RegisterExtension;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.RegisterExtension;
 
-import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertFalse;
-import static org.junit.jupiter.api.Assertions.assertNotNull;
-import static org.junit.jupiter.api.Assertions.assertTrue;
+import java.util.HashSet;
+import java.util.List;
+import java.util.Set;
+
+import static org.junit.jupiter.api.Assertions.*;
 
 public class FlattenedPrefetchIT {
 
     @RegisterExtension
     static final CayenneTestsEnv env = CayenneTestsEnv.forProject(CayenneProjects.TESTMAP_PROJECT);
-
-    protected DataChannelInterceptor queryInterceptor;
 
     protected TableHelper tArtist;
     protected TableHelper tPainting;
@@ -56,7 +51,6 @@ public class FlattenedPrefetchIT {
     
     @BeforeEach
     public void setUp() throws Exception {
-        queryInterceptor = env.dataChannelInterceptor();
 
         tArtist = env.table("ARTIST", "ARTIST_ID", "ARTIST_NAME");
 
@@ -109,7 +103,7 @@ public class FlattenedPrefetchIT {
                 .prefetch(Artist.GROUP_ARRAY.disjoint())
                 .select(env.context());
 
-        queryInterceptor.runWithQueriesBlocked(() -> assertArtistResult(objects));
+        env.runWithQueriesBlocked(() -> assertArtistResult(objects));
     }
 
     @Test
@@ -121,7 +115,7 @@ public class FlattenedPrefetchIT {
                 .prefetch(Painting.TO_ARTIST.dot(Artist.GROUP_ARRAY).disjoint())
                 .select(env.context());
 
-        queryInterceptor.runWithQueriesBlocked(() -> assertPaintingResult(objects));
+        env.runWithQueriesBlocked(() -> assertPaintingResult(objects));
     }
 
     @Test
@@ -132,8 +126,7 @@ public class FlattenedPrefetchIT {
                 .prefetch(Artist.GROUP_ARRAY.joint())
                 .select(env.context());
 
-        queryInterceptor.runWithQueriesBlocked(() -> assertArtistResult(objects));
-
+        env.runWithQueriesBlocked(() -> assertArtistResult(objects));
     }
 
     @Test
@@ -145,7 +138,7 @@ public class FlattenedPrefetchIT {
                 .prefetch(Painting.TO_ARTIST.dot(Artist.GROUP_ARRAY).joint())
                 .select(env.context());
 
-        queryInterceptor.runWithQueriesBlocked(() -> assertPaintingResult(objects));
+        env.runWithQueriesBlocked(() -> assertPaintingResult(objects));
     }
 
     private void assertArtistResult(List<Artist> objects) {
@@ -167,7 +160,7 @@ public class FlattenedPrefetchIT {
     private void assertArtGroupResult(List<ArtGroup> list) {
         assertNotNull(list);
         assertFalse(((ValueHolder) list).isFault(), "artist's groups not resolved: ");
-        assertTrue(list.size() > 0);
+        assertFalse(list.isEmpty());
 
         for (ArtGroup g : list) {
             assertEquals(PersistenceState.COMMITTED, g.getPersistenceState());

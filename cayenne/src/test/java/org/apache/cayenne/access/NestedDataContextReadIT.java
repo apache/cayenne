@@ -30,7 +30,6 @@ import org.apache.cayenne.runtime.CayenneRuntime;
 import org.apache.cayenne.test.jdbc.TableHelper;
 import org.apache.cayenne.testdo.testmap.Artist;
 import org.apache.cayenne.testdo.testmap.Painting;
-import org.apache.cayenne.unit.di.DataChannelInterceptor;
 import org.apache.cayenne.unit.di.runtime.CayenneProjects;
 import org.apache.cayenne.unit.di.runtime.CayenneTestsEnv;
 import org.junit.jupiter.api.extension.RegisterExtension;
@@ -50,7 +49,6 @@ public class NestedDataContextReadIT {
 
     private CayenneRuntime runtime;
     private DataContext context;
-    private DataChannelInterceptor queryInterceptor;
 
     private TableHelper tArtist;
     private TableHelper tPainting;
@@ -59,7 +57,6 @@ public class NestedDataContextReadIT {
     public void setUp() throws Exception {
         runtime = env.runtime();
         context = env.context();
-        queryInterceptor = env.dataChannelInterceptor();
         tArtist = env.table("ARTIST", "ARTIST_ID", "ARTIST_NAME");
 
         tPainting = env.table("PAINTING").setColumns(
@@ -226,12 +223,12 @@ public class NestedDataContextReadIT {
         assertEquals(PersistenceState.NEW, newTarget.getPersistenceState());
 
         // run an ordered query, so we can address specific objects directly by index
-        final List<Painting> childSources = ObjectSelect.query(Painting.class)
+        List<Painting> childSources = ObjectSelect.query(Painting.class)
                 .orderBy(Painting.PAINTING_TITLE.asc())
                 .select(child);
         assertEquals(5, childSources.size());
 
-        queryInterceptor.runWithQueriesBlocked(() -> {
+        env.runWithQueriesBlocked(() -> {
             Painting childHollowTargetSrc = childSources.get(0);
             assertSame(child, childHollowTargetSrc.getObjectContext());
 
@@ -272,21 +269,19 @@ public class NestedDataContextReadIT {
     public void prefetchingToOne() throws Exception {
         createPrefetchingDataSet();
 
-        final ObjectContext child = runtime.newContext(context);
+        ObjectContext child = runtime.newContext(context);
 
-        final ObjectId prefetchedId = ObjectId.of(
+        ObjectId prefetchedId = ObjectId.of(
                 "Artist",
                 Artist.ARTIST_ID_PK_COLUMN,
                 33001);
 
-        final List<Painting> results = ObjectSelect.query(Painting.class)
+        List<Painting> results = ObjectSelect.query(Painting.class)
                 .orderBy(Painting.PAINTING_TITLE.asc())
                 .prefetch(Painting.TO_ARTIST.disjoint())
                 .select(child);
 
-        // blockQueries();
-
-        queryInterceptor.runWithQueriesBlocked(() -> {
+        env.runWithQueriesBlocked(() -> {
             assertEquals(2, results.size());
             for (Painting o : results) {
                 assertEquals(PersistenceState.COMMITTED, o.getPersistenceState());
@@ -305,14 +300,14 @@ public class NestedDataContextReadIT {
     public void prefetchingToMany() throws Exception {
         createPrefetchingDataSet();
 
-        final ObjectContext child = runtime.newContext(context);
+        ObjectContext child = runtime.newContext(context);
 
-        final List<Artist> results = ObjectSelect.query(Artist.class)
+        List<Artist> results = ObjectSelect.query(Artist.class)
                 .orderBy(Artist.ARTIST_NAME.asc())
                 .prefetch(Artist.PAINTING_ARRAY.disjoint())
                 .select(child);
 
-        queryInterceptor.runWithQueriesBlocked(() -> {
+        env.runWithQueriesBlocked(() -> {
             Artist o1 = results.get(0);
             assertEquals(PersistenceState.COMMITTED, o1.getPersistenceState());
             assertSame(child, o1.getObjectContext());

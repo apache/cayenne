@@ -19,38 +19,24 @@
 package org.apache.cayenne.unit.di.runtime;
 
 import org.apache.cayenne.access.UnitTestDomain;
-import org.apache.cayenne.di.Provider;
 import org.apache.cayenne.runtime.CayenneRuntime;
-import org.apache.cayenne.unit.di.DataChannelInterceptor;
 
-public class RuntimeCaseDataChannelInterceptor implements DataChannelInterceptor {
+class DataChannelInterceptor {
 
-    private final Provider<CayenneRuntime> runtimeProvider;
+    public static void runWithQueriesBlocked(CayenneRuntime runtime, Runnable task) {
 
-    public RuntimeCaseDataChannelInterceptor(Provider<CayenneRuntime> runtimeProvider) {
-        this.runtimeProvider = runtimeProvider;
-    }
-
-    @Override
-    public void runWithQueriesBlocked(Runnable task) {
-
-        UnitTestDomain channel = (UnitTestDomain) runtimeProvider
-                .get()
-                .getChannel();
-
+        UnitTestDomain channel = (UnitTestDomain) runtime.getChannel();
         channel.setBlockingQueries(true);
         try {
             task.run();
-        }
-        finally {
+        } finally {
             channel.setBlockingQueries(false);
         }
     }
 
-    @Override
-    public int runWithQueryCounter(Runnable task) {
-        UnitTestDomain channel = (UnitTestDomain) runtimeProvider.get().getChannel();
-        RuntimeCaseDataNode node = (RuntimeCaseDataNode)channel.getDataNodes().iterator().next();
+    public static int runWithQueryCounter(CayenneRuntime runtime, Runnable task) {
+        UnitTestDomain channel = (UnitTestDomain) runtime.getChannel();
+        RuntimeCaseDataNode node = (RuntimeCaseDataNode) channel.getDataNodes().iterator().next();
 
         int start = node.getQueriesCount();
         int end;

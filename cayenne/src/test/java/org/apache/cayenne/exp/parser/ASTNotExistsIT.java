@@ -26,7 +26,6 @@ import org.apache.cayenne.test.jdbc.TableHelper;
 import org.apache.cayenne.testdo.testmap.Artist;
 import org.apache.cayenne.testdo.testmap.Gallery;
 import org.apache.cayenne.testdo.testmap.Painting;
-import org.apache.cayenne.unit.di.DataChannelInterceptor;
 import org.apache.cayenne.unit.di.runtime.CayenneProjects;
 import org.apache.cayenne.unit.di.runtime.CayenneTestsEnv;
 import org.junit.jupiter.api.BeforeEach;
@@ -43,11 +42,8 @@ public class ASTNotExistsIT {
     @RegisterExtension
     static final CayenneTestsEnv env = CayenneTestsEnv.forProject(CayenneProjects.TESTMAP_PROJECT);
 
-    private DataChannelInterceptor queryInterceptor;
-
     @BeforeEach
     public void createArtistsDataSet() throws Exception {
-        queryInterceptor = env.dataChannelInterceptor();
         TableHelper tArtist = env.table("ARTIST", "ARTIST_ID", "ARTIST_NAME", "DATE_OF_BIRTH");
 
         long dateBase = System.currentTimeMillis();
@@ -125,7 +121,7 @@ public class ASTNotExistsIT {
                 .orderBy(Artist.ARTIST_ID_PK_PROPERTY.asc())
                 .select(env.context());
 
-        queryInterceptor.runWithQueriesBlocked(() -> {
+        env.runWithQueriesBlocked(() -> {
             List<Artist> artistsFiltered = exp.filterObjects(artists);
             assertEquals(artistSelected, artistsFiltered, exp.toString());
         });

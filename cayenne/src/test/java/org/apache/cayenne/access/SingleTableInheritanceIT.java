@@ -19,10 +19,6 @@
 
 package org.apache.cayenne.access;
 
-import java.sql.Types;
-import java.util.Arrays;
-import java.util.List;
-
 import org.apache.cayenne.Cayenne;
 import org.apache.cayenne.query.ObjectSelect;
 import org.apache.cayenne.query.SQLTemplate;
@@ -36,44 +32,39 @@ import org.apache.cayenne.testdo.inheritance_people.Department;
 import org.apache.cayenne.testdo.inheritance_people.Employee;
 import org.apache.cayenne.testdo.inheritance_people.Manager;
 import org.apache.cayenne.testdo.inheritance_people.PersonNotes;
-import org.apache.cayenne.unit.di.DataChannelInterceptor;
 import org.apache.cayenne.unit.di.runtime.PeopleProjectCase;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
-import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertNotNull;
-import static org.junit.jupiter.api.Assertions.assertSame;
-import static org.junit.jupiter.api.Assertions.assertTrue;
+import java.sql.Types;
+import java.util.Arrays;
+import java.util.List;
+
+import static org.junit.jupiter.api.Assertions.*;
 
 public class SingleTableInheritanceIT extends PeopleProjectCase {
 
-        private DataContext context;
-
-        private DataContext context2;
-
-        private DataChannelInterceptor queryBlocker;
-
+    private DataContext context;
+    private DataContext context2;
     private TableHelper tPerson;
     private TableHelper tAddress;
     private TableHelper tClientCompany;
     private TableHelper tDepartment;
 
     @BeforeEach
-	public void setUp() {
-    	context = env.context();
-    	context2 = (DataContext) env.runtime().newContext();
-    	queryBlocker = env.dataChannelInterceptor();
-		tAddress = new TableHelper(dbHelper, "ADDRESS", "ADDRESS_ID", "CITY", "PERSON_ID");
+    public void setUp() {
+        context = env.context();
+        context2 = (DataContext) env.runtime().newContext();
+        tAddress = new TableHelper(dbHelper, "ADDRESS", "ADDRESS_ID", "CITY", "PERSON_ID");
 
-		tClientCompany = new TableHelper(dbHelper, "CLIENT_COMPANY", "CLIENT_COMPANY_ID", "NAME");
+        tClientCompany = new TableHelper(dbHelper, "CLIENT_COMPANY", "CLIENT_COMPANY_ID", "NAME");
 
-		tDepartment = new TableHelper(dbHelper, "DEPARTMENT", "DEPARTMENT_ID", "NAME");
+        tDepartment = new TableHelper(dbHelper, "DEPARTMENT", "DEPARTMENT_ID", "NAME");
 
-		tPerson = new TableHelper(dbHelper, "PERSON").setColumns("PERSON_ID", "NAME", "PERSON_TYPE", "SALARY",
-				"CLIENT_COMPANY_ID", "DEPARTMENT_ID").setColumnTypes(Types.INTEGER, Types.VARCHAR, Types.CHAR,
-				Types.FLOAT, Types.INTEGER, Types.INTEGER);
-	}
+        tPerson = new TableHelper(dbHelper, "PERSON").setColumns("PERSON_ID", "NAME", "PERSON_TYPE", "SALARY",
+                "CLIENT_COMPANY_ID", "DEPARTMENT_ID").setColumnTypes(Types.INTEGER, Types.VARCHAR, Types.CHAR,
+                Types.FLOAT, Types.INTEGER, Types.INTEGER);
+    }
 
     private void create2PersonDataSet() throws Exception {
         tPerson.insert(1, "E1", "EE", null, null, null);
@@ -206,7 +197,7 @@ public class SingleTableInheritanceIT extends PeopleProjectCase {
 
         assertTrue(person instanceof Employee);
 
-        queryBlocker.runWithQueriesBlocked(() -> {
+        env.runWithQueriesBlocked(() -> {
             assertEquals(2, person.getNotes().size());
 
             String[] names = new String[2];
@@ -241,7 +232,7 @@ public class SingleTableInheritanceIT extends PeopleProjectCase {
                 query);
         assertTrue(person instanceof Employee);
 
-        queryBlocker.runWithQueriesBlocked(() -> {
+        env.runWithQueriesBlocked(() -> {
             assertEquals(2, person.getNotes().size());
 
             String[] names = new String[2];
@@ -276,7 +267,7 @@ public class SingleTableInheritanceIT extends PeopleProjectCase {
         assertEquals(2, notes.size());
         final PersonNotes note = notes.get(0);
 
-        queryBlocker.runWithQueriesBlocked(() -> assertEquals("AA", note.getPerson().getName()));
+        env.runWithQueriesBlocked(() -> assertEquals("AA", note.getPerson().getName()));
     }
 
     @Test
@@ -293,10 +284,8 @@ public class SingleTableInheritanceIT extends PeopleProjectCase {
         ObjectSelect<PersonNotes> query = ObjectSelect.query(PersonNotes.class)
                 .prefetch(PersonNotes.PERSON.joint());
 
-        final PersonNotes note = (PersonNotes) Cayenne.objectForQuery(context, query);
-
-        queryBlocker.runWithQueriesBlocked(() -> assertEquals("AA", note.getPerson().getName()));
-
+        PersonNotes note = (PersonNotes) Cayenne.objectForQuery(context, query);
+        env.runWithQueriesBlocked(() -> assertEquals("AA", note.getPerson().getName()));
     }
 
     @Test

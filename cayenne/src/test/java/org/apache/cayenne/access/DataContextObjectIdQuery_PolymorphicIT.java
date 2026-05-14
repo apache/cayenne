@@ -26,7 +26,6 @@ import org.apache.cayenne.test.jdbc.TableHelper;
 import org.apache.cayenne.testdo.inheritance_people.AbstractPerson;
 import org.apache.cayenne.testdo.inheritance_people.Employee;
 import org.apache.cayenne.testdo.inheritance_people.Manager;
-import org.apache.cayenne.unit.di.DataChannelInterceptor;
 import org.apache.cayenne.unit.di.runtime.PeopleProjectCase;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -38,79 +37,74 @@ import static org.junit.jupiter.api.Assertions.assertInstanceOf;
 
 public class DataContextObjectIdQuery_PolymorphicIT extends PeopleProjectCase {
 
-		private DataContext context1;
+    private DataContext context1;
+    private DataContext context2;
+    private TableHelper tPerson;
 
-		private DataContext context2;
+    @BeforeEach
+    public void before() {
+        context1 = env.context();
+        context2 = (DataContext) env.runtime().newContext();
+        tPerson = new TableHelper(dbHelper, "PERSON").setColumns("PERSON_ID", "NAME", "PERSON_TYPE")
+                .setColumnTypes(Types.INTEGER, Types.VARCHAR, Types.CHAR);
+    }
 
-		private DataChannelInterceptor queryInterceptor;
+    @Test
+    public void polymorphicSharedCache() throws SQLException {
 
-	private TableHelper tPerson;
+        tPerson.insert(1, "P1", "EM");
 
-	@BeforeEach
-	public void before() {
-		context1 = env.context();
-		context2 = (DataContext) env.runtime().newContext();
-		queryInterceptor = env.dataChannelInterceptor();
-		tPerson = new TableHelper(dbHelper, "PERSON").setColumns("PERSON_ID", "NAME", "PERSON_TYPE")
-				.setColumnTypes(Types.INTEGER, Types.VARCHAR, Types.CHAR);
-	}
+        final ObjectIdQuery q1 = new ObjectIdQuery(ObjectId.of("AbstractPerson", "PERSON_ID", 1), false,
+                ObjectIdQuery.CACHE);
 
-	@Test
-	public void polymorphicSharedCache() throws SQLException {
-
-		tPerson.insert(1, "P1", "EM");
-
-		final ObjectIdQuery q1 = new ObjectIdQuery(ObjectId.of("AbstractPerson", "PERSON_ID", 1), false,
-				ObjectIdQuery.CACHE);
-
-		AbstractPerson ap1 = (AbstractPerson) Cayenne.objectForQuery(context1, q1);
+        AbstractPerson ap1 = (AbstractPerson) Cayenne.objectForQuery(context1, q1);
         assertInstanceOf(Manager.class, ap1);
 
-		queryInterceptor.runWithQueriesBlocked(() -> {
+        env.runWithQueriesBlocked(() -> {
             // use different context to ensure we hit shared cache
             AbstractPerson ap2 = (AbstractPerson) Cayenne.objectForQuery(context2, q1);
             assertInstanceOf(Manager.class, ap2);
         });
-	}
+    }
 
-	@Test
-	public void polymorphicSharedCache_AfterCayenneInsert() {
-
-
-		// see CAY-2101... we are trying to get a snapshot from a new object in the shared cache, and then read this
-		// object via a relationship, so that shared cache is consulted
-		Employee e = context1.newObject(Employee.class);
-		e.setName("E1");
-		e.setSalary(1234.01f);
-
-		context1.commitChanges();
+    @Test
+    public void polymorphicSharedCache_AfterCayenneInsert() {
 
 
-		final ObjectIdQuery q1 = new ObjectIdQuery(
-				ObjectId.of("AbstractPerson", "PERSON_ID", Cayenne.intPKForObject(e)),
-				false,
-				ObjectIdQuery.CACHE);
+        // see CAY-2101... we are trying to get a snapshot from a new object in the shared cache, and then read this
+        // object via a relationship, so that shared cache is consulted
+        Employee e = context1.newObject(Employee.class);
+        e.setName("E1");
+        e.setSalary(1234.01f);
+
+        context1.commitChanges();
 
 
-		queryInterceptor.runWithQueriesBlocked(() -> {
+        final ObjectIdQuery q1 = new ObjectIdQuery(
+                ObjectId.of("AbstractPerson", "PERSON_ID", Cayenne.intPKForObject(e)),
+                false,
+                ObjectIdQuery.CACHE);
+
+
+        env.runWithQueriesBlocked(() -> {
             // use different context to ensure we hit shared cache
             AbstractPerson ap1 = (AbstractPerson) Cayenne.objectForQuery(context2, q1);
             assertInstanceOf(Employee.class, ap1);
         });
-	}
+    }
 
-	@Test
-	public void polymorphicLocalCache() throws SQLException {
+    @Test
+    public void polymorphicLocalCache() throws SQLException {
 
-		tPerson.insert(1, "P1", "EM");
+        tPerson.insert(1, "P1", "EM");
 
-		final ObjectIdQuery q1 = new ObjectIdQuery(ObjectId.of("AbstractPerson", "PERSON_ID", 1), false,
-				ObjectIdQuery.CACHE);
+        final ObjectIdQuery q1 = new ObjectIdQuery(ObjectId.of("AbstractPerson", "PERSON_ID", 1), false,
+                ObjectIdQuery.CACHE);
 
-		AbstractPerson ap1 = (AbstractPerson) Cayenne.objectForQuery(context1, q1);
+        AbstractPerson ap1 = (AbstractPerson) Cayenne.objectForQuery(context1, q1);
         assertInstanceOf(Manager.class, ap1);
 
-		queryInterceptor.runWithQueriesBlocked(() -> {
+        env.runWithQueriesBlocked(() -> {
             // use same context to ensure we hit local cache
             // note that this does not guarantee test correctness. If local
             // cache polymorphic ID lookup is broken, shared cache will pick
@@ -118,5 +112,5 @@ public class DataContextObjectIdQuery_PolymorphicIT extends PeopleProjectCase {
             AbstractPerson ap2 = (AbstractPerson) Cayenne.objectForQuery(context1, q1);
             assertInstanceOf(Manager.class, ap2);
         });
-	}
+    }
 }

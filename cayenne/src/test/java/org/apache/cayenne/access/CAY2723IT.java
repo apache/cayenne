@@ -21,7 +21,6 @@ package org.apache.cayenne.access;
 import org.apache.cayenne.dba.JdbcPkGenerator;
 import org.apache.cayenne.testdo.testmap.Painting;
 import org.apache.cayenne.testdo.testmap.PaintingInfo;
-import org.apache.cayenne.unit.di.DataChannelInterceptor;
 import org.apache.cayenne.unit.di.runtime.CayenneProjects;
 import org.apache.cayenne.unit.di.runtime.CayenneTestsEnv;
 import org.junit.jupiter.api.Test;
@@ -37,11 +36,10 @@ public class CAY2723IT {
     @Test
     public void phantomToDepPKUpdate() {
         DataContext context = env.context();
-        DataChannelInterceptor queryInterceptor = env.dataChannelInterceptor();
 
         // try to trigger PK generator. so it wouldn't random fail the actual test
         for (int i = 0; i < JdbcPkGenerator.DEFAULT_PK_CACHE_SIZE; i++) {
-            int queryCounter = queryInterceptor.runWithQueryCounter(() -> {
+            int queryCounter = env.runWithQueryCounter(() -> {
                 Painting painting = context.newObject(Painting.class);
                 painting.setPaintingTitle("test_warmup");
                 context.commitChanges();
@@ -64,7 +62,7 @@ public class CAY2723IT {
         context.deleteObject(paintingInfo);
 
         // here should be only single insert of the painting object
-        int queryCounter = queryInterceptor.runWithQueryCounter(() -> context.commitChanges());
+        int queryCounter = env.runWithQueryCounter(() -> context.commitChanges());
         assertEquals(1, queryCounter);
     }
 }

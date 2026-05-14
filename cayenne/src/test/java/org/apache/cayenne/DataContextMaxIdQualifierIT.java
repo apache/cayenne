@@ -24,7 +24,6 @@ import org.apache.cayenne.runtime.CayenneRuntime;
 import org.apache.cayenne.test.jdbc.TableHelper;
 import org.apache.cayenne.testdo.testmap.Artist;
 import org.apache.cayenne.testdo.testmap.Painting;
-import org.apache.cayenne.unit.di.DataChannelInterceptor;
 import org.apache.cayenne.unit.di.runtime.CayenneProjects;
 import org.apache.cayenne.unit.di.runtime.CayenneTestsEnv;
 import org.junit.jupiter.api.extension.RegisterExtension;
@@ -44,7 +43,6 @@ public class DataContextMaxIdQualifierIT {
     static final CayenneTestsEnv env = CayenneTestsEnv.forProject(CayenneProjects.TESTMAP_PROJECT);
 
     protected DataContext context;
-    protected DataChannelInterceptor queryInterceptor;
     protected CayenneRuntime runtime;
     
     private TableHelper tArtist;
@@ -53,7 +51,6 @@ public class DataContextMaxIdQualifierIT {
     @BeforeEach
     public void setUp() throws Exception {
         context = env.context();
-        queryInterceptor = env.dataChannelInterceptor();
         runtime = env.runtime();
         tArtist = env.table("ARTIST", "ARTIST_ID", "ARTIST_NAME");
 
@@ -82,7 +79,7 @@ public class DataContextMaxIdQualifierIT {
         insertData();
         runtime.getDataDomain().setMaxIdQualifierSize(10);
 
-        int queriesCount = queryInterceptor.runWithQueryCounter(() ->
+        int queriesCount = env.runWithQueryCounter(() ->
                 ObjectSelect.query(Artist.class)
                         .prefetch(Artist.PAINTING_ARRAY.disjointById())
                         .select(context));
@@ -95,7 +92,7 @@ public class DataContextMaxIdQualifierIT {
         insertData();
         runtime.getDataDomain().setMaxIdQualifierSize(0);
 
-        int queriesCount = queryInterceptor.runWithQueryCounter(() ->
+        int queriesCount = env.runWithQueryCounter(() ->
                 ObjectSelect.query(Artist.class)
                         .prefetch(Artist.PAINTING_ARRAY.disjointById())
                         .select(context));
@@ -108,7 +105,7 @@ public class DataContextMaxIdQualifierIT {
         insertData();
         runtime.getDataDomain().setMaxIdQualifierSize(-1);
 
-        int queriesCount = queryInterceptor.runWithQueryCounter(() ->
+        int queriesCount = env.runWithQueryCounter(() ->
                 ObjectSelect.query(Artist.class)
                         .prefetch(Artist.PAINTING_ARRAY.disjointById())
                         .select(context));
@@ -124,7 +121,7 @@ public class DataContextMaxIdQualifierIT {
 
         ObjectSelect<Painting> query = ObjectSelect.query(Painting.class).pageSize(10);
 
-        int queriesCount = queryInterceptor.runWithQueryCounter(() -> {
+        int queriesCount = env.runWithQueryCounter(() -> {
             List<Painting> boxes = query.select(context);
             for (Painting box : boxes) {
                 box.getToArtist();
@@ -133,7 +130,7 @@ public class DataContextMaxIdQualifierIT {
 
         assertEquals(21, queriesCount);
 
-        queriesCount = queryInterceptor.runWithQueryCounter(() -> {
+        queriesCount = env.runWithQueryCounter(() -> {
             List<Painting> boxes = query.select(context);
             List<Painting> tempList = new ArrayList<>(boxes);
         });
@@ -149,7 +146,7 @@ public class DataContextMaxIdQualifierIT {
 
         ObjectSelect<Painting> query = ObjectSelect.query(Painting.class).pageSize(10);
 
-        int queriesCount = queryInterceptor.runWithQueryCounter(() -> {
+        int queriesCount = env.runWithQueryCounter(() -> {
             final List<Painting> boxes = query.select(context);
             for (Painting box : boxes) {
                 box.getToArtist();
@@ -158,8 +155,8 @@ public class DataContextMaxIdQualifierIT {
 
         assertEquals(11, queriesCount);
 
-        queriesCount = queryInterceptor.runWithQueryCounter(() -> {
-            final List<Painting> boxes = query.select(context);
+        queriesCount = env.runWithQueryCounter(() -> {
+             List<Painting> boxes = query.select(context);
             List<Painting> tempList = new ArrayList<>(boxes);
         });
 
@@ -174,7 +171,7 @@ public class DataContextMaxIdQualifierIT {
 
         ObjectSelect<Painting> query = ObjectSelect.query(Painting.class).pageSize(10);
 
-        int queriesCount = queryInterceptor.runWithQueryCounter(() -> {
+        int queriesCount = env.runWithQueryCounter(() -> {
             final List<Painting> boxes = query.select(context);
             List<Painting> tempList = new ArrayList<>(boxes);
         });
@@ -190,7 +187,7 @@ public class DataContextMaxIdQualifierIT {
 
         ObjectSelect<Painting> query = ObjectSelect.query(Painting.class).pageSize(10);
 
-        int queriesCount = queryInterceptor.runWithQueryCounter(() -> {
+        int queriesCount = env.runWithQueryCounter(() -> {
             final List<Painting> boxes = query.select(context);
             List<Painting> tempList = new ArrayList<>(boxes);
         });

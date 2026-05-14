@@ -31,7 +31,6 @@ import org.apache.cayenne.testdo.testmap.Gallery;
 import org.apache.cayenne.testdo.testmap.Painting;
 import org.apache.cayenne.unit.OracleUnitDbAdapter;
 import org.apache.cayenne.unit.UnitDbAdapter;
-import org.apache.cayenne.unit.di.DataChannelInterceptor;
 import org.apache.cayenne.unit.di.runtime.CayenneProjects;
 import org.apache.cayenne.unit.di.runtime.CayenneTestsEnv;
 import org.junit.jupiter.api.BeforeEach;
@@ -52,7 +51,6 @@ public class SQLTemplateIT {
 	static final CayenneTestsEnv env = CayenneTestsEnv.forProject(CayenneProjects.TESTMAP_PROJECT);
 
 	private DataContext context;
-	protected DataChannelInterceptor queryInterceptor;
 	protected UnitDbAdapter unitDbAdapter;
 
 	private TableHelper tPainting;
@@ -62,7 +60,6 @@ public class SQLTemplateIT {
 	@BeforeEach
 	public void setUp() throws Exception {
 		context = env.context();
-		queryInterceptor = env.dataChannelInterceptor();
 		unitDbAdapter = env.unitDbAdapter();
 		tArtist = env.table("ARTIST", "ARTIST_ID", "ARTIST_NAME", "DATE_OF_BIRTH");
 
@@ -464,7 +461,7 @@ public class SQLTemplateIT {
 		@SuppressWarnings("unchecked")
 		List<Painting> paintings = context.performQuery(q1);
 
-		queryInterceptor.runWithQueriesBlocked(() -> {
+		env.runWithQueriesBlocked(() -> {
 			for(Painting painting : paintings) {
 				assertEquals(PersistenceState.COMMITTED, painting.getToArtist().getPersistenceState());
 			}

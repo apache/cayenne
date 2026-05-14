@@ -22,7 +22,6 @@ package org.apache.cayenne.access;
 import org.apache.cayenne.Cayenne;
 import org.apache.cayenne.testdo.inheritance_people.Employee;
 import org.apache.cayenne.testdo.inheritance_people.PersonNotes;
-import org.apache.cayenne.unit.di.DataChannelInterceptor;
 import org.apache.cayenne.unit.di.runtime.PeopleProjectCase;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -31,15 +30,13 @@ import static org.junit.jupiter.api.Assertions.assertInstanceOf;
 
 public class DataContextRelationshipQuery_PolymorphicIT extends PeopleProjectCase {
 
-        private DataContext context1;
-        private DataContext context2;
-        private DataChannelInterceptor queryInterceptor;
+    private DataContext context1;
+    private DataContext context2;
 
     @BeforeEach
     public void before() {
         context1 = env.context();
         context2 = (DataContext) env.runtime().newContext();
-        queryInterceptor = env.dataChannelInterceptor();
     }
 
     @Test
@@ -58,8 +55,8 @@ public class DataContextRelationshipQuery_PolymorphicIT extends PeopleProjectCas
         context1.commitChanges();
 
         // use different context to ensure we hit shared cache for relationship resolving
-        final PersonNotes nPeer = Cayenne.objectForPK(context2, PersonNotes.class, Cayenne.intPKForObject(n));
+        PersonNotes nPeer = Cayenne.objectForPK(context2, PersonNotes.class, Cayenne.intPKForObject(n));
 
-        queryInterceptor.runWithQueriesBlocked(() -> assertInstanceOf(Employee.class, nPeer.getPerson()));
+        env.runWithQueriesBlocked(() -> assertInstanceOf(Employee.class, nPeer.getPerson()));
     }
 }

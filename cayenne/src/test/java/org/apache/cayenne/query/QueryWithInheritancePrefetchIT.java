@@ -19,25 +19,21 @@
 
 package org.apache.cayenne.query;
 
-import java.util.List;
-
 import org.apache.cayenne.runtime.CayenneRuntime;
 import org.apache.cayenne.test.jdbc.TableHelper;
 import org.apache.cayenne.testdo.inheritance_with_enum.Dependent;
 import org.apache.cayenne.testdo.inheritance_with_enum.Root;
 import org.apache.cayenne.testdo.inheritance_with_enum.Sub;
 import org.apache.cayenne.testdo.inheritance_with_enum.Type;
-import org.apache.cayenne.unit.di.DataChannelInterceptor;
 import org.apache.cayenne.unit.di.runtime.CayenneProjects;
 import org.apache.cayenne.unit.di.runtime.CayenneTestsEnv;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.RegisterExtension;
 
-import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertFalse;
-import static org.junit.jupiter.api.Assertions.assertNotNull;
-import static org.junit.jupiter.api.Assertions.assertTrue;
+import java.util.List;
+
+import static org.junit.jupiter.api.Assertions.*;
 
 /**
  *
@@ -49,12 +45,10 @@ public class QueryWithInheritancePrefetchIT {
     static final CayenneTestsEnv env = CayenneTestsEnv.forProject(CayenneProjects.INHERITANCE_WITH_ENUM_PROJECT);
 
     private CayenneRuntime runtime;
-    private DataChannelInterceptor queryInterceptor;
 
     @BeforeEach
     public void createTestData() throws Exception {
         runtime = env.runtime();
-        queryInterceptor = env.dataChannelInterceptor();
         TableHelper tRoot = env.table("iwe_root", "id", "type", "name", "enum");
 
         tRoot.insert(1, 0, "root1", null);
@@ -81,8 +75,8 @@ public class QueryWithInheritancePrefetchIT {
 
         assertNotNull(result.get(0));
         assertFalse(result.get(0) instanceof Sub);
-        assertTrue(result.get(1) instanceof Sub);
-        assertTrue(result.get(2) instanceof Sub);
+        assertInstanceOf(Sub.class, result.get(1));
+        assertInstanceOf(Sub.class, result.get(2));
 
         assertEquals(Type.type1, ((Sub)result.get(1)).getEnum());
         assertEquals(Type.type2, ((Sub)result.get(2)).getEnum());
@@ -121,11 +115,11 @@ public class QueryWithInheritancePrefetchIT {
     private void assertPrefetchResult(final List<Dependent> result) {
         assertEquals(3, result.size());
 
-        queryInterceptor.runWithQueriesBlocked(() -> {
+        env.runWithQueriesBlocked(() -> {
             assertNotNull(result.get(0).getRoot());
             assertFalse(result.get(0).getRoot() instanceof Sub);
-            assertTrue(result.get(1).getRoot() instanceof Sub);
-            assertTrue(result.get(2).getRoot() instanceof Sub);
+            assertInstanceOf(Sub.class, result.get(1).getRoot());
+            assertInstanceOf(Sub.class, result.get(2).getRoot());
 
             assertEquals(Type.type1, ((Sub) result.get(1).getRoot()).getEnum());
             assertEquals(Type.type2, ((Sub) result.get(2).getRoot()).getEnum());

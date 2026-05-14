@@ -40,7 +40,6 @@ import org.apache.cayenne.runtime.CayenneRuntime;
 import org.apache.cayenne.test.jdbc.DbHelper;
 import org.apache.cayenne.test.jdbc.TableHelper;
 import org.apache.cayenne.unit.UnitDbAdapter;
-import org.apache.cayenne.unit.di.DataChannelInterceptor;
 import org.apache.cayenne.unit.util.SQLTemplateCustomizer;
 import org.junit.jupiter.api.extension.AfterEachCallback;
 import org.junit.jupiter.api.extension.BeforeEachCallback;
@@ -211,8 +210,12 @@ public class CayenneTestsEnv implements BeforeEachCallback, AfterEachCallback {
         return channel.getDataNodes().iterator().next();
     }
 
-    public DataChannelInterceptor dataChannelInterceptor() {
-        return new RuntimeCaseDataChannelInterceptor(() -> runtime);
+    public void runWithQueriesBlocked(Runnable task) {
+        DataChannelInterceptor.runWithQueriesBlocked(runtime, task);
+    }
+
+    public int runWithQueryCounter(Runnable task) {
+        return DataChannelInterceptor.runWithQueryCounter(runtime, task);
     }
 
     public AdhocObjectFactory adhocObjectFactory() {

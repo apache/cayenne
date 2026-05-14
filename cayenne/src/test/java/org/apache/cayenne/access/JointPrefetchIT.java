@@ -35,7 +35,6 @@ import org.apache.cayenne.test.jdbc.TableHelper;
 import org.apache.cayenne.testdo.testmap.Artist;
 import org.apache.cayenne.testdo.testmap.Gallery;
 import org.apache.cayenne.testdo.testmap.Painting;
-import org.apache.cayenne.unit.di.DataChannelInterceptor;
 import org.apache.cayenne.unit.di.runtime.CayenneProjects;
 import org.apache.cayenne.unit.di.runtime.CayenneTestsEnv;
 import org.junit.jupiter.api.extension.RegisterExtension;
@@ -61,7 +60,6 @@ public class JointPrefetchIT {
 
     protected DataContext context;
     protected CayenneRuntime runtime;
-    protected DataChannelInterceptor queryInterceptor;
 
     protected TableHelper tArtist;
     protected TableHelper tGallery;
@@ -72,7 +70,6 @@ public class JointPrefetchIT {
     public void setUp() throws Exception {
         context = env.context();
         runtime = env.runtime();
-        queryInterceptor = env.dataChannelInterceptor();
         tArtist = env.table("ARTIST", "ARTIST_ID", "ARTIST_NAME");
 
         tGallery = env.table("GALLERY", "GALLERY_ID", "GALLERY_NAME");
@@ -105,7 +102,7 @@ public class JointPrefetchIT {
                 .prefetch(Painting.TO_ARTIST.joint())
                 .select(context);
 
-        queryInterceptor.runWithQueriesBlocked(() -> {
+        env.runWithQueriesBlocked(() -> {
             assertEquals(2, objects.size());
 
             for (Painting p : objects) {
@@ -126,7 +123,7 @@ public class JointPrefetchIT {
                 .prefetch(Artist.PAINTING_ARRAY.joint())
                 .select(context);
 
-        queryInterceptor.runWithQueriesBlocked(() -> {
+        env.runWithQueriesBlocked(() -> {
             // herein lies the limitation of prefetching combined with fetch limit -
             // we got fewer artists than we wanted
             assertEquals(1, objects.size());
@@ -151,7 +148,7 @@ public class JointPrefetchIT {
                 .prefetch(Painting.TO_ARTIST.joint())
                 .select(context);
 
-        queryInterceptor.runWithQueriesBlocked(() -> {
+        env.runWithQueriesBlocked(() -> {
             assertEquals(3, rows.size());
 
             // row should contain columns from both entities minus those duplicated in a join...
@@ -196,7 +193,7 @@ public class JointPrefetchIT {
         @SuppressWarnings("unchecked")
         final List<Artist> objects = (List<Artist>)context.performQuery(q);
 
-        queryInterceptor.runWithQueriesBlocked(() -> {
+        env.runWithQueriesBlocked(() -> {
             // without OUTER join we will get fewer objects...
             assertEquals(2, objects.size());
 
@@ -205,7 +202,7 @@ public class JointPrefetchIT {
 
                 assertNotNull(list);
                 assertFalse(((ValueHolder) list).isFault());
-                assertTrue(list.size() > 0);
+                assertFalse(list.isEmpty());
 
                 for (Painting p : list) {
                     assertEquals(PersistenceState.COMMITTED, p.getPersistenceState());
@@ -226,7 +223,7 @@ public class JointPrefetchIT {
                 .prefetch(Painting.TO_ARTIST.joint())
                 .select(context);
 
-        queryInterceptor.runWithQueriesBlocked(() -> {
+        env.runWithQueriesBlocked(() -> {
             assertEquals(3, objects.size());
             for (Painting p : objects) {
                 Artist target = p.getToArtist();
@@ -263,11 +260,11 @@ public class JointPrefetchIT {
         assertEquals("java.util.Date", dateOfBirth.getType());
         dateOfBirth.setType("java.sql.Date");
         try {
-            final List<Painting> objects = ObjectSelect.query(Painting.class)
+             List<Painting> objects = ObjectSelect.query(Painting.class)
                     .prefetch(Painting.TO_ARTIST.joint())
                     .select(context);
 
-            queryInterceptor.runWithQueriesBlocked(() -> {
+            env.runWithQueriesBlocked(() -> {
                 assertEquals(1, objects.size());
                 for (Painting p : objects) {
                     Artist a = p.getToArtist();
@@ -286,11 +283,11 @@ public class JointPrefetchIT {
         createJointPrefetchDataSet();
 
         // query with to-many joint prefetches
-        final List<Artist> objects = ObjectSelect.query(Artist.class)
+         List<Artist> objects = ObjectSelect.query(Artist.class)
                 .prefetch(Artist.PAINTING_ARRAY.joint())
                 .select(context);
 
-        queryInterceptor.runWithQueriesBlocked(() -> {
+        env.runWithQueriesBlocked(() -> {
             assertEquals(3, objects.size());
 
             for (Artist a : objects) {
@@ -313,15 +310,15 @@ public class JointPrefetchIT {
         createJointPrefetchDataSet();
 
         // query with to-many joint prefetches and qualifier that doesn't match prefetch....
-        final List<Artist> objects = ObjectSelect.query(Artist.class)
+         List<Artist> objects = ObjectSelect.query(Artist.class)
                 .where(Artist.ARTIST_NAME.eq("artist1"))
                 .prefetch(Artist.PAINTING_ARRAY.joint())
                 .select(context);
 
-        queryInterceptor.runWithQueriesBlocked(() -> {
+        env.runWithQueriesBlocked(() -> {
             assertEquals(1, objects.size());
 
-            Artist a = objects.get(0);
+            Artist a = objects.getFirst();
             List<Painting> list = a.getPaintingArray();
 
             assertNotNull(list);
@@ -355,11 +352,11 @@ public class JointPrefetchIT {
         assertNull(g1);
 
         // query with to-many joint prefetches
-        final List<Artist> objects = ObjectSelect.query(Artist.class)
+         List<Artist> objects = ObjectSelect.query(Artist.class)
                 .prefetch(Artist.PAINTING_ARRAY.dot(Painting.TO_GALLERY).joint())
                 .select(context);
 
-        queryInterceptor.runWithQueriesBlocked(() -> {
+        env.runWithQueriesBlocked(() -> {
             assertEquals(3, objects.size());
 
             for (Artist a : objects) {
@@ -400,12 +397,12 @@ public class JointPrefetchIT {
                 .addPrefetch(Artist.PAINTING_ARRAY.joint())
                 .select(context);
 
-        queryInterceptor.runWithQueriesBlocked(() -> {
+        env.runWithQueriesBlocked(() -> {
             assertEquals(2, objects.size());
 
             for (Artist artist : objects) {
                 List<Painting> paintings = artist.getPaintingArray();
-                assertTrue(paintings.size() > 0);
+                assertFalse(paintings.isEmpty());
                 for (Painting painting : paintings) {
                     assertEquals(PersistenceState.COMMITTED, painting.getPersistenceState());
                     assertNotNull(painting.getPaintingTitle());
@@ -424,7 +421,7 @@ public class JointPrefetchIT {
                 + "FROM ARTIST t0, GALLERY t2 ")
                 .addPrefetch(Artist.PAINTING_ARRAY.dot(Painting.TO_GALLERY).joint())
                 .select(context);
-        queryInterceptor.runWithQueriesBlocked(() -> {
+        env.runWithQueriesBlocked(() -> {
             Persistent g1 = (Persistent) context.getGraphManager().getNode(
                     ObjectId.of("Gallery", Gallery.GALLERY_ID_PK_COLUMN, 33001)
             );

@@ -19,7 +19,6 @@
 
 package org.apache.cayenne.access;
 
-import java.util.List;
 import org.apache.cayenne.PersistenceState;
 import org.apache.cayenne.Persistent;
 import org.apache.cayenne.ValueHolder;
@@ -28,31 +27,26 @@ import org.apache.cayenne.query.PrefetchTreeNode;
 import org.apache.cayenne.test.jdbc.TableHelper;
 import org.apache.cayenne.testdo.testmap.Artist;
 import org.apache.cayenne.testdo.testmap.Painting;
-import org.apache.cayenne.unit.di.DataChannelInterceptor;
 import org.apache.cayenne.unit.di.runtime.CayenneProjects;
 import org.apache.cayenne.unit.di.runtime.CayenneTestsEnv;
-import org.junit.jupiter.api.extension.RegisterExtension;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.RegisterExtension;
 
-import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertFalse;
-import static org.junit.jupiter.api.Assertions.assertNotNull;
-import static org.junit.jupiter.api.Assertions.assertTrue;
+import java.util.List;
+
+import static org.junit.jupiter.api.Assertions.*;
 
 public class SimpleIdIncrementalFaultListPrefetchIT {
 
     @RegisterExtension
     static final CayenneTestsEnv env = CayenneTestsEnv.forProject(CayenneProjects.TESTMAP_PROJECT);
 
-    protected DataChannelInterceptor queryInterceptor;
-
     protected TableHelper tArtist;
     protected TableHelper tPaining;
 
     @BeforeEach
     public void setUp() throws Exception {
-        queryInterceptor = env.dataChannelInterceptor();
         tArtist = env.table("ARTIST", "ARTIST_ID", "ARTIST_NAME");
 
         tPaining = env.table("PAINTING", "PAINTING_ID",
@@ -115,7 +109,7 @@ public class SimpleIdIncrementalFaultListPrefetchIT {
         // currently queries with prefetch do not resolve their first page
         assertEquals(result.size(), result.getUnfetchedObjects());
 
-        int count = queryInterceptor.runWithQueryCounter(() -> {
+        int count = env.runWithQueryCounter(() -> {
             // go through the second page objects and count queries
             for (int i = 3; i < 6; i++) {
                 result.get(i);
@@ -172,12 +166,10 @@ public class SimpleIdIncrementalFaultListPrefetchIT {
         // get an objects from the second page
         final Persistent p1 = (Persistent) result.get(q.getPageSize());
 
-        queryInterceptor.runWithQueriesBlocked(() -> {
+        env.runWithQueriesBlocked(() -> {
             Object toOnePrefetch = p1.readNestedProperty("toArtist");
             assertNotNull(toOnePrefetch);
-            assertTrue(
-                    toOnePrefetch instanceof Persistent,
-                    "Expected Persistent, got: " + toOnePrefetch.getClass().getName());
+            assertInstanceOf(Persistent.class, toOnePrefetch, "Expected Persistent, got: " + toOnePrefetch.getClass().getName());
 
             Persistent a1 = (Persistent) toOnePrefetch;
             assertEquals(PersistenceState.COMMITTED, a1.getPersistenceState());

@@ -27,7 +27,6 @@ import org.apache.cayenne.test.jdbc.TableHelper;
 import org.apache.cayenne.testdo.testmap.Artist;
 import org.apache.cayenne.testdo.testmap.Painting;
 import org.apache.cayenne.testdo.testmap.PaintingInfo;
-import org.apache.cayenne.unit.di.DataChannelInterceptor;
 import org.apache.cayenne.unit.di.runtime.CayenneProjects;
 import org.apache.cayenne.unit.di.runtime.CayenneTestsEnv;
 import org.junit.jupiter.api.BeforeEach;
@@ -49,10 +48,6 @@ public class DataContextDisjointByIdPrefetchIT {
     static final CayenneTestsEnv env = CayenneTestsEnv.forProject(CayenneProjects.TESTMAP_PROJECT);
 
     protected DataContext context;
-
-
-    protected DataChannelInterceptor queryInterceptor;
-
     private TableHelper tArtist;
     private TableHelper tPainting;
     private TableHelper tPaintingInfo;
@@ -60,7 +55,6 @@ public class DataContextDisjointByIdPrefetchIT {
     @BeforeEach
     public void setUp() throws Exception {
         context = env.context();
-        queryInterceptor = env.dataChannelInterceptor();
         tArtist = env.table("ARTIST", "ARTIST_ID", "ARTIST_NAME");
 
         tPainting = env.table("PAINTING").setColumns("PAINTING_ID", "ARTIST_ID", "PAINTING_TITLE").setColumnTypes(Types.INTEGER, Types.BIGINT,
@@ -113,7 +107,7 @@ public class DataContextDisjointByIdPrefetchIT {
                 .prefetch(Artist.PAINTING_ARRAY.disjointById())
                 .select(context);
 
-        queryInterceptor.runWithQueriesBlocked(() -> {
+        env.runWithQueriesBlocked(() -> {
             assertFalse(result.isEmpty());
             Artist b1 = result.get(0);
             @SuppressWarnings("unchecked")
@@ -138,14 +132,14 @@ public class DataContextDisjointByIdPrefetchIT {
         createArtistWithTwoPaintingsDataSet();
 
         List<Artist> result = SQLSelect.query(Artist.class, "SELECT "
-                + "#result('ARTIST_NAME' 'String'), "
-                + "#result('DATE_OF_BIRTH' 'java.util.Date'), "
-                + "#result('t0.ARTIST_ID' 'int' '' 'ARTIST_ID') "
-                + "FROM ARTIST t0")
+                        + "#result('ARTIST_NAME' 'String'), "
+                        + "#result('DATE_OF_BIRTH' 'java.util.Date'), "
+                        + "#result('t0.ARTIST_ID' 'int' '' 'ARTIST_ID') "
+                        + "FROM ARTIST t0")
                 .addPrefetch(Artist.PAINTING_ARRAY.disjointById())
                 .select(context);
 
-        queryInterceptor.runWithQueriesBlocked(() -> {
+        env.runWithQueriesBlocked(() -> {
             assertFalse(result.isEmpty());
             Artist b1 = result.get(0);
 
@@ -174,7 +168,7 @@ public class DataContextDisjointByIdPrefetchIT {
                 .prefetch(Painting.TO_ARTIST.disjointById())
                 .select(context);
 
-        queryInterceptor.runWithQueriesBlocked(() -> {
+        env.runWithQueriesBlocked(() -> {
             assertFalse(result.isEmpty());
             Painting b1 = result.get(0);
             assertNotNull(b1.getToArtist());
@@ -188,17 +182,17 @@ public class DataContextDisjointByIdPrefetchIT {
         createArtistWithTwoPaintingsDataSet();
 
         List<Painting> result = SQLSelect.query(Painting.class, "SELECT "
-                + "#result('ESTIMATED_PRICE' 'BigDecimal'), "
-                + "#result('PAINTING_TITLE' 'String'), "
-                + "#result('PAINTING_DESCRIPTION' 'String'), "
-                + "#result('GALLERY_ID' 'int'), "
-                + "#result('PAINTING_ID' 'int'), "
-                + "#result('ARTIST_ID' 'int') "
-                + "FROM PAINTING")
+                        + "#result('ESTIMATED_PRICE' 'BigDecimal'), "
+                        + "#result('PAINTING_TITLE' 'String'), "
+                        + "#result('PAINTING_DESCRIPTION' 'String'), "
+                        + "#result('GALLERY_ID' 'int'), "
+                        + "#result('PAINTING_ID' 'int'), "
+                        + "#result('ARTIST_ID' 'int') "
+                        + "FROM PAINTING")
                 .addPrefetch(Painting.TO_ARTIST.disjointById())
                 .select(context);
 
-        queryInterceptor.runWithQueriesBlocked(() -> {
+        env.runWithQueriesBlocked(() -> {
             assertFalse(result.isEmpty());
             Painting p1 = result.get(0);
             assertEquals(PersistenceState.COMMITTED, p1.getPersistenceState());
@@ -222,7 +216,7 @@ public class DataContextDisjointByIdPrefetchIT {
                 .limit(2)
                 .select(context);
 
-        queryInterceptor.runWithQueriesBlocked(() -> {
+        env.runWithQueriesBlocked(() -> {
 
             assertEquals(2, bags.size());
 
@@ -242,10 +236,10 @@ public class DataContextDisjointByIdPrefetchIT {
     public void oneToOneRelationship() throws Exception {
         createTwoPaintingsWithInfosDataSet();
 
-        final List<Painting> result = ObjectSelect.query(Painting.class)
+        List<Painting> result = ObjectSelect.query(Painting.class)
                 .prefetch(Painting.TO_PAINTING_INFO.disjointById())
                 .select(context);
-        queryInterceptor.runWithQueriesBlocked(() -> {
+        env.runWithQueriesBlocked(() -> {
             assertFalse(result.isEmpty());
             List<String> boxColors = new ArrayList<>();
             for (Painting box : result) {

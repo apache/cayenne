@@ -25,7 +25,6 @@ import org.apache.cayenne.PersistenceState;
 import org.apache.cayenne.runtime.CayenneRuntime;
 import org.apache.cayenne.test.jdbc.TableHelper;
 import org.apache.cayenne.testdo.testmap.Artist;
-import org.apache.cayenne.unit.di.DataChannelInterceptor;
 import org.apache.cayenne.unit.di.runtime.CayenneProjects;
 import org.apache.cayenne.unit.di.runtime.CayenneTestsEnv;
 import org.junit.jupiter.api.BeforeEach;
@@ -34,28 +33,20 @@ import org.junit.jupiter.api.extension.RegisterExtension;
 
 import static org.junit.jupiter.api.Assertions.*;
 
-public class DataContextLocalObjectIT  {
+public class DataContextLocalObjectIT {
 
     @RegisterExtension
     static final CayenneTestsEnv env = CayenneTestsEnv.forProject(CayenneProjects.TESTMAP_PROJECT);
 
-        private DataContext context1;
-
-        private DataContext context2;
-
-
-        private DataChannelInterceptor interceptor;
-
-        private CayenneRuntime runtime;
-
+    private DataContext context1;
+    private DataContext context2;
+    private CayenneRuntime runtime;
     private TableHelper tArtist;
 
-    
     @BeforeEach
     public void setUp() throws Exception {
         context1 = env.context();
         context2 = (DataContext) env.runtime().newContext();
-        interceptor = env.dataChannelInterceptor();
         runtime = env.runtime();
         tArtist = env.table("ARTIST", "ARTIST_ID", "ARTIST_NAME");
     }
@@ -67,7 +58,7 @@ public class DataContextLocalObjectIT  {
         final Artist a1 = Cayenne.objectForPK(context1, Artist.class, 456);
         final Artist a2 = Cayenne.objectForPK(context2, Artist.class, 456);
 
-        interceptor.runWithQueriesBlocked(() -> {
+        env.runWithQueriesBlocked(() -> {
             Artist a3 = context2.localObject(a1);
             assertSame(a3, a2);
             assertSame(context2, a3.getObjectContext());
@@ -80,7 +71,7 @@ public class DataContextLocalObjectIT  {
 
         final Artist a1 = Cayenne.objectForPK(context1, Artist.class, 456);
 
-        interceptor.runWithQueriesBlocked(() -> {
+        env.runWithQueriesBlocked(() -> {
             Artist a2 = context1.localObject(a1);
             assertSame(a2, a1);
         });
@@ -92,7 +83,7 @@ public class DataContextLocalObjectIT  {
 
         final Artist a1 = Cayenne.objectForPK(context1, Artist.class, 456);
 
-        interceptor.runWithQueriesBlocked(() -> {
+        env.runWithQueriesBlocked(() -> {
             Artist a3 = context2.localObject(a1);
             assertNotSame(a3, a1);
             assertEquals(a3.getObjectId(), a1.getObjectId());
@@ -121,9 +112,9 @@ public class DataContextLocalObjectIT  {
     @Test
     public void localObject_TempId() {
 
-        final Artist a1 = context1.newObject(Artist.class);
+        Artist a1 = context1.newObject(Artist.class);
 
-        interceptor.runWithQueriesBlocked(() -> {
+        env.runWithQueriesBlocked(() -> {
 
             Artist a = context2.localObject(a1);
             assertNotNull(a);
@@ -139,9 +130,9 @@ public class DataContextLocalObjectIT  {
 
         final Artist a1 = context1.newObject(Artist.class);
 
-        final ObjectContext nestedContext = runtime.newContext(context1);
+         ObjectContext nestedContext = runtime.newContext(context1);
 
-        interceptor.runWithQueriesBlocked(() -> {
+        env.runWithQueriesBlocked(() -> {
 
             Artist a3 = nestedContext.localObject(a1);
             assertNotSame(a3, a1);

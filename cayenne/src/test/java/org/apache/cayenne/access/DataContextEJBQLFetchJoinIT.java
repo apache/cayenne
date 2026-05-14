@@ -17,6 +17,7 @@
  *  under the License.
  ****************************************************************/
 package org.apache.cayenne.access;
+
 import org.apache.cayenne.PersistenceState;
 import org.apache.cayenne.ValueHolder;
 import org.apache.cayenne.query.EJBQLQuery;
@@ -26,7 +27,6 @@ import org.apache.cayenne.testdo.testmap.ArtistExhibit;
 import org.apache.cayenne.testdo.testmap.Exhibit;
 import org.apache.cayenne.testdo.testmap.Gallery;
 import org.apache.cayenne.testdo.testmap.Painting;
-import org.apache.cayenne.unit.di.DataChannelInterceptor;
 import org.apache.cayenne.unit.di.runtime.CayenneProjects;
 import org.apache.cayenne.unit.di.runtime.CayenneTestsEnv;
 import org.junit.jupiter.api.BeforeEach;
@@ -48,18 +48,15 @@ public class DataContextEJBQLFetchJoinIT {
     @RegisterExtension
     static final CayenneTestsEnv env = CayenneTestsEnv.forProject(CayenneProjects.TESTMAP_PROJECT);
 
-    protected DataChannelInterceptor queryBlocker;
-
     protected TableHelper tArtist;
     protected TableHelper tPainting;
     protected TableHelper tGallery;
     protected TableHelper tExhibit;
     protected TableHelper tArtistExhibit;
 
-    
+
     @BeforeEach
     public void setUp() throws Exception {
-        queryBlocker = env.dataChannelInterceptor();
         tArtist = env.table("ARTIST", "ARTIST_ID", "ARTIST_NAME");
 
         tPainting = env.table("PAINTING").setColumns(
@@ -112,9 +109,9 @@ public class DataContextEJBQLFetchJoinIT {
 
         EJBQLQuery query = new EJBQLQuery(ejbql);
 
-        final List<?> objects = env.context().performQuery(query);
+        List<?> objects = env.context().performQuery(query);
 
-        queryBlocker.runWithQueriesBlocked(() -> {
+        env.runWithQueriesBlocked(() -> {
 
             assertEquals(2, objects.size());
 
@@ -146,7 +143,7 @@ public class DataContextEJBQLFetchJoinIT {
 
         final List<?> objects = env.context().performQuery(query);
 
-        queryBlocker.runWithQueriesBlocked(() -> {
+        env.runWithQueriesBlocked(() -> {
 
             assertEquals(1, objects.size());
 
@@ -194,7 +191,7 @@ public class DataContextEJBQLFetchJoinIT {
 
         final List<?> objects = env.context().performQuery(query);
 
-        queryBlocker.runWithQueriesBlocked(() -> {
+        env.runWithQueriesBlocked(() -> {
             assertNotNull(objects);
             assertFalse(objects.isEmpty());
             assertEquals(1, objects.size());
@@ -213,7 +210,7 @@ public class DataContextEJBQLFetchJoinIT {
 
         final List<?> objects = env.context().performQuery(query);
 
-        queryBlocker.runWithQueriesBlocked(() -> {
+        env.runWithQueriesBlocked(() -> {
 
             assertEquals(2, objects.size());
 
@@ -288,8 +285,8 @@ public class DataContextEJBQLFetchJoinIT {
 
         EJBQLQuery query = new EJBQLQuery(ejbql);
 
-        final List<?> objects = env.context().performQuery(query);
-        queryBlocker.runWithQueriesBlocked(() -> {
+        List<?> objects = env.context().performQuery(query);
+        env.runWithQueriesBlocked(() -> {
 
             assertEquals(6, objects.size());
 

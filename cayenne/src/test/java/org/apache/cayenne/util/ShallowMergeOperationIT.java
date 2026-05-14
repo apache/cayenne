@@ -29,7 +29,6 @@ import org.apache.cayenne.runtime.CayenneRuntime;
 import org.apache.cayenne.test.jdbc.TableHelper;
 import org.apache.cayenne.testdo.testmap.Artist;
 import org.apache.cayenne.testdo.testmap.Painting;
-import org.apache.cayenne.unit.di.DataChannelInterceptor;
 import org.apache.cayenne.unit.di.runtime.CayenneProjects;
 import org.apache.cayenne.unit.di.runtime.CayenneTestsEnv;
 import org.junit.jupiter.api.BeforeEach;
@@ -45,17 +44,13 @@ public class ShallowMergeOperationIT {
 
     private CayenneRuntime runtime;
     private DataContext context;
-    private DataChannelInterceptor queryInterceptor;
-
     private TableHelper tArtist;
 
     @BeforeEach
     public void setUp() throws Exception {
         runtime = env.runtime();
         context = env.context();
-        queryInterceptor = env.dataChannelInterceptor();
         tArtist = env.table("ARTIST", "ARTIST_ID", "ARTIST_NAME");
-
     }
 
     private void createArtistsDataSet() throws Exception {
@@ -75,7 +70,7 @@ public class ShallowMergeOperationIT {
         final Painting _newP = context.newObject(Painting.class);
         _new.addToPaintingArray(_newP);
 
-        queryInterceptor.runWithQueriesBlocked(() -> {
+        env.runWithQueriesBlocked(() -> {
             Painting painting = op.merge(_newP);
 
             assertEquals(PersistenceState.COMMITTED, painting.getPersistenceState());
@@ -113,7 +108,7 @@ public class ShallowMergeOperationIT {
         assertEquals(PersistenceState.MODIFIED, modified.getPersistenceState());
         assertEquals(PersistenceState.MODIFIED, peerModified.getPersistenceState());
 
-        queryInterceptor.runWithQueriesBlocked(() -> {
+        env.runWithQueriesBlocked(() -> {
             Persistent peerModified2 = op.merge(modified);
             assertSame(peerModified, peerModified2);
             assertEquals(
@@ -151,7 +146,7 @@ public class ShallowMergeOperationIT {
         assertEquals(PersistenceState.NEW, _new.getPersistenceState());
 
         // now check how objects in different state behave
-        queryInterceptor.runWithQueriesBlocked(() -> {
+        env.runWithQueriesBlocked(() -> {
             Persistent newPeer = op.merge(_new);
 
             assertEquals(_new.getObjectId(), newPeer.getObjectId());

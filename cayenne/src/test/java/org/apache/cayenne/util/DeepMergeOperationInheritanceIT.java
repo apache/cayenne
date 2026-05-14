@@ -25,26 +25,21 @@ import org.apache.cayenne.query.ObjectSelect;
 import org.apache.cayenne.testdo.inheritance_people.Department;
 import org.apache.cayenne.testdo.inheritance_people.Employee;
 import org.apache.cayenne.testdo.inheritance_people.Manager;
-import org.apache.cayenne.unit.di.DataChannelInterceptor;
 import org.apache.cayenne.unit.di.runtime.PeopleProjectCase;
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
 import static org.junit.jupiter.api.Assertions.*;
-import org.junit.jupiter.api.BeforeEach;
 
 public class DeepMergeOperationInheritanceIT extends PeopleProjectCase {
 
-        private DataContext context;
-
-        private DataContext context1;
-
-        protected DataChannelInterceptor queryInterceptor;
+    private DataContext context;
+    private DataContext context1;
 
     @BeforeEach
     public void setUp() {
         context = env.context();
         context1 = (DataContext) env.runtime().newContext();
-        queryInterceptor = env.dataChannelInterceptor();
     }
 
     @Test
@@ -108,7 +103,7 @@ public class DeepMergeOperationInheritanceIT extends PeopleProjectCase {
     }
 
     private void assertMergeResult(Department d1, DeepMergeOperation op) {
-        queryInterceptor.runWithQueriesBlocked(() -> {
+        env.runWithQueriesBlocked(() -> {
             Department d2 = op.merge(d1);
             assertNotNull(d2);
             assertEquals(PersistenceState.COMMITTED, d2.getPersistenceState());

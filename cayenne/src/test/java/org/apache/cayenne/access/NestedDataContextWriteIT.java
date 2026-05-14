@@ -31,7 +31,6 @@ import org.apache.cayenne.testdo.testmap.ArtGroup;
 import org.apache.cayenne.testdo.testmap.Artist;
 import org.apache.cayenne.testdo.testmap.Painting;
 import org.apache.cayenne.testdo.testmap.PaintingInfo;
-import org.apache.cayenne.unit.di.DataChannelInterceptor;
 import org.apache.cayenne.unit.di.runtime.CayenneProjects;
 import org.apache.cayenne.unit.di.runtime.CayenneTestsEnv;
 import org.junit.jupiter.api.BeforeEach;
@@ -53,7 +52,6 @@ public class NestedDataContextWriteIT {
 
     private CayenneRuntime runtime;
     private DataContext context;
-    private DataChannelInterceptor queryInterceptor;
 
     private TableHelper tArtist;
     private TableHelper tPainting;
@@ -62,7 +60,6 @@ public class NestedDataContextWriteIT {
     public void setUp() throws Exception {
         runtime = env.runtime();
         context = env.context();
-        queryInterceptor = env.dataChannelInterceptor();
         tArtist = env.table("ARTIST", "ARTIST_ID", "ARTIST_NAME");
 
         tPainting = env.table("PAINTING").setColumns(
@@ -152,7 +149,7 @@ public class NestedDataContextWriteIT {
         Cayenne.objectForPK(childContextPeer, Painting.class, 33001);
         childP1.setToArtist(null);
 
-        queryInterceptor.runWithQueriesBlocked(() -> {
+        env.runWithQueriesBlocked(() -> {
             childContext.commitChangesToParent();
             assertEquals(PersistenceState.COMMITTED, childP1.getPersistenceState());
 
@@ -190,7 +187,7 @@ public class NestedDataContextWriteIT {
         final Artist childHollow = objects.get(3);
         childContext.invalidateObjects(childHollow);
 
-        queryInterceptor.runWithQueriesBlocked(() -> {
+        env.runWithQueriesBlocked(() -> {
             childContext.commitChangesToParent();
 
             // * all modified child objects must be in committed state now
@@ -367,7 +364,7 @@ public class NestedDataContextWriteIT {
         childModifiedToMany.getPaintingArray().size();
         childModifiedToMany.addToPaintingArray(objects.get(3));
 
-        queryInterceptor.runWithQueriesBlocked(() -> {
+        env.runWithQueriesBlocked(() -> {
             Painting parentModifiedSimple;
             Artist parentModifiedToMany;
 
@@ -431,7 +428,7 @@ public class NestedDataContextWriteIT {
         childDetail1.setTextReview("Detail1");
         childDetail1.setPainting(childMaster);
 
-        queryInterceptor.runWithQueriesBlocked(() -> {
+        env.runWithQueriesBlocked(() -> {
             childContext.commitChangesToParent();
 
             assertEquals(PersistenceState.COMMITTED, childMaster
@@ -477,7 +474,7 @@ public class NestedDataContextWriteIT {
         assertEquals(1, childO1.getGroupArray().size());
         assertEquals(1, childO2.getArtistArray().size());
 
-        queryInterceptor.runWithQueriesBlocked(() -> {
+        env.runWithQueriesBlocked(() -> {
             childContext.commitChangesToParent();
 
             assertEquals(PersistenceState.COMMITTED, childO1.getPersistenceState());
@@ -524,7 +521,7 @@ public class NestedDataContextWriteIT {
         assertEquals(1, childO2.getArtistArray().size());
         assertEquals(1, childO3.getArtistArray().size());
 
-        queryInterceptor.runWithQueriesBlocked(() -> {
+        env.runWithQueriesBlocked(() -> {
             childContext.commitChangesToParent();
 
             assertEquals(PersistenceState.COMMITTED, childO1.getPersistenceState());
@@ -560,7 +557,7 @@ public class NestedDataContextWriteIT {
 
         childO1.removeFromGroupArray(childO2);
 
-        queryInterceptor.runWithQueriesBlocked(() -> {
+        env.runWithQueriesBlocked(() -> {
             childContext.commitChangesToParent();
 
             assertEquals(PersistenceState.COMMITTED, childO1.getPersistenceState());
@@ -659,6 +656,6 @@ public class NestedDataContextWriteIT {
         
         child.commitChangesToParent();
         parent.commitChanges();
-        assertTrue(!painting.getObjectId().isTemporary());
+        assertFalse(painting.getObjectId().isTemporary());
     }
 }

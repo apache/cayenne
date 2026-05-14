@@ -29,7 +29,6 @@ import org.apache.cayenne.tx.BaseTransaction;
 import org.apache.cayenne.tx.ExternalTransaction;
 import org.apache.cayenne.tx.Transaction;
 import org.apache.cayenne.unit.UnitDbAdapter;
-import org.apache.cayenne.unit.di.DataChannelInterceptor;
 import org.apache.cayenne.unit.di.runtime.CayenneProjects;
 import org.apache.cayenne.unit.di.runtime.CayenneTestsEnv;
 import org.junit.jupiter.api.BeforeEach;
@@ -53,10 +52,7 @@ public class DataContextPerformQueryAPIIT {
 
     private DataContext context;
     private DataContext context2;
-
     private UnitDbAdapter accessStackAdapter;
-    private DataChannelInterceptor queryInterceptor;
-
     private TableHelper tArtist;
     private TableHelper tPainting;
 
@@ -66,7 +62,6 @@ public class DataContextPerformQueryAPIIT {
         context = env.context();
         context2 = (DataContext) env.runtime().newContext();
         accessStackAdapter = env.unitDbAdapter();
-        queryInterceptor = env.dataChannelInterceptor();
         tArtist = env.table("ARTIST", "ARTIST_ID", "ARTIST_NAME");
 
         tPainting = env.table("PAINTING").setColumns("PAINTING_ID", "ARTIST_ID", "PAINTING_TITLE", "ESTIMATED_PRICE").setColumnTypes(
@@ -196,7 +191,7 @@ public class DataContextPerformQueryAPIIT {
         List<?> artists = context.performQuery("QueryWithLocalCache", true);
         assertEquals(2, artists.size());
 
-        queryInterceptor.runWithQueriesBlocked(() -> {
+        env.runWithQueriesBlocked(() -> {
             List<?> artists1 = context.performQuery("QueryWithLocalCache", false);
             assertEquals(2, artists1.size());
         });
@@ -209,7 +204,7 @@ public class DataContextPerformQueryAPIIT {
         List<?> artists = context.performQuery("QueryWithSharedCache", true);
         assertEquals(2, artists.size());
 
-        queryInterceptor.runWithQueriesBlocked(() -> {
+        env.runWithQueriesBlocked(() -> {
             List<?> artists1 = context2.performQuery("QueryWithSharedCache", false);
             assertEquals(2, artists1.size());
         });
