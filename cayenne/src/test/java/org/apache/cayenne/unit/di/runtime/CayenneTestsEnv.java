@@ -53,7 +53,7 @@ public class CayenneTestsEnv implements BeforeEachCallback, AfterEachCallback {
     static {
         TEST_SCOPE = new DefaultScope();
         INJECTOR = DIBootstrap.createInjector(new RuntimeCaseModule(TEST_SCOPE));
-        INJECTOR.getInstance(SchemaBuilder.class).rebuildSchema();
+        INJECTOR.getInstance(AllTestsSchemaManager.class).rebuildSchema();
     }
 
     private final String project;
@@ -119,7 +119,7 @@ public class CayenneTestsEnv implements BeforeEachCallback, AfterEachCallback {
         this.dbHelper = INJECTOR.getInstance(DBHelper.class);
         this.dbCleaner = new DBCleaner(
                 (FlavoredDBHelper) dbHelper,
-                INJECTOR.getInstance(SchemaBuilder.class),
+                INJECTOR.getInstance(AllTestsSchemaManager.class),
                 runtime.getDataDomain().getDataMaps());
 
         if (autoClean) {
@@ -197,8 +197,8 @@ public class CayenneTestsEnv implements BeforeEachCallback, AfterEachCallback {
         return INJECTOR.getInstance(SQLTemplateCustomizer.class);
     }
 
-    public SchemaBuilder schemaBuilder() {
-        return INJECTOR.getInstance(SchemaBuilder.class);
+    public AllTestsSchemaManager schemaBuilder() {
+        return INJECTOR.getInstance(AllTestsSchemaManager.class);
     }
 
     public static class WeakReferenceStrategyModule implements Module {

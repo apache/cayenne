@@ -29,10 +29,10 @@ import java.util.List;
 public class DBCleaner {
 
     private final FlavoredDBHelper dbHelper;
-    private final SchemaBuilder schemaBuilder;
+    private final AllTestsSchemaManager schemaBuilder;
     private final Collection<DataMap> dataMaps;
 
-    public DBCleaner(FlavoredDBHelper dbHelper, SchemaBuilder schemaBuilder, Collection<DataMap> dataMaps) {
+    public DBCleaner(FlavoredDBHelper dbHelper, AllTestsSchemaManager schemaBuilder, Collection<DataMap> dataMaps) {
         this.dbHelper = dbHelper;
         this.schemaBuilder = schemaBuilder;
         this.dataMaps = dataMaps;

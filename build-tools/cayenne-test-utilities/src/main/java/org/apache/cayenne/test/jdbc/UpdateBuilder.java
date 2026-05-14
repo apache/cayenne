@@ -37,7 +37,7 @@ public class UpdateBuilder extends SQLBuilder {
         }
 
         sqlBuffer.append(dbHelper.quote(column)).append(" = ?");
-        initBinding(value, valueType);
+        bind(value, valueType);
         return this;
     }
 

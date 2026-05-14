@@ -41,7 +41,7 @@ public class WhereBuilder extends SQLBuilder {
         }
 
         sqlBuffer.append(dbHelper.quote(column)).append(" = ?");
-        initBinding(value, valueType);
+        bind(value, valueType);
 
         return this;
     }
@@ -56,7 +56,7 @@ public class WhereBuilder extends SQLBuilder {
         }
 
         sqlBuffer.append(dbHelper.quote(column)).append(" = ?");
-        initBinding(value, valueType);
+        bind(value, valueType);
 
         return this;
     }

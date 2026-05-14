@@ -18,19 +18,19 @@
  ****************************************************************/
 package org.apache.cayenne.unit.di.runtime;
 
-import javax.sql.DataSource;
-
 import org.apache.cayenne.dba.QuotingStrategy;
 import org.apache.cayenne.map.DataMap;
 import org.apache.cayenne.test.jdbc.DBHelper;
+
+import javax.sql.DataSource;
 
 /**
  * A DbHelper that understands various supported DB flavors.
  */
 public class FlavoredDBHelper extends DBHelper {
 
-    private QuotingStrategy quotingStrategy;
-    private DataMap dataMap;
+    private final QuotingStrategy quotingStrategy;
+    private final DataMap dataMap;
 
     public FlavoredDBHelper(DataSource dataSource, QuotingStrategy quotingStrategy, DataMap dataMap) {
         super(dataSource);

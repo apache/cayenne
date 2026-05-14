@@ -26,21 +26,25 @@ public abstract class SQLBuilder {
 
     static final int NO_TYPE = Integer.MIN_VALUE;
 
-    protected DBHelper dbHelper;
-    protected Collection<Object> bindings;
-    protected Collection<Integer> bindingTypes;
-    protected StringBuilder sqlBuffer;
+    protected final DBHelper dbHelper;
+    protected final Collection<Object> bindings;
+    protected final Collection<Integer> bindingTypes;
+    protected final StringBuilder sqlBuffer;
 
     protected SQLBuilder(DBHelper dbHelper) {
         this(
                 dbHelper,
                 new StringBuilder(),
-                new ArrayList<Object>(),
-                new ArrayList<Integer>());
+                new ArrayList<>(),
+                new ArrayList<>());
     }
 
-    protected SQLBuilder(DBHelper dbHelper, StringBuilder sqlBuffer,
-            Collection<Object> bindings, Collection<Integer> bindingTypes) {
+    protected SQLBuilder(
+            DBHelper dbHelper,
+            StringBuilder sqlBuffer,
+            Collection<Object> bindings,
+            Collection<Integer> bindingTypes) {
+
         this.dbHelper = dbHelper;
         this.bindings = bindings;
         this.bindingTypes = bindingTypes;
@@ -54,7 +58,7 @@ public abstract class SQLBuilder {
                 bindingTypes);
     }
 
-    protected void initBinding(Object value, int type) {
+    protected void bind(Object value, int type) {
         bindings.add(value);
         bindingTypes.add(type);
     }

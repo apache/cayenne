@@ -25,7 +25,7 @@ import org.apache.cayenne.map.DbEntity;
 import org.apache.cayenne.testdo.testmap.Artist;
 import org.apache.cayenne.unit.di.runtime.CayenneProjects;
 import org.apache.cayenne.unit.di.runtime.CayenneTestsEnv;
-import org.apache.cayenne.unit.di.runtime.SchemaBuilder;
+import org.apache.cayenne.unit.di.runtime.AllTestsSchemaManager;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -42,7 +42,7 @@ public class JdbcPkGeneratorIT {
 
     private DbAdapter adapter;
     private DataNode node;
-    private SchemaBuilder schemaBuilder;
+    private AllTestsSchemaManager schemaBuilder;
 
     @BeforeEach
     public void setUp() throws Exception {

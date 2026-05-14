@@ -35,7 +35,7 @@ import java.util.List;
  */
 public class DBHelper {
 
-	protected DataSource dataSource;
+	protected final DataSource dataSource;
 
 	public DBHelper(DataSource dataSource) {
 		this.dataSource = dataSource;
@@ -115,7 +115,7 @@ public class DBHelper {
 
 	/**
 	 * Inserts a single row. Columns types can be null and will be determined
-	 * from ParameterMetaData in this case. The later scenario will not work if
+	 * from ParameterMetaData in this case. The latter scenario will not work if
 	 * values contains nulls and the DB is Oracle.
 	 */
 	public void insert(String table, String[] columns, Object[] values, int[] columnTypes) throws SQLException {
@@ -136,9 +136,7 @@ public class DBHelper {
 		}
 
 		sql.append(") VALUES (?");
-		for (int i = 1; i < values.length; i++) {
-			sql.append(", ?");
-		}
+        sql.append(", ?".repeat(values.length - 1));
 		sql.append(")");
 
 		try (Connection c = getConnection()) {
@@ -224,14 +222,14 @@ public class DBHelper {
 	public Object getObject(String table, String column) throws SQLException {
 		final String sql = "select " + quote(column) + " from " + quote(table);
 
-		return new RowTemplate<Object>(this) {
+		return new RowTemplate<>(this) {
 
-			@Override
-			Object readRow(ResultSet rs, String sql) throws SQLException {
-				return rs.getObject(1);
-			}
+            @Override
+            Object readRow(ResultSet rs, String sql) throws SQLException {
+                return rs.getObject(1);
+            }
 
-		}.execute(sql);
+        }.execute(sql);
 	}
 
 	public byte getByte(String table, String column) throws SQLException {

@@ -202,7 +202,7 @@ public class RuntimeCaseModule implements Module {
         binder.bind(ValueObjectTypeRegistry.class).to(DefaultValueObjectTypeRegistry.class);
         binder.bind(ValueComparisonStrategyFactory.class).to(DefaultValueComparisonStrategyFactory.class);
 
-        binder.bind(SchemaBuilder.class).to(SchemaBuilder.class);
+        binder.bind(AllTestsSchemaManager.class).to(AllTestsSchemaManager.class);
         binder.bind(JdbcEventLogger.class).to(Slf4jJdbcEventLogger.class);
         binder.bind(RuntimeProperties.class).to(DefaultRuntimeProperties.class);
         binder.bind(ObjectMapRetainStrategy.class).to(DefaultObjectMapRetainStrategy.class);
