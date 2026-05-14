@@ -22,28 +22,49 @@ mvn clean verify -pl cayenne -am
 
 ## Testing
 
+Tests split into two suites driven by different plugins, and **selecting a single test uses a different property for each**:
+
+- `*Test.java` — unit tests, run by Surefire on `mvn test`. Selector: `-Dtest=`
+- `*IT.java` — integration tests, run by Failsafe on `mvn verify` (not `mvn test`). Selector: `-Dit.test=`
+
+Passing `-Dtest=SomeIT` to `mvn test` will fail with "No tests matching pattern" because Surefire's default include patterns exclude `*IT.java`. Always pair `-Dit.test=` with `mvn verify`.
+
 The `cayenneTestConnection` property selects the database backend for tests. Default is HSQL.
 
 ```bash
-# Run all tests (HSQL)
+# Run all tests, unit + integration (HSQL)
 mvn verify
 
-# Run against specific databases
+# Run against a specific database
 mvn verify -DcayenneTestConnection=h2
 mvn verify -DcayenneTestConnection=derby
 mvn verify -DcayenneTestConnection=mysql-tc        # via TestContainers
-mvn verify -DcayenneTestConnection=postgres-tc      # via TestContainers
-mvn verify -DcayenneTestConnection=sqlserver-tc     # via TestContainers
+mvn verify -DcayenneTestConnection=postgres-tc     # via TestContainers
+mvn verify -DcayenneTestConnection=sqlserver-tc    # via TestContainers
 
-# Run a single test class (in the relevant module directory)
-mvn test -Dtest=PoolingDataSourceTest
+# Skip tests
+mvn verify -DskipITs        # skip integration tests, still run unit tests
+mvn verify -DskipTests      # skip both
 
-# Run a single test method
-mvn test -Dtest=PoolingDataSourceTest#testConnection
+# --- Run a single UNIT test (*Test.java) — Surefire ---
+mvn test -Dtest=PoolingDataSourceTest -Dsurefire.failIfNoSpecifiedTests=false -pl cayenne -am
+mvn test -Dtest=PoolingDataSourceTest#testConnection -Dsurefire.failIfNoSpecifiedTests=false -pl cayenne -am
+mvn test -Dtest=PoolingDataSourceTest -DcayenneTestConnection=h2 -Dsurefire.failIfNoSpecifiedTests=false -pl cayenne -am
 
-# Run a single test against a specific database
-mvn test -Dtest=SomeTest -DcayenneTestConnection=h2
+# --- Run a single INTEGRATION test (*IT.java) — Failsafe ---
+# Runs the IT plus all unit tests in the module (simple form):
+mvn verify -Dit.test=Cay2412IT -Dfailsafe.failIfNoSpecifiedTests=false -pl cayenne -am
+mvn verify -Dit.test=Cay2412IT#disjointByIdPrefetch -Dfailsafe.failIfNoSpecifiedTests=false -pl cayenne -am
+
+# Runs only the IT, skipping unit tests in the same module (faster for iteration):
+mvn verify -Dit.test=Cay2412IT \
+    -Dtest='__nothing__' \
+    -Dsurefire.failIfNoSpecifiedTests=false \
+    -Dfailsafe.failIfNoSpecifiedTests=false \
+    -pl cayenne -am
 ```
+
+Why the `failIfNoSpecifiedTests=false` flags are needed when using `-am`: Surefire and Failsafe are bound in the parent `<pluginManagement>` and inherit into every reactor module, including upstream JAR modules that have no matching test class. Without these flags the build fails on the first such module. If you instead `cd` into the target module and the dependencies are already installed, you can omit both `-pl ... -am` and the flags.
 
 ## Module Structure
 
