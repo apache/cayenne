@@ -19,7 +19,6 @@
 
 package org.apache.cayenne.query;
 
-import org.apache.cayenne.ObjectContext;
 import org.apache.cayenne.exp.Expression;
 import org.apache.cayenne.exp.parser.ASTBitwiseAnd;
 import org.apache.cayenne.exp.parser.ASTBitwiseNot;
@@ -31,9 +30,8 @@ import org.apache.cayenne.exp.parser.ASTObjPath;
 import org.apache.cayenne.exp.parser.ASTScalar;
 import org.apache.cayenne.test.jdbc.TableHelper;
 import org.apache.cayenne.testdo.return_types.ReturnTypesMap1;
-import org.apache.cayenne.unit.UnitDbAdapter;
 import org.apache.cayenne.unit.di.runtime.CayenneProjects;
-import org.apache.cayenne.unit.di.runtime.CayenneTestsEnv;
+import org.apache.cayenne.unit.CayenneTestsEnv;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.RegisterExtension;
 

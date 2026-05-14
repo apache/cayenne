@@ -24,7 +24,7 @@ import org.apache.cayenne.query.ObjectIdQuery;
 import org.apache.cayenne.testdo.relationships_to_one_fk.ToOneFK1;
 import org.apache.cayenne.testdo.relationships_to_one_fk.ToOneFK2;
 import org.apache.cayenne.unit.di.runtime.CayenneProjects;
-import org.apache.cayenne.unit.di.runtime.CayenneTestsEnv;
+import org.apache.cayenne.unit.CayenneTestsEnv;
 import org.junit.jupiter.api.extension.RegisterExtension;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.BeforeEach;

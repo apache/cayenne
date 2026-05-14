@@ -17,34 +17,29 @@
  *  under the License.
  ****************************************************************/
 
-package org.apache.cayenne.unit;
+package org.apache.cayenne.unit.dba;
 
-import org.apache.cayenne.configuration.DataSourceDescriptor;
+import org.apache.cayenne.dba.DbAdapter;
 
-/**
- * Extension of the {@link DataSourceDescriptor} for tests that adds adapterClassName field to it.
- */
-public class UnitDataSourceDescriptor extends DataSourceDescriptor {
 
-    protected String adapterClassName;
+public class H2UnitDbAdapter extends UnitDbAdapter {
 
-    public String getAdapterClassName() {
-        return adapterClassName;
+    public H2UnitDbAdapter(DbAdapter adapter) {
+        super(adapter);
     }
 
-    public void setAdapterClassName(String adapterClassName) {
-        this.adapterClassName = adapterClassName;
+    @Override
+    public boolean supportsLobs() {
+        return true;
+    }
+    
+    @Override
+    public boolean supportsStoredProcedures() {
+        return false;
     }
 
-    public UnitDataSourceDescriptor copy() {
-        UnitDataSourceDescriptor copy = new UnitDataSourceDescriptor();
-        copy.setDataSourceUrl(getDataSourceUrl());
-        copy.setJdbcDriver(getJdbcDriver());
-        copy.setUserName(getUserName());
-        copy.setPassword(getPassword());
-        copy.setAdapterClassName(getAdapterClassName());
-        copy.setMinConnections(getMinConnections());
-        copy.setMaxConnections(getMaxConnections());
-        return copy;
+    @Override
+    public boolean supportsGeneratedKeysAdd() {
+        return true;
     }
 }

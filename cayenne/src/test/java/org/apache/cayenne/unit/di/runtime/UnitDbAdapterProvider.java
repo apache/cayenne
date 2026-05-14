@@ -28,7 +28,7 @@ import org.apache.cayenne.dba.DbAdapter;
 import org.apache.cayenne.di.Inject;
 import org.apache.cayenne.di.Injector;
 import org.apache.cayenne.di.Provider;
-import org.apache.cayenne.unit.UnitDbAdapter;
+import org.apache.cayenne.unit.dba.UnitDbAdapter;
 import org.apache.cayenne.util.Util;
 
 public class UnitDbAdapterProvider implements Provider<UnitDbAdapter> {

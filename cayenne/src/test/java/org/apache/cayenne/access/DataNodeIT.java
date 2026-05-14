@@ -20,9 +20,8 @@
 package org.apache.cayenne.access;
 
 import org.apache.cayenne.dba.JdbcAdapter;
-import org.apache.cayenne.di.AdhocObjectFactory;
 import org.apache.cayenne.unit.di.runtime.CayenneProjects;
-import org.apache.cayenne.unit.di.runtime.CayenneTestsEnv;
+import org.apache.cayenne.unit.CayenneTestsEnv;
 import org.junit.jupiter.api.extension.RegisterExtension;
 import org.junit.jupiter.api.Test;
 import static org.junit.jupiter.api.Assertions.assertEquals;

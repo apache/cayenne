@@ -19,13 +19,11 @@
 
 package org.apache.cayenne.value.json;
 
-import org.apache.cayenne.access.DataContext;
 import org.apache.cayenne.query.SelectById;
 import org.apache.cayenne.testdo.json.JsonOther;
 import org.apache.cayenne.testdo.json.JsonVarchar;
-import org.apache.cayenne.unit.UnitDbAdapter;
 import org.apache.cayenne.unit.di.runtime.CayenneProjects;
-import org.apache.cayenne.unit.di.runtime.CayenneTestsEnv;
+import org.apache.cayenne.unit.CayenneTestsEnv;
 import org.apache.cayenne.value.Json;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.RegisterExtension;

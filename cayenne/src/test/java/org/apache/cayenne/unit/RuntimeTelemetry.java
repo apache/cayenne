@@ -16,12 +16,13 @@
  *  specific language governing permissions and limitations
  *  under the License.
  ****************************************************************/
-package org.apache.cayenne.unit.di.runtime;
+package org.apache.cayenne.unit;
 
 import org.apache.cayenne.access.UnitTestDomain;
 import org.apache.cayenne.runtime.CayenneRuntime;
+import org.apache.cayenne.unit.di.runtime.RuntimeCaseDataNode;
 
-class DataChannelInterceptor {
+class RuntimeTelemetry {
 
     public static void runWithQueriesBlocked(CayenneRuntime runtime, Runnable task) {
 

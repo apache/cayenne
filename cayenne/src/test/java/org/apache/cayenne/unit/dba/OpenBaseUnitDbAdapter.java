@@ -16,44 +16,43 @@
  *  specific language governing permissions and limitations
  *  under the License.
  ****************************************************************/
-package org.apache.cayenne.unit;
+
+package org.apache.cayenne.unit.dba;
+
+import java.sql.Connection;
+import java.util.Collection;
 
 import org.apache.cayenne.dba.DbAdapter;
-import org.apache.cayenne.map.DbEntity;
+import org.apache.cayenne.map.DataMap;
 
-public class FirebirdUnitDbAdapter extends UnitDbAdapter {
+/**
+ */
+public class OpenBaseUnitDbAdapter extends UnitDbAdapter {
 
-    public FirebirdUnitDbAdapter(DbAdapter adapter) {
+    public OpenBaseUnitDbAdapter(DbAdapter adapter) {
         super(adapter);
     }
 
     @Override
-    public boolean supportsBoolean() {
-        return true;
+    public void willDropTables(Connection conn, DataMap map, Collection tablesToDrop)
+            throws Exception {
+        // avoid dropping constraints...
     }
 
     @Override
-    public boolean supportsLobs() {
-        return true;
-    }
-
-    @Override
-    public boolean supportsFKConstraints(DbEntity entity) {
-        return !entity.getName().contains("CLOB");
-    }
-
-    @Override
-    public boolean supportsBinaryPK() {
+    public boolean supportsHaving() {
         return false;
     }
 
     @Override
-    public boolean supportsPKGeneratorConcurrency() {
+    public boolean supportsReverseComparison() {
+        // TODO: andrus, 7/1/2007 I am trying to follow up with openbase on this...
         return false;
     }
 
     @Override
-    public boolean supportsSelectBooleanExpression() {
+    public boolean supportNullRowForAggregateFunctions() {
+        // TODO: andrus, 7/1/2007 I am trying to follow up with openbase on this...
         return false;
     }
 }

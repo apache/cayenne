@@ -25,7 +25,6 @@ import org.apache.cayenne.dba.hsqldb.HSQLDBAdapter;
 import org.apache.cayenne.dba.sqlite.SQLiteAdapter;
 import org.apache.cayenne.di.Inject;
 import org.apache.cayenne.di.Provider;
-import org.apache.cayenne.unit.UnitDataSourceDescriptor;
 import org.apache.cayenne.unit.testcontainers.TestContainerProvider;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;

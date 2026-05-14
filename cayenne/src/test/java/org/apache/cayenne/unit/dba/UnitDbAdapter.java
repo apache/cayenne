@@ -17,7 +17,7 @@
  *  under the License.
  ****************************************************************/
 
-package org.apache.cayenne.unit;
+package org.apache.cayenne.unit.dba;
 
 import org.apache.cayenne.CayenneRuntimeException;
 import org.apache.cayenne.configuration.Constants;

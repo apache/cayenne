@@ -19,7 +19,6 @@
 
 package org.apache.cayenne.reflect;
 
-import org.apache.cayenne.ObjectContext;
 import org.apache.cayenne.annotation.PostPersist;
 import org.apache.cayenne.annotation.PostRemove;
 import org.apache.cayenne.annotation.PostUpdate;
@@ -28,7 +27,7 @@ import org.apache.cayenne.annotation.PreRemove;
 import org.apache.cayenne.annotation.PreUpdate;
 import org.apache.cayenne.testdo.lifecycle_callbacks_order.Lifecycle;
 import org.apache.cayenne.unit.di.runtime.CayenneProjects;
-import org.apache.cayenne.unit.di.runtime.CayenneTestsEnv;
+import org.apache.cayenne.unit.CayenneTestsEnv;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.RegisterExtension;
 

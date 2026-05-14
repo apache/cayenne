@@ -32,7 +32,7 @@ import org.apache.cayenne.testdo.relationships_delete_rules.DeleteRuleTest1;
 import org.apache.cayenne.testdo.relationships_delete_rules.DeleteRuleTest2;
 import org.apache.cayenne.testdo.relationships_delete_rules.DeleteRuleTest3;
 import org.apache.cayenne.unit.di.runtime.CayenneProjects;
-import org.apache.cayenne.unit.di.runtime.CayenneTestsEnv;
+import org.apache.cayenne.unit.CayenneTestsEnv;
 import org.junit.jupiter.api.extension.RegisterExtension;
 import org.junit.jupiter.api.Test;
 import java.util.ArrayList;

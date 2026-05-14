@@ -19,8 +19,6 @@
 
 package org.apache.cayenne.unit.di.runtime;
 
-import org.apache.cayenne.unit.UnitDataSourceDescriptor;
-
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Iterator;

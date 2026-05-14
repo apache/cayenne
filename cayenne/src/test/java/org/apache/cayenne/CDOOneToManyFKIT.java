@@ -19,12 +19,11 @@
 
 package org.apache.cayenne;
 
-import org.apache.cayenne.access.DataContext;
 import org.apache.cayenne.testdo.relationships_to_many_fk.ToManyFkDep;
 import org.apache.cayenne.testdo.relationships_to_many_fk.ToManyFkRoot;
 import org.apache.cayenne.testdo.relationships_to_many_fk.ToManyRoot2;
 import org.apache.cayenne.unit.di.runtime.CayenneProjects;
-import org.apache.cayenne.unit.di.runtime.CayenneTestsEnv;
+import org.apache.cayenne.unit.CayenneTestsEnv;
 import org.junit.jupiter.api.extension.RegisterExtension;
 import org.junit.jupiter.api.Test;
 import static org.junit.jupiter.api.Assertions.assertEquals;

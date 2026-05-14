@@ -16,43 +16,37 @@
  *  specific language governing permissions and limitations
  *  under the License.
  ****************************************************************/
-
-package org.apache.cayenne.unit;
-
-import java.sql.Connection;
-import java.util.Collection;
+package org.apache.cayenne.unit.dba;
 
 import org.apache.cayenne.dba.DbAdapter;
-import org.apache.cayenne.map.DataMap;
 
-/**
- */
-public class OpenBaseUnitDbAdapter extends UnitDbAdapter {
+public class SQLiteUnitDbAdapter extends UnitDbAdapter {
 
-    public OpenBaseUnitDbAdapter(DbAdapter adapter) {
+    public SQLiteUnitDbAdapter(DbAdapter adapter) {
         super(adapter);
     }
-
+    
     @Override
-    public void willDropTables(Connection conn, DataMap map, Collection tablesToDrop)
-            throws Exception {
-        // avoid dropping constraints...
+    public boolean supportsFKConstraints() {
+        return false;
     }
-
+    
     @Override
-    public boolean supportsHaving() {
+    public boolean supportsColumnTypeReengineering() {
+        return false;
+    }
+    
+    @Override
+    public boolean supportsCaseSensitiveLike() {
+        return false;
+    }
+    
+    @Override
+    public boolean supportsAllAnySome() {
         return false;
     }
 
-    @Override
-    public boolean supportsReverseComparison() {
-        // TODO: andrus, 7/1/2007 I am trying to follow up with openbase on this...
-        return false;
-    }
-
-    @Override
-    public boolean supportNullRowForAggregateFunctions() {
-        // TODO: andrus, 7/1/2007 I am trying to follow up with openbase on this...
+    public boolean supportsEscapeInLike() {
         return false;
     }
 }

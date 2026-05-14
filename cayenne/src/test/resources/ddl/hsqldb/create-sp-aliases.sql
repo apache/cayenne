@@ -18,5 +18,5 @@
  ****************************************************************/
 DROP PROCEDURE IF EXISTS cayenne_tst_upd_proc;
 DROP PROCEDURE IF EXISTS cayenne_tst_select_proc;
-CREATE PROCEDURE cayenne_tst_upd_proc( IN paintingPrice INT ) LANGUAGE JAVA EXTERNAL NAME 'CLASSPATH:org.apache.cayenne.unit.HSQLProcedures.cayenne_tst_upd_proc';
-CREATE PROCEDURE cayenne_tst_select_proc( IN name VARCHAR(50), IN paintingPrice INT ) LANGUAGE JAVA EXTERNAL NAME 'CLASSPATH:org.apache.cayenne.unit.HSQLProcedures.cayenne_tst_select_proc';
+CREATE PROCEDURE cayenne_tst_upd_proc( IN paintingPrice INT ) LANGUAGE JAVA EXTERNAL NAME 'CLASSPATH:org.apache.cayenne.unit.dba.HSQLProcedures.cayenne_tst_upd_proc';
+CREATE PROCEDURE cayenne_tst_select_proc( IN name VARCHAR(50), IN paintingPrice INT ) LANGUAGE JAVA EXTERNAL NAME 'CLASSPATH:org.apache.cayenne.unit.dba.HSQLProcedures.cayenne_tst_select_proc';

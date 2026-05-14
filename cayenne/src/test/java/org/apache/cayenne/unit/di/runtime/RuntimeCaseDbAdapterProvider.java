@@ -26,7 +26,6 @@ import org.apache.cayenne.dba.PkGenerator;
 import org.apache.cayenne.di.AdhocObjectFactory;
 import org.apache.cayenne.di.Inject;
 import org.apache.cayenne.di.Provider;
-import org.apache.cayenne.unit.UnitDataSourceDescriptor;
 
 public class RuntimeCaseDbAdapterProvider implements Provider<JdbcAdapter> {
     private UnitDataSourceDescriptor dataSourceInfo;

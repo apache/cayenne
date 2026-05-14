@@ -38,7 +38,7 @@ import org.apache.cayenne.map.DbEntity;
 import org.apache.cayenne.map.Procedure;
 import org.apache.cayenne.resource.URLResource;
 import org.apache.cayenne.testdo.extended_type.StringET1ExtendedType;
-import org.apache.cayenne.unit.UnitDbAdapter;
+import org.apache.cayenne.unit.dba.UnitDbAdapter;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 

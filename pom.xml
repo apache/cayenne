@@ -914,7 +914,7 @@
                 <configuration>
                     <argLine>
                         -javaagent:${settings.localRepository}/org/mockito/mockito-core/${mockito.version}/mockito-core-${mockito.version}.jar
-                        -Dhsqldb.method_class_names=org.apache.cayenne.unit.HSQLProcedures.*
+                        -Dhsqldb.method_class_names=org.apache.cayenne.unit.dba.HSQLProcedures.*
                     </argLine>
                     <systemPropertyVariables>
                         <org.slf4j.simpleLogger.defaultLogLevel>${cayenneLogLevel}

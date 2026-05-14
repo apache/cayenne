@@ -16,7 +16,7 @@
  *  specific language governing permissions and limitations
  *  under the License.
  ****************************************************************/
-package org.apache.cayenne.unit.di.runtime;
+package org.apache.cayenne.unit;
 
 import org.apache.cayenne.access.DataContext;
 import org.apache.cayenne.access.DataDomain;
@@ -38,7 +38,13 @@ import org.apache.cayenne.map.EntityResolver;
 import org.apache.cayenne.runtime.CayenneRuntime;
 import org.apache.cayenne.test.jdbc.DbHelper;
 import org.apache.cayenne.test.jdbc.TableHelper;
-import org.apache.cayenne.unit.UnitDbAdapter;
+import org.apache.cayenne.unit.dba.UnitDbAdapter;
+import org.apache.cayenne.unit.di.runtime.AllTestsSchemaManager;
+import org.apache.cayenne.unit.di.runtime.DbCleaner;
+import org.apache.cayenne.unit.di.runtime.FlavoredDbHelper;
+import org.apache.cayenne.unit.di.runtime.RuntimeCaseDataNodeFactory;
+import org.apache.cayenne.unit.di.runtime.RuntimeCaseDataSourceFactory;
+import org.apache.cayenne.unit.di.runtime.RuntimeCaseModule;
 import org.apache.cayenne.unit.util.SQLTemplateCustomizer;
 import org.junit.jupiter.api.extension.AfterEachCallback;
 import org.junit.jupiter.api.extension.BeforeEachCallback;
@@ -215,11 +221,11 @@ public class CayenneTestsEnv implements BeforeEachCallback, AfterEachCallback {
     }
 
     public void runWithQueriesBlocked(Runnable task) {
-        DataChannelInterceptor.runWithQueriesBlocked(runtime, task);
+        RuntimeTelemetry.runWithQueriesBlocked(runtime, task);
     }
 
     public int runWithQueryCounter(Runnable task) {
-        return DataChannelInterceptor.runWithQueryCounter(runtime, task);
+        return RuntimeTelemetry.runWithQueryCounter(runtime, task);
     }
 
     public AdhocObjectFactory adhocObjectFactory() {

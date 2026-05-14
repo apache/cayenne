@@ -20,13 +20,12 @@
 package org.apache.cayenne.access.types;
 
 import org.apache.cayenne.DataRow;
-import org.apache.cayenne.access.DataContext;
 import org.apache.cayenne.query.MappedSelect;
 import org.apache.cayenne.query.ObjectSelect;
 import org.apache.cayenne.testdo.legacy_datetime.CalendarEntity;
 import org.apache.cayenne.testdo.legacy_datetime.DateTestEntity;
 import org.apache.cayenne.unit.di.runtime.CayenneProjects;
-import org.apache.cayenne.unit.di.runtime.CayenneTestsEnv;
+import org.apache.cayenne.unit.CayenneTestsEnv;
 import org.junit.jupiter.api.extension.RegisterExtension;
 import org.junit.jupiter.api.Test;
 import java.sql.Time;

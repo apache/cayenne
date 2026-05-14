@@ -17,31 +17,17 @@
  *  under the License.
  ****************************************************************/
 
-
-package org.apache.cayenne.unit;
-
-import java.sql.Connection;
-import java.util.Collection;
+package org.apache.cayenne.unit.dba;
 
 import org.apache.cayenne.dba.DbAdapter;
 import org.apache.cayenne.map.DataMap;
 
-/**
- */
-public class DB2UnitDbAdapter extends UnitDbAdapter {
+import java.sql.Connection;
 
-    public DB2UnitDbAdapter(DbAdapter adapter) {
+public class HSQLDBUnitDbAdapter extends UnitDbAdapter {
+
+    public HSQLDBUnitDbAdapter(DbAdapter adapter) {
         super(adapter);
-    }
-    
-    @Override
-    public void willDropTables(Connection conn, DataMap map, Collection tablesToDrop) throws Exception {
-        // avoid dropping constraints...  
-    }
-
-    @Override
-    public boolean supportsBinaryPK() {
-        return false;
     }
 
     @Override
@@ -49,14 +35,41 @@ public class DB2UnitDbAdapter extends UnitDbAdapter {
         return true;
     }
 
+    /**
+     * Note that out of all SP tests HSQLDB (as of 8.0.2) supports only updates that do
+     * not return a ResultSet (see HSQL CallableStatement JavaDocs). Once HSQL implements
+     * the rest of callable statement we can enable our unit test.
+     */
     @Override
     public boolean supportsStoredProcedures() {
         return false;
     }
 
     @Override
-    public boolean supportsGeneratedKeysDrop() {
+    public boolean supportsHaving() {
+        return false;
+    }
+
+    @Override
+    public void createdTables(Connection con, DataMap map) throws Exception {
+        if (map.getProcedureMap().containsKey("cayenne_tst_select_proc")) {
+            executeDDL(con, "hsqldb", "create-sp-aliases.sql");
+        }
+    }
+
+    /**
+     * In HyperSQL, REAL, FLOAT, DOUBLE are equivalent and all mapped to double in Java
+     * @see <a href="http://hsqldb.org/doc/guide/sqlgeneral-chapt.html#sgc_numeric_types">HSQLDB data types documentation</a>
+     */
+    @Override
+    public boolean realAsDouble() {
         return true;
+    }
+
+    @Override
+    public boolean supportsPKGeneratorConcurrency() {
+        // HSQL is not locking AUTO_PK_TABLE, so running PkGenerator in parallel may result in conflicting ranges
+        return false;
     }
 
     @Override
@@ -65,17 +78,7 @@ public class DB2UnitDbAdapter extends UnitDbAdapter {
     }
 
     @Override
-    public boolean supportsExpressionInHaving() {
-        return false;
-    }
-
-    @Override
-    public boolean supportsSelectBooleanExpression() {
-        return false;
-    }
-
-    @Override
-    public boolean supportsPreciseTime() {
-        return false;
+    public boolean supportsGeneratedKeysDrop() {
+        return true;
     }
 }

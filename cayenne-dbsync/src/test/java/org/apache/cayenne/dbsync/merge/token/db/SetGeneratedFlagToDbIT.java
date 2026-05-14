@@ -27,7 +27,7 @@ import org.apache.cayenne.dbsync.merge.MergeCase;
 import org.apache.cayenne.dbsync.merge.token.MergerToken;
 import org.apache.cayenne.map.DbAttribute;
 import org.apache.cayenne.map.DbEntity;
-import org.apache.cayenne.unit.UnitDbAdapter;
+import org.apache.cayenne.unit.dba.UnitDbAdapter;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;

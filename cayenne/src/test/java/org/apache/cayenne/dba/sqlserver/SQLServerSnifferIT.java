@@ -20,12 +20,9 @@
 package org.apache.cayenne.dba.sqlserver;
 
 import org.apache.cayenne.dba.DbAdapter;
-import org.apache.cayenne.di.AdhocObjectFactory;
-import org.apache.cayenne.unit.SQLServerUnitDbAdapter;
-import org.apache.cayenne.unit.UnitDbAdapter;
+import org.apache.cayenne.unit.dba.SQLServerUnitDbAdapter;
 import org.apache.cayenne.unit.di.runtime.CayenneProjects;
-import org.apache.cayenne.unit.di.runtime.CayenneTestsEnv;
-import org.apache.cayenne.unit.di.runtime.RuntimeCaseDataSourceFactory;
+import org.apache.cayenne.unit.CayenneTestsEnv;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.RegisterExtension;
 

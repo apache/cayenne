@@ -16,37 +16,47 @@
  *  specific language governing permissions and limitations
  *  under the License.
  ****************************************************************/
-package org.apache.cayenne.unit;
+
+package org.apache.cayenne.unit.dba;
 
 import org.apache.cayenne.dba.DbAdapter;
 
-public class SQLiteUnitDbAdapter extends UnitDbAdapter {
+/**
+ * Ingress doesn't support sorting by an aggregate expression (ORDER BY COUNT(some_field))
+ */
+public class IngresUnitDbAdapter extends UnitDbAdapter {
 
-    public SQLiteUnitDbAdapter(DbAdapter adapter) {
+    public IngresUnitDbAdapter(DbAdapter adapter) {
         super(adapter);
     }
+//    
+//    @Override
+//    public boolean supportsFKConstraints() {
+//        return false;
+//    }
     
     @Override
-    public boolean supportsFKConstraints() {
+    public boolean supportsBoolean() {
         return false;
     }
     
     @Override
-    public boolean supportsColumnTypeReengineering() {
-        return false;
+    public boolean supportsLobs() {
+        return true;
     }
-    
+
     @Override
-    public boolean supportsCaseSensitiveLike() {
-        return false;
-    }
-    
-    @Override
-    public boolean supportsAllAnySome() {
+    public boolean supportsExpressionInHaving() {
         return false;
     }
 
-    public boolean supportsEscapeInLike() {
+    @Override
+    public boolean supportsSelectBooleanExpression() {
         return false;
+    }
+
+    @Override
+    public boolean isLowerCaseNames() {
+        return true;
     }
 }

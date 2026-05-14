@@ -19,14 +19,13 @@
 
 package org.apache.cayenne.dba;
 
-import org.apache.cayenne.access.DataNode;
 import org.apache.cayenne.access.jdbc.SQLTemplateAction;
 import org.apache.cayenne.log.NoopJdbcEventLogger;
 import org.apache.cayenne.query.ObjectSelect;
 import org.apache.cayenne.query.SQLTemplate;
 import org.apache.cayenne.testdo.testmap.Artist;
 import org.apache.cayenne.unit.di.runtime.CayenneProjects;
-import org.apache.cayenne.unit.di.runtime.CayenneTestsEnv;
+import org.apache.cayenne.unit.CayenneTestsEnv;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.RegisterExtension;
 

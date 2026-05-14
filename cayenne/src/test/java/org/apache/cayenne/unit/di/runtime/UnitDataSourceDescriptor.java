@@ -16,30 +16,35 @@
  *  specific language governing permissions and limitations
  *  under the License.
  ****************************************************************/
+
 package org.apache.cayenne.unit.di.runtime;
 
-import java.sql.Types;
+import org.apache.cayenne.configuration.DataSourceDescriptor;
 
-import org.apache.cayenne.test.jdbc.DbHelper;
-import org.apache.cayenne.unit.CayenneTestsEnv;
-import org.junit.jupiter.api.BeforeEach;
-import org.junit.jupiter.api.extension.RegisterExtension;
+/**
+ * Extension of the {@link DataSourceDescriptor} for tests that adds adapterClassName field to it.
+ */
+public class UnitDataSourceDescriptor extends DataSourceDescriptor {
 
-public class PeopleProjectCase {
+    protected String adapterClassName;
 
-	@RegisterExtension
-	protected static final CayenneTestsEnv env = CayenneTestsEnv
-			.forProject(CayenneProjects.PEOPLE_PROJECT)
-			.withoutAutoClean();
+    public String getAdapterClassName() {
+        return adapterClassName;
+    }
 
-	protected DbHelper dbHelper;
+    public void setAdapterClassName(String adapterClassName) {
+        this.adapterClassName = adapterClassName;
+    }
 
-	@BeforeEach
-	public void cleanUpDB() throws Exception {
-		// must null out the circular FK before DBCleaner.clean() runs, otherwise
-		// PostgreSQL's strict FK enforcement aborts the cleanup
-		dbHelper = env.dbHelper();
-		dbHelper.update("PERSON").set("DEPARTMENT_ID", null, Types.INTEGER).execute();
-		env.dbCleaner().clean();
-	}
+    public UnitDataSourceDescriptor copy() {
+        UnitDataSourceDescriptor copy = new UnitDataSourceDescriptor();
+        copy.setDataSourceUrl(getDataSourceUrl());
+        copy.setJdbcDriver(getJdbcDriver());
+        copy.setUserName(getUserName());
+        copy.setPassword(getPassword());
+        copy.setAdapterClassName(getAdapterClassName());
+        copy.setMinConnections(getMinConnections());
+        copy.setMaxConnections(getMaxConnections());
+        return copy;
+    }
 }

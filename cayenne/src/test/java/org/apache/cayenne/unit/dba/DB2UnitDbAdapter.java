@@ -17,29 +17,65 @@
  *  under the License.
  ****************************************************************/
 
-package org.apache.cayenne.unit;
+
+package org.apache.cayenne.unit.dba;
+
+import java.sql.Connection;
+import java.util.Collection;
 
 import org.apache.cayenne.dba.DbAdapter;
+import org.apache.cayenne.map.DataMap;
 
+/**
+ */
+public class DB2UnitDbAdapter extends UnitDbAdapter {
 
-public class H2UnitDbAdapter extends UnitDbAdapter {
-
-    public H2UnitDbAdapter(DbAdapter adapter) {
+    public DB2UnitDbAdapter(DbAdapter adapter) {
         super(adapter);
+    }
+    
+    @Override
+    public void willDropTables(Connection conn, DataMap map, Collection tablesToDrop) throws Exception {
+        // avoid dropping constraints...  
+    }
+
+    @Override
+    public boolean supportsBinaryPK() {
+        return false;
     }
 
     @Override
     public boolean supportsLobs() {
         return true;
     }
-    
+
     @Override
     public boolean supportsStoredProcedures() {
         return false;
     }
 
     @Override
+    public boolean supportsGeneratedKeysDrop() {
+        return true;
+    }
+
+    @Override
     public boolean supportsGeneratedKeysAdd() {
         return true;
+    }
+
+    @Override
+    public boolean supportsExpressionInHaving() {
+        return false;
+    }
+
+    @Override
+    public boolean supportsSelectBooleanExpression() {
+        return false;
+    }
+
+    @Override
+    public boolean supportsPreciseTime() {
+        return false;
     }
 }

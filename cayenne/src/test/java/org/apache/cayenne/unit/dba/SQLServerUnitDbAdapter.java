@@ -17,12 +17,11 @@
  *  under the License.
  ****************************************************************/
 
-package org.apache.cayenne.unit;
+package org.apache.cayenne.unit.dba;
 
 import java.sql.Connection;
 import java.util.Collection;
 
-import org.apache.cayenne.configuration.Constants;
 import org.apache.cayenne.dba.DbAdapter;
 import org.apache.cayenne.map.DataMap;
 
