@@ -22,7 +22,7 @@ package org.apache.cayenne.value.json;
 import org.apache.cayenne.query.SelectById;
 import org.apache.cayenne.testdo.json.JsonOther;
 import org.apache.cayenne.testdo.json.JsonVarchar;
-import org.apache.cayenne.unit.di.runtime.CayenneProjects;
+import org.apache.cayenne.unit.runtime.CayenneProjects;
 import org.apache.cayenne.unit.CayenneTestsEnv;
 import org.apache.cayenne.value.Json;
 import org.junit.jupiter.api.Test;

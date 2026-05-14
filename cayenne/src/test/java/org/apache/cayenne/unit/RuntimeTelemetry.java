@@ -18,9 +18,10 @@
  ****************************************************************/
 package org.apache.cayenne.unit;
 
+import org.apache.cayenne.access.DataDomain;
 import org.apache.cayenne.access.UnitTestDomain;
 import org.apache.cayenne.runtime.CayenneRuntime;
-import org.apache.cayenne.unit.di.runtime.RuntimeCaseDataNode;
+import org.apache.cayenne.unit.runtime.RuntimeCaseDataNode;
 
 class RuntimeTelemetry {
 
@@ -36,7 +37,7 @@ class RuntimeTelemetry {
     }
 
     public static int runWithQueryCounter(CayenneRuntime runtime, Runnable task) {
-        UnitTestDomain channel = (UnitTestDomain) runtime.getChannel();
+        DataDomain channel = (DataDomain) runtime.getChannel();
         RuntimeCaseDataNode node = (RuntimeCaseDataNode) channel.getDataNodes().iterator().next();
 
         int start = node.getQueriesCount();

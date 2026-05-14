@@ -16,7 +16,7 @@
  *  specific language governing permissions and limitations
  *  under the License.
  ****************************************************************/
-package org.apache.cayenne.unit.di.runtime;
+package org.apache.cayenne.unit.runtime;
 
 import org.apache.cayenne.ConfigurationException;
 import org.apache.cayenne.dba.derby.DerbyAdapter;

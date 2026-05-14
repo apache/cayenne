@@ -29,7 +29,7 @@ import org.apache.cayenne.exp.property.PropertyFactory;
 import org.apache.cayenne.test.jdbc.TableHelper;
 import org.apache.cayenne.testdo.primitive.PrimitivesTestEntity;
 import org.apache.cayenne.unit.dba.UnitDbAdapter;
-import org.apache.cayenne.unit.di.runtime.CayenneProjects;
+import org.apache.cayenne.unit.runtime.CayenneProjects;
 import org.apache.cayenne.unit.CayenneTestsEnv;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;

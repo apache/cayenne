@@ -28,7 +28,7 @@ import org.apache.cayenne.runtime.CayenneRuntime;
 import org.apache.cayenne.testdo.qualified.Qualified1;
 import org.apache.cayenne.unit.dba.DerbyUnitDbAdapter;
 import org.apache.cayenne.unit.dba.UnitDbAdapter;
-import org.apache.cayenne.unit.di.runtime.CayenneProjects;
+import org.apache.cayenne.unit.runtime.CayenneProjects;
 import org.apache.cayenne.unit.CayenneTestsEnv;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;

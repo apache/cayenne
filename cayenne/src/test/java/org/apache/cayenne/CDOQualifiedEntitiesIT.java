@@ -28,7 +28,7 @@ import org.apache.cayenne.testdo.qualified.Qualified2;
 import org.apache.cayenne.testdo.qualified.Qualified3;
 import org.apache.cayenne.testdo.qualified.Qualified4;
 import org.apache.cayenne.unit.dba.UnitDbAdapter;
-import org.apache.cayenne.unit.di.runtime.CayenneProjects;
+import org.apache.cayenne.unit.runtime.CayenneProjects;
 import org.apache.cayenne.unit.CayenneTestsEnv;
 import org.junit.jupiter.api.extension.RegisterExtension;
 import org.junit.jupiter.api.BeforeEach;

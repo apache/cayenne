@@ -33,7 +33,7 @@ import org.apache.cayenne.exp.path.CayennePath;
 import org.apache.cayenne.resource.URLResource;
 import org.apache.cayenne.runtime.CayenneRuntime;
 import org.apache.cayenne.testdo.inheritance_vertical.Iv2Sub1;
-import org.apache.cayenne.unit.di.runtime.CayenneProjects;
+import org.apache.cayenne.unit.runtime.CayenneProjects;
 import org.apache.cayenne.unit.CayenneTestsEnv;
 import org.apache.cayenne.util.Util;
 import org.apache.cayenne.util.XMLEncoder;

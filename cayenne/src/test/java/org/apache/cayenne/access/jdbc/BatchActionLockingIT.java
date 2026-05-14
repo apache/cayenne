@@ -31,7 +31,7 @@ import org.apache.cayenne.map.EntityResolver;
 import org.apache.cayenne.query.DeleteBatchQuery;
 import org.apache.cayenne.unit.jdbc.TestConnection;
 import org.apache.cayenne.testdo.locking.SimpleLockingTestEntity;
-import org.apache.cayenne.unit.di.runtime.CayenneProjects;
+import org.apache.cayenne.unit.runtime.CayenneProjects;
 import org.apache.cayenne.unit.CayenneTestsEnv;
 import org.junit.jupiter.api.extension.RegisterExtension;
 import org.junit.jupiter.api.Test;

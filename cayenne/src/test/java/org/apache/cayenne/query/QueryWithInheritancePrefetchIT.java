@@ -25,7 +25,7 @@ import org.apache.cayenne.testdo.inheritance_with_enum.Dependent;
 import org.apache.cayenne.testdo.inheritance_with_enum.Root;
 import org.apache.cayenne.testdo.inheritance_with_enum.Sub;
 import org.apache.cayenne.testdo.inheritance_with_enum.Type;
-import org.apache.cayenne.unit.di.runtime.CayenneProjects;
+import org.apache.cayenne.unit.runtime.CayenneProjects;
 import org.apache.cayenne.unit.CayenneTestsEnv;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;

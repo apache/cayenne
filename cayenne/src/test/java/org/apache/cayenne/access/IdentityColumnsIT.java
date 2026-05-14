@@ -34,7 +34,7 @@ import org.apache.cayenne.testdo.generated.GeneratedColumnTestEntity;
 import org.apache.cayenne.testdo.generated.GeneratedF1;
 import org.apache.cayenne.testdo.generated.GeneratedF2;
 import org.apache.cayenne.testdo.generated.GeneratedReflexive;
-import org.apache.cayenne.unit.di.runtime.CayenneProjects;
+import org.apache.cayenne.unit.runtime.CayenneProjects;
 import org.apache.cayenne.unit.CayenneTestsEnv;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;

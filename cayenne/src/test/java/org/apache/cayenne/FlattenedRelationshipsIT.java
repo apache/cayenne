@@ -33,7 +33,7 @@ import org.apache.cayenne.testdo.relationships_flattened.FlattenedTest2;
 import org.apache.cayenne.testdo.relationships_flattened.FlattenedTest3;
 import org.apache.cayenne.testdo.relationships_flattened.FlattenedTest4;
 import org.apache.cayenne.testdo.relationships_flattened.FlattenedTest5;
-import org.apache.cayenne.unit.di.runtime.CayenneProjects;
+import org.apache.cayenne.unit.runtime.CayenneProjects;
 import org.apache.cayenne.unit.CayenneTestsEnv;
 import org.apache.cayenne.validation.ValidationResult;
 import org.junit.jupiter.api.BeforeEach;

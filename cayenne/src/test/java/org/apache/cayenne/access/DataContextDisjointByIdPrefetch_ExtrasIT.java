@@ -26,7 +26,7 @@ import org.apache.cayenne.testdo.things.Bag;
 import org.apache.cayenne.testdo.things.Ball;
 import org.apache.cayenne.testdo.things.Box;
 import org.apache.cayenne.testdo.things.Thing;
-import org.apache.cayenne.unit.di.runtime.CayenneProjects;
+import org.apache.cayenne.unit.runtime.CayenneProjects;
 import org.apache.cayenne.unit.CayenneTestsEnv;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;

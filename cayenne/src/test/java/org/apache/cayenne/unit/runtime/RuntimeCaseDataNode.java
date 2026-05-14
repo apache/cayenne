@@ -16,23 +16,30 @@
  *  specific language governing permissions and limitations
  *  under the License.
  ****************************************************************/
-package org.apache.cayenne.unit.di.runtime;
+package org.apache.cayenne.unit.runtime;
 
-import org.apache.cayenne.configuration.DataNodeDescriptor;
-import org.apache.cayenne.configuration.runtime.DataSourceFactory;
-import org.apache.cayenne.di.Inject;
+import org.apache.cayenne.access.DataNode;
+import org.apache.cayenne.access.OperationObserver;
+import org.apache.cayenne.query.Query;
 
-import javax.sql.DataSource;
+import java.util.Collection;
+import java.util.concurrent.atomic.AtomicInteger;
 
-public class RuntimeCaseSharedDataSourceFactory implements DataSourceFactory {
+public class RuntimeCaseDataNode extends DataNode {
 
-    private RuntimeCaseDataSourceFactory factory;
+    AtomicInteger queryCounter = new AtomicInteger();
 
-    public RuntimeCaseSharedDataSourceFactory(@Inject RuntimeCaseDataSourceFactory factory) {
-        this.factory = factory;
+    public RuntimeCaseDataNode(String name) {
+        super(name);
     }
 
-    public DataSource getDataSource(DataNodeDescriptor nodeDescriptor) throws Exception {
-        return factory.getSharedDataSource();
+    @Override
+    public void performQueries(Collection<? extends Query> queries, OperationObserver callback) {
+        super.performQueries(queries, callback);
+        queryCounter.addAndGet(queries.size());
+    }
+
+    public int getQueriesCount() {
+        return queryCounter.get();
     }
 }

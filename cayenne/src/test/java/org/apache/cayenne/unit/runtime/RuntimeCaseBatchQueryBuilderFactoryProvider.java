@@ -16,30 +16,17 @@
  *  specific language governing permissions and limitations
  *  under the License.
  ****************************************************************/
-package org.apache.cayenne.unit.di.runtime;
+package org.apache.cayenne.unit.runtime;
 
-import java.sql.Types;
+import org.apache.cayenne.ConfigurationException;
+import org.apache.cayenne.access.translator.batch.BatchTranslatorFactory;
+import org.apache.cayenne.access.translator.batch.DefaultBatchTranslatorFactory;
+import org.apache.cayenne.di.Provider;
 
-import org.apache.cayenne.test.jdbc.DbHelper;
-import org.apache.cayenne.unit.CayenneTestsEnv;
-import org.junit.jupiter.api.BeforeEach;
-import org.junit.jupiter.api.extension.RegisterExtension;
+public class RuntimeCaseBatchQueryBuilderFactoryProvider implements
+        Provider<BatchTranslatorFactory> {
 
-public class PeopleProjectCase {
-
-	@RegisterExtension
-	protected static final CayenneTestsEnv env = CayenneTestsEnv
-			.forProject(CayenneProjects.PEOPLE_PROJECT)
-			.withoutAutoClean();
-
-	protected DbHelper dbHelper;
-
-	@BeforeEach
-	public void cleanUpDB() throws Exception {
-		// must null out the circular FK before DBCleaner.clean() runs, otherwise
-		// PostgreSQL's strict FK enforcement aborts the cleanup
-		dbHelper = env.dbHelper();
-		dbHelper.update("PERSON").set("DEPARTMENT_ID", null, Types.INTEGER).execute();
-		env.dbCleaner().clean();
-	}
+    public BatchTranslatorFactory get() throws ConfigurationException {
+        return new DefaultBatchTranslatorFactory();
+    }
 }

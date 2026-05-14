@@ -25,7 +25,7 @@ import org.apache.cayenne.query.ObjectSelect;
 import org.apache.cayenne.testdo.inheritance_people.Department;
 import org.apache.cayenne.testdo.inheritance_people.Employee;
 import org.apache.cayenne.testdo.inheritance_people.Manager;
-import org.apache.cayenne.unit.di.runtime.PeopleProjectCase;
+import org.apache.cayenne.unit.runtime.PeopleProjectCase;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 

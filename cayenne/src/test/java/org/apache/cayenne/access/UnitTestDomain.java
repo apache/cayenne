@@ -19,40 +19,20 @@
 
 package org.apache.cayenne.access;
 
-import java.util.Collection;
-import java.util.Map;
-
-import org.junit.jupiter.api.Assertions;
-import org.opentest4j.AssertionFailedError;
-
 import org.apache.cayenne.ObjectContext;
 import org.apache.cayenne.QueryResponse;
 import org.apache.cayenne.query.Query;
+import org.junit.jupiter.api.Assertions;
+import org.opentest4j.AssertionFailedError;
+
+import java.util.Collection;
 
 public class UnitTestDomain extends DataDomain {
 
-    protected boolean blockingQueries;
-    protected int queryCount;
+    private boolean blockingQueries;
 
     public UnitTestDomain(String name) {
         super(name);
-    }
-
-    @SuppressWarnings("deprecation")
-    public UnitTestDomain(String name, Map properties) {
-        super(name, properties);
-    }
-
-    public void restartQueryCounter() {
-        queryCount = 0;
-    }
-
-    public int getQueryCount() {
-        return queryCount;
-    }
-
-    public boolean isBlockingQueries() {
-        return blockingQueries;
     }
 
     public void setBlockingQueries(boolean blockingQueries) {
@@ -77,7 +57,5 @@ public class UnitTestDomain extends DataDomain {
         if (blockingQueries) {
             Assertions.fail("Query is unexpected: " + queries);
         }
-
-        queryCount++;
     }
 }

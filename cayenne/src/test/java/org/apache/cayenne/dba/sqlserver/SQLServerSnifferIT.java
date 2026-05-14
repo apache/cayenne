@@ -21,7 +21,7 @@ package org.apache.cayenne.dba.sqlserver;
 
 import org.apache.cayenne.dba.DbAdapter;
 import org.apache.cayenne.unit.dba.SQLServerUnitDbAdapter;
-import org.apache.cayenne.unit.di.runtime.CayenneProjects;
+import org.apache.cayenne.unit.runtime.CayenneProjects;
 import org.apache.cayenne.unit.CayenneTestsEnv;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.RegisterExtension;

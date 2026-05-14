@@ -21,7 +21,7 @@ package org.apache.cayenne.datasource;
 import java.sql.Driver;
 
 import org.apache.cayenne.CayenneRuntimeException;
-import org.apache.cayenne.unit.di.runtime.CayenneProjects;
+import org.apache.cayenne.unit.runtime.CayenneProjects;
 import org.apache.cayenne.unit.CayenneTestsEnv;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.RegisterExtension;

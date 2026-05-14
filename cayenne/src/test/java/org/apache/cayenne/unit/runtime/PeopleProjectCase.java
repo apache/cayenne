@@ -16,31 +16,30 @@
  *  specific language governing permissions and limitations
  *  under the License.
  ****************************************************************/
-package org.apache.cayenne.unit.di.runtime;
+package org.apache.cayenne.unit.runtime;
 
-import org.apache.cayenne.dba.QuotingStrategy;
-import org.apache.cayenne.map.DataMap;
+import java.sql.Types;
+
 import org.apache.cayenne.test.jdbc.DbHelper;
+import org.apache.cayenne.unit.CayenneTestsEnv;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.extension.RegisterExtension;
 
-import javax.sql.DataSource;
+public class PeopleProjectCase {
 
-/**
- * A DbHelper that understands various supported DB flavors.
- */
-public class FlavoredDbHelper extends DbHelper {
+	@RegisterExtension
+	protected static final CayenneTestsEnv env = CayenneTestsEnv
+			.forProject(CayenneProjects.PEOPLE_PROJECT)
+			.withoutAutoClean();
 
-    private final QuotingStrategy quotingStrategy;
-    private final DataMap dataMap;
+	protected DbHelper dbHelper;
 
-    public FlavoredDbHelper(DataSource dataSource, QuotingStrategy quotingStrategy, DataMap dataMap) {
-        super(dataSource);
-        this.dataMap = dataMap;
-        this.quotingStrategy = quotingStrategy;
-    }
-
-    @Override
-    protected String quote(String sqlIdentifier) {
-        return quotingStrategy.quotedIdentifier(dataMap, sqlIdentifier);
-    }
-
+	@BeforeEach
+	public void cleanUpDB() throws Exception {
+		// must null out the circular FK before DBCleaner.clean() runs, otherwise
+		// PostgreSQL's strict FK enforcement aborts the cleanup
+		dbHelper = env.dbHelper();
+		dbHelper.update("PERSON").set("DEPARTMENT_ID", null, Types.INTEGER).execute();
+		env.dbCleaner().clean();
+	}
 }

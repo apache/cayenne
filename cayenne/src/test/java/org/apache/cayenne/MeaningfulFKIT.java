@@ -22,7 +22,7 @@ package org.apache.cayenne;
 import org.apache.cayenne.query.SelectById;
 import org.apache.cayenne.testdo.relationships.MeaningfulFK;
 import org.apache.cayenne.testdo.relationships.RelationshipHelper;
-import org.apache.cayenne.unit.di.runtime.CayenneProjects;
+import org.apache.cayenne.unit.runtime.CayenneProjects;
 import org.apache.cayenne.unit.CayenneTestsEnv;
 import org.apache.cayenne.validation.ValidationResult;
 import org.junit.jupiter.api.Test;
