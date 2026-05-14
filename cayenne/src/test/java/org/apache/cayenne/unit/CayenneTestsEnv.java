@@ -23,6 +23,7 @@ import org.apache.cayenne.access.DataDomain;
 import org.apache.cayenne.access.DataNode;
 import org.apache.cayenne.configuration.Constants;
 import org.apache.cayenne.configuration.DataMapLoader;
+import org.apache.cayenne.configuration.DataNodeDescriptor;
 import org.apache.cayenne.configuration.DataSourceDescriptor;
 import org.apache.cayenne.configuration.runtime.CoreModule;
 import org.apache.cayenne.configuration.runtime.DataNodeFactory;
@@ -35,6 +36,7 @@ import org.apache.cayenne.di.Module;
 import org.apache.cayenne.log.JdbcEventLogger;
 import org.apache.cayenne.map.DataMap;
 import org.apache.cayenne.map.EntityResolver;
+import org.apache.cayenne.map.Procedure;
 import org.apache.cayenne.runtime.CayenneRuntime;
 import org.apache.cayenne.test.jdbc.DbHelper;
 import org.apache.cayenne.test.jdbc.TableHelper;
@@ -80,7 +82,7 @@ public class CayenneTestsEnv implements BeforeEachCallback, AfterEachCallback {
     private final String project;
     private final Class<?>[] extraModules;
     private final boolean autoClean;
-    private final boolean weakReferenceStrategy;
+    private final boolean weakReferences;
 
     // single-test scoped vars
     private DataContext context;
@@ -88,11 +90,11 @@ public class CayenneTestsEnv implements BeforeEachCallback, AfterEachCallback {
     private DbCleaner dbCleaner;
     private CayenneRuntime runtime;
 
-    private CayenneTestsEnv(String project, Class<?>[] extraModules, boolean autoClean, boolean weakReferenceStrategy) {
+    private CayenneTestsEnv(String project, Class<?>[] extraModules, boolean autoClean, boolean weakReferences) {
         this.project = project;
         this.extraModules = extraModules;
         this.autoClean = autoClean;
-        this.weakReferenceStrategy = weakReferenceStrategy;
+        this.weakReferences = weakReferences;
     }
 
     public static CayenneTestsEnv forProject(String project) {
@@ -100,27 +102,14 @@ public class CayenneTestsEnv implements BeforeEachCallback, AfterEachCallback {
     }
 
     public CayenneTestsEnv withExtraModules(Class<?>... modules) {
-        return new CayenneTestsEnv(project, modules, autoClean, weakReferenceStrategy);
+        return new CayenneTestsEnv(project, modules, autoClean, weakReferences);
     }
 
-    /**
-     * Disables the automatic {@code DBCleaner.clean()} call in {@link #beforeEach}.
-     * Use this when the test (or a base class) needs to perform schema-specific
-     * setup (e.g. break circular FKs) before cleaning. The caller is then
-     * responsible for invoking {@code env.dbCleaner().clean()} from its own
-     * {@code @BeforeEach}.
-     */
     public CayenneTestsEnv withoutAutoClean() {
-        return new CayenneTestsEnv(project, extraModules, false, weakReferenceStrategy);
+        return new CayenneTestsEnv(project, extraModules, false, weakReferences);
     }
 
-    /**
-     * Configures the runtime with the weak-reference object-tracking strategy
-     * instead of the default soft-reference strategy used by other tests. Use
-     * for GC-sensitive tests that need objects to be collectable as soon as
-     * they become unreferenced.
-     */
-    public CayenneTestsEnv withWeakReferenceStrategy() {
+    public CayenneTestsEnv withWeakReferences() {
         return new CayenneTestsEnv(project, extraModules, autoClean, true);
     }
 
@@ -162,25 +151,56 @@ public class CayenneTestsEnv implements BeforeEachCallback, AfterEachCallback {
     }
 
     private CayenneRuntime buildRuntime() {
-        UnitDbAdapter unitDbAdapter = INJECTOR.getInstance(UnitDbAdapter.class);
-
-
         List<Module> modules = new ArrayList<>();
-
-        modules.add(new TestRuntimeOverridesModule(unitDbAdapter));
+        modules.add(new TestRuntimeOverridesModule());
 
         for (Class<?> moduleType : extraModules) {
             modules.add(instantiateModule(moduleType));
         }
 
-        if (weakReferenceStrategy) {
+        if (weakReferences) {
             modules.add(new WeakReferenceStrategyModule());
         }
 
-        return CayenneRuntime.builder()
+        CayenneRuntime runtime = CayenneRuntime.builder()
                 .addConfig(project)
                 .addModules(modules)
                 .build();
+
+        synthesizeDataNodes(runtime);
+
+        return runtime;
+    }
+
+    private void synthesizeDataNodes(CayenneRuntime runtime) {
+
+        UnitDbAdapter unitDbAdapter = unitDbAdapter();
+        DataDomain domain = runtime.getDataDomain();
+        DataNodeFactory dataNodeFactory = runtime.getInjector().getInstance(DataNodeFactory.class);
+
+        DataNode lastNode = null;
+        for (DataMap dataMap : domain.getDataMaps()) {
+            DataNodeDescriptor descriptor = new DataNodeDescriptor(dataMap.getName());
+
+            DataNode node;
+            try {
+                node = dataNodeFactory.createDataNode(descriptor);
+            } catch (Exception e) {
+                throw new RuntimeException("Failed to create test DataNode for map " + dataMap.getName(), e);
+            }
+            node.addDataMap(dataMap);
+
+            for (Procedure proc : dataMap.getProcedures()) {
+                unitDbAdapter.tweakProcedure(proc);
+            }
+
+            domain.addNode(node);
+            lastNode = node;
+        }
+
+        if (domain.getDataMaps().size() == 1) {
+            domain.setDefaultNode(lastNode);
+        }
     }
 
     private static Module instantiateModule(Class<?> moduleType) {
@@ -255,7 +275,7 @@ public class CayenneTestsEnv implements BeforeEachCallback, AfterEachCallback {
         }
     }
 
-    private record TestRuntimeOverridesModule(UnitDbAdapter unitDbAdapter) implements Module {
+    private static class TestRuntimeOverridesModule implements Module {
 
         @Override
         public void configure(Binder binder) {
@@ -264,9 +284,8 @@ public class CayenneTestsEnv implements BeforeEachCallback, AfterEachCallback {
             // a fresh DbAdapter per call — RuntimeCaseDbAdapterProvider is unscoped in the test injector
             binder.bind(DbAdapter.class).toProviderInstance(() -> INJECTOR.getInstance(DbAdapter.class));
 
-            binder.bind(DataDomain.class).toProviderInstance(new RuntimeCaseDataDomainProvider(unitDbAdapter));
             binder.bind(DataNodeFactory.class).to(CayenneTestDataNodeFactory.class);
-            binder.bind(UnitDbAdapter.class).toInstance(unitDbAdapter);
+            binder.bind(UnitDbAdapter.class).toInstance(INJECTOR.getInstance(UnitDbAdapter.class));
             binder.bind(RuntimeCaseDataSourceFactory.class).toInstance(DATA_SOURCE_FACTORY);
 
             CoreModule.extend(binder)
