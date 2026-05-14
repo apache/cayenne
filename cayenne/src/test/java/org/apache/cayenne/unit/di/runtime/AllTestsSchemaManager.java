@@ -30,7 +30,6 @@ import org.apache.cayenne.ashwood.AshwoodEntitySorter;
 import org.apache.cayenne.cache.MapQueryCache;
 import org.apache.cayenne.configuration.DataMapLoader;
 import org.apache.cayenne.dba.DbAdapter;
-import org.apache.cayenne.di.Inject;
 import org.apache.cayenne.event.DefaultEventManager;
 import org.apache.cayenne.log.JdbcEventLogger;
 import org.apache.cayenne.map.DataMap;
@@ -93,11 +92,11 @@ public class AllTestsSchemaManager {
     private final DataDomain domain;
 
     public AllTestsSchemaManager(
-            @Inject RuntimeCaseDataSourceFactory dataSourceFactory,
-            @Inject UnitDbAdapter unitDbAdapter,
-            @Inject DbAdapter dbAdapter,
-            @Inject JdbcEventLogger jdbcEventLogger,
-            @Inject DataMapLoader loader) {
+            RuntimeCaseDataSourceFactory dataSourceFactory,
+            UnitDbAdapter unitDbAdapter,
+            DbAdapter dbAdapter,
+            JdbcEventLogger jdbcEventLogger,
+            DataMapLoader loader) {
 
         this.dataSourceFactory = dataSourceFactory;
         this.unitDbAdapter = unitDbAdapter;

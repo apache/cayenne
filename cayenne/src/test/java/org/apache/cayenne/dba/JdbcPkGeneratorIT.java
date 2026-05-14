@@ -25,7 +25,6 @@ import org.apache.cayenne.map.DbEntity;
 import org.apache.cayenne.testdo.testmap.Artist;
 import org.apache.cayenne.unit.di.runtime.CayenneProjects;
 import org.apache.cayenne.unit.di.runtime.CayenneTestsEnv;
-import org.apache.cayenne.unit.di.runtime.AllTestsSchemaManager;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -42,15 +41,13 @@ public class JdbcPkGeneratorIT {
     static final CayenneTestsEnv env = CayenneTestsEnv.forProject(CayenneProjects.TESTMAP_PROJECT);
 
     private DataNode node;
-    private AllTestsSchemaManager schemaManager;
 
     @BeforeEach
     public void setUp() throws Exception {
         node = env.dataNode();
-        schemaManager = env.schemaManager();
-        schemaManager.dropPKSupport();
+        CayenneTestsEnv.SCHEMA_MANAGER.dropPKSupport();
     }
-    
+
     @AfterEach
     public void tearDown() throws Exception {
 
@@ -60,8 +57,8 @@ public class JdbcPkGeneratorIT {
 
             pkGenerator.setPkStartValue(JdbcPkGenerator.DEFAULT_PK_START_VALUE);
 
-            schemaManager.dropPKSupport();
-            schemaManager.createPKSupport();
+            CayenneTestsEnv.SCHEMA_MANAGER.dropPKSupport();
+            CayenneTestsEnv.SCHEMA_MANAGER.createPKSupport();
         }
     }
 

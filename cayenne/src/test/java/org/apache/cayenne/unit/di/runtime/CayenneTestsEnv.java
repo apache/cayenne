@@ -22,14 +22,17 @@ import org.apache.cayenne.access.DataContext;
 import org.apache.cayenne.access.DataDomain;
 import org.apache.cayenne.access.DataNode;
 import org.apache.cayenne.configuration.Constants;
+import org.apache.cayenne.configuration.DataMapLoader;
 import org.apache.cayenne.configuration.DataSourceDescriptor;
 import org.apache.cayenne.configuration.runtime.CoreModule;
+import org.apache.cayenne.dba.DbAdapter;
 import org.apache.cayenne.di.AdhocObjectFactory;
 import org.apache.cayenne.di.Binder;
 import org.apache.cayenne.di.DIBootstrap;
 import org.apache.cayenne.di.Injector;
 import org.apache.cayenne.di.Module;
 import org.apache.cayenne.di.spi.DefaultScope;
+import org.apache.cayenne.log.JdbcEventLogger;
 import org.apache.cayenne.map.DataMap;
 import org.apache.cayenne.map.EntityResolver;
 import org.apache.cayenne.runtime.CayenneRuntime;
@@ -51,11 +54,18 @@ public class CayenneTestsEnv implements BeforeEachCallback, AfterEachCallback {
 
     private static final DefaultScope TEST_SCOPE;
     private static final Injector INJECTOR;
+    public static final AllTestsSchemaManager SCHEMA_MANAGER;
 
     static {
         TEST_SCOPE = new DefaultScope();
         INJECTOR = DIBootstrap.createInjector(new RuntimeCaseModule(TEST_SCOPE));
-        INJECTOR.getInstance(AllTestsSchemaManager.class).rebuildSchema();
+        SCHEMA_MANAGER = new AllTestsSchemaManager(
+                INJECTOR.getInstance(RuntimeCaseDataSourceFactory.class),
+                INJECTOR.getInstance(UnitDbAdapter.class),
+                INJECTOR.getInstance(DbAdapter.class),
+                INJECTOR.getInstance(JdbcEventLogger.class),
+                INJECTOR.getInstance(DataMapLoader.class));
+        SCHEMA_MANAGER.rebuildSchema();
     }
 
     private final String project;
@@ -120,7 +130,7 @@ public class CayenneTestsEnv implements BeforeEachCallback, AfterEachCallback {
         this.context = (DataContext) runtime.newContext();
         this.dbHelper = INJECTOR.getInstance(DbHelper.class);
         this.dbCleaner = new DbCleaner(
-                INJECTOR.getInstance(AllTestsSchemaManager.class),
+                SCHEMA_MANAGER,
                 dbHelper,
                 context.getEntityResolver().getDataMaps().stream().map(DataMap::getName).collect(Collectors.toSet()));
 
@@ -189,10 +199,6 @@ public class CayenneTestsEnv implements BeforeEachCallback, AfterEachCallback {
 
     public SQLTemplateCustomizer sqlTemplateCustomizer() {
         return INJECTOR.getInstance(SQLTemplateCustomizer.class);
-    }
-
-    public AllTestsSchemaManager schemaManager() {
-        return INJECTOR.getInstance(AllTestsSchemaManager.class);
     }
 
     public static class WeakReferenceStrategyModule implements Module {
