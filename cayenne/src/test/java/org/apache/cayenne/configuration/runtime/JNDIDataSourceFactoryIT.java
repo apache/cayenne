@@ -19,13 +19,13 @@
 package org.apache.cayenne.configuration.runtime;
 
 import org.apache.cayenne.configuration.DataNodeDescriptor;
+import org.apache.cayenne.unit.CayenneTestsEnv;
 import org.apache.cayenne.unit.jdbc.TestDataSource;
 import org.apache.cayenne.unit.runtime.CayenneProjects;
-import org.apache.cayenne.unit.CayenneTestsEnv;
-import org.junit.jupiter.api.extension.RegisterExtension;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.RegisterExtension;
+
 import javax.naming.InitialContext;
-import javax.naming.NameNotFoundException;
 
 import static org.junit.jupiter.api.Assertions.assertSame;
 import static org.junit.jupiter.api.Assertions.assertThrows;
@@ -91,6 +91,6 @@ public class JNDIDataSourceFactoryIT {
         JNDISetup.doSetup();
 
         JNDIDataSourceFactory factory = new JNDIDataSourceFactory();
-        assertThrows(NameNotFoundException.class, () -> factory.getDataSource(descriptor));
+        assertThrows(RuntimeException.class, () -> factory.getDataSource(descriptor));
     }
 }

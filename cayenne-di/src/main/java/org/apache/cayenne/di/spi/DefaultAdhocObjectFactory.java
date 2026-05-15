@@ -29,7 +29,7 @@ import org.apache.cayenne.di.Provider;
  * A default implementation of {@link AdhocObjectFactory} that creates objects
  * using default no-arg constructor and injects dependencies into annotated
  * fields. Note that constructor injection is not supported by this factory.
- * 
+ *
  * @since 3.1
  */
 public class DefaultAdhocObjectFactory implements AdhocObjectFactory {
@@ -45,9 +45,8 @@ public class DefaultAdhocObjectFactory implements AdhocObjectFactory {
         this.classLoaderManager = classLoaderManager;
     }
 
-    @SuppressWarnings("unchecked")
     @Override
-    public <T> T newInstance(Class<? super T> superType, String className) {
+    public <T> T newInstance(Class<? super T> superType, String className, boolean skipInjection) {
 
         if (superType == null) {
             throw new NullPointerException("Null superType");
@@ -63,17 +62,23 @@ public class DefaultAdhocObjectFactory implements AdhocObjectFactory {
             throw new DIRuntimeException("Class %s is not assignable to %s", className, superType.getName());
         }
 
-        T instance;
-        try {
-            Provider<T> provider0 = new ConstructorInjectingProvider<>(type, (DefaultInjector) injector);
-            Provider<T> provider1 = new FieldInjectingProvider<>(provider0, (DefaultInjector) injector);
-            instance = provider1.get();
-        } catch (Exception e) {
-            throw new DIRuntimeException("Error creating instance of class %s of type %s", e, className,
-                    superType.getName());
-        }
+        return skipInjection
+                ? newInstanceNoInjection(type)
+                : newInstanceWithInjection(type);
+    }
 
-        return instance;
+    private <T> T newInstanceNoInjection(Class<T> type) {
+        try {
+            return type.getDeclaredConstructor().newInstance();
+        } catch (Exception e) {
+            throw new DIRuntimeException("Error creating instance of type %s", e, type.getName());
+        }
+    }
+
+    private <T> T newInstanceWithInjection(Class<T> type) {
+        Provider<T> provider0 = new ConstructorInjectingProvider<>(type, (DefaultInjector) injector);
+        Provider<T> provider1 = new FieldInjectingProvider<>(provider0, (DefaultInjector) injector);
+        return provider1.get();
     }
 
     @SuppressWarnings("unchecked")

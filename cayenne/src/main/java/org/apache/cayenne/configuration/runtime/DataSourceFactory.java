@@ -18,9 +18,9 @@
  ****************************************************************/
 package org.apache.cayenne.configuration.runtime;
 
-import javax.sql.DataSource;
-
 import org.apache.cayenne.configuration.DataNodeDescriptor;
+
+import javax.sql.DataSource;
 
 /**
  * @since 3.1
@@ -28,8 +28,7 @@ import org.apache.cayenne.configuration.DataNodeDescriptor;
 public interface DataSourceFactory {
 
     /**
-     * Returns DataSource object based on the configuration provided in the
-     * "nodeDescriptor".
+     * Returns DataSource object based on the configuration provided in the "nodeDescriptor".
      */
-    DataSource getDataSource(DataNodeDescriptor nodeDescriptor) throws Exception;
+    DataSource getDataSource(DataNodeDescriptor nodeDescriptor);
 }

@@ -18,10 +18,10 @@
  ****************************************************************/
 package org.apache.cayenne.configuration.runtime;
 
-import javax.sql.DataSource;
-
 import org.apache.cayenne.configuration.DataNodeDescriptor;
 import org.apache.cayenne.dba.DbAdapter;
+
+import javax.sql.DataSource;
 
 /**
  * @since 3.1
@@ -29,8 +29,7 @@ import org.apache.cayenne.dba.DbAdapter;
 public interface DbAdapterFactory {
 
     /**
-     * Returns an instance of DbAdapter if the factory detects that it knows how to handle
-     * the database.
+     * Returns an instance of DbAdapter if the factory detects that it knows how to handle the database.
      */
-    DbAdapter createAdapter(DataNodeDescriptor nodeDescriptor, DataSource dataSource) throws Exception;
+    DbAdapter createAdapter(DataNodeDescriptor nodeDescriptor, DataSource dataSource);
 }

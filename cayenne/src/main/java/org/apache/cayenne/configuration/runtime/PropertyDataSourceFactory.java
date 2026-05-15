@@ -18,10 +18,6 @@
  ****************************************************************/
 package org.apache.cayenne.configuration.runtime;
 
-import java.sql.Driver;
-
-import javax.sql.DataSource;
-
 import org.apache.cayenne.ConfigurationException;
 import org.apache.cayenne.configuration.Constants;
 import org.apache.cayenne.configuration.DataNodeDescriptor;
@@ -30,6 +26,9 @@ import org.apache.cayenne.datasource.DataSourceBuilder;
 import org.apache.cayenne.datasource.UnmanagedPoolingDataSource;
 import org.apache.cayenne.di.AdhocObjectFactory;
 import org.apache.cayenne.di.Inject;
+
+import javax.sql.DataSource;
+import java.sql.Driver;
 
 /**
  * A DataSourceFactrory that creates a DataSource based on system properties.
@@ -45,54 +44,59 @@ import org.apache.cayenne.di.Inject;
  * </ul>
  * At least url and driver properties must be specified for this factory to
  * return a valid DataSource.
- * 
+ *
  * @since 3.1
  */
 public class PropertyDataSourceFactory implements DataSourceFactory {
 
-	@Inject
-	protected RuntimeProperties properties;
+    @Inject
+    protected RuntimeProperties properties;
 
-	@Inject
-	private AdhocObjectFactory objectFactory;
+    @Inject
+    private AdhocObjectFactory objectFactory;
 
-	@Override
-	public DataSource getDataSource(DataNodeDescriptor nodeDescriptor) throws Exception {
+    @Override
+    public DataSource getDataSource(DataNodeDescriptor nodeDescriptor) {
 
-		String suffix = "." + nodeDescriptor.getDataChannelDescriptor().getName() + "." + nodeDescriptor.getName();
+        String suffix = "." + nodeDescriptor.getDataChannelDescriptor().getName() + "." + nodeDescriptor.getName();
 
-		String driverClass = getProperty(Constants.JDBC_DRIVER_PROPERTY, suffix);
-		String url = getProperty(Constants.JDBC_URL_PROPERTY, suffix);
-		String username = getProperty(Constants.JDBC_USERNAME_PROPERTY, suffix);
-		String password = getProperty(Constants.JDBC_PASSWORD_PROPERTY, suffix);
-		int minConnections = getIntProperty(Constants.JDBC_MIN_CONNECTIONS_PROPERTY, suffix, 1);
-		int maxConnections = getIntProperty(Constants.JDBC_MAX_CONNECTIONS_PROPERTY, suffix, 1);
-		long maxQueueWaitTime = properties.getLong(Constants.JDBC_MAX_QUEUE_WAIT_TIME,
-				UnmanagedPoolingDataSource.MAX_QUEUE_WAIT_DEFAULT);
-		String validationQuery = properties.get(Constants.JDBC_VALIDATION_QUERY_PROPERTY);
+        String driverClass = getProperty(Constants.JDBC_DRIVER_PROPERTY, suffix);
+        String url = getProperty(Constants.JDBC_URL_PROPERTY, suffix);
+        String username = getProperty(Constants.JDBC_USERNAME_PROPERTY, suffix);
+        String password = getProperty(Constants.JDBC_PASSWORD_PROPERTY, suffix);
+        int minConnections = getIntProperty(Constants.JDBC_MIN_CONNECTIONS_PROPERTY, suffix, 1);
+        int maxConnections = getIntProperty(Constants.JDBC_MAX_CONNECTIONS_PROPERTY, suffix, 1);
+        long maxQueueWaitTime = properties.getLong(Constants.JDBC_MAX_QUEUE_WAIT_TIME,
+                UnmanagedPoolingDataSource.MAX_QUEUE_WAIT_DEFAULT);
+        String validationQuery = properties.get(Constants.JDBC_VALIDATION_QUERY_PROPERTY);
 
-		Driver driver = objectFactory.<Driver>getJavaClass(driverClass).getDeclaredConstructor().newInstance();
-		return DataSourceBuilder.url(url).driver(driver).userName(username).password(password)
-				.pool(minConnections, maxConnections).maxQueueWaitTime(maxQueueWaitTime)
-				.validationQuery(validationQuery).build();
-	}
+        Driver driver = objectFactory.newInstance(Driver.class, driverClass, true);
+        return DataSourceBuilder
+                .url(url)
+                .driver(driver)
+                .userName(username)
+                .password(password)
+                .pool(minConnections, maxConnections)
+                .maxQueueWaitTime(maxQueueWaitTime)
+                .validationQuery(validationQuery).build();
+    }
 
-	protected int getIntProperty(String propertyName, String suffix, int defaultValue) {
-		String string = getProperty(propertyName, suffix);
+    protected int getIntProperty(String propertyName, String suffix, int defaultValue) {
+        String string = getProperty(propertyName, suffix);
 
-		if (string == null) {
-			return defaultValue;
-		}
+        if (string == null) {
+            return defaultValue;
+        }
 
-		try {
-			return Integer.parseInt(string);
-		} catch (NumberFormatException e) {
-			throw new ConfigurationException("Invalid int property '%s': '%s'", propertyName, string);
-		}
-	}
+        try {
+            return Integer.parseInt(string);
+        } catch (NumberFormatException e) {
+            throw new ConfigurationException("Invalid int property '%s': '%s'", propertyName, string);
+        }
+    }
 
-	protected String getProperty(String propertyName, String suffix) {
-		String value = properties.get(propertyName + suffix);
-		return value != null ? value : properties.get(propertyName);
-	}
+    protected String getProperty(String propertyName, String suffix) {
+        String value = properties.get(propertyName + suffix);
+        return value != null ? value : properties.get(propertyName);
+    }
 }

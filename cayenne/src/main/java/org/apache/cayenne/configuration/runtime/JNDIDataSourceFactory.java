@@ -18,29 +18,29 @@
  ****************************************************************/
 package org.apache.cayenne.configuration.runtime;
 
-import javax.naming.Context;
-import javax.naming.InitialContext;
-import javax.naming.NamingException;
-import javax.sql.DataSource;
-
 import org.apache.cayenne.CayenneRuntimeException;
 import org.apache.cayenne.configuration.DataNodeDescriptor;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import javax.naming.Context;
+import javax.naming.InitialContext;
+import javax.naming.NamingException;
+import javax.sql.DataSource;
+
 /**
  * Locates DataSource mapped via JNDI.
  * 
  * @since 3.1
- * @deprecated since 5.0, unused by Cayenne
+ * @deprecated unused by Cayenne
  */
-@Deprecated(since = "5.0")
+@Deprecated(since = "5.0", forRemoval = true)
 public class JNDIDataSourceFactory implements DataSourceFactory {
 
 	private static final Logger LOGGER = LoggerFactory.getLogger(JNDIDataSourceFactory.class);
 
 	@Override
-	public DataSource getDataSource(DataNodeDescriptor nodeDescriptor) throws Exception {
+	public DataSource getDataSource(DataNodeDescriptor nodeDescriptor) {
 
 		String location = getLocation(nodeDescriptor);
 
@@ -48,7 +48,7 @@ public class JNDIDataSourceFactory implements DataSourceFactory {
 			return lookupViaJNDI(location);
 		} catch (Exception e) {
 			LOGGER.info("*** failed JNDI lookup of DataSource at location: " + location, e);
-			throw e;
+			throw new RuntimeException(e);
 		}
 	}
 

@@ -19,14 +19,15 @@
 
 package org.apache.cayenne.configuration;
 
-import java.io.Serializable;
-import java.util.Objects;
-
 import org.apache.cayenne.util.XMLEncoder;
 import org.apache.cayenne.util.XMLSerializable;
 
+import java.io.Serializable;
+import java.util.Objects;
+
 /**
- * Helper JavaBean class that holds DataSource information for the Cayenne-managed DataSource.
+ * Helper holding  DataSource information for the Cayenne-managed DataSource.
+ *
  * @since 5.0
  */
 public class DataSourceDescriptor implements Serializable, XMLSerializable {
@@ -111,11 +112,11 @@ public class DataSourceDescriptor implements Serializable, XMLSerializable {
                 .start("driver").attribute("value", jdbcDriver).end()
                 .start("url").attribute("value", dataSourceUrl).end()
                 .start("connectionPool")
-                    .attribute("min", minConnections)
-                    .attribute("max", maxConnections).end()
+                .attribute("min", minConnections)
+                .attribute("max", maxConnections).end()
                 .start("login")
-                    .attribute("userName", userName)
-                    .attribute("password", password).end()
+                .attribute("userName", userName)
+                .attribute("password", password).end()
                 .end();
     }
 

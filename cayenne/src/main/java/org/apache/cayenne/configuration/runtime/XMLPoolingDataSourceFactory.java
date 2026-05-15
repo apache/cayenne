@@ -18,10 +18,6 @@
  ****************************************************************/
 package org.apache.cayenne.configuration.runtime;
 
-import java.sql.Driver;
-
-import javax.sql.DataSource;
-
 import org.apache.cayenne.ConfigurationException;
 import org.apache.cayenne.configuration.Constants;
 import org.apache.cayenne.configuration.DataNodeDescriptor;
@@ -34,47 +30,48 @@ import org.apache.cayenne.di.Inject;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import javax.sql.DataSource;
+import java.sql.Driver;
+
 /**
  * A {@link DataSourceFactory} that loads JDBC connection information from an
  * XML resource associated with the DataNodeDescriptor, returning a DataSource
  * with simple connection pooling.
- * 
+ *
  * @since 3.1
  */
 // TODO: this factory does not read XML anymore, should we rename it to something else?
 public class XMLPoolingDataSourceFactory implements DataSourceFactory {
 
-	private static final Logger logger = LoggerFactory.getLogger(XMLPoolingDataSourceFactory.class);
+    private static final Logger logger = LoggerFactory.getLogger(XMLPoolingDataSourceFactory.class);
 
-	@Inject
-	private RuntimeProperties properties;
+    @Inject
+    private RuntimeProperties properties;
 
-	@Inject
-	private AdhocObjectFactory objectFactory;
+    @Inject
+    private AdhocObjectFactory objectFactory;
 
-	@Override
-	public DataSource getDataSource(DataNodeDescriptor nodeDescriptor) throws Exception {
+    @Override
+    public DataSource getDataSource(DataNodeDescriptor nodeDescriptor) {
 
-		DataSourceDescriptor descriptor = nodeDescriptor.getDataSourceDescriptor();
-		if (descriptor == null) {
-			String message = "Null dataSourceDescriptor for nodeDescriptor '" + nodeDescriptor.getName() + "'";
-			logger.info(message);
-			throw new ConfigurationException(message);
-		}
+        DataSourceDescriptor descriptor = nodeDescriptor.getDataSourceDescriptor();
+        if (descriptor == null) {
+            String message = "Null dataSourceDescriptor for nodeDescriptor '" + nodeDescriptor.getName() + "'";
+            logger.info(message);
+            throw new ConfigurationException(message);
+        }
 
-		long maxQueueWaitTime = properties
-				.getLong(Constants.JDBC_MAX_QUEUE_WAIT_TIME, UnmanagedPoolingDataSource.MAX_QUEUE_WAIT_DEFAULT);
+        long maxQueueWaitTime = properties
+                .getLong(Constants.JDBC_MAX_QUEUE_WAIT_TIME, UnmanagedPoolingDataSource.MAX_QUEUE_WAIT_DEFAULT);
 
-		Driver driver = objectFactory.<Driver>getJavaClass(descriptor.getJdbcDriver())
-				.getDeclaredConstructor().newInstance();
+        Driver driver = objectFactory.newInstance(Driver.class, descriptor.getJdbcDriver(), true);
 
-		return DataSourceBuilder.url(descriptor.getDataSourceUrl())
-				.driver(driver)
-				.userName(descriptor.getUserName())
-				.password(descriptor.getPassword())
-				.pool(descriptor.getMinConnections(), descriptor.getMaxConnections())
-				.maxQueueWaitTime(maxQueueWaitTime)
-				.build();
-	}
-
+        return DataSourceBuilder.url(descriptor.getDataSourceUrl())
+                .driver(driver)
+                .userName(descriptor.getUserName())
+                .password(descriptor.getPassword())
+                .pool(descriptor.getMinConnections(), descriptor.getMaxConnections())
+                .maxQueueWaitTime(maxQueueWaitTime)
+                .build();
+    }
 }

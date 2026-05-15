@@ -64,7 +64,7 @@ public class DefaultDataNodeFactory implements DataNodeFactory {
     protected SQLTemplateProcessor sqlTemplateProcessor;
 
     @Override
-    public DataNode createDataNode(DataNodeDescriptor nodeDescriptor) throws Exception {
+    public DataNode createDataNode(DataNodeDescriptor nodeDescriptor) {
 
         DataNode dataNode = new DataNode(nodeDescriptor.getName());
 

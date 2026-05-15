@@ -18,14 +18,6 @@
  ****************************************************************/
 package org.apache.cayenne.configuration.runtime;
 
-import java.sql.Connection;
-import java.sql.DatabaseMetaData;
-import java.sql.SQLException;
-import java.util.List;
-import java.util.Objects;
-
-import javax.sql.DataSource;
-
 import org.apache.cayenne.CayenneRuntimeException;
 import org.apache.cayenne.configuration.Constants;
 import org.apache.cayenne.configuration.DataNodeDescriptor;
@@ -37,6 +29,13 @@ import org.apache.cayenne.di.AdhocObjectFactory;
 import org.apache.cayenne.di.Inject;
 import org.apache.cayenne.di.Injector;
 import org.apache.cayenne.log.JdbcEventLogger;
+
+import javax.sql.DataSource;
+import java.sql.Connection;
+import java.sql.DatabaseMetaData;
+import java.sql.SQLException;
+import java.util.List;
+import java.util.Objects;
 
 /**
  * A factory of DbAdapters that either loads user-provided adapter or guesses
@@ -68,7 +67,7 @@ public class DefaultDbAdapterFactory implements DbAdapterFactory {
 	}
 
 	@Override
-	public DbAdapter createAdapter(DataNodeDescriptor nodeDescriptor, final DataSource dataSource) {
+	public DbAdapter createAdapter(DataNodeDescriptor nodeDescriptor, DataSource dataSource) {
 
 		String adapterType = null;
 

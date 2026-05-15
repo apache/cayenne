@@ -19,10 +19,6 @@
 
 package org.apache.cayenne.dbsync.reverse.configuration;
 
-import java.sql.Driver;
-
-import javax.sql.DataSource;
-
 import org.apache.cayenne.configuration.DataNodeDescriptor;
 import org.apache.cayenne.configuration.DataSourceDescriptor;
 import org.apache.cayenne.configuration.runtime.DataSourceFactory;
@@ -30,25 +26,30 @@ import org.apache.cayenne.datasource.DriverDataSource;
 import org.apache.cayenne.di.AdhocObjectFactory;
 import org.apache.cayenne.di.Inject;
 
+import javax.sql.DataSource;
+import java.sql.Driver;
+
 /**
  * @since 4.0
  */
 public class DriverDataSourceFactory implements DataSourceFactory {
 
-	private AdhocObjectFactory objectFactory;
+    private final AdhocObjectFactory objectFactory;
 
-	public DriverDataSourceFactory(@Inject AdhocObjectFactory objectFactory) {
-		this.objectFactory = objectFactory;
-	}
+    public DriverDataSourceFactory(@Inject AdhocObjectFactory objectFactory) {
+        this.objectFactory = objectFactory;
+    }
 
-	public DataSource getDataSource(DataNodeDescriptor nodeDescriptor) throws Exception {
-		DataSourceDescriptor dataSourceDescriptor = nodeDescriptor.getDataSourceDescriptor();
-		if (dataSourceDescriptor == null) {
-			throw new IllegalArgumentException("'nodeDescriptor' contains no datasource descriptor");
-		}
+    public DataSource getDataSource(DataNodeDescriptor nodeDescriptor) {
+        DataSourceDescriptor dataSourceDescriptor = nodeDescriptor.getDataSourceDescriptor();
+        if (dataSourceDescriptor == null) {
+            throw new IllegalArgumentException("'nodeDescriptor' contains no datasource descriptor");
+        }
 
-		Driver driver = objectFactory.<Driver>getJavaClass(dataSourceDescriptor.getJdbcDriver()).getDeclaredConstructor().newInstance();
-		return new DriverDataSource(driver, dataSourceDescriptor.getDataSourceUrl(), dataSourceDescriptor.getUserName(),
-				dataSourceDescriptor.getPassword());
-	}
+        return new DriverDataSource(
+                objectFactory.newInstance(Driver.class, dataSourceDescriptor.getJdbcDriver(), true),
+                dataSourceDescriptor.getDataSourceUrl(),
+                dataSourceDescriptor.getUserName(),
+                dataSourceDescriptor.getPassword());
+    }
 }

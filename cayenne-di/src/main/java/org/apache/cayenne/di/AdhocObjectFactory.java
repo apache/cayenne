@@ -21,21 +21,30 @@ package org.apache.cayenne.di;
 /**
  * Creates objects for user-provided String class names, injecting dependencies
  * into them.
- * 
+ *
  * @since 3.1
  */
 public interface AdhocObjectFactory {
 
     /**
-     * Returns an instance of "className" that implements "superType", injecting
-     * dependencies from the registry into it.
+     * Returns an instance of "className" that implements "superType", injecting dependencies from the registry into it.
      */
-    <T> T newInstance(Class<? super T> superType, String className);
+    default <T> T newInstance(Class<? super T> superType, String className) {
+        return newInstance(superType, className, false);
+    }
+
+    /**
+     * Returns an instance of "className" that implements "superType", injecting dependencies from the registry into it
+     * if requested
+     *
+     * @since 5.0
+     */
+    <T> T newInstance(Class<? super T> superType, String className, boolean skipInjection);
 
     /**
      * Returns a Java class loaded using ClassLoader returned from
      * {@link ClassLoaderManager#getClassLoader(String)} for a given class name.
-     * 
+     *
      * @since 4.0
      */
     <T> Class<? extends T> getJavaClass(String className);

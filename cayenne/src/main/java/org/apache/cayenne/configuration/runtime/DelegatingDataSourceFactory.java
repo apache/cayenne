@@ -64,9 +64,8 @@ public class DelegatingDataSourceFactory implements DataSourceFactory {
     }
 
     @Override
-    public DataSource getDataSource(DataNodeDescriptor nodeDescriptor) throws Exception {
-        DataSource dataSource = getDataSourceFactory(nodeDescriptor).getDataSource(
-                nodeDescriptor);
+    public DataSource getDataSource(DataNodeDescriptor nodeDescriptor) {
+        DataSource dataSource = getDataSourceFactory(nodeDescriptor).getDataSource(nodeDescriptor);
         attachToScope(dataSource);
         return dataSource;
     }
