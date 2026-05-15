@@ -21,7 +21,7 @@ package org.apache.cayenne.ashwood;
 import org.apache.cayenne.ObjectContext;
 import org.apache.cayenne.map.DbEntity;
 import org.apache.cayenne.map.EntityResolver;
-import org.apache.cayenne.unit.runtime.PeopleProjectCase;
+import org.apache.cayenne.unit.PeopleProjectCase;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 

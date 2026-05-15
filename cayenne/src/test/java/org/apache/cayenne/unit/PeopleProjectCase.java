@@ -16,14 +16,14 @@
  *  specific language governing permissions and limitations
  *  under the License.
  ****************************************************************/
-package org.apache.cayenne.unit.runtime;
-
-import java.sql.Types;
+package org.apache.cayenne.unit;
 
 import org.apache.cayenne.test.jdbc.DbHelper;
-import org.apache.cayenne.unit.CayenneTestsEnv;
+import org.apache.cayenne.unit.runtime.CayenneProjects;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.extension.RegisterExtension;
+
+import java.sql.Types;
 
 public class PeopleProjectCase {
 

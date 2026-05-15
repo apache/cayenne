@@ -25,7 +25,7 @@ import org.apache.cayenne.map.ObjEntity;
 import org.apache.cayenne.testdo.inheritance_people.Department;
 import org.apache.cayenne.testdo.inheritance_people.Employee;
 import org.apache.cayenne.testdo.inheritance_people.Manager;
-import org.apache.cayenne.unit.runtime.PeopleProjectCase;
+import org.apache.cayenne.unit.PeopleProjectCase;
 import org.junit.jupiter.api.Test;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
