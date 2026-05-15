@@ -47,7 +47,7 @@ public class CayenneJCacheModuleIT {
     @RegisterExtension
     static final CayenneTestsEnv env = CayenneTestsEnv
             .forProject(CayenneProjects.TESTMAP_PROJECT)
-            .withExtraModules(EhCacheModule.class);
+            .withExtraModules(new EhCacheModule());
 
     ObjectContext context;
     CayenneRuntime runtime;

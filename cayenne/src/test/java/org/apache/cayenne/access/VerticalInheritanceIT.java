@@ -21,6 +21,8 @@ package org.apache.cayenne.access;
 import org.apache.cayenne.Cayenne;
 import org.apache.cayenne.ObjectContext;
 import org.apache.cayenne.Persistent;
+import org.apache.cayenne.access.flush.operation.DbRowOpSorter;
+import org.apache.cayenne.access.flush.operation.GraphBasedDbRowOpSorter;
 import org.apache.cayenne.query.ColumnSelect;
 import org.apache.cayenne.query.EJBQLQuery;
 import org.apache.cayenne.query.ObjectSelect;
@@ -51,7 +53,7 @@ public class VerticalInheritanceIT {
 
 	@RegisterExtension
 	static final CayenneTestsEnv env = CayenneTestsEnv.forProject(CayenneProjects.INHERITANCE_VERTICAL_PROJECT)
-	        .withExtraModules(GraphSorterModule.class);
+	        .withExtraModules(binder -> binder.bind(DbRowOpSorter.class).to(GraphBasedDbRowOpSorter.class));
 
 	protected CayenneRuntime runtime;
 

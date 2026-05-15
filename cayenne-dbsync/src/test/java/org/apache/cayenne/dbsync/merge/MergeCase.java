@@ -67,7 +67,7 @@ public abstract class MergeCase {
     @RegisterExtension
     protected static final CayenneTestsEnv env = CayenneTestsEnv
             .forProject(CayenneProjects.TESTMAP_PROJECT)
-            .withExtraModules(DbSyncModule.class)
+            .withExtraModules(new DbSyncModule())
             .withoutAutoClean();
 
     protected EntityResolver resolver;

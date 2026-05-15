@@ -54,6 +54,7 @@ import org.junit.jupiter.api.extension.BeforeEachCallback;
 import org.junit.jupiter.api.extension.ExtensionContext;
 
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -81,7 +82,7 @@ public class CayenneTestsEnv implements BeforeEachCallback, AfterEachCallback {
     }
 
     private final String project;
-    private final Class<?>[] extraModules;
+    private final Module[] extraModules;
     private final boolean autoClean;
     private final boolean weakReferences;
 
@@ -91,7 +92,7 @@ public class CayenneTestsEnv implements BeforeEachCallback, AfterEachCallback {
     private DbCleaner dbCleaner;
     private CayenneRuntime runtime;
 
-    private CayenneTestsEnv(String project, Class<?>[] extraModules, boolean autoClean, boolean weakReferences) {
+    private CayenneTestsEnv(String project, Module[] extraModules, boolean autoClean, boolean weakReferences) {
         this.project = project;
         this.extraModules = extraModules;
         this.autoClean = autoClean;
@@ -99,10 +100,10 @@ public class CayenneTestsEnv implements BeforeEachCallback, AfterEachCallback {
     }
 
     public static CayenneTestsEnv forProject(String project) {
-        return new CayenneTestsEnv(project, new Class<?>[0], true, false);
+        return new CayenneTestsEnv(project, new Module[0], true, false);
     }
 
-    public CayenneTestsEnv withExtraModules(Class<?>... modules) {
+    public CayenneTestsEnv withExtraModules(Module... modules) {
         return new CayenneTestsEnv(project, modules, autoClean, weakReferences);
     }
 
@@ -155,9 +156,7 @@ public class CayenneTestsEnv implements BeforeEachCallback, AfterEachCallback {
         List<Module> modules = new ArrayList<>();
         modules.add(new TestRuntimeOverridesModule());
 
-        for (Class<?> moduleType : extraModules) {
-            modules.add(instantiateModule(moduleType));
-        }
+        Collections.addAll(modules, extraModules);
 
         if (weakReferences) {
             modules.add(new WeakReferenceStrategyModule());
@@ -211,14 +210,6 @@ public class CayenneTestsEnv implements BeforeEachCallback, AfterEachCallback {
 
         if (domain.getDataMaps().size() == 1) {
             domain.setDefaultNode(lastNode);
-        }
-    }
-
-    private static Module instantiateModule(Class<?> moduleType) {
-        try {
-            return (Module) moduleType.getConstructor().newInstance();
-        } catch (ReflectiveOperationException e) {
-            throw new RuntimeException("Failed to instantiate extra module: " + moduleType.getName(), e);
         }
     }
 

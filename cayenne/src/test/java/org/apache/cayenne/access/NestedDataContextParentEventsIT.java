@@ -20,7 +20,7 @@
 package org.apache.cayenne.access;
 
 import org.apache.cayenne.ObjectContext;
-import org.apache.cayenne.access.util.RuntimeCaseSyncModule;
+import org.apache.cayenne.configuration.runtime.CoreModule;
 import org.apache.cayenne.test.parallel.ParallelTestContainer;
 import org.apache.cayenne.testdo.testmap.Artist;
 import org.apache.cayenne.unit.runtime.CayenneProjects;
@@ -36,7 +36,7 @@ public class NestedDataContextParentEventsIT {
 
     @RegisterExtension
     static final CayenneTestsEnv env = CayenneTestsEnv.forProject(CayenneProjects.TESTMAP_PROJECT)
-            .withExtraModules(RuntimeCaseSyncModule.class);
+            .withExtraModules(binder -> CoreModule.extend(binder).syncContexts());
 
     @Test
     public void parentUpdatedId() throws Exception {

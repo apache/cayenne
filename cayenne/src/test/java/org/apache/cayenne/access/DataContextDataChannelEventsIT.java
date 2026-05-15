@@ -22,7 +22,7 @@ package org.apache.cayenne.access;
 import org.apache.cayenne.DataChannel;
 import org.apache.cayenne.DataChannelListener;
 import org.apache.cayenne.ObjectContext;
-import org.apache.cayenne.access.util.RuntimeCaseSyncModule;
+import org.apache.cayenne.configuration.runtime.CoreModule;
 import org.apache.cayenne.graph.GraphEvent;
 import org.apache.cayenne.test.parallel.ParallelTestContainer;
 import org.apache.cayenne.testdo.testmap.Artist;
@@ -43,7 +43,7 @@ public class DataContextDataChannelEventsIT {
 
     @RegisterExtension
     static final CayenneTestsEnv env = CayenneTestsEnv.forProject(CayenneProjects.TESTMAP_PROJECT)
-            .withExtraModules(RuntimeCaseSyncModule.class);
+            .withExtraModules(binder -> CoreModule.extend(binder).syncContexts());
 
     private DataContext context;
     private DataContext peer;

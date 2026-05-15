@@ -19,6 +19,8 @@
 
 package org.apache.cayenne.access;
 
+import org.apache.cayenne.access.flush.operation.DbRowOpSorter;
+import org.apache.cayenne.access.flush.operation.GraphBasedDbRowOpSorter;
 import org.apache.cayenne.testdo.meaningful_pk.MeaningfulPKDep;
 import org.apache.cayenne.testdo.meaningful_pk.MeaningfulPKTest1;
 import org.apache.cayenne.testdo.meaningful_pk.MeaningfulPk;
@@ -32,7 +34,7 @@ public class DataContextEntityWithMeaningfulPKAndCustomDbRowOpSorterIT {
     @RegisterExtension
     static final CayenneTestsEnv env = CayenneTestsEnv
             .forProject(CayenneProjects.MEANINGFUL_PK_PROJECT)
-            .withExtraModules(GraphSorterModule.class);
+            .withExtraModules(binder -> binder.bind(DbRowOpSorter.class).to(GraphBasedDbRowOpSorter.class));
 
     @Test
     public void insertDelete() {

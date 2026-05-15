@@ -24,7 +24,7 @@ import java.util.Date;
 import org.apache.cayenne.DataRow;
 import org.apache.cayenne.PersistenceState;
 import org.apache.cayenne.Persistent;
-import org.apache.cayenne.access.util.RuntimeCaseSyncModule;
+import org.apache.cayenne.configuration.runtime.CoreModule;
 import org.apache.cayenne.test.parallel.ParallelTestContainer;
 import org.apache.cayenne.testdo.testmap.Artist;
 import org.apache.cayenne.unit.runtime.CayenneProjects;
@@ -43,7 +43,7 @@ public class DataContextDelegateSharedCacheIT {
 
     @RegisterExtension
     static final CayenneTestsEnv env = CayenneTestsEnv.forProject(CayenneProjects.TESTMAP_PROJECT)
-            .withExtraModules(RuntimeCaseSyncModule.class);
+            .withExtraModules(binder -> CoreModule.extend(binder).syncContexts());
 
     private DataContext context;
     private DataContext context1;

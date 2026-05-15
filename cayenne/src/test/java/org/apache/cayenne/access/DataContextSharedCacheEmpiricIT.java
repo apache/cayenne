@@ -26,8 +26,6 @@ import java.util.List;
 import org.apache.cayenne.DataRow;
 import org.apache.cayenne.configuration.DefaultRuntimeProperties;
 import org.apache.cayenne.configuration.runtime.CoreModule;
-import org.apache.cayenne.di.Binder;
-import org.apache.cayenne.di.Module;
 import org.apache.cayenne.event.DefaultEventManager;
 import org.apache.cayenne.query.ObjectSelect;
 import org.apache.cayenne.runtime.CayenneRuntime;
@@ -49,7 +47,7 @@ public class DataContextSharedCacheEmpiricIT {
 
     @RegisterExtension
     static final CayenneTestsEnv env = CayenneTestsEnv.forProject(CayenneProjects.TESTMAP_PROJECT)
-            .withExtraModules(DataContextSharedCacheEmpiricIT.SyncContextsModule.class);
+            .withExtraModules(binder -> CoreModule.extend(binder).syncContexts());
 
 
     private static final String NEW_NAME = "versionX";
@@ -173,10 +171,4 @@ public class DataContextSharedCacheEmpiricIT {
         helper.runTest(3000);
     }
 
-    public static class SyncContextsModule implements Module {
-        @Override
-        public void configure(Binder binder) {
-            CoreModule.extend(binder).syncContexts();
-        }
-    }
 }

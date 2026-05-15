@@ -21,8 +21,6 @@ package org.apache.cayenne;
 
 import org.apache.cayenne.access.flush.operation.DbRowOpSorter;
 import org.apache.cayenne.access.flush.operation.GraphBasedDbRowOpSorter;
-import org.apache.cayenne.di.Binder;
-import org.apache.cayenne.di.Module;
 import org.apache.cayenne.query.ObjectSelect;
 import org.apache.cayenne.testdo.testmap.ArtGroup;
 import org.apache.cayenne.testdo.testmap.Artist;
@@ -40,7 +38,7 @@ public class CDOReflexiveRelICustomSorterIT {
     @RegisterExtension
     static final CayenneTestsEnv env = CayenneTestsEnv
             .forProject(CayenneProjects.TESTMAP_PROJECT)
-            .withExtraModules(GraphSorterModule.class);
+            .withExtraModules(binder -> binder.bind(DbRowOpSorter.class).to(GraphBasedDbRowOpSorter.class));
 
     @Test
     public void addDeleteNoCommit() {
@@ -201,10 +199,4 @@ public class CDOReflexiveRelICustomSorterIT {
         context.commitChanges();
     }
 
-    public static class GraphSorterModule implements Module {
-        @Override
-        public void configure(Binder binder) {
-            binder.bind(DbRowOpSorter.class).to(GraphBasedDbRowOpSorter.class);
-        }
-    }
 }
