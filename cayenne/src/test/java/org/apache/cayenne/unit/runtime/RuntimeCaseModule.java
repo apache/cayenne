@@ -85,7 +85,6 @@ import org.apache.cayenne.unit.testcontainers.OracleContainerProvider;
 import org.apache.cayenne.unit.testcontainers.PostgresContainerProvider;
 import org.apache.cayenne.unit.testcontainers.SqlServerContainerProvider;
 import org.apache.cayenne.unit.testcontainers.TestContainerProvider;
-import org.apache.cayenne.unit.util.SQLTemplateCustomizer;
 import org.xml.sax.XMLReader;
 
 import java.util.Calendar;
@@ -175,7 +174,6 @@ public class RuntimeCaseModule implements Module {
         // server runtime... BatchQueryBuilderFactory is hardcoded and whatever is placed
         // in the CoreModule is ignored
         binder.bind(BatchTranslatorFactory.class).toProvider(RuntimeCaseBatchQueryBuilderFactoryProvider.class);
-        binder.bind(SQLTemplateCustomizer.class).toProvider(SQLTemplateCustomizerProvider.class);
         binder.bind(ClassLoaderManager.class).to(DefaultClassLoaderManager.class);
         binder.bind(AdhocObjectFactory.class).to(DefaultAdhocObjectFactory.class);
         binder.bind(ResourceLocator.class).to(ClassLoaderResourceLocator.class);

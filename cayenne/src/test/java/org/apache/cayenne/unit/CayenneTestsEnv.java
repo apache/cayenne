@@ -278,6 +278,6 @@ public class CayenneTestsEnv implements BeforeEachCallback, AfterEachCallback {
     }
 
     public SQLTemplateCustomizer sqlTemplateCustomizer() {
-        return INJECTOR.getInstance(SQLTemplateCustomizer.class);
+        return SQLTemplateCustomizer.of(dataNode().getAdapter());
     }
 }
