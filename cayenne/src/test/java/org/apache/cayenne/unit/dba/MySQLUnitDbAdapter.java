@@ -74,11 +74,6 @@ public class MySQLUnitDbAdapter extends UnitDbAdapter {
     }
 
     @Override
-    public boolean supportsCaseSensitiveLike() {
-        return false;
-    }
-
-    @Override
     public boolean supportsStoredProcedures() {
         return true;
     }

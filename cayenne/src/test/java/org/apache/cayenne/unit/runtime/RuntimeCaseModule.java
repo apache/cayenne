@@ -32,7 +32,6 @@ import org.apache.cayenne.configuration.DefaultRuntimeProperties;
 import org.apache.cayenne.configuration.ObjectStoreFactory;
 import org.apache.cayenne.configuration.RuntimeProperties;
 import org.apache.cayenne.configuration.runtime.CoreModuleExtender;
-import org.apache.cayenne.configuration.runtime.DataSourceFactory;
 import org.apache.cayenne.configuration.runtime.PkGeneratorFactoryProvider;
 import org.apache.cayenne.configuration.xml.DataChannelMetaData;
 import org.apache.cayenne.configuration.xml.DefaultHandlerFactory;
@@ -47,12 +46,10 @@ import org.apache.cayenne.dba.db2.DB2Adapter;
 import org.apache.cayenne.dba.db2.DB2PkGenerator;
 import org.apache.cayenne.dba.derby.DerbyAdapter;
 import org.apache.cayenne.dba.derby.DerbyPkGenerator;
-import org.apache.cayenne.dba.firebird.FirebirdAdapter;
 import org.apache.cayenne.dba.frontbase.FrontBaseAdapter;
 import org.apache.cayenne.dba.frontbase.FrontBasePkGenerator;
 import org.apache.cayenne.dba.h2.H2Adapter;
 import org.apache.cayenne.dba.h2.H2PkGenerator;
-import org.apache.cayenne.dba.hsqldb.HSQLDBAdapter;
 import org.apache.cayenne.dba.ingres.IngresAdapter;
 import org.apache.cayenne.dba.ingres.IngresPkGenerator;
 import org.apache.cayenne.dba.mysql.MySQLAdapter;
@@ -62,7 +59,6 @@ import org.apache.cayenne.dba.oracle.OracleAdapter;
 import org.apache.cayenne.dba.oracle.OraclePkGenerator;
 import org.apache.cayenne.dba.postgres.PostgresAdapter;
 import org.apache.cayenne.dba.postgres.PostgresPkGenerator;
-import org.apache.cayenne.dba.sqlite.SQLiteAdapter;
 import org.apache.cayenne.dba.sqlserver.SQLServerAdapter;
 import org.apache.cayenne.dba.sybase.SybaseAdapter;
 import org.apache.cayenne.dba.sybase.SybasePkGenerator;
@@ -82,20 +78,6 @@ import org.apache.cayenne.reflect.generic.DefaultValueComparisonStrategyFactory;
 import org.apache.cayenne.reflect.generic.ValueComparisonStrategyFactory;
 import org.apache.cayenne.resource.ClassLoaderResourceLocator;
 import org.apache.cayenne.resource.ResourceLocator;
-import org.apache.cayenne.unit.dba.DB2UnitDbAdapter;
-import org.apache.cayenne.unit.dba.DerbyUnitDbAdapter;
-import org.apache.cayenne.unit.dba.FirebirdUnitDbAdapter;
-import org.apache.cayenne.unit.dba.FrontBaseUnitDbAdapter;
-import org.apache.cayenne.unit.dba.H2UnitDbAdapter;
-import org.apache.cayenne.unit.dba.HSQLDBUnitDbAdapter;
-import org.apache.cayenne.unit.dba.IngresUnitDbAdapter;
-import org.apache.cayenne.unit.dba.MySQLUnitDbAdapter;
-import org.apache.cayenne.unit.dba.OracleUnitDbAdapter;
-import org.apache.cayenne.unit.dba.PostgresUnitDbAdapter;
-import org.apache.cayenne.unit.dba.SQLServerUnitDbAdapter;
-import org.apache.cayenne.unit.dba.SQLiteUnitDbAdapter;
-import org.apache.cayenne.unit.dba.SybaseUnitDbAdapter;
-import org.apache.cayenne.unit.dba.UnitDbAdapter;
 import org.apache.cayenne.unit.testcontainers.Db2ContainerProvider;
 import org.apache.cayenne.unit.testcontainers.MariaDbContainerProvider;
 import org.apache.cayenne.unit.testcontainers.MysqlContainerProvider;
@@ -115,21 +97,7 @@ public class RuntimeCaseModule implements Module {
 
         // these are the objects injectable in unit tests that subclass from RuntimeCase.
 
-        binder.bindMap(String.class, UnitDbAdapterProvider.TEST_ADAPTERS_MAP)
-                .put(FirebirdAdapter.class.getName(), FirebirdUnitDbAdapter.class.getName())
-                .put(OracleAdapter.class.getName(), OracleUnitDbAdapter.class.getName())
-                .put(DerbyAdapter.class.getName(), DerbyUnitDbAdapter.class.getName())
-                .put(Oracle8Adapter.class.getName(), OracleUnitDbAdapter.class.getName())
-                .put(SybaseAdapter.class.getName(), SybaseUnitDbAdapter.class.getName())
-                .put(MySQLAdapter.class.getName(), MySQLUnitDbAdapter.class.getName())
-                .put(PostgresAdapter.class.getName(), PostgresUnitDbAdapter.class.getName())
-                .put(SQLServerAdapter.class.getName(), SQLServerUnitDbAdapter.class.getName())
-                .put(DB2Adapter.class.getName(), DB2UnitDbAdapter.class.getName())
-                .put(HSQLDBAdapter.class.getName(), HSQLDBUnitDbAdapter.class.getName())
-                .put(H2Adapter.class.getName(), H2UnitDbAdapter.class.getName())
-                .put(FrontBaseAdapter.class.getName(), FrontBaseUnitDbAdapter.class.getName())
-                .put(IngresAdapter.class.getName(), IngresUnitDbAdapter.class.getName())
-                .put(SQLiteAdapter.class.getName(), SQLiteUnitDbAdapter.class.getName());
+
 
         binder.bind(PkGeneratorFactoryProvider.class).to(PkGeneratorFactoryProvider.class);
         binder.bind(PkGenerator.class).to(JdbcPkGenerator.class);
@@ -209,9 +177,7 @@ public class RuntimeCaseModule implements Module {
                 return unitDataSourceDescriptor;
             }
         });
-        binder.bind(DataSourceFactory.class).to(RuntimeCaseSharedDataSourceFactory.class);
         binder.bind(DbAdapter.class).toProvider(RuntimeCaseDbAdapterProvider.class);
-        binder.bind(UnitDbAdapter.class).toProvider(UnitDbAdapterProvider.class);
 
         // this factory is a hack that allows to inject to DbAdapters loaded outside of
         // server runtime... BatchQueryBuilderFactory is hardcoded and whatever is placed

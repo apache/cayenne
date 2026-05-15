@@ -20,11 +20,22 @@
 package org.apache.cayenne.unit.dba;
 
 import org.apache.cayenne.CayenneRuntimeException;
-import org.apache.cayenne.configuration.Constants;
-import org.apache.cayenne.configuration.RuntimeProperties;
 import org.apache.cayenne.dba.DbAdapter;
 import org.apache.cayenne.dba.QuotingStrategy;
-import org.apache.cayenne.di.Inject;
+import org.apache.cayenne.dba.db2.DB2Adapter;
+import org.apache.cayenne.dba.derby.DerbyAdapter;
+import org.apache.cayenne.dba.firebird.FirebirdAdapter;
+import org.apache.cayenne.dba.frontbase.FrontBaseAdapter;
+import org.apache.cayenne.dba.h2.H2Adapter;
+import org.apache.cayenne.dba.hsqldb.HSQLDBAdapter;
+import org.apache.cayenne.dba.ingres.IngresAdapter;
+import org.apache.cayenne.dba.mysql.MySQLAdapter;
+import org.apache.cayenne.dba.oracle.Oracle8Adapter;
+import org.apache.cayenne.dba.oracle.OracleAdapter;
+import org.apache.cayenne.dba.postgres.PostgresAdapter;
+import org.apache.cayenne.dba.sqlite.SQLiteAdapter;
+import org.apache.cayenne.dba.sqlserver.SQLServerAdapter;
+import org.apache.cayenne.dba.sybase.SybaseAdapter;
 import org.apache.cayenne.exp.parser.ASTExtract;
 import org.apache.cayenne.map.DataMap;
 import org.apache.cayenne.map.DbEntity;
@@ -45,6 +56,7 @@ import java.util.Collection;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Map;
+import java.util.Objects;
 
 /**
  * Defines API and a common superclass for testing various database features.
@@ -52,20 +64,41 @@ import java.util.Map;
  * differently. Many things implemented in subclasses may become future
  * candidates for inclusion in the corresponding adapter code.
  */
-public class UnitDbAdapter {
+public abstract class UnitDbAdapter {
 
-    private static final Logger logger = LoggerFactory.getLogger(UnitDbAdapter.class);
+    private static final Logger LOGGER = LoggerFactory.getLogger(UnitDbAdapter.class);
 
-    @Inject
-    protected RuntimeProperties runtimeProperties;
+    public static UnitDbAdapter of(DbAdapter adapter) {
 
-    protected DbAdapter adapter;
+        // the order of cases is important due to random adapter subclasses
+        return switch (adapter) {
+            case FirebirdAdapter a -> new FirebirdUnitDbAdapter(a);
+            case Oracle8Adapter a -> new OracleUnitDbAdapter(a);
+            case OracleAdapter a -> new OracleUnitDbAdapter(a);
+            case DerbyAdapter a -> new DerbyUnitDbAdapter(a);
+            case SQLServerAdapter a -> new SQLServerUnitDbAdapter(a);
+            case SybaseAdapter a -> new SybaseUnitDbAdapter(a);
+            case MySQLAdapter a -> new MySQLUnitDbAdapter(a);
+            case PostgresAdapter a -> new PostgresUnitDbAdapter(a);
+            case DB2Adapter a -> new DB2UnitDbAdapter(a);
+            case HSQLDBAdapter a -> new HSQLDBUnitDbAdapter(a);
+            case H2Adapter a -> new H2UnitDbAdapter(a);
+            case FrontBaseAdapter a -> new FrontBaseUnitDbAdapter(a);
+            case IngresAdapter a -> new IngresUnitDbAdapter(a);
+            case SQLiteAdapter a -> new SQLiteUnitDbAdapter(a);
 
-    public UnitDbAdapter(DbAdapter adapter) {
-        if (adapter == null) {
-            throw new CayenneRuntimeException("Null adapter.");
-        }
-        this.adapter = adapter;
+            default -> throw new IllegalStateException("Unmapped adapter type: " + adapter.getClass().getName());
+        };
+    }
+
+    protected final DbAdapter adapter;
+
+    protected UnitDbAdapter(DbAdapter adapter) {
+        this.adapter = Objects.requireNonNull(adapter);
+    }
+
+    public DbAdapter getAdapter() {
+        return adapter;
     }
 
     public boolean supportsPKGeneratorConcurrency() {
@@ -75,11 +108,11 @@ public class UnitDbAdapter {
     public String getIdentifiersStartQuote() {
         return "\"";
     }
-    
+
     public String getIdentifiersEndQuote() {
         return "\"";
     }
-    
+
     /**
      * Returns whether the target DB treats REAL values as DOUBLEs. Default is
      * false, i.e. REALs are treated as FLOATs.
@@ -114,22 +147,14 @@ public class UnitDbAdapter {
             QuotingStrategy strategy = adapter.getQuotingStrategy();
 
             for (String constraint : constraints) {
-                StringBuilder drop = new StringBuilder();
 
-                drop.append("ALTER TABLE ").append(strategy.quotedFullyQualifiedName(entity))
-                        .append(" DROP CONSTRAINT ").append(constraint);
-                executeDDL(conn, drop.toString());
+                String drop = "ALTER TABLE " + strategy.quotedFullyQualifiedName(entity) +
+                        " DROP CONSTRAINT " + constraint;
+                executeDDL(conn, drop);
             }
         }
     }
 
-    public void droppedTables(Connection con, DataMap map) throws Exception {
-
-    }
-
-    /**
-     * Callback method that allows Delegate to customize test procedure.
-     */
     public void tweakProcedure(Procedure proc) {
     }
 
@@ -137,7 +162,6 @@ public class UnitDbAdapter {
     }
 
     public void createdTables(Connection con, DataMap map) throws Exception {
-
     }
 
     public boolean supportsStoredProcedures() {
@@ -195,18 +219,10 @@ public class UnitDbAdapter {
     }
 
     public boolean supportsFKConstraints(DbEntity entity) {
-        if ("FK_OF_DIFFERENT_TYPE".equals(entity.getName())) {
-            return false;
-        }
-
-        return true;
+        return !"FK_OF_DIFFERENT_TYPE".equals(entity.getName());
     }
 
     public boolean supportsFKConstraints() {
-        return true;
-    }
-
-    public boolean supportsColumnTypeReengineering() {
         return true;
     }
 
@@ -237,10 +253,6 @@ public class UnitDbAdapter {
         return true;
     }
 
-    public boolean supportsCaseSensitiveLike() {
-        return !runtimeProperties.getBoolean(Constants.CI_PROPERTY, false);
-    }
-
     public boolean supportsCaseInsensitiveOrder() {
         return true;
     }
@@ -258,13 +270,10 @@ public class UnitDbAdapter {
     }
 
     protected void executeDDL(Connection con, String ddl) throws Exception {
-        logger.info(ddl);
-        Statement st = con.createStatement();
+        LOGGER.info(ddl);
 
-        try {
+        try (Statement st = con.createStatement()) {
             st.execute(ddl);
-        } finally {
-            st.close();
         }
     }
 
@@ -289,7 +298,7 @@ public class UnitDbAdapter {
         BufferedReader in = new BufferedReader(new InputStreamReader(resource));
         StringBuffer buf = new StringBuffer();
         try {
-            String line = null;
+            String line;
             while ((line = in.readLine()) != null) {
                 buf.append(line).append('\n');
             }
@@ -315,7 +324,7 @@ public class UnitDbAdapter {
      * and Collections of constraint names as values.
      */
     protected Map<String, Collection<String>> getConstraints(Connection conn, DataMap map,
-            Collection<String> includeTables) throws SQLException {
+                                                             Collection<String> includeTables) throws SQLException {
 
         Map<String, Collection<String>> constraintMap = new HashMap<>();
 
@@ -330,8 +339,7 @@ public class UnitDbAdapter {
             QuotingStrategy strategy = adapter.getQuotingStrategy();
 
             // Get all constraints for the table
-            ResultSet rs = metadata.getExportedKeys(entity.getCatalog(), entity.getSchema(), entity.getName());
-            try {
+            try (ResultSet rs = metadata.getExportedKeys(entity.getCatalog(), entity.getSchema(), entity.getName())) {
                 while (rs.next()) {
                     String fk = rs.getString("FK_NAME");
                     String fkTable = rs.getString("FKTABLE_NAME");
@@ -347,8 +355,6 @@ public class UnitDbAdapter {
                         constraints.add(strategy.quotedIdentifier(entity, fk));
                     }
                 }
-            } finally {
-                rs.close();
             }
         }
 
@@ -415,10 +421,6 @@ public class UnitDbAdapter {
         return false;
     }
 
-    public boolean supportsLongIn() {
-        return true;
-    }
-
     public boolean supportsNullComparison() {
         return true;
     }
@@ -427,7 +429,7 @@ public class UnitDbAdapter {
      * Support for select like this:
      * SELECT t0.ARTIST_NAME FROM ARTIST t0 WHERE 'abc'
      */
-    public boolean supportScalarAsExpression(){
+    public boolean supportScalarAsExpression() {
         return false;
     }
 

@@ -94,14 +94,15 @@ public class AllTestsSchemaManager {
     public AllTestsSchemaManager(
             TestDataSources dataSourceFactory,
             UnitDbAdapter unitDbAdapter,
-            DbAdapter dbAdapter,
             JdbcEventLogger jdbcEventLogger,
             DataMapLoader loader) {
 
         this.dataSourceFactory = dataSourceFactory;
         this.unitDbAdapter = unitDbAdapter;
         this.jdbcEventLogger = jdbcEventLogger;
-        this.domain = initDomain(loader, dbAdapter);
+
+        // TODO: just create a normal CayenneRuntime with all the defaults
+        this.domain = initDomain(loader, unitDbAdapter.getAdapter());
     }
 
     private DataDomain initDomain(DataMapLoader loader, DbAdapter dbAdapter) {
@@ -349,8 +350,6 @@ public class AllTestsSchemaManager {
                     }
                 }
             }
-
-            unitDbAdapter.droppedTables(conn, map);
         }
     }
 

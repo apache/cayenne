@@ -34,7 +34,6 @@ import org.apache.cayenne.configuration.runtime.CoreModule;
 import org.apache.cayenne.configuration.runtime.DbAdapterFactory;
 import org.apache.cayenne.dba.DbAdapter;
 import org.apache.cayenne.di.AdhocObjectFactory;
-import org.apache.cayenne.di.Binder;
 import org.apache.cayenne.di.DIBootstrap;
 import org.apache.cayenne.di.Injector;
 import org.apache.cayenne.di.Module;
@@ -67,27 +66,34 @@ import java.util.stream.Collectors;
 public class CayenneTestsEnv implements BeforeEachCallback, AfterEachCallback {
 
     private static final Injector INJECTOR;
+
+    // shared stack parts... use these directly from the tests
     public static final TestDataSources DATA_SOURCES;
     public static final AllTestsSchemaManager SCHEMAS;
+    public static final UnitDbAdapter UNIT_DB_ADAPTER;
 
     static {
         INJECTOR = DIBootstrap.createInjector(new RuntimeCaseModule());
+
         DATA_SOURCES = new TestDataSources(
                 INJECTOR.getInstance(DataSourceDescriptor.class),
                 INJECTOR.getInstance(AdhocObjectFactory.class));
+
+        UNIT_DB_ADAPTER = UnitDbAdapter.of(INJECTOR.getInstance(DbAdapter.class));
+
         SCHEMAS = new AllTestsSchemaManager(
                 DATA_SOURCES,
-                INJECTOR.getInstance(UnitDbAdapter.class),
-                INJECTOR.getInstance(DbAdapter.class),
+                UNIT_DB_ADAPTER,
                 INJECTOR.getInstance(JdbcEventLogger.class),
                 INJECTOR.getInstance(DataMapLoader.class));
+
         SCHEMAS.rebuildSchema();
     }
 
     private final String project;
     private final Module[] extraModules;
     private final boolean autoClean;
-    private final boolean weakReferences;
+    private final String retainStrategy;
 
     // single-test scoped vars
     private DataContext context;
@@ -95,27 +101,28 @@ public class CayenneTestsEnv implements BeforeEachCallback, AfterEachCallback {
     private DbCleaner dbCleaner;
     private CayenneRuntime runtime;
 
-    private CayenneTestsEnv(String project, Module[] extraModules, boolean autoClean, boolean weakReferences) {
+    private CayenneTestsEnv(String project, Module[] extraModules, boolean autoClean, String retainStrategy) {
         this.project = project;
         this.extraModules = extraModules;
         this.autoClean = autoClean;
-        this.weakReferences = weakReferences;
+        this.retainStrategy = retainStrategy;
     }
 
     public static CayenneTestsEnv forProject(String project) {
-        return new CayenneTestsEnv(project, new Module[0], true, false);
+        // Soft refs by default instead of weak — avoids GC-sensitive test flakiness.
+        return new CayenneTestsEnv(project, new Module[0], true, "soft");
     }
 
     public CayenneTestsEnv withExtraModules(Module... modules) {
-        return new CayenneTestsEnv(project, modules, autoClean, weakReferences);
+        return new CayenneTestsEnv(project, modules, autoClean, retainStrategy);
     }
 
     public CayenneTestsEnv withoutAutoClean() {
-        return new CayenneTestsEnv(project, extraModules, false, weakReferences);
+        return new CayenneTestsEnv(project, extraModules, false, retainStrategy);
     }
 
     public CayenneTestsEnv withWeakReferences() {
-        return new CayenneTestsEnv(project, extraModules, autoClean, true);
+        return new CayenneTestsEnv(project, extraModules, autoClean, "weak");
     }
 
     @Override
@@ -156,14 +163,10 @@ public class CayenneTestsEnv implements BeforeEachCallback, AfterEachCallback {
     }
 
     private CayenneRuntime buildRuntime() {
+
         List<Module> modules = new ArrayList<>();
-        modules.add(new TestRuntimeOverridesModule());
-
+        modules.add(b -> CoreModule.extend(b).setProperty(Constants.OBJECT_RETAIN_STRATEGY_PROPERTY, retainStrategy));
         Collections.addAll(modules, extraModules);
-
-        if (weakReferences) {
-            modules.add(new WeakReferenceStrategyModule());
-        }
 
         CayenneRuntime runtime = CayenneRuntime.builder()
                 .addConfig(project)
@@ -187,7 +190,6 @@ public class CayenneTestsEnv implements BeforeEachCallback, AfterEachCallback {
         SelectTranslatorFactory selectTranslatorFactory = runtimeInjector.getInstance(SelectTranslatorFactory.class);
         SQLTemplateProcessor sqlTemplateProcessor = runtimeInjector.getInstance(SQLTemplateProcessor.class);
 
-        DataNode lastNode = null;
         for (DataMap dataMap : domain.getDataMaps()) {
 
             DataSource dataSource = DATA_SOURCES.dataSource(dataMap.getName());
@@ -215,11 +217,10 @@ public class CayenneTestsEnv implements BeforeEachCallback, AfterEachCallback {
             }
 
             domain.addNode(node);
-            lastNode = node;
         }
 
         if (domain.getDataMaps().size() == 1) {
-            domain.setDefaultNode(lastNode);
+            domain.setDefaultNode(domain.getDataNodes().iterator().next());
         }
     }
 
@@ -274,26 +275,5 @@ public class CayenneTestsEnv implements BeforeEachCallback, AfterEachCallback {
 
     public SQLTemplateCustomizer sqlTemplateCustomizer() {
         return INJECTOR.getInstance(SQLTemplateCustomizer.class);
-    }
-
-    public static class WeakReferenceStrategyModule implements Module {
-        @Override
-        public void configure(Binder binder) {
-            CoreModule.extend(binder).setProperty(Constants.OBJECT_RETAIN_STRATEGY_PROPERTY, "weak");
-        }
-    }
-
-    private static class TestRuntimeOverridesModule implements Module {
-
-        @Override
-        public void configure(Binder binder) {
-
-            binder.bind(UnitDbAdapter.class).toInstance(INJECTOR.getInstance(UnitDbAdapter.class));
-            binder.bind(TestDataSources.class).toInstance(DATA_SOURCES);
-
-            CoreModule.extend(binder)
-                    // Soft refs instead of weak — avoids GC-sensitive test flakiness.
-                    .setProperty(Constants.OBJECT_RETAIN_STRATEGY_PROPERTY, "soft");
-        }
     }
 }

@@ -32,16 +32,6 @@ public class SQLiteUnitDbAdapter extends UnitDbAdapter {
     }
     
     @Override
-    public boolean supportsColumnTypeReengineering() {
-        return false;
-    }
-    
-    @Override
-    public boolean supportsCaseSensitiveLike() {
-        return false;
-    }
-    
-    @Override
     public boolean supportsAllAnySome() {
         return false;
     }
