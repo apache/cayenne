@@ -34,7 +34,7 @@ import static org.junit.jupiter.api.Assertions.*;
 public class MergerFactoryIT extends MergeCase {
 
     @Test
-    public void addAndDropColumnToDb() throws Exception {
+    public void addAndDropColumnToDb() {
         DbEntity dbEntity = map.getDbEntity("PAINTING");
         assertNotNull(dbEntity);
 
@@ -56,7 +56,7 @@ public class MergerFactoryIT extends MergeCase {
     }
 
     @Test
-    public void changeVarcharSizeToDb() throws Exception {
+    public void changeVarcharSizeToDb() {
         DbEntity dbEntity = map.getDbEntity("PAINTING");
         assertNotNull(dbEntity);
 
@@ -87,7 +87,7 @@ public class MergerFactoryIT extends MergeCase {
     }
 
     @Test
-    public void multipleTokensToDb() throws Exception {
+    public void multipleTokensToDb() {
         DbEntity dbEntity = map.getDbEntity("PAINTING");
         assertNotNull(dbEntity);
 

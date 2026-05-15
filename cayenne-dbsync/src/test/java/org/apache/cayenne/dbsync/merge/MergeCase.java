@@ -42,7 +42,6 @@ import org.apache.cayenne.map.DbAttribute;
 import org.apache.cayenne.map.DbEntity;
 import org.apache.cayenne.map.EntityResolver;
 import org.apache.cayenne.runtime.CayenneRuntime;
-import org.apache.cayenne.test.jdbc.DbHelper;
 import org.apache.cayenne.unit.CayenneTestsEnv;
 import org.apache.cayenne.unit.dba.UnitDbAdapter;
 import org.apache.cayenne.unit.runtime.CayenneProjects;
@@ -62,6 +61,8 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 
 public abstract class MergeCase {
 
+    private static final Logger LOGGER = LoggerFactory.getLogger(MergeCase.class);
+
     // disable auto-clean: we null out ARTGROUP.PARENT_GROUP_ID before cleanup
     // to avoid FK violations on databases with strict FK enforcement (e.g. Postgres)
     @RegisterExtension
@@ -73,8 +74,6 @@ public abstract class MergeCase {
     protected EntityResolver resolver;
     protected DataNode node;
     protected DataMap map;
-    private final Logger logger = LoggerFactory.getLogger(MergeCase.class);
-    private DbHelper dbHelper;
     private CayenneRuntime runtime;
     protected UnitDbAdapter accessStackAdapter;
 
@@ -82,17 +81,14 @@ public abstract class MergeCase {
     public void setUp() throws Exception {
         resolver = env.entityResolver();
         node = env.dataNode();
-        dbHelper = env.dbHelper();
         runtime = env.runtime();
         accessStackAdapter = env.unitDbAdapter();
 
         // break circular FK before DBCleaner.clean()
-        dbHelper.update("ARTGROUP").set("PARENT_GROUP_ID", null, Types.INTEGER).execute();
+        env.dbHelper().update("ARTGROUP").set("PARENT_GROUP_ID", null, Types.INTEGER).execute();
         env.dbCleaner().clean();
 
-        // this map can't be safely modified in this test, as it is reset by DI
-        // container
-        // on every test
+        // this map can't be safely modified in this test, as it is reset by DI container on every test
         map = runtime.getDataDomain().getDataMap("testmap");
 
         filterDataMap();
@@ -280,7 +276,7 @@ public abstract class MergeCase {
             try {
                 executeSql(sql);
             } catch (Exception e) {
-                logger.info("Exception dropping table " + tableName + ", probably abscent..");
+                LOGGER.info("Exception dropping table " + tableName + ", probably abscent..");
             }
         }
     }
