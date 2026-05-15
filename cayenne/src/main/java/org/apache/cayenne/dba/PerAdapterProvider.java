@@ -28,7 +28,9 @@ import java.util.Objects;
  * This allows modules to create adapter-specific extensions without altering DbAdapter API.
  *
  * @since 4.0
+ * @deprecated unused, it is trivial to create per-adapter classes without the common superclass
  */
+@Deprecated(since = "5.0", forRemoval = true)
 public class PerAdapterProvider<T> {
 
     private Map<String, T> perAdapterValues;

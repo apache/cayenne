@@ -19,22 +19,32 @@
 
 package org.apache.cayenne.configuration.runtime;
 
-import org.apache.cayenne.dba.PerAdapterProvider;
+import org.apache.cayenne.dba.DbAdapter;
 import org.apache.cayenne.dba.PkGenerator;
+import org.apache.cayenne.di.DIRuntimeException;
 import org.apache.cayenne.di.Inject;
 
 import java.util.Map;
+import java.util.Objects;
 
 /**
  * Per-adapter provider of PkGenerators
  *
  * @since 4.1
  */
-public class PkGeneratorFactoryProvider extends PerAdapterProvider<PkGenerator> {
+public class PkGeneratorFactoryProvider {
+
+    private final Map<String, PkGenerator> perAdapterValues;
+    private final PkGenerator defaultValue;
 
     public PkGeneratorFactoryProvider(
             @Inject Map<String, PkGenerator> perAdapterValues,
             @Inject PkGenerator defaultValue) {
-        super(perAdapterValues, defaultValue);
+        this.perAdapterValues = Objects.requireNonNull(perAdapterValues);
+        this.defaultValue = Objects.requireNonNull(defaultValue);
+    }
+
+    public PkGenerator get(DbAdapter adapter) throws DIRuntimeException {
+        return perAdapterValues.getOrDefault(adapter.unwrap().getClass().getName(), defaultValue);
     }
 }

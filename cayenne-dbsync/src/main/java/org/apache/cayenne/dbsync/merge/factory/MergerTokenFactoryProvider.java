@@ -18,21 +18,31 @@
  ****************************************************************/
 package org.apache.cayenne.dbsync.merge.factory;
 
-import org.apache.cayenne.dba.PerAdapterProvider;
+import org.apache.cayenne.dba.DbAdapter;
 import org.apache.cayenne.dbsync.DbSyncModule;
+import org.apache.cayenne.di.DIRuntimeException;
 import org.apache.cayenne.di.Inject;
 
 import java.util.Map;
+import java.util.Objects;
 
 /**
  * @since 4.0
  */
-public class MergerTokenFactoryProvider extends PerAdapterProvider<MergerTokenFactory> {
+public class MergerTokenFactoryProvider {
+
+    private final Map<String, MergerTokenFactory> perAdapterValues;
+    private final MergerTokenFactory defaultValue;
 
     public MergerTokenFactoryProvider(
             @Inject(DbSyncModule.MERGER_FACTORIES_MAP) Map<String, MergerTokenFactory> perAdapterValues,
             @Inject MergerTokenFactory defaultValue) {
 
-        super(perAdapterValues, defaultValue);
+        this.perAdapterValues = Objects.requireNonNull(perAdapterValues);
+        this.defaultValue = Objects.requireNonNull(defaultValue);
+    }
+
+    public MergerTokenFactory get(DbAdapter adapter) throws DIRuntimeException {
+        return perAdapterValues.getOrDefault(adapter.unwrap().getClass().getName(), defaultValue);
     }
 }
