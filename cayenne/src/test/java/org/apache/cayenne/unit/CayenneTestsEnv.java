@@ -28,8 +28,10 @@ import org.apache.cayenne.access.translator.batch.BatchTranslatorFactory;
 import org.apache.cayenne.access.translator.select.SelectTranslatorFactory;
 import org.apache.cayenne.configuration.Constants;
 import org.apache.cayenne.configuration.DataMapLoader;
+import org.apache.cayenne.configuration.DataNodeDescriptor;
 import org.apache.cayenne.configuration.DataSourceDescriptor;
 import org.apache.cayenne.configuration.runtime.CoreModule;
+import org.apache.cayenne.configuration.runtime.DbAdapterFactory;
 import org.apache.cayenne.dba.DbAdapter;
 import org.apache.cayenne.di.AdhocObjectFactory;
 import org.apache.cayenne.di.Binder;
@@ -53,6 +55,7 @@ import org.junit.jupiter.api.extension.AfterEachCallback;
 import org.junit.jupiter.api.extension.BeforeEachCallback;
 import org.junit.jupiter.api.extension.ExtensionContext;
 
+import javax.sql.DataSource;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
@@ -183,17 +186,24 @@ public class CayenneTestsEnv implements BeforeEachCallback, AfterEachCallback {
         BatchTranslatorFactory batchTranslatorFactory = runtimeInjector.getInstance(BatchTranslatorFactory.class);
         SelectTranslatorFactory selectTranslatorFactory = runtimeInjector.getInstance(SelectTranslatorFactory.class);
         SQLTemplateProcessor sqlTemplateProcessor = runtimeInjector.getInstance(SQLTemplateProcessor.class);
-        DbAdapter adapter = runtimeInjector.getInstance(DbAdapter.class);
 
         DataNode lastNode = null;
         for (DataMap dataMap : domain.getDataMaps()) {
+
+            DataSource dataSource = DATA_SOURCES.dataSource(dataMap.getName());
+
             DataNode node = new TestTelemetryDataNode(dataMap.getName());
 
             node.setJdbcEventLogger(jdbcEventLogger);
             node.setRowReaderFactory(rowReaderFactory);
             node.setBatchTranslatorFactory(batchTranslatorFactory);
             node.setSelectTranslatorFactory(selectTranslatorFactory);
-            node.setDataSource(DATA_SOURCES.dataSource(dataMap.getName()));
+            node.setDataSource(dataSource);
+
+            // this gives us AutoAdapter
+            DbAdapter adapter = runtimeInjector.getInstance(DbAdapterFactory.class)
+                    .createAdapter(new DataNodeDescriptor(), dataSource);
+
             node.setAdapter(adapter);
             node.setSchemaUpdateStrategy(new SkipSchemaUpdateStrategy());
             node.setSqlTemplateProcessor(sqlTemplateProcessor);
@@ -277,10 +287,6 @@ public class CayenneTestsEnv implements BeforeEachCallback, AfterEachCallback {
 
         @Override
         public void configure(Binder binder) {
-
-            // TODO: factor it out of INJECTOR
-            // a fresh DbAdapter per call — RuntimeCaseDbAdapterProvider is unscoped in the test injector
-            binder.bind(DbAdapter.class).toProviderInstance(() -> INJECTOR.getInstance(DbAdapter.class));
 
             binder.bind(UnitDbAdapter.class).toInstance(INJECTOR.getInstance(UnitDbAdapter.class));
             binder.bind(TestDataSources.class).toInstance(DATA_SOURCES);

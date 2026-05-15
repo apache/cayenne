@@ -121,9 +121,7 @@ public class UpdateBatchTranslatorIT {
             List<DbAttribute> idAttributes = Collections.singletonList(entity.getAttribute("LOCKING_TEST_ID"));
             List<DbAttribute> updatedAttributes = Collections.singletonList(entity.getAttribute("DESCRIPTION"));
 
-            UpdateBatchQuery updateQuery = new UpdateBatchQuery(entity, idAttributes, updatedAttributes,
-                    Collections.emptySet(), 1);
-            JdbcAdapter adapter = (JdbcAdapter) this.adapter;
+            UpdateBatchQuery updateQuery = new UpdateBatchQuery(entity, idAttributes, updatedAttributes, Collections.emptySet(), 1);
 
             UpdateBatchTranslator builder = new UpdateBatchTranslator(updateQuery, adapter);
             String generatedSql = builder.getSql();
@@ -153,9 +151,7 @@ public class UpdateBatchTranslatorIT {
 
             Collection<String> nullAttributes = Collections.singleton("NAME");
 
-            UpdateBatchQuery updateQuery = new UpdateBatchQuery(entity, idAttributes, updatedAttributes,
-                    nullAttributes, 1);
-            JdbcAdapter adapter = (JdbcAdapter) this.adapter;
+            UpdateBatchQuery updateQuery = new UpdateBatchQuery(entity, idAttributes, updatedAttributes, nullAttributes, 1);
 
             UpdateBatchTranslator builder = new UpdateBatchTranslator(updateQuery, adapter);
             String generatedSql = builder.getSql();

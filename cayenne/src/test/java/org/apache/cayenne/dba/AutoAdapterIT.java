@@ -29,10 +29,7 @@ import org.apache.cayenne.unit.CayenneTestsEnv;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.RegisterExtension;
 
-import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertFalse;
-import static org.junit.jupiter.api.Assertions.assertNotNull;
-import static org.junit.jupiter.api.Assertions.assertSame;
+import static org.junit.jupiter.api.Assertions.*;
 
 public class AutoAdapterIT {
 
@@ -48,16 +45,17 @@ public class AutoAdapterIT {
 
     @Test
     public void createSQLTemplateAction() {
-        AutoAdapter autoAdapter = new AutoAdapter(() -> env.dataNode().getAdapter(), NoopJdbcEventLogger.getInstance());
 
-        SQLTemplateAction action = (SQLTemplateAction) autoAdapter.getAction(new SQLTemplate(Artist.class,
-                "select * from artist"), env.dataNode());
+        assertInstanceOf(AutoAdapter.class, env.dataNode().getAdapter());
+        AutoAdapter autoAdapter = (AutoAdapter) env.dataNode().getAdapter();
+
+        SQLTemplateAction action = (SQLTemplateAction) autoAdapter
+                .getAction(new SQLTemplate(Artist.class, "select * from artist"), env.dataNode());
 
         // it is important for SQLTemplateAction to be used with unwrapped adapter,
         // as the adapter class name is used as a key to the correct SQL template.
         assertNotNull(action.getAdapter());
         assertFalse(action.getAdapter() instanceof AutoAdapter);
-        assertSame(env.dataNode().getAdapter(), action.getAdapter());
     }
 
     @Test

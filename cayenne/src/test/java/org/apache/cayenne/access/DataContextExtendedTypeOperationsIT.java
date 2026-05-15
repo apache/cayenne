@@ -18,30 +18,34 @@
  ****************************************************************/
 package org.apache.cayenne.access;
 
-import java.util.Arrays;
-
+import org.apache.cayenne.configuration.runtime.CoreModule;
 import org.apache.cayenne.query.CapsStrategy;
 import org.apache.cayenne.query.ObjectSelect;
 import org.apache.cayenne.query.SQLTemplate;
 import org.apache.cayenne.testdo.extended_type.ExtendedTypeEntity;
 import org.apache.cayenne.testdo.extended_type.StringET1;
-import org.apache.cayenne.unit.runtime.CayenneProjects;
+import org.apache.cayenne.testdo.extended_type.StringET1ExtendedType;
 import org.apache.cayenne.unit.CayenneTestsEnv;
+import org.apache.cayenne.unit.runtime.CayenneProjects;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.RegisterExtension;
+
+import java.util.Arrays;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 
 public class DataContextExtendedTypeOperationsIT {
 
     @RegisterExtension
-    static final CayenneTestsEnv env = CayenneTestsEnv.forProject(CayenneProjects.EXTENDED_TYPE_PROJECT);
+    static final CayenneTestsEnv env = CayenneTestsEnv
+            .forProject(CayenneProjects.EXTENDED_TYPE_PROJECT)
+            .withExtraModules(b ->  CoreModule.extend(b).addUserExtendedType(StringET1ExtendedType.class));
 
     @Test
     public void storeExtendedType() {
         ExtendedTypeEntity e1 = env.context().newObject(ExtendedTypeEntity.class);
         e1.setName(new StringET1("X"));
-        e1.getObjectContext().commitChanges();
+        env.context().commitChanges();
 
         SQLTemplate checkQ = new SQLTemplate(
                 ExtendedTypeEntity.class,
@@ -62,7 +66,7 @@ public class DataContextExtendedTypeOperationsIT {
         ExtendedTypeEntity e3 = e1.getObjectContext().newObject(ExtendedTypeEntity.class);
         e3.setName(new StringET1("Z"));
 
-        e1.getObjectContext().commitChanges();
+        env.context().commitChanges();
 
         ObjectSelect<ExtendedTypeEntity> query = ObjectSelect.query(ExtendedTypeEntity.class)
                 .where(ExtendedTypeEntity.NAME.in(new StringET1("X"), new StringET1("Y")));

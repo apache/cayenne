@@ -25,6 +25,7 @@ import org.apache.cayenne.DataRow;
 import org.apache.cayenne.ObjectId;
 import org.apache.cayenne.PersistenceState;
 import org.apache.cayenne.Persistent;
+import org.apache.cayenne.dba.DbAdapter;
 import org.apache.cayenne.dba.JdbcAdapter;
 import org.apache.cayenne.dba.JdbcPkGenerator;
 import org.apache.cayenne.dba.PkGenerator;
@@ -263,7 +264,7 @@ public class DataContextExtrasIT {
                 .next()
                 .getAdapter()
                 .getPkGenerator();
-        JdbcAdapter adapter = (JdbcAdapter) domain
+        DbAdapter adapter = domain
                 .getDataNodes()
                 .iterator()
                 .next()

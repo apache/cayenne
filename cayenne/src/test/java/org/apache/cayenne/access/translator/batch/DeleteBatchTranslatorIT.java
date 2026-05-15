@@ -117,7 +117,6 @@ public class DeleteBatchTranslatorIT {
             List<DbAttribute> idAttributes = Collections.singletonList(entity.getAttribute("LOCKING_TEST_ID"));
 
             DeleteBatchQuery deleteQuery = new DeleteBatchQuery(entity, idAttributes, Collections.emptySet(), 1);
-            JdbcAdapter adapter = (JdbcAdapter) this.adapter;
             DeleteBatchTranslator builder = new DeleteBatchTranslator(deleteQuery, adapter);
             String generatedSql = builder.getSql();
 
@@ -147,8 +146,6 @@ public class DeleteBatchTranslatorIT {
             Collection<String> nullAttributes = Collections.singleton("NAME");
 
             DeleteBatchQuery deleteQuery = new DeleteBatchQuery(entity, idAttributes, nullAttributes, 1);
-
-            JdbcAdapter adapter = (JdbcAdapter) this.adapter;
 
             DeleteBatchTranslator builder = new DeleteBatchTranslator(deleteQuery, adapter);
             String generatedSql = builder.getSql();

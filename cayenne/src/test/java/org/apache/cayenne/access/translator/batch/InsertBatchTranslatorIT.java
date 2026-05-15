@@ -91,8 +91,6 @@ public class InsertBatchTranslatorIT {
 
             entity.getDataMap().setQuotingSQLIdentifiers(true);
 
-            JdbcAdapter adapter = (JdbcAdapter) this.adapter;
-
             InsertBatchQuery insertQuery = new InsertBatchQuery(entity, 1);
             InsertBatchTranslator builder = new InsertBatchTranslator(insertQuery, adapter);
             String generatedSql = builder.getSql();

@@ -37,7 +37,6 @@ import org.apache.cayenne.map.DbAttribute;
 import org.apache.cayenne.map.DbEntity;
 import org.apache.cayenne.map.Procedure;
 import org.apache.cayenne.resource.URLResource;
-import org.apache.cayenne.testdo.extended_type.StringET1ExtendedType;
 import org.apache.cayenne.unit.TestDataSources;
 import org.apache.cayenne.unit.dba.UnitDbAdapter;
 import org.slf4j.Logger;
@@ -124,10 +123,7 @@ public class AllTestsSchemaManager {
         node.setJdbcEventLogger(jdbcEventLogger);
         node.setAdapter(dbAdapter);
         node.setDataSource(dataSourceFactory.sharedDataSource());
-
-        // setup test extended types
-        node.getAdapter().getExtendedTypes().registerType(new StringET1ExtendedType());
-
+        
         // tweak mapping with a delegate
         for (Procedure proc : map.getProcedures()) {
             unitDbAdapter.tweakProcedure(proc);
