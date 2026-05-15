@@ -57,6 +57,7 @@ import javax.sql.DataSource;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
+import java.util.Objects;
 import java.util.stream.Collectors;
 
 /**
@@ -99,7 +100,7 @@ public class CayenneTestsEnv implements BeforeEachCallback, AfterEachCallback {
     private TestDbAdapter testDbAdapter;
 
     private CayenneTestsEnv(String project, Module[] extraModules, boolean autoClean, String retainStrategy) {
-        this.project = project;
+        this.project = Objects.requireNonNull(project);
         this.extraModules = extraModules;
         this.autoClean = autoClean;
         this.retainStrategy = retainStrategy;
@@ -124,17 +125,13 @@ public class CayenneTestsEnv implements BeforeEachCallback, AfterEachCallback {
 
     @Override
     public void beforeEach(ExtensionContext ctx) {
-        if (project == null) {
-            throw new NullPointerException("Null 'project', annotate your test case with @UseCayenneRuntime");
-        }
-
         this.runtime = buildRuntime();
+        synthesizeDataNodes(runtime);
+
         this.context = (DataContext) runtime.newContext();
 
         DbAdapter firstAdapter = runtime.getDataDomain().getDataNodes().iterator().next().getAdapter();
-
         this.testDbAdapter = TestDbAdapter.of(firstAdapter);
-
         tweakProcedures(runtime, testDbAdapter);
 
         this.dbHelper = new FlavoredDbHelper(
@@ -170,13 +167,10 @@ public class CayenneTestsEnv implements BeforeEachCallback, AfterEachCallback {
         modules.add(b -> CoreModule.extend(b).setProperty(Constants.OBJECT_RETAIN_STRATEGY_PROPERTY, retainStrategy));
         Collections.addAll(modules, extraModules);
 
-        CayenneRuntime runtime = CayenneRuntime.builder()
+        return CayenneRuntime.builder()
                 .addConfig(project)
                 .addModules(modules)
                 .build();
-
-        synthesizeDataNodes(runtime);
-        return runtime;
     }
 
     private static void synthesizeDataNodes(CayenneRuntime runtime) {
