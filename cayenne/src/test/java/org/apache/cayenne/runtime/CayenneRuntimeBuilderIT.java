@@ -18,138 +18,136 @@
  ****************************************************************/
 package org.apache.cayenne.runtime;
 
-import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertNotNull;
-import static org.junit.jupiter.api.Assertions.assertSame;
-
-import java.util.List;
-
-import javax.sql.DataSource;
-
 import org.apache.cayenne.DataRow;
 import org.apache.cayenne.ObjectContext;
 import org.apache.cayenne.access.DataNode;
 import org.apache.cayenne.configuration.DataSourceDescriptor;
 import org.apache.cayenne.map.DataMap;
 import org.apache.cayenne.query.SQLSelect;
-import org.apache.cayenne.test.jdbc.TableHelper;
-import org.apache.cayenne.unit.runtime.CayenneProjects;
 import org.apache.cayenne.unit.CayenneTestsEnv;
+import org.apache.cayenne.unit.runtime.CayenneProjects;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.RegisterExtension;
 
-@SuppressWarnings("deprecation")
+import javax.sql.DataSource;
+import java.util.List;
+
+import static org.junit.jupiter.api.Assertions.*;
+
 public class CayenneRuntimeBuilderIT {
 
-	@RegisterExtension
-	static final CayenneTestsEnv env = CayenneTestsEnv.forProject(CayenneProjects.TESTMAP_PROJECT);
+    @RegisterExtension
+    static final CayenneTestsEnv env = CayenneTestsEnv.forProject(CayenneProjects.TESTMAP_PROJECT);
 
-	private CayenneRuntime runtime;
-	private DataSourceDescriptor dsi;
+    private DataSourceDescriptor dsi;
+    private CayenneRuntime localRuntime;
+    private DataSource dataSource;
 
-	private CayenneRuntime localRuntime;
-	private DataSource dataSource;
+    @AfterEach
+    public void stopLocalRuntime() {
 
-	@AfterEach
-	public void stopLocalRuntime() {
+        // even though we don't supply real configs here, we sometimes access
+        // DataDomain, and this starts EventManager threads that need to be
+        // shutdown
+        if (localRuntime != null) {
+            localRuntime.shutdown();
+        }
+    }
 
-		// even though we don't supply real configs here, we sometimes access
-		// DataDomain, and this starts EventManager threads that need to be
-		// shutdown
-		if (localRuntime != null) {
-			localRuntime.shutdown();
-		}
-	}
+    @BeforeEach
+    public void setUp() throws Exception {
 
-	@BeforeEach
-	public void setUp() throws Exception {
-		runtime = env.runtime();
-		dsi = env.dataSourceDescriptor();
-		TableHelper tArtist = env.table("ARTIST", "ARTIST_ID", "ARTIST_NAME");
-		tArtist.insert(33001, "AA1");
-		tArtist.insert(33002, "AA2");
+        this.dsi = env.dataSourceDescriptor();
+        this.dataSource = env.runtime().getDataSource("testmap");
 
-		this.dataSource = runtime.getDataSource("testmap");
-	}
+        env.table("ARTIST", "ARTIST_ID", "ARTIST_NAME")
+                .insert(33001, "AA1")
+                .insert(33002, "AA2");
+    }
 
-	@Test
-	public void configFree_WithDBParams() {
+    @Test
+    public void configFree_WithDBParams() {
 
-		localRuntime = new CayenneRuntimeBuilder(null).jdbcDriver(dsi.getJdbcDriver()).url(dsi.getDataSourceUrl())
-				.password(dsi.getPassword()).user(dsi.getUserName()).minConnections(1).maxConnections(2).build();
+        localRuntime = new CayenneRuntimeBuilder(null)
+                .jdbcDriver(dsi.getJdbcDriver())
+                .url(dsi.getDataSourceUrl())
+                .password(dsi.getPassword())
+                .user(dsi.getUserName())
+                .minConnections(1)
+                .maxConnections(2).build();
 
-		List<DataRow> result = SQLSelect.dataRowQuery("SELECT * FROM ARTIST").select(localRuntime.newContext());
-		assertEquals(2, result.size());
-	}
+        List<DataRow> result = SQLSelect.dataRowQuery("SELECT * FROM ARTIST").select(localRuntime.newContext());
+        assertEquals(2, result.size());
+    }
 
-	@Test
-	public void configFree_WithDBParams_WithProject() {
+    @Test
+    public void configFree_WithDBParams_WithProject() {
 
-		localRuntime = new CayenneRuntimeBuilder(null).addConfig(CayenneProjects.TESTMAP_PROJECT)
-				.jdbcDriver(dsi.getJdbcDriver()).url(dsi.getDataSourceUrl()).password(dsi.getPassword())
-				.user(dsi.getUserName()).minConnections(1).maxConnections(2).build();
+        localRuntime = new CayenneRuntimeBuilder(null).addConfig(CayenneProjects.TESTMAP_PROJECT)
+                .jdbcDriver(dsi.getJdbcDriver()).url(dsi.getDataSourceUrl()).password(dsi.getPassword())
+                .user(dsi.getUserName()).minConnections(1).maxConnections(2).build();
 
-		DataMap map = localRuntime.getDataDomain().getDataMap("testmap");
-		assertNotNull(map);
+        DataMap map = localRuntime.getDataDomain().getDataMap("testmap");
+        assertNotNull(map);
 
-		DataNode node = localRuntime.getDataDomain().getDefaultNode();
-		assertNotNull(node);
-		assertEquals(1, node.getDataMaps().size());
+        DataNode node = localRuntime.getDataDomain().getDefaultNode();
+        assertNotNull(node);
+        assertEquals(1, node.getDataMaps().size());
 
-		assertSame(map, node.getDataMap("testmap"));
-	}
+        assertSame(map, node.getDataMap("testmap"));
+    }
 
-	@Test
-	public void configFree_WithDataSource() {
+    @Test
+    public void configFree_WithDataSource() {
 
-		localRuntime = new CayenneRuntimeBuilder(null).dataSource(dataSource).build();
+        localRuntime = new CayenneRuntimeBuilder(null).dataSource(dataSource).build();
 
-		List<DataRow> result = SQLSelect.dataRowQuery("SELECT * FROM ARTIST").select(localRuntime.newContext());
-		assertEquals(2, result.size());
-	}
+        List<DataRow> result = SQLSelect.dataRowQuery("SELECT * FROM ARTIST").select(localRuntime.newContext());
+        assertEquals(2, result.size());
+    }
 
-	@Test
-	public void noNodeConfig_WithDataSource() {
+    @Test
+    public void noNodeConfig_WithDataSource() {
 
-		localRuntime = new CayenneRuntimeBuilder(null).addConfig(CayenneProjects.TESTMAP_PROJECT).dataSource(dataSource)
-				.build();
+        localRuntime = new CayenneRuntimeBuilder(null).addConfig(CayenneProjects.TESTMAP_PROJECT).dataSource(dataSource)
+                .build();
 
-		DataMap map = localRuntime.getDataDomain().getDataMap("testmap");
-		assertNotNull(map);
+        DataMap map = localRuntime.getDataDomain().getDataMap("testmap");
+        assertNotNull(map);
 
-		DataNode node = localRuntime.getDataDomain().getDefaultNode();
-		assertNotNull(node);
-		assertEquals(1, node.getDataMaps().size());
+        DataNode node = localRuntime.getDataDomain().getDefaultNode();
+        assertNotNull(node);
+        assertEquals(1, node.getDataMaps().size());
 
-		assertSame(map, node.getDataMap("testmap"));
-	}
+        assertSame(map, node.getDataMap("testmap"));
+    }
 
-	@Test
-	public void unnamedDomain_MultiLocation() {
-		localRuntime = new CayenneRuntimeBuilder(null).addConfigs(CayenneProjects.TESTMAP_PROJECT,
-				CayenneProjects.EMBEDDABLE_PROJECT).build();
+    @Test
+    public void unnamedDomain_MultiLocation() {
+        localRuntime = new CayenneRuntimeBuilder(null).addConfigs(CayenneProjects.TESTMAP_PROJECT,
+                CayenneProjects.EMBEDDABLE_PROJECT).build();
 
-		assertEquals("cayenne", localRuntime.getDataDomain().getName());
-	}
+        assertEquals("cayenne", localRuntime.getDataDomain().getName());
+    }
 
-	@Test
-	public void namedDomain_MultiLocation() {
-		localRuntime = new CayenneRuntimeBuilder("myd").addConfigs(CayenneProjects.TESTMAP_PROJECT,
-				CayenneProjects.EMBEDDABLE_PROJECT).build();
-		assertEquals("myd", localRuntime.getDataDomain().getName());
-	}
+    @Test
+    public void namedDomain_MultiLocation() {
+        localRuntime = new CayenneRuntimeBuilder("myd").addConfigs(CayenneProjects.TESTMAP_PROJECT,
+                CayenneProjects.EMBEDDABLE_PROJECT).build();
+        assertEquals("myd", localRuntime.getDataDomain().getName());
+    }
 
-	/**
-	 * Test case for CAY-2265
-	 */
-	@Test
-	public void unnamedDomain_CustomNameProjectFile() {
-		localRuntime = new CayenneRuntimeBuilder(null).addConfigs(CayenneProjects.CUSTOM_NAME_PROJECT).build();
-		assertEquals("cayenne", localRuntime.getDataDomain().getName());
+    /**
+     * Test case for CAY-2265
+     */
+    @Test
+    public void unnamedDomain_CustomNameProjectFile() {
+        localRuntime = new CayenneRuntimeBuilder(null).addConfigs(CayenneProjects.CUSTOM_NAME_PROJECT).build();
+        assertEquals("cayenne", localRuntime.getDataDomain().getName());
 
-		ObjectContext context = localRuntime.newContext();
-		assertNotNull(context);
-	}
+        ObjectContext context = localRuntime.newContext();
+        assertNotNull(context);
+    }
 }

@@ -45,7 +45,6 @@ import org.apache.cayenne.runtime.CayenneRuntime;
 import org.apache.cayenne.test.jdbc.DbHelper;
 import org.apache.cayenne.test.jdbc.TableHelper;
 import org.apache.cayenne.unit.dba.TestDbAdapter;
-import org.apache.cayenne.unit.runtime.AllTestsSchemaManager;
 import org.apache.cayenne.unit.runtime.DbCleaner;
 import org.apache.cayenne.unit.runtime.FlavoredDbHelper;
 import org.apache.cayenne.unit.runtime.RuntimeCaseModule;

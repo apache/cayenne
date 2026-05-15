@@ -21,6 +21,7 @@ package org.apache.cayenne.unit.runtime;
 
 import org.apache.cayenne.map.DbEntity;
 import org.apache.cayenne.test.jdbc.DbHelper;
+import org.apache.cayenne.unit.AllTestsSchemaManager;
 
 import java.sql.SQLException;
 import java.util.Set;
