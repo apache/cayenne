@@ -21,25 +21,34 @@ package org.apache.cayenne.unit.dba;
 
 import org.apache.cayenne.dba.DbAdapter;
 
+public class IngresTestDbAdapter extends TestDbAdapter {
 
-public class H2UnitDbAdapter extends UnitDbAdapter {
-
-    public H2UnitDbAdapter(DbAdapter adapter) {
+    public IngresTestDbAdapter(DbAdapter adapter) {
         super(adapter);
     }
-
+    
+    @Override
+    public boolean supportsBoolean() {
+        return false;
+    }
+    
     @Override
     public boolean supportsLobs() {
         return true;
     }
-    
+
     @Override
-    public boolean supportsStoredProcedures() {
+    public boolean supportsExpressionInHaving() {
         return false;
     }
 
     @Override
-    public boolean supportsGeneratedKeysAdd() {
+    public boolean supportsSelectBooleanExpression() {
+        return false;
+    }
+
+    @Override
+    public boolean isLowerCaseNames() {
         return true;
     }
 }

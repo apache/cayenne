@@ -64,41 +64,39 @@ import java.util.Objects;
  * differently. Many things implemented in subclasses may become future
  * candidates for inclusion in the corresponding adapter code.
  */
-public abstract class UnitDbAdapter {
+public abstract class TestDbAdapter {
 
-    private static final Logger LOGGER = LoggerFactory.getLogger(UnitDbAdapter.class);
+    private static final Logger LOGGER = LoggerFactory.getLogger(TestDbAdapter.class);
 
-    public static UnitDbAdapter of(DbAdapter adapter) {
+    public static TestDbAdapter of(DbAdapter adapter) {
+
+        DbAdapter realAdapter = adapter.unwrap();
 
         // the order of cases is important due to random adapter subclasses
-        return switch (adapter) {
-            case FirebirdAdapter a -> new FirebirdUnitDbAdapter(a);
-            case Oracle8Adapter a -> new OracleUnitDbAdapter(a);
-            case OracleAdapter a -> new OracleUnitDbAdapter(a);
-            case DerbyAdapter a -> new DerbyUnitDbAdapter(a);
-            case SQLServerAdapter a -> new SQLServerUnitDbAdapter(a);
-            case SybaseAdapter a -> new SybaseUnitDbAdapter(a);
-            case MySQLAdapter a -> new MySQLUnitDbAdapter(a);
-            case PostgresAdapter a -> new PostgresUnitDbAdapter(a);
-            case DB2Adapter a -> new DB2UnitDbAdapter(a);
-            case HSQLDBAdapter a -> new HSQLDBUnitDbAdapter(a);
-            case H2Adapter a -> new H2UnitDbAdapter(a);
-            case FrontBaseAdapter a -> new FrontBaseUnitDbAdapter(a);
-            case IngresAdapter a -> new IngresUnitDbAdapter(a);
-            case SQLiteAdapter a -> new SQLiteUnitDbAdapter(a);
+        return switch (realAdapter) {
+            case FirebirdAdapter a -> new FirebirdTestDbAdapter(a);
+            case Oracle8Adapter a -> new OracleTestDbAdapter(a);
+            case OracleAdapter a -> new OracleTestDbAdapter(a);
+            case DerbyAdapter a -> new DerbyTestDbAdapter(a);
+            case SQLServerAdapter a -> new SQLServerTestDbAdapter(a);
+            case SybaseAdapter a -> new SybaseTestDbAdapter(a);
+            case MySQLAdapter a -> new MySQLTestDbAdapter(a);
+            case PostgresAdapter a -> new PostgresTestDbAdapter(a);
+            case DB2Adapter a -> new DB2TestDbAdapter(a);
+            case HSQLDBAdapter a -> new HSQLDBTestDbAdapter(a);
+            case H2Adapter a -> new H2TestDbAdapter(a);
+            case FrontBaseAdapter a -> new FrontBaseTestDbAdapter(a);
+            case IngresAdapter a -> new IngresTestDbAdapter(a);
+            case SQLiteAdapter a -> new SQLiteTestDbAdapter(a);
 
-            default -> throw new IllegalStateException("Unmapped adapter type: " + adapter.getClass().getName());
+            default -> throw new IllegalStateException("Unmapped adapter type: " + realAdapter.getClass().getName());
         };
     }
 
     protected final DbAdapter adapter;
 
-    protected UnitDbAdapter(DbAdapter adapter) {
+    protected TestDbAdapter(DbAdapter adapter) {
         this.adapter = Objects.requireNonNull(adapter);
-    }
-
-    public DbAdapter getAdapter() {
-        return adapter;
     }
 
     public boolean supportsPKGeneratorConcurrency() {
@@ -249,10 +247,6 @@ public abstract class UnitDbAdapter {
         return true;
     }
 
-    public boolean supportsHaving() {
-        return true;
-    }
-
     public boolean supportsCaseInsensitiveOrder() {
         return true;
     }
@@ -286,7 +280,7 @@ public abstract class UnitDbAdapter {
      * database.
      */
     private String ddlString(String database, String name) {
-        StringBuffer location = new StringBuffer();
+        StringBuilder location = new StringBuilder();
         location.append("ddl/").append(database).append("/").append(name);
 
         InputStream resource = Thread.currentThread().getContextClassLoader().getResourceAsStream(location.toString());
@@ -296,7 +290,7 @@ public abstract class UnitDbAdapter {
         }
 
         BufferedReader in = new BufferedReader(new InputStreamReader(resource));
-        StringBuffer buf = new StringBuffer();
+        StringBuilder buf = new StringBuilder();
         try {
             String line;
             while ((line = in.readLine()) != null) {
@@ -345,13 +339,9 @@ public abstract class UnitDbAdapter {
                     String fkTable = rs.getString("FKTABLE_NAME");
 
                     if (fk != null && fkTable != null) {
-                        Collection<String> constraints = constraintMap.get(fkTable);
-                        if (constraints == null) {
-                            // use a set to avoid duplicate constraints
-                            constraints = new HashSet<String>();
-                            constraintMap.put(fkTable, constraints);
-                        }
-
+                        Collection<String> constraints = constraintMap
+                                .computeIfAbsent(fkTable, k -> new HashSet<String>());
+                        // use a set to avoid duplicate constraints
                         constraints.add(strategy.quotedIdentifier(entity, fk));
                     }
                 }

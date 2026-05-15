@@ -28,7 +28,7 @@ import org.apache.cayenne.testdo.testmap.Painting;
 import org.apache.cayenne.tx.BaseTransaction;
 import org.apache.cayenne.tx.ExternalTransaction;
 import org.apache.cayenne.tx.Transaction;
-import org.apache.cayenne.unit.dba.UnitDbAdapter;
+import org.apache.cayenne.unit.dba.TestDbAdapter;
 import org.apache.cayenne.unit.runtime.CayenneProjects;
 import org.apache.cayenne.unit.CayenneTestsEnv;
 import org.junit.jupiter.api.BeforeEach;
@@ -52,7 +52,7 @@ public class DataContextPerformQueryAPIIT {
 
     private DataContext context;
     private DataContext context2;
-    private UnitDbAdapter accessStackAdapter;
+    private TestDbAdapter accessStackAdapter;
     private TableHelper tArtist;
     private TableHelper tPainting;
 
@@ -61,7 +61,7 @@ public class DataContextPerformQueryAPIIT {
     public void setUp() throws Exception {
         context = env.context();
         context2 = (DataContext) env.runtime().newContext();
-        accessStackAdapter = env.unitDbAdapter();
+        accessStackAdapter = env.testDbAdapter();
         tArtist = env.table("ARTIST", "ARTIST_ID", "ARTIST_NAME");
 
         tPainting = env.table("PAINTING").setColumns("PAINTING_ID", "ARTIST_ID", "PAINTING_TITLE", "ESTIMATED_PRICE").setColumnTypes(

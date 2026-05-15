@@ -25,7 +25,7 @@ import org.apache.cayenne.exp.ExpressionFactory;
 import org.apache.cayenne.query.ObjectSelect;
 import org.apache.cayenne.test.jdbc.TableHelper;
 import org.apache.cayenne.testdo.relationships_clob.ClobMaster;
-import org.apache.cayenne.unit.dba.UnitDbAdapter;
+import org.apache.cayenne.unit.dba.TestDbAdapter;
 import org.apache.cayenne.unit.runtime.CayenneProjects;
 import org.apache.cayenne.unit.CayenneTestsEnv;
 import org.junit.jupiter.api.BeforeEach;
@@ -44,7 +44,7 @@ public class CAY_115IT {
     static final CayenneTestsEnv env = CayenneTestsEnv.forProject(CayenneProjects.RELATIONSHIPS_CLOB_PROJECT);
 
     protected DataContext context;
-    protected UnitDbAdapter accessStackAdapter;
+    protected TestDbAdapter accessStackAdapter;
 
     protected TableHelper tClobMaster;
     protected TableHelper tClobDetail;
@@ -52,7 +52,7 @@ public class CAY_115IT {
     @BeforeEach
     public void setUp() throws Exception {
         context = env.context();
-        accessStackAdapter = env.unitDbAdapter();
+        accessStackAdapter = env.testDbAdapter();
         tClobMaster = env.table("CLOB_MASTER", "CLOB_MASTER_ID", "CLOB_COLUMN", "NAME");
         
         tClobDetail = env.table("CLOB_DETAIL", "CLOB_DETAIL_ID", "CLOB_MASTER_ID", "NAME");

@@ -33,7 +33,7 @@ import org.apache.cayenne.exp.property.PropertyFactory;
 import org.apache.cayenne.test.jdbc.TableHelper;
 import org.apache.cayenne.testdo.testmap.Artist;
 import org.apache.cayenne.testdo.testmap.Painting;
-import org.apache.cayenne.unit.dba.UnitDbAdapter;
+import org.apache.cayenne.unit.dba.TestDbAdapter;
 import org.apache.cayenne.unit.runtime.CayenneProjects;
 import org.apache.cayenne.unit.CayenneTestsEnv;
 import org.junit.jupiter.api.AfterEach;
@@ -51,7 +51,7 @@ public class ObjectSelect_AggregateIT {
     static final CayenneTestsEnv env = CayenneTestsEnv.forProject(CayenneProjects.TESTMAP_PROJECT);
 
     private DataContext context;
-    private UnitDbAdapter dbAdapter;
+    private TestDbAdapter dbAdapter;
 
     // Format: d/m/YY
     DateFormat dateFormat = DateFormat.getDateInstance(DateFormat.SHORT, Locale.US);
@@ -59,7 +59,7 @@ public class ObjectSelect_AggregateIT {
     @BeforeEach
     public void createArtistsDataSet() throws Exception {
         context = env.context();
-        dbAdapter = env.unitDbAdapter();
+        dbAdapter = env.testDbAdapter();
         TableHelper tArtist = env.table("ARTIST", "ARTIST_ID", "ARTIST_NAME", "DATE_OF_BIRTH");
         tArtist.setColumnTypes(Types.INTEGER, Types.VARCHAR, Types.DATE);
 

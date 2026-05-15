@@ -28,8 +28,8 @@ import org.apache.cayenne.access.DataContext;
 import org.apache.cayenne.test.jdbc.TableHelper;
 import org.apache.cayenne.testdo.testmap.Artist;
 import org.apache.cayenne.testdo.testmap.Painting;
-import org.apache.cayenne.unit.dba.OracleUnitDbAdapter;
-import org.apache.cayenne.unit.dba.UnitDbAdapter;
+import org.apache.cayenne.unit.dba.OracleTestDbAdapter;
+import org.apache.cayenne.unit.dba.TestDbAdapter;
 import org.apache.cayenne.unit.runtime.CayenneProjects;
 import org.apache.cayenne.unit.CayenneTestsEnv;
 import org.junit.jupiter.api.BeforeEach;
@@ -44,12 +44,12 @@ public class ObjectSelect_RunIT {
 	@RegisterExtension
 	static final CayenneTestsEnv env = CayenneTestsEnv.forProject(CayenneProjects.TESTMAP_PROJECT);
 
-	private UnitDbAdapter unitDbAdapter;
+	private TestDbAdapter testDbAdapter;
 	private DataContext context;
 
 	@BeforeEach
 	public void createArtistsDataSet() throws Exception {
-		unitDbAdapter = env.unitDbAdapter();
+		testDbAdapter = env.testDbAdapter();
 		context = env.context();
 		TableHelper tArtist = env.table("ARTIST", "ARTIST_ID", "ARTIST_NAME", "DATE_OF_BIRTH");
 
@@ -198,7 +198,7 @@ public class ObjectSelect_RunIT {
 		// TODO: This will fail for Oracle, so skip for now.
 		//       It is necessary to provide connection with "fixedString=true" property somehow.
 		//       Also see CAY-1470.
-		assumeFalse(unitDbAdapter instanceof OracleUnitDbAdapter);
+		assumeFalse(testDbAdapter instanceof OracleTestDbAdapter);
 		Artist a = ObjectSelect.query(Artist.class)
 				.where(Artist.ARTIST_NAME.function("UPPER", String.class).eq("ARTIST1"))
 				.selectOne(context);

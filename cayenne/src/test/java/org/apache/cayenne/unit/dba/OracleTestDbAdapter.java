@@ -35,16 +35,9 @@ import java.util.Collection;
 import java.util.Iterator;
 import java.util.List;
 
-/**
- */
-public class OracleUnitDbAdapter extends UnitDbAdapter {
+public class OracleTestDbAdapter extends TestDbAdapter {
 
-    /**
-     * Constructor for OracleDelegate.
-     * 
-     * @param adapter
-     */
-    public OracleUnitDbAdapter(DbAdapter adapter) {
+    public OracleTestDbAdapter(DbAdapter adapter) {
         super(adapter);
     }
 

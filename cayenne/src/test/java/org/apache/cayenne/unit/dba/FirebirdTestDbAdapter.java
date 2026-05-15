@@ -16,43 +16,44 @@
  *  specific language governing permissions and limitations
  *  under the License.
  ****************************************************************/
-
 package org.apache.cayenne.unit.dba;
 
-import java.sql.Connection;
-import java.util.Collection;
-
 import org.apache.cayenne.dba.DbAdapter;
-import org.apache.cayenne.map.DataMap;
+import org.apache.cayenne.map.DbEntity;
 
-/**
- */
-public class OpenBaseUnitDbAdapter extends UnitDbAdapter {
+public class FirebirdTestDbAdapter extends TestDbAdapter {
 
-    public OpenBaseUnitDbAdapter(DbAdapter adapter) {
+    public FirebirdTestDbAdapter(DbAdapter adapter) {
         super(adapter);
     }
 
     @Override
-    public void willDropTables(Connection conn, DataMap map, Collection tablesToDrop)
-            throws Exception {
-        // avoid dropping constraints...
+    public boolean supportsBoolean() {
+        return true;
     }
 
     @Override
-    public boolean supportsHaving() {
+    public boolean supportsLobs() {
+        return true;
+    }
+
+    @Override
+    public boolean supportsFKConstraints(DbEntity entity) {
+        return !entity.getName().contains("CLOB");
+    }
+
+    @Override
+    public boolean supportsBinaryPK() {
         return false;
     }
 
     @Override
-    public boolean supportsReverseComparison() {
-        // TODO: andrus, 7/1/2007 I am trying to follow up with openbase on this...
+    public boolean supportsPKGeneratorConcurrency() {
         return false;
     }
 
     @Override
-    public boolean supportNullRowForAggregateFunctions() {
-        // TODO: andrus, 7/1/2007 I am trying to follow up with openbase on this...
+    public boolean supportsSelectBooleanExpression() {
         return false;
     }
 }

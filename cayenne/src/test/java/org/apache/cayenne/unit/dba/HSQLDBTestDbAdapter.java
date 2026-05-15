@@ -23,17 +23,11 @@ import org.apache.cayenne.dba.DbAdapter;
 import org.apache.cayenne.map.DataMap;
 
 import java.sql.Connection;
-import java.util.Collection;
 
-public class PostgresUnitDbAdapter extends UnitDbAdapter {
+public class HSQLDBTestDbAdapter extends TestDbAdapter {
 
-    public PostgresUnitDbAdapter(DbAdapter adapter) {
+    public HSQLDBTestDbAdapter(DbAdapter adapter) {
         super(adapter);
-    }
-
-    @Override
-    public void willDropTables(Connection conn, DataMap map, Collection tablesToDrop) throws Exception {
-        // avoid dropping constraints...
     }
 
     @Override
@@ -41,43 +35,45 @@ public class PostgresUnitDbAdapter extends UnitDbAdapter {
         return true;
     }
 
+    /**
+     * Note that out of all SP tests HSQLDB (as of 8.0.2) supports only updates that do
+     * not return a ResultSet (see HSQL CallableStatement JavaDocs). Once HSQL implements
+     * the rest of callable statement we can enable our unit test.
+     */
     @Override
     public boolean supportsStoredProcedures() {
-        return true;
-    }
-
-    @Override
-    public boolean canMakeObjectsOutOfProcedures() {
-        // we are a victim of CAY-148 - column capitalization...
         return false;
     }
 
     @Override
     public void createdTables(Connection con, DataMap map) throws Exception {
         if (map.getProcedureMap().containsKey("cayenne_tst_select_proc")) {
-            executeDDL(con, "postgresql", "create-select-sp.sql");
-            executeDDL(con, "postgresql", "create-update-sp.sql");
-            executeDDL(con, "postgresql", "create-update-sp2.sql");
-            executeDDL(con, "postgresql", "create-out-sp.sql");
+            executeDDL(con, "hsqldb", "create-sp-aliases.sql");
         }
     }
 
-    public boolean isLowerCaseNames() {
+    /**
+     * In HyperSQL, REAL, FLOAT, DOUBLE are equivalent and all mapped to double in Java
+     * @see <a href="http://hsqldb.org/doc/guide/sqlgeneral-chapt.html#sgc_numeric_types">HSQLDB data types documentation</a>
+     */
+    @Override
+    public boolean realAsDouble() {
         return true;
     }
 
     @Override
-    public boolean supportsJsonType() {
+    public boolean supportsPKGeneratorConcurrency() {
+        // HSQL is not locking AUTO_PK_TABLE, so running PkGenerator in parallel may result in conflicting ranges
+        return false;
+    }
+
+    @Override
+    public boolean supportsGeneratedKeysAdd() {
         return true;
     }
 
     @Override
     public boolean supportsGeneratedKeysDrop() {
-        return true;
-    }
-
-    @Override
-    public boolean supportsSerializableTransactionIsolation() {
         return true;
     }
 }

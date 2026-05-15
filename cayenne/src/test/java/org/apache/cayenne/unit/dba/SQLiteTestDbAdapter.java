@@ -20,9 +20,9 @@ package org.apache.cayenne.unit.dba;
 
 import org.apache.cayenne.dba.DbAdapter;
 
-public class SQLiteUnitDbAdapter extends UnitDbAdapter {
+public class SQLiteTestDbAdapter extends TestDbAdapter {
 
-    public SQLiteUnitDbAdapter(DbAdapter adapter) {
+    public SQLiteTestDbAdapter(DbAdapter adapter) {
         super(adapter);
     }
     

@@ -27,7 +27,7 @@ import org.apache.cayenne.map.DbEntity;
 import org.apache.cayenne.query.DeleteBatchQuery;
 import org.apache.cayenne.runtime.CayenneRuntime;
 import org.apache.cayenne.testdo.locking.SimpleLockingTestEntity;
-import org.apache.cayenne.unit.dba.UnitDbAdapter;
+import org.apache.cayenne.unit.dba.TestDbAdapter;
 import org.apache.cayenne.unit.runtime.CayenneProjects;
 import org.apache.cayenne.unit.CayenneTestsEnv;
 import org.junit.jupiter.api.BeforeEach;
@@ -49,7 +49,7 @@ public class DeleteBatchTranslatorIT {
 
     private CayenneRuntime runtime;
     private DbAdapter adapter;
-    private UnitDbAdapter unitAdapter;
+    private TestDbAdapter unitAdapter;
     private AdhocObjectFactory objectFactory;
 
 
@@ -57,7 +57,7 @@ public class DeleteBatchTranslatorIT {
     public void setUp() {
         runtime = env.runtime();
         adapter = env.dataNode().getAdapter();
-        unitAdapter = env.unitDbAdapter();
+        unitAdapter = env.testDbAdapter();
         objectFactory = env.adhocObjectFactory();
     }
 

@@ -94,7 +94,7 @@ public class ExpressionFactoryIT {
 
     @Test
     public void escapeCharacter() {
-        if (!env.unitDbAdapter().supportsEscapeInLike()) {
+        if (!env.testDbAdapter().supportsEscapeInLike()) {
             return;
         }
 
@@ -116,7 +116,7 @@ public class ExpressionFactoryIT {
     @Test
     public void contains_Escape() {
 
-        if (!env.unitDbAdapter().supportsEscapeInLike()) {
+        if (!env.testDbAdapter().supportsEscapeInLike()) {
             return;
         }
 

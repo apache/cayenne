@@ -95,19 +95,11 @@ public class RuntimeCaseModule implements Module {
 
     public void configure(Binder binder) {
 
-        // these are the objects injectable in unit tests that subclass from RuntimeCase.
-
-
-
         binder.bind(PkGeneratorFactoryProvider.class).to(PkGeneratorFactoryProvider.class);
         binder.bind(PkGenerator.class).to(JdbcPkGenerator.class);
 
         new RuntimeCaseModuleExtender(binder)
                 .initAllExtensions()
-
-                // Use soft references instead of default weak.
-                // Should remove problems with random-failing tests (those that are GC-sensitive).
-                .setProperty(Constants.OBJECT_RETAIN_STRATEGY_PROPERTY, "soft")
 
                 .addPkGenerator(DB2Adapter.class, DB2PkGenerator.class)
                 .addPkGenerator(DerbyAdapter.class, DerbyPkGenerator.class)

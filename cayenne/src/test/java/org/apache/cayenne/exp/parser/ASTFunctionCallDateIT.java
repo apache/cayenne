@@ -25,7 +25,7 @@ import org.apache.cayenne.exp.Expression;
 import org.apache.cayenne.exp.ExpressionFactory;
 import org.apache.cayenne.query.ObjectSelect;
 import org.apache.cayenne.testdo.legacy_datetime.DateTestEntity;
-import org.apache.cayenne.unit.dba.UnitDbAdapter;
+import org.apache.cayenne.unit.dba.TestDbAdapter;
 import org.apache.cayenne.unit.runtime.CayenneProjects;
 import org.apache.cayenne.unit.CayenneTestsEnv;
 import org.junit.jupiter.api.BeforeEach;
@@ -41,11 +41,11 @@ public class ASTFunctionCallDateIT {
     @RegisterExtension
     static final CayenneTestsEnv env = CayenneTestsEnv.forProject(CayenneProjects.LEGACY_DATE_TIME_PROJECT);
 
-    private UnitDbAdapter unitDbAdapter;
+    private TestDbAdapter testDbAdapter;
 
     @BeforeEach
     public void createDataSet() throws Exception {
-        unitDbAdapter = env.unitDbAdapter();
+        testDbAdapter = env.testDbAdapter();
         Calendar cal = Calendar.getInstance();
         cal.set(Calendar.MILLISECOND, 0);
 
@@ -89,7 +89,7 @@ public class ASTFunctionCallDateIT {
     public void currentTime() throws Exception {
         Expression exp = ExpressionFactory.greaterOrEqualExp("timeColumn", new ASTCurrentTime());
         List<DateTestEntity> res = ObjectSelect.query(DateTestEntity.class, exp).select(env.context());
-        if(!unitDbAdapter.supportsTimeSqlType()) {
+        if(!testDbAdapter.supportsTimeSqlType()) {
             // check only that query is executed without error
             // result will be invalid most likely as DB doesn't support TIME data type
             return;
@@ -128,7 +128,7 @@ public class ASTFunctionCallDateIT {
     public void aSTCurrentTimeParse() {
         Expression exp = ExpressionFactory.exp("timeColumn > currentTime()");
         DateTestEntity res = ObjectSelect.query(DateTestEntity.class, exp).selectOne(env.context());
-        if(!unitDbAdapter.supportsTimeSqlType()) {
+        if(!testDbAdapter.supportsTimeSqlType()) {
             return;
         }
         assertNotNull(res);

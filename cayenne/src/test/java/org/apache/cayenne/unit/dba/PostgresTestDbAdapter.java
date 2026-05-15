@@ -17,31 +17,23 @@
  *  under the License.
  ****************************************************************/
 
-
 package org.apache.cayenne.unit.dba;
-
-import java.sql.Connection;
-import java.util.Collection;
 
 import org.apache.cayenne.dba.DbAdapter;
 import org.apache.cayenne.map.DataMap;
 
-/**
- */
-public class DB2UnitDbAdapter extends UnitDbAdapter {
+import java.sql.Connection;
+import java.util.Collection;
 
-    public DB2UnitDbAdapter(DbAdapter adapter) {
+public class PostgresTestDbAdapter extends TestDbAdapter {
+
+    public PostgresTestDbAdapter(DbAdapter adapter) {
         super(adapter);
     }
-    
-    @Override
-    public void willDropTables(Connection conn, DataMap map, Collection tablesToDrop) throws Exception {
-        // avoid dropping constraints...  
-    }
 
     @Override
-    public boolean supportsBinaryPK() {
-        return false;
+    public void willDropTables(Connection conn, DataMap map, Collection tablesToDrop) throws Exception {
+        // avoid dropping constraints...
     }
 
     @Override
@@ -51,7 +43,32 @@ public class DB2UnitDbAdapter extends UnitDbAdapter {
 
     @Override
     public boolean supportsStoredProcedures() {
+        return true;
+    }
+
+    @Override
+    public boolean canMakeObjectsOutOfProcedures() {
+        // we are a victim of CAY-148 - column capitalization...
         return false;
+    }
+
+    @Override
+    public void createdTables(Connection con, DataMap map) throws Exception {
+        if (map.getProcedureMap().containsKey("cayenne_tst_select_proc")) {
+            executeDDL(con, "postgresql", "create-select-sp.sql");
+            executeDDL(con, "postgresql", "create-update-sp.sql");
+            executeDDL(con, "postgresql", "create-update-sp2.sql");
+            executeDDL(con, "postgresql", "create-out-sp.sql");
+        }
+    }
+
+    public boolean isLowerCaseNames() {
+        return true;
+    }
+
+    @Override
+    public boolean supportsJsonType() {
+        return true;
     }
 
     @Override
@@ -60,22 +77,7 @@ public class DB2UnitDbAdapter extends UnitDbAdapter {
     }
 
     @Override
-    public boolean supportsGeneratedKeysAdd() {
+    public boolean supportsSerializableTransactionIsolation() {
         return true;
-    }
-
-    @Override
-    public boolean supportsExpressionInHaving() {
-        return false;
-    }
-
-    @Override
-    public boolean supportsSelectBooleanExpression() {
-        return false;
-    }
-
-    @Override
-    public boolean supportsPreciseTime() {
-        return false;
     }
 }

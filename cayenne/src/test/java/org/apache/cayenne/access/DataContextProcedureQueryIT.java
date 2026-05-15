@@ -56,7 +56,7 @@ public class DataContextProcedureQueryIT  {
 
     @Test
     public void update() throws Exception {
-        if (!env.unitDbAdapter().supportsStoredProcedures()) {
+        if (!env.testDbAdapter().supportsStoredProcedures()) {
             return;
         }
 
@@ -93,7 +93,7 @@ public class DataContextProcedureQueryIT  {
 
     @Test
     public void updateNoParam() throws Exception {
-        if (!env.unitDbAdapter().supportsStoredProcedures()) {
+        if (!env.testDbAdapter().supportsStoredProcedures()) {
             return;
         }
 
@@ -129,7 +129,7 @@ public class DataContextProcedureQueryIT  {
 
     @Test
     public void select1() throws Exception {
-        if (!env.unitDbAdapter().supportsStoredProcedures()) {
+        if (!env.testDbAdapter().supportsStoredProcedures()) {
             return;
         }
 
@@ -155,7 +155,7 @@ public class DataContextProcedureQueryIT  {
 
     @Test
     public void select2() throws Exception {
-        if (!env.unitDbAdapter().supportsStoredProcedures()) {
+        if (!env.testDbAdapter().supportsStoredProcedures()) {
             return;
         }
 
@@ -182,7 +182,7 @@ public class DataContextProcedureQueryIT  {
 
     @Test
     public void select3() throws Exception {
-        if (!env.unitDbAdapter().supportsStoredProcedures()) {
+        if (!env.testDbAdapter().supportsStoredProcedures()) {
             return;
         }
 
@@ -211,7 +211,7 @@ public class DataContextProcedureQueryIT  {
 
     @Test
     public void fetchLimit() throws Exception {
-        if (!env.unitDbAdapter().supportsStoredProcedures()) {
+        if (!env.testDbAdapter().supportsStoredProcedures()) {
             return;
         }
 
@@ -231,7 +231,7 @@ public class DataContextProcedureQueryIT  {
 
     @Test
     public void fetchOffset() throws Exception {
-        if (!env.unitDbAdapter().supportsStoredProcedures()) {
+        if (!env.testDbAdapter().supportsStoredProcedures()) {
             return;
         }
 
@@ -251,7 +251,7 @@ public class DataContextProcedureQueryIT  {
 
     @Test
     public void columnNameCapitalization() throws Exception {
-        if (!env.unitDbAdapter().supportsStoredProcedures()) {
+        if (!env.testDbAdapter().supportsStoredProcedures()) {
             return;
         }
 
@@ -279,7 +279,7 @@ public class DataContextProcedureQueryIT  {
 
     @Test
     public void outParams() throws Exception {
-        if (!env.unitDbAdapter().supportsStoredProcedures()) {
+        if (!env.testDbAdapter().supportsStoredProcedures()) {
             return;
         }
 
@@ -300,11 +300,11 @@ public class DataContextProcedureQueryIT  {
 
     @Test
     public void selectPersistentObject() throws Exception {
-        if (!env.unitDbAdapter().supportsStoredProcedures()) {
+        if (!env.testDbAdapter().supportsStoredProcedures()) {
             return;
         }
 
-        if (!env.unitDbAdapter().canMakeObjectsOutOfProcedures()) {
+        if (!env.testDbAdapter().canMakeObjectsOutOfProcedures()) {
             return;
         }
 
@@ -330,7 +330,7 @@ public class DataContextProcedureQueryIT  {
     @Test
     public void selectWithRowDescriptor() throws Exception {
 
-        if (!env.unitDbAdapter().supportsStoredProcedures()) {
+        if (!env.testDbAdapter().supportsStoredProcedures()) {
             return;
         }
 

@@ -44,7 +44,7 @@ import org.apache.cayenne.map.Procedure;
 import org.apache.cayenne.runtime.CayenneRuntime;
 import org.apache.cayenne.test.jdbc.DbHelper;
 import org.apache.cayenne.test.jdbc.TableHelper;
-import org.apache.cayenne.unit.dba.UnitDbAdapter;
+import org.apache.cayenne.unit.dba.TestDbAdapter;
 import org.apache.cayenne.unit.runtime.AllTestsSchemaManager;
 import org.apache.cayenne.unit.runtime.DbCleaner;
 import org.apache.cayenne.unit.runtime.FlavoredDbHelper;
@@ -70,7 +70,6 @@ public class CayenneTestsEnv implements BeforeEachCallback, AfterEachCallback {
     // shared stack parts... use these directly from the tests
     public static final TestDataSources DATA_SOURCES;
     public static final AllTestsSchemaManager SCHEMAS;
-    public static final UnitDbAdapter UNIT_DB_ADAPTER;
 
     static {
         INJECTOR = DIBootstrap.createInjector(new RuntimeCaseModule());
@@ -79,11 +78,9 @@ public class CayenneTestsEnv implements BeforeEachCallback, AfterEachCallback {
                 INJECTOR.getInstance(DataSourceDescriptor.class),
                 INJECTOR.getInstance(AdhocObjectFactory.class));
 
-        UNIT_DB_ADAPTER = UnitDbAdapter.of(INJECTOR.getInstance(DbAdapter.class));
-
         SCHEMAS = new AllTestsSchemaManager(
                 DATA_SOURCES,
-                UNIT_DB_ADAPTER,
+                INJECTOR.getInstance(DbAdapter.class),
                 INJECTOR.getInstance(JdbcEventLogger.class),
                 INJECTOR.getInstance(DataMapLoader.class));
 
@@ -100,6 +97,7 @@ public class CayenneTestsEnv implements BeforeEachCallback, AfterEachCallback {
     private DbHelper dbHelper;
     private DbCleaner dbCleaner;
     private CayenneRuntime runtime;
+    private TestDbAdapter testDbAdapter;
 
     private CayenneTestsEnv(String project, Module[] extraModules, boolean autoClean, String retainStrategy) {
         this.project = project;
@@ -134,12 +132,16 @@ public class CayenneTestsEnv implements BeforeEachCallback, AfterEachCallback {
         this.runtime = buildRuntime();
         this.context = (DataContext) runtime.newContext();
 
-        DataNode node = runtime.getDataDomain().getDataNodes().iterator().next();
-        DataMap firstMap = context.getEntityResolver().getDataMaps().iterator().next();
+        DbAdapter firstAdapter = runtime.getDataDomain().getDataNodes().iterator().next().getAdapter();
+
+        this.testDbAdapter = TestDbAdapter.of(firstAdapter);
+
+        tweakProcedures(runtime, testDbAdapter);
+
         this.dbHelper = new FlavoredDbHelper(
                 DATA_SOURCES.sharedDataSource(),
-                node.getAdapter().getQuotingStrategy(),
-                firstMap);
+                firstAdapter.getQuotingStrategy(),
+                context.getEntityResolver().getDataMaps().iterator().next());
 
         this.dbCleaner = new DbCleaner(
                 SCHEMAS,
@@ -160,6 +162,7 @@ public class CayenneTestsEnv implements BeforeEachCallback, AfterEachCallback {
         this.dbHelper = null;
         this.dbCleaner = null;
         this.runtime = null;
+        this.testDbAdapter = null;
     }
 
     private CayenneRuntime buildRuntime() {
@@ -174,13 +177,11 @@ public class CayenneTestsEnv implements BeforeEachCallback, AfterEachCallback {
                 .build();
 
         synthesizeDataNodes(runtime);
-
         return runtime;
     }
 
-    private void synthesizeDataNodes(CayenneRuntime runtime) {
+    private static void synthesizeDataNodes(CayenneRuntime runtime) {
 
-        UnitDbAdapter unitDbAdapter = unitDbAdapter();
         DataDomain domain = runtime.getDataDomain();
         Injector runtimeInjector = runtime.getInjector();
 
@@ -211,16 +212,19 @@ public class CayenneTestsEnv implements BeforeEachCallback, AfterEachCallback {
             node.setSqlTemplateProcessor(sqlTemplateProcessor);
 
             node.addDataMap(dataMap);
-
-            for (Procedure proc : dataMap.getProcedures()) {
-                unitDbAdapter.tweakProcedure(proc);
-            }
-
             domain.addNode(node);
         }
 
         if (domain.getDataMaps().size() == 1) {
             domain.setDefaultNode(domain.getDataNodes().iterator().next());
+        }
+    }
+
+    private static void tweakProcedures(CayenneRuntime runtime, TestDbAdapter adapter) {
+        for (DataMap dataMap : runtime.getDataDomain().getDataMaps()) {
+            for (Procedure proc : dataMap.getProcedures()) {
+                adapter.tweakProcedure(proc);
+            }
         }
     }
 
@@ -240,8 +244,8 @@ public class CayenneTestsEnv implements BeforeEachCallback, AfterEachCallback {
         return runtime;
     }
 
-    public UnitDbAdapter unitDbAdapter() {
-        return INJECTOR.getInstance(UnitDbAdapter.class);
+    public TestDbAdapter testDbAdapter() {
+        return testDbAdapter;
     }
 
     public EntityResolver entityResolver() {

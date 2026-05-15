@@ -29,14 +29,11 @@ import java.sql.ResultSet;
 import java.sql.Statement;
 import java.util.ArrayList;
 import java.util.Collection;
-import java.util.Iterator;
 import java.util.List;
 
-/**
- */
-public class SybaseUnitDbAdapter extends UnitDbAdapter {
+public class SybaseTestDbAdapter extends TestDbAdapter {
 
-	public SybaseUnitDbAdapter(DbAdapter adapter) {
+	public SybaseTestDbAdapter(DbAdapter adapter) {
 		super(adapter);
 	}
 
@@ -65,7 +62,7 @@ public class SybaseUnitDbAdapter extends UnitDbAdapter {
 	}
 
 	@Override
-	public void willCreateTables(Connection con, DataMap map) throws Exception {
+	public void willCreateTables(Connection con, DataMap map) {
 
 		// Sybase does not support NULLable BIT columns...
 		DbEntity e = map.getDbEntity("PRIMITIVES_TEST");
@@ -107,10 +104,9 @@ public class SybaseUnitDbAdapter extends UnitDbAdapter {
 	@Override
 	public void willDropTables(Connection con, DataMap map, Collection tablesToDrop) throws Exception {
 
-		Iterator it = tablesToDrop.iterator();
-		while (it.hasNext()) {
-			dropConstraints(con, (String) it.next());
-		}
+        for (Object o : tablesToDrop) {
+            dropConstraints(con, (String) o);
+        }
 
 		dropProcedures(con, map);
 	}
@@ -128,11 +124,11 @@ public class SybaseUnitDbAdapter extends UnitDbAdapter {
 	protected void dropConstraints(Connection con, String tableName) throws Exception {
 		List<String> names = new ArrayList<>(3);
 
-		try (Statement select = con.createStatement();) {
+		try (Statement select = con.createStatement()) {
 
 			try (ResultSet rs = select.executeQuery("SELECT t0.name "
 					+ "FROM sysobjects t0, sysconstraints t1, sysobjects t2 "
-					+ "WHERE t0.id = t1.constrid and t1.tableid = t2.id and t2.name = '" + tableName + "'");) {
+					+ "WHERE t0.id = t1.constrid and t1.tableid = t2.id and t2.name = '" + tableName + "'")) {
 
 				while (rs.next()) {
 					names.add(rs.getString("name"));

@@ -25,7 +25,7 @@ import org.apache.cayenne.exp.Expression;
 import org.apache.cayenne.exp.ExpressionFactory;
 import org.apache.cayenne.query.ObjectSelect;
 import org.apache.cayenne.testdo.testmap.Artist;
-import org.apache.cayenne.unit.dba.OracleUnitDbAdapter;
+import org.apache.cayenne.unit.dba.OracleTestDbAdapter;
 import org.apache.cayenne.unit.runtime.CayenneProjects;
 import org.apache.cayenne.unit.CayenneTestsEnv;
 import org.junit.jupiter.api.Test;
@@ -61,7 +61,7 @@ public class ASTFunctionCallStringIT {
         // TODO: This will fail for Oracle, so skip for now.
         //       It is necessary to provide connection with "fixedString=true" property somehow.
         //       Also see CAY-1470.
-        assumeFalse(env.unitDbAdapter() instanceof OracleUnitDbAdapter);
+        assumeFalse(env.testDbAdapter() instanceof OracleTestDbAdapter);
         Artist a1 = createArtist("name");
         Artist a2 = ObjectSelect.query(Artist.class)
                 .where(Artist.ARTIST_NAME.upper().eq("NAME")).selectOne(env.context());
@@ -73,7 +73,7 @@ public class ASTFunctionCallStringIT {
         // TODO: This will fail for Oracle, so skip for now.
         //       It is necessary to provide connection with "fixedString=true" property somehow.
         //       Also see CAY-1470.
-        assumeFalse(env.unitDbAdapter() instanceof OracleUnitDbAdapter);
+        assumeFalse(env.testDbAdapter() instanceof OracleTestDbAdapter);
         Artist a1 = createArtist("NAME");
         Artist a2 = ObjectSelect.query(Artist.class)
                 .where(Artist.ARTIST_NAME.lower().eq("name")).selectOne(env.context());

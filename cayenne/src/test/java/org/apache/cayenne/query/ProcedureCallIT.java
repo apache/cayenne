@@ -50,7 +50,7 @@ public class ProcedureCallIT {
 
     @Test
     public void update() throws Exception {
-        if (!env.unitDbAdapter().supportsStoredProcedures()) {
+        if (!env.testDbAdapter().supportsStoredProcedures()) {
             return;
         }
 
@@ -70,7 +70,7 @@ public class ProcedureCallIT {
 
     @Test
     public void updateNoParam() throws Exception {
-        if (!env.unitDbAdapter().supportsStoredProcedures()) {
+        if (!env.testDbAdapter().supportsStoredProcedures()) {
             return;
         }
 
@@ -90,7 +90,7 @@ public class ProcedureCallIT {
 
     @Test
     public void select() throws Exception {
-        if (!env.unitDbAdapter().supportsStoredProcedures()) {
+        if (!env.testDbAdapter().supportsStoredProcedures()) {
             return;
         }
 
@@ -117,7 +117,7 @@ public class ProcedureCallIT {
 
     @Test
     public void fetchLimit() throws Exception {
-        if (!env.unitDbAdapter().supportsStoredProcedures()) {
+        if (!env.testDbAdapter().supportsStoredProcedures()) {
             return;
         }
 
@@ -138,7 +138,7 @@ public class ProcedureCallIT {
 
     @Test
     public void fetchOffset() throws Exception {
-        if (!env.unitDbAdapter().supportsStoredProcedures()) {
+        if (!env.testDbAdapter().supportsStoredProcedures()) {
             return;
         }
 
@@ -159,7 +159,7 @@ public class ProcedureCallIT {
 
     @Test
     public void columnNameCapitalization() throws Exception {
-        if (!env.unitDbAdapter().supportsStoredProcedures()) {
+        if (!env.testDbAdapter().supportsStoredProcedures()) {
             return;
         }
 
@@ -187,7 +187,7 @@ public class ProcedureCallIT {
 
     @Test
     public void outParams() throws Exception {
-        if (!env.unitDbAdapter().supportsStoredProcedures()) {
+        if (!env.testDbAdapter().supportsStoredProcedures()) {
             return;
         }
 
@@ -202,11 +202,11 @@ public class ProcedureCallIT {
 
     @Test
     public void selectPersistentObject() throws Exception {
-        if (!env.unitDbAdapter().supportsStoredProcedures()) {
+        if (!env.testDbAdapter().supportsStoredProcedures()) {
             return;
         }
 
-        if (!env.unitDbAdapter().canMakeObjectsOutOfProcedures()) {
+        if (!env.testDbAdapter().canMakeObjectsOutOfProcedures()) {
             return;
         }
 
@@ -230,7 +230,7 @@ public class ProcedureCallIT {
 
     @Test
     public void selectWithRowDescriptor() throws Exception {
-        if (!env.unitDbAdapter().supportsStoredProcedures()) {
+        if (!env.testDbAdapter().supportsStoredProcedures()) {
             return;
         }
 

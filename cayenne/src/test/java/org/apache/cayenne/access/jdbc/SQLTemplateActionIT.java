@@ -31,7 +31,7 @@ import org.apache.cayenne.query.SortOrder;
 import org.apache.cayenne.test.jdbc.TableHelper;
 import org.apache.cayenne.testdo.testmap.Artist;
 import org.apache.cayenne.unit.CayenneTestsEnv;
-import org.apache.cayenne.unit.dba.UnitDbAdapter;
+import org.apache.cayenne.unit.dba.TestDbAdapter;
 import org.apache.cayenne.unit.runtime.CayenneProjects;
 import org.apache.cayenne.unit.util.SQLTemplateCustomizer;
 import org.junit.jupiter.api.BeforeEach;
@@ -54,7 +54,7 @@ public class SQLTemplateActionIT {
     static final CayenneTestsEnv env = CayenneTestsEnv.forProject(CayenneProjects.TESTMAP_PROJECT);
 
     private DataNode node;
-    private UnitDbAdapter unitDbAdapter;
+    private TestDbAdapter testDbAdapter;
     private ObjectContext context;
     private SQLTemplateCustomizer sqlTemplateCustomizer;
     private TableHelper tArtist;
@@ -62,7 +62,7 @@ public class SQLTemplateActionIT {
     @BeforeEach
     public void setUp() throws Exception {
         node = env.dataNode();
-        unitDbAdapter = env.unitDbAdapter();
+        testDbAdapter = env.testDbAdapter();
         context = env.context();
         sqlTemplateCustomizer = env.sqlTemplateCustomizer();
         tArtist = env.table("ARTIST", "ARTIST_ID", "ARTIST_NAME", "DATE_OF_BIRTH");
@@ -133,7 +133,7 @@ public class SQLTemplateActionIT {
         String templateString = "SELECT * FROM ARTIST";
         SQLTemplate sqlTemplate = new SQLTemplate(Artist.class, templateString);
 
-        if (unitDbAdapter.isLowerCaseNames()) {
+        if (testDbAdapter.isLowerCaseNames()) {
             sqlTemplate.setColumnNamesCapitalization(CapsStrategy.UPPER);
         }
 

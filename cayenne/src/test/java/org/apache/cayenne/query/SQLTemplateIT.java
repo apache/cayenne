@@ -29,8 +29,8 @@ import org.apache.cayenne.test.jdbc.TableHelper;
 import org.apache.cayenne.testdo.testmap.Artist;
 import org.apache.cayenne.testdo.testmap.Gallery;
 import org.apache.cayenne.testdo.testmap.Painting;
-import org.apache.cayenne.unit.dba.OracleUnitDbAdapter;
-import org.apache.cayenne.unit.dba.UnitDbAdapter;
+import org.apache.cayenne.unit.dba.OracleTestDbAdapter;
+import org.apache.cayenne.unit.dba.TestDbAdapter;
 import org.apache.cayenne.unit.runtime.CayenneProjects;
 import org.apache.cayenne.unit.CayenneTestsEnv;
 import org.junit.jupiter.api.BeforeEach;
@@ -51,7 +51,7 @@ public class SQLTemplateIT {
 	static final CayenneTestsEnv env = CayenneTestsEnv.forProject(CayenneProjects.TESTMAP_PROJECT);
 
 	private DataContext context;
-	protected UnitDbAdapter unitDbAdapter;
+	protected TestDbAdapter testDbAdapter;
 
 	private TableHelper tPainting;
 	private TableHelper tArtist;
@@ -60,7 +60,7 @@ public class SQLTemplateIT {
 	@BeforeEach
 	public void setUp() throws Exception {
 		context = env.context();
-		unitDbAdapter = env.unitDbAdapter();
+		testDbAdapter = env.testDbAdapter();
 		tArtist = env.table("ARTIST", "ARTIST_ID", "ARTIST_NAME", "DATE_OF_BIRTH");
 
 		tPainting = env.table("PAINTING", "PAINTING_ID", "ARTIST_ID", "PAINTING_TITLE", "ESTIMATED_PRICE");
@@ -93,7 +93,7 @@ public class SQLTemplateIT {
 
 	@Test
 	public void testReturnGeneratedKeys() {
-		if(unitDbAdapter.supportsGeneratedKeys()) {
+		if(testDbAdapter.supportsGeneratedKeys()) {
 			DataMap testDataMap = context.getEntityResolver().getDataMap("testmap");
 			String sql = "INSERT INTO GENERATED_COLUMN (NAME) VALUES ('Surikov')";
 			SQLTemplate q1 = new SQLTemplate(testDataMap, sql, true);
@@ -313,7 +313,7 @@ public class SQLTemplateIT {
 		assertTrue(artists.get(0) instanceof Object[]);
 
         // TODO: JDBC's BIGINT matches Oracle's NUMERIC, which matches BigDecimal.
-        Class<?> idType = unitDbAdapter instanceof OracleUnitDbAdapter ? BigDecimal.class : Long.class;
+        Class<?> idType = testDbAdapter instanceof OracleTestDbAdapter ? BigDecimal.class : Long.class;
         assertInstanceOf(idType, artists.get(0)[0]);
 	}
 
@@ -330,7 +330,7 @@ public class SQLTemplateIT {
 		assertTrue(artists.get(0) instanceof Object[]);
 
         // JDBC's BIGINT matches Oracle's NUMERIC, which matches BigDecimal.
-        Class<?> idType = unitDbAdapter instanceof OracleUnitDbAdapter ? BigDecimal.class : Long.class;
+        Class<?> idType = testDbAdapter instanceof OracleTestDbAdapter ? BigDecimal.class : Long.class;
 		assertInstanceOf(idType, artists.get(0)[0]);
 	}
 

@@ -107,11 +107,11 @@ public class MappedQueryIT {
 
     @Test
     public void procedureQuery() throws Exception {
-        if (!env.unitDbAdapter().supportsStoredProcedures()) {
+        if (!env.testDbAdapter().supportsStoredProcedures()) {
             return;
         }
 
-        if (!env.unitDbAdapter().canMakeObjectsOutOfProcedures()) {
+        if (!env.testDbAdapter().canMakeObjectsOutOfProcedures()) {
             return;
         }
 

@@ -29,8 +29,8 @@ import org.apache.cayenne.testdo.datetime.LocalDateTestEntity;
 import org.apache.cayenne.testdo.datetime.LocalDateTimeTestEntity;
 import org.apache.cayenne.testdo.datetime.LocalTimeTestEntity;
 import org.apache.cayenne.testdo.datetime.PeriodTestEntity;
-import org.apache.cayenne.unit.dba.MySQLUnitDbAdapter;
-import org.apache.cayenne.unit.dba.UnitDbAdapter;
+import org.apache.cayenne.unit.dba.MySQLTestDbAdapter;
+import org.apache.cayenne.unit.dba.TestDbAdapter;
 import org.apache.cayenne.unit.runtime.CayenneProjects;
 import org.apache.cayenne.unit.CayenneTestsEnv;
 import org.junit.jupiter.api.extension.RegisterExtension;
@@ -55,12 +55,12 @@ public class DateTimeTypesIT {
     static final CayenneTestsEnv env = CayenneTestsEnv.forProject(CayenneProjects.DATE_TIME_PROJECT);
 
     private DataContext context;
-    private UnitDbAdapter unitDbAdapter;
+    private TestDbAdapter testDbAdapter;
 
     @BeforeEach
     public void before() throws SQLException {
         context = env.context();
-        unitDbAdapter = env.unitDbAdapter();
+        testDbAdapter = env.testDbAdapter();
         DbHelper dbHelper = env.dbHelper();
         dbHelper.deleteAll("LOCAL_DATE_TEST");
         dbHelper.deleteAll("LOCAL_DATETIME_TEST");
@@ -106,7 +106,7 @@ public class DateTimeTypesIT {
 
         LocalTimeTestEntity testRead = ObjectSelect.query(LocalTimeTestEntity.class).selectOne(context);
 
-        TemporalField testValue = unitDbAdapter.supportsPreciseTime()
+        TemporalField testValue = testDbAdapter.supportsPreciseTime()
                 ? ChronoField.MILLI_OF_DAY
                 : ChronoField.SECOND_OF_DAY;
 
@@ -137,7 +137,7 @@ public class DateTimeTypesIT {
     @Test
     public void localDateTime_DST_Select() {
 
-        if (!(unitDbAdapter instanceof MySQLUnitDbAdapter)) {
+        if (!(testDbAdapter instanceof MySQLTestDbAdapter)) {
             // skip other DB's for now until we can test across all of them
             return;
         }
@@ -165,7 +165,7 @@ public class DateTimeTypesIT {
     @Test
     public void localDateTime_DST_Insert() {
 
-        if (!(unitDbAdapter instanceof MySQLUnitDbAdapter)) {
+        if (!(testDbAdapter instanceof MySQLTestDbAdapter)) {
             // skip other DB's for now until we can test across all of them
             return;
         }

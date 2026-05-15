@@ -27,7 +27,7 @@ import org.apache.cayenne.dbsync.merge.MergeCase;
 import org.apache.cayenne.dbsync.merge.token.MergerToken;
 import org.apache.cayenne.map.DbAttribute;
 import org.apache.cayenne.map.DbEntity;
-import org.apache.cayenne.unit.dba.UnitDbAdapter;
+import org.apache.cayenne.unit.dba.TestDbAdapter;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -54,17 +54,17 @@ import static org.junit.jupiter.api.Assertions.fail;
  * (here is actually two variants as some DB can only drop whereas some can only add generated attribute)
  *
  * @see DbAdapter#supportsGeneratedKeys()
- * @see UnitDbAdapter#supportsGeneratedKeys()
- * @see UnitDbAdapter#supportsGeneratedKeysAdd()
- * @see UnitDbAdapter#supportsGeneratedKeysDrop()
+ * @see TestDbAdapter#supportsGeneratedKeys()
+ * @see TestDbAdapter#supportsGeneratedKeysAdd()
+ * @see TestDbAdapter#supportsGeneratedKeysDrop()
  */
 public class SetGeneratedFlagToDbIT extends MergeCase {
 
-    UnitDbAdapter dbAdapter;
+    TestDbAdapter dbAdapter;
 
     @BeforeEach
     public void setUpDbAdapter() {
-        dbAdapter = env.unitDbAdapter();
+        dbAdapter = env.testDbAdapter();
     }
 
     @Test

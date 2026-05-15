@@ -28,7 +28,7 @@ import org.apache.cayenne.exp.property.NumericProperty;
 import org.apache.cayenne.exp.property.PropertyFactory;
 import org.apache.cayenne.test.jdbc.TableHelper;
 import org.apache.cayenne.testdo.primitive.PrimitivesTestEntity;
-import org.apache.cayenne.unit.dba.UnitDbAdapter;
+import org.apache.cayenne.unit.dba.TestDbAdapter;
 import org.apache.cayenne.unit.runtime.CayenneProjects;
 import org.apache.cayenne.unit.CayenneTestsEnv;
 import org.junit.jupiter.api.BeforeEach;
@@ -45,14 +45,14 @@ public class ObjectSelect_PrimitiveColumnsIT {
     static final CayenneTestsEnv env = CayenneTestsEnv.forProject(CayenneProjects.PRIMITIVE_PROJECT);
 
     private DataContext context;
-    private UnitDbAdapter unitDbAdapter;
+    private TestDbAdapter testDbAdapter;
 
     private TableHelper tPrimitives;
 
     @BeforeEach
     public void createTestRecords() throws Exception {
         context = env.context();
-        unitDbAdapter = env.unitDbAdapter();
+        testDbAdapter = env.testDbAdapter();
         tPrimitives = env.table("PRIMITIVES_TEST", "ID", "BOOLEAN_COLUMN", "INT_COLUMN");
         for (int i = 1; i <= 20; i++) {
             tPrimitives.insert(i, (i % 2 == 0), i * 10);
@@ -111,7 +111,7 @@ public class ObjectSelect_PrimitiveColumnsIT {
 
     @Test
     public void selectBooleanExpColumn() {
-        if(!unitDbAdapter.supportsSelectBooleanExpression()) {
+        if(!testDbAdapter.supportsSelectBooleanExpression()) {
             return;
         }
 
@@ -139,7 +139,7 @@ public class ObjectSelect_PrimitiveColumnsIT {
 
     @Test
     public void selectColumnsExpList() {
-        if(!unitDbAdapter.supportsSelectBooleanExpression()) {
+        if(!testDbAdapter.supportsSelectBooleanExpression()) {
             return;
         }
 

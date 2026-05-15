@@ -496,8 +496,8 @@ public class DefaultSelectTranslatorIT {
 			DbEntity entity = env.context().getEntityResolver().getDbEntity("ARTIST");
 			entity.getDataMap().setQuotingSQLIdentifiers(true);
 
-			String charStart = env.unitDbAdapter().getIdentifiersStartQuote();
-			String charEnd = env.unitDbAdapter().getIdentifiersEndQuote();
+			String charStart = env.testDbAdapter().getIdentifiersStartQuote();
+			String charEnd = env.testDbAdapter().getIdentifiersEndQuote();
 
 			String s = new DefaultSelectTranslator(q, env.dataNode().getAdapter(), env.dataNode().getEntityResolver()).getSql();
 			assertTrue(s.startsWith("SELECT "));
@@ -535,8 +535,8 @@ public class DefaultSelectTranslatorIT {
 			DbEntity entity = env.context().getEntityResolver().getDbEntity("ARTIST");
 			entity.getDataMap().setQuotingSQLIdentifiers(true);
 
-			String charStart = env.unitDbAdapter().getIdentifiersStartQuote();
-			String charEnd = env.unitDbAdapter().getIdentifiersEndQuote();
+			String charStart = env.testDbAdapter().getIdentifiersStartQuote();
+			String charEnd = env.testDbAdapter().getIdentifiersEndQuote();
 
 			String s = new DefaultSelectTranslator(q, env.dataNode().getAdapter(), env.dataNode().getEntityResolver()).getSql();
 
@@ -581,8 +581,8 @@ public class DefaultSelectTranslatorIT {
 			DbEntity entity = env.context().getEntityResolver().getDbEntity("ARTIST");
 			entity.getDataMap().setQuotingSQLIdentifiers(true);
 
-			String charStart = env.unitDbAdapter().getIdentifiersStartQuote();
-			String charEnd = env.unitDbAdapter().getIdentifiersEndQuote();
+			String charStart = env.testDbAdapter().getIdentifiersStartQuote();
+			String charEnd = env.testDbAdapter().getIdentifiersEndQuote();
 
 			String s = new DefaultSelectTranslator(q, env.dataNode().getAdapter(), env.dataNode().getEntityResolver()).getSql();
 
@@ -658,8 +658,8 @@ public class DefaultSelectTranslatorIT {
 			DbEntity entity = env.context().getEntityResolver().getDbEntity("PAINTING");
 			entity.getDataMap().setQuotingSQLIdentifiers(true);
 
-			String charStart = env.unitDbAdapter().getIdentifiersStartQuote();
-			String charEnd = env.unitDbAdapter().getIdentifiersEndQuote();
+			String charStart = env.testDbAdapter().getIdentifiersStartQuote();
+			String charEnd = env.testDbAdapter().getIdentifiersEndQuote();
 
 			String s = new DefaultSelectTranslator(q, env.dataNode().getAdapter(), env.dataNode().getEntityResolver()).getSql();
 

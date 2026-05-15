@@ -16,44 +16,30 @@
  *  specific language governing permissions and limitations
  *  under the License.
  ****************************************************************/
+
 package org.apache.cayenne.unit.dba;
 
 import org.apache.cayenne.dba.DbAdapter;
-import org.apache.cayenne.map.DbEntity;
 
-public class FirebirdUnitDbAdapter extends UnitDbAdapter {
 
-    public FirebirdUnitDbAdapter(DbAdapter adapter) {
+public class H2TestDbAdapter extends TestDbAdapter {
+
+    public H2TestDbAdapter(DbAdapter adapter) {
         super(adapter);
-    }
-
-    @Override
-    public boolean supportsBoolean() {
-        return true;
     }
 
     @Override
     public boolean supportsLobs() {
         return true;
     }
-
+    
     @Override
-    public boolean supportsFKConstraints(DbEntity entity) {
-        return !entity.getName().contains("CLOB");
-    }
-
-    @Override
-    public boolean supportsBinaryPK() {
+    public boolean supportsStoredProcedures() {
         return false;
     }
 
     @Override
-    public boolean supportsPKGeneratorConcurrency() {
-        return false;
-    }
-
-    @Override
-    public boolean supportsSelectBooleanExpression() {
-        return false;
+    public boolean supportsGeneratedKeysAdd() {
+        return true;
     }
 }

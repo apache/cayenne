@@ -28,16 +28,14 @@ import java.sql.Connection;
 import java.util.Arrays;
 import java.util.Collection;
 
-/**
- */
-public class MySQLUnitDbAdapter extends UnitDbAdapter {
+public class MySQLTestDbAdapter extends TestDbAdapter {
 
     static final Collection<String> NO_CONSTRAINTS_TABLES = Arrays.asList(
             "REFLEXIVE_AND_TO_ONE",
             "ARTGROUP",
             "FK_OF_DIFFERENT_TYPE");
 
-    public MySQLUnitDbAdapter(DbAdapter adapter) {
+    public MySQLTestDbAdapter(DbAdapter adapter) {
         super(adapter);
     }
     

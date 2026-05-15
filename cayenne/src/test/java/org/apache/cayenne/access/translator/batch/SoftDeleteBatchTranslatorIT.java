@@ -32,7 +32,7 @@ import org.apache.cayenne.query.ObjectSelect;
 import org.apache.cayenne.query.SQLTemplate;
 import org.apache.cayenne.test.parallel.ParallelTestContainer;
 import org.apache.cayenne.testdo.soft_delete.SoftDelete;
-import org.apache.cayenne.unit.dba.UnitDbAdapter;
+import org.apache.cayenne.unit.dba.TestDbAdapter;
 import org.apache.cayenne.unit.runtime.CayenneProjects;
 import org.apache.cayenne.unit.CayenneTestsEnv;
 import org.junit.jupiter.api.BeforeEach;
@@ -53,7 +53,7 @@ public class SoftDeleteBatchTranslatorIT {
     static final CayenneTestsEnv env = CayenneTestsEnv.forProject(CayenneProjects.SOFT_DELETE_PROJECT);
 
     private DataNode node;
-    private UnitDbAdapter unitAdapter;
+    private TestDbAdapter unitAdapter;
     private AdhocObjectFactory objectFactory;
 
     private DeleteBatchTranslator createTranslator(DeleteBatchQuery query) {
@@ -68,7 +68,7 @@ public class SoftDeleteBatchTranslatorIT {
     @BeforeEach
     public void setUp() {
         node = env.dataNode();
-        unitAdapter = env.unitDbAdapter();
+        unitAdapter = env.testDbAdapter();
         objectFactory = env.adhocObjectFactory();
     }
 

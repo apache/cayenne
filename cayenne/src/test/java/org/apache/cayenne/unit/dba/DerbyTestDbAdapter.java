@@ -19,68 +19,34 @@
 
 package org.apache.cayenne.unit.dba;
 
-import java.sql.Connection;
-import java.util.Collection;
-
 import org.apache.cayenne.dba.DbAdapter;
 import org.apache.cayenne.exp.parser.ASTExtract;
-import org.apache.cayenne.map.DataMap;
 
-/**
- */
-public class FrontBaseUnitDbAdapter extends UnitDbAdapter {
+public class DerbyTestDbAdapter extends TestDbAdapter {
 
-    public FrontBaseUnitDbAdapter(DbAdapter adapter) {
+    static {
+        // as of Derby 10.1 Alpha, this is needed for Mac OS X:
+        // http://issues.apache.org/jira/browse/DERBY-1
+        System.setProperty("derby.storage.fileSyncTransactionLog", "true");
+    }
+
+    public DerbyTestDbAdapter(DbAdapter adapter) {
         super(adapter);
     }
 
     @Override
-    public boolean supportsLobs() {
-        return true;
-    }
-
-    @Override
-    public boolean supportsLobInsertsAsStrings() {
-        return false;
-    }
-    
-    @Override
-    public boolean supportsEqualNullSyntax() {
-        return false;
-    }
-
-    @Override
-    public void willDropTables(Connection conn, DataMap map, Collection tablesToDrop)
-            throws Exception {
-        // avoid dropping constraints...
-    }
-
-    @Override
-    public boolean supportsBatchPK() {
-        return false;
-    }
-
-    @Override
-    public boolean supportsHaving() {
-        // FrontBase DOES support HAVING, however it doesn't support aggegate expressions
-        // in HAVING, and requires using column aliases instead. As HAVING is used for old
-        // and ugly derived DbEntities, no point in implementing special support at the
-        // adapter level.
+    public boolean supportsBinaryPK() {
         return false;
     }
 
     @Override
     public boolean supportsCaseInsensitiveOrder() {
-        // TODO, Andrus 11/8/2005: FrontBase does support UPPER() in ordering clause,
-        // however it does not
-        // support table aliases inside UPPER... Not sure what to do about it.
-
         return false;
     }
-
+    
     @Override
-    public boolean supportsEscapeInLike() {
-        return false;
+    public boolean supportsLobs() {
+        return true;
     }
 
     @Override
@@ -88,13 +54,24 @@ public class FrontBaseUnitDbAdapter extends UnitDbAdapter {
         return false;
     }
 
+    @Override
     public boolean supportsExtractPart(ASTExtract.DateTimePart part) {
         switch (part) {
-            case WEEK:
             case DAY_OF_YEAR:
             case DAY_OF_WEEK:
+            case WEEK:
                 return false;
         }
         return true;
+    }
+
+    @Override
+    public boolean supportsNullComparison() {
+        return false;
+    }
+
+    @Override
+    public boolean supportsPreciseTime() {
+        return false;
     }
 }

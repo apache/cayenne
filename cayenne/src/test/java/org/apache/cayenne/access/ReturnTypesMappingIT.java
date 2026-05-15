@@ -30,7 +30,7 @@ import org.apache.cayenne.query.ObjectSelect;
 import org.apache.cayenne.testdo.return_types.ReturnTypesMap1;
 import org.apache.cayenne.testdo.return_types.ReturnTypesMap2;
 import org.apache.cayenne.testdo.return_types.ReturnTypesMapLobs1;
-import org.apache.cayenne.unit.dba.PostgresUnitDbAdapter;
+import org.apache.cayenne.unit.dba.PostgresTestDbAdapter;
 import org.apache.cayenne.unit.runtime.CayenneProjects;
 import org.apache.cayenne.unit.CayenneTestsEnv;
 import org.junit.jupiter.api.extension.RegisterExtension;
@@ -65,7 +65,7 @@ public class ReturnTypesMappingIT {
         DataRow testRead = (DataRow) env.context().performQuery(MappedSelect.query("SelectReturnTypesMap1")).get(0);
         Object columnValue = testRead.get(columnName);
         assertNotNull(columnValue);
-        if(env.unitDbAdapter().onlyGenericNumberType()) {
+        if(env.testDbAdapter().onlyGenericNumberType()) {
             assertEquals(BigDecimal.class, columnValue.getClass());
             assertEquals(BigDecimal.valueOf(bigintValue), columnValue);
         } else {
@@ -93,7 +93,7 @@ public class ReturnTypesMappingIT {
 
     @Test
     public void binary() throws Exception {
-        if (env.unitDbAdapter().supportsLobs()) {
+        if (env.testDbAdapter().supportsLobs()) {
             String columnName = "BINARY_COLUMN";
             ReturnTypesMap2 test = env.context().newObject(ReturnTypesMap2.class);
 
@@ -113,7 +113,7 @@ public class ReturnTypesMappingIT {
 
     @Test
     public void binary2() throws Exception {
-        if (env.unitDbAdapter().supportsLobs()) {
+        if (env.testDbAdapter().supportsLobs()) {
             ReturnTypesMap2 test = env.context().newObject(ReturnTypesMap2.class);
 
             byte[] binaryValue = {
@@ -169,10 +169,10 @@ public class ReturnTypesMappingIT {
 
     @Test
     public void blob() throws Exception {
-        assumeTrue(!(env.unitDbAdapter() instanceof PostgresUnitDbAdapter),
+        assumeTrue(!(env.testDbAdapter() instanceof PostgresTestDbAdapter),
                 "In postresql blob_column has OID type, but in JAVA it converts into long not into byte.");
 
-        if (env.unitDbAdapter().supportsLobs()) {
+        if (env.testDbAdapter().supportsLobs()) {
             String columnName = "BLOB_COLUMN";
             ReturnTypesMap2 test = env.context().newObject(ReturnTypesMap2.class);
 
@@ -192,7 +192,7 @@ public class ReturnTypesMappingIT {
 
     @Test
     public void blob2() throws Exception {
-        if (env.unitDbAdapter().supportsLobs()) {
+        if (env.testDbAdapter().supportsLobs()) {
             ReturnTypesMap2 test = env.context().newObject(ReturnTypesMap2.class);
 
             byte[] blobValue = {
@@ -298,7 +298,7 @@ public class ReturnTypesMappingIT {
 
     @Test
     public void clob() throws Exception {
-        if (env.unitDbAdapter().supportsLobs()) {
+        if (env.testDbAdapter().supportsLobs()) {
             String columnName = "CLOB_COLUMN";
             ReturnTypesMapLobs1 test = env.context().newObject(ReturnTypesMapLobs1.class);
 
@@ -323,7 +323,7 @@ public class ReturnTypesMappingIT {
 
     @Test
     public void nclob() throws Exception {
-        if (env.unitDbAdapter().supportsLobs()) {
+        if (env.testDbAdapter().supportsLobs()) {
             String columnName = "NCLOB_COLUMN";
             ReturnTypesMapLobs1 test = env.context().newObject(ReturnTypesMapLobs1.class);
 
@@ -349,7 +349,7 @@ public class ReturnTypesMappingIT {
 
     @Test
     public void clob2() throws Exception {
-        if (env.unitDbAdapter().supportsLobs()) {
+        if (env.testDbAdapter().supportsLobs()) {
             ReturnTypesMapLobs1 test = env.context().newObject(ReturnTypesMapLobs1.class);
 
             StringBuffer buffer = new StringBuffer();
@@ -454,7 +454,7 @@ public class ReturnTypesMappingIT {
         DataRow testRead = (DataRow) env.context().performQuery(MappedSelect.query("SelectReturnTypesMap1")).get(0);
         Object columnValue = testRead.get(columnName);
         assertNotNull(columnValue);
-        if(env.unitDbAdapter().onlyGenericNumberType()) {
+        if(env.testDbAdapter().onlyGenericNumberType()) {
             assertEquals(BigDecimal.class, columnValue.getClass());
             assertEquals(BigDecimal.valueOf(doubleValue), columnValue);
         } else {
@@ -492,7 +492,7 @@ public class ReturnTypesMappingIT {
         DataRow testRead = (DataRow) env.context().performQuery(MappedSelect.query("SelectReturnTypesMap1")).get(0);
         Object columnValue = testRead.get(columnName);
         assertNotNull(columnValue);
-        if(env.unitDbAdapter().onlyGenericNumberType()) {
+        if(env.testDbAdapter().onlyGenericNumberType()) {
             assertEquals(BigDecimal.class, columnValue.getClass());
         } else {
             assertTrue(Float.class.equals(columnValue.getClass())
@@ -553,7 +553,7 @@ public class ReturnTypesMappingIT {
 
     @Test
     public void longVarBinary() throws Exception {
-        if (env.unitDbAdapter().supportsLobs()) {
+        if (env.testDbAdapter().supportsLobs()) {
             String columnName = "LONGVARBINARY_COLUMN";
             ReturnTypesMap2 test = env.context().newObject(ReturnTypesMap2.class);
 
@@ -573,7 +573,7 @@ public class ReturnTypesMappingIT {
 
     @Test
     public void longVarBinary2() throws Exception {
-        if (env.unitDbAdapter().supportsLobs()) {
+        if (env.testDbAdapter().supportsLobs()) {
             ReturnTypesMap2 test = env.context().newObject(ReturnTypesMap2.class);
 
             byte[] longvarbinaryValue = {
@@ -701,10 +701,10 @@ public class ReturnTypesMappingIT {
 
         // MySQL can treat REAL as either DOUBLE or FLOAT depending on the
         // engine settings
-        if(env.unitDbAdapter().onlyGenericNumberType()) {
+        if(env.testDbAdapter().onlyGenericNumberType()) {
             assertEquals(BigDecimal.class, columnValue.getClass());
         } else {
-            if (env.unitDbAdapter().realAsDouble()) {
+            if (env.testDbAdapter().realAsDouble()) {
                 assertEquals(Double.class, columnValue.getClass());
                 assertEquals(Double.valueOf(realValue), (Double) columnValue, 0.0001);
             } else {
@@ -744,7 +744,7 @@ public class ReturnTypesMappingIT {
         DataRow testRead = (DataRow) env.context().performQuery(MappedSelect.query("SelectReturnTypesMap1")).get(0);
         Object columnValue = testRead.get(columnName);
         assertNotNull(columnValue);
-        if(env.unitDbAdapter().onlyGenericNumberType()) {
+        if(env.testDbAdapter().onlyGenericNumberType()) {
             assertEquals(Integer.class, columnValue.getClass());
             assertEquals(intValue, columnValue);
         } else {
@@ -863,7 +863,7 @@ public class ReturnTypesMappingIT {
         DataRow testRead = (DataRow) env.context().performQuery(MappedSelect.query("SelectReturnTypesMap1")).get(0);
         Object columnValue = testRead.get(columnName);
         assertNotNull(columnValue);
-        if(env.unitDbAdapter().onlyGenericNumberType()) {
+        if(env.testDbAdapter().onlyGenericNumberType()) {
             assertEquals(Integer.class, columnValue.getClass());
         } else {
             assertEquals(Short.class, columnValue.getClass());
@@ -890,7 +890,7 @@ public class ReturnTypesMappingIT {
 
     @Test
     public void varBinary() throws Exception {
-        if (env.unitDbAdapter().supportsLobs()) {
+        if (env.testDbAdapter().supportsLobs()) {
             String columnName = "VARBINARY_COLUMN";
             ReturnTypesMap2 test = env.context().newObject(ReturnTypesMap2.class);
 
@@ -910,7 +910,7 @@ public class ReturnTypesMappingIT {
 
     @Test
     public void varBinary2() throws Exception {
-        if (env.unitDbAdapter().supportsLobs()) {
+        if (env.testDbAdapter().supportsLobs()) {
             ReturnTypesMap2 test = env.context().newObject(ReturnTypesMap2.class);
 
             byte[] varbinaryValue = {

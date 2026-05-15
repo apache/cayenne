@@ -27,7 +27,7 @@ import org.apache.cayenne.testdo.qualified.Qualified1;
 import org.apache.cayenne.testdo.qualified.Qualified2;
 import org.apache.cayenne.testdo.qualified.Qualified3;
 import org.apache.cayenne.testdo.qualified.Qualified4;
-import org.apache.cayenne.unit.dba.UnitDbAdapter;
+import org.apache.cayenne.unit.dba.TestDbAdapter;
 import org.apache.cayenne.unit.runtime.CayenneProjects;
 import org.apache.cayenne.unit.CayenneTestsEnv;
 import org.junit.jupiter.api.extension.RegisterExtension;
@@ -45,8 +45,7 @@ public class CDOQualifiedEntitiesIT {
     @RegisterExtension
     static final CayenneTestsEnv env = CayenneTestsEnv.forProject(CayenneProjects.QUALIFIED_PROJECT);
 
-    private UnitDbAdapter accessStackAdapter;
-
+    private TestDbAdapter testDbAdapter;
     private TableHelper tQualified1;
     private TableHelper tQualified2;
     private TableHelper tQualified3;
@@ -54,8 +53,8 @@ public class CDOQualifiedEntitiesIT {
 
     @BeforeEach
     public void setUp() throws Exception {
-        accessStackAdapter = env.unitDbAdapter();
-        int bool = accessStackAdapter.supportsBoolean() ? Types.BOOLEAN : Types.INTEGER;
+        testDbAdapter = env.testDbAdapter();
+        int bool = testDbAdapter.supportsBoolean() ? Types.BOOLEAN : Types.INTEGER;
 
         tQualified1 = env.table("TEST_QUALIFIED1")
                 .setColumns("ID", "NAME", "DELETED")
@@ -77,26 +76,26 @@ public class CDOQualifiedEntitiesIT {
     private void createReadToManyDataSet() throws Exception {
         
         tQualified1.insert(1, "OX1", null);
-        tQualified1.insert(2, "OX2", accessStackAdapter.supportsBoolean() ? true : 1);
+        tQualified1.insert(2, "OX2", testDbAdapter.supportsBoolean() ? true : 1);
 
         tQualified2.insert(1, "OY1", null, 1);
-        tQualified2.insert(2, "OY2", accessStackAdapter.supportsBoolean() ? true : 1, 1);
+        tQualified2.insert(2, "OY2", testDbAdapter.supportsBoolean() ? true : 1, 1);
         tQualified2.insert(3, "OY3", null, 2);
-        tQualified2.insert(4, "OY4", accessStackAdapter.supportsBoolean() ? true : 1, 2);
+        tQualified2.insert(4, "OY4", testDbAdapter.supportsBoolean() ? true : 1, 2);
     }
 
     private void createReadToOneDataSet() throws Exception {
         tQualified1.insert(1, "OX1", null);
-        tQualified1.insert(2, "OX2", accessStackAdapter.supportsBoolean() ? true : 1);
+        tQualified1.insert(2, "OX2", testDbAdapter.supportsBoolean() ? true : 1);
 
         tQualified2.insert(1, "OY1", null, 2);
     }
 
     private void createJoinDataSet() throws Exception {
         tQualified3.insert(1, "O1", null);
-        tQualified3.insert(2, "O2", accessStackAdapter.supportsBoolean() ? true : 1);
+        tQualified3.insert(2, "O2", testDbAdapter.supportsBoolean() ? true : 1);
         tQualified3.insert(3, "11", null);
-        tQualified3.insert(4, "12", accessStackAdapter.supportsBoolean() ? true : 1);
+        tQualified3.insert(4, "12", testDbAdapter.supportsBoolean() ? true : 1);
 
         tQualified4.insert(1, "SHOULD_SELECT", null, 1);
         tQualified4.insert(2, "SHOULD_NOT_SELECT", null, 2);
@@ -106,7 +105,7 @@ public class CDOQualifiedEntitiesIT {
 
     @Test
     public void readToMany() throws Exception {
-        if (accessStackAdapter.supportsNullBoolean()) {
+        if (testDbAdapter.supportsNullBoolean()) {
 
             createReadToManyDataSet();
 
@@ -128,7 +127,7 @@ public class CDOQualifiedEntitiesIT {
 
     @Test
     public void jointPrefetchToMany() throws Exception {
-        if (accessStackAdapter.supportsNullBoolean()) {
+        if (testDbAdapter.supportsNullBoolean()) {
 
             createReadToManyDataSet();
 
@@ -152,7 +151,7 @@ public class CDOQualifiedEntitiesIT {
 
     @Test
     public void disjointPrefetchToMany() throws Exception {
-        if (accessStackAdapter.supportsNullBoolean()) {
+        if (testDbAdapter.supportsNullBoolean()) {
 
             createReadToManyDataSet();
 
@@ -176,7 +175,7 @@ public class CDOQualifiedEntitiesIT {
 
     @Test
     public void disjointByIdPrefetchToMany() throws Exception {
-        if (accessStackAdapter.supportsNullBoolean()) {
+        if (testDbAdapter.supportsNullBoolean()) {
 
             createReadToManyDataSet();
 
@@ -200,7 +199,7 @@ public class CDOQualifiedEntitiesIT {
 
     @Test
     public void readToOne() throws Exception {
-        if (accessStackAdapter.supportsNullBoolean()) {
+        if (testDbAdapter.supportsNullBoolean()) {
 
             createReadToOneDataSet();
 

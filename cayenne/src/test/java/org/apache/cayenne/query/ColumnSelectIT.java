@@ -45,8 +45,8 @@ import org.apache.cayenne.testdo.testmap.Exhibit;
 import org.apache.cayenne.testdo.testmap.Gallery;
 import org.apache.cayenne.testdo.testmap.Painting;
 import org.apache.cayenne.testdo.testmap.PaintingInfo;
-import org.apache.cayenne.unit.dba.PostgresUnitDbAdapter;
-import org.apache.cayenne.unit.dba.UnitDbAdapter;
+import org.apache.cayenne.unit.dba.PostgresTestDbAdapter;
+import org.apache.cayenne.unit.dba.TestDbAdapter;
 import org.apache.cayenne.unit.runtime.CayenneProjects;
 import org.apache.cayenne.unit.CayenneTestsEnv;
 import org.junit.jupiter.api.BeforeEach;
@@ -63,7 +63,7 @@ public class ColumnSelectIT {
 
     private DataContext context;
     private CayenneRuntime runtime;
-    private UnitDbAdapter unitDbAdapter;
+    private TestDbAdapter testDbAdapter;
 
     // Format: d/m/YY
     private static final DateFormat dateFormat = DateFormat.getDateInstance(DateFormat.SHORT, Locale.US);
@@ -74,7 +74,7 @@ public class ColumnSelectIT {
     public void createArtistsDataSet() throws Exception {
         context = env.context();
         runtime = env.runtime();
-        unitDbAdapter = env.unitDbAdapter();
+        testDbAdapter = env.testDbAdapter();
         tArtist = env.table("ARTIST", "ARTIST_ID", "ARTIST_NAME", "DATE_OF_BIRTH");
         tArtist.setColumnTypes(Types.INTEGER, Types.VARCHAR, Types.DATE);
 
@@ -143,7 +143,7 @@ public class ColumnSelectIT {
                     .having(PropertyFactory.COUNT.gt(10L))
                     .selectOne(context);
         } catch (CayenneRuntimeException ex) {
-            if(unitDbAdapter.supportsExpressionInHaving()) {
+            if(testDbAdapter.supportsExpressionInHaving()) {
                 fail();
             } else {
                 return;
@@ -163,7 +163,7 @@ public class ColumnSelectIT {
                     .having(PropertyFactory.COUNT.gt(10L))
                     .selectOne(context);
         } catch (CayenneRuntimeException ex) {
-            if(unitDbAdapter.supportsExpressionInHaving()) {
+            if(testDbAdapter.supportsExpressionInHaving()) {
                 fail();
             } else {
                 return;
@@ -182,7 +182,7 @@ public class ColumnSelectIT {
                     .having(PropertyFactory.COUNT.gt(10L))
                     .selectOne(context);
         } catch (CayenneRuntimeException ex) {
-            if(unitDbAdapter.supportsExpressionInHaving()) {
+            if(testDbAdapter.supportsExpressionInHaving()) {
                 fail();
             } else {
                 return;
@@ -231,7 +231,7 @@ public class ColumnSelectIT {
                     .having(Artist.PAINTING_ARRAY.count().gt(4L))
                     .selectOne(context);
         } catch (CayenneRuntimeException ex) {
-            if(unitDbAdapter.supportsExpressionInHaving()) {
+            if(testDbAdapter.supportsExpressionInHaving()) {
                 fail();
             } else {
                 return;
@@ -251,7 +251,7 @@ public class ColumnSelectIT {
                 .having(paintingCount.gt(4L))
                 .selectOne(context);
         } catch (CayenneRuntimeException ex) {
-            if(unitDbAdapter.supportsExpressionInHaving()) {
+            if(testDbAdapter.supportsExpressionInHaving()) {
                 fail();
             } else {
                 return;
@@ -263,7 +263,7 @@ public class ColumnSelectIT {
 
     @Test
     public void selectWithQuoting() {
-        if(unitDbAdapter instanceof PostgresUnitDbAdapter) {
+        if(testDbAdapter instanceof PostgresTestDbAdapter) {
             // we need to convert somehow all names to lowercase on postgres, so skip it for now
             return;
         }
@@ -277,7 +277,7 @@ public class ColumnSelectIT {
                     .having(paintingCount.gt(4L))
                     .selectOne(context);
         } catch (CayenneRuntimeException ex) {
-            if(unitDbAdapter.supportsExpressionInHaving()) {
+            if(testDbAdapter.supportsExpressionInHaving()) {
                 fail();
             } else {
                 return;
@@ -291,7 +291,7 @@ public class ColumnSelectIT {
 
     @Test
     public void selectGroupByWithQuoting() throws Exception {
-        if(unitDbAdapter instanceof PostgresUnitDbAdapter) {
+        if(testDbAdapter instanceof PostgresTestDbAdapter) {
             // we need to convert somehow all names to lowercase on postgres, so skip it for now
             return;
         }

@@ -42,7 +42,7 @@ public class MiscTypesIT {
     public void serializable() throws Exception {
 
         // this test requires BLOB support
-        if(!env.unitDbAdapter().supportsLobs()) {
+        if(!env.testDbAdapter().supportsLobs()) {
             return;
         }
 

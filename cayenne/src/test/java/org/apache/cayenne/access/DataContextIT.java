@@ -41,7 +41,7 @@ import org.apache.cayenne.testdo.testmap.NullTestEntity;
 import org.apache.cayenne.testdo.testmap.Painting;
 import org.apache.cayenne.testdo.testmap.ROArtist;
 import org.apache.cayenne.unit.CayenneTestsEnv;
-import org.apache.cayenne.unit.dba.UnitDbAdapter;
+import org.apache.cayenne.unit.dba.TestDbAdapter;
 import org.apache.cayenne.unit.runtime.CayenneProjects;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -65,7 +65,7 @@ public class DataContextIT {
 	static final CayenneTestsEnv env = CayenneTestsEnv.forProject(CayenneProjects.TESTMAP_PROJECT);
 
 	protected DataContext context;
-	protected UnitDbAdapter accessStackAdapter;
+	protected TestDbAdapter accessStackAdapter;
 
 	protected TableHelper tArtist;
 	protected TableHelper tExhibit;
@@ -75,7 +75,7 @@ public class DataContextIT {
 	@BeforeEach
 	public void setUp() throws Exception {
 		context = env.context();
-		accessStackAdapter = env.unitDbAdapter();
+		accessStackAdapter = env.testDbAdapter();
 		tArtist = env.table("ARTIST", "ARTIST_ID", "ARTIST_NAME");
 
 		tExhibit = env.table("EXHIBIT", "EXHIBIT_ID", "GALLERY_ID", "OPENING_DATE", "CLOSING_DATE");

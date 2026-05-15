@@ -38,7 +38,7 @@ import org.apache.cayenne.map.DbEntity;
 import org.apache.cayenne.map.Procedure;
 import org.apache.cayenne.resource.URLResource;
 import org.apache.cayenne.unit.TestDataSources;
-import org.apache.cayenne.unit.dba.UnitDbAdapter;
+import org.apache.cayenne.unit.dba.TestDbAdapter;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -87,22 +87,22 @@ public class AllTestsSchemaManager {
     private static final Set<String> EXTRA_EXCLUDED_FOR_NO_NATIVE_JSON = Set.of("JSON_OTHER");
 
     private final TestDataSources dataSourceFactory;
-    private final UnitDbAdapter unitDbAdapter;
+    private final TestDbAdapter testDbAdapter;
     private final JdbcEventLogger jdbcEventLogger;
     private final DataDomain domain;
 
     public AllTestsSchemaManager(
             TestDataSources dataSourceFactory,
-            UnitDbAdapter unitDbAdapter,
+            DbAdapter dbAdapter,
             JdbcEventLogger jdbcEventLogger,
             DataMapLoader loader) {
 
         this.dataSourceFactory = dataSourceFactory;
-        this.unitDbAdapter = unitDbAdapter;
+        this.testDbAdapter = TestDbAdapter.of(dbAdapter);
         this.jdbcEventLogger = jdbcEventLogger;
 
         // TODO: just create a normal CayenneRuntime with all the defaults
-        this.domain = initDomain(loader, unitDbAdapter.getAdapter());
+        this.domain = initDomain(loader, dbAdapter);
     }
 
     private DataDomain initDomain(DataMapLoader loader, DbAdapter dbAdapter) {
@@ -127,7 +127,7 @@ public class AllTestsSchemaManager {
         
         // tweak mapping with a delegate
         for (Procedure proc : map.getProcedures()) {
-            unitDbAdapter.tweakProcedure(proc);
+            testDbAdapter.tweakProcedure(proc);
         }
         filterDataMap(map);
 
@@ -164,7 +164,7 @@ public class AllTestsSchemaManager {
     }
 
     private void filterDataMap(DataMap map) {
-        boolean supportsBinaryPK = unitDbAdapter.supportsBinaryPK();
+        boolean supportsBinaryPK = testDbAdapter.supportsBinaryPK();
 
         if (supportsBinaryPK) {
             return;
@@ -259,9 +259,9 @@ public class AllTestsSchemaManager {
     private List<DbEntity> excludeEntities(Collection<DbEntity> entities) {
         // exclude various unsupported tests...
 
-        boolean excludeLOB = !unitDbAdapter.supportsLobs();
-        boolean excludeNativeJson = !unitDbAdapter.supportsJsonType();
-        boolean excludeBinaryPK = !unitDbAdapter.supportsBinaryPK();
+        boolean excludeLOB = !testDbAdapter.supportsLobs();
+        boolean excludeNativeJson = !testDbAdapter.supportsJsonType();
+        boolean excludeBinaryPK = !testDbAdapter.supportsBinaryPK();
         if (!excludeLOB && !excludeNativeJson && !excludeBinaryPK) {
             return Collections.emptyList();
         }
@@ -328,7 +328,7 @@ public class AllTestsSchemaManager {
                 }
             }
 
-            unitDbAdapter.willDropTables(conn, map, allTables);
+            testDbAdapter.willDropTables(conn, map, allTables);
 
             // drop all tables in the map
             try (Statement stmt = conn.createStatement()) {
@@ -366,7 +366,7 @@ public class AllTestsSchemaManager {
     private void createSchema(DataNode node, DataMap map) throws Exception {
 
         try (Connection conn = dataSourceFactory.sharedDataSource().getConnection()) {
-            unitDbAdapter.willCreateTables(conn, map);
+            testDbAdapter.willCreateTables(conn, map);
             try (Statement stmt = conn.createStatement()) {
 
                 for (String query : tableCreateQueries(node, map)) {
@@ -374,7 +374,7 @@ public class AllTestsSchemaManager {
                     stmt.execute(query);
                 }
             }
-            unitDbAdapter.createdTables(conn, map);
+            testDbAdapter.createdTables(conn, map);
         }
     }
 
@@ -396,7 +396,7 @@ public class AllTestsSchemaManager {
 
         // FK constraints
         for (DbEntity ent : orderedEntities) {
-            if (!unitDbAdapter.supportsFKConstraints(ent)) {
+            if (!testDbAdapter.supportsFKConstraints(ent)) {
                 continue;
             }
 

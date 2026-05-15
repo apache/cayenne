@@ -34,7 +34,7 @@ public class DataContextCrossDBIT {
 
     @Test
     public void multiDBUpdate() {
-        if (!env.unitDbAdapter().supportsPKGeneratorConcurrency()) {
+        if (!env.testDbAdapter().supportsPKGeneratorConcurrency()) {
             return;
         }
         // for now testing that no exceptions are thrown... wouldn't hurt to check the

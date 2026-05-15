@@ -26,8 +26,8 @@ import org.apache.cayenne.map.ObjEntity;
 import org.apache.cayenne.query.ObjectSelect;
 import org.apache.cayenne.runtime.CayenneRuntime;
 import org.apache.cayenne.testdo.qualified.Qualified1;
-import org.apache.cayenne.unit.dba.DerbyUnitDbAdapter;
-import org.apache.cayenne.unit.dba.UnitDbAdapter;
+import org.apache.cayenne.unit.dba.DerbyTestDbAdapter;
+import org.apache.cayenne.unit.dba.TestDbAdapter;
 import org.apache.cayenne.unit.runtime.CayenneProjects;
 import org.apache.cayenne.unit.CayenneTestsEnv;
 import org.junit.jupiter.api.BeforeEach;
@@ -51,14 +51,14 @@ public class ConcurrentPkGeneratorIT {
 	static final CayenneTestsEnv env = CayenneTestsEnv.forProject(CayenneProjects.QUALIFIED_PROJECT);
 
 	private CayenneRuntime runtime;
-	private UnitDbAdapter unitDbAdapter;
+	private TestDbAdapter testDbAdapter;
 
 	@BeforeEach
 	public void prepareDerbyDb() {
 		runtime = env.runtime();
-		unitDbAdapter = env.unitDbAdapter();
+		testDbAdapter = env.testDbAdapter();
 		//use to fix random test failures on derby db
-		if(unitDbAdapter instanceof DerbyUnitDbAdapter) {
+		if(testDbAdapter instanceof DerbyTestDbAdapter) {
 			try(Connection connection = runtime.getDataDomain().getDataNode("qualified").getDataSource().getConnection()){
 				CallableStatement cs =
 						connection.prepareCall("CALL SYSCS_UTIL.SYSCS_SET_DATABASE_PROPERTY(?, ?)");
@@ -77,7 +77,7 @@ public class ConcurrentPkGeneratorIT {
      */
     @Test
     public void concurrentInserts() {
-    	if(!unitDbAdapter.supportsPKGeneratorConcurrency()) {
+    	if(!testDbAdapter.supportsPKGeneratorConcurrency()) {
     		return;
 		}
 

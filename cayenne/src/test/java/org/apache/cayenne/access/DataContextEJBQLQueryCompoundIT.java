@@ -24,7 +24,7 @@ import org.apache.cayenne.query.EJBQLQuery;
 import org.apache.cayenne.test.jdbc.TableHelper;
 import org.apache.cayenne.testdo.compound.CompoundFkTestEntity;
 import org.apache.cayenne.testdo.compound.CompoundPkTestEntity;
-import org.apache.cayenne.unit.dba.UnitDbAdapter;
+import org.apache.cayenne.unit.dba.TestDbAdapter;
 import org.apache.cayenne.unit.runtime.CayenneProjects;
 import org.apache.cayenne.unit.CayenneTestsEnv;
 import org.junit.jupiter.api.BeforeEach;
@@ -42,7 +42,7 @@ public class DataContextEJBQLQueryCompoundIT {
 	@RegisterExtension
 	static final CayenneTestsEnv env = CayenneTestsEnv.forProject(CayenneProjects.COMPOUND_PROJECT);
 
-	private UnitDbAdapter accessStackAdapter;
+	private TestDbAdapter accessStackAdapter;
 
 	private TableHelper tCompoundPk;
 	private TableHelper tCompoundFk;
@@ -50,7 +50,7 @@ public class DataContextEJBQLQueryCompoundIT {
 	
 	@BeforeEach
 	public void setUp() throws Exception {
-		accessStackAdapter = env.unitDbAdapter();
+		accessStackAdapter = env.testDbAdapter();
 		tCompoundPk = env.table("COMPOUND_PK_TEST", "KEY1", "KEY2");
 
 		tCompoundFk = env.table("COMPOUND_FK_TEST", "PKEY", "F_KEY1", "F_KEY2");

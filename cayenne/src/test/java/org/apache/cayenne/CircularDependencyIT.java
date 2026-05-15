@@ -23,7 +23,7 @@ import org.apache.cayenne.test.jdbc.TableHelper;
 import org.apache.cayenne.testdo.relationships.E1;
 import org.apache.cayenne.testdo.relationships.E2;
 import org.apache.cayenne.testdo.relationships.ReflexiveAndToOne;
-import org.apache.cayenne.unit.dba.OracleUnitDbAdapter;
+import org.apache.cayenne.unit.dba.OracleTestDbAdapter;
 import org.apache.cayenne.unit.runtime.CayenneProjects;
 import org.apache.cayenne.unit.CayenneTestsEnv;
 import org.junit.jupiter.api.extension.RegisterExtension;
@@ -70,7 +70,7 @@ public class CircularDependencyIT {
 
         CayenneRuntimeException ex = assertThrows(CayenneRuntimeException.class, () -> env.context().commitChanges());
         // TODO: Oracle adapter still does not fully support key generation.
-        if (env.unitDbAdapter() instanceof OracleUnitDbAdapter) {
+        if (env.testDbAdapter() instanceof OracleTestDbAdapter) {
             assertTrue(ex.getCause().getMessage().contains("parent key not found"));
         } else {
             assertTrue(ex.getMessage().contains("PK is not generated"),

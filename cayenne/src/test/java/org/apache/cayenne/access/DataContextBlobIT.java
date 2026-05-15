@@ -50,11 +50,11 @@ public class DataContextBlobIT {
     }
 
     protected boolean skipTests() {
-        return !env.unitDbAdapter().supportsLobs();
+        return !env.testDbAdapter().supportsLobs();
     }
 
     protected boolean skipEmptyLOBTests() {
-        return !env.unitDbAdapter().handlesNullVsEmptyLOBs();
+        return !env.testDbAdapter().handlesNullVsEmptyLOBs();
     }
 
     @Test

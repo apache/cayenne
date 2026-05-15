@@ -27,7 +27,7 @@ import org.apache.cayenne.exp.Expression;
 import org.apache.cayenne.exp.ExpressionFactory;
 import org.apache.cayenne.query.ObjectSelect;
 import org.apache.cayenne.testdo.legacy_datetime.DateTestEntity;
-import org.apache.cayenne.unit.dba.UnitDbAdapter;
+import org.apache.cayenne.unit.dba.TestDbAdapter;
 import org.apache.cayenne.unit.runtime.CayenneProjects;
 import org.apache.cayenne.unit.CayenneTestsEnv;
 import org.junit.jupiter.api.BeforeEach;
@@ -42,11 +42,11 @@ public class ASTExtractIT {
     @RegisterExtension
     static final CayenneTestsEnv env = CayenneTestsEnv.forProject(CayenneProjects.LEGACY_DATE_TIME_PROJECT);
 
-    private UnitDbAdapter unitDbAdapter;
+    private TestDbAdapter testDbAdapter;
 
     @BeforeEach
     public void createDataSet() throws Exception {
-        unitDbAdapter = env.unitDbAdapter();
+        testDbAdapter = env.testDbAdapter();
         Calendar cal = Calendar.getInstance();
         cal.set(Calendar.MILLISECOND, 0);
 
@@ -85,7 +85,7 @@ public class ASTExtractIT {
             long res = ObjectSelect.query(DateTestEntity.class, exp).selectCount(env.context());
             assertEquals(1, res);
         } catch (CayenneRuntimeException e) {
-            if(unitDbAdapter.supportsExtractPart(ASTExtract.DateTimePart.YEAR)) {
+            if(testDbAdapter.supportsExtractPart(ASTExtract.DateTimePart.YEAR)) {
                 throw e;
             } // else ok
         }
@@ -99,7 +99,7 @@ public class ASTExtractIT {
             long res = ObjectSelect.query(DateTestEntity.class, exp).selectCount(env.context());
             assertEquals(1, res);
         } catch (CayenneRuntimeException e) {
-            if(unitDbAdapter.supportsExtractPart(ASTExtract.DateTimePart.MONTH)) {
+            if(testDbAdapter.supportsExtractPart(ASTExtract.DateTimePart.MONTH)) {
                 throw e;
             } // else ok
         }
@@ -113,7 +113,7 @@ public class ASTExtractIT {
             long res = ObjectSelect.query(DateTestEntity.class, exp).selectCount(env.context());
             assertEquals(1, res);
         } catch (CayenneRuntimeException e) {
-            if(unitDbAdapter.supportsExtractPart(ASTExtract.DateTimePart.WEEK)) {
+            if(testDbAdapter.supportsExtractPart(ASTExtract.DateTimePart.WEEK)) {
                 throw e;
             } // else ok
         }
@@ -127,7 +127,7 @@ public class ASTExtractIT {
             long res = ObjectSelect.query(DateTestEntity.class, exp).selectCount(env.context());
             assertEquals(1, res);
         } catch (CayenneRuntimeException e) {
-            if(unitDbAdapter.supportsExtractPart(ASTExtract.DateTimePart.DAY_OF_YEAR)) {
+            if(testDbAdapter.supportsExtractPart(ASTExtract.DateTimePart.DAY_OF_YEAR)) {
                 throw e;
             } // else ok
         }
@@ -142,7 +142,7 @@ public class ASTExtractIT {
             assertTrue(res.contains(59));
             assertTrue(res.contains(89));
         } catch (CayenneRuntimeException e) {
-            if(unitDbAdapter.supportsExtractPart(ASTExtract.DateTimePart.DAY_OF_YEAR)) {
+            if(testDbAdapter.supportsExtractPart(ASTExtract.DateTimePart.DAY_OF_YEAR)) {
                 throw e;
             } // else ok
         }
@@ -155,7 +155,7 @@ public class ASTExtractIT {
             long res = ObjectSelect.query(DateTestEntity.class, exp).selectCount(env.context());
             assertEquals(1, res);
         } catch (CayenneRuntimeException e) {
-            if(unitDbAdapter.supportsExtractPart(ASTExtract.DateTimePart.DAY)) {
+            if(testDbAdapter.supportsExtractPart(ASTExtract.DateTimePart.DAY)) {
                 throw e;
             } // else ok
         }
@@ -168,7 +168,7 @@ public class ASTExtractIT {
             long res = ObjectSelect.query(DateTestEntity.class, exp).selectCount(env.context());
             assertEquals(1, res);
         } catch (CayenneRuntimeException e) {
-            if(unitDbAdapter.supportsExtractPart(ASTExtract.DateTimePart.DAY_OF_MONTH)) {
+            if(testDbAdapter.supportsExtractPart(ASTExtract.DateTimePart.DAY_OF_MONTH)) {
                 throw e;
             } // else ok
         }
@@ -181,7 +181,7 @@ public class ASTExtractIT {
             long res = ObjectSelect.query(DateTestEntity.class, exp).selectCount(env.context());
             assertEquals(1, res);
         } catch (CayenneRuntimeException e) {
-            if(unitDbAdapter.supportsExtractPart(ASTExtract.DateTimePart.DAY_OF_WEEK)) {
+            if(testDbAdapter.supportsExtractPart(ASTExtract.DateTimePart.DAY_OF_WEEK)) {
                 throw e;
             }
         }
@@ -194,7 +194,7 @@ public class ASTExtractIT {
             long res = ObjectSelect.query(DateTestEntity.class, exp).selectCount(env.context());
             assertEquals(1, res);
         } catch (CayenneRuntimeException e) {
-            if(unitDbAdapter.supportsExtractPart(ASTExtract.DateTimePart.HOUR)) {
+            if(testDbAdapter.supportsExtractPart(ASTExtract.DateTimePart.HOUR)) {
                 throw e;
             } // else ok
         }
@@ -207,7 +207,7 @@ public class ASTExtractIT {
             long res = ObjectSelect.query(DateTestEntity.class, exp).selectCount(env.context());
             assertEquals(1, res);
         } catch (CayenneRuntimeException e) {
-            if(unitDbAdapter.supportsExtractPart(ASTExtract.DateTimePart.MINUTE)) {
+            if(testDbAdapter.supportsExtractPart(ASTExtract.DateTimePart.MINUTE)) {
                 throw e;
             }
         }
@@ -220,7 +220,7 @@ public class ASTExtractIT {
             long res = ObjectSelect.query(DateTestEntity.class, exp).selectCount(env.context());
             assertEquals(1, res);
         } catch (CayenneRuntimeException e) {
-            if(unitDbAdapter.supportsExtractPart(ASTExtract.DateTimePart.SECOND)) {
+            if(testDbAdapter.supportsExtractPart(ASTExtract.DateTimePart.SECOND)) {
                 throw e;
             }
         }

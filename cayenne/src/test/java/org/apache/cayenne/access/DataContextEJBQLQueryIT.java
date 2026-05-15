@@ -26,7 +26,7 @@ import org.apache.cayenne.reflect.LifecycleCallbackRegistry;
 import org.apache.cayenne.test.jdbc.TableHelper;
 import org.apache.cayenne.testdo.testmap.Artist;
 import org.apache.cayenne.testdo.testmap.Painting;
-import org.apache.cayenne.unit.dba.UnitDbAdapter;
+import org.apache.cayenne.unit.dba.TestDbAdapter;
 import org.apache.cayenne.unit.runtime.CayenneProjects;
 import org.apache.cayenne.unit.CayenneTestsEnv;
 import org.junit.jupiter.api.BeforeEach;
@@ -49,7 +49,7 @@ public class DataContextEJBQLQueryIT {
     @RegisterExtension
     static final CayenneTestsEnv env = CayenneTestsEnv.forProject(CayenneProjects.TESTMAP_PROJECT);
 
-    private UnitDbAdapter accessStackAdapter;
+    private TestDbAdapter accessStackAdapter;
 
     private TableHelper tArtist;
     private TableHelper tPainting;
@@ -57,7 +57,7 @@ public class DataContextEJBQLQueryIT {
     
     @BeforeEach
     public void setUp() throws Exception {
-        accessStackAdapter = env.unitDbAdapter();
+        accessStackAdapter = env.testDbAdapter();
         tArtist = env.table("ARTIST", "ARTIST_ID", "ARTIST_NAME");
 
         tPainting = env.table("PAINTING").setColumns(

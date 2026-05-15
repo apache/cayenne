@@ -50,7 +50,7 @@ public class SelectQueryClobIT {
      */
     @Test
     public void selectLikeIgnoreCaseClob() throws Exception {
-        if (env.unitDbAdapter().supportsLobs()) {
+        if (env.testDbAdapter().supportsLobs()) {
             createClobDataSet();
             List<?> objects = ObjectSelect.query(ClobTestEntity.class)
                     .where(ClobTestEntity.CLOB_COL.likeIgnoreCase("clob%"))
@@ -61,7 +61,7 @@ public class SelectQueryClobIT {
 
     @Test
     public void selectFetchLimit_Offset_DistinctClob() throws Exception {
-        if (env.unitDbAdapter().supportsLobs()) {
+        if (env.testDbAdapter().supportsLobs()) {
             createClobDataSet();
 
             // see CAY-1539... CLOB column causes suppression of DISTINCT in
@@ -78,7 +78,7 @@ public class SelectQueryClobIT {
 
     @Test
     public void selectEqualsClob() throws Exception {
-        if (env.unitDbAdapter().supportsLobComparisons()) {
+        if (env.testDbAdapter().supportsLobComparisons()) {
             createClobDataSet();
             List<?> objects = ObjectSelect.query(ClobTestEntity.class)
                     .where(ClobTestEntity.CLOB_COL.eq("clob1"))
@@ -89,7 +89,7 @@ public class SelectQueryClobIT {
 
     @Test
     public void selectNotEqualsClob() throws Exception {
-        if (env.unitDbAdapter().supportsLobComparisons()) {
+        if (env.testDbAdapter().supportsLobComparisons()) {
             createClobDataSet();
             List<?> objects = ObjectSelect.query(ClobTestEntity.class)
                     .where(ClobTestEntity.CLOB_COL.ne("clob1"))
@@ -100,7 +100,7 @@ public class SelectQueryClobIT {
 
     @Test
     public void selectNotEqualsEmptyClob() throws Exception {
-        if (env.unitDbAdapter().supportsLobComparisons()) {
+        if (env.testDbAdapter().supportsLobComparisons()) {
             createClobDataSet();
             List<?> objects = ObjectSelect.query(ClobTestEntity.class)
                     .where(ClobTestEntity.CLOB_COL.ne(""))

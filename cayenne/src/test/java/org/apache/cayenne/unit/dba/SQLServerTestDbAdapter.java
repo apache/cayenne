@@ -25,9 +25,9 @@ import org.apache.cayenne.map.DataMap;
 import java.sql.Connection;
 import java.util.Collection;
 
-public class SQLServerUnitDbAdapter extends SybaseUnitDbAdapter {
+public class SQLServerTestDbAdapter extends SybaseTestDbAdapter {
 
-    public SQLServerUnitDbAdapter(DbAdapter adapter) {
+    public SQLServerTestDbAdapter(DbAdapter adapter) {
         super(adapter);
     }
 
@@ -37,7 +37,7 @@ public class SQLServerUnitDbAdapter extends SybaseUnitDbAdapter {
     }
 
     @Override
-    public void willCreateTables(Connection con, DataMap map) throws Exception {
+    public void willCreateTables(Connection con, DataMap map) {
     }
 
     @Override

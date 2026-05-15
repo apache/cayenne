@@ -21,7 +21,7 @@ package org.apache.cayenne.dba;
 
 import org.apache.cayenne.access.DataNode;
 import org.apache.cayenne.map.DbEntity;
-import org.apache.cayenne.unit.dba.UnitDbAdapter;
+import org.apache.cayenne.unit.dba.TestDbAdapter;
 import org.apache.cayenne.unit.runtime.CayenneProjects;
 import org.apache.cayenne.unit.CayenneTestsEnv;
 import org.junit.jupiter.api.BeforeEach;
@@ -40,7 +40,7 @@ public class PkGeneratorIT {
     @RegisterExtension
     static final CayenneTestsEnv env = CayenneTestsEnv.forProject(CayenneProjects.TESTMAP_PROJECT);
 
-    private UnitDbAdapter accessStackAdapter;
+    private TestDbAdapter accessStackAdapter;
     private DataNode node;
 
     private PkGenerator pkGenerator;
@@ -48,7 +48,7 @@ public class PkGeneratorIT {
 
     @BeforeEach
     public void setUp() throws Exception {
-        accessStackAdapter = env.unitDbAdapter();
+        accessStackAdapter = env.testDbAdapter();
         node = env.dataNode();
         pkGenerator = node.getAdapter().getPkGenerator();
         paintingEntity = node.getEntityResolver().getDbEntity("PAINTING");
