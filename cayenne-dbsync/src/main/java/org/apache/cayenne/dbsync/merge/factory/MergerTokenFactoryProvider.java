@@ -43,6 +43,14 @@ public class MergerTokenFactoryProvider {
     }
 
     public MergerTokenFactory get(DbAdapter adapter) throws DIRuntimeException {
-        return perAdapterValues.getOrDefault(adapter.unwrap().getClass().getName(), defaultValue);
+        // walk up the class hierarchy so subclasses (e.g. HSQLDBNoSchemaAdapter)
+        // resolve to the factory mapped against their parent (HSQLDBAdapter)
+        for (Class<?> c = adapter.unwrap().getClass(); DbAdapter.class.isAssignableFrom(c); c = c.getSuperclass()) {
+            MergerTokenFactory factory = perAdapterValues.get(c.getName());
+            if (factory != null) {
+                return factory;
+            }
+        }
+        return defaultValue;
     }
 }
