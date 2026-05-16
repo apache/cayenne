@@ -25,7 +25,6 @@ import org.apache.cayenne.access.types.*;
 import org.apache.cayenne.configuration.ConfigurationNameMapper;
 import org.apache.cayenne.configuration.Constants;
 import org.apache.cayenne.configuration.DataMapLoader;
-import org.apache.cayenne.configuration.DataSourceDescriptor;
 import org.apache.cayenne.configuration.DefaultConfigurationNameMapper;
 import org.apache.cayenne.configuration.DefaultObjectStoreFactory;
 import org.apache.cayenne.configuration.DefaultRuntimeProperties;
@@ -39,7 +38,6 @@ import org.apache.cayenne.configuration.xml.HandlerFactory;
 import org.apache.cayenne.configuration.xml.NoopDataChannelMetaData;
 import org.apache.cayenne.configuration.xml.XMLDataMapLoader;
 import org.apache.cayenne.configuration.xml.XMLReaderProvider;
-import org.apache.cayenne.dba.DbAdapter;
 import org.apache.cayenne.dba.JdbcPkGenerator;
 import org.apache.cayenne.dba.PkGenerator;
 import org.apache.cayenne.dba.db2.DB2Adapter;
@@ -65,11 +63,8 @@ import org.apache.cayenne.dba.sybase.SybasePkGenerator;
 import org.apache.cayenne.di.AdhocObjectFactory;
 import org.apache.cayenne.di.Binder;
 import org.apache.cayenne.di.ClassLoaderManager;
-import org.apache.cayenne.di.DIRuntimeException;
-import org.apache.cayenne.di.Inject;
 import org.apache.cayenne.di.Key;
 import org.apache.cayenne.di.Module;
-import org.apache.cayenne.di.Provider;
 import org.apache.cayenne.di.spi.DefaultAdhocObjectFactory;
 import org.apache.cayenne.di.spi.DefaultClassLoaderManager;
 import org.apache.cayenne.log.JdbcEventLogger;
@@ -78,13 +73,6 @@ import org.apache.cayenne.reflect.generic.DefaultValueComparisonStrategyFactory;
 import org.apache.cayenne.reflect.generic.ValueComparisonStrategyFactory;
 import org.apache.cayenne.resource.ClassLoaderResourceLocator;
 import org.apache.cayenne.resource.ResourceLocator;
-import org.apache.cayenne.unit.testcontainers.Db2ContainerProvider;
-import org.apache.cayenne.unit.testcontainers.MariaDbContainerProvider;
-import org.apache.cayenne.unit.testcontainers.MysqlContainerProvider;
-import org.apache.cayenne.unit.testcontainers.OracleContainerProvider;
-import org.apache.cayenne.unit.testcontainers.PostgresContainerProvider;
-import org.apache.cayenne.unit.testcontainers.SqlServerContainerProvider;
-import org.apache.cayenne.unit.testcontainers.TestContainerProvider;
 import org.xml.sax.XMLReader;
 
 import java.util.Calendar;
@@ -149,26 +137,6 @@ public class RuntimeCaseModule implements Module {
         binder.bind(JdbcEventLogger.class).to(Slf4jJdbcEventLogger.class);
         binder.bind(RuntimeProperties.class).to(DefaultRuntimeProperties.class);
         binder.bind(ObjectMapRetainStrategy.class).to(DefaultObjectMapRetainStrategy.class);
-
-        binder.bindMap(TestContainerProvider.class)
-                .put("mysql", MysqlContainerProvider.class)
-                .put("mariadb", MariaDbContainerProvider.class)
-                .put("postgres", PostgresContainerProvider.class)
-                .put("sqlserver", SqlServerContainerProvider.class)
-                .put("oracle", OracleContainerProvider.class)
-                .put("db2", Db2ContainerProvider.class);
-
-        binder.bind(UnitDataSourceDescriptor.class).toProvider(RuntimeCaseDataSourceDescriptorProvider.class);
-        binder.bind(DataSourceDescriptor.class).toProviderInstance(new Provider<>() {
-            @Inject
-            UnitDataSourceDescriptor unitDataSourceDescriptor;
-
-            @Override
-            public DataSourceDescriptor get() throws DIRuntimeException {
-                return unitDataSourceDescriptor;
-            }
-        });
-        binder.bind(DbAdapter.class).toProvider(RuntimeCaseDbAdapterProvider.class);
 
         // this factory is a hack that allows to inject to DbAdapters loaded outside of
         // server runtime... BatchQueryBuilderFactory is hardcoded and whatever is placed

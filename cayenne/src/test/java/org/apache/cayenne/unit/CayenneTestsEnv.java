@@ -34,7 +34,6 @@ import org.apache.cayenne.configuration.runtime.DbAdapterFactory;
 import org.apache.cayenne.datasource.DataSourceBuilder;
 import org.apache.cayenne.dba.DbAdapter;
 import org.apache.cayenne.di.AdhocObjectFactory;
-import org.apache.cayenne.di.DIBootstrap;
 import org.apache.cayenne.di.Injector;
 import org.apache.cayenne.di.Module;
 import org.apache.cayenne.log.JdbcEventLogger;
@@ -46,7 +45,6 @@ import org.apache.cayenne.test.jdbc.DbHelper;
 import org.apache.cayenne.test.jdbc.TableHelper;
 import org.apache.cayenne.unit.dba.TestDbAdapter;
 import org.apache.cayenne.unit.runtime.FlavoredDbHelper;
-import org.apache.cayenne.unit.runtime.RuntimeCaseModule;
 import org.apache.cayenne.unit.util.SQLTemplateCustomizer;
 import org.junit.jupiter.api.extension.AfterEachCallback;
 import org.junit.jupiter.api.extension.BeforeEachCallback;
@@ -64,25 +62,22 @@ import java.util.stream.Collectors;
  */
 public class CayenneTestsEnv implements BeforeEachCallback, AfterEachCallback {
 
-    private static final Injector INJECTOR;
-
     // shared stack parts... use these directly from the tests
+    // TODO: we should support multiple physically-isolated schemas for cleaner tests
     public static final DbSchemaManager COMMON_SCHEMA;
 
     static {
-        INJECTOR = DIBootstrap.createInjector(new RuntimeCaseModule());
-
-        DataSourceDescriptor dataSourceDescriptor = INJECTOR.getInstance(DataSourceDescriptor.class);
-        DataSource dataSource = DataSourceBuilder
-                .url(dataSourceDescriptor.getDataSourceUrl())
-                .driver(dataSourceDescriptor.getJdbcDriver())
-                .userName(dataSourceDescriptor.getUserName())
-                .password(dataSourceDescriptor.getPassword())
-                .pool(dataSourceDescriptor.getMinConnections(), dataSourceDescriptor.getMaxConnections())
+        DataSourceDescriptor dsDescriptor = TestDataSourceDescriptorFactory.create();
+        DataSource ds = DataSourceBuilder
+                .url(dsDescriptor.getDataSourceUrl())
+                .driver(dsDescriptor.getJdbcDriver())
+                .userName(dsDescriptor.getUserName())
+                .password(dsDescriptor.getPassword())
+                .pool(dsDescriptor.getMinConnections(), dsDescriptor.getMaxConnections())
                 .build();
 
         // "cayenne-ALL.xml" is a special synthetic project file that includes all test DataMaps
-        COMMON_SCHEMA = new DbSchemaManager("cayenne-ALL.xml", dataSource);
+        COMMON_SCHEMA = new DbSchemaManager("cayenne-ALL.xml", dsDescriptor, ds);
         COMMON_SCHEMA.rebuildSchema();
     }
 
@@ -261,10 +256,6 @@ public class CayenneTestsEnv implements BeforeEachCallback, AfterEachCallback {
 
     public DbCleaner dbCleaner() {
         return dbCleaner;
-    }
-
-    public DataSourceDescriptor dataSourceDescriptor() {
-        return INJECTOR.getInstance(DataSourceDescriptor.class);
     }
 
     public SQLTemplateCustomizer sqlTemplateCustomizer() {

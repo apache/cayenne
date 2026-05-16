@@ -17,7 +17,7 @@
  *  under the License.
  ****************************************************************/
 
-package org.apache.cayenne.unit.runtime;
+package org.apache.cayenne.unit;
 
 import org.apache.cayenne.configuration.DataSourceDescriptor;
 

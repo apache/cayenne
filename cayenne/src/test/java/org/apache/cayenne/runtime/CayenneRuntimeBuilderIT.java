@@ -59,8 +59,8 @@ public class CayenneRuntimeBuilderIT {
     @BeforeEach
     public void setUp() throws Exception {
 
-        this.dsi = env.dataSourceDescriptor();
-        this.dataSource = env.runtime().getDataSource("testmap");
+        this.dsi = CayenneTestsEnv.COMMON_SCHEMA.dataSourceDescriptor();
+        this.dataSource = CayenneTestsEnv.COMMON_SCHEMA.dataSource();
 
         env.table("ARTIST", "ARTIST_ID", "ARTIST_NAME")
                 .insert(33001, "AA1")

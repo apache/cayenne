@@ -40,7 +40,7 @@ public class BasePoolingDataSourceIT {
 
 	@BeforeEach
 	public void before() throws SQLException {
-        DataSourceDescriptor dataSourceInfo = env.dataSourceDescriptor();
+        DataSourceDescriptor dataSourceInfo = CayenneTestsEnv.COMMON_SCHEMA.dataSourceDescriptor();
         AdhocObjectFactory objectFactory = env.adhocObjectFactory();
 
 		Driver driver = objectFactory.newInstance(Driver.class, dataSourceInfo.getJdbcDriver());

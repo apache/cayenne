@@ -16,15 +16,19 @@
  *  specific language governing permissions and limitations
  *  under the License.
  ****************************************************************/
-package org.apache.cayenne.unit.runtime;
+package org.apache.cayenne.unit;
 
 import org.apache.cayenne.ConfigurationException;
 import org.apache.cayenne.dba.derby.DerbyAdapter;
 import org.apache.cayenne.dba.h2.H2Adapter;
 import org.apache.cayenne.dba.hsqldb.HSQLDBAdapter;
 import org.apache.cayenne.dba.sqlite.SQLiteAdapter;
-import org.apache.cayenne.di.Inject;
-import org.apache.cayenne.di.Provider;
+import org.apache.cayenne.unit.testcontainers.Db2ContainerProvider;
+import org.apache.cayenne.unit.testcontainers.MariaDbContainerProvider;
+import org.apache.cayenne.unit.testcontainers.MysqlContainerProvider;
+import org.apache.cayenne.unit.testcontainers.OracleContainerProvider;
+import org.apache.cayenne.unit.testcontainers.PostgresContainerProvider;
+import org.apache.cayenne.unit.testcontainers.SqlServerContainerProvider;
 import org.apache.cayenne.unit.testcontainers.TestContainerProvider;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -37,9 +41,9 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.Properties;
 
-public class RuntimeCaseDataSourceDescriptorProvider implements Provider<UnitDataSourceDescriptor> {
+public class TestDataSourceDescriptorFactory {
 
-    private static final Logger logger = LoggerFactory.getLogger(RuntimeCaseDataSourceDescriptorProvider.class);
+    private static final Logger LOGGER = LoggerFactory.getLogger(TestDataSourceDescriptorFactory.class);
 
     private static final String PROPERTIES_FILE = "connection.properties";
     private static final String CONNECTION_NAME_KEY = "cayenneTestConnection";
@@ -50,86 +54,32 @@ public class RuntimeCaseDataSourceDescriptorProvider implements Provider<UnitDat
     private static final String URL_KEY_MAVEN = "cayenneJdbcUrl";
     private static final String DRIVER_KEY_MAVEN = "cayenneJdbcDriver";
 
-    private Map<String, UnitDataSourceDescriptor> inMemoryDataSources;
-    private ConnectionProperties connectionProperties;
 
-    private final Map<String, TestContainerProvider> testContainerProviders;
+    public static UnitDataSourceDescriptor create() {
 
-    public RuntimeCaseDataSourceDescriptorProvider(@Inject Map<String, TestContainerProvider> testContainerProviders)
-            throws IOException {
-
-        this.testContainerProviders = testContainerProviders;
         Map<String, String> propertiesMap = new HashMap<>();
 
         File file = connectionPropertiesFile();
-        if(file.exists()) {
+        if (file.exists()) {
             Properties properties = new Properties();
             properties.load(new FileReader(file));
             properties.forEach((k, v) -> propertiesMap.put(k.toString(), v.toString()));
         }
 
-        this.connectionProperties = new ConnectionProperties(propertiesMap);
-        logger.info("Loaded  " + connectionProperties.size() + " DataSource configurations from properties file");
-
-        this.inMemoryDataSources = new HashMap<>();
-
-        // preload default in-memory DataSources. Will use them as defaults if
-        // nothing is configured in ~/.cayenne/connection.properties
-        UnitDataSourceDescriptor hsqldb = new UnitDataSourceDescriptor();
-        hsqldb.setAdapterClassName(HSQLDBAdapter.class.getName());
-        hsqldb.setUserName("sa");
-        hsqldb.setPassword("");
-        hsqldb.setDataSourceUrl("jdbc:hsqldb:mem:aname;sql.regular_names=false");
-        hsqldb.setJdbcDriver("org.hsqldb.jdbcDriver");
-        hsqldb.setMinConnections(ConnectionProperties.MIN_CONNECTIONS);
-        hsqldb.setMaxConnections(ConnectionProperties.MAX_CONNECTIONS);
-        inMemoryDataSources.put("hsql", hsqldb);
-
-        UnitDataSourceDescriptor h2 = new UnitDataSourceDescriptor();
-        h2.setAdapterClassName(H2Adapter.class.getName());
-        h2.setUserName("sa");
-        h2.setPassword("");
-        h2.setDataSourceUrl("jdbc:h2:mem:aname;DB_CLOSE_DELAY=-1;");
-        h2.setJdbcDriver("org.h2.Driver");
-        h2.setMinConnections(ConnectionProperties.MIN_CONNECTIONS);
-        h2.setMaxConnections(ConnectionProperties.MAX_CONNECTIONS);
-        inMemoryDataSources.put("h2", h2);
-
-        UnitDataSourceDescriptor derby = new UnitDataSourceDescriptor();
-        derby.setAdapterClassName(DerbyAdapter.class.getName());
-        derby.setUserName("sa");
-        derby.setPassword("");
-        derby.setDataSourceUrl("jdbc:derby:target/testdb;create=true");
-        derby.setJdbcDriver("org.apache.derby.jdbc.EmbeddedDriver");
-        derby.setMinConnections(ConnectionProperties.MIN_CONNECTIONS);
-        derby.setMaxConnections(ConnectionProperties.MAX_CONNECTIONS);
-        inMemoryDataSources.put("derby", derby);
-
-        UnitDataSourceDescriptor sqlite = new UnitDataSourceDescriptor();
-        sqlite.setAdapterClassName(SQLiteAdapter.class.getName());
-        sqlite.setUserName("sa");
-        sqlite.setPassword("");
-        sqlite.setDataSourceUrl("jdbc:sqlite:file:memdb?mode=memory&cache=shared&date_class=text");
-        sqlite.setJdbcDriver("org.sqlite.JDBC");
-        sqlite.setMinConnections(ConnectionProperties.MIN_CONNECTIONS);
-        sqlite.setMaxConnections(ConnectionProperties.MAX_CONNECTIONS);
-        inMemoryDataSources.put("sqlite", sqlite);
-    }
-
-    @Override
-    public UnitDataSourceDescriptor get() throws ConfigurationException {
+        ConnectionProperties connectionProperties = new ConnectionProperties(propertiesMap);
+        LOGGER.info("Loaded  " + connectionProperties.size() + " DataSource configurations from properties file");
 
         String connectionKey = property(CONNECTION_NAME_KEY);
         if (connectionKey == null) {
             connectionKey = "hsql";
         }
 
-        logger.info("Connection key: " + connectionKey);
+        LOGGER.info("Connection key: " + connectionKey);
         UnitDataSourceDescriptor connectionInfo = connectionProperties.getConnection(connectionKey);
 
         // attempt default if invalid key is specified
         if (connectionInfo == null) {
-            connectionInfo = inMemoryDataSources.get(connectionKey);
+            connectionInfo = checkInMemoryDataSource(connectionKey);
         }
 
         if (connectionInfo == null) {
@@ -142,11 +92,62 @@ public class RuntimeCaseDataSourceDescriptorProvider implements Provider<UnitDat
             throw new ConfigurationException("No connection info for key: " + connectionKey);
         }
 
-        logger.info("loaded connection info: " + connectionInfo);
+        LOGGER.info("loaded connection info: " + connectionInfo);
         return connectionInfo;
     }
 
-    private UnitDataSourceDescriptor checkTestContainersDataSource(String connectionKey) {
+    private static UnitDataSourceDescriptor checkInMemoryDataSource(String connectionKey) {
+        return switch (connectionKey) {
+            case "hsql" -> {
+                UnitDataSourceDescriptor descriptor = new UnitDataSourceDescriptor();
+                descriptor.setAdapterClassName(HSQLDBAdapter.class.getName());
+                descriptor.setUserName("sa");
+                descriptor.setPassword("");
+                descriptor.setDataSourceUrl("jdbc:hsqldb:mem:aname;sql.regular_names=false");
+                descriptor.setJdbcDriver("org.hsqldb.jdbcDriver");
+                descriptor.setMinConnections(ConnectionProperties.MIN_CONNECTIONS);
+                descriptor.setMaxConnections(ConnectionProperties.MAX_CONNECTIONS);
+                yield descriptor;
+            }
+            case "h2" -> {
+                UnitDataSourceDescriptor descriptor = new UnitDataSourceDescriptor();
+                descriptor.setAdapterClassName(H2Adapter.class.getName());
+                descriptor.setUserName("sa");
+                descriptor.setPassword("");
+                descriptor.setDataSourceUrl("jdbc:h2:mem:aname;DB_CLOSE_DELAY=-1;");
+                descriptor.setJdbcDriver("org.h2.Driver");
+                descriptor.setMinConnections(ConnectionProperties.MIN_CONNECTIONS);
+                descriptor.setMaxConnections(ConnectionProperties.MAX_CONNECTIONS);
+                yield descriptor;
+            }
+            case "derby" -> {
+                UnitDataSourceDescriptor descriptor = new UnitDataSourceDescriptor();
+                descriptor.setAdapterClassName(DerbyAdapter.class.getName());
+                descriptor.setUserName("sa");
+                descriptor.setPassword("");
+                descriptor.setDataSourceUrl("jdbc:derby:target/testdb;create=true");
+                descriptor.setJdbcDriver("org.apache.derby.jdbc.EmbeddedDriver");
+                descriptor.setMinConnections(ConnectionProperties.MIN_CONNECTIONS);
+                descriptor.setMaxConnections(ConnectionProperties.MAX_CONNECTIONS);
+                yield descriptor;
+            }
+            case "sqlite" -> {
+                UnitDataSourceDescriptor descriptor = new UnitDataSourceDescriptor();
+                descriptor.setAdapterClassName(SQLiteAdapter.class.getName());
+                descriptor.setUserName("sa");
+                descriptor.setPassword("");
+                descriptor.setDataSourceUrl("jdbc:sqlite:file:memdb?mode=memory&cache=shared&date_class=text");
+                descriptor.setJdbcDriver("org.sqlite.JDBC");
+                descriptor.setMinConnections(ConnectionProperties.MIN_CONNECTIONS);
+                descriptor.setMaxConnections(ConnectionProperties.MAX_CONNECTIONS);
+                yield descriptor;
+            }
+            default -> null;
+        };
+    }
+
+    private static UnitDataSourceDescriptor checkTestContainersDataSource(String connectionKey) {
+
         // special case for the testcontainers profile
         if (!connectionKey.endsWith("-tc")) {
             return null;
@@ -154,12 +155,21 @@ public class RuntimeCaseDataSourceDescriptorProvider implements Provider<UnitDat
 
         String db = connectionKey.substring(0, connectionKey.length() - 3);
 
-        TestContainerProvider testContainerProvider = testContainerProviders.get(db);
-        if(testContainerProvider == null) {
+        TestContainerProvider testContainerProvider = switch (db) {
+            case "mysql" -> new MysqlContainerProvider();
+            case "mariadb" -> new MariaDbContainerProvider();
+            case "postgres" -> new PostgresContainerProvider();
+            case "sqlserver" -> new SqlServerContainerProvider();
+            case "oracle" -> new OracleContainerProvider();
+            case "db2" -> new Db2ContainerProvider();
+            default -> null;
+        };
+
+        if (testContainerProvider == null) {
             return null;
         }
 
-        String version = property(CONNECTION_DB_VERSION);
+        String version = System.getProperty(CONNECTION_DB_VERSION);
         JdbcDatabaseContainer<?> container = testContainerProvider.startContainer(version);
 
         UnitDataSourceDescriptor sourceInfo = new UnitDataSourceDescriptor();
@@ -173,23 +183,23 @@ public class RuntimeCaseDataSourceDescriptorProvider implements Provider<UnitDat
         return sourceInfo;
     }
 
-    private File connectionPropertiesFile() {
+    private static File connectionPropertiesFile() {
         return new File(cayenneUserDir(), PROPERTIES_FILE);
     }
 
-    private File cayenneUserDir() {
+    private static File cayenneUserDir() {
         File homeDir = new File(System.getProperty("user.home"));
         return new File(homeDir, ".cayenne");
     }
 
-    private UnitDataSourceDescriptor applyOverrides(UnitDataSourceDescriptor connectionInfo) {
-        String adapter = property(ADAPTER_KEY_MAVEN);
-        String user = property(USER_NAME_KEY_MAVEN);
-        String pass = property(PASSWORD_KEY_MAVEN);
-        String url = property(URL_KEY_MAVEN);
-        String driver = property(DRIVER_KEY_MAVEN);
+    private static UnitDataSourceDescriptor applyOverrides(UnitDataSourceDescriptor connectionInfo) {
+        String adapter = System.getProperty(ADAPTER_KEY_MAVEN);
+        String user = System.getProperty(USER_NAME_KEY_MAVEN);
+        String pass = System.getProperty(PASSWORD_KEY_MAVEN);
+        String url = System.getProperty(URL_KEY_MAVEN);
+        String driver = System.getProperty(DRIVER_KEY_MAVEN);
         // no overrides, do nothing
-        if(adapter == null && user == null && pass == null && url == null && driver == null) {
+        if (adapter == null && user == null && pass == null && url == null && driver == null) {
             return connectionInfo;
         }
 
@@ -226,10 +236,5 @@ public class RuntimeCaseDataSourceDescriptorProvider implements Provider<UnitDat
         }
 
         return connectionInfo;
-    }
-
-    private String property(String name) {
-        String p = System.getProperty(name);
-        return p == null || p.startsWith("$") ? null : p;
     }
 }

@@ -21,6 +21,7 @@ package org.apache.cayenne.unit;
 
 import org.apache.cayenne.access.DataDomain;
 import org.apache.cayenne.access.DataNode;
+import org.apache.cayenne.configuration.DataSourceDescriptor;
 import org.apache.cayenne.dba.DbAdapter;
 import org.apache.cayenne.map.DataMap;
 import org.apache.cayenne.map.DbAttribute;
@@ -61,13 +62,15 @@ public class DbSchemaManager {
     private static final Set<String> EXTRA_EXCLUDED_FOR_NO_LOB = Set.of("CLOB_DETAIL");
     private static final Set<String> EXTRA_EXCLUDED_FOR_NO_NATIVE_JSON = Set.of("JSON_OTHER");
 
+    private final DataSourceDescriptor dataSourceDescriptor;
     private final DataSource dataSource;
     private final TestDbAdapter testDbAdapter;
     private final DataDomain domain;
     private final List<DataMap> dataMapsInSchemaSetupOrder;
 
-    public DbSchemaManager(String project, DataSource dataSource) {
+    public DbSchemaManager(String project, DataSourceDescriptor dataSourceDescriptor, DataSource dataSource) {
 
+        this.dataSourceDescriptor = dataSourceDescriptor;
         this.dataSource = dataSource;
         this.domain = CayenneRuntime.builder()
                 .addConfig(project)
@@ -94,6 +97,10 @@ public class DbSchemaManager {
 
     public DataSource dataSource() {
         return dataSource;
+    }
+
+    public DataSourceDescriptor dataSourceDescriptor() {
+        return dataSourceDescriptor;
     }
 
     /**

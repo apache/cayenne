@@ -17,7 +17,7 @@
  *  under the License.
  ****************************************************************/
 
-package org.apache.cayenne.unit.runtime;
+package org.apache.cayenne.unit;
 
 import java.util.ArrayList;
 import java.util.HashMap;
