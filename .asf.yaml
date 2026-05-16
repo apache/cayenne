@@ -5,8 +5,7 @@ github:
       branches:
         includes:
           - "~DEFAULT_BRANCH"
-          - "release/*"
-          - "rel/*"
+          - "STABLE-*"
         excludes: []
       bypass_teams:
         - root
