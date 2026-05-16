@@ -61,7 +61,7 @@ public class CayennePersistentObjectIT {
     }
 
     @Test
-    public void readNestedProperty1() throws Exception {
+    public void readNestedProperty1() {
         Artist a = new Artist();
         assertNull(a.readNestedProperty("artistName"));
         a.setArtistName("aaa");
@@ -69,7 +69,7 @@ public class CayennePersistentObjectIT {
     }
 
     @Test
-    public void readNestedPropertyNotPersistentString() throws Exception {
+    public void readNestedPropertyNotPersistentString() {
         Artist a = new Artist();
         assertNull(a.readNestedProperty("someOtherProperty"));
         a.setSomeOtherProperty("aaa");
@@ -77,7 +77,7 @@ public class CayennePersistentObjectIT {
     }
 
     @Test
-    public void readNestedPropertyNonPersistentNotString() throws Exception {
+    public void readNestedPropertyNonPersistentNotString() {
         Artist a = new Artist();
         Object object = new Object();
         assertNull(a.readNestedProperty("someOtherObjectProperty"));
@@ -100,7 +100,7 @@ public class CayennePersistentObjectIT {
 
     @SuppressWarnings("unchecked")
     @Test
-    public void readNestedPropertyToManyInMiddle() throws Exception {
+    public void readNestedPropertyToManyInMiddle() {
 
         Artist a = env.context().newObject(Artist.class);
         ArtistExhibit ex = env.context().newObject(ArtistExhibit.class);
@@ -113,17 +113,16 @@ public class CayennePersistentObjectIT {
         ex.setToArtist(a);
 
         List<String> names = (List<String>) a.readNestedProperty("paintingArray.paintingTitle");
-        assertEquals(names.size(), 2);
-        assertEquals(names.get(0), "p1");
-        assertEquals(names.get(1), "p2");
+        assertEquals(2, names.size());
+        assertEquals("p1", names.get(0));
+        assertEquals("p2", names.get(1));
 
         List<String> names2 = (List<String>) ex.readNestedProperty("toArtist.paintingArray.paintingTitle");
         assertEquals(names, names2);
     }
 
-    @SuppressWarnings("unchecked")
     @Test
-    public void readNestedPropertyToManyInMiddle1() throws Exception {
+    public void readNestedPropertyToManyInMiddle1() {
 
         Artist a = env.context().newObject(Artist.class);
         ArtistExhibit ex = env.context().newObject(ArtistExhibit.class);
@@ -136,9 +135,9 @@ public class CayennePersistentObjectIT {
         ex.setToArtist(a);
 
         List<String> names = (List<String>) a.readNestedProperty("paintingArray+.paintingTitle");
-        assertEquals(names.size(), 2);
-        assertEquals(names.get(0), "p1");
-        assertEquals(names.get(1), "p2");
+        assertEquals(2, names.size());
+        assertEquals("p1", names.get(0));
+        assertEquals("p2", names.get(1));
 
         List<String> names2 = (List<String>) ex.readNestedProperty("toArtist.paintingArray+.paintingTitle");
         assertEquals(names, names2);
@@ -147,7 +146,7 @@ public class CayennePersistentObjectIT {
     @Test
     public void filterObjects() {
 
-        List<Painting> paintingList = new ArrayList<Painting>();
+        List<Painting> paintingList = new ArrayList<>();
         Painting p1 = env.context().newObject(Painting.class);
         Artist a1 = env.context().newObject(Artist.class);
         a1.setArtistName("dddAd");
@@ -157,13 +156,13 @@ public class CayennePersistentObjectIT {
         Expression exp = ExpressionFactory.likeExp("toArtist+.artistName", "d%");
 
         List<Painting> rezult = exp.filterObjects(paintingList);
-        assertEquals(a1, rezult.get(0).getToArtist());
+        assertEquals(a1, rezult.getFirst().getToArtist());
     }
 
     @Test
     public void filterObjectsResultIsMutable() {
 
-        List<Artist> artistList = new ArrayList<Artist>();
+        List<Artist> artistList = new ArrayList<>();
         Artist a = env.context().newObject(Artist.class);
         a.setArtistName("Pablo");
 
@@ -172,6 +171,5 @@ public class CayennePersistentObjectIT {
         List<Artist> result = exp.filterObjects(artistList);
         assertTrue(result.isEmpty());
         result.add(a); // list should be mutable
-        assertTrue(!result.isEmpty());
     }
 }

@@ -197,7 +197,7 @@ public class CayennePersistentObjectInContextIT {
 
         List<Artist> artists = ObjectSelect.query(Artist.class, Artist.ARTIST_NAME.eq("m6")).select(context);
         assertEquals(1, artists.size());
-        Artist o1 = artists.get(0);
+        Artist o1 = artists.getFirst();
         assertNotNull(o1);
         assertEquals("m6", o1.getArtistName());
     }
@@ -269,11 +269,6 @@ public class CayennePersistentObjectInContextIT {
                 .getVersion(), artist.getSnapshotVersion());
     }
 
-    /**
-     * Tests a condition when user substitutes object id of a new object instead of
-     * setting replacement. This is demonstrated here -
-     * http://objectstyle.org/cayenne/lists/cayenne-user/2005/01/0210.html
-     */
     @Test
     public void objectsCommittedManualOID() {
 

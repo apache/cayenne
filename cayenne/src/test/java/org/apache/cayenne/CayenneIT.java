@@ -42,11 +42,7 @@ import java.util.Collections;
 import java.util.List;
 import java.util.Map;
 
-import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertNotNull;
-import static org.junit.jupiter.api.Assertions.assertNull;
-import static org.junit.jupiter.api.Assertions.assertSame;
-import static org.junit.jupiter.api.Assertions.assertTrue;
+import static org.junit.jupiter.api.Assertions.*;
 
 public class CayenneIT {
 
@@ -115,7 +111,7 @@ public class CayenneIT {
 
         Object object = Cayenne.objectForQuery(env.context(), query);
         assertNotNull(object);
-        assertTrue(object instanceof Number);
+        assertInstanceOf(Number.class, object);
         assertEquals(2, ((Number) object).intValue());
     }
 
@@ -127,8 +123,7 @@ public class CayenneIT {
         EJBQLQuery query = new EJBQLQuery(ejbql);
         Object object = Cayenne.objectForQuery(env.context(), query);
         assertNotNull(object);
-        assertTrue(object instanceof Number,
-                "Object class: " + object.getClass().getName());
+        assertInstanceOf(Number.class, object, "Object class: " + object.getClass().getName());
         assertEquals(2, ((Number) object).intValue());
     }
 
@@ -150,7 +145,7 @@ public class CayenneIT {
         Object object = Cayenne.objectForQuery(env.context(), new ObjectIdQuery(id));
 
         assertNotNull(object);
-        assertTrue(object instanceof Artist);
+        assertInstanceOf(Artist.class, object);
         assertEquals("artist2", ((Artist) object).getArtistName());
     }
 
@@ -167,7 +162,7 @@ public class CayenneIT {
     }
 
     @Test
-    public void objectForQueryNoObject() throws Exception {
+    public void objectForQueryNoObject() {
 
         ObjectId id = ObjectId.of("Artist", Artist.ARTIST_ID_PK_COLUMN, 44001);
 
@@ -185,7 +180,7 @@ public class CayenneIT {
     }
 
     @Test
-    public void objectForPKTemporary() throws Exception {
+    public void objectForPKTemporary() {
 
         Persistent o1 = env.context().newObject(Artist.class);
         Persistent o2 = env.context().newObject(Artist.class);
@@ -205,7 +200,7 @@ public class CayenneIT {
                 33002));
 
         assertNotNull(object);
-        assertTrue(object instanceof Artist);
+        assertInstanceOf(Artist.class, object);
         assertEquals("artist2", ((Artist) object).getArtistName());
     }
 
@@ -213,11 +208,11 @@ public class CayenneIT {
     public void objectForPKClassInt() throws Exception {
         createOneArtist();
 
-        Object object = Cayenne.objectForPK(env.context(), Artist.class, 33002);
+        Artist object = Cayenne.objectForPK(env.context(), Artist.class, 33002);
 
         assertNotNull(object);
-        assertTrue(object instanceof Artist);
-        assertEquals("artist2", ((Artist) object).getArtistName());
+        assertInstanceOf(Artist.class, object);
+        assertEquals("artist2", object.getArtistName());
     }
 
     @Test
@@ -227,7 +222,7 @@ public class CayenneIT {
         Object object = Cayenne.objectForPK(env.context(), "Artist", 33002);
 
         assertNotNull(object);
-        assertTrue(object instanceof Artist);
+        assertInstanceOf(Artist.class, object);
         assertEquals("artist2", ((Artist) object).getArtistName());
     }
 
@@ -238,11 +233,11 @@ public class CayenneIT {
         Map<String, Integer> pk = Collections.singletonMap(
                 Artist.ARTIST_ID_PK_COLUMN,
                 33002);
-        Object object = Cayenne.objectForPK(env.context(), Artist.class, pk);
+        Artist object = Cayenne.objectForPK(env.context(), Artist.class, pk);
 
         assertNotNull(object);
-        assertTrue(object instanceof Artist);
-        assertEquals("artist2", ((Artist) object).getArtistName());
+        assertTrue(true);
+        assertEquals("artist2", object.getArtistName());
     }
 
     @Test
@@ -251,7 +246,7 @@ public class CayenneIT {
 
         List<Artist> objects = ObjectSelect.query(Artist.class).select(env.context());
         assertEquals(1, objects.size());
-        Persistent object = objects.get(0);
+        Persistent object = objects.getFirst();
 
         assertEquals(33002, Cayenne.intPKForObject(object));
     }
@@ -262,7 +257,7 @@ public class CayenneIT {
 
         List<Artist> objects = ObjectSelect.query(Artist.class).select(env.context());
         assertEquals(1, objects.size());
-        Persistent object = objects.get(0);
+        Persistent object = objects.getFirst();
 
         assertEquals(33002L, Cayenne.pkForObject(object));
     }
@@ -273,7 +268,7 @@ public class CayenneIT {
 
         List<?> objects = env.context().performQuery(new EJBQLQuery("select a from Artist a"));
         assertEquals(1, objects.size());
-        Artist object = (Artist) objects.get(0);
+        Artist object = (Artist) objects.getFirst();
 
         assertEquals(33002L, Cayenne.pkForObject(object));
     }

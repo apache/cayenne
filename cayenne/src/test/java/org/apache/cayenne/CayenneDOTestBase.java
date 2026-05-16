@@ -1,5 +1,3 @@
-package org.apache.cayenne;
-
 /*****************************************************************
  *   Licensed to the Apache Software Foundation (ASF) under one
  *  or more contributor license agreements.  See the NOTICE file
@@ -18,6 +16,7 @@ package org.apache.cayenne;
  *  specific language governing permissions and limitations
  *  under the License.
  ****************************************************************/
+package org.apache.cayenne;
 
 import org.apache.cayenne.query.ObjectSelect;
 import org.apache.cayenne.testdo.testmap.Artist;
@@ -72,13 +71,13 @@ public abstract class CayenneDOTestBase {
 
     protected Painting fetchPainting() {
         List<Painting> pts = ObjectSelect.query(Painting.class, Painting.PAINTING_TITLE.eq(paintingName)).select(context);
-        return (pts.size() > 0) ? pts.get(0) : null;
+        return (!pts.isEmpty()) ? pts.getFirst() : null;
     }
 
     protected PaintingInfo fetchPaintingInfo() {
         // we are using "LIKE" comparison, since Sybase does not allow
         // "=" comparisons on "text" columns
         List<PaintingInfo> pts = ObjectSelect.query(PaintingInfo.class, PaintingInfo.TEXT_REVIEW.like(textReview)).select(context);
-        return (pts.size() > 0) ? pts.get(0) : null;
+        return !pts.isEmpty() ? pts.getFirst() : null;
     }
 }

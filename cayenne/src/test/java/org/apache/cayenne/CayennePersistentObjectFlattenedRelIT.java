@@ -92,8 +92,8 @@ public class CayennePersistentObjectFlattenedRelIT {
         List<ArtGroup> groupList = a1.getGroupArray();
         assertNotNull(groupList);
         assertEquals(1, groupList.size());
-        assertEquals(PersistenceState.COMMITTED, groupList.get(0).getPersistenceState());
-        assertEquals("g1", groupList.get(0).getName());
+        assertEquals(PersistenceState.COMMITTED, groupList.getFirst().getPersistenceState());
+        assertEquals("g1", groupList.getFirst().getName());
     }
 
     @Test
@@ -108,13 +108,13 @@ public class CayennePersistentObjectFlattenedRelIT {
         assertEquals(1, results.size());
 
         assertFalse(env.context().hasChanges());
-        ArtGroup group = results.get(0);
+        ArtGroup group = results.getFirst();
         a1.addToGroupArray(group);
         assertTrue(env.context().hasChanges());
 
         List<?> groupList = a1.getGroupArray();
         assertEquals(1, groupList.size());
-        assertEquals("g1", ((ArtGroup) groupList.get(0)).getName());
+        assertEquals("g1", ((ArtGroup) groupList.getFirst()).getName());
 
         // Ensure that the commit doesn't fail
         a1.getObjectContext().commitChanges();
@@ -127,7 +127,7 @@ public class CayennePersistentObjectFlattenedRelIT {
         a1 = Cayenne.objectForPK(context2, Artist.class, 33001);
         groupList = a1.getGroupArray();
         assertEquals(1, groupList.size());
-        assertEquals("g1", ((ArtGroup) groupList.get(0)).getName());
+        assertEquals("g1", ((ArtGroup) groupList.getFirst()).getName());
     }
 
     // Test case to show up a bug in committing more than once
@@ -140,12 +140,12 @@ public class CayennePersistentObjectFlattenedRelIT {
         List<ArtGroup> results = ObjectSelect.query(ArtGroup.class, ArtGroup.NAME.eq("g1")).select(env.context());
         assertEquals(1, results.size());
 
-        ArtGroup group = results.get(0);
+        ArtGroup group = results.getFirst();
         a1.addToGroupArray(group);
 
         List<?> groupList = a1.getGroupArray();
         assertEquals(1, groupList.size());
-        assertEquals("g1", ((ArtGroup) groupList.get(0)).getName());
+        assertEquals("g1", ((ArtGroup) groupList.getFirst()).getName());
 
         // Ensure that the commit doesn't fail
         a1.getObjectContext().commitChanges();
@@ -160,7 +160,7 @@ public class CayennePersistentObjectFlattenedRelIT {
 
         Artist a1 = Cayenne.objectForPK(env.context(), Artist.class, 33001);
 
-        ArtGroup group = a1.getGroupArray().get(0);
+        ArtGroup group = a1.getGroupArray().getFirst();
         a1.removeFromGroupArray(group);
 
         List<ArtGroup> groupList = a1.getGroupArray();
@@ -182,7 +182,7 @@ public class CayennePersistentObjectFlattenedRelIT {
         create1Artist1ArtGroup1ArtistGroupDataSet();
         Artist a1 = Cayenne.objectForPK(env.context(), Artist.class, 33001);
 
-        ArtGroup group = a1.getGroupArray().get(0);
+        ArtGroup group = a1.getGroupArray().getFirst();
         a1.removeFromGroupArray(group); // Cause the delete of the link record
 
         env.context().deleteObjects(a1); // Cause the deletion of the artist
@@ -197,10 +197,9 @@ public class CayennePersistentObjectFlattenedRelIT {
         Artist a1 = Cayenne.objectForPK(env.context(), Artist.class, 33001);
 
         List<ArtGroup> results = ObjectSelect.query(ArtGroup.class, ArtGroup.NAME.eq("g1")).select(env.context());
-        ;
         assertEquals(1, results.size());
 
-        ArtGroup group = results.get(0);
+        ArtGroup group = results.getFirst();
         a1.addToGroupArray(group);
         group.removeFromArtistArray(a1);
 

@@ -36,13 +36,7 @@ import org.junit.jupiter.api.Test;
 
 import java.util.List;
 
-import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertFalse;
-import static org.junit.jupiter.api.Assertions.assertNotNull;
-import static org.junit.jupiter.api.Assertions.assertNull;
-import static org.junit.jupiter.api.Assertions.assertSame;
-import static org.junit.jupiter.api.Assertions.assertThrows;
-import static org.junit.jupiter.api.Assertions.assertTrue;
+import static org.junit.jupiter.api.Assertions.*;
 
 public class CayennePersistentObjectRelationshipsIT {
 
@@ -91,7 +85,7 @@ public class CayennePersistentObjectRelationshipsIT {
         createArtistWithPaintingDataSet();
 
         Painting p1 = Cayenne.objectForPK(env.context(), Painting.class, 6);
-        assertTrue(p1.getToArtist().readNestedProperty("paintingArray") instanceof List<?>);
+        assertInstanceOf(List.class, p1.getToArtist().readNestedProperty("paintingArray"));
     }
 
     @Test
@@ -106,7 +100,7 @@ public class CayennePersistentObjectRelationshipsIT {
 
         List<Painting> paintings = a1.getPaintingArray();
         assertEquals(1, paintings.size());
-        Painting p2 = paintings.get(0);
+        Painting p2 = paintings.getFirst();
         assertSame(p1, p2);
     }
 
@@ -158,8 +152,8 @@ public class CayennePersistentObjectRelationshipsIT {
 
         assertNotNull(plist);
         assertEquals(1, plist.size());
-        assertEquals(PersistenceState.COMMITTED, plist.get(0).getPersistenceState());
-        assertEquals("pW", plist.get(0).getPaintingTitle());
+        assertEquals(PersistenceState.COMMITTED, plist.getFirst().getPersistenceState());
+        assertEquals("pW", plist.getFirst().getPaintingTitle());
     }
 
     @Test
@@ -293,12 +287,12 @@ public class CayennePersistentObjectRelationshipsIT {
     }
 
     @Test
-    public void newToMany() throws Exception {
+    public void newToMany() {
         Artist artist = env.context().newObject(Artist.class);
         artist.setArtistName("test");
-        assertTrue(artist.readPropertyDirectly("paintingArray") instanceof ToManyList);
+        assertInstanceOf(ToManyList.class, artist.readPropertyDirectly("paintingArray"));
 
-        ToManyList list = (ToManyList) artist.readPropertyDirectly("paintingArray");
+        ToManyList<?> list = (ToManyList<?>) artist.readPropertyDirectly("paintingArray");
         assertFalse(list.isFault());
 
         env.context().commitChanges();
