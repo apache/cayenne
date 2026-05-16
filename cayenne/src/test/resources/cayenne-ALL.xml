@@ -38,11 +38,8 @@
 	<map name="uuid"/>
 	<map name="multi-tier"/>
 	<map name="reflexive"/>
-	<map name="delete-rules"/>
 	<map name="lifecycle-callbacks-order"/>
-	<map name="lifecycles"/>
 	<map name="map-to-many"/>
-	<map name="toone"/>
 	<map name="meaningful-pk"/>
 	<map name="table-primitives"/>
 	<map name="generic"/>

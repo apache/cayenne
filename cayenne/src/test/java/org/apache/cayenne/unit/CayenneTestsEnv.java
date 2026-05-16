@@ -82,8 +82,6 @@ public class CayenneTestsEnv implements BeforeEachCallback, AfterEachCallback {
                 .build();
 
         // "cayenne-ALL.xml" is a special synthetic project file that includes all test DataMaps
-        // TODO: support for multiple schemas, so that DDL operation scope (such as dropping PK)
-        //   can be isolated from the wider test environment
         COMMON_SCHEMA = new DbSchemaManager("cayenne-ALL.xml", dataSource);
         COMMON_SCHEMA.rebuildSchema();
     }

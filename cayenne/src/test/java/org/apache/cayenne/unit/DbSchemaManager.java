@@ -50,7 +50,8 @@ import java.util.Map;
 import java.util.Set;
 
 /**
- * Maps a full physical DB namespace (schema or database) that can be shared between many test DataMaps.
+ * Maps a full physical DB namespace (schema or database) that can be shared between many test DataMaps. Holds its
+ * DataSource.
  */
 public class DbSchemaManager {
 

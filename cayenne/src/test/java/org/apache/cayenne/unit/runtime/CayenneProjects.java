@@ -21,15 +21,11 @@ package org.apache.cayenne.unit.runtime;
 
 public class CayenneProjects {
 
-    // known runtimes... unit tests may reuse these with @UseCayenneRuntime
-    // annotation or can define their own on the fly
-    // (TODO: how would that work with the global schema setup?)
     public static final String ARRAY_TYPE_PROJECT = "cayenne-array-type.xml";
     public static final String BINARY_PK_PROJECT = "cayenne-binary-pk.xml";
     public static final String CAY_2032 = "cayenne-cay-2032.xml";
     public static final String COMPOUND_PROJECT = "cayenne-compound.xml";
     public static final String DATE_TIME_PROJECT = "cayenne-date-time.xml";
-    public static final String DELETE_RULES_PROJECT = "cayenne-delete-rules.xml";
     public static final String EMBEDDABLE_PROJECT = "cayenne-embeddable.xml";
     public static final String EMPTY_PROJECT = "cayenne-empty.xml";
     public static final String ENUM_PROJECT = "cayenne-enum.xml";
@@ -42,7 +38,6 @@ public class CayenneProjects {
     public static final String JSON_PROJECT = "cayenne-json.xml";
     public static final String LEGACY_DATE_TIME_PROJECT = "cayenne-legacy-date-time.xml";
     public static final String LIFECYCLE_CALLBACKS_ORDER_PROJECT = "cayenne-lifecycle-callbacks-order.xml";
-    public static final String LIFECYCLES_PROJECT = "cayenne-lifecycles.xml";
     public static final String LOB_PROJECT = "cayenne-lob.xml";
     public static final String LOCKING_PROJECT = "cayenne-locking.xml";
     public static final String MAP_TO_MANY_PROJECT = "cayenne-map-to-many.xml";
@@ -76,7 +71,6 @@ public class CayenneProjects {
     public static final String TABLE_PRIMITIVES_PROJECT = "cayenne-table-primitives.xml";
     public static final String TESTMAP_PROJECT = "cayenne-testmap.xml";
     public static final String THINGS_PROJECT = "cayenne-things.xml";
-    public static final String TOONE_PROJECT = "cayenne-toone.xml";
     public static final String UNSUPPORTED_DISTINCT_TYPES_PROJECT = "cayenne-unsupported-distinct-types.xml";
     public static final String UUID_PROJECT = "cayenne-uuid.xml";
     public static final String CUSTOM_NAME_PROJECT = "custom-name-file.xml";
