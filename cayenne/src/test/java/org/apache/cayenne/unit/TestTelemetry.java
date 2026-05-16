@@ -37,7 +37,11 @@ class TestTelemetry {
     }
 
     public static int runWithQueryCounter(CayenneRuntime runtime, Runnable task) {
-        TestTelemetryDataNode node = (TestTelemetryDataNode) runtime.getDataDomain().getDataNodes().iterator().next();
+        TelemetricDataNodeFactory.TelemetricDataNode node = (TelemetricDataNodeFactory.TelemetricDataNode) runtime
+                .getDataDomain()
+                .getDataNodes()
+                .iterator()
+                .next();
 
         int start = node.getQueriesCount();
         int end;
@@ -51,7 +55,7 @@ class TestTelemetry {
 
     private static void setBlockingQueries(Collection<DataNode> nodes, boolean blocking) {
         for (DataNode node : nodes) {
-            ((TestTelemetryDataNode) node).setBlockingQueries(blocking);
+            ((TelemetricDataNodeFactory.TelemetricDataNode) node).setBlockingQueries(blocking);
         }
     }
 }

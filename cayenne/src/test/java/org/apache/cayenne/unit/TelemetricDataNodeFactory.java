@@ -20,35 +20,45 @@ package org.apache.cayenne.unit;
 
 import org.apache.cayenne.access.DataNode;
 import org.apache.cayenne.access.OperationObserver;
+import org.apache.cayenne.configuration.runtime.DefaultDataNodeFactory;
 import org.apache.cayenne.query.Query;
 import org.junit.jupiter.api.Assertions;
 
 import java.util.Collection;
 import java.util.concurrent.atomic.AtomicInteger;
 
-class TestTelemetryDataNode extends DataNode {
-
-    private final AtomicInteger queryCounter = new AtomicInteger();
-    private volatile boolean blockingQueries;
-
-    public TestTelemetryDataNode(String name) {
-        super(name);
-    }
+public class TelemetricDataNodeFactory extends DefaultDataNodeFactory {
 
     @Override
-    public void performQueries(Collection<? extends Query> queries, OperationObserver callback) {
-        if (blockingQueries) {
-            Assertions.fail("Query is unexpected: " + queries);
+    protected DataNode doCreateDataNode(String name) {
+        return new TelemetricDataNode(name);
+    }
+
+    static class TelemetricDataNode extends DataNode {
+
+        private final AtomicInteger queryCounter = new AtomicInteger();
+        private volatile boolean blockingQueries;
+
+        public TelemetricDataNode(String name) {
+            super(name);
         }
-        super.performQueries(queries, callback);
-        queryCounter.addAndGet(queries.size());
+
+        @Override
+        public void performQueries(Collection<? extends Query> queries, OperationObserver callback) {
+            if (blockingQueries) {
+                Assertions.fail("Query is unexpected: " + queries);
+            }
+            super.performQueries(queries, callback);
+            queryCounter.addAndGet(queries.size());
+        }
+
+        public int getQueriesCount() {
+            return queryCounter.get();
+        }
+
+        public void setBlockingQueries(boolean blockingQueries) {
+            this.blockingQueries = blockingQueries;
+        }
     }
 
-    public int getQueriesCount() {
-        return queryCounter.get();
-    }
-
-    public void setBlockingQueries(boolean blockingQueries) {
-        this.blockingQueries = blockingQueries;
-    }
 }

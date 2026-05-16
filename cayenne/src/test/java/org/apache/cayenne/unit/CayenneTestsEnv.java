@@ -21,22 +21,14 @@ package org.apache.cayenne.unit;
 import org.apache.cayenne.access.DataContext;
 import org.apache.cayenne.access.DataDomain;
 import org.apache.cayenne.access.DataNode;
-import org.apache.cayenne.access.dbsync.SkipSchemaUpdateStrategy;
-import org.apache.cayenne.access.jdbc.SQLTemplateProcessor;
-import org.apache.cayenne.access.jdbc.reader.RowReaderFactory;
-import org.apache.cayenne.access.translator.batch.BatchTranslatorFactory;
-import org.apache.cayenne.access.translator.select.SelectTranslatorFactory;
 import org.apache.cayenne.configuration.Constants;
-import org.apache.cayenne.configuration.DataNodeDescriptor;
 import org.apache.cayenne.configuration.DataSourceDescriptor;
 import org.apache.cayenne.configuration.runtime.CoreModule;
-import org.apache.cayenne.configuration.runtime.DbAdapterFactory;
+import org.apache.cayenne.configuration.runtime.DataNodeFactory;
 import org.apache.cayenne.datasource.DataSourceBuilder;
 import org.apache.cayenne.dba.DbAdapter;
 import org.apache.cayenne.di.AdhocObjectFactory;
-import org.apache.cayenne.di.Injector;
 import org.apache.cayenne.di.Module;
-import org.apache.cayenne.log.JdbcEventLogger;
 import org.apache.cayenne.map.DataMap;
 import org.apache.cayenne.map.EntityResolver;
 import org.apache.cayenne.map.Procedure;
@@ -120,8 +112,6 @@ public class CayenneTestsEnv implements BeforeEachCallback, AfterEachCallback {
     @Override
     public void beforeEach(ExtensionContext ctx) {
         this.runtime = buildRuntime();
-        synthesizeDataNodes(runtime, COMMON_SCHEMA.dataSource());
-
         this.context = (DataContext) runtime.newContext();
 
         DbAdapter firstAdapter = runtime.getDataDomain().getDataNodes().iterator().next().getAdapter();
@@ -159,50 +149,14 @@ public class CayenneTestsEnv implements BeforeEachCallback, AfterEachCallback {
 
         List<Module> modules = new ArrayList<>();
         modules.add(b -> CoreModule.extend(b).setProperty(Constants.OBJECT_RETAIN_STRATEGY_PROPERTY, retainStrategy));
+        modules.add(b -> b.bind(DataNodeFactory.class).to(TelemetricDataNodeFactory.class));
         Collections.addAll(modules, extraModules);
 
         return CayenneRuntime.builder()
                 .addConfig(project)
                 .addModules(modules)
+                .dataSource(COMMON_SCHEMA.dataSource())
                 .build();
-    }
-
-    private static void synthesizeDataNodes(CayenneRuntime runtime, DataSource dataSource) {
-
-        DataDomain domain = runtime.getDataDomain();
-        Injector runtimeInjector = runtime.getInjector();
-
-        JdbcEventLogger jdbcEventLogger = runtimeInjector.getInstance(JdbcEventLogger.class);
-        RowReaderFactory rowReaderFactory = runtimeInjector.getInstance(RowReaderFactory.class);
-        BatchTranslatorFactory batchTranslatorFactory = runtimeInjector.getInstance(BatchTranslatorFactory.class);
-        SelectTranslatorFactory selectTranslatorFactory = runtimeInjector.getInstance(SelectTranslatorFactory.class);
-        SQLTemplateProcessor sqlTemplateProcessor = runtimeInjector.getInstance(SQLTemplateProcessor.class);
-
-        for (DataMap dataMap : domain.getDataMaps()) {
-
-            DataNode node = new TestTelemetryDataNode(dataMap.getName());
-
-            node.setJdbcEventLogger(jdbcEventLogger);
-            node.setRowReaderFactory(rowReaderFactory);
-            node.setBatchTranslatorFactory(batchTranslatorFactory);
-            node.setSelectTranslatorFactory(selectTranslatorFactory);
-            node.setDataSource(dataSource);
-
-            // this gives us AutoAdapter
-            DbAdapter adapter = runtimeInjector.getInstance(DbAdapterFactory.class)
-                    .createAdapter(new DataNodeDescriptor(), dataSource);
-
-            node.setAdapter(adapter);
-            node.setSchemaUpdateStrategy(new SkipSchemaUpdateStrategy());
-            node.setSqlTemplateProcessor(sqlTemplateProcessor);
-
-            node.addDataMap(dataMap);
-            domain.addNode(node);
-        }
-
-        if (domain.getDataMaps().size() == 1) {
-            domain.setDefaultNode(domain.getDataNodes().iterator().next());
-        }
     }
 
     private static void tweakProcedures(CayenneRuntime runtime, TestDbAdapter adapter) {

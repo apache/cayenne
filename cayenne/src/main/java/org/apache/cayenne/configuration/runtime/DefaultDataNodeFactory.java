@@ -66,7 +66,7 @@ public class DefaultDataNodeFactory implements DataNodeFactory {
     @Override
     public DataNode createDataNode(DataNodeDescriptor nodeDescriptor) {
 
-        DataNode dataNode = new DataNode(nodeDescriptor.getName());
+        DataNode dataNode = doCreateDataNode(nodeDescriptor.getName());
 
         dataNode.setJdbcEventLogger(jdbcEventLogger);
         dataNode.setRowReaderFactory(rowReaderFactory);
@@ -86,4 +86,8 @@ public class DefaultDataNodeFactory implements DataNodeFactory {
         return dataNode;
     }
 
+    // keeping a protected method for the sake of tests that would override it
+    protected DataNode doCreateDataNode(String name) {
+        return new DataNode(name);
+    }
 }
