@@ -21,22 +21,13 @@ package org.apache.cayenne.unit;
 
 import org.apache.cayenne.access.DataDomain;
 import org.apache.cayenne.access.DataNode;
-import org.apache.cayenne.access.DbGenerator;
-import org.apache.cayenne.access.dbsync.SkipSchemaUpdateStrategy;
-import org.apache.cayenne.access.jdbc.reader.DefaultRowReaderFactory;
-import org.apache.cayenne.access.translator.batch.DefaultBatchTranslatorFactory;
-import org.apache.cayenne.access.translator.select.DefaultSelectTranslatorFactory;
-import org.apache.cayenne.ashwood.AshwoodEntitySorter;
-import org.apache.cayenne.cache.MapQueryCache;
-import org.apache.cayenne.configuration.DataMapLoader;
 import org.apache.cayenne.dba.DbAdapter;
-import org.apache.cayenne.event.DefaultEventManager;
-import org.apache.cayenne.log.JdbcEventLogger;
 import org.apache.cayenne.map.DataMap;
 import org.apache.cayenne.map.DbAttribute;
 import org.apache.cayenne.map.DbEntity;
+import org.apache.cayenne.map.DbRelationship;
 import org.apache.cayenne.map.Procedure;
-import org.apache.cayenne.resource.URLResource;
+import org.apache.cayenne.runtime.CayenneRuntime;
 import org.apache.cayenne.unit.dba.TestDbAdapter;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -52,33 +43,15 @@ import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.Comparator;
+import java.util.IdentityHashMap;
 import java.util.List;
 import java.util.ListIterator;
+import java.util.Map;
 import java.util.Set;
-import java.util.stream.Stream;
 
 public class AllTestsSchemaManager {
 
     private static final Logger LOGGER = LoggerFactory.getLogger(AllTestsSchemaManager.class);
-
-    private static final String[] MAPS_FOR_SCHEMA_SETUP = {"testmap.map.xml", "compound.map.xml",
-            "misc-types.map.xml", "things.map.xml", "numeric-types.map.xml", "binary-pk.map.xml", "no-pk.map.xml",
-            "lob.map.xml", "date-time.map.xml", "enum.map.xml", "json.map.xml", "extended-type.map.xml",
-            "generated.map.xml", "mixed-persistence-strategy.map.xml", "people.map.xml", "primitive.map.xml",
-            "inheritance.map.xml", "locking.map.xml", "soft-delete.map.xml", "empty.map.xml", "relationships.map.xml",
-            "relationships-activity.map.xml", "relationships-delete-rules.map.xml",
-            "relationships-collection-to-many.map.xml", "relationships-child-master.map.xml",
-            "relationships-clob.map.xml", "relationships-flattened.map.xml", "relationships-many-to-many-join.map.xml",
-            "relationships-set-to-many.map.xml", "relationships-to-many-fk.map.xml", "relationships-to-one-fk.map.xml",
-            "return-types.map.xml", "uuid.map.xml", "multi-tier.map.xml", "reflexive.map.xml", "delete-rules.map.xml",
-            "lifecycle-callbacks-order.map.xml", "lifecycles.map.xml", "map-to-many.map.xml", "toone.map.xml",
-            "meaningful-pk.map.xml", "table-primitives.map.xml", "generic.map.xml", "map-db1.map.xml",
-            "map-db2.map.xml", "embeddable.map.xml", "qualified.map.xml", "quoted-identifiers.map.xml",
-            "inheritance-single-table1.map.xml", "inheritance-vertical.map.xml", "oneway-rels.map.xml",
-            "unsupported-distinct-types.map.xml", "array-type.map.xml", "cay-2032.map.xml",
-            "weighted-sort.map.xml", "hybrid-data-object.map.xml", "legacy-date-time.map.xml", "inheritance-with-enum.map.xml",
-            "lazy-attributes.map.xml", "cay2666/datamap.map.xml", "cay2641/datamapLazy.map.xml",
-            "annotation/datamapAnnotation.map.xml"};
 
     // hardcoded dependent entities that should be excluded if LOBs are not supported
     private static final Set<String> EXTRA_EXCLUDED_FOR_NO_LOB = Set.of("CLOB_DETAIL");
@@ -86,56 +59,33 @@ public class AllTestsSchemaManager {
 
     private final DataSource dataSource;
     private final TestDbAdapter testDbAdapter;
-    private final JdbcEventLogger jdbcEventLogger;
     private final DataDomain domain;
+    private final List<DataMap> dataMapsInSchemaSetupOrder;
 
-    public AllTestsSchemaManager(
-            DataSource dataSource,
-            DbAdapter dbAdapter,
-            JdbcEventLogger jdbcEventLogger,
-            DataMapLoader loader) {
+    public AllTestsSchemaManager(DataSource dataSource) {
 
         this.dataSource = dataSource;
-        this.testDbAdapter = TestDbAdapter.of(dbAdapter);
-        this.jdbcEventLogger = jdbcEventLogger;
+        this.domain = CayenneRuntime.builder()
+                .addConfig("cayenne-ALL.xml")
+                .dataSource(dataSource)
+                .build()
+                .getDataDomain();
 
-        // TODO: just create a normal CayenneRuntime with all the defaults
-        this.domain = initDomain(loader, dbAdapter);
-    }
+        this.testDbAdapter = TestDbAdapter.of(domain.getDefaultNode().getAdapter());
 
-    private DataDomain initDomain(DataMapLoader loader, DbAdapter dbAdapter) {
-        DataDomain domain = new DataDomain("temp");
-        domain.setEventManager(new DefaultEventManager(2));
-        domain.setEntitySorter(new AshwoodEntitySorter());
-        domain.setQueryCache(new MapQueryCache(50));
+        for (DataMap map : domain.getDataMaps()) {
+            // tweak mapping with a delegate
+            for (Procedure proc : map.getProcedures()) {
+                testDbAdapter.tweakProcedure(proc);
+            }
 
-        Stream.of(MAPS_FOR_SCHEMA_SETUP).map(m -> getClass().getClassLoader().getResource(m))
-                .map(u -> loader.load(new URLResource(u)))
-                .forEach(m -> domain.addNode(initNode(m, dbAdapter)));
-
-        return domain;
-    }
-
-    private DataNode initNode(DataMap map, DbAdapter dbAdapter) {
-
-        DataNode node = new DataNode(map.getName());
-        node.setJdbcEventLogger(jdbcEventLogger);
-        node.setAdapter(dbAdapter);
-        node.setDataSource(dataSource);
-        
-        // tweak mapping with a delegate
-        for (Procedure proc : map.getProcedures()) {
-            testDbAdapter.tweakProcedure(proc);
+            filterDataMap(map);
         }
-        filterDataMap(map);
 
-        node.addDataMap(map);
+        // TODO: suspect
+        domain.getEntitySorter().setEntityResolver(domain.getEntityResolver());
 
-        node.setSchemaUpdateStrategy(new SkipSchemaUpdateStrategy());
-        node.setRowReaderFactory(new DefaultRowReaderFactory());
-        node.setBatchTranslatorFactory(new DefaultBatchTranslatorFactory());
-        node.setSelectTranslatorFactory(new DefaultSelectTranslatorFactory());
-        return node;
+        this.dataMapsInSchemaSetupOrder = sortDataMapsInSchemaSetupOrder();
     }
 
     /**
@@ -185,8 +135,10 @@ public class AllTestsSchemaManager {
      * Drops all test tables.
      */
     private void dropSchema() throws Exception {
-        for (DataNode node : domain.getDataNodes()) {
-            dropSchema(node, node.getDataMaps().iterator().next());
+        ListIterator<DataMap> it = dataMapsInSchemaSetupOrder.listIterator(dataMapsInSchemaSetupOrder.size());
+        while (it.hasPrevious()) {
+            DataMap map = it.previous();
+            dropSchema(domain.lookupDataNode(map), map);
         }
     }
 
@@ -194,14 +146,14 @@ public class AllTestsSchemaManager {
      * Creates all test tables in the database.
      */
     private void createSchema() throws Exception {
-        for (DataNode node : domain.getDataNodes()) {
-            createSchema(node, node.getDataMaps().iterator().next());
+        for (DataMap map : dataMapsInSchemaSetupOrder) {
+            createSchema(domain.lookupDataNode(map), map);
         }
     }
 
     public void dropPKSupport() throws Exception {
-        for (DataNode node : domain.getDataNodes()) {
-            dropPKSupport(node, node.getDataMaps().iterator().next());
+        for (DataMap map : dataMapsInSchemaSetupOrder) {
+            dropPKSupport(domain.lookupDataNode(map), map);
         }
     }
 
@@ -211,9 +163,91 @@ public class AllTestsSchemaManager {
      * objects and data for primary key support.
      */
     public void createPKSupport() throws Exception {
-        for (DataNode node : domain.getDataNodes()) {
-            createPKSupport(node, node.getDataMaps().iterator().next());
+        for (DataMap map : dataMapsInSchemaSetupOrder) {
+            createPKSupport(domain.lookupDataNode(map), map);
         }
+    }
+
+    private List<DataMap> sortDataMapsInSchemaSetupOrder() {
+        List<DataMap> maps = new ArrayList<>(domain.getDataMaps());
+        Map<DataMap, List<DataMap>> dependencies = new IdentityHashMap<>();
+
+        for (DataMap map : maps) {
+            dependencies.put(map, dataMapDependencies(map, maps));
+        }
+
+        List<DataMap> sorted = new ArrayList<>(maps.size());
+        Set<DataMap> visited = Collections.newSetFromMap(new IdentityHashMap<>());
+        Set<DataMap> visiting = Collections.newSetFromMap(new IdentityHashMap<>());
+
+        for (DataMap map : maps) {
+            sortDataMap(map, dependencies, visited, visiting, sorted);
+        }
+
+        return Collections.unmodifiableList(sorted);
+    }
+
+    private List<DataMap> dataMapDependencies(DataMap map, List<DataMap> maps) {
+        List<DataMap> dependencies = new ArrayList<>();
+
+        for (DbEntity entity : map.getDbEntities()) {
+            for (DbRelationship relationship : entity.getRelationships()) {
+                DataMap targetMap = dataMapDependency(map, relationship);
+                if (targetMap != null && maps.contains(targetMap) && !dependencies.contains(targetMap)) {
+                    dependencies.add(targetMap);
+                }
+            }
+        }
+
+        return dependencies;
+    }
+
+    private DataMap dataMapDependency(DataMap sourceMap, DbRelationship relationship) {
+        if (relationship.isRuntime() || relationship.isToMany() || !relationship.isToPK() || relationship.isToDependentPK()) {
+            return null;
+        }
+
+        boolean hasUnresolvedJoin = relationship.getJoins().stream()
+                .anyMatch(join -> join.getSource() == null || join.getTarget() == null);
+        if (hasUnresolvedJoin) {
+            return null;
+        }
+
+        DbEntity targetEntity = relationship.getTargetEntity();
+        DataMap targetMap = targetEntity != null ? targetEntity.getDataMap() : null;
+        if (targetMap == null || targetMap == sourceMap) {
+            return null;
+        }
+
+        if (domain.lookupDataNode(sourceMap) != domain.lookupDataNode(targetMap)) {
+            return null;
+        }
+
+        return targetMap;
+    }
+
+    private void sortDataMap(
+            DataMap map,
+            Map<DataMap, List<DataMap>> dependencies,
+            Set<DataMap> visited,
+            Set<DataMap> visiting,
+            List<DataMap> sorted) {
+
+        if (visited.contains(map)) {
+            return;
+        }
+
+        if (!visiting.add(map)) {
+            throw new IllegalStateException("Cycle in DataMap dependencies involving " + map.getName());
+        }
+
+        for (DataMap dependency : dependencies.getOrDefault(map, Collections.emptyList())) {
+            sortDataMap(dependency, dependencies, visited, visiting, sorted);
+        }
+
+        visiting.remove(map);
+        visited.add(map);
+        sorted.add(map);
     }
 
     public List<DbEntity> dbEntitiesInInsertOrder(String mapName) {
@@ -229,7 +263,7 @@ public class AllTestsSchemaManager {
         // intentionally taking "mapName", not a "map", as we need to resolve the corresponding map in our private
         // namespace defined by "domain"
 
-        DataMap localMap = domain.getDataMap(mapName);
+        DataMap localMap = dataMap(mapName);
         List<DbEntity> entities = new ArrayList<>(localMap.getDbEntities());
         entities.removeAll(excludeEntities(entities));
 
@@ -376,8 +410,6 @@ public class AllTestsSchemaManager {
         DbAdapter adapter = node.getAdapter();
 
         List<DbEntity> orderedEntities = dbEntitiesInInsertOrder(map.getName());
-        List<DbEntity> excludedEntities = excludeEntities(map.getDbEntities());
-        DbGenerator gen = new DbGenerator(adapter, map, excludedEntities, domain, jdbcEventLogger);
         List<String> queries = new ArrayList<>();
 
         // table definitions
@@ -391,10 +423,72 @@ public class AllTestsSchemaManager {
                 continue;
             }
 
-            List<String> qs = gen.createConstraintsQueries(ent);
-            queries.addAll(qs);
+            queries.addAll(createConstraintsQueries(adapter, ent));
         }
 
         return queries;
+    }
+
+    private List<String> createConstraintsQueries(DbAdapter adapter, DbEntity table) {
+        List<String> queries = new ArrayList<>();
+
+        for (DbRelationship rel : table.getRelationships()) {
+
+            if (rel.isRuntime()) {
+                continue;
+            }
+
+            if (rel.isToMany()) {
+                continue;
+            }
+
+            DataMap srcMap = rel.getSourceEntity().getDataMap();
+            DataMap targetMap = rel.getTargetEntity().getDataMap();
+
+            if (srcMap != null && targetMap != null && srcMap != targetMap) {
+                continue;
+            }
+
+            if (rel.isToPK() && !rel.isToDependentPK()) {
+                boolean hasUnresolvedJoin = rel.getJoins().stream()
+                        .anyMatch(join -> join.getSource() == null || join.getTarget() == null);
+
+                if (hasUnresolvedJoin) {
+                    continue;
+                }
+
+                if (adapter.supportsUniqueConstraints()) {
+                    DbRelationship reverse = rel.getReverseRelationship();
+                    if (reverse != null && !reverse.isToMany() && !reverse.isToPK()) {
+                        String unique = adapter.createUniqueConstraint(rel.getSourceEntity(), rel.getSourceAttributes());
+                        if (unique != null) {
+                            queries.add(unique);
+                        }
+                    }
+                }
+
+                String fk = adapter.createFkConstraint(rel);
+                if (fk != null) {
+                    queries.add(fk);
+                }
+            }
+        }
+
+        return queries;
+    }
+
+    private DataMap dataMap(String name) {
+        DataMap dataMap = domain.getDataMap(name);
+        if (dataMap != null) {
+            return dataMap;
+        }
+
+        for (DataMap candidate : domain.getDataMaps()) {
+            if (candidate.getName().endsWith('/' + name)) {
+                return candidate;
+            }
+        }
+
+        throw new IllegalArgumentException("Unknown DataMap: " + name);
     }
 }

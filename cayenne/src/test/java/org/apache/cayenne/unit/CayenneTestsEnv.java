@@ -27,7 +27,6 @@ import org.apache.cayenne.access.jdbc.reader.RowReaderFactory;
 import org.apache.cayenne.access.translator.batch.BatchTranslatorFactory;
 import org.apache.cayenne.access.translator.select.SelectTranslatorFactory;
 import org.apache.cayenne.configuration.Constants;
-import org.apache.cayenne.configuration.DataMapLoader;
 import org.apache.cayenne.configuration.DataNodeDescriptor;
 import org.apache.cayenne.configuration.DataSourceDescriptor;
 import org.apache.cayenne.configuration.runtime.CoreModule;
@@ -78,11 +77,7 @@ public class CayenneTestsEnv implements BeforeEachCallback, AfterEachCallback {
                 INJECTOR.getInstance(DataSourceDescriptor.class),
                 INJECTOR.getInstance(AdhocObjectFactory.class));
 
-        SCHEMAS = new AllTestsSchemaManager(
-                DATA_SOURCES.sharedDataSource(),
-                INJECTOR.getInstance(DbAdapter.class),
-                INJECTOR.getInstance(JdbcEventLogger.class),
-                INJECTOR.getInstance(DataMapLoader.class));
+        SCHEMAS = new AllTestsSchemaManager(DATA_SOURCES.sharedDataSource());
 
         SCHEMAS.rebuildSchema();
     }
