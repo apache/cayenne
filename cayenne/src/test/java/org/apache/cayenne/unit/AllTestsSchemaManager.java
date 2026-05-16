@@ -60,8 +60,6 @@ public class AllTestsSchemaManager {
 
     private static final Logger LOGGER = LoggerFactory.getLogger(AllTestsSchemaManager.class);
 
-    private static final String SKIP_SCHEMA_PROPERTY = "cayenneTestSkipSchemaCreation";
-
     private static final String[] MAPS_FOR_SCHEMA_SETUP = {"testmap.map.xml", "compound.map.xml",
             "misc-types.map.xml", "things.map.xml", "numeric-types.map.xml", "binary-pk.map.xml", "no-pk.map.xml",
             "lob.map.xml", "date-time.map.xml", "enum.map.xml", "json.map.xml", "extended-type.map.xml",
@@ -140,17 +138,10 @@ public class AllTestsSchemaManager {
     }
 
     /**
-     * Completely rebuilds the test schema.
+     * Rebuilds the test schema, combining all DataMaps that require schema support. Schema generation is done like that
+     * instead of on-demand per-DataMap  to avoid conflicts when dropping and generating PK objects.
      */
     public void rebuildSchema() {
-
-        // Generate schema combining all DataMaps that require schema support. Schema generation is done like that
-        // instead of per DataMap on demand to avoid conflicts when dropping and generating PK objects.
-
-        if ("true".equalsIgnoreCase(System.getProperty(SKIP_SCHEMA_PROPERTY))) {
-            LOGGER.info("skipping schema generation... ");
-            return;
-        }
 
         try {
             dropSchema();
