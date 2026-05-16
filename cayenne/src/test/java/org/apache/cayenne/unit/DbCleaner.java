@@ -17,11 +17,10 @@
  *  under the License.
  ****************************************************************/
 
-package org.apache.cayenne.unit.runtime;
+package org.apache.cayenne.unit;
 
 import org.apache.cayenne.map.DbEntity;
 import org.apache.cayenne.test.jdbc.DbHelper;
-import org.apache.cayenne.unit.AllTestsSchemaManager;
 
 import java.sql.SQLException;
 import java.util.Set;
@@ -32,10 +31,10 @@ import java.util.Set;
 public class DbCleaner {
 
     private final DbHelper dbHelper;
-    private final AllTestsSchemaManager parentSchemaManager;
+    private final DbSchemaManager parentSchemaManager;
     private final Set<String> dataMaps;
 
-    public DbCleaner(AllTestsSchemaManager parentSchemaManager, DbHelper dbHelper, Set<String> dataMaps) {
+    public DbCleaner(DbSchemaManager parentSchemaManager, DbHelper dbHelper, Set<String> dataMaps) {
         this.parentSchemaManager = parentSchemaManager;
         this.dbHelper = dbHelper;
         this.dataMaps = dataMaps;

@@ -56,7 +56,7 @@ public class BaseLoaderIT {
         accessStackAdapter = env.testDbAdapter();
         store = new DbLoadDataStore();
         assertTrue(store.getDbEntities().isEmpty(), "Store is not empty");
-        this.connection = CayenneTestsEnv.DATA_SOURCES.sharedDataSource().getConnection();
+        this.connection = CayenneTestsEnv.COMMON_SCHEMA.dataSource().getConnection();
     }
 
     @AfterEach

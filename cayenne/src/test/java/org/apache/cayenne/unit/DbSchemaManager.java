@@ -49,9 +49,12 @@ import java.util.ListIterator;
 import java.util.Map;
 import java.util.Set;
 
-public class AllTestsSchemaManager {
+/**
+ * Maps a full physical DB namespace (schema or database) that can be shared between many test DataMaps.
+ */
+public class DbSchemaManager {
 
-    private static final Logger LOGGER = LoggerFactory.getLogger(AllTestsSchemaManager.class);
+    private static final Logger LOGGER = LoggerFactory.getLogger(DbSchemaManager.class);
 
     // hardcoded dependent entities that should be excluded if LOBs are not supported
     private static final Set<String> EXTRA_EXCLUDED_FOR_NO_LOB = Set.of("CLOB_DETAIL");
@@ -62,11 +65,11 @@ public class AllTestsSchemaManager {
     private final DataDomain domain;
     private final List<DataMap> dataMapsInSchemaSetupOrder;
 
-    public AllTestsSchemaManager(DataSource dataSource) {
+    public DbSchemaManager(String project, DataSource dataSource) {
 
         this.dataSource = dataSource;
         this.domain = CayenneRuntime.builder()
-                .addConfig("cayenne-ALL.xml")
+                .addConfig(project)
                 .dataSource(dataSource)
                 .build()
                 .getDataDomain();
@@ -86,6 +89,10 @@ public class AllTestsSchemaManager {
         domain.getEntitySorter().setEntityResolver(domain.getEntityResolver());
 
         this.dataMapsInSchemaSetupOrder = sortDataMapsInSchemaSetupOrder();
+    }
+
+    public DataSource dataSource() {
+        return dataSource;
     }
 
     /**
@@ -168,6 +175,7 @@ public class AllTestsSchemaManager {
         }
     }
 
+    // TODO: this is only needed for "map-db1" and "map-db2". Looks wasteful
     private List<DataMap> sortDataMapsInSchemaSetupOrder() {
         List<DataMap> maps = new ArrayList<>(domain.getDataMaps());
         Map<DataMap, List<DataMap>> dependencies = new IdentityHashMap<>();
@@ -184,7 +192,7 @@ public class AllTestsSchemaManager {
             sortDataMap(map, dependencies, visited, visiting, sorted);
         }
 
-        return Collections.unmodifiableList(sorted);
+        return sorted;
     }
 
     private List<DataMap> dataMapDependencies(DataMap map, List<DataMap> maps) {

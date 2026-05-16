@@ -106,7 +106,7 @@ public class SQLTemplateActionIT {
 
         MockOperationObserver observer = new MockOperationObserver();
 
-        try (Connection c = CayenneTestsEnv.DATA_SOURCES.sharedDataSource().getConnection();) {
+        try (Connection c = CayenneTestsEnv.COMMON_SCHEMA.dataSource().getConnection();) {
             plan.performAction(c, observer);
         }
 
@@ -163,7 +163,7 @@ public class SQLTemplateActionIT {
 
         MockOperationObserver observer = new MockOperationObserver();
 
-        try (Connection c = CayenneTestsEnv.DATA_SOURCES.sharedDataSource().getConnection();) {
+        try (Connection c = CayenneTestsEnv.COMMON_SCHEMA.dataSource().getConnection();) {
             plan.performAction(c, observer);
         }
 
@@ -193,7 +193,7 @@ public class SQLTemplateActionIT {
 
         MockOperationObserver observer = new MockOperationObserver();
 
-        try (Connection c = CayenneTestsEnv.DATA_SOURCES.sharedDataSource().getConnection();) {
+        try (Connection c = CayenneTestsEnv.COMMON_SCHEMA.dataSource().getConnection();) {
             plan.performAction(c, observer);
         }
 
@@ -223,7 +223,7 @@ public class SQLTemplateActionIT {
 
         MockOperationObserver observer = new MockOperationObserver();
 
-        try (Connection c = CayenneTestsEnv.DATA_SOURCES.sharedDataSource().getConnection();) {
+        try (Connection c = CayenneTestsEnv.COMMON_SCHEMA.dataSource().getConnection();) {
             plan.performAction(c, observer);
         }
 
@@ -251,7 +251,7 @@ public class SQLTemplateActionIT {
 
         SQLAction action = node.getAdapter().getAction(template, node);
 
-        try (Connection c = CayenneTestsEnv.DATA_SOURCES.sharedDataSource().getConnection();) {
+        try (Connection c = CayenneTestsEnv.COMMON_SCHEMA.dataSource().getConnection();) {
             MockOperationObserver observer = new MockOperationObserver();
             action.performAction(c, observer);
 
@@ -273,7 +273,7 @@ public class SQLTemplateActionIT {
 
         SQLAction action = node.getAdapter().getAction(template, node);
 
-        try (Connection c = CayenneTestsEnv.DATA_SOURCES.sharedDataSource().getConnection();) {
+        try (Connection c = CayenneTestsEnv.COMMON_SCHEMA.dataSource().getConnection();) {
             MockOperationObserver observer = new MockOperationObserver();
             action.performAction(c, observer);
 
@@ -308,7 +308,7 @@ public class SQLTemplateActionIT {
         assertSame(node, action.dataNode);
         assertSame(template, action.getQuery());
 
-        try (Connection c = CayenneTestsEnv.DATA_SOURCES.sharedDataSource().getConnection();) {
+        try (Connection c = CayenneTestsEnv.COMMON_SCHEMA.dataSource().getConnection();) {
             MockOperationObserver observer = new MockOperationObserver();
             action.performAction(c, observer);
 

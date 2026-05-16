@@ -45,7 +45,9 @@ public class JdbcPkGeneratorIT {
     @BeforeEach
     public void setUp() throws Exception {
         node = env.dataNode();
-        CayenneTestsEnv.SCHEMAS.dropPKSupport();
+
+        // TODO: we should have a dedicated DbSchemaManager for such destructive operations working off of its own DB
+        CayenneTestsEnv.COMMON_SCHEMA.dropPKSupport();
     }
 
     @AfterEach
@@ -57,8 +59,9 @@ public class JdbcPkGeneratorIT {
 
             pkGenerator.setPkStartValue(JdbcPkGenerator.DEFAULT_PK_START_VALUE);
 
-            CayenneTestsEnv.SCHEMAS.dropPKSupport();
-            CayenneTestsEnv.SCHEMAS.createPKSupport();
+            // TODO: we should have a dedicated DbSchemaManager for such destructive operations working off of its own DB
+            CayenneTestsEnv.COMMON_SCHEMA.dropPKSupport();
+            CayenneTestsEnv.COMMON_SCHEMA.createPKSupport();
         }
     }
 

@@ -138,7 +138,7 @@ public class DbLoaderIT {
     @BeforeEach
     public void before() throws Exception {
         adapter = env.dataNode().getAdapter();
-        this.connection = CayenneTestsEnv.DATA_SOURCES.sharedDataSource().getConnection();
+        this.connection = CayenneTestsEnv.COMMON_SCHEMA.dataSource().getConnection();
     }
 
     private DbLoader createDbLoader() {

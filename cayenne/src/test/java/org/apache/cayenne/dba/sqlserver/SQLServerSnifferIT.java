@@ -43,7 +43,7 @@ public class SQLServerSnifferIT {
 
 		DbAdapter adapter;
 
-		try (Connection c = CayenneTestsEnv.DATA_SOURCES.sharedDataSource().getConnection()) {
+		try (Connection c = CayenneTestsEnv.COMMON_SCHEMA.dataSource().getConnection()) {
 			adapter = sniffer.createAdapter(c.getMetaData());
 		}
 

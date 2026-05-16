@@ -31,6 +31,7 @@ import org.apache.cayenne.configuration.DataNodeDescriptor;
 import org.apache.cayenne.configuration.DataSourceDescriptor;
 import org.apache.cayenne.configuration.runtime.CoreModule;
 import org.apache.cayenne.configuration.runtime.DbAdapterFactory;
+import org.apache.cayenne.datasource.DataSourceBuilder;
 import org.apache.cayenne.dba.DbAdapter;
 import org.apache.cayenne.di.AdhocObjectFactory;
 import org.apache.cayenne.di.DIBootstrap;
@@ -44,7 +45,6 @@ import org.apache.cayenne.runtime.CayenneRuntime;
 import org.apache.cayenne.test.jdbc.DbHelper;
 import org.apache.cayenne.test.jdbc.TableHelper;
 import org.apache.cayenne.unit.dba.TestDbAdapter;
-import org.apache.cayenne.unit.runtime.DbCleaner;
 import org.apache.cayenne.unit.runtime.FlavoredDbHelper;
 import org.apache.cayenne.unit.runtime.RuntimeCaseModule;
 import org.apache.cayenne.unit.util.SQLTemplateCustomizer;
@@ -67,19 +67,25 @@ public class CayenneTestsEnv implements BeforeEachCallback, AfterEachCallback {
     private static final Injector INJECTOR;
 
     // shared stack parts... use these directly from the tests
-    public static final TestDataSources DATA_SOURCES;
-    public static final AllTestsSchemaManager SCHEMAS;
+    public static final DbSchemaManager COMMON_SCHEMA;
 
     static {
         INJECTOR = DIBootstrap.createInjector(new RuntimeCaseModule());
 
-        DATA_SOURCES = new TestDataSources(
-                INJECTOR.getInstance(DataSourceDescriptor.class),
-                INJECTOR.getInstance(AdhocObjectFactory.class));
+        DataSourceDescriptor dataSourceDescriptor = INJECTOR.getInstance(DataSourceDescriptor.class);
+        DataSource dataSource = DataSourceBuilder
+                .url(dataSourceDescriptor.getDataSourceUrl())
+                .driver(dataSourceDescriptor.getJdbcDriver())
+                .userName(dataSourceDescriptor.getUserName())
+                .password(dataSourceDescriptor.getPassword())
+                .pool(dataSourceDescriptor.getMinConnections(), dataSourceDescriptor.getMaxConnections())
+                .build();
 
-        SCHEMAS = new AllTestsSchemaManager(DATA_SOURCES.sharedDataSource());
-
-        SCHEMAS.rebuildSchema();
+        // "cayenne-ALL.xml" is a special synthetic project file that includes all test DataMaps
+        // TODO: support for multiple schemas, so that DDL operation scope (such as dropping PK)
+        //   can be isolated from the wider test environment
+        COMMON_SCHEMA = new DbSchemaManager("cayenne-ALL.xml", dataSource);
+        COMMON_SCHEMA.rebuildSchema();
     }
 
     private final String project;
@@ -121,7 +127,7 @@ public class CayenneTestsEnv implements BeforeEachCallback, AfterEachCallback {
     @Override
     public void beforeEach(ExtensionContext ctx) {
         this.runtime = buildRuntime();
-        synthesizeDataNodes(runtime);
+        synthesizeDataNodes(runtime, COMMON_SCHEMA.dataSource());
 
         this.context = (DataContext) runtime.newContext();
 
@@ -130,12 +136,12 @@ public class CayenneTestsEnv implements BeforeEachCallback, AfterEachCallback {
         tweakProcedures(runtime, testDbAdapter);
 
         this.dbHelper = new FlavoredDbHelper(
-                DATA_SOURCES.sharedDataSource(),
+                COMMON_SCHEMA.dataSource(),
                 firstAdapter.getQuotingStrategy(),
                 context.getEntityResolver().getDataMaps().iterator().next());
 
         this.dbCleaner = new DbCleaner(
-                SCHEMAS,
+                COMMON_SCHEMA,
                 dbHelper,
                 context.getEntityResolver().getDataMaps().stream().map(DataMap::getName).collect(Collectors.toSet()));
 
@@ -168,7 +174,7 @@ public class CayenneTestsEnv implements BeforeEachCallback, AfterEachCallback {
                 .build();
     }
 
-    private static void synthesizeDataNodes(CayenneRuntime runtime) {
+    private static void synthesizeDataNodes(CayenneRuntime runtime, DataSource dataSource) {
 
         DataDomain domain = runtime.getDataDomain();
         Injector runtimeInjector = runtime.getInjector();
@@ -180,8 +186,6 @@ public class CayenneTestsEnv implements BeforeEachCallback, AfterEachCallback {
         SQLTemplateProcessor sqlTemplateProcessor = runtimeInjector.getInstance(SQLTemplateProcessor.class);
 
         for (DataMap dataMap : domain.getDataMaps()) {
-
-            DataSource dataSource = DATA_SOURCES.dataSource(dataMap.getName());
 
             DataNode node = new TestTelemetryDataNode(dataMap.getName());
 

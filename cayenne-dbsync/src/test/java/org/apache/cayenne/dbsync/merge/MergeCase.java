@@ -227,7 +227,7 @@ public abstract class MergeCase {
 
     private void executeSql(String sql) throws Exception {
 
-        try (Connection conn = CayenneTestsEnv.DATA_SOURCES.sharedDataSource().getConnection();) {
+        try (Connection conn = CayenneTestsEnv.COMMON_SCHEMA.dataSource().getConnection();) {
 
             try (Statement st = conn.createStatement();) {
                 st.execute(sql);
