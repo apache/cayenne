@@ -85,18 +85,18 @@ public class AllTestsSchemaManager {
     private static final Set<String> EXTRA_EXCLUDED_FOR_NO_LOB = Set.of("CLOB_DETAIL");
     private static final Set<String> EXTRA_EXCLUDED_FOR_NO_NATIVE_JSON = Set.of("JSON_OTHER");
 
-    private final TestDataSources dataSourceFactory;
+    private final TestDataSources dataSources;
     private final TestDbAdapter testDbAdapter;
     private final JdbcEventLogger jdbcEventLogger;
     private final DataDomain domain;
 
     public AllTestsSchemaManager(
-            TestDataSources dataSourceFactory,
+            TestDataSources dataSources,
             DbAdapter dbAdapter,
             JdbcEventLogger jdbcEventLogger,
             DataMapLoader loader) {
 
-        this.dataSourceFactory = dataSourceFactory;
+        this.dataSources = dataSources;
         this.testDbAdapter = TestDbAdapter.of(dbAdapter);
         this.jdbcEventLogger = jdbcEventLogger;
 
@@ -122,7 +122,7 @@ public class AllTestsSchemaManager {
         DataNode node = new DataNode(map.getName());
         node.setJdbcEventLogger(jdbcEventLogger);
         node.setAdapter(dbAdapter);
-        node.setDataSource(dataSourceFactory.sharedDataSource());
+        node.setDataSource(dataSources.sharedDataSource());
         
         // tweak mapping with a delegate
         for (Procedure proc : map.getProcedures()) {
@@ -311,7 +311,7 @@ public class AllTestsSchemaManager {
 
         List<DbEntity> list = dbEntitiesInInsertOrder(map.getName());
 
-        try (Connection conn = dataSourceFactory.sharedDataSource().getConnection()) {
+        try (Connection conn = dataSources.sharedDataSource().getConnection()) {
 
             DatabaseMetaData md = conn.getMetaData();
             List<String> allTables = new ArrayList<>();
@@ -364,7 +364,7 @@ public class AllTestsSchemaManager {
 
     private void createSchema(DataNode node, DataMap map) throws Exception {
 
-        try (Connection conn = dataSourceFactory.sharedDataSource().getConnection()) {
+        try (Connection conn = dataSources.sharedDataSource().getConnection()) {
             testDbAdapter.willCreateTables(conn, map);
             try (Statement stmt = conn.createStatement()) {
 
