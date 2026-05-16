@@ -50,7 +50,7 @@ public class CayennePersistentObjectFlattenedRelIT {
     @BeforeEach
     public void setUp() throws Exception {
         runtime = env.runtime();
-        env.dbHelper().update("ARTGROUP").set("PARENT_GROUP_ID", null, Types.INTEGER).execute();
+        env.table("ARTGROUP").update().set("PARENT_GROUP_ID", null, Types.INTEGER).execute();
         env.dbCleaner().clean();
 
         tArtist = env.table("ARTIST", "ARTIST_ID", "ARTIST_NAME");

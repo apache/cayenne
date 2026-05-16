@@ -23,7 +23,6 @@ import org.apache.cayenne.access.DataContext;
 import org.apache.cayenne.query.ObjectSelect;
 import org.apache.cayenne.query.SQLExec;
 import org.apache.cayenne.query.SQLSelect;
-import org.apache.cayenne.test.jdbc.DbHelper;
 import org.apache.cayenne.testdo.datetime.DurationTestEntity;
 import org.apache.cayenne.testdo.datetime.LocalDateTestEntity;
 import org.apache.cayenne.testdo.datetime.LocalDateTimeTestEntity;
@@ -61,12 +60,11 @@ public class DateTimeTypesIT {
     public void before() throws SQLException {
         context = env.context();
         testDbAdapter = env.testDbAdapter();
-        DbHelper dbHelper = env.dbHelper();
-        dbHelper.deleteAll("LOCAL_DATE_TEST");
-        dbHelper.deleteAll("LOCAL_DATETIME_TEST");
-        dbHelper.deleteAll("LOCAL_TIME_TEST");
-        dbHelper.deleteAll("DURATION_TEST");
-        dbHelper.deleteAll("PERIOD_TEST");
+        env.table("LOCAL_DATE_TEST").deleteAll();
+        env.table("LOCAL_DATETIME_TEST").deleteAll();
+        env.table("LOCAL_TIME_TEST").deleteAll();
+        env.table("DURATION_TEST").deleteAll();
+        env.table("PERIOD_TEST").deleteAll();
     }
 
     @Test

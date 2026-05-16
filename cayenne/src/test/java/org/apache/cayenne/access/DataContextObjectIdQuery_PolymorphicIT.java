@@ -45,7 +45,7 @@ public class DataContextObjectIdQuery_PolymorphicIT extends PeopleProjectCase {
     public void before() {
         context1 = env.context();
         context2 = (DataContext) env.runtime().newContext();
-        tPerson = new TableHelper(dbHelper, "PERSON").setColumns("PERSON_ID", "NAME", "PERSON_TYPE")
+        tPerson = env.table("PERSON").setColumns("PERSON_ID", "NAME", "PERSON_TYPE")
                 .setColumnTypes(Types.INTEGER, Types.VARCHAR, Types.CHAR);
     }
 

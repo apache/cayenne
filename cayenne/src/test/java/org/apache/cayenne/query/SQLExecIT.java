@@ -71,7 +71,7 @@ public class SQLExecIT {
                 .paramsArray("a3").update(env.context());
 
         assertEquals(1, inserted);
-        assertEquals("a3", env.dbHelper().getString("ARTIST", "ARTIST_NAME").trim());
+        assertEquals("a3", env.table("ARTIST").getString("ARTIST_NAME").trim());
     }
 
     @Test
@@ -103,8 +103,8 @@ public class SQLExecIT {
                 .paramsArray(55, "a3").update(env.context());
 
         assertEquals(1, inserted);
-        assertEquals(55L, env.dbHelper().getLong("ARTIST", "ARTIST_ID"));
-        assertEquals("a3", env.dbHelper().getString("ARTIST", "ARTIST_NAME").trim());
+        assertEquals(55L, env.table("ARTIST").getLong("ARTIST_ID"));
+        assertEquals("a3", env.table("ARTIST").getString("ARTIST_NAME").trim());
     }
 
     @Test
@@ -114,7 +114,7 @@ public class SQLExecIT {
             QueryResult<?> result = inserter.paramsArray(i, "artist " + i).execute(env.context());
             assertEquals(1, result.firstUpdateCount());
         }
-        assertEquals(2, env.dbHelper().getRowCount("ARTIST"));
+        assertEquals(2, env.table("ARTIST").getRowCount());
     }
 
     @Test
@@ -127,6 +127,6 @@ public class SQLExecIT {
             QueryResult<?> result = inserter.params(params).execute(env.context());
             assertEquals(1, result.firstUpdateCount());
         }
-        assertEquals(2, env.dbHelper().getRowCount("ARTIST"));
+        assertEquals(2, env.table("ARTIST").getRowCount());
     }
 }

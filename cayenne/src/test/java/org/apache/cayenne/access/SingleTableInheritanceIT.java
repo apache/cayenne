@@ -55,13 +55,13 @@ public class SingleTableInheritanceIT extends PeopleProjectCase {
     public void setUp() {
         context = env.context();
         context2 = (DataContext) env.runtime().newContext();
-        tAddress = new TableHelper(dbHelper, "ADDRESS", "ADDRESS_ID", "CITY", "PERSON_ID");
+        tAddress = env.table("ADDRESS", "ADDRESS_ID", "CITY", "PERSON_ID");
 
-        tClientCompany = new TableHelper(dbHelper, "CLIENT_COMPANY", "CLIENT_COMPANY_ID", "NAME");
+        tClientCompany = env.table("CLIENT_COMPANY", "CLIENT_COMPANY_ID", "NAME");
 
-        tDepartment = new TableHelper(dbHelper, "DEPARTMENT", "DEPARTMENT_ID", "NAME");
+        tDepartment = env.table("DEPARTMENT", "DEPARTMENT_ID", "NAME");
 
-        tPerson = new TableHelper(dbHelper, "PERSON").setColumns("PERSON_ID", "NAME", "PERSON_TYPE", "SALARY",
+        tPerson = env.table("PERSON").setColumns("PERSON_ID", "NAME", "PERSON_TYPE", "SALARY",
                 "CLIENT_COMPANY_ID", "DEPARTMENT_ID").setColumnTypes(Types.INTEGER, Types.VARCHAR, Types.CHAR,
                 Types.FLOAT, Types.INTEGER, Types.INTEGER);
     }

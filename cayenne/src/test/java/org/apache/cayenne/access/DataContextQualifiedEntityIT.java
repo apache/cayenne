@@ -45,7 +45,7 @@ public class DataContextQualifiedEntityIT extends PeopleProjectCase {
     @BeforeEach
     public void setUp() throws Exception {
         context = env.context();
-        tPerson = new TableHelper(dbHelper, "PERSON").setColumns(
+        tPerson = env.table("PERSON").setColumns(
                 "CLIENT_COMPANY_ID",
                 "CLIENT_CONTACT_TYPE",
                 "DEPARTMENT_ID",

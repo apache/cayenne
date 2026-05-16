@@ -21,7 +21,6 @@ package org.apache.cayenne.unit.jira;
 
 import org.apache.cayenne.access.DataContext;
 import org.apache.cayenne.query.ObjectSelect;
-import org.apache.cayenne.test.jdbc.DbHelper;
 import org.apache.cayenne.test.jdbc.TableHelper;
 import org.apache.cayenne.testdo.relationships.ReflexiveAndToOne;
 import org.apache.cayenne.unit.CayenneProjects;
@@ -47,17 +46,15 @@ public class CAY_194IT {
     static final CayenneTestsEnv env = CayenneTestsEnv.forProject(CayenneProjects.RELATIONSHIPS_PROJECT);
 
     protected DataContext context;
-    private DbHelper dbHelper;
 
     @BeforeEach
     public void setUp() throws Exception {
         context = env.context();
-        dbHelper = env.dbHelper();
-        TableHelper tReflexive = new TableHelper(dbHelper, "REFLEXIVE_AND_TO_ONE", "REFLEXIVE_AND_TO_ONE_ID", "PARENT_ID");
+        TableHelper tReflexive = env.table("REFLEXIVE_AND_TO_ONE", "REFLEXIVE_AND_TO_ONE_ID", "PARENT_ID");
 
         tReflexive.update().set("PARENT_ID", null, Types.INTEGER).execute();
 
-        dbHelper.deleteAll("REFLEXIVE_AND_TO_ONE");
+        env.table("REFLEXIVE_AND_TO_ONE").deleteAll();
     }
 
     @Test

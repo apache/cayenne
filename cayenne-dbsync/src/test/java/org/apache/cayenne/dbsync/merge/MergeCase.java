@@ -85,7 +85,7 @@ public abstract class MergeCase {
         accessStackAdapter = env.testDbAdapter();
 
         // break circular FK before DBCleaner.clean()
-        env.dbHelper().update("ARTGROUP").set("PARENT_GROUP_ID", null, Types.INTEGER).execute();
+        env.table("ARTGROUP").update().set("PARENT_GROUP_ID", null, Types.INTEGER).execute();
         env.dbCleaner().clean();
 
         // this map can't be safely modified in this test, as it is reset by DI container on every test

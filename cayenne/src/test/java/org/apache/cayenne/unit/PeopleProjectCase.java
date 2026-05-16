@@ -18,7 +18,6 @@
  ****************************************************************/
 package org.apache.cayenne.unit;
 
-import org.apache.cayenne.test.jdbc.DbHelper;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.extension.RegisterExtension;
 
@@ -31,14 +30,11 @@ public class PeopleProjectCase {
 			.forProject(CayenneProjects.PEOPLE_PROJECT)
 			.withoutAutoClean();
 
-	protected DbHelper dbHelper;
-
 	@BeforeEach
 	public void cleanUpDB() throws Exception {
 		// must null out the circular FK before DBCleaner.clean() runs, otherwise
 		// PostgreSQL's strict FK enforcement aborts the cleanup
-		dbHelper = env.dbHelper();
-		dbHelper.update("PERSON").set("DEPARTMENT_ID", null, Types.INTEGER).execute();
+		env.table("PERSON").update().set("DEPARTMENT_ID", null, Types.INTEGER).execute();
 		env.dbCleaner().clean();
 	}
 }
