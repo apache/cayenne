@@ -18,15 +18,12 @@
  ****************************************************************/
 package org.apache.cayenne.unit.testcontainers;
 
-import java.time.Duration;
-
-import org.apache.cayenne.dba.JdbcAdapter;
-import org.apache.cayenne.dba.oracle.OracleAdapter;
 import org.testcontainers.containers.JdbcDatabaseContainer;
-import org.testcontainers.containers.OracleContainer;
 import org.testcontainers.utility.DockerImageName;
 
-public class OracleContainerProvider extends TestContainerProvider {
+import java.time.Duration;
+
+public class OracleContainerStarter extends DbContainerStarter {
 
     @Override
     public JdbcDatabaseContainer<?> startContainer(String version) {
@@ -35,18 +32,13 @@ public class OracleContainerProvider extends TestContainerProvider {
     }
 
     @Override
-    JdbcDatabaseContainer<?> createContainer(DockerImageName dockerImageName) {
-        return new OracleContainer(dockerImageName)
+    protected JdbcDatabaseContainer<?> createContainer(DockerImageName dockerImageName) {
+        return new org.testcontainers.containers.OracleContainer(dockerImageName)
                 .withStartupTimeout(Duration.ofMinutes(5));
     }
 
     @Override
-    String getDockerImage() {
+    protected String dockerImage() {
         return "gvenzl/oracle-xe:18-slim-faststart";
-    }
-
-    @Override
-    public Class<? extends JdbcAdapter> getAdapterClass() {
-        return OracleAdapter.class;
     }
 }

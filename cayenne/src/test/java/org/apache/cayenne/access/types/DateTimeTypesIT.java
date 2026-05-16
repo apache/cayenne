@@ -31,7 +31,7 @@ import org.apache.cayenne.testdo.datetime.LocalTimeTestEntity;
 import org.apache.cayenne.testdo.datetime.PeriodTestEntity;
 import org.apache.cayenne.unit.dba.MySQLTestDbAdapter;
 import org.apache.cayenne.unit.dba.TestDbAdapter;
-import org.apache.cayenne.unit.runtime.CayenneProjects;
+import org.apache.cayenne.unit.CayenneProjects;
 import org.apache.cayenne.unit.CayenneTestsEnv;
 import org.junit.jupiter.api.extension.RegisterExtension;
 import org.junit.jupiter.api.BeforeEach;

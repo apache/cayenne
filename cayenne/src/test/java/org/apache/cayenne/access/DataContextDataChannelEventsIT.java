@@ -26,7 +26,7 @@ import org.apache.cayenne.configuration.runtime.CoreModule;
 import org.apache.cayenne.graph.GraphEvent;
 import org.apache.cayenne.test.parallel.ParallelTestContainer;
 import org.apache.cayenne.testdo.testmap.Artist;
-import org.apache.cayenne.unit.runtime.CayenneProjects;
+import org.apache.cayenne.unit.CayenneProjects;
 import org.apache.cayenne.unit.CayenneTestsEnv;
 import org.apache.cayenne.util.EventUtil;
 import org.junit.jupiter.api.BeforeEach;

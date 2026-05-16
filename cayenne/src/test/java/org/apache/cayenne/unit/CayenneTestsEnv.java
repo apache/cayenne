@@ -43,8 +43,8 @@ import org.apache.cayenne.map.Procedure;
 import org.apache.cayenne.runtime.CayenneRuntime;
 import org.apache.cayenne.test.jdbc.DbHelper;
 import org.apache.cayenne.test.jdbc.TableHelper;
+import org.apache.cayenne.unit.datasource.DataSourceConfigLoader;
 import org.apache.cayenne.unit.dba.TestDbAdapter;
-import org.apache.cayenne.unit.runtime.FlavoredDbHelper;
 import org.apache.cayenne.unit.util.SQLTemplateCustomizer;
 import org.junit.jupiter.api.extension.AfterEachCallback;
 import org.junit.jupiter.api.extension.BeforeEachCallback;
@@ -67,7 +67,7 @@ public class CayenneTestsEnv implements BeforeEachCallback, AfterEachCallback {
     public static final DbSchemaManager COMMON_SCHEMA;
 
     static {
-        DataSourceDescriptor dsDescriptor = TestDataSourceDescriptorFactory.create();
+        DataSourceDescriptor dsDescriptor = DataSourceConfigLoader.load();
         DataSource ds = DataSourceBuilder
                 .url(dsDescriptor.getDataSourceUrl())
                 .driver(dsDescriptor.getJdbcDriver())

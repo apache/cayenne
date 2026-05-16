@@ -30,7 +30,7 @@ import org.apache.cayenne.test.jdbc.TableHelper;
 import org.apache.cayenne.testdo.numeric_types.BigDecimalEntity;
 import org.apache.cayenne.testdo.numeric_types.BigIntegerEntity;
 import org.apache.cayenne.testdo.numeric_types.BooleanTestEntity;
-import org.apache.cayenne.unit.runtime.CayenneProjects;
+import org.apache.cayenne.unit.CayenneProjects;
 import org.apache.cayenne.unit.CayenneTestsEnv;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;

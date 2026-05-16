@@ -16,7 +16,7 @@
  *  specific language governing permissions and limitations
  *  under the License.
  ****************************************************************/
-package org.apache.cayenne.unit.runtime;
+package org.apache.cayenne.unit;
 
 import org.apache.cayenne.dba.QuotingStrategy;
 import org.apache.cayenne.map.DataMap;

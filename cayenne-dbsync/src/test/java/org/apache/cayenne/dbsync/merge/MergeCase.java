@@ -44,7 +44,7 @@ import org.apache.cayenne.map.EntityResolver;
 import org.apache.cayenne.runtime.CayenneRuntime;
 import org.apache.cayenne.unit.CayenneTestsEnv;
 import org.apache.cayenne.unit.dba.TestDbAdapter;
-import org.apache.cayenne.unit.runtime.CayenneProjects;
+import org.apache.cayenne.unit.CayenneProjects;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.extension.RegisterExtension;
 import org.slf4j.Logger;

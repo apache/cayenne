@@ -20,7 +20,7 @@ package org.apache.cayenne.datasource;
 
 import org.apache.cayenne.CayenneRuntimeException;
 import org.apache.cayenne.unit.CayenneTestsEnv;
-import org.apache.cayenne.unit.runtime.CayenneProjects;
+import org.apache.cayenne.unit.CayenneProjects;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.RegisterExtension;
 

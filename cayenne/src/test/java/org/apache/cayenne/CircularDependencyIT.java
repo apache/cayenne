@@ -24,7 +24,7 @@ import org.apache.cayenne.testdo.relationships.E1;
 import org.apache.cayenne.testdo.relationships.E2;
 import org.apache.cayenne.testdo.relationships.ReflexiveAndToOne;
 import org.apache.cayenne.unit.dba.OracleTestDbAdapter;
-import org.apache.cayenne.unit.runtime.CayenneProjects;
+import org.apache.cayenne.unit.CayenneProjects;
 import org.apache.cayenne.unit.CayenneTestsEnv;
 import org.junit.jupiter.api.extension.RegisterExtension;
 import org.junit.jupiter.api.AfterEach;

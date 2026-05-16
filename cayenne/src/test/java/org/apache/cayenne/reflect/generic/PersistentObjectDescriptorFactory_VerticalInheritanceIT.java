@@ -22,7 +22,7 @@ import org.apache.cayenne.GenericPersistentObject;
 import org.apache.cayenne.access.types.ValueObjectTypeRegistry;
 import org.apache.cayenne.reflect.ClassDescriptor;
 import org.apache.cayenne.reflect.SingletonFaultFactory;
-import org.apache.cayenne.unit.runtime.CayenneProjects;
+import org.apache.cayenne.unit.CayenneProjects;
 import org.apache.cayenne.unit.CayenneTestsEnv;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.RegisterExtension;

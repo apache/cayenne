@@ -20,7 +20,7 @@
 package org.apache.cayenne;
 
 import org.apache.cayenne.testdo.testmap.ArtGroup;
-import org.apache.cayenne.unit.runtime.CayenneProjects;
+import org.apache.cayenne.unit.CayenneProjects;
 import org.apache.cayenne.unit.CayenneTestsEnv;
 import org.junit.jupiter.api.extension.RegisterExtension;
 import org.junit.jupiter.api.BeforeEach;

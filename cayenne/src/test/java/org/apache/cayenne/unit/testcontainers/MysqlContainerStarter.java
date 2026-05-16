@@ -18,25 +18,28 @@
  ****************************************************************/
 package org.apache.cayenne.unit.testcontainers;
 
-import org.apache.cayenne.dba.JdbcAdapter;
-import org.apache.cayenne.dba.postgres.PostgresAdapter;
 import org.testcontainers.containers.JdbcDatabaseContainer;
-import org.testcontainers.containers.PostgreSQLContainer;
+import org.testcontainers.containers.MySQLContainer;
 import org.testcontainers.utility.DockerImageName;
 
-public class PostgresContainerProvider extends TestContainerProvider {
+import java.util.Calendar;
+
+public class MysqlContainerStarter extends DbContainerStarter {
+
     @Override
-    JdbcDatabaseContainer<?> createContainer(DockerImageName dockerImageName) {
-        return new PostgreSQLContainer<>(dockerImageName);
+    protected JdbcDatabaseContainer<?> createContainer(DockerImageName dockerImageName) {
+        return new MySQLContainer<>(dockerImageName)
+                .withUrlParam("useUnicode", "true")
+                .withUrlParam("characterEncoding", "UTF-8")
+                .withUrlParam("generateSimpleParameterMetadata", "true")
+                .withUrlParam("useLegacyDatetimeCode", "false")
+                .withUrlParam("serverTimezone", Calendar.getInstance().getTimeZone().getID())
+                .withCommand("--character-set-server=utf8mb4")
+                .withCommand("--max-allowed-packet=5242880");
     }
 
     @Override
-    String getDockerImage() {
-        return "postgres:9";
-    }
-
-    @Override
-    public Class<? extends JdbcAdapter> getAdapterClass() {
-        return PostgresAdapter.class;
+    protected String dockerImage() {
+        return "mysql:8.2";
     }
 }

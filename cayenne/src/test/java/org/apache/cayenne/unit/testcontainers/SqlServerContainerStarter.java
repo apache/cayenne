@@ -16,17 +16,22 @@
  *  specific language governing permissions and limitations
  *  under the License.
  ****************************************************************/
-package org.apache.cayenne.unit.runtime;
+package org.apache.cayenne.unit.testcontainers;
 
-import org.apache.cayenne.ConfigurationException;
-import org.apache.cayenne.access.translator.batch.BatchTranslatorFactory;
-import org.apache.cayenne.access.translator.batch.DefaultBatchTranslatorFactory;
-import org.apache.cayenne.di.Provider;
+import org.testcontainers.containers.JdbcDatabaseContainer;
+import org.testcontainers.containers.MSSQLServerContainer;
+import org.testcontainers.utility.DockerImageName;
 
-public class RuntimeCaseBatchQueryBuilderFactoryProvider implements
-        Provider<BatchTranslatorFactory> {
+public class SqlServerContainerStarter extends DbContainerStarter {
+    @Override
+    protected JdbcDatabaseContainer<?> createContainer(DockerImageName dockerImageName) {
+        return new MSSQLServerContainer<>(dockerImageName)
+                .withUrlParam("sendTimeAsDatetime", "false")
+                .acceptLicense();
+    }
 
-    public BatchTranslatorFactory get() throws ConfigurationException {
-        return new DefaultBatchTranslatorFactory();
+    @Override
+    protected String dockerImage() {
+        return "mcr.microsoft.com/mssql/server";
     }
 }

@@ -28,7 +28,7 @@ import org.apache.cayenne.testdo.embeddable.EmbedEntity1;
 import org.apache.cayenne.testdo.embeddable.EmbedEntity2;
 import org.apache.cayenne.testdo.embeddable.EmbedRoot;
 import org.apache.cayenne.testdo.embeddable.Embeddable1;
-import org.apache.cayenne.unit.runtime.CayenneProjects;
+import org.apache.cayenne.unit.CayenneProjects;
 import org.apache.cayenne.unit.CayenneTestsEnv;
 import org.junit.jupiter.api.extension.RegisterExtension;
 import org.junit.jupiter.api.BeforeEach;

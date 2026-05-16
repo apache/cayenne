@@ -26,7 +26,7 @@ import org.apache.cayenne.annotation.PrePersist;
 import org.apache.cayenne.annotation.PreRemove;
 import org.apache.cayenne.annotation.PreUpdate;
 import org.apache.cayenne.testdo.lifecycle_callbacks_order.Lifecycle;
-import org.apache.cayenne.unit.runtime.CayenneProjects;
+import org.apache.cayenne.unit.CayenneProjects;
 import org.apache.cayenne.unit.CayenneTestsEnv;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.RegisterExtension;

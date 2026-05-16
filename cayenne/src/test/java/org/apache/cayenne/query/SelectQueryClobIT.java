@@ -22,7 +22,7 @@ package org.apache.cayenne.query;
 import org.apache.cayenne.Cayenne;
 import org.apache.cayenne.test.jdbc.TableHelper;
 import org.apache.cayenne.testdo.lob.ClobTestEntity;
-import org.apache.cayenne.unit.runtime.CayenneProjects;
+import org.apache.cayenne.unit.CayenneProjects;
 import org.apache.cayenne.unit.CayenneTestsEnv;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.RegisterExtension;

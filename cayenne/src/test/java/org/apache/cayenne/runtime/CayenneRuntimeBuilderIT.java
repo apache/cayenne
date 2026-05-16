@@ -25,7 +25,7 @@ import org.apache.cayenne.configuration.DataSourceDescriptor;
 import org.apache.cayenne.map.DataMap;
 import org.apache.cayenne.query.SQLSelect;
 import org.apache.cayenne.unit.CayenneTestsEnv;
-import org.apache.cayenne.unit.runtime.CayenneProjects;
+import org.apache.cayenne.unit.CayenneProjects;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;

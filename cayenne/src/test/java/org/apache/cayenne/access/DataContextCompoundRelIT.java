@@ -25,7 +25,7 @@ import org.apache.cayenne.testdo.compound.CompoundOrder;
 import org.apache.cayenne.testdo.compound.CompoundOrderLine;
 import org.apache.cayenne.testdo.compound.CompoundOrderLineInfo;
 import org.apache.cayenne.testdo.compound.CompoundPkTestEntity;
-import org.apache.cayenne.unit.runtime.CayenneProjects;
+import org.apache.cayenne.unit.CayenneProjects;
 import org.apache.cayenne.unit.CayenneTestsEnv;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;

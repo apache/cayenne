@@ -23,7 +23,7 @@ import org.apache.cayenne.access.DataContext;
 import org.apache.cayenne.query.ObjectIdQuery;
 import org.apache.cayenne.testdo.relationships_to_one_fk.ToOneFK1;
 import org.apache.cayenne.testdo.relationships_to_one_fk.ToOneFK2;
-import org.apache.cayenne.unit.runtime.CayenneProjects;
+import org.apache.cayenne.unit.CayenneProjects;
 import org.apache.cayenne.unit.CayenneTestsEnv;
 import org.junit.jupiter.api.extension.RegisterExtension;
 import org.junit.jupiter.api.Test;

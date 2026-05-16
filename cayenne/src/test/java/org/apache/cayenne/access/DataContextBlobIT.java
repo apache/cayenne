@@ -24,7 +24,7 @@ import java.util.List;
 import org.apache.cayenne.access.types.ByteArrayTypeTest;
 import org.apache.cayenne.query.ObjectSelect;
 import org.apache.cayenne.testdo.lob.BlobTestEntity;
-import org.apache.cayenne.unit.runtime.CayenneProjects;
+import org.apache.cayenne.unit.CayenneProjects;
 import org.apache.cayenne.unit.CayenneTestsEnv;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;

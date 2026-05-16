@@ -21,7 +21,7 @@ package org.apache.cayenne.configuration.runtime;
 import org.apache.cayenne.configuration.DataNodeDescriptor;
 import org.apache.cayenne.unit.CayenneTestsEnv;
 import org.apache.cayenne.unit.jdbc.TestDataSource;
-import org.apache.cayenne.unit.runtime.CayenneProjects;
+import org.apache.cayenne.unit.CayenneProjects;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.RegisterExtension;
 

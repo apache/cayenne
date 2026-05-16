@@ -18,27 +18,21 @@
  ****************************************************************/
 package org.apache.cayenne.unit.testcontainers;
 
-import org.apache.cayenne.dba.JdbcAdapter;
-import org.apache.cayenne.dba.sqlserver.SQLServerAdapter;
 import org.testcontainers.containers.JdbcDatabaseContainer;
-import org.testcontainers.containers.MSSQLServerContainer;
 import org.testcontainers.utility.DockerImageName;
 
-public class SqlServerContainerProvider extends TestContainerProvider {
-    @Override
-    JdbcDatabaseContainer<?> createContainer(DockerImageName dockerImageName) {
-        return new MSSQLServerContainer<>(dockerImageName)
-                .withUrlParam("sendTimeAsDatetime", "false")
-                .acceptLicense();
+public abstract class DbContainerStarter {
+
+    public JdbcDatabaseContainer<?> startContainer(String version) {
+        DockerImageName baseName = DockerImageName.parse(dockerImage());
+        DockerImageName fullName = version != null ? baseName.withTag(version) : baseName;
+
+        JdbcDatabaseContainer<?> container = createContainer(fullName);
+        container.start();
+        return container;
     }
 
-    @Override
-    String getDockerImage() {
-        return "mcr.microsoft.com/mssql/server";
-    }
+    protected abstract JdbcDatabaseContainer<?> createContainer(DockerImageName dockerImageName);
 
-    @Override
-    public Class<? extends JdbcAdapter> getAdapterClass() {
-        return SQLServerAdapter.class;
-    }
+    protected abstract String dockerImage();
 }

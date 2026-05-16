@@ -18,26 +18,18 @@
  ****************************************************************/
 package org.apache.cayenne.unit.testcontainers;
 
-import org.apache.cayenne.dba.JdbcAdapter;
 import org.testcontainers.containers.JdbcDatabaseContainer;
+import org.testcontainers.containers.PostgreSQLContainer;
 import org.testcontainers.utility.DockerImageName;
 
-public abstract class TestContainerProvider {
-
-    abstract JdbcDatabaseContainer<?> createContainer(DockerImageName dockerImageName);
-
-    abstract String getDockerImage();
-
-    public abstract Class<? extends JdbcAdapter> getAdapterClass();
-
-    public JdbcDatabaseContainer<?> startContainer(String version) {
-        DockerImageName dockerImageName = DockerImageName.parse(getDockerImage());
-        if(version != null) {
-            dockerImageName = dockerImageName.withTag(version);
-        }
-        JdbcDatabaseContainer<?> container = createContainer(dockerImageName);
-        container.start();
-        return container;
+public class PostgresContainerStarter extends DbContainerStarter {
+    @Override
+    protected JdbcDatabaseContainer<?> createContainer(DockerImageName dockerImageName) {
+        return new PostgreSQLContainer<>(dockerImageName);
     }
 
+    @Override
+    protected String dockerImage() {
+        return "postgres:9";
+    }
 }

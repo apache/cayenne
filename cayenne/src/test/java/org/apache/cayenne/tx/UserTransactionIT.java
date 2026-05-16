@@ -21,7 +21,7 @@ package org.apache.cayenne.tx;
 
 import org.apache.cayenne.log.NoopJdbcEventLogger;
 import org.apache.cayenne.testdo.testmap.Artist;
-import org.apache.cayenne.unit.runtime.CayenneProjects;
+import org.apache.cayenne.unit.CayenneProjects;
 import org.apache.cayenne.unit.CayenneTestsEnv;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.RegisterExtension;

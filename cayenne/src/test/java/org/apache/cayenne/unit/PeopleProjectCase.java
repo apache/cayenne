@@ -19,7 +19,6 @@
 package org.apache.cayenne.unit;
 
 import org.apache.cayenne.test.jdbc.DbHelper;
-import org.apache.cayenne.unit.runtime.CayenneProjects;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.extension.RegisterExtension;
 

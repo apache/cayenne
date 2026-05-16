@@ -26,7 +26,7 @@ import org.apache.cayenne.testdo.extended_type.ExtendedTypeEntity;
 import org.apache.cayenne.testdo.extended_type.StringET1;
 import org.apache.cayenne.testdo.extended_type.StringET1ExtendedType;
 import org.apache.cayenne.unit.CayenneTestsEnv;
-import org.apache.cayenne.unit.runtime.CayenneProjects;
+import org.apache.cayenne.unit.CayenneProjects;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.RegisterExtension;
 

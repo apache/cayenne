@@ -40,7 +40,7 @@ import org.apache.cayenne.testdo.numeric_types.DecimalPKTestEntity;
 import org.apache.cayenne.testdo.numeric_types.LongEntity;
 import org.apache.cayenne.testdo.numeric_types.SmallintTestEntity;
 import org.apache.cayenne.testdo.numeric_types.TinyintTestEntity;
-import org.apache.cayenne.unit.runtime.CayenneProjects;
+import org.apache.cayenne.unit.CayenneProjects;
 import org.apache.cayenne.unit.CayenneTestsEnv;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;

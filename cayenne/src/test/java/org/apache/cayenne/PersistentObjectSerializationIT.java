@@ -21,7 +21,7 @@ package org.apache.cayenne;
 
 import org.apache.cayenne.access.ToManyList;
 import org.apache.cayenne.testdo.testmap.Artist;
-import org.apache.cayenne.unit.runtime.CayenneProjects;
+import org.apache.cayenne.unit.CayenneProjects;
 import org.apache.cayenne.unit.CayenneTestsEnv;
 import org.apache.cayenne.util.Util;
 import org.junit.jupiter.api.Test;

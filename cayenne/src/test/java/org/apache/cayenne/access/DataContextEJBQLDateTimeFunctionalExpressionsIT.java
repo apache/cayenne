@@ -21,7 +21,7 @@ package org.apache.cayenne.access;
 
 import org.apache.cayenne.query.EJBQLQuery;
 import org.apache.cayenne.testdo.legacy_datetime.DateTestEntity;
-import org.apache.cayenne.unit.runtime.CayenneProjects;
+import org.apache.cayenne.unit.CayenneProjects;
 import org.apache.cayenne.unit.CayenneTestsEnv;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.RegisterExtension;

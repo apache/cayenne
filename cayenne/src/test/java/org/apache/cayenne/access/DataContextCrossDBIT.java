@@ -22,7 +22,7 @@ package org.apache.cayenne.access;
 import org.apache.cayenne.testdo.db1.CrossdbM1E1;
 import org.apache.cayenne.testdo.db2.CrossdbM2E1;
 import org.apache.cayenne.testdo.db2.CrossdbM2E2;
-import org.apache.cayenne.unit.runtime.CayenneProjects;
+import org.apache.cayenne.unit.CayenneProjects;
 import org.apache.cayenne.unit.CayenneTestsEnv;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.RegisterExtension;
