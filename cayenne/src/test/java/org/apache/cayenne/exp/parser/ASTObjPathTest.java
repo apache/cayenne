@@ -23,10 +23,8 @@ import static org.junit.jupiter.api.Assertions.assertNull;
 
 import java.io.IOException;
 
-import org.apache.cayenne.testdo.enum_test.Enum1;
-import org.apache.cayenne.testdo.enum_test.EnumEntity;
 import org.apache.cayenne.testdo.testmap.Artist;
-import org.apache.cayenne.unit.util.TstBean;
+import org.apache.cayenne.unit.util.TestObject;
 import org.junit.jupiter.api.Test;
 
 public class ASTObjPathTest {
@@ -70,11 +68,11 @@ public class ASTObjPathTest {
 	public void evaluate_JavaBean() {
 		ASTObjPath node = new ASTObjPath("property2");
 
-		TstBean b1 = new TstBean();
+		TestObject b1 = new TestObject();
 		b1.setProperty2(1);
 		assertEquals(1, node.evaluate(b1));
 
-		TstBean b2 = new TstBean();
+		TestObject b2 = new TestObject();
 		b2.setProperty2(-3);
 		assertEquals(-3, node.evaluate(b2));
 	}

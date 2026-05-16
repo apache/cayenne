@@ -20,15 +20,16 @@ package org.apache.cayenne.testdo.testmap;
 
 import org.apache.cayenne.testdo.testmap.annotations.Tag1;
 import org.apache.cayenne.testdo.testmap.auto._Artist;
-import org.apache.cayenne.unit.util.ValidationDelegate;
 import org.apache.cayenne.validation.ValidationResult;
+
+import java.util.function.Consumer;
 
 @Tag1
 public class Artist extends _Artist {
     
     private static final long serialVersionUID = 1L; 
 
-    protected transient ValidationDelegate validationDelegate;
+    protected transient Consumer<Artist> validationCallback;
     protected boolean validateForSaveCalled;
     protected boolean postAdded;
     protected boolean prePersisted;
@@ -51,8 +52,8 @@ public class Artist extends _Artist {
         validateForSaveCalled = false;
     }
 
-    public void setValidationDelegate(ValidationDelegate validationDelegate) {
-        this.validationDelegate = validationDelegate;
+    public void setValidationCallback(Consumer<Artist> validationCallback) {
+        this.validationCallback = validationCallback;
     }
 
     public void resetCallbackFlags() {
@@ -69,8 +70,8 @@ public class Artist extends _Artist {
     @Override
     public void validateForSave(ValidationResult validationResult) {
         validateForSaveCalled = true;
-        if (validationDelegate != null) {
-            validationDelegate.validateForSave(this, validationResult);
+        if (validationCallback != null) {
+            validationCallback.accept(this);
         }
         super.validateForSave(validationResult);
     }

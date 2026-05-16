@@ -20,7 +20,7 @@
 package org.apache.cayenne.reflect;
 
 import org.apache.cayenne.map.ObjAttribute;
-import org.apache.cayenne.unit.util.TstBean;
+import org.apache.cayenne.unit.util.TestObject;
 import org.junit.jupiter.api.Test;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
@@ -46,17 +46,17 @@ public class PersistentDescriptorTest {
         PersistentDescriptor d1 = new PersistentDescriptor();
 
         ObjAttribute attribute = mock(ObjAttribute.class);
-        FieldAccessor accessor = new FieldAccessor(TstBean.class, "string",
+        FieldAccessor accessor = new FieldAccessor(TestObject.class, "string",
                 String.class);
         PropertyDescriptor property = new SimpleAttributeProperty(d1, accessor,
                 attribute);
 
         d1.addDeclaredProperty(property);
 
-        TstBean from = new TstBean();
+        TestObject from = new TestObject();
         from.setString("123");
 
-        TstBean to = new TstBean();
+        TestObject to = new TestObject();
 
         d1.shallowMerge(from, to);
         assertEquals("123", to.getString());

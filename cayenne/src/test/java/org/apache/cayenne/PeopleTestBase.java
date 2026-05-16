@@ -16,27 +16,27 @@
  *  specific language governing permissions and limitations
  *  under the License.
  ****************************************************************/
+package org.apache.cayenne;
 
-package org.apache.cayenne.unit.jira;
+import org.apache.cayenne.unit.CayenneProjects;
+import org.apache.cayenne.unit.CayenneTestsEnv;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.extension.RegisterExtension;
 
-/**
- */
-public class CAY_207String1 {
+import java.sql.Types;
 
-    protected String string;
+public class PeopleTestBase {
 
-    public CAY_207String1(String string) {
-        // mock deserialization behavior... if the raw data is invalid, an exception
-        // should be thrown
-        if (string != null && !string.startsWith("T1")) {
-            throw new IllegalArgumentException(string);
-        }
+	@RegisterExtension
+	protected static final CayenneTestsEnv env = CayenneTestsEnv
+			.forProject(CayenneProjects.PEOPLE_PROJECT)
+			.withoutAutoClean();
 
-        this.string = string;
-    }
-
-    @Override
-    public String toString() {
-        return getClass().getName() + ": " + string;
-    }
+	@BeforeEach
+	public void cleanUpDB() throws Exception {
+		// must null out the circular FK before DBCleaner.clean() runs, otherwise
+		// PostgreSQL's strict FK enforcement aborts the cleanup
+		env.table("PERSON").update().set("DEPARTMENT_ID", null, Types.INTEGER).execute();
+		env.dbCleaner().clean();
+	}
 }

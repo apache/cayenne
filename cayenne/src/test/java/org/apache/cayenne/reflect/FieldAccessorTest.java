@@ -19,7 +19,7 @@
 
 package org.apache.cayenne.reflect;
 
-import org.apache.cayenne.unit.util.TstBean;
+import org.apache.cayenne.unit.util.TestObject;
 import org.junit.jupiter.api.Test;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
@@ -29,15 +29,15 @@ public class FieldAccessorTest {
 
     @Test
     public void constructor() {
-        FieldAccessor accessor = new FieldAccessor(TstBean.class, "string", String.class);
+        FieldAccessor accessor = new FieldAccessor(TestObject.class, "string", String.class);
         assertEquals("string", accessor.getName());
     }
 
     @Test
     public void get() {
-        FieldAccessor accessor = new FieldAccessor(TstBean.class, "string", String.class);
+        FieldAccessor accessor = new FieldAccessor(TestObject.class, "string", String.class);
 
-        TstBean object = new TstBean();
+        TestObject object = new TestObject();
         object.setString("abc");
         assertEquals("abc", accessor.getValue(object));
     }

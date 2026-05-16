@@ -16,15 +16,31 @@
  *  specific language governing permissions and limitations
  *  under the License.
  ****************************************************************/
-package org.apache.cayenne.unit.util;
+package org.apache.cayenne.unit;
 
-import org.apache.cayenne.validation.ValidationResult;
+import org.apache.cayenne.dba.QuotingStrategy;
+import org.apache.cayenne.map.DataMap;
+import org.apache.cayenne.test.jdbc.DbHelper;
+
+import javax.sql.DataSource;
 
 /**
- * A callback interface used by unit tests to implement custom validation logic.
- * 
+ * A DbHelper that understands various supported DB flavors.
  */
-public interface ValidationDelegate {
+class FlavorAwareDbHelper extends DbHelper {
 
-    void validateForSave(Object object, ValidationResult validationResult);
+    private final QuotingStrategy quotingStrategy;
+    private final DataMap dataMap;
+
+    public FlavorAwareDbHelper(DataSource dataSource, QuotingStrategy quotingStrategy, DataMap dataMap) {
+        super(dataSource);
+        this.dataMap = dataMap;
+        this.quotingStrategy = quotingStrategy;
+    }
+
+    @Override
+    protected String quote(String sqlIdentifier) {
+        return quotingStrategy.quotedIdentifier(dataMap, sqlIdentifier);
+    }
+
 }

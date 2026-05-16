@@ -16,31 +16,21 @@
  *  specific language governing permissions and limitations
  *  under the License.
  ****************************************************************/
-package org.apache.cayenne.unit;
 
-import org.apache.cayenne.dba.QuotingStrategy;
-import org.apache.cayenne.map.DataMap;
-import org.apache.cayenne.test.jdbc.DbHelper;
+package org.apache.cayenne.jira;
 
-import javax.sql.DataSource;
+import org.apache.cayenne.testdo.inheritance_people.Manager;
 
 /**
- * A DbHelper that understands various supported DB flavors.
  */
-public class FlavoredDbHelper extends DbHelper {
+public class CAY_207Manager1 extends Manager {
 
-    private final QuotingStrategy quotingStrategy;
-    private final DataMap dataMap;
-
-    public FlavoredDbHelper(DataSource dataSource, QuotingStrategy quotingStrategy, DataMap dataMap) {
-        super(dataSource);
-        this.dataMap = dataMap;
-        this.quotingStrategy = quotingStrategy;
+    public void setClientContactType(CAY_207String1 clientContactType) {
+        writeProperty("clientContactType", clientContactType);
     }
 
-    @Override
-    protected String quote(String sqlIdentifier) {
-        return quotingStrategy.quotedIdentifier(dataMap, sqlIdentifier);
+    public CAY_207String1 getClientContactType() {
+        return (CAY_207String1) readProperty("clientContactType");
     }
 
 }

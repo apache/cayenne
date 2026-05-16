@@ -16,7 +16,7 @@
  *  specific language governing permissions and limitations
  *  under the License.
  ****************************************************************/
-package org.apache.cayenne.unit.jira;
+package org.apache.cayenne.jira;
 
 import org.apache.cayenne.access.DataDomain;
 import org.apache.cayenne.configuration.runtime.CoreModule;

@@ -21,12 +21,12 @@ package org.apache.cayenne.access;
 
 import org.apache.cayenne.Cayenne;
 import org.apache.cayenne.ObjectId;
+import org.apache.cayenne.PeopleTestBase;
 import org.apache.cayenne.query.ObjectIdQuery;
 import org.apache.cayenne.test.jdbc.TableHelper;
 import org.apache.cayenne.testdo.inheritance_people.AbstractPerson;
 import org.apache.cayenne.testdo.inheritance_people.Employee;
 import org.apache.cayenne.testdo.inheritance_people.Manager;
-import org.apache.cayenne.unit.PeopleProjectCase;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
@@ -35,7 +35,7 @@ import java.sql.Types;
 
 import static org.junit.jupiter.api.Assertions.assertInstanceOf;
 
-public class DataContextObjectIdQuery_PolymorphicIT extends PeopleProjectCase {
+public class DataContextObjectIdQuery_PolymorphicIT extends PeopleTestBase {
 
     private DataContext context1;
     private DataContext context2;

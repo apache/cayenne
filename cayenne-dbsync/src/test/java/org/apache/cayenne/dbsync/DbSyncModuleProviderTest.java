@@ -19,7 +19,7 @@
 package org.apache.cayenne.dbsync;
 
 import org.apache.cayenne.runtime.CayenneRuntimeModuleProvider;
-import org.apache.cayenne.unit.util.ModuleProviderChecker;
+import org.apache.cayenne.unit.ModuleProviderChecker;
 import org.junit.jupiter.api.Test;
 
 public class DbSyncModuleProviderTest {

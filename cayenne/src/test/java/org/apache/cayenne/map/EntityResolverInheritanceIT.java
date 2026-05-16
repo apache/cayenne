@@ -24,11 +24,11 @@ import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.junit.jupiter.api.Assertions.assertNull;
 import static org.junit.jupiter.api.Assertions.assertSame;
 
-import org.apache.cayenne.unit.PeopleProjectCase;
+import org.apache.cayenne.PeopleTestBase;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.BeforeEach;
 
-public class EntityResolverInheritanceIT extends PeopleProjectCase {
+public class EntityResolverInheritanceIT extends PeopleTestBase {
 
         private EntityResolver resolver;
 

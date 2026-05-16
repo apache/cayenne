@@ -25,14 +25,14 @@ import org.apache.cayenne.map.ObjEntity;
 import org.apache.cayenne.testdo.inheritance_people.Department;
 import org.apache.cayenne.testdo.inheritance_people.Employee;
 import org.apache.cayenne.testdo.inheritance_people.Manager;
-import org.apache.cayenne.unit.PeopleProjectCase;
+import org.apache.cayenne.PeopleTestBase;
 import org.junit.jupiter.api.Test;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertSame;
 import org.junit.jupiter.api.BeforeEach;
 
-public class FluentSelectPrefetchRouterActionQualifiedEntityIT extends PeopleProjectCase {
+public class FluentSelectPrefetchRouterActionQualifiedEntityIT extends PeopleTestBase {
 
         private EntityResolver resolver;
 

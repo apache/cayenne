@@ -20,15 +20,15 @@
 package org.apache.cayenne.access;
 
 import org.apache.cayenne.Cayenne;
+import org.apache.cayenne.PeopleTestBase;
 import org.apache.cayenne.testdo.inheritance_people.Employee;
 import org.apache.cayenne.testdo.inheritance_people.PersonNotes;
-import org.apache.cayenne.unit.PeopleProjectCase;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
 import static org.junit.jupiter.api.Assertions.assertInstanceOf;
 
-public class DataContextRelationshipQuery_PolymorphicIT extends PeopleProjectCase {
+public class DataContextRelationshipQuery_PolymorphicIT extends PeopleTestBase {
 
     private DataContext context1;
     private DataContext context2;

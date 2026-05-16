@@ -26,7 +26,7 @@ import org.apache.cayenne.testdo.testmap.ArtistExhibit;
 import org.apache.cayenne.testdo.testmap.Painting;
 import org.apache.cayenne.unit.CayenneTestsEnv;
 import org.apache.cayenne.unit.CayenneProjects;
-import org.apache.cayenne.unit.util.TstBean;
+import org.apache.cayenne.unit.util.TestObject;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.RegisterExtension;
 
@@ -88,14 +88,14 @@ public class CayennePersistentObjectIT {
     @Test
     public void readNestedPropertyNonPersistentObjectPath() {
         GenericPersistentObject o1 = new GenericPersistentObject();
-        TstBean o2 = new TstBean();
+        TestObject o2 = new TestObject();
         o2.setInteger(55);
         o1.writePropertyDirectly("o2", o2);
 
         assertSame(o2, o1.readNestedProperty("o2"));
         assertEquals(55, o1.readNestedProperty("o2.integer"));
-        assertEquals(TstBean.class, o1.readNestedProperty("o2.class"));
-        assertEquals(TstBean.class.getName(), o1.readNestedProperty("o2.class.name"));
+        assertEquals(TestObject.class, o1.readNestedProperty("o2.class"));
+        assertEquals(TestObject.class.getName(), o1.readNestedProperty("o2.class.name"));
     }
 
     @SuppressWarnings("unchecked")

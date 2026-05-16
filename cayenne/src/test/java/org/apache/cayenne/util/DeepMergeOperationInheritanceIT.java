@@ -25,13 +25,13 @@ import org.apache.cayenne.query.ObjectSelect;
 import org.apache.cayenne.testdo.inheritance_people.Department;
 import org.apache.cayenne.testdo.inheritance_people.Employee;
 import org.apache.cayenne.testdo.inheritance_people.Manager;
-import org.apache.cayenne.unit.PeopleProjectCase;
+import org.apache.cayenne.PeopleTestBase;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
 import static org.junit.jupiter.api.Assertions.*;
 
-public class DeepMergeOperationInheritanceIT extends PeopleProjectCase {
+public class DeepMergeOperationInheritanceIT extends PeopleTestBase {
 
     private DataContext context;
     private DataContext context1;

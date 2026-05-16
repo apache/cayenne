@@ -21,7 +21,7 @@ package org.apache.cayenne.ashwood;
 import org.apache.cayenne.ObjectContext;
 import org.apache.cayenne.map.DbEntity;
 import org.apache.cayenne.map.EntityResolver;
-import org.apache.cayenne.unit.PeopleProjectCase;
+import org.apache.cayenne.PeopleTestBase;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
@@ -31,7 +31,7 @@ import java.util.List;
 
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
-public class AshwoodEntitySorter_InheritanceIT extends PeopleProjectCase {
+public class AshwoodEntitySorter_InheritanceIT extends PeopleTestBase {
 
 		protected ObjectContext context;
 

@@ -27,15 +27,15 @@ import java.util.List;
 import java.util.Set;
 
 import org.apache.cayenne.ObjectContext;
+import org.apache.cayenne.PeopleTestBase;
 import org.apache.cayenne.query.EJBQLQuery;
 import org.apache.cayenne.testdo.inheritance_people.Address;
 import org.apache.cayenne.testdo.inheritance_people.Department;
 import org.apache.cayenne.testdo.inheritance_people.Manager;
-import org.apache.cayenne.unit.PeopleProjectCase;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
-public class DataContextEJBQLConditionsPeopleIT extends PeopleProjectCase {
+public class DataContextEJBQLConditionsPeopleIT extends PeopleTestBase {
 
     private ObjectContext context;
 

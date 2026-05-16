@@ -37,6 +37,8 @@ import org.apache.cayenne.test.jdbc.DbHelper;
 import org.apache.cayenne.test.jdbc.TableHelper;
 import org.apache.cayenne.unit.datasource.DataSourceConfigLoader;
 import org.apache.cayenne.unit.dba.TestDbAdapter;
+import org.apache.cayenne.unit.telemetry.TelemetricDataNodeFactory;
+import org.apache.cayenne.unit.telemetry.TestTelemetry;
 import org.apache.cayenne.unit.util.SQLTemplateCustomizer;
 import org.junit.jupiter.api.extension.AfterEachCallback;
 import org.junit.jupiter.api.extension.BeforeEachCallback;
@@ -118,7 +120,7 @@ public class CayenneTestsEnv implements BeforeEachCallback, AfterEachCallback {
         this.testDbAdapter = TestDbAdapter.of(firstAdapter);
         tweakProcedures(runtime, testDbAdapter);
 
-        this.dbHelper = new FlavoredDbHelper(
+        this.dbHelper = new FlavorAwareDbHelper(
                 COMMON_SCHEMA.dataSource(),
                 firstAdapter.getQuotingStrategy(),
                 context.getEntityResolver().getDataMaps().iterator().next());

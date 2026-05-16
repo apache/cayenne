@@ -16,7 +16,7 @@
  *    specific language governing permissions and limitations
  *    under the License.
  */
-package org.apache.cayenne.unit.util;
+package org.apache.cayenne.unit;
 
 import org.apache.cayenne.di.spi.ModuleProvider;
 

@@ -17,20 +17,26 @@
  *  under the License.
  ****************************************************************/
 
-package org.apache.cayenne.unit.jira;
-
-import org.apache.cayenne.testdo.inheritance_people.Manager;
+package org.apache.cayenne.jira;
 
 /**
  */
-public class CAY_207Manager1 extends Manager {
+public class CAY_207String2 {
 
-    public void setClientContactType(CAY_207String1 clientContactType) {
-        writeProperty("clientContactType", clientContactType);
+    protected String string;
+
+    public CAY_207String2(String string) {
+        // mock deserialization behavior... if the raw data is invalid, an exception
+        // should be thrown
+        if (string != null && !string.startsWith("T2")) {
+            throw new IllegalArgumentException(string);
+        }
+
+        this.string = string;
     }
 
-    public CAY_207String1 getClientContactType() {
-        return (CAY_207String1) readProperty("clientContactType");
+    @Override
+    public String toString() {
+        return getClass().getName() + ": " + string;
     }
-
 }

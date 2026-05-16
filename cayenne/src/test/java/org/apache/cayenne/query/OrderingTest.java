@@ -22,7 +22,7 @@ package org.apache.cayenne.query;
 import org.apache.cayenne.exp.Expression;
 import org.apache.cayenne.exp.FunctionExpressionFactory;
 import org.apache.cayenne.testdo.testmap.Painting;
-import org.apache.cayenne.unit.util.TstBean;
+import org.apache.cayenne.unit.util.TestObject;
 import org.junit.jupiter.api.Test;
 
 import java.math.BigDecimal;
@@ -158,9 +158,9 @@ public class OrderingTest {
     @Test
     public void compare4() {
         // compare on non-persistent property
-        TstBean t1 = new TstBean(1000);
-        TstBean t2 = new TstBean(2000);
-        TstBean t3 = new TstBean(2000);
+        TestObject t1 = new TestObject(1000);
+        TestObject t2 = new TestObject(2000);
+        TestObject t3 = new TestObject(2000);
 
         Ordering ordering = new Ordering("integer", SortOrder.ASCENDING);
         assertTrue(ordering.compare(t1, t2) < 0);
@@ -170,11 +170,11 @@ public class OrderingTest {
 
     @Test
     public void orderList() {
-        List<TstBean> list = new ArrayList<>(3);
+        List<TestObject> list = new ArrayList<>(3);
 
-        list.add(new TstBean(5));
-        list.add(new TstBean(2));
-        list.add(new TstBean(3));
+        list.add(new TestObject(5));
+        list.add(new TestObject(2));
+        list.add(new TestObject(3));
 
         new Ordering("integer", SortOrder.ASCENDING).orderList(list);
         assertEquals(2, list.get(0).getInteger().intValue());
@@ -215,21 +215,21 @@ public class OrderingTest {
 
     @Test
     public void orderList_Static() {
-        List<TstBean> list = new ArrayList<>(6);
+        List<TestObject> list = new ArrayList<>(6);
 
-        list.add(new TstBean("c", 1));
-        list.add(new TstBean("c", 30));
-        list.add(new TstBean("a", 5));
-        list.add(new TstBean("b", 1));
-        list.add(new TstBean("b", 2));
-        list.add(new TstBean("b", 5));
+        list.add(new TestObject("c", 1));
+        list.add(new TestObject("c", 30));
+        list.add(new TestObject("a", 5));
+        list.add(new TestObject("b", 1));
+        list.add(new TestObject("b", 2));
+        list.add(new TestObject("b", 5));
 
         List<Ordering> orderings = asList(
                 new Ordering("string", SortOrder.ASCENDING),
                 new Ordering("integer", SortOrder.DESCENDING));
 
         // clone list and then order
-        List<TstBean> orderedList = new ArrayList<>(list);
+        List<TestObject> orderedList = new ArrayList<>(list);
         Ordering.orderList(orderedList, orderings);
 
         assertEquals(list.get(2), orderedList.get(0));
@@ -242,14 +242,14 @@ public class OrderingTest {
 
     @Test
     public void orderedList() {
-        Collection<TstBean> set = new HashSet<>(6);
+        Collection<TestObject> set = new HashSet<>(6);
 
-        TstBean shouldBe0 = new TstBean("a", 0);
-        TstBean shouldBe1 = new TstBean("b", 0);
-        TstBean shouldBe2 = new TstBean("c", 0);
-        TstBean shouldBe3 = new TstBean("d", 0);
-        TstBean shouldBe4 = new TstBean("f", 0);
-        TstBean shouldBe5 = new TstBean("r", 0);
+        TestObject shouldBe0 = new TestObject("a", 0);
+        TestObject shouldBe1 = new TestObject("b", 0);
+        TestObject shouldBe2 = new TestObject("c", 0);
+        TestObject shouldBe3 = new TestObject("d", 0);
+        TestObject shouldBe4 = new TestObject("f", 0);
+        TestObject shouldBe5 = new TestObject("r", 0);
 
         set.add(shouldBe1);
         set.add(shouldBe0);
@@ -258,7 +258,7 @@ public class OrderingTest {
         set.add(shouldBe2);
         set.add(shouldBe4);
 
-        List<TstBean> orderedList = new Ordering("string", SortOrder.ASCENDING).orderedList(set);
+        List<TestObject> orderedList = new Ordering("string", SortOrder.ASCENDING).orderedList(set);
 
         assertEquals(shouldBe0, orderedList.get(0));
         assertEquals(shouldBe1, orderedList.get(1));
@@ -270,14 +270,14 @@ public class OrderingTest {
 
     @Test
     public void orderedList_Static() {
-        Collection<TstBean> set = new HashSet<>(6);
+        Collection<TestObject> set = new HashSet<>(6);
 
-        TstBean shouldBe0 = new TstBean("a", 5);
-        TstBean shouldBe1 = new TstBean("b", 5);
-        TstBean shouldBe2 = new TstBean("b", 2);
-        TstBean shouldBe3 = new TstBean("b", 1);
-        TstBean shouldBe4 = new TstBean("c", 30);
-        TstBean shouldBe5 = new TstBean("c", 1);
+        TestObject shouldBe0 = new TestObject("a", 5);
+        TestObject shouldBe1 = new TestObject("b", 5);
+        TestObject shouldBe2 = new TestObject("b", 2);
+        TestObject shouldBe3 = new TestObject("b", 1);
+        TestObject shouldBe4 = new TestObject("c", 30);
+        TestObject shouldBe5 = new TestObject("c", 1);
 
         set.add(shouldBe0);
         set.add(shouldBe5);
@@ -290,7 +290,7 @@ public class OrderingTest {
                 new Ordering("string", SortOrder.ASCENDING),
                 new Ordering("integer", SortOrder.DESCENDING));
 
-        List<TstBean> orderedList = Ordering.orderedList(set, orderings);
+        List<TestObject> orderedList = Ordering.orderedList(set, orderings);
 
         assertEquals(shouldBe0, orderedList.get(0));
         assertEquals(shouldBe1, orderedList.get(1));
@@ -302,14 +302,14 @@ public class OrderingTest {
 
     @Test
     public void orderListWithFunction() {
-        Collection<TstBean> set = new HashSet<>(6);
+        Collection<TestObject> set = new HashSet<>(6);
 
-        TstBean shouldBe0 = new TstBean("", 0);
-        TstBean shouldBe1 = new TstBean("", -1);
-        TstBean shouldBe2 = new TstBean("", -2);
-        TstBean shouldBe3 = new TstBean("", 5);
-        TstBean shouldBe4 = new TstBean("", -6);
-        TstBean shouldBe5 = new TstBean("", -30);
+        TestObject shouldBe0 = new TestObject("", 0);
+        TestObject shouldBe1 = new TestObject("", -1);
+        TestObject shouldBe2 = new TestObject("", -2);
+        TestObject shouldBe3 = new TestObject("", 5);
+        TestObject shouldBe4 = new TestObject("", -6);
+        TestObject shouldBe5 = new TestObject("", -30);
 
         set.add(shouldBe4);
         set.add(shouldBe2);
@@ -318,7 +318,7 @@ public class OrderingTest {
         set.add(shouldBe0);
         set.add(shouldBe3);
 
-        List<TstBean> orderedList = new Ordering(FunctionExpressionFactory.absExp("integer"), SortOrder.ASCENDING).orderedList(set);
+        List<TestObject> orderedList = new Ordering(FunctionExpressionFactory.absExp("integer"), SortOrder.ASCENDING).orderedList(set);
 
         assertEquals(shouldBe0, orderedList.get(0));
         assertEquals(shouldBe1, orderedList.get(1));
@@ -330,14 +330,14 @@ public class OrderingTest {
 
     @Test
     public void orderListWithFunction_Static() {
-        Collection<TstBean> set = new HashSet<>(6);
+        Collection<TestObject> set = new HashSet<>(6);
 
-        TstBean shouldBe0 = new TstBean("cx", -2);
-        TstBean shouldBe1 = new TstBean("cf", -1);
-        TstBean shouldBe2 = new TstBean("basa", 2);
-        TstBean shouldBe3 = new TstBean("abcd", -1);
-        TstBean shouldBe4 = new TstBean("bdsasd", -2);
-        TstBean shouldBe5 = new TstBean("bdsadf", 1);
+        TestObject shouldBe0 = new TestObject("cx", -2);
+        TestObject shouldBe1 = new TestObject("cf", -1);
+        TestObject shouldBe2 = new TestObject("basa", 2);
+        TestObject shouldBe3 = new TestObject("abcd", -1);
+        TestObject shouldBe4 = new TestObject("bdsasd", -2);
+        TestObject shouldBe5 = new TestObject("bdsadf", 1);
 
         set.add(shouldBe4);
         set.add(shouldBe2);
@@ -351,7 +351,7 @@ public class OrderingTest {
                 new Ordering(FunctionExpressionFactory.absExp("integer"), SortOrder.DESCENDING)
         );
 
-        List<TstBean> orderedList = Ordering.orderedList(set, orderings);
+        List<TestObject> orderedList = Ordering.orderedList(set, orderings);
 
         assertEquals(shouldBe0, orderedList.get(0));
         assertEquals(shouldBe1, orderedList.get(1));

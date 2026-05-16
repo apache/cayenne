@@ -24,22 +24,20 @@ import org.apache.cayenne.testdo.testmap.Artist;
 import org.apache.cayenne.testdo.testmap.Painting;
 import org.apache.cayenne.unit.CayenneProjects;
 import org.apache.cayenne.unit.CayenneTestsEnv;
-import org.junit.jupiter.api.extension.RegisterExtension;
-import org.apache.cayenne.unit.util.ValidationDelegate;
 import org.junit.jupiter.api.Test;
-import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertFalse;
-import static org.junit.jupiter.api.Assertions.assertTrue;
+import org.junit.jupiter.api.extension.RegisterExtension;
 
-/**
- */
+import java.util.function.Consumer;
+
+import static org.junit.jupiter.api.Assertions.*;
+
 public class DataContextValidationIT {
 
     @RegisterExtension
     static final CayenneTestsEnv env = CayenneTestsEnv.forProject(CayenneProjects.TESTMAP_PROJECT);
 
     @Test
-    public void validatingObjectsOnCommitProperty() throws Exception {
+    public void validatingObjectsOnCommitProperty() {
         env.context().setValidatingObjectsOnCommit(true);
         assertTrue(env.context().isValidatingObjectsOnCommit());
 
@@ -48,7 +46,7 @@ public class DataContextValidationIT {
     }
 
     @Test
-    public void validatingObjectsOnCommit() throws Exception {
+    public void validatingObjectsOnCommit() {
         // test that validation is called properly
 
         env.context().setValidatingObjectsOnCommit(true);
@@ -65,11 +63,9 @@ public class DataContextValidationIT {
     }
 
     @Test
-    public void validationModifyingContext() throws Exception {
+    public void validationModifyingContext() {
 
-        ValidationDelegate delegate = (object, validationResult) -> {
-
-            Artist a = (Artist) object;
+        Consumer<Artist> callback = a -> {
             Painting p = a.getObjectContext().newObject(Painting.class);
             p.setPaintingTitle("XXX");
             p.setToArtist(a);
@@ -77,13 +73,13 @@ public class DataContextValidationIT {
 
         env.context().setValidatingObjectsOnCommit(true);
         Artist a1 = env.context().newObject(Artist.class);
-        a1.setValidationDelegate(delegate);
+        a1.setValidationCallback(callback);
         a1.setArtistName("a1");
 
         // add another artist to ensure that modifying context works when more than one
         // object is committed
         Artist a2 = env.context().newObject(Artist.class);
-        a2.setValidationDelegate(delegate);
+        a2.setValidationCallback(callback);
         a2.setArtistName("a2");
         env.context().commitChanges();
 

@@ -16,25 +16,21 @@
  *  specific language governing permissions and limitations
  *  under the License.
  ****************************************************************/
-package org.apache.cayenne.unit;
 
-import org.junit.jupiter.api.BeforeEach;
-import org.junit.jupiter.api.extension.RegisterExtension;
+package org.apache.cayenne.jira;
 
-import java.sql.Types;
+import org.apache.cayenne.testdo.inheritance_people.Manager;
 
-public class PeopleProjectCase {
+/**
+ */
+public class CAY_207Manager2 extends Manager {
 
-	@RegisterExtension
-	protected static final CayenneTestsEnv env = CayenneTestsEnv
-			.forProject(CayenneProjects.PEOPLE_PROJECT)
-			.withoutAutoClean();
+    public void setClientContactType(CAY_207String1 clientContactType) {
+        writeProperty("clientContactType", clientContactType);
+    }
 
-	@BeforeEach
-	public void cleanUpDB() throws Exception {
-		// must null out the circular FK before DBCleaner.clean() runs, otherwise
-		// PostgreSQL's strict FK enforcement aborts the cleanup
-		env.table("PERSON").update().set("DEPARTMENT_ID", null, Types.INTEGER).execute();
-		env.dbCleaner().clean();
-	}
+    public CAY_207String2 getClientContactType() {
+        return (CAY_207String2) readProperty("clientContactType");
+    }
+
 }

@@ -17,7 +17,7 @@
  *  under the License.
  ****************************************************************/
 
-package org.apache.cayenne.unit.jira;
+package org.apache.cayenne.jira;
 
 import org.apache.cayenne.Cayenne;
 import org.apache.cayenne.access.DataContext;

@@ -20,7 +20,7 @@
 package org.apache.cayenne.gen;
 
 import org.apache.cayenne.tools.CayenneToolsModuleProvider;
-import org.apache.cayenne.unit.util.ModuleProviderChecker;
+import org.apache.cayenne.unit.ModuleProviderChecker;
 import org.junit.jupiter.api.Test;
 
 public class CgenModuleProviderTest {
