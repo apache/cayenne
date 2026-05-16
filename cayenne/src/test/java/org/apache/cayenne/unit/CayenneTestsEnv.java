@@ -79,7 +79,7 @@ public class CayenneTestsEnv implements BeforeEachCallback, AfterEachCallback {
                 INJECTOR.getInstance(AdhocObjectFactory.class));
 
         SCHEMAS = new AllTestsSchemaManager(
-                DATA_SOURCES,
+                DATA_SOURCES.sharedDataSource(),
                 INJECTOR.getInstance(DbAdapter.class),
                 INJECTOR.getInstance(JdbcEventLogger.class),
                 INJECTOR.getInstance(DataMapLoader.class));

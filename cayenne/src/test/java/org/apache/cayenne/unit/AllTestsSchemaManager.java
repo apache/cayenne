@@ -41,6 +41,7 @@ import org.apache.cayenne.unit.dba.TestDbAdapter;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import javax.sql.DataSource;
 import java.sql.Connection;
 import java.sql.DatabaseMetaData;
 import java.sql.ResultSet;
@@ -83,18 +84,18 @@ public class AllTestsSchemaManager {
     private static final Set<String> EXTRA_EXCLUDED_FOR_NO_LOB = Set.of("CLOB_DETAIL");
     private static final Set<String> EXTRA_EXCLUDED_FOR_NO_NATIVE_JSON = Set.of("JSON_OTHER");
 
-    private final TestDataSources dataSources;
+    private final DataSource dataSource;
     private final TestDbAdapter testDbAdapter;
     private final JdbcEventLogger jdbcEventLogger;
     private final DataDomain domain;
 
     public AllTestsSchemaManager(
-            TestDataSources dataSources,
+            DataSource dataSource,
             DbAdapter dbAdapter,
             JdbcEventLogger jdbcEventLogger,
             DataMapLoader loader) {
 
-        this.dataSources = dataSources;
+        this.dataSource = dataSource;
         this.testDbAdapter = TestDbAdapter.of(dbAdapter);
         this.jdbcEventLogger = jdbcEventLogger;
 
@@ -120,7 +121,7 @@ public class AllTestsSchemaManager {
         DataNode node = new DataNode(map.getName());
         node.setJdbcEventLogger(jdbcEventLogger);
         node.setAdapter(dbAdapter);
-        node.setDataSource(dataSources.sharedDataSource());
+        node.setDataSource(dataSource);
         
         // tweak mapping with a delegate
         for (Procedure proc : map.getProcedures()) {
@@ -302,7 +303,7 @@ public class AllTestsSchemaManager {
 
         List<DbEntity> list = dbEntitiesInInsertOrder(map.getName());
 
-        try (Connection conn = dataSources.sharedDataSource().getConnection()) {
+        try (Connection conn = dataSource.getConnection()) {
 
             DatabaseMetaData md = conn.getMetaData();
             List<String> allTables = new ArrayList<>();
@@ -355,7 +356,7 @@ public class AllTestsSchemaManager {
 
     private void createSchema(DataNode node, DataMap map) throws Exception {
 
-        try (Connection conn = dataSources.sharedDataSource().getConnection()) {
+        try (Connection conn = dataSource.getConnection()) {
             testDbAdapter.willCreateTables(conn, map);
             try (Statement stmt = conn.createStatement()) {
 
