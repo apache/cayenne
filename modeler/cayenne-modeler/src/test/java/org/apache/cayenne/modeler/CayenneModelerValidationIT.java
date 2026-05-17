@@ -58,16 +58,22 @@ public class CayenneModelerValidationIT {
 
     @Test
     public void validatorProvided() {
-        Application application = new Application(injector, new UIInitializer() {
-        });
+        Application application = new Application(
+                injector,
+                new UIInitializer() {
+                },
+                CliArgs.parse(new String[0]));
         assertTrue(application.getProjectValidator() instanceof ConfigurableProjectValidator);
     }
 
     @Test
     public void configLoaded() {
         URLResource projectResource = new URLResource(getClass().getResource(CAYENNE_CONFIGURED_VALIDATION_PROJECT));
-        Application application = new Application(injector, new UIInitializer() {
-        });
+        Application application = new Application(
+                injector,
+                new UIInitializer() {
+                },
+                CliArgs.parse(new String[0]));
         ProjectLoader projectLoader = injector.getInstance(ProjectLoader.class);
         Project project = projectLoader.loadProject(projectResource);
 

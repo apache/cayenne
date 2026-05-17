@@ -120,16 +120,20 @@ public class OpenProjectAction extends AppAction {
                 return;
             }
 
-            openProject(f);
+            openProject(f, null);
         }
 
         app.getUndoManager().discardAllEdits();
     }
 
     /**
-     * Opens specified project file. File must already exist.
+     * Opens the specified project file. File must already exist. When
+     * {@code mcpHandshakeNonce} is non-null, the MCP-driven launch contract is honoured:
+     * on successful open, a handshake entry is written to {@link java.util.prefs.Preferences}
+     * so the MCP server's wait loop can confirm the project loaded. Pass {@code null}
+     * for normal user-driven opens.
      */
-    public void openProject(File file) {
+    public void openProject(File file, String mcpHandshakeNonce) {
         try {
             if (!file.exists()) {
                 JOptionPane.showMessageDialog(
@@ -178,7 +182,7 @@ public class OpenProjectAction extends AppAction {
                     break;
             }
 
-            openProjectResourse(rootSource, controller);
+            openProjectResourse(rootSource, controller, mcpHandshakeNonce);
 
 
         } catch (Exception ex) {
@@ -187,9 +191,9 @@ public class OpenProjectAction extends AppAction {
         }
     }
 
-    private Project openProjectResourse(Resource resource, MainFrame controller) {
+    private Project openProjectResourse(Resource resource, MainFrame controller, String mcpHandshakeNonce) {
         Project project = app.getProjectLoader().loadProject(resource);
-        controller.onProjectOpened(project);
+        controller.onProjectOpened(project, mcpHandshakeNonce);
         return project;
     }
 

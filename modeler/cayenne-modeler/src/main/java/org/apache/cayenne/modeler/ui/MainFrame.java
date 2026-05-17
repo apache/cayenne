@@ -21,6 +21,7 @@ package org.apache.cayenne.modeler.ui;
 
 import org.apache.cayenne.CayenneRuntimeException;
 import org.apache.cayenne.modeler.Application;
+import org.apache.cayenne.modeler.mcp.McpHandshakeWriter;
 import org.apache.cayenne.modeler.pref.RecentProjectsPrefs;
 import org.apache.cayenne.modeler.service.action.GlobalActions;
 import org.apache.cayenne.modeler.service.os.OperatingSystem;
@@ -272,9 +273,13 @@ public class MainFrame extends AppFrame {
     }
 
     /**
-     * Handles project opening control. Updates main frame, then delegates control to child controllers.
+     * Handles project opening control. Updates main frame, then delegates control to
+     * child controllers. If {@code mcpHandshakeNonce} is non-null, also writes an MCP
+     * handshake entry once the project is loaded - signals to an MCP server that
+     * launched the Modeler with {@code --mcp-handshake} that the project is ready.
+     * Callers not in the MCP launch path pass {@code null}.
      */
-    public void onProjectOpened(Project project) {
+    public void onProjectOpened(Project project, String mcpHandshakeNonce) {
 
         session.projectOpened(project);
         this.projectView = new ProjectView(session);
@@ -310,6 +315,10 @@ public class MainFrame extends AppFrame {
 
         if (!allFailures.isEmpty()) {
             app.getActionManager().getAction(ValidateAction.class).showFailures(allFailures);
+        }
+
+        if (mcpHandshakeNonce != null) {
+            McpHandshakeWriter.write(mcpHandshakeNonce, app.getCli().rawArgs(), getProjectLocationString());
         }
     }
 
@@ -360,7 +369,7 @@ public class MainFrame extends AppFrame {
         if (transferFile.isFile()) {
             FileFilter filter = FileFilters.getApplicationFilter();
             if (filter.accept(transferFile)) {
-                app.getActionManager().getAction(OpenProjectAction.class).openProject(transferFile);
+                app.getActionManager().getAction(OpenProjectAction.class).openProject(transferFile, null);
                 return true;
             }
         }

@@ -107,7 +107,7 @@ class ProjectFileChangeTracker extends Thread {
                     session.app()
                             .getActionManager()
                             .getAction(OpenProjectAction.class)
-                            .openProject(fileDirectory);
+                            .openProject(fileDirectory, null);
                 }
             } else {
                 session.setDirty(true);

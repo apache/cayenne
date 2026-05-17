@@ -54,7 +54,7 @@ public class RevertAction extends AppAction {
         if (!isNew && fileDirectory.isFile()) {
             app
                     .getActionManager()
-                    .getAction(OpenProjectAction.class).openProject(fileDirectory);
+                    .getAction(OpenProjectAction.class).openProject(fileDirectory, null);
         }
 
         // create new

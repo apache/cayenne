@@ -66,6 +66,8 @@ public class Application {
 
     public static void launch(String[] args, UIInitializer platformInitializer) {
 
+        CliArgs cli = CliArgs.parse(args);
+
         LOGGER.info("Starting CayenneModeler.");
         LOGGER.info("JRE v.{} at {}", System.getProperty("java.version"), System.getProperty("java.home"));
 
@@ -77,21 +79,8 @@ public class Application {
                 new DbSyncModule(),
                 new ModelerModule());
 
-        SwingUtilities.invokeLater(() -> new Application(injector, platformInitializer).launch(initialProjectFromArgs(args)));
-    }
-
-    private static File initialProjectFromArgs(String[] args) {
-        if (args != null && args.length == 1) {
-            File f = new File(args[0]);
-
-            if (f.isFile()
-                    && f.getName().startsWith("cayenne")
-                    && f.getName().endsWith(".xml")) {
-                return f;
-            }
-        }
-
-        return null;
+        SwingUtilities.invokeLater(() ->
+                new Application(injector, platformInitializer, cli).launch(cli.initialProject()));
     }
 
     private final Injector injector;
@@ -99,15 +88,17 @@ public class Application {
     private final ModelerClassLoader classLoader;
     private final PreferencesRepository preferencesRepository;
     private final ProjectValidator projectValidator;
+    private final CliArgs cli;
     private GlobalActions actionManager;
     private LogConsole logConsole;
     private MainFrame frame;
     private CayenneUndoManager undoManager;
     private DBConnectors dbConnectors;
 
-    public Application(Injector injector, UIInitializer platformInitializer) {
+    public Application(Injector injector, UIInitializer platformInitializer, CliArgs cli) {
         this.injector = injector;
         this.platformInitializer = platformInitializer;
+        this.cli = cli;
 
         this.classLoader = new ModelerClassLoader();
         this.preferencesRepository = new PreferencesRepository(injector.getInstance(ConfigurationNameMapper.class));
@@ -175,6 +166,10 @@ public class Application {
         return logConsole;
     }
 
+    public CliArgs getCli() {
+        return cli;
+    }
+
     public void launch(File initialProject) {
         this.platformInitializer.initLookAndFeel();
         this.actionManager = new GlobalActions(
@@ -215,7 +210,8 @@ public class Application {
         }
 
         if (initialProject != null) {
-            getActionManager().getAction(OpenProjectAction.class).openProject(initialProject);
+            getActionManager().getAction(OpenProjectAction.class)
+                    .openProject(initialProject, cli.mcpHandshakeNonce());
         }
     }
 

@@ -67,7 +67,7 @@ public class NewProjectAction extends AppAction {
         Project project = new Project(
                 new ConfigurationTree<DataChannelDescriptor>(dataChannelDescriptor));
 
-        controller.onProjectOpened(project);
+        controller.onProjectOpened(project, null);
 
         // select default domain
         getProjectSession().displayDomain(new DomainDisplayEvent(this, dataChannelDescriptor));
