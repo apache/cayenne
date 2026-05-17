@@ -16,7 +16,7 @@
  *  specific language governing permissions and limitations
  *  under the License.
  ****************************************************************/
-package org.apache.cayenne.modeler.osx;
+package org.apache.cayenne.modeler.platform.osx;
 
 import java.awt.Dimension;
 import java.awt.Graphics;

@@ -17,7 +17,7 @@
  *  under the License.
  ****************************************************************/
 
-package org.apache.cayenne.modeler.osx;
+package org.apache.cayenne.modeler.platform.osx;
 
 /**
  * @since 4.2

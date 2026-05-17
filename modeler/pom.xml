@@ -36,12 +36,9 @@
 		<module>cayenne-wocompat</module>
 		<module>cayenne-modeler</module>
 		<module>cayenne-modeler-generic</module>
-		<module>cayenne-modeler-generic-ext</module>
-		<module>cayenne-modeler-mac-ext</module>
 		<module>cayenne-modeler-mac</module>
 		<module>cayenne-modeler-win</module>
-        <module>cayenne-modeler-win-ext</module>
-    </modules>
+	</modules>
 
 	<build>
 		<plugins>

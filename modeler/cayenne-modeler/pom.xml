@@ -44,6 +44,11 @@
 		</dependency>
 
 		<dependency>
+			<groupId>com.jgoodies</groupId>
+			<artifactId>jgoodies-looks</artifactId>
+		</dependency>
+
+		<dependency>
 			<groupId>org.apache.cayenne</groupId>
 			<artifactId>cayenne</artifactId>
 			<version>${project.version}</version>

@@ -38,13 +38,7 @@
 			<version>${project.version}</version>
 		</dependency>
 
-		<dependency>
-			<groupId>org.apache.cayenne.modeler</groupId>
-			<artifactId>cayenne-modeler-mac-ext</artifactId>
-			<version>${project.version}</version>
-		</dependency>
-
-		<!-- 
+		<!--
 			adding cayenne runtime dependencies explicitly, 
 			as they are marked as "provided" in the modeler pom
 			and won't be included in the jar 
@@ -79,7 +73,7 @@
 							<name>CayenneModeler</name>
 							<longName>${project.version}</longName>
 							<destDir>${project.build.outputDirectory}</destDir>
-							<mainClass>org.apache.cayenne.modeler.osx.OSXMain</mainClass>
+							<mainClass>org.apache.cayenne.modeler.Main</mainClass>
 							<icon>src/japplication/resources/CayenneModeler.icns</icon>
 							<os>mac</os>
 							<jvm0>21</jvm0>

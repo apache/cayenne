@@ -16,14 +16,26 @@
  *  specific language governing permissions and limitations
  *  under the License.
  ****************************************************************/
-
-package org.apache.cayenne.modeler.osx;
+package org.apache.cayenne.modeler.platform;
 
 import org.apache.cayenne.modeler.Application;
 
-public final class OSXMain {
+import javax.swing.JFrame;
 
-    public static void main(String[] args) {
-        Application.launch(args, new OSXPlatformInitializer());
+/**
+ * A base callback for platform-specific Modeler initialization.
+ */
+public interface UIPlatformInitializer {
+
+    /**
+     * Initializes application look and feel.
+     */
+    default void initLookAndFeel() {
+    }
+
+    /**
+     * Updates default frame menus according to the platform specifics.
+     */
+    default void setupMenus(Application app, JFrame frame) {
     }
 }

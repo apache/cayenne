@@ -16,11 +16,11 @@
  *  specific language governing permissions and limitations
  *  under the License.
  ****************************************************************/
-package org.apache.cayenne.modeler.osx;
+package org.apache.cayenne.modeler.platform.osx;
 
 import org.apache.cayenne.modeler.Application;
 import org.apache.cayenne.modeler.service.action.GlobalActions;
-import org.apache.cayenne.modeler.ui.UIPlatformInitializer;
+import org.apache.cayenne.modeler.platform.UIPlatformInitializer;
 import org.apache.cayenne.modeler.ui.action.AboutAction;
 import org.apache.cayenne.modeler.ui.action.ConfigurePreferencesAction;
 import org.apache.cayenne.modeler.ui.action.ExitAction;

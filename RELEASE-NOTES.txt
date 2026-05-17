@@ -41,6 +41,7 @@ CAY-2937 Decommission "graph" Support
 CAY-2938 Modeler: prettier DB Import - part 1
 CAY-2940 Upgrade to SLF4J version 2.0.17
 CAY-2942 CayenneModeler MCP: cgen_run tool
+CAY-2945 CayenneModeler universal "main"
 
 Bug Fixes:
 

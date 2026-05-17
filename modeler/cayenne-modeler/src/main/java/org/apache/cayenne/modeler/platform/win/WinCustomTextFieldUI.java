@@ -17,7 +17,7 @@
  *  under the License.
  ****************************************************************/
 
-package org.apache.cayenne.modeler.win;
+package org.apache.cayenne.modeler.platform.win;
 
 import java.lang.reflect.Constructor;
 import javax.swing.JComponent;

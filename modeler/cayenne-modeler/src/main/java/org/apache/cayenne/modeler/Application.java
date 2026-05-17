@@ -37,7 +37,7 @@ import org.apache.cayenne.modeler.pref.PreferencesRepository;
 import org.apache.cayenne.modeler.pref.RecentProjectsPrefs;
 import org.apache.cayenne.modeler.service.action.GlobalActions;
 import org.apache.cayenne.modeler.service.classloader.ModelerClassLoader;
-import org.apache.cayenne.modeler.ui.UIPlatformInitializer;
+import org.apache.cayenne.modeler.platform.UIPlatformInitializer;
 import org.apache.cayenne.modeler.service.validator.ConfigurableProjectValidator;
 import org.apache.cayenne.modeler.ui.MainFrame;
 import org.apache.cayenne.modeler.ui.action.OpenProjectAction;

@@ -17,7 +17,7 @@
  *  under the License.
  ****************************************************************/
 
-package org.apache.cayenne.modeler.generic;
+package org.apache.cayenne.modeler.platform.generic;
 
 import java.awt.Color;
 import java.awt.Dimension;

@@ -16,12 +16,12 @@
  *  specific language governing permissions and limitations
  *  under the License.
  ****************************************************************/
-package org.apache.cayenne.modeler.generic;
+package org.apache.cayenne.modeler.platform.generic;
 
 import com.jgoodies.looks.plastic.PlasticLookAndFeel;
 import com.jgoodies.looks.plastic.PlasticTheme;
 import com.jgoodies.looks.plastic.PlasticXPLookAndFeel;
-import org.apache.cayenne.modeler.ui.UIPlatformInitializer;
+import org.apache.cayenne.modeler.platform.UIPlatformInitializer;
 import org.apache.cayenne.modeler.toolkit.icon.IconFactory;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
