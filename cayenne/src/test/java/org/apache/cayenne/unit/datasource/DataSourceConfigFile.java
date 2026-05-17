@@ -74,14 +74,12 @@ class DataSourceConfigFile {
     }
 
     private static DataSourceDescriptor buildDataSourceDescriptor(String name, Properties props) {
-        DataSourceDescriptor dsi = new DataSourceDescriptor();
+        DataSourceDescriptor dsi = DataSourceDescriptorFactory.create();
 
         dsi.setUserName(props.getProperty(name + "." + USER_NAME_KEY));
         dsi.setPassword(props.getProperty(name + "." + PASSWORD_KEY));
         dsi.setDataSourceUrl(props.getProperty(name + "." + URL_KEY));
         dsi.setJdbcDriver(props.getProperty(name + "." + DRIVER_KEY));
-        dsi.setMinConnections(DataSourceConfigLoader.MIN_CONNECTIONS);
-        dsi.setMaxConnections(DataSourceConfigLoader.MAX_CONNECTIONS);
 
         return dsi;
     }

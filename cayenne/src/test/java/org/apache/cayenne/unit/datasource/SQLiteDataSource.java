@@ -16,22 +16,17 @@
  *  specific language governing permissions and limitations
  *  under the License.
  ****************************************************************/
-package org.apache.cayenne.unit.testcontainers;
+package org.apache.cayenne.unit.datasource;
 
-import org.testcontainers.containers.JdbcDatabaseContainer;
-import org.testcontainers.containers.MSSQLServerContainer;
-import org.testcontainers.utility.DockerImageName;
+import org.apache.cayenne.configuration.DataSourceDescriptor;
 
-public class SqlServerContainerStarter extends DbContainerStarter {
-    @Override
-    protected JdbcDatabaseContainer<?> createContainer(DockerImageName dockerImageName) {
-        return new MSSQLServerContainer<>(dockerImageName)
-                .withUrlParam("sendTimeAsDatetime", "false")
-                .acceptLicense();
-    }
+public class SQLiteDataSource {
 
-    @Override
-    protected String dockerImage() {
-        return "mcr.microsoft.com/mssql/server";
+    public static DataSourceDescriptor start() {
+        return DataSourceDescriptorFactory.create(
+                "sa",
+                "",
+                "jdbc:sqlite:file:memdb?mode=memory&cache=shared&date_class=text",
+                "org.sqlite.JDBC");
     }
 }

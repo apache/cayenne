@@ -16,30 +16,28 @@
  *  specific language governing permissions and limitations
  *  under the License.
  ****************************************************************/
-package org.apache.cayenne.unit.testcontainers;
+package org.apache.cayenne.unit.datasource;
 
+import org.apache.cayenne.configuration.DataSourceDescriptor;
 import org.testcontainers.containers.JdbcDatabaseContainer;
-import org.testcontainers.containers.MySQLContainer;
+import org.testcontainers.containers.MSSQLServerContainer;
 import org.testcontainers.utility.DockerImageName;
 
-import java.util.Calendar;
+public class SqlServerDataSource extends TestContainersDataSource {
 
-public class MysqlContainerStarter extends DbContainerStarter {
+    public static DataSourceDescriptor start() {
+        return TestContainersDataSource.start(new SqlServerDataSource());
+    }
 
     @Override
     protected JdbcDatabaseContainer<?> createContainer(DockerImageName dockerImageName) {
-        return new MySQLContainer<>(dockerImageName)
-                .withUrlParam("useUnicode", "true")
-                .withUrlParam("characterEncoding", "UTF-8")
-                .withUrlParam("generateSimpleParameterMetadata", "true")
-                .withUrlParam("useLegacyDatetimeCode", "false")
-                .withUrlParam("serverTimezone", Calendar.getInstance().getTimeZone().getID())
-                .withCommand("--character-set-server=utf8mb4")
-                .withCommand("--max-allowed-packet=5242880");
+        return new MSSQLServerContainer<>(dockerImageName)
+                .withUrlParam("sendTimeAsDatetime", "false")
+                .acceptLicense();
     }
 
     @Override
     protected String dockerImage() {
-        return "mysql:8.2";
+        return "mcr.microsoft.com/mssql/server";
     }
 }

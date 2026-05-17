@@ -16,29 +16,26 @@
  *  specific language governing permissions and limitations
  *  under the License.
  ****************************************************************/
-package org.apache.cayenne.unit.testcontainers;
+package org.apache.cayenne.unit.datasource;
 
+import org.apache.cayenne.configuration.DataSourceDescriptor;
 import org.testcontainers.containers.JdbcDatabaseContainer;
+import org.testcontainers.containers.MariaDBContainer;
 import org.testcontainers.utility.DockerImageName;
 
-import java.time.Duration;
+public class MariaDbDataSource extends TestContainersDataSource {
 
-public class OracleContainerStarter extends DbContainerStarter {
-
-    @Override
-    public JdbcDatabaseContainer<?> startContainer(String version) {
-        JdbcDatabaseContainer<?> container = super.startContainer(version);
-        return container;
+    public static DataSourceDescriptor start() {
+        return TestContainersDataSource.start(new MariaDbDataSource());
     }
 
     @Override
     protected JdbcDatabaseContainer<?> createContainer(DockerImageName dockerImageName) {
-        return new org.testcontainers.containers.OracleContainer(dockerImageName)
-                .withStartupTimeout(Duration.ofMinutes(5));
+        return new MariaDBContainer<>(dockerImageName);
     }
 
     @Override
     protected String dockerImage() {
-        return "gvenzl/oracle-xe:18-slim-faststart";
+        return "mariadb:10.3";
     }
 }

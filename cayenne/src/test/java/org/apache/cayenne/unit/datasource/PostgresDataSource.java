@@ -16,36 +16,26 @@
  *  specific language governing permissions and limitations
  *  under the License.
  ****************************************************************/
-package org.apache.cayenne.unit.testcontainers;
+package org.apache.cayenne.unit.datasource;
 
+import org.apache.cayenne.configuration.DataSourceDescriptor;
 import org.testcontainers.containers.JdbcDatabaseContainer;
+import org.testcontainers.containers.PostgreSQLContainer;
 import org.testcontainers.utility.DockerImageName;
 
-import java.time.Duration;
+public class PostgresDataSource extends TestContainersDataSource {
 
-public class Db2ContainerStarter extends DbContainerStarter {
-
-    @Override
-    public JdbcDatabaseContainer<?> startContainer(String version) {
-        JdbcDatabaseContainer<?> container = super.startContainer(version);
-        // need to wait to ensure that DB has started
-        try {
-            Thread.sleep(40000);
-        } catch (InterruptedException ignored) {
-        }
-        return container;
+    public static DataSourceDescriptor start() {
+        return TestContainersDataSource.start(new PostgresDataSource());
     }
 
     @Override
     protected JdbcDatabaseContainer<?> createContainer(DockerImageName dockerImageName) {
-        return new org.testcontainers.containers.Db2Container(dockerImageName)
-                .withStartupTimeout(Duration.ofMinutes(15))
-                .withDatabaseName("testdb")
-                .acceptLicense();
+        return new PostgreSQLContainer<>(dockerImageName);
     }
 
     @Override
     protected String dockerImage() {
-        return "ibmcom/db2";
+        return "postgres:9";
     }
 }

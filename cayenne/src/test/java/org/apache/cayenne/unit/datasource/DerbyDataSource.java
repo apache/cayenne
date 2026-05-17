@@ -16,22 +16,17 @@
  *  specific language governing permissions and limitations
  *  under the License.
  ****************************************************************/
-package org.apache.cayenne.unit.testcontainers;
+package org.apache.cayenne.unit.datasource;
 
-import org.testcontainers.containers.JdbcDatabaseContainer;
-import org.testcontainers.containers.MariaDBContainer;
-import org.testcontainers.utility.DockerImageName;
+import org.apache.cayenne.configuration.DataSourceDescriptor;
 
-public class MariaDbContainerStarter extends DbContainerStarter {
+public class DerbyDataSource {
 
-    @Override
-    protected JdbcDatabaseContainer<?> createContainer(DockerImageName dockerImageName) {
-        return new MariaDBContainer<>(dockerImageName);
+    public static DataSourceDescriptor start() {
+        return DataSourceDescriptorFactory.create(
+                "sa",
+                "",
+                "jdbc:derby:target/testdb;create=true",
+                "org.apache.derby.jdbc.EmbeddedDriver");
     }
-
-    @Override
-    protected String dockerImage() {
-        return "mariadb:10.3";
-    }
-
 }

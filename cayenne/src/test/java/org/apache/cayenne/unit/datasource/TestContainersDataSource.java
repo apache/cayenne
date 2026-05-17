@@ -16,14 +16,28 @@
  *  specific language governing permissions and limitations
  *  under the License.
  ****************************************************************/
-package org.apache.cayenne.unit.testcontainers;
+package org.apache.cayenne.unit.datasource;
 
+import org.apache.cayenne.configuration.DataSourceDescriptor;
 import org.testcontainers.containers.JdbcDatabaseContainer;
 import org.testcontainers.utility.DockerImageName;
 
-public abstract class DbContainerStarter {
+abstract class TestContainersDataSource {
 
-    public JdbcDatabaseContainer<?> startContainer(String version) {
+    private static final String CONNECTION_DB_VERSION = "cayenneTestDbVersion";
+
+    protected static DataSourceDescriptor start(TestContainersDataSource dataSource) {
+        String version = System.getProperty(CONNECTION_DB_VERSION);
+        JdbcDatabaseContainer<?> container = dataSource.startContainer(version);
+
+        return DataSourceDescriptorFactory.create(
+                container.getUsername(),
+                container.getPassword(),
+                container.getJdbcUrl(),
+                container.getDriverClassName());
+    }
+
+    protected JdbcDatabaseContainer<?> startContainer(String version) {
         DockerImageName baseName = DockerImageName.parse(dockerImage());
         DockerImageName fullName = version != null ? baseName.withTag(version) : baseName;
 
