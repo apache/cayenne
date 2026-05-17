@@ -75,17 +75,18 @@ public class CayenneTestsEnv implements BeforeEachCallback, AfterEachCallback {
         COMMON_SCHEMA.rebuildSchema();
     }
 
+    public static CayenneTestsEnv forProject(String project) {
+        // Soft refs by default instead of weak — avoids GC-sensitive test flakiness.
+        return new CayenneTestsEnv(project, new Module[0], true, "soft");
+    }
+
     private final String project;
     private final Module[] extraModules;
     private final boolean autoClean;
     private final String retainStrategy;
 
-    // single-test scoped vars
-    private DataContext context;
-    private DbHelper dbHelper;
-    private DbCleaner dbCleaner;
-    private CayenneRuntime runtime;
-    private TestDbAdapter testDbAdapter;
+    // created in beforeEach, discarded in afterEach
+    private TestScope scope;
 
     private CayenneTestsEnv(String project, Module[] extraModules, boolean autoClean, String retainStrategy) {
         this.project = Objects.requireNonNull(project);
@@ -93,12 +94,7 @@ public class CayenneTestsEnv implements BeforeEachCallback, AfterEachCallback {
         this.autoClean = autoClean;
         this.retainStrategy = retainStrategy;
     }
-
-    public static CayenneTestsEnv forProject(String project) {
-        // Soft refs by default instead of weak — avoids GC-sensitive test flakiness.
-        return new CayenneTestsEnv(project, new Module[0], true, "soft");
-    }
-
+    
     public CayenneTestsEnv withExtraModules(Module... modules) {
         return new CayenneTestsEnv(project, modules, autoClean, retainStrategy);
     }
@@ -113,38 +109,36 @@ public class CayenneTestsEnv implements BeforeEachCallback, AfterEachCallback {
 
     @Override
     public void beforeEach(ExtensionContext ctx) {
-        this.runtime = buildRuntime();
-        this.context = (DataContext) runtime.newContext();
+        CayenneRuntime runtime = buildRuntime();
+        DataContext context = (DataContext) runtime.newContext();
 
         DbAdapter firstAdapter = runtime.getDataDomain().getDataNodes().iterator().next().getAdapter();
-        this.testDbAdapter = TestDbAdapter.of(firstAdapter);
+        TestDbAdapter testDbAdapter = TestDbAdapter.of(firstAdapter);
         tweakProcedures(runtime, testDbAdapter);
 
-        this.dbHelper = new FlavorAwareDbHelper(
+        DbHelper dbHelper = new FlavorAwareDbHelper(
                 COMMON_SCHEMA.dataSource(),
                 firstAdapter.getQuotingStrategy(),
                 context.getEntityResolver().getDataMaps().iterator().next());
 
-        this.dbCleaner = new DbCleaner(
+        DbCleaner dbCleaner = new DbCleaner(
                 COMMON_SCHEMA,
                 dbHelper,
                 context.getEntityResolver().getDataMaps().stream().map(DataMap::getName).collect(Collectors.toSet()));
 
+        this.scope = new TestScope(runtime, context, testDbAdapter, dbHelper, dbCleaner);
+
         if (autoClean) {
-            dbCleaner.clean();
+            scope.clean();
         }
     }
 
     @Override
     public void afterEach(ExtensionContext ctx) {
-        if (runtime != null) {
-            runtime.shutdown();
+        if (scope != null) {
+            scope.shutdown();
+            this.scope = null;
         }
-        this.context = null;
-        this.dbHelper = null;
-        this.dbCleaner = null;
-        this.runtime = null;
-        this.testDbAdapter = null;
     }
 
     private CayenneRuntime buildRuntime() {
@@ -170,47 +164,63 @@ public class CayenneTestsEnv implements BeforeEachCallback, AfterEachCallback {
     }
 
     public DataContext context() {
-        return context;
+        return scope.context();
     }
 
     public TableHelper table(String tableName, String... columns) {
-        return new TableHelper(dbHelper, tableName, columns);
+        return new TableHelper(scope.dbHelper(), tableName, columns);
     }
 
     public CayenneRuntime runtime() {
-        return runtime;
+        return scope.runtime();
     }
 
     public TestDbAdapter testDbAdapter() {
-        return testDbAdapter;
+        return scope.testDbAdapter();
     }
 
     public EntityResolver entityResolver() {
-        return runtime.getDataDomain().getEntityResolver();
+        return scope.runtime().getDataDomain().getEntityResolver();
     }
 
     public DataNode dataNode() {
-        DataDomain channel = runtime.getDataDomain();
+        DataDomain channel = scope.runtime().getDataDomain();
         return channel.getDataNodes().iterator().next();
     }
 
     public void runWithQueriesBlocked(Runnable task) {
-        TestTelemetry.runWithQueriesBlocked(runtime, task);
+        TestTelemetry.runWithQueriesBlocked(scope.runtime(), task);
     }
 
     public int runWithQueryCounter(Runnable task) {
-        return TestTelemetry.runWithQueryCounter(runtime, task);
+        return TestTelemetry.runWithQueryCounter(scope.runtime(), task);
     }
 
     public AdhocObjectFactory adhocObjectFactory() {
-        return runtime.getInjector().getInstance(AdhocObjectFactory.class);
+        return scope.runtime().getInjector().getInstance(AdhocObjectFactory.class);
     }
 
     public DbCleaner dbCleaner() {
-        return dbCleaner;
+        return scope.dbCleaner();
     }
 
     public SQLTemplateCustomizer sqlTemplateCustomizer() {
         return SQLTemplateCustomizer.of(dataNode().getAdapter());
+    }
+
+    private record TestScope(
+            CayenneRuntime runtime,
+            DataContext context,
+            TestDbAdapter testDbAdapter,
+            DbHelper dbHelper,
+            DbCleaner dbCleaner) {
+
+        void clean() {
+            dbCleaner.clean();
+        }
+
+        void shutdown() {
+            runtime.shutdown();
+        }
     }
 }
