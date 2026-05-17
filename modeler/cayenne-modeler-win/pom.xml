@@ -40,14 +40,6 @@
 		</dependency>
 	</dependencies>
 
-	<build>
-		<resources>
-			<resource>
-				<directory>target/modeler</directory>
-			</resource>
-		</resources>
-	</build>
-
 	<profiles>
 		<!-- Avoid assembly of Modeler on normal build -->
 		<profile>
