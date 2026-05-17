@@ -35,10 +35,10 @@ public class UrlOpener {
             if (Desktop.isDesktopSupported() && Desktop.getDesktop().isSupported(Desktop.Action.BROWSE)) {
                 Desktop.getDesktop().browse(new URI(url));
                 // failover to a platform-specific hacks
-            } else if (OperatingSystem.getOS() == OperatingSystem.WINDOWS) {
+            } else if (OperatingSystem.os == OperatingSystem.WINDOWS) {
                 String cmd = "rundll32 url.dll,FileProtocolHandler " + url;
                 Runtime.getRuntime().exec(cmd);
-            } else if (OperatingSystem.getOS() == OperatingSystem.MAC_OS_X) {
+            } else if (OperatingSystem.os == OperatingSystem.MAC_OS) {
                 String cmd = "open " + url;
                 Runtime.getRuntime().exec(cmd);
             } else { // assume Unix or Linux

@@ -25,7 +25,7 @@ import java.awt.Font;
 
 public interface TextSyntax {
 
-    Font DEFAULT_FONT = new Font(OperatingSystem.getOS() == OperatingSystem.WINDOWS
+    Font DEFAULT_FONT = new Font(OperatingSystem.os == OperatingSystem.WINDOWS
             ? "Courier New"
             : "Courier", Font.PLAIN, 14);
 

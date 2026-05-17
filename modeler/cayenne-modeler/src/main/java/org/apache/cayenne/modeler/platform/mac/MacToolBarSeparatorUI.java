@@ -16,7 +16,7 @@
  *  specific language governing permissions and limitations
  *  under the License.
  ****************************************************************/
-package org.apache.cayenne.modeler.platform.osx;
+package org.apache.cayenne.modeler.platform.mac;
 
 import java.awt.Dimension;
 import java.awt.Graphics;
@@ -31,13 +31,13 @@ import javax.swing.plaf.basic.BasicToolBarSeparatorUI;
  *
  * @since 4.0
  */
-public class OSXToolBarSeparatorUI extends BasicToolBarSeparatorUI {
+public class MacToolBarSeparatorUI extends BasicToolBarSeparatorUI {
 
-    private OSXToolBarSeparatorUI() {
+    private MacToolBarSeparatorUI() {
     }
 
     public static ComponentUI createUI(JComponent c) {
-        return new OSXToolBarSeparatorUI();
+        return new MacToolBarSeparatorUI();
     }
 
     public void paint( Graphics g, JComponent c ) {

@@ -19,26 +19,19 @@
 
 package org.apache.cayenne.modeler;
 
-import org.apache.cayenne.modeler.service.os.OperatingSystem;
 import org.apache.cayenne.modeler.platform.UIPlatformInitializer;
+import org.apache.cayenne.modeler.service.os.OperatingSystem;
+import org.junit.jupiter.params.ParameterizedTest;
+import org.junit.jupiter.params.provider.EnumSource;
 
-public final class Main {
+import static org.junit.jupiter.api.Assertions.assertNotNull;
 
-    public static void main(String[] args) {
-        Application.launch(args, loadPlatformInitializer(OperatingSystem.os));
-    }
+public class MainTest {
 
-    static UIPlatformInitializer loadPlatformInitializer(OperatingSystem os) {
-        String fqn = switch (os) {
-            case MAC_OS -> "org.apache.cayenne.modeler.platform.mac.MacPlatformInitializer";
-            case WINDOWS -> "org.apache.cayenne.modeler.platform.win.WinPlatformInitializer";
-            case OTHER -> "org.apache.cayenne.modeler.platform.generic.GenericPlatformInitializer";
-        };
-
-        try {
-            return (UIPlatformInitializer) Class.forName(fqn).getDeclaredConstructor().newInstance();
-        } catch (ReflectiveOperationException e) {
-            throw new IllegalStateException("Cannot load platform initializer " + fqn, e);
-        }
+    @ParameterizedTest
+    @EnumSource(OperatingSystem.class)
+    public void loadPlatformInitializer_resolvesValidClass(OperatingSystem os) {
+        UIPlatformInitializer initializer = Main.loadPlatformInitializer(os);
+        assertNotNull(initializer, "No initializer resolved for " + os);
     }
 }

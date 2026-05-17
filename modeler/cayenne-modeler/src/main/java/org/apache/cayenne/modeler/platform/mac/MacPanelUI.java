@@ -17,7 +17,7 @@
  *  under the License.
  ****************************************************************/
 
-package org.apache.cayenne.modeler.platform.osx;
+package org.apache.cayenne.modeler.platform.mac;
 
 import org.apache.cayenne.modeler.ui.SearchPanel;
 
@@ -26,11 +26,11 @@ import javax.swing.plaf.ComponentUI;
 import javax.swing.plaf.basic.BasicPanelUI;
 import java.awt.*;
 
-public class OSXPanelUI extends BasicPanelUI {
+public class MacPanelUI extends BasicPanelUI {
 
     private static final Color BACKGROUND = new Color(0xEEEEEE);
 
-    private static final OSXPanelUI INSTANCE;
+    private static final MacPanelUI INSTANCE;
 
     static {
         BasicPanelUI delegate;
@@ -43,12 +43,12 @@ public class OSXPanelUI extends BasicPanelUI {
             delegate = new BasicPanelUI();
         }
 
-        INSTANCE = new OSXPanelUI(delegate);
+        INSTANCE = new MacPanelUI(delegate);
     }
 
     private BasicPanelUI delegate;
 
-    private OSXPanelUI(BasicPanelUI delegate) {
+    private MacPanelUI(BasicPanelUI delegate) {
         this.delegate = delegate;
     }
 

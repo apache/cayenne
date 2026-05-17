@@ -24,26 +24,20 @@ package org.apache.cayenne.modeler.service.os;
  */
 public enum OperatingSystem {
 
-    MAC_OS_X, WINDOWS, OTHER;
+    MAC_OS, WINDOWS, OTHER;
 
-    private static final OperatingSystem os;
+    public static final OperatingSystem os;
+
     static {
-        String osName = System.getProperty("os.name");
 
-        if (osName == null) {
-            os = OTHER;
+        String osName = System.getProperty("os.name").toLowerCase();
+
+        if (osName.startsWith("win")) {
+            os = WINDOWS;
+        } else if (osName.startsWith("mac")) {
+            os = MAC_OS;
         } else {
-            if (osName.startsWith("Windows")) {
-                os = WINDOWS;
-            } else if (osName.startsWith("Mac OS X")) {
-                os = MAC_OS_X;
-            } else {
-                os = OTHER;
-            }
+            os = OTHER;
         }
-    }
-
-    public static OperatingSystem getOS() {
-        return os;
     }
 }

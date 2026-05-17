@@ -37,28 +37,6 @@
 			<artifactId>cayenne-modeler</artifactId>
 			<version>${project.version}</version>
 		</dependency>
-
-		<!--
-			adding cayenne runtime dependencies explicitly, 
-			as they are marked as "provided" in the modeler pom
-			and won't be included in the jar 
-		-->
-		<dependency>
-			<groupId>org.apache.cayenne</groupId>
-			<artifactId>cayenne</artifactId>
-			<version>${project.version}</version>
-		</dependency>
-		<dependency>
-			<groupId>org.apache.cayenne</groupId>
-			<artifactId>cayenne-project</artifactId>
-			<version>${project.version}</version>
-		</dependency>
-		<dependency>
-			<groupId>org.apache.cayenne.modeler</groupId>
-			<artifactId>cayenne-wocompat</artifactId>
-			<version>${project.version}</version>
-		</dependency>
-
 	</dependencies>
 
     <profiles>

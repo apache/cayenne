@@ -16,7 +16,7 @@
  *  specific language governing permissions and limitations
  *  under the License.
  ****************************************************************/
-package org.apache.cayenne.modeler.platform.osx;
+package org.apache.cayenne.modeler.platform.mac;
 
 import org.apache.cayenne.modeler.Application;
 import org.apache.cayenne.modeler.service.action.GlobalActions;
@@ -32,7 +32,7 @@ import java.awt.*;
 import java.util.HashSet;
 import java.util.Set;
 
-public class OSXPlatformInitializer implements UIPlatformInitializer {
+public class MacPlatformInitializer implements UIPlatformInitializer {
 
     @Override
     public void initLookAndFeel() {
@@ -42,8 +42,8 @@ public class OSXPlatformInitializer implements UIPlatformInitializer {
         Color darkGrey = new Color(225, 225, 225);
         Border darkBorder = BorderFactory.createLineBorder(darkGrey);
 
-        UIManager.put("ToolBarSeparatorUI", OSXToolBarSeparatorUI.class.getName());
-        UIManager.put("PanelUI", OSXPanelUI.class.getName());
+        UIManager.put("ToolBarSeparatorUI", MacToolBarSeparatorUI.class.getName());
+        UIManager.put("PanelUI", MacPanelUI.class.getName());
         // next two is custom-made for Cayenne's MainToolBar
         UIManager.put("ToolBar.background", lightGrey);
         UIManager.put("MainToolBar.background", lightGrey);
@@ -69,8 +69,8 @@ public class OSXPlatformInitializer implements UIPlatformInitializer {
         UIManager.put("CheckBoxHeader.border", BorderFactory.createEmptyBorder(0, 9, 0, 0));
 
         // MacOS BigSur needs additional style tweaking for the tabs active state
-        OSXVersion version = OSXVersion.fromSystemProperties();
-        if (version.gt(OSXVersion.CATALINA)) {
+        MacOSVersion version = MacOSVersion.fromSystemProperties();
+        if (version.gt(MacOSVersion.CATALINA)) {
             UIManager.put("TabbedPane.selectedTabTitlePressedColor", Color.BLACK);
             UIManager.put("TabbedPane.selectedTabTitleNormalColor", Color.BLACK);
             UIManager.put("TabbedPane.selectedTabTitleShadowDisabledColor", new Color(0, 0, 0, 0));

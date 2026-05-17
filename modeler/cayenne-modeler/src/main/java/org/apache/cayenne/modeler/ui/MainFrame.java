@@ -225,7 +225,7 @@ public class MainFrame extends AppFrame {
         });
 
         // Register a hook to save the window position when quit via the app menu. This is in macOS only.
-        if (OperatingSystem.getOS() == OperatingSystem.MAC_OS_X) {
+        if (OperatingSystem.os == OperatingSystem.MAC_OS) {
             Runnable runner = session::saveSelectionToPrefs;
             Runtime.getRuntime().addShutdownHook(new Thread(runner, "Window Prefs Hook"));
         }
