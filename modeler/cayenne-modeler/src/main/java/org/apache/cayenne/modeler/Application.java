@@ -19,11 +19,11 @@
 
 package org.apache.cayenne.modeler;
 
+import org.apache.cayenne.configuration.ConfigurationNameMapper;
 import org.apache.cayenne.configuration.DataMapLoader;
 import org.apache.cayenne.configuration.runtime.DbAdapterFactory;
 import org.apache.cayenne.configuration.xml.DataChannelMetaData;
 import org.apache.cayenne.dbsync.merge.factory.MergerTokenFactoryProvider;
-import org.apache.cayenne.di.Inject;
 import org.apache.cayenne.di.Injector;
 import org.apache.cayenne.modeler.dbconnector.DBConnectors;
 import org.apache.cayenne.modeler.log.ModelerLogFactory;
@@ -35,6 +35,7 @@ import org.apache.cayenne.modeler.pref.RecentProjectsPrefs;
 import org.apache.cayenne.modeler.service.action.GlobalActions;
 import org.apache.cayenne.modeler.service.classloader.ModelerClassLoader;
 import org.apache.cayenne.modeler.service.platform.PlatformInitializer;
+import org.apache.cayenne.modeler.service.validator.ConfigurableProjectValidator;
 import org.apache.cayenne.modeler.ui.MainFrame;
 import org.apache.cayenne.modeler.ui.action.OpenProjectAction;
 import org.apache.cayenne.modeler.ui.logconsole.LogConsole;
@@ -65,16 +66,24 @@ public class Application {
 
     private final Injector injector;
     private final String name;
+    private final GlobalActions actionManager;
+    private final ProjectValidator projectValidator;
     private LogConsole logConsole;
     private MainFrame frame;
     private CayenneUndoManager undoManager;
     private DBConnectors dbConnectors;
 
-    public Application(@Inject Injector injector) {
+    public Application(Injector injector) {
         this.injector = injector;
 
         String configuredName = System.getProperty(APPLICATION_NAME_PROPERTY);
         this.name = (configuredName != null) ? configuredName : DEFAULT_APPLICATION_NAME;
+
+        this.actionManager = new GlobalActions(
+                this,
+                injector.getInstance(ConfigurationNameMapper.class),
+                injector.getInstance(ConfigurationNodeParentGetter.class));
+        this.projectValidator = new ConfigurableProjectValidator(this);
     }
 
     public String getName() {
@@ -86,11 +95,11 @@ public class Application {
     }
 
     public GlobalActions getActionManager() {
-        return injector.getInstance(GlobalActions.class);
+        return actionManager;
     }
 
     public ProjectValidator getProjectValidator() {
-        return injector.getInstance(ProjectValidator.class);
+        return projectValidator;
     }
 
     public ProjectSaver getProjectSaver() {

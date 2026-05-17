@@ -27,16 +27,13 @@ import org.apache.cayenne.di.Binder;
 import org.apache.cayenne.di.Module;
 import org.apache.cayenne.gen.xml.CgenExtension;
 import org.apache.cayenne.modeler.pref.PreferencesRepository;
-import org.apache.cayenne.modeler.service.action.GlobalActions;
 import org.apache.cayenne.modeler.service.platform.DefaultPlatformInitializer;
 import org.apache.cayenne.modeler.service.platform.PlatformInitializer;
 import org.apache.cayenne.modeler.service.classloader.ModelerClassLoader;
-import org.apache.cayenne.modeler.service.validator.ConfigurableProjectValidator;
 import org.apache.cayenne.modeler.service.validator.extension.ValidationExtension;
 import org.apache.cayenne.project.ProjectModule;
 import org.apache.cayenne.project.extension.ExtensionAwareHandlerFactory;
 import org.apache.cayenne.project.extension.info.InfoExtension;
-import org.apache.cayenne.project.validation.ProjectValidator;
 import org.xml.sax.XMLReader;
 
 /**
@@ -46,8 +43,6 @@ public class ModelerModule implements Module {
 
     public void configure(Binder binder) {
 
-        binder.bind(Application.class).to(Application.class);
-        binder.bind(GlobalActions.class).to(GlobalActions.class);
         binder.bind(ModelerClassLoader.class).to(ModelerClassLoader.class);
         binder.bind(PlatformInitializer.class).to(DefaultPlatformInitializer.class);
         binder.bind(HandlerFactory.class).to(ExtensionAwareHandlerFactory.class);
@@ -61,7 +56,5 @@ public class ModelerModule implements Module {
                 .addExtension(DbImportExtension.class)
                 .addExtension(CgenExtension.class)
                 .addExtension(ValidationExtension.class);
-
-        binder.bind(ProjectValidator.class).to(ConfigurableProjectValidator.class);
     }
 }

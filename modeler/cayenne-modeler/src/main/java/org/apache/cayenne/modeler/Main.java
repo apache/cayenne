@@ -72,7 +72,7 @@ public class Main {
         LOGGER.info("JRE v.{} at {}", System.getProperty("java.version"), System.getProperty("java.home"));
 
         SwingUtilities.invokeLater(() -> {
-            Application application = injector.getInstance(Application.class);
+            Application application = new Application(injector);
             application.startup(initialProjectFromArgs());
         });
 

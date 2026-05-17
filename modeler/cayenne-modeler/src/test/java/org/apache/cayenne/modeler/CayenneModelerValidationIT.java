@@ -27,7 +27,6 @@ import org.apache.cayenne.project.Project;
 import org.apache.cayenne.project.ProjectLoader;
 import org.apache.cayenne.project.ProjectModule;
 import org.apache.cayenne.project.validation.Inspection;
-import org.apache.cayenne.project.validation.ProjectValidator;
 import org.apache.cayenne.project.validation.ValidationConfig;
 import org.apache.cayenne.resource.URLResource;
 import org.junit.jupiter.api.BeforeAll;
@@ -60,14 +59,14 @@ public class CayenneModelerValidationIT {
 
     @Test
     public void validatorProvided() {
-        ProjectValidator projectValidator = injector.getInstance(ProjectValidator.class);
-        assertTrue(projectValidator instanceof ConfigurableProjectValidator);
+        Application application = new Application(injector);
+        assertTrue(application.getProjectValidator() instanceof ConfigurableProjectValidator);
     }
 
     @Test
     public void configLoaded() {
         URLResource projectResource = new URLResource(getClass().getResource(CAYENNE_CONFIGURED_VALIDATION_PROJECT));
-        Application application = injector.getInstance(Application.class);
+        Application application = new Application(injector);
         ProjectLoader projectLoader = injector.getInstance(ProjectLoader.class);
         Project project = projectLoader.loadProject(projectResource);
 

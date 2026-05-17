@@ -20,7 +20,6 @@ package org.apache.cayenne.modeler.service.action;
 
 import org.apache.cayenne.configuration.ConfigurationNameMapper;
 import org.apache.cayenne.configuration.ConfigurationNode;
-import org.apache.cayenne.di.Inject;
 import org.apache.cayenne.modeler.Application;
 import org.apache.cayenne.modeler.toolkit.AppAction;
 import org.apache.cayenne.modeler.ui.action.*;
@@ -55,9 +54,9 @@ public class GlobalActions {
     private final ConfigurationNodeParentGetter nodeParentGetter;
 
     public GlobalActions(
-            @Inject Application application,
-            @Inject ConfigurationNameMapper nameMapper,
-            @Inject ConfigurationNodeParentGetter nodeParentGetter) {
+            Application application,
+            ConfigurationNameMapper nameMapper,
+            ConfigurationNodeParentGetter nodeParentGetter) {
 
         this.nodeParentGetter = nodeParentGetter;
 
