@@ -52,20 +52,11 @@ import java.util.List;
 import java.util.stream.Collectors;
 
 /**
- * A main modeler application class that provides a number of services to the Modeler
- * components. Configuration properties:
- * <ul>
- * <li>cayenne.modeler.application.name - name of the application, 'CayenneModeler' is
- * default. Used to locate preferences domain among other things.</li>
- * </ul>
+ * A main modeler application class that manages the main app frame and everything below it.
  */
 public class Application {
 
-    private static final String APPLICATION_NAME_PROPERTY = "cayenne.modeler.application.name";
-    private static final String DEFAULT_APPLICATION_NAME = "CayenneModeler";
-
     private final Injector injector;
-    private final String name;
     private final ModelerClassLoader classLoader;
     private final PreferencesRepository preferencesRepository;
     private final GlobalActions actionManager;
@@ -78,9 +69,6 @@ public class Application {
     public Application(Injector injector) {
         this.injector = injector;
 
-        String configuredName = System.getProperty(APPLICATION_NAME_PROPERTY);
-        this.name = (configuredName != null) ? configuredName : DEFAULT_APPLICATION_NAME;
-
         this.classLoader = new ModelerClassLoader();
         this.preferencesRepository = new PreferencesRepository(injector.getInstance(ConfigurationNameMapper.class));
         this.actionManager = new GlobalActions(
@@ -88,10 +76,6 @@ public class Application {
                 injector.getInstance(ConfigurationNameMapper.class),
                 injector.getInstance(ConfigurationNodeParentGetter.class));
         this.projectValidator = new ConfigurableProjectValidator(this);
-    }
-
-    public String getName() {
-        return name;
     }
 
     public ModelerClassLoader getClassLoader() {
