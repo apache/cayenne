@@ -20,7 +20,7 @@ package org.apache.cayenne.modeler.platform.mac;
 
 import org.apache.cayenne.modeler.Application;
 import org.apache.cayenne.modeler.service.action.GlobalActions;
-import org.apache.cayenne.modeler.platform.UIPlatformInitializer;
+import org.apache.cayenne.modeler.platform.UIInitializer;
 import org.apache.cayenne.modeler.ui.action.AboutAction;
 import org.apache.cayenne.modeler.ui.action.ConfigurePreferencesAction;
 import org.apache.cayenne.modeler.ui.action.ExitAction;
@@ -32,7 +32,7 @@ import java.awt.*;
 import java.util.HashSet;
 import java.util.Set;
 
-public class MacPlatformInitializer implements UIPlatformInitializer {
+public class MacUIInitializer implements UIInitializer {
 
     @Override
     public void initLookAndFeel() {

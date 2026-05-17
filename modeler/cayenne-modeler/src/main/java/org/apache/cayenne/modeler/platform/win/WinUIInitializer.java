@@ -19,7 +19,7 @@
 package org.apache.cayenne.modeler.platform.win;
 
 import com.jgoodies.looks.windows.WindowsLookAndFeel;
-import org.apache.cayenne.modeler.platform.UIPlatformInitializer;
+import org.apache.cayenne.modeler.platform.UIInitializer;
 import org.apache.cayenne.modeler.toolkit.icon.IconFactory;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -27,9 +27,9 @@ import org.slf4j.LoggerFactory;
 import javax.swing.*;
 import java.awt.*;
 
-public class WinPlatformInitializer implements UIPlatformInitializer {
+public class WinUIInitializer implements UIInitializer {
 
-    private static final Logger LOGGER = LoggerFactory.getLogger(WinPlatformInitializer.class);
+    private static final Logger LOGGER = LoggerFactory.getLogger(WinUIInitializer.class);
 
     @Override
     public void initLookAndFeel() {

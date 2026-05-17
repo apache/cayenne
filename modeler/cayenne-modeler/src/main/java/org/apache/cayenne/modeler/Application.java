@@ -37,7 +37,7 @@ import org.apache.cayenne.modeler.pref.PreferencesRepository;
 import org.apache.cayenne.modeler.pref.RecentProjectsPrefs;
 import org.apache.cayenne.modeler.service.action.GlobalActions;
 import org.apache.cayenne.modeler.service.classloader.ModelerClassLoader;
-import org.apache.cayenne.modeler.platform.UIPlatformInitializer;
+import org.apache.cayenne.modeler.platform.UIInitializer;
 import org.apache.cayenne.modeler.service.validator.ConfigurableProjectValidator;
 import org.apache.cayenne.modeler.ui.MainFrame;
 import org.apache.cayenne.modeler.ui.action.OpenProjectAction;
@@ -64,7 +64,7 @@ public class Application {
 
     private static final Logger LOGGER = LoggerFactory.getLogger(Application.class);
 
-    public static void launch(String[] args, UIPlatformInitializer platformInitializer) {
+    public static void launch(String[] args, UIInitializer platformInitializer) {
         try {
             // logger should go after Look And Feel or Logger Console will be without style
             LOGGER.info("Starting CayenneModeler.");
@@ -102,7 +102,7 @@ public class Application {
     }
 
     private final Injector injector;
-    private final UIPlatformInitializer platformInitializer;
+    private final UIInitializer platformInitializer;
     private final ModelerClassLoader classLoader;
     private final PreferencesRepository preferencesRepository;
     private final GlobalActions actionManager;
@@ -112,7 +112,7 @@ public class Application {
     private CayenneUndoManager undoManager;
     private DBConnectors dbConnectors;
 
-    public Application(Injector injector, UIPlatformInitializer platformInitializer) {
+    public Application(Injector injector, UIInitializer platformInitializer) {
         this.injector = injector;
         this.platformInitializer = platformInitializer;
 
@@ -154,7 +154,7 @@ public class Application {
         return injector.getInstance(UpgradeService.class);
     }
 
-    public UIPlatformInitializer getPlatformInitializer() {
+    public UIInitializer getPlatformInitializer() {
         return platformInitializer;
     }
 

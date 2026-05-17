@@ -25,7 +25,7 @@ import javax.swing.JFrame;
 /**
  * A base callback for platform-specific Modeler initialization.
  */
-public interface UIPlatformInitializer {
+public interface UIInitializer {
 
     /**
      * Initializes application look and feel.

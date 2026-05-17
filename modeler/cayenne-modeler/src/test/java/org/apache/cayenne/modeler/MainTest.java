@@ -19,7 +19,7 @@
 
 package org.apache.cayenne.modeler;
 
-import org.apache.cayenne.modeler.platform.UIPlatformInitializer;
+import org.apache.cayenne.modeler.platform.UIInitializer;
 import org.apache.cayenne.modeler.service.os.OperatingSystem;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.EnumSource;
@@ -31,7 +31,7 @@ public class MainTest {
     @ParameterizedTest
     @EnumSource(OperatingSystem.class)
     public void loadPlatformInitializer_resolvesValidClass(OperatingSystem os) {
-        UIPlatformInitializer initializer = Main.loadPlatformInitializer(os);
+        UIInitializer initializer = Main.loadPlatformInitializer(os);
         assertNotNull(initializer, "No initializer resolved for " + os);
     }
 }

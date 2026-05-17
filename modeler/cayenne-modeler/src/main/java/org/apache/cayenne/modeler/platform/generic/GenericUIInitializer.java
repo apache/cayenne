@@ -21,7 +21,7 @@ package org.apache.cayenne.modeler.platform.generic;
 import com.jgoodies.looks.plastic.PlasticLookAndFeel;
 import com.jgoodies.looks.plastic.PlasticTheme;
 import com.jgoodies.looks.plastic.PlasticXPLookAndFeel;
-import org.apache.cayenne.modeler.platform.UIPlatformInitializer;
+import org.apache.cayenne.modeler.platform.UIInitializer;
 import org.apache.cayenne.modeler.toolkit.icon.IconFactory;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -29,9 +29,9 @@ import org.slf4j.LoggerFactory;
 import javax.swing.*;
 import java.awt.*;
 
-public class GenericPlatformInitializer implements UIPlatformInitializer {
+public class GenericUIInitializer implements UIInitializer {
 
-    private static final Logger LOGGER = LoggerFactory.getLogger(GenericPlatformInitializer.class);
+    private static final Logger LOGGER = LoggerFactory.getLogger(GenericUIInitializer.class);
 
     private static final String DEFAULT_LAF_NAME = PlasticXPLookAndFeel.class.getName();
 

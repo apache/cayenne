@@ -20,7 +20,7 @@
 package org.apache.cayenne.modeler;
 
 import org.apache.cayenne.modeler.service.os.OperatingSystem;
-import org.apache.cayenne.modeler.platform.UIPlatformInitializer;
+import org.apache.cayenne.modeler.platform.UIInitializer;
 
 public final class Main {
 
@@ -28,15 +28,15 @@ public final class Main {
         Application.launch(args, loadPlatformInitializer(OperatingSystem.os));
     }
 
-    static UIPlatformInitializer loadPlatformInitializer(OperatingSystem os) {
+    static UIInitializer loadPlatformInitializer(OperatingSystem os) {
         String fqn = switch (os) {
-            case MAC_OS -> "org.apache.cayenne.modeler.platform.mac.MacPlatformInitializer";
-            case WINDOWS -> "org.apache.cayenne.modeler.platform.win.WinPlatformInitializer";
-            case OTHER -> "org.apache.cayenne.modeler.platform.generic.GenericPlatformInitializer";
+            case MAC_OS -> "org.apache.cayenne.modeler.platform.mac.MacUIInitializer";
+            case WINDOWS -> "org.apache.cayenne.modeler.platform.win.WinUIInitializer";
+            case OTHER -> "org.apache.cayenne.modeler.platform.generic.GenericUIInitializer";
         };
 
         try {
-            return (UIPlatformInitializer) Class.forName(fqn).getDeclaredConstructor().newInstance();
+            return (UIInitializer) Class.forName(fqn).getDeclaredConstructor().newInstance();
         } catch (ReflectiveOperationException e) {
             throw new IllegalStateException("Cannot load platform initializer " + fqn, e);
         }

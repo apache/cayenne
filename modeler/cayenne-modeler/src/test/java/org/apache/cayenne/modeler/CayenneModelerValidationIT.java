@@ -22,7 +22,7 @@ import org.apache.cayenne.configuration.DataChannelDescriptor;
 import org.apache.cayenne.dbsync.reverse.configuration.ToolsModule;
 import org.apache.cayenne.di.DIBootstrap;
 import org.apache.cayenne.di.Injector;
-import org.apache.cayenne.modeler.platform.UIPlatformInitializer;
+import org.apache.cayenne.modeler.platform.UIInitializer;
 import org.apache.cayenne.modeler.service.validator.ConfigurableProjectValidator;
 import org.apache.cayenne.project.Project;
 import org.apache.cayenne.project.ProjectLoader;
@@ -58,7 +58,7 @@ public class CayenneModelerValidationIT {
 
     @Test
     public void validatorProvided() {
-        Application application = new Application(injector, new UIPlatformInitializer() {
+        Application application = new Application(injector, new UIInitializer() {
         });
         assertTrue(application.getProjectValidator() instanceof ConfigurableProjectValidator);
     }
@@ -66,7 +66,7 @@ public class CayenneModelerValidationIT {
     @Test
     public void configLoaded() {
         URLResource projectResource = new URLResource(getClass().getResource(CAYENNE_CONFIGURED_VALIDATION_PROJECT));
-        Application application = new Application(injector, new UIPlatformInitializer() {
+        Application application = new Application(injector, new UIInitializer() {
         });
         ProjectLoader projectLoader = injector.getInstance(ProjectLoader.class);
         Project project = projectLoader.loadProject(projectResource);
