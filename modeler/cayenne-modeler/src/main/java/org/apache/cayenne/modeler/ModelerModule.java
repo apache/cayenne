@@ -26,10 +26,8 @@ import org.apache.cayenne.dbsync.xml.DbImportExtension;
 import org.apache.cayenne.di.Binder;
 import org.apache.cayenne.di.Module;
 import org.apache.cayenne.gen.xml.CgenExtension;
-import org.apache.cayenne.modeler.pref.PreferencesRepository;
 import org.apache.cayenne.modeler.service.platform.DefaultPlatformInitializer;
 import org.apache.cayenne.modeler.service.platform.PlatformInitializer;
-import org.apache.cayenne.modeler.service.classloader.ModelerClassLoader;
 import org.apache.cayenne.modeler.service.validator.extension.ValidationExtension;
 import org.apache.cayenne.project.ProjectModule;
 import org.apache.cayenne.project.extension.ExtensionAwareHandlerFactory;
@@ -43,13 +41,10 @@ public class ModelerModule implements Module {
 
     public void configure(Binder binder) {
 
-        binder.bind(ModelerClassLoader.class).to(ModelerClassLoader.class);
         binder.bind(PlatformInitializer.class).to(DefaultPlatformInitializer.class);
         binder.bind(HandlerFactory.class).to(ExtensionAwareHandlerFactory.class);
         binder.bind(DataChannelMetaData.class).to(DefaultDataChannelMetaData.class);
         binder.bind(XMLReader.class).toProviderInstance(new XMLReaderProvider(true)).withoutScope();
-
-        binder.bind(PreferencesRepository.class).to(PreferencesRepository.class);
 
         ProjectModule.extend(binder)
                 .addExtension(InfoExtension.class)

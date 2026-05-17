@@ -66,6 +66,8 @@ public class Application {
 
     private final Injector injector;
     private final String name;
+    private final ModelerClassLoader classLoader;
+    private final PreferencesRepository preferencesRepository;
     private final GlobalActions actionManager;
     private final ProjectValidator projectValidator;
     private LogConsole logConsole;
@@ -79,6 +81,8 @@ public class Application {
         String configuredName = System.getProperty(APPLICATION_NAME_PROPERTY);
         this.name = (configuredName != null) ? configuredName : DEFAULT_APPLICATION_NAME;
 
+        this.classLoader = new ModelerClassLoader();
+        this.preferencesRepository = new PreferencesRepository(injector.getInstance(ConfigurationNameMapper.class));
         this.actionManager = new GlobalActions(
                 this,
                 injector.getInstance(ConfigurationNameMapper.class),
@@ -91,7 +95,7 @@ public class Application {
     }
 
     public ModelerClassLoader getClassLoader() {
-        return injector.getInstance(ModelerClassLoader.class);
+        return classLoader;
     }
 
     public GlobalActions getActionManager() {
@@ -193,7 +197,7 @@ public class Application {
     }
 
     public PreferencesRepository getPreferencesRepository() {
-        return injector.getInstance(PreferencesRepository.class);
+        return preferencesRepository;
     }
 
     /**

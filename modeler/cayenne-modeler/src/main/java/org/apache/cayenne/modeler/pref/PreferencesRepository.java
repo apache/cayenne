@@ -19,7 +19,6 @@
 package org.apache.cayenne.modeler.pref;
 
 import org.apache.cayenne.configuration.DataChannelDescriptor;
-import org.apache.cayenne.di.Inject;
 import org.apache.cayenne.map.DataMap;
 import org.apache.cayenne.modeler.pref.migration.toV5._1_DbConnectorsMigration;
 import org.apache.cayenne.modeler.pref.migration.toV5._2_ClasspathMigration;
@@ -95,7 +94,7 @@ public class PreferencesRepository {
                 .collect(Collectors.toList());
     }
 
-    public PreferencesRepository(@Inject ConfigurationNameMapper nameMapper) {
+    public PreferencesRepository(ConfigurationNameMapper nameMapper) {
         this.nameMapper = nameMapper;
         this.root = Preferences.userRoot().node(ROOT_PATH);
         this.migrations = toV5Migrations();
