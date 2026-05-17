@@ -38,9 +38,9 @@ mvn verify
 # Run against a specific database
 mvn verify -DcayenneTestConnection=h2
 mvn verify -DcayenneTestConnection=derby
-mvn verify -DcayenneTestConnection=mysql-tc        # via TestContainers
-mvn verify -DcayenneTestConnection=postgres-tc     # via TestContainers
-mvn verify -DcayenneTestConnection=sqlserver-tc    # via TestContainers
+mvn verify -DcayenneTestConnection=mysql        # via TestContainers
+mvn verify -DcayenneTestConnection=postgres     # via TestContainers
+mvn verify -DcayenneTestConnection=sqlserver    # via TestContainers
 
 # Skip tests
 mvn verify -DskipITs        # skip integration tests, still run unit tests
@@ -97,7 +97,7 @@ pins versions only — each consuming `<dependency>` declares its own scope expl
 
 GitHub Actions runs on push to master/STABLE-* branches:
 - JDK: 21, 25
-- Databases: hsql, h2, derby, mysql-tc, postgres-tc, sqlserver-tc
+- Databases: hsql, h2, derby, mysql, postgres, sqlserver
 
 ## Issue Tracker
 

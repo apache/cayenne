@@ -51,12 +51,12 @@ public class DataSourceConfigLoader {
                 case "h2" -> H2DataSource.start();
                 case "derby" -> DerbyDataSource.start();
                 case "sqlite" -> SQLiteDataSource.start();
-                case "mysql-tc" -> MysqlDataSource.start();
-                case "mariadb-tc" -> MariaDbDataSource.start();
-                case "postgres-tc" -> PostgresDataSource.start();
-                case "sqlserver-tc" -> SqlServerDataSource.start();
-                case "oracle-tc" -> OracleDataSource.start();
-                case "db2-tc" -> Db2DataSource.start();
+                case "mysql" -> MysqlDataSource.start();
+                case "mariadb" -> MariaDbDataSource.start();
+                case "postgres" -> PostgresDataSource.start();
+                case "sqlserver" -> SqlServerDataSource.start();
+                case "oracle" -> OracleDataSource.start();
+                case "db2" -> Db2DataSource.start();
                 default -> null;
             };
         }
