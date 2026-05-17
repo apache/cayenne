@@ -78,7 +78,6 @@
         <maven-api.version>3.9.8</maven-api.version>
         <maven-plugin-annotations.version>3.13.1</maven-plugin-annotations.version>
         <maven-plugin-testing-harness.version>3.5.1</maven-plugin-testing-harness.version>
-        <orange-extensions.version>1.3.0</orange-extensions.version>
 
         <!-- Maven plugin versions -->
         <apache-rat-plugin.version>0.18</apache-rat-plugin.version>
@@ -591,11 +590,6 @@
                 <groupId>org.apache.maven.plugin-testing</groupId>
                 <artifactId>maven-plugin-testing-harness</artifactId>
                 <version>${maven-plugin-testing-harness.version}</version>
-            </dependency>
-            <dependency>
-                <groupId>com.yuvimasory</groupId>
-                <artifactId>orange-extensions</artifactId>
-                <version>${orange-extensions.version}</version>
             </dependency>
         </dependencies>
     </dependencyManagement>

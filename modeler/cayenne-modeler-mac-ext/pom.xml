@@ -33,13 +33,6 @@
 
 	<dependencies>
 
-		<!-- This allows to compile Mac modeler code outside OS X -->
-		<dependency>
-    		<groupId>com.yuvimasory</groupId>
-    		<artifactId>orange-extensions</artifactId>
-    		<scope>provided</scope>
-		</dependency>
-		
 		<dependency>
 			<groupId>org.apache.cayenne.modeler</groupId>
 			<artifactId>cayenne-modeler</artifactId>
