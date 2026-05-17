@@ -105,8 +105,8 @@ public class Application {
     private final UIInitializer platformInitializer;
     private final ModelerClassLoader classLoader;
     private final PreferencesRepository preferencesRepository;
-    private final GlobalActions actionManager;
     private final ProjectValidator projectValidator;
+    private GlobalActions actionManager;
     private LogConsole logConsole;
     private MainFrame frame;
     private CayenneUndoManager undoManager;
@@ -118,10 +118,6 @@ public class Application {
 
         this.classLoader = new ModelerClassLoader();
         this.preferencesRepository = new PreferencesRepository(injector.getInstance(ConfigurationNameMapper.class));
-        this.actionManager = new GlobalActions(
-                this,
-                injector.getInstance(ConfigurationNameMapper.class),
-                injector.getInstance(ConfigurationNodeParentGetter.class));
         this.projectValidator = new ConfigurableProjectValidator(this);
     }
 
@@ -187,7 +183,11 @@ public class Application {
     }
 
     public void launch(File initialProject) {
-        platformInitializer.initLookAndFeel();
+        this.platformInitializer.initLookAndFeel();
+        this.actionManager = new GlobalActions(
+                this,
+                injector.getInstance(ConfigurationNameMapper.class),
+                injector.getInstance(ConfigurationNodeParentGetter.class));
 
         this.logConsole = new LogConsole(this);
         ModelerLogFactory.setAppender(logConsole);
