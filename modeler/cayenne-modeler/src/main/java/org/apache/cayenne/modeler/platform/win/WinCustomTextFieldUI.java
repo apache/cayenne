@@ -19,16 +19,13 @@
 
 package org.apache.cayenne.modeler.platform.win;
 
-import java.lang.reflect.Constructor;
-import javax.swing.JComponent;
-import javax.swing.plaf.ComponentUI;
-import javax.swing.plaf.basic.BasicTextFieldUI;
-
 import org.apache.cayenne.modeler.toolkit.combobox.EditorTextField;
 
-/**
- * @since 4.0
- */
+import javax.swing.*;
+import javax.swing.plaf.ComponentUI;
+import javax.swing.plaf.basic.BasicTextFieldUI;
+import java.lang.reflect.Constructor;
+
 public class WinCustomTextFieldUI extends BasicTextFieldUI {
 
     private static Constructor<? extends ComponentUI> winFieldUIConstructor;

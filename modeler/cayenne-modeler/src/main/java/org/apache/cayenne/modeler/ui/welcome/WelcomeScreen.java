@@ -26,7 +26,7 @@ import org.apache.cayenne.modeler.toolkit.AppPanel;
 import org.apache.cayenne.modeler.toolkit.icon.IconFactory;
 import org.apache.cayenne.modeler.ui.action.NewProjectAction;
 import org.apache.cayenne.modeler.ui.action.OpenProjectAction;
-import org.apache.cayenne.modeler.event.model.RecentFileListListener;
+import org.apache.cayenne.modeler.event.model.RecentFileListener;
 
 import javax.swing.*;
 import java.awt.*;
@@ -37,7 +37,7 @@ import java.util.List;
 /**
  * A panel shown when no project is open. User can quickly create new project or open an existing one.
  */
-public class WelcomeScreen extends AppPanel implements RecentFileListListener, RecentFileListRenderer.OnFileClickListener {
+public class WelcomeScreen extends AppPanel implements RecentFileListener, RecentFileListRenderer.OnFileClickListener {
 
     private final GlobalActions actionManager;
 

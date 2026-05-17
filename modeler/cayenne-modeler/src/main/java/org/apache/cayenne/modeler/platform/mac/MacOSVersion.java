@@ -19,30 +19,27 @@
 
 package org.apache.cayenne.modeler.platform.mac;
 
-/**
- * @since 4.2
- */
-public class MacOSVersion {
+import org.apache.cayenne.modeler.service.os.OperatingSystem;
+
+public record MacOSVersion(int major, int minor) {
 
     public static final MacOSVersion UNKNOWN = new MacOSVersion(-1, -1);
     public static final MacOSVersion CATALINA = new MacOSVersion(10, 15);
     public static final MacOSVersion BIG_SUR = new MacOSVersion(10, 16);
 
-    private final int major;
-    private final int minor;
-
     public static MacOSVersion fromSystemProperties() {
+
         // sanity check in case this code executed not on macOS
-        String osName = System.getProperty("os.name").toLowerCase();
-        if(!osName.contains("mac")) {
+        if (OperatingSystem.os != OperatingSystem.MAC_OS) {
             return UNKNOWN;
         }
 
         String osVersion = System.getProperty("os.version");
         String[] osVersionComponents = osVersion.split("\\.");
-        if(osVersionComponents.length != 2) {
+        if (osVersionComponents.length != 2) {
             return UNKNOWN;
         }
+
         try {
             int major = Integer.parseInt(osVersionComponents[0]);
             int minor = Integer.parseInt(osVersionComponents[1]);
@@ -52,26 +49,7 @@ public class MacOSVersion {
         }
     }
 
-    public MacOSVersion(int major, int minor) {
-        this.major = major;
-        this.minor = minor;
-    }
-
     public boolean gt(MacOSVersion version) {
-        return getMajor() >= version.getMajor()
-                && getMinor() > version.getMinor();
-    }
-
-    public boolean eq(MacOSVersion version) {
-        return getMajor() == version.getMajor()
-                && getMinor() == version.getMinor();
-    }
-
-    public int getMajor() {
-        return major;
-    }
-
-    public int getMinor() {
-        return minor;
+        return major() > version.major() || (major() == version.major() && minor() > version.minor());
     }
 }

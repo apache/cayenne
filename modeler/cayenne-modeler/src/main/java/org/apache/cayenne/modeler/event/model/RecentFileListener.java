@@ -20,9 +20,9 @@
 package org.apache.cayenne.modeler.event.model;
 
 /**
- * Listens to changes in recent file list
+ * Listens to changes in the recent file list
  */
-public interface RecentFileListListener {
+public interface RecentFileListener {
 
     /**
      * Invoked when recent files list changed (for instance, a new project was opened

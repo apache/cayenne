@@ -19,23 +19,18 @@
 
 package org.apache.cayenne.modeler.platform.generic;
 
-import java.awt.Color;
-import java.awt.Dimension;
-import java.awt.Graphics;
-import java.awt.event.MouseAdapter;
-import java.awt.event.MouseEvent;
-import javax.swing.AbstractButton;
-import javax.swing.BorderFactory;
-import javax.swing.JComponent;
-import javax.swing.border.Border;
-import javax.swing.plaf.ComponentUI;
-
+import com.jgoodies.looks.plastic.PlasticButtonUI;
 import org.apache.cayenne.modeler.toolkit.AppAction;
 
-/**
- * @since 4.0
- */
-public class GenericButtonUI extends com.jgoodies.looks.plastic.PlasticButtonUI {
+import javax.swing.*;
+import javax.swing.border.Border;
+import javax.swing.plaf.ComponentUI;
+import java.awt.*;
+import java.awt.event.MouseAdapter;
+import java.awt.event.MouseEvent;
+
+public class GenericButtonUI extends PlasticButtonUI {
+
     private static final GenericButtonUI INSTANCE = new GenericButtonUI();
 
     private static final Border BORDER = BorderFactory.createCompoundBorder(

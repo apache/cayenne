@@ -46,7 +46,7 @@ public class MacPanelUI extends BasicPanelUI {
         INSTANCE = new MacPanelUI(delegate);
     }
 
-    private BasicPanelUI delegate;
+    private final BasicPanelUI delegate;
 
     private MacPanelUI(BasicPanelUI delegate) {
         this.delegate = delegate;

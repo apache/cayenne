@@ -20,7 +20,7 @@
 package org.apache.cayenne.modeler.ui;
 
 import org.apache.cayenne.modeler.Application;
-import org.apache.cayenne.modeler.event.model.RecentFileListListener;
+import org.apache.cayenne.modeler.event.model.RecentFileListener;
 import org.apache.cayenne.modeler.pref.RecentProjectsPrefs;
 import org.apache.cayenne.modeler.service.action.GlobalActions;
 import org.apache.cayenne.modeler.ui.action.*;
@@ -34,16 +34,13 @@ import java.util.List;
 
 class MainMenuBar extends JMenuBar {
 
-    private final List<RecentFileListListener> recentFileListeners;
+    private final List<RecentFileListener> recentFileListeners;
     private final Application app;
 
     MainMenuBar(Application app) {
         this.recentFileListeners = new ArrayList<>();
         this.app = app;
-        initLayout();
-    }
 
-    private void initLayout() {
         JMenu fileMenu = new JMenu("File");
         JMenu editMenu = new JMenu("Edit");
         JMenu viewMenu = new JMenu("View");
@@ -128,17 +125,17 @@ class MainMenuBar extends JMenuBar {
         add(helpMenu);
     }
 
-    void addRecentFileListener(RecentFileListListener listener) {
+    void addRecentFileListener(RecentFileListener listener) {
         recentFileListeners.add(listener);
     }
 
     void fireRecentFileListChanged() {
-        for (RecentFileListListener listener : recentFileListeners) {
+        for (RecentFileListener listener : recentFileListeners) {
             listener.recentFileListChanged();
         }
     }
 
-    class RecentFileMenu extends JMenu implements RecentFileListListener {
+    class RecentFileMenu extends JMenu implements RecentFileListener {
 
         private final OpenProjectAction action;
 

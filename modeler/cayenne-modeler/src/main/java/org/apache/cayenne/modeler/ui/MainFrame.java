@@ -356,7 +356,7 @@ public class MainFrame extends AppFrame {
             return false;
         }
 
-        File transferFile = fileList.get(0);
+        File transferFile = fileList.getFirst();
         if (transferFile.isFile()) {
             FileFilter filter = FileFilters.getApplicationFilter();
             if (filter.accept(transferFile)) {

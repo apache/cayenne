@@ -65,26 +65,19 @@ public class Application {
     private static final Logger LOGGER = LoggerFactory.getLogger(Application.class);
 
     public static void launch(String[] args, UIInitializer platformInitializer) {
-        try {
-            // logger should go after Look And Feel or Logger Console will be without style
-            LOGGER.info("Starting CayenneModeler.");
-            LOGGER.info("JRE v.{} at {}", System.getProperty("java.version"), System.getProperty("java.home"));
 
-            // TODO: this is dirty... CoreModule is out of place inside the Modeler...
-            // If we need CayenneRuntime for certain operations, those should start their own stack...
-            Injector injector = DIBootstrap.createInjector(
-                    new CoreModule(),
-                    new ProjectModule(),
-                    new DbSyncModule(),
-                    new ModelerModule());
+        LOGGER.info("Starting CayenneModeler.");
+        LOGGER.info("JRE v.{} at {}", System.getProperty("java.version"), System.getProperty("java.home"));
 
-            SwingUtilities.invokeLater(() -> {
-                new Application(injector, platformInitializer).launch(initialProjectFromArgs(args));
-            });
-        } catch (Exception e) {
-            e.printStackTrace();
-            System.exit(1);
-        }
+        // TODO: this is dirty... CoreModule is out of place inside the Modeler...
+        // If we need CayenneRuntime for certain operations, those should start their own stack...
+        Injector injector = DIBootstrap.createInjector(
+                new CoreModule(),
+                new ProjectModule(),
+                new DbSyncModule(),
+                new ModelerModule());
+
+        SwingUtilities.invokeLater(() -> new Application(injector, platformInitializer).launch(initialProjectFromArgs(args)));
     }
 
     private static File initialProjectFromArgs(String[] args) {

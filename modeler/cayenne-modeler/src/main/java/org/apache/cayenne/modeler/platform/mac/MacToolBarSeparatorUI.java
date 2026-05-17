@@ -18,16 +18,13 @@
  ****************************************************************/
 package org.apache.cayenne.modeler.platform.mac;
 
-import java.awt.Dimension;
-import java.awt.Graphics;
-import javax.swing.JComponent;
-import javax.swing.JToolBar;
-import javax.swing.SwingConstants;
+import javax.swing.*;
 import javax.swing.plaf.ComponentUI;
 import javax.swing.plaf.basic.BasicToolBarSeparatorUI;
+import java.awt.*;
 
 /**
- * This class provides correct size as in AquaToolBarSeparatorUI, but doesn't render anything.
+ * Provides correct size as in AquaToolBarSeparatorUI, but doesn't render anything.
  *
  * @since 4.0
  */

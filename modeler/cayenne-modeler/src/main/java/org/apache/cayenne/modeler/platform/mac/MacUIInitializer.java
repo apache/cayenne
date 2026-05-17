@@ -113,25 +113,23 @@ public class MacUIInitializer implements UIInitializer {
         removeActions.add(globalActions.getAction(ConfigurePreferencesAction.class));
 
         JMenuBar menuBar = frame.getJMenuBar();
-        for (Component menu : menuBar.getComponents()) {
-            if (menu instanceof JMenu) {
-                JMenu jMenu = (JMenu) menu;
+        for (Component c : menuBar.getComponents()) {
+            if (c instanceof JMenu menu) {
 
-                Component[] menuItems = jMenu.getPopupMenu().getComponents();
+                Component[] menuItems = menu.getPopupMenu().getComponents();
                 for (int i = 0; i < menuItems.length; i++) {
 
-                    if (menuItems[i] instanceof JMenuItem) {
-                        JMenuItem jMenuItem = (JMenuItem) menuItems[i];
+                    if (menuItems[i] instanceof JMenuItem menuItem) {
 
-                        if (removeActions.contains(jMenuItem.getAction())) {
-                            jMenu.remove(jMenuItem);
+                        if (removeActions.contains(menuItem.getAction())) {
+                            menu.remove(menuItem);
 
                             // this algorithm is pretty lame, but it works for
                             // the current (as of 08.2010) menu layout
                             if (i > 0
                                     && i == menuItems.length - 1
                                     && menuItems[i - 1] instanceof JPopupMenu.Separator) {
-                                jMenu.remove(i - 1);
+                                menu.remove(i - 1);
                             }
                         }
                     }
