@@ -19,37 +19,11 @@
 
 package org.apache.cayenne.modeler.osx;
 
-import java.util.Collection;
+import org.apache.cayenne.modeler.Application;
 
-import org.apache.cayenne.di.Module;
-import org.apache.cayenne.modeler.Main;
+public final class OSXMain {
 
-/**
- * Main class to start CayenneModeler on MacOSX.
- */
-public class OSXMain extends Main {
-
-    /**
-     * Main method that starts the CayenneModeler.
-     */
     public static void main(String[] args) {
-        try {
-            new OSXMain(args).launch();
-        }
-        catch (Exception e) {
-            e.printStackTrace();
-            System.exit(1);
-        }
-    }
-
-    protected OSXMain(String[] args) {
-        super(args);
-    }
-
-    @Override
-    protected Collection<Module> appendModules(Collection<Module> modules) {
-        modules = super.appendModules(modules);
-        modules.add(new OSXCayenneModelerModule());
-        return modules;
+        Application.launch(args, new OSXPlatformInitializer());
     }
 }

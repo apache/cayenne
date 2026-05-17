@@ -19,89 +19,12 @@
 
 package org.apache.cayenne.modeler;
 
-import org.apache.cayenne.configuration.runtime.CoreModule;
-import org.apache.cayenne.dbsync.DbSyncModule;
-import org.apache.cayenne.di.DIBootstrap;
-import org.apache.cayenne.di.Injector;
-import org.apache.cayenne.di.Module;
-import org.apache.cayenne.modeler.service.platform.PlatformInitializer;
-import org.apache.cayenne.project.ProjectModule;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
+import org.apache.cayenne.modeler.ui.UIPlatformInitializer;
 
-import javax.swing.*;
-import java.io.File;
-import java.util.ArrayList;
-import java.util.Collection;
+public final class Main {
 
-/**
- * Main class responsible for starting CayenneModeler.
- */
-public class Main {
-
-    private static final Logger LOGGER = LoggerFactory.getLogger(Main.class);
-
-    protected String[] args;
-
-    /**
-     * Main method that starts the CayenneModeler.
-     */
     public static void main(String[] args) {
-        try {
-            new Main(args).launch();
-        } catch (Exception e) {
-            e.printStackTrace();
-            System.exit(1);
-        }
-    }
-
-    protected Main(String[] args) {
-        this.args = args;
-    }
-
-    protected void launch() {
-
-        // TODO: use module auto-loading...
-        Injector injector = DIBootstrap.createInjector(appendModules(new ArrayList<>()));
-
-        // init look and feel before using any Swing classes...
-        injector.getInstance(PlatformInitializer.class).initLookAndFeel();
-
-        // logger should go after Look And Feel or Logger Console will be without style
-        LOGGER.info("Starting CayenneModeler.");
-        LOGGER.info("JRE v.{} at {}", System.getProperty("java.version"), System.getProperty("java.home"));
-
-        SwingUtilities.invokeLater(() -> {
-            Application application = new Application(injector);
-            application.startup(initialProjectFromArgs());
+        Application.launch(args, new UIPlatformInitializer() {
         });
-
-    }
-
-    protected Collection<Module> appendModules(Collection<Module> modules) {
-
-        // TODO: this is dirty... CoreModule is out of place inside the Modeler...
-        // If we need CayenneRuntime for certain operations, those should start their own stack...
-        modules.add(new CoreModule());
-
-        modules.add(new ProjectModule());
-        modules.add(new DbSyncModule());
-        modules.add(new ModelerModule());
-
-        return modules;
-    }
-
-    protected File initialProjectFromArgs() {
-        if (args != null && args.length == 1) {
-            File f = new File(args[0]);
-
-            if (f.isFile()
-                    && f.getName().startsWith("cayenne")
-                    && f.getName().endsWith(".xml")) {
-                return f;
-            }
-        }
-
-        return null;
     }
 }

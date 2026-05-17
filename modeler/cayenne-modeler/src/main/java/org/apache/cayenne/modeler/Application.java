@@ -21,9 +21,12 @@ package org.apache.cayenne.modeler;
 
 import org.apache.cayenne.configuration.ConfigurationNameMapper;
 import org.apache.cayenne.configuration.DataMapLoader;
+import org.apache.cayenne.configuration.runtime.CoreModule;
 import org.apache.cayenne.configuration.runtime.DbAdapterFactory;
 import org.apache.cayenne.configuration.xml.DataChannelMetaData;
+import org.apache.cayenne.dbsync.DbSyncModule;
 import org.apache.cayenne.dbsync.merge.factory.MergerTokenFactoryProvider;
+import org.apache.cayenne.di.DIBootstrap;
 import org.apache.cayenne.di.Injector;
 import org.apache.cayenne.modeler.dbconnector.DBConnectors;
 import org.apache.cayenne.modeler.log.ModelerLogFactory;
@@ -34,7 +37,7 @@ import org.apache.cayenne.modeler.pref.PreferencesRepository;
 import org.apache.cayenne.modeler.pref.RecentProjectsPrefs;
 import org.apache.cayenne.modeler.service.action.GlobalActions;
 import org.apache.cayenne.modeler.service.classloader.ModelerClassLoader;
-import org.apache.cayenne.modeler.service.platform.PlatformInitializer;
+import org.apache.cayenne.modeler.ui.UIPlatformInitializer;
 import org.apache.cayenne.modeler.service.validator.ConfigurableProjectValidator;
 import org.apache.cayenne.modeler.ui.MainFrame;
 import org.apache.cayenne.modeler.ui.action.OpenProjectAction;
@@ -42,9 +45,12 @@ import org.apache.cayenne.modeler.ui.logconsole.LogConsole;
 import org.apache.cayenne.modeler.undo.CayenneUndoManager;
 import org.apache.cayenne.project.ConfigurationNodeParentGetter;
 import org.apache.cayenne.project.ProjectLoader;
+import org.apache.cayenne.project.ProjectModule;
 import org.apache.cayenne.project.ProjectSaver;
 import org.apache.cayenne.project.upgrade.UpgradeService;
 import org.apache.cayenne.project.validation.ProjectValidator;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import javax.swing.*;
 import java.io.File;
@@ -56,7 +62,47 @@ import java.util.stream.Collectors;
  */
 public class Application {
 
+    private static final Logger LOGGER = LoggerFactory.getLogger(Application.class);
+
+    public static void launch(String[] args, UIPlatformInitializer platformInitializer) {
+        try {
+            // logger should go after Look And Feel or Logger Console will be without style
+            LOGGER.info("Starting CayenneModeler.");
+            LOGGER.info("JRE v.{} at {}", System.getProperty("java.version"), System.getProperty("java.home"));
+
+            // TODO: this is dirty... CoreModule is out of place inside the Modeler...
+            // If we need CayenneRuntime for certain operations, those should start their own stack...
+            Injector injector = DIBootstrap.createInjector(
+                    new CoreModule(),
+                    new ProjectModule(),
+                    new DbSyncModule(),
+                    new ModelerModule());
+
+            SwingUtilities.invokeLater(() -> {
+                new Application(injector, platformInitializer).launch(initialProjectFromArgs(args));
+            });
+        } catch (Exception e) {
+            e.printStackTrace();
+            System.exit(1);
+        }
+    }
+
+    private static File initialProjectFromArgs(String[] args) {
+        if (args != null && args.length == 1) {
+            File f = new File(args[0]);
+
+            if (f.isFile()
+                    && f.getName().startsWith("cayenne")
+                    && f.getName().endsWith(".xml")) {
+                return f;
+            }
+        }
+
+        return null;
+    }
+
     private final Injector injector;
+    private final UIPlatformInitializer platformInitializer;
     private final ModelerClassLoader classLoader;
     private final PreferencesRepository preferencesRepository;
     private final GlobalActions actionManager;
@@ -66,8 +112,9 @@ public class Application {
     private CayenneUndoManager undoManager;
     private DBConnectors dbConnectors;
 
-    public Application(Injector injector) {
+    public Application(Injector injector, UIPlatformInitializer platformInitializer) {
         this.injector = injector;
+        this.platformInitializer = platformInitializer;
 
         this.classLoader = new ModelerClassLoader();
         this.preferencesRepository = new PreferencesRepository(injector.getInstance(ConfigurationNameMapper.class));
@@ -77,6 +124,7 @@ public class Application {
                 injector.getInstance(ConfigurationNodeParentGetter.class));
         this.projectValidator = new ConfigurableProjectValidator(this);
     }
+
 
     public ModelerClassLoader getClassLoader() {
         return classLoader;
@@ -106,8 +154,8 @@ public class Application {
         return injector.getInstance(UpgradeService.class);
     }
 
-    public PlatformInitializer getPlatformInitializer() {
-        return injector.getInstance(PlatformInitializer.class);
+    public UIPlatformInitializer getPlatformInitializer() {
+        return platformInitializer;
     }
 
     public ConfigurationNodeParentGetter getConfigurationNodeParentGetter() {
@@ -138,7 +186,9 @@ public class Application {
         return logConsole;
     }
 
-    public void startup(File initialProject) {
+    public void launch(File initialProject) {
+        platformInitializer.initLookAndFeel();
+
         this.logConsole = new LogConsole(this);
         ModelerLogFactory.setAppender(logConsole);
 

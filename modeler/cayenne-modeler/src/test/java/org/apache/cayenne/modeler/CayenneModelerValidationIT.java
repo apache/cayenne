@@ -22,6 +22,7 @@ import org.apache.cayenne.configuration.DataChannelDescriptor;
 import org.apache.cayenne.dbsync.reverse.configuration.ToolsModule;
 import org.apache.cayenne.di.DIBootstrap;
 import org.apache.cayenne.di.Injector;
+import org.apache.cayenne.modeler.ui.UIPlatformInitializer;
 import org.apache.cayenne.modeler.service.validator.ConfigurableProjectValidator;
 import org.apache.cayenne.project.Project;
 import org.apache.cayenne.project.ProjectLoader;
@@ -37,9 +38,7 @@ import org.slf4j.LoggerFactory;
 import java.util.EnumSet;
 import java.util.List;
 
-import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertNotNull;
-import static org.junit.jupiter.api.Assertions.assertTrue;
+import static org.junit.jupiter.api.Assertions.*;
 
 public class CayenneModelerValidationIT {
 
@@ -59,14 +58,16 @@ public class CayenneModelerValidationIT {
 
     @Test
     public void validatorProvided() {
-        Application application = new Application(injector);
+        Application application = new Application(injector, new UIPlatformInitializer() {
+        });
         assertTrue(application.getProjectValidator() instanceof ConfigurableProjectValidator);
     }
 
     @Test
     public void configLoaded() {
         URLResource projectResource = new URLResource(getClass().getResource(CAYENNE_CONFIGURED_VALIDATION_PROJECT));
-        Application application = new Application(injector);
+        Application application = new Application(injector, new UIPlatformInitializer() {
+        });
         ProjectLoader projectLoader = injector.getInstance(ProjectLoader.class);
         Project project = projectLoader.loadProject(projectResource);
 

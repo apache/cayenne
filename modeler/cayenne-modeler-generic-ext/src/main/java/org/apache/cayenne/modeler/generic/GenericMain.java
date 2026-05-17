@@ -18,34 +18,11 @@
  ****************************************************************/
 package org.apache.cayenne.modeler.generic;
 
-import java.util.Collection;
+import org.apache.cayenne.modeler.Application;
 
-import org.apache.cayenne.di.Module;
-import org.apache.cayenne.modeler.Main;
+public final class GenericMain {
 
-public class GenericMain extends Main {
-
-    /**
-     * Main method that starts the CayenneModeler.
-     */
     public static void main(String[] args) {
-        try {
-            new GenericMain(args).launch();
-        }
-        catch (Exception e) {
-            e.printStackTrace();
-            System.exit(1);
-        }
-    }
-
-    protected GenericMain(String[] args) {
-        super(args);
-    }
-
-    @Override
-    protected Collection<Module> appendModules(Collection<Module> modules) {
-        modules = super.appendModules(modules);
-        modules.add(new GenericCayenneModelerModule());
-        return modules;
+        Application.launch(args, new GenericPlatformInitializer());
     }
 }

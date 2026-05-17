@@ -21,7 +21,7 @@ package org.apache.cayenne.modeler.generic;
 import com.jgoodies.looks.plastic.PlasticLookAndFeel;
 import com.jgoodies.looks.plastic.PlasticTheme;
 import com.jgoodies.looks.plastic.PlasticXPLookAndFeel;
-import org.apache.cayenne.modeler.service.platform.PlatformInitializer;
+import org.apache.cayenne.modeler.ui.UIPlatformInitializer;
 import org.apache.cayenne.modeler.toolkit.icon.IconFactory;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -29,20 +29,16 @@ import org.slf4j.LoggerFactory;
 import javax.swing.*;
 import java.awt.*;
 
-public class GenericPlatformInitializer implements PlatformInitializer {
+public class GenericPlatformInitializer implements UIPlatformInitializer {
 
-    private static Logger logger = LoggerFactory.getLogger(GenericPlatformInitializer.class);
+    private static final Logger LOGGER = LoggerFactory.getLogger(GenericPlatformInitializer.class);
 
-    static final String DEFAULT_LAF_NAME = PlasticXPLookAndFeel.class.getName();
+    private static final String DEFAULT_LAF_NAME = PlasticXPLookAndFeel.class.getName();
 
-    // note that another theme - "Desert Blue" doesn't support Chinese and
-    // Japanese chars
-    static final String DEFAULT_THEME_NAME = "Sky Bluer";
+    // note that another theme - "Desert Blue" doesn't support Chinese and Japanese chars
+    private static final String DEFAULT_THEME_NAME = "Sky Bluer";
 
-    public void setupMenus(JFrame frame) {
-        // noop - default menus are fine
-    }
-
+    @Override
     public void initLookAndFeel() {
 
         PlasticTheme theme = findTheme();
@@ -56,7 +52,7 @@ public class GenericPlatformInitializer implements PlatformInitializer {
             // override some default styles and colors
             overrideUIDefaults();
         } catch (Exception e) {
-            logger.warn("Error installing L&F: " + DEFAULT_LAF_NAME, e);
+            LOGGER.warn("Error installing L&F: " + DEFAULT_LAF_NAME, e);
         }
     }
 
@@ -89,7 +85,7 @@ public class GenericPlatformInitializer implements PlatformInitializer {
         UIManager.put("MainToolBar.border",             BorderFactory.createLineBorder(Color.GRAY));
     }
 
-    protected PlasticTheme findTheme() {
+    private PlasticTheme findTheme() {
 
         for (Object object : PlasticLookAndFeel.getInstalledThemes()) {
             PlasticTheme theme = (PlasticTheme) object;
@@ -99,5 +95,4 @@ public class GenericPlatformInitializer implements PlatformInitializer {
         }
         return null;
     }
-
 }

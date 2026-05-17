@@ -19,23 +19,17 @@
 package org.apache.cayenne.modeler.win;
 
 import com.jgoodies.looks.windows.WindowsLookAndFeel;
-import org.apache.cayenne.modeler.service.platform.PlatformInitializer;
+import org.apache.cayenne.modeler.ui.UIPlatformInitializer;
 import org.apache.cayenne.modeler.toolkit.icon.IconFactory;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import javax.swing.JFrame;
-import javax.swing.UIManager;
-import javax.swing.BorderFactory;
-import java.awt.Color;
+import javax.swing.*;
+import java.awt.*;
 
-public class WinPlatformInitializer implements PlatformInitializer {
+public class WinPlatformInitializer implements UIPlatformInitializer {
 
-    private static Logger logger = LoggerFactory.getLogger(WinPlatformInitializer.class);
-
-    @Override
-    public void setupMenus(JFrame frame) {
-    }
+    private static final Logger LOGGER = LoggerFactory.getLogger(WinPlatformInitializer.class);
 
     @Override
     public void initLookAndFeel() {
@@ -44,7 +38,7 @@ public class WinPlatformInitializer implements PlatformInitializer {
             // override some default styles and colors
             overrideUIDefaults();
         } catch (Exception e) {
-            logger.warn("Error installing L&F: " + WindowsLookAndFeel.class.getName(), e);
+            LOGGER.warn("Error installing L&F: " + WindowsLookAndFeel.class.getName(), e);
         }
     }
 

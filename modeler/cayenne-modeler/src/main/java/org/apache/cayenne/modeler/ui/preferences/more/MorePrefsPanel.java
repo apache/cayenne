@@ -117,6 +117,6 @@ public class MorePrefsPanel extends AppPanel {
 
         // Defer the rebuild to a later EDT tick so the in-flight action handler
         // (and any pending dispose events) drain first.
-        SwingUtilities.invokeLater(() -> app.startup(null));
+        SwingUtilities.invokeLater(() -> app.launch(null));
     }
 }

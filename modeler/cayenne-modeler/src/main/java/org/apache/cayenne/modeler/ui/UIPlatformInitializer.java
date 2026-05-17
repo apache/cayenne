@@ -16,22 +16,26 @@
  *  specific language governing permissions and limitations
  *  under the License.
  ****************************************************************/
-package org.apache.cayenne.modeler.service.platform;
+package org.apache.cayenne.modeler.ui;
+
+import org.apache.cayenne.modeler.Application;
 
 import javax.swing.JFrame;
 
 /**
- * An interface that provides methods for platform-specific Modeler initialization.
+ * A base callback for platform-specific Modeler initialization.
  */
-public interface PlatformInitializer {
+public interface UIPlatformInitializer {
 
     /**
      * Initializes application look and feel.
      */
-    void initLookAndFeel();
+    default void initLookAndFeel() {
+    }
 
     /**
      * Updates default frame menus according to the platform specifics.
      */
-    void setupMenus(JFrame frame);
+    default void setupMenus(Application app, JFrame frame) {
+    }
 }

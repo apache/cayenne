@@ -18,9 +18,9 @@
  ****************************************************************/
 package org.apache.cayenne.modeler.osx;
 
-import org.apache.cayenne.di.Inject;
-import org.apache.cayenne.modeler.service.platform.PlatformInitializer;
+import org.apache.cayenne.modeler.Application;
 import org.apache.cayenne.modeler.service.action.GlobalActions;
+import org.apache.cayenne.modeler.ui.UIPlatformInitializer;
 import org.apache.cayenne.modeler.ui.action.AboutAction;
 import org.apache.cayenne.modeler.ui.action.ConfigurePreferencesAction;
 import org.apache.cayenne.modeler.ui.action.ExitAction;
@@ -32,31 +32,12 @@ import java.awt.*;
 import java.util.HashSet;
 import java.util.Set;
 
-public class OSXPlatformInitializer implements PlatformInitializer {
-
-    @Inject
-    protected GlobalActions globalActions;
+public class OSXPlatformInitializer implements UIPlatformInitializer {
 
     @Override
     public void initLookAndFeel() {
-
         // override some default styles and colors, assuming that Aqua theme will be used
-        overrideUIDefaults();
 
-        Desktop desktop = Desktop.getDesktop();
-
-        desktop.setAboutHandler(e -> globalActions.getAction(AboutAction.class).showAboutDialog());
-        desktop.setPreferencesHandler(e -> globalActions.getAction(ConfigurePreferencesAction.class).showPreferencesDialog());
-        desktop.setQuitHandler((e, r) -> {
-            if (!globalActions.getAction(ExitAction.class).exit()) {
-                r.cancelQuit();
-            } else {
-                r.performQuit();
-            }
-        });
-    }
-
-    private void overrideUIDefaults() {
         Color lightGrey = new Color(0xEEEEEE);
         Color darkGrey = new Color(225, 225, 225);
         Border darkBorder = BorderFactory.createLineBorder(darkGrey);
@@ -108,7 +89,21 @@ public class OSXPlatformInitializer implements PlatformInitializer {
     }
 
     @Override
-    public void setupMenus(JFrame frame) {
+    public void setupMenus(Application app, JFrame frame) {
+
+        GlobalActions globalActions = app.getActionManager();
+
+        Desktop desktop = Desktop.getDesktop();
+        desktop.setAboutHandler(e -> globalActions.getAction(AboutAction.class).showAboutDialog());
+        desktop.setPreferencesHandler(e -> globalActions.getAction(ConfigurePreferencesAction.class).showPreferencesDialog());
+        desktop.setQuitHandler((e, r) -> {
+            if (!globalActions.getAction(ExitAction.class).exit()) {
+                r.cancelQuit();
+            } else {
+                r.performQuit();
+            }
+        });
+
         // set additional look and feel for the window
         frame.getRootPane().putClientProperty("apple.awt.brushMetalLook", Boolean.TRUE);
 

@@ -18,33 +18,11 @@
  ****************************************************************/
 package org.apache.cayenne.modeler.win;
 
-import org.apache.cayenne.di.Module;
-import org.apache.cayenne.modeler.Main;
+import org.apache.cayenne.modeler.Application;
 
-import java.util.Collection;
+public final class WinMain {
 
-public class WinMain extends Main {
-
-    /**
-     * Main method that starts the CayenneModeler.
-     */
     public static void main(String[] args) {
-        try {
-            new WinMain(args).launch();
-        } catch (Exception e) {
-            e.printStackTrace();
-            System.exit(1);
-        }
-    }
-
-    protected WinMain(String[] args) {
-        super(args);
-    }
-
-    @Override
-    protected Collection<Module> appendModules(Collection<Module> modules) {
-        modules = super.appendModules(modules);
-        modules.add(new WinCayenneModelerModule());
-        return modules;
+        Application.launch(args, new WinPlatformInitializer());
     }
 }
