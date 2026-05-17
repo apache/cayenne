@@ -64,8 +64,9 @@ public class OpenProjectTool {
         McpSchema.Tool descriptor = new McpSchema.Tool(
                 NAME,
                 null,
-                "Launch CayenneModeler with the given project file. Non-blocking; waits for "
-                        + "the Modeler to report a startup handshake before returning.",
+                """
+                Launch CayenneModeler with the given project file. Non-blocking; waits for \
+                the Modeler to report a startup handshake before returning.""",
                 new McpSchema.JsonSchema(
                         "object",
                         Map.of(
@@ -88,8 +89,9 @@ public class OpenProjectTool {
             try {
                 json = jsonMapper.writeValueAsString(result);
             } catch (IOException e) {
-                json = "{\"status\":\"error\",\"error\":{\"code\":\"launch_failed\","
-                        + "\"message\":\"Serialization failed: " + e.getMessage() + "\"}}";
+                json = """
+                       {"status":"error","error":{"code":"launch_failed","message":"Serialization failed: %s"}}\
+                       """.formatted(e.getMessage());
             }
 
             return McpSchema.CallToolResult.builder()
@@ -111,7 +113,7 @@ public class OpenProjectTool {
             projectFile = Path.of(projectPath);
         } catch (RuntimeException e) {
             return validationFailed(OpenProjectErrorCode.project_not_found,
-                    "Invalid path '" + projectPath + "': " + e.getMessage(),
+                    "Invalid path '%s': %s".formatted(projectPath, e.getMessage()),
                     new OpenProjectValidation(false, null, null));
         }
         if (!Files.isReadable(projectFile)) {
@@ -124,8 +126,9 @@ public class OpenProjectTool {
         Optional<Path> mcpDir = McpJarLocator.locate(OpenProjectTool.class);
         if (mcpDir.isEmpty()) {
             return validationFailed(OpenProjectErrorCode.mcp_jar_location_unresolved,
-                    "Could not resolve the running MCP server jar's location via "
-                            + "ProtectionDomain. This is expected only in exotic launch configurations.",
+                    """
+                    Could not resolve the running MCP server jar's location via ProtectionDomain. \
+                    This is expected only in exotic launch configurations.""",
                     new OpenProjectValidation(true, false, null));
         }
 
@@ -135,8 +138,8 @@ public class OpenProjectTool {
         if (discovery instanceof NotFound nf) {
             String notes = String.join("; ", nf.probeNotes());
             return validationFailed(OpenProjectErrorCode.modeler_not_found,
-                    "No CayenneModeler installation found relative to MCP jar at "
-                            + mcpDir.get() + ". Probes: " + notes,
+                    "No CayenneModeler installation found relative to MCP jar at %s. Probes: %s"
+                            .formatted(mcpDir.get(), notes),
                     new OpenProjectValidation(true, true, false));
         }
         Found found = (Found) discovery;
@@ -198,7 +201,8 @@ public class OpenProjectTool {
                         allPassed,
                         null,
                         new OpenProjectError(OpenProjectErrorCode.launch_exited_early,
-                                "Spawned Modeler process exited before reporting handshake (" + exit + ")"));
+                                "Spawned Modeler process exited before reporting handshake (%s)"
+                                        .formatted(exit)));
             }
             case TIMEOUT -> {
                 boolean stillAlive = launch.processAlivenessMeaningful() && launch.process().isAlive();
@@ -211,8 +215,8 @@ public class OpenProjectTool {
                         allPassed,
                         null,
                         new OpenProjectError(OpenProjectErrorCode.launch_not_confirmed,
-                                "Handshake did not appear within " + HANDSHAKE_TIMEOUT.toSeconds()
-                                        + "s. " + hint + "."));
+                                "Handshake did not appear within %ds. %s.".formatted(
+                                        HANDSHAKE_TIMEOUT.toSeconds(), hint)));
             }
         };
     }

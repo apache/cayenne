@@ -82,8 +82,9 @@ final class ModelerDiscovery {
         if (sourceTree.isPresent()) {
             return sourceTree.get();
         }
-        notes.add("source_tree: no built CayenneModeler under <gitRoot>/modeler/cayenne-modeler-{mac,win,generic}/target/classes/"
-                + " (run `mvn -pl modeler/cayenne-modeler-<kind> -am package -P<kind>`)");
+        notes.add("""
+                  source_tree: no built CayenneModeler under <gitRoot>/modeler/cayenne-modeler-{mac,win,generic}/target/classes/ \
+                  (run `mvn -pl modeler/cayenne-modeler-<kind> -am package -P<kind>`)""");
 
         return new NotFound(List.copyOf(notes));
     }
