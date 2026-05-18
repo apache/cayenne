@@ -114,6 +114,7 @@
                                 <argument>clean</argument>
                                 <argument>${gradle.task}</argument>
                                 <argument>--no-daemon</argument>
+                                <argument>-PprojectVersion=${project.version}</argument>
                             </arguments>
                         </configuration>
                         <goals>

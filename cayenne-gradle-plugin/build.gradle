@@ -58,12 +58,8 @@ version = projectVersion
 def cayenneVersion = version
 
 def getProjectVersion() {
-    def pomFile = file('pom.xml')
-    if (pomFile.file) {
-        def pom = new groovy.xml.XmlSlurper().parseText(file('pom.xml').text)
-        def pomVersion = pom.parent.version
-        return pomVersion
-    }
+    logger.info('Info: provided project version ' + project.findProperty('projectVersion'))
+    return project.findProperty('projectVersion') ?: '5.0-SNAPSHOT'
 }
 
 def classpathFile = file('build/classpath.txt')
