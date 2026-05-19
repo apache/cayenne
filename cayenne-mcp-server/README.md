@@ -52,13 +52,19 @@ Replace `/path/to/cayenne-mcp-server.jar` with the actual path from the section 
 
 ### Claude Code
 
+By default `claude mcp add` registers the server for the current project only. Use `--scope user` to make it available across all projects for your OS user:
+
 ```bash
+# Current project only (default)
 claude mcp add cayenne -- java -jar /path/to/cayenne-mcp-server-<VERSION>.jar
+
+# All projects for the current user
+claude mcp add cayenne --scope user -- java -jar /path/to/cayenne-mcp-server-<VERSION>.jar
 ```
 
 ### Cursor
 
-Edit `~/.cursor/mcp.json` (global) or `.cursor/mcp.json` in your project:
+Edit `~/.cursor/mcp.json` (global, all projects) or `.cursor/mcp.json` in your project (per-project):
 
 ```json
 {
@@ -73,7 +79,7 @@ Edit `~/.cursor/mcp.json` (global) or `.cursor/mcp.json` in your project:
 
 ### VS Code (GitHub Copilot)
 
-Add to `.vscode/mcp.json` in your project:
+Add to `.vscode/mcp.json` in your project (per-project), or to your user `mcp.json` via the Command Palette → "MCP: Open User Configuration" (all projects):
 
 ```json
 {
