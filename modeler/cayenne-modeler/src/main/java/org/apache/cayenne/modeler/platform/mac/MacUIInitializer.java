@@ -91,6 +91,16 @@ public class MacUIInitializer implements UIInitializer {
     @Override
     public void setupMenus(Application app, JFrame frame) {
 
+        // set additional look and feel for the window
+        frame.getRootPane().putClientProperty("apple.awt.brushMetalLook", Boolean.TRUE);
+
+        // Only relocate About/Preferences/Quit to the macOS application menu when the
+        // screen menu bar is actually in use. Otherwise the JMenuBar stays inside the
+        // window frame, and stripping these items would make them inaccessible.
+        if (!Boolean.getBoolean("apple.laf.useScreenMenuBar")) {
+            return;
+        }
+
         GlobalActions globalActions = app.getActionManager();
 
         Desktop desktop = Desktop.getDesktop();
@@ -103,9 +113,6 @@ public class MacUIInitializer implements UIInitializer {
                 r.performQuit();
             }
         });
-
-        // set additional look and feel for the window
-        frame.getRootPane().putClientProperty("apple.awt.brushMetalLook", Boolean.TRUE);
 
         Set<Action> removeActions = new HashSet<>();
         removeActions.add(globalActions.getAction(ExitAction.class));
