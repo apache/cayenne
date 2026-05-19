@@ -52,7 +52,8 @@ public class HandshakeWatcherTest {
 
     @Test
     public void handshakeReceivedReadsPidAndPath() throws BackingStoreException {
-        Preferences node = Preferences.userRoot()
+        Preferences node = Preferences
+                .userRoot()
                 .node(HandshakeWatcher.NODE_PREFIX + "/" + nonce);
         node.putLong("pid", 4242L);
         node.put("startedAt", "2026-05-17T10:00:00Z");

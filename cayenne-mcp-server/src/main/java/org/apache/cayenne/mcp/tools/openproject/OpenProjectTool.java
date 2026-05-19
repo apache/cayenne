@@ -134,14 +134,20 @@ public class OpenProjectTool {
         // Step 3 — discover a Modeler installation.
         OsKind osKind = OsKind.detect();
         DiscoveryResult discovery = ModelerDiscovery.discover(mcpDir.get(), osKind);
-        if (discovery instanceof NotFound nf) {
-            String notes = String.join("; ", nf.probeNotes());
-            return validationFailed(OpenProjectErrorCode.modeler_not_found,
+        return switch (discovery) {
+            case Found f -> launchAndAwait(f, projectFile);
+            case NotFound nf -> validationFailed(OpenProjectErrorCode.modeler_not_found,
                     "No CayenneModeler installation found relative to MCP jar at %s. Probes: %s"
-                            .formatted(mcpDir.get(), notes),
+                            .formatted(mcpDir.get(), String.join("; ", nf.probeNotes())),
                     new OpenProjectValidation(true, true, false));
-        }
-        Found found = (Found) discovery;
+        };
+    }
+
+    /**
+     * Steps 4-5 of the open-project flow: spawn the Modeler with the handshake nonce
+     * and wait for it to confirm a successful project load.
+     */
+    private OpenProjectResult launchAndAwait(Found found, Path projectFile) {
         OpenProjectValidation allPassed = new OpenProjectValidation(true, true, true);
 
         // Step 4 — launch.
