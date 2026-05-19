@@ -1,0 +1,67 @@
+// Licensed to the Apache Software Foundation (ASF) under one or more
+// contributor license agreements. See the NOTICE file distributed with
+// this work for additional information regarding copyright ownership.
+// The ASF licenses this file to you under the Apache License, Version
+// 2.0 (the "License"); you may not use this file except in compliance
+// with the License. You may obtain a copy of the License at
+//
+// https://www.apache.org/licenses/LICENSE-2.0 Unless required by
+// applicable law or agreed to in writing, software distributed under the
+// License is distributed on an "AS IS" BASIS, WITHOUT WARRANTIES OR
+// CONDITIONS OF ANY KIND, either express or implied. See the License for
+// the specific language governing permissions and limitations under the
+// License.
+
+=== MCP Tools
+
+The server currently exposes two tools. Your agent will discover them on its own, but it is useful to understand the capabilities and possible prompts. Both tools operate on a Cayenne project descriptor (a `cayenne-*.xml` file) and take absolute paths - agents should resolve relative paths against the current workspace before invoking.
+
+==== open_project
+
+Launches CayenneModeler with the given project file pre-loaded. The call is non-blocking; the server waits for the Modeler to confirm a successful project load via a short startup handshake, then returns.
+
+.Parameters
+[cols="1,1,3", options="header"]
+|===
+| Name | Required | Description
+| `projectPath` | yes | Absolute path to the top-level Cayenne project descriptor (`cayenne-*.xml`).
+|===
+
+In most cases your agent knows where the project is, so a typical prompt that triggers this tool is just this:
+[quote]
+____
+open my Cayenne project in the Modeler
+____
+
+Though you can be more specific and indicate the exact project to open:
+[quote]
+____
+open the Cayenne project at @/path/to/cayenne-project.xml in the Modeler.
+____
+
+
+
+==== cgen_run
+
+Runs the Cayenne class generator (`cgen`) for a single DataMap inside the project, using the `cgen` configuration stored in the DataMap XML. The tool returns a JSON report describing which files were written, which were already up-to-date, and any errors encountered.
+
+.Parameters
+[cols="1,1,3", options="header"]
+|===
+| Name | Required | Description
+| `projectPath` | yes | Absolute path to the top-level Cayenne project descriptor (`cayenne-*.xml`), not a DataMap file.
+| `dataMap` | yes | Name of the target DataMap as it appears in the `<map name='...'>` element of the project descriptor.
+|===
+
+A typical agent prompt that triggers this tool:
+[quote]
+____
+regenerate Java classes for the `MyDataMap` DataMap in `/path/to/cayenne-project.xml`.
+____
+
+Or if you only have one project and one DataMap:
+[quote]
+____
+regenerate Java classes from Cayenne model
+____
+

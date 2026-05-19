@@ -45,6 +45,8 @@ include::_cayenne-guide/part1.adoc[]
 
 include::_cayenne-guide/part2.adoc[]
 
+include::_cayenne-guide/part3.adoc[]
+
 include::_cayenne-guide/part4.adoc[]
 
 include::_cayenne-guide/part5.adoc[]
