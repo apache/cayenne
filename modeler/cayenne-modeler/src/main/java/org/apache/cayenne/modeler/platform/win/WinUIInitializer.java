@@ -32,7 +32,7 @@ public class WinUIInitializer implements UIInitializer {
     private static final Logger LOGGER = LoggerFactory.getLogger(WinUIInitializer.class);
 
     @Override
-    public void initLookAndFeel() {
+    public void beforeSwingLaunch() {
         try {
             UIManager.setLookAndFeel(WindowsLookAndFeel.class.getName());
             // override some default styles and colors

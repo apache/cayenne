@@ -64,7 +64,9 @@ public class Application {
 
     private static final Logger LOGGER = LoggerFactory.getLogger(Application.class);
 
-    public static void launch(String[] args, UIInitializer platformInitializer) {
+    public static void launch(String[] args, UIInitializer platformInit) {
+
+        platformInit.beforeSwingLaunch();
 
         CliArgs cli = CliArgs.parse(args);
 
@@ -80,11 +82,11 @@ public class Application {
                 new ModelerModule());
 
         SwingUtilities.invokeLater(() ->
-                new Application(injector, platformInitializer, cli).launch(cli.initialProject()));
+                new Application(injector, platformInit, cli).launch(cli.initialProject()));
     }
 
     private final Injector injector;
-    private final UIInitializer platformInitializer;
+    private final UIInitializer platformInit;
     private final ModelerClassLoader classLoader;
     private final PreferencesRepository preferencesRepository;
     private final ProjectValidator projectValidator;
@@ -95,9 +97,9 @@ public class Application {
     private CayenneUndoManager undoManager;
     private DBConnectors dbConnectors;
 
-    public Application(Injector injector, UIInitializer platformInitializer, CliArgs cli) {
+    public Application(Injector injector, UIInitializer platformInit, CliArgs cli) {
         this.injector = injector;
-        this.platformInitializer = platformInitializer;
+        this.platformInit = platformInit;
         this.cli = cli;
 
         this.classLoader = new ModelerClassLoader();
@@ -134,8 +136,8 @@ public class Application {
         return injector.getInstance(UpgradeService.class);
     }
 
-    public UIInitializer getPlatformInitializer() {
-        return platformInitializer;
+    public UIInitializer getPlatformInit() {
+        return platformInit;
     }
 
     public ConfigurationNodeParentGetter getConfigurationNodeParentGetter() {
@@ -171,7 +173,7 @@ public class Application {
     }
 
     public void launch(File initialProject) {
-        this.platformInitializer.initLookAndFeel();
+
         this.actionManager = new GlobalActions(
                 this,
                 injector.getInstance(ConfigurationNameMapper.class),
@@ -197,6 +199,8 @@ public class Application {
 
         this.undoManager = new CayenneUndoManager(this);
         this.frame = new MainFrame(this);
+        this.platformInit.afterFrameCreated(this);
+
 
         // open up
         frame.onStartup();

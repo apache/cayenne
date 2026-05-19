@@ -135,8 +135,6 @@ public class MainFrame extends AppFrame {
 
         setProjectView(null);
 
-        this.app.getPlatformInitializer().setupMenus(this.app, this);
-
         this.session = new ProjectSession(this.app);
         this.session.addDirtyListener((wasDirty, isDirty) -> {
             if (isDirty) {

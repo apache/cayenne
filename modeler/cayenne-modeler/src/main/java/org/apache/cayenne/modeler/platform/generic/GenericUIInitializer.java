@@ -39,7 +39,7 @@ public class GenericUIInitializer implements UIInitializer {
     private static final String DEFAULT_THEME_NAME = "Sky Bluer";
 
     @Override
-    public void initLookAndFeel() {
+    public void beforeSwingLaunch() {
 
         PlasticTheme theme = findTheme();
 

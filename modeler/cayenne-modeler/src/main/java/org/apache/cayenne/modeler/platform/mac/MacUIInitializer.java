@@ -35,7 +35,10 @@ import java.util.Set;
 public class MacUIInitializer implements UIInitializer {
 
     @Override
-    public void initLookAndFeel() {
+    public void beforeSwingLaunch() {
+        // must be set before Aqua L&F initializes — it reads this property during init
+        System.setProperty("apple.awt.application.name", "CayenneModeler");
+
         // override some default styles and colors, assuming that Aqua theme will be used
 
         Color lightGrey = new Color(0xEEEEEE);
@@ -89,10 +92,10 @@ public class MacUIInitializer implements UIInitializer {
     }
 
     @Override
-    public void setupMenus(Application app, JFrame frame) {
+    public void afterFrameCreated(Application app) {
 
         // set additional look and feel for the window
-        frame.getRootPane().putClientProperty("apple.awt.brushMetalLook", Boolean.TRUE);
+        app.getFrame().getRootPane().putClientProperty("apple.awt.brushMetalLook", Boolean.TRUE);
 
         // Only relocate About/Preferences/Quit to the macOS application menu when the
         // screen menu bar is actually in use. Otherwise the JMenuBar stays inside the
@@ -119,7 +122,7 @@ public class MacUIInitializer implements UIInitializer {
         removeActions.add(globalActions.getAction(AboutAction.class));
         removeActions.add(globalActions.getAction(ConfigurePreferencesAction.class));
 
-        JMenuBar menuBar = frame.getJMenuBar();
+        JMenuBar menuBar = app.getFrame().getJMenuBar();
         for (Component c : menuBar.getComponents()) {
             if (c instanceof JMenu menu) {
 

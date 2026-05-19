@@ -20,22 +20,22 @@ package org.apache.cayenne.modeler.platform;
 
 import org.apache.cayenne.modeler.Application;
 
-import javax.swing.JFrame;
-
 /**
  * A base callback for platform-specific Modeler initialization.
  */
 public interface UIInitializer {
 
     /**
-     * Initializes application look and feel.
+     * Sets platform-specific system properties and initializes the application look and feel.
+     * Called before AWT/Swing is touched, so implementations may set properties that AWT reads
+     * only during its own init (e.g. {@code apple.awt.application.name}) before installing the L&F.
      */
-    default void initLookAndFeel() {
+    default void beforeSwingLaunch() {
     }
 
     /**
      * Updates default frame menus according to the platform specifics.
      */
-    default void setupMenus(Application app, JFrame frame) {
+    default void afterFrameCreated(Application app) {
     }
 }
