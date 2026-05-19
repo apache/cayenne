@@ -77,15 +77,18 @@ public class CgenRunTool {
         McpSchema.Tool descriptor = new McpSchema.Tool(
                 NAME,
                 null,
-                "Run Cayenne class generator (cgen) for a named DataMap. " +
-                        "Returns a JSON report of what was written, what was already up-to-date, and any errors.",
+                """
+                        Run Cayenne class generator (cgen) for a named DataMap. Returns a JSON report of what was \
+                        written, what was already up-to-date, and any errors.""",
                 new McpSchema.JsonSchema(
                         "object",
                         Map.of(
-                                "projectPath", Map.of("type", "string", "description",
-                                        "Absolute path to the top-level Cayenne project descriptor (cayenne-*.xml), not a DataMap file"),
-                                "dataMap", Map.of("type", "string", "description",
-                                        "Name of the target DataMap as it appears in the <map name='...'> element of the project descriptor")
+                                "projectPath", Map.of(
+                                        "type", "string",
+                                        "description", "Absolute path to the top-level Cayenne project descriptor (cayenne-*.xml), not a DataMap file"),
+                                "dataMap", Map.of(
+                                        "type", "string",
+                                        "description", "Name of the target DataMap as it appears in the <map name='...'> element of the project descriptor")
                         ),
                         List.of("projectPath", "dataMap"),
                         null, null, null
@@ -104,8 +107,9 @@ public class CgenRunTool {
             try {
                 json = jsonMapper.writeValueAsString(result);
             } catch (IOException e) {
-                json = "{\"status\":\"error\",\"error\":{\"code\":\"cgen_runtime_error\"," +
-                        "\"message\":\"Serialization failed: " + e.getMessage() + "\"}}";
+                json = """
+                        {"status":"error","error":{"code":"cgen_runtime_error",\
+                        "message":"Serialization failed: %s"}}""".formatted(e.getMessage());
             }
 
             return McpSchema.CallToolResult.builder()

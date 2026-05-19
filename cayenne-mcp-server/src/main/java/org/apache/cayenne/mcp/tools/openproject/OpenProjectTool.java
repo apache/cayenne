@@ -65,13 +65,14 @@ public class OpenProjectTool {
                 NAME,
                 null,
                 """
-                Launch CayenneModeler with the given project file. Non-blocking; waits for \
-                the Modeler to report a startup handshake before returning.""",
+                        Launch CayenneModeler with the given project file. Non-blocking; waits for \
+                        the Modeler to report a startup handshake before returning.""",
                 new McpSchema.JsonSchema(
                         "object",
                         Map.of(
-                                "projectPath", Map.of("type", "string", "description",
-                                        "Absolute path to the top-level Cayenne project descriptor (cayenne-*.xml)")
+                                "projectPath", Map.of(
+                                        "type", "string",
+                                        "description", "Absolute path to the top-level Cayenne project descriptor (cayenne-*.xml)")
                         ),
                         List.of("projectPath"),
                         null, null, null
@@ -90,8 +91,8 @@ public class OpenProjectTool {
                 json = jsonMapper.writeValueAsString(result);
             } catch (IOException e) {
                 json = """
-                       {"status":"error","error":{"code":"launch_failed","message":"Serialization failed: %s"}}\
-                       """.formatted(e.getMessage());
+                        {"status":"error","error":{"code":"launch_failed","message":"Serialization failed: %s"}}\
+                        """.formatted(e.getMessage());
             }
 
             return McpSchema.CallToolResult.builder()
@@ -126,9 +127,7 @@ public class OpenProjectTool {
         Optional<Path> mcpDir = McpJarLocator.locate(OpenProjectTool.class);
         if (mcpDir.isEmpty()) {
             return validationFailed(OpenProjectErrorCode.mcp_jar_location_unresolved,
-                    """
-                    Could not resolve the running MCP server jar's location via ProtectionDomain. \
-                    This is expected only in exotic launch configurations.""",
+                    "Could not resolve the running MCP server jar's location",
                     new OpenProjectValidation(true, false, null));
         }
 
@@ -222,7 +221,7 @@ public class OpenProjectTool {
     }
 
     private static OpenProjectResult validationFailed(OpenProjectErrorCode code, String message,
-                                                       OpenProjectValidation validation) {
+                                                      OpenProjectValidation validation) {
         return new OpenProjectResult(
                 "validation_failed",
                 null,
