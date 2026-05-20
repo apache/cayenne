@@ -53,13 +53,12 @@ import org.apache.cayenne.modeler.event.display.ProcedureDisplayEvent;
 import org.apache.cayenne.modeler.event.display.ProcedureParameterDisplayEvent;
 import org.apache.cayenne.modeler.event.display.QueryDisplayEvent;
 import org.apache.cayenne.modeler.pref.PreferenceAdapter;
-import org.apache.cayenne.modeler.pref.PrefsManager;
-import org.apache.cayenne.project.Project;
 import org.apache.cayenne.util.CayenneMapEntry;
 
 import java.util.ArrayList;
 import java.util.List;
 import java.util.prefs.BackingStoreException;
+import java.util.prefs.Preferences;
 
 /**
  * Binding-style handler for the Modeler's last project selection. Loaded on project
@@ -96,8 +95,8 @@ public final class ProjectPrefs extends PreferenceAdapter {
         query, multipleObjects
     }
 
-    public ProjectPrefs(PrefsManager repository, Project project) {
-        super(repository.projectPref(project, null));
+    public ProjectPrefs(Preferences prefs) {
+        super(prefs);
     }
 
     public void load(ProjectSession session) {

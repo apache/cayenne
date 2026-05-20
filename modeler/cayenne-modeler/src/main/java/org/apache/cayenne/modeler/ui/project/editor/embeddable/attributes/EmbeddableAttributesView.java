@@ -171,7 +171,7 @@ public class EmbeddableAttributesView extends ProjectPanel implements
         AutoCompletion.enable(javaTypesCombo, false, true, session::getSelectedDataMap);
         typeColumn.setCellEditor(new CMComboBoxCellEditor(javaTypesCombo));
 
-        new CMTablePrefs(app.getPrefsManager(), "embeddable/attributeTable")
+        new CMTablePrefs(app.getPrefsManager().uiNode("embeddable/attributeTable"))
                 .bind(table, null, EmbeddableAttributeTableModel.OBJ_ATTRIBUTE);
 
     }

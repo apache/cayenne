@@ -20,15 +20,16 @@
 package org.apache.cayenne.modeler.ui.logconsole;
 
 import org.apache.cayenne.modeler.pref.PreferenceAdapter;
-import org.apache.cayenne.modeler.pref.PrefsLocator;
+
+import java.util.prefs.Preferences;
 
 public final class LogConsolePrefs extends PreferenceAdapter {
 
-    static final String NODE = "logConsole";
+    public static final String NODE = "logConsole";
     static final String SHOW_CONSOLE = "showLogConsole";
 
-    public LogConsolePrefs(PrefsLocator locator) {
-        super(locator.appNode(NODE));
+    public LogConsolePrefs(Preferences prefs) {
+        super(prefs);
     }
 
     public boolean isShowConsole() {

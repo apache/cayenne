@@ -187,7 +187,7 @@ public class Application {
 
         getPrefsManager().runMigrations();
 
-        this.dbConnectors = new DBConnectorPrefs(prefsLocator).getConnectors();
+        this.dbConnectors = new DBConnectorPrefs(prefsLocator.appNode(DBConnectorPrefs.NODE)).getConnectors();
 
         refreshClassLoader();
 
@@ -238,7 +238,7 @@ public class Application {
      * Reinitializes ModelerClassLoader from preferences.
      */
     public void refreshClassLoader() {
-        List<String> values = new ClasspathPrefs(prefsLocator).getEntries();
+        List<String> values = new ClasspathPrefs(prefsLocator.appNode(ClasspathPrefs.NODE)).getEntries();
         if (!values.isEmpty()) {
             getClassLoader().setFiles(values.stream().map(File::new).collect(Collectors.toList()));
         }
@@ -246,8 +246,8 @@ public class Application {
 
     private File initialProjectFromPreferences() {
 
-        if (new GeneralPrefs(prefsLocator).isAutoLoadProject()) {
-            List<File> files = new RecentProjectsPrefs(prefsLocator).getFiles();
+        if (new GeneralPrefs(prefsLocator.appNode(GeneralPrefs.NODE)).isAutoLoadProject()) {
+            List<File> files = new RecentProjectsPrefs(prefsLocator.appNode(RecentProjectsPrefs.NODE)).getFiles();
             if (!files.isEmpty()) {
                 return files.getFirst();
             }

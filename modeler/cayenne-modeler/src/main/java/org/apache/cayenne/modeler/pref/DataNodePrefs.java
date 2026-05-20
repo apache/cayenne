@@ -18,29 +18,22 @@
  ****************************************************************/
 package org.apache.cayenne.modeler.pref;
 
-import org.apache.cayenne.project.Project;
+import java.util.prefs.Preferences;
 
 public final class DataNodePrefs extends PreferenceAdapter {
 
     public static final String LOCAL_DATA_SOURCE_PROPERTY = "localDataSource";
 
-    static final String NODE = "dataNode";
-
-    private final PrefsManager repository;
-    private final Project project;
+    public static final String NODE = "dataNode";
 
     private String localDataSource;
 
-    public DataNodePrefs(PrefsManager repository, Project project, String dataNodeName) {
-        super(repository.projectPref(project, NODE + "/" + dataNodeName));
-
-        // capture repo and project for the sake of "rename"
-        this.repository = repository;
-        this.project = project;
+    public DataNodePrefs(Preferences prefs) {
+        super(prefs);
     }
 
-    public DataNodePrefs rename(String newName) {
-        DataNodePrefs renamed = new DataNodePrefs(repository, project, newName);
+    public DataNodePrefs renameTo(Preferences newPrefs) {
+        DataNodePrefs renamed = new DataNodePrefs(newPrefs);
 
         // TODO: is this the correct behavior? In the DataMapPrefs we are doing "copy", not "move" to handle reverts
         PreferencesCopier.move(prefs, renamed.prefs);

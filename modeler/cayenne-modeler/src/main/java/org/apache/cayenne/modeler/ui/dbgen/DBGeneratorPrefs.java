@@ -19,15 +19,15 @@
 package org.apache.cayenne.modeler.ui.dbgen;
 
 import org.apache.cayenne.modeler.pref.PreferenceAdapter;
-import org.apache.cayenne.modeler.pref.PrefsManager;
-import org.apache.cayenne.project.Project;
+
+import java.util.prefs.Preferences;
 
 /**
  * Persistence for the DB Generator dialog's checkbox options.
  */
 public class DBGeneratorPrefs extends PreferenceAdapter {
 
-    static final String NODE = "dbGenerator";
+    public static final String NODE = "dbGenerator";
 
     private static final String CREATE_FK_PROPERTY = "createFK";
     private static final String CREATE_PK_PROPERTY = "createPK";
@@ -35,8 +35,8 @@ public class DBGeneratorPrefs extends PreferenceAdapter {
     private static final String DROP_PK_PROPERTY = "dropPK";
     private static final String DROP_TABLES_PROPERTY = "dropTables";
 
-    public DBGeneratorPrefs(PrefsManager repository, Project project) {
-        super(repository.projectPref(project, NODE));
+    public DBGeneratorPrefs(Preferences prefs) {
+        super(prefs);
     }
 
     public boolean getCreateFK() {

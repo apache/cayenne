@@ -26,6 +26,7 @@ import java.io.File;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.prefs.BackingStoreException;
+import java.util.prefs.Preferences;
 
 public final class RecentProjectsPrefs extends PreferenceAdapter {
 
@@ -35,8 +36,8 @@ public final class RecentProjectsPrefs extends PreferenceAdapter {
 
     public static final String NODE = "lastProjects";
 
-    public RecentProjectsPrefs(PrefsLocator locator) {
-        super(locator.appNode(NODE));
+    public RecentProjectsPrefs(Preferences prefs) {
+        super(prefs);
     }
 
     public List<File> getFiles() {

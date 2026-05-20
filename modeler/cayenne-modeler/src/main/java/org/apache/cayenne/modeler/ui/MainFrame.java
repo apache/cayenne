@@ -114,7 +114,7 @@ public class MainFrame extends AppFrame {
         splitPane.getInsets().right = 5;
         splitPane.setResizeWeight(0.7);
 
-        this.splitPanePrefs = new CMSplitPanePrefs(app.getPrefsManager(), "frame/splitPane");
+        this.splitPanePrefs = new CMSplitPanePrefs(app.getPrefsManager().uiNode("frame/splitPane"));
 
         JPanel statusBar = new JPanel(new FlowLayout(FlowLayout.LEFT, 3, 1));
         statusBar.setBorder(TopBorder.create());
@@ -238,7 +238,7 @@ public class MainFrame extends AppFrame {
             }
         });
 
-        new CMComponentGeometryPrefs(app.getPrefsManager(), "frame/geometry").bind(this, 1200, 720);
+        new CMComponentGeometryPrefs(app.getPrefsManager().uiNode("frame/geometry")).bind(this, 1200, 720);
 
         setVisible(true);
     }
@@ -328,11 +328,11 @@ public class MainFrame extends AppFrame {
      * Adds path to the list of last opened projects in preferences.
      */
     public void addToLastProjListAction(File file) {
-        new RecentProjectsPrefs(app.getPrefsLocator()).addFile(file);
+        new RecentProjectsPrefs(app.getPrefsLocator().appNode(RecentProjectsPrefs.NODE)).addFile(file);
     }
 
     public void changePathInLastProjListAction(File oldFile, File newFile) {
-        RecentProjectsPrefs prefs = new RecentProjectsPrefs(app.getPrefsLocator());
+        RecentProjectsPrefs prefs = new RecentProjectsPrefs(app.getPrefsLocator().appNode(RecentProjectsPrefs.NODE));
         prefs.removeFile(oldFile);
         prefs.addFile(newFile);
 

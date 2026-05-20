@@ -231,7 +231,7 @@ public class DataNodeEditorPanel extends ProjectPanel {
         String oldName = node.getName();
         node.setName(newName);
 
-        new DataNodePrefs(app.getPrefsManager(), session.project(), oldName).rename(newName);
+        new DataNodePrefs(dataNodePref(oldName)).renameTo(dataNodePref(newName));
     }
 
     private DataNodePrefs nodePrefs() {
@@ -239,7 +239,11 @@ public class DataNodeEditorPanel extends ProjectPanel {
         if (selected == null) {
             throw new IllegalStateException("No DataNode selected");
         }
-        return new DataNodePrefs(app.getPrefsManager(), session.project(), selected.getName());
+        return new DataNodePrefs(dataNodePref(selected.getName()));
+    }
+
+    private java.util.prefs.Preferences dataNodePref(String dataNodeName) {
+        return app.getPrefsManager().projectPref(session.project(), DataNodePrefs.NODE + "/" + dataNodeName);
     }
 
     private void dataSourceConfigAction() {

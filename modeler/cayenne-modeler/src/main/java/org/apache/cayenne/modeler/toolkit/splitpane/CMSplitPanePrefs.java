@@ -20,17 +20,17 @@
 package org.apache.cayenne.modeler.toolkit.splitpane;
 
 import org.apache.cayenne.modeler.pref.PreferenceAdapter;
-import org.apache.cayenne.modeler.pref.PrefsManager;
 
 import javax.swing.*;
 import java.beans.PropertyChangeListener;
+import java.util.prefs.Preferences;
 
 public final class CMSplitPanePrefs extends PreferenceAdapter {
 
     private PropertyChangeListener listener;
 
-    public CMSplitPanePrefs(PrefsManager repository, String path) {
-        super(repository.uiNode(path));
+    public CMSplitPanePrefs(Preferences prefs) {
+        super(prefs);
     }
 
     public void bind(JSplitPane pane, int defaultLocation) {

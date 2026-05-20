@@ -158,10 +158,9 @@ public class JDBCDataSourcePanel extends DataSourcePanel {
 
         DataSourceDescriptor projectDataSourceDescriptor = getNode().getDataSourceDescriptor();
 
-        String key = new DataNodePrefs(
-                app.getPrefsManager(),
+        String key = new DataNodePrefs(app.getPrefsManager().projectPref(
                 frame.getProjectSession().project(),
-                getNode().getName()).getLocalDataSource();
+                DataNodePrefs.NODE + "/" + getNode().getName())).getLocalDataSource();
         if (key == null) {
             frame.updateStatus("No Local DataSource selected for node...");
             return;

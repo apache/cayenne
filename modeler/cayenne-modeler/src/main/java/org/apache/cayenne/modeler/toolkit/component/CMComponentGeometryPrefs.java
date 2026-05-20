@@ -20,11 +20,11 @@
 package org.apache.cayenne.modeler.toolkit.component;
 
 import org.apache.cayenne.modeler.pref.PreferenceAdapter;
-import org.apache.cayenne.modeler.pref.PrefsManager;
 
 import java.awt.*;
 import java.awt.event.ComponentAdapter;
 import java.awt.event.ComponentEvent;
+import java.util.prefs.Preferences;
 
 public final class CMComponentGeometryPrefs extends PreferenceAdapter {
 
@@ -33,8 +33,8 @@ public final class CMComponentGeometryPrefs extends PreferenceAdapter {
     private static final String X_PROPERTY = "x";
     private static final String Y_PROPERTY = "y";
 
-    public CMComponentGeometryPrefs(PrefsManager repository, String path) {
-        super(repository.uiNode(path));
+    public CMComponentGeometryPrefs(Preferences prefs) {
+        super(prefs);
     }
 
     public void bind(Component c, int defaultWidth, int defaultHeight) {

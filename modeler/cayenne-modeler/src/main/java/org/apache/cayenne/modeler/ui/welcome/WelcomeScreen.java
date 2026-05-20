@@ -126,7 +126,7 @@ public class WelcomeScreen extends AppPanel implements RecentFileListener, Recen
 
     @Override
     public void recentFileListChanged() {
-        List<File> arr = new RecentProjectsPrefs(app.getPrefsLocator()).getFiles();
+        List<File> arr = new RecentProjectsPrefs(app.getPrefsLocator().appNode(RecentProjectsPrefs.NODE)).getFiles();
         recentProjectsList.setModel(new RecentFileListModel(arr));
     }
 }

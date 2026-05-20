@@ -137,7 +137,7 @@ class ProjectOpener extends JFileChooser {
     }
 
     private File getDefaultStartDir(Application application) {
-        List<File> recent = new RecentProjectsPrefs(application.getPrefsLocator()).getFiles();
+        List<File> recent = new RecentProjectsPrefs(application.getPrefsLocator().appNode(RecentProjectsPrefs.NODE)).getFiles();
         if (!recent.isEmpty()) {
             File parent = recent.get(0).getParentFile();
             if (parent != null && parent.isDirectory()) {

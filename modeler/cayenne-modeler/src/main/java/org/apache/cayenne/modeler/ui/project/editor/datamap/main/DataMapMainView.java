@@ -241,7 +241,7 @@ public class DataMapMainView extends ProjectPanel {
         dataMap.setDefaultPackage(newDefaultPackage);
 
         // update class generation preferences
-        new DataMapPrefs(app.getPrefsManager(), dataMap)
+        new DataMapPrefs(app.getPrefsManager().dataMapPref(dataMap, null))
                 .setSuperclassPackage(newDefaultPackage, DataMapPrefs.DEFAULT_SUPERCLASS_PACKAGE_SUFFIX);
 
         session.fireDataMapEvent(DataMapEvent.ofChange(this, dataMap));

@@ -19,6 +19,8 @@
 
 package org.apache.cayenne.modeler.pref;
 
+import java.util.prefs.Preferences;
+
 public final class GeneralPrefs extends PreferenceAdapter {
 
     public static final String NODE = "general";
@@ -28,8 +30,8 @@ public final class GeneralPrefs extends PreferenceAdapter {
     public static final String ENCODING = "encoding";
     public static final String FAVOURITE_DATA_SOURCE = "favouriteDataSource";
 
-    public GeneralPrefs(PrefsLocator locator) {
-        super(locator.appNode(NODE));
+    public GeneralPrefs(Preferences prefs) {
+        super(prefs);
     }
 
     public boolean isAutoLoadProject() {

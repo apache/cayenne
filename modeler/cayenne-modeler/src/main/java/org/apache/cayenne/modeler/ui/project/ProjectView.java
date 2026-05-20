@@ -102,7 +102,7 @@ public class ProjectView extends ProjectPanel {
 
         this.filterPopup = new TreeFilterPopup(treePanel);
 
-        new CMSplitPanePrefs(app.getPrefsManager(), "project/splitPane").bind(splitPane, 300);
+        new CMSplitPanePrefs(app.getPrefsManager().uiNode("project/splitPane")).bind(splitPane, 300);
     }
 
     public EditorPanelView getEditorPanel() {

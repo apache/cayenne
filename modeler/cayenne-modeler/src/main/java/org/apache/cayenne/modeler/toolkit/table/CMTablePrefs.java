@@ -19,7 +19,6 @@
 package org.apache.cayenne.modeler.toolkit.table;
 
 import org.apache.cayenne.modeler.pref.PreferenceAdapter;
-import org.apache.cayenne.modeler.pref.PrefsManager;
 
 import javax.swing.event.ChangeEvent;
 import javax.swing.event.ListSelectionEvent;
@@ -29,6 +28,7 @@ import javax.swing.table.TableColumn;
 import javax.swing.table.TableColumnModel;
 import javax.swing.table.TableModel;
 import java.util.Map;
+import java.util.prefs.Preferences;
 
 public final class CMTablePrefs extends PreferenceAdapter {
 
@@ -38,8 +38,8 @@ public final class CMTablePrefs extends PreferenceAdapter {
     private static final String ORDER_KEY = "colOrder";
     private static final String LISTENER_PROPERTY = "TablePrefs.listener";
 
-    public CMTablePrefs(PrefsManager manager, String path) {
-        super(manager.uiNode(path));
+    public CMTablePrefs(Preferences prefs) {
+        super(prefs);
     }
 
     /**

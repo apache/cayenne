@@ -185,7 +185,7 @@ public class DbAttributePanel extends JPanel implements DbEntityDisplayListener,
         TableColumn typeColumn = table.getColumnModel().getColumn(DbAttributeTableModel.DB_ATTRIBUTE_TYPE);
         typeColumn.setCellEditor(new CMComboBoxCellEditor(comboBox));
 
-        new CMTablePrefs(session.app().getPrefsManager(), "dbEntity/attributeTable")
+        new CMTablePrefs(session.app().getPrefsManager().uiNode("dbEntity/attributeTable"))
                 .bind(table, null, DbAttributeTableModel.DB_ATTRIBUTE_NAME);
     }
 

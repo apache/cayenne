@@ -201,14 +201,14 @@ public class ProjectSession {
         if (project == null) {
             return;
         }
-        new ProjectPrefs(app.getPrefsManager(), project).flush(this);
+        new ProjectPrefs(app.getPrefsManager().projectPref(project, null)).flush(this);
     }
 
     public void restoreSelectionFromPrefs() {
         if (project == null) {
             return;
         }
-        new ProjectPrefs(app.getPrefsManager(), project).load(this);
+        new ProjectPrefs(app.getPrefsManager().projectPref(project, null)).load(this);
     }
 
     public boolean isDirty() {

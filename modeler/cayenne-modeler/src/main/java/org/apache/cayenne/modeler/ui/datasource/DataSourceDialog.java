@@ -84,7 +84,7 @@ public class DataSourceDialog extends ProjectDialog {
         refreshDataSources();
         initFavouriteDataSource();
 
-        DataMapPrefs dataMapPrefs = new DataMapPrefs(app.getPrefsManager(), session.getSelectedDataMap());
+        DataMapPrefs dataMapPrefs = new DataMapPrefs(app.getPrefsManager().dataMapPref(session.getSelectedDataMap(), null));
         if (dataMapPrefs.hasDbAdapter()) {
             getConnectionInfoFromPreferences().copyTo(connector);
         }
@@ -155,7 +155,7 @@ public class DataSourceDialog extends ProjectDialog {
     }
 
     private void initFavouriteDataSource() {
-        String favourite = new GeneralPrefs(app.getPrefsLocator()).getFavouriteDataSource();
+        String favourite = new GeneralPrefs(app.getPrefsLocator().appNode(GeneralPrefs.NODE)).getFavouriteDataSource();
         if (favourite != null && connectors.containsKey(favourite)) {
             setSelectedDataSource(favourite);
             dataSources.setSelectedItem(dataSourceKey);
@@ -163,7 +163,7 @@ public class DataSourceDialog extends ProjectDialog {
     }
 
     private DBConnector getConnectionInfoFromPreferences() {
-        DataMapPrefs dataMapPrefs = new DataMapPrefs(app.getPrefsManager(), session.getSelectedDataMap());
+        DataMapPrefs dataMapPrefs = new DataMapPrefs(app.getPrefsManager().dataMapPref(session.getSelectedDataMap(), null));
         DBConnector c = dataMapPrefs.getConnector();
         return c != null ? c : new DBConnector();
     }
@@ -197,7 +197,7 @@ public class DataSourceDialog extends ProjectDialog {
         this.canceled = canceled;
         dispose();
         if (!canceled) {
-            new GeneralPrefs(app.getPrefsLocator()).setFavouriteDataSource(dataSourceKey);
+            new GeneralPrefs(app.getPrefsLocator().appNode(GeneralPrefs.NODE)).setFavouriteDataSource(dataSourceKey);
         }
     }
 

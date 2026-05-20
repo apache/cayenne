@@ -26,6 +26,7 @@ import java.util.ArrayList;
 import java.util.Comparator;
 import java.util.List;
 import java.util.prefs.BackingStoreException;
+import java.util.prefs.Preferences;
 
 public final class ClasspathPrefs extends PreferenceAdapter {
 
@@ -33,8 +34,8 @@ public final class ClasspathPrefs extends PreferenceAdapter {
 
     public static final String NODE = "classpath";
 
-    public ClasspathPrefs(PrefsLocator locator) {
-        super(locator.appNode(NODE));
+    public ClasspathPrefs(Preferences prefs) {
+        super(prefs);
     }
 
     // Returns classpath entries in numeric-key order. Defensive against any

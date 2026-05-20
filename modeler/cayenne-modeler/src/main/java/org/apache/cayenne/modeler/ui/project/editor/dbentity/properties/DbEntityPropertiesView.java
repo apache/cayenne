@@ -71,7 +71,7 @@ public class DbEntityPropertiesView extends ProjectPanel implements DbEntityDisp
 
         splitPane.setOneTouchExpandable(true);
         splitPane.setResizeWeight(0.5);
-        new CMSplitPanePrefs(app.getPrefsManager(), "dbEntity/splitPane").bind(splitPane, -1);
+        new CMSplitPanePrefs(app.getPrefsManager().uiNode("dbEntity/splitPane")).bind(splitPane, -1);
         add(splitPane);
 
         toolBar.setFloatable(false);

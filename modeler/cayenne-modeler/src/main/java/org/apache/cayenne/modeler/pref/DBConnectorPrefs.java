@@ -32,7 +32,7 @@ import java.util.prefs.Preferences;
  */
 public class DBConnectorPrefs extends PreferenceAdapter {
 
-    static final String NODE = "dbConnectors";
+    public static final String NODE = "dbConnectors";
 
     private static final String DB_ADAPTER_PROPERTY = "dbAdapter";
     private static final String JDBC_DRIVER_PROPERTY = "jdbcDriver";
@@ -40,8 +40,8 @@ public class DBConnectorPrefs extends PreferenceAdapter {
     private static final String URL_PROPERTY = "url";
     private static final String USER_NAME_PROPERTY = "userName";
 
-    public DBConnectorPrefs(PrefsLocator locator) {
-        super(locator.appNode(NODE));
+    public DBConnectorPrefs(Preferences prefs) {
+        super(prefs);
     }
 
     public DBConnectors getConnectors() {

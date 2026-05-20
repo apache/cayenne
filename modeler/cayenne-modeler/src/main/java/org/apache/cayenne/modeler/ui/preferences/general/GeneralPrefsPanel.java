@@ -55,7 +55,7 @@ public class GeneralPrefsPanel extends AppPanel {
         this.systemEncoding = Charset.defaultCharset().name();
         this.defaultLabel = systemEncoding + " (default)";
 
-        GeneralPrefs prefs = new GeneralPrefs(app.getPrefsLocator());
+        GeneralPrefs prefs = new GeneralPrefs(app.getPrefsLocator().appNode(GeneralPrefs.NODE));
 
         this.encodingChoices = new JComboBox<>(new DefaultComboBoxModel<>(encodingLabels()));
         selectEncoding(prefs.getEncoding());
@@ -70,7 +70,7 @@ public class GeneralPrefsPanel extends AppPanel {
     }
 
     public void commit() {
-        GeneralPrefs prefs = new GeneralPrefs(app.getPrefsLocator());
+        GeneralPrefs prefs = new GeneralPrefs(app.getPrefsLocator().appNode(GeneralPrefs.NODE));
         prefs.setEncoding(selectedEncoding());
         prefs.setAutoLoadProject(autoLoadProject.isSelected());
         prefs.setNoDeletePrompt(noDeletePrompt.isSelected());
