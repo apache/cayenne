@@ -33,6 +33,7 @@ import org.apache.cayenne.modeler.event.model.ObjEntityEvent;
 import org.apache.cayenne.modeler.event.model.ObjEntityListener;
 import org.apache.cayenne.modeler.event.model.ProjectBeforeSaveEvent;
 import org.apache.cayenne.modeler.event.model.ProjectBeforeSaveListener;
+import org.apache.cayenne.modeler.toolkit.ProjectPanel;
 import org.apache.cayenne.modeler.toolkit.table.CMTablePrefs;
 import org.apache.cayenne.modeler.project.ObjEntityOps;
 import org.apache.cayenne.modeler.service.action.GlobalActions;
@@ -73,18 +74,16 @@ import java.util.Map;
 /**
  * Detail view of the ObjEntity attributes.
  */
-public class ObjAttributePanel extends JPanel implements ObjEntityDisplayListener, ObjEntityListener, ObjAttributeListener, ProjectBeforeSaveListener {
+public class ObjAttributePanel extends ProjectPanel implements ObjEntityDisplayListener, ObjEntityListener, ObjAttributeListener, ProjectBeforeSaveListener {
 
     private static final ImageIcon INHERITANCE_ICON = IconFactory.buildIcon("icon-inheritance.png");
 
-    private final ProjectSession session;
     private final ObjEntityPropertiesView parentPanel;
-
     private final CMTable table;
     private final JMenuItem editMenu;
 
     public ObjAttributePanel(ProjectSession session, ObjEntityPropertiesView parentPanel) {
-        this.session = session;
+        super(session);
         this.parentPanel = parentPanel;
         this.table = new CMTable();
         this.editMenu = new JMenuItem("Edit Attribute", IconFactory.buildIcon("icon-edit.png"));
@@ -95,11 +94,11 @@ public class ObjAttributePanel extends JPanel implements ObjEntityDisplayListene
     private void initLayout() {
         setLayout(new BorderLayout());
 
-        GlobalActions globalActions = session.app().getActionManager();
+        GlobalActions globalActions = app.getActionManager();
 
         table.setSelectionMode(ListSelectionModel.MULTIPLE_INTERVAL_SELECTION);
         table.setAutoResizeMode(JTable.AUTO_RESIZE_OFF);
-        table.setDefaultRenderer(String.class, new CellRenderer(session));
+        table.setDefaultRenderer(String.class, new CellRenderer());
 
         JPopupMenu popup = new JPopupMenu();
         popup.add(editMenu);
@@ -139,7 +138,7 @@ public class ObjAttributePanel extends JPanel implements ObjEntityDisplayListene
 
         table.getSelectionModel().addListSelectionListener(this::valueChanged);
 
-        session.app().getActionManager().setupCutCopyPaste(
+        app.getActionManager().setupCutCopyPaste(
                 table,
                 CutAttributeRelationshipAction.class,
                 CopyAttributeRelationshipAction.class);
@@ -218,7 +217,7 @@ public class ObjAttributePanel extends JPanel implements ObjEntityDisplayListene
     public void objAttributeAdded(ObjAttributeEvent e) {
         ObjAttributeTableModel model = (ObjAttributeTableModel) table.getModel();
 
-        model.addRow((ObjAttribute) e.getAttribute());
+        model.addRow(e.getAttribute());
         model.fireTableDataChanged();
 
         int ind = -1;
@@ -263,7 +262,7 @@ public class ObjAttributePanel extends JPanel implements ObjEntityDisplayListene
                         JOptionPane.QUESTION_MESSAGE,
                         JOptionPane.YES_NO_OPTION);
 
-                JDialog dialog = pane.createDialog(session.app().getFrame(), "Confirm Remove");
+                JDialog dialog = pane.createDialog(app.getFrame(), "Confirm Remove");
                 dialog.setVisible(true);
 
                 boolean shouldDelete;
@@ -318,7 +317,7 @@ public class ObjAttributePanel extends JPanel implements ObjEntityDisplayListene
         table.getColumnModel().getColumn(ObjAttributeTableModel.DB_ATTRIBUTE).setCellRenderer(new DbAttributePathComboBoxRenderer());
         table.getColumnModel().getColumn(ObjAttributeTableModel.DB_ATTRIBUTE).setCellEditor(new DbAttributePathComboBoxEditor(session::getSelectedDataMap));
 
-        new CMTablePrefs(session.app().getPrefsManager().uiNode("objEntity/attributeTable"))
+        new CMTablePrefs(app.getPrefsManager().uiNode("objEntity/attributeTable"))
                 .bind(table, minSizes, ObjAttributeTableModel.OBJ_ATTRIBUTE);
     }
 
@@ -330,13 +329,12 @@ public class ObjAttributePanel extends JPanel implements ObjEntityDisplayListene
             return;
         }
 
-        if (!(table.getModel() instanceof ObjAttributeTableModel)) {
+        if (!(table.getModel() instanceof ObjAttributeTableModel model)) {
             // probably means this panel hasn't been loaded yet...
             return;
         }
 
-        ObjAttributeTableModel model = (ObjAttributeTableModel) table.getModel();
-        if (model.getDbEntity() != ((ObjEntity) e.getEntity()).getDbEntity()) {
+        if (model.getDbEntity() != e.getEntity().getDbEntity()) {
             model.resetDbEntity();
             setUpTableStructure();
         }
@@ -347,20 +345,14 @@ public class ObjAttributePanel extends JPanel implements ObjEntityDisplayListene
             return;
         }
 
-        this.rebuildTable((ObjEntity) e.getEntity());
+        this.rebuildTable(e.getEntity());
     }
 
     public void objEntityRemoved(ObjEntityEvent e) {
     }
 
     // custom renderer used for inherited attributes highlighting
-    static final class CellRenderer extends DefaultTableCellRenderer {
-
-        private final ProjectSession session;
-
-        CellRenderer(ProjectSession session) {
-            this.session = session;
-        }
+    final class CellRenderer extends DefaultTableCellRenderer {
 
         @Override
         public Component getTableCellRendererComponent(
@@ -403,7 +395,7 @@ public class ObjAttributePanel extends JPanel implements ObjEntityDisplayListene
         public void mouseClicked(MouseEvent event, int x) {
             Point point = event.getPoint();
             if (point.x - x <= INHERITANCE_ICON.getIconWidth()) {
-                GlobalActions globalActions = session.app().getActionManager();
+                GlobalActions globalActions = app.getActionManager();
                 globalActions.getAction(ObjEntityToSuperEntityAction.class).performAction(null);
             }
         }
@@ -433,7 +425,7 @@ public class ObjAttributePanel extends JPanel implements ObjEntityDisplayListene
         // ... show dialog...
         new ObjAttributeInfoDialog(
                 session,
-                session.app().getFrame(),
+                app.getFrame(),
                 row, model).open();
 
         // This is required for a table to be updated properly
@@ -459,7 +451,7 @@ public class ObjAttributePanel extends JPanel implements ObjEntityDisplayListene
                 parentPanel.getRelationshipPanel().getTable().getCellEditor().stopCellEditing();
             }
 
-            GlobalActions globalActions = session.app().getActionManager();
+            GlobalActions globalActions = app.getActionManager();
             globalActions.getAction(RemoveAttributeRelationshipAction.class).setCurrentSelectedPanel(this);
             globalActions.getAction(CutAttributeRelationshipAction.class).setCurrentSelectedPanel(this);
             globalActions.getAction(CopyAttributeRelationshipAction.class).setCurrentSelectedPanel(this);

@@ -30,36 +30,37 @@ import org.apache.cayenne.dbsync.reverse.dbimport.ReverseEngineering;
 import org.apache.cayenne.dbsync.reverse.dbimport.Schema;
 import org.apache.cayenne.map.DataMap;
 import org.apache.cayenne.modeler.project.ProjectSession;
+import org.apache.cayenne.modeler.toolkit.ProjectPanel;
 import org.apache.cayenne.modeler.ui.project.editor.datamap.dbimport.action.DbImportActions;
 import org.apache.cayenne.modeler.ui.project.editor.datamap.dbimport.tree.DbImportTreeNode;
 
-import javax.swing.JPanel;
-import javax.swing.JScrollPane;
-import javax.swing.JTree;
-import javax.swing.SwingUtilities;
+import javax.swing.*;
 import javax.swing.tree.DefaultTreeCellRenderer;
 import javax.swing.tree.TreePath;
-import java.awt.BorderLayout;
+import java.awt.*;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
 import java.util.HashMap;
 import java.util.Map;
 
-class ReverseEngineeringTreePanel extends JPanel {
+class ReverseEngineeringTreePanel extends ProjectPanel {
 
     private final DbImportTree reverseEngineeringTree;
     private final DbImportTree dbSchemaTree;
 
-    private final ProjectSession session;
     private final DbImportActions actions;
     private final DBSchemaPanel dbSchemaPanel;
     private ConfigToolbar treeToolbar;
     private final Map<Class<?>, DefaultPopUpMenu> popups;
 
-    ReverseEngineeringTreePanel(ProjectSession session, DbImportTree reverseEngineeringTree,
-                                DbImportTree dbSchemaTree, DBSchemaPanel dbSchemaPanel,
-                                DbImportActions actions) {
-        this.session = session;
+    ReverseEngineeringTreePanel(
+            ProjectSession session,
+            DbImportTree reverseEngineeringTree,
+            DbImportTree dbSchemaTree,
+            DBSchemaPanel dbSchemaPanel,
+            DbImportActions actions) {
+
+        super(session);
         this.reverseEngineeringTree = reverseEngineeringTree;
         this.dbSchemaTree = dbSchemaTree;
         this.dbSchemaPanel = dbSchemaPanel;
@@ -126,7 +127,7 @@ class ReverseEngineeringTreePanel extends JPanel {
                 } else if (reverseEngineeringTree.getSelectionPath() != null) {
                     DbImportTreeNode selectedNode = reverseEngineeringTree.getSelectedNode();
 
-                    if( selectedNode.isExcludeColumn() || selectedNode.isIncludeColumn()) {
+                    if (selectedNode.isExcludeColumn() || selectedNode.isIncludeColumn()) {
                         DbImportTreeNode expandNode = selectedNode.getParent();
 
                         DbImportTreeNode parentPath = dbSchemaTree.findNode(
@@ -163,7 +164,7 @@ class ReverseEngineeringTreePanel extends JPanel {
 
     private ReverseEngineering getReverseEngineeringBySelectedMap() {
         DataMap dataMap = session.getSelectedDataMap();
-        return session.app().getMetaData().get(dataMap, ReverseEngineering.class);
+        return app.getMetaData().get(dataMap, ReverseEngineering.class);
     }
 
     private void changeIcons() {

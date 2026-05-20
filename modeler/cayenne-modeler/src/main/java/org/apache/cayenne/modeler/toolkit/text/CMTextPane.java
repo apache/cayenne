@@ -37,8 +37,8 @@ import java.awt.geom.Rectangle2D;
 public class CMTextPane extends JPanel {
 
     protected Highlighter.HighlightPainter painter;
-    private JTextPaneScrollable pane;
-    private JScrollPane scrollPane;
+    private final JTextPaneScrollable pane;
+    private final JScrollPane scrollPane;
 
     private boolean imageError;
     private String tooltipTextError;

@@ -29,6 +29,7 @@ import org.apache.cayenne.modeler.event.model.DbAttributeEvent;
 import org.apache.cayenne.modeler.event.model.DbAttributeListener;
 import org.apache.cayenne.modeler.project.ProjectSession;
 import org.apache.cayenne.modeler.service.action.GlobalActions;
+import org.apache.cayenne.modeler.toolkit.ProjectPanel;
 import org.apache.cayenne.modeler.toolkit.combobox.AutoCompletion;
 import org.apache.cayenne.modeler.toolkit.combobox.CMComboBox;
 import org.apache.cayenne.modeler.toolkit.table.BoardTableCellRenderer;
@@ -52,14 +53,13 @@ import java.util.List;
 /**
  * Detail view of the DbEntity attributes.
  */
-public class DbAttributePanel extends JPanel implements DbEntityDisplayListener, DbAttributeListener {
+public class DbAttributePanel extends ProjectPanel implements DbEntityDisplayListener, DbAttributeListener {
 
-    private final ProjectSession session;
     private final CMTable table;
     private final DbEntityPropertiesView parentPanel;
 
     public DbAttributePanel(ProjectSession session, DbEntityPropertiesView parentPanel) {
-        this.session = session;
+        super(session);
         this.parentPanel = parentPanel;
         this.table = new CMTable();
         initLayout();
@@ -69,7 +69,7 @@ public class DbAttributePanel extends JPanel implements DbEntityDisplayListener,
     private void initLayout() {
         setLayout(new BorderLayout());
 
-        GlobalActions globalActions = session.app().getActionManager();
+        GlobalActions globalActions = app.getActionManager();
 
         table.setSelectionMode(ListSelectionModel.MULTIPLE_INTERVAL_SELECTION);
         table.setAutoResizeMode(JTable.AUTO_RESIZE_OFF);
@@ -92,7 +92,7 @@ public class DbAttributePanel extends JPanel implements DbEntityDisplayListener,
 
         table.getSelectionModel().addListSelectionListener(this::valueChanged);
 
-        session.app().getActionManager().setupCutCopyPaste(
+        app.getActionManager().setupCutCopyPaste(
                 table,
                 CutAttributeRelationshipAction.class,
                 CopyAttributeRelationshipAction.class);
@@ -108,13 +108,13 @@ public class DbAttributePanel extends JPanel implements DbEntityDisplayListener,
         List<?> listAttrs = model.getObjectList();
         int[] newSel = new int[attrs.length];
 
-        session.app().getActionManager()
+        app.getActionManager()
                 .getAction(RemoveAttributeRelationshipAction.class)
                 .setCurrentSelectedPanel(parentPanel.getAttributePanel());
-        session.app().getActionManager()
+        app.getActionManager()
                 .getAction(CutAttributeRelationshipAction.class)
                 .setCurrentSelectedPanel(parentPanel.getAttributePanel());
-        session.app().getActionManager()
+        app.getActionManager()
                 .getAction(CopyAttributeRelationshipAction.class)
                 .setCurrentSelectedPanel(parentPanel.getAttributePanel());
 
@@ -185,7 +185,7 @@ public class DbAttributePanel extends JPanel implements DbEntityDisplayListener,
         TableColumn typeColumn = table.getColumnModel().getColumn(DbAttributeTableModel.DB_ATTRIBUTE_TYPE);
         typeColumn.setCellEditor(new CMComboBoxCellEditor(comboBox));
 
-        new CMTablePrefs(session.app().getPrefsManager().uiNode("dbEntity/attributeTable"))
+        new CMTablePrefs(app.getPrefsManager().uiNode("dbEntity/attributeTable"))
                 .bind(table, null, DbAttributeTableModel.DB_ATTRIBUTE_NAME);
     }
 
@@ -204,7 +204,7 @@ public class DbAttributePanel extends JPanel implements DbEntityDisplayListener,
                 parentPanel.getRelationshipPanel().getTable().getCellEditor().stopCellEditing();
             }
 
-            GlobalActions globalActions = session.app().getActionManager();
+            GlobalActions globalActions = app.getActionManager();
 
             globalActions.getAction(RemoveAttributeRelationshipAction.class).setCurrentSelectedPanel(this);
             globalActions.getAction(CutAttributeRelationshipAction.class).setCurrentSelectedPanel(this);

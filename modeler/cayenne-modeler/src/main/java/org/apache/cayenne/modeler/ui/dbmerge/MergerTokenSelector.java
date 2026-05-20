@@ -69,7 +69,6 @@ public class MergerTokenSelector extends JPanel {
     private final List<MergerToken> selectableTokensList;
 
     private MergerToken token;
-    private int permanentlyExcludedCount;
     private MergerTokenFactory mergerTokenFactory;
     private boolean isReverse;
 
@@ -140,7 +139,7 @@ public class MergerTokenSelector extends JPanel {
      * A callback action that updates the state of Select All checkbox.
      */
     public void tableSelectedAction() {
-        int unselectedCount = excludedTokens.size() - permanentlyExcludedCount;
+        int unselectedCount = excludedTokens.size();
 
         if (unselectedCount == selectableTokensList.size()) {
             checkAll.setSelected(false);

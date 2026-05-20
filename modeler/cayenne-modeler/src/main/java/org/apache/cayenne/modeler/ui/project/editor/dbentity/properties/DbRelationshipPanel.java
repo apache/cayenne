@@ -25,6 +25,7 @@ import org.apache.cayenne.modeler.event.model.DbRelationshipEvent;
 import org.apache.cayenne.modeler.event.model.DbEntityEvent;
 import org.apache.cayenne.modeler.event.model.DbEntityListener;
 import org.apache.cayenne.modeler.event.model.DbRelationshipListener;
+import org.apache.cayenne.modeler.toolkit.ProjectPanel;
 import org.apache.cayenne.modeler.toolkit.icon.IconFactory;
 import org.apache.cayenne.modeler.project.ProjectSession;
 import org.apache.cayenne.modeler.service.action.GlobalActions;
@@ -59,17 +60,16 @@ import java.util.List;
 /**
  * Displays DbRelationships for the current DbEntity.
  */
-public class DbRelationshipPanel extends JPanel implements DbEntityDisplayListener,
+public class DbRelationshipPanel extends ProjectPanel implements DbEntityDisplayListener,
         DbEntityListener, DbRelationshipListener, TableModelListener {
 
-    private final ProjectSession session;
     private final CMTable table;
     private final DbEntityPropertiesView parentPanel;
     private final JMenuItem editMenu;
     private JComboBox<DbEntity> targetCombo;
 
     public DbRelationshipPanel(ProjectSession session, DbEntityPropertiesView parentPanel) {
-        this.session = session;
+        super(session);
         this.parentPanel = parentPanel;
         this.table = new CMTable();
         this.editMenu = new JMenuItem("Edit Relationship", IconFactory.buildIcon("icon-edit.png"));
@@ -80,7 +80,7 @@ public class DbRelationshipPanel extends JPanel implements DbEntityDisplayListen
     private void initLayout() {
         setLayout(new BorderLayout());
 
-        GlobalActions globalActions = session.app().getActionManager();
+        GlobalActions globalActions = app.getActionManager();
 
         table.setSelectionMode(ListSelectionModel.MULTIPLE_INTERVAL_SELECTION);
         table.setAutoResizeMode(JTable.AUTO_RESIZE_OFF);
@@ -108,7 +108,7 @@ public class DbRelationshipPanel extends JPanel implements DbEntityDisplayListen
 
         table.getSelectionModel().addListSelectionListener(this::valueChanged);
 
-        session.app().getActionManager().setupCutCopyPaste(
+        app.getActionManager().setupCutCopyPaste(
                 table,
                 CutAttributeRelationshipAction.class,
                 CopyAttributeRelationshipAction.class);
@@ -136,7 +136,7 @@ public class DbRelationshipPanel extends JPanel implements DbEntityDisplayListen
         List<DbRelationship> listRels = model.getObjectList();
         int[] newSel = new int[rels.length];
 
-        GlobalActions globalActions = session.app().getActionManager();
+        GlobalActions globalActions = app.getActionManager();
         globalActions.getAction(RemoveAttributeRelationshipAction.class).setCurrentSelectedPanel(this);
         globalActions.getAction(CutAttributeRelationshipAction.class).setCurrentSelectedPanel(this);
         globalActions.getAction(CopyAttributeRelationshipAction.class).setCurrentSelectedPanel(this);
@@ -193,7 +193,7 @@ public class DbRelationshipPanel extends JPanel implements DbEntityDisplayListen
         TableColumn toDepPkColumn = table.getColumnModel().getColumn(DbRelationshipTableModel.TO_DEPENDENT_KEY);
         toDepPkColumn.setCellRenderer(new CheckBoxCellRenderer());
 
-        new CMTablePrefs(session.app().getPrefsManager().uiNode("dbEntity/relationshipTable"))
+        new CMTablePrefs(app.getPrefsManager().uiNode("dbEntity/relationshipTable"))
                 .bind(table, null, DbRelationshipTableModel.NAME);
     }
 
@@ -267,7 +267,7 @@ public class DbRelationshipPanel extends JPanel implements DbEntityDisplayListen
 
         DbRelationshipTableModel model = (DbRelationshipTableModel) table.getModel();
         DbRelationship rel = model.getRelationship(row);
-        new DbRelationshipDialog(session, session.app().getFrame())
+        new DbRelationshipDialog(session, app.getFrame())
                 .modifyRelationship(rel)
                 .open();
     }
@@ -287,7 +287,7 @@ public class DbRelationshipPanel extends JPanel implements DbEntityDisplayListen
                 parentPanel.getAttributePanel().getTable().getCellEditor().stopCellEditing();
             }
 
-            GlobalActions globalActions = session.app().getActionManager();
+            GlobalActions globalActions = app.getActionManager();
             globalActions.getAction(RemoveAttributeRelationshipAction.class).setCurrentSelectedPanel(this);
             globalActions.getAction(CutAttributeRelationshipAction.class).setCurrentSelectedPanel(this);
             globalActions.getAction(CopyAttributeRelationshipAction.class).setCurrentSelectedPanel(this);

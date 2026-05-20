@@ -25,7 +25,7 @@ import javax.swing.event.UndoableEditListener;
 
 public class CMUndoableTextPane extends CMTextPane {
 
-    private UndoableEditListener undoListener;
+    private final UndoableEditListener undoListener;
 
     public CMUndoableTextPane(CayenneUndoManager undoManager, TextSyntax syntax) {
         super(syntax);
