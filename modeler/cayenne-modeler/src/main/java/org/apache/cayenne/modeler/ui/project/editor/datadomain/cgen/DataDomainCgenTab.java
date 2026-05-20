@@ -27,7 +27,7 @@ import org.apache.cayenne.gen.ClassGenerationAction;
 import org.apache.cayenne.gen.ClassGenerationActionFactory;
 import org.apache.cayenne.map.DataMap;
 import org.apache.cayenne.modeler.event.display.DataMapDisplayEvent;
-import org.apache.cayenne.modeler.pref.GeneralPrefs;
+import org.apache.cayenne.modeler.pref.adapters.GeneralPrefs;
 import org.apache.cayenne.modeler.project.CgenOps;
 import org.apache.cayenne.modeler.project.ProjectSession;
 import org.apache.cayenne.modeler.ui.project.editor.datadomain.DataDomainGeneratorsTab;

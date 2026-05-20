@@ -27,7 +27,7 @@ import org.apache.cayenne.dbsync.naming.NameBuilder;
 import org.apache.cayenne.map.DataMap;
 import org.apache.cayenne.modeler.Application;
 import org.apache.cayenne.modeler.toolkit.AppAction;
-import org.apache.cayenne.modeler.toolkit.filechooser.CMFileChooserPrefs;
+import org.apache.cayenne.modeler.pref.adapters.FileChooserPrefs;
 import org.apache.cayenne.modeler.toolkit.filechooser.FileFilters;
 import org.apache.cayenne.resource.Resource;
 import org.apache.cayenne.resource.URLResource;
@@ -102,7 +102,7 @@ public class ImportDataMapAction extends AppAction {
         JFileChooser chooser = new JFileChooser();
         chooser.setFileSelectionMode(JFileChooser.FILES_ONLY);
 
-        new CMFileChooserPrefs(app.getPrefsManager().uiNode("importDataMap/lastDir")).bind(chooser);
+        new FileChooserPrefs(app.getPrefsManager().uiNode("importDataMap/lastDir")).bind(chooser);
 
         chooser.addChoosableFileFilter(FileFilters.getDataMapFilter());
 

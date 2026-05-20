@@ -26,7 +26,7 @@ import org.apache.cayenne.configuration.DataNodeDescriptor;
 import org.apache.cayenne.map.DataMap;
 import org.apache.cayenne.map.ObjEntity;
 import org.apache.cayenne.modeler.event.model.DataMapEvent;
-import org.apache.cayenne.modeler.pref.DataMapPrefs;
+import org.apache.cayenne.modeler.pref.adapters.DataMapPrefs;
 import org.apache.cayenne.modeler.project.ProjectComparators;
 import org.apache.cayenne.modeler.project.ProjectSession;
 import org.apache.cayenne.modeler.toolkit.ProjectPanel;

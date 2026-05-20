@@ -26,7 +26,7 @@ import org.apache.cayenne.modeler.event.model.DbEntityEvent;
 import org.apache.cayenne.modeler.event.model.DbEntityListener;
 import org.apache.cayenne.modeler.service.action.GlobalActions;
 import org.apache.cayenne.modeler.toolkit.icon.IconFactory;
-import org.apache.cayenne.modeler.toolkit.splitpane.CMSplitPanePrefs;
+import org.apache.cayenne.modeler.pref.adapters.SplitPanePrefs;
 import org.apache.cayenne.modeler.toolkit.ProjectPanel;
 import org.apache.cayenne.modeler.ui.action.CopyAttributeRelationshipAction;
 import org.apache.cayenne.modeler.ui.action.CreateAttributeAction;
@@ -71,7 +71,7 @@ public class DbEntityPropertiesView extends ProjectPanel implements DbEntityDisp
 
         splitPane.setOneTouchExpandable(true);
         splitPane.setResizeWeight(0.5);
-        new CMSplitPanePrefs(app.getPrefsManager().uiNode("dbEntity/splitPane")).bind(splitPane, -1);
+        new SplitPanePrefs(app.getPrefsManager().uiNode("dbEntity/splitPane")).bind(splitPane, -1);
         add(splitPane);
 
         toolBar.setFloatable(false);

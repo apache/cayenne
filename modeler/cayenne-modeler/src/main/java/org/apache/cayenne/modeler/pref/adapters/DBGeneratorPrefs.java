@@ -16,7 +16,7 @@
  *  specific language governing permissions and limitations
  *  under the License.
  ****************************************************************/
-package org.apache.cayenne.modeler.ui.dbgen;
+package org.apache.cayenne.modeler.pref.adapters;
 
 import org.apache.cayenne.modeler.pref.PreferenceAdapter;
 

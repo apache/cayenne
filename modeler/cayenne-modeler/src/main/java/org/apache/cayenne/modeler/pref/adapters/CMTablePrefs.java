@@ -16,9 +16,10 @@
  *  specific language governing permissions and limitations
  *  under the License.
  ****************************************************************/
-package org.apache.cayenne.modeler.toolkit.table;
+package org.apache.cayenne.modeler.pref.adapters;
 
 import org.apache.cayenne.modeler.pref.PreferenceAdapter;
+import org.apache.cayenne.modeler.toolkit.table.CMTable;
 
 import javax.swing.event.ChangeEvent;
 import javax.swing.event.ListSelectionEvent;

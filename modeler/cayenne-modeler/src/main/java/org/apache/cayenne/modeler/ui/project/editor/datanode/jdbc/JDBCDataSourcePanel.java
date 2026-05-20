@@ -26,7 +26,7 @@ import org.apache.cayenne.configuration.DataNodeDescriptor;
 import org.apache.cayenne.configuration.DataSourceDescriptor;
 import org.apache.cayenne.modeler.Application;
 import org.apache.cayenne.modeler.dbconnector.DBConnector;
-import org.apache.cayenne.modeler.pref.DataNodePrefs;
+import org.apache.cayenne.modeler.pref.adapters.DataNodePrefs;
 import org.apache.cayenne.modeler.toolkit.text.CMPasswordField;
 import org.apache.cayenne.modeler.toolkit.text.CMUndoableTextField;
 import org.apache.cayenne.modeler.ui.MainFrame;

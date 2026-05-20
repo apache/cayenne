@@ -18,7 +18,7 @@
  ****************************************************************/
 package org.apache.cayenne.modeler.pref.migration.toV5;
 
-import org.apache.cayenne.modeler.pref.GeneralPrefs;
+import org.apache.cayenne.modeler.pref.adapters.GeneralPrefs;
 import org.apache.cayenne.modeler.pref.PreferenceMigration;
 import org.apache.cayenne.modeler.pref.PrefsLocator;
 import org.slf4j.Logger;

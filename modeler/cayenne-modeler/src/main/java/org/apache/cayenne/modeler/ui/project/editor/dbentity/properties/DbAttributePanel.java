@@ -36,7 +36,7 @@ import org.apache.cayenne.modeler.toolkit.table.BoardTableCellRenderer;
 import org.apache.cayenne.modeler.toolkit.table.CMComboBoxCellEditor;
 import org.apache.cayenne.modeler.toolkit.table.CMTable;
 import org.apache.cayenne.modeler.toolkit.table.CMTablePanel;
-import org.apache.cayenne.modeler.toolkit.table.CMTablePrefs;
+import org.apache.cayenne.modeler.pref.adapters.CMTablePrefs;
 import org.apache.cayenne.modeler.ui.action.CopyAttributeRelationshipAction;
 import org.apache.cayenne.modeler.ui.action.CutAttributeRelationshipAction;
 import org.apache.cayenne.modeler.ui.action.PasteAction;

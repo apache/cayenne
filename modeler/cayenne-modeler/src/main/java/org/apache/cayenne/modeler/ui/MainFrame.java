@@ -22,14 +22,14 @@ package org.apache.cayenne.modeler.ui;
 import org.apache.cayenne.CayenneRuntimeException;
 import org.apache.cayenne.modeler.Application;
 import org.apache.cayenne.modeler.mcp.McpHandshakeWriter;
-import org.apache.cayenne.modeler.pref.RecentProjectsPrefs;
+import org.apache.cayenne.modeler.pref.adapters.RecentProjectsPrefs;
 import org.apache.cayenne.modeler.service.action.GlobalActions;
 import org.apache.cayenne.modeler.service.os.OperatingSystem;
 import org.apache.cayenne.modeler.toolkit.AppFrame;
 import org.apache.cayenne.modeler.toolkit.border.TopBorder;
-import org.apache.cayenne.modeler.toolkit.component.CMComponentGeometryPrefs;
+import org.apache.cayenne.modeler.pref.adapters.ComponentGeometryPrefs;
 import org.apache.cayenne.modeler.toolkit.icon.IconFactory;
-import org.apache.cayenne.modeler.toolkit.splitpane.CMSplitPanePrefs;
+import org.apache.cayenne.modeler.pref.adapters.SplitPanePrefs;
 import org.apache.cayenne.modeler.ui.action.ExitAction;
 import org.apache.cayenne.modeler.ui.action.OpenProjectAction;
 import org.apache.cayenne.modeler.ui.action.RevertAction;
@@ -86,7 +86,7 @@ public class MainFrame extends AppFrame {
     private final ProjectSession session;
 
     private final JSplitPane splitPane;
-    private final CMSplitPanePrefs splitPanePrefs;
+    private final SplitPanePrefs splitPanePrefs;
     private final JLabel status;
     private final WelcomeScreen welcomePanel;
     private final MainMenuBar menuBar;
@@ -114,7 +114,7 @@ public class MainFrame extends AppFrame {
         splitPane.getInsets().right = 5;
         splitPane.setResizeWeight(0.7);
 
-        this.splitPanePrefs = new CMSplitPanePrefs(app.getPrefsManager().uiNode("frame/splitPane"));
+        this.splitPanePrefs = new SplitPanePrefs(app.getPrefsManager().uiNode("frame/splitPane"));
 
         JPanel statusBar = new JPanel(new FlowLayout(FlowLayout.LEFT, 3, 1));
         statusBar.setBorder(TopBorder.create());
@@ -238,7 +238,7 @@ public class MainFrame extends AppFrame {
             }
         });
 
-        new CMComponentGeometryPrefs(app.getPrefsManager().uiNode("frame/geometry")).bind(this, 1200, 720);
+        new ComponentGeometryPrefs(app.getPrefsManager().uiNode("frame/geometry")).bind(this, 1200, 720);
 
         setVisible(true);
     }

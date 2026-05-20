@@ -17,8 +17,9 @@
  *  under the License.
  ****************************************************************/
 
-package org.apache.cayenne.modeler.pref;
+package org.apache.cayenne.modeler.pref.adapters;
 
+import org.apache.cayenne.modeler.pref.PreferenceAdapter;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 

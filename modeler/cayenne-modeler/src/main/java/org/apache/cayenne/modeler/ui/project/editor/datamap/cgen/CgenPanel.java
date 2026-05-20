@@ -43,7 +43,7 @@ import org.apache.cayenne.modeler.event.model.EmbeddableListener;
 import org.apache.cayenne.modeler.event.model.ObjEntityEvent;
 import org.apache.cayenne.modeler.event.model.ObjEntityListener;
 import org.apache.cayenne.modeler.event.model.ProjectAfterSaveEvent;
-import org.apache.cayenne.modeler.pref.GeneralPrefs;
+import org.apache.cayenne.modeler.pref.adapters.GeneralPrefs;
 import org.apache.cayenne.modeler.project.CgenOps;
 import org.apache.cayenne.modeler.project.ProjectSession;
 import org.apache.cayenne.modeler.toolkit.ProjectPanel;

@@ -20,7 +20,7 @@
 package org.apache.cayenne.modeler.ui.welcome;
 
 import org.apache.cayenne.modeler.Application;
-import org.apache.cayenne.modeler.pref.RecentProjectsPrefs;
+import org.apache.cayenne.modeler.pref.adapters.RecentProjectsPrefs;
 import org.apache.cayenne.modeler.service.action.GlobalActions;
 import org.apache.cayenne.modeler.toolkit.AppPanel;
 import org.apache.cayenne.modeler.toolkit.icon.IconFactory;

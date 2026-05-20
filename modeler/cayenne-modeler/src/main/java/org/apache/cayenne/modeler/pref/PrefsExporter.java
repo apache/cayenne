@@ -26,9 +26,9 @@ import java.util.Arrays;
 import java.util.prefs.BackingStoreException;
 import java.util.prefs.Preferences;
 
-class PreferencesJsonExporter {
+public class PrefsExporter {
     
-    private static final Logger LOGGER = LoggerFactory.getLogger(PreferencesJsonExporter.class);
+    private static final Logger LOGGER = LoggerFactory.getLogger(PrefsExporter.class);
 
     public static String exportAsJson(Preferences node) {
         StringBuilder sb = new StringBuilder();

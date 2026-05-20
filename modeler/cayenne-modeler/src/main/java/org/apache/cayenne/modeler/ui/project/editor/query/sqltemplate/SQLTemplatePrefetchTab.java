@@ -34,7 +34,7 @@ import org.apache.cayenne.modeler.toolkit.tree.EntityTreeFilter;
 import org.apache.cayenne.modeler.toolkit.tree.EntityTreeModel;
 import org.apache.cayenne.modeler.toolkit.columnview.ColumnViewPanel;
 import org.apache.cayenne.modeler.toolkit.icon.IconFactory;
-import org.apache.cayenne.modeler.toolkit.splitpane.CMSplitPanePrefs;
+import org.apache.cayenne.modeler.pref.adapters.SplitPanePrefs;
 import org.apache.cayenne.modeler.toolkit.table.CMTable;
 import org.apache.cayenne.util.CayenneMapEntry;
 
@@ -92,7 +92,7 @@ public class SQLTemplatePrefetchTab extends ProjectPanel {
 
         //As of CAY-888 #3 main pane is now a JSplitPane. Top component is a bit larger.
         JSplitPane mainPanel = new JSplitPane(JSplitPane.VERTICAL_SPLIT);
-        new CMSplitPanePrefs(app.getPrefsManager().uiNode("sqlTemplate/prefetchSplit")).bind(mainPanel, defLocation);
+        new SplitPanePrefs(app.getPrefsManager().uiNode("sqlTemplate/prefetchSplit")).bind(mainPanel, defLocation);
 
         mainPanel.setTopComponent(createEditorPanel());
         mainPanel.setBottomComponent(createSelectorPanel());

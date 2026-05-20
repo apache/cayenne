@@ -20,7 +20,7 @@ package org.apache.cayenne.modeler.ui.action;
 
 import org.apache.cayenne.modeler.Application;
 import org.apache.cayenne.modeler.toolkit.AppAction;
-import org.apache.cayenne.modeler.ui.logconsole.LogConsolePrefs;
+import org.apache.cayenne.modeler.pref.adapters.LogConsolePrefs;
 
 import javax.swing.Action;
 import java.awt.event.ActionEvent;

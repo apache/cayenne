@@ -17,11 +17,12 @@
  *  under the License.
  ****************************************************************/
 
-package org.apache.cayenne.modeler.pref;
+package org.apache.cayenne.modeler.pref.adapters;
 
 import org.apache.cayenne.CayenneRuntimeException;
 import org.apache.cayenne.modeler.dbconnector.DBConnector;
 import org.apache.cayenne.modeler.dbconnector.DBConnectors;
+import org.apache.cayenne.modeler.pref.PreferenceAdapter;
 
 import java.util.prefs.BackingStoreException;
 import java.util.prefs.Preferences;

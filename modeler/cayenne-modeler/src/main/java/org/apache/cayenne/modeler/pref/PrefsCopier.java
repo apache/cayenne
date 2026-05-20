@@ -27,11 +27,11 @@ import java.util.prefs.Preferences;
 /**
  * Recursive {@link Preferences} subtree copy and move helpers.
  */
-public final class PreferencesCopier {
+public final class PrefsCopier {
 
-    private static final Logger LOGGER = LoggerFactory.getLogger(PreferencesCopier.class);
+    private static final Logger LOGGER = LoggerFactory.getLogger(PrefsCopier.class);
 
-    private PreferencesCopier() {
+    private PrefsCopier() {
     }
 
     /**

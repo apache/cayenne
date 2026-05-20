@@ -17,7 +17,7 @@
  *  under the License.
  ****************************************************************/
 
-package org.apache.cayenne.modeler.toolkit.component;
+package org.apache.cayenne.modeler.pref.adapters;
 
 import org.apache.cayenne.modeler.pref.PreferenceAdapter;
 
@@ -26,14 +26,14 @@ import java.awt.event.ComponentAdapter;
 import java.awt.event.ComponentEvent;
 import java.util.prefs.Preferences;
 
-public final class CMComponentGeometryPrefs extends PreferenceAdapter {
+public final class ComponentGeometryPrefs extends PreferenceAdapter {
 
     private static final String HEIGHT_PROPERTY = "height";
     private static final String WIDTH_PROPERTY = "width";
     private static final String X_PROPERTY = "x";
     private static final String Y_PROPERTY = "y";
 
-    public CMComponentGeometryPrefs(Preferences prefs) {
+    public ComponentGeometryPrefs(Preferences prefs) {
         super(prefs);
     }
 

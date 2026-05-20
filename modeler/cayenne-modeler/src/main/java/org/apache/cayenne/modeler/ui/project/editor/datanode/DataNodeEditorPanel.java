@@ -30,7 +30,7 @@ import org.apache.cayenne.configuration.DataNodeDescriptor;
 import org.apache.cayenne.configuration.runtime.XMLPoolingDataSourceFactory;
 import org.apache.cayenne.modeler.dbconnector.DBConnector;
 import org.apache.cayenne.modeler.event.model.DataNodeEvent;
-import org.apache.cayenne.modeler.pref.DataNodePrefs;
+import org.apache.cayenne.modeler.pref.adapters.DataNodePrefs;
 import org.apache.cayenne.modeler.project.ProjectSession;
 import org.apache.cayenne.modeler.toolkit.ProjectPanel;
 import org.apache.cayenne.modeler.toolkit.combobox.CMUndoableComboBox;

@@ -17,32 +17,38 @@
  *  under the License.
  ****************************************************************/
 
-package org.apache.cayenne.modeler.ui.logconsole;
+package org.apache.cayenne.modeler.pref.adapters;
 
 import org.apache.cayenne.modeler.pref.PreferenceAdapter;
 
+import javax.swing.*;
+import java.beans.PropertyChangeListener;
 import java.util.prefs.Preferences;
 
-public final class LogConsolePrefs extends PreferenceAdapter {
+public final class SplitPanePrefs extends PreferenceAdapter {
 
-    public static final String NODE = "logConsole";
-    static final String SHOW_CONSOLE = "showLogConsole";
+    private PropertyChangeListener listener;
 
-    public LogConsolePrefs(Preferences prefs) {
+    public SplitPanePrefs(Preferences prefs) {
         super(prefs);
     }
 
-    public boolean isShowConsole() {
-        return prefs.getBoolean(SHOW_CONSOLE, false);
+    public void bind(JSplitPane pane, int defaultLocation) {
+        unbind(pane);
+
+        int dividerLocation = prefs.getInt(JSplitPane.DIVIDER_LOCATION_PROPERTY, defaultLocation);
+        if (dividerLocation > 0) {
+            pane.setDividerLocation(dividerLocation);
+        }
+
+        this.listener = e -> prefs.putInt(JSplitPane.DIVIDER_LOCATION_PROPERTY, pane.getDividerLocation());
+        pane.addPropertyChangeListener(JSplitPane.DIVIDER_LOCATION_PROPERTY, listener);
     }
 
-    public void setShowConsole(boolean v) {
-        prefs.putBoolean(SHOW_CONSOLE, v);
-    }
-
-    public boolean toggleShowConsole() {
-        boolean v = !isShowConsole();
-        setShowConsole(v);
-        return v;
+    public void unbind(JSplitPane pane) {
+        if (listener != null) {
+            pane.removePropertyChangeListener(JSplitPane.DIVIDER_LOCATION_PROPERTY, listener);
+            listener = null;
+        }
     }
 }

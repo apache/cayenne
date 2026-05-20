@@ -16,7 +16,10 @@
  *  specific language governing permissions and limitations
  *  under the License.
  ****************************************************************/
-package org.apache.cayenne.modeler.pref;
+package org.apache.cayenne.modeler.pref.adapters;
+
+import org.apache.cayenne.modeler.pref.PreferenceAdapter;
+import org.apache.cayenne.modeler.pref.PrefsCopier;
 
 import java.util.prefs.Preferences;
 
@@ -36,7 +39,7 @@ public final class DataNodePrefs extends PreferenceAdapter {
         DataNodePrefs renamed = new DataNodePrefs(newPrefs);
 
         // TODO: is this the correct behavior? In the DataMapPrefs we are doing "copy", not "move" to handle reverts
-        PreferencesCopier.move(prefs, renamed.prefs);
+        PrefsCopier.move(prefs, renamed.prefs);
         return renamed;
     }
 

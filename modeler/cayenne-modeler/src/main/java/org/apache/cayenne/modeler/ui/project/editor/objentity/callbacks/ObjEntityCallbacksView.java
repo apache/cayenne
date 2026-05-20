@@ -30,7 +30,7 @@ import org.apache.cayenne.modeler.event.display.CallbackTypeDisplayEvent;
 import org.apache.cayenne.modeler.event.display.TablePopupHandler;
 import org.apache.cayenne.modeler.event.model.CallbackMethodEvent;
 import org.apache.cayenne.modeler.event.model.CallbackMethodListener;
-import org.apache.cayenne.modeler.toolkit.table.CMTablePrefs;
+import org.apache.cayenne.modeler.pref.adapters.CMTablePrefs;
 import org.apache.cayenne.modeler.toolkit.icon.IconFactory;
 import org.apache.cayenne.modeler.toolkit.table.CMTable;
 import org.apache.cayenne.modeler.ui.action.CopyCallbackMethodAction;

@@ -41,7 +41,7 @@ import org.apache.cayenne.modeler.event.display.ObjEntityDisplayEvent;
 import org.apache.cayenne.modeler.event.display.ObjEntityDisplayListener;
 import org.apache.cayenne.modeler.event.display.ObjRelationshipDisplayEvent;
 import org.apache.cayenne.modeler.event.display.TablePopupHandler;
-import org.apache.cayenne.modeler.toolkit.table.CMTablePrefs;
+import org.apache.cayenne.modeler.pref.adapters.CMTablePrefs;
 import org.apache.cayenne.modeler.toolkit.table.CMTable;
 import org.apache.cayenne.modeler.toolkit.table.CMTablePanel;
 import org.apache.cayenne.modeler.toolkit.Renderers;

@@ -25,7 +25,7 @@ import org.apache.cayenne.map.SelectQueryDescriptor;
 import org.apache.cayenne.modeler.event.model.QueryEvent;
 import org.apache.cayenne.modeler.toolkit.columnview.ColumnViewPanel;
 import org.apache.cayenne.modeler.toolkit.icon.IconFactory;
-import org.apache.cayenne.modeler.toolkit.splitpane.CMSplitPanePrefs;
+import org.apache.cayenne.modeler.pref.adapters.SplitPanePrefs;
 import org.apache.cayenne.modeler.toolkit.table.CMTable;
 import org.apache.cayenne.modeler.toolkit.ProjectPanel;
 import org.apache.cayenne.modeler.toolkit.AppAction;
@@ -81,7 +81,7 @@ public class SelectQueryOrderingTab extends ProjectPanel {
 
         //As of CAY-888 #3 main pane is now a JSplitPane. Top component is a bit larger.
         JSplitPane mainPanel = new JSplitPane(JSplitPane.VERTICAL_SPLIT);
-        new CMSplitPanePrefs(app.getPrefsManager().uiNode("selectQuery/orderingSplit")).bind(mainPanel, defLocation);
+        new SplitPanePrefs(app.getPrefsManager().uiNode("selectQuery/orderingSplit")).bind(mainPanel, defLocation);
 
         mainPanel.setTopComponent(createEditorPanel());
         mainPanel.setBottomComponent(createSelectorPanel());

@@ -24,7 +24,7 @@ import org.apache.cayenne.modeler.Application;
 import org.apache.cayenne.modeler.toolkit.AppAction;
 import org.apache.cayenne.modeler.ui.datasource.DataSourceDialog;
 import org.apache.cayenne.modeler.dbconnector.DBConnector;
-import org.apache.cayenne.modeler.pref.DataMapPrefs;
+import org.apache.cayenne.modeler.pref.adapters.DataMapPrefs;
 
 /**
  * Base action that provides DBConnectionInfo for the current DataMap or calls {@link DataSourceDialog} dialog to

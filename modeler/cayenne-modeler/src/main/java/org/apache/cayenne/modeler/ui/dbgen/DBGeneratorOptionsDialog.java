@@ -28,6 +28,7 @@ import org.apache.cayenne.dba.DbAdapter;
 import org.apache.cayenne.log.NoopJdbcEventLogger;
 import org.apache.cayenne.map.DataMap;
 import org.apache.cayenne.modeler.dbconnector.DBConnector;
+import org.apache.cayenne.modeler.pref.adapters.DBGeneratorPrefs;
 import org.apache.cayenne.modeler.toolkit.border.TopBorder;
 import org.apache.cayenne.modeler.toolkit.ProjectDialog;
 import org.apache.cayenne.modeler.ui.datasource.DataSourceDialog;

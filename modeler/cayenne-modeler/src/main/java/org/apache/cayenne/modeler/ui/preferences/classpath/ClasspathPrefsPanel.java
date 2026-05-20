@@ -24,8 +24,8 @@ import com.jgoodies.forms.builder.PanelBuilder;
 import com.jgoodies.forms.layout.CellConstraints;
 import com.jgoodies.forms.layout.FormLayout;
 import org.apache.cayenne.modeler.Application;
-import org.apache.cayenne.modeler.pref.ClasspathPrefs;
-import org.apache.cayenne.modeler.toolkit.filechooser.CMFileChooserPrefs;
+import org.apache.cayenne.modeler.pref.adapters.ClasspathPrefs;
+import org.apache.cayenne.modeler.pref.adapters.FileChooserPrefs;
 import org.apache.cayenne.modeler.toolkit.table.CMTable;
 import org.apache.cayenne.modeler.toolkit.AppPanel;
 import org.apache.cayenne.modeler.ui.preferences.classpath.maven.MavenDependencyDialog;
@@ -139,7 +139,7 @@ public class ClasspathPrefsPanel extends AppPanel {
         chooser.setDialogType(JFileChooser.OPEN_DIALOG);
         chooser.setAcceptAllFileFilterUsed(true);
 
-        new CMFileChooserPrefs(app.getPrefsManager().uiNode("classpath/lastDir")).bind(chooser);
+        new FileChooserPrefs(app.getPrefsManager().uiNode("classpath/lastDir")).bind(chooser);
         if (filter != null) {
             chooser.addChoosableFileFilter(filter);
             chooser.setFileFilter(filter);

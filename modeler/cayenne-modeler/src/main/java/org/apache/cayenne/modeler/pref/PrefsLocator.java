@@ -21,7 +21,7 @@ package org.apache.cayenne.modeler.pref;
 import java.util.prefs.Preferences;
 
 /**
- * Resolves preference nodes against the common root.
+ * Resolves common types of preference nodes against the common root.
  */
 public final class PrefsLocator {
 
@@ -90,15 +90,5 @@ public final class PrefsLocator {
      */
     public Preferences handshakeNode(String nonce) {
         return root.node(HANDSHAKE_ROOT).node(nonce);
-    }
-
-    /**
-     * Serializes the entire Modeler preferences subtree ({@link #modelerRoot()})
-     * as a pretty-printed JSON string. Each {@link Preferences} node becomes a JSON
-     * object whose own keys map to string values and whose child node names map to
-     * nested objects.
-     */
-    public String exportAsJson() {
-        return PreferencesJsonExporter.exportAsJson(modelerRoot());
     }
 }

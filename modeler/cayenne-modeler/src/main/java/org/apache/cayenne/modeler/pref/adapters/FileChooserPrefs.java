@@ -17,7 +17,7 @@
  *  under the License.
  ****************************************************************/
 
-package org.apache.cayenne.modeler.toolkit.filechooser;
+package org.apache.cayenne.modeler.pref.adapters;
 
 import org.apache.cayenne.modeler.pref.PreferenceAdapter;
 
@@ -25,11 +25,11 @@ import javax.swing.JFileChooser;
 import java.io.File;
 import java.util.prefs.Preferences;
 
-public final class CMFileChooserPrefs extends PreferenceAdapter {
+public final class FileChooserPrefs extends PreferenceAdapter {
 
     private static final String PATH_PROPERTY = "path";
 
-    public CMFileChooserPrefs(Preferences prefs) {
+    public FileChooserPrefs(Preferences prefs) {
         super(prefs);
     }
 

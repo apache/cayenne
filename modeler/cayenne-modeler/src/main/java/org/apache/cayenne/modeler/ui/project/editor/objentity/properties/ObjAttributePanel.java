@@ -34,7 +34,7 @@ import org.apache.cayenne.modeler.event.model.ObjEntityListener;
 import org.apache.cayenne.modeler.event.model.ProjectBeforeSaveEvent;
 import org.apache.cayenne.modeler.event.model.ProjectBeforeSaveListener;
 import org.apache.cayenne.modeler.toolkit.ProjectPanel;
-import org.apache.cayenne.modeler.toolkit.table.CMTablePrefs;
+import org.apache.cayenne.modeler.pref.adapters.CMTablePrefs;
 import org.apache.cayenne.modeler.project.ObjEntityOps;
 import org.apache.cayenne.modeler.service.action.GlobalActions;
 import org.apache.cayenne.modeler.toolkit.combobox.AutoCompletion;

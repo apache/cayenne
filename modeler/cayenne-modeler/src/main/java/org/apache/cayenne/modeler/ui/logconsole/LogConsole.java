@@ -20,6 +20,7 @@ package org.apache.cayenne.modeler.ui.logconsole;
 
 import org.apache.cayenne.modeler.Application;
 import org.apache.cayenne.modeler.log.LogAppender;
+import org.apache.cayenne.modeler.pref.adapters.LogConsolePrefs;
 import org.apache.cayenne.modeler.toolkit.border.TopBorder;
 import org.apache.cayenne.modeler.toolkit.icon.IconFactory;
 import org.apache.cayenne.modeler.toolkit.AppPanel;

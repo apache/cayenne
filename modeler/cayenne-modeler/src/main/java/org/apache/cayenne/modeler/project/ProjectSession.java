@@ -38,6 +38,7 @@ import org.apache.cayenne.map.QueryDescriptor;
 import org.apache.cayenne.modeler.Application;
 import org.apache.cayenne.modeler.event.display.*;
 import org.apache.cayenne.modeler.event.model.*;
+import org.apache.cayenne.modeler.pref.adapters.ProjectPrefs;
 import org.apache.cayenne.modeler.service.action.GlobalActions;
 import org.apache.cayenne.modeler.ui.project.editor.objentity.callbacks.CallbackType;
 import org.apache.cayenne.modeler.ui.project.editor.objentity.callbacks.ObjCallbackMethod;

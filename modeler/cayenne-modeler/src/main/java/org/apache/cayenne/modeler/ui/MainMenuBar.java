@@ -21,7 +21,7 @@ package org.apache.cayenne.modeler.ui;
 
 import org.apache.cayenne.modeler.Application;
 import org.apache.cayenne.modeler.event.model.RecentFileListener;
-import org.apache.cayenne.modeler.pref.RecentProjectsPrefs;
+import org.apache.cayenne.modeler.pref.adapters.RecentProjectsPrefs;
 import org.apache.cayenne.modeler.service.action.GlobalActions;
 import org.apache.cayenne.modeler.ui.action.*;
 

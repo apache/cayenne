@@ -22,7 +22,7 @@ import org.apache.cayenne.modeler.event.display.ObjEntityDisplayEvent;
 import org.apache.cayenne.modeler.event.display.ObjEntityDisplayListener;
 import org.apache.cayenne.modeler.event.model.ObjEntityEvent;
 import org.apache.cayenne.modeler.event.model.ObjEntityListener;
-import org.apache.cayenne.modeler.toolkit.splitpane.CMSplitPanePrefs;
+import org.apache.cayenne.modeler.pref.adapters.SplitPanePrefs;
 import org.apache.cayenne.modeler.service.action.GlobalActions;
 import org.apache.cayenne.modeler.toolkit.icon.IconFactory;
 import org.apache.cayenne.modeler.ui.action.CopyAttributeRelationshipAction;
@@ -67,7 +67,7 @@ public class ObjEntityPropertiesView extends ProjectPanel implements ObjEntityDi
 
         splitPane.setOneTouchExpandable(true);
         splitPane.setResizeWeight(0.5);
-        new CMSplitPanePrefs(app.getPrefsManager().uiNode("objEntity/splitPane")).bind(splitPane, -1);
+        new SplitPanePrefs(app.getPrefsManager().uiNode("objEntity/splitPane")).bind(splitPane, -1);
         add(splitPane);
 
         toolBar.setFloatable(false);

@@ -27,9 +27,9 @@ import org.apache.cayenne.gen.ClassGenerationAction;
 import org.apache.cayenne.gen.TemplateType;
 import org.apache.cayenne.map.DataMap;
 import org.apache.cayenne.modeler.Application;
-import org.apache.cayenne.modeler.toolkit.component.CMComponentGeometryPrefs;
+import org.apache.cayenne.modeler.pref.adapters.ComponentGeometryPrefs;
 import org.apache.cayenne.modeler.toolkit.icon.IconFactory;
-import org.apache.cayenne.modeler.toolkit.splitpane.CMSplitPanePrefs;
+import org.apache.cayenne.modeler.pref.adapters.SplitPanePrefs;
 import org.apache.cayenne.modeler.toolkit.AppFrame;
 import org.apache.cayenne.modeler.ui.project.editor.datamap.cgen.CgenConfigPanel;
 import org.apache.velocity.exception.ParseErrorException;
@@ -256,8 +256,8 @@ public class TemplateEditor extends AppFrame {
     }
 
     private void bindGeometry() {
-        new CMSplitPanePrefs(app.getPrefsManager().uiNode("templateEditor/splitPane")).bind(split, 600);
-        new CMComponentGeometryPrefs(app.getPrefsManager().uiNode("templateEditor/geometry")).bind(this, 1200, 700);
+        new SplitPanePrefs(app.getPrefsManager().uiNode("templateEditor/splitPane")).bind(split, 600);
+        new ComponentGeometryPrefs(app.getPrefsManager().uiNode("templateEditor/geometry")).bind(this, 1200, 700);
     }
 
     private void mapVelocityTokenMaker() {

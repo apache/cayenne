@@ -29,7 +29,7 @@ import org.apache.cayenne.map.Procedure;
 import org.apache.cayenne.map.ProcedureParameter;
 import org.apache.cayenne.map.QueryDescriptor;
 import org.apache.cayenne.map.Relationship;
-import org.apache.cayenne.modeler.pref.DataNodePrefs;
+import org.apache.cayenne.modeler.pref.adapters.DataNodePrefs;
 import org.apache.cayenne.modeler.project.ProjectSession;
 import org.apache.cayenne.validation.ValidationFailure;
 import org.slf4j.Logger;

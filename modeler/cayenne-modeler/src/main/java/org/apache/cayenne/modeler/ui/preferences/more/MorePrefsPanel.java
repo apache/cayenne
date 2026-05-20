@@ -23,6 +23,7 @@ import com.jgoodies.forms.builder.PanelBuilder;
 import com.jgoodies.forms.layout.CellConstraints;
 import com.jgoodies.forms.layout.FormLayout;
 import org.apache.cayenne.modeler.Application;
+import org.apache.cayenne.modeler.pref.PrefsExporter;
 import org.apache.cayenne.modeler.toolkit.AppPanel;
 import org.apache.cayenne.modeler.ui.action.CloseProjectAction;
 
@@ -80,7 +81,7 @@ public class MorePrefsPanel extends AppPanel {
     }
 
     private void copyAllClicked() {
-        String json = app.getPrefsLocator().exportAsJson();
+        String json = PrefsExporter.exportAsJson(app.getPrefsLocator().modelerRoot());
         Toolkit.getDefaultToolkit().getSystemClipboard().setContents(new StringSelection(json), null);
     }
 

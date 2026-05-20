@@ -17,7 +17,7 @@
  *  under the License.
  ****************************************************************/
 
-package org.apache.cayenne.modeler.project;
+package org.apache.cayenne.modeler.pref.adapters;
 
 import org.apache.cayenne.configuration.ConfigurationNode;
 import org.apache.cayenne.configuration.DataChannelDescriptor;
@@ -53,6 +53,7 @@ import org.apache.cayenne.modeler.event.display.ProcedureDisplayEvent;
 import org.apache.cayenne.modeler.event.display.ProcedureParameterDisplayEvent;
 import org.apache.cayenne.modeler.event.display.QueryDisplayEvent;
 import org.apache.cayenne.modeler.pref.PreferenceAdapter;
+import org.apache.cayenne.modeler.project.ProjectSession;
 import org.apache.cayenne.util.CayenneMapEntry;
 
 import java.util.ArrayList;

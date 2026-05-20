@@ -330,7 +330,7 @@ public class PrefsManager {
     }
 
     private static void relocate(Function<String, Preferences> nodeForId, String oldId, String newId) {
-        PreferencesCopier.move(nodeForId.apply(oldId), nodeForId.apply(newId));
+        PrefsCopier.move(nodeForId.apply(oldId), nodeForId.apply(newId));
     }
 
     private static String projectPath(Project project) {

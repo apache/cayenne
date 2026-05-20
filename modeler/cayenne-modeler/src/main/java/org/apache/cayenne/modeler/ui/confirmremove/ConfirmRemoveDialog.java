@@ -19,7 +19,7 @@
 package org.apache.cayenne.modeler.ui.confirmremove;
 
 import org.apache.cayenne.modeler.Application;
-import org.apache.cayenne.modeler.pref.GeneralPrefs;
+import org.apache.cayenne.modeler.pref.adapters.GeneralPrefs;
 
 import javax.swing.*;
 

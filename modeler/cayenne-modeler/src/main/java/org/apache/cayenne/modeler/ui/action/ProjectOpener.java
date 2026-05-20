@@ -22,7 +22,7 @@ package org.apache.cayenne.modeler.ui.action;
 import org.apache.cayenne.CayenneRuntimeException;
 import org.apache.cayenne.configuration.DataChannelDescriptor;
 import org.apache.cayenne.modeler.Application;
-import org.apache.cayenne.modeler.pref.RecentProjectsPrefs;
+import org.apache.cayenne.modeler.pref.adapters.RecentProjectsPrefs;
 import org.apache.cayenne.modeler.ui.project.overwrite.OverwriteDialog;
 import org.apache.cayenne.modeler.toolkit.filechooser.FileFilters;
 import org.apache.cayenne.project.Project;

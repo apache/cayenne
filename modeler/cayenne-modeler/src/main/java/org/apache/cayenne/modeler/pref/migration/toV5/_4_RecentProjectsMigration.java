@@ -19,9 +19,9 @@
 package org.apache.cayenne.modeler.pref.migration.toV5;
 
 import org.apache.cayenne.modeler.pref.PreferenceMigration;
-import org.apache.cayenne.modeler.pref.PreferencesCopier;
+import org.apache.cayenne.modeler.pref.PrefsCopier;
 import org.apache.cayenne.modeler.pref.PrefsLocator;
-import org.apache.cayenne.modeler.pref.RecentProjectsPrefs;
+import org.apache.cayenne.modeler.pref.adapters.RecentProjectsPrefs;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -59,6 +59,6 @@ public class _4_RecentProjectsMigration implements PreferenceMigration {
         }
 
         Preferences target = locator.appNode(RecentProjectsPrefs.NODE);
-        PreferencesCopier.copy(legacy, target);
+        PrefsCopier.copy(legacy, target);
     }
 }

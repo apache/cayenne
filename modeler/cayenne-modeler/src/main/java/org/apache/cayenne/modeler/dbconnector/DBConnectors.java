@@ -19,7 +19,7 @@
 
 package org.apache.cayenne.modeler.dbconnector;
 
-import org.apache.cayenne.modeler.pref.DBConnectorPrefs;
+import org.apache.cayenne.modeler.pref.adapters.DBConnectorPrefs;
 
 import java.util.ArrayList;
 import java.util.Collections;

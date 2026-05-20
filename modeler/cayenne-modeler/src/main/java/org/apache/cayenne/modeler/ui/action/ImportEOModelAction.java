@@ -53,7 +53,7 @@ import org.apache.cayenne.modeler.event.model.ObjEntityEvent;
 import org.apache.cayenne.modeler.event.model.QueryEvent;
 import org.apache.cayenne.modeler.project.ProjectSession;
 import org.apache.cayenne.modeler.toolkit.AppAction;
-import org.apache.cayenne.modeler.toolkit.filechooser.CMFileChooserPrefs;
+import org.apache.cayenne.modeler.pref.adapters.FileChooserPrefs;
 import org.apache.cayenne.modeler.ui.errors.ErrorDialog;
 import org.apache.cayenne.wocompat.EOModelProcessor;
 import org.slf4j.Logger;
@@ -325,7 +325,7 @@ public class ImportEOModelAction extends AppAction {
             eoModelChooser = new EOModelChooser("Select EOModel");
         }
 
-        new CMFileChooserPrefs(app.getPrefsManager().uiNode("importEOModel/lastDir")).bind(eoModelChooser);
+        new FileChooserPrefs(app.getPrefsManager().uiNode("importEOModel/lastDir")).bind(eoModelChooser);
 
         return eoModelChooser;
     }

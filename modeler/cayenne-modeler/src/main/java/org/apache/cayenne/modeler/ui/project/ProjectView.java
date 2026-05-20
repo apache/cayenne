@@ -21,7 +21,7 @@ package org.apache.cayenne.modeler.ui.project;
 
 import org.apache.cayenne.modeler.project.ProjectSession;
 import org.apache.cayenne.modeler.service.action.GlobalActions;
-import org.apache.cayenne.modeler.toolkit.splitpane.CMSplitPanePrefs;
+import org.apache.cayenne.modeler.pref.adapters.SplitPanePrefs;
 import org.apache.cayenne.modeler.toolkit.ProjectPanel;
 import org.apache.cayenne.modeler.ui.action.CollapseTreeAction;
 import org.apache.cayenne.modeler.ui.action.FilterAction;
@@ -102,7 +102,7 @@ public class ProjectView extends ProjectPanel {
 
         this.filterPopup = new TreeFilterPopup(treePanel);
 
-        new CMSplitPanePrefs(app.getPrefsManager().uiNode("project/splitPane")).bind(splitPane, 300);
+        new SplitPanePrefs(app.getPrefsManager().uiNode("project/splitPane")).bind(splitPane, 300);
     }
 
     public EditorPanelView getEditorPanel() {
