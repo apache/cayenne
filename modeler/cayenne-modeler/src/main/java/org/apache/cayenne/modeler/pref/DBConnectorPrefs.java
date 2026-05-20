@@ -40,8 +40,8 @@ public class DBConnectorPrefs extends PreferenceAdapter {
     private static final String URL_PROPERTY = "url";
     private static final String USER_NAME_PROPERTY = "userName";
 
-    public DBConnectorPrefs(PreferencesRepository repository) {
-        super(repository.appPref(NODE));
+    public DBConnectorPrefs(PrefsLocator locator) {
+        super(locator.appNode(NODE));
     }
 
     public DBConnectors getConnectors() {

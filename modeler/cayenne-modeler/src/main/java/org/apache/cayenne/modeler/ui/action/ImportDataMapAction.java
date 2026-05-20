@@ -102,7 +102,7 @@ public class ImportDataMapAction extends AppAction {
         JFileChooser chooser = new JFileChooser();
         chooser.setFileSelectionMode(JFileChooser.FILES_ONLY);
 
-        new CMFileChooserPrefs(app.getPreferencesRepository(), "importDataMap/lastDir").bind(chooser);
+        new CMFileChooserPrefs(app.getPrefsRepository(), "importDataMap/lastDir").bind(chooser);
 
         chooser.addChoosableFileFilter(FileFilters.getDataMapFilter());
 

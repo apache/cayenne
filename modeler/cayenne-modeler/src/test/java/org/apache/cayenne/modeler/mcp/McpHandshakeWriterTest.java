@@ -19,6 +19,7 @@
 
 package org.apache.cayenne.modeler.mcp;
 
+import org.apache.cayenne.modeler.pref.PrefsLocator;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.Test;
 
@@ -36,10 +37,11 @@ public class McpHandshakeWriterTest {
 
     // Unique per test method - keeps parallel runs and prior aborted runs from colliding.
     private final String nonce = UUID.randomUUID().toString().replace("-", "");
+    private final PrefsLocator locator = new PrefsLocator();
 
     @AfterEach
     public void cleanup() throws BackingStoreException {
-        Preferences node = Preferences.userRoot().node(McpHandshakeWriter.NODE_PREFIX + nonce);
+        Preferences node = locator.handshakeNode(nonce);
         if (node != null) {
             node.removeNode();
             Preferences.userRoot().flush();
@@ -51,7 +53,7 @@ public class McpHandshakeWriterTest {
         String[] argv = {"--mcp-handshake", nonce, "/path/to/cayenne-foo.xml"};
         long before = System.currentTimeMillis() - 1;
 
-        McpHandshakeWriter.write(nonce, argv, "/path/to/cayenne-foo.xml");
+        McpHandshakeWriter.write(locator, nonce, argv, "/path/to/cayenne-foo.xml");
 
         Preferences prefs = pollForNode();
 
@@ -72,14 +74,14 @@ public class McpHandshakeWriterTest {
 
     @Test
     public void nullArgvWritesEmptyArgsString() throws Exception {
-        McpHandshakeWriter.write(nonce, null, "/p");
+        McpHandshakeWriter.write(locator, nonce, null, "/p");
         Preferences prefs = pollForNode();
         assertEquals("", prefs.get("args", null));
     }
 
     @Test
     public void nullProjectPathWritesEmptyString() throws Exception {
-        McpHandshakeWriter.write(nonce, new String[]{"x"}, null);
+        McpHandshakeWriter.write(locator, nonce, new String[]{"x"}, null);
         Preferences prefs = pollForNode();
         assertEquals("", prefs.get("projectPath", null));
     }
@@ -90,14 +92,11 @@ public class McpHandshakeWriterTest {
      * race the writer's sequential puts.
      */
     private Preferences pollForNode() throws Exception {
-        String fullPath = McpHandshakeWriter.NODE_PREFIX + nonce;
+        Preferences node = locator.handshakeNode(nonce);
         long deadline = System.currentTimeMillis() + 5_000;
         while (System.currentTimeMillis() < deadline) {
-            if (Preferences.userRoot().nodeExists(fullPath)) {
-                Preferences node = Preferences.userRoot().node(fullPath);
-                if (hasAllKeys(node)) {
-                    return node;
-                }
+            if (hasAllKeys(node)) {
+                return node;
             }
             Thread.sleep(25);
         }

@@ -39,6 +39,7 @@ import java.util.HashMap;
 import java.util.IdentityHashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.function.Function;
 import java.util.prefs.BackingStoreException;
 import java.util.prefs.Preferences;
 import java.util.stream.Collectors;
@@ -46,34 +47,30 @@ import java.util.stream.Stream;
 
 
 /**
- * App-wide preferences service for the Modeler. Owns the layout under
- * {@code org/apache/cayenne/modeler/v5} and resolves project / DataMap nodes
- * from their on-disk file paths (or stable per-runtime ids while still unsaved).
+ * App-wide preferences service for the Modeler. Delegates preferences-node
+ * location to {@link PrefsLocator} and adds Modeler-specific lifecycle
+ * on top: tracking unsaved projects/DataMaps with in-memory ids, staging
+ * renames/moves so they can be replayed on save, running version-gated
+ * preference migrations, and resetting the subtree.
  */
-public class PreferencesRepository {
+public class PrefsRepository {
 
-    private static final Logger LOGGER = LoggerFactory.getLogger(PreferencesRepository.class);
+    private static final Logger LOGGER = LoggerFactory.getLogger(PrefsRepository.class);
 
-    private static final String VERSION = "v5";
-    private static final String ROOT_PATH = "org/apache/cayenne/modeler/" + VERSION;
+    private static final String PROJECT_INDEX_NODE = "projectIndex";
+    private static final String DATAMAP_INDEX_NODE = "dataMapIndex";
+    private static final String UNSAVED_PREFIX = "unsaved-";
 
-    static final String APP_NODE = "app";
-    static final String PROJECT_NODE = "project";
-    static final String DATAMAP_NODE = "datamap";
+    private static final String UI_NODE = "ui";
+    private static final String META_NODE = "_meta";
 
-    static final String META_NODE = "_meta";
-    static final String UI_NODE = "ui";
-    static final String PROJECT_INDEX_NODE = "projectIndex";
-    static final String DATAMAP_INDEX_NODE = "dataMapIndex";
-
-    static final String MIGRATIONS_VERSION_KEY = "migrationsAppliedVersion";
-    static final String PATH_KEY = "path";
-    static final String UNSAVED_PREFIX = "unsaved-";
+    private static final String MIGRATIONS_VERSION_KEY = "migrationsAppliedVersion";
+    private static final String PATH_KEY = "path";
 
     private final ConfigurationNameMapper nameMapper;
     private final List<PreferenceMigration> migrations;
 
-    private final Preferences root;
+    private final PrefsLocator locator;
     private final Map<Project, String> newProjectIds;
     private final Map<DataMap, String> newDataMapIds;
     private final Map<String, String> stagingDataMap;
@@ -94,9 +91,9 @@ public class PreferencesRepository {
                 .collect(Collectors.toList());
     }
 
-    public PreferencesRepository(ConfigurationNameMapper nameMapper) {
+    public PrefsRepository(ConfigurationNameMapper nameMapper, PrefsLocator locator) {
         this.nameMapper = nameMapper;
-        this.root = Preferences.userRoot().node(ROOT_PATH);
+        this.locator = locator;
         this.migrations = toV5Migrations();
         this.newProjectIds = new IdentityHashMap<>();
         this.newDataMapIds = new IdentityHashMap<>();
@@ -104,53 +101,49 @@ public class PreferencesRepository {
         this.stagingProject = new HashMap<>();
     }
 
-    public Preferences appPref(String relativePath) {
-        Preferences appRoot = root.node(APP_NODE);
-        return relativePath == null || relativePath.isEmpty() ? appRoot : appRoot.node(relativePath);
-    }
-
-    /**
-     * Per-component UI preferences node, addressed by a short stable path
-     * chosen by the caller (e.g. {@code "splitPane/templateEditor"}). Pass
-     * {@code null} or an empty string to get the {@code ui} base node itself.
-     */
-    public Preferences uiPref(String relativePath) {
-        Preferences uiRoot = appPref(UI_NODE);
-        return relativePath == null || relativePath.isEmpty() ? uiRoot : uiRoot.node(relativePath);
-    }
-
     /**
      * Returns the preferences node for the given {@link Project}, optionally descending into a subtree within it.
      */
     public Preferences projectPref(Project project, String relativePath) {
-        String id = projectId(project);
-        Preferences node = root.node(PROJECT_NODE).node(id);
-        recordPath(node, projectPath(project), PROJECT_INDEX_NODE, id);
+        Preferences node;
+        String path = projectPath(project);
+        if (path != null) {
+            String id = PreferenceNodeIds.idForPath(path);
+            node = locator.projectNode(id);
+            recordPath(node, id, path, PROJECT_INDEX_NODE);
+        } else {
+            String id = newProjectIds.computeIfAbsent(project, p -> newUnsavedId());
+            node = locator.projectNode(id);
+        }
         return relativePath == null || relativePath.isEmpty() ? node : node.node(relativePath);
+    }
+
+    /**
+     * Returns a node under {@code v5/app/ui}, optionally descending into a subtree.
+     * Pass {@code null} or empty for the {@code ui} node itself. This is the conventional
+     * home for UI-state preferences (frame geometry, split-pane positions, table columns,
+     * file-chooser last-dirs) — anything not tied to a specific project or DataMap.
+     */
+    public Preferences uiNode(String relativePath) {
+        Preferences uiRoot = locator.appNode(UI_NODE);
+        return relativePath == null || relativePath.isEmpty() ? uiRoot : uiRoot.node(relativePath);
     }
 
     /**
      * Returns the preferences node for the given {@link DataMap}, optionally descending into a subtree within it.
      */
     public Preferences dataMapPref(DataMap map, String relativePath) {
-        String id = dataMapId(map);
-        Preferences node = root.node(DATAMAP_NODE).node(id);
-        recordPath(node, dataMapPath(map), DATAMAP_INDEX_NODE, id);
-        return relativePath == null || relativePath.isEmpty() ? node : node.node(relativePath);
-    }
-
-    private String projectId(Project project) {
-        String path = projectPath(project);
-        return path != null
-                ? PreferenceNodeIds.idForPath(path)
-                : newProjectIds.computeIfAbsent(project, p -> newUnsavedId());
-    }
-
-    private String dataMapId(DataMap map) {
+        Preferences node;
         String path = dataMapPath(map);
-        return path != null
-                ? PreferenceNodeIds.idForPath(path)
-                : newDataMapIds.computeIfAbsent(map, m -> newUnsavedId());
+        if (path != null) {
+            String id = PreferenceNodeIds.idForPath(path);
+            node = locator.dataMapNode(id);
+            recordPath(node, id, path, DATAMAP_INDEX_NODE);
+        } else {
+            String id = newDataMapIds.computeIfAbsent(map, m -> newUnsavedId());
+            node = locator.dataMapNode(id);
+        }
+        return relativePath == null || relativePath.isEmpty() ? node : node.node(relativePath);
     }
 
     /**
@@ -241,16 +234,6 @@ public class PreferencesRepository {
     }
 
     /**
-     * Serializes the entire preferences subtree owned by this repository as a
-     * pretty-printed JSON string. Each {@link Preferences} node becomes a JSON
-     * object whose own keys map to string values and whose child node names map
-     * to nested objects.
-     */
-    public String exportAsJson() {
-        return PreferencesJsonExporter.exportAsJson(root);
-    }
-
-    /**
      * Removes every child node of the repository root, wiping all Modeler
      * preferences. Also clears in-memory unsaved-id bookkeeping so subsequent
      * {@link #projectPref}/{@link #dataMapPref} lookups don't reference deleted
@@ -267,6 +250,7 @@ public class PreferencesRepository {
      * already applied so legacy preferences are not re-imported on next startup.
      */
     public void resetToDefaults(boolean importLegacyPreferences) {
+        Preferences root = locator.modelerRoot();
         try {
             for (String childName : root.childrenNames()) {
                 root.node(childName).removeNode();
@@ -279,8 +263,8 @@ public class PreferencesRepository {
         newDataMapIds.clear();
 
         if (!importLegacyPreferences && !migrations.isEmpty()) {
-            int highest = migrations.get(migrations.size() - 1).version();
-            Preferences meta = appPref(META_NODE);
+            int highest = migrations.getLast().version();
+            Preferences meta = locator.appNode(META_NODE);
             meta.putInt(MIGRATIONS_VERSION_KEY, highest);
             try {
                 meta.flush();
@@ -295,13 +279,13 @@ public class PreferencesRepository {
      * version exceeds {@code app/_meta/migrationsAppliedVersion}.
      */
     public void runMigrations() {
-        Preferences meta = appPref(META_NODE);
+        Preferences meta = locator.appNode(META_NODE);
         int applied = meta.getInt(MIGRATIONS_VERSION_KEY, 0);
         int max = applied;
         for (PreferenceMigration m : migrations) {
             if (m.version() > applied) {
                 try {
-                    m.apply(this);
+                    m.apply(locator);
                 } catch (RuntimeException e) {
                     LOGGER.warn("Migration v{} failed: {}", m.version(), e.getMessage(), e);
                 }
@@ -326,18 +310,18 @@ public class PreferencesRepository {
         if (stagedOldPath != null) {
             String oldId = PreferenceNodeIds.idForPath(stagedOldPath);
             if (!oldId.equals(savedId)) {
-                relocate(PROJECT_NODE, oldId, savedId, PROJECT_INDEX_NODE, currentPath);
+                relocate(locator::projectNode, oldId, savedId, PROJECT_INDEX_NODE, currentPath);
             } else {
-                recordPath(root.node(PROJECT_NODE).node(savedId), currentPath, PROJECT_INDEX_NODE, savedId);
+                recordPath(locator.projectNode(savedId), savedId, currentPath, PROJECT_INDEX_NODE);
             }
             return;
         }
 
         String oldId = newProjectIds.remove(project);
         if (oldId != null && !oldId.equals(savedId)) {
-            relocate(PROJECT_NODE, oldId, savedId, PROJECT_INDEX_NODE, currentPath);
+            relocate(locator::projectNode, oldId, savedId, PROJECT_INDEX_NODE, currentPath);
         } else {
-            recordPath(root.node(PROJECT_NODE).node(savedId), currentPath, PROJECT_INDEX_NODE, savedId);
+            recordPath(locator.projectNode(savedId), savedId, currentPath, PROJECT_INDEX_NODE);
         }
     }
 
@@ -352,35 +336,35 @@ public class PreferencesRepository {
         if (stagedOldPath != null) {
             String oldId = PreferenceNodeIds.idForPath(stagedOldPath);
             if (!oldId.equals(savedId)) {
-                relocate(DATAMAP_NODE, oldId, savedId, DATAMAP_INDEX_NODE, currentPath);
+                relocate(locator::dataMapNode, oldId, savedId, DATAMAP_INDEX_NODE, currentPath);
             } else {
-                recordPath(root.node(DATAMAP_NODE).node(savedId), currentPath, DATAMAP_INDEX_NODE, savedId);
+                recordPath(locator.dataMapNode(savedId), savedId, currentPath, DATAMAP_INDEX_NODE);
             }
             return;
         }
 
         String oldId = newDataMapIds.remove(map);
         if (oldId != null && !oldId.equals(savedId)) {
-            relocate(DATAMAP_NODE, oldId, savedId, DATAMAP_INDEX_NODE, currentPath);
+            relocate(locator::dataMapNode, oldId, savedId, DATAMAP_INDEX_NODE, currentPath);
         } else {
-            recordPath(root.node(DATAMAP_NODE).node(savedId), currentPath, DATAMAP_INDEX_NODE, savedId);
+            recordPath(locator.dataMapNode(savedId), savedId, currentPath, DATAMAP_INDEX_NODE);
         }
     }
 
-    private void relocate(String parentNode, String oldId, String newId, String indexNode, String path) {
-        Preferences src = root.node(parentNode).node(oldId);
-        Preferences dst = root.node(parentNode).node(newId);
+    private void relocate(Function<String, Preferences> nodeForId, String oldId, String newId, String indexNode, String path) {
+        Preferences src = nodeForId.apply(oldId);
+        Preferences dst = nodeForId.apply(newId);
         PreferencesCopier.move(src, dst);
-        appPref(indexNode).remove(oldId);
-        recordPath(dst, path, indexNode, newId);
+        locator.appNode(indexNode).remove(oldId);
+        recordPath(dst, newId, path, indexNode);
     }
 
-    private void recordPath(Preferences node, String path, String indexNode, String id) {
+    private void recordPath(Preferences node, String id, String path, String indexNode) {
         if (path == null) {
             return;
         }
         node.put(PATH_KEY, path);
-        appPref(indexNode).put(id, path);
+        locator.appNode(indexNode).put(id, path);
     }
 
     private static String projectPath(Project project) {

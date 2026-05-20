@@ -30,14 +30,15 @@ import org.apache.cayenne.di.DIBootstrap;
 import org.apache.cayenne.di.Injector;
 import org.apache.cayenne.modeler.dbconnector.DBConnectors;
 import org.apache.cayenne.modeler.log.ModelerLogFactory;
+import org.apache.cayenne.modeler.platform.UIInitializer;
 import org.apache.cayenne.modeler.pref.ClasspathPrefs;
 import org.apache.cayenne.modeler.pref.DBConnectorPrefs;
 import org.apache.cayenne.modeler.pref.GeneralPrefs;
-import org.apache.cayenne.modeler.pref.PreferencesRepository;
+import org.apache.cayenne.modeler.pref.PrefsLocator;
+import org.apache.cayenne.modeler.pref.PrefsRepository;
 import org.apache.cayenne.modeler.pref.RecentProjectsPrefs;
 import org.apache.cayenne.modeler.service.action.GlobalActions;
 import org.apache.cayenne.modeler.service.classloader.ModelerClassLoader;
-import org.apache.cayenne.modeler.platform.UIInitializer;
 import org.apache.cayenne.modeler.service.validator.ConfigurableProjectValidator;
 import org.apache.cayenne.modeler.ui.MainFrame;
 import org.apache.cayenne.modeler.ui.action.OpenProjectAction;
@@ -88,7 +89,8 @@ public class Application {
     private final Injector injector;
     private final UIInitializer platformInit;
     private final ModelerClassLoader classLoader;
-    private final PreferencesRepository preferencesRepository;
+    private final PrefsLocator prefsLocator;
+    private final PrefsRepository prefsRepository;
     private final ProjectValidator projectValidator;
     private final CliArgs cli;
     private GlobalActions actionManager;
@@ -103,7 +105,8 @@ public class Application {
         this.cli = cli;
 
         this.classLoader = new ModelerClassLoader();
-        this.preferencesRepository = new PreferencesRepository(injector.getInstance(ConfigurationNameMapper.class));
+        this.prefsLocator = new PrefsLocator();
+        this.prefsRepository = new PrefsRepository(injector.getInstance(ConfigurationNameMapper.class), prefsLocator);
         this.projectValidator = new ConfigurableProjectValidator(this);
     }
 
@@ -182,9 +185,9 @@ public class Application {
         this.logConsole = new LogConsole(this);
         ModelerLogFactory.setAppender(logConsole);
 
-        getPreferencesRepository().runMigrations();
+        getPrefsRepository().runMigrations();
 
-        this.dbConnectors = new DBConnectorPrefs(getPreferencesRepository()).getConnectors();
+        this.dbConnectors = new DBConnectorPrefs(prefsLocator).getConnectors();
 
         refreshClassLoader();
 
@@ -223,15 +226,19 @@ public class Application {
         return dbConnectors;
     }
 
-    public PreferencesRepository getPreferencesRepository() {
-        return preferencesRepository;
+    public PrefsRepository getPrefsRepository() {
+        return prefsRepository;
+    }
+
+    public PrefsLocator getPrefsLocator() {
+        return prefsLocator;
     }
 
     /**
      * Reinitializes ModelerClassLoader from preferences.
      */
     public void refreshClassLoader() {
-        List<String> values = new ClasspathPrefs(getPreferencesRepository()).getEntries();
+        List<String> values = new ClasspathPrefs(prefsLocator).getEntries();
         if (!values.isEmpty()) {
             getClassLoader().setFiles(values.stream().map(File::new).collect(Collectors.toList()));
         }
@@ -239,10 +246,10 @@ public class Application {
 
     private File initialProjectFromPreferences() {
 
-        if (new GeneralPrefs(getPreferencesRepository()).isAutoLoadProject()) {
-            List<File> files = new RecentProjectsPrefs(getPreferencesRepository()).getFiles();
+        if (new GeneralPrefs(prefsLocator).isAutoLoadProject()) {
+            List<File> files = new RecentProjectsPrefs(prefsLocator).getFiles();
             if (!files.isEmpty()) {
-                return files.get(0);
+                return files.getFirst();
             }
         }
 

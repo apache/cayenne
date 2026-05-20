@@ -19,7 +19,7 @@
 package org.apache.cayenne.modeler.pref.migration.toV5;
 
 import org.apache.cayenne.modeler.pref.PreferenceMigration;
-import org.apache.cayenne.modeler.pref.PreferencesRepository;
+import org.apache.cayenne.modeler.pref.PrefsLocator;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -58,13 +58,13 @@ public class _7_EntityTablePrefsMigration implements PreferenceMigration {
     }
 
     @Override
-    public void apply(PreferencesRepository repo) {
+    public void apply(PrefsLocator locator) {
         for (String[] pair : PATHS) {
-            copyTable(repo, pair[0], pair[1]);
+            copyTable(locator, pair[0], pair[1]);
         }
     }
 
-    private static void copyTable(PreferencesRepository repo, String legacyPath, String uiPath) {
+    private static void copyTable(PrefsLocator locator, String legacyPath, String uiPath) {
         Preferences legacy;
         String[] legacyKeys;
         try {
@@ -78,7 +78,7 @@ public class _7_EntityTablePrefsMigration implements PreferenceMigration {
             return;
         }
 
-        Preferences target = repo.uiPref(uiPath);
+        Preferences target = locator.appNode("ui").node(uiPath);
         for (String key : legacyKeys) {
             switch (key) {
                 case LEGACY_SORT_COLUMN:

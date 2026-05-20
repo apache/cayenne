@@ -26,7 +26,7 @@ import org.apache.cayenne.map.DataMap;
 import org.apache.cayenne.modeler.Application;
 import org.apache.cayenne.modeler.event.model.ProjectBeforeSaveEvent;
 import org.apache.cayenne.modeler.event.model.ProjectAfterSaveEvent;
-import org.apache.cayenne.modeler.pref.PreferencesRepository;
+import org.apache.cayenne.modeler.pref.PrefsRepository;
 import org.apache.cayenne.modeler.toolkit.AppAction;
 import org.apache.cayenne.project.Project;
 import org.apache.cayenne.project.ProjectSaver;
@@ -83,7 +83,7 @@ public class SaveAsAction extends AppAction {
 
         getProjectSession().pauseFileChangeTracking();
 
-        PreferencesRepository repo = app.getPreferencesRepository();
+        PrefsRepository repo = app.getPrefsRepository();
         repo.stageProjectMove(p, projectDir);
         DataChannelDescriptor descriptor = (DataChannelDescriptor) p.getRootNode();
         if (descriptor != null) {

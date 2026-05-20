@@ -19,7 +19,7 @@
 package org.apache.cayenne.modeler.pref.migration.toV5;
 
 import org.apache.cayenne.modeler.pref.PreferenceMigration;
-import org.apache.cayenne.modeler.pref.PreferencesRepository;
+import org.apache.cayenne.modeler.pref.PrefsLocator;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -46,7 +46,7 @@ public class _6_ProjectSplitPaneMigration implements PreferenceMigration {
     }
 
     @Override
-    public void apply(PreferencesRepository repo) {
+    public void apply(PrefsLocator locator) {
         Preferences legacy;
         try {
             if (!Preferences.userRoot().nodeExists(LEGACY_PATH)) {
@@ -60,7 +60,7 @@ public class _6_ProjectSplitPaneMigration implements PreferenceMigration {
 
         int dividerLocation = legacy.getInt(DIVIDER_LOCATION, Integer.MIN_VALUE);
         if (dividerLocation != Integer.MIN_VALUE) {
-            repo.uiPref("project/splitPane").putInt(DIVIDER_LOCATION, dividerLocation);
+            locator.appNode("ui").node("project/splitPane").putInt(DIVIDER_LOCATION, dividerLocation);
         }
     }
 }

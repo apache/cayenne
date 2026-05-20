@@ -63,7 +63,7 @@ public class ConfirmRemoveDialog {
         // If the user clicks "cancel" or window close button, we'll just ignore whatever's in the checkbox because
         // it's non-sensical.
         if (shouldDelete) {
-            new GeneralPrefs(application.getPreferencesRepository()).setNoDeletePrompt(neverPromptAgainBox.isSelected());
+            new GeneralPrefs(application.getPrefsLocator()).setNoDeletePrompt(neverPromptAgainBox.isSelected());
         }
     }
 
@@ -72,7 +72,7 @@ public class ConfirmRemoveDialog {
     }
 
     public boolean shouldDelete(String name) {
-        if (allowAsking && !new GeneralPrefs(application.getPreferencesRepository()).isNoDeletePrompt()) {
+        if (allowAsking && !new GeneralPrefs(application.getPrefsLocator()).isNoDeletePrompt()) {
             showDialog(name);
         }
 

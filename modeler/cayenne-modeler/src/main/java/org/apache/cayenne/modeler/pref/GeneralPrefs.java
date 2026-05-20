@@ -28,8 +28,8 @@ public final class GeneralPrefs extends PreferenceAdapter {
     public static final String ENCODING = "encoding";
     public static final String FAVOURITE_DATA_SOURCE = "favouriteDataSource";
 
-    public GeneralPrefs(PreferencesRepository repository) {
-        super(repository.appPref(NODE));
+    public GeneralPrefs(PrefsLocator locator) {
+        super(locator.appNode(NODE));
     }
 
     public boolean isAutoLoadProject() {

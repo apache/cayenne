@@ -20,7 +20,7 @@ package org.apache.cayenne.modeler.pref.migration.toV5;
 
 import org.apache.cayenne.modeler.pref.GeneralPrefs;
 import org.apache.cayenne.modeler.pref.PreferenceMigration;
-import org.apache.cayenne.modeler.pref.PreferencesRepository;
+import org.apache.cayenne.modeler.pref.PrefsLocator;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -47,7 +47,7 @@ public class _3_GeneralPrefsMigration implements PreferenceMigration {
     }
 
     @Override
-    public void apply(PreferencesRepository repo) {
+    public void apply(PrefsLocator locator) {
         Preferences legacy;
         try {
             if (!Preferences.userRoot().nodeExists(LEGACY_PATH)) {
@@ -59,7 +59,7 @@ public class _3_GeneralPrefsMigration implements PreferenceMigration {
             return;
         }
 
-        Preferences target = repo.appPref(GeneralPrefs.NODE);
+        Preferences target = locator.appNode(GeneralPrefs.NODE);
         target.putBoolean(GeneralPrefs.AUTO_LOAD_PROJECT, legacy.getBoolean("autoLoadProject", false));
         String encoding = normalizeEncoding(legacy.get("encoding", ""));
         if (encoding != null) {

@@ -53,7 +53,7 @@ import org.apache.cayenne.modeler.event.display.ProcedureDisplayEvent;
 import org.apache.cayenne.modeler.event.display.ProcedureParameterDisplayEvent;
 import org.apache.cayenne.modeler.event.display.QueryDisplayEvent;
 import org.apache.cayenne.modeler.pref.PreferenceAdapter;
-import org.apache.cayenne.modeler.pref.PreferencesRepository;
+import org.apache.cayenne.modeler.pref.PrefsRepository;
 import org.apache.cayenne.project.Project;
 import org.apache.cayenne.util.CayenneMapEntry;
 
@@ -96,7 +96,7 @@ public final class ProjectPrefs extends PreferenceAdapter {
         query, multipleObjects
     }
 
-    public ProjectPrefs(PreferencesRepository repository, Project project) {
+    public ProjectPrefs(PrefsRepository repository, Project project) {
         super(repository.projectPref(project, null));
     }
 

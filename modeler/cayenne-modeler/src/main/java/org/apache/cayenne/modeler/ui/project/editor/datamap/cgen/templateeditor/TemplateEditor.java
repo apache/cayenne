@@ -256,8 +256,8 @@ public class TemplateEditor extends AppFrame {
     }
 
     private void bindGeometry() {
-        new CMSplitPanePrefs(app.getPreferencesRepository(), "templateEditor/splitPane").bind(split, 600);
-        new CMComponentGeometryPrefs(app.getPreferencesRepository(), "templateEditor/geometry").bind(this, 1200, 700);
+        new CMSplitPanePrefs(app.getPrefsRepository(), "templateEditor/splitPane").bind(split, 600);
+        new CMComponentGeometryPrefs(app.getPrefsRepository(), "templateEditor/geometry").bind(this, 1200, 700);
     }
 
     private void mapVelocityTokenMaker() {

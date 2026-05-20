@@ -23,7 +23,6 @@ import com.jgoodies.forms.builder.PanelBuilder;
 import com.jgoodies.forms.layout.CellConstraints;
 import com.jgoodies.forms.layout.FormLayout;
 import org.apache.cayenne.modeler.Application;
-import org.apache.cayenne.modeler.pref.PreferencesRepository;
 import org.apache.cayenne.modeler.toolkit.AppPanel;
 import org.apache.cayenne.modeler.ui.action.CloseProjectAction;
 
@@ -81,8 +80,7 @@ public class MorePrefsPanel extends AppPanel {
     }
 
     private void copyAllClicked() {
-        PreferencesRepository repository = app.getPreferencesRepository();
-        String json = repository.exportAsJson();
+        String json = app.getPrefsLocator().exportAsJson();
         Toolkit.getDefaultToolkit().getSystemClipboard().setContents(new StringSelection(json), null);
     }
 
@@ -113,7 +111,7 @@ public class MorePrefsPanel extends AppPanel {
         }
         app.getFrame().dispose();
 
-        app.getPreferencesRepository().resetToDefaults(importLegacy);
+        app.getPrefsRepository().resetToDefaults(importLegacy);
 
         // Defer the rebuild to a later EDT tick so the in-flight action handler
         // (and any pending dispose events) drain first.

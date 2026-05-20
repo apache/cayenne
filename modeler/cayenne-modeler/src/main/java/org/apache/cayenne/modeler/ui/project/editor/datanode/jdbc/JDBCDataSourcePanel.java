@@ -159,7 +159,7 @@ public class JDBCDataSourcePanel extends DataSourcePanel {
         DataSourceDescriptor projectDataSourceDescriptor = getNode().getDataSourceDescriptor();
 
         String key = new DataNodePrefs(
-                app.getPreferencesRepository(),
+                app.getPrefsRepository(),
                 frame.getProjectSession().project(),
                 getNode().getName()).getLocalDataSource();
         if (key == null) {

@@ -33,8 +33,8 @@ public final class ClasspathPrefs extends PreferenceAdapter {
 
     public static final String NODE = "classpath";
 
-    public ClasspathPrefs(PreferencesRepository repository) {
-        super(repository.appPref(NODE));
+    public ClasspathPrefs(PrefsLocator locator) {
+        super(locator.appNode(NODE));
     }
 
     // Returns classpath entries in numeric-key order. Defensive against any

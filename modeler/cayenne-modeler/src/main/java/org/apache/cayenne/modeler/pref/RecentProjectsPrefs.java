@@ -35,8 +35,8 @@ public final class RecentProjectsPrefs extends PreferenceAdapter {
 
     public static final String NODE = "lastProjects";
 
-    public RecentProjectsPrefs(PreferencesRepository repository) {
-        super(repository.appPref(NODE));
+    public RecentProjectsPrefs(PrefsLocator locator) {
+        super(locator.appNode(NODE));
     }
 
     public List<File> getFiles() {

@@ -182,7 +182,7 @@ public class ProjectSession {
     public void projectClosed() {
 
         setDirty(false);
-        app.getPreferencesRepository().resetTransientState();
+        app.getPrefsRepository().resetTransientState();
 
         this.project = null;
         this.entityResolver = null;
@@ -201,14 +201,14 @@ public class ProjectSession {
         if (project == null) {
             return;
         }
-        new ProjectPrefs(app.getPreferencesRepository(), project).flush(this);
+        new ProjectPrefs(app.getPrefsRepository(), project).flush(this);
     }
 
     public void restoreSelectionFromPrefs() {
         if (project == null) {
             return;
         }
-        new ProjectPrefs(app.getPreferencesRepository(), project).load(this);
+        new ProjectPrefs(app.getPrefsRepository(), project).load(this);
     }
 
     public boolean isDirty() {
@@ -550,7 +550,7 @@ public class ProjectSession {
 
     public void fireProjectAfterSaveEvent(ProjectAfterSaveEvent e) {
         fileChangeTracker.reset();
-        app.getPreferencesRepository().commitProject(project);
+        app.getPrefsRepository().commitProject(project);
         for (ProjectAfterSaveListener eventListener : listeners.getListeners(ProjectAfterSaveListener.class)) {
             eventListener.projectSaved(e);
         }

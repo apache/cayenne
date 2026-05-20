@@ -219,7 +219,7 @@ public class ObjEntityCallbacksView extends ProjectPanel {
         }
 
         for (CMTable table : tables) {
-            new CMTablePrefs(app.getPreferencesRepository(), "objEntity/callbackTable")
+            new CMTablePrefs(app.getPrefsRepository(), "objEntity/callbackTable")
                     .bind(table, MIN_SIZES);
         }
     }
@@ -513,7 +513,7 @@ public class ObjEntityCallbacksView extends ProjectPanel {
 
         public void mouseDragged(MouseEvent e) {
             if (table.getColumnWidthChanged()) {
-                new CMTablePrefs(app.getPreferencesRepository(), "objEntity/callbackTable")
+                new CMTablePrefs(app.getPrefsRepository(), "objEntity/callbackTable")
                         .bind(table, MIN_SIZES);
                 for (CMTable nextTable : tables) {
                     if (!table.equals(nextTable)) {

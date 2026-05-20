@@ -106,7 +106,7 @@ public class DBGeneratorOptionsDialog extends ProjectDialog {
 
         this.connector = new DBConnector();
         this.connector.setAllowDataSourceFailure(true);
-        this.generatorDefaults = new DBGeneratorPrefs(app.getPreferencesRepository(), session.project());
+        this.generatorDefaults = new DBGeneratorPrefs(app.getPrefsRepository(), session.project());
 
         // create widgets — set initial state before wiring listeners so we
         // don't fire spurious refresh events during construction.

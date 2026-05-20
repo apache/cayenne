@@ -19,7 +19,7 @@
 package org.apache.cayenne.modeler.ui.dbgen;
 
 import org.apache.cayenne.modeler.pref.PreferenceAdapter;
-import org.apache.cayenne.modeler.pref.PreferencesRepository;
+import org.apache.cayenne.modeler.pref.PrefsRepository;
 import org.apache.cayenne.project.Project;
 
 /**
@@ -35,7 +35,7 @@ public class DBGeneratorPrefs extends PreferenceAdapter {
     private static final String DROP_PK_PROPERTY = "dropPK";
     private static final String DROP_TABLES_PROPERTY = "dropTables";
 
-    public DBGeneratorPrefs(PreferencesRepository repository, Project project) {
+    public DBGeneratorPrefs(PrefsRepository repository, Project project) {
         super(repository.projectPref(project, NODE));
     }
 

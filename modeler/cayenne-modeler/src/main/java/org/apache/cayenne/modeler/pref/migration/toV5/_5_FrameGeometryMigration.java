@@ -19,7 +19,7 @@
 package org.apache.cayenne.modeler.pref.migration.toV5;
 
 import org.apache.cayenne.modeler.pref.PreferenceMigration;
-import org.apache.cayenne.modeler.pref.PreferencesRepository;
+import org.apache.cayenne.modeler.pref.PrefsLocator;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -46,7 +46,7 @@ public class _5_FrameGeometryMigration implements PreferenceMigration {
     }
 
     @Override
-    public void apply(PreferencesRepository repo) {
+    public void apply(PrefsLocator locator) {
         Preferences legacy;
         try {
             if (!Preferences.userRoot().nodeExists(LEGACY_PATH)) {
@@ -58,7 +58,7 @@ public class _5_FrameGeometryMigration implements PreferenceMigration {
             return;
         }
 
-        Preferences target = repo.uiPref("frame/geometry");
+        Preferences target = locator.appNode("ui").node("frame/geometry");
         copyInt(legacy, target, "width");
         copyInt(legacy, target, "height");
         copyInt(legacy, target, "x");

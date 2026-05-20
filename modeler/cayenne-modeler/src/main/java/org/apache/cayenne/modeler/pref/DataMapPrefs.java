@@ -26,7 +26,7 @@ public final class DataMapPrefs extends PreferenceAdapter {
     public static final String SUPERCLASS_PACKAGE_PROPERTY = "superclassPackage";
     public static final String DEFAULT_SUPERCLASS_PACKAGE_SUFFIX = "auto";
 
-    public DataMapPrefs(PreferencesRepository repository, DataMap dataMap) {
+    public DataMapPrefs(PrefsRepository repository, DataMap dataMap) {
         super(repository.dataMapPref(dataMap, null));
     }
 

@@ -20,7 +20,7 @@ package org.apache.cayenne.modeler.pref.migration.toV5;
 
 import org.apache.cayenne.modeler.pref.ClasspathPrefs;
 import org.apache.cayenne.modeler.pref.PreferenceMigration;
-import org.apache.cayenne.modeler.pref.PreferencesRepository;
+import org.apache.cayenne.modeler.pref.PrefsLocator;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -46,7 +46,7 @@ public class _2_ClasspathMigration implements PreferenceMigration {
     }
 
     @Override
-    public void apply(PreferencesRepository repo) {
+    public void apply(PrefsLocator locator) {
         Preferences legacy;
         String[] legacyKeys;
         try {
@@ -60,7 +60,7 @@ public class _2_ClasspathMigration implements PreferenceMigration {
             return;
         }
 
-        Preferences target = repo.appPref(ClasspathPrefs.NODE);
+        Preferences target = locator.appNode(ClasspathPrefs.NODE);
         for (String key : legacyKeys) {
             try {
                 Integer.parseInt(key);
