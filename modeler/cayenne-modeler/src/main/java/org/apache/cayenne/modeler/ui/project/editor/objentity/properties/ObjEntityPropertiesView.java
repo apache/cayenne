@@ -67,7 +67,7 @@ public class ObjEntityPropertiesView extends ProjectPanel implements ObjEntityDi
 
         splitPane.setOneTouchExpandable(true);
         splitPane.setResizeWeight(0.5);
-        new CMSplitPanePrefs(app.getPrefsRepository(), "objEntity/splitPane").bind(splitPane, -1);
+        new CMSplitPanePrefs(app.getPrefsManager(), "objEntity/splitPane").bind(splitPane, -1);
         add(splitPane);
 
         toolBar.setFloatable(false);

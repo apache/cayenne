@@ -35,7 +35,7 @@ import org.apache.cayenne.modeler.pref.ClasspathPrefs;
 import org.apache.cayenne.modeler.pref.DBConnectorPrefs;
 import org.apache.cayenne.modeler.pref.GeneralPrefs;
 import org.apache.cayenne.modeler.pref.PrefsLocator;
-import org.apache.cayenne.modeler.pref.PrefsRepository;
+import org.apache.cayenne.modeler.pref.PrefsManager;
 import org.apache.cayenne.modeler.pref.RecentProjectsPrefs;
 import org.apache.cayenne.modeler.service.action.GlobalActions;
 import org.apache.cayenne.modeler.service.classloader.ModelerClassLoader;
@@ -90,7 +90,7 @@ public class Application {
     private final UIInitializer platformInit;
     private final ModelerClassLoader classLoader;
     private final PrefsLocator prefsLocator;
-    private final PrefsRepository prefsRepository;
+    private final PrefsManager prefsManager;
     private final ProjectValidator projectValidator;
     private final CliArgs cli;
     private GlobalActions actionManager;
@@ -106,7 +106,7 @@ public class Application {
 
         this.classLoader = new ModelerClassLoader();
         this.prefsLocator = new PrefsLocator();
-        this.prefsRepository = new PrefsRepository(injector.getInstance(ConfigurationNameMapper.class), prefsLocator);
+        this.prefsManager = new PrefsManager(injector.getInstance(ConfigurationNameMapper.class), prefsLocator);
         this.projectValidator = new ConfigurableProjectValidator(this);
     }
 
@@ -185,7 +185,7 @@ public class Application {
         this.logConsole = new LogConsole(this);
         ModelerLogFactory.setAppender(logConsole);
 
-        getPrefsRepository().runMigrations();
+        getPrefsManager().runMigrations();
 
         this.dbConnectors = new DBConnectorPrefs(prefsLocator).getConnectors();
 
@@ -226,8 +226,8 @@ public class Application {
         return dbConnectors;
     }
 
-    public PrefsRepository getPrefsRepository() {
-        return prefsRepository;
+    public PrefsManager getPrefsManager() {
+        return prefsManager;
     }
 
     public PrefsLocator getPrefsLocator() {

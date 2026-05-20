@@ -287,7 +287,7 @@ public class ProcedureParameterTab extends ProjectPanel implements ProcedurePara
         moveUp.setEnabled(false);
         moveDown.setEnabled(false);
 
-        new CMTablePrefs(app.getPrefsRepository(), "procedure/parameterTable").bind(table, null);
+        new CMTablePrefs(app.getPrefsManager(), "procedure/parameterTable").bind(table, null);
     }
 
     public void procedureParameterAdded(ProcedureParameterEvent e) {

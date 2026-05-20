@@ -241,7 +241,7 @@ public class DataMapMainView extends ProjectPanel {
         dataMap.setDefaultPackage(newDefaultPackage);
 
         // update class generation preferences
-        new DataMapPrefs(app.getPrefsRepository(), dataMap)
+        new DataMapPrefs(app.getPrefsManager(), dataMap)
                 .setSuperclassPackage(newDefaultPackage, DataMapPrefs.DEFAULT_SUPERCLASS_PACKAGE_SUFFIX);
 
         session.fireDataMapEvent(DataMapEvent.ofChange(this, dataMap));
@@ -343,7 +343,7 @@ public class DataMapMainView extends ProjectPanel {
                 nodesUsingMap.add(node);
             }
         }
-        app.getPrefsRepository().stageDataMapRename(map, newName);
+        app.getPrefsManager().stageDataMapRename(map, newName);
         map.setName(newName);
         for (DataNodeDescriptor node : nodesUsingMap) {
             node.getDataMapNames().remove(oldName);

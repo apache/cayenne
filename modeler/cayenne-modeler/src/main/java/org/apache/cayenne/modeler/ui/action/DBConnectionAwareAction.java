@@ -73,6 +73,6 @@ public abstract class DBConnectionAwareAction extends AppAction {
     }
 
     private DataMapPrefs dataMapPrefs(DataMap dataMap) {
-        return new DataMapPrefs(app.getPrefsRepository(), dataMap);
+        return new DataMapPrefs(app.getPrefsManager(), dataMap);
     }
 }

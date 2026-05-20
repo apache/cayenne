@@ -139,7 +139,7 @@ public class ClasspathPrefsPanel extends AppPanel {
         chooser.setDialogType(JFileChooser.OPEN_DIALOG);
         chooser.setAcceptAllFileFilterUsed(true);
 
-        new CMFileChooserPrefs(app.getPrefsRepository(), "classpath/lastDir").bind(chooser);
+        new CMFileChooserPrefs(app.getPrefsManager(), "classpath/lastDir").bind(chooser);
         if (filter != null) {
             chooser.addChoosableFileFilter(filter);
             chooser.setFileFilter(filter);

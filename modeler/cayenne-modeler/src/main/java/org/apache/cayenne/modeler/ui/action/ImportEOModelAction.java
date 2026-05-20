@@ -325,7 +325,7 @@ public class ImportEOModelAction extends AppAction {
             eoModelChooser = new EOModelChooser("Select EOModel");
         }
 
-        new CMFileChooserPrefs(app.getPrefsRepository(), "importEOModel/lastDir").bind(eoModelChooser);
+        new CMFileChooserPrefs(app.getPrefsManager(), "importEOModel/lastDir").bind(eoModelChooser);
 
         return eoModelChooser;
     }

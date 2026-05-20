@@ -19,7 +19,7 @@
 package org.apache.cayenne.modeler.pref;
 
 /**
- * One-time data migration applied by {@link PrefsRepository#runMigrations()}.
+ * One-time data migration applied by {@link PrefsManager#runMigrations()}.
  */
 public interface PreferenceMigration {
 

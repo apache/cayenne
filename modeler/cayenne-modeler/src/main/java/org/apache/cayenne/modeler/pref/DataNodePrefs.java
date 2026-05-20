@@ -26,12 +26,12 @@ public final class DataNodePrefs extends PreferenceAdapter {
 
     static final String NODE = "dataNode";
 
-    private final PrefsRepository repository;
+    private final PrefsManager repository;
     private final Project project;
 
     private String localDataSource;
 
-    public DataNodePrefs(PrefsRepository repository, Project project, String dataNodeName) {
+    public DataNodePrefs(PrefsManager repository, Project project, String dataNodeName) {
         super(repository.projectPref(project, NODE + "/" + dataNodeName));
 
         // capture repo and project for the sake of "rename"

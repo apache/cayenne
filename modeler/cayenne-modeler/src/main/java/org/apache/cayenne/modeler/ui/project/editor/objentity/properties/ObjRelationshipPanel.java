@@ -276,7 +276,7 @@ public class ObjRelationshipPanel extends JPanel implements ObjEntityDisplayList
         deleteRulesCombo.setSelectedIndex(0); // Default to the first value
         col.setCellEditor(new CMComboBoxCellEditor(deleteRulesCombo));
 
-        new CMTablePrefs(session.app().getPrefsRepository(), "objEntity/relationshipTable")
+        new CMTablePrefs(session.app().getPrefsManager(), "objEntity/relationshipTable")
                 .bind(table, null, ObjRelationshipTableModel.REL_NAME);
     }
 

@@ -48,7 +48,7 @@ public class NameGeneratorPreferences {
     }
 
     Preferences getPreference(Application application) {
-        return application.getPrefsRepository().projectPref(application.getFrame().getProjectSession().project(), null);
+        return application.getPrefsManager().projectPref(application.getFrame().getProjectSession().project(), null);
     }
 
     /**

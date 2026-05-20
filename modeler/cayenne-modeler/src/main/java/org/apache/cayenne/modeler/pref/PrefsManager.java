@@ -27,6 +27,7 @@ import org.apache.cayenne.modeler.pref.migration.toV5._4_RecentProjectsMigration
 import org.apache.cayenne.modeler.pref.migration.toV5._5_FrameGeometryMigration;
 import org.apache.cayenne.modeler.pref.migration.toV5._6_ProjectSplitPaneMigration;
 import org.apache.cayenne.modeler.pref.migration.toV5._7_EntityTablePrefsMigration;
+import org.apache.cayenne.modeler.pref.migration.toV5._8_RemoveRedundantPathIndexMigration;
 import org.apache.cayenne.configuration.ConfigurationNameMapper;
 import org.apache.cayenne.project.Project;
 import org.apache.cayenne.resource.Resource;
@@ -47,25 +48,19 @@ import java.util.stream.Stream;
 
 
 /**
- * App-wide preferences service for the Modeler. Delegates preferences-node
- * location to {@link PrefsLocator} and adds Modeler-specific lifecycle
- * on top: tracking unsaved projects/DataMaps with in-memory ids, staging
- * renames/moves so they can be replayed on save, running version-gated
- * preference migrations, and resetting the subtree.
+ * A stateful preferences manager for the Application. Handles preference versioning, DataMap and project renaming,
+ * locating preference nodes under the common root, etc.
  */
-public class PrefsRepository {
+public class PrefsManager {
 
-    private static final Logger LOGGER = LoggerFactory.getLogger(PrefsRepository.class);
+    private static final Logger LOGGER = LoggerFactory.getLogger(PrefsManager.class);
 
-    private static final String PROJECT_INDEX_NODE = "projectIndex";
-    private static final String DATAMAP_INDEX_NODE = "dataMapIndex";
     private static final String UNSAVED_PREFIX = "unsaved-";
 
     private static final String UI_NODE = "ui";
     private static final String META_NODE = "_meta";
 
     private static final String MIGRATIONS_VERSION_KEY = "migrationsAppliedVersion";
-    private static final String PATH_KEY = "path";
 
     private final ConfigurationNameMapper nameMapper;
     private final List<PreferenceMigration> migrations;
@@ -84,14 +79,15 @@ public class PrefsRepository {
                         new _4_RecentProjectsMigration(),
                         new _5_FrameGeometryMigration(),
                         new _6_ProjectSplitPaneMigration(),
-                        new _7_EntityTablePrefsMigration())
+                        new _7_EntityTablePrefsMigration(),
+                        new _8_RemoveRedundantPathIndexMigration())
 
                 // just in case, sort to prevent any ordering issues with manual insertion
                 .sorted(Comparator.comparingInt(PreferenceMigration::version))
                 .collect(Collectors.toList());
     }
 
-    public PrefsRepository(ConfigurationNameMapper nameMapper, PrefsLocator locator) {
+    public PrefsManager(ConfigurationNameMapper nameMapper, PrefsLocator locator) {
         this.nameMapper = nameMapper;
         this.locator = locator;
         this.migrations = toV5Migrations();
@@ -105,16 +101,11 @@ public class PrefsRepository {
      * Returns the preferences node for the given {@link Project}, optionally descending into a subtree within it.
      */
     public Preferences projectPref(Project project, String relativePath) {
-        Preferences node;
         String path = projectPath(project);
-        if (path != null) {
-            String id = PreferenceNodeIds.idForPath(path);
-            node = locator.projectNode(id);
-            recordPath(node, id, path, PROJECT_INDEX_NODE);
-        } else {
-            String id = newProjectIds.computeIfAbsent(project, p -> newUnsavedId());
-            node = locator.projectNode(id);
-        }
+        String id = path != null
+                ? PreferenceNodeIds.idForPath(path)
+                : newProjectIds.computeIfAbsent(project, p -> newUnsavedId());
+        Preferences node = locator.projectNode(id);
         return relativePath == null || relativePath.isEmpty() ? node : node.node(relativePath);
     }
 
@@ -133,16 +124,11 @@ public class PrefsRepository {
      * Returns the preferences node for the given {@link DataMap}, optionally descending into a subtree within it.
      */
     public Preferences dataMapPref(DataMap map, String relativePath) {
-        Preferences node;
         String path = dataMapPath(map);
-        if (path != null) {
-            String id = PreferenceNodeIds.idForPath(path);
-            node = locator.dataMapNode(id);
-            recordPath(node, id, path, DATAMAP_INDEX_NODE);
-        } else {
-            String id = newDataMapIds.computeIfAbsent(map, m -> newUnsavedId());
-            node = locator.dataMapNode(id);
-        }
+        String id = path != null
+                ? PreferenceNodeIds.idForPath(path)
+                : newDataMapIds.computeIfAbsent(map, m -> newUnsavedId());
+        Preferences node = locator.dataMapNode(id);
         return relativePath == null || relativePath.isEmpty() ? node : node.node(relativePath);
     }
 
@@ -310,18 +296,14 @@ public class PrefsRepository {
         if (stagedOldPath != null) {
             String oldId = PreferenceNodeIds.idForPath(stagedOldPath);
             if (!oldId.equals(savedId)) {
-                relocate(locator::projectNode, oldId, savedId, PROJECT_INDEX_NODE, currentPath);
-            } else {
-                recordPath(locator.projectNode(savedId), savedId, currentPath, PROJECT_INDEX_NODE);
+                relocate(locator::projectNode, oldId, savedId);
             }
             return;
         }
 
         String oldId = newProjectIds.remove(project);
         if (oldId != null && !oldId.equals(savedId)) {
-            relocate(locator::projectNode, oldId, savedId, PROJECT_INDEX_NODE, currentPath);
-        } else {
-            recordPath(locator.projectNode(savedId), savedId, currentPath, PROJECT_INDEX_NODE);
+            relocate(locator::projectNode, oldId, savedId);
         }
     }
 
@@ -336,35 +318,19 @@ public class PrefsRepository {
         if (stagedOldPath != null) {
             String oldId = PreferenceNodeIds.idForPath(stagedOldPath);
             if (!oldId.equals(savedId)) {
-                relocate(locator::dataMapNode, oldId, savedId, DATAMAP_INDEX_NODE, currentPath);
-            } else {
-                recordPath(locator.dataMapNode(savedId), savedId, currentPath, DATAMAP_INDEX_NODE);
+                relocate(locator::dataMapNode, oldId, savedId);
             }
             return;
         }
 
         String oldId = newDataMapIds.remove(map);
         if (oldId != null && !oldId.equals(savedId)) {
-            relocate(locator::dataMapNode, oldId, savedId, DATAMAP_INDEX_NODE, currentPath);
-        } else {
-            recordPath(locator.dataMapNode(savedId), savedId, currentPath, DATAMAP_INDEX_NODE);
+            relocate(locator::dataMapNode, oldId, savedId);
         }
     }
 
-    private void relocate(Function<String, Preferences> nodeForId, String oldId, String newId, String indexNode, String path) {
-        Preferences src = nodeForId.apply(oldId);
-        Preferences dst = nodeForId.apply(newId);
-        PreferencesCopier.move(src, dst);
-        locator.appNode(indexNode).remove(oldId);
-        recordPath(dst, newId, path, indexNode);
-    }
-
-    private void recordPath(Preferences node, String id, String path, String indexNode) {
-        if (path == null) {
-            return;
-        }
-        node.put(PATH_KEY, path);
-        locator.appNode(indexNode).put(id, path);
+    private static void relocate(Function<String, Preferences> nodeForId, String oldId, String newId) {
+        PreferencesCopier.move(nodeForId.apply(oldId), nodeForId.apply(newId));
     }
 
     private static String projectPath(Project project) {

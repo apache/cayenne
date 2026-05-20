@@ -21,11 +21,7 @@ package org.apache.cayenne.modeler.pref;
 import java.util.prefs.Preferences;
 
 /**
- * Maps logical Modeler preference locations to {@link Preferences} nodes. Pure
- * JDK; holds the layout constants for {@code org/apache/cayenne/modeler/v5/...}
- * (the regular preferences tree) and {@code org/apache/cayenne/modeler/mcp-handshake/...}
- * (the sibling MCP launch-handshake namespace). All Modeler code that addresses
- * a preferences node should go through this class.
+ * Resolves preference nodes against the common root.
  */
 public final class PrefsLocator {
 
@@ -43,7 +39,15 @@ public final class PrefsLocator {
     private final Preferences root;
 
     public PrefsLocator() {
-        this.root = Preferences.userRoot();
+        this(Preferences.userRoot());
+    }
+
+    /**
+     * Test-friendly constructor letting callers point the locator at an isolated
+     * preferences subtree instead of {@link Preferences#userRoot()}.
+     */
+    public PrefsLocator(Preferences root) {
+        this.root = root;
     }
 
     /**

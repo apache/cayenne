@@ -193,7 +193,7 @@ public class DbRelationshipPanel extends JPanel implements DbEntityDisplayListen
         TableColumn toDepPkColumn = table.getColumnModel().getColumn(DbRelationshipTableModel.TO_DEPENDENT_KEY);
         toDepPkColumn.setCellRenderer(new CheckBoxCellRenderer());
 
-        new CMTablePrefs(session.app().getPrefsRepository(), "dbEntity/relationshipTable")
+        new CMTablePrefs(session.app().getPrefsManager(), "dbEntity/relationshipTable")
                 .bind(table, null, DbRelationshipTableModel.NAME);
     }
 

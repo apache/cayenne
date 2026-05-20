@@ -111,7 +111,7 @@ public class MorePrefsPanel extends AppPanel {
         }
         app.getFrame().dispose();
 
-        app.getPrefsRepository().resetToDefaults(importLegacy);
+        app.getPrefsManager().resetToDefaults(importLegacy);
 
         // Defer the rebuild to a later EDT tick so the in-flight action handler
         // (and any pending dispose events) drain first.

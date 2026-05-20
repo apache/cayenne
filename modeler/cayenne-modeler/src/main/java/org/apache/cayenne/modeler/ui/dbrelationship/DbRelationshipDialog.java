@@ -321,7 +321,7 @@ public class DbRelationshipDialog extends ProjectDialog {
         AutoCompletion.enable(targetCombo, session::getSelectedDataMap);
         targetColumn.setCellEditor(new CMComboBoxCellEditor(targetCombo));
 
-        new CMTablePrefs(app.getPrefsRepository(), "dbEntity/dbjoinTable")
+        new CMTablePrefs(app.getPrefsManager(), "dbEntity/dbjoinTable")
                 .bind(table, null, DbJoinTableModel.SOURCE);
     }
 

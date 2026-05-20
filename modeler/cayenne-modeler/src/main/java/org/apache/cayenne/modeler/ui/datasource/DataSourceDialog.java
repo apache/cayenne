@@ -84,7 +84,7 @@ public class DataSourceDialog extends ProjectDialog {
         refreshDataSources();
         initFavouriteDataSource();
 
-        DataMapPrefs dataMapPrefs = new DataMapPrefs(app.getPrefsRepository(), session.getSelectedDataMap());
+        DataMapPrefs dataMapPrefs = new DataMapPrefs(app.getPrefsManager(), session.getSelectedDataMap());
         if (dataMapPrefs.hasDbAdapter()) {
             getConnectionInfoFromPreferences().copyTo(connector);
         }
@@ -163,7 +163,7 @@ public class DataSourceDialog extends ProjectDialog {
     }
 
     private DBConnector getConnectionInfoFromPreferences() {
-        DataMapPrefs dataMapPrefs = new DataMapPrefs(app.getPrefsRepository(), session.getSelectedDataMap());
+        DataMapPrefs dataMapPrefs = new DataMapPrefs(app.getPrefsManager(), session.getSelectedDataMap());
         DBConnector c = dataMapPrefs.getConnector();
         return c != null ? c : new DBConnector();
     }

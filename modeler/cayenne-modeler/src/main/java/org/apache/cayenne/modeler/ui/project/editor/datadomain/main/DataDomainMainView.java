@@ -203,7 +203,7 @@ public class DataDomainMainView extends ProjectPanel implements DomainDisplayLis
                 this,
                 dataChannelDescriptor,
                 dataChannelDescriptor.getName());
-        app.getPrefsRepository().stageProjectRename(session.project(), newName);
+        app.getPrefsManager().stageProjectRename(session.project(), newName);
         dataChannelDescriptor.setName(newName);
 
         session.fireDomainEvent(e);
