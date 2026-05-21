@@ -11,18 +11,24 @@ This plugin teaches Claude how to:
 
 The plugin assumes downstream **users of Cayenne** writing their own Java apps. It does *not* cover contributor workflows for hacking on Cayenne itself.
 
-## First-time setup
+## Install
 
-> **Cayenne 5.0+ only.** The MCP server ships with Cayenne 5.0. Skills that depend on it (`cayenne-cgen`, `cayenne-modeler`, `cayenne-reverse-engineer`) will not work against earlier Cayenne versions — there is no MCP server to register. The XML-editing skills (`cayenne-modeling`) and runtime/query skills target Cayenne 5.0 idioms too; for older Cayenne, this plugin is not the right tool.
+**Cayenne 5.0+ only.** The MCP server ships with Cayenne 5.0. Skills that depend on it (`cayenne-cgen`, `cayenne-modeler`, `cayenne-reverse-engineer`) will not work against earlier Cayenne versions. The XML-editing, runtime, and query skills also target 5.0 idioms — for older Cayenne, this plugin is not the right tool.
 
-1. **Register the Cayenne MCP server.** Class generation (`cgen_run`) and opening the Modeler GUI (`open_project`) both go through this server.
-TODO: Full instructions will be on the website shorly.
+The plugin is distributed from the Apache Cayenne GitHub repository: **https://github.com/apache/cayenne**. Inside Claude Code:
 
-```bash
+```
+# register the "marketplace"
+/plugin marketplace add apache/cayenne
+
+# install the plugin
+/plugin install apache-cayenne@apache-cayenne
+
+# Install the MCP server (requires a local CayenneModeler install)
 claude mcp add cayenne --scope user -- java -jar /path/to/cayenne-mcp-server-<VERSION>.jar
 ```
 
-2. **Verify** the server is registered with `claude mcp list` — you should see an entry named `cayenne` (the MCP server alias from the command above, separate from this plugin's `apache-cayenne` name) showing as connected.
+Full MCP setup instructions will be on the Cayenne website shortly.
 
 That's it. The skills detect the MCP server at runtime; if it isn't connected they point back at this README instead of falling back to Maven or Gradle goals.
 

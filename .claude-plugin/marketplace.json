@@ -1,0 +1,23 @@
+{
+  "name": "apache-cayenne",
+  "metadata": {
+    "description": "Apache Cayenne ORM Claude Code plugins"
+  },
+  "owner": {
+    "name": "Apache Cayenne"
+  },
+  "plugins": [
+    {
+      "name": "apache-cayenne",
+      "description": "Apache Cayenne 5.0 ORM — design DataMaps, reverse-engineer schemas, generate classes, write runtime code.",
+      "author": { "name": "Apache Cayenne" },
+      "source": {
+        "type": "git",
+        "repo": "apache/cayenne",
+        "path": "ai-plugin"
+      },
+      "category": "development",
+      "tags": ["java", "orm", "cayenne", "database"]
+    }
+  ]
+}
