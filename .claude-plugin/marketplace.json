@@ -11,7 +11,12 @@
       "name": "apache-cayenne",
       "description": "Apache Cayenne 5.0 ORM — design DataMaps, reverse-engineer schemas, generate classes, write runtime code.",
       "author": { "name": "Apache Cayenne" },
-      "source": "./ai-plugin",
+      "source": {
+        "source": "git-subdir",
+        "url": "https://github.com/apache/cayenne.git",
+        "path": "ai-plugin",
+        "ref": "master"
+      },
       "category": "development",
       "tags": ["java", "orm", "cayenne", "database"]
     }
