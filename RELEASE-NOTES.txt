@@ -43,6 +43,7 @@ CAY-2940 Upgrade to SLF4J version 2.0.17
 CAY-2942 CayenneModeler MCP: cgen_run tool
 CAY-2943 CayenneModeler MCP: open_project tool
 CAY-2945 CayenneModeler universal "main"
+CAY-2946 Claude Code "plugin" for agentic coding with Cayenne
 
 Bug Fixes:
 

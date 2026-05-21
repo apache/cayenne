@@ -1,0 +1,61 @@
+# apache-cayenne — Claude Code plugin
+
+Apache Cayenne ORM workflows for Claude Code.
+
+This plugin teaches Claude how to:
+
+- Edit Cayenne DataMap (`*.map.xml`) and project descriptor (`cayenne-*.xml`) files a-la-carte (add entities, relationships, queries, embeddables).
+- Reverse-engineer a database schema into a DataMap by driving CayenneModeler.
+- Regenerate Java entity classes from a DataMap.
+- Bootstrap `CayenneRuntime` in a Java application and write `ObjectSelect` / `SQLSelect` queries.
+
+The plugin assumes downstream **users of Cayenne** writing their own Java apps. It does *not* cover contributor workflows for hacking on Cayenne itself.
+
+## First-time setup
+
+> **Cayenne 5.0+ only.** The MCP server ships with Cayenne 5.0. Skills that depend on it (`cayenne-cgen`, `cayenne-modeler`, `cayenne-reverse-engineer`) will not work against earlier Cayenne versions — there is no MCP server to register. The XML-editing skills (`cayenne-modeling`) and runtime/query skills target Cayenne 5.0 idioms too; for older Cayenne, this plugin is not the right tool.
+
+1. **Register the Cayenne MCP server.** Class generation (`cgen_run`) and opening the Modeler GUI (`open_project`) both go through this server.
+TODO: Full instructions will be on the website shorly.
+
+```bash
+claude mcp add cayenne --scope user -- java -jar /path/to/cayenne-mcp-server-<VERSION>.jar
+```
+
+2. **Verify** the server is registered with `claude mcp list` — you should see an entry named `cayenne` (the MCP server alias from the command above, separate from this plugin's `apache-cayenne` name) showing as connected.
+
+That's it. The skills detect the MCP server at runtime; if it isn't connected they point back at this README instead of falling back to Maven or Gradle goals.
+
+## What's in here
+
+```
+ai-plugin/
+├── .claude-plugin/plugin.json   # manifest
+├── README.md                    # this file
+├── skills/                      # auto-triggering workflows
+│   ├── cayenne-modeling/        # edit *.map.xml and cayenne-*.xml
+│   ├── cayenne-reverse-engineer/# import a DB schema (Modeler GUI)
+│   ├── cayenne-cgen/            # regenerate Java classes via MCP
+│   ├── cayenne-modeler/         # open the GUI on a project
+│   ├── cayenne-runtime/         # bootstrap CayenneRuntime in an app
+│   └── cayenne-query/           # write ObjectSelect / SQLSelect queries
+└── references/                  # source-of-truth docs loaded by skills
+    ├── project-layout.md
+    ├── datamap-schema.md
+    ├── project-descriptor-schema.md
+    ├── dbimport-config.md
+    ├── cgen-config.md
+    ├── runtime-api.md
+    ├── query-api.md
+    └── mcp-tools.md
+```
+
+Each skill is a thin trigger that loads the right reference docs and walks Claude through the workflow.
+
+ORM workflows go through:
+
+1. Direct XML edits — primary path for a-la-carte model changes.
+2. MCP `cgen_run` — class generation.
+3. MCP `open_project` → CayenneModeler GUI — full DB sync and visual editing.
+
+and will NOT use Maven or Gradle plugins
