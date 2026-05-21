@@ -3,6 +3,24 @@ name: cayenne-modeler
 description: "Use this skill when the user explicitly wants to open CayenneModeler (the GUI) on a Cayenne project, or when the modeling task is inherently visual — reverse engineering (delegated to cayenne-reverse-engineer), bulk relationship layout, multi-entity visual refactoring. Trigger on phrases like 'open the Modeler', 'open in CayenneModeler', 'launch the GUI', 'edit visually', 'show me the project in the Modeler'. Do NOT trigger as a fallback for ordinary a-la-carte XML edits — those belong in the cayenne-modeling skill, which is faster and doesn't require the user to context-switch."
 ---
 
+<!--
+	Licensed to the Apache Software Foundation (ASF) under one
+	or more contributor license agreements.  See the NOTICE file
+	distributed with this work for additional information
+	regarding copyright ownership.  The ASF licenses this file
+	to you under the Apache License, Version 2.0 (the
+	"License"); you may not use this file except in compliance
+	with the License.  You may obtain a copy of the License at
+	
+	https://www.apache.org/licenses/LICENSE-2.0
+	
+	Unless required by applicable law or agreed to in writing,
+	software distributed under the License is distributed on an
+	"AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY
+	KIND, either express or implied.  See the License for the
+	specific language governing permissions and limitations
+	under the License.   
+-->
 # cayenne-modeler
 
 Launch CayenneModeler with a Cayenne project file pre-loaded, via the `mcp__cayenne__open_project` MCP tool.

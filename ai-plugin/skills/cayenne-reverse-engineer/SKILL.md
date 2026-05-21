@@ -3,6 +3,24 @@ name: cayenne-reverse-engineer
 description: "Use this skill whenever the user wants to import database schema metadata into a Cayenne DataMap — full-schema sync from a live DB. Trigger on phrases like 'reverse engineer the database', 'import the schema', 'generate a DataMap from my DB', 'sync the model with the database', 'add the new tables from the DB', 'import the customer table', 'pick up the latest schema changes', 'create entities from these tables', or any request that involves reading database metadata to populate or update a DataMap. This is for *full schema* or *bulk table* import; one-off a-la-carte entity additions belong in the cayenne-modeling skill. The skill drives this through CayenneModeler's reverse-engineering wizard via the `mcp__cayenne__open_project` MCP tool — it does NOT use Maven `cdbimport` or any Gradle equivalent."
 ---
 
+<!--
+	Licensed to the Apache Software Foundation (ASF) under one
+	or more contributor license agreements.  See the NOTICE file
+	distributed with this work for additional information
+	regarding copyright ownership.  The ASF licenses this file
+	to you under the Apache License, Version 2.0 (the
+	"License"); you may not use this file except in compliance
+	with the License.  You may obtain a copy of the License at
+	
+	https://www.apache.org/licenses/LICENSE-2.0
+	
+	Unless required by applicable law or agreed to in writing,
+	software distributed under the License is distributed on an
+	"AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY
+	KIND, either express or implied.  See the License for the
+	specific language governing permissions and limitations
+	under the License.   
+-->
 # cayenne-reverse-engineer
 
 Import a database schema into a Cayenne DataMap by driving the CayenneModeler's reverse-engineering wizard through MCP. Cayenne 5.0 does not yet expose reverse engineering as a direct MCP tool, so the workflow launches the GUI and walks the user through the wizard.

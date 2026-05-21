@@ -3,6 +3,24 @@ name: cayenne-modeling
 description: "Use this skill whenever the user wants to edit, inspect, or extend the Cayenne ORM model in a project — adding or modifying entities, attributes, relationships, embeddables, named queries, stored procedures, or DataNodes. Trigger on phrases like 'add an ObjEntity', 'add a DbEntity', 'add a relationship', 'expose this column as an attribute', 'create a new DataMap', 'add a named query', 'create an embeddable', 'add a stored procedure', 'change the attribute type', 'mark this column as nullable', 'rename this entity', or any mention of a Cayenne `*.map.xml` or `cayenne-*.xml` file. Also trigger when the user references modeling concepts (ObjEntity, DbEntity, ObjAttribute, DbAttribute, ObjRelationship, DbRelationship, Embeddable, dbEntityName, deleteRule, db-attribute-path, db-relationship-path, defaultPackage) in the context of a Cayenne-using app. This is the *primary* skill for a-la-carte ORM model manipulation — direct XML edits, not the Modeler GUI."
 ---
 
+<!--
+	Licensed to the Apache Software Foundation (ASF) under one
+	or more contributor license agreements.  See the NOTICE file
+	distributed with this work for additional information
+	regarding copyright ownership.  The ASF licenses this file
+	to you under the Apache License, Version 2.0 (the
+	"License"); you may not use this file except in compliance
+	with the License.  You may obtain a copy of the License at
+	
+	https://www.apache.org/licenses/LICENSE-2.0
+	
+	Unless required by applicable law or agreed to in writing,
+	software distributed under the License is distributed on an
+	"AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY
+	KIND, either express or implied.  See the License for the
+	specific language governing permissions and limitations
+	under the License.   
+-->
 # cayenne-modeling
 
 Edit Cayenne DataMap (`*.map.xml`) and project descriptor (`cayenne-*.xml`) files directly. This is the **default path** for granular model changes — adding one entity, one relationship, one query. Use the Modeler GUI (`cayenne-modeler` skill) only for inherently visual work like reverse engineering.

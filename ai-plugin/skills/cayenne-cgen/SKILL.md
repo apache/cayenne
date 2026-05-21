@@ -3,6 +3,24 @@ name: cayenne-cgen
 description: "Use this skill whenever the user wants to (re)generate Cayenne entity Java classes from a DataMap. Trigger on phrases like 'generate Java classes', 'regenerate entities', 'run cgen', 'create the entity classes', 'why is the Artist class missing fields', 'where did the `_Abstract*` classes come from', 'sync the entity classes with the model', or any request to materialize Java from the DataMap. Also trigger as a follow-up after modeling changes (someone added an entity, attribute, or relationship and now the Java side is stale). This skill exclusively uses the `mcp__cayenne__cgen_run` MCP tool — it does NOT use `mvn cayenne:cgen` or the Gradle cgen task."
 ---
 
+<!--
+	Licensed to the Apache Software Foundation (ASF) under one
+	or more contributor license agreements.  See the NOTICE file
+	distributed with this work for additional information
+	regarding copyright ownership.  The ASF licenses this file
+	to you under the Apache License, Version 2.0 (the
+	"License"); you may not use this file except in compliance
+	with the License.  You may obtain a copy of the License at
+	
+	https://www.apache.org/licenses/LICENSE-2.0
+	
+	Unless required by applicable law or agreed to in writing,
+	software distributed under the License is distributed on an
+	"AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY
+	KIND, either express or implied.  See the License for the
+	specific language governing permissions and limitations
+	under the License.   
+-->
 # cayenne-cgen
 
 Run Cayenne's class generator on a DataMap via the `mcp__cayenne__cgen_run` MCP tool. Reads the embedded `<cgen>` block in the DataMap to determine destination, mode, templates, etc.

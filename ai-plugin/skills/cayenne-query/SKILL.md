@@ -3,6 +3,24 @@ name: cayenne-query
 description: "Use this skill whenever the user wants to write or modify a Cayenne query — fetching entities by criteria, joining, prefetching to avoid N+1, ordering, paginating, aggregating, or running raw SQL through Cayenne. Trigger on phrases like 'query for X', 'fetch all artists where ...', 'write an ObjectSelect', 'use SQLSelect', 'use SelectById', 'add a prefetch', 'get distinct values', 'count rows', 'find by ID', 'load by primary key', 'build a Cayenne expression', 'why am I getting N+1', 'how do I paginate', 'select a single column', 'select columns into a DTO', 'named query in the DataMap'. Do NOT trigger for modeling changes (use cayenne-modeling) or runtime bootstrap (use cayenne-runtime)."
 ---
 
+<!--
+	Licensed to the Apache Software Foundation (ASF) under one
+	or more contributor license agreements.  See the NOTICE file
+	distributed with this work for additional information
+	regarding copyright ownership.  The ASF licenses this file
+	to you under the Apache License, Version 2.0 (the
+	"License"); you may not use this file except in compliance
+	with the License.  You may obtain a copy of the License at
+	
+	https://www.apache.org/licenses/LICENSE-2.0
+	
+	Unless required by applicable law or agreed to in writing,
+	software distributed under the License is distributed on an
+	"AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY
+	KIND, either express or implied.  See the License for the
+	specific language governing permissions and limitations
+	under the License.   
+-->
 # cayenne-query
 
 Write idiomatic Cayenne 5.0 queries — `ObjectSelect`, `SelectById`, `SQLSelect`, expressions, prefetch, pagination, aggregates.
