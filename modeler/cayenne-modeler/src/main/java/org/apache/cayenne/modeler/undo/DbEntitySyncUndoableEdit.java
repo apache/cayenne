@@ -18,10 +18,6 @@
  ****************************************************************/
 package org.apache.cayenne.modeler.undo;
 
-import java.util.Collection;
-
-import javax.swing.undo.CompoundEdit;
-
 import org.apache.cayenne.configuration.DataChannelDescriptor;
 import org.apache.cayenne.map.DataMap;
 import org.apache.cayenne.map.DbAttribute;
@@ -30,6 +26,9 @@ import org.apache.cayenne.map.ObjEntity;
 import org.apache.cayenne.map.ObjRelationship;
 import org.apache.cayenne.modeler.project.ProjectSession;
 import org.apache.cayenne.util.EntityMergeListener;
+
+import javax.swing.undo.CompoundEdit;
+import java.util.Collection;
 
 public class DbEntitySyncUndoableEdit extends CompoundEdit {
 
@@ -56,7 +55,7 @@ public class DbEntitySyncUndoableEdit extends CompoundEdit {
 
     public class EntitySyncUndoableListener implements EntityMergeListener {
 
-        private ObjEntity entity;
+        private final ObjEntity entity;
 
         public EntitySyncUndoableListener(ObjEntity entity) {
             this.entity = entity;

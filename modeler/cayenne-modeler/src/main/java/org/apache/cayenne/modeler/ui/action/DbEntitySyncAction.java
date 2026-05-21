@@ -94,17 +94,16 @@ public class DbEntitySyncAction extends AppAction {
             filterInheritedEntities(entities);
 
             boolean hasChanges = false;
-            for (final ObjEntity entity : entities) {
+            for (ObjEntity entity : entities) {
 
-                final DbEntitySyncUndoableEdit.EntitySyncUndoableListener listener = undoableEdit.new EntitySyncUndoableListener(
-                        entity);
+                DbEntitySyncUndoableEdit.EntitySyncUndoableListener listener = undoableEdit.new EntitySyncUndoableListener(entity);
 
                 merger.addEntityMergeListener(listener);
 
-                final Collection<DbAttribute> meaningfulFKs = merger.getMeaningfulFKs(entity);
+                Collection<DbAttribute> meaningfulFKs = merger.getMeaningfulFKs(entity);
 
                 // TODO: addition or removal of model objects should be reflected in listener callbacks...
-                // we should not be trying to introspect the merger
+                //  we should not be trying to introspect the merger
                 if (merger.isRemovingMeaningfulFKs() && !meaningfulFKs.isEmpty()) {
                     undoableEdit.addEdit(undoableEdit.new MeaningfulFKsUndoableEdit(entity, meaningfulFKs));
                     hasChanges = true;
@@ -135,12 +134,12 @@ public class DbEntitySyncAction extends AppAction {
     static class PreserveRelationshipNameGenerator extends DefaultObjectNameGenerator {
 
         @Override
-        public String relationshipName(final DbRelationship... relationshipChain) {
+        public String relationshipName(DbRelationship... relationshipChain) {
             if (relationshipChain.length == 0) {
                 return super.relationshipName(relationshipChain);
             }
-            final DbRelationship last = relationshipChain[relationshipChain.length - 1];
-            // must be in sync with DefaultBaseNameVisitor.visitDbRelationship
+
+            DbRelationship last = relationshipChain[relationshipChain.length - 1];
             if (last.getName().startsWith("untitledRel")) {
                 return super.relationshipName(relationshipChain);
             }

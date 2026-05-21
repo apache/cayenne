@@ -41,7 +41,7 @@ import java.awt.event.ComponentEvent;
 import java.util.Collection;
 import java.util.List;
 
-public class DbSyncDbImportAction extends DefaultDbImportAction {
+public class ModelerDbImportAction extends DefaultDbImportAction {
 
     private final DataMap targetMap;
     private final DbImportResultDialog resultDialog;
@@ -49,7 +49,7 @@ public class DbSyncDbImportAction extends DefaultDbImportAction {
     private DataMap sourceDataMap;
     private DbImportConfiguration config;
 
-    public DbSyncDbImportAction(
+    public ModelerDbImportAction(
             @Inject DataMap targetMap,
             @Inject Application application,
             @Inject Logger logger,

@@ -36,7 +36,7 @@ import java.util.Objects;
  */
 public class DefaultObjectNameGenerator implements ObjectNameGenerator {
 
-    private DbEntityNameStemmer dbEntityNameStemmer;
+    private final DbEntityNameStemmer dbEntityNameStemmer;
 
     public DefaultObjectNameGenerator() {
         this.dbEntityNameStemmer = NoStemStemmer.getInstance();
@@ -108,7 +108,7 @@ public class DefaultObjectNameGenerator implements ObjectNameGenerator {
             return stemmed(last.getTargetEntityName());
         }
 
-        DbJoin join1 = joins.get(0);
+        DbJoin join1 = joins.getFirst();
 
         // TODO: multi-join relationships
 

@@ -32,7 +32,7 @@ public class AddRelationshipToModel extends AbstractToModelToken.Entity {
     public static final String COMMA_SEPARATOR = ", ";
     public static final int COMMA_SEPARATOR_LENGTH = COMMA_SEPARATOR.length();
 
-    private DbRelationship relationship;
+    private final DbRelationship relationship;
 
     public AddRelationshipToModel(DbEntity entity, DbRelationship relationship) {
         super("Add Relationship", 125, entity);
@@ -42,13 +42,13 @@ public class AddRelationshipToModel extends AbstractToModelToken.Entity {
     public static String getTokenValue(DbRelationship rel) {
         String attributes = "";
         if (rel.getJoins().size() == 1) {
-            attributes = rel.getJoins().get(0).getTargetName();
+            attributes = rel.getJoins().getFirst().getTargetName();
         } else {
             for (DbJoin dbJoin : rel.getJoins()) {
                 attributes += dbJoin.getTargetName() + COMMA_SEPARATOR;
             }
 
-            if(attributes.isEmpty()) {
+            if (attributes.isEmpty()) {
                 attributes = "{}";
             } else {
                 attributes = "{" + attributes.substring(0, attributes.length() - COMMA_SEPARATOR_LENGTH) + "}";
@@ -66,7 +66,7 @@ public class AddRelationshipToModel extends AbstractToModelToken.Entity {
     @Override
     public void execute(MergerContext context) {
         // Set name to relationship if it was created without it, e.g. in createReverse() action
-        if(relationship.getName() == null) {
+        if (relationship.getName() == null) {
             relationship.setName(context.getNameGenerator().relationshipName(relationship));
         }
 

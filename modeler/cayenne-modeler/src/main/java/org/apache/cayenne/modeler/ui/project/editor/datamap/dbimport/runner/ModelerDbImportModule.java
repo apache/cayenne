@@ -42,7 +42,7 @@ public class ModelerDbImportModule implements Module {
         binder.bind(ProjectSession.class).toInstance(loaderContext.getProjectSession());
         binder.bind(GlobalActions.class).toInstance(loaderContext.getApplication().getActionManager());
         binder.bind(ProjectSaver.class).to(DbImportProjectSaver.class);
-        binder.bind(DbImportAction.class).to(DbSyncDbImportAction.class);
+        binder.bind(DbImportAction.class).to(ModelerDbImportAction.class);
         binder.bind(DataMap.class).toInstance(loaderContext.getDataMap());
     }
 }

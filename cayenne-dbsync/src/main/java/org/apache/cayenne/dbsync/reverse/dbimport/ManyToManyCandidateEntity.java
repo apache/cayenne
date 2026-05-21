@@ -54,8 +54,8 @@ class ManyToManyCandidateEntity {
         ObjRelationship rel1 = relationships.get(0);
         ObjRelationship rel2 = relationships.get(1);
 
-        dbRel1 = rel1.getDbRelationships().get(0);
-        dbRel2 = rel2.getDbRelationships().get(0);
+        dbRel1 = rel1.getDbRelationships().getFirst();
+        dbRel2 = rel2.getDbRelationships().getFirst();
 
         reverseRelationship1 = dbRel1.getReverseRelationship();
         reverseRelationship2 = dbRel2.getReverseRelationship();
@@ -64,11 +64,6 @@ class ManyToManyCandidateEntity {
         entity2 = rel2.getTargetEntity();
     }
 
-    /**
-     * Method check - if current entity represent many to many temporary table
-     *
-     * @return true if current entity is represent many to many table; otherwise returns false
-     */
     public static ManyToManyCandidateEntity build(ObjEntity joinEntity) {
         ArrayList<ObjRelationship> relationships = new ArrayList<>(joinEntity.getRelationships());
         if (relationships.size() != 2 || (relationships.get(0).getDbRelationships().isEmpty() || relationships.get(1).getDbRelationships().isEmpty())) {
@@ -84,7 +79,7 @@ class ManyToManyCandidateEntity {
     }
 
     private boolean isManyToMany() {
-        boolean isNotHaveAttributes = joinEntity.getAttributes().size() == 0;
+        boolean isNotHaveAttributes = joinEntity.getAttributes().isEmpty();
 
         return isNotHaveAttributes
                 && reverseRelationship1 != null && reverseRelationship1.isToDependentPK()
@@ -96,8 +91,9 @@ class ManyToManyCandidateEntity {
                                           DbRelationship rel1, DbRelationship rel2) {
 
         if (rel1.getSourceAttributes().isEmpty() && rel2.getTargetAttributes().isEmpty()) {
-            LOG.warn("Wrong call ManyToManyCandidateEntity.addFlattenedRelationship(... , " + srcEntity.getName()
-                    + ", " + dstEntity.getName() + ", ...)");
+            LOG.warn("Wrong call ManyToManyCandidateEntity.addFlattenedRelationship(... , {}, {}, ...)",
+                    srcEntity.getName(),
+                    dstEntity.getName());
 
             return;
         }
@@ -118,10 +114,7 @@ class ManyToManyCandidateEntity {
     }
 
     /**
-     * Method make direct relationships between 2 entities and remove relationships to
-     * many to many entity
-     *
-     * @param nameGenerator
+     * Make direct relationships between 2 entities and remove relationships to many-to-many entity
      */
     public void optimizeRelationships(ObjectNameGenerator nameGenerator) {
         entity1.removeRelationship(reverseRelationship1.getName());

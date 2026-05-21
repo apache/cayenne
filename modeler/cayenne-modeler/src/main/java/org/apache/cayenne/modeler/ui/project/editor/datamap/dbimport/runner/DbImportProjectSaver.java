@@ -28,7 +28,7 @@ import org.apache.cayenne.resource.Resource;
 
 public class DbImportProjectSaver implements ProjectSaver {
 
-    private ProjectSession session;
+    private final ProjectSession session;
 
     public DbImportProjectSaver(@Inject ProjectSession session) {
         this.session = session;
