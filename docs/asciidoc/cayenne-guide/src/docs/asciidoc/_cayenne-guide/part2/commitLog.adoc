@@ -1,0 +1,140 @@
+// Licensed to the Apache Software Foundation (ASF) under one or more
+// contributor license agreements. See the NOTICE file distributed with
+// this work for additional information regarding copyright ownership.
+// The ASF licenses this file to you under the Apache License, Version
+// 2.0 (the "License"); you may not use this file except in compliance
+// with the License. You may obtain a copy of the License at
+//
+// https://www.apache.org/licenses/LICENSE-2.0 Unless required by
+// applicable law or agreed to in writing, software distributed under the
+// License is distributed on an "AS IS" BASIS, WITHOUT WARRANTIES OR
+// CONDITIONS OF ANY KIND, either express or implied. See the License for
+// the specific language governing permissions and limitations under the
+// License.
+
+include::../var.adoc[]
+
+[[commit-log]]
+=== Commit Log
+
+Cayenne includes built-in support for capturing commit changes and delivering them to application-defined listeners. This lets you build audit trails, propagate changes to external systems, or enforce post-commit business rules without coupling that logic to individual entity classes.
+
+NOTE: Prior to Cayenne 5.0 this feature shipped as a separate `cayenne-commitlog` artifact. Starting with 5.0 it is part of the core `cayenne` dependency. Migrate by replacing `CommitLogModule.extend(binder)` with `CoreModule.extend(binder)`.
+
+==== Basic Usage
+
+To receive commit notifications, follow three steps.
+
+===== 1. Annotate entities
+
+Mark every entity whose changes you want to capture with `@CommitLog`:
+
+[source,java]
+----
+@CommitLog
+public class Order extends _Order {
+    // ...
+}
+----
+
+By default every committed entity is included. To limit auditing to annotated entities only, call `commitLogAnnotationEntitiesOnly()` during configuration (see below).
+
+The annotation accepts optional attributes:
+
+[source,java]
+----
+@CommitLog(
+    ignoredProperties = {"internalState"},         // exclude from change records
+    ignoreAttributes = false,                       // set true to skip all attributes
+    ignoreToOneRelationships = false,               // set true to skip all to-one relationships
+    ignoreToManyRelationships = false               // set true to skip all to-many relationships
+)
+public class Order extends _Order { ... }
+----
+
+For properties containing sensitive data, annotate the getter with `@Confidential` instead of `ignoredProperties`. The value will appear in the `ChangeMap` as `*******` rather than the real value.
+
+===== 2. Implement CommitLogListener
+
+[source,java]
+----
+public class AuditListener implements CommitLogListener {
+
+    @Override
+    public void onPostCommit(ObjectContext originatingContext, ChangeMap changes) {
+        for (ObjectChange change : changes.getUniqueChanges()) {
+            switch (change.getType()) {
+                case INSERT -> System.out.println("Inserted: " + change.getPostCommitId());
+                case UPDATE -> System.out.println("Updated:  " + change.getPostCommitId());
+                case DELETE -> System.out.println("Deleted:  " + change.getPreCommitId());
+            }
+        }
+    }
+}
+----
+
+`ChangeMap` gives access to the full set of changes in one commit. Each `ObjectChange` carries:
+
+* `getType()` — `INSERT`, `UPDATE`, or `DELETE`
+* `getPreCommitId()` / `getPostCommitId()` — the object identity before and after the commit
+* `getAttributeChanges()` — map of attribute name → `AttributeChange` (old and new value)
+* `getToOneRelationshipChanges()` / `getToManyRelationshipChanges()` — relationship-level changes
+
+Multiple listeners may be registered; all receive identical change data for the same commit.
+
+===== 3. Register the listener
+
+[source,java]
+----
+CayenneRuntime runtime = CayenneRuntime.builder()
+        .addConfig("cayenne-project.xml")
+        .addModule(binder -> CoreModule.extend(binder)
+                .addCommitLogListener(AuditListener.class))
+        .build();
+----
+
+==== Restricting to Annotated Entities
+
+To audit only entities marked with `@CommitLog`:
+
+[source,java]
+----
+CoreModule.extend(binder)
+        .commitLogAnnotationEntitiesOnly()
+        .addCommitLogListener(AuditListener.class)
+----
+
+==== Dispatching Events Outside the Transaction
+
+By default, listeners are called within the database transaction, so a listener can write additional rows as part of the same commit. If your listener performs its own transaction (for example writing to a different database), call `excludeCommitLogFromTransaction()` to move the notification outside the main transaction:
+
+[source,java]
+----
+CoreModule.extend(binder)
+        .excludeCommitLogFromTransaction()
+        .addCommitLogListener(AuditListener.class)
+----
+
+IMPORTANT: `excludeCommitLogFromTransaction()` must be called *before* `addCommitLogListener()`.
+
+==== Custom Entity Factory
+
+For full control over which entities are included and how their metadata is computed, provide a custom `CommitLogEntityFactory`:
+
+[source,java]
+----
+public class MyEntityFactory implements CommitLogEntityFactory {
+    @Override
+    public CommitLogEntity getEntity(ObjEntity entity) {
+        // return null to exclude the entity, or a CommitLogEntity instance to include it
+        ...
+    }
+}
+----
+
+[source,java]
+----
+CoreModule.extend(binder)
+        .commitLogEntityFactory(MyEntityFactory.class)
+        .addCommitLogListener(AuditListener.class)
+----

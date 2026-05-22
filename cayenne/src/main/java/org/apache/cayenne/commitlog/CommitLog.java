@@ -30,7 +30,9 @@ import java.lang.annotation.Target;
  * An annotation that adds commit log behavior to Persistent objects.
  *
  * @since 4.0
+ * @deprecated use {@link org.apache.cayenne.annotation.CommitLog} instead.
  */
+@Deprecated(since = "5.0")
 @Target(ElementType.TYPE)
 @Retention(RetentionPolicy.RUNTIME)
 @Documented

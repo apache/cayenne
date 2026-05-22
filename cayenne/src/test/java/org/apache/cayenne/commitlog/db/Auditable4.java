@@ -16,35 +16,14 @@
  *  specific language governing permissions and limitations
  *  under the License.
  ****************************************************************/
+package org.apache.cayenne.commitlog.db;
 
-package org.apache.cayenne.commitlog;
+import org.apache.cayenne.annotation.CommitLog;
+import org.apache.cayenne.commitlog.db.auto._Auditable4;
 
-import java.util.Collection;
-import java.util.Collections;
+@CommitLog(ignoreToOneRelationships = true)
+public class Auditable4 extends _Auditable4 {
 
-import org.apache.cayenne.runtime.CayenneRuntimeModuleProvider;
-import org.apache.cayenne.configuration.runtime.CoreModule;
-import org.apache.cayenne.di.Module;
+	private static final long serialVersionUID = 1L;
 
-/**
- * @deprecated the commit log module is now part of core Cayenne; this provider is a no-op.
- * @since 4.0
- */
-@Deprecated(since = "5.0")
-public class CommitLogModuleProvider implements CayenneRuntimeModuleProvider {
-
-    @Override
-    public Module module() {
-        return new CommitLogModule();
-    }
-
-    @Override
-    public Class<? extends Module> moduleType() {
-        return CommitLogModule.class;
-    }
-
-    @Override
-    public Collection<Class<? extends Module>> overrides() {
-        return Collections.singletonList(CoreModule.class);
-    }
 }

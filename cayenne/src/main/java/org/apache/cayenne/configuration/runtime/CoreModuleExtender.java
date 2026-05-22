@@ -24,12 +24,17 @@ import org.apache.cayenne.DataChannelSyncFilter;
 import org.apache.cayenne.access.types.ExtendedType;
 import org.apache.cayenne.access.types.ExtendedTypeFactory;
 import org.apache.cayenne.access.types.ValueObjectType;
+import org.apache.cayenne.commitlog.CommitLogFilter;
+import org.apache.cayenne.commitlog.CommitLogListener;
+import org.apache.cayenne.commitlog.meta.AnnotationCommitLogEntityFactory;
+import org.apache.cayenne.commitlog.meta.CommitLogEntityFactory;
 import org.apache.cayenne.configuration.Constants;
 import org.apache.cayenne.dba.DbAdapter;
 import org.apache.cayenne.dba.PkGenerator;
 import org.apache.cayenne.di.Binder;
 import org.apache.cayenne.di.ListBuilder;
 import org.apache.cayenne.di.MapBuilder;
+import org.apache.cayenne.graph.GraphChangeHandler;
 import org.apache.cayenne.tx.TransactionFilter;
 
 /**
@@ -53,6 +58,8 @@ public class CoreModuleExtender {
     private ListBuilder<ExtendedType> userExtendedTypes;
     private ListBuilder<ExtendedTypeFactory> extendedTypeFactories;
     private ListBuilder<ValueObjectType> valueObjectTypes;
+    private ListBuilder<CommitLogListener> commitLogListeners;
+    private boolean commitLogFilterRegistered;
 
     protected CoreModuleExtender(Binder binder) {
         this.binder = binder;
@@ -70,6 +77,7 @@ public class CoreModuleExtender {
         contributeUserExtendedTypes();
         contributeExtendedTypeFactories();
         contributeValueObjectTypes();
+        contributeCommitLogListeners();
         return this;
     }
 
@@ -289,6 +297,85 @@ public class CoreModuleExtender {
     public CoreModuleExtender addValueObjectType(Class<? extends ValueObjectType<?, ?>> type) {
         contributeValueObjectTypes().add(type);
         return this;
+    }
+
+    /**
+     * Registers a commit log listener that receives post-commit change notifications.
+     *
+     * @since 5.0
+     */
+    public CoreModuleExtender addCommitLogListener(CommitLogListener listener) {
+        contributeCommitLogListeners().add(listener);
+        ensureCommitLogFilterRegistered(true);
+        return this;
+    }
+
+    /**
+     * Registers a commit log listener type that receives post-commit change notifications.
+     *
+     * @since 5.0
+     */
+    public CoreModuleExtender addCommitLogListener(Class<? extends CommitLogListener> listenerType) {
+        contributeCommitLogListeners().add(listenerType);
+        ensureCommitLogFilterRegistered(true);
+        return this;
+    }
+
+    /**
+     * Restricts commit log auditing to entities annotated with {@link org.apache.cayenne.commitlog.CommitLog}.
+     * By default all entities are audited.
+     *
+     * @since 5.0
+     */
+    public CoreModuleExtender commitLogAnnotationEntitiesOnly() {
+        binder.bind(CommitLogEntityFactory.class).to(AnnotationCommitLogEntityFactory.class);
+        return this;
+    }
+
+    /**
+     * Installs a custom factory for commit log entity metadata.
+     *
+     * @since 5.0
+     */
+    public CoreModuleExtender commitLogEntityFactory(Class<? extends CommitLogEntityFactory> factoryType) {
+        binder.bind(CommitLogEntityFactory.class).to(factoryType);
+        return this;
+    }
+
+    /**
+     * Configures commit log listeners to be notified outside the database transaction. By default listeners are called
+     * within the transaction, allowing them to participate in the same commit. Use this option when listeners may
+     * themselves write to the database and you want to avoid nested transactions.
+     *
+     * @since 5.0
+     */
+    public CoreModuleExtender excludeCommitLogFromTransaction() {
+        GraphChangeHandler noopHandler = new GraphChangeHandler() {};
+        DataChannelSyncFilter diffInitFilter = (originatingContext, changes, syncType, filterChain) -> {
+            changes.apply(noopHandler);
+            return filterChain.onSync(originatingContext, changes, syncType);
+        };
+        contributeSyncFilters().insertBefore(diffInitFilter, TransactionFilter.class);
+        ensureCommitLogFilterRegistered(false);
+        return this;
+    }
+
+    private void ensureCommitLogFilterRegistered(boolean inTx) {
+        if (!commitLogFilterRegistered) {
+            if (inTx) {
+                contributeSyncFilters().insertBefore(CommitLogFilter.class, TransactionFilter.class);
+            } else {
+                contributeSyncFilters().addAfter(CommitLogFilter.class, TransactionFilter.class);
+            }
+            commitLogFilterRegistered = true;
+        }
+    }
+
+    private ListBuilder<CommitLogListener> contributeCommitLogListeners() {
+        if (commitLogListeners == null) {
+            commitLogListeners = binder.bindList(CommitLogListener.class);
+        }
+        return commitLogListeners;
     }
 
     private ListBuilder<String> contributeProjectLocations() {

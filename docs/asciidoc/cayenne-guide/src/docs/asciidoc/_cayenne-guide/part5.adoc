@@ -16,8 +16,6 @@
 
 include::part5/cacheInvalidation.adoc[]
 
-include::part5/commitLog.adoc[]
-
 include::part5/crypto.adoc[]
 
 include::part5/jCache.adoc[]

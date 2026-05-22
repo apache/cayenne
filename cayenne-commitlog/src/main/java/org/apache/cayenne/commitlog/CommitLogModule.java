@@ -19,45 +19,31 @@
 
 package org.apache.cayenne.commitlog;
 
-import org.apache.cayenne.commitlog.meta.IncludeAllCommitLogEntityFactory;
+import org.apache.cayenne.configuration.runtime.CoreModule;
 import org.apache.cayenne.di.Binder;
-import org.apache.cayenne.di.ListBuilder;
 import org.apache.cayenne.di.Module;
 
 /**
- * Auto-loadable module that enables gathering of commit log information for Cayenne stack. To add custom listeners to
- * receive commit log events, implement {@link CommitLogListener} and register it using {@link CommitLogModule#extend(Binder)}
+ * Commit log support is now part of the core {@code cayenne} module. This class is retained for backward
+ * compatibility only. Replace usages with {@link CoreModule#extend(Binder)} and its
+ * {@code addCommitLogListener} / {@code commitLogAnnotationEntitiesOnly} methods.
  *
+ * @deprecated use {@link CoreModule#extend(Binder)} commit log methods.
  * @since 4.0
  */
+@Deprecated(since = "5.0")
 public class CommitLogModule implements Module {
 
     /**
-     * @deprecated use {@link #extend(Binder)} instead
+     * @deprecated use {@link CoreModule#extend(Binder)} commit log methods.
      */
     @Deprecated(since = "5.0")
-    static ListBuilder<CommitLogListener> contributeListeners(Binder binder) {
-        return binder.bindList(CommitLogListener.class);
-    }
-
-    /**
-     * Starts an extension module builder to add listeners and/or other customizations for {@link CommitLogModule}.
-     *
-     * @return a new builder of {@link CommitLogModule} extensions.
-     * @since 5.0
-     */
     public static CommitLogModuleExtender extend(Binder binder) {
-        return new CommitLogModuleExtender(binder);
+        return new CommitLogModuleExtender(CoreModule.extend(binder));
     }
 
     @Override
     public void configure(Binder binder) {
-
-        extend(binder)
-                .initAllExtensions()
-                .entityFactory(IncludeAllCommitLogEntityFactory.class)
-                .includeInTransaction();
-
-        binder.bind(CommitLogFilter.class).to(CommitLogFilter.class);
+        // no-op: commit log support is now wired by CoreModule
     }
 }

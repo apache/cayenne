@@ -18,102 +18,74 @@
  ****************************************************************/
 package org.apache.cayenne.commitlog;
 
-import org.apache.cayenne.DataChannelSyncFilter;
-import org.apache.cayenne.commitlog.meta.AnnotationCommitLogEntityFactory;
-import org.apache.cayenne.commitlog.meta.CommitLogEntity;
 import org.apache.cayenne.commitlog.meta.CommitLogEntityFactory;
-import org.apache.cayenne.configuration.runtime.CoreModule;
-import org.apache.cayenne.di.Binder;
-import org.apache.cayenne.di.ListBuilder;
-import org.apache.cayenne.graph.GraphChangeHandler;
+import org.apache.cayenne.configuration.runtime.CoreModuleExtender;
 
 /**
- * A builder of a custom extensions module for {@link CommitLogModule} that customizes its services and installs
- * application-specific commit log listeners.
- *
+ * @deprecated use {@link CoreModuleExtender} commitlog methods directly via {@link org.apache.cayenne.configuration.runtime.CoreModule#extend(org.apache.cayenne.di.Binder)}.
  * @since 4.0
  */
+@Deprecated(since = "5.0")
 public class CommitLogModuleExtender {
 
-    private final Binder binder;
-    private ListBuilder<CommitLogListener> commitLogListeners;
+    private final CoreModuleExtender coreExtender;
 
-    protected CommitLogModuleExtender(Binder binder) {
-        this.binder = binder;
+    CommitLogModuleExtender(CoreModuleExtender coreExtender) {
+        this.coreExtender = coreExtender;
     }
 
-    protected CommitLogModuleExtender initAllExtensions() {
-        contributeCommitLogListeners();
-        return this;
-    }
-
-    public CommitLogModuleExtender addListener(Class<? extends CommitLogListener> type) {
-        contributeCommitLogListeners().add(type);
-        return this;
-    }
-
+    /**
+     * @deprecated use {@link CoreModuleExtender#addCommitLogListener(CommitLogListener)}
+     */
+    @Deprecated(since = "5.0")
     public CommitLogModuleExtender addListener(CommitLogListener instance) {
-        contributeCommitLogListeners().add(instance);
+        coreExtender.addCommitLogListener(instance);
         return this;
     }
 
     /**
-     * If called, events will be dispatched outside the main commit transaction. By default, events are dispatched
-     * within the transaction, so listeners can commit their code together with the main commit.
+     * @deprecated use {@link CoreModuleExtender#addCommitLogListener(Class)}
      */
+    @Deprecated(since = "5.0")
+    public CommitLogModuleExtender addListener(Class<? extends CommitLogListener> type) {
+        coreExtender.addCommitLogListener(type);
+        return this;
+    }
+
+    /**
+     * @deprecated use {@link CoreModuleExtender#excludeCommitLogFromTransaction()}
+     */
+    @Deprecated(since = "5.0")
     public CommitLogModuleExtender excludeFromTransaction() {
-        CoreModule.extend(binder).addSyncFilter(createDiffInitFilter(), true);
-        return registerFilter(false);
+        coreExtender.excludeCommitLogFromTransaction();
+        return this;
     }
 
     /**
-     * @since 5.0
+     * No-op. Commit log listeners are now included in the transaction by default.
+     *
+     * @deprecated the default behavior is now to include in the transaction
      */
+    @Deprecated(since = "5.0")
     public CommitLogModuleExtender includeInTransaction() {
-        return registerFilter(true);
-    }
-
-    protected CommitLogModuleExtender registerFilter(boolean inTx) {
-        CoreModule.extend(binder).addSyncFilter(CommitLogFilter.class, inTx);
         return this;
     }
 
     /**
-     * Installs entity filter that would only include entities annotated with
-     * {@link CommitLog} on the callbacks. Also {@link CommitLog#confidential()}
-     * properties will be obfuscated and {@link CommitLog#ignoredProperties()} -
-     * excluded from the change collection.
+     * @deprecated use {@link CoreModuleExtender#commitLogAnnotationEntitiesOnly()}
      */
+    @Deprecated(since = "5.0")
     public CommitLogModuleExtender commitLogAnnotationEntitiesOnly() {
-        return entityFactory(AnnotationCommitLogEntityFactory.class);
-    }
-
-    /**
-     * Installs a custom factory for {@link CommitLogEntity} objects that allows implementors to use their own
-     * annotations, etc.
-     */
-    public CommitLogModuleExtender entityFactory(Class<? extends CommitLogEntityFactory> entityFactoryType) {
-        binder.bind(CommitLogEntityFactory.class).to(entityFactoryType);
+        coreExtender.commitLogAnnotationEntitiesOnly();
         return this;
     }
 
-    private ListBuilder<CommitLogListener> contributeCommitLogListeners() {
-        if (commitLogListeners == null) {
-            commitLogListeners = binder.bindList(CommitLogListener.class);
-        }
-        return commitLogListeners;
-    }
-
     /**
-     * @return the filter that just initializes incoming Diff
+     * @deprecated use {@link CoreModuleExtender#commitLogEntityFactory(Class)}
      */
-    private static DataChannelSyncFilter createDiffInitFilter() {
-        GraphChangeHandler noopHandler = new GraphChangeHandler() {};
-        return (originatingContext, changes, syncType, filterChain)
-                -> {
-            // see ObjectStoreGraphDiff.resolveDiff()
-            changes.apply(noopHandler);
-            return filterChain.onSync(originatingContext, changes, syncType);
-        };
+    @Deprecated(since = "5.0")
+    public CommitLogModuleExtender entityFactory(Class<? extends CommitLogEntityFactory> entityFactoryType) {
+        coreExtender.commitLogEntityFactory(entityFactoryType);
+        return this;
     }
 }

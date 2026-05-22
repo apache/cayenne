@@ -23,19 +23,23 @@ import java.util.concurrent.ConcurrentMap;
 
 import org.apache.cayenne.DataChannel;
 import org.apache.cayenne.ObjectId;
+import org.apache.cayenne.annotation.CommitLog;
 import org.apache.cayenne.di.Inject;
 import org.apache.cayenne.di.Provider;
-import org.apache.cayenne.commitlog.CommitLog;
 import org.apache.cayenne.map.EntityResolver;
 import org.apache.cayenne.map.ObjEntity;
 import org.apache.cayenne.reflect.ClassDescriptor;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
  * Compiles {@link CommitLogEntity}'s based on {@link CommitLog} annotation.
- * 
+ *
  * @since 4.0
  */
 public class AnnotationCommitLogEntityFactory implements CommitLogEntityFactory {
+
+	private static final Logger logger = LoggerFactory.getLogger(AnnotationCommitLogEntityFactory.class);
 
 	private static final CommitLogEntity BLOCKED_ENTITY = new CommitLogEntity() {
 
@@ -78,7 +82,6 @@ public class AnnotationCommitLogEntityFactory implements CommitLogEntityFactory 
 		}
 
 		return descriptor;
-
 	}
 
 	private EntityResolver getEntityResolver() {
@@ -88,17 +91,29 @@ public class AnnotationCommitLogEntityFactory implements CommitLogEntityFactory 
 	private CommitLogEntity createDescriptor(String entityName) {
 		EntityResolver entityResolver = getEntityResolver();
 		ClassDescriptor classDescriptor = entityResolver.getClassDescriptor(entityName);
+		Class<?> objectClass = classDescriptor.getObjectClass();
 
-		CommitLog a = classDescriptor.getObjectClass().getAnnotation(CommitLog.class);
-		if (a == null) {
-			return BLOCKED_ENTITY;
+		CommitLog a = objectClass.getAnnotation(CommitLog.class);
+		if (a != null) {
+			ObjEntity entity = entityResolver.getObjEntity(entityName);
+			return new MutableCommitLogLogEntity(entity).setConfidential(a.confidential())
+					.setIgnoreProperties(a.ignoredProperties()).setIgnoreAttributes(a.ignoreAttributes())
+					.setIgnoreToOneRelationships(a.ignoreToOneRelationships())
+					.setIgnoreToManyRelationships(a.ignoreToManyRelationships());
 		}
 
-		ObjEntity entity = entityResolver.getObjEntity(entityName);
-		return new MutableCommitLogLogEntity(entity).setConfidential(a.confidential())
-				.setIgnoreProperties(a.ignoredProperties()).setIgnoreAttributes(a.ignoreAttributes())
-				.setIgnoreToOneRelationships(a.ignoreToOneRelationships())
-				.setIgnoreToManyRelationships(a.ignoreToManyRelationships());
-	}
+		@SuppressWarnings("deprecation")
+		org.apache.cayenne.commitlog.CommitLog legacyA = objectClass.getAnnotation(org.apache.cayenne.commitlog.CommitLog.class);
+		if (legacyA != null) {
+			logger.warn("Entity class '{}' uses deprecated @org.apache.cayenne.commitlog.CommitLog annotation. " +
+					"Replace with @org.apache.cayenne.annotation.CommitLog.", objectClass.getName());
+			ObjEntity entity = entityResolver.getObjEntity(entityName);
+			return new MutableCommitLogLogEntity(entity).setConfidential(legacyA.confidential())
+					.setIgnoreProperties(legacyA.ignoredProperties()).setIgnoreAttributes(legacyA.ignoreAttributes())
+					.setIgnoreToOneRelationships(legacyA.ignoreToOneRelationships())
+					.setIgnoreToManyRelationships(legacyA.ignoreToManyRelationships());
+		}
 
+		return BLOCKED_ENTITY;
+	}
 }

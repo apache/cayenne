@@ -17,34 +17,14 @@
  *  under the License.
  ****************************************************************/
 
-package org.apache.cayenne.commitlog;
+package org.apache.cayenne.commitlog.db;
 
-import java.util.Collection;
-import java.util.Collections;
+import org.apache.cayenne.annotation.CommitLog;
+import org.apache.cayenne.commitlog.db.auto._Auditable5;
 
-import org.apache.cayenne.runtime.CayenneRuntimeModuleProvider;
-import org.apache.cayenne.configuration.runtime.CoreModule;
-import org.apache.cayenne.di.Module;
+@CommitLog
+public class Auditable5 extends _Auditable5 {
 
-/**
- * @deprecated the commit log module is now part of core Cayenne; this provider is a no-op.
- * @since 4.0
- */
-@Deprecated(since = "5.0")
-public class CommitLogModuleProvider implements CayenneRuntimeModuleProvider {
+    private static final long serialVersionUID = 1L;
 
-    @Override
-    public Module module() {
-        return new CommitLogModule();
-    }
-
-    @Override
-    public Class<? extends Module> moduleType() {
-        return CommitLogModule.class;
-    }
-
-    @Override
-    public Collection<Class<? extends Module>> overrides() {
-        return Collections.singletonList(CoreModule.class);
-    }
 }

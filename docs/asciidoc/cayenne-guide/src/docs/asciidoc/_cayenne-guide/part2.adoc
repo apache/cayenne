@@ -28,6 +28,8 @@ include::part2/queries.adoc[]
 
 include::part2/lifecycle.adoc[]
 
+include::part2/commitLog.adoc[]
+
 include::part2/tuning.adoc[]
 
 include::part2/customize.adoc[]

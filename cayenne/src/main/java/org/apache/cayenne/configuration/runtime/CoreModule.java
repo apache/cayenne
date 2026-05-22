@@ -21,6 +21,9 @@ package org.apache.cayenne.configuration.runtime;
 import org.apache.cayenne.DataChannel;
 import org.apache.cayenne.DataChannelQueryFilter;
 import org.apache.cayenne.DataChannelSyncFilter;
+import org.apache.cayenne.commitlog.CommitLogFilter;
+import org.apache.cayenne.commitlog.meta.IncludeAllCommitLogEntityFactory;
+import org.apache.cayenne.commitlog.meta.CommitLogEntityFactory;
 import org.apache.cayenne.access.DataDomain;
 import org.apache.cayenne.access.DataRowStoreFactory;
 import org.apache.cayenne.access.DefaultDataRowStoreFactory;
@@ -482,5 +485,8 @@ public class CoreModule implements Module {
 
         binder.bind(DataDomainFlushActionFactory.class).to(DefaultDataDomainFlushActionFactory.class);
         binder.bind(DbRowOpSorter.class).to(DefaultDbRowOpSorter.class);
+
+        binder.bind(CommitLogFilter.class).to(CommitLogFilter.class);
+        binder.bind(CommitLogEntityFactory.class).to(IncludeAllCommitLogEntityFactory.class);
     }
 }
