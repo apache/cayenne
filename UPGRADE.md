@@ -87,7 +87,7 @@ and the release you are upgrading to.
   extensions. If you encounter those, change how you configure the modules, following this general pattern
   (using `CacheInvalidationModule` as an example):
   ```java
-  ServerRuntime.builder(..)
+  CayenneRuntime.builder(..)
       .addModule(b -> CacheInvalidationModule.extend(b).addHandler(MyHandler.class))
       .build();
   ```
@@ -95,7 +95,14 @@ and the release you are upgrading to.
   module, and (2) an extender does not produce a `Module` — instead it adds services directly to the
   `Binder`. So it is usually invoked within a lambda that produces a `Module`, or within an app `Module`.
 
-* Per [CAY-2822](https://issues.apache.org/jira/browse/CAY-2822) `cayenne-server` module is renamed to `cayenne` — update your build scripts accordingly.
+* Per [CAY-2822](https://issues.apache.org/jira/browse/CAY-2822) `cayenne-server` module is renamed to `cayenne` — update your build scripts accordingly:
+  ```xml
+  <dependency>
+      <groupId>org.apache.cayenne</groupId>
+      <artifactId>cayenne</artifactId>
+      <version>{version}</version>
+  </dependency>
+  ```
 
 * Per [CAY-2823](https://issues.apache.org/jira/browse/CAY-2823) `ServerRuntime` is deprecated. Use `org.apache.cayenne.runtime.CayenneRuntime` instead.
 
@@ -106,7 +113,13 @@ and the release you are upgrading to.
 * Per [CAY-2825](https://issues.apache.org/jira/browse/CAY-2825) Package `org.apache.cayenne.configuration.server` was renamed to
   `org.apache.cayenne.configuration.runtime` — fix your imports accordingly.
 
-* Per [CAY-2826](https://issues.apache.org/jira/browse/CAY-2826) `ServerModule` renamed to `CoreModule`.
+* Per [CAY-2826](https://issues.apache.org/jira/browse/CAY-2826) `ServerModule` renamed to `CoreModule`. The new builder pattern combining both changes:
+  ```java
+  CayenneRuntime runtime = CayenneRuntime.builder()
+          .addConfig("cayenne-project.xml")
+          .module(b -> CoreModule.extend(b).setProperty("some_property", "some_value"))
+          .build();
+  ```
 
 * Per [CAY-2828](https://issues.apache.org/jira/browse/CAY-2828) The `server` prefix was removed from the names of runtime properties and named collections
   defined in `org.apache.cayenne.configuration.Constants`. Update references in code and in any scripts
@@ -115,3 +128,51 @@ and the release you are upgrading to.
 * Per [CAY-2845](https://issues.apache.org/jira/browse/CAY-2845) `DataObject` interface and `BaseDataObject` class were deprecated and all logic moved to
   the `Persistent` interface and `PersistentObject` class. Regenerate model classes via the cgen tool in
   CayenneModeler or Maven/Gradle plugins.
+
+## New Features in 5.0
+
+### New Dev Versioning Scheme
+
+Snapshot versions are now a constant value — the dev version of 5.0 will always be `5.0-SNAPSHOT`,
+so you can stay at the bleeding edge of development if needed:
+
+```xml
+<dependency>
+    <groupId>org.apache.cayenne</groupId>
+    <artifactId>cayenne</artifactId>
+    <version>5.0-SNAPSHOT</version>
+</dependency>
+```
+
+### New Class Generation UI
+
+The new Class Generation UI in CayenneModeler simplifies configuration, allows multiple `cgen` setups
+per project, and includes a template editor. Custom templates are now part of the project XML
+configuration and don't require separate setup in either Modeler or Maven/Gradle plugins.
+
+### Improved `(not)exists` Queries
+
+`(not)exists` is now directly supported by the Expression API (including `Expression`, the expression
+parser, and the Property API) — no need to construct a subquery manually. The feature can handle any
+expression and spawn several sub-queries per expression if needed:
+
+```java
+long count = ObjectSelect.query(Artist.class)
+        .where(Artist.PAINTING_ARRAY.dot(Painting.PAINTING_TITLE).like("painting%").exists())
+        .selectCount(context);
+```
+
+### Improved SQL Support
+
+`ANY` and `ALL` subqueries are now supported, as well as `case-when` expressions:
+
+```java
+import static org.apache.cayenne.exp.ExpressionFactory.*;
+// ...
+Expression caseWhenExp = caseWhen(
+        List.of(betweenExp("estimatedPrice", 0, 9),
+                betweenExp("estimatedPrice", 10, 20)),
+        List.of(wrapScalarValue("low"),
+                wrapScalarValue("high")),
+        wrapScalarValue("error"));
+```
