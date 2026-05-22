@@ -46,7 +46,7 @@ The plugin is distributed from the Apache Cayenne GitHub repository: **https://g
 claude mcp add cayenne --scope user -- java -jar /path/to/cayenne-mcp-server-<VERSION>.jar
 ```
 
-Full MCP setup instructions will be on the Cayenne website shortly.
+Full MCP setup instructions: https://cayenne.apache.org/docs/5.0/cayenne-guide/installing-the-cayenne-mcp-server/
 
 That's it. The skills detect the MCP server at runtime; if it isn't connected they point back at this README instead of falling back to Maven or Gradle goals.
 
