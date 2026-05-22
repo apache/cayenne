@@ -27,10 +27,10 @@
 
 ## Quick Links
 
-* Getting Started https://cayenne.apache.org/docs/5.0/getting-started-guide/
-* Getting Started DB-First https://cayenne.apache.org/docs/5.0/getting-started-db-first/
-* Documentation https://cayenne.apache.org/docs/5.0/cayenne-guide/
-* Upgrading from Older Cayenne [UPGRADE.md](UPGRADE.md)
+* [Getting Started](https://cayenne.apache.org/docs/5.0/getting-started-guide/)
+* [Getting Started DB-First](https://cayenne.apache.org/docs/5.0/getting-started-db-first/)
+* [Documentation](https://cayenne.apache.org/docs/5.0/cayenne-guide/)
+* [Upgrading from Older Cayenne](UPGRADE.md)
 
 ## Quick Start
 
