@@ -22,7 +22,11 @@
 [![Build Status](https://github.com/apache/cayenne/actions/workflows/verify-deploy-on-push.yml/badge.svg?branch=master)](https://github.com/apache/cayenne/actions/workflows/verify-deploy-on-push.yml)
 
 
-[Apache Cayenne](https://cayenne.apache.org) is an open source persistence framework.
+[Apache Cayenne](https://cayenne.apache.org) is an open source java persistence framework. With a wealth of unique and powerful features, Cayenne can address a wide range of persistence needs. Cayenne seamlessly binds one or more database schemas directly to Java objects, managing atomic commit and rollbacks, SQL generation, joins, sequences, and more.
+
+Cayenne is designed to be easy to use, without sacrificing flexibility or design. To that end, Cayenne supports database reverse engineering and generation, as well as templated class generation. All of these functions can be controlled directly through the GUI CayenneModeler app. An entire database schema can be mapped directly to Java objects within minutes, all from the comfort of the GUI-based CayenneModeler.
+
+Cayenne supports numerous other features, including caching, an object query syntax, relationship pre-fetching, on-demand object and relationship faulting, object inheritance, database auto-detection, and generic persistent objects. Cayenne can scale up or down to virtually any project size. With a mature, 100% open source framework, an energetic user community, and a track record of solid performance in high-volume environments, Cayenne is an exceptional choice for persistence services.
 
 
 ## Quick Links
@@ -158,15 +162,9 @@ int inserted = SQLExec
 
 ```
 
-## About
-With a wealth of unique and powerful features, Cayenne can address a wide range of persistence needs. Cayenne seamlessly binds one or more database schemas directly to Java objects, managing atomic commit and rollbacks, SQL generation, joins, sequences, and more.
-
-Cayenne is designed to be easy to use, without sacrificing flexibility or design. To that end, Cayenne supports database reverse engineering and generation, as well as a Velocity-based class generation engine. All of these functions can be controlled directly through the CayenneModeler, a fully functional GUI tool. No cryptic XML or annotation based configuration is required! An entire database schema can be mapped directly to Java objects within minutes, all from the comfort of the GUI-based CayenneModeler.
-
-Cayenne supports numerous other features, including caching, a complete object query syntax, relationship pre-fetching, on-demand object and relationship faulting, object inheritance, database auto-detection, and generic persisted objects. Most importantly, Cayenne can scale up or down to virtually any project size. With a mature, 100% open source framework, an energetic user community, and a track record of solid performance in high-volume environments, Cayenne is an exceptional choice for persistence services.
-
-# Collaboration and Support
+## Collaboration and Support
 * [Bug/Feature Tracker](https://issues.apache.org/jira/browse/CAY)
 * [Mailing lists](https://cayenne.apache.org/mailing-lists.html)
 * [Support](https://cayenne.apache.org/support.html)
 * [Contributing](https://cayenne.apache.org/how-can-i-help.html)
+
