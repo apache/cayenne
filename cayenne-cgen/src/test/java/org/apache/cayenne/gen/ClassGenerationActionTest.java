@@ -278,8 +278,9 @@ public class ClassGenerationActionTest extends CgenCase {
 		File outFile = new File(tempFolder + "/TestClass1.java");
 		assertFalse(outFile.exists());
 
-		action.openWriter(templateType);
-		assertTrue(outFile.exists());
+		try(Writer ignored = action.openWriter(templateType)) {
+			assertTrue(outFile.exists());
+		}
 
 		assertNull(action.openWriter(templateType));
 	}
@@ -300,8 +301,9 @@ public class ClassGenerationActionTest extends CgenCase {
 		File outFile = new File(tempFolder + "/TestClass1.java");
 		assertFalse(outFile.exists());
 
-		action.openWriter(templateType);
-		assertTrue(outFile.exists());
+		try(Writer ignored = action.openWriter(templateType)) {
+			assertTrue(outFile.exists());
+		}
 
 		assertNull(action.openWriter(templateType));
 
