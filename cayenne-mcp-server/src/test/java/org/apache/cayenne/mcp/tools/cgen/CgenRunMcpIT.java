@@ -129,9 +129,10 @@ public class CgenRunMcpIT {
     public void generatesFilesOnFirstRun() throws Exception {
         send(callJson(4, projectFile, "PersonMap"));
 
-        String superPath = destDir.resolve("com/example/auto/_Person.java").toAbsolutePath().toString();
-        String subPath   = destDir.resolve("com/example/Person.java").toAbsolutePath().toString();
-        String destPath  = destDir.toAbsolutePath().toString();
+        // JSON-escape backslashes so Windows paths round-trip correctly through Jackson serialization
+        String superPath = destDir.resolve("com/example/auto/_Person.java").toAbsolutePath().toString().replace("\\", "\\\\");
+        String subPath   = destDir.resolve("com/example/Person.java").toAbsolutePath().toString().replace("\\", "\\\\");
+        String destPath  = destDir.toAbsolutePath().toString().replace("\\", "\\\\");
 
         assertEquals("""
                 {
@@ -171,7 +172,7 @@ public class CgenRunMcpIT {
 
         send(callJson(6, projectFile, "PersonMap"));
 
-        String destPath = destDir.toAbsolutePath().toString();
+        String destPath = destDir.toAbsolutePath().toString().replace("\\", "\\\\");
 
         assertEquals("""
                 {
@@ -200,7 +201,10 @@ public class CgenRunMcpIT {
         JsonNode root = MAPPER.readTree(mcpResponse);
         String text = root.at("/result/content/0/text").asText();
         JsonNode payload = MAPPER.readTree(text);
-        return MAPPER.writerWithDefaultPrettyPrinter().writeValueAsString(payload);
+        // Normalize CRLF → LF: Jackson's DefaultPrettyPrinter uses System.lineSeparator()
+        // which is \r\n on Windows, but Java text blocks always use \n.
+        return MAPPER.writerWithDefaultPrettyPrinter().writeValueAsString(payload)
+                .replace("\r\n", "\n");
     }
 
     private String callJson(int id, Path project, String dataMap) {
