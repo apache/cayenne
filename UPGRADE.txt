@@ -7,20 +7,18 @@ IMPORTANT: be sure to read all notes for the intermediate releases between your
 
 UPGRADING TO 5.0.M2
 
-* Per CAY-2947 commit log support has moved from the separate `cayenne-commitlog` artifact into the core
-`cayenne` artifact. No extra dependency is needed. Replace:
+* Per CAY-2947 the `cayenne-commitlog` artifact has been removed. Commit log support is now part of the
+core `cayenne` artifact — no extra dependency needed. Migrate as follows:
+ - Remove the `cayenne-commitlog` dependency from your build.
+ - Replace `CommitLogModule.extend(binder).addListener(l)` with:
 ```
-binder -> CommitLogModule.extend(binder).addListener(myListener)
+CoreModule.extend(binder).addCommitLogListener(l)
 ```
-with:
-```
-binder -> CoreModule.extend(binder).addCommitLogListener(myListener)
-```
-The `excludeFromTransaction()` method is now `excludeCommitLogFromTransaction()` on `CoreModuleExtender`.
-The `@CommitLog` annotation has moved to `org.apache.cayenne.annotation.CommitLog`. The old
-`org.apache.cayenne.commitlog.CommitLog` is deprecated and still recognized at runtime, but will log a
-warning for each entity class that uses it.
-The `cayenne-commitlog` artifact is retained with deprecated shim classes for backward compatibility.
+ - `excludeFromTransaction()` is now `excludeCommitLogFromTransaction()` on `CoreModuleExtender`.
+ - Replace `@org.apache.cayenne.commitlog.CommitLog` on entity classes with
+`@org.apache.cayenne.annotation.CommitLog`.
+ - The `CommitLogListener`, `ChangeMap`, `ObjectChange` and related model classes remain in the
+`org.apache.cayenne.commitlog` package (now part of the core artifact).
 
 * Per CAY-2935 Minimum required Java version for Apache Cayenne 5.0 is 21
 

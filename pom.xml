@@ -111,8 +111,7 @@
         <module>cayenne-ant</module>
         <module>cayenne-cache-invalidation</module>
         <module>cayenne-cgen</module>
-        <module>cayenne-commitlog</module>
-        <module>cayenne-crypto</module>
+<module>cayenne-crypto</module>
         <module>cayenne-dbsync</module>
         <module>cayenne-di</module>
         <module>cayenne-gradle-plugin</module>
