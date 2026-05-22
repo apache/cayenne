@@ -22,11 +22,11 @@
 [![Build Status](https://github.com/apache/cayenne/actions/workflows/verify-deploy-on-push.yml/badge.svg?branch=master)](https://github.com/apache/cayenne/actions/workflows/verify-deploy-on-push.yml)
 
 
-[Apache Cayenne](https://cayenne.apache.org) is an open source java persistence framework. With a wealth of unique and powerful features, Cayenne can address a wide range of persistence needs. Cayenne seamlessly binds one or more database schemas directly to Java objects, managing atomic commit and rollbacks, SQL generation, joins, sequences, and more.
+[Apache Cayenne](https://cayenne.apache.org) is an open source persistence framework for Java. With a wealth of unique and powerful features, Cayenne can address a wide range of persistence needs. Cayenne seamlessly binds one or more database schemas to Java objects, managing atomic commits and rollbacks, SQL generation, joins, sequences, and more.
 
-Cayenne is designed to be easy to use, without sacrificing flexibility or design. To that end, Cayenne supports database reverse engineering and generation, as well as templated class generation. All of these functions can be controlled directly through the GUI CayenneModeler app. An entire database schema can be mapped directly to Java objects within minutes, all from the comfort of the GUI-based CayenneModeler.
+Cayenne supports database reverse engineering and generation, as well as templated class generation. All of these functions can be controlled through the GUI CayenneModeler app. An entire database schema can be mapped directly to Java objects within minutes, all from the comfort of the GUI-based CayenneModeler.
 
-Cayenne supports numerous other features, including caching, an object query syntax, relationship pre-fetching, on-demand object and relationship faulting, object inheritance, database auto-detection, and generic persistent objects. Cayenne can scale up or down to virtually any project size. With a mature, 100% open source framework, an energetic user community, and a track record of solid performance in high-volume environments, Cayenne is an exceptional choice for persistence services.
+Cayenne supports numerous other features, including caching, an object query syntax, relationship pre-fetching, on-demand object and relationship faulting, object inheritance, database auto-detection, and generic persistent objects. Cayenne can scale up or down to virtually any project size.
 
 
 ## Quick Links
