@@ -63,7 +63,15 @@ public class PropertyListSerialization {
 			throw new FileNotFoundException("No such file: " + f);
 		}
 
-		return new Parser(f, factory).propertyList();
+		// Use explicit stream so it is closed after parsing; Parser(File) leaves the stream open,
+		// which prevents temp-directory cleanup on Windows.
+		try (InputStream in = new java.io.FileInputStream(f)) {
+			return new Parser(in, factory).propertyList();
+		} catch (FileNotFoundException e) {
+			throw e;
+		} catch (IOException e) {
+			throw new CayenneRuntimeException("Error reading plist: " + f, e);
+		}
 	}
 
 	/**
