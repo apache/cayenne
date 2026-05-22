@@ -46,7 +46,7 @@
         <asciidoctorj.pdf.version>2.3.23</asciidoctorj.pdf.version>
         <cayenne.version>${project.version}</cayenne.version>
         <cayenne.major.version>5.0</cayenne.major.version>
-        <hugo.asciidoctorj.extension.version>1.0-M2</hugo.asciidoctorj.extension.version>
+        <hugo.asciidoctorj.extension.version>1.0-M4</hugo.asciidoctorj.extension.version>
         <jsoup.version>1.15.3</jsoup.version>
     </properties>
 
