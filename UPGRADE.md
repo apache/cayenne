@@ -2,8 +2,56 @@
 
 > For upgrade notes for Cayenne 4.2 and older, see [UPGRADE-4.2-and-older.md](UPGRADE-4.2-and-older.md).
 
-**IMPORTANT:** Be sure to read all notes for the intermediate releases between your current release
-and the release you are upgrading to.
+## What's New in 5.0
+
+This is a high-level overview of 5.0 changes. Check the next section for milestone-by-milestone upgrade instructions.
+
+### New Dev Versioning Scheme
+
+Snapshot versions are now a constant value — the dev version of 5.0 will always be `5.0-SNAPSHOT`,
+so you can stay at the bleeding edge of development if needed:
+
+```xml
+<dependency>
+    <groupId>org.apache.cayenne</groupId>
+    <artifactId>cayenne</artifactId>
+    <version>5.0-SNAPSHOT</version>
+</dependency>
+```
+
+### New Class Generation UI
+
+The new Class Generation UI in CayenneModeler simplifies configuration, allows multiple `cgen` setups
+per project, and includes a template editor. Custom templates are now part of the project XML
+configuration and don't require separate setup in either Modeler or Maven/Gradle plugins.
+
+### Improved `(not)exists` Queries
+
+`(not)exists` is now directly supported by the Expression API (including `Expression`, the expression
+parser, and the Property API) — no need to construct a subquery manually. The feature can handle any
+expression and spawn several sub-queries per expression if needed:
+
+```java
+long count = ObjectSelect.query(Artist.class)
+        .where(Artist.PAINTING_ARRAY.dot(Painting.PAINTING_TITLE).like("painting%").exists())
+        .selectCount(context);
+```
+
+### Improved SQL Support
+
+`ANY` and `ALL` subqueries are now supported, as well as `case-when` expressions:
+
+```java
+import static org.apache.cayenne.exp.ExpressionFactory.*;
+// ...
+Expression caseWhenExp = caseWhen(
+        List.of(betweenExp("estimatedPrice", 0, 9),
+                betweenExp("estimatedPrice", 10, 20)),
+        List.of(wrapScalarValue("low"),
+                wrapScalarValue("high")),
+        wrapScalarValue("error"));
+```
+
 
 ## Upgrading to 5.0.M2
 
@@ -128,51 +176,3 @@ and the release you are upgrading to.
 * Per [CAY-2845](https://issues.apache.org/jira/browse/CAY-2845) `DataObject` interface and `BaseDataObject` class were deprecated and all logic moved to
   the `Persistent` interface and `PersistentObject` class. Regenerate model classes via the cgen tool in
   CayenneModeler or Maven/Gradle plugins.
-
-## New Features in 5.0
-
-### New Dev Versioning Scheme
-
-Snapshot versions are now a constant value — the dev version of 5.0 will always be `5.0-SNAPSHOT`,
-so you can stay at the bleeding edge of development if needed:
-
-```xml
-<dependency>
-    <groupId>org.apache.cayenne</groupId>
-    <artifactId>cayenne</artifactId>
-    <version>5.0-SNAPSHOT</version>
-</dependency>
-```
-
-### New Class Generation UI
-
-The new Class Generation UI in CayenneModeler simplifies configuration, allows multiple `cgen` setups
-per project, and includes a template editor. Custom templates are now part of the project XML
-configuration and don't require separate setup in either Modeler or Maven/Gradle plugins.
-
-### Improved `(not)exists` Queries
-
-`(not)exists` is now directly supported by the Expression API (including `Expression`, the expression
-parser, and the Property API) — no need to construct a subquery manually. The feature can handle any
-expression and spawn several sub-queries per expression if needed:
-
-```java
-long count = ObjectSelect.query(Artist.class)
-        .where(Artist.PAINTING_ARRAY.dot(Painting.PAINTING_TITLE).like("painting%").exists())
-        .selectCount(context);
-```
-
-### Improved SQL Support
-
-`ANY` and `ALL` subqueries are now supported, as well as `case-when` expressions:
-
-```java
-import static org.apache.cayenne.exp.ExpressionFactory.*;
-// ...
-Expression caseWhenExp = caseWhen(
-        List.of(betweenExp("estimatedPrice", 0, 9),
-                betweenExp("estimatedPrice", 10, 20)),
-        List.of(wrapScalarValue("low"),
-                wrapScalarValue("high")),
-        wrapScalarValue("error"));
-```
