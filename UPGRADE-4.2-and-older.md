@@ -3,16 +3,12 @@
 > These notes cover Cayenne releases up to and including 4.2.
 > For 5.0 and newer, see [UPGRADE.md](UPGRADE.md).
 
----
-
 ## Upgrading to 4.2.M2
 
 * Per CAY-2659 All batch translators (`InsertBatchTranslator`, `UpdateBatchTranslator`, etc.) are updated
   to the new SQLBuilder utility. If you are using customized versions of these classes you should either
   update them accordingly, or keep using the old versions which are moved to the
   `org.apache.cayenne.access.translator.batch.legacy` package.
-
----
 
 ## Upgrading to 4.2.M1
 
@@ -44,13 +40,9 @@
   SQLSelect.params(String name, Object value)
   ```
 
----
-
 ## Upgrading to 4.1.M3
 
 * Per CAY-2514 `SERVER_CONTEXTS_SYNC_PROPERTY` default value was set to `false`.
-
----
 
 ## Upgrading to 4.1.M2
 
@@ -67,8 +59,6 @@
     `WebModule` is autoloaded, so you shouldn't add it to the runtime explicitly any more.
   - `cayenne-osgi` — contains OSGi related functionality.
   - `cayenne-rop-server` — ROP server part.
-
----
 
 ## Upgrading to 4.1.M1
 
@@ -90,8 +80,6 @@
   continue to work, but to get the benefits you should regenerate code via Modeler
   ("Tools" → "Generate Classes") or cgen tools in Maven/Ant/Gradle plugins. Also note that the
   serialization format of old data objects has changed — do not use serialized form to store objects.
-
----
 
 ## Upgrading to 4.0.B1
 
@@ -225,8 +213,6 @@
   validation before insert using a `prePersist` callback (create it in CayenneModeler) or by overriding
   `validateForSave()`.
 
----
-
 ## Upgrading to 4.0.M5
 
 * Per CAY-2186 `DerbyPkGenerator` switched from `AUTO_PK_TABLE` to a sequence-based PK generator.
@@ -276,8 +262,6 @@
 * Per CAY-2164 Creating a `ServerRuntimeBuilder` is now done via `ServerRuntime.builder()` (static
   method). The previous style `ServerRuntimeBuilder.builder()` is deprecated.
 
----
-
 ## Upgrading to 4.0.M4
 
 * Per CAY-2133 `LegacyObjectNameGenerator` is no longer provided, as it wasn't possible to maintain it
@@ -312,8 +296,6 @@
   8. `meaningfulPk`
   9. `overwrite`
 
----
-
 ## Upgrading to 4.0.M3
 
 * Per CAY-2026 Minimal Java version is now 1.7. Use Cayenne 3.1 or 4.0.M2 if your application requires
@@ -346,8 +328,6 @@
       <version>4.0.M3</version>
     </parent>
     ```
-
----
 
 ## Upgrading to 4.0.M2
 
@@ -391,8 +371,6 @@
   `ServerRuntimeBuilder` will only use the config name if there's a single config and no override —
   otherwise it uses the override, or `"cayenne"` as the default. See CAY-1972.
 
----
-
 ## Upgrading to 3.1.B1
 
 * Per CAY-1665 all properties and DI collection keys were placed in a single `Constants` interface, with
@@ -400,8 +378,6 @@
   https://issues.apache.org/jira/browse/CAY-1665 for the mapping between old and new names.
 
   If you are upgrading from an earlier 3.1 release, update your code and runtime parameters accordingly.
-
----
 
 ## Upgrading to 3.1.M3
 
@@ -420,8 +396,6 @@
   runtime.getChannel().getEntityResolver().getCallbackRegistry().addListener(listenerInstance);
   ```
   Note that DataMap listener entries from old `*.map.xml` files will be ignored.
-
----
 
 ## Upgrading to 3.1.M1
 
@@ -504,14 +478,10 @@ requiring attention.
   -Dcayenne.jdbc.password=bar
   ```
 
----
-
 ## Upgrading to 3.0.B1
 
 * Per CAY-1281 the `pre-persist` callback was renamed to `post-add` (while `pre-persist` now has a
   different meaning). Open the project in the Modeler and agree to the automated upgrade.
-
----
 
 ## Upgrading to 3.0.M6
 
@@ -524,8 +494,6 @@ requiring attention.
 * Per CAY-1175 The `columnNameCapitalization` property of `SQLTemplate` now takes an enum, not a
   `String` — fix the calling code.
 
----
-
 ## Upgrading to 3.0.M5
 
 * Per CAY-1127 Query "name" is no longer used as an internal cache key. This change is transparent to
@@ -534,16 +502,12 @@ requiring attention.
   String cacheKey = query.getQueryMetadata(entityResolver).getCacheKey();
   ```
 
----
-
 ## Upgrading to 3.0.M4
 
 * Per CAY-1049 API of internal classes that participate in `SelectQuery` translation has changed in a
   backwards-incompatible way. This should not affect regular users, but if you implemented a custom
   `DbAdapter`, check classes that directly or indirectly inherit from `QueryAssembler` and
   `QueryAssemblerHelper`.
-
----
 
 ## Upgrading to 3.0.M3
 
@@ -553,15 +517,11 @@ requiring attention.
   generics this should not affect you, but if you do you will need to review any new compiler errors
   or warnings. Generics only affect compile time — the runtime behaviour is unchanged.
 
----
-
 ## Upgrading to 3.0.M2
 
 * Per CAY-843 Lifecycle callback functionality is now built into `DataContext` and `DataDomain` — all
   custom setup code is no longer needed. As a result of this change `org.apache.cayenne.intercept`
   package was removed. See http://cayenne.apache.org/doc/lifecycle-callbacks.html for details.
-
----
 
 ## Upgrading to 3.0.M1
 
@@ -592,8 +552,6 @@ requiring attention.
   ```sql
   ALTER TABLE AUTO_PK_SUPPORT CHANGE COLUMN NEXT_ID NEXT_ID BIGINT NOT NULL;
   ```
-
----
 
 ## Upgrading to 2.0.x
 
