@@ -101,10 +101,7 @@
 						<configuration>
 							<!-- must use ${project.build.directory}, as using relative path "target/sources" confuses the plugin -->
 							<sourcepath>${project.build.directory}/sources</sourcepath>
-
-							<!-- this is relative to target/site/apidocs  -->
-							<destDir>doc/api</destDir>
-							<stylesheet>java</stylesheet>
+							<outputDirectory>${project.build.directory}/site/apidocs/doc/api</outputDirectory>
 							<header><![CDATA[<a href="http://cayenne.apache.org" target="top">Apache Cayenne</a>]]></header>
 						</configuration>
 						<executions>
