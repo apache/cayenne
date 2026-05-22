@@ -88,7 +88,7 @@
 			</includes>
 		</dependencySet>
 		<dependencySet>
-			<outputDirectory>${content.dir}/</outputDirectory>
+			<outputDirectory>${content.dir}/doc/api</outputDirectory>
 			<includes>
 				<include>org.apache.cayenne.docs:cayenne-doc</include>
 			</includes>

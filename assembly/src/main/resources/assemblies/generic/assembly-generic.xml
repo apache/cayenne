@@ -90,7 +90,7 @@
 			</includes>
 		</dependencySet>
 		<dependencySet>
-			<outputDirectory>/</outputDirectory>
+			<outputDirectory>doc/api</outputDirectory>
 			<includes>
 				<include>org.apache.cayenne.docs:cayenne-doc</include>
 			</includes>
