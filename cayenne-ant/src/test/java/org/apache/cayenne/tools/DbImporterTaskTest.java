@@ -175,9 +175,10 @@ public class DbImporterTaskTest {
 
     @SuppressWarnings("unchecked")
     private void verifyResult(File map, File mapFileCopy) throws IOException {
-        FileReader control = new FileReader(map.getAbsolutePath() + "-result");
-        FileReader test = new FileReader(mapFileCopy);
-        assertThat(test, CompareMatcher.isSimilarTo(control).ignoreWhitespace());
+        try (FileReader control = new FileReader(map.getAbsolutePath() + "-result");
+             FileReader test = new FileReader(mapFileCopy)) {
+            assertThat(test, CompareMatcher.isSimilarTo(control).ignoreWhitespace());
+        }
     }
 
     private void prepareDatabase(String sqlFile, DbImportConfiguration dbImportConfiguration) throws Exception {
