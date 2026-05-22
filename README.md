@@ -35,6 +35,7 @@ Cayenne supports numerous other features, including caching, an object query syn
 * [Getting Started](https://cayenne.apache.org/docs/5.0/getting-started-guide/)
 * [Documentation](https://cayenne.apache.org/docs/5.0/cayenne-guide/)
 * [Upgrading from Older Cayenne](https://github.com/apache/cayenne/blob/master/UPGRADE.md)
+* [Bug/Feature Tracker](https://issues.apache.org/jira/browse/CAY)
 
 ## Quick Start
 
@@ -162,7 +163,6 @@ int inserted = SQLExec
 ```
 
 ## Collaboration and Support
-* [Bug/Feature Tracker](https://issues.apache.org/jira/browse/CAY)
 * [Mailing lists](https://cayenne.apache.org/mailing-lists.html)
 * [Support](https://cayenne.apache.org/support.html)
 * [Contributing](https://cayenne.apache.org/how-can-i-help.html)
