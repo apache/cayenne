@@ -22,10 +22,6 @@
 [![Build Status](https://github.com/apache/cayenne/actions/workflows/verify-deploy-on-push.yml/badge.svg?branch=master)](https://github.com/apache/cayenne/actions/workflows/verify-deploy-on-push.yml)
 
 
-<p align="center">
-    <a href="https://cayenne.apache.org"><img src="https://cayenne.apache.org/img/cayenne_illustr3-30e8b8fa06.png" width="261" height="166" alt="Apache Cayenne Logo"/></a>
-</p>
-
 [Apache Cayenne](https://cayenne.apache.org) is an open source persistence framework licensed under the Apache License, providing object-relational mapping (ORM) and remoting services. 
 
 
