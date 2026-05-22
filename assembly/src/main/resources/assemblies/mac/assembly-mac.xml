@@ -69,7 +69,6 @@
 				<include>org.apache.cayenne:cayenne-ant</include>
 				<include>org.apache.cayenne:cayenne-cache-invalidation</include>
 				<include>org.apache.cayenne:cayenne-cgen</include>
-				<include>org.apache.cayenne:cayenne-commitlog</include>
 				<include>org.apache.cayenne:cayenne-crypto</include>
 				<include>org.apache.cayenne:cayenne-dbsync</include>
 				<include>org.apache.cayenne:cayenne-di</include>
