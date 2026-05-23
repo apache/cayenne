@@ -60,10 +60,10 @@ class DbRelationshipPathComboBoxEditor extends PathChooserComboBoxCellEditor<Obj
         }
         initializeCombo(model, row, table);
 
-        String dbRelationshipPath = ((JTextComponent) (comboBoxPathChooser).
+        String dbRelationshipPath = ((JTextComponent) (pathChooser).
                 getEditor().getEditorComponent()).getText();
         previousEmbeddedLevel = dbRelationshipPath.split(Pattern.quote(".")).length;
-        return comboBoxPathChooser;
+        return pathChooser;
     }
 
     @Override
@@ -74,11 +74,11 @@ class DbRelationshipPathComboBoxEditor extends PathChooserComboBoxCellEditor<Obj
     @Override
     protected void initializeCombo(ObjRelationshipTableModel model, int row, final JTable table) {
         super.initializeCombo(model, row, table);
-        comboBoxPathChooser.setSelectedItem(model.getRelationship(row).getDbRelationshipPath());
+        pathChooser.setSelectedItem(model.getRelationship(row).getDbRelationshipPath());
 
         enterPressedCount = 0;
-        comboBoxPathChooser.setToolTipText("To choose relationship press enter two times.To choose next relationship press dot.");
-        JTextComponent textEditor = (JTextComponent) (comboBoxPathChooser).
+        pathChooser.setToolTipText("To choose relationship press enter two times.To choose next relationship press dot.");
+        JTextComponent textEditor = (JTextComponent) (pathChooser).
                 getEditor().getEditorComponent();
         textEditor.addFocusListener(this);
         savePath = this.model.getRelationship(row).getDbRelationshipPath().value();
@@ -86,7 +86,7 @@ class DbRelationshipPathComboBoxEditor extends PathChooserComboBoxCellEditor<Obj
 
     @Override
     protected void enterPressed(JTable table) {
-        String dbRelationshipPath = ((JTextComponent) (comboBoxPathChooser).
+        String dbRelationshipPath = ((JTextComponent) (pathChooser).
                 getEditor().getEditorComponent()).getText();
         changeObjEntity(dbRelationshipPath);
         Object currentNode = getCurrentNode(dbRelationshipPath);
@@ -130,7 +130,7 @@ class DbRelationshipPathComboBoxEditor extends PathChooserComboBoxCellEditor<Obj
     @Override
     protected void parsePathString(char lastEnteredCharacter) {
         super.parsePathString(lastEnteredCharacter);
-        String dbRelationshipPath = ((JTextComponent) (comboBoxPathChooser).
+        String dbRelationshipPath = ((JTextComponent) (pathChooser).
                 getEditor().getEditorComponent()).getText();
         changeObjEntity(dbRelationshipPath);
         enterPressedCount = 0;

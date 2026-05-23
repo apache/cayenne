@@ -19,14 +19,12 @@
 
 package org.apache.cayenne.modeler.ui.project.editor.objentity.properties;
 
-import org.apache.cayenne.map.MappingNamespace;
-
-import java.util.function.Supplier;
-
 import org.apache.cayenne.map.DbAttribute;
+import org.apache.cayenne.map.MappingNamespace;
 import org.apache.cayenne.modeler.toolkit.Renderers;
 import org.apache.cayenne.modeler.toolkit.combobox.AutoCompletion;
 import org.apache.cayenne.modeler.toolkit.combobox.CMComboBox;
+import org.apache.cayenne.modeler.toolkit.combobox.CMComboBoxCellEditor;
 import org.apache.cayenne.modeler.toolkit.combobox.CMComboBoxPopupResizer;
 import org.apache.cayenne.modeler.toolkit.icon.IconFactory;
 import org.apache.cayenne.modeler.toolkit.table.CMTableModel;
@@ -44,7 +42,9 @@ import java.awt.event.ActionListener;
 import java.awt.event.KeyAdapter;
 import java.awt.event.KeyEvent;
 import java.util.ArrayList;
+import java.util.EventObject;
 import java.util.List;
+import java.util.function.Supplier;
 import java.util.regex.Pattern;
 
 /**
@@ -52,12 +52,12 @@ import java.util.regex.Pattern;
  */
 abstract class PathChooserComboBoxCellEditor<T extends CMTableModel<?>> extends AbstractCellEditor implements TableCellEditor, ActionListener, PopupMenuListener {
 
-    protected JComboBox<String> comboBoxPathChooser;
-    protected int previousEmbeddedLevel = 0;
+    private final Supplier<MappingNamespace> namespaceSupplier;
+    protected JComboBox<String> pathChooser;
+    protected int previousEmbeddedLevel;
     protected EntityTreeModel treeModel;
     protected int row;
     private JTable table;
-    private final Supplier<MappingNamespace> namespaceSupplier;
 
     protected PathChooserComboBoxCellEditor(Supplier<MappingNamespace> namespaceSupplier) {
         this.namespaceSupplier = namespaceSupplier;
@@ -76,9 +76,9 @@ abstract class PathChooserComboBoxCellEditor<T extends CMTableModel<?>> extends 
         String dbAttributePath = getPathToInitializeCombo(model, row);
         List<String> nodeChildren = getChildren(currentNode, dbAttributePath);
         this.table = table;
-        comboBoxPathChooser = new CMComboBox<>(nodeChildren);
-        comboBoxPathChooser.addPopupMenuListener(new CMComboBoxPopupResizer(comboBoxPathChooser));
-        comboBoxPathChooser.getEditor().getEditorComponent().addKeyListener(new KeyAdapter() {
+        pathChooser = new CMComboBox<>(nodeChildren);
+        pathChooser.addPopupMenuListener(new CMComboBoxPopupResizer(pathChooser));
+        pathChooser.getEditor().getEditorComponent().addKeyListener(new KeyAdapter() {
             @Override
             public void keyReleased(KeyEvent event) {
                 if (event.getKeyCode() == KeyEvent.VK_ENTER) {
@@ -88,25 +88,23 @@ abstract class PathChooserComboBoxCellEditor<T extends CMTableModel<?>> extends 
                 parsePathString(event.getKeyChar());
             }
         });
-        AutoCompletion.enable(comboBoxPathChooser, true, true, namespaceSupplier);
-        ((JComponent) comboBoxPathChooser.getEditor().getEditorComponent()).setBorder(null);
-        comboBoxPathChooser.setBorder(BorderFactory.createEmptyBorder(0, 5, 0, 0));
-        comboBoxPathChooser.setRenderer(new PathChooserComboBoxCellRenderer());
-        comboBoxPathChooser.addActionListener(this);
-        comboBoxPathChooser.addPopupMenuListener(this);
+        AutoCompletion.enable(pathChooser, true, true, namespaceSupplier);
+        pathChooser.setRenderer(new PathChooserComboBoxCellRenderer());
+        pathChooser.addActionListener(this);
+        pathChooser.addPopupMenuListener(this);
     }
 
     private void setComboModelAccordingToPath(String pathString) {
         List<String> currentNodeChildren = new ArrayList<>(getChildren(getCurrentNode(pathString), pathString));
-        comboBoxPathChooser.setModel(new DefaultComboBoxModel<>(currentNodeChildren.toArray(new String[0])));
-        comboBoxPathChooser.setSelectedItem(pathString);
+        pathChooser.setModel(new DefaultComboBoxModel<>(currentNodeChildren.toArray(new String[0])));
+        pathChooser.setSelectedItem(pathString);
         if (!pathString.isEmpty()) {
-            comboBoxPathChooser.showPopup();
+            pathChooser.showPopup();
         }
     }
 
     protected void parsePathString(char lastEnteredCharacter) {
-        JTextComponent editorComponent = (JTextComponent) (comboBoxPathChooser).getEditor().getEditorComponent();
+        JTextComponent editorComponent = (JTextComponent) (pathChooser).getEditor().getEditorComponent();
         String pathString = editorComponent.getText();
         if (pathString != null && pathString.isEmpty()) {
             setComboModelAccordingToPath("");
@@ -128,13 +126,13 @@ abstract class PathChooserComboBoxCellEditor<T extends CMTableModel<?>> extends 
             String saveDbAttributePath = pathString;
             pathString = pathString.replaceAll(lastStringInPath + "$", "");
             List<String> currentNodeChildren = new ArrayList<>(getChildren(getCurrentNode(pathString), pathString));
-            comboBoxPathChooser.setModel(new DefaultComboBoxModel<>(currentNodeChildren.toArray(new String[0])));
-            comboBoxPathChooser.setSelectedItem(saveDbAttributePath);
+            pathChooser.setModel(new DefaultComboBoxModel<>(currentNodeChildren.toArray(new String[0])));
+            pathChooser.setSelectedItem(saveDbAttributePath);
         }
     }
 
     protected void processDotEntered() {
-        JTextComponent editorComponent = (JTextComponent) (comboBoxPathChooser).getEditor().getEditorComponent();
+        JTextComponent editorComponent = (JTextComponent) (pathChooser).getEditor().getEditorComponent();
 
         String dbAttributePath = editorComponent.getText();
         if (".".equals(dbAttributePath)) {
@@ -168,12 +166,6 @@ abstract class PathChooserComboBoxCellEditor<T extends CMTableModel<?>> extends 
         }
     }
 
-    /**
-     * find current node by path
-     *
-     * @param pathString db path
-     * @return last node in path which matches DbRelationship or DbAttribute
-     */
     protected Object getCurrentNode(String pathString) {
         //case for new attribute
         if (pathString == null || pathString.isEmpty()) {
@@ -194,11 +186,6 @@ abstract class PathChooserComboBoxCellEditor<T extends CMTableModel<?>> extends 
         return root;
     }
 
-    /**
-     * @param node       for which we will find children
-     * @param pathString string which will be added to each child to make right autocomplete
-     * @return list with children , which will be used to autocomplete
-     */
     protected List<String> getChildren(Object node, String pathString) {
         List<String> currentNodeChildren = new ArrayList<>();
         for (int j = 0; j < treeModel.getChildCount(node); j++) {
@@ -210,19 +197,30 @@ abstract class PathChooserComboBoxCellEditor<T extends CMTableModel<?>> extends 
     }
 
     @Override
+    public boolean isCellEditable(EventObject e) {
+        return CMComboBoxCellEditor.isTableCellEditable(e);
+    }
+
+    @Override
+    public boolean stopCellEditing() {
+        pathChooser.actionPerformed(new ActionEvent(this, 0, ""));
+        fireEditingStopped();
+        return true;
+    }
+
+    @Override
     public void actionPerformed(ActionEvent e) {
         //for some reason comboBoxPathChooser don't load selected item text, so we made it by hand
-        if (comboBoxPathChooser.getSelectedIndex() != (-1)) {
-            ((JTextComponent) (comboBoxPathChooser).
-                    getEditor().getEditorComponent()).setText(comboBoxPathChooser.getSelectedItem().toString());
+        if (pathChooser.getSelectedIndex() != (-1)) {
+            ((JTextComponent) (pathChooser).
+                    getEditor().getEditorComponent()).setText(pathChooser.getSelectedItem().toString());
         }
     }
 
     @Override
     public void popupMenuWillBecomeInvisible(PopupMenuEvent e) {
-        if (comboBoxPathChooser.getSelectedIndex() != -1 &&
-                !((JTextComponent) (comboBoxPathChooser).
-                        getEditor().getEditorComponent()).getText().isEmpty()) {
+        if (pathChooser.getSelectedIndex() != -1
+                && !((JTextComponent) (pathChooser).getEditor().getEditorComponent()).getText().isEmpty()) {
             enterPressed(table);
         }
     }
@@ -240,8 +238,8 @@ abstract class PathChooserComboBoxCellEditor<T extends CMTableModel<?>> extends 
         private final ImageIcon rightArrow = IconFactory.buildIcon("icon-arrow-closed.png");
 
         @Override
-        public Component getListCellRendererComponent(JList<?> list, Object value, int index,
-                                                      boolean isSelected, boolean cellHasFocus) {
+        public Component getListCellRendererComponent(
+                JList<?> list, Object value, int index, boolean isSelected, boolean cellHasFocus) {
 
             JPanel panel = new JPanel(new BorderLayout());
             JLabel label = new JLabel(value.toString());

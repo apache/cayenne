@@ -64,9 +64,9 @@ class DbAttributePathComboBoxEditor extends PathChooserComboBoxCellEditor<ObjAtt
         }
         initializeCombo(model, row, table);
 
-        String dbAttributePath = ((JTextComponent) (comboBoxPathChooser).getEditor().getEditorComponent()).getText();
+        String dbAttributePath = ((JTextComponent) (pathChooser).getEditor().getEditorComponent()).getText();
         previousEmbeddedLevel = Util.countMatches(dbAttributePath, ".");
-        return comboBoxPathChooser;
+        return pathChooser;
     }
 
     @Override
@@ -77,7 +77,7 @@ class DbAttributePathComboBoxEditor extends PathChooserComboBoxCellEditor<ObjAtt
     @Override
     protected void initializeCombo(ObjAttributeTableModel model, int row, final JTable table) {
         super.initializeCombo(model, row, table);
-        comboBoxPathChooser.setSelectedItem(model.getAttribute(row).getDbAttributePath());
+        pathChooser.setSelectedItem(model.getAttribute(row).getDbAttributePath());
         savePath = this.model.getAttribute(row).getDbAttributePath().value();
     }
 
@@ -99,7 +99,7 @@ class DbAttributePathComboBoxEditor extends PathChooserComboBoxCellEditor<ObjAtt
 
     @Override
     protected void enterPressed(JTable table) {
-        String dbAttributePath = ((JTextComponent) comboBoxPathChooser.
+        String dbAttributePath = ((JTextComponent) pathChooser.
                 getEditor().getEditorComponent()).getText();
         Object currentNode = getCurrentNode(dbAttributePath);
         String[] pathStrings = dbAttributePath.split(Pattern.quote("."));
@@ -123,14 +123,14 @@ class DbAttributePathComboBoxEditor extends PathChooserComboBoxCellEditor<ObjAtt
             if (dbAttributePath.charAt(dbAttributePath.length() - 1) != '.') {
                 dbAttributePath = dbAttributePath + '.';
                 previousEmbeddedLevel = Util.countMatches(dbAttributePath, ".");
-                ((JTextComponent) (comboBoxPathChooser).
+                ((JTextComponent) (pathChooser).
                         getEditor().getEditorComponent()).setText(dbAttributePath);
             }
             List<String> currentNodeChildren = new ArrayList<>(getChildren(getCurrentNode(dbAttributePath), dbAttributePath));
-            comboBoxPathChooser.setModel(new DefaultComboBoxModel<>(currentNodeChildren.toArray(new String[0])));
-            comboBoxPathChooser.setSelectedItem(dbAttributePath);
-            comboBoxPathChooser.showPopup();
-            comboBoxPathChooser.setPopupVisible(true);
+            pathChooser.setModel(new DefaultComboBoxModel<>(currentNodeChildren.toArray(new String[0])));
+            pathChooser.setSelectedItem(dbAttributePath);
+            pathChooser.showPopup();
+            pathChooser.setPopupVisible(true);
         }
     }
 

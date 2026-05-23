@@ -38,7 +38,7 @@ public class CMComboBoxCellEditor extends AbstractCellEditor implements TableCel
     // Auto-complete combos collide with DefaultCellEditor's stop-editing flow,
     // so they need a custom action-listener-based path. This client property
     // is read by Swing's combo UI to keep the popup behavior table-friendly.
-    static final String IS_TABLE_CELL_EDITOR_PROPERTY = "JComboBox.isTableCellEditor";
+    private static final String IS_TABLE_CELL_EDITOR_PROPERTY = "JComboBox.isTableCellEditor";
 
     private final JComboBox<?> comboBox;
     private final boolean autocomplete;
@@ -78,15 +78,16 @@ public class CMComboBoxCellEditor extends AbstractCellEditor implements TableCel
         return true;
     }
 
-    @Override
-    public boolean isCellEditable(EventObject e) {
-        if (e instanceof MouseEvent) {
-            MouseEvent me = (MouseEvent) e;
-            if (me.isControlDown() || me.isShiftDown()) {
-                return false;
-            }
+    public static boolean isTableCellEditable(EventObject e) {
+        if (e instanceof MouseEvent me) {
+            return !me.isControlDown() && !me.isShiftDown();
         }
         return true;
+    }
+
+    @Override
+    public boolean isCellEditable(EventObject e) {
+        return isTableCellEditable(e);
     }
 
     @Override
