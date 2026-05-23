@@ -28,7 +28,7 @@ import org.apache.cayenne.modeler.project.DbRelationshipOps;
 import org.apache.cayenne.modeler.toolkit.table.CMTableModel;
 import org.apache.cayenne.modeler.project.ProjectSession;
 import org.apache.cayenne.project.extension.info.ObjectInfo;
-import org.apache.cayenne.util.Util;
+import java.util.Objects;
 
 import javax.swing.*;
 import java.util.ArrayList;
@@ -138,7 +138,7 @@ public class DbRelationshipTableModel extends CMTableModel<DbRelationship> {
         if (column == NAME) {
             String newName = (String) aValue;
             String oldName = rel.getName();
-            if (Util.nullSafeEquals(newName, oldName)) {
+            if (Objects.equals(newName, oldName)) {
                 return;
             }
             DbRelationship clash = entity.getRelationship(newName);

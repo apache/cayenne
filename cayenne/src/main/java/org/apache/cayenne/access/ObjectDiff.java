@@ -40,7 +40,7 @@ import org.apache.cayenne.reflect.ClassDescriptor;
 import org.apache.cayenne.reflect.PropertyVisitor;
 import org.apache.cayenne.reflect.ToManyProperty;
 import org.apache.cayenne.reflect.ToOneProperty;
-import org.apache.cayenne.util.Util;
+import java.util.Objects;
 
 import java.util.ArrayList;
 import java.util.Collection;
@@ -491,7 +491,7 @@ public class ObjectDiff extends NodeDiff {
             if (!(object instanceof ArcOperation other)) {
                 return false;
             }
-            return arcId.equals(other.arcId) && Util.nullSafeEquals(targetNodeId, other.targetNodeId);
+            return arcId.equals(other.arcId) && Objects.equals(targetNodeId, other.targetNodeId);
         }
 
         @Override

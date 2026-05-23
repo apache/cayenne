@@ -42,7 +42,7 @@ import org.apache.cayenne.modeler.project.ProjectComparators;
 import org.apache.cayenne.project.extension.info.ObjectInfo;
 import org.apache.cayenne.query.CapsStrategy;
 import org.apache.cayenne.query.ProcedureQuery;
-import org.apache.cayenne.util.Util;
+import java.util.Objects;
 import org.apache.cayenne.validation.ValidationException;
 
 import javax.swing.*;
@@ -184,7 +184,7 @@ public class ProcedureQueryView extends ProjectPanel {
             return;
         }
 
-        if (Util.nullSafeEquals(newName, query.getName())) {
+        if (Objects.equals(newName, query.getName())) {
             return;
         }
 

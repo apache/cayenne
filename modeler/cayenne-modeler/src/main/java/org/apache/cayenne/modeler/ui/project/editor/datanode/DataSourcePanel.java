@@ -22,7 +22,7 @@ package org.apache.cayenne.modeler.ui.project.editor.datanode;
 import org.apache.cayenne.configuration.DataNodeDescriptor;
 import org.apache.cayenne.modeler.Application;
 import org.apache.cayenne.modeler.toolkit.AppPanel;
-import org.apache.cayenne.util.Util;
+import java.util.Objects;
 
 /**
  * Base for the inner panels of {@link DataNodeEditorPanel} that edit the DataSource portion
@@ -44,7 +44,7 @@ public abstract class DataSourcePanel extends AppPanel {
     }
 
     public void setNode(DataNodeDescriptor node) {
-        if (!Util.nullSafeEquals(this.node, node)) {
+        if (!Objects.equals(this.node, node)) {
             this.node = node;
             refreshView();
         }

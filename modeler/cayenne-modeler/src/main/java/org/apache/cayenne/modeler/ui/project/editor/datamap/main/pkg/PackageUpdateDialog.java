@@ -30,6 +30,7 @@ import org.apache.cayenne.modeler.event.model.ObjEntityEvent;
 import org.apache.cayenne.modeler.project.ProjectSession;
 import org.apache.cayenne.modeler.ui.project.editor.datamap.defaults.DefaultsUpdateDialog;
 import org.apache.cayenne.util.Util;
+import java.util.Objects;
 
 import java.awt.Window;
 import java.util.ArrayList;
@@ -75,7 +76,7 @@ public class PackageUpdateDialog extends DefaultsUpdateDialog {
             if (doAll || Util.isEmptyString(oldName) || oldName.indexOf('.') < 0) {
                 String className = extractClassName(Util.isEmptyString(oldName) ? entity.getName() : oldName);
                 String newName = dataMap.getNameWithDefaultPackage(className);
-                if (!Util.nullSafeEquals(newName, entity.getClassName())) {
+                if (!Objects.equals(newName, entity.getClassName())) {
                     entity.setClassName(newName);
                     session.fireObjEntityEvent(ObjEntityEvent.ofChange(this, entity));
                 }

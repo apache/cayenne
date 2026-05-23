@@ -66,6 +66,7 @@ import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
+import java.util.Objects;
 import java.util.StringTokenizer;
 import java.util.regex.Pattern;
 
@@ -193,24 +194,13 @@ public class Util {
 	 * Compares two objects similar to "Object.equals(Object)". Unlike
 	 * Object.equals(..), this method doesn't throw an exception if any of the
 	 * two objects is null.
+	 *
+	 * @deprecated Use {@link Objects#equals(Object, Object)} for non-array types,
+	 *             or {@link Objects#deepEquals(Object, Object)} when the values may be arrays.
 	 */
+	@Deprecated(since = "5.0", forRemoval = true)
 	public static boolean nullSafeEquals(Object o1, Object o2) {
-
-		if (o1 == null) {
-			return o2 == null;
-		}
-
-		// Arrays must be handled differently since equals() only does
-		// an "==" for an array and ignores equivalence. If an array, use
-		// the Jakarta Commons Language component EqualsBuilder to determine
-		// the types contained in the array and do individual comparisons.
-		if (o1.getClass().isArray()) {
-			EqualsBuilder builder = new EqualsBuilder();
-			builder.append(o1, o2);
-			return builder.isEquals();
-		} else { // It is NOT an array, so use regular equals()
-			return o1.equals(o2);
-        }
+		return Objects.deepEquals(o1, o2);
 	}
 
 	/**

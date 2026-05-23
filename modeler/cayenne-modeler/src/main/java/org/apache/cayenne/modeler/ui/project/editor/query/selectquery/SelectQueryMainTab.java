@@ -40,7 +40,7 @@ import org.apache.cayenne.modeler.ui.project.editor.query.ObjectQueryPropertiesP
 import org.apache.cayenne.modeler.project.ProjectComparators;
 import org.apache.cayenne.project.extension.info.ObjectInfo;
 import org.apache.cayenne.util.CayenneMapEntry;
-import org.apache.cayenne.util.Util;
+import java.util.Objects;
 import org.apache.cayenne.validation.ValidationException;
 
 import javax.swing.*;
@@ -196,7 +196,7 @@ public class SelectQueryMainTab extends BaseQueryMainTab {
 
         try {
             String oldQualifier = ExpressionConvertor.asString(query.getQualifier());
-            if (!Util.nullSafeEquals(oldQualifier, text)) {
+            if (!Objects.equals(oldQualifier, text)) {
                 Expression exp = ExpressionConvertor.fromString(text);
 
                 /*

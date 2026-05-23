@@ -35,8 +35,9 @@ import org.apache.cayenne.exp.ExpressionException;
 import org.apache.cayenne.exp.parser.ASTDbPath;
 import org.apache.cayenne.exp.parser.ASTObjPath;
 import org.apache.cayenne.util.ConversionUtil;
-import org.apache.cayenne.util.Util;
 import org.apache.cayenne.util.XMLEncoder;
+
+import java.util.Objects;
 import org.apache.cayenne.util.XMLSerializable;
 
 /**
@@ -144,7 +145,7 @@ public class Ordering implements Comparator<Object>, Serializable, XMLSerializab
 
 		Ordering o = (Ordering) object;
 
-		if (!Util.nullSafeEquals(sortSpecString, o.sortSpecString)) {
+		if (!Objects.equals(sortSpecString, o.sortSpecString)) {
 			return false;
 		}
 
@@ -178,7 +179,7 @@ public class Ordering implements Comparator<Object>, Serializable, XMLSerializab
 	 * @since 1.1
 	 */
 	public void setSortSpecString(String sortSpecString) {
-		if (!Util.nullSafeEquals(this.sortSpecString, sortSpecString)) {
+		if (!Objects.equals(this.sortSpecString, sortSpecString)) {
 			this.sortSpecString = sortSpecString;
 			this.sortSpec = null;
 		}

@@ -23,7 +23,7 @@ import org.apache.cayenne.map.EmbeddableAttribute;
 import org.apache.cayenne.modeler.event.model.EmbeddableAttributeEvent;
 import org.apache.cayenne.modeler.toolkit.table.CMTableModel;
 import org.apache.cayenne.modeler.project.ProjectSession;
-import org.apache.cayenne.util.Util;
+import java.util.Objects;
 
 import java.util.ArrayList;
 import java.util.Collection;
@@ -63,7 +63,7 @@ public class EmbeddableAttributeTableModel extends CMTableModel {
             String oldName = attribute.getName();
             String newName = value != null ? value.toString().trim() : null;
             renamedFrom = oldName;
-            if (!Util.nullSafeEquals(oldName, newName)) {
+            if (!Objects.equals(oldName, newName)) {
                 attribute.setName(newName);
                 if (embeddable != null) {
                     embeddable.removeAttribute(oldName);

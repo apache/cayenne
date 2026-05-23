@@ -21,7 +21,6 @@ package org.apache.cayenne.modeler.toolkit.table;
 
 import org.apache.cayenne.CayenneRuntimeException;
 import org.apache.cayenne.modeler.project.ProjectSession;
-import org.apache.cayenne.util.Util;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -35,6 +34,7 @@ import java.lang.reflect.Method;
 import java.util.Collections;
 import java.util.Comparator;
 import java.util.List;
+import java.util.Objects;
 
 /**
  * Superclass of CayenneModeler table model classes.
@@ -58,7 +58,7 @@ public abstract class CMTableModel<T> extends AbstractTableModel {
         try {
 
             Object oldValue = getValueAt(row, col);
-            if (!Util.nullSafeEquals(newVal, oldValue)) {
+            if (!Objects.deepEquals(newVal, oldValue)) {
                 setUpdatedValueAt(newVal, row, col);
 
                 this.session.app()

@@ -19,7 +19,7 @@
 
 package org.apache.cayenne.reflect;
 
-import org.apache.cayenne.util.Util;
+import java.util.Objects;
 
 /**
  * Defines bean property API used by Cayenne to access object data, do faulting
@@ -80,7 +80,7 @@ public interface PropertyDescriptor {
     /**
      * Allows to use special logic to compare values for equality
      * as in rare cases it is not sufficient to use the default equals() method.
-     * Default implementation uses {@link Util#nullSafeEquals(Object, Object)} method.
+     * Default implementation uses {@link Objects#deepEquals(Object, Object)}.
      *
      * @param value1 to compare
      * @param value2 to compare
@@ -89,7 +89,7 @@ public interface PropertyDescriptor {
      * @since 4.2
      */
     default boolean equals(Object value1, Object value2) {
-        return Util.nullSafeEquals(value1, value2);
+        return Objects.deepEquals(value1, value2);
     }
 
 }

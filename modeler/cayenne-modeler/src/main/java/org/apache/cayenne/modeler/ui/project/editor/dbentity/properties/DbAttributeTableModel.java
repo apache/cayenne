@@ -28,7 +28,7 @@ import org.apache.cayenne.modeler.project.DbAttributeOps;
 import org.apache.cayenne.modeler.toolkit.table.CMTableModel;
 import org.apache.cayenne.modeler.project.ProjectSession;
 import org.apache.cayenne.project.extension.info.ObjectInfo;
-import org.apache.cayenne.util.Util;
+import java.util.Objects;
 
 import javax.swing.*;
 import java.util.ArrayList;
@@ -170,7 +170,7 @@ public class DbAttributeTableModel extends CMTableModel<DbAttribute> {
 
     private String setDbAttributeName(DbAttribute attr, String newName) {
         String oldName = attr.getName();
-        if (Util.nullSafeEquals(newName, oldName)) {
+        if (Objects.equals(newName, oldName)) {
             return null;
         }
         DbEntity parent = attr.getEntity();

@@ -25,6 +25,7 @@ import org.apache.cayenne.modeler.project.ProjectSession;
 import org.apache.cayenne.modeler.ui.project.editor.datamap.defaults.DefaultsUpdateDialog;
 import org.apache.cayenne.modeler.project.ProjectComparators;
 import org.apache.cayenne.util.Util;
+import java.util.Objects;
 
 import java.awt.Window;
 
@@ -45,7 +46,7 @@ public class SuperclassUpdateDialog extends DefaultsUpdateDialog {
         dataMap.getObjEntities().stream()
                 .sorted(ProjectComparators.forDataMapChildren()).forEach(entity -> {
                     if (doAll || Util.isEmptyString(entity.getSuperClassName())) {
-                        if (!Util.nullSafeEquals(defaultSuperclass, entity.getSuperClassName())) {
+                        if (!Objects.equals(defaultSuperclass, entity.getSuperClassName())) {
                             entity.setSuperClassName(defaultSuperclass);
                             // any way to batch events, a big change will flood the app with entity events?
                             session.fireObjEntityEvent(ObjEntityEvent.ofChange(this, entity));

@@ -20,7 +20,7 @@
 package org.apache.cayenne;
 
 import org.apache.cayenne.util.HashCodeBuilder;
-import org.apache.cayenne.util.Util;
+import java.util.Objects;
 
 import java.util.Arrays;
 import java.util.Collections;
@@ -127,7 +127,7 @@ class ObjectIdCompound implements ObjectId {
 		}
 
 		ObjectIdCompound id = (ObjectIdCompound) object;
-		if (!Util.nullSafeEquals(entityName, id.entityName)) {
+		if (!Objects.equals(entityName, id.entityName)) {
 			return false;
 		}
 
@@ -163,7 +163,7 @@ class ObjectIdCompound implements ObjectId {
 			return o2 instanceof Number n2 && n1.longValue() == n2.longValue();
 		}
 
-		return Util.nullSafeEquals(o1, o2);
+		return Objects.deepEquals(o1, o2);
 	}
 
 	@Override

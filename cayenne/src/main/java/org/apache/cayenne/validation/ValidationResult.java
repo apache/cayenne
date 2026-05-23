@@ -19,10 +19,9 @@
 
 package org.apache.cayenne.validation;
 
-import org.apache.cayenne.util.Util;
-
 import java.io.Serializable;
 import java.util.ArrayList;
+import java.util.Objects;
 import java.util.Collections;
 import java.util.List;
 
@@ -72,7 +71,7 @@ public class ValidationResult implements Serializable {
     public List<ValidationFailure> getFailures(Object source) {
         ArrayList<ValidationFailure> matchingFailures = new ArrayList<>(5);
         for (ValidationFailure failure : failures) {
-            if (Util.nullSafeEquals(source, failure.getSource())) {
+            if (Objects.equals(source, failure.getSource())) {
                 matchingFailures.add(failure);
             }
         }
@@ -95,7 +94,7 @@ public class ValidationResult implements Serializable {
      */
     public boolean hasFailures(Object source) {
         for (ValidationFailure failure : failures) {
-            if (Util.nullSafeEquals(source, failure.getSource())) {
+            if (Objects.equals(source, failure.getSource())) {
                 return true;
             }
         }

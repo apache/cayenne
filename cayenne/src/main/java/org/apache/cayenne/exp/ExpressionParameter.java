@@ -19,8 +19,6 @@
 
 package org.apache.cayenne.exp;
 
-import org.apache.cayenne.util.Util;
-
 import java.io.Serializable;
 import java.util.Objects;
 
@@ -59,7 +57,7 @@ public class ExpressionParameter implements Serializable {
 		}
 
 		ExpressionParameter parameter = (ExpressionParameter) o;
-		return Util.nullSafeEquals(name, parameter.name);
+		return Objects.equals(name, parameter.name);
 	}
 
 	@Override

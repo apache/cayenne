@@ -49,7 +49,7 @@ import org.apache.cayenne.modeler.ui.project.editor.objentity.duplicates.Duplica
 import org.apache.cayenne.modeler.ui.project.editor.query.ExistingSelectionProcessor;
 import org.apache.cayenne.modeler.project.ProjectComparators;
 import org.apache.cayenne.project.extension.info.ObjectInfo;
-import org.apache.cayenne.util.Util;
+import java.util.Objects;
 import org.apache.cayenne.validation.ValidationException;
 
 import javax.swing.*;
@@ -166,7 +166,7 @@ public class ObjEntityMainView extends ProjectPanel implements ObjEntityDisplayL
 
             ObjEntity entity = session.getSelectedObjEntity();
 
-            if (!Util.nullSafeEquals(name, entity.getSuperEntityName())) {
+            if (!Objects.equals(name, entity.getSuperEntityName())) {
                 List<ObjAttribute> duplicateAttributes = null;
                 if (name != null) {
                     duplicateAttributes = getDuplicatedAttributes(superEntity);
@@ -312,7 +312,7 @@ public class ObjEntityMainView extends ProjectPanel implements ObjEntityDisplayL
         ObjEntity entity = session.getSelectedObjEntity();
 
         // "ent" may be null if we quit editing by changing tree selection
-        if (entity != null && !Util.nullSafeEquals(entity.getClassName(), className)) {
+        if (entity != null && !Objects.equals(entity.getClassName(), className)) {
             entity.setClassName(className);
             session.fireObjEntityEvent(ObjEntityEvent.ofChange(this, entity));
         }
@@ -326,7 +326,7 @@ public class ObjEntityMainView extends ProjectPanel implements ObjEntityDisplayL
 
         ObjEntity ent = session.getSelectedObjEntity();
 
-        if (ent != null && !Util.nullSafeEquals(ent.getSuperClassName(), text)) {
+        if (ent != null && !Objects.equals(ent.getSuperClassName(), text)) {
             ent.setSuperClassName(text);
             session.fireObjEntityEvent(ObjEntityEvent.ofChange(this, ent));
         }
@@ -341,7 +341,7 @@ public class ObjEntityMainView extends ProjectPanel implements ObjEntityDisplayL
         if (entity != null) {
             try {
                 String oldQualifier = ExpressionConvertor.asString(entity.getDeclaredQualifier());
-                if (!Util.nullSafeEquals(oldQualifier, text)) {
+                if (!Objects.equals(oldQualifier, text)) {
                     entity.setDeclaredQualifier(ExpressionConvertor.fromString(text));
                     session.fireObjEntityEvent(ObjEntityEvent.ofChange(this, entity));
                 }
@@ -362,7 +362,7 @@ public class ObjEntityMainView extends ProjectPanel implements ObjEntityDisplayL
             return;
         }
 
-        if (Util.nullSafeEquals(newName, entity.getName())) {
+        if (Objects.equals(newName, entity.getName())) {
             return;
         }
 

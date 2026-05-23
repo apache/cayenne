@@ -27,6 +27,7 @@ import org.apache.cayenne.modeler.event.model.ProcedureEvent;
 import org.apache.cayenne.modeler.project.ProjectSession;
 import org.apache.cayenne.modeler.ui.project.editor.datamap.defaults.DefaultsUpdateDialog;
 import org.apache.cayenne.util.Util;
+import java.util.Objects;
 
 import java.awt.Window;
 
@@ -46,7 +47,7 @@ public class SchemaUpdateDialog extends DefaultsUpdateDialog {
 
         for (DbEntity entity : dataMap.getDbEntities()) {
             if (doAll || Util.isEmptyString(entity.getSchema())) {
-                if (!Util.nullSafeEquals(defaultSchema, entity.getSchema())) {
+                if (!Objects.equals(defaultSchema, entity.getSchema())) {
                     entity.setSchema(defaultSchema);
                     session.fireDbEntityEvent(DbEntityEvent.ofChange(this, entity));
                 }
@@ -55,7 +56,7 @@ public class SchemaUpdateDialog extends DefaultsUpdateDialog {
 
         for (Procedure procedure : dataMap.getProcedures()) {
             if (doAll || Util.isEmptyString(procedure.getSchema())) {
-                if (!Util.nullSafeEquals(defaultSchema, procedure.getSchema())) {
+                if (!Objects.equals(defaultSchema, procedure.getSchema())) {
                     procedure.setSchema(defaultSchema);
                     session.fireProcedureEvent(ProcedureEvent.ofChange(this, procedure));
                 }

@@ -35,7 +35,7 @@ import org.apache.cayenne.modeler.event.model.ProcedureEvent;
 import org.apache.cayenne.modeler.toolkit.text.CMUndoableTextField;
 import org.apache.cayenne.project.extension.info.ObjectInfo;
 import org.apache.cayenne.modeler.toolkit.checkbox.CMCheckBox;
-import org.apache.cayenne.util.Util;
+import java.util.Objects;
 import org.apache.cayenne.validation.ValidationException;
 
 import javax.swing.*;
@@ -140,7 +140,7 @@ public class ProcedureTab extends ProjectPanel implements ProcedureDisplayListen
 
         Procedure procedure = session.getSelectedProcedure();
 
-        if (procedure == null || Util.nullSafeEquals(newName, procedure.getName())) {
+        if (procedure == null || Objects.equals(newName, procedure.getName())) {
             return;
         }
 
@@ -172,7 +172,7 @@ public class ProcedureTab extends ProjectPanel implements ProcedureDisplayListen
 
         Procedure procedure = session.getSelectedProcedure();
 
-        if (procedure != null && !Util.nullSafeEquals(procedure.getSchema(), text)) {
+        if (procedure != null && !Objects.equals(procedure.getSchema(), text)) {
             procedure.setSchema(text);
             session.fireProcedureEvent(ProcedureEvent.ofChange(this, procedure));
         }
@@ -185,7 +185,7 @@ public class ProcedureTab extends ProjectPanel implements ProcedureDisplayListen
 
         Procedure procedure = session.getSelectedProcedure();
 
-        if (procedure != null && !Util.nullSafeEquals(procedure.getCatalog(), text)) {
+        if (procedure != null && !Objects.equals(procedure.getCatalog(), text)) {
             procedure.setCatalog(text);
             session.fireProcedureEvent(ProcedureEvent.ofChange(this, procedure));
         }

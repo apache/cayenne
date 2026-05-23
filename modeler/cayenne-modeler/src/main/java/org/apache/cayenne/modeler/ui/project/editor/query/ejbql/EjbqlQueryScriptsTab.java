@@ -39,7 +39,7 @@ import org.apache.cayenne.project.validation.EJBQLStatementValidator.PositionExc
 import org.apache.cayenne.map.EJBQLQueryDescriptor;
 import org.apache.cayenne.map.QueryDescriptor;
 import org.apache.cayenne.modeler.toolkit.text.CMTextPane;
-import org.apache.cayenne.util.Util;
+import java.util.Objects;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -177,7 +177,7 @@ public class EjbqlQueryScriptsTab extends ProjectPanel implements DocumentListen
 
         // Compare the value before modifying the query - text area
         // will call "verify" even if no changes have occured....
-        if (!Util.nullSafeEquals(text, query.getEjbql())) {
+        if (!Objects.equals(text, query.getEjbql())) {
             query.setEjbql(text);
             session.fireQueryEvent(QueryEvent.ofChange(this, query));
         }

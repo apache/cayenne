@@ -33,8 +33,9 @@ import org.apache.cayenne.configuration.ConfigurationNodeVisitor;
 import org.apache.cayenne.exp.parser.ASTScalar;
 import org.apache.cayenne.util.ConversionUtil;
 import org.apache.cayenne.util.HashCodeBuilder;
-import org.apache.cayenne.util.Util;
 import org.apache.cayenne.util.XMLEncoder;
+
+import java.util.Objects;
 import org.apache.cayenne.util.XMLSerializable;
 
 /**
@@ -285,7 +286,7 @@ public abstract class Expression implements Serializable, XMLSerializable {
 		// compare operands
 		int len = e.getOperandCount();
 		for (int i = 0; i < len; i++) {
-			if (!Util.nullSafeEquals(e.getOperand(i), getOperand(i))) {
+			if (!Objects.deepEquals(e.getOperand(i), getOperand(i))) {
 				return false;
 			}
 		}

@@ -166,6 +166,7 @@ public class UtilTest {
 	}
 
 	@Test
+	@SuppressWarnings("deprecation")
 	public void nullSafeEquals() throws Exception {
 		// need a special subclass of Object to make "clone" method public
 		class CloneableObject implements Cloneable {

@@ -19,7 +19,7 @@
 
 package org.apache.cayenne.graph;
 
-import org.apache.cayenne.util.Util;
+import java.util.Objects;
 
 /**
  * @since 1.2
@@ -69,7 +69,7 @@ public class NodePropertyChangeOperation extends NodeDiff {
 	 */
 	@Override
 	public boolean isNoop() {
-		return Util.nullSafeEquals(oldValue, newValue);
+		return Objects.deepEquals(oldValue, newValue);
 	}
 
 	@Override

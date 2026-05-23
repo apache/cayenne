@@ -22,10 +22,10 @@ package org.apache.cayenne.map;
 import org.apache.cayenne.CayenneRuntimeException;
 import org.apache.cayenne.configuration.ConfigurationNode;
 import org.apache.cayenne.configuration.ConfigurationNodeVisitor;
-import org.apache.cayenne.util.Util;
 import org.apache.cayenne.util.XMLEncoder;
 
 import java.util.ArrayList;
+import java.util.Objects;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.HashMap;
@@ -507,8 +507,8 @@ public class DbRelationship extends Relationship<DbEntity, DbAttribute, DbRelati
             }
 
             DbJoin j = (DbJoin) o;
-            return j.relationship == this.relationship && Util.nullSafeEquals(j.sourceName, this.sourceName)
-                    && Util.nullSafeEquals(j.targetName, this.targetName);
+            return j.relationship == this.relationship && Objects.equals(j.sourceName, this.sourceName)
+                    && Objects.equals(j.targetName, this.targetName);
         }
     }
 

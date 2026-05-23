@@ -20,7 +20,7 @@
 package org.apache.cayenne.modeler.pref.dbconnector;
 
 import org.apache.cayenne.configuration.DataSourceDescriptor;
-import org.apache.cayenne.util.Util;
+import java.util.Objects;
 
 /**
  * Configuration record for a named database connection profile stored in user preferences.
@@ -89,27 +89,27 @@ public class DBConnector {
     public boolean copyTo(DBConnector connector) {
         boolean updated = false;
 
-        if (!Util.nullSafeEquals(connector.getUrl(), getUrl())) {
+        if (!Objects.equals(connector.getUrl(), getUrl())) {
             connector.setUrl(getUrl());
             updated = true;
         }
 
-        if (!Util.nullSafeEquals(connector.getUserName(), getUserName())) {
+        if (!Objects.equals(connector.getUserName(), getUserName())) {
             connector.setUserName(getUserName());
             updated = true;
         }
 
-        if (!Util.nullSafeEquals(connector.getPassword(), getPassword())) {
+        if (!Objects.equals(connector.getPassword(), getPassword())) {
             connector.setPassword(getPassword());
             updated = true;
         }
 
-        if (!Util.nullSafeEquals(connector.getJdbcDriver(), getJdbcDriver())) {
+        if (!Objects.equals(connector.getJdbcDriver(), getJdbcDriver())) {
             connector.setJdbcDriver(getJdbcDriver());
             updated = true;
         }
 
-        if (!Util.nullSafeEquals(connector.getDbAdapter(), getDbAdapter())) {
+        if (!Objects.equals(connector.getDbAdapter(), getDbAdapter())) {
             connector.setDbAdapter(getDbAdapter());
             updated = true;
         }
@@ -124,22 +124,22 @@ public class DBConnector {
     public boolean copyTo(final DataSourceDescriptor dataSourceInfo) {
         boolean updated = false;
 
-        if (!Util.nullSafeEquals(dataSourceInfo.getDataSourceUrl(), getUrl())) {
+        if (!Objects.equals(dataSourceInfo.getDataSourceUrl(), getUrl())) {
             dataSourceInfo.setDataSourceUrl(getUrl());
             updated = true;
         }
 
-        if (!Util.nullSafeEquals(dataSourceInfo.getUserName(), getUserName())) {
+        if (!Objects.equals(dataSourceInfo.getUserName(), getUserName())) {
             dataSourceInfo.setUserName(getUserName());
             updated = true;
         }
 
-        if (!Util.nullSafeEquals(dataSourceInfo.getPassword(), getPassword())) {
+        if (!Objects.equals(dataSourceInfo.getPassword(), getPassword())) {
             dataSourceInfo.setPassword(getPassword());
             updated = true;
         }
 
-        if (!Util.nullSafeEquals(dataSourceInfo.getJdbcDriver(), getJdbcDriver())) {
+        if (!Objects.equals(dataSourceInfo.getJdbcDriver(), getJdbcDriver())) {
             dataSourceInfo.setJdbcDriver(getJdbcDriver());
             updated = true;
         }

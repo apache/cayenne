@@ -27,7 +27,7 @@ import org.apache.cayenne.map.ObjEntity;
 import org.apache.cayenne.query.ObjectSelect;
 import org.apache.cayenne.query.Query;
 import org.apache.cayenne.query.QueryMetadata;
-import org.apache.cayenne.util.Util;
+import java.util.Objects;
 
 import java.io.Serializable;
 import java.util.ArrayList;
@@ -807,7 +807,7 @@ public class IncrementalFaultList<E> implements List<E>, Serializable {
 				for (Map.Entry<?, ?> entry : id.entrySet()) {
 					Object key = entry.getKey();
 					Object value = entry.getValue();
-					if (!Util.nullSafeEquals(value, map.get(key))) {
+					if (!Objects.deepEquals(value, map.get(key))) {
 						return false;
 					}
 				}
@@ -831,7 +831,7 @@ public class IncrementalFaultList<E> implements List<E>, Serializable {
 			for (Map.Entry<?, ?> entry : id.entrySet()) {
 				Object key = entry.getKey();
 				Object value = entry.getValue();
-				if (!Util.nullSafeEquals(value, map.get(key))) {
+				if (!Objects.deepEquals(value, map.get(key))) {
 					return false;
 				}
 			}

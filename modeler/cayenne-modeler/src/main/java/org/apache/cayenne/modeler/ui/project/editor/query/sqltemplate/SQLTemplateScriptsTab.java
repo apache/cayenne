@@ -30,7 +30,7 @@ import org.apache.cayenne.modeler.project.ProjectSession;
 import org.apache.cayenne.modeler.dbadapter.DbAdapters;
 import org.apache.cayenne.modeler.toolkit.text.CMUndoableTextPane;
 import org.apache.cayenne.modeler.toolkit.text.CMTextPane;
-import org.apache.cayenne.util.Util;
+import java.util.Objects;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -234,12 +234,12 @@ public class SQLTemplateScriptsTab extends ProjectPanel {
         // Compare the value before modifying the query - text pane
         // will call "verify" even if no changes have occured....
         if (key.equals(DEFAULT_LABEL)) {
-            if (!Util.nullSafeEquals(text, query.getSql())) {
+            if (!Objects.equals(text, query.getSql())) {
                 query.setSql(text);
                 session.fireQueryEvent(QueryEvent.ofChange(this, query));
             }
         } else {
-            if (!Util.nullSafeEquals(text, query.getAdapterSql().get(key))) {
+            if (!Objects.equals(text, query.getAdapterSql().get(key))) {
                 query.getAdapterSql().put(key, text);
                 session.fireQueryEvent(QueryEvent.ofChange(this, query));
             }

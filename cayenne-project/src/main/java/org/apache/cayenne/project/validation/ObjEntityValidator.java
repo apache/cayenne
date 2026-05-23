@@ -24,6 +24,7 @@ import org.apache.cayenne.map.ObjEntity;
 import org.apache.cayenne.util.Util;
 import org.apache.cayenne.validation.ValidationResult;
 
+import java.util.Objects;
 import java.util.function.Supplier;
 
 class ObjEntityValidator extends ConfigurationNodeValidator<ObjEntity> {
@@ -85,7 +86,7 @@ class ObjEntityValidator extends ConfigurationNodeValidator<ObjEntity> {
 
             ObjEntity conflictingEntity = nextMap.getObjEntity(name);
             if (conflictingEntity != null
-                    && !Util.nullSafeEquals(conflictingEntity.getClassName(), entity.getClassName())) {
+                    && !Objects.equals(conflictingEntity.getClassName(), entity.getClassName())) {
                 addFailure(validationResult, entity, "Duplicate ObjEntity name in another DataMap: '%s'", name);
                 break;
             }

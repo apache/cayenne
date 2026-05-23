@@ -36,7 +36,7 @@ import org.apache.cayenne.modeler.event.display.EmbeddableDisplayListener;
 import org.apache.cayenne.modeler.toolkit.text.CMUndoableTextField;
 import org.apache.cayenne.modeler.project.ProjectComparators;
 import org.apache.cayenne.project.extension.info.ObjectInfo;
-import org.apache.cayenne.util.Util;
+import java.util.Objects;
 import org.apache.cayenne.validation.ValidationException;
 
 import javax.swing.*;
@@ -98,7 +98,7 @@ public class EmbeddableMainView extends ProjectPanel implements EmbeddableDispla
             return;
         }
 
-        if (Util.nullSafeEquals(newClassName, embeddable.getClassName())) {
+        if (Objects.equals(newClassName, embeddable.getClassName())) {
             return;
         }
 

@@ -45,7 +45,6 @@ import org.apache.cayenne.modeler.toolkit.tree.EntityTreeModel;
 import org.apache.cayenne.modeler.toolkit.tree.EntityTreeRelationshipFilter;
 import org.apache.cayenne.project.extension.info.ObjectInfo;
 import org.apache.cayenne.util.DeleteRuleUpdater;
-import org.apache.cayenne.util.Util;
 
 import javax.swing.JButton;
 import javax.swing.JCheckBox;
@@ -499,7 +498,7 @@ public class ObjRelationshipInfoDialog extends ProjectDialog implements TreeSele
 
         String userInputName = relationshipName.getText();
         String oldName = relationship.getName();
-        if (!Util.nullSafeEquals(oldName, userInputName)) {
+        if (!Objects.equals(oldName, userInputName)) {
             ObjEntity source = relationship.getSourceEntity();
             ObjRelationship clash = source.getRelationship(userInputName);
             if (clash != null && clash != relationship) {
@@ -522,7 +521,7 @@ public class ObjRelationshipInfoDialog extends ProjectDialog implements TreeSele
             }
         }
 
-        if (objectTarget == null || !Util.nullSafeEquals(objectTarget.getName(), relationship.getTargetEntityName())) {
+        if (objectTarget == null || !Objects.equals(objectTarget.getName(), relationship.getTargetEntityName())) {
             hasChanges = true;
             // event notification is propagated via the modeler events from the caller —
             // the model itself doesn't know about the mediator.
@@ -547,7 +546,7 @@ public class ObjRelationshipInfoDialog extends ProjectDialog implements TreeSele
 
         String collectionType = ObjRelationship.DEFAULT_COLLECTION_TYPE.equals(targetCollection)
                 || !relationship.isToMany() ? null : targetCollection;
-        if (!Util.nullSafeEquals(collectionType, relationship.getCollectionType())) {
+        if (!Objects.equals(collectionType, relationship.getCollectionType())) {
             hasChanges = true;
             relationship.setCollectionType(collectionType);
         }
@@ -555,7 +554,7 @@ public class ObjRelationshipInfoDialog extends ProjectDialog implements TreeSele
         // map key only makes sense for Map relationships
         String mapKey = COLLECTION_TYPE_MAP.equals(collectionType) && !DEFAULT_MAP_KEY.equals(this.mapKey)
                 ? this.mapKey : null;
-        if (!Util.nullSafeEquals(mapKey, relationship.getMapKey())) {
+        if (!Objects.equals(mapKey, relationship.getMapKey())) {
             hasChanges = true;
             relationship.setMapKey(mapKey);
         }

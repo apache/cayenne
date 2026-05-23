@@ -31,7 +31,7 @@ import org.apache.cayenne.modeler.toolkit.Renderers;
 import org.apache.cayenne.modeler.toolkit.text.CMUndoableTextField;
 import org.apache.cayenne.modeler.toolkit.combobox.AutoCompletion;
 import org.apache.cayenne.modeler.toolkit.combobox.CMComboBox;
-import org.apache.cayenne.util.Util;
+import java.util.Objects;
 import org.apache.cayenne.validation.ValidationException;
 
 import javax.swing.*;
@@ -83,7 +83,7 @@ public abstract class BaseQueryMainTab extends ProjectPanel {
             return;
         }
 
-        if (Util.nullSafeEquals(newName, query.getName())) {
+        if (Objects.equals(newName, query.getName())) {
             return;
         }
 

@@ -24,7 +24,7 @@ import java.util.Map;
 
 import org.apache.cayenne.util.HashCodeBuilder;
 import org.apache.cayenne.util.SingleEntryMap;
-import org.apache.cayenne.util.Util;
+import java.util.Objects;
 
 /**
  * {@link ObjectId} with single non-numeric value
@@ -116,10 +116,10 @@ class ObjectIdSingle implements ObjectId {
             return false;
         }
         ObjectIdSingle that = (ObjectIdSingle) o;
-        if(!Util.nullSafeEquals(entityName, that.entityName)) {
+        if(!Objects.equals(entityName, that.entityName)) {
             return false;
         }
-        return Util.nullSafeEquals(value, that.value);
+        return Objects.deepEquals(value, that.value);
     }
 
     @Override

@@ -39,7 +39,7 @@ import org.apache.cayenne.modeler.project.ProjectSession;
 import org.apache.cayenne.modeler.ui.project.editor.ExpressionConvertor;
 import org.apache.cayenne.modeler.ui.project.editor.query.ExistingSelectionProcessor;
 import org.apache.cayenne.project.extension.info.ObjectInfo;
-import org.apache.cayenne.util.Util;
+import java.util.Objects;
 import org.apache.cayenne.validation.ValidationException;
 
 import javax.swing.BorderFactory;
@@ -216,7 +216,7 @@ public class DbEntityMainView extends ProjectPanel implements ExistingSelectionP
 
         DbEntity entity = session.getSelectedDbEntity();
 
-        if (entity == null || Util.nullSafeEquals(newName, entity.getName())) {
+        if (entity == null || Objects.equals(newName, entity.getName())) {
             return;
         }
 
@@ -241,7 +241,7 @@ public class DbEntityMainView extends ProjectPanel implements ExistingSelectionP
 
         DbEntity ent = session.getSelectedDbEntity();
 
-        if (ent != null && !Util.nullSafeEquals(ent.getCatalog(), text)) {
+        if (ent != null && !Objects.equals(ent.getCatalog(), text)) {
             ent.setCatalog(text);
             session.fireDbEntityEvent(DbEntityEvent.ofChange(this, ent));
         }
@@ -255,7 +255,7 @@ public class DbEntityMainView extends ProjectPanel implements ExistingSelectionP
 
         DbEntity ent = session.getSelectedDbEntity();
 
-        if (ent != null && !Util.nullSafeEquals(ent.getSchema(), text)) {
+        if (ent != null && !Objects.equals(ent.getSchema(), text)) {
             ent.setSchema(text);
             session.fireDbEntityEvent(DbEntityEvent.ofChange(this, ent));
         }
@@ -269,10 +269,10 @@ public class DbEntityMainView extends ProjectPanel implements ExistingSelectionP
 
         DbEntity ent = session.getSelectedDbEntity();
 
-        if (ent != null && !Util.nullSafeEquals(ent.getQualifier(), qualifier)) {
+        if (ent != null && !Objects.equals(ent.getQualifier(), qualifier)) {
             try {
                 String oldQualifier = ExpressionConvertor.asString(ent.getQualifier());
-                if (!Util.nullSafeEquals(oldQualifier, qualifier)) {
+                if (!Objects.equals(oldQualifier, qualifier)) {
                     ent.setQualifier(ExpressionConvertor.fromString(qualifier));
                     session.fireDbEntityEvent(DbEntityEvent.ofChange(this, ent));
                 }

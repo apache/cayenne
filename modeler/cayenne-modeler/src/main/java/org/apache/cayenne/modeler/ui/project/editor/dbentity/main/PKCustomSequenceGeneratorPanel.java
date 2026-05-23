@@ -26,7 +26,7 @@ import org.apache.cayenne.map.DbKeyGenerator;
 import org.apache.cayenne.modeler.event.model.DbEntityEvent;
 import org.apache.cayenne.modeler.toolkit.text.CMUndoableTextField;
 import org.apache.cayenne.modeler.project.ProjectSession;
-import org.apache.cayenne.util.Util;
+import java.util.Objects;
 import org.apache.cayenne.validation.ValidationException;
 
 import javax.swing.*;
@@ -114,7 +114,7 @@ public class PKCustomSequenceGeneratorPanel extends PKGeneratorPanel {
         }
 
         DbKeyGenerator generator = session.getSelectedDbEntity().getPrimaryKeyGenerator();
-        if (!Util.nullSafeEquals(generator.getKeyCacheSize(), cacheSize)) {
+        if (!Objects.equals(generator.getKeyCacheSize(), cacheSize)) {
             generator.setKeyCacheSize(cacheSize);
             session.fireDbEntityEvent(DbEntityEvent.ofChange(this, generator.getDbEntity()));
         }
@@ -132,7 +132,7 @@ public class PKCustomSequenceGeneratorPanel extends PKGeneratorPanel {
         }
 
         DbKeyGenerator generator = session.getSelectedDbEntity().getPrimaryKeyGenerator();
-        if (!Util.nullSafeEquals(text, generator.getName())) {
+        if (!Objects.equals(text, generator.getName())) {
             generator.setGeneratorName(text);
             session.fireDbEntityEvent(DbEntityEvent.ofChange(this, generator.getDbEntity()));
         }

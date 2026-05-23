@@ -26,6 +26,7 @@ import org.apache.cayenne.modeler.event.model.ProcedureEvent;
 import org.apache.cayenne.modeler.project.ProjectSession;
 import org.apache.cayenne.modeler.ui.project.editor.datamap.defaults.DefaultsUpdateDialog;
 import org.apache.cayenne.util.Util;
+import java.util.Objects;
 
 import java.awt.Window;
 
@@ -45,7 +46,7 @@ public class CatalogUpdateDialog extends DefaultsUpdateDialog {
 
         for (DbEntity entity : dataMap.getDbEntities()) {
             if (doAll || Util.isEmptyString(entity.getCatalog())) {
-                if (!Util.nullSafeEquals(defaultCatalog, entity.getCatalog())) {
+                if (!Objects.equals(defaultCatalog, entity.getCatalog())) {
                     entity.setCatalog(defaultCatalog);
                     // any way to batch events, a big change will flood the app with entity events?
                     session.fireDbEntityEvent(DbEntityEvent.ofChange(this, entity));
@@ -55,7 +56,7 @@ public class CatalogUpdateDialog extends DefaultsUpdateDialog {
 
         for (Procedure procedure : dataMap.getProcedures()) {
             if (doAll || Util.isEmptyString(procedure.getCatalog())) {
-                if (!Util.nullSafeEquals(defaultCatalog, procedure.getCatalog())) {
+                if (!Objects.equals(defaultCatalog, procedure.getCatalog())) {
                     procedure.setCatalog(defaultCatalog);
                     // any way to batch events, a big change will flood the app with procedure events?
                     session.fireProcedureEvent(ProcedureEvent.ofChange(this, procedure));

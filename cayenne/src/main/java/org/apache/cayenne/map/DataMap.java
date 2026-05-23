@@ -37,6 +37,7 @@ import java.util.Collections;
 import java.util.Comparator;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.Objects;
 import java.util.TreeMap;
 
 import static java.util.Collections.emptyList;
@@ -590,7 +591,7 @@ public class DataMap implements Serializable, ConfigurationNode, XMLSerializable
 			throw new NullPointerException("Null entity or name");
 		}
 		String oldName = entity.getName();
-		if (Util.nullSafeEquals(oldName, newName)) {
+		if (Objects.equals(oldName, newName)) {
 			return;
 		}
 		if (dbEntityMap.get(oldName) != entity) {
@@ -619,7 +620,7 @@ public class DataMap implements Serializable, ConfigurationNode, XMLSerializable
 			throw new NullPointerException("Null entity or name");
 		}
 		String oldName = entity.getName();
-		if (Util.nullSafeEquals(oldName, newName)) {
+		if (Objects.equals(oldName, newName)) {
 			return;
 		}
 		if (objEntityMap.get(oldName) != entity) {

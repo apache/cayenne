@@ -30,7 +30,7 @@ import org.apache.cayenne.modeler.toolkit.text.CMUndoableTextField;
 import org.apache.cayenne.modeler.toolkit.ProjectPanel;
 import org.apache.cayenne.modeler.project.ProjectSession;
 import org.apache.cayenne.project.extension.info.ObjectInfo;
-import org.apache.cayenne.util.Util;
+import java.util.Objects;
 import org.apache.cayenne.validation.ValidationException;
 
 import java.awt.BorderLayout;
@@ -111,7 +111,7 @@ public class EjbqlQueryMainTab extends ProjectPanel {
             return;
         }
 
-        if (Util.nullSafeEquals(newName, query.getName())) {
+        if (Objects.equals(newName, query.getName())) {
             return;
         }
 

@@ -41,7 +41,7 @@ import org.apache.cayenne.modeler.ui.project.editor.datamap.main.pkg.PackageUpda
 import org.apache.cayenne.modeler.ui.project.editor.datamap.main.schema.SchemaUpdateDialog;
 import org.apache.cayenne.modeler.ui.project.editor.datamap.main.superclass.SuperclassUpdateDialog;
 import org.apache.cayenne.project.extension.info.ObjectInfo;
-import org.apache.cayenne.util.Util;
+import java.util.Objects;
 import org.apache.cayenne.validation.ValidationException;
 
 import javax.swing.*;
@@ -234,7 +234,7 @@ public class DataMapMainView extends ProjectPanel {
         }
 
         String oldPackage = dataMap.getDefaultPackage();
-        if (Util.nullSafeEquals(newDefaultPackage, oldPackage)) {
+        if (Objects.equals(newDefaultPackage, oldPackage)) {
             return;
         }
 
@@ -259,7 +259,7 @@ public class DataMapMainView extends ProjectPanel {
         }
 
         String oldCatalog = dataMap.getDefaultCatalog();
-        if (Util.nullSafeEquals(newCatalog, oldCatalog)) {
+        if (Objects.equals(newCatalog, oldCatalog)) {
             return;
         }
 
@@ -279,7 +279,7 @@ public class DataMapMainView extends ProjectPanel {
         }
 
         String oldSchema = dataMap.getDefaultSchema();
-        if (Util.nullSafeEquals(newSchema, oldSchema)) {
+        if (Objects.equals(newSchema, oldSchema)) {
             return;
         }
 
@@ -299,7 +299,7 @@ public class DataMapMainView extends ProjectPanel {
         }
 
         String oldSuperclass = dataMap.getDefaultSuperclass();
-        if (Util.nullSafeEquals(newSuperclass, oldSuperclass)) {
+        if (Objects.equals(newSuperclass, oldSuperclass)) {
             return;
         }
 
@@ -328,7 +328,7 @@ public class DataMapMainView extends ProjectPanel {
                     + "'. Use a different name.");
         }
         String oldName = map.getName();
-        if (Util.nullSafeEquals(newName, oldName)) {
+        if (Objects.equals(newName, oldName)) {
             return;
         }
 

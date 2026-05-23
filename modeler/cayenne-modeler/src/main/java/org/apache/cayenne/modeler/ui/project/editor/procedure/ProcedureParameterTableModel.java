@@ -25,7 +25,7 @@ import org.apache.cayenne.map.Procedure;
 import org.apache.cayenne.map.ProcedureParameter;
 import org.apache.cayenne.modeler.project.ProjectSession;
 import org.apache.cayenne.modeler.toolkit.table.CMTableModel;
-import org.apache.cayenne.util.Util;
+import java.util.Objects;
 
 import javax.swing.JOptionPane;
 import java.util.ArrayList;
@@ -152,7 +152,7 @@ public class ProcedureParameterTableModel extends CMTableModel<ProcedureParamete
     protected void setParameterName(String newVal, ProcedureParameter parameter) {
         String newName = newVal.trim();
         String oldName = parameter.getName();
-        if (Util.nullSafeEquals(oldName, newName)) {
+        if (Objects.equals(oldName, newName)) {
             return;
         }
         Procedure procedure = parameter.getProcedure();

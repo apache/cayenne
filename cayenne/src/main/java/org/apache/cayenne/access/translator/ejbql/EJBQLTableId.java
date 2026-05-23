@@ -19,11 +19,11 @@
 package org.apache.cayenne.access.translator.ejbql;
 
 import java.util.Iterator;
+import java.util.Objects;
 
 import org.apache.cayenne.map.DbEntity;
 import org.apache.cayenne.map.DbRelationship;
 import org.apache.cayenne.reflect.ClassDescriptor;
-import org.apache.cayenne.util.Util;
 
 /**
  * A helper class representing an "id" of a database table during EJBQL translation. EJBQL
@@ -126,11 +126,11 @@ class EJBQLTableId {
 
         EJBQLTableId id = (EJBQLTableId) object;
 
-        if (!Util.nullSafeEquals(entityId, id.entityId)) {
+        if (!Objects.equals(entityId, id.entityId)) {
             return false;
         }
 
-        if (!Util.nullSafeEquals(dbPath, id.dbPath)) {
+        if (!Objects.equals(dbPath, id.dbPath)) {
             return false;
         }
 

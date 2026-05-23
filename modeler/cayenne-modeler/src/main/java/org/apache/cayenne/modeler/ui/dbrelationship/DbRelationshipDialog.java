@@ -44,7 +44,7 @@ import org.apache.cayenne.modeler.project.ProjectSession;
 import org.apache.cayenne.modeler.undo.CreateRelationshipUndoableEdit;
 import org.apache.cayenne.modeler.undo.RelationshipUndoableEdit;
 import org.apache.cayenne.project.extension.info.ObjectInfo;
-import org.apache.cayenne.util.Util;
+import java.util.Objects;
 
 import javax.swing.AbstractListModel;
 import javax.swing.ComboBoxModel;
@@ -391,7 +391,7 @@ public class DbRelationshipDialog extends ProjectDialog {
     }
 
     private void handleNameUpdate(DbRelationship rel, String userInputName) {
-        if (Util.nullSafeEquals(rel.getName(), userInputName)) {
+        if (Objects.equals(rel.getName(), userInputName)) {
             return;
         }
 
@@ -400,7 +400,7 @@ public class DbRelationshipDialog extends ProjectDialog {
                 .baseName(userInputName)
                 .name();
 
-        if (Util.nullSafeEquals(sourceEntityName, rel.getName())) {
+        if (Objects.equals(sourceEntityName, rel.getName())) {
             return;
         }
         String oldName = rel.getName();

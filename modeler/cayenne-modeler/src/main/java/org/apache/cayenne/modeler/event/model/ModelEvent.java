@@ -19,7 +19,7 @@
 
 package org.apache.cayenne.modeler.event.model;
 
-import org.apache.cayenne.util.Util;
+import java.util.Objects;
 
 import java.util.EventObject;
 
@@ -60,7 +60,7 @@ public abstract class ModelEvent extends EventObject {
     }
 
     public boolean isNameChange() {
-        return oldName != null && !Util.nullSafeEquals(oldName, getNewName());
+        return oldName != null && !Objects.equals(oldName, getNewName());
     }
 
     /**

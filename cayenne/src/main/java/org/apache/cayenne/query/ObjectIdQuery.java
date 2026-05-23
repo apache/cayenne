@@ -29,6 +29,8 @@ import org.apache.cayenne.map.ObjEntity;
 import org.apache.cayenne.reflect.ClassDescriptor;
 import org.apache.cayenne.util.Util;
 
+import java.util.Objects;
+
 /**
  * A query that matches zero or one object or data row corresponding to the ObjectId. Used
  * internally by Cayenne to lookup objects by id. Notice that cache policies of
@@ -175,7 +177,7 @@ public class ObjectIdQuery extends IndirectQuery {
 
         ObjectIdQuery query = (ObjectIdQuery) object;
 
-        return Util.nullSafeEquals(objectId, query.getObjectId());
+        return Objects.equals(objectId, query.getObjectId());
     }
 
     /**

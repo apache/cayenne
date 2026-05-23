@@ -39,6 +39,7 @@ import org.apache.cayenne.query.QueryCacheStrategy;
 import org.apache.cayenne.map.QueryDescriptor;
 import org.apache.cayenne.query.QueryMetadata;
 import org.apache.cayenne.util.Util;
+import java.util.Objects;
 import org.apache.cayenne.validation.ValidationException;
 
 import org.slf4j.Logger;
@@ -211,7 +212,7 @@ public abstract class SelectPropertiesPanel extends JPanel {
         if (query != null) {
             try {
                 Object old = query.getProperty(property);
-                if (Util.nullSafeEquals(value, old)) {
+                if (Objects.equals(value, old)) {
                     return;
                 }
                 query.setProperty(property, value);

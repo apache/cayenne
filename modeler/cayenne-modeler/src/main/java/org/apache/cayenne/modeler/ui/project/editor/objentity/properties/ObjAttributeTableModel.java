@@ -40,6 +40,7 @@ import org.apache.cayenne.modeler.toolkit.table.CMTableModel;
 import org.apache.cayenne.modeler.project.ProjectSession;
 import org.apache.cayenne.project.extension.info.ObjectInfo;
 import org.apache.cayenne.util.Util;
+import java.util.Objects;
 
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -226,7 +227,7 @@ public class ObjAttributeTableModel extends CMTableModel<ObjAttribute> {
     private void setObjAttribute(ObjAttribute attribute, Object value) {
         String newName = value != null ? value.toString().trim() : null;
         String oldName = attribute.getName();
-        if (Util.nullSafeEquals(newName, oldName)) {
+        if (Objects.equals(newName, oldName)) {
             return;
         }
         ObjEntity parent = attribute.getEntity();

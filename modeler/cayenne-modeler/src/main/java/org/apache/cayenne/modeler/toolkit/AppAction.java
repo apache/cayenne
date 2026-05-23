@@ -26,7 +26,7 @@ import org.apache.cayenne.modeler.project.ProjectSession;
 import org.apache.cayenne.modeler.toolkit.icon.IconFactory;
 import org.apache.cayenne.modeler.ui.errors.ErrorDialog;
 import org.apache.cayenne.project.Project;
-import org.apache.cayenne.util.Util;
+import java.util.Objects;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -81,7 +81,7 @@ public abstract class AppAction extends AbstractAction {
      * action.
      */
     public void setName(String newName) {
-        if (!Util.nullSafeEquals(getValue(Action.NAME), newName)) {
+        if (!Objects.equals(getValue(Action.NAME), newName)) {
             super.putValue(Action.NAME, newName);
         }
     }

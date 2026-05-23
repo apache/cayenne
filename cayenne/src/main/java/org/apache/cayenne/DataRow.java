@@ -21,11 +21,11 @@ package org.apache.cayenne;
 
 import java.util.HashMap;
 import java.util.Map;
+import java.util.Objects;
 import java.util.concurrent.atomic.AtomicLong;
 
 import org.apache.cayenne.map.DbRelationship;
 import org.apache.cayenne.util.ToStringBuilder;
-import org.apache.cayenne.util.Util;
 
 /**
  * DataRow a map that holds values retrieved from the database for a given query row.
@@ -102,7 +102,7 @@ public class DataRow extends HashMap<String, Object> {
             Object currentValue = entry.getValue();
             Object rowValue = row.get(key);
 
-            if (!Util.nullSafeEquals(currentValue, rowValue)) {
+            if (!Objects.deepEquals(currentValue, rowValue)) {
                 if (diff == null) {
                     diff = new DataRow(this.size());
                 }

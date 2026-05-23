@@ -31,7 +31,7 @@ import org.apache.cayenne.modeler.toolkit.checkbox.CMCheckBox;
 import org.apache.cayenne.modeler.toolkit.text.CMUndoableTextField;
 import org.apache.cayenne.modeler.toolkit.ProjectPanel;
 import org.apache.cayenne.modeler.project.ProjectSession;
-import org.apache.cayenne.util.Util;
+import java.util.Objects;
 import org.apache.cayenne.validation.ValidationException;
 
 import javax.swing.*;
@@ -137,7 +137,7 @@ public class DataDomainMainView extends ProjectPanel implements DomainDisplayLis
 
         Map<String, String> properties = domain.getProperties();
         String oldValue = properties.get(property);
-        if (!Util.nullSafeEquals(value, oldValue)) {
+        if (!Objects.equals(value, oldValue)) {
             properties.put(property, value);
 
             DomainEvent e = DomainEvent.ofChange(this, domain);
@@ -191,7 +191,7 @@ public class DataDomainMainView extends ProjectPanel implements DomainDisplayLis
                 .getFrame().getProjectSession().project()
                 .getRootNode();
 
-        if (Util.nullSafeEquals(dataChannelDescriptor.getName(), newName)) {
+        if (Objects.equals(dataChannelDescriptor.getName(), newName)) {
             return;
         }
 

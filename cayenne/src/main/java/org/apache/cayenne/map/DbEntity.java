@@ -39,8 +39,9 @@ import org.apache.cayenne.exp.ExpressionException;
 import org.apache.cayenne.exp.ExpressionFactory;
 import org.apache.cayenne.exp.path.CayennePath;
 import org.apache.cayenne.util.CayenneMapEntry;
-import org.apache.cayenne.util.Util;
 import org.apache.cayenne.util.XMLEncoder;
+
+import java.util.Objects;
 
 /**
  * A DbEntity is a mapping descriptor that defines a structure of a database
@@ -292,7 +293,7 @@ public class DbEntity extends Entity<DbEntity, DbAttribute, DbRelationship>
         }
 
         String oldName = attr.getName();
-        if (Util.nullSafeEquals(oldName, newName)) {
+        if (Objects.equals(oldName, newName)) {
             return;
         }
 
@@ -339,7 +340,7 @@ public class DbEntity extends Entity<DbEntity, DbAttribute, DbRelationship>
         }
 
         String oldName = rel.getName();
-        if (Util.nullSafeEquals(oldName, newName)) {
+        if (Objects.equals(oldName, newName)) {
             return;
         }
 

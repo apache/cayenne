@@ -21,7 +21,7 @@ package org.apache.cayenne.reflect;
 
 import org.apache.cayenne.CayenneRuntimeException;
 import org.apache.cayenne.ExtendedEnumeration;
-import org.apache.cayenne.util.Util;
+import java.util.Objects;
 
 /**
  * @since 1.2
@@ -44,7 +44,7 @@ class EnumConverter<T extends Enum<T> & ExtendedEnumeration> implements Converte
             }
 
             for (ExtendedEnumeration en : values) {
-                if (Util.nullSafeEquals(en.getDatabaseValue(), object)) {
+                if (Objects.deepEquals(en.getDatabaseValue(), object)) {
                     return (T) en;
                 }
             }

@@ -33,8 +33,9 @@ import org.apache.cayenne.exp.parser.ASTDbPath;
 import org.apache.cayenne.exp.path.CayennePath;
 import org.apache.cayenne.util.CayenneMapEntry;
 import org.apache.cayenne.util.ToStringBuilder;
-import org.apache.cayenne.util.Util;
 import org.apache.cayenne.util.XMLEncoder;
+
+import java.util.Objects;
 
 /**
  * Describes an association between two Java classes mapped as source and target
@@ -542,7 +543,7 @@ public class ObjRelationship extends Relationship<ObjEntity, ObjAttribute, ObjRe
      * @since 5.0
      */
     public void setDbRelationshipPath(CayennePath relationshipPath) {
-        if (!Util.nullSafeEquals(getDbRelationshipPath(), relationshipPath)) {
+        if (!Objects.equals(getDbRelationshipPath(), relationshipPath)) {
             refreshFromPath(relationshipPath, false);
         }
     }
@@ -556,7 +557,7 @@ public class ObjRelationship extends Relationship<ObjEntity, ObjAttribute, ObjRe
      */
     public void setDeferredDbRelationshipPath(String relationshipPath) {
         CayennePath newPath = CayennePath.of(relationshipPath);
-        if (!Util.nullSafeEquals(getDbRelationshipPath(), newPath)) {
+        if (!Objects.equals(getDbRelationshipPath(), newPath)) {
             deferredPath = newPath;
         }
     }

@@ -36,7 +36,7 @@ import org.apache.cayenne.query.EntityResultSegment;
 import org.apache.cayenne.query.ObjectSelect;
 import org.apache.cayenne.query.Query;
 import org.apache.cayenne.query.QueryMetadata;
-import org.apache.cayenne.util.Util;
+import java.util.Objects;
 
 /**
  * FaultList that is used for paginated {@link ColumnSelect} queries.
@@ -219,7 +219,7 @@ class MixedResultIncrementalFaultList<E> extends IncrementalFaultList<E> {
                 }
 
                 for (Map.Entry<?, ?> entry : id.entrySet()) {
-                    if (!Util.nullSafeEquals(entry.getValue(), map.get(entry.getKey()))) {
+                    if (!Objects.deepEquals(entry.getValue(), map.get(entry.getKey()))) {
                         return false;
                     }
                 }
