@@ -251,7 +251,9 @@ public class Util {
 
 	/**
 	 * @since 4.1
+	 * @deprecated use {@code cs.chars().allMatch(Character::isDigit)} or equivalent
 	 */
+	@Deprecated(since = "5.0", forRemoval = true)
 	public static boolean isNumeric(CharSequence cs) {
 		if (isEmptyString(cs)) {
 			return false;

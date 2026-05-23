@@ -38,14 +38,11 @@ import org.apache.cayenne.modeler.project.ProjectSession;
 import org.apache.cayenne.query.QueryCacheStrategy;
 import org.apache.cayenne.map.QueryDescriptor;
 import org.apache.cayenne.query.QueryMetadata;
-import org.apache.cayenne.util.Util;
 import java.util.Objects;
 import org.apache.cayenne.validation.ValidationException;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-
-import static org.apache.cayenne.util.Util.isNumeric;
 
 /**
  * A panel that supports editing the properties of a GenericSelectQuery.
@@ -222,6 +219,10 @@ public abstract class SelectPropertiesPanel extends JPanel {
                 LOGGER.warn("Error setting property: " + property, ex);
             }
         }
+    }
+
+    private static boolean isNumeric(String s) {
+        return s.chars().allMatch(Character::isDigit);
     }
 
     static final class CacheStrategyRenderer extends DefaultListCellRenderer {
