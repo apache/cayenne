@@ -53,12 +53,7 @@ public final class DataMapPrefs extends PrefsAdapter {
     }
 
     public void setSuperclassPackage(String superclassPackage) {
-        if (prefs != null) {
-            if (superclassPackage == null) {
-                superclassPackage = "";
-            }
-            prefs.put(SUPERCLASS_PACKAGE_PROPERTY, superclassPackage);
-        }
+        putOrRemove(SUPERCLASS_PACKAGE_PROPERTY, superclassPackage);
     }
 
     /**
@@ -66,7 +61,7 @@ public final class DataMapPrefs extends PrefsAdapter {
      * connection has been configured (URL not set).
      */
     public DBConnector getConnector() {
-        if (prefs == null || prefs.get(DBConnector.URL_PROPERTY, null) == null) {
+        if (prefs.get(DBConnector.URL_PROPERTY, null) == null) {
             return null;
         }
         DBConnector connector = new DBConnector();
@@ -79,18 +74,11 @@ public final class DataMapPrefs extends PrefsAdapter {
     }
 
     public void setConnector(DBConnector connector) {
-        if (prefs == null) {
-            return;
-        }
-        if (connector.getDbAdapter() != null) {
-            prefs.put(DBConnector.DB_ADAPTER_PROPERTY, connector.getDbAdapter());
-        } else {
-            prefs.remove(DBConnector.DB_ADAPTER_PROPERTY);
-        }
-        prefs.put(DBConnector.URL_PROPERTY, connector.getUrl());
-        prefs.put(DBConnector.USER_NAME_PROPERTY, connector.getUserName());
-        prefs.put(DBConnector.PASSWORD_PROPERTY, connector.getPassword());
-        prefs.put(DBConnector.JDBC_DRIVER_PROPERTY, connector.getJdbcDriver());
+        putOrRemove(DBConnector.DB_ADAPTER_PROPERTY, connector.getDbAdapter());
+        putOrRemove(DBConnector.URL_PROPERTY, connector.getUrl());
+        putOrRemove(DBConnector.USER_NAME_PROPERTY, connector.getUserName());
+        putOrRemove(DBConnector.PASSWORD_PROPERTY, connector.getPassword());
+        putOrRemove(DBConnector.JDBC_DRIVER_PROPERTY, connector.getJdbcDriver());
     }
 
     public boolean hasDbAdapter() {

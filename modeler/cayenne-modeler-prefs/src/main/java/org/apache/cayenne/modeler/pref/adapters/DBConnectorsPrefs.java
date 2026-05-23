@@ -31,7 +31,7 @@ import java.util.prefs.Preferences;
  * Loads {@link DBConnectors} from the user prefs and binds the registry's
  * change events to the prefs node, so registry mutations are mirrored to disk.
  */
-public class DBConnectorPrefs extends PrefsAdapter {
+public class DBConnectorsPrefs extends PrefsAdapter {
 
     public static final String NODE = "dbConnectors";
 
@@ -41,7 +41,7 @@ public class DBConnectorPrefs extends PrefsAdapter {
     private static final String URL_PROPERTY = "url";
     private static final String USER_NAME_PROPERTY = "userName";
 
-    public DBConnectorPrefs(Preferences prefs) {
+    public DBConnectorsPrefs(Preferences prefs) {
         super(prefs);
     }
 

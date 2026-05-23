@@ -31,4 +31,12 @@ public abstract class PrefsAdapter {
     protected PrefsAdapter(Preferences prefs) {
         this.prefs = prefs;
     }
+
+    protected void putOrRemove(String key, String value) {
+        if (value == null) {
+            prefs.remove(key);
+        } else {
+            prefs.put(key, value);
+        }
+    }
 }

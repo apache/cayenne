@@ -33,7 +33,7 @@ import org.apache.cayenne.modeler.log.ModelerLogFactory;
 import org.apache.cayenne.modeler.platform.UIInitializer;
 import org.apache.cayenne.modeler.toolkit.filechooser.FileChooserFactory;
 import org.apache.cayenne.modeler.pref.adapters.ClasspathPrefs;
-import org.apache.cayenne.modeler.pref.adapters.DBConnectorPrefs;
+import org.apache.cayenne.modeler.pref.adapters.DBConnectorsPrefs;
 import org.apache.cayenne.modeler.pref.adapters.GeneralPrefs;
 import org.apache.cayenne.modeler.pref.PrefsLocator;
 import org.apache.cayenne.modeler.pref.PrefsManager;
@@ -190,7 +190,7 @@ public class Application {
 
         getPrefsManager().runMigrations();
 
-        this.dbConnectors = new DBConnectorPrefs(prefsLocator.appNode(DBConnectorPrefs.NODE)).getConnectors();
+        this.dbConnectors = new DBConnectorsPrefs(prefsLocator.appNode(DBConnectorsPrefs.NODE)).getConnectors();
 
         refreshClassLoader();
 

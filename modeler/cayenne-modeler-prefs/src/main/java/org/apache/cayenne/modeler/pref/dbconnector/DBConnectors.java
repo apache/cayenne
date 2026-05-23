@@ -19,7 +19,7 @@
 
 package org.apache.cayenne.modeler.pref.dbconnector;
 
-import org.apache.cayenne.modeler.pref.adapters.DBConnectorPrefs;
+import org.apache.cayenne.modeler.pref.adapters.DBConnectorsPrefs;
 
 import java.util.ArrayList;
 import java.util.Collections;
@@ -29,7 +29,7 @@ import java.util.Map;
 
 /**
  * App-wide registry of named local DB connection profiles. Source of truth at runtime;
- * fires events on add/remove so listeners (e.g. {@link DBConnectorPrefs}) can mirror
+ * fires events on add/remove so listeners (e.g. {@link DBConnectorsPrefs}) can mirror
  * state to persistent storage.
  */
 public class DBConnectors {

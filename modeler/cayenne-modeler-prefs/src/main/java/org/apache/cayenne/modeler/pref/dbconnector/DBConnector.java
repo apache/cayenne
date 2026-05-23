@@ -30,7 +30,6 @@ import org.apache.cayenne.util.Util;
  */
 public class DBConnector {
 
-    private static final String EMPTY_STRING = "";
     public static final String DB_ADAPTER_PROPERTY = "dbAdapter";
     public static final String JDBC_DRIVER_PROPERTY = "jdbcDriver";
     public static final String PASSWORD_PROPERTY = "password";
@@ -60,7 +59,7 @@ public class DBConnector {
     }
 
     public String getPassword() {
-        return password == null ? EMPTY_STRING : password;
+        return password;
     }
 
     public void setPassword(final String password) {
@@ -76,7 +75,7 @@ public class DBConnector {
     }
 
     public String getUserName() {
-        return userName == null ? EMPTY_STRING : userName;
+        return userName;
     }
 
     public void setUserName(final String userName) {
