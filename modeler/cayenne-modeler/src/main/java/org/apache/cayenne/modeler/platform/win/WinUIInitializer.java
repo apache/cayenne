@@ -73,6 +73,6 @@ public class WinUIInitializer implements UIInitializer {
         UIManager.put("MenuItem.opaque", Boolean.TRUE);
         UIManager.put("CheckBoxMenuItem.opaque", Boolean.TRUE);
         UIManager.put("RadioButtonMenuItem.opaque", Boolean.TRUE);
-        UIManager.put("Button.border", BorderFactory.createEmptyBorder(4, 4, 4, 4));
+        UIManager.put("Button.border", BorderFactory.createEmptyBorder());
     }
 }
