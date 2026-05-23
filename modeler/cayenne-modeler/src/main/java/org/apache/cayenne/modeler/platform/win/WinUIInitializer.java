@@ -25,7 +25,6 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import javax.swing.*;
-import javax.swing.plaf.InsetsUIResource;
 import java.awt.*;
 
 public class WinUIInitializer implements UIInitializer {
@@ -75,6 +74,6 @@ public class WinUIInitializer implements UIInitializer {
         UIManager.put("CheckBoxMenuItem.opaque", Boolean.TRUE);
         UIManager.put("RadioButtonMenuItem.opaque", Boolean.TRUE);
         UIManager.put("Button.border", BorderFactory.createEmptyBorder());
-        UIManager.put("Button.margin", new InsetsUIResource(4, 4, 4, 4));
+        UIManager.put("ToolBar.buttonMargin", new Insets(4, 4, 4, 4));
     }
 }

@@ -31,6 +31,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import javax.swing.*;
+import java.awt.Insets;
 import java.awt.event.ActionEvent;
 
 /**
@@ -227,6 +228,10 @@ public abstract class AppAction extends AbstractAction {
             setDisabledIcon(IconFactory.disabledIcon(getIcon()));
             setFocusPainted(false);
             setFocusable(false);
+            Insets margin = UIManager.getInsets("ToolBar.buttonMargin");
+            if (margin != null) {
+                setMargin(margin);
+            }
             putClientProperty("JButton.buttonType", "segmentedTextured");
             putClientProperty("JButton.segmentPosition", POSITIONS[position]);
         }
