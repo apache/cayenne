@@ -142,10 +142,6 @@ public class Application {
         return injector.getInstance(UpgradeService.class);
     }
 
-    public UIInitializer getPlatformInit() {
-        return platformInit;
-    }
-
     public FileChooserFactory getFileChooserFactory() {
         return fileChooserFactory;
     }
@@ -210,8 +206,7 @@ public class Application {
         this.undoManager = new CayenneUndoManager(this);
         this.frame = new MainFrame(this);
         this.platformInit.afterFrameCreated(this);
-
-
+        
         // open up
         frame.onStartup();
 
