@@ -119,6 +119,7 @@
 				<include>org.apache.cayenne:cayenne-mcp-server</include>
 			</includes>
 			<unpack>false</unpack>
+			<outputFileNameMapping>CayenneMCPServer.jar</outputFileNameMapping>
 		</dependencySet>
 	</dependencySets>
 </assembly>

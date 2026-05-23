@@ -61,7 +61,7 @@
         <hsqldb.version>2.7.4</hsqldb.version>
         <ibm.db2.jcc.version>11.5.7.0</ibm.db2.jcc.version>
         <ingres.driver.version>4.0.7</ingres.driver.version>
-        <jaybird.version>4.0.6.java8</jaybird.version>
+        <jaybird.version>4.0.6.java11</jaybird.version>
         <mariadb.connector.version>3.0.6</mariadb.connector.version>
         <mssql.jdbc.version>12.10.0.jre11</mssql.jdbc.version>
         <mysql.connector.version>9.5.0</mysql.connector.version>
@@ -457,7 +457,7 @@
             </dependency>
             <dependency>
                 <groupId>org.firebirdsql.jdbc</groupId>
-                <artifactId>jaybird-jdk18</artifactId>
+                <artifactId>jaybird</artifactId>
                 <version>${jaybird.version}</version>
             </dependency>
             <dependency>
@@ -643,7 +643,7 @@
         </dependency>
         <dependency>
             <groupId>org.firebirdsql.jdbc</groupId>
-            <artifactId>jaybird-jdk18</artifactId>
+            <artifactId>jaybird</artifactId>
             <scope>test</scope>
         </dependency>
         <dependency>

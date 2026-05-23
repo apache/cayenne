@@ -37,12 +37,9 @@ Build the module first:
 
 ```bash
 mvn clean package -pl cayenne-mcp-server -am -DskipTests
-```
 
-The JAR is then at:
-
-```
-cayenne-mcp-server/target/classes/CayenneMCPServer.jar
+# the JAR is now at
+# cayenne-mcp-server/target/cayenne-mcp-server-<VERSION>.jar
 ```
 
 ## Configuring AI clients
