@@ -62,21 +62,10 @@ public class CMComboBoxCellEditor extends AbstractCellEditor
         comboBox.addPopupMenuListener(new PopupMenuListener() {
             @Override
             public void popupMenuWillBecomeVisible(PopupMenuEvent e) {
-                // First call: sets popup.preferredSize so the popup *window* is created at the
-                // correct width (window size is determined from popup.preferredSize before show()).
-                adjustPopupWidth();
-                // Second call via invokeLater: BasicComboPopup.show() calls getPopupLocation()
-                // *after* firing this listener, which re-constrains scroller.maxSize back to the
-                // column width. Running again on the next EDT cycle fixes the scroller, then
-                // revalidate/repaint forces the layout to update inside the already-wide window.
-                SwingUtilities.invokeLater(() -> {
-                    adjustPopupWidth();
-                    Object child = comboBox.getUI().getAccessibleChild(comboBox, 0);
-                    if (child instanceof JPopupMenu popup) {
-                        popup.revalidate();
-                        popup.repaint();
-                    }
-                });
+                // BasicComboPopup.show() calls getPopupLocation() after this listener fires,
+                // constraining the popup to the column width. Adjust on the next EDT cycle —
+                // invokeLater lands ahead of the first WM_PAINT, so no flash occurs.
+                SwingUtilities.invokeLater(() -> adjustPopupWidth());
             }
             @Override public void popupMenuWillBecomeInvisible(PopupMenuEvent e) {}
             @Override public void popupMenuCanceled(PopupMenuEvent e) {}
@@ -97,19 +86,20 @@ public class CMComboBoxCellEditor extends AbstractCellEditor
 
     private void adjustPopupWidth() {
         Object child = comboBox.getUI().getAccessibleChild(comboBox, 0);
-        if (!(child instanceof JPopupMenu)) {
+        if (!(child instanceof JPopupMenu popup)) {
             return;
         }
-        JPopupMenu popup = (JPopupMenu) child;
         JScrollPane scrollPane = findScrollPane(popup);
         if (scrollPane == null) {
             return;
         }
+        Window window = SwingUtilities.getWindowAncestor(popup);
+        if (window == null) {
+            return;
+        }
 
-        // BasicComboPopup.show() constrains the scroll pane's preferredSize and maximumSize
-        // to the column width before firing this listener. Reset them so the scroll pane
-        // reports its natural content-based width — which already incorporates item metrics,
-        // list insets, scrollbar width, and scroll pane borders — no manual overhead needed.
+        // Clear sizes set by BasicComboPopup.getPopupLocation() so the scroll pane
+        // reports its natural content-based width.
         scrollPane.setPreferredSize(null);
         scrollPane.setMaximumSize(null);
         popup.setPreferredSize(null);
@@ -117,10 +107,21 @@ public class CMComboBoxCellEditor extends AbstractCellEditor
         int naturalWidth = scrollPane.getPreferredSize().width;
         int targetWidth = Math.min(Math.max(naturalWidth, comboBox.getWidth()), ComboBoxPopup.MAX_WIDTH);
 
-        Dimension scrollSize = new Dimension(targetWidth, scrollPane.getPreferredSize().height);
+        // Use the window's actual height — correctly determined by BasicComboPopup based on row count.
+        // Setting scroller maxSize to windowHeight lets BoxLayout fill all available vertical space.
+        int windowHeight = window.getHeight();
+        Dimension scrollSize = new Dimension(targetWidth, windowHeight);
         scrollPane.setPreferredSize(scrollSize);
         scrollPane.setMaximumSize(scrollSize);
-        popup.setPreferredSize(new Dimension(targetWidth, popup.getPreferredSize().height));
+        popup.setPreferredSize(new Dimension(targetWidth, windowHeight));
+
+        // Widen the popup window; the height was already set correctly by BasicComboPopup.
+        Point loc = window.getLocation();
+        window.setSize(targetWidth, windowHeight);
+        window.setLocation(loc);
+
+        popup.revalidate();
+        popup.repaint();
     }
 
     private static JScrollPane findScrollPane(Container container) {
