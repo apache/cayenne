@@ -75,6 +75,7 @@ public class UtilTest {
 	}
 
 	@Test
+	@SuppressWarnings("deprecation")
 	public void toMap() {
 		Object[] keys = new Object[] { "a", "b" };
 		Object[] values = new Object[] { "1", "2" };

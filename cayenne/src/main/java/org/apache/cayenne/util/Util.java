@@ -81,7 +81,7 @@ public class Util {
     }
 
     @Deprecated
-    private static DefaultAdhocObjectFactory objectFactory;
+    private static final DefaultAdhocObjectFactory objectFactory;
 
     static {
         objectFactory = new DefaultAdhocObjectFactory(null, new DefaultClassLoaderManager());
@@ -109,7 +109,7 @@ public class Util {
      * separator.
      */
     public static String stringFromFile(File file) throws IOException {
-        return stringFromFile(file, System.getProperty("line.separator"));
+        return stringFromFile(file, System.lineSeparator());
     }
 
     /**
@@ -119,8 +119,8 @@ public class Util {
     public static String stringFromFile(File file, String joinWith) throws IOException {
         StringBuilder buf = new StringBuilder();
 
-        try (BufferedReader in = new BufferedReader(new FileReader(file));) {
-            String line = null;
+        try (BufferedReader in = new BufferedReader(new FileReader(file))) {
+            String line;
             while ((line = in.readLine()) != null) {
                 buf.append(line).append(joinWith);
             }
@@ -148,7 +148,7 @@ public class Util {
         StringBuilder builder = new StringBuilder();
 
         for (Object o : objects) {
-            if (builder.length() > 0) {
+            if (!builder.isEmpty()) {
                 builder.append(separator);
             }
 
@@ -173,8 +173,7 @@ public class Util {
      * recursively "unwraps" it, and returns the result to the user.
      */
     public static Throwable unwindException(Throwable th) {
-        if (th instanceof SAXException) {
-            SAXException sax = (SAXException) th;
+        if (th instanceof SAXException sax) {
             if (sax.getException() != null) {
                 return unwindException(sax.getException());
             }
@@ -226,7 +225,7 @@ public class Util {
      * Returns true, if the String is null or an empty string.
      */
     public static boolean isEmptyString(CharSequence string) {
-        return string == null || string.length() == 0;
+        return string == null || string.isEmpty();
     }
 
     /**
@@ -291,7 +290,7 @@ public class Util {
      * @since 4.1
      */
     public static String capitalized(String name) {
-        if (name == null || name.length() == 0) {
+        if (name == null || name.isEmpty()) {
             return name;
         }
 
@@ -305,7 +304,7 @@ public class Util {
      * @since 4.2
      */
     public static String uncapitalized(String aString) {
-        if (aString == null || aString.length() == 0) {
+        if (aString == null || aString.isEmpty()) {
             return aString;
         }
 
@@ -402,7 +401,7 @@ public class Util {
      * @since 3.0
      */
     public static String stripPackageName(String className) {
-        if (className == null || className.length() == 0) {
+        if (className == null || className.isEmpty()) {
             return className;
         }
 
@@ -419,7 +418,10 @@ public class Util {
      * Creates a mutable map out of two arrays with keys and values.
      *
      * @since 1.2
+     * @deprecated use {@link java.util.stream.IntStream#range} with
+     *             {@link java.util.stream.Collectors#toMap} to build a map from parallel arrays
      */
+    @Deprecated(since = "5.0", forRemoval = true)
     public static <K, V> Map<K, V> toMap(K[] keys, V[] values) {
         int keysSize = (keys != null) ? keys.length : 0;
         int valuesSize = (values != null) ? values.length : 0;

@@ -23,12 +23,13 @@ import org.apache.cayenne.dba.TypesMapping;
 import org.apache.cayenne.map.DbAttribute;
 import org.apache.cayenne.map.EmbeddableAttribute;
 import org.apache.cayenne.map.ObjAttribute;
-import org.apache.cayenne.util.Util;
 
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.stream.Collectors;
+import java.util.stream.IntStream;
 
 /**
  * Methods for mangling strings.
@@ -44,8 +45,12 @@ public class ImportUtils {
 			Byte.class.getName(), Boolean.class.getName(), Float.class.getName(), Short.class.getName(),
 			Integer.class.getName(), Character.class.getName() };
 
-	static Map<String, String> classesForPrimitives = Util.toMap(primitives, primitiveClasses);
-	static Map<String, String> primitivesForClasses = Util.toMap(primitiveClasses, primitives);
+	static final Map<String, String> classesForPrimitives = IntStream.range(0, primitives.length)
+			.boxed()
+			.collect(Collectors.toUnmodifiableMap(i -> primitives[i], i -> primitiveClasses[i]));
+	static final Map<String, String> primitivesForClasses = IntStream.range(0, primitiveClasses.length)
+			.boxed()
+			.collect(Collectors.toUnmodifiableMap(i -> primitiveClasses[i], i -> primitives[i]));
 
 	protected Map<String, String> importTypesMap = new HashMap<>();
 
