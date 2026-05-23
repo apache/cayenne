@@ -93,10 +93,15 @@ public class CMComboBoxCellEditor extends AbstractCellEditor
         if (scrollPane == null) {
             return;
         }
-        Window window = SwingUtilities.getWindowAncestor(popup);
-        if (window == null) {
-            return;
-        }
+
+        // Heavyweight popup → its own top-level Window (distinct from the combo's window).
+        // Lightweight popup → no dedicated Window; getWindowAncestor returns the *main app frame*,
+        // which we must NOT resize. Whether a popup is heavy or light is decided per-show by Swing
+        // based on whether it fits inside the parent window (Windows tends to use lightweight when
+        // it fits; macOS uses heavyweight more often).
+        Window comboWindow = SwingUtilities.getWindowAncestor(comboBox);
+        Window popupWindow = SwingUtilities.getWindowAncestor(popup);
+        boolean heavyweight = popupWindow != null && popupWindow != comboWindow;
 
         // Clear sizes set by BasicComboPopup.getPopupLocation() so the scroll pane
         // reports its natural content-based width.
@@ -107,18 +112,20 @@ public class CMComboBoxCellEditor extends AbstractCellEditor
         int naturalWidth = scrollPane.getPreferredSize().width;
         int targetWidth = Math.min(Math.max(naturalWidth, comboBox.getWidth()), ComboBoxPopup.MAX_WIDTH);
 
-        // Use the window's actual height — correctly determined by BasicComboPopup based on row count.
-        // Setting scroller maxSize to windowHeight lets BoxLayout fill all available vertical space.
-        int windowHeight = window.getHeight();
-        Dimension scrollSize = new Dimension(targetWidth, windowHeight);
+        // For the height, BasicComboPopup has already sized the popup's container correctly based
+        // on row count. Reuse that height when available; otherwise fall back to popup pref height.
+        int targetHeight = heavyweight ? popupWindow.getHeight() : popup.getPreferredSize().height;
+        Dimension scrollSize = new Dimension(targetWidth, targetHeight);
         scrollPane.setPreferredSize(scrollSize);
         scrollPane.setMaximumSize(scrollSize);
-        popup.setPreferredSize(new Dimension(targetWidth, windowHeight));
+        popup.setPreferredSize(new Dimension(targetWidth, targetHeight));
 
-        // Widen the popup window; the height was already set correctly by BasicComboPopup.
-        Point loc = window.getLocation();
-        window.setSize(targetWidth, windowHeight);
-        window.setLocation(loc);
+        if (heavyweight) {
+            // Widen the dedicated popup window; preserve its location.
+            Point loc = popupWindow.getLocation();
+            popupWindow.setSize(targetWidth, targetHeight);
+            popupWindow.setLocation(loc);
+        }
 
         popup.revalidate();
         popup.repaint();
