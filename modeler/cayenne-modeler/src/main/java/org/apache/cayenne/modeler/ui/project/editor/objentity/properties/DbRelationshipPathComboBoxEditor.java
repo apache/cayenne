@@ -38,11 +38,12 @@ import java.util.regex.Pattern;
 class DbRelationshipPathComboBoxEditor extends PathChooserComboBoxCellEditor<ObjRelationshipTableModel> implements FocusListener {
 
     private static final int REL_TARGET_PATH_COLUMN = 2;
-    private static int enterPressedCount = 0;
+
     private final ProjectSession session;
     private JTable table;
     private String savePath;
     private ObjRelationshipTableModel model;
+    private boolean enterPressed;
 
     DbRelationshipPathComboBoxEditor(ProjectSession session) {
         super(session::getSelectedDataMap);
@@ -76,11 +77,9 @@ class DbRelationshipPathComboBoxEditor extends PathChooserComboBoxCellEditor<Obj
         super.initializeCombo(model, row, table);
         pathChooser.setSelectedItem(model.getRelationship(row).getDbRelationshipPath());
 
-        enterPressedCount = 0;
-        pathChooser.setToolTipText("To choose relationship press enter two times.To choose next relationship press dot.");
-        JTextComponent textEditor = (JTextComponent) (pathChooser).
-                getEditor().getEditorComponent();
-        textEditor.addFocusListener(this);
+        enterPressed = false;
+        pathChooser.setToolTipText("To choose relationship, press enter twice. To choose next relationship press dot.");
+        pathChooser.getEditor().getEditorComponent().addFocusListener(this);
         savePath = this.model.getRelationship(row).getDbRelationshipPath().value();
     }
 
@@ -94,9 +93,9 @@ class DbRelationshipPathComboBoxEditor extends PathChooserComboBoxCellEditor<Obj
         String lastStringInPath = pathStrings[pathStrings.length - 1];
         if (lastStringInPath.equals(Renderers.asString(currentNode))
                 && currentNode instanceof DbRelationship) {
-            if (enterPressedCount == 1) {
+            if (enterPressed) {
                 //it is second time enter pressed.. so we will save input data
-                enterPressedCount = 0;
+                enterPressed = false;
                 if (table.getCellEditor() != null) {
 
                     table.getCellEditor().stopCellEditing();
@@ -118,7 +117,7 @@ class DbRelationshipPathComboBoxEditor extends PathChooserComboBoxCellEditor<Obj
                 }
                 table.repaint();
             }
-            enterPressedCount = 1;
+            enterPressed = true;
         }
     }
 
@@ -133,7 +132,7 @@ class DbRelationshipPathComboBoxEditor extends PathChooserComboBoxCellEditor<Obj
         String dbRelationshipPath = ((JTextComponent) (pathChooser).
                 getEditor().getEditorComponent()).getText();
         changeObjEntity(dbRelationshipPath);
-        enterPressedCount = 0;
+        enterPressed = false;
     }
 
     @Override
