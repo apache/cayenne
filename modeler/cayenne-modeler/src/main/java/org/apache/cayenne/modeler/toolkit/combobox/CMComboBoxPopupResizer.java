@@ -17,71 +17,39 @@
  *  under the License.
  ****************************************************************/
 
-package org.apache.cayenne.modeler.toolkit.table;
-
-import org.apache.cayenne.modeler.toolkit.combobox.AutoCompletion;
-import org.apache.cayenne.modeler.toolkit.combobox.ComboBoxPopup;
+package org.apache.cayenne.modeler.toolkit.combobox;
 
 import javax.swing.*;
 import javax.swing.event.PopupMenuEvent;
 import javax.swing.event.PopupMenuListener;
-import javax.swing.table.TableCellEditor;
 import java.awt.*;
-import java.awt.event.ActionEvent;
-import java.awt.event.ActionListener;
-import java.awt.event.MouseEvent;
-import java.io.Serializable;
-import java.util.EventObject;
 
 /**
- * Combo box cell editor for the modeler. Handles both auto-completion-aware
- * and plain combos uniformly. Editing is suppressed for ctrl/shift-clicks so
- * the user can extend a multi-row selection without opening the editor.
+ * Widens a combo box drop-down to fit its content, up to {@link ComboBoxPopup#MAX_WIDTH}.
+ * Handles both heavyweight (own Window) and lightweight (embedded) popups correctly.
  */
-public class CMComboBoxCellEditor extends AbstractCellEditor
-        implements TableCellEditor, ActionListener, Serializable {
-
-    // Auto-complete combos collide with DefaultCellEditor's stop-editing flow,
-    // so they need a custom action-listener-based path. This client property
-    // is read by Swing's combo UI to keep the popup behavior table-friendly.
-    static final String IS_TABLE_CELL_EDITOR_PROPERTY = "JComboBox.isTableCellEditor";
+public class CMComboBoxPopupResizer implements PopupMenuListener {
 
     private final JComboBox<?> comboBox;
-    private final boolean autocomplete;
 
-    public CMComboBoxCellEditor(JComboBox<?> comboBox) {
+    public CMComboBoxPopupResizer(JComboBox<?> comboBox) {
         this.comboBox = comboBox;
-        this.autocomplete = Boolean.TRUE.equals(
-                comboBox.getClientProperty(AutoCompletion.AUTOCOMPLETION_PROPERTY));
-
-        if (autocomplete) {
-            comboBox.putClientProperty(IS_TABLE_CELL_EDITOR_PROPERTY, Boolean.TRUE);
-            comboBox.addActionListener(this);
-        }
-
-        comboBox.addPopupMenuListener(new PopupMenuListener() {
-            @Override
-            public void popupMenuWillBecomeVisible(PopupMenuEvent e) {
-                // BasicComboPopup.show() calls getPopupLocation() after this listener fires,
-                // constraining the popup to the column width. Adjust on the next EDT cycle —
-                // invokeLater lands ahead of the first WM_PAINT, so no flash occurs.
-                SwingUtilities.invokeLater(() -> adjustPopupWidth());
-            }
-            @Override public void popupMenuWillBecomeInvisible(PopupMenuEvent e) {}
-            @Override public void popupMenuCanceled(PopupMenuEvent e) {}
-        });
     }
 
     @Override
-    public Object getCellEditorValue() {
-        return comboBox.getSelectedItem();
+    public void popupMenuWillBecomeVisible(PopupMenuEvent e) {
+        // BasicComboPopup.show() calls getPopupLocation() after this listener fires,
+        // constraining the popup to the column width. Adjust on the next EDT cycle —
+        // invokeLater lands ahead of the first WM_PAINT, so no flash occurs.
+        SwingUtilities.invokeLater(this::adjustPopupWidth);
     }
 
     @Override
-    public Component getTableCellEditorComponent(JTable table, Object value,
-                                                 boolean isSelected, int row, int column) {
-        comboBox.setSelectedItem(value);
-        return comboBox;
+    public void popupMenuWillBecomeInvisible(PopupMenuEvent e) {
+    }
+
+    @Override
+    public void popupMenuCanceled(PopupMenuEvent e) {
     }
 
     private void adjustPopupWidth() {
@@ -144,35 +112,5 @@ public class CMComboBoxCellEditor extends AbstractCellEditor
             }
         }
         return null;
-    }
-
-    @Override
-    public boolean stopCellEditing() {
-        if (autocomplete && comboBox.isEditable()) {
-            // Notify the combo box that editing has stopped (e.g. user pressed F2).
-            comboBox.actionPerformed(new ActionEvent(this, 0, ""));
-        }
-        fireEditingStopped();
-        return true;
-    }
-
-    @Override
-    public boolean isCellEditable(EventObject e) {
-        if (e instanceof MouseEvent) {
-            MouseEvent me = (MouseEvent) e;
-            if (me.isControlDown() || me.isShiftDown()) {
-                return false;
-            }
-        }
-        return true;
-    }
-
-    @Override
-    public void actionPerformed(ActionEvent e) {
-        // Selecting an item produces "comboBoxChanged" — ignore.
-        // Hitting enter produces "comboBoxEdited" — stop editing.
-        if (autocomplete && "comboBoxEdited".equals(e.getActionCommand())) {
-            stopCellEditing();
-        }
     }
 }

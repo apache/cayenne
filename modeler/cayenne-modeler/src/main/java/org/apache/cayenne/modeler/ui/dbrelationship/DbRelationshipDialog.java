@@ -36,7 +36,7 @@ import org.apache.cayenne.modeler.project.DbRelationshipOps;
 import org.apache.cayenne.modeler.toolkit.buttons.CMButtonPanel;
 import org.apache.cayenne.modeler.toolkit.combobox.AutoCompletion;
 import org.apache.cayenne.modeler.toolkit.combobox.CMComboBox;
-import org.apache.cayenne.modeler.toolkit.table.CMComboBoxCellEditor;
+import org.apache.cayenne.modeler.toolkit.combobox.CMComboBoxCellEditor;
 import org.apache.cayenne.modeler.toolkit.table.CMTable;
 import org.apache.cayenne.modeler.pref.adapters.CMTablePrefs;
 import org.apache.cayenne.modeler.toolkit.ProjectDialog;

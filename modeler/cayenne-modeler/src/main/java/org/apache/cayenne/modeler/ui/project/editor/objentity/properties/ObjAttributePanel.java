@@ -39,7 +39,7 @@ import org.apache.cayenne.modeler.project.ObjEntityOps;
 import org.apache.cayenne.modeler.service.action.GlobalActions;
 import org.apache.cayenne.modeler.toolkit.combobox.AutoCompletion;
 import org.apache.cayenne.modeler.toolkit.combobox.CMComboBox;
-import org.apache.cayenne.modeler.toolkit.table.CMComboBoxCellEditor;
+import org.apache.cayenne.modeler.toolkit.combobox.CMComboBoxCellEditor;
 import org.apache.cayenne.modeler.toolkit.icon.IconFactory;
 import org.apache.cayenne.modeler.toolkit.table.CMTable;
 import org.apache.cayenne.modeler.toolkit.table.CMTableModel;

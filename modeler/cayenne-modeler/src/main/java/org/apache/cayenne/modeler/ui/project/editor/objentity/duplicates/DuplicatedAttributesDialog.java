@@ -25,7 +25,7 @@ import org.apache.cayenne.map.ObjAttribute;
 import org.apache.cayenne.map.ObjEntity;
 import org.apache.cayenne.modeler.Application;
 import org.apache.cayenne.modeler.toolkit.combobox.CMComboBox;
-import org.apache.cayenne.modeler.toolkit.table.CMComboBoxCellEditor;
+import org.apache.cayenne.modeler.toolkit.combobox.CMComboBoxCellEditor;
 import org.apache.cayenne.modeler.toolkit.AppDialog;
 import org.apache.cayenne.modeler.project.ProjectSession;
 import org.apache.cayenne.modeler.toolkit.table.CMTableModel;

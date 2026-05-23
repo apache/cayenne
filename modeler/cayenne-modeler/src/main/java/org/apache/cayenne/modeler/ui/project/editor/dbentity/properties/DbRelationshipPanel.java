@@ -45,7 +45,7 @@ import org.apache.cayenne.modeler.toolkit.table.CMTablePanel;
 import org.apache.cayenne.modeler.toolkit.Renderers;
 import org.apache.cayenne.modeler.toolkit.combobox.AutoCompletion;
 import org.apache.cayenne.modeler.toolkit.combobox.CMComboBox;
-import org.apache.cayenne.modeler.toolkit.table.CMComboBoxCellEditor;
+import org.apache.cayenne.modeler.toolkit.combobox.CMComboBoxCellEditor;
 
 import javax.swing.*;
 import javax.swing.event.ListSelectionEvent;
