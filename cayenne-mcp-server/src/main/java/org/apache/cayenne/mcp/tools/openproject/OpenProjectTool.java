@@ -123,21 +123,22 @@ public class OpenProjectTool {
         }
 
         // Step 2 — locate the MCP jar's directory.
-        Optional<Path> mcpDir = McpJarLocator.locate(OpenProjectTool.class);
-        if (mcpDir.isEmpty()) {
+        Optional<McpJarLocator.Located> mcpLocated = McpJarLocator.locate(OpenProjectTool.class);
+        if (mcpLocated.isEmpty()) {
             return validationFailed(OpenProjectErrorCode.mcp_jar_location_unresolved,
                     "Could not resolve the running MCP server jar's location",
                     new OpenProjectValidation(true, false, null));
         }
+        McpJarLocator.Located mcp = mcpLocated.get();
 
         // Step 3 — discover a Modeler installation.
         OsKind osKind = OsKind.detect();
-        DiscoveryResult discovery = ModelerDiscovery.discover(mcpDir.get(), osKind);
+        DiscoveryResult discovery = ModelerDiscovery.discover(mcp.dir(), osKind, mcp.isDistribution());
         return switch (discovery) {
             case Found f -> launchAndAwait(f, projectFile);
             case NotFound nf -> validationFailed(OpenProjectErrorCode.modeler_not_found,
                     "No CayenneModeler installation found relative to MCP jar at %s. Probes: %s"
-                            .formatted(mcpDir.get(), String.join("; ", nf.probeNotes())),
+                            .formatted(mcp.dir(), String.join("; ", nf.probeNotes())),
                     new OpenProjectValidation(true, true, false));
         };
     }

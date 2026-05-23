@@ -14,21 +14,21 @@ Downloads are available at https://cayenne.apache.org/download/.
 
 ### macOS (DMG)
 ```
-<install-dir>/CayenneModeler.app/Contents/Resources/mcp/cayenne-mcp-server-<VERSION>.jar
+<install-dir>/CayenneModeler.app/Contents/Resources/mcp/CayenneMCPServer.jar
 
 # But typically, in:
-/Applications/CayenneModeler.app/Contents/Resources/mcp/cayenne-mcp-server-<VERSION>.jar
+/Applications/CayenneModeler.app/Contents/Resources/mcp/CayenneMCPServer.jar
 ```
 
 ### Windows (ZIP)
 ```
-<install-dir>\bin\cayenne-mcp-server-<VERSION>.jar
+<install-dir>\bin\CayenneMCPServer.jar
 ```
 
 ### Linux / cross-platform (tar.gz)
 
 ```
-<install-dir>/bin/cayenne-mcp-server-<VERSION>.jar
+<install-dir>/bin/CayenneMCPServer.jar
 ```
 
 ### Development build (own Cayenne source)
@@ -42,13 +42,13 @@ mvn clean package -pl cayenne-mcp-server -am -DskipTests
 The JAR is then at:
 
 ```
-cayenne-mcp-server/target/cayenne-mcp-server-<VERSION>.jar
+cayenne-mcp-server/target/classes/CayenneMCPServer.jar
 ```
 
 ## Configuring AI clients
 
 The server communicates over **stdio** and is launched on demand by the client.
-Replace `/path/to/cayenne-mcp-server.jar` with the actual path from the section above.
+Replace `/path/to/CayenneMCPServer.jar` with the actual path from the section above.
 
 ### Claude Code
 
@@ -56,10 +56,10 @@ By default `claude mcp add` registers the server for the current project only. U
 
 ```bash
 # Current project only (default)
-claude mcp add cayenne -- java -jar /path/to/cayenne-mcp-server-<VERSION>.jar
+claude mcp add cayenne -- java -jar /path/to/CayenneMCPServer.jar
 
 # All projects for the current user
-claude mcp add cayenne --scope user -- java -jar /path/to/cayenne-mcp-server-<VERSION>.jar
+claude mcp add cayenne --scope user -- java -jar /path/to/CayenneMCPServer.jar
 ```
 
 ### Cursor
@@ -71,7 +71,7 @@ Edit `~/.cursor/mcp.json` (global, all projects) or `.cursor/mcp.json` in your p
   "mcpServers": {
     "cayenne": {
       "command": "java",
-      "args": ["-jar", "/path/to/cayenne-mcp-server-<VERSION>.jar"]
+      "args": ["-jar", "/path/to/CayenneMCPServer.jar"]
     }
   }
 }
@@ -87,7 +87,7 @@ Add to `.vscode/mcp.json` in your project (per-project), or to your user `mcp.js
     "cayenne": {
       "type": "stdio",
       "command": "java",
-      "args": ["-jar", "/path/to/cayenne-mcp-server-<VERSION>.jar"]
+      "args": ["-jar", "/path/to/CayenneMCPServer.jar"]
     }
   }
 }

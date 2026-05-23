@@ -43,7 +43,7 @@ The plugin is distributed from the Apache Cayenne GitHub repository: **https://g
 /plugin install apache-cayenne@apache-cayenne
 
 # Install the MCP server (requires a local CayenneModeler install)
-claude mcp add cayenne --scope user -- java -jar /path/to/cayenne-mcp-server-<VERSION>.jar
+claude mcp add cayenne --scope user -- java -jar /path/to/CayenneMCPServer.jar
 ```
 
 Full MCP setup instructions: https://cayenne.apache.org/docs/5.0/cayenne-guide/installing-the-cayenne-mcp-server/

@@ -54,6 +54,16 @@ final class ModelerDiscovery {
     }
 
     static DiscoveryResult discover(Path mcpDir, OsKind osKind) {
+        return discover(mcpDir, osKind, false);
+    }
+
+    /**
+     * @param isDistributionJar {@code true} when the MCP server is running from
+     *   {@value McpJarLocator#MCP_JAR_NAME} — a distribution build. When {@code true},
+     *   the source-tree fallback is skipped: a production jar should not accidentally
+     *   pick up a developer Modeler build.
+     */
+    static DiscoveryResult discover(Path mcpDir, OsKind osKind, boolean isDistributionJar) {
         List<String> notes = new ArrayList<>();
 
         if (osKind == OsKind.MAC) {
@@ -78,13 +88,15 @@ final class ModelerDiscovery {
         }
         notes.add("generic: no " + GENERIC_JAR_NAME + " sibling of the MCP jar");
 
-        Optional<Found> sourceTree = probeSourceTree(mcpDir, osKind);
-        if (sourceTree.isPresent()) {
-            return sourceTree.get();
+        if (!isDistributionJar) {
+            Optional<Found> sourceTree = probeSourceTree(mcpDir, osKind);
+            if (sourceTree.isPresent()) {
+                return sourceTree.get();
+            }
+            notes.add("""
+                      source_tree: no built CayenneModeler under <gitRoot>/modeler/cayenne-modeler-{mac,win,generic}/target/classes/ \
+                      (run `mvn -pl modeler/cayenne-modeler-<kind> -am package -P<kind>`)""");
         }
-        notes.add("""
-                  source_tree: no built CayenneModeler under <gitRoot>/modeler/cayenne-modeler-{mac,win,generic}/target/classes/ \
-                  (run `mvn -pl modeler/cayenne-modeler-<kind> -am package -P<kind>`)""");
 
         return new NotFound(List.copyOf(notes));
     }

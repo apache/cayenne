@@ -25,7 +25,7 @@ The Cayenne MCP server (`cayenne-mcp-server` module) exposes Cayenne operations 
 Setup is documented in `cayenne-mcp-server/README.md` at the repo root. Quick form for Claude Code:
 
 ```bash
-claude mcp add cayenne --scope user -- java -jar /path/to/cayenne-mcp-server-<VERSION>.jar
+claude mcp add cayenne --scope user -- java -jar /path/to/CayenneMCPServer.jar
 ```
 
 Verify the server is registered with `claude mcp list` — you should see an entry named `cayenne` (the MCP server alias from the `claude mcp add cayenne` command above) showing as connected. This is unrelated to the plugin name `apache-cayenne`.

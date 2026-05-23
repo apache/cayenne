@@ -33,7 +33,7 @@ public class CayenneMcpMain {
         String version = version();
 
         if (opts.isHelp()) {
-            System.err.println("Usage: java -jar cayenne-mcp-server.jar [options]");
+            System.err.println("Usage: java -jar CayenneMCPServer.jar [options]");
             System.err.println();
             System.err.println("Options:");
             System.err.println("  -h, --help     Print this help and exit.");

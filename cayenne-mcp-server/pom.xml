@@ -76,6 +76,7 @@
     </dependencies>
 
     <build>
+        <finalName>CayenneMCPServer</finalName>
         <plugins>
 
             <plugin>
