@@ -19,12 +19,6 @@
 
 package org.apache.cayenne.util;
 
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.HashMap;
-import java.util.Map;
-import java.util.Map.Entry;
-
 import org.apache.cayenne.CayenneRuntimeException;
 import org.apache.cayenne.ObjectContext;
 import org.apache.cayenne.ObjectId;
@@ -37,6 +31,12 @@ import org.apache.cayenne.reflect.ToManyMapProperty;
 import org.apache.cayenne.reflect.ToManyProperty;
 import org.apache.cayenne.reflect.ToOneProperty;
 
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.HashMap;
+import java.util.Map;
+import java.util.Map.Entry;
+
 /**
  * An operation that merges changes from an object graph, whose objects are registered in
  * some ObjectContext, to peer objects in an ObjectConext that is a child of that context.
@@ -44,7 +44,9 @@ import org.apache.cayenne.reflect.ToOneProperty;
  * unresolved relationships.
  * 
  * @since 1.2
+ * @deprecated unused
  */
+@Deprecated(since = "5.0", forRemoval = true)
 public class DeepMergeOperation {
 
     private final EntityResolver entityResolver;
