@@ -24,21 +24,20 @@ import org.apache.cayenne.configuration.DataChannelDescriptor;
 import org.apache.cayenne.modeler.Application;
 import org.apache.cayenne.modeler.pref.adapters.RecentProjectsPrefs;
 import org.apache.cayenne.modeler.ui.project.overwrite.OverwriteDialog;
+import org.apache.cayenne.modeler.toolkit.filechooser.FileChooserFactory;
 import org.apache.cayenne.modeler.toolkit.filechooser.FileFilters;
 import org.apache.cayenne.project.Project;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import javax.swing.*;
-import javax.swing.filechooser.FileFilter;
 import java.io.File;
 import java.util.List;
 
 
 /**
- * File chooser panel used to select a directory to store project files.
+ * Helper that shows file-chooser dialogs for opening and saving Cayenne projects.
  */
-class ProjectOpener extends JFileChooser {
+class ProjectOpener {
 
     private static final Logger LOGGER = LoggerFactory.getLogger(ProjectOpener.class);
 
@@ -46,94 +45,52 @@ class ProjectOpener extends JFileChooser {
      * Selects a directory to store the project.
      */
     public File newProjectDir(Application application, Project p) {
-        if (p != null) {
-            StringBuilder nameProject = new StringBuilder("cayenne");
-            if (((DataChannelDescriptor) p.getRootNode()).getName() != null) {
-                nameProject.append("-").append(((DataChannelDescriptor) p.getRootNode()).getName());
-            }
-            nameProject.append(".xml");
-            // configure for application project
-            return newProjectDir(nameProject.toString(), FileFilters.getApplicationFilter(), application);
-        } else {
+        if (p == null) {
             throw new CayenneRuntimeException("Null project.");
         }
-    }
 
-    private File newProjectDir(String location, FileFilter filter, Application application) {
-        // configure dialog
-        setDialogTitle("Select Project Directory");
-        setFileSelectionMode(JFileChooser.FILES_AND_DIRECTORIES);
-        setCurrentDirectory(getDefaultStartDir(application));
-
-        // preselect current directory
-        if (getCurrentDirectory() != null) {
-            setSelectedFile(getCurrentDirectory());
+        StringBuilder nameProject = new StringBuilder("cayenne");
+        if (((DataChannelDescriptor) p.getRootNode()).getName() != null) {
+            nameProject.append("-").append(((DataChannelDescriptor) p.getRootNode()).getName());
         }
+        nameProject.append(".xml");
 
-        // configure filters
-        resetChoosableFileFilters();
-        // allow users to see directories with cayenne.xml files
-        addChoosableFileFilter(filter);
-
-        File selectedDir;
+        FileChooserFactory factory = application.getFileChooserFactory();
+        File startDir = getDefaultStartDir(application);
 
         while (true) {
-            int status = showDialog(application.getFrame(), "Select");
-            selectedDir = getSelectedFile();
-            if (status != JFileChooser.APPROVE_OPTION || selectedDir == null) {
+            File selectedDir = factory.openDirectory(application.getFrame(), "Select Project Directory", startDir);
+            if (selectedDir == null) {
                 LOGGER.info("Save canceled.");
                 return null;
             }
 
-            // normalize selection
-            LOGGER.info("Selected: " + selectedDir);
-            if (!selectedDir.isDirectory()) {
-                selectedDir = getSelectedFile().getParentFile();
-            }
-
-            // check for overwrite
-            File projectFile = new File(selectedDir, location);
+            LOGGER.info("Selected: {}", selectedDir);
+            File projectFile = new File(selectedDir, nameProject.toString());
             if (projectFile.exists()) {
                 OverwriteDialog dialog = new OverwriteDialog(projectFile, application.getFrame());
                 dialog.show();
-
                 if (dialog.shouldOverwrite()) {
-                    break;
+                    return selectedDir;
                 } else if (!dialog.shouldSelectAnother()) {
-                    // canceled
                     return null;
                 }
+                // else loop again
             } else {
-                break;
+                return selectedDir;
             }
         }
-
-        return selectedDir;
     }
 
     /**
-     * Runs a dialog to open Cayenne project.
+     * Runs a dialog to open a Cayenne project.
      */
     public File openProjectFile(Application application) {
-
-        // configure dialog
-        setDialogTitle("Select Project File");
-        setFileSelectionMode(JFileChooser.FILES_ONLY);
-        setCurrentDirectory(getDefaultStartDir(application));
-
-        // configure filters
-        resetChoosableFileFilters();
-        addChoosableFileFilter(FileFilters.getApplicationFilter());
-
-        // default to App projects
-        setFileFilter(FileFilters.getApplicationFilter());
-
-        int status = showOpenDialog(application.getFrame());
-        if (status != JFileChooser.APPROVE_OPTION) {
-            return null;
-        }
-
-        return getSelectedFile();
+        return application.getFileChooserFactory().openFile(
+                application.getFrame(),
+                "Select Project File",
+                getDefaultStartDir(application),
+                FileFilters.getApplicationFilter());
     }
 
     private File getDefaultStartDir(Application application) {

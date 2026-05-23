@@ -42,7 +42,6 @@ import javax.swing.DefaultComboBoxModel;
 import javax.swing.JButton;
 import javax.swing.JCheckBox;
 import javax.swing.JComboBox;
-import javax.swing.JFileChooser;
 import javax.swing.JLabel;
 import javax.swing.JOptionPane;
 import javax.swing.JPanel;
@@ -350,25 +349,16 @@ public class DBGeneratorOptionsDialog extends ProjectDialog {
     }
 
     private void storeSQLAction() {
-        JFileChooser fc = new JFileChooser();
-        fc.setDialogType(JFileChooser.SAVE_DIALOG);
-        fc.setDialogTitle("Save SQL Script");
-
         File projectDir = new File(app
                 .getFrame().getProjectSession().project()
                 .getConfigurationResource()
                 .getURL()
                 .getPath());
-        fc.setCurrentDirectory(projectDir);
-        if (fc.showSaveDialog(this) == JFileChooser.APPROVE_OPTION) {
+        File file = app.getFileChooserFactory().saveFile(this, "Save SQL Script", projectDir, null);
+        if (file != null) {
             refreshGeneratorAction();
-            try {
-                File file = fc.getSelectedFile();
-                FileWriter fw = new FileWriter(file);
-                PrintWriter pw = new PrintWriter(fw);
+            try (FileWriter fw = new FileWriter(file); PrintWriter pw = new PrintWriter(fw)) {
                 pw.print(textForSQL);
-                pw.flush();
-                pw.close();
             } catch (IOException ex) {
                 reportError("Error Saving SQL", ex);
             }

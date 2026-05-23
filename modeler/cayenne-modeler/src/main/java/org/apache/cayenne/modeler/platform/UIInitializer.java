@@ -19,6 +19,8 @@
 package org.apache.cayenne.modeler.platform;
 
 import org.apache.cayenne.modeler.Application;
+import org.apache.cayenne.modeler.toolkit.filechooser.FileChooserFactory;
+import org.apache.cayenne.modeler.toolkit.filechooser.JFileChooserFactory;
 
 /**
  * A base callback for platform-specific Modeler initialization.
@@ -37,5 +39,13 @@ public interface UIInitializer {
      * Updates default frame menus according to the platform specifics.
      */
     default void afterFrameCreated(Application app) {
+    }
+
+    /**
+     * Returns the platform-appropriate {@link FileChooserFactory}. Defaults to Swing's
+     * {@code JFileChooser}; overridden on macOS to use the native {@code FileDialog}.
+     */
+    default FileChooserFactory fileChooserFactory() {
+        return new JFileChooserFactory();
     }
 }

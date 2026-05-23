@@ -35,7 +35,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import javax.swing.*;
-import java.awt.*;
+import java.awt.Frame;
 import java.awt.event.ActionEvent;
 import java.io.File;
 import java.net.URL;
@@ -98,19 +98,9 @@ public class ImportDataMapAction extends AppAction {
     }
 
     protected File selectDataMap(Frame f) {
-
-        JFileChooser chooser = new JFileChooser();
-        chooser.setFileSelectionMode(JFileChooser.FILES_ONLY);
-
-        new FileChooserPrefs(app.getPrefsManager().uiNode("importDataMap/lastDir")).bind(chooser);
-
-        chooser.addChoosableFileFilter(FileFilters.getDataMapFilter());
-
-        int status = chooser.showDialog(f, "Select DataMap");
-        if (status == JFileChooser.APPROVE_OPTION) {
-            return chooser.getSelectedFile();
-        }
-
-        return null;
+        FileChooserPrefs prefs = new FileChooserPrefs(app.getPrefsManager().uiNode("importDataMap/lastDir"));
+        File selected = app.getFileChooserFactory().openFile(f, "Select DataMap", prefs.loadDir(), FileFilters.getDataMapFilter());
+        prefs.saveDir(selected);
+        return selected;
     }
 }

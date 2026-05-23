@@ -31,6 +31,7 @@ import org.apache.cayenne.di.Injector;
 import org.apache.cayenne.modeler.dbconnector.DBConnectors;
 import org.apache.cayenne.modeler.log.ModelerLogFactory;
 import org.apache.cayenne.modeler.platform.UIInitializer;
+import org.apache.cayenne.modeler.toolkit.filechooser.FileChooserFactory;
 import org.apache.cayenne.modeler.pref.adapters.ClasspathPrefs;
 import org.apache.cayenne.modeler.pref.adapters.DBConnectorPrefs;
 import org.apache.cayenne.modeler.pref.adapters.GeneralPrefs;
@@ -88,6 +89,7 @@ public class Application {
 
     private final Injector injector;
     private final UIInitializer platformInit;
+    private final FileChooserFactory fileChooserFactory;
     private final ModelerClassLoader classLoader;
     private final PrefsLocator prefsLocator;
     private final PrefsManager prefsManager;
@@ -102,6 +104,7 @@ public class Application {
     public Application(Injector injector, UIInitializer platformInit, CliArgs cli) {
         this.injector = injector;
         this.platformInit = platformInit;
+        this.fileChooserFactory = platformInit.fileChooserFactory();
         this.cli = cli;
 
         this.classLoader = new ModelerClassLoader();
@@ -141,6 +144,10 @@ public class Application {
 
     public UIInitializer getPlatformInit() {
         return platformInit;
+    }
+
+    public FileChooserFactory getFileChooserFactory() {
+        return fileChooserFactory;
     }
 
     public ConfigurationNodeParentGetter getConfigurationNodeParentGetter() {

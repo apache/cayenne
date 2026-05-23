@@ -33,12 +33,10 @@ import org.apache.cayenne.modeler.toolkit.filechooser.FileFilters;
 
 import javax.swing.BorderFactory;
 import javax.swing.JButton;
-import javax.swing.JFileChooser;
 import javax.swing.JPanel;
 import javax.swing.JScrollPane;
 import javax.swing.JTable;
 import javax.swing.SwingUtilities;
-import javax.swing.filechooser.FileFilter;
 import javax.swing.table.AbstractTableModel;
 import java.awt.BorderLayout;
 import java.io.File;
@@ -99,10 +97,8 @@ public class ClasspathPrefsPanel extends AppPanel {
         JButton addMvnButton = new JButton("Get From Maven Central");
         JButton deleteEntryButton = new JButton("Delete");
 
-        addJarButton.addActionListener(e ->
-                chooseClassEntry(FileFilters.getExtensionFileFilter("jar", "JAR Files"), "Select JAR File.", JFileChooser.FILES_ONLY));
-        addDirButton.addActionListener(e ->
-                chooseClassEntry(null, "Select Java Class Directory.", JFileChooser.DIRECTORIES_ONLY));
+        addJarButton.addActionListener(e -> chooseJarEntry());
+        addDirButton.addActionListener(e -> chooseDirEntry());
         addMvnButton.addActionListener(e ->
                 new MavenDependencyDialog(app, SwingUtilities.getWindowAncestor(this), this).open());
         deleteEntryButton.addActionListener(e -> removeEntryClicked());
@@ -133,24 +129,18 @@ public class ClasspathPrefsPanel extends AppPanel {
         add(outer.getPanel(), BorderLayout.CENTER);
     }
 
-    private void chooseClassEntry(FileFilter filter, String title, int selectionMode) {
-        JFileChooser chooser = new JFileChooser();
-        chooser.setFileSelectionMode(selectionMode);
-        chooser.setDialogType(JFileChooser.OPEN_DIALOG);
-        chooser.setAcceptAllFileFilterUsed(true);
+    private void chooseJarEntry() {
+        FileChooserPrefs prefs = new FileChooserPrefs(app.getPrefsManager().uiNode("classpath/lastDir"));
+        File selected = app.getFileChooserFactory().openFile(
+                this, "Select JAR File.", prefs.loadDir(), FileFilters.getExtensionFileFilter("jar", "JAR Files"));
+        prefs.saveDir(selected);
+        entryAdded(selected);
+    }
 
-        new FileChooserPrefs(app.getPrefsManager().uiNode("classpath/lastDir")).bind(chooser);
-        if (filter != null) {
-            chooser.addChoosableFileFilter(filter);
-            chooser.setFileFilter(filter);
-        }
-        chooser.setDialogTitle(title);
-
-        File selected = null;
-        if (chooser.showOpenDialog(this) == JFileChooser.APPROVE_OPTION) {
-            selected = chooser.getSelectedFile();
-        }
-
+    private void chooseDirEntry() {
+        FileChooserPrefs prefs = new FileChooserPrefs(app.getPrefsManager().uiNode("classpath/lastDir"));
+        File selected = app.getFileChooserFactory().openDirectory(this, "Select Java Class Directory.", prefs.loadDir());
+        prefs.saveDir(selected);
         entryAdded(selected);
     }
 

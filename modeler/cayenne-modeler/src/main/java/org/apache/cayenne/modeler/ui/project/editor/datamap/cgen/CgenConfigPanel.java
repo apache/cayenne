@@ -397,21 +397,12 @@ public class CgenConfigPanel extends ProjectPanel {
 
     private void selectOutputFolderAction() {
         String currentDir = outputFolder.getText();
+        File initialDir = !Util.isEmptyString(currentDir)
+                ? new File(currentDir)
+                : CgenOps.baseDir(session).toFile();
 
-        JFileChooser chooser = new JFileChooser();
-        chooser.setFileSelectionMode(JFileChooser.DIRECTORIES_ONLY);
-        chooser.setDialogType(JFileChooser.OPEN_DIALOG);
-
-        if (!Util.isEmptyString(currentDir)) {
-            chooser.setCurrentDirectory(new File(currentDir));
-        } else {
-            chooser.setCurrentDirectory(CgenOps.baseDir(session).toFile());
-        }
-
-        int result = chooser.showOpenDialog(this);
-        if (result == JFileChooser.APPROVE_OPTION) {
-            File selected = chooser.getSelectedFile();
-
+        File selected = app.getFileChooserFactory().openDirectory(this, "Select Output Folder", initialDir);
+        if (selected != null) {
             String path = selected.getAbsolutePath();
             outputFolder.setText(path);
             applyOutputFolder(path);

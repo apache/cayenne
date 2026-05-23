@@ -58,9 +58,7 @@ import org.apache.cayenne.wocompat.EOModelProcessor;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import javax.swing.*;
 import javax.swing.filechooser.FileFilter;
-import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.io.File;
 import java.net.URL;
@@ -77,10 +75,10 @@ public class ImportEOModelAction extends AppAction {
 
     private static final Logger LOGGER = LoggerFactory.getLogger(ImportEOModelAction.class);
 
+    private static final FileFilter eomodelFilter = new EOModelFileFilter();
+
     private final Map<String, String> adaptersByEofPlugin;
     private final Map<String, String> adaptersByDriver;
-
-    private JFileChooser eoModelChooser;
 
     public ImportEOModelAction(Application application) {
         super(application, "Import EOModel");
@@ -125,34 +123,27 @@ public class ImportEOModelAction extends AppAction {
      * Allows user to select an EOModel, then imports it as a DataMap.
      */
     protected void importEOModel() {
-        JFileChooser fileChooser = getEOModelChooser();
-        int status = fileChooser.showOpenDialog(app.getFrame());
+        FileChooserPrefs prefs = new FileChooserPrefs(app.getPrefsManager().uiNode("importEOModel/lastDir"));
+        File selected = app.getFileChooserFactory().openFile(app.getFrame(), "Select EOModel", prefs.loadDir(), eomodelFilter);
+        if (selected == null) {
+            return;
+        }
+        prefs.saveDir(selected);
 
-        if (status == JFileChooser.APPROVE_OPTION) {
+        File file = selected.getParentFile();
+        DataMap currentMap = getProjectSession().getSelectedDataMap();
 
-            File file = fileChooser.getSelectedFile().getParentFile();
-
-            DataMap currentMap = getProjectSession().getSelectedDataMap();
-
-            try {
-                URL url = file.toURI().toURL();
-
-                EOModelProcessor processor = new EOModelProcessor();
-
-                // load DataNode if we are not merging with an existing map
-                if (currentMap == null) {
-                    loadDataNode(processor.loadModeIndex(url));
-                }
-
-                // load DataMap
-                DataMap map = processor.loadEOModel(url);
-                addDataMap(map, currentMap);
-
-            } catch (Exception ex) {
-                LOGGER.info("EOModel Loading Exception", ex);
-                new ErrorDialog(app, "Import EOModel Error", ex).open();
+        try {
+            URL url = file.toURI().toURL();
+            EOModelProcessor processor = new EOModelProcessor();
+            if (currentMap == null) {
+                loadDataNode(processor.loadModeIndex(url));
             }
-
+            DataMap map = processor.loadEOModel(url);
+            addDataMap(map, currentMap);
+        } catch (Exception ex) {
+            LOGGER.info("EOModel Loading Exception", ex);
+            new ErrorDialog(app, "Import EOModel Error", ex).open();
         }
     }
 
@@ -303,59 +294,6 @@ public class ImportEOModelAction extends AppAction {
             // will be linked with it...
             CreateDataMapAction.onMapCreated(app.getFrame(), getProjectSession(), map);
 
-        }
-    }
-
-    /**
-     * Returns EOModel chooser.
-     */
-    public JFileChooser getEOModelChooser() {
-
-        if (eoModelChooser == null) {
-            eoModelChooser = new EOModelChooser("Select EOModel");
-        }
-
-        new FileChooserPrefs(app.getPrefsManager().uiNode("importEOModel/lastDir")).bind(eoModelChooser);
-
-        return eoModelChooser;
-    }
-
-    /**
-     * Custom file chooser that will pop up again if an invalid file is selected.
-     */
-    static class EOModelChooser extends JFileChooser {
-
-        static final FileFilter eomodelFilter = new EOModelFileFilter();
-
-        private JDialog cachedDialog;
-
-        public EOModelChooser(String title) {
-            super.setFileFilter(eomodelFilter);
-            super.setDialogTitle(title);
-            super.setFileSelectionMode(JFileChooser.FILES_ONLY);
-        }
-
-        public int showOpenDialog(Component parent) {
-            int status = super.showOpenDialog(parent);
-            if (status != JFileChooser.APPROVE_OPTION) {
-                cachedDialog = null;
-                return status;
-            }
-
-            File file = this.getSelectedFile();
-            if (file.isFile() && eomodelFilter.accept(file)) {
-                cachedDialog = null;
-                return JFileChooser.APPROVE_OPTION;
-            }
-
-            return this.showOpenDialog(parent);
-        }
-
-        protected JDialog createDialog(Component parent) throws HeadlessException {
-            if (cachedDialog == null) {
-                cachedDialog = super.createDialog(parent);
-            }
-            return cachedDialog;
         }
     }
 

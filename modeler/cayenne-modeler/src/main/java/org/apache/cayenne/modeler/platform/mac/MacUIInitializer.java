@@ -21,6 +21,7 @@ package org.apache.cayenne.modeler.platform.mac;
 import org.apache.cayenne.modeler.Application;
 import org.apache.cayenne.modeler.service.action.GlobalActions;
 import org.apache.cayenne.modeler.platform.UIInitializer;
+import org.apache.cayenne.modeler.toolkit.filechooser.FileChooserFactory;
 import org.apache.cayenne.modeler.ui.action.AboutAction;
 import org.apache.cayenne.modeler.ui.action.ConfigurePreferencesAction;
 import org.apache.cayenne.modeler.ui.action.ExitAction;
@@ -40,7 +41,6 @@ public class MacUIInitializer implements UIInitializer {
         System.setProperty("apple.awt.application.name", "CayenneModeler");
 
         // override some default styles and colors, assuming that Aqua theme will be used
-
         Color lightGrey = new Color(0xEEEEEE);
         Color darkGrey = new Color(225, 225, 225);
         Border darkBorder = BorderFactory.createLineBorder(darkGrey);
@@ -89,6 +89,11 @@ public class MacUIInitializer implements UIInitializer {
         };
         UIManager.put("MenuItem.selectedBackgroundPainter", backgroundPainter);
         UIManager.put("MenuItem.selectionForeground", Color.BLACK);
+    }
+
+    @Override
+    public FileChooserFactory fileChooserFactory() {
+        return new MacFileChooserFactory();
     }
 
     @Override

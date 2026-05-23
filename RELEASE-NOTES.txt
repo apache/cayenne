@@ -45,6 +45,7 @@ CAY-2943 CayenneModeler MCP: open_project tool
 CAY-2945 CayenneModeler universal "main"
 CAY-2946 Claude Code "plugin" for agentic coding with Cayenne
 CAY-2947 Merge "cayenne-commitlog" into the core
+CAY-2948 Modeler: use native FileDialog on Mac
 
 Bug Fixes:
 

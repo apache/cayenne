@@ -22,6 +22,9 @@ package org.apache.cayenne.modeler.pref.adapters;
 import org.apache.cayenne.modeler.pref.PreferenceAdapter;
 
 import javax.swing.JFileChooser;
+import java.awt.FileDialog;
+import java.awt.event.ComponentAdapter;
+import java.awt.event.ComponentEvent;
 import java.io.File;
 import java.util.prefs.Preferences;
 
@@ -34,22 +37,45 @@ public final class FileChooserPrefs extends PreferenceAdapter {
     }
 
     public void bind(JFileChooser chooser) {
-        File startDir = resolveExistingDirectory(prefs.get(PATH_PROPERTY, null));
+        File startDir = loadDir();
         if (startDir != null) {
             chooser.setCurrentDirectory(startDir);
         }
-
         chooser.addActionListener(e -> {
             if (JFileChooser.APPROVE_SELECTION.equals(e.getActionCommand())) {
-                File selected = chooser.getSelectedFile();
-                if (selected != null) {
-                    prefs.put(PATH_PROPERTY,
-                            selected.isFile()
-                                    ? selected.getParentFile().getAbsolutePath()
-                                    : selected.getAbsolutePath());
+                saveDir(chooser.getSelectedFile());
+            }
+        });
+    }
+
+    public void bind(FileDialog dialog) {
+        File startDir = loadDir();
+        if (startDir != null) {
+            dialog.setDirectory(startDir.getAbsolutePath());
+        }
+        dialog.addComponentListener(new ComponentAdapter() {
+            @Override
+            public void componentHidden(ComponentEvent e) {
+                String file = dialog.getFile();
+                String dir = dialog.getDirectory();
+                if (file != null && dir != null) {
+                    prefs.put(PATH_PROPERTY, dir);
                 }
             }
         });
+    }
+
+    public File loadDir() {
+        return resolveExistingDirectory(prefs.get(PATH_PROPERTY, null));
+    }
+
+    public void saveDir(File f) {
+        if (f != null) {
+            prefs.put(PATH_PROPERTY,
+                    f.isFile()
+                            ? f.getParentFile().getAbsolutePath()
+                            : f.getAbsolutePath());
+        }
     }
 
     private static File resolveExistingDirectory(String path) {

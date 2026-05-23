@@ -61,7 +61,6 @@ import org.slf4j.LoggerFactory;
 import javax.sql.DataSource;
 import javax.swing.Box;
 import javax.swing.JButton;
-import javax.swing.JFileChooser;
 import javax.swing.JOptionPane;
 import javax.swing.JPanel;
 import javax.swing.JScrollPane;
@@ -359,24 +358,13 @@ public class MergerOptionsDialog extends ProjectDialog {
     }
 
     private void storeSQLAction() {
-        JFileChooser fc = new JFileChooser();
-        fc.setDialogType(JFileChooser.SAVE_DIALOG);
-        fc.setDialogTitle("Save SQL Script");
-
-        Resource projectDir = app.getFrame().getProjectSession().project().getConfigurationResource();
-        if (projectDir != null) {
-            fc.setCurrentDirectory(new File(projectDir.getURL().getPath()));
-        }
-
-        if (fc.showSaveDialog(this) == JFileChooser.APPROVE_OPTION) {
+        Resource configRes = app.getFrame().getProjectSession().project().getConfigurationResource();
+        File initialDir = configRes != null ? new File(configRes.getURL().getPath()) : null;
+        File file = app.getFileChooserFactory().saveFile(this, "Save SQL Script", initialDir, null);
+        if (file != null) {
             refreshSQLAction();
-            try {
-                File file = fc.getSelectedFile();
-                FileWriter fw = new FileWriter(file);
-                PrintWriter pw = new PrintWriter(fw);
+            try (FileWriter fw = new FileWriter(file); PrintWriter pw = new PrintWriter(fw)) {
                 pw.print(textForSQL);
-                pw.flush();
-                pw.close();
             } catch (IOException ex) {
                 reportError("Error Saving SQL", ex);
             }
