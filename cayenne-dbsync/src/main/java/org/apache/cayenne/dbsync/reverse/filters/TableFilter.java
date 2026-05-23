@@ -24,8 +24,7 @@ import java.util.List;
 import java.util.Set;
 import java.util.TreeSet;
 import java.util.regex.Pattern;
-
-import org.apache.cayenne.util.Util;
+import java.util.stream.Collectors;
 
 /**
  * TableFilter contain at least one IncludeTable always.
@@ -121,7 +120,7 @@ public class TableFilter {
         }
 
         if (!excludes.isEmpty()) {
-            res.append(prefix).append("  ").append(Util.join(excludes, " OR ")).append("\n");
+            res.append(prefix).append("  ").append(excludes.stream().map(Pattern::pattern).collect(Collectors.joining(" OR "))).append("\n");
         }
 
         return res;

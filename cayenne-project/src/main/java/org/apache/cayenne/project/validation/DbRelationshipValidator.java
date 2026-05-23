@@ -190,7 +190,7 @@ class DbRelationshipValidator extends ConfigurationNodeValidator<DbRelationship>
         }
         Collections.sort(joins);
 
-        return Util.join(joins, ",");
+        return String.join(",", joins);
     }
 
     private String toString(DbRelationship relationship) {

@@ -53,7 +53,6 @@ import java.io.ObjectOutputStream;
 import java.io.Serializable;
 import java.lang.reflect.Member;
 import java.lang.reflect.Modifier;
-import java.math.BigDecimal;
 import java.net.URI;
 import java.net.URISyntaxException;
 import java.net.URL;
@@ -135,7 +134,9 @@ public class Util {
 	 *            The separator between the strings.
 	 * @return A single string of all the input strings separated by the
 	 *         separator.
+	 * @deprecated use {@link String#join(CharSequence, CharSequence...)} or {@link java.util.stream.Collectors#joining}
 	 */
+	@Deprecated(since = "5.0", forRemoval = true)
 	public static String join(Iterable<?> objects, String separator) {
 		if (objects == null) {
 			return "";

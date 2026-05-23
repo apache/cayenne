@@ -18,12 +18,11 @@
  ****************************************************************/
 package org.apache.cayenne.dbsync.reverse.filters;
 
-import org.apache.cayenne.util.Util;
-
 import java.util.ArrayList;
 import java.util.Comparator;
 import java.util.List;
 import java.util.regex.Pattern;
+import java.util.stream.Collectors;
 
 /**
  * @since 4.0
@@ -170,13 +169,13 @@ public class PatternFilter {
         if (includes.isEmpty()) {
             // Do nothing.
         } else if (includes.size() > 1) {
-            res.append("(").append(Util.join(includes, " OR ")).append(")");
+            res.append("(").append(includes.stream().map(Pattern::pattern).collect(Collectors.joining(" OR "))).append(")");
         } else {
             res.append(includes.get(0).pattern());
         }
 
         if (!excludes.isEmpty()) {
-            res.append(" AND NOT (").append(Util.join(includes, " OR ")).append(")");
+            res.append(" AND NOT (").append(includes.stream().map(Pattern::pattern).collect(Collectors.joining(" OR "))).append(")");
         }
 
         return res;
