@@ -26,7 +26,6 @@ import org.apache.cayenne.dba.TypesMapping;
 import org.apache.cayenne.map.DbAttribute;
 import org.apache.cayenne.map.ObjAttribute;
 import org.apache.cayenne.map.ProcedureParameter;
-import org.apache.cayenne.util.HashCodeBuilder;
 
 import java.util.Objects;
 import org.apache.cayenne.util.ToStringBuilder;
@@ -192,8 +191,7 @@ public class ColumnDescriptor {
      */
     @Override
     public int hashCode() {
-        return new HashCodeBuilder(23, 43).append(name).append(namePrefix).append(procedureName).append(tableName)
-                .append(dataRowKey).toHashCode();
+        return Objects.hash(name, namePrefix, procedureName, tableName, dataRowKey);
     }
 
     /**

@@ -19,15 +19,16 @@
 
 package org.apache.cayenne;
 
+import org.apache.cayenne.util.SingleEntryMap;
+
+import java.util.Arrays;
 import java.util.Collections;
 import java.util.Map;
-
-import org.apache.cayenne.util.HashCodeBuilder;
-import org.apache.cayenne.util.SingleEntryMap;
 import java.util.Objects;
 
 /**
  * {@link ObjectId} with single non-numeric value
+ *
  * @since 4.2
  */
 class ObjectIdSingle implements ObjectId {
@@ -77,7 +78,7 @@ class ObjectIdSingle implements ObjectId {
 
     @Override
     public Map<String, Object> getReplacementIdMap() {
-        if(replacementId == null) {
+        if (replacementId == null) {
             replacementId = new SingleEntryMap<>(keyName);
         }
         return replacementId;
@@ -116,7 +117,7 @@ class ObjectIdSingle implements ObjectId {
             return false;
         }
         ObjectIdSingle that = (ObjectIdSingle) o;
-        if(!Objects.equals(entityName, that.entityName)) {
+        if (!Objects.equals(entityName, that.entityName)) {
             return false;
         }
         return Objects.deepEquals(value, that.value);
@@ -124,9 +125,22 @@ class ObjectIdSingle implements ObjectId {
 
     @Override
     public int hashCode() {
-        if(hashCode == 0) {
-            hashCode = new HashCodeBuilder().append(entityName).append(value).toHashCode();
+        if (hashCode == 0) {
+            hashCode = 31 * Objects.hashCode(entityName) + deepHashCode(value);
         }
         return hashCode;
+    }
+
+    static int deepHashCode(Object v) {
+        if (v instanceof byte[] a) return Arrays.hashCode(a);
+        if (v instanceof int[] a) return Arrays.hashCode(a);
+        if (v instanceof long[] a) return Arrays.hashCode(a);
+        if (v instanceof short[] a) return Arrays.hashCode(a);
+        if (v instanceof char[] a) return Arrays.hashCode(a);
+        if (v instanceof float[] a) return Arrays.hashCode(a);
+        if (v instanceof double[] a) return Arrays.hashCode(a);
+        if (v instanceof boolean[] a) return Arrays.hashCode(a);
+        if (v instanceof Object[] a) return Arrays.deepHashCode(a);
+        return Objects.hashCode(v);
     }
 }

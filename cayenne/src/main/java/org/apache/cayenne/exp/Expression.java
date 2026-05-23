@@ -32,7 +32,6 @@ import org.apache.cayenne.CayenneRuntimeException;
 import org.apache.cayenne.configuration.ConfigurationNodeVisitor;
 import org.apache.cayenne.exp.parser.ASTScalar;
 import org.apache.cayenne.util.ConversionUtil;
-import org.apache.cayenne.util.HashCodeBuilder;
 import org.apache.cayenne.util.XMLEncoder;
 
 import java.util.Objects;
@@ -296,12 +295,12 @@ public abstract class Expression implements Serializable, XMLSerializable {
 
 	@Override
 	public int hashCode() {
-		HashCodeBuilder builder = new HashCodeBuilder().append(getType());
+		int result = getType();
 		int opCount = getOperandCount();
-		for(int i=0; i<opCount; i++) {
-			builder.append(getOperand(i));
+		for (int i = 0; i < opCount; i++) {
+			result = 31 * result + Objects.hashCode(getOperand(i));
 		}
-		return builder.toHashCode();
+		return result;
 	}
 
 	/**

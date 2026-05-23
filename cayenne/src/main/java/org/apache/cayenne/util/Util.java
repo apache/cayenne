@@ -590,11 +590,11 @@ public class Util {
      */
     @Deprecated(since = "5.0", forRemoval = true)
     public static int hashCode(Collection<?> c) {
-        HashCodeBuilder builder = new HashCodeBuilder();
+        int result = 17;
         for (Object o : c) {
-            builder.append(o);
+            result = 37 * result + Objects.hashCode(o);
         }
-        return builder.toHashCode();
+        return result;
     }
 
     /**

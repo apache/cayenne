@@ -19,7 +19,6 @@
 
 package org.apache.cayenne;
 
-import org.apache.cayenne.util.HashCodeBuilder;
 import java.util.Objects;
 
 import java.util.Arrays;
@@ -29,227 +28,216 @@ import java.util.Map;
 
 /**
  * Compound {@link ObjectId}
+ *
  * @since 4.2
  */
 class ObjectIdCompound implements ObjectId {
 
-	private static final long serialVersionUID = -2265029098344119323L;
-	
-	protected final String entityName;
-	protected final Map<String, Object> objectIdKeys;
+    private static final long serialVersionUID = -2265029098344119323L;
 
-	protected Map<String, Object> replacementIdMap;
+    protected final String entityName;
+    protected final Map<String, Object> objectIdKeys;
 
-	// hash code is transient to make sure id is portable across VM
-	private transient int hashCode;
+    protected Map<String, Object> replacementIdMap;
 
-	// exists for deserialization with Hessian and similar
-	@SuppressWarnings("unused")
-	private ObjectIdCompound() {
-		entityName = null;
-		objectIdKeys = Collections.emptyMap();
-	}
+    // hash code is transient to make sure id is portable across VM
+    private transient int hashCode;
 
-	/**
-	 * Creates a portable permanent ObjectId as a compound primary key.
-	 * 
-	 * @param entityName
-	 *            The entity name which this object id is for
-	 * @param idMap
-	 *            Keys are usually the attribute names for each part of the
-	 *            primary key. Values are unique when taken as a whole.
-	 * @since 1.2
-	 */
-	ObjectIdCompound(String entityName, Map<String, ?> idMap) {
-		this.entityName = entityName;
+    // exists for deserialization with Hessian and similar
+    @SuppressWarnings("unused")
+    private ObjectIdCompound() {
+        entityName = null;
+        objectIdKeys = Collections.emptyMap();
+    }
 
-		if (idMap == null || idMap.size() == 0) {
-			this.objectIdKeys = Collections.emptyMap();
-			return;
-		}
-		this.objectIdKeys = wrapIdMap(idMap);
-	}
+    /**
+     * Creates a portable permanent ObjectId as a compound primary key.
+     *
+     * @param entityName The entity name which this object id is for
+     * @param idMap      Keys are usually the attribute names for each part of the
+     *                   primary key. Values are unique when taken as a whole.
+     * @since 1.2
+     */
+    ObjectIdCompound(String entityName, Map<String, ?> idMap) {
+        this.entityName = entityName;
 
-	@SuppressWarnings("unchecked")
-	private Map<String, Object> wrapIdMap(Map<String, ?> m) {
-		if(m.getClass() == HashMap.class) {
-			return (Map<String, Object>)m;
-		} else {
-			// we have to create a copy of the map, otherwise we may run into serialization problems with hessian
-			return new HashMap<>(m);
-		}
-	}
+        if (idMap == null || idMap.size() == 0) {
+            this.objectIdKeys = Collections.emptyMap();
+            return;
+        }
+        this.objectIdKeys = wrapIdMap(idMap);
+    }
 
-	/**
-	 * Is this is temporary object id (used for objects which are not yet
-	 * persisted to the data store).
-	 */
-	@Override
-	public boolean isTemporary() {
-		return false;
-	}
+    @SuppressWarnings("unchecked")
+    private Map<String, Object> wrapIdMap(Map<String, ?> m) {
+        if (m.getClass() == HashMap.class) {
+            return (Map<String, Object>) m;
+        } else {
+            // we have to create a copy of the map, otherwise we may run into serialization problems with hessian
+            return new HashMap<>(m);
+        }
+    }
 
-	/**
-	 * @since 1.2
-	 */
-	@Override
-	public String getEntityName() {
-		return entityName;
-	}
+    /**
+     * Is this is temporary object id (used for objects which are not yet
+     * persisted to the data store).
+     */
+    @Override
+    public boolean isTemporary() {
+        return false;
+    }
 
-	/**
-	 * Get the binary temporary object id. Null if this object id is permanent
-	 * (persisted to the data store).
-	 */
-	@Override
-	public byte[] getKey() {
-		return null;
-	}
+    /**
+     * @since 1.2
+     */
+    @Override
+    public String getEntityName() {
+        return entityName;
+    }
 
-	/**
-	 * Returns an unmodifiable Map of persistent id values, essentially a
-	 * primary key map. For temporary id returns replacement id, if it was
-	 * already created. Otherwise returns an empty map.
-	 */
-	@Override
-	public Map<String, Object> getIdSnapshot() {
-		return Collections.unmodifiableMap(objectIdKeys);
-	}
+    /**
+     * Get the binary temporary object id. Null if this object id is permanent
+     * (persisted to the data store).
+     */
+    @Override
+    public byte[] getKey() {
+        return null;
+    }
 
-	@Override
-	public boolean equals(Object object) {
-		if (this == object) {
-			return true;
-		}
+    /**
+     * Returns an unmodifiable Map of persistent id values, essentially a
+     * primary key map. For temporary id returns replacement id, if it was
+     * already created. Otherwise returns an empty map.
+     */
+    @Override
+    public Map<String, Object> getIdSnapshot() {
+        return Collections.unmodifiableMap(objectIdKeys);
+    }
 
-		if (!(object instanceof ObjectIdCompound)) {
-			return false;
-		}
+    @Override
+    public boolean equals(Object object) {
+        if (this == object) {
+            return true;
+        }
 
-		ObjectIdCompound id = (ObjectIdCompound) object;
-		if (!Objects.equals(entityName, id.entityName)) {
-			return false;
-		}
+        if (!(object instanceof ObjectIdCompound)) {
+            return false;
+        }
 
-		if (id.objectIdKeys.size() != objectIdKeys.size()) {
-			return false;
-		}
+        ObjectIdCompound id = (ObjectIdCompound) object;
+        if (!Objects.equals(entityName, id.entityName)) {
+            return false;
+        }
 
-		for (Map.Entry<String, ?> entry : objectIdKeys.entrySet()) {
-			String entryKey = entry.getKey();
-			Object entryValue = entry.getValue();
+        if (id.objectIdKeys.size() != objectIdKeys.size()) {
+            return false;
+        }
 
-			if (entryValue == null
-					&& (id.objectIdKeys.get(entryKey) != null || !id.objectIdKeys.containsKey(entryKey))) {
-				return false;
-			} else if (!valueEquals(entryValue, id.objectIdKeys.get(entryKey))) {
-				return false;
-			}
-		}
+        for (Map.Entry<String, ?> entry : objectIdKeys.entrySet()) {
+            String entryKey = entry.getKey();
+            Object entryValue = entry.getValue();
 
-		return true;
-	}
+            if (entryValue == null
+                    && (id.objectIdKeys.get(entryKey) != null || !id.objectIdKeys.containsKey(entryKey))) {
+                return false;
+            } else if (!valueEquals(entryValue, id.objectIdKeys.get(entryKey))) {
+                return false;
+            }
+        }
 
-	private boolean valueEquals(Object o1, Object o2) {
-		if (o1 == o2) {
-			return true;
-		}
+        return true;
+    }
 
-		if (o2 == null) {
-			return false;
-		}
+    private boolean valueEquals(Object o1, Object o2) {
+        if (o1 == o2) {
+            return true;
+        }
 
-		if (o1 instanceof Number n1) {
-			return o2 instanceof Number n2 && n1.longValue() == n2.longValue();
-		}
+        if (o2 == null) {
+            return false;
+        }
 
-		return Objects.deepEquals(o1, o2);
-	}
+        if (o1 instanceof Number n1) {
+            return o2 instanceof Number n2 && n1.longValue() == n2.longValue();
+        }
 
-	@Override
-	public int hashCode() {
-		if(hashCode != 0) {
-			return hashCode;
-		}
+        return Objects.deepEquals(o1, o2);
+    }
 
-		HashCodeBuilder builder = new HashCodeBuilder().append(entityName.hashCode());
+    @Override
+    public int hashCode() {
+        if (hashCode != 0) {
+            return hashCode;
+        }
 
-		// handle multiple keys - must sort the keys to use with HashCodeBuilder
-		String[] keys = objectIdKeys.keySet().toArray(new String[0]);
-		Arrays.sort(keys);
-		for (int i = 0; i < keys.length; i++) {
-			// HashCodeBuilder will take care of processing object if it
-			// happens to be a primitive array such as byte[]
+        // sort keys for order-independence
+        String[] keys = objectIdKeys.keySet().toArray(new String[0]);
+        Arrays.sort(keys);
+        int result = entityName.hashCode();
+        for (int i = 0; i < keys.length; i++) {
+            result = 31 * result + i;
+            Object value = objectIdKeys.get(keys[i]);
+            // reconcile all numeric types via long; use content hash for arrays
+            result = 31 * result + (value instanceof Number n ? Long.hashCode(n.longValue()) : ObjectIdSingle.deepHashCode(value));
+        }
+        return hashCode = result;
+    }
 
-			// also we don't have to append the key hashcode, its index will work
-			builder.append(i);
+    /**
+     * Returns a non-null mutable map that can be used to append replacement id
+     * values. This allows to incrementally build a replacement GlobalID.
+     *
+     * @since 1.2
+     */
+    @Override
+    public Map<String, Object> getReplacementIdMap() {
+        if (replacementIdMap == null) {
+            replacementIdMap = new HashMap<>();
+        }
 
-			Object value = objectIdKeys.get(keys[i]);
-			// must reconcile all possible numeric types
-			if (value instanceof Number number) {
-				builder.append(number.longValue());
-			} else {
-				builder.append(value);
-			}
-		}
-		return hashCode = builder.toHashCode();
-	}
+        return replacementIdMap;
+    }
 
-	/**
-	 * Returns a non-null mutable map that can be used to append replacement id
-	 * values. This allows to incrementally build a replacement GlobalID.
-	 * 
-	 * @since 1.2
-	 */
-	@Override
-	public Map<String, Object> getReplacementIdMap() {
-		if (replacementIdMap == null) {
-			replacementIdMap = new HashMap<>();
-		}
+    /**
+     * Creates and returns a replacement ObjectId. No validation of ID is done.
+     *
+     * @since 1.2
+     */
+    @Override
+    public ObjectId createReplacementId() {
+        if (replacementIdMap == null) {
+            return this;
+        }
+        // merge existing and replaced ids to handle a replaced subset of a compound primary key
+        Map<String, Object> newIdMap = new HashMap<>(objectIdKeys);
+        newIdMap.putAll(replacementIdMap);
+        return ObjectId.of(entityName, newIdMap);
+    }
 
-		return replacementIdMap;
-	}
+    /**
+     * Returns true if there is full or partial replacement id attached to this
+     * id. This method is preferable to "!getReplacementIdMap().isEmpty()" as
+     * it avoids unneeded replacement id map creation.
+     */
+    @Override
+    public boolean isReplacementIdAttached() {
+        return replacementIdMap != null && !replacementIdMap.isEmpty();
+    }
 
-	/**
-	 * Creates and returns a replacement ObjectId. No validation of ID is done.
-	 * 
-	 * @since 1.2
-	 */
-	@Override
-	public ObjectId createReplacementId() {
-		if(replacementIdMap == null) {
-			return this;
-		}
-		// merge existing and replaced ids to handle a replaced subset of a compound primary key
-		Map<String, Object> newIdMap = new HashMap<>(objectIdKeys);
-		newIdMap.putAll(replacementIdMap);
-		return ObjectId.of(entityName, newIdMap);
-	}
-
-	/**
-	 * Returns true if there is full or partial replacement id attached to this
-	 * id. This method is preferable to "!getReplacementIdMap().isEmpty()" as
-	 * it avoids unneeded replacement id map creation.
-	 */
-	@Override
-	public boolean isReplacementIdAttached() {
-		return replacementIdMap != null && !replacementIdMap.isEmpty();
-	}
-
-	/**
-	 * A standard toString method used for debugging. It is guaranteed to
-	 * produce the same string if two ObjectIds are equal.
-	 */
-	@Override
-	public String toString() {
-		StringBuilder buffer = new StringBuilder().append("<ObjectId:").append(entityName);
-		// ensure consistent order of the keys, so that toString could be
-		// used as a unique key, just like id itself
-		String[] keys = objectIdKeys.keySet().toArray(new String[0]);
-		Arrays.sort(keys);
-		for (String key : keys) {
-			buffer.append(", ").append(key).append("=").append(objectIdKeys.get(key));
-		}
-		return buffer.append(">").toString();
-	}
+    /**
+     * A standard toString method used for debugging. It is guaranteed to
+     * produce the same string if two ObjectIds are equal.
+     */
+    @Override
+    public String toString() {
+        StringBuilder buffer = new StringBuilder().append("<ObjectId:").append(entityName);
+        // ensure consistent order of the keys, so that toString could be
+        // used as a unique key, just like id itself
+        String[] keys = objectIdKeys.keySet().toArray(new String[0]);
+        Arrays.sort(keys);
+        for (String key : keys) {
+            buffer.append(", ").append(key).append("=").append(objectIdKeys.get(key));
+        }
+        return buffer.append(">").toString();
+    }
 }

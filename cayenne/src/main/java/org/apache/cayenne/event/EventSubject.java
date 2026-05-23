@@ -22,7 +22,7 @@ package org.apache.cayenne.event;
 import java.io.Serializable;
 import java.util.Map;
 
-import org.apache.cayenne.util.HashCodeBuilder;
+import java.util.Objects;
 import org.apache.cayenne.util.WeakValueMap;
 
 /**
@@ -103,9 +103,7 @@ public class EventSubject implements Serializable {
 
     @Override
     public int hashCode() {
-        return new HashCodeBuilder(17, 3)
-                .append(_fullyQualifiedSubjectName)
-                .toHashCode();
+        return Objects.hashCode(_fullyQualifiedSubjectName);
     }
 
     public String getSubjectName() {

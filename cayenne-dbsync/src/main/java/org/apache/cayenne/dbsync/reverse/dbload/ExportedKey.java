@@ -25,7 +25,6 @@ import java.util.Objects;
 
 import org.apache.cayenne.map.DbEntity;
 import org.apache.cayenne.util.CompareToBuilder;
-import org.apache.cayenne.util.HashCodeBuilder;
 import org.apache.cayenne.util.Util;
 
 /**
@@ -92,11 +91,7 @@ public class ExportedKey implements Comparable<ExportedKey> {
 
     @Override
     public int hashCode() {
-        return new HashCodeBuilder()
-                .append(pk)
-                .append(fk)
-                .append(keySeq)
-                .toHashCode();
+        return Objects.hash(pk, fk, keySeq);
     }
 
     @Override
@@ -198,13 +193,7 @@ public class ExportedKey implements Comparable<ExportedKey> {
 
         @Override
         public int hashCode() {
-            return new HashCodeBuilder()
-                    .append(catalog)
-                    .append(schema)
-                    .append(table)
-                    .append(column)
-                    .append(name)
-                    .toHashCode();
+            return Objects.hash(catalog, schema, table, column, name);
         }
 
         /**

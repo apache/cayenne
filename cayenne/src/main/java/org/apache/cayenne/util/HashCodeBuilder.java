@@ -21,9 +21,11 @@ package org.apache.cayenne.util;
 /**
  * Assists in implementing {@link Object#hashCode()} methods. The code is based on
  * HashCodeBuilder from commons-lang 2.1.
- * 
+ *
  * @since 3.0
+ * @deprecated use {@link java.util.Objects#hash(Object...)} or a manual {@code 31 * h + Objects.hashCode(x)} loop
  */
+@Deprecated(since = "5.0", forRemoval = true)
 public class HashCodeBuilder {
 
     /**
