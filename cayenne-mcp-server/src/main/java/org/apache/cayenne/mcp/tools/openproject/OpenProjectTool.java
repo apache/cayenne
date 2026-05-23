@@ -42,7 +42,6 @@ import java.util.List;
 import java.util.Map;
 import java.util.Optional;
 import java.util.UUID;
-import java.util.function.BooleanSupplier;
 
 /**
  * MCP tool that launches CayenneModeler with a project file pre-loaded. The tool
@@ -172,10 +171,7 @@ public class OpenProjectTool {
                 launch.command());
 
         // Step 5 — wait for the handshake.
-        BooleanSupplier alive = launch.processAlivenessMeaningful()
-                ? () -> launch.process().isAlive()
-                : () -> true;
-        WatchResult watch = HandshakeWatcher.await(nonce, alive, HANDSHAKE_TIMEOUT);
+        WatchResult watch = HandshakeWatcher.await(nonce, () -> true, HANDSHAKE_TIMEOUT);
 
         return switch (watch.outcome()) {
             case HANDSHAKE_RECEIVED -> {
@@ -210,18 +206,13 @@ public class OpenProjectTool {
                                         .formatted(exit)));
             }
             case TIMEOUT -> {
-                boolean stillAlive = launch.processAlivenessMeaningful() && launch.process().isAlive();
-                String hint = stillAlive
-                        ? "Modeler process is still running but did not confirm opening the project — check the Modeler window for an error dialog"
-                        : "Modeler process is not alive at the timeout boundary";
                 yield new OpenProjectResult(
                         "error",
                         resolved,
                         allPassed,
                         null,
                         new OpenProjectError(OpenProjectErrorCode.launch_not_confirmed,
-                                "Handshake did not appear within %ds. %s.".formatted(
-                                        HANDSHAKE_TIMEOUT.toSeconds(), hint)));
+                                "Handshake did not appear within %ds".formatted(HANDSHAKE_TIMEOUT.toSeconds())));
             }
         };
     }

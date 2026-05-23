@@ -33,7 +33,7 @@ import java.util.List;
  */
 final class ModelerLauncher {
 
-    record LaunchResult(Process process, List<String> command, boolean processAlivenessMeaningful) {}
+    record LaunchResult(Process process, List<String> command) {}
 
     private ModelerLauncher() {
     }
@@ -80,12 +80,7 @@ final class ModelerLauncher {
 
         Process process = pb.start();
 
-        // Process.isAlive() only carries signal for processes we own end-to-end.
-        // On Mac, the process we spawn is `open`, which exits in milliseconds with
-        // no relationship to whether the Modeler actually started.
-        boolean alivenessMeaningful = kind != LauncherKind.MAC_APP;
-
-        return new LaunchResult(process, command, alivenessMeaningful);
+        return new LaunchResult(process, command);
     }
 
     private static Path workingDirectory(LauncherKind kind, Path launcher) {
