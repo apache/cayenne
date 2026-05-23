@@ -21,9 +21,12 @@ package org.apache.cayenne.util;
 /**
  * Assists in implementing {@link Object#equals(Object)} methods. The code is based on
  * EqualsBuilder from commons-lang 2.1.
- * 
+ *
+ * @deprecated Use {@link java.util.Objects#equals(Object, Object)} or
+ *             {@link java.util.Objects#deepEquals(Object, Object)} directly.
  * @since 3.0
  */
+@Deprecated(since = "5.0", forRemoval = true)
 public class EqualsBuilder {
 
     /**

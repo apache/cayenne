@@ -25,7 +25,6 @@ import java.util.Objects;
 
 import org.apache.cayenne.map.DbEntity;
 import org.apache.cayenne.util.CompareToBuilder;
-import org.apache.cayenne.util.EqualsBuilder;
 import org.apache.cayenne.util.HashCodeBuilder;
 import org.apache.cayenne.util.Util;
 
@@ -86,11 +85,9 @@ public class ExportedKey implements Comparable<ExportedKey> {
             return false;
         }
         ExportedKey rhs = (ExportedKey) obj;
-        return new EqualsBuilder()
-                .append(this.pk, rhs.pk)
-                .append(this.fk, rhs.fk)
-                .append(this.keySeq, rhs.keySeq)
-                .isEquals();
+        return Objects.equals(pk, rhs.pk)
+                && Objects.equals(fk, rhs.fk)
+                && keySeq == rhs.keySeq;
     }
 
     @Override
@@ -192,13 +189,11 @@ public class ExportedKey implements Comparable<ExportedKey> {
                 return false;
             }
             KeyData rhs = (KeyData) obj;
-            return new EqualsBuilder()
-                    .append(this.catalog, rhs.catalog)
-                    .append(this.schema, rhs.schema)
-                    .append(this.table, rhs.table)
-                    .append(this.column, rhs.column)
-                    .append(this.name, rhs.name)
-                    .isEquals();
+            return Objects.equals(catalog, rhs.catalog)
+                    && Objects.equals(schema, rhs.schema)
+                    && Objects.equals(table, rhs.table)
+                    && Objects.equals(column, rhs.column)
+                    && Objects.equals(name, rhs.name);
         }
 
         @Override

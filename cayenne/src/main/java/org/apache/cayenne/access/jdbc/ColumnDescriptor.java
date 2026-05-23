@@ -26,8 +26,9 @@ import org.apache.cayenne.dba.TypesMapping;
 import org.apache.cayenne.map.DbAttribute;
 import org.apache.cayenne.map.ObjAttribute;
 import org.apache.cayenne.map.ProcedureParameter;
-import org.apache.cayenne.util.EqualsBuilder;
 import org.apache.cayenne.util.HashCodeBuilder;
+
+import java.util.Objects;
 import org.apache.cayenne.util.ToStringBuilder;
 
 /**
@@ -179,9 +180,11 @@ public class ColumnDescriptor {
         }
 
         ColumnDescriptor rhs = (ColumnDescriptor) o;
-        return new EqualsBuilder().append(name, rhs.name).append(namePrefix, rhs.namePrefix)
-                .append(procedureName, rhs.procedureName).append(dataRowKey, rhs.dataRowKey)
-                .append(tableName, rhs.tableName).isEquals();
+        return Objects.equals(name, rhs.name)
+                && Objects.equals(namePrefix, rhs.namePrefix)
+                && Objects.equals(procedureName, rhs.procedureName)
+                && Objects.equals(dataRowKey, rhs.dataRowKey)
+                && Objects.equals(tableName, rhs.tableName);
     }
 
     /**
