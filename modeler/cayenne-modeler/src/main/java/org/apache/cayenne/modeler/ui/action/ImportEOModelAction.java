@@ -23,7 +23,6 @@ import org.apache.cayenne.configuration.ConfigurationNode;
 import org.apache.cayenne.configuration.DataChannelDescriptor;
 import org.apache.cayenne.configuration.DataNodeDescriptor;
 import org.apache.cayenne.configuration.DataSourceDescriptor;
-import org.apache.cayenne.configuration.runtime.JNDIDataSourceFactory;
 import org.apache.cayenne.configuration.runtime.XMLPoolingDataSourceFactory;
 import org.apache.cayenne.dba.DbAdapter;
 import org.apache.cayenne.dba.db2.DB2Adapter;
@@ -158,51 +157,43 @@ public class ImportEOModelAction extends AppAction {
     }
 
     protected void loadDataNode(Map eomodelIndex) {
-        // if this is JDBC or JNDI node and connection dictionary is specified, load a
-        // DataNode, otherwise ignore it (meaning that pre 5.* EOModels will not have a
-        // node).
+        // if this is a JDBC node and connection dictionary is specified, load a DataNode,
+        // otherwise ignore it (meaning that pre 5.* EOModels will not have a node).
 
         String adapter = (String) eomodelIndex.get("adaptorName");
         Map<?, ?> connection = (Map) eomodelIndex.get("connectionDictionary");
 
-        if (adapter != null && connection != null) {
+        if (adapter != null && connection != null && !"JNDI".equalsIgnoreCase(adapter)) {
             CreateNodeAction nodeBuilder = app.getActionManager().getAction(CreateNodeAction.class);
 
             // this should make created node current, resulting in the new map being added
             // to the node automatically once it is loaded
             DataNodeDescriptor node = nodeBuilder.buildDataNode();
 
-            // configure node...
-            if ("JNDI".equalsIgnoreCase(adapter)) {
-                node.setDataSourceFactoryType(JNDIDataSourceFactory.class.getName());
-                node.setParameters((String) connection.get("serverUrl"));
-            } else {
-
-                // guess adapter from plugin or driver
-                String cayenneAdapter = adaptersByEofPlugin.get(connection.get("plugin"));
-                if (cayenneAdapter == null) {
-                    cayenneAdapter = adaptersByDriver.get(connection.get("driver"));
-                }
-
-                if (cayenneAdapter != null) {
-                    try {
-                        Class<DbAdapter> adapterClass = app
-                                .getClassLoader()
-                                .loadClass(DbAdapter.class, cayenneAdapter);
-                        node.setAdapterType(adapterClass.toString());
-                    } catch (Throwable ex) {
-                        // ignore...
-                    }
-                }
-
-                node.setDataSourceFactoryType(XMLPoolingDataSourceFactory.class.getName());
-
-                DataSourceDescriptor dsi = node.getDataSourceDescriptor();
-                dsi.setDataSourceUrl(keyAsString(connection, "URL"));
-                dsi.setJdbcDriver(keyAsString(connection, "driver"));
-                dsi.setPassword(keyAsString(connection, "password"));
-                dsi.setUserName(keyAsString(connection, "username"));
+            // guess adapter from plugin or driver
+            String cayenneAdapter = adaptersByEofPlugin.get(connection.get("plugin"));
+            if (cayenneAdapter == null) {
+                cayenneAdapter = adaptersByDriver.get(connection.get("driver"));
             }
+
+            if (cayenneAdapter != null) {
+                try {
+                    Class<DbAdapter> adapterClass = app
+                            .getClassLoader()
+                            .loadClass(DbAdapter.class, cayenneAdapter);
+                    node.setAdapterType(adapterClass.toString());
+                } catch (Throwable ex) {
+                    // ignore...
+                }
+            }
+
+            node.setDataSourceFactoryType(XMLPoolingDataSourceFactory.class.getName());
+
+            DataSourceDescriptor dsi = node.getDataSourceDescriptor();
+            dsi.setDataSourceUrl(keyAsString(connection, "URL"));
+            dsi.setJdbcDriver(keyAsString(connection, "driver"));
+            dsi.setPassword(keyAsString(connection, "password"));
+            dsi.setUserName(keyAsString(connection, "username"));
 
             DataChannelDescriptor domain = (DataChannelDescriptor) getProjectSession()
                     .project()
@@ -334,7 +325,7 @@ public class ImportEOModelAction extends AppAction {
      */
     static class EOModelChooser extends JFileChooser {
 
-        private static final FileFilter eomodelFilter = new EOModelFileFilter();
+        static final FileFilter eomodelFilter = new EOModelFileFilter();
 
         private JDialog cachedDialog;
 
