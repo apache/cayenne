@@ -62,7 +62,21 @@ public class CMComboBoxCellEditor extends AbstractCellEditor
         comboBox.addPopupMenuListener(new PopupMenuListener() {
             @Override
             public void popupMenuWillBecomeVisible(PopupMenuEvent e) {
+                // First call: sets popup.preferredSize so the popup *window* is created at the
+                // correct width (window size is determined from popup.preferredSize before show()).
                 adjustPopupWidth();
+                // Second call via invokeLater: BasicComboPopup.show() calls getPopupLocation()
+                // *after* firing this listener, which re-constrains scroller.maxSize back to the
+                // column width. Running again on the next EDT cycle fixes the scroller, then
+                // revalidate/repaint forces the layout to update inside the already-wide window.
+                SwingUtilities.invokeLater(() -> {
+                    adjustPopupWidth();
+                    Object child = comboBox.getUI().getAccessibleChild(comboBox, 0);
+                    if (child instanceof JPopupMenu popup) {
+                        popup.revalidate();
+                        popup.repaint();
+                    }
+                });
             }
             @Override public void popupMenuWillBecomeInvisible(PopupMenuEvent e) {}
             @Override public void popupMenuCanceled(PopupMenuEvent e) {}
