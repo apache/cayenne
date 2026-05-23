@@ -75,7 +75,7 @@ public class ImportEOModelAction extends AppAction {
 
     private static final Logger LOGGER = LoggerFactory.getLogger(ImportEOModelAction.class);
 
-    private static final FileFilter eomodelFilter = new EOModelFileFilter();
+    static final FileFilter eomodelFilter = new EOModelFileFilter();
 
     private final Map<String, String> adaptersByEofPlugin;
     private final Map<String, String> adaptersByDriver;

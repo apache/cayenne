@@ -30,7 +30,7 @@ import static org.junit.jupiter.api.Assertions.assertTrue;
 
 public class EOModelFileFilterTest {
 
-    protected FileFilter filter = ImportEOModelAction.EOModelChooser.eomodelFilter;
+    protected FileFilter filter = ImportEOModelAction.eomodelFilter;
 
     @Test
     public void testAcceptDir() {
