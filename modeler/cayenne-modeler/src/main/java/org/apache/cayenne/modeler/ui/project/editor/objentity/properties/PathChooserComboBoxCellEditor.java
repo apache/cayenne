@@ -27,6 +27,7 @@ import org.apache.cayenne.map.DbAttribute;
 import org.apache.cayenne.modeler.toolkit.Renderers;
 import org.apache.cayenne.modeler.toolkit.combobox.AutoCompletion;
 import org.apache.cayenne.modeler.toolkit.combobox.CMComboBox;
+import org.apache.cayenne.modeler.toolkit.combobox.CMComboBoxPopupResizer;
 import org.apache.cayenne.modeler.toolkit.icon.IconFactory;
 import org.apache.cayenne.modeler.toolkit.table.CMTableModel;
 import org.apache.cayenne.modeler.toolkit.tree.EntityTreeModel;
@@ -76,6 +77,7 @@ abstract class PathChooserComboBoxCellEditor<T extends CMTableModel<?>> extends 
         List<String> nodeChildren = getChildren(currentNode, dbAttributePath);
         this.table = table;
         comboBoxPathChooser = new CMComboBox<>(nodeChildren);
+        comboBoxPathChooser.addPopupMenuListener(new CMComboBoxPopupResizer(comboBoxPathChooser));
         comboBoxPathChooser.getEditor().getEditorComponent().addKeyListener(new KeyAdapter() {
             @Override
             public void keyReleased(KeyEvent event) {
