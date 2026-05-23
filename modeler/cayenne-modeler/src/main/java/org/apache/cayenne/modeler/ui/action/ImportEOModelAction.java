@@ -112,10 +112,12 @@ public class ImportEOModelAction extends AppAction {
         adaptersByDriver.put("org.firebirdsql.jdbc.FBDriver", FirebirdAdapter.class.getName());
     }
 
+    @Override
     public String getIconName() {
         return "icon-eomodel.png";
     }
 
+    @Override
     public void performAction(ActionEvent event) {
         importEOModel();
     }
@@ -129,10 +131,7 @@ public class ImportEOModelAction extends AppAction {
 
         if (status == JFileChooser.APPROVE_OPTION) {
 
-            File file = fileChooser.getSelectedFile();
-            if (file.isFile()) {
-                file = file.getParentFile();
-            }
+            File file = fileChooser.getSelectedFile().getParentFile();
 
             DataMap currentMap = getProjectSession().getSelectedDataMap();
 
@@ -331,22 +330,18 @@ public class ImportEOModelAction extends AppAction {
     }
 
     /**
-     * Custom file chooser that will pop up again if a bad directory is selected.
+     * Custom file chooser that will pop up again if an invalid file is selected.
      */
     static class EOModelChooser extends JFileChooser {
 
-        static final FileFilter eomodelFilter = new EOModelFileFilter();
-        private static final FileFilter eomodelSelectFilter = new EOModelSelectFilter();
+        private static final FileFilter eomodelFilter = new EOModelFileFilter();
 
-        protected FileFilter selectFilter;
-        protected JDialog cachedDialog;
-
+        private JDialog cachedDialog;
 
         public EOModelChooser(String title) {
             super.setFileFilter(eomodelFilter);
             super.setDialogTitle(title);
-            super.setFileSelectionMode(JFileChooser.FILES_AND_DIRECTORIES);
-            this.selectFilter = eomodelSelectFilter;
+            super.setFileSelectionMode(JFileChooser.FILES_ONLY);
         }
 
         public int showOpenDialog(Component parent) {
@@ -356,22 +351,16 @@ public class ImportEOModelAction extends AppAction {
                 return status;
             }
 
-            // make sure invalid directory is not selected
             File file = this.getSelectedFile();
-            if (selectFilter.accept(file)) {
+            if (file.isFile() && eomodelFilter.accept(file)) {
                 cachedDialog = null;
                 return JFileChooser.APPROVE_OPTION;
-            } else {
-                if (file.isDirectory()) {
-                    this.setCurrentDirectory(file);
-                }
-
-                return this.showOpenDialog(parent);
             }
+
+            return this.showOpenDialog(parent);
         }
 
         protected JDialog createDialog(Component parent) throws HeadlessException {
-
             if (cachedDialog == null) {
                 cachedDialog = super.createDialog(parent);
             }
@@ -403,34 +392,4 @@ public class ImportEOModelAction extends AppAction {
         }
     }
 
-    static final class EOModelSelectFilter extends FileFilter {
-
-        /**
-         * Accepts all directories and <code>*.eomodeld/index.eomodeld</code> files.
-         *
-         * @see EOModelSelectFilter#accept(File)
-         */
-        public boolean accept(File f) {
-            if (f.isDirectory()) {
-                if (f.getName().endsWith(EOModelFileFilter.EOM_SUFFIX)
-                        && new File(f, EOModelFileFilter.EOM_INDEX).exists()) {
-
-                    return true;
-                }
-            } else if (f.isFile()) {
-                File parent = f.getParentFile();
-                if (parent != null
-                        && parent.getName().endsWith(EOModelFileFilter.EOM_SUFFIX)
-                        && EOModelFileFilter.EOM_INDEX.equals(f.getName())) {
-                    return true;
-                }
-            }
-
-            return false;
-        }
-
-        public String getDescription() {
-            return "*" + EOModelFileFilter.EOM_SUFFIX;
-        }
-    }
 }
