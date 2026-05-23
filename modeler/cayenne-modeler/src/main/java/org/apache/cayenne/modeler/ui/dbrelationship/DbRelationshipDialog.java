@@ -36,7 +36,7 @@ import org.apache.cayenne.modeler.project.DbRelationshipOps;
 import org.apache.cayenne.modeler.toolkit.buttons.CMButtonPanel;
 import org.apache.cayenne.modeler.toolkit.combobox.AutoCompletion;
 import org.apache.cayenne.modeler.toolkit.combobox.CMComboBox;
-import org.apache.cayenne.modeler.toolkit.combobox.CMComboBoxCellEditor;
+import org.apache.cayenne.modeler.toolkit.combobox.CMAutoCompleteComboBoxCellEditor;
 import org.apache.cayenne.modeler.toolkit.table.CMTable;
 import org.apache.cayenne.modeler.pref.adapters.CMTablePrefs;
 import org.apache.cayenne.modeler.toolkit.ProjectDialog;
@@ -313,13 +313,13 @@ public class DbRelationshipDialog extends ProjectDialog {
         JComboBox<String> sourceCombo = new CMComboBox<>(
                 dbAttributeNames(relationship.getSourceEntity()).stream().sorted().toArray(String[]::new));
         AutoCompletion.enable(sourceCombo, session::getSelectedDataMap);
-        sourceColumn.setCellEditor(new CMComboBoxCellEditor(sourceCombo));
+        sourceColumn.setCellEditor(new CMAutoCompleteComboBoxCellEditor(sourceCombo));
 
         TableColumn targetColumn = table.getColumnModel().getColumn(DbJoinTableModel.TARGET);
         JComboBox<String> targetCombo = new CMComboBox<>(
                 dbAttributeNames(relationship.getTargetEntity()).stream().sorted().toArray(String[]::new));
         AutoCompletion.enable(targetCombo, session::getSelectedDataMap);
-        targetColumn.setCellEditor(new CMComboBoxCellEditor(targetCombo));
+        targetColumn.setCellEditor(new CMAutoCompleteComboBoxCellEditor(targetCombo));
 
         new CMTablePrefs(app.getPrefsManager().uiNode("dbEntity/dbjoinTable"))
                 .bind(table, null, DbJoinTableModel.SOURCE);

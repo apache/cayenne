@@ -37,6 +37,7 @@ import org.apache.cayenne.modeler.toolkit.ProjectPanel;
 import org.apache.cayenne.modeler.toolkit.combobox.AutoCompletion;
 import org.apache.cayenne.modeler.toolkit.combobox.CMComboBox;
 import org.apache.cayenne.modeler.toolkit.icon.IconFactory;
+import org.apache.cayenne.modeler.toolkit.combobox.CMAutoCompleteComboBoxCellEditor;
 import org.apache.cayenne.modeler.toolkit.combobox.CMComboBoxCellEditor;
 import org.apache.cayenne.modeler.toolkit.table.CMTable;
 import org.apache.cayenne.modeler.toolkit.table.CMTablePanel;
@@ -274,7 +275,7 @@ public class ProcedureParameterTab extends ProjectPanel implements ProcedurePara
         Arrays.sort(dbTypes);
         JComboBox<String> typesEditor = new CMComboBox<>(dbTypes);
         AutoCompletion.enable(typesEditor, session::getSelectedDataMap);
-        typesColumn.setCellEditor(new CMComboBoxCellEditor(typesEditor));
+        typesColumn.setCellEditor(new CMAutoCompleteComboBoxCellEditor(typesEditor));
 
         // direction column tweaking
         TableColumn directionColumn = table.getColumnModel()

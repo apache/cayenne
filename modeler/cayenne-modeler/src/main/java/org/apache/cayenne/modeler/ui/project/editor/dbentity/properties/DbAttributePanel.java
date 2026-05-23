@@ -33,7 +33,7 @@ import org.apache.cayenne.modeler.toolkit.ProjectPanel;
 import org.apache.cayenne.modeler.toolkit.combobox.AutoCompletion;
 import org.apache.cayenne.modeler.toolkit.combobox.CMComboBox;
 import org.apache.cayenne.modeler.toolkit.table.BoardTableCellRenderer;
-import org.apache.cayenne.modeler.toolkit.combobox.CMComboBoxCellEditor;
+import org.apache.cayenne.modeler.toolkit.combobox.CMAutoCompleteComboBoxCellEditor;
 import org.apache.cayenne.modeler.toolkit.table.CMTable;
 import org.apache.cayenne.modeler.toolkit.table.CMTablePanel;
 import org.apache.cayenne.modeler.pref.adapters.CMTablePrefs;
@@ -183,7 +183,7 @@ public class DbAttributePanel extends ProjectPanel implements DbEntityDisplayLis
         AutoCompletion.enable(comboBox, session::getSelectedDataMap);
 
         TableColumn typeColumn = table.getColumnModel().getColumn(DbAttributeTableModel.DB_ATTRIBUTE_TYPE);
-        typeColumn.setCellEditor(new CMComboBoxCellEditor(comboBox));
+        typeColumn.setCellEditor(new CMAutoCompleteComboBoxCellEditor(comboBox));
 
         new CMTablePrefs(app.getPrefsManager().uiNode("dbEntity/attributeTable"))
                 .bind(table, null, DbAttributeTableModel.DB_ATTRIBUTE_NAME);

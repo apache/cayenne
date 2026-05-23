@@ -22,38 +22,34 @@ package org.apache.cayenne.modeler.toolkit.combobox;
 import javax.swing.*;
 import javax.swing.table.TableCellEditor;
 import java.awt.*;
-import java.awt.event.ActionEvent;
-import java.awt.event.ActionListener;
 import java.awt.event.MouseEvent;
 import java.io.Serializable;
 import java.util.EventObject;
 
 /**
- * Combo box cell editor for the modeler. Handles both auto-completion-aware
- * and plain combos uniformly. Editing is suppressed for ctrl/shift-clicks so
- * the user can extend a multi-row selection without opening the editor.
+ * Plain combo box cell editor for the modeler. Editing is suppressed for
+ * ctrl/shift-clicks so the user can extend a multi-row selection without
+ * opening the editor.
  */
-public class CMComboBoxCellEditor extends AbstractCellEditor implements TableCellEditor, ActionListener, Serializable {
+public class CMComboBoxCellEditor extends AbstractCellEditor implements TableCellEditor, Serializable {
 
-    // Auto-complete combos collide with DefaultCellEditor's stop-editing flow,
-    // so they need a custom action-listener-based path. This client property
-    // is read by Swing's combo UI to keep the popup behavior table-friendly.
-    private static final String IS_TABLE_CELL_EDITOR_PROPERTY = "JComboBox.isTableCellEditor";
-
-    private final JComboBox<?> comboBox;
-    private final boolean autocomplete;
+    protected final JComboBox<?> comboBox;
 
     public CMComboBoxCellEditor(JComboBox<?> comboBox) {
         this.comboBox = comboBox;
-        this.autocomplete = Boolean.TRUE.equals(
-                comboBox.getClientProperty(AutoCompletion.AUTOCOMPLETION_PROPERTY));
-
-        if (autocomplete) {
-            comboBox.putClientProperty(IS_TABLE_CELL_EDITOR_PROPERTY, Boolean.TRUE);
-            comboBox.addActionListener(this);
-        }
-
         comboBox.addPopupMenuListener(new CMComboBoxPopupResizer(comboBox));
+    }
+
+    public static boolean isTableCellEditable(EventObject e) {
+        if (e instanceof MouseEvent me) {
+            return !me.isControlDown() && !me.isShiftDown();
+        }
+        return true;
+    }
+
+    @Override
+    public boolean isCellEditable(EventObject e) {
+        return isTableCellEditable(e);
     }
 
     @Override
@@ -70,32 +66,7 @@ public class CMComboBoxCellEditor extends AbstractCellEditor implements TableCel
 
     @Override
     public boolean stopCellEditing() {
-        if (autocomplete && comboBox.isEditable()) {
-            // Notify the combo box that editing has stopped (e.g. user pressed F2).
-            comboBox.actionPerformed(new ActionEvent(this, 0, ""));
-        }
         fireEditingStopped();
         return true;
-    }
-
-    public static boolean isTableCellEditable(EventObject e) {
-        if (e instanceof MouseEvent me) {
-            return !me.isControlDown() && !me.isShiftDown();
-        }
-        return true;
-    }
-
-    @Override
-    public boolean isCellEditable(EventObject e) {
-        return isTableCellEditable(e);
-    }
-
-    @Override
-    public void actionPerformed(ActionEvent e) {
-        // Selecting an item produces "comboBoxChanged" — ignore.
-        // Hitting enter produces "comboBoxEdited" — stop editing.
-        if (autocomplete && "comboBoxEdited".equals(e.getActionCommand())) {
-            stopCellEditing();
-        }
     }
 }

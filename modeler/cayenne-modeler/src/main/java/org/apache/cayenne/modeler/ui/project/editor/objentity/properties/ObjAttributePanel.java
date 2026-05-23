@@ -39,7 +39,7 @@ import org.apache.cayenne.modeler.project.ObjEntityOps;
 import org.apache.cayenne.modeler.service.action.GlobalActions;
 import org.apache.cayenne.modeler.toolkit.combobox.AutoCompletion;
 import org.apache.cayenne.modeler.toolkit.combobox.CMComboBox;
-import org.apache.cayenne.modeler.toolkit.combobox.CMComboBoxCellEditor;
+import org.apache.cayenne.modeler.toolkit.combobox.CMAutoCompleteComboBoxCellEditor;
 import org.apache.cayenne.modeler.toolkit.icon.IconFactory;
 import org.apache.cayenne.modeler.toolkit.table.CMTable;
 import org.apache.cayenne.modeler.toolkit.table.CMTableModel;
@@ -166,7 +166,7 @@ public class ObjAttributePanel extends ProjectPanel implements ObjEntityDisplayL
 
         JComboBox<String> javaTypesCombo = new CMComboBox<>(typeNames);
         AutoCompletion.enable(javaTypesCombo, false, true, session::getSelectedDataMap);
-        typeColumn.setCellEditor(new CMComboBoxCellEditor(javaTypesCombo));
+        typeColumn.setCellEditor(new CMAutoCompleteComboBoxCellEditor(javaTypesCombo));
     }
 
     /**

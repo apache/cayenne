@@ -45,7 +45,7 @@ import org.apache.cayenne.modeler.toolkit.table.CMTablePanel;
 import org.apache.cayenne.modeler.toolkit.Renderers;
 import org.apache.cayenne.modeler.toolkit.combobox.AutoCompletion;
 import org.apache.cayenne.modeler.toolkit.combobox.CMComboBox;
-import org.apache.cayenne.modeler.toolkit.combobox.CMComboBoxCellEditor;
+import org.apache.cayenne.modeler.toolkit.combobox.CMAutoCompleteComboBoxCellEditor;
 
 import javax.swing.*;
 import javax.swing.event.ListSelectionEvent;
@@ -188,7 +188,7 @@ public class DbRelationshipPanel extends ProjectPanel implements DbEntityDisplay
         targetCombo.setModel(createComboModel());
 
         TableColumn targetColumn = table.getColumnModel().getColumn(DbRelationshipTableModel.TARGET);
-        targetColumn.setCellEditor(new CMComboBoxCellEditor(targetCombo));
+        targetColumn.setCellEditor(new CMAutoCompleteComboBoxCellEditor(targetCombo));
 
         TableColumn toDepPkColumn = table.getColumnModel().getColumn(DbRelationshipTableModel.TO_DEPENDENT_KEY);
         toDepPkColumn.setCellRenderer(new CheckBoxCellRenderer());

@@ -145,7 +145,7 @@ public class DuplicatedAttributesDialog extends AppDialog {
 
     private void updateTable() {
         TableColumn actionColumn = attributesTable.getColumnModel().getColumn(DuplicatedAttributeTableModel.ACTION);
-        JComboBox actionsCombo = new CMComboBox<>(DELETE_ACTION, RENAME_ACTION);
+        JComboBox<?> actionsCombo = new CMComboBox<>(DELETE_ACTION, RENAME_ACTION);
         actionColumn.setCellEditor(new CMComboBoxCellEditor(actionsCombo));
     }
 

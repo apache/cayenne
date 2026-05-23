@@ -34,7 +34,7 @@ import org.apache.cayenne.modeler.service.action.GlobalActions;
 import org.apache.cayenne.modeler.toolkit.valuetype.ValueTypes;
 import org.apache.cayenne.modeler.toolkit.combobox.AutoCompletion;
 import org.apache.cayenne.modeler.toolkit.combobox.CMComboBox;
-import org.apache.cayenne.modeler.toolkit.combobox.CMComboBoxCellEditor;
+import org.apache.cayenne.modeler.toolkit.combobox.CMAutoCompleteComboBoxCellEditor;
 import org.apache.cayenne.modeler.toolkit.table.CMTable;
 import org.apache.cayenne.modeler.toolkit.table.CMTablePanel;
 import org.apache.cayenne.modeler.pref.adapters.CMTablePrefs;
@@ -169,7 +169,7 @@ public class EmbeddableAttributesView extends ProjectPanel implements
         TableColumn typeColumn = table.getColumnModel().getColumn(EmbeddableAttributeTableModel.OBJ_ATTRIBUTE_TYPE);
         JComboBox javaTypesCombo = new CMComboBox<>(ValueTypes.getTypes());
         AutoCompletion.enable(javaTypesCombo, false, true, session::getSelectedDataMap);
-        typeColumn.setCellEditor(new CMComboBoxCellEditor(javaTypesCombo));
+        typeColumn.setCellEditor(new CMAutoCompleteComboBoxCellEditor(javaTypesCombo));
 
         new CMTablePrefs(app.getPrefsManager().uiNode("embeddable/attributeTable"))
                 .bind(table, null, EmbeddableAttributeTableModel.OBJ_ATTRIBUTE);
