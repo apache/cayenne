@@ -569,7 +569,10 @@ public class Util {
      * Returns a sorted iterator from an unsorted one. Use this method as a last
      * resort, since it is much less efficient then just sorting a collection
      * that backs the original iterator.
+     *
+     * @deprecated unused
      */
+    @Deprecated(since = "5.0", forRemoval = true)
     public static <T> Iterator<T> sortedIterator(Iterator<T> it, Comparator<T> comparator) {
         List<T> list = new ArrayList<>();
         while (it.hasNext()) {
