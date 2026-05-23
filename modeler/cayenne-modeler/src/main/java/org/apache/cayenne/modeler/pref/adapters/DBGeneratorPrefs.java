@@ -18,14 +18,14 @@
  ****************************************************************/
 package org.apache.cayenne.modeler.pref.adapters;
 
-import org.apache.cayenne.modeler.pref.PreferenceAdapter;
+import org.apache.cayenne.modeler.pref.PrefsAdapter;
 
 import java.util.prefs.Preferences;
 
 /**
  * Persistence for the DB Generator dialog's checkbox options.
  */
-public class DBGeneratorPrefs extends PreferenceAdapter {
+public class DBGeneratorPrefs extends PrefsAdapter {
 
     public static final String NODE = "dbGenerator";
 

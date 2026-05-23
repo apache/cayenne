@@ -46,7 +46,8 @@ import org.apache.cayenne.dbsync.reverse.filters.PatternFilter;
 import org.apache.cayenne.dbsync.reverse.filters.TableFilter;
 import org.apache.cayenne.map.DataMap;
 import org.apache.cayenne.map.ObjEntity;
-import org.apache.cayenne.modeler.dbconnector.DBConnector;
+import org.apache.cayenne.modeler.pref.dbconnector.DBConnector;
+import org.apache.cayenne.modeler.dbconnector.DBConnectorFactory;
 import org.apache.cayenne.modeler.event.model.DataMapEvent;
 import org.apache.cayenne.modeler.toolkit.border.TopBorder;
 import org.apache.cayenne.modeler.toolkit.text.CMTextArea;
@@ -192,7 +193,7 @@ public class MergerOptionsDialog extends ProjectDialog {
 
     private void prepareMigrator() {
         try {
-            adapter = connectionInfo.makeAdapter(app.getClassLoader(), app.getDbAdapterFactory());
+            adapter = new DBConnectorFactory(app.getClassLoader()).makeAdapter(connectionInfo, app.getDbAdapterFactory());
 
             MergerTokenFactory mergerTokenFactory = mergerTokenFactoryProvider.get(adapter);
             tokens.setMergerTokenFactory(mergerTokenFactory);
@@ -207,7 +208,7 @@ public class MergerOptionsDialog extends ProjectDialog {
             DbLoaderConfiguration config = new DbLoaderConfiguration();
             config.setFiltersConfig(filters);
 
-            DataSource dataSource = connectionInfo.makeDataSource(app.getClassLoader());
+            DataSource dataSource = new DBConnectorFactory(app.getClassLoader()).makeDataSource(connectionInfo);
 
             DataMap dbImport;
             try (Connection conn = dataSource.getConnection()) {
@@ -263,7 +264,7 @@ public class MergerOptionsDialog extends ProjectDialog {
 
         DataSource dataSource;
         try {
-            dataSource = connectionInfo.makeDataSource(app.getClassLoader());
+            dataSource = new DBConnectorFactory(app.getClassLoader()).makeDataSource(connectionInfo);
         } catch (SQLException ex) {
             reportError("Migration Error", ex);
             return;

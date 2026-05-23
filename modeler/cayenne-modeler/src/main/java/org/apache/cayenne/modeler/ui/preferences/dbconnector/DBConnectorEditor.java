@@ -21,7 +21,7 @@ package org.apache.cayenne.modeler.ui.preferences.dbconnector;
 
 import com.jgoodies.forms.builder.DefaultFormBuilder;
 import com.jgoodies.forms.layout.FormLayout;
-import org.apache.cayenne.modeler.dbconnector.DBConnector;
+import org.apache.cayenne.modeler.pref.dbconnector.DBConnector;
 import org.apache.cayenne.modeler.toolkit.text.CMPasswordField;
 import org.apache.cayenne.modeler.toolkit.text.CMTextField;
 import org.apache.cayenne.modeler.dbadapter.DbAdapters;

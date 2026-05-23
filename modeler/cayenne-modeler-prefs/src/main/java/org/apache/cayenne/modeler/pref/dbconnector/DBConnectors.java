@@ -17,7 +17,7 @@
  *  under the License.
  ****************************************************************/
 
-package org.apache.cayenne.modeler.dbconnector;
+package org.apache.cayenne.modeler.pref.dbconnector;
 
 import org.apache.cayenne.modeler.pref.adapters.DBConnectorPrefs;
 

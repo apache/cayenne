@@ -19,9 +19,8 @@
 
 package org.apache.cayenne.modeler.pref.adapters;
 
-import org.apache.cayenne.modeler.pref.PreferenceAdapter;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
+import org.apache.cayenne.CayenneRuntimeException;
+import org.apache.cayenne.modeler.pref.PrefsAdapter;
 
 import java.util.ArrayList;
 import java.util.Comparator;
@@ -29,9 +28,7 @@ import java.util.List;
 import java.util.prefs.BackingStoreException;
 import java.util.prefs.Preferences;
 
-public final class ClasspathPrefs extends PreferenceAdapter {
-
-    private static final Logger LOGGER = LoggerFactory.getLogger(ClasspathPrefs.class);
+public final class ClasspathPrefs extends PrefsAdapter {
 
     public static final String NODE = "classpath";
 
@@ -84,8 +81,7 @@ public final class ClasspathPrefs extends PreferenceAdapter {
         try {
             return prefs.keys();
         } catch (BackingStoreException e) {
-            LOGGER.info("Error loading preferences", e);
-            return new String[0];
+            throw new CayenneRuntimeException("Error loading classpath preferences", e);
         }
     }
 }

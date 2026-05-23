@@ -19,14 +19,14 @@
 
 package org.apache.cayenne.modeler.pref.adapters;
 
-import org.apache.cayenne.modeler.pref.PreferenceAdapter;
+import org.apache.cayenne.modeler.pref.PrefsAdapter;
 
 import java.awt.*;
 import java.awt.event.ComponentAdapter;
 import java.awt.event.ComponentEvent;
 import java.util.prefs.Preferences;
 
-public final class ComponentGeometryPrefs extends PreferenceAdapter {
+public final class ComponentGeometryPrefs extends PrefsAdapter {
 
     private static final String HEIGHT_PROPERTY = "height";
     private static final String WIDTH_PROPERTY = "width";

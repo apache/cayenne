@@ -18,6 +18,7 @@
  ****************************************************************/
 package org.apache.cayenne.mcp.tools.openproject;
 
+import org.apache.cayenne.modeler.pref.PrefsLocator;
 import org.apache.cayenne.mcp.tools.openproject.HandshakeWatcher.Outcome;
 import org.apache.cayenne.mcp.tools.openproject.HandshakeWatcher.WatchResult;
 import org.apache.cayenne.mcp.tools.openproject.ModelerLauncher.LaunchResult;
@@ -59,7 +60,7 @@ public class OpenProjectStubIT {
 
         try {
             WatchResult watch = HandshakeWatcher.await(
-                    nonce, () -> launch.process().isAlive(), Duration.ofSeconds(15));
+                    nonce, () -> launch.process().isAlive(), Duration.ofSeconds(15), new PrefsLocator());
 
             assertEquals(Outcome.HANDSHAKE_RECEIVED, watch.outcome(),
                     "expected stub to write handshake within 15s");

@@ -28,7 +28,8 @@ import org.apache.cayenne.di.DIBootstrap;
 import org.apache.cayenne.di.Injector;
 import org.apache.cayenne.map.DataMap;
 import org.apache.cayenne.modeler.Application;
-import org.apache.cayenne.modeler.dbconnector.DBConnector;
+import org.apache.cayenne.modeler.pref.dbconnector.DBConnector;
+import org.apache.cayenne.modeler.dbconnector.DBConnectorFactory;
 import org.apache.cayenne.modeler.project.DataMapOps;
 import org.apache.cayenne.modeler.ui.project.editor.datamap.dbimport.progress.DbImportProgressDialog;
 import org.apache.cayenne.modeler.ui.action.DBConnectionAwareAction;
@@ -81,7 +82,7 @@ public class ModelerDbImportAction extends DBConnectionAwareAction {
         }
 
         try {
-            context.setConnection(connectionInfo.makeDataSource(app.getClassLoader()).getConnection());
+            context.setConnection(new DBConnectorFactory(app.getClassLoader()).makeDataSource(connectionInfo).getConnection());
         } catch (SQLException ex) {
             JOptionPane.showMessageDialog(
                     app.getFrame(),

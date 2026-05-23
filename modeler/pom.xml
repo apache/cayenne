@@ -34,6 +34,7 @@
 	
 	<modules>
 		<module>cayenne-wocompat</module>
+		<module>cayenne-modeler-prefs</module>
 		<module>cayenne-modeler</module>
 		<module>cayenne-modeler-generic</module>
 		<module>cayenne-modeler-mac</module>

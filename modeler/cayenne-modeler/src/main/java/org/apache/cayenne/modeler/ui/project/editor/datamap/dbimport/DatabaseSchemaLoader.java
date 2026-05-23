@@ -41,7 +41,8 @@ import org.apache.cayenne.dbsync.reverse.dbimport.Schema;
 import org.apache.cayenne.dbsync.reverse.dbimport.SchemaContainer;
 import org.apache.cayenne.modeler.service.classloader.ModelerClassLoader;
 import org.apache.cayenne.modeler.ui.project.editor.datamap.dbimport.tree.DbImportTreeNode;
-import org.apache.cayenne.modeler.dbconnector.DBConnector;
+import org.apache.cayenne.modeler.pref.dbconnector.DBConnector;
+import org.apache.cayenne.modeler.dbconnector.DBConnectorFactory;
 
 public class DatabaseSchemaLoader {
 
@@ -57,8 +58,8 @@ public class DatabaseSchemaLoader {
 
     public ReverseEngineering load(DBConnector connectionInfo,
                                    ModelerClassLoader loadingService) throws Exception {
-        DbAdapter dbAdapter = connectionInfo.makeAdapter(loadingService, adapterFactory);
-        try (Connection connection = connectionInfo.makeDataSource(loadingService).getConnection()) {
+        DbAdapter dbAdapter = new DBConnectorFactory(loadingService).makeAdapter(connectionInfo, adapterFactory);
+        try (Connection connection = new DBConnectorFactory(loadingService).makeDataSource(connectionInfo).getConnection()) {
             processCatalogs(connection, dbAdapter);
         }
 
@@ -131,7 +132,7 @@ public class DatabaseSchemaLoader {
                                          String[] tableTypesFromConfig) throws Exception {
         int pathIndex = 1;
         String catalogName = null, schemaName = null;
-        DbAdapter adapter = connectionInfo.makeAdapter(loadingService, adapterFactory);
+        DbAdapter adapter = new DBConnectorFactory(loadingService).makeAdapter(connectionInfo, adapterFactory);
 
         Object userObject = getUserObjectOrNull(path, pathIndex);
         if (userObject != null) {
@@ -149,7 +150,7 @@ public class DatabaseSchemaLoader {
             }
         }
 
-        try (Connection connection = connectionInfo.makeDataSource(loadingService).getConnection()) {
+        try (Connection connection = new DBConnectorFactory(loadingService).makeDataSource(connectionInfo).getConnection()) {
             String[] types = tableTypesFromConfig != null && tableTypesFromConfig.length != 0 ?
                     tableTypesFromConfig :
                     new String[]{"TABLE", "VIEW", "SYSTEM TABLE",
@@ -193,7 +194,7 @@ public class DatabaseSchemaLoader {
         }
 
         String tableName = processTable(userObject);
-        try (Connection connection = connectionInfo.makeDataSource(loadingService).getConnection()) {
+        try (Connection connection = new DBConnectorFactory(loadingService).makeDataSource(connectionInfo).getConnection()) {
             try (ResultSet rs = connection.getMetaData().getColumns(catalogName, schemaName, tableName, null)) {
                 while (rs.next()) {
                     String column = rs.getString("COLUMN_NAME");

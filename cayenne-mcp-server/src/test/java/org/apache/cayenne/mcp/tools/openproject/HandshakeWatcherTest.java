@@ -18,6 +18,7 @@
  ****************************************************************/
 package org.apache.cayenne.mcp.tools.openproject;
 
+import org.apache.cayenne.modeler.pref.PrefsLocator;
 import org.apache.cayenne.mcp.tools.openproject.HandshakeWatcher.Outcome;
 import org.apache.cayenne.mcp.tools.openproject.HandshakeWatcher.WatchResult;
 import org.junit.jupiter.api.AfterEach;
@@ -40,27 +41,25 @@ import static org.junit.jupiter.api.Assertions.assertTrue;
 public class HandshakeWatcherTest {
 
     private static final BooleanSupplier ALIVE = () -> true;
+    private static final PrefsLocator LOCATOR = new PrefsLocator();
     private final String nonce = "test-" + UUID.randomUUID().toString().replace("-", "");
 
     @AfterEach
     public void cleanup() throws BackingStoreException {
-        Preferences root = Preferences.userRoot();
-        if (root.nodeExists(HandshakeWatcher.NODE_PREFIX + "/" + nonce)) {
-            root.node(HandshakeWatcher.NODE_PREFIX + "/" + nonce).removeNode();
+        if (LOCATOR.handshakeNodeExists(nonce)) {
+            LOCATOR.handshakeNode(nonce).removeNode();
         }
     }
 
     @Test
     public void handshakeReceivedReadsPidAndPath() throws BackingStoreException {
-        Preferences node = Preferences
-                .userRoot()
-                .node(HandshakeWatcher.NODE_PREFIX + "/" + nonce);
+        Preferences node = LOCATOR.handshakeNode(nonce);
         node.putLong("pid", 4242L);
         node.put("startedAt", "2026-05-17T10:00:00Z");
         node.put("projectPath", "/abs/cayenne-project.xml");
         node.flush();
 
-        WatchResult result = HandshakeWatcher.await(nonce, ALIVE, Duration.ofSeconds(2));
+        WatchResult result = HandshakeWatcher.await(nonce, ALIVE, Duration.ofSeconds(2), LOCATOR);
 
         assertEquals(Outcome.HANDSHAKE_RECEIVED, result.outcome());
         assertNotNull(result.data());
@@ -70,12 +69,12 @@ public class HandshakeWatcherTest {
         assertTrue(result.waitMs() >= 0);
 
         // Watcher must remove the node after reading.
-        assertFalse(Preferences.userRoot().nodeExists(HandshakeWatcher.NODE_PREFIX + "/" + nonce));
+        assertFalse(LOCATOR.handshakeNodeExists(nonce));
     }
 
     @Test
     public void timeoutOnMissingHandshake() {
-        WatchResult result = HandshakeWatcher.await(nonce, ALIVE, Duration.ofMillis(400));
+        WatchResult result = HandshakeWatcher.await(nonce, ALIVE, Duration.ofMillis(400), LOCATOR);
 
         assertEquals(Outcome.TIMEOUT, result.outcome());
         assertNull(result.data());
@@ -97,7 +96,7 @@ public class HandshakeWatcherTest {
         }, "test-killer").start();
 
         long start = System.currentTimeMillis();
-        WatchResult result = HandshakeWatcher.await(nonce, alive::get, Duration.ofSeconds(10));
+        WatchResult result = HandshakeWatcher.await(nonce, alive::get, Duration.ofSeconds(10), LOCATOR);
         long elapsed = System.currentTimeMillis() - start;
 
         assertEquals(Outcome.SPAWNED_PROCESS_EXITED, result.outcome());
@@ -111,30 +110,27 @@ public class HandshakeWatcherTest {
         String freshNonce = "test-fresh-" + UUID.randomUUID().toString().replace("-", "");
         String staleNonce = "test-stale-" + UUID.randomUUID().toString().replace("-", "");
         try {
-            Preferences fresh = Preferences.userRoot()
-                    .node(HandshakeWatcher.NODE_PREFIX + "/" + freshNonce);
+            Preferences fresh = LOCATOR.handshakeNode(freshNonce);
             fresh.put("startedAt", Instant.now().toString());
             fresh.flush();
 
-            Preferences stale = Preferences.userRoot()
-                    .node(HandshakeWatcher.NODE_PREFIX + "/" + staleNonce);
+            Preferences stale = LOCATOR.handshakeNode(staleNonce);
             stale.put("startedAt", Instant.now().minus(Duration.ofDays(2)).toString());
             stale.flush();
 
             // Trigger pruning by running the watcher with a missing-handshake nonce.
-            HandshakeWatcher.await(nonce, ALIVE, Duration.ofMillis(200));
+            HandshakeWatcher.await(nonce, ALIVE, Duration.ofMillis(200), LOCATOR);
 
-            assertTrue(Preferences.userRoot().nodeExists(HandshakeWatcher.NODE_PREFIX + "/" + freshNonce),
+            assertTrue(LOCATOR.handshakeNodeExists(freshNonce),
                     "Recent sibling must be preserved");
-            assertFalse(Preferences.userRoot().nodeExists(HandshakeWatcher.NODE_PREFIX + "/" + staleNonce),
+            assertFalse(LOCATOR.handshakeNodeExists(staleNonce),
                     "Stale sibling must be pruned");
         } finally {
-            Preferences root = Preferences.userRoot();
-            if (root.nodeExists(HandshakeWatcher.NODE_PREFIX + "/" + freshNonce)) {
-                root.node(HandshakeWatcher.NODE_PREFIX + "/" + freshNonce).removeNode();
+            if (LOCATOR.handshakeNodeExists(freshNonce)) {
+                LOCATOR.handshakeNode(freshNonce).removeNode();
             }
-            if (root.nodeExists(HandshakeWatcher.NODE_PREFIX + "/" + staleNonce)) {
-                root.node(HandshakeWatcher.NODE_PREFIX + "/" + staleNonce).removeNode();
+            if (LOCATOR.handshakeNodeExists(staleNonce)) {
+                LOCATOR.handshakeNode(staleNonce).removeNode();
             }
         }
     }

@@ -22,7 +22,7 @@ package org.apache.cayenne.modeler.ui.preferences.dbconnector.creator;
 import com.jgoodies.forms.builder.DefaultFormBuilder;
 import com.jgoodies.forms.layout.FormLayout;
 import org.apache.cayenne.modeler.Application;
-import org.apache.cayenne.modeler.dbconnector.DBConnector;
+import org.apache.cayenne.modeler.pref.dbconnector.DBConnector;
 import org.apache.cayenne.modeler.toolkit.AppDialog;
 import org.apache.cayenne.modeler.ui.preferences.dbconnector.DBConnectorPrefsPanel;
 import org.apache.cayenne.modeler.dbadapter.DbAdapters;

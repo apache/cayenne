@@ -18,6 +18,7 @@
  ****************************************************************/
 package org.apache.cayenne.mcp.tools.openproject;
 
+import org.apache.cayenne.modeler.pref.PrefsLocator;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -35,21 +36,20 @@ import java.util.prefs.Preferences;
  *
  * @since 5.0
  */
-final class HandshakeWatcher {
+class HandshakeWatcher {
 
     private static final Logger LOGGER = LoggerFactory.getLogger(HandshakeWatcher.class);
-
-    /** Must match {@code McpHandshakeWriter.NODE_PREFIX} on the Modeler side. */
-    static final String NODE_PREFIX = "/org/apache/cayenne/modeler/mcp-handshake";
 
     private static final long POLL_INTERVAL_MS = 200L;
     private static final Duration STALE_NODE_TTL = Duration.ofHours(24);
 
-    enum Outcome { HANDSHAKE_RECEIVED, SPAWNED_PROCESS_EXITED, TIMEOUT }
+    enum Outcome {HANDSHAKE_RECEIVED, SPAWNED_PROCESS_EXITED, TIMEOUT}
 
-    record WatchResult(Outcome outcome, HandshakeData data, long waitMs) {}
+    record WatchResult(Outcome outcome, HandshakeData data, long waitMs) {
+    }
 
-    record HandshakeData(long pid, String startedAt, String resolvedProjectPath) {}
+    record HandshakeData(long pid, String startedAt, String resolvedProjectPath) {
+    }
 
     private HandshakeWatcher() {
     }
@@ -59,16 +59,20 @@ final class HandshakeWatcher {
      * the spawned process exits (when that signal is meaningful) or the timeout is hit.
      * Regardless of outcome, the nonce's subnode is removed and stale siblings are pruned.
      */
-    static WatchResult await(String nonce, BooleanSupplier spawnedProcessAlive, Duration timeout) {
+    public static WatchResult await(
+            String nonce,
+            BooleanSupplier spawnedProcessAlive,
+            Duration timeout,
+            PrefsLocator locator) {
+
         long start = System.currentTimeMillis();
         long deadline = start + timeout.toMillis();
-        String nodePath = NODE_PREFIX + "/" + nonce;
 
-        WatchResult result = null;
+        WatchResult result;
         try {
             while (true) {
-                if (nodeExists(nodePath)) {
-                    HandshakeData data = readHandshake(nodePath);
+                if (locator.handshakeNodeExists(nonce)) {
+                    HandshakeData data = readHandshake(locator.handshakeNode(nonce));
                     long waitMs = System.currentTimeMillis() - start;
                     result = new WatchResult(Outcome.HANDSHAKE_RECEIVED, data, waitMs);
                     break;
@@ -96,36 +100,26 @@ final class HandshakeWatcher {
                 }
             }
         } finally {
-            removeNode(nodePath);
-            pruneStaleSiblings();
+            removeNode(locator, nonce);
+            pruneStaleSiblings(locator);
         }
         return result;
     }
 
-    private static boolean nodeExists(String absolutePath) {
-        try {
-            return Preferences.userRoot().nodeExists(absolutePath);
-        } catch (BackingStoreException e) {
-            LOGGER.warn("Failed to query preferences for {}: {}", absolutePath, e.toString());
-            return false;
-        }
-    }
-
-    private static HandshakeData readHandshake(String absolutePath) {
-        Preferences node = Preferences.userRoot().node(absolutePath);
+    private static HandshakeData readHandshake(Preferences node) {
         long pid = node.getLong("pid", -1L);
         String startedAt = node.get("startedAt", null);
         String resolvedProjectPath = node.get("projectPath", null);
         return new HandshakeData(pid, startedAt, resolvedProjectPath);
     }
 
-    private static void removeNode(String absolutePath) {
+    private static void removeNode(PrefsLocator locator, String nonce) {
         try {
-            if (Preferences.userRoot().nodeExists(absolutePath)) {
-                Preferences.userRoot().node(absolutePath).removeNode();
+            if (locator.handshakeNodeExists(nonce)) {
+                locator.handshakeNode(nonce).removeNode();
             }
         } catch (BackingStoreException | IllegalStateException e) {
-            LOGGER.warn("Failed to remove handshake node {}: {}", absolutePath, e.toString());
+            LOGGER.warn("Failed to remove handshake node for nonce {}: {}", nonce, e.toString());
         }
     }
 
@@ -134,13 +128,13 @@ final class HandshakeWatcher {
      * Belt-and-suspenders cleanup against an MCP server that crashed between launching
      * the Modeler and reading the handshake.
      */
-    private static void pruneStaleSiblings() {
+    private static void pruneStaleSiblings(PrefsLocator locator) {
+        if (!locator.handshakeRootNodeExists()) {
+            return;
+        }
+
         try {
-            Preferences root = Preferences.userRoot();
-            if (!root.nodeExists(NODE_PREFIX)) {
-                return;
-            }
-            Preferences parent = root.node(NODE_PREFIX);
+            Preferences parent = locator.handshakeRootNode();
             Instant cutoff = Instant.now().minus(STALE_NODE_TTL);
             for (String child : parent.childrenNames()) {
                 Preferences childNode = parent.node(child);

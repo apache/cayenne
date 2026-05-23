@@ -32,68 +32,63 @@
 	<packaging>jar</packaging>
 
 	<dependencies>
-
-		<dependency>
-			<groupId>org.slf4j</groupId>
-			<artifactId>slf4j-api</artifactId>
-		</dependency>
-
-		<dependency>
-			<groupId>com.jgoodies</groupId>
-			<artifactId>forms</artifactId>
-		</dependency>
-
-		<dependency>
-			<groupId>com.jgoodies</groupId>
-			<artifactId>jgoodies-looks</artifactId>
-		</dependency>
-
 		<dependency>
 			<groupId>org.apache.cayenne</groupId>
 			<artifactId>cayenne</artifactId>
 			<version>${project.version}</version>
 		</dependency>
-
 		<dependency>
 			<groupId>org.apache.cayenne</groupId>
 			<artifactId>cayenne-project</artifactId>
 			<version>${project.version}</version>
 		</dependency>
-
 		<dependency>
 			<groupId>org.apache.cayenne</groupId>
 			<artifactId>cayenne-cgen</artifactId>
 			<version>${project.version}</version>
 		</dependency>
-
 		<dependency>
 			<groupId>org.apache.cayenne</groupId>
 			<artifactId>cayenne-dbsync</artifactId>
 			<version>${project.version}</version>
 		</dependency>
-
 		<dependency>
 			<groupId>org.apache.cayenne.modeler</groupId>
 			<artifactId>cayenne-wocompat</artifactId>
 			<version>${project.version}</version>
 		</dependency>
-
 		<dependency>
-			<groupId>org.junit.jupiter</groupId>
-			<artifactId>junit-jupiter</artifactId>
-			<scope>test</scope>
+			<groupId>org.apache.cayenne.modeler</groupId>
+			<artifactId>cayenne-modeler-prefs</artifactId>
+			<version>${project.version}</version>
 		</dependency>
-
+		<dependency>
+			<groupId>org.slf4j</groupId>
+			<artifactId>slf4j-api</artifactId>
+		</dependency>
+		<dependency>
+			<groupId>com.jgoodies</groupId>
+			<artifactId>forms</artifactId>
+		</dependency>
+		<dependency>
+			<groupId>com.jgoodies</groupId>
+			<artifactId>jgoodies-looks</artifactId>
+		</dependency>
 		<dependency>
 			<groupId>com.fifesoft</groupId>
 			<artifactId>rsyntaxtextarea</artifactId>
 		</dependency>
 
+		<!-- Test dependencies -->
+		<dependency>
+			<groupId>org.junit.jupiter</groupId>
+			<artifactId>junit-jupiter</artifactId>
+			<scope>test</scope>
+		</dependency>
 		<dependency>
 			<groupId>org.mockito</groupId>
 			<artifactId>mockito-core</artifactId>
 			<scope>test</scope>
 		</dependency>
-
 	</dependencies>
 </project>

@@ -27,7 +27,8 @@ import org.apache.cayenne.access.DbGenerator;
 import org.apache.cayenne.dba.DbAdapter;
 import org.apache.cayenne.log.NoopJdbcEventLogger;
 import org.apache.cayenne.map.DataMap;
-import org.apache.cayenne.modeler.dbconnector.DBConnector;
+import org.apache.cayenne.modeler.pref.dbconnector.DBConnector;
+import org.apache.cayenne.modeler.dbconnector.DBConnectorFactory;
 import org.apache.cayenne.modeler.pref.adapters.DBGeneratorPrefs;
 import org.apache.cayenne.modeler.toolkit.border.TopBorder;
 import org.apache.cayenne.modeler.toolkit.ProjectDialog;
@@ -105,7 +106,6 @@ public class DBGeneratorOptionsDialog extends ProjectDialog {
         this.tables = new TableSelectorPanel(app);
 
         this.connector = new DBConnector();
-        this.connector.setAllowDataSourceFailure(true);
         this.generatorDefaults = new DBGeneratorPrefs(app.getPrefsManager().projectPref(session.project(), DBGeneratorPrefs.NODE));
 
         // create widgets — set initial state before wiring listeners so we
@@ -259,7 +259,7 @@ public class DBGeneratorOptionsDialog extends ProjectDialog {
 
     private void prepareGenerator() {
         try {
-            DbAdapter adapter = connector.makeAdapter(app.getClassLoader(), app.getDbAdapterFactory());
+            DbAdapter adapter = new DBConnectorFactory(app.getClassLoader()).makeAdapter(connector, app.getDbAdapterFactory(), true);
             generators = new ArrayList<>();
             for (DataMap dataMap : dataMaps) {
                 generators.add(new DbGenerator(

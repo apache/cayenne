@@ -23,7 +23,7 @@ import org.apache.cayenne.map.DataMap;
 import org.apache.cayenne.modeler.Application;
 import org.apache.cayenne.modeler.toolkit.AppAction;
 import org.apache.cayenne.modeler.ui.datasource.DataSourceDialog;
-import org.apache.cayenne.modeler.dbconnector.DBConnector;
+import org.apache.cayenne.modeler.pref.dbconnector.DBConnector;
 import org.apache.cayenne.modeler.pref.adapters.DataMapPrefs;
 
 /**

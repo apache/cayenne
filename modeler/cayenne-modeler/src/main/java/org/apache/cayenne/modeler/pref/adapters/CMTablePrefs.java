@@ -18,7 +18,7 @@
  ****************************************************************/
 package org.apache.cayenne.modeler.pref.adapters;
 
-import org.apache.cayenne.modeler.pref.PreferenceAdapter;
+import org.apache.cayenne.modeler.pref.PrefsAdapter;
 import org.apache.cayenne.modeler.toolkit.table.CMTable;
 
 import javax.swing.event.ChangeEvent;
@@ -31,7 +31,7 @@ import javax.swing.table.TableModel;
 import java.util.Map;
 import java.util.prefs.Preferences;
 
-public final class CMTablePrefs extends PreferenceAdapter {
+public final class CMTablePrefs extends PrefsAdapter {
 
     private static final String SORT_COLUMN_KEY = "sortColumn";
     private static final String SORT_ORDER_KEY = "sortOrder";

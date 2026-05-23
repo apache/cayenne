@@ -166,7 +166,7 @@ public class CgenRunTool {
                             + "Configure code generation for this DataMap in CayenneModeler before invoking the tool.",
                     new CgenValidation(true, true, false, null, null));
         }
-        CgenConfiguration cgenConfig = configList.getAll().get(0);
+        CgenConfiguration cgenConfig = configList.getAll().getFirst();
 
         // Step 5 — destDir specified?
         Path destDir = cgenConfig.buildOutputPath();

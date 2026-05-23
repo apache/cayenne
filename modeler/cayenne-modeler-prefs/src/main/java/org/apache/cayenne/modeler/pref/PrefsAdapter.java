@@ -24,11 +24,11 @@ import java.util.prefs.Preferences;
 /**
  * Superclass of objects linking preferences with components.
  */
-public abstract class PreferenceAdapter {
+public abstract class PrefsAdapter {
 
     protected final Preferences prefs;
 
-    protected PreferenceAdapter(Preferences prefs) {
+    protected PrefsAdapter(Preferences prefs) {
         this.prefs = prefs;
     }
 }

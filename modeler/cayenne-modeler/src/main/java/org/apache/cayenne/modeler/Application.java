@@ -28,7 +28,7 @@ import org.apache.cayenne.dbsync.DbSyncModule;
 import org.apache.cayenne.dbsync.merge.factory.MergerTokenFactoryProvider;
 import org.apache.cayenne.di.DIBootstrap;
 import org.apache.cayenne.di.Injector;
-import org.apache.cayenne.modeler.dbconnector.DBConnectors;
+import org.apache.cayenne.modeler.pref.dbconnector.DBConnectors;
 import org.apache.cayenne.modeler.log.ModelerLogFactory;
 import org.apache.cayenne.modeler.platform.UIInitializer;
 import org.apache.cayenne.modeler.toolkit.filechooser.FileChooserFactory;
@@ -206,7 +206,7 @@ public class Application {
         this.undoManager = new CayenneUndoManager(this);
         this.frame = new MainFrame(this);
         this.platformInit.afterFrameCreated(this);
-        
+
         // open up
         frame.onStartup();
 

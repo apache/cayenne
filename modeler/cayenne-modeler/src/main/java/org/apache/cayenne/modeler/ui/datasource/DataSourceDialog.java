@@ -23,8 +23,9 @@ import com.jgoodies.forms.builder.PanelBuilder;
 import com.jgoodies.forms.layout.CellConstraints;
 import com.jgoodies.forms.layout.FormLayout;
 import org.apache.cayenne.dba.DbAdapter;
-import org.apache.cayenne.modeler.dbconnector.DBConnector;
-import org.apache.cayenne.modeler.dbconnector.DBConnectors;
+import org.apache.cayenne.modeler.pref.dbconnector.DBConnector;
+import org.apache.cayenne.modeler.dbconnector.DBConnectorFactory;
+import org.apache.cayenne.modeler.pref.dbconnector.DBConnectors;
 import org.apache.cayenne.modeler.pref.adapters.DataMapPrefs;
 import org.apache.cayenne.modeler.pref.adapters.GeneralPrefs;
 import org.apache.cayenne.modeler.service.classloader.ModelerClassLoader;
@@ -175,8 +176,9 @@ public class DataSourceDialog extends ProjectDialog {
         // doing connection testing...
         try {
             try {
-                this.adapter = info.makeAdapter(classLoader, app.getDbAdapterFactory());
-                this.dataSource = info.makeDataSource(classLoader);
+                DBConnectorFactory factory = new DBConnectorFactory(classLoader);
+                this.adapter = factory.makeAdapter(info, app.getDbAdapterFactory());
+                this.dataSource = factory.makeDataSource(info);
             } catch (SQLException ignore) {
                 showNoConnectorDialog("Unable to load driver '" + info.getJdbcDriver() + "'");
                 return;

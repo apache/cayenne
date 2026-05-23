@@ -25,7 +25,8 @@ import org.apache.cayenne.dbsync.reverse.dbload.DbLoaderDelegate;
 import org.apache.cayenne.dbsync.reverse.filters.FiltersConfigBuilder;
 import org.apache.cayenne.map.DataMap;
 import org.apache.cayenne.modeler.Application;
-import org.apache.cayenne.modeler.dbconnector.DBConnector;
+import org.apache.cayenne.modeler.pref.dbconnector.DBConnector;
+import org.apache.cayenne.modeler.dbconnector.DBConnectorFactory;
 import org.apache.cayenne.modeler.service.classloader.ModelerClassLoader;
 import org.apache.cayenne.modeler.project.ProjectSession;
 import org.apache.cayenne.util.Util;
@@ -137,8 +138,8 @@ public class ModelerDbLoaderContext {
         try {
             ModelerClassLoader classLoader = application.getClassLoader();
             config.getDbLoaderConfig().setFiltersConfig(new FiltersConfigBuilder(reverseEngineering)
-                    .dataSource(connectionInfo.makeDataSource(classLoader))
-                    .dbAdapter(connectionInfo.makeAdapter(classLoader, application.getDbAdapterFactory()))
+                    .dataSource(new DBConnectorFactory(classLoader).makeDataSource(connectionInfo))
+                    .dbAdapter(new DBConnectorFactory(classLoader).makeAdapter(connectionInfo, application.getDbAdapterFactory()))
                     .build());
         } catch (Exception e) {
             processException(e, "Fail while building configs.");

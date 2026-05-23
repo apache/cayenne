@@ -18,6 +18,7 @@
  ****************************************************************/
 package org.apache.cayenne.modeler.pref;
 
+import java.util.prefs.BackingStoreException;
 import java.util.prefs.Preferences;
 
 /**
@@ -82,13 +83,39 @@ public final class PrefsLocator {
         return root.node(DATAMAP_ROOT).node(dataMapId);
     }
 
-    /**
-     * Returns the per-nonce node under the MCP launch-handshake namespace
-     * ({@code org/apache/cayenne/modeler/mcp-handshake/<nonce>}). This subtree
-     * is intentionally a sibling of {@link #modelerRoot()} so that Modeler-wide
-     * resets do not clobber in-flight handshakes.
-     */
     public Preferences handshakeNode(String nonce) {
         return root.node(HANDSHAKE_ROOT).node(nonce);
+    }
+
+    /**
+     * Returns the handshake namespace root node. Only call this after confirming the
+     * node exists via {@link #handshakeRootNodeExists()}.
+     */
+    public Preferences handshakeRootNode() {
+        return root.node(HANDSHAKE_ROOT);
+    }
+
+    /**
+     * Returns {@code true} if the per-nonce handshake node exists without creating it.
+     * Returns {@code false} if the backing store cannot be queried.
+     */
+    public boolean handshakeNodeExists(String nonce) {
+        try {
+            return root.nodeExists(HANDSHAKE_ROOT + "/" + nonce);
+        } catch (BackingStoreException e) {
+            return false;
+        }
+    }
+
+    /**
+     * Returns {@code true} if the handshake namespace root node exists without creating it.
+     * Returns {@code false} if the backing store cannot be queried.
+     */
+    public boolean handshakeRootNodeExists() {
+        try {
+            return root.nodeExists(HANDSHAKE_ROOT);
+        } catch (BackingStoreException e) {
+            return false;
+        }
     }
 }

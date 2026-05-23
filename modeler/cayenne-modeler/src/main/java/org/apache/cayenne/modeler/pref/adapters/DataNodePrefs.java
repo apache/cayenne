@@ -18,12 +18,12 @@
  ****************************************************************/
 package org.apache.cayenne.modeler.pref.adapters;
 
-import org.apache.cayenne.modeler.pref.PreferenceAdapter;
+import org.apache.cayenne.modeler.pref.PrefsAdapter;
 import org.apache.cayenne.modeler.pref.PrefsCopier;
 
 import java.util.prefs.Preferences;
 
-public final class DataNodePrefs extends PreferenceAdapter {
+public final class DataNodePrefs extends PrefsAdapter {
 
     public static final String LOCAL_DATA_SOURCE_PROPERTY = "localDataSource";
 

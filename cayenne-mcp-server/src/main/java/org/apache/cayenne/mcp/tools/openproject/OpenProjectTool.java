@@ -34,6 +34,8 @@ import org.apache.cayenne.mcp.tools.openproject.protocol.OpenProjectResolved;
 import org.apache.cayenne.mcp.tools.openproject.protocol.OpenProjectResult;
 import org.apache.cayenne.mcp.tools.openproject.protocol.OpenProjectValidation;
 
+import org.apache.cayenne.modeler.pref.PrefsLocator;
+
 import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
@@ -57,8 +59,14 @@ public class OpenProjectTool {
 
     static final Duration HANDSHAKE_TIMEOUT = Duration.ofSeconds(15);
 
-    public static McpServerFeatures.SyncToolSpecification spec(McpJsonMapper jsonMapper) {
-        OpenProjectTool tool = new OpenProjectTool();
+    private final PrefsLocator prefsLocator;
+
+    public OpenProjectTool(PrefsLocator prefsLocator) {
+        this.prefsLocator = prefsLocator;
+    }
+
+    public static McpServerFeatures.SyncToolSpecification spec(McpJsonMapper jsonMapper, PrefsLocator prefsLocator) {
+        OpenProjectTool tool = new OpenProjectTool(prefsLocator);
 
         McpSchema.Tool descriptor = new McpSchema.Tool(
                 NAME,
@@ -172,7 +180,7 @@ public class OpenProjectTool {
                 launch.command());
 
         // Step 5 — wait for the handshake.
-        WatchResult watch = HandshakeWatcher.await(nonce, () -> true, HANDSHAKE_TIMEOUT);
+        WatchResult watch = HandshakeWatcher.await(nonce, () -> true, HANDSHAKE_TIMEOUT, prefsLocator);
 
         return switch (watch.outcome()) {
             case HANDSHAKE_RECEIVED -> {

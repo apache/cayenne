@@ -32,7 +32,7 @@ import org.apache.cayenne.modeler.ui.project.editor.datamap.dbimport.DbImportVie
 import org.apache.cayenne.modeler.ui.project.editor.datamap.dbimport.DBSchemaPanel;
 import org.apache.cayenne.modeler.ui.project.editor.datamap.dbimport.PrintColumnsBiFunction;
 import org.apache.cayenne.modeler.ui.project.editor.datamap.dbimport.PrintTablesBiFunction;
-import org.apache.cayenne.modeler.dbconnector.DBConnector;
+import org.apache.cayenne.modeler.pref.dbconnector.DBConnector;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 

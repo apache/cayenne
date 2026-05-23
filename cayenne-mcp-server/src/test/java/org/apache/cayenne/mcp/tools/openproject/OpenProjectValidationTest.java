@@ -18,6 +18,7 @@
  ****************************************************************/
 package org.apache.cayenne.mcp.tools.openproject;
 
+import org.apache.cayenne.modeler.pref.PrefsLocator;
 import org.apache.cayenne.mcp.tools.openproject.protocol.OpenProjectErrorCode;
 import org.apache.cayenne.mcp.tools.openproject.protocol.OpenProjectResult;
 import org.junit.jupiter.api.Test;
@@ -28,7 +29,7 @@ import static org.junit.jupiter.api.Assertions.assertNull;
 
 public class OpenProjectValidationTest {
 
-    private final OpenProjectTool tool = new OpenProjectTool();
+    private final OpenProjectTool tool = new OpenProjectTool(new PrefsLocator());
 
     @Test
     public void projectNotFound() {

@@ -19,7 +19,7 @@
 
 package org.apache.cayenne.modeler.pref.adapters;
 
-import org.apache.cayenne.modeler.pref.PreferenceAdapter;
+import org.apache.cayenne.modeler.pref.PrefsAdapter;
 
 import javax.swing.JFileChooser;
 import java.awt.FileDialog;
@@ -28,7 +28,7 @@ import java.awt.event.ComponentEvent;
 import java.io.File;
 import java.util.prefs.Preferences;
 
-public final class FileChooserPrefs extends PreferenceAdapter {
+public final class FileChooserPrefs extends PrefsAdapter {
 
     private static final String PATH_PROPERTY = "path";
 

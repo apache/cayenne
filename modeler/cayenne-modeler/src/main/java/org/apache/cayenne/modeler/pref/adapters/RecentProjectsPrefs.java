@@ -19,7 +19,7 @@
 
 package org.apache.cayenne.modeler.pref.adapters;
 
-import org.apache.cayenne.modeler.pref.PreferenceAdapter;
+import org.apache.cayenne.modeler.pref.PrefsAdapter;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -29,7 +29,7 @@ import java.util.List;
 import java.util.prefs.BackingStoreException;
 import java.util.prefs.Preferences;
 
-public final class RecentProjectsPrefs extends PreferenceAdapter {
+public final class RecentProjectsPrefs extends PrefsAdapter {
 
     private static final Logger LOGGER = LoggerFactory.getLogger(RecentProjectsPrefs.class);
 

@@ -20,9 +20,9 @@
 package org.apache.cayenne.modeler.pref.adapters;
 
 import org.apache.cayenne.CayenneRuntimeException;
-import org.apache.cayenne.modeler.dbconnector.DBConnector;
-import org.apache.cayenne.modeler.dbconnector.DBConnectors;
-import org.apache.cayenne.modeler.pref.PreferenceAdapter;
+import org.apache.cayenne.modeler.pref.dbconnector.DBConnector;
+import org.apache.cayenne.modeler.pref.dbconnector.DBConnectors;
+import org.apache.cayenne.modeler.pref.PrefsAdapter;
 
 import java.util.prefs.BackingStoreException;
 import java.util.prefs.Preferences;
@@ -31,7 +31,7 @@ import java.util.prefs.Preferences;
  * Loads {@link DBConnectors} from the user prefs and binds the registry's
  * change events to the prefs node, so registry mutations are mirrored to disk.
  */
-public class DBConnectorPrefs extends PreferenceAdapter {
+public class DBConnectorPrefs extends PrefsAdapter {
 
     public static final String NODE = "dbConnectors";
 

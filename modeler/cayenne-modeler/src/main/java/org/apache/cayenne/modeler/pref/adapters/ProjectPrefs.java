@@ -52,7 +52,7 @@ import org.apache.cayenne.modeler.event.display.ObjRelationshipDisplayEvent;
 import org.apache.cayenne.modeler.event.display.ProcedureDisplayEvent;
 import org.apache.cayenne.modeler.event.display.ProcedureParameterDisplayEvent;
 import org.apache.cayenne.modeler.event.display.QueryDisplayEvent;
-import org.apache.cayenne.modeler.pref.PreferenceAdapter;
+import org.apache.cayenne.modeler.pref.PrefsAdapter;
 import org.apache.cayenne.modeler.project.ProjectSession;
 import org.apache.cayenne.util.CayenneMapEntry;
 
@@ -65,7 +65,7 @@ import java.util.prefs.Preferences;
  * Binding-style handler for the Modeler's last project selection. Loaded on project
  * open to restore selection, flushed on project close or Modeler close to persist it.
  */
-public final class ProjectPrefs extends PreferenceAdapter {
+public final class ProjectPrefs extends PrefsAdapter {
 
     private static final String EVENT_KEY = "event";
 

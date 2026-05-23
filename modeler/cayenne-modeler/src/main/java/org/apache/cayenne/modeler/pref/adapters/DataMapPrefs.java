@@ -18,12 +18,12 @@
  ****************************************************************/
 package org.apache.cayenne.modeler.pref.adapters;
 
-import org.apache.cayenne.modeler.dbconnector.DBConnector;
-import org.apache.cayenne.modeler.pref.PreferenceAdapter;
+import org.apache.cayenne.modeler.pref.dbconnector.DBConnector;
+import org.apache.cayenne.modeler.pref.PrefsAdapter;
 
 import java.util.prefs.Preferences;
 
-public final class DataMapPrefs extends PreferenceAdapter {
+public final class DataMapPrefs extends PrefsAdapter {
 
     public static final String SUPERCLASS_PACKAGE_PROPERTY = "superclassPackage";
     public static final String DEFAULT_SUPERCLASS_PACKAGE_SUFFIX = "auto";
