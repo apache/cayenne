@@ -69,7 +69,7 @@ import java.util.Collection;
 import java.util.Iterator;
 
 /**
- * Modal wizard for generating the database from a set of DataMaps. Two tabs: SQL options
+ * Modal dialog for generating the database from a set of DataMaps. Two tabs: SQL options
  * (CRUD checkboxes + adapter + previewed SQL) and Tables (per-table include/exclude).
  */
 public class DBGeneratorOptionsDialog extends ProjectDialog {

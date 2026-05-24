@@ -64,6 +64,66 @@ Surface the `summary` to the user verbatim. List the first few `writtenFiles` pa
 
 **Source:** `cayenne-mcp-server/src/main/java/org/apache/cayenne/mcp/tools/cgen/CgenRunTool.java`.
 
+## Tool: `dbimport_run`
+
+Runs Cayenne reverse-engineering (dbimport) for one DataMap. Reads the JDBC connection from the DBConnector that CayenneModeler stored in preferences when the user last ran the reverse-engineering dialog for this DataMap. If the DataMap has a `<reverse-engineering>` block its filters are applied; otherwise the full database schema is imported. Rewrites the DataMap XML on disk with the merged schema.
+
+**Arguments:**
+
+| Name | Type | Required | Description |
+|---|---|---|---|
+| `projectPath` | string | yes | Absolute path to the top-level Cayenne project descriptor (`cayenne-*.xml`), **not** a DataMap file. |
+| `dataMap` | string | yes | Name of the target DataMap as it appears in the `<map name="...">` element of the project descriptor. Not a file path. |
+
+JDBC URL, driver, and credentials are **not** arguments — they come from CayenneModeler preferences. Schema filters come from the DataMap's `<reverse-engineering>` block if present.
+
+**Returns:** JSON object with fields:
+
+```json
+{
+  "status": "imported | up_to_date | validation_failed | error",
+  "summary": {
+    "tokensConsidered": 5,
+    "tokensApplied": 5,
+    "entitiesAdded": 3,
+    "entitiesRemoved": 0,
+    "entitiesModified": 2,
+    "relationshipsAdded": 4
+  },
+  "resolved": {
+    "dataMapFile": "/path/to/datamap.map.xml",
+    "jdbcUrl": "jdbc:postgresql://localhost/mydb",
+    "jdbcDriver": "org.postgresql.Driver",
+    "dbAdapter": "org.apache.cayenne.dba.postgres.PostgresAdapter"
+  },
+  "warnings": [],
+  "validation": {
+    "projectFound": true,
+    "dataMapFound": true,
+    "dbConnectorPresent": true,
+    "jdbcDriverLoadable": true,
+    "jdbcConnectionOpened": true
+  },
+  "error": null
+}
+```
+
+Surface the `summary` to the user. If `status` is `imported`, report entity/relationship counts. If `up_to_date`, nothing changed. Show `warnings` if non-empty; they are `WARN`-level log lines captured from the dbsync engine.
+
+**Failure modes:**
+
+| Error code | Meaning | Remediation |
+|---|---|---|
+| `project_not_found` | `projectPath` not readable | Verify path. |
+| `project_parse_failed` | Not a valid Cayenne project descriptor | Confirm the file is a `cayenne-*.xml`. |
+| `datamap_not_found` | No matching DataMap name; error message lists available names | Correct the `dataMap` argument. |
+| `dbconnector_not_configured` | No DBConnector stored in preferences for this DataMap | Open the Modeler via `open_project`, run the Modeler's reverse-engineering dialog once to save the connection, then re-run `dbimport_run`. |
+| `jdbc_driver_not_loadable` | Driver class not on CayenneModeler's classpath | Open CayenneModeler → Preferences → Classpath, add the JDBC driver jar, save, then re-run. |
+| `jdbc_connection_failed` | Connection could not be opened | Check JDBC URL, credentials, and network access. |
+| `dbimport_runtime_error` | Import started but threw mid-run | Check the error message; `summary` shows counts captured before the failure. |
+
+**Source:** `cayenne-mcp-server/src/main/java/org/apache/cayenne/mcp/tools/dbimport/DbImportRunTool.java`.
+
 ## Tool: `open_project`
 
 Launches CayenneModeler with a project file pre-loaded.
@@ -83,7 +143,7 @@ Launches CayenneModeler with a project file pre-loaded.
 
 **Returns:** JSON object with `status` (`ok` / `error`), and on error a `code` indicating the failure (e.g., `modeler_not_found`, `project_not_found`, `handshake_timeout`).
 
-**When to call:** for reverse-engineering workflows (drives the user through the Modeler's import wizard), bulk visual editing, or when the user explicitly asks to open the Modeler.
+**When to call:** for reverse-engineering workflows (drives the user through the Modeler's import dialog), bulk visual editing, or when the user explicitly asks to open the Modeler.
 
 **Don't call it** as a fallback for simple XML edits — direct edits via the `cayenne-modeling` skill are faster and don't require the user to switch context.
 
@@ -91,7 +151,7 @@ Launches CayenneModeler with a project file pre-loaded.
 
 ## Detecting whether the server is connected
 
-The MCP tools surface in this session under names `mcp__cayenne__cgen_run` and `mcp__cayenne__open_project`. If they are not in the available tools, the server is not registered.
+The MCP tools surface in this session under names `mcp__cayenne__cgen_run`, `mcp__cayenne__open_project`, and `mcp__cayenne__dbimport_run`. If they are not in the available tools, the server is not registered.
 
 When unavailable:
 

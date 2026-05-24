@@ -240,7 +240,7 @@ A separate namespace, embedded directly in the DataMap. See `cgen-config.md` for
 
 ## `<dbImport>` — embedded reverse-engineering config
 
-A separate namespace, used by the Modeler's reverse-engineering wizard to persist its options. See `dbimport-config.md` for fields.
+A separate namespace, used by the Modeler's reverse-engineering dialog to persist its options. See `dbimport-config.md` for fields.
 
 ## Anti-patterns to avoid
 

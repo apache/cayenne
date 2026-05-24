@@ -18,7 +18,7 @@
 -->
 # Reverse-engineering config (`<dbImport>`)
 
-Reference for the options shown by the CayenneModeler reverse-engineering wizard, persisted as a `<dbImport>` block inside a DataMap.
+Reference for the options shown by the CayenneModeler reverse-engineering dialog, persisted as a `<dbImport>` block inside a DataMap.
 
 ## XML shape (persisted inside a DataMap)
 
@@ -87,16 +87,16 @@ Reference for the options shown by the CayenneModeler reverse-engineering wizard
 | `<forceDataMapCatalog>` | boolean | `false` | When `true`, every imported DbEntity is tagged with the DataMap's catalog, overriding the DB's reported value. Use only when the DB catalog reported by JDBC is wrong or noisy. |
 | `<forceDataMapSchema>` | boolean | `false` | Same as above for schema. |
 
-## How the Modeler wizard maps to these fields
+## How the Modeler dialog maps to these fields
 
-Walking the **Tools → Reengineer Database Schema** wizard, the screens correspond to:
+Walking the **Tools → Reengineer Database Schema** dialog, the screens correspond to:
 
 1. **Datasource** — JDBC connection (adapter, driver, URL, user/password). Not stored in `<dbImport>`; it's a one-shot connection.
 2. **Configure** — filter tables/columns/procedures. Maps to `<includeTable>`, `<excludeTable>`, `<tableTypes>`, etc.
 3. **Naming** — `<namingStrategy>`, `<stripFromTableNames>`, `<defaultPackage>`, `<meaningfulPkTables>`.
 4. **Other options** — checkboxes for `skipPrimaryKeyLoading`, `skipRelationshipsLoading`, `forceDataMapCatalog`, `forceDataMapSchema`, `useJava7Types`.
 
-After running the wizard, the chosen settings are persisted as a `<dbImport>` block in the DataMap so subsequent re-imports re-use them.
+After running the dialog, the chosen settings are persisted as a `<dbImport>` block in the DataMap so subsequent re-imports re-use them.
 
 ## Re-running an import
 

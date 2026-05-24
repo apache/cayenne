@@ -85,7 +85,7 @@ import java.util.LinkedList;
 import java.util.List;
 
 /**
- * Modal wizard for altering the database schema to match a DataMap. Two tabs:
+ * Modal dialog for altering the database schema to match a DataMap. Two tabs:
  * Operations (per-token include/exclude via {@link MergerTokenSelector}) and Generated SQL.
  */
 public class MergerOptionsDialog extends ProjectDialog {
