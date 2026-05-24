@@ -25,12 +25,10 @@ import java.security.NoSuchAlgorithmException;
 import java.util.prefs.Preferences;
 
 /**
- * Encodes a file path into a single-segment {@link Preferences} node name. The id has
- * the form {@code <16-hex-sha256>-<sanitized-basename>} and stays under {@link #MAX_LEN}
- * characters, well below {@link Preferences#MAX_NAME_LENGTH}. The original absolute
- * path is meant to be stored alongside the node as a {@code path} value.
+ * Does repeatable encoding of a file path into a single-segment {@link Preferences} node name. The id has
+ * the form {@code <16-hex-sha256>-<sanitized-basename>} and stays under {@link Preferences#MAX_NAME_LENGTH}.
  */
-class PreferenceNodeIds {
+public class PreferenceNodeIds {
 
     static final int MAX_LEN = 60;
     static final int HASH_LEN = 16;
