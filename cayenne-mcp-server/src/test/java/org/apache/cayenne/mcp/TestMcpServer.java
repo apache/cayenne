@@ -10,13 +10,13 @@ import java.util.concurrent.TimeUnit;
 /**
  * Handles the lifecycle of a test in-process MCP server.
  */
-public class InProcessMcpServer {
+public class TestMcpServer {
 
     private final OutputStream outputStream;
     private final InputStream inputStream;
     private final Thread serverThread;
 
-    public static InProcessMcpServer start() {
+    public static TestMcpServer start() {
         try {
             PipedOutputStream clientOut = new PipedOutputStream();
             PipedInputStream serverIn = new PipedInputStream(clientOut);
@@ -29,13 +29,13 @@ public class InProcessMcpServer {
             serverThread.setDaemon(true);
             serverThread.start();
 
-            return new InProcessMcpServer(clientOut, clientIn, serverThread);
+            return new TestMcpServer(clientOut, clientIn, serverThread);
         } catch (IOException e) {
             throw new RuntimeException("Failed to start in-process MCP server", e);
         }
     }
 
-    private InProcessMcpServer(OutputStream outputStream, InputStream inputStream, Thread serverThread) {
+    private TestMcpServer(OutputStream outputStream, InputStream inputStream, Thread serverThread) {
         this.outputStream = outputStream;
         this.inputStream = inputStream;
         this.serverThread = serverThread;

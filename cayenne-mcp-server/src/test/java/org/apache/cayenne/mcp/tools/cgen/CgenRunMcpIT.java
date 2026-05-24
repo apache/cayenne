@@ -18,23 +18,15 @@
  ****************************************************************/
 package org.apache.cayenne.mcp.tools.cgen;
 
-import org.apache.cayenne.mcp.InProcessMcpServer;
-import org.junit.jupiter.api.AfterEach;
+import org.apache.cayenne.mcp.TestMcpClient;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.RegisterExtension;
 import org.junit.jupiter.api.io.TempDir;
-import tools.jackson.databind.JsonNode;
-import tools.jackson.databind.ObjectMapper;
-import tools.jackson.databind.json.JsonMapper;
 
-import java.io.BufferedReader;
-import java.io.BufferedWriter;
 import java.io.IOException;
-import java.io.InputStreamReader;
-import java.io.OutputStreamWriter;
 import java.nio.file.Files;
 import java.nio.file.Path;
-import java.util.concurrent.TimeUnit;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertTrue;
@@ -46,57 +38,34 @@ import static org.junit.jupiter.api.Assertions.assertTrue;
  */
 public class CgenRunMcpIT {
 
-    private static final ObjectMapper MAPPER = JsonMapper.builder().build();
+    @RegisterExtension
+    TestMcpClient client = new TestMcpClient();
 
     @TempDir
     Path tempDir;
 
-    private InProcessMcpServer server;
-    private BufferedWriter writer;
-    private BufferedReader reader;
     private Path projectFile;
     private Path destDir;
 
     @BeforeEach
-    void setUp() throws Exception {
+    void setUp() throws IOException {
         destDir = tempDir.resolve("generated");
         writeFixture("PersonMap", "com.example", destDir, true);
         projectFile = tempDir.resolve("cayenne-project.xml");
-
-        server = InProcessMcpServer.start();
-        writer = new BufferedWriter(new OutputStreamWriter(server.getOutputStream()));
-        reader = new BufferedReader(new InputStreamReader(server.getInputStream()));
-
-        send("""
-                {"jsonrpc":"2.0","id":1,"method":"initialize","params":{\
-                "protocolVersion":"2024-11-05",\
-                "capabilities":{},\
-                "clientInfo":{"name":"test","version":"1.0"}}}""");
-        String initResponse = readLine(5_000);
-        assertTrue(initResponse.contains("\"id\":1"), "initialize response missing: " + initResponse);
-
-        send("""
-                {"jsonrpc":"2.0","method":"notifications/initialized","params":{}}""");
-    }
-
-    @AfterEach
-    void stopServer() throws Exception {
-        writer.close();
-        assertTrue(server.waitFor(10, TimeUnit.SECONDS), "Server thread did not stop after stdin was closed");
     }
 
     @Test
-    public void toolsListIncludesCgenRun() throws Exception {
-        send("""
+    public void toolsListIncludesCgenRun() {
+        client.send("""
                 {"jsonrpc":"2.0","id":2,"method":"tools/list","params":{}}""");
 
-        String response = readLine(5_000);
+        String response = client.readLine(5_000);
         assertTrue(response.contains("\"cgen_run\""), "tools/list missing 'cgen_run': " + response);
     }
 
     @Test
-    public void projectNotFoundReturnsValidationError() throws Exception {
-        send("""
+    public void projectNotFoundReturnsValidationError() {
+        client.send("""
                 {"jsonrpc":"2.0","id":3,"method":"tools/call","params":{\
                 "name":"cgen_run","arguments":{\
                 "projectPath":"/no/such/file.xml","dataMap":"X"}}}""");
@@ -122,12 +91,12 @@ public class CgenRunMcpIT {
                     "code" : "project_not_found",
                     "message" : "No readable file at /no/such/file.xml"
                   }
-                }""", extractPayload(readLine(5_000)));
+                }""", client.readLineAsJson(5_000));
     }
 
     @Test
-    public void generatesFilesOnFirstRun() throws Exception {
-        send(callJson(4, projectFile, "PersonMap"));
+    public void generatesFilesOnFirstRun() {
+        client.sendToolCall(4, "cgen_run", projectFile, "PersonMap");
 
         // JSON-escape backslashes so Windows paths round-trip correctly through Jackson serialization
         String superPath = destDir.resolve("com/example/auto/_Person.java").toAbsolutePath().toString().replace("\\", "\\\\");
@@ -162,15 +131,15 @@ public class CgenRunMcpIT {
                     "destDirWritable" : true
                   },
                   "error" : null
-                }""".formatted(superPath, subPath, destPath), extractPayload(readLine(15_000)));
+                }""".formatted(superPath, subPath, destPath), client.readLineAsJson(15_000));
     }
 
     @Test
-    public void upToDateOnSecondRun() throws Exception {
-        send(callJson(5, projectFile, "PersonMap"));
-        readLine(15_000);
+    public void upToDateOnSecondRun() {
+        client.sendToolCall(5, "cgen_run", projectFile, "PersonMap");
+        client.readLine(15_000);
 
-        send(callJson(6, projectFile, "PersonMap"));
+        client.sendToolCall(6, "cgen_run", projectFile, "PersonMap");
 
         String destPath = destDir.toAbsolutePath().toString().replace("\\", "\\\\");
 
@@ -194,46 +163,7 @@ public class CgenRunMcpIT {
                     "destDirWritable" : true
                   },
                   "error" : null
-                }""".formatted(destPath), extractPayload(readLine(15_000)));
-    }
-    
-    private String extractPayload(String mcpResponse) throws Exception {
-        JsonNode root = MAPPER.readTree(mcpResponse);
-        String text = root.at("/result/content/0/text").asText();
-        JsonNode payload = MAPPER.readTree(text);
-        // Normalize CRLF → LF: Jackson's DefaultPrettyPrinter uses System.lineSeparator()
-        // which is \r\n on Windows, but Java text blocks always use \n.
-        return MAPPER.writerWithDefaultPrettyPrinter().writeValueAsString(payload)
-                .replace("\r\n", "\n");
-    }
-
-    private String callJson(int id, Path project, String dataMap) {
-        String escapedPath = project.toString().replace("\\", "\\\\");
-        return String.format(
-                "{\"jsonrpc\":\"2.0\",\"id\":%d,\"method\":\"tools/call\",\"params\":{" +
-                "\"name\":\"cgen_run\",\"arguments\":{" +
-                "\"projectPath\":\"%s\",\"dataMap\":\"%s\"}}}",
-                id, escapedPath, dataMap);
-    }
-
-    private void send(String json) throws IOException {
-        writer.write(json);
-        writer.newLine();
-        writer.flush();
-    }
-
-    private String readLine(long timeoutMs) throws Exception {
-        long deadline = System.currentTimeMillis() + timeoutMs;
-        while (System.currentTimeMillis() < deadline) {
-            if (reader.ready()) {
-                String line = reader.readLine();
-                if (line != null && !line.isBlank()) {
-                    return line;
-                }
-            }
-            Thread.sleep(20);
-        }
-        throw new AssertionError("No response within " + timeoutMs + "ms");
+                }""".formatted(destPath), client.readLineAsJson(15_000));
     }
 
     private void writeFixture(String mapName, String pkg, Path destDir, boolean makePairs) throws IOException {
