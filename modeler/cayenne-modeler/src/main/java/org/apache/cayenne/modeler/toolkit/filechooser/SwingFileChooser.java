@@ -21,9 +21,18 @@ package org.apache.cayenne.modeler.toolkit.filechooser;
 
 import org.apache.cayenne.modeler.pref.adapters.FileChooserPrefs;
 
+import javax.swing.JButton;
+import javax.swing.JDialog;
 import javax.swing.JFileChooser;
+import javax.swing.JOptionPane;
+import javax.swing.JPanel;
+import javax.swing.SwingUtilities;
 import javax.swing.filechooser.FileFilter;
+import java.awt.BorderLayout;
 import java.awt.Component;
+import java.awt.Dialog;
+import java.awt.FlowLayout;
+import java.awt.Window;
 import java.io.File;
 import java.util.function.Consumer;
 
@@ -55,13 +64,12 @@ public class SwingFileChooser implements CMFileChooser {
 
     @Override
     public File openDir(File initialDir) {
-        return showOpen(JFileChooser.DIRECTORIES_ONLY,
-                c -> { if (initialDir != null) c.setCurrentDirectory(initialDir); }, null);
+        return showOpenDir(parent, title, c -> { if (initialDir != null) c.setCurrentDirectory(initialDir); });
     }
 
     @Override
     public File openDir(FileChooserPrefs prefs) {
-        return showOpen(JFileChooser.DIRECTORIES_ONLY, prefs::bind, null);
+        return showOpenDir(parent, title, prefs::bind);
     }
 
     @Override
@@ -71,17 +79,73 @@ public class SwingFileChooser implements CMFileChooser {
 
     @Override
     public File saveDir(File initialDir) {
+        return showOpenDir(parent, title, c -> { if (initialDir != null) c.setCurrentDirectory(initialDir); });
+    }
+
+    // setControlButtonsAreShown(false) + custom buttons: on macOS Aqua L&F the built-in
+    // approve button is continuously re-disabled when nothing is selected (e.g. after
+    // navigating into a directory). The custom dialog owns its own always-enabled "Select"
+    // button and a "New Folder" button, and is used on all platforms for consistency.
+    public static File showOpenDir(Component parent, String title, Consumer<JFileChooser> init) {
         JFileChooser chooser = new JFileChooser();
         chooser.setFileSelectionMode(JFileChooser.DIRECTORIES_ONLY);
-        if (initialDir != null) {
-            chooser.setCurrentDirectory(initialDir);
+        chooser.setControlButtonsAreShown(false);
+        init.accept(chooser);
+
+        boolean[] approved = {false};
+        JButton selectBtn = new JButton("Select");
+        JButton cancelBtn = new JButton("Cancel");
+        JButton newFolderBtn = new JButton("New Folder");
+
+        selectBtn.addActionListener(e -> {
+            approved[0] = true;
+            SwingUtilities.getWindowAncestor(chooser).dispose();
+        });
+        cancelBtn.addActionListener(e -> SwingUtilities.getWindowAncestor(chooser).dispose());
+        newFolderBtn.addActionListener(e -> {
+            String name = JOptionPane.showInputDialog(SwingUtilities.getWindowAncestor(chooser),
+                    "Folder name:", "New Folder", JOptionPane.PLAIN_MESSAGE);
+            if (name != null && !name.isBlank()) {
+                File newDir = new File(chooser.getCurrentDirectory(), name);
+                if (newDir.mkdir()) {
+                    chooser.setCurrentDirectory(newDir);
+                } else {
+                    JOptionPane.showMessageDialog(SwingUtilities.getWindowAncestor(chooser),
+                            "Could not create folder \"" + name + "\".", "Error", JOptionPane.ERROR_MESSAGE);
+                }
+            }
+        });
+        chooser.addActionListener(e -> {
+            if (JFileChooser.APPROVE_SELECTION.equals(e.getActionCommand())) {
+                approved[0] = true;
+            }
+            SwingUtilities.getWindowAncestor(chooser).dispose();
+        });
+
+        JPanel left = new JPanel(new FlowLayout(FlowLayout.LEADING));
+        left.add(newFolderBtn);
+        JPanel right = new JPanel(new FlowLayout(FlowLayout.TRAILING));
+        right.add(cancelBtn);
+        right.add(selectBtn);
+        JPanel buttons = new JPanel(new BorderLayout());
+        buttons.add(left, BorderLayout.WEST);
+        buttons.add(right, BorderLayout.EAST);
+
+        Window owner = (parent instanceof Window w) ? w : (parent != null ? SwingUtilities.getWindowAncestor(parent) : null);
+        JDialog dialog = new JDialog(owner, title != null ? title : "", Dialog.ModalityType.APPLICATION_MODAL);
+        dialog.setDefaultCloseOperation(JDialog.DISPOSE_ON_CLOSE);
+        dialog.add(chooser, BorderLayout.CENTER);
+        dialog.add(buttons, BorderLayout.SOUTH);
+        dialog.getRootPane().setDefaultButton(selectBtn);
+        dialog.pack();
+        dialog.setLocationRelativeTo(parent);
+        dialog.setVisible(true);
+
+        if (!approved[0]) {
+            return null;
         }
-        if (title != null) {
-            chooser.setDialogTitle(title);
-        }
-        return chooser.showDialog(parent, "Select") == JFileChooser.APPROVE_OPTION
-                ? chooser.getSelectedFile()
-                : null;
+        File selected = chooser.getSelectedFile();
+        return selected != null ? selected : chooser.getCurrentDirectory();
     }
 
     private File showOpen(int mode, Consumer<JFileChooser> init, FileFilter filter) {

@@ -21,16 +21,11 @@ package org.apache.cayenne.modeler.platform.mac;
 
 import org.apache.cayenne.modeler.pref.adapters.FileChooserPrefs;
 import org.apache.cayenne.modeler.toolkit.filechooser.CMFileChooser;
+import org.apache.cayenne.modeler.toolkit.filechooser.SwingFileChooser;
 
-import javax.swing.JButton;
-import javax.swing.JFileChooser;
-import javax.swing.SwingUtilities;
 import javax.swing.filechooser.FileFilter;
-import java.awt.Component;
-import java.awt.Container;
 import java.awt.FileDialog;
 import java.awt.Frame;
-import java.awt.event.HierarchyEvent;
 import java.io.File;
 import java.io.FilenameFilter;
 import java.util.function.Consumer;
@@ -53,7 +48,9 @@ public class MacFileChooser implements CMFileChooser {
     @Override
     public File openFile(File initialDir, FileFilter filter) {
         return showOpen(toFilenameFilter(filter),
-                fd -> { if (initialDir != null) fd.setDirectory(initialDir.getAbsolutePath()); });
+                fd -> {
+                    if (initialDir != null) fd.setDirectory(initialDir.getAbsolutePath());
+                });
     }
 
     @Override
@@ -63,12 +60,14 @@ public class MacFileChooser implements CMFileChooser {
 
     @Override
     public File openDir(File initialDir) {
-        return showOpenDir(c -> { if (initialDir != null) c.setCurrentDirectory(initialDir); });
+        // must use custom JFileChooser, as MacOS native dialog doesn't allow to block file name selection
+        return SwingFileChooser.showOpenDir(parent, title, c -> { if (initialDir != null) c.setCurrentDirectory(initialDir); });
     }
 
     @Override
     public File openDir(FileChooserPrefs prefs) {
-        return showOpenDir(prefs::bind);
+        // must use custom JFileChooser, as MacOS native dialog doesn't allow to block file name selection
+        return SwingFileChooser.showOpenDir(parent, title, prefs::bind);
     }
 
     @Override
@@ -78,7 +77,8 @@ public class MacFileChooser implements CMFileChooser {
 
     @Override
     public File saveDir(File initialDir) {
-        return showOpenDir(c -> { if (initialDir != null) c.setCurrentDirectory(initialDir); });
+        // must use custom JFileChooser, as MacOS native dialog doesn't allow to block file name selection
+        return SwingFileChooser.showOpenDir(parent, title, c -> { if (initialDir != null) c.setCurrentDirectory(initialDir); });
     }
 
     private File showOpen(FilenameFilter fnFilter, Consumer<FileDialog> init) {
@@ -102,64 +102,6 @@ public class MacFileChooser implements CMFileChooser {
         String file = fd.getFile();
         return file != null ? new File(fd.getDirectory(), file) : null;
     }
-
-    private File showOpenDir(Consumer<JFileChooser> init) {
-
-        // JFileChooser instead of FileDialog: apple.awt.fileDialogForDirectories makes
-        // FileDialog pick directories, but the button is labeled "Load" with no way to
-        // override it. JFileChooser shows "Open" and lets us set a dialog title.
-
-        // FILES_AND_DIRECTORIES + directory filter instead of DIRECTORIES_ONLY: on macOS
-        // Aqua L&F the approval button stays disabled in DIRECTORIES_ONLY mode.
-        JFileChooser chooser = new JFileChooser();
-        chooser.setFileSelectionMode(JFileChooser.FILES_AND_DIRECTORIES);
-        chooser.setFileFilter(DIRS_ONLY_FILTER);
-
-        // AquaFileChooserUI disables the approve button when the user navigates into a
-        // directory with nothing selected. Directly enabling buttons in the component tree
-        // (via invokeLater, after Aqua's own listener runs) keeps it always active so the
-        // user can confirm the current directory without selecting a child item.
-        // No state mutations — setSelectedFile(dir) makes Aqua navigate into that dir,
-        // firing DIRECTORY_CHANGED again and causing an infinite loop.
-        chooser.addPropertyChangeListener(e -> {
-            String prop = e.getPropertyName();
-            if (JFileChooser.DIRECTORY_CHANGED_PROPERTY.equals(prop)
-                    || JFileChooser.SELECTED_FILE_CHANGED_PROPERTY.equals(prop)) {
-                SwingUtilities.invokeLater(() -> enableButtons(chooser));
-            }
-        });
-
-        chooser.addHierarchyListener(e -> {
-            if ((e.getChangeFlags() & HierarchyEvent.SHOWING_CHANGED) != 0 && chooser.isShowing()) {
-                enableButtons(chooser);
-            }
-        });
-        
-        init.accept(chooser);
-        if (title != null) {
-            chooser.setDialogTitle(title);
-        }
-        if (chooser.showOpenDialog(parent) != JFileChooser.APPROVE_OPTION) {
-            return null;
-        }
-        File selected = chooser.getSelectedFile();
-        return selected != null ? selected : chooser.getCurrentDirectory();
-    }
-
-    private static void enableButtons(Container container) {
-        for (Component c : container.getComponents()) {
-            if (c instanceof JButton btn) {
-                btn.setEnabled(true);
-            } else if (c instanceof Container cont) {
-                enableButtons(cont);
-            }
-        }
-    }
-
-    private static final FileFilter DIRS_ONLY_FILTER = new FileFilter() {
-        @Override public boolean accept(File f) { return f.isDirectory(); }
-        @Override public String getDescription() { return "Directories"; }
-    };
 
     private static FilenameFilter toFilenameFilter(FileFilter filter) {
         return filter != null ? (dir, name) -> filter.accept(new File(dir, name)) : null;
