@@ -27,10 +27,9 @@ package org.apache.cayenne.mcp.tools.dbimport.protocol;
 public record DbImportValidation(
         Boolean projectFound,
         Boolean dataMapFound,
-        Boolean reverseEngineeringConfigPresent,
         Boolean dbConnectorPresent,
         Boolean jdbcDriverLoadable,
         Boolean jdbcConnectionOpened
 ) {
-    public static final DbImportValidation ALL_PASSED = new DbImportValidation(true, true, true, true, true, true);
+    public static final DbImportValidation ALL_PASSED = new DbImportValidation(true, true, true, true, true);
 }

@@ -70,7 +70,6 @@ public class DbImportRunValidationTest {
         assertEquals(DbImportErrorCode.project_not_found, result.error().code());
         assertFalse(result.validation().projectFound());
         assertNull(result.validation().dataMapFound());
-        assertNull(result.validation().reverseEngineeringConfigPresent());
         assertNull(result.validation().dbConnectorPresent());
         assertNull(result.validation().jdbcDriverLoadable());
         assertNull(result.validation().jdbcConnectionOpened());
@@ -89,7 +88,6 @@ public class DbImportRunValidationTest {
         assertEquals(DbImportErrorCode.project_parse_failed, result.error().code());
         assertTrue(result.validation().projectFound());
         assertNull(result.validation().dataMapFound());
-        assertNull(result.validation().reverseEngineeringConfigPresent());
         assertNull(result.validation().dbConnectorPresent());
         assertNull(result.validation().jdbcDriverLoadable());
         assertNull(result.validation().jdbcConnectionOpened());
@@ -108,7 +106,6 @@ public class DbImportRunValidationTest {
         assertTrue(result.error().message().contains("TestMap"), "Available maps should be listed");
         assertTrue(result.validation().projectFound());
         assertFalse(result.validation().dataMapFound());
-        assertNull(result.validation().reverseEngineeringConfigPresent());
         assertNull(result.validation().dbConnectorPresent());
         assertNull(result.validation().jdbcDriverLoadable());
         assertNull(result.validation().jdbcConnectionOpened());
@@ -116,17 +113,19 @@ public class DbImportRunValidationTest {
     }
 
     @Test
-    public void reverseEngineeringConfigMissing() throws URISyntaxException {
-        String projectPath = fixtureProject("no-dbimport");
+    public void noReverseEngineeringProceedsThroughToConnectorCheck(@TempDir Path tmp) throws IOException {
+        Path projectFile = copyFixture("no-dbimport", tmp);
+        Preferences isolatedRoot = isolatedPrefsRoot();
 
-        DbImportRunResult result = tool.run(projectPath, "TestMap");
+        DbImportRunTool isolatedTool = new DbImportRunTool(new PrefsLocator(isolatedRoot));
+        DbImportRunResult result = isolatedTool.run(projectFile.toString(), "TestMap");
 
+        // Should not fail on missing reverse-engineering — proceeds to connector check instead
         assertEquals("validation_failed", result.status());
-        assertEquals(DbImportErrorCode.reverse_engineering_config_missing, result.error().code());
+        assertEquals(DbImportErrorCode.dbconnector_not_configured, result.error().code());
         assertTrue(result.validation().projectFound());
         assertTrue(result.validation().dataMapFound());
-        assertFalse(result.validation().reverseEngineeringConfigPresent());
-        assertNull(result.validation().dbConnectorPresent());
+        assertFalse(result.validation().dbConnectorPresent());
         assertNull(result.validation().jdbcDriverLoadable());
         assertNull(result.validation().jdbcConnectionOpened());
         assertNoCredentialsInResult(result);
@@ -145,7 +144,6 @@ public class DbImportRunValidationTest {
         assertEquals(DbImportErrorCode.dbconnector_not_configured, result.error().code());
         assertTrue(result.validation().projectFound());
         assertTrue(result.validation().dataMapFound());
-        assertTrue(result.validation().reverseEngineeringConfigPresent());
         assertFalse(result.validation().dbConnectorPresent());
         assertNull(result.validation().jdbcDriverLoadable());
         assertNull(result.validation().jdbcConnectionOpened());

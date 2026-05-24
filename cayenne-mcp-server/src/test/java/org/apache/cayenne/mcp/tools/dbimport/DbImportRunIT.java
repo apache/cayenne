@@ -115,7 +115,6 @@ public class DbImportRunIT {
 
         assertTrue(result.validation().projectFound());
         assertTrue(result.validation().dataMapFound());
-        assertTrue(result.validation().reverseEngineeringConfigPresent());
         assertTrue(result.validation().dbConnectorPresent());
         assertTrue(result.validation().jdbcDriverLoadable());
         assertTrue(result.validation().jdbcConnectionOpened());

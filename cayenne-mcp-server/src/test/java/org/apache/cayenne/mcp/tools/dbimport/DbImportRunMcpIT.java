@@ -144,7 +144,6 @@ public class DbImportRunMcpIT {
                   "validation" : {
                     "projectFound" : false,
                     "dataMapFound" : null,
-                    "reverseEngineeringConfigPresent" : null,
                     "dbConnectorPresent" : null,
                     "jdbcDriverLoadable" : null,
                     "jdbcConnectionOpened" : null
@@ -184,7 +183,6 @@ public class DbImportRunMcpIT {
                   "validation" : {
                     "projectFound" : true,
                     "dataMapFound" : true,
-                    "reverseEngineeringConfigPresent" : true,
                     "dbConnectorPresent" : true,
                     "jdbcDriverLoadable" : true,
                     "jdbcConnectionOpened" : true
@@ -225,7 +223,6 @@ public class DbImportRunMcpIT {
                   "validation" : {
                     "projectFound" : true,
                     "dataMapFound" : true,
-                    "reverseEngineeringConfigPresent" : true,
                     "dbConnectorPresent" : true,
                     "jdbcDriverLoadable" : true,
                     "jdbcConnectionOpened" : true

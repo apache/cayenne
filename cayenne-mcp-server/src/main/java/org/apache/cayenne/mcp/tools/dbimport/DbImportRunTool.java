@@ -22,13 +22,11 @@ import io.modelcontextprotocol.json.McpJsonMapper;
 import io.modelcontextprotocol.server.McpServerFeatures;
 import io.modelcontextprotocol.spec.McpSchema;
 import org.apache.cayenne.configuration.DataChannelDescriptor;
-import org.apache.cayenne.configuration.xml.DataChannelMetaData;
 import org.apache.cayenne.datasource.DriverDataSource;
 import org.apache.cayenne.dbsync.DbSyncModule;
 import org.apache.cayenne.dbsync.reverse.configuration.ToolsModule;
 import org.apache.cayenne.dbsync.reverse.dbimport.DbImportConfiguration;
 import org.apache.cayenne.dbsync.reverse.dbimport.DbImportModule;
-import org.apache.cayenne.dbsync.reverse.dbimport.ReverseEngineering;
 import org.apache.cayenne.di.DIBootstrap;
 import org.apache.cayenne.di.Injector;
 import org.apache.cayenne.map.DataMap;
@@ -68,9 +66,10 @@ import java.util.stream.Collectors;
 
 /**
  * MCP tool that runs Cayenne dbimport for a single DataMap inside a Cayenne project.
- * Reads reverse-engineering filter config from the DataMap's {@code <reverse-engineering>}
- * block and JDBC connection info from the DBConnector stored in CayenneModeler preferences
- * for this DataMap. Returns a structured JSON summary of what changed.
+ * Reads JDBC connection info from the DBConnector stored in CayenneModeler preferences for
+ * this DataMap. If the DataMap has a {@code <reverse-engineering>} block its filters are
+ * applied; otherwise the full database schema is imported. Returns a structured JSON summary
+ * of what changed.
  *
  * @since 5.0
  */
@@ -106,11 +105,12 @@ public class DbImportRunTool {
                 NAME,
                 null,
                 """
-                        Run Cayenne dbimport for a named DataMap. Reads reverse-engineering filters \
-                        from the DataMap's <reverse-engineering> block and JDBC connection from the \
-                        DBConnector that CayenneModeler stored for this DataMap. Returns token-count \
-                        summary and resolved connection metadata; actual schema changes are written \
-                        to the DataMap XML on disk.""",
+                        Run Cayenne dbimport for a named DataMap. Reads JDBC connection from the \
+                        DBConnector stored for this DataMap in CayenneModeler preferences. If the \
+                        DataMap has a <reverse-engineering> block its filters are applied; otherwise \
+                        the full database schema is imported. Returns token-count summary and \
+                        resolved connection metadata; actual schema changes are written to the \
+                        DataMap XML on disk.""",
                 new McpSchema.JsonSchema(
                         "object",
                         Map.of(
@@ -157,7 +157,7 @@ public class DbImportRunTool {
         if (!Files.isReadable(projectFile)) {
             return validationFailed(DbImportErrorCode.project_not_found,
                     "No readable file at %s".formatted(projectPath),
-                    new DbImportValidation(false, null, null, null, null, null));
+                    new DbImportValidation(false, null, null, null, null));
         }
 
         // Step 2 — parses as Cayenne project?
@@ -170,7 +170,7 @@ public class DbImportRunTool {
         } catch (Exception e) {
             return validationFailed(DbImportErrorCode.project_parse_failed,
                     "Cayenne project loader rejected the descriptor: %s".formatted(e.getMessage()),
-                    new DbImportValidation(true, null, null, null, null, null));
+                    new DbImportValidation(true, null, null, null, null));
         }
 
         // Step 3 — DataMap present?
@@ -184,23 +184,13 @@ public class DbImportRunTool {
             return validationFailed(DbImportErrorCode.datamap_not_found,
                     "Project loaded successfully but contains no DataMap named '%s'. Available DataMaps: %s."
                             .formatted(dataMapName, available),
-                    new DbImportValidation(true, false, null, null, null, null));
-        }
-
-        // Step 4 — <reverse-engineering> config present?
-        DataChannelMetaData metaData = injector.getInstance(DataChannelMetaData.class);
-        ReverseEngineering reverseEngineering = metaData.get(dataMap, ReverseEngineering.class);
-        if (reverseEngineering == null) {
-            return validationFailed(DbImportErrorCode.reverse_engineering_config_missing,
-                    "DataMap '%s' has no <reverse-engineering> configuration. Configure dbimport for this DataMap in CayenneModeler before invoking the tool."
-                            .formatted(dataMapName),
-                    new DbImportValidation(true, true, false, null, null, null));
+                    new DbImportValidation(true, false, null, null, null));
         }
 
         // Resolve DataMap file path for preference node lookup
         Path dataMapFile = resolveDataMapFile(dataMap);
 
-        // Step 5 — DBConnector stored in preferences?
+        // Step 4 — DBConnector stored in preferences?
         String dataMapId = PreferenceNodeIds.idForPath(dataMapFile.toAbsolutePath().toString());
         DBConnector connector = new DataMapPrefs(prefsLocator.dataMapNode(dataMapId)).getConnector();
         if (connector == null) {
@@ -211,7 +201,7 @@ public class DbImportRunTool {
                             choose 'Reengineer Database Schema…', and pick a connection — \
                             its values will be saved to this DataMap's preferences.\
                             """.formatted(dataMapName, projectPath),
-                    new DbImportValidation(true, true, true, false, null, null));
+                    new DbImportValidation(true, true, false, null, null));
         }
 
         DbImportResolved resolved = new DbImportResolved(
@@ -221,7 +211,7 @@ public class DbImportRunTool {
                 connector.getDbAdapter()
         );
 
-        // Step 6 — JDBC driver loadable from Preferences → Classpath?
+        // Step 5 — JDBC driver loadable from Preferences → Classpath?
         ClassLoader driverCl = buildDriverClassLoader();
         Driver driver;
         try {
@@ -230,17 +220,17 @@ public class DbImportRunTool {
             return validationFailed(DbImportErrorCode.jdbc_driver_not_loadable,
                     "JDBC driver class '%s' could not be loaded. In CayenneModeler, open Preferences → Classpath, add the driver jar, then re-run — the MCP server reads the classpath fresh on each call."
                             .formatted(connector.getJdbcDriver()),
-                    new DbImportValidation(true, true, true, true, false, null),
+                    new DbImportValidation(true, true, true, false, null),
                     resolved);
         } catch (Exception e) {
             return validationFailed(DbImportErrorCode.jdbc_driver_not_loadable,
                     "JDBC driver class '%s' could not be instantiated: %s"
                             .formatted(connector.getJdbcDriver(), e.getMessage()),
-                    new DbImportValidation(true, true, true, true, false, null),
+                    new DbImportValidation(true, true, true, false, null),
                     resolved);
         }
 
-        // Step 7 — JDBC connection opens?
+        // Step 6 — JDBC connection opens?
         Connection conn;
         try {
             conn = new DriverDataSource(
@@ -254,7 +244,7 @@ public class DbImportRunTool {
             return validationFailed(DbImportErrorCode.jdbc_connection_failed,
                     "Could not open JDBC connection to '%s' as '%s': %s%s."
                             .formatted(connector.getUrl(), connector.getUserName(), e.getMessage(), sqlState),
-                    new DbImportValidation(true, true, true, true, true, false),
+                    new DbImportValidation(true, true, true, true, false),
                     resolved);
         }
 

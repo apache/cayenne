@@ -64,7 +64,7 @@ Both fields are required.
 
 ## `dbimport_run`
 
-Runs Cayenne reverse-engineering (dbimport) for a named DataMap. Reads the `<reverse-engineering>` filter config from the DataMap XML and reads JDBC connection info from the DBConnector that CayenneModeler stored in preferences for this DataMap. Rewrites the DataMap XML on disk with the merged schema.
+Runs Cayenne reverse-engineering (dbimport) for a named DataMap. Reads JDBC connection info from the DBConnector that CayenneModeler stored in preferences for this DataMap. If the DataMap has a `<reverse-engineering>` block its filters are applied; otherwise the full database schema is imported. Rewrites the DataMap XML on disk with the merged schema.
 
 ### Input
 
@@ -75,7 +75,7 @@ Runs Cayenne reverse-engineering (dbimport) for a named DataMap. Reads the `<rev
 }
 ```
 
-Both fields are required. JDBC URL, driver, credentials, and schema filters are not inputs — they come from CayenneModeler preferences and the DataMap's `<reverse-engineering>` block respectively.
+Both fields are required. JDBC URL, driver, and credentials are not inputs — they come from CayenneModeler preferences. Schema filters come from the DataMap's `<reverse-engineering>` block if present.
 
 ### Output
 
@@ -98,15 +98,14 @@ Both fields are required. JDBC URL, driver, credentials, and schema filters are 
   },
   "warnings": ["string (captured WARN-level log lines from org.apache.cayenne.dbsync)"],
   "validation": {
-    "projectFound":                    true,
-    "dataMapFound":                    true,
-    "reverseEngineeringConfigPresent": true,
-    "dbConnectorPresent":              true,
-    "jdbcDriverLoadable":              true,
-    "jdbcConnectionOpened":            true
+    "projectFound":       true,
+    "dataMapFound":       true,
+    "dbConnectorPresent": true,
+    "jdbcDriverLoadable": true,
+    "jdbcConnectionOpened": true
   },
   "error": {
-    "code":    "project_not_found | project_parse_failed | datamap_not_found | reverse_engineering_config_missing | dbconnector_not_configured | jdbc_driver_not_loadable | jdbc_connection_failed | dbimport_runtime_error",
+    "code":    "project_not_found | project_parse_failed | datamap_not_found | dbconnector_not_configured | jdbc_driver_not_loadable | jdbc_connection_failed | dbimport_runtime_error",
     "message": "string"
   }
 }
@@ -119,8 +118,8 @@ Both fields are required. JDBC URL, driver, credentials, and schema filters are 
 - `error` — validation passed but dbimport threw mid-run; `summary` reflects counters captured before the failure
 
 `resolved` notes:
-- Populated as soon as the connector is resolved (validation step 5), so it is present even on `jdbc_driver_not_loadable` and `jdbc_connection_failed` failures.
-- `null` only when validation fails before the connector is read (steps 1–4).
+- Populated as soon as the connector is resolved (validation step 4), so it is present even on `jdbc_driver_not_loadable` and `jdbc_connection_failed` failures.
+- `null` only when validation fails before the connector is read (steps 1–3).
 - Never contains `userName` or `password`.
 
 `summary` notes:

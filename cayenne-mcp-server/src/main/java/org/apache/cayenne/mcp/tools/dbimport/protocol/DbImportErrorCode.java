@@ -22,7 +22,6 @@ public enum DbImportErrorCode {
     project_not_found,
     project_parse_failed,
     datamap_not_found,
-    reverse_engineering_config_missing,
     dbconnector_not_configured,
     jdbc_driver_not_loadable,
     jdbc_connection_failed,
