@@ -28,6 +28,7 @@ import org.apache.cayenne.dbsync.reverse.dbimport.DbImportConfiguration;
 import org.apache.cayenne.dbsync.reverse.dbimport.DbImportModule;
 import org.apache.cayenne.di.DIBootstrap;
 import org.apache.cayenne.di.Injector;
+import org.apache.cayenne.gen.xml.CgenExtension;
 import org.apache.cayenne.map.DataMap;
 import org.apache.cayenne.modeler.pref.PreferenceNodeIds;
 import org.apache.cayenne.modeler.pref.PrefsLocator;
@@ -45,6 +46,7 @@ import org.apache.cayenne.mcp.tools.dbimport.protocol.DbImportValidation;
 import org.apache.cayenne.project.Project;
 import org.apache.cayenne.project.ProjectLoader;
 import org.apache.cayenne.project.ProjectModule;
+import org.apache.cayenne.project.extension.validation.ValidationExtension;
 import org.apache.cayenne.resource.URLResource;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -84,13 +86,16 @@ public class DbImportRunTool {
 
     public DbImportRunTool(PrefsLocator prefsLocator) {
         this.prefsLocator = prefsLocator;
+        // TODO CAY-2950: unknown extensions should be preserved via blob roundtrip instead of
+        //  requiring each extension to be explicitly registered here
         this.injector = DIBootstrap.createInjector(
                 new DbSyncModule(),
                 new ToolsModule(LOGGER),
                 new DbImportModule(),
                 new ProjectModule(),
                 new McpProjectLoaderModule(),
-                binder -> binder.bind(InstrumentedDbImportAction.class).to(InstrumentedDbImportAction.class)
+                b -> ProjectModule.extend(b).addExtension(CgenExtension.class).addExtension(ValidationExtension.class),
+                b -> b.bind(InstrumentedDbImportAction.class).to(InstrumentedDbImportAction.class)
         );
     }
 

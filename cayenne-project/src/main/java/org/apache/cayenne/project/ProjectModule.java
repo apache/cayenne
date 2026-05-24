@@ -37,8 +37,8 @@ import org.apache.cayenne.project.validation.DefaultProjectValidator;
 import org.apache.cayenne.project.validation.ProjectValidator;
 
 /**
- * A dependency injection (DI) module contributing configuration related
- * to Cayenne mapping project manipulation to a DI container.
+ * A dependency injection (DI) module contributing configuration related to Cayenne mapping project manipulation to a
+ * DI container.
  *
  * @since 4.0
  */

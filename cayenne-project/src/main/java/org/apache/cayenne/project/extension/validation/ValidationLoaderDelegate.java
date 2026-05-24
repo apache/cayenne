@@ -16,36 +16,31 @@
  *  specific language governing permissions and limitations
  *  under the License.
  ****************************************************************/
-package org.apache.cayenne.modeler.service.validator.extension;
+package org.apache.cayenne.project.extension.validation;
 
-import org.apache.cayenne.configuration.ConfigurationNodeVisitor;
 import org.apache.cayenne.configuration.xml.DataChannelMetaData;
+import org.apache.cayenne.configuration.xml.NamespaceAwareNestedTagHandler;
 import org.apache.cayenne.di.Inject;
-import org.apache.cayenne.project.Project;
-import org.apache.cayenne.project.extension.BaseNamingDelegate;
 import org.apache.cayenne.project.extension.LoaderDelegate;
-import org.apache.cayenne.project.extension.ProjectExtension;
-import org.apache.cayenne.project.extension.SaverDelegate;
 
-public class ValidationExtension implements ProjectExtension {
+public class ValidationLoaderDelegate implements LoaderDelegate {
 
-    static final String NAMESPACE = "http://cayenne.apache.org/schema/" + Project.VERSION + "/validation";
+    private final DataChannelMetaData metaData;
 
-    @Inject
-    protected DataChannelMetaData metadata;
-
-    @Override
-    public LoaderDelegate createLoaderDelegate() {
-        return new ValidationLoaderDelegate(metadata);
+    ValidationLoaderDelegate(@Inject DataChannelMetaData metaData) {
+        this.metaData = metaData;
     }
 
     @Override
-    public SaverDelegate createSaverDelegate() {
-        return new ValidationSaverDelegate(metadata);
+    public String getTargetNamespace() {
+        return ValidationExtension.NAMESPACE;
     }
 
     @Override
-    public ConfigurationNodeVisitor<String> createNamingDelegate() {
-        return new BaseNamingDelegate();
+    public NamespaceAwareNestedTagHandler createHandler(NamespaceAwareNestedTagHandler parent, String tag) {
+        if (ValidationConfigHandler.CONFIG_TAG.equals(tag)) {
+            return new ValidationConfigHandler(parent, metaData);
+        }
+        return null;
     }
 }
