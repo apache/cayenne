@@ -22,7 +22,6 @@ import io.modelcontextprotocol.json.McpJsonMapper;
 import io.modelcontextprotocol.server.McpServerFeatures;
 import io.modelcontextprotocol.spec.McpSchema;
 import org.apache.cayenne.configuration.DataChannelDescriptor;
-import org.apache.cayenne.datasource.DriverDataSource;
 import org.apache.cayenne.dbsync.DbSyncModule;
 import org.apache.cayenne.dbsync.reverse.configuration.ToolsModule;
 import org.apache.cayenne.dbsync.reverse.dbimport.DbImportConfiguration;
@@ -55,8 +54,6 @@ import java.net.URL;
 import java.net.URLClassLoader;
 import java.nio.file.Files;
 import java.nio.file.Path;
-import java.sql.Connection;
-import java.sql.Driver;
 import java.sql.SQLException;
 import java.util.List;
 import java.util.Map;
@@ -211,44 +208,12 @@ public class DbImportRunTool {
                 connector.getDbAdapter()
         );
 
-        // Step 5 — JDBC driver loadable from Preferences → Classpath?
+        // Set the thread context classloader so DefaultClassLoaderManager (used by
+        // DriverDataSourceFactory → AdhocObjectFactory) picks up the driver JARs from preferences.
+        // Driver loading and connection failures surface as exceptions from action.execute() below.
         ClassLoader driverCl = buildDriverClassLoader();
-        Driver driver;
-        try {
-            driver = (Driver) driverCl.loadClass(connector.getJdbcDriver()).getDeclaredConstructor().newInstance();
-        } catch (ClassNotFoundException e) {
-            return validationFailed(DbImportErrorCode.jdbc_driver_not_loadable,
-                    "JDBC driver class '%s' could not be loaded. In CayenneModeler, open Preferences → Classpath, add the driver jar, then re-run — the MCP server reads the classpath fresh on each call."
-                            .formatted(connector.getJdbcDriver()),
-                    new DbImportValidation(true, true, true, false, null),
-                    resolved);
-        } catch (Exception e) {
-            return validationFailed(DbImportErrorCode.jdbc_driver_not_loadable,
-                    "JDBC driver class '%s' could not be instantiated: %s"
-                            .formatted(connector.getJdbcDriver(), e.getMessage()),
-                    new DbImportValidation(true, true, true, false, null),
-                    resolved);
-        }
-
-        // Step 6 — JDBC connection opens?
-        Connection conn;
-        try {
-            conn = new DriverDataSource(
-                    driver,
-                    connector.getUrl(),
-                    connector.getUserName(),
-                    connector.getPassword()).getConnection();
-
-        } catch (SQLException e) {
-            String sqlState = e.getSQLState() != null ? " [SQLState: %s]".formatted(e.getSQLState()) : "";
-            return validationFailed(DbImportErrorCode.jdbc_connection_failed,
-                    "Could not open JDBC connection to '%s' as '%s': %s%s."
-                            .formatted(connector.getUrl(), connector.getUserName(), e.getMessage(), sqlState),
-                    new DbImportValidation(true, true, true, true, false),
-                    resolved);
-        }
-
-        // All validation passed — run dbimport
+        ClassLoader previousCl = Thread.currentThread().getContextClassLoader();
+        Thread.currentThread().setContextClassLoader(driverCl);
         Supplier<List<String>> stopCapture = McpLoggingHandler.startCapture("org.apache.cayenne.dbsync");
         List<String> warnings;
         try {
@@ -263,16 +228,29 @@ public class DbImportRunTool {
             return new DbImportRunResult(status, summary, resolved, warnings, DbImportValidation.ALL_PASSED, null);
         } catch (Exception e) {
             warnings = stopCapture.get();
+            if (hasCauseOfType(e, ClassNotFoundException.class)) {
+                return validationFailed(DbImportErrorCode.jdbc_driver_not_loadable,
+                        "JDBC driver class '%s' could not be loaded. In CayenneModeler, open Preferences → Classpath, add the driver jar, then re-run."
+                                .formatted(connector.getJdbcDriver()),
+                        new DbImportValidation(true, true, true, false, null),
+                        resolved);
+            }
+            if (hasCauseOfType(e, SQLException.class)) {
+                SQLException sqle = causeOfType(e, SQLException.class);
+                String sqlState = sqle.getSQLState() != null ? " [SQLState: %s]".formatted(sqle.getSQLState()) : "";
+                return validationFailed(DbImportErrorCode.jdbc_connection_failed,
+                        "Could not open JDBC connection to '%s' as '%s': %s%s."
+                                .formatted(connector.getUrl(), connector.getUserName(), sqle.getMessage(), sqlState),
+                        new DbImportValidation(true, true, true, true, false),
+                        resolved);
+            }
             InstrumentedDbImportAction action = injector.getInstance(InstrumentedDbImportAction.class);
             DbImportSummary partial = action.buildSummary(0);
             String msg = e.getMessage() != null ? e.getMessage() : e.getClass().getName();
             return new DbImportRunResult("error", partial, resolved, warnings, DbImportValidation.ALL_PASSED,
                     new DbImportError(DbImportErrorCode.dbimport_runtime_error, msg));
         } finally {
-            try {
-                conn.close();
-            } catch (SQLException ignored) {
-            }
+            Thread.currentThread().setContextClassLoader(previousCl);
         }
     }
 
@@ -335,6 +313,25 @@ public class DbImportRunTool {
                 validation,
                 new DbImportError(code, message)
         );
+    }
+
+    private static boolean hasCauseOfType(Throwable t, Class<? extends Throwable> type) {
+        for (Throwable c = t; c != null; c = c.getCause()) {
+            if (type.isInstance(c)) {
+                return true;
+            }
+        }
+        return false;
+    }
+
+    @SuppressWarnings("unchecked")
+    private static <T extends Throwable> T causeOfType(Throwable t, Class<T> type) {
+        for (Throwable c = t; c != null; c = c.getCause()) {
+            if (type.isInstance(c)) {
+                return (T) c;
+            }
+        }
+        return null;
     }
 
     private record CachedClassLoader(List<String> entries, ClassLoader loader) {
