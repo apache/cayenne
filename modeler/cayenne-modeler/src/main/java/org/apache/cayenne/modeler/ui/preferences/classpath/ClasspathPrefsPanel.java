@@ -131,14 +131,13 @@ public class ClasspathPrefsPanel extends AppPanel {
 
     private void chooseJarEntry() {
         FileChooserPrefs prefs = new FileChooserPrefs(app.getPrefsManager().uiNode("classpath/lastDir"));
-        File selected = app.getFileChooserFactory().openFile(
-                this, "Select JAR File.", prefs, FileFilters.getExtensionFileFilter("jar", "JAR Files"));
+        File selected = app.getFileChooser(this, "Select JAR File.").openFile(prefs, FileFilters.getExtensionFileFilter("jar", "JAR Files"));
         entryAdded(selected);
     }
 
     private void chooseDirEntry() {
         FileChooserPrefs prefs = new FileChooserPrefs(app.getPrefsManager().uiNode("classpath/lastDir"));
-        File selected = app.getFileChooserFactory().openDir(this, "Select Java Class Directory.", prefs);
+        File selected = app.getFileChooser(this, "Select Java Class Directory.").openDir(prefs);
         entryAdded(selected);
     }
 

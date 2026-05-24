@@ -28,47 +28,49 @@ import java.io.File;
 import java.util.function.Consumer;
 
 /**
- * {@link FileChooserFactory} implementation backed by Swing's {@link JFileChooser}.
+ * {@link CMFileChooser} implementation backed by Swing's {@link JFileChooser}.
  */
-public class JFileChooserFactory implements FileChooserFactory {
+public class SwingFileChooser implements CMFileChooser {
+
+    private final Component parent;
+    private final String title;
+
+    public SwingFileChooser(Component parent, String title) {
+        this.parent = parent;
+        this.title = title;
+    }
 
     @Override
-    public File openFile(Component parent, String title, File initialDir, FileFilter filter) {
+    public File openFile(File initialDir, FileFilter filter) {
         return showOpen(
-                parent,
-                title,
                 JFileChooser.FILES_ONLY,
-                c -> {
-                    if (initialDir != null) c.setCurrentDirectory(initialDir);
-                },
+                c -> { if (initialDir != null) c.setCurrentDirectory(initialDir); },
                 filter);
     }
 
     @Override
-    public File openFile(Component parent, String title, FileChooserPrefs prefs, FileFilter filter) {
-        return showOpen(parent, title, JFileChooser.FILES_ONLY, prefs::bind, filter);
+    public File openFile(FileChooserPrefs prefs, FileFilter filter) {
+        return showOpen(JFileChooser.FILES_ONLY, prefs::bind, filter);
     }
 
     @Override
-    public File saveFile(Component parent, String title, FileChooserPrefs prefs, String defaultName) {
-        return showSave(parent, title, prefs::bind, defaultName);
+    public File openDir(File initialDir) {
+        return showOpen(JFileChooser.DIRECTORIES_ONLY,
+                c -> { if (initialDir != null) c.setCurrentDirectory(initialDir); }, null);
     }
 
     @Override
-    public File openDir(Component parent, String title, File initialDir) {
-        return showOpen(parent, title, JFileChooser.DIRECTORIES_ONLY,
-                c -> {
-                    if (initialDir != null) c.setCurrentDirectory(initialDir);
-                }, null);
+    public File openDir(FileChooserPrefs prefs) {
+        return showOpen(JFileChooser.DIRECTORIES_ONLY, prefs::bind, null);
     }
 
     @Override
-    public File openDir(Component parent, String title, FileChooserPrefs prefs) {
-        return showOpen(parent, title, JFileChooser.DIRECTORIES_ONLY, prefs::bind, null);
+    public File saveFile(FileChooserPrefs prefs, String defaultName) {
+        return showSave(prefs::bind, defaultName);
     }
 
     @Override
-    public File saveDir(Component parent, String title, File initialDir) {
+    public File saveDir(File initialDir) {
         JFileChooser chooser = new JFileChooser();
         chooser.setFileSelectionMode(JFileChooser.DIRECTORIES_ONLY);
         if (initialDir != null) {
@@ -82,7 +84,7 @@ public class JFileChooserFactory implements FileChooserFactory {
                 : null;
     }
 
-    private File showOpen(Component parent, String title, int mode, Consumer<JFileChooser> init, FileFilter filter) {
+    private File showOpen(int mode, Consumer<JFileChooser> init, FileFilter filter) {
         JFileChooser chooser = new JFileChooser();
         chooser.setFileSelectionMode(mode);
         init.accept(chooser);
@@ -98,7 +100,7 @@ public class JFileChooserFactory implements FileChooserFactory {
                 : null;
     }
 
-    private File showSave(Component parent, String title, Consumer<JFileChooser> init, String defaultName) {
+    private File showSave(Consumer<JFileChooser> init, String defaultName) {
         JFileChooser chooser = new JFileChooser();
         init.accept(chooser);
         if (title != null) {

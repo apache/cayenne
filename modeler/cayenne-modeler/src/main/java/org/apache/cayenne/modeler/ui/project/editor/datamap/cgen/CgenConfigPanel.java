@@ -401,7 +401,7 @@ public class CgenConfigPanel extends ProjectPanel {
                 ? new File(currentDir)
                 : CgenOps.baseDir(session).toFile();
 
-        File selected = app.getFileChooserFactory().openDir(this, "Select Output Folder", initialDir);
+        File selected = app.getFileChooser(this, "Select Output Folder").openDir(initialDir);
         if (selected != null) {
             String path = selected.getAbsolutePath();
             outputFolder.setText(path);

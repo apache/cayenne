@@ -21,7 +21,7 @@ package org.apache.cayenne.modeler.platform.mac;
 import org.apache.cayenne.modeler.Application;
 import org.apache.cayenne.modeler.service.action.GlobalActions;
 import org.apache.cayenne.modeler.platform.UIInitializer;
-import org.apache.cayenne.modeler.toolkit.filechooser.FileChooserFactory;
+import org.apache.cayenne.modeler.toolkit.filechooser.CMFileChooserFactory;
 import org.apache.cayenne.modeler.ui.action.AboutAction;
 import org.apache.cayenne.modeler.ui.action.ConfigurePreferencesAction;
 import org.apache.cayenne.modeler.ui.action.ExitAction;
@@ -92,8 +92,19 @@ public class MacUIInitializer implements UIInitializer {
     }
 
     @Override
-    public FileChooserFactory fileChooserFactory() {
-        return new MacFileChooserFactory();
+    public CMFileChooserFactory fileChooserFactory() {
+        return (parent, title) -> new MacFileChooser(toFrame(parent), title);
+    }
+
+    private static Frame toFrame(Component c) {
+        Window w = SwingUtilities.getWindowAncestor(c);
+        while (w != null) {
+            if (w instanceof Frame f) {
+                return f;
+            }
+            w = w.getOwner();
+        }
+        return null;
     }
 
     @Override

@@ -359,7 +359,7 @@ public class MergerOptionsDialog extends ProjectDialog {
 
     private void storeSQLAction() {
         FileChooserPrefs prefs = new FileChooserPrefs(app.getPrefsManager().uiNode("merger/lastSqlDir"));
-        File file = app.getFileChooserFactory().saveFile(this, "Save SQL Script", prefs, null);
+        File file = app.getFileChooser(this, "Save SQL Script").saveFile(prefs, null);
         if (file != null) {
             refreshSQLAction();
             try (FileWriter fw = new FileWriter(file); PrintWriter pw = new PrintWriter(fw)) {

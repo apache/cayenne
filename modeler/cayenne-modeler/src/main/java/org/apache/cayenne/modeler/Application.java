@@ -31,7 +31,8 @@ import org.apache.cayenne.di.Injector;
 import org.apache.cayenne.modeler.pref.dbconnector.DBConnectors;
 import org.apache.cayenne.modeler.log.ModelerLogFactory;
 import org.apache.cayenne.modeler.platform.UIInitializer;
-import org.apache.cayenne.modeler.toolkit.filechooser.FileChooserFactory;
+import org.apache.cayenne.modeler.toolkit.filechooser.CMFileChooser;
+import org.apache.cayenne.modeler.toolkit.filechooser.CMFileChooserFactory;
 import org.apache.cayenne.modeler.pref.adapters.ClasspathPrefs;
 import org.apache.cayenne.modeler.pref.adapters.DBConnectorsPrefs;
 import org.apache.cayenne.modeler.pref.adapters.GeneralPrefs;
@@ -55,6 +56,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import javax.swing.*;
+import java.awt.Component;
 import java.io.File;
 import java.util.List;
 import java.util.stream.Collectors;
@@ -89,7 +91,7 @@ public class Application {
 
     private final Injector injector;
     private final UIInitializer platformInit;
-    private final FileChooserFactory fileChooserFactory;
+    private final CMFileChooserFactory fileChooserFactory;
     private final ModelerClassLoader classLoader;
     private final PrefsLocator prefsLocator;
     private final PrefsManager prefsManager;
@@ -142,8 +144,8 @@ public class Application {
         return injector.getInstance(UpgradeService.class);
     }
 
-    public FileChooserFactory getFileChooserFactory() {
-        return fileChooserFactory;
+    public CMFileChooser getFileChooser(Component parent, String title) {
+        return fileChooserFactory.create(parent, title);
     }
 
     public ConfigurationNodeParentGetter getConfigurationNodeParentGetter() {

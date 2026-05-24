@@ -351,7 +351,7 @@ public class DBGeneratorOptionsDialog extends ProjectDialog {
 
     private void storeSQLAction() {
         FileChooserPrefs prefs = new FileChooserPrefs(app.getPrefsManager().uiNode("dbgen/lastSqlDir"));
-        File file = app.getFileChooserFactory().saveFile(this, "Save SQL Script", prefs, null);
+        File file = app.getFileChooser(this, "Save SQL Script").saveFile(prefs, null);
         if (file != null) {
             refreshGeneratorAction();
             try (FileWriter fw = new FileWriter(file); PrintWriter pw = new PrintWriter(fw)) {

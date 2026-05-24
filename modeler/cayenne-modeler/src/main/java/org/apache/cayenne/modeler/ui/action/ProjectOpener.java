@@ -24,7 +24,6 @@ import org.apache.cayenne.configuration.DataChannelDescriptor;
 import org.apache.cayenne.modeler.Application;
 import org.apache.cayenne.modeler.pref.adapters.RecentProjectsPrefs;
 import org.apache.cayenne.modeler.ui.project.overwrite.OverwriteDialog;
-import org.apache.cayenne.modeler.toolkit.filechooser.FileChooserFactory;
 import org.apache.cayenne.modeler.toolkit.filechooser.FileFilters;
 import org.apache.cayenne.project.Project;
 import org.slf4j.Logger;
@@ -55,11 +54,10 @@ class ProjectOpener {
         }
         nameProject.append(".xml");
 
-        FileChooserFactory factory = application.getFileChooserFactory();
         File startDir = getDefaultStartDir(application);
 
         while (true) {
-            File selectedDir = factory.saveDir(application.getFrame(), "Select Project Directory", startDir);
+            File selectedDir = application.getFileChooser(application.getFrame(), "Select Project Directory").saveDir(startDir);
             if (selectedDir == null) {
                 LOGGER.info("Save canceled.");
                 return null;
@@ -86,11 +84,8 @@ class ProjectOpener {
      * Runs a dialog to open a Cayenne project.
      */
     public File openProjectFile(Application application) {
-        return application.getFileChooserFactory().openFile(
-                application.getFrame(),
-                "Select Project File",
-                getDefaultStartDir(application),
-                FileFilters.getApplicationFilter());
+        return application.getFileChooser(application.getFrame(), "Select Project File")
+                .openFile(getDefaultStartDir(application), FileFilters.getApplicationFilter());
     }
 
     private File getDefaultStartDir(Application application) {

@@ -99,6 +99,6 @@ public class ImportDataMapAction extends AppAction {
 
     protected File selectDataMap(Frame f) {
         FileChooserPrefs prefs = new FileChooserPrefs(app.getPrefsManager().uiNode("importDataMap/lastDir"));
-        return app.getFileChooserFactory().openFile(f, "Select DataMap", prefs, FileFilters.getDataMapFilter());
+        return app.getFileChooser(f, "Select DataMap").openFile(prefs, FileFilters.getDataMapFilter());
     }
 }

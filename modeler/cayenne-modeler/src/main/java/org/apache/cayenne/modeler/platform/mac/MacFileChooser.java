@@ -20,62 +20,65 @@
 package org.apache.cayenne.modeler.platform.mac;
 
 import org.apache.cayenne.modeler.pref.adapters.FileChooserPrefs;
-import org.apache.cayenne.modeler.toolkit.filechooser.FileChooserFactory;
+import org.apache.cayenne.modeler.toolkit.filechooser.CMFileChooser;
 
-import javax.swing.SwingUtilities;
 import javax.swing.filechooser.FileFilter;
-import java.awt.Component;
 import java.awt.FileDialog;
 import java.awt.Frame;
-import java.awt.Window;
 import java.io.File;
 import java.io.FilenameFilter;
 import java.util.function.Consumer;
 
 /**
- * {@link FileChooserFactory} implementation backed by the native OS {@link FileDialog}.
+ * {@link CMFileChooser} implementation backed by the native OS {@link FileDialog}.
  * On macOS this delegates to NSOpenPanel / NSSavePanel, providing Quick Look preview,
  * Spotlight search, and the standard Finder sidebar.
  */
-public class MacFileChooserFactory implements FileChooserFactory {
+public class MacFileChooser implements CMFileChooser {
 
     private static final String DIRS_DIALOG_PROPERTY = "apple.awt.fileDialogForDirectories";
 
+    private final Frame parent;
+    private final String title;
+
+    public MacFileChooser(Frame parent, String title) {
+        this.parent = parent;
+        this.title = title;
+    }
+
     @Override
-    public File openFile(Component parent, String title, File initialDir, FileFilter filter) {
-        return showOpen(toFrame(parent), title, toFilenameFilter(filter),
+    public File openFile(File initialDir, FileFilter filter) {
+        return showOpen(toFilenameFilter(filter),
                 fd -> { if (initialDir != null) fd.setDirectory(initialDir.getAbsolutePath()); });
     }
 
     @Override
-    public File openFile(Component parent, String title, FileChooserPrefs prefs, FileFilter filter) {
-        return showOpen(toFrame(parent), title, toFilenameFilter(filter), prefs::bind);
+    public File openFile(FileChooserPrefs prefs, FileFilter filter) {
+        return showOpen(toFilenameFilter(filter), prefs::bind);
     }
 
     @Override
-    public File saveFile(Component parent, String title, FileChooserPrefs prefs, String defaultName) {
-        return showSave(toFrame(parent), title, prefs::bind, defaultName);
+    public File openDir(File initialDir) {
+        return showOpenDir(fd -> { if (initialDir != null) fd.setDirectory(initialDir.getAbsolutePath()); });
     }
 
     @Override
-    public File openDir(Component parent, String title, File initialDir) {
-        return showOpenDir(toFrame(parent), title,
-                fd -> { if (initialDir != null) fd.setDirectory(initialDir.getAbsolutePath()); });
+    public File openDir(FileChooserPrefs prefs) {
+        return showOpenDir(prefs::bind);
     }
 
     @Override
-    public File openDir(Component parent, String title, FileChooserPrefs prefs) {
-        return showOpenDir(toFrame(parent), title, prefs::bind);
+    public File saveFile(FileChooserPrefs prefs, String defaultName) {
+        return showSave(prefs::bind, defaultName);
     }
 
     @Override
-    public File saveDir(Component parent, String title, File initialDir) {
-        return showOpenDir(toFrame(parent), title,
-                fd -> { if (initialDir != null) fd.setDirectory(initialDir.getAbsolutePath()); });
+    public File saveDir(File initialDir) {
+        return showOpenDir(fd -> { if (initialDir != null) fd.setDirectory(initialDir.getAbsolutePath()); });
     }
 
-    private File showOpen(Frame frame, String title, FilenameFilter fnFilter, Consumer<FileDialog> init) {
-        FileDialog fd = new FileDialog(frame, title != null ? title : "", FileDialog.LOAD);
+    private File showOpen(FilenameFilter fnFilter, Consumer<FileDialog> init) {
+        FileDialog fd = new FileDialog(parent, title != null ? title : "", FileDialog.LOAD);
         init.accept(fd);
         if (fnFilter != null) {
             fd.setFilenameFilter(fnFilter);
@@ -85,8 +88,8 @@ public class MacFileChooserFactory implements FileChooserFactory {
         return file != null ? new File(fd.getDirectory(), file) : null;
     }
 
-    private File showSave(Frame frame, String title, Consumer<FileDialog> init, String defaultName) {
-        FileDialog fd = new FileDialog(frame, title != null ? title : "", FileDialog.SAVE);
+    private File showSave(Consumer<FileDialog> init, String defaultName) {
+        FileDialog fd = new FileDialog(parent, title != null ? title : "", FileDialog.SAVE);
         init.accept(fd);
         if (defaultName != null) {
             fd.setFile(defaultName);
@@ -96,12 +99,15 @@ public class MacFileChooserFactory implements FileChooserFactory {
         return file != null ? new File(fd.getDirectory(), file) : null;
     }
 
-    private File showOpenDir(Frame frame, String title, Consumer<FileDialog> init) {
+    private File showOpenDir(Consumer<FileDialog> init) {
         // Toggle the property only for the duration of this modal dialog.
         // FileDialog is EDT-blocking, so no other dialog can run concurrently.
         System.setProperty(DIRS_DIALOG_PROPERTY, "true");
         try {
-            FileDialog fd = new FileDialog(frame, title != null ? title : "", FileDialog.LOAD);
+
+            // FileDialog.LOAD results in the "Save" button being called "Load". This is unfortunate, but the
+            // alternative allows the user to override the file name
+            FileDialog fd = new FileDialog(parent, title != null ? title : "", FileDialog.LOAD);
             init.accept(fd);
             fd.setVisible(true);
             String file = fd.getFile();
@@ -114,16 +120,5 @@ public class MacFileChooserFactory implements FileChooserFactory {
 
     private static FilenameFilter toFilenameFilter(FileFilter filter) {
         return filter != null ? (dir, name) -> filter.accept(new File(dir, name)) : null;
-    }
-
-    private static Frame toFrame(Component c) {
-        Window w = SwingUtilities.getWindowAncestor(c);
-        while (w != null) {
-            if (w instanceof Frame f) {
-                return f;
-            }
-            w = w.getOwner();
-        }
-        return null;
     }
 }
