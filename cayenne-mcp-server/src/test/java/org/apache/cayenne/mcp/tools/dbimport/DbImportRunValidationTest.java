@@ -44,13 +44,12 @@ import static org.junit.jupiter.api.Assertions.*;
 public class DbImportRunValidationTest {
 
     private static DbImportRunTool tool;
-    private static PrefsLocator prefsLocator;
 
     private Preferences testPrefsRoot;
 
     @BeforeAll
     public static void setUpClass() {
-        prefsLocator = new PrefsLocator(Preferences.userRoot().node("cayenne-test/dbimport-validation"));
+        PrefsLocator prefsLocator = new PrefsLocator(Preferences.userRoot().node("cayenne-test/dbimport-validation"));
         tool = new DbImportRunTool(prefsLocator);
     }
 
@@ -96,7 +95,7 @@ public class DbImportRunValidationTest {
 
     @Test
     public void dataMapNotFound() throws URISyntaxException {
-        String projectPath = fixtureProject("no-dbimport");
+        String projectPath = fixtureProject();
 
         DbImportRunResult result = tool.run(projectPath, "NoSuchMap");
 
@@ -213,9 +212,9 @@ public class DbImportRunValidationTest {
         assertNoCredentialsInResult(result);
     }
 
-    private static String fixtureProject(String fixture) throws URISyntaxException {
+    private static String fixtureProject() throws URISyntaxException {
         return Paths.get(DbImportRunValidationTest.class
-                .getResource("/dbimport-fixtures/" + fixture + "/cayenne-project.xml")
+                .getResource("/dbimport-fixtures/no-dbimport/cayenne-project.xml")
                 .toURI()).toString();
     }
 
