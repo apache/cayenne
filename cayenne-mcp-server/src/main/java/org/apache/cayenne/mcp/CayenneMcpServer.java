@@ -26,6 +26,7 @@ import io.modelcontextprotocol.server.transport.StdioServerTransportProvider;
 import io.modelcontextprotocol.spec.McpSchema;
 import org.apache.cayenne.modeler.pref.PrefsLocator;
 import org.apache.cayenne.mcp.tools.cgen.CgenRunTool;
+import org.apache.cayenne.mcp.tools.dbimport.DbImportRunTool;
 import org.apache.cayenne.mcp.tools.openproject.OpenProjectTool;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -56,6 +57,7 @@ public class CayenneMcpServer {
                 .serverInfo("cayenne-mcp-server", version)
                 .capabilities(McpSchema.ServerCapabilities.builder().tools(true).build())
                 .tools(CgenRunTool.spec(jsonMapper))
+                .tools(DbImportRunTool.spec(jsonMapper, prefsLocator))
                 .tools(OpenProjectTool.spec(jsonMapper, prefsLocator))
                 .build();
 

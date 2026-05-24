@@ -93,6 +93,16 @@ Do not set `<scope>` inside `<dependencyManagement>` (except `<scope>import</sco
 pins versions only — each consuming `<dependency>` declares its own scope explicitly.
 
 
+## Java Style
+
+Never use fully-qualified class names inline in code. Always add a proper `import` statement and use the simple name.
+
+Line width is 120 characters — applies to code, Javadoc, and other comments.
+
+Avoid `var` — only use it when the type is immediately obvious from the right-hand side of the assignment
+(e.g., `var list = new ArrayList<String>()`). Never use `var` for method return values, streams, or anything
+that requires reading the right-hand side carefully to determine the type.
+
 ## CI Matrix
 
 GitHub Actions runs on push to master/STABLE-* branches:
