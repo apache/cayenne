@@ -56,4 +56,9 @@ public class InfoExtension implements ProjectExtension {
     public ConfigurationNodeVisitor<String> createNamingDelegate() {
         return new BaseNamingDelegate();
     }
+
+    @Override
+    public int order() {
+        return 10;
+    }
 }

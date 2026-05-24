@@ -51,4 +51,9 @@ public class CgenExtension implements ProjectExtension {
     public ConfigurationNodeVisitor<String> createNamingDelegate() {
         return new BaseNamingDelegate();
     }
+
+    @Override
+    public int order() {
+        return 30;
+    }
 }

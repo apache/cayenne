@@ -53,4 +53,8 @@ public class DbImportExtension implements ProjectExtension {
         return new BaseNamingDelegate();
     }
 
+    @Override
+    public int order() {
+        return 20;
+    }
 }

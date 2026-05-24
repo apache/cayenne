@@ -48,4 +48,9 @@ public class ValidationExtension implements ProjectExtension {
     public ConfigurationNodeVisitor<String> createNamingDelegate() {
         return new BaseNamingDelegate();
     }
+
+    @Override
+    public int order() {
+        return 40;
+    }
 }

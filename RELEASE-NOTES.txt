@@ -78,6 +78,7 @@ CAY-2931 Modeler: default encoding detected as UTF8, should be UTF-8
 CAY-2934 Modeler: dropdown data trunction
 CAY-2944 MergerTokenFactoryProvider does not resolve adapter subclasses
 CAY-2951 Newly reverse-engineered entities are excluded from CGen
+CAY-2952 Unstable project extension ordering
 
 ----------------------------------
 Release: 5.0-M1

@@ -19,6 +19,7 @@
 package org.apache.cayenne.project;
 
 import org.apache.cayenne.configuration.ConfigurationNameMapper;
+import org.apache.cayenne.configuration.ConfigurationNodeVisitor;
 import org.apache.cayenne.configuration.ConfigurationTree;
 import org.apache.cayenne.configuration.DataChannelDescriptor;
 import org.apache.cayenne.configuration.DataNodeDescriptor;
@@ -27,7 +28,10 @@ import org.apache.cayenne.di.DIBootstrap;
 import org.apache.cayenne.di.Injector;
 import org.apache.cayenne.di.Module;
 import org.apache.cayenne.map.DataMap;
+import org.apache.cayenne.project.extension.BaseSaverDelegate;
+import org.apache.cayenne.project.extension.LoaderDelegate;
 import org.apache.cayenne.project.extension.ProjectExtension;
+import org.apache.cayenne.project.extension.SaverDelegate;
 import org.apache.cayenne.resource.URLResource;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -43,6 +47,7 @@ import java.io.File;
 import java.net.URL;
 import java.util.Arrays;
 import java.util.Collections;
+import java.util.List;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertTrue;
@@ -133,6 +138,30 @@ public class FileProjectSaverTest {
         assertEquals("A", xpath.evaluate("@name", mapRefs.item(0)));
         assertEquals("B", xpath.evaluate("@name", mapRefs.item(1)));
         assertEquals("C", xpath.evaluate("@name", mapRefs.item(2)));
+    }
+
+    @Test
+    public void extensionsAreSortedByOrder() {
+        ProjectExtension ext10 = stubExtension(10);
+        ProjectExtension ext20 = stubExtension(20);
+        ProjectExtension ext30 = stubExtension(30);
+
+        // supply in reverse order — saver must still store them sorted ascending
+        FileProjectSaver s1 = new FileProjectSaver(List.of(ext30, ext20, ext10));
+        assertEquals(List.of(ext10, ext20, ext30), s1.extensions);
+
+        // supply in random order
+        FileProjectSaver s2 = new FileProjectSaver(List.of(ext20, ext10, ext30));
+        assertEquals(List.of(ext10, ext20, ext30), s2.extensions);
+    }
+
+    private static ProjectExtension stubExtension(int order) {
+        return new ProjectExtension() {
+            @Override public LoaderDelegate createLoaderDelegate() { return null; }
+            @Override public SaverDelegate createSaverDelegate() { return new BaseSaverDelegate(); }
+            @Override public ConfigurationNodeVisitor<String> createNamingDelegate() { return null; }
+            @Override public int order() { return order; }
+        };
     }
 
     /**

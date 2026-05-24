@@ -50,4 +50,12 @@ public interface ProjectExtension {
 
     ConfigurationNodeVisitor<String> createNamingDelegate();
 
+    /**
+     * Controls the relative position of this extension's XML elements within a saved file.
+     * Extensions with lower values are written first. Each known extension must return a unique value.
+     *
+     * @since 5.0
+     */
+    int order();
+
 }

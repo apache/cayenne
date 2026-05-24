@@ -42,6 +42,7 @@ import java.net.MalformedURLException;
 import java.net.URL;
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.Comparator;
 import java.util.List;
 
 /**
@@ -68,9 +69,11 @@ public class FileProjectSaver implements ProjectSaver {
         // this is not configurable yet... probably doesn't have to be
         fileEncoding = "UTF-8";
 
-        this.extensions = extensions;
-        Collection<SaverDelegate> delegates = new ArrayList<>(extensions.size());
-        for (ProjectExtension extension : extensions) {
+        List<ProjectExtension> sorted = new ArrayList<>(extensions);
+        sorted.sort(Comparator.comparingInt(ProjectExtension::order));
+        this.extensions = sorted;
+        Collection<SaverDelegate> delegates = new ArrayList<>(sorted.size());
+        for (ProjectExtension extension : sorted) {
             delegates.add(extension.createSaverDelegate());
         }
         delegate = new CompoundSaverDelegate(delegates);
