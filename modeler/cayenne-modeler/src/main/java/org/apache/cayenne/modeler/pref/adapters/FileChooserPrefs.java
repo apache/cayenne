@@ -71,10 +71,8 @@ public final class FileChooserPrefs extends PrefsAdapter {
 
     public void saveDir(File f) {
         if (f != null) {
-            prefs.put(PATH_PROPERTY,
-                    f.isFile()
-                            ? f.getParentFile().getAbsolutePath()
-                            : f.getAbsolutePath());
+            String dir = f.isFile() ? f.getParentFile().getAbsolutePath() : f.getAbsolutePath();
+            prefs.put(PATH_PROPERTY, dir);
         }
     }
 
@@ -82,13 +80,16 @@ public final class FileChooserPrefs extends PrefsAdapter {
         if (path == null) {
             return null;
         }
+
         File f = new File(path);
         if (f.isDirectory()) {
             return f;
         }
+
         if (f.isFile()) {
             return f.getParentFile();
         }
+
         return null;
     }
 }
