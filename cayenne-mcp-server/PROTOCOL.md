@@ -62,6 +62,76 @@ Both fields are required.
 - `validation_failed` — a pre-flight check failed; the failing slot in `validation` is `false`, later slots are `null`
 - `error` — cgen started but threw mid-run; `files` lists what was written before the failure
 
+## `dbimport_run`
+
+Runs Cayenne reverse-engineering (dbimport) for a named DataMap. Reads the `<reverse-engineering>` filter config from the DataMap XML and reads JDBC connection info from the DBConnector that CayenneModeler stored in preferences for this DataMap. Rewrites the DataMap XML on disk with the merged schema.
+
+### Input
+
+```json
+{
+  "projectPath": "string (absolute path to cayenne-*.xml)",
+  "dataMap":     "string (DataMap name as it appears in the project descriptor)"
+}
+```
+
+Both fields are required. JDBC URL, driver, credentials, and schema filters are not inputs — they come from CayenneModeler preferences and the DataMap's `<reverse-engineering>` block respectively.
+
+### Output
+
+```json
+{
+  "status": "imported | up_to_date | validation_failed | error",
+  "summary": {
+    "tokensConsidered":  0,
+    "tokensApplied":     0,
+    "entitiesAdded":     0,
+    "entitiesRemoved":   0,
+    "entitiesModified":  0,
+    "relationshipsAdded": 0
+  },
+  "resolved": {
+    "dataMapFile": "string (absolute path to the DataMap XML file)",
+    "jdbcUrl":     "string",
+    "jdbcDriver":  "string",
+    "dbAdapter":   "string"
+  },
+  "warnings": ["string (captured WARN-level log lines from org.apache.cayenne.dbsync)"],
+  "validation": {
+    "projectFound":                    true,
+    "dataMapFound":                    true,
+    "reverseEngineeringConfigPresent": true,
+    "dbConnectorPresent":              true,
+    "jdbcDriverLoadable":              true,
+    "jdbcConnectionOpened":            true
+  },
+  "error": {
+    "code":    "project_not_found | project_parse_failed | datamap_not_found | reverse_engineering_config_missing | dbconnector_not_configured | jdbc_driver_not_loadable | jdbc_connection_failed | dbimport_runtime_error",
+    "message": "string"
+  }
+}
+```
+
+`status` semantics:
+- `imported` — dbimport ran and applied at least one merger token; DataMap XML was rewritten on disk
+- `up_to_date` — dbimport ran but the DataMap was already in sync with the database; no file change
+- `validation_failed` — a pre-flight check failed; the failing slot in `validation` is `false`, later slots are `null`
+- `error` — validation passed but dbimport threw mid-run; `summary` reflects counters captured before the failure
+
+`resolved` notes:
+- Populated as soon as the connector is resolved (validation step 5), so it is present even on `jdbc_driver_not_loadable` and `jdbc_connection_failed` failures.
+- `null` only when validation fails before the connector is read (steps 1–4).
+- Never contains `userName` or `password`.
+
+`summary` notes:
+- `tokensConsidered` — merger tokens computed from the DB/DataMap diff.
+- `tokensApplied` — tokens actually applied; equals `tokensConsidered` on success.
+- Entity/relationship counters are rolled up from the applied token stream; `Read` the DataMap XML before and after for the full diff.
+
+`validation` notes:
+- `dbConnectorPresent` — the DataMap's preferences node holds a stored DBConnector (set by CayenneModeler when the user last ran "Reengineer Database Schema" for this DataMap).
+- `jdbcDriverLoadable` — the driver class was loadable from the URLClassLoader built from CayenneModeler's *Preferences → Classpath* entries; if `false`, add the driver jar there and re-run.
+
 ## `open_project`
 
 Launches CayenneModeler with a project file pre-loaded and blocks until the Modeler reports a startup handshake (15 s timeout).
