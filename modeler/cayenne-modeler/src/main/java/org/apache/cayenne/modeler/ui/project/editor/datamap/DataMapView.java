@@ -48,7 +48,6 @@ public class DataMapView extends ProjectTabbedPane {
     }
 
     private void currentDataMapChanged(DataMapDisplayEvent e) {
-
         if (e.isMainTabFocus()) {
             setSelectedIndex(0);
         }

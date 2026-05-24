@@ -414,10 +414,10 @@ public class CgenConfiguration implements Serializable, XMLSerializable {
     }
 
     private String getExcludedEntities() {
-        return dataMap.getObjEntities()
-                .stream()
-                .map(ObjEntity::getName)
-                .filter(name -> !entityArtifacts.contains(name))
+        Set<String> existing = dataMap.getObjEntityMap().keySet();
+        return excludedEntityArtifacts.stream()
+                .filter(existing::contains)
+                .sorted()
                 .collect(Collectors.joining(","));
     }
 
@@ -430,10 +430,10 @@ public class CgenConfiguration implements Serializable, XMLSerializable {
     }
 
     private String getExcludedEmbeddables() {
-        return dataMap.getEmbeddables()
-                .stream()
-                .map(Embeddable::getClassName)
-                .filter(className -> !embeddableArtifacts.contains(className))
+        Set<String> existing = dataMap.getEmbeddableMap().keySet();
+        return excludedEmbeddableArtifacts.stream()
+                .filter(existing::contains)
+                .sorted()
                 .collect(Collectors.joining(","));
     }
 

@@ -48,7 +48,6 @@ import org.apache.cayenne.modeler.project.CgenOps;
 import org.apache.cayenne.modeler.project.ProjectSession;
 import org.apache.cayenne.modeler.toolkit.ProjectPanel;
 import org.apache.cayenne.modeler.toolkit.icon.IconFactory;
-import org.apache.cayenne.modeler.ui.project.editor.datamap.dbimport.DbImportResultDialog;
 import org.apache.cayenne.tools.ToolsInjectorBuilder;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -68,8 +67,7 @@ import java.util.stream.Collectors;
  * the body splits into the per-class artefact selector (left) and the cgen options form (right).
  * Subscribes to project events to keep its model snapshot in sync with mapping edits.
  */
-public class CgenPanel extends ProjectPanel
-        implements ObjEntityListener, EmbeddableListener, DataMapListener {
+public class CgenPanel extends ProjectPanel implements ObjEntityListener, EmbeddableListener, DataMapListener {
 
     private static final Logger LOGGER = LoggerFactory.getLogger(CgenPanel.class);
 
@@ -246,6 +244,10 @@ public class CgenPanel extends ProjectPanel
     private void setConfiguration(String selectedConfig) {
         cgenConfiguration = cgenConfigList.getByName(selectedConfig);
         if (cgenConfiguration != null) {
+            // Refresh entityArtifacts from the DataMap so any entities added since the config
+            // was last loaded (e.g. by a dbimport run) are treated as included by default.
+            cgenConfiguration.resolveExcludedEntities();
+            cgenConfiguration.resolveExcludedEmbeddables();
             addToSelectedEntities(cgenConfiguration.getEntities());
             addToSelectedEmbeddables(cgenConfiguration.getEmbeddables());
             cgenConfiguration.setForce(true);
@@ -462,6 +464,17 @@ public class CgenPanel extends ProjectPanel
             for (ObjEntity entity : selectionModel.getSelectedEntities(classes)) {
                 cgenConfiguration.loadEntity(entity);
             }
+            // Keep excludedEntityArtifacts in sync so XML serialization stays correct
+            Collection<String> excluded = cgenConfiguration.getExcludedEntityArtifacts();
+            excluded.clear();
+            DataMap dataMap = cgenConfiguration.getDataMap();
+            if (dataMap != null) {
+                Set<String> selected = cgenConfiguration.getEntities();
+                dataMap.getObjEntities().stream()
+                        .map(ObjEntity::getName)
+                        .filter(name -> !selected.contains(name))
+                        .forEach(excluded::add);
+            }
         }
         checkCgenConfigDirty();
     }
@@ -471,6 +484,17 @@ public class CgenPanel extends ProjectPanel
             cgenConfiguration.getEmbeddables().clear();
             for (Embeddable embeddable : selectionModel.getSelectedEmbeddables(classes)) {
                 cgenConfiguration.loadEmbeddable(embeddable);
+            }
+            // Keep excludedEmbeddableArtifacts in sync so XML serialization stays correct
+            Collection<String> excluded = cgenConfiguration.getExcludedEmbeddableArtifacts();
+            excluded.clear();
+            DataMap dataMap = cgenConfiguration.getDataMap();
+            if (dataMap != null) {
+                Set<String> selected = cgenConfiguration.getEmbeddables();
+                dataMap.getEmbeddables().stream()
+                        .map(Embeddable::getClassName)
+                        .filter(name -> !selected.contains(name))
+                        .forEach(excluded::add);
             }
         }
         checkCgenConfigDirty();
@@ -565,20 +589,16 @@ public class CgenPanel extends ProjectPanel
 
     @Override
     public void dataMapChanged(DataMapEvent e) {
-        if (e.getSource() instanceof DbImportResultDialog) {
-            if (cgenConfiguration != null) {
-                for (ObjEntity objEntity : e.getDataMap().getObjEntities()) {
-                    if (!cgenConfiguration.getExcludedEntityArtifacts().contains(objEntity.getName())) {
-                        addEntity(cgenConfiguration.getDataMap(), objEntity);
-                    }
-                }
-            }
-            checkCgenConfigDirty();
-        }
     }
 
     @Override
     public void dataMapAdded(DataMapEvent e) {
+        // DbImportProjectSaver fires a pair of REMOVE / ADD events after merging new entities into a DataMap.
+        // Re-initialize the panel so newly imported entities appear as included.
+        DataMap map = e.getDataMap();
+        if (map != null && cgenConfiguration != null && map == cgenConfiguration.getDataMap()) {
+            initFromModel(map);
+        }
     }
 
     @Override
