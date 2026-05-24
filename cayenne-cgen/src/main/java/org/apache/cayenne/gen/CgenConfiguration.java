@@ -58,11 +58,11 @@ public class CgenConfiguration implements Serializable, XMLSerializable {
      */
     private Path cgenOutputPath;
 
-    private Collection<Artifact> artifacts;
+    private final Collection<Artifact> artifacts;
     private Set<String> entityArtifacts;
-    private Collection<String> excludedEntityArtifacts;
+    private final Collection<String> excludedEntityArtifacts;
     private Set<String> embeddableArtifacts;
-    private Collection<String> excludedEmbeddableArtifacts;
+    private final Collection<String> excludedEmbeddableArtifacts;
 
     private String name;
     private String superPkg;
@@ -102,9 +102,8 @@ public class CgenConfiguration implements Serializable, XMLSerializable {
 
     public CgenConfiguration() {
         this.name = CgenConfigList.DEFAULT_CONFIG_NAME;
-        /**
-         * {@link #isDefault()} method should be in sync with the following values
-         */
+
+        // isDefault() method should be in sync with the following values
         this.outputPattern = "*.java";
         this.timestamp = 0L;
         this.usePkgPath = true;
@@ -195,6 +194,7 @@ public class CgenConfiguration implements Serializable, XMLSerializable {
 
     /**
      * Method returns output path as is, without any processing.
+     *
      * @return cgen output relative path
      * @see #buildOutputPath()
      * @since 5.0 renamed from {@code getRelPath()}
@@ -247,12 +247,12 @@ public class CgenConfiguration implements Serializable, XMLSerializable {
             return cgenOutputPath;
         }
 
-        if(cgenOutputPath == null) {
+        if (cgenOutputPath == null) {
             // this case should be invalid, but let the caller deal with it
             return null;
         }
 
-        if(cgenOutputPath.isAbsolute()) {
+        if (cgenOutputPath.isAbsolute()) {
             return cgenOutputPath.normalize();
         } else {
             return rootProjectPath.resolve(cgenOutputPath).toAbsolutePath().normalize();
@@ -524,28 +524,13 @@ public class CgenConfiguration implements Serializable, XMLSerializable {
     }
 
     public CgenTemplate getTemplateByType(TemplateType type) {
-        switch (type) {
-            case ENTITY_SINGLE_CLASS:
-            case ENTITY_SUBCLASS:
-                return getTemplate();
-
-            case ENTITY_SUPERCLASS:
-                return getSuperTemplate();
-
-            case EMBEDDABLE_SINGLE_CLASS:
-            case EMBEDDABLE_SUBCLASS:
-                return getEmbeddableTemplate();
-
-            case EMBEDDABLE_SUPERCLASS:
-               return getEmbeddableSuperTemplate();
-
-            case DATAMAP_SINGLE_CLASS:
-            case DATAMAP_SUBCLASS:
-                return getDataMapTemplate();
-
-            case DATAMAP_SUPERCLASS:
-                return getDataMapSuperTemplate();
-        }
-        return null;
+        return switch (type) {
+            case ENTITY_SINGLE_CLASS, ENTITY_SUBCLASS -> getTemplate();
+            case ENTITY_SUPERCLASS -> getSuperTemplate();
+            case EMBEDDABLE_SINGLE_CLASS, EMBEDDABLE_SUBCLASS -> getEmbeddableTemplate();
+            case EMBEDDABLE_SUPERCLASS -> getEmbeddableSuperTemplate();
+            case DATAMAP_SINGLE_CLASS, DATAMAP_SUBCLASS -> getDataMapTemplate();
+            case DATAMAP_SUPERCLASS -> getDataMapSuperTemplate();
+        };
     }
 }
