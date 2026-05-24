@@ -107,6 +107,14 @@ class HandshakeWatcher {
     }
 
     private static HandshakeData readHandshake(Preferences node) {
+        try {
+            // Force a backing-store reload so keys written by the Modeler process are
+            // visible here — nodeExists() can return true before the reader's cache is
+            // refreshed on macOS CFPreferences.
+            node.sync();
+        } catch (BackingStoreException e) {
+            LOGGER.debug("sync before handshake read failed, proceeding with cached values: {}", e.toString());
+        }
         long pid = node.getLong("pid", -1L);
         String startedAt = node.get("startedAt", null);
         String resolvedProjectPath = node.get("projectPath", null);
