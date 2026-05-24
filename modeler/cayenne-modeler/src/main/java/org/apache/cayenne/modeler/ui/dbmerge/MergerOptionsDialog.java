@@ -46,6 +46,7 @@ import org.apache.cayenne.dbsync.reverse.filters.PatternFilter;
 import org.apache.cayenne.dbsync.reverse.filters.TableFilter;
 import org.apache.cayenne.map.DataMap;
 import org.apache.cayenne.map.ObjEntity;
+import org.apache.cayenne.modeler.pref.adapters.FileChooserPrefs;
 import org.apache.cayenne.modeler.pref.dbconnector.DBConnector;
 import org.apache.cayenne.modeler.dbconnector.DBConnectorFactory;
 import org.apache.cayenne.modeler.event.model.DataMapEvent;
@@ -55,7 +56,6 @@ import org.apache.cayenne.modeler.toolkit.ProjectDialog;
 import org.apache.cayenne.modeler.project.ProjectSession;
 import org.apache.cayenne.modeler.ui.validation.ValidationDialog;
 import org.apache.cayenne.project.Project;
-import org.apache.cayenne.resource.Resource;
 import org.apache.cayenne.validation.ValidationResult;
 import org.slf4j.LoggerFactory;
 
@@ -236,8 +236,7 @@ public class MergerOptionsDialog extends ProjectDialog {
 
         while (it.hasNext()) {
             MergerToken token = it.next();
-            if (token instanceof AbstractToDbToken) {
-                AbstractToDbToken tdb = (AbstractToDbToken) token;
+            if (token instanceof AbstractToDbToken tdb) {
                 for (String sql : tdb.createSql(adapter)) {
                     buf.append(sql);
                     buf.append(lineEnd);
@@ -359,9 +358,8 @@ public class MergerOptionsDialog extends ProjectDialog {
     }
 
     private void storeSQLAction() {
-        Resource configRes = app.getFrame().getProjectSession().project().getConfigurationResource();
-        File initialDir = configRes != null ? new File(configRes.getURL().getPath()) : null;
-        File file = app.getFileChooserFactory().saveFile(this, "Save SQL Script", initialDir, null);
+        FileChooserPrefs prefs = new FileChooserPrefs(app.getPrefsManager().uiNode("merger/lastSqlDir"));
+        File file = app.getFileChooserFactory().saveFile(this, "Save SQL Script", prefs, null);
         if (file != null) {
             refreshSQLAction();
             try (FileWriter fw = new FileWriter(file); PrintWriter pw = new PrintWriter(fw)) {

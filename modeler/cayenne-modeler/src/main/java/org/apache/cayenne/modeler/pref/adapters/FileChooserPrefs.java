@@ -65,18 +65,9 @@ public final class FileChooserPrefs extends PrefsAdapter {
         });
     }
 
-    public File loadDir() {
-        return resolveExistingDirectory(prefs.get(PATH_PROPERTY, null));
-    }
+    private File loadDir() {
+        String path = prefs.get(PATH_PROPERTY, null);
 
-    public void saveDir(File f) {
-        if (f != null) {
-            String dir = f.isFile() ? f.getParentFile().getAbsolutePath() : f.getAbsolutePath();
-            prefs.put(PATH_PROPERTY, dir);
-        }
-    }
-
-    private static File resolveExistingDirectory(String path) {
         if (path == null) {
             return null;
         }
@@ -92,4 +83,12 @@ public final class FileChooserPrefs extends PrefsAdapter {
 
         return null;
     }
+
+    private void saveDir(File f) {
+        if (f != null) {
+            String dir = f.isFile() ? f.getParentFile().getAbsolutePath() : f.getAbsolutePath();
+            prefs.put(PATH_PROPERTY, dir);
+        }
+    }
+
 }

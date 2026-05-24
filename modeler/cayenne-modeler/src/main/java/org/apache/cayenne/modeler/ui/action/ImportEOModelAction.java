@@ -124,11 +124,10 @@ public class ImportEOModelAction extends AppAction {
      */
     protected void importEOModel() {
         FileChooserPrefs prefs = new FileChooserPrefs(app.getPrefsManager().uiNode("importEOModel/lastDir"));
-        File selected = app.getFileChooserFactory().openFile(app.getFrame(), "Select EOModel", prefs.loadDir(), eomodelFilter);
+        File selected = app.getFileChooserFactory().openFile(app.getFrame(), "Select EOModel", prefs, eomodelFilter);
         if (selected == null) {
             return;
         }
-        prefs.saveDir(selected);
 
         File file = selected.getParentFile();
         DataMap currentMap = getProjectSession().getSelectedDataMap();

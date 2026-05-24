@@ -59,7 +59,7 @@ class ProjectOpener {
         File startDir = getDefaultStartDir(application);
 
         while (true) {
-            File selectedDir = factory.openDirectory(application.getFrame(), "Select Project Directory", startDir);
+            File selectedDir = factory.saveDir(application.getFrame(), "Select Project Directory", startDir);
             if (selectedDir == null) {
                 LOGGER.info("Save canceled.");
                 return null;

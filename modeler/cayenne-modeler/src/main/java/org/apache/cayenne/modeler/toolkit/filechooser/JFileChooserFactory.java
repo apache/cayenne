@@ -19,25 +19,75 @@
 
 package org.apache.cayenne.modeler.toolkit.filechooser;
 
+import org.apache.cayenne.modeler.pref.adapters.FileChooserPrefs;
+
 import javax.swing.JFileChooser;
 import javax.swing.filechooser.FileFilter;
 import java.awt.Component;
 import java.io.File;
+import java.util.function.Consumer;
 
 /**
  * {@link FileChooserFactory} implementation backed by Swing's {@link JFileChooser}.
  */
-public class JFileChooserFactory extends FileChooserFactory {
+public class JFileChooserFactory implements FileChooserFactory {
 
     @Override
     public File openFile(Component parent, String title, File initialDir, FileFilter filter) {
+        return showOpen(
+                parent,
+                title,
+                JFileChooser.FILES_ONLY,
+                c -> {
+                    if (initialDir != null) c.setCurrentDirectory(initialDir);
+                },
+                filter);
+    }
+
+    @Override
+    public File openFile(Component parent, String title, FileChooserPrefs prefs, FileFilter filter) {
+        return showOpen(parent, title, JFileChooser.FILES_ONLY, prefs::bind, filter);
+    }
+
+    @Override
+    public File saveFile(Component parent, String title, FileChooserPrefs prefs, String defaultName) {
+        return showSave(parent, title, prefs::bind, defaultName);
+    }
+
+    @Override
+    public File openDir(Component parent, String title, File initialDir) {
+        return showOpen(parent, title, JFileChooser.DIRECTORIES_ONLY,
+                c -> {
+                    if (initialDir != null) c.setCurrentDirectory(initialDir);
+                }, null);
+    }
+
+    @Override
+    public File openDir(Component parent, String title, FileChooserPrefs prefs) {
+        return showOpen(parent, title, JFileChooser.DIRECTORIES_ONLY, prefs::bind, null);
+    }
+
+    @Override
+    public File saveDir(Component parent, String title, File initialDir) {
         JFileChooser chooser = new JFileChooser();
-        chooser.setFileSelectionMode(JFileChooser.FILES_ONLY);
+        chooser.setFileSelectionMode(JFileChooser.DIRECTORIES_ONLY);
+        if (initialDir != null) {
+            chooser.setCurrentDirectory(initialDir);
+        }
         if (title != null) {
             chooser.setDialogTitle(title);
         }
-        if (initialDir != null) {
-            chooser.setCurrentDirectory(initialDir);
+        return chooser.showDialog(parent, "Select") == JFileChooser.APPROVE_OPTION
+                ? chooser.getSelectedFile()
+                : null;
+    }
+
+    private File showOpen(Component parent, String title, int mode, Consumer<JFileChooser> init, FileFilter filter) {
+        JFileChooser chooser = new JFileChooser();
+        chooser.setFileSelectionMode(mode);
+        init.accept(chooser);
+        if (title != null) {
+            chooser.setDialogTitle(title);
         }
         if (filter != null) {
             chooser.addChoosableFileFilter(filter);
@@ -48,34 +98,16 @@ public class JFileChooserFactory extends FileChooserFactory {
                 : null;
     }
 
-    @Override
-    public File saveFile(Component parent, String title, File initialDir, String defaultName) {
+    private File showSave(Component parent, String title, Consumer<JFileChooser> init, String defaultName) {
         JFileChooser chooser = new JFileChooser();
+        init.accept(chooser);
         if (title != null) {
             chooser.setDialogTitle(title);
-        }
-        if (initialDir != null) {
-            chooser.setCurrentDirectory(initialDir);
         }
         if (defaultName != null) {
             chooser.setSelectedFile(new File(defaultName));
         }
         return chooser.showSaveDialog(parent) == JFileChooser.APPROVE_OPTION
-                ? chooser.getSelectedFile()
-                : null;
-    }
-
-    @Override
-    public File openDirectory(Component parent, String title, File initialDir) {
-        JFileChooser chooser = new JFileChooser();
-        chooser.setFileSelectionMode(JFileChooser.DIRECTORIES_ONLY);
-        if (title != null) {
-            chooser.setDialogTitle(title);
-        }
-        if (initialDir != null) {
-            chooser.setCurrentDirectory(initialDir);
-        }
-        return chooser.showOpenDialog(parent) == JFileChooser.APPROVE_OPTION
                 ? chooser.getSelectedFile()
                 : null;
     }

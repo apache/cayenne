@@ -30,6 +30,7 @@ import org.apache.cayenne.map.DataMap;
 import org.apache.cayenne.modeler.pref.dbconnector.DBConnector;
 import org.apache.cayenne.modeler.dbconnector.DBConnectorFactory;
 import org.apache.cayenne.modeler.pref.adapters.DBGeneratorPrefs;
+import org.apache.cayenne.modeler.pref.adapters.FileChooserPrefs;
 import org.apache.cayenne.modeler.toolkit.border.TopBorder;
 import org.apache.cayenne.modeler.toolkit.ProjectDialog;
 import org.apache.cayenne.modeler.ui.datasource.DataSourceDialog;
@@ -349,12 +350,8 @@ public class DBGeneratorOptionsDialog extends ProjectDialog {
     }
 
     private void storeSQLAction() {
-        File projectDir = new File(app
-                .getFrame().getProjectSession().project()
-                .getConfigurationResource()
-                .getURL()
-                .getPath());
-        File file = app.getFileChooserFactory().saveFile(this, "Save SQL Script", projectDir, null);
+        FileChooserPrefs prefs = new FileChooserPrefs(app.getPrefsManager().uiNode("dbgen/lastSqlDir"));
+        File file = app.getFileChooserFactory().saveFile(this, "Save SQL Script", prefs, null);
         if (file != null) {
             refreshGeneratorAction();
             try (FileWriter fw = new FileWriter(file); PrintWriter pw = new PrintWriter(fw)) {

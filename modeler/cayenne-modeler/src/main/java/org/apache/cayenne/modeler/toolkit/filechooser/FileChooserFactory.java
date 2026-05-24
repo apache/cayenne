@@ -19,28 +19,27 @@
 
 package org.apache.cayenne.modeler.toolkit.filechooser;
 
+import org.apache.cayenne.modeler.pref.adapters.FileChooserPrefs;
+
 import javax.swing.filechooser.FileFilter;
 import java.awt.Component;
 import java.io.File;
 
 /**
- * Platform-specific factory for file and directory chooser dialogs.
- * Implementations may use either a native OS dialog or Swing's JFileChooser.
+ * Platform-specific factory for file and directory chooser dialogs. Implementations may use either a native OS dialog
+ * or Swing's JFileChooser.
  */
-public abstract class FileChooserFactory {
+public interface FileChooserFactory {
 
-    /**
-     * Shows a file-open dialog and returns the selected file, or {@code null} if canceled.
-     */
-    public abstract File openFile(Component parent, String title, File initialDir, FileFilter filter);
+    File openFile(Component parent, String title, File initialDir, FileFilter filter);
 
-    /**
-     * Shows a file-save dialog and returns the selected file, or {@code null} if canceled.
-     */
-    public abstract File saveFile(Component parent, String title, File initialDir, String defaultName);
+    File openFile(Component parent, String title, FileChooserPrefs prefs, FileFilter filter);
 
-    /**
-     * Shows a directory-selection dialog and returns the selected directory, or {@code null} if canceled.
-     */
-    public abstract File openDirectory(Component parent, String title, File initialDir);
+    File openDir(Component parent, String title, File initialDir);
+
+    File openDir(Component parent, String title, FileChooserPrefs prefs);
+
+    File saveFile(Component parent, String title, FileChooserPrefs prefs, String defaultName);
+
+    File saveDir(Component parent, String title, File initialDir);
 }
