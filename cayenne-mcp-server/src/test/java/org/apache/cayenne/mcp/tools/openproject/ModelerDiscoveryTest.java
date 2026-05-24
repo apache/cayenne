@@ -174,8 +174,8 @@ public class ModelerDiscoveryTest {
         DiscoveryResult result = ModelerDiscovery.discover(tmp, OsKind.MAC);
 
         NotFound nf = assertInstanceOf(NotFound.class, result);
-        // Mac eligible probes: mac, generic, source_tree (3)
-        assertEquals(3, nf.probeNotes().size());
+        // Mac eligible probes: mac, generic (2)
+        assertEquals(2, nf.probeNotes().size());
         // None of the notes should mention .exe (Windows probe wasn't eligible).
         assertTrue(nf.probeNotes().stream().noneMatch(n -> n.contains(".exe")));
     }
@@ -199,47 +199,8 @@ public class ModelerDiscoveryTest {
         DiscoveryResult result = ModelerDiscovery.discover(tmp, OsKind.OTHER);
 
         NotFound nf = assertInstanceOf(NotFound.class, result);
-        // OTHER eligible probes: generic, source_tree (2)
-        assertEquals(2, nf.probeNotes().size());
-    }
-
-    // -------- Source-tree fallback --------
-
-    @Test
-    public void sourceTreeMatchesGenericLauncher(@TempDir Path tmp) throws IOException {
-        Path root = tmp.resolve("repo");
-        Files.createDirectories(root.resolve(".git"));
-        Path genericClasses = root.resolve("modeler/cayenne-modeler-generic/target/classes");
-        Files.createDirectories(genericClasses);
-        Files.createFile(genericClasses.resolve(ModelerDiscovery.GENERIC_JAR_NAME));
-
-        Path mcpDir = root.resolve("cayenne-mcp-server/target");
-        Files.createDirectories(mcpDir);
-
-        DiscoveryResult result = ModelerDiscovery.discover(mcpDir, OsKind.OTHER);
-
-        Found found = assertInstanceOf(Found.class, result);
-        assertEquals(OpenProjectDistribution.source_tree, found.distribution());
-        assertEquals(LauncherKind.GENERIC_JAR, found.launcherKind());
-    }
-
-    @Test
-    public void sourceTreeMatchesMacBundle(@TempDir Path tmp) throws IOException {
-        Path root = tmp.resolve("repo");
-        Files.createDirectories(root.resolve(".git"));
-        Path macClasses = root.resolve("modeler/cayenne-modeler-mac/target/classes");
-        Path bundle = macClasses.resolve("CayenneModeler.app");
-        Files.createDirectories(bundle.resolve("Contents/MacOS"));
-
-        Path mcpDir = root.resolve("cayenne-mcp-server/target");
-        Files.createDirectories(mcpDir);
-
-        DiscoveryResult result = ModelerDiscovery.discover(mcpDir, OsKind.MAC);
-
-        Found found = assertInstanceOf(Found.class, result);
-        assertEquals(OpenProjectDistribution.source_tree, found.distribution());
-        assertEquals(LauncherKind.MAC_APP, found.launcherKind());
-        assertEquals(bundle, found.launcher());
+        // OTHER eligible probes: generic (1)
+        assertEquals(1, nf.probeNotes().size());
     }
 
     @Test
@@ -247,8 +208,8 @@ public class ModelerDiscoveryTest {
         DiscoveryResult result = ModelerDiscovery.discover(tmp, OsKind.OTHER);
 
         NotFound nf = assertInstanceOf(NotFound.class, result);
-        assertEquals(2, nf.probeNotes().size(),
-                "OTHER has 2 eligible probes: generic and source_tree");
+        assertEquals(1, nf.probeNotes().size(),
+                "OTHER has 1 eligible probe: generic");
     }
 
     // -------- Helpers --------

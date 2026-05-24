@@ -40,9 +40,6 @@ final class ModelerDiscovery {
     static final String WINDOWS_EXE_NAME = "CayenneModeler.exe";
     static final String GENERIC_JAR_NAME = "CayenneModeler.jar";
 
-    /** Max levels to climb when locating the source-tree git root. */
-    private static final int SOURCE_TREE_CLIMB_LIMIT = 8;
-
     sealed interface DiscoveryResult permits Found, NotFound {}
 
     record Found(OpenProjectDistribution distribution, LauncherKind launcherKind, Path launcher)
@@ -54,16 +51,6 @@ final class ModelerDiscovery {
     }
 
     static DiscoveryResult discover(Path mcpDir, OsKind osKind) {
-        return discover(mcpDir, osKind, false);
-    }
-
-    /**
-     * @param isDistributionJar {@code true} when the MCP server is running from
-     *   {@value McpJarLocator#MCP_JAR_NAME} — a distribution build. When {@code true},
-     *   the source-tree fallback is skipped: a production jar should not accidentally
-     *   pick up a developer Modeler build.
-     */
-    static DiscoveryResult discover(Path mcpDir, OsKind osKind, boolean isDistributionJar) {
         List<String> notes = new ArrayList<>();
 
         if (osKind == OsKind.MAC) {
@@ -87,16 +74,6 @@ final class ModelerDiscovery {
             return new Found(OpenProjectDistribution.generic, LauncherKind.GENERIC_JAR, generic.get());
         }
         notes.add("generic: no " + GENERIC_JAR_NAME + " sibling of the MCP jar");
-
-        if (!isDistributionJar) {
-            Optional<Found> sourceTree = probeSourceTree(mcpDir, osKind);
-            if (sourceTree.isPresent()) {
-                return sourceTree.get();
-            }
-            notes.add("""
-                      source_tree: no built CayenneModeler under <gitRoot>/modeler/cayenne-modeler-{mac,win,generic}/target/classes/ \
-                      (run `mvn -pl modeler/cayenne-modeler-<kind> -am package -P<kind>`)""");
-        }
 
         return new NotFound(List.copyOf(notes));
     }
@@ -151,73 +128,4 @@ final class ModelerDiscovery {
         return Files.isRegularFile(candidate) ? Optional.of(candidate) : Optional.empty();
     }
 
-    /**
-     * Source-tree probe — climbs to a {@code .git}-bearing root and looks under
-     * {@code modeler/cayenne-modeler-{mac,win,generic}/target/classes/} for the
-     * OS-appropriate launcher. The reported distribution is {@code source_tree}
-     * so callers can see when dev-mode discovery kicked in; the launcher kind
-     * still drives argv construction.
-     */
-    static Optional<Found> probeSourceTree(Path mcpDir, OsKind osKind) {
-        Path gitRoot = findGitRoot(mcpDir);
-        if (gitRoot == null) {
-            return Optional.empty();
-        }
-
-        if (osKind == OsKind.MAC) {
-            Path macClasses = gitRoot.resolve("modeler/cayenne-modeler-mac/target/classes");
-            Optional<Path> bundle = findAppBundle(macClasses);
-            if (bundle.isPresent()) {
-                return Optional.of(new Found(
-                        OpenProjectDistribution.source_tree, LauncherKind.MAC_APP, bundle.get()));
-            }
-        }
-
-        if (osKind == OsKind.WINDOWS) {
-            Path winExe = gitRoot.resolve(
-                    "modeler/cayenne-modeler-win/target/classes/" + WINDOWS_EXE_NAME);
-            if (Files.isRegularFile(winExe)) {
-                return Optional.of(new Found(
-                        OpenProjectDistribution.source_tree, LauncherKind.WINDOWS_EXE, winExe));
-            }
-        }
-
-        Path genericJar = gitRoot.resolve(
-                "modeler/cayenne-modeler-generic/target/classes/" + GENERIC_JAR_NAME);
-        if (Files.isRegularFile(genericJar)) {
-            return Optional.of(new Found(
-                    OpenProjectDistribution.source_tree, LauncherKind.GENERIC_JAR, genericJar));
-        }
-
-        return Optional.empty();
-    }
-
-    private static Path findGitRoot(Path start) {
-        if (start == null) {
-            return null;
-        }
-        Path current = start;
-        for (int i = 0; i < SOURCE_TREE_CLIMB_LIMIT && current != null; i++) {
-            if (Files.isDirectory(current.resolve(".git"))) {
-                return current;
-            }
-            current = current.getParent();
-        }
-        return null;
-    }
-
-    private static Optional<Path> findAppBundle(Path dir) {
-        if (!Files.isDirectory(dir)) {
-            return Optional.empty();
-        }
-        try (var stream = Files.list(dir)) {
-            return stream
-                    .filter(p -> p.getFileName() != null
-                            && p.getFileName().toString().endsWith(".app"))
-                    .filter(p -> Files.isDirectory(p.resolve("Contents/MacOS")))
-                    .findFirst();
-        } catch (java.io.IOException e) {
-            return Optional.empty();
-        }
-    }
 }

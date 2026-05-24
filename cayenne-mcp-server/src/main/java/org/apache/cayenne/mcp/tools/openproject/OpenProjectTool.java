@@ -37,12 +37,16 @@ import org.apache.cayenne.mcp.tools.openproject.protocol.OpenProjectValidation;
 import org.apache.cayenne.modeler.pref.PrefsLocator;
 
 import java.io.IOException;
+import java.net.URISyntaxException;
+import java.net.URL;
 import java.nio.file.Files;
 import java.nio.file.Path;
+import java.nio.file.Paths;
+import java.security.CodeSource;
+import java.security.ProtectionDomain;
 import java.time.Duration;
 import java.util.List;
 import java.util.Map;
-import java.util.Optional;
 import java.util.UUID;
 
 /**
@@ -131,22 +135,21 @@ public class OpenProjectTool {
         }
 
         // Step 2 — locate the MCP jar's directory.
-        Optional<McpJarLocator.Located> mcpLocated = McpJarLocator.locate(OpenProjectTool.class);
-        if (mcpLocated.isEmpty()) {
+        Path mcpDir = mcpJarDir();
+        if (mcpDir == null) {
             return validationFailed(OpenProjectErrorCode.mcp_jar_location_unresolved,
                     "Could not resolve the running MCP server jar's location",
                     new OpenProjectValidation(true, false, null));
         }
-        McpJarLocator.Located mcp = mcpLocated.get();
 
         // Step 3 — discover a Modeler installation.
         OsKind osKind = OsKind.detect();
-        DiscoveryResult discovery = ModelerDiscovery.discover(mcp.dir(), osKind, mcp.isDistribution());
+        DiscoveryResult discovery = ModelerDiscovery.discover(mcpDir, osKind);
         return switch (discovery) {
             case Found f -> launchAndAwait(f, projectFile);
             case NotFound nf -> validationFailed(OpenProjectErrorCode.modeler_not_found,
                     "No CayenneModeler installation found relative to MCP jar at %s. Probes: %s"
-                            .formatted(mcp.dir(), String.join("; ", nf.probeNotes())),
+                            .formatted(mcpDir, String.join("; ", nf.probeNotes())),
                     new OpenProjectValidation(true, true, false));
         };
     }
@@ -214,20 +217,20 @@ public class OpenProjectTool {
                                 "Spawned Modeler process exited before reporting handshake (%s)"
                                         .formatted(exit)));
             }
-            case TIMEOUT -> {
-                yield new OpenProjectResult(
-                        "error",
-                        resolved,
-                        allPassed,
-                        null,
-                        new OpenProjectError(OpenProjectErrorCode.launch_not_confirmed,
-                                "Handshake did not appear within %ds".formatted(HANDSHAKE_TIMEOUT.toSeconds())));
-            }
+            case TIMEOUT -> new OpenProjectResult(
+                    "error",
+                    resolved,
+                    allPassed,
+                    null,
+                    new OpenProjectError(OpenProjectErrorCode.launch_not_confirmed,
+                            "Handshake did not appear within %ds".formatted(HANDSHAKE_TIMEOUT.toSeconds())));
         };
     }
 
-    private static OpenProjectResult validationFailed(OpenProjectErrorCode code, String message,
-                                                      OpenProjectValidation validation) {
+    private static OpenProjectResult validationFailed(
+            OpenProjectErrorCode code,
+            String message,
+            OpenProjectValidation validation) {
         return new OpenProjectResult(
                 "validation_failed",
                 null,
@@ -235,5 +238,26 @@ public class OpenProjectTool {
                 null,
                 new OpenProjectError(code, message)
         );
+    }
+
+    static Path mcpJarDir() {
+        try {
+            ProtectionDomain pd = OpenProjectTool.class.getProtectionDomain();
+            if (pd == null) {
+                return null;
+            }
+            CodeSource cs = pd.getCodeSource();
+            if (cs == null) {
+                return null;
+            }
+            URL url = cs.getLocation();
+            if (url == null) {
+                return null;
+            }
+            Path location = Paths.get(url.toURI());
+            return Files.isRegularFile(location) && location.getParent() != null ? location.getParent() : location;
+        } catch (URISyntaxException | RuntimeException e) {
+            return null;
+        }
     }
 }

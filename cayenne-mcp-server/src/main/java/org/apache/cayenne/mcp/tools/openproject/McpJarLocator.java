@@ -25,7 +25,6 @@ import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.security.CodeSource;
 import java.security.ProtectionDomain;
-import java.util.Optional;
 
 /**
  * Resolves the directory that contains the running MCP server jar. Used as the
@@ -35,46 +34,12 @@ import java.util.Optional;
  */
 final class McpJarLocator {
 
-    /** Canonical name of the MCP server jar in a distribution (outside of dev builds). */
-    static final String MCP_JAR_NAME = "CayenneMCPServer.jar";
-
-    record Located(Path dir, boolean isDistribution) {}
-
     private McpJarLocator() {
     }
 
     /**
-     * Locates the directory containing the jar (or class output dir) the given class
-     * was loaded from, and whether that jar is the canonical distribution jar
-     * ({@value #MCP_JAR_NAME}). Returns {@code Optional.empty()} in exotic launch
-     * configurations where the protection domain has no resolvable location.
+     * Returns the directory containing the jar the given class was loaded from, or {@code null} in exotic launch configurations where the
+     * protection domain has no resolvable location.
      */
-    static Optional<Located> locate(Class<?> anchor) {
-        try {
-            ProtectionDomain pd = anchor.getProtectionDomain();
-            if (pd == null) {
-                return Optional.empty();
-            }
-            CodeSource cs = pd.getCodeSource();
-            if (cs == null) {
-                return Optional.empty();
-            }
-            URL url = cs.getLocation();
-            if (url == null) {
-                return Optional.empty();
-            }
-            Path location = Paths.get(url.toURI());
-            // For a jar: location is the jar itself; we want its parent directory.
-            // For a class-file directory (IDE / surefire fork): location is the dir;
-            // its parent is also a reasonable starting point (target/), but here we
-            // want the dir that "would have been the jar's parent" — so use it directly.
-            boolean isDistribution = Files.isRegularFile(location)
-                    && MCP_JAR_NAME.equals(location.getFileName() != null
-                            ? location.getFileName().toString() : "");
-            Path dir = location.getParent() != null ? location.getParent() : location;
-            return Optional.of(new Located(dir, isDistribution));
-        } catch (URISyntaxException | RuntimeException e) {
-            return Optional.empty();
-        }
-    }
+
 }

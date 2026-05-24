@@ -26,6 +26,5 @@ package org.apache.cayenne.mcp.tools.openproject.protocol;
 public enum OpenProjectDistribution {
     mac,
     windows,
-    generic,
-    source_tree
+    generic
 }
