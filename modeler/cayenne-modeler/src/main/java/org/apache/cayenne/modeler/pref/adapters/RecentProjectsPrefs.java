@@ -41,6 +41,18 @@ public final class RecentProjectsPrefs extends PrefsAdapter {
         super(prefs);
     }
 
+    public File getStartDir() {
+        List<File> files = getFiles();
+        if (!files.isEmpty()) {
+            File parent = files.getFirst().getParentFile();
+            if (parent != null && parent.isDirectory()) {
+                return parent;
+            }
+        }
+
+        return new File(System.getProperty("user.dir"));
+    }
+
     public List<File> getFiles() {
         String[] keys = keys();
         List<File> files = new ArrayList<>(keys.length);
@@ -59,7 +71,7 @@ public final class RecentProjectsPrefs extends PrefsAdapter {
     public void addFile(File file) {
         List<File> files = getFiles();
         files.remove(file);
-        files.add(0, file);
+        files.addFirst(file);
         if (files.size() > MAX_SIZE) {
             files = files.subList(0, MAX_SIZE);
         }

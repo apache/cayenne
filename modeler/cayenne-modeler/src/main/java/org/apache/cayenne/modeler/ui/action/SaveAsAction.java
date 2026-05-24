@@ -27,12 +27,16 @@ import org.apache.cayenne.modeler.Application;
 import org.apache.cayenne.modeler.event.model.ProjectBeforeSaveEvent;
 import org.apache.cayenne.modeler.event.model.ProjectAfterSaveEvent;
 import org.apache.cayenne.modeler.pref.PrefsManager;
+import org.apache.cayenne.modeler.pref.adapters.RecentProjectsPrefs;
 import org.apache.cayenne.modeler.toolkit.AppAction;
+import org.apache.cayenne.modeler.ui.project.overwrite.OverwriteDialog;
 import org.apache.cayenne.project.Project;
 import org.apache.cayenne.project.ProjectSaver;
 import org.apache.cayenne.project.validation.ProjectValidator;
 import org.apache.cayenne.resource.URLResource;
 import org.apache.cayenne.validation.ValidationResult;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import javax.swing.*;
 import java.awt.*;
@@ -46,7 +50,7 @@ import java.io.File;
  */
 public class SaveAsAction extends AppAction {
 
-    private final ProjectOpener fileChooser;
+    private static final Logger LOGGER = LoggerFactory.getLogger(SaveAsAction.class);
 
     public SaveAsAction(Application application) {
         this("Save As...", application);
@@ -54,7 +58,6 @@ public class SaveAsAction extends AppAction {
 
     protected SaveAsAction(String name, Application application) {
         super(application, name);
-        this.fileChooser = new ProjectOpener();
     }
 
     @Override
@@ -70,7 +73,7 @@ public class SaveAsAction extends AppAction {
     protected boolean saveAll() throws Exception {
         Project p = getCurrentProject();
 
-        File projectDir = fileChooser.newProjectDir(app, p);
+        File projectDir = newProjectDir(p);
         if (projectDir == null) {
             return false;
         }
@@ -150,5 +153,42 @@ public class SaveAsAction extends AppAction {
 
         Project project = app.getFrame().getProjectSession().project();
         return project != null && project.isModified();
+    }
+
+    private File newProjectDir(Project p) {
+        if (p == null) {
+            throw new CayenneRuntimeException("Null project.");
+        }
+
+        StringBuilder nameProject = new StringBuilder("cayenne");
+        if (((DataChannelDescriptor) p.getRootNode()).getName() != null) {
+            nameProject.append("-").append(((DataChannelDescriptor) p.getRootNode()).getName());
+        }
+        nameProject.append(".xml");
+
+        File startDir = new RecentProjectsPrefs(app.getPrefsLocator().appNode(RecentProjectsPrefs.NODE)).getStartDir();
+
+        while (true) {
+            File selectedDir = app.getFileChooser(app.getFrame(), "Select Project Directory").saveDir(startDir);
+            if (selectedDir == null) {
+                LOGGER.info("Save canceled.");
+                return null;
+            }
+
+            LOGGER.info("Selected: {}", selectedDir);
+            File projectFile = new File(selectedDir, nameProject.toString());
+            if (projectFile.exists()) {
+                OverwriteDialog dialog = new OverwriteDialog(projectFile, app.getFrame());
+                dialog.show();
+                if (dialog.shouldOverwrite()) {
+                    return selectedDir;
+                } else if (!dialog.shouldSelectAnother()) {
+                    return null;
+                }
+                // else loop again
+            } else {
+                return selectedDir;
+            }
+        }
     }
 }

@@ -105,8 +105,8 @@ public class MacFileChooser implements CMFileChooser {
         System.setProperty(DIRS_DIALOG_PROPERTY, "true");
         try {
 
-            // FileDialog.LOAD results in the "Save" button being called "Load". This is unfortunate, but the
-            // alternative allows the user to override the file name
+            // TODO: FileDialog.LOAD results in the "Save" button being called "Load". This is unfortunate, but the
+            //   alternative allows the user to override the file name
             FileDialog fd = new FileDialog(parent, title != null ? title : "", FileDialog.LOAD);
             init.accept(fd);
             fd.setVisible(true);

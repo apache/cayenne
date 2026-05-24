@@ -20,7 +20,9 @@
 package org.apache.cayenne.modeler.ui.action;
 
 import org.apache.cayenne.modeler.Application;
+import org.apache.cayenne.modeler.pref.adapters.RecentProjectsPrefs;
 import org.apache.cayenne.modeler.toolkit.AppAction;
+import org.apache.cayenne.modeler.toolkit.filechooser.FileFilters;
 import org.apache.cayenne.modeler.ui.MainFrame;
 import org.apache.cayenne.modeler.ui.errors.ErrorDialog;
 import org.apache.cayenne.project.Project;
@@ -62,12 +64,8 @@ public class OpenProjectAction extends AppAction {
         PROJECT_TO_MODELER_VERSION = Collections.unmodifiableMap(map);
     }
 
-    private final ProjectOpener fileChooser;
-
-
     public OpenProjectAction(Application application) {
         super(application, "Open Project");
-        this.fileChooser = new ProjectOpener();
         resetClipboard();
     }
 
@@ -107,8 +105,7 @@ public class OpenProjectAction extends AppAction {
 
         if (f == null) {
             try {
-                // Get the project file name (always cayenne.xml)
-                f = fileChooser.openProjectFile(app);
+                f = openProjectFile();
             } catch (Exception ex) {
                 LOGGER.warn("Error loading project file.", ex);
             }
@@ -221,5 +218,12 @@ public class OpenProjectAction extends AppAction {
                 throw new UnsupportedFlavorException(flavor);
             }
         }, null);
+    }
+
+    private File openProjectFile() {
+        File startDir = new RecentProjectsPrefs(app.getPrefsLocator().appNode(RecentProjectsPrefs.NODE)).getStartDir();
+        return app
+                .getFileChooser(app.getFrame(), "Select Project File")
+                .openFile(startDir, FileFilters.getApplicationFilter());
     }
 }
