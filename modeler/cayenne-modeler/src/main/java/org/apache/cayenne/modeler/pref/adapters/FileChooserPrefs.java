@@ -47,10 +47,7 @@ public final class FileChooserPrefs extends PrefsAdapter {
     }
 
     public void bind(FileDialog dialog) {
-        File startDir = getDir();
-        if (startDir != null) {
-            dialog.setDirectory(startDir.getAbsolutePath());
-        }
+        // start directory already set by the caller — just attach the save listener
         dialog.addComponentListener(new ComponentAdapter() {
             @Override
             public void componentHidden(ComponentEvent e) {

@@ -47,15 +47,12 @@ public class MacFileChooser implements CMFileChooser {
 
     @Override
     public File openFile(File initialDir, FileFilter filter) {
-        return showOpen(toFilenameFilter(filter),
-                fd -> {
-                    if (initialDir != null) fd.setDirectory(initialDir.getAbsolutePath());
-                });
+        return showOpen(toFilenameFilter(filter), initialDir, fd -> {});
     }
 
     @Override
     public File openFile(FileChooserPrefs prefs, FileFilter filter) {
-        return showOpen(toFilenameFilter(filter), prefs::bind);
+        return showOpen(toFilenameFilter(filter), prefs.getDir(), prefs::bind);
     }
 
     @Override
@@ -72,7 +69,7 @@ public class MacFileChooser implements CMFileChooser {
 
     @Override
     public File saveFile(FileChooserPrefs prefs, String defaultName) {
-        return showSave(prefs::bind, defaultName);
+        return showSave(prefs.getDir(), prefs::bind, defaultName);
     }
 
     @Override
@@ -81,8 +78,11 @@ public class MacFileChooser implements CMFileChooser {
         return SwingFileChooser.showOpenDir(parent, title, initialDir, c -> {});
     }
 
-    private File showOpen(FilenameFilter fnFilter, Consumer<FileDialog> init) {
+    private File showOpen(FilenameFilter fnFilter, File startDir, Consumer<FileDialog> init) {
         FileDialog fd = new FileDialog(parent, title != null ? title : "", FileDialog.LOAD);
+        if (startDir != null) {
+            fd.setDirectory(startDir.getAbsolutePath());
+        }
         init.accept(fd);
         if (fnFilter != null) {
             fd.setFilenameFilter(fnFilter);
@@ -92,8 +92,11 @@ public class MacFileChooser implements CMFileChooser {
         return file != null ? new File(fd.getDirectory(), file) : null;
     }
 
-    private File showSave(Consumer<FileDialog> init, String defaultName) {
+    private File showSave(File startDir, Consumer<FileDialog> init, String defaultName) {
         FileDialog fd = new FileDialog(parent, title != null ? title : "", FileDialog.SAVE);
+        if (startDir != null) {
+            fd.setDirectory(startDir.getAbsolutePath());
+        }
         init.accept(fd);
         if (defaultName != null) {
             fd.setFile(defaultName);
