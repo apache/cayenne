@@ -61,13 +61,13 @@ public class MacFileChooser implements CMFileChooser {
     @Override
     public File openDir(File initialDir) {
         // must use custom JFileChooser, as MacOS native dialog doesn't allow to block file name selection
-        return SwingFileChooser.showOpenDir(parent, title, c -> { if (initialDir != null) c.setCurrentDirectory(initialDir); });
+        return SwingFileChooser.showOpenDir(parent, title, initialDir, c -> {});
     }
 
     @Override
     public File openDir(FileChooserPrefs prefs) {
         // must use custom JFileChooser, as MacOS native dialog doesn't allow to block file name selection
-        return SwingFileChooser.showOpenDir(parent, title, prefs::bind);
+        return SwingFileChooser.showOpenDir(parent, title, prefs.getDir(), prefs::bind);
     }
 
     @Override
@@ -78,7 +78,7 @@ public class MacFileChooser implements CMFileChooser {
     @Override
     public File saveDir(File initialDir) {
         // must use custom JFileChooser, as MacOS native dialog doesn't allow to block file name selection
-        return SwingFileChooser.showOpenDir(parent, title, c -> { if (initialDir != null) c.setCurrentDirectory(initialDir); });
+        return SwingFileChooser.showOpenDir(parent, title, initialDir, c -> {});
     }
 
     private File showOpen(FilenameFilter fnFilter, Consumer<FileDialog> init) {

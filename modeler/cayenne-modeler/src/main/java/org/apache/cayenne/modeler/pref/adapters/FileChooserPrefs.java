@@ -37,10 +37,8 @@ public final class FileChooserPrefs extends PrefsAdapter {
     }
 
     public void bind(JFileChooser chooser) {
-        File startDir = loadDir();
-        if (startDir != null) {
-            chooser.setCurrentDirectory(startDir);
-        }
+        // start directory already set via the JFileChooser constructor — just attach the save listener. Setting it
+        // again would make things very slow on Windows (setCurrentDirectory(targetDir) scans the target dir)
         chooser.addActionListener(e -> {
             if (JFileChooser.APPROVE_SELECTION.equals(e.getActionCommand())) {
                 saveDir(chooser.getSelectedFile());
@@ -49,7 +47,7 @@ public final class FileChooserPrefs extends PrefsAdapter {
     }
 
     public void bind(FileDialog dialog) {
-        File startDir = loadDir();
+        File startDir = getDir();
         if (startDir != null) {
             dialog.setDirectory(startDir.getAbsolutePath());
         }
@@ -65,7 +63,7 @@ public final class FileChooserPrefs extends PrefsAdapter {
         });
     }
 
-    private File loadDir() {
+    public File getDir() {
         String path = prefs.get(PATH_PROPERTY, null);
 
         if (path == null) {

@@ -36,9 +36,6 @@ import java.awt.Window;
 import java.io.File;
 import java.util.function.Consumer;
 
-/**
- * {@link CMFileChooser} implementation backed by Swing's {@link JFileChooser}.
- */
 public class SwingFileChooser implements CMFileChooser {
 
     private final Component parent;
@@ -51,43 +48,41 @@ public class SwingFileChooser implements CMFileChooser {
 
     @Override
     public File openFile(File initialDir, FileFilter filter) {
-        return showOpen(
-                JFileChooser.FILES_ONLY,
-                c -> { if (initialDir != null) c.setCurrentDirectory(initialDir); },
-                filter);
+        return showOpen(JFileChooser.FILES_ONLY, initialDir, c -> {}, filter);
     }
 
     @Override
     public File openFile(FileChooserPrefs prefs, FileFilter filter) {
-        return showOpen(JFileChooser.FILES_ONLY, prefs::bind, filter);
+        return showOpen(JFileChooser.FILES_ONLY, prefs.getDir(), prefs::bind, filter);
     }
 
     @Override
     public File openDir(File initialDir) {
-        return showOpenDir(parent, title, c -> { if (initialDir != null) c.setCurrentDirectory(initialDir); });
+        return showOpenDir(parent, title, initialDir, c -> {});
     }
 
     @Override
     public File openDir(FileChooserPrefs prefs) {
-        return showOpenDir(parent, title, prefs::bind);
+        return showOpenDir(parent, title, prefs.getDir(), prefs::bind);
     }
 
     @Override
     public File saveFile(FileChooserPrefs prefs, String defaultName) {
-        return showSave(prefs::bind, defaultName);
+        return showSave(prefs.getDir(), prefs::bind, defaultName);
     }
 
     @Override
     public File saveDir(File initialDir) {
-        return showOpenDir(parent, title, c -> { if (initialDir != null) c.setCurrentDirectory(initialDir); });
+        return showOpenDir(parent, title, initialDir, c -> {});
     }
 
     // setControlButtonsAreShown(false) + custom buttons: on macOS Aqua L&F the built-in
     // approve button is continuously re-disabled when nothing is selected (e.g. after
     // navigating into a directory). The custom dialog owns its own always-enabled "Select"
     // button and a "New Folder" button, and is used on all platforms for consistency.
-    public static File showOpenDir(Component parent, String title, Consumer<JFileChooser> init) {
-        JFileChooser chooser = new JFileChooser();
+
+    public static File showOpenDir(Component parent, String title, File startDir, Consumer<JFileChooser> init) {
+        JFileChooser chooser = new JFileChooser(startDir);
         chooser.setFileSelectionMode(JFileChooser.DIRECTORIES_ONLY);
         chooser.setControlButtonsAreShown(false);
         init.accept(chooser);
@@ -148,8 +143,8 @@ public class SwingFileChooser implements CMFileChooser {
         return selected != null ? selected : chooser.getCurrentDirectory();
     }
 
-    private File showOpen(int mode, Consumer<JFileChooser> init, FileFilter filter) {
-        JFileChooser chooser = new JFileChooser();
+    private File showOpen(int mode, File startDir, Consumer<JFileChooser> init, FileFilter filter) {
+        JFileChooser chooser = new JFileChooser(startDir);
         chooser.setFileSelectionMode(mode);
         init.accept(chooser);
         if (title != null) {
@@ -164,8 +159,8 @@ public class SwingFileChooser implements CMFileChooser {
                 : null;
     }
 
-    private File showSave(Consumer<JFileChooser> init, String defaultName) {
-        JFileChooser chooser = new JFileChooser();
+    private File showSave(File startDir, Consumer<JFileChooser> init, String defaultName) {
+        JFileChooser chooser = new JFileChooser(startDir);
         init.accept(chooser);
         if (title != null) {
             chooser.setDialogTitle(title);
