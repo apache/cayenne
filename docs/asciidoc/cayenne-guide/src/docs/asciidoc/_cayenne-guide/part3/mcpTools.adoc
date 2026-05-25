@@ -14,7 +14,12 @@
 
 === MCP Tools
 
-The server exposes three tools. Your agent will discover them on its own, but it is useful to understand the capabilities and possible prompts. All tools operate on a Cayenne project descriptor (a `cayenne-*.xml` file) and take absolute paths - agents should resolve relative paths against the current workspace before invoking.
+The server exposes three tools. Your agent will discover them on its own, but it is useful to understand the
+capabilities and possible prompts. All tools operate on a Cayenne project descriptor (a `cayenne-*.xml` file) and take
+absolute paths — agents should resolve relative paths against the current workspace before invoking.
+
+If you are using the `apache-cayenne` Claude Code plugin, its skills (`cayenne-cgen`, `cayenne-modeler`, `cayenne-db-import`)
+call these tools automatically. You can verify the server is available with `claude mcp list` — look for an entry named `cayenne`.
 
 ==== open_project
 
@@ -70,12 +75,12 @@ ____
 ==== dbimport_run
 
 Runs Cayenne reverse engineering (dbimport) for a single DataMap inside the project.
-The tool reads the JDBC connection from the DBConnector that CayenneModeler stored in preferences when the user last ran the reverse-engineering dialog for this DataMap.
+The tool reads the JDBC connection from CayenneModeler preferences on the local machine (the agent doesn't see the credentials).
 If the DataMap has a `<reverse-engineering>` block its filters are applied; otherwise the full database schema is imported.
 The DataMap XML is rewritten on disk with the merged schema, and a JSON summary of what changed is returned.
 
-JDBC credentials are not passed as arguments — they come from CayenneModeler preferences.
-If no connection has been saved yet (`dbconnector_not_configured` error), open the project in the Modeler with `open_project`, run the dialog once to save the connection, then call `dbimport_run` again.
+If no connection has been saved yet (`dbconnector_not_configured` error), open the project in the Modeler with
+`open_project`, run the dialog once to save the connection, then call `dbimport_run` again.
 
 .Parameters
 [cols="1,1,3", options="header"]

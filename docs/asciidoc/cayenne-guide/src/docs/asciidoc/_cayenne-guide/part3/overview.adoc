@@ -16,4 +16,9 @@
 
 AI coding agents such as Claude Code, Cursor, etc. can read and write Cayenne projects like any other Java codebase. For day-to-day API work — writing queries, manipulating an `ObjectContext`, etc. — you don't need anything Cayenne-specific. Prompt the agent the way you would for any other project.
 
-The Cayenne MCP (Model Context Protocol) server is what makes the agent _Cayenne-aware_ beyond plain source editing. It is a small stdio-based process that the AI client launches on demand and exposes a focused set of tools for operating on a Cayenne project descriptor. This chapter walks you through installing the server and explains the available tools.
+Two additional elements make the agent _Cayenne-aware_ beyond plain source editing:
+
+* MCP server — a small stdio-based process the agent launches on demand, exposing tools for class generation, DB import, and opening CayenneModeler. Works with any MCP-compatible client (Claude Code, Cursor, Codex, etc.).
+* `apache-cayenne` Claude Code plugin — a Claude Code-specific extension that bundles pre-built skills for DataMap editing, query writing, runtime setup, and more. The skills detect the MCP server at runtime; 
+
+Both elements are independent but work best together. This chapter walks you through installing both and explains the available MCP tools.

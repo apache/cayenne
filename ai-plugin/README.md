@@ -31,7 +31,7 @@ The plugin assumes downstream **users of Cayenne** writing their own Java apps. 
 
 ## Install
 
-**Cayenne 5.0+ only.** The MCP server ships with Cayenne 5.0. Skills that depend on it (`cayenne-cgen`, `cayenne-modeler`, `cayenne-reverse-engineer`) will not work against earlier Cayenne versions. The XML-editing, runtime, and query skills also target 5.0 idioms — for older Cayenne, this plugin is not the right tool.
+**Cayenne 5.0+ only.** The MCP server ships with Cayenne 5.0. Skills that depend on it (`cayenne-cgen`, `cayenne-modeler`, `cayenne-db-import`) will not work against earlier Cayenne versions. The XML-editing, runtime, and query skills also target 5.0 idioms — for older Cayenne, this plugin is not the right tool.
 
 The plugin is distributed from the Apache Cayenne GitHub repository: **https://github.com/apache/cayenne**. Inside Claude Code:
 
@@ -58,7 +58,7 @@ ai-plugin/
 ├── README.md                    # this file
 ├── skills/                      # auto-triggering workflows
 │   ├── cayenne-modeling/        # edit *.map.xml and cayenne-*.xml
-│   ├── cayenne-reverse-engineer/# import a DB schema (Modeler GUI)
+│   ├── cayenne-db-import/       # import a DB schema (Modeler GUI)
 │   ├── cayenne-cgen/            # regenerate Java classes via MCP
 │   ├── cayenne-modeler/         # open the GUI on a project
 │   ├── cayenne-runtime/         # bootstrap CayenneRuntime in an app

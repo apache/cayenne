@@ -16,6 +16,6 @@
 
 include::part3/overview.adoc[]
 
-include::part3/installingMcpServer.adoc[]
+include::part3/installing.adoc[]
 
 include::part3/mcpTools.adoc[]

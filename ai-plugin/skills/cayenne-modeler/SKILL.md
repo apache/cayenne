@@ -1,6 +1,6 @@
 ---
 name: cayenne-modeler
-description: "Use this skill when the user explicitly wants to open CayenneModeler (the GUI) on a Cayenne project, or when the modeling task is inherently visual — reverse engineering (delegated to cayenne-reverse-engineer), bulk relationship layout, multi-entity visual refactoring. Trigger on phrases like 'open the Modeler', 'open in CayenneModeler', 'launch the GUI', 'edit visually', 'show me the project in the Modeler'. Do NOT trigger as a fallback for ordinary a-la-carte XML edits — those belong in the cayenne-modeling skill, which is faster and doesn't require the user to context-switch."
+description: "Use this skill when the user explicitly wants to open CayenneModeler (the GUI) on a Cayenne project, or when the modeling task is inherently visual — reverse engineering (delegated to cayenne-db-import), bulk relationship layout, multi-entity visual refactoring. Trigger on phrases like 'open the Modeler', 'open in CayenneModeler', 'launch the GUI', 'edit visually', 'show me the project in the Modeler'. Do NOT trigger as a fallback for ordinary a-la-carte XML edits — those belong in the cayenne-modeling skill, which is faster and doesn't require the user to context-switch."
 ---
 
 <!--
@@ -63,7 +63,7 @@ The tool spawns the Modeler asynchronously, then waits up to ~15 seconds for a s
 
 Once `open_project` returns `ok`, the user is in the GUI. From here, depending on intent:
 
-- **Reverse engineering**: that's the `cayenne-reverse-engineer` skill's job to walk them through. Do not duplicate that workflow here — just open and step out.
+- **Reverse engineering**: that's the `cayenne-db-import` skill's job to walk them through. Do not duplicate that workflow here — just open and step out.
 - **Visual layout / bulk editing**: tell the user what tab to navigate to (e.g., DataMap → ObjEntity for entity-level edits, DataMap → Class Generation for cgen config) and let them work. Don't try to script GUI actions.
 - **Just wanted to see the project**: nothing more to do.
 

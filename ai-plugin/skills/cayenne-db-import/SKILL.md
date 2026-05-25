@@ -1,5 +1,5 @@
 ---
-name: cayenne-reverse-engineer
+name: cayenne-db-import
 description: "Use this skill whenever the user wants to import database schema metadata into a Cayenne DataMap — full-schema sync from a live DB. Trigger on phrases like 'reverse engineer the database', 'import the schema', 'generate a DataMap from my DB', 'sync the model with the database', 'add the new tables from the DB', 'import the customer table', 'pick up the latest schema changes', 'create entities from these tables', or any request that involves reading database metadata to populate or update a DataMap. This is for *full schema* or *bulk table* import; one-off a-la-carte entity additions belong in the cayenne-modeling skill. The skill runs reverse engineering directly via the `mcp__cayenne__dbimport_run` MCP tool when a DBConnector is already configured; otherwise it opens the CayenneModeler GUI via `mcp__cayenne__open_project` to configure the connection first."
 ---
 
@@ -21,7 +21,7 @@ description: "Use this skill whenever the user wants to import database schema m
 	specific language governing permissions and limitations
 	under the License.   
 -->
-# cayenne-reverse-engineer
+# cayenne-db-import
 
 Import a database schema into a Cayenne DataMap using the `mcp__cayenne__dbimport_run` MCP tool. If a DBConnector is already stored in preferences for the DataMap the import runs directly without any GUI interaction. When the connection has not been configured yet, the workflow launches CayenneModeler and walks the user through the dialog once to save the connection, then re-runs `dbimport_run`.
 

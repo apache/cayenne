@@ -81,7 +81,7 @@ If anything fails, fix it before reporting done.
 
 - **If you modified entities and the DataMap has a `<cgen>` block:** suggest invoking the `cayenne-cgen` skill to regenerate Java classes. Mention which entities are affected.
 - **If the user added a new entity and there's no Java class yet:** same — recommend `cayenne-cgen`.
-- **If the user is asking about a full DB sync** (importing many tables, syncing with a changed schema): hand off to `cayenne-reverse-engineer`. Do not try to script this via XML edits.
+- **If the user is asking about a full DB sync** (importing many tables, syncing with a changed schema): hand off to `cayenne-db-import`. Do not try to script this via XML edits.
 - **If the change is structurally messy** (bulk renaming relationships, visual graph rework): suggest the `cayenne-modeler` skill. Otherwise do not.
 
 ## Modeler coexistence

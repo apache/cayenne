@@ -20,7 +20,7 @@
 
 The Cayenne MCP server (`cayenne-mcp-server` module) exposes Cayenne operations to AI agents over stdio.
 
-**Availability: Cayenne 5.0+ only.** The MCP server is a new component shipped alongside CayenneModeler starting with the 5.0 release. There is no MCP server for Cayenne 4.x or earlier — skills that depend on these tools (`cayenne-cgen`, `cayenne-modeler`, `cayenne-reverse-engineer`) cannot be used against pre-5.0 projects.
+**Availability: Cayenne 5.0+ only.** The MCP server is a new component shipped alongside CayenneModeler starting with the 5.0 release. There is no MCP server for Cayenne 4.x or earlier — skills that depend on these tools (`cayenne-cgen`, `cayenne-modeler`, `cayenne-db-import`) cannot be used against pre-5.0 projects.
 
 Setup is documented in `cayenne-mcp-server/README.md` at the repo root. Quick form for Claude Code:
 
