@@ -12,10 +12,17 @@
 // the specific language governing permissions and limitations under the
 // License.
 
-== Agentic Coding
 
-include::part3/overview.adoc[]
+=== `apache-cayenne` Claude Code Plugin
 
-include::part3/plugin.adoc[]
+(Claude Code specific) Install the `apache-cayenne` plugin with Cayenne skills under Claude Code:
 
-include::part3/mcp.adoc[]
+[source,bash]
+----
+/plugin marketplace add apache/cayenne
+/plugin install apache-cayenne@apache-cayenne
+/reload-plugins
+----
+
+The plugin adds skills for DataMap editing, class generation, reverse engineering, query writing, and runtime setup.
+The skills work best with the MCP server present (see the next chapter).
