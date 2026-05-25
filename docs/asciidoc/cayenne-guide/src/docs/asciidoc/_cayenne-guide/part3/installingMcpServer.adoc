@@ -14,49 +14,53 @@
 
 === Installing the Cayenne MCP Server
 
-The MCP server is a self-contained, stdio-based process that the AI client launches on demand. It is bundled with the platform-specific CayenneModeler and requires Java 21 or later on the system `PATH`.
+The MCP server is a self-contained, stdio-based process that the AI client launches on demand. It is bundled with the
+platform-specific CayenneModeler and requires Java 21 or later on the system `PATH`.
 
 ==== Finding the JAR
 
-As mentioned above, the MCP server jar is a part if the CayenneModeler download (available at https://cayenne.apache.org/download/). Its location depends on the install format:
+As mentioned above, the MCP server jar is a part if the CayenneModeler download (available at
+https://cayenne.apache.org/download/). Its location depends on the install format:
 
 ===== macOS
 
 [source]
 ----
 # <install-dir> is typically "/Applications", but it can be any other directory
-<install-dir>/CayenneModeler.app/Contents/Resources/mcp/cayenne-mcp-server-<VERSION>.jar
+<install-dir>/CayenneModeler.app/Contents/Resources/mcp/CayenneMCPServer.jar
 ----
 
 ===== Windows
 
 [source]
 ----
-<install-dir>\bin\cayenne-mcp-server-<VERSION>.jar
+<install-dir>\bin\CayenneMCPServer.jar
 ----
 
 ===== Linux / cross-platform
 
 [source]
 ----
-<install-dir>/bin/cayenne-mcp-server-<VERSION>.jar
+<install-dir>/bin/CayenneMCPServer.jar
 ----
 
 ==== Configuring AI clients
 
-The server communicates over stdio and is launched on demand by the client. In the snippets below, replace `/path/to/cayenne-mcp-server-<VERSION>.jar` with the actual jar path from the previous section.
+The server communicates over stdio and is launched on demand by the client. In the snippets below, replace
+`/path/to/CayenneMCPServer.jar` with the actual jar path from the previous section.
 
 ===== Claude Code
 
-By default `claude mcp add` registers the server for the current project only. Use `--scope user` to make it available across all projects for your OS user:
+By default `claude mcp add` registers the server for the current project only. Use `--scope user` to make it available
+across all projects for your OS user:
 
 [source,bash]
 ----
 # Current project only
-claude mcp add cayenne -- java -jar /path/to/cayenne-mcp-server-<VERSION>.jar
+claude mcp add cayenne -- java -jar /path/to/CayenneMCPServer.jar
 
 # All projects for the current user
-claude mcp add cayenne --scope user -- java -jar /path/to/cayenne-mcp-server-<VERSION>.jar
+claude mcp add cayenne --scope user -- java -jar /path/to/CayenneMCPServer.jar
 ----
 
 ===== Cursor
@@ -69,7 +73,7 @@ Edit `~/.cursor/mcp.json` (global, all projects) or `.cursor/mcp.json` in your p
   "mcpServers": {
     "cayenne": {
       "command": "java",
-      "args": ["-jar", "/path/to/cayenne-mcp-server-<VERSION>.jar"]
+      "args": ["-jar", "/path/to/CayenneMCPServer.jar"]
     }
   }
 }
@@ -83,6 +87,6 @@ Add a `[mcp_servers.cayenne]` entry to `~/.codex/config.toml`:
 ----
 [mcp_servers.cayenne]
 command = "java"
-args = ["-jar", "/path/to/cayenne-mcp-server-<VERSION>.jar"]
+args = ["-jar", "/path/to/CayenneMCPServer.jar"]
 ----
 
