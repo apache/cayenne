@@ -19,26 +19,41 @@
 
 package org.apache.cayenne.modeler.toolkit.filechooser;
 
-import org.apache.cayenne.modeler.pref.adapters.FileChooserPrefs;
-
+import javax.swing.JFileChooser;
 import javax.swing.filechooser.FileFilter;
+import java.awt.Component;
 import java.io.File;
 
 /**
- * A file/directory chooser dialog bound to a specific parent component and title.
- * Obtained via {@code application.getFileChooser(parent, title)}.
+ * Modal open-file dialog backed by {@link JFileChooser#showOpenDialog}.
  */
-public interface CMFileChooser {
+public final class SwingFileOpenerDialog extends JFileChooser {
 
-    File openFile(File initialDir, FileFilter filter);
+    private final Component parent;
 
-    File openFile(FileChooserPrefs prefs, FileFilter filter);
+    public SwingFileOpenerDialog(
+            Component parent,
+            String title,
+            File startDir,
+            FileFilter filter) {
 
-    File openDir(File initialDir);
+        super(startDir);
 
-    File openDir(FileChooserPrefs prefs);
+        this.parent = parent;
+        setFileSelectionMode(FILES_ONLY);
+        if (title != null) {
+            setDialogTitle(title);
+        }
+        if (filter != null) {
+            addChoosableFileFilter(filter);
+            setFileFilter(filter);
+        }
+    }
 
-    File saveFile(FileChooserPrefs prefs, String defaultName);
-
-    File saveDir(File initialDir);
+    /**
+     * Shows the dialog modally and returns the selected file, or {@code null} if the user cancelled.
+     */
+    public File open() {
+        return showOpenDialog(parent) == APPROVE_OPTION ? getSelectedFile() : null;
+    }
 }

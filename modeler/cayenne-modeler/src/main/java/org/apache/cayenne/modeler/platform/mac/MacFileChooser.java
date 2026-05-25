@@ -21,11 +21,10 @@ package org.apache.cayenne.modeler.platform.mac;
 
 import org.apache.cayenne.modeler.pref.adapters.FileChooserPrefs;
 import org.apache.cayenne.modeler.toolkit.filechooser.CMFileChooser;
-import org.apache.cayenne.modeler.toolkit.filechooser.SwingFileChooser;
+import org.apache.cayenne.modeler.toolkit.filechooser.SwingDirChooserDialog;
 
 import javax.swing.filechooser.FileFilter;
-import java.awt.FileDialog;
-import java.awt.Frame;
+import java.awt.*;
 import java.io.File;
 import java.io.FilenameFilter;
 import java.util.function.Consumer;
@@ -57,14 +56,16 @@ public class MacFileChooser implements CMFileChooser {
 
     @Override
     public File openDir(File initialDir) {
-        // must use custom JFileChooser, as MacOS native dialog doesn't allow to block file name selection
-        return SwingFileChooser.showOpenDir(parent, title, initialDir, c -> {});
+        // must use custom JFileChooser, as macOS native dialog doesn't allow to block file name selection
+        return new SwingDirChooserDialog(parent, title, initialDir).open();
     }
 
     @Override
     public File openDir(FileChooserPrefs prefs) {
-        // must use custom JFileChooser, as MacOS native dialog doesn't allow to block file name selection
-        return SwingFileChooser.showOpenDir(parent, title, prefs.getDir(), prefs::bind);
+        // must use custom JFileChooser, as macOS native dialog doesn't allow to block file name selection
+        SwingDirChooserDialog dialog = new SwingDirChooserDialog(parent, title, prefs.getDir());
+        prefs.bind(dialog);
+        return dialog.open();
     }
 
     @Override
@@ -74,8 +75,8 @@ public class MacFileChooser implements CMFileChooser {
 
     @Override
     public File saveDir(File initialDir) {
-        // must use custom JFileChooser, as MacOS native dialog doesn't allow to block file name selection
-        return SwingFileChooser.showOpenDir(parent, title, initialDir, c -> {});
+        // must use custom JFileChooser, as macOS native dialog doesn't allow to block file name selection
+        return new SwingDirChooserDialog(parent, title, initialDir).open();
     }
 
     private File showOpen(FilenameFilter fnFilter, File startDir, Consumer<FileDialog> init) {
