@@ -19,9 +19,12 @@
 
 package org.apache.cayenne.modeler.toolkit.filechooser;
 
+import org.apache.cayenne.modeler.pref.adapters.FileChooserPrefs;
+
 import javax.swing.JFileChooser;
 import javax.swing.filechooser.FileFilter;
 import java.awt.Component;
+import java.awt.event.ActionListener;
 import java.io.File;
 
 /**
@@ -29,31 +32,50 @@ import java.io.File;
  */
 public final class SwingFileOpenerDialog extends JFileChooser {
 
-    private final Component parent;
+    private static SwingFileOpenerDialog instance;
 
-    public SwingFileOpenerDialog(
-            Component parent,
-            String title,
-            File startDir,
-            FileFilter filter) {
+    /**
+     * Returns the lazily-initialized cached singleton. Constructing a {@link JFileChooser} is
+     * expensive — on Windows it triggers a full L&amp;F UI delegate install and a Shell32 scan
+     * that can take hundreds of milliseconds, making first-time dialog open feel sluggish.
+     * Since Swing is single-threaded, one instance is safely reused across all callers; transient
+     * state (listeners, filters, current directory, selection) is reset on each {@link #open}.
+     */
+    public static SwingFileOpenerDialog getInstance() {
+        if (instance == null) {
+            instance = new SwingFileOpenerDialog();
+        }
+        return instance;
+    }
 
-        super(startDir);
-
-        this.parent = parent;
+    private SwingFileOpenerDialog() {
         setFileSelectionMode(FILES_ONLY);
-        if (title != null) {
-            setDialogTitle(title);
-        }
-        if (filter != null) {
-            addChoosableFileFilter(filter);
-            setFileFilter(filter);
-        }
     }
 
     /**
      * Shows the dialog modally and returns the selected file, or {@code null} if the user cancelled.
      */
-    public File open() {
+    public File open(Component parent, String title, File startDir, FileFilter filter, FileChooserPrefs prefs) {
+        reset();
+        if (startDir != null) {
+            setCurrentDirectory(startDir);
+        }
+        setDialogTitle(title);
+        if (filter != null) {
+            addChoosableFileFilter(filter);
+            setFileFilter(filter);
+        }
+        if (prefs != null) {
+            prefs.bind(this);
+        }
         return showOpenDialog(parent) == APPROVE_OPTION ? getSelectedFile() : null;
+    }
+
+    private void reset() {
+        for (ActionListener l : getActionListeners()) {
+            removeActionListener(l);
+        }
+        resetChoosableFileFilters();
+        setSelectedFile(null);
     }
 }

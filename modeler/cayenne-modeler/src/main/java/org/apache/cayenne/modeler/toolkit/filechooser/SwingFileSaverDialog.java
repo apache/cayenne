@@ -19,8 +19,11 @@
 
 package org.apache.cayenne.modeler.toolkit.filechooser;
 
+import org.apache.cayenne.modeler.pref.adapters.FileChooserPrefs;
+
 import javax.swing.JFileChooser;
 import java.awt.Component;
+import java.awt.event.ActionListener;
 import java.io.File;
 
 /**
@@ -28,29 +31,48 @@ import java.io.File;
  */
 public final class SwingFileSaverDialog extends JFileChooser {
 
-    private final Component parent;
+    private static SwingFileSaverDialog instance;
 
-    public SwingFileSaverDialog(
-            Component parent,
-            String title,
-            File startDir,
-            String defaultName) {
-
-        super(startDir);
-
-        this.parent = parent;
-        if (title != null) {
-            setDialogTitle(title);
+    /**
+     * Returns the lazily-initialized cached singleton. Constructing a {@link JFileChooser} is
+     * expensive — on Windows it triggers a full L&amp;F UI delegate install and a Shell32 scan
+     * that can take hundreds of milliseconds, making first-time dialog open feel sluggish.
+     * Since Swing is single-threaded, one instance is safely reused across all callers; transient
+     * state (listeners, filters, current directory, selection) is reset on each {@link #open}.
+     */
+    public static SwingFileSaverDialog getInstance() {
+        if (instance == null) {
+            instance = new SwingFileSaverDialog();
         }
-        if (defaultName != null) {
-            setSelectedFile(new File(defaultName));
-        }
+        return instance;
+    }
+
+    private SwingFileSaverDialog() {
     }
 
     /**
      * Shows the dialog modally and returns the selected file, or {@code null} if the user cancelled.
      */
-    public File open() {
+    public File open(Component parent, String title, File startDir, String defaultName, FileChooserPrefs prefs) {
+        reset();
+        if (startDir != null) {
+            setCurrentDirectory(startDir);
+        }
+        setDialogTitle(title);
+        if (defaultName != null) {
+            setSelectedFile(new File(defaultName));
+        }
+        if (prefs != null) {
+            prefs.bind(this);
+        }
         return showSaveDialog(parent) == APPROVE_OPTION ? getSelectedFile() : null;
+    }
+
+    private void reset() {
+        for (ActionListener l : getActionListeners()) {
+            removeActionListener(l);
+        }
+        resetChoosableFileFilters();
+        setSelectedFile(null);
     }
 }

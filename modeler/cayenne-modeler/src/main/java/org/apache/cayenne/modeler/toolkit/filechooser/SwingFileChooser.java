@@ -37,37 +37,31 @@ public class SwingFileChooser implements CMFileChooser {
 
     @Override
     public File openFile(File initialDir, FileFilter filter) {
-        return new SwingFileOpenerDialog(parent, title, initialDir, filter).open();
+        return SwingFileOpenerDialog.getInstance().open(parent, title, initialDir, filter, null);
     }
 
     @Override
     public File openFile(FileChooserPrefs prefs, FileFilter filter) {
-        SwingFileOpenerDialog dialog = new SwingFileOpenerDialog(parent, title, prefs.getDir(), filter);
-        prefs.bind(dialog);
-        return dialog.open();
+        return SwingFileOpenerDialog.getInstance().open(parent, title, prefs.getDir(), filter, prefs);
     }
 
     @Override
     public File openDir(File initialDir) {
-        return new SwingDirChooserDialog(parent, title, initialDir).open();
+        return SwingDirChooserDialog.getInstance().open(parent, title, initialDir, null);
     }
 
     @Override
     public File openDir(FileChooserPrefs prefs) {
-        SwingDirChooserDialog dialog = new SwingDirChooserDialog(parent, title, prefs.getDir());
-        prefs.bind(dialog);
-        return dialog.open();
+        return SwingDirChooserDialog.getInstance().open(parent, title, prefs.getDir(), prefs);
     }
 
     @Override
     public File saveFile(FileChooserPrefs prefs, String defaultName) {
-        SwingFileSaverDialog dialog = new SwingFileSaverDialog(parent, title, prefs.getDir(), defaultName);
-        prefs.bind(dialog);
-        return dialog.open();
+        return SwingFileSaverDialog.getInstance().open(parent, title, prefs.getDir(), defaultName, prefs);
     }
 
     @Override
     public File saveDir(File initialDir) {
-        return new SwingDirChooserDialog(parent, title, initialDir).open();
+        return SwingDirChooserDialog.getInstance().open(parent, title, initialDir, null);
     }
 }

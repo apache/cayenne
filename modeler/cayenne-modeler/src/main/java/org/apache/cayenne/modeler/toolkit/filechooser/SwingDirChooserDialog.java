@@ -19,6 +19,8 @@
 
 package org.apache.cayenne.modeler.toolkit.filechooser;
 
+import org.apache.cayenne.modeler.pref.adapters.FileChooserPrefs;
+
 import javax.swing.JButton;
 import javax.swing.JDialog;
 import javax.swing.JFileChooser;
@@ -27,6 +29,7 @@ import javax.swing.JPanel;
 import java.awt.BorderLayout;
 import java.awt.Component;
 import java.awt.FlowLayout;
+import java.awt.event.ActionListener;
 import java.io.File;
 
 /**
@@ -35,32 +38,50 @@ import java.io.File;
  */
 public final class SwingDirChooserDialog extends JFileChooser {
 
-    private final Component parent;
+    private static SwingDirChooserDialog instance;
+
+    /**
+     * Returns the lazily-initialized cached singleton. Constructing a {@link JFileChooser} is
+     * expensive — on Windows it triggers a full L&amp;F UI delegate install and a Shell32 scan
+     * that can take hundreds of milliseconds, making first-time dialog open feel sluggish.
+     * Since Swing is single-threaded, one instance is safely reused across all callers; transient
+     * state (listeners, current directory, selection) is reset on each {@link #open}.
+     */
+    public static SwingDirChooserDialog getInstance() {
+        if (instance == null) {
+            instance = new SwingDirChooserDialog();
+        }
+        return instance;
+    }
+
     private final JButton selectButton = new JButton("Select");
     private final JButton cancelButton = new JButton("Cancel");
     private final JButton newFolderButton = new JButton("New Folder");
 
-    public SwingDirChooserDialog(Component parent, String title, File startDir) {
-        super(startDir);
-        this.parent = parent;
-
+    private SwingDirChooserDialog() {
         setFileSelectionMode(DIRECTORIES_ONLY);
 
         // Using setControlButtonsAreShown(false) because on macOS Aqua L&F the built-in approve button is
         // continuously re-disabled when nothing is selected (e.g. after navigating into a directory).
         setControlButtonsAreShown(false);
 
-        if (title != null) {
-            setDialogTitle(title);
-        }
-
-        initBindings();
+        selectButton.addActionListener(e -> approveSelection());
+        cancelButton.addActionListener(e -> cancelSelection());
+        newFolderButton.addActionListener(e -> promptNewFolder());
     }
 
     /**
      * Shows the dialog modally and returns the selected directory, or {@code null} if the user cancelled.
      */
-    public File open() {
+    public File open(Component parent, String title, File startDir, FileChooserPrefs prefs) {
+        reset();
+        if (startDir != null) {
+            setCurrentDirectory(startDir);
+        }
+        setDialogTitle(title);
+        if (prefs != null) {
+            prefs.bind(this);
+        }
         if (showOpenDialog(parent) != APPROVE_OPTION) {
             return null;
         }
@@ -90,10 +111,11 @@ public final class SwingDirChooserDialog extends JFileChooser {
         return dialog;
     }
 
-    private void initBindings() {
-        selectButton.addActionListener(e -> approveSelection());
-        cancelButton.addActionListener(e -> cancelSelection());
-        newFolderButton.addActionListener(e -> promptNewFolder());
+    private void reset() {
+        for (ActionListener l : getActionListeners()) {
+            removeActionListener(l);
+        }
+        setSelectedFile(null);
     }
 
     private void promptNewFolder() {
