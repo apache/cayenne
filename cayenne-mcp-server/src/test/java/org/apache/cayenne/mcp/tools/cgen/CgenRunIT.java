@@ -28,6 +28,7 @@ import org.junit.jupiter.api.io.TempDir;
 import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
+import java.nio.file.attribute.FileTime;
 import java.util.List;
 
 import static org.junit.jupiter.api.Assertions.*;
@@ -115,6 +116,30 @@ public class CgenRunIT {
 
         int skipped = result.summary().filesConsidered() - result.summary().filesWritten();
         assertTrue(skipped >= 1, "At least one file (the existing subclass) should have been skipped");
+    }
+
+    @Test
+    public void regeneratesAfterDataMapChange() throws IOException {
+        // First run — generates files
+        CgenRunResult first = tool.run(projectFile.toString(), "PersonMap");
+        assertEquals("generated", first.status());
+
+        // Bump the DataMap's mtime to be clearly newer than the generated files.
+        // Use setLastModifiedTime rather than a wall-clock sleep to avoid
+        // filesystem mtime granularity issues (Windows has 1-second resolution).
+        long maxGeneratedMtime = first.files().stream()
+                .mapToLong(e -> Path.of(e.path()).toFile().lastModified())
+                .max()
+                .orElseThrow();
+        Path dataMapFile = tempDir.resolve("PersonMap.map.xml");
+        Files.setLastModifiedTime(dataMapFile, FileTime.fromMillis(maxGeneratedMtime + 5_000L));
+
+        // Second run — must detect that the DataMap is newer than the generated files
+        // and regenerate the superclass(es).
+        CgenRunResult second = tool.run(projectFile.toString(), "PersonMap");
+        assertEquals("generated", second.status(),
+                "Expected regeneration after DataMap mtime was bumped past generated files");
+        assertTrue(second.summary().filesWritten() > 0);
     }
 
     private Path writeFixture(String mapName, String pkg, Path destDir, boolean makePairs) throws IOException {
