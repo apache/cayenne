@@ -87,7 +87,7 @@ public class DbImportRunMcpIT {
 
         // The in-process MCP server uses new PrefsLocator() → Preferences.userRoot().
         // Write the connector there so the server can find it when the tool runs.
-        String dataMapId = PreferenceNodeIds.idForPath(dataMapFile.toAbsolutePath().toString());
+        String dataMapId = PreferenceNodeIds.idForPath(dataMapFile.toUri().getRawPath());
         PrefsLocator locator = new PrefsLocator(Preferences.userRoot());
         dataMapPrefsNode = locator.dataMapNode(dataMapId);
         DBConnector connector = new DBConnector();

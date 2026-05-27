@@ -165,7 +165,7 @@ public class DbImportRunValidationTest {
         connector.setJdbcDriver("com.nonexistent.Driver");
         connector.setDbAdapter("org.apache.cayenne.dba.hsqldb.HSQLDBNoSchemaAdapter");
         new DataMapPrefs(locator.dataMapNode(
-                PreferenceNodeIds.idForPath(dataMapFile.toAbsolutePath().toString())))
+                PreferenceNodeIds.idForPath(dataMapFile.toUri().getRawPath())))
                 .setConnector(connector);
 
         DbImportRunTool isolatedTool = new DbImportRunTool(locator);
@@ -198,7 +198,7 @@ public class DbImportRunValidationTest {
         connector.setJdbcDriver("org.hsqldb.jdbc.JDBCDriver");
         connector.setDbAdapter("org.apache.cayenne.dba.hsqldb.HSQLDBNoSchemaAdapter");
         new DataMapPrefs(locator.dataMapNode(
-                PreferenceNodeIds.idForPath(dataMapFile.toAbsolutePath().toString())))
+                PreferenceNodeIds.idForPath(dataMapFile.toUri().getRawPath())))
                 .setConnector(connector);
 
         DbImportRunTool isolatedTool = new DbImportRunTool(locator);

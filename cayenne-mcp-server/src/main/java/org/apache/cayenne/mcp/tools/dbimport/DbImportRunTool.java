@@ -189,11 +189,12 @@ public class DbImportRunTool {
                     new DbImportValidation(true, false, null, null, null));
         }
 
-        // Resolve DataMap file path for preference node lookup
-        Path dataMapFile = resolveDataMapFile(dataMap);
-
         // Step 4 — DBConnector stored in preferences?
-        String dataMapId = PreferenceNodeIds.idForPath(dataMapFile.toAbsolutePath().toString());
+        // Keep this in sync with PrefsManager.dataMapPath(...), which keys Modeler preferences
+        // from URL.getPath(). On Windows file:/D:/... has a leading slash here, and hashing a
+        // java.nio Path string would point to a different preference node.
+        URL dataMapSourceUrl = dataMap.getConfigurationSource().getURL();
+        String dataMapId = PreferenceNodeIds.idForPath(dataMapSourceUrl.getPath());
         DBConnector connector = new DataMapPrefs(prefsLocator.dataMapNode(dataMapId)).getConnector();
         if (connector == null) {
             return validationFailed(DbImportErrorCode.dbconnector_not_configured,
@@ -206,6 +207,7 @@ public class DbImportRunTool {
                     new DbImportValidation(true, true, false, null, null));
         }
 
+        Path dataMapFile = resolveDataMapFile(dataMap);
         DbImportResolved resolved = new DbImportResolved(
                 dataMapFile.toAbsolutePath().toString(),
                 connector.getUrl(),

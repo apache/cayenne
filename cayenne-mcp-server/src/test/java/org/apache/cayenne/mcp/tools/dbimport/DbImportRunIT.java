@@ -167,7 +167,7 @@ public class DbImportRunIT {
     public void connectorNotConfigured() {
         // Clear the connector from prefs
         new DataMapPrefs(prefsLocator.dataMapNode(
-                PreferenceNodeIds.idForPath(dataMapFile.toAbsolutePath().toString())))
+                PreferenceNodeIds.idForPath(dataMapFile.toUri().getRawPath())))
                 .setConnector(new DBConnector()); // empty connector clears URL sentinel
 
         DbImportRunResult result = tool.run(projectFile.toString(), "TestMap");
@@ -191,7 +191,7 @@ public class DbImportRunIT {
         c.setJdbcDriver(driver);
         c.setDbAdapter(adapter);
 
-        Preferences mapPrefs = prefsLocator.dataMapNode(PreferenceNodeIds.idForPath(dataMapFile.toAbsolutePath().toString()));
+        Preferences mapPrefs = prefsLocator.dataMapNode(PreferenceNodeIds.idForPath(dataMapFile.toUri().getRawPath()));
         new DataMapPrefs(mapPrefs).setConnector(c);
     }
 }
