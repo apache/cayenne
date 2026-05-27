@@ -46,6 +46,7 @@ CAY-2945 CayenneModeler universal "main"
 CAY-2946 Claude Code "plugin" for agentic coding with Cayenne
 CAY-2947 Merge "cayenne-commitlog" into the core
 CAY-2948 Modeler: use native FileDialog on Mac
+CAY-2953 Upgrade Gradle to 9.4.0
 
 Bug Fixes:
 
