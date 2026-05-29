@@ -127,6 +127,10 @@ class ReverseEngineeringTreePanel extends ProjectPanel {
                 } else if (reverseEngineeringTree.getSelectionPath() != null) {
                     DbImportTreeNode selectedNode = reverseEngineeringTree.getSelectedNode();
 
+                    if (selectedNode.isLabel() || selectedNode.isReverseEngineering()) {
+                        return;
+                    }
+
                     if (selectedNode.isExcludeColumn() || selectedNode.isIncludeColumn()) {
                         DbImportTreeNode expandNode = selectedNode.getParent();
 
