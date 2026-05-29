@@ -207,7 +207,7 @@ public class DataSourceDialog extends ProjectDialog {
         DBConnectors registry = app.getDbConnectors();
         java.util.Set<String> before = new java.util.HashSet<>(registry.getAll().keySet());
 
-        new PreferenceDialog(app, app.getFrame()).showDBConnectorEditorAction(dataSourceKey);
+        new PreferenceDialog(app, this).showDBConnectorEditorAction(dataSourceKey);
 
         // auto-select any newly-added DataSource (last new wins, matching prior commit-order behavior)
         for (String name : registry.getAll().keySet()) {
@@ -219,7 +219,7 @@ public class DataSourceDialog extends ProjectDialog {
     }
 
     private void classPathConfigAction() {
-        new PreferenceDialog(app, app.getFrame()).showClassPathEditorAction();
+        new PreferenceDialog(app, this).showClassPathEditorAction();
         refreshDataSources();
     }
 

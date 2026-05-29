@@ -79,7 +79,7 @@ public class PreferenceDialog extends AppDialog {
     private final MorePrefsPanel morePrefs;
 
     public PreferenceDialog(Application app, Window owner) {
-        super(app, owner, "Edit Preferences", ModalityType.MODELESS);
+        super(app, owner, "Edit Preferences", ModalityType.APPLICATION_MODAL);
 
         this.menu = new JList<>();
         this.detailLayout = new CardLayout();
