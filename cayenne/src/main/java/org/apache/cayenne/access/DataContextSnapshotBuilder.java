@@ -38,11 +38,6 @@ import org.apache.cayenne.reflect.ToOneProperty;
 
 import java.util.Map;
 
-/**
- * {@link DataContext} delegates object snapshot creation to this class
- *
- * @see DataContext#currentSnapshot(Persistent)
- */
 class DataContextSnapshotBuilder implements PropertyVisitor {
 
     private final EntityResolver resolver;

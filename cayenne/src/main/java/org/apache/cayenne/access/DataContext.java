@@ -243,7 +243,7 @@ public class DataContext implements ObjectContext {
         setEntityResolver(channel.getEntityResolver());
 
         if (mergeHandler != null) {
-            mergeHandler.setActive(false);
+            mergeHandler.stop();
             mergeHandler = null;
         }
 

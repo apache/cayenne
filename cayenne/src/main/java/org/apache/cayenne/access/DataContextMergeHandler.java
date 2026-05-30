@@ -38,33 +38,28 @@ import org.apache.cayenne.reflect.ToOneProperty;
 
 /**
  * A listener of GraphEvents sent by the DataChannel that merges changes to the DataContext.
- * 
+ *
  * @since 1.2
  */
-// TODO: andrus, 11/25/2006 - this logic is the same as the logic in DataRowUtils used to
-// merge snapshot changes. Any way to reconclie the two? (in fact DataRowUtils is more
-// comprehensive)
 class DataContextMergeHandler implements GraphChangeHandler, DataChannelListener {
 
-    private boolean active;
     private final DataContext context;
+    private volatile boolean stopped;
 
     DataContextMergeHandler(DataContext context) {
-        this.active = true;
         this.context = context;
     }
 
-    void setActive(boolean active) {
-        this.active = active;
+    void stop() {
+        this.stopped = true;
     }
 
     /**
-     * Returns true if this object is active and an event came from our channel, but did
-     * not originate in it.
+     * Returns true if this object is active and an event came from our channel, but did not originate in it.
      */
     private boolean shouldProcessEvent(GraphEvent e) {
 
-        if (!active) {
+        if (stopped) {
             return false;
         }
 
@@ -149,7 +144,7 @@ class DataContextMergeHandler implements GraphChangeHandler, DataChannelListener
     public void nodeRemoved(Object nodeId) {
         ObjectStore os = context.getObjectStore();
         synchronized (os) {
-            os.processDeletedID((ObjectId)nodeId);
+            os.processDeletedID((ObjectId) nodeId);
         }
     }
 
