@@ -142,9 +142,9 @@ public class SQLTemplateAction implements SQLAction {
 		SQLStatement compiled = dataNode.getSqlTemplateProcessor().processTemplate(template,
 				query.getPositionalParams());
 
-		bindExtendedTypes(compiled.getBindings());
+		bindExtendedTypes(compiled.bindings());
 		if (loggable) {
-			dataNode.getJdbcEventLogger().logQuery(compiled.getSql(), compiled.getBindings());
+			dataNode.getJdbcEventLogger().logQuery(compiled.sql(), compiled.bindings());
 		}
 
 		execute(connection, callback, compiled, counts);
@@ -172,9 +172,9 @@ public class SQLTemplateAction implements SQLAction {
 		for (int i = 0; i < batchSize; i++) {
 			Map<String, ?> nextParameters = it.next();
 			SQLStatement compiled = dataNode.getSqlTemplateProcessor().processTemplate(template, nextParameters);
-			bindExtendedTypes(compiled.getBindings());
+			bindExtendedTypes(compiled.bindings());
 			if (loggable) {
-				dataNode.getJdbcEventLogger().logQuery(compiled.getSql(), compiled.getBindings());
+				dataNode.getJdbcEventLogger().logQuery(compiled.sql(), compiled.bindings());
 			}
 
 			execute(connection, callback, compiled, counts);
@@ -188,10 +188,10 @@ public class SQLTemplateAction implements SQLAction {
 		long t1 = System.currentTimeMillis();
 		boolean iteratedResult = callback.isIteratedResult();
 		int generatedKeys = query.isReturnGeneratedKeys() ? Statement.RETURN_GENERATED_KEYS : Statement.NO_GENERATED_KEYS;
-		PreparedStatement statement = connection.prepareStatement(compiled.getSql(), generatedKeys);
+		PreparedStatement statement = connection.prepareStatement(compiled.sql(), generatedKeys);
 
 		try {
-			bind(statement, compiled.getBindings());
+			bind(statement, compiled.bindings());
 
 			// process a mix of results
 			boolean isResultSet = statement.execute();
@@ -302,11 +302,11 @@ public class SQLTemplateAction implements SQLAction {
 	 */
 	private ColumnDescriptor[] createColumnDescriptors(SQLStatement compiled) {
 		// SQLTemplate #result columns take precedence over other ways to determine the type
-		if (compiled.getResultColumns().length > 0) {
+		if (compiled.resultColumns().length > 0) {
 			if(query.getResultColumnsTypes() != null) {
 				throw new CayenneRuntimeException("Caused by setting return types by directives and by parameters in query.");
 			} else {
-				return compiled.getResultColumns();
+				return compiled.resultColumns();
 			}
 		}
 

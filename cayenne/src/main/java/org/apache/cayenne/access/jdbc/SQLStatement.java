@@ -22,62 +22,9 @@ package org.apache.cayenne.access.jdbc;
 import org.apache.cayenne.access.translator.ParameterBinding;
 
 /**
- * A PreparedStatement descriptor containing a String of SQL and an array of parameters.
- * SQLStatement is essentially a "compiled" version of any single query.
- * 
+ * A translated form of a Query used to generated PreparedStatements.
+ *
  * @since 1.1
  */
-public class SQLStatement {
-
-    protected String sql;
-    protected ParameterBinding[] bindings;
-    protected ColumnDescriptor[] resultColumns;
-
-    public SQLStatement() {
-    }
-
-    public SQLStatement(String sql, ParameterBinding[] bindings) {
-        this(sql, null, bindings);
-    }
-
-    /**
-     * @since 1.2
-     */
-    public SQLStatement(String sql, ColumnDescriptor[] resultColumns,
-                        ParameterBinding[] bindings) {
-
-        setSql(sql);
-        setBindings(bindings);
-        setResultColumns(resultColumns);
-    }
-
-    /**
-     * @since 1.2
-     */
-    public ColumnDescriptor[] getResultColumns() {
-        return resultColumns;
-    }
-
-    /**
-     * @since 1.2
-     */
-    public void setResultColumns(ColumnDescriptor[] descriptors) {
-        resultColumns = descriptors;
-    }
-
-    public ParameterBinding[] getBindings() {
-        return bindings;
-    }
-
-    public String getSql() {
-        return sql;
-    }
-
-    public void setBindings(ParameterBinding[] bindings) {
-        this.bindings = bindings;
-    }
-
-    public void setSql(String string) {
-        sql = string;
-    }
+public record SQLStatement(String sql, ColumnDescriptor[] resultColumns, ParameterBinding[] bindings) {
 }

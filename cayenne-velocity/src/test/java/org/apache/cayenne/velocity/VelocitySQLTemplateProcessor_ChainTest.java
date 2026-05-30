@@ -45,18 +45,18 @@ public class VelocitySQLTemplateProcessor_ChainTest {
 
 		SQLStatement compiled = processor.processTemplate("#chain(' AND ') #end",
 				Collections.<String, Object> emptyMap());
-		assertEquals("", compiled.getSql());
+		assertEquals("", compiled.sql());
 
 		compiled = processor.processTemplate("#chain(' AND ') garbage #end", Collections.<String, Object> emptyMap());
-		assertEquals("", compiled.getSql());
+		assertEquals("", compiled.sql());
 
 		compiled = processor.processTemplate("#chain(' AND ' 'PREFIX') #end", Collections.<String, Object> emptyMap());
 
-		assertEquals("", compiled.getSql());
+		assertEquals("", compiled.sql());
 		compiled = processor.processTemplate("#chain(' AND ' 'PREFIX') garbage #end",
 				Collections.<String, Object> emptyMap());
 
-		assertEquals("", compiled.getSql());
+		assertEquals("", compiled.sql());
 	}
 
 	@Test
@@ -69,7 +69,7 @@ public class VelocitySQLTemplateProcessor_ChainTest {
 		map.put("c", "[C]");
 
 		SQLStatement compiled = processor.processTemplate(template, map);
-		assertEquals("[A] OR [B] OR [C]", compiled.getSql());
+		assertEquals("[A] OR [B] OR [C]", compiled.sql());
 	}
 
 	@Test
@@ -83,7 +83,7 @@ public class VelocitySQLTemplateProcessor_ChainTest {
 		map.put("c", "[C]");
 
 		SQLStatement compiled = processor.processTemplate(template, map);
-		assertEquals("WHERE [A] OR [B] OR [C]", compiled.getSql());
+		assertEquals("WHERE [A] OR [B] OR [C]", compiled.sql());
 	}
 
 	@Test
@@ -96,7 +96,7 @@ public class VelocitySQLTemplateProcessor_ChainTest {
 		map.put("c", "[C]");
 
 		SQLStatement compiled = processor.processTemplate(template, map);
-		assertEquals("WHERE [A] OR [C]", compiled.getSql());
+		assertEquals("WHERE [A] OR [C]", compiled.sql());
 	}
 
 	@Test
@@ -109,7 +109,7 @@ public class VelocitySQLTemplateProcessor_ChainTest {
 		map.put("c", "[C]");
 
 		SQLStatement compiled = processor.processTemplate(template, map);
-		assertEquals("WHERE [B] OR [C]", compiled.getSql());
+		assertEquals("WHERE [B] OR [C]", compiled.sql());
 	}
 
 	@Test
@@ -122,7 +122,7 @@ public class VelocitySQLTemplateProcessor_ChainTest {
 		map.put("b", "[B]");
 
 		SQLStatement compiled = processor.processTemplate(template, map);
-		assertEquals("WHERE [A] OR [B]", compiled.getSql());
+		assertEquals("WHERE [A] OR [B]", compiled.sql());
 	}
 
 	@Test
@@ -135,7 +135,7 @@ public class VelocitySQLTemplateProcessor_ChainTest {
 		map.put("c", "[C]");
 
 		SQLStatement compiled = processor.processTemplate(template, map);
-		assertEquals("WHERE [A] some other stuff OR [C]", compiled.getSql());
+		assertEquals("WHERE [A] some other stuff OR [C]", compiled.sql());
 	}
 
 	@Test
@@ -143,7 +143,7 @@ public class VelocitySQLTemplateProcessor_ChainTest {
 		String template = "#chain(' OR ' 'WHERE ')" + "#chunk()C1#end" + "#chunk()C2#end" + "#chunk()C3#end" + "#end";
 
 		SQLStatement compiled = processor.processTemplate(template, Collections.<String, Object> emptyMap());
-		assertEquals("WHERE C1 OR C2 OR C3", compiled.getSql());
+		assertEquals("WHERE C1 OR C2 OR C3", compiled.sql());
 	}
 
 	@Test
@@ -152,7 +152,7 @@ public class VelocitySQLTemplateProcessor_ChainTest {
 				+ "#end";
 
 		SQLStatement compiled = processor.processTemplate(template, Collections.<String, Object> emptyMap());
-		assertEquals("", compiled.getSql());
+		assertEquals("", compiled.sql());
 	}
 
 	@Test
@@ -165,7 +165,7 @@ public class VelocitySQLTemplateProcessor_ChainTest {
 		map.put("b", 0);
 
 		SQLStatement compiled = processor.processTemplate(template, map);
-		assertEquals("WHERE [A] OR [B]", compiled.getSql());
+		assertEquals("WHERE [A] OR [B]", compiled.sql());
 	}
 
 	@Test
@@ -178,7 +178,7 @@ public class VelocitySQLTemplateProcessor_ChainTest {
 		map.put("b", 0);
 
 		SQLStatement compiled = processor.processTemplate(template, map);
-		assertEquals("WHERE false OR 0", compiled.getSql());
+		assertEquals("WHERE false OR 0", compiled.sql());
 	}
 
 }
