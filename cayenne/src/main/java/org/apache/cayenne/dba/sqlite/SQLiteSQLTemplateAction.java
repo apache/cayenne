@@ -51,15 +51,15 @@ class SQLiteSQLTemplateAction extends SQLTemplateAction {
             SQLStatement compiled,
             Collection<Number> updateCounts) throws SQLException, Exception {
 
-        String sql = compiled.getSql().trim();
+        String sql = compiled.sql().trim();
         boolean select = sql.length() > "SELECT".length()
                 && sql.substring(0, "SELECT".length()).equalsIgnoreCase("SELECT");
 
         long t1 = System.currentTimeMillis();
         boolean iteratedResult = callback.isIteratedResult();
-        PreparedStatement statement = connection.prepareStatement(compiled.getSql());
+        PreparedStatement statement = connection.prepareStatement(compiled.sql());
         try {
-            bind(statement, compiled.getBindings());
+            bind(statement, compiled.bindings());
 
             // start - code different from super
             if (select) {

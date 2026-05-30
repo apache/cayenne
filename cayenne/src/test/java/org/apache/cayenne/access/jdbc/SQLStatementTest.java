@@ -33,19 +33,9 @@ public class SQLStatementTest {
     @Test
     public void constructor() throws Exception {
         ParameterBinding[] bindings = new ParameterBinding[0];
-        SQLStatement statement = new SQLStatement("abc", bindings);
-        assertEquals("abc", statement.getSql());
-        assertSame(bindings, statement.getBindings());
-    }
-
-    @Test
-    public void sql() throws Exception {
-        SQLStatement statement = new SQLStatement();
-        statement.setSql("abc");
-        assertEquals("abc", statement.getSql());
-        statement.setSql("xyz");
-        assertEquals("xyz", statement.getSql());
-        statement.setSql(null);
-        assertNull(statement.getSql());
+        SQLStatement statement = new SQLStatement("abc", null, bindings);
+        assertEquals("abc", statement.sql());
+        assertSame(bindings, statement.bindings());
+        assertNull(statement.resultColumns());
     }
 }

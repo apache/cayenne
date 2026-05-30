@@ -44,9 +44,9 @@ public class VelocitySQLTemplateProcessor_SelectTest {
 
 		SQLStatement compiled = processor.processTemplate(sqlTemplate, Collections.<String, Object> emptyMap());
 
-		assertEquals(sqlTemplate, compiled.getSql());
-		assertEquals(0, compiled.getBindings().length);
-		assertEquals(0, compiled.getResultColumns().length);
+		assertEquals(sqlTemplate, compiled.sql());
+		assertEquals(0, compiled.bindings().length);
+		assertEquals(0, compiled.resultColumns().length);
 	}
 
 	@Test
@@ -55,11 +55,11 @@ public class VelocitySQLTemplateProcessor_SelectTest {
 
 		SQLStatement compiled = processor.processTemplate(sqlTemplate, Collections.<String, Object> emptyMap());
 
-		assertEquals("SELECT A FROM ME", compiled.getSql());
-		assertEquals(0, compiled.getBindings().length);
-		assertEquals(1, compiled.getResultColumns().length);
-		assertEquals("A", compiled.getResultColumns()[0].getName());
-		assertNull(compiled.getResultColumns()[0].getJavaClass());
+		assertEquals("SELECT A FROM ME", compiled.sql());
+		assertEquals(0, compiled.bindings().length);
+		assertEquals(1, compiled.resultColumns().length);
+		assertEquals("A", compiled.resultColumns()[0].getName());
+		assertNull(compiled.resultColumns()[0].getJavaClass());
 	}
 
 	@Test
@@ -68,12 +68,12 @@ public class VelocitySQLTemplateProcessor_SelectTest {
 
 		SQLStatement compiled = processor.processTemplate(sqlTemplate, Collections.<String, Object> emptyMap());
 
-		assertEquals("SELECT A FROM ME", compiled.getSql());
-		assertEquals(0, compiled.getBindings().length);
+		assertEquals("SELECT A FROM ME", compiled.sql());
+		assertEquals(0, compiled.bindings().length);
 
-		assertEquals(1, compiled.getResultColumns().length);
-		assertEquals("A", compiled.getResultColumns()[0].getName());
-		assertEquals("java.lang.String", compiled.getResultColumns()[0].getJavaClass());
+		assertEquals(1, compiled.resultColumns().length);
+		assertEquals("A", compiled.resultColumns()[0].getName());
+		assertEquals("java.lang.String", compiled.resultColumns()[0].getJavaClass());
 	}
 
 	@Test
@@ -82,11 +82,11 @@ public class VelocitySQLTemplateProcessor_SelectTest {
 
 		SQLStatement compiled = processor.processTemplate(sqlTemplate, Collections.<String, Object> emptyMap());
 
-		assertEquals("SELECT A AS B FROM ME", compiled.getSql());
-		assertEquals(0, compiled.getBindings().length);
+		assertEquals("SELECT A AS B FROM ME", compiled.sql());
+		assertEquals(0, compiled.bindings().length);
 
-		assertEquals(1, compiled.getResultColumns().length);
-		ColumnDescriptor column = compiled.getResultColumns()[0];
+		assertEquals(1, compiled.resultColumns().length);
+		ColumnDescriptor column = compiled.resultColumns()[0];
 		assertEquals("A", column.getName());
 		assertEquals("B", column.getDataRowKey());
 		assertEquals("java.lang.String", column.getJavaClass());
@@ -98,12 +98,12 @@ public class VelocitySQLTemplateProcessor_SelectTest {
 
 		SQLStatement compiled = processor.processTemplate(sqlTemplate, Collections.<String, Object> emptyMap());
 
-		assertEquals("SELECT A, B, C FROM ME", compiled.getSql());
-		assertEquals(0, compiled.getBindings().length);
+		assertEquals("SELECT A, B, C FROM ME", compiled.sql());
+		assertEquals(0, compiled.bindings().length);
 
-		assertEquals(3, compiled.getResultColumns().length);
-		assertEquals("A", compiled.getResultColumns()[0].getName());
-		assertEquals("B", compiled.getResultColumns()[1].getName());
-		assertEquals("C", compiled.getResultColumns()[2].getName());
+		assertEquals(3, compiled.resultColumns().length);
+		assertEquals("A", compiled.resultColumns()[0].getName());
+		assertEquals("B", compiled.resultColumns()[1].getName());
+		assertEquals("C", compiled.resultColumns()[2].getName());
 	}
 }

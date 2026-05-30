@@ -51,7 +51,7 @@ class OracleSQLTemplateAction extends SQLTemplateAction {
 		// Oracle NUMBER
 		// columns...
 
-		if (compiled.getResultColumns().length == 0) {
+		if (compiled.resultColumns().length == 0) {
 			resultSet = new OracleResultSetWrapper(resultSet);
 		}
 
