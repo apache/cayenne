@@ -53,7 +53,7 @@ class DataContextDeleteAction {
         this.context = context;
     }
 
-    boolean performDelete(Persistent object) throws DeleteDenyException {
+    void performDelete(Persistent object) throws DeleteDenyException {
 
         int oldState = object.getPersistenceState();
 
@@ -63,7 +63,7 @@ class DataContextDeleteAction {
             // into a horrible recursive loop due to CASCADE delete rules.
             // Assume that everything must have been done correctly already
             // and *don't* do it again
-            return false;
+            return;
         }
 
         if (object.getObjectContext() == null) {
@@ -88,8 +88,6 @@ class DataContextDeleteAction {
         } else {
             deletePersistent(object);
         }
-
-        return true;
     }
 
     private void deleteNew(Persistent object) throws DeleteDenyException {
@@ -117,13 +115,11 @@ class DataContextDeleteAction {
         return switch (object) {
             case null -> Collections.emptyList();
 
-
             // create copies of collections to avoid iterator exceptions
-            case Collection ignored -> new ArrayList<>((Collection<Persistent>) object);
-            case Map ignored -> new ArrayList<>(((Map<?, Persistent>) object).values());
+            case Collection<?> ignored -> new ArrayList<>((Collection<Persistent>) object);
+            case Map<?, ?> ignored -> new ArrayList<>(((Map<?, Persistent>) object).values());
             default -> Collections.singleton((Persistent) object);
         };
-
     }
 
     private void processDeleteRules(final Persistent object, int oldState)

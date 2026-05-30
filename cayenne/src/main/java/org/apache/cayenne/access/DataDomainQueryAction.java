@@ -210,9 +210,8 @@ class DataDomainQueryAction implements QueryRouter, OperationObserver {
     }
 
     private boolean interceptOIDQuery() {
-        if (query instanceof ObjectIdQuery) {
+        if (query instanceof ObjectIdQuery oidQuery) {
 
-            ObjectIdQuery oidQuery = (ObjectIdQuery) query;
             ObjectId oid = oidQuery.getObjectId();
 
             // special handling of temp ids...
@@ -280,9 +279,8 @@ class DataDomainQueryAction implements QueryRouter, OperationObserver {
 
     private boolean interceptRelationshipQuery() {
 
-        if (query instanceof RelationshipQuery) {
+        if (query instanceof RelationshipQuery relationshipQuery) {
 
-            RelationshipQuery relationshipQuery = (RelationshipQuery) query;
             if (relationshipQuery.isRefreshing()) {
                 return !DONE;
             }
@@ -296,7 +294,7 @@ class DataDomainQueryAction implements QueryRouter, OperationObserver {
 
             // we can assume that there is one and only one DbRelationship as
             // we previously checked that "!isSourceIndependentFromTargetChange"
-            DbRelationship dbRelationship = relationship.getDbRelationships().get(0);
+            DbRelationship dbRelationship = relationship.getDbRelationships().getFirst();
 
             // FK pointing to a unique field that is a 'fake' PK (CAY-1755)...
             // It is not sufficient to generate target ObjectId.
@@ -398,7 +396,7 @@ class DataDomainQueryAction implements QueryRouter, OperationObserver {
                 return DONE;
             }
 
-            // 3. refresh query - this shouldn't normally happen as child datacontext
+            // 3. refresh query - this shouldn't normally happen as child context
             // usually does a cascading refresh
             if (refreshQuery.getQuery() != null) {
                 Query cachedQuery = refreshQuery.getQuery();
@@ -582,9 +580,9 @@ class DataDomainQueryAction implements QueryRouter, OperationObserver {
                 converter = new SingleObjectConversionStrategy();
             } else {
                 if (metadata.isSingleResultSetMapping()) {
-                    if (rsMapping.get(0) instanceof EntityResultSegment) {
+                    if (rsMapping.getFirst() instanceof EntityResultSegment) {
                         converter = new SingleObjectConversionStrategy();
-                    } else if (rsMapping.get(0) instanceof EmbeddableResultSegment) {
+                    } else if (rsMapping.getFirst() instanceof EmbeddableResultSegment) {
                         converter = new SingleEmbeddableConversionStrategy();
                     } else {
                         converter = new SingleScalarConversionStrategy();
@@ -669,8 +667,7 @@ class DataDomainQueryAction implements QueryRouter, OperationObserver {
     @Override
     public void nextRows(Query query, List<?> dataRows) {
         // exclude prefetched rows in the main result
-        if (prefetchResultsByPath != null && query instanceof PrefetchSelectQuery) {
-            PrefetchSelectQuery<?> prefetchQuery = (PrefetchSelectQuery<?>) query;
+        if (prefetchResultsByPath != null && query instanceof PrefetchSelectQuery<?> prefetchQuery) {
             prefetchResultsByPath.put(prefetchQuery.getPrefetchPath(), dataRows);
         } else {
             fullResponse.addResultList(dataRows);
@@ -680,8 +677,7 @@ class DataDomainQueryAction implements QueryRouter, OperationObserver {
     @Override
     public void nextRows(Query q, ResultIterator<?> it) {
         // exclude prefetched rows in the main result
-        if (prefetchResultsByPath != null && query instanceof PrefetchSelectQuery) {
-            PrefetchSelectQuery<?> prefetchQuery = (PrefetchSelectQuery<?>) query;
+        if (prefetchResultsByPath != null && query instanceof PrefetchSelectQuery<?> prefetchQuery) {
             prefetchResultsByPath.put(prefetchQuery.getPrefetchPath(), (List<?>) it);
         } else {
             this.fullResponse.addResultIterator(it);
@@ -790,7 +786,7 @@ class DataDomainQueryAction implements QueryRouter, OperationObserver {
         @Override
         Persistent convert(DataRow dataRow) {
             PrefetchProcessorNode node = getPrefetchProcessorNode(Collections.singletonList(dataRow));
-            return node.getObjects().get(0);
+            return node.getObjects().getFirst();
         }
 
         private PrefetchProcessorNode getPrefetchProcessorNode(List<DataRow> mainRows) {
@@ -799,7 +795,7 @@ class DataDomainQueryAction implements QueryRouter, OperationObserver {
             List<Object> rsMapping = metadata.getResultSetMapping();
             EntityResultSegment resultSegment = null;
             if (rsMapping != null && !rsMapping.isEmpty()) {
-                resultSegment = (EntityResultSegment) rsMapping.get(0);
+                resultSegment = (EntityResultSegment) rsMapping.getFirst();
             }
 
             ClassDescriptor descriptor = resultSegment == null
@@ -829,7 +825,7 @@ class DataDomainQueryAction implements QueryRouter, OperationObserver {
 
         @Override
         List<EmbeddableObject> convert(List<DataRow> mainRows) {
-            EmbeddableResultSegment resultSegment = (EmbeddableResultSegment) metadata.getResultSetMapping().get(0);
+            EmbeddableResultSegment resultSegment = (EmbeddableResultSegment) metadata.getResultSetMapping().getFirst();
             Embeddable embeddable = resultSegment.getEmbeddable();
             Class<? extends EmbeddableObject> embeddableClass = objectFactory.getJavaClass(embeddable.getClassName());
             List<EmbeddableObject> result = new ArrayList<>(mainRows.size());
@@ -849,7 +845,7 @@ class DataDomainQueryAction implements QueryRouter, OperationObserver {
 
         @Override
         EmbeddableObject convert(DataRow dataRow) {
-            return convert(Collections.singletonList(dataRow)).get(0);
+            return convert(Collections.singletonList(dataRow)).getFirst();
         }
     }
 
@@ -895,7 +891,7 @@ class DataDomainQueryAction implements QueryRouter, OperationObserver {
         Object[] convert(Object[] objectsArray) {
             List<Object[]> objects = new ArrayList<>(1);
             objects.add(objectsArray);
-            return convert(objects).get(0);
+            return convert(objects).getFirst();
         }
 
         private List<Object[]> createResultList(List<Object[]> mainRows, boolean needConversion) {

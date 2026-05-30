@@ -19,12 +19,11 @@
 
 package org.apache.cayenne.access;
 
-import java.util.Collections;
-import java.util.List;
-
 import org.apache.cayenne.ObjectId;
 import org.apache.cayenne.ResultIterator;
 import org.apache.cayenne.query.Query;
+
+import java.util.List;
 
 /**
  * Defines a set of callback methods that allow {@link QueryEngine} to pass back query

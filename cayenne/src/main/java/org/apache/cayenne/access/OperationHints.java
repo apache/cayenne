@@ -20,8 +20,7 @@
 package org.apache.cayenne.access;
 
 /**
- * Defines API that allows QueryEngine to obtain information about query execution
- * strategy.
+ * Defines API that allows QueryEngine to obtain information about query execution strategy.
  * 
  */
 public interface OperationHints {
@@ -31,5 +30,5 @@ public interface OperationHints {
      * should be returned as a ResultIterator. <code>false</code> is returned when the
      * results are expected as a list.
      */
-    public boolean isIteratedResult();
+    boolean isIteratedResult();
 }
