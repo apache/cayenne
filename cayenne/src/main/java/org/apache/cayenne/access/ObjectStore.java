@@ -460,7 +460,7 @@ public class ObjectStore implements Serializable, SnapshotEventListener, GraphMa
 
     /**
      * Returns a snapshot for ObjectId from the underlying snapshot cache. If cache
-     * contains no snapshot, it will attempt fetching it using provided QueryEngine. If
+     * contains no snapshot, it will attempt fetching it using provided DataNode. If
      * fetch attempt fails or inconsistent data is returned, underlying cache will throw a
      * CayenneRuntimeException.
      * 

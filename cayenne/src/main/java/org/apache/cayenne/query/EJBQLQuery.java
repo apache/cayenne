@@ -85,7 +85,7 @@ public class EJBQLQuery extends CacheableQuery {
             throw new CayenneRuntimeException("No DataMap found, can't route query %s", this);
         }
 
-        router.route(router.engineForDataMap(map), this, substitutedQuery);
+        router.route(router.nodeForDataMap(map), this, substitutedQuery);
     }
 
     public SQLAction createSQLAction(SQLActionVisitor visitor) {

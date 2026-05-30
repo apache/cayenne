@@ -31,7 +31,7 @@ import java.util.function.Function;
 import java.util.stream.Stream;
 
 import org.apache.cayenne.CayenneRuntimeException;
-import org.apache.cayenne.access.QueryEngine;
+import org.apache.cayenne.access.DataNode;
 import org.apache.cayenne.map.DataMap;
 import org.apache.cayenne.map.DbEntity;
 import org.apache.cayenne.map.EntityResolver;
@@ -130,11 +130,11 @@ public class SQLTemplate extends AbstractQuery implements ParameterizedQuery {
 	public void route(QueryRouter router, EntityResolver resolver, Query substitutedQuery) {
 		DataMap map = getMetaData(resolver).getDataMap();
 
-		QueryEngine engine;
+		DataNode engine;
 		if (map != null) {
-			engine = router.engineForDataMap(map);
+			engine = router.nodeForDataMap(map);
 		} else {
-			engine = router.engineForName(getDataNodeName());
+			engine = router.nodeForName(getDataNodeName());
 		}
 
 		router.route(engine, this, substitutedQuery);

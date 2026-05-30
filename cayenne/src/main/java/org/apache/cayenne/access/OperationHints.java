@@ -20,7 +20,7 @@
 package org.apache.cayenne.access;
 
 /**
- * Defines API that allows QueryEngine to obtain information about query execution strategy.
+ * Defines API that allows a DataNode to obtain information about query execution strategy.
  * 
  */
 public interface OperationHints {

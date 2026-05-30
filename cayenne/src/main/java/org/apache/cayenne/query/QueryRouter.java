@@ -19,43 +19,59 @@
 
 package org.apache.cayenne.query;
 
-import org.apache.cayenne.access.QueryEngine;
+import org.apache.cayenne.access.DataNode;
 import org.apache.cayenne.map.DataMap;
 
 /**
- * An interface used by Queries to route themselves to an appropriate QueryEngine. As of
+ * An interface used by Queries to route themselves to an appropriate DataNode. As of
  * 1.2 QueryRouter only supports routing by DataMap.
- * 
+ *
  * @since 1.2
  */
 public interface QueryRouter {
 
     /**
-     * A callback method that allows a query to set its preferred engine during the
+     * A callback method that allows a query to set its preferred node during the
      * routing phase. It allows query to further customize its routing, e.g. it is
      * possible to implement query chains that pass multiple queries for execution.
-     * 
-     * @param engine engine to use for query execution
-     * @param query A query to execute.
+     *
+     * @param node             node to use for query execution
+     * @param query            A query to execute.
      * @param substitutedQuery a query that was substituted for "query". Results must be
-     *            mapped back to substituted query.
+     *                         mapped back to substituted query.
      */
-    void route(QueryEngine engine, Query query, Query substitutedQuery);
-    
-    /**
-     * Returns a QueryEngine for a given name. If the name is null, a default
-     * QueryEngine is returned. If there's no default engine, an exception is
-     * thrown.
-     * 
-     * @since 4.0
-     */
-    QueryEngine engineForName(String name);
+    void route(DataNode node, Query query, Query substitutedQuery);
 
     /**
-     * Returns a QueryEngine that is configured to handle a given DataMap.
-     * 
-     * @throws org.apache.cayenne.CayenneRuntimeException if an engine can't be found.
-     * @throws NullPointerException if a map parameter is null.
+     * Returns a DataNode for a given name. If the name is null, a default
+     * DataNode is returned. If there's no default node, an exception is
+     * thrown.
+     *
+     * @since 5.0
      */
-    QueryEngine engineForDataMap(DataMap map);
+    DataNode nodeForName(String name);
+
+    /**
+     * Returns a DataNode that is configured to handle a given DataMap.
+     *
+     * @since 5.0
+     */
+    DataNode nodeForDataMap(DataMap map);
+
+    /**
+     * @since 4.0
+     * @deprecated renamed to {@link #nodeForName(String)}.
+     */
+    @Deprecated(since = "5.0", forRemoval = true)
+    default DataNode engineForName(String name) {
+        return nodeForName(name);
+    }
+
+    /**
+     * @deprecated renamed to {@link #nodeForDataMap(DataMap)}.
+     */
+    @Deprecated(since = "5.0", forRemoval = true)
+    default DataNode engineForDataMap(DataMap map) {
+        return nodeForDataMap(map);
+    }
 }

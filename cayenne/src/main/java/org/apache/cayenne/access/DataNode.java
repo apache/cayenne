@@ -60,7 +60,7 @@ import java.util.logging.Logger;
  * server, but can potentially be some other storage type like an LDAP server,
  * etc.
  */
-public class DataNode implements QueryEngine {
+public class DataNode {
 
 	protected String name;
 	protected DataSource dataSource;
@@ -228,7 +228,6 @@ public class DataNode implements QueryEngine {
 	 *
 	 * @since 1.1
 	 */
-	@Override
 	public void performQueries(Collection<? extends Query> queries, OperationObserver callback) {
 
 		int listSize = queries.size();
@@ -297,7 +296,6 @@ public class DataNode implements QueryEngine {
 	/**
 	 * Returns EntityResolver that handles DataMaps of this node.
 	 */
-	@Override
 	public EntityResolver getEntityResolver() {
 		return entityResolver;
 	}

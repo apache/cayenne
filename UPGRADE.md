@@ -105,6 +105,10 @@ Expression caseWhenExp = caseWhen(
   open CayenneModeler.app --args path/to/cayenne-project.xml
   ```
 
+* Per [CAY-2955](https://issues.apache.org/jira/browse/CAY-2955) the obsolete `QueryEngine` abstraction (`org.apache.cayenne.access.QueryEngine`) has been removed.
+  `DataNode` is now used directly wherever `QueryEngine` was previously referenced. So you must subclass `DataNode` 
+  and override `performQueries()` if you previously implemented a custom `QueryEngine`.
+
 ## Upgrading to 5.0.M1
 
 * Per [CAY-2737](https://issues.apache.org/jira/browse/CAY-2737) All code deprecated in Cayenne 4.1 and 4.2 was deleted — please review your code before

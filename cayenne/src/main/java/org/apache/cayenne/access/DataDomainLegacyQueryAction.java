@@ -33,12 +33,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-/**
- * DataDomain query action that relies on externally provided OperationObserver to process
- * the results.
- * 
- * @since 1.2
- */
+@Deprecated
 class DataDomainLegacyQueryAction implements QueryRouter, OperationObserver {
 
     DataDomain domain;
@@ -46,7 +41,7 @@ class DataDomainLegacyQueryAction implements QueryRouter, OperationObserver {
     Query query;
     QueryMetadata metadata;
 
-    Map<QueryEngine, List<Query>> queriesByNode;
+    Map<DataNode, List<Query>> queriesByNode;
     Map<Query, Query> queriesByExecutedQueries;
 
     DataDomainLegacyQueryAction(DataDomain domain, Query query, OperationObserver callback) {
@@ -70,9 +65,9 @@ class DataDomainLegacyQueryAction implements QueryRouter, OperationObserver {
 
         // run categorized queries
         if (queriesByNode != null) {
-            for (final Map.Entry<QueryEngine, List<Query>> entry : queriesByNode
+            for (final Map.Entry<DataNode, List<Query>> entry : queriesByNode
                     .entrySet()) {
-                QueryEngine nextNode = entry.getKey();
+                DataNode nextNode = entry.getKey();
                 Collection<Query> nodeQueries = entry.getValue();
                 nextNode.performQueries(nodeQueries, this);
             }
@@ -80,19 +75,19 @@ class DataDomainLegacyQueryAction implements QueryRouter, OperationObserver {
     }
 
     @Override
-    public void route(QueryEngine engine, Query query, Query substitutedQuery) {
+    public void route(DataNode node, Query query, Query substitutedQuery) {
 
         List<Query> queries = null;
         if (queriesByNode == null) {
             queriesByNode = new HashMap<>();
         }
         else {
-            queries = queriesByNode.get(engine);
+            queries = queriesByNode.get(node);
         }
 
         if (queries == null) {
             queries = new ArrayList<>(5);
-            queriesByNode.put(engine, queries);
+            queriesByNode.put(node, queries);
         }
 
         queries.add(query);
@@ -110,12 +105,12 @@ class DataDomainLegacyQueryAction implements QueryRouter, OperationObserver {
     }
 
     @Override
-    public QueryEngine engineForDataMap(DataMap map) {
+    public DataNode nodeForDataMap(DataMap map) {
         if (map == null) {
             throw new NullPointerException("Null DataMap, can't determine DataNode.");
         }
 
-        QueryEngine node = domain.lookupDataNode(map);
+        DataNode node = domain.lookupDataNode(map);
 
         if (node == null) {
             throw new CayenneRuntimeException("No DataNode exists for DataMap %s", map);
@@ -125,12 +120,12 @@ class DataDomainLegacyQueryAction implements QueryRouter, OperationObserver {
     }
     
     /**
-     * @since 4.0
+     * @since 5.0
      */
     @Override
-    public QueryEngine engineForName(String name) {
+    public DataNode nodeForName(String name) {
 
-        QueryEngine node;
+        DataNode node;
 
         if (name != null) {
             node = domain.getDataNode(name);

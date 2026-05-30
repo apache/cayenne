@@ -62,7 +62,7 @@ import java.util.concurrent.CopyOnWriteArrayList;
  * user. When a child DataContext sends a query to the DataDomain, it is
  * transparently routed to an appropriate DataNode.
  */
-public class DataDomain implements QueryEngine, DataChannel {
+public class DataDomain implements DataChannel {
 
     public static final String SHARED_CACHE_ENABLED_PROPERTY = "cayenne.DataDomain.sharedCache";
     public static final boolean SHARED_CACHE_ENABLED_DEFAULT = true;
@@ -529,17 +529,17 @@ public class DataDomain implements QueryEngine, DataChannel {
     }
 
     /**
-     * Routes queries to appropriate DataNodes for execution.
+     * Routes queries to appropriate DataNodes for execution
+     *
+     * @deprecated use {@link #onQuery(ObjectContext, Query)} instead.
      */
-    @Override
+    @Deprecated(since = "5.0", forRemoval = true)
     public void performQueries(Collection<? extends Query> queries, OperationObserver callback) {
         transactionManager.performInTransaction(() -> {
             new DataDomainLegacyQueryAction(DataDomain.this, new QueryChain(queries), callback).execute();
             return null;
         });
     }
-
-    // ****** DataChannel methods:
 
     /**
      * Runs query returning generic QueryResponse.

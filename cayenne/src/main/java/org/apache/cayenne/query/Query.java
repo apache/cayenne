@@ -19,7 +19,7 @@
 
 package org.apache.cayenne.query;
 
-import org.apache.cayenne.access.QueryEngine;
+import org.apache.cayenne.access.DataNode;
 import org.apache.cayenne.map.EntityResolver;
 
 import java.io.Serializable;
@@ -42,9 +42,9 @@ public interface Query extends Serializable {
     /**
      * A callback method invoked by Cayenne during the routing phase of the query
      * execution. Mapping of DataNodes is provided by QueryRouter. Query should use a
-     * {@link QueryRouter#route(QueryEngine, Query, Query)} callback method to route
+     * {@link QueryRouter#route(DataNode, Query, Query)} callback method to route
      * itself. Query can create one or more substitute queries or even provide its own
-     * QueryEngine to execute itself.
+     * DataNode to execute itself.
      * 
      * @since 1.2
      */

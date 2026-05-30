@@ -26,7 +26,7 @@ import org.apache.cayenne.query.Query;
 import java.util.List;
 
 /**
- * Defines a set of callback methods that allow {@link QueryEngine} to pass back query
+ * Defines a set of callback methods that allow {@link DataNode} to pass back query
  * results and notify caller about exceptions.
  */
 public interface OperationObserver extends OperationHints {

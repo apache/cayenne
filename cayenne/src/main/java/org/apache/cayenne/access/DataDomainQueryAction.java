@@ -96,7 +96,7 @@ class DataDomainQueryAction implements QueryRouter, OperationObserver {
     private QueryResponse response;
     private GenericResponse fullResponse;
     private Map<CayennePath, List<?>> prefetchResultsByPath;
-    private Map<QueryEngine, Collection<Query>> queriesByNode;
+    private Map<DataNode, Collection<Query>> queriesByNode;
     private boolean noObjectConversion;
     // True when using a caching strategy (shared or local cache), indicating lists are immutable and need copying
     private boolean cachedResult;
@@ -518,8 +518,8 @@ class DataDomainQueryAction implements QueryRouter, OperationObserver {
 
         // run categorized queries
         if (queriesByNode != null) {
-            for (Map.Entry<QueryEngine, Collection<Query>> entry : queriesByNode.entrySet()) {
-                QueryEngine nextNode = entry.getKey();
+            for (Map.Entry<DataNode, Collection<Query>> entry : queriesByNode.entrySet()) {
+                DataNode nextNode = entry.getKey();
                 Collection<Query> nodeQueries = entry.getValue();
                 nextNode.performQueries(nodeQueries, this);
             }
@@ -600,29 +600,29 @@ class DataDomainQueryAction implements QueryRouter, OperationObserver {
     }
 
     @Override
-    public void route(QueryEngine engine, Query query, Query substitutedQuery) {
+    public void route(DataNode node, Query query, Query substitutedQuery) {
         Collection<Query> queries = null;
         if (queriesByNode == null) {
             queriesByNode = new HashMap<>();
         } else {
-            queries = queriesByNode.get(engine);
+            queries = queriesByNode.get(node);
         }
 
         if (queries == null) {
             queries = new ArrayList<>(5);
-            queriesByNode.put(engine, queries);
+            queriesByNode.put(node, queries);
         }
 
         queries.add(query);
     }
 
     @Override
-    public QueryEngine engineForDataMap(DataMap map) {
+    public DataNode nodeForDataMap(DataMap map) {
         if (map == null) {
             throw new NullPointerException("Null DataMap, can't determine DataNode.");
         }
 
-        QueryEngine node = domain.lookupDataNode(map);
+        DataNode node = domain.lookupDataNode(map);
 
         if (node == null) {
             throw new CayenneRuntimeException("No DataNode exists for DataMap %s", map);
@@ -632,12 +632,12 @@ class DataDomainQueryAction implements QueryRouter, OperationObserver {
     }
 
     /**
-     * @since 4.0
+     * @since 5.0
      */
     @Override
-    public QueryEngine engineForName(String name) {
+    public DataNode nodeForName(String name) {
 
-        QueryEngine node;
+        DataNode node;
 
         if (name != null) {
             node = domain.getDataNode(name);

@@ -23,8 +23,7 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 
-import org.apache.cayenne.access.MockQueryEngine;
-import org.apache.cayenne.access.QueryEngine;
+import org.apache.cayenne.access.DataNode;
 import org.apache.cayenne.map.DataMap;
 
 public class MockQueryRouter implements QueryRouter {
@@ -43,16 +42,16 @@ public class MockQueryRouter implements QueryRouter {
         return queries.size();
     }
 
-    public void route(QueryEngine engine, Query query, Query substitutedQuery) {
+    public void route(DataNode node, Query query, Query substitutedQuery) {
         queries.add(query);
     }
 
-    public QueryEngine engineForDataMap(DataMap map) {
-        return new MockQueryEngine();
+    public DataNode nodeForDataMap(DataMap map) {
+        return new DataNode();
     }
-    
+
     @Override
-    public QueryEngine engineForName(String name) {
-        return new MockQueryEngine();
+    public DataNode nodeForName(String name) {
+        return new DataNode();
     }
 }
