@@ -121,7 +121,7 @@ class DataContextSnapshotBuilder implements PropertyVisitor {
                         + ". Object may have been deleted externally.", object.getObjectId());
             }
 
-            DbRelationship dbRel = rel.getDbRelationships().get(0);
+            DbRelationship dbRel = rel.getDbRelationships().getFirst();
             for (DbJoin join : dbRel.getJoins()) {
                 String key = join.getSourceName();
                 snapshot.put(key, storedSnapshot.get(key));
@@ -134,13 +134,12 @@ class DataContextSnapshotBuilder implements PropertyVisitor {
         Persistent target = (Persistent) targetObject;
         Map<String, Object> idParts = target.getObjectId().getIdSnapshot();
 
-        // this may happen in uncommitted objects - see the warning in
-        // the JavaDoc of this method.
+        // this may happen in uncommitted objects - see the warning in the JavaDoc of this method.
         if (idParts.isEmpty()) {
             return true;
         }
 
-        DbRelationship dbRel = rel.getDbRelationships().get(0);
+        DbRelationship dbRel = rel.getDbRelationships().getFirst();
         Map<String, Object> fk = dbRel.srcFkSnapshotWithTargetSnapshot(idParts);
         snapshot.putAll(fk);
         return true;

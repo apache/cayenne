@@ -49,7 +49,6 @@ import javax.sql.DataSource;
 import java.io.PrintWriter;
 import java.sql.Connection;
 import java.sql.SQLException;
-import java.sql.SQLFeatureNotSupportedException;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.HashMap;
@@ -216,7 +215,9 @@ public class DataNode implements QueryEngine {
 	 * Returns a DataNode that should handle queries for all DataMap components.
 	 *
 	 * @since 1.1
+	 * @deprecated unused and unneeded
 	 */
+	@Deprecated(since = "5.0", forRemoval = true)
 	public DataNode lookupDataNode(DataMap dataMap) {
 		// we don't know any better than to return ourselves...
 		return this;
@@ -246,7 +247,7 @@ public class DataNode implements QueryEngine {
 		// upper limit.
 		getAdapter().getExtendedTypes();
 
-		Connection connection = null;
+		Connection connection;
 
 		try {
 			connection = this.getDataSource().getConnection();
@@ -324,7 +325,7 @@ public class DataNode implements QueryEngine {
 	 * @since 4.0
 	 */
 	public RowReader<?> rowReader(RowDescriptor descriptor, QueryMetadata queryMetadata) {
-		return rowReader(descriptor, queryMetadata, Collections.<ObjAttribute, ColumnDescriptor> emptyMap());
+		return rowReader(descriptor, queryMetadata, Collections.emptyMap());
 	}
 
 	/**
@@ -461,7 +462,7 @@ public class DataNode implements QueryEngine {
          * @since 3.0
          */
         @Override
-        public boolean isWrapperFor(Class<?> iface) throws SQLException {
+        public boolean isWrapperFor(Class<?> iface) {
             return iface.isAssignableFrom(dataSource.getClass());
         }
 
@@ -481,9 +482,8 @@ public class DataNode implements QueryEngine {
          * @since 3.1
          */
         @Override
-        public Logger getParentLogger() throws SQLFeatureNotSupportedException {
-            // don't throw SQLFeatureNotSupported - this will break JDK 1.5
-            // runtime
+        public Logger getParentLogger() {
+            // don't throw SQLFeatureNotSupported - this will break JDK 1.5 runtime
             throw new UnsupportedOperationException();
         }
     }

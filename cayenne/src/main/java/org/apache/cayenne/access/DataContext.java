@@ -19,18 +19,6 @@
 
 package org.apache.cayenne.access;
 
-import java.io.IOException;
-import java.io.ObjectInputStream;
-import java.io.ObjectOutputStream;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.Collection;
-import java.util.Collections;
-import java.util.Iterator;
-import java.util.List;
-import java.util.Map;
-import java.util.concurrent.ConcurrentHashMap;
-
 import org.apache.cayenne.CayenneRuntimeException;
 import org.apache.cayenne.DataChannel;
 import org.apache.cayenne.DataRow;
@@ -55,7 +43,14 @@ import org.apache.cayenne.graph.GraphEvent;
 import org.apache.cayenne.graph.GraphManager;
 import org.apache.cayenne.map.EntityResolver;
 import org.apache.cayenne.map.ObjEntity;
-import org.apache.cayenne.query.*;
+import org.apache.cayenne.query.IteratedQueryDecorator;
+import org.apache.cayenne.query.MappedExec;
+import org.apache.cayenne.query.MappedSelect;
+import org.apache.cayenne.query.ObjectIdQuery;
+import org.apache.cayenne.query.Query;
+import org.apache.cayenne.query.QueryMetadata;
+import org.apache.cayenne.query.RefreshQuery;
+import org.apache.cayenne.query.Select;
 import org.apache.cayenne.reflect.ClassDescriptor;
 import org.apache.cayenne.reflect.PropertyDescriptor;
 import org.apache.cayenne.runtime.CayenneRuntime;
@@ -64,6 +59,18 @@ import org.apache.cayenne.util.EventUtil;
 import org.apache.cayenne.util.GenericResponse;
 import org.apache.cayenne.util.ObjectContextGraphAction;
 import org.apache.cayenne.util.Util;
+
+import java.io.IOException;
+import java.io.ObjectInputStream;
+import java.io.ObjectOutputStream;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Collection;
+import java.util.Collections;
+import java.util.Iterator;
+import java.util.List;
+import java.util.Map;
+import java.util.concurrent.ConcurrentHashMap;
 
 /**
  * The most common implementation of {@link ObjectContext}. DataContext is an
@@ -78,16 +85,18 @@ public class DataContext implements ObjectContext {
      *
      * @since 3.0
      */
-    protected static final ThreadLocal<ObjectContext> threadObjectContext = new ThreadLocal<ObjectContext>();
+    @Deprecated(since = "5.0", forRemoval = true)
+    protected static final ThreadLocal<ObjectContext> threadObjectContext = new ThreadLocal<>();
 
     /**
      * Returns the ObjectContext bound to the current thread.
      *
      * @since 3.0
      * @return the ObjectContext associated with caller thread.
-     * @throws IllegalStateException
-     *             if there is no ObjectContext bound to the current thread.
+     * @throws IllegalStateException if there is no ObjectContext bound to the current thread.
+     * @deprecated if you are using thread context, you can create your own ThreadLocal
      */
+    @Deprecated(since = "5.0", forRemoval = true)
     public static ObjectContext getThreadObjectContext() throws IllegalStateException {
         ObjectContext context = threadObjectContext.get();
         if (context == null) {
@@ -104,7 +113,9 @@ public class DataContext implements ObjectContext {
      * unbind currently bound ObjectContext.
      *
      * @since 3.0
+     * @deprecated if you are using thread context, you can create your own ThreadLocal
      */
+    @Deprecated(since = "5.0", forRemoval = true)
     public static void bindThreadObjectContext(ObjectContext context) {
         threadObjectContext.set(context);
     }
@@ -133,11 +144,6 @@ public class DataContext implements ObjectContext {
     protected transient QueryCache queryCache;
     protected transient EntityResolver entityResolver;
 
-    /**
-     * @deprecated since 4.0 used in a method that itself should be deprecated,
-     *             so this is a temp code
-     */
-    @Deprecated
     protected transient TransactionFactory transactionFactory;
 
     protected transient DataContextMergeHandler mergeHandler;
@@ -313,7 +319,7 @@ public class DataContext implements ObjectContext {
 
         List<?> response = channel.onQuery(this, new DataDomainQuery()).firstList();
 
-        if (response != null && response.size() > 0 && response.get(0) instanceof DataDomain dataDomain) {
+        if (response != null && !response.isEmpty() && response.getFirst() instanceof DataDomain dataDomain) {
             return dataDomain;
         }
 
@@ -563,7 +569,7 @@ public class DataContext implements ObjectContext {
         if (object.getPersistenceState() == PersistenceState.HOLLOW) {
             ObjectId oid = object.getObjectId();
             List<?> objects = performQuery(new ObjectIdQuery(oid, false, ObjectIdQuery.CACHE));
-            if (objects.size() == 0) {
+            if (objects.isEmpty()) {
                 throw new FaultFailureException(
                         "Error resolving fault, no matching row exists in the database for ObjectId: " + oid);
             } else if (objects.size() > 1) {
@@ -630,7 +636,7 @@ public class DataContext implements ObjectContext {
 
         ClassDescriptor descriptor = getEntityResolver().getClassDescriptor(entity.getName());
         List<T> list = objectsFromDataRows(descriptor, Collections.singletonList(dataRow));
-        return list.get(0);
+        return list.getFirst();
     }
 
     /**
@@ -645,7 +651,7 @@ public class DataContext implements ObjectContext {
         ClassDescriptor descriptor = getEntityResolver().getClassDescriptor(entityName);
         List<?> list = objectsFromDataRows(descriptor, Collections.singletonList(dataRow));
 
-        return (Persistent) list.get(0);
+        return (Persistent) list.getFirst();
     }
 
     /**
@@ -900,13 +906,13 @@ public class DataContext implements ObjectContext {
     public <T> T selectOne(Select<T> query) {
         List<T> objects = select(query);
 
-        if (objects.size() == 0) {
+        if (objects.isEmpty()) {
             return null;
         } else if (objects.size() > 1) {
             throw new CayenneRuntimeException("Expected zero or one object, instead query matched: %d", objects.size());
         }
 
-        return objects.get(0);
+        return objects.getFirst();
     }
 
     /**
@@ -916,7 +922,7 @@ public class DataContext implements ObjectContext {
     public <T> T selectFirst(Select<T> query) {
         List<T> objects = select(query);
 
-        return (objects == null || objects.isEmpty()) ? null : objects.get(0);
+        return (objects == null || objects.isEmpty()) ? null : objects.getFirst();
     }
 
     /**
@@ -925,7 +931,7 @@ public class DataContext implements ObjectContext {
     @Override
     public <T> void iterate(Select<T> query, ResultIteratorCallback<T> callback) {
 
-        try (ResultIterator<T> it = iterator(query);) {
+        try (ResultIterator<T> it = iterator(query)) {
             for (T t : it) {
                 callback.next(t);
             }

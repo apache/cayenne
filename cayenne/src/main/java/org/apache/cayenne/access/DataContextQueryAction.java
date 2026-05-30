@@ -19,12 +19,6 @@
 
 package org.apache.cayenne.access;
 
-import java.util.Collection;
-import java.util.Iterator;
-import java.util.List;
-import java.util.Map;
-import java.util.Objects;
-
 import org.apache.cayenne.ObjectContext;
 import org.apache.cayenne.PersistenceState;
 import org.apache.cayenne.Persistent;
@@ -35,6 +29,12 @@ import org.apache.cayenne.query.Query;
 import org.apache.cayenne.query.RefreshQuery;
 import org.apache.cayenne.util.ListResponse;
 import org.apache.cayenne.util.ObjectContextQueryAction;
+
+import java.util.Collection;
+import java.util.Iterator;
+import java.util.List;
+import java.util.Map;
+import java.util.Objects;
 
 /**
  * A DataContext-specific version of
@@ -140,7 +140,7 @@ class DataContextQueryAction extends ObjectContextQueryAction {
             if(rsMapping.size() > 1) {
                 mixedResults = true;
             } else if(rsMapping.size() == 1) {
-                mixedResults = !(rsMapping.get(0) instanceof EntityResultSegment)
+                mixedResults = !(rsMapping.getFirst() instanceof EntityResultSegment)
                         || !metadata.isSingleResultSetMapping();
             }
         }
@@ -172,7 +172,7 @@ class DataContextQueryAction extends ObjectContextQueryAction {
             }
 
             // 2. invalidate object collection
-            Collection objects = refreshQuery.getObjects();
+            Collection<?> objects = refreshQuery.getObjects();
             if (objects != null && !objects.isEmpty()) {
 
                 synchronized (context.getObjectStore()) {

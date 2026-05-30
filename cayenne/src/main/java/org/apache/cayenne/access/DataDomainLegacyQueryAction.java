@@ -41,8 +41,6 @@ import java.util.Map;
  */
 class DataDomainLegacyQueryAction implements QueryRouter, OperationObserver {
 
-    static final boolean DONE = true;
-
     DataDomain domain;
     OperationObserver callback;
     Query query;

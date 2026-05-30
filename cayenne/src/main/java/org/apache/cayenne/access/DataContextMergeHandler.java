@@ -47,7 +47,7 @@ import org.apache.cayenne.reflect.ToOneProperty;
 class DataContextMergeHandler implements GraphChangeHandler, DataChannelListener {
 
     private boolean active;
-    private DataContext context;
+    private final DataContext context;
 
     DataContextMergeHandler(DataContext context) {
         this.active = true;
@@ -136,10 +136,6 @@ class DataContextMergeHandler implements GraphChangeHandler, DataChannelListener
     public void graphRolledback(GraphEvent event) {
         // TODO: andrus, 3/26/2006 - enable this once all ObjectStore diffs implement
         // working undo operation
-
-        // if(shouldProcessEvent(e)) {
-        // event.getDiff().undo(this);
-        // }
     }
 
     // *** GraphChangeHandler methods
@@ -177,16 +173,16 @@ class DataContextMergeHandler implements GraphChangeHandler, DataChannelListener
 
     @Override
     public void arcCreated(Object nodeId, Object targetNodeId, ArcId arcId) {
-        arcChanged(nodeId, targetNodeId, arcId);
+        arcChanged(nodeId, arcId);
     }
 
     @Override
     public void arcDeleted(Object nodeId, Object targetNodeId, ArcId arcId) {
-        arcChanged(nodeId, targetNodeId, arcId);
+        arcChanged(nodeId, arcId);
     }
 
     // works the same for add and remove as long as we don't get too smart per TODO below.
-    private void arcChanged(Object nodeId, Object targetNodeId, Object arcId) {
+    private void arcChanged(Object nodeId, Object arcId) {
 
         final Persistent source = (Persistent) context.getGraphManager().getNode(nodeId);
         if (source != null && source.getPersistenceState() != PersistenceState.HOLLOW) {

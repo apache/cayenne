@@ -19,11 +19,6 @@
 
 package org.apache.cayenne.access;
 
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.Collections;
-import java.util.Map;
-
 import org.apache.cayenne.CayenneRuntimeException;
 import org.apache.cayenne.DeleteDenyException;
 import org.apache.cayenne.ObjectContext;
@@ -40,14 +35,19 @@ import org.apache.cayenne.reflect.PropertyVisitor;
 import org.apache.cayenne.reflect.ToManyProperty;
 import org.apache.cayenne.reflect.ToOneProperty;
 
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.Collections;
+import java.util.Map;
+
 /**
  * A CayenneContext helper that processes object deletion.
- * 
+ *
  * @since 1.2
  */
 class DataContextDeleteAction {
 
-    private ObjectContext context;
+    private final ObjectContext context;
 
     DataContextDeleteAction(ObjectContext context) {
         this.context = context;
@@ -73,19 +73,19 @@ class DataContextDeleteAction {
 
         if (object.getObjectContext() != context) {
             throw new CayenneRuntimeException(
-                    "Attempt to delete object regsitered in a different ObjectContext. Object: %s, context: %s"
-                            , object, context);
+                    "Attempt to delete object registered in a different ObjectContext. Object: %s, context: %s",
+                    object,
+                    context);
         }
 
         // must resolve HOLLOW objects before delete... needed
         // to process relationships and optimistic locking...
 
         context.prepareForAccess(object, null, false);
-        
+
         if (oldState == PersistenceState.NEW) {
             deleteNew(object);
-        }
-        else {
+        } else {
             deletePersistent(object);
         }
 
@@ -95,7 +95,7 @@ class DataContextDeleteAction {
     private void deleteNew(Persistent object) throws DeleteDenyException {
         object.setPersistenceState(PersistenceState.TRANSIENT);
         processDeleteRules(object, PersistenceState.NEW);
-        
+
         // if an object was NEW, we must throw it out
         context.getGraphManager().unregisterNode(object.getObjectId());
     }
@@ -104,7 +104,7 @@ class DataContextDeleteAction {
         context.getEntityResolver().getCallbackRegistry().performCallbacks(
                 LifecycleEvent.PRE_REMOVE,
                 object);
-        
+
         int oldState = object.getPersistenceState();
         object.setPersistenceState(PersistenceState.DELETED);
         processDeleteRules(object, oldState);
@@ -114,18 +114,16 @@ class DataContextDeleteAction {
     @SuppressWarnings("unchecked")
     private Collection<Persistent> toCollection(Object object) {
 
-        if (object == null) {
-            return Collections.emptyList();
-        }
+        return switch (object) {
+            case null -> Collections.emptyList();
 
-        // create copies of collections to avoid iterator exceptions
-        if (object instanceof Collection) {
-            return new ArrayList<>((Collection<Persistent>) object);
-        } else if (object instanceof Map) {
-            return new ArrayList<>(((Map<?, Persistent>) object).values());
-        } else {
-            return Collections.singleton((Persistent)object);
-        }
+
+            // create copies of collections to avoid iterator exceptions
+            case Collection ignored -> new ArrayList<>((Collection<Persistent>) object);
+            case Map ignored -> new ArrayList<>(((Map<?, Persistent>) object).values());
+            default -> Collections.singleton((Persistent) object);
+        };
+
     }
 
     private void processDeleteRules(final Persistent object, int oldState)
@@ -149,7 +147,7 @@ class DataContextDeleteAction {
             final Collection<Persistent> relatedObjects = toCollection(property.readProperty(object));
 
             // no related object, bail out
-            if (relatedObjects.size() == 0) {
+            if (relatedObjects.isEmpty()) {
                 continue;
             }
 

@@ -19,12 +19,10 @@
 
 package org.apache.cayenne.query;
 
-import java.io.Serializable;
-
 import org.apache.cayenne.access.QueryEngine;
-import org.apache.cayenne.map.DataMap;
 import org.apache.cayenne.map.EntityResolver;
-import org.apache.cayenne.map.QueryDescriptor;
+
+import java.io.Serializable;
 
 /**
  * Defines minimal API of a query descriptor that is executable via Cayenne.
