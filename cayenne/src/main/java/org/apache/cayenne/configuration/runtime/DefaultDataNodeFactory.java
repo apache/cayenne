@@ -22,8 +22,11 @@ import org.apache.cayenne.access.DataNode;
 import org.apache.cayenne.access.dbsync.SchemaUpdateStrategyFactory;
 import org.apache.cayenne.access.translator.sqltemplate.SQLTemplateTranslator;
 import org.apache.cayenne.access.jdbc.reader.RowReaderFactory;
-import org.apache.cayenne.access.translator.batch.BatchTranslatorFactory;
+import org.apache.cayenne.access.translator.batch.BatchTranslator;
 import org.apache.cayenne.access.translator.select.SelectTranslator;
+import org.apache.cayenne.query.DeleteBatchQuery;
+import org.apache.cayenne.query.InsertBatchQuery;
+import org.apache.cayenne.query.UpdateBatchQuery;
 import org.apache.cayenne.configuration.DataNodeDescriptor;
 import org.apache.cayenne.di.AdhocObjectFactory;
 import org.apache.cayenne.di.Inject;
@@ -45,9 +48,15 @@ public class DefaultDataNodeFactory implements DataNodeFactory {
     @Inject
     protected DataSourceFactory dataSourceFactory;
 
-    @Inject
-    protected BatchTranslatorFactory batchTranslatorFactory;
-    
+    @Inject(BatchTranslator.INSERT)
+    protected BatchTranslator<InsertBatchQuery> insertBatchTranslator;
+
+    @Inject(BatchTranslator.UPDATE)
+    protected BatchTranslator<UpdateBatchQuery> updateBatchTranslator;
+
+    @Inject(BatchTranslator.DELETE)
+    protected BatchTranslator<DeleteBatchQuery> deleteBatchTranslator;
+
     @Inject
     protected SelectTranslator selectTranslator;
 
@@ -70,7 +79,9 @@ public class DefaultDataNodeFactory implements DataNodeFactory {
 
         dataNode.setJdbcEventLogger(jdbcEventLogger);
         dataNode.setRowReaderFactory(rowReaderFactory);
-        dataNode.setBatchTranslatorFactory(batchTranslatorFactory);
+        dataNode.setInsertBatchTranslator(insertBatchTranslator);
+        dataNode.setUpdateBatchTranslator(updateBatchTranslator);
+        dataNode.setDeleteBatchTranslator(deleteBatchTranslator);
         dataNode.setSelectTranslator(selectTranslator);
         dataNode.setSqlTemplateTranslator(sqlTemplateTranslator);
 

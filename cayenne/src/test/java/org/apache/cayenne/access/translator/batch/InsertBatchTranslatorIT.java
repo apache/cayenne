@@ -34,8 +34,6 @@ import org.junit.jupiter.api.BeforeEach;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
-import static org.junit.jupiter.api.Assertions.assertSame;
-import static org.mockito.Mockito.mock;
 
 public class InsertBatchTranslatorIT {
 
@@ -57,17 +55,6 @@ public class InsertBatchTranslatorIT {
     }
 
     @Test
-    public void constructor() {
-        DbAdapter adapter = objectFactory.newInstance(DbAdapter.class, JdbcAdapter.class.getName());
-
-        InsertBatchQuery query = mock(InsertBatchQuery.class);
-        InsertBatchTranslator builder = new InsertBatchTranslator(query, adapter);
-
-        assertSame(adapter, builder.context.getAdapter());
-        assertSame(query, builder.context.getQuery());
-    }
-
-    @Test
     public void createSqlString() {
         DbEntity entity = runtime.getDataDomain().getEntityResolver()
                 .getObjEntity(SimpleLockingTestEntity.class)
@@ -75,8 +62,7 @@ public class InsertBatchTranslatorIT {
 
         DbAdapter adapter = objectFactory.newInstance(DbAdapter.class, JdbcAdapter.class.getName());
         InsertBatchQuery insertQuery = new InsertBatchQuery(entity, 1);
-        InsertBatchTranslator builder = new InsertBatchTranslator(insertQuery, adapter);
-        String generatedSql = builder.getSql();
+        String generatedSql = new InsertBatchTranslator().translate(insertQuery, adapter).sql();
         assertNotNull(generatedSql);
         assertEquals("INSERT INTO " + entity.getName() + "( DESCRIPTION, INT_COLUMN_NOTNULL, INT_COLUMN_NULL, LOCKING_TEST_ID, NAME) " +
                         "VALUES( ?, ?, ?, ?, ?)",
@@ -92,8 +78,7 @@ public class InsertBatchTranslatorIT {
             entity.getDataMap().setQuotingSQLIdentifiers(true);
 
             InsertBatchQuery insertQuery = new InsertBatchQuery(entity, 1);
-            InsertBatchTranslator builder = new InsertBatchTranslator(insertQuery, adapter);
-            String generatedSql = builder.getSql();
+            String generatedSql = new InsertBatchTranslator().translate(insertQuery, adapter).sql();
             String charStart = unitAdapter.getIdentifiersStartQuote();
             String charEnd = unitAdapter.getIdentifiersEndQuote();
             assertNotNull(generatedSql);

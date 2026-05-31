@@ -32,8 +32,10 @@ import org.apache.cayenne.access.dbsync.SkipSchemaUpdateStrategy;
 import org.apache.cayenne.access.dbsync.ThrowOnPartialOrCreateSchemaStrategy;
 import org.apache.cayenne.access.translator.sqltemplate.SQLTemplateTranslator;
 import org.apache.cayenne.access.jdbc.reader.RowReaderFactory;
-import org.apache.cayenne.access.translator.batch.BatchTranslatorFactory;
-import org.apache.cayenne.access.translator.batch.DefaultBatchTranslatorFactory;
+import org.apache.cayenne.access.translator.batch.BatchTranslator;
+import org.apache.cayenne.access.translator.batch.DeleteBatchTranslator;
+import org.apache.cayenne.access.translator.batch.InsertBatchTranslator;
+import org.apache.cayenne.access.translator.batch.UpdateBatchTranslator;
 import org.apache.cayenne.access.translator.select.DbAdapterDelegatedSelectTranslator;
 import org.apache.cayenne.access.translator.select.SelectTranslator;
 import org.apache.cayenne.access.types.DefaultValueObjectTypeRegistry;
@@ -222,7 +224,9 @@ public class DataDomainProviderTest {
             b.bind(DataChannelDescriptorLoader.class).toInstance(testLoader);
             b.bind(DbAdapterFactory.class).to(DefaultDbAdapterFactory.class);
             b.bind(RuntimeProperties.class).to(DefaultRuntimeProperties.class);
-            b.bind(BatchTranslatorFactory.class).to(DefaultBatchTranslatorFactory.class);
+            b.bind(Key.get(BatchTranslator.class, BatchTranslator.INSERT)).to(InsertBatchTranslator.class);
+            b.bind(Key.get(BatchTranslator.class, BatchTranslator.UPDATE)).to(UpdateBatchTranslator.class);
+            b.bind(Key.get(BatchTranslator.class, BatchTranslator.DELETE)).to(DeleteBatchTranslator.class);
             b.bind(SelectTranslator.class).to(DbAdapterDelegatedSelectTranslator.class);
 
             b.bind(DataSourceFactory.class).toInstance(new MockDataSourceFactory());

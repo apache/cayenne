@@ -21,7 +21,6 @@ package org.apache.cayenne.dba.oracle;
 
 import org.apache.cayenne.access.DataNode;
 import org.apache.cayenne.dba.JdbcActionBuilder;
-import org.apache.cayenne.query.BatchQuery;
 import org.apache.cayenne.query.FluentSelect;
 import org.apache.cayenne.query.ProcedureQuery;
 import org.apache.cayenne.query.SQLAction;
@@ -39,18 +38,6 @@ class OracleActionBuilder extends JdbcActionBuilder {
     @Override
     public SQLAction sqlAction(SQLTemplate query) {
         return new OracleSQLTemplateAction(query, dataNode);
-    }
-
-    @Override
-    public SQLAction batchAction(BatchQuery query) {
-
-        // optimistic locking is not supported in batches due to JDBC driver
-        // limitations
-        // TODO: is this still true with ojdbc6.jar?
-        boolean useOptimisticLock = query.isUsingOptimisticLocking();
-        boolean runningAsBatch = !useOptimisticLock && dataNode.getAdapter().supportsBatchUpdates();
-
-        return new OracleBatchAction(query, dataNode, runningAsBatch);
     }
 
     @Override

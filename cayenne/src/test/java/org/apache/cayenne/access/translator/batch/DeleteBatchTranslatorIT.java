@@ -40,7 +40,6 @@ import java.util.Collections;
 import java.util.List;
 
 import static org.junit.jupiter.api.Assertions.*;
-import static org.mockito.Mockito.mock;
 
 public class DeleteBatchTranslatorIT {
 
@@ -62,17 +61,6 @@ public class DeleteBatchTranslatorIT {
     }
 
     @Test
-    public void constructor() {
-        DbAdapter adapter = objectFactory.newInstance(DbAdapter.class, JdbcAdapter.class.getName());
-
-        DeleteBatchQuery query = mock(DeleteBatchQuery.class);
-        DeleteBatchTranslator builder = new DeleteBatchTranslator(query, adapter);
-
-        assertSame(adapter, builder.context.getAdapter());
-        assertSame(query, builder.context.getQuery());
-    }
-
-    @Test
     public void createSqlString() {
         DbEntity entity = runtime.getDataDomain().getEntityResolver().getObjEntity(SimpleLockingTestEntity.class)
                 .getDbEntity();
@@ -82,8 +70,7 @@ public class DeleteBatchTranslatorIT {
         DeleteBatchQuery deleteQuery = new DeleteBatchQuery(entity, idAttributes, Collections.emptySet(), 1);
 
         DbAdapter adapter = objectFactory.newInstance(DbAdapter.class, JdbcAdapter.class.getName());
-        DeleteBatchTranslator builder = new DeleteBatchTranslator(deleteQuery, adapter);
-        String generatedSql = builder.getSql();
+        String generatedSql = new DeleteBatchTranslator().translate(deleteQuery, adapter).sql();
         assertNotNull(generatedSql);
         assertEquals("DELETE FROM " + entity.getName() + " WHERE LOCKING_TEST_ID = ?", generatedSql);
     }
@@ -101,8 +88,7 @@ public class DeleteBatchTranslatorIT {
         DeleteBatchQuery deleteQuery = new DeleteBatchQuery(entity, idAttributes, nullAttributes, 1);
 
         DbAdapter adapter = objectFactory.newInstance(DbAdapter.class, JdbcAdapter.class.getName());
-        DeleteBatchTranslator builder = new DeleteBatchTranslator(deleteQuery, adapter);
-        String generatedSql = builder.getSql();
+        String generatedSql = new DeleteBatchTranslator().translate(deleteQuery, adapter).sql();
         assertNotNull(generatedSql);
         assertEquals("DELETE FROM " + entity.getName() + " WHERE ( LOCKING_TEST_ID = ? ) AND ( NAME IS NULL )", generatedSql);
     }
@@ -117,8 +103,7 @@ public class DeleteBatchTranslatorIT {
             List<DbAttribute> idAttributes = Collections.singletonList(entity.getAttribute("LOCKING_TEST_ID"));
 
             DeleteBatchQuery deleteQuery = new DeleteBatchQuery(entity, idAttributes, Collections.emptySet(), 1);
-            DeleteBatchTranslator builder = new DeleteBatchTranslator(deleteQuery, adapter);
-            String generatedSql = builder.getSql();
+            String generatedSql = new DeleteBatchTranslator().translate(deleteQuery, adapter).sql();
 
             String charStart = unitAdapter.getIdentifiersStartQuote();
             String charEnd = unitAdapter.getIdentifiersEndQuote();
@@ -147,8 +132,7 @@ public class DeleteBatchTranslatorIT {
 
             DeleteBatchQuery deleteQuery = new DeleteBatchQuery(entity, idAttributes, nullAttributes, 1);
 
-            DeleteBatchTranslator builder = new DeleteBatchTranslator(deleteQuery, adapter);
-            String generatedSql = builder.getSql();
+            String generatedSql = new DeleteBatchTranslator().translate(deleteQuery, adapter).sql();
 
             String charStart = unitAdapter.getIdentifiersStartQuote();
             String charEnd = unitAdapter.getIdentifiersEndQuote();

@@ -79,7 +79,8 @@ public class SelectAction extends BaseSQLAction {
         long t1 = System.currentTimeMillis();
 
         JdbcEventLogger logger = dataNode.getJdbcEventLogger();
-        TranslatedSelect translated = dataNode.translateSelect(query);
+        TranslatedSelect translated = dataNode.getSelectTranslator()
+                .translate(query, dataNode.getAdapter(), dataNode.getEntityResolver());
 
         logger.logQuery(translated.sql(), translated.bindings());
 
@@ -111,7 +112,7 @@ public class SelectAction extends BaseSQLAction {
                 .setColumns(translated.resultColumns())
                 .getDescriptor(dataNode.getAdapter().getExtendedTypes());
 
-        RowReader<?> rowReader = dataNode.rowReader(descriptor, queryMetadata);
+        RowReader<?> rowReader = dataNode.getRowReaderFactory().rowReader(descriptor, queryMetadata, dataNode.getAdapter());
 
         ResultIterator<?> it = new JDBCResultIterator<>(statement, rs, rowReader);
         it = forIteratedResult(it, observer, connection, t1, translated.sql());

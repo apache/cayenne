@@ -21,24 +21,20 @@ package org.apache.cayenne.access;
 
 import org.apache.cayenne.CayenneRuntimeException;
 import org.apache.cayenne.access.dbsync.SchemaUpdateStrategy;
-import org.apache.cayenne.access.jdbc.RowDescriptor;
-import org.apache.cayenne.access.translator.sqltemplate.SQLTemplateTranslator;
-import org.apache.cayenne.access.jdbc.reader.RowReader;
 import org.apache.cayenne.access.jdbc.reader.RowReaderFactory;
 import org.apache.cayenne.access.translator.batch.BatchTranslator;
-import org.apache.cayenne.access.translator.batch.BatchTranslatorFactory;
 import org.apache.cayenne.access.translator.select.SelectTranslator;
-import org.apache.cayenne.access.translator.select.TranslatedSelect;
+import org.apache.cayenne.access.translator.sqltemplate.SQLTemplateTranslator;
 import org.apache.cayenne.dba.DbAdapter;
 import org.apache.cayenne.dba.JdbcAdapter;
 import org.apache.cayenne.log.JdbcEventLogger;
 import org.apache.cayenne.log.NoopJdbcEventLogger;
 import org.apache.cayenne.map.DataMap;
 import org.apache.cayenne.map.EntityResolver;
-import org.apache.cayenne.query.BatchQuery;
+import org.apache.cayenne.query.DeleteBatchQuery;
+import org.apache.cayenne.query.InsertBatchQuery;
 import org.apache.cayenne.query.Query;
-import org.apache.cayenne.query.QueryMetadata;
-import org.apache.cayenne.query.Select;
+import org.apache.cayenne.query.UpdateBatchQuery;
 import org.apache.cayenne.tx.BaseTransaction;
 import org.apache.cayenne.tx.Transaction;
 import org.apache.cayenne.util.ToStringBuilder;
@@ -70,7 +66,9 @@ public class DataNode {
 
 	private JdbcEventLogger jdbcEventLogger;
 	private RowReaderFactory rowReaderFactory;
-	private BatchTranslatorFactory batchTranslatorFactory;
+	private BatchTranslator<InsertBatchQuery> insertBatchTranslator;
+	private BatchTranslator<UpdateBatchQuery> updateBatchTranslator;
+	private BatchTranslator<DeleteBatchQuery> deleteBatchTranslator;
 	private SelectTranslator selectTranslator;
 	private SQLTemplateTranslator sqlTemplateTranslator;
 
@@ -316,29 +314,6 @@ public class DataNode {
 
 
 	/**
-	 * Creates a {@link RowReader} using internal {@link RowReaderFactory}.
-	 *
-	 * @since 4.0
-	 */
-	public RowReader<?> rowReader(RowDescriptor descriptor, QueryMetadata queryMetadata) {
-		return rowReaderFactory.rowReader(descriptor, queryMetadata, getAdapter());
-	}
-
-	/**
-	 * @since 4.0
-	 */
-	public BatchTranslator batchTranslator(BatchQuery query, String trimFunction) {
-		return batchTranslatorFactory.translator(query, getAdapter(), trimFunction);
-	}
-
-	/**
-	 * @since 5.0
-	 */
-	public TranslatedSelect translateSelect(Select<?> query) {
-		return selectTranslator.translate(query, getAdapter(), getEntityResolver());
-	}
-
-	/**
 	 * @since 4.0
 	 */
 	public RowReaderFactory getRowReaderFactory() {
@@ -353,17 +328,45 @@ public class DataNode {
 	}
 
 	/**
-	 * @since 4.0
+	 * @since 5.0
 	 */
-	public BatchTranslatorFactory getBatchTranslatorFactory() {
-		return batchTranslatorFactory;
+	public BatchTranslator<InsertBatchQuery> getInsertBatchTranslator() {
+		return insertBatchTranslator;
 	}
 
 	/**
-	 * @since 4.0
+	 * @since 5.0
 	 */
-	public void setBatchTranslatorFactory(BatchTranslatorFactory batchTranslatorFactory) {
-		this.batchTranslatorFactory = batchTranslatorFactory;
+	public void setInsertBatchTranslator(BatchTranslator<InsertBatchQuery> insertBatchTranslator) {
+		this.insertBatchTranslator = insertBatchTranslator;
+	}
+
+	/**
+	 * @since 5.0
+	 */
+	public BatchTranslator<UpdateBatchQuery> getUpdateBatchTranslator() {
+		return updateBatchTranslator;
+	}
+
+	/**
+	 * @since 5.0
+	 */
+	public void setUpdateBatchTranslator(BatchTranslator<UpdateBatchQuery> updateBatchTranslator) {
+		this.updateBatchTranslator = updateBatchTranslator;
+	}
+
+	/**
+	 * @since 5.0
+	 */
+	public BatchTranslator<DeleteBatchQuery> getDeleteBatchTranslator() {
+		return deleteBatchTranslator;
+	}
+
+	/**
+	 * @since 5.0
+	 */
+	public void setDeleteBatchTranslator(BatchTranslator<DeleteBatchQuery> deleteBatchTranslator) {
+		this.deleteBatchTranslator = deleteBatchTranslator;
 	}
 
 	/**

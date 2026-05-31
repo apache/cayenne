@@ -16,21 +16,25 @@
  *  specific language governing permissions and limitations
  *  under the License.
  ****************************************************************/
+
 package org.apache.cayenne.access.translator.batch;
 
-import org.apache.cayenne.dba.DbAdapter;
-import org.apache.cayenne.query.BatchQuery;
+import org.apache.cayenne.access.translator.ParameterBinding;
+import org.apache.cayenne.query.BatchQueryRow;
 
 /**
- * Factory which creates BatchQueryBuilders for different types of queries,
- * which, in their turn, create SQL strings for batch queries.
- * 
- * @since 4.0
+ * An immutable result of translating a batch query: the SQL String shared by all rows of the batch,
+ * the widest possible array of parameter bindings, and a stateless {@link BatchRowBinder} that applies
+ * a single row's state to those bindings.
+ *
+ * @since 5.0
  */
-public interface BatchTranslatorFactory {
+public record TranslatedBatch(String sql, ParameterBinding[] bindings, BatchRowBinder binder) {
 
     /**
-     * Creates a proper translator for a BatchQuery
+     * Applies the given row's state to the binding template, returning the (reused) bindings array.
      */
-    BatchTranslator translator(BatchQuery query, DbAdapter adapter, String trimFunction);
+    public ParameterBinding[] updateBindings(BatchQueryRow row) {
+        return binder.bind(bindings, row);
+    }
 }

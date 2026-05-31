@@ -18,7 +18,7 @@
  ****************************************************************/
 package org.apache.cayenne.configuration.runtime;
 
-import org.apache.cayenne.access.translator.batch.BatchTranslatorFactory;
+import org.apache.cayenne.access.translator.batch.BatchTranslator;
 import org.apache.cayenne.access.types.DefaultValueObjectTypeRegistry;
 import org.apache.cayenne.access.types.ValueObjectTypeRegistry;
 import org.apache.cayenne.configuration.Constants;
@@ -84,7 +84,9 @@ public class DefaultDbAdapterFactoryTest {
             binder.bind(ClassLoaderManager.class).to(DefaultClassLoaderManager.class);
             binder.bind(AdhocObjectFactory.class).to(DefaultAdhocObjectFactory.class);
             binder.bind(RuntimeProperties.class).to(DefaultRuntimeProperties.class);
-            binder.bind(BatchTranslatorFactory.class).toInstance(mock(BatchTranslatorFactory.class));
+            binder.bind(Key.get(BatchTranslator.class, BatchTranslator.INSERT)).toInstance(mock(BatchTranslator.class));
+            binder.bind(Key.get(BatchTranslator.class, BatchTranslator.UPDATE)).toInstance(mock(BatchTranslator.class));
+            binder.bind(Key.get(BatchTranslator.class, BatchTranslator.DELETE)).toInstance(mock(BatchTranslator.class));
         };
 
         Injector injector = DIBootstrap.createInjector(testModule);
@@ -114,7 +116,9 @@ public class DefaultDbAdapterFactoryTest {
             b.bind(ResourceLocator.class).to(ClassLoaderResourceLocator.class);
             b.bind(Key.get(ResourceLocator.class, Constants.RESOURCE_LOCATOR)).to(ClassLoaderResourceLocator.class);
             b.bind(RuntimeProperties.class).to(DefaultRuntimeProperties.class);
-            b.bind(BatchTranslatorFactory.class).toInstance(mock(BatchTranslatorFactory.class));
+            b.bind(Key.get(BatchTranslator.class, BatchTranslator.INSERT)).toInstance(mock(BatchTranslator.class));
+            b.bind(Key.get(BatchTranslator.class, BatchTranslator.UPDATE)).toInstance(mock(BatchTranslator.class));
+            b.bind(Key.get(BatchTranslator.class, BatchTranslator.DELETE)).toInstance(mock(BatchTranslator.class));
 
             b.bind(ValueObjectTypeRegistry.class).to(DefaultValueObjectTypeRegistry.class);
         };
@@ -149,7 +153,9 @@ public class DefaultDbAdapterFactoryTest {
             b.bind(ResourceLocator.class).to(ClassLoaderResourceLocator.class);
             b.bind(Key.get(ResourceLocator.class, Constants.RESOURCE_LOCATOR)).to(ClassLoaderResourceLocator.class);
             b.bind(RuntimeProperties.class).to(DefaultRuntimeProperties.class);
-            b.bind(BatchTranslatorFactory.class).toInstance(mock(BatchTranslatorFactory.class));
+            b.bind(Key.get(BatchTranslator.class, BatchTranslator.INSERT)).toInstance(mock(BatchTranslator.class));
+            b.bind(Key.get(BatchTranslator.class, BatchTranslator.UPDATE)).toInstance(mock(BatchTranslator.class));
+            b.bind(Key.get(BatchTranslator.class, BatchTranslator.DELETE)).toInstance(mock(BatchTranslator.class));
 
             b.bind(ValueObjectTypeRegistry.class).to(DefaultValueObjectTypeRegistry.class);
             b.bind(ValueComparisonStrategyFactory.class).to(DefaultValueComparisonStrategyFactory.class);
@@ -189,7 +195,9 @@ public class DefaultDbAdapterFactoryTest {
             binder.bind(JdbcEventLogger.class).to(Slf4jJdbcEventLogger.class);
             binder.bind(AdhocObjectFactory.class).to(DefaultAdhocObjectFactory.class);
             binder.bind(RuntimeProperties.class).to(DefaultRuntimeProperties.class);
-            binder.bind(BatchTranslatorFactory.class).toInstance(mock(BatchTranslatorFactory.class));
+            binder.bind(Key.get(BatchTranslator.class, BatchTranslator.INSERT)).toInstance(mock(BatchTranslator.class));
+            binder.bind(Key.get(BatchTranslator.class, BatchTranslator.UPDATE)).toInstance(mock(BatchTranslator.class));
+            binder.bind(Key.get(BatchTranslator.class, BatchTranslator.DELETE)).toInstance(mock(BatchTranslator.class));
         };
 
         Injector injector = DIBootstrap.createInjector(testModule);

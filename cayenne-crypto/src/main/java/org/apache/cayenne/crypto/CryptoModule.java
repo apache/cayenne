@@ -19,9 +19,10 @@
 package org.apache.cayenne.crypto;
 
 import org.apache.cayenne.access.jdbc.reader.RowReaderFactory;
-import org.apache.cayenne.access.translator.batch.BatchTranslatorFactory;
+import org.apache.cayenne.access.translator.batch.BatchTranslator;
 import org.apache.cayenne.configuration.DataMapLoader;
-import org.apache.cayenne.crypto.batch.CryptoBatchTranslatorFactoryDecorator;
+import org.apache.cayenne.crypto.batch.CryptoBatchTranslator;
+import org.apache.cayenne.di.Key;
 import org.apache.cayenne.crypto.cipher.DefaultCipherFactory;
 import org.apache.cayenne.crypto.key.JceksKeySource;
 import org.apache.cayenne.crypto.map.CryptoDataMapLoader;
@@ -152,7 +153,9 @@ public class CryptoModule implements Module {
         binder.bind(TransformerFactory.class).to(DefaultTransformerFactory.class);
 
         binder.decorate(DataMapLoader.class).before(CryptoDataMapLoader.class);
-        binder.decorate(BatchTranslatorFactory.class).before(CryptoBatchTranslatorFactoryDecorator.class);
+        binder.decorate(Key.get(BatchTranslator.class, BatchTranslator.INSERT)).before(CryptoBatchTranslator.class);
+        binder.decorate(Key.get(BatchTranslator.class, BatchTranslator.UPDATE)).before(CryptoBatchTranslator.class);
+        binder.decorate(Key.get(BatchTranslator.class, BatchTranslator.DELETE)).before(CryptoBatchTranslator.class);
         binder.bind(RowReaderFactory.class).to(CryptoRowReaderFactoryDecorator.class);
 
         // decorate Crypto's own services to allow Cayenne to operate over plaintext entities even if crypto keys are

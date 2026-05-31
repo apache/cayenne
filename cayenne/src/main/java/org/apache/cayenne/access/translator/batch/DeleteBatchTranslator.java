@@ -23,7 +23,6 @@ import org.apache.cayenne.access.sqlbuilder.DeleteBuilder;
 import org.apache.cayenne.access.sqlbuilder.SQLBuilder;
 import org.apache.cayenne.access.translator.ParameterBinding;
 import org.apache.cayenne.access.types.ExtendedType;
-import org.apache.cayenne.dba.DbAdapter;
 import org.apache.cayenne.map.DbAttribute;
 import org.apache.cayenne.query.BatchQueryRow;
 import org.apache.cayenne.query.DeleteBatchQuery;
@@ -31,37 +30,41 @@ import org.apache.cayenne.query.DeleteBatchQuery;
 /**
  * @since 4.2
  */
-public class DeleteBatchTranslator extends BaseBatchTranslator<DeleteBatchQuery> implements BatchTranslator {
-
-    public DeleteBatchTranslator(DeleteBatchQuery query, DbAdapter adapter) {
-        super(query, adapter);
-    }
+public class DeleteBatchTranslator extends BaseBatchTranslator<DeleteBatchQuery> {
 
     @Override
-    public String getSql() {
+    protected String createSql(BatchTranslatorContext<DeleteBatchQuery> context) {
         DeleteBuilder deleteBuilder = SQLBuilder
                 .delete(context.getRootDbEntity())
-                .where(buildQualifier(context.getQuery().getDbAttributes()));
-        return doTranslate(deleteBuilder);
+                .where(buildQualifier(context, context.getQuery().getDbAttributes()));
+        return doTranslate(context, deleteBuilder);
     }
 
     @Override
-    protected boolean isNullAttribute(DbAttribute attribute) {
+    protected boolean isNullAttribute(BatchTranslatorContext<DeleteBatchQuery> context, DbAttribute attribute) {
         return context.getQuery().isNull(attribute);
     }
 
     @Override
-    public ParameterBinding[] updateBindings(BatchQueryRow row) {
+    protected ParameterBinding[] updateBindings(
+            BatchTranslatorContext<DeleteBatchQuery> context,
+            ParameterBinding[] bindings,
+            BatchQueryRow row) {
+
         DeleteBatchQuery deleteBatch = context.getQuery();
-        for(int i=0, position=0; i<deleteBatch.getDbAttributes().size(); i++) {
-            position = updateBinding(row.getValue(i), position);
+        for (int i = 0, position = 0; i < deleteBatch.getDbAttributes().size(); i++) {
+            position = updateBinding(context, bindings, row.getValue(i), position);
         }
         return bindings;
     }
 
-    protected int updateBinding(Object value, int position) {
+    protected int updateBinding(
+            BatchTranslatorContext<DeleteBatchQuery> context,
+            ParameterBinding[] bindings,
+            Object value, int position) {
+        
         // skip null attributes... they are translated as "IS NULL"
-        if(value != null) {
+        if (value != null) {
             ExtendedType<?> extendedType = context.getAdapter().getExtendedTypes().getRegisteredType(value.getClass());
             bindings[position].reset(++position, value, extendedType);
         }

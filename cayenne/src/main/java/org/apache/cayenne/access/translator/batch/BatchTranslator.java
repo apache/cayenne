@@ -19,33 +19,45 @@
 
 package org.apache.cayenne.access.translator.batch;
 
-import org.apache.cayenne.access.translator.ParameterBinding;
-import org.apache.cayenne.query.BatchQueryRow;
+import org.apache.cayenne.dba.DbAdapter;
+import org.apache.cayenne.query.BatchQuery;
 
 /**
- * Superclass of batch query translators.
- * 
+ * A stateless service that translates a batch query of type {@code T} into an immutable
+ * {@link TranslatedBatch}. Each batch query flavor (insert, update, delete) is handled by its own
+ * translator, configured individually in the DI container under the {@link #INSERT}, {@link #UPDATE}
+ * and {@link #DELETE} binding names.
+ *
+ * @param <T> type of the batch query to translate
  * @since 4.0
  */
-public interface BatchTranslator {
+public interface BatchTranslator<T extends BatchQuery> {
 
     /**
-     * Returns SQL String that can be used to init a PreparedStatement.
+     * DI binding name of the translator for {@link org.apache.cayenne.query.InsertBatchQuery}.
+     *
+     * @since 5.0
      */
-    String getSql();
+    String INSERT = "insert";
 
     /**
-     * Returns the widest possible array of bindings for this query.
+     * DI binding name of the translator for {@link org.apache.cayenne.query.UpdateBatchQuery}.
+     *
+     * @since 5.0
      */
-    ParameterBinding[] getBindings();
+    String UPDATE = "update";
 
     /**
-     * Updates internal bindings to be used with a given row, returning updated
-     * bindings array. This method guarantees that the returned array contains
-     * the same bindings in the same order as in the array returned from
-     * {@link #getBindings()} (but in a state corresponding to the 'row'
-     * parameter). Usually the returned array is actually the same object reused
-     * for every iteration, only with changed object state.
+     * DI binding name of the translator for {@link org.apache.cayenne.query.DeleteBatchQuery}.
+     *
+     * @since 5.0
      */
-    ParameterBinding[] updateBindings(BatchQueryRow row);
+    String DELETE = "delete";
+
+    /**
+     * Translates the provided batch query into an immutable {@link TranslatedBatch}.
+     *
+     * @since 5.0
+     */
+    TranslatedBatch translate(T query, DbAdapter adapter);
 }
