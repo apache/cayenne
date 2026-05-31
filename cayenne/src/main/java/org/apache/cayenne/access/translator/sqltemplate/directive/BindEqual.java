@@ -30,9 +30,9 @@ public class BindEqual extends Bind {
     public static final BindEqual INSTANCE = new BindEqual();
 
     @Override
-    protected void processBinding(Context context, ParameterBinding binding) {
-        if (binding.getValue() != null) {
-            context.addParameterBinding(binding);
+    protected void processBinding(Context context, ParameterBinding binding, Object value) {
+        if (value != null) {
+            context.addParameterBinding(binding, value);
             context.getBuilder().append("= ?");
         } else {
             context.getBuilder().append("IS NULL");

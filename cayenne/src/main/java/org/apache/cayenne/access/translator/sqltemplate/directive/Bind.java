@@ -67,11 +67,11 @@ public class Bind implements Directive {
             jdbcType = TypesMapping.getSqlTypeByName(TypesMapping.SQL_NULL);
         }
 
-        processBinding(context, new ParameterBinding(value, jdbcType, scale));
+        processBinding(context, new ParameterBinding(context.preferredBindingType(jdbcType), scale), value);
     }
 
-    protected void processBinding(Context context, ParameterBinding binding) {
-        context.addParameterBinding(binding);
+    protected void processBinding(Context context, ParameterBinding binding, Object value) {
+        context.addParameterBinding(binding, value);
         context.getBuilder().append('?');
     }
 }

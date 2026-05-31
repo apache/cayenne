@@ -21,7 +21,7 @@ package org.apache.cayenne.access.sqlbuilder;
 
 import java.util.Collection;
 
-import org.apache.cayenne.access.translator.DbAttributeBinding;
+import org.apache.cayenne.access.translator.ParameterBinding;
 import org.apache.cayenne.dba.DbAdapter;
 import org.apache.cayenne.dba.QuotingStrategy;
 import org.apache.cayenne.map.DbEntity;
@@ -33,7 +33,7 @@ public interface SQLGenerationContext {
 
     DbAdapter getAdapter();
 
-    Collection<DbAttributeBinding> getBindings();
+    Collection<ParameterBinding> getBindings();
 
     QuotingStrategy getQuotingStrategy();
 

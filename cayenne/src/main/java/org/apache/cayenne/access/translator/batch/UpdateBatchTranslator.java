@@ -21,7 +21,7 @@ package org.apache.cayenne.access.translator.batch;
 
 import org.apache.cayenne.access.sqlbuilder.SQLBuilder;
 import org.apache.cayenne.access.sqlbuilder.UpdateBuilder;
-import org.apache.cayenne.access.translator.DbAttributeBinding;
+import org.apache.cayenne.access.translator.ParameterBinding;
 import org.apache.cayenne.access.types.ExtendedType;
 import org.apache.cayenne.dba.DbAdapter;
 import org.apache.cayenne.map.DbAttribute;
@@ -59,7 +59,7 @@ public class UpdateBatchTranslator extends BaseBatchTranslator<UpdateBatchQuery>
     }
 
     @Override
-    public DbAttributeBinding[] updateBindings(BatchQueryRow row) {
+    public ParameterBinding[] updateBindings(BatchQueryRow row) {
         UpdateBatchQuery updateBatch = context.getQuery();
 
         int i = 0;

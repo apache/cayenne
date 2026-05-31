@@ -19,7 +19,6 @@
 package org.apache.cayenne.log;
 
 import org.apache.cayenne.CayenneRuntimeException;
-import org.apache.cayenne.access.translator.DbAttributeBinding;
 import org.apache.cayenne.access.translator.ParameterBinding;
 import org.apache.cayenne.configuration.Constants;
 import org.apache.cayenne.configuration.RuntimeProperties;
@@ -115,12 +114,10 @@ public class Slf4jJdbcEventLogger implements JdbcEventLogger {
 
 				buffer.append(j++);
 
-				if(b instanceof DbAttributeBinding) {
-					DbAttribute attribute = ((DbAttributeBinding) b).getAttribute();
-					if (attribute != null) {
-						buffer.append("->");
-						buffer.append(attribute.getName());
-					}
+				DbAttribute attribute = b.getAttribute();
+				if (attribute != null) {
+					buffer.append("->");
+					buffer.append(attribute.getName());
 				}
 
 				buffer.append(":");

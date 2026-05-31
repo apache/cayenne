@@ -19,29 +19,42 @@
 package org.apache.cayenne.access.translator;
 
 import org.apache.cayenne.access.types.ExtendedType;
+import org.apache.cayenne.map.DbAttribute;
 
 /**
- * Describes a PreparedStatement parameter generic binding.
- * 
+ * Describes a single PreparedStatement parameter binding. A binding carries immutable metadata
+ * (the optional source {@link DbAttribute}, the JDBC type and scale) established at creation time,
+ * plus a mutable per-iteration state (value, statement position, {@link ExtendedType}) updated via
+ * {@link #include(int, Object, ExtendedType)} / {@link #exclude()} as batch rows are processed.
+ *
  * @since 4.0
  */
 public class ParameterBinding {
 
 	private static final int EXCLUDED_POSITION = -1;
 
+	private final DbAttribute attribute;
+	private final int jdbcType;
+	private final int scale;
+
 	private Object value;
 	private int statementPosition;
 	private ExtendedType<?> extendedType;
-	private Integer jdbcType;
-	private int scale;
 
-	public ParameterBinding(Object value, Integer jdbcType, int scale) {
-		this.value = value;
-		this.jdbcType = jdbcType;
-		this.scale = scale;
+	/**
+	 * @since 5.0
+	 */
+	public ParameterBinding(int jdbcType, int scale) {
+		this(jdbcType, scale, null);
 	}
 
-	public ParameterBinding() {
+	/**
+	 * @since 5.0
+	 */
+	public ParameterBinding(int jdbcType, int scale, DbAttribute attribute) {
+		this.attribute = attribute;
+		this.jdbcType = jdbcType;
+		this.scale = scale;
 		this.statementPosition = EXCLUDED_POSITION;
 	}
 
@@ -49,16 +62,8 @@ public class ParameterBinding {
 		return value;
 	}
 
-	public void setValue(Object value) {
-		this.value = value;
-	}
-
 	public int getStatementPosition() {
 		return statementPosition;
-	}
-
-	public void setStatementPosition(int statementPosition) {
-		this.statementPosition = statementPosition;
 	}
 
 	public boolean isExcluded() {
@@ -67,10 +72,6 @@ public class ParameterBinding {
 
 	public ExtendedType getExtendedType() {
 		return extendedType;
-	}
-
-	public void setExtendedType(ExtendedType<?> extendedType) {
-		this.extendedType = extendedType;
 	}
 
 	/**
@@ -83,28 +84,28 @@ public class ParameterBinding {
 	}
 
 	/**
-	 * Sets the value of the binding and initializes statement position var,
-	 * thus "including" this binding in the current iteration.
+	 * Sets the value, statement position and {@link ExtendedType} of the binding, thus "including" it in the current
+	 * iteration. Returns this binding for chaining.
 	 */
-	public void include(int statementPosition, Object value, ExtendedType<?> extendedType) {
+	public ParameterBinding include(int statementPosition, Object value, ExtendedType<?> extendedType) {
 		this.statementPosition = statementPosition;
 		this.value = value;
 		this.extendedType = extendedType;
+		return this;
 	}
 
-	public Integer getJdbcType() {
+	public int getJdbcType() {
 		return jdbcType;
-	}
-
-	public void setJdbcType(Integer type) {
-		this.jdbcType = type;
 	}
 
 	public int getScale() {
 		return scale;
 	}
 
-	public void setScale(int scale) {
-		this.scale = scale;
+	/**
+	 * @since 5.0
+	 */
+	public DbAttribute getAttribute() {
+		return attribute;
 	}
 }

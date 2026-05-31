@@ -21,7 +21,7 @@ package org.apache.cayenne.access.translator.batch;
 
 import org.apache.cayenne.access.sqlbuilder.DeleteBuilder;
 import org.apache.cayenne.access.sqlbuilder.SQLBuilder;
-import org.apache.cayenne.access.translator.DbAttributeBinding;
+import org.apache.cayenne.access.translator.ParameterBinding;
 import org.apache.cayenne.access.types.ExtendedType;
 import org.apache.cayenne.dba.DbAdapter;
 import org.apache.cayenne.map.DbAttribute;
@@ -51,7 +51,7 @@ public class DeleteBatchTranslator extends BaseBatchTranslator<DeleteBatchQuery>
     }
 
     @Override
-    public DbAttributeBinding[] updateBindings(BatchQueryRow row) {
+    public ParameterBinding[] updateBindings(BatchQueryRow row) {
         DeleteBatchQuery deleteBatch = context.getQuery();
         for(int i=0, position=0; i<deleteBatch.getDbAttributes().size(); i++) {
             position = updateBinding(row.getValue(i), position);

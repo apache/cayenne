@@ -43,11 +43,12 @@ public class BindEqualDirective extends BindDirective {
     protected void render(
         InternalContextAdapter context,
         Writer writer,
-        ParameterBinding binding)
+        ParameterBinding binding,
+        Object value)
         throws IOException {
 
-        if (binding.getValue() != null) {
-            bind(context, binding);
+        if (value != null) {
+            bind(context, binding, value);
             writer.write("= ?");
         }
         else {

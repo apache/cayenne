@@ -24,7 +24,7 @@ import org.apache.cayenne.access.sqlbuilder.SQLBuilder;
 import org.apache.cayenne.access.sqlbuilder.SQLGenerationContext;
 import org.apache.cayenne.access.sqlbuilder.SelectBuilder;
 import org.apache.cayenne.access.sqlbuilder.sqltree.Node;
-import org.apache.cayenne.access.translator.DbAttributeBinding;
+import org.apache.cayenne.access.translator.ParameterBinding;
 import org.apache.cayenne.dba.DbAdapter;
 import org.apache.cayenne.dba.QuotingStrategy;
 import org.apache.cayenne.exp.parser.ASTAggregateFunctionCall;
@@ -92,7 +92,7 @@ public class TranslatorContext implements SQLGenerationContext {
      * - order by expressions
      * - where expression (including qualifiers from all used DbEntities and ObjEntities)
      */
-    private final Collection<DbAttributeBinding> bindings;
+    private final Collection<ParameterBinding> bindings;
 
     // Translated query
     private final TranslatableQueryWrapper query;
@@ -161,7 +161,7 @@ public class TranslatorContext implements SQLGenerationContext {
         return new TranslatedSelect(
                 getFinalSQL(),
                 getColumnDescriptors().toArray(new ColumnDescriptor[0]),
-                getBindings().toArray(new DbAttributeBinding[0]),
+                getBindings().toArray(new ParameterBinding[0]),
                 isDistinctSuppression(),
                 getTableCount() > 1);
     }
@@ -194,7 +194,7 @@ public class TranslatorContext implements SQLGenerationContext {
         return columnDescriptors;
     }
 
-    public Collection<DbAttributeBinding> getBindings() {
+    public Collection<ParameterBinding> getBindings() {
         return bindings;
     }
 

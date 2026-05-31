@@ -81,7 +81,7 @@ public class BindObjectEqual implements Directive {
             int jdbcType = (value != null) ? TypesMapping.getSqlTypeByJava(value.getClass()) : Types.INTEGER;
 
             renderColumn(context, sqlColumnsArray[i], i);
-            render(context, new ParameterBinding(value, jdbcType, -1));
+            render(context, new ParameterBinding(context.preferredBindingType(jdbcType), -1), value);
         }
     }
 
@@ -93,9 +93,9 @@ public class BindObjectEqual implements Directive {
         context.getBuilder().append(columnName).append(' ');
     }
 
-    protected void render(Context context, ParameterBinding binding) {
-        if (binding.getValue() != null) {
-            context.addParameterBinding(binding);
+    protected void render(Context context, ParameterBinding binding, Object value) {
+        if (value != null) {
+            context.addParameterBinding(binding, value);
             context.getBuilder().append("= ?");
         } else {
             context.getBuilder().append("IS NULL");

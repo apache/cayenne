@@ -200,6 +200,19 @@ public interface DbAdapter {
 	void bindParameter(PreparedStatement statement, ParameterBinding parameterBinding) throws Exception;
 
 	/**
+	 * Returns the JDBC type that this adapter prefers to bind for a given mapped JDBC type. The
+	 * default implementation is an identity function; adapters whose drivers require a different
+	 * type (e.g. remapping the {@code N*} character types to their non-national counterparts)
+	 * override this. The returned type is resolved into the {@link ParameterBinding} at binding
+	 * creation time, so it matches the type actually sent to the PreparedStatement.
+	 *
+	 * @since 5.0
+	 */
+	default int preferredBindingType(int jdbcType) {
+		return jdbcType;
+	}
+
+	/**
 	 * Returns the name of the table type (as returned by
 	 * <code>DatabaseMetaData.getTableTypes</code>) for a simple user table.
 	 */

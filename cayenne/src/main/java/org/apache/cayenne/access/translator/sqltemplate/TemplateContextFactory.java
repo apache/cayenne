@@ -21,15 +21,23 @@ package org.apache.cayenne.access.translator.sqltemplate;
 
 import java.util.Map;
 
+import org.apache.cayenne.dba.DbAdapter;
+
 /**
  * @since 4.1
  */
 public interface TemplateContextFactory {
 
-    Context createContext(Map<String, ?> parameters, boolean positionalMode);
+    /**
+     * @since 5.0
+     */
+    Context createContext(Map<String, ?> parameters, boolean positionalMode, DbAdapter adapter);
 
-    default Context createContext(Map<String, ?> parameters) {
-        return createContext(parameters, false);
+    /**
+     * @since 5.0
+     */
+    default Context createContext(Map<String, ?> parameters, DbAdapter adapter) {
+        return createContext(parameters, false, adapter);
     }
 
 }

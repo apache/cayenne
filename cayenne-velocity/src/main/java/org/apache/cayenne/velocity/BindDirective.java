@@ -25,6 +25,9 @@ import java.util.Collection;
 import java.util.Iterator;
 
 import org.apache.cayenne.access.translator.ParameterBinding;
+import org.apache.cayenne.access.types.ExtendedType;
+import org.apache.cayenne.access.types.ExtendedTypeMap;
+import org.apache.cayenne.dba.DbAdapter;
 import org.apache.cayenne.dba.TypesMapping;
 import org.apache.cayenne.util.ConversionUtil;
 import org.apache.velocity.context.InternalContextAdapter;
@@ -130,12 +133,26 @@ public class BindDirective extends Directive {
 					+ ") at line " + node.getLine() + ", column " + node.getColumn());
 		}
 
-		render(context, writer, new ParameterBinding(value, jdbcType, scale));
+		render(context, writer, new ParameterBinding(preferredBindingType(context, jdbcType), scale), value);
 	}
 
-	protected void render(InternalContextAdapter context, Writer writer, ParameterBinding binding) throws IOException {
+	/**
+	 * Resolves the JDBC type the target adapter prefers for binding.
+	 *
+	 * @since 5.0
+	 */
+	protected int preferredBindingType(InternalContextAdapter context, int jdbcType) {
+		return adapter(context).preferredBindingType(jdbcType);
+	}
 
-		bind(context, binding);
+	private static DbAdapter adapter(InternalContextAdapter context) {
+		return (DbAdapter) context.getInternalUserContext().get(VelocitySQLTemplateTranslator.ADAPTER_KEY);
+	}
+
+	protected void render(InternalContextAdapter context, Writer writer, ParameterBinding binding, Object value)
+			throws IOException {
+
+		bind(context, binding, value);
 		writer.write('?');
 	}
 
@@ -146,14 +163,24 @@ public class BindDirective extends Directive {
 	/**
 	 * Adds value to the list of bindings in the context.
 	 */
-	protected void bind(InternalContextAdapter context, ParameterBinding binding) {
+	protected void bind(InternalContextAdapter context, ParameterBinding binding, Object value) {
 
 		@SuppressWarnings("unchecked")
 		Collection<ParameterBinding> bindings = (Collection<ParameterBinding>)
 				context.getInternalUserContext().get(VelocitySQLTemplateTranslator.BINDINGS_LIST_KEY);
 
 		if (bindings != null) {
+			// a binding's statement position is its 1-based ordinal among the bound parameters; the
+			// ExtendedType is resolved from the value via the adapter
+			binding.include(bindings.size() + 1, value, extendedType(context, value));
 			bindings.add(binding);
 		}
+	}
+
+	private ExtendedType<?> extendedType(InternalContextAdapter context, Object value) {
+		ExtendedTypeMap extendedTypes = adapter(context).getExtendedTypes();
+		return value != null
+				? extendedTypes.getRegisteredType(value.getClass())
+				: extendedTypes.getDefaultType();
 	}
 }

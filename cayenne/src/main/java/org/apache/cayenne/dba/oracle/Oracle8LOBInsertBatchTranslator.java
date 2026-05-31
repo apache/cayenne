@@ -25,7 +25,6 @@ import org.apache.cayenne.map.DbAttribute;
 import org.apache.cayenne.query.BatchQueryRow;
 import org.apache.cayenne.query.InsertBatchQuery;
 
-import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
 
@@ -33,23 +32,6 @@ class Oracle8LOBInsertBatchTranslator extends Oracle8LOBBatchTranslator {
 
     Oracle8LOBInsertBatchTranslator(InsertBatchQuery query, DbAdapter adapter, String trimFunction) {
         super(query, adapter, trimFunction);
-    }
-
-    @Override
-    List<Object> getValuesForLOBUpdateParameters(BatchQueryRow row) {
-        List<DbAttribute> dbAttributes = query.getDbAttributes();
-        int len = dbAttributes.size();
-
-        List<Object> values = new ArrayList<>(len);
-        for (int i = 0; i < len; i++) {
-            Object value = row.getValue(i);
-            DbAttribute attribute = dbAttributes.get(i);
-            if (isUpdateableColumn(value, attribute.getType())) {
-                values.add(value);
-            }
-        }
-
-        return values;
     }
 
     @Override

@@ -19,7 +19,7 @@
 package org.apache.cayenne.crypto.transformer;
 
 import org.apache.cayenne.access.jdbc.ColumnDescriptor;
-import org.apache.cayenne.access.translator.DbAttributeBinding;
+import org.apache.cayenne.access.translator.ParameterBinding;
 import org.apache.cayenne.access.types.ExtendedTypeMap;
 
 /**
@@ -30,7 +30,7 @@ import org.apache.cayenne.access.types.ExtendedTypeMap;
  */
 public interface TransformerFactory {
 
-    BindingsTransformer encryptor(DbAttributeBinding[] bindings, ExtendedTypeMap extendedTypeMap);
+    BindingsTransformer encryptor(ParameterBinding[] bindings, ExtendedTypeMap extendedTypeMap);
 
     MapTransformer decryptor(ColumnDescriptor[] columns, Object sampleRow);
 }
