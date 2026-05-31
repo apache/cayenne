@@ -143,9 +143,9 @@ abstract class Oracle8LOBBatchTranslator extends DefaultBatchTranslator {
                         ? adapter.getExtendedTypes().getRegisteredType(value.getClass())
                         : adapter.getExtendedTypes().getDefaultType();
 
-                b.include(j++, value, extendedType);
+                b.reset(j++, value, extendedType);
             } else {
-                b.exclude();
+                b.disable();
             }
         }
 

@@ -59,7 +59,7 @@ public class BatchAction extends BaseSQLAction {
 			throws Exception {
 
 		for (ParameterBinding b : bindings) {
-			if (!b.isExcluded()) {
+			if (!b.isDisabled()) {
 				adapter.bindParameter(statement, b);
 			}
 		}

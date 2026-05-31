@@ -118,7 +118,7 @@ public class Context {
         }
         // a binding's statement position is its 1-based ordinal among the bound parameters; the
         // ExtendedType is resolved from the value via the adapter
-        binding.include(parameterBindings.size() + 1, value, extendedType(value));
+        binding.reset(parameterBindings.size() + 1, value, extendedType(value));
         parameterBindings.add(binding);
     }
 

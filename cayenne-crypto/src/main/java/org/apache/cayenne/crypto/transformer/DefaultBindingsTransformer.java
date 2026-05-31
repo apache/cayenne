@@ -57,7 +57,7 @@ public class DefaultBindingsTransformer implements BindingsTransformer {
                     ? extendedTypeMap.getRegisteredType(transformed.getClass())
                     : extendedTypeMap.getDefaultType();
 
-            b.include(b.getStatementPosition(), transformed, extendedType);
+            b.reset(b.getStatementPosition(), transformed, extendedType);
         }
     }
 

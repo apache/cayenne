@@ -157,7 +157,7 @@ public class ValueNode extends Node {
             int jdbcType = context.getAdapter().preferredBindingType(TypesMapping.getSqlTypeByJava(value.getClass()));
             binding = new ParameterBinding(jdbcType, -1);
         }
-        binding.include(context.getBindings().size() + 1, value, extendedType);
+        binding.reset(context.getBindings().size() + 1, value, extendedType);
         context.getBindings().add(binding);
     }
 

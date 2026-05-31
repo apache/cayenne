@@ -172,7 +172,7 @@ public class BindDirective extends Directive {
 		if (bindings != null) {
 			// a binding's statement position is its 1-based ordinal among the bound parameters; the
 			// ExtendedType is resolved from the value via the adapter
-			binding.include(bindings.size() + 1, value, extendedType(context, value));
+			binding.reset(bindings.size() + 1, value, extendedType(context, value));
 			bindings.add(binding);
 		}
 	}
