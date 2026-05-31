@@ -47,12 +47,6 @@ public class HSQLDBSniffer implements DbAdapterDetector {
             return null;
         }
 
-        boolean supportsSchema = md.getDriverMajorVersion() < 1
-                || md.getDriverMajorVersion() == 1 && md.getDriverMinorVersion() <= 8;
-
-        // TODO: is this correct? Looks like newer drivers result in HSQLDBNoSchemaAdapter (which is presumably legacy?)
-        return supportsSchema
-                ? objectFactory.newInstance(DbAdapter.class, HSQLDBAdapter.class.getName())
-                : objectFactory.newInstance(DbAdapter.class, HSQLDBNoSchemaAdapter.class.getName());
+        return objectFactory.newInstance(DbAdapter.class, HSQLDBAdapter.class.getName());
     }
 }

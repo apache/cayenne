@@ -163,7 +163,7 @@ public class DbImportRunValidationTest {
         connector.setUserName("SA");
         connector.setPassword("");
         connector.setJdbcDriver("com.nonexistent.Driver");
-        connector.setDbAdapter("org.apache.cayenne.dba.hsqldb.HSQLDBNoSchemaAdapter");
+        connector.setDbAdapter("org.apache.cayenne.dba.hsqldb.HSQLDBAdapter");
         new DataMapPrefs(locator.dataMapNode(
                 PreferenceNodeIds.idForPath(dataMapFile.toUri().getRawPath())))
                 .setConnector(connector);
@@ -196,7 +196,7 @@ public class DbImportRunValidationTest {
         connector.setUserName("SA");
         connector.setPassword("");
         connector.setJdbcDriver("org.hsqldb.jdbc.JDBCDriver");
-        connector.setDbAdapter("org.apache.cayenne.dba.hsqldb.HSQLDBNoSchemaAdapter");
+        connector.setDbAdapter("org.apache.cayenne.dba.hsqldb.HSQLDBAdapter");
         new DataMapPrefs(locator.dataMapNode(
                 PreferenceNodeIds.idForPath(dataMapFile.toUri().getRawPath())))
                 .setConnector(connector);
