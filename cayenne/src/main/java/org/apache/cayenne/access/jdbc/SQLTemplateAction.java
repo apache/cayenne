@@ -239,7 +239,8 @@ public class SQLTemplateAction implements SQLAction {
         ExtendedTypeMap types = dataNode.getAdapter().getExtendedTypes();
         RowDescriptorBuilder builder = configureRowDescriptorBuilder(compiled, resultSet);
         recreateQueryMetadata(resultSet);
-        RowReader<?> rowReader = dataNode.rowReader(builder.getDescriptor(types), queryMetadata);
+        RowReader<?> rowReader = dataNode.getRowReaderFactory()
+                .rowReader(builder.getDescriptor(types), queryMetadata, dataNode.getAdapter());
         ResultIterator<?> it = new JDBCResultIterator<>(statement, resultSet, rowReader);
 
         if (iteratedResult) {

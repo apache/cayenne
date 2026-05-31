@@ -23,8 +23,10 @@ import org.apache.cayenne.access.flush.DataDomainFlushActionFactory;
 import org.apache.cayenne.access.flush.DefaultDataDomainFlushActionFactory;
 import org.apache.cayenne.access.flush.operation.DbRowOpSorter;
 import org.apache.cayenne.access.flush.operation.DefaultDbRowOpSorter;
-import org.apache.cayenne.access.translator.batch.BatchTranslatorFactory;
-import org.apache.cayenne.access.translator.batch.DefaultBatchTranslatorFactory;
+import org.apache.cayenne.access.translator.batch.BatchTranslator;
+import org.apache.cayenne.access.translator.batch.DeleteBatchTranslator;
+import org.apache.cayenne.access.translator.batch.InsertBatchTranslator;
+import org.apache.cayenne.access.translator.batch.UpdateBatchTranslator;
 import org.apache.cayenne.access.types.DefaultValueObjectTypeRegistry;
 import org.apache.cayenne.access.types.ValueObjectTypeRegistry;
 import org.apache.cayenne.configuration.Constants;
@@ -153,7 +155,9 @@ public class ToolsModule implements Module {
         binder.bind(Key.get(ResourceLocator.class, Constants.RESOURCE_LOCATOR)).to(ClassLoaderResourceLocator.class);
 
         binder.bind(RuntimeProperties.class).to(DefaultRuntimeProperties.class);
-        binder.bind(BatchTranslatorFactory.class).to(DefaultBatchTranslatorFactory.class);
+        binder.bind(Key.get(BatchTranslator.class, BatchTranslator.INSERT)).to(InsertBatchTranslator.class);
+        binder.bind(Key.get(BatchTranslator.class, BatchTranslator.UPDATE)).to(UpdateBatchTranslator.class);
+        binder.bind(Key.get(BatchTranslator.class, BatchTranslator.DELETE)).to(DeleteBatchTranslator.class);
         binder.bind(JdbcEventLogger.class).to(Slf4jJdbcEventLogger.class);
         binder.bind(PkGeneratorFactoryProvider.class).to(PkGeneratorFactoryProvider.class);
         binder.bind(PkGenerator.class).to(JdbcPkGenerator.class);

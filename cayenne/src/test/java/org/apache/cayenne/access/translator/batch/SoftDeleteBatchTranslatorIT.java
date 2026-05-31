@@ -56,13 +56,13 @@ public class SoftDeleteBatchTranslatorIT {
     private TestDbAdapter unitAdapter;
     private AdhocObjectFactory objectFactory;
 
-    private DeleteBatchTranslator createTranslator(DeleteBatchQuery query) {
+    private String createSql(DeleteBatchQuery query) {
         DbAdapter adapter = objectFactory.newInstance(JdbcAdapter.class, JdbcAdapter.class.getName());
-        return createTranslator(query, adapter);
+        return createSql(query, adapter);
     }
 
-    private DeleteBatchTranslator createTranslator(DeleteBatchQuery query, DbAdapter adapter) {
-        return (DeleteBatchTranslator) new SoftDeleteTranslatorFactory().translator(query, adapter, null);
+    private String createSql(DeleteBatchQuery query, DbAdapter adapter) {
+        return new SoftDeleteBatchTranslator().translate(query, adapter).sql();
     }
 
     @BeforeEach
@@ -79,8 +79,7 @@ public class SoftDeleteBatchTranslatorIT {
         List<DbAttribute> idAttributes = Collections.singletonList(entity.getAttribute("ID"));
 
         DeleteBatchQuery deleteQuery = new DeleteBatchQuery(entity, idAttributes, Collections.emptySet(), 1);
-        DeleteBatchTranslator builder = createTranslator(deleteQuery);
-        String generatedSql = builder.getSql();
+        String generatedSql = createSql(deleteQuery);
         assertNotNull(generatedSql);
         assertEquals("UPDATE " + entity.getName() + " SET DELETED = ? WHERE ID = ?", generatedSql);
     }
@@ -94,8 +93,7 @@ public class SoftDeleteBatchTranslatorIT {
         Collection<String> nullAttributes = Collections.singleton("NAME");
 
         DeleteBatchQuery deleteQuery = new DeleteBatchQuery(entity, idAttributes, nullAttributes, 1);
-        DeleteBatchTranslator builder = createTranslator(deleteQuery);
-        String generatedSql = builder.getSql();
+        String generatedSql = createSql(deleteQuery);
         assertNotNull(generatedSql);
         assertEquals("UPDATE " + entity.getName() + " SET DELETED = ? WHERE ( ID = ? ) AND ( NAME IS NULL )", generatedSql);
     }
@@ -111,8 +109,7 @@ public class SoftDeleteBatchTranslatorIT {
 
             DeleteBatchQuery deleteQuery = new DeleteBatchQuery(entity, idAttributes, Collections.emptySet(), 1);
             DbAdapter adapter = node.getAdapter();
-            DeleteBatchTranslator builder = createTranslator(deleteQuery, adapter);
-            String generatedSql = builder.getSql();
+            String generatedSql = createSql(deleteQuery, adapter);
 
             String charStart = unitAdapter.getIdentifiersStartQuote();
             String charEnd = unitAdapter.getIdentifiersEndQuote();
@@ -131,9 +128,9 @@ public class SoftDeleteBatchTranslatorIT {
 
         DbEntity entity = env.context().getEntityResolver().getObjEntity(SoftDelete.class).getDbEntity();
 
-        BatchTranslatorFactory oldFactory = node.getBatchTranslatorFactory();
+        BatchTranslator<DeleteBatchQuery> oldTranslator = node.getDeleteBatchTranslator();
         try {
-            node.setBatchTranslatorFactory(new SoftDeleteTranslatorFactory());
+            node.setDeleteBatchTranslator(new SoftDeleteBatchTranslator());
 
             final SoftDelete test = env.context().newObject(SoftDelete.class);
             test.setName("SoftDeleteBatchQueryBuilderTest");
@@ -169,7 +166,7 @@ public class SoftDeleteBatchTranslatorIT {
             }.runTest(200);
         } finally {
             env.context().performQuery(new SQLTemplate(entity, "DELETE FROM SOFT_DELETE"));
-            node.setBatchTranslatorFactory(oldFactory);
+            node.setDeleteBatchTranslator(oldTranslator);
         }
     }
 

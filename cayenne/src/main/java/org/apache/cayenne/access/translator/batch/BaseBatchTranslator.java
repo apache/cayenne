@@ -19,8 +19,6 @@
 
 package org.apache.cayenne.access.translator.batch;
 
-import java.util.List;
-
 import org.apache.cayenne.access.sqlbuilder.ExpressionNodeBuilder;
 import org.apache.cayenne.access.sqlbuilder.NodeBuilder;
 import org.apache.cayenne.access.sqlbuilder.SQLBuilder;
@@ -31,54 +29,56 @@ import org.apache.cayenne.access.translator.select.DefaultQuotingAppendable;
 import org.apache.cayenne.dba.DbAdapter;
 import org.apache.cayenne.map.DbAttribute;
 import org.apache.cayenne.query.BatchQuery;
+import org.apache.cayenne.query.BatchQueryRow;
+
+import java.util.List;
 
 /**
- * @since 4.2
  * @param <T> type of the batch query to translate
+ * @since 4.2
  */
-public abstract class BaseBatchTranslator<T extends BatchQuery> {
+public abstract class BaseBatchTranslator<T extends BatchQuery> implements BatchTranslator<T> {
 
-    protected final BatchTranslatorContext<T> context;
+    @Override
+    public TranslatedBatch translate(T query, DbAdapter adapter) {
+        BatchTranslatorContext<T> context = new BatchTranslatorContext<>(query, adapter);
 
-    protected ParameterBinding[] bindings;
+        String sql = createSql(context);
+        ParameterBinding[] bindings = createBindings(context);
 
-    public BaseBatchTranslator(T query, DbAdapter adapter) {
-        this.context = new BatchTranslatorContext<>(query, adapter);
+        return new TranslatedBatch(sql, bindings, (b, row) -> updateBindings(context, b, row));
     }
 
-    public ParameterBinding[] getBindings() {
-        return bindings;
+    protected abstract String createSql(BatchTranslatorContext<T> context);
+
+    protected ParameterBinding[] createBindings(BatchTranslatorContext<T> context) {
+        return context.getBindings().toArray(new ParameterBinding[0]);
     }
 
-    /**
-     * This method applies {@link org.apache.cayenne.access.translator.select.BaseSQLTreeProcessor} to the
-     * provided SQL tree node and generates SQL string from it.
-     *
-     * @param nodeBuilder SQL tree node builder
-     * @return SQL string
-     */
-    protected String doTranslate(NodeBuilder nodeBuilder) {
-        Node node = nodeBuilder.build();
-        // convert to database flavour
-        node = context.getAdapter().getSqlTreeProcessor().process(node);
-        // generate SQL
+    protected abstract ParameterBinding[] updateBindings(
+            BatchTranslatorContext<T> context,
+            ParameterBinding[] bindings,
+            BatchQueryRow row);
+
+    protected String doTranslate(BatchTranslatorContext<T> context, NodeBuilder nodeBuilder) {
+        Node node = context.getAdapter().getSqlTreeProcessor().process(nodeBuilder.build());
+
         SQLGenerationVisitor visitor = new SQLGenerationVisitor(new DefaultQuotingAppendable(context));
         node.visit(visitor);
 
-        bindings = context.getBindings().toArray(new ParameterBinding[0]);
         return visitor.getSQLString();
     }
 
-    abstract protected boolean isNullAttribute(DbAttribute attribute);
+    protected abstract boolean isNullAttribute(BatchTranslatorContext<T> context, DbAttribute attribute);
 
-    protected ExpressionNodeBuilder buildQualifier(List<DbAttribute> attributeList) {
+    protected ExpressionNodeBuilder buildQualifier(BatchTranslatorContext<T> context, List<DbAttribute> attributeList) {
         ExpressionNodeBuilder eq = null;
         for (DbAttribute attr : attributeList) {
-            Integer value = isNullAttribute(attr) ? null : 1;
+            Integer value = isNullAttribute(context, attr) ? null : 1;
             ExpressionNodeBuilder next = SQLBuilder
                     .column(attr.getName()).attribute(attr)
                     .eq(SQLBuilder.value(value).attribute(attr));
-            if(eq == null) {
+            if (eq == null) {
                 eq = next;
             } else {
                 eq = eq.and(next);

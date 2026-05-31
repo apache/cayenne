@@ -24,6 +24,7 @@ import org.apache.cayenne.access.MockOperationObserver;
 import org.apache.cayenne.access.OptimisticLockException;
 import org.apache.cayenne.access.jdbc.reader.RowReaderFactory;
 import org.apache.cayenne.access.translator.batch.DeleteBatchTranslator;
+import org.apache.cayenne.access.translator.batch.TranslatedBatch;
 import org.apache.cayenne.dba.JdbcAdapter;
 import org.apache.cayenne.map.DbAttribute;
 import org.apache.cayenne.map.DbEntity;
@@ -72,7 +73,7 @@ public class BatchActionLockingIT {
 		batchQuery.setUsingOptimisticLocking(true);
 		batchQuery.add(qualifierSnapshot);
 
-		DeleteBatchTranslator batchQueryBuilder = new DeleteBatchTranslator(batchQuery, adapter);
+		TranslatedBatch translated = new DeleteBatchTranslator().translate(batchQuery, adapter);
 
 		TestConnection mockConnection = new TestConnection();
 		mockConnection.prepareUpdateCount("DELETE", 1);
@@ -84,7 +85,7 @@ public class BatchActionLockingIT {
 		node.setEntityResolver(resolver);
 		node.setRowReaderFactory(mock(RowReaderFactory.class));
 		BatchAction action = new BatchAction(batchQuery, node, false);
-		action.runAsIndividualQueries(mockConnection, batchQueryBuilder, new MockOperationObserver(), generatesKeys);
+		action.runAsIndividualQueries(mockConnection, translated, new MockOperationObserver(), generatesKeys);
 		assertEquals(0, mockConnection.getNumberCommits());
 		assertEquals(0, mockConnection.getNumberRollbacks());
 	}
@@ -110,7 +111,7 @@ public class BatchActionLockingIT {
 		batchQuery.setUsingOptimisticLocking(true);
 		batchQuery.add(qualifierSnapshot);
 
-		DeleteBatchTranslator batchQueryBuilder = new DeleteBatchTranslator(batchQuery, adapter);
+		TranslatedBatch translated = new DeleteBatchTranslator().translate(batchQuery, adapter);
 
 		TestConnection mockConnection = new TestConnection();
 		mockConnection.prepareUpdateCount("DELETE", 0);
@@ -122,7 +123,7 @@ public class BatchActionLockingIT {
 		node.setRowReaderFactory(mock(RowReaderFactory.class));
 		BatchAction action = new BatchAction(batchQuery, node, false);
 		assertThrows(OptimisticLockException.class, () ->
-			action.runAsIndividualQueries(mockConnection, batchQueryBuilder, new MockOperationObserver(), generatesKeys));
+			action.runAsIndividualQueries(mockConnection, translated, new MockOperationObserver(), generatesKeys));
 		assertEquals(0, mockConnection.getNumberCommits());
 		assertEquals(0, mockConnection.getNumberRollbacks());
 	}

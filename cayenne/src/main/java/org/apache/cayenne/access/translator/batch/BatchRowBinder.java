@@ -17,27 +17,20 @@
  *  under the License.
  ****************************************************************/
 
-package org.apache.cayenne.dba.oracle;
+package org.apache.cayenne.access.translator.batch;
 
-import org.apache.cayenne.access.DataNode;
-import org.apache.cayenne.access.jdbc.BatchAction;
-import org.apache.cayenne.access.translator.batch.BatchTranslator;
-import org.apache.cayenne.query.BatchQuery;
+import org.apache.cayenne.access.translator.ParameterBinding;
+import org.apache.cayenne.query.BatchQueryRow;
 
 /**
- * @since 1.2
+ * A stateless strategy that populates a batch query's binding template with the values of a single
+ * {@link BatchQueryRow}. The same template array is reused for every row, so the returned array is the
+ * one passed in, only with the per-row state applied.
+ *
+ * @since 5.0
  */
-class OracleBatchAction extends BatchAction {
+@FunctionalInterface
+public interface BatchRowBinder {
 
-    /**
-     * @since 4.0
-     */
-    OracleBatchAction(BatchQuery batchQuery, DataNode dataNode, boolean runningAsBatch) {
-        super(batchQuery, dataNode, runningAsBatch);
-    }
-
-    @Override
-    protected BatchTranslator createTranslator() {
-        return dataNode.batchTranslator(query, OracleAdapter.TRIM_FUNCTION);
-    }
+    ParameterBinding[] bind(ParameterBinding[] bindings, BatchQueryRow row);
 }

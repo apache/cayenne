@@ -23,7 +23,6 @@ import org.apache.cayenne.access.sqlbuilder.InsertBuilder;
 import org.apache.cayenne.access.sqlbuilder.SQLBuilder;
 import org.apache.cayenne.access.translator.ParameterBinding;
 import org.apache.cayenne.access.types.ExtendedType;
-import org.apache.cayenne.dba.DbAdapter;
 import org.apache.cayenne.map.DbAttribute;
 import org.apache.cayenne.query.BatchQueryRow;
 import org.apache.cayenne.query.InsertBatchQuery;
@@ -31,20 +30,16 @@ import org.apache.cayenne.query.InsertBatchQuery;
 /**
  * @since 4.2
  */
-public class InsertBatchTranslator extends BaseBatchTranslator<InsertBatchQuery> implements BatchTranslator {
-
-    public InsertBatchTranslator(InsertBatchQuery query, DbAdapter adapter) {
-        super(query, adapter);
-    }
+public class InsertBatchTranslator extends BaseBatchTranslator<InsertBatchQuery> {
 
     @Override
-    public String getSql() {
+    protected String createSql(BatchTranslatorContext<InsertBatchQuery> context) {
         InsertBatchQuery query = context.getQuery();
         InsertBuilder insertBuilder = SQLBuilder.insert(context.getRootDbEntity());
 
         for(DbAttribute attribute : query.getDbAttributes()) {
             // skip generated attributes, if needed
-            if(excludeInBatch(attribute)) {
+            if(excludeInBatch(context, attribute)) {
                 continue;
             }
             insertBuilder
@@ -54,16 +49,17 @@ public class InsertBatchTranslator extends BaseBatchTranslator<InsertBatchQuery>
                     .value(SQLBuilder.value(1).attribute(attribute));
         }
 
-        return doTranslate(insertBuilder);
+        return doTranslate(context, insertBuilder);
     }
 
     @Override
-    public ParameterBinding[] updateBindings(BatchQueryRow row) {
+    protected ParameterBinding[] updateBindings(BatchTranslatorContext<InsertBatchQuery> context,
+                                                ParameterBinding[] bindings, BatchQueryRow row) {
         InsertBatchQuery query = context.getQuery();
         int i=0;
         int j=0;
         for(DbAttribute attribute : query.getDbAttributes()) {
-            if(excludeInBatch(attribute)) {
+            if(excludeInBatch(context, attribute)) {
                 i++;
                 continue;
             }
@@ -77,7 +73,7 @@ public class InsertBatchTranslator extends BaseBatchTranslator<InsertBatchQuery>
         return bindings;
     }
 
-    protected boolean excludeInBatch(DbAttribute attribute) {
+    protected boolean excludeInBatch(BatchTranslatorContext<InsertBatchQuery> context, DbAttribute attribute) {
         // attribute inclusion rule - one of the rules below must be true:
         //  (1) attribute not generated
         //  (2) attribute is generated and PK and adapter does not support generated keys
@@ -85,7 +81,7 @@ public class InsertBatchTranslator extends BaseBatchTranslator<InsertBatchQuery>
     }
 
     @Override
-    protected boolean isNullAttribute(DbAttribute attribute) {
+    protected boolean isNullAttribute(BatchTranslatorContext<InsertBatchQuery> context, DbAttribute attribute) {
         return false;
     }
 }

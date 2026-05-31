@@ -40,7 +40,6 @@ import java.util.Collections;
 import java.util.List;
 
 import static org.junit.jupiter.api.Assertions.*;
-import static org.mockito.Mockito.mock;
 
 public class UpdateBatchTranslatorIT {
 
@@ -62,16 +61,6 @@ public class UpdateBatchTranslatorIT {
     }
 
     @Test
-    public void constructor() {
-        DbAdapter adapter = objectFactory.newInstance(DbAdapter.class, JdbcAdapter.class.getName());
-        UpdateBatchQuery query = mock(UpdateBatchQuery.class);
-        UpdateBatchTranslator builder = new UpdateBatchTranslator(query, adapter);
-
-        assertSame(adapter, builder.context.getAdapter());
-        assertSame(query, builder.context.getQuery());
-    }
-
-    @Test
     public void createSqlString() {
         DbEntity entity = runtime.getDataDomain().getEntityResolver().getObjEntity(SimpleLockingTestEntity.class)
                 .getDbEntity();
@@ -83,8 +72,7 @@ public class UpdateBatchTranslatorIT {
                 Collections.emptySet(), 1);
 
         DbAdapter adapter = objectFactory.newInstance(DbAdapter.class, JdbcAdapter.class.getName());
-        UpdateBatchTranslator builder = new UpdateBatchTranslator(updateQuery, adapter);
-        String generatedSql = builder.getSql();
+        String generatedSql = new UpdateBatchTranslator().translate(updateQuery, adapter).sql();
         assertNotNull(generatedSql);
         assertEquals("UPDATE " + entity.getName() + " SET DESCRIPTION = ? WHERE LOCKING_TEST_ID = ?", generatedSql);
     }
@@ -103,8 +91,7 @@ public class UpdateBatchTranslatorIT {
         UpdateBatchQuery updateQuery = new UpdateBatchQuery(entity, idAttributes, updatedAttributes, nullAttributes, 1);
 
         DbAdapter adapter = objectFactory.newInstance(DbAdapter.class, JdbcAdapter.class.getName());
-        UpdateBatchTranslator builder = new UpdateBatchTranslator(updateQuery, adapter);
-        String generatedSql = builder.getSql();
+        String generatedSql = new UpdateBatchTranslator().translate(updateQuery, adapter).sql();
         assertNotNull(generatedSql);
 
         assertEquals("UPDATE " + entity.getName() + " SET DESCRIPTION = ? WHERE ( LOCKING_TEST_ID = ? ) AND ( NAME IS NULL )",
@@ -123,8 +110,7 @@ public class UpdateBatchTranslatorIT {
 
             UpdateBatchQuery updateQuery = new UpdateBatchQuery(entity, idAttributes, updatedAttributes, Collections.emptySet(), 1);
 
-            UpdateBatchTranslator builder = new UpdateBatchTranslator(updateQuery, adapter);
-            String generatedSql = builder.getSql();
+            String generatedSql = new UpdateBatchTranslator().translate(updateQuery, adapter).sql();
 
             String charStart = unitAdapter.getIdentifiersStartQuote();
             String charEnd = unitAdapter.getIdentifiersEndQuote();
@@ -153,8 +139,7 @@ public class UpdateBatchTranslatorIT {
 
             UpdateBatchQuery updateQuery = new UpdateBatchQuery(entity, idAttributes, updatedAttributes, nullAttributes, 1);
 
-            UpdateBatchTranslator builder = new UpdateBatchTranslator(updateQuery, adapter);
-            String generatedSql = builder.getSql();
+            String generatedSql = new UpdateBatchTranslator().translate(updateQuery, adapter).sql();
             assertNotNull(generatedSql);
 
             String charStart = unitAdapter.getIdentifiersStartQuote();

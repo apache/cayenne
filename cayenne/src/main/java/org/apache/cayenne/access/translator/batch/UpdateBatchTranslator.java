@@ -23,7 +23,6 @@ import org.apache.cayenne.access.sqlbuilder.SQLBuilder;
 import org.apache.cayenne.access.sqlbuilder.UpdateBuilder;
 import org.apache.cayenne.access.translator.ParameterBinding;
 import org.apache.cayenne.access.types.ExtendedType;
-import org.apache.cayenne.dba.DbAdapter;
 import org.apache.cayenne.map.DbAttribute;
 import org.apache.cayenne.query.BatchQueryRow;
 import org.apache.cayenne.query.UpdateBatchQuery;
@@ -31,14 +30,10 @@ import org.apache.cayenne.query.UpdateBatchQuery;
 /**
  * @since 4.2
  */
-public class UpdateBatchTranslator extends BaseBatchTranslator<UpdateBatchQuery> implements BatchTranslator {
-
-    public UpdateBatchTranslator(UpdateBatchQuery query, DbAdapter adapter) {
-        super(query, adapter);
-    }
+public class UpdateBatchTranslator extends BaseBatchTranslator<UpdateBatchQuery> {
 
     @Override
-    public String getSql() {
+    protected String createSql(BatchTranslatorContext<UpdateBatchQuery> context) {
         UpdateBatchQuery query = context.getQuery();
 
         UpdateBuilder updateBuilder = SQLBuilder.update(context.getRootDbEntity());
@@ -48,18 +43,19 @@ public class UpdateBatchTranslator extends BaseBatchTranslator<UpdateBatchQuery>
                     .eq(SQLBuilder.value(1).attribute(attr))
             );
         }
-        updateBuilder.where(buildQualifier(query.getQualifierAttributes()));
+        updateBuilder.where(buildQualifier(context, query.getQualifierAttributes()));
 
-        return doTranslate(updateBuilder);
+        return doTranslate(context, updateBuilder);
     }
 
     @Override
-    protected boolean isNullAttribute(DbAttribute attribute) {
+    protected boolean isNullAttribute(BatchTranslatorContext<UpdateBatchQuery> context, DbAttribute attribute) {
         return context.getQuery().isNull(attribute);
     }
 
     @Override
-    public ParameterBinding[] updateBindings(BatchQueryRow row) {
+    protected ParameterBinding[] updateBindings(BatchTranslatorContext<UpdateBatchQuery> context,
+                                                ParameterBinding[] bindings, BatchQueryRow row) {
         UpdateBatchQuery updateBatch = context.getQuery();
 
         int i = 0;

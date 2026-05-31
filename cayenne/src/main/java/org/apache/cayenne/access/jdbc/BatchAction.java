@@ -19,6 +19,7 @@
 
 package org.apache.cayenne.access.jdbc;
 
+import org.apache.cayenne.CayenneRuntimeException;
 import org.apache.cayenne.ObjectId;
 import org.apache.cayenne.ResultIterator;
 import org.apache.cayenne.access.DataNode;
@@ -26,7 +27,7 @@ import org.apache.cayenne.access.OperationObserver;
 import org.apache.cayenne.access.OptimisticLockException;
 import org.apache.cayenne.access.jdbc.reader.RowReader;
 import org.apache.cayenne.access.translator.ParameterBinding;
-import org.apache.cayenne.access.translator.batch.BatchTranslator;
+import org.apache.cayenne.access.translator.batch.TranslatedBatch;
 import org.apache.cayenne.dba.DbAdapter;
 import org.apache.cayenne.log.JdbcEventLogger;
 import org.apache.cayenne.map.DbAttribute;
@@ -34,7 +35,9 @@ import org.apache.cayenne.map.ObjAttribute;
 import org.apache.cayenne.map.ObjEntity;
 import org.apache.cayenne.query.BatchQuery;
 import org.apache.cayenne.query.BatchQueryRow;
+import org.apache.cayenne.query.DeleteBatchQuery;
 import org.apache.cayenne.query.InsertBatchQuery;
+import org.apache.cayenne.query.UpdateBatchQuery;
 
 import java.sql.Connection;
 import java.sql.PreparedStatement;
@@ -73,15 +76,21 @@ public class BatchAction extends BaseSQLAction {
 
 	@Override
 	public void performAction(Connection connection, OperationObserver observer) throws Exception {
-		BatchTranslator translator = createTranslator();
+		DbAdapter adapter = dataNode.getAdapter();
+		TranslatedBatch translated = switch (query) {
+			case InsertBatchQuery insert -> dataNode.getInsertBatchTranslator().translate(insert, adapter);
+			case UpdateBatchQuery update -> dataNode.getUpdateBatchTranslator().translate(update, adapter);
+			case DeleteBatchQuery delete -> dataNode.getDeleteBatchTranslator().translate(delete, adapter);
+			case null, default -> throw new CayenneRuntimeException("Unsupported batch query: %s", query);
+		};
 
 		boolean isBatch = canRunAsBatch();
 		boolean generatesKeys = hasGeneratedKeys() && supportsGeneratedKeys(isBatch);
 
 		if (isBatch) {
-			runAsBatch(connection, translator, observer, generatesKeys);
+			runAsBatch(connection, translated, observer, generatesKeys);
 		} else {
-			runAsIndividualQueries(connection, translator, observer, generatesKeys);
+			runAsIndividualQueries(connection, translated, observer, generatesKeys);
 		}
 	}
 
@@ -99,14 +108,10 @@ public class BatchAction extends BaseSQLAction {
 		return true;
 	}
 
-	protected BatchTranslator createTranslator() {
-		return dataNode.batchTranslator(query, null);
-	}
-
-	protected void runAsBatch(Connection con, BatchTranslator translator, OperationObserver delegate, boolean generatesKeys)
+	protected void runAsBatch(Connection con, TranslatedBatch translated, OperationObserver delegate, boolean generatesKeys)
 			throws Exception {
 
-		String sql = translator.getSql();
+		String sql = translated.sql();
 		JdbcEventLogger logger = dataNode.getJdbcEventLogger();
 		boolean isLoggable = logger.isLoggable();
 
@@ -120,7 +125,7 @@ public class BatchAction extends BaseSQLAction {
 		try (PreparedStatement statement = prepareStatement(con, sql, adapter, generatesKeys)) {
 			for (BatchQueryRow row : query.getRows()) {
 
-				ParameterBinding[] bindings = translator.updateBindings(row);
+				ParameterBinding[] bindings = translated.updateBindings(row);
 				logger.logQueryParameters("batch bind", bindings);
 				for (ParameterBinding b : bindings) {
 					adapter.bindParameter(statement, b);
@@ -159,7 +164,7 @@ public class BatchAction extends BaseSQLAction {
 	/**
 	 * Executes batch as individual queries over the same prepared statement.
 	 */
-	protected void runAsIndividualQueries(Connection connection, BatchTranslator translator,
+	protected void runAsIndividualQueries(Connection connection, TranslatedBatch translated,
 			OperationObserver delegate, boolean generatesKeys) throws Exception {
 
 		if(query.getRows().isEmpty()) {
@@ -169,7 +174,7 @@ public class BatchAction extends BaseSQLAction {
 		JdbcEventLogger logger = dataNode.getJdbcEventLogger();
 		boolean useOptimisticLock = query.isUsingOptimisticLocking();
 
-		String queryStr = translator.getSql();
+		String queryStr = translated.sql();
 
 		// log batch SQL execution
 		logger.log(queryStr);
@@ -181,7 +186,7 @@ public class BatchAction extends BaseSQLAction {
 		try (PreparedStatement statement = prepareStatement(connection, queryStr, adapter, generatesKeys)) {
 			for (BatchQueryRow row : query.getRows()) {
 
-				ParameterBinding[] bindings = translator.updateBindings(row);
+				ParameterBinding[] bindings = translated.updateBindings(row);
 				logger.logQueryParameters("bind", bindings);
 
 				for (ParameterBinding b : bindings) {
@@ -283,7 +288,8 @@ public class BatchAction extends BaseSQLAction {
 			this.keyRowDescriptor = builder.getDescriptor(dataNode.getAdapter().getExtendedTypes());
 		}
 
-		RowReader<?> rowReader = dataNode.rowReader(keyRowDescriptor, query.getMetaData(dataNode.getEntityResolver()));
+		RowReader<?> rowReader = dataNode.getRowReaderFactory()
+				.rowReader(keyRowDescriptor, query.getMetaData(dataNode.getEntityResolver()), dataNode.getAdapter());
 		ResultIterator iterator = new JDBCResultIterator(null, keysRS, rowReader);
 
 		List<ObjectId> objectIds = new ArrayList<>(rows.size());

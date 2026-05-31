@@ -23,51 +23,85 @@ import org.apache.cayenne.access.sqlbuilder.SQLBuilder;
 import org.apache.cayenne.access.sqlbuilder.UpdateBuilder;
 import org.apache.cayenne.access.translator.ParameterBinding;
 import org.apache.cayenne.access.types.ExtendedType;
-import org.apache.cayenne.dba.DbAdapter;
 import org.apache.cayenne.dba.TypesMapping;
 import org.apache.cayenne.map.DbAttribute;
 import org.apache.cayenne.query.BatchQueryRow;
 import org.apache.cayenne.query.DeleteBatchQuery;
 
+import java.sql.Types;
+
 import static org.apache.cayenne.access.sqlbuilder.SQLBuilder.*;
 
 /**
+ * A delete {@link BatchTranslator} that performs a 'soft' delete (an UPDATE setting the 'deleted' field
+ * to true) for entities that have a boolean 'deleted' field, and falls back to the regular SQL DELETE of
+ * the {@link DeleteBatchTranslator} superclass for the rest. Bind it under the {@link BatchTranslator#DELETE}
+ * name to enable soft deletes.
+ *
  * @since 4.2
  */
 public class SoftDeleteBatchTranslator extends DeleteBatchTranslator {
 
+    public static final String DEFAULT_DELETED_FIELD_NAME = "DELETED";
+
     private final String deletedFieldName;
 
-    public SoftDeleteBatchTranslator(DeleteBatchQuery query, DbAdapter adapter, String deletedFieldName) {
-        super(query, adapter);
+    public SoftDeleteBatchTranslator() {
+        this(DEFAULT_DELETED_FIELD_NAME);
+    }
+
+    public SoftDeleteBatchTranslator(String deletedFieldName) {
         this.deletedFieldName = deletedFieldName;
     }
 
-    @Override
-    public String getSql() {
-        DeleteBatchQuery query = context.getQuery();
-        DbAttribute deleteAttribute = query.getDbEntity().getAttribute(deletedFieldName);
+    protected boolean isHardDelete(DeleteBatchQuery query) {
+        DbAttribute attr = query.getDbEntity().getAttribute(deletedFieldName);
+        return attr == null || attr.getType() != Types.BOOLEAN;
+    }
 
+    @Override
+    protected String createSql(BatchTranslatorContext<DeleteBatchQuery> context) {
+        DeleteBatchQuery query = context.getQuery();
+        if (isHardDelete(query)) {
+            return super.createSql(context);
+        }
+
+        DbAttribute deleteAttribute = query.getDbEntity().getAttribute(deletedFieldName);
         UpdateBuilder updateBuilder = update(context.getRootDbEntity())
                 .set(column(deletedFieldName).attribute(deleteAttribute)
                         .eq(SQLBuilder.value(true).attribute(deleteAttribute)))
-                .where(buildQualifier(query.getDbAttributes()));
+                .where(buildQualifier(context, query.getDbAttributes()));
 
-        String sql = doTranslate(updateBuilder);
+        return doTranslate(context, updateBuilder);
+    }
 
+    @Override
+    protected ParameterBinding[] createBindings(BatchTranslatorContext<DeleteBatchQuery> context) {
+        ParameterBinding[] bindings = super.createBindings(context);
+        if (isHardDelete(context.getQuery())) {
+            return bindings;
+        }
+
+        // the 'deleted' flag is the first binding and stays constant across all rows of the batch
+        DbAttribute deleteAttribute = context.getQuery().getDbEntity().getAttribute(deletedFieldName);
         String typeName = TypesMapping.getJavaBySqlType(deleteAttribute);
         ExtendedType<?> extendedType = context.getAdapter().getExtendedTypes().getRegisteredType(typeName);
         bindings[0].reset(1, true, extendedType);
 
-        return sql;
+        return bindings;
     }
 
     @Override
-    public ParameterBinding[] updateBindings(BatchQueryRow row) {
+    protected ParameterBinding[] updateBindings(BatchTranslatorContext<DeleteBatchQuery> context,
+                                                ParameterBinding[] bindings, BatchQueryRow row) {
         DeleteBatchQuery deleteBatch = context.getQuery();
+        if (isHardDelete(deleteBatch)) {
+            return super.updateBindings(context, bindings, row);
+        }
 
+        // bindings[0] holds the constant 'deleted' flag, so qualifier values start at position 1
         for(int i=0, position=1; i<deleteBatch.getDbAttributes().size(); i++) {
-            position = updateBinding(row.getValue(i), position);
+            position = updateBinding(context, bindings, row.getValue(i), position);
         }
 
         return bindings;
