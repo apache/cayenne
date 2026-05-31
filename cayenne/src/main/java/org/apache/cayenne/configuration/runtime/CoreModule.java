@@ -121,7 +121,7 @@ import org.apache.cayenne.reflect.generic.DefaultValueComparisonStrategyFactory;
 import org.apache.cayenne.reflect.generic.ValueComparisonStrategyFactory;
 import org.apache.cayenne.resource.ClassLoaderResourceLocator;
 import org.apache.cayenne.resource.ResourceLocator;
-import org.apache.cayenne.access.translator.sqltemplate.CayenneSQLTemplateTranslator;
+import org.apache.cayenne.access.translator.sqltemplate.DefaultSQLTemplateTranslator;
 import org.apache.cayenne.access.translator.sqltemplate.DefaultTemplateContextFactory;
 import org.apache.cayenne.access.translator.sqltemplate.TemplateContextFactory;
 import org.apache.cayenne.tx.DefaultTransactionFactory;
@@ -476,7 +476,7 @@ public class CoreModule implements Module {
         binder.bind(TransactionManager.class).to(DefaultTransactionManager.class);
         binder.bind(RowReaderFactory.class).to(DefaultRowReaderFactory.class);
 
-        binder.bind(SQLTemplateTranslator.class).to(CayenneSQLTemplateTranslator.class);
+        binder.bind(SQLTemplateTranslator.class).to(DefaultSQLTemplateTranslator.class);
         binder.bind(TemplateContextFactory.class).to(DefaultTemplateContextFactory.class);
 
         binder.bind(HandlerFactory.class).to(DefaultHandlerFactory.class);

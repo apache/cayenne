@@ -34,19 +34,18 @@ import java.util.Map;
 
 
 /**
- * @since 4.1
+ * @since 5.0
  */
-public class CayenneSQLTemplateTranslator implements SQLTemplateTranslator {
+public class DefaultSQLTemplateTranslator implements SQLTemplateTranslator {
 
-    ConcurrentLinkedHashMap<String, Node> templateCache = new ConcurrentLinkedHashMap
-            .Builder<String, Node>().maximumWeightedCapacity(100).build();
-
-    TemplateParserPool parserPool = new TemplateParserPool();
-
+    private final ConcurrentLinkedHashMap<String, Node> templateCache;
+    private final TemplateParserPool parserPool;
     private final TemplateContextFactory contextFactory;
 
-    public CayenneSQLTemplateTranslator(@Inject TemplateContextFactory contextFactory) {
+    public DefaultSQLTemplateTranslator(@Inject TemplateContextFactory contextFactory) {
         this.contextFactory = contextFactory;
+        this.templateCache = new ConcurrentLinkedHashMap.Builder<String, Node>().maximumWeightedCapacity(100).build();
+        this.parserPool = new TemplateParserPool();
     }
 
     @Override
@@ -58,8 +57,8 @@ public class CayenneSQLTemplateTranslator implements SQLTemplateTranslator {
     @Override
     public TranslatedSQL translate(String template, List<Object> positionalParameters) {
         Map<String, Object> parameters = new HashMap<>();
-        int i=0;
-        for(Object param : positionalParameters) {
+        int i = 0;
+        for (Object param : positionalParameters) {
             parameters.put(String.valueOf(i++), param);
         }
         Context context = contextFactory.createContext(parameters, true);
@@ -68,7 +67,7 @@ public class CayenneSQLTemplateTranslator implements SQLTemplateTranslator {
 
     protected TranslatedSQL process(String template, Context context) {
         Node node = templateCache.get(template);
-        if(node == null) {
+        if (node == null) {
             SQLTemplateParser parser = parserPool.get();
             try {
                 parser.ReInit(new ByteArrayInputStream(template.getBytes()));

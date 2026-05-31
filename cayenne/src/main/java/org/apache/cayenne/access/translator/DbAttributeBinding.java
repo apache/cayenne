@@ -30,7 +30,6 @@ public class DbAttributeBinding extends ParameterBinding {
 	private final DbAttribute attribute;
 
 	public DbAttributeBinding(DbAttribute attribute) {
-		super();
 		this.attribute = attribute;
 	}
 

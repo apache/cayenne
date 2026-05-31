@@ -31,7 +31,7 @@ public class ParameterBinding {
 
 	private Object value;
 	private int statementPosition;
-	private ExtendedType extendedType;
+	private ExtendedType<?> extendedType;
 	private Integer jdbcType;
 	private int scale;
 
@@ -69,7 +69,7 @@ public class ParameterBinding {
 		return extendedType;
 	}
 
-	public void setExtendedType(ExtendedType extendedType) {
+	public void setExtendedType(ExtendedType<?> extendedType) {
 		this.extendedType = extendedType;
 	}
 
@@ -86,7 +86,7 @@ public class ParameterBinding {
 	 * Sets the value of the binding and initializes statement position var,
 	 * thus "including" this binding in the current iteration.
 	 */
-	public void include(int statementPosition, Object value, ExtendedType extendedType) {
+	public void include(int statementPosition, Object value, ExtendedType<?> extendedType) {
 		this.statementPosition = statementPosition;
 		this.value = value;
 		this.extendedType = extendedType;

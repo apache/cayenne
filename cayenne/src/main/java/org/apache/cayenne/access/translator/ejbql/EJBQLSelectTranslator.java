@@ -34,10 +34,6 @@ public class EJBQLSelectTranslator extends EJBQLBaseVisitor {
         this.context = context;
     }
 
-    EJBQLTranslationContext getContext() {
-        return context;
-    }
-
     @Override
     public boolean visitDistinct(EJBQLExpression expression) {
         // "distinct" is appended via a marker as sometimes a later match on to-many would
@@ -109,7 +105,7 @@ public class EJBQLSelectTranslator extends EJBQLBaseVisitor {
         context.append(" WHERE");
         context.popMarker();
 
-        if (context.findOrCreateMarkedBuffer(context.makeEntityQualifierMarker()).length() > 0) {
+        if (!context.findOrCreateMarkedBuffer(context.makeEntityQualifierMarker()).isEmpty()) {
             context.append(" AND");
         }
 
