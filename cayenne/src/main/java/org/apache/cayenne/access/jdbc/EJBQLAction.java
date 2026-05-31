@@ -18,8 +18,6 @@
  ****************************************************************/
 package org.apache.cayenne.access.jdbc;
 
-import java.sql.Connection;
-
 import org.apache.cayenne.access.DataNode;
 import org.apache.cayenne.access.OperationObserver;
 import org.apache.cayenne.access.translator.ejbql.EJBQLTranslationContext;
@@ -33,9 +31,11 @@ import org.apache.cayenne.query.QueryMetadata;
 import org.apache.cayenne.query.SQLActionVisitor;
 import org.apache.cayenne.query.SQLTemplate;
 
+import java.sql.Connection;
+
 /**
  * Parses an EJBQL statement, converting it to SQL. Executes the resulting SQL.
- * 
+ *
  * @since 3.0
  */
 public class EJBQLAction extends BaseSQLAction {
@@ -53,9 +53,13 @@ public class EJBQLAction extends BaseSQLAction {
     @Override
     public void performAction(Connection connection, OperationObserver observer) throws Exception {
         EJBQLCompiledExpression compiledExpression = query.getExpression(dataNode.getEntityResolver());
-        final EJBQLTranslatorFactory translatorFactory = dataNode.getAdapter().getEjbqlTranslatorFactory();
-        final EJBQLTranslationContext context = new EJBQLTranslationContext(dataNode.getEntityResolver(), query,
-                compiledExpression, translatorFactory, dataNode.getAdapter().getQuotingStrategy());
+        EJBQLTranslatorFactory translatorFactory = dataNode.getAdapter().getEjbqlTranslatorFactory();
+        EJBQLTranslationContext context = new EJBQLTranslationContext(
+                dataNode.getEntityResolver(),
+                query,
+                compiledExpression,
+                translatorFactory,
+                dataNode.getAdapter().getQuotingStrategy());
 
         compiledExpression.getExpression().visit(new EJBQLBaseVisitor(false) {
 
@@ -95,7 +99,7 @@ public class EJBQLAction extends BaseSQLAction {
         }
 
         int queryTimeout = md.getQueryTimeout();
-        if(queryTimeout != QueryMetadata.QUERY_TIMEOUT_DEFAULT) {
+        if (queryTimeout != QueryMetadata.QUERY_TIMEOUT_DEFAULT) {
             sqlQuery.setQueryTimeout(queryTimeout);
         }
 

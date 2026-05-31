@@ -22,16 +22,11 @@ package org.apache.cayenne.access.types;
 import java.sql.CallableStatement;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
-import java.util.Optional;
-
-import org.apache.cayenne.access.sqlbuilder.sqltree.ChildProcessor;
-import org.apache.cayenne.access.sqlbuilder.sqltree.Node;
 
 /**
  * Defines methods to read Java objects from JDBC ResultSets and write as parameters of PreparedStatements.
  */
 public interface ExtendedType<T> {
-
 
     /**
      * Defines trimming constant for toString method that helps to limit logging of large values.

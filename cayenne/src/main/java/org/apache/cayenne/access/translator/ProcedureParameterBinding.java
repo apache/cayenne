@@ -30,7 +30,6 @@ public class ProcedureParameterBinding extends ParameterBinding {
 	private final ProcedureParameter parameter;
 
 	public ProcedureParameterBinding(ProcedureParameter procedureParameter) {
-		super();
 		this.parameter = procedureParameter;
 	}
 

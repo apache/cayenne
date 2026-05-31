@@ -34,13 +34,13 @@ import org.junit.jupiter.api.Test;
 
 import static org.junit.jupiter.api.Assertions.*;
 
-public class CayenneSQLTemplateTranslatorTest {
+public class DefaultSQLTemplateTranslatorTest {
 
-    private CayenneSQLTemplateTranslator processor;
+    private DefaultSQLTemplateTranslator processor;
 
     @BeforeEach
     public void before() {
-        processor = new CayenneSQLTemplateTranslator(new DefaultTemplateContextFactory());
+        processor = new DefaultSQLTemplateTranslator(new DefaultTemplateContextFactory());
     }
 
     @Test
