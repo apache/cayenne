@@ -21,6 +21,9 @@ package org.apache.cayenne.access;
 
 import org.apache.cayenne.CayenneRuntimeException;
 import org.apache.cayenne.access.dbsync.SchemaUpdateStrategy;
+import org.apache.cayenne.access.jdbc.ColumnDescriptor;
+import org.apache.cayenne.access.jdbc.RowDescriptor;
+import org.apache.cayenne.access.jdbc.reader.RowReader;
 import org.apache.cayenne.access.jdbc.reader.RowReaderFactory;
 import org.apache.cayenne.access.translator.batch.BatchTranslator;
 import org.apache.cayenne.access.translator.select.SelectTranslator;
@@ -31,9 +34,11 @@ import org.apache.cayenne.log.JdbcEventLogger;
 import org.apache.cayenne.log.NoopJdbcEventLogger;
 import org.apache.cayenne.map.DataMap;
 import org.apache.cayenne.map.EntityResolver;
+import org.apache.cayenne.map.ObjAttribute;
 import org.apache.cayenne.query.DeleteBatchQuery;
 import org.apache.cayenne.query.InsertBatchQuery;
 import org.apache.cayenne.query.Query;
+import org.apache.cayenne.query.QueryMetadata;
 import org.apache.cayenne.query.UpdateBatchQuery;
 import org.apache.cayenne.tx.BaseTransaction;
 import org.apache.cayenne.tx.Transaction;
@@ -312,6 +317,29 @@ public class DataNode {
 		return new ToStringBuilder(this).append("name", getName()).toString();
 	}
 
+
+	/**
+	 * Creates a {@link RowReader} using internal {@link RowReaderFactory}.
+	 *
+	 * @since 4.0
+	 * @deprecated in favor of obtaining the factory via {@link #getRowReaderFactory()} and calling it directly.
+	 */
+	@Deprecated(since = "5.0", forRemoval = true)
+	public RowReader<?> rowReader(RowDescriptor descriptor, QueryMetadata queryMetadata) {
+		return rowReaderFactory.rowReader(descriptor, queryMetadata, getAdapter());
+	}
+
+	/**
+	 * Creates a {@link RowReader} using internal {@link RowReaderFactory}.
+	 *
+	 * @since 4.0
+	 * @deprecated in favor of obtaining the factory via {@link #getRowReaderFactory()} and calling it directly.
+	 */
+	@Deprecated(since = "5.0", forRemoval = true)
+	public RowReader<?> rowReader(RowDescriptor descriptor, QueryMetadata queryMetadata,
+			Map<ObjAttribute, ColumnDescriptor> attributeOverrides) {
+		return rowReader(descriptor, queryMetadata);
+	}
 
 	/**
 	 * @since 4.0
