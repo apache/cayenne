@@ -61,6 +61,10 @@ Expression caseWhenExp = caseWhen(
   If you referenced `Oracle8Adapter` explicitly (e.g. in a DataNode adapter configuration or custom DI
   bindings), switch to `org.apache.cayenne.dba.oracle.OracleAdapter`.
 
+* Per [CAY-2957](https://issues.apache.org/jira/browse/CAY-2957) the legacy HSQLDB adapter (HSQL <= 1.8) has been removed.
+  `org.apache.cayenne.dba.hsqldb.HSQLDBNoSchemaAdapter` no longer exists, and the `HSQLDBSniffer` now maps all. If you
+  happen to be on those older HSQL versions, update to the latest one.
+
 ## Upgrading to 5.0.M2
 
 * Per [CAY-2947](https://issues.apache.org/jira/browse/CAY-2947) the `cayenne-commitlog` artifact has been removed. Commit log support is now part of the

@@ -18,7 +18,7 @@
  ****************************************************************/
 package org.apache.cayenne.mcp.tools.dbimport;
 
-import org.apache.cayenne.dba.hsqldb.HSQLDBNoSchemaAdapter;
+import org.apache.cayenne.dba.hsqldb.HSQLDBAdapter;
 import org.apache.cayenne.mcp.tools.dbimport.protocol.DbImportRunResult;
 import org.apache.cayenne.modeler.pref.PreferenceNodeIds;
 import org.apache.cayenne.modeler.pref.PrefsLocator;
@@ -42,7 +42,7 @@ import static org.junit.jupiter.api.Assertions.*;
 
 public class DbImportRunIT {
 
-    private static final String HSQL_ADAPTER = HSQLDBNoSchemaAdapter.class.getName();
+    private static final String HSQL_ADAPTER = HSQLDBAdapter.class.getName();
     private static final String HSQL_DRIVER = "org.hsqldb.jdbc.JDBCDriver";
 
     @TempDir

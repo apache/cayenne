@@ -14,6 +14,7 @@ Date:
 Changes/New Features:
 
 CAY-2956 Get rid of a dedicated adapter for Oracle 8
+CAY-2957 Get rid of adaper for legacy HSQLDB <= 1.8
 
 Bug Fixes:
 
