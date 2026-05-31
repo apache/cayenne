@@ -115,7 +115,7 @@ public class SelectAction extends BaseSQLAction {
                 .setColumns(translated.resultColumns())
                 .getDescriptor(dataNode.getAdapter().getExtendedTypes());
 
-        RowReader<?> rowReader = dataNode.rowReader(descriptor, queryMetadata, translated.attributeOverrides());
+        RowReader<?> rowReader = dataNode.rowReader(descriptor, queryMetadata);
 
         ResultIterator<?> it = new JDBCResultIterator<>(statement, rs, rowReader);
         it = forIteratedResult(it, observer, connection, t1, translated.sql());

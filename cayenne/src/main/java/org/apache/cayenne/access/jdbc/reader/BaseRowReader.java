@@ -34,16 +34,14 @@ abstract class BaseRowReader<T> implements RowReader<T> {
     ExtendedType[] converters;
     String[] labels;
     int[] types;
-    DataRowPostProcessor postProcessor;
     String entityName;
 
-    BaseRowReader(RowDescriptor descriptor, QueryMetadata queryMetadata, DataRowPostProcessor postProcessor) {
+    BaseRowReader(RowDescriptor descriptor, QueryMetadata queryMetadata) {
         ObjEntity rootObjEntity = queryMetadata.getObjEntity();
         if (rootObjEntity != null) {
             this.entityName = rootObjEntity.getName();
         }
 
-        this.postProcessor = postProcessor;
         this.converters = descriptor.getConverters();
 
         ColumnDescriptor[] columns = descriptor.getColumns();

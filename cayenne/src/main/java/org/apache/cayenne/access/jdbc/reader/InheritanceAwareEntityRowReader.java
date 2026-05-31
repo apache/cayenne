@@ -33,19 +33,14 @@ class InheritanceAwareEntityRowReader extends EntityRowReader {
 
     private EntityInheritanceTree entityInheritanceTree;
 
-    public InheritanceAwareEntityRowReader(RowDescriptor descriptor, EntityResultSegment segmentMetadata,
-            DataRowPostProcessor postProcessor) {
-        
-        super(descriptor, segmentMetadata, postProcessor);
+    public InheritanceAwareEntityRowReader(RowDescriptor descriptor, EntityResultSegment segmentMetadata) {
+
+        super(descriptor, segmentMetadata);
         this.entityInheritanceTree = segmentMetadata.getClassDescriptor().getEntityInheritanceTree();
     }
 
     @Override
     void postprocessRow(ResultSet resultSet, DataRow dataRow) throws Exception {
-        if (postProcessor != null) {
-            postProcessor.postprocessRow(resultSet, dataRow);
-        }
-
         ObjEntity entity = entityInheritanceTree.entityMatchingRow(dataRow);
         dataRow.setEntityName(entity != null ? entity.getName() : entityName);
     }

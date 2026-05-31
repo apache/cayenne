@@ -19,11 +19,8 @@
 
 package org.apache.cayenne.access.translator.select;
 
-import java.util.Map;
-
 import org.apache.cayenne.access.jdbc.ColumnDescriptor;
 import org.apache.cayenne.access.translator.DbAttributeBinding;
-import org.apache.cayenne.map.ObjAttribute;
 
 /**
  * An immutable result of translating a {@link org.apache.cayenne.query.Select} query to SQL,
@@ -35,7 +32,6 @@ public record TranslatedSelect(
         String sql,
         ColumnDescriptor[] resultColumns,
         DbAttributeBinding[] bindings,
-        Map<ObjAttribute, ColumnDescriptor> attributeOverrides,
         boolean suppressingDistinct,
         boolean hasJoins) {
 }

@@ -38,7 +38,6 @@ import org.apache.cayenne.dba.DbAdapter;
 import org.apache.cayenne.dba.TypesMapping;
 import org.apache.cayenne.di.Inject;
 import org.apache.cayenne.map.DbAttribute;
-import org.apache.cayenne.map.ObjAttribute;
 import org.apache.cayenne.query.EntityResultSegment;
 import org.apache.cayenne.query.QueryMetadata;
 import org.apache.cayenne.query.ScalarResultSegment;
@@ -61,10 +60,9 @@ public class CryptoRowReaderFactoryDecorator extends DefaultRowReaderFactory {
     }
 
     @Override
-    public RowReader<?> rowReader(RowDescriptor descriptor, QueryMetadata queryMetadata, DbAdapter adapter,
-                                  Map<ObjAttribute, ColumnDescriptor> attributeOverrides) {
+    public RowReader<?> rowReader(RowDescriptor descriptor, QueryMetadata queryMetadata, DbAdapter adapter) {
         RowDescriptor encryptedRowDescriptor = encryptedRowDescriptor(descriptor, adapter.getExtendedTypes());
-        return super.rowReader(encryptedRowDescriptor, queryMetadata, adapter, attributeOverrides);
+        return super.rowReader(encryptedRowDescriptor, queryMetadata, adapter);
     }
 
     @Override
@@ -77,18 +75,16 @@ public class CryptoRowReaderFactoryDecorator extends DefaultRowReaderFactory {
 
     @Override
     protected RowReader<?> createEntityRowReader(RowDescriptor descriptor, QueryMetadata queryMetadata,
-                                                 EntityResultSegment resultMetadata,
-                                                 PostprocessorFactory postProcessorFactory) {
+                                                 EntityResultSegment resultMetadata) {
         RowReader<?> entityRowReader = super
-                .createEntityRowReader(descriptor, queryMetadata, resultMetadata, postProcessorFactory);
+                .createEntityRowReader(descriptor, queryMetadata, resultMetadata);
         return new DecoratedEntityRowReader(descriptor, entityRowReader, resultMetadata);
     }
 
     @Override
-    protected RowReader<?> createFullRowReader(RowDescriptor descriptor, QueryMetadata queryMetadata,
-                                               PostprocessorFactory postProcessorFactory) {
+    protected RowReader<?> createFullRowReader(RowDescriptor descriptor, QueryMetadata queryMetadata) {
         RowReader<?> fullRowReader = super
-                .createFullRowReader(descriptor, queryMetadata, postProcessorFactory);
+                .createFullRowReader(descriptor, queryMetadata);
         return new DecoratedFullRowReader(descriptor, fullRowReader);
     }
 

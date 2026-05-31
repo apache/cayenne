@@ -21,7 +21,6 @@ package org.apache.cayenne.access;
 
 import org.apache.cayenne.CayenneRuntimeException;
 import org.apache.cayenne.access.dbsync.SchemaUpdateStrategy;
-import org.apache.cayenne.access.jdbc.ColumnDescriptor;
 import org.apache.cayenne.access.jdbc.RowDescriptor;
 import org.apache.cayenne.access.translator.sqltemplate.SQLTemplateTranslator;
 import org.apache.cayenne.access.jdbc.reader.RowReader;
@@ -36,7 +35,6 @@ import org.apache.cayenne.log.JdbcEventLogger;
 import org.apache.cayenne.log.NoopJdbcEventLogger;
 import org.apache.cayenne.map.DataMap;
 import org.apache.cayenne.map.EntityResolver;
-import org.apache.cayenne.map.ObjAttribute;
 import org.apache.cayenne.query.BatchQuery;
 import org.apache.cayenne.query.Query;
 import org.apache.cayenne.query.QueryMetadata;
@@ -323,17 +321,7 @@ public class DataNode {
 	 * @since 4.0
 	 */
 	public RowReader<?> rowReader(RowDescriptor descriptor, QueryMetadata queryMetadata) {
-		return rowReader(descriptor, queryMetadata, Collections.emptyMap());
-	}
-
-	/**
-	 * Creates a {@link RowReader} using internal {@link RowReaderFactory}.
-	 *
-	 * @since 4.0
-	 */
-	public RowReader<?> rowReader(RowDescriptor descriptor, QueryMetadata queryMetadata,
-			Map<ObjAttribute, ColumnDescriptor> attributeOverrides) {
-		return rowReaderFactory.rowReader(descriptor, queryMetadata, getAdapter(), attributeOverrides);
+		return rowReaderFactory.rowReader(descriptor, queryMetadata, getAdapter());
 	}
 
 	/**

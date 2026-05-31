@@ -39,7 +39,6 @@ import org.apache.cayenne.query.QueryMetadata;
 
 import java.util.ArrayList;
 import java.util.Collection;
-import java.util.Collections;
 import java.util.LinkedList;
 import java.util.List;
 
@@ -139,7 +138,6 @@ public class TranslatorContext implements SQLGenerationContext {
                 getFinalSQL(),
                 getColumnDescriptors().toArray(new ColumnDescriptor[0]),
                 getBindings().toArray(new DbAttributeBinding[0]),
-                Collections.emptyMap(),
                 isDistinctSuppression(),
                 getTableCount() > 1);
     }
