@@ -48,7 +48,7 @@ public class SelectAction extends BaseSQLAction {
 
         for (ParameterBinding b : bindings) {
 
-            if (b.isExcluded()) {
+            if (b.isDisabled()) {
                 continue;
             }
 

@@ -99,7 +99,7 @@ class Oracle8LOBBatchAction implements SQLAction {
 				logger.logQueryParameters("bind", bindings);
 
 				for (ParameterBinding b : bindings) {
-					if (!b.isExcluded()) {
+					if (!b.isDisabled()) {
 						adapter.bindParameter(statement, b);
 					}
 				}
@@ -148,7 +148,7 @@ class Oracle8LOBBatchAction implements SQLAction {
 				ParameterBinding binding = new ParameterBinding(
 						adapter.preferredBindingType(attribute.getType()), attribute.getScale(), attribute
 				);
-				binding.include(i + 1, value, extendedType);
+				binding.reset(i + 1, value, extendedType);
 				adapter.bindParameter(selectStatement, binding);
 				if(isLoggable) {
 					attributeBindings[i] = binding;

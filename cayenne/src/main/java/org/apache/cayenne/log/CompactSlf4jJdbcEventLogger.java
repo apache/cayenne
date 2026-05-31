@@ -112,7 +112,7 @@ public class CompactSlf4jJdbcEventLogger extends Slf4jJdbcEventLogger {
         String key = null;
         String value;
         for (ParameterBinding b : bindings) {
-            if (b.isExcluded()) {
+            if (b.isDisabled()) {
                 continue;
             }
 

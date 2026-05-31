@@ -100,7 +100,7 @@ public class Slf4jJdbcEventLogger implements JdbcEventLogger {
 			for (int i = 0, j = 1; i < len; i++) {
 				ParameterBinding b = bindings[i];
 
-				if (b.isExcluded()) {
+				if (b.isDisabled()) {
 					continue;
 				}
 

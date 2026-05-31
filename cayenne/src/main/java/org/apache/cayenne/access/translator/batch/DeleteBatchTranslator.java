@@ -63,7 +63,7 @@ public class DeleteBatchTranslator extends BaseBatchTranslator<DeleteBatchQuery>
         // skip null attributes... they are translated as "IS NULL"
         if(value != null) {
             ExtendedType<?> extendedType = context.getAdapter().getExtendedTypes().getRegisteredType(value.getClass());
-            bindings[position].include(++position, value, extendedType);
+            bindings[position].reset(++position, value, extendedType);
         }
         return position;
     }

@@ -72,7 +72,7 @@ public class InsertBatchTranslator extends BaseBatchTranslator<InsertBatchQuery>
             ExtendedType<?> extendedType = value != null
                     ? context.getAdapter().getExtendedTypes().getRegisteredType(value.getClass())
                     : context.getAdapter().getExtendedTypes().getDefaultType();
-            bindings[j].include(++j, value, extendedType);
+            bindings[j].reset(++j, value, extendedType);
         }
         return bindings;
     }

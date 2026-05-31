@@ -69,7 +69,7 @@ public class UpdateBatchTranslator extends BaseBatchTranslator<UpdateBatchQuery>
             ExtendedType<?> extendedType = value == null
                 ? context.getAdapter().getExtendedTypes().getDefaultType()
                 : context.getAdapter().getExtendedTypes().getRegisteredType(value.getClass());
-            bindings[j].include(++j, value, extendedType);
+            bindings[j].reset(++j, value, extendedType);
         }
 
         for(DbAttribute attribute : updateBatch.getQualifierAttributes()) {
@@ -79,7 +79,7 @@ public class UpdateBatchTranslator extends BaseBatchTranslator<UpdateBatchQuery>
             }
             Object value = row.getValue(i);
             ExtendedType<?> extendedType = context.getAdapter().getExtendedTypes().getRegisteredType(value.getClass());
-            bindings[j].include(++j, value, extendedType);
+            bindings[j].reset(++j, value, extendedType);
             i++;
         }
         return bindings;

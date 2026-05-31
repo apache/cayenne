@@ -22,90 +22,86 @@ import org.apache.cayenne.access.types.ExtendedType;
 import org.apache.cayenne.map.DbAttribute;
 
 /**
- * Describes a single PreparedStatement parameter binding. A binding carries immutable metadata
- * (the optional source {@link DbAttribute}, the JDBC type and scale) established at creation time,
- * plus a mutable per-iteration state (value, statement position, {@link ExtendedType}) updated via
- * {@link #include(int, Object, ExtendedType)} / {@link #exclude()} as batch rows are processed.
+ * Describes a single PreparedStatement parameter binding. Partially mutable
  *
  * @since 4.0
  */
 public class ParameterBinding {
 
-	private static final int EXCLUDED_POSITION = -1;
+    private static final int EXCLUDED_POSITION = -1;
 
-	private final DbAttribute attribute;
-	private final int jdbcType;
-	private final int scale;
+    private final DbAttribute attribute;
+    private final int jdbcType;
+    private final int scale;
 
-	private Object value;
-	private int statementPosition;
-	private ExtendedType<?> extendedType;
+    private Object value;
+    private int statementPosition;
+    private ExtendedType<?> extendedType;
 
-	/**
-	 * @since 5.0
-	 */
-	public ParameterBinding(int jdbcType, int scale) {
-		this(jdbcType, scale, null);
-	}
+    /**
+     * @since 5.0
+     */
+    public ParameterBinding(int jdbcType, int scale) {
+        this(jdbcType, scale, null);
+    }
 
-	/**
-	 * @since 5.0
-	 */
-	public ParameterBinding(int jdbcType, int scale, DbAttribute attribute) {
-		this.attribute = attribute;
-		this.jdbcType = jdbcType;
-		this.scale = scale;
-		this.statementPosition = EXCLUDED_POSITION;
-	}
+    /**
+     * @since 5.0
+     */
+    public ParameterBinding(int jdbcType, int scale, DbAttribute attribute) {
+        this.attribute = attribute;
+        this.jdbcType = jdbcType;
+        this.scale = scale;
+        this.statementPosition = EXCLUDED_POSITION;
+    }
 
-	public Object getValue() {
-		return value;
-	}
+    public Object getValue() {
+        return value;
+    }
 
-	public int getStatementPosition() {
-		return statementPosition;
-	}
+    public int getStatementPosition() {
+        return statementPosition;
+    }
 
-	public boolean isExcluded() {
-		return statementPosition == EXCLUDED_POSITION;
-	}
+    public boolean isDisabled() {
+        return statementPosition == EXCLUDED_POSITION;
+    }
 
-	public ExtendedType getExtendedType() {
-		return extendedType;
-	}
+    public ExtendedType getExtendedType() {
+        return extendedType;
+    }
 
-	/**
-	 * Marks the binding object as excluded for the current iteration.
-	 */
-	public void exclude() {
-		this.statementPosition = EXCLUDED_POSITION;
-		this.value = null;
-		this.extendedType = null;
-	}
+    /**
+     * Marks the binding object as excluded for the current iteration.
+     */
+    public void disable() {
+        this.statementPosition = EXCLUDED_POSITION;
+        this.value = null;
+        this.extendedType = null;
+    }
 
-	/**
-	 * Sets the value, statement position and {@link ExtendedType} of the binding, thus "including" it in the current
-	 * iteration. Returns this binding for chaining.
-	 */
-	public ParameterBinding include(int statementPosition, Object value, ExtendedType<?> extendedType) {
-		this.statementPosition = statementPosition;
-		this.value = value;
-		this.extendedType = extendedType;
-		return this;
-	}
+    /**
+     * Sets the value, statement position and {@link ExtendedType} of the binding.
+     */
+    public ParameterBinding reset(int statementPosition, Object value, ExtendedType<?> extendedType) {
+        this.statementPosition = statementPosition;
+        this.value = value;
+        this.extendedType = extendedType;
+        return this;
+    }
 
-	public int getJdbcType() {
-		return jdbcType;
-	}
+    public int getJdbcType() {
+        return jdbcType;
+    }
 
-	public int getScale() {
-		return scale;
-	}
+    public int getScale() {
+        return scale;
+    }
 
-	/**
-	 * @since 5.0
-	 */
-	public DbAttribute getAttribute() {
-		return attribute;
-	}
+    /**
+     * @since 5.0
+     */
+    public DbAttribute getAttribute() {
+        return attribute;
+    }
 }
