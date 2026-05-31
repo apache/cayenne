@@ -19,16 +19,15 @@
 
 package org.apache.cayenne.access.jdbc;
 
-import java.sql.ResultSet;
-import java.sql.SQLException;
-import java.util.List;
-
 import org.apache.cayenne.access.DataNode;
 import org.apache.cayenne.access.OperationObserver;
 import org.apache.cayenne.access.jdbc.reader.RowReader;
 import org.apache.cayenne.query.Query;
 import org.apache.cayenne.query.QueryMetadata;
 import org.apache.cayenne.query.SQLAction;
+
+import java.sql.ResultSet;
+import java.util.List;
 
 /**
  * A convenience superclass for SQLAction implementations.
@@ -51,7 +50,7 @@ public abstract class BaseSQLAction implements SQLAction {
      */
     @SuppressWarnings({ "rawtypes", "unchecked" })
     protected void readResultSet(ResultSet resultSet, RowDescriptor descriptor, Query query, OperationObserver delegate)
-            throws SQLException, Exception {
+            throws Exception {
 
         long t1 = System.currentTimeMillis();
 

@@ -18,18 +18,18 @@
  ****************************************************************/
 package org.apache.cayenne.dba.mysql;
 
-import java.sql.CallableStatement;
-import java.sql.Connection;
-import java.sql.ResultSet;
-import java.sql.SQLException;
-import java.util.Objects;
-
 import org.apache.cayenne.access.DataNode;
 import org.apache.cayenne.access.OperationObserver;
 import org.apache.cayenne.access.jdbc.ProcedureAction;
 import org.apache.cayenne.access.jdbc.RowDescriptor;
 import org.apache.cayenne.access.translator.procedure.ProcedureTranslator;
 import org.apache.cayenne.query.ProcedureQuery;
+
+import java.sql.CallableStatement;
+import java.sql.Connection;
+import java.sql.ResultSet;
+import java.sql.SQLException;
+import java.util.Objects;
 
 /**
  * @since 3.0
@@ -41,7 +41,7 @@ class MySQLProcedureAction extends ProcedureAction {
 	}
 
 	@Override
-	public void performAction(Connection connection, OperationObserver observer) throws SQLException, Exception {
+	public void performAction(Connection connection, OperationObserver observer) throws Exception {
 
 		processedResultSets = 0;
 

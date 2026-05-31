@@ -18,11 +18,6 @@
  ****************************************************************/
 package org.apache.cayenne.dba;
 
-import java.sql.PreparedStatement;
-import java.sql.SQLException;
-import java.util.Collection;
-import java.util.List;
-
 import org.apache.cayenne.access.DataNode;
 import org.apache.cayenne.access.sqlbuilder.sqltree.SQLTreeProcessor;
 import org.apache.cayenne.access.translator.ParameterBinding;
@@ -36,6 +31,10 @@ import org.apache.cayenne.map.EntityResolver;
 import org.apache.cayenne.query.FluentSelect;
 import org.apache.cayenne.query.Query;
 import org.apache.cayenne.query.SQLAction;
+
+import java.sql.PreparedStatement;
+import java.util.Collection;
+import java.util.List;
 
 /**
  * A Cayenne extension point that abstracts the differences between specifics of
@@ -195,7 +194,7 @@ public interface DbAdapter {
 	/**
 	 * Binds an object value to PreparedStatement's parameter.
 	 */
-	void bindParameter(PreparedStatement statement, ParameterBinding parameterBinding) throws SQLException, Exception;
+	void bindParameter(PreparedStatement statement, ParameterBinding parameterBinding) throws Exception;
 
 	/**
 	 * Returns the name of the table type (as returned by

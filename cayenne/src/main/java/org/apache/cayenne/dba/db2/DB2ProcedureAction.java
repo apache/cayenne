@@ -18,17 +18,16 @@
  ****************************************************************/
 package org.apache.cayenne.dba.db2;
 
-import java.sql.CallableStatement;
-import java.sql.Connection;
-import java.sql.ResultSet;
-import java.sql.SQLException;
-
 import org.apache.cayenne.access.DataNode;
 import org.apache.cayenne.access.OperationObserver;
 import org.apache.cayenne.access.jdbc.ProcedureAction;
 import org.apache.cayenne.access.jdbc.RowDescriptor;
 import org.apache.cayenne.access.translator.procedure.ProcedureTranslator;
 import org.apache.cayenne.query.ProcedureQuery;
+
+import java.sql.CallableStatement;
+import java.sql.Connection;
+import java.sql.ResultSet;
 
 /**
  * @since 3.1
@@ -40,7 +39,7 @@ class DB2ProcedureAction extends ProcedureAction {
 	}
 
 	@Override
-	public void performAction(Connection connection, OperationObserver observer) throws SQLException, Exception {
+	public void performAction(Connection connection, OperationObserver observer) throws Exception {
 
 		// cloned from super except for result processing consistent with
 		// CAY-1874

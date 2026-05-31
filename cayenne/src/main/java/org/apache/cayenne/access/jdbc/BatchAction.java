@@ -168,7 +168,7 @@ public class BatchAction extends BaseSQLAction {
 	 * Executes batch as individual queries over the same prepared statement.
 	 */
 	protected void runAsIndividualQueries(Connection connection, BatchTranslator translator,
-			OperationObserver delegate, boolean generatesKeys) throws SQLException, Exception {
+			OperationObserver delegate, boolean generatesKeys) throws Exception {
 
 		if(query.getRows().isEmpty()) {
 			return;

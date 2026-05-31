@@ -19,18 +19,6 @@
 
 package org.apache.cayenne.dba.oracle;
 
-import java.io.OutputStream;
-import java.io.Writer;
-import java.lang.reflect.Method;
-import java.sql.Blob;
-import java.sql.Clob;
-import java.sql.Connection;
-import java.sql.PreparedStatement;
-import java.sql.ResultSet;
-import java.sql.SQLException;
-import java.sql.Types;
-import java.util.List;
-
 import org.apache.cayenne.CayenneRuntimeException;
 import org.apache.cayenne.access.OperationObserver;
 import org.apache.cayenne.access.translator.DbAttributeBinding;
@@ -45,17 +33,27 @@ import org.apache.cayenne.query.SQLAction;
 import org.apache.cayenne.query.UpdateBatchQuery;
 import org.apache.cayenne.util.Util;
 
+import java.io.OutputStream;
+import java.io.Writer;
+import java.lang.reflect.Method;
+import java.sql.Blob;
+import java.sql.Clob;
+import java.sql.Connection;
+import java.sql.PreparedStatement;
+import java.sql.ResultSet;
+import java.sql.Types;
+import java.util.List;
+
 /**
  * @since 3.0
  */
 class Oracle8LOBBatchAction implements SQLAction {
 
-	private BatchQuery query;
-	private DbAdapter adapter;
-	private JdbcEventLogger logger;
+	private final BatchQuery query;
+	private final DbAdapter adapter;
+	private final JdbcEventLogger logger;
 
-	private static void bind(DbAdapter adapter, PreparedStatement statement, DbAttributeBinding[] bindings)
-			throws SQLException, Exception {
+	private static void bind(DbAdapter adapter, PreparedStatement statement, DbAttributeBinding[] bindings) throws Exception {
 
 		for (DbAttributeBinding b : bindings) {
 			DbAttributeBinding binding = new DbAttributeBinding(b.getAttribute());
@@ -70,7 +68,7 @@ class Oracle8LOBBatchAction implements SQLAction {
 	}
 
 	@Override
-	public void performAction(Connection connection, OperationObserver observer) throws SQLException, Exception {
+	public void performAction(Connection connection, OperationObserver observer) throws Exception {
 
 		Oracle8LOBBatchTranslator translator;
 		if (query instanceof InsertBatchQuery) {
@@ -123,10 +121,10 @@ class Oracle8LOBBatchAction implements SQLAction {
 	}
 
 	void processLOBRow(Connection con, Oracle8LOBBatchTranslator queryBuilder, Oracle8LOBBatchQueryWrapper selectQuery,
-			List<DbAttribute> qualifierAttributes, BatchQueryRow row) throws SQLException, Exception {
+			List<DbAttribute> qualifierAttributes, BatchQueryRow row) throws Exception {
 
 		List<DbAttribute> lobAttributes = selectQuery.getDbAttributesForUpdatedLOBColumns();
-		if (lobAttributes.size() == 0) {
+		if (lobAttributes.isEmpty()) {
 			return;
 		}
 
@@ -147,7 +145,7 @@ class Oracle8LOBBatchAction implements SQLAction {
 			for (int i = 0; i < parametersSize; i++) {
 				DbAttribute attribute = qualifierAttributes.get(i);
 				Object value = qualifierValues.get(i);
-				ExtendedType extendedType = value != null
+				ExtendedType<?> extendedType = value != null
 						? adapter.getExtendedTypes().getRegisteredType(value.getClass())
 						: adapter.getExtendedTypes().getDefaultType();
 

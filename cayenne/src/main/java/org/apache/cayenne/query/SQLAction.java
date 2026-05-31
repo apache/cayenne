@@ -19,10 +19,9 @@
 
 package org.apache.cayenne.query;
 
-import java.sql.Connection;
-import java.sql.SQLException;
-
 import org.apache.cayenne.access.OperationObserver;
+
+import java.sql.Connection;
 
 /**
  * Defines API for query execution strategy over JDBC connection (as in Strategy Pattern).
@@ -36,6 +35,5 @@ public interface SQLAction {
     /**
      * Executes a query using a strategy defined by the implementation.
      */
-    void performAction(Connection connection, OperationObserver observer)
-            throws SQLException, Exception;
+    void performAction(Connection connection, OperationObserver observer) throws Exception;
 }
