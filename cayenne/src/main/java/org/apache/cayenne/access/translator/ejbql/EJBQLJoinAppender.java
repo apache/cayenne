@@ -256,7 +256,7 @@ public class EJBQLJoinAppender {
                 context.pushMarker(context.makeEntityQualifierMarker(), false);
 
                 ejbqlQualifier.visit(context
-                        .getTranslatorFactory()
+                        .getTranslator()
                         .getConditionTranslator(context));
 
                 context.popMarker();
