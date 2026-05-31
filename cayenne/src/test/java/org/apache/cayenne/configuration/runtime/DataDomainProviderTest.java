@@ -30,12 +30,12 @@ import org.apache.cayenne.access.dbsync.DefaultSchemaUpdateStrategyFactory;
 import org.apache.cayenne.access.dbsync.SchemaUpdateStrategyFactory;
 import org.apache.cayenne.access.dbsync.SkipSchemaUpdateStrategy;
 import org.apache.cayenne.access.dbsync.ThrowOnPartialOrCreateSchemaStrategy;
-import org.apache.cayenne.access.jdbc.SQLTemplateProcessor;
+import org.apache.cayenne.access.translator.sqltemplate.SQLTemplateTranslator;
 import org.apache.cayenne.access.jdbc.reader.RowReaderFactory;
 import org.apache.cayenne.access.translator.batch.BatchTranslatorFactory;
 import org.apache.cayenne.access.translator.batch.DefaultBatchTranslatorFactory;
-import org.apache.cayenne.access.translator.select.DefaultSelectTranslatorFactory;
-import org.apache.cayenne.access.translator.select.SelectTranslatorFactory;
+import org.apache.cayenne.access.translator.select.DbAdapterDelegatedSelectTranslator;
+import org.apache.cayenne.access.translator.select.SelectTranslator;
 import org.apache.cayenne.access.types.DefaultValueObjectTypeRegistry;
 import org.apache.cayenne.access.types.ValueObjectTypeRegistry;
 import org.apache.cayenne.annotation.PostLoad;
@@ -225,14 +225,14 @@ public class DataDomainProviderTest {
             b.bind(DbAdapterFactory.class).to(DefaultDbAdapterFactory.class);
             b.bind(RuntimeProperties.class).to(DefaultRuntimeProperties.class);
             b.bind(BatchTranslatorFactory.class).to(DefaultBatchTranslatorFactory.class);
-            b.bind(SelectTranslatorFactory.class).to(DefaultSelectTranslatorFactory.class);
+            b.bind(SelectTranslator.class).to(DbAdapterDelegatedSelectTranslator.class);
 
             b.bind(DataSourceFactory.class).toInstance(new MockDataSourceFactory());
             b.bind(JdbcEventLogger.class).to(Slf4jJdbcEventLogger.class);
             b.bind(QueryCache.class).toInstance(mock(QueryCache.class));
             b.bind(RowReaderFactory.class).toInstance(mock(RowReaderFactory.class));
             b.bind(DataNodeFactory.class).to(DefaultDataNodeFactory.class);
-            b.bind(SQLTemplateProcessor.class).toInstance(mock(SQLTemplateProcessor.class));
+            b.bind(SQLTemplateTranslator.class).toInstance(mock(SQLTemplateTranslator.class));
 
             b.bind(EventBridge.class).toProvider(NoopEventBridgeProvider.class);
             b.bind(DataRowStoreFactory.class).to(DefaultDataRowStoreFactory.class);

@@ -35,13 +35,13 @@ import org.apache.cayenne.access.flush.DataDomainFlushActionFactory;
 import org.apache.cayenne.access.flush.DefaultDataDomainFlushActionFactory;
 import org.apache.cayenne.access.flush.operation.DbRowOpSorter;
 import org.apache.cayenne.access.flush.operation.DefaultDbRowOpSorter;
-import org.apache.cayenne.access.jdbc.SQLTemplateProcessor;
+import org.apache.cayenne.access.translator.sqltemplate.SQLTemplateTranslator;
 import org.apache.cayenne.access.jdbc.reader.DefaultRowReaderFactory;
 import org.apache.cayenne.access.jdbc.reader.RowReaderFactory;
 import org.apache.cayenne.access.translator.batch.BatchTranslatorFactory;
 import org.apache.cayenne.access.translator.batch.DefaultBatchTranslatorFactory;
-import org.apache.cayenne.access.translator.select.DefaultSelectTranslatorFactory;
-import org.apache.cayenne.access.translator.select.SelectTranslatorFactory;
+import org.apache.cayenne.access.translator.select.DbAdapterDelegatedSelectTranslator;
+import org.apache.cayenne.access.translator.select.SelectTranslator;
 import org.apache.cayenne.access.types.*;
 import org.apache.cayenne.ashwood.AshwoodEntitySorter;
 import org.apache.cayenne.cache.MapQueryCacheProvider;
@@ -121,9 +121,9 @@ import org.apache.cayenne.reflect.generic.DefaultValueComparisonStrategyFactory;
 import org.apache.cayenne.reflect.generic.ValueComparisonStrategyFactory;
 import org.apache.cayenne.resource.ClassLoaderResourceLocator;
 import org.apache.cayenne.resource.ResourceLocator;
-import org.apache.cayenne.template.CayenneSQLTemplateProcessor;
-import org.apache.cayenne.template.DefaultTemplateContextFactory;
-import org.apache.cayenne.template.TemplateContextFactory;
+import org.apache.cayenne.access.translator.sqltemplate.CayenneSQLTemplateTranslator;
+import org.apache.cayenne.access.translator.sqltemplate.DefaultTemplateContextFactory;
+import org.apache.cayenne.access.translator.sqltemplate.TemplateContextFactory;
 import org.apache.cayenne.tx.DefaultTransactionFactory;
 import org.apache.cayenne.tx.DefaultTransactionManager;
 import org.apache.cayenne.tx.TransactionFactory;
@@ -464,7 +464,7 @@ public class CoreModule implements Module {
         binder.bind(EntitySorter.class).to(AshwoodEntitySorter.class).withoutScope();
 
         binder.bind(BatchTranslatorFactory.class).to(DefaultBatchTranslatorFactory.class);
-        binder.bind(SelectTranslatorFactory.class).to(DefaultSelectTranslatorFactory.class);
+        binder.bind(SelectTranslator.class).to(DbAdapterDelegatedSelectTranslator.class);
 
         // a default ObjectMapRetainStrategy used to create objects map for
         // ObjectStore
@@ -476,7 +476,7 @@ public class CoreModule implements Module {
         binder.bind(TransactionManager.class).to(DefaultTransactionManager.class);
         binder.bind(RowReaderFactory.class).to(DefaultRowReaderFactory.class);
 
-        binder.bind(SQLTemplateProcessor.class).to(CayenneSQLTemplateProcessor.class);
+        binder.bind(SQLTemplateTranslator.class).to(CayenneSQLTemplateTranslator.class);
         binder.bind(TemplateContextFactory.class).to(DefaultTemplateContextFactory.class);
 
         binder.bind(HandlerFactory.class).to(DefaultHandlerFactory.class);

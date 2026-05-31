@@ -19,21 +19,18 @@
 
 package org.apache.cayenne.access.translator.select;
 
-import java.util.Collections;
-import java.util.Map;
-import java.util.Objects;
-
-import org.apache.cayenne.access.jdbc.ColumnDescriptor;
-import org.apache.cayenne.access.translator.DbAttributeBinding;
+import org.apache.cayenne.CayenneRuntimeException;
 import org.apache.cayenne.dba.DbAdapter;
 import org.apache.cayenne.map.EntityResolver;
-import org.apache.cayenne.map.ObjAttribute;
 import org.apache.cayenne.query.FluentSelect;
+import org.apache.cayenne.query.Select;
 
 /**
- * Default translator of select queries {@link FluentSelect}.
+ * A {@link SelectTranslator} that translates a {@link FluentSelect} by running the {@link TranslationStage}
+ * pipeline over a {@link TranslatorContext}. This is the translator returned by the base
+ * {@link org.apache.cayenne.dba.JdbcAdapter}; adapters may subclass it to customize translation.
  *
- * @since 4.2
+ * @since 5.0
  */
 public class DefaultSelectTranslator implements SelectTranslator {
 
@@ -55,72 +52,25 @@ public class DefaultSelectTranslator implements SelectTranslator {
             new SQLGenerationStage()
     };
 
-    private final TranslatorContext context;
-
-    /**
-     * Constructor for the subquery case
-     */
-    DefaultSelectTranslator(TranslatableQueryWrapper query, TranslatorContext parentContext) {
-        Objects.requireNonNull(query, "Query is null");
-        Objects.requireNonNull(parentContext, "Parent context is null");
-        this.context = new TranslatorContext(query, parentContext.getAdapter(), parentContext.getResolver(), parentContext);
-        // skip SQL translation stage for nested translators, it should be performed by root context only
-        this.context.setSkipSQLGeneration(true);
+    @Override
+    public TranslatedSelect translate(Select<?> query, DbAdapter adapter, EntityResolver resolver) {
+        if (!(query instanceof FluentSelect)) {
+            throw new CayenneRuntimeException("Unsupported type of Select query %s", query);
+        }
+        TranslatorContext context = new TranslatorContext(
+                new FluentSelectWrapper((FluentSelect<?, ?>) query), adapter, resolver, null);
+        translate(context);
+        return context.toResult();
     }
 
     /**
-     * Constructor for the root query case
+     * Runs the {@link TranslationStage} pipeline over the given context. Used for the root query (by
+     * {@link #translate(Select, DbAdapter, EntityResolver)}), and directly by {@link QualifierTranslator}
+     * for subqueries (which consume the intermediate context rather than the final result).
      */
-    DefaultSelectTranslator(TranslatableQueryWrapper query, DbAdapter adapter, EntityResolver entityResolver) {
-        Objects.requireNonNull(query, "Query is null");
-        Objects.requireNonNull(adapter, "DbAdapter is null");
-        Objects.requireNonNull(entityResolver, "EntityResolver is null");
-        this.context = new TranslatorContext(query, adapter, entityResolver, null);
-    }
-
-    public DefaultSelectTranslator(FluentSelect<?, ?> query, DbAdapter adapter, EntityResolver entityResolver) {
-        this(new FluentSelectWrapper(query), adapter, entityResolver);
-    }
-
-    TranslatorContext getContext() {
-        return context;
-    }
-
-    void translate() {
-        for(TranslationStage stage : TRANSLATION_STAGES) {
+    static void translate(TranslatorContext context) {
+        for (TranslationStage stage : TRANSLATION_STAGES) {
             stage.perform(context);
         }
     }
-
-    @Override
-    public String getSql() {
-        translate();
-        return context.getFinalSQL();
-    }
-
-    @Override
-    public DbAttributeBinding[] getBindings() {
-        return context.getBindings().toArray(new DbAttributeBinding[0]);
-    }
-
-    @Override
-    public Map<ObjAttribute, ColumnDescriptor> getAttributeOverrides() {
-        return Collections.emptyMap();
-    }
-
-    @Override
-    public ColumnDescriptor[] getResultColumns() {
-        return context.getColumnDescriptors().toArray(new ColumnDescriptor[0]);
-    }
-
-    @Override
-    public boolean isSuppressingDistinct() {
-        return context.isDistinctSuppression();
-    }
-
-    @Override
-    public boolean hasJoins() {
-        return context.getTableCount() > 1;
-    }
-
 }

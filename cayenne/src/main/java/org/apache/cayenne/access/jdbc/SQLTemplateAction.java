@@ -139,7 +139,7 @@ public class SQLTemplateAction implements SQLAction {
 	private void runWithPositionalParameters(Connection connection, OperationObserver callback, String template,
 											 Collection<Number> counts, boolean loggable) throws Exception {
 
-		SQLStatement compiled = dataNode.getSqlTemplateProcessor().processTemplate(template,
+		SQLStatement compiled = dataNode.getSqlTemplateTranslator().translate(template,
 				query.getPositionalParams());
 
 		bindExtendedTypes(compiled.bindings());
@@ -171,7 +171,7 @@ public class SQLTemplateAction implements SQLAction {
 
 		for (int i = 0; i < batchSize; i++) {
 			Map<String, ?> nextParameters = it.next();
-			SQLStatement compiled = dataNode.getSqlTemplateProcessor().processTemplate(template, nextParameters);
+			SQLStatement compiled = dataNode.getSqlTemplateTranslator().translate(template, nextParameters);
 			bindExtendedTypes(compiled.bindings());
 			if (loggable) {
 				dataNode.getJdbcEventLogger().logQuery(compiled.sql(), compiled.bindings());

@@ -19,7 +19,7 @@
 
 package org.apache.cayenne.velocity;
 
-import org.apache.cayenne.access.jdbc.SQLTemplateProcessor;
+import org.apache.cayenne.access.translator.sqltemplate.SQLTemplateTranslator;
 import org.apache.cayenne.di.Binder;
 import org.apache.cayenne.di.Module;
 
@@ -30,6 +30,6 @@ public class VelocityModule implements Module {
 
     @Override
     public void configure(Binder binder) {
-        binder.bind(SQLTemplateProcessor.class).to(VelocitySQLTemplateProcessor.class);
+        binder.bind(SQLTemplateTranslator.class).to(VelocitySQLTemplateTranslator.class);
     }
 }

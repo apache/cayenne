@@ -24,7 +24,7 @@ import org.apache.cayenne.access.DataNode;
 import org.apache.cayenne.access.OperationObserver;
 import org.apache.cayenne.access.jdbc.reader.RowReader;
 import org.apache.cayenne.access.translator.DbAttributeBinding;
-import org.apache.cayenne.access.translator.select.SelectTranslator;
+import org.apache.cayenne.access.translator.select.TranslatedSelect;
 import org.apache.cayenne.dba.DbAdapter;
 import org.apache.cayenne.log.JdbcEventLogger;
 import org.apache.cayenne.query.PrefetchProcessor;
@@ -39,203 +39,203 @@ import java.util.List;
 
 /**
  * A SQLAction that handles SelectQuery execution.
- * 
+ *
  * @since 1.2
  */
 public class SelectAction extends BaseSQLAction {
 
-	private static void bind(DbAdapter adapter, PreparedStatement statement, DbAttributeBinding[] bindings) throws Exception {
+    private static void bind(DbAdapter adapter, PreparedStatement statement, DbAttributeBinding[] bindings) throws Exception {
 
-		for (DbAttributeBinding b : bindings) {
+        for (DbAttributeBinding b : bindings) {
 
-			if (b.isExcluded()) {
-				continue;
-			}
+            if (b.isExcluded()) {
+                continue;
+            }
 
-			// null DbAttributes are a result of inferior qualifier
-			// processing (qualifier can't map parameters to DbAttributes
-			// and therefore only supports standard java types now) hence, a
-			// special moronic case here:
-			if (b.getAttribute() == null) {
-				statement.setObject(b.getStatementPosition(), b.getValue());
-			} else {
-				adapter.bindParameter(statement, b);
-			}
-		}
+            // null DbAttributes are a result of inferior qualifier
+            // processing (qualifier can't map parameters to DbAttributes
+            // and therefore only supports standard java types now) hence, a
+            // special moronic case here:
+            if (b.getAttribute() == null) {
+                statement.setObject(b.getStatementPosition(), b.getValue());
+            } else {
+                adapter.bindParameter(statement, b);
+            }
+        }
 
-	}
+    }
 
-	protected Select<?> query;
-	protected QueryMetadata queryMetadata;
+    protected Select<?> query;
+    protected QueryMetadata queryMetadata;
 
-	/**
-	 * @since 4.0
-	 */
-	public SelectAction(Select<?> query, DataNode dataNode) {
-		super(dataNode);
-		this.query = query;
-		this.queryMetadata = query.getMetaData(dataNode.getEntityResolver());
-	}
+    /**
+     * @since 4.0
+     */
+    public SelectAction(Select<?> query, DataNode dataNode) {
+        super(dataNode);
+        this.query = query;
+        this.queryMetadata = query.getMetaData(dataNode.getEntityResolver());
+    }
 
-	@Override
-	public void performAction(Connection connection, OperationObserver observer) throws Exception {
+    @Override
+    public void performAction(Connection connection, OperationObserver observer) throws Exception {
 
-		final long t1 = System.currentTimeMillis();
+        long t1 = System.currentTimeMillis();
 
-		JdbcEventLogger logger = dataNode.getJdbcEventLogger();
-		SelectTranslator translator = dataNode.selectTranslator(query);
-		final String sql = translator.getSql();
-		final DbAttributeBinding[] bindings = translator.getBindings();
+        JdbcEventLogger logger = dataNode.getJdbcEventLogger();
+        TranslatedSelect translated = dataNode.translateSelect(query);
 
-		logger.logQuery(sql, bindings);
+        logger.logQuery(translated.sql(), translated.bindings());
 
-		PreparedStatement statement = connection.prepareStatement(sql);
-		bind(dataNode.getAdapter(), statement, bindings);
+        PreparedStatement statement = connection.prepareStatement(translated.sql());
+        bind(dataNode.getAdapter(), statement, translated.bindings());
 
-		int fetchSize = queryMetadata.getStatementFetchSize();
-		if (fetchSize != 0) {
-			statement.setFetchSize(fetchSize);
-		}
+        int fetchSize = queryMetadata.getStatementFetchSize();
+        if (fetchSize != 0) {
+            statement.setFetchSize(fetchSize);
+        }
 
-		int queryTimeout = queryMetadata.getQueryTimeout();
-		if(queryTimeout != QueryMetadata.QUERY_TIMEOUT_DEFAULT) {
-			statement.setQueryTimeout(queryTimeout);
-		}
+        int queryTimeout = queryMetadata.getQueryTimeout();
+        if (queryTimeout != QueryMetadata.QUERY_TIMEOUT_DEFAULT) {
+            statement.setQueryTimeout(queryTimeout);
+        }
 
-		ResultSet rs;
+        ResultSet rs;
 
-		// need to run in try-catch block to close statement properly if
-		// exception happens
-		try {
-			rs = statement.executeQuery();
-		} catch (Exception ex) {
-			statement.close();
-			throw ex;
-		}
-		RowDescriptor descriptor = new RowDescriptorBuilder().setColumns(translator.getResultColumns()).getDescriptor(
-				dataNode.getAdapter().getExtendedTypes());
+        // need to run in try-catch block to close statement properly if
+        // exception happens
+        try {
+            rs = statement.executeQuery();
+        } catch (Exception ex) {
+            statement.close();
+            throw ex;
+        }
 
-		RowReader<?> rowReader = dataNode.rowReader(descriptor, queryMetadata, translator.getAttributeOverrides());
+        RowDescriptor descriptor = new RowDescriptorBuilder()
+                .setColumns(translated.resultColumns())
+                .getDescriptor(dataNode.getAdapter().getExtendedTypes());
 
-		ResultIterator<?> it = new JDBCResultIterator<>(statement, rs, rowReader);
-		it = forIteratedResult(it, observer, connection, t1, sql);
-		it = forSuppressedDistinct(it, translator);
-		it = forFetchLimit(it, translator);
+        RowReader<?> rowReader = dataNode.rowReader(descriptor, queryMetadata, translated.attributeOverrides());
 
-		// TODO: Should do something about closing ResultSet and
-		// PreparedStatement in this method, instead of relying on
-		// DefaultResultIterator to do that later
+        ResultIterator<?> it = new JDBCResultIterator<>(statement, rs, rowReader);
+        it = forIteratedResult(it, observer, connection, t1, translated.sql());
+        it = forSuppressedDistinct(it, translated);
+        it = forFetchLimit(it, translated);
 
-		if (observer.isIteratedResult()) {
-			try {
-				observer.nextRows(query, it);
-			} catch (Exception ex) {
-				it.close();
-				throw ex;
-			}
-		} else {
-			List<?> resultRows;
-			try {
-				resultRows = it.allRows();
-			} finally {
-				it.close();
-			}
+        // TODO: Should do something about closing ResultSet and
+        // PreparedStatement in this method, instead of relying on
+        // DefaultResultIterator to do that later
 
-			dataNode.getJdbcEventLogger().logSelectCount(resultRows.size(), System.currentTimeMillis() - t1, sql);
+        if (observer.isIteratedResult()) {
+            try {
+                observer.nextRows(query, it);
+            } catch (Exception ex) {
+                it.close();
+                throw ex;
+            }
+        } else {
+            List<?> resultRows;
+            try {
+                resultRows = it.allRows();
+            } finally {
+                it.close();
+            }
 
-			observer.nextRows(query, resultRows);
-		}
-	}
+            dataNode.getJdbcEventLogger().logSelectCount(resultRows.size(), System.currentTimeMillis() - t1, translated.sql());
 
-	private <T> ResultIterator<T> forIteratedResult(ResultIterator<T> iterator, OperationObserver observer,
-			Connection connection, final long queryStartedAt, final String sql) {
-		if (!observer.isIteratedResult()) {
-			return iterator;
-		}
+            observer.nextRows(query, resultRows);
+        }
+    }
 
-		return new ConnectionAwareResultIterator<>(iterator, connection) {
+    private <T> ResultIterator<T> forIteratedResult(ResultIterator<T> iterator, OperationObserver observer,
+                                                    Connection connection, final long queryStartedAt, final String sql) {
+        if (!observer.isIteratedResult()) {
+            return iterator;
+        }
+
+        return new ConnectionAwareResultIterator<>(iterator, connection) {
             @Override
             protected void doClose() {
                 dataNode.getJdbcEventLogger().logSelectCount(rowCounter, System.currentTimeMillis() - queryStartedAt, sql);
                 super.doClose();
             }
         };
-	}
+    }
 
-	private <T> ResultIterator<T> forFetchLimit(ResultIterator<T> iterator, SelectTranslator translator) {
-		// wrap iterator in a fetch limit checker ... there are a few cases when
-		// in-memory fetch limit is a noop, however in a general case this is
-		// needed, as the SQL result count does not directly correspond to the
-		// number of objects returned from Cayenne.
+    private <T> ResultIterator<T> forFetchLimit(ResultIterator<T> iterator, TranslatedSelect translated) {
+        // wrap iterator in a fetch limit checker ... there are a few cases when
+        // in-memory fetch limit is a noop, however in a general case this is
+        // needed, as the SQL result count does not directly correspond to the
+        // number of objects returned from Cayenne.
 
-		int fetchLimit = queryMetadata.getFetchLimit();
-		int offset = translator.isSuppressingDistinct()
-				? queryMetadata.getFetchOffset()
-				: getInMemoryOffset(queryMetadata.getFetchOffset());
+        int fetchLimit = queryMetadata.getFetchLimit();
+        int offset = translated.suppressingDistinct()
+                ? queryMetadata.getFetchOffset()
+                : getInMemoryOffset(queryMetadata.getFetchOffset());
 
-		if (fetchLimit > 0 || offset > 0) {
-			return new LimitResultIterator<>(iterator, offset, fetchLimit);
-		} else {
-			return iterator;
-		}
-	}
+        if (fetchLimit > 0 || offset > 0) {
+            return new LimitResultIterator<>(iterator, offset, fetchLimit);
+        } else {
+            return iterator;
+        }
+    }
 
-	private <T> ResultIterator<T> forSuppressedDistinct(ResultIterator<T> iterator, SelectTranslator translator) {
-		if (!translator.isSuppressingDistinct() ||
-				queryMetadata.isSuppressingDistinct()) {
-			return iterator;
-		}
+    private <T> ResultIterator<T> forSuppressedDistinct(ResultIterator<T> iterator, TranslatedSelect translated) {
+        if (!translated.suppressingDistinct() ||
+                queryMetadata.isSuppressingDistinct()) {
+            return iterator;
+        }
 
-		// wrap result iterator if distinct has to be suppressed
+        // wrap result iterator if distinct has to be suppressed
 
-		// a joint prefetch warrants full row compare
-		final boolean[] compareFullRows = new boolean[1];
-		compareFullRows[0] = translator.hasJoins();
+        // a joint prefetch warrants full row compare
+        final boolean[] compareFullRows = new boolean[1];
+        compareFullRows[0] = translated.hasJoins();
 
-		final PrefetchTreeNode rootPrefetch = queryMetadata.getPrefetchTree();
-		if (!compareFullRows[0] && rootPrefetch != null) {
-			rootPrefetch.traverse(new PrefetchProcessor() {
+        final PrefetchTreeNode rootPrefetch = queryMetadata.getPrefetchTree();
+        if (!compareFullRows[0] && rootPrefetch != null) {
+            rootPrefetch.traverse(new PrefetchProcessor() {
 
-				@Override
-				public void finishPrefetch(PrefetchTreeNode node) {
-				}
+                @Override
+                public void finishPrefetch(PrefetchTreeNode node) {
+                }
 
-				@Override
-				public boolean startDisjointPrefetch(PrefetchTreeNode node) {
-					// continue to children only if we are at root
-					return rootPrefetch == node;
-				}
+                @Override
+                public boolean startDisjointPrefetch(PrefetchTreeNode node) {
+                    // continue to children only if we are at root
+                    return rootPrefetch == node;
+                }
 
-				@Override
-				public boolean startDisjointByIdPrefetch(PrefetchTreeNode node) {
-					// continue to children only if we are at root
-					return rootPrefetch == node;
-				}
+                @Override
+                public boolean startDisjointByIdPrefetch(PrefetchTreeNode node) {
+                    // continue to children only if we are at root
+                    return rootPrefetch == node;
+                }
 
-				@Override
-				public boolean startUnknownPrefetch(PrefetchTreeNode node) {
-					// continue to children only if we are at root
-					return rootPrefetch == node;
-				}
+                @Override
+                public boolean startUnknownPrefetch(PrefetchTreeNode node) {
+                    // continue to children only if we are at root
+                    return rootPrefetch == node;
+                }
 
-				@Override
-				public boolean startJointPrefetch(PrefetchTreeNode node) {
-					if (rootPrefetch != node) {
-						compareFullRows[0] = true;
-						return false;
-					}
+                @Override
+                public boolean startJointPrefetch(PrefetchTreeNode node) {
+                    if (rootPrefetch != node) {
+                        compareFullRows[0] = true;
+                        return false;
+                    }
 
-					return true;
-				}
+                    return true;
+                }
 
-				@Override
-				public boolean startPhantomPrefetch(PrefetchTreeNode node) {
-					return true;
-				}
-			});
-		}
+                @Override
+                public boolean startPhantomPrefetch(PrefetchTreeNode node) {
+                    return true;
+                }
+            });
+        }
 
-		return new DistinctResultIterator<>(iterator, queryMetadata.getDbEntity(), compareFullRows[0]);
-	}
+        return new DistinctResultIterator<>(iterator, queryMetadata.getDbEntity(), compareFullRows[0]);
+    }
 
 }

@@ -19,33 +19,21 @@
 
 package org.apache.cayenne.access.translator.select;
 
-import java.util.Map;
-
-import org.apache.cayenne.access.jdbc.ColumnDescriptor;
-import org.apache.cayenne.access.translator.DbAttributeBinding;
-import org.apache.cayenne.map.ObjAttribute;
-import org.apache.cayenne.query.ObjectSelect;
+import org.apache.cayenne.dba.DbAdapter;
+import org.apache.cayenne.map.EntityResolver;
+import org.apache.cayenne.query.Select;
 
 /**
- * An abstraction of {@link ObjectSelect} translator.
- * 
- * @since 4.0 this is an interface.
+ * A stateless service that translates a {@link Select} query into an immutable {@link TranslatedSelect}.
+ *
+ * @since 4.0
  */
 public interface SelectTranslator {
 
-	String getSql() throws Exception;
-
-	DbAttributeBinding[] getBindings();
-
-	Map<ObjAttribute, ColumnDescriptor> getAttributeOverrides();
-
-	ColumnDescriptor[] getResultColumns();
-
-	boolean isSuppressingDistinct();
-
-	/**
-	 * @since 4.0
-	 * @return do query has at least one join
-	 */
-	boolean hasJoins();
+    /**
+     * Translates the provided query into an immutable {@link TranslatedSelect}.
+     *
+     * @since 5.0
+     */
+    TranslatedSelect translate(Select<?> query, DbAdapter adapter, EntityResolver resolver);
 }

@@ -19,7 +19,8 @@
 package org.apache.cayenne.access;
 
 import org.apache.cayenne.Fault;
-import org.apache.cayenne.access.translator.select.DefaultSelectTranslator;
+import org.apache.cayenne.access.translator.select.DbAdapterDelegatedSelectTranslator;
+import org.apache.cayenne.access.translator.select.TranslatedSelect;
 import org.apache.cayenne.dba.DbAdapter;
 import org.apache.cayenne.query.ColumnSelect;
 import org.apache.cayenne.query.ObjectSelect;
@@ -66,17 +67,17 @@ public class Cay2641IT {
     public void translatorSql() {
         ObjectSelect<ArtistLazy> artists = ObjectSelect.query(ArtistLazy.class);
 
-        DefaultSelectTranslator translator = new DefaultSelectTranslator(artists, adapter, env.context().getEntityResolver());
+        TranslatedSelect translator = new DbAdapterDelegatedSelectTranslator().translate(artists, adapter, env.context().getEntityResolver());
 
-        String sql = translator.getSql();
+        String sql = translator.sql();
         assertFalse(sql.contains("t0.NAME"));
 
         String pattern = "SELECT t0.SURNAME( c0)?, t0.ID( c1)? FROM ArtistLazy t0";
         MatcherAssert.assertThat(sql, Matchers.matchesPattern(pattern));
 
         ColumnSelect<String> select = ObjectSelect.columnQuery(ArtistLazy.class, ArtistLazy.NAME);
-        translator = new DefaultSelectTranslator(select, adapter, env.context().getEntityResolver());
-        sql = translator.getSql();
+        translator = new DbAdapterDelegatedSelectTranslator().translate(select, adapter, env.context().getEntityResolver());
+        sql = translator.sql();
 
         assertTrue(sql.contains("t0.NAME"));
     }
@@ -107,8 +108,8 @@ public class Cay2641IT {
     @Test
     public void prefetchLazyTranslatorSql() {
         ObjectSelect<PaintingLazy> paintingLazyObjectSelect = ObjectSelect.query(PaintingLazy.class).prefetch(PaintingLazy.ARTIST.joint());
-        DefaultSelectTranslator translator = new DefaultSelectTranslator(paintingLazyObjectSelect, adapter, env.context().getEntityResolver());
-        String sql = translator.getSql();
+        TranslatedSelect translator = new DbAdapterDelegatedSelectTranslator().translate(paintingLazyObjectSelect, adapter, env.context().getEntityResolver());
+        String sql = translator.sql();
         assertFalse(sql.contains("t0.NAME"));
 
         String pattern = "SELECT t0.ARTIST_ID( c0)?, t0.ID( c1)?, t1.ID( c2)?, t1.SURNAME( c3)?"

@@ -28,7 +28,7 @@ import org.apache.cayenne.map.DbAttribute;
 import org.apache.cayenne.map.DbEntity;
 import org.apache.cayenne.map.DbRelationship;
 import org.apache.cayenne.map.EntityResolver;
-import org.apache.cayenne.query.FluentSelect;
+import org.apache.cayenne.query.Select;
 import org.apache.cayenne.query.Query;
 import org.apache.cayenne.query.SQLAction;
 
@@ -53,9 +53,12 @@ public interface DbAdapter {
 	String getBatchTerminator();
 
 	/**
+	 * Returns the {@link SelectTranslator} for the given query. The default implementation ignores the
+	 * query, but the parameter is retained so adapters can pick a translator based on it.
+	 *
 	 * @since 4.2
 	 */
-	SelectTranslator getSelectTranslator(FluentSelect<?, ?> query, EntityResolver entityResolver);
+	SelectTranslator getSelectTranslator(Select<?> query, EntityResolver entityResolver);
 
 	/**
 	 * @since 4.2

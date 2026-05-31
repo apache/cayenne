@@ -20,10 +20,10 @@ package org.apache.cayenne.configuration.runtime;
 
 import org.apache.cayenne.access.DataNode;
 import org.apache.cayenne.access.dbsync.SchemaUpdateStrategyFactory;
-import org.apache.cayenne.access.jdbc.SQLTemplateProcessor;
+import org.apache.cayenne.access.translator.sqltemplate.SQLTemplateTranslator;
 import org.apache.cayenne.access.jdbc.reader.RowReaderFactory;
 import org.apache.cayenne.access.translator.batch.BatchTranslatorFactory;
-import org.apache.cayenne.access.translator.select.SelectTranslatorFactory;
+import org.apache.cayenne.access.translator.select.SelectTranslator;
 import org.apache.cayenne.configuration.DataNodeDescriptor;
 import org.apache.cayenne.di.AdhocObjectFactory;
 import org.apache.cayenne.di.Inject;
@@ -49,7 +49,7 @@ public class DefaultDataNodeFactory implements DataNodeFactory {
     protected BatchTranslatorFactory batchTranslatorFactory;
     
     @Inject
-    protected SelectTranslatorFactory selectTranslatorFactory;
+    protected SelectTranslator selectTranslator;
 
     @Inject
     protected DbAdapterFactory adapterFactory;
@@ -61,7 +61,7 @@ public class DefaultDataNodeFactory implements DataNodeFactory {
     protected SchemaUpdateStrategyFactory schemaUpdateStrategyFactory;
     
     @Inject
-    protected SQLTemplateProcessor sqlTemplateProcessor;
+    protected SQLTemplateTranslator sqlTemplateTranslator;
 
     @Override
     public DataNode createDataNode(DataNodeDescriptor nodeDescriptor) {
@@ -71,8 +71,8 @@ public class DefaultDataNodeFactory implements DataNodeFactory {
         dataNode.setJdbcEventLogger(jdbcEventLogger);
         dataNode.setRowReaderFactory(rowReaderFactory);
         dataNode.setBatchTranslatorFactory(batchTranslatorFactory);
-        dataNode.setSelectTranslatorFactory(selectTranslatorFactory);
-        dataNode.setSqlTemplateProcessor(sqlTemplateProcessor);
+        dataNode.setSelectTranslator(selectTranslator);
+        dataNode.setSqlTemplateTranslator(sqlTemplateTranslator);
 
         DataSource dataSource = dataSourceFactory.getDataSource(nodeDescriptor);
 

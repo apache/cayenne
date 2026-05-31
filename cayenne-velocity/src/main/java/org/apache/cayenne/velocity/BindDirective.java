@@ -150,7 +150,7 @@ public class BindDirective extends Directive {
 
 		@SuppressWarnings("unchecked")
 		Collection<ParameterBinding> bindings = (Collection<ParameterBinding>)
-				context.getInternalUserContext().get(VelocitySQLTemplateProcessor.BINDINGS_LIST_KEY);
+				context.getInternalUserContext().get(VelocitySQLTemplateTranslator.BINDINGS_LIST_KEY);
 
 		if (bindings != null) {
 			bindings.add(binding);

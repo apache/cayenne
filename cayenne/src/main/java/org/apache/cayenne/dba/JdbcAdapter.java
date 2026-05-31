@@ -41,7 +41,7 @@ import org.apache.cayenne.map.DbEntity;
 import org.apache.cayenne.map.DbJoin;
 import org.apache.cayenne.map.DbRelationship;
 import org.apache.cayenne.map.EntityResolver;
-import org.apache.cayenne.query.FluentSelect;
+import org.apache.cayenne.query.Select;
 import org.apache.cayenne.query.Query;
 import org.apache.cayenne.query.SQLAction;
 import org.apache.cayenne.resource.Resource;
@@ -522,8 +522,8 @@ public class JdbcAdapter implements DbAdapter {
     }
 
     @Override
-    public SelectTranslator getSelectTranslator(FluentSelect<?, ?> query, EntityResolver entityResolver) {
-        return new DefaultSelectTranslator(query, this, entityResolver);
+    public SelectTranslator getSelectTranslator(Select<?> query, EntityResolver entityResolver) {
+        return new DefaultSelectTranslator();
     }
 
     @Override
