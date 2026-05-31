@@ -42,7 +42,6 @@ import org.apache.cayenne.map.DataMap;
 import org.apache.cayenne.map.EntityResolver;
 import org.apache.cayenne.map.EntitySorter;
 import org.apache.cayenne.query.Query;
-import org.apache.cayenne.query.QueryChain;
 import org.apache.cayenne.tx.BaseTransaction;
 import org.apache.cayenne.tx.Transaction;
 import org.apache.cayenne.tx.TransactionManager;
@@ -526,19 +525,6 @@ public class DataDomain implements DataChannel {
                 sharedSnapshotCache.shutdown();
             }
         }
-    }
-
-    /**
-     * Routes queries to appropriate DataNodes for execution
-     *
-     * @deprecated use {@link #onQuery(ObjectContext, Query)} instead.
-     */
-    @Deprecated(since = "5.0", forRemoval = true)
-    public void performQueries(Collection<? extends Query> queries, OperationObserver callback) {
-        transactionManager.performInTransaction(() -> {
-            new DataDomainLegacyQueryAction(DataDomain.this, new QueryChain(queries), callback).execute();
-            return null;
-        });
     }
 
     /**

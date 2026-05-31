@@ -18,11 +18,6 @@
  ****************************************************************/
 package org.apache.cayenne.access.translator.sqltemplate.directive;
 
-import java.sql.SQLException;
-import java.util.Collections;
-import java.util.List;
-import java.util.Map;
-
 import org.apache.cayenne.access.MockOperationObserver;
 import org.apache.cayenne.query.CapsStrategy;
 import org.apache.cayenne.query.SQLTemplate;
@@ -34,11 +29,15 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.RegisterExtension;
 
+import java.sql.SQLException;
+import java.util.Collections;
+import java.util.List;
+import java.util.Map;
+
 import static org.junit.jupiter.api.Assertions.assertEquals;
 
 /**
- * Test for Result directive to check if we could use ResultDirective
- * optionally.
+ * Test for Result directive to check if we could use ResultDirective optionally.
  */
 public class ResultDirectiveIT {
 
@@ -96,7 +95,7 @@ public class ResultDirectiveIT {
 		SQLTemplate template = new SQLTemplate(Artist.class, sql);
 		template.setColumnNamesCapitalization(CapsStrategy.UPPER);
 		MockOperationObserver observer = new MockOperationObserver();
-		runtime.getDataDomain().performQueries(Collections.singletonList(template), observer);
+		runtime.getDataDomain().getDefaultNode().performQueries(Collections.singletonList(template), observer);
 
 		@SuppressWarnings("unchecked")
 		List<Map<String, Object>> data = observer.rowsForQuery(template);
