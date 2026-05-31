@@ -93,7 +93,7 @@ public class SQLTemplateAction implements SQLAction {
      * ResultSet is encountered.
      */
     @Override
-    public void performAction(Connection connection, OperationObserver callback) throws SQLException, Exception {
+    public void performAction(Connection connection, OperationObserver callback) throws Exception {
 
         String template = extractTemplateString();
 
@@ -164,8 +164,7 @@ public class SQLTemplateAction implements SQLAction {
         // for now supporting deprecated batch parameters...
         Iterator<Map<String, ?>> it;
         if (size == 0) {
-            Iterator empty = Collections.singleton(Collections.emptyMap()).iterator();
-            it = empty;
+            it = (Iterator) Collections.singleton(Collections.emptyMap()).iterator();
         } else {
             it = query.parametersIterator();
         }
