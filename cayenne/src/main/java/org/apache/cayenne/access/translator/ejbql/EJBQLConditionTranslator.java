@@ -76,7 +76,7 @@ public class EJBQLConditionTranslator extends EJBQLBaseVisitor {
 
     @Override
     public boolean visitAggregate(EJBQLExpression expression) {
-        expression.visit(context.getTranslatorFactory().getAggregateColumnTranslator(context));
+        expression.visit(context.getTranslator().getAggregateColumnTranslator(context));
         return false;
     }
 

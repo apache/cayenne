@@ -50,7 +50,7 @@ class EJBQLGroupByTranslator extends EJBQLBaseVisitor {
             context.append(',');
         }
 
-        expression.visit(context.getTranslatorFactory().getIdentifierColumnsTranslator(context));
+        expression.visit(context.getTranslator().getIdentifierColumnsTranslator(context));
         return false;
     }
 

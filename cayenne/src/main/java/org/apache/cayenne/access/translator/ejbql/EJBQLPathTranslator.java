@@ -121,7 +121,7 @@ public abstract class EJBQLPathTranslator extends EJBQLBaseVisitor {
 
 	protected void resolveJoin() {
 
-		EJBQLJoinAppender joinAppender = context.getTranslatorFactory().getJoinAppender(context);
+		EJBQLJoinAppender joinAppender = context.getTranslator().getJoinAppender(context);
 
 		String newPath = idPath + '.' + lastPathComponent;
 		String oldPath = joinAppender.registerReusableJoin(idPath, lastPathComponent, newPath);

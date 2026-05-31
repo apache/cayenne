@@ -48,13 +48,13 @@ class EJBQLUpdateTranslator extends EJBQLBaseVisitor {
     @Override
     public boolean visitWhere(EJBQLExpression expression) {
         context.append(" WHERE");
-        expression.visit(context.getTranslatorFactory().getConditionTranslator(context));
+        expression.visit(context.getTranslator().getConditionTranslator(context));
         return false;
     }
 
     @Override
     public boolean visitFrom(EJBQLExpression expression, int finishedChildIndex) {
-        expression.visit(context.getTranslatorFactory().getFromTranslator(context));
+        expression.visit(context.getTranslator().getFromTranslator(context));
 
         return false;
     }
@@ -68,7 +68,7 @@ class EJBQLUpdateTranslator extends EJBQLBaseVisitor {
             context.append(" SET");
         }
 
-        expression.visit(context.getTranslatorFactory().getUpdateItemTranslator(context));
+        expression.visit(context.getTranslator().getUpdateItemTranslator(context));
         return false;
     }
 }

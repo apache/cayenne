@@ -27,7 +27,6 @@ import org.apache.cayenne.map.DbAttribute;
 import org.apache.cayenne.map.DbEntity;
 import org.apache.cayenne.map.DbRelationship;
 import org.apache.cayenne.map.ObjAttribute;
-import org.apache.cayenne.map.ObjEntity;
 import org.apache.cayenne.map.ObjRelationship;
 
 import java.util.Collection;
@@ -59,7 +58,7 @@ public class EJBQLSelectColumnsTranslator extends EJBQLBaseVisitor {
 
     @Override
     public boolean visitAggregate(EJBQLExpression expression) {
-        expression.visit(context.getTranslatorFactory().getAggregateColumnTranslator(context));
+        expression.visit(context.getTranslator().getAggregateColumnTranslator(context));
         return false;
     }
 
@@ -205,7 +204,7 @@ public class EJBQLSelectColumnsTranslator extends EJBQLBaseVisitor {
 
     @Override
     public boolean visitIdentifier(EJBQLExpression expression) {
-        expression.visit(context.getTranslatorFactory().getIdentifierColumnsTranslator(context));
+        expression.visit(context.getTranslator().getIdentifierColumnsTranslator(context));
         return false;
     }
 

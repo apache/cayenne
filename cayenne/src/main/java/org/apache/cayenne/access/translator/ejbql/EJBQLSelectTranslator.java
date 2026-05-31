@@ -48,7 +48,7 @@ public class EJBQLSelectTranslator extends EJBQLBaseVisitor {
     public boolean visitFrom(EJBQLExpression expression, int finishedChildIndex) {
         context.append(" FROM");
         context.setAppendingResultColumns(false);
-        expression.visit(context.getTranslatorFactory().getFromTranslator(context));
+        expression.visit(context.getTranslator().getFromTranslator(context));
         context.markCurrentPosition(context.makeWhereMarker());
         context.markCurrentPosition(context.makeEntityQualifierMarker());
         return false;
@@ -57,21 +57,21 @@ public class EJBQLSelectTranslator extends EJBQLBaseVisitor {
     @Override
     public boolean visitGroupBy(EJBQLExpression expression) {
         context.append(" GROUP BY");
-        expression.visit(context.getTranslatorFactory().getGroupByTranslator(context));
+        expression.visit(context.getTranslator().getGroupByTranslator(context));
         return false;
     }
 
     @Override
     public boolean visitHaving(EJBQLExpression expression) {
         context.append(" HAVING");
-        expression.visit(context.getTranslatorFactory().getConditionTranslator(context));
+        expression.visit(context.getTranslator().getConditionTranslator(context));
         return false;
     }
 
     @Override
     public boolean visitOrderBy(EJBQLExpression expression) {
         context.append(" ORDER BY");
-        expression.visit(context.getTranslatorFactory().getOrderByTranslator(context));
+        expression.visit(context.getTranslator().getOrderByTranslator(context));
         return false;
     }
 
@@ -92,7 +92,7 @@ public class EJBQLSelectTranslator extends EJBQLBaseVisitor {
 
     @Override
     public boolean visitSelectExpressions(EJBQLExpression expression) {
-        expression.visit(context.getTranslatorFactory().getSelectColumnsTranslator(
+        expression.visit(context.getTranslator().getSelectColumnsTranslator(
                 context));
         return false;
     }
@@ -109,7 +109,7 @@ public class EJBQLSelectTranslator extends EJBQLBaseVisitor {
             context.append(" AND");
         }
 
-        expression.visit(context.getTranslatorFactory().getConditionTranslator(context));
+        expression.visit(context.getTranslator().getConditionTranslator(context));
         return false;
     }
 

@@ -100,7 +100,7 @@ class EJBQLIdentifierColumnsTranslator extends EJBQLBaseVisitor {
 
                         if (marker == null) {
                             marker = EJBQLJoinAppender.makeJoinTailMarker(idVar);
-                            joinAppender = context.getTranslatorFactory().getJoinAppender(context);
+                            joinAppender = context.getTranslator().getJoinAppender(context);
                         }
 
                         DbRelationship dr = (DbRelationship) pathPart;

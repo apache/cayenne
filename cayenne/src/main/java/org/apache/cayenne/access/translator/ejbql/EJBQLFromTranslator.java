@@ -35,7 +35,7 @@ public class EJBQLFromTranslator extends EJBQLBaseVisitor {
     public EJBQLFromTranslator(EJBQLTranslationContext context) {
         super(true);
         this.context = context;
-        this.joinAppender = context.getTranslatorFactory().getJoinAppender(context);
+        this.joinAppender = context.getTranslator().getJoinAppender(context);
     }
 
     @Override

@@ -97,7 +97,7 @@ public abstract class EJBQLDbPathTranslator extends EJBQLBaseVisitor {
 
 	private void resolveJoin(boolean inner) {
 
-		EJBQLJoinAppender joinAppender = context.getTranslatorFactory().getJoinAppender(context);
+		EJBQLJoinAppender joinAppender = context.getTranslator().getJoinAppender(context);
 
 		// TODO: andrus 1/6/2007 - conflict with object path naming... maybe
 		// 'registerReusableJoin' should normalize everything to a db path?
@@ -237,7 +237,7 @@ public abstract class EJBQLDbPathTranslator extends EJBQLBaseVisitor {
 
 	protected void resolveJoin() {
 
-		EJBQLJoinAppender joinAppender = context.getTranslatorFactory().getJoinAppender(context);
+		EJBQLJoinAppender joinAppender = context.getTranslator().getJoinAppender(context);
 
 		String newPath = idPath + '.' + lastPathComponent;
 		String oldPath = joinAppender.registerReusableJoin(idPath, lastPathComponent, newPath);

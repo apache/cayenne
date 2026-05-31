@@ -42,7 +42,7 @@ import java.util.Map;
 
 /**
  * A context used for translating of EJBQL to SQL.
- * 
+ *
  * @since 3.0
  */
 public class EJBQLTranslationContext {
@@ -50,7 +50,7 @@ public class EJBQLTranslationContext {
     private EJBQLCompiledExpression compiledExpression;
     protected Map<String, Object> namedParameters;
     protected Map<Integer, Object> positionalParameters;
-    private EJBQLTranslator translatorFactory;
+    private EJBQLTranslator translator;
     private DbAdapter adapter;
     private QuotingStrategy quotingStrategy;
     private EntityResolver entityResolver;
@@ -73,9 +73,13 @@ public class EJBQLTranslationContext {
     // not.
     private boolean appendingResultColumns;
 
-    public EJBQLTranslationContext(EntityResolver entityResolver, EJBQLQuery query,
+    public EJBQLTranslationContext(
+            EntityResolver entityResolver,
+            EJBQLQuery query,
             EJBQLCompiledExpression compiledExpression,
-            EJBQLTranslator translatorFactory, DbAdapter adapter, QuotingStrategy quotingStrategy) {
+            EJBQLTranslator translator,
+            DbAdapter adapter,
+            QuotingStrategy quotingStrategy) {
 
         this.entityResolver = entityResolver;
         this.compiledExpression = compiledExpression;
@@ -83,7 +87,7 @@ public class EJBQLTranslationContext {
 
         this.namedParameters = query.getNamedParameters();
         this.positionalParameters = query.getPositionalParameters();
-        this.translatorFactory = translatorFactory;
+        this.translator = translator;
         this.adapter = adapter;
         this.usingAliases = true;
         this.caseInsensitive = false;
@@ -118,8 +122,8 @@ public class EJBQLTranslationContext {
         query.setParams(boundParameters);
         return query;
     }
-    
-    public QueryMetadata getMetadata(){
+
+    public QueryMetadata getMetadata() {
         return queryMetadata;
     }
 
@@ -136,8 +140,8 @@ public class EJBQLTranslationContext {
         return id;
     }
 
-    EJBQLTranslator getTranslatorFactory() {
-        return translatorFactory;
+    EJBQLTranslator getTranslator() {
+        return translator;
     }
 
     /**
@@ -174,8 +178,7 @@ public class EJBQLTranslationContext {
                         .getEntityDescriptor(id.getEntityId())
                         .getEntity()
                         .getDbEntity();
-            }
-            else {
+            } else {
                 DbRelationship last = incoming.get(incoming.size() - 1);
                 entity = last.getTargetEntity();
             }
@@ -354,16 +357,17 @@ public class EJBQLTranslationContext {
      * <p>This method takes a value object which may be a collection or a non-collection.  If it
      * is a collection then it will bind all of the values in the collection.  If it is a non-
      * collection then it will bind that single object.</p>
+     *
      * @param value
      * @return
      */
 
     List<String> bindParameters(Object value) {
-        if(Collection.class.isAssignableFrom(value.getClass())) {
+        if (Collection.class.isAssignableFrom(value.getClass())) {
             Iterator<?> parameterValueIterator = ((Collection<?>) value).iterator();
             List<String> result = new ArrayList<>();
 
-            while(parameterValueIterator.hasNext()) {
+            while (parameterValueIterator.hasNext()) {
                 result.add(bindParameter(parameterValueIterator.next()));
             }
 
@@ -421,8 +425,7 @@ public class EJBQLTranslationContext {
         if (dot > 0) {
             keyBuffer.append(idPath.substring(0, dot).toLowerCase()).append(
                     idPath.substring(dot));
-        }
-        else {
+        } else {
             keyBuffer.append(idPath.toLowerCase());
         }
 
@@ -432,8 +435,7 @@ public class EJBQLTranslationContext {
 
         if (tableAliases != null) {
             alias = tableAliases.get(key);
-        }
-        else {
+        } else {
             tableAliases = new HashMap<>();
             alias = null;
         }
@@ -488,11 +490,11 @@ public class EJBQLTranslationContext {
     public void setUsingAliases(boolean useAliases) {
         this.usingAliases = useAliases;
     }
-    
+
     public boolean isCaseInsensitive() {
         return caseInsensitive;
     }
-    
+
     public void setCaseInsensitive(boolean caseInsensitive) {
         this.caseInsensitive = caseInsensitive;
     }

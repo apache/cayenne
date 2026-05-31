@@ -53,12 +53,12 @@ public class EJBQLAction extends BaseSQLAction {
     @Override
     public void performAction(Connection connection, OperationObserver observer) throws Exception {
         EJBQLCompiledExpression compiledExpression = query.getExpression(dataNode.getEntityResolver());
-        EJBQLTranslator translatorFactory = dataNode.getEjbqlTranslator();
+        EJBQLTranslator translator = dataNode.getEjbqlTranslator();
         EJBQLTranslationContext context = new EJBQLTranslationContext(
                 dataNode.getEntityResolver(),
                 query,
                 compiledExpression,
-                translatorFactory,
+                translator,
                 dataNode.getAdapter(),
                 dataNode.getAdapter().getQuotingStrategy());
 
@@ -66,21 +66,21 @@ public class EJBQLAction extends BaseSQLAction {
 
             @Override
             public boolean visitSelect(EJBQLExpression expression) {
-                EJBQLExpressionVisitor visitor = translatorFactory.getSelectTranslator(context);
+                EJBQLExpressionVisitor visitor = translator.getSelectTranslator(context);
                 expression.visit(visitor);
                 return false;
             }
 
             @Override
             public boolean visitDelete(EJBQLExpression expression) {
-                EJBQLExpressionVisitor visitor = translatorFactory.getDeleteTranslator(context);
+                EJBQLExpressionVisitor visitor = translator.getDeleteTranslator(context);
                 expression.visit(visitor);
                 return false;
             }
 
             @Override
             public boolean visitUpdate(EJBQLExpression expression) {
-                EJBQLExpressionVisitor visitor = translatorFactory.getUpdateTranslator(context);
+                EJBQLExpressionVisitor visitor = translator.getUpdateTranslator(context);
                 expression.visit(visitor);
                 return false;
             }
