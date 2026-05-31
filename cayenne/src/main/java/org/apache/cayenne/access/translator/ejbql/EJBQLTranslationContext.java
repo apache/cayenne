@@ -18,6 +18,7 @@
  ****************************************************************/
 package org.apache.cayenne.access.translator.ejbql;
 
+import org.apache.cayenne.dba.DbAdapter;
 import org.apache.cayenne.dba.QuotingStrategy;
 import org.apache.cayenne.ejbql.EJBQLCompiledExpression;
 import org.apache.cayenne.ejbql.EJBQLException;
@@ -49,7 +50,8 @@ public class EJBQLTranslationContext {
     private EJBQLCompiledExpression compiledExpression;
     protected Map<String, Object> namedParameters;
     protected Map<Integer, Object> positionalParameters;
-    private EJBQLTranslatorFactory translatorFactory;
+    private EJBQLTranslator translatorFactory;
+    private DbAdapter adapter;
     private QuotingStrategy quotingStrategy;
     private EntityResolver entityResolver;
     private List<Object> resultSetMetadata;
@@ -73,7 +75,7 @@ public class EJBQLTranslationContext {
 
     public EJBQLTranslationContext(EntityResolver entityResolver, EJBQLQuery query,
             EJBQLCompiledExpression compiledExpression,
-            EJBQLTranslatorFactory translatorFactory, QuotingStrategy quotingStrategy) {
+            EJBQLTranslator translatorFactory, DbAdapter adapter, QuotingStrategy quotingStrategy) {
 
         this.entityResolver = entityResolver;
         this.compiledExpression = compiledExpression;
@@ -82,6 +84,7 @@ public class EJBQLTranslationContext {
         this.namedParameters = query.getNamedParameters();
         this.positionalParameters = query.getPositionalParameters();
         this.translatorFactory = translatorFactory;
+        this.adapter = adapter;
         this.usingAliases = true;
         this.caseInsensitive = false;
         this.queryMetadata = query.getMetaData(entityResolver);
@@ -133,8 +136,15 @@ public class EJBQLTranslationContext {
         return id;
     }
 
-    EJBQLTranslatorFactory getTranslatorFactory() {
+    EJBQLTranslator getTranslatorFactory() {
         return translatorFactory;
+    }
+
+    /**
+     * @since 5.0
+     */
+    DbAdapter getAdapter() {
+        return adapter;
     }
 
     EntityResolver getEntityResolver() {

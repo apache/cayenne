@@ -25,7 +25,6 @@ import org.apache.cayenne.map.DbAttribute;
 import org.apache.cayenne.map.DbEntity;
 import org.apache.cayenne.map.DbJoin;
 import org.apache.cayenne.map.DbRelationship;
-import org.apache.cayenne.map.Relationship;
 import org.apache.cayenne.reflect.ClassDescriptor;
 
 import java.util.Collection;
@@ -35,7 +34,7 @@ import java.util.Map;
 
 public abstract class EJBQLDbPathTranslator extends EJBQLBaseVisitor {
 
-	private EJBQLTranslationContext context;
+	private final EJBQLTranslationContext context;
 	protected DbEntity currentEntity;
 	private String lastPathComponent;
 	protected String lastAlias;
@@ -121,8 +120,8 @@ public abstract class EJBQLDbPathTranslator extends EJBQLBaseVisitor {
 			} else {
 				joinAppender.appendOuterJoin(joinMarker, new EJBQLTableId(idPath), new EJBQLTableId(fullPath));
 
-				Relationship lastRelationship = currentEntity.getRelationship(lastPathComponent);
-				DbEntity targetEntity = (DbEntity) lastRelationship.getTargetEntity();
+				DbRelationship lastRelationship = currentEntity.getRelationship(lastPathComponent);
+				DbEntity targetEntity = lastRelationship.getTargetEntity();
 
 				this.lastAlias = context.getTableAlias(fullPath,
 						context.getQuotingStrategy().quotedFullyQualifiedName(targetEntity));
@@ -139,7 +138,7 @@ public abstract class EJBQLDbPathTranslator extends EJBQLBaseVisitor {
 					+ currentEntity.getName() + "'");
 		}
 
-		this.currentEntity = (DbEntity) relationship.getTargetEntity();
+		this.currentEntity = relationship.getTargetEntity();
 	}
 
 	private void processLastPathComponent() {
@@ -162,7 +161,7 @@ public abstract class EJBQLDbPathTranslator extends EJBQLBaseVisitor {
 
 	protected void processTerminatingAttribute(DbAttribute attribute) {
 
-		DbEntity table = (DbEntity) attribute.getEntity();
+		DbEntity table = attribute.getEntity();
 
 		if (isUsingAliases()) {
 			String alias = this.lastAlias != null ? lastAlias : context.getTableAlias(idPath, context
@@ -180,7 +179,7 @@ public abstract class EJBQLDbPathTranslator extends EJBQLBaseVisitor {
 			// use an outer join for to-many matches
 			resolveJoin(false);
 
-			DbEntity table = (DbEntity) relationship.getTargetEntity();
+			DbEntity table = relationship.getTargetEntity();
 
 			String alias = this.lastAlias != null ? lastAlias : context.getTableAlias(idPath, context
 					.getQuotingStrategy().quotedFullyQualifiedName(table));
@@ -200,7 +199,7 @@ public abstract class EJBQLDbPathTranslator extends EJBQLBaseVisitor {
 		} else {
 			// match FK against the target object
 
-			DbEntity table = (DbEntity) relationship.getSourceEntity();
+			DbEntity table = relationship.getSourceEntity();
 
 			String alias = this.lastAlias != null ? lastAlias : context.getTableAlias(idPath, context
 					.getQuotingStrategy().quotedFullyQualifiedName(table));
@@ -208,7 +207,7 @@ public abstract class EJBQLDbPathTranslator extends EJBQLBaseVisitor {
 			List<DbJoin> joins = relationship.getJoins();
 
 			if (joins.size() == 1) {
-				DbJoin join = joins.get(0);
+				DbJoin join = joins.getFirst();
 				context.append(' ');
 				if (isUsingAliases()) {
 					context.append(alias).append('.');
@@ -260,7 +259,7 @@ public abstract class EJBQLDbPathTranslator extends EJBQLBaseVisitor {
 		} else {
 			DbRelationship lastRelationship = currentEntity.getRelationship(lastPathComponent);
 
-			DbEntity targetEntity = null;
+			DbEntity targetEntity;
 			if (lastRelationship != null) {
 				targetEntity = lastRelationship.getTargetEntity();
 			} else {

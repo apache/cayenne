@@ -23,8 +23,8 @@ import org.apache.cayenne.CayenneRuntimeException;
 import org.apache.cayenne.access.DataNode;
 import org.apache.cayenne.access.sqlbuilder.sqltree.SQLTreeProcessor;
 import org.apache.cayenne.access.translator.ParameterBinding;
-import org.apache.cayenne.access.translator.ejbql.EJBQLTranslatorFactory;
-import org.apache.cayenne.access.translator.ejbql.JdbcEJBQLTranslatorFactory;
+import org.apache.cayenne.access.translator.ejbql.EJBQLTranslator;
+import org.apache.cayenne.access.translator.ejbql.JdbcEJBQLTranslator;
 import org.apache.cayenne.access.translator.procedure.DefaultProcedureTranslator;
 import org.apache.cayenne.access.translator.procedure.ProcedureTranslator;
 import org.apache.cayenne.access.translator.select.DefaultSelectTranslator;
@@ -74,7 +74,7 @@ public class JdbcAdapter implements DbAdapter {
     protected boolean supportsBatchUpdates;
     protected boolean supportsUniqueConstraints;
     protected boolean supportsGeneratedKeys;
-    protected EJBQLTranslatorFactory ejbqlTranslatorFactory;
+    protected EJBQLTranslator ejbqlTranslator;
 
     protected ResourceLocator resourceLocator;
     protected boolean caseInsensitiveCollations;
@@ -100,7 +100,7 @@ public class JdbcAdapter implements DbAdapter {
 
         this.quotingStrategy = createQuotingStrategy();
 
-        this.ejbqlTranslatorFactory = createEJBQLTranslatorFactory();
+        this.ejbqlTranslator = createEJBQLTranslator();
         this.typesHandler = TypesHandler.getHandler(findResource("/types.xml"));
         this.extendedTypes = new ExtendedTypeMap();
         initExtendedTypes(defaultExtendedTypes, userExtendedTypes, extendedTypeFactories, valueObjectTypeRegistry);
@@ -186,14 +186,14 @@ public class JdbcAdapter implements DbAdapter {
     }
 
     /**
-     * Creates and returns an {@link EJBQLTranslatorFactory} used to generate
+     * Creates and returns an {@link EJBQLTranslator} used to generate
      * visitors for EJBQL to SQL translations. This method should be overriden
      * by subclasses that need to customize EJBQL generation.
      *
      * @since 3.0
      */
-    protected EJBQLTranslatorFactory createEJBQLTranslatorFactory() {
-        JdbcEJBQLTranslatorFactory translatorFactory = new JdbcEJBQLTranslatorFactory();
+    protected EJBQLTranslator createEJBQLTranslator() {
+        JdbcEJBQLTranslator translatorFactory = new JdbcEJBQLTranslator();
         translatorFactory.setCaseInsensitive(caseInsensitiveCollations);
         return translatorFactory;
     }
@@ -579,15 +579,15 @@ public class JdbcAdapter implements DbAdapter {
     }
 
     /**
-     * Returns a translator factory for EJBQL to SQL translation. The factory is
-     * normally initialized in constructor by calling
-     * {@link #createEJBQLTranslatorFactory()}, and can be changed later by
-     * calling {@link #setEjbqlTranslatorFactory(EJBQLTranslatorFactory)}.
+     * Returns the {@link EJBQLTranslator} for EJBQL to SQL translation. It is normally initialized in the
+     * constructor by calling {@link #createEJBQLTranslator()}, and can be changed later by calling
+     * {@link #setEjbqlTranslator(EJBQLTranslator)}.
      *
-     * @since 3.0
+     * @since 5.0
      */
-    public EJBQLTranslatorFactory getEjbqlTranslatorFactory() {
-        return ejbqlTranslatorFactory;
+    @Override
+    public EJBQLTranslator getEjbqlTranslator() {
+        return ejbqlTranslator;
     }
 
     @Override
@@ -601,15 +601,22 @@ public class JdbcAdapter implements DbAdapter {
     }
 
     /**
-     * Sets a translator factory for EJBQL to SQL translation. This property is
-     * normally initialized in constructor by calling
-     * {@link #createEJBQLTranslatorFactory()}, so users would only override it
-     * if they need to customize EJBQL translation.
+     * Sets the {@link EJBQLTranslator} for EJBQL to SQL translation. This property is normally initialized in the
+     * constructor by calling {@link #createEJBQLTranslator()}, so users would only override it if they need to
+     * customize EJBQL translation.
      *
-     * @since 3.0
+     * @since 5.0
      */
-    public void setEjbqlTranslatorFactory(EJBQLTranslatorFactory ejbqlTranslatorFactory) {
-        this.ejbqlTranslatorFactory = ejbqlTranslatorFactory;
+    public void setEjbqlTranslator(EJBQLTranslator ejbqlTranslator) {
+        this.ejbqlTranslator = ejbqlTranslator;
+    }
+
+    /**
+     * @deprecated since 5.0 in favor of {@link #setEjbqlTranslator(EJBQLTranslator)}.
+     */
+    @Deprecated(since = "5.0")
+    public void setEjbqlTranslatorFactory(EJBQLTranslator ejbqlTranslator) {
+        setEjbqlTranslator(ejbqlTranslator);
     }
 
     /**

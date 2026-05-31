@@ -21,12 +21,12 @@ package org.apache.cayenne.access.translator.ejbql;
 import org.apache.cayenne.ejbql.EJBQLExpressionVisitor;
 
 /**
- * Defines a factory for translation visitors of EJBQL. DbAdapters can customize EJBQL
- * translation by providing their own factory implementation.
- * 
+ * A stateless service that produces translation visitors of EJBQL. DbAdapters can customize EJBQL
+ * translation by providing their own implementation.
+ *
  * @since 3.0
  */
-public interface EJBQLTranslatorFactory {
+public interface EJBQLTranslator {
     
     EJBQLJoinAppender getJoinAppender(EJBQLTranslationContext context);
 

@@ -23,7 +23,7 @@ import org.apache.cayenne.CayenneRuntimeException;
 import org.apache.cayenne.access.DataNode;
 import org.apache.cayenne.access.sqlbuilder.sqltree.SQLTreeProcessor;
 import org.apache.cayenne.access.translator.ParameterBinding;
-import org.apache.cayenne.access.translator.ejbql.EJBQLTranslatorFactory;
+import org.apache.cayenne.access.translator.ejbql.EJBQLTranslator;
 import org.apache.cayenne.access.types.ByteArrayType;
 import org.apache.cayenne.access.types.ByteType;
 import org.apache.cayenne.access.types.CharType;
@@ -122,8 +122,8 @@ public class SQLServerAdapter extends JdbcAdapter {
     }
 
     @Override
-    protected EJBQLTranslatorFactory createEJBQLTranslatorFactory() {
-        return new SQLServerEJBQLTranslatorFactory();
+    protected EJBQLTranslator createEJBQLTranslator() {
+        return new SQLServerEJBQLTranslator();
     }
 
     /**

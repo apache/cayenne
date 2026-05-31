@@ -16,16 +16,20 @@
  *  specific language governing permissions and limitations
  *  under the License.
  ****************************************************************/
-package org.apache.cayenne.dba.sqlserver;
+
+package org.apache.cayenne.dba.hsqldb;
 
 import org.apache.cayenne.access.translator.ejbql.EJBQLTranslationContext;
-import org.apache.cayenne.access.translator.ejbql.JdbcEJBQLTranslatorFactory;
+import org.apache.cayenne.access.translator.ejbql.JdbcEJBQLTranslator;
 import org.apache.cayenne.ejbql.EJBQLExpressionVisitor;
 
-class SQLServerEJBQLTranslatorFactory extends JdbcEJBQLTranslatorFactory {
+/**
+ * @since 4.0
+ */
+public class HSQLEJBQLTranslator extends JdbcEJBQLTranslator {
 
     @Override
     public EJBQLExpressionVisitor getConditionTranslator(EJBQLTranslationContext context) {
-        return new SQLServerEJBQLConditionTranslator(context);
+        return new HSQLEJBQLConditionTranslator(context);
     }
 }

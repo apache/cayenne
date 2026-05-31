@@ -21,7 +21,7 @@ package org.apache.cayenne.access.jdbc;
 import org.apache.cayenne.access.DataNode;
 import org.apache.cayenne.access.OperationObserver;
 import org.apache.cayenne.access.translator.ejbql.EJBQLTranslationContext;
-import org.apache.cayenne.access.translator.ejbql.EJBQLTranslatorFactory;
+import org.apache.cayenne.access.translator.ejbql.EJBQLTranslator;
 import org.apache.cayenne.ejbql.EJBQLBaseVisitor;
 import org.apache.cayenne.ejbql.EJBQLCompiledExpression;
 import org.apache.cayenne.ejbql.EJBQLExpression;
@@ -53,12 +53,13 @@ public class EJBQLAction extends BaseSQLAction {
     @Override
     public void performAction(Connection connection, OperationObserver observer) throws Exception {
         EJBQLCompiledExpression compiledExpression = query.getExpression(dataNode.getEntityResolver());
-        EJBQLTranslatorFactory translatorFactory = dataNode.getAdapter().getEjbqlTranslatorFactory();
+        EJBQLTranslator translatorFactory = dataNode.getEjbqlTranslator();
         EJBQLTranslationContext context = new EJBQLTranslationContext(
                 dataNode.getEntityResolver(),
                 query,
                 compiledExpression,
                 translatorFactory,
+                dataNode.getAdapter(),
                 dataNode.getAdapter().getQuotingStrategy());
 
         compiledExpression.getExpression().visit(new EJBQLBaseVisitor(false) {

@@ -16,16 +16,20 @@
  *  specific language governing permissions and limitations
  *  under the License.
  ****************************************************************/
-package org.apache.cayenne.dba.sybase;
+package org.apache.cayenne.dba.mysql;
 
 import org.apache.cayenne.access.translator.ejbql.EJBQLTranslationContext;
-import org.apache.cayenne.access.translator.ejbql.JdbcEJBQLTranslatorFactory;
+import org.apache.cayenne.access.translator.ejbql.JdbcEJBQLTranslator;
 import org.apache.cayenne.ejbql.EJBQLExpressionVisitor;
 
-class SybaseEJBQLTranslatorFactory extends JdbcEJBQLTranslatorFactory {
+/**
+ * @since 3.0
+ */
+class MySQLEJBQLTranslator extends JdbcEJBQLTranslator {
 
     @Override
     public EJBQLExpressionVisitor getConditionTranslator(EJBQLTranslationContext context) {
-        return new SybaseEJBQLConditionTranslator(context);
+        context.setCaseInsensitive(caseInsensitive);
+        return new MySQLEJBQLConditionTranslator(context);
     }
 }

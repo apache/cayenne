@@ -21,11 +21,11 @@ package org.apache.cayenne.access.translator.ejbql;
 import org.apache.cayenne.ejbql.EJBQLExpressionVisitor;
 
 /**
- * A default EJBQLTranslatorFactory.
- * 
+ * A default {@link EJBQLTranslator}.
+ *
  * @since 3.0
  */
-public class JdbcEJBQLTranslatorFactory implements EJBQLTranslatorFactory {
+public class JdbcEJBQLTranslator implements EJBQLTranslator {
 
     protected static final String JOIN_APPENDER_KEY = "$JoinAppender";
     

@@ -27,8 +27,8 @@ import org.apache.cayenne.CayenneRuntimeException;
 import org.apache.cayenne.access.DataNode;
 import org.apache.cayenne.access.sqlbuilder.sqltree.SQLTreeProcessor;
 import org.apache.cayenne.access.translator.ParameterBinding;
-import org.apache.cayenne.access.translator.ejbql.EJBQLTranslatorFactory;
-import org.apache.cayenne.access.translator.ejbql.JdbcEJBQLTranslatorFactory;
+import org.apache.cayenne.access.translator.ejbql.EJBQLTranslator;
+import org.apache.cayenne.access.translator.ejbql.JdbcEJBQLTranslator;
 import org.apache.cayenne.access.types.BooleanType;
 import org.apache.cayenne.access.types.ByteArrayType;
 import org.apache.cayenne.access.types.CharType;
@@ -150,13 +150,13 @@ public class DB2Adapter extends JdbcAdapter {
     }
 
     /**
-     * @since 4.0
+     * @since 5.0
      */
     @Override
-    public EJBQLTranslatorFactory getEjbqlTranslatorFactory() {
-        JdbcEJBQLTranslatorFactory translatorFactory = new DB2EJBQLTranslatorFactory();
-        translatorFactory.setCaseInsensitive(caseInsensitiveCollations);
-        return translatorFactory;
+    public EJBQLTranslator getEjbqlTranslator() {
+        JdbcEJBQLTranslator translator = new DB2EJBQLTranslator();
+        translator.setCaseInsensitive(caseInsensitiveCollations);
+        return translator;
     }
 
     @Override

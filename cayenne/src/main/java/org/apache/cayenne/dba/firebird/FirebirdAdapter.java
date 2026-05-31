@@ -22,7 +22,7 @@ package org.apache.cayenne.dba.firebird;
 import org.apache.cayenne.CayenneRuntimeException;
 import org.apache.cayenne.access.DataNode;
 import org.apache.cayenne.access.sqlbuilder.sqltree.SQLTreeProcessor;
-import org.apache.cayenne.access.translator.ejbql.EJBQLTranslatorFactory;
+import org.apache.cayenne.access.translator.ejbql.EJBQLTranslator;
 import org.apache.cayenne.access.types.ByteArrayType;
 import org.apache.cayenne.access.types.CharType;
 import org.apache.cayenne.access.types.ExtendedType;
@@ -108,9 +108,12 @@ public class FirebirdAdapter extends JdbcAdapter {
         return new FirebirdSQLTreeProcessor();
     }
 
+    /**
+     * @since 5.0
+     */
     @Override
-    public EJBQLTranslatorFactory getEjbqlTranslatorFactory() {
-        return new FirebirdEJBQLTranslatorFactory();
+    public EJBQLTranslator getEjbqlTranslator() {
+        return new FirebirdEJBQLTranslator();
     }
 
     @Override

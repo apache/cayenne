@@ -42,6 +42,8 @@ import org.apache.cayenne.access.translator.batch.BatchTranslator;
 import org.apache.cayenne.access.translator.batch.DeleteBatchTranslator;
 import org.apache.cayenne.access.translator.batch.InsertBatchTranslator;
 import org.apache.cayenne.access.translator.batch.UpdateBatchTranslator;
+import org.apache.cayenne.access.translator.ejbql.DbAdapterDelegatedEJBQLTranslator;
+import org.apache.cayenne.access.translator.ejbql.EJBQLTranslator;
 import org.apache.cayenne.access.translator.procedure.DbAdapterDelegatedProcedureTranslator;
 import org.apache.cayenne.access.translator.procedure.ProcedureTranslator;
 import org.apache.cayenne.access.translator.select.DbAdapterDelegatedSelectTranslator;
@@ -470,6 +472,7 @@ public class CoreModule implements Module {
         binder.bind(Key.get(BatchTranslator.class, BatchTranslator.DELETE)).to(DeleteBatchTranslator.class);
         binder.bind(SelectTranslator.class).to(DbAdapterDelegatedSelectTranslator.class);
         binder.bind(ProcedureTranslator.class).to(DbAdapterDelegatedProcedureTranslator.class);
+        binder.bind(EJBQLTranslator.class).to(DbAdapterDelegatedEJBQLTranslator.class);
 
         // a default ObjectMapRetainStrategy used to create objects map for
         // ObjectStore

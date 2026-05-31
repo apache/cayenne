@@ -83,8 +83,8 @@ public class AutoAdapterIT {
                 autoAdapter.getSqlTreeProcessor().getClass());
         assertSame(adapter.getExtendedTypes(),
                 autoAdapter.getExtendedTypes());
-        assertSame(adapter.getEjbqlTranslatorFactory(),
-                autoAdapter.getEjbqlTranslatorFactory());
+        assertSame(adapter.getEjbqlTranslator(),
+                autoAdapter.getEjbqlTranslator());
         // returns a new instance for each call
         assertSame(adapter.getSelectTranslator(select, env.dataNode().getEntityResolver()).getClass(),
                 autoAdapter.getSelectTranslator(select, env.dataNode().getEntityResolver()).getClass());

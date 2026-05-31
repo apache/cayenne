@@ -17,19 +17,19 @@
  *  under the License.
  ****************************************************************/
 
-package org.apache.cayenne.dba.hsqldb;
+package org.apache.cayenne.dba.h2;
 
 import org.apache.cayenne.access.translator.ejbql.EJBQLTranslationContext;
-import org.apache.cayenne.access.translator.ejbql.JdbcEJBQLTranslatorFactory;
+import org.apache.cayenne.access.translator.ejbql.JdbcEJBQLTranslator;
 import org.apache.cayenne.ejbql.EJBQLExpressionVisitor;
 
 /**
- * @since 4.0
+ * @since 5.0
  */
-public class HSQLEJBQLTranslatorFactory extends JdbcEJBQLTranslatorFactory {
+public class H2EJBQLTranslator extends JdbcEJBQLTranslator {
 
     @Override
     public EJBQLExpressionVisitor getConditionTranslator(EJBQLTranslationContext context) {
-        return new HSQLEJBQLConditionTranslator(context);
+        return new H2EJBQLConditionTranslator(context);
     }
 }
