@@ -266,7 +266,7 @@ class QualifierTranslator implements TraversalHandler {
                         subquery.getQuery(), context.getAdapter(), context.getResolver(), context);
                 // skip SQL translation stage for nested translators, it should be performed by root context only
                 subContext.setSkipSQLGeneration(true);
-                DefaultSelectTranslator.translate(subContext);
+                subContext.translate();
                 return subContext.getSelectBuilder().build();
 
             case ENCLOSING_OBJECT:

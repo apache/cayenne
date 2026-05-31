@@ -52,6 +52,24 @@ import static org.apache.cayenne.access.sqlbuilder.SQLBuilder.node;
  */
 public class TranslatorContext implements SQLGenerationContext {
 
+    private static final TranslationStage[] TRANSLATION_STAGES = {
+            new QualifierTranslationStage(),
+            new ColumnExtractorStage(),
+            new PrefetchNodeStage(),
+            new OrderingStage(),
+            new HavingTranslationStage(),
+            new OrderingGroupByStage(),
+            new GroupByStage(),
+            new DistinctStage(),
+            new OrderingDistinctStage(),
+            new LimitOffsetStage(),
+            new ColumnDescriptorStage(),
+            new TableTreeQualifierStage(),
+            new TableTreeStage(),
+            new SQLResultStage(),
+            new SQLGenerationStage()
+    };
+
     private final TableTree tableTree;
 
     /**
@@ -133,7 +151,13 @@ public class TranslatorContext implements SQLGenerationContext {
         }
     }
 
-    public TranslatedSelect toResult() {
+    void translate() {
+        for (TranslationStage stage : TRANSLATION_STAGES) {
+            stage.perform(this);
+        }
+    }
+
+    public TranslatedSelect getTranslation() {
         return new TranslatedSelect(
                 getFinalSQL(),
                 getColumnDescriptors().toArray(new ColumnDescriptor[0]),

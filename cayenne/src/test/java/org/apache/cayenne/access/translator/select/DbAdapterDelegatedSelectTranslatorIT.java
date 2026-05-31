@@ -783,7 +783,7 @@ public class DbAdapterDelegatedSelectTranslatorIT {
 
 		TranslatorContext context = new TranslatorContext(new FluentSelectWrapper(query), env.dataNode().getAdapter(),
 																		 env.context().getEntityResolver(), null);
-		DefaultSelectTranslator.translate(context);
+		context.translate();
 
 		int totalJoins = context.getTableCount() - 1;
 		assertEquals(3, totalJoins);
@@ -800,7 +800,7 @@ public class DbAdapterDelegatedSelectTranslatorIT {
 
 		TranslatorContext context = new TranslatorContext(new FluentSelectWrapper(query), env.dataNode().getAdapter(),
 																		 env.context().getEntityResolver(), null);
-		DefaultSelectTranslator.translate(context);
+		context.translate();
 
 		int totalJoins = context.getTableCount() - 1;
 		assertEquals(2, totalJoins);
@@ -817,7 +817,7 @@ public class DbAdapterDelegatedSelectTranslatorIT {
 
 		TranslatorContext context = new TranslatorContext(new FluentSelectWrapper(query), env.dataNode().getAdapter(),
 																		 env.context().getEntityResolver(), null);
-		DefaultSelectTranslator.translate(context);
+		context.translate();
 
 		int totalJoins = context.getTableCount() - 1;
 		assertEquals(2, totalJoins);
@@ -833,7 +833,7 @@ public class DbAdapterDelegatedSelectTranslatorIT {
 
 		TranslatorContext context = new TranslatorContext(new FluentSelectWrapper(query), env.dataNode().getAdapter(),
 																		 env.context().getEntityResolver(), null);
-		DefaultSelectTranslator.translate(context);
+		context.translate();
 
 		int totalJoins = context.getTableCount() - 1;
 		assertEquals(4, totalJoins);
