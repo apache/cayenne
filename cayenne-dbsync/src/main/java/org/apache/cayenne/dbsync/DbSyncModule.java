@@ -26,7 +26,6 @@ import org.apache.cayenne.dba.h2.H2Adapter;
 import org.apache.cayenne.dba.hsqldb.HSQLDBAdapter;
 import org.apache.cayenne.dba.ingres.IngresAdapter;
 import org.apache.cayenne.dba.mysql.MySQLAdapter;
-import org.apache.cayenne.dba.oracle.Oracle8Adapter;
 import org.apache.cayenne.dba.oracle.OracleAdapter;
 import org.apache.cayenne.dba.postgres.PostgresAdapter;
 import org.apache.cayenne.dba.sqlserver.SQLServerAdapter;
@@ -78,7 +77,6 @@ public class DbSyncModule implements Module {
                 .put(IngresAdapter.class.getName(), IngresMergerTokenFactory.class)
                 .put(MySQLAdapter.class.getName(), MySQLMergerTokenFactory.class)
                 .put(OracleAdapter.class.getName(), OracleMergerTokenFactory.class)
-                .put(Oracle8Adapter.class.getName(), OracleMergerTokenFactory.class)
                 .put(PostgresAdapter.class.getName(), PostgresMergerTokenFactory.class)
                 .put(SQLServerAdapter.class.getName(), SQLServerMergerTokenFactory.class)
                 .put(SybaseAdapter.class.getName(), SybaseMergerTokenFactory.class);

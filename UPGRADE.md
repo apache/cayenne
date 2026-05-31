@@ -53,6 +53,14 @@ Expression caseWhenExp = caseWhen(
 ```
 
 
+## Upgrading to 5.0.M3
+
+* Per [CAY-2956](https://issues.apache.org/jira/browse/CAY-2956) the dedicated Oracle 8 adapter has been removed.
+  `org.apache.cayenne.dba.oracle.Oracle8Adapter` and its supporting classes no longer exist, and the
+  `OracleSniffer` now maps all Oracle versions to `OracleAdapter` regardless of the JDBC driver version.
+  If you referenced `Oracle8Adapter` explicitly (e.g. in a DataNode adapter configuration or custom DI
+  bindings), switch to `org.apache.cayenne.dba.oracle.OracleAdapter`.
+
 ## Upgrading to 5.0.M2
 
 * Per [CAY-2947](https://issues.apache.org/jira/browse/CAY-2947) the `cayenne-commitlog` artifact has been removed. Commit log support is now part of the

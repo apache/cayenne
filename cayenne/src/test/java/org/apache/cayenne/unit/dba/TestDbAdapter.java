@@ -30,7 +30,6 @@ import org.apache.cayenne.dba.h2.H2Adapter;
 import org.apache.cayenne.dba.hsqldb.HSQLDBAdapter;
 import org.apache.cayenne.dba.ingres.IngresAdapter;
 import org.apache.cayenne.dba.mysql.MySQLAdapter;
-import org.apache.cayenne.dba.oracle.Oracle8Adapter;
 import org.apache.cayenne.dba.oracle.OracleAdapter;
 import org.apache.cayenne.dba.postgres.PostgresAdapter;
 import org.apache.cayenne.dba.sqlite.SQLiteAdapter;
@@ -75,7 +74,6 @@ public abstract class TestDbAdapter {
         // the order of cases is important due to random adapter subclasses
         return switch (realAdapter) {
             case FirebirdAdapter a -> new FirebirdTestDbAdapter(a);
-            case Oracle8Adapter a -> new OracleTestDbAdapter(a);
             case OracleAdapter a -> new OracleTestDbAdapter(a);
             case DerbyAdapter a -> new DerbyTestDbAdapter(a);
             case SQLServerAdapter a -> new SQLServerTestDbAdapter(a);

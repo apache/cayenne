@@ -65,7 +65,6 @@ import org.apache.cayenne.dba.mariadb.MariaDBSniffer;
 import org.apache.cayenne.dba.mysql.MySQLAdapter;
 import org.apache.cayenne.dba.mysql.MySQLPkGenerator;
 import org.apache.cayenne.dba.mysql.MySQLSniffer;
-import org.apache.cayenne.dba.oracle.Oracle8Adapter;
 import org.apache.cayenne.dba.oracle.OracleAdapter;
 import org.apache.cayenne.dba.oracle.OraclePkGenerator;
 import org.apache.cayenne.dba.oracle.OracleSniffer;
@@ -139,7 +138,6 @@ public class ToolsModule implements Module {
                 .addPkGenerator(IngresAdapter.class, IngresPkGenerator.class)
                 .addPkGenerator(MySQLAdapter.class, MySQLPkGenerator.class)
                 .addPkGenerator(OracleAdapter.class, OraclePkGenerator.class)
-                .addPkGenerator(Oracle8Adapter.class, OraclePkGenerator.class)
                 .addPkGenerator(PostgresAdapter.class, PostgresPkGenerator.class)
                 .addPkGenerator(SQLServerAdapter.class, SybasePkGenerator.class)
                 .addPkGenerator(SybaseAdapter.class, SybasePkGenerator.class);
