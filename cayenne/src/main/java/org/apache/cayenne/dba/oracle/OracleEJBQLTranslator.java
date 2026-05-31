@@ -16,20 +16,19 @@
  *  specific language governing permissions and limitations
  *  under the License.
  ****************************************************************/
-
-package org.apache.cayenne.dba.h2;
+package org.apache.cayenne.dba.oracle;
 
 import org.apache.cayenne.access.translator.ejbql.EJBQLTranslationContext;
-import org.apache.cayenne.access.translator.ejbql.JdbcEJBQLTranslatorFactory;
+import org.apache.cayenne.access.translator.ejbql.JdbcEJBQLTranslator;
 import org.apache.cayenne.ejbql.EJBQLExpressionVisitor;
 
 /**
- * @since 5.0
+ * @since 3.0
  */
-public class H2EJBQLTranslatorFactory extends JdbcEJBQLTranslatorFactory {
+class OracleEJBQLTranslator extends JdbcEJBQLTranslator {
 
     @Override
     public EJBQLExpressionVisitor getConditionTranslator(EJBQLTranslationContext context) {
-        return new H2EJBQLConditionTranslator(context);
+        return new OracleEJBQLConditionTranslator(context);
     }
 }

@@ -21,7 +21,7 @@ package org.apache.cayenne.dba;
 import org.apache.cayenne.access.DataNode;
 import org.apache.cayenne.access.sqlbuilder.sqltree.SQLTreeProcessor;
 import org.apache.cayenne.access.translator.ParameterBinding;
-import org.apache.cayenne.access.translator.ejbql.EJBQLTranslatorFactory;
+import org.apache.cayenne.access.translator.ejbql.EJBQLTranslator;
 import org.apache.cayenne.access.translator.procedure.ProcedureTranslator;
 import org.apache.cayenne.access.translator.select.SelectTranslator;
 import org.apache.cayenne.access.types.ExtendedTypeMap;
@@ -262,11 +262,19 @@ public interface DbAdapter {
 	DbAdapter unwrap();
 
 	/**
-	 * Returns a translator factory for EJBQL to SQL translation.
+	 * Returns the {@link EJBQLTranslator} for EJBQL to SQL translation.
 	 *
-	 * @since 4.0
+	 * @since 5.0
 	 */
-	EJBQLTranslatorFactory getEjbqlTranslatorFactory();
+	EJBQLTranslator getEjbqlTranslator();
+
+	/**
+	 * @deprecated since 5.0 in favor of {@link #getEjbqlTranslator()}.
+	 */
+	@Deprecated(since = "5.0")
+	default EJBQLTranslator getEjbqlTranslatorFactory() {
+		return getEjbqlTranslator();
+	}
 
 	/**
 	 * @since 4.1

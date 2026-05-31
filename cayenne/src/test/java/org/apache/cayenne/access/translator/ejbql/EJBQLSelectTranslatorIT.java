@@ -56,7 +56,7 @@ public class EJBQLSelectTranslatorIT {
         };
 
         EJBQLTranslationContext tr = new EJBQLTranslationContext(env.runtime().getDataDomain().getEntityResolver(), query,
-                select, new JdbcEJBQLTranslatorFactory(), env.dataNode().getAdapter().getQuotingStrategy());
+                select, new JdbcEJBQLTranslator(), env.dataNode().getAdapter(), env.dataNode().getAdapter().getQuotingStrategy());
         select.getExpression().visit(new EJBQLSelectTranslator(tr));
         return tr.getQuery();
     }
@@ -308,7 +308,7 @@ public class EJBQLSelectTranslatorIT {
         query.setParameter("x", null);
 
         EJBQLTranslationContext tr = new EJBQLTranslationContext(env.runtime().getDataDomain().getEntityResolver(), query,
-                select, new JdbcEJBQLTranslatorFactory(), env.dataNode().getAdapter().getQuotingStrategy());
+                select, new JdbcEJBQLTranslator(), env.dataNode().getAdapter(), env.dataNode().getAdapter().getQuotingStrategy());
         select.getExpression().visit(new EJBQLSelectTranslator(tr));
         String sql = tr.getQuery().getDefaultTemplate();
         assertTrue(sql.endsWith("t0.ARTIST_ID IS NULL"), sql);
@@ -325,7 +325,7 @@ public class EJBQLSelectTranslatorIT {
         query.setParameter("b", "Y");
 
         EJBQLTranslationContext tr = new EJBQLTranslationContext(env.runtime().getDataDomain().getEntityResolver(), query,
-                select, new JdbcEJBQLTranslatorFactory(), env.dataNode().getAdapter().getQuotingStrategy());
+                select, new JdbcEJBQLTranslator(), env.dataNode().getAdapter(), env.dataNode().getAdapter().getQuotingStrategy());
         select.getExpression().visit(new EJBQLSelectTranslator(tr));
         String sql = tr.getQuery().getDefaultTemplate();
         assertTrue(sql.endsWith("t0.ARTIST_ID IS NULL OR t1.ARTIST_NAME = #bind($id0)"), sql);

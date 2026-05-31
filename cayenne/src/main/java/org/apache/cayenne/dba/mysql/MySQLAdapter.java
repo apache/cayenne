@@ -23,8 +23,8 @@ import org.apache.cayenne.access.DataNode;
 import org.apache.cayenne.access.sqlbuilder.sqltree.SQLTreeProcessor;
 import org.apache.cayenne.access.translator.ParameterBinding;
 import org.apache.cayenne.access.translator.procedure.ProcedureTranslator;
-import org.apache.cayenne.access.translator.ejbql.EJBQLTranslatorFactory;
-import org.apache.cayenne.access.translator.ejbql.JdbcEJBQLTranslatorFactory;
+import org.apache.cayenne.access.translator.ejbql.EJBQLTranslator;
+import org.apache.cayenne.access.translator.ejbql.JdbcEJBQLTranslator;
 import org.apache.cayenne.access.types.ByteArrayType;
 import org.apache.cayenne.access.types.CharType;
 import org.apache.cayenne.access.types.DateType;
@@ -252,8 +252,8 @@ public class MySQLAdapter extends JdbcAdapter {
 	 * @since 3.0
 	 */
 	@Override
-	protected EJBQLTranslatorFactory createEJBQLTranslatorFactory() {
-		JdbcEJBQLTranslatorFactory translatorFactory = new MySQLEJBQLTranslatorFactory();
+	protected EJBQLTranslator createEJBQLTranslator() {
+		JdbcEJBQLTranslator translatorFactory = new MySQLEJBQLTranslator();
 		translatorFactory.setCaseInsensitive(caseInsensitiveCollations);
 		return translatorFactory;
 	}

@@ -16,21 +16,22 @@
  *  specific language governing permissions and limitations
  *  under the License.
  ****************************************************************/
-package org.apache.cayenne.dba.derby;
+
+package org.apache.cayenne.dba.firebird;
 
 import org.apache.cayenne.access.translator.ejbql.EJBQLTranslationContext;
-import org.apache.cayenne.access.translator.ejbql.JdbcEJBQLTranslatorFactory;
+import org.apache.cayenne.access.translator.ejbql.JdbcEJBQLTranslator;
 import org.apache.cayenne.ejbql.EJBQLExpressionVisitor;
 
 /**
- * @since 3.1
+ * @since 4.0
  */
-public class DerbyEJBQLTranslatorFactory extends JdbcEJBQLTranslatorFactory {
+public class FirebirdEJBQLTranslator extends JdbcEJBQLTranslator {
 
     @Override
     public EJBQLExpressionVisitor getConditionTranslator(EJBQLTranslationContext context) {
         context.setCaseInsensitive(caseInsensitive);
-        return new DerbyEJBQLConditionTranslator(context);
+        return new FirebirdEJBQLConditionTranslator(context);
     }
 
 }

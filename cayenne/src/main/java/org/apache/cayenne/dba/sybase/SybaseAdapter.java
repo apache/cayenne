@@ -21,7 +21,7 @@ package org.apache.cayenne.dba.sybase;
 
 import org.apache.cayenne.access.sqlbuilder.sqltree.SQLTreeProcessor;
 import org.apache.cayenne.access.translator.ParameterBinding;
-import org.apache.cayenne.access.translator.ejbql.EJBQLTranslatorFactory;
+import org.apache.cayenne.access.translator.ejbql.EJBQLTranslator;
 import org.apache.cayenne.access.types.ByteArrayType;
 import org.apache.cayenne.access.types.ByteType;
 import org.apache.cayenne.access.types.CharType;
@@ -68,8 +68,8 @@ public class SybaseAdapter extends JdbcAdapter {
      * @since 3.0
      */
     @Override
-    protected EJBQLTranslatorFactory createEJBQLTranslatorFactory() {
-        return new SybaseEJBQLTranslatorFactory();
+    protected EJBQLTranslator createEJBQLTranslator() {
+        return new SybaseEJBQLTranslator();
     }
 
     /**

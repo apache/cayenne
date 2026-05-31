@@ -22,8 +22,8 @@ package org.apache.cayenne.dba.hsqldb;
 import org.apache.cayenne.CayenneRuntimeException;
 import org.apache.cayenne.access.DataNode;
 import org.apache.cayenne.access.sqlbuilder.sqltree.SQLTreeProcessor;
-import org.apache.cayenne.access.translator.ejbql.EJBQLTranslatorFactory;
-import org.apache.cayenne.access.translator.ejbql.JdbcEJBQLTranslatorFactory;
+import org.apache.cayenne.access.translator.ejbql.EJBQLTranslator;
+import org.apache.cayenne.access.translator.ejbql.JdbcEJBQLTranslator;
 import org.apache.cayenne.access.translator.procedure.ProcedureTranslator;
 import org.apache.cayenne.access.types.CharType;
 import org.apache.cayenne.access.types.ExtendedType;
@@ -110,8 +110,8 @@ public class HSQLDBAdapter extends JdbcAdapter {
 	 * @since 4.0
 	 */
 	@Override
-	protected EJBQLTranslatorFactory createEJBQLTranslatorFactory() {
-		JdbcEJBQLTranslatorFactory translatorFactory = new HSQLEJBQLTranslatorFactory();
+	protected EJBQLTranslator createEJBQLTranslator() {
+		JdbcEJBQLTranslator translatorFactory = new HSQLEJBQLTranslator();
 		translatorFactory.setCaseInsensitive(caseInsensitiveCollations);
 		return translatorFactory;
 	}

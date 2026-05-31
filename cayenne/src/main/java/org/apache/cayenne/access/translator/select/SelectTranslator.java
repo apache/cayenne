@@ -24,14 +24,14 @@ import org.apache.cayenne.map.EntityResolver;
 import org.apache.cayenne.query.Select;
 
 /**
- * A stateless service that translates a {@link Select} query into an immutable {@link TranslatedSelect}.
+ * A service that translates a {@link Select} query into a {@link TranslatedSelect}.
  *
  * @since 4.0
  */
 public interface SelectTranslator {
 
     /**
-     * Translates the provided query into an immutable {@link TranslatedSelect}.
+     * Translates the provided query into a {@link TranslatedSelect}.
      *
      * @since 5.0
      */

@@ -24,12 +24,12 @@ import org.apache.cayenne.map.EntityResolver;
 import org.apache.cayenne.query.ProcedureQuery;
 
 /**
- * A stateless service that translates a {@link ProcedureQuery} into an immutable {@link TranslatedProcedure}.
+ * A service that translates a {@link ProcedureQuery} into a {@link TranslatedProcedure}.
  */
 public interface ProcedureTranslator {
 
     /**
-     * Translates the provided query into an immutable {@link TranslatedProcedure}.
+     * Translates the provided query into a {@link TranslatedProcedure}.
      *
      * @since 5.0
      */

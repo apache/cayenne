@@ -26,6 +26,7 @@ import org.apache.cayenne.access.jdbc.RowDescriptor;
 import org.apache.cayenne.access.jdbc.reader.RowReader;
 import org.apache.cayenne.access.jdbc.reader.RowReaderFactory;
 import org.apache.cayenne.access.translator.batch.BatchTranslator;
+import org.apache.cayenne.access.translator.ejbql.EJBQLTranslator;
 import org.apache.cayenne.access.translator.procedure.ProcedureTranslator;
 import org.apache.cayenne.access.translator.select.SelectTranslator;
 import org.apache.cayenne.access.translator.sqltemplate.SQLTemplateTranslator;
@@ -77,6 +78,7 @@ public class DataNode {
 	private BatchTranslator<DeleteBatchQuery> deleteBatchTranslator;
 	private SelectTranslator selectTranslator;
 	private ProcedureTranslator procedureTranslator;
+	private EJBQLTranslator ejbqlTranslator;
 	private SQLTemplateTranslator sqlTemplateTranslator;
 
 	TransactionDataSource readThroughDataSource;
@@ -439,6 +441,20 @@ public class DataNode {
 	 */
 	public void setProcedureTranslator(ProcedureTranslator procedureTranslator) {
 		this.procedureTranslator = procedureTranslator;
+	}
+
+	/**
+	 * @since 5.0
+	 */
+	public EJBQLTranslator getEjbqlTranslator() {
+		return ejbqlTranslator;
+	}
+
+	/**
+	 * @since 5.0
+	 */
+	public void setEjbqlTranslator(EJBQLTranslator ejbqlTranslator) {
+		this.ejbqlTranslator = ejbqlTranslator;
 	}
 
     // a read-through DataSource that ensures returning the same connection
