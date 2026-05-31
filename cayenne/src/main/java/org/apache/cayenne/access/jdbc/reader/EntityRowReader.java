@@ -42,11 +42,7 @@ class EntityRowReader implements RowReader<DataRow> {
     private int mapCapacity;
     private int startIndex;
 
-    DataRowPostProcessor postProcessor;
-
-    EntityRowReader(RowDescriptor descriptor, EntityResultSegment segmentMetadata, DataRowPostProcessor postProcessor) {
-
-        this.postProcessor = postProcessor;
+    EntityRowReader(RowDescriptor descriptor, EntityResultSegment segmentMetadata) {
 
         ClassDescriptor classDescriptor = segmentMetadata.getClassDescriptor();
 
@@ -106,10 +102,6 @@ class EntityRowReader implements RowReader<DataRow> {
     }
 
     void postprocessRow(ResultSet resultSet, DataRow dataRow) throws Exception {
-        if (postProcessor != null) {
-            postProcessor.postprocessRow(resultSet, dataRow);
-        }
-
         dataRow.setEntityName(entityName);
     }
 }

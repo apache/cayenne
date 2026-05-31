@@ -33,8 +33,8 @@ class FullRowReader extends BaseRowReader<DataRow> {
 
     int mapCapacity;
 
-    FullRowReader(RowDescriptor descriptor, QueryMetadata queryMetadata, DataRowPostProcessor postProcessor) {
-        super(descriptor, queryMetadata, postProcessor);
+    FullRowReader(RowDescriptor descriptor, QueryMetadata queryMetadata) {
+        super(descriptor, queryMetadata);
         this.mapCapacity = (int) Math.ceil((descriptor.getWidth()) / 0.75);
     }
 
@@ -65,10 +65,6 @@ class FullRowReader extends BaseRowReader<DataRow> {
     }
 
     void postprocessRow(ResultSet resultSet, DataRow dataRow) throws Exception {
-        if (postProcessor != null) {
-            postProcessor.postprocessRow(resultSet, dataRow);
-        }
-
         dataRow.setEntityName(entityName);
     }
 }

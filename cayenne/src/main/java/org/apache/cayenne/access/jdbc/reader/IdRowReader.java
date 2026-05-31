@@ -37,8 +37,8 @@ class IdRowReader<T> extends BaseRowReader<T> {
 
     protected int[] pkIndices;
 
-    public IdRowReader(RowDescriptor descriptor, QueryMetadata queryMetadata, EntityResultSegment resultMetadata, DataRowPostProcessor postProcessor) {
-        super(descriptor, queryMetadata, postProcessor);
+    public IdRowReader(RowDescriptor descriptor, QueryMetadata queryMetadata, EntityResultSegment resultMetadata) {
+        super(descriptor, queryMetadata);
 
         DbEntity dbEntity = resultMetadata == null
                 ? queryMetadata.getDbEntity()
@@ -95,9 +95,6 @@ class IdRowReader<T> extends BaseRowReader<T> {
         @SuppressWarnings("unchecked")
         T val = (T) converters[index].materializeObject(resultSet, index + 1, types[index]);
 
-        // note that postProcessor overrides are not applied. ID mapping must be
-        // the
-        // same across inheritance hierarchy, so overrides do not make sense.
         return val;
     }
 
@@ -112,10 +109,6 @@ class IdRowReader<T> extends BaseRowReader<T> {
             // note: jdbc column indexes start from 1, not 0 as in arrays
             Object val = converters[index].materializeObject(resultSet, index + 1, types[index]);
             idRow.put(labels[index], val);
-        }
-
-        if (postProcessor != null) {
-            postProcessor.postprocessRow(resultSet, idRow);
         }
 
         return (T) idRow;

@@ -24,7 +24,6 @@ import org.apache.cayenne.access.jdbc.reader.DefaultRowReaderFactory;
 import org.apache.cayenne.access.jdbc.reader.RowReader;
 import org.apache.cayenne.access.types.ExtendedTypeMap;
 import org.apache.cayenne.dba.DbAdapter;
-import org.apache.cayenne.map.ObjAttribute;
 import org.apache.cayenne.query.MockQueryMetadata;
 import org.apache.cayenne.unit.jdbc.TestConnection;
 import org.apache.cayenne.unit.jdbc.TestResultSet;
@@ -33,7 +32,6 @@ import org.junit.jupiter.api.Test;
 
 import java.sql.Connection;
 import java.sql.Statement;
-import java.util.Collections;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertFalse;
@@ -52,7 +50,7 @@ public class JDBCResultIteratorTest {
 
 		RowDescriptor descriptor = new RowDescriptorBuilder().setResultSet(rs).getDescriptor(new ExtendedTypeMap());
 		RowReader<?> rowReader = new DefaultRowReaderFactory().rowReader(descriptor, new MockQueryMetadata(),
-				mock(DbAdapter.class), Collections.<ObjAttribute, ColumnDescriptor> emptyMap());
+				mock(DbAdapter.class));
 
 		JDBCResultIterator it = new JDBCResultIterator(s, rs, rowReader);
 

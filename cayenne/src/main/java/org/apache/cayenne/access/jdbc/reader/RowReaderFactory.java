@@ -18,21 +18,16 @@
  ****************************************************************/
 package org.apache.cayenne.access.jdbc.reader;
 
-import java.util.Map;
-
-import org.apache.cayenne.access.jdbc.ColumnDescriptor;
 import org.apache.cayenne.access.jdbc.RowDescriptor;
 import org.apache.cayenne.dba.DbAdapter;
-import org.apache.cayenne.map.ObjAttribute;
 import org.apache.cayenne.query.QueryMetadata;
 
 /**
  * Creates RowReader instances for executed queries.
- * 
+ *
  * @since 4.0
  */
 public interface RowReaderFactory {
 
-    RowReader<?> rowReader(RowDescriptor descriptor, QueryMetadata queryMetadata, DbAdapter adapter,
-            Map<ObjAttribute, ColumnDescriptor> attributeOverrides);
+    RowReader<?> rowReader(RowDescriptor descriptor, QueryMetadata queryMetadata, DbAdapter adapter);
 }
