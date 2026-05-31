@@ -49,7 +49,6 @@ import org.apache.cayenne.query.SQLAction;
 import org.apache.cayenne.resource.ResourceLocator;
 
 import java.sql.PreparedStatement;
-import java.sql.SQLException;
 import java.sql.Types;
 import java.util.ArrayList;
 import java.util.Collection;
@@ -135,7 +134,7 @@ public class MySQLAdapter extends JdbcAdapter {
 		QuotingStrategy context = getQuotingStrategy();
 		buf.append(context.quotedFullyQualifiedName(table));
 
-		return List.of("SET FOREIGN_KEY_CHECKS=0", "DROP TABLE IF EXISTS " + buf.toString() + " CASCADE",
+		return List.of("SET FOREIGN_KEY_CHECKS=0", "DROP TABLE IF EXISTS " + buf + " CASCADE",
 				"SET FOREIGN_KEY_CHECKS=1");
 	}
 
@@ -228,26 +227,19 @@ public class MySQLAdapter extends JdbcAdapter {
 	}
 
 	@Override
-	public void bindParameter(PreparedStatement statement, ParameterBinding binding)
-			throws SQLException, Exception {
+	public void bindParameter(PreparedStatement statement, ParameterBinding binding) throws Exception {
 		binding.setJdbcType(mapNTypes(binding.getJdbcType()));
 		super.bindParameter(statement, binding);
 	}
 
 	private int mapNTypes(int sqlType) {
-		switch (sqlType) {
-		case Types.NCHAR:
-			return Types.CHAR;
-		case Types.NCLOB:
-			return Types.CLOB;
-		case Types.NVARCHAR:
-			return Types.VARCHAR;
-		case Types.LONGNVARCHAR:
-			return Types.LONGVARCHAR;
-
-		default:
-			return sqlType;
-		}
+        return switch (sqlType) {
+            case Types.NCHAR -> Types.CHAR;
+            case Types.NCLOB -> Types.CLOB;
+            case Types.NVARCHAR -> Types.VARCHAR;
+            case Types.LONGNVARCHAR -> Types.LONGVARCHAR;
+            default -> sqlType;
+        };
 	}
 
 	/**
@@ -365,13 +357,10 @@ public class MySQLAdapter extends JdbcAdapter {
 		// As of MySQL 5.6.4 the "TIMESTAMP" and "TIME" types support length,
 		// which is the number of decimal places for fractional seconds
 		// http://dev.mysql.com/doc/refman/5.6/en/fractional-seconds.html
-		switch (type) {
-		case Types.TIMESTAMP:
-		case Types.TIME:
-			return true;
-		default:
-			return super.typeSupportsLength(type);
-		}
+        return switch (type) {
+            case Types.TIMESTAMP, Types.TIME -> true;
+            default -> super.typeSupportsLength(type);
+        };
 	}
 
 	@Override
