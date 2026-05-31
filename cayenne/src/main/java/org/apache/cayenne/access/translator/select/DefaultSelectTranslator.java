@@ -34,24 +34,6 @@ import org.apache.cayenne.query.Select;
  */
 public class DefaultSelectTranslator implements SelectTranslator {
 
-    private static final TranslationStage[] TRANSLATION_STAGES = {
-            new QualifierTranslationStage(),
-            new ColumnExtractorStage(),
-            new PrefetchNodeStage(),
-            new OrderingStage(),
-            new HavingTranslationStage(),
-            new OrderingGroupByStage(),
-            new GroupByStage(),
-            new DistinctStage(),
-            new OrderingDistinctStage(),
-            new LimitOffsetStage(),
-            new ColumnDescriptorStage(),
-            new TableTreeQualifierStage(),
-            new TableTreeStage(),
-            new SQLResultStage(),
-            new SQLGenerationStage()
-    };
-
     @Override
     public TranslatedSelect translate(Select<?> query, DbAdapter adapter, EntityResolver resolver) {
         if (!(query instanceof FluentSelect)) {
@@ -59,18 +41,7 @@ public class DefaultSelectTranslator implements SelectTranslator {
         }
         TranslatorContext context = new TranslatorContext(
                 new FluentSelectWrapper((FluentSelect<?, ?>) query), adapter, resolver, null);
-        translate(context);
-        return context.toResult();
-    }
-
-    /**
-     * Runs the {@link TranslationStage} pipeline over the given context. Used for the root query (by
-     * {@link #translate(Select, DbAdapter, EntityResolver)}), and directly by {@link QualifierTranslator}
-     * for subqueries (which consume the intermediate context rather than the final result).
-     */
-    static void translate(TranslatorContext context) {
-        for (TranslationStage stage : TRANSLATION_STAGES) {
-            stage.perform(context);
-        }
+        context.translate();
+        return context.getTranslation();
     }
 }
