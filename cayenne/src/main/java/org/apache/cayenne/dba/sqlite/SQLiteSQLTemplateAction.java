@@ -20,7 +20,7 @@ package org.apache.cayenne.dba.sqlite;
 
 import org.apache.cayenne.access.DataNode;
 import org.apache.cayenne.access.OperationObserver;
-import org.apache.cayenne.access.jdbc.SQLStatement;
+import org.apache.cayenne.access.translator.sqltemplate.TranslatedSQL;
 import org.apache.cayenne.access.jdbc.SQLTemplateAction;
 import org.apache.cayenne.query.SQLTemplate;
 
@@ -47,7 +47,7 @@ class SQLiteSQLTemplateAction extends SQLTemplateAction {
     protected void execute(
             Connection connection,
             OperationObserver callback,
-            SQLStatement compiled,
+            TranslatedSQL compiled,
             Collection<Number> updateCounts) throws Exception {
 
         String sql = compiled.sql().trim();

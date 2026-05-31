@@ -25,6 +25,7 @@ import org.apache.cayenne.access.DataNode;
 import org.apache.cayenne.access.OperationObserver;
 import org.apache.cayenne.access.jdbc.reader.RowReader;
 import org.apache.cayenne.access.translator.ParameterBinding;
+import org.apache.cayenne.access.translator.sqltemplate.TranslatedSQL;
 import org.apache.cayenne.access.types.ExtendedType;
 import org.apache.cayenne.access.types.ExtendedTypeMap;
 import org.apache.cayenne.dba.DbAdapter;
@@ -139,7 +140,7 @@ public class SQLTemplateAction implements SQLAction {
 	private void runWithPositionalParameters(Connection connection, OperationObserver callback, String template,
 											 Collection<Number> counts, boolean loggable) throws Exception {
 
-		SQLStatement compiled = dataNode.getSqlTemplateTranslator().translate(template,
+		TranslatedSQL compiled = dataNode.getSqlTemplateTranslator().translate(template,
 				query.getPositionalParams());
 
 		bindExtendedTypes(compiled.bindings());
@@ -171,7 +172,7 @@ public class SQLTemplateAction implements SQLAction {
 
 		for (int i = 0; i < batchSize; i++) {
 			Map<String, ?> nextParameters = it.next();
-			SQLStatement compiled = dataNode.getSqlTemplateTranslator().translate(template, nextParameters);
+			TranslatedSQL compiled = dataNode.getSqlTemplateTranslator().translate(template, nextParameters);
 			bindExtendedTypes(compiled.bindings());
 			if (loggable) {
 				dataNode.getJdbcEventLogger().logQuery(compiled.sql(), compiled.bindings());
@@ -182,7 +183,7 @@ public class SQLTemplateAction implements SQLAction {
 
 	}
 
-	protected void execute(Connection connection, OperationObserver callback, SQLStatement compiled,
+	protected void execute(Connection connection, OperationObserver callback, TranslatedSQL compiled,
 						   Collection<Number> updateCounts) throws Exception {
 
 		long t1 = System.currentTimeMillis();
@@ -247,7 +248,7 @@ public class SQLTemplateAction implements SQLAction {
 	}
 
 	@SuppressWarnings({ "unchecked", "rawtypes" })
-	protected void processSelectResult(SQLStatement compiled, Connection connection, Statement statement,
+	protected void processSelectResult(TranslatedSQL compiled, Connection connection, Statement statement,
 									   ResultSet resultSet, OperationObserver callback, final long startTime) throws Exception {
 
 		boolean iteratedResult = callback.isIteratedResult();
@@ -300,7 +301,7 @@ public class SQLTemplateAction implements SQLAction {
 	/**
 	 * Creates column descriptors based on compiled statement and query metadata
 	 */
-	private ColumnDescriptor[] createColumnDescriptors(SQLStatement compiled) {
+	private ColumnDescriptor[] createColumnDescriptors(TranslatedSQL compiled) {
 		// SQLTemplate #result columns take precedence over other ways to determine the type
 		if (compiled.resultColumns().length > 0) {
 			if(query.getResultColumnsTypes() != null) {
@@ -328,7 +329,7 @@ public class SQLTemplateAction implements SQLAction {
 	/**
 	 * @since 3.0
 	 */
-	protected RowDescriptorBuilder configureRowDescriptorBuilder(SQLStatement compiled, ResultSet resultSet)
+	protected RowDescriptorBuilder configureRowDescriptorBuilder(TranslatedSQL compiled, ResultSet resultSet)
 			throws SQLException {
 		RowDescriptorBuilder builder = new RowDescriptorBuilder()
 				.setResultSet(resultSet)

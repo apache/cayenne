@@ -17,25 +17,18 @@
  *  under the License.
  ****************************************************************/
 
-package org.apache.cayenne.access.jdbc;
+package org.apache.cayenne.access.translator.sqltemplate;
 
+import org.apache.cayenne.access.jdbc.ColumnDescriptor;
 import org.apache.cayenne.access.translator.ParameterBinding;
-import org.junit.jupiter.api.Test;
-
-import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertNull;
-import static org.junit.jupiter.api.Assertions.assertSame;
 
 /**
+ * A translated form of a Query used to generated PreparedStatements.
+ *
+ * @since 1.1
  */
-public class SQLStatementTest {
-
-    @Test
-    public void constructor() throws Exception {
-        ParameterBinding[] bindings = new ParameterBinding[0];
-        SQLStatement statement = new SQLStatement("abc", null, bindings);
-        assertEquals("abc", statement.sql());
-        assertSame(bindings, statement.bindings());
-        assertNull(statement.resultColumns());
-    }
+public record TranslatedSQL(
+        String sql,
+        ColumnDescriptor[] resultColumns,
+        ParameterBinding[] bindings) {
 }

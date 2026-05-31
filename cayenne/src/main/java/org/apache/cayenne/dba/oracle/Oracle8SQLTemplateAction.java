@@ -21,7 +21,7 @@ package org.apache.cayenne.dba.oracle;
 
 import org.apache.cayenne.access.DataNode;
 import org.apache.cayenne.access.OperationObserver;
-import org.apache.cayenne.access.jdbc.SQLStatement;
+import org.apache.cayenne.access.translator.sqltemplate.TranslatedSQL;
 import org.apache.cayenne.access.jdbc.SQLTemplateAction;
 import org.apache.cayenne.query.SQLTemplate;
 
@@ -48,7 +48,7 @@ class Oracle8SQLTemplateAction extends SQLTemplateAction {
      * not work in Oracle 8.* drivers.
      */
     @Override
-    protected void execute(Connection connection, OperationObserver callback, SQLStatement compiled,
+    protected void execute(Connection connection, OperationObserver callback, TranslatedSQL compiled,
                            Collection<Number> updateCounts) throws Exception {
 
         String sql = compiled.sql().trim();

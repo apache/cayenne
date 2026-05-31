@@ -20,7 +20,6 @@
 package org.apache.cayenne.access.translator.sqltemplate;
 
 import org.apache.cayenne.CayenneRuntimeException;
-import org.apache.cayenne.access.jdbc.SQLStatement;
 import org.apache.cayenne.di.Inject;
 import org.apache.cayenne.access.translator.sqltemplate.parser.Node;
 import org.apache.cayenne.access.translator.sqltemplate.parser.ParseException;
@@ -51,13 +50,13 @@ public class CayenneSQLTemplateTranslator implements SQLTemplateTranslator {
     }
 
     @Override
-    public SQLStatement translate(String template, Map<String, ?> parameters) {
+    public TranslatedSQL translate(String template, Map<String, ?> parameters) {
         Context context = contextFactory.createContext(parameters);
         return process(template, context);
     }
 
     @Override
-    public SQLStatement translate(String template, List<Object> positionalParameters) {
+    public TranslatedSQL translate(String template, List<Object> positionalParameters) {
         Map<String, Object> parameters = new HashMap<>();
         int i=0;
         for(Object param : positionalParameters) {
@@ -67,7 +66,7 @@ public class CayenneSQLTemplateTranslator implements SQLTemplateTranslator {
         return process(template, context);
     }
 
-    protected SQLStatement process(String template, Context context) {
+    protected TranslatedSQL process(String template, Context context) {
         Node node = templateCache.get(template);
         if(node == null) {
             SQLTemplateParser parser = parserPool.get();
@@ -85,6 +84,6 @@ public class CayenneSQLTemplateTranslator implements SQLTemplateTranslator {
 
         node.evaluate(context);
 
-        return new SQLStatement(context.buildTemplate(), context.getColumnDescriptors(), context.getParameterBindings());
+        return new TranslatedSQL(context.buildTemplate(), context.getColumnDescriptors(), context.getParameterBindings());
     }
 }
