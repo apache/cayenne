@@ -19,26 +19,25 @@
 
 package org.apache.cayenne.dba.hsqldb;
 
-import org.apache.cayenne.access.translator.procedure.ProcedureTranslator;
+import org.apache.cayenne.access.translator.procedure.DefaultProcedureTranslator;
 import org.apache.cayenne.map.Procedure;
 
 /**
  * Works around HSQLDB's pickiness about stored procedure syntax.
- * 
+ *
  * @since 1.2
  */
-public class HSQLDBProcedureTranslator extends ProcedureTranslator {
+public class HSQLDBProcedureTranslator extends DefaultProcedureTranslator {
 
     /**
      * Creates HSQLDB-compliant SQL to execute a stored procedure.
      */
     @Override
-    protected String createSqlString() {
-        Procedure procedure = getProcedure();
+    protected String createSqlString(Procedure procedure, int callParamsSize) {
 
         StringBuilder buf = new StringBuilder();
 
-        int totalParams = callParams.size();
+        int totalParams = callParamsSize;
 
         // check if procedure returns values
         if (procedure.isReturningValue()) {

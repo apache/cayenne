@@ -17,25 +17,15 @@
  *  under the License.
  ****************************************************************/
 
-package org.apache.cayenne.dba.hsqldb;
+package org.apache.cayenne.access.translator.procedure;
 
-import org.apache.cayenne.access.DataNode;
-import org.apache.cayenne.dba.JdbcActionBuilder;
-import org.apache.cayenne.query.FluentSelect;
-import org.apache.cayenne.query.SQLAction;
+import org.apache.cayenne.access.translator.ParameterBinding;
+import org.apache.cayenne.map.ProcedureParameter;
 
-class HSQLActionBuilder extends JdbcActionBuilder {
-
-    HSQLActionBuilder(DataNode dataNode) {
-        super(dataNode);
-    }
-
-    /**
-     * @since 4.2
-     */
-    @Override
-    public <T> SQLAction objectSelectAction(FluentSelect<T, ?> query) {
-        return new HSQLSelectAction(query, dataNode);
-    }
-
+/**
+ * An immutable result of translating a {@link org.apache.cayenne.query.ProcedureQuery} to a stored procedure call.
+ *
+ * @since 5.0
+ */
+public record TranslatedProcedure(String sql, ProcedureParameter[] callParams, ParameterBinding[] bindings) {
 }

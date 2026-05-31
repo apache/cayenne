@@ -22,12 +22,14 @@ import org.apache.cayenne.access.DataNode;
 import org.apache.cayenne.access.sqlbuilder.sqltree.SQLTreeProcessor;
 import org.apache.cayenne.access.translator.ParameterBinding;
 import org.apache.cayenne.access.translator.ejbql.EJBQLTranslatorFactory;
+import org.apache.cayenne.access.translator.procedure.ProcedureTranslator;
 import org.apache.cayenne.access.translator.select.SelectTranslator;
 import org.apache.cayenne.access.types.ExtendedTypeMap;
 import org.apache.cayenne.map.DbAttribute;
 import org.apache.cayenne.map.DbEntity;
 import org.apache.cayenne.map.DbRelationship;
 import org.apache.cayenne.map.EntityResolver;
+import org.apache.cayenne.query.ProcedureQuery;
 import org.apache.cayenne.query.Select;
 import org.apache.cayenne.query.Query;
 import org.apache.cayenne.query.SQLAction;
@@ -59,6 +61,14 @@ public interface DbAdapter {
 	 * @since 4.2
 	 */
 	SelectTranslator getSelectTranslator(Select<?> query, EntityResolver entityResolver);
+
+	/**
+	 * Returns the {@link ProcedureTranslator} for the given query. The default implementation ignores the
+	 * query, but the parameter is retained so adapters can pick a translator based on it.
+	 *
+	 * @since 5.0
+	 */
+	ProcedureTranslator getProcedureTranslator(ProcedureQuery query, EntityResolver entityResolver);
 
 	/**
 	 * @since 4.2

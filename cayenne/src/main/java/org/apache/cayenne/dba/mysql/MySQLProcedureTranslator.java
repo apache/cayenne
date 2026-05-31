@@ -17,25 +17,29 @@
  *  under the License.
  ****************************************************************/
 
-package org.apache.cayenne.dba.hsqldb;
+package org.apache.cayenne.dba.mysql;
 
-import org.apache.cayenne.access.DataNode;
-import org.apache.cayenne.dba.JdbcActionBuilder;
-import org.apache.cayenne.query.FluentSelect;
-import org.apache.cayenne.query.SQLAction;
+import org.apache.cayenne.access.translator.procedure.DefaultProcedureTranslator;
+import org.apache.cayenne.map.Procedure;
 
-class HSQLActionBuilder extends JdbcActionBuilder {
+/**
+ * A translator that adds parenthesis to no-param queries.
+ *
+ * @since 5.0
+ */
+// see CAY-750 for the problem description
+public class MySQLProcedureTranslator extends DefaultProcedureTranslator {
 
-    HSQLActionBuilder(DataNode dataNode) {
-        super(dataNode);
-    }
-
-    /**
-     * @since 4.2
-     */
     @Override
-    public <T> SQLAction objectSelectAction(FluentSelect<T, ?> query) {
-        return new HSQLSelectAction(query, dataNode);
-    }
+    protected String createSqlString(Procedure procedure, int callParamsSize) {
 
+        String sql = super.createSqlString(procedure, callParamsSize);
+
+        // add empty parameter parenthesis
+        if (sql.endsWith("}") && !sql.endsWith(")}")) {
+            sql = sql.substring(0, sql.length() - 1) + "()}";
+        }
+
+        return sql;
+    }
 }

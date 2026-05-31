@@ -17,25 +17,22 @@
  *  under the License.
  ****************************************************************/
 
-package org.apache.cayenne.dba.hsqldb;
+package org.apache.cayenne.access.translator.procedure;
 
-import org.apache.cayenne.access.DataNode;
-import org.apache.cayenne.dba.JdbcActionBuilder;
-import org.apache.cayenne.query.FluentSelect;
-import org.apache.cayenne.query.SQLAction;
+import org.apache.cayenne.dba.DbAdapter;
+import org.apache.cayenne.map.EntityResolver;
+import org.apache.cayenne.query.ProcedureQuery;
 
-class HSQLActionBuilder extends JdbcActionBuilder {
+/**
+ * A {@link ProcedureTranslator} that resolves the actual translator from {@link DbAdapter#getProcedureTranslator}
+ * allowing adapters to customize translation.
+ *
+ * @since 5.0
+ */
+public class DbAdapterDelegatedProcedureTranslator implements ProcedureTranslator {
 
-    HSQLActionBuilder(DataNode dataNode) {
-        super(dataNode);
-    }
-
-    /**
-     * @since 4.2
-     */
     @Override
-    public <T> SQLAction objectSelectAction(FluentSelect<T, ?> query) {
-        return new HSQLSelectAction(query, dataNode);
+    public TranslatedProcedure translate(ProcedureQuery query, DbAdapter adapter, EntityResolver resolver) {
+        return adapter.getProcedureTranslator(query, resolver).translate(query, adapter, resolver);
     }
-
 }

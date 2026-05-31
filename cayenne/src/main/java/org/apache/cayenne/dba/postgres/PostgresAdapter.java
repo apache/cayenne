@@ -23,6 +23,7 @@ import org.apache.cayenne.CayenneRuntimeException;
 import org.apache.cayenne.access.DataNode;
 import org.apache.cayenne.access.sqlbuilder.sqltree.SQLTreeProcessor;
 import org.apache.cayenne.access.translator.ParameterBinding;
+import org.apache.cayenne.access.translator.procedure.ProcedureTranslator;
 import org.apache.cayenne.access.types.CharType;
 import org.apache.cayenne.access.types.ExtendedType;
 import org.apache.cayenne.access.types.ExtendedTypeFactory;
@@ -37,6 +38,8 @@ import org.apache.cayenne.dba.TypesMapping;
 import org.apache.cayenne.di.Inject;
 import org.apache.cayenne.map.DbAttribute;
 import org.apache.cayenne.map.DbEntity;
+import org.apache.cayenne.map.EntityResolver;
+import org.apache.cayenne.query.ProcedureQuery;
 import org.apache.cayenne.query.Query;
 import org.apache.cayenne.query.SQLAction;
 import org.apache.cayenne.resource.ResourceLocator;
@@ -93,6 +96,14 @@ public class PostgresAdapter extends JdbcAdapter {
     @Override
     public SQLAction getAction(Query query, DataNode node) {
         return query.createSQLAction(new PostgresActionBuilder(node));
+    }
+
+    /**
+     * @since 5.0
+     */
+    @Override
+    public ProcedureTranslator getProcedureTranslator(ProcedureQuery query, EntityResolver entityResolver) {
+        return new PostgresProcedureTranslator();
     }
 
     /**

@@ -19,10 +19,7 @@
 
 package org.apache.cayenne.dba.postgres;
 
-import java.sql.Connection;
-
 import org.apache.cayenne.access.DataNode;
-import org.apache.cayenne.access.translator.procedure.ProcedureTranslator;
 import org.apache.cayenne.dba.sqlserver.SQLServerProcedureAction;
 import org.apache.cayenne.query.ProcedureQuery;
 
@@ -30,44 +27,14 @@ import org.apache.cayenne.query.ProcedureQuery;
  * Current implementation simply relies on SQLServerProcedureAction superclass behavior.
  * Namely that CallableStatement.execute() rewinds result set pointer so
  * CallableStatement.getMoreResults() shouldn't be invoked until the first result set is
- * processed.
- * 
+ * processed. The no-param parenthesis quirk (CAY-750) is handled by
+ * {@link PostgresProcedureTranslator}.
+ *
  * @since 1.2
  */
 class PostgresProcedureAction extends SQLServerProcedureAction {
 
     PostgresProcedureAction(ProcedureQuery query, DataNode dataNode) {
         super(query, dataNode);
-    }
-
-    /**
-     * Creates a translator that adds parenthesis to no-param queries.
-     */
-    // see CAY-750 for the problem description
-    @Override
-    protected ProcedureTranslator createTranslator(Connection connection) {
-        ProcedureTranslator translator = new PostgresProcedureTranslator();
-        translator.setAdapter(dataNode.getAdapter());
-        translator.setQuery(query);
-        translator.setEntityResolver(dataNode.getEntityResolver());
-        translator.setConnection(connection);
-        translator.setJdbcEventLogger(dataNode.getJdbcEventLogger());
-        return translator;
-    }
-
-    static class PostgresProcedureTranslator extends ProcedureTranslator {
-
-        @Override
-        protected String createSqlString() {
-
-            String sql = super.createSqlString();
-
-            // add empty parameter parenthesis
-            if (sql.endsWith("}") && !sql.endsWith(")}")) {
-                sql = sql.substring(0, sql.length() - 1) + "()}";
-            }
-
-            return sql;
-        }
     }
 }

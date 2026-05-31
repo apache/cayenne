@@ -22,7 +22,7 @@ import org.apache.cayenne.access.DataNode;
 import org.apache.cayenne.access.OperationObserver;
 import org.apache.cayenne.access.jdbc.ProcedureAction;
 import org.apache.cayenne.access.jdbc.RowDescriptor;
-import org.apache.cayenne.access.translator.procedure.ProcedureTranslator;
+import org.apache.cayenne.access.translator.procedure.TranslatedProcedure;
 import org.apache.cayenne.query.ProcedureQuery;
 
 import java.sql.CallableStatement;
@@ -45,9 +45,13 @@ class MySQLProcedureAction extends ProcedureAction {
 
 		processedResultSets = 0;
 
-		ProcedureTranslator transl = createTranslator(connection);
+		TranslatedProcedure translated = dataNode.getProcedureTranslator()
+				.translate(query, dataNode.getAdapter(), dataNode.getEntityResolver());
 
-		try (CallableStatement statement = (CallableStatement) transl.createStatement();) {
+		dataNode.getJdbcEventLogger().logQuery(translated.sql(), translated.bindings());
+
+		try (CallableStatement statement = connection.prepareCall(translated.sql());) {
+			bindParameters(statement, translated);
 
 			// this is one difference with super - we need to read the first
 			// result set
@@ -101,37 +105,5 @@ class MySQLProcedureAction extends ProcedureAction {
 		observer.nextCount(query, updateCount);
 
 		return true;
-	}
-
-	/**
-	 * Creates a translator that adds parenthesis to no-param queries.
-	 */
-	// see CAY-750 for the problem description
-	@Override
-	protected ProcedureTranslator createTranslator(Connection connection) {
-		ProcedureTranslator translator = new MySQLProcedureTranslator();
-		translator.setAdapter(dataNode.getAdapter());
-		translator.setQuery(query);
-		translator.setEntityResolver(dataNode.getEntityResolver());
-		translator.setConnection(connection);
-		translator.setJdbcEventLogger(dataNode.getJdbcEventLogger());
-		return translator;
-	}
-
-	// same as postgres translator - should we make this the default?
-	static class MySQLProcedureTranslator extends ProcedureTranslator {
-
-		@Override
-		protected String createSqlString() {
-
-			String sql = super.createSqlString();
-
-			// add empty parameter parenthesis
-			if (sql.endsWith("}") && !sql.endsWith(")}")) {
-				sql = sql.substring(0, sql.length() - 1) + "()}";
-			}
-
-			return sql;
-		}
 	}
 }
