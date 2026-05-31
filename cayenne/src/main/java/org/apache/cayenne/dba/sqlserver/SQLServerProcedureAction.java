@@ -25,7 +25,7 @@ import org.apache.cayenne.access.DataNode;
 import org.apache.cayenne.access.OperationObserver;
 import org.apache.cayenne.access.jdbc.ProcedureAction;
 import org.apache.cayenne.access.jdbc.RowDescriptor;
-import org.apache.cayenne.access.translator.procedure.ProcedureTranslator;
+import org.apache.cayenne.access.translator.procedure.TranslatedProcedure;
 import org.apache.cayenne.query.ProcedureQuery;
 import org.apache.cayenne.query.Query;
 
@@ -57,9 +57,14 @@ public class SQLServerProcedureAction extends ProcedureAction {
 	@Override
 	public void performAction(Connection connection, OperationObserver observer) throws Exception {
 
-		ProcedureTranslator transl = createTranslator(connection);
+		TranslatedProcedure translated = dataNode.getProcedureTranslator()
+				.translate(query, dataNode.getAdapter(), dataNode.getEntityResolver());
 
-		try (CallableStatement statement = (CallableStatement) transl.createStatement();) {
+		dataNode.getJdbcEventLogger().logQuery(translated.sql(), translated.bindings());
+
+		try (CallableStatement statement = connection.prepareCall(translated.sql());) {
+			bindParameters(statement, translated);
+
 			// stored procedure may contain a mixture of update counts and
 			// result sets,
 			// and out parameters. Read out parameters first, then

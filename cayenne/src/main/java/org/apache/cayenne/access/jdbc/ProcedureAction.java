@@ -23,8 +23,10 @@ import org.apache.cayenne.CayenneRuntimeException;
 import org.apache.cayenne.DataRow;
 import org.apache.cayenne.access.DataNode;
 import org.apache.cayenne.access.OperationObserver;
-import org.apache.cayenne.access.translator.procedure.ProcedureTranslator;
+import org.apache.cayenne.access.translator.ParameterBinding;
+import org.apache.cayenne.access.translator.procedure.TranslatedProcedure;
 import org.apache.cayenne.access.types.ExtendedType;
+import org.apache.cayenne.dba.DbAdapter;
 import org.apache.cayenne.map.Procedure;
 import org.apache.cayenne.map.ProcedureParameter;
 import org.apache.cayenne.query.ProcedureQuery;
@@ -66,10 +68,14 @@ public class ProcedureAction extends BaseSQLAction {
 
 		processedResultSets = 0;
 
-		ProcedureTranslator transl = createTranslator(connection);
+		TranslatedProcedure translated = dataNode.getProcedureTranslator()
+				.translate(query, dataNode.getAdapter(), dataNode.getEntityResolver());
 
-		try (CallableStatement statement = (CallableStatement) transl.createStatement();) {
+		dataNode.getJdbcEventLogger().logQuery(translated.sql(), translated.bindings());
+
+		try (CallableStatement statement = connection.prepareCall(translated.sql());) {
 			initStatement(statement);
+			bindParameters(statement, translated);
 
 			// stored procedure may contain a mixture of update counts and
 			// result sets,
@@ -114,19 +120,32 @@ public class ProcedureAction extends BaseSQLAction {
 	}
 
 	/**
-	 * Returns the ProcedureTranslator to use for this ProcedureAction.
-	 * 
-	 * @param connection
-	 *            JDBC connection
+	 * Applies the translated bindings to the CallableStatement: registers OUT parameters and binds IN parameters.
+	 * A stored procedure parameter can be both IN and OUT at the same time.
+	 *
+	 * @since 5.0
 	 */
-	protected ProcedureTranslator createTranslator(Connection connection) {
-		ProcedureTranslator translator = new ProcedureTranslator();
-		translator.setAdapter(dataNode.getAdapter());
-		translator.setQuery(query);
-		translator.setEntityResolver(dataNode.getEntityResolver());
-		translator.setConnection(connection);
-		translator.setJdbcEventLogger(dataNode.getJdbcEventLogger());
-		return translator;
+	protected void bindParameters(CallableStatement statement, TranslatedProcedure translated) throws Exception {
+		DbAdapter adapter = dataNode.getAdapter();
+		ProcedureParameter[] callParams = translated.callParams();
+		ParameterBinding[] bindings = translated.bindings();
+
+		for (int i = 0; i < callParams.length; i++) {
+			ProcedureParameter param = callParams[i];
+
+			if (param.isOutParam()) {
+				int precision = param.getPrecision();
+				if (precision >= 0) {
+					statement.registerOutParameter(i + 1, param.getType(), precision);
+				} else {
+					statement.registerOutParameter(i + 1, param.getType());
+				}
+			}
+
+			if (param.isInParameter()) {
+				adapter.bindParameter(statement, bindings[i]);
+			}
+		}
 	}
 
 	/**

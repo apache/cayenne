@@ -36,6 +36,8 @@ import org.apache.cayenne.access.translator.batch.BatchTranslator;
 import org.apache.cayenne.access.translator.batch.DeleteBatchTranslator;
 import org.apache.cayenne.access.translator.batch.InsertBatchTranslator;
 import org.apache.cayenne.access.translator.batch.UpdateBatchTranslator;
+import org.apache.cayenne.access.translator.procedure.DbAdapterDelegatedProcedureTranslator;
+import org.apache.cayenne.access.translator.procedure.ProcedureTranslator;
 import org.apache.cayenne.access.translator.select.DbAdapterDelegatedSelectTranslator;
 import org.apache.cayenne.access.translator.select.SelectTranslator;
 import org.apache.cayenne.access.types.DefaultValueObjectTypeRegistry;
@@ -228,6 +230,7 @@ public class DataDomainProviderTest {
             b.bind(Key.get(BatchTranslator.class, BatchTranslator.UPDATE)).to(UpdateBatchTranslator.class);
             b.bind(Key.get(BatchTranslator.class, BatchTranslator.DELETE)).to(DeleteBatchTranslator.class);
             b.bind(SelectTranslator.class).to(DbAdapterDelegatedSelectTranslator.class);
+            b.bind(ProcedureTranslator.class).to(DbAdapterDelegatedProcedureTranslator.class);
 
             b.bind(DataSourceFactory.class).toInstance(new MockDataSourceFactory());
             b.bind(JdbcEventLogger.class).to(Slf4jJdbcEventLogger.class);

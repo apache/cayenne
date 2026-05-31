@@ -25,6 +25,8 @@ import org.apache.cayenne.access.sqlbuilder.sqltree.SQLTreeProcessor;
 import org.apache.cayenne.access.translator.ParameterBinding;
 import org.apache.cayenne.access.translator.ejbql.EJBQLTranslatorFactory;
 import org.apache.cayenne.access.translator.ejbql.JdbcEJBQLTranslatorFactory;
+import org.apache.cayenne.access.translator.procedure.DefaultProcedureTranslator;
+import org.apache.cayenne.access.translator.procedure.ProcedureTranslator;
 import org.apache.cayenne.access.translator.select.DefaultSelectTranslator;
 import org.apache.cayenne.access.translator.select.SelectTranslator;
 import org.apache.cayenne.access.types.ExtendedType;
@@ -41,6 +43,7 @@ import org.apache.cayenne.map.DbEntity;
 import org.apache.cayenne.map.DbJoin;
 import org.apache.cayenne.map.DbRelationship;
 import org.apache.cayenne.map.EntityResolver;
+import org.apache.cayenne.query.ProcedureQuery;
 import org.apache.cayenne.query.Select;
 import org.apache.cayenne.query.Query;
 import org.apache.cayenne.query.SQLAction;
@@ -524,6 +527,11 @@ public class JdbcAdapter implements DbAdapter {
     @Override
     public SelectTranslator getSelectTranslator(Select<?> query, EntityResolver entityResolver) {
         return new DefaultSelectTranslator();
+    }
+
+    @Override
+    public ProcedureTranslator getProcedureTranslator(ProcedureQuery query, EntityResolver entityResolver) {
+        return new DefaultProcedureTranslator();
     }
 
     @Override

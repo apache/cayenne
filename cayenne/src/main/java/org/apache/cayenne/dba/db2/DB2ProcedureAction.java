@@ -22,7 +22,7 @@ import org.apache.cayenne.access.DataNode;
 import org.apache.cayenne.access.OperationObserver;
 import org.apache.cayenne.access.jdbc.ProcedureAction;
 import org.apache.cayenne.access.jdbc.RowDescriptor;
-import org.apache.cayenne.access.translator.procedure.ProcedureTranslator;
+import org.apache.cayenne.access.translator.procedure.TranslatedProcedure;
 import org.apache.cayenne.query.ProcedureQuery;
 
 import java.sql.CallableStatement;
@@ -46,10 +46,14 @@ class DB2ProcedureAction extends ProcedureAction {
 
 		processedResultSets = 0;
 
-		ProcedureTranslator transl = createTranslator(connection);
+		TranslatedProcedure translated = dataNode.getProcedureTranslator()
+				.translate(query, dataNode.getAdapter(), dataNode.getEntityResolver());
 
-		try (CallableStatement statement = (CallableStatement) transl.createStatement();) {
+		dataNode.getJdbcEventLogger().logQuery(translated.sql(), translated.bindings());
+
+		try (CallableStatement statement = connection.prepareCall(translated.sql());) {
 			initStatement(statement);
+			bindParameters(statement, translated);
 			boolean hasResultSet = statement.execute();
 
 			// read out parameters
