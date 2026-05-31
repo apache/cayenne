@@ -32,7 +32,7 @@ import org.apache.cayenne.map.DbAttribute;
 import org.apache.cayenne.map.DbEntity;
 import org.apache.cayenne.map.DbRelationship;
 import org.apache.cayenne.map.EntityResolver;
-import org.apache.cayenne.query.FluentSelect;
+import org.apache.cayenne.query.Select;
 import org.apache.cayenne.query.Query;
 import org.apache.cayenne.query.SQLAction;
 
@@ -100,7 +100,7 @@ public class AutoAdapter implements DbAdapter {
 	 * @since 4.2
 	 */
 	@Override
-	public SelectTranslator getSelectTranslator(FluentSelect<?, ?> query, EntityResolver entityResolver) {
+	public SelectTranslator getSelectTranslator(Select<?> query, EntityResolver entityResolver) {
 		return getAdapter().getSelectTranslator(query, entityResolver);
 	}
 

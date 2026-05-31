@@ -1,0 +1,868 @@
+/*****************************************************************
+ *   Licensed to the Apache Software Foundation (ASF) under one
+ *  or more contributor license agreements.  See the NOTICE file
+ *  distributed with this work for additional information
+ *  regarding copyright ownership.  The ASF licenses this file
+ *  to you under the Apache License, Version 2.0 (the
+ *  "License"); you may not use this file except in compliance
+ *  with the License.  You may obtain a copy of the License at
+ *
+ *    https://www.apache.org/licenses/LICENSE-2.0
+ *
+ *  Unless required by applicable law or agreed to in writing,
+ *  software distributed under the License is distributed on an
+ *  "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY
+ *  KIND, either express or implied.  See the License for the
+ *  specific language governing permissions and limitations
+ *  under the License.
+ ****************************************************************/
+
+package org.apache.cayenne.access.translator.select;
+
+import org.apache.cayenne.access.jdbc.ColumnDescriptor;
+import org.apache.cayenne.exp.ExpressionException;
+import org.apache.cayenne.exp.ExpressionFactory;
+import org.apache.cayenne.map.DbAttribute;
+import org.apache.cayenne.map.DbEntity;
+import org.apache.cayenne.query.ObjectSelect;
+import org.apache.cayenne.query.PrefetchTreeNode;
+import org.apache.cayenne.testdo.testmap.ArtGroup;
+import org.apache.cayenne.testdo.testmap.Artist;
+import org.apache.cayenne.testdo.testmap.ArtistExhibit;
+import org.apache.cayenne.testdo.testmap.Award;
+import org.apache.cayenne.testdo.testmap.CompoundPainting;
+import org.apache.cayenne.testdo.testmap.Exhibit;
+import org.apache.cayenne.testdo.testmap.Gallery;
+import org.apache.cayenne.testdo.testmap.Painting;
+import org.apache.cayenne.unit.CayenneProjects;
+import org.apache.cayenne.unit.CayenneTestsEnv;
+import org.junit.jupiter.api.extension.RegisterExtension;
+import org.junit.jupiter.api.Test;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Comparator;
+import java.util.Date;
+import java.util.List;
+
+import static org.junit.jupiter.api.Assertions.*;
+
+public class DbAdapterDelegatedSelectTranslatorIT {
+
+	@RegisterExtension
+	static final CayenneTestsEnv env = CayenneTestsEnv.forProject(CayenneProjects.TESTMAP_PROJECT);
+
+	/**
+	 * Tests query creation with qualifier and ordering.
+	 */
+	@Test
+	public void createSqlString1() throws Exception {
+		// query with qualifier and ordering
+		ObjectSelect<Artist> q = ObjectSelect.query(Artist.class, Artist.ARTIST_NAME.like("a%"))
+				.orderBy(Artist.DATE_OF_BIRTH.asc());
+
+		TranslatedSelect defaultSelectTranslator = new DbAdapterDelegatedSelectTranslator().translate(q, env.dataNode().getAdapter(), env.dataNode().getEntityResolver());
+		String generatedSql = defaultSelectTranslator.sql();
+
+		// do some simple assertions to make sure all parts are in
+		assertNotNull(generatedSql);
+		assertFalse(defaultSelectTranslator.hasJoins());
+		assertTrue(generatedSql.startsWith("SELECT "));
+		assertTrue(generatedSql.indexOf(" FROM ") > 0);
+		assertTrue(generatedSql.indexOf(" WHERE ") > generatedSql.indexOf(" FROM "));
+		assertTrue(generatedSql.indexOf(" ORDER BY ") > generatedSql.indexOf(" WHERE "));
+	}
+
+	/**
+	 * Tests query creation with qualifier and ordering.
+	 */
+	@Test
+	public void dbEntityQualifier() throws Exception {
+
+		ObjectSelect<Artist> q = ObjectSelect.query(Artist.class);
+		final DbEntity entity = env.context().getEntityResolver().getDbEntity("ARTIST");
+		final DbEntity middleEntity = env.context().getEntityResolver().getDbEntity("ARTIST_GROUP");
+
+		entity.setQualifier(ExpressionFactory.exp("ARTIST_NAME = \"123\""));
+		middleEntity.setQualifier(ExpressionFactory.exp("GROUP_ID = 1987"));
+
+		TranslatedSelect transl = new DbAdapterDelegatedSelectTranslator().translate(q, env.dataNode().getAdapter(), env.dataNode().getEntityResolver());
+
+		try {
+
+			String generatedSql = transl.sql();
+
+			// do some simple assertions to make sure all parts are in
+			assertNotNull(generatedSql);
+			assertTrue(generatedSql.startsWith("SELECT "));
+			assertTrue(generatedSql.indexOf(" FROM ") > 0);
+			if (generatedSql.contains("RTRIM")) {
+				assertTrue(generatedSql.indexOf("ARTIST_NAME) =") > generatedSql.indexOf("RTRIM("));
+			} else if (generatedSql.contains("TRIM")) {
+				assertTrue(generatedSql.indexOf("ARTIST_NAME) =") > generatedSql.indexOf("TRIM("));
+			} else {
+				assertTrue(generatedSql.indexOf("ARTIST_NAME =") > 0);
+			}
+		} finally {
+			entity.setQualifier(null);
+			middleEntity.setQualifier(null);
+		}
+	}
+
+	@Test
+	public void dbEntityQualifier_OuterJoin() throws Exception {
+
+		ObjectSelect<Painting> q = ObjectSelect.query(Painting.class)
+				.orderBy(Painting.TO_ARTIST.outer().dot(Artist.ARTIST_NAME).asc());
+
+		final DbEntity entity = env.context().getEntityResolver().getDbEntity("ARTIST");
+		final DbEntity middleEntity = env.context().getEntityResolver().getDbEntity("ARTIST_GROUP");
+
+		entity.setQualifier(ExpressionFactory.exp("ARTIST_NAME = \"123\""));
+		middleEntity.setQualifier(ExpressionFactory.exp("GROUP_ID = 1987"));
+
+		TranslatedSelect transl = new DbAdapterDelegatedSelectTranslator().translate(q, env.dataNode().getAdapter(), env.dataNode().getEntityResolver());
+
+		try {
+
+			String generatedSql = transl.sql();
+
+			// do some simple assertions to make sure all parts are in
+			assertNotNull(generatedSql);
+			assertTrue(generatedSql.startsWith("SELECT "));
+
+			int iFrom = generatedSql.indexOf(" FROM ");
+			int iPaintingTable = generatedSql.indexOf(" PAINTING ");
+			int iArtistTable = generatedSql.indexOf(" ARTIST ");
+			int iName = generatedSql.indexOf("ARTIST_NAME =");
+			int iOrder = generatedSql.indexOf(" ORDER");
+
+			assertTrue(iFrom > 0);
+			assertTrue(iPaintingTable > iFrom);
+			assertTrue(iArtistTable > iPaintingTable);
+			assertTrue(iName > iArtistTable);
+			assertTrue(iOrder > iName);
+
+		} finally {
+			entity.setQualifier(null);
+			middleEntity.setQualifier(null);
+		}
+	}
+
+	@Test
+	public void dbEntityQualifier_FlattenedRel() throws Exception {
+
+		ObjectSelect<Artist> q = ObjectSelect.query(Artist.class, Artist.GROUP_ARRAY.dot(ArtGroup.NAME).eq("bar"));
+
+		final DbEntity entity = env.context().getEntityResolver().getDbEntity("ARTIST");
+		final DbEntity middleEntity = env.context().getEntityResolver().getDbEntity("ARTIST_GROUP");
+
+		entity.setQualifier(ExpressionFactory.exp("ARTIST_NAME = \"123\""));
+		middleEntity.setQualifier(ExpressionFactory.exp("GROUP_ID = 1987"));
+
+		TranslatedSelect transl = new DbAdapterDelegatedSelectTranslator().translate(q, env.dataNode().getAdapter(), env.dataNode().getEntityResolver());
+
+		try {
+
+			String generatedSql = transl.sql();
+
+			// do some simple assertions to make sure all parts are in
+			assertNotNull(generatedSql);
+			assertTrue(generatedSql.startsWith("SELECT "));
+			assertTrue(generatedSql.indexOf(" FROM ") > 0);
+			if (generatedSql.contains("RTRIM")) {
+				assertTrue(generatedSql.indexOf("ARTIST_NAME) =") > generatedSql.indexOf("RTRIM("));
+			} else if (generatedSql.contains("TRIM")) {
+				assertTrue(generatedSql.indexOf("ARTIST_NAME) =") > generatedSql.indexOf("TRIM("));
+			} else {
+				assertTrue(generatedSql.indexOf("ARTIST_NAME =") > 0);
+			}
+
+		} finally {
+			entity.setQualifier(null);
+			middleEntity.setQualifier(null);
+		}
+	}
+
+	@Test
+	public void dbEntityQualifier_RelatedMatch() throws Exception {
+
+		ObjectSelect<Painting> q = ObjectSelect.query(Painting.class, Painting.TO_ARTIST.dot(Artist.ARTIST_NAME).eq("foo"));
+
+		final DbEntity entity = env.context().getEntityResolver().getDbEntity("ARTIST");
+		final DbEntity middleEntity = env.context().getEntityResolver().getDbEntity("ARTIST_GROUP");
+
+		entity.setQualifier(ExpressionFactory.exp("ARTIST_NAME = \"123\""));
+		middleEntity.setQualifier(ExpressionFactory.exp("GROUP_ID = 1987"));
+
+		TranslatedSelect transl = new DbAdapterDelegatedSelectTranslator().translate(q, env.dataNode().getAdapter(), env.dataNode().getEntityResolver());
+
+		try {
+
+			String generatedSql = transl.sql();
+
+			// do some simple assertions to make sure all parts are in
+			assertNotNull(generatedSql);
+			assertTrue(generatedSql.startsWith("SELECT "));
+			assertTrue(generatedSql.indexOf(" FROM ") > 0);
+			if (generatedSql.contains("RTRIM")) {
+				assertTrue(generatedSql.indexOf("ARTIST_NAME) =") > generatedSql.indexOf("RTRIM("));
+			} else if (generatedSql.contains("TRIM")) {
+				assertTrue(generatedSql.indexOf("ARTIST_NAME) =") > generatedSql.indexOf("TRIM("));
+			} else {
+				assertTrue(generatedSql.indexOf("ARTIST_NAME =") > 0);
+			}
+		} finally {
+			entity.setQualifier(null);
+			middleEntity.setQualifier(null);
+		}
+	}
+
+	/**
+	 * Tests query creation with "distinct" specified.
+	 */
+	@Test
+	public void createSqlString2() throws Exception {
+		// query with "distinct" set
+		ObjectSelect<Artist> q = ObjectSelect.query(Artist.class);
+		q.distinct();
+
+		String generatedSql = new DbAdapterDelegatedSelectTranslator().translate(q, env.dataNode().getAdapter(), env.dataNode().getEntityResolver()).sql();
+
+		// do some simple assertions to make sure all parts are in
+		assertNotNull(generatedSql);
+		assertTrue(generatedSql.startsWith("SELECT DISTINCT"));
+	}
+
+	/**
+	 * Test aliases when the same table used in more then 1 relationship. Check
+	 * translation of relationship path "ArtistExhibit.toArtist.artistName" and
+	 * "ArtistExhibit.toExhibit.toGallery.paintingArray.toArtist.artistName".
+	 */
+	@Test
+	public void createSqlString5() throws Exception {
+		ObjectSelect<ArtistExhibit> q = ObjectSelect.query(ArtistExhibit.class)
+				.where(ArtistExhibit.TO_ARTIST
+						.dot(Artist.ARTIST_NAME).like( "a%"))
+				.and(ArtistExhibit.TO_EXHIBIT
+						.dot(Exhibit.TO_GALLERY)
+						.dot(Gallery.PAINTING_ARRAY)
+						.dot(Painting.TO_ARTIST)
+						.dot(Artist.ARTIST_NAME).like("a%"));
+
+		String generatedSql = new DbAdapterDelegatedSelectTranslator().translate(q, env.dataNode().getAdapter(), env.dataNode().getEntityResolver()).sql();
+		// logObj.warn("Query: " + generatedSql);
+
+		// do some simple assertions to make sure all parts are in
+		assertNotNull(generatedSql);
+		assertTrue(generatedSql.startsWith("SELECT "));
+		assertTrue(generatedSql.indexOf(" FROM ") > 0);
+		assertTrue(generatedSql.indexOf(" WHERE ") > generatedSql.indexOf(" FROM "));
+
+		// check that there are 2 distinct aliases for the ARTIST table
+		int ind1 = generatedSql.indexOf("ARTIST t", generatedSql.indexOf(" FROM "));
+		assertTrue(ind1 > 0);
+
+		int ind2 = generatedSql.indexOf("ARTIST t", ind1 + 1);
+		assertTrue(ind2 > 0);
+
+		assertTrue(generatedSql.charAt(ind1 + "ARTIST t".length()) != generatedSql.charAt(ind2 + "ARTIST t".length()));
+	}
+
+	/**
+	 * Test aliases when the same table used in more then 1 relationship. Check
+	 * translation of relationship path "ArtistExhibit.toArtist.artistName" and
+	 * "ArtistExhibit.toArtist.paintingArray.paintingTitle".
+	 */
+	@Test
+	public void createSqlString6() throws Exception {
+		ObjectSelect<ArtistExhibit> q = ObjectSelect.query(ArtistExhibit.class)
+				.where(ArtistExhibit.TO_ARTIST.dot(Artist.ARTIST_NAME).like("a%"))
+				.and(ArtistExhibit.TO_ARTIST.dot(Artist.PAINTING_ARRAY).dot(Painting.PAINTING_TITLE).like("p%"));
+
+		String generatedSql = new DbAdapterDelegatedSelectTranslator().translate(q, env.dataNode().getAdapter(), env.dataNode().getEntityResolver())
+				.sql();
+
+		// do some simple assertions to make sure all parts are in
+		assertNotNull(generatedSql);
+		assertTrue(generatedSql.startsWith("SELECT "));
+		assertTrue(generatedSql.indexOf(" FROM ") > 0);
+		assertTrue(generatedSql.indexOf(" WHERE ") > generatedSql.indexOf(" FROM "));
+
+		// check that there is only one distinct alias for the ARTIST
+		// table
+		int ind1 = generatedSql.indexOf("ARTIST t", generatedSql.indexOf(" FROM "));
+		assertTrue(ind1 > 0);
+
+		int ind2 = generatedSql.indexOf("ARTIST t", ind1 + 1);
+		assertTrue(ind2 < 0, generatedSql);
+	}
+
+	/**
+	 * Test query when qualifying on the same attribute more than once. Check
+	 * translation "Artist.dateOfBirth > ? AND Artist.dateOfBirth < ?".
+	 */
+	@Test
+	public void createSqlString7() throws Exception {
+		ObjectSelect<Artist> q = ObjectSelect.query(Artist.class)
+				.where(Artist.DATE_OF_BIRTH.gt(new Date()))
+				.and(Artist.DATE_OF_BIRTH.lt(new Date()));
+
+		String generatedSql = new DbAdapterDelegatedSelectTranslator().translate(q, env.dataNode().getAdapter(), env.dataNode().getEntityResolver())
+				.sql();
+		// logObj.warn("Query: " + generatedSql);
+
+		// do some simple assertions to make sure all parts are in
+		assertNotNull(generatedSql);
+		assertTrue(generatedSql.startsWith("SELECT "));
+
+		int i1 = generatedSql.indexOf(" FROM ");
+		assertTrue(i1 > 0);
+
+		int i2 = generatedSql.indexOf(" WHERE ");
+		assertTrue(i2 > i1);
+
+		int i3 = generatedSql.indexOf("DATE_OF_BIRTH", i2 + 1);
+		assertTrue(i3 > i2);
+
+		int i4 = generatedSql.indexOf("DATE_OF_BIRTH", i3 + 1);
+		assertTrue(i4 > i3, "No second DOB comparison: " + i4 + ", " + i3);
+	}
+
+	/**
+	 * Test query when qualifying on the same attribute accessed over
+	 * relationship, more than once. Check translation
+	 * "Painting.toArtist.dateOfBirth > ? AND Painting.toArtist.dateOfBirth <
+	 * ?".
+	 */
+	@Test
+	public void createSqlString8() throws Exception {
+		ObjectSelect<Painting> q = ObjectSelect.query(Painting.class)
+				.where(Painting.TO_ARTIST.dot(Artist.DATE_OF_BIRTH).gt(new Date()))
+				.and(Painting.TO_ARTIST.dot(Artist.DATE_OF_BIRTH).lt(new Date()));
+
+		String generatedSql = new DbAdapterDelegatedSelectTranslator().translate(q, env.dataNode().getAdapter(), env.dataNode().getEntityResolver()).sql();
+
+		// do some simple assertions to make sure all parts are in
+		assertNotNull(generatedSql);
+		assertTrue(generatedSql.startsWith("SELECT "));
+
+		int i1 = generatedSql.indexOf(" FROM ");
+		assertTrue(i1 > 0);
+
+		int i2 = generatedSql.indexOf(" WHERE ");
+		assertTrue(i2 > i1);
+
+		int i3 = generatedSql.indexOf("DATE_OF_BIRTH", i2 + 1);
+		assertTrue(i3 > i2);
+
+		int i4 = generatedSql.indexOf("DATE_OF_BIRTH", i3 + 1);
+		assertTrue(i4 > i3, "No second DOB comparison: " + i4 + ", " + i3);
+	}
+
+	@Test
+	public void createSqlString9() throws Exception {
+		// query for a compound ObjEntity with qualifier
+		ObjectSelect<CompoundPainting> q = ObjectSelect.query(CompoundPainting.class, CompoundPainting.ARTIST_NAME.like("a%"));
+
+		String sql = new DbAdapterDelegatedSelectTranslator().translate(q, env.dataNode().getAdapter(), env.dataNode().getEntityResolver()).sql();
+
+		// do some simple assertions to make sure all parts are in
+		assertNotNull(sql);
+		assertTrue(sql.startsWith("SELECT "));
+
+		int i1 = sql.indexOf(" FROM ");
+		assertTrue(i1 > 0);
+
+		int i2 = sql.indexOf("PAINTING");
+		assertTrue(i2 > 0);
+
+		int i3 = sql.indexOf("ARTIST");
+		assertTrue(i3 > 0);
+
+		int i4 = sql.indexOf("GALLERY");
+		assertTrue(i4 > 0);
+
+		int i5 = sql.indexOf("PAINTING_INFO");
+		assertTrue(i5 > 0);
+
+		int i6 = sql.indexOf("ARTIST_NAME");
+		assertTrue(i6 > 0);
+
+		int i7 = sql.indexOf("ESTIMATED_PRICE");
+		assertTrue(i7 > 0);
+
+		int i8 = sql.indexOf("GALLERY_NAME");
+		assertTrue(i8 > 0);
+
+		int i9 = sql.indexOf("PAINTING_TITLE");
+		assertTrue(i9 > 0);
+
+		int i10 = sql.indexOf("TEXT_REVIEW");
+		assertTrue(i10 > 0);
+
+		int i11 = sql.indexOf("PAINTING_ID");
+		assertTrue(i11 > 0);
+
+		int i12 = sql.indexOf("ARTIST_ID");
+		assertTrue(i12 > 0);
+
+		int i13 = sql.indexOf("GALLERY_ID");
+		assertTrue(i13 > 0);
+
+	}
+
+	@Test
+	public void createSqlString10() throws Exception {
+		// query with to-many joint prefetches
+		ObjectSelect<Artist> q = ObjectSelect.query(Artist.class).prefetch(Artist.PAINTING_ARRAY.joint());
+
+		TranslatedSelect transl = new DbAdapterDelegatedSelectTranslator().translate(q, env.dataNode().getAdapter(),
+				env.dataNode().getEntityResolver());
+		String sql = transl.sql();
+		assertNotNull(sql);
+		assertTrue(sql.startsWith("SELECT "));
+
+		int i1 = sql.indexOf("ARTIST_ID");
+		assertTrue(i1 > 0, sql);
+
+		int i2 = sql.indexOf("FROM");
+		assertTrue(i2 > 0, sql);
+
+		assertTrue(sql.indexOf("PAINTING_ID") > 0, sql);
+
+		// assert we have one join
+		assertTrue(transl.hasJoins());
+	}
+
+	@Test
+	public void createSqlString11() throws Exception {
+		// query with joint prefetches and other joins
+		ObjectSelect q = ObjectSelect.query(Artist.class)
+				.where(Artist.PAINTING_ARRAY.dot(Painting.PAINTING_TITLE).eq("a"))
+				.prefetch(Artist.PAINTING_ARRAY.joint());
+
+		TranslatedSelect transl = new DbAdapterDelegatedSelectTranslator().translate(q, env.dataNode().getAdapter(),
+				env.dataNode().getEntityResolver());
+
+		transl.sql();
+
+		// assert we only have one join
+		assertTrue(transl.hasJoins());
+	}
+
+	@Test
+	public void createSqlString12() throws Exception {
+		// query with to-one joint prefetches
+		ObjectSelect<Painting> q = ObjectSelect.query(Painting.class).prefetch(Painting.TO_ARTIST.joint());
+
+		TranslatedSelect transl = new DbAdapterDelegatedSelectTranslator().translate(q, env.dataNode().getAdapter(),
+				env.dataNode().getEntityResolver());
+
+		String sql = transl.sql();
+		assertNotNull(sql);
+		assertTrue(sql.startsWith("SELECT "));
+
+		int i1 = sql.indexOf("ARTIST_ID");
+		assertTrue(i1 > 0, sql);
+
+		int i2 = sql.indexOf("FROM");
+		assertTrue(i2 > 0, sql);
+
+		assertTrue(sql.indexOf("PAINTING_ID") > 0, sql);
+
+		// assert we have one join
+		assertTrue(transl.hasJoins());
+	}
+
+	@Test
+	public void createSqlString13() throws Exception {
+		// query with invalid joint prefetches
+		ObjectSelect<Painting> q = ObjectSelect.query(Painting.class)
+				.prefetch("invalid.invalid", PrefetchTreeNode.JOINT_PREFETCH_SEMANTICS);
+		try {
+			new DbAdapterDelegatedSelectTranslator().translate(q, env.dataNode().getAdapter(), env.dataNode().getEntityResolver()).sql();
+			fail("Invalid jointPrefetch must have thrown...");
+		} catch (ExpressionException e) {
+			// expected
+		}
+	}
+
+	@Test
+	public void createSqlStringWithQuoteSqlIdentifiers() throws Exception {
+
+		try {
+			ObjectSelect<Artist> q = ObjectSelect.query(Artist.class)
+					.orderBy(Artist.DATE_OF_BIRTH.asc());
+			DbEntity entity = env.context().getEntityResolver().getDbEntity("ARTIST");
+			entity.getDataMap().setQuotingSQLIdentifiers(true);
+
+			String charStart = env.testDbAdapter().getIdentifiersStartQuote();
+			String charEnd = env.testDbAdapter().getIdentifiersEndQuote();
+
+			String s = new DbAdapterDelegatedSelectTranslator().translate(q, env.dataNode().getAdapter(), env.dataNode().getEntityResolver()).sql();
+			assertTrue(s.startsWith("SELECT "));
+			int iFrom = s.indexOf(" FROM ");
+			assertTrue(iFrom > 0);
+			int artistName = s.indexOf(charStart + "t0" + charEnd + "." + charStart + "ARTIST_NAME" + charEnd);
+			assertTrue(artistName > 0 && artistName < iFrom);
+			int artistId = s.indexOf(charStart + "t0" + charEnd + "." + charStart + "ARTIST_ID" + charEnd);
+			assertTrue(artistId > 0 && artistId < iFrom);
+			int dateOfBirth = s.indexOf(charStart + "t0" + charEnd + "." + charStart + "DATE_OF_BIRTH" + charEnd);
+			assertTrue(dateOfBirth > 0 && dateOfBirth < iFrom);
+			int iArtist = s.indexOf(charStart + "ARTIST" + charEnd + " " + charStart + "t0" + charEnd);
+			assertTrue(iArtist > iFrom);
+			int iOrderBy = s.indexOf(" ORDER BY ");
+			int dateOfBirth2 = s.indexOf(charStart + "t0" + charEnd + "." + charStart + "DATE_OF_BIRTH" + charEnd,
+					iOrderBy);
+			assertTrue(iOrderBy > iArtist);
+			assertTrue(dateOfBirth2 > iOrderBy);
+
+		} finally {
+			DbEntity entity = env.context().getEntityResolver().getDbEntity("ARTIST");
+			entity.getDataMap().setQuotingSQLIdentifiers(false);
+		}
+
+	}
+
+	@Test
+	public void createSqlStringWithQuoteSqlIdentifiers2() throws Exception {
+
+		try {
+			ObjectSelect<Artist> q = ObjectSelect.query(Artist.class)
+					.where(Artist.DATE_OF_BIRTH.gt(new Date()))
+					.and(Artist.DATE_OF_BIRTH.lt(new Date()));
+
+			DbEntity entity = env.context().getEntityResolver().getDbEntity("ARTIST");
+			entity.getDataMap().setQuotingSQLIdentifiers(true);
+
+			String charStart = env.testDbAdapter().getIdentifiersStartQuote();
+			String charEnd = env.testDbAdapter().getIdentifiersEndQuote();
+
+			String s = new DbAdapterDelegatedSelectTranslator().translate(q, env.dataNode().getAdapter(), env.dataNode().getEntityResolver()).sql();
+
+			assertTrue(s.startsWith("SELECT "));
+			int iFrom = s.indexOf(" FROM ");
+			assertTrue(iFrom > 0);
+			int artistName = s.indexOf(charStart + "t0" + charEnd + "." + charStart + "ARTIST_NAME" + charEnd);
+			assertTrue(artistName > 0 && artistName < iFrom);
+			int artistId = s.indexOf(charStart + "t0" + charEnd + "." + charStart + "ARTIST_ID" + charEnd);
+			assertTrue(artistId > 0 && artistId < iFrom);
+			int dateOfBirth = s.indexOf(charStart + "t0" + charEnd + "." + charStart + "DATE_OF_BIRTH" + charEnd);
+			assertTrue(dateOfBirth > 0 && dateOfBirth < iFrom);
+			int iArtist = s.indexOf(charStart + "ARTIST" + charEnd + " " + charStart + "t0" + charEnd);
+			assertTrue(iArtist > iFrom);
+			int iWhere = s.indexOf(" WHERE ");
+			assertTrue(iWhere > iArtist);
+
+			int dateOfBirth2 = s.indexOf(charStart + "t0" + charEnd + "." + charStart + "DATE_OF_BIRTH" + charEnd + " > ?");
+			assertTrue(dateOfBirth2 > iWhere);
+
+			int iAnd = s.indexOf(" AND ");
+			assertTrue(iAnd > iWhere);
+			int dateOfBirth3 = s.indexOf(charStart + "t0" + charEnd + "." + charStart + "DATE_OF_BIRTH" + charEnd + " < ?");
+			assertTrue(dateOfBirth3 > iAnd);
+
+		} finally {
+			DbEntity entity = env.context().getEntityResolver().getDbEntity("ARTIST");
+			entity.getDataMap().setQuotingSQLIdentifiers(false);
+		}
+	}
+
+	@Test
+	public void createSqlStringWithQuoteSqlIdentifiers3() throws Exception {
+
+		// query with joint prefetches and other joins
+		// and with QuoteSqlIdentifiers = true
+		try {
+			ObjectSelect<Artist> q = ObjectSelect.query(Artist.class)
+					.where(Artist.PAINTING_ARRAY.dot(Painting.PAINTING_TITLE).eq("a"))
+					.prefetch(Artist.PAINTING_ARRAY.joint());
+
+			DbEntity entity = env.context().getEntityResolver().getDbEntity("ARTIST");
+			entity.getDataMap().setQuotingSQLIdentifiers(true);
+
+			String charStart = env.testDbAdapter().getIdentifiersStartQuote();
+			String charEnd = env.testDbAdapter().getIdentifiersEndQuote();
+
+			String s = new DbAdapterDelegatedSelectTranslator().translate(q, env.dataNode().getAdapter(), env.dataNode().getEntityResolver()).sql();
+
+			assertTrue(s.startsWith("SELECT DISTINCT "), s);
+			int iFrom = s.indexOf(" FROM ");
+			assertTrue(iFrom > 0, s);
+			int artistName = s.indexOf(charStart + "t0" + charEnd + "." + charStart + "ARTIST_NAME" + charEnd);
+			assertTrue(artistName > 0 && artistName < iFrom, s);
+			int artistId = s.indexOf(charStart + "t0" + charEnd + "." + charStart + "ARTIST_ID" + charEnd);
+			assertTrue(artistId > 0 && artistId < iFrom, s);
+			int dateOfBirth = s.indexOf(charStart + "t0" + charEnd + "." + charStart + "DATE_OF_BIRTH" + charEnd);
+			assertTrue(dateOfBirth > 0 && dateOfBirth < iFrom, s);
+			int estimatedPrice = s.indexOf(charStart + "t2" + charEnd + "." + charStart + "ESTIMATED_PRICE" + charEnd);
+			assertTrue(estimatedPrice > 0 && estimatedPrice < iFrom, s);
+			int paintingDescription = s.indexOf(charStart + "t2" + charEnd + "." + charStart + "PAINTING_DESCRIPTION"
+					+ charEnd);
+			assertTrue(paintingDescription > 0 && paintingDescription < iFrom, s);
+			int paintingTitle = s.indexOf(charStart + "t2" + charEnd + "." + charStart + "PAINTING_TITLE" + charEnd);
+			assertTrue(paintingTitle > 0 && paintingTitle < iFrom, s);
+			int artistIdT2 = s.indexOf(charStart + "t2" + charEnd + "." + charStart + "ARTIST_ID" + charEnd);
+			assertTrue(artistIdT2 > 0 && artistIdT2 < iFrom, s);
+			int galleryId = s.indexOf(charStart + "t2" + charEnd + "." + charStart + "GALLERY_ID" + charEnd);
+			assertTrue(galleryId > 0 && galleryId < iFrom, s);
+			int paintingId = s.indexOf(charStart + "t2" + charEnd + "." + charStart + "PAINTING_ID" + charEnd);
+			assertTrue(paintingId > 0 && paintingId < iFrom, s);
+			int iArtist = s.indexOf(charStart + "ARTIST" + charEnd + " " + charStart + "t0" + charEnd);
+			assertTrue(iArtist > iFrom, s);
+			int iJoin = s.indexOf("JOIN");
+			assertTrue(iJoin > iFrom, s);
+			int iPainting2 = s.indexOf(charStart + "PAINTING" + charEnd + " " + charStart + "t1" + charEnd);
+			assertTrue(iPainting2 > iJoin, s);
+			int iOn2 = s.indexOf(" ON ", iJoin);
+			assertTrue(iOn2 > iJoin, s);
+			int iArtistId2 = s.indexOf(charStart + "t0" + charEnd + "." + charStart + "ARTIST_ID" + charEnd, iJoin);
+			assertTrue(iArtistId2 > iOn2, s);
+			int iArtistId2T1 = s.indexOf(charStart + "t1" + charEnd + "." + charStart + "ARTIST_ID" + charEnd, iJoin);
+			assertTrue(iArtistId2T1 > iOn2, s);
+			int i2 = s.indexOf("=", iJoin);
+			assertTrue(iArtistId2T1 > i2 || iArtistId2 > i2, s);
+			int iLeftJoin = s.indexOf("LEFT JOIN");
+			assertTrue(iLeftJoin > iJoin, s);
+			int iPainting = s.indexOf(charStart + "PAINTING" + charEnd + " " + charStart + "t2" + charEnd);
+			assertTrue(iPainting > iLeftJoin, s);
+			int iOn = s.indexOf(" ON ", iLeftJoin);
+			assertTrue(iOn > iLeftJoin, s);
+			int iArtistId = s.indexOf(charStart + "t0" + charEnd + "." + charStart + "ARTIST_ID" + charEnd, iLeftJoin);
+			assertTrue(iArtistId > iOn, s);
+			int iArtistIdT2 = s
+					.indexOf(charStart + "t2" + charEnd + "." + charStart + "ARTIST_ID" + charEnd, iLeftJoin);
+			assertTrue(iArtistIdT2 > iOn, s);
+			int i = s.indexOf("=", iLeftJoin);
+			assertTrue(iArtistIdT2 > i || iArtistId > i, s);
+			int iWhere = s.indexOf(" WHERE ");
+			assertTrue(iWhere > iLeftJoin, s);
+
+			int paintingTitle2 = s.indexOf(charStart + "t1" + charEnd + "." + charStart + "PAINTING_TITLE" + charEnd + " = ?");
+			assertTrue(paintingTitle2 > iWhere, s);
+
+		} finally {
+			DbEntity entity = env.context().getEntityResolver().getDbEntity("ARTIST");
+			entity.getDataMap().setQuotingSQLIdentifiers(false);
+		}
+	}
+
+	@Test
+	public void createSqlStringWithQuoteSqlIdentifiers4() throws Exception {
+
+		// query with to-one joint prefetches
+		// and with QuoteSqlIdentifiers = true
+		try {
+			ObjectSelect<Painting> q = ObjectSelect.query(Painting.class).prefetch(Painting.TO_ARTIST.joint());
+
+			DbEntity entity = env.context().getEntityResolver().getDbEntity("PAINTING");
+			entity.getDataMap().setQuotingSQLIdentifiers(true);
+
+			String charStart = env.testDbAdapter().getIdentifiersStartQuote();
+			String charEnd = env.testDbAdapter().getIdentifiersEndQuote();
+
+			String s = new DbAdapterDelegatedSelectTranslator().translate(q, env.dataNode().getAdapter(), env.dataNode().getEntityResolver()).sql();
+
+			assertTrue(s.startsWith("SELECT "), s);
+			int iFrom = s.indexOf(" FROM ");
+			assertTrue(iFrom > 0, s);
+
+			int paintingDescription = s.indexOf(charStart + "t0" + charEnd + "." + charStart + "PAINTING_DESCRIPTION"
+					+ charEnd);
+			assertTrue(paintingDescription > 0 && paintingDescription < iFrom, s);
+			int paintingTitle = s.indexOf(charStart + "t0" + charEnd + "." + charStart + "PAINTING_TITLE" + charEnd);
+			assertTrue(paintingTitle > 0 && paintingTitle < iFrom, s);
+			int artistIdT1 = s.indexOf(charStart + "t0" + charEnd + "." + charStart + "ARTIST_ID" + charEnd);
+			assertTrue(artistIdT1 > 0 && artistIdT1 < iFrom, s);
+			int estimatedPrice = s.indexOf(charStart + "t0" + charEnd + "." + charStart + "ESTIMATED_PRICE" + charEnd);
+			assertTrue(estimatedPrice > 0 && estimatedPrice < iFrom, s);
+			int galleryId = s.indexOf(charStart + "t0" + charEnd + "." + charStart + "GALLERY_ID" + charEnd);
+			assertTrue(galleryId > 0 && galleryId < iFrom, s);
+			int paintingId = s.indexOf(charStart + "t0" + charEnd + "." + charStart + "PAINTING_ID" + charEnd);
+			assertTrue(paintingId > 0 && paintingId < iFrom, s);
+			int artistName = s.indexOf(charStart + "t1" + charEnd + "." + charStart + "ARTIST_NAME" + charEnd);
+			assertTrue(artistName > 0 && artistName < iFrom, s);
+			int artistId = s.indexOf(charStart + "t1" + charEnd + "." + charStart + "ARTIST_ID" + charEnd);
+			assertTrue(artistId > 0 && artistId < iFrom, s);
+			int dateOfBirth = s.indexOf(charStart + "t1" + charEnd + "." + charStart + "DATE_OF_BIRTH" + charEnd);
+			assertTrue(dateOfBirth > 0 && dateOfBirth < iFrom, s);
+			int iPainting = s.indexOf(charStart + "PAINTING" + charEnd + " " + charStart + "t0" + charEnd);
+			assertTrue(iPainting > iFrom, s);
+
+			int iLeftJoin = s.indexOf("LEFT JOIN");
+			assertTrue(iLeftJoin > iFrom, s);
+			int iArtist = s.indexOf(charStart + "ARTIST" + charEnd + " " + charStart + "t1" + charEnd);
+			assertTrue(iArtist > iLeftJoin, s);
+			int iOn = s.indexOf(" ON ");
+			assertTrue(iOn > iLeftJoin, s);
+			int iArtistId = s.indexOf(charStart + "t0" + charEnd + "." + charStart + "ARTIST_ID" + charEnd, iLeftJoin);
+			assertTrue(iArtistId > iOn, s);
+			int iArtistIdT1 = s
+					.indexOf(charStart + "t1" + charEnd + "." + charStart + "ARTIST_ID" + charEnd, iLeftJoin);
+			assertTrue(iArtistIdT1 > iOn, s);
+			int i = s.indexOf("=", iLeftJoin);
+			assertTrue(iArtistIdT1 > i || iArtistId > i, s);
+
+		} finally {
+			DbEntity entity = env.context().getEntityResolver().getDbEntity("PAINTING");
+			entity.getDataMap().setQuotingSQLIdentifiers(false);
+		}
+	}
+
+	/**
+	 * Tests columns generated for a simple object query.
+	 */
+	@Test
+	public void buildResultColumns1() throws Exception {
+		ObjectSelect<Painting> q = ObjectSelect.query(Painting.class);
+		TranslatedSelect tr = new DbAdapterDelegatedSelectTranslator().translate(q, env.dataNode().getAdapter(), env.dataNode().getEntityResolver());
+
+		tr.sql();
+
+		List<ColumnDescriptor> columns = Arrays.asList(tr.resultColumns());
+		columns.sort(Comparator.comparing(ColumnDescriptor::getName));
+
+		DbEntity entity = env.context().getEntityResolver().getDbEntity("PAINTING");
+		List<DbAttribute> attributes = new ArrayList<>(entity.getAttributes());
+		attributes.sort(Comparator.comparing(DbAttribute::getName));
+
+		// all DbAttributes must be included
+		assertEquals(attributes.size(), columns.size());
+
+		for(int i=0; i<attributes.size(); i++) {
+			DbAttribute attribute = attributes.get(i);
+			ColumnDescriptor descriptor = columns.get(i);
+			assertEquals(attribute, descriptor.getAttribute());
+			assertEquals(attribute.getName(), descriptor.getName());
+			assertEquals(attribute.getName(), descriptor.getDataRowKey());
+			assertEquals(attribute.getType(), descriptor.getJdbcType());
+		}
+	}
+
+	/**
+	 * Tests columns generated for an object query with joint prefetch.
+	 */
+	@Test
+	public void buildResultColumns2() throws Exception {
+		ObjectSelect<Painting> q = ObjectSelect.query(Painting.class).prefetch(Painting.TO_ARTIST.joint());
+		TranslatedSelect tr = new DbAdapterDelegatedSelectTranslator().translate(q, env.dataNode().getAdapter(), env.dataNode().getEntityResolver());
+
+		tr.sql();
+
+		List<ColumnDescriptor> columns = Arrays.asList(tr.resultColumns());
+		columns.sort(Comparator.comparing(ColumnDescriptor::getName));
+
+		DbEntity rootEntity = env.context().getEntityResolver().getDbEntity("PAINTING");
+		List<DbAttribute> attributes = new ArrayList<>(rootEntity.getAttributes());
+		DbEntity joinedEntity = env.context().getEntityResolver().getDbEntity("ARTIST");
+		attributes.addAll(joinedEntity.getAttributes());
+		attributes.sort(Comparator.comparing(DbAttribute::getName));
+
+		for(int i=0; i<attributes.size(); i++) {
+			DbAttribute attribute = attributes.get(i);
+			ColumnDescriptor descriptor = columns.get(i);
+			assertEquals(attribute, descriptor.getAttribute());
+			assertEquals(attribute.getName(), descriptor.getName());
+			if("ARTIST".equals(attribute.getEntity().getName())) {
+				assertEquals("toArtist." + attribute.getName(), descriptor.getDataRowKey());
+			} else {
+				assertEquals(attribute.getName(), descriptor.getDataRowKey());
+			}
+			assertEquals(attribute.getType(), descriptor.getJdbcType());
+		}
+	}
+
+	@Test
+	public void aliasedJoins() {
+		ObjectSelect<Artist> query = ObjectSelect.query(Artist.class)
+				.where(ExpressionFactory.and(
+						ExpressionFactory.matchAllExp("|awardArray", 1, 2),
+						Artist.AWARD_ARRAY.alias("aw1").dot(Award.NAME).eq("123")
+				));
+		query.select(env.context());
+
+		TranslatorContext context = new TranslatorContext(new FluentSelectWrapper(query), env.dataNode().getAdapter(),
+																		 env.context().getEntityResolver(), null);
+		DefaultSelectTranslator.translate(context);
+
+		int totalJoins = context.getTableCount() - 1;
+		assertEquals(3, totalJoins);
+	}
+
+	@Test
+	public void aliasedJoins_DifferentAliases() {
+		ObjectSelect<Artist> query = ObjectSelect.query(Artist.class)
+				.where(ExpressionFactory.and(
+						Artist.AWARD_ARRAY.alias("aw1").containsId(1),
+						Artist.AWARD_ARRAY.alias("aw2").dot(Award.NAME).eq("123")
+				));
+		query.select(env.context());
+
+		TranslatorContext context = new TranslatorContext(new FluentSelectWrapper(query), env.dataNode().getAdapter(),
+																		 env.context().getEntityResolver(), null);
+		DefaultSelectTranslator.translate(context);
+
+		int totalJoins = context.getTableCount() - 1;
+		assertEquals(2, totalJoins);
+	}
+
+	@Test
+	public void aliasedJoins_DifferentProperties() {
+		ObjectSelect<Artist> query = ObjectSelect.query(Artist.class)
+				.where(ExpressionFactory.and(
+						Artist.AWARD_ARRAY.alias("aw1").containsId(1),
+						Artist.PAINTING_ARRAY.alias("aw2").dot(Painting.PAINTING_TITLE).eq("123")
+				));
+		query.select(env.context());
+
+		TranslatorContext context = new TranslatorContext(new FluentSelectWrapper(query), env.dataNode().getAdapter(),
+																		 env.context().getEntityResolver(), null);
+		DefaultSelectTranslator.translate(context);
+
+		int totalJoins = context.getTableCount() - 1;
+		assertEquals(2, totalJoins);
+	}
+
+	@Test
+	public void aliasedJoins_FlattenedRelationship() {
+		ObjectSelect<Artist> query = ObjectSelect.query(Artist.class)
+				.where(ExpressionFactory.and(
+						ExpressionFactory.matchAllExp("|groupArray.name", "ag1", "ag2")
+				));
+		query.select(env.context());
+
+		TranslatorContext context = new TranslatorContext(new FluentSelectWrapper(query), env.dataNode().getAdapter(),
+																		 env.context().getEntityResolver(), null);
+		DefaultSelectTranslator.translate(context);
+
+		int totalJoins = context.getTableCount() - 1;
+		assertEquals(4, totalJoins);
+	}
+
+	@Test
+	public void dbEntityQualifier_JoinQuery() throws Exception {
+
+		final DbEntity entity = env.context().getEntityResolver().getDbEntity("ARTIST");
+		entity.setQualifier(ExpressionFactory.exp("ARTIST_NAME = 'Should be on JOIN condition and not WHERE'"));
+
+		ObjectSelect<Painting> q = ObjectSelect.query(Painting.class)
+				.where
+						(
+								Painting.TO_ARTIST.dot(Artist.DATE_OF_BIRTH).eq(new java.sql.Date(1, 0, 1))
+										.orExp(Painting.TO_GALLERY.dot(Gallery.GALLERY_NAME).like("G%"))
+						);
+
+		// If the DbEntity qualifier is set on the WHERE condition then the OR expression will fail to find matches
+
+		TranslatedSelect transl = new DbAdapterDelegatedSelectTranslator().translate(q, env.dataNode().getAdapter(), env.dataNode().getEntityResolver());
+		try {
+			String generatedSql = transl.sql();
+			int whereNdx = generatedSql.indexOf(" WHERE ");
+			int joinNdx = generatedSql.indexOf(" JOIN ARTIST ");
+			assertTrue(generatedSql.substring(joinNdx, whereNdx).indexOf("ARTIST_NAME") > 0); // Should be in JOIN condition
+			assertTrue(generatedSql.indexOf("ARTIST_NAME", whereNdx) < 0); // Should not be part of WHERE
+		} finally {
+			entity.setQualifier(null);
+		}
+	}
+}

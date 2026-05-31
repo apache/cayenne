@@ -22,7 +22,8 @@ package org.apache.cayenne.access;
 import org.apache.cayenne.Cayenne;
 import org.apache.cayenne.ObjectContext;
 import org.apache.cayenne.PersistenceState;
-import org.apache.cayenne.access.translator.select.DefaultSelectTranslator;
+import org.apache.cayenne.access.translator.select.DbAdapterDelegatedSelectTranslator;
+import org.apache.cayenne.access.translator.select.TranslatedSelect;
 import org.apache.cayenne.map.DefaultEntityResultSegment;
 import org.apache.cayenne.query.ColumnSelect;
 import org.apache.cayenne.query.EJBQLQuery;
@@ -205,10 +206,10 @@ public class DataContextFlattenedAttributesIT {
                 .columns(CompoundPaintingLongNames.SELF);
 
         DataNode dataNode = context.getParentDataDomain().getDataNodes().iterator().next();
-        DefaultSelectTranslator translator =
-                new DefaultSelectTranslator(originalQuery, dataNode.getAdapter(), context.getEntityResolver());
+        TranslatedSelect translator =
+                new DbAdapterDelegatedSelectTranslator().translate(originalQuery, dataNode.getAdapter(), context.getEntityResolver());
 
-        translator.getSql();
+        translator.sql();
 
         DefaultEntityResultSegment segment = (DefaultEntityResultSegment) originalQuery
                 .getMetaData(context.getEntityResolver())
@@ -216,8 +217,8 @@ public class DataContextFlattenedAttributesIT {
                 .get(0);
 
         assertEquals(12, segment.getFields().size());
-        assertEquals(12, translator.getResultColumns().length);
-        assertEquals(segment.getFields().size(), translator.getResultColumns().length);
+        assertEquals(12, translator.resultColumns().length);
+        assertEquals(segment.getFields().size(), translator.resultColumns().length);
     }
 
     @Test

@@ -23,13 +23,13 @@ import org.apache.cayenne.CayenneRuntimeException;
 import org.apache.cayenne.access.dbsync.SchemaUpdateStrategy;
 import org.apache.cayenne.access.jdbc.ColumnDescriptor;
 import org.apache.cayenne.access.jdbc.RowDescriptor;
-import org.apache.cayenne.access.jdbc.SQLTemplateProcessor;
+import org.apache.cayenne.access.translator.sqltemplate.SQLTemplateTranslator;
 import org.apache.cayenne.access.jdbc.reader.RowReader;
 import org.apache.cayenne.access.jdbc.reader.RowReaderFactory;
 import org.apache.cayenne.access.translator.batch.BatchTranslator;
 import org.apache.cayenne.access.translator.batch.BatchTranslatorFactory;
 import org.apache.cayenne.access.translator.select.SelectTranslator;
-import org.apache.cayenne.access.translator.select.SelectTranslatorFactory;
+import org.apache.cayenne.access.translator.select.TranslatedSelect;
 import org.apache.cayenne.dba.DbAdapter;
 import org.apache.cayenne.dba.JdbcAdapter;
 import org.apache.cayenne.log.JdbcEventLogger;
@@ -73,8 +73,8 @@ public class DataNode {
 	private JdbcEventLogger jdbcEventLogger;
 	private RowReaderFactory rowReaderFactory;
 	private BatchTranslatorFactory batchTranslatorFactory;
-	private SelectTranslatorFactory selectTranslatorFactory;
-	private SQLTemplateProcessor sqlTemplateProcessor;
+	private SelectTranslator selectTranslator;
+	private SQLTemplateTranslator sqlTemplateTranslator;
 
 	TransactionDataSource readThroughDataSource;
 
@@ -344,10 +344,10 @@ public class DataNode {
 	}
 
 	/**
-	 * @since 4.0
+	 * @since 5.0
 	 */
-	public SelectTranslator selectTranslator(Select<?> query) {
-		return selectTranslatorFactory.translator(query, getAdapter(), getEntityResolver());
+	public TranslatedSelect translateSelect(Select<?> query) {
+		return selectTranslator.translate(query, getAdapter(), getEntityResolver());
 	}
 
 	/**
@@ -379,31 +379,31 @@ public class DataNode {
 	}
 
 	/**
-	 * @since 4.0
+	 * @since 5.0
 	 */
-	public SQLTemplateProcessor getSqlTemplateProcessor() {
-		return sqlTemplateProcessor;
+	public SQLTemplateTranslator getSqlTemplateTranslator() {
+		return sqlTemplateTranslator;
 	}
 
 	/**
-	 * @since 4.0
+	 * @since 5.0
 	 */
-	public void setSqlTemplateProcessor(SQLTemplateProcessor sqlTemplateProcessor) {
-		this.sqlTemplateProcessor = sqlTemplateProcessor;
+	public void setSqlTemplateTranslator(SQLTemplateTranslator sqlTemplateTranslator) {
+		this.sqlTemplateTranslator = sqlTemplateTranslator;
 	}
 
 	/**
-	 * @since 4.0
+	 * @since 5.0
 	 */
-	public SelectTranslatorFactory getSelectTranslatorFactory() {
-		return selectTranslatorFactory;
+	public SelectTranslator getSelectTranslator() {
+		return selectTranslator;
 	}
 
 	/**
-	 * @since 4.0
+	 * @since 5.0
 	 */
-	public void setSelectTranslatorFactory(SelectTranslatorFactory selectTranslatorFactory) {
-		this.selectTranslatorFactory = selectTranslatorFactory;
+	public void setSelectTranslator(SelectTranslator selectTranslator) {
+		this.selectTranslator = selectTranslator;
 	}
 
     // a read-through DataSource that ensures returning the same connection

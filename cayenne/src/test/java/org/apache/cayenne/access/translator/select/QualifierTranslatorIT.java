@@ -63,10 +63,10 @@ public class QualifierTranslatorIT {
                 .and(CompoundFkTestEntity.NAME.like("test%"))
                 .and(CompoundFkTestEntity.NAME.contains("a"));
 
-        DefaultSelectTranslator translator
-                = new DefaultSelectTranslator(query, runtime.getDataDomain().getDefaultNode().getAdapter(), env.context().getEntityResolver());
+        TranslatorContext context
+                = new TranslatorContext(new FluentSelectWrapper(query), runtime.getDataDomain().getDefaultNode().getAdapter(), env.context().getEntityResolver(), null);
 
-        QualifierTranslator qualifierTranslator = translator.getContext().getQualifierTranslator();
+        QualifierTranslator qualifierTranslator = context.getQualifierTranslator();
 
         Node node = qualifierTranslator.translate(query.getWhere());
 
@@ -88,10 +88,10 @@ public class QualifierTranslatorIT {
                 .where(CompoundFkTestEntity.TO_COMPOUND_PK.eq(testEntity.get(0)))
                 .or(CompoundFkTestEntity.TO_COMPOUND_PK.eq(testEntity.get(1)));
 
-        DefaultSelectTranslator translator
-                = new DefaultSelectTranslator(query, runtime.getDataDomain().getDefaultNode().getAdapter(), env.context().getEntityResolver());
+        TranslatorContext context
+                = new TranslatorContext(new FluentSelectWrapper(query), runtime.getDataDomain().getDefaultNode().getAdapter(), env.context().getEntityResolver(), null);
 
-        QualifierTranslator qualifierTranslator = translator.getContext().getQualifierTranslator();
+        QualifierTranslator qualifierTranslator = context.getQualifierTranslator();
 
         Node node = qualifierTranslator.translate(query.getWhere());
 
@@ -106,10 +106,10 @@ public class QualifierTranslatorIT {
         ObjectSelect<CompoundFkTestEntity> query = ObjectSelect.query(CompoundFkTestEntity.class)
                 .where(ExpressionFactory.exp("name = -1"));
 
-        DefaultSelectTranslator translator
-                = new DefaultSelectTranslator(query, runtime.getDataDomain().getDefaultNode().getAdapter(), env.context().getEntityResolver());
+        TranslatorContext context
+                = new TranslatorContext(new FluentSelectWrapper(query), runtime.getDataDomain().getDefaultNode().getAdapter(), env.context().getEntityResolver(), null);
 
-        QualifierTranslator qualifierTranslator = translator.getContext().getQualifierTranslator();
+        QualifierTranslator qualifierTranslator = context.getQualifierTranslator();
 
         Node node = qualifierTranslator.translate(query.getWhere());
 

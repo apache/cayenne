@@ -65,6 +65,6 @@ public class VerticalInheritanceJoinOrderIT {
     private String translateToSql(ObjectSelect<?> query) {
         DbAdapter adapter = env.dataNode().getAdapter();
         EntityResolver resolver = env.dataNode().getEntityResolver();
-        return new DefaultSelectTranslator(query, adapter, resolver).getSql();
+        return new DbAdapterDelegatedSelectTranslator().translate(query, adapter, resolver).sql();
     }
 }

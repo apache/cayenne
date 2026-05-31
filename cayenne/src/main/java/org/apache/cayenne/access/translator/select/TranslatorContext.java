@@ -19,15 +19,10 @@
 
 package org.apache.cayenne.access.translator.select;
 
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.LinkedList;
-import java.util.List;
-
 import org.apache.cayenne.access.jdbc.ColumnDescriptor;
+import org.apache.cayenne.access.sqlbuilder.SQLBuilder;
 import org.apache.cayenne.access.sqlbuilder.SQLGenerationContext;
 import org.apache.cayenne.access.sqlbuilder.SelectBuilder;
-import org.apache.cayenne.access.sqlbuilder.SQLBuilder;
 import org.apache.cayenne.access.sqlbuilder.sqltree.Node;
 import org.apache.cayenne.access.translator.DbAttributeBinding;
 import org.apache.cayenne.dba.DbAdapter;
@@ -41,6 +36,12 @@ import org.apache.cayenne.map.EntityResult;
 import org.apache.cayenne.map.SQLResult;
 import org.apache.cayenne.query.Ordering;
 import org.apache.cayenne.query.QueryMetadata;
+
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.Collections;
+import java.util.LinkedList;
+import java.util.List;
 
 import static org.apache.cayenne.access.sqlbuilder.SQLBuilder.exp;
 import static org.apache.cayenne.access.sqlbuilder.SQLBuilder.node;
@@ -128,26 +129,37 @@ public class TranslatorContext implements SQLGenerationContext {
         this.qualifierTranslator = new QualifierTranslator(this);
         this.quotingStrategy = adapter.getQuotingStrategy();
         this.resultNodeList = new LinkedList<>();
-        if(query.needsResultSetMapping()) {
+        if (query.needsResultSetMapping()) {
             this.sqlResult = new SQLResult();
         }
     }
 
+    public TranslatedSelect toResult() {
+        return new TranslatedSelect(
+                getFinalSQL(),
+                getColumnDescriptors().toArray(new ColumnDescriptor[0]),
+                getBindings().toArray(new DbAttributeBinding[0]),
+                Collections.emptyMap(),
+                isDistinctSuppression(),
+                getTableCount() > 1);
+    }
+
     /**
      * Mark start of a new class descriptor, to be able to process result columns properly.
+     *
      * @param type of a descriptor
      * @see #addResultNode(Node, boolean, Property, CayennePath)
      */
     void markDescriptorStart(DescriptorType type) {
-        if(type == DescriptorType.PREFETCH) {
+        if (type == DescriptorType.PREFETCH) {
             appendResultToRoot = true;
         }
     }
 
     void markDescriptorEnd(DescriptorType type) {
-        if(type == DescriptorType.ROOT) {
+        if (type == DescriptorType.ROOT) {
             rootSegmentEnd = resultNodeList.size() - 1;
-        } else if(type == DescriptorType.PREFETCH) {
+        } else if (type == DescriptorType.PREFETCH) {
             appendResultToRoot = false;
         }
     }
@@ -205,23 +217,23 @@ public class TranslatorContext implements SQLGenerationContext {
     }
 
     boolean hasAggregate() {
-        if(hasAggregate != null) {
+        if (hasAggregate != null) {
             return hasAggregate;
         }
 
-        if(getQuery().getHavingQualifier() != null) {
+        if (getQuery().getHavingQualifier() != null) {
             return (hasAggregate = true);
         }
 
-        for(ResultNodeDescriptor resultNode : getResultNodeList()) {
-            if(resultNode.isAggregate()) {
+        for (ResultNodeDescriptor resultNode : getResultNodeList()) {
+            if (resultNode.isAggregate()) {
                 return (hasAggregate = true);
             }
         }
 
-        if(getQuery().getOrderings() != null) {
-            for(Ordering ordering : getQuery().getOrderings()) {
-                if(ordering.getSortSpec() instanceof ASTAggregateFunctionCall) {
+        if (getQuery().getOrderings() != null) {
+            for (Ordering ordering : getQuery().getOrderings()) {
+                if (ordering.getSortSpec() instanceof ASTAggregateFunctionCall) {
                     return (hasAggregate = true);
                 }
             }
@@ -260,7 +272,7 @@ public class TranslatorContext implements SQLGenerationContext {
 
     ResultNodeDescriptor addResultNode(Node node, boolean inDataRow, Property<?> property, CayennePath dataRowKey) {
         ResultNodeDescriptor resultNode = new ResultNodeDescriptor(node, inDataRow, property, dataRowKey);
-        if(appendResultToRoot) {
+        if (appendResultToRoot) {
             resultNodeList.add(rootSegmentEnd + 1, resultNode);
         } else {
             resultNodeList.add(resultNode);
@@ -297,7 +309,7 @@ public class TranslatorContext implements SQLGenerationContext {
     }
 
     void appendQualifierNode(Node qualifierNode) {
-        if(this.qualifierNode == null) {
+        if (this.qualifierNode == null) {
             this.qualifierNode = qualifierNode;
         } else {
             this.qualifierNode = exp(node(this.qualifierNode)).and(node(qualifierNode)).build();
