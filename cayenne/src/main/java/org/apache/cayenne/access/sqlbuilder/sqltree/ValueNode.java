@@ -39,7 +39,6 @@ public class ValueNode extends Node {
 
     private final Object value;
     private final boolean isArray;
-    // Used as hint for type of this value
     private final DbAttribute attribute;
     private final boolean needBinding;
 
@@ -74,54 +73,41 @@ public class ValueNode extends Node {
     }
 
     private void appendValue(Object val, QuotingAppendable buffer) {
-        if(val == null) {
+        if (val == null) {
             appendNullValue(buffer);
             return;
         }
 
-        if(isArray && val.getClass().isArray()) {
-            if(val instanceof short[]) {
-                appendValue((short[])val, buffer);
-            } else if(val instanceof char[]) {
-                appendValue((char[])val, buffer);
-            } else if(val instanceof int[]) {
-                appendValue((int[])val, buffer);
-            } else if(val instanceof long[]) {
-                appendValue((long[])val, buffer);
-            } else if(val instanceof float[]) {
-                appendValue((float[])val, buffer);
-            } else if(val instanceof double[]) {
-                appendValue((double[])val, buffer);
-            } else if(val instanceof boolean[]) {
-                appendValue((boolean[])val, buffer);
-            } else if(val instanceof Object[]) {
-                appendValue((Object[]) val, buffer);
-            } else if(val instanceof byte[]) {
-                // append byte[] array as single object
-                appendValue((byte[])val, buffer);
-            } else {
-                throw new CayenneRuntimeException("Unsupported array type %s", val.getClass().getName());
+        if (isArray && val.getClass().isArray()) {
+            switch (val) {
+                case short[] shorts -> appendValue(shorts, buffer);
+                case char[] chars -> appendValue(chars, buffer);
+                case int[] ints -> appendValue(ints, buffer);
+                case long[] longs -> appendValue(longs, buffer);
+                case float[] floats -> appendValue(floats, buffer);
+                case double[] doubles -> appendValue(doubles, buffer);
+                case boolean[] booleans -> appendValue(booleans, buffer);
+                case Object[] objects -> appendValue(objects, buffer);
+                // append byte[] array as a single object
+                case byte[] bytes -> appendValue(bytes, buffer);
+                default -> throw new CayenneRuntimeException("Unsupported array type %s", val.getClass().getName());
             }
         } else {
-            if(val instanceof Persistent persistent) {
-                appendValue(persistent, buffer);
-            } else if(val instanceof ObjectId objectId) {
-                appendValue(objectId, buffer);
-            } else if(val instanceof Supplier<?> supplier) {
-                appendValue(supplier.get(), buffer);
-            } else if(val instanceof CharSequence charSequence) {
-                appendStringValue(buffer, charSequence);
-            } else {
-                appendObjectValue(buffer, val);
+            switch (val) {
+                case Persistent persistent -> appendValue(persistent, buffer);
+                case ObjectId objectId -> appendValue(objectId, buffer);
+                case Supplier<?> supplier -> appendValue(supplier.get(), buffer);
+                case CharSequence charSequence -> appendStringValue(buffer, charSequence);
+                default -> appendObjectValue(buffer, val);
             }
         }
     }
 
     protected void appendObjectValue(QuotingAppendable buffer, Object value) {
-        if(value == null) {
+        if (value == null) {
             return;
         }
-        if(buffer.getContext() == null || !needBinding) {
+        if (buffer.getContext() == null || !needBinding) {
             buffer.append(' ').append(value.toString());
         } else {
             buffer.append(" ?");
@@ -130,7 +116,7 @@ public class ValueNode extends Node {
     }
 
     protected void appendStringValue(QuotingAppendable buffer, CharSequence value) {
-        if(buffer.getContext() == null || !needBinding) {
+        if (buffer.getContext() == null || !needBinding) {
             buffer.append(" '").append(value).append("'");
         } else {
             // value can't be null here
@@ -147,16 +133,10 @@ public class ValueNode extends Node {
 
         // 'attribute' is only a type hint and may be absent (e.g. function arguments and other
         // literals not bound to a column); fall back to deriving the JDBC type from the value
-        ParameterBinding binding;
-        if (attribute != null) {
-            binding = new ParameterBinding(
-                    context.getAdapter().preferredBindingType(attribute.getType()),
-                    attribute.getScale(),
-                    attribute);
-        } else {
-            int jdbcType = context.getAdapter().preferredBindingType(TypesMapping.getSqlTypeByJava(value.getClass()));
-            binding = new ParameterBinding(jdbcType, -1);
-        }
+        ParameterBinding binding = (attribute != null)
+                ? new ParameterBinding(context.getAdapter().preferredBindingType(attribute.getType()), attribute.getScale(), attribute)
+                : new ParameterBinding(context.getAdapter().preferredBindingType(TypesMapping.getSqlTypeByJava(value.getClass())), -1);
+
         binding.reset(context.getBindings().size() + 1, value, extendedType);
         context.getBindings().add(binding);
     }
@@ -166,15 +146,15 @@ public class ValueNode extends Node {
     }
 
     private void appendValue(ObjectId value, QuotingAppendable buffer) {
-        for(Object idVal: value.getIdSnapshot().values()) {
+        for (Object idVal : value.getIdSnapshot().values()) {
             appendValue(idVal, buffer);
         }
     }
 
     private void appendValue(short[] val, QuotingAppendable buffer) {
         boolean first = true;
-        for(short i : val) {
-            if(first) {
+        for (short i : val) {
+            if (first) {
                 first = false;
             } else {
                 buffer.append(',');
@@ -185,8 +165,8 @@ public class ValueNode extends Node {
 
     private void appendValue(char[] val, QuotingAppendable buffer) {
         boolean first = true;
-        for(char i : val) {
-            if(first) {
+        for (char i : val) {
+            if (first) {
                 first = false;
             } else {
                 buffer.append(',');
@@ -197,8 +177,8 @@ public class ValueNode extends Node {
 
     private void appendValue(int[] val, QuotingAppendable buffer) {
         boolean first = true;
-        for(int i : val) {
-            if(first) {
+        for (int i : val) {
+            if (first) {
                 first = false;
             } else {
                 buffer.append(',');
@@ -209,8 +189,8 @@ public class ValueNode extends Node {
 
     private void appendValue(long[] val, QuotingAppendable buffer) {
         boolean first = true;
-        for(long i : val) {
-            if(first) {
+        for (long i : val) {
+            if (first) {
                 first = false;
             } else {
                 buffer.append(',');
@@ -221,8 +201,8 @@ public class ValueNode extends Node {
 
     private void appendValue(float[] val, QuotingAppendable buffer) {
         boolean first = true;
-        for(float i : val) {
-            if(first) {
+        for (float i : val) {
+            if (first) {
                 first = false;
             } else {
                 buffer.append(',');
@@ -233,8 +213,8 @@ public class ValueNode extends Node {
 
     private void appendValue(double[] val, QuotingAppendable buffer) {
         boolean first = true;
-        for(double i : val) {
-            if(first) {
+        for (double i : val) {
+            if (first) {
                 first = false;
             } else {
                 buffer.append(',');
@@ -245,8 +225,8 @@ public class ValueNode extends Node {
 
     private void appendValue(boolean[] val, QuotingAppendable buffer) {
         boolean first = true;
-        for(boolean i : val) {
-            if(first) {
+        for (boolean i : val) {
+            if (first) {
                 first = false;
             } else {
                 buffer.append(',');
@@ -257,8 +237,8 @@ public class ValueNode extends Node {
 
     private void appendValue(byte[] val, QuotingAppendable buffer) {
         boolean first = true;
-        for(byte i : val) {
-            if(first) {
+        for (byte i : val) {
+            if (first) {
                 first = false;
             } else {
                 buffer.append(',');
@@ -269,8 +249,8 @@ public class ValueNode extends Node {
 
     private void appendValue(Object[] val, QuotingAppendable buffer) {
         boolean first = true;
-        for(Object i : val) {
-            if(first) {
+        for (Object i : val) {
+            if (first) {
                 first = false;
             } else {
                 buffer.append(',');
