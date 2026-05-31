@@ -19,17 +19,18 @@
 
 package org.apache.cayenne.access.sqlbuilder.sqltree;
 
-import java.util.Objects;
-import java.util.function.Supplier;
-
 import org.apache.cayenne.CayenneRuntimeException;
 import org.apache.cayenne.ObjectId;
 import org.apache.cayenne.Persistent;
-import org.apache.cayenne.access.sqlbuilder.SQLGenerationContext;
-import org.apache.cayenne.access.translator.DbAttributeBinding;
 import org.apache.cayenne.access.sqlbuilder.QuotingAppendable;
+import org.apache.cayenne.access.sqlbuilder.SQLGenerationContext;
+import org.apache.cayenne.access.translator.ParameterBinding;
 import org.apache.cayenne.access.types.ExtendedType;
+import org.apache.cayenne.dba.TypesMapping;
 import org.apache.cayenne.map.DbAttribute;
+
+import java.util.Objects;
+import java.util.function.Supplier;
 
 /**
  * @since 4.2
@@ -143,10 +144,20 @@ public class ValueNode extends Node {
         SQLGenerationContext context = buffer.getContext();
         // allow translation in out-of-context scope, to be able to use as a standalone SQL generator
         ExtendedType<?> extendedType = context.getAdapter().getExtendedTypes().getRegisteredType(value.getClass());
-        DbAttributeBinding binding = new DbAttributeBinding(attribute);
-        binding.setStatementPosition(context.getBindings().size() + 1);
-        binding.setExtendedType(extendedType);
-        binding.setValue(value);
+
+        // 'attribute' is only a type hint and may be absent (e.g. function arguments and other
+        // literals not bound to a column); fall back to deriving the JDBC type from the value
+        ParameterBinding binding;
+        if (attribute != null) {
+            binding = new ParameterBinding(
+                    context.getAdapter().preferredBindingType(attribute.getType()),
+                    attribute.getScale(),
+                    attribute);
+        } else {
+            int jdbcType = context.getAdapter().preferredBindingType(TypesMapping.getSqlTypeByJava(value.getClass()));
+            binding = new ParameterBinding(jdbcType, -1);
+        }
+        binding.include(context.getBindings().size() + 1, value, extendedType);
         context.getBindings().add(binding);
     }
 

@@ -26,7 +26,7 @@ import org.apache.cayenne.access.sqlbuilder.NodeBuilder;
 import org.apache.cayenne.access.sqlbuilder.SQLBuilder;
 import org.apache.cayenne.access.sqlbuilder.SQLGenerationVisitor;
 import org.apache.cayenne.access.sqlbuilder.sqltree.Node;
-import org.apache.cayenne.access.translator.DbAttributeBinding;
+import org.apache.cayenne.access.translator.ParameterBinding;
 import org.apache.cayenne.access.translator.select.DefaultQuotingAppendable;
 import org.apache.cayenne.dba.DbAdapter;
 import org.apache.cayenne.map.DbAttribute;
@@ -40,13 +40,13 @@ public abstract class BaseBatchTranslator<T extends BatchQuery> {
 
     protected final BatchTranslatorContext<T> context;
 
-    protected DbAttributeBinding[] bindings;
+    protected ParameterBinding[] bindings;
 
     public BaseBatchTranslator(T query, DbAdapter adapter) {
         this.context = new BatchTranslatorContext<>(query, adapter);
     }
 
-    public DbAttributeBinding[] getBindings() {
+    public ParameterBinding[] getBindings() {
         return bindings;
     }
 
@@ -65,7 +65,7 @@ public abstract class BaseBatchTranslator<T extends BatchQuery> {
         SQLGenerationVisitor visitor = new SQLGenerationVisitor(new DefaultQuotingAppendable(context));
         node.visit(visitor);
 
-        bindings = context.getBindings().toArray(new DbAttributeBinding[0]);
+        bindings = context.getBindings().toArray(new ParameterBinding[0]);
         return visitor.getSQLString();
     }
 

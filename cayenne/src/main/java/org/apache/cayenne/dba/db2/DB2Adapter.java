@@ -164,7 +164,6 @@ public class DB2Adapter extends JdbcAdapter {
         if (binding.getValue() == null && (binding.getJdbcType() == 0 || binding.getJdbcType() == Types.BOOLEAN)) {
             statement.setNull(binding.getStatementPosition(), Types.VARCHAR);
         } else {
-            binding.setJdbcType(convertNTypes(binding.getJdbcType()));
             super.bindParameter(statement, binding);
         }
     }
@@ -180,10 +179,11 @@ public class DB2Adapter extends JdbcAdapter {
     }
 
     /**
-     * @since 4.0
+     * @since 5.0
      */
-    private int convertNTypes(int sqlType) {
-        switch (sqlType) {
+    @Override
+    public int preferredBindingType(int jdbcType) {
+        switch (jdbcType) {
             case Types.NCHAR:
                 return Types.CHAR;
             case Types.NVARCHAR:
@@ -194,7 +194,7 @@ public class DB2Adapter extends JdbcAdapter {
                 return Types.CLOB;
 
             default:
-                return sqlType;
+                return jdbcType;
         }
     }
 

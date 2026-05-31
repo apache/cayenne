@@ -27,7 +27,7 @@ import java.util.List;
 import java.util.Map;
 
 import org.apache.cayenne.access.translator.ParameterBinding;
-import org.apache.cayenne.access.translator.ProcedureParameterBinding;
+import org.apache.cayenne.access.translator.ParameterBinding;
 import org.apache.cayenne.access.types.ExtendedType;
 import org.apache.cayenne.dba.DbAdapter;
 import org.apache.cayenne.log.JdbcEventLogger;
@@ -160,8 +160,8 @@ public class ProcedureTranslator {
 				if(value instanceof NotInParam) {
 					value = value.toString();
 				}
-				parameterBindings[i] = new ParameterBinding(value,
-						procedureParameter.getType(), procedureParameter.getPrecision());
+				parameterBindings[i] = new ParameterBinding(procedureParameter.getType(), procedureParameter.getPrecision())
+						.include(i + 1, value, null);
 			}
 			logger.logQuery(sqlStr, parameterBindings);
 		}
@@ -231,10 +231,8 @@ public class ProcedureTranslator {
 				? adapter.getExtendedTypes().getRegisteredType(val.getClass())
 				: adapter.getExtendedTypes().getDefaultType();
 
-		ProcedureParameterBinding binding = new ProcedureParameterBinding(param);
-		binding.setStatementPosition(pos);
-		binding.setValue(val);
-		binding.setExtendedType(extendedType);
+		ParameterBinding binding = new ParameterBinding(adapter.preferredBindingType(param.getType()), param.getPrecision())
+				.include(pos, val, extendedType);
 		adapter.bindParameter(stmt, binding);
 	}
 

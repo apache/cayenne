@@ -24,7 +24,7 @@ import java.util.Collection;
 import java.util.List;
 
 import org.apache.cayenne.access.sqlbuilder.SQLGenerationContext;
-import org.apache.cayenne.access.translator.DbAttributeBinding;
+import org.apache.cayenne.access.translator.ParameterBinding;
 import org.apache.cayenne.dba.DbAdapter;
 import org.apache.cayenne.dba.QuotingStrategy;
 import org.apache.cayenne.map.DbEntity;
@@ -38,7 +38,7 @@ class BatchTranslatorContext<T extends BatchQuery> implements SQLGenerationConte
 
     private final T query;
     private final DbAdapter adapter;
-    private final List<DbAttributeBinding> bindings;
+    private final List<ParameterBinding> bindings;
 
     BatchTranslatorContext(T query, DbAdapter adapter) {
         this.query = query;
@@ -52,7 +52,7 @@ class BatchTranslatorContext<T extends BatchQuery> implements SQLGenerationConte
     }
 
     @Override
-    public Collection<DbAttributeBinding> getBindings() {
+    public Collection<ParameterBinding> getBindings() {
         return bindings;
     }
 

@@ -26,7 +26,6 @@ import org.apache.cayenne.access.OperationObserver;
 import org.apache.cayenne.access.jdbc.reader.RowReader;
 import org.apache.cayenne.access.translator.ParameterBinding;
 import org.apache.cayenne.access.translator.sqltemplate.TranslatedSQL;
-import org.apache.cayenne.access.types.ExtendedType;
 import org.apache.cayenne.access.types.ExtendedTypeMap;
 import org.apache.cayenne.dba.DbAdapter;
 import org.apache.cayenne.dba.TypesMapping;
@@ -125,25 +124,12 @@ public class SQLTemplateAction implements SQLAction {
         callback.nextBatchCount(query, ints);
     }
 
-    private void bindExtendedTypes(ParameterBinding[] bindings) {
-        int i = 1;
-        for (ParameterBinding binding : bindings) {
-            Object value = binding.getValue();
-            ExtendedType extendedType = value != null
-                    ? getAdapter().getExtendedTypes().getRegisteredType(value.getClass())
-                    : getAdapter().getExtendedTypes().getDefaultType();
-            binding.setExtendedType(extendedType);
-            binding.setStatementPosition(i++);
-        }
-    }
-
     private void runWithPositionalParameters(Connection connection, OperationObserver callback, String template,
                                              Collection<Number> counts, boolean loggable) throws Exception {
 
         TranslatedSQL compiled = dataNode.getSqlTemplateTranslator().translate(template,
-                query.getPositionalParams());
+                query.getPositionalParams(), getAdapter());
 
-        bindExtendedTypes(compiled.bindings());
         if (loggable) {
             dataNode.getJdbcEventLogger().logQuery(compiled.sql(), compiled.bindings());
         }
@@ -171,8 +157,7 @@ public class SQLTemplateAction implements SQLAction {
 
         for (int i = 0; i < batchSize; i++) {
             Map<String, ?> nextParameters = it.next();
-            TranslatedSQL compiled = dataNode.getSqlTemplateTranslator().translate(template, nextParameters);
-            bindExtendedTypes(compiled.bindings());
+            TranslatedSQL compiled = dataNode.getSqlTemplateTranslator().translate(template, nextParameters, getAdapter());
             if (loggable) {
                 dataNode.getJdbcEventLogger().logQuery(compiled.sql(), compiled.bindings());
             }

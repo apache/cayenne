@@ -21,28 +21,37 @@ package org.apache.cayenne.velocity;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNull;
+import static org.mockito.ArgumentMatchers.anyInt;
+import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.when;
 
 import java.util.Collections;
 
 import org.apache.cayenne.access.jdbc.ColumnDescriptor;
 import org.apache.cayenne.access.translator.sqltemplate.TranslatedSQL;
+import org.apache.cayenne.access.types.ExtendedTypeMap;
+import org.apache.cayenne.dba.DbAdapter;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
 public class VelocitySQLTemplateTranslator_SelectTest {
 
 	private VelocitySQLTemplateTranslator processor;
+	private DbAdapter adapter;
 
 	@BeforeEach
 	public void before() {
 		processor = new VelocitySQLTemplateTranslator();
+		adapter = mock(DbAdapter.class);
+		when(adapter.preferredBindingType(anyInt())).thenAnswer(i -> i.getArgument(0));
+		when(adapter.getExtendedTypes()).thenReturn(new ExtendedTypeMap());
 	}
 
 	@Test
 	public void processTemplateUnchanged() throws Exception {
 		String sqlTemplate = "SELECT * FROM ME";
 
-		TranslatedSQL compiled = processor.translate(sqlTemplate, Collections.<String, Object> emptyMap());
+		TranslatedSQL compiled = processor.translate(sqlTemplate, Collections.<String, Object> emptyMap(), adapter);
 
 		assertEquals(sqlTemplate, compiled.sql());
 		assertEquals(0, compiled.bindings().length);
@@ -53,7 +62,7 @@ public class VelocitySQLTemplateTranslator_SelectTest {
 	public void processSelectTemplate1() throws Exception {
 		String sqlTemplate = "SELECT #result('A') FROM ME";
 
-		TranslatedSQL compiled = processor.translate(sqlTemplate, Collections.<String, Object> emptyMap());
+		TranslatedSQL compiled = processor.translate(sqlTemplate, Collections.<String, Object> emptyMap(), adapter);
 
 		assertEquals("SELECT A FROM ME", compiled.sql());
 		assertEquals(0, compiled.bindings().length);
@@ -66,7 +75,7 @@ public class VelocitySQLTemplateTranslator_SelectTest {
 	public void processSelectTemplate2() throws Exception {
 		String sqlTemplate = "SELECT #result('A' 'String') FROM ME";
 
-		TranslatedSQL compiled = processor.translate(sqlTemplate, Collections.<String, Object> emptyMap());
+		TranslatedSQL compiled = processor.translate(sqlTemplate, Collections.<String, Object> emptyMap(), adapter);
 
 		assertEquals("SELECT A FROM ME", compiled.sql());
 		assertEquals(0, compiled.bindings().length);
@@ -80,7 +89,7 @@ public class VelocitySQLTemplateTranslator_SelectTest {
 	public void processSelectTemplate3() throws Exception {
 		String sqlTemplate = "SELECT #result('A' 'String' 'B') FROM ME";
 
-		TranslatedSQL compiled = processor.translate(sqlTemplate, Collections.<String, Object> emptyMap());
+		TranslatedSQL compiled = processor.translate(sqlTemplate, Collections.<String, Object> emptyMap(), adapter);
 
 		assertEquals("SELECT A AS B FROM ME", compiled.sql());
 		assertEquals(0, compiled.bindings().length);
@@ -96,7 +105,7 @@ public class VelocitySQLTemplateTranslator_SelectTest {
 	public void processSelectTemplate4() throws Exception {
 		String sqlTemplate = "SELECT #result('A'), #result('B'), #result('C') FROM ME";
 
-		TranslatedSQL compiled = processor.translate(sqlTemplate, Collections.<String, Object> emptyMap());
+		TranslatedSQL compiled = processor.translate(sqlTemplate, Collections.<String, Object> emptyMap(), adapter);
 
 		assertEquals("SELECT A, B, C FROM ME", compiled.sql());
 		assertEquals(0, compiled.bindings().length);

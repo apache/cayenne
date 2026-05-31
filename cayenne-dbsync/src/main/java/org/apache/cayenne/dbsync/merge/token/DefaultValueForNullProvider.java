@@ -33,8 +33,11 @@ public class DefaultValueForNullProvider implements ValueForNullProvider {
     private Map<String, ParameterBinding> values = new HashMap<>();
 
     public void set(DbEntity entity, DbAttribute column, Object value, int type) {
-        values.put(createKey(entity, column), new ParameterBinding(value, type, column
-                .getAttributePrecision()));
+        // the binding is only ever read for its value (inlined into the UPDATE below), never bound to a
+        // statement, so the position is irrelevant here
+        ParameterBinding binding = new ParameterBinding(type, column.getAttributePrecision())
+                .include(1, value, null);
+        values.put(createKey(entity, column), binding);
     }
 
     protected ParameterBinding get(DbEntity entity, DbAttribute column) {

@@ -139,15 +139,12 @@ public class SQLServerAdapter extends JdbcAdapter {
 
         // SQL Server driver doesn't like CLOBs and BLOBs as parameters
         if (binding.getValue() == null) {
-            if (binding.getJdbcType() == Types.CLOB) {
-                binding.setJdbcType(Types.VARCHAR);
-            } else if (binding.getJdbcType() == Types.BLOB) {
-                binding.setJdbcType(Types.VARBINARY);
-            }
-        }
-
-        if (binding.getValue() == null && binding.getJdbcType() == 0) {
-            statement.setNull(binding.getStatementPosition(), Types.VARCHAR);
+            int jdbcType = switch (binding.getJdbcType()) {
+                case Types.CLOB, 0 -> Types.VARCHAR;
+                case Types.BLOB -> Types.VARBINARY;
+                default -> binding.getJdbcType();
+            };
+            statement.setNull(binding.getStatementPosition(), jdbcType);
         } else {
             super.bindParameter(statement, binding);
         }

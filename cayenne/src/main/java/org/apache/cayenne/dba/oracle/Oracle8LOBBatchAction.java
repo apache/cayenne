@@ -21,7 +21,7 @@ package org.apache.cayenne.dba.oracle;
 
 import org.apache.cayenne.CayenneRuntimeException;
 import org.apache.cayenne.access.OperationObserver;
-import org.apache.cayenne.access.translator.DbAttributeBinding;
+import org.apache.cayenne.access.translator.ParameterBinding;
 import org.apache.cayenne.access.types.ExtendedType;
 import org.apache.cayenne.dba.DbAdapter;
 import org.apache.cayenne.log.JdbcEventLogger;
@@ -52,14 +52,6 @@ class Oracle8LOBBatchAction implements SQLAction {
 	private final BatchQuery query;
 	private final DbAdapter adapter;
 	private final JdbcEventLogger logger;
-
-	private static void bind(DbAdapter adapter, PreparedStatement statement, DbAttributeBinding[] bindings) throws Exception {
-
-		for (DbAttributeBinding b : bindings) {
-			DbAttributeBinding binding = new DbAttributeBinding(b.getAttribute());
-			adapter.bindParameter(statement, binding);
-		}
-	}
 
 	Oracle8LOBBatchAction(BatchQuery query, DbAdapter adapter, JdbcEventLogger logger) {
 		this.adapter = adapter;
@@ -103,10 +95,14 @@ class Oracle8LOBBatchAction implements SQLAction {
 
 			try (PreparedStatement statement = connection.prepareStatement(updateStr)) {
 
-				DbAttributeBinding[] bindings = translator.updateBindings(row);
+				ParameterBinding[] bindings = translator.updateBindings(row);
 				logger.logQueryParameters("bind", bindings);
 
-				bind(adapter, statement, bindings);
+				for (ParameterBinding b : bindings) {
+					if (!b.isExcluded()) {
+						adapter.bindParameter(statement, b);
+					}
+				}
 
 				updated = statement.executeUpdate();
 				logger.logUpdateCount(updated);
@@ -138,9 +134,9 @@ class Oracle8LOBBatchAction implements SQLAction {
 		String selectStr = queryBuilder.createLOBSelectString(lobAttributes, qualifierAttributes);
 
 		try (PreparedStatement selectStatement = con.prepareStatement(selectStr)) {
-			DbAttributeBinding[] attributeBindings = null;
+			ParameterBinding[] attributeBindings = null;
 			if(isLoggable) {
-				attributeBindings = new DbAttributeBinding[parametersSize];
+				attributeBindings = new ParameterBinding[parametersSize];
 			}
 			for (int i = 0; i < parametersSize; i++) {
 				DbAttribute attribute = qualifierAttributes.get(i);
@@ -149,10 +145,10 @@ class Oracle8LOBBatchAction implements SQLAction {
 						? adapter.getExtendedTypes().getRegisteredType(value.getClass())
 						: adapter.getExtendedTypes().getDefaultType();
 
-				DbAttributeBinding binding = new DbAttributeBinding(attribute);
-				binding.setStatementPosition(i + 1);
-				binding.setValue(value);
-				binding.setExtendedType(extendedType);
+				ParameterBinding binding = new ParameterBinding(
+						adapter.preferredBindingType(attribute.getType()), attribute.getScale(), attribute
+				);
+				binding.include(i + 1, value, extendedType);
 				adapter.bindParameter(selectStatement, binding);
 				if(isLoggable) {
 					attributeBindings[i] = binding;

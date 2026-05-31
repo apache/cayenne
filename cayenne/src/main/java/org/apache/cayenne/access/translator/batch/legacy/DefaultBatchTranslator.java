@@ -20,7 +20,7 @@ package org.apache.cayenne.access.translator.batch.legacy;
 
 import java.sql.Types;
 
-import org.apache.cayenne.access.translator.DbAttributeBinding;
+import org.apache.cayenne.access.translator.ParameterBinding;
 import org.apache.cayenne.access.translator.batch.BatchTranslator;
 import org.apache.cayenne.dba.DbAdapter;
 import org.apache.cayenne.dba.QuotingStrategy;
@@ -43,7 +43,7 @@ public abstract class DefaultBatchTranslator implements BatchTranslator {
 
     protected boolean translated;
     protected String sql;
-    protected DbAttributeBinding[] bindings;
+    protected ParameterBinding[] bindings;
 
     public DefaultBatchTranslator(BatchQuery query, DbAdapter adapter, String trimFunction) {
         this.query = query;
@@ -70,22 +70,22 @@ public abstract class DefaultBatchTranslator implements BatchTranslator {
     }
 
     @Override
-    public DbAttributeBinding[] getBindings() {
+    public ParameterBinding[] getBindings() {
         ensureTranslated();
         return bindings;
     }
     
     @Override
-    public DbAttributeBinding[] updateBindings(BatchQueryRow row) {
+    public ParameterBinding[] updateBindings(BatchQueryRow row) {
         ensureTranslated();
         return doUpdateBindings(row);
     }
 
     protected abstract String createSql();
 
-    protected abstract DbAttributeBinding[] createBindings();
+    protected abstract ParameterBinding[] createBindings();
     
-    protected abstract DbAttributeBinding[] doUpdateBindings(BatchQueryRow row);
+    protected abstract ParameterBinding[] doUpdateBindings(BatchQueryRow row);
 
     /**
      * Appends the name of the column to the query buffer. Subclasses use this

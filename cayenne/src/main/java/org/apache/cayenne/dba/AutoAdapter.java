@@ -218,6 +218,14 @@ public class AutoAdapter implements DbAdapter {
 		getAdapter().bindParameter(statement, parameterBinding);
 	}
 
+	/**
+	 * @since 5.0
+	 */
+	@Override
+	public int preferredBindingType(int jdbcType) {
+		return getAdapter().preferredBindingType(jdbcType);
+	}
+
 	@Override
 	public String tableTypeForTable() {
 		return getAdapter().tableTypeForTable();

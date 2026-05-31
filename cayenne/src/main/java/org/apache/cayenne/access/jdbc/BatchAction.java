@@ -25,7 +25,7 @@ import org.apache.cayenne.access.DataNode;
 import org.apache.cayenne.access.OperationObserver;
 import org.apache.cayenne.access.OptimisticLockException;
 import org.apache.cayenne.access.jdbc.reader.RowReader;
-import org.apache.cayenne.access.translator.DbAttributeBinding;
+import org.apache.cayenne.access.translator.ParameterBinding;
 import org.apache.cayenne.access.translator.batch.BatchTranslator;
 import org.apache.cayenne.dba.DbAdapter;
 import org.apache.cayenne.log.JdbcEventLogger;
@@ -55,10 +55,10 @@ public class BatchAction extends BaseSQLAction {
 	protected BatchQuery query;
 	protected RowDescriptor keyRowDescriptor;
 
-	private static void bind(DbAdapter adapter, PreparedStatement statement, DbAttributeBinding[] bindings)
+	private static void bind(DbAdapter adapter, PreparedStatement statement, ParameterBinding[] bindings)
 			throws Exception {
 
-		for (DbAttributeBinding b : bindings) {
+		for (ParameterBinding b : bindings) {
 			if (!b.isExcluded()) {
 				adapter.bindParameter(statement, b);
 			}
@@ -130,7 +130,7 @@ public class BatchAction extends BaseSQLAction {
 		try (PreparedStatement statement = prepareStatement(con, sql, adapter, generatesKeys)) {
 			for (BatchQueryRow row : query.getRows()) {
 
-				DbAttributeBinding[] bindings = translator.updateBindings(row);
+				ParameterBinding[] bindings = translator.updateBindings(row);
 				logger.logQueryParameters("batch bind", bindings);
 				bind(adapter, statement, bindings);
 
@@ -189,7 +189,7 @@ public class BatchAction extends BaseSQLAction {
 		try (PreparedStatement statement = prepareStatement(connection, queryStr, adapter, generatesKeys)) {
 			for (BatchQueryRow row : query.getRows()) {
 
-				DbAttributeBinding[] bindings = translator.updateBindings(row);
+				ParameterBinding[] bindings = translator.updateBindings(row);
 				logger.logQueryParameters("bind", bindings);
 
 				bind(adapter, statement, bindings);

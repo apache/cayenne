@@ -199,13 +199,16 @@ public class DerbyAdapter extends JdbcAdapter {
         if (binding.getValue() == null && binding.getJdbcType() == 0) {
             statement.setNull(binding.getStatementPosition(), Types.VARCHAR);
         } else {
-            binding.setJdbcType(convertNTypes(binding.getJdbcType()));
             super.bindParameter(statement, binding);
         }
     }
 
-    private int convertNTypes(int sqlType) {
-        switch (sqlType) {
+    /**
+     * @since 5.0
+     */
+    @Override
+    public int preferredBindingType(int jdbcType) {
+        switch (jdbcType) {
             case Types.NCHAR:
                 return Types.CHAR;
             case Types.NVARCHAR:
@@ -216,7 +219,7 @@ public class DerbyAdapter extends JdbcAdapter {
                 return Types.CLOB;
 
             default:
-                return sqlType;
+                return jdbcType;
         }
     }
 

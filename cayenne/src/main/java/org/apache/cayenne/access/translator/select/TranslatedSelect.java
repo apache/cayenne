@@ -20,7 +20,7 @@
 package org.apache.cayenne.access.translator.select;
 
 import org.apache.cayenne.access.jdbc.ColumnDescriptor;
-import org.apache.cayenne.access.translator.DbAttributeBinding;
+import org.apache.cayenne.access.translator.ParameterBinding;
 
 /**
  * An immutable result of translating a {@link org.apache.cayenne.query.Select} query to SQL,
@@ -31,7 +31,7 @@ import org.apache.cayenne.access.translator.DbAttributeBinding;
 public record TranslatedSelect(
         String sql,
         ColumnDescriptor[] resultColumns,
-        DbAttributeBinding[] bindings,
+        ParameterBinding[] bindings,
         boolean suppressingDistinct,
         boolean hasJoins) {
 }

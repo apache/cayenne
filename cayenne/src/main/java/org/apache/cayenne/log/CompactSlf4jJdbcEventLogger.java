@@ -26,7 +26,6 @@ import java.util.Map;
 import java.util.regex.Pattern;
 import java.util.stream.Collectors;
 
-import org.apache.cayenne.access.translator.DbAttributeBinding;
 import org.apache.cayenne.access.translator.ParameterBinding;
 import org.apache.cayenne.configuration.RuntimeProperties;
 import org.apache.cayenne.di.Inject;
@@ -117,11 +116,9 @@ public class CompactSlf4jJdbcEventLogger extends Slf4jJdbcEventLogger {
                 continue;
             }
 
-            if (b instanceof DbAttributeBinding) {
-                DbAttribute attribute = ((DbAttributeBinding) b).getAttribute();
-                if (attribute != null) {
-                    key = attribute.getName();
-                }
+            DbAttribute attribute = b.getAttribute();
+            if (attribute != null) {
+                key = attribute.getName();
             }
 
             if (b.getExtendedType() != null) {

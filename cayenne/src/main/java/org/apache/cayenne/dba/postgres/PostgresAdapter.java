@@ -135,18 +135,13 @@ public class PostgresAdapter extends JdbcAdapter {
     }
 
     @Override
-    public void bindParameter(PreparedStatement statement, ParameterBinding binding) throws Exception {
-        binding.setJdbcType(mapNTypes(binding.getJdbcType()));
-        super.bindParameter(statement, binding);
-    }
-
-    private int mapNTypes(int sqlType) {
-        return switch (sqlType) {
+    public int preferredBindingType(int jdbcType) {
+        return switch (jdbcType) {
             case Types.NCHAR -> Types.CHAR;
             case Types.NCLOB -> Types.CLOB;
             case Types.NVARCHAR -> Types.VARCHAR;
             case Types.LONGNVARCHAR -> Types.LONGVARCHAR;
-            default -> sqlType;
+            default -> jdbcType;
         };
     }
 

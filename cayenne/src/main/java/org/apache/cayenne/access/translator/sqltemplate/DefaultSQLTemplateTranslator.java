@@ -20,6 +20,7 @@
 package org.apache.cayenne.access.translator.sqltemplate;
 
 import org.apache.cayenne.CayenneRuntimeException;
+import org.apache.cayenne.dba.DbAdapter;
 import org.apache.cayenne.di.Inject;
 import org.apache.cayenne.access.translator.sqltemplate.parser.Node;
 import org.apache.cayenne.access.translator.sqltemplate.parser.ParseException;
@@ -49,19 +50,19 @@ public class DefaultSQLTemplateTranslator implements SQLTemplateTranslator {
     }
 
     @Override
-    public TranslatedSQL translate(String template, Map<String, ?> parameters) {
-        Context context = contextFactory.createContext(parameters);
+    public TranslatedSQL translate(String template, Map<String, ?> parameters, DbAdapter adapter) {
+        Context context = contextFactory.createContext(parameters, adapter);
         return process(template, context);
     }
 
     @Override
-    public TranslatedSQL translate(String template, List<Object> positionalParameters) {
+    public TranslatedSQL translate(String template, List<Object> positionalParameters, DbAdapter adapter) {
         Map<String, Object> parameters = new HashMap<>();
         int i = 0;
         for (Object param : positionalParameters) {
             parameters.put(String.valueOf(i++), param);
         }
-        Context context = contextFactory.createContext(parameters, true);
+        Context context = contextFactory.createContext(parameters, true, adapter);
         return process(template, context);
     }
 

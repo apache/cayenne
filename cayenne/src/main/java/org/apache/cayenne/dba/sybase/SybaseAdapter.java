@@ -19,10 +19,6 @@
 
 package org.apache.cayenne.dba.sybase;
 
-import java.sql.PreparedStatement;
-import java.sql.Types;
-import java.util.List;
-
 import org.apache.cayenne.access.sqlbuilder.sqltree.SQLTreeProcessor;
 import org.apache.cayenne.access.translator.ParameterBinding;
 import org.apache.cayenne.access.translator.ejbql.EJBQLTranslatorFactory;
@@ -38,11 +34,14 @@ import org.apache.cayenne.configuration.Constants;
 import org.apache.cayenne.configuration.RuntimeProperties;
 import org.apache.cayenne.dba.DefaultQuotingStrategy;
 import org.apache.cayenne.dba.JdbcAdapter;
-import org.apache.cayenne.dba.PkGenerator;
 import org.apache.cayenne.dba.QuotingStrategy;
 import org.apache.cayenne.di.Inject;
 import org.apache.cayenne.map.DbAttribute;
 import org.apache.cayenne.resource.ResourceLocator;
+
+import java.sql.PreparedStatement;
+import java.sql.Types;
+import java.util.List;
 
 /**
  * DbAdapter implementation for <a href="http://www.sybase.com">Sybase RDBMS</a>.
@@ -116,15 +115,12 @@ public class SybaseAdapter extends JdbcAdapter {
 
         // Sybase driver doesn't like CLOBs and BLOBs as parameters
         if (binding.getValue() == null) {
-            if (binding.getJdbcType() == Types.CLOB) {
-                binding.setJdbcType(Types.VARCHAR);
-            } else if (binding.getJdbcType() == Types.BLOB) {
-                binding.setJdbcType(Types.VARBINARY);
-            }
-        }
-
-        if (binding.getValue() == null && binding.getJdbcType() == 0) {
-            statement.setNull(binding.getStatementPosition(), Types.VARCHAR);
+            int jdbcType = switch (binding.getJdbcType()) {
+                case Types.CLOB, 0 -> Types.VARCHAR;
+                case Types.BLOB -> Types.VARBINARY;
+                default -> binding.getJdbcType();
+            };
+            statement.setNull(binding.getStatementPosition(), jdbcType);
         } else {
             super.bindParameter(statement, binding);
         }

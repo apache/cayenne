@@ -19,12 +19,8 @@
 
 package org.apache.cayenne.dba.oracle;
 
-import java.sql.Types;
-import java.util.Iterator;
-import java.util.List;
-
 import org.apache.cayenne.CayenneRuntimeException;
-import org.apache.cayenne.access.translator.DbAttributeBinding;
+import org.apache.cayenne.access.translator.ParameterBinding;
 import org.apache.cayenne.access.translator.batch.legacy.DefaultBatchTranslator;
 import org.apache.cayenne.access.types.ExtendedType;
 import org.apache.cayenne.dba.DbAdapter;
@@ -33,6 +29,10 @@ import org.apache.cayenne.dba.TypesMapping;
 import org.apache.cayenne.map.DbAttribute;
 import org.apache.cayenne.query.BatchQuery;
 import org.apache.cayenne.query.BatchQueryRow;
+
+import java.sql.Types;
+import java.util.Iterator;
+import java.util.List;
 
 /**
  * Superclass of query builders for the DML operations involving LOBs.
@@ -46,8 +46,6 @@ abstract class Oracle8LOBBatchTranslator extends DefaultBatchTranslator {
     Oracle8LOBBatchTranslator(BatchQuery query, DbAdapter adapter, String trimFunction) {
         super(query, adapter, trimFunction);
     }
-
-    abstract List<Object> getValuesForLOBUpdateParameters(BatchQueryRow row);
 
     abstract String createSql(BatchQueryRow row);
 
@@ -111,27 +109,28 @@ abstract class Oracle8LOBBatchTranslator extends DefaultBatchTranslator {
     }
     
     @Override
-    protected DbAttributeBinding[] createBindings() {
+    protected ParameterBinding[] createBindings() {
         List<DbAttribute> dbAttributes = query.getDbAttributes();
         int len = dbAttributes.size();
 
-        DbAttributeBinding[] bindings = new DbAttributeBinding[len];
+        ParameterBinding[] bindings = new ParameterBinding[len];
 
         for (int i = 0; i < len; i++) {
-            bindings[i] = new DbAttributeBinding(dbAttributes.get(i));
+            DbAttribute attribute = dbAttributes.get(i);
+            bindings[i] = new ParameterBinding(adapter.preferredBindingType(attribute.getType()), attribute.getScale(), attribute);
         }
 
         return bindings;
     }
     
     @Override
-    protected DbAttributeBinding[] doUpdateBindings(BatchQueryRow row) {
+    protected ParameterBinding[] doUpdateBindings(BatchQueryRow row) {
 
         int len = bindings.length;
 
         for (int i = 0, j = 1; i < len; i++) {
 
-            DbAttributeBinding b = bindings[i];
+            ParameterBinding b = bindings[i];
 
             Object value = row.getValue(i);
             DbAttribute attribute = b.getAttribute();

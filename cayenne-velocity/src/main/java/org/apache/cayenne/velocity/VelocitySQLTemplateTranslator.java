@@ -24,6 +24,7 @@ import org.apache.cayenne.access.jdbc.ColumnDescriptor;
 import org.apache.cayenne.access.translator.sqltemplate.TranslatedSQL;
 import org.apache.cayenne.access.translator.sqltemplate.SQLTemplateTranslator;
 import org.apache.cayenne.access.translator.ParameterBinding;
+import org.apache.cayenne.dba.DbAdapter;
 import org.apache.cayenne.exp.ExpressionException;
 import org.apache.cayenne.access.translator.sqltemplate.SQLTemplateRenderingUtils;
 import org.apache.velocity.Template;
@@ -92,6 +93,7 @@ public class VelocitySQLTemplateTranslator implements SQLTemplateTranslator {
 	static final String BINDINGS_LIST_KEY = "bindings";
 	static final String RESULT_COLUMNS_LIST_KEY = "resultColumns";
 	static final String HELPER_KEY = "helper";
+	static final String ADAPTER_KEY = "adapter";
 
 	protected RuntimeInstance velocityRuntime;
 	protected SQLTemplateRenderingUtils renderingUtils;
@@ -123,17 +125,17 @@ public class VelocitySQLTemplateTranslator implements SQLTemplateTranslator {
 	 * as a "helper" variable and SQLStatement object as "statement" variable.
 	 */
 	@Override
-	public TranslatedSQL translate(String template, Map<String, ?> parameters) {
+	public TranslatedSQL translate(String template, Map<String, ?> parameters, DbAdapter adapter) {
 		// have to make a copy of parameter map since we are gonna modify it..
 		Map<String, Object> internalParameters = (parameters != null && !parameters.isEmpty()) ? new HashMap<>(
 				parameters) : new HashMap<String, Object>(5);
 
 		SimpleNode parsedTemplate = parse(template);
-		return translate(template, parsedTemplate, internalParameters);
+		return translate(template, parsedTemplate, internalParameters, adapter);
 	}
 
 	@Override
-	public TranslatedSQL translate(String template, List<Object> positionalParameters) {
+	public TranslatedSQL translate(String template, List<Object> positionalParameters, DbAdapter adapter) {
 
 		SimpleNode parsedTemplate = parse(template);
 
@@ -143,15 +145,16 @@ public class VelocitySQLTemplateTranslator implements SQLTemplateTranslator {
 		parsedTemplate.jjtAccept(visitor, null);
 		visitor.onFinish();
 
-		return translate(template, parsedTemplate, internalParameters);
+		return translate(template, parsedTemplate, internalParameters, adapter);
 	}
 
-	TranslatedSQL translate(String template, SimpleNode parsedTemplate, Map<String, Object> parameters) {
+	TranslatedSQL translate(String template, SimpleNode parsedTemplate, Map<String, Object> parameters, DbAdapter adapter) {
 		List<ParameterBinding> bindings = new ArrayList<>();
 		List<ColumnDescriptor> results = new ArrayList<>();
 		parameters.put(BINDINGS_LIST_KEY, bindings);
 		parameters.put(RESULT_COLUMNS_LIST_KEY, results);
 		parameters.put(HELPER_KEY, renderingUtils);
+		parameters.put(ADAPTER_KEY, adapter);
 
 		String sql;
 		try {

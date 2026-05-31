@@ -39,9 +39,9 @@ public class BindObjectNotEqual extends BindObjectEqual {
     }
 
     @Override
-    protected void render(Context context, ParameterBinding binding) {
-        if (binding.getValue() != null) {
-            context.addParameterBinding(binding);
+    protected void render(Context context, ParameterBinding binding, Object value) {
+        if (value != null) {
+            context.addParameterBinding(binding, value);
             context.getBuilder().append("<> ?");
         } else {
             context.getBuilder().append("IS NOT NULL");

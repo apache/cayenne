@@ -94,7 +94,7 @@ public class BindObjectEqualDirective extends BindDirective {
 
             renderColumn(context, writer, sqlColumnsArray[i], i);
             writer.write(' ');
-            render(context, writer, new ParameterBinding(value, jdbcType, -1));
+            render(context, writer, new ParameterBinding(preferredBindingType(context, jdbcType), -1), value);
         }
 
         return true;
@@ -151,10 +151,11 @@ public class BindObjectEqualDirective extends BindDirective {
     protected void render(
             InternalContextAdapter context,
             Writer writer,
-            ParameterBinding binding) throws IOException {
+            ParameterBinding binding,
+            Object value) throws IOException {
 
-        if (binding.getValue() != null) {
-            bind(context, binding);
+        if (value != null) {
+            bind(context, binding, value);
             writer.write("= ?");
         }
         else {

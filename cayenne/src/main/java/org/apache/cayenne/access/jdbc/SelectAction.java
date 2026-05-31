@@ -23,7 +23,7 @@ import org.apache.cayenne.ResultIterator;
 import org.apache.cayenne.access.DataNode;
 import org.apache.cayenne.access.OperationObserver;
 import org.apache.cayenne.access.jdbc.reader.RowReader;
-import org.apache.cayenne.access.translator.DbAttributeBinding;
+import org.apache.cayenne.access.translator.ParameterBinding;
 import org.apache.cayenne.access.translator.select.TranslatedSelect;
 import org.apache.cayenne.dba.DbAdapter;
 import org.apache.cayenne.log.JdbcEventLogger;
@@ -44,9 +44,9 @@ import java.util.List;
  */
 public class SelectAction extends BaseSQLAction {
 
-    private static void bind(DbAdapter adapter, PreparedStatement statement, DbAttributeBinding[] bindings) throws Exception {
+    private static void bind(DbAdapter adapter, PreparedStatement statement, ParameterBinding[] bindings) throws Exception {
 
-        for (DbAttributeBinding b : bindings) {
+        for (ParameterBinding b : bindings) {
 
             if (b.isExcluded()) {
                 continue;
