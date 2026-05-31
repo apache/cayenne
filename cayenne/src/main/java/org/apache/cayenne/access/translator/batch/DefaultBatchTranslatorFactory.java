@@ -34,15 +34,12 @@ public class DefaultBatchTranslatorFactory implements BatchTranslatorFactory {
 
     @Override
     public BatchTranslator translator(BatchQuery query, DbAdapter adapter, String trimFunction) {
-        if (query instanceof InsertBatchQuery) {
-            return insertTranslator((InsertBatchQuery) query, adapter);
-        } else if (query instanceof UpdateBatchQuery) {
-            return updateTranslator((UpdateBatchQuery) query, adapter);
-        } else if (query instanceof DeleteBatchQuery) {
-            return deleteTranslator((DeleteBatchQuery) query, adapter);
-        } else {
-            throw new CayenneRuntimeException("Unsupported batch query: %s", query);
-        }
+        return switch (query) {
+            case InsertBatchQuery insertBatchQuery -> insertTranslator(insertBatchQuery, adapter);
+            case UpdateBatchQuery updateBatchQuery -> updateTranslator(updateBatchQuery, adapter);
+            case DeleteBatchQuery deleteBatchQuery -> deleteTranslator(deleteBatchQuery, adapter);
+            case null, default -> throw new CayenneRuntimeException("Unsupported batch query: %s", query);
+        };
     }
 
     protected BatchTranslator deleteTranslator(DeleteBatchQuery query, DbAdapter adapter) {
