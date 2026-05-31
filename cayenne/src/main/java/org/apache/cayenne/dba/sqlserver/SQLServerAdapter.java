@@ -19,29 +19,37 @@
 
 package org.apache.cayenne.dba.sqlserver;
 
-import java.util.Collection;
-import java.util.Iterator;
-import java.util.List;
-import java.util.stream.Collectors;
-
 import org.apache.cayenne.CayenneRuntimeException;
 import org.apache.cayenne.access.DataNode;
 import org.apache.cayenne.access.sqlbuilder.sqltree.SQLTreeProcessor;
+import org.apache.cayenne.access.translator.ParameterBinding;
+import org.apache.cayenne.access.translator.ejbql.EJBQLTranslatorFactory;
+import org.apache.cayenne.access.types.ByteArrayType;
+import org.apache.cayenne.access.types.ByteType;
 import org.apache.cayenne.access.types.CharType;
 import org.apache.cayenne.access.types.ExtendedType;
 import org.apache.cayenne.access.types.ExtendedTypeFactory;
 import org.apache.cayenne.access.types.ExtendedTypeMap;
 import org.apache.cayenne.access.types.JsonType;
+import org.apache.cayenne.access.types.ShortType;
 import org.apache.cayenne.access.types.ValueObjectTypeRegistry;
 import org.apache.cayenne.configuration.Constants;
 import org.apache.cayenne.configuration.RuntimeProperties;
-import org.apache.cayenne.dba.sybase.SybaseAdapter;
+import org.apache.cayenne.dba.DefaultQuotingStrategy;
+import org.apache.cayenne.dba.JdbcAdapter;
+import org.apache.cayenne.dba.QuotingStrategy;
 import org.apache.cayenne.di.Inject;
 import org.apache.cayenne.map.DbAttribute;
 import org.apache.cayenne.map.DbEntity;
 import org.apache.cayenne.query.Query;
 import org.apache.cayenne.query.SQLAction;
 import org.apache.cayenne.resource.ResourceLocator;
+
+import java.sql.PreparedStatement;
+import java.sql.Types;
+import java.util.Collection;
+import java.util.List;
+import java.util.stream.Collectors;
 
 /**
  * <p>
@@ -80,94 +88,154 @@ import org.apache.cayenne.resource.ResourceLocator;
  *
  * @since 1.1
  */
-public class SQLServerAdapter extends SybaseAdapter {
+public class SQLServerAdapter extends JdbcAdapter {
 
-	/**
-	 * Stores the major version of the database.
-	 * Database versions 12 and higher supports the use of LIMIT,lower versions use TOP N.
-	 *
-	 * @since 4.2
-	 */
-	private Integer version;
+    /**
+     * Stores the major version of the database.
+     * Database versions 12 and higher supports the use of LIMIT,lower versions use TOP N.
+     */
+    private Integer version;
 
-	private final List<String> SYSTEM_SCHEMAS = List.of(
-			"db_accessadmin", "db_backupoperator",
-			"db_datareader", "db_datawriter", "db_ddladmin", "db_denydatareader",
-			"db_denydatawriter", "sys", "db_owner", "db_securityadmin", "INFORMATION_SCHEMA"
-	);
+    private final List<String> SYSTEM_SCHEMAS = List.of(
+            "db_accessadmin", "db_backupoperator",
+            "db_datareader", "db_datawriter", "db_ddladmin", "db_denydatareader",
+            "db_denydatawriter", "sys", "db_owner", "db_securityadmin", "INFORMATION_SCHEMA"
+    );
 
-	private final List<String> SYSTEM_CATALOGS = List.of("model", "msdb", "tempdb");
+    private final List<String> SYSTEM_CATALOGS = List.of("model", "msdb", "tempdb");
 
-	public SQLServerAdapter(@Inject RuntimeProperties runtimeProperties,
-							@Inject(Constants.DEFAULT_TYPES_LIST) List<ExtendedType> defaultExtendedTypes,
-							@Inject(Constants.USER_TYPES_LIST) List<ExtendedType> userExtendedTypes,
-							@Inject(Constants.TYPE_FACTORIES_LIST) List<ExtendedTypeFactory> extendedTypeFactories,
-							@Inject(Constants.RESOURCE_LOCATOR) ResourceLocator resourceLocator,
-							@Inject ValueObjectTypeRegistry valueObjectTypeRegistry) {
-		super(runtimeProperties, defaultExtendedTypes, userExtendedTypes, extendedTypeFactories, resourceLocator, valueObjectTypeRegistry);
+    public SQLServerAdapter(@Inject RuntimeProperties runtimeProperties,
+                            @Inject(Constants.DEFAULT_TYPES_LIST) List<ExtendedType> defaultExtendedTypes,
+                            @Inject(Constants.USER_TYPES_LIST) List<ExtendedType> userExtendedTypes,
+                            @Inject(Constants.TYPE_FACTORIES_LIST) List<ExtendedTypeFactory> extendedTypeFactories,
+                            @Inject(Constants.RESOURCE_LOCATOR) ResourceLocator resourceLocator,
+                            @Inject ValueObjectTypeRegistry valueObjectTypeRegistry) {
+        super(runtimeProperties, defaultExtendedTypes, userExtendedTypes, extendedTypeFactories, resourceLocator, valueObjectTypeRegistry);
 
-		this.setSupportsBatchUpdates(true);
-	}
+        this.setSupportsGeneratedKeys(true);
+        this.setSupportsBatchUpdates(true);
+    }
+
+    @Override
+    protected QuotingStrategy createQuotingStrategy() {
+        return new DefaultQuotingStrategy("[", "]");
+    }
+
+    @Override
+    protected EJBQLTranslatorFactory createEJBQLTranslatorFactory() {
+        return new SQLServerEJBQLTranslatorFactory();
+    }
+
+    /**
+     * Returns the word "go".
+     */
+    @Override
+    public String getBatchTerminator() {
+        return "go";
+    }
+
+    @Override
+    public void bindParameter(PreparedStatement statement, ParameterBinding binding) throws Exception {
+
+        // SQL Server driver doesn't like CLOBs and BLOBs as parameters
+        if (binding.getValue() == null) {
+            if (binding.getJdbcType() == Types.CLOB) {
+                binding.setJdbcType(Types.VARCHAR);
+            } else if (binding.getJdbcType() == Types.BLOB) {
+                binding.setJdbcType(Types.VARBINARY);
+            }
+        }
+
+        if (binding.getValue() == null && binding.getJdbcType() == 0) {
+            statement.setNull(binding.getStatementPosition(), Types.VARCHAR);
+        } else {
+            super.bindParameter(statement, binding);
+        }
+    }
+
+    /**
+     * Overrides super implementation to correctly set up identity columns.
+     */
+    @Override
+    public void createTableAppendColumn(StringBuffer sqlBuffer, DbAttribute column) {
+
+        super.createTableAppendColumn(sqlBuffer, column);
+
+        if (column.isGenerated()) {
+            // current limitation - we don't allow to set identity parameters...
+            sqlBuffer.append(" IDENTITY (1, 1)");
+        }
+    }
 
     /**
      * Not supported, see: <a href="https://github.com/microsoft/mssql-jdbc/issues/245">mssql-jdbc #245</a>
      */
-	@Override
-	public boolean supportsGeneratedKeysForBatchInserts() {
-		return false;
-	}
+    @Override
+    public boolean supportsGeneratedKeysForBatchInserts() {
+        return false;
+    }
 
-	/**
-	 * @since 4.2
-	 */
-	@Override
-	public SQLTreeProcessor getSqlTreeProcessor() {
-		if(getVersion() != null && getVersion() >= 12) {
-			return new SQLServerTreeProcessorV12();
-		}
-		return new SQLServerTreeProcessor();
-	}
+    /**
+     * @since 4.2
+     */
+    @Override
+    public SQLTreeProcessor getSqlTreeProcessor() {
+        if (getVersion() != null && getVersion() >= 12) {
+            return new SQLServerTreeProcessorV12();
+        }
+        return new SQLServerTreeProcessor();
+    }
 
-	@Override
-	protected void configureExtendedTypes(ExtendedTypeMap map) {
-		super.configureExtendedTypes(map);
+    @Override
+    protected void configureExtendedTypes(ExtendedTypeMap map) {
+        super.configureExtendedTypes(map);
 
-		CharType charType = new CharType(true, false);
-		map.registerType(charType);
-		map.registerType(new JsonType(charType, true));
-	}
+        // create specially configured CharType handler
+        map.registerType(new CharType(true, false));
 
-	/**
-	 * Uses SQLServerActionBuilder to create the right action.
-	 *
-	 * @since 1.2
-	 */
-	@Override
-	public SQLAction getAction(Query query, DataNode node) {
-		return query.createSQLAction(new SQLServerActionBuilder(node, getVersion()));
-	}
+        // create specially configured ByteArrayType handler
+        map.registerType(new ByteArrayType(true, false));
 
-	@Override
-	public List<String> getSystemSchemas() {
-		return SYSTEM_SCHEMAS;
-	}
+        // address driver inability to handle java.lang.Short and java.lang.Byte
+        map.registerType(new ShortType(true));
+        map.registerType(new ByteType(true));
 
-	@Override
-	public List<String> getSystemCatalogs() {
-		return SYSTEM_CATALOGS;
-	}
+        CharType charType = new CharType(true, false);
+        map.registerType(charType);
+        map.registerType(new JsonType(charType, true));
+    }
 
-	public Integer getVersion() {
-		return version;
-	}
+    /**
+     * Uses SQLServerActionBuilder to create the right action.
+     *
+     * @since 1.2
+     */
+    @Override
+    public SQLAction getAction(Query query, DataNode node) {
+        return query.createSQLAction(new SQLServerActionBuilder(node, getVersion()));
+    }
 
-	/**
-	 * @since 4.2
-	 * @param version of the server as provided by the JDBC driver
-	 */
-	public void setVersion(Integer version) {
-		this.version = version;
-	}
+    @Override
+    public List<String> getSystemSchemas() {
+        return SYSTEM_SCHEMAS;
+    }
+
+    @Override
+    public List<String> getSystemCatalogs() {
+        return SYSTEM_CATALOGS;
+    }
+
+    public Integer getVersion() {
+        return version;
+    }
+
+    /**
+     * @param version of the server as provided by the JDBC driver
+     * @since 4.2
+     */
+    public void setVersion(Integer version) {
+        this.version = version;
+    }
 
     /**
      * Generates DDL to create unique index that allows multiple NULL values to comply with ANSI SQL,
@@ -185,7 +253,6 @@ public class SQLServerAdapter extends SybaseAdapter {
      * @param source  entity for the index
      * @param columns source columns for the index
      * @return DDL to create unique index
-     *
      * @since 4.2.1
      */
     @Override
