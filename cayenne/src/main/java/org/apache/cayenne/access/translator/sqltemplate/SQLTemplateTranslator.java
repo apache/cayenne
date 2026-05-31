@@ -18,8 +18,6 @@
  ****************************************************************/
 package org.apache.cayenne.access.translator.sqltemplate;
 
-import org.apache.cayenne.access.jdbc.SQLStatement;
-
 import java.util.List;
 import java.util.Map;
 
@@ -34,7 +32,7 @@ public interface SQLTemplateTranslator {
 	 *
 	 * @since 5.0
 	 */
-	SQLStatement translate(String template, Map<String, ?> parameters);
+	TranslatedSQL translate(String template, Map<String, ?> parameters);
 
 	/**
 	 * Builds and returns a SQLStatement based on SQL template String and a list
@@ -42,5 +40,5 @@ public interface SQLTemplateTranslator {
 	 *
 	 * @since 5.0
 	 */
-	SQLStatement translate(String template, List<Object> positionalParameters);
+	TranslatedSQL translate(String template, List<Object> positionalParameters);
 }

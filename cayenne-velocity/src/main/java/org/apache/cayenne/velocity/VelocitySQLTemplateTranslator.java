@@ -21,7 +21,7 @@ package org.apache.cayenne.velocity;
 
 import org.apache.cayenne.CayenneRuntimeException;
 import org.apache.cayenne.access.jdbc.ColumnDescriptor;
-import org.apache.cayenne.access.jdbc.SQLStatement;
+import org.apache.cayenne.access.translator.sqltemplate.TranslatedSQL;
 import org.apache.cayenne.access.translator.sqltemplate.SQLTemplateTranslator;
 import org.apache.cayenne.access.translator.ParameterBinding;
 import org.apache.cayenne.exp.ExpressionException;
@@ -123,7 +123,7 @@ public class VelocitySQLTemplateTranslator implements SQLTemplateTranslator {
 	 * as a "helper" variable and SQLStatement object as "statement" variable.
 	 */
 	@Override
-	public SQLStatement translate(String template, Map<String, ?> parameters) {
+	public TranslatedSQL translate(String template, Map<String, ?> parameters) {
 		// have to make a copy of parameter map since we are gonna modify it..
 		Map<String, Object> internalParameters = (parameters != null && !parameters.isEmpty()) ? new HashMap<>(
 				parameters) : new HashMap<String, Object>(5);
@@ -133,7 +133,7 @@ public class VelocitySQLTemplateTranslator implements SQLTemplateTranslator {
 	}
 
 	@Override
-	public SQLStatement translate(String template, List<Object> positionalParameters) {
+	public TranslatedSQL translate(String template, List<Object> positionalParameters) {
 
 		SimpleNode parsedTemplate = parse(template);
 
@@ -146,7 +146,7 @@ public class VelocitySQLTemplateTranslator implements SQLTemplateTranslator {
 		return translate(template, parsedTemplate, internalParameters);
 	}
 
-	SQLStatement translate(String template, SimpleNode parsedTemplate, Map<String, Object> parameters) {
+	TranslatedSQL translate(String template, SimpleNode parsedTemplate, Map<String, Object> parameters) {
 		List<ParameterBinding> bindings = new ArrayList<>();
 		List<ColumnDescriptor> results = new ArrayList<>();
 		parameters.put(BINDINGS_LIST_KEY, bindings);
@@ -166,7 +166,7 @@ public class VelocitySQLTemplateTranslator implements SQLTemplateTranslator {
 		ColumnDescriptor[] resultsArray = new ColumnDescriptor[results.size()];
 		results.toArray(resultsArray);
 
-		return new SQLStatement(sql, resultsArray, bindingsArray);
+		return new TranslatedSQL(sql, resultsArray, bindingsArray);
 	}
 
 	String buildStatement(VelocityContext context, String template, SimpleNode parsedTemplate) throws Exception {

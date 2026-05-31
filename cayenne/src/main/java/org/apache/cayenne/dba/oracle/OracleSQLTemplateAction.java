@@ -26,7 +26,7 @@ import java.sql.Statement;
 import org.apache.cayenne.access.DataNode;
 import org.apache.cayenne.access.OperationObserver;
 import org.apache.cayenne.access.jdbc.RowDescriptorBuilder;
-import org.apache.cayenne.access.jdbc.SQLStatement;
+import org.apache.cayenne.access.translator.sqltemplate.TranslatedSQL;
 import org.apache.cayenne.access.jdbc.SQLTemplateAction;
 import org.apache.cayenne.map.DbEntity;
 import org.apache.cayenne.query.SQLTemplate;
@@ -44,8 +44,8 @@ class OracleSQLTemplateAction extends SQLTemplateAction {
 	}
 
 	@Override
-	protected void processSelectResult(SQLStatement compiled, Connection connection, Statement statement,
-			ResultSet resultSet, OperationObserver callback, long startTime) throws Exception {
+	protected void processSelectResult(TranslatedSQL compiled, Connection connection, Statement statement,
+									   ResultSet resultSet, OperationObserver callback, long startTime) throws Exception {
 
 		// wrap ResultSet to distinguish between Integer and BigDecimal for
 		// Oracle NUMBER
@@ -62,7 +62,7 @@ class OracleSQLTemplateAction extends SQLTemplateAction {
 	 * @since 3.0
 	 */
 	@Override
-	protected RowDescriptorBuilder configureRowDescriptorBuilder(SQLStatement compiled, ResultSet resultSet)
+	protected RowDescriptorBuilder configureRowDescriptorBuilder(TranslatedSQL compiled, ResultSet resultSet)
 			throws SQLException {
 
 		RowDescriptorBuilder builder = super.configureRowDescriptorBuilder(compiled, resultSet);

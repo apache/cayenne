@@ -25,7 +25,7 @@ import java.util.Collections;
 import java.util.HashMap;
 import java.util.Map;
 
-import org.apache.cayenne.access.jdbc.SQLStatement;
+import org.apache.cayenne.access.translator.sqltemplate.TranslatedSQL;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
@@ -43,7 +43,7 @@ public class VelocitySQLTemplateTranslator_ChainTest {
 		// whatever is inside the chain, it should render as empty if there
 		// is no chunks...
 
-		SQLStatement compiled = processor.translate("#chain(' AND ') #end",
+		TranslatedSQL compiled = processor.translate("#chain(' AND ') #end",
 				Collections.<String, Object> emptyMap());
 		assertEquals("", compiled.sql());
 
@@ -68,7 +68,7 @@ public class VelocitySQLTemplateTranslator_ChainTest {
 		map.put("b", "[B]");
 		map.put("c", "[C]");
 
-		SQLStatement compiled = processor.translate(template, map);
+		TranslatedSQL compiled = processor.translate(template, map);
 		assertEquals("[A] OR [B] OR [C]", compiled.sql());
 	}
 
@@ -82,7 +82,7 @@ public class VelocitySQLTemplateTranslator_ChainTest {
 		map.put("b", "[B]");
 		map.put("c", "[C]");
 
-		SQLStatement compiled = processor.translate(template, map);
+		TranslatedSQL compiled = processor.translate(template, map);
 		assertEquals("WHERE [A] OR [B] OR [C]", compiled.sql());
 	}
 
@@ -95,7 +95,7 @@ public class VelocitySQLTemplateTranslator_ChainTest {
 		map.put("a", "[A]");
 		map.put("c", "[C]");
 
-		SQLStatement compiled = processor.translate(template, map);
+		TranslatedSQL compiled = processor.translate(template, map);
 		assertEquals("WHERE [A] OR [C]", compiled.sql());
 	}
 
@@ -108,7 +108,7 @@ public class VelocitySQLTemplateTranslator_ChainTest {
 		map.put("b", "[B]");
 		map.put("c", "[C]");
 
-		SQLStatement compiled = processor.translate(template, map);
+		TranslatedSQL compiled = processor.translate(template, map);
 		assertEquals("WHERE [B] OR [C]", compiled.sql());
 	}
 
@@ -121,7 +121,7 @@ public class VelocitySQLTemplateTranslator_ChainTest {
 		map.put("a", "[A]");
 		map.put("b", "[B]");
 
-		SQLStatement compiled = processor.translate(template, map);
+		TranslatedSQL compiled = processor.translate(template, map);
 		assertEquals("WHERE [A] OR [B]", compiled.sql());
 	}
 
@@ -134,7 +134,7 @@ public class VelocitySQLTemplateTranslator_ChainTest {
 		map.put("a", "[A]");
 		map.put("c", "[C]");
 
-		SQLStatement compiled = processor.translate(template, map);
+		TranslatedSQL compiled = processor.translate(template, map);
 		assertEquals("WHERE [A] some other stuff OR [C]", compiled.sql());
 	}
 
@@ -142,7 +142,7 @@ public class VelocitySQLTemplateTranslator_ChainTest {
 	public void processTemplateChainUnconditionalChunks() throws Exception {
 		String template = "#chain(' OR ' 'WHERE ')" + "#chunk()C1#end" + "#chunk()C2#end" + "#chunk()C3#end" + "#end";
 
-		SQLStatement compiled = processor.translate(template, Collections.<String, Object> emptyMap());
+		TranslatedSQL compiled = processor.translate(template, Collections.<String, Object> emptyMap());
 		assertEquals("WHERE C1 OR C2 OR C3", compiled.sql());
 	}
 
@@ -151,7 +151,7 @@ public class VelocitySQLTemplateTranslator_ChainTest {
 		String template = "#chain(' OR ' 'WHERE ')" + "#chunk($a)$a#end" + "#chunk($b)$b#end" + "#chunk($c)$c#end"
 				+ "#end";
 
-		SQLStatement compiled = processor.translate(template, Collections.<String, Object> emptyMap());
+		TranslatedSQL compiled = processor.translate(template, Collections.<String, Object> emptyMap());
 		assertEquals("", compiled.sql());
 	}
 
@@ -164,7 +164,7 @@ public class VelocitySQLTemplateTranslator_ChainTest {
 		map.put("a", false);
 		map.put("b", 0);
 
-		SQLStatement compiled = processor.translate(template, map);
+		TranslatedSQL compiled = processor.translate(template, map);
 		assertEquals("WHERE [A] OR [B]", compiled.sql());
 	}
 
@@ -177,7 +177,7 @@ public class VelocitySQLTemplateTranslator_ChainTest {
 		map.put("a", false);
 		map.put("b", 0);
 
-		SQLStatement compiled = processor.translate(template, map);
+		TranslatedSQL compiled = processor.translate(template, map);
 		assertEquals("WHERE false OR 0", compiled.sql());
 	}
 
