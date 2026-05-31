@@ -112,10 +112,6 @@ public class CompactSlf4jJdbcEventLogger extends Slf4jJdbcEventLogger {
         String key = null;
         String value;
         for (ParameterBinding b : bindings) {
-            if (b.isDisabled()) {
-                continue;
-            }
-
             DbAttribute attribute = b.getAttribute();
             if (attribute != null) {
                 key = attribute.getName();

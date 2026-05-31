@@ -55,16 +55,6 @@ public class BatchAction extends BaseSQLAction {
 	protected BatchQuery query;
 	protected RowDescriptor keyRowDescriptor;
 
-	private static void bind(DbAdapter adapter, PreparedStatement statement, ParameterBinding[] bindings)
-			throws Exception {
-
-		for (ParameterBinding b : bindings) {
-			if (!b.isDisabled()) {
-				adapter.bindParameter(statement, b);
-			}
-		}
-	}
-
 	/**
 	 * @since 4.0
 	 */
@@ -132,7 +122,9 @@ public class BatchAction extends BaseSQLAction {
 
 				ParameterBinding[] bindings = translator.updateBindings(row);
 				logger.logQueryParameters("batch bind", bindings);
-				bind(adapter, statement, bindings);
+				for (ParameterBinding b : bindings) {
+					adapter.bindParameter(statement, b);
+				}
 
 				statement.addBatch();
 			}
@@ -192,7 +184,9 @@ public class BatchAction extends BaseSQLAction {
 				ParameterBinding[] bindings = translator.updateBindings(row);
 				logger.logQueryParameters("bind", bindings);
 
-				bind(adapter, statement, bindings);
+				for (ParameterBinding b : bindings) {
+					adapter.bindParameter(statement, b);
+				}
 
 				int updated = statement.executeUpdate();
 				if (useOptimisticLock && updated != 1) {

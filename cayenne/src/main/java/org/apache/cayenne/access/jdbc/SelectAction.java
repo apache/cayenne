@@ -48,10 +48,6 @@ public class SelectAction extends BaseSQLAction {
 
         for (ParameterBinding b : bindings) {
 
-            if (b.isDisabled()) {
-                continue;
-            }
-
             // null DbAttributes are a result of inferior qualifier
             // processing (qualifier can't map parameters to DbAttributes
             // and therefore only supports standard java types now) hence, a
