@@ -59,9 +59,6 @@ public class SQLTemplateCustomizer {
         q3.put(
                 "org.apache.cayenne.dba.oracle.OracleAdapter",
                 "UPDATE ARTIST SET ARTIST_NAME = #bind($newName) WHERE RTRIM(ARTIST_NAME) = #bind($oldName)");
-        q3.put(
-                "org.apache.cayenne.dba.oracle.Oracle8Adapter",
-                "UPDATE ARTIST SET ARTIST_NAME = #bind($newName) WHERE RTRIM(ARTIST_NAME) = #bind($oldName)");
 
         map.put("SELECT * FROM ARTIST ORDER BY ARTIST_ID", q1);
         map.put("SELECT * FROM ARTIST WHERE ARTIST_ID = #bind($id)", q2);
