@@ -28,8 +28,6 @@ import org.apache.cayenne.map.DbAttribute;
  */
 public class ParameterBinding {
 
-    private static final int EXCLUDED_POSITION = -1;
-
     private final DbAttribute attribute;
     private final int jdbcType;
     private final int scale;
@@ -52,7 +50,20 @@ public class ParameterBinding {
         this.attribute = attribute;
         this.jdbcType = jdbcType;
         this.scale = scale;
-        this.statementPosition = EXCLUDED_POSITION;
+
+        this.statementPosition = -1;
+    }
+
+    /**
+     * Sets the value, statement position and {@link ExtendedType} of the binding.
+     *
+     * @since 5.0
+     */
+    public ParameterBinding reset(int statementPosition, Object value, ExtendedType<?> extendedType) {
+        this.statementPosition = statementPosition;
+        this.value = value;
+        this.extendedType = extendedType;
+        return this;
     }
 
     public Object getValue() {
@@ -63,31 +74,8 @@ public class ParameterBinding {
         return statementPosition;
     }
 
-    public boolean isDisabled() {
-        return statementPosition == EXCLUDED_POSITION;
-    }
-
     public ExtendedType getExtendedType() {
         return extendedType;
-    }
-
-    /**
-     * Marks the binding object as excluded for the current iteration.
-     */
-    public void disable() {
-        this.statementPosition = EXCLUDED_POSITION;
-        this.value = null;
-        this.extendedType = null;
-    }
-
-    /**
-     * Sets the value, statement position and {@link ExtendedType} of the binding.
-     */
-    public ParameterBinding reset(int statementPosition, Object value, ExtendedType<?> extendedType) {
-        this.statementPosition = statementPosition;
-        this.value = value;
-        this.extendedType = extendedType;
-        return this;
     }
 
     public int getJdbcType() {
