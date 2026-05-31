@@ -19,16 +19,16 @@
 
 package org.apache.cayenne.dba.sqlserver;
 
-import java.sql.Connection;
-import java.sql.SQLException;
-import java.sql.Statement;
-
 import org.apache.cayenne.access.DataNode;
 import org.apache.cayenne.access.OperationObserver;
 import org.apache.cayenne.access.jdbc.BatchAction;
 import org.apache.cayenne.map.DbAttribute;
 import org.apache.cayenne.query.BatchQuery;
 import org.apache.cayenne.query.InsertBatchQuery;
+
+import java.sql.Connection;
+import java.sql.SQLException;
+import java.sql.Statement;
 
 /**
  * @since 1.2
@@ -40,7 +40,7 @@ public class SQLServerBatchAction extends BatchAction {
 	}
 
 	@Override
-	public void performAction(Connection connection, OperationObserver observer) throws SQLException, Exception {
+	public void performAction(Connection connection, OperationObserver observer) throws Exception {
 
 		// this condition checks if identity columns are present in the query
 		// and adapter

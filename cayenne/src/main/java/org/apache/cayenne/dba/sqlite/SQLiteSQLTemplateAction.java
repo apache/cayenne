@@ -18,17 +18,16 @@
  ****************************************************************/
 package org.apache.cayenne.dba.sqlite;
 
-import java.sql.Connection;
-import java.sql.PreparedStatement;
-import java.sql.ResultSet;
-import java.sql.SQLException;
-import java.util.Collection;
-
 import org.apache.cayenne.access.DataNode;
 import org.apache.cayenne.access.OperationObserver;
 import org.apache.cayenne.access.jdbc.SQLStatement;
 import org.apache.cayenne.access.jdbc.SQLTemplateAction;
 import org.apache.cayenne.query.SQLTemplate;
+
+import java.sql.Connection;
+import java.sql.PreparedStatement;
+import java.sql.ResultSet;
+import java.util.Collection;
 
 /**
  * @since 3.0
@@ -49,7 +48,7 @@ class SQLiteSQLTemplateAction extends SQLTemplateAction {
             Connection connection,
             OperationObserver callback,
             SQLStatement compiled,
-            Collection<Number> updateCounts) throws SQLException, Exception {
+            Collection<Number> updateCounts) throws Exception {
 
         String sql = compiled.sql().trim();
         boolean select = sql.length() > "SELECT".length()
@@ -82,7 +81,7 @@ class SQLiteSQLTemplateAction extends SQLTemplateAction {
             }
             else {
                 int updateCount = statement.executeUpdate();
-                updateCounts.add(Integer.valueOf(updateCount));
+                updateCounts.add(updateCount);
                 dataNode.getJdbcEventLogger().logUpdateCount(updateCount);
             }
 

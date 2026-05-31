@@ -19,11 +19,6 @@
 
 package org.apache.cayenne.access.jdbc;
 
-import java.sql.Connection;
-import java.sql.PreparedStatement;
-import java.sql.ResultSet;
-import java.util.List;
-
 import org.apache.cayenne.ResultIterator;
 import org.apache.cayenne.access.DataNode;
 import org.apache.cayenne.access.OperationObserver;
@@ -36,6 +31,11 @@ import org.apache.cayenne.query.PrefetchProcessor;
 import org.apache.cayenne.query.PrefetchTreeNode;
 import org.apache.cayenne.query.QueryMetadata;
 import org.apache.cayenne.query.Select;
+
+import java.sql.Connection;
+import java.sql.PreparedStatement;
+import java.sql.ResultSet;
+import java.util.List;
 
 /**
  * A SQLAction that handles SelectQuery execution.
@@ -153,13 +153,13 @@ public class SelectAction extends BaseSQLAction {
 			return iterator;
 		}
 
-		return new ConnectionAwareResultIterator<T>(iterator, connection) {
-			@Override
-			protected void doClose() {
-				dataNode.getJdbcEventLogger().logSelectCount(rowCounter, System.currentTimeMillis() - queryStartedAt, sql);
-				super.doClose();
-			}
-		};
+		return new ConnectionAwareResultIterator<>(iterator, connection) {
+            @Override
+            protected void doClose() {
+                dataNode.getJdbcEventLogger().logSelectCount(rowCounter, System.currentTimeMillis() - queryStartedAt, sql);
+                super.doClose();
+            }
+        };
 	}
 
 	private <T> ResultIterator<T> forFetchLimit(ResultIterator<T> iterator, SelectTranslator translator) {

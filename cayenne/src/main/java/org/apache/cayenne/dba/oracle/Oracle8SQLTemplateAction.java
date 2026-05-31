@@ -19,17 +19,16 @@
 
 package org.apache.cayenne.dba.oracle;
 
-import java.sql.Connection;
-import java.sql.PreparedStatement;
-import java.sql.ResultSet;
-import java.sql.SQLException;
-import java.util.Collection;
-
 import org.apache.cayenne.access.DataNode;
 import org.apache.cayenne.access.OperationObserver;
 import org.apache.cayenne.access.jdbc.SQLStatement;
 import org.apache.cayenne.access.jdbc.SQLTemplateAction;
 import org.apache.cayenne.query.SQLTemplate;
+
+import java.sql.Connection;
+import java.sql.PreparedStatement;
+import java.sql.ResultSet;
+import java.util.Collection;
 
 /**
  * A SQLTemplateAction that addresses Oracle 8 driver limitations.
@@ -50,7 +49,7 @@ class Oracle8SQLTemplateAction extends SQLTemplateAction {
      */
     @Override
     protected void execute(Connection connection, OperationObserver callback, SQLStatement compiled,
-            Collection updateCounts) throws SQLException, Exception {
+                           Collection<Number> updateCounts) throws Exception {
 
         String sql = compiled.sql().trim();
         boolean select = sql.length() > "SELECT".length()

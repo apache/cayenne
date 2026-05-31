@@ -32,7 +32,6 @@ import org.apache.cayenne.query.Query;
 import java.sql.CallableStatement;
 import java.sql.Connection;
 import java.sql.ResultSet;
-import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -56,7 +55,7 @@ public class SQLServerProcedureAction extends ProcedureAction {
 	}
 
 	@Override
-	public void performAction(Connection connection, OperationObserver observer) throws SQLException, Exception {
+	public void performAction(Connection connection, OperationObserver observer) throws Exception {
 
 		ProcedureTranslator transl = createTranslator(connection);
 
