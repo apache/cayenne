@@ -28,7 +28,7 @@ import org.apache.cayenne.query.Query;
 /**
  * DataChannel is an abstraction used by ObjectContexts to obtain mapping metadata and
  * access a persistent store. There is rarely a need to use it directly.
- * 
+ *
  * @since 1.2
  */
 public interface DataChannel {
@@ -38,7 +38,7 @@ public interface DataChannel {
      * in the parent DataChannel. If the parent is itself an ObjectContext, changes are
      * NOT propagated any further.
      */
-    public static final int FLUSH_NOCASCADE_SYNC = 1;
+    int FLUSH_NOCASCADE_SYNC = 1;
 
     /**
      * A synchronization type that results in changes from an ObjectContext to be recorded
@@ -46,23 +46,23 @@ public interface DataChannel {
      * to send its own sync message to its parent DataChannel to cascade synchronization
      * all the way down the stack.
      */
-    public static final int FLUSH_CASCADE_SYNC = 2;
+    int FLUSH_CASCADE_SYNC = 2;
 
     /**
      * A synchronization type that results in cascading rollback of changes through the
      * DataChannel stack.
      */
-    public static final int ROLLBACK_CASCADE_SYNC = 3;
+    int ROLLBACK_CASCADE_SYNC = 3;
 
-    public static final EventSubject GRAPH_CHANGED_SUBJECT = EventSubject.getSubject(
+    EventSubject GRAPH_CHANGED_SUBJECT = EventSubject.getSubject(
             DataChannel.class,
             "graphChanged");
 
-    public static final EventSubject GRAPH_FLUSHED_SUBJECT = EventSubject.getSubject(
+    EventSubject GRAPH_FLUSHED_SUBJECT = EventSubject.getSubject(
             DataChannel.class,
             "graphFlushed");
 
-    public static final EventSubject GRAPH_ROLLEDBACK_SUBJECT = EventSubject.getSubject(
+    EventSubject GRAPH_ROLLEDBACK_SUBJECT = EventSubject.getSubject(
             DataChannel.class,
             "graphRolledback");
 
@@ -80,9 +80,9 @@ public interface DataChannel {
     /**
      * Executes a query, using provided <em>context</em> to register persistent objects if
      * query returns any objects.
-     * 
+     *
      * @param originatingContext an ObjectContext that originated the query, used to
-     *            register result objects.
+     *                           register result objects.
      * @return a generic response object that encapsulates result of the execution.
      */
     QueryResponse onQuery(ObjectContext originatingContext, Query query);
@@ -91,11 +91,11 @@ public interface DataChannel {
      * Processes synchronization request from a child ObjectContext, returning a GraphDiff
      * that describes changes to objects made on the receiving end as a result of
      * synchronization.
-     * 
+     *
      * @param originatingContext an ObjectContext that initiated the sync. Can be null.
-     * @param changes diff from the context that initiated the sync.
-     * @param syncType One of {@link #FLUSH_NOCASCADE_SYNC}, {@link #FLUSH_CASCADE_SYNC},
-     *            {@link #ROLLBACK_CASCADE_SYNC}.
+     * @param changes            diff from the context that initiated the sync.
+     * @param syncType           One of {@link #FLUSH_NOCASCADE_SYNC}, {@link #FLUSH_CASCADE_SYNC},
+     *                           {@link #ROLLBACK_CASCADE_SYNC}.
      */
     GraphDiff onSync(ObjectContext originatingContext, GraphDiff changes, int syncType);
 }

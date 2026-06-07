@@ -37,7 +37,7 @@ import java.util.Objects;
  * ObjectIdQuery are different from generic {@link QueryMetadata} cache policies.
  * ObjectIdQuery is special - it is the only query that can be done against Cayenne main
  * cache, thus cache handling is significantly different from all other of the queries.
- * 
+ *
  * @since 1.2
  */
 public class ObjectIdQuery extends IndirectQuery {
@@ -95,7 +95,7 @@ public class ObjectIdQuery extends IndirectQuery {
                 public ClassDescriptor getClassDescriptor() {
                     return resolver.getClassDescriptor(objectId.getEntityName());
                 }
-                
+
                 @Override
                 public ObjEntity getObjEntity() {
                     return getClassDescriptor().getEntity();
@@ -131,7 +131,7 @@ public class ObjectIdQuery extends IndirectQuery {
                 .entityName(objectId.getEntityName())
                 .where(ExpressionFactory.matchAllDbExp(objectId.getIdSnapshot(), Expression.EQUAL_TO));
         // if we got to the point of fetch, always force refresh....
-        if(fetchingDataRows) {
+        if (fetchingDataRows) {
             query.fetchDataRows();
         }
         return query;
@@ -171,13 +171,7 @@ public class ObjectIdQuery extends IndirectQuery {
             return true;
         }
 
-        if (!(object instanceof ObjectIdQuery)) {
-            return false;
-        }
-
-        ObjectIdQuery query = (ObjectIdQuery) object;
-
-        return Objects.equals(objectId, query.getObjectId());
+        return object instanceof ObjectIdQuery query && Objects.equals(objectId, query.getObjectId());
     }
 
     /**
