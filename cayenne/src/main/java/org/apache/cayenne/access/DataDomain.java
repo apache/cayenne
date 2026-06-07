@@ -49,7 +49,6 @@ import org.apache.cayenne.util.ToStringBuilder;
 
 import java.util.Collection;
 import java.util.Collections;
-import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
@@ -116,7 +115,6 @@ public class DataDomain implements DataChannel {
     protected Map<String, DataNode> nodes;
     protected Map<String, DataNode> nodesByDataMapName;
     protected DataNode defaultNode;
-    protected Map<String, String> properties;
 
     protected EntityResolver entityResolver;
     protected DataRowStore sharedSnapshotCache;
@@ -147,31 +145,12 @@ public class DataDomain implements DataChannel {
         resetProperties();
     }
 
-    /**
-     * Creates new DataDomain.
-     *
-     * @param name       DataDomain name. Domain can be located using its name in the
-     *                   Configuration object.
-     * @param properties A Map containing domain configuration properties.
-     * @deprecated since 4.0 unused
-     */
-    @Deprecated
-    public DataDomain(String name, Map<String, String> properties) {
-        init(name);
-        initWithProperties(properties);
-    }
-
     private void init(String name) {
 
         this.queryFilters = new CopyOnWriteArrayList<>();
         this.syncFilters = new CopyOnWriteArrayList<>();
         this.nodesByDataMapName = new ConcurrentHashMap<>();
         this.nodes = new ConcurrentHashMap<>();
-
-        // properties are read-only, so no need for concurrent map, or any
-        // specific map
-        // for that matter
-        this.properties = Collections.emptyMap();
 
         setName(name);
     }
@@ -204,37 +183,13 @@ public class DataDomain implements DataChannel {
     }
 
     /**
+     * Resets the domain's behavioral flags to their defaults.
+     *
      * @since 1.1
      */
     protected void resetProperties() {
-        properties = Collections.emptyMap();
-
         sharedCacheEnabled = SHARED_CACHE_ENABLED_DEFAULT;
         validatingObjectsOnCommit = VALIDATING_OBJECTS_ON_COMMIT_DEFAULT;
-    }
-
-    /**
-     * Reinitializes domain state with a new set of properties.
-     *
-     * @since 1.1
-     * @deprecated since 4.0 properties are processed by the DI provider.
-     */
-    @Deprecated
-    public void initWithProperties(Map<String, String> properties) {
-
-        // clone properties to ensure that it is read-only internally
-        properties = properties != null ? new HashMap<>(properties) : Collections.emptyMap();
-
-        String sharedCacheEnabled = properties.get(SHARED_CACHE_ENABLED_PROPERTY);
-        String validatingObjectsOnCommit = properties.get(VALIDATING_OBJECTS_ON_COMMIT_PROPERTY);
-
-        // init ivars from properties
-        this.sharedCacheEnabled = (sharedCacheEnabled != null) ? "true".equalsIgnoreCase(sharedCacheEnabled)
-                : SHARED_CACHE_ENABLED_DEFAULT;
-        this.validatingObjectsOnCommit = (validatingObjectsOnCommit != null) ? "true"
-                .equalsIgnoreCase(validatingObjectsOnCommit) : VALIDATING_OBJECTS_ON_COMMIT_DEFAULT;
-
-        this.properties = properties;
     }
 
     /**
@@ -308,14 +263,6 @@ public class DataDomain implements DataChannel {
      */
     public void setValidatingObjectsOnCommit(boolean flag) {
         this.validatingObjectsOnCommit = flag;
-    }
-
-    /**
-     * @return a Map of properties for this DataDomain.
-     * @since 1.1
-     */
-    public Map<String, String> getProperties() {
-        return properties;
     }
 
     /**
