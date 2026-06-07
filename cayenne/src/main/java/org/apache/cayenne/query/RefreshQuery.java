@@ -122,15 +122,18 @@ public class RefreshQuery implements Query {
 
             public QueryMetadata getMetaData(EntityResolver resolver) {
                 QueryMetadata md = query.getMetaData(resolver);
+                QueryCacheStrategy refreshStrategy = switch (md.getCacheStrategy()) {
+                    case LOCAL_CACHE -> QueryCacheStrategy.LOCAL_CACHE_REFRESH;
+                    case SHARED_CACHE -> QueryCacheStrategy.SHARED_CACHE_REFRESH;
+                    case null, default -> md.getCacheStrategy();
+                };
 
-                QueryMetadataWrapper wrappedMd = new QueryMetadataWrapper(md);
-                if (QueryCacheStrategy.LOCAL_CACHE == md.getCacheStrategy()) {
-                    wrappedMd.override(QueryMetadata.CACHE_STRATEGY_PROPERTY, QueryCacheStrategy.LOCAL_CACHE_REFRESH);
-                } else if (QueryCacheStrategy.SHARED_CACHE == md.getCacheStrategy()) {
-                    wrappedMd.override(QueryMetadata.CACHE_STRATEGY_PROPERTY, QueryCacheStrategy.SHARED_CACHE_REFRESH);
-                }
-
-                return wrappedMd;
+                return new QueryMetadataProxy(md) {
+                    @Override
+                    public QueryCacheStrategy getCacheStrategy() {
+                        return refreshStrategy;
+                    }
+                };
             }
 
             public void route(

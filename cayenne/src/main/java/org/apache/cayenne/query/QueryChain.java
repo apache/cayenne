@@ -110,8 +110,11 @@ public class QueryChain implements Query {
      * Returns default metadata.
      */
     public QueryMetadata getMetaData(EntityResolver resolver) {
-        QueryMetadataWrapper wrapper = new QueryMetadataWrapper(DefaultQueryMetadata.defaultMetadata);
-        wrapper.override(QueryMetadata.FETCHING_DATA_ROWS_PROPERTY, Boolean.TRUE);
-        return wrapper;
+        return new QueryMetadataProxy(DefaultQueryMetadata.defaultMetadata) {
+            @Override
+            public boolean isFetchingDataRows() {
+                return true;
+            }
+        };
     }
 }
