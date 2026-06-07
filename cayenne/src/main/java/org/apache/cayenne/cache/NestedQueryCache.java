@@ -66,7 +66,6 @@ public class NestedQueryCache implements QueryCache {
     /**
      * Clears the underlying shared cache.
      * @see QueryCache#clear()
-     * @deprecated since 4.0
      */
     @Override
     @Deprecated

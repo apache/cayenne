@@ -664,7 +664,6 @@ public class ObjRelationship extends Relationship<ObjEntity, ObjAttribute, ObjRe
 
     /**
      * Recalculates a new readonly value based on the underlying DbRelationships.
-     * @deprecated since 4.2
      */
     @Deprecated(since = "4.2")
     public void recalculateReadOnlyValue() {

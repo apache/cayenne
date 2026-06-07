@@ -78,8 +78,8 @@ public interface QueryCache {
     /**
      * Clears all cache entries.
      *
-     * @deprecated since 4.0. Please use implementation specific methods to perform cache management tasks.
+     * @deprecated use implementation specific methods to perform cache management tasks.
      */
-    @Deprecated
+    @Deprecated(since = "4.0")
     void clear();
 }

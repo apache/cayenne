@@ -612,9 +612,9 @@ public class JdbcAdapter implements DbAdapter {
     }
 
     /**
-     * @deprecated since 5.0 in favor of {@link #setEjbqlTranslator(EJBQLTranslator)}.
+     * @deprecated in favor of {@link #setEjbqlTranslator(EJBQLTranslator)}.
      */
-    @Deprecated(since = "5.0")
+    @Deprecated(since = "5.0", forRemoval = true)
     public void setEjbqlTranslatorFactory(EJBQLTranslator ejbqlTranslator) {
         setEjbqlTranslator(ejbqlTranslator);
     }

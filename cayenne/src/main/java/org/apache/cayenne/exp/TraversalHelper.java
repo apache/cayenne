@@ -24,7 +24,7 @@ package org.apache.cayenne.exp;
  * Useful as a superclass for partial implementations 
  * of TraversalHandler. 
  *
- * @deprecated since 5.0 as {@link TraversalHandler} has default no-op implementations for all methods
+ * @deprecated as {@link TraversalHandler} has default no-op implementations for all methods
  */
 @Deprecated(since = "5.0", forRemoval = true)
 public class TraversalHelper implements TraversalHandler {

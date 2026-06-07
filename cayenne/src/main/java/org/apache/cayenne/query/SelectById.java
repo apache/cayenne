@@ -180,7 +180,7 @@ public class SelectById<T> extends IndirectQuery implements Select<T> {
 
 	/**
 	 * @since 4.2
-	 * @deprecated since 5.0, use {@link #queryId(Class, Object)}
+	 * @deprecated use {@link #queryId(Class, Object)}
 	 */
 	@Deprecated(since = "5.0", forRemoval = true)
 	public static <T> SelectById<T> query(Class<T> entityType, Object id) {
@@ -189,7 +189,7 @@ public class SelectById<T> extends IndirectQuery implements Select<T> {
 
 	/**
 	 * @since 4.2
-	 * @deprecated since 5.0, use {@link #queryMap(Class, Map)}
+	 * @deprecated use {@link #queryMap(Class, Map)}
 	 */
 	@Deprecated(since = "5.0", forRemoval = true)
 	public static <T> SelectById<T> query(Class<T> entityType, Map<String, ?> id) {
@@ -198,7 +198,7 @@ public class SelectById<T> extends IndirectQuery implements Select<T> {
 
 	/**
 	 * @since 4.2
-	 * @deprecated since 5.0, use {@link #queryObjectId(Class, ObjectId)}
+	 * @deprecated use {@link #queryObjectId(Class, ObjectId)}
 	 */
 	@Deprecated(since = "5.0", forRemoval = true)
 	public static <T> SelectById<T> query(Class<T> entityType, ObjectId id) {
@@ -207,7 +207,7 @@ public class SelectById<T> extends IndirectQuery implements Select<T> {
 
 	/**
 	 * @since 4.2
-	 * @deprecated since 5.0, use {@link #queryIds(Class, Object...)}
+	 * @deprecated use {@link #queryIds(Class, Object...)}
 	 */
 	@Deprecated(since = "5.0", forRemoval = true)
 	public static <T> SelectById<T> query(Class<T> entityType, Object firstId, Object... otherIds) {
@@ -218,7 +218,7 @@ public class SelectById<T> extends IndirectQuery implements Select<T> {
 
 	/**
 	 * @since 4.2
-	 * @deprecated since 5.0, use {@link #queryIdsCollection(Class, Collection)}
+	 * @deprecated use {@link #queryIdsCollection(Class, Collection)}
 	 */
 	@Deprecated(since = "5.0", forRemoval = true)
 	public static <T> SelectById<T> query(Class<T> entityType, Collection<Object> ids) {
@@ -229,7 +229,7 @@ public class SelectById<T> extends IndirectQuery implements Select<T> {
 
 	/**
 	 * @since 4.2
-	 * @deprecated since 5.0, use {@link #queryMaps(Class, Map[])}
+	 * @deprecated use {@link #queryMaps(Class, Map[])}
 	 */
 	@Deprecated(since = "5.0", forRemoval = true)
 	@SafeVarargs
@@ -241,7 +241,7 @@ public class SelectById<T> extends IndirectQuery implements Select<T> {
 
 	/**
 	 * @since 4.2
-	 * @deprecated since 5.0, use {@link #queryObjectIds(Class, ObjectId...)}
+	 * @deprecated use {@link #queryObjectIds(Class, ObjectId...)}
 	 */
 	@Deprecated(since = "5.0", forRemoval = true)
 	public static <T> SelectById<T> query(Class<T> entityType, ObjectId firstId, ObjectId... otherIds) {
@@ -380,7 +380,7 @@ public class SelectById<T> extends IndirectQuery implements Select<T> {
 	/* Deprecated since 5.0 DataRow factory methods */
 
 	/**
-	 * @deprecated since 5.0, use {@link #dataRowQueryId(Class, Object)}
+	 * @deprecated use {@link #dataRowQueryId(Class, Object)}
 	 */
 	@Deprecated(since = "5.0", forRemoval = true)
 	public static SelectById<DataRow> dataRowQuery(Class<?> entityType, Object id) {
@@ -388,7 +388,7 @@ public class SelectById<T> extends IndirectQuery implements Select<T> {
 	}
 
 	/**
-	 * @deprecated since 5.0, use {@link #dataRowQueryMap(Class, Map)}
+	 * @deprecated use {@link #dataRowQueryMap(Class, Map)}
 	 */
 	@Deprecated(since = "5.0", forRemoval = true)
 	public static SelectById<DataRow> dataRowQuery(Class<?> entityType, Map<String, ?> id) {
@@ -396,7 +396,7 @@ public class SelectById<T> extends IndirectQuery implements Select<T> {
 	}
 
 	/**
-	 * @deprecated since 5.0, use {@link #dataRowQueryObjectId(ObjectId)}
+	 * @deprecated use {@link #dataRowQueryObjectId(ObjectId)}
 	 */
 	@Deprecated(since = "5.0", forRemoval = true)
 	public static SelectById<DataRow> dataRowQuery(ObjectId id) {
@@ -405,7 +405,7 @@ public class SelectById<T> extends IndirectQuery implements Select<T> {
 
 	/**
 	 * @since 4.2
-	 * @deprecated since 5.0, use {@link #dataRowQueryIds(Class, Object...)}
+	 * @deprecated use {@link #dataRowQueryIds(Class, Object...)}
 	 */
 	@Deprecated(since = "5.0", forRemoval = true)
 	public static SelectById<DataRow> dataRowQuery(Class<?> entityType, Object firstId, Object... otherIds) {
@@ -416,7 +416,7 @@ public class SelectById<T> extends IndirectQuery implements Select<T> {
 
 	/**
 	 * @since 4.2
-	 * @deprecated since 5.0, use {@link #dataRowQueryMaps(Class, Map[])}
+	 * @deprecated use {@link #dataRowQueryMaps(Class, Map[])}
 	 */
 	@Deprecated(since = "5.0", forRemoval = true)
 	@SafeVarargs
@@ -428,7 +428,7 @@ public class SelectById<T> extends IndirectQuery implements Select<T> {
 
 	/**
 	 * @since 4.2
-	 * @deprecated since 5.0, use {@link #dataRowQueryObjectIds(ObjectId...)}
+	 * @deprecated use {@link #dataRowQueryObjectIds(ObjectId...)}
 	 */
 	@Deprecated(since = "5.0", forRemoval = true)
 	public static SelectById<DataRow> dataRowQuery(ObjectId firstId, ObjectId... otherIds) {

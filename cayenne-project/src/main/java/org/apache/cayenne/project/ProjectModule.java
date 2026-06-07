@@ -55,7 +55,7 @@ public class ProjectModule implements Module {
      * @since 4.1
      * @deprecated in favor of {@link #extend(Binder)}
      */
-    @Deprecated(since = "5.0")
+    @Deprecated(since = "5.0", forRemoval = true)
     public static ListBuilder<ProjectExtension> contributeExtensions(Binder binder) {
         return binder.bindList(ProjectExtension.class);
     }
@@ -64,7 +64,7 @@ public class ProjectModule implements Module {
      * @since 4.1
      * @deprecated in favor of {@link #extend(Binder)}
      */
-    @Deprecated(since = "5.0")
+    @Deprecated(since = "5.0", forRemoval = true)
     public static ListBuilder<UpgradeHandler> contributeUpgradeHandler(Binder binder) {
         return binder.bindList(UpgradeHandler.class);
     }

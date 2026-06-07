@@ -45,7 +45,7 @@ public interface Constants {
     String ADAPTER_DETECTORS_LIST = "cayenne.adapter_detectors";
 
     /**
-     * @deprecated since 5.0, use {@link #ADAPTER_DETECTORS_LIST}
+     * @deprecated use {@link #ADAPTER_DETECTORS_LIST}
      */
     @Deprecated(since = "5.0", forRemoval = true)
     String SERVER_ADAPTER_DETECTORS_LIST = ADAPTER_DETECTORS_LIST;
@@ -58,7 +58,7 @@ public interface Constants {
     String DOMAIN_LISTENERS_LIST = "cayenne.domain_listeners";
 
     /**
-     * @deprecated since 5.0, use {@link #DOMAIN_LISTENERS_LIST}
+     * @deprecated use {@link #DOMAIN_LISTENERS_LIST}
      */
     @Deprecated(since = "5.0", forRemoval = true)
     String SERVER_DOMAIN_LISTENERS_LIST = DOMAIN_LISTENERS_LIST;
@@ -70,7 +70,7 @@ public interface Constants {
     String PROJECT_LOCATIONS_LIST = "cayenne.project_locations";
 
     /**
-     * @deprecated since 5.0, use {@link #PROJECT_LOCATIONS_LIST}
+     * @deprecated use {@link #PROJECT_LOCATIONS_LIST}
      */
     @Deprecated(since = "5.0", forRemoval = true)
     String SERVER_PROJECT_LOCATIONS_LIST = PROJECT_LOCATIONS_LIST;
@@ -84,7 +84,7 @@ public interface Constants {
     String DEFAULT_TYPES_LIST = "cayenne.default_types";
 
     /**
-     * @deprecated since 5.0, use {@link #DEFAULT_TYPES_LIST}
+     * @deprecated use {@link #DEFAULT_TYPES_LIST}
      */
     @Deprecated(since = "5.0", forRemoval = true)
     String SERVER_DEFAULT_TYPES_LIST = DEFAULT_TYPES_LIST;
@@ -98,7 +98,7 @@ public interface Constants {
     String USER_TYPES_LIST = "cayenne.user_types";
 
     /**
-     * @deprecated since 5.0, use {@link #USER_TYPES_LIST}
+     * @deprecated use {@link #USER_TYPES_LIST}
      */
     @Deprecated(since = "5.0", forRemoval = true)
     String SERVER_USER_TYPES_LIST = USER_TYPES_LIST;
@@ -112,7 +112,7 @@ public interface Constants {
     String TYPE_FACTORIES_LIST = "cayenne.type_factories";
 
     /**
-     * @deprecated since 5.0, use {@link #TYPE_FACTORIES_LIST}
+     * @deprecated use {@link #TYPE_FACTORIES_LIST}
      */
     @Deprecated(since = "5.0", forRemoval = true)
     String SERVER_TYPE_FACTORIES_LIST = TYPE_FACTORIES_LIST;
@@ -123,7 +123,7 @@ public interface Constants {
     String RESOURCE_LOCATOR = "cayenne.resource_locator";
 
     /**
-     * @deprecated since 5.0, use {@link #RESOURCE_LOCATOR}
+     * @deprecated use {@link #RESOURCE_LOCATOR}
      */
     @Deprecated(since = "5.0", forRemoval = true)
     String SERVER_RESOURCE_LOCATOR = RESOURCE_LOCATOR;
@@ -175,7 +175,7 @@ public interface Constants {
     String DOMAIN_NAME_PROPERTY = "cayenne.domain.name";
 
     /**
-     * @deprecated since 5.0, use {@link #DOMAIN_NAME_PROPERTY}
+     * @deprecated use {@link #DOMAIN_NAME_PROPERTY}
      */
     @Deprecated(since = "5.0", forRemoval = true)
     String SERVER_DOMAIN_NAME_PROPERTY = DOMAIN_NAME_PROPERTY;
@@ -187,7 +187,7 @@ public interface Constants {
     String CONTEXTS_SYNC_PROPERTY = "cayenne.contexts_sync_strategy";
 
     /**
-     * @deprecated since 5.0, use {@link #CONTEXTS_SYNC_PROPERTY}
+     * @deprecated use {@link #CONTEXTS_SYNC_PROPERTY}
      */
     @Deprecated(since = "5.0", forRemoval = true)
     String SERVER_CONTEXTS_SYNC_PROPERTY = CONTEXTS_SYNC_PROPERTY;
@@ -199,7 +199,7 @@ public interface Constants {
     String OBJECT_RETAIN_STRATEGY_PROPERTY = "cayenne.object_retain_strategy";
 
     /**
-     * @deprecated since 5.0, use {@link #CONTEXTS_SYNC_PROPERTY}
+     * @deprecated use {@link #CONTEXTS_SYNC_PROPERTY}
      */
     @Deprecated(since = "5.0", forRemoval = true)
     String SERVER_OBJECT_RETAIN_STRATEGY_PROPERTY = OBJECT_RETAIN_STRATEGY_PROPERTY;
@@ -211,7 +211,7 @@ public interface Constants {
     String EXTERNAL_TX_PROPERTY = "cayenne.external_tx";
 
     /**
-     * @deprecated since 5.0, use {@link #EXTERNAL_TX_PROPERTY}
+     * @deprecated use {@link #EXTERNAL_TX_PROPERTY}
      */
     @Deprecated(since = "5.0", forRemoval = true)
     String SERVER_EXTERNAL_TX_PROPERTY = EXTERNAL_TX_PROPERTY;
@@ -226,7 +226,7 @@ public interface Constants {
     String MAX_ID_QUALIFIER_SIZE_PROPERTY = "cayenne.max_id_qualifier_size";
 
     /**
-     * @deprecated since 5.0, use {@link #MAX_ID_QUALIFIER_SIZE_PROPERTY}
+     * @deprecated use {@link #MAX_ID_QUALIFIER_SIZE_PROPERTY}
      */
     @Deprecated(since = "5.0", forRemoval = true)
     String SERVER_MAX_ID_QUALIFIER_SIZE_PROPERTY = MAX_ID_QUALIFIER_SIZE_PROPERTY;

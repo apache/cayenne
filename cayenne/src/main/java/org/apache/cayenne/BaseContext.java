@@ -24,7 +24,7 @@ import org.apache.cayenne.access.DataContext;
  * A common base superclass for Cayenne ObjectContext implementors.
  * 
  * @since 3.0
- * @deprecated since 5.0, use {@link DataContext} directly
+ * @deprecated use {@link DataContext} directly
  */
 @Deprecated(since = "5.0", forRemoval = true)
 public abstract class BaseContext extends DataContext {

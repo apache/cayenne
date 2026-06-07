@@ -32,7 +32,7 @@ import java.lang.annotation.Target;
  * @since 4.0
  * @deprecated use {@link org.apache.cayenne.annotation.CommitLog} instead.
  */
-@Deprecated(since = "5.0")
+@Deprecated(since = "5.0", forRemoval = true)
 @Target(ElementType.TYPE)
 @Retention(RetentionPolicy.RUNTIME)
 @Documented

@@ -269,9 +269,9 @@ public interface DbAdapter {
 	EJBQLTranslator getEjbqlTranslator();
 
 	/**
-	 * @deprecated since 5.0 in favor of {@link #getEjbqlTranslator()}.
+	 * @deprecated in favor of {@link #getEjbqlTranslator()}.
 	 */
-	@Deprecated(since = "5.0")
+	@Deprecated(since = "5.0", forRemoval = true)
 	default EJBQLTranslator getEjbqlTranslatorFactory() {
 		return getEjbqlTranslator();
 	}

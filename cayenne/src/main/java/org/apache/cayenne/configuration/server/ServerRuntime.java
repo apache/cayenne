@@ -32,7 +32,7 @@ import java.util.Collections;
  * ServerRuntime is the default Cayenne stack that you should be using in all apps with the exception of client-side ROP.</p>
  *
  * @since 3.1
- * @deprecated since 5.0, use {@link CayenneRuntime} class instead
+ * @deprecated use {@link CayenneRuntime} class instead
  */
 @Deprecated(since = "5.0", forRemoval = true)
 public class ServerRuntime extends CayenneRuntime {
@@ -44,7 +44,7 @@ public class ServerRuntime extends CayenneRuntime {
      *
      * @return a builder of CayenneRuntime.
      * @since 4.0
-     * @deprecated since 5.0, use {@link CayenneRuntime#builder()} instead
+     * @deprecated use {@link CayenneRuntime#builder()} instead
      */
     @Deprecated(since = "5.0", forRemoval = true)
     public static CayenneRuntimeBuilder builder() {
@@ -57,7 +57,7 @@ public class ServerRuntime extends CayenneRuntime {
      *
      * @param name optional symbolic name of the created runtime.
      * @return a named builder of CayenneRuntime.
-     * @deprecated since 5.0, use {@link CayenneRuntime#builder(String)} instead
+     * @deprecated use {@link CayenneRuntime#builder(String)} instead
      */
     @Deprecated(since = "5.0", forRemoval = true)
     public static CayenneRuntimeBuilder builder(String name) {

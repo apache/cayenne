@@ -62,7 +62,7 @@ public class EntityProperty<E extends Persistent> extends BaseProperty<E> implem
     }
 
     /**
-     * @deprecated since 5.0 in favour of {@link #idsInCollection(Collection)}
+     * @deprecated in favour of {@link #idsInCollection(Collection)}
      */
     @Deprecated(since = "5.0", forRemoval = true)
     public Expression inId(Collection<Object> ids) {
@@ -80,7 +80,7 @@ public class EntityProperty<E extends Persistent> extends BaseProperty<E> implem
     }
 
     /**
-     * @deprecated since 5.0 in favour of {@link #idsIn(Object...)}
+     * @deprecated in favour of {@link #idsIn(Object...)}
      */
     @Deprecated(since = "5.0", forRemoval = true)
     public Expression inId(Object firstId, Object... moreIds) {
@@ -105,7 +105,7 @@ public class EntityProperty<E extends Persistent> extends BaseProperty<E> implem
     }
 
     /**
-     * @deprecated since 5.0 in favour of {@link #idsNotInCollection(Collection)}
+     * @deprecated in favour of {@link #idsNotInCollection(Collection)}
      */
     @Deprecated(since = "5.0", forRemoval = true)
     public Expression ninId(Collection<Object> ids) {
@@ -123,7 +123,7 @@ public class EntityProperty<E extends Persistent> extends BaseProperty<E> implem
     }
 
     /**
-     * @deprecated since 5.0 in favour of {@link #idsNotIn(Object...)}
+     * @deprecated in favour of {@link #idsNotIn(Object...)}
      */
     @Deprecated(since = "5.0", forRemoval = true)
     public Expression ninId(Object firstId, Object... moreIds) {

@@ -1264,7 +1264,7 @@ public class DataContext implements ObjectContext {
 
     /**
      * @since 4.0
-     * @deprecated since 4.0 avoid using this directly. Transaction management
+     * @deprecated avoid using this directly. Transaction management
      *             at this level will be eventually removed
      */
     @Deprecated

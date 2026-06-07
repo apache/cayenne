@@ -166,7 +166,7 @@ public class CoreModule implements Module {
      * @since 4.0
      * @deprecated in favor of {@link #extend(Binder)} API
      */
-    @Deprecated(since = "5.0")
+    @Deprecated(since = "5.0", forRemoval = true)
     public static void useExternalTransactions(Binder binder, boolean useExternal) {
         extend(binder).setProperty(Constants.EXTERNAL_TX_PROPERTY, String.valueOf(useExternal));
     }
@@ -179,7 +179,7 @@ public class CoreModule implements Module {
      * @since 4.0
      * @deprecated in favor of {@link #extend(Binder)} API
      */
-    @Deprecated(since = "5.0")
+    @Deprecated(since = "5.0", forRemoval = true)
     public static void setSnapshotCacheSize(Binder binder, int size) {
         extend(binder).snapshotCacheSize(size);
     }
@@ -192,7 +192,7 @@ public class CoreModule implements Module {
      * @return ListBuilder for String locations.
      * @deprecated in favor of {@link #extend(Binder)} API
      */
-    @Deprecated(since = "5.0")
+    @Deprecated(since = "5.0", forRemoval = true)
     public static ListBuilder<String> contributeProjectLocations(Binder binder) {
         return binder.bindList(String.class, Constants.PROJECT_LOCATIONS_LIST);
     }
@@ -206,7 +206,7 @@ public class CoreModule implements Module {
      * @since 4.1
      * @deprecated in favor of {@link #extend(Binder)} API
      */
-    @Deprecated(since = "5.0")
+    @Deprecated(since = "5.0", forRemoval = true)
     public static ListBuilder<DataChannelQueryFilter> contributeDomainQueryFilters(Binder binder) {
         return binder.bindList(DataChannelQueryFilter.class);
     }
@@ -220,7 +220,7 @@ public class CoreModule implements Module {
      * @since 4.1
      * @deprecated in favor of {@link #extend(Binder)} API
      */
-    @Deprecated(since = "5.0")
+    @Deprecated(since = "5.0", forRemoval = true)
     public static ListBuilder<DataChannelSyncFilter> contributeDomainSyncFilters(Binder binder) {
         return binder.bindList(DataChannelSyncFilter.class);
     }
@@ -233,7 +233,7 @@ public class CoreModule implements Module {
      * @since 4.0
      * @deprecated in favor of {@link #extend(Binder)} API
      */
-    @Deprecated(since = "5.0")
+    @Deprecated(since = "5.0", forRemoval = true)
     public static ListBuilder<Object> contributeDomainListeners(Binder binder) {
         return binder.bindList(Object.class, Constants.DOMAIN_LISTENERS_LIST);
     }
@@ -247,7 +247,7 @@ public class CoreModule implements Module {
      * @since 4.0
      * @deprecated in favor of {@link #extend(Binder)} API
      */
-    @Deprecated(since = "5.0")
+    @Deprecated(since = "5.0", forRemoval = true)
     public static ListBuilder<DbAdapterDetector> contributeAdapterDetectors(Binder binder) {
         return binder.bindList(DbAdapterDetector.class, Constants.ADAPTER_DETECTORS_LIST);
     }
@@ -261,7 +261,7 @@ public class CoreModule implements Module {
      * @since 4.1
      * @deprecated in favor of {@link #extend(Binder)} API
      */
-    @Deprecated(since = "5.0")
+    @Deprecated(since = "5.0", forRemoval = true)
     public static MapBuilder<PkGenerator> contributePkGenerators(Binder binder) {
         return binder.bindMap(PkGenerator.class);
     }
@@ -275,7 +275,7 @@ public class CoreModule implements Module {
      * @since 4.0
      * @deprecated in favor of {@link #extend(Binder)} API
      */
-    @Deprecated(since = "5.0")
+    @Deprecated(since = "5.0", forRemoval = true)
     public static MapBuilder<String> contributeProperties(Binder binder) {
         return binder.bindMap(String.class, Constants.PROPERTIES_MAP);
     }
@@ -289,7 +289,7 @@ public class CoreModule implements Module {
      * @since 4.0
      * @deprecated in favor of {@link #extend(Binder)} API
      */
-    @Deprecated(since = "5.0")
+    @Deprecated(since = "5.0", forRemoval = true)
     public static ListBuilder<ExtendedTypeFactory> contributeTypeFactories(Binder binder) {
         return binder.bindList(ExtendedTypeFactory.class, Constants.TYPE_FACTORIES_LIST);
     }
@@ -304,7 +304,7 @@ public class CoreModule implements Module {
      * @since 4.0
      * @deprecated in favor of {@link #extend(Binder)} API
      */
-    @Deprecated(since = "5.0")
+    @Deprecated(since = "5.0", forRemoval = true)
     public static ListBuilder<ExtendedType> contributeDefaultTypes(Binder binder) {
         return binder.bindList(ExtendedType.class, Constants.DEFAULT_TYPES_LIST);
     }
@@ -319,7 +319,7 @@ public class CoreModule implements Module {
      * @since 4.0
      * @deprecated in favor of {@link #extend(Binder)} API
      */
-    @Deprecated(since = "5.0")
+    @Deprecated(since = "5.0", forRemoval = true)
     public static ListBuilder<ExtendedType> contributeUserTypes(Binder binder) {
         return binder.bindList(ExtendedType.class, Constants.USER_TYPES_LIST);
     }
@@ -330,7 +330,7 @@ public class CoreModule implements Module {
      * @since 4.0
      * @deprecated in favor of {@link #extend(Binder)} API
      */
-    @Deprecated(since = "5.0")
+    @Deprecated(since = "5.0", forRemoval = true)
     public static ListBuilder<ValueObjectType> contributeValueObjectTypes(Binder binder) {
         return binder.bindList(ValueObjectType.class);
     }
