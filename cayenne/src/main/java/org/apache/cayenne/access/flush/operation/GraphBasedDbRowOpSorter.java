@@ -272,7 +272,7 @@ public class GraphBasedDbRowOpSorter implements DbRowOpSorter {
 
         private Map<String, Object> getCachedSnapshot(Persistent object) {
             ObjectIdQuery query = new ObjectIdQuery(object.getObjectId(), true, ObjectIdQuery.CACHE);
-            QueryResponse response = object.getObjectContext().getChannel().onQuery(null, query);
+            QueryResponse response = object.getObjectContext().getParent().onQuery(null, query);
             @SuppressWarnings("unchecked")
             List<DataRow> result = (List<DataRow>) response.firstList();
             if (result == null || result.isEmpty()) {

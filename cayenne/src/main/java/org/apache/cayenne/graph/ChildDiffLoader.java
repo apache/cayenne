@@ -276,7 +276,7 @@ public class ChildDiffLoader implements GraphChangeHandler {
 
 		// skip context cache lookup, go directly to its channel
 		Query query = new ObjectIdQuery((ObjectId) nodeId);
-		QueryResponse response = context.getChannel().onQuery(context, query);
+		QueryResponse response = context.getParent().onQuery(context, query);
 		List<?> objects = response.firstList();
 
 		if (objects.size() == 0) {

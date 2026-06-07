@@ -528,6 +528,16 @@ public class DataDomain implements DataChannel {
     }
 
     /**
+     * Returns null, as DataDomain is the root of the DataChannel stack.
+     *
+     * @since 5.0
+     */
+    @Override
+    public DataChannel getParent() {
+        return null;
+    }
+
+    /**
      * Runs query returning generic QueryResponse.
      *
      * @since 1.2

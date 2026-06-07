@@ -137,9 +137,7 @@ class DataDomainQueryAction implements QueryRouter, OperationObserver {
                 if (interceptRelationshipQuery() != DONE) {
                     if (interceptRefreshQuery() != DONE) {
                         if (interceptSharedCache() != DONE) {
-                            if (interceptDataDomainQuery() != DONE) {
-                                runQueryInTransaction();
-                            }
+                            runQueryInTransaction();
                         }
                     }
                 }
@@ -198,15 +196,6 @@ class DataDomainQueryAction implements QueryRouter, OperationObserver {
                 }
             }
         }
-    }
-
-    private boolean interceptDataDomainQuery() {
-        if (query instanceof DataDomainQuery) {
-            response = new ListResponse(domain);
-            return DONE;
-        }
-
-        return !DONE;
     }
 
     private boolean interceptOIDQuery() {

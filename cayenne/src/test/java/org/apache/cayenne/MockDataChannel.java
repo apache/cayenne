@@ -72,6 +72,10 @@ public class MockDataChannel implements DataChannel {
         return null;
     }
 
+    public DataChannel getParent() {
+        return null;
+    }
+
     public void reset() {
         requestObjects.clear();
     }

@@ -260,9 +260,14 @@ public interface ObjectContext extends DataChannel, Serializable {
     GraphManager getGraphManager();
 
     /**
-     * Returns an DataChannel used by this context.
+     * Returns a DataChannel used by this context.
+     *
+     * @deprecated since 5.0 in favor of {@link DataChannel#getParent()}
      */
-    DataChannel getChannel();
+    @Deprecated(since = "5.0")
+    default DataChannel getChannel() {
+        return getParent();
+    }
 
     /**
      * Returns <code>true</code> if there are any modified, deleted or new
