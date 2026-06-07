@@ -34,7 +34,7 @@ public class CacheInvalidationModule implements Module {
     /**
      * @deprecated in favor of {@link #extend(Binder)}
      */
-    @Deprecated(since = "5.0")
+    @Deprecated(since = "5.0", forRemoval = true)
     static ListBuilder<InvalidationHandler> contributeInvalidationHandler(Binder binder) {
         return binder.bindList(InvalidationHandler.class);
     }

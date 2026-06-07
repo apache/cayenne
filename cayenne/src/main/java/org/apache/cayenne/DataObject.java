@@ -22,7 +22,7 @@ package org.apache.cayenne;
 /**
  * Defines basic methods for a persistent object in Cayenne.
  *
- * @deprecated since 5.0, use {@link Persistent} interface directly
+ * @deprecated use {@link Persistent} interface directly
  */
 @Deprecated(since = "5.0", forRemoval = true)
 public interface DataObject extends Persistent {

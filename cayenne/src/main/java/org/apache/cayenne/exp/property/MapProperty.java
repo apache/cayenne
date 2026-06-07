@@ -90,7 +90,7 @@ public class MapProperty<K, V extends Persistent> extends BaseProperty<Map<K, V>
 
     /**
      * @return An expression for finding objects with values in the given set.
-     * @deprecated since 5.0 in favour of {@link #containsValues(V...)}
+     * @deprecated in favour of {@link #containsValues(V...)}
      */
     @Deprecated(since = "5.0", forRemoval = true)
     @SafeVarargs
@@ -119,7 +119,7 @@ public class MapProperty<K, V extends Persistent> extends BaseProperty<Map<K, V>
 
     /**
      * @return An expression for finding objects with values in the given set.
-     * @deprecated since 5.0 in favour of {@link #containsValuesCollection(Collection)}
+     * @deprecated in favour of {@link #containsValuesCollection(Collection)}
      */
     @Deprecated(since = "5.0", forRemoval = true)
     public Expression contains(Collection<V> values) {
@@ -136,7 +136,7 @@ public class MapProperty<K, V extends Persistent> extends BaseProperty<Map<K, V>
 
     /**
      * @return An expression for finding objects with values not in the given set.
-     * @deprecated since 5.0 in favour of {@link #notContainsValuesCollection(Collection)}
+     * @deprecated in favour of {@link #notContainsValuesCollection(Collection)}
      */
     @Deprecated(since = "5.0", forRemoval = true)
     public Expression notContains(Collection<V> values) {
@@ -153,7 +153,7 @@ public class MapProperty<K, V extends Persistent> extends BaseProperty<Map<K, V>
 
     /**
      * @return An expression for finding objects with values not in the given set.
-     * @deprecated since 5.0 in favour of {@link #notContainsValues(V...)}
+     * @deprecated in favour of {@link #notContainsValues(V...)}
      */
     @Deprecated(since = "5.0", forRemoval = true)
     @SafeVarargs
@@ -190,7 +190,7 @@ public class MapProperty<K, V extends Persistent> extends BaseProperty<Map<K, V>
 
     /**
      * @return An expression for finding objects with given id set
-     * @deprecated since 5.0 in favour of {@link #containsIds(Object...)}
+     * @deprecated in favour of {@link #containsIds(Object...)}
      */
     @Deprecated(since = "5.0", forRemoval = true)
     public Expression containsId(Object firstId, Object... moreId) {
@@ -217,7 +217,7 @@ public class MapProperty<K, V extends Persistent> extends BaseProperty<Map<K, V>
 
     /**
      * @return An expression for finding objects with given id set.
-     * @deprecated since 5.0 in favour of {@link #containsIdsCollection(Collection)}
+     * @deprecated in favour of {@link #containsIdsCollection(Collection)}
      */
     @Deprecated(since = "5.0", forRemoval = true)
     public Expression containsId(Collection<Object> ids) {
@@ -243,7 +243,7 @@ public class MapProperty<K, V extends Persistent> extends BaseProperty<Map<K, V>
 
     /**
      * @return An expression for finding objects without given id set.
-     * @deprecated since 5.0 in favour of {@link #notContainsIds(Object...)}
+     * @deprecated in favour of {@link #notContainsIds(Object...)}
      */
     @Deprecated(since = "5.0", forRemoval = true)
     public Expression notContainsId(Object firstId, Object... moreId) {
@@ -270,7 +270,7 @@ public class MapProperty<K, V extends Persistent> extends BaseProperty<Map<K, V>
 
     /**
      * @return An expression for finding objects without given id set.
-     * @deprecated since 5.0 in favour of {@link #notContainsIdsCollection(Collection)}
+     * @deprecated in favour of {@link #notContainsIdsCollection(Collection)}
      */
     @Deprecated(since = "5.0", forRemoval = true)
     public Expression notContainsId(Collection<Object> ids) {

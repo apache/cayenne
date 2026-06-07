@@ -22,7 +22,7 @@
  * <p>
  * See <a href="https://issues.apache.org/jira/browse/CAY-2820">JIRA</a> for details.
  *
- * @deprecated since 5.0
+ * @deprecated
  * @see org.apache.cayenne.configuration.runtime
  * @see org.apache.cayenne.runtime
  */

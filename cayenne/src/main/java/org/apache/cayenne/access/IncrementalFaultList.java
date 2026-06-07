@@ -140,7 +140,7 @@ public class IncrementalFaultList<E> implements List<E>, Serializable {
 	 * fully resolved. For the rest of the list, only ObjectIds are read.
 	 * 
 	 * @since 3.0
-	 * @deprecated since 5.0, does nothing
+	 * @deprecated does nothing
 	 */
 	@Deprecated(since = "5.0", forRemoval = true)
 	protected void fillIn(final Query query, List<Object> elementsList) {

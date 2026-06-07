@@ -140,7 +140,6 @@ public class DbImportConfiguration {
     }
 
     /**
-     * @deprecated since 5.0
      * @return false
      */
     @Deprecated(since = "5.0", forRemoval = true)
@@ -151,7 +150,6 @@ public class DbImportConfiguration {
     /**
      * does nothing
      * @param usePrimitives not used
-     * @deprecated since 5.0
      */
     @Deprecated(since = "5.0", forRemoval = true)
     public void setUsePrimitives(boolean usePrimitives) {

@@ -18,12 +18,14 @@
  ****************************************************************/
 package org.apache.cayenne.cache;
 
-import java.util.List;
-
 import org.apache.cayenne.query.QueryMetadata;
+
+import java.util.List;
 
 public class MockQueryCache implements QueryCache {
 
+    @Deprecated(since = "4.0")
+    @Override
     public void clear() {
     }
 

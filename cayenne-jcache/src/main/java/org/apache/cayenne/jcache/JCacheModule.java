@@ -41,7 +41,7 @@ public class JCacheModule implements Module {
     /**
      * @deprecated in favor of {@link #extend(Binder)}
      */
-    @Deprecated(since = "5.0")
+    @Deprecated(since = "5.0", forRemoval = true)
     public static void contributeJCacheProviderConfig(Binder binder, String providerConfigURI) {
         extend(binder).setJCacheProviderConfig(providerConfigURI);
     }

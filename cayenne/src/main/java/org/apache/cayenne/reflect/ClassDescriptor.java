@@ -94,7 +94,7 @@ public interface ClassDescriptor {
      * <pre>
      * this.getObjectClass().isAssignableFrom(objectClass)
      * </pre>
-     * @deprecated since 5.0, will throw UnsupportedOperationException on invocation,
+     * @deprecated will throw UnsupportedOperationException on invocation,
      *             use {@link #getSubclassDescriptor(String)}
      */
     @Deprecated(since = "5.0", forRemoval = true)

@@ -262,9 +262,9 @@ public interface ObjectContext extends DataChannel, Serializable {
     /**
      * Returns a DataChannel used by this context.
      *
-     * @deprecated since 5.0 in favor of {@link DataChannel#getParent()}
+     * @deprecated in favor of {@link DataChannel#getParent()}
      */
-    @Deprecated(since = "5.0")
+    @Deprecated(since = "5.0", forRemoval = true)
     default DataChannel getChannel() {
         return getParent();
     }

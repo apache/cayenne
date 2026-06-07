@@ -18,14 +18,14 @@
  ****************************************************************/
 package org.apache.cayenne.cache;
 
+import org.apache.cayenne.CayenneRuntimeException;
+import org.apache.cayenne.query.QueryMetadata;
+import org.apache.cayenne.util.concurrentlinkedhashmap.ConcurrentLinkedHashMap;
+
 import java.io.Serializable;
 import java.util.List;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
-
-import org.apache.cayenne.CayenneRuntimeException;
-import org.apache.cayenne.query.QueryMetadata;
-import org.apache.cayenne.util.concurrentlinkedhashmap.ConcurrentLinkedHashMap;
 
 /**
  * A default implementation of the {@link QueryCache} interface that stores data in a
@@ -119,6 +119,8 @@ public class MapQueryCache implements QueryCache, Serializable {
         removeGroup(groupKey);
     }
 
+    @Override
+    @Deprecated(since = "4.0")
     public void clear() {
         cacheGroups.clear();
     }

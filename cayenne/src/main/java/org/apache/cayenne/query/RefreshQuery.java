@@ -41,7 +41,7 @@ public class RefreshQuery implements Query {
      * Creates a RefreshQuery that does full refresh of all registered objects, cascading
      * refresh all the way to the shared cache.
      *
-     * @deprecated since 4.0, "refresh all" query will drop all cache contents
+     * @deprecated "refresh all" query will drop all cache contents
      * @see org.apache.cayenne.cache.QueryCache#clear()
      */
     @Deprecated

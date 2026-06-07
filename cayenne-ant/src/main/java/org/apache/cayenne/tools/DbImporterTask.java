@@ -243,7 +243,7 @@ public class DbImporterTask extends Task {
     }
 
     /**
-     * @deprecated since 5.0 this method is unused and does nothing
+     * @deprecated this method is unused and does nothing
      */
     @Deprecated(since = "5.0", forRemoval = true)
     public void setUsePrimitives(boolean flag) {
