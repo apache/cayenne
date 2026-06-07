@@ -111,7 +111,7 @@ public class DataContextDecoratedStackIT {
             return channel.onSync(originatingContext, changes, syncType);
         }
 
-        public DataChannel getChannel() {
+        public DataChannel getParent() {
             return channel;
         }
 

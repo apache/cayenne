@@ -78,6 +78,14 @@ public interface DataChannel {
     EntityResolver getEntityResolver();
 
     /**
+     * Returns the parent channel of this channel in the DataChannel stack, or null if this is a
+     * root channel (such as a {@link org.apache.cayenne.access.DataDomain}).
+     *
+     * @since 5.0
+     */
+    DataChannel getParent();
+
+    /**
      * Executes a query, using provided <em>context</em> to register persistent objects if
      * query returns any objects.
      *

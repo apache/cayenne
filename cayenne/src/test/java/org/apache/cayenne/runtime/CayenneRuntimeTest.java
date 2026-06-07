@@ -104,6 +104,10 @@ public class CayenneRuntimeTest {
                 return null;
             }
 
+            public DataChannel getParent() {
+                return null;
+            }
+
             public QueryResponse onQuery(ObjectContext originatingContext, Query query) {
                 return null;
             }

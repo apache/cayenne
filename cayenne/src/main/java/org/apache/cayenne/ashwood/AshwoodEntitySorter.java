@@ -319,7 +319,7 @@ public class AshwoodEntitySorter implements EntitySorter {
 		}
 
 		ObjectIdQuery query = new ObjectIdQuery(object.getObjectId(), true, ObjectIdQuery.CACHE);
-		QueryResponse response = context.getChannel().onQuery(null, query);
+		QueryResponse response = context.getParent().onQuery(null, query);
 		List<?> result = response.firstList();
 		if (result == null || result.size() == 0) {
 			return null;

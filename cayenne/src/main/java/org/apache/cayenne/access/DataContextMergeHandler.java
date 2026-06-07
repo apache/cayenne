@@ -65,11 +65,11 @@ class DataContextMergeHandler implements GraphChangeHandler, DataChannelListener
 
         // this effectively filters out all events that are not coming from peers or
         // grandparents...
-        return e.getSource() == context.getChannel()
+        return e.getSource() == context.getParent()
                 && e.getPostedBy() != context
-                && e.getPostedBy() != context.getChannel();
+                && e.getPostedBy() != context.getParent();
 
-        // the first condition (e.getSource() == context.getChannel()) is actually always
+        // the first condition (e.getSource() == context.getParent()) is actually always
         // 'true' because of how the listener is registered. Still keep it here as an
         // extra safegurad
     }

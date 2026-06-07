@@ -269,7 +269,7 @@ public class DataContext implements ObjectContext {
     }
 
     @Override
-    public DataChannel getChannel() {
+    public DataChannel getParent() {
         attachToRuntimeIfNeeded();
         return channel;
     }
@@ -298,29 +298,21 @@ public class DataContext implements ObjectContext {
 
 
     /**
-     * Returns a DataDomain used by this DataContext. DataDomain is looked up in
-     * the DataChannel hierarchy. If a channel is not a DataDomain or a
-     * DataContext, null is returned.
+     * Returns a DataDomain used by this DataContext. DataDomain is looked up in the DataChannel hierarchy. If the final
+     * channel is not a DataDomain, null is returned.
      * 
-     * @return DataDomain that is a direct or indirect parent of this
-     *         DataContext in the DataChannel hierarchy.
+     * @return DataDomain that is a direct or indirect parent of this DataContext in the DataChannel hierarchy.
      * @since 1.1
      */
     public DataDomain getParentDataDomain() {
         attachToRuntimeIfNeeded();
 
-        if (channel == null) {
-            return null;
-        }
-
-        if (channel instanceof DataDomain dataDomain) {
-            return dataDomain;
-        }
-
-        List<?> response = channel.onQuery(this, new DataDomainQuery()).firstList();
-
-        if (response != null && !response.isEmpty() && response.getFirst() instanceof DataDomain dataDomain) {
-            return dataDomain;
+        DataChannel c = channel;
+        while (c != null) {
+            if (c instanceof DataDomain dataDomain) {
+                return dataDomain;
+            }
+            c = c.getParent();
         }
 
         return null;
@@ -618,7 +610,7 @@ public class DataContext implements ObjectContext {
     }
 
     private List <?> objectsFromDataRowsFromParentContext(ClassDescriptor descriptor, List<? extends DataRow> dataRows) {
-        return getChannel().onQuery(this, new ObjectsFromDataRowsQuery(descriptor, dataRows)).firstList();
+        return getParent().onQuery(this, new ObjectsFromDataRowsQuery(descriptor, dataRows)).firstList();
     }
 
     /**
@@ -824,7 +816,7 @@ public class DataContext implements ObjectContext {
      */
     GraphDiff flushToParent(boolean cascade) {
 
-        if (this.getChannel() == null) {
+        if (this.getParent() == null) {
             throw new CayenneRuntimeException("Cannot commit changes - channel is not set.");
         }
 
@@ -845,7 +837,7 @@ public class DataContext implements ObjectContext {
             } else {
 
                 try {
-                    parentChanges = getChannel().onSync(this, changes, syncType);
+                    parentChanges = getParent().onSync(this, changes, syncType);
 
                     // note that this is a hack resulting from a fix to CAY-766...
                     // To support valid object state in PostPersist callback,
@@ -882,7 +874,7 @@ public class DataContext implements ObjectContext {
 
             // this event is caught by child DataContexts to update temporary ObjectIds with permanent
             if (!diff.isNoop()) {
-                fireDataChannelCommitted(getChannel(), diff);
+                fireDataChannelCommitted(getParent(), diff);
             }
 
             return diff;
@@ -992,7 +984,7 @@ public class DataContext implements ObjectContext {
             return new GenericResponse();
         }
 
-        if (this.getChannel() == null) {
+        if (this.getParent() == null) {
             throw new CayenneRuntimeException("Can't run query - parent DataChannel is not set.");
         }
 

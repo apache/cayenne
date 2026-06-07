@@ -321,7 +321,7 @@ public abstract class ObjectContextQueryAction {
                          * nested contexts).
                          */
                         if (((Persistent) object).getPersistenceState() == PersistenceState.NEW
-                                && !(actingContext.getChannel() instanceof ObjectContext)) {
+                                && !(actingContext.getParent() instanceof ObjectContext)) {
                             this.response = new ListResponse();
                             return DONE;
                         }
@@ -411,6 +411,6 @@ public abstract class ObjectContextQueryAction {
      * Fetches data from the channel.
      */
     protected void runQuery() {
-        this.response = actingContext.getChannel().onQuery(actingContext, query);
+        this.response = actingContext.getParent().onQuery(actingContext, query);
     }
 }
