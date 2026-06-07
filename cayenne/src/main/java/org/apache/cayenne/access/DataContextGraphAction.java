@@ -16,9 +16,7 @@
  *  specific language governing permissions and limitations
  *  under the License.
  ****************************************************************/
-package org.apache.cayenne.util;
-
-import java.io.Serializable;
+package org.apache.cayenne.access;
 
 import org.apache.cayenne.ObjectContext;
 import org.apache.cayenne.PersistenceState;
@@ -28,19 +26,14 @@ import org.apache.cayenne.reflect.ArcProperty;
 import org.apache.cayenne.reflect.ClassDescriptor;
 import org.apache.cayenne.reflect.PropertyDescriptor;
 
-/**
- * A base implementation of a helper class to handle
- * {@link ObjectContext#propertyChanged(org.apache.cayenne.Persistent, String, Object, Object)}
- * processing on behalf of an ObjectContext.
- * 
- * @since 3.0
- * TODO: make this non-public! 
- */
-public class ObjectContextGraphAction implements Serializable {
+import java.io.Serializable;
 
-    protected ObjectContext context;
 
-    public ObjectContextGraphAction(ObjectContext context) {
+class DataContextGraphAction implements Serializable {
+
+    private final ObjectContext context;
+
+    public DataContextGraphAction(ObjectContext context) {
         this.context = context;
     }
 
@@ -64,8 +57,7 @@ public class ObjectContextGraphAction implements Serializable {
 
         if (property instanceof ArcProperty) {
             handleArcPropertyChange(object, (ArcProperty) property, oldValue, newValue);
-        }
-        else {
+        } else {
             handleSimplePropertyChange(object, propertyName, oldValue, newValue);
         }
     }
@@ -99,7 +91,7 @@ public class ObjectContextGraphAction implements Serializable {
             String propertyName,
             Object oldValue,
             Object newValue) {
-        
+
         context.getGraphManager().nodePropertyChanged(
                 object.getObjectId(),
                 propertyName,
