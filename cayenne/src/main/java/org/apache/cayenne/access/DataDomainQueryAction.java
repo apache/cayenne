@@ -87,17 +87,18 @@ class DataDomainQueryAction implements QueryRouter, OperationObserver {
     private static final boolean DONE = true;
 
     private final DataContext context;
-    final DataDomain domain;
-    final Query query;
+    private final DataDomain domain;
+    private final Query query;
     private final QueryMetadata metadata;
     private final AdhocObjectFactory objectFactory;
+    private final DataRowStore cache;
 
-    private DataRowStore cache;
     private QueryResponse response;
     private GenericResponse fullResponse;
     private Map<CayennePath, List<?>> prefetchResultsByPath;
     private Map<DataNode, Collection<Query>> queriesByNode;
     private boolean noObjectConversion;
+
     // True when using a caching strategy (shared or local cache), indicating lists are immutable and need copying
     private boolean cachedResult;
     // True when results were found in cache (cache hit), false when fetched from database (cache miss or explicit refresh)
@@ -120,13 +121,9 @@ class DataDomainQueryAction implements QueryRouter, OperationObserver {
         this.objectFactory = domain.getObjectFactory();
 
         // cache may be shared or unique for the ObjectContext
-        if (context != null) {
-            this.cache = this.context.getObjectStore().getDataRowCache();
-        }
-
-        if (this.cache == null) {
-            this.cache = domain.getSharedSnapshotCache();
-        }
+        this.cache = this.context != null && this.context.getObjectStore().getDataRowCache() != null
+                ? this.context.getObjectStore().getDataRowCache()
+                : domain.getSharedSnapshotCache();
     }
 
     QueryResponse execute() {

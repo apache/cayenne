@@ -29,7 +29,6 @@ import org.apache.cayenne.log.JdbcEventLogger;
 public class DefaultTransactionFactory implements TransactionFactory {
 
     protected boolean externalTransactions;
-
     protected JdbcEventLogger jdbcEventLogger;
 
     public DefaultTransactionFactory(@Inject RuntimeProperties properties, @Inject JdbcEventLogger jdbcEventLogger) {
@@ -47,8 +46,9 @@ public class DefaultTransactionFactory implements TransactionFactory {
      */
     @Override
     public Transaction createTransaction(TransactionDescriptor descriptor) {
-        return externalTransactions ? new ExternalTransaction(jdbcEventLogger, descriptor) : new CayenneTransaction(
-                jdbcEventLogger, descriptor);
+        return externalTransactions
+                ? new ExternalTransaction(jdbcEventLogger, descriptor)
+                : new CayenneTransaction(jdbcEventLogger, descriptor);
     }
 
 }

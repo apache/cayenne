@@ -18,17 +18,17 @@
  ****************************************************************/
 package org.apache.cayenne.query;
 
-import java.util.Collection;
-import java.util.Collections;
-
 import org.apache.cayenne.CayenneRuntimeException;
 import org.apache.cayenne.Persistent;
 import org.apache.cayenne.map.EntityResolver;
 
+import java.util.Collection;
+import java.util.Collections;
+
 /**
  * A query that allows to explicitly clear both object and list caches either via refetch
  * (eager refresh) or invalidate (lazy refresh).
- * 
+ *
  * @since 3.0
  */
 public class RefreshQuery implements Query {
@@ -36,18 +36,6 @@ public class RefreshQuery implements Query {
     protected Collection<?> objects;
     protected Query query;
     protected String[] groupKeys;
-
-    /**
-     * Creates a RefreshQuery that does full refresh of all registered objects, cascading
-     * refresh all the way to the shared cache.
-     *
-     * @deprecated "refresh all" query will drop all cache contents
-     * @see org.apache.cayenne.cache.QueryCache#clear()
-     */
-    @Deprecated
-    public RefreshQuery() {
-
-    }
 
     /**
      * Creates a RefreshQuery that refreshes a collection of objects, including
@@ -77,7 +65,7 @@ public class RefreshQuery implements Query {
      * Creates a RefreshQuery that refreshes query results identified by group keys.
      */
     public RefreshQuery(String... groupKeys) {
-        this.groupKeys = groupKeys;
+        this.groupKeys = groupKeys != null && groupKeys.length == 0 ? null : groupKeys;
     }
 
     public QueryMetadata getMetaData(EntityResolver resolver) {
