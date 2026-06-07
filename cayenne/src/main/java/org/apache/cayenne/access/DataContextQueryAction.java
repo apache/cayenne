@@ -20,44 +20,175 @@
 package org.apache.cayenne.access;
 
 import org.apache.cayenne.ObjectContext;
+import org.apache.cayenne.ObjectId;
 import org.apache.cayenne.PersistenceState;
 import org.apache.cayenne.Persistent;
+import org.apache.cayenne.QueryResponse;
+import org.apache.cayenne.cache.QueryCache;
+import org.apache.cayenne.cache.QueryCacheEntryFactory;
 import org.apache.cayenne.map.DbEntity;
+import org.apache.cayenne.map.EntityInheritanceTree;
 import org.apache.cayenne.query.EntityResultSegment;
+import org.apache.cayenne.query.IteratedQueryDecorator;
 import org.apache.cayenne.query.ObjectIdQuery;
 import org.apache.cayenne.query.Query;
+import org.apache.cayenne.query.QueryCacheStrategy;
+import org.apache.cayenne.query.QueryMetadata;
 import org.apache.cayenne.query.RefreshQuery;
+import org.apache.cayenne.query.RelationshipQuery;
+import org.apache.cayenne.reflect.ArcProperty;
+import org.apache.cayenne.reflect.ClassDescriptor;
+import org.apache.cayenne.util.GenericResponse;
 import org.apache.cayenne.util.ListResponse;
-import org.apache.cayenne.util.ObjectContextQueryAction;
+import org.apache.cayenne.util.ShallowMergeOperation;
 
+import java.util.ArrayList;
 import java.util.Collection;
+import java.util.Collections;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 import java.util.Objects;
+import java.util.Set;
 
-/**
- * A DataContext-specific version of
- * {@link org.apache.cayenne.util.ObjectContextQueryAction}.
- * 
- * @since 1.2
- */
-class DataContextQueryAction extends ObjectContextQueryAction {
+class DataContextQueryAction {
 
-    protected DataContext actingDataContext;
+    private static final boolean DONE = true;
 
-    public DataContextQueryAction(DataContext actingContext, ObjectContext targetContext,
-            Query query) {
-        super(actingContext, targetContext, query);
-        actingDataContext = actingContext;
+    private final ObjectContext actingContext;
+    private final ObjectContext targetContext;
+    private final DataContext actingDataContext;
+    private final Query query;
+    private final QueryMetadata metadata;
+    private final boolean queryOriginator;
+
+    private transient QueryResponse response;
+
+    public DataContextQueryAction(DataContext actingContext, ObjectContext targetContext, Query query) {
+
+        this.actingContext = actingContext;
+        this.actingDataContext = actingContext;
+        this.query = query;
+
+        // this means that a caller must pass self as both acting context and target
+        // context to indicate that a query originated here... null (ROP) or differing
+        // context indicates that the query was originated elsewhere, which has
+        // consequences in LOCAL_CACHE handling
+        this.queryOriginator = targetContext != null && targetContext == actingContext;
+
+        // no special target context and same target context as acting context mean the
+        // same thing. "normalize" the internal state to avoid confusion
+        this.targetContext = targetContext != actingContext ? targetContext : null;
+        this.metadata = query.getMetaData(actingContext.getEntityResolver());
     }
 
-    @Override
+    /**
+     * Worker method that performs internal query.
+     */
+    public QueryResponse execute() {
+        if (interceptIteratedQuery() != DONE) {
+            if (interceptOIDQuery() != DONE) {
+                if (interceptRelationshipQuery() != DONE) {
+                    if (interceptRefreshQuery() != DONE) {
+                        if (interceptLocalCache() != DONE) {
+                            executePostCache();
+                        }
+                    }
+                }
+            }
+        }
+
+        interceptObjectConversion();
+        return response;
+    }
+
+    private boolean interceptIteratedQuery() {
+        if (query instanceof IteratedQueryDecorator) {
+            runQuery();
+            return DONE;
+        }
+        return !DONE;
+    }
+
+    private void executePostCache() {
+        if (interceptInternalQuery() != DONE) {
+            if (interceptPaginatedQuery() != DONE) {
+                runQuery();
+            }
+        }
+    }
+
+    /**
+     * Transfers fetched objects into the target context if it is different from "acting"
+     * context. Note that when this method is invoked, result objects are already
+     * registered with acting context by the parent channel.
+     */
+    protected void interceptObjectConversion() {
+
+        if (targetContext != null && !metadata.isFetchingDataRows()) {
+
+            // rewrite response to contain objects from the query context
+
+            GenericResponse childResponse = new GenericResponse();
+            ShallowMergeOperation merger = null;
+
+            for (response.reset(); response.next(); ) {
+                if (response.isList()) {
+                    List<?> objects = response.currentList();
+                    if (objects.isEmpty()) {
+                        childResponse.addResultList(objects);
+                    } else {
+
+                        // minor optimization, skip Object[] if there are no persistent objects
+                        boolean haveObjects = metadata.getResultSetMapping() == null;
+                        if (!haveObjects) {
+                            for (Object next : metadata.getResultSetMapping()) {
+                                if (next instanceof EntityResultSegment) {
+                                    haveObjects = true;
+                                    break;
+                                }
+                            }
+                        }
+
+                        if (merger == null) {
+                            merger = new ShallowMergeOperation(targetContext);
+                        }
+
+                        // TODO: Andrus 1/31/2006 - IncrementalFaultList is not properly
+                        // transferred between contexts....
+
+                        List<Object> childObjects = new ArrayList<>(objects.size());
+                        for (Object object1 : objects) {
+                            if (object1 instanceof Persistent object) {
+                                childObjects.add(merger.merge(object));
+                            } else if (haveObjects && object1 instanceof Object[] parentData) {
+                                // merge objects inside Object[]
+                                Object[] childData = new Object[parentData.length];
+                                System.arraycopy(parentData, 0, childData, 0, parentData.length);
+                                for (int i = 0; i < childData.length; i++) {
+                                    if (childData[i] instanceof Persistent) {
+                                        childData[i] = merger.merge((Persistent) childData[i]);
+                                    }
+                                }
+                                childObjects.add(childData);
+                            } else {
+                                childObjects.add(object1);
+                            }
+                        }
+
+                        childResponse.addResultList(childObjects);
+                    }
+                } else {
+                    childResponse.addBatchUpdateCount(response.currentUpdateCount());
+                }
+            }
+
+            response = childResponse;
+        }
+
+    }
+
     protected boolean interceptInternalQuery() {
-        return interceptObjectFromDataRowsQuery();
-    }
-
-    private boolean interceptObjectFromDataRowsQuery() {
         if (query instanceof ObjectsFromDataRowsQuery objectsFromDataRowsQuery) {
             response = new ListResponse(actingDataContext.objectsFromDataRows(
                     objectsFromDataRowsQuery.getDescriptor(),
@@ -68,9 +199,8 @@ class DataContextQueryAction extends ObjectContextQueryAction {
     }
 
     /**
-     * Overrides super implementation to property handle data row fetches.
+     * Handles {@link ObjectIdQuery}, properly handling data row fetches.
      */
-    @Override
     protected boolean interceptOIDQuery() {
         if (query instanceof ObjectIdQuery oidQuery) {
 
@@ -79,10 +209,10 @@ class DataContextQueryAction extends ObjectContextQueryAction {
                 if (object != null) {
 
                     // TODO: andrus, 10/14/2006 - obtaining a row from an object is the
-                    // only piece that makes this method different from the super
-                    // implementation. This is used in NEW objects sorting on insert. It
-                    // would be nice to implement an alternative algorithm that wouldn't
-                    // require this hack.
+                    // only piece that makes this method different from a plain cache
+                    // lookup. This is used in NEW objects sorting on insert. It would be
+                    // nice to implement an alternative algorithm that wouldn't require
+                    // this hack.
                     if (oidQuery.isFetchingDataRows()) {
                         object = actingDataContext.currentSnapshot((Persistent) object);
                     }
@@ -100,7 +230,116 @@ class DataContextQueryAction extends ObjectContextQueryAction {
         return !DONE;
     }
 
-    @Override
+    // TODO: bunch of copy/paset from DataDomainQueryAction
+    protected Object polymorphicObjectFromCache(ObjectId superOid) {
+        Object object = actingContext.getGraphManager().getNode(superOid);
+        if (object != null) {
+            return object;
+        }
+
+        EntityInheritanceTree inheritanceTree = actingContext.getEntityResolver().getInheritanceTree(superOid.getEntityName());
+        if (!inheritanceTree.getChildren().isEmpty()) {
+            object = polymorphicObjectFromCache(inheritanceTree, superOid);
+        }
+
+        return object;
+    }
+
+    private Object polymorphicObjectFromCache(EntityInheritanceTree superNode, ObjectId superOid) {
+
+        for (EntityInheritanceTree child : superNode.getChildren()) {
+            ObjectId id = ObjectId.of(child.getEntity().getName(), superOid);
+            Object object = actingContext.getGraphManager().getNode(id);
+            if (object != null) {
+                return object;
+            }
+
+            object = polymorphicObjectFromCache(child, superOid);
+            if (object != null) {
+                return object;
+            }
+        }
+
+        return null;
+    }
+
+    protected boolean interceptRelationshipQuery() {
+
+        if (query instanceof RelationshipQuery relationshipQuery) {
+            if (!relationshipQuery.isRefreshing()) {
+
+                // don't intercept to-many relationships if fetch is done to the same
+                // context as the root context of this action - this will result in an
+                // infinite loop.
+
+                if (targetContext == null
+                        && relationshipQuery.getRelationship(
+                        actingContext.getEntityResolver()).isToMany()) {
+                    return !DONE;
+                }
+
+                ObjectId id = relationshipQuery.getObjectId();
+                Object object = actingContext.getGraphManager().getNode(id);
+
+                if (object != null) {
+
+                    ClassDescriptor descriptor = actingContext
+                            .getEntityResolver()
+                            .getClassDescriptor(id.getEntityName());
+
+                    if (!descriptor.isFault(object)) {
+
+                        ArcProperty property = (ArcProperty) descriptor
+                                .getProperty(relationshipQuery.getRelationshipName());
+
+                        if (!property.isFault(object)) {
+
+                            Object related = property.readPropertyDirectly(object);
+
+                            // null to-one
+                            List<?> result = switch (related) {
+                                case null -> new ArrayList<>(1);
+
+                                // to-many List
+                                case List list -> list;
+
+                                // to-many Set
+                                case Set set -> new ArrayList<>(set);
+
+                                // to-many Map
+                                case Map map -> new ArrayList<>(map.values());
+
+                                // non-null to-one
+                                // TODO: any risks of returning an immutable list here?
+                                default -> Collections.singletonList(related);
+                            };
+
+                            this.response = new ListResponse(result);
+                            return DONE;
+
+                        }
+
+                        // Workaround for CAY-1183. If a Relationship query is being sent
+                        // from child context, we assure that local object is not NEW and
+                        // relationship - unresolved (this way exception will occur). This
+                        // helps when faulting objects that were committed to parent
+                        // context (this), but not to database. Checking type of context's
+                        // channel is the only way to ensure that we are on the top level
+                        // of context hierarchy (there might be more than one-level-deep
+                        // nested contexts).
+                        if (((Persistent) object).getPersistenceState() == PersistenceState.NEW
+                                && !(actingContext.getParent() instanceof ObjectContext)) {
+                            this.response = new ListResponse();
+                            return DONE;
+                        }
+                    }
+                }
+            }
+        }
+
+        return !DONE;
+    }
+
     protected boolean interceptPaginatedQuery() {
         if (metadata.getPageSize() > 0) {
             // this will select raw ids
@@ -121,7 +360,7 @@ class DataContextQueryAction extends ObjectContextQueryAction {
     private IncrementalFaultList<?> createIncrementalFaultList(List<?> rawIds, int maxIdQualifierSize) {
         // just a sanity check
         Objects.requireNonNull(rawIds, "Trying to execute paginated query that is not a select query");
-        if(isMixedResultsForPaginatedQuery()) {
+        if (isMixedResultsForPaginatedQuery()) {
             return new MixedResultIncrementalFaultList<>(actingDataContext, query, maxIdQualifierSize, rawIds);
         } else {
             DbEntity dbEntity = metadata.getDbEntity();
@@ -136,10 +375,10 @@ class DataContextQueryAction extends ObjectContextQueryAction {
     private boolean isMixedResultsForPaginatedQuery() {
         boolean mixedResults = false;
         List<Object> rsMapping = metadata.getResultSetMapping();
-        if(rsMapping != null) {
-            if(rsMapping.size() > 1) {
+        if (rsMapping != null) {
+            if (rsMapping.size() > 1) {
                 mixedResults = true;
-            } else if(rsMapping.size() == 1) {
+            } else if (rsMapping.size() == 1) {
                 mixedResults = !(rsMapping.getFirst() instanceof EntityResultSegment)
                         || !metadata.isSingleResultSetMapping();
             }
@@ -147,24 +386,21 @@ class DataContextQueryAction extends ObjectContextQueryAction {
         return mixedResults;
     }
 
-    @Override
     protected boolean interceptRefreshQuery() {
         if (query instanceof RefreshQuery refreshQuery) {
-
-            DataContext context = (DataContext) actingContext;
 
             // handle four separate cases, but do not combine them as it will be
             // unclear how to handle cascading behavior
 
             // 1. refresh all
             if (refreshQuery.isRefreshAll()) {
-                synchronized (context.getObjectStore()) {
+                synchronized (actingDataContext.getObjectStore()) {
 
-                    invalidateLocally(context.getObjectStore(), context
+                    invalidateLocally(actingDataContext.getObjectStore(), actingDataContext
                             .getObjectStore()
                             .getObjectIterator());
 
-                    context.getQueryCache().clear();
+                    actingDataContext.getQueryCache().clear();
                 }
 
                 // cascade
@@ -175,8 +411,8 @@ class DataContextQueryAction extends ObjectContextQueryAction {
             Collection<?> objects = refreshQuery.getObjects();
             if (objects != null && !objects.isEmpty()) {
 
-                synchronized (context.getObjectStore()) {
-                    invalidateLocally(context.getObjectStore(), objects.iterator());
+                synchronized (actingDataContext.getObjectStore()) {
+                    invalidateLocally(actingDataContext.getObjectStore(), objects.iterator());
                 }
 
                 // cascade
@@ -188,11 +424,11 @@ class DataContextQueryAction extends ObjectContextQueryAction {
             if (cachedQuery != null) {
 
                 String cacheKey = cachedQuery
-                        .getMetaData(context.getEntityResolver())
+                        .getMetaData(actingDataContext.getEntityResolver())
                         .getCacheKey();
-                context.getQueryCache().remove(cacheKey);
+                actingDataContext.getQueryCache().remove(cacheKey);
 
-                this.response = context.performGenericQuery(cachedQuery);
+                this.response = actingDataContext.performGenericQuery(cachedQuery);
 
                 // do not cascade to avoid running query twice
                 return DONE;
@@ -203,7 +439,7 @@ class DataContextQueryAction extends ObjectContextQueryAction {
             if (groups != null && groups.length > 0) {
 
                 for (String group : groups) {
-                    context.getQueryCache().removeGroup(group);
+                    actingDataContext.getQueryCache().removeGroup(group);
                 }
 
                 // cascade group invalidation
@@ -239,5 +475,64 @@ class DataContextQueryAction extends ObjectContextQueryAction {
 
             object.setPersistenceState(PersistenceState.HOLLOW);
         }
+    }
+
+    protected boolean interceptLocalCache() {
+
+        if (metadata.getCacheKey() == null) {
+            return !DONE;
+        }
+
+        // ignore local cache unless this context originated the query...
+        if (!queryOriginator) {
+            return !DONE;
+        }
+
+        boolean cache = QueryCacheStrategy.LOCAL_CACHE == metadata.getCacheStrategy();
+        boolean cacheOrCacheRefresh = cache
+                || QueryCacheStrategy.LOCAL_CACHE_REFRESH == metadata.getCacheStrategy();
+
+        if (!cacheOrCacheRefresh) {
+            return !DONE;
+        }
+
+        QueryCache queryCache = getQueryCache();
+        QueryCacheEntryFactory factory = getCacheObjectFactory();
+
+        if (cache) {
+            boolean wasResponseNull = (response == null);
+            List cachedResults = queryCache.get(metadata, factory);
+
+            // response may already be initialized by the factory above ... it is null if
+            // there was a preexisting cache entry
+            if (response == null || wasResponseNull) {
+                response = new ListResponse(cachedResults);
+            }
+        } else {
+            // on cache-refresh request, fetch without blocking and fill the cache
+            queryCache.put(metadata, factory.createObject());
+        }
+
+        return DONE;
+    }
+
+    protected QueryCache getQueryCache() {
+        return actingDataContext.getQueryCache();
+    }
+
+    protected QueryCacheEntryFactory getCacheObjectFactory() {
+        return () -> {
+            executePostCache();
+            List result = response.firstList();
+            // make an immutable list to make sure callers don't mess it up
+            return result != null ? Collections.unmodifiableList(result) : null;
+        };
+    }
+
+    /**
+     * Fetches data from the channel.
+     */
+    protected void runQuery() {
+        this.response = actingContext.getParent().onQuery(actingContext, query);
     }
 }

@@ -57,7 +57,6 @@ import org.apache.cayenne.runtime.CayenneRuntime;
 import org.apache.cayenne.tx.TransactionFactory;
 import org.apache.cayenne.util.EventUtil;
 import org.apache.cayenne.util.GenericResponse;
-import org.apache.cayenne.util.ObjectContextGraphAction;
 import org.apache.cayenne.util.Util;
 
 import java.io.IOException;
@@ -130,7 +129,7 @@ public class DataContext implements ObjectContext {
      *
      * @since 3.1
      */
-    protected ObjectContextGraphAction graphAction;
+    protected DataContextGraphAction graphAction;
 
     /**
      * Stores user defined properties associated with this DataContext.
@@ -166,7 +165,7 @@ public class DataContext implements ObjectContext {
      */
     public DataContext(DataChannel channel, ObjectStore objectStore) {
 
-        graphAction = new ObjectContextGraphAction(this);
+        graphAction = new DataContextGraphAction(this);
         objectCreator = new DataContextObjectCreator(this);
 
         // inject self as parent context
