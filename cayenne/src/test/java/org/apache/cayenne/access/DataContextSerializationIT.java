@@ -35,6 +35,7 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.RegisterExtension;
 
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -137,7 +138,7 @@ public class DataContextSerializationIT {
         DataDomain domain = context.getParentDataDomain();
         DataRowStore snapshotCache = new DataRowStore(
                 domain.getName(),
-                new DefaultRuntimeProperties(domain.getProperties()),
+                new DefaultRuntimeProperties(Collections.emptyMap()),
                 domain.getEventManager());
 
         Map<Object, Persistent> map = new HashMap<>();

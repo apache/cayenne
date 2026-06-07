@@ -38,8 +38,6 @@ import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.RegisterExtension;
 
 import java.util.Collections;
-import java.util.HashMap;
-import java.util.Map;
 
 import static org.junit.jupiter.api.Assertions.*;
 
@@ -158,43 +156,27 @@ public class DataDomainIT {
         assertNotNull(domain.getEntityResolver());
     }
 
-    @SuppressWarnings("deprecation")
     @Test
-    public void initDataDomainWithSharedCache() throws Exception {
-        Map<String, String> properties = new HashMap<>();
-        properties.put(DataDomain.SHARED_CACHE_ENABLED_PROPERTY, Boolean.TRUE.toString());
-
-        DataDomain domain = new DataDomain("d1", properties);
-        assertTrue(domain.isSharedCacheEnabled());
+    public void sharedCacheEnabledDefault() {
+        assertTrue(new DataDomain("d1").isSharedCacheEnabled());
     }
 
-    @SuppressWarnings("deprecation")
     @Test
-    public void initDataDomainWithDedicatedCache() throws Exception {
-        Map<String, String> properties = new HashMap<>();
-        properties.put(DataDomain.SHARED_CACHE_ENABLED_PROPERTY, Boolean.FALSE.toString());
-
-        DataDomain domain = new DataDomain("d1", properties);
+    public void sharedCacheEnabled() {
+        DataDomain domain = new DataDomain("d1");
+        domain.setSharedCacheEnabled(false);
         assertFalse(domain.isSharedCacheEnabled());
     }
 
-    @SuppressWarnings("deprecation")
     @Test
-    public void initDataDomainValidation() throws Exception {
-        Map<String, String> properties = new HashMap<>();
-        properties.put(DataDomain.VALIDATING_OBJECTS_ON_COMMIT_PROPERTY, Boolean.TRUE.toString());
-
-        DataDomain domain = new DataDomain("d1", properties);
-        assertTrue(domain.isValidatingObjectsOnCommit());
+    public void validatingObjectsOnCommitDefault() {
+        assertTrue(new DataDomain("d1").isValidatingObjectsOnCommit());
     }
 
-    @SuppressWarnings("deprecation")
     @Test
-    public void initDataDomainNoValidation() throws Exception {
-        Map<String, String> properties = new HashMap<>();
-        properties.put(DataDomain.VALIDATING_OBJECTS_ON_COMMIT_PROPERTY, Boolean.FALSE.toString());
-
-        DataDomain domain = new DataDomain("d1", properties);
+    public void validatingObjectsOnCommit() {
+        DataDomain domain = new DataDomain("d1");
+        domain.setValidatingObjectsOnCommit(false);
         assertFalse(domain.isValidatingObjectsOnCommit());
     }
 

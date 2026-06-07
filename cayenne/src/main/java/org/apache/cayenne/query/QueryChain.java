@@ -20,7 +20,6 @@
 package org.apache.cayenne.query;
 
 import org.apache.cayenne.CayenneRuntimeException;
-import org.apache.cayenne.map.DataMap;
 import org.apache.cayenne.map.EntityResolver;
 
 import java.util.ArrayList;
