@@ -77,7 +77,7 @@ import java.util.function.Function;
  * Performs query routing and execution. During execution phase intercepts
  * callbacks to the OperationObserver, remapping results to the original
  * pre-routed queries.
- * 
+ *
  * @since 1.2
  */
 class DataDomainQueryAction implements QueryRouter, OperationObserver {
@@ -452,11 +452,11 @@ class DataDomainQueryAction implements QueryRouter, OperationObserver {
             // response may already be initialized by the factory above ...
             // it is null if there was a preexisting cache entry
             cacheHit = (response == null);
-            
+
             if (response == null || wasResponseNull) {
                 response = new ListResponse(cachedResults);
             }
-            
+
             // Mark as cached result - lists need copying whether hit or miss
             cachedResult = true;
 
@@ -545,12 +545,12 @@ class DataDomainQueryAction implements QueryRouter, OperationObserver {
         ObjectConversionStrategy<?, ?> converter = getConverter();
         // local copy because it can change while iterating
         QueryResponse response = this.response;
-        for (response.reset(); response.next();) {
+        for (response.reset(); response.next(); ) {
             if (response.isList()) {
                 List<?> mainRows = response.currentList(); // List<DataRow> or List<Object[]>
                 if (mainRows != null && !mainRows.isEmpty()) {
                     List<?> result = converter.convert((List) mainRows);
-                    if(result != mainRows) {
+                    if (result != mainRows) {
                         updateResponse(mainRows, result);
                     }
                 }
@@ -735,15 +735,14 @@ class DataDomainQueryAction implements QueryRouter, OperationObserver {
                         .synchronizedRootResultNodeFromDataRows(normalizedRows);
             } else {
                 // When results come from cache (not a refresh operation), wrap metadata to prevent refreshing objects
-                QueryMetadata effectiveMetadata = shouldSkipRefresh() && metadata.isRefreshingObjects() 
-                        ? new NonRefreshingQueryMetadataWrapper(metadata)
+                QueryMetadata effectiveMetadata = shouldSkipRefresh() && metadata.isRefreshingObjects()
+                        ? nonRefreshingMetadata(metadata)
                         : metadata;
-                HierarchicalObjectResolver resolver = new HierarchicalObjectResolver(context, effectiveMetadata);
-                return resolver
+                return new HierarchicalObjectResolver(context, effectiveMetadata)
                         .synchronizedRootResultNodeFromDataRows(prefetchTree, normalizedRows, prefetchResultsByPath);
             }
         }
-        
+
         private boolean shouldSkipRefresh() {
             // Skip refresh only for cache hits to prevent stale cached data from clobbering newer in-memory state
             // For cache misses (including explicit refresh operations), cacheHit is false, so refresh happens normally
@@ -764,6 +763,15 @@ class DataDomainQueryAction implements QueryRouter, OperationObserver {
                 callbackRegistry.performCallbacks(LifecycleEvent.POST_LOAD, objects);
             }
         }
+    }
+
+    private QueryMetadata nonRefreshingMetadata(QueryMetadata metadata) {
+        return new QueryMetadataProxy(metadata) {
+            @Override
+            public boolean isRefreshingObjects() {
+                return false;
+            }
+        };
     }
 
     class SingleObjectConversionStrategy extends ObjectConversionStrategy<DataRow, Persistent> {
@@ -865,7 +873,7 @@ class DataDomainQueryAction implements QueryRouter, OperationObserver {
             List<Object[]> result = createResultList(mainRows, needConversion);
 
             // no conversions needed for scalar positions;
-            if(needConversion) {
+            if (needConversion) {
                 // reuse Object[]'s to fill them with resolved objects
                 List<PrefetchProcessorNode> segmentNodes = doInPlaceConversion(result);
 
@@ -895,19 +903,19 @@ class DataDomainQueryAction implements QueryRouter, OperationObserver {
         }
 
         private List<Object[]> createResultList(List<Object[]> mainRows, boolean needConversion) {
-            if(!cachedResult) {
+            if (!cachedResult) {
                 // fast-path, we can reuse existing rows
                 return mainRows;
             }
 
-            if(!needConversion) {
+            if (!needConversion) {
                 // no conversion needed, so can clone only top-level list
                 return new ArrayList<>(mainRows);
             }
 
             // slowest path, deep copy everything
             List<Object[]> result = new ArrayList<>(mainRows.size());
-            for(Object[] row : mainRows) {
+            for (Object[] row : mainRows) {
                 result.add(Arrays.copyOf(row, metadata.getResultSetMapping().size()));
             }
             return result;
@@ -949,7 +957,7 @@ class DataDomainQueryAction implements QueryRouter, OperationObserver {
         private List<PrefetchProcessorNode> doInPlaceConversion(List<Object[]> result) {
             List<Object> resultSetMapping = metadata.getResultSetMapping();
             int width = resultSetMapping.size();
-            int height  = result.size();
+            int height = result.size();
             List<PrefetchProcessorNode> segmentNodes = new ArrayList<>(width);
             for (int i = 0; i < width; i++) {
                 Object mapping = resultSetMapping.get(i);
@@ -1033,21 +1041,6 @@ class DataDomainQueryAction implements QueryRouter, OperationObserver {
         @Override
         Object convert(Object object) {
             return mapper.apply(parentStrategy.convert(object));
-        }
-    }
-
-    /**
-     * Wrapper that overrides isRefreshingObjects() to return false, preventing cached
-     * query results from clobbering newer in-memory object state.
-     */
-    static class NonRefreshingQueryMetadataWrapper extends QueryMetadataProxy {
-        NonRefreshingQueryMetadataWrapper(QueryMetadata delegate) {
-            super(delegate);
-        }
-
-        @Override
-        public boolean isRefreshingObjects() {
-            return false;
         }
     }
 }
