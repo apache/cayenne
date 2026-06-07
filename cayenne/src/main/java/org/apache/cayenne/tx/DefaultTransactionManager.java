@@ -27,8 +27,8 @@ import org.apache.cayenne.log.JdbcEventLogger;
  */
 public class DefaultTransactionManager implements TransactionManager {
 
-    private TransactionFactory txFactory;
-    private JdbcEventLogger jdbcEventLogger;
+    private final TransactionFactory txFactory;
+    private final JdbcEventLogger jdbcEventLogger;
 
     public DefaultTransactionManager(@Inject TransactionFactory txFactory, @Inject JdbcEventLogger jdbcEventLogger) {
         this.txFactory = txFactory;
@@ -63,21 +63,16 @@ public class DefaultTransactionManager implements TransactionManager {
     }
 
     protected BaseTransactionHandler getHandler(TransactionDescriptor descriptor) {
-        switch (descriptor.getPropagation()) {
+        return switch (descriptor.getPropagation()) {
             // MANDATORY requires transaction to exists
-            case MANDATORY:
-                return new MandatoryTransactionHandler(txFactory, jdbcEventLogger);
+            case MANDATORY -> new MandatoryTransactionHandler(txFactory, jdbcEventLogger);
 
             // NESTED can join existing or create new
-            case NESTED:
-                return new NestedTransactionHandler(txFactory, jdbcEventLogger);
+            case NESTED -> new NestedTransactionHandler(txFactory, jdbcEventLogger);
 
             // REQUIRES_NEW should always create new transaction
-            case REQUIRES_NEW:
-                return new RequiresNewTransactionHandler(txFactory, jdbcEventLogger);
-        }
-
-        throw new CayenneRuntimeException("Unsupported transaction propagation: " + descriptor.getPropagation());
+            case REQUIRES_NEW -> new RequiresNewTransactionHandler(txFactory, jdbcEventLogger);
+        };
     }
 
     private static class NestedTransactionHandler extends BaseTransactionHandler {
@@ -135,8 +130,8 @@ public class DefaultTransactionManager implements TransactionManager {
 
     protected static abstract class BaseTransactionHandler {
 
-        private TransactionFactory txFactory;
-        private JdbcEventLogger jdbcEventLogger;
+        private final TransactionFactory txFactory;
+        private final JdbcEventLogger jdbcEventLogger;
 
         private BaseTransactionHandler(TransactionFactory txFactory, JdbcEventLogger jdbcEventLogger) {
             this.txFactory = txFactory;
