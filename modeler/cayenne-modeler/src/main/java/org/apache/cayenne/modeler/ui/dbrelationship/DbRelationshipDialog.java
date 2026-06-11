@@ -399,16 +399,25 @@ public class DbRelationshipDialog extends ProjectDialog {
             return;
         }
 
-        String sourceEntityName = NameBuilder
+        String newName = NameBuilder
                 .builder(rel, rel.getSourceEntity())
                 .baseName(userInputName)
                 .name();
 
-        if (Objects.equals(sourceEntityName, rel.getName())) {
+        if (Objects.equals(newName, rel.getName())) {
             return;
         }
         String oldName = rel.getName();
-        rel.setName(sourceEntityName);
+
+        // the entity maps relationships by name, so an attached relationship must be re-keyed, not just renamed
+        DbEntity sourceEntity = rel.getSourceEntity();
+        if (sourceEntity.getRelationship(oldName) == rel) {
+            sourceEntity.removeRelationship(oldName);
+            rel.setName(newName);
+            sourceEntity.addRelationship(rel);
+        } else {
+            rel.setName(newName);
+        }
 
         session.fireDbRelationshipEvent(DbRelationshipEvent.ofChange(this, rel, rel.getSourceEntity(), oldName));
     }

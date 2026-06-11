@@ -19,6 +19,7 @@
 package org.apache.cayenne.modeler.undo;
 
 import org.apache.cayenne.map.DbEntity;
+import org.apache.cayenne.map.DbJoin;
 import org.apache.cayenne.map.DbRelationship;
 import org.apache.cayenne.map.ObjEntity;
 import org.apache.cayenne.map.ObjRelationship;
@@ -102,7 +103,9 @@ public class RelationshipUndoableEdit extends CayenneUndoableEdit {
 		rel.setToMany(dbRelationship.isToMany());
 		rel.setTargetEntityName(dbRelationship.getTargetEntityName());
 		rel.setSourceEntity(dbRelationship.getSourceEntity());
-		rel.setJoins(rel.getJoins());
+		rel.setJoins(dbRelationship.getJoins().stream()
+				.map(j -> new DbJoin(rel, j.getSourceName(), j.getTargetName()))
+				.toList());
 		return rel;
 	}
 
