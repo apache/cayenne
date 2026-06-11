@@ -19,6 +19,7 @@ CAY-2957 Get rid of adapter for legacy HSQLDB <= 1.8
 Bug Fixes:
 
 CAY-2958 Empty join is saved
+CAY-2959 Modeler: DbRelationship dialog "Cancel" doesn't cancel
 
 ----------------------------------
 Release: 5.0-M2
