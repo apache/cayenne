@@ -73,7 +73,10 @@ public class DbJoinTableModel extends CMTableModel<DbJoin> {
     }
 
     public void commit() {
-        relationship.setJoins(objectList);
+        // drop empty rows added by the user but never filled in
+        relationship.setJoins(objectList.stream()
+                .filter(j -> j.getSourceName() != null || j.getTargetName() != null)
+                .toList());
     }
 
     @Override
