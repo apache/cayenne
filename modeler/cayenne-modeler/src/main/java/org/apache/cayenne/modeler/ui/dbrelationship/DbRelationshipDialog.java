@@ -344,11 +344,13 @@ public class DbRelationshipDialog extends ProjectDialog {
         stopEditing();
 
         DbJoinTableModel model = (DbJoinTableModel) table.getModel();
-        boolean updatingReverse = !model.getObjectList().isEmpty();
 
         handleNameUpdate(relationship, name.getText().trim());
 
         model.commit();
+
+        // check after commit, as it filters out empty joins
+        boolean updatingReverse = !relationship.getJoins().isEmpty();
 
         relationship.setToMany(toMany.isSelected());
 

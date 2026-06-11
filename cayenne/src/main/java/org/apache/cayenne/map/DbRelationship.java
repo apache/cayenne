@@ -80,7 +80,10 @@ public class DbRelationship extends Relationship<DbEntity, DbAttribute, DbRelati
         encoder.attribute("toDependentPK", isToDependentPK() && isValidForDepPk());
         encoder.attribute("toMany", isToMany());
 
-        encoder.nested(getJoins(), delegate);
+        // skip empty joins that would otherwise be saved as useless "<db-attribute-pair/>" tags
+        encoder.nested(getJoins().stream()
+                .filter(j -> j.getSourceName() != null || j.getTargetName() != null)
+                .toList(), delegate);
 
         delegate.visitDbRelationship(this);
         encoder.end();
