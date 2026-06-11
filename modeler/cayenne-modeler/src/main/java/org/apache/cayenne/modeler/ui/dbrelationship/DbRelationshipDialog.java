@@ -317,6 +317,11 @@ public class DbRelationshipDialog extends ProjectDialog {
     private void save() {
         stopEditing();
 
+        // "Done" with no edits must behave like "Cancel" - no mutation, no events, no dirty flag
+        if (!create && !hasChanges()) {
+            return;
+        }
+
         handleNameUpdate(relationship, name.getText().trim());
 
         // the single place where the dialog editing state is written to the relationship
@@ -392,6 +397,56 @@ public class DbRelationshipDialog extends ProjectDialog {
                     DbRelationshipEvent.ofChange(this, relationship, relationship.getSourceEntity()));
             app.getUndoManager().addEdit(undo);
         }
+    }
+
+    /**
+     * Compares the dialog widget state against the untouched relationship, covering every input that
+     * {@link #save()} would write. Must be called before any mutation.
+     */
+    private boolean hasChanges() {
+        if (!Objects.equals(relationship.getName(), name.getText().trim())) {
+            return true;
+        }
+        if (!Objects.equals(relationship.getTargetEntityName(), currentTarget != null ? currentTarget.getName() : null)) {
+            return true;
+        }
+        if (relationship.isToMany() != toMany.isSelected()) {
+            return true;
+        }
+        if (relationship.isToDependentPK() != toDepPk.isSelected()) {
+            return true;
+        }
+        if (unsetReverseDepPk && reverseRelationship != null && reverseRelationship.isToDependentPK()) {
+            return true;
+        }
+        if (reverseRelationship != null
+                && !Objects.equals(reverseRelationship.getName(), reverseName.getText().trim())) {
+            return true;
+        }
+        if (joinsChanged()) {
+            return true;
+        }
+
+        String oldComment = ObjectInfo.getFromMetaData(app.getMetaData(), relationship, ObjectInfo.COMMENT);
+        return !Objects.equals(oldComment != null ? oldComment : "", comment.getText());
+    }
+
+    /**
+     * Compares the join table rows against the relationship's joins, ignoring blank rows (the ones
+     * {@link DbJoinTableModel#commit()} drops) and row order, so that merely sorting the table by a column
+     * doesn't count as a change.
+     */
+    private boolean joinsChanged() {
+        List<String> edited = ((DbJoinTableModel) table.getModel()).getObjectList().stream()
+                .filter(j -> j.getSourceName() != null || j.getTargetName() != null)
+                .map(j -> j.getSourceName() + "→" + j.getTargetName())
+                .sorted()
+                .toList();
+        List<String> existing = relationship.getJoins().stream()
+                .map(j -> j.getSourceName() + "→" + j.getTargetName())
+                .sorted()
+                .toList();
+        return !edited.equals(existing);
     }
 
     private void handleNameUpdate(DbRelationship rel, String userInputName) {
