@@ -108,6 +108,15 @@ public abstract class CMTableModel<T> extends AbstractTableModel {
         fireTableDataChanged();
     }
 
+    public void removeAllRows() {
+        if (objectList.isEmpty()) {
+            return;
+        }
+
+        objectList.clear();
+        fireTableDataChanged();
+    }
+
     /**
      * Moves a row up, jumping down if row is already at the top.
      */

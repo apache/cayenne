@@ -267,9 +267,7 @@ public class DbRelationshipPanel extends ProjectPanel implements DbEntityDisplay
 
         DbRelationshipTableModel model = (DbRelationshipTableModel) table.getModel();
         DbRelationship rel = model.getRelationship(row);
-        new DbRelationshipDialog(session, app.getFrame())
-                .modifyRelationship(rel)
-                .open();
+        DbRelationshipDialog.openForEdit(session, app.getFrame(), rel);
     }
 
     private void valueChanged(ListSelectionEvent e) {

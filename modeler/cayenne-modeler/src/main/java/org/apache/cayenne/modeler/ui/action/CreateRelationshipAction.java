@@ -94,9 +94,7 @@ public class CreateRelationshipAction extends AppAction {
             DbEntity dbEnt = getProjectSession().getSelectedDbEntity();
             if (dbEnt != null) {
 
-                new DbRelationshipDialog(getProjectSession(), app.getFrame())
-                        .createNewRelationship(dbEnt)
-                        .open();
+                DbRelationshipDialog.openForCreate(getProjectSession(), app.getFrame(), dbEnt);
             }
         }
     }

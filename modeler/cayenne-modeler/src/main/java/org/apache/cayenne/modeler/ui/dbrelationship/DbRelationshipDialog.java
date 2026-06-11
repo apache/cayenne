@@ -32,45 +32,28 @@ import org.apache.cayenne.map.ObjAttribute;
 import org.apache.cayenne.map.ObjRelationship;
 import org.apache.cayenne.modeler.event.display.DbRelationshipDisplayEvent;
 import org.apache.cayenne.modeler.event.model.DbRelationshipEvent;
+import org.apache.cayenne.modeler.pref.adapters.CMTablePrefs;
 import org.apache.cayenne.modeler.project.DbRelationshipOps;
+import org.apache.cayenne.modeler.project.ProjectSession;
+import org.apache.cayenne.modeler.toolkit.ProjectDialog;
 import org.apache.cayenne.modeler.toolkit.buttons.CMButtonPanel;
 import org.apache.cayenne.modeler.toolkit.combobox.AutoCompletion;
-import org.apache.cayenne.modeler.toolkit.combobox.CMComboBox;
 import org.apache.cayenne.modeler.toolkit.combobox.CMAutoCompleteComboBoxCellEditor;
+import org.apache.cayenne.modeler.toolkit.combobox.CMComboBox;
 import org.apache.cayenne.modeler.toolkit.table.CMTable;
-import org.apache.cayenne.modeler.pref.adapters.CMTablePrefs;
-import org.apache.cayenne.modeler.toolkit.ProjectDialog;
-import org.apache.cayenne.modeler.project.ProjectSession;
 import org.apache.cayenne.modeler.undo.CreateRelationshipUndoableEdit;
 import org.apache.cayenne.modeler.undo.RelationshipUndoableEdit;
 import org.apache.cayenne.project.extension.info.ObjectInfo;
-import java.util.Objects;
 
-import javax.swing.AbstractListModel;
-import javax.swing.ComboBoxModel;
-import javax.swing.DefaultListModel;
-import javax.swing.JButton;
-import javax.swing.JCheckBox;
-import javax.swing.JComboBox;
-import javax.swing.JLabel;
-import javax.swing.JList;
-import javax.swing.JOptionPane;
-import javax.swing.JPanel;
-import javax.swing.JScrollPane;
-import javax.swing.JTextField;
-import javax.swing.ListSelectionModel;
+import javax.swing.*;
 import javax.swing.table.TableColumn;
-import java.awt.BorderLayout;
-import java.awt.Dimension;
-import java.awt.FlowLayout;
-import java.awt.Window;
-import java.awt.event.WindowAdapter;
-import java.awt.event.WindowEvent;
+import java.awt.*;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.Comparator;
 import java.util.List;
+import java.util.Objects;
 import java.util.Optional;
 import java.util.Set;
 import java.util.function.Function;
@@ -98,14 +81,45 @@ public class DbRelationshipDialog extends ProjectDialog {
     private final JButton saveButton;
     private final JButton cancelButton;
 
-    private DbRelationship relationship;
-    private DbRelationship reverseRelationship;
-    private boolean create;
-    private boolean cancelPressed;
-    private RelationshipUndoableEdit undo;
+    private final DbRelationship relationship;
+    private final DbRelationship reverseRelationship;
+    private final boolean create;
+    private boolean saved;
+    private final RelationshipUndoableEdit undo;
 
-    public DbRelationshipDialog(ProjectSession session, Window owner) {
+    // dialog-local editing state, applied to the relationship only on save
+    private DbEntity currentTarget;
+    private boolean unsetReverseDepPk;
+
+    public static Optional<DbRelationship> openForCreate(ProjectSession session, Window owner, DbEntity sourceEntity) {
+        DbRelationship relationship = new DbRelationship();
+        relationship.setName(NameBuilder.builder(relationship, sourceEntity).name());
+        relationship.setSourceEntity(sourceEntity);
+
+        DbRelationshipDialog dialog = new DbRelationshipDialog(session, owner, relationship, true);
+        dialog.open();
+        return dialog.saved ? Optional.of(relationship) : Optional.empty();
+    }
+
+    public static void openForEdit(ProjectSession session, Window owner, DbRelationship relationship) {
+        new DbRelationshipDialog(session, owner, relationship, false).open();
+    }
+
+    private DbRelationshipDialog(ProjectSession session, Window owner, DbRelationship relationship, boolean create) {
         super(session, owner, "Create dbRelationship", ModalityType.APPLICATION_MODAL);
+
+        if (relationship.getSourceEntity() == null) {
+            throw new CayenneRuntimeException("Null source entity: %s", relationship);
+        }
+        if (relationship.getSourceEntity().getDataMap() == null) {
+            throw new CayenneRuntimeException("Null DataMap: %s", relationship.getSourceEntity());
+        }
+
+        this.relationship = relationship;
+        this.create = create;
+        this.undo = new RelationshipUndoableEdit(session, relationship);
+        this.reverseRelationship = relationship.getReverseRelationship();
+        this.currentTarget = relationship.getTargetEntity();
 
         this.name = new JTextField(25);
         this.targetEntities = new JComboBox<>();
@@ -122,38 +136,8 @@ public class DbRelationshipDialog extends ProjectDialog {
         this.table.getSelectionModel().setSelectionMode(ListSelectionModel.SINGLE_SELECTION);
 
         initLayout();
-    }
-
-    public DbRelationshipDialog createNewRelationship(DbEntity dbEntity) {
-        this.create = true;
-
-        DbRelationship rel = new DbRelationship();
-        rel.setName(NameBuilder.builder(rel, dbEntity).name());
-        rel.setSourceEntity(dbEntity);
-
-        return modifyRelationship(rel);
-    }
-
-    public DbRelationshipDialog modifyRelationship(DbRelationship dbRelationship) {
-        this.undo = new RelationshipUndoableEdit(session, dbRelationship);
-        this.relationship = dbRelationship;
-        this.reverseRelationship = relationship.getReverseRelationship();
-
-        if (relationship.getSourceEntity() == null) {
-            throw new CayenneRuntimeException("Null source entity: %s", relationship);
-        }
-        if (relationship.getSourceEntity().getDataMap() == null) {
-            throw new CayenneRuntimeException("Null DataMap: %s", relationship.getSourceEntity());
-        }
-
         initBindings();
         initFromModel();
-
-        return this;
-    }
-
-    public Optional<DbRelationship> getRelationship() {
-        return cancelPressed ? Optional.empty() : Optional.of(relationship);
     }
 
     private void initLayout() {
@@ -197,10 +181,7 @@ public class DbRelationshipDialog extends ProjectDialog {
     }
 
     private void initFromModel() {
-        TargetComboBoxModel targetComboBoxModel =
-                new TargetComboBoxModel(session.entityResolver().getDbEntities());
-        targetEntities.setModel(targetComboBoxModel);
-
+        targetEntities.setModel(new TargetComboBoxModel(session.entityResolver().getDbEntities()));
         sourceName.setText(relationship.getSourceEntityName());
         toDepPk.setSelected(relationship.isToDependentPK());
         toMany.setSelected(relationship.isToMany());
@@ -210,7 +191,7 @@ public class DbRelationshipDialog extends ProjectDialog {
             reverseName.setText(reverseRelationship.getName());
         }
 
-        if (relationship.getTargetEntity() == null) {
+        if (currentTarget == null) {
             enableOptions(false);
         } else {
             enableInfo();
@@ -222,27 +203,29 @@ public class DbRelationshipDialog extends ProjectDialog {
     private void initBindings() {
         targetEntities.addActionListener(action -> {
             DbEntity selectedItem = ((TargetComboBoxModel) targetEntities.getModel()).selected;
-            if (relationship.getTargetEntityName() == null) {
-                relationship.setTargetEntityName(selectedItem.getName());
-            } else if (!relationship.getTargetEntityName().equals(selectedItem.getName())) {
+            boolean joinsReset = false;
+            if (currentTarget == null) {
+                currentTarget = selectedItem;
+            } else if (currentTarget != selectedItem) {
                 if (showWarningDialog(relationship)) {
-                    relationship.removeAllJoins();
-                    relationship.setTargetEntityName(selectedItem.getName());
+                    currentTarget = selectedItem;
+                    joinsReset = true;
                 } else {
-                    targetEntities.setSelectedItem(relationship.getTargetEntityName());
+                    targetEntities.setSelectedItem(currentTarget.getName());
                 }
-                relationship.setToDependentPK(false);
-                toDepPk.setSelected(relationship.isValidForDepPk());
-                session.fireDbRelationshipEvent(DbRelationshipEvent.ofChange(this, relationship, relationship.getSourceEntity()));
             }
             enableInfo();
+            if (joinsReset) {
+                // joins to the old target make no sense for the new one; reset the uncommitted table rows
+                ((DbJoinTableModel) table.getModel()).removeAllRows();
+                toDepPk.setSelected(false);
+                toDepPk.setEnabled(false);
+            }
         });
 
         addButton.addActionListener(e -> {
             DbJoinTableModel model = (DbJoinTableModel) table.getModel();
-            DbJoin join = new DbJoin(relationship);
-            relationship.addJoin(join);
-            model.addRow(join);
+            model.addRow(new DbJoin(relationship));
             table.select(model.getRowCount() - 1);
         });
 
@@ -250,51 +233,36 @@ public class DbRelationshipDialog extends ProjectDialog {
             DbJoinTableModel model = (DbJoinTableModel) table.getModel();
             stopEditing();
             int row = table.getSelectedRow();
-            DbJoin join = model.getJoin(row);
+            model.removeRow(model.getJoin(row));
 
-            relationship.removeJoin(join);
-            if (relationship.isValidForDepPk()) {
+            if (model.isValidForDepPk()) {
                 toDepPk.setEnabled(true);
             } else {
                 toDepPk.setEnabled(false);
                 toDepPk.setSelected(false);
-                relationship.setToDependentPK(false);
             }
-
-            model.removeRow(join);
         });
 
         saveButton.addActionListener(e -> {
-            cancelPressed = false;
             save();
+            saved = true;
             dispose();
         });
 
-        cancelButton.addActionListener(e -> {
-            cancelPressed = true;
-            dispose();
-        });
-
-        addWindowListener(new WindowAdapter() {
-            @Override
-            public void windowClosing(WindowEvent e) {
-                cancelPressed = true;
-            }
-        });
+        cancelButton.addActionListener(e -> dispose());
 
         toDepPk.setEnabled(relationship.isValidForDepPk());
         toDepPk.addActionListener(selected -> {
-            boolean isSelected = toDepPk.isSelected();
-            DbRelationship reverse = relationship.getReverseRelationship();
-            if (reverse != null && reverse.isToDependentPK() && isSelected) {
-                boolean setToDepPk = JOptionPane.showConfirmDialog(
+            unsetReverseDepPk = false;
+            if (toDepPk.isSelected() && reverseRelationship != null && reverseRelationship.isToDependentPK()) {
+                unsetReverseDepPk = JOptionPane.showConfirmDialog(
                         app.getFrame(),
                         "Unset reverse relationship's \"To Dep PK\" setting?",
                         "Warning", JOptionPane.OK_CANCEL_OPTION, JOptionPane.PLAIN_MESSAGE) == JOptionPane.OK_OPTION;
-                relationship.setToDependentPK(setToDepPk);
-                reverse.setToDependentPK(!setToDepPk);
-            } else {
-                relationship.setToDependentPK(toDepPk.isSelected());
+                if (!unsetReverseDepPk) {
+                    // both sides can't be dep PK, and the user chose to keep it on the reverse
+                    toDepPk.setSelected(false);
+                }
             }
         });
     }
@@ -302,10 +270,16 @@ public class DbRelationshipDialog extends ProjectDialog {
     private void enableInfo() {
         enableOptions(true);
 
-        table.setModel(new DbJoinTableModel(relationship, session, this, true));
-        table.getModel().addTableModelListener(change -> {
+        // carry uncommitted joins over from the previous model, if any; the relationship itself only
+        // reflects the table state after "Done"
+        List<DbJoin> joins = table.getModel() instanceof DbJoinTableModel previous
+                ? previous.getObjectList()
+                : relationship.getJoins();
+        DbJoinTableModel model = new DbJoinTableModel(relationship, session, this, joins, currentTarget);
+        table.setModel(model);
+        model.addTableModelListener(change -> {
             if (change.getLastRow() != Integer.MAX_VALUE) {
-                toDepPk.setEnabled(relationship.isValidForDepPk());
+                toDepPk.setEnabled(model.isValidForDepPk());
             }
         });
 
@@ -317,7 +291,7 @@ public class DbRelationshipDialog extends ProjectDialog {
 
         TableColumn targetColumn = table.getColumnModel().getColumn(DbJoinTableModel.TARGET);
         JComboBox<String> targetCombo = new CMComboBox<>(
-                dbAttributeNames(relationship.getTargetEntity()).stream().sorted().toArray(String[]::new));
+                dbAttributeNames(currentTarget).stream().sorted().toArray(String[]::new));
         AutoCompletion.enable(targetCombo, session::getSelectedDataMap);
         targetColumn.setCellEditor(new CMAutoCompleteComboBoxCellEditor(targetCombo));
 
@@ -343,16 +317,20 @@ public class DbRelationshipDialog extends ProjectDialog {
     private void save() {
         stopEditing();
 
-        DbJoinTableModel model = (DbJoinTableModel) table.getModel();
-
         handleNameUpdate(relationship, name.getText().trim());
 
-        model.commit();
+        // the single place where the dialog editing state is written to the relationship
+        relationship.setTargetEntityName(currentTarget != null ? currentTarget.getName() : null);
+        relationship.setToMany(toMany.isSelected());
+        relationship.setToDependentPK(toDepPk.isSelected());
+        if (unsetReverseDepPk && reverseRelationship != null) {
+            reverseRelationship.setToDependentPK(false);
+        }
+
+        ((DbJoinTableModel) table.getModel()).commit();
 
         // check after commit, as it filters out empty joins
         boolean updatingReverse = !relationship.getJoins().isEmpty();
-
-        relationship.setToMany(toMany.isSelected());
 
         ObjectInfo.putToMetaData(app.getMetaData(), relationship, ObjectInfo.COMMENT, comment.getText());
 
@@ -360,36 +338,60 @@ public class DbRelationshipDialog extends ProjectDialog {
         // Don't create reverse with no joins - makes no sense...
         if (updatingReverse) {
 
-            if (reverseRelationship == null) {
-                reverseRelationship = new DbRelationship();
-                reverseRelationship.setName(NameBuilder
-                        .builder(reverseRelationship, relationship.getTargetEntity())
+            DbRelationship reverse = reverseRelationship;
+            if (reverse == null) {
+                reverse = new DbRelationship();
+                reverse.setName(NameBuilder
+                        .builder(reverse, relationship.getTargetEntity())
                         .baseName(reverseName.getText().trim())
                         .name());
 
-                reverseRelationship.setSourceEntity(relationship.getTargetEntity());
-                reverseRelationship.setTargetEntityName(relationship.getSourceEntity());
-                reverseRelationship.setToMany(!relationship.isToMany());
-                relationship.getTargetEntity().addRelationship(reverseRelationship);
+                reverse.setSourceEntity(relationship.getTargetEntity());
+                reverse.setTargetEntityName(relationship.getSourceEntity());
+                reverse.setToMany(!relationship.isToMany());
+                relationship.getTargetEntity().addRelationship(reverse);
 
                 // fire only if the relationship is to the same entity (needed to update entity view)
                 if (relationship.getSourceEntity() == relationship.getTargetEntity()) {
                     session.fireDbRelationshipEvent(DbRelationshipEvent.ofAdd(
-                            this, reverseRelationship, reverseRelationship.getSourceEntity()));
+                            this, reverse, reverse.getSourceEntity()));
                 }
             } else {
-                handleNameUpdate(reverseRelationship, reverseName.getText().trim());
+                handleNameUpdate(reverse, reverseName.getText().trim());
             }
 
-            Collection<DbJoin> reverseJoins = getReverseJoins();
-            reverseRelationship.setJoins(reverseJoins);
+            reverse.setJoins(getReverseJoins(reverse));
 
-            if (!relationship.isToDependentPK() && reverseRelationship.isValidForDepPk()) {
-                reverseRelationship.setToDependentPK(true);
+            if (!relationship.isToDependentPK() && reverse.isValidForDepPk()) {
+                reverse.setToDependentPK(true);
             }
         }
 
-        fireDbRelationshipEvent(create);
+        if (create) {
+            DbEntity dbEntity = relationship.getSourceEntity();
+            if (dbEntity.getRelationship(relationship.getName()) == null) {
+                dbEntity.addRelationship(relationship);
+            }
+
+            session.fireDbRelationshipEvent(DbRelationshipEvent.ofAdd(this, relationship, dbEntity));
+
+            DbRelationshipDisplayEvent rde = new DbRelationshipDisplayEvent(
+                    this,
+                    (DataChannelDescriptor) session.project().getRootNode(),
+                    session.getSelectedDataMap(),
+                    dbEntity,
+                    relationship);
+
+            session.displayDbRelationship(rde);
+            app.getUndoManager().addEdit(
+                    new CreateRelationshipUndoableEdit(session, relationship.getSourceEntity(),
+                            new DbRelationship[]{relationship}));
+
+        } else {
+            session.fireDbRelationshipEvent(
+                    DbRelationshipEvent.ofChange(this, relationship, relationship.getSourceEntity()));
+            app.getUndoManager().addEdit(undo);
+        }
     }
 
     private void handleNameUpdate(DbRelationship rel, String userInputName) {
@@ -411,7 +413,7 @@ public class DbRelationshipDialog extends ProjectDialog {
         session.fireDbRelationshipEvent(DbRelationshipEvent.ofChange(this, rel, rel.getSourceEntity(), oldName));
     }
 
-    private Collection<DbJoin> getReverseJoins() {
+    private Collection<DbJoin> getReverseJoins(DbRelationship reverse) {
         Collection<DbJoin> joins = relationship.getJoins();
 
         if ((joins == null) || (joins.isEmpty())) {
@@ -424,38 +426,11 @@ public class DbRelationshipDialog extends ProjectDialog {
         for (DbJoin pair : joins) {
             DbJoin reverseJoin = pair.createReverseJoin();
             // since reverse relationship is not yet initialized, the reverse join is wired by hand
-            reverseJoin.setRelationship(reverseRelationship);
+            reverseJoin.setRelationship(reverse);
             reverseJoins.add(reverseJoin);
         }
 
         return reverseJoins;
-    }
-
-    private void fireDbRelationshipEvent(boolean isCreate) {
-        if (!isCreate) {
-            session.fireDbRelationshipEvent(
-                    DbRelationshipEvent.ofChange(this, relationship, relationship.getSourceEntity()));
-            app.getUndoManager().addEdit(undo);
-        } else {
-            DbEntity dbEntity = relationship.getSourceEntity();
-            if (dbEntity.getRelationship(relationship.getName()) == null) {
-                dbEntity.addRelationship(relationship);
-            }
-
-            session.fireDbRelationshipEvent(DbRelationshipEvent.ofAdd(this, relationship, dbEntity));
-
-            DbRelationshipDisplayEvent rde = new DbRelationshipDisplayEvent(
-                    this,
-                    (DataChannelDescriptor) session.project().getRootNode(),
-                    session.getSelectedDataMap(),
-                    dbEntity,
-                    relationship);
-
-            session.displayDbRelationship(rde);
-            app.getUndoManager().addEdit(
-                    new CreateRelationshipUndoableEdit(session, relationship.getSourceEntity(),
-                            new DbRelationship[]{relationship}));
-        }
     }
 
     private boolean showWarningDialog(DbRelationship relationship) {

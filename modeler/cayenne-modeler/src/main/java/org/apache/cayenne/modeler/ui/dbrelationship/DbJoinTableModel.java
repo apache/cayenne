@@ -19,6 +19,7 @@
 
 package org.apache.cayenne.modeler.ui.dbrelationship;
 
+import org.apache.cayenne.map.DbAttribute;
 import org.apache.cayenne.map.DbEntity;
 import org.apache.cayenne.map.DbJoin;
 import org.apache.cayenne.map.DbRelationship;
@@ -26,49 +27,39 @@ import org.apache.cayenne.modeler.project.ProjectSession;
 import org.apache.cayenne.modeler.toolkit.table.CMTableModel;
 
 import java.util.ArrayList;
+import java.util.List;
+import java.util.stream.Collectors;
 
-/**
- * Model for editing DbAttributePair-s. Changes in the join attributes
- * don't take place until commit() is called. Creation of the new
- * DbAttributes is not allowed - user should choose from the existing ones.
- */
-public class DbJoinTableModel extends CMTableModel<DbJoin> {
+class DbJoinTableModel extends CMTableModel<DbJoin> {
 
-    // Columns
     static final int SOURCE = 0;
     static final int TARGET = 1;
 
-    protected DbRelationship relationship;
-    protected DbEntity source;
-    protected DbEntity target;
-
-    /**
-     * Is the table editable.
-     */
-    private boolean editable;
-
-    public DbJoinTableModel(
-            DbRelationship relationship,
-            ProjectSession session,
-            Object src) {
-
-        super(session, src, new ArrayList<>(relationship.getJoins()));
-        this.relationship = relationship;
-        this.source = relationship.getSourceEntity();
-        this.target = relationship.getTargetEntity();
-    }
+    private final DbRelationship relationship;
+    private final DbEntity source;
+    private final DbEntity target;
 
     public DbJoinTableModel(
             DbRelationship relationship,
             ProjectSession session,
             Object src,
-            boolean editable) {
+            List<DbJoin> joins,
+            DbEntity target) {
 
-        this(relationship, session, src);
-        this.editable = editable;
+        super(session, src, copyJoins(relationship, joins));
+        this.relationship = relationship;
+        this.source = relationship.getSourceEntity();
+        this.target = target;
     }
 
-    public Class getElementsClass() {
+    private static List<DbJoin> copyJoins(DbRelationship relationship, List<DbJoin> joins) {
+        return joins.stream()
+                .map(j -> new DbJoin(relationship, j.getSourceName(), j.getTargetName()))
+                .collect(Collectors.toCollection(ArrayList::new));
+    }
+
+    @Override
+    public Class<?> getElementsClass() {
         return DbJoin.class;
     }
 
@@ -79,6 +70,32 @@ public class DbJoinTableModel extends CMTableModel<DbJoin> {
                 .toList());
     }
 
+    /**
+     * Same check as {@link DbRelationship#isValidForDepPk()}, but over the uncommitted joins and target
+     * entity of this table.
+     */
+    public boolean isValidForDepPk() {
+        if (objectList.isEmpty()) {
+            return false;
+        }
+
+        for (DbJoin join : objectList) {
+            DbAttribute sourceAttribute = source != null && join.getSourceName() != null
+                    ? source.getAttribute(join.getSourceName())
+                    : null;
+            DbAttribute targetAttribute = target != null && join.getTargetName() != null
+                    ? target.getAttribute(join.getTargetName())
+                    : null;
+
+            if (targetAttribute != null && !targetAttribute.isPrimaryKey()
+                    || sourceAttribute != null && !sourceAttribute.isPrimaryKey()) {
+                return false;
+            }
+        }
+
+        return true;
+    }
+
     @Override
     public int getColumnCount() {
         return 2;
@@ -87,9 +104,9 @@ public class DbJoinTableModel extends CMTableModel<DbJoin> {
     @Override
     public String getColumnName(int column) {
         if (column == SOURCE)
-            return relationship.getSourceEntity().getName();
+            return source.getName();
         else if (column == TARGET)
-            return relationship.getTargetEntity().getName();
+            return target != null ? target.getName() : "";
         else
             return "";
     }
@@ -142,9 +159,9 @@ public class DbJoinTableModel extends CMTableModel<DbJoin> {
 
     public boolean isCellEditable(int row, int col) {
         if (col == SOURCE) {
-            return relationship.getSourceEntity() != null && editable;
+            return source != null;
         } else if (col == TARGET) {
-            return relationship.getTargetEntity() != null && editable;
+            return target != null;
         }
 
         return false;

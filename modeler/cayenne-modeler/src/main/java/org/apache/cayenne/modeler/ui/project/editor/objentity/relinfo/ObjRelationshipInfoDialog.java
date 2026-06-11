@@ -32,41 +32,30 @@ import org.apache.cayenne.map.ObjEntity;
 import org.apache.cayenne.map.ObjRelationship;
 import org.apache.cayenne.modeler.event.display.ObjRelationshipDisplayEvent;
 import org.apache.cayenne.modeler.event.model.ObjRelationshipEvent;
-import org.apache.cayenne.modeler.toolkit.columnview.ColumnViewPanel;
-import org.apache.cayenne.modeler.toolkit.buttons.CMButtonPanel;
-import org.apache.cayenne.modeler.toolkit.combobox.CMComboBox;
-import org.apache.cayenne.modeler.toolkit.ProjectDialog;
-import org.apache.cayenne.modeler.ui.dbrelationship.DbRelationshipDialog;
-import org.apache.cayenne.modeler.project.ProjectSession;
-import org.apache.cayenne.modeler.undo.CreateRelationshipUndoableEdit;
-import org.apache.cayenne.modeler.undo.RelationshipUndoableEdit;
 import org.apache.cayenne.modeler.project.ProjectComparators;
+import org.apache.cayenne.modeler.project.ProjectSession;
+import org.apache.cayenne.modeler.toolkit.ProjectDialog;
+import org.apache.cayenne.modeler.toolkit.buttons.CMButtonPanel;
+import org.apache.cayenne.modeler.toolkit.columnview.ColumnViewPanel;
+import org.apache.cayenne.modeler.toolkit.combobox.CMComboBox;
 import org.apache.cayenne.modeler.toolkit.tree.EntityTreeModel;
 import org.apache.cayenne.modeler.toolkit.tree.EntityTreeRelationshipFilter;
+import org.apache.cayenne.modeler.ui.dbrelationship.DbRelationshipDialog;
+import org.apache.cayenne.modeler.undo.CreateRelationshipUndoableEdit;
+import org.apache.cayenne.modeler.undo.RelationshipUndoableEdit;
 import org.apache.cayenne.project.extension.info.ObjectInfo;
 import org.apache.cayenne.util.DeleteRuleUpdater;
 
-import javax.swing.JButton;
-import javax.swing.JCheckBox;
-import javax.swing.JComboBox;
-import javax.swing.JLabel;
-import javax.swing.JOptionPane;
-import javax.swing.JPanel;
-import javax.swing.JScrollPane;
-import javax.swing.JTextField;
+import javax.swing.*;
 import javax.swing.event.TreeSelectionEvent;
 import javax.swing.event.TreeSelectionListener;
 import javax.swing.tree.TreePath;
-import java.awt.BorderLayout;
-import java.awt.Dimension;
-import java.awt.FlowLayout;
-import java.awt.Window;
+import java.awt.*;
 import java.awt.event.ItemEvent;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
 import java.util.Objects;
-import java.util.Optional;
 
 /**
  * Modal "ObjRelationship inspector" — name, target entity, semantics, collection type,
@@ -363,12 +352,7 @@ public class ObjRelationshipInfoDialog extends ProjectDialog implements TreeSele
     private void createRelationship() {
         DbEntity dbEntity = relationship.getSourceEntity().getDbEntity();
 
-        DbRelationshipDialog dialog =
-                new DbRelationshipDialog(session, this).createNewRelationship(dbEntity);
-        dialog.open();
-
-        Optional<DbRelationship> dbRelationship = dialog.getRelationship();
-        if (dbRelationship.isPresent()) {
+        DbRelationshipDialog.openForCreate(session, this, dbEntity).ifPresent(dbRelationship -> {
             Object[] oldPath = new Object[]{getStartEntity()};
 
             EntityTreeModel treeModel = (EntityTreeModel) pathBrowser.getModel();
@@ -379,9 +363,9 @@ public class ObjRelationshipInfoDialog extends ProjectDialog implements TreeSele
 
             Object[] path = new Object[oldPath.length + 1];
             System.arraycopy(oldPath, 0, path, 0, path.length - 1);
-            path[path.length - 1] = dbRelationship.get();
+            path[path.length - 1] = dbRelationship;
             pathBrowser.setSelectionPath(new TreePath(path));
-        }
+        });
     }
 
     private void setDeleteRule() {
