@@ -36,6 +36,6 @@ public class PostgresDataSource extends TestContainersDataSource {
 
     @Override
     protected String dockerImage() {
-        return "postgres:9";
+        return "postgres:16";
     }
 }
