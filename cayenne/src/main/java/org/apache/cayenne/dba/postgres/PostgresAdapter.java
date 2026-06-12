@@ -22,7 +22,6 @@ package org.apache.cayenne.dba.postgres;
 import org.apache.cayenne.CayenneRuntimeException;
 import org.apache.cayenne.access.DataNode;
 import org.apache.cayenne.access.sqlbuilder.sqltree.SQLTreeProcessor;
-import org.apache.cayenne.access.translator.ParameterBinding;
 import org.apache.cayenne.access.translator.procedure.ProcedureTranslator;
 import org.apache.cayenne.access.types.CharType;
 import org.apache.cayenne.access.types.ExtendedType;
@@ -44,7 +43,6 @@ import org.apache.cayenne.query.Query;
 import org.apache.cayenne.query.SQLAction;
 import org.apache.cayenne.resource.ResourceLocator;
 
-import java.sql.PreparedStatement;
 import java.sql.Types;
 import java.util.Collection;
 import java.util.Collections;
@@ -124,25 +122,17 @@ public class PostgresAdapter extends JdbcAdapter {
     @Override
     public DbAttribute buildAttribute(String name, String typeName, int type, int size, int scale, boolean allowNulls) {
 
-        if ("json".equalsIgnoreCase(typeName)) {
-            type = Types.OTHER;
-        }
-        // "bytea" maps to pretty much any binary type, so
-        // it is up to us to select the most sensible default.
-        // And the winner is LONGVARBINARY
-        else if (BYTEA.equalsIgnoreCase(typeName)) {
-            type = Types.LONGVARBINARY;
-        }
-        // oid is returned as INTEGER, need to make it BLOB
-        else if ("oid".equals(typeName)) {
-            type = Types.BLOB;
-        }
-        // somehow the driver reverse-engineers "text" as VARCHAR, must be CLOB
-        else if ("text".equalsIgnoreCase(typeName)) {
-            type = Types.CLOB;
-        }
+        int amendedType = switch (typeName != null ? typeName.toLowerCase() : "") {
+            case "json" -> Types.OTHER;
+            // "bytea" maps to pretty much any binary type, so it is up to us to select the most sensible default.
+            // And the winner is LONGVARBINARY
+            case BYTEA -> Types.LONGVARBINARY;
+            // oid is returned as INTEGER, need to make it BLOB
+            case "oid" -> Types.BLOB;
+            default -> type;
+        };
 
-        return super.buildAttribute(name, typeName, type, size, scale, allowNulls);
+        return super.buildAttribute(name, typeName, amendedType, size, scale, allowNulls);
     }
 
     @Override

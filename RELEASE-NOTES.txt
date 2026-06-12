@@ -21,6 +21,7 @@ Bug Fixes:
 CAY-2958 Empty join is saved
 CAY-2959 Modeler: DbRelationship dialog "Cancel" doesn't cancel
 CAY-2960 Undoing renamed relationship change throws
+CAY-2961 PostgreSQL "text" column is reverse-engineered as CLOB
 
 ----------------------------------
 Release: 5.0-M2
