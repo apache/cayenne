@@ -39,6 +39,14 @@ class ObjectSelectMetadata extends BaseQueryMetadata {
 
 	protected Map<String, String> pathSplitAliases;
 
+	/**
+	 * @since 5.0
+	 */
+	@Override
+	public boolean isReadOnly() {
+		return true;
+	}
+
 	@Override
 	void copyFromInfo(QueryMetadata info) {
 		super.copyFromInfo(info);

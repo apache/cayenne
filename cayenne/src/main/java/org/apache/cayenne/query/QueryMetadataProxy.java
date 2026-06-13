@@ -141,4 +141,9 @@ public class QueryMetadataProxy implements QueryMetadata {
     public boolean isSuppressingDistinct() {
         return mdDelegate.isSuppressingDistinct();
     }
+
+    @Override
+    public boolean isReadOnly() {
+        return mdDelegate.isReadOnly();
+    }
 }

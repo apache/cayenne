@@ -19,8 +19,6 @@
 
 package org.apache.cayenne.access;
 
-import java.util.List;
-
 import org.apache.cayenne.access.types.ByteArrayTypeTest;
 import org.apache.cayenne.query.ObjectSelect;
 import org.apache.cayenne.testdo.lob.BlobTestEntity;
@@ -30,8 +28,9 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.RegisterExtension;
 
-import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertNull;
+import java.util.List;
+
+import static org.junit.jupiter.api.Assertions.*;
 
 public class DataContextBlobIT {
 
@@ -113,6 +112,24 @@ public class DataContextBlobIT {
             return;
         }
         runWithBlobSize(1024 * 1024);
+    }
+
+    @Test
+    public void selectWithBlobInQualifier() {
+        if (skipTests()) {
+            return;
+        }
+
+        byte[] bytes = {'a', 'b', 'c', 'd'};
+        BlobTestEntity blob = context.newObject(BlobTestEntity.class);
+        blob.setBlobCol(bytes);
+        context.commitChanges();
+
+        // TODO: change this to a real query one PostgreSQLAdapter start supporting LOB-based criteria (that will require
+        //  a special SQL syntax).
+        assertDoesNotThrow(() -> ObjectSelect.query(BlobTestEntity.class)
+                .where(BlobTestEntity.BLOB_COL.eq(bytes))
+                .selectCount(context2));
     }
 
     @Test

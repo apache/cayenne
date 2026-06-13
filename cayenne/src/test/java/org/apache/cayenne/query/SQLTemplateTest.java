@@ -19,16 +19,19 @@
 package org.apache.cayenne.query;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertNotSame;
 import static org.junit.jupiter.api.Assertions.assertNull;
 import static org.junit.jupiter.api.Assertions.assertSame;
 import static org.junit.jupiter.api.Assertions.assertTrue;
+import static org.mockito.Mockito.mock;
 
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.Map;
 
+import org.apache.cayenne.map.EntityResolver;
 import org.apache.cayenne.util.Util;
 import org.junit.jupiter.api.Test;
 
@@ -133,5 +136,10 @@ public class SQLTemplateTest {
 		assertNotSame(o, c1);
 		assertEquals(o.getRoot(), c1.getRoot());
 		assertEquals(o.getDefaultTemplate(), c1.getDefaultTemplate());
+	}
+
+	@Test
+	public void notReadOnlyMetadata() {
+		assertFalse(new SQLTemplate("E1", "SELECT").getMetaData(mock(EntityResolver.class)).isReadOnly());
 	}
 }

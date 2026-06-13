@@ -25,10 +25,12 @@ import java.util.Collections;
 import org.apache.cayenne.DataRow;
 import org.apache.cayenne.exp.Expression;
 import org.apache.cayenne.exp.ExpressionFactory;
+import org.apache.cayenne.map.EntityResolver;
 import org.apache.cayenne.testdo.testmap.Artist;
 import org.junit.jupiter.api.Test;
 
 import static org.junit.jupiter.api.Assertions.*;
+import static org.mockito.Mockito.mock;
 
 public class ObjectSelectTest {
 
@@ -433,6 +435,11 @@ public class ObjectSelectTest {
 
 		query.queryTimeout(1).queryTimeout(2);
 		assertEquals(2, query.getQueryTimeout());
+	}
+
+	@Test
+	public void readOnlyMetadata() {
+		assertTrue(ObjectSelect.query(Artist.class).getMetaData(mock(EntityResolver.class)).isReadOnly());
 	}
 
 }

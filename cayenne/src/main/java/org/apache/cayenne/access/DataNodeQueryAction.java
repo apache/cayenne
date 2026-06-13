@@ -19,20 +19,19 @@
 
 package org.apache.cayenne.access;
 
-import java.sql.Connection;
-import java.sql.SQLException;
-import java.util.List;
-
 import org.apache.cayenne.ObjectId;
 import org.apache.cayenne.ResultIterator;
 import org.apache.cayenne.query.Query;
 import org.apache.cayenne.query.SQLAction;
 
+import java.sql.Connection;
+import java.util.List;
+
 /**
  * A helper that executes a sequence of queries, providing correct mapping of the results
  * to the original query. Note that this class is not thread-safe as it stores current
  * query execution state.
- * 
+ *
  * @since 1.2
  */
 class DataNodeQueryAction {
@@ -45,8 +44,7 @@ class DataNodeQueryAction {
         this.node = node;
     }
 
-    public void runQuery(Connection connection, final Query originalQuery)
-            throws SQLException, Exception {
+    public void runQuery(Connection connection, Query originalQuery) throws Exception {
 
         // wrap to ensure that the result is mapped back to the original query, even if
         // the underlying SQLAction uses query substitute...
@@ -71,7 +69,7 @@ class DataNodeQueryAction {
             public void nextRows(Query q, ResultIterator it) {
                 observer.nextRows(originalQuery, it);
             }
-            
+
             @Override
             public void nextGeneratedRows(Query query, ResultIterator<?> keys, List<ObjectId> idsToUpdate) {
                 observer.nextGeneratedRows(originalQuery, keys, idsToUpdate);

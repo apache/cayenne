@@ -78,4 +78,19 @@ public interface TransactionManager {
      * @since 4.1
      */
     <T> T performInTransaction(TransactionalOperation<T> op, TransactionListener callback, TransactionDescriptor descriptor);
+
+    /**
+     * Performs an operation in a transaction created by the supplied factory, instead of the
+     * configured one. This lets callers run an operation in a special transaction, such as a
+     * {@link ReadOnlyTransaction}. Behaves like {@link TransactionPropagation#NESTED} - joining an
+     * existing transaction if one is bound, otherwise creating a new one from the given factory.
+     *
+     * @param op                 an operation to perform within the transaction.
+     * @param transactionFactory a factory for the transaction to run the operation in.
+     * @param <T> returned value type
+     * @return a value returned by the "op" operation.
+     *
+     * @since 5.0
+     */
+    <T> T performInTransaction(TransactionalOperation<T> op, TransactionFactory transactionFactory);
 }

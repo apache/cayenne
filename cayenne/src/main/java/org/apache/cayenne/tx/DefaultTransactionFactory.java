@@ -36,11 +36,6 @@ public class DefaultTransactionFactory implements TransactionFactory {
         this.jdbcEventLogger = jdbcEventLogger;
     }
 
-    @Override
-    public Transaction createTransaction() {
-        return createTransaction(TransactionDescriptor.defaultDescriptor());
-    }
-
     /**
      * @since 4.1
      */
