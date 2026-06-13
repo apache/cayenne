@@ -19,11 +19,6 @@
 
 package org.apache.cayenne.dba.db2;
 
-import java.sql.PreparedStatement;
-import java.sql.Types;
-import java.util.List;
-
-import org.apache.cayenne.CayenneRuntimeException;
 import org.apache.cayenne.access.DataNode;
 import org.apache.cayenne.access.sqlbuilder.sqltree.SQLTreeProcessor;
 import org.apache.cayenne.access.translator.ParameterBinding;
@@ -40,24 +35,19 @@ import org.apache.cayenne.access.types.ValueObjectTypeRegistry;
 import org.apache.cayenne.configuration.Constants;
 import org.apache.cayenne.configuration.RuntimeProperties;
 import org.apache.cayenne.dba.JdbcAdapter;
-import org.apache.cayenne.dba.PkGenerator;
 import org.apache.cayenne.di.Inject;
 import org.apache.cayenne.map.DbAttribute;
 import org.apache.cayenne.query.Query;
 import org.apache.cayenne.query.SQLAction;
+
+import java.sql.PreparedStatement;
+import java.sql.Types;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
 /**
- * DbAdapter implementation for the <a href="http://www.ibm.com/db2/"> DB2 RDBMS </a>.
- * Sample connection settings to use with DB2 are shown below:
- * 
- * <pre>
- *       test-db2.jdbc.username = test
- *       test-db2.jdbc.password = secret
- *       test-db2.jdbc.url = jdbc:db2://servername:50000/databasename
- *       test-db2.jdbc.driver = com.ibm.db2.jcc.DB2Driver
- * </pre>
+ * DbAdapter implementation for the DB2 RDBMS.
  */
 public class DB2Adapter extends JdbcAdapter {
 

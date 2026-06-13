@@ -19,7 +19,6 @@
 
 package org.apache.cayenne.dba.firebird;
 
-import org.apache.cayenne.CayenneRuntimeException;
 import org.apache.cayenne.access.DataNode;
 import org.apache.cayenne.access.sqlbuilder.sqltree.SQLTreeProcessor;
 import org.apache.cayenne.access.translator.ejbql.EJBQLTranslator;
@@ -43,17 +42,7 @@ import java.util.List;
 import java.util.Map;
 
 /**
- * DbAdapter implementation for <a href="http://www.firebirdsql.org">FirebirdSQL
- * RDBMS </a>. Sample connection settings to use with Firebird are shown
- * below:
- * 
- * <pre>
- *      firebird.cayenne.adapter = org.apache.cayenne.dba.firebird.FirebirdAdapter
- *      firebird.jdbc.username = test
- *      firebird.jdbc.password = secret
- *      firebird.jdbc.url = jdbc:firebirdsql:localhost:/home/firebird/test.fdb  
- *      firebird.jdbc.driver = org.firebirdsql.jdbc.FBDriver
- * </pre>
+ * DbAdapter implementation for the FirebirdSQL RDBMS
  */
 public class FirebirdAdapter extends JdbcAdapter {
 

@@ -19,7 +19,6 @@
 
 package org.apache.cayenne.dba.ingres;
 
-import org.apache.cayenne.CayenneRuntimeException;
 import org.apache.cayenne.access.DataNode;
 import org.apache.cayenne.access.sqlbuilder.sqltree.SQLTreeProcessor;
 import org.apache.cayenne.access.translator.ParameterBinding;
@@ -30,7 +29,6 @@ import org.apache.cayenne.access.types.ValueObjectTypeRegistry;
 import org.apache.cayenne.configuration.Constants;
 import org.apache.cayenne.configuration.RuntimeProperties;
 import org.apache.cayenne.dba.JdbcAdapter;
-import org.apache.cayenne.dba.PkGenerator;
 import org.apache.cayenne.dba.TypesMapping;
 import org.apache.cayenne.di.Inject;
 import org.apache.cayenne.map.DbAttribute;
@@ -38,37 +36,25 @@ import org.apache.cayenne.query.Query;
 import org.apache.cayenne.query.SQLAction;
 
 import java.sql.PreparedStatement;
-import java.sql.SQLException;
 import java.sql.Types;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
 /**
- * DbAdapter implementation for <a
- * href="http://opensource.ca.com/projects/ingres/">Ingres</a>. Sample
- * connection settings to use with Ingres are shown below:
- *
- * <pre>
- *  ingres.jdbc.username = test
- *  ingres.jdbc.password = secret
- *  ingres.jdbc.url = jdbc:ingres://serverhostname:II7/cayenne
- *  ingres.jdbc.driver = ca.ingres.jdbc.IngresDriver
- * </pre>
+ * DbAdapter implementation for Ingres RDBMS.
  */
 public class IngresAdapter extends JdbcAdapter {
 
-	public static final String TRIM_FUNCTION = "TRIM";
-
-	public IngresAdapter(@Inject RuntimeProperties runtimeProperties,
-	                     @Inject(Constants.DEFAULT_TYPES_LIST) List<ExtendedType> defaultExtendedTypes,
-	                     @Inject(Constants.USER_TYPES_LIST) List<ExtendedType> userExtendedTypes,
-	                     @Inject(Constants.TYPE_FACTORIES_LIST) List<ExtendedTypeFactory> extendedTypeFactories,
-						 @Inject ValueObjectTypeRegistry valueObjectTypeRegistry) {
-		super(runtimeProperties, defaultExtendedTypes, userExtendedTypes, extendedTypeFactories, valueObjectTypeRegistry);
-		setSupportsUniqueConstraints(true);
-		setSupportsGeneratedKeys(true);
-	}
+    public IngresAdapter(@Inject RuntimeProperties runtimeProperties,
+                         @Inject(Constants.DEFAULT_TYPES_LIST) List<ExtendedType> defaultExtendedTypes,
+                         @Inject(Constants.USER_TYPES_LIST) List<ExtendedType> userExtendedTypes,
+                         @Inject(Constants.TYPE_FACTORIES_LIST) List<ExtendedTypeFactory> extendedTypeFactories,
+                         @Inject ValueObjectTypeRegistry valueObjectTypeRegistry) {
+        super(runtimeProperties, defaultExtendedTypes, userExtendedTypes, extendedTypeFactories, valueObjectTypeRegistry);
+        setSupportsUniqueConstraints(true);
+        setSupportsGeneratedKeys(true);
+    }
 
     @Override
     protected Map<Integer, String[]> createExternalTypes() {
@@ -110,69 +96,68 @@ public class IngresAdapter extends JdbcAdapter {
     /**
      * @since 4.2
      */
-	@Override
-	public SQLTreeProcessor getSqlTreeProcessor() {
-		return new IngressSQLTreeProcessor();
-	}
+    @Override
+    public SQLTreeProcessor getSqlTreeProcessor() {
+        return new IngressSQLTreeProcessor();
+    }
 
-	@Override
-	public SQLAction getAction(Query query, DataNode node) {
-		return query.createSQLAction(new IngresActionBuilder(node));
-	}
+    @Override
+    public SQLAction getAction(Query query, DataNode node) {
+        return query.createSQLAction(new IngresActionBuilder(node));
+    }
 
-	@Override
-	protected void configureExtendedTypes(ExtendedTypeMap map) {
-		super.configureExtendedTypes(map);
-		map.registerType(new IngresCharType());
+    @Override
+    protected void configureExtendedTypes(ExtendedTypeMap map) {
+        super.configureExtendedTypes(map);
+        map.registerType(new IngresCharType());
 
-		// configure boolean type to work with numeric columns
-		map.registerType(new IngresBooleanType());
-	}
+        // configure boolean type to work with numeric columns
+        map.registerType(new IngresBooleanType());
+    }
 
-	@Override
-	public void bindParameter(PreparedStatement statement, ParameterBinding binding)
-			throws SQLException, Exception {
+    @Override
+    public void bindParameter(PreparedStatement statement, ParameterBinding binding) throws Exception {
 
-		if (binding.getValue() == null && (binding.getJdbcType() == Types.BIT)) {
-			statement.setNull(binding.getStatementPosition(), Types.SMALLINT);
-		} else {
-			super.bindParameter(statement, binding);
-		}
-	}
+        if (binding.getValue() == null && (binding.getJdbcType() == Types.BIT)) {
+            statement.setNull(binding.getStatementPosition(), Types.SMALLINT);
+        } else {
+            super.bindParameter(statement, binding);
+        }
+    }
 
-	@Override
-	public void createTableAppendColumn(StringBuffer buf, DbAttribute at) {
-		String type = getType(this, at);
-		buf.append(quotingStrategy.quotedName(at)).append(' ').append(type);
+    @Override
+    public void createTableAppendColumn(StringBuffer buf, DbAttribute at) {
+        String type = getType(this, at);
+        buf.append(quotingStrategy.quotedName(at)).append(' ').append(type);
 
-		// append size and precision (if applicable)
-		if (typeSupportsLength(at.getType())) {
-			int len = at.getMaxLength();
-			int scale = TypesMapping.isDecimal(at.getType()) ? at.getScale() : -1;
+        // append size and precision (if applicable)
+        if (typeSupportsLength(at.getType())) {
+            int len = at.getMaxLength();
+            int scale = TypesMapping.isDecimal(at.getType()) ? at.getScale() : -1;
 
-			// sanity check
-			if (scale > len) {
-				scale = -1;
-			}
+            // sanity check
+            if (scale > len) {
+                scale = -1;
+            }
 
-			if (len > 0) {
-				buf.append('(').append(len);
+            if (len > 0) {
+                buf.append('(').append(len);
 
-				if (scale >= 0) {
-					buf.append(", ").append(scale);
-				}
+                if (scale >= 0) {
+                    buf.append(", ").append(scale);
+                }
 
-				buf.append(')');
-			}
-		}
+                buf.append(')');
+            }
+        }
 
-		if (at.isGenerated()) {
-			buf.append(" GENERATED BY DEFAULT AS IDENTITY ");
-		}
+        if (at.isGenerated()) {
+            buf.append(" GENERATED BY DEFAULT AS IDENTITY ");
+        }
 
-		// Ingres does not like "null" for non mandatory fields
-		if (at.isMandatory()) {
-			buf.append(" NOT NULL");
-		}
-	}
+        // Ingres does not like "null" for non mandatory fields
+        if (at.isMandatory()) {
+            buf.append(" NOT NULL");
+        }
+    }
 }

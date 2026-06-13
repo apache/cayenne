@@ -51,16 +51,7 @@ import java.util.List;
 import java.util.Map;
 
 /**
- * DbAdapter implementation for <a href="http://www.postgresql.org">PostgreSQL
- * RDBMS </a>. Sample connection settings to use with PostgreSQL are shown
- * below:
- *
- * <pre>
- *      postgres.jdbc.username = test
- *      postgres.jdbc.password = secret
- *      postgres.jdbc.url = jdbc:postgresql://serverhostname/cayenne
- *      postgres.jdbc.driver = org.postgresql.Driver
- * </pre>
+ * DbAdapter implementation for PostgreSQL RDBMS
  */
 public class PostgresAdapter extends JdbcAdapter {
 
@@ -154,7 +145,7 @@ public class PostgresAdapter extends JdbcAdapter {
     }
 
     @Override
-    public DbAttribute buildAttribute(String name, String typeName, int type, int size, int scale, boolean allowNulls) {
+    public DbAttribute buildAttribute(String name, String typeName, int type, int maxLength, int scale, boolean allowNulls) {
 
         int amendedType = switch (typeName != null ? typeName.toLowerCase() : "") {
             case "json" -> Types.OTHER;
@@ -166,7 +157,7 @@ public class PostgresAdapter extends JdbcAdapter {
             default -> type;
         };
 
-        return super.buildAttribute(name, typeName, amendedType, size, scale, allowNulls);
+        return super.buildAttribute(name, typeName, amendedType, maxLength, scale, allowNulls);
     }
 
     @Override

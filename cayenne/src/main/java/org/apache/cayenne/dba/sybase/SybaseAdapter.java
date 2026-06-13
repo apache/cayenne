@@ -45,7 +45,7 @@ import java.util.List;
 import java.util.Map;
 
 /**
- * DbAdapter implementation for <a href="http://www.sybase.com">Sybase RDBMS</a>.
+ * DbAdapter implementation for Sybase RDBMS.
  */
 public class SybaseAdapter extends JdbcAdapter {
 

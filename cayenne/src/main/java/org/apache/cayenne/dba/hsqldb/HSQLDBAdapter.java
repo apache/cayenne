@@ -52,29 +52,21 @@ import java.util.List;
 import java.util.Map;
 
 /**
- * DbAdapter implementation for the <a href="http://hsqldb.sourceforge.net/">
- * HSQLDB RDBMS </a>. Sample connection settings to use with HSQLDB are shown
- * below:
- *
- * <pre>
- *        test-hsqldb.jdbc.username = test
- *        test-hsqldb.jdbc.password = secret
- *        test-hsqldb.jdbc.url = jdbc:hsqldb:hsql://serverhostname
- *        test-hsqldb.jdbc.driver = org.hsqldb.jdbcDriver
- * </pre>
+ * DbAdapter implementation for the HSQLDB RDBMS.
  */
 public class HSQLDBAdapter extends JdbcAdapter {
 
-	public static final String TRIM_FUNCTION = "RTRIM";
+    public static final String TRIM_FUNCTION = "RTRIM";
 
-	public HSQLDBAdapter(@Inject RuntimeProperties runtimeProperties,
-			@Inject(Constants.DEFAULT_TYPES_LIST) List<ExtendedType> defaultExtendedTypes,
-			@Inject(Constants.USER_TYPES_LIST) List<ExtendedType> userExtendedTypes,
-			@Inject(Constants.TYPE_FACTORIES_LIST) List<ExtendedTypeFactory> extendedTypeFactories,
-		    @Inject ValueObjectTypeRegistry valueObjectTypeRegistry) {
-		super(runtimeProperties, defaultExtendedTypes, userExtendedTypes, extendedTypeFactories, valueObjectTypeRegistry);
-		setSupportsGeneratedKeys(true);
-	}
+    public HSQLDBAdapter(
+            @Inject RuntimeProperties runtimeProperties,
+            @Inject(Constants.DEFAULT_TYPES_LIST) List<ExtendedType> defaultExtendedTypes,
+            @Inject(Constants.USER_TYPES_LIST) List<ExtendedType> userExtendedTypes,
+            @Inject(Constants.TYPE_FACTORIES_LIST) List<ExtendedTypeFactory> extendedTypeFactories,
+            @Inject ValueObjectTypeRegistry valueObjectTypeRegistry) {
+        super(runtimeProperties, defaultExtendedTypes, userExtendedTypes, extendedTypeFactories, valueObjectTypeRegistry);
+        setSupportsGeneratedKeys(true);
+    }
 
     @Override
     protected Map<Integer, String[]> createExternalTypes() {
@@ -114,199 +106,199 @@ public class HSQLDBAdapter extends JdbcAdapter {
         return types;
     }
 
-	/**
-	 * @since 4.0
-	 */
-	@Override
-	protected void configureExtendedTypes(ExtendedTypeMap map) {
-		super.configureExtendedTypes(map);
+    /**
+     * @since 4.0
+     */
+    @Override
+    protected void configureExtendedTypes(ExtendedTypeMap map) {
+        super.configureExtendedTypes(map);
 
-		// create specially configured CharType handler
-		CharType charType = new CharType(true, true);
-		map.registerType(charType);
+        // create specially configured CharType handler
+        CharType charType = new CharType(true, true);
+        map.registerType(charType);
 
-		map.registerType(new JsonType(charType, true));
-	}
+        map.registerType(new JsonType(charType, true));
+    }
 
-	/**
-	 * @since 4.2
-	 */
-	@Override
-	public SQLTreeProcessor getSqlTreeProcessor() {
-		return new HSQLTreeProcessor();
-	}
+    /**
+     * @since 4.2
+     */
+    @Override
+    public SQLTreeProcessor getSqlTreeProcessor() {
+        return new HSQLTreeProcessor();
+    }
 
-	/**
-	 * @since 5.0
-	 */
-	@Override
-	public ProcedureTranslator getProcedureTranslator(ProcedureQuery query, EntityResolver entityResolver) {
-		return new HSQLDBProcedureTranslator();
-	}
+    /**
+     * @since 5.0
+     */
+    @Override
+    public ProcedureTranslator getProcedureTranslator(ProcedureQuery query, EntityResolver entityResolver) {
+        return new HSQLDBProcedureTranslator();
+    }
 
-	/**
-	 * @since 4.0
-	 */
-	@Override
-	protected EJBQLTranslator createEJBQLTranslator() {
-		JdbcEJBQLTranslator translatorFactory = new HSQLEJBQLTranslator();
-		translatorFactory.setCaseInsensitive(caseInsensitiveCollations);
-		return translatorFactory;
-	}
+    /**
+     * @since 4.0
+     */
+    @Override
+    protected EJBQLTranslator createEJBQLTranslator() {
+        JdbcEJBQLTranslator translatorFactory = new HSQLEJBQLTranslator();
+        translatorFactory.setCaseInsensitive(caseInsensitiveCollations);
+        return translatorFactory;
+    }
 
-	/**
-	 * Generate fully-qualified name for 1.8 and on. Subclass generates
-	 * unqualified name.
-	 *
-	 * @since 1.2
-	 */
-	protected String getTableName(DbEntity entity) {
-		return quotingStrategy.quotedFullyQualifiedName(entity);
-	}
+    /**
+     * Generate fully-qualified name for 1.8 and on. Subclass generates
+     * unqualified name.
+     *
+     * @since 1.2
+     */
+    protected String getTableName(DbEntity entity) {
+        return quotingStrategy.quotedFullyQualifiedName(entity);
+    }
 
-	/**
-	 * Returns DbEntity schema name for 1.8 and on. Subclass generates
-	 * unqualified name.
-	 *
-	 * @since 1.2
-	 */
-	protected String getSchemaName(DbEntity entity) {
-		return entity.getSchema();
-	}
+    /**
+     * Returns DbEntity schema name for 1.8 and on. Subclass generates
+     * unqualified name.
+     *
+     * @since 1.2
+     */
+    protected String getSchemaName(DbEntity entity) {
+        return entity.getSchema();
+    }
 
-	/**
-	 * Uses special action builder to create the right action.
-	 *
-	 * @since 1.2
-	 */
-	@Override
-	public SQLAction getAction(Query query, DataNode node) {
-		return query.createSQLAction(new HSQLActionBuilder(node));
-	}
+    /**
+     * Uses special action builder to create the right action.
+     *
+     * @since 1.2
+     */
+    @Override
+    public SQLAction getAction(Query query, DataNode node) {
+        return query.createSQLAction(new HSQLActionBuilder(node));
+    }
 
-	/**
-	 * Returns a DDL string to create a unique constraint over a set of columns.
-	 *
-	 * @since 1.1
-	 */
-	@Override
-	public String createUniqueConstraint(DbEntity source, Collection<DbAttribute> columns) {
+    /**
+     * Returns a DDL string to create a unique constraint over a set of columns.
+     *
+     * @since 1.1
+     */
+    @Override
+    public String createUniqueConstraint(DbEntity source, Collection<DbAttribute> columns) {
 
-		if (columns == null || columns.isEmpty()) {
-			throw new CayenneRuntimeException("Can't create UNIQUE constraint - no columns specified.");
-		}
+        if (columns == null || columns.isEmpty()) {
+            throw new CayenneRuntimeException("Can't create UNIQUE constraint - no columns specified.");
+        }
 
-		String srcName = getTableName(source);
+        String srcName = getTableName(source);
 
-		StringBuilder buf = new StringBuilder();
+        StringBuilder buf = new StringBuilder();
 
-		buf.append("ALTER TABLE ").append(srcName);
-		buf.append(" ADD CONSTRAINT ");
+        buf.append("ALTER TABLE ").append(srcName);
+        buf.append(" ADD CONSTRAINT ");
 
-		String name = "U_" + source.getName() + "_" + (long) (System.currentTimeMillis() / (Math.random() * 100000));
-		buf.append(quotingStrategy.quotedIdentifier(source, source.getSchema(), name));
-		buf.append(" UNIQUE (");
+        String name = "U_" + source.getName() + "_" + (long) (System.currentTimeMillis() / (Math.random() * 100000));
+        buf.append(quotingStrategy.quotedIdentifier(source, source.getSchema(), name));
+        buf.append(" UNIQUE (");
 
-		Iterator<DbAttribute> it = columns.iterator();
-		DbAttribute first = it.next();
-		buf.append(quotingStrategy.quotedName(first));
+        Iterator<DbAttribute> it = columns.iterator();
+        DbAttribute first = it.next();
+        buf.append(quotingStrategy.quotedName(first));
 
-		while (it.hasNext()) {
-			DbAttribute next = it.next();
-			buf.append(", ");
-			buf.append(quotingStrategy.quotedName(next));
-		}
+        while (it.hasNext()) {
+            DbAttribute next = it.next();
+            buf.append(", ");
+            buf.append(quotingStrategy.quotedName(next));
+        }
 
-		buf.append(")");
+        buf.append(")");
 
-		return buf.toString();
-	}
+        return buf.toString();
+    }
 
-	/**
-	 * Adds an ADD CONSTRAINT clause to a relationship constraint.
-	 *
-	 * @see JdbcAdapter#createFkConstraint(DbRelationship)
-	 */
-	@Override
-	public String createFkConstraint(DbRelationship rel) {
+    /**
+     * Adds an ADD CONSTRAINT clause to a relationship constraint.
+     *
+     * @see JdbcAdapter#createFkConstraint(DbRelationship)
+     */
+    @Override
+    public String createFkConstraint(DbRelationship rel) {
 
-		StringBuilder buf = new StringBuilder();
-		StringBuilder refBuf = new StringBuilder();
+        StringBuilder buf = new StringBuilder();
+        StringBuilder refBuf = new StringBuilder();
 
-		String srcName = getTableName(rel.getSourceEntity());
-		String dstName = getTableName(rel.getTargetEntity());
+        String srcName = getTableName(rel.getSourceEntity());
+        String dstName = getTableName(rel.getTargetEntity());
 
-		buf.append("ALTER TABLE ");
-		buf.append(srcName);
+        buf.append("ALTER TABLE ");
+        buf.append(srcName);
 
-		// hsqldb requires the ADD CONSTRAINT statement
-		buf.append(" ADD CONSTRAINT ");
+        // hsqldb requires the ADD CONSTRAINT statement
+        buf.append(" ADD CONSTRAINT ");
 
-		String name = "U_" + rel.getSourceEntity().getName() + "_"
-				+ (long) (System.currentTimeMillis() / (Math.random() * 100000));
+        String name = "U_" + rel.getSourceEntity().getName() + "_"
+                + (long) (System.currentTimeMillis() / (Math.random() * 100000));
 
-		DbEntity sourceEntity = rel.getSourceEntity();
+        DbEntity sourceEntity = rel.getSourceEntity();
 
-		buf.append(quotingStrategy.quotedIdentifier(sourceEntity, sourceEntity.getSchema(), name));
-		buf.append(" FOREIGN KEY (");
+        buf.append(quotingStrategy.quotedIdentifier(sourceEntity, sourceEntity.getSchema(), name));
+        buf.append(" FOREIGN KEY (");
 
-		boolean first = true;
-		for (DbJoin join : rel.getJoins()) {
-			if (!first) {
-				buf.append(", ");
-				refBuf.append(", ");
-			} else {
-				first = false;
-			}
+        boolean first = true;
+        for (DbJoin join : rel.getJoins()) {
+            if (!first) {
+                buf.append(", ");
+                refBuf.append(", ");
+            } else {
+                first = false;
+            }
 
-			buf.append(quotingStrategy.quotedSourceName(join));
-			refBuf.append(quotingStrategy.quotedTargetName(join));
-		}
+            buf.append(quotingStrategy.quotedSourceName(join));
+            refBuf.append(quotingStrategy.quotedTargetName(join));
+        }
 
-		buf.append(") REFERENCES ");
-		buf.append(dstName);
-		buf.append(" (");
-		buf.append(refBuf.toString());
-		buf.append(')');
+        buf.append(") REFERENCES ");
+        buf.append(dstName);
+        buf.append(" (");
+        buf.append(refBuf.toString());
+        buf.append(')');
 
-		// also make sure we delete dependent FKs
-		buf.append(" ON DELETE CASCADE");
+        // also make sure we delete dependent FKs
+        buf.append(" ON DELETE CASCADE");
 
-		return buf.toString();
-	}
+        return buf.toString();
+    }
 
-	/**
-	 * Uses "CREATE CACHED TABLE" instead of "CREATE TABLE".
-	 *
-	 * @since 1.2
-	 */
-	@Override
-	public String createTable(DbEntity ent) {
-		// SET SCHEMA <schemaname>
-		String sql = super.createTable(ent);
-		if (sql != null && sql.toUpperCase().startsWith("CREATE TABLE ")) {
-			sql = "CREATE CACHED TABLE " + sql.substring("CREATE TABLE ".length());
-		}
+    /**
+     * Uses "CREATE CACHED TABLE" instead of "CREATE TABLE".
+     *
+     * @since 1.2
+     */
+    @Override
+    public String createTable(DbEntity ent) {
+        // SET SCHEMA <schemaname>
+        String sql = super.createTable(ent);
+        if (sql != null && sql.toUpperCase().startsWith("CREATE TABLE ")) {
+            sql = "CREATE CACHED TABLE " + sql.substring("CREATE TABLE ".length());
+        }
 
-		return sql;
-	}
+        return sql;
+    }
 
-	@Override
-	public void createTableAppendColumn(StringBuffer sqlBuffer, DbAttribute column) {
-		// CAY-1095: if the column is type double, temporarily set the max
-		// length to 0 to
-		// avoid adding precision information.
-		if (column.getType() == Types.DOUBLE && column.getMaxLength() > 0) {
-			int len = column.getMaxLength();
-			column.setMaxLength(0);
-			super.createTableAppendColumn(sqlBuffer, column);
-			column.setMaxLength(len);
-		} else {
-			super.createTableAppendColumn(sqlBuffer, column);
-		}
+    @Override
+    public void createTableAppendColumn(StringBuffer sqlBuffer, DbAttribute column) {
+        // CAY-1095: if the column is type double, temporarily set the max
+        // length to 0 to
+        // avoid adding precision information.
+        if (column.getType() == Types.DOUBLE && column.getMaxLength() > 0) {
+            int len = column.getMaxLength();
+            column.setMaxLength(0);
+            super.createTableAppendColumn(sqlBuffer, column);
+            column.setMaxLength(len);
+        } else {
+            super.createTableAppendColumn(sqlBuffer, column);
+        }
 
-		if(column.isGenerated()) {
-			sqlBuffer.append(" GENERATED BY DEFAULT AS IDENTITY (START WITH 1)");
-		}
-	}
+        if (column.isGenerated()) {
+            sqlBuffer.append(" GENERATED BY DEFAULT AS IDENTITY (START WITH 1)");
+        }
+    }
 }
