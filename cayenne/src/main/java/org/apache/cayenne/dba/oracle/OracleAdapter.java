@@ -42,7 +42,6 @@ import org.apache.cayenne.query.InsertBatchQuery;
 import org.apache.cayenne.query.Query;
 import org.apache.cayenne.query.SQLAction;
 import org.apache.cayenne.query.UpdateBatchQuery;
-import org.apache.cayenne.resource.ResourceLocator;
 
 import java.lang.reflect.Field;
 import java.sql.CallableStatement;
@@ -51,7 +50,9 @@ import java.sql.ResultSet;
 import java.sql.Types;
 import java.util.Collection;
 import java.util.Collections;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 /**
  * DbAdapter implementation for <a href="http://www.oracle.com">Oracle RDBMS
@@ -165,13 +166,46 @@ public class OracleAdapter extends JdbcAdapter {
 						 @Inject(Constants.DEFAULT_TYPES_LIST) List<ExtendedType> defaultExtendedTypes,
 						 @Inject(Constants.USER_TYPES_LIST) List<ExtendedType> userExtendedTypes,
 						 @Inject(Constants.TYPE_FACTORIES_LIST) List<ExtendedTypeFactory> extendedTypeFactories,
-						 @Inject(Constants.RESOURCE_LOCATOR) ResourceLocator resourceLocator,
 						 @Inject ValueObjectTypeRegistry valueObjectTypeRegistry) {
-		super(runtimeProperties, defaultExtendedTypes, userExtendedTypes, extendedTypeFactories, resourceLocator, valueObjectTypeRegistry);
+		super(runtimeProperties, defaultExtendedTypes, userExtendedTypes, extendedTypeFactories, valueObjectTypeRegistry);
 
 		// enable batch updates by default
 		setSupportsBatchUpdates(true);
 	}
+
+    @Override
+    protected Map<Integer, String[]> createExternalTypes() {
+        Map<Integer, String[]> types = new HashMap<>();
+        types.put(Types.BIGINT, new String[]{"NUMBER"});
+        types.put(Types.BINARY, new String[]{"RAW"});
+        types.put(Types.BIT, new String[]{"INTEGER"});
+        types.put(Types.BLOB, new String[]{"BLOB"});
+        types.put(Types.BOOLEAN, new String[]{"INTEGER"});
+        types.put(Types.CHAR, new String[]{"CHAR"});
+        types.put(Types.CLOB, new String[]{"CLOB"});
+        types.put(Types.DATE, new String[]{"DATE"});
+        types.put(Types.DECIMAL, new String[]{"DECIMAL"});
+        types.put(Types.DOUBLE, new String[]{"NUMBER"});
+        types.put(Types.FLOAT, new String[]{"FLOAT"});
+        types.put(Types.INTEGER, new String[]{"INTEGER"});
+        types.put(Types.LONGNVARCHAR, new String[]{"NCLOB"});
+        types.put(Types.LONGVARBINARY, new String[]{"LONG RAW"});
+        types.put(Types.LONGVARCHAR, new String[]{"LONG VARCHAR"});
+        types.put(Types.NCHAR, new String[]{"NCHAR"});
+        types.put(Types.NCLOB, new String[]{"NCLOB"});
+        types.put(Types.NUMERIC, new String[]{"NUMBER"});
+        types.put(Types.NVARCHAR, new String[]{"NVARCHAR2"});
+        types.put(Types.REAL, new String[]{"NUMBER"});
+        types.put(Types.ROWID, new String[]{"ROWID"});
+        types.put(Types.SMALLINT, new String[]{"SMALLINT"});
+        types.put(Types.SQLXML, new String[]{"XMLType"});
+        types.put(Types.TIME, new String[]{"DATE"});
+        types.put(Types.TIMESTAMP, new String[]{"TIMESTAMP"});
+        types.put(Types.TINYINT, new String[]{"SMALLINT"});
+        types.put(Types.VARBINARY, new String[]{"RAW"});
+        types.put(Types.VARCHAR, new String[]{"VARCHAR2"});
+        return types;
+    }
 
 	/**
 	 * @since 4.2
