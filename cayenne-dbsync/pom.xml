@@ -44,12 +44,10 @@
 			<groupId>org.apache.cayenne</groupId>
 			<artifactId>cayenne-project</artifactId>
 			<version>${project.version}</version>
-			<scope>compile</scope>
 		</dependency>
         <dependency>
             <groupId>net.java.dev.inflector</groupId>
             <artifactId>inflector</artifactId>
-            <scope>compile</scope>
         </dependency>
 		<!-- Test dependencies -->
 		<dependency>

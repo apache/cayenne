@@ -41,7 +41,6 @@
         <dependency>
             <groupId>javax.cache</groupId>
             <artifactId>cache-api</artifactId>
-            <scope>compile</scope>
         </dependency>
 
         <!-- Test dependencies -->
