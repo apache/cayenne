@@ -43,18 +43,10 @@ import java.util.List;
 import java.util.Map;
 
 /**
- * A SQLite database adapter that works with Zentus JDBC driver. See
- * http://www.zentus.com/sqlitejdbc/ for the driver information. Also look at
- * http://www.xerial.org/trac/Xerial/wiki/SQLiteJDBC for another adaptor option.
- * 
- * <pre>
- *      sqlite.jdbc.url = jdbc:sqlite:sqlitetest.db
- *      sqlite.jdbc.driver = org.sqlite.JDBC
- * </pre>
- * 
+ * A SQLite database adapter.
+ *
  * @since 3.0
  */
-// check http://cwiki.apache.org/CAY/sqliteadapter.html for current limitations.
 public class SQLiteAdapter extends JdbcAdapter {
 
     public SQLiteAdapter(
@@ -168,7 +160,7 @@ public class SQLiteAdapter extends JdbcAdapter {
 
         // do not append " PRIMARY KEY () " for single column generated primary key
         if (entity.getPrimaryKeys().size() == 1) {
-            DbAttribute column = entity.getPrimaryKeys().iterator().next();
+            DbAttribute column = entity.getPrimaryKeys().getFirst();
             if (column.isGenerated()) {
                 return;
             }

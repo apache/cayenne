@@ -55,123 +55,115 @@ import java.util.List;
 import java.util.Map;
 
 /**
- * DbAdapter implementation for <a href="http://www.oracle.com">Oracle RDBMS
- * </a>. Sample connection settings to use with Oracle are shown below:
- *
- * <pre>
- *          test-oracle.jdbc.username = test
- *          test-oracle.jdbc.password = secret
- *          test-oracle.jdbc.url = jdbc:oracle:thin:@//192.168.0.20:1521/ora1
- *          test-oracle.jdbc.driver = oracle.jdbc.driver.OracleDriver
- * </pre>
+ * DbAdapter implementation for Oracle RDBMS
  */
 public class OracleAdapter extends JdbcAdapter {
 
-	public static final String ORACLE_FLOAT = "FLOAT";
-	public static final String ORACLE_BLOB = "BLOB";
-	public static final String ORACLE_CLOB = "CLOB";
-	public static final String ORACLE_NCLOB = "NCLOB";
+    public static final String ORACLE_FLOAT = "FLOAT";
+    public static final String ORACLE_BLOB = "BLOB";
+    public static final String ORACLE_CLOB = "CLOB";
+    public static final String ORACLE_NCLOB = "NCLOB";
 
-	public static final String TRIM_FUNCTION = "RTRIM";
-	public static final String NEW_CLOB_FUNCTION = "EMPTY_CLOB()";
-	public static final String NEW_BLOB_FUNCTION = "EMPTY_BLOB()";
+    public static final String TRIM_FUNCTION = "RTRIM";
+    public static final String NEW_CLOB_FUNCTION = "EMPTY_CLOB()";
+    public static final String NEW_BLOB_FUNCTION = "EMPTY_BLOB()";
 
-	protected static boolean initDone;
-	protected static int oracleCursorType = Integer.MAX_VALUE;
+    protected static boolean initDone;
+    protected static int oracleCursorType = Integer.MAX_VALUE;
 
-	protected static boolean supportsOracleLOB;
+    protected static boolean supportsOracleLOB;
 
-	private List<String> SYSTEM_SCHEMAS = List.of(
-			"ANONYMOUS", "APPQOSSYS", "AUDSYS", "CTXSYS", "DBSFWUSER",
-			"DBSNMP", "DIP", "DVF", "GGSYS", "DVSYS", "GSMADMIN_INTERNAL",
-			"GSMCATUSER", "GSMUSER", "LBACSYS", "MDDATA", "MDSYS", "OJVMSYS",
-			"OLAPSYS", "ORACLE_OCM", "ORDDATA", "ORDPLUGINS", "ORDSYS", "OUTLN",
-			"REMOTE_SCHEDULER_AGENT", "SYSTEM", "WMSYS", "SI_INFORMTN_SCHEMA",
-			"SYS", "SYSBACKUP", "SYSDG", "SYSKM", "SYSRAC", "SYS$UMF", "XDB", "XS$NULL");
+    private List<String> SYSTEM_SCHEMAS = List.of(
+            "ANONYMOUS", "APPQOSSYS", "AUDSYS", "CTXSYS", "DBSFWUSER",
+            "DBSNMP", "DIP", "DVF", "GGSYS", "DVSYS", "GSMADMIN_INTERNAL",
+            "GSMCATUSER", "GSMUSER", "LBACSYS", "MDDATA", "MDSYS", "OJVMSYS",
+            "OLAPSYS", "ORACLE_OCM", "ORDDATA", "ORDPLUGINS", "ORDSYS", "OUTLN",
+            "REMOTE_SCHEDULER_AGENT", "SYSTEM", "WMSYS", "SI_INFORMTN_SCHEMA",
+            "SYS", "SYSBACKUP", "SYSDG", "SYSKM", "SYSRAC", "SYS$UMF", "XDB", "XS$NULL");
 
-	static {
-		// TODO: as CAY-234 shows, having such initialization done in a static
-		// fashion
-		// makes it untestable and any potential problems hard to reproduce.
-		// Make this
-		// an instance method (with all the affected vars) and write unit tests.
-		initDriverInformation();
-	}
+    static {
+        // TODO: as CAY-234 shows, having such initialization done in a static
+        // fashion
+        // makes it untestable and any potential problems hard to reproduce.
+        // Make this
+        // an instance method (with all the affected vars) and write unit tests.
+        initDriverInformation();
+    }
 
-	protected static void initDriverInformation() {
-		initDone = true;
+    protected static void initDriverInformation() {
+        initDone = true;
 
-		// configure static information
-		try {
-			Class<?> oraTypes = Class.forName("oracle.jdbc.driver.OracleTypes");
-			Field cursorField = oraTypes.getField("CURSOR");
-			oracleCursorType = cursorField.getInt(null);
+        // configure static information
+        try {
+            Class<?> oraTypes = Class.forName("oracle.jdbc.driver.OracleTypes");
+            Field cursorField = oraTypes.getField("CURSOR");
+            oracleCursorType = cursorField.getInt(null);
 
-			supportsOracleLOB = true;
-		} catch (Throwable th) {
-			// ignoring...
-		}
-	}
+            supportsOracleLOB = true;
+        } catch (Throwable th) {
+            // ignoring...
+        }
+    }
 
-	// TODO: rename to something that looks like English ...
-	public static boolean isSupportsOracleLOB() {
-		return supportsOracleLOB;
-	}
+    // TODO: rename to something that looks like English ...
+    public static boolean isSupportsOracleLOB() {
+        return supportsOracleLOB;
+    }
 
-	/**
-	 * Utility method that returns <code>true</code> if the query will update at
-	 * least one BLOB or CLOB DbAttribute.
-	 *
-	 * @since 1.2
-	 */
-	static boolean updatesLOBColumns(BatchQuery query) {
-		boolean isInsert = query instanceof InsertBatchQuery;
-		boolean isUpdate = query instanceof UpdateBatchQuery;
+    /**
+     * Utility method that returns <code>true</code> if the query will update at
+     * least one BLOB or CLOB DbAttribute.
+     *
+     * @since 1.2
+     */
+    static boolean updatesLOBColumns(BatchQuery query) {
+        boolean isInsert = query instanceof InsertBatchQuery;
+        boolean isUpdate = query instanceof UpdateBatchQuery;
 
-		if (!isInsert && !isUpdate) {
-			return false;
-		}
+        if (!isInsert && !isUpdate) {
+            return false;
+        }
 
-		List<DbAttribute> updatedAttributes = (isInsert) ? query.getDbAttributes() : ((UpdateBatchQuery) query)
-				.getUpdatedAttributes();
+        List<DbAttribute> updatedAttributes = (isInsert) ? query.getDbAttributes() : ((UpdateBatchQuery) query)
+                .getUpdatedAttributes();
 
-		for (DbAttribute attr : updatedAttributes) {
-			int type = attr.getType();
-			if (type == Types.CLOB || type == Types.BLOB) {
-				return true;
-			}
-		}
+        for (DbAttribute attr : updatedAttributes) {
+            int type = attr.getType();
+            if (type == Types.CLOB || type == Types.BLOB) {
+                return true;
+            }
+        }
 
-		return false;
-	}
+        return false;
+    }
 
-	/**
-	 * Returns an Oracle JDBC extension type defined in
-	 * oracle.jdbc.driver.OracleTypes.CURSOR. This value is determined from
-	 * Oracle driver classes via reflection in runtime, so that Cayenne code has
-	 * no compile dependency on the driver. This means that calling this method
-	 * when the driver is not available will result in an exception.
-	 */
-	public static int getOracleCursorType() {
+    /**
+     * Returns an Oracle JDBC extension type defined in
+     * oracle.jdbc.driver.OracleTypes.CURSOR. This value is determined from
+     * Oracle driver classes via reflection in runtime, so that Cayenne code has
+     * no compile dependency on the driver. This means that calling this method
+     * when the driver is not available will result in an exception.
+     */
+    public static int getOracleCursorType() {
 
-		if (oracleCursorType == Integer.MAX_VALUE) {
-			throw new CayenneRuntimeException("No information exists about oracle types. "
-					+ "Check that Oracle JDBC driver is available to the application.");
-		}
+        if (oracleCursorType == Integer.MAX_VALUE) {
+            throw new CayenneRuntimeException("No information exists about oracle types. "
+                    + "Check that Oracle JDBC driver is available to the application.");
+        }
 
-		return oracleCursorType;
-	}
+        return oracleCursorType;
+    }
 
-	public OracleAdapter(@Inject RuntimeProperties runtimeProperties,
-						 @Inject(Constants.DEFAULT_TYPES_LIST) List<ExtendedType> defaultExtendedTypes,
-						 @Inject(Constants.USER_TYPES_LIST) List<ExtendedType> userExtendedTypes,
-						 @Inject(Constants.TYPE_FACTORIES_LIST) List<ExtendedTypeFactory> extendedTypeFactories,
-						 @Inject ValueObjectTypeRegistry valueObjectTypeRegistry) {
-		super(runtimeProperties, defaultExtendedTypes, userExtendedTypes, extendedTypeFactories, valueObjectTypeRegistry);
+    public OracleAdapter(@Inject RuntimeProperties runtimeProperties,
+                         @Inject(Constants.DEFAULT_TYPES_LIST) List<ExtendedType> defaultExtendedTypes,
+                         @Inject(Constants.USER_TYPES_LIST) List<ExtendedType> userExtendedTypes,
+                         @Inject(Constants.TYPE_FACTORIES_LIST) List<ExtendedTypeFactory> extendedTypeFactories,
+                         @Inject ValueObjectTypeRegistry valueObjectTypeRegistry) {
+        super(runtimeProperties, defaultExtendedTypes, userExtendedTypes, extendedTypeFactories, valueObjectTypeRegistry);
 
-		// enable batch updates by default
-		setSupportsBatchUpdates(true);
-	}
+        // enable batch updates by default
+        setSupportsBatchUpdates(true);
+    }
 
     @Override
     protected Map<Integer, String[]> createExternalTypes() {
@@ -207,188 +199,188 @@ public class OracleAdapter extends JdbcAdapter {
         return types;
     }
 
-	/**
-	 * @since 4.2
-	 */
-	@Override
-	public SQLTreeProcessor getSqlTreeProcessor() {
-		return new OracleSQLTreeProcessor();
-	}
+    /**
+     * @since 4.2
+     */
+    @Override
+    public SQLTreeProcessor getSqlTreeProcessor() {
+        return new OracleSQLTreeProcessor();
+    }
 
-	/**
-	 * @since 3.0
-	 */
-	@Override
-	protected EJBQLTranslator createEJBQLTranslator() {
-		return new OracleEJBQLTranslator();
-	}
+    /**
+     * @since 3.0
+     */
+    @Override
+    protected EJBQLTranslator createEJBQLTranslator() {
+        return new OracleEJBQLTranslator();
+    }
 
-	/**
-	 * Installs appropriate ExtendedTypes as converters for passing values
-	 * between JDBC and Java layers.
-	 */
-	@Override
-	protected void configureExtendedTypes(ExtendedTypeMap map) {
-		super.configureExtendedTypes(map);
+    /**
+     * Installs appropriate ExtendedTypes as converters for passing values
+     * between JDBC and Java layers.
+     */
+    @Override
+    protected void configureExtendedTypes(ExtendedTypeMap map) {
+        super.configureExtendedTypes(map);
 
-		// create specially configured CharType handler
-		OracleCharType charType = new OracleCharType();
-		map.registerType(charType);
+        // create specially configured CharType handler
+        OracleCharType charType = new OracleCharType();
+        map.registerType(charType);
 
-		// create specially configured ByteArrayType handler
-		map.registerType(new OracleByteArrayType());
+        // create specially configured ByteArrayType handler
+        map.registerType(new OracleByteArrayType());
 
-		// override date handler with Oracle handler
-		map.registerType(new OracleUtilDateType());
+        // override date handler with Oracle handler
+        map.registerType(new OracleUtilDateType());
 
-		// At least on MacOS X, driver does not handle Short and Byte properly
-		map.registerType(new ShortType(true));
-		map.registerType(new ByteType(true));
+        // At least on MacOS X, driver does not handle Short and Byte properly
+        map.registerType(new ShortType(true));
+        map.registerType(new ByteType(true));
 
-		map.registerType(new OracleBooleanType());
-		map.registerType(new JsonType(charType, true));
-	}
+        map.registerType(new OracleBooleanType());
+        map.registerType(new JsonType(charType, true));
+    }
 
-	/**
-	 * Returns a query string to drop a table corresponding to <code>ent</code>
-	 * DbEntity. Changes superclass behavior to drop all related foreign key
-	 * constraints.
-	 *
-	 * @since 3.0
-	 */
-	@Override
-	public Collection<String> dropTableStatements(DbEntity table) {
-		return Collections.singleton("DROP TABLE " + getQuotingStrategy().quotedFullyQualifiedName(table)
-				+ " CASCADE CONSTRAINTS");
-	}
+    /**
+     * Returns a query string to drop a table corresponding to <code>ent</code>
+     * DbEntity. Changes superclass behavior to drop all related foreign key
+     * constraints.
+     *
+     * @since 3.0
+     */
+    @Override
+    public Collection<String> dropTableStatements(DbEntity table) {
+        return Collections.singleton("DROP TABLE " + getQuotingStrategy().quotedFullyQualifiedName(table)
+                + " CASCADE CONSTRAINTS");
+    }
 
-	@Override
-	public void bindParameter(PreparedStatement statement, ParameterBinding binding) throws Exception {
+    @Override
+    public void bindParameter(PreparedStatement statement, ParameterBinding binding) throws Exception {
 
-		// Oracle doesn't support BOOLEAN even when binding NULL, so have to
-		// intercept
-		// NULL Boolean here, as super doesn't pass it through ExtendedType...
-		if (binding.getValue() == null && binding.getJdbcType() == Types.BOOLEAN) {
-			ExtendedType typeProcessor = getExtendedTypes().getRegisteredType(Boolean.class);
-			typeProcessor.setJdbcObject(statement, binding.getValue(), binding.getStatementPosition(), binding
-							.getJdbcType(),binding.getScale());
-		} else {
-			super.bindParameter(statement, binding);
-		}
-	}
+        // Oracle doesn't support BOOLEAN even when binding NULL, so have to
+        // intercept
+        // NULL Boolean here, as super doesn't pass it through ExtendedType...
+        if (binding.getValue() == null && binding.getJdbcType() == Types.BOOLEAN) {
+            ExtendedType typeProcessor = getExtendedTypes().getRegisteredType(Boolean.class);
+            typeProcessor.setJdbcObject(statement, binding.getValue(), binding.getStatementPosition(), binding
+                    .getJdbcType(), binding.getScale());
+        } else {
+            super.bindParameter(statement, binding);
+        }
+    }
 
-	/**
-	 * Fixes some reverse engineering problems. Namely if a columns is created
-	 * as DECIMAL and has non-positive precision it is converted to INTEGER.
-	 */
-	@Override
-	public DbAttribute buildAttribute(String name, String typeName, int type, int size, int scale, boolean allowNulls) {
-		DbAttribute attr = super.buildAttribute(name, typeName, type, size, scale, allowNulls);
+    /**
+     * Fixes some reverse engineering problems. Namely if a columns is created
+     * as DECIMAL and has non-positive precision it is converted to INTEGER.
+     */
+    @Override
+    public DbAttribute buildAttribute(String name, String typeName, int type, int maxLength, int scale, boolean allowNulls) {
+        DbAttribute attr = super.buildAttribute(name, typeName, type, maxLength, scale, allowNulls);
 
-		if (type == Types.DECIMAL && scale <= 0) {
-			if (size <= 9) {
-				attr.setType(Types.INTEGER);
-			} else if(size <= 19) {
-				attr.setType(Types.BIGINT);
-			}
-			attr.setScale(-1);
-		} else if (type == Types.OTHER) {
-			// in this case we need to guess the attribute type
-			// based on its string value
-			if (ORACLE_FLOAT.equals(typeName)) {
-				attr.setType(Types.FLOAT);
-			} else if (ORACLE_BLOB.equals(typeName)) {
-				attr.setType(Types.BLOB);
-			} else if (ORACLE_CLOB.equals(typeName)) {
-				attr.setType(Types.CLOB);
-			} else if (ORACLE_NCLOB.equals(typeName)) {
-				attr.setType(Types.NCLOB);
-			}
-		} else if (type == Types.DATE) {
-			// Oracle DATE can store JDBC TIMESTAMP
-			if ("DATE".equals(typeName)) {
-				attr.setType(Types.TIMESTAMP);
-			}
-		}
+        if (type == Types.DECIMAL && scale <= 0) {
+            if (maxLength <= 9) {
+                attr.setType(Types.INTEGER);
+            } else if (maxLength <= 19) {
+                attr.setType(Types.BIGINT);
+            }
+            attr.setScale(-1);
+        } else if (type == Types.OTHER) {
+            // in this case we need to guess the attribute type
+            // based on its string value
+            if (ORACLE_FLOAT.equals(typeName)) {
+                attr.setType(Types.FLOAT);
+            } else if (ORACLE_BLOB.equals(typeName)) {
+                attr.setType(Types.BLOB);
+            } else if (ORACLE_CLOB.equals(typeName)) {
+                attr.setType(Types.CLOB);
+            } else if (ORACLE_NCLOB.equals(typeName)) {
+                attr.setType(Types.NCLOB);
+            }
+        } else if (type == Types.DATE) {
+            // Oracle DATE can store JDBC TIMESTAMP
+            if ("DATE".equals(typeName)) {
+                attr.setType(Types.TIMESTAMP);
+            }
+        }
 
-		return attr;
-	}
+        return attr;
+    }
 
-	/**
-	 * Uses OracleActionBuilder to create the right action.
-	 *
-	 * @since 1.2
-	 */
-	@Override
-	public SQLAction getAction(Query query, DataNode node) {
-		return query.createSQLAction(new OracleActionBuilder(node));
-	}
+    /**
+     * Uses OracleActionBuilder to create the right action.
+     *
+     * @since 1.2
+     */
+    @Override
+    public SQLAction getAction(Query query, DataNode node) {
+        return query.createSQLAction(new OracleActionBuilder(node));
+    }
 
-	@Override
-	public List<String> getSystemSchemas() {
-		return SYSTEM_SCHEMAS;
-	}
+    @Override
+    public List<String> getSystemSchemas() {
+        return SYSTEM_SCHEMAS;
+    }
 
-	/**
-	 * @since 5.0
-	 */
-	@Override
-	public boolean typeSupportsScale(int type) {
-		return type != Types.TIME && super.typeSupportsScale(type);
-	}
+    /**
+     * @since 5.0
+     */
+    @Override
+    public boolean typeSupportsScale(int type) {
+        return type != Types.TIME && super.typeSupportsScale(type);
+    }
 
-	/**
-	 * @since 3.0
-	 */
-	final class OracleBooleanType implements ExtendedType<Boolean> {
+    /**
+     * @since 3.0
+     */
+    final class OracleBooleanType implements ExtendedType<Boolean> {
 
-		@Override
-		public String getClassName() {
-			return Boolean.class.getName();
-		}
+        @Override
+        public String getClassName() {
+            return Boolean.class.getName();
+        }
 
-		@Override
-		public void setJdbcObject(PreparedStatement st, Boolean val, int pos, int type, int precision) throws Exception {
+        @Override
+        public void setJdbcObject(PreparedStatement st, Boolean val, int pos, int type, int precision) throws Exception {
 
-			// Oracle does not support Types.BOOLEAN, so we have to override
-			// user mapping
-			// unconditionally
-			if (val == null) {
-				st.setNull(pos, Types.INTEGER);
-			} else {
-				boolean flag = Boolean.TRUE.equals(val);
-				st.setInt(pos, flag ? 1 : 0);
-			}
-		}
+            // Oracle does not support Types.BOOLEAN, so we have to override
+            // user mapping
+            // unconditionally
+            if (val == null) {
+                st.setNull(pos, Types.INTEGER);
+            } else {
+                boolean flag = Boolean.TRUE.equals(val);
+                st.setInt(pos, flag ? 1 : 0);
+            }
+        }
 
-		@Override
-		public Boolean materializeObject(ResultSet rs, int index, int type) throws Exception {
+        @Override
+        public Boolean materializeObject(ResultSet rs, int index, int type) throws Exception {
 
-			// Oracle does not support Types.BOOLEAN, so we have to override
-			// user mapping
-			// unconditionally
-			int i = rs.getInt(index);
-			return rs.wasNull() ? null : i == 0 ? Boolean.FALSE : Boolean.TRUE;
-		}
+            // Oracle does not support Types.BOOLEAN, so we have to override
+            // user mapping
+            // unconditionally
+            int i = rs.getInt(index);
+            return rs.wasNull() ? null : i == 0 ? Boolean.FALSE : Boolean.TRUE;
+        }
 
-		@Override
-		public Boolean materializeObject(CallableStatement st, int index, int type) throws Exception {
+        @Override
+        public Boolean materializeObject(CallableStatement st, int index, int type) throws Exception {
 
-			// Oracle does not support Types.BOOLEAN, so we have to override
-			// user mapping
-			// unconditionally
-			int i = st.getInt(index);
-			return st.wasNull() ? null : i == 0 ? Boolean.FALSE : Boolean.TRUE;
-		}
+            // Oracle does not support Types.BOOLEAN, so we have to override
+            // user mapping
+            // unconditionally
+            int i = st.getInt(index);
+            return st.wasNull() ? null : i == 0 ? Boolean.FALSE : Boolean.TRUE;
+        }
 
-		@Override
-		public String toString(Boolean value) {
-			if (value == null) {
-				return "NULL";
-			}
+        @Override
+        public String toString(Boolean value) {
+            if (value == null) {
+                return "NULL";
+            }
 
-			return '\'' + value.toString() + '\'';
-		}
+            return '\'' + value.toString() + '\'';
+        }
 
-	}
+    }
 }

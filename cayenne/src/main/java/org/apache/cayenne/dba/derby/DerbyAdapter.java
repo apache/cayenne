@@ -19,7 +19,6 @@
 
 package org.apache.cayenne.dba.derby;
 
-import org.apache.cayenne.CayenneRuntimeException;
 import org.apache.cayenne.access.DataNode;
 import org.apache.cayenne.access.sqlbuilder.sqltree.SQLTreeProcessor;
 import org.apache.cayenne.access.translator.ParameterBinding;
@@ -36,7 +35,6 @@ import org.apache.cayenne.access.types.ValueObjectTypeRegistry;
 import org.apache.cayenne.configuration.Constants;
 import org.apache.cayenne.configuration.RuntimeProperties;
 import org.apache.cayenne.dba.JdbcAdapter;
-import org.apache.cayenne.dba.PkGenerator;
 import org.apache.cayenne.di.Inject;
 import org.apache.cayenne.map.DbAttribute;
 import org.apache.cayenne.query.Query;
@@ -50,22 +48,7 @@ import java.util.List;
 import java.util.Map;
 
 /**
- * DbAdapter implementation for the <a href="http://db.apache.org/derby/"> Derby RDBMS
- * </a>. Sample connection settings to use with Derby are shown below. <h3>Embedded</h3>
- * <p>
- * <pre>
- *  test-derby.jdbc.url = jdbc:derby:testdb;create=true
- *  test-derby.jdbc.driver = org.apache.derby.jdbc.EmbeddedDriver
- * </pre>
- * <p>
- * <h3>Network Server</h3>
- * <p>
- * <pre>
- *  derbynet.jdbc.url = jdbc:derby://localhost/cayenne
- *  derbynet.jdbc.driver = org.apache.derby.jdbc.ClientDriver
- *  derbynet.jdbc.username = someuser
- *  derbynet.jdbc.password = secret;
- * </pre>
+ * DbAdapter implementation for the Derby RDBMS
  */
 public class DerbyAdapter extends JdbcAdapter {
 

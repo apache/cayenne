@@ -42,16 +42,7 @@ import java.util.List;
 import java.util.Map;
 
 /**
- * DbAdapter implementation for <a href="http://www.h2database.com/">H2
- * RDBMS </a>. Sample connection settings to use with H2 are shown
- * below:
- * 
- * <pre>
- *      postgres.jdbc.username = sa
- *      postgres.jdbc.password = 
- *      postgres.jdbc.url = jdbc:h2:cayenne
- *      postgres.jdbc.driver = org.h2.Driver
- * </pre>
+ * DbAdapter implementation for H2 RDBMS.
  * 
  * @since 3.0
  */
@@ -154,11 +145,11 @@ public class H2Adapter extends JdbcAdapter {
     }
 
     @Override
-    public DbAttribute buildAttribute(String name, String typeName, int type, int size, int scale, boolean allowNulls) {
+    public DbAttribute buildAttribute(String name, String typeName, int type, int maxLength, int scale, boolean allowNulls) {
         if ("json".equalsIgnoreCase(typeName)) {
             type = Types.OTHER;
         }
-        return super.buildAttribute(name, typeName, type, size, scale, allowNulls);
+        return super.buildAttribute(name, typeName, type, maxLength, scale, allowNulls);
     }
 
 

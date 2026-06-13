@@ -498,15 +498,15 @@ public class JdbcAdapter implements DbAdapter {
     }
 
     @Override
-    public DbAttribute buildAttribute(String name, String typeName, int type, int size, int scale, boolean allowNulls) {
+    public DbAttribute buildAttribute(String name, String typeName, int type, int maxLength, int scale, boolean allowNulls) {
 
         DbAttribute attr = new DbAttribute();
         attr.setName(name);
         attr.setType(type);
         attr.setMandatory(!allowNulls);
 
-        if (size >= 0) {
-            attr.setMaxLength(size);
+        if (maxLength >= 0) {
+            attr.setMaxLength(maxLength);
         }
 
         if (scale >= 0) {
