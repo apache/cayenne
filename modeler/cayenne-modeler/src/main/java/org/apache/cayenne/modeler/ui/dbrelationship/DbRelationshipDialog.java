@@ -41,8 +41,8 @@ import org.apache.cayenne.modeler.toolkit.combobox.AutoCompletion;
 import org.apache.cayenne.modeler.toolkit.combobox.CMAutoCompleteComboBoxCellEditor;
 import org.apache.cayenne.modeler.toolkit.combobox.CMComboBox;
 import org.apache.cayenne.modeler.toolkit.table.CMTable;
-import org.apache.cayenne.modeler.undo.CreateRelationshipUndoableEdit;
-import org.apache.cayenne.modeler.undo.RelationshipUndoableEdit;
+import org.apache.cayenne.modeler.undo.CreateDbRelationshipUndoableEdit;
+import org.apache.cayenne.modeler.undo.DbRelationshipUndoableEdit;
 import org.apache.cayenne.project.extension.info.ObjectInfo;
 
 import javax.swing.*;
@@ -85,7 +85,7 @@ public class DbRelationshipDialog extends ProjectDialog {
     private final DbRelationship reverseRelationship;
     private final boolean create;
     private boolean saved;
-    private final RelationshipUndoableEdit undo;
+    private final DbRelationshipUndoableEdit undo;
 
     // dialog-local editing state, applied to the relationship only on save
     private DbEntity currentTarget;
@@ -117,7 +117,7 @@ public class DbRelationshipDialog extends ProjectDialog {
 
         this.relationship = relationship;
         this.create = create;
-        this.undo = new RelationshipUndoableEdit(session, relationship);
+        this.undo = new DbRelationshipUndoableEdit(session, relationship);
         this.reverseRelationship = relationship.getReverseRelationship();
         this.currentTarget = relationship.getTargetEntity();
 
@@ -389,7 +389,7 @@ public class DbRelationshipDialog extends ProjectDialog {
 
             session.displayDbRelationship(rde);
             app.getUndoManager().addEdit(
-                    new CreateRelationshipUndoableEdit(session, relationship.getSourceEntity(),
+                    new CreateDbRelationshipUndoableEdit(session, relationship.getSourceEntity(),
                             new DbRelationship[]{relationship}));
 
         } else {

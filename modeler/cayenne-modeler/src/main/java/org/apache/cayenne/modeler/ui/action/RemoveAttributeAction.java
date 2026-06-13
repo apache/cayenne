@@ -36,7 +36,9 @@ import org.apache.cayenne.modeler.project.DataMapOps;
 import org.apache.cayenne.modeler.project.ObjEntityOps;
 import org.apache.cayenne.modeler.ui.confirmremove.ConfirmRemoveDialog;
 import org.apache.cayenne.modeler.project.ProjectSession;
-import org.apache.cayenne.modeler.undo.RemoveAttributeUndoableEdit;
+import org.apache.cayenne.modeler.undo.RemoveDbAttributeUndoableEdit;
+import org.apache.cayenne.modeler.undo.RemoveEmbeddableAttributeUndoableEdit;
+import org.apache.cayenne.modeler.undo.RemoveObjAttributeUndoableEdit;
 
 import java.awt.event.ActionEvent;
 import java.util.Collection;
@@ -87,7 +89,7 @@ public class RemoveAttributeAction extends RemoveAction implements MultipleObjec
                 Embeddable embeddable = session.getSelectedEmbeddable();
 
                 app.getUndoManager().addEdit(
-                        new RemoveAttributeUndoableEdit(session,embeddable, embAttrs));
+                        new RemoveEmbeddableAttributeUndoableEdit(session, embeddable, embAttrs));
 
                 removeEmbeddableAttributes(embeddable, embAttrs);
 
@@ -99,7 +101,7 @@ public class RemoveAttributeAction extends RemoveAction implements MultipleObjec
 
                 ObjEntity entity = session.getSelectedObjEntity();
 
-                app.getUndoManager().addEdit(new RemoveAttributeUndoableEdit(session,entity, objAttrs));
+                app.getUndoManager().addEdit(new RemoveObjAttributeUndoableEdit(session, entity, objAttrs));
 
                 removeObjAttributes(entity, objAttrs);
             }
@@ -110,7 +112,7 @@ public class RemoveAttributeAction extends RemoveAction implements MultipleObjec
 
         		DbEntity entity = session.getSelectedDbEntity();
 
-                app.getUndoManager().addEdit(new RemoveAttributeUndoableEdit(session,entity, dbAttrs));
+                app.getUndoManager().addEdit(new RemoveDbAttributeUndoableEdit(session, entity, dbAttrs));
 
                 removeDbAttributes(session.getSelectedDataMap(), entity, dbAttrs);
         	}

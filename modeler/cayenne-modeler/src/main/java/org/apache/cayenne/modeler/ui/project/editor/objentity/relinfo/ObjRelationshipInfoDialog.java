@@ -41,8 +41,8 @@ import org.apache.cayenne.modeler.toolkit.combobox.CMComboBox;
 import org.apache.cayenne.modeler.toolkit.tree.EntityTreeModel;
 import org.apache.cayenne.modeler.toolkit.tree.EntityTreeRelationshipFilter;
 import org.apache.cayenne.modeler.ui.dbrelationship.DbRelationshipDialog;
-import org.apache.cayenne.modeler.undo.CreateRelationshipUndoableEdit;
-import org.apache.cayenne.modeler.undo.RelationshipUndoableEdit;
+import org.apache.cayenne.modeler.undo.CreateObjRelationshipUndoableEdit;
+import org.apache.cayenne.modeler.undo.ObjRelationshipUndoableEdit;
 import org.apache.cayenne.project.extension.info.ObjectInfo;
 import org.apache.cayenne.util.DeleteRuleUpdater;
 
@@ -102,7 +102,7 @@ public class ObjRelationshipInfoDialog extends ProjectDialog implements TreeSele
     private String targetCollection;
     private String mapKey;
 
-    private RelationshipUndoableEdit undo;
+    private ObjRelationshipUndoableEdit undo;
     private boolean isCreate;
 
     public ObjRelationshipInfoDialog(ProjectSession session, Window owner) {
@@ -149,7 +149,7 @@ public class ObjRelationshipInfoDialog extends ProjectDialog implements TreeSele
 
     public ObjRelationshipInfoDialog modifyRelationship(ObjRelationship rel) {
         this.relationship = rel;
-        this.undo = new RelationshipUndoableEdit(session, rel);
+        this.undo = new ObjRelationshipUndoableEdit(session, rel);
 
         // current limitation is that an ObjRelationship must have source
         // and target entities present, with DbEntities chosen.
@@ -320,7 +320,7 @@ public class ObjRelationshipInfoDialog extends ProjectDialog implements TreeSele
         if (isCreate) {
             relationship.getSourceEntity().addRelationship(relationship);
             fireObjRelationshipEvent(this);
-            app.getUndoManager().addEdit(new CreateRelationshipUndoableEdit(
+            app.getUndoManager().addEdit(new CreateObjRelationshipUndoableEdit(
                     session, relationship.getSourceEntity(), new ObjRelationship[]{relationship}));
         } else {
             session.fireObjRelationshipEvent(ObjRelationshipEvent.ofChange(this, relationship,

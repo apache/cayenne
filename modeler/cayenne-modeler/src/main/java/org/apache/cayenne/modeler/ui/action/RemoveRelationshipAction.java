@@ -31,7 +31,8 @@ import org.apache.cayenne.modeler.event.model.ObjRelationshipEvent;
 import org.apache.cayenne.modeler.project.DataMapOps;
 import org.apache.cayenne.modeler.ui.confirmremove.ConfirmRemoveDialog;
 import org.apache.cayenne.modeler.project.ProjectSession;
-import org.apache.cayenne.modeler.undo.RemoveRelationshipUndoableEdit;
+import org.apache.cayenne.modeler.undo.RemoveDbRelationshipUndoableEdit;
+import org.apache.cayenne.modeler.undo.RemoveObjRelationshipUndoableEdit;
 
 import java.awt.event.ActionEvent;
 
@@ -78,7 +79,7 @@ public class RemoveRelationshipAction extends RemoveAction implements MultipleOb
 							.shouldDelete("selected ObjRelationships"))) {
 				ObjEntity entity = session.getSelectedObjEntity();
 				removeObjRelationships(entity, rels);
-				app.getUndoManager().addEdit(new RemoveRelationshipUndoableEdit(session,entity, rels));
+				app.getUndoManager().addEdit(new RemoveObjRelationshipUndoableEdit(session, entity, rels));
 			}
 		} else {
 			DbRelationship[] dbRels = getProjectSession()
@@ -90,7 +91,7 @@ public class RemoveRelationshipAction extends RemoveAction implements MultipleOb
 								.shouldDelete("selected DbRelationships"))) {
 					DbEntity entity = session.getSelectedDbEntity();
 					removeDbRelationships(entity, dbRels);
-					app.getUndoManager().addEdit(new RemoveRelationshipUndoableEdit(session,entity, dbRels));
+					app.getUndoManager().addEdit(new RemoveDbRelationshipUndoableEdit(session, entity, dbRels));
 				}
 			}
 		}

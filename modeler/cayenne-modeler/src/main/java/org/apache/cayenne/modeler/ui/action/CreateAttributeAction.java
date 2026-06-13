@@ -41,7 +41,8 @@ import org.apache.cayenne.modeler.event.display.DbAttributeDisplayEvent;
 import org.apache.cayenne.modeler.event.display.EmbeddableAttributeDisplayEvent;
 import org.apache.cayenne.modeler.event.display.ObjAttributeDisplayEvent;
 import org.apache.cayenne.modeler.toolkit.AppAction;
-import org.apache.cayenne.modeler.undo.CreateAttributeUndoableEdit;
+import org.apache.cayenne.modeler.undo.CreateDbAttributeUndoableEdit;
+import org.apache.cayenne.modeler.undo.CreateObjAttributeUndoableEdit;
 import org.apache.cayenne.modeler.undo.CreateEmbAttributeUndoableEdit;
 
 import java.awt.event.ActionEvent;
@@ -128,7 +129,7 @@ public class CreateAttributeAction extends AppAction {
             createObjAttribute(session.getSelectedDataMap(), objEntity, attr);
 
             app.getUndoManager().addEdit(
-                    new CreateAttributeUndoableEdit(session, (DataChannelDescriptor) session.project().getRootNode(),
+                    new CreateObjAttributeUndoableEdit(session, (DataChannelDescriptor) session.project().getRootNode(),
                             session.getSelectedDataMap(), objEntity, attr));
         } else if (getProjectSession().getSelectedDbEntity() != null) {
             DbEntity dbEntity = getProjectSession().getSelectedDbEntity();
@@ -141,7 +142,7 @@ public class CreateAttributeAction extends AppAction {
             createDbAttribute(session.getSelectedDataMap(), dbEntity, attr);
 
             app.getUndoManager().addEdit(
-                    new CreateAttributeUndoableEdit(session, (DataChannelDescriptor) session.project().getRootNode(),
+                    new CreateDbAttributeUndoableEdit(session, (DataChannelDescriptor) session.project().getRootNode(),
                             session.getSelectedDataMap(), dbEntity, attr));
         }
     }

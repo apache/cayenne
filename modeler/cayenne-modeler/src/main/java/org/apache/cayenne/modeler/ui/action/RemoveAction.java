@@ -59,10 +59,13 @@ import org.apache.cayenne.modeler.ui.confirmremove.ConfirmRemoveDialog;
 import org.apache.cayenne.modeler.project.ProjectSession;
 import org.apache.cayenne.modeler.ui.project.editor.objentity.callbacks.CallbackType;
 import org.apache.cayenne.modeler.ui.project.editor.objentity.callbacks.ObjCallbackMethod;
-import org.apache.cayenne.modeler.undo.RemoveAttributeUndoableEdit;
+import org.apache.cayenne.modeler.undo.RemoveDbAttributeUndoableEdit;
+import org.apache.cayenne.modeler.undo.RemoveDbRelationshipUndoableEdit;
+import org.apache.cayenne.modeler.undo.RemoveEmbeddableAttributeUndoableEdit;
+import org.apache.cayenne.modeler.undo.RemoveObjAttributeUndoableEdit;
+import org.apache.cayenne.modeler.undo.RemoveObjRelationshipUndoableEdit;
 import org.apache.cayenne.modeler.undo.RemoveCallbackMethodUndoableEdit;
 import org.apache.cayenne.modeler.undo.RemoveCompoundUndoableEdit;
-import org.apache.cayenne.modeler.undo.RemoveRelationshipUndoableEdit;
 import org.apache.cayenne.modeler.undo.RemoveUndoableEdit;
 
 import javax.swing.*;
@@ -230,7 +233,7 @@ public class RemoveAction extends AppAction {
         		Embeddable embeddable = session.getSelectedEmbeddable();
 
                 app.getUndoManager()
-                        .addEdit(new RemoveAttributeUndoableEdit(session,embeddable, embAttrs));
+                        .addEdit(new RemoveEmbeddableAttributeUndoableEdit(session, embeddable, embAttrs));
 
                 for (EmbeddableAttribute attrib : embAttrs) {
                     embeddable.removeAttribute(attrib.getName());
@@ -251,7 +254,7 @@ public class RemoveAction extends AppAction {
 
         		ObjEntity entity = session.getSelectedObjEntity();
 
-                app.getUndoManager().addEdit(new RemoveAttributeUndoableEdit(session,entity, objAttrs));
+                app.getUndoManager().addEdit(new RemoveObjAttributeUndoableEdit(session, entity, objAttrs));
 
                 for (ObjAttribute attrib : objAttrs) {
                     entity.removeAttribute(attrib.getName());
@@ -272,7 +275,7 @@ public class RemoveAction extends AppAction {
         		DbEntity entity = session.getSelectedDbEntity();
 
                 app.getUndoManager()
-                        .addEdit(new RemoveAttributeUndoableEdit(session,entity, dbAttrs));
+                        .addEdit(new RemoveDbAttributeUndoableEdit(session, entity, dbAttrs));
 
                 for (DbAttribute attrib : dbAttrs) {
                     entity.removeAttribute(attrib.getName());
@@ -298,7 +301,7 @@ public class RemoveAction extends AppAction {
 				}
 
                 DataMapOps.removeBrokenObjToDbMappings(session.getSelectedDataMap());
-				app.getUndoManager().addEdit(new RemoveRelationshipUndoableEdit(session,entity, dbRels));
+				app.getUndoManager().addEdit(new RemoveDbRelationshipUndoableEdit(session, entity, dbRels));
 			}
 		}
 	}
@@ -312,7 +315,7 @@ public class RemoveAction extends AppAction {
 ObjRelationshipEvent e = ObjRelationshipEvent.ofRemove(app.getFrame(), rel, entity);
 				session.fireObjRelationshipEvent(e);
 			}
-			app.getUndoManager().addEdit(new RemoveRelationshipUndoableEdit(session,entity, rels));
+			app.getUndoManager().addEdit(new RemoveObjRelationshipUndoableEdit(session, entity, rels));
 		}		
 	}
 
