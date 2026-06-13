@@ -54,6 +54,7 @@ import org.apache.cayenne.query.RelationshipQuery;
 import org.apache.cayenne.reflect.ClassDescriptor;
 import org.apache.cayenne.reflect.LifecycleCallbackRegistry;
 import org.apache.cayenne.tx.BaseTransaction;
+import org.apache.cayenne.tx.ReadOnlyTransaction;
 import org.apache.cayenne.tx.Transaction;
 import org.apache.cayenne.util.GenericResponse;
 import org.apache.cayenne.util.ListResponse;
@@ -483,10 +484,17 @@ class DataDomainQueryAction implements QueryRouter, OperationObserver {
      * Gets response from the underlying DataNodes.
      */
     void runQueryInTransaction() {
-        domain.getTransactionManager().performInTransaction(() -> {
-            runQuery();
-            return null;
-        });
+        if (metadata.isReadOnly() && BaseTransaction.getThreadTransaction() == null) {
+            domain.getTransactionManager().performInTransaction(() -> {
+                runQuery();
+                return null;
+            }, descriptor -> new ReadOnlyTransaction());
+        } else {
+            domain.getTransactionManager().performInTransaction(() -> {
+                runQuery();
+                return null;
+            });
+        }
     }
 
     private void runQuery() {

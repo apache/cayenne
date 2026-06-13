@@ -94,4 +94,9 @@ public class ObjectIdQueryTest {
         QueryMetadata md3 = q3.getMetaData(null);
         assertFalse(md3.isFetchingDataRows());
     }
+
+    @Test
+    public void readOnlyMetadata() {
+        assertTrue(new ObjectIdQuery(ObjectId.of("abc", "a", 1)).getMetaData(null).isReadOnly());
+    }
 }

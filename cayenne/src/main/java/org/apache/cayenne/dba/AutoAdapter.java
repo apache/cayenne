@@ -152,6 +152,7 @@ public class AutoAdapter implements DbAdapter {
 		return getAdapter().supportsGeneratedKeysForBatchInserts();
 	}
 
+
 	@Override
 	public boolean supportsBatchUpdates() {
 		return getAdapter().supportsBatchUpdates();

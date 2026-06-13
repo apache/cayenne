@@ -20,17 +20,17 @@
 package org.apache.cayenne.tx;
 
 /**
- * Propagation behaviour of transaction
+ * Propagation behavior of transaction
  */
 public enum TransactionPropagation {
+
     /**
      * Support a current transaction, throw an exception if none exists.
      */
     MANDATORY,
 
     /**
-     * Execute within a nested transaction if a current transaction exists,
-     * create a new one if none exists.
+     * Execute within a nested transaction if a current transaction exists, create a new one if none exists.
      */
     NESTED,
 

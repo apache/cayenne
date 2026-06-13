@@ -173,6 +173,11 @@ public class RelationshipQuery extends IndirectQuery {
                 public int getStatementFetchSize() {
                     return statementFetchSize;
                 }
+
+                @Override
+                public boolean isReadOnly() {
+                    return true;
+                }
             };
 
             this.metadataResolver = resolver;

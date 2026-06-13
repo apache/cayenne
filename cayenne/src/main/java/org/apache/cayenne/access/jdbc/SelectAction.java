@@ -75,12 +75,15 @@ public class SelectAction extends BaseSQLAction {
 
     @Override
     public void performAction(Connection connection, OperationObserver observer) throws Exception {
+        TranslatedSelect translated = dataNode.getSelectTranslator().translate(query, dataNode.getAdapter(), dataNode.getEntityResolver());
+        performAction(connection, observer, translated);
+    }
+
+    protected void performAction(Connection connection, OperationObserver observer, TranslatedSelect translated) throws Exception {
 
         long t1 = System.currentTimeMillis();
 
         JdbcEventLogger logger = dataNode.getJdbcEventLogger();
-        TranslatedSelect translated = dataNode.getSelectTranslator()
-                .translate(query, dataNode.getAdapter(), dataNode.getEntityResolver());
 
         logger.logQuery(translated.sql(), translated.bindings());
 

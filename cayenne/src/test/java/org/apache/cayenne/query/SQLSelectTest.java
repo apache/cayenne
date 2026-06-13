@@ -119,4 +119,10 @@ public class SQLSelectTest {
 		assertNotEquals(md1.getCacheKey(), md2.getCacheKey());
 		assertNotEquals(md3.getCacheKey(), md2.getCacheKey());
 	}
+
+	@Test
+	public void notReadOnlyMetadata() {
+		// raw SQL is opaque, so SQLSelect keeps the regular transaction
+		assertFalse(SQLSelect.dataRowQuery("SELECT * FROM X").getMetaData(mock(EntityResolver.class)).isReadOnly());
+	}
 }

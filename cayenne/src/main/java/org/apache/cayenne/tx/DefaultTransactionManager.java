@@ -58,8 +58,18 @@ public class DefaultTransactionManager implements TransactionManager {
      */
     @Override
     public <T> T performInTransaction(TransactionalOperation<T> op, TransactionListener callback, TransactionDescriptor descriptor) {
-        BaseTransactionHandler handler = getHandler(descriptor);
-        return handler.handle(op, callback, descriptor);
+        return getHandler(descriptor).handle(op, callback, descriptor);
+    }
+
+    /**
+     * @since 5.0
+     */
+    @Override
+    public <T> T performInTransaction(TransactionalOperation<T> op, TransactionFactory transactionFactory) {
+        // TODO: feels kinda dirty to bypass the normal handler flow. Probably an indicator that handlers need to be
+        //  refactored
+        return new NestedTransactionHandler(transactionFactory, jdbcEventLogger)
+                .handle(op, DoNothingTransactionListener.getInstance(), TransactionDescriptor.defaultDescriptor());
     }
 
     protected BaseTransactionHandler getHandler(TransactionDescriptor descriptor) {
@@ -84,7 +94,7 @@ public class DefaultTransactionManager implements TransactionManager {
         @Override
         protected <T> T handle(TransactionalOperation<T> op, TransactionListener callback, TransactionDescriptor descriptor) {
             Transaction currentTx = BaseTransaction.getThreadTransaction();
-            if(currentTx != null) {
+            if (currentTx != null) {
                 return performInTransaction(currentTx, op, callback);
             } else {
                 return performInNewTransaction(op, callback, descriptor);
@@ -101,7 +111,7 @@ public class DefaultTransactionManager implements TransactionManager {
         @Override
         protected <T> T handle(TransactionalOperation<T> op, TransactionListener callback, TransactionDescriptor descriptor) {
             Transaction currentTx = BaseTransaction.getThreadTransaction();
-            if(currentTx == null) {
+            if (currentTx == null) {
                 throw new CayenneRuntimeException("Transaction operation should join to existing transaction but none found.");
             }
             return performInTransaction(currentTx, op, callback);
@@ -120,7 +130,7 @@ public class DefaultTransactionManager implements TransactionManager {
             try {
                 return performInNewTransaction(op, callback, descriptor);
             } finally {
-                if(currentTx != null) {
+                if (currentTx != null) {
                     // restore old transaction, if where set
                     BaseTransaction.bindThreadTransaction(currentTx);
                 }

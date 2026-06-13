@@ -19,6 +19,8 @@
 
 package org.apache.cayenne.tx;
 
+import org.apache.cayenne.CayenneRuntimeException;
+
 import javax.sql.DataSource;
 import java.sql.Connection;
 import java.sql.SQLException;
@@ -28,11 +30,7 @@ import java.util.HashMap;
 import java.util.LinkedHashSet;
 import java.util.Map;
 
-import org.apache.cayenne.CayenneRuntimeException;
-
 /**
- * A Cayenne transaction. Currently supports managing JDBC connections.
- *
  * @since 4.0
  */
 public abstract class BaseTransaction implements Transaction {

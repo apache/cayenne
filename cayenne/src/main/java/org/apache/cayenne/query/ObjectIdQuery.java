@@ -105,6 +105,11 @@ public class ObjectIdQuery extends IndirectQuery {
                 public boolean isFetchingDataRows() {
                     return fetchingDataRows;
                 }
+
+                @Override
+                public boolean isReadOnly() {
+                    return true;
+                }
             };
 
             this.metadataResolver = resolver;

@@ -264,4 +264,15 @@ public interface QueryMetadata {
     default Function<?, ?> getResultMapper() {
         return null;
     }
+
+    /**
+     * Returns true if this is a read-only (selecting) query that does not need to run in its own
+     * transaction. Defaults to false, so any query not explicitly marked read-only is still wrapped
+     * in a transaction.
+     *
+     * @since 5.0
+     */
+    default boolean isReadOnly() {
+        return false;
+    }
 }
