@@ -63,240 +63,236 @@ import java.util.logging.Logger;
  */
 public class DataNode {
 
-	protected String name;
-	protected DataSource dataSource;
-	protected DbAdapter adapter;
-	protected String dataSourceFactory;
-	protected EntityResolver entityResolver;
-	protected SchemaUpdateStrategy schemaUpdateStrategy;
-	protected Map<String, DataMap> dataMaps;
+    protected String name;
+    protected DbAdapter adapter;
+    protected String dataSourceFactory;
+    protected EntityResolver entityResolver;
+    protected SchemaUpdateStrategy schemaUpdateStrategy;
+    protected Map<String, DataMap> dataMaps;
 
-	private JdbcEventLogger jdbcEventLogger;
-	private RowReaderFactory rowReaderFactory;
-	private BatchTranslator<InsertBatchQuery> insertBatchTranslator;
-	private BatchTranslator<UpdateBatchQuery> updateBatchTranslator;
-	private BatchTranslator<DeleteBatchQuery> deleteBatchTranslator;
-	private SelectTranslator selectTranslator;
-	private ProcedureTranslator procedureTranslator;
-	private EJBQLTranslator ejbqlTranslator;
-	private SQLTemplateTranslator sqlTemplateTranslator;
+    private DataSource dataSource;
+    private JdbcEventLogger jdbcEventLogger;
+    private RowReaderFactory rowReaderFactory;
+    private BatchTranslator<InsertBatchQuery> insertBatchTranslator;
+    private BatchTranslator<UpdateBatchQuery> updateBatchTranslator;
+    private BatchTranslator<DeleteBatchQuery> deleteBatchTranslator;
+    private SelectTranslator selectTranslator;
+    private ProcedureTranslator procedureTranslator;
+    private EJBQLTranslator ejbqlTranslator;
+    private SQLTemplateTranslator sqlTemplateTranslator;
 
-	TransactionDataSource readThroughDataSource;
+    /**
+     * Creates a new unnamed DataNode.
+     */
+    public DataNode() {
+        this(null);
+    }
 
-	/**
-	 * Creates a new unnamed DataNode.
-	 */
-	public DataNode() {
-		this(null);
-	}
+    /**
+     * Creates a new DataNode, assigning it a name.
+     */
+    public DataNode(String name) {
 
-	/**
-	 * Creates a new DataNode, assigning it a name.
-	 */
-	public DataNode(String name) {
+        this.name = name;
+        this.dataMaps = new HashMap<>();
 
-		this.name = name;
-		this.dataMaps = new HashMap<>();
-		this.readThroughDataSource = new TransactionDataSource();
+        // make sure logger is not null
+        this.jdbcEventLogger = NoopJdbcEventLogger.getInstance();
+    }
 
-		// make sure logger is not null
-		this.jdbcEventLogger = NoopJdbcEventLogger.getInstance();
-	}
+    /**
+     * @since 3.0
+     */
+    public SchemaUpdateStrategy getSchemaUpdateStrategy() {
+        return schemaUpdateStrategy;
+    }
 
-	/**
-	 * @since 3.0
-	 */
-	public SchemaUpdateStrategy getSchemaUpdateStrategy() {
-		return schemaUpdateStrategy;
-	}
+    /**
+     * @since 3.0
+     */
+    public void setSchemaUpdateStrategy(SchemaUpdateStrategy schemaUpdateStrategy) {
+        this.schemaUpdateStrategy = schemaUpdateStrategy;
+    }
 
-	/**
-	 * @since 3.0
-	 */
-	public void setSchemaUpdateStrategy(SchemaUpdateStrategy schemaUpdateStrategy) {
-		this.schemaUpdateStrategy = schemaUpdateStrategy;
-	}
+    /**
+     * @since 3.1
+     */
+    public JdbcEventLogger getJdbcEventLogger() {
+        if (jdbcEventLogger == null && adapter instanceof JdbcAdapter jdbcAdapter) {
+            jdbcEventLogger = jdbcAdapter.getJdbcEventLogger();
+        }
 
-	/**
-	 * @since 3.1
-	 */
-	public JdbcEventLogger getJdbcEventLogger() {
-		if (jdbcEventLogger == null && adapter instanceof JdbcAdapter jdbcAdapter) {
-			jdbcEventLogger = jdbcAdapter.getJdbcEventLogger();
-		}
+        return jdbcEventLogger;
+    }
 
-		return jdbcEventLogger;
-	}
+    /**
+     * @since 3.1
+     */
+    public void setJdbcEventLogger(JdbcEventLogger logger) {
+        this.jdbcEventLogger = logger;
+    }
 
-	/**
-	 * @since 3.1
-	 */
-	public void setJdbcEventLogger(JdbcEventLogger logger) {
-		this.jdbcEventLogger = logger;
-	}
+    /**
+     * Returns node name. Name is used to uniquely identify DataNode within a
+     * DataDomain.
+     */
+    public String getName() {
+        return name;
+    }
 
-	/**
-	 * Returns node name. Name is used to uniquely identify DataNode within a
-	 * DataDomain.
-	 */
-	public String getName() {
-		return name;
-	}
+    public void setName(String name) {
+        this.name = name;
+    }
 
-	public void setName(String name) {
-		this.name = name;
-	}
+    /**
+     * Returns a name of DataSourceFactory class for this node.
+     */
+    public String getDataSourceFactory() {
+        return dataSourceFactory;
+    }
 
-	/**
-	 * Returns a name of DataSourceFactory class for this node.
-	 */
-	public String getDataSourceFactory() {
-		return dataSourceFactory;
-	}
+    public void setDataSourceFactory(String dataSourceFactory) {
+        this.dataSourceFactory = dataSourceFactory;
+    }
 
-	public void setDataSourceFactory(String dataSourceFactory) {
-		this.dataSourceFactory = dataSourceFactory;
-	}
+    /**
+     * Returns an unmodifiable collection of DataMaps handled by this DataNode.
+     */
+    public Collection<DataMap> getDataMaps() {
+        return Collections.unmodifiableCollection(dataMaps.values());
+    }
 
-	/**
-	 * Returns an unmodifiable collection of DataMaps handled by this DataNode.
-	 */
-	public Collection<DataMap> getDataMaps() {
-		return Collections.unmodifiableCollection(dataMaps.values());
-	}
+    /**
+     * Returns datamap with specified name, null if none present
+     */
+    public DataMap getDataMap(String name) {
+        return dataMaps.get(name);
+    }
 
-	/**
-	 * Returns datamap with specified name, null if none present
-	 */
-	public DataMap getDataMap(String name) {
-		return dataMaps.get(name);
-	}
+    public void setDataMaps(Collection<DataMap> dataMaps) {
+        for (DataMap map : dataMaps) {
+            this.dataMaps.put(map.getName(), map);
+        }
+    }
 
-	public void setDataMaps(Collection<DataMap> dataMaps) {
-		for (DataMap map : dataMaps) {
-			this.dataMaps.put(map.getName(), map);
-		}
-	}
+    /**
+     * Adds a DataMap to be handled by this node.
+     */
+    public void addDataMap(DataMap map) {
+        this.dataMaps.put(map.getName(), map);
+    }
 
-	/**
-	 * Adds a DataMap to be handled by this node.
-	 */
-	public void addDataMap(DataMap map) {
-		this.dataMaps.put(map.getName(), map);
-	}
+    public void removeDataMap(DataMap map) {
+        removeDataMap(map.getName());
+    }
 
-	public void removeDataMap(DataMap map) {
-		removeDataMap(map.getName());
-	}
+    public void removeDataMap(String mapName) {
+        dataMaps.remove(mapName);
+    }
 
-	public void removeDataMap(String mapName) {
-		dataMaps.remove(mapName);
-	}
+    /**
+     * Returns DataSource used by this DataNode to obtain connections.
+     */
+    public DataSource getDataSource() {
+        // return the read-through wrapper, not the raw pool, so callers participate in schema
+        // updates and transaction connection sharing
+        return dataSource;
+    }
 
-	/**
-	 * Returns DataSource used by this DataNode to obtain connections.
-	 */
-	public DataSource getDataSource() {
-		return dataSource != null ? readThroughDataSource : null;
-	}
+    public void setDataSource(DataSource dataSource) {
+        this.dataSource = new TransactionDataSource(this, dataSource);
+    }
 
-	public void setDataSource(DataSource dataSource) {
-		this.dataSource = dataSource;
-	}
+    /**
+     * Returns DbAdapter object. This is a plugin that handles RDBMS
+     * vendor-specific features.
+     */
+    public DbAdapter getAdapter() {
+        return adapter;
+    }
 
-	/**
-	 * Returns DbAdapter object. This is a plugin that handles RDBMS
-	 * vendor-specific features.
-	 */
-	public DbAdapter getAdapter() {
-		return adapter;
-	}
+    public void setAdapter(DbAdapter adapter) {
+        this.adapter = adapter;
+    }
 
-	public void setAdapter(DbAdapter adapter) {
-		this.adapter = adapter;
-	}
+    /**
+     * Returns a DataNode that should handle queries for all DataMap components.
+     *
+     * @since 1.1
+     * @deprecated unused and unneeded
+     */
+    @Deprecated(since = "5.0", forRemoval = true)
+    public DataNode lookupDataNode(DataMap dataMap) {
+        // we don't know any better than to return ourselves...
+        return this;
+    }
 
-	/**
-	 * Returns a DataNode that should handle queries for all DataMap components.
-	 *
-	 * @since 1.1
-	 * @deprecated unused and unneeded
-	 */
-	@Deprecated(since = "5.0", forRemoval = true)
-	public DataNode lookupDataNode(DataMap dataMap) {
-		// we don't know any better than to return ourselves...
-		return this;
-	}
+    /**
+     * Runs queries using Connection obtained from internal DataSource.
+     *
+     * @since 1.1
+     */
+    public void performQueries(Collection<? extends Query> queries, OperationObserver callback) {
 
-	/**
-	 * Runs queries using Connection obtained from internal DataSource.
-	 *
-	 * @since 1.1
-	 */
-	public void performQueries(Collection<? extends Query> queries, OperationObserver callback) {
+        int listSize = queries.size();
+        if (listSize == 0) {
+            return;
+        }
 
-		int listSize = queries.size();
-		if (listSize == 0) {
-			return;
-		}
+        if (callback.isIteratedResult() && listSize > 1) {
+            throw new CayenneRuntimeException("Iterated queries are not allowed in a batch. Batch size: %d", listSize);
+        }
 
-		if (callback.isIteratedResult() && listSize > 1) {
-			throw new CayenneRuntimeException("Iterated queries are not allowed in a batch. Batch size: %d", listSize);
-		}
+        // do this meaningless inexpensive operation to trigger AutoAdapter lazy initialization before opening a
+        // connection. Otherwise, we may end up with two connections open simultaneously, possibly hitting connection
+        // pool upper limit.
+        getAdapter().getExtendedTypes();
 
-		// do this meaningless inexpensive operation to trigger AutoAdapter lazy
-		// initialization before opening a connection. Otherwise we may end up
-		// with two
-		// connections open simultaneously, possibly hitting connection pool
-		// upper limit.
-		getAdapter().getExtendedTypes();
+        Transaction tx = BaseTransaction.getThreadTransaction();
+        Connection connection;
 
-		Connection connection;
+        try {
+            connection = dataSource.getConnection();
+        } catch (Exception globalEx) {
+            getJdbcEventLogger().logQueryError(globalEx);
 
-		try {
-			connection = this.getDataSource().getConnection();
-		} catch (Exception globalEx) {
-			getJdbcEventLogger().logQueryError(globalEx);
+            if (tx != null) {
+                tx.setRollbackOnly();
+            }
 
-			Transaction transaction = BaseTransaction.getThreadTransaction();
-			if (transaction != null) {
-				transaction.setRollbackOnly();
-			}
-
-			callback.nextGlobalException(globalEx);
-			return;
-		}
+            callback.nextGlobalException(globalEx);
+            return;
+        }
 
 		try {
 			DataNodeQueryAction queryRunner = new DataNodeQueryAction(this, callback);
 
-			for (Query nextQuery : queries) {
+            for (Query nextQuery : queries) {
 
-				// catch exceptions for each individual query
-				try {
-					queryRunner.runQuery(connection, nextQuery);
-				} catch (Exception queryEx) {
-					getJdbcEventLogger().logQueryError(queryEx);
+                // catch exceptions for each individual query
+                try {
+                    queryRunner.runQuery(connection, nextQuery);
+                } catch (Exception queryEx) {
+                    getJdbcEventLogger().logQueryError(queryEx);
 
-					// notify consumer of the exception,
-					// stop running further queries
-					callback.nextQueryException(nextQuery, queryEx);
+                    // notify consumer of the exception,
+                    // stop running further queries
+                    callback.nextQueryException(nextQuery, queryEx);
 
-					Transaction transaction = BaseTransaction.getThreadTransaction();
-					if (transaction != null) {
-						transaction.setRollbackOnly();
-					}
-					break;
-				}
-			}
-		} finally {
-			try {
-				connection.close();
-			} catch (SQLException e) {
-				// ignore closing exceptions...
-			}
-		}
-	}
+                    if (tx != null) {
+                        tx.setRollbackOnly();
+                    }
+                    break;
+                }
+            }
+        } finally {
+            try {
+                connection.close();
+            } catch (SQLException e) {
+                // ignore closing exceptions...
+            }
+        }
+    }
 
 	/**
 	 * Returns EntityResolver that handles DataMaps of this node.
@@ -305,185 +301,197 @@ public class DataNode {
 		return entityResolver;
 	}
 
-	/**
-	 * Sets EntityResolver. DataNode relies on externally set EntityResolver, so
-	 * if the node is created outside of DataDomain stack, a valid
-	 * EntityResolver must be provided explicitly.
-	 *
-	 * @since 1.1
-	 */
-	public void setEntityResolver(EntityResolver entityResolver) {
-		this.entityResolver = entityResolver;
-	}
+    /**
+     * Sets EntityResolver. DataNode relies on externally set EntityResolver, so
+     * if the node is created outside of DataDomain stack, a valid
+     * EntityResolver must be provided explicitly.
+     *
+     * @since 1.1
+     */
+    public void setEntityResolver(EntityResolver entityResolver) {
+        this.entityResolver = entityResolver;
+    }
 
-	@Override
-	public String toString() {
-		return new ToStringBuilder(this).append("name", getName()).toString();
-	}
+    @Override
+    public String toString() {
+        return new ToStringBuilder(this).append("name", getName()).toString();
+    }
 
 
-	/**
-	 * Creates a {@link RowReader} using internal {@link RowReaderFactory}.
-	 *
-	 * @since 4.0
-	 * @deprecated in favor of obtaining the factory via {@link #getRowReaderFactory()} and calling it directly.
-	 */
-	@Deprecated(since = "5.0", forRemoval = true)
-	public RowReader<?> rowReader(RowDescriptor descriptor, QueryMetadata queryMetadata) {
-		return rowReaderFactory.rowReader(descriptor, queryMetadata, getAdapter());
-	}
+    /**
+     * Creates a {@link RowReader} using internal {@link RowReaderFactory}.
+     *
+     * @since 4.0
+     * @deprecated in favor of obtaining the factory via {@link #getRowReaderFactory()} and calling it directly.
+     */
+    @Deprecated(since = "5.0", forRemoval = true)
+    public RowReader<?> rowReader(RowDescriptor descriptor, QueryMetadata queryMetadata) {
+        return rowReaderFactory.rowReader(descriptor, queryMetadata, getAdapter());
+    }
 
-	/**
-	 * Creates a {@link RowReader} using internal {@link RowReaderFactory}.
-	 *
-	 * @since 4.0
-	 * @deprecated in favor of obtaining the factory via {@link #getRowReaderFactory()} and calling it directly.
-	 */
-	@Deprecated(since = "5.0", forRemoval = true)
-	public RowReader<?> rowReader(RowDescriptor descriptor, QueryMetadata queryMetadata,
-			Map<ObjAttribute, ColumnDescriptor> attributeOverrides) {
-		return rowReader(descriptor, queryMetadata);
-	}
+    /**
+     * Creates a {@link RowReader} using internal {@link RowReaderFactory}.
+     *
+     * @since 4.0
+     * @deprecated in favor of obtaining the factory via {@link #getRowReaderFactory()} and calling it directly.
+     */
+    @Deprecated(since = "5.0", forRemoval = true)
+    public RowReader<?> rowReader(RowDescriptor descriptor, QueryMetadata queryMetadata,
+                                  Map<ObjAttribute, ColumnDescriptor> attributeOverrides) {
+        return rowReader(descriptor, queryMetadata);
+    }
 
-	/**
-	 * @since 4.0
-	 */
-	public RowReaderFactory getRowReaderFactory() {
-		return rowReaderFactory;
-	}
+    /**
+     * @since 4.0
+     */
+    public RowReaderFactory getRowReaderFactory() {
+        return rowReaderFactory;
+    }
 
-	/**
-	 * @since 4.0
-	 */
-	public void setRowReaderFactory(RowReaderFactory rowReaderFactory) {
-		this.rowReaderFactory = rowReaderFactory;
-	}
+    /**
+     * @since 4.0
+     */
+    public void setRowReaderFactory(RowReaderFactory rowReaderFactory) {
+        this.rowReaderFactory = rowReaderFactory;
+    }
 
-	/**
-	 * @since 5.0
-	 */
-	public BatchTranslator<InsertBatchQuery> getInsertBatchTranslator() {
-		return insertBatchTranslator;
-	}
+    /**
+     * @since 5.0
+     */
+    public BatchTranslator<InsertBatchQuery> getInsertBatchTranslator() {
+        return insertBatchTranslator;
+    }
 
-	/**
-	 * @since 5.0
-	 */
-	public void setInsertBatchTranslator(BatchTranslator<InsertBatchQuery> insertBatchTranslator) {
-		this.insertBatchTranslator = insertBatchTranslator;
-	}
+    /**
+     * @since 5.0
+     */
+    public void setInsertBatchTranslator(BatchTranslator<InsertBatchQuery> insertBatchTranslator) {
+        this.insertBatchTranslator = insertBatchTranslator;
+    }
 
-	/**
-	 * @since 5.0
-	 */
-	public BatchTranslator<UpdateBatchQuery> getUpdateBatchTranslator() {
-		return updateBatchTranslator;
-	}
+    /**
+     * @since 5.0
+     */
+    public BatchTranslator<UpdateBatchQuery> getUpdateBatchTranslator() {
+        return updateBatchTranslator;
+    }
 
-	/**
-	 * @since 5.0
-	 */
-	public void setUpdateBatchTranslator(BatchTranslator<UpdateBatchQuery> updateBatchTranslator) {
-		this.updateBatchTranslator = updateBatchTranslator;
-	}
+    /**
+     * @since 5.0
+     */
+    public void setUpdateBatchTranslator(BatchTranslator<UpdateBatchQuery> updateBatchTranslator) {
+        this.updateBatchTranslator = updateBatchTranslator;
+    }
 
-	/**
-	 * @since 5.0
-	 */
-	public BatchTranslator<DeleteBatchQuery> getDeleteBatchTranslator() {
-		return deleteBatchTranslator;
-	}
+    /**
+     * @since 5.0
+     */
+    public BatchTranslator<DeleteBatchQuery> getDeleteBatchTranslator() {
+        return deleteBatchTranslator;
+    }
 
-	/**
-	 * @since 5.0
-	 */
-	public void setDeleteBatchTranslator(BatchTranslator<DeleteBatchQuery> deleteBatchTranslator) {
-		this.deleteBatchTranslator = deleteBatchTranslator;
-	}
+    /**
+     * @since 5.0
+     */
+    public void setDeleteBatchTranslator(BatchTranslator<DeleteBatchQuery> deleteBatchTranslator) {
+        this.deleteBatchTranslator = deleteBatchTranslator;
+    }
 
-	/**
-	 * @since 5.0
-	 */
-	public SQLTemplateTranslator getSqlTemplateTranslator() {
-		return sqlTemplateTranslator;
-	}
+    /**
+     * @since 5.0
+     */
+    public SQLTemplateTranslator getSqlTemplateTranslator() {
+        return sqlTemplateTranslator;
+    }
 
-	/**
-	 * @since 5.0
-	 */
-	public void setSqlTemplateTranslator(SQLTemplateTranslator sqlTemplateTranslator) {
-		this.sqlTemplateTranslator = sqlTemplateTranslator;
-	}
+    /**
+     * @since 5.0
+     */
+    public void setSqlTemplateTranslator(SQLTemplateTranslator sqlTemplateTranslator) {
+        this.sqlTemplateTranslator = sqlTemplateTranslator;
+    }
 
-	/**
-	 * @since 5.0
-	 */
-	public SelectTranslator getSelectTranslator() {
-		return selectTranslator;
-	}
+    /**
+     * @since 5.0
+     */
+    public SelectTranslator getSelectTranslator() {
+        return selectTranslator;
+    }
 
-	/**
-	 * @since 5.0
-	 */
-	public void setSelectTranslator(SelectTranslator selectTranslator) {
-		this.selectTranslator = selectTranslator;
-	}
+    /**
+     * @since 5.0
+     */
+    public void setSelectTranslator(SelectTranslator selectTranslator) {
+        this.selectTranslator = selectTranslator;
+    }
 
-	/**
-	 * @since 5.0
-	 */
-	public ProcedureTranslator getProcedureTranslator() {
-		return procedureTranslator;
-	}
+    /**
+     * @since 5.0
+     */
+    public ProcedureTranslator getProcedureTranslator() {
+        return procedureTranslator;
+    }
 
-	/**
-	 * @since 5.0
-	 */
-	public void setProcedureTranslator(ProcedureTranslator procedureTranslator) {
-		this.procedureTranslator = procedureTranslator;
-	}
+    /**
+     * @since 5.0
+     */
+    public void setProcedureTranslator(ProcedureTranslator procedureTranslator) {
+        this.procedureTranslator = procedureTranslator;
+    }
 
-	/**
-	 * @since 5.0
-	 */
-	public EJBQLTranslator getEjbqlTranslator() {
-		return ejbqlTranslator;
-	}
+    /**
+     * @since 5.0
+     */
+    public EJBQLTranslator getEjbqlTranslator() {
+        return ejbqlTranslator;
+    }
 
-	/**
-	 * @since 5.0
-	 */
-	public void setEjbqlTranslator(EJBQLTranslator ejbqlTranslator) {
-		this.ejbqlTranslator = ejbqlTranslator;
-	}
+    /**
+     * @since 5.0
+     */
+    public void setEjbqlTranslator(EJBQLTranslator ejbqlTranslator) {
+        this.ejbqlTranslator = ejbqlTranslator;
+    }
 
     // a read-through DataSource that ensures returning the same connection
-    // within
-    // transaction.
-    final class TransactionDataSource implements DataSource {
+    // within transaction.
+    static class TransactionDataSource implements DataSource {
 
         final String CONNECTION_RESOURCE_PREFIX = "DataNode.Connection.";
 
+        private final DataNode dataNode;
+        private final DataSource dataSource;
+
+        public TransactionDataSource(DataNode dataNode, DataSource dataSource) {
+            this.dataNode = dataNode;
+            this.dataSource = dataSource;
+        }
 
         @Override
         public Connection getConnection() throws SQLException {
+            // read the strategy from the node, as it may be set after this data source is created
+            SchemaUpdateStrategy schemaUpdateStrategy = dataNode.getSchemaUpdateStrategy();
             if (schemaUpdateStrategy != null) {
-                schemaUpdateStrategy.updateSchema(DataNode.this);
+                schemaUpdateStrategy.updateSchema(dataNode);
             }
 
             Transaction t = BaseTransaction.getThreadTransaction();
-            return (t != null) ? t.getOrCreateConnection(CONNECTION_RESOURCE_PREFIX + name, dataSource)
+            return (t != null)
+                    ? t.getOrCreateConnection(CONNECTION_RESOURCE_PREFIX + dataNode.getName(), dataSource)
                     : dataSource.getConnection();
         }
 
         @Override
         public Connection getConnection(String username, String password) throws SQLException {
+            // read the strategy from the node, as it may be set after this data source is created
+            SchemaUpdateStrategy schemaUpdateStrategy = dataNode.getSchemaUpdateStrategy();
             if (schemaUpdateStrategy != null) {
-                schemaUpdateStrategy.updateSchema(DataNode.this);
+                schemaUpdateStrategy.updateSchema(dataNode);
             }
 
             Transaction t = BaseTransaction.getThreadTransaction();
-            return (t != null) ? t.getOrCreateConnection(CONNECTION_RESOURCE_PREFIX + name, dataSource)
+            return (t != null)
+                    ? t.getOrCreateConnection(CONNECTION_RESOURCE_PREFIX + dataNode.getName(), dataSource)
                     : dataSource.getConnection(username, password);
         }
 
