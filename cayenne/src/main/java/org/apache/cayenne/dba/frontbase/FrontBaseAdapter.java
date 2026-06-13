@@ -19,6 +19,7 @@
 
 package org.apache.cayenne.dba.frontbase;
 
+import org.apache.cayenne.dba.NativeColumnType;
 import org.apache.cayenne.CayenneRuntimeException;
 import org.apache.cayenne.access.DataNode;
 import org.apache.cayenne.access.sqlbuilder.sqltree.SQLTreeProcessor;
@@ -40,10 +41,8 @@ import org.apache.cayenne.query.SQLAction;
 import java.sql.Types;
 import java.util.Collection;
 import java.util.Collections;
-import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
-import java.util.Map;
 
 /**
  * DbAdapter implementation for FrontBase RDBMS
@@ -69,36 +68,36 @@ public class FrontBaseAdapter extends JdbcAdapter {
     }
 
     @Override
-    protected Map<Integer, String[]> createExternalTypes() {
-        Map<Integer, String[]> types = new HashMap<>();
-        types.put(Types.BIGINT, new String[]{"LONGINT"});
-        types.put(Types.BINARY, new String[]{"BIT"});
-        types.put(Types.BIT, new String[]{"BIT"});
-        types.put(Types.BLOB, new String[]{"BLOB"});
-        types.put(Types.BOOLEAN, new String[]{"BOOLEAN"});
-        types.put(Types.CHAR, new String[]{"CHAR"});
-        types.put(Types.CLOB, new String[]{"CLOB"});
-        types.put(Types.DATE, new String[]{"DATE"});
-        types.put(Types.DECIMAL, new String[]{"DECIMAL"});
-        types.put(Types.DOUBLE, new String[]{"DOUBLE PRECISION"});
-        types.put(Types.FLOAT, new String[]{"FLOAT"});
-        types.put(Types.INTEGER, new String[]{"INTEGER"});
-        types.put(Types.LONGNVARCHAR, new String[]{"CHAR VARYING"});
-        types.put(Types.LONGVARBINARY, new String[]{"BLOB"});
-        types.put(Types.LONGVARCHAR, new String[]{"CHAR VARYING"});
-        types.put(Types.NCHAR, new String[]{"NCHAR"});
-        types.put(Types.NCLOB, new String[]{"CLOB"});
-        types.put(Types.NUMERIC, new String[]{"NUMERIC"});
-        types.put(Types.NVARCHAR, new String[]{"CHAR VARYING"});
-        types.put(Types.OTHER, new String[]{"INTERVAL"});
-        types.put(Types.REAL, new String[]{"REAL"});
-        types.put(Types.SMALLINT, new String[]{"SMALLINT"});
-        types.put(Types.TIME, new String[]{"TIME"});
-        types.put(Types.TIMESTAMP, new String[]{"TIMESTAMP"});
-        types.put(Types.TINYINT, new String[]{"SMALLINT"});
-        types.put(Types.VARBINARY, new String[]{"BIT VARYING"});
-        types.put(Types.VARCHAR, new String[]{"CHAR VARYING"});
-        return types;
+    protected NativeColumnType[] createExternalTypes() {
+        return new NativeColumnType[]{
+            NativeColumnType.of(Types.BIGINT, "LONGINT"),
+            NativeColumnType.of(Types.BINARY, "BIT"),
+            NativeColumnType.of(Types.BIT, "BIT"),
+            NativeColumnType.of(Types.BLOB, "BLOB"),
+            NativeColumnType.of(Types.BOOLEAN, "BOOLEAN"),
+            NativeColumnType.of(Types.CHAR, "CHAR"),
+            NativeColumnType.of(Types.CLOB, "CLOB"),
+            NativeColumnType.of(Types.DATE, "DATE"),
+            NativeColumnType.of(Types.DECIMAL, "DECIMAL"),
+            NativeColumnType.of(Types.DOUBLE, "DOUBLE PRECISION"),
+            NativeColumnType.of(Types.FLOAT, "FLOAT"),
+            NativeColumnType.of(Types.INTEGER, "INTEGER"),
+            NativeColumnType.of(Types.LONGNVARCHAR, "CHAR VARYING"),
+            NativeColumnType.of(Types.LONGVARBINARY, "BLOB"),
+            NativeColumnType.of(Types.LONGVARCHAR, "CHAR VARYING"),
+            NativeColumnType.of(Types.NCHAR, "NCHAR"),
+            NativeColumnType.of(Types.NCLOB, "CLOB"),
+            NativeColumnType.of(Types.NUMERIC, "NUMERIC"),
+            NativeColumnType.of(Types.NVARCHAR, "CHAR VARYING"),
+            NativeColumnType.of(Types.OTHER, "INTERVAL"),
+            NativeColumnType.of(Types.REAL, "REAL"),
+            NativeColumnType.of(Types.SMALLINT, "SMALLINT"),
+            NativeColumnType.of(Types.TIME, "TIME"),
+            NativeColumnType.of(Types.TIMESTAMP, "TIMESTAMP"),
+            NativeColumnType.of(Types.TINYINT, "SMALLINT"),
+            NativeColumnType.of(Types.VARBINARY, "BIT VARYING"),
+            NativeColumnType.of(Types.VARCHAR, "CHAR VARYING"),
+        };
     }
 
     /**
@@ -152,14 +151,13 @@ public class FrontBaseAdapter extends JdbcAdapter {
                         , ent.getFullyQualifiedName(), at.getName());
             }
 
-            String[] types = externalTypesForJdbcType(at.getType());
+            NativeColumnType[] types = nativeColumnTypes(at.getType());
             if (types == null || types.length == 0) {
                 throw new CayenneRuntimeException("Undefined type for attribute '%s.%s': %s"
                         , ent.getFullyQualifiedName(), at.getName(), at.getType());
             }
 
-            String type = types[0];
-            buf.append(context.quotedName(at)).append(' ').append(type);
+            buf.append(context.quotedName(at)).append(' ').append(types[0].nativeType());
 
             // Mapping LONGVARCHAR without length creates a column with length
             // "1" which

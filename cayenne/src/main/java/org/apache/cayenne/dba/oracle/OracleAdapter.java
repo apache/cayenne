@@ -19,6 +19,7 @@
 
 package org.apache.cayenne.dba.oracle;
 
+import org.apache.cayenne.dba.NativeColumnType;
 import org.apache.cayenne.CayenneRuntimeException;
 import org.apache.cayenne.access.DataNode;
 import org.apache.cayenne.access.sqlbuilder.sqltree.SQLTreeProcessor;
@@ -50,9 +51,7 @@ import java.sql.ResultSet;
 import java.sql.Types;
 import java.util.Collection;
 import java.util.Collections;
-import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
 
 /**
  * DbAdapter implementation for Oracle RDBMS
@@ -166,37 +165,37 @@ public class OracleAdapter extends JdbcAdapter {
     }
 
     @Override
-    protected Map<Integer, String[]> createExternalTypes() {
-        Map<Integer, String[]> types = new HashMap<>();
-        types.put(Types.BIGINT, new String[]{"NUMBER"});
-        types.put(Types.BINARY, new String[]{"RAW"});
-        types.put(Types.BIT, new String[]{"INTEGER"});
-        types.put(Types.BLOB, new String[]{"BLOB"});
-        types.put(Types.BOOLEAN, new String[]{"INTEGER"});
-        types.put(Types.CHAR, new String[]{"CHAR"});
-        types.put(Types.CLOB, new String[]{"CLOB"});
-        types.put(Types.DATE, new String[]{"DATE"});
-        types.put(Types.DECIMAL, new String[]{"DECIMAL"});
-        types.put(Types.DOUBLE, new String[]{"NUMBER"});
-        types.put(Types.FLOAT, new String[]{"FLOAT"});
-        types.put(Types.INTEGER, new String[]{"INTEGER"});
-        types.put(Types.LONGNVARCHAR, new String[]{"NCLOB"});
-        types.put(Types.LONGVARBINARY, new String[]{"LONG RAW"});
-        types.put(Types.LONGVARCHAR, new String[]{"LONG VARCHAR"});
-        types.put(Types.NCHAR, new String[]{"NCHAR"});
-        types.put(Types.NCLOB, new String[]{"NCLOB"});
-        types.put(Types.NUMERIC, new String[]{"NUMBER"});
-        types.put(Types.NVARCHAR, new String[]{"NVARCHAR2"});
-        types.put(Types.REAL, new String[]{"NUMBER"});
-        types.put(Types.ROWID, new String[]{"ROWID"});
-        types.put(Types.SMALLINT, new String[]{"SMALLINT"});
-        types.put(Types.SQLXML, new String[]{"XMLType"});
-        types.put(Types.TIME, new String[]{"DATE"});
-        types.put(Types.TIMESTAMP, new String[]{"TIMESTAMP"});
-        types.put(Types.TINYINT, new String[]{"SMALLINT"});
-        types.put(Types.VARBINARY, new String[]{"RAW"});
-        types.put(Types.VARCHAR, new String[]{"VARCHAR2"});
-        return types;
+    protected NativeColumnType[] createExternalTypes() {
+        return new NativeColumnType[]{
+            NativeColumnType.of(Types.BIGINT, "NUMBER"),
+            NativeColumnType.of(Types.BINARY, "RAW"),
+            NativeColumnType.of(Types.BIT, "INTEGER"),
+            NativeColumnType.of(Types.BLOB, "BLOB"),
+            NativeColumnType.of(Types.BOOLEAN, "INTEGER"),
+            NativeColumnType.of(Types.CHAR, "CHAR"),
+            NativeColumnType.of(Types.CLOB, "CLOB"),
+            NativeColumnType.of(Types.DATE, "DATE"),
+            NativeColumnType.of(Types.DECIMAL, "DECIMAL"),
+            NativeColumnType.of(Types.DOUBLE, "NUMBER"),
+            NativeColumnType.of(Types.FLOAT, "FLOAT"),
+            NativeColumnType.of(Types.INTEGER, "INTEGER"),
+            NativeColumnType.of(Types.LONGNVARCHAR, "NCLOB"),
+            NativeColumnType.of(Types.LONGVARBINARY, "LONG RAW"),
+            NativeColumnType.of(Types.LONGVARCHAR, "LONG VARCHAR"),
+            NativeColumnType.of(Types.NCHAR, "NCHAR"),
+            NativeColumnType.of(Types.NCLOB, "NCLOB"),
+            NativeColumnType.of(Types.NUMERIC, "NUMBER"),
+            NativeColumnType.of(Types.NVARCHAR, "NVARCHAR2"),
+            NativeColumnType.of(Types.REAL, "NUMBER"),
+            NativeColumnType.of(Types.ROWID, "ROWID"),
+            NativeColumnType.of(Types.SMALLINT, "SMALLINT"),
+            NativeColumnType.of(Types.SQLXML, "XMLType"),
+            NativeColumnType.of(Types.TIME, "DATE"),
+            NativeColumnType.of(Types.TIMESTAMP, "TIMESTAMP"),
+            NativeColumnType.of(Types.TINYINT, "SMALLINT"),
+            NativeColumnType.of(Types.VARBINARY, "RAW"),
+            NativeColumnType.of(Types.VARCHAR, "VARCHAR2"),
+        };
     }
 
     /**

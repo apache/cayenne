@@ -19,6 +19,7 @@
 
 package org.apache.cayenne.dba.postgres;
 
+import org.apache.cayenne.dba.NativeColumnType;
 import org.apache.cayenne.CayenneRuntimeException;
 import org.apache.cayenne.access.DataNode;
 import org.apache.cayenne.access.sqlbuilder.sqltree.SQLTreeProcessor;
@@ -45,10 +46,8 @@ import org.apache.cayenne.query.SQLAction;
 import java.sql.Types;
 import java.util.Collection;
 import java.util.Collections;
-import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
-import java.util.Map;
 
 /**
  * DbAdapter implementation for PostgreSQL RDBMS
@@ -70,37 +69,40 @@ public class PostgresAdapter extends JdbcAdapter {
     }
 
     @Override
-    protected Map<Integer, String[]> createExternalTypes() {
-        Map<Integer, String[]> types = new HashMap<>();
-        types.put(Types.BIGINT, new String[]{"bigint", "bigserial"});
-        types.put(Types.BINARY, new String[]{"bytea"});
-        types.put(Types.BIT, new String[]{"boolean"});
-        types.put(Types.BLOB, new String[]{"oid"});
-        types.put(Types.BOOLEAN, new String[]{"boolean"});
-        types.put(Types.CHAR, new String[]{"character"});
-        types.put(Types.CLOB, new String[]{"text"});
-        types.put(Types.DATE, new String[]{"date"});
-        types.put(Types.DECIMAL, new String[]{"decimal"});
-        types.put(Types.DOUBLE, new String[]{"double precision"});
-        types.put(Types.FLOAT, new String[]{"float"});
-        types.put(Types.INTEGER, new String[]{"integer", "serial"});
-        types.put(Types.LONGNVARCHAR, new String[]{"text"});
-        types.put(Types.LONGVARBINARY, new String[]{"bytea"});
-        types.put(Types.LONGVARCHAR, new String[]{"text"});
-        types.put(Types.NCHAR, new String[]{"character"});
-        types.put(Types.NCLOB, new String[]{"text"});
-        types.put(Types.NUMERIC, new String[]{"numeric"});
-        types.put(Types.NVARCHAR, new String[]{"varchar"});
-        types.put(Types.OTHER, new String[]{"json"});
-        types.put(Types.REAL, new String[]{"real"});
-        types.put(Types.SMALLINT, new String[]{"smallint", "smallserial"});
-        types.put(Types.SQLXML, new String[]{"xml"});
-        types.put(Types.TIME, new String[]{"time"});
-        types.put(Types.TIMESTAMP, new String[]{"timestamp with time zone"});
-        types.put(Types.TINYINT, new String[]{"smallint"});
-        types.put(Types.VARBINARY, new String[]{"bytea"});
-        types.put(Types.VARCHAR, new String[]{"varchar"});
-        return types;
+    protected NativeColumnType[] createExternalTypes() {
+        return new NativeColumnType[]{
+                NativeColumnType.of(Types.BIGINT, "bigint"),
+                NativeColumnType.of(Types.BIGINT, "bigserial").asAutoIncrement(),
+                NativeColumnType.of(Types.BINARY, "bytea"),
+                NativeColumnType.of(Types.BIT, "boolean"),
+                NativeColumnType.of(Types.BLOB, "oid"),
+                NativeColumnType.of(Types.BOOLEAN, "boolean"),
+                NativeColumnType.of(Types.CHAR, "character"),
+                NativeColumnType.of(Types.CLOB, "text"),
+                NativeColumnType.of(Types.DATE, "date"),
+                NativeColumnType.of(Types.DECIMAL, "decimal"),
+                NativeColumnType.of(Types.DOUBLE, "double precision"),
+                NativeColumnType.of(Types.FLOAT, "float"),
+                NativeColumnType.of(Types.INTEGER, "integer"),
+                NativeColumnType.of(Types.INTEGER, "serial").asAutoIncrement(),
+                NativeColumnType.of(Types.LONGNVARCHAR, "text"),
+                NativeColumnType.of(Types.LONGVARBINARY, "bytea"),
+                NativeColumnType.of(Types.LONGVARCHAR, "text"),
+                NativeColumnType.of(Types.NCHAR, "character"),
+                NativeColumnType.of(Types.NCLOB, "text"),
+                NativeColumnType.of(Types.NUMERIC, "numeric"),
+                NativeColumnType.of(Types.NVARCHAR, "varchar"),
+                NativeColumnType.of(Types.OTHER, "json"),
+                NativeColumnType.of(Types.REAL, "real"),
+                NativeColumnType.of(Types.SMALLINT, "smallint"),
+                NativeColumnType.of(Types.SMALLINT, "smallserial").asAutoIncrement(),
+                NativeColumnType.of(Types.SQLXML, "xml"),
+                NativeColumnType.of(Types.TIME, "time"),
+                NativeColumnType.of(Types.TIMESTAMP, "timestamp with time zone"),
+                NativeColumnType.of(Types.TINYINT, "smallint"),
+                NativeColumnType.of(Types.VARBINARY, "bytea"),
+                NativeColumnType.of(Types.VARCHAR, "varchar"),
+        };
     }
 
     /**
@@ -232,18 +234,29 @@ public class PostgresAdapter extends JdbcAdapter {
                     , ent.getFullyQualifiedName(), at.getName());
         }
 
-        String[] types = externalTypesForJdbcType(at.getType());
+        NativeColumnType[] types = nativeColumnTypes(at.getType());
         if (types == null || types.length == 0) {
-            throw new CayenneRuntimeException("Undefined type for attribute '%s.%s': %s"
-                    , ent.getFullyQualifiedName(), at.getName(), at.getType());
+            throw new CayenneRuntimeException(
+                    "Undefined type for attribute '%s.%s': %s", ent.getFullyQualifiedName(), at.getName(), at.getType());
         }
 
-        // Checking that attribute is generated and we have alternative types in the external types mapping.
-        // If so, use those autoincremented types. For example serial, bigserial, smallserial.
-        String type = (at.isGenerated() && types.length > 1) ? types[1] : types[0];
+        // For a generated column use the auto-increment variant if there is one (serial, bigserial, smallserial).
+        NativeColumnType selected = types[0];
+        if (at.isGenerated()) {
+            for (NativeColumnType candidate : types) {
+                if (candidate.autoIncrement()) {
+                    selected = candidate;
+                    break;
+                }
+            }
+        }
 
-        buf.append(context.quotedName(at)).append(' ').append(type).append(sizeAndPrecision(this, at))
-                .append(at.isMandatory() ? " NOT" : "").append(" NULL");
+        buf.append(context.quotedName(at))
+                .append(' ')
+                .append(selected.nativeType())
+                .append(sizeAndPrecision(this, at))
+                .append(at.isMandatory() ? " NOT" : "")
+                .append(" NULL");
     }
 
     @Override
@@ -252,10 +265,10 @@ public class PostgresAdapter extends JdbcAdapter {
         if (Types.DOUBLE == type || Types.REAL == type) {
             return false;
         }
-        String[] externalTypes = externalTypesForJdbcType(type);
-        if (externalTypes != null && externalTypes.length > 0) {
-            for (String externalType : externalTypes) {
-                if (BYTEA.equalsIgnoreCase(externalType)) {
+        NativeColumnType[] externalTypes = nativeColumnTypes(type);
+        if (externalTypes != null) {
+            for (NativeColumnType externalType : externalTypes) {
+                if (BYTEA.equalsIgnoreCase(externalType.nativeType())) {
                     return false;
                 }
             }

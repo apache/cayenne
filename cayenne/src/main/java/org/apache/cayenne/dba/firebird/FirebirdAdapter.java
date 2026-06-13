@@ -19,6 +19,7 @@
 
 package org.apache.cayenne.dba.firebird;
 
+import org.apache.cayenne.dba.NativeColumnType;
 import org.apache.cayenne.access.DataNode;
 import org.apache.cayenne.access.sqlbuilder.sqltree.SQLTreeProcessor;
 import org.apache.cayenne.access.translator.ejbql.EJBQLTranslator;
@@ -37,9 +38,7 @@ import org.apache.cayenne.query.Query;
 import org.apache.cayenne.query.SQLAction;
 
 import java.sql.Types;
-import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
 
 /**
  * DbAdapter implementation for the FirebirdSQL RDBMS
@@ -63,41 +62,41 @@ public class FirebirdAdapter extends JdbcAdapter {
     }
 
     @Override
-    protected Map<Integer, String[]> createExternalTypes() {
-        Map<Integer, String[]> types = new HashMap<>();
-        types.put(Types.ARRAY, new String[]{"BLOB"});
-        types.put(Types.BIGINT, new String[]{"BIGINT"});
-        types.put(Types.BINARY, new String[]{"BLOB"});
-        types.put(Types.BIT, new String[]{"SMALLINT"});
-        types.put(Types.BLOB, new String[]{"BLOB"});
-        types.put(Types.BOOLEAN, new String[]{"SMALLINT"});
-        types.put(Types.CHAR, new String[]{"VARCHAR"});
-        types.put(Types.CLOB, new String[]{"BLOB SUB_TYPE TEXT"});
-        types.put(Types.DATALINK, new String[]{"BLOB"});
-        types.put(Types.DATE, new String[]{"DATE"});
-        types.put(Types.DECIMAL, new String[]{"DECIMAL"});
-        types.put(Types.DOUBLE, new String[]{"DOUBLE PRECISION"});
-        types.put(Types.FLOAT, new String[]{"DOUBLE PRECISION"});
-        types.put(Types.INTEGER, new String[]{"INTEGER"});
-        types.put(Types.JAVA_OBJECT, new String[]{"BLOB"});
-        types.put(Types.LONGNVARCHAR, new String[]{"BLOB SUB_TYPE TEXT"});
-        types.put(Types.LONGVARBINARY, new String[]{"BLOB"});
-        types.put(Types.LONGVARCHAR, new String[]{"BLOB SUB_TYPE TEXT"});
-        types.put(Types.NCHAR, new String[]{"CHAR CHARACTER SET UNICODE_FSS"});
-        types.put(Types.NCLOB, new String[]{"BLOB SUB_TYPE TEXT"});
-        types.put(Types.NUMERIC, new String[]{"DECIMAL"});
-        types.put(Types.NVARCHAR, new String[]{"VARCHAR CHARACTER SET UNICODE_FSS"});
-        types.put(Types.OTHER, new String[]{"BLOB"});
-        types.put(Types.REAL, new String[]{"REAL"});
-        types.put(Types.REF, new String[]{"BLOB"});
-        types.put(Types.SMALLINT, new String[]{"SMALLINT"});
-        types.put(Types.STRUCT, new String[]{"BLOB"});
-        types.put(Types.TIME, new String[]{"TIME"});
-        types.put(Types.TIMESTAMP, new String[]{"TIMESTAMP"});
-        types.put(Types.TINYINT, new String[]{"SMALLINT"});
-        types.put(Types.VARBINARY, new String[]{"BLOB"});
-        types.put(Types.VARCHAR, new String[]{"VARCHAR"});
-        return types;
+    protected NativeColumnType[] createExternalTypes() {
+        return new NativeColumnType[]{
+            NativeColumnType.of(Types.ARRAY, "BLOB"),
+            NativeColumnType.of(Types.BIGINT, "BIGINT"),
+            NativeColumnType.of(Types.BINARY, "BLOB"),
+            NativeColumnType.of(Types.BIT, "SMALLINT"),
+            NativeColumnType.of(Types.BLOB, "BLOB"),
+            NativeColumnType.of(Types.BOOLEAN, "SMALLINT"),
+            NativeColumnType.of(Types.CHAR, "VARCHAR"),
+            NativeColumnType.of(Types.CLOB, "BLOB SUB_TYPE TEXT"),
+            NativeColumnType.of(Types.DATALINK, "BLOB"),
+            NativeColumnType.of(Types.DATE, "DATE"),
+            NativeColumnType.of(Types.DECIMAL, "DECIMAL"),
+            NativeColumnType.of(Types.DOUBLE, "DOUBLE PRECISION"),
+            NativeColumnType.of(Types.FLOAT, "DOUBLE PRECISION"),
+            NativeColumnType.of(Types.INTEGER, "INTEGER"),
+            NativeColumnType.of(Types.JAVA_OBJECT, "BLOB"),
+            NativeColumnType.of(Types.LONGNVARCHAR, "BLOB SUB_TYPE TEXT"),
+            NativeColumnType.of(Types.LONGVARBINARY, "BLOB"),
+            NativeColumnType.of(Types.LONGVARCHAR, "BLOB SUB_TYPE TEXT"),
+            NativeColumnType.of(Types.NCHAR, "CHAR CHARACTER SET UNICODE_FSS"),
+            NativeColumnType.of(Types.NCLOB, "BLOB SUB_TYPE TEXT"),
+            NativeColumnType.of(Types.NUMERIC, "DECIMAL"),
+            NativeColumnType.of(Types.NVARCHAR, "VARCHAR CHARACTER SET UNICODE_FSS"),
+            NativeColumnType.of(Types.OTHER, "BLOB"),
+            NativeColumnType.of(Types.REAL, "REAL"),
+            NativeColumnType.of(Types.REF, "BLOB"),
+            NativeColumnType.of(Types.SMALLINT, "SMALLINT"),
+            NativeColumnType.of(Types.STRUCT, "BLOB"),
+            NativeColumnType.of(Types.TIME, "TIME"),
+            NativeColumnType.of(Types.TIMESTAMP, "TIMESTAMP"),
+            NativeColumnType.of(Types.TINYINT, "SMALLINT"),
+            NativeColumnType.of(Types.VARBINARY, "BLOB"),
+            NativeColumnType.of(Types.VARCHAR, "VARCHAR"),
+        };
     }
     
     protected void configureExtendedTypes(ExtendedTypeMap map) {

@@ -19,6 +19,7 @@
 
 package org.apache.cayenne.dba.mysql;
 
+import org.apache.cayenne.dba.NativeColumnType;
 import org.apache.cayenne.access.DataNode;
 import org.apache.cayenne.access.sqlbuilder.sqltree.SQLTreeProcessor;
 import org.apache.cayenne.access.translator.ejbql.EJBQLTranslator;
@@ -53,10 +54,8 @@ import java.sql.Types;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Comparator;
-import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
-import java.util.Map;
 
 /**
  * DbAdapter implementation for MySQL RDBMS.
@@ -84,36 +83,36 @@ public class MySQLAdapter extends JdbcAdapter {
     }
 
     @Override
-    protected Map<Integer, String[]> createExternalTypes() {
-        Map<Integer, String[]> types = new HashMap<>();
-        types.put(Types.BIGINT, new String[]{"BIGINT", "INT UNSIGNED", "INTEGER UNSIGNED", "MEDIUMINT UNSIGNED"});
-        types.put(Types.BINARY, new String[]{"BINARY"});
-        types.put(Types.BIT, new String[]{"BIT"});
-        types.put(Types.BLOB, new String[]{"LONGBLOB"});
-        types.put(Types.BOOLEAN, new String[]{"BOOL"});
-        types.put(Types.CHAR, new String[]{"CHAR"});
-        types.put(Types.CLOB, new String[]{"LONGTEXT"});
-        types.put(Types.DATE, new String[]{"DATE"});
-        types.put(Types.DECIMAL, new String[]{"DECIMAL"});
-        types.put(Types.DOUBLE, new String[]{"DOUBLE"});
-        types.put(Types.FLOAT, new String[]{"FLOAT"});
-        types.put(Types.INTEGER, new String[]{"INT", "INTEGER"});
-        types.put(Types.LONGNVARCHAR, new String[]{"LONGTEXT"});
-        types.put(Types.LONGVARBINARY, new String[]{"LONGBLOB"});
-        types.put(Types.LONGVARCHAR, new String[]{"LONGTEXT"});
-        types.put(Types.NCHAR, new String[]{"CHAR"});
-        types.put(Types.NCLOB, new String[]{"LONGTEXT"});
-        types.put(Types.NUMERIC, new String[]{"DECIMAL", "NUMERIC"});
-        types.put(Types.NVARCHAR, new String[]{"VARCHAR"});
-        types.put(Types.REAL, new String[]{"DOUBLE", "REAL"});
-        types.put(Types.SMALLINT, new String[]{"SMALLINT"});
-        types.put(Types.SQLXML, new String[]{"LONGTEXT"});
-        types.put(Types.TIME, new String[]{"TIME"});
-        types.put(Types.TIMESTAMP, new String[]{"DATETIME", "TIMESTAMP"});
-        types.put(Types.TINYINT, new String[]{"TINYINT"});
-        types.put(Types.VARBINARY, new String[]{"VARBINARY"});
-        types.put(Types.VARCHAR, new String[]{"VARCHAR"});
-        return types;
+    protected NativeColumnType[] createExternalTypes() {
+        return new NativeColumnType[]{
+            NativeColumnType.of(Types.BIGINT, "BIGINT"),
+            NativeColumnType.of(Types.BINARY, "BINARY"),
+            NativeColumnType.of(Types.BIT, "BIT"),
+            NativeColumnType.of(Types.BLOB, "LONGBLOB"),
+            NativeColumnType.of(Types.BOOLEAN, "BOOL"),
+            NativeColumnType.of(Types.CHAR, "CHAR"),
+            NativeColumnType.of(Types.CLOB, "LONGTEXT"),
+            NativeColumnType.of(Types.DATE, "DATE"),
+            NativeColumnType.of(Types.DECIMAL, "DECIMAL"),
+            NativeColumnType.of(Types.DOUBLE, "DOUBLE"),
+            NativeColumnType.of(Types.FLOAT, "FLOAT"),
+            NativeColumnType.of(Types.INTEGER, "INT"),
+            NativeColumnType.of(Types.LONGNVARCHAR, "LONGTEXT"),
+            NativeColumnType.of(Types.LONGVARBINARY, "LONGBLOB"),
+            NativeColumnType.of(Types.LONGVARCHAR, "LONGTEXT"),
+            NativeColumnType.of(Types.NCHAR, "CHAR"),
+            NativeColumnType.of(Types.NCLOB, "LONGTEXT"),
+            NativeColumnType.of(Types.NUMERIC, "DECIMAL"),
+            NativeColumnType.of(Types.NVARCHAR, "VARCHAR"),
+            NativeColumnType.of(Types.REAL, "DOUBLE"),
+            NativeColumnType.of(Types.SMALLINT, "SMALLINT"),
+            NativeColumnType.of(Types.SQLXML, "LONGTEXT"),
+            NativeColumnType.of(Types.TIME, "TIME"),
+            NativeColumnType.of(Types.TIMESTAMP, "DATETIME"),
+            NativeColumnType.of(Types.TINYINT, "TINYINT"),
+            NativeColumnType.of(Types.VARBINARY, "VARBINARY"),
+            NativeColumnType.of(Types.VARCHAR, "VARCHAR"),
+        };
     }
 
     @Override
