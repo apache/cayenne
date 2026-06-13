@@ -21,65 +21,43 @@ package org.apache.cayenne.modeler.undo;
 import javax.swing.undo.CannotRedoException;
 import javax.swing.undo.CannotUndoException;
 
-import org.apache.cayenne.map.DbEntity;
-import org.apache.cayenne.map.DbRelationship;
+import org.apache.cayenne.configuration.DataChannelDescriptor;
 import org.apache.cayenne.map.ObjEntity;
 import org.apache.cayenne.map.ObjRelationship;
+import org.apache.cayenne.modeler.event.display.ObjEntityDisplayEvent;
+import org.apache.cayenne.modeler.project.ProjectSession;
 import org.apache.cayenne.modeler.ui.action.CreateRelationshipAction;
 import org.apache.cayenne.modeler.ui.action.RemoveRelationshipAction;
-import org.apache.cayenne.modeler.project.ProjectSession;
 
-public class RemoveRelationshipUndoableEdit extends BaseRemovePropertyUndoableEdit {
+public class CreateObjRelationshipUndoableEdit extends CayenneUndoableEdit {
 
-    private ObjRelationship[] rels;
-    private DbRelationship[] dbRels;
+    private final ObjEntity objEntity;
+    private final ObjRelationship[] relationships;
 
-    public RemoveRelationshipUndoableEdit(ProjectSession session, ObjEntity objEntity, ObjRelationship[] rels) {
+    public CreateObjRelationshipUndoableEdit(ProjectSession session, ObjEntity objEntity, ObjRelationship[] relationships) {
         super(session);
         this.objEntity = objEntity;
-        this.rels = rels;
-    }
-
-    public RemoveRelationshipUndoableEdit(ProjectSession session, DbEntity dbEntity, DbRelationship[] dbRels) {
-        super(session);
-        this.dbEntity = dbEntity;
-        this.dbRels = dbRels;
+        this.relationships = relationships;
     }
 
     @Override
     public String getPresentationName() {
-        if (objEntity != null) {
-            return "Remove Obj Relationship";
-        } else {
-            return "Remove Db Relationship";
-        }
+        return "Create Relationship";
     }
 
     @Override
     public void redo() throws CannotRedoException {
-        RemoveRelationshipAction action = globalActions.getAction(RemoveRelationshipAction.class);
-        if (objEntity != null) {
-            action.removeObjRelationships(objEntity, rels);
-            focusObjEntity();
-        } else {
-            action.removeDbRelationships(dbEntity, dbRels);
-            focusDBEntity();
+        CreateRelationshipAction action = globalActions.getAction(CreateRelationshipAction.class);
+        for (ObjRelationship rel : relationships) {
+            action.createObjRelationship(objEntity, rel);
         }
     }
 
     @Override
     public void undo() throws CannotUndoException {
-        CreateRelationshipAction action = globalActions.getAction(CreateRelationshipAction.class);
-        if (objEntity != null) {
-            for (ObjRelationship r : rels) {
-                action.createObjRelationship(objEntity, r);
-            }
-            focusObjEntity();
-        } else {
-            for (DbRelationship dr : dbRels) {
-                action.createDbRelationship(dbEntity, dr);
-            }
-            focusDBEntity();
-        }
+        RemoveRelationshipAction action = globalActions.getAction(RemoveRelationshipAction.class);
+        DataChannelDescriptor domain = (DataChannelDescriptor) session.project().getRootNode();
+        action.removeObjRelationships(objEntity, relationships);
+        session.displayObjEntity(new ObjEntityDisplayEvent(this, domain, objEntity.getDataMap(), objEntity));
     }
 }

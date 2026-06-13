@@ -28,7 +28,7 @@ import org.apache.cayenne.modeler.event.model.DbRelationshipEvent;
 import org.apache.cayenne.modeler.service.classloader.ModelerClassLoader;
 import org.apache.cayenne.modeler.toolkit.ProjectDialog;
 import org.apache.cayenne.modeler.project.ProjectSession;
-import org.apache.cayenne.modeler.undo.CreateRelationshipUndoableEdit;
+import org.apache.cayenne.modeler.undo.CreateDbRelationshipUndoableEdit;
 import org.apache.cayenne.modeler.undo.InferRelationshipsUndoableEdit;
 import org.apache.cayenne.modeler.NameGeneratorPreferences;
 import org.slf4j.Logger;
@@ -382,7 +382,7 @@ public class InferRelationshipsDialog extends ProjectDialog {
             rel.setToMany(temp.isToMany());
             temp.getSource().addRelationship(rel);
 
-            undoableEdit.addEdit(new CreateRelationshipUndoableEdit(
+            undoableEdit.addEdit(new CreateDbRelationshipUndoableEdit(
                     session, temp.getSource(), new DbRelationship[]{rel}));
         }
         JOptionPane.showMessageDialog(this, getSelectedEntitiesSize() + " relationships generated");
