@@ -35,10 +35,11 @@ import org.apache.cayenne.di.Inject;
 import org.apache.cayenne.map.DbAttribute;
 import org.apache.cayenne.query.Query;
 import org.apache.cayenne.query.SQLAction;
-import org.apache.cayenne.resource.ResourceLocator;
 
 import java.sql.Types;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 /**
  * DbAdapter implementation for <a href="http://www.h2database.com/">H2
@@ -59,10 +60,48 @@ public class H2Adapter extends JdbcAdapter {
             @Inject(Constants.DEFAULT_TYPES_LIST) List<ExtendedType> defaultExtendedTypes,
             @Inject(Constants.USER_TYPES_LIST) List<ExtendedType> userExtendedTypes,
             @Inject(Constants.TYPE_FACTORIES_LIST) List<ExtendedTypeFactory> extendedTypeFactories,
-            @Inject(Constants.RESOURCE_LOCATOR) ResourceLocator resourceLocator,
             @Inject ValueObjectTypeRegistry valueObjectTypeRegistry) {
-        super(runtimeProperties, defaultExtendedTypes, userExtendedTypes, extendedTypeFactories, resourceLocator, valueObjectTypeRegistry);
+        super(runtimeProperties, defaultExtendedTypes, userExtendedTypes, extendedTypeFactories, valueObjectTypeRegistry);
         setSupportsGeneratedKeys(true);
+    }
+
+    @Override
+    protected Map<Integer, String[]> createExternalTypes() {
+        Map<Integer, String[]> types = new HashMap<>();
+        types.put(Types.ARRAY, new String[]{"ARRAY"});
+        types.put(Types.BIGINT, new String[]{"BIGINT"});
+        types.put(Types.BINARY, new String[]{"BINARY"});
+        types.put(Types.BIT, new String[]{"BIT"});
+        types.put(Types.BLOB, new String[]{"BLOB"});
+        types.put(Types.BOOLEAN, new String[]{"BOOLEAN"});
+        types.put(Types.CHAR, new String[]{"CHAR"});
+        types.put(Types.CLOB, new String[]{"CLOB"});
+        types.put(Types.DATALINK, new String[]{"DATALINK"});
+        types.put(Types.DATE, new String[]{"DATE"});
+        types.put(Types.DECIMAL, new String[]{"DECIMAL"});
+        types.put(Types.DOUBLE, new String[]{"DOUBLE"});
+        types.put(Types.FLOAT, new String[]{"FLOAT"});
+        types.put(Types.INTEGER, new String[]{"INTEGER"});
+        types.put(Types.JAVA_OBJECT, new String[]{"JAVA_OBJECT"});
+        types.put(Types.LONGNVARCHAR, new String[]{"NCLOB"});
+        types.put(Types.LONGVARBINARY, new String[]{"LONGVARBINARY"});
+        types.put(Types.LONGVARCHAR, new String[]{"CLOB"});
+        types.put(Types.NCHAR, new String[]{"NCHAR"});
+        types.put(Types.NCLOB, new String[]{"NCLOB"});
+        types.put(Types.NUMERIC, new String[]{"NUMERIC"});
+        types.put(Types.NVARCHAR, new String[]{"NVARCHAR"});
+        types.put(Types.OTHER, new String[]{"OTHER"});
+        types.put(Types.REAL, new String[]{"REAL"});
+        types.put(Types.REF, new String[]{"REF"});
+        types.put(Types.SMALLINT, new String[]{"SMALLINT"});
+        types.put(Types.SQLXML, new String[]{"NCLOB"});
+        types.put(Types.STRUCT, new String[]{"STRUCT"});
+        types.put(Types.TIME, new String[]{"TIME"});
+        types.put(Types.TIMESTAMP, new String[]{"TIMESTAMP"});
+        types.put(Types.TINYINT, new String[]{"TINYINT"});
+        types.put(Types.VARBINARY, new String[]{"VARBINARY"});
+        types.put(Types.VARCHAR, new String[]{"VARCHAR"});
+        return types;
     }
 
     @Override

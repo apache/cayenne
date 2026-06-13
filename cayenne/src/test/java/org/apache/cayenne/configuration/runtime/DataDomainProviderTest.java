@@ -210,12 +210,6 @@ public class DataDomainProviderTest {
             final ResourceLocator locator = new ClassLoaderResourceLocator(classLoaderManager) {
 
                 public Collection<Resource> findResources(String name) {
-                    // ResourceLocator also used by JdbcAdapter to locate types.xml...
-                    // if this is the request we are getting, just let it go through..
-                    if (name.endsWith("types.xml")) {
-                        return super.findResources(name);
-                    }
-
                     assertEquals(testConfigName, name);
                     return Collections.<Resource>singleton(new MockResource());
                 }

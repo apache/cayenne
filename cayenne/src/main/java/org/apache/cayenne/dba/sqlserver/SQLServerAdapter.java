@@ -43,12 +43,13 @@ import org.apache.cayenne.map.DbAttribute;
 import org.apache.cayenne.map.DbEntity;
 import org.apache.cayenne.query.Query;
 import org.apache.cayenne.query.SQLAction;
-import org.apache.cayenne.resource.ResourceLocator;
 
 import java.sql.PreparedStatement;
 import java.sql.Types;
 import java.util.Collection;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.stream.Collectors;
 
 /**
@@ -108,12 +109,45 @@ public class SQLServerAdapter extends JdbcAdapter {
                             @Inject(Constants.DEFAULT_TYPES_LIST) List<ExtendedType> defaultExtendedTypes,
                             @Inject(Constants.USER_TYPES_LIST) List<ExtendedType> userExtendedTypes,
                             @Inject(Constants.TYPE_FACTORIES_LIST) List<ExtendedTypeFactory> extendedTypeFactories,
-                            @Inject(Constants.RESOURCE_LOCATOR) ResourceLocator resourceLocator,
                             @Inject ValueObjectTypeRegistry valueObjectTypeRegistry) {
-        super(runtimeProperties, defaultExtendedTypes, userExtendedTypes, extendedTypeFactories, resourceLocator, valueObjectTypeRegistry);
+        super(runtimeProperties, defaultExtendedTypes, userExtendedTypes, extendedTypeFactories, valueObjectTypeRegistry);
 
         this.setSupportsGeneratedKeys(true);
         this.setSupportsBatchUpdates(true);
+    }
+
+    @Override
+    protected Map<Integer, String[]> createExternalTypes() {
+        Map<Integer, String[]> types = new HashMap<>();
+        types.put(Types.BIGINT, new String[]{"bigint"});
+        types.put(Types.BINARY, new String[]{"binary"});
+        types.put(Types.BIT, new String[]{"bit"});
+        types.put(Types.BLOB, new String[]{"image"});
+        types.put(Types.BOOLEAN, new String[]{"bit"});
+        types.put(Types.CHAR, new String[]{"char"});
+        types.put(Types.CLOB, new String[]{"text"});
+        types.put(Types.DATE, new String[]{"date"});
+        types.put(Types.DECIMAL, new String[]{"decimal"});
+        types.put(Types.DOUBLE, new String[]{"double precision"});
+        types.put(Types.FLOAT, new String[]{"float"});
+        types.put(Types.INTEGER, new String[]{"int"});
+        types.put(Types.LONGNVARCHAR, new String[]{"ntext"});
+        types.put(Types.LONGVARBINARY, new String[]{"image"});
+        types.put(Types.LONGVARCHAR, new String[]{"text"});
+        types.put(Types.NCHAR, new String[]{"nchar"});
+        types.put(Types.NCLOB, new String[]{"ntext"});
+        types.put(Types.NUMERIC, new String[]{"numeric"});
+        types.put(Types.NVARCHAR, new String[]{"nvarchar"});
+        types.put(Types.REAL, new String[]{"real"});
+        types.put(Types.ROWID, new String[]{"ROWID"});
+        types.put(Types.SMALLINT, new String[]{"smallint"});
+        types.put(Types.SQLXML, new String[]{"xml"});
+        types.put(Types.TIME, new String[]{"time"});
+        types.put(Types.TIMESTAMP, new String[]{"datetime"});
+        types.put(Types.TINYINT, new String[]{"tinyint"});
+        types.put(Types.VARBINARY, new String[]{"varbinary"});
+        types.put(Types.VARCHAR, new String[]{"varchar"});
+        return types;
     }
 
     @Override

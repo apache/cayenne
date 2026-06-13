@@ -47,18 +47,16 @@ import org.apache.cayenne.query.ProcedureQuery;
 import org.apache.cayenne.query.Select;
 import org.apache.cayenne.query.Query;
 import org.apache.cayenne.query.SQLAction;
-import org.apache.cayenne.resource.Resource;
-import org.apache.cayenne.resource.ResourceLocator;
-import org.apache.cayenne.util.Util;
 
-import java.net.URL;
 import java.sql.PreparedStatement;
 import java.sql.Types;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.Comparator;
+import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
+import java.util.Map;
 
 /**
  * A generic DbAdapter implementation. Can be used as a default adapter or as a
@@ -69,14 +67,13 @@ public class JdbcAdapter implements DbAdapter {
     private PkGenerator pkGenerator;
     protected QuotingStrategy quotingStrategy;
 
-    protected TypesHandler typesHandler;
+    protected Map<Integer, String[]> externalTypes;
     protected ExtendedTypeMap extendedTypes;
     protected boolean supportsBatchUpdates;
     protected boolean supportsUniqueConstraints;
     protected boolean supportsGeneratedKeys;
     protected EJBQLTranslator ejbqlTranslator;
 
-    protected ResourceLocator resourceLocator;
     protected boolean caseInsensitiveCollations;
 
     @Inject
@@ -89,19 +86,17 @@ public class JdbcAdapter implements DbAdapter {
                        @Inject(Constants.DEFAULT_TYPES_LIST) List<ExtendedType> defaultExtendedTypes,
                        @Inject(Constants.USER_TYPES_LIST) List<ExtendedType> userExtendedTypes,
                        @Inject(Constants.TYPE_FACTORIES_LIST) List<ExtendedTypeFactory> extendedTypeFactories,
-                       @Inject(Constants.RESOURCE_LOCATOR) ResourceLocator resourceLocator,
                        @Inject ValueObjectTypeRegistry valueObjectTypeRegistry) {
 
         // init defaults
         this.setSupportsBatchUpdates(false);
         this.setSupportsUniqueConstraints(true);
         this.caseInsensitiveCollations = runtimeProperties.getBoolean(Constants.CI_PROPERTY, false);
-        this.resourceLocator = resourceLocator;
 
         this.quotingStrategy = createQuotingStrategy();
 
         this.ejbqlTranslator = createEJBQLTranslator();
-        this.typesHandler = TypesHandler.getHandler(findResource("/types.xml"));
+        this.externalTypes = createExternalTypes();
         this.extendedTypes = new ExtendedTypeMap();
         initExtendedTypes(defaultExtendedTypes, userExtendedTypes, extendedTypeFactories, valueObjectTypeRegistry);
     }
@@ -124,33 +119,50 @@ public class JdbcAdapter implements DbAdapter {
     }
 
     /**
-     * Locates and returns a named adapter resource. A resource can be an XML
-     * file, etc.
-     * <p>
-     * This implementation is based on the premise that each adapter is located
-     * in its own Java package and all resources are in the same package as
-     * well. Resource lookup is recursive, so that if DbAdapter is a subclass of
-     * another adapter, parent adapter package is searched as a failover.
-     * </p>
+     * Creates the mapping of JDBC types to RDBMS type names used for DDL generation. The first name in each
+     * array is used for column DDL; some adapters use subsequent names for special cases (e.g. PostgreSQL
+     * serial types for generated columns). Subclasses override this method, mapping every type supported by
+     * the target database explicitly, without calling the superclass.
      *
-     * @since 3.0
+     * @since 5.0
      */
-    protected URL findResource(String name) {
-        Class<?> adapterClass = getClass();
-
-        while (adapterClass != null && JdbcAdapter.class.isAssignableFrom(adapterClass)) {
-
-            String path = Util.getPackagePath(adapterClass.getName()) + name;
-            Collection<Resource> resources = resourceLocator.findResources(path);
-
-            if (!resources.isEmpty()) {
-                return resources.iterator().next().getURL();
-            }
-
-            adapterClass = adapterClass.getSuperclass();
-        }
-
-        return null;
+    protected Map<Integer, String[]> createExternalTypes() {
+        Map<Integer, String[]> types = new HashMap<>();
+        types.put(Types.ARRAY, new String[]{"ARRAY"});
+        types.put(Types.BIGINT, new String[]{"BIGINT"});
+        types.put(Types.ROWID, new String[]{"ROWID"});
+        types.put(Types.BINARY, new String[]{"BINARY"});
+        types.put(Types.BIT, new String[]{"BIT"});
+        types.put(Types.BLOB, new String[]{"BLOB"});
+        types.put(Types.BOOLEAN, new String[]{"BOOLEAN"});
+        types.put(Types.CHAR, new String[]{"CHAR"});
+        types.put(Types.NCHAR, new String[]{"NCHAR"});
+        types.put(Types.CLOB, new String[]{"CLOB"});
+        types.put(Types.NCLOB, new String[]{"NCLOB"});
+        types.put(Types.DATALINK, new String[]{"DATALINK"});
+        types.put(Types.DATE, new String[]{"DATE"});
+        types.put(Types.DECIMAL, new String[]{"DECIMAL"});
+        types.put(Types.DOUBLE, new String[]{"DOUBLE"});
+        types.put(Types.FLOAT, new String[]{"FLOAT"});
+        types.put(Types.INTEGER, new String[]{"INTEGER"});
+        types.put(Types.JAVA_OBJECT, new String[]{"JAVA_OBJECT"});
+        types.put(Types.LONGVARBINARY, new String[]{"LONGVARBINARY"});
+        types.put(Types.LONGVARCHAR, new String[]{"LONGVARCHAR"});
+        types.put(Types.LONGNVARCHAR, new String[]{"LONGNVARCHAR"});
+        types.put(Types.NUMERIC, new String[]{"NUMERIC"});
+        types.put(Types.OTHER, new String[]{"OTHER"});
+        types.put(Types.REAL, new String[]{"REAL"});
+        types.put(Types.REF, new String[]{"REF"});
+        types.put(Types.SMALLINT, new String[]{"SMALLINT"});
+        types.put(Types.STRUCT, new String[]{"STRUCT"});
+        types.put(Types.TIME, new String[]{"TIME"});
+        types.put(Types.TIMESTAMP, new String[]{"TIMESTAMP"});
+        types.put(Types.TINYINT, new String[]{"TINYINT"});
+        types.put(Types.VARBINARY, new String[]{"VARBINARY"});
+        types.put(Types.VARCHAR, new String[]{"VARCHAR"});
+        types.put(Types.NVARCHAR, new String[]{"NVARCHAR"});
+        types.put(Types.SQLXML, new String[]{"SQLXML"});
+        return types;
     }
 
     /**
@@ -477,7 +489,7 @@ public class JdbcAdapter implements DbAdapter {
 
     @Override
     public String[] externalTypesForJdbcType(int type) {
-        return typesHandler.externalTypesForJdbcType(type);
+        return externalTypes.get(type);
     }
 
     @Override

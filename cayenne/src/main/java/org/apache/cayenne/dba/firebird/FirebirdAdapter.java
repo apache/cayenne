@@ -36,9 +36,11 @@ import org.apache.cayenne.di.Inject;
 import org.apache.cayenne.map.DbAttribute;
 import org.apache.cayenne.query.Query;
 import org.apache.cayenne.query.SQLAction;
-import org.apache.cayenne.resource.ResourceLocator;
 
+import java.sql.Types;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 /**
  * DbAdapter implementation for <a href="http://www.firebirdsql.org">FirebirdSQL
@@ -61,16 +63,52 @@ public class FirebirdAdapter extends JdbcAdapter {
             @Inject(Constants.DEFAULT_TYPES_LIST) List<ExtendedType> defaultExtendedTypes,
             @Inject(Constants.USER_TYPES_LIST) List<ExtendedType> userExtendedTypes,
             @Inject(Constants.TYPE_FACTORIES_LIST) List<ExtendedTypeFactory> extendedTypeFactories,
-            @Inject(Constants.RESOURCE_LOCATOR) ResourceLocator resourceLocator,
             @Inject ValueObjectTypeRegistry valueObjectTypeRegistry) {
         super(
                 runtimeProperties,
                 defaultExtendedTypes,
                 userExtendedTypes,
                 extendedTypeFactories,
-                resourceLocator,
                 valueObjectTypeRegistry);
 	    setSupportsBatchUpdates(true);
+    }
+
+    @Override
+    protected Map<Integer, String[]> createExternalTypes() {
+        Map<Integer, String[]> types = new HashMap<>();
+        types.put(Types.ARRAY, new String[]{"BLOB"});
+        types.put(Types.BIGINT, new String[]{"BIGINT"});
+        types.put(Types.BINARY, new String[]{"BLOB"});
+        types.put(Types.BIT, new String[]{"SMALLINT"});
+        types.put(Types.BLOB, new String[]{"BLOB"});
+        types.put(Types.BOOLEAN, new String[]{"SMALLINT"});
+        types.put(Types.CHAR, new String[]{"VARCHAR"});
+        types.put(Types.CLOB, new String[]{"BLOB SUB_TYPE TEXT"});
+        types.put(Types.DATALINK, new String[]{"BLOB"});
+        types.put(Types.DATE, new String[]{"DATE"});
+        types.put(Types.DECIMAL, new String[]{"DECIMAL"});
+        types.put(Types.DOUBLE, new String[]{"DOUBLE PRECISION"});
+        types.put(Types.FLOAT, new String[]{"DOUBLE PRECISION"});
+        types.put(Types.INTEGER, new String[]{"INTEGER"});
+        types.put(Types.JAVA_OBJECT, new String[]{"BLOB"});
+        types.put(Types.LONGNVARCHAR, new String[]{"BLOB SUB_TYPE TEXT"});
+        types.put(Types.LONGVARBINARY, new String[]{"BLOB"});
+        types.put(Types.LONGVARCHAR, new String[]{"BLOB SUB_TYPE TEXT"});
+        types.put(Types.NCHAR, new String[]{"CHAR CHARACTER SET UNICODE_FSS"});
+        types.put(Types.NCLOB, new String[]{"BLOB SUB_TYPE TEXT"});
+        types.put(Types.NUMERIC, new String[]{"DECIMAL"});
+        types.put(Types.NVARCHAR, new String[]{"VARCHAR CHARACTER SET UNICODE_FSS"});
+        types.put(Types.OTHER, new String[]{"BLOB"});
+        types.put(Types.REAL, new String[]{"REAL"});
+        types.put(Types.REF, new String[]{"BLOB"});
+        types.put(Types.SMALLINT, new String[]{"SMALLINT"});
+        types.put(Types.STRUCT, new String[]{"BLOB"});
+        types.put(Types.TIME, new String[]{"TIME"});
+        types.put(Types.TIMESTAMP, new String[]{"TIMESTAMP"});
+        types.put(Types.TINYINT, new String[]{"SMALLINT"});
+        types.put(Types.VARBINARY, new String[]{"BLOB"});
+        types.put(Types.VARCHAR, new String[]{"VARCHAR"});
+        return types;
     }
     
     protected void configureExtendedTypes(ExtendedTypeMap map) {
