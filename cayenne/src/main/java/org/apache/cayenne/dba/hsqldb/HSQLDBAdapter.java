@@ -19,6 +19,7 @@
 
 package org.apache.cayenne.dba.hsqldb;
 
+import org.apache.cayenne.dba.NativeColumnType;
 import org.apache.cayenne.CayenneRuntimeException;
 import org.apache.cayenne.access.DataNode;
 import org.apache.cayenne.access.sqlbuilder.sqltree.SQLTreeProcessor;
@@ -46,10 +47,8 @@ import org.apache.cayenne.query.SQLAction;
 
 import java.sql.Types;
 import java.util.Collection;
-import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
-import java.util.Map;
 
 /**
  * DbAdapter implementation for the HSQLDB RDBMS.
@@ -69,41 +68,41 @@ public class HSQLDBAdapter extends JdbcAdapter {
     }
 
     @Override
-    protected Map<Integer, String[]> createExternalTypes() {
-        Map<Integer, String[]> types = new HashMap<>();
-        types.put(Types.ARRAY, new String[]{"ARRAY"});
-        types.put(Types.BIGINT, new String[]{"BIGINT"});
-        types.put(Types.BINARY, new String[]{"BINARY"});
-        types.put(Types.BIT, new String[]{"BIT"});
-        types.put(Types.BLOB, new String[]{"LONGVARBINARY"});
-        types.put(Types.BOOLEAN, new String[]{"BOOLEAN"});
-        types.put(Types.CHAR, new String[]{"CHAR"});
-        types.put(Types.CLOB, new String[]{"LONGVARCHAR"});
-        types.put(Types.DATALINK, new String[]{"DATALINK"});
-        types.put(Types.DATE, new String[]{"DATE"});
-        types.put(Types.DECIMAL, new String[]{"DECIMAL"});
-        types.put(Types.DOUBLE, new String[]{"DOUBLE"});
-        types.put(Types.FLOAT, new String[]{"FLOAT"});
-        types.put(Types.INTEGER, new String[]{"INTEGER"});
-        types.put(Types.JAVA_OBJECT, new String[]{"JAVA_OBJECT"});
-        types.put(Types.LONGNVARCHAR, new String[]{"LONGVARCHAR"});
-        types.put(Types.LONGVARBINARY, new String[]{"LONGVARBINARY"});
-        types.put(Types.LONGVARCHAR, new String[]{"LONGVARCHAR"});
-        types.put(Types.NCHAR, new String[]{"CHAR"});
-        types.put(Types.NCLOB, new String[]{"LONGVARCHAR"});
-        types.put(Types.NUMERIC, new String[]{"NUMERIC"});
-        types.put(Types.NVARCHAR, new String[]{"VARCHAR"});
-        types.put(Types.OTHER, new String[]{"OTHER"});
-        types.put(Types.REAL, new String[]{"REAL"});
-        types.put(Types.REF, new String[]{"REF"});
-        types.put(Types.SMALLINT, new String[]{"SMALLINT"});
-        types.put(Types.STRUCT, new String[]{"STRUCT"});
-        types.put(Types.TIME, new String[]{"TIME"});
-        types.put(Types.TIMESTAMP, new String[]{"TIMESTAMP"});
-        types.put(Types.TINYINT, new String[]{"TINYINT"});
-        types.put(Types.VARBINARY, new String[]{"VARBINARY"});
-        types.put(Types.VARCHAR, new String[]{"VARCHAR"});
-        return types;
+    protected NativeColumnType[] createExternalTypes() {
+        return new NativeColumnType[]{
+            NativeColumnType.of(Types.ARRAY, "ARRAY"),
+            NativeColumnType.of(Types.BIGINT, "BIGINT"),
+            NativeColumnType.of(Types.BINARY, "BINARY"),
+            NativeColumnType.of(Types.BIT, "BIT"),
+            NativeColumnType.of(Types.BLOB, "LONGVARBINARY"),
+            NativeColumnType.of(Types.BOOLEAN, "BOOLEAN"),
+            NativeColumnType.of(Types.CHAR, "CHAR"),
+            NativeColumnType.of(Types.CLOB, "LONGVARCHAR"),
+            NativeColumnType.of(Types.DATALINK, "DATALINK"),
+            NativeColumnType.of(Types.DATE, "DATE"),
+            NativeColumnType.of(Types.DECIMAL, "DECIMAL"),
+            NativeColumnType.of(Types.DOUBLE, "DOUBLE"),
+            NativeColumnType.of(Types.FLOAT, "FLOAT"),
+            NativeColumnType.of(Types.INTEGER, "INTEGER"),
+            NativeColumnType.of(Types.JAVA_OBJECT, "JAVA_OBJECT"),
+            NativeColumnType.of(Types.LONGNVARCHAR, "LONGVARCHAR"),
+            NativeColumnType.of(Types.LONGVARBINARY, "LONGVARBINARY"),
+            NativeColumnType.of(Types.LONGVARCHAR, "LONGVARCHAR"),
+            NativeColumnType.of(Types.NCHAR, "CHAR"),
+            NativeColumnType.of(Types.NCLOB, "LONGVARCHAR"),
+            NativeColumnType.of(Types.NUMERIC, "NUMERIC"),
+            NativeColumnType.of(Types.NVARCHAR, "VARCHAR"),
+            NativeColumnType.of(Types.OTHER, "OTHER"),
+            NativeColumnType.of(Types.REAL, "REAL"),
+            NativeColumnType.of(Types.REF, "REF"),
+            NativeColumnType.of(Types.SMALLINT, "SMALLINT"),
+            NativeColumnType.of(Types.STRUCT, "STRUCT"),
+            NativeColumnType.of(Types.TIME, "TIME"),
+            NativeColumnType.of(Types.TIMESTAMP, "TIMESTAMP"),
+            NativeColumnType.of(Types.TINYINT, "TINYINT"),
+            NativeColumnType.of(Types.VARBINARY, "VARBINARY"),
+            NativeColumnType.of(Types.VARCHAR, "VARCHAR"),
+        };
     }
 
     /**

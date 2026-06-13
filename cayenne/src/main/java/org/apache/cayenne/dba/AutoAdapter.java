@@ -190,9 +190,15 @@ public class AutoAdapter implements DbAdapter {
 		return getAdapter().createFkConstraint(rel);
 	}
 
+	@Deprecated(since = "5.0", forRemoval = true)
 	@Override
 	public String[] externalTypesForJdbcType(int type) {
 		return getAdapter().externalTypesForJdbcType(type);
+	}
+
+	@Override
+	public NativeColumnType[] nativeColumnTypes(int type) {
+		return getAdapter().nativeColumnTypes(type);
 	}
 
 	@Override

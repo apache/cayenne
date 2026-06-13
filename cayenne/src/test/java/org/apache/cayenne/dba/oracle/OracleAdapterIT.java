@@ -19,6 +19,7 @@
 
 package org.apache.cayenne.dba.oracle;
 
+import org.apache.cayenne.dba.NativeColumnType;
 import org.apache.cayenne.map.DataMap;
 import org.apache.cayenne.query.InsertBatchQuery;
 import org.apache.cayenne.unit.CayenneProjects;
@@ -56,9 +57,9 @@ public class OracleAdapterIT {
                 OracleAdapter.class, 
                 OracleAdapter.class.getName());
 
-        String[] types = adapter.externalTypesForJdbcType(Types.TIMESTAMP);
+        NativeColumnType[] types = adapter.nativeColumnTypes(Types.TIMESTAMP);
         assertNotNull(types);
         assertEquals(1, types.length);
-        assertEquals("TIMESTAMP", types[0]);
+        assertEquals("TIMESTAMP", types[0].nativeType());
     }
 }

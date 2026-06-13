@@ -32,6 +32,7 @@ import org.junit.jupiter.api.extension.RegisterExtension;
 import java.sql.Types;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
 
 public class JdbcAdapterIT {
@@ -40,7 +41,7 @@ public class JdbcAdapterIT {
     static final CayenneTestsEnv env = CayenneTestsEnv.forProject(CayenneProjects.TESTMAP_PROJECT);
 
     @Test
-    public void externalTypesForJdbcType() throws Exception {
+    public void nativeColumnTypes() throws Exception {
         // check a few types
         checkType(Types.BLOB);
         checkType(Types.ARRAY);
@@ -50,13 +51,15 @@ public class JdbcAdapterIT {
 
     private void checkType(int type) throws java.lang.Exception {
         JdbcAdapter adapter = env.adhocObjectFactory().newInstance(
-                JdbcAdapter.class, 
+                JdbcAdapter.class,
                 JdbcAdapter.class.getName());
 
-        String[] types = adapter.externalTypesForJdbcType(type);
+        NativeColumnType[] types = adapter.nativeColumnTypes(type);
         assertNotNull(types);
         assertEquals(1, types.length);
-        assertEquals(TypesMapping.getSqlNameByType(type), types[0]);
+        assertEquals(type, types[0].jdbcType());
+        assertEquals(TypesMapping.getSqlNameByType(type), types[0].nativeType());
+        assertFalse(types[0].autoIncrement());
     }
 
     @Test

@@ -162,8 +162,19 @@ public interface DbAdapter {
 	/**
 	 * Returns an array of RDBMS types that can be used with JDBC
 	 * <code>type</code>. Valid JDBC types are defined in java.sql.Types.
+	 *
+	 * @deprecated use {@link #nativeColumnTypes(int)}
 	 */
+	@Deprecated(since = "5.0", forRemoval = true)
 	String[] externalTypesForJdbcType(int type);
+
+	/**
+	 * Returns the database-native types that the given JDBC <code>type</code> (see {@link java.sql.Types}) maps to,
+	 * or null if the type is not supported. The first variant is used for column DDL.
+	 *
+	 * @since 5.0
+	 */
+	NativeColumnType[] nativeColumnTypes(int type);
 
 	/**
 	 * Returns a map of ExtendedTypes that is used to translate values between

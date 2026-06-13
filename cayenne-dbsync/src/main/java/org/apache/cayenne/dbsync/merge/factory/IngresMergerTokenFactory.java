@@ -150,7 +150,7 @@ public class IngresMergerTokenFactory extends DefaultMergerTokenFactory {
                 sqlBuffer.append(" ALTER COLUMN ");
                 sqlBuffer.append(context.quotedName(getColumn()));
                 sqlBuffer.append(" ");
-                sqlBuffer.append(adapter.externalTypesForJdbcType(getColumn().getType())[0]);
+                sqlBuffer.append(adapter.nativeColumnTypes(getColumn().getType())[0].nativeType());
 
                 if (adapter.typeSupportsLength(getColumn().getType()) && getColumn().getMaxLength() > 0) {
                     sqlBuffer.append("(");
@@ -179,7 +179,7 @@ public class IngresMergerTokenFactory extends DefaultMergerTokenFactory {
                 sqlBuffer.append(" ALTER COLUMN ");
                 sqlBuffer.append(context.quotedName(getColumn()));
                 sqlBuffer.append(" ");
-                sqlBuffer.append(adapter.externalTypesForJdbcType(getColumn().getType())[0]);
+                sqlBuffer.append(adapter.nativeColumnTypes(getColumn().getType())[0].nativeType());
 
                 if (adapter.typeSupportsLength(getColumn().getType()) && getColumn().getMaxLength() > 0) {
                     sqlBuffer.append("(");
