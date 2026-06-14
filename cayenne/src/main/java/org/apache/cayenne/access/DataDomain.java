@@ -44,6 +44,7 @@ import org.apache.cayenne.map.EntitySorter;
 import org.apache.cayenne.query.Query;
 import org.apache.cayenne.tx.BaseTransaction;
 import org.apache.cayenne.tx.Transaction;
+import org.apache.cayenne.tx.TransactionFactory;
 import org.apache.cayenne.tx.TransactionManager;
 import org.apache.cayenne.util.ToStringBuilder;
 
@@ -79,6 +80,12 @@ public class DataDomain implements DataChannel {
      */
     @Inject
     protected TransactionManager transactionManager;
+
+    /**
+     * @since 5.0
+     */
+    @Inject
+    protected TransactionFactory transactionFactory;
 
     /**
      * @since 4.0
@@ -764,6 +771,10 @@ public class DataDomain implements DataChannel {
 
     TransactionManager getTransactionManager() {
         return transactionManager;
+    }
+
+    TransactionFactory getTransactionFactory() {
+        return transactionFactory;
     }
 
     AdhocObjectFactory getObjectFactory() {

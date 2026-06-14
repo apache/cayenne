@@ -61,7 +61,6 @@ import org.apache.cayenne.reflect.PropertyVisitor;
 import org.apache.cayenne.reflect.ToManyProperty;
 import org.apache.cayenne.reflect.ToOneProperty;
 import org.apache.cayenne.runtime.CayenneRuntime;
-import org.apache.cayenne.tx.TransactionFactory;
 import org.apache.cayenne.util.EventUtil;
 import org.apache.cayenne.util.GenericResponse;
 import org.apache.cayenne.util.Util;
@@ -150,8 +149,6 @@ public class DataContext implements ObjectContext {
     protected transient QueryCache queryCache;
     protected transient EntityResolver entityResolver;
 
-    protected transient TransactionFactory transactionFactory;
-
     protected transient DataContextMergeHandler mergeHandler;
 
     protected boolean validatingObjectsOnCommit = true;
@@ -228,7 +225,6 @@ public class DataContext implements ObjectContext {
     protected void attachToRuntime(Injector injector) {
         attachToChannel(injector.getInstance(DataChannel.class));
         setQueryCache(new NestedQueryCache(injector.getInstance(QueryCache.class)));
-        this.transactionFactory = injector.getInstance(TransactionFactory.class);
     }
 
     /**
@@ -1396,21 +1392,6 @@ public class DataContext implements ObjectContext {
             GraphEvent e = new GraphEvent(this, postedBy, changes);
             manager.postEvent(e, DataChannel.GRAPH_CHANGED_SUBJECT);
         }
-    }
-
-    TransactionFactory getTransactionFactory() {
-        attachToRuntimeIfNeeded();
-        return transactionFactory;
-    }
-
-    /**
-     * @since 4.0
-     * @deprecated avoid using this directly. Transaction management
-     *             at this level will be eventually removed
-     */
-    @Deprecated
-    public void setTransactionFactory(TransactionFactory transactionFactory) {
-        this.transactionFactory = transactionFactory;
     }
 
     @Override
