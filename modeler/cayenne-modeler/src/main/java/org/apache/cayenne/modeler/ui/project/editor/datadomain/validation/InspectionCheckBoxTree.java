@@ -68,6 +68,9 @@ class InspectionCheckBoxTree extends CheckBoxTree {
         DefaultMutableTreeNode root = new DefaultMutableTreeNode();
         Map<Inspection.Group, MutableTreeNode> groupNodes = new EnumMap<>(Inspection.Group.class);
         for (Inspection inspection : Inspection.values()) {
+            if (inspection.isDeprecated()) {
+                continue;
+            }
             MutableTreeNode groupNode = groupNodes.computeIfAbsent(inspection.group(), g -> addChild(root, g));
             DefaultMutableTreeNode inspectionNode = addChild(groupNode, inspection);
             inspectionPathCache.put(inspection, new TreePath(inspectionNode.getPath()));

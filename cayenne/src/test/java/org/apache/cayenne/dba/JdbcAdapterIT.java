@@ -63,6 +63,19 @@ public class JdbcAdapterIT {
     }
 
     @Test
+    public void createTableUnconstrainedVarcharUsesDefaultLength() {
+        JdbcAdapter adapter = env.adhocObjectFactory().newInstance(
+                JdbcAdapter.class,
+                JdbcAdapter.class.getName());
+        DbEntity e = new DbEntity("Test");
+        DbAttribute c = new DbAttribute("c");
+        c.setType(Types.VARCHAR);   // no max length -> default char length
+        e.addAttribute(c);
+
+        assertEquals("CREATE TABLE Test (c VARCHAR(255) NULL)", adapter.createTable(e));
+    }
+
+    @Test
     public void createTableQuoteSqlIdentifiers() {
 
         if (env.dataNode().getAdapter() instanceof MySQLAdapter mySQLAdapter) {

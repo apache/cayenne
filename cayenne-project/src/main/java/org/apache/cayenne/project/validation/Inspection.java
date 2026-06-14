@@ -67,7 +67,8 @@ public enum Inspection {
     DB_ATTRIBUTE_NO_NAME(Group.DB_ATTRIBUTE, "Empty db attribute name"),
     DB_ATTRIBUTE_INVALID_NAME(Group.DB_ATTRIBUTE, "Invalid db attribute name"),
     DB_ATTRIBUTE_NO_TYPE(Group.DB_ATTRIBUTE, "Empty db attribute type"),
-    DB_ATTRIBUTE_NO_LENGTH(Group.DB_ATTRIBUTE, "String db attribute has no length"),
+    @Deprecated(since = "5.0", forRemoval = true)
+    DB_ATTRIBUTE_NO_LENGTH(Group.DB_ATTRIBUTE, "String db attribute has no length", true),
 
     DB_RELATIONSHIP_NO_NAME(Group.DB_RELATIONSHIP, "Empty db relationship name"),
     DB_RELATIONSHIP_NAME_DUPLICATE(Group.DB_RELATIONSHIP, "Duplicate of a db relationship name"),
@@ -93,7 +94,8 @@ public enum Inspection {
 
     PROCEDURE_PARAMETER_NO_NAME(Group.PROCEDURE_PARAMETER, "Empty procedure parameter name"),
     PROCEDURE_PARAMETER_NO_TYPE(Group.PROCEDURE_PARAMETER, "Empty procedure parameter type"),
-    PROCEDURE_PARAMETER_NO_LENGTH(Group.PROCEDURE_PARAMETER, "String procedure parameter has no length"),
+    @Deprecated(since = "5.0", forRemoval = true)
+    PROCEDURE_PARAMETER_NO_LENGTH(Group.PROCEDURE_PARAMETER, "String procedure parameter has no length", true),
     PROCEDURE_PARAMETER_NO_DIRECTION(Group.PROCEDURE_PARAMETER, "Procedure parameter has no direction"),
 
     QUERY_NO_NAME(Group.QUERY, "Empty query name"),
@@ -116,15 +118,25 @@ public enum Inspection {
     private final Group group;
     private final String readableName;
     private final String description;
+    private final boolean deprecated;
 
     Inspection(Group group, String name) {
-        this(group, name, name);
+        this(group, name, name, false);
+    }
+
+    Inspection(Group group, String name, boolean deprecated) {
+        this(group, name, name, deprecated);
     }
 
     Inspection(Group group, String name, String description) {
+        this(group, name, description, false);
+    }
+
+    Inspection(Group group, String name, String description, boolean deprecated) {
         this.group = group;
         this.readableName = name;
         this.description = description;
+        this.deprecated = deprecated;
     }
 
     public Group group() {
@@ -137,6 +149,17 @@ public enum Inspection {
 
     public String description() {
         return description;
+    }
+
+    /**
+     * Returns true if this inspection is no longer performed and is retained only so previously saved project
+     * configurations that reference it still load. Deprecated inspections are hidden from the UI and stripped
+     * when a project is saved.
+     *
+     * @since 5.0
+     */
+    public boolean isDeprecated() {
+        return deprecated;
     }
 
     @Override

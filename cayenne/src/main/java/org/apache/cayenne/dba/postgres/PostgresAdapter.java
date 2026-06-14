@@ -78,6 +78,7 @@ public class PostgresAdapter extends JdbcAdapter {
                 NativeColumnType.of(Types.BLOB, "oid"),
                 NativeColumnType.of(Types.BOOLEAN, "boolean"),
                 NativeColumnType.of(Types.CHAR, "character"),
+                NativeColumnType.of(Types.CHAR, "text").asUnconstrained(),
                 NativeColumnType.of(Types.CLOB, "text"),
                 NativeColumnType.of(Types.DATE, "date"),
                 NativeColumnType.of(Types.DECIMAL, "decimal"),
@@ -89,9 +90,11 @@ public class PostgresAdapter extends JdbcAdapter {
                 NativeColumnType.of(Types.LONGVARBINARY, "bytea"),
                 NativeColumnType.of(Types.LONGVARCHAR, "text"),
                 NativeColumnType.of(Types.NCHAR, "character"),
+                NativeColumnType.of(Types.NCHAR, "text").asUnconstrained(),
                 NativeColumnType.of(Types.NCLOB, "text"),
                 NativeColumnType.of(Types.NUMERIC, "numeric"),
                 NativeColumnType.of(Types.NVARCHAR, "varchar"),
+                NativeColumnType.of(Types.NVARCHAR, "text").asUnconstrained(),
                 NativeColumnType.of(Types.OTHER, "json"),
                 NativeColumnType.of(Types.REAL, "real"),
                 NativeColumnType.of(Types.SMALLINT, "smallint"),
@@ -102,6 +105,7 @@ public class PostgresAdapter extends JdbcAdapter {
                 NativeColumnType.of(Types.TINYINT, "smallint"),
                 NativeColumnType.of(Types.VARBINARY, "bytea"),
                 NativeColumnType.of(Types.VARCHAR, "varchar"),
+                NativeColumnType.of(Types.VARCHAR, "text").asUnconstrained(),
         };
     }
 
@@ -149,7 +153,8 @@ public class PostgresAdapter extends JdbcAdapter {
     @Override
     public DbAttribute buildAttribute(String name, String typeName, int type, int maxLength, int scale, boolean allowNulls) {
 
-        int amendedType = switch (typeName != null ? typeName.toLowerCase() : "") {
+        String lower = typeName != null ? typeName.toLowerCase() : "";
+        int amendedType = switch (lower) {
             case "json" -> Types.OTHER;
             // "bytea" maps to pretty much any binary type, so it is up to us to select the most sensible default.
             // And the winner is LONGVARBINARY
@@ -159,7 +164,10 @@ public class PostgresAdapter extends JdbcAdapter {
             default -> type;
         };
 
-        return super.buildAttribute(name, typeName, amendedType, maxLength, scale, allowNulls);
+        // "text" is an unconstrained VARCHAR; the driver reports a bogus huge length, so treat it as unknown (-1)
+        int amendedLength = "text".equals(lower) ? -1 : maxLength;
+
+        return super.buildAttribute(name, typeName, amendedType, amendedLength, scale, allowNulls);
     }
 
     @Override
@@ -234,26 +242,10 @@ public class PostgresAdapter extends JdbcAdapter {
                     , ent.getFullyQualifiedName(), at.getName());
         }
 
-        NativeColumnType[] types = nativeColumnTypes(at.getType());
-        if (types == null || types.length == 0) {
-            throw new CayenneRuntimeException(
-                    "Undefined type for attribute '%s.%s': %s", ent.getFullyQualifiedName(), at.getName(), at.getType());
-        }
-
-        // For a generated column use the auto-increment variant if there is one (serial, bigserial, smallserial).
-        NativeColumnType selected = types[0];
-        if (at.isGenerated()) {
-            for (NativeColumnType candidate : types) {
-                if (candidate.autoIncrement()) {
-                    selected = candidate;
-                    break;
-                }
-            }
-        }
-
+        // getType / sizeAndPrecision pick the right variant (auto-increment serial, unconstrained "text", ...)
         buf.append(context.quotedName(at))
                 .append(' ')
-                .append(selected.nativeType())
+                .append(getType(this, at))
                 .append(sizeAndPrecision(this, at))
                 .append(at.isMandatory() ? " NOT" : "")
                 .append(" NULL");

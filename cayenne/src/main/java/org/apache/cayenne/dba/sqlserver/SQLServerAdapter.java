@@ -90,6 +90,7 @@ public class SQLServerAdapter extends JdbcAdapter {
             NativeColumnType.of(Types.BLOB, "image"),
             NativeColumnType.of(Types.BOOLEAN, "bit"),
             NativeColumnType.of(Types.CHAR, "char"),
+            NativeColumnType.of(Types.CHAR, "varchar(max)").asUnconstrained(),
             NativeColumnType.of(Types.CLOB, "text"),
             NativeColumnType.of(Types.DATE, "date"),
             NativeColumnType.of(Types.DECIMAL, "decimal"),
@@ -100,9 +101,11 @@ public class SQLServerAdapter extends JdbcAdapter {
             NativeColumnType.of(Types.LONGVARBINARY, "image"),
             NativeColumnType.of(Types.LONGVARCHAR, "text"),
             NativeColumnType.of(Types.NCHAR, "nchar"),
+            NativeColumnType.of(Types.NCHAR, "nvarchar(max)").asUnconstrained(),
             NativeColumnType.of(Types.NCLOB, "ntext"),
             NativeColumnType.of(Types.NUMERIC, "numeric"),
             NativeColumnType.of(Types.NVARCHAR, "nvarchar"),
+            NativeColumnType.of(Types.NVARCHAR, "nvarchar(max)").asUnconstrained(),
             NativeColumnType.of(Types.REAL, "real"),
             NativeColumnType.of(Types.ROWID, "ROWID"),
             NativeColumnType.of(Types.SMALLINT, "smallint"),
@@ -112,6 +115,7 @@ public class SQLServerAdapter extends JdbcAdapter {
             NativeColumnType.of(Types.TINYINT, "tinyint"),
             NativeColumnType.of(Types.VARBINARY, "varbinary"),
             NativeColumnType.of(Types.VARCHAR, "varchar"),
+            NativeColumnType.of(Types.VARCHAR, "varchar(max)").asUnconstrained(),
         };
     }
 

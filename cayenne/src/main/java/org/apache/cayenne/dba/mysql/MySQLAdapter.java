@@ -91,6 +91,7 @@ public class MySQLAdapter extends JdbcAdapter {
             NativeColumnType.of(Types.BLOB, "LONGBLOB"),
             NativeColumnType.of(Types.BOOLEAN, "BOOL"),
             NativeColumnType.of(Types.CHAR, "CHAR"),
+            NativeColumnType.of(Types.CHAR, "longtext").asUnconstrained(),
             NativeColumnType.of(Types.CLOB, "LONGTEXT"),
             NativeColumnType.of(Types.DATE, "DATE"),
             NativeColumnType.of(Types.DECIMAL, "DECIMAL"),
@@ -101,9 +102,11 @@ public class MySQLAdapter extends JdbcAdapter {
             NativeColumnType.of(Types.LONGVARBINARY, "LONGBLOB"),
             NativeColumnType.of(Types.LONGVARCHAR, "LONGTEXT"),
             NativeColumnType.of(Types.NCHAR, "CHAR"),
+            NativeColumnType.of(Types.NCHAR, "longtext").asUnconstrained(),
             NativeColumnType.of(Types.NCLOB, "LONGTEXT"),
             NativeColumnType.of(Types.NUMERIC, "DECIMAL"),
             NativeColumnType.of(Types.NVARCHAR, "VARCHAR"),
+            NativeColumnType.of(Types.NVARCHAR, "longtext").asUnconstrained(),
             NativeColumnType.of(Types.REAL, "DOUBLE"),
             NativeColumnType.of(Types.SMALLINT, "SMALLINT"),
             NativeColumnType.of(Types.SQLXML, "LONGTEXT"),
@@ -112,6 +115,7 @@ public class MySQLAdapter extends JdbcAdapter {
             NativeColumnType.of(Types.TINYINT, "TINYINT"),
             NativeColumnType.of(Types.VARBINARY, "VARBINARY"),
             NativeColumnType.of(Types.VARCHAR, "VARCHAR"),
+            NativeColumnType.of(Types.VARCHAR, "longtext").asUnconstrained(),
         };
     }
 

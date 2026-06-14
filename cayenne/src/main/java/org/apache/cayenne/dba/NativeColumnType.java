@@ -20,18 +20,19 @@ package org.apache.cayenne.dba;
 
 /**
  * Describes a single database-native (external) SQL type that a JDBC type (see {@link java.sql.Types}) maps to.
- * A JDBC type may map to more than one external type, e.g. a primary name plus the auto-increment variant used
- * for generated columns (PostgreSQL "serial").
+ * A JDBC type may map to more than one native type, e.g. a primary name plus the auto-increment variant used
+ * for generated columns (PostgreSQL "serial"), or a primary name plus an unconstrained variant used for a
+ * character column with no max length (PostgreSQL "text").
  *
  * @since 5.0
  */
-public record NativeColumnType(int jdbcType, String nativeType, boolean autoIncrement) {
+public record NativeColumnType(int jdbcType, String nativeType, boolean autoIncrement, boolean unconstrained) {
 
     /**
-     * Creates a plain external type.
+     * Creates a plain native type.
      */
-    public static NativeColumnType of(int jdbcType, String dbType) {
-        return new NativeColumnType(jdbcType, dbType, false);
+    public static NativeColumnType of(int jdbcType, String nativeType) {
+        return new NativeColumnType(jdbcType, nativeType, false, false);
     }
 
     /**
@@ -39,6 +40,14 @@ public record NativeColumnType(int jdbcType, String nativeType, boolean autoIncr
      * {@link java.sql.Types#INTEGER}. Used to render generated columns.
      */
     public NativeColumnType asAutoIncrement() {
-        return new NativeColumnType(jdbcType, nativeType, true);
+        return new NativeColumnType(jdbcType, nativeType, true, unconstrained);
+    }
+
+    /**
+     * Returns a copy of this type flagged as the unconstrained variant, i.e. one that may be used for a character
+     * column with no max length and rendered without a length suffix, e.g. PostgreSQL "text" or MySQL "longtext".
+     */
+    public NativeColumnType asUnconstrained() {
+        return new NativeColumnType(jdbcType, nativeType, autoIncrement, true);
     }
 }

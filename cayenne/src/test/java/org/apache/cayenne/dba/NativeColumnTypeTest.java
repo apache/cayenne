@@ -34,6 +34,7 @@ public class NativeColumnTypeTest {
         assertEquals(Types.VARCHAR, type.jdbcType());
         assertEquals("varchar", type.nativeType());
         assertFalse(type.autoIncrement());
+        assertFalse(type.unconstrained());
     }
 
     @Test
@@ -43,10 +44,26 @@ public class NativeColumnTypeTest {
 
         // only the flag flips; everything else is preserved
         assertTrue(auto.autoIncrement());
+        assertFalse(auto.unconstrained());
         assertEquals(base.jdbcType(), auto.jdbcType());
         assertEquals(base.nativeType(), auto.nativeType());
 
         // the original is unchanged
         assertFalse(base.autoIncrement());
+    }
+
+    @Test
+    public void asUnconstrained() {
+        NativeColumnType base = NativeColumnType.of(Types.VARCHAR, "text");
+        NativeColumnType unconstrained = base.asUnconstrained();
+
+        // only the flag flips; everything else is preserved
+        assertTrue(unconstrained.unconstrained());
+        assertFalse(unconstrained.autoIncrement());
+        assertEquals(base.jdbcType(), unconstrained.jdbcType());
+        assertEquals(base.nativeType(), unconstrained.nativeType());
+
+        // the original is unchanged
+        assertFalse(base.unconstrained());
     }
 }

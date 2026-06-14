@@ -18,7 +18,6 @@
  ****************************************************************/
 package org.apache.cayenne.project.validation;
 
-import java.sql.Types;
 import java.util.function.Supplier;
 
 import org.apache.cayenne.dba.TypesMapping;
@@ -41,7 +40,6 @@ class ProcedureParameterValidator extends ConfigurationNodeValidator<ProcedurePa
         on(node, validationResult)
                 .performIfEnabled(Inspection.PROCEDURE_PARAMETER_NO_NAME, this::checkForName)
                 .performIfEnabled(Inspection.PROCEDURE_PARAMETER_NO_TYPE, this::checkForType)
-                .performIfEnabled(Inspection.PROCEDURE_PARAMETER_NO_LENGTH, this::checkForLength)
                 .performIfEnabled(Inspection.PROCEDURE_PARAMETER_NO_DIRECTION, this::checkForDirection);
     }
 
@@ -56,19 +54,6 @@ class ProcedureParameterValidator extends ConfigurationNodeValidator<ProcedurePa
         // all attributes must have type
         if (parameter.getType() == TypesMapping.NOT_DEFINED) {
             addFailure(validationResult, parameter, "ProcedureParameter '%s' has no type", parameter.getName());
-        }
-    }
-
-    private void checkForLength(ProcedureParameter parameter, ValidationResult validationResult) {
-        // VARCHAR and CHAR attributes must have max length
-        if (parameter.getMaxLength() < 0
-                && (parameter.getType() == Types.VARCHAR
-                    || parameter.getType() == Types.NVARCHAR
-                    || parameter.getType() == Types.CHAR
-                    || parameter.getType() == Types.NCHAR)) {
-
-            addFailure(validationResult, parameter, "Character ProcedureParameter '%s' doesn't have max length",
-                    parameter.getName());
         }
     }
 

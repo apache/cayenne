@@ -68,6 +68,8 @@ public class JdbcAdapter implements DbAdapter {
     private PkGenerator pkGenerator;
     protected QuotingStrategy quotingStrategy;
 
+    protected int defaultCharLength = 255;
+
     protected Map<Integer, NativeColumnType[]> nativeColumnTypes;
     protected ExtendedTypeMap extendedTypes;
     protected boolean supportsBatchUpdates;
@@ -292,6 +294,14 @@ public class JdbcAdapter implements DbAdapter {
     }
 
     /**
+     * @since 5.0
+     */
+    @Override
+    public int defaultCharLength() {
+        return defaultCharLength;
+    }
+
+    /**
      * @since 3.0
      */
     @Override
@@ -379,8 +389,49 @@ public class JdbcAdapter implements DbAdapter {
         sqlBuffer.append(column.isMandatory() ? " NOT NULL" : " NULL");
     }
 
+    /**
+     * Selects the native type variant to use for a column: the auto-increment variant for a generated column,
+     * the {@link NativeColumnType#unconstrained() unconstrained} variant for a character column with no max length,
+     * otherwise the primary variant.
+     *
+     * @since 5.0
+     */
+    public static NativeColumnType selectNativeType(DbAdapter adapter, DbAttribute column) {
+        NativeColumnType[] variants = adapter.nativeColumnTypes(column.getType());
+        if (variants == null || variants.length == 0) {
+            String entityName = column.getEntity() != null
+                    ? column.getEntity().getFullyQualifiedName()
+                    : "<null>";
+            throw new CayenneRuntimeException("Undefined type for attribute '%s.%s': %s."
+                    , entityName, column.getName(), column.getType());
+        }
+
+        if (column.isGenerated()) {
+            for (NativeColumnType variant : variants) {
+                if (variant.autoIncrement()) {
+                    return variant;
+                }
+            }
+        } else if (isLengthBearingCharacter(column.getType()) && column.getMaxLength() <= 0) {
+            for (NativeColumnType variant : variants) {
+                if (variant.unconstrained()) {
+                    return variant;
+                }
+            }
+        }
+        return variants[0];
+    }
+
     public static String sizeAndPrecision(DbAdapter adapter, DbAttribute column) {
-        if (!adapter.typeSupportsLength(column.getType()) && !adapter.typeSupportsScale(column.getType())) {
+        int type = column.getType();
+
+        // an unconstrained character column either uses a length-free native type, or falls back to the
+        // adapter's default length for databases that require one
+        if (isLengthBearingCharacter(type) && column.getMaxLength() <= 0) {
+            return selectNativeType(adapter, column).unconstrained() ? "" : "(" + adapter.defaultCharLength() + ")";
+        }
+
+        if (!adapter.typeSupportsLength(type) && !adapter.typeSupportsScale(type)) {
             return "";
         }
 
@@ -401,21 +452,12 @@ public class JdbcAdapter implements DbAdapter {
     }
 
     public static String getType(DbAdapter adapter, DbAttribute column) {
-        int columnType = column.getType();
-        if(columnType == Types.OTHER) {
+        if (column.getType() == Types.OTHER) {
             // TODO: warn that this is unsupported yet
             return "OTHER";
         }
 
-        NativeColumnType[] types = adapter.nativeColumnTypes(columnType);
-        if (types == null || types.length == 0) {
-            String entityName = column.getEntity() != null
-                    ? column.getEntity().getFullyQualifiedName()
-                    : "<null>";
-            throw new CayenneRuntimeException("Undefined type for attribute '%s.%s': %s."
-                    , entityName, column.getName(), column.getType());
-        }
-        return types[0].nativeType();
+        return selectNativeType(adapter, column).nativeType();
     }
 
     /**
@@ -684,4 +726,7 @@ public class JdbcAdapter implements DbAdapter {
         return this;
     }
 
+    private static boolean isLengthBearingCharacter(int type) {
+        return type == Types.CHAR || type == Types.NCHAR || type == Types.VARCHAR || type == Types.NVARCHAR;
+    }
 }
