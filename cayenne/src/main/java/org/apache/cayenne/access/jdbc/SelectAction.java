@@ -44,23 +44,6 @@ import java.util.List;
  */
 public class SelectAction extends BaseSQLAction {
 
-    private static void bind(DbAdapter adapter, PreparedStatement statement, ParameterBinding[] bindings) throws Exception {
-
-        for (ParameterBinding b : bindings) {
-
-            // null DbAttributes are a result of inferior qualifier
-            // processing (qualifier can't map parameters to DbAttributes
-            // and therefore only supports standard java types now) hence, a
-            // special moronic case here:
-            if (b.getAttribute() == null) {
-                statement.setObject(b.getStatementPosition(), b.getValue());
-            } else {
-                adapter.bindParameter(statement, b);
-            }
-        }
-
-    }
-
     protected Select<?> query;
     protected QueryMetadata queryMetadata;
 
@@ -87,9 +70,22 @@ public class SelectAction extends BaseSQLAction {
 
         logger.logQuery(translated.sql(), translated.bindings());
 
+        DbAdapter adapter = dataNode.getAdapter();
         PreparedStatement statement = connection.prepareStatement(translated.sql());
-        bind(dataNode.getAdapter(), statement, translated.bindings());
 
+        for (ParameterBinding b : translated.bindings()) {
+
+            // null DbAttributes are a result of inferior qualifier
+            // processing (qualifier can't map parameters to DbAttributes
+            // and therefore only supports standard java types now) hence, a
+            // special moronic case here:
+            if (b.getAttribute() == null) {
+                statement.setObject(b.getStatementPosition(), b.getValue());
+            } else {
+                adapter.bindParameter(statement, b);
+            }
+        }
+        
         int fetchSize = queryMetadata.getStatementFetchSize();
         if (fetchSize != 0) {
             statement.setFetchSize(fetchSize);
