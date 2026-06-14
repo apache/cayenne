@@ -27,8 +27,6 @@ import java.util.Date;
 
 import org.apache.cayenne.access.types.UtilDateType;
 
-/**
- */
 public class OracleUtilDateType extends UtilDateType {
 
 	@Override

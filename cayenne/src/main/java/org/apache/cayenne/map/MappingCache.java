@@ -38,7 +38,7 @@ class MappingCache implements MappingNamespace {
 
     private static final ObjEntity OBJ_DUPLICATE_MARKER = new ObjEntity();
 
-    protected static final Logger logger = LoggerFactory.getLogger(MappingCache.class);
+    protected static final Logger LOGGER = LoggerFactory.getLogger(MappingCache.class);
 
     protected Collection<DataMap> maps;
     protected Map<String, QueryDescriptor> queryDesriptors;
@@ -136,7 +136,7 @@ class MappingCache implements MappingNamespace {
                         } else {
                             // bad mapping? Or most likely some classloader
                             // issue
-                            logger.warn("No super entity mapping for '" + superOEName + "'");
+                            LOGGER.warn("No super entity mapping for '" + superOEName + "'");
                             continue;
                         }
                     }
@@ -161,7 +161,7 @@ class MappingCache implements MappingNamespace {
             CayenneMapEntry duplicate = dst.get(entry.getName());
             if(duplicate != null) {
                 DataMap parent = (DataMap) duplicate.getParent();
-                logger.warn("Found duplicated name " + entry.getName()
+                LOGGER.warn("Found duplicated name " + entry.getName()
                         + " in datamaps " + srcMap.getName() + " and " + parent.getName());
             }
         }

@@ -30,7 +30,7 @@ import org.xml.sax.ContentHandler;
  */
 public final class DataChannelHandler extends VersionAwareHandler {
 
-    private static final Logger logger = LoggerFactory.getLogger(XMLDataChannelDescriptorLoader.class);
+    private static final Logger LOGGER = LoggerFactory.getLogger(XMLDataChannelDescriptorLoader.class);
 
     static final String DOMAIN_TAG = "domain";
 
@@ -52,7 +52,7 @@ public final class DataChannelHandler extends VersionAwareHandler {
             return new DataChannelChildrenHandler(xmlDataChannelDescriptorLoader, this);
         }
 
-        logger.info(unexpectedTagMessage(localName, DOMAIN_TAG));
+        LOGGER.info(unexpectedTagMessage(localName, DOMAIN_TAG));
         return super.createChildTagHandler(namespaceURI, localName, name, attributes);
     }
 }

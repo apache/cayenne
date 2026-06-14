@@ -34,7 +34,7 @@ import org.xml.sax.ContentHandler;
  */
 final class DataChannelChildrenHandler extends NamespaceAwareNestedTagHandler {
 
-    private static final Logger logger = LoggerFactory.getLogger(XMLDataChannelDescriptorLoader.class);
+    private static final Logger LOGGER = LoggerFactory.getLogger(XMLDataChannelDescriptorLoader.class);
 
     static final String OLD_MAP_TAG = "map";
     static final String NODE_TAG = "node";
@@ -107,7 +107,7 @@ final class DataChannelChildrenHandler extends NamespaceAwareNestedTagHandler {
 
         Resource dataMapResource = baseResource.getRelativeResource(dataMapLocation);
 
-        logger.info("Loading XML DataMap resource from " + dataMapResource.getURL());
+        LOGGER.info("Loading XML DataMap resource from " + dataMapResource.getURL());
 
         DataMap dataMap = xmlDataChannelDescriptorLoader.dataMapLoader.load(dataMapResource);
         dataMap.setName(dataMapName);

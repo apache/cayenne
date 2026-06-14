@@ -35,11 +35,9 @@ import org.apache.cayenne.tx.Transaction;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-/**
- */
 public class MySQLPkGenerator extends JdbcPkGenerator {
 
-    private static final Logger logger = LoggerFactory.getLogger(MySQLPkGenerator.class);
+    private static final Logger LOGGER = LoggerFactory.getLogger(MySQLPkGenerator.class);
 
     /**
      * Used by DI
@@ -75,7 +73,7 @@ public class MySQLPkGenerator extends JdbcPkGenerator {
         // See https://issues.apache.org/jira/browse/CAY-2186 for details.
         Transaction transaction = BaseTransaction.getThreadTransaction();
         if (transaction != null && transaction.isExternal()) {
-            logger.warn("Using MysqlPkGenerator with external transaction manager may lead to inconsistent state.");
+            LOGGER.warn("Using MysqlPkGenerator with external transaction manager may lead to inconsistent state.");
         }
         BaseTransaction.bindThreadTransaction(null);
 

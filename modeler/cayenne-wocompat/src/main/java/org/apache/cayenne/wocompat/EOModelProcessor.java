@@ -59,7 +59,7 @@ import java.util.stream.Collectors;
  */
 public class EOModelProcessor {
 
-	private static final Logger logger = LoggerFactory.getLogger(EOModelProcessor.class);
+	private static final Logger LOGGER = LoggerFactory.getLogger(EOModelProcessor.class);
 
 	protected Predicate<String> prototypeChecker;
 
@@ -721,7 +721,7 @@ public class EOModelProcessor {
 			try {
 				flatRel.setDbRelationshipPath(targetPath);
 			} catch (ExpressionException ex) {
-				logger.warn("Invalid relationship: " + targetPath);
+				LOGGER.warn("Invalid relationship: " + targetPath);
 				continue;
 			}
 

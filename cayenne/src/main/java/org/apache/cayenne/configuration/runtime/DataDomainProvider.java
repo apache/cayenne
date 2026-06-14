@@ -61,7 +61,7 @@ import java.util.Map;
  */
 public class DataDomainProvider implements Provider<DataDomain> {
 
-    private static final Logger logger = LoggerFactory.getLogger(DataDomainProvider.class);
+    private static final Logger LOGGER = LoggerFactory.getLogger(DataDomainProvider.class);
 
     @Inject
     protected ResourceLocator resourceLocator;
@@ -170,7 +170,7 @@ public class DataDomainProvider implements Provider<DataDomain> {
         }
 
         if (defaultNode != null) {
-            logger.info("setting DataNode '" + defaultNode.getName() + "' as default, used by all unlinked DataMaps");
+            LOGGER.info("setting DataNode '" + defaultNode.getName() + "' as default, used by all unlinked DataMaps");
 
             dataDomain.setDefaultNode(defaultNode);
         }
@@ -223,8 +223,8 @@ public class DataDomainProvider implements Provider<DataDomain> {
 
         long t0 = System.currentTimeMillis();
 
-        if (logger.isDebugEnabled()) {
-            logger.debug("starting configuration loading: " + locations);
+        if (LOGGER.isDebugEnabled()) {
+            LOGGER.debug("starting configuration loading: " + locations);
         }
 
         DataChannelDescriptor[] descriptors = new DataChannelDescriptor[locations.size()];
@@ -243,7 +243,7 @@ public class DataDomainProvider implements Provider<DataDomain> {
 
             // no support for multiple configs yet, but this is not a hard error
             if (configurations.size() > 1) {
-                logger.info("found " + configurations.size() + " configurations for " + location
+                LOGGER.info("found " + configurations.size() + " configurations for " + location
                         + ", will use the first one: " + configurationResource.getURL());
             }
 
@@ -258,8 +258,8 @@ public class DataDomainProvider implements Provider<DataDomain> {
 
         long t1 = System.currentTimeMillis();
 
-        if (logger.isDebugEnabled()) {
-            logger.debug("finished configuration loading in " + (t1 - t0) + " ms.");
+        if (LOGGER.isDebugEnabled()) {
+            LOGGER.debug("finished configuration loading in " + (t1 - t0) + " ms.");
         }
 
         return descriptorMerger.merge(descriptors);

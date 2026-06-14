@@ -30,7 +30,7 @@ import org.xml.sax.Attributes;
  */
 class DataSourceChildrenHandler extends NamespaceAwareNestedTagHandler {
 
-    private static final Logger logger = LoggerFactory.getLogger(XMLDataChannelDescriptorLoader.class);
+    private static final Logger LOGGER = LoggerFactory.getLogger(XMLDataChannelDescriptorLoader.class);
 
     static final String DRIVER_TAG = "driver";
     static final String LOGIN_TAG = "login";
@@ -85,7 +85,7 @@ class DataSourceChildrenHandler extends NamespaceAwareNestedTagHandler {
             try {
                 dataSourceDescriptor.setMinConnections(Integer.parseInt(min));
             } catch (NumberFormatException nfex) {
-                logger.info("Non-numeric 'min' attribute", nfex);
+                LOGGER.info("Non-numeric 'min' attribute", nfex);
                 throw new ConfigurationException("Non-numeric 'min' attribute '%s'", nfex, min);
             }
         }
@@ -95,7 +95,7 @@ class DataSourceChildrenHandler extends NamespaceAwareNestedTagHandler {
             try {
                 dataSourceDescriptor.setMaxConnections(Integer.parseInt(max));
             } catch (NumberFormatException nfex) {
-                logger.info("Non-numeric 'max' attribute", nfex);
+                LOGGER.info("Non-numeric 'max' attribute", nfex);
                 throw new ConfigurationException("Non-numeric 'max' attribute '%s'", nfex, max);
             }
         }

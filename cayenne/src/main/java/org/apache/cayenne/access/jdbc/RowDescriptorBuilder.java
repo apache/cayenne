@@ -43,7 +43,7 @@ import java.util.function.Function;
  */
 public class RowDescriptorBuilder {
 
-    private static final Logger logger = LoggerFactory.getLogger(RowDescriptorBuilder.class);
+    private static final Logger LOGGER = LoggerFactory.getLogger(RowDescriptorBuilder.class);
 
     private static final Function<String, String> UPPERCASE_TRANSFORMER = input ->
             input != null ? input.toUpperCase() : null;
@@ -138,7 +138,7 @@ public class RowDescriptorBuilder {
         }
 
         if(validateDuplicateColumnNames && !duplicates.isEmpty()) {
-            logger.warn("Found duplicated columns '" + String.join("', '", duplicates) + "' in row descriptor. " +
+            LOGGER.warn("Found duplicated columns '" + String.join("', '", duplicates) + "' in row descriptor. " +
                     "This can lead to errors when converting result to persistent objects.");
         }
 

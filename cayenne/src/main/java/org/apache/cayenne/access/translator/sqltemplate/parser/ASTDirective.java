@@ -29,7 +29,7 @@ import org.slf4j.LoggerFactory;
  */
 public class ASTDirective extends IdentifierNode {
 
-    private static final Logger logger = LoggerFactory.getLogger(ASTDirective.class);
+    private static final Logger LOGGER = LoggerFactory.getLogger(ASTDirective.class);
 
     public ASTDirective(int id) {
         super(id);
@@ -39,7 +39,7 @@ public class ASTDirective extends IdentifierNode {
     public void evaluate(Context context) {
         Directive directive = context.getDirective(getIdentifier());
         if(directive == null) {
-            logger.warn("Unknown directive #{}", getIdentifier());
+            LOGGER.warn("Unknown directive #{}", getIdentifier());
             return;
         }
 

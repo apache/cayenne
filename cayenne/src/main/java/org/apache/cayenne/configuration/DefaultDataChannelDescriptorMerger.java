@@ -47,7 +47,7 @@ import org.slf4j.LoggerFactory;
  */
 public class DefaultDataChannelDescriptorMerger implements DataChannelDescriptorMerger {
 
-    private static final Logger logger = LoggerFactory
+    private static final Logger LOGGER = LoggerFactory
             .getLogger(DefaultDataChannelDescriptorMerger.class);
 
     public DataChannelDescriptor merge(DataChannelDescriptor... descriptors) {
@@ -78,7 +78,7 @@ public class DefaultDataChannelDescriptorMerger implements DataChannelDescriptor
                 DataMap existing = merged.getDataMap(map.getName());
                 if (existing != null) {
 
-                    logger.info("Discarding overridden DataMap '"
+                    LOGGER.info("Discarding overridden DataMap '"
                             + map.getName()
                             + "' from descriptor '"
                             + descriptor.getName()
@@ -86,7 +86,7 @@ public class DefaultDataChannelDescriptorMerger implements DataChannelDescriptor
                 }
                 else {
 
-                    logger.info("Using DataMap '"
+                    LOGGER.info("Using DataMap '"
                             + map.getName()
                             + "' from descriptor '"
                             + descriptor.getName()
@@ -100,7 +100,7 @@ public class DefaultDataChannelDescriptorMerger implements DataChannelDescriptor
 
                 DataNodeDescriptor existing = merged.getNodeDescriptor(node.getName());
                 if (existing != null) {
-                    logger.info("Discarding overridden DataNode '"
+                    LOGGER.info("Discarding overridden DataNode '"
                             + node.getName()
                             + "' from descriptor '"
                             + descriptor.getName()
@@ -113,7 +113,7 @@ public class DefaultDataChannelDescriptorMerger implements DataChannelDescriptor
                     }
                 }
                 else {
-                    logger.info("Using DataNode '"
+                    LOGGER.info("Using DataNode '"
                             + node.getName()
                             + "' from descriptor '"
                             + descriptor.getName()

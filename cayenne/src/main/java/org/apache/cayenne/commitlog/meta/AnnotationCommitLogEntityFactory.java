@@ -39,7 +39,7 @@ import org.slf4j.LoggerFactory;
  */
 public class AnnotationCommitLogEntityFactory implements CommitLogEntityFactory {
 
-	private static final Logger logger = LoggerFactory.getLogger(AnnotationCommitLogEntityFactory.class);
+	private static final Logger LOGGER = LoggerFactory.getLogger(AnnotationCommitLogEntityFactory.class);
 
 	private static final CommitLogEntity BLOCKED_ENTITY = new CommitLogEntity() {
 
@@ -105,7 +105,7 @@ public class AnnotationCommitLogEntityFactory implements CommitLogEntityFactory 
 		@SuppressWarnings("deprecation")
 		org.apache.cayenne.commitlog.CommitLog legacyA = objectClass.getAnnotation(org.apache.cayenne.commitlog.CommitLog.class);
 		if (legacyA != null) {
-			logger.warn("Entity class '{}' uses deprecated @org.apache.cayenne.commitlog.CommitLog annotation. " +
+			LOGGER.warn("Entity class '{}' uses deprecated @org.apache.cayenne.commitlog.CommitLog annotation. " +
 					"Replace with @org.apache.cayenne.annotation.CommitLog.", objectClass.getName());
 			ObjEntity entity = entityResolver.getObjEntity(entityName);
 			return new MutableCommitLogLogEntity(entity).setConfidential(legacyA.confidential())

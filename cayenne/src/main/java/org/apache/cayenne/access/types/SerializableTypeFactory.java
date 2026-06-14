@@ -36,7 +36,7 @@ import org.slf4j.LoggerFactory;
  */
 class SerializableTypeFactory implements ExtendedTypeFactory {
 
-	private static final Logger logger = LoggerFactory.getLogger(SerializableTypeFactory.class);
+	private static final Logger LOGGER = LoggerFactory.getLogger(SerializableTypeFactory.class);
 
 	private ExtendedTypeMap map;
 
@@ -45,11 +45,11 @@ class SerializableTypeFactory implements ExtendedTypeFactory {
 	}
 
 	public ExtendedType getType(Class<?> objectClass) {
-		logger.warn("Haven't found suitable ExtendedType for class '" + objectClass.getCanonicalName()
+		LOGGER.warn("Haven't found suitable ExtendedType for class '" + objectClass.getCanonicalName()
 				+ "'. Most likely you need to define a custom ExtendedType.");
 
 		if (Serializable.class.isAssignableFrom(objectClass)) {
-			logger.warn("SerializableType will be used for type conversion.");
+			LOGGER.warn("SerializableType will be used for type conversion.");
 
 			// using a binary stream delegate instead of byte[] may actually
 			// speed up things in some dbs, but at least byte[] type works consistently

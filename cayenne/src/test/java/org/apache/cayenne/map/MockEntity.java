@@ -29,8 +29,6 @@ import org.apache.cayenne.exp.path.CayennePath;
 import org.apache.cayenne.util.CayenneMapEntry;
 import org.apache.cayenne.util.XMLEncoder;
 
-/**
- */
 public class MockEntity extends Entity<MockEntity, MockAttribute, MockRelationship> {
 
     public MockEntity() {

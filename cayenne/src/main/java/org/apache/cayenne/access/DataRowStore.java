@@ -51,7 +51,7 @@ import java.util.concurrent.ConcurrentMap;
  */
 public class DataRowStore implements Serializable {
 
-    private static final Logger logger = LoggerFactory.getLogger(DataRowStore.class);
+    private static final Logger LOGGER = LoggerFactory.getLogger(DataRowStore.class);
 
     // default property values
 
@@ -101,8 +101,8 @@ public class DataRowStore implements Serializable {
         // expiration time is never used actually
         maxSize = properties.getInt(Constants.SNAPSHOT_CACHE_SIZE_PROPERTY, SNAPSHOT_CACHE_SIZE_DEFAULT);
 
-        if (logger.isDebugEnabled()) {
-            logger.debug("DataRowStore property " + Constants.SNAPSHOT_CACHE_SIZE_PROPERTY + " = " + maxSize);
+        if (LOGGER.isDebugEnabled()) {
+            LOGGER.debug("DataRowStore property " + Constants.SNAPSHOT_CACHE_SIZE_PROPERTY + " = " + maxSize);
         }
 
         this.snapshots = new ConcurrentLinkedHashMap.Builder<ObjectId, DataRow>()
@@ -290,8 +290,8 @@ public class DataRowStore implements Serializable {
             return;
         }
 
-        if (logger.isDebugEnabled()) {
-            logger.debug("remote event: " + event);
+        if (LOGGER.isDebugEnabled()) {
+            LOGGER.debug("remote event: " + event);
         }
 
         Collection<ObjectId> deletedSnapshotIds = event.getDeletedIds();
@@ -303,7 +303,7 @@ public class DataRowStore implements Serializable {
                 && invalidatedSnapshotIds.isEmpty()
                 && diffs.isEmpty()
                 && indirectlyModifiedIds.isEmpty()) {
-            logger.warn("processRemoteEvent.. bogus call... no changes.");
+            LOGGER.warn("processRemoteEvent.. bogus call... no changes.");
             return;
         }
 
@@ -335,7 +335,7 @@ public class DataRowStore implements Serializable {
                 && invalidatedSnapshotIds.isEmpty()
                 && updatedSnapshots.isEmpty()
                 && (indirectlyModifiedIds == null || indirectlyModifiedIds.isEmpty())) {
-            logger.warn("postSnapshotsChangeEvent.. bogus call... no changes.");
+            LOGGER.warn("postSnapshotsChangeEvent.. bogus call... no changes.");
             return;
         }
 
@@ -403,8 +403,8 @@ public class DataRowStore implements Serializable {
 
                         // snapshots can be huge potentially.. so print them only if the
                         // user is expecting them to be printed
-                        if (logger.isDebugEnabled()) {
-                            logger
+                        if (LOGGER.isDebugEnabled()) {
+                            LOGGER
                                     .debug("snapshot version changed, don't know what to do... Old: "
                                             + oldSnapshot
                                             + ", New: "
@@ -469,8 +469,8 @@ public class DataRowStore implements Serializable {
                     invalidatedSnapshotIDs,
                     indirectlyModifiedIds);
 
-            if (logger.isDebugEnabled()) {
-                logger.debug("postSnapshotsChangeEvent: " + event);
+            if (LOGGER.isDebugEnabled()) {
+                LOGGER.debug("postSnapshotsChangeEvent: " + event);
             }
 
             // synchronously notify listeners; leaving it up to the listeners to
@@ -498,7 +498,7 @@ public class DataRowStore implements Serializable {
             try {
                 remoteNotificationsHandler.shutdown();
             } catch (Exception ex) {
-                logger.info("Exception shutting down EventBridge.", ex);
+                LOGGER.info("Exception shutting down EventBridge.", ex);
             }
             remoteNotificationsHandler = null;
         }

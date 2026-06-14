@@ -22,8 +22,6 @@ package org.apache.cayenne.map;
 import org.apache.cayenne.Persistent;
 import org.apache.cayenne.query.Query;
 
-/**
- */
 public class MockEntityResolver extends EntityResolver {
 
     protected ObjEntity mockObjEntity;

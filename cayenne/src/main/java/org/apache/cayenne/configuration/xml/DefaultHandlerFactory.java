@@ -28,14 +28,14 @@ import org.xml.sax.Attributes;
  */
 public class DefaultHandlerFactory implements HandlerFactory {
 
-    private static final Logger logger = LoggerFactory.getLogger(XMLDataChannelDescriptorLoader.class);
+    private static final Logger LOGGER = LoggerFactory.getLogger(XMLDataChannelDescriptorLoader.class);
 
     @Override
     public NamespaceAwareNestedTagHandler createHandler(String namespace, String localName, NamespaceAwareNestedTagHandler parent) {
         return new NamespaceAwareNestedTagHandler(parent, namespace) {
             @Override
             protected boolean processElement(String namespaceURI, String localName, Attributes attributes) {
-                logger.debug("Skipping unknown tag <{}:{}>", namespaceURI, localName);
+                LOGGER.debug("Skipping unknown tag <{}:{}>", namespaceURI, localName);
                 return true;
             }
         };

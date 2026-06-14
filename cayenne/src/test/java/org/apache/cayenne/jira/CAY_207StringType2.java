@@ -25,8 +25,6 @@ import java.sql.CallableStatement;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 
-/**
- */
 public class CAY_207StringType2 implements ExtendedType<CAY_207String2> {
 
     @Override

@@ -43,7 +43,7 @@ class PropertyHandler extends NamespaceAwareNestedTagHandler {
 
     static final String PROPERTY_TAG = "property";
 
-    private static final Logger logger = LoggerFactory.getLogger(PropertyHandler.class);
+    private static final Logger LOGGER = LoggerFactory.getLogger(PropertyHandler.class);
 
     private DataChannelMetaData metaData;
 
@@ -67,7 +67,7 @@ class PropertyHandler extends NamespaceAwareNestedTagHandler {
                     }
                     String oldValue = info.put(name, attributes.getValue("value"));
                     if(oldValue != null) {
-                        logger.warn("Duplicated property {} for object {}", name, parentObject);
+                        LOGGER.warn("Duplicated property {} for object {}", name, parentObject);
                     }
                 }
                 return true;

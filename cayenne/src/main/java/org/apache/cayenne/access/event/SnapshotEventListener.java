@@ -21,8 +21,6 @@ package org.apache.cayenne.access.event;
 
 import java.util.EventListener;
 
-/**
- */
 public interface SnapshotEventListener extends EventListener {
     public void snapshotsChanged(SnapshotEvent event);
 }
