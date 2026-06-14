@@ -282,7 +282,7 @@ public class DbAttribute extends Attribute<DbEntity, DbAttribute, DbRelationship
      * @return java class guessed by the JDBC type of this attribute
      * @since 5.0
      */
-    public String getJavaClass() {
+    public String getJavaClassName() {
         return TypesMapping.getJavaBySqlType(this);
     }
 
