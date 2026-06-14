@@ -41,7 +41,7 @@ public interface MergerToken extends Comparable<MergerToken> {
     MergeDirection getDirection();
 
     /**
-     * Create a complimentary token with the reverse direction. AddColumn in one direction becomes
+     * Create a complementary token with the reverse direction. AddColumn in one direction becomes
      * DropColumn in the other direction.
      * <p>
      * Not all tokens are reversible.

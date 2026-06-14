@@ -45,7 +45,7 @@ public interface ArcProperty extends PropertyDescriptor {
     String getComplimentaryReverseDbRelationshipPath();
 
     /**
-     * Returns a complimentary reverse ArcProperty or null if no reverse arc
+     * Returns a complementary reverse ArcProperty or null if no reverse arc
      * exists.
      */
     ArcProperty getComplimentaryReverseArc();

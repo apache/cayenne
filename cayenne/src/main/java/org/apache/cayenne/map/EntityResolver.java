@@ -19,22 +19,8 @@
 
 package org.apache.cayenne.map;
 
-import java.io.IOException;
-import java.io.ObjectInputStream;
-import java.io.Serializable;
-import java.lang.annotation.Annotation;
-import java.lang.reflect.Method;
-
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.Collections;
-import java.util.EnumMap;
-import java.util.Map;
-import java.util.concurrent.atomic.AtomicLong;
-
 import org.apache.cayenne.Persistent;
 import org.apache.cayenne.access.types.ValueObjectTypeRegistry;
-
 import org.apache.cayenne.annotation.PostAdd;
 import org.apache.cayenne.annotation.PostLoad;
 import org.apache.cayenne.annotation.PostPersist;
@@ -55,6 +41,18 @@ import org.apache.cayenne.reflect.valueholder.ValueHolderDescriptorFactory;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import java.io.IOException;
+import java.io.ObjectInputStream;
+import java.io.Serializable;
+import java.lang.annotation.Annotation;
+import java.lang.reflect.Method;
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.Collections;
+import java.util.EnumMap;
+import java.util.Map;
+import java.util.concurrent.atomic.AtomicLong;
+
 /**
  * Represents a virtual shared namespace for zero or more DataMaps. Unlike
  * DataMap, EntityResolver is intended to work as a runtime container of
@@ -67,10 +65,11 @@ import org.slf4j.LoggerFactory;
  */
 public class EntityResolver implements MappingNamespace, Serializable {
 
-    protected static final Logger logger = LoggerFactory.getLogger(EntityResolver.class);
+    private static final Logger LOGGER = LoggerFactory.getLogger(EntityResolver.class);
     protected static AtomicLong incrementer = new AtomicLong();
 
     protected static final Map<LifecycleEvent, Class<? extends Annotation>> LIFECYCLE_EVENT_MAP;
+
     static {
         LIFECYCLE_EVENT_MAP = new EnumMap<>(LifecycleEvent.class);
         LIFECYCLE_EVENT_MAP.put(LifecycleEvent.POST_ADD, PostAdd.class);
@@ -152,8 +151,9 @@ public class EntityResolver implements MappingNamespace, Serializable {
                         reverse.setRuntime(true);
                         targetEntity.addRelationship(reverse);
 
-                        logger.info("added runtime complimentary DbRelationship from " + targetEntity.getName()
-                                + " to " + reverse.getTargetEntityName());
+                        LOGGER.info("added complementary runtime DbRelationship from {} to {}",
+                                targetEntity.getName(),
+                                reverse.getTargetEntityName());
                     }
                 }
             }
@@ -166,7 +166,7 @@ public class EntityResolver implements MappingNamespace, Serializable {
 
         do {
             name = "runtimeRelationship" + incrementer.getAndIncrement();
-        } while(entity.getRelationship(name) != null);
+        } while (entity.getRelationship(name) != null);
 
         return name;
     }
@@ -185,7 +185,7 @@ public class EntityResolver implements MappingNamespace, Serializable {
                 // load annotated methods
                 for (Method m : entityClass.getDeclaredMethods()) {
                     LIFECYCLE_EVENT_MAP.forEach((eventType, annotationType) -> {
-                        if(m.getDeclaredAnnotation(annotationType) != null) {
+                        if (m.getDeclaredAnnotation(annotationType) != null) {
                             callbackRegistry.addCallback(eventType, entityClass, m);
                         }
                     });
@@ -460,8 +460,7 @@ public class EntityResolver implements MappingNamespace, Serializable {
      * ObjEntity that maps to the services the specified class
      *
      * @return the required ObjEntity or null if there is none that matches the
-     *         specifier
-     *
+     * specifier
      * @since 4.0
      */
     public ObjEntity getObjEntity(Class<?> entityClass) {
@@ -492,7 +491,7 @@ public class EntityResolver implements MappingNamespace, Serializable {
     /**
      * Returns an object that compiles and stores {@link ClassDescriptor}
      * instances for all entities.
-     * 
+     *
      * @since 3.0
      */
     public ClassDescriptorMap getClassDescriptorMap() {

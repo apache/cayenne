@@ -28,7 +28,7 @@ import org.apache.cayenne.map.ObjRelationship;
  */
 public abstract class BaseArcProperty extends BaseProperty implements ArcProperty {
 
-    protected String complimentaryReverseArcName;
+    protected String complementaryReverseArcName;
     protected ClassDescriptor targetDescriptor;
     protected ObjRelationship relationship;
     protected CayennePath reverseDbPath;
@@ -39,7 +39,7 @@ public abstract class BaseArcProperty extends BaseProperty implements ArcPropert
         super(owner, accessor);
 
         this.targetDescriptor = targetDescriptor;
-        this.complimentaryReverseArcName = reverseName;
+        this.complementaryReverseArcName = reverseName;
         this.relationship = owner.getEntity().getRelationship(getName());
     }
 
@@ -62,7 +62,7 @@ public abstract class BaseArcProperty extends BaseProperty implements ArcPropert
     }
 
     public ArcProperty getComplimentaryReverseArc() {
-        return (ArcProperty) targetDescriptor.getProperty(complimentaryReverseArcName);
+        return (ArcProperty) targetDescriptor.getProperty(complementaryReverseArcName);
     }
 
     public ClassDescriptor getTargetDescriptor() {

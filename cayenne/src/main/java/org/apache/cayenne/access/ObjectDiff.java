@@ -65,7 +65,7 @@ public class ObjectDiff extends NodeDiff {
     private Map<ArcOperation, ArcOperation> flatIds;
     private Map<ArcOperation, ArcOperation> phantomFks;
 
-    private Persistent object;
+    private final Persistent object;
 
     ObjectDiff(final Persistent object) {
 
@@ -244,11 +244,11 @@ public class ObjectDiff extends NodeDiff {
                     }
                 } else if (property.getComplimentaryReverseArc() == null) {
 
-                    // register complimentary arc diff
+                    // register complementary arc diff
                     ArcId arc = arcId.getReverseId();
                     //new ArcId(ASTDbPath.DB_PREFIX + property.getComplimentaryReverseDbRelationshipPath(), property.getName());
-                    ArcOperation complimentaryOp = new ArcOperation(targetId, arcDiff.getNodeId(), arc, arcDiff.isDelete());
-                    parent.registerDiff(targetId, complimentaryOp);
+                    ArcOperation complementaryOp = new ArcOperation(targetId, arcDiff.getNodeId(), arc, arcDiff.isDelete());
+                    parent.registerDiff(targetId, complementaryOp);
                 }
 
             } else if (property instanceof ToOneProperty) {
@@ -455,9 +455,9 @@ public class ObjectDiff extends NodeDiff {
 
     static final class ArcOperation extends NodeDiff {
 
-        private Object targetNodeId;
-        private ArcId arcId;
-        private boolean delete;
+        private final Object targetNodeId;
+        private final ArcId arcId;
+        private final boolean delete;
 
         ArcOperation(Object nodeId, Object targetNodeId, ArcId arcId, boolean delete) {
 
