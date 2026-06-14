@@ -19,16 +19,15 @@
 
 package org.apache.cayenne.access.jdbc;
 
-import java.sql.ResultSetMetaData;
-import java.sql.SQLException;
-
 import org.apache.cayenne.dba.TypesMapping;
 import org.apache.cayenne.map.DbAttribute;
 import org.apache.cayenne.map.ObjAttribute;
 import org.apache.cayenne.map.ProcedureParameter;
-
-import java.util.Objects;
 import org.apache.cayenne.util.ToStringBuilder;
+
+import java.sql.ResultSetMetaData;
+import java.sql.SQLException;
+import java.util.Objects;
 
 /**
  * A descriptor of a ResultSet column.
@@ -140,10 +139,10 @@ public class ColumnDescriptor {
 
     private static String getColumnNameFromMeta(ResultSetMetaData metaData, int position) throws SQLException {
         String name = metaData.getColumnLabel(position);
-        if (name == null || name.length() == 0) {
+        if (name == null || name.isEmpty()) {
             name = metaData.getColumnName(position);
 
-            if (name == null || name.length() == 0) {
+            if (name == null || name.isEmpty()) {
                 name = "column_" + position;
             }
         }
@@ -174,11 +173,10 @@ public class ColumnDescriptor {
      */
     @Override
     public boolean equals(Object o) {
-        if (!(o instanceof ColumnDescriptor)) {
+        if (!(o instanceof ColumnDescriptor rhs)) {
             return false;
         }
 
-        ColumnDescriptor rhs = (ColumnDescriptor) o;
         return Objects.equals(name, rhs.name)
                 && Objects.equals(namePrefix, rhs.namePrefix)
                 && Objects.equals(procedureName, rhs.procedureName)
