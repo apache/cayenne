@@ -336,7 +336,17 @@ public class DataContextEntityWithMeaningfulPKIT {
     }
 
     @Test
-    public void generatedBigIntegerPK() {
+    public void pkGeneratorMadeBigIntegerPK() {
+        MeaningfulPkBigint pkObj = context.newObject(MeaningfulPkBigint.class);
+
+        context.commitChanges();
+
+        assertNotNull(pkObj.getPk());
+        assertTrue(pkObj.getPk().compareTo(BigInteger.ZERO) > 0);
+    }
+
+    @Test
+    public void dbGeneratedBigIntegerPK() {
         MeaningfulPkBigintGenerated pkObj1 = context.newObject(MeaningfulPkBigintGenerated.class);
         MeaningfulPkBigintGenerated pkObj2 = context.newObject(MeaningfulPkBigintGenerated.class);
         MeaningfulPkBigintGenerated pkObj3 = context.newObject(MeaningfulPkBigintGenerated.class);
