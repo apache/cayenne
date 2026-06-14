@@ -177,7 +177,7 @@ public abstract class Relationship<E extends Entity<E, A, R>, A extends Attribut
     }
     
     /**
-     * Returns a "complimentary" relationship going in the opposite direction. Returns
+     * Returns a "complementary" relationship going in the opposite direction. Returns
      * null if no such relationship is found.
      * @since 3.1
      */

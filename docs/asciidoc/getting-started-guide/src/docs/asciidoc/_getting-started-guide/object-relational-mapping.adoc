@@ -71,7 +71,7 @@ image::modeler-dbrelationship.png[align="center"]
 
 - Click "Done" to confirm the changes and close the dialog.
 
-- Two complimentary relationships have been created - from ARTIST to PAINTING
+- Two complementary relationships have been created - from ARTIST to PAINTING
 and back.
 
 - Repeat the steps above to create a many-to-one relationship from PAINTING to GALLERY, calling the relationships pair

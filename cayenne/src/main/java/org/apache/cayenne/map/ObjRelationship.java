@@ -160,7 +160,7 @@ public class ObjRelationship extends Relationship<ObjEntity, ObjAttribute, ObjRe
     }
 
     /**
-     * Returns the name of a complimentary relationship going in the opposite
+     * Returns the name of a complementary relationship going in the opposite
      * direction or null if it doesn't exist.
      * 
      * @since 1.2
@@ -171,7 +171,7 @@ public class ObjRelationship extends Relationship<ObjEntity, ObjAttribute, ObjRe
     }
 
     /**
-     * Returns a "complimentary" ObjRelationship going in the opposite
+     * Returns a "complementary" ObjRelationship going in the opposite
      * direction. Returns null if no such relationship is found.
      */
     @Override
@@ -226,7 +226,7 @@ public class ObjRelationship extends Relationship<ObjEntity, ObjAttribute, ObjRe
     }
 
     /**
-     * Creates a complimentary reverse relationship from target entity to the
+     * Creates a complementary reverse relationship from target entity to the
      * source entity. A new relationship is created regardless of whether one
      * already exists. Returned relationship is not attached to the source
      * entity and has no name. Throws a {@link CayenneRuntimeException} if

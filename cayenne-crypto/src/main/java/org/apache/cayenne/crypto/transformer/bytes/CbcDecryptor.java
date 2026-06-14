@@ -32,7 +32,7 @@ import org.apache.cayenne.crypto.CayenneCryptoException;
 
 /**
  * A {@link BytesDecryptor} that decrypts the provided bytes that were encrypted
- * by the complimentary {@link CbcEncryptor}. The object is stateful and is not
+ * by the complementary {@link CbcEncryptor}. The object is stateful and is not
  * thread-safe.
  * 
  * @since 4.0
