@@ -41,7 +41,7 @@ public class DataContextConcurrencyIT {
     @RegisterExtension
     static final CayenneTestsEnv env = CayenneTestsEnv.forProject(CayenneProjects.TESTMAP_PROJECT);
 
-    private static final Logger logger = LoggerFactory.getLogger(DataContextConcurrencyIT.class);
+    private static final Logger LOGGER = LoggerFactory.getLogger(DataContextConcurrencyIT.class);
 
     /**
      * see https://issues.apache.org/jira/browse/CAY-2382
@@ -96,7 +96,7 @@ public class DataContextConcurrencyIT {
                         serializationStartSignal.countDown();
                     }
                 } catch (Exception e) {
-                    logger.error("Serialization failed", e);
+                    LOGGER.error("Serialization failed", e);
                     return false;
                 }
             }

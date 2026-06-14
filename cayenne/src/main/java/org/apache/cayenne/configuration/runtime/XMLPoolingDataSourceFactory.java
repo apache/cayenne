@@ -43,7 +43,7 @@ import java.sql.Driver;
 // TODO: this factory does not read XML anymore, should we rename it to something else?
 public class XMLPoolingDataSourceFactory implements DataSourceFactory {
 
-    private static final Logger logger = LoggerFactory.getLogger(XMLPoolingDataSourceFactory.class);
+    private static final Logger LOGGER = LoggerFactory.getLogger(XMLPoolingDataSourceFactory.class);
 
     @Inject
     private RuntimeProperties properties;
@@ -57,7 +57,7 @@ public class XMLPoolingDataSourceFactory implements DataSourceFactory {
         DataSourceDescriptor descriptor = nodeDescriptor.getDataSourceDescriptor();
         if (descriptor == null) {
             String message = "Null dataSourceDescriptor for nodeDescriptor '" + nodeDescriptor.getName() + "'";
-            logger.info(message);
+            LOGGER.info(message);
             throw new ConfigurationException(message);
         }
 

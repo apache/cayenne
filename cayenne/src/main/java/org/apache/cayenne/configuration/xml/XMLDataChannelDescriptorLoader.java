@@ -42,7 +42,7 @@ import java.util.Arrays;
  */
 public class XMLDataChannelDescriptorLoader implements DataChannelDescriptorLoader {
 
-    private static final Logger logger = LoggerFactory.getLogger(XMLDataChannelDescriptorLoader.class);
+    private static final Logger LOGGER = LoggerFactory.getLogger(XMLDataChannelDescriptorLoader.class);
 
     /**
      * Versions of project XML files that this loader can read.
@@ -77,7 +77,7 @@ public class XMLDataChannelDescriptorLoader implements DataChannelDescriptorLoad
 
         URL configurationURL = configurationResource.getURL();
 
-        logger.info("Loading XML configuration resource from " + configurationURL);
+        LOGGER.info("Loading XML configuration resource from " + configurationURL);
 
         final DataChannelDescriptor descriptor = new DataChannelDescriptor();
         descriptor.setConfigurationSource(configurationResource);

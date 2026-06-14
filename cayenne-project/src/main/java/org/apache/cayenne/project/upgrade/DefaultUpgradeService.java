@@ -87,7 +87,7 @@ import static org.apache.cayenne.util.Util.isBlank;
  */
 public class DefaultUpgradeService implements UpgradeService {
 
-    private static final Logger logger = LoggerFactory.getLogger(DefaultUpgradeService.class);
+    private static final Logger LOGGER = LoggerFactory.getLogger(DefaultUpgradeService.class);
 
     public static final String UNKNOWN_VERSION = "0";
     public static final String MIN_SUPPORTED_VERSION = "6";
@@ -242,7 +242,7 @@ public class DefaultUpgradeService implements UpgradeService {
                 resources.add(mapResource);
             }
         } catch (Exception ex) {
-            logger.warn("Can't get additional dataMap resources: ", ex);
+            LOGGER.warn("Can't get additional dataMap resources: ", ex);
         }
         return resources;
     }
@@ -255,7 +255,7 @@ public class DefaultUpgradeService implements UpgradeService {
             Transformer transformer = TransformerFactory.newInstance().newTransformer();
             transformer.transform(input, output);
         } catch (Exception ex) {
-            logger.warn("Can't save the document: ", ex);
+            LOGGER.warn("Can't save the document: ", ex);
         }
     }
 

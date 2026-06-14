@@ -49,7 +49,7 @@ import java.util.List;
  */
 public class UpgradeHandler_V11 implements UpgradeHandler {
 
-    private static final Logger logger = LoggerFactory.getLogger(UpgradeHandler_V11.class);
+    private static final Logger LOGGER = LoggerFactory.getLogger(UpgradeHandler_V11.class);
 
     private static final List<String> defaultTemplatePaths = List.of(
             "templates/v4_1/singleclass.vm",
@@ -289,7 +289,7 @@ public class UpgradeHandler_V11 implements UpgradeHandler {
             } catch (NoSuchFileException e) {
                 return "The template " + path + " was not found during the project upgrade. Use the template editor in Cayenne modeler to set the template";
             } catch (IOException e) {
-                logger.warn("Can't read the file: " + path, e);
+                LOGGER.warn("Can't read the file: " + path, e);
                 return "Can't read the file: " + path + e.getMessage();
             }
         } else {

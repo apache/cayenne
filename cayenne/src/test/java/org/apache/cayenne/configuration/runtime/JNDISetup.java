@@ -42,7 +42,7 @@ import java.util.concurrent.ConcurrentHashMap;
  */
 class JNDISetup {
 
-    private static final Logger logger = LoggerFactory.getLogger(JNDISetup.class);
+    private static final Logger LOGGER = LoggerFactory.getLogger(JNDISetup.class);
 
     private static final String ENV_SUBCONTEXT = "java:comp/env";
 
@@ -61,7 +61,7 @@ class JNDISetup {
             try {
                 NamingManager.setInitialContextFactoryBuilder(new InMemoryContextFactoryBuilder());
             } catch (NamingException e) {
-                logger.error("Can't perform JNDI setup, ignoring...", e);
+                LOGGER.error("Can't perform JNDI setup, ignoring...", e);
             }
             setup = true;
         }

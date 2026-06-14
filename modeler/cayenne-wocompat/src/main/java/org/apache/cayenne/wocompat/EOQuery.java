@@ -250,7 +250,7 @@ public class EOQuery<T> extends ObjectSelect<T> {
 		private static final String OBJ_C = ":"; // Objective-C syntax addition.
 
 		private static Map<String, Integer> selectorToExpressionBridge;
-		private static final Logger logger = LoggerFactory.getLogger(EOFetchSpecificationParser.class);
+		private static final Logger LOGGER = LoggerFactory.getLogger(EOFetchSpecificationParser.class);
 
 		/**
 		 * selectorToExpressionBridge is just a mapping of EOModeler's selector
@@ -476,7 +476,7 @@ public class EOQuery<T> extends ObjectSelect<T> {
 				try {
 					keyExp = entity.translateToDbPath(keyExp);
 				} catch (Exception dbpathEx) {
-					logger.warn("Couldn't find " + keyExp + " in " + entity.getName() + " in EOModel");
+					LOGGER.warn("Couldn't find " + keyExp + " in " + entity.getName() + " in EOModel");
 				}
 			}
 
@@ -487,7 +487,7 @@ public class EOQuery<T> extends ObjectSelect<T> {
 				exp.setOperand(1, comparisonValue);
 				return exp;
 			} catch (ExpressionException e) {
-				logger.warn(e.getUnlabeledMessage());
+				LOGGER.warn(e.getUnlabeledMessage());
 				return null;
 			}
 		}

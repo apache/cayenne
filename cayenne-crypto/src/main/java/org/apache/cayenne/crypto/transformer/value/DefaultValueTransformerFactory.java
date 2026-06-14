@@ -45,7 +45,7 @@ import java.util.concurrent.ConcurrentMap;
  */
 public class DefaultValueTransformerFactory implements ValueTransformerFactory {
 
-    private static final Logger logger = LoggerFactory.getLogger(DefaultValueTransformerFactory.class);
+    private static final Logger LOGGER = LoggerFactory.getLogger(DefaultValueTransformerFactory.class);
 
     public static final String DB_TO_BYTE_CONVERTERS_KEY =
             "org.apache.cayenne.crypto.transformer.value.DefaultValueTransformerFactory.dbToBytes";
@@ -171,7 +171,7 @@ public class DefaultValueTransformerFactory implements ValueTransformerFactory {
             String attributeName = dbEntity.getName() + "." + a.getName();
             String msg = javaTypes.size() > 1 ? "ObjAttributes with different java types" : "No ObjAttributes";
             // Warn user about this problem as there is nothing else we can do
-            logger.warn(msg + " bound to DbAttribute '" + attributeName + "', " + javaType + " type will be used.");
+            LOGGER.warn(msg + " bound to DbAttribute '" + attributeName + "', " + javaType + " type will be used.");
             return javaType;
         }
 

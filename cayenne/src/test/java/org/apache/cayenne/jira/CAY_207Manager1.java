@@ -21,8 +21,6 @@ package org.apache.cayenne.jira;
 
 import org.apache.cayenne.testdo.inheritance_people.Manager;
 
-/**
- */
 public class CAY_207Manager1 extends Manager {
 
     public void setClientContactType(CAY_207String1 clientContactType) {

@@ -48,7 +48,7 @@ import java.util.concurrent.ConcurrentHashMap;
  */
 public class DelegatingDataSourceFactory implements DataSourceFactory {
 
-    private static final Logger logger = LoggerFactory
+    private static final Logger LOGGER = LoggerFactory
             .getLogger(DelegatingDataSourceFactory.class);
 
     @Inject
@@ -124,7 +124,7 @@ public class DelegatingDataSourceFactory implements DataSourceFactory {
     }
 
     private void findUnusedProperties(DataNodeDescriptor nodeDescriptor) {
-        if(!logger.isInfoEnabled() || nodeDescriptor.getDataChannelDescriptor() == null) {
+        if(!LOGGER.isInfoEnabled() || nodeDescriptor.getDataChannelDescriptor() == null) {
             return;
         }
         boolean found = false;
@@ -154,7 +154,7 @@ public class DelegatingDataSourceFactory implements DataSourceFactory {
             logResult.delete(logResult.length() - 2, logResult.length())
                     .append(". Will use project DataSource configuration. ")
                     .append("Set driver and url properties to enable DataSource configuration override. ");
-            logger.info(logResult.toString());
+            LOGGER.info(logResult.toString());
         }
     }
 
@@ -187,7 +187,7 @@ public class DelegatingDataSourceFactory implements DataSourceFactory {
             return false;
         }
 
-        logger
+        LOGGER
                 .info(String
                         .format(
                                 "Found DataSourceFactory system property overrides for URL and Driver "

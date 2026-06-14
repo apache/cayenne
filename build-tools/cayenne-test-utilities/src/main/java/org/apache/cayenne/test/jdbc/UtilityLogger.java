@@ -23,9 +23,9 @@ import org.slf4j.LoggerFactory;
 
 class UtilityLogger {
 
-    private static Logger logger = LoggerFactory.getLogger(UtilityLogger.class);
+    private static Logger LOGGER = LoggerFactory.getLogger(UtilityLogger.class);
 
     static void log(String sql) {
-        logger.info(sql);
+        LOGGER.info(sql);
     }
 }

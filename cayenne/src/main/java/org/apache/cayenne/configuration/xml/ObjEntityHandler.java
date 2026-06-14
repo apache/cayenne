@@ -38,7 +38,7 @@ import static org.apache.cayenne.util.Util.isBlank;
  */
 public class ObjEntityHandler extends NamespaceAwareNestedTagHandler {
 
-    private static final Logger logger = LoggerFactory.getLogger(ObjEntityHandler.class);
+    private static final Logger LOGGER = LoggerFactory.getLogger(ObjEntityHandler.class);
 
     private static final String OBJ_ENTITY_TAG = "obj-entity";
     private static final String OBJ_ATTRIBUTE_TAG = "obj-attribute";
@@ -205,7 +205,7 @@ public class ObjEntityHandler extends NamespaceAwareNestedTagHandler {
             try {
                 entity.setDeclaredQualifier(ExpressionFactory.exp(qualifier));
             } catch (ExpressionException ex) {
-                logger.warn("Unable to parse entity " + entity.getName() + " qualifier", ex);
+                LOGGER.warn("Unable to parse entity " + entity.getName() + " qualifier", ex);
             }
         }
     }

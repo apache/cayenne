@@ -31,14 +31,14 @@ import org.slf4j.LoggerFactory;
 import java.sql.SQLException;
 
 /**
- * A {@link JdbcEventLogger} built on top of slf4j-api logger.
+ * A {@link JdbcEventLogger} built on top of slf4j-api LOGGER.
  * 
  * @since 3.1
  * @since 4.0 renamed from CommonsJdbcEventLogger to Slf4jJdbcEventLogger as part of migration to SLF4J
  */
 public class Slf4jJdbcEventLogger implements JdbcEventLogger {
 
-	private static final Logger logger = LoggerFactory.getLogger(JdbcEventLogger.class);
+	private static final Logger LOGGER = LoggerFactory.getLogger(JdbcEventLogger.class);
 
 	protected long queryExecutionTimeLoggingThreshold;
 
@@ -50,7 +50,7 @@ public class Slf4jJdbcEventLogger implements JdbcEventLogger {
 	@Override
 	public void log(String message) {
 		if (message != null) {
-			logger.info(message);
+			LOGGER.info(message);
 		}
 	}
 
@@ -58,7 +58,7 @@ public class Slf4jJdbcEventLogger implements JdbcEventLogger {
 	public void logGeneratedKey(DbAttribute attribute, Object value) {
 		if (isLoggable()) {
 			String entity = attribute.getEntity().getName();
-			logger.info("Generated PK: " + entity + "." + attribute.getName() + " = " + value);
+			LOGGER.info("Generated PK: " + entity + "." + attribute.getName() + " = " + value);
 		}
 	}
 
@@ -70,7 +70,7 @@ public class Slf4jJdbcEventLogger implements JdbcEventLogger {
 			appendParameters(buffer, "bind", bindings);
 
 			if (buffer.length() > 0) {
-				logger.info(buffer.toString());
+				LOGGER.info(buffer.toString());
 			}
 		}
 	}
@@ -84,7 +84,7 @@ public class Slf4jJdbcEventLogger implements JdbcEventLogger {
 			appendParameters(buffer, label, bindings);
 
 			if (buffer.length() > 0) {
-				logger.info(buffer.toString());
+				LOGGER.info(buffer.toString());
 			}
 		}
 	}
@@ -156,12 +156,12 @@ public class Slf4jJdbcEventLogger implements JdbcEventLogger {
 				buf.append(" - took ").append(time).append(" ms.");
 			}
 
-			logger.info(buf.toString());
+			LOGGER.info(buf.toString());
 		}
 
 		if (queryExecutionTimeLoggingThreshold > 0 && time > queryExecutionTimeLoggingThreshold) {
 			String message = "Query time exceeded threshold (" + time + " ms): ";
-			logger.warn(message + sql, new CayenneRuntimeException(message + "%s", sql));
+			LOGGER.warn(message + sql, new CayenneRuntimeException(message + "%s", sql));
 		}
 	}
 
@@ -169,27 +169,27 @@ public class Slf4jJdbcEventLogger implements JdbcEventLogger {
 	public void logUpdateCount(int count) {
 		if (isLoggable()) {
 			if (count < 0) {
-				logger.info("=== updated ? rows");
+				LOGGER.info("=== updated ? rows");
 			} else {
 				String countStr = (count == 1) ? "=== updated 1 row." : "=== updated " + count + " rows.";
-				logger.info(countStr);
+				LOGGER.info(countStr);
 			}
 		}
 	}
 
 	@Override
 	public void logBeginTransaction(String transactionLabel) {
-		logger.info("--- " + transactionLabel);
+		LOGGER.info("--- " + transactionLabel);
 	}
 
 	@Override
 	public void logCommitTransaction(String transactionLabel) {
-		logger.info("+++ " + transactionLabel);
+		LOGGER.info("+++ " + transactionLabel);
 	}
 
 	@Override
 	public void logRollbackTransaction(String transactionLabel) {
-		logger.info("*** " + transactionLabel);
+		LOGGER.info("*** " + transactionLabel);
 	}
 
 	@Override
@@ -199,12 +199,12 @@ public class Slf4jJdbcEventLogger implements JdbcEventLogger {
 				th = Util.unwindException(th);
 			}
 
-			logger.info("*** error.", th);
+			LOGGER.info("*** error.", th);
 
 			if (th instanceof SQLException) {
 				SQLException sqlException = ((SQLException) th).getNextException();
 				while (sqlException != null) {
-					logger.info("*** nested SQL error.", sqlException);
+					LOGGER.info("*** nested SQL error.", sqlException);
 					sqlException = sqlException.getNextException();
 				}
 			}
@@ -213,6 +213,6 @@ public class Slf4jJdbcEventLogger implements JdbcEventLogger {
 
 	@Override
 	public boolean isLoggable() {
-		return logger.isInfoEnabled();
+		return LOGGER.isInfoEnabled();
 	}
 }

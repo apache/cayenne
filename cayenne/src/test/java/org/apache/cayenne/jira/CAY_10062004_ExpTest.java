@@ -25,8 +25,6 @@ import org.junit.jupiter.api.Test;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 
-/**
- */
 public class CAY_10062004_ExpTest {
 
     @Test

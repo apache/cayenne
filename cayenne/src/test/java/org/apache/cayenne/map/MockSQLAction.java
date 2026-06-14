@@ -25,8 +25,6 @@ import java.sql.SQLException;
 import org.apache.cayenne.access.OperationObserver;
 import org.apache.cayenne.query.SQLAction;
 
-/**
- */
 public class MockSQLAction implements SQLAction {
 
     public MockSQLAction() {

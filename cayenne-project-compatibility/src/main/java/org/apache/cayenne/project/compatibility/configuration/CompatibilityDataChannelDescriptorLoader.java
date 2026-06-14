@@ -54,7 +54,7 @@ import org.xml.sax.XMLReader;
  */
 public class CompatibilityDataChannelDescriptorLoader extends XMLDataChannelDescriptorLoader {
 
-    private static final Logger logger = LoggerFactory.getLogger(XMLDataChannelDescriptorLoader.class);
+    private static final Logger LOGGER = LoggerFactory.getLogger(XMLDataChannelDescriptorLoader.class);
 
     @Inject
     Provider<UpgradeService> upgradeServiceProvider;
@@ -97,7 +97,7 @@ public class CompatibilityDataChannelDescriptorLoader extends XMLDataChannelDesc
             throw new ConfigurationException("Unable to upgrade " + configurationURL);
         }
 
-        logger.info("Loading XML configuration resource from " + configurationURL);
+        LOGGER.info("Loading XML configuration resource from " + configurationURL);
 
         final DataChannelDescriptor descriptor = new DataChannelDescriptor();
         descriptor.setConfigurationSource(configurationResource);

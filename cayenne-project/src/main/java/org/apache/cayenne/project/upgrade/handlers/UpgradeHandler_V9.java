@@ -37,7 +37,7 @@ import org.w3c.dom.Node;
  */
 public class UpgradeHandler_V9 implements UpgradeHandler {
 
-    private static final Logger logger = LoggerFactory.getLogger(UpgradeHandler_V9.class);
+    private static final Logger LOGGER = LoggerFactory.getLogger(UpgradeHandler_V9.class);
 
     @Override
     public String getVersion() {
@@ -67,13 +67,13 @@ public class UpgradeHandler_V9 implements UpgradeHandler {
                 File file = new File(directoryPath + "/" + reFileName);
                 if (file.exists()) {
                     if(!file.delete()) {
-                        logger.warn("Can't delete file " + file);
+                        LOGGER.warn("Can't delete file " + file);
                     }
                 }
                 dataMap.removeChild(reNode);
             }
         } catch (Exception ex) {
-            logger.warn("Can't process dataMap DOM: ", ex);
+            LOGGER.warn("Can't process dataMap DOM: ", ex);
         }
     }
 }

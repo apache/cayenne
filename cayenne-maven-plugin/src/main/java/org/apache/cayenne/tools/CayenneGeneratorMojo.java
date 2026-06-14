@@ -250,7 +250,7 @@ public class CayenneGeneratorMojo extends AbstractMojo {
 
     private transient Injector injector;
 
-    private static final Logger logger = LoggerFactory.getLogger(CayenneGeneratorMojo.class);
+    private static final Logger LOGGER = LoggerFactory.getLogger(CayenneGeneratorMojo.class);
 
     private boolean useConfigFromDataMap;
 
@@ -338,14 +338,14 @@ public class CayenneGeneratorMojo extends AbstractMojo {
     List<CgenConfiguration> buildConfigurations(DataMap dataMap) {
         CgenConfigList cgenConfigList = injector.getInstance(DataChannelMetaData.class).get(dataMap, CgenConfigList.class);
         if (hasConfig()) {
-            logger.info("Using cgen config from pom.xml");
+            LOGGER.info("Using cgen config from pom.xml");
             return Collections.singletonList(cgenConfigFromPom(dataMap));
         } else if (cgenConfigList != null) {
-            logger.info("Using cgen config from dataMap");
+            LOGGER.info("Using cgen config from dataMap");
             useConfigFromDataMap = true;
             return cgenConfigList.getAll();
         } else {
-            logger.info("Using default cgen config.");
+            LOGGER.info("Using default cgen config.");
             CgenConfiguration cgenConfiguration = new CgenConfiguration();
             cgenConfiguration.setDataMap(dataMap);
             cgenConfiguration.updateOutputPath(defaultDir.toPath());

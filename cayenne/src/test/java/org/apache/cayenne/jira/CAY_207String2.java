@@ -19,8 +19,6 @@
 
 package org.apache.cayenne.jira;
 
-/**
- */
 public class CAY_207String2 {
 
     protected String string;

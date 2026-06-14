@@ -19,8 +19,6 @@
 
 package org.apache.cayenne.map;
 
-/**
- */
 public class MockObjRelationship extends ObjRelationship {
 
     protected ObjRelationship reverseRelationship;
