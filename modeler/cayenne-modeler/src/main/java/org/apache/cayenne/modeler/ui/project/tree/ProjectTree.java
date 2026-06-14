@@ -227,7 +227,7 @@ public class ProjectTree extends JTree
 
             return (value != null) ? String.valueOf(PropertyUtils.getProperty(value, "name")) : "";
         } catch (Exception e) {
-            LOGGER.warn("Exception reading property 'name', class " + value.getClass().getName(), e);
+            LOGGER.warn("Exception reading property 'name', class {}", value.getClass().getName(), e);
             return "";
         }
     }

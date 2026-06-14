@@ -52,9 +52,7 @@ public class RelationshipLoader extends AbstractLoader {
         }
 
         for (Map.Entry<String, Set<ExportedKey>> entry : map.getExportedKeysEntrySet()) {
-            if (LOGGER.isDebugEnabled()) {
-                LOGGER.debug("Process keys for: " + entry.getKey());
-            }
+            LOGGER.debug("Process keys for: {}", entry.getKey());
 
             Set<ExportedKey> exportedKeys = entry.getValue();
             ExportedKey key = exportedKeys.iterator().next();
@@ -171,13 +169,13 @@ public class RelationshipLoader extends AbstractLoader {
             // skip invalid joins...
             DbAttribute pkAtt = pkEntity.getAttribute(pkName);
             if (pkAtt == null) {
-                LOGGER.info("no attribute for declared primary key: " + pkName);
+                LOGGER.info("no attribute for declared primary key: {}", pkName);
                 continue;
             }
 
             DbAttribute fkAtt = fkEntity.getAttribute(fkName);
             if (fkAtt == null) {
-                LOGGER.info("no attribute for declared foreign key: " + fkName);
+                LOGGER.info("no attribute for declared foreign key: {}", fkName);
                 continue;
             }
 

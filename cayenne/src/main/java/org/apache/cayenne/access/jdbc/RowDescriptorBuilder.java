@@ -138,8 +138,9 @@ public class RowDescriptorBuilder {
         }
 
         if(validateDuplicateColumnNames && !duplicates.isEmpty()) {
-            LOGGER.warn("Found duplicated columns '" + String.join("', '", duplicates) + "' in row descriptor. " +
-                    "This can lead to errors when converting result to persistent objects.");
+            LOGGER.warn("Found duplicated columns '{}' in row descriptor. " +
+                    "This can lead to errors when converting result to persistent objects.",
+                    String.join("', '", duplicates));
         }
 
         if (outputLen < rsLen) {

@@ -77,17 +77,17 @@ public class ProcedureColumnLoader extends PerCatalogAndSchemaLoader {
         // skip ResultSet columns, as they are not described in Cayenne procedures yet...
         short type = rs.getShort("COLUMN_TYPE");
         if (type == DatabaseMetaData.procedureColumnResult) {
-            LOGGER.debug("skipping ResultSet column: " + key + "." + columnName);
+            LOGGER.debug("skipping ResultSet column: {}.{}", key, columnName);
             return null;
         }
 
         if (columnName == null || columnName.isEmpty()) {
             if (type == DatabaseMetaData.procedureColumnReturn) {
-                LOGGER.debug("null column name, assuming result column: " + key);
+                LOGGER.debug("null column name, assuming result column: {}", key);
                 columnName = "_return_value";
                 procedure.setReturningValue(true);
             } else {
-                LOGGER.info("invalid null column name, skipping column : " + key);
+                LOGGER.info("invalid null column name, skipping column : {}", key);
                 return null;
             }
         }

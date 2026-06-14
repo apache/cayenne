@@ -107,7 +107,7 @@ public abstract class AppDialog extends JDialog {
      */
     protected void reportError(String title, Throwable t) {
         Throwable unwound = Util.unwindException(t);
-        LOGGER.info("Error in " + getClass().getName(), unwound);
+        LOGGER.info("Error in {}", getClass().getName(), unwound);
         JOptionPane.showMessageDialog(this, unwound.getMessage(), title, JOptionPane.ERROR_MESSAGE);
     }
 }

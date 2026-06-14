@@ -721,7 +721,7 @@ public class EOModelProcessor {
 			try {
 				flatRel.setDbRelationshipPath(targetPath);
 			} catch (ExpressionException ex) {
-				LOGGER.warn("Invalid relationship: " + targetPath);
+				LOGGER.warn("Invalid relationship: {}", targetPath);
 				continue;
 			}
 

@@ -107,7 +107,7 @@ final class DataChannelChildrenHandler extends NamespaceAwareNestedTagHandler {
 
         Resource dataMapResource = baseResource.getRelativeResource(dataMapLocation);
 
-        LOGGER.info("Loading XML DataMap resource from " + dataMapResource.getURL());
+        LOGGER.info("Loading XML DataMap resource from {}", dataMapResource.getURL());
 
         DataMap dataMap = xmlDataChannelDescriptorLoader.dataMapLoader.load(dataMapResource);
         dataMap.setName(dataMapName);

@@ -136,7 +136,7 @@ class MappingCache implements MappingNamespace {
                         } else {
                             // bad mapping? Or most likely some classloader
                             // issue
-                            LOGGER.warn("No super entity mapping for '" + superOEName + "'");
+                            LOGGER.warn("No super entity mapping for '{}'", superOEName);
                             continue;
                         }
                     }
@@ -161,8 +161,8 @@ class MappingCache implements MappingNamespace {
             CayenneMapEntry duplicate = dst.get(entry.getName());
             if(duplicate != null) {
                 DataMap parent = (DataMap) duplicate.getParent();
-                LOGGER.warn("Found duplicated name " + entry.getName()
-                        + " in datamaps " + srcMap.getName() + " and " + parent.getName());
+                LOGGER.warn("Found duplicated name {} in datamaps {} and {}",
+                        entry.getName(), srcMap.getName(), parent.getName());
             }
         }
     }

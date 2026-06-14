@@ -97,7 +97,7 @@ public class CompatibilityDataChannelDescriptorLoader extends XMLDataChannelDesc
             throw new ConfigurationException("Unable to upgrade " + configurationURL);
         }
 
-        LOGGER.info("Loading XML configuration resource from " + configurationURL);
+        LOGGER.info("Loading XML configuration resource from {}", configurationURL);
 
         final DataChannelDescriptor descriptor = new DataChannelDescriptor();
         descriptor.setConfigurationSource(configurationResource);

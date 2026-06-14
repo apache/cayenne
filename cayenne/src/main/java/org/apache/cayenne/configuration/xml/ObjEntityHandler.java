@@ -205,7 +205,7 @@ public class ObjEntityHandler extends NamespaceAwareNestedTagHandler {
             try {
                 entity.setDeclaredQualifier(ExpressionFactory.exp(qualifier));
             } catch (ExpressionException ex) {
-                LOGGER.warn("Unable to parse entity " + entity.getName() + " qualifier", ex);
+                LOGGER.warn("Unable to parse entity {} qualifier", entity.getName(), ex);
             }
         }
     }

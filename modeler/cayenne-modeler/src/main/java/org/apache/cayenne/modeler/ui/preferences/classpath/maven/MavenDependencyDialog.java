@@ -161,7 +161,7 @@ public class MavenDependencyDialog extends AppDialog {
             finalizeDownload(dstFile, "Url not found: " + srcUrl, false, false);
             return;
         } catch (Exception e) {
-            LOGGER.warn("Failed to download Maven dependency " + srcUrl, e);
+            LOGGER.warn("Failed to download Maven dependency {}", srcUrl, e);
             finalizeDownload(dstFile, "Unable to download file " + dstFile, false, true);
             return;
         }

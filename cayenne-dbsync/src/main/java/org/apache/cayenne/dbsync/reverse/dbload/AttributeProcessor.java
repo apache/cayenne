@@ -68,10 +68,8 @@ class AttributeProcessor {
 
         String columnName = rs.getString("COLUMN_NAME");
         if (columnFilter == null || !columnFilter.isIncluded(columnName)) {
-            if (LOGGER.isDebugEnabled()) {
-                LOGGER.debug("Skip column '" + entity.getName() + "." + columnName +
-                        "' (Path: " + entity.getCatalog() + "/" + entity.getSchema() + "; Filter: " + columnFilter + ")");
-            }
+            LOGGER.debug("Skip column '{}.{}' (Path: {}/{}; Filter: {})",
+                    entity.getName(), columnName, entity.getCatalog(), entity.getSchema(), columnFilter);
             return;
         }
 

@@ -38,7 +38,7 @@ public class WinUIInitializer implements UIInitializer {
             // override some default styles and colors
             overrideUIDefaults();
         } catch (Exception e) {
-            LOGGER.warn("Error installing L&F: " + WindowsLookAndFeel.class.getName(), e);
+            LOGGER.warn("Error installing L&F: {}", WindowsLookAndFeel.class.getName(), e);
         }
     }
 

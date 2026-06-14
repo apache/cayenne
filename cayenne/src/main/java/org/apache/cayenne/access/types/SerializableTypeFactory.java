@@ -45,8 +45,8 @@ class SerializableTypeFactory implements ExtendedTypeFactory {
 	}
 
 	public ExtendedType getType(Class<?> objectClass) {
-		LOGGER.warn("Haven't found suitable ExtendedType for class '" + objectClass.getCanonicalName()
-				+ "'. Most likely you need to define a custom ExtendedType.");
+		LOGGER.warn("Haven't found suitable ExtendedType for class '{}'. Most likely you need to define a custom "
+				+ "ExtendedType.", objectClass.getCanonicalName());
 
 		if (Serializable.class.isAssignableFrom(objectClass)) {
 			LOGGER.warn("SerializableType will be used for type conversion.");

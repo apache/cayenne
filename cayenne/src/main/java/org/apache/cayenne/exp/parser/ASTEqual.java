@@ -141,7 +141,7 @@ public class ASTEqual extends ConditionNode implements ValueInjector {
 			try {
 				path.injectValue(o, scalar.getValue());
 			} catch (Exception ex) {
-				LOGGER.warn("Failed to inject value " + " on path " + path.getPath() + " to " + o, ex);
+				LOGGER.warn("Failed to inject value on path {} to {}", path.getPath(), o, ex);
 			}
 		}
 	}

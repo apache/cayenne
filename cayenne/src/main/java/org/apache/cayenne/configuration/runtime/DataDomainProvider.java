@@ -170,7 +170,7 @@ public class DataDomainProvider implements Provider<DataDomain> {
         }
 
         if (defaultNode != null) {
-            LOGGER.info("setting DataNode '" + defaultNode.getName() + "' as default, used by all unlinked DataMaps");
+            LOGGER.info("setting DataNode '{}' as default, used by all unlinked DataMaps", defaultNode.getName());
 
             dataDomain.setDefaultNode(defaultNode);
         }
@@ -223,9 +223,7 @@ public class DataDomainProvider implements Provider<DataDomain> {
 
         long t0 = System.currentTimeMillis();
 
-        if (LOGGER.isDebugEnabled()) {
-            LOGGER.debug("starting configuration loading: " + locations);
-        }
+        LOGGER.debug("starting configuration loading: {}", locations);
 
         DataChannelDescriptor[] descriptors = new DataChannelDescriptor[locations.size()];
 
@@ -243,8 +241,8 @@ public class DataDomainProvider implements Provider<DataDomain> {
 
             // no support for multiple configs yet, but this is not a hard error
             if (configurations.size() > 1) {
-                LOGGER.info("found " + configurations.size() + " configurations for " + location
-                        + ", will use the first one: " + configurationResource.getURL());
+                LOGGER.info("found {} configurations for {}, will use the first one: {}", configurations.size(),
+                        location, configurationResource.getURL());
             }
 
             ConfigurationTree<DataChannelDescriptor> tree = loader.load(configurationResource);
@@ -258,9 +256,7 @@ public class DataDomainProvider implements Provider<DataDomain> {
 
         long t1 = System.currentTimeMillis();
 
-        if (LOGGER.isDebugEnabled()) {
-            LOGGER.debug("finished configuration loading in " + (t1 - t0) + " ms.");
-        }
+        LOGGER.debug("finished configuration loading in {} ms.", (t1 - t0));
 
         return descriptorMerger.merge(descriptors);
     }

@@ -45,9 +45,8 @@ class ExportedKeyLoader extends PerEntityLoader {
 
     @Override
     boolean catchException(DbEntity entity, SQLException ex) {
-        LOGGER.info("Error getting relationships for '"
-                + entity.getCatalog() + "." + entity.getSchema()
-                + "', ignoring. " + ex.getMessage(), ex);
+        LOGGER.info("Error getting relationships for '{}.{}', ignoring. {}",
+                entity.getCatalog(), entity.getSchema(), ex.getMessage(), ex);
         return true;
     }
 
@@ -62,13 +61,13 @@ class ExportedKeyLoader extends PerEntityLoader {
 
         DbEntity pkEntity = map.getDbEntity(key.getPk().getTable());
         if (!key.getPk().validateEntity(pkEntity)) {
-            LOGGER.info("Skip relation: '" + key + "' because table '" + key.getPk().getTable() + "' is not found or in different catalog/schema");
+            LOGGER.info("Skip relation: '{}' because table '{}' is not found or in different catalog/schema", key, key.getPk().getTable());
             return;
         }
 
         DbEntity fkEntity = map.getDbEntity(key.getFk().getTable());
         if (!key.getFk().validateEntity(fkEntity)) {
-            LOGGER.info("Skip relation: '" + key + "' because table '" + key.getFk().getTable() + "' is not found or in different catalog/schema");
+            LOGGER.info("Skip relation: '{}' because table '{}' is not found or in different catalog/schema", key, key.getFk().getTable());
             return;
         }
 

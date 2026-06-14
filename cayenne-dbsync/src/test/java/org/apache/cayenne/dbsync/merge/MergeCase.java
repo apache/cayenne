@@ -276,7 +276,7 @@ public abstract class MergeCase {
             try {
                 executeSql(sql);
             } catch (Exception e) {
-                LOGGER.info("Exception dropping table " + tableName + ", probably abscent..");
+                LOGGER.info("Exception dropping table {}, probably abscent..", tableName);
             }
         }
     }

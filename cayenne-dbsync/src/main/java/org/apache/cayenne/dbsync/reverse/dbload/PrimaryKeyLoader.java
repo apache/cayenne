@@ -50,7 +50,7 @@ class PrimaryKeyLoader extends PerEntityLoader {
             // why an attribute might be null is not quiet clear
             // but there is a bug report 731406 indicating that it is
             // possible so just print the warning, and ignore
-            LOGGER.warn("Can't locate attribute for primary key: " + columnName);
+            LOGGER.warn("Can't locate attribute for primary key: {}", columnName);
             return;
         }
 

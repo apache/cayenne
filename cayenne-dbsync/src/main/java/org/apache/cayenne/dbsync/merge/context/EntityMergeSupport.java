@@ -257,8 +257,8 @@ public class EntityMergeSupport {
             if (dbRelationship.getTargetEntityName() != null) {
                 boolean needGeneratedEntity = createObjRelationship(entity, dbRelationship, nameGenerator.objEntityName(targetEntity));
                 if (needGeneratedEntity) {
-                    LOGGER.warn("Can't find ObjEntity for " + dbRelationship.getTargetEntityName());
-                    LOGGER.warn("Db Relationship (" + dbRelationship + ") will have GUESSED Obj Relationship reflection. ");
+                    LOGGER.warn("Can't find ObjEntity for {}", dbRelationship.getTargetEntityName());
+                    LOGGER.warn("Db Relationship ({}) will have GUESSED Obj Relationship reflection. ", dbRelationship);
                 }
             }
         } else {
