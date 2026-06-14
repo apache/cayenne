@@ -75,7 +75,7 @@ public class JdbcPkGenerator implements PkGenerator {
         return this.adapter;
     }
 
-    public void createAutoPk(DataNode node, List<DbEntity> dbEntities) throws Exception {
+    public void createAutoPk(DataNode node, List<DbEntity> dbEntities) {
         // check if a table exists
 
         // create AUTO_PK_SUPPORT table
@@ -110,7 +110,7 @@ public class JdbcPkGenerator implements PkGenerator {
     /**
      * Drops table named "AUTO_PK_SUPPORT" if it exists in the database.
      */
-    public void dropAutoPk(DataNode node, List<DbEntity> dbEntities) throws Exception {
+    public void dropAutoPk(DataNode node, List<DbEntity> dbEntities) {
         if (autoPkTableExists(node)) {
             runUpdate(node, dropAutoPkString());
         }
@@ -161,34 +161,36 @@ public class JdbcPkGenerator implements PkGenerator {
     /**
      * Checks if AUTO_PK_TABLE already exists in the database.
      */
-    protected boolean autoPkTableExists(DataNode node) throws SQLException {
+    protected boolean autoPkTableExists(DataNode node) {
 
         try (Connection con = node.getDataSource().getConnection()) {
             DatabaseMetaData md = con.getMetaData();
             try (ResultSet tables = md.getTables(null, null, "AUTO_PK_SUPPORT", null)) {
                 return tables.next();
             }
+        } catch (SQLException e) {
+            throw new CayenneRuntimeException("Error checking for AUTO_PK_SUPPORT table", e);
         }
     }
 
     /**
      * Runs JDBC update over a Connection obtained from DataNode. Returns a
      * number of objects returned from update.
-     *
-     * @throws SQLException in case of query failure.
      */
-    public int runUpdate(DataNode node, String sql) throws SQLException {
+    public int runUpdate(DataNode node, String sql) {
         adapter.getJdbcEventLogger().log(sql);
 
         try (Connection con = node.getDataSource().getConnection()) {
             try (Statement upd = con.createStatement()) {
                 return upd.executeUpdate(sql);
             }
+        } catch (SQLException e) {
+            throw new CayenneRuntimeException("Error executing PK update: %s", e, sql);
         }
     }
 
     @Override
-    public Object generatePk(DataNode node, DbAttribute pk, Class<?> javaType) throws Exception {
+    public Object generatePk(DataNode node, DbAttribute pk, Class<?> javaType) {
 
         DbEntity entity = pk.getEntity();
 
@@ -268,7 +270,7 @@ public class JdbcPkGenerator implements PkGenerator {
      *
      * @since 3.0
      */
-    protected long longPkFromDatabase(DataNode node, DbEntity entity) throws Exception {
+    protected long longPkFromDatabase(DataNode node, DbEntity entity) {
         String select = "SELECT #result('NEXT_ID' 'long' 'NEXT_ID') FROM AUTO_PK_SUPPORT "
                 + "WHERE TABLE_NAME = '" + entity.getName() + '\'';
 
