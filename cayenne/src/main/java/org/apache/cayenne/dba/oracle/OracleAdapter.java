@@ -164,11 +164,11 @@ public class OracleAdapter extends JdbcAdapter {
         setSupportsBatchUpdates(true);
 
         // VARCHAR2 standard maximum, used for an unconstrained character column
-        this.defaultCharLength = 4000;
+        this.defaultCharColumnLength = 4000;
     }
 
     @Override
-    protected NativeColumnType[] createExternalTypes() {
+    protected NativeColumnType[] createNativeTypes() {
         return new NativeColumnType[]{
             NativeColumnType.of(Types.BIGINT, "NUMBER"),
             NativeColumnType.of(Types.BINARY, "RAW"),

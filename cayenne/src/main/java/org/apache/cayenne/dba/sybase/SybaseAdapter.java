@@ -59,7 +59,7 @@ public class SybaseAdapter extends JdbcAdapter {
     }
 
     @Override
-    protected NativeColumnType[] createExternalTypes() {
+    protected NativeColumnType[] createNativeTypes() {
         return new NativeColumnType[]{
             NativeColumnType.of(Types.BIGINT, "decimal(19,0)"),
             NativeColumnType.of(Types.BINARY, "binary"),

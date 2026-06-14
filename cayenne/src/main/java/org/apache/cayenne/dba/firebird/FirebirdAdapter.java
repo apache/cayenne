@@ -62,7 +62,7 @@ public class FirebirdAdapter extends JdbcAdapter {
     }
 
     @Override
-    protected NativeColumnType[] createExternalTypes() {
+    protected NativeColumnType[] createNativeTypes() {
         return new NativeColumnType[]{
             NativeColumnType.of(Types.ARRAY, "BLOB"),
             NativeColumnType.of(Types.BIGINT, "BIGINT"),
@@ -110,8 +110,8 @@ public class FirebirdAdapter extends JdbcAdapter {
     }
 
     public void createTableAppendColumn(StringBuffer sqlBuffer, DbAttribute column) {
-        String type = getType(this, column);
-        String length = sizeAndPrecision(this, column);
+        String type = preferredNativeColumnType(column).nativeType();
+        String length = sizeAndScale(this, column);
 
         sqlBuffer.append(quotingStrategy.quotedName(column));
         sqlBuffer.append(' ');

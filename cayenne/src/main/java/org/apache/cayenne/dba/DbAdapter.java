@@ -18,6 +18,7 @@
  ****************************************************************/
 package org.apache.cayenne.dba;
 
+import org.apache.cayenne.CayenneRuntimeException;
 import org.apache.cayenne.access.DataNode;
 import org.apache.cayenne.access.sqlbuilder.sqltree.SQLTreeProcessor;
 import org.apache.cayenne.access.translator.ParameterBinding;
@@ -30,9 +31,9 @@ import org.apache.cayenne.map.DbEntity;
 import org.apache.cayenne.map.DbRelationship;
 import org.apache.cayenne.map.EntityResolver;
 import org.apache.cayenne.query.ProcedureQuery;
-import org.apache.cayenne.query.Select;
 import org.apache.cayenne.query.Query;
 import org.apache.cayenne.query.SQLAction;
+import org.apache.cayenne.query.Select;
 
 import java.sql.PreparedStatement;
 import java.util.Collection;
@@ -125,21 +126,46 @@ public interface DbAdapter {
 	/**
 	 * Returns true if supplied type can have a scale attribute as a part of column definition.
 	 *
-	 * @param type sql type code
-	 * @return <code>true</code> if a given type supports scale
-	 *
 	 * @since 5.0
 	 */
 	boolean typeSupportsScale(int type);
 
 	/**
 	 * Returns the length to use for an unconstrained character column (a CHAR/VARCHAR-family column with no max
-	 * length) when this database requires a length. Adapters whose database accepts a length-free character type
-	 * instead declare an {@link NativeColumnType#asUnconstrained() unconstrained} native type.
+	 * length) when this database requires a length.
 	 *
 	 * @since 5.0
 	 */
-	int defaultCharLength();
+	int defaultCharColumnLength();
+
+	/**
+	 * @since 5.0
+	 */
+	default NativeColumnType preferredNativeColumnType(DbAttribute column) {
+		NativeColumnType[] variants = nativeColumnTypes(column.getType());
+		if (variants == null || variants.length == 0) {
+			String entityName = column.getEntity() != null
+					? column.getEntity().getFullyQualifiedName()
+					: "<null>";
+			throw new CayenneRuntimeException("Undefined type for attribute '%s.%s': %s."
+					, entityName, column.getName(), column.getType());
+		}
+
+		if (column.isGenerated()) {
+			for (NativeColumnType variant : variants) {
+				if (variant.autoIncrement()) {
+					return variant;
+				}
+			}
+		} else if (TypesMapping.isCharacterWithMaxLengthSupport(column.getType()) && column.getMaxLength() <= 0) {
+			for (NativeColumnType variant : variants) {
+				if (variant.unconstrained()) {
+					return variant;
+				}
+			}
+		}
+		return variants[0];
+	}
 
 	/**
 	 * Returns a collection of SQL statements needed to drop a database table.

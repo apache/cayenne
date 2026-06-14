@@ -70,7 +70,7 @@ public class DerbyAdapter extends JdbcAdapter {
     }
 
     @Override
-    protected NativeColumnType[] createExternalTypes() {
+    protected NativeColumnType[] createNativeTypes() {
         return new NativeColumnType[]{
             NativeColumnType.of(Types.ARRAY, "ARRAY"),
             NativeColumnType.of(Types.BIGINT, "BIGINT"),
@@ -146,8 +146,8 @@ public class DerbyAdapter extends JdbcAdapter {
      */
     @Override
     public void createTableAppendColumn(StringBuffer sqlBuffer, DbAttribute column) {
-        String type = getType(this, column);
-        String length = sizeAndPrecision(this, column);
+        String type = preferredNativeColumnType(column).nativeType();
+        String length = sizeAndScale(this, column);
 
         sqlBuffer.append(quotingStrategy.quotedName(column));
         sqlBuffer.append(' ');

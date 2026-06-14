@@ -175,8 +175,8 @@ public class AutoAdapter implements DbAdapter {
 	 * @since 5.0
 	 */
 	@Override
-	public int defaultCharLength() {
-		return getAdapter().defaultCharLength();
+	public int defaultCharColumnLength() {
+		return getAdapter().defaultCharColumnLength();
 	}
 
 	@Override

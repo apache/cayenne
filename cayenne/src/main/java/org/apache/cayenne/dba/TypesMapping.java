@@ -286,6 +286,10 @@ public class TypesMapping {
                 || type == Types.CLOB || type == Types.NCLOB || type == Types.LONGVARCHAR || type == Types.LONGNVARCHAR;
     }
 
+    static boolean isCharacterWithMaxLengthSupport(int type) {
+        return type == CHAR || type == NCHAR || type == VARCHAR || type == NVARCHAR;
+    }
+
     /**
      * Returns true if supplied type is a binary type.
      *

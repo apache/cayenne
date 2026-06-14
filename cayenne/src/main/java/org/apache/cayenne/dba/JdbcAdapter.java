@@ -68,7 +68,7 @@ public class JdbcAdapter implements DbAdapter {
     private PkGenerator pkGenerator;
     protected QuotingStrategy quotingStrategy;
 
-    protected int defaultCharLength = 255;
+    protected int defaultCharColumnLength;
 
     protected Map<Integer, NativeColumnType[]> nativeColumnTypes;
     protected ExtendedTypeMap extendedTypes;
@@ -92,6 +92,7 @@ public class JdbcAdapter implements DbAdapter {
                        @Inject ValueObjectTypeRegistry valueObjectTypeRegistry) {
 
         // init defaults
+        this.defaultCharColumnLength = 255;
         this.setSupportsBatchUpdates(false);
         this.setSupportsUniqueConstraints(true);
         this.caseInsensitiveCollations = runtimeProperties.getBoolean(Constants.CI_PROPERTY, false);
@@ -99,7 +100,7 @@ public class JdbcAdapter implements DbAdapter {
         this.quotingStrategy = createQuotingStrategy();
 
         this.ejbqlTranslator = createEJBQLTranslator();
-        this.nativeColumnTypes = indexBySqlType(createExternalTypes());
+        this.nativeColumnTypes = indexBySqlType(createNativeTypes());
         this.extendedTypes = new ExtendedTypeMap();
         initExtendedTypes(defaultExtendedTypes, userExtendedTypes, extendedTypeFactories, valueObjectTypeRegistry);
     }
@@ -126,42 +127,42 @@ public class JdbcAdapter implements DbAdapter {
      *
      * @since 5.0
      */
-    protected NativeColumnType[] createExternalTypes() {
+    protected NativeColumnType[] createNativeTypes() {
         return new NativeColumnType[]{
-            NativeColumnType.of(Types.ARRAY, "ARRAY"),
-            NativeColumnType.of(Types.BIGINT, "BIGINT"),
-            NativeColumnType.of(Types.ROWID, "ROWID"),
-            NativeColumnType.of(Types.BINARY, "BINARY"),
-            NativeColumnType.of(Types.BIT, "BIT"),
-            NativeColumnType.of(Types.BLOB, "BLOB"),
-            NativeColumnType.of(Types.BOOLEAN, "BOOLEAN"),
-            NativeColumnType.of(Types.CHAR, "CHAR"),
-            NativeColumnType.of(Types.NCHAR, "NCHAR"),
-            NativeColumnType.of(Types.CLOB, "CLOB"),
-            NativeColumnType.of(Types.NCLOB, "NCLOB"),
-            NativeColumnType.of(Types.DATALINK, "DATALINK"),
-            NativeColumnType.of(Types.DATE, "DATE"),
-            NativeColumnType.of(Types.DECIMAL, "DECIMAL"),
-            NativeColumnType.of(Types.DOUBLE, "DOUBLE"),
-            NativeColumnType.of(Types.FLOAT, "FLOAT"),
-            NativeColumnType.of(Types.INTEGER, "INTEGER"),
-            NativeColumnType.of(Types.JAVA_OBJECT, "JAVA_OBJECT"),
-            NativeColumnType.of(Types.LONGVARBINARY, "LONGVARBINARY"),
-            NativeColumnType.of(Types.LONGVARCHAR, "LONGVARCHAR"),
-            NativeColumnType.of(Types.LONGNVARCHAR, "LONGNVARCHAR"),
-            NativeColumnType.of(Types.NUMERIC, "NUMERIC"),
-            NativeColumnType.of(Types.OTHER, "OTHER"),
-            NativeColumnType.of(Types.REAL, "REAL"),
-            NativeColumnType.of(Types.REF, "REF"),
-            NativeColumnType.of(Types.SMALLINT, "SMALLINT"),
-            NativeColumnType.of(Types.STRUCT, "STRUCT"),
-            NativeColumnType.of(Types.TIME, "TIME"),
-            NativeColumnType.of(Types.TIMESTAMP, "TIMESTAMP"),
-            NativeColumnType.of(Types.TINYINT, "TINYINT"),
-            NativeColumnType.of(Types.VARBINARY, "VARBINARY"),
-            NativeColumnType.of(Types.VARCHAR, "VARCHAR"),
-            NativeColumnType.of(Types.NVARCHAR, "NVARCHAR"),
-            NativeColumnType.of(Types.SQLXML, "SQLXML"),
+                NativeColumnType.of(Types.ARRAY, "ARRAY"),
+                NativeColumnType.of(Types.BIGINT, "BIGINT"),
+                NativeColumnType.of(Types.ROWID, "ROWID"),
+                NativeColumnType.of(Types.BINARY, "BINARY"),
+                NativeColumnType.of(Types.BIT, "BIT"),
+                NativeColumnType.of(Types.BLOB, "BLOB"),
+                NativeColumnType.of(Types.BOOLEAN, "BOOLEAN"),
+                NativeColumnType.of(Types.CHAR, "CHAR"),
+                NativeColumnType.of(Types.NCHAR, "NCHAR"),
+                NativeColumnType.of(Types.CLOB, "CLOB"),
+                NativeColumnType.of(Types.NCLOB, "NCLOB"),
+                NativeColumnType.of(Types.DATALINK, "DATALINK"),
+                NativeColumnType.of(Types.DATE, "DATE"),
+                NativeColumnType.of(Types.DECIMAL, "DECIMAL"),
+                NativeColumnType.of(Types.DOUBLE, "DOUBLE"),
+                NativeColumnType.of(Types.FLOAT, "FLOAT"),
+                NativeColumnType.of(Types.INTEGER, "INTEGER"),
+                NativeColumnType.of(Types.JAVA_OBJECT, "JAVA_OBJECT"),
+                NativeColumnType.of(Types.LONGVARBINARY, "LONGVARBINARY"),
+                NativeColumnType.of(Types.LONGVARCHAR, "LONGVARCHAR"),
+                NativeColumnType.of(Types.LONGNVARCHAR, "LONGNVARCHAR"),
+                NativeColumnType.of(Types.NUMERIC, "NUMERIC"),
+                NativeColumnType.of(Types.OTHER, "OTHER"),
+                NativeColumnType.of(Types.REAL, "REAL"),
+                NativeColumnType.of(Types.REF, "REF"),
+                NativeColumnType.of(Types.SMALLINT, "SMALLINT"),
+                NativeColumnType.of(Types.STRUCT, "STRUCT"),
+                NativeColumnType.of(Types.TIME, "TIME"),
+                NativeColumnType.of(Types.TIMESTAMP, "TIMESTAMP"),
+                NativeColumnType.of(Types.TINYINT, "TINYINT"),
+                NativeColumnType.of(Types.VARBINARY, "VARBINARY"),
+                NativeColumnType.of(Types.VARCHAR, "VARCHAR"),
+                NativeColumnType.of(Types.NVARCHAR, "NVARCHAR"),
+                NativeColumnType.of(Types.SQLXML, "SQLXML"),
         };
     }
 
@@ -284,7 +285,6 @@ public class JdbcAdapter implements DbAdapter {
      *
      * @param type sql type code
      * @return <code>true</code> if a given type supports scale
-     *
      * @since 5.0
      */
     @Override
@@ -297,8 +297,8 @@ public class JdbcAdapter implements DbAdapter {
      * @since 5.0
      */
     @Override
-    public int defaultCharLength() {
-        return defaultCharLength;
+    public int defaultCharColumnLength() {
+        return defaultCharColumnLength;
     }
 
     /**
@@ -383,52 +383,27 @@ public class JdbcAdapter implements DbAdapter {
     @Override
     public void createTableAppendColumn(StringBuffer sqlBuffer, DbAttribute column) {
         sqlBuffer.append(quotingStrategy.quotedName(column));
-        sqlBuffer.append(' ').append(getType(this, column));
+        sqlBuffer.append(' ').append(preferredNativeColumnType(column).nativeType());
 
-        sqlBuffer.append(sizeAndPrecision(this, column));
+        sqlBuffer.append(sizeAndScale(this, column));
         sqlBuffer.append(column.isMandatory() ? " NOT NULL" : " NULL");
     }
 
     /**
-     * Selects the native type variant to use for a column: the auto-increment variant for a generated column,
-     * the {@link NativeColumnType#unconstrained() unconstrained} variant for a character column with no max length,
-     * otherwise the primary variant.
-     *
-     * @since 5.0
+     * @deprecated in favor of {@link #sizeAndScale(DbAdapter, DbAttribute)}
      */
-    public static NativeColumnType selectNativeType(DbAdapter adapter, DbAttribute column) {
-        NativeColumnType[] variants = adapter.nativeColumnTypes(column.getType());
-        if (variants == null || variants.length == 0) {
-            String entityName = column.getEntity() != null
-                    ? column.getEntity().getFullyQualifiedName()
-                    : "<null>";
-            throw new CayenneRuntimeException("Undefined type for attribute '%s.%s': %s."
-                    , entityName, column.getName(), column.getType());
-        }
-
-        if (column.isGenerated()) {
-            for (NativeColumnType variant : variants) {
-                if (variant.autoIncrement()) {
-                    return variant;
-                }
-            }
-        } else if (isLengthBearingCharacter(column.getType()) && column.getMaxLength() <= 0) {
-            for (NativeColumnType variant : variants) {
-                if (variant.unconstrained()) {
-                    return variant;
-                }
-            }
-        }
-        return variants[0];
+    @Deprecated(since = "5.0", forRemoval = true)
+    public static String sizeAndPrecision(DbAdapter adapter, DbAttribute column) {
+        return sizeAndScale(adapter, column);
     }
 
-    public static String sizeAndPrecision(DbAdapter adapter, DbAttribute column) {
+    public static String sizeAndScale(DbAdapter adapter, DbAttribute column) {
         int type = column.getType();
 
         // an unconstrained character column either uses a length-free native type, or falls back to the
         // adapter's default length for databases that require one
-        if (isLengthBearingCharacter(type) && column.getMaxLength() <= 0) {
-            return selectNativeType(adapter, column).unconstrained() ? "" : "(" + adapter.defaultCharLength() + ")";
+        if (TypesMapping.isCharacterWithMaxLengthSupport(type) && column.getMaxLength() <= 0) {
+            return adapter.preferredNativeColumnType(column).unconstrained() ? "" : "(" + adapter.defaultCharColumnLength() + ")";
         }
 
         if (!adapter.typeSupportsLength(type) && !adapter.typeSupportsScale(type)) {
@@ -437,7 +412,7 @@ public class JdbcAdapter implements DbAdapter {
 
         int len = column.getMaxLength();
         int scale = TypesMapping.isDateTime(column.getType())
-                    || TypesMapping.isDecimal(column.getType()) && column.getType() != Types.FLOAT
+                || TypesMapping.isDecimal(column.getType()) && column.getType() != Types.FLOAT
                 ? column.getScale() : -1;
 
         if (len > 0) {
@@ -451,13 +426,12 @@ public class JdbcAdapter implements DbAdapter {
         return "";
     }
 
+    /**
+     * @deprecated in favor of {@link #preferredNativeColumnType(DbAttribute)}
+     */
+    @Deprecated(since = "5.0", forRemoval = true)
     public static String getType(DbAdapter adapter, DbAttribute column) {
-        if (column.getType() == Types.OTHER) {
-            // TODO: warn that this is unsupported yet
-            return "OTHER";
-        }
-
-        return selectNativeType(adapter, column).nativeType();
+        return adapter.preferredNativeColumnType(column).nativeType();
     }
 
     /**
@@ -513,7 +487,7 @@ public class JdbcAdapter implements DbAdapter {
 
         // sort joins in the order PK are set in target, to avoid errors on some DBs
         List<DbJoin> joins = rel.getJoins();
-        if(rel.isToPK()) {
+        if (rel.isToPK()) {
             List<DbAttribute> pks = rel.getTargetEntity().getPrimaryKeys();
             joins.sort(Comparator.comparingInt(join -> pks.indexOf(join.getTarget())));
         }
@@ -726,7 +700,4 @@ public class JdbcAdapter implements DbAdapter {
         return this;
     }
 
-    private static boolean isLengthBearingCharacter(int type) {
-        return type == Types.CHAR || type == Types.NCHAR || type == Types.VARCHAR || type == Types.NVARCHAR;
-    }
 }

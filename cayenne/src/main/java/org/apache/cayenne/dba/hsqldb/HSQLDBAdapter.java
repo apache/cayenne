@@ -68,7 +68,7 @@ public class HSQLDBAdapter extends JdbcAdapter {
     }
 
     @Override
-    protected NativeColumnType[] createExternalTypes() {
+    protected NativeColumnType[] createNativeTypes() {
         return new NativeColumnType[]{
             NativeColumnType.of(Types.ARRAY, "ARRAY"),
             NativeColumnType.of(Types.BIGINT, "BIGINT"),

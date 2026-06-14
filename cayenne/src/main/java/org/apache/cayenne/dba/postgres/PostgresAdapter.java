@@ -69,7 +69,7 @@ public class PostgresAdapter extends JdbcAdapter {
     }
 
     @Override
-    protected NativeColumnType[] createExternalTypes() {
+    protected NativeColumnType[] createNativeTypes() {
         return new NativeColumnType[]{
                 NativeColumnType.of(Types.BIGINT, "bigint"),
                 NativeColumnType.of(Types.BIGINT, "bigserial").asAutoIncrement(),
@@ -235,19 +235,19 @@ public class PostgresAdapter extends JdbcAdapter {
         return buf.toString();
     }
 
-    private void createAttribute(DbEntity ent, QuotingStrategy context, StringBuilder buf, DbAttribute at) {
+    private void createAttribute(DbEntity ent, QuotingStrategy context, StringBuilder buf, DbAttribute column) {
         // attribute may not be fully valid, do a simple check
-        if (at.getType() == TypesMapping.NOT_DEFINED) {
+        if (column.getType() == TypesMapping.NOT_DEFINED) {
             throw new CayenneRuntimeException("Undefined type for attribute '%s.%s'"
-                    , ent.getFullyQualifiedName(), at.getName());
+                    , ent.getFullyQualifiedName(), column.getName());
         }
 
         // getType / sizeAndPrecision pick the right variant (auto-increment serial, unconstrained "text", ...)
-        buf.append(context.quotedName(at))
+        buf.append(context.quotedName(column))
                 .append(' ')
-                .append(getType(this, at))
-                .append(sizeAndPrecision(this, at))
-                .append(at.isMandatory() ? " NOT" : "")
+                .append(preferredNativeColumnType(column).nativeType())
+                .append(sizeAndScale(this, column))
+                .append(column.isMandatory() ? " NOT" : "")
                 .append(" NULL");
     }
 

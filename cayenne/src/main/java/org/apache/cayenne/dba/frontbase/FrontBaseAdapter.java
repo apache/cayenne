@@ -68,7 +68,7 @@ public class FrontBaseAdapter extends JdbcAdapter {
     }
 
     @Override
-    protected NativeColumnType[] createExternalTypes() {
+    protected NativeColumnType[] createNativeTypes() {
         return new NativeColumnType[]{
             NativeColumnType.of(Types.BIGINT, "LONGINT"),
             NativeColumnType.of(Types.BINARY, "BIT"),

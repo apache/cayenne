@@ -54,8 +54,8 @@ public class AddColumnToDb extends AbstractToDbToken.EntityAndColumn {
         QuotingStrategy context = adapter.getQuotingStrategy();
         appendPrefix(sqlBuffer, context);
 
-        sqlBuffer.append(JdbcAdapter.getType(adapter, getColumn()));
-        sqlBuffer.append(JdbcAdapter.sizeAndPrecision(adapter, getColumn()));
+        sqlBuffer.append(adapter.preferredNativeColumnType(getColumn()).nativeType());
+        sqlBuffer.append(JdbcAdapter.sizeAndScale(adapter, getColumn()));
 
         return Collections.singletonList(sqlBuffer.toString());
     }
