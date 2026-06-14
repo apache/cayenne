@@ -66,7 +66,22 @@ public class HSQLDBAdapterIT {
         e.addAttribute(dblPrec);
         
         String sql = adapter.createTable(e);
-        
+
         assertEquals(0,sql.indexOf("CREATE CACHED TABLE"));
+    }
+
+    @Test
+    public void createTableUnconstrainedVarcharIsLengthFree() {
+        HSQLDBAdapter adapter = env.adhocObjectFactory().newInstance(
+                HSQLDBAdapter.class,
+                HSQLDBAdapter.class.getName());
+        DbEntity e = new DbEntity("Test");
+        DbAttribute c = new DbAttribute("c");
+        c.setType(Types.VARCHAR);   // no max length -> unconstrained
+
+        e.addAttribute(c);
+
+        // HSQLDB accepts a length-free VARCHAR
+        assertEquals("CREATE CACHED TABLE Test (c VARCHAR NULL)", adapter.createTable(e));
     }
 }

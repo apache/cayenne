@@ -171,6 +171,14 @@ public class AutoAdapter implements DbAdapter {
 		return getAdapter().typeSupportsScale(type);
 	}
 
+	/**
+	 * @since 5.0
+	 */
+	@Override
+	public int defaultCharLength() {
+		return getAdapter().defaultCharLength();
+	}
+
 	@Override
 	public Collection<String> dropTableStatements(DbEntity table) {
 		return getAdapter().dropTableStatements(table);

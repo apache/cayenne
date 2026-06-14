@@ -21,6 +21,8 @@ package org.apache.cayenne.dba.oracle;
 
 import org.apache.cayenne.dba.NativeColumnType;
 import org.apache.cayenne.map.DataMap;
+import org.apache.cayenne.map.DbAttribute;
+import org.apache.cayenne.map.DbEntity;
 import org.apache.cayenne.query.InsertBatchQuery;
 import org.apache.cayenne.unit.CayenneProjects;
 import org.apache.cayenne.unit.CayenneTestsEnv;
@@ -61,5 +63,20 @@ public class OracleAdapterIT {
         assertNotNull(types);
         assertEquals(1, types.length);
         assertEquals("TIMESTAMP", types[0].nativeType());
+    }
+
+    @Test
+    public void createTableUnconstrainedVarcharUsesDefaultLength() {
+        OracleAdapter adapter = env.adhocObjectFactory().newInstance(
+                OracleAdapter.class,
+                OracleAdapter.class.getName());
+        DbEntity e = new DbEntity("Test");
+        DbAttribute c = new DbAttribute("c");
+        c.setType(Types.VARCHAR);   // no max length -> Oracle default char length
+
+        e.addAttribute(c);
+
+        // Oracle has no length-free character type, so it falls back to VARCHAR2(4000)
+        assertEquals("CREATE TABLE Test (c VARCHAR2(4000) NULL)", adapter.createTable(e));
     }
 }

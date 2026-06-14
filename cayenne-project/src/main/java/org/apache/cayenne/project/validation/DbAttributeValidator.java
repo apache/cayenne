@@ -40,8 +40,7 @@ class DbAttributeValidator extends ConfigurationNodeValidator<DbAttribute> {
         on(node, validationResult)
                 .performIfEnabled(Inspection.DB_ATTRIBUTE_NO_NAME, this::checkForName)
                 .performIfEnabled(Inspection.DB_ATTRIBUTE_INVALID_NAME, this::validateName)
-                .performIfEnabled(Inspection.DB_ATTRIBUTE_NO_TYPE, this::checkForType)
-                .performIfEnabled(Inspection.DB_ATTRIBUTE_NO_LENGTH, this::checkForLength);
+                .performIfEnabled(Inspection.DB_ATTRIBUTE_NO_TYPE, this::checkForType);
     }
 
     private void checkForName(DbAttribute attribute, ValidationResult validationResult) {
@@ -70,19 +69,6 @@ class DbAttributeValidator extends ConfigurationNodeValidator<DbAttribute> {
         // all attributes must have type
         if (attribute.getType() == TypesMapping.NOT_DEFINED) {
             addFailure(validationResult, attribute, "DbAttribute has no type");
-        }
-    }
-
-    private void checkForLength(DbAttribute attribute, ValidationResult validationResult) {
-        if (attribute.getMaxLength() < 0
-                && (attribute.getType() == java.sql.Types.VARCHAR
-                || attribute.getType() == java.sql.Types.NVARCHAR
-                || attribute.getType() == java.sql.Types.CHAR
-                || attribute.getType() == java.sql.Types.NCHAR)) {
-            // VARCHAR and CHAR attributes must have max length
-
-            addFailure(validationResult, attribute, "Character DbAttribute '%s' doesn't have max length",
-                    attribute.getName());
         }
     }
 }

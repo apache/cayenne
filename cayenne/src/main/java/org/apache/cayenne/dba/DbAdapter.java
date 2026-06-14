@@ -133,6 +133,15 @@ public interface DbAdapter {
 	boolean typeSupportsScale(int type);
 
 	/**
+	 * Returns the length to use for an unconstrained character column (a CHAR/VARCHAR-family column with no max
+	 * length) when this database requires a length. Adapters whose database accepts a length-free character type
+	 * instead declare an {@link NativeColumnType#asUnconstrained() unconstrained} native type.
+	 *
+	 * @since 5.0
+	 */
+	int defaultCharLength();
+
+	/**
 	 * Returns a collection of SQL statements needed to drop a database table.
 	 *
 	 * @since 3.0

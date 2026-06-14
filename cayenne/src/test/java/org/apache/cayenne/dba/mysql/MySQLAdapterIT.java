@@ -115,4 +115,18 @@ public class MySQLAdapterIT {
         assertTrue(sql.indexOf("DATETIME") > 0);
         assertEquals("CREATE TABLE Test (dbl1 DATETIME NULL, dbl2 TIME NULL) ENGINE=InnoDB", sql);
     }
+
+    @Test
+    public void createTableUnconstrainedVarcharRendersLongtext() {
+        MySQLAdapter adapter = env.adhocObjectFactory().newInstance(
+                MySQLAdapter.class,
+                MySQLAdapter.class.getName());
+
+        DbEntity e = new DbEntity("Test");
+        DbAttribute c = new DbAttribute("c");
+        c.setType(Types.VARCHAR);   // no max length -> unconstrained
+        e.addAttribute(c);
+
+        assertEquals("CREATE TABLE Test (c longtext NULL) ENGINE=InnoDB", adapter.createTable(e));
+    }
 }

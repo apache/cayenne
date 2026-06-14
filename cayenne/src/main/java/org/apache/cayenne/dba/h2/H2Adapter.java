@@ -64,7 +64,7 @@ public class H2Adapter extends JdbcAdapter {
             NativeColumnType.of(Types.BIT, "BIT"),
             NativeColumnType.of(Types.BLOB, "BLOB"),
             NativeColumnType.of(Types.BOOLEAN, "BOOLEAN"),
-            NativeColumnType.of(Types.CHAR, "CHAR"),
+            NativeColumnType.of(Types.CHAR, "CHAR").asUnconstrained(),
             NativeColumnType.of(Types.CLOB, "CLOB"),
             NativeColumnType.of(Types.DATALINK, "DATALINK"),
             NativeColumnType.of(Types.DATE, "DATE"),
@@ -76,10 +76,10 @@ public class H2Adapter extends JdbcAdapter {
             NativeColumnType.of(Types.LONGNVARCHAR, "NCLOB"),
             NativeColumnType.of(Types.LONGVARBINARY, "LONGVARBINARY"),
             NativeColumnType.of(Types.LONGVARCHAR, "CLOB"),
-            NativeColumnType.of(Types.NCHAR, "NCHAR"),
+            NativeColumnType.of(Types.NCHAR, "NCHAR").asUnconstrained(),
             NativeColumnType.of(Types.NCLOB, "NCLOB"),
             NativeColumnType.of(Types.NUMERIC, "NUMERIC"),
-            NativeColumnType.of(Types.NVARCHAR, "NVARCHAR"),
+            NativeColumnType.of(Types.NVARCHAR, "NVARCHAR").asUnconstrained(),
             NativeColumnType.of(Types.OTHER, "OTHER"),
             NativeColumnType.of(Types.REAL, "REAL"),
             NativeColumnType.of(Types.REF, "REF"),
@@ -90,7 +90,7 @@ public class H2Adapter extends JdbcAdapter {
             NativeColumnType.of(Types.TIMESTAMP, "TIMESTAMP"),
             NativeColumnType.of(Types.TINYINT, "TINYINT"),
             NativeColumnType.of(Types.VARBINARY, "VARBINARY"),
-            NativeColumnType.of(Types.VARCHAR, "VARCHAR"),
+            NativeColumnType.of(Types.VARCHAR, "VARCHAR").asUnconstrained(),
         };
     }
 

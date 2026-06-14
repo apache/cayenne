@@ -44,6 +44,8 @@ public class ValidationSaverDelegate extends BaseSaverDelegate {
         ValidationConfig validationConfig = ValidationConfig.fromMetadata(metaData, dataChannelDescriptor);
         Set<Inspection> disabledInspections = EnumSet.allOf(Inspection.class);
         disabledInspections.removeAll(validationConfig.getEnabledInspections());
+        // deprecated inspections are no longer performed; drop them on save instead of round-tripping them
+        disabledInspections.removeIf(Inspection::isDeprecated);
         if (disabledInspections.isEmpty()) {
             return null;
         }

@@ -55,4 +55,17 @@ public class SQLServerAdapterIT {
         assertEquals(-1, sql.indexOf("float(22, 12)"));
         assertEquals("CREATE TABLE Test (dbl1 float(22) NULL)", sql);
     }
+
+    @Test
+    public void createTableUnconstrainedVarcharRendersMax() {
+        SQLServerAdapter adapter = env.adhocObjectFactory().newInstance(
+                SQLServerAdapter.class,
+                SQLServerAdapter.class.getName());
+        DbEntity e = new DbEntity("Test");
+        DbAttribute c = new DbAttribute("c");
+        c.setType(Types.VARCHAR);   // no max length -> unconstrained
+        e.addAttribute(c);
+
+        assertEquals("CREATE TABLE Test (c varchar(max) NULL)", adapter.createTable(e));
+    }
 }

@@ -162,6 +162,9 @@ public class OracleAdapter extends JdbcAdapter {
 
         // enable batch updates by default
         setSupportsBatchUpdates(true);
+
+        // VARCHAR2 standard maximum, used for an unconstrained character column
+        this.defaultCharLength = 4000;
     }
 
     @Override

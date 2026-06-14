@@ -94,4 +94,29 @@ public class PostgresAdapterIT {
         assertArrayEquals(new String[]{"integer", "serial"}, adapter.externalTypesForJdbcType(Types.INTEGER));
     }
 
+    @Test
+    public void textColumnReverseEngineeredAsUnconstrained() {
+        PostgresAdapter adapter = env.adhocObjectFactory().newInstance(
+                PostgresAdapter.class,
+                PostgresAdapter.class.getName());
+
+        // the driver reports a bogus huge length for "text"; it must become an unconstrained VARCHAR
+        DbAttribute attribute = adapter.buildAttribute("c", "text", Types.VARCHAR, Integer.MAX_VALUE, -1, true);
+        assertEquals(Types.VARCHAR, attribute.getType());
+        assertEquals(-1, attribute.getMaxLength());
+    }
+
+    @Test
+    public void createTableUnconstrainedVarcharRendersText() {
+        PostgresAdapter adapter = env.adhocObjectFactory().newInstance(
+                PostgresAdapter.class,
+                PostgresAdapter.class.getName());
+        DbEntity e = new DbEntity("Test");
+        DbAttribute c = new DbAttribute("c");
+        c.setType(Types.VARCHAR);   // no max length -> unconstrained
+        e.addAttribute(c);
+
+        assertEquals("CREATE TABLE Test (c text NULL)", adapter.createTable(e));
+    }
+
 }
