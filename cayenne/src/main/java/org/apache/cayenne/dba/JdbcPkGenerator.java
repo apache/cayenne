@@ -25,6 +25,8 @@ import org.apache.cayenne.ObjectId;
 import org.apache.cayenne.ResultIterator;
 import org.apache.cayenne.access.DataNode;
 import org.apache.cayenne.access.OperationObserver;
+import org.apache.cayenne.access.types.ValueObjectType;
+import org.apache.cayenne.access.types.ValueObjectTypeRegistry;
 import org.apache.cayenne.map.DbAttribute;
 import org.apache.cayenne.map.DbEntity;
 import org.apache.cayenne.map.DbKeyGenerator;
@@ -185,17 +187,8 @@ public class JdbcPkGenerator implements PkGenerator {
         }
     }
 
-    /**
-     * Generates a unique and non-repeating primary key for specified dbEntity.
-     * <p>
-     * This implementation is naive since it does not lock the database rows
-     * when executing select and subsequent update. Adapter-specific
-     * implementations are more robust.
-     * </p>
-     *
-     * @since 3.0
-     */
-    public Object generatePk(DataNode node, DbAttribute pk) throws Exception {
+    @Override
+    public Object generatePk(DataNode node, DbAttribute pk, Class<?> javaType) throws Exception {
 
         DbEntity entity = pk.getEntity();
 
@@ -239,6 +232,17 @@ public class JdbcPkGenerator implements PkGenerator {
             }
         }
 
+        if (javaType != null) {
+            ValueObjectTypeRegistry registry = node.getEntityResolver().getValueObjectTypeRegistry();
+            if (registry != null) {
+                ValueObjectType<Object, Long> converter = (ValueObjectType<Object, Long>) registry.getValueType(javaType);
+                if (converter != null) {
+                    return converter.toJavaObject(value);
+                }
+            }
+        }
+
+        // legacy behavior for plain numeric PKs
         if (pk.getType() == Types.BIGINT) {
             return value;
         } else {
