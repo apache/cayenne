@@ -25,6 +25,7 @@ import java.sql.SQLException;
 import java.sql.Statement;
 import java.util.Collections;
 
+import org.apache.cayenne.CayenneRuntimeException;
 import org.apache.cayenne.access.DataNode;
 import org.apache.cayenne.dba.JdbcAdapter;
 import org.apache.cayenne.dba.JdbcPkGenerator;
@@ -59,7 +60,7 @@ public class MySQLPkGenerator extends JdbcPkGenerator {
      * @since 3.0
      */
     @Override
-    protected long longPkFromDatabase(DataNode node, DbEntity entity) throws Exception {
+    protected long longPkFromDatabase(DataNode node, DbEntity entity) {
 
         // must work directly with JDBC connection, since we
         // must unlock the AUTO_PK_SUPPORT table in case of
@@ -115,7 +116,7 @@ public class MySQLPkGenerator extends JdbcPkGenerator {
 
         // check errors
         if (exception != null) {
-            throw exception;
+            throw new CayenneRuntimeException("Error generating pk for DbEntity %s", exception, entity.getName());
         }
 
         return pk;

@@ -105,7 +105,7 @@ public class SQLServerPkGenerator extends OraclePkGenerator {
     }
 
     @Override
-    public Object generatePk(DataNode node, DbAttribute pk, Class<?> javaType) throws Exception {
+    public Object generatePk(DataNode node, DbAttribute pk, Class<?> javaType) {
         DbEntity entity = pk.getEntity();
 
         //check key on UNIQUEIDENTIFIER; UNIQUEIDENTIFIER is a character with a length of 36
@@ -139,7 +139,7 @@ public class SQLServerPkGenerator extends OraclePkGenerator {
         }
     }
 
-    protected String guidPkFromDatabase(DataNode node, DbEntity entity) throws SQLException {
+    protected String guidPkFromDatabase(DataNode node, DbEntity entity) {
         try (Connection con = node.getDataSource().getConnection()) {
             try (Statement st = con.createStatement()) {
                 adapter.getJdbcEventLogger().log(SELECT_NEW_GUID);
@@ -150,6 +150,8 @@ public class SQLServerPkGenerator extends OraclePkGenerator {
                     return rs.getString(1);
                 }
             }
+        } catch (SQLException e) {
+            throw new CayenneRuntimeException("Error generating pk for DbEntity %s", e, entity.getName());
         }
     }
 }

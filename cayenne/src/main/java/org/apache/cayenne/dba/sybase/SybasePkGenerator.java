@@ -30,6 +30,7 @@ import org.apache.cayenne.tx.Transaction;
 import java.sql.CallableStatement;
 import java.sql.Connection;
 import java.sql.ResultSet;
+import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -98,7 +99,7 @@ public class SybasePkGenerator extends JdbcPkGenerator {
 	 *            node that provides access to a DataSource.
 	 */
 	@Override
-	public void createAutoPk(DataNode node, List<DbEntity> dbEntities) throws Exception {
+	public void createAutoPk(DataNode node, List<DbEntity> dbEntities) {
 		super.createAutoPk(node, dbEntities);
 		runUpdate(node, safePkProcDrop());
 		runUpdate(node, unsafePkProcCreate());
@@ -138,7 +139,7 @@ public class SybasePkGenerator extends JdbcPkGenerator {
 	 *            node that provides access to a DataSource.
 	 */
 	@Override
-	public void dropAutoPk(DataNode node, List<DbEntity> dbEntities) throws Exception {
+	public void dropAutoPk(DataNode node, List<DbEntity> dbEntities) {
 		runUpdate(node, safePkProcDrop());
 		runUpdate(node, safePkTableDrop());
 	}
@@ -155,7 +156,7 @@ public class SybasePkGenerator extends JdbcPkGenerator {
 	 * @since 3.0
 	 */
 	@Override
-	protected long longPkFromDatabase(DataNode node, DbEntity entity) throws Exception {
+	protected long longPkFromDatabase(DataNode node, DbEntity entity) {
 		// handle CAY-588 - get connection that is separate from the connection
 		// in the current transaction.
 
@@ -187,6 +188,8 @@ public class SybasePkGenerator extends JdbcPkGenerator {
 							+ ", no result set from stored procedure.", entity.getName());
 				}
 			}
+		} catch (SQLException e) {
+			throw new CayenneRuntimeException("Error generating pk for DbEntity %s", e, entity.getName());
 		} finally {
 			BaseTransaction.bindThreadTransaction(transaction);
 		}

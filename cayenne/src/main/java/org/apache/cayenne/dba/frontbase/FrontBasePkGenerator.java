@@ -61,7 +61,7 @@ public class FrontBasePkGenerator extends JdbcPkGenerator {
     }
 
     @Override
-    public void createAutoPk(DataNode node, List<DbEntity> dbEntities) throws Exception {
+    public void createAutoPk(DataNode node, List<DbEntity> dbEntities) {
         // For each entity (re)set the unique counter
         for (DbEntity entity : dbEntities) {
             runUpdate(node, pkCreateString(entity.getName()));
@@ -78,7 +78,7 @@ public class FrontBasePkGenerator extends JdbcPkGenerator {
     }
 
     @Override
-    public void dropAutoPk(DataNode node, List<DbEntity> dbEntities) throws Exception {
+    public void dropAutoPk(DataNode node, List<DbEntity> dbEntities) {
     }
 
     @Override
@@ -119,7 +119,7 @@ public class FrontBasePkGenerator extends JdbcPkGenerator {
      * @since 3.0
      */
     @Override
-    protected long longPkFromDatabase(DataNode node, DbEntity entity) throws Exception {
+    protected long longPkFromDatabase(DataNode node, DbEntity entity) {
 
         String template = "SELECT #result('UNIQUE' 'long') FROM " + entity.getName();
 

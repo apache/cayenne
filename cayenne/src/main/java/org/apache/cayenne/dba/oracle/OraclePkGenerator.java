@@ -67,7 +67,7 @@ public class OraclePkGenerator extends JdbcPkGenerator {
     private static final String _SEQUENCE_PREFIX = "pk_";
 
     @Override
-    public void createAutoPk(DataNode node, List<DbEntity> dbEntities) throws Exception {
+    public void createAutoPk(DataNode node, List<DbEntity> dbEntities) {
         List<String> sequences = getExistingSequences(node);
         // create needed sequences
         for (DbEntity dbEntity : dbEntities) {
@@ -94,7 +94,7 @@ public class OraclePkGenerator extends JdbcPkGenerator {
      * Drops PK sequences for all specified DbEntities.
      */
     @Override
-    public void dropAutoPk(DataNode node, List<DbEntity> dbEntities) throws Exception {
+    public void dropAutoPk(DataNode node, List<DbEntity> dbEntities) {
         List<String> sequences = getExistingSequences(node);
 
         // drop obsolete sequences
@@ -160,7 +160,7 @@ public class OraclePkGenerator extends JdbcPkGenerator {
      * @since 3.0
      */
     @Override
-    protected long longPkFromDatabase(DataNode node, DbEntity entity) throws Exception {
+    protected long longPkFromDatabase(DataNode node, DbEntity entity) {
 
         DbKeyGenerator pkGenerator = entity.getPrimaryKeyGenerator();
         String pkGeneratingSequenceName;
@@ -183,6 +183,8 @@ public class OraclePkGenerator extends JdbcPkGenerator {
                     return rs.getLong(1);
                 }
             }
+        } catch (SQLException e) {
+            throw new CayenneRuntimeException("Error generating pk for DbEntity %s", e, entity.getName());
         }
     }
 
@@ -229,7 +231,7 @@ public class OraclePkGenerator extends JdbcPkGenerator {
      * Fetches a list of existing sequences that might match Cayenne generated
      * ones.
      */
-    protected List<String> getExistingSequences(DataNode node) throws SQLException {
+    protected List<String> getExistingSequences(DataNode node) {
 
         // check existing sequences
         try (Connection con = node.getDataSource().getConnection()) {
@@ -248,6 +250,8 @@ public class OraclePkGenerator extends JdbcPkGenerator {
                     return sequenceList;
                 }
             }
+        } catch (SQLException e) {
+            throw new CayenneRuntimeException("Error fetching existing sequences", e);
         }
     }
 }

@@ -38,7 +38,7 @@ public interface PkGenerator {
      * @param dbEntities a list of entities that require primary key auto-generation
      *                   support
      */
-    void createAutoPk(DataNode node, List<DbEntity> dbEntities) throws Exception;
+    void createAutoPk(DataNode node, List<DbEntity> dbEntities);
 
     /**
      * Returns a list of SQL strings needed to generates database objects to provide
@@ -55,7 +55,7 @@ public interface PkGenerator {
      * @param dbEntities a list of entities whose primary key auto-generation support
      *                   should be dropped.
      */
-    void dropAutoPk(DataNode node, List<DbEntity> dbEntities) throws Exception;
+    void dropAutoPk(DataNode node, List<DbEntity> dbEntities);
 
     /**
      * Returns SQL string needed to drop database objects associated with automatic
@@ -69,7 +69,7 @@ public interface PkGenerator {
      * @deprecated unused by the framework that relies on {@link #generatePk(DataNode, DbAttribute, Class)}
      */
     @Deprecated(since = "5.0", forRemoval = true)
-    default Object generatePk(DataNode dataNode, DbAttribute pk) throws Exception {
+    default Object generatePk(DataNode dataNode, DbAttribute pk) {
         return generatePk(dataNode, pk, null);
     }
 
@@ -78,7 +78,7 @@ public interface PkGenerator {
      *
      * @since 5.0
      */
-    Object generatePk(DataNode dataNode, DbAttribute pk, Class<?> javaType) throws Exception;
+    Object generatePk(DataNode dataNode, DbAttribute pk, Class<?> javaType);
 
     /**
      * Install the adapter associated with current PkGenerator
