@@ -22,136 +22,196 @@ package org.apache.cayenne.dba.sqlserver;
 import org.apache.cayenne.CayenneRuntimeException;
 import org.apache.cayenne.access.DataNode;
 import org.apache.cayenne.dba.JdbcAdapter;
-import org.apache.cayenne.dba.TypesMapping;
-import org.apache.cayenne.dba.oracle.OraclePkGenerator;
-import org.apache.cayenne.map.DbAttribute;
+import org.apache.cayenne.dba.JdbcPkGenerator;
 import org.apache.cayenne.map.DbEntity;
-import org.apache.cayenne.map.DbKeyGenerator;
+import org.apache.cayenne.tx.BaseTransaction;
+import org.apache.cayenne.tx.Transaction;
 
+import java.sql.CallableStatement;
 import java.sql.Connection;
 import java.sql.ResultSet;
 import java.sql.SQLException;
-import java.sql.Statement;
 import java.util.ArrayList;
 import java.util.List;
 
 /**
- * The default PK generator for MS SQL,
- * which uses sequences to generate a PK for an integer key type
- * and NEWID() for UNIQUEIDENTIFIER key type
+ * Primary key generator implementation for Sybase. Uses a lookup table named "AUTO_PK_SUPPORT" and a stored procedure
+ * "auto_pk_for_table" to search and increment primary keys for tables.
  *
- * @since 4.1
+ * @since 5.0
  */
-public class SQLServerPkGenerator extends OraclePkGenerator {
+public class SQLServerPkGenerator extends JdbcPkGenerator {
 
-    //MS SQL function for generating GUID
-    private static final String SELECT_NEW_GUID = "SELECT NEWID()";
+	/**
+	 * Used by DI
+	 * @since 4.1
+	 */
+	public SQLServerPkGenerator(){
+		super();
+	}
 
-    private static final String SEQUENCE_PREFIX = "_pk";
+	protected SQLServerPkGenerator(JdbcAdapter adapter) {
+		super(adapter);
+	}
 
-    private static final int MAX_LENGTH_GUID = 36;
+	@Override
+	protected String pkTableCreateString() {
+		return "CREATE TABLE AUTO_PK_SUPPORT (TABLE_NAME CHAR(100) NOT NULL, NEXT_ID DECIMAL(19,0) NOT NULL, PRIMARY KEY(TABLE_NAME))";
+	}
 
-    public SQLServerPkGenerator() {
-        super();
-    }
+	/**
+	 * Generates database objects to provide automatic primary key support.
+	 * Method will execute the following SQL statements:
+	 * <p>
+	 * 1. Executed only if a corresponding table does not exist in the database.
+	 * </p>
+	 * 
+	 * <pre>
+	 *    CREATE TABLE AUTO_PK_SUPPORT (
+	 *       TABLE_NAME VARCHAR(32) NOT NULL,
+	 *       NEXT_ID DECIMAL(19,0) NOT NULL
+	 *    )
+	 * </pre>
+	 * <p>
+	 * 2. Executed under any circumstances.
+	 * </p>
+	 * 
+	 * <pre>
+	 * if exists (SELECT * FROM sysobjects WHERE name = 'auto_pk_for_table')
+	 * BEGIN
+	 *    DROP PROCEDURE auto_pk_for_table 
+	 * END
+	 * </pre>
+	 * <p>
+	 * 3. Executed under any circumstances.
+	 * </p>
+	 * CREATE PROCEDURE auto_pk_for_table
+	 * 
+	 * <pre>
+	 * &#064;tname VARCHAR(32),
+	 * &#064;pkbatchsize INT AS BEGIN BEGIN TRANSACTION UPDATE AUTO_PK_SUPPORT set NEXT_ID =
+	 *              NEXT_ID +
+	 * &#064;pkbatchsize WHERE TABLE_NAME =
+	 * &#064;tname SELECT NEXT_ID from AUTO_PK_SUPPORT where NEXT_ID =
+	 * &#064;tname COMMIT END
+	 * </pre>
+	 * 
+	 * @param node
+	 *            node that provides access to a DataSource.
+	 */
+	@Override
+	public void createAutoPk(DataNode node, List<DbEntity> dbEntities) {
+		super.createAutoPk(node, dbEntities);
+		runUpdate(node, safePkProcDrop());
+		runUpdate(node, unsafePkProcCreate());
+	}
 
-    protected SQLServerPkGenerator(JdbcAdapter adapter) {
-        super(adapter);
-    }
+	@Override
+	public List<String> createAutoPkStatements(List<DbEntity> dbEntities) {
+		List<String> list = super.createAutoPkStatements(dbEntities);
 
-    @Override
-    protected String createSequenceString(DbEntity ent) {
-        return "CREATE SEQUENCE " + sequenceName(ent)
-                + " AS [bigint] START WITH " + pkStartValue + " INCREMENT BY "
-                + pkCacheSize(ent) + " NO CACHE";
-    }
+		// add stored procedure drop code
+		list.add(safePkProcDrop());
 
-    @Override
-    protected String getSequencePrefix() {
-        return SEQUENCE_PREFIX;
-    }
+		// add stored procedure creation code
+		list.add(unsafePkProcCreate());
 
-    @Override
-    protected String selectNextValQuery(String sequenceName) {
-        return "SELECT NEXT VALUE FOR " + sequenceName;
-    }
+		return list;
+	}
 
-    @Override
-    public List<String> createAutoPkStatements(List<DbEntity> dbEntities) {
-        List<String> list = new ArrayList<>(dbEntities.size());
-        for (DbEntity dbEntity : dbEntities) {
-            if (dbEntity.getPrimaryKeys().size() == 1) {
-                DbAttribute pk = dbEntity.getPrimaryKeys().iterator().next();
-                if (TypesMapping.isNumeric(pk.getType())) {
-                    list.add(createSequenceString(dbEntity));
-                }
-            }
-        }
-        return list;
-    }
+	/**
+	 * Drops database objects related to automatic primary key support. Method
+	 * will execute the following SQL statements:
+	 * 
+	 * <pre>
+	 * if exists (SELECT * FROM sysobjects WHERE name = 'AUTO_PK_SUPPORT')
+	 * BEGIN
+	 *    DROP TABLE AUTO_PK_SUPPORT
+	 * END
+	 * 
+	 * 
+	 * if exists (SELECT * FROM sysobjects WHERE name = 'auto_pk_for_table')
+	 * BEGIN
+	 *    DROP PROCEDURE auto_pk_for_table 
+	 * END
+	 * </pre>
+	 * 
+	 * @param node
+	 *            node that provides access to a DataSource.
+	 */
+	@Override
+	public void dropAutoPk(DataNode node, List<DbEntity> dbEntities) {
+		runUpdate(node, safePkProcDrop());
+		runUpdate(node, safePkTableDrop());
+	}
 
-    @Override
-    public List<String> dropAutoPkStatements(List<DbEntity> dbEntities) {
-        List<String> list = new ArrayList<>(dbEntities.size());
-        for (DbEntity dbEntity : dbEntities) {
-            if (dbEntity.getPrimaryKeys().size() == 1) {
-                DbAttribute pk = dbEntity.getPrimaryKeys().iterator().next();
-                if (TypesMapping.isNumeric(pk.getType())) {
-                    list.add(dropSequenceString(dbEntity));
-                }
-            }
-        }
-        return list;
-    }
+	@Override
+	public List<String> dropAutoPkStatements(List<DbEntity> dbEntities) {
+		List<String> list = new ArrayList<>();
+		list.add(safePkProcDrop());
+		list.add(safePkTableDrop());
+		return list;
+	}
 
-    @Override
-    public Object generatePk(DataNode node, DbAttribute pk, Class<?> javaType) {
-        DbEntity entity = pk.getEntity();
+	/**
+	 * @since 3.0
+	 */
+	@Override
+	protected long longPkFromDatabase(DataNode node, DbEntity entity) {
+		// handle CAY-588 - get connection that is separate from the connection
+		// in the current transaction.
 
-        //check key on UNIQUEIDENTIFIER; UNIQUEIDENTIFIER is a character with a length of 36
-        if (TypesMapping.isCharacter(pk.getType()) && pk.getMaxLength() == MAX_LENGTH_GUID) {
-            return guidPkFromDatabase(node, entity);
-        } else {
-            return super.generatePk(node, pk, javaType);
-        }
-    }
+		// TODO (andrus, 7/6/2006) Note that this will still work in a pool with
+		// a single connection, as PK generator is invoked early in the transaction,
+		// before the connection is grabbed for commit...
+		// So maybe promote this to other adapters in 3.0?
 
-    @Override
-    protected String selectAllSequencesQuery() {
-        return """
-                SELECT seq.name
-                FROM sys.sequences AS seq
-                JOIN sys.schemas AS sch
-                ON seq.schema_id = sch.schema_id""";
-    }
+		Transaction transaction = BaseTransaction.getThreadTransaction();
+		BaseTransaction.bindThreadTransaction(null);
 
-    @Override
-    protected String sequenceName(DbEntity entity) {
-        // use custom generator if possible
-        DbKeyGenerator keyGenerator = entity.getPrimaryKeyGenerator();
-        if (keyGenerator != null && DbKeyGenerator.ORACLE_TYPE.equals(keyGenerator.getGeneratorType())
-                && keyGenerator.getGeneratorName() != null) {
+		try (Connection connection = node.getDataSource().getConnection()) {
+			try (CallableStatement statement = connection.prepareCall("{call auto_pk_for_table(?, ?)}")) {
+				statement.setString(1, entity.getName());
+				statement.setInt(2, getPkCacheSize());
 
-            return keyGenerator.getGeneratorName().toLowerCase();
-        } else {
-            String seqName = entity.getName().toLowerCase() + getSequencePrefix();
-            return adapter.getQuotingStrategy().quotedIdentifier(entity, entity.getSchema(), seqName);
-        }
-    }
+				// can't use "executeQuery" per http://jtds.sourceforge.net/faq.html#expectingResultSet
+				statement.execute();
+				if (statement.getMoreResults()) {
+					try (ResultSet rs = statement.getResultSet()) {
+						if (rs.next()) {
+							return rs.getLong(1);
+						} else {
+							throw new CayenneRuntimeException("Error generating pk for DbEntity %s", entity.getName());
+						}
+					}
+				} else {
+					throw new CayenneRuntimeException("Error generating pk for DbEntity %s"
+							+ ", no result set from stored procedure.", entity.getName());
+				}
+			}
+		} catch (SQLException e) {
+			throw new CayenneRuntimeException("Error generating pk for DbEntity %s", e, entity.getName());
+		} finally {
+			BaseTransaction.bindThreadTransaction(transaction);
+		}
+	}
 
-    protected String guidPkFromDatabase(DataNode node, DbEntity entity) {
-        try (Connection con = node.getDataSource().getConnection()) {
-            try (Statement st = con.createStatement()) {
-                adapter.getJdbcEventLogger().log(SELECT_NEW_GUID);
-                try (ResultSet rs = st.executeQuery(SELECT_NEW_GUID)) {
-                    if (!rs.next()) {
-                        throw new CayenneRuntimeException("Error generating pk for DbEntity %s", entity.getName());
-                    }
-                    return rs.getString(1);
-                }
-            }
-        } catch (SQLException e) {
-            throw new CayenneRuntimeException("Error generating pk for DbEntity %s", e, entity.getName());
-        }
-    }
+	private String safePkTableDrop() {
+		return "if exists (SELECT * FROM sysobjects WHERE name = 'AUTO_PK_SUPPORT') BEGIN " +
+				" DROP TABLE AUTO_PK_SUPPORT END";
+	}
+
+	private String unsafePkProcCreate() {
+		return """
+				CREATE PROCEDURE auto_pk_for_table @tname VARCHAR(32), @pkbatchsize INT AS BEGIN
+				BEGIN TRANSACTION
+				UPDATE AUTO_PK_SUPPORT set NEXT_ID = NEXT_ID + @pkbatchsize WHERE TABLE_NAME = @tname
+				SELECT NEXT_ID FROM AUTO_PK_SUPPORT WHERE TABLE_NAME = @tname
+				COMMIT END""";
+	}
+
+	private String safePkProcDrop() {
+		return "if exists (SELECT * FROM sysobjects WHERE name = 'auto_pk_for_table') BEGIN DROP PROCEDURE auto_pk_for_table END";
+	}
+
 }
