@@ -478,7 +478,7 @@ public class DbGenerator {
 
 			// tables with no columns are not included
 			if (nextEntity.getAttributes().size() == 0) {
-				LOGGER.info("Skipping entity with no attributes: " + nextEntity.getName());
+				LOGGER.info("Skipping entity with no attributes: {}", nextEntity.getName());
 				continue;
 			}
 
@@ -491,8 +491,8 @@ public class DbGenerator {
 			boolean invalidAttributes = false;
 			for (final DbAttribute attr : nextEntity.getAttributes()) {
 				if (attr.getType() == TypesMapping.NOT_DEFINED) {
-					LOGGER.info("Skipping entity, attribute type is undefined: " + nextEntity.getName() + "."
-							+ attr.getName());
+					LOGGER.info("Skipping entity, attribute type is undefined: {}.{}", nextEntity.getName(),
+							attr.getName());
 					invalidAttributes = true;
 					break;
 				}

@@ -47,7 +47,7 @@ public class JNDIDataSourceFactory implements DataSourceFactory {
 		try {
 			return lookupViaJNDI(location);
 		} catch (Exception e) {
-			LOGGER.info("*** failed JNDI lookup of DataSource at location: " + location, e);
+			LOGGER.info("*** failed JNDI lookup of DataSource at location: {}", location, e);
 			throw new RuntimeException(e);
 		}
 	}
@@ -63,7 +63,7 @@ public class JNDIDataSourceFactory implements DataSourceFactory {
 
 	DataSource lookupViaJNDI(String location) throws NamingException {
 
-		LOGGER.info("Connecting. JNDI path: " + location);
+		LOGGER.info("Connecting. JNDI path: {}", location);
 
 		Context context = new InitialContext();
 		DataSource dataSource;
@@ -75,7 +75,7 @@ public class JNDIDataSourceFactory implements DataSourceFactory {
 			dataSource = (DataSource) context.lookup(location);
 		}
 
-		LOGGER.info("Found JNDI DataSource at location: " + location);
+		LOGGER.info("Found JNDI DataSource at location: {}", location);
 
 		return dataSource;
 	}

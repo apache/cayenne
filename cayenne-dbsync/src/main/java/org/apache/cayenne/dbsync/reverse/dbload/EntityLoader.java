@@ -67,8 +67,8 @@ class EntityLoader extends PerCatalogAndSchemaLoader {
 
         if (!(catalog.name == null || catalog.name.equals(catalogName))
                 || !(schema.name == null || schema.name.equals(schemaName))) {
-            LOGGER.error(catalogName + "." + schema + "." + schemaName + " wrongly loaded for catalog/schema : "
-                    + catalog.name + "." + schema.name);
+            LOGGER.error("{}.{}.{} wrongly loaded for catalog/schema : {}.{}",
+                    catalogName, schema, schemaName, catalog.name, schema.name);
             return;
         }
 
@@ -82,7 +82,7 @@ class EntityLoader extends PerCatalogAndSchemaLoader {
     private void addDbEntityToMap(DetectedDbEntity table, DbLoadDataStore map) {
         DbEntity oldEnt = map.addDbEntitySafe(table);
         if (oldEnt != null) {
-            LOGGER.warn("Overwrite DbEntity: " + oldEnt.getName());
+            LOGGER.warn("Overwrite DbEntity: {}", oldEnt.getName());
             delegate.dbEntityRemoved(oldEnt);
         }
         delegate.dbEntityAdded(table);

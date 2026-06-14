@@ -64,7 +64,7 @@ class DeletedDiffProcessor implements GraphChangeHandler {
 		List<DataRow> rows = (List<DataRow>)result.firstList();
 
 		if (rows.isEmpty()) {
-			LOGGER.warn("No DB snapshot for object to be deleted, no changes will be recorded. ID: " + id);
+			LOGGER.warn("No DB snapshot for object to be deleted, no changes will be recorded. ID: {}", id);
 			return;
 		}
 

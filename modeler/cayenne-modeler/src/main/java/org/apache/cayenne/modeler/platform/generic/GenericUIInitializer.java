@@ -52,7 +52,7 @@ public class GenericUIInitializer implements UIInitializer {
             // override some default styles and colors
             overrideUIDefaults();
         } catch (Exception e) {
-            LOGGER.warn("Error installing L&F: " + DEFAULT_LAF_NAME, e);
+            LOGGER.warn("Error installing L&F: {}", DEFAULT_LAF_NAME, e);
         }
     }
 

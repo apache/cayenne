@@ -386,7 +386,7 @@ public class DbSchemaManager {
                             LOGGER.info(dropSql);
                             stmt.execute(dropSql);
                         } catch (SQLException sqe) {
-                            LOGGER.warn("Can't drop table " + ent.getName() + ", ignoring...", sqe);
+                            LOGGER.warn("Can't drop table {}, ignoring...", ent.getName(), sqe);
                         }
                     }
                 }

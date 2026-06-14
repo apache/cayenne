@@ -120,9 +120,7 @@ public class DriverDataSource implements DataSource {
 	}
 
 	private void logConnect(String url, String userName, String password) {
-		if (LOGGER.isInfoEnabled()) {
-			LOGGER.info("Connecting to '" + url + "' as '" + userName + "'");
-		}
+		LOGGER.info("Connecting to '{}' as '{}'", url, userName);
 	}
 
 	@Override

@@ -320,7 +320,7 @@ public class InferRelationshipsDialog extends ProjectDialog {
             return classLoader.loadClass(ObjectNameGenerator.class, strategyClass)
                     .getDeclaredConstructor().newInstance();
         } catch (Throwable th) {
-            LOGGER.error("Error in " + getClass().getName(), th);
+            LOGGER.error("Error in {}", getClass().getName(), th);
             JOptionPane.showMessageDialog(
                     this,
                     "Naming Strategy Initialization Error: " + th.getMessage(),
@@ -356,7 +356,7 @@ public class InferRelationshipsDialog extends ProjectDialog {
             strategyCombo.setModel(new DefaultComboBoxModel<>(
                     NameGeneratorPreferences.getInstance().getLastUsedStrategies(app)));
         } catch (Throwable th) {
-            LOGGER.error("Error in " + getClass().getName(), th);
+            LOGGER.error("Error in {}", getClass().getName(), th);
             return;
         }
 

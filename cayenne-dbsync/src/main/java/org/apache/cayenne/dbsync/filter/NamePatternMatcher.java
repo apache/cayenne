@@ -82,7 +82,7 @@ public class NamePatternMatcher implements NameFilter {
             } catch (PatternSyntaxException e) {
 
                 if (logger != null) {
-                    logger.warn("Ignoring invalid pattern [" + patternString1 + "], reason: " + e.getMessage());
+                    logger.warn("Ignoring invalid pattern [{}], reason: {}", patternString1, e.getMessage());
                 }
             }
         }

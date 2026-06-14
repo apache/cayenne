@@ -216,7 +216,7 @@ public abstract class SelectPropertiesPanel extends JPanel {
                 session.fireQueryEvent(QueryEvent.ofChange(this, query));
             }
             catch (Exception ex) {
-                LOGGER.warn("Error setting property: " + property, ex);
+                LOGGER.warn("Error setting property: {}", property, ex);
             }
         }
     }

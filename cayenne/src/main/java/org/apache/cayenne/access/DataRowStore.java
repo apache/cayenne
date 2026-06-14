@@ -101,9 +101,7 @@ public class DataRowStore implements Serializable {
         // expiration time is never used actually
         maxSize = properties.getInt(Constants.SNAPSHOT_CACHE_SIZE_PROPERTY, SNAPSHOT_CACHE_SIZE_DEFAULT);
 
-        if (LOGGER.isDebugEnabled()) {
-            LOGGER.debug("DataRowStore property " + Constants.SNAPSHOT_CACHE_SIZE_PROPERTY + " = " + maxSize);
-        }
+        LOGGER.debug("DataRowStore property {} = {}", Constants.SNAPSHOT_CACHE_SIZE_PROPERTY, maxSize);
 
         this.snapshots = new ConcurrentLinkedHashMap.Builder<ObjectId, DataRow>()
                 .maximumWeightedCapacity(maxSize)
@@ -290,9 +288,7 @@ public class DataRowStore implements Serializable {
             return;
         }
 
-        if (LOGGER.isDebugEnabled()) {
-            LOGGER.debug("remote event: " + event);
-        }
+        LOGGER.debug("remote event: {}", event);
 
         Collection<ObjectId> deletedSnapshotIds = event.getDeletedIds();
         Collection<ObjectId> invalidatedSnapshotIds = event.getInvalidatedIds();
@@ -401,15 +397,8 @@ public class DataRowStore implements Serializable {
                     // no good options exist to tell how to merge the two.
                     if (oldSnapshot.getVersion() != newSnapshot.getReplacesVersion()) {
 
-                        // snapshots can be huge potentially.. so print them only if the
-                        // user is expecting them to be printed
-                        if (LOGGER.isDebugEnabled()) {
-                            LOGGER
-                                    .debug("snapshot version changed, don't know what to do... Old: "
-                                            + oldSnapshot
-                                            + ", New: "
-                                            + newSnapshot);
-                        }
+                        LOGGER.debug("snapshot version changed, don't know what to do... Old: {}, New: {}",
+                                oldSnapshot, newSnapshot);
 
                         forgetSnapshot(key);
                         continue;
@@ -469,9 +458,7 @@ public class DataRowStore implements Serializable {
                     invalidatedSnapshotIDs,
                     indirectlyModifiedIds);
 
-            if (LOGGER.isDebugEnabled()) {
-                LOGGER.debug("postSnapshotsChangeEvent: " + event);
-            }
+            LOGGER.debug("postSnapshotsChangeEvent: {}", event);
 
             // synchronously notify listeners; leaving it up to the listeners to
             // register as "non-blocking" if needed.

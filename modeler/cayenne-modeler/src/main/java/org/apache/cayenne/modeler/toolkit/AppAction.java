@@ -148,7 +148,7 @@ public abstract class AppAction extends AbstractAction {
         try {
             performAction(e);
         } catch (Throwable th) {
-            LOGGER.info("Action Exception: " + getValue(Action.DEFAULT), th);
+            LOGGER.info("Action Exception: {}", getValue(Action.DEFAULT), th);
             new ErrorDialog(app, "CayenneModeler Error", th).open();
         }
     }

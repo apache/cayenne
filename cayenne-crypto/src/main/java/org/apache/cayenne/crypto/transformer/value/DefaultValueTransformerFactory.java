@@ -171,7 +171,7 @@ public class DefaultValueTransformerFactory implements ValueTransformerFactory {
             String attributeName = dbEntity.getName() + "." + a.getName();
             String msg = javaTypes.size() > 1 ? "ObjAttributes with different java types" : "No ObjAttributes";
             // Warn user about this problem as there is nothing else we can do
-            LOGGER.warn(msg + " bound to DbAttribute '" + attributeName + "', " + javaType + " type will be used.");
+            LOGGER.warn("{} bound to DbAttribute '{}', {} type will be used.", msg, attributeName, javaType);
             return javaType;
         }
 

@@ -383,7 +383,7 @@ public class PropertyUtils {
             }
         } catch (DIRuntimeException ex) {
             if(logger != null) {
-                logger.warn("WARN: Class not found: " + attrType + ". Will use default PropertyDescriptor.");
+                logger.warn("WARN: Class not found: {}. Will use default PropertyDescriptor.", attrType);
             }
             return PropertyDescriptor.defaultDescriptor();
         }

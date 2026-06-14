@@ -476,7 +476,7 @@ public class EOQuery<T> extends ObjectSelect<T> {
 				try {
 					keyExp = entity.translateToDbPath(keyExp);
 				} catch (Exception dbpathEx) {
-					LOGGER.warn("Couldn't find " + keyExp + " in " + entity.getName() + " in EOModel");
+					LOGGER.warn("Couldn't find {} in {} in EOModel", keyExp, entity.getName());
 				}
 			}
 

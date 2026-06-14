@@ -310,7 +310,7 @@ public class ClassGenerationAction {
 
         if (logger != null) {
             String label = templateType.isSuperclass() ? "superclass" : "class";
-            logger.info("Generating " + label + " file: " + outFile.getCanonicalPath());
+            logger.info("Generating {} file: {}", label, outFile.getCanonicalPath());
         }
 
         // return writer with specified encoding

@@ -35,26 +35,24 @@ public class LoggingDbLoaderDelegate extends DefaultDbLoaderDelegate {
 
     @Override
     public void dbEntityAdded(DbEntity entity) {
-        logger.info("  Table: " + entity.getFullyQualifiedName());
+        logger.info("  Table: {}", entity.getFullyQualifiedName());
     }
 
     @Override
     public void dbEntityRemoved(DbEntity entity) {
-        logger.info("  Table removed: " + entity.getFullyQualifiedName());
+        logger.info("  Table removed: {}", entity.getFullyQualifiedName());
     }
 
     @Override
     public boolean dbRelationship(DbEntity entity) {
-        if (logger.isDebugEnabled()) {
-            logger.debug("    Relationships for " + entity.getFullyQualifiedName());
-        }
+        logger.debug("    Relationships for {}", entity.getFullyQualifiedName());
 
         return true;
     }
 
     @Override
     public boolean dbRelationshipLoaded(DbEntity entity, DbRelationship relationship) {
-        logger.info("    " + relationship);
+        logger.info("    {}", relationship);
 
         return true;
     }

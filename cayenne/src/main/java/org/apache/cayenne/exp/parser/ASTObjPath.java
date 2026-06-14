@@ -119,7 +119,7 @@ public class ASTObjPath extends ASTPath {
 					PropertyUtils.setProperty(source, firstSegment, value);
 				}
 			} catch (CayenneRuntimeException ex) {
-				LOGGER.warn("Failed to inject value " + value + " on path " + getPath() + " to " + source, ex);
+				LOGGER.warn("Failed to inject value {} on path {} to {}", value, getPath(), source, ex);
 			}
 		}
 	}

@@ -67,7 +67,7 @@ public class DataSourceConfigLoader {
             throw new ConfigurationException("No DataSource descriptor for key: " + connectionName);
         }
 
-        LOGGER.info("loaded DataSource descriptor: " + descriptor);
+        LOGGER.info("loaded DataSource descriptor: {}", descriptor);
         return descriptor;
     }
 

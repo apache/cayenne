@@ -150,7 +150,7 @@ class ProjectFileChangeTracker extends Thread {
         try {
             files.put(location, new TrackedFile(location));
         } catch (SecurityException e) {
-            LOGGER.error("SecurityException adding file " + location, e);
+            LOGGER.error("SecurityException adding file {}", location, e);
         }
     }
 
@@ -169,7 +169,7 @@ class ProjectFileChangeTracker extends Thread {
             try {
                 fileExists = fi.getFile().exists();
             } catch (SecurityException e) {
-                LOGGER.error("SecurityException checking file " + fi.getFile().getPath(), e);
+                LOGGER.error("SecurityException checking file {}", fi.getFile().getPath(), e);
 
                 // we still process with other files
                 continue;

@@ -58,7 +58,7 @@ public class Slf4jJdbcEventLogger implements JdbcEventLogger {
 	public void logGeneratedKey(DbAttribute attribute, Object value) {
 		if (isLoggable()) {
 			String entity = attribute.getEntity().getName();
-			LOGGER.info("Generated PK: " + entity + "." + attribute.getName() + " = " + value);
+			LOGGER.info("Generated PK: {}.{} = {}", entity, attribute.getName(), value);
 		}
 	}
 
@@ -161,7 +161,7 @@ public class Slf4jJdbcEventLogger implements JdbcEventLogger {
 
 		if (queryExecutionTimeLoggingThreshold > 0 && time > queryExecutionTimeLoggingThreshold) {
 			String message = "Query time exceeded threshold (" + time + " ms): ";
-			LOGGER.warn(message + sql, new CayenneRuntimeException(message + "%s", sql));
+			LOGGER.warn("{}{}", message, sql, new CayenneRuntimeException(message + "%s", sql));
 		}
 	}
 
@@ -179,17 +179,17 @@ public class Slf4jJdbcEventLogger implements JdbcEventLogger {
 
 	@Override
 	public void logBeginTransaction(String transactionLabel) {
-		LOGGER.info("--- " + transactionLabel);
+		LOGGER.info("--- {}", transactionLabel);
 	}
 
 	@Override
 	public void logCommitTransaction(String transactionLabel) {
-		LOGGER.info("+++ " + transactionLabel);
+		LOGGER.info("+++ {}", transactionLabel);
 	}
 
 	@Override
 	public void logRollbackTransaction(String transactionLabel) {
-		LOGGER.info("*** " + transactionLabel);
+		LOGGER.info("*** {}", transactionLabel);
 	}
 
 	@Override

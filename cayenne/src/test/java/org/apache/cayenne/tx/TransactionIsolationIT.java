@@ -89,7 +89,7 @@ public class TransactionIsolationIT {
                         startSignal.countDown();
                     }
                     if(result != 0) {
-                        logger.error("First fetch returned " + result);
+                        logger.error("First fetch returned {}", result);
                         return false;
                     }
                     try {
@@ -100,7 +100,7 @@ public class TransactionIsolationIT {
                     }
 
                     result = ObjectSelect.query(Artist.class).selectCount(context);
-                    logger.info("Second fetch returned " + result);
+                    logger.info("Second fetch returned {}", result);
                     return result == 0;
                 }, descriptor);
             } catch (Exception ex) {

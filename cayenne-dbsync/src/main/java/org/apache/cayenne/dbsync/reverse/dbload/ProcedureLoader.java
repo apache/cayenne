@@ -55,7 +55,7 @@ public class ProcedureLoader extends PerCatalogAndSchemaLoader {
         PatternFilter filter = config.getFiltersConfig().proceduresFilter(catalog.name, schema.name);
         String name = rs.getString("PROCEDURE_NAME");
         if (!filter.isIncluded(name)) {
-            LOGGER.info("skipping Cayenne PK procedure: " + name);
+            LOGGER.info("skipping Cayenne PK procedure: {}", name);
             return;
         }
 

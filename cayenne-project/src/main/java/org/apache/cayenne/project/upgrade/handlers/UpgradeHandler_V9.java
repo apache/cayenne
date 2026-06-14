@@ -67,7 +67,7 @@ public class UpgradeHandler_V9 implements UpgradeHandler {
                 File file = new File(directoryPath + "/" + reFileName);
                 if (file.exists()) {
                     if(!file.delete()) {
-                        LOGGER.warn("Can't delete file " + file);
+                        LOGGER.warn("Can't delete file {}", file);
                     }
                 }
                 dataMap.removeChild(reNode);

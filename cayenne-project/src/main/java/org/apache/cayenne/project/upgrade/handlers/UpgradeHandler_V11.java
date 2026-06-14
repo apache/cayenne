@@ -289,7 +289,7 @@ public class UpgradeHandler_V11 implements UpgradeHandler {
             } catch (NoSuchFileException e) {
                 return "The template " + path + " was not found during the project upgrade. Use the template editor in Cayenne modeler to set the template";
             } catch (IOException e) {
-                LOGGER.warn("Can't read the file: " + path, e);
+                LOGGER.warn("Can't read the file: {}", path, e);
                 return "Can't read the file: " + path + e.getMessage();
             }
         } else {

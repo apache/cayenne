@@ -77,7 +77,7 @@ public class XMLDataChannelDescriptorLoader implements DataChannelDescriptorLoad
 
         URL configurationURL = configurationResource.getURL();
 
-        LOGGER.info("Loading XML configuration resource from " + configurationURL);
+        LOGGER.info("Loading XML configuration resource from {}", configurationURL);
 
         final DataChannelDescriptor descriptor = new DataChannelDescriptor();
         descriptor.setConfigurationSource(configurationResource);

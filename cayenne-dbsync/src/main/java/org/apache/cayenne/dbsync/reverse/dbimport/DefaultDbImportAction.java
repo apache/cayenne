@@ -171,10 +171,8 @@ public class DefaultDbImportAction implements DbImportAction {
 
     protected DataMap loadDataMap(DbImportConfiguration config) throws Exception {
 
-        if (logger.isDebugEnabled()) {
-            logger.debug("DB connection: " + config.getDataSourceInfo());
-            logger.debug(String.valueOf(config));
-        }
+        logger.debug("DB connection: {}", config.getDataSourceInfo());
+        logger.debug("{}", config);
 
         DataNodeDescriptor dataNodeDescriptor = config.createDataNodeDescriptor();
         DataSource dataSource = dataSourceFactory.getDataSource(dataNodeDescriptor);
@@ -204,7 +202,7 @@ public class DefaultDbImportAction implements DbImportAction {
             String path = config.getTargetDataMap() == null ? "null" : config.getTargetDataMap().getAbsolutePath() + "'";
 
             logger.info("");
-            logger.info("Map file does not exist. Loaded db model will be saved into '" + path);
+            logger.info("Map file does not exist. Loaded db model will be saved into '{}", path);
 
             hasChanges = true;
             targetDataMap = newTargetDataMap(config);
@@ -303,7 +301,7 @@ public class DefaultDbImportAction implements DbImportAction {
             List<ObjRelationship> rels = new LinkedList<>(objEntity.getRelationships());
             for (ObjRelationship rel : rels) {
                 if (rel.getSourceEntity() == null || rel.getTargetEntity() == null) {
-                    logger.error("Incorrect obj relationship source or target entity is null: " + rel);
+                    logger.error("Incorrect obj relationship source or target entity is null: {}", rel);
 
                     objEntity.removeRelationship(rel.getName());
                 }
@@ -481,7 +479,7 @@ public class DefaultDbImportAction implements DbImportAction {
                 dataChannelDescriptor = new DataChannelDescriptor();
                 dataChannelDescriptor.setName(getProjectNameFromFileName(config.getCayenneProject().getName()));
                 dataChannelDescriptor.setConfigurationSource(new URLResource(config.getCayenneProject().toURI().toURL()));
-                logger.info("Project file does not exist. New project will be saved into '" + config.getCayenneProject().getAbsolutePath());
+                logger.info("Project file does not exist. New project will be saved into '{}", config.getCayenneProject().getAbsolutePath());
             }
 
             dataChannelDescriptor.getDataMaps().add(dataMap);
