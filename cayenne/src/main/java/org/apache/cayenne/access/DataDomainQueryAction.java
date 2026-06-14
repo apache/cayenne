@@ -178,7 +178,7 @@ class DataDomainQueryAction implements QueryRouter, OperationObserver {
         if (tx != null) {
             runIteratedQuery(tx);
         } else {
-            tx = context.getTransactionFactory().createTransaction();
+            tx = domain.getTransactionFactory().createTransaction();
             BaseTransaction.bindThreadTransaction(tx);
             try {
                 runIteratedQuery(tx);

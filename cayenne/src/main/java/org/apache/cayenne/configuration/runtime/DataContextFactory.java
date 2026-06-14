@@ -31,7 +31,6 @@ import org.apache.cayenne.configuration.ObjectContextFactory;
 import org.apache.cayenne.configuration.ObjectStoreFactory;
 import org.apache.cayenne.di.Inject;
 import org.apache.cayenne.event.EventManager;
-import org.apache.cayenne.tx.TransactionFactory;
 
 /**
  * @since 3.1
@@ -52,9 +51,6 @@ public class DataContextFactory implements ObjectContextFactory {
     
     @Inject
     protected QueryCache queryCache;
-    
-    @Inject
-    protected TransactionFactory transactionFactory;
 
     @Override
     public ObjectContext createContext() {
@@ -101,7 +97,6 @@ public class DataContextFactory implements ObjectContextFactory {
         context.setValidatingObjectsOnCommit(parent.isValidatingObjectsOnCommit());
         context.setUsingSharedSnapshotCache(parent.isUsingSharedSnapshotCache());
         context.setQueryCache(new NestedQueryCache(queryCache));
-        context.setTransactionFactory(transactionFactory);
 
         return context;
     }
@@ -118,10 +113,9 @@ public class DataContextFactory implements ObjectContextFactory {
                 parent, objectStoreFactory.createObjectStore(snapshotCache));
         context.setValidatingObjectsOnCommit(parent.isValidatingObjectsOnCommit());
         context.setQueryCache(new NestedQueryCache(queryCache));
-        context.setTransactionFactory(transactionFactory);
         return context;
     }
-    
+
     protected DataContext newInstance(DataChannel parent, ObjectStore objectStore) {
         return new DataContext(parent, objectStore);
     }
