@@ -233,6 +233,7 @@ public class CDOQualifiedEntitiesIT {
         List<Qualified4> result = ObjectSelect.query(Qualified4.class)
                 .where(Qualified4.QUALIFIED3.alias("a1").dot(Qualified3.NAME).like("O%"))
                 .or(Qualified4.QUALIFIED3.alias("a2").dot(Qualified3.NAME).like("1%"))
+                .orderBy(Qualified4.NAME.asc())
                 .select(env.context());
 
         assertEquals(2, result.size());
