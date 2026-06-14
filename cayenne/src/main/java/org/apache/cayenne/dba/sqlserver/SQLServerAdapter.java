@@ -82,7 +82,7 @@ public class SQLServerAdapter extends JdbcAdapter {
     }
 
     @Override
-    protected NativeColumnType[] createExternalTypes() {
+    protected NativeColumnType[] createNativeTypes() {
         return new NativeColumnType[]{
             NativeColumnType.of(Types.BIGINT, "bigint"),
             NativeColumnType.of(Types.BINARY, "binary"),

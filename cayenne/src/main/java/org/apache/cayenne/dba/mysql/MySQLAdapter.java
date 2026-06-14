@@ -83,7 +83,7 @@ public class MySQLAdapter extends JdbcAdapter {
     }
 
     @Override
-    protected NativeColumnType[] createExternalTypes() {
+    protected NativeColumnType[] createNativeTypes() {
         return new NativeColumnType[]{
             NativeColumnType.of(Types.BIGINT, "BIGINT"),
             NativeColumnType.of(Types.BINARY, "BINARY"),
@@ -337,7 +337,7 @@ public class MySQLAdapter extends JdbcAdapter {
     @Override
     public void createTableAppendColumn(StringBuffer sqlBuffer, DbAttribute column) {
 
-        String type = getType(this, column);
+        String type = preferredNativeColumnType(column).nativeType();
 
         sqlBuffer.append(quotingStrategy.quotedName(column));
         sqlBuffer.append(' ').append(type);

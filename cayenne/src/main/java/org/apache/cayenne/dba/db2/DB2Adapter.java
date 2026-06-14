@@ -52,8 +52,6 @@ public class DB2Adapter extends JdbcAdapter {
 
     private static final String FOR_BIT_DATA_SUFFIX = " FOR BIT DATA";
 
-    private static final String TRIM_FUNCTION = "RTRIM";
-
     public DB2Adapter(@Inject RuntimeProperties runtimeProperties,
             @Inject(Constants.DEFAULT_TYPES_LIST) List<ExtendedType> defaultExtendedTypes,
             @Inject(Constants.USER_TYPES_LIST) List<ExtendedType> userExtendedTypes,
@@ -64,7 +62,7 @@ public class DB2Adapter extends JdbcAdapter {
     }
 
     @Override
-    protected NativeColumnType[] createExternalTypes() {
+    protected NativeColumnType[] createNativeTypes() {
         return new NativeColumnType[]{
             NativeColumnType.of(Types.ARRAY, "ARRAY"),
             NativeColumnType.of(Types.BIGINT, "BIGINT"),
@@ -120,7 +118,7 @@ public class DB2Adapter extends JdbcAdapter {
      */
     @Override
     public void createTableAppendColumn(StringBuffer sqlBuffer, DbAttribute column) {
-        String type = getType(this, column);
+        String type = preferredNativeColumnType(column).nativeType();
 
         sqlBuffer.append(quotingStrategy.quotedName(column)).append(' ');
 
@@ -130,7 +128,7 @@ public class DB2Adapter extends JdbcAdapter {
         if(column.getType() == Types.NCHAR) {
             column.setMaxLength(maxLength / 2);
         }
-        String length = sizeAndPrecision(this, column);
+        String length = sizeAndScale(this, column);
         column.setMaxLength(maxLength);
 
         // assemble...
@@ -210,22 +208,16 @@ public class DB2Adapter extends JdbcAdapter {
      */
     @Override
     public int preferredBindingType(int jdbcType) {
-        switch (jdbcType) {
-            case Types.NCHAR:
-                return Types.CHAR;
-            case Types.NVARCHAR:
-                return Types.VARCHAR;
-            case Types.LONGNVARCHAR:
-                return Types.LONGVARCHAR;
-            case Types.NCLOB:
-                return Types.CLOB;
-
-            default:
-                return jdbcType;
-        }
+        return switch (jdbcType) {
+            case Types.NCHAR -> Types.CHAR;
+            case Types.NVARCHAR -> Types.VARCHAR;
+            case Types.LONGNVARCHAR -> Types.LONGVARCHAR;
+            case Types.NCLOB -> Types.CLOB;
+            default -> jdbcType;
+        };
     }
 
-    final class DB2BooleanType extends BooleanType {
+    static final class DB2BooleanType extends BooleanType {
         @Override
         public void setJdbcObject(PreparedStatement st, Boolean val, int pos, int type, int precision) throws Exception {
             if (val != null) {

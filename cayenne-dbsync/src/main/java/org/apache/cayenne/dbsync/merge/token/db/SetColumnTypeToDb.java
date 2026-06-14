@@ -62,8 +62,8 @@ public class SetColumnTypeToDb extends AbstractToDbToken.Entity {
         StringBuffer sqlBuffer = new StringBuffer();
         appendPrefix(sqlBuffer, adapter.getQuotingStrategy());
   
-        sqlBuffer.append(JdbcAdapter.getType(adapter, columnNew));
-        sqlBuffer.append(JdbcAdapter.sizeAndPrecision(adapter, columnNew));
+        sqlBuffer.append(adapter.preferredNativeColumnType(columnNew).nativeType());
+        sqlBuffer.append(JdbcAdapter.sizeAndScale(adapter, columnNew));
 
         return Collections.singletonList(sqlBuffer.toString());
     }
