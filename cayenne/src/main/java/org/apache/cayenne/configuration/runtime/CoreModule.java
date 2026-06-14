@@ -102,6 +102,7 @@ import org.apache.cayenne.dba.postgres.PostgresPkGenerator;
 import org.apache.cayenne.dba.postgres.PostgresSniffer;
 import org.apache.cayenne.dba.sqlite.SQLiteSniffer;
 import org.apache.cayenne.dba.sqlserver.SQLServerAdapter;
+import org.apache.cayenne.dba.sqlserver.SQLServerPkGenerator;
 import org.apache.cayenne.dba.sqlserver.SQLServerSniffer;
 import org.apache.cayenne.dba.sybase.SybaseAdapter;
 import org.apache.cayenne.dba.sybase.SybasePkGenerator;
@@ -376,7 +377,7 @@ public class CoreModule implements Module {
                 .addPkGenerator(MySQLAdapter.class, MySQLPkGenerator.class)
                 .addPkGenerator(OracleAdapter.class, OraclePkGenerator.class)
                 .addPkGenerator(PostgresAdapter.class, PostgresPkGenerator.class)
-                .addPkGenerator(SQLServerAdapter.class, SybasePkGenerator.class)
+                .addPkGenerator(SQLServerAdapter.class, SQLServerPkGenerator.class)
                 .addPkGenerator(SybaseAdapter.class, SybasePkGenerator.class)
 
                 .addSyncFilter(TransactionFilter.class)
