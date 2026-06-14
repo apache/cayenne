@@ -19,11 +19,11 @@
 
 package org.apache.cayenne.dba;
 
-import java.util.List;
-
 import org.apache.cayenne.access.DataNode;
 import org.apache.cayenne.map.DbAttribute;
 import org.apache.cayenne.map.DbEntity;
+
+import java.util.List;
 
 /**
  * Defines methods to support automatic primary key generation.
@@ -66,9 +66,19 @@ public interface PkGenerator {
     /**
      * Generates a unique and non-repeating primary key for specified PK attribute.
      *
-     * @since 3.0
+     * @deprecated unused by the framework that relies on {@link #generatePk(DataNode, DbAttribute, Class)}
      */
-    Object generatePk(DataNode dataNode, DbAttribute pk) throws Exception;
+    @Deprecated(since = "5.0", forRemoval = true)
+    default Object generatePk(DataNode dataNode, DbAttribute pk) throws Exception {
+        return generatePk(dataNode, pk, null);
+    }
+
+    /**
+     * Generates a unique and non-repeating primary key for the specified PK attribute
+     *
+     * @since 5.0
+     */
+    Object generatePk(DataNode dataNode, DbAttribute pk, Class<?> javaType) throws Exception;
 
     /**
      * Install the adapter associated with current PkGenerator

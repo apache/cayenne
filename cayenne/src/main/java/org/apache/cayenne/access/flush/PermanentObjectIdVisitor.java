@@ -19,8 +19,6 @@
 
 package org.apache.cayenne.access.flush;
 
-import java.util.Map;
-
 import org.apache.cayenne.CayenneRuntimeException;
 import org.apache.cayenne.ObjectId;
 import org.apache.cayenne.access.DataDomain;
@@ -36,6 +34,8 @@ import org.apache.cayenne.map.EntityResolver;
 import org.apache.cayenne.map.ObjAttribute;
 import org.apache.cayenne.map.ObjEntity;
 import org.apache.cayenne.reflect.ClassDescriptor;
+
+import java.util.Map;
 
 /**
  * Visitor that fills replacement map of {@link ObjectId}s of inserted objects.
@@ -65,9 +65,9 @@ class PermanentObjectIdVisitor implements DbRowOpVisitor<Void> {
             return null;
         }
 
-        if((lastObjEntity == null && lastDbEntity == null) || !id.getEntityName().equals(lastEntityName)) {
+        if ((lastObjEntity == null && lastDbEntity == null) || !id.getEntityName().equals(lastEntityName)) {
             lastEntityName = id.getEntityName();
-            if(lastEntityName.startsWith(ASTDbPath.DB_PREFIX)) {
+            if (lastEntityName.startsWith(ASTDbPath.DB_PREFIX)) {
                 lastDbEntity = resolver.getDbEntity(lastEntityName.substring(ASTDbPath.DB_PREFIX.length()));
                 lastObjEntity = null;
                 lastDescriptor = null;
@@ -87,7 +87,7 @@ class PermanentObjectIdVisitor implements DbRowOpVisitor<Void> {
     @Override
     public Void visitDelete(DeleteDbRowOp dbRow) {
         // flattened ids will be temporary for delete operation, replace it
-        if(dbRow.getChangeId().isTemporary() && dbRow.getChangeId().isReplacementIdAttached()) {
+        if (dbRow.getChangeId().isTemporary() && dbRow.getChangeId().isReplacementIdAttached()) {
             dbRow.setChangeId(dbRow.getChangeId().createReplacementId());
         }
         return null;
@@ -110,18 +110,17 @@ class PermanentObjectIdVisitor implements DbRowOpVisitor<Void> {
                 continue;
             }
 
+            ObjAttribute objAttr = lastObjEntity != null ? lastObjEntity.getAttributeForDbAttribute(dbAttr) : null;
+
             // handle meaningful PK
-            if(lastObjEntity != null) {
-                ObjAttribute objAttr = lastObjEntity.getAttributeForDbAttribute(dbAttr);
-                if (objAttr != null) {
-                    Object value = lastDescriptor.getProperty(objAttr.getName()).readPropertyDirectly(dbRow.getObject());
-                    if (value != null) {
-                        // primitive 0 has to be treated as NULL, or otherwise we can't generate PK for POJO's
-                        Class<?> javaClass = objAttr.getJavaClass();
-                        if (!javaClass.isPrimitive() || !(value instanceof Number number) || number.intValue() != 0) {
-                            idMap.put(dbAttrName, value);
-                            continue;
-                        }
+            if (objAttr != null) {
+                Object value = lastDescriptor.getProperty(objAttr.getName()).readPropertyDirectly(dbRow.getObject());
+                if (value != null) {
+                    // primitive 0 has to be treated as NULL, or otherwise we can't generate PK for POJO's
+                    Class<?> javaClass = objAttr.getJavaClass();
+                    if (!javaClass.isPrimitive() || !(value instanceof Number number) || number.intValue() != 0) {
+                        idMap.put(dbAttrName, value);
+                        continue;
                     }
                 }
             }
@@ -140,11 +139,13 @@ class PermanentObjectIdVisitor implements DbRowOpVisitor<Void> {
 
             // finally, use database generation mechanism
             try {
-                Object pkValue = pkGenerator.generatePk(lastNode, dbAttr);
+                Class<?> javaType = objAttr != null ? objAttr.getJavaClass() : null;
+
+                Object pkValue = pkGenerator.generatePk(lastNode, dbAttr, javaType);
                 idMap.put(dbAttrName, pkValue);
                 autoPkDone = true;
             } catch (Exception ex) {
-                throw new CayenneRuntimeException("Error generating PK: %s", ex,  ex.getMessage());
+                throw new CayenneRuntimeException("Error generating PK: %s", ex, ex.getMessage());
             }
         }
     }
