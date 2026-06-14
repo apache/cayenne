@@ -43,6 +43,8 @@ public class ObjAttribute extends Attribute<ObjEntity, ObjAttribute, ObjRelation
     protected boolean lazy;
     protected CayennePath dbAttributePath;
 
+    private volatile Class<?> javaClass;
+
     public ObjAttribute() {
     }
 
@@ -87,12 +89,19 @@ public class ObjAttribute extends Attribute<ObjEntity, ObjAttribute, ObjRelation
      * Wraps any thrown exceptions into CayenneRuntimeException.
      */
     public Class<?> getJavaClass() {
+        Class<?> result = javaClass;
+        if (result != null) {
+            return result;
+        }
+
         if (this.getType() == null) {
             return null;
         }
 
         try {
-            return Util.getJavaClass(getType());
+            result = Util.getJavaClass(getType());
+            javaClass = result;
+            return result;
         } catch (ClassNotFoundException e) {
             throw new CayenneRuntimeException("Failed to load class for name '" + this.getType() + "': "
                     + e.getMessage(), e);
@@ -133,6 +142,7 @@ public class ObjAttribute extends Attribute<ObjEntity, ObjAttribute, ObjRelation
      */
     public void setType(String type) {
         this.type = type;
+        this.javaClass = null;
     }
 
     /**
