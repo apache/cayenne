@@ -19,13 +19,10 @@
 
 package org.apache.cayenne.access;
 
-import java.util.Map;
-
 import org.apache.cayenne.DataRow;
 import org.apache.cayenne.ObjectId;
 import org.apache.cayenne.PersistenceState;
 import org.apache.cayenne.Persistent;
-import org.apache.cayenne.exp.path.CayennePath;
 import org.apache.cayenne.map.DbJoin;
 import org.apache.cayenne.map.DbRelationship;
 import org.apache.cayenne.map.ObjAttribute;
@@ -36,6 +33,8 @@ import org.apache.cayenne.reflect.ClassDescriptor;
 import org.apache.cayenne.reflect.PropertyVisitor;
 import org.apache.cayenne.reflect.ToManyProperty;
 import org.apache.cayenne.reflect.ToOneProperty;
+
+import java.util.Map;
 
 /**
  * DataRowUtils contains a number of static methods to work with DataRows. This is a
@@ -137,6 +136,7 @@ class DataRowUtils {
 
         descriptor.visitProperties(new PropertyVisitor() {
 
+            @Override
             public boolean visitAttribute(AttributeProperty property) {
                 String dbAttrPath = property.getAttribute().getDbAttributePath().value();
 
@@ -159,11 +159,13 @@ class DataRowUtils {
                 return true;
             }
 
+            @Override
             public boolean visitToMany(ToManyProperty property) {
                 // noop - nothing to merge
                 return true;
             }
 
+            @Override
             public boolean visitToOne(ToOneProperty property) {
                 ObjRelationship relationship = property.getRelationship();
                 if (relationship.isToPK()) {
@@ -174,7 +176,7 @@ class DataRowUtils {
 
                         DbRelationship dbRelationship = relationship
                                 .getDbRelationships()
-                                .get(0);
+                                .getFirst();
 
                         // must check before creating ObjectId because of partial snapshots
                         if (hasFK(dbRelationship, snapshot)) {

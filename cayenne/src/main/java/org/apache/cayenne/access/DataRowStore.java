@@ -55,7 +55,11 @@ public class DataRowStore implements Serializable {
 
     // default property values
 
-    public static final long SNAPSHOT_EXPIRATION_DEFAULT = 2 * 60 * 60; // default expiration time is 2 hours
+    /**
+     * @deprecated unused
+     */
+    @Deprecated(since = "5.0", forRemoval = true)
+    public static final long SNAPSHOT_EXPIRATION_DEFAULT = 2 * 60 * 60;
     public static final int SNAPSHOT_CACHE_SIZE_DEFAULT = 10000;
 
     protected String name;

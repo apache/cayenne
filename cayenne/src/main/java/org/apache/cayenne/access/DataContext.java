@@ -36,12 +36,15 @@ import org.apache.cayenne.cache.NestedQueryCache;
 import org.apache.cayenne.cache.QueryCache;
 import org.apache.cayenne.di.Injector;
 import org.apache.cayenne.event.EventManager;
+import org.apache.cayenne.exp.ValueInjector;
+import org.apache.cayenne.graph.ArcId;
 import org.apache.cayenne.graph.ChildDiffLoader;
 import org.apache.cayenne.graph.CompoundDiff;
 import org.apache.cayenne.graph.GraphDiff;
 import org.apache.cayenne.graph.GraphEvent;
 import org.apache.cayenne.graph.GraphManager;
 import org.apache.cayenne.map.EntityResolver;
+import org.apache.cayenne.map.LifecycleEvent;
 import org.apache.cayenne.map.ObjEntity;
 import org.apache.cayenne.query.IteratedQueryDecorator;
 import org.apache.cayenne.query.MappedExec;
@@ -51,8 +54,12 @@ import org.apache.cayenne.query.Query;
 import org.apache.cayenne.query.QueryMetadata;
 import org.apache.cayenne.query.RefreshQuery;
 import org.apache.cayenne.query.Select;
+import org.apache.cayenne.reflect.AttributeProperty;
 import org.apache.cayenne.reflect.ClassDescriptor;
 import org.apache.cayenne.reflect.PropertyDescriptor;
+import org.apache.cayenne.reflect.PropertyVisitor;
+import org.apache.cayenne.reflect.ToManyProperty;
+import org.apache.cayenne.reflect.ToOneProperty;
 import org.apache.cayenne.runtime.CayenneRuntime;
 import org.apache.cayenne.tx.TransactionFactory;
 import org.apache.cayenne.util.EventUtil;
@@ -149,8 +156,6 @@ public class DataContext implements ObjectContext {
 
     protected boolean validatingObjectsOnCommit = true;
 
-    protected transient DataContextObjectCreator objectCreator;
-
     /**
      * Creates a new DataContext that is not attached to the Cayenne stack.
      */
@@ -166,7 +171,6 @@ public class DataContext implements ObjectContext {
     public DataContext(DataChannel channel, ObjectStore objectStore) {
 
         graphAction = new DataContextGraphAction(this);
-        objectCreator = new DataContextObjectCreator(this);
 
         // inject self as parent context
         if (objectStore != null) {
@@ -652,7 +656,17 @@ public class DataContext implements ObjectContext {
      */
     @Override
     public <T> T newObject(Class<T> persistentClass) {
-        return objectCreator.newObject(persistentClass);
+        if (persistentClass == null) {
+            throw new NullPointerException("Null 'persistentClass'");
+        }
+
+        ObjEntity entity = getEntityResolver().getObjEntity(persistentClass);
+        if (entity == null) {
+            throw new IllegalArgumentException("Class is not mapped with Cayenne: " + persistentClass.getName());
+        }
+
+
+        return (T) newObject(entity.getName());
     }
 
     /**
@@ -667,7 +681,27 @@ public class DataContext implements ObjectContext {
      * @since 3.0
      */
     public Persistent newObject(String entityName) {
-        return objectCreator.newObject(entityName);
+        ClassDescriptor descriptor = getEntityResolver().getClassDescriptor(entityName);
+        if (descriptor == null) {
+            throw new IllegalArgumentException("Invalid entity name: " + entityName);
+        }
+
+        Persistent object;
+        try {
+            object = (Persistent) descriptor.createObject();
+        } catch (Exception ex) {
+            throw new CayenneRuntimeException("Error instantiating object.", ex);
+        }
+
+        // this will initialize to-many lists
+        descriptor.injectValueHolders(object);
+
+        // NOTE: the order of initialization of persistence artifacts below is important - do not change it lightly
+        object.setObjectId(ObjectId.of(entityName));
+
+        injectInitialValue(object);
+
+        return object;
     }
 
     /**
@@ -682,7 +716,117 @@ public class DataContext implements ObjectContext {
      */
     @Override
     public void registerNewObject(Object object) {
-        objectCreator.registerNewObject(object);
+        if (object == null) {
+            throw new NullPointerException("Can't register null object.");
+        }
+
+        ObjEntity entity = getEntityResolver().getObjEntity((Persistent) object);
+        if (entity == null) {
+            throw new IllegalArgumentException("Can't find ObjEntity for Persistent class: "
+                    + object.getClass().getName() + ", class is likely not mapped.");
+        }
+
+        final Persistent persistent = (Persistent) object;
+
+        // sanity check - maybe already registered
+        if (persistent.getObjectId() != null) {
+            if (persistent.getObjectContext() == this) {
+                // already registered, just ignore
+                return;
+            } else if (persistent.getObjectContext() != null) {
+                throw new IllegalStateException("Persistent is already registered with another DataContext. "
+                        + "Try using 'localObjects()' instead.");
+            }
+        } else {
+            persistent.setObjectId(ObjectId.of(entity.getName()));
+        }
+
+        ClassDescriptor descriptor = getEntityResolver().getClassDescriptor(entity.getName());
+        if (descriptor == null) {
+            throw new IllegalArgumentException("Invalid entity name: " + entity.getName());
+        }
+
+        injectInitialValue(object);
+
+        // now we need to find all arc changes, inject missing value holders and
+        // pull in all transient connected objects
+
+        descriptor.visitProperties(new PropertyVisitor() {
+
+            public boolean visitToMany(ToManyProperty property) {
+                property.injectValueHolder(persistent);
+
+                if (!property.isFault(persistent)) {
+
+                    Object value = property.readProperty(persistent);
+                    @SuppressWarnings({"unchecked", "rawtypes"})
+                    Collection<Map.Entry<?, ?>> collection = (value instanceof Map)
+                            ? ((Map) value).entrySet()
+                            : (Collection<Map.Entry<?, ?>>) value;
+
+                    for (Object target : collection) {
+                        if (target instanceof Persistent targetDO) {
+                            // make sure it is registered
+                            registerNewObject(targetDO);
+                            getObjectStore().arcCreated(persistent.getObjectId(), targetDO.getObjectId(), new ArcId(property));
+                        }
+                    }
+                }
+                return true;
+            }
+
+            public boolean visitToOne(ToOneProperty property) {
+                Object target = property.readPropertyDirectly(persistent);
+
+                if (target instanceof Persistent targetDO) {
+                    // make sure it is registered
+                    registerNewObject(targetDO);
+                    getObjectStore().arcCreated(persistent.getObjectId(), targetDO.getObjectId(), new ArcId(property));
+                }
+                return true;
+            }
+
+            public boolean visitAttribute(AttributeProperty property) {
+                return true;
+            }
+        });
+    }
+
+    /**
+     * If ObjEntity qualifier is set, asks it to inject initial value to an object.
+     * Also performs all Persistent initialization operations
+     */
+    private void injectInitialValue(Object obj) {
+        // must follow this exact order of property initialization per CAY-653,
+        // i.e. have the id and the context in place BEFORE setPersistence is called
+
+        Persistent object = (Persistent) obj;
+
+        object.setObjectContext(this);
+        object.setPersistenceState(PersistenceState.NEW);
+
+        GraphManager graphManager = getGraphManager();
+        synchronized (graphManager) {
+            graphManager.registerNode(object.getObjectId(), object);
+            graphManager.nodeCreated(object.getObjectId());
+        }
+
+        ObjEntity entity;
+        try {
+            entity = getEntityResolver().getObjEntity(object.getObjectId().getEntityName());
+        } catch (CayenneRuntimeException ex) {
+            // ObjEntity cannot be fetched, ignored
+            entity = null;
+        }
+
+        if (entity != null) {
+            if (entity.getDeclaredQualifier() instanceof ValueInjector valueInjector) {
+                valueInjector.injectValue(object);
+            }
+        }
+
+        // invoke callbacks
+        getEntityResolver().getCallbackRegistry().performCallbacks(LifecycleEvent.POST_ADD, object);
     }
 
     /**
@@ -1179,8 +1323,6 @@ public class DataContext implements ObjectContext {
                 object.setObjectContext(this);
             }
         }
-
-        objectCreator = new DataContextObjectCreator(this);
 
         // ... deferring initialization of transient properties of this context till first access,
         // so that it can attach to Cayenne runtime using appropriate thread injector.

@@ -29,9 +29,7 @@ public interface DataRowStoreFactory {
     /**
      * Create new {@link DataRowStore} object.
      *
-     * @since 4.0
-     * @param name DataRowStore name. Used to identify this DataRowStore in events, etc.
-     *             Can't be null.
+     * @param name DataRowStore name. Used to identify this DataRowStore in events, etc. Can't be null.
      */
     DataRowStore createDataRowStore(String name);
 

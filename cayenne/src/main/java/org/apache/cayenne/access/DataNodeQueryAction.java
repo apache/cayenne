@@ -66,7 +66,7 @@ class DataNodeQueryAction {
             }
 
             @Override
-            public void nextRows(Query q, ResultIterator it) {
+            public void nextRows(Query q, ResultIterator<?> it) {
                 observer.nextRows(originalQuery, it);
             }
 

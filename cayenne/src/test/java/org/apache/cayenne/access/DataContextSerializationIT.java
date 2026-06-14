@@ -82,22 +82,22 @@ public class DataContextSerializationIT {
     }
 
     @Test
-    public void serializeChannel() throws Exception {
+    public void serializeParent() throws Exception {
 
         DataContext deserializedContext = Util.cloneViaSerialization(context);
 
-        assertNotNull(deserializedContext.getChannel());
-        assertSame(context.getChannel(), deserializedContext.getChannel());
+        assertNotNull(deserializedContext.getParent());
+        assertSame(context.getParent(), deserializedContext.getParent());
     }
 
     @Test
-    public void serializeNestedChannel() throws Exception {
+    public void serializeNestedParent() throws Exception {
 
         ObjectContext child = runtime.newContext(context);
 
         ObjectContext deserializedContext = Util.cloneViaSerialization(child);
 
-        assertNotNull(deserializedContext.getChannel());
+        assertNotNull(deserializedContext.getParent());
         assertNotNull(deserializedContext.getEntityResolver());
     }
 
@@ -266,12 +266,5 @@ public class DataContextSerializationIT {
         assertFalse(deserializedArtist.getObjectId().isTemporary());
         assertEquals("artist2", deserializedArtist.getArtistName());
         assertSame(deserializedContext, deserializedArtist.getObjectContext());
-    }
-
-    @Test
-    public void serializeObjectCreator() throws Exception {
-        DataContext deserializedContext = Util.cloneViaSerialization(context);
-        assertNotNull(deserializedContext.objectCreator);
-        assertSame(deserializedContext, deserializedContext.objectCreator.context);
     }
 }
