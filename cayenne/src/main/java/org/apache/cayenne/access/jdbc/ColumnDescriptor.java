@@ -91,7 +91,7 @@ public class ColumnDescriptor {
 
         this.attribute = attribute;
         this.namePrefix = tableAlias;
-        this.javaClass = attribute.getJavaClass();
+        this.javaClass = attribute.getJavaClassName();
 
         if (attribute.getEntity() != null) {
             this.tableName = attribute.getEntity().getName();

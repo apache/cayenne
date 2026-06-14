@@ -308,6 +308,6 @@ public class BatchAction extends BaseSQLAction {
 				return attributeForDbAttribute.getType();
 			}
 		}
-		return key.getJavaClass();
+		return key.getJavaClassName();
 	}
 }

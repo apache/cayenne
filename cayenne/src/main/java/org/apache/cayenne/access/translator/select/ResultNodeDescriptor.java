@@ -106,7 +106,7 @@ class ResultNodeDescriptor {
             return property.getType().getCanonicalName();
         }
         if (getDbAttribute() != null) {
-            return getDbAttribute().getJavaClass();
+            return getDbAttribute().getJavaClassName();
         }
         return null;
     }
