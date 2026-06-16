@@ -20,7 +20,7 @@
 package org.apache.cayenne.dba.frontbase;
 
 import org.apache.cayenne.CayenneRuntimeException;
-import org.apache.cayenne.access.sqlbuilder.QuotingAppendable;
+import org.apache.cayenne.access.sqlbuilder.SQLAppendable;
 import org.apache.cayenne.access.sqlbuilder.sqltree.FunctionNode;
 import org.apache.cayenne.access.sqlbuilder.sqltree.Node;
 import org.apache.cayenne.access.sqlbuilder.sqltree.OpExpressionNode;
@@ -42,7 +42,7 @@ public class FrontBaseSQLTreeProcessor extends BaseSQLTreeProcessor {
                 // POSITION (substr IN str)
                 replaceChild(parent, index, new FunctionNode("POSITION", child.getAlias()) {
                     @Override
-                    public void appendChildrenSeparator(QuotingAppendable buffer, int childIdx) {
+                    public void appendChildrenSeparator(SQLAppendable buffer, int childIdx) {
                         buffer.append(" IN ");
                     }
                 });
@@ -54,7 +54,7 @@ public class FrontBaseSQLTreeProcessor extends BaseSQLTreeProcessor {
                 // SUBSTRING (str FROM offset FOR length)
                 replaceChild(parent, index, new FunctionNode("SUBSTRING", child.getAlias()){
                     @Override
-                    public void appendChildrenSeparator(QuotingAppendable buffer, int childIdx) {
+                    public void appendChildrenSeparator(SQLAppendable buffer, int childIdx) {
                         if(childIdx == 0) {
                             buffer.append(" FROM ");
                         } else if(childIdx == 1) {
@@ -92,7 +92,7 @@ public class FrontBaseSQLTreeProcessor extends BaseSQLTreeProcessor {
         }
 
         @Override
-        public void appendChildrenSeparator(QuotingAppendable buffer, int childIdx) {
+        public void appendChildrenSeparator(SQLAppendable buffer, int childIdx) {
             buffer.append(" FROM ");
         }
 

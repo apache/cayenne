@@ -28,7 +28,7 @@ import org.apache.cayenne.exp.Expression;
 class TableTreeQualifierStage implements TranslationStage {
 
     @Override
-    public void perform(TranslatorContext context) {
+    public void perform(SelectTranslatorContext context) {
         context.getTableTree().visit(node -> {
             if(node.getRelationship() == null) {
                 // translate only root qualifier here, joined tables are processed in the `TableTreeStage`
@@ -42,7 +42,7 @@ class TableTreeQualifierStage implements TranslationStage {
         }
     }
 
-    private static void appendQualifier(TranslatorContext context, TableTreeNode node, Expression dbQualifier) {
+    private static void appendQualifier(SelectTranslatorContext context, TableTreeNode node, Expression dbQualifier) {
         if (dbQualifier == null) {
             return;
         }

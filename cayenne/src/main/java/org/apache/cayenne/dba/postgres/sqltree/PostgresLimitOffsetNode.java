@@ -19,7 +19,7 @@
 
 package org.apache.cayenne.dba.postgres.sqltree;
 
-import org.apache.cayenne.access.sqlbuilder.QuotingAppendable;
+import org.apache.cayenne.access.sqlbuilder.SQLAppendable;
 import org.apache.cayenne.access.sqlbuilder.sqltree.LimitOffsetNode;
 import org.apache.cayenne.access.sqlbuilder.sqltree.Node;
 
@@ -37,7 +37,7 @@ public class PostgresLimitOffsetNode extends LimitOffsetNode {
     }
 
     @Override
-    public QuotingAppendable append(QuotingAppendable buffer) {
+    public SQLAppendable append(SQLAppendable buffer) {
         if(limit == 0 && offset == 0) {
             return buffer;
         }

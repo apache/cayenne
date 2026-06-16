@@ -19,7 +19,7 @@
 
 package org.apache.cayenne.dba.mysql.sqltree;
 
-import org.apache.cayenne.access.sqlbuilder.QuotingAppendable;
+import org.apache.cayenne.access.sqlbuilder.SQLAppendable;
 import org.apache.cayenne.access.sqlbuilder.sqltree.LikeNode;
 import org.apache.cayenne.access.sqlbuilder.sqltree.Node;
 
@@ -32,7 +32,7 @@ public class MysqlLikeNode extends LikeNode {
     }
 
     @Override
-    public void appendChildrenSeparator(QuotingAppendable buffer, int childIdx) {
+    public void appendChildrenSeparator(SQLAppendable buffer, int childIdx) {
         if (not) {
             buffer.append(" NOT");
         }

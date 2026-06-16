@@ -80,7 +80,7 @@ import static org.apache.cayenne.exp.Expression.*;
  */
 class QualifierTranslator implements TraversalHandler {
 
-    private final TranslatorContext context;
+    private final SelectTranslatorContext context;
     private final PathTranslator pathTranslator;
     private final Set<Object> expressionsToSkip;
     private final Deque<Node> nodeStack;
@@ -89,7 +89,7 @@ class QualifierTranslator implements TraversalHandler {
 
     static final String ERR_MSG_ARRAYS_NOT_SUPPORTED = "Arrays are not supported as a arguments in";
 
-    QualifierTranslator(TranslatorContext context) {
+    QualifierTranslator(SelectTranslatorContext context) {
         this.context = context;
         this.pathTranslator = context.getPathTranslator();
         // must use identity comparison for the node skipping, or it could skip the wrong node
@@ -262,7 +262,7 @@ class QualifierTranslator implements TraversalHandler {
 
             case SUBQUERY:
                 ASTSubquery subquery = (ASTSubquery) node;
-                TranslatorContext subContext = new TranslatorContext(
+                SelectTranslatorContext subContext = new SelectTranslatorContext(
                         subquery.getQuery(), context.getAdapter(), context.getResolver(), context);
                 // skip SQL translation stage for nested translators, it should be performed by root context only
                 subContext.setSkipSQLGeneration(true);

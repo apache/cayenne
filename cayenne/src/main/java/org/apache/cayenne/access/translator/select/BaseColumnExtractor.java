@@ -30,9 +30,9 @@ import static org.apache.cayenne.access.sqlbuilder.SQLBuilder.table;
  */
 abstract class BaseColumnExtractor implements ColumnExtractor {
 
-    protected final TranslatorContext context;
+    protected final SelectTranslatorContext context;
 
-    BaseColumnExtractor(TranslatorContext context) {
+    BaseColumnExtractor(SelectTranslatorContext context) {
         this.context = context;
     }
 

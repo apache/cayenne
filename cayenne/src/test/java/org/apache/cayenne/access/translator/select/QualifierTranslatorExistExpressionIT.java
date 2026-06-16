@@ -20,7 +20,7 @@
 package org.apache.cayenne.access.translator.select;
 
 import org.apache.cayenne.access.sqlbuilder.SQLGenerationVisitor;
-import org.apache.cayenne.access.sqlbuilder.StringBuilderAppendable;
+import org.apache.cayenne.access.sqlbuilder.DefaultSQLAppendable;
 import org.apache.cayenne.access.sqlbuilder.sqltree.Node;
 import org.apache.cayenne.exp.Expression;
 import org.apache.cayenne.exp.ExpressionFactory;
@@ -46,8 +46,8 @@ public class QualifierTranslatorExistExpressionIT {
 
         ObjectSelect<Artist> query = ObjectSelect.query(Artist.class, exp);
 
-        TranslatorContext context
-                = new TranslatorContext(new FluentSelectWrapper(query), env.runtime().getDataDomain().getDefaultNode().getAdapter(), env.context().getEntityResolver(), null);
+        SelectTranslatorContext context
+                = new SelectTranslatorContext(new FluentSelectWrapper(query), env.runtime().getDataDomain().getDefaultNode().getAdapter(), env.context().getEntityResolver(), null);
 
         QualifierTranslator qualifierTranslator = context.getQualifierTranslator();
 
@@ -65,8 +65,8 @@ public class QualifierTranslatorExistExpressionIT {
                 .exp("exists paintingArray");
         ObjectSelect<Artist> query = ObjectSelect.query(Artist.class, exp);
 
-        TranslatorContext context
-                = new TranslatorContext(new FluentSelectWrapper(query), env.runtime().getDataDomain().getDefaultNode().getAdapter(), env.context().getEntityResolver(), null);
+        SelectTranslatorContext context
+                = new SelectTranslatorContext(new FluentSelectWrapper(query), env.runtime().getDataDomain().getDefaultNode().getAdapter(), env.context().getEntityResolver(), null);
 
         QualifierTranslator qualifierTranslator = context.getQualifierTranslator();
 
@@ -86,8 +86,8 @@ public class QualifierTranslatorExistExpressionIT {
 
         ObjectSelect<Artist> query = ObjectSelect.query(Artist.class, exp);
 
-        TranslatorContext context
-                = new TranslatorContext(new FluentSelectWrapper(query), env.runtime().getDataDomain().getDefaultNode().getAdapter(), env.context().getEntityResolver(), null);
+        SelectTranslatorContext context
+                = new SelectTranslatorContext(new FluentSelectWrapper(query), env.runtime().getDataDomain().getDefaultNode().getAdapter(), env.context().getEntityResolver(), null);
 
         QualifierTranslator qualifierTranslator = context.getQualifierTranslator();
 
@@ -104,8 +104,8 @@ public class QualifierTranslatorExistExpressionIT {
 
         ObjectSelect<Artist> query = ObjectSelect.query(Artist.class, exp);
 
-        TranslatorContext context
-                = new TranslatorContext(new FluentSelectWrapper(query), env.runtime().getDataDomain().getDefaultNode().getAdapter(), env.context().getEntityResolver(), null);
+        SelectTranslatorContext context
+                = new SelectTranslatorContext(new FluentSelectWrapper(query), env.runtime().getDataDomain().getDefaultNode().getAdapter(), env.context().getEntityResolver(), null);
 
         QualifierTranslator qualifierTranslator = context.getQualifierTranslator();
 
@@ -125,8 +125,8 @@ public class QualifierTranslatorExistExpressionIT {
 
         ObjectSelect<Artist> query = ObjectSelect.query(Artist.class, exp);
 
-        TranslatorContext context
-                = new TranslatorContext(new FluentSelectWrapper(query), env.runtime().getDataDomain().getDefaultNode().getAdapter(), env.context().getEntityResolver(), null);
+        SelectTranslatorContext context
+                = new SelectTranslatorContext(new FluentSelectWrapper(query), env.runtime().getDataDomain().getDefaultNode().getAdapter(), env.context().getEntityResolver(), null);
 
         QualifierTranslator qualifierTranslator = context.getQualifierTranslator();
 
@@ -146,8 +146,8 @@ public class QualifierTranslatorExistExpressionIT {
 
         ObjectSelect<Artist> query = ObjectSelect.query(Artist.class, exp);
 
-        TranslatorContext context
-                = new TranslatorContext(new FluentSelectWrapper(query), env.runtime().getDataDomain().getDefaultNode().getAdapter(), env.context().getEntityResolver(), null);
+        SelectTranslatorContext context
+                = new SelectTranslatorContext(new FluentSelectWrapper(query), env.runtime().getDataDomain().getDefaultNode().getAdapter(), env.context().getEntityResolver(), null);
 
         QualifierTranslator qualifierTranslator = context.getQualifierTranslator();
 
@@ -169,8 +169,8 @@ public class QualifierTranslatorExistExpressionIT {
 
         ObjectSelect<Artist> query = ObjectSelect.query(Artist.class, exp);
 
-        TranslatorContext context
-                = new TranslatorContext(new FluentSelectWrapper(query), env.runtime().getDataDomain().getDefaultNode().getAdapter(), env.context().getEntityResolver(), null);
+        SelectTranslatorContext context
+                = new SelectTranslatorContext(new FluentSelectWrapper(query), env.runtime().getDataDomain().getDefaultNode().getAdapter(), env.context().getEntityResolver(), null);
 
         QualifierTranslator qualifierTranslator = context.getQualifierTranslator();
 
@@ -191,8 +191,8 @@ public class QualifierTranslatorExistExpressionIT {
 
         ObjectSelect<Artist> query = ObjectSelect.query(Artist.class, exp);
 
-        TranslatorContext context
-                = new TranslatorContext(new FluentSelectWrapper(query), env.runtime().getDataDomain().getDefaultNode().getAdapter(), env.context().getEntityResolver(), null);
+        SelectTranslatorContext context
+                = new SelectTranslatorContext(new FluentSelectWrapper(query), env.runtime().getDataDomain().getDefaultNode().getAdapter(), env.context().getEntityResolver(), null);
 
         QualifierTranslator qualifierTranslator = context.getQualifierTranslator();
 
@@ -213,8 +213,8 @@ public class QualifierTranslatorExistExpressionIT {
 
         ObjectSelect<Artist> query = ObjectSelect.query(Artist.class, exp);
 
-        TranslatorContext context
-                = new TranslatorContext(new FluentSelectWrapper(query), env.runtime().getDataDomain().getDefaultNode().getAdapter(), env.context().getEntityResolver(), null);
+        SelectTranslatorContext context
+                = new SelectTranslatorContext(new FluentSelectWrapper(query), env.runtime().getDataDomain().getDefaultNode().getAdapter(), env.context().getEntityResolver(), null);
 
         QualifierTranslator qualifierTranslator = context.getQualifierTranslator();
 
@@ -236,8 +236,8 @@ public class QualifierTranslatorExistExpressionIT {
 
         ObjectSelect<Artist> query = ObjectSelect.query(Artist.class, exp);
 
-        TranslatorContext context
-                = new TranslatorContext(new FluentSelectWrapper(query), env.runtime().getDataDomain().getDefaultNode().getAdapter(), env.context().getEntityResolver(), null);
+        SelectTranslatorContext context
+                = new SelectTranslatorContext(new FluentSelectWrapper(query), env.runtime().getDataDomain().getDefaultNode().getAdapter(), env.context().getEntityResolver(), null);
 
         QualifierTranslator qualifierTranslator = context.getQualifierTranslator();
 
@@ -263,8 +263,8 @@ public class QualifierTranslatorExistExpressionIT {
 
         ObjectSelect<Artist> query = ObjectSelect.query(Artist.class, exp);
 
-        TranslatorContext context
-                = new TranslatorContext(new FluentSelectWrapper(query), env.runtime().getDataDomain().getDefaultNode().getAdapter(), env.context().getEntityResolver(), null);
+        SelectTranslatorContext context
+                = new SelectTranslatorContext(new FluentSelectWrapper(query), env.runtime().getDataDomain().getDefaultNode().getAdapter(), env.context().getEntityResolver(), null);
 
         QualifierTranslator qualifierTranslator = context.getQualifierTranslator();
 
@@ -296,8 +296,8 @@ public class QualifierTranslatorExistExpressionIT {
                 .exists();
         ObjectSelect<Artist> query = ObjectSelect.query(Artist.class, exp);
 
-        TranslatorContext context
-                = new TranslatorContext(new FluentSelectWrapper(query), env.runtime().getDataDomain().getDefaultNode().getAdapter(), env.context().getEntityResolver(), null);
+        SelectTranslatorContext context
+                = new SelectTranslatorContext(new FluentSelectWrapper(query), env.runtime().getDataDomain().getDefaultNode().getAdapter(), env.context().getEntityResolver(), null);
 
         QualifierTranslator qualifierTranslator = context.getQualifierTranslator();
 
@@ -317,7 +317,7 @@ public class QualifierTranslatorExistExpressionIT {
     protected void assertSQL(String expected, Node node) {
         assertNotNull(node);
 
-        SQLGenerationVisitor visitor = new SQLGenerationVisitor(new StringBuilderAppendable());
+        SQLGenerationVisitor visitor = new SQLGenerationVisitor(new DefaultSQLAppendable(null));
         node.visit(visitor);
         assertEquals(expected, visitor.getSQLString());
     }

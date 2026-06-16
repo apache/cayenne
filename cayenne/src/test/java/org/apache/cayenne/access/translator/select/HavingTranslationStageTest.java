@@ -34,7 +34,7 @@ import static org.junit.jupiter.api.Assertions.*;
 
 public class HavingTranslationStageTest {
 
-    private TranslatorContext context;
+    private SelectTranslatorContext context;
 
     @BeforeEach
     public void prepareContext() {
@@ -50,7 +50,7 @@ public class HavingTranslationStageTest {
                         .withDbEntity(dbEntity)
                         .build())
                 .build();
-        context = new MockTranslatorContext(wrapper);
+        context = new MockSelectTranslatorContext(wrapper);
     }
 
     @Test

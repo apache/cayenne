@@ -23,5 +23,5 @@ package org.apache.cayenne.access.translator.select;
  * @since 4.2
  */
 interface TranslationStage {
-    void perform(TranslatorContext context);
+    void perform(SelectTranslatorContext context);
 }

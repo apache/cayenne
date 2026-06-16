@@ -17,25 +17,19 @@
  *  under the License.
  ****************************************************************/
 
-package org.apache.cayenne.access.sqlbuilder;
+package org.apache.cayenne.access.translator.select;
 
-/**
- * @since 4.2
- */
-public interface QuotingAppendable extends Appendable {
+import org.apache.cayenne.dba.DbAdapter;
+import org.apache.cayenne.map.EntityResolver;
 
-    @Override
-    QuotingAppendable append(CharSequence csq);
+import static org.mockito.Mockito.mock;
 
-    @Override
-    QuotingAppendable append(CharSequence csq, int start, int end);
+public class MockSelectTranslatorContext extends SelectTranslatorContext {
+    MockSelectTranslatorContext(TranslatableQueryWrapper query) {
+        super(query, mock(DbAdapter.class), null, null);
+    }
 
-    @Override
-    QuotingAppendable append(char c);
-
-    QuotingAppendable append(int i);
-
-    QuotingAppendable appendQuoted(CharSequence csq);
-
-    SQLGenerationContext getContext();
+    MockSelectTranslatorContext(TranslatableQueryWrapper query, EntityResolver resolver) {
+        super(query, mock(DbAdapter.class), resolver, null);
+    }
 }

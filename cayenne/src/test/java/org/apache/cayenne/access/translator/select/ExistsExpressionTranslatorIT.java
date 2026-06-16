@@ -41,11 +41,11 @@ public class ExistsExpressionTranslatorIT {
     @RegisterExtension
     static final CayenneTestsEnv env = CayenneTestsEnv.forProject(CayenneProjects.TESTMAP_PROJECT);
 
-    private TranslatorContext translatorContext;
+    private SelectTranslatorContext translatorContext;
 
     @BeforeEach
     public void setUp() {
-        translatorContext = mock(TranslatorContext.class);
+        translatorContext = mock(SelectTranslatorContext.class);
         DbEntity dbArtist = env.context().getEntityResolver().getDbEntity("ARTIST");
         ObjEntity objArtist = env.context().getEntityResolver().getObjEntity("Artist");
         when(translatorContext.getRootDbEntity()).thenReturn(dbArtist);
@@ -147,7 +147,7 @@ public class ExistsExpressionTranslatorIT {
     public void dbPath() {
         Expression exp = ExpressionFactory.exp("db:PAINTING_ARRAY").exists();
 
-        translatorContext = mock(TranslatorContext.class);
+        translatorContext = mock(SelectTranslatorContext.class);
         DbEntity dbArtist = env.context().getEntityResolver().getDbEntity("ARTIST");
         when(translatorContext.getRootDbEntity()).thenReturn(dbArtist);
         when(translatorContext.getMetadata()).thenReturn(new MockQueryMetadata());

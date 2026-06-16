@@ -29,7 +29,7 @@ import static org.apache.cayenne.access.sqlbuilder.SQLBuilder.*;
 
 abstract class OrderingAbstractStage implements TranslationStage {
 
-    protected void processOrdering(QualifierTranslator qualifierTranslator, TranslatorContext context, Ordering ordering) {
+    protected void processOrdering(QualifierTranslator qualifierTranslator, SelectTranslatorContext context, Ordering ordering) {
         Expression orderExp = ordering.getSortSpec();
         NodeBuilder nodeBuilder = node(qualifierTranslator.translate(orderExp));
 
@@ -48,7 +48,7 @@ abstract class OrderingAbstractStage implements TranslationStage {
         }
     }
 
-    private boolean orderColumnAbsent(TranslatorContext context, Node orderingNode) {
+    private boolean orderColumnAbsent(SelectTranslatorContext context, Node orderingNode) {
         for (ResultNodeDescriptor result : context.getResultNodeList()) {
             if (result.getNode().deepEquals(orderingNode)) {
                 return false;

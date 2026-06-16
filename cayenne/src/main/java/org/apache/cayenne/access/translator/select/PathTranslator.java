@@ -38,9 +38,9 @@ class PathTranslator {
     private final Map<CayennePath, PathTranslationResult> objResultCache = new ConcurrentHashMap<>();
     private final Map<CayennePath, PathTranslationResult> dbResultCache = new ConcurrentHashMap<>();
 
-    private final TranslatorContext context;
+    private final SelectTranslatorContext context;
 
-    PathTranslator(TranslatorContext context) {
+    PathTranslator(SelectTranslatorContext context) {
         this.context = context;
     }
 

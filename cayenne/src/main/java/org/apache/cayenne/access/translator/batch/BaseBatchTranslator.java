@@ -23,9 +23,9 @@ import org.apache.cayenne.access.sqlbuilder.ExpressionNodeBuilder;
 import org.apache.cayenne.access.sqlbuilder.NodeBuilder;
 import org.apache.cayenne.access.sqlbuilder.SQLBuilder;
 import org.apache.cayenne.access.sqlbuilder.SQLGenerationVisitor;
+import org.apache.cayenne.access.sqlbuilder.DefaultSQLAppendable;
 import org.apache.cayenne.access.sqlbuilder.sqltree.Node;
 import org.apache.cayenne.access.translator.ParameterBinding;
-import org.apache.cayenne.access.translator.select.DefaultQuotingAppendable;
 import org.apache.cayenne.dba.DbAdapter;
 import org.apache.cayenne.map.DbAttribute;
 import org.apache.cayenne.query.BatchQuery;
@@ -63,7 +63,7 @@ public abstract class BaseBatchTranslator<T extends BatchQuery> implements Batch
     protected String doTranslate(BatchTranslatorContext<T> context, NodeBuilder nodeBuilder) {
         Node node = context.getAdapter().getSqlTreeProcessor().process(nodeBuilder.build());
 
-        SQLGenerationVisitor visitor = new SQLGenerationVisitor(new DefaultQuotingAppendable(context));
+        SQLGenerationVisitor visitor = new SQLGenerationVisitor(new DefaultSQLAppendable(context));
         node.visit(visitor);
 
         return visitor.getSQLString();

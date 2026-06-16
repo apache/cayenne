@@ -22,7 +22,7 @@ package org.apache.cayenne.access.sqlbuilder.sqltree;
 import org.apache.cayenne.CayenneRuntimeException;
 import org.apache.cayenne.ObjectId;
 import org.apache.cayenne.Persistent;
-import org.apache.cayenne.access.sqlbuilder.QuotingAppendable;
+import org.apache.cayenne.access.sqlbuilder.SQLAppendable;
 import org.apache.cayenne.access.sqlbuilder.SQLGenerationContext;
 import org.apache.cayenne.access.translator.ParameterBinding;
 import org.apache.cayenne.access.types.ExtendedType;
@@ -63,16 +63,16 @@ public class ValueNode extends Node {
     }
 
     @Override
-    public QuotingAppendable append(QuotingAppendable buffer) {
+    public SQLAppendable append(SQLAppendable buffer) {
         appendValue(value, buffer);
         return buffer;
     }
 
-    protected void appendNullValue(QuotingAppendable buffer) {
+    protected void appendNullValue(SQLAppendable buffer) {
         buffer.append(" NULL");
     }
 
-    private void appendValue(Object val, QuotingAppendable buffer) {
+    private void appendValue(Object val, SQLAppendable buffer) {
         if (val == null) {
             appendNullValue(buffer);
             return;
@@ -103,7 +103,7 @@ public class ValueNode extends Node {
         }
     }
 
-    protected void appendObjectValue(QuotingAppendable buffer, Object value) {
+    protected void appendObjectValue(SQLAppendable buffer, Object value) {
         if (value == null) {
             return;
         }
@@ -115,9 +115,9 @@ public class ValueNode extends Node {
         }
     }
 
-    protected void appendStringValue(QuotingAppendable buffer, CharSequence value) {
+    protected void appendStringValue(SQLAppendable buffer, CharSequence value) {
         if (buffer.getContext() == null || !needBinding) {
-            buffer.append(" '").append(value).append("'");
+            buffer.append(" '").append(value.toString()).append("'");
         } else {
             // value can't be null here
             buffer.append(" ?");
@@ -125,7 +125,7 @@ public class ValueNode extends Node {
         }
     }
 
-    protected void addValueBinding(QuotingAppendable buffer, Object value) {
+    protected void addValueBinding(SQLAppendable buffer, Object value) {
         // value can't be null here
         SQLGenerationContext context = buffer.getContext();
         // allow translation in out-of-context scope, to be able to use as a standalone SQL generator
@@ -141,17 +141,17 @@ public class ValueNode extends Node {
         context.getBindings().add(binding);
     }
 
-    private void appendValue(Persistent value, QuotingAppendable buffer) {
+    private void appendValue(Persistent value, SQLAppendable buffer) {
         appendValue(value.getObjectId(), buffer);
     }
 
-    private void appendValue(ObjectId value, QuotingAppendable buffer) {
+    private void appendValue(ObjectId value, SQLAppendable buffer) {
         for (Object idVal : value.getIdSnapshot().values()) {
             appendValue(idVal, buffer);
         }
     }
 
-    private void appendValue(short[] val, QuotingAppendable buffer) {
+    private void appendValue(short[] val, SQLAppendable buffer) {
         boolean first = true;
         for (short i : val) {
             if (first) {
@@ -163,7 +163,7 @@ public class ValueNode extends Node {
         }
     }
 
-    private void appendValue(char[] val, QuotingAppendable buffer) {
+    private void appendValue(char[] val, SQLAppendable buffer) {
         boolean first = true;
         for (char i : val) {
             if (first) {
@@ -175,7 +175,7 @@ public class ValueNode extends Node {
         }
     }
 
-    private void appendValue(int[] val, QuotingAppendable buffer) {
+    private void appendValue(int[] val, SQLAppendable buffer) {
         boolean first = true;
         for (int i : val) {
             if (first) {
@@ -187,7 +187,7 @@ public class ValueNode extends Node {
         }
     }
 
-    private void appendValue(long[] val, QuotingAppendable buffer) {
+    private void appendValue(long[] val, SQLAppendable buffer) {
         boolean first = true;
         for (long i : val) {
             if (first) {
@@ -199,7 +199,7 @@ public class ValueNode extends Node {
         }
     }
 
-    private void appendValue(float[] val, QuotingAppendable buffer) {
+    private void appendValue(float[] val, SQLAppendable buffer) {
         boolean first = true;
         for (float i : val) {
             if (first) {
@@ -211,7 +211,7 @@ public class ValueNode extends Node {
         }
     }
 
-    private void appendValue(double[] val, QuotingAppendable buffer) {
+    private void appendValue(double[] val, SQLAppendable buffer) {
         boolean first = true;
         for (double i : val) {
             if (first) {
@@ -223,7 +223,7 @@ public class ValueNode extends Node {
         }
     }
 
-    private void appendValue(boolean[] val, QuotingAppendable buffer) {
+    private void appendValue(boolean[] val, SQLAppendable buffer) {
         boolean first = true;
         for (boolean i : val) {
             if (first) {
@@ -235,7 +235,7 @@ public class ValueNode extends Node {
         }
     }
 
-    private void appendValue(byte[] val, QuotingAppendable buffer) {
+    private void appendValue(byte[] val, SQLAppendable buffer) {
         boolean first = true;
         for (byte i : val) {
             if (first) {
@@ -247,7 +247,7 @@ public class ValueNode extends Node {
         }
     }
 
-    private void appendValue(Object[] val, QuotingAppendable buffer) {
+    private void appendValue(Object[] val, SQLAppendable buffer) {
         boolean first = true;
         for (Object i : val) {
             if (first) {

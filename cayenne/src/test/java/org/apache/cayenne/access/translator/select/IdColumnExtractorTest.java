@@ -42,7 +42,7 @@ public class IdColumnExtractorTest extends BaseColumnExtractorTest {
                         .withDbEntity(mockDbEntity)
                         .build())
                 .build();
-        TranslatorContext context = new MockTranslatorContext(wrapper);
+        SelectTranslatorContext context = new MockSelectTranslatorContext(wrapper);
 
         DataMap dataMap = new DataMap();
         dataMap.addDbEntity(mockDbEntity);
@@ -78,7 +78,7 @@ public class IdColumnExtractorTest extends BaseColumnExtractorTest {
                         .withDbEntity(mockDbEntity)
                         .build())
                 .build();
-        TranslatorContext context = new MockTranslatorContext(wrapper);
+        SelectTranslatorContext context = new MockSelectTranslatorContext(wrapper);
 
         ObjEntity entity = new ObjEntity();
         entity.setDbEntity(mockDbEntity);

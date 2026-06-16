@@ -33,7 +33,7 @@ class DbPathProcessor extends PathProcessor<DbEntity> {
 
     private final boolean flattenedPath;
 
-    DbPathProcessor(TranslatorContext context, DbEntity entity, CayennePath parentPath, boolean flattenedPath) {
+    DbPathProcessor(SelectTranslatorContext context, DbEntity entity, CayennePath parentPath, boolean flattenedPath) {
         super(context, entity);
         this.flattenedPath = flattenedPath;
         if (parentPath != null) {

@@ -19,7 +19,7 @@
 
 package org.apache.cayenne.access.sqlbuilder.sqltree;
 
-import org.apache.cayenne.access.sqlbuilder.QuotingAppendable;
+import org.apache.cayenne.access.sqlbuilder.SQLAppendable;
 
 /**
  * @since 4.2
@@ -35,7 +35,7 @@ public class OffsetFetchNextNode extends LimitOffsetNode {
     }
 
     @Override
-    public QuotingAppendable append(QuotingAppendable buffer) {
+    public SQLAppendable append(SQLAppendable buffer) {
         // OFFSET X ROWS FETCH NEXT Y ROWS ONLY
         if(offset > 0) {
             buffer.append(" OFFSET ").append(offset).append(" ROWS");

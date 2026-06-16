@@ -46,7 +46,7 @@ class DistinctStage implements TranslationStage {
     }
 
     @Override
-    public void perform(TranslatorContext context) {
+    public void perform(SelectTranslatorContext context) {
         // explicit suppressing of distinct
         if(context.getMetadata().isSuppressingDistinct()) {
             context.setDistinctSuppression(true);

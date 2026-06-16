@@ -19,7 +19,7 @@
 
 package org.apache.cayenne.access.sqlbuilder.sqltree;
 
-import org.apache.cayenne.access.sqlbuilder.QuotingAppendable;
+import org.apache.cayenne.access.sqlbuilder.SQLAppendable;
 
 import java.util.Objects;
 
@@ -35,7 +35,7 @@ public class OpExpressionNode extends ExpressionNode {
     }
 
     @Override
-    public void appendChildrenSeparator(QuotingAppendable buffer, int childInd) {
+    public void appendChildrenSeparator(SQLAppendable buffer, int childInd) {
         buffer.append(' ').append(op);
     }
 

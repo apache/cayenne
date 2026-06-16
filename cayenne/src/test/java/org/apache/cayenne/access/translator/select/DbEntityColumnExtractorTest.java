@@ -40,7 +40,7 @@ public class DbEntityColumnExtractorTest extends BaseColumnExtractorTest {
                         .withDbEntity(createMockDbEntity("mock"))
                         .build())
                 .build();
-        TranslatorContext context = new MockTranslatorContext(wrapper);
+        SelectTranslatorContext context = new MockSelectTranslatorContext(wrapper);
 
         DbEntityColumnExtractor extractor = new DbEntityColumnExtractor(context);
         extractor.extract(CayennePath.EMPTY_PATH);
@@ -84,7 +84,7 @@ public class DbEntityColumnExtractorTest extends BaseColumnExtractorTest {
                         .withDbEntity(mockDbEntity)
                         .build())
                 .build();
-        TranslatorContext context = new MockTranslatorContext(wrapper);
+        SelectTranslatorContext context = new MockSelectTranslatorContext(wrapper);
 
         DbRelationship relationship = new DbRelationship();
         relationship.setSourceEntity(mockDbEntity);

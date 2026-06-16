@@ -24,7 +24,7 @@ import org.apache.cayenne.query.Ordering;
 class OrderingDistinctStage extends OrderingAbstractStage {
 
     @Override
-    public void perform(TranslatorContext context) {
+    public void perform(SelectTranslatorContext context) {
         if (context.getQuery().getOrderings() == null) {
             return;
         }
@@ -38,7 +38,7 @@ class OrderingDistinctStage extends OrderingAbstractStage {
         }
     }
 
-    private boolean isDistinct(TranslatorContext context) {
+    private boolean isDistinct(SelectTranslatorContext context) {
         return !context.isDistinctSuppression()
                 && (context.getQuery().isDistinct()
                 || context.getTableTree().hasToManyJoin());

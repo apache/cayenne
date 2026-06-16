@@ -28,7 +28,7 @@ import org.apache.cayenne.exp.Expression;
 class HavingTranslationStage implements TranslationStage {
 
     @Override
-    public void perform(TranslatorContext context) {
+    public void perform(SelectTranslatorContext context) {
         Expression expression = context.getQuery().getHavingQualifier();
         QualifierTranslator translator = context.getQualifierTranslator();
         Node qualifier = translator.translate(expression);

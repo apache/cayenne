@@ -26,7 +26,6 @@ import org.apache.cayenne.access.sqlbuilder.SelectBuilder;
 import org.apache.cayenne.access.sqlbuilder.sqltree.Node;
 import org.apache.cayenne.access.translator.ParameterBinding;
 import org.apache.cayenne.dba.DbAdapter;
-import org.apache.cayenne.dba.QuotingStrategy;
 import org.apache.cayenne.exp.parser.ASTAggregateFunctionCall;
 import org.apache.cayenne.exp.path.CayennePath;
 import org.apache.cayenne.exp.property.Property;
@@ -50,7 +49,7 @@ import static org.apache.cayenne.access.sqlbuilder.SQLBuilder.node;
  *
  * @since 4.2
  */
-public class TranslatorContext implements SQLGenerationContext {
+class SelectTranslatorContext implements SQLGenerationContext {
 
     private static final TranslationStage[] TRANSLATION_STAGES = {
             new QualifierTranslationStage(),
@@ -100,14 +99,13 @@ public class TranslatorContext implements SQLGenerationContext {
 
     private final EntityResolver resolver;
     private final DbAdapter adapter;
-    private final QuotingStrategy quotingStrategy;
 
     // Select builder that builds final SQL tree
     private final SelectBuilder selectBuilder;
     private final QualifierTranslator qualifierTranslator;
     private final PathTranslator pathTranslator;
     // Parent context will be not null in case of a nested query
-    private final TranslatorContext parentContext;
+    private final SelectTranslatorContext parentContext;
     // List of SQL tree nodes that describe resulting rows of this query
     private final List<ResultNodeDescriptor> resultNodeList;
 
@@ -132,7 +130,7 @@ public class TranslatorContext implements SQLGenerationContext {
     private SQLResult sqlResult;
     private EntityResult rootEntityResult;
 
-    TranslatorContext(TranslatableQueryWrapper query, DbAdapter adapter, EntityResolver resolver, TranslatorContext parentContext) {
+    SelectTranslatorContext(TranslatableQueryWrapper query, DbAdapter adapter, EntityResolver resolver, SelectTranslatorContext parentContext) {
         this.query = query;
         this.adapter = adapter;
         this.resolver = resolver;
@@ -144,7 +142,6 @@ public class TranslatorContext implements SQLGenerationContext {
         this.selectBuilder = SQLBuilder.select();
         this.pathTranslator = new PathTranslator(this);
         this.qualifierTranslator = new QualifierTranslator(this);
-        this.quotingStrategy = adapter.getQuotingStrategy();
         this.resultNodeList = new LinkedList<>();
         if (query.needsResultSetMapping()) {
             this.sqlResult = new SQLResult();
@@ -226,16 +223,14 @@ public class TranslatorContext implements SQLGenerationContext {
         return resolver;
     }
 
+    @Override
     public DbAdapter getAdapter() {
         return adapter;
     }
 
+    @Override
     public DbEntity getRootDbEntity() {
         return metadata.getDbEntity();
-    }
-
-    public QuotingStrategy getQuotingStrategy() {
-        return quotingStrategy;
     }
 
     boolean hasAggregate() {
@@ -302,7 +297,7 @@ public class TranslatorContext implements SQLGenerationContext {
         return resultNode;
     }
 
-    TranslatorContext getParentContext() {
+    SelectTranslatorContext getParentContext() {
         return parentContext;
     }
 

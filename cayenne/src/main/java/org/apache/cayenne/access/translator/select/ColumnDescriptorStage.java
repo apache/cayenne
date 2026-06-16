@@ -28,7 +28,7 @@ import org.apache.cayenne.map.DbAttribute;
 class ColumnDescriptorStage implements TranslationStage {
 
     @Override
-    public void perform(TranslatorContext context) {
+    public void perform(SelectTranslatorContext context) {
         int i = 0;
         for(ResultNodeDescriptor resultNode : context.getResultNodeList()) {
             context.getSelectBuilder().result(resultNode::getNode);

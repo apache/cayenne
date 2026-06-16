@@ -48,7 +48,7 @@ public class CustomColumnSetExtractorTest extends BaseColumnExtractorTest {
                         .withDbEntity(mockDbEntity)
                         .build())
                 .build();
-        TranslatorContext context = new MockTranslatorContext(wrapper);
+        SelectTranslatorContext context = new MockSelectTranslatorContext(wrapper);
 
         DataMap dataMap = new DataMap();
         dataMap.addDbEntity(mockDbEntity);

@@ -19,57 +19,70 @@
 
 package org.apache.cayenne.access.sqlbuilder;
 
+import org.apache.cayenne.dba.QuotingStrategy;
+
 /**
  * @since 4.2
  */
-public class StringBuilderAppendable implements QuotingAppendable {
+public class DefaultSQLAppendable implements SQLAppendable {
 
     protected final StringBuilder builder;
+    protected final SQLGenerationContext context;
+    protected final QuotingStrategy quotingStrategy;
 
-    public StringBuilderAppendable() {
+    public DefaultSQLAppendable(SQLGenerationContext context) {
         this.builder = new StringBuilder();
+        this.context = context;
+        this.quotingStrategy = context == null ? null : context.getAdapter().getQuotingStrategy();
     }
 
     @Override
-    public QuotingAppendable append(CharSequence csq) {
-        builder.append(csq);
+    public SQLAppendable append(String str) {
+        builder.append(str);
         return this;
     }
 
     @Override
-    public QuotingAppendable append(CharSequence csq, int start, int end) {
-        builder.append(csq, start, end);
-        return this;
-    }
-
-    @Override
-    public QuotingAppendable append(char c) {
+    public SQLAppendable append(char c) {
         builder.append(c);
         return this;
     }
 
     @Override
-    public QuotingAppendable append(int c) {
+    public SQLAppendable append(int c) {
         builder.append(c);
         return this;
     }
 
     @Override
-    public QuotingAppendable appendQuoted(CharSequence csq) {
-        builder.append(csq);
+    public SQLAppendable appendQuoted(String str) {
+        if (quotingStrategy == null) {
+            builder.append(str);
+        } else {
+            quotingStrategy.quotedIdentifier(context.getRootDbEntity(), str, builder);
+        }
         return this;
     }
 
     @Override
     public SQLGenerationContext getContext() {
-        return null;
+        return context;
+    }
+
+    @Override
+    public String getSql() {
+        return builder.toString();
     }
 
     @Override
     public String toString() {
-        return builder.toString();
+        return getSql();
     }
 
+    /**
+     * @deprecated unused
+     */
+    @Deprecated(since = "5.0", forRemoval = true)
     public StringBuilder unwrap() {
         return builder;
     }

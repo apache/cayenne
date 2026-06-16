@@ -19,7 +19,7 @@
 
 package org.apache.cayenne.access.sqlbuilder.sqltree;
 
-import org.apache.cayenne.access.sqlbuilder.QuotingAppendable;
+import org.apache.cayenne.access.sqlbuilder.SQLAppendable;
 
 import java.util.Objects;
 
@@ -35,7 +35,7 @@ public class TopNode extends Node {
     }
 
     @Override
-    public QuotingAppendable append(QuotingAppendable buffer) {
+    public SQLAppendable append(SQLAppendable buffer) {
         return buffer.append(" TOP ").append(count);
     }
 

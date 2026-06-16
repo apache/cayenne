@@ -19,7 +19,7 @@
 
 package org.apache.cayenne.access.sqlbuilder.sqltree;
 
-import org.apache.cayenne.access.sqlbuilder.QuotingAppendable;
+import org.apache.cayenne.access.sqlbuilder.SQLAppendable;
 
 /**
  * @since 4.2
@@ -27,12 +27,12 @@ import org.apache.cayenne.access.sqlbuilder.QuotingAppendable;
 public class OrderByNode extends Node {
 
     @Override
-    public QuotingAppendable append(QuotingAppendable buffer) {
+    public SQLAppendable append(SQLAppendable buffer) {
         return buffer.append(" ORDER BY");
     }
 
     @Override
-    public void appendChildrenSeparator(QuotingAppendable buffer, int childInd) {
+    public void appendChildrenSeparator(SQLAppendable buffer, int childInd) {
         buffer.append(',');
     }
 

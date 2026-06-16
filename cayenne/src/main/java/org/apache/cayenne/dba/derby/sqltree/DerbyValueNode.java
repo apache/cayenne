@@ -21,7 +21,7 @@ package org.apache.cayenne.dba.derby.sqltree;
 
 import java.sql.Types;
 
-import org.apache.cayenne.access.sqlbuilder.QuotingAppendable;
+import org.apache.cayenne.access.sqlbuilder.SQLAppendable;
 import org.apache.cayenne.access.sqlbuilder.sqltree.Node;
 import org.apache.cayenne.access.sqlbuilder.sqltree.ValueNode;
 import org.apache.cayenne.map.DbAttribute;
@@ -35,7 +35,7 @@ public class DerbyValueNode extends ValueNode {
         super(value, isArray, attribute, needBinding);
     }
 
-    protected void appendStringValue(QuotingAppendable buffer, CharSequence value) {
+    protected void appendStringValue(SQLAppendable buffer, CharSequence value) {
         if(getAttribute() == null || (getAttribute() != null && getAttribute().getType() == Types.CLOB)) {
             buffer.append(" CAST(? AS VARCHAR(").append(Math.max(1,value.length())).append("))");
         } else {

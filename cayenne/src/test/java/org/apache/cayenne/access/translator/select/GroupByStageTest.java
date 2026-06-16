@@ -32,12 +32,12 @@ import static org.junit.jupiter.api.Assertions.*;
 
 public class GroupByStageTest {
 
-    private TranslatorContext context;
+    private SelectTranslatorContext context;
 
     @BeforeEach
     public void prepareContext() {
         TranslatableQueryWrapper wrapper = new MockQueryWrapperBuilder().build();
-        context = new MockTranslatorContext(wrapper);
+        context = new MockSelectTranslatorContext(wrapper);
     }
 
     // no result columns

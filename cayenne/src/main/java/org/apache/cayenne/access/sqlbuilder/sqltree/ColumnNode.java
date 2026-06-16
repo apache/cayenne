@@ -19,7 +19,7 @@
 
 package org.apache.cayenne.access.sqlbuilder.sqltree;
 
-import org.apache.cayenne.access.sqlbuilder.QuotingAppendable;
+import org.apache.cayenne.access.sqlbuilder.SQLAppendable;
 import org.apache.cayenne.map.DbAttribute;
 
 import java.util.Objects;
@@ -43,7 +43,7 @@ public class ColumnNode extends Node {
     }
 
     @Override
-    public QuotingAppendable append(QuotingAppendable buffer) {
+    public SQLAppendable append(SQLAppendable buffer) {
         buffer.append(' ');
         if (table != null) {
             buffer.appendQuoted(table).append('.');

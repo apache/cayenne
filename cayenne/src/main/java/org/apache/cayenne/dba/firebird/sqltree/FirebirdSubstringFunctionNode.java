@@ -19,7 +19,7 @@
 
 package org.apache.cayenne.dba.firebird.sqltree;
 
-import org.apache.cayenne.access.sqlbuilder.QuotingAppendable;
+import org.apache.cayenne.access.sqlbuilder.SQLAppendable;
 import org.apache.cayenne.access.sqlbuilder.sqltree.FunctionNode;
 import org.apache.cayenne.access.sqlbuilder.sqltree.Node;
 
@@ -38,7 +38,7 @@ public class FirebirdSubstringFunctionNode extends FunctionNode {
     }
 
     @Override
-    public void appendChildrenSeparator(QuotingAppendable buffer, int childIdx) {
+    public void appendChildrenSeparator(SQLAppendable buffer, int childIdx) {
         if(skipContent()) {
             return;
         }
@@ -50,7 +50,7 @@ public class FirebirdSubstringFunctionNode extends FunctionNode {
     }
 
     @Override
-    public void appendChildrenEnd(QuotingAppendable buffer) {
+    public void appendChildrenEnd(SQLAppendable buffer) {
         if(skipContent()) {
             return;
         }

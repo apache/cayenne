@@ -19,7 +19,7 @@
 
 package org.apache.cayenne.dba.postgres.sqltree;
 
-import org.apache.cayenne.access.sqlbuilder.QuotingAppendable;
+import org.apache.cayenne.access.sqlbuilder.SQLAppendable;
 import org.apache.cayenne.access.sqlbuilder.sqltree.FunctionNode;
 import org.apache.cayenne.access.sqlbuilder.sqltree.Node;
 
@@ -32,7 +32,7 @@ public class PositionFunctionNode extends FunctionNode {
     }
 
     @Override
-    public void appendChildrenSeparator(QuotingAppendable buffer, int childIdx) {
+    public void appendChildrenSeparator(SQLAppendable buffer, int childIdx) {
         buffer.append(" IN ");
     }
 

@@ -22,7 +22,6 @@ import org.apache.cayenne.map.DataMap;
 import org.apache.cayenne.map.DbAttribute;
 import org.apache.cayenne.map.DbEntity;
 import org.apache.cayenne.map.DbJoin;
-import org.apache.cayenne.map.Entity;
 
 /**
  * @since 3.0

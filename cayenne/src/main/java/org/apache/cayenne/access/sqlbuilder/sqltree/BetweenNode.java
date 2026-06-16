@@ -20,7 +20,7 @@
 package org.apache.cayenne.access.sqlbuilder.sqltree;
 
 
-import org.apache.cayenne.access.sqlbuilder.QuotingAppendable;
+import org.apache.cayenne.access.sqlbuilder.SQLAppendable;
 
 import java.util.Objects;
 
@@ -36,7 +36,7 @@ public class BetweenNode extends ExpressionNode {
     }
 
     @Override
-    public void appendChildrenSeparator(QuotingAppendable buffer, int childIdx) {
+    public void appendChildrenSeparator(SQLAppendable buffer, int childIdx) {
         if (childIdx == 0) {
             if (not) {
                 buffer.append(" NOT");

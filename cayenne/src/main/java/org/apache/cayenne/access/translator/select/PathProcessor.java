@@ -40,7 +40,7 @@ abstract class PathProcessor<T extends Entity<?,?,?>> implements PathTranslation
     public static final String DB_PATH_ALIAS_INDICATOR = "db:";
 
     protected final Map<String, String> pathSplitAliases;
-    protected final TranslatorContext context;
+    protected final SelectTranslatorContext context;
     protected final List<CayennePath> attributePaths;
     protected final List<DbAttribute> attributes;
 
@@ -51,7 +51,7 @@ abstract class PathProcessor<T extends Entity<?,?,?>> implements PathTranslation
     protected DbRelationship relationship;
     protected String currentAlias;
 
-    public PathProcessor(TranslatorContext context, T entity) {
+    public PathProcessor(SelectTranslatorContext context, T entity) {
         this.context = Objects.requireNonNull(context);
         this.entity = Objects.requireNonNull(entity);
         this.pathSplitAliases = context.getMetadata().getPathSplitAliases();

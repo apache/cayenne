@@ -32,7 +32,7 @@ package org.apache.cayenne.access.translator.select;
 class ColumnExtractorStage implements TranslationStage {
 
     @Override
-    public void perform(TranslatorContext context) {
+    public void perform(SelectTranslatorContext context) {
         ColumnExtractor extractor;
 
         if(context.getQuery().getColumns() != null && !context.getQuery().getColumns().isEmpty()) {

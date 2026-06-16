@@ -19,7 +19,7 @@
 
 package org.apache.cayenne.dba.firebird.sqltree;
 
-import org.apache.cayenne.access.sqlbuilder.QuotingAppendable;
+import org.apache.cayenne.access.sqlbuilder.SQLAppendable;
 import org.apache.cayenne.access.sqlbuilder.sqltree.Node;
 
 /**
@@ -35,7 +35,7 @@ public class FirebirdLimitNode extends Node {
     }
 
     @Override
-    public QuotingAppendable append(QuotingAppendable buffer) {
+    public SQLAppendable append(SQLAppendable buffer) {
         buffer.append(" ROWS ");
         if(from > 0) {
             buffer.append(from).append(" TO ");

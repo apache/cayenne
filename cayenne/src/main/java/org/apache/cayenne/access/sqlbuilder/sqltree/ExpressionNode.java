@@ -20,7 +20,7 @@
 package org.apache.cayenne.access.sqlbuilder.sqltree;
 
 
-import org.apache.cayenne.access.sqlbuilder.QuotingAppendable;
+import org.apache.cayenne.access.sqlbuilder.SQLAppendable;
 
 /**
  * @since 4.2
@@ -35,12 +35,12 @@ public class ExpressionNode extends Node {
     }
 
     @Override
-    public QuotingAppendable append(QuotingAppendable buffer) {
+    public SQLAppendable append(SQLAppendable buffer) {
         return buffer;
     }
 
     @Override
-    public void appendChildrenStart(QuotingAppendable buffer) {
+    public void appendChildrenStart(SQLAppendable buffer) {
         if(parent != null
                 && parent.type != NodeType.WHERE
                 && parent.type != NodeType.JOIN
@@ -50,7 +50,7 @@ public class ExpressionNode extends Node {
     }
 
     @Override
-    public void appendChildrenEnd(QuotingAppendable buffer) {
+    public void appendChildrenEnd(SQLAppendable buffer) {
         if(parent != null
                 && parent.type != NodeType.WHERE
                 && parent.type != NodeType.JOIN

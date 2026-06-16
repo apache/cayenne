@@ -20,7 +20,7 @@
 package org.apache.cayenne.access.sqlbuilder.sqltree;
 
 import org.apache.cayenne.access.sqlbuilder.JoinType;
-import org.apache.cayenne.access.sqlbuilder.QuotingAppendable;
+import org.apache.cayenne.access.sqlbuilder.SQLAppendable;
 
 /**
  * @since 4.2
@@ -40,12 +40,12 @@ public class JoinNode extends Node {
     }
 
     @Override
-    public QuotingAppendable append(QuotingAppendable buffer) {
+    public SQLAppendable append(SQLAppendable buffer) {
         return buffer.append(joinType.getName()).append("JOIN");
     }
 
     @Override
-    public void appendChildrenSeparator(QuotingAppendable buffer, int childInd) {
+    public void appendChildrenSeparator(SQLAppendable buffer, int childInd) {
         buffer.append(" ON");
     }
 }

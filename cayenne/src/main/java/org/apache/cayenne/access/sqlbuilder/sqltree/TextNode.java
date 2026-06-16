@@ -19,7 +19,7 @@
 
 package org.apache.cayenne.access.sqlbuilder.sqltree;
 
-import org.apache.cayenne.access.sqlbuilder.QuotingAppendable;
+import org.apache.cayenne.access.sqlbuilder.SQLAppendable;
 
 import java.util.Objects;
 
@@ -28,14 +28,14 @@ import java.util.Objects;
  */
 public class TextNode extends Node {
 
-    private final CharSequence text;
+    private final String text;
 
-    public TextNode(CharSequence text) {
+    public TextNode(String text) {
         this.text = text;
     }
 
     @Override
-    public QuotingAppendable append(QuotingAppendable buffer) {
+    public SQLAppendable append(SQLAppendable buffer) {
         return buffer.append(text);
     }
 
@@ -44,7 +44,7 @@ public class TextNode extends Node {
         return new TextNode(text);
     }
 
-    public CharSequence getText() {
+    public String getText() {
         return text;
     }
 

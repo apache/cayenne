@@ -19,7 +19,7 @@
 
 package org.apache.cayenne.dba.ingres;
 
-import org.apache.cayenne.access.sqlbuilder.QuotingAppendable;
+import org.apache.cayenne.access.sqlbuilder.SQLAppendable;
 import org.apache.cayenne.access.sqlbuilder.sqltree.ColumnNode;
 import org.apache.cayenne.access.sqlbuilder.sqltree.FunctionNode;
 import org.apache.cayenne.access.sqlbuilder.sqltree.LimitOffsetNode;
@@ -43,7 +43,7 @@ public class IngressSQLTreeProcessor extends BaseSQLTreeProcessor {
     protected void onLimitOffsetNode(Node parent, LimitOffsetNode child, int index) {
         replaceChild(parent, index, new OffsetFetchNextNode(child) {
             @Override
-            public QuotingAppendable append(QuotingAppendable buffer) {
+            public SQLAppendable append(SQLAppendable buffer) {
                 // OFFSET X FETCH NEXT Y ROWS ONLY
                 if(offset > 0) {
                     buffer.append("OFFSET ").append(offset);
@@ -70,7 +70,7 @@ public class IngressSQLTreeProcessor extends BaseSQLTreeProcessor {
             case "SUBSTRING":
                 Node replacement = new FunctionNode("SUBSTRING", child.getAlias(), true) {
                     @Override
-                    public void appendChildrenSeparator(QuotingAppendable buffer, int childIdx) {
+                    public void appendChildrenSeparator(SQLAppendable buffer, int childIdx) {
                         // 0, CAST(1 AS INTEGER), CAST(2 AS INTEGER)
                         if(childIdx == 1 || childIdx == 2) {
                             buffer.append(" AS INTEGER)");
@@ -81,7 +81,7 @@ public class IngressSQLTreeProcessor extends BaseSQLTreeProcessor {
                     }
 
                     @Override
-                    public void appendChildrenEnd(QuotingAppendable buffer) {
+                    public void appendChildrenEnd(SQLAppendable buffer) {
                         buffer.append(" AS INTEGER)");
                         super.appendChildrenEnd(buffer);
                     }
@@ -91,7 +91,7 @@ public class IngressSQLTreeProcessor extends BaseSQLTreeProcessor {
             case "TRIM":
                 replaceChild(parent, index, new FunctionNode("RTRIM(LTRIM", child.getAlias(), true) {
                     @Override
-                    public void appendChildrenEnd(QuotingAppendable buffer) {
+                    public void appendChildrenEnd(SQLAppendable buffer) {
                         buffer.append(')');
                         super.appendChildrenEnd(buffer);
                     }

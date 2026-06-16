@@ -20,7 +20,6 @@
 package org.apache.cayenne.access.translator.select;
 
 import java.util.List;
-import java.util.Map;
 
 import org.apache.cayenne.access.sqlbuilder.ExpressionNodeBuilder;
 import org.apache.cayenne.access.sqlbuilder.JoinNodeBuilder;
@@ -41,7 +40,7 @@ import static org.apache.cayenne.access.sqlbuilder.SQLBuilder.*;
 class TableTreeStage implements TranslationStage {
 
     @Override
-    public void perform(TranslatorContext context) {
+    public void perform(SelectTranslatorContext context) {
         context.getTableTree().visit(node -> {
             NodeBuilder tableNode = table(node.getEntity()).as(node.getTableAlias());
             if(node.getRelationship() != null) {
@@ -62,7 +61,7 @@ class TableTreeStage implements TranslationStage {
         }
     }
 
-    private NodeBuilder getJoinExpression(TranslatorContext context, TableTreeNode node) {
+    private NodeBuilder getJoinExpression(SelectTranslatorContext context, TableTreeNode node) {
         List<DbJoin> joins = node.getRelationship().getJoins();
 
         ExpressionNodeBuilder expressionNodeBuilder = null;
@@ -87,7 +86,7 @@ class TableTreeStage implements TranslationStage {
     }
 
     private static ExpressionNodeBuilder appendQualifier(ExpressionNodeBuilder joinBuilder,
-                                        TranslatorContext context,
+                                        SelectTranslatorContext context,
                                         TableTreeNode node,
                                         Expression dbQualifier) {
         if (dbQualifier == null) {

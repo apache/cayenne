@@ -36,17 +36,16 @@ import org.apache.cayenne.map.EmbeddedResult;
 import org.apache.cayenne.map.JoinType;
 import org.apache.cayenne.map.ObjEntity;
 import org.apache.cayenne.reflect.ClassDescriptor;
-import org.apache.cayenne.util.Util;
 
 /**
  * @since 4.2
  */
 class CustomColumnSetExtractor implements ColumnExtractor {
 
-    private final TranslatorContext context;
+    private final SelectTranslatorContext context;
     private final Collection<Property<?>> columns;
 
-    CustomColumnSetExtractor(TranslatorContext context, Collection<Property<?>> columns) {
+    CustomColumnSetExtractor(SelectTranslatorContext context, Collection<Property<?>> columns) {
         this.context = context;
         this.columns = columns;
     }

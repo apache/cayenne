@@ -21,7 +21,7 @@ package org.apache.cayenne.access.sqlbuilder.sqltree;
 
 import java.util.Objects;
 
-import org.apache.cayenne.access.sqlbuilder.QuotingAppendable;
+import org.apache.cayenne.access.sqlbuilder.SQLAppendable;
 import org.apache.cayenne.map.DbEntity;
 
 /**
@@ -46,7 +46,7 @@ public class TableNode extends Node {
     }
 
     @Override
-    public QuotingAppendable append(QuotingAppendable buffer) {
+    public SQLAppendable append(SQLAppendable buffer) {
         buffer.append(' ');
 
         if(dbEntity != null) {

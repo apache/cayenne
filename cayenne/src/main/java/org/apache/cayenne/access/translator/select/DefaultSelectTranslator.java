@@ -27,7 +27,7 @@ import org.apache.cayenne.query.Select;
 
 /**
  * A {@link SelectTranslator} that translates a {@link FluentSelect} by running the {@link TranslationStage}
- * pipeline over a {@link TranslatorContext}. This is the translator returned by the base
+ * pipeline over a {@link SelectTranslatorContext}. This is the translator returned by the base
  * {@link org.apache.cayenne.dba.JdbcAdapter}; adapters may subclass it to customize translation.
  *
  * @since 5.0
@@ -39,7 +39,7 @@ public class DefaultSelectTranslator implements SelectTranslator {
         if (!(query instanceof FluentSelect)) {
             throw new CayenneRuntimeException("Unsupported type of Select query %s", query);
         }
-        TranslatorContext context = new TranslatorContext(
+        SelectTranslatorContext context = new SelectTranslatorContext(
                 new FluentSelectWrapper((FluentSelect<?, ?>) query), adapter, resolver, null);
         context.translate();
         return context.getTranslation();

@@ -39,7 +39,7 @@ import static org.junit.jupiter.api.Assertions.*;
 
 public class OrderingStageTest {
 
-    private TranslatorContext context;
+    private SelectTranslatorContext context;
 
     @BeforeEach
     public void prepareContext() {
@@ -73,7 +73,7 @@ public class OrderingStageTest {
                         .build())
                 .withDistinct( true )
                 .build();
-        context = new MockTranslatorContext(wrapper);
+        context = new MockSelectTranslatorContext(wrapper);
     }
 
     @Test

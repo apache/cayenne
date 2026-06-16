@@ -35,13 +35,13 @@ class IdColumnExtractor extends BaseColumnExtractor {
     private ObjEntity objEntity;
     private EntityResult result;
 
-    IdColumnExtractor(TranslatorContext context, DbEntity dbEntity) {
+    IdColumnExtractor(SelectTranslatorContext context, DbEntity dbEntity) {
         super(context);
         this.dbEntity = dbEntity;
         this.objEntity = null;
     }
 
-    IdColumnExtractor(TranslatorContext context, ObjEntity objEntity) {
+    IdColumnExtractor(SelectTranslatorContext context, ObjEntity objEntity) {
         this(context, objEntity.getDbEntity());
         this.objEntity = objEntity;
         if(context.getQuery().needsResultSetMapping()) {

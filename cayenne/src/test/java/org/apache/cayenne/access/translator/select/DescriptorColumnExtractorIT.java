@@ -53,7 +53,7 @@ public class DescriptorColumnExtractorIT {
         EntityResolver resolver = env.context().getEntityResolver();
         ClassDescriptor classDescriptor = resolver.getClassDescriptor("CompoundPaintingLongNames");
 
-        TranslatorContext translatorContext = new TranslatorContext(
+        SelectTranslatorContext translatorContext = new SelectTranslatorContext(
                 new FluentSelectWrapper(ObjectSelect.query(CompoundPaintingLongNames.class)
                         .column(CompoundPaintingLongNames.SELF)),
                 Mockito.mock(DbAdapter.class),

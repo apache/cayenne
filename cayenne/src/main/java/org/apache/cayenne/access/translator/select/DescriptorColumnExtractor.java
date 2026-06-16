@@ -51,7 +51,7 @@ class DescriptorColumnExtractor extends BaseColumnExtractor implements PropertyV
     private CayennePath prefix;
     private CayennePath labelPrefix;
 
-    DescriptorColumnExtractor(TranslatorContext context, ClassDescriptor descriptor) {
+    DescriptorColumnExtractor(SelectTranslatorContext context, ClassDescriptor descriptor) {
         super(context);
         this.descriptor = descriptor;
         this.pathTranslator = context.getPathTranslator();
@@ -61,10 +61,10 @@ class DescriptorColumnExtractor extends BaseColumnExtractor implements PropertyV
         this.prefix = prefix;
         boolean newEntityResult = false;
         this.labelPrefix = CayennePath.EMPTY_PATH;
-        TranslatorContext.DescriptorType type = TranslatorContext.DescriptorType.OTHER;
+        SelectTranslatorContext.DescriptorType type = SelectTranslatorContext.DescriptorType.OTHER;
 
         if(prefix != null && prefix.hasMarker(CayennePath.PREFETCH_MARKER)) {
-            type = TranslatorContext.DescriptorType.PREFETCH;
+            type = SelectTranslatorContext.DescriptorType.PREFETCH;
             labelPrefix = prefix;
             if(context.getQuery().needsResultSetMapping()) {
                 entityResult = context.getRootEntityResult();
@@ -78,7 +78,7 @@ class DescriptorColumnExtractor extends BaseColumnExtractor implements PropertyV
                 newEntityResult = true;
             }
             if(descriptor.getEntity().getDbEntity() == context.getRootDbEntity()){
-                type = TranslatorContext.DescriptorType.ROOT;
+                type = SelectTranslatorContext.DescriptorType.ROOT;
                 context.setRootEntityResult(entityResult);
             }
         }

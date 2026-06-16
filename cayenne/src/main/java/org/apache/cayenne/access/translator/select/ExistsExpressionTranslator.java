@@ -47,11 +47,11 @@ import java.util.Map;
  */
 class ExistsExpressionTranslator {
 
-    private final TranslatorContext context;
+    private final SelectTranslatorContext context;
     private final Expression expressionToTranslate;
     private final boolean not;
 
-    ExistsExpressionTranslator(TranslatorContext context, SimpleNode exists) {
+    ExistsExpressionTranslator(SelectTranslatorContext context, SimpleNode exists) {
         this.context = context;
         this.expressionToTranslate = exists;
         this.not = exists instanceof ASTNotExists;

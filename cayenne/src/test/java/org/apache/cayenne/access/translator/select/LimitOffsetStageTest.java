@@ -29,7 +29,7 @@ import static org.junit.jupiter.api.Assertions.*;
 
 public class LimitOffsetStageTest {
 
-    private TranslatorContext context;
+    private SelectTranslatorContext context;
 
     @BeforeEach
     public void prepareContext() {
@@ -42,7 +42,7 @@ public class LimitOffsetStageTest {
                         .withLimitOffset(123, 321)
                         .build())
                 .build();
-        context = new MockTranslatorContext(wrapper);
+        context = new MockSelectTranslatorContext(wrapper);
     }
 
     @Test

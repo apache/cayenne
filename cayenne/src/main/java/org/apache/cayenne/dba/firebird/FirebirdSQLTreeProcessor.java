@@ -23,7 +23,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 import org.apache.cayenne.access.sqlbuilder.ExpressionNodeBuilder;
-import org.apache.cayenne.access.sqlbuilder.QuotingAppendable;
+import org.apache.cayenne.access.sqlbuilder.SQLAppendable;
 import org.apache.cayenne.access.sqlbuilder.sqltree.FunctionNode;
 import org.apache.cayenne.access.sqlbuilder.sqltree.InNode;
 import org.apache.cayenne.access.sqlbuilder.sqltree.LimitOffsetNode;
@@ -51,7 +51,7 @@ public class FirebirdSQLTreeProcessor extends BaseSQLTreeProcessor {
     protected void onValueNode(Node parent, ValueNode child, int index) {
         replaceChild(parent, index, new ValueNode(child.getValue(), child.isArray(), child.getAttribute(), child.isNeedBinding()) {
             @Override
-            protected void appendStringValue(QuotingAppendable buffer, CharSequence value) {
+            protected void appendStringValue(SQLAppendable buffer, CharSequence value) {
                 buffer.append("CAST(");
                 super.appendStringValue(buffer, value);
                 buffer.append(" AS VARCHAR(").append(Math.max(1,value.length())).append("))");
@@ -167,7 +167,7 @@ public class FirebirdSQLTreeProcessor extends BaseSQLTreeProcessor {
             case "SECOND":
                 Node functionReplacement = new FunctionNode("EXTRACT", child.getAlias(), true) {
                     @Override
-                    public void appendChildrenSeparator(QuotingAppendable buffer, int childIdx) {
+                    public void appendChildrenSeparator(SQLAppendable buffer, int childIdx) {
                         buffer.append(' ');
                     }
                 };

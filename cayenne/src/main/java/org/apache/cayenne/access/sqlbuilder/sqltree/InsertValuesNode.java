@@ -19,7 +19,7 @@
 
 package org.apache.cayenne.access.sqlbuilder.sqltree;
 
-import org.apache.cayenne.access.sqlbuilder.QuotingAppendable;
+import org.apache.cayenne.access.sqlbuilder.SQLAppendable;
 
 /**
  * @since 4.2
@@ -36,22 +36,22 @@ public class InsertValuesNode extends Node {
     }
 
     @Override
-    public QuotingAppendable append(QuotingAppendable buffer) {
+    public SQLAppendable append(SQLAppendable buffer) {
         return buffer.append(" VALUES");
     }
 
     @Override
-    public void appendChildrenStart(QuotingAppendable buffer) {
+    public void appendChildrenStart(SQLAppendable buffer) {
         buffer.append('(');
     }
 
     @Override
-    public void appendChildrenSeparator(QuotingAppendable buffer, int childInd) {
+    public void appendChildrenSeparator(SQLAppendable buffer, int childInd) {
         buffer.append(',');
     }
 
     @Override
-    public void appendChildrenEnd(QuotingAppendable buffer) {
+    public void appendChildrenEnd(SQLAppendable buffer) {
         buffer.append(')');
     }
 }

@@ -25,23 +25,28 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 public class BaseSqlBuilderTest {
 
     protected void assertSQL(String expected, Node node) {
-        assertSQL(expected, node, new StringBuilderAppendable());
+        assertSQL(expected, node, new DefaultSQLAppendable(null));
     }
 
     protected void assertQuotedSQL(String expected, Node node) {
-        assertSQL(expected, node, new MockQuotedStringBuilderAppendable());
+        assertSQL(expected, node, new TestSQLAppendable(null));
     }
 
-    protected void assertSQL(String expected, Node node, QuotingAppendable appendable) {
+    protected void assertSQL(String expected, Node node, SQLAppendable appendable) {
         SQLGenerationVisitor visitor = new SQLGenerationVisitor(appendable);
         node.visit(visitor);
         assertEquals(expected, visitor.getSQLString());
     }
 
-    protected static class MockQuotedStringBuilderAppendable extends StringBuilderAppendable {
+    protected static class TestSQLAppendable extends DefaultSQLAppendable {
+
+        public TestSQLAppendable(SQLGenerationContext context) {
+            super(context);
+        }
+
         @Override
-        public QuotingAppendable appendQuoted(CharSequence csq) {
-            builder.append('`').append(csq).append('`');
+        public SQLAppendable appendQuoted(String str) {
+            builder.append('`').append(str).append('`');
             return this;
         }
     }

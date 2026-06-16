@@ -40,7 +40,7 @@ public class ObjPathProcessorIT {
 
     @BeforeEach
     public void prepareTranslationContext() {
-        TranslatorContext translatorContext = new TranslatorContext(
+        SelectTranslatorContext translatorContext = new SelectTranslatorContext(
                 new FluentSelectWrapper(ObjectSelect.query(Object.class)),
                 Mockito.mock(DbAdapter.class),
                 env.context().getEntityResolver(),

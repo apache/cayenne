@@ -32,7 +32,7 @@ class DbEntityColumnExtractor extends BaseColumnExtractor {
 
     private final DbEntity dbEntity;
 
-    DbEntityColumnExtractor(TranslatorContext context) {
+    DbEntityColumnExtractor(SelectTranslatorContext context) {
         super(context);
         this.dbEntity = Objects.requireNonNull(context.getMetadata().getDbEntity(), "No root entity");
     }

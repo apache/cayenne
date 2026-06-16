@@ -781,7 +781,7 @@ public class DbAdapterDelegatedSelectTranslatorIT {
 				));
 		query.select(env.context());
 
-		TranslatorContext context = new TranslatorContext(new FluentSelectWrapper(query), env.dataNode().getAdapter(),
+		SelectTranslatorContext context = new SelectTranslatorContext(new FluentSelectWrapper(query), env.dataNode().getAdapter(),
 																		 env.context().getEntityResolver(), null);
 		context.translate();
 
@@ -798,7 +798,7 @@ public class DbAdapterDelegatedSelectTranslatorIT {
 				));
 		query.select(env.context());
 
-		TranslatorContext context = new TranslatorContext(new FluentSelectWrapper(query), env.dataNode().getAdapter(),
+		SelectTranslatorContext context = new SelectTranslatorContext(new FluentSelectWrapper(query), env.dataNode().getAdapter(),
 																		 env.context().getEntityResolver(), null);
 		context.translate();
 
@@ -815,7 +815,7 @@ public class DbAdapterDelegatedSelectTranslatorIT {
 				));
 		query.select(env.context());
 
-		TranslatorContext context = new TranslatorContext(new FluentSelectWrapper(query), env.dataNode().getAdapter(),
+		SelectTranslatorContext context = new SelectTranslatorContext(new FluentSelectWrapper(query), env.dataNode().getAdapter(),
 																		 env.context().getEntityResolver(), null);
 		context.translate();
 
@@ -831,7 +831,7 @@ public class DbAdapterDelegatedSelectTranslatorIT {
 				));
 		query.select(env.context());
 
-		TranslatorContext context = new TranslatorContext(new FluentSelectWrapper(query), env.dataNode().getAdapter(),
+		SelectTranslatorContext context = new SelectTranslatorContext(new FluentSelectWrapper(query), env.dataNode().getAdapter(),
 																		 env.context().getEntityResolver(), null);
 		context.translate();
 

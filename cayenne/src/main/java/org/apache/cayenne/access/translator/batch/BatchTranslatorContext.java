@@ -19,16 +19,15 @@
 
 package org.apache.cayenne.access.translator.batch;
 
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.List;
-
 import org.apache.cayenne.access.sqlbuilder.SQLGenerationContext;
 import org.apache.cayenne.access.translator.ParameterBinding;
 import org.apache.cayenne.dba.DbAdapter;
-import org.apache.cayenne.dba.QuotingStrategy;
 import org.apache.cayenne.map.DbEntity;
 import org.apache.cayenne.query.BatchQuery;
+
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.List;
 
 /**
  * @since 4.2
@@ -54,11 +53,6 @@ class BatchTranslatorContext<T extends BatchQuery> implements SQLGenerationConte
     @Override
     public Collection<ParameterBinding> getBindings() {
         return bindings;
-    }
-
-    @Override
-    public QuotingStrategy getQuotingStrategy() {
-        return adapter.getQuotingStrategy();
     }
 
     @Override

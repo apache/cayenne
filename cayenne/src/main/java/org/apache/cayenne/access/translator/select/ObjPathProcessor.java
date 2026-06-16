@@ -39,7 +39,7 @@ class ObjPathProcessor extends PathProcessor<ObjEntity> {
     private ObjAttribute attribute;
     private EmbeddedAttribute embeddedAttribute;
 
-    ObjPathProcessor(TranslatorContext context, ObjEntity entity, CayennePath parentPath) {
+    ObjPathProcessor(SelectTranslatorContext context, ObjEntity entity, CayennePath parentPath) {
         super(context, entity);
         if (parentPath != null) {
             currentDbPath = currentDbPath.withMarker(parentPath.marker()).dot(parentPath);

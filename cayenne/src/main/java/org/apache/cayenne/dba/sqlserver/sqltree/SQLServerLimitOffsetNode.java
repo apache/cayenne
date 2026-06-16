@@ -19,7 +19,7 @@
 
 package org.apache.cayenne.dba.sqlserver.sqltree;
 
-import org.apache.cayenne.access.sqlbuilder.QuotingAppendable;
+import org.apache.cayenne.access.sqlbuilder.SQLAppendable;
 import org.apache.cayenne.access.sqlbuilder.sqltree.LimitOffsetNode;
 import org.apache.cayenne.access.sqlbuilder.sqltree.Node;
 
@@ -33,7 +33,7 @@ public class SQLServerLimitOffsetNode extends LimitOffsetNode {
     }
 
     @Override
-    public QuotingAppendable append(QuotingAppendable buffer) {
+    public SQLAppendable append(SQLAppendable buffer) {
         // OFFSET X ROWS FETCH NEXT Y ROWS ONLY
         if(limit == 0 && offset == 0) {
             return buffer;

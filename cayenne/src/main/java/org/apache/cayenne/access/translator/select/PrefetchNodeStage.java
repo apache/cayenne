@@ -51,13 +51,13 @@ class PrefetchNodeStage implements TranslationStage {
     private static final Logger LOGGER = LoggerFactory.getLogger(SelectTranslator.class);
 
     @Override
-    public void perform(TranslatorContext context) {
+    public void perform(SelectTranslatorContext context) {
         updatePrefetchNodes(context);
         processJoint(context);
         processPrefetchQuery(context);
     }
 
-    private void updatePrefetchNodes(TranslatorContext context) {
+    private void updatePrefetchNodes(SelectTranslatorContext context) {
         if(context.getMetadata().getPrefetchTree() == null) {
             return;
         }
@@ -69,7 +69,7 @@ class PrefetchNodeStage implements TranslationStage {
         }
     }
 
-    private void processJoint(TranslatorContext context) {
+    private void processJoint(SelectTranslatorContext context) {
         QueryMetadata queryMetadata = context.getMetadata();
         PrefetchTreeNode prefetch = queryMetadata.getPrefetchTree();
         if(prefetch == null) {
@@ -129,7 +129,7 @@ class PrefetchNodeStage implements TranslationStage {
                 : o);
     }
 
-    private void processPrefetchQuery(TranslatorContext context) {
+    private void processPrefetchQuery(SelectTranslatorContext context) {
         Select<?> select = context.getQuery().unwrap();
         if(!(select instanceof PrefetchSelectQuery)) {
             return;

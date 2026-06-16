@@ -19,7 +19,7 @@
 
 package org.apache.cayenne.access.sqlbuilder.sqltree;
 
-import org.apache.cayenne.access.sqlbuilder.QuotingAppendable;
+import org.apache.cayenne.access.sqlbuilder.SQLAppendable;
 
 import java.util.Objects;
 
@@ -42,14 +42,14 @@ public class LikeNode extends ExpressionNode {
     }
 
     @Override
-    public void appendChildrenStart(QuotingAppendable buffer) {
+    public void appendChildrenStart(SQLAppendable buffer) {
         if(ignoreCase) {
             buffer.append(" UPPER(");
         }
     }
 
     @Override
-    public void appendChildrenSeparator(QuotingAppendable buffer, int childIdx) {
+    public void appendChildrenSeparator(SQLAppendable buffer, int childIdx) {
         if(ignoreCase) {
             buffer.append(')');
         }
@@ -63,7 +63,7 @@ public class LikeNode extends ExpressionNode {
     }
 
     @Override
-    public void appendChildrenEnd(QuotingAppendable buffer) {
+    public void appendChildrenEnd(SQLAppendable buffer) {
         if(ignoreCase) {
             buffer.append(')');
         }

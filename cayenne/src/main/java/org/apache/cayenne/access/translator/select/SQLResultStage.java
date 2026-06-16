@@ -27,7 +27,7 @@ import java.util.List;
 public class SQLResultStage implements TranslationStage {
 
     @Override
-    public void perform(TranslatorContext context) {
+    public void perform(SelectTranslatorContext context) {
         if(context.getParentContext() != null || !context.getQuery().needsResultSetMapping()) {
             return;
         }

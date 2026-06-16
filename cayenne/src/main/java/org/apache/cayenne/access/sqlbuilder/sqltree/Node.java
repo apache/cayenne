@@ -20,8 +20,8 @@
 package org.apache.cayenne.access.sqlbuilder.sqltree;
 
 import org.apache.cayenne.access.sqlbuilder.NodeTreeVisitor;
-import org.apache.cayenne.access.sqlbuilder.QuotingAppendable;
-import org.apache.cayenne.access.sqlbuilder.StringBuilderAppendable;
+import org.apache.cayenne.access.sqlbuilder.SQLAppendable;
+import org.apache.cayenne.access.sqlbuilder.DefaultSQLAppendable;
 
 /**
  * @since 4.2
@@ -130,7 +130,7 @@ public abstract class Node {
 
     @Override
     public String toString() {
-        return "Node {" + append(new StringBuilderAppendable()).toString() + "}";
+        return "Node {" + append(new DefaultSQLAppendable(null)).getSql() + "}";
     }
 
     public NodeType getType() {
@@ -139,15 +139,15 @@ public abstract class Node {
 
     public abstract Node copy();
 
-    public abstract QuotingAppendable append(QuotingAppendable buffer);
+    public abstract SQLAppendable append(SQLAppendable buffer);
 
-    public void appendChildrenSeparator(QuotingAppendable buffer, int childInd) {
+    public void appendChildrenSeparator(SQLAppendable buffer, int childInd) {
     }
 
-    public void appendChildrenStart(QuotingAppendable buffer) {
+    public void appendChildrenStart(SQLAppendable buffer) {
     }
 
-    public void appendChildrenEnd(QuotingAppendable buffer) {
+    public void appendChildrenEnd(SQLAppendable buffer) {
     }
 
     /**

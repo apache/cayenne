@@ -37,7 +37,7 @@ public class ColumnDescriptorStageTest {
                         .withSuppressDistinct()
                         .build())
                 .build();
-        TranslatorContext context = new MockTranslatorContext(wrapper);
+        SelectTranslatorContext context = new MockSelectTranslatorContext(wrapper);
 
         context.addResultNode(new EmptyNode());
         context.addResultNode(new EmptyNode(), CayennePath.of("key"));

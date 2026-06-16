@@ -19,7 +19,7 @@
 
 package org.apache.cayenne.access.sqlbuilder.sqltree;
 
-import org.apache.cayenne.access.sqlbuilder.QuotingAppendable;
+import org.apache.cayenne.access.sqlbuilder.SQLAppendable;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
@@ -34,7 +34,7 @@ public class NodeTest {
         }
 
         @Override
-        public QuotingAppendable append(QuotingAppendable buffer) {
+        public SQLAppendable append(SQLAppendable buffer) {
             return buffer.append("test");
         }
     }

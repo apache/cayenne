@@ -18,7 +18,7 @@
  ****************************************************************/
 package org.apache.cayenne.dba.sqlite;
 
-import org.apache.cayenne.access.sqlbuilder.QuotingAppendable;
+import org.apache.cayenne.access.sqlbuilder.SQLAppendable;
 import org.apache.cayenne.access.sqlbuilder.sqltree.FunctionNode;
 import org.apache.cayenne.access.sqlbuilder.sqltree.LimitOffsetNode;
 import org.apache.cayenne.access.sqlbuilder.sqltree.Node;
@@ -102,7 +102,7 @@ public class SQLiteTreeProcessor extends BaseSQLTreeProcessor {
     private void replaceExtractFunction(Node parent, FunctionNode original, int index, String format) {
         Node replacement = new FunctionNode("cast", original.getAlias(), true) {
             @Override
-            public void appendChildrenSeparator(QuotingAppendable buffer, int childIdx) {
+            public void appendChildrenSeparator(SQLAppendable buffer, int childIdx) {
                 buffer.append(" as ");
             }
         };

@@ -23,7 +23,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 import org.apache.cayenne.access.sqlbuilder.ExpressionNodeBuilder;
-import org.apache.cayenne.access.sqlbuilder.QuotingAppendable;
+import org.apache.cayenne.access.sqlbuilder.SQLAppendable;
 import org.apache.cayenne.access.sqlbuilder.SelectBuilder;
 import org.apache.cayenne.access.sqlbuilder.sqltree.ColumnNode;
 import org.apache.cayenne.access.sqlbuilder.sqltree.EmptyNode;
@@ -213,7 +213,7 @@ public class OracleSQLTreeProcessor extends BaseSQLTreeProcessor {
             case "SECOND":
                 functionReplacement = new FunctionNode("EXTRACT", child.getAlias(), true) {
                     @Override
-                    public void appendChildrenSeparator(QuotingAppendable buffer, int childIdx) {
+                    public void appendChildrenSeparator(SQLAppendable buffer, int childIdx) {
                         buffer.append(' ');
                     }
                 };

@@ -19,7 +19,7 @@
 
 package org.apache.cayenne.access.sqlbuilder.sqltree;
 
-import org.apache.cayenne.access.sqlbuilder.QuotingAppendable;
+import org.apache.cayenne.access.sqlbuilder.SQLAppendable;
 
 import java.sql.Types;
 import java.util.Objects;
@@ -36,7 +36,7 @@ public class TrimmingColumnNode extends Node {
     }
 
     @Override
-    public QuotingAppendable append(QuotingAppendable buffer) {
+    public SQLAppendable append(SQLAppendable buffer) {
         boolean isResult = isResultNode();
         if(columnNode.getAlias() == null || isResult) {
             if(isCharType() && isAllowedForTrimming()) {
@@ -65,7 +65,7 @@ public class TrimmingColumnNode extends Node {
                 && columnNode.getAttribute().getType() == Types.CLOB;
     }
 
-    protected void appendRtrim(QuotingAppendable buffer) {
+    protected void appendRtrim(SQLAppendable buffer) {
         buffer.append(" RTRIM(");
         appendColumnNode(buffer);
         buffer.append(")");
@@ -109,20 +109,20 @@ public class TrimmingColumnNode extends Node {
         return false;
     }
 
-    protected void appendClobColumnNode(QuotingAppendable buffer) {
+    protected void appendClobColumnNode(SQLAppendable buffer) {
         buffer.append(" CAST(");
         appendColumnNode(buffer);
         buffer.append(" AS VARCHAR(").append(getColumnSize()).append("))");
     }
 
-    protected void appendColumnNode(QuotingAppendable buffer) {
+    protected void appendColumnNode(SQLAppendable buffer) {
         if (columnNode.getTable() != null) {
             buffer.appendQuoted(columnNode.getTable()).append('.');
         }
         buffer.appendQuoted(columnNode.getColumn());
     }
 
-    protected void appendAlias(QuotingAppendable buffer, boolean isResult) {
+    protected void appendAlias(SQLAppendable buffer, boolean isResult) {
         if(!isResult) {
             return;
         }

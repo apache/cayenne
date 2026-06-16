@@ -18,9 +18,8 @@
  ****************************************************************/
 package org.apache.cayenne.dba.mysql.sqltree;
 
-import org.apache.cayenne.access.sqlbuilder.QuotingAppendable;
+import org.apache.cayenne.access.sqlbuilder.SQLAppendable;
 import org.apache.cayenne.access.sqlbuilder.sqltree.Node;
-import org.apache.cayenne.dba.mysql.MySQLTreeProcessor;
 
 /**
  * @since 4.2
@@ -33,12 +32,12 @@ public class ConvertNode extends Node {
     }
 
     @Override
-    public QuotingAppendable append(QuotingAppendable buffer) {
+    public SQLAppendable append(SQLAppendable buffer) {
         return buffer.append("CONVERT(");
     }
 
     @Override
-    public void appendChildrenEnd(QuotingAppendable buffer) {
+    public void appendChildrenEnd(SQLAppendable buffer) {
         buffer.append(" USING utf8mb4)");
     }
 }

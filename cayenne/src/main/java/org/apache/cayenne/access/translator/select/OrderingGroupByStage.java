@@ -24,7 +24,7 @@ import org.apache.cayenne.query.Ordering;
 class OrderingGroupByStage extends OrderingAbstractStage {
 
     @Override
-    public void perform(TranslatorContext context) {
+    public void perform(SelectTranslatorContext context) {
         if (context.getQuery().getOrderings() == null) {
             return;
         }

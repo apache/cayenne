@@ -49,7 +49,7 @@ public class DistinctStageTest {
     @Test
     public void noSuppression() {
         TranslatableQueryWrapper wrapper = new MockQueryWrapperBuilder().withDistinct(true).build();
-        TranslatorContext context = new MockTranslatorContext(wrapper);
+        SelectTranslatorContext context = new MockSelectTranslatorContext(wrapper);
 
         assertFalse(context.isDistinctSuppression());
 
@@ -67,7 +67,7 @@ public class DistinctStageTest {
                         .withSuppressDistinct()
                         .build())
                 .build();
-        TranslatorContext context = new MockTranslatorContext(wrapper);
+        SelectTranslatorContext context = new MockSelectTranslatorContext(wrapper);
 
         assertFalse(context.isDistinctSuppression());
 
@@ -83,7 +83,7 @@ public class DistinctStageTest {
                 .withDistinct(true)
                 .withMetaData(new MockQueryMetadataBuilder().build())
                 .build();
-        TranslatorContext context = new MockTranslatorContext(wrapper);
+        SelectTranslatorContext context = new MockSelectTranslatorContext(wrapper);
 
         DbAttribute attribute = new DbAttribute();
         attribute.setType(Types.LONGVARBINARY);

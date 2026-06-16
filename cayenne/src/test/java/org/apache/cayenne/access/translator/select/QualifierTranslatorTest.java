@@ -21,7 +21,7 @@ package org.apache.cayenne.access.translator.select;
 
 import org.apache.cayenne.CayenneRuntimeException;
 import org.apache.cayenne.access.sqlbuilder.SQLGenerationVisitor;
-import org.apache.cayenne.access.sqlbuilder.StringBuilderAppendable;
+import org.apache.cayenne.access.sqlbuilder.DefaultSQLAppendable;
 import org.apache.cayenne.access.sqlbuilder.sqltree.*;
 import org.apache.cayenne.exp.Expression;
 import org.apache.cayenne.exp.ExpressionFactory;
@@ -84,7 +84,7 @@ public class QualifierTranslatorTest {
                         .withObjEntity(entity)
                         .build())
                 .build();
-        TranslatorContext context = new MockTranslatorContext(wrapper, resolver);
+        SelectTranslatorContext context = new MockSelectTranslatorContext(wrapper, resolver);
         translator = new QualifierTranslator(context);
     }
 
@@ -160,7 +160,7 @@ public class QualifierTranslatorTest {
         assertInstanceOf(ValueNode.class, node);
         assertNull(((ValueNode) node).getValue());
 
-        SQLGenerationVisitor visitor = new SQLGenerationVisitor(new StringBuilderAppendable());
+        SQLGenerationVisitor visitor = new SQLGenerationVisitor(new DefaultSQLAppendable(null));
         node.visit(visitor);
         assertEquals(" NULL", visitor.getSQLString());
     }
@@ -170,7 +170,7 @@ public class QualifierTranslatorTest {
         Node node = translate("-1");
         assertInstanceOf(FunctionNode.class, node);
 
-        SQLGenerationVisitor visitor = new SQLGenerationVisitor(new StringBuilderAppendable());
+        SQLGenerationVisitor visitor = new SQLGenerationVisitor(new DefaultSQLAppendable(null));
         node.visit(visitor);
         assertEquals(" - 1", visitor.getSQLString());
     }
@@ -182,7 +182,7 @@ public class QualifierTranslatorTest {
         assertInstanceOf(ValueNode.class, node);
         assertNull(((ValueNode) node).getValue());
 
-        SQLGenerationVisitor visitor = new SQLGenerationVisitor(new StringBuilderAppendable());
+        SQLGenerationVisitor visitor = new SQLGenerationVisitor(new DefaultSQLAppendable(null));
         node.visit(visitor);
         assertEquals(" NULL", visitor.getSQLString());
     }
@@ -483,7 +483,7 @@ public class QualifierTranslatorTest {
         assertEquals("AND", ((OpExpressionNode)and).getOp());
         assertEquals(3, and.getChildrenCount());
 
-        SQLGenerationVisitor visitor = new SQLGenerationVisitor(new StringBuilderAppendable());
+        SQLGenerationVisitor visitor = new SQLGenerationVisitor(new DefaultSQLAppendable(null));
         and.visit(visitor);
         assertEquals(" ( t0.a < 2 ) AND t0.b IN ( 5, 6) AND ( t0.b = 7 )", visitor.getSQLString());
     }
@@ -570,7 +570,7 @@ public class QualifierTranslatorTest {
     public void translateStringScalar() {
         Expression scalarValue = ExpressionFactory.wrapScalarValue("abc");
         Node translate = translator.translate(scalarValue);
-        SQLGenerationVisitor visitor = new SQLGenerationVisitor(new StringBuilderAppendable());
+        SQLGenerationVisitor visitor = new SQLGenerationVisitor(new DefaultSQLAppendable(null));
         translate.visit(visitor);
         assertInstanceOf(ASTScalar.class, scalarValue);
         assertEquals(" 'abc'",visitor.getSQLString());
@@ -580,7 +580,7 @@ public class QualifierTranslatorTest {
     public void translateNumberScalar() {
         Expression scalarValue = ExpressionFactory.wrapScalarValue(123);
         Node translate = translator.translate(scalarValue);
-        SQLGenerationVisitor visitor = new SQLGenerationVisitor(new StringBuilderAppendable());
+        SQLGenerationVisitor visitor = new SQLGenerationVisitor(new DefaultSQLAppendable(null));
         translate.visit(visitor);
         assertInstanceOf(ASTScalar.class, scalarValue);
         assertEquals(" 123",visitor.getSQLString());
@@ -590,7 +590,7 @@ public class QualifierTranslatorTest {
     public void needBindingValueNode() {
         Expression scalarValue = ExpressionFactory.wrapScalarValue(123);
         Node translatedNode = translator.translate(scalarValue);
-        assertTrue(translatedNode instanceof ValueNode);
+        assertInstanceOf(ValueNode.class, translatedNode);
         assertFalse(((ValueNode)translatedNode).isNeedBinding());
     }
 

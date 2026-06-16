@@ -25,7 +25,7 @@ package org.apache.cayenne.access.translator.select;
 class GroupByStage implements TranslationStage {
 
     @Override
-    public void perform(TranslatorContext context) {
+    public void perform(SelectTranslatorContext context) {
         if (!context.hasAggregate()) {
             return;
         }

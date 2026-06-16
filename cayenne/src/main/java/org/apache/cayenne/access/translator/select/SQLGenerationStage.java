@@ -20,6 +20,7 @@
 package org.apache.cayenne.access.translator.select;
 
 import org.apache.cayenne.access.sqlbuilder.SQLGenerationVisitor;
+import org.apache.cayenne.access.sqlbuilder.DefaultSQLAppendable;
 import org.apache.cayenne.access.sqlbuilder.sqltree.Node;
 
 /**
@@ -28,7 +29,7 @@ import org.apache.cayenne.access.sqlbuilder.sqltree.Node;
 class SQLGenerationStage implements TranslationStage {
 
     @Override
-    public void perform(TranslatorContext context) {
+    public void perform(SelectTranslatorContext context) {
         if(context.isSkipSQLGeneration()) {
             return;
         }
@@ -37,7 +38,7 @@ class SQLGenerationStage implements TranslationStage {
         // convert to database flavour
         node = context.getAdapter().getSqlTreeProcessor().process(node);
         // generate SQL
-        SQLGenerationVisitor visitor = new SQLGenerationVisitor(new DefaultQuotingAppendable(context));
+        SQLGenerationVisitor visitor = new SQLGenerationVisitor(new DefaultSQLAppendable(context));
         node.visit(visitor);
         context.setFinalSQL(visitor.getSQLString());
     }

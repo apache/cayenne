@@ -17,32 +17,31 @@
  *  under the License.
  ****************************************************************/
 
-package org.apache.cayenne.access.translator.select;
-
-import org.apache.cayenne.access.sqlbuilder.QuotingAppendable;
-import org.apache.cayenne.access.sqlbuilder.SQLGenerationContext;
-import org.apache.cayenne.access.sqlbuilder.StringBuilderAppendable;
+package org.apache.cayenne.access.sqlbuilder;
 
 /**
- * @since 4.2
+ * @since 5.0
  */
-public class DefaultQuotingAppendable extends StringBuilderAppendable {
+public interface SQLAppendable {
 
-    private final SQLGenerationContext context;
+    SQLAppendable append(String str);
 
-    public DefaultQuotingAppendable(SQLGenerationContext context) {
-        super();
-        this.context = context;
+    /**
+     * @deprecated unused; no SQL tree node appends a sub-range. Kept for binary compatibility,
+     * now delegating to {@link #append(String)}.
+     */
+    @Deprecated(since = "5.0", forRemoval = true)
+    default SQLAppendable append(CharSequence csq, int start, int end) {
+        return append(csq.subSequence(start, end).toString());
     }
 
-    @Override
-    public QuotingAppendable appendQuoted(CharSequence content) {
-        context.getQuotingStrategy().quotedIdentifier(context.getRootDbEntity(), content, builder);
-        return this;
-    }
+    SQLAppendable append(char c);
 
-    @Override
-    public SQLGenerationContext getContext() {
-        return context;
-    }
+    SQLAppendable append(int i);
+
+    SQLAppendable appendQuoted(String str);
+
+    SQLGenerationContext getContext();
+
+    String getSql();
 }

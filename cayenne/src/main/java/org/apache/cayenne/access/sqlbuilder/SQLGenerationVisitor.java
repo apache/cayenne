@@ -26,9 +26,9 @@ import org.apache.cayenne.access.sqlbuilder.sqltree.Node;
  */
 public class SQLGenerationVisitor implements NodeTreeVisitor {
 
-    private final QuotingAppendable appendable;
+    private final SQLAppendable appendable;
 
-    public SQLGenerationVisitor(QuotingAppendable appendable) {
+    public SQLGenerationVisitor(SQLAppendable appendable) {
         this.appendable = appendable;
     }
 
@@ -57,7 +57,7 @@ public class SQLGenerationVisitor implements NodeTreeVisitor {
     }
 
     public String getSQLString() {
-        return appendable.toString();
+        return appendable.getSql();
     }
 
 }

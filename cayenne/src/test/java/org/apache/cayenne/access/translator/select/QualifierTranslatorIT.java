@@ -19,7 +19,7 @@
 
 package org.apache.cayenne.access.translator.select;
 import org.apache.cayenne.access.sqlbuilder.SQLGenerationVisitor;
-import org.apache.cayenne.access.sqlbuilder.StringBuilderAppendable;
+import org.apache.cayenne.access.sqlbuilder.DefaultSQLAppendable;
 import org.apache.cayenne.access.sqlbuilder.sqltree.Node;
 import org.apache.cayenne.exp.ExpressionFactory;
 import org.apache.cayenne.query.ObjectSelect;
@@ -63,14 +63,14 @@ public class QualifierTranslatorIT {
                 .and(CompoundFkTestEntity.NAME.like("test%"))
                 .and(CompoundFkTestEntity.NAME.contains("a"));
 
-        TranslatorContext context
-                = new TranslatorContext(new FluentSelectWrapper(query), runtime.getDataDomain().getDefaultNode().getAdapter(), env.context().getEntityResolver(), null);
+        SelectTranslatorContext context
+                = new SelectTranslatorContext(new FluentSelectWrapper(query), runtime.getDataDomain().getDefaultNode().getAdapter(), env.context().getEntityResolver(), null);
 
         QualifierTranslator qualifierTranslator = context.getQualifierTranslator();
 
         Node node = qualifierTranslator.translate(query.getWhere());
 
-        SQLGenerationVisitor visitor = new SQLGenerationVisitor(new StringBuilderAppendable());
+        SQLGenerationVisitor visitor = new SQLGenerationVisitor(new DefaultSQLAppendable(null));
         node.visit(visitor);
 
         assertEquals(" ( ( ( t0.F_KEY1 = 'PK1' ) AND ( t0.F_KEY2 = 'PK2' ) ) AND t0.NAME LIKE 'test%' ) AND t0.NAME LIKE '%a%'", visitor.getSQLString());
@@ -88,14 +88,14 @@ public class QualifierTranslatorIT {
                 .where(CompoundFkTestEntity.TO_COMPOUND_PK.eq(testEntity.get(0)))
                 .or(CompoundFkTestEntity.TO_COMPOUND_PK.eq(testEntity.get(1)));
 
-        TranslatorContext context
-                = new TranslatorContext(new FluentSelectWrapper(query), runtime.getDataDomain().getDefaultNode().getAdapter(), env.context().getEntityResolver(), null);
+        SelectTranslatorContext context
+                = new SelectTranslatorContext(new FluentSelectWrapper(query), runtime.getDataDomain().getDefaultNode().getAdapter(), env.context().getEntityResolver(), null);
 
         QualifierTranslator qualifierTranslator = context.getQualifierTranslator();
 
         Node node = qualifierTranslator.translate(query.getWhere());
 
-        SQLGenerationVisitor visitor = new SQLGenerationVisitor(new StringBuilderAppendable());
+        SQLGenerationVisitor visitor = new SQLGenerationVisitor(new DefaultSQLAppendable(null));
         node.visit(visitor);
 
         assertEquals(" ( ( t0.F_KEY1 = 'PK1' ) AND ( t0.F_KEY2 = 'PK2' ) ) OR ( ( t0.F_KEY1 = 'PK3' ) AND ( t0.F_KEY2 = 'PK4' ) )", visitor.getSQLString());
@@ -106,14 +106,14 @@ public class QualifierTranslatorIT {
         ObjectSelect<CompoundFkTestEntity> query = ObjectSelect.query(CompoundFkTestEntity.class)
                 .where(ExpressionFactory.exp("name = -1"));
 
-        TranslatorContext context
-                = new TranslatorContext(new FluentSelectWrapper(query), runtime.getDataDomain().getDefaultNode().getAdapter(), env.context().getEntityResolver(), null);
+        SelectTranslatorContext context
+                = new SelectTranslatorContext(new FluentSelectWrapper(query), runtime.getDataDomain().getDefaultNode().getAdapter(), env.context().getEntityResolver(), null);
 
         QualifierTranslator qualifierTranslator = context.getQualifierTranslator();
 
         Node node = qualifierTranslator.translate(query.getWhere());
 
-        SQLGenerationVisitor visitor = new SQLGenerationVisitor(new StringBuilderAppendable());
+        SQLGenerationVisitor visitor = new SQLGenerationVisitor(new DefaultSQLAppendable(null));
         node.visit(visitor);
 
         assertEquals(" t0.NAME = - 1", visitor.getSQLString());

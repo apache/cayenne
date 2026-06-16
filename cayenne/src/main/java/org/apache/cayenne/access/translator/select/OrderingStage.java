@@ -33,7 +33,7 @@ import static org.apache.cayenne.access.sqlbuilder.SQLBuilder.*;
 class OrderingStage implements TranslationStage {
 
     @Override
-    public void perform(TranslatorContext context) {
+    public void perform(SelectTranslatorContext context) {
         if(context.getQuery().getOrderings() == null) {
             return;
         }
@@ -44,7 +44,7 @@ class OrderingStage implements TranslationStage {
         }
     }
 
-    private void processOrdering(QualifierTranslator qualifierTranslator, TranslatorContext context, Ordering ordering) {
+    private void processOrdering(QualifierTranslator qualifierTranslator, SelectTranslatorContext context, Ordering ordering) {
         Expression exp = ordering.getSortSpec();
         Node translatedNode = qualifierTranslator.translate(exp);
 
