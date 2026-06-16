@@ -55,6 +55,14 @@ Expression caseWhenExp = caseWhen(
 
 ## Upgrading to 5.0.M3
 
+
+* Per [CAY-2954](https://issues.apache.org/jira/browse/CAY-2954) selecting queries are no longer wrapped in
+transactions internally by Cayenne. Using connections in "auto-commit" mode instead has a significant positive impact 
+on DB performance. This should not affect manually-managed transactions. But in theory, in some rare cases this may 
+still change consistency behavior of disjoint prefetches (as multiple related selects will no longer be wrapped in a 
+single transaction). We'd like to look at the actual cases to propose a mitigation approach, but one possible 
+solution may be changing to "joint" prefetches.
+
 * Per [CAY-2956](https://issues.apache.org/jira/browse/CAY-2956) the dedicated Oracle 8 adapter has been removed.
   `org.apache.cayenne.dba.oracle.Oracle8Adapter` and its supporting classes no longer exist, and the
   `OracleSniffer` now maps all Oracle versions to `OracleAdapter` regardless of the JDBC driver version.
