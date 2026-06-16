@@ -140,11 +140,14 @@ public abstract class TestDbAdapter {
                 continue;
             }
 
-            QuotingStrategy strategy = adapter.getQuotingStrategy();
+            DataMap dataMap = entity.getDataMap();
+            QuotingStrategy quotes = dataMap != null && dataMap.isQuotingSQLIdentifiers()
+                    ? adapter.getQuotingStrategy() : QuotingStrategy.NONE;
 
             for (String constraint : constraints) {
 
-                String drop = "ALTER TABLE " + strategy.quotedFullyQualifiedName(entity) +
+                String drop = "ALTER TABLE "
+                        + quotes.quotedFQN(entity.getCatalog(), entity.getSchema(), entity.getName()) +
                         " DROP CONSTRAINT " + constraint;
                 executeDDL(conn, drop);
             }
@@ -328,7 +331,9 @@ public abstract class TestDbAdapter {
                 continue;
             }
 
-            QuotingStrategy strategy = adapter.getQuotingStrategy();
+            DataMap dataMap = entity.getDataMap();
+            QuotingStrategy quotes = dataMap != null && dataMap.isQuotingSQLIdentifiers()
+                    ? adapter.getQuotingStrategy() : QuotingStrategy.NONE;
 
             // Get all constraints for the table
             try (ResultSet rs = metadata.getExportedKeys(entity.getCatalog(), entity.getSchema(), entity.getName())) {
@@ -340,7 +345,7 @@ public abstract class TestDbAdapter {
                         Collection<String> constraints = constraintMap
                                 .computeIfAbsent(fkTable, k -> new HashSet<String>());
                         // use a set to avoid duplicate constraints
-                        constraints.add(strategy.quotedIdentifier(entity, fk));
+                        constraints.add(quotes.quoted(fk));
                     }
                 }
             }

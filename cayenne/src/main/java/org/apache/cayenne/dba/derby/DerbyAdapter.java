@@ -35,6 +35,7 @@ import org.apache.cayenne.access.types.ShortType;
 import org.apache.cayenne.access.types.ValueObjectTypeRegistry;
 import org.apache.cayenne.configuration.Constants;
 import org.apache.cayenne.configuration.RuntimeProperties;
+import org.apache.cayenne.dba.QuotingStrategy;
 import org.apache.cayenne.dba.JdbcAdapter;
 import org.apache.cayenne.di.Inject;
 import org.apache.cayenne.map.DbAttribute;
@@ -149,7 +150,10 @@ public class DerbyAdapter extends JdbcAdapter {
         String type = preferredNativeColumnType(column).nativeType();
         String length = sizeAndScale(this, column);
 
-        sqlBuffer.append(quotingStrategy.quotedName(column));
+        QuotingStrategy quotes = getQuotingStrategy(column.getEntity());
+        quotes.appendStart(sqlBuffer);
+        sqlBuffer.append(column.getName());
+        quotes.appendEnd(sqlBuffer);
         sqlBuffer.append(' ');
 
         // assemble...

@@ -35,6 +35,7 @@ import org.apache.cayenne.access.types.JsonType;
 import org.apache.cayenne.access.types.ValueObjectTypeRegistry;
 import org.apache.cayenne.configuration.Constants;
 import org.apache.cayenne.configuration.RuntimeProperties;
+import org.apache.cayenne.dba.QuotingStrategy;
 import org.apache.cayenne.dba.JdbcAdapter;
 import org.apache.cayenne.di.Inject;
 import org.apache.cayenne.map.DbAttribute;
@@ -120,7 +121,11 @@ public class DB2Adapter extends JdbcAdapter {
     public void createTableAppendColumn(StringBuffer sqlBuffer, DbAttribute column) {
         String type = preferredNativeColumnType(column).nativeType();
 
-        sqlBuffer.append(quotingStrategy.quotedName(column)).append(' ');
+        QuotingStrategy quotes = getQuotingStrategy(column.getEntity());
+        quotes.appendStart(sqlBuffer);
+        sqlBuffer.append(column.getName());
+        quotes.appendEnd(sqlBuffer);
+        sqlBuffer.append(' ');
 
         // DB2 GRAPHIC type that is used for NCHAR type length is in characters not in bytes
         // so divide max size by 2 and later restore the value

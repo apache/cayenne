@@ -27,6 +27,7 @@ import org.apache.cayenne.dbsync.merge.token.db.SetColumnTypeToDb;
 import org.apache.cayenne.dbsync.merge.token.db.SetGeneratedFlagToDb;
 import org.apache.cayenne.dbsync.merge.token.db.SetNotNullToDb;
 import org.apache.cayenne.dbsync.merge.token.db.SetPrimaryKeyToDb;
+import org.apache.cayenne.map.DataMap;
 import org.apache.cayenne.map.DbAttribute;
 import org.apache.cayenne.map.DbEntity;
 import org.apache.cayenne.map.DbRelationship;
@@ -48,12 +49,16 @@ public class MySQLMergerTokenFactory extends DefaultMergerTokenFactory {
             public List<String> createSql(DbAdapter adapter) {
                 StringBuffer sqlBuffer = new StringBuffer();
 
-                QuotingStrategy context = adapter.getQuotingStrategy();
+                DataMap dataMap = getEntity().getDataMap();
+                QuotingStrategy quotes = dataMap != null && dataMap.isQuotingSQLIdentifiers()
+                        ? adapter.getQuotingStrategy() : QuotingStrategy.NONE;
 
                 sqlBuffer.append("ALTER TABLE ");
-                sqlBuffer.append(context.quotedFullyQualifiedName(getEntity()));
+                quotes.appendFQN(sqlBuffer, getEntity().getCatalog(), getEntity().getSchema(), getEntity().getName());
                 sqlBuffer.append(" CHANGE ");
-                sqlBuffer.append(context.quotedName(getColumn()));
+                quotes.appendStart(sqlBuffer);
+                sqlBuffer.append(getColumn().getName());
+                quotes.appendEnd(sqlBuffer);
                 sqlBuffer.append(" ");
                 adapter.createTableAppendColumn(sqlBuffer, column);
 
@@ -73,12 +78,16 @@ public class MySQLMergerTokenFactory extends DefaultMergerTokenFactory {
             public List<String> createSql(DbAdapter adapter) {
                 StringBuffer sqlBuffer = new StringBuffer();
 
-                QuotingStrategy context = adapter.getQuotingStrategy();
+                DataMap dataMap = getEntity().getDataMap();
+                QuotingStrategy quotes = dataMap != null && dataMap.isQuotingSQLIdentifiers()
+                        ? adapter.getQuotingStrategy() : QuotingStrategy.NONE;
 
                 sqlBuffer.append("ALTER TABLE ");
-                sqlBuffer.append(context.quotedFullyQualifiedName(getEntity()));
+                quotes.appendFQN(sqlBuffer, getEntity().getCatalog(), getEntity().getSchema(), getEntity().getName());
                 sqlBuffer.append(" CHANGE ");
-                sqlBuffer.append(context.quotedName(getColumn()));
+                quotes.appendStart(sqlBuffer);
+                sqlBuffer.append(getColumn().getName());
+                quotes.appendEnd(sqlBuffer);
                 sqlBuffer.append(" ");
                 adapter.createTableAppendColumn(sqlBuffer, column);
 
@@ -97,12 +106,14 @@ public class MySQLMergerTokenFactory extends DefaultMergerTokenFactory {
         return new SetColumnTypeToDb(entity, columnOriginal, columnNew) {
 
             @Override
-            protected void appendPrefix(StringBuffer sqlBuffer, QuotingStrategy context) {
+            protected void appendPrefix(StringBuffer sqlBuffer, QuotingStrategy quotes) {
                 // http://dev.mysql.com/tech-resources/articles/mysql-cluster-50.html
                 sqlBuffer.append("ALTER TABLE ");
-                sqlBuffer.append(context.quotedFullyQualifiedName(entity));
+                quotes.appendFQN(sqlBuffer, entity.getCatalog(), entity.getSchema(), entity.getName());
                 sqlBuffer.append(" MODIFY ");
-                sqlBuffer.append(context.quotedName(columnNew));
+                quotes.appendStart(sqlBuffer);
+                sqlBuffer.append(columnNew.getName());
+                quotes.appendEnd(sqlBuffer);
                 sqlBuffer.append(" ");
             }
 
@@ -123,10 +134,15 @@ public class MySQLMergerTokenFactory extends DefaultMergerTokenFactory {
                 if (fkName == null) {
                     return Collections.emptyList();
                 }
-                QuotingStrategy context = adapter.getQuotingStrategy();
+                DataMap dataMap = entity.getDataMap();
+                QuotingStrategy quotes = dataMap != null && dataMap.isQuotingSQLIdentifiers()
+                        ? adapter.getQuotingStrategy() : QuotingStrategy.NONE;
 
                 // http://dev.mysql.com/tech-resources/articles/mysql-cluster-50.html
-                return Collections.singletonList("ALTER TABLE " + context.quotedFullyQualifiedName(entity) + " DROP FOREIGN KEY " + fkName);
+                StringBuilder sql = new StringBuilder("ALTER TABLE ");
+                quotes.appendFQN(sql, entity.getCatalog(), entity.getSchema(), entity.getName());
+                sql.append(" DROP FOREIGN KEY ").append(fkName);
+                return Collections.singletonList(sql.toString());
             }
         };
     }
@@ -147,10 +163,11 @@ public class MySQLMergerTokenFactory extends DefaultMergerTokenFactory {
             protected void appendDropOriginalPrimaryKeySQL(
                     DbAdapter adapter,
                     List<String> sqls) {
-                sqls.add("ALTER TABLE "
-                        + adapter.getQuotingStrategy()
-                                .quotedFullyQualifiedName(getEntity())
-                        + " DROP PRIMARY KEY");
+                QuotingStrategy quotes = resolveQuotes(adapter);
+                StringBuilder sql = new StringBuilder("ALTER TABLE ");
+                quotes.appendFQN(sql, getEntity().getCatalog(), getEntity().getSchema(), getEntity().getName());
+                sql.append(" DROP PRIMARY KEY");
+                sqls.add(sql.toString());
             }
 
         };

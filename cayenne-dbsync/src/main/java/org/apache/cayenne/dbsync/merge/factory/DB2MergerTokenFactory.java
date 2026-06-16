@@ -37,11 +37,13 @@ public class DB2MergerTokenFactory extends DefaultMergerTokenFactory {
         return new SetColumnTypeToDb(entity, columnOriginal, columnNew) {
 
             @Override
-            protected void appendPrefix(StringBuffer sqlBuffer, QuotingStrategy context) {
+            protected void appendPrefix(StringBuffer sqlBuffer, QuotingStrategy quotes) {
                 sqlBuffer.append("ALTER TABLE ");
-                sqlBuffer.append(context.quotedFullyQualifiedName(entity));
+                quotes.appendFQN(sqlBuffer, entity.getCatalog(), entity.getSchema(), entity.getName());
                 sqlBuffer.append(" ALTER COLUMN ");
-                sqlBuffer.append(context.quotedName(columnNew));
+                quotes.appendStart(sqlBuffer);
+                sqlBuffer.append(columnNew.getName());
+                quotes.appendEnd(sqlBuffer);
                 sqlBuffer.append(" SET DATA TYPE ");
             }
         };

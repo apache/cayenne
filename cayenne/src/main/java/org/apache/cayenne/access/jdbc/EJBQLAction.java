@@ -22,8 +22,11 @@ import org.apache.cayenne.access.DataNode;
 import org.apache.cayenne.access.OperationObserver;
 import org.apache.cayenne.access.translator.ejbql.EJBQLTranslationContext;
 import org.apache.cayenne.access.translator.ejbql.EJBQLTranslator;
+import org.apache.cayenne.dba.QuotingStrategy;
 import org.apache.cayenne.ejbql.EJBQLBaseVisitor;
 import org.apache.cayenne.ejbql.EJBQLCompiledExpression;
+import org.apache.cayenne.map.DataMap;
+import org.apache.cayenne.map.DbEntity;
 import org.apache.cayenne.ejbql.EJBQLExpression;
 import org.apache.cayenne.ejbql.EJBQLExpressionVisitor;
 import org.apache.cayenne.query.EJBQLQuery;
@@ -54,13 +57,20 @@ public class EJBQLAction extends BaseSQLAction {
     public void performAction(Connection connection, OperationObserver observer) throws Exception {
         EJBQLCompiledExpression compiledExpression = query.getExpression(dataNode.getEntityResolver());
         EJBQLTranslator translator = dataNode.getEjbqlTranslator();
+
+        DbEntity rootDbEntity = compiledExpression.getRootDescriptor().getEntity().getDbEntity();
+        DataMap dataMap = rootDbEntity != null ? rootDbEntity.getDataMap() : null;
+        QuotingStrategy quotingStrategy = dataMap != null && dataMap.isQuotingSQLIdentifiers()
+                ? dataNode.getAdapter().getQuotingStrategy()
+                : QuotingStrategy.NONE;
+
         EJBQLTranslationContext context = new EJBQLTranslationContext(
                 dataNode.getEntityResolver(),
                 query,
                 compiledExpression,
                 translator,
                 dataNode.getAdapter(),
-                dataNode.getAdapter().getQuotingStrategy());
+                quotingStrategy);
 
         compiledExpression.getExpression().visit(new EJBQLBaseVisitor(false) {
 

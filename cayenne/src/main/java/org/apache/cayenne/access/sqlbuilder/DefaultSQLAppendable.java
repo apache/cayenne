@@ -20,20 +20,32 @@
 package org.apache.cayenne.access.sqlbuilder;
 
 import org.apache.cayenne.dba.QuotingStrategy;
+import org.apache.cayenne.map.DbEntity;
 
 /**
  * @since 4.2
  */
 public class DefaultSQLAppendable implements SQLAppendable {
 
-    protected final StringBuilder builder;
-    protected final SQLGenerationContext context;
-    protected final QuotingStrategy quotingStrategy;
+    final StringBuilder builder;
+    private final SQLGenerationContext context;
+    private final QuotingStrategy quotingStrategy;
 
     public DefaultSQLAppendable(SQLGenerationContext context) {
         this.builder = new StringBuilder();
         this.context = context;
-        this.quotingStrategy = context == null ? null : context.getAdapter().getQuotingStrategy();
+        this.quotingStrategy = resolveQuotes(context);
+    }
+
+    private static QuotingStrategy resolveQuotes(SQLGenerationContext context) {
+        if (context == null) {
+            return QuotingStrategy.NONE;
+        }
+        DbEntity rootDbEntity = context.getRootDbEntity();
+        boolean quoting = rootDbEntity != null
+                && rootDbEntity.getDataMap() != null
+                && rootDbEntity.getDataMap().isQuotingSQLIdentifiers();
+        return quoting ? context.getAdapter().getQuotingStrategy() : QuotingStrategy.NONE;
     }
 
     @Override
@@ -56,11 +68,9 @@ public class DefaultSQLAppendable implements SQLAppendable {
 
     @Override
     public SQLAppendable appendQuoted(String str) {
-        if (quotingStrategy == null) {
-            builder.append(str);
-        } else {
-            quotingStrategy.quotedIdentifier(context.getRootDbEntity(), str, builder);
-        }
+        quotingStrategy.appendStart(builder);
+        builder.append(str);
+        quotingStrategy.appendEnd(builder);
         return this;
     }
 
@@ -77,13 +87,5 @@ public class DefaultSQLAppendable implements SQLAppendable {
     @Override
     public String toString() {
         return getSql();
-    }
-
-    /**
-     * @deprecated unused
-     */
-    @Deprecated(since = "5.0", forRemoval = true)
-    public StringBuilder unwrap() {
-        return builder;
     }
 }

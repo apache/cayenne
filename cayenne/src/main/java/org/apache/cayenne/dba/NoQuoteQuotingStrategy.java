@@ -16,28 +16,28 @@
  *  specific language governing permissions and limitations
  *  under the License.
  ****************************************************************/
-package org.apache.cayenne.unit;
-
-import org.apache.cayenne.dba.QuotingStrategy;
-import org.apache.cayenne.test.jdbc.DbHelper;
-
-import javax.sql.DataSource;
+package org.apache.cayenne.dba;
 
 /**
- * A DbHelper that understands various supported DB flavors.
+ * An {@link QuotingStrategy} that never quotes - both delimiters are empty, so identifiers are
+ * appended verbatim. Accessed via {@link QuotingStrategy#NONE}.
+ *
+ * @since 5.0
  */
-class FlavorAwareDbHelper extends DbHelper {
+final class NoQuoteQuotingStrategy implements QuotingStrategy {
 
-    private final QuotingStrategy quotingStrategy;
+    static final NoQuoteQuotingStrategy INSTANCE = new NoQuoteQuotingStrategy();
 
-    public FlavorAwareDbHelper(DataSource dataSource, QuotingStrategy quotingStrategy) {
-        super(dataSource);
-        this.quotingStrategy = quotingStrategy;
+    private NoQuoteQuotingStrategy() {
     }
 
     @Override
-    protected String quote(String sqlIdentifier) {
-        return quotingStrategy.quoted(sqlIdentifier);
+    public void appendStart(Appendable out) {
+        // no-op
     }
 
+    @Override
+    public void appendEnd(Appendable out) {
+        // no-op
+    }
 }

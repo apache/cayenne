@@ -46,7 +46,7 @@ public class BaseSqlBuilderTest {
 
         @Override
         public SQLAppendable appendQuoted(String str) {
-            builder.append('`').append(str).append('`');
+            append('`').append(str).append('`');
             return this;
         }
     }

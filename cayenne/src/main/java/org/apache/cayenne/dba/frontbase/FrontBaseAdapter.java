@@ -127,10 +127,10 @@ public class FrontBaseAdapter extends JdbcAdapter {
      */
     @Override
     public String createTable(DbEntity ent) {
-        QuotingStrategy context = getQuotingStrategy();
+        QuotingStrategy quotes = getQuotingStrategy(ent);
         StringBuilder buf = new StringBuilder();
         buf.append("CREATE TABLE ");
-        buf.append(context.quotedFullyQualifiedName(ent));
+        quotes.appendFQN(buf, ent.getCatalog(), ent.getSchema(), ent.getName());
         buf.append(" (");
 
         // columns
@@ -157,7 +157,10 @@ public class FrontBaseAdapter extends JdbcAdapter {
                         , ent.getFullyQualifiedName(), at.getName(), at.getType());
             }
 
-            buf.append(context.quotedName(at)).append(' ').append(types[0].nativeType());
+            quotes.appendStart(buf);
+            buf.append(at.getName());
+            quotes.appendEnd(buf);
+            buf.append(' ').append(types[0].nativeType());
 
             // Mapping LONGVARCHAR without length creates a column with length
             // "1" which
@@ -219,7 +222,9 @@ public class FrontBaseAdapter extends JdbcAdapter {
                 }
 
                 DbAttribute at = pkit.next();
-                buf.append(quotingStrategy.quotedName(at));
+                quotes.appendStart(buf);
+                buf.append(at.getName());
+                quotes.appendEnd(buf);
             }
             buf.append(')');
         }
@@ -232,7 +237,11 @@ public class FrontBaseAdapter extends JdbcAdapter {
      */
     @Override
     public Collection<String> dropTableStatements(DbEntity table) {
-        return Collections.singleton("DROP TABLE " + getQuotingStrategy().quotedFullyQualifiedName(table) + " CASCADE");
+        QuotingStrategy quotes = getQuotingStrategy(table);
+        StringBuilder buf = new StringBuilder("DROP TABLE ");
+        quotes.appendFQN(buf, table.getCatalog(), table.getSchema(), table.getName());
+        buf.append(" CASCADE");
+        return Collections.singleton(buf.toString());
     }
 
     /**

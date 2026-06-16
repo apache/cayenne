@@ -18,65 +18,85 @@
  ****************************************************************/
 package org.apache.cayenne.dba;
 
-import org.apache.cayenne.map.DataMap;
-import org.apache.cayenne.map.DbAttribute;
-import org.apache.cayenne.map.DbEntity;
-import org.apache.cayenne.map.DbJoin;
+import org.apache.cayenne.CayenneRuntimeException;
+
+import java.io.IOException;
 
 /**
- * @since 3.0
+ * Encapsulates a database-specific SQL identifier quoting style (the start and end quote characters).
+ *
+ * @since 4.0
  */
 public interface QuotingStrategy {
 
     /**
-     * Builds a fully qualified name from catalog, schema, name parts of
-     * DbEntity, enclosing them in quotations according to this strategy
-     * algorithm. Analog of "quotedIdentifier(entity.getCatalog(),
-     * entity.getSchema(), entity.getName())".
-     * 
-     * @since 4.0
+     * A shared no-quote instance that appends identifiers verbatim. Used wherever SQL identifier
+     * quoting is disabled.
      */
-    String quotedFullyQualifiedName(DbEntity entity);
+    QuotingStrategy NONE = NoQuoteQuotingStrategy.INSTANCE;
 
     /**
-     * 
-     * @since 4.0
+     * Appends the start-quote delimiter (e.g. {@code "}, {@code [} or {@code `}). A no-op when quoting is off.
+     *
+     * @since 5.0
      */
-    String quotedName(DbAttribute attribute);
+    void appendStart(Appendable out);
 
     /**
-     * @since 4.0
+     * Appends the end-quote delimiter (e.g. {@code "}, {@code ]} or {@code `}). A no-op when quoting is off.
+     *
+     * @since 5.0
      */
-    String quotedSourceName(DbJoin join);
+    void appendEnd(Appendable out);
 
     /**
-     * @since 4.0
+     * Appends a fully-qualified name, joining non-null parts with {@code '.'} and wrapping each part
+     * in start/end quotes. {@code null} parts are skipped.
+     *
+     * @since 5.0
      */
-    String quotedTargetName(DbJoin join);
-
-    /**
-     * @since 4.0
-     */
-    default String quotedIdentifier(DbEntity entity, String... identifierParts) {
-        return quotedIdentifier(entity.getDataMap(), identifierParts);
+    default void appendFQN(Appendable out, String... parts) {
+        try {
+            boolean first = true;
+            for (String part : parts) {
+                if (part == null) {
+                    continue;
+                }
+                if (!first) {
+                    out.append('.');
+                }
+                first = false;
+                appendStart(out);
+                out.append(part);
+                appendEnd(out);
+            }
+        } catch (IOException e) {
+            throw new CayenneRuntimeException("Failed to append identifier", e);
+        }
     }
-    
-    /**
-     * @since 4.0
-     */
-    String quotedIdentifier(DataMap dataMap, String... identifierParts);
 
     /**
-     * Append quoted identifier to provided appender
-     * @since 4.2
+     * Returns a single quoted identifier.
+     *
+     * @since 5.0
      */
-    default void quotedIdentifier(DbEntity entity, CharSequence identifier, Appendable appender) {
-        quotedIdentifier(entity.getDataMap(), identifier, appender);
+    default String quoted(String identifier) {
+        StringBuilder buffer = new StringBuilder();
+        appendStart(buffer);
+        buffer.append(identifier);
+        appendEnd(buffer);
+        return buffer.toString();
     }
 
     /**
-     * Append quoted identifier to provided appender
-     * @since 4.2
+     * Returns a quoted fully-qualified name, joining non-null parts with {@code '.'} and wrapping
+     * each part in start/end quotes. {@code null} parts are skipped.
+     *
+     * @since 5.0
      */
-    void quotedIdentifier(DataMap dataMap, CharSequence identifier, Appendable appender);
+    default String quotedFQN(String... parts) {
+        StringBuilder buffer = new StringBuilder();
+        appendFQN(buffer, parts);
+        return buffer.toString();
+    }
 }

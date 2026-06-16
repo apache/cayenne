@@ -26,6 +26,7 @@ import org.apache.cayenne.dba.DbAdapter;
 import org.apache.cayenne.dba.QuotingStrategy;
 import org.apache.cayenne.dbsync.merge.factory.MergerTokenFactory;
 import org.apache.cayenne.dbsync.merge.token.MergerToken;
+import org.apache.cayenne.map.DataMap;
 import org.apache.cayenne.map.DbAttribute;
 import org.apache.cayenne.map.DbEntity;
 
@@ -61,8 +62,18 @@ public class SetGeneratedFlagToDb extends AbstractToDbToken.EntityAndColumn {
     }
 
     protected void appendAlterColumnClause(DbAdapter adapter, StringBuffer builder) {
-        QuotingStrategy context = adapter.getQuotingStrategy();
-        builder.append(" ALTER COLUMN ").append(context.quotedName(getColumn())).append(" ");
+        QuotingStrategy quotes = resolveQuotes(adapter);
+        builder.append(" ALTER COLUMN ");
+        quotes.appendStart(builder);
+        builder.append(getColumn().getName());
+        quotes.appendEnd(builder);
+        builder.append(" ");
+    }
+
+    private QuotingStrategy resolveQuotes(DbAdapter adapter) {
+        DataMap dataMap = getEntity().getDataMap();
+        return dataMap != null && dataMap.isQuotingSQLIdentifiers()
+                ? adapter.getQuotingStrategy() : QuotingStrategy.NONE;
     }
 
     @SuppressWarnings("unchecked")
@@ -72,10 +83,11 @@ public class SetGeneratedFlagToDb extends AbstractToDbToken.EntityAndColumn {
             return (List<String>)Collections.EMPTY_LIST;
         }
 
-        QuotingStrategy context = adapter.getQuotingStrategy();
+        QuotingStrategy quotes = resolveQuotes(adapter);
 
         StringBuffer builder = new StringBuffer();
-        builder.append("ALTER TABLE ").append(context.quotedFullyQualifiedName(getEntity()));
+        builder.append("ALTER TABLE ");
+        quotes.appendFQN(builder, getEntity().getCatalog(), getEntity().getSchema(), getEntity().getName());
         appendAlterColumnClause(adapter, builder);
         if(isGenerated) {
             appendAutoIncrement(adapter, builder);

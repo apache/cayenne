@@ -20,10 +20,11 @@
 package org.apache.cayenne.dbsync.merge.token.db;
 
 import org.apache.cayenne.dba.DbAdapter;
-import org.apache.cayenne.dba.JdbcAdapter;
 import org.apache.cayenne.dba.QuotingStrategy;
+import org.apache.cayenne.dba.JdbcAdapter;
 import org.apache.cayenne.dbsync.merge.factory.MergerTokenFactory;
 import org.apache.cayenne.dbsync.merge.token.MergerToken;
+import org.apache.cayenne.map.DataMap;
 import org.apache.cayenne.map.DbAttribute;
 import org.apache.cayenne.map.DbEntity;
 
@@ -39,20 +40,24 @@ public class AddColumnToDb extends AbstractToDbToken.EntityAndColumn {
     /**
      * append the part of the token before the actual column data type
      */
-    protected void appendPrefix(StringBuffer sqlBuffer, QuotingStrategy context) {
+    protected void appendPrefix(StringBuffer sqlBuffer, QuotingStrategy quotes) {
 
         sqlBuffer.append("ALTER TABLE ");
-        sqlBuffer.append(context.quotedFullyQualifiedName(getEntity()));
+        quotes.appendFQN(sqlBuffer, getEntity().getCatalog(), getEntity().getSchema(), getEntity().getName());
         sqlBuffer.append(" ADD COLUMN ");
-        sqlBuffer.append(context.quotedName(getColumn()));
+        quotes.appendStart(sqlBuffer);
+        sqlBuffer.append(getColumn().getName());
+        quotes.appendEnd(sqlBuffer);
         sqlBuffer.append(" ");
     }
 
     @Override
     public List<String> createSql(DbAdapter adapter) {
         StringBuffer sqlBuffer = new StringBuffer();
-        QuotingStrategy context = adapter.getQuotingStrategy();
-        appendPrefix(sqlBuffer, context);
+        DataMap dataMap = getEntity().getDataMap();
+        QuotingStrategy quotes = dataMap != null && dataMap.isQuotingSQLIdentifiers()
+                ? adapter.getQuotingStrategy() : QuotingStrategy.NONE;
+        appendPrefix(sqlBuffer, quotes);
 
         sqlBuffer.append(adapter.preferredNativeColumnType(getColumn()).nativeType());
         sqlBuffer.append(JdbcAdapter.sizeAndScale(adapter, getColumn()));

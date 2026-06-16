@@ -21,7 +21,6 @@ package org.apache.cayenne.access.sqlbuilder;
 
 import org.apache.cayenne.access.translator.ParameterBinding;
 import org.apache.cayenne.dba.DbAdapter;
-import org.apache.cayenne.dba.QuotingStrategy;
 import org.apache.cayenne.map.DbEntity;
 
 import java.util.Collection;
@@ -34,14 +33,6 @@ public interface SQLGenerationContext {
     DbAdapter getAdapter();
 
     Collection<ParameterBinding> getBindings();
-
-    /**
-     * @deprecated use {@link DbAdapter#getQuotingStrategy()}
-     */
-    @Deprecated(since = "5.0", forRemoval = true)
-    default QuotingStrategy getQuotingStrategy() {
-        return getAdapter().getQuotingStrategy();
-    }
 
     DbEntity getRootDbEntity();
 }

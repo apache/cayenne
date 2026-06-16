@@ -38,6 +38,7 @@ import org.apache.cayenne.configuration.Constants;
 import org.apache.cayenne.configuration.RuntimeProperties;
 import org.apache.cayenne.di.Inject;
 import org.apache.cayenne.log.JdbcEventLogger;
+import org.apache.cayenne.map.DataMap;
 import org.apache.cayenne.map.DbAttribute;
 import org.apache.cayenne.map.DbEntity;
 import org.apache.cayenne.map.DbJoin;
@@ -306,7 +307,19 @@ public class JdbcAdapter implements DbAdapter {
      */
     @Override
     public Collection<String> dropTableStatements(DbEntity table) {
-        return Collections.singleton("DROP TABLE " + quotingStrategy.quotedFullyQualifiedName(table));
+        QuotingStrategy quotes = getQuotingStrategy(table);
+        StringBuilder buf = new StringBuilder("DROP TABLE ");
+        quotes.appendFQN(buf, table.getCatalog(), table.getSchema(), table.getName());
+        return Collections.singleton(buf.toString());
+    }
+
+    /**
+     * Resolves the {@link QuotingStrategy} instance to use for the given entity, based on whether
+     * its DataMap enables SQL identifier quoting.
+     */
+    protected QuotingStrategy getQuotingStrategy(DbEntity entity) {
+        DataMap dataMap = entity.getDataMap();
+        return dataMap != null && dataMap.isQuotingSQLIdentifiers() ? getQuotingStrategy() : QuotingStrategy.NONE;
     }
 
     /**
@@ -316,9 +329,11 @@ public class JdbcAdapter implements DbAdapter {
     @Override
     public String createTable(DbEntity entity) {
 
+        QuotingStrategy quotes = getQuotingStrategy(entity);
+
         StringBuffer sqlBuffer = new StringBuffer();
         sqlBuffer.append("CREATE TABLE ");
-        sqlBuffer.append(quotingStrategy.quotedFullyQualifiedName(entity));
+        quotes.appendFQN(sqlBuffer, entity.getCatalog(), entity.getSchema(), entity.getName());
 
         sqlBuffer.append(" (");
         // columns
@@ -355,6 +370,8 @@ public class JdbcAdapter implements DbAdapter {
      */
     protected void createTableAppendPKClause(StringBuffer sqlBuffer, DbEntity entity) {
 
+        QuotingStrategy quotes = getQuotingStrategy(entity);
+
         Iterator<DbAttribute> pkit = entity.getPrimaryKeys().iterator();
         if (pkit.hasNext()) {
             sqlBuffer.append(", PRIMARY KEY (");
@@ -369,7 +386,9 @@ public class JdbcAdapter implements DbAdapter {
 
                 DbAttribute at = pkit.next();
 
-                sqlBuffer.append(quotingStrategy.quotedName(at));
+                quotes.appendStart(sqlBuffer);
+                sqlBuffer.append(at.getName());
+                quotes.appendEnd(sqlBuffer);
             }
             sqlBuffer.append(')');
         }
@@ -382,7 +401,10 @@ public class JdbcAdapter implements DbAdapter {
      */
     @Override
     public void createTableAppendColumn(StringBuffer sqlBuffer, DbAttribute column) {
-        sqlBuffer.append(quotingStrategy.quotedName(column));
+        QuotingStrategy quotes = getQuotingStrategy(column.getEntity());
+        quotes.appendStart(sqlBuffer);
+        sqlBuffer.append(column.getName());
+        quotes.appendEnd(sqlBuffer);
         sqlBuffer.append(' ').append(preferredNativeColumnType(column).nativeType());
 
         sqlBuffer.append(sizeAndScale(this, column));
@@ -446,20 +468,26 @@ public class JdbcAdapter implements DbAdapter {
             throw new CayenneRuntimeException("Can't create UNIQUE constraint - no columns specified.");
         }
 
+        QuotingStrategy quotes = getQuotingStrategy(source);
+
         StringBuilder buf = new StringBuilder();
 
         buf.append("ALTER TABLE ");
-        buf.append(quotingStrategy.quotedFullyQualifiedName(source));
+        quotes.appendFQN(buf, source.getCatalog(), source.getSchema(), source.getName());
         buf.append(" ADD UNIQUE (");
 
         Iterator<DbAttribute> it = columns.iterator();
         DbAttribute first = it.next();
-        buf.append(quotingStrategy.quotedName(first));
+        quotes.appendStart(buf);
+        buf.append(first.getName());
+        quotes.appendEnd(buf);
 
         while (it.hasNext()) {
             DbAttribute next = it.next();
             buf.append(", ");
-            buf.append(quotingStrategy.quotedName(next));
+            quotes.appendStart(buf);
+            buf.append(next.getName());
+            quotes.appendEnd(buf);
         }
 
         buf.append(")");
@@ -475,12 +503,13 @@ public class JdbcAdapter implements DbAdapter {
     public String createFkConstraint(DbRelationship rel) {
 
         DbEntity source = rel.getSourceEntity();
+        QuotingStrategy quotes = getQuotingStrategy(source);
         StringBuilder buf = new StringBuilder();
         StringBuilder refBuf = new StringBuilder();
 
         buf.append("ALTER TABLE ");
 
-        buf.append(quotingStrategy.quotedFullyQualifiedName(source));
+        quotes.appendFQN(buf, source.getCatalog(), source.getSchema(), source.getName());
         buf.append(" ADD FOREIGN KEY (");
 
         boolean first = true;
@@ -500,13 +529,18 @@ public class JdbcAdapter implements DbAdapter {
                 refBuf.append(", ");
             }
 
-            buf.append(quotingStrategy.quotedSourceName(join));
-            refBuf.append(quotingStrategy.quotedTargetName(join));
+            quotes.appendStart(buf);
+            buf.append(join.getSourceName());
+            quotes.appendEnd(buf);
+            quotes.appendStart(refBuf);
+            refBuf.append(join.getTargetName());
+            quotes.appendEnd(refBuf);
         }
 
         buf.append(") REFERENCES ");
 
-        buf.append(quotingStrategy.quotedFullyQualifiedName(rel.getTargetEntity()));
+        DbEntity target = rel.getTargetEntity();
+        quotes.appendFQN(buf, target.getCatalog(), target.getSchema(), target.getName());
 
         buf.append(" (").append(refBuf).append(')');
         return buf.toString();
@@ -676,16 +710,11 @@ public class JdbcAdapter implements DbAdapter {
         setEjbqlTranslator(ejbqlTranslator);
     }
 
-    /**
-     * @since 4.0
-     */
     protected QuotingStrategy createQuotingStrategy() {
-        return new DefaultQuotingStrategy("\"", "\"");
+        return new DefaultQuotingStrategy('"', '"');
     }
 
-    /**
-     * @since 4.0
-     */
+    @Override
     public QuotingStrategy getQuotingStrategy() {
         return quotingStrategy;
     }

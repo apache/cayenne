@@ -18,8 +18,6 @@
  ****************************************************************/
 package org.apache.cayenne.dba;
 
-import org.apache.cayenne.map.DataMap;
-import org.apache.cayenne.map.DbEntity;
 import org.junit.jupiter.api.Test;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
@@ -27,30 +25,41 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 public class DefaultQuotingStrategyTest {
 
     @Test
-    public void quotedIdentifier() {
-
-        DataMap dm = new DataMap();
-        dm.setQuotingSQLIdentifiers(true);
-        DbEntity de = new DbEntity();
-        de.setDataMap(dm);
-
-        DefaultQuotingStrategy strategy = new DefaultQuotingStrategy("[", "]");
-        assertEquals("[a]", strategy.quotedIdentifier(de, "a"));
-        assertEquals("[a]", strategy.quotedIdentifier(de, null, null, "a"));
-        assertEquals("[c].[b].[a]", strategy.quotedIdentifier(de, "c", "b", "a"));
+    public void fullyQualifiedName() {
+        QuotingStrategy quotes = new DefaultQuotingStrategy('[', ']');
+        StringBuilder buffer = new StringBuilder();
+        quotes.appendFQN(buffer, "c", "b", "a");
+        assertEquals("[c].[b].[a]", buffer.toString());
     }
 
     @Test
-    public void unQuotedIdentifier() {
+    public void fullyQualifiedNameSkipsNullParts() {
+        QuotingStrategy quotes = new DefaultQuotingStrategy('[', ']');
+        StringBuilder buffer = new StringBuilder();
+        quotes.appendFQN(buffer, null, null, "a");
+        assertEquals("[a]", buffer.toString());
+    }
 
-        DataMap dm = new DataMap();
-        dm.setQuotingSQLIdentifiers(false);
-        DbEntity de = new DbEntity();
-        de.setDataMap(dm);
+    @Test
+    public void singleIdentifierWithSymmetricQuotes() {
+        QuotingStrategy quotes = new DefaultQuotingStrategy('"', '"');
+        StringBuilder buffer = new StringBuilder();
+        quotes.appendStart(buffer);
+        buffer.append("a");
+        quotes.appendEnd(buffer);
+        assertEquals("\"a\"", buffer.toString());
+    }
 
-        DefaultQuotingStrategy strategy = new DefaultQuotingStrategy("[", "]");
-        assertEquals("a", strategy.quotedIdentifier(de, "a"));
-        assertEquals("a", strategy.quotedIdentifier(de, null, null, "a"));
-        assertEquals("c.b.a", strategy.quotedIdentifier(de, "c", "b", "a"));
+    @Test
+    public void none() {
+        StringBuilder fqn = new StringBuilder();
+        QuotingStrategy.NONE.appendFQN(fqn, "c", "b", "a");
+        assertEquals("c.b.a", fqn.toString());
+
+        StringBuilder single = new StringBuilder();
+        QuotingStrategy.NONE.appendStart(single);
+        single.append("a");
+        QuotingStrategy.NONE.appendEnd(single);
+        assertEquals("a", single.toString());
     }
 }

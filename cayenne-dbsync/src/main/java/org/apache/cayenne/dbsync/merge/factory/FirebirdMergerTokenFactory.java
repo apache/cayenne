@@ -26,6 +26,7 @@ import org.apache.cayenne.dbsync.merge.token.db.AddColumnToDb;
 import org.apache.cayenne.dbsync.merge.token.db.DropColumnToDb;
 import org.apache.cayenne.dbsync.merge.token.db.SetAllowNullToDb;
 import org.apache.cayenne.dbsync.merge.token.db.SetNotNullToDb;
+import org.apache.cayenne.map.DataMap;
 import org.apache.cayenne.map.DbAttribute;
 import org.apache.cayenne.map.DbEntity;
 
@@ -38,9 +39,16 @@ public class FirebirdMergerTokenFactory extends DefaultMergerTokenFactory {
     public MergerToken createDropColumnToDb(DbEntity entity, DbAttribute column) {
         return new DropColumnToDb(entity, column) {
             public List<String> createSql(DbAdapter adapter) {
-                QuotingStrategy quoting = adapter.getQuotingStrategy();
-                return Collections.singletonList("ALTER TABLE " + quoting.quotedFullyQualifiedName(getEntity())
-                        + " DROP " + quoting.quotedName(getColumn()));
+                DataMap dataMap = getEntity().getDataMap();
+                QuotingStrategy quotes = dataMap != null && dataMap.isQuotingSQLIdentifiers()
+                        ? adapter.getQuotingStrategy() : QuotingStrategy.NONE;
+                StringBuilder sql = new StringBuilder("ALTER TABLE ");
+                quotes.appendFQN(sql, getEntity().getCatalog(), getEntity().getSchema(), getEntity().getName());
+                sql.append(" DROP ");
+                quotes.appendStart(sql);
+                sql.append(getColumn().getName());
+                quotes.appendEnd(sql);
+                return Collections.singletonList(sql.toString());
             }
         };
     }
@@ -49,12 +57,15 @@ public class FirebirdMergerTokenFactory extends DefaultMergerTokenFactory {
     public MergerToken createSetNotNullToDb(DbEntity entity, DbAttribute column) {
         return new SetNotNullToDb(entity, column) {
             public List<String> createSql(DbAdapter adapter) {
-                QuotingStrategy context = adapter.getQuotingStrategy();
-                String entityName = context.quotedFullyQualifiedName(getEntity()) ;
-                String columnName = context.quotedName(getColumn());
+                DataMap dataMap = getEntity().getDataMap();
+                QuotingStrategy quotes = dataMap != null && dataMap.isQuotingSQLIdentifiers()
+                        ? adapter.getQuotingStrategy() : QuotingStrategy.NONE;
+                String entityName = quotes.quotedFQN(getEntity().getCatalog(), getEntity().getSchema(),
+                        getEntity().getName());
+                String columnName = quotes.quoted(getColumn().getName());
                 // Firebird doesn't support ALTER TABLE table_name ALTER column_name SET NOT NULL
-                // but this might be achived by modyfication of system tables 
-                return Collections.singletonList(String.format("UPDATE RDB$RELATION_FIELDS SET RDB$NULL_FLAG = 1 "+ 
+                // but this might be achived by modyfication of system tables
+                return Collections.singletonList(String.format("UPDATE RDB$RELATION_FIELDS SET RDB$NULL_FLAG = 1 "+
                 "WHERE RDB$FIELD_NAME = '%s' AND RDB$RELATION_NAME = '%s'", columnName, entityName));
             }
         };
@@ -64,11 +75,14 @@ public class FirebirdMergerTokenFactory extends DefaultMergerTokenFactory {
     public MergerToken createSetAllowNullToDb(DbEntity entity, DbAttribute column) {
         return new SetAllowNullToDb(entity, column) {
             public List<String> createSql(DbAdapter adapter) {
-                QuotingStrategy context = adapter.getQuotingStrategy();
-                String entityName = context.quotedFullyQualifiedName(getEntity()) ;
-                String columnName = context.quotedName(getColumn()); 
+                DataMap dataMap = getEntity().getDataMap();
+                QuotingStrategy quotes = dataMap != null && dataMap.isQuotingSQLIdentifiers()
+                        ? adapter.getQuotingStrategy() : QuotingStrategy.NONE;
+                String entityName = quotes.quotedFQN(getEntity().getCatalog(), getEntity().getSchema(),
+                        getEntity().getName());
+                String columnName = quotes.quoted(getColumn().getName());
                 // Firebird doesn't support ALTER TABLE table_name ALTER column_name DROP NOT NULL
-                // but this might be achived by modyfication system tables 
+                // but this might be achived by modyfication system tables
                 return Collections.singletonList(String.format("UPDATE RDB$RELATION_FIELDS SET RDB$NULL_FLAG = NULL "+
                 " WHERE RDB$FIELD_NAME = '%s' AND RDB$RELATION_NAME = '%s'", columnName, entityName));
             }
@@ -78,11 +92,13 @@ public class FirebirdMergerTokenFactory extends DefaultMergerTokenFactory {
     @Override
     public MergerToken createAddColumnToDb(DbEntity entity, DbAttribute column) {
         return new AddColumnToDb(entity, column) {
-            protected void appendPrefix(StringBuffer sqlBuffer, QuotingStrategy context) {
+            protected void appendPrefix(StringBuffer sqlBuffer, QuotingStrategy quotes) {
                 sqlBuffer.append("ALTER TABLE ");
-                sqlBuffer.append(context.quotedFullyQualifiedName(getEntity()));
+                quotes.appendFQN(sqlBuffer, getEntity().getCatalog(), getEntity().getSchema(), getEntity().getName());
                 sqlBuffer.append(" ADD ");
-                sqlBuffer.append(context.quotedName(getColumn()));
+                quotes.appendStart(sqlBuffer);
+                sqlBuffer.append(getColumn().getName());
+                quotes.appendEnd(sqlBuffer);
                 sqlBuffer.append(" ");
             }
         };

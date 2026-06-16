@@ -20,11 +20,12 @@
 package org.apache.cayenne.dbsync.merge.token.db;
 
 import org.apache.cayenne.dba.DbAdapter;
-import org.apache.cayenne.dba.JdbcAdapter;
 import org.apache.cayenne.dba.QuotingStrategy;
+import org.apache.cayenne.dba.JdbcAdapter;
 import org.apache.cayenne.dba.TypesMapping;
 import org.apache.cayenne.dbsync.merge.factory.MergerTokenFactory;
 import org.apache.cayenne.dbsync.merge.token.MergerToken;
+import org.apache.cayenne.map.DataMap;
 import org.apache.cayenne.map.DbAttribute;
 import org.apache.cayenne.map.DbEntity;
 
@@ -47,20 +48,25 @@ public class SetColumnTypeToDb extends AbstractToDbToken.Entity {
     
     /**
      * append the part of the token before the actual column data type
-     * @param context 
+     * @param quotes
      */
-    protected void appendPrefix(StringBuffer sqlBuffer, QuotingStrategy context) {
+    protected void appendPrefix(StringBuffer sqlBuffer, QuotingStrategy quotes) {
         sqlBuffer.append("ALTER TABLE ");
-        sqlBuffer.append(context.quotedFullyQualifiedName(getEntity()));
+        quotes.appendFQN(sqlBuffer, getEntity().getCatalog(), getEntity().getSchema(), getEntity().getName());
         sqlBuffer.append(" ALTER ");
-        sqlBuffer.append(context.quotedName(columnNew));
+        quotes.appendStart(sqlBuffer);
+        sqlBuffer.append(columnNew.getName());
+        quotes.appendEnd(sqlBuffer);
         sqlBuffer.append(" TYPE ");
     }
 
     @Override
     public List<String> createSql(DbAdapter adapter) {
         StringBuffer sqlBuffer = new StringBuffer();
-        appendPrefix(sqlBuffer, adapter.getQuotingStrategy());
+        DataMap dataMap = getEntity().getDataMap();
+        QuotingStrategy quotes = dataMap != null && dataMap.isQuotingSQLIdentifiers()
+                ? adapter.getQuotingStrategy() : QuotingStrategy.NONE;
+        appendPrefix(sqlBuffer, quotes);
   
         sqlBuffer.append(adapter.preferredNativeColumnType(columnNew).nativeType());
         sqlBuffer.append(JdbcAdapter.sizeAndScale(adapter, columnNew));

@@ -23,6 +23,7 @@ import org.apache.cayenne.dba.DbAdapter;
 import org.apache.cayenne.dba.QuotingStrategy;
 import org.apache.cayenne.dbsync.merge.factory.MergerTokenFactory;
 import org.apache.cayenne.dbsync.merge.token.MergerToken;
+import org.apache.cayenne.map.DataMap;
 import org.apache.cayenne.map.DbEntity;
 import org.apache.cayenne.map.DbRelationship;
 import org.apache.cayenne.dbsync.reverse.dbload.DbRelationshipDetected;
@@ -52,9 +53,13 @@ public class DropRelationshipToDb extends AbstractToDbToken.Entity {
             return Collections.emptyList();
         }
 
-        QuotingStrategy context = adapter.getQuotingStrategy();
-        return Collections.singletonList(
-                "ALTER TABLE " + context.quotedFullyQualifiedName(getEntity()) + " DROP CONSTRAINT " + getFkName());
+        DataMap dataMap = getEntity().getDataMap();
+        QuotingStrategy quotes = dataMap != null && dataMap.isQuotingSQLIdentifiers()
+                ? adapter.getQuotingStrategy() : QuotingStrategy.NONE;
+        StringBuilder sql = new StringBuilder("ALTER TABLE ");
+        quotes.appendFQN(sql, getEntity().getCatalog(), getEntity().getSchema(), getEntity().getName());
+        sql.append(" DROP CONSTRAINT ").append(getFkName());
+        return Collections.singletonList(sql.toString());
     }
 
     public MergerToken createReverse(MergerTokenFactory factory) {

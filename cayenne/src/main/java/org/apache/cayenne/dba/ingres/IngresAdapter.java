@@ -29,6 +29,7 @@ import org.apache.cayenne.access.types.ExtendedTypeMap;
 import org.apache.cayenne.access.types.ValueObjectTypeRegistry;
 import org.apache.cayenne.configuration.Constants;
 import org.apache.cayenne.configuration.RuntimeProperties;
+import org.apache.cayenne.dba.QuotingStrategy;
 import org.apache.cayenne.dba.JdbcAdapter;
 import org.apache.cayenne.dba.TypesMapping;
 import org.apache.cayenne.di.Inject;
@@ -127,7 +128,11 @@ public class IngresAdapter extends JdbcAdapter {
     @Override
     public void createTableAppendColumn(StringBuffer buf, DbAttribute column) {
         String type = preferredNativeColumnType(column).nativeType();
-        buf.append(quotingStrategy.quotedName(column)).append(' ').append(type);
+        QuotingStrategy quotes = getQuotingStrategy(column.getEntity());
+        quotes.appendStart(buf);
+        buf.append(column.getName());
+        quotes.appendEnd(buf);
+        buf.append(' ').append(type);
 
         // append size and precision (if applicable)
         if (typeSupportsLength(column.getType())) {

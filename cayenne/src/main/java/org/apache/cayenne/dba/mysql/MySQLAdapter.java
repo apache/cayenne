@@ -39,8 +39,8 @@ import org.apache.cayenne.access.types.ValueObjectTypeRegistry;
 import org.apache.cayenne.configuration.Constants;
 import org.apache.cayenne.configuration.RuntimeProperties;
 import org.apache.cayenne.dba.DefaultQuotingStrategy;
-import org.apache.cayenne.dba.JdbcAdapter;
 import org.apache.cayenne.dba.QuotingStrategy;
+import org.apache.cayenne.dba.JdbcAdapter;
 import org.apache.cayenne.dba.TypesMapping;
 import org.apache.cayenne.di.Inject;
 import org.apache.cayenne.map.DbAttribute;
@@ -121,7 +121,7 @@ public class MySQLAdapter extends JdbcAdapter {
 
     @Override
     protected QuotingStrategy createQuotingStrategy() {
-        return new DefaultQuotingStrategy("`", "`");
+        return new DefaultQuotingStrategy('`', '`');
     }
 
     /**
@@ -159,8 +159,8 @@ public class MySQLAdapter extends JdbcAdapter {
         // checks
         // statement
         StringBuilder buf = new StringBuilder();
-        QuotingStrategy context = getQuotingStrategy();
-        buf.append(context.quotedFullyQualifiedName(table));
+        QuotingStrategy quotes = getQuotingStrategy(table);
+        quotes.appendFQN(buf, table.getCatalog(), table.getSchema(), table.getName());
 
         return List.of("SET FOREIGN_KEY_CHECKS=0", "DROP TABLE IF EXISTS " + buf + " CASCADE",
                 "SET FOREIGN_KEY_CHECKS=1");
@@ -311,6 +311,8 @@ public class MySQLAdapter extends JdbcAdapter {
         List<DbAttribute> pkList = new ArrayList<>(entity.getPrimaryKeys());
         pkList.sort(PKComparator.INSTANCE);
 
+        QuotingStrategy quotes = getQuotingStrategy(entity);
+
         Iterator<DbAttribute> pkit = pkList.iterator();
         if (pkit.hasNext()) {
 
@@ -324,7 +326,9 @@ public class MySQLAdapter extends JdbcAdapter {
                 }
 
                 DbAttribute at = pkit.next();
-                sqlBuffer.append(quotingStrategy.quotedName(at));
+                quotes.appendStart(sqlBuffer);
+                sqlBuffer.append(at.getName());
+                quotes.appendEnd(sqlBuffer);
             }
             sqlBuffer.append(')');
         }
@@ -339,7 +343,10 @@ public class MySQLAdapter extends JdbcAdapter {
 
         String type = preferredNativeColumnType(column).nativeType();
 
-        sqlBuffer.append(quotingStrategy.quotedName(column));
+        QuotingStrategy quotes = getQuotingStrategy(column.getEntity());
+        quotes.appendStart(sqlBuffer);
+        sqlBuffer.append(column.getName());
+        quotes.appendEnd(sqlBuffer);
         sqlBuffer.append(' ').append(type);
 
         // append size and precision (if applicable)s

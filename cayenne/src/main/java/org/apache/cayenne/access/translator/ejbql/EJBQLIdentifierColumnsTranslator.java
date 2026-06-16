@@ -19,6 +19,7 @@
 package org.apache.cayenne.access.translator.ejbql;
 
 import org.apache.cayenne.CayenneRuntimeException;
+import org.apache.cayenne.dba.QuotingStrategy;
 import org.apache.cayenne.dba.TypesMapping;
 import org.apache.cayenne.ejbql.EJBQLBaseVisitor;
 import org.apache.cayenne.ejbql.EJBQLExpression;
@@ -207,8 +208,10 @@ class EJBQLIdentifierColumnsTranslator extends EJBQLBaseVisitor {
             String javaType) {
 
         DbEntity table = column.getEntity();
-        String alias = context.getTableAlias(identifier, context.getQuotingStrategy().quotedFullyQualifiedName(table));
-        String columnName = alias + "." + context.getQuotingStrategy().quotedName(column);
+        QuotingStrategy quotes = context.getIdentifierQuotes();
+        String alias = context.getTableAlias(identifier,
+                quotes.quotedFQN(table.getCatalog(), table.getSchema(), table.getName()));
+        String columnName = alias + "." + quotes.quoted(column.getName());
 
         Set<String> columns = getColumns();
 

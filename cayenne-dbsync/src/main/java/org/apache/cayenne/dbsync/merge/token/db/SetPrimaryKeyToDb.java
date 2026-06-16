@@ -23,6 +23,7 @@ import org.apache.cayenne.dba.DbAdapter;
 import org.apache.cayenne.dba.QuotingStrategy;
 import org.apache.cayenne.dbsync.merge.factory.MergerTokenFactory;
 import org.apache.cayenne.dbsync.merge.token.MergerToken;
+import org.apache.cayenne.map.DataMap;
 import org.apache.cayenne.map.DbAttribute;
 import org.apache.cayenne.map.DbEntity;
 
@@ -56,23 +57,35 @@ public class SetPrimaryKeyToDb extends AbstractToDbToken.Entity {
         return sqls;
     }
 
+    protected QuotingStrategy resolveQuotes(DbAdapter adapter) {
+        DataMap dataMap = getEntity().getDataMap();
+        return dataMap != null && dataMap.isQuotingSQLIdentifiers()
+                ? adapter.getQuotingStrategy() : QuotingStrategy.NONE;
+    }
+
     protected void appendDropOriginalPrimaryKeySQL(DbAdapter adapter, List<String> sqls) {
         if (detectedPrimaryKeyName == null) {
             return;
         }
-        sqls.add("ALTER TABLE " + adapter.getQuotingStrategy().quotedFullyQualifiedName(getEntity())
-                + " DROP CONSTRAINT " + detectedPrimaryKeyName);
+        QuotingStrategy quotes = resolveQuotes(adapter);
+        StringBuilder sql = new StringBuilder("ALTER TABLE ");
+        quotes.appendFQN(sql, getEntity().getCatalog(), getEntity().getSchema(), getEntity().getName());
+        sql.append(" DROP CONSTRAINT ").append(detectedPrimaryKeyName);
+        sqls.add(sql.toString());
     }
 
     protected void appendAddNewPrimaryKeySQL(DbAdapter adapter, List<String> sqls) {
-        QuotingStrategy quotingStrategy = adapter.getQuotingStrategy();
+        QuotingStrategy quotes = resolveQuotes(adapter);
 
         StringBuilder sql = new StringBuilder();
         sql.append("ALTER TABLE ");
-        sql.append(quotingStrategy.quotedFullyQualifiedName(getEntity()));
+        quotes.appendFQN(sql, getEntity().getCatalog(), getEntity().getSchema(), getEntity().getName());
         sql.append(" ADD PRIMARY KEY (");
         for (Iterator<DbAttribute> it = primaryKeyNew.iterator(); it.hasNext();) {
-            sql.append(quotingStrategy.quotedName(it.next()));
+            DbAttribute pk = it.next();
+            quotes.appendStart(sql);
+            sql.append(pk.getName());
+            quotes.appendEnd(sql);
             if (it.hasNext()) {
                 sql.append(", ");
             }

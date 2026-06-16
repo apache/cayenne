@@ -24,11 +24,11 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 
-import org.apache.cayenne.dba.QuotingStrategy;
 import org.apache.cayenne.ejbql.EJBQLBaseVisitor;
 import org.apache.cayenne.ejbql.EJBQLException;
 import org.apache.cayenne.ejbql.EJBQLExpression;
 import org.apache.cayenne.ejbql.EJBQLParserFactory;
+import org.apache.cayenne.dba.QuotingStrategy;
 import org.apache.cayenne.exp.Expression;
 import org.apache.cayenne.map.DbEntity;
 import org.apache.cayenne.map.DbJoin;
@@ -102,13 +102,14 @@ public class EJBQLJoinAppender {
             throw new EJBQLException("No join configured for id " + rhsId);
         }
 
-        QuotingStrategy quoter = context.getQuotingStrategy();
         DbRelationship incomingDB = joinRelationships.get(0);
 
         // TODO: andrus, 1/6/2008 - move reusable join check here...
 
+        QuotingStrategy quotes = context.getIdentifierQuotes();
         DbEntity sourceEntity = incomingDB.getSourceEntity();
-        String tableName = quoter.quotedFullyQualifiedName(sourceEntity);
+        String tableName = quotes.quotedFQN(sourceEntity.getCatalog(), sourceEntity.getSchema(),
+                sourceEntity.getName());
 
         String sourceAlias = context.getTableAlias(lhsId.getEntityId(), tableName);
 
@@ -126,12 +127,16 @@ public class EJBQLJoinAppender {
                 for (int i = 1; i < joinRelationships.size(); i++) {
                     DbRelationship dbRelationship = joinRelationships.get(i);
 
-                    String subquerySourceTableName = quoter.quotedFullyQualifiedName(dbRelationship.getSourceEntity());
+                    DbEntity subquerySourceEntity = dbRelationship.getSourceEntity();
+                    String subquerySourceTableName = quotes.quotedFQN(subquerySourceEntity.getCatalog(),
+                            subquerySourceEntity.getSchema(), subquerySourceEntity.getName());
                     String subquerySourceAlias = context.getTableAlias(
                             subquerySourceTableName,
                             subquerySourceTableName);
 
-                    String subqueryTargetTableName = quoter.quotedFullyQualifiedName(dbRelationship.getTargetEntity());
+                    DbEntity subqueryTargetEntity = dbRelationship.getTargetEntity();
+                    String subqueryTargetTableName = quotes.quotedFQN(subqueryTargetEntity.getCatalog(),
+                            subqueryTargetEntity.getSchema(), subqueryTargetEntity.getName());
 
                     String subqueryTargetAlias;
                     if(i==joinRelationships.size()-1){
@@ -181,19 +186,19 @@ public class EJBQLJoinAppender {
             String sourceAlias,
             String targetAlias) {
         context.append(" ON (");
-        QuotingStrategy quoter = context.getQuotingStrategy();
 
+        QuotingStrategy quotes = context.getIdentifierQuotes();
         Iterator<DbJoin> it = incomingDB.getJoins().iterator();
         if (it.hasNext()) {
             DbJoin dbJoin = it.next();
             context
                     .append(sourceAlias)
                     .append('.')
-                    .append(quoter.quotedSourceName(dbJoin))
+                    .append(quotes.quoted(dbJoin.getSourceName()))
                     .append(" = ")
                     .append(targetAlias)
                     .append('.')
-                    .append(quoter.quotedTargetName(dbJoin));
+                    .append(quotes.quoted(dbJoin.getTargetName()));
         }
 
         while (it.hasNext()) {
@@ -202,11 +207,11 @@ public class EJBQLJoinAppender {
             context
                     .append(sourceAlias)
                     .append('.')
-                    .append(quoter.quotedSourceName(dbJoin))
+                    .append(quotes.quoted(dbJoin.getSourceName()))
                     .append(" = ")
                     .append(targetAlias)
                     .append('.')
-                    .append(quoter.quotedTargetName(dbJoin));
+                    .append(quotes.quoted(dbJoin.getTargetName()));
         }
 
         context.append(")");
@@ -216,7 +221,8 @@ public class EJBQLJoinAppender {
 
         DbEntity dbEntity = id.getDbEntity(context);
 
-        String tableName = context.getQuotingStrategy().quotedFullyQualifiedName(dbEntity);
+        QuotingStrategy quotes = context.getIdentifierQuotes();
+        String tableName = quotes.quotedFQN(dbEntity.getCatalog(), dbEntity.getSchema(), dbEntity.getName());
 
         String alias;
 
@@ -297,8 +303,6 @@ public class EJBQLJoinAppender {
 
         if (!isProcessingOmitted) {
 
-            QuotingStrategy quoter = context.getQuotingStrategy();
-
             Collection<ObjAttribute> attributes = context.getEntityDescriptor(id.getEntityId())
                     .getEntity().getAttributes();
             for (ObjAttribute objAttribute : attributes) {
@@ -310,13 +314,18 @@ public class EJBQLJoinAppender {
                         CayenneMapEntry next = dbPathIterator.next();
                         if (next instanceof DbRelationship rel) {
                             context.append(" LEFT OUTER JOIN ");
-                            String targetEntityName = quoter.quotedFullyQualifiedName(rel.getTargetEntity());
+                            QuotingStrategy quotes = context.getIdentifierQuotes();
+                            DbEntity targetEntity = rel.getTargetEntity();
+                            String targetEntityName = quotes.quotedFQN(targetEntity.getCatalog(),
+                                    targetEntity.getSchema(), targetEntity.getName());
                             String subqueryTargetAlias = context.getTableAlias(id.getEntityId(), targetEntityName);
                             context.append(targetEntityName).append(' ').append(subqueryTargetAlias);
+                            DbEntity relSourceEntity = rel.getSourceEntity();
                             generateJoiningExpression(
                                     rel,
                                     context.getTableAlias(id.getEntityId(),
-                                            quoter.quotedFullyQualifiedName(rel.getSourceEntity())),
+                                            quotes.quotedFQN(relSourceEntity.getCatalog(),
+                                                    relSourceEntity.getSchema(), relSourceEntity.getName())),
                                     subqueryTargetAlias);
                         }
 

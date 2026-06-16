@@ -37,12 +37,14 @@ public class PostgresMergerTokenFactory extends DefaultMergerTokenFactory {
         return new SetColumnTypeToDb(entity, columnOriginal, columnNew) {
 
             @Override
-            protected void appendPrefix(StringBuffer sqlBuffer, QuotingStrategy quotingStrategy) {
+            protected void appendPrefix(StringBuffer sqlBuffer, QuotingStrategy quotes) {
                 // http://www.postgresql.org/docs/8.2/static/sql-altertable.html
                 sqlBuffer.append("ALTER TABLE ");
-                sqlBuffer.append(quotingStrategy.quotedFullyQualifiedName(entity));
+                quotes.appendFQN(sqlBuffer, entity.getCatalog(), entity.getSchema(), entity.getName());
                 sqlBuffer.append(" ALTER ");
-                sqlBuffer.append(quotingStrategy.quotedName(columnNew));
+                quotes.appendStart(sqlBuffer);
+                sqlBuffer.append(columnNew.getName());
+                quotes.appendEnd(sqlBuffer);
                 sqlBuffer.append(" TYPE ");
             }
         };

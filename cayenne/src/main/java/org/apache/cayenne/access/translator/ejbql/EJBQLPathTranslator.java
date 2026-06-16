@@ -27,6 +27,7 @@ import java.util.Map;
 import org.apache.cayenne.ejbql.EJBQLBaseVisitor;
 import org.apache.cayenne.ejbql.EJBQLException;
 import org.apache.cayenne.ejbql.EJBQLExpression;
+import org.apache.cayenne.dba.QuotingStrategy;
 import org.apache.cayenne.exp.path.CayennePath;
 import org.apache.cayenne.map.DbAttribute;
 import org.apache.cayenne.map.DbEntity;
@@ -128,16 +129,20 @@ public abstract class EJBQLPathTranslator extends EJBQLBaseVisitor {
 
 		this.fullPath = fullPath + '.' + lastPathComponent;
 
+		QuotingStrategy quotes = context.getIdentifierQuotes();
 		if (oldPath != null) {
 			this.idPath = oldPath;
 			ObjRelationship lastRelationship = currentEntity.getRelationship(lastPathComponent);
 			if (lastRelationship != null) {
-				ObjEntity targetEntity = lastRelationship.getTargetEntity();
+				DbEntity targetDbEntity = lastRelationship.getTargetEntity().getDbEntity();
 
 				this.lastAlias = context.getTableAlias(fullPath,
-						context.getQuotingStrategy().quotedFullyQualifiedName(targetEntity.getDbEntity()));
+						quotes.quotedFQN(targetDbEntity.getCatalog(), targetDbEntity.getSchema(),
+								targetDbEntity.getName()));
 			} else {
-				String tableName = context.getQuotingStrategy().quotedFullyQualifiedName(currentEntity.getDbEntity());
+				DbEntity currentDbEntity = currentEntity.getDbEntity();
+				String tableName = quotes.quotedFQN(currentDbEntity.getCatalog(), currentDbEntity.getSchema(),
+						currentDbEntity.getName());
 				this.lastAlias = context.getTableAlias(oldPath, tableName);
 			}
 		} else {
@@ -158,8 +163,10 @@ public abstract class EJBQLPathTranslator extends EJBQLBaseVisitor {
 
 			}
 
+			DbEntity targetDbEntity = targetEntity.getDbEntity();
 			this.lastAlias = context.getTableAlias(fullPath,
-					context.getQuotingStrategy().quotedFullyQualifiedName(targetEntity.getDbEntity()));
+					quotes.quotedFQN(targetDbEntity.getCatalog(), targetDbEntity.getSchema(),
+							targetDbEntity.getName()));
 
 			this.idPath = newPath;
 		}
@@ -204,18 +211,20 @@ public abstract class EJBQLPathTranslator extends EJBQLBaseVisitor {
 			}
 		}
 
+		QuotingStrategy quotes = context.getIdentifierQuotes();
 		if (isUsingAliases()) {
-			String alias = this.lastAlias != null ? lastAlias : context.getTableAlias(idPath, context
-					.getQuotingStrategy().quotedFullyQualifiedName(table));
+			String alias = this.lastAlias != null ? lastAlias : context.getTableAlias(idPath,
+					quotes.quotedFQN(table.getCatalog(), table.getSchema(), table.getName()));
 			context.append(' ').append(alias).append('.')
-					.append(context.getQuotingStrategy().quotedName(attribute.getDbAttribute()));
+					.append(quotes.quoted(attribute.getDbAttribute().getName()));
 		} else {
-			context.append(' ').append(context.getQuotingStrategy().quotedName(attribute.getDbAttribute()));
+			context.append(' ').append(quotes.quoted(attribute.getDbAttribute().getName()));
 		}
 	}
 
 	protected void processTerminatingRelationship(ObjRelationship relationship) {
 
+		QuotingStrategy quotes = context.getIdentifierQuotes();
 		if (relationship.isSourceIndependentFromTargetChange()) {
 
 			// (andrus) use an outer join for to-many matches.. This is somewhat
@@ -235,7 +244,8 @@ public abstract class EJBQLPathTranslator extends EJBQLBaseVisitor {
 
 			String alias = this.lastAlias != null
 					? lastAlias
-					: context.getTableAlias(idPath, context.getQuotingStrategy().quotedFullyQualifiedName(table));
+					: context.getTableAlias(idPath,
+							quotes.quotedFQN(table.getCatalog(), table.getSchema(), table.getName()));
 
 			Collection<DbAttribute> pks = table.getPrimaryKeys();
 
@@ -245,7 +255,7 @@ public abstract class EJBQLPathTranslator extends EJBQLBaseVisitor {
 				if (isUsingAliases()) {
 					context.append(alias).append('.');
 				}
-				context.append(context.getQuotingStrategy().quotedName(pk));
+				context.append(quotes.quoted(pk.getName()));
 			} else {
 				throw new EJBQLException("Multi-column PK to-many matches are not yet supported.");
 			}
@@ -258,7 +268,8 @@ public abstract class EJBQLPathTranslator extends EJBQLBaseVisitor {
 
 			String alias = this.lastAlias != null
 					? lastAlias
-					: context.getTableAlias(idPath, context.getQuotingStrategy().quotedFullyQualifiedName(table));
+					: context.getTableAlias(idPath,
+							quotes.quotedFQN(table.getCatalog(), table.getSchema(), table.getName()));
 
 			List<DbJoin> joins = dbRelationship.getJoins();
 
@@ -268,7 +279,7 @@ public abstract class EJBQLPathTranslator extends EJBQLBaseVisitor {
 				if (isUsingAliases()) {
 					context.append(alias).append('.');
 				}
-				context.append(context.getQuotingStrategy().quotedName(join.getSource()));
+				context.append(quotes.quoted(join.getSource().getName()));
 			} else {
 				Map<String, String> multiColumnMatch = new HashMap<>(joins.size() + 2);
 

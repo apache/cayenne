@@ -499,7 +499,10 @@ public class EJBQLTranslationContext {
         this.caseInsensitive = caseInsensitive;
     }
 
-    public QuotingStrategy getQuotingStrategy() {
+    /**
+     * @since 5.0
+     */
+    public QuotingStrategy getIdentifierQuotes() {
         return quotingStrategy;
     }
 

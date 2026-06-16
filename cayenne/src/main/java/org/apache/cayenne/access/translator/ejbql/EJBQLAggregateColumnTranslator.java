@@ -26,6 +26,7 @@ import org.apache.cayenne.ejbql.EJBQLExpression;
 import org.apache.cayenne.ejbql.EJBQLExpressionVisitor;
 import org.apache.cayenne.ejbql.parser.EJBQLAggregateColumn;
 import org.apache.cayenne.ejbql.parser.EJBQLIntegerLiteral;
+import org.apache.cayenne.dba.QuotingStrategy;
 import org.apache.cayenne.map.DbAttribute;
 import org.apache.cayenne.map.DbEntity;
 import org.apache.cayenne.map.ObjAttribute;
@@ -131,10 +132,11 @@ class EJBQLAggregateColumnTranslator extends EJBQLBaseVisitor {
             EJBQLAggregateColumnTranslator.this.attributeType = attribute.getType();
 
             DbEntity table = currentEntity.getDbEntity();
-            String alias = this.lastAlias != null ? lastAlias : context.getTableAlias(idPath, context
-                    .getQuotingStrategy().quotedFullyQualifiedName(table));
+            QuotingStrategy quotes = context.getIdentifierQuotes();
+            String alias = this.lastAlias != null ? lastAlias : context.getTableAlias(idPath,
+                    quotes.quotedFQN(table.getCatalog(), table.getSchema(), table.getName()));
             context.append(alias).append('.')
-                    .append(context.getQuotingStrategy().quotedName(attribute.getDbAttribute()));
+                    .append(quotes.quoted(attribute.getDbAttribute().getName()));
         }
 
         @Override
@@ -146,7 +148,8 @@ class EJBQLAggregateColumnTranslator extends EJBQLBaseVisitor {
             }
 
             DbAttribute pk = getPk(relationship.getTargetEntity().getDbEntity());
-            context.append(lastAlias).append('.').append(context.getQuotingStrategy().quotedName(pk));
+            QuotingStrategy quotes = context.getIdentifierQuotes();
+            context.append(lastAlias).append('.').append(quotes.quoted(pk.getName()));
         }
     }
 
@@ -173,9 +176,10 @@ class EJBQLAggregateColumnTranslator extends EJBQLBaseVisitor {
             }
 
             DbEntity dbEntity = classDescriptor.getEntity().getDbEntity();
-            String tableName = context.getQuotingStrategy().quotedFullyQualifiedName(dbEntity);
+            QuotingStrategy quotes = context.getIdentifierQuotes();
+            String tableName = quotes.quotedFQN(dbEntity.getCatalog(), dbEntity.getSchema(), dbEntity.getName());
             context.append(context.getTableAlias(expression.getText(), tableName))
-                    .append('.').append(context.getQuotingStrategy().quotedName(getPk(dbEntity)));
+                    .append('.').append(quotes.quoted(getPk(dbEntity).getName()));
             return false;
         }
 

@@ -44,11 +44,13 @@ public class H2MergerTokenFactory extends DefaultMergerTokenFactory {
         return new SetColumnTypeToDb(entity, columnOriginal, columnNew) {
 
             @Override
-            protected void appendPrefix(StringBuffer sqlBuffer, QuotingStrategy context) {
+            protected void appendPrefix(StringBuffer sqlBuffer, QuotingStrategy quotes) {
                 sqlBuffer.append("ALTER TABLE ");
-                sqlBuffer.append(context.quotedFullyQualifiedName(entity));
+                quotes.appendFQN(sqlBuffer, entity.getCatalog(), entity.getSchema(), entity.getName());
                 sqlBuffer.append(" ALTER ");
-                sqlBuffer.append(context.quotedName(columnNew));
+                quotes.appendStart(sqlBuffer);
+                sqlBuffer.append(columnNew.getName());
+                quotes.appendEnd(sqlBuffer);
                 sqlBuffer.append(" ");
             }
         };
@@ -74,8 +76,11 @@ public class H2MergerTokenFactory extends DefaultMergerTokenFactory {
 
             @Override
             protected void appendDropOriginalPrimaryKeySQL(DbAdapter adapter, List<String> sqls) {
-                sqls.add("ALTER TABLE " + adapter.getQuotingStrategy().quotedFullyQualifiedName(getEntity())
-                        + " DROP PRIMARY KEY");
+                QuotingStrategy quotes = resolveQuotes(adapter);
+                StringBuilder sql = new StringBuilder("ALTER TABLE ");
+                quotes.appendFQN(sql, getEntity().getCatalog(), getEntity().getSchema(), getEntity().getName());
+                sql.append(" DROP PRIMARY KEY");
+                sqls.add(sql.toString());
             }
 
         };

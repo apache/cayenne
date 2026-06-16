@@ -34,6 +34,7 @@ import org.apache.cayenne.access.types.ShortType;
 import org.apache.cayenne.access.types.ValueObjectTypeRegistry;
 import org.apache.cayenne.configuration.Constants;
 import org.apache.cayenne.configuration.RuntimeProperties;
+import org.apache.cayenne.dba.QuotingStrategy;
 import org.apache.cayenne.dba.JdbcAdapter;
 import org.apache.cayenne.di.Inject;
 import org.apache.cayenne.map.DbAttribute;
@@ -252,8 +253,11 @@ public class OracleAdapter extends JdbcAdapter {
      */
     @Override
     public Collection<String> dropTableStatements(DbEntity table) {
-        return Collections.singleton("DROP TABLE " + getQuotingStrategy().quotedFullyQualifiedName(table)
-                + " CASCADE CONSTRAINTS");
+        QuotingStrategy quotes = getQuotingStrategy(table);
+        StringBuilder buf = new StringBuilder("DROP TABLE ");
+        quotes.appendFQN(buf, table.getCatalog(), table.getSchema(), table.getName());
+        buf.append(" CASCADE CONSTRAINTS");
+        return Collections.singleton(buf.toString());
     }
 
     @Override

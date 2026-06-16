@@ -150,16 +150,17 @@ public class EJBQLConditionTranslator extends EJBQLBaseVisitor {
             throw new EJBQLException("First child of SIZE must be a collection path, got: " + expression.getChild(1));
         }
 
-        QuotingStrategy quoter = context.getQuotingStrategy();
 
         EJBQLPath path = (EJBQLPath) expression.getChild(0);
 
         String id = path.getAbsolutePath();
 
+        QuotingStrategy quotes = context.getIdentifierQuotes();
         String correlatedEntityId = path.getId();
         ClassDescriptor correlatedEntityDescriptor = context.getEntityDescriptor(correlatedEntityId);
-        String correlatedTableName = quoter.quotedFullyQualifiedName(correlatedEntityDescriptor.getEntity()
-                .getDbEntity());
+        DbEntity correlatedDbEntity = correlatedEntityDescriptor.getEntity().getDbEntity();
+        String correlatedTableName = quotes.quotedFQN(correlatedDbEntity.getCatalog(), correlatedDbEntity.getSchema(),
+                correlatedDbEntity.getName());
         String correlatedTableAlias = context.getTableAlias(correlatedEntityId, correlatedTableName);
 
         String subqueryId = context.createIdAlias(id);
@@ -171,7 +172,9 @@ public class EJBQLConditionTranslator extends EJBQLBaseVisitor {
 
         context.append(" EXISTS (SELECT 1 FROM ");
 
-        String subqueryTableName = quoter.quotedFullyQualifiedName(targetDescriptor.getEntity().getDbEntity());
+        DbEntity subqueryDbEntity = targetDescriptor.getEntity().getDbEntity();
+        String subqueryTableName = quotes.quotedFQN(subqueryDbEntity.getCatalog(), subqueryDbEntity.getSchema(),
+                subqueryDbEntity.getName());
         String subqueryRootAlias = context.getTableAlias(subqueryId, subqueryTableName);
 
         ObjRelationship relationship = correlatedEntityDescriptor.getEntity().getRelationship(path.getRelativePath());
@@ -192,7 +195,7 @@ public class EJBQLConditionTranslator extends EJBQLBaseVisitor {
         while (it.hasNext()) {
             DbJoin join = it.next();
             context.append(' ').append(subqueryRootAlias).append('.').append(join.getTargetName()).append(" = ");
-            context.append(correlatedTableAlias).append('.').append(quoter.quotedSourceName(join));
+            context.append(correlatedTableAlias).append('.').append(quotes.quoted(join.getSourceName()));
 
             if (it.hasNext()) {
                 context.append(" AND");
@@ -227,7 +230,6 @@ public class EJBQLConditionTranslator extends EJBQLBaseVisitor {
                     + expression.getChild(1));
         }
 
-        QuotingStrategy quoter = context.getQuotingStrategy();
 
         EJBQLPath path = (EJBQLPath) expression.getChild(1);
 
@@ -235,10 +237,12 @@ public class EJBQLConditionTranslator extends EJBQLBaseVisitor {
         // joins...
         String id = path.getAbsolutePath();
 
+        QuotingStrategy quotes = context.getIdentifierQuotes();
         String correlatedEntityId = path.getId();
         ClassDescriptor correlatedEntityDescriptor = context.getEntityDescriptor(correlatedEntityId);
-        String correlatedTableName = quoter.quotedFullyQualifiedName(correlatedEntityDescriptor.getEntity()
-                .getDbEntity());
+        DbEntity correlatedDbEntity = correlatedEntityDescriptor.getEntity().getDbEntity();
+        String correlatedTableName = quotes.quotedFQN(correlatedDbEntity.getCatalog(), correlatedDbEntity.getSchema(),
+                correlatedDbEntity.getName());
         String correlatedTableAlias = context.getTableAlias(correlatedEntityId, correlatedTableName);
 
         String subqueryId = context.createIdAlias(id);
@@ -250,7 +254,9 @@ public class EJBQLConditionTranslator extends EJBQLBaseVisitor {
 
         context.append(" EXISTS (SELECT 1 FROM ");
 
-        String subqueryTableName = quoter.quotedFullyQualifiedName(targetDescriptor.getEntity().getDbEntity());
+        DbEntity subqueryDbEntity = targetDescriptor.getEntity().getDbEntity();
+        String subqueryTableName = quotes.quotedFQN(subqueryDbEntity.getCatalog(), subqueryDbEntity.getSchema(),
+                subqueryDbEntity.getName());
         String subqueryRootAlias = context.getTableAlias(subqueryId, subqueryTableName);
 
         ObjRelationship relationship = correlatedEntityDescriptor.getEntity().getRelationship(path.getRelativePath());
@@ -272,7 +278,7 @@ public class EJBQLConditionTranslator extends EJBQLBaseVisitor {
 
         for (DbJoin join : correlatedJoinRelationship.getJoins()) {
             context.append(' ').append(subqueryRootAlias).append('.').append(join.getTargetName()).append(" = ");
-            context.append(correlatedTableAlias).append('.').append(quoter.quotedSourceName(join));
+            context.append(correlatedTableAlias).append('.').append(quotes.quoted(join.getSourceName()));
             context.append(" AND");
         }
 
@@ -291,14 +297,16 @@ public class EJBQLConditionTranslator extends EJBQLBaseVisitor {
 
     private String processFlattenedRelationShip(String subqueryRootAlias, ObjRelationship relationship) {
 
-        QuotingStrategy quoter = context.getQuotingStrategy();
 
+        QuotingStrategy quotes = context.getIdentifierQuotes();
         List<DbRelationship> dbRelationships = relationship.getDbRelationships();
         // reverse order to get the nearest to the correlated of the direct
         // relation
         for (int i = dbRelationships.size() - 1; i > 0; i--) {
             DbRelationship dbRelationship = dbRelationships.get(i);
-            String subqueryTargetTableName = quoter.quotedFullyQualifiedName(dbRelationship.getTargetEntity());
+            DbEntity subqueryTargetEntity = dbRelationship.getTargetEntity();
+            String subqueryTargetTableName = quotes.quotedFQN(subqueryTargetEntity.getCatalog(),
+                    subqueryTargetEntity.getSchema(), subqueryTargetEntity.getName());
             String subqueryTargetAlias;
             if (i == dbRelationships.size() - 1) {
                 subqueryTargetAlias = subqueryRootAlias;
@@ -309,7 +317,9 @@ public class EJBQLConditionTranslator extends EJBQLBaseVisitor {
 
             context.append(" JOIN ");
 
-            String subquerySourceTableName = quoter.quotedFullyQualifiedName(dbRelationship.getSourceEntity());
+            DbEntity subquerySourceEntity = dbRelationship.getSourceEntity();
+            String subquerySourceTableName = quotes.quotedFQN(subquerySourceEntity.getCatalog(),
+                    subquerySourceEntity.getSchema(), subquerySourceEntity.getName());
             String subquerySourceAlias = context.getTableAlias(subquerySourceTableName, subquerySourceTableName);
 
             context.append(subquerySourceTableName).append(' ').append(subquerySourceAlias);
@@ -628,14 +638,15 @@ public class EJBQLConditionTranslator extends EJBQLBaseVisitor {
         }
 
         DbEntity table = descriptor.getEntity().getDbEntity();
-        String alias = context.getTableAlias(expression.getText(), context.getQuotingStrategy()
-                .quotedFullyQualifiedName(table));
+        QuotingStrategy quotes = context.getIdentifierQuotes();
+        String alias = context.getTableAlias(expression.getText(),
+                quotes.quotedFQN(table.getCatalog(), table.getSchema(), table.getName()));
 
         Collection<DbAttribute> pks = table.getPrimaryKeys();
 
         if (pks.size() == 1) {
             DbAttribute pk = pks.iterator().next();
-            context.append(' ').append(alias).append('.').append(context.getQuotingStrategy().quotedName(pk));
+            context.append(' ').append(alias).append('.').append(quotes.quoted(pk.getName()));
         } else {
             throw new EJBQLException("Multi-column PK to-many matches are not yet supported.");
         }

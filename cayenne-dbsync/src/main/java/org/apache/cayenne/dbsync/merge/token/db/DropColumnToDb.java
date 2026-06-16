@@ -26,6 +26,7 @@ import org.apache.cayenne.dba.DbAdapter;
 import org.apache.cayenne.dba.QuotingStrategy;
 import org.apache.cayenne.dbsync.merge.factory.MergerTokenFactory;
 import org.apache.cayenne.dbsync.merge.token.MergerToken;
+import org.apache.cayenne.map.DataMap;
 import org.apache.cayenne.map.DbAttribute;
 import org.apache.cayenne.map.DbEntity;
 
@@ -38,11 +39,15 @@ public class DropColumnToDb extends AbstractToDbToken.EntityAndColumn {
     @Override
     public List<String> createSql(DbAdapter adapter) {
         StringBuilder sqlBuffer = new StringBuilder();
-        QuotingStrategy context = adapter.getQuotingStrategy();
+        DataMap dataMap = getEntity().getDataMap();
+        QuotingStrategy quotes = dataMap != null && dataMap.isQuotingSQLIdentifiers()
+                ? adapter.getQuotingStrategy() : QuotingStrategy.NONE;
         sqlBuffer.append("ALTER TABLE ");
-        sqlBuffer.append(context.quotedFullyQualifiedName(getEntity()));
+        quotes.appendFQN(sqlBuffer, getEntity().getCatalog(), getEntity().getSchema(), getEntity().getName());
         sqlBuffer.append(" DROP COLUMN ");
-        sqlBuffer.append(context.quotedName(getColumn()));
+        quotes.appendStart(sqlBuffer);
+        sqlBuffer.append(getColumn().getName());
+        quotes.appendEnd(sqlBuffer);
 
         return Collections.singletonList(sqlBuffer.toString());
     }

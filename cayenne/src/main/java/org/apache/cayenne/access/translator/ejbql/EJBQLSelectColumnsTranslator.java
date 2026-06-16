@@ -19,6 +19,7 @@
 package org.apache.cayenne.access.translator.ejbql;
 
 import org.apache.cayenne.CayenneRuntimeException;
+import org.apache.cayenne.dba.QuotingStrategy;
 import org.apache.cayenne.dba.TypesMapping;
 import org.apache.cayenne.ejbql.EJBQLBaseVisitor;
 import org.apache.cayenne.ejbql.EJBQLException;
@@ -87,9 +88,11 @@ public class EJBQLSelectColumnsTranslator extends EJBQLBaseVisitor {
                     resolveJoin();
                 }
 
+                QuotingStrategy quotes = context.getIdentifierQuotes();
                 String alias = this.lastAlias != null
                         ? lastAlias
-                        : context.getTableAlias(idPath, context.getQuotingStrategy().quotedFullyQualifiedName(table));
+                        : context.getTableAlias(idPath,
+                                quotes.quotedFQN(table.getCatalog(), table.getSchema(), table.getName()));
 
                 boolean first = true;
                 for (DbAttribute dbAttribute : dbAttr) {
@@ -102,9 +105,12 @@ public class EJBQLSelectColumnsTranslator extends EJBQLBaseVisitor {
 
             @Override
             protected void processTerminatingAttribute(DbAttribute attribute) {
+                QuotingStrategy quotes = context.getIdentifierQuotes();
                 String alias = this.lastAlias != null
                         ? lastAlias
-                        : context.getTableAlias(idPath, context.getQuotingStrategy().quotedFullyQualifiedName(currentEntity));
+                        : context.getTableAlias(idPath,
+                                quotes.quotedFQN(currentEntity.getCatalog(), currentEntity.getSchema(),
+                                        currentEntity.getName()));
 
                 appendColumn(TypesMapping.getJavaBySqlType(attribute), alias, attribute,
                         context.isAppendingResultColumns() ? context.nextColumnAlias() : "");
@@ -145,9 +151,11 @@ public class EJBQLSelectColumnsTranslator extends EJBQLBaseVisitor {
                     resolveJoin();
                 }
 
+                QuotingStrategy quotes = context.getIdentifierQuotes();
                 String alias = this.lastAlias != null
                         ? lastAlias
-                        : context.getTableAlias(idPath, context.getQuotingStrategy().quotedFullyQualifiedName(table));
+                        : context.getTableAlias(idPath,
+                                quotes.quotedFQN(table.getCatalog(), table.getSchema(), table.getName()));
 
                 boolean first = true;
                 while (it.hasNext()) {
@@ -166,9 +174,11 @@ public class EJBQLSelectColumnsTranslator extends EJBQLBaseVisitor {
             @Override
             protected void processTerminatingAttribute(ObjAttribute attribute) {
                 DbEntity table = currentEntity.getDbEntity();
+                QuotingStrategy quotes = context.getIdentifierQuotes();
                 String alias = this.lastAlias != null
                         ? lastAlias
-                        : context.getTableAlias(idPath, context.getQuotingStrategy().quotedFullyQualifiedName(table));
+                        : context.getTableAlias(idPath,
+                                quotes.quotedFQN(table.getCatalog(), table.getSchema(), table.getName()));
                 if (attribute.isFlattened()) {
                     Iterator<?> dbPathIterator = attribute.getDbPathIterator();
                     EJBQLTableId lhsId = new EJBQLTableId(idPath);
@@ -179,9 +189,11 @@ public class EJBQLSelectColumnsTranslator extends EJBQLBaseVisitor {
                         if (pathPart == null) {
                             throw new CayenneRuntimeException("ObjAttribute has no component: %s", attribute.getName());
                         } else if (pathPart instanceof DbAttribute dbAttribute) {
+                            DbEntity attributeEntity = dbAttribute.getEntity();
                             appendColumn(attribute.getType(),
-                                    context.getTableAlias(lhsId.getEntityId(), context.getQuotingStrategy()
-                                            .quotedFullyQualifiedName(dbAttribute.getEntity())),
+                                    context.getTableAlias(lhsId.getEntityId(),
+                                            quotes.quotedFQN(attributeEntity.getCatalog(), attributeEntity.getSchema(),
+                                                    attributeEntity.getName())),
                                     dbAttribute, context.isAppendingResultColumns() ? context.nextColumnAlias() : "");
 
                         }
@@ -215,7 +227,8 @@ public class EJBQLSelectColumnsTranslator extends EJBQLBaseVisitor {
             context.append(' ');
         }
 
-        context.append(alias).append('.').append(context.getQuotingStrategy().quotedName(dbAttribute));
+        QuotingStrategy quotes = context.getIdentifierQuotes();
+        context.append(alias).append('.').append(quotes.quoted(dbAttribute.getName()));
 
         if (context.isAppendingResultColumns()) {
             // String columnAlias = context.nextColumnAlias();

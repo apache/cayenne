@@ -34,8 +34,8 @@ import org.apache.cayenne.access.types.ValueObjectTypeRegistry;
 import org.apache.cayenne.configuration.Constants;
 import org.apache.cayenne.configuration.RuntimeProperties;
 import org.apache.cayenne.dba.DefaultQuotingStrategy;
-import org.apache.cayenne.dba.JdbcAdapter;
 import org.apache.cayenne.dba.QuotingStrategy;
+import org.apache.cayenne.dba.JdbcAdapter;
 import org.apache.cayenne.di.Inject;
 import org.apache.cayenne.map.DbAttribute;
 
@@ -93,7 +93,7 @@ public class SybaseAdapter extends JdbcAdapter {
 
     @Override
     protected QuotingStrategy createQuotingStrategy() {
-        return new DefaultQuotingStrategy("[", "]");
+        return new DefaultQuotingStrategy('[', ']');
     }
 
     /**

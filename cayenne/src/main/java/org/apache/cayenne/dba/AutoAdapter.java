@@ -266,9 +266,6 @@ public class AutoAdapter implements DbAdapter {
 		getAdapter().createTableAppendColumn(sqlBuffer, column);
 	}
 
-	/**
-	 * @since 4.0
-	 */
 	@Override
 	public QuotingStrategy getQuotingStrategy() {
 		return getAdapter().getQuotingStrategy();

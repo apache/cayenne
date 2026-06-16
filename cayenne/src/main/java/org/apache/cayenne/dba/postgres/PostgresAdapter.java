@@ -32,8 +32,8 @@ import org.apache.cayenne.access.types.JsonType;
 import org.apache.cayenne.access.types.ValueObjectTypeRegistry;
 import org.apache.cayenne.configuration.Constants;
 import org.apache.cayenne.configuration.RuntimeProperties;
-import org.apache.cayenne.dba.JdbcAdapter;
 import org.apache.cayenne.dba.QuotingStrategy;
+import org.apache.cayenne.dba.JdbcAdapter;
 import org.apache.cayenne.dba.TypesMapping;
 import org.apache.cayenne.di.Inject;
 import org.apache.cayenne.map.DbAttribute;
@@ -191,9 +191,11 @@ public class PostgresAdapter extends JdbcAdapter {
     @Override
     public String createTable(DbEntity ent) {
 
-        QuotingStrategy context = getQuotingStrategy();
+        QuotingStrategy quotes = getQuotingStrategy(ent);
         StringBuilder buf = new StringBuilder();
-        buf.append("CREATE TABLE ").append(context.quotedFullyQualifiedName(ent)).append(" (");
+        buf.append("CREATE TABLE ");
+        quotes.appendFQN(buf, ent.getCatalog(), ent.getSchema(), ent.getName());
+        buf.append(" (");
 
         // columns
         Iterator<DbAttribute> it = ent.getAttributes().iterator();
@@ -205,7 +207,7 @@ public class PostgresAdapter extends JdbcAdapter {
                 buf.append(", ");
             }
 
-            createAttribute(ent, context, buf, it.next());
+            createAttribute(ent, quotes, buf, it.next());
         }
 
         // primary key clause
@@ -227,7 +229,9 @@ public class PostgresAdapter extends JdbcAdapter {
                 }
 
                 DbAttribute at = pkit.next();
-                buf.append(context.quotedName(at));
+                quotes.appendStart(buf);
+                buf.append(at.getName());
+                quotes.appendEnd(buf);
             }
             buf.append(')');
         }
@@ -235,7 +239,7 @@ public class PostgresAdapter extends JdbcAdapter {
         return buf.toString();
     }
 
-    private void createAttribute(DbEntity ent, QuotingStrategy context, StringBuilder buf, DbAttribute column) {
+    private void createAttribute(DbEntity ent, QuotingStrategy quotes, StringBuilder buf, DbAttribute column) {
         // attribute may not be fully valid, do a simple check
         if (column.getType() == TypesMapping.NOT_DEFINED) {
             throw new CayenneRuntimeException("Undefined type for attribute '%s.%s'"
@@ -243,8 +247,10 @@ public class PostgresAdapter extends JdbcAdapter {
         }
 
         // getType / sizeAndPrecision pick the right variant (auto-increment serial, unconstrained "text", ...)
-        buf.append(context.quotedName(column))
-                .append(' ')
+        quotes.appendStart(buf);
+        buf.append(column.getName());
+        quotes.appendEnd(buf);
+        buf.append(' ')
                 .append(preferredNativeColumnType(column).nativeType())
                 .append(sizeAndScale(this, column))
                 .append(column.isMandatory() ? " NOT" : "")
@@ -274,8 +280,11 @@ public class PostgresAdapter extends JdbcAdapter {
      */
     @Override
     public Collection<String> dropTableStatements(DbEntity table) {
-        QuotingStrategy context = getQuotingStrategy();
-        return Collections.singleton("DROP TABLE " + context.quotedFullyQualifiedName(table) + " CASCADE");
+        QuotingStrategy quotes = getQuotingStrategy(table);
+        StringBuilder buf = new StringBuilder("DROP TABLE ");
+        quotes.appendFQN(buf, table.getCatalog(), table.getSchema(), table.getName());
+        buf.append(" CASCADE");
+        return Collections.singleton(buf.toString());
     }
 
     @Override

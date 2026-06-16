@@ -25,6 +25,7 @@ import org.apache.cayenne.dbsync.merge.token.db.SetAllowNullToDb;
 import org.apache.cayenne.dbsync.merge.token.db.SetColumnTypeToDb;
 import org.apache.cayenne.dbsync.merge.token.db.SetGeneratedFlagToDb;
 import org.apache.cayenne.dbsync.merge.token.db.SetNotNullToDb;
+import org.apache.cayenne.map.DataMap;
 import org.apache.cayenne.map.DbAttribute;
 import org.apache.cayenne.map.DbEntity;
 
@@ -42,12 +43,14 @@ public class DerbyMergerTokenFactory extends DefaultMergerTokenFactory {
         return new SetColumnTypeToDb(entity, columnOriginal, columnNew) {
 
             @Override
-            protected void appendPrefix(StringBuffer sqlBuffer, QuotingStrategy context) {
+            protected void appendPrefix(StringBuffer sqlBuffer, QuotingStrategy quotes) {
                 // http://db.apache.org/derby/manuals/reference/sqlj26.html
                 sqlBuffer.append("ALTER TABLE ");
-                sqlBuffer.append(context.quotedFullyQualifiedName(entity));
+                quotes.appendFQN(sqlBuffer, entity.getCatalog(), entity.getSchema(), entity.getName());
                 sqlBuffer.append(" ALTER ");
-                sqlBuffer.append(context.quotedName(columnNew));
+                quotes.appendStart(sqlBuffer);
+                sqlBuffer.append(columnNew.getName());
+                quotes.appendEnd(sqlBuffer);
                 sqlBuffer.append(" SET DATA TYPE ");
             }
         };
@@ -59,10 +62,18 @@ public class DerbyMergerTokenFactory extends DefaultMergerTokenFactory {
 
             @Override
             public List<String> createSql(DbAdapter adapter) {
-                QuotingStrategy context = adapter.getQuotingStrategy();
+                DataMap dataMap = getEntity().getDataMap();
+                QuotingStrategy quotes = dataMap != null && dataMap.isQuotingSQLIdentifiers()
+                        ? adapter.getQuotingStrategy() : QuotingStrategy.NONE;
+                StringBuilder sql = new StringBuilder("ALTER TABLE ");
+                quotes.appendFQN(sql, getEntity().getCatalog(), getEntity().getSchema(), getEntity().getName());
+                sql.append(" ALTER COLUMN ");
+                quotes.appendStart(sql);
+                sql.append(getColumn().getName());
+                quotes.appendEnd(sql);
+                sql.append(" NOT NULL");
 
-                return Collections.singletonList("ALTER TABLE " + context.quotedFullyQualifiedName(getEntity())
-                        + " ALTER COLUMN " + context.quotedName(getColumn()) + " NOT NULL");
+                return Collections.singletonList(sql.toString());
             }
 
         };
@@ -74,10 +85,18 @@ public class DerbyMergerTokenFactory extends DefaultMergerTokenFactory {
 
             @Override
             public List<String> createSql(DbAdapter adapter) {
-                QuotingStrategy context = adapter.getQuotingStrategy();
+                DataMap dataMap = getEntity().getDataMap();
+                QuotingStrategy quotes = dataMap != null && dataMap.isQuotingSQLIdentifiers()
+                        ? adapter.getQuotingStrategy() : QuotingStrategy.NONE;
+                StringBuilder sql = new StringBuilder("ALTER TABLE ");
+                quotes.appendFQN(sql, getEntity().getCatalog(), getEntity().getSchema(), getEntity().getName());
+                sql.append(" ALTER COLUMN ");
+                quotes.appendStart(sql);
+                sql.append(getColumn().getName());
+                quotes.appendEnd(sql);
+                sql.append(" NULL");
 
-                return Collections.singletonList("ALTER TABLE " + context.quotedFullyQualifiedName(getEntity())
-                        + " ALTER COLUMN " + context.quotedName(getColumn()) + " NULL");
+                return Collections.singletonList(sql.toString());
             }
 
         };

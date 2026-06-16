@@ -28,6 +28,7 @@ import org.apache.cayenne.dbsync.merge.token.db.SetAllowNullToDb;
 import org.apache.cayenne.dbsync.merge.token.db.SetColumnTypeToDb;
 import org.apache.cayenne.dbsync.merge.token.db.SetGeneratedFlagToDb;
 import org.apache.cayenne.dbsync.merge.token.db.SetNotNullToDb;
+import org.apache.cayenne.map.DataMap;
 import org.apache.cayenne.map.DbAttribute;
 import org.apache.cayenne.map.DbEntity;
 import org.apache.cayenne.map.DbJoin;
@@ -45,11 +46,13 @@ public class IngresMergerTokenFactory extends DefaultMergerTokenFactory {
         return new SetColumnTypeToDb(entity, columnOriginal, columnNew) {
 
             @Override
-            protected void appendPrefix(StringBuffer sqlBuffer, QuotingStrategy context) {
+            protected void appendPrefix(StringBuffer sqlBuffer, QuotingStrategy quotes) {
                 sqlBuffer.append("ALTER TABLE ");
-                sqlBuffer.append(context.quotedFullyQualifiedName(entity));
+                quotes.appendFQN(sqlBuffer, entity.getCatalog(), entity.getSchema(), entity.getName());
                 sqlBuffer.append(" ALTER COLUMN ");
-                sqlBuffer.append(context.quotedName(columnNew));
+                quotes.appendStart(sqlBuffer);
+                sqlBuffer.append(columnNew.getName());
+                quotes.appendEnd(sqlBuffer);
                 sqlBuffer.append(" ");
             }
         };
@@ -62,11 +65,15 @@ public class IngresMergerTokenFactory extends DefaultMergerTokenFactory {
             @Override
             public List<String> createSql(DbAdapter adapter) {
                 StringBuilder buf = new StringBuilder();
-                QuotingStrategy context = adapter.getQuotingStrategy();
+                DataMap dataMap = getEntity().getDataMap();
+                QuotingStrategy quotes = dataMap != null && dataMap.isQuotingSQLIdentifiers()
+                        ? adapter.getQuotingStrategy() : QuotingStrategy.NONE;
                 buf.append("ALTER TABLE ");
-                buf.append(context.quotedFullyQualifiedName(getEntity()));
+                quotes.appendFQN(buf, getEntity().getCatalog(), getEntity().getSchema(), getEntity().getName());
                 buf.append(" DROP COLUMN ");
-                buf.append(context.quotedName(getColumn()));
+                quotes.appendStart(buf);
+                buf.append(getColumn().getName());
+                quotes.appendEnd(buf);
                 buf.append(" RESTRICT ");
 
                 return Collections.singletonList(buf.toString());
@@ -83,19 +90,23 @@ public class IngresMergerTokenFactory extends DefaultMergerTokenFactory {
                 if (!rel.isToMany() && rel.isToPK() && !rel.isToDependentPK()) {
 
                     DbEntity source = (DbEntity) rel.getSourceEntity();
-                    QuotingStrategy context = adapter.getQuotingStrategy();
+                    DataMap dataMap = source.getDataMap();
+                    QuotingStrategy quotes = dataMap != null && dataMap.isQuotingSQLIdentifiers()
+                            ? adapter.getQuotingStrategy() : QuotingStrategy.NONE;
                     StringBuilder buf = new StringBuilder();
                     StringBuilder refBuf = new StringBuilder();
 
                     buf.append("ALTER TABLE ");
-                    buf.append(context.quotedFullyQualifiedName(source));
+                    quotes.appendFQN(buf, source.getCatalog(), source.getSchema(), source.getName());
 
                     // requires the ADD CONSTRAINT statement
                     buf.append(" ADD CONSTRAINT ");
                     String name = "U_" + rel.getSourceEntity().getName() + "_"
                             + (long) (System.currentTimeMillis() / (Math.random() * 100000));
 
-                    buf.append(context.quotedIdentifier(rel.getSourceEntity(), name));
+                    quotes.appendStart(buf);
+                    buf.append(name);
+                    quotes.appendEnd(buf);
                     buf.append(" FOREIGN KEY (");
 
                     boolean first = true;
@@ -107,12 +118,17 @@ public class IngresMergerTokenFactory extends DefaultMergerTokenFactory {
                             first = false;
                         }
 
-                        buf.append(context.quotedSourceName(join));
-                        refBuf.append(context.quotedTargetName(join));
+                        quotes.appendStart(buf);
+                        buf.append(join.getSourceName());
+                        quotes.appendEnd(buf);
+                        quotes.appendStart(refBuf);
+                        refBuf.append(join.getTargetName());
+                        quotes.appendEnd(refBuf);
                     }
 
                     buf.append(") REFERENCES ");
-                    buf.append(context.quotedFullyQualifiedName((DbEntity) rel.getTargetEntity()));
+                    DbEntity target = (DbEntity) rel.getTargetEntity();
+                    quotes.appendFQN(buf, target.getCatalog(), target.getSchema(), target.getName());
                     buf.append(" (");
                     buf.append(refBuf.toString());
                     buf.append(')');
@@ -143,12 +159,16 @@ public class IngresMergerTokenFactory extends DefaultMergerTokenFactory {
 
                 StringBuilder sqlBuffer = new StringBuilder();
 
-                QuotingStrategy context = adapter.getQuotingStrategy();
+                DataMap dataMap = getEntity().getDataMap();
+                QuotingStrategy quotes = dataMap != null && dataMap.isQuotingSQLIdentifiers()
+                        ? adapter.getQuotingStrategy() : QuotingStrategy.NONE;
 
                 sqlBuffer.append("ALTER TABLE ");
                 sqlBuffer.append(getEntity().getFullyQualifiedName());
                 sqlBuffer.append(" ALTER COLUMN ");
-                sqlBuffer.append(context.quotedName(getColumn()));
+                quotes.appendStart(sqlBuffer);
+                sqlBuffer.append(getColumn().getName());
+                quotes.appendEnd(sqlBuffer);
                 sqlBuffer.append(" ");
                 sqlBuffer.append(adapter.nativeColumnTypes(getColumn().getType())[0].nativeType());
 
@@ -173,11 +193,15 @@ public class IngresMergerTokenFactory extends DefaultMergerTokenFactory {
             @Override
             public List<String> createSql(DbAdapter adapter) {
                 StringBuilder sqlBuffer = new StringBuilder();
-                QuotingStrategy context = adapter.getQuotingStrategy();
+                DataMap dataMap = getEntity().getDataMap();
+                QuotingStrategy quotes = dataMap != null && dataMap.isQuotingSQLIdentifiers()
+                        ? adapter.getQuotingStrategy() : QuotingStrategy.NONE;
                 sqlBuffer.append("ALTER TABLE ");
-                sqlBuffer.append(context.quotedFullyQualifiedName(getEntity()));
+                quotes.appendFQN(sqlBuffer, getEntity().getCatalog(), getEntity().getSchema(), getEntity().getName());
                 sqlBuffer.append(" ALTER COLUMN ");
-                sqlBuffer.append(context.quotedName(getColumn()));
+                quotes.appendStart(sqlBuffer);
+                sqlBuffer.append(getColumn().getName());
+                quotes.appendEnd(sqlBuffer);
                 sqlBuffer.append(" ");
                 sqlBuffer.append(adapter.nativeColumnTypes(getColumn().getType())[0].nativeType());
 
@@ -208,9 +232,12 @@ public class IngresMergerTokenFactory extends DefaultMergerTokenFactory {
                     return Collections.emptyList();
                 }
                 
+                DataMap dataMap = getEntity().getDataMap();
+                QuotingStrategy quotes = dataMap != null && dataMap.isQuotingSQLIdentifiers()
+                        ? adapter.getQuotingStrategy() : QuotingStrategy.NONE;
                 StringBuilder buf = new StringBuilder();
                 buf.append("ALTER TABLE ");
-                buf.append(adapter.getQuotingStrategy().quotedFullyQualifiedName(getEntity()));
+                quotes.appendFQN(buf, getEntity().getCatalog(), getEntity().getSchema(), getEntity().getName());
                 buf.append(" DROP CONSTRAINT ");
                 buf.append(fkName);
                 buf.append(" CASCADE ");

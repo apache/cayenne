@@ -37,8 +37,8 @@ import org.apache.cayenne.access.types.ValueObjectTypeRegistry;
 import org.apache.cayenne.configuration.Constants;
 import org.apache.cayenne.configuration.RuntimeProperties;
 import org.apache.cayenne.dba.DefaultQuotingStrategy;
-import org.apache.cayenne.dba.JdbcAdapter;
 import org.apache.cayenne.dba.QuotingStrategy;
+import org.apache.cayenne.dba.JdbcAdapter;
 import org.apache.cayenne.di.Inject;
 import org.apache.cayenne.map.DbAttribute;
 import org.apache.cayenne.map.DbEntity;
@@ -121,7 +121,7 @@ public class SQLServerAdapter extends JdbcAdapter {
 
     @Override
     protected QuotingStrategy createQuotingStrategy() {
-        return new DefaultQuotingStrategy("[", "]");
+        return new DefaultQuotingStrategy('[', ']');
     }
 
     @Override
@@ -261,12 +261,14 @@ public class SQLServerAdapter extends JdbcAdapter {
             throw new CayenneRuntimeException("Can't create UNIQUE constraint - no columns specified.");
         }
 
+        QuotingStrategy quotes = getQuotingStrategy(source);
+
         return "CREATE UNIQUE NONCLUSTERED INDEX " + uniqueIndexName(source, columns) + " ON " +
-                quotingStrategy.quotedFullyQualifiedName(source) +
+                quotes.quotedFQN(source.getCatalog(), source.getSchema(), source.getName()) +
                 "(" +
-                columns.stream().map(quotingStrategy::quotedName).collect(Collectors.joining(", ")) +
+                columns.stream().map(c -> quotes.quoted(c.getName())).collect(Collectors.joining(", ")) +
                 ") WHERE " +
-                columns.stream().map(quotingStrategy::quotedName)
+                columns.stream().map(c -> quotes.quoted(c.getName()))
                         .map(n -> n + " IS NOT NULL")
                         .collect(Collectors.joining(" AND "));
     }

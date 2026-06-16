@@ -25,6 +25,7 @@ import org.apache.cayenne.ejbql.EJBQLBaseVisitor;
 import org.apache.cayenne.ejbql.EJBQLException;
 import org.apache.cayenne.ejbql.EJBQLExpression;
 import org.apache.cayenne.ejbql.EJBQLExpressionVisitor;
+import org.apache.cayenne.dba.QuotingStrategy;
 import org.apache.cayenne.map.DbAttribute;
 import org.apache.cayenne.map.DbEntity;
 import org.apache.cayenne.map.DbRelationship;
@@ -74,8 +75,10 @@ class EJBQLGroupByTranslator extends EJBQLBaseVisitor {
                 String idVariableAbsolutePath = fullPath + "." + expression.getText();
                 ClassDescriptor descriptor = context.getEntityDescriptor(idVariableAbsolutePath);
                 if (descriptor != null) {
-                    this.lastAlias = context.getTableAlias(idVariableAbsolutePath, context.getQuotingStrategy()
-                            .quotedFullyQualifiedName(descriptor.getEntity().getDbEntity()));
+                    QuotingStrategy quotes = context.getIdentifierQuotes();
+                    DbEntity dbEntity = descriptor.getEntity().getDbEntity();
+                    this.lastAlias = context.getTableAlias(idVariableAbsolutePath,
+                            quotes.quotedFQN(dbEntity.getCatalog(), dbEntity.getSchema(), dbEntity.getName()));
                 }
 
                 resolveLastPathComponent(expression.getText());
@@ -95,8 +98,9 @@ class EJBQLGroupByTranslator extends EJBQLBaseVisitor {
 
                 Iterator<DbAttribute> it = dbAttr.iterator();
 
-                String alias = this.lastAlias != null ? lastAlias : context.getTableAlias(idPath, context
-                        .getQuotingStrategy().quotedFullyQualifiedName(table));
+                QuotingStrategy quotes = context.getIdentifierQuotes();
+                String alias = this.lastAlias != null ? lastAlias : context.getTableAlias(idPath,
+                        quotes.quotedFQN(table.getCatalog(), table.getSchema(), table.getName()));
 
                 boolean first = true;
                 while (it.hasNext()) {
@@ -104,7 +108,7 @@ class EJBQLGroupByTranslator extends EJBQLBaseVisitor {
                     context.append(!first ? ", " : " ");
 
                     DbAttribute dbAttribute = it.next();
-                    context.append(alias).append('.').append(context.getQuotingStrategy().quotedName(dbAttribute));
+                    context.append(alias).append('.').append(quotes.quoted(dbAttribute.getName()));
 
                     first = false;
                 }

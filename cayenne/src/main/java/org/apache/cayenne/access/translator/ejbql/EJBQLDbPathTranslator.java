@@ -21,6 +21,7 @@ package org.apache.cayenne.access.translator.ejbql;
 import org.apache.cayenne.ejbql.EJBQLBaseVisitor;
 import org.apache.cayenne.ejbql.EJBQLException;
 import org.apache.cayenne.ejbql.EJBQLExpression;
+import org.apache.cayenne.dba.QuotingStrategy;
 import org.apache.cayenne.map.DbAttribute;
 import org.apache.cayenne.map.DbEntity;
 import org.apache.cayenne.map.DbJoin;
@@ -106,17 +107,19 @@ public abstract class EJBQLDbPathTranslator extends EJBQLBaseVisitor {
 
 		this.fullPath = fullPath + '.' + lastPathComponent;
 
+		QuotingStrategy quotes = context.getIdentifierQuotes();
 		if (oldPath != null) {
 			this.idPath = oldPath;
 			this.lastAlias = context.getTableAlias(oldPath,
-					context.getQuotingStrategy().quotedFullyQualifiedName(currentEntity));
+					quotes.quotedFQN(currentEntity.getCatalog(), currentEntity.getSchema(), currentEntity.getName()));
 		} else {
 
 			// register join
 			if (inner) {
 				joinAppender.appendInnerJoin(joinMarker, new EJBQLTableId(idPath), new EJBQLTableId(fullPath));
 				this.lastAlias = context.getTableAlias(fullPath,
-						context.getQuotingStrategy().quotedFullyQualifiedName(currentEntity));
+						quotes.quotedFQN(currentEntity.getCatalog(), currentEntity.getSchema(),
+								currentEntity.getName()));
 			} else {
 				joinAppender.appendOuterJoin(joinMarker, new EJBQLTableId(idPath), new EJBQLTableId(fullPath));
 
@@ -124,7 +127,7 @@ public abstract class EJBQLDbPathTranslator extends EJBQLBaseVisitor {
 				DbEntity targetEntity = lastRelationship.getTargetEntity();
 
 				this.lastAlias = context.getTableAlias(fullPath,
-						context.getQuotingStrategy().quotedFullyQualifiedName(targetEntity));
+						quotes.quotedFQN(targetEntity.getCatalog(), targetEntity.getSchema(), targetEntity.getName()));
 			}
 
 			this.idPath = newPath;
@@ -162,18 +165,20 @@ public abstract class EJBQLDbPathTranslator extends EJBQLBaseVisitor {
 	protected void processTerminatingAttribute(DbAttribute attribute) {
 
 		DbEntity table = attribute.getEntity();
+		QuotingStrategy quotes = context.getIdentifierQuotes();
 
 		if (isUsingAliases()) {
-			String alias = this.lastAlias != null ? lastAlias : context.getTableAlias(idPath, context
-					.getQuotingStrategy().quotedFullyQualifiedName(table));
-			context.append(' ').append(alias).append('.').append(context.getQuotingStrategy().quotedName(attribute));
+			String alias = this.lastAlias != null ? lastAlias : context.getTableAlias(idPath,
+					quotes.quotedFQN(table.getCatalog(), table.getSchema(), table.getName()));
+			context.append(' ').append(alias).append('.').append(quotes.quoted(attribute.getName()));
 		} else {
-			context.append(' ').append(context.getQuotingStrategy().quotedName(attribute));
+			context.append(' ').append(quotes.quoted(attribute.getName()));
 		}
 	}
 
 	protected void processTerminatingRelationship(DbRelationship relationship) {
 
+		QuotingStrategy quotes = context.getIdentifierQuotes();
 		if (relationship.isToMany()) {
 
 			// use an outer join for to-many matches
@@ -181,8 +186,8 @@ public abstract class EJBQLDbPathTranslator extends EJBQLBaseVisitor {
 
 			DbEntity table = relationship.getTargetEntity();
 
-			String alias = this.lastAlias != null ? lastAlias : context.getTableAlias(idPath, context
-					.getQuotingStrategy().quotedFullyQualifiedName(table));
+			String alias = this.lastAlias != null ? lastAlias : context.getTableAlias(idPath,
+					quotes.quotedFQN(table.getCatalog(), table.getSchema(), table.getName()));
 
 			Collection<DbAttribute> pks = table.getPrimaryKeys();
 
@@ -192,7 +197,7 @@ public abstract class EJBQLDbPathTranslator extends EJBQLBaseVisitor {
 				if (isUsingAliases()) {
 					context.append(alias).append('.');
 				}
-				context.append(context.getQuotingStrategy().quotedName(pk));
+				context.append(quotes.quoted(pk.getName()));
 			} else {
 				throw new EJBQLException("Multi-column PK to-many matches are not yet supported.");
 			}
@@ -201,8 +206,8 @@ public abstract class EJBQLDbPathTranslator extends EJBQLBaseVisitor {
 
 			DbEntity table = relationship.getSourceEntity();
 
-			String alias = this.lastAlias != null ? lastAlias : context.getTableAlias(idPath, context
-					.getQuotingStrategy().quotedFullyQualifiedName(table));
+			String alias = this.lastAlias != null ? lastAlias : context.getTableAlias(idPath,
+					quotes.quotedFQN(table.getCatalog(), table.getSchema(), table.getName()));
 
 			List<DbJoin> joins = relationship.getJoins();
 
@@ -212,7 +217,7 @@ public abstract class EJBQLDbPathTranslator extends EJBQLBaseVisitor {
 				if (isUsingAliases()) {
 					context.append(alias).append('.');
 				}
-				context.append(context.getQuotingStrategy().quotedName(join.getSource()));
+				context.append(quotes.quoted(join.getSource().getName()));
 			} else {
 				Map<String, String> multiColumnMatch = new HashMap<>(joins.size() + 2);
 
@@ -244,6 +249,7 @@ public abstract class EJBQLDbPathTranslator extends EJBQLBaseVisitor {
 
 		this.fullPath = fullPath + '.' + lastPathComponent;
 
+		QuotingStrategy quotes = context.getIdentifierQuotes();
 		if (oldPath != null) {
 			this.idPath = oldPath;
 			DbRelationship lastRelationship = currentEntity.getRelationship(lastPathComponent);
@@ -251,9 +257,10 @@ public abstract class EJBQLDbPathTranslator extends EJBQLBaseVisitor {
 				DbEntity targetEntity = lastRelationship.getTargetEntity();
 
 				this.lastAlias = context.getTableAlias(fullPath,
-						context.getQuotingStrategy().quotedFullyQualifiedName(targetEntity));
+						quotes.quotedFQN(targetEntity.getCatalog(), targetEntity.getSchema(), targetEntity.getName()));
 			} else {
-				String tableName = context.getQuotingStrategy().quotedFullyQualifiedName(currentEntity);
+				String tableName = quotes.quotedFQN(currentEntity.getCatalog(), currentEntity.getSchema(),
+						currentEntity.getName());
 				this.lastAlias = context.getTableAlias(oldPath, tableName);
 			}
 		} else {
@@ -271,7 +278,7 @@ public abstract class EJBQLDbPathTranslator extends EJBQLBaseVisitor {
 			// TODO: outer joins handling
 
 			this.lastAlias = context.getTableAlias(fullPath,
-					context.getQuotingStrategy().quotedFullyQualifiedName(targetEntity));
+					quotes.quotedFQN(targetEntity.getCatalog(), targetEntity.getSchema(), targetEntity.getName()));
 
 			this.idPath = newPath;
 		}

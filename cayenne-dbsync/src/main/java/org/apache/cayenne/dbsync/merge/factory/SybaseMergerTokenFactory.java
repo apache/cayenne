@@ -26,6 +26,7 @@ import org.apache.cayenne.dbsync.merge.token.db.DropColumnToDb;
 import org.apache.cayenne.dbsync.merge.token.db.SetAllowNullToDb;
 import org.apache.cayenne.dbsync.merge.token.db.SetColumnTypeToDb;
 import org.apache.cayenne.dbsync.merge.token.db.SetNotNullToDb;
+import org.apache.cayenne.map.DataMap;
 import org.apache.cayenne.map.DbAttribute;
 import org.apache.cayenne.map.DbEntity;
 
@@ -48,9 +49,11 @@ public class SybaseMergerTokenFactory extends DefaultMergerTokenFactory {
             public List<String> createSql(DbAdapter adapter) {
 
                 StringBuffer sqlBuffer = new StringBuffer();
-                QuotingStrategy context = adapter.getQuotingStrategy();
+                DataMap dataMap = getEntity().getDataMap();
+                QuotingStrategy quotes = dataMap != null && dataMap.isQuotingSQLIdentifiers()
+                        ? adapter.getQuotingStrategy() : QuotingStrategy.NONE;
                 sqlBuffer.append("ALTER TABLE ");
-                sqlBuffer.append(context.quotedFullyQualifiedName(getEntity()));
+                quotes.appendFQN(sqlBuffer, getEntity().getCatalog(), getEntity().getSchema(), getEntity().getName());
                 sqlBuffer.append(" ADD ");
                 boolean magnatory = column.isMandatory();
                 column.setMandatory(false);
@@ -74,11 +77,15 @@ public class SybaseMergerTokenFactory extends DefaultMergerTokenFactory {
             @Override
             public List<String> createSql(DbAdapter adapter) {
                 StringBuilder sqlBuffer = new StringBuilder();
-                QuotingStrategy context = adapter.getQuotingStrategy();
+                DataMap dataMap = getEntity().getDataMap();
+                QuotingStrategy quotes = dataMap != null && dataMap.isQuotingSQLIdentifiers()
+                        ? adapter.getQuotingStrategy() : QuotingStrategy.NONE;
                 sqlBuffer.append("ALTER TABLE ");
-                sqlBuffer.append(context.quotedFullyQualifiedName(getEntity()));
+                quotes.appendFQN(sqlBuffer, getEntity().getCatalog(), getEntity().getSchema(), getEntity().getName());
                 sqlBuffer.append(" DROP ");
-                sqlBuffer.append(context.quotedName(getColumn()));
+                quotes.appendStart(sqlBuffer);
+                sqlBuffer.append(getColumn().getName());
+                quotes.appendEnd(sqlBuffer);
 
                 return Collections.singletonList(sqlBuffer.toString());
             }
@@ -137,12 +144,14 @@ public class SybaseMergerTokenFactory extends DefaultMergerTokenFactory {
         return new SetColumnTypeToDb(entity, columnOriginal, columnNew) {
 
             @Override
-            protected void appendPrefix(StringBuffer sqlBuffer, QuotingStrategy context) {
+            protected void appendPrefix(StringBuffer sqlBuffer, QuotingStrategy quotes) {
                 // http://dev.mysql.com/tech-resources/articles/mysql-cluster-50.html
                 sqlBuffer.append("ALTER TABLE ");
-                sqlBuffer.append(context.quotedFullyQualifiedName(entity));
+                quotes.appendFQN(sqlBuffer, entity.getCatalog(), entity.getSchema(), entity.getName());
                 sqlBuffer.append(" MODIFY ");
-                sqlBuffer.append(context.quotedName(columnNew));
+                quotes.appendStart(sqlBuffer);
+                sqlBuffer.append(columnNew.getName());
+                quotes.appendEnd(sqlBuffer);
                 sqlBuffer.append(" ");
             }
 
@@ -154,9 +163,11 @@ public class SybaseMergerTokenFactory extends DefaultMergerTokenFactory {
             DbEntity entity,
             DbAttribute column) {
         StringBuffer sqlBuffer = new StringBuffer();
-        QuotingStrategy context = adapter.getQuotingStrategy();
+        DataMap dataMap = entity.getDataMap();
+        QuotingStrategy quotes = dataMap != null && dataMap.isQuotingSQLIdentifiers()
+                ? adapter.getQuotingStrategy() : QuotingStrategy.NONE;
         sqlBuffer.append("ALTER TABLE ");
-        sqlBuffer.append(context.quotedFullyQualifiedName(entity));
+        quotes.appendFQN(sqlBuffer, entity.getCatalog(), entity.getSchema(), entity.getName());
         sqlBuffer.append(" MODIFY ");
         adapter.createTableAppendColumn(sqlBuffer, column);
 

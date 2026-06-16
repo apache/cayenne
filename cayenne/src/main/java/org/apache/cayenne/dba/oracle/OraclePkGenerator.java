@@ -21,6 +21,7 @@ package org.apache.cayenne.dba.oracle;
 
 import org.apache.cayenne.CayenneRuntimeException;
 import org.apache.cayenne.access.DataNode;
+import org.apache.cayenne.dba.QuotingStrategy;
 import org.apache.cayenne.dba.JdbcAdapter;
 import org.apache.cayenne.dba.JdbcPkGenerator;
 import org.apache.cayenne.map.DataMap;
@@ -100,15 +101,14 @@ public class OraclePkGenerator extends JdbcPkGenerator {
         // drop obsolete sequences
         for (DbEntity dbEntity : dbEntities) {
             String name;
-            if (dbEntity.getDataMap().isQuotingSQLIdentifiers()) {
-                DbEntity tempEnt = new DbEntity();
-                DataMap dm = new DataMap();
-                dm.setQuotingSQLIdentifiers(false);
-                tempEnt.setDataMap(dm);
-                tempEnt.setName(dbEntity.getName());
-                name = stripSchemaName(sequenceName(tempEnt));
+            if (dbEntity.getDataMap() != null && dbEntity.getDataMap().isQuotingSQLIdentifiers()) {
+                // the comparison name must be unquoted; render the bare sequence name without
+                // catalog/schema, matching the legacy behavior
+                StringBuilder buf = new StringBuilder();
+                QuotingStrategy.NONE.appendFQN(buf, getSequencePrefix() + dbEntity.getName().toLowerCase());
+                name = stripSchemaName(buf.toString());
             } else {
-                name = stripSchemaName(sequenceName(dbEntity));
+                name = stripSchemaName(sequenceName(dbEntity, QuotingStrategy.NONE));
             }
             if (sequences.contains(name)) {
                 runUpdate(node, dropSequenceString(dbEntity));
@@ -205,6 +205,16 @@ public class OraclePkGenerator extends JdbcPkGenerator {
      * Returns expected primary key sequence name for a DbEntity.
      */
     protected String sequenceName(DbEntity entity) {
+        DataMap dataMap = entity.getDataMap();
+        QuotingStrategy quotes = dataMap != null && dataMap.isQuotingSQLIdentifiers()
+                ? adapter.getQuotingStrategy() : QuotingStrategy.NONE;
+        return sequenceName(entity, quotes);
+    }
+
+    /**
+     * Renders the sequence name for the entity using the provided quoting style.
+     */
+    private String sequenceName(DbEntity entity, QuotingStrategy quotes) {
 
         // use custom generator if possible
         DbKeyGenerator keyGenerator = entity.getPrimaryKeyGenerator();
@@ -214,7 +224,9 @@ public class OraclePkGenerator extends JdbcPkGenerator {
             return keyGenerator.getGeneratorName().toLowerCase();
         } else {
             String seqName = getSequencePrefix() + entity.getName().toLowerCase();
-            return adapter.getQuotingStrategy().quotedIdentifier(entity, entity.getCatalog(), entity.getSchema(), seqName);
+            StringBuilder buf = new StringBuilder();
+            quotes.appendFQN(buf, entity.getCatalog(), entity.getSchema(), seqName);
+            return buf.toString();
         }
     }
 
