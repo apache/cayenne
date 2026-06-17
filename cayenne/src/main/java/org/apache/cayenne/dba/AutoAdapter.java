@@ -266,9 +266,18 @@ public class AutoAdapter implements DbAdapter {
 		getAdapter().createTableAppendColumn(sqlBuffer, column);
 	}
 
+	@Deprecated
 	@Override
 	public QuotingStrategy getQuotingStrategy() {
 		return getAdapter().getQuotingStrategy();
+	}
+
+	/**
+	 * @since 5.0
+	 */
+	@Override
+	public QuotingStrategy getQuotingStrategy(DbEntity entity) {
+		return getAdapter().getQuotingStrategy(entity);
 	}
 
 	/**

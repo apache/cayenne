@@ -26,6 +26,7 @@ import org.apache.cayenne.access.translator.ejbql.EJBQLTranslator;
 import org.apache.cayenne.access.translator.procedure.ProcedureTranslator;
 import org.apache.cayenne.access.translator.select.SelectTranslator;
 import org.apache.cayenne.access.types.ExtendedTypeMap;
+import org.apache.cayenne.map.DataMap;
 import org.apache.cayenne.map.DbAttribute;
 import org.apache.cayenne.map.DbEntity;
 import org.apache.cayenne.map.DbRelationship;
@@ -292,8 +293,21 @@ public interface DbAdapter {
      * and {@link QuotingStrategy#NONE} otherwise.
      *
      * @since 4.0
+     * @deprecated in favor of {@link #getQuotingStrategy(DbEntity)}
      */
+    @Deprecated(since = "5.0", forRemoval = true)
     QuotingStrategy getQuotingStrategy();
+
+    /**
+     * Resolves the {@link QuotingStrategy} to use for the given entity: this adapter's strategy when the
+     * entity's DataMap enables SQL identifier quoting, and {@link QuotingStrategy#NONE} otherwise.
+     *
+     * @since 5.0
+     */
+    default QuotingStrategy getQuotingStrategy(DbEntity entity) {
+        DataMap dataMap = entity != null ? entity.getDataMap() : null;
+        return dataMap != null && dataMap.isQuotingSQLIdentifiers() ? getQuotingStrategy() : QuotingStrategy.NONE;
+    }
 
     /**
      * Allows the users to get access to the adapter decorated by a given

@@ -28,7 +28,6 @@ import org.apache.cayenne.dbsync.merge.token.db.SetAllowNullToDb;
 import org.apache.cayenne.dbsync.merge.token.db.SetColumnTypeToDb;
 import org.apache.cayenne.dbsync.merge.token.db.SetGeneratedFlagToDb;
 import org.apache.cayenne.dbsync.merge.token.db.SetNotNullToDb;
-import org.apache.cayenne.map.DataMap;
 import org.apache.cayenne.map.DbAttribute;
 import org.apache.cayenne.map.DbEntity;
 import org.apache.cayenne.map.DbJoin;
@@ -65,9 +64,7 @@ public class IngresMergerTokenFactory extends DefaultMergerTokenFactory {
             @Override
             public List<String> createSql(DbAdapter adapter) {
                 StringBuilder buf = new StringBuilder();
-                DataMap dataMap = getEntity().getDataMap();
-                QuotingStrategy quotes = dataMap != null && dataMap.isQuotingSQLIdentifiers()
-                        ? adapter.getQuotingStrategy() : QuotingStrategy.NONE;
+                QuotingStrategy quotes = adapter.getQuotingStrategy(getEntity());
                 buf.append("ALTER TABLE ");
                 quotes.appendFQN(buf, getEntity().getCatalog(), getEntity().getSchema(), getEntity().getName());
                 buf.append(" DROP COLUMN ");
@@ -90,9 +87,7 @@ public class IngresMergerTokenFactory extends DefaultMergerTokenFactory {
                 if (!rel.isToMany() && rel.isToPK() && !rel.isToDependentPK()) {
 
                     DbEntity source = (DbEntity) rel.getSourceEntity();
-                    DataMap dataMap = source.getDataMap();
-                    QuotingStrategy quotes = dataMap != null && dataMap.isQuotingSQLIdentifiers()
-                            ? adapter.getQuotingStrategy() : QuotingStrategy.NONE;
+                    QuotingStrategy quotes = adapter.getQuotingStrategy(source);
                     StringBuilder buf = new StringBuilder();
                     StringBuilder refBuf = new StringBuilder();
 
@@ -159,9 +154,7 @@ public class IngresMergerTokenFactory extends DefaultMergerTokenFactory {
 
                 StringBuilder sqlBuffer = new StringBuilder();
 
-                DataMap dataMap = getEntity().getDataMap();
-                QuotingStrategy quotes = dataMap != null && dataMap.isQuotingSQLIdentifiers()
-                        ? adapter.getQuotingStrategy() : QuotingStrategy.NONE;
+                QuotingStrategy quotes = adapter.getQuotingStrategy(getEntity());
 
                 sqlBuffer.append("ALTER TABLE ");
                 sqlBuffer.append(getEntity().getFullyQualifiedName());
@@ -193,9 +186,7 @@ public class IngresMergerTokenFactory extends DefaultMergerTokenFactory {
             @Override
             public List<String> createSql(DbAdapter adapter) {
                 StringBuilder sqlBuffer = new StringBuilder();
-                DataMap dataMap = getEntity().getDataMap();
-                QuotingStrategy quotes = dataMap != null && dataMap.isQuotingSQLIdentifiers()
-                        ? adapter.getQuotingStrategy() : QuotingStrategy.NONE;
+                QuotingStrategy quotes = adapter.getQuotingStrategy(getEntity());
                 sqlBuffer.append("ALTER TABLE ");
                 quotes.appendFQN(sqlBuffer, getEntity().getCatalog(), getEntity().getSchema(), getEntity().getName());
                 sqlBuffer.append(" ALTER COLUMN ");
@@ -232,9 +223,7 @@ public class IngresMergerTokenFactory extends DefaultMergerTokenFactory {
                     return Collections.emptyList();
                 }
                 
-                DataMap dataMap = getEntity().getDataMap();
-                QuotingStrategy quotes = dataMap != null && dataMap.isQuotingSQLIdentifiers()
-                        ? adapter.getQuotingStrategy() : QuotingStrategy.NONE;
+                QuotingStrategy quotes = adapter.getQuotingStrategy(getEntity());
                 StringBuilder buf = new StringBuilder();
                 buf.append("ALTER TABLE ");
                 quotes.appendFQN(buf, getEntity().getCatalog(), getEntity().getSchema(), getEntity().getName());

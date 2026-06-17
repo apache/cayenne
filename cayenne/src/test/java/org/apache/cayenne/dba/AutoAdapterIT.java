@@ -21,6 +21,7 @@ package org.apache.cayenne.dba;
 
 import org.apache.cayenne.access.jdbc.SQLTemplateAction;
 import org.apache.cayenne.log.NoopJdbcEventLogger;
+import org.apache.cayenne.map.DbEntity;
 import org.apache.cayenne.query.ObjectSelect;
 import org.apache.cayenne.query.SQLTemplate;
 import org.apache.cayenne.testdo.testmap.Artist;
@@ -76,8 +77,9 @@ public class AutoAdapterIT {
                 autoAdapter.getBatchTerminator());
         assertSame(adapter.getPkGenerator(),
                 autoAdapter.getPkGenerator());
-        assertSame(adapter.getQuotingStrategy(),
-                autoAdapter.getQuotingStrategy());
+        DbEntity artistDbEntity = env.dataNode().getEntityResolver().getObjEntity(Artist.class).getDbEntity();
+        assertSame(adapter.getQuotingStrategy(artistDbEntity),
+                autoAdapter.getQuotingStrategy(artistDbEntity));
         // returns a new instance for each call
         assertSame(adapter.getSqlTreeProcessor().getClass(),
                 autoAdapter.getSqlTreeProcessor().getClass());

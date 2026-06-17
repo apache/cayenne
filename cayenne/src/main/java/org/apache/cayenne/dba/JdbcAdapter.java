@@ -38,7 +38,6 @@ import org.apache.cayenne.configuration.Constants;
 import org.apache.cayenne.configuration.RuntimeProperties;
 import org.apache.cayenne.di.Inject;
 import org.apache.cayenne.log.JdbcEventLogger;
-import org.apache.cayenne.map.DataMap;
 import org.apache.cayenne.map.DbAttribute;
 import org.apache.cayenne.map.DbEntity;
 import org.apache.cayenne.map.DbJoin;
@@ -311,15 +310,6 @@ public class JdbcAdapter implements DbAdapter {
         StringBuilder buf = new StringBuilder("DROP TABLE ");
         quotes.appendFQN(buf, table.getCatalog(), table.getSchema(), table.getName());
         return Collections.singleton(buf.toString());
-    }
-
-    /**
-     * Resolves the {@link QuotingStrategy} instance to use for the given entity, based on whether
-     * its DataMap enables SQL identifier quoting.
-     */
-    protected QuotingStrategy getQuotingStrategy(DbEntity entity) {
-        DataMap dataMap = entity.getDataMap();
-        return dataMap != null && dataMap.isQuotingSQLIdentifiers() ? getQuotingStrategy() : QuotingStrategy.NONE;
     }
 
     /**

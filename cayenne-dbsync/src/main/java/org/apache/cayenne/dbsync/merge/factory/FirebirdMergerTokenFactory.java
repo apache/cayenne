@@ -26,7 +26,6 @@ import org.apache.cayenne.dbsync.merge.token.db.AddColumnToDb;
 import org.apache.cayenne.dbsync.merge.token.db.DropColumnToDb;
 import org.apache.cayenne.dbsync.merge.token.db.SetAllowNullToDb;
 import org.apache.cayenne.dbsync.merge.token.db.SetNotNullToDb;
-import org.apache.cayenne.map.DataMap;
 import org.apache.cayenne.map.DbAttribute;
 import org.apache.cayenne.map.DbEntity;
 
@@ -39,9 +38,7 @@ public class FirebirdMergerTokenFactory extends DefaultMergerTokenFactory {
     public MergerToken createDropColumnToDb(DbEntity entity, DbAttribute column) {
         return new DropColumnToDb(entity, column) {
             public List<String> createSql(DbAdapter adapter) {
-                DataMap dataMap = getEntity().getDataMap();
-                QuotingStrategy quotes = dataMap != null && dataMap.isQuotingSQLIdentifiers()
-                        ? adapter.getQuotingStrategy() : QuotingStrategy.NONE;
+                QuotingStrategy quotes = adapter.getQuotingStrategy(getEntity());
                 StringBuilder sql = new StringBuilder("ALTER TABLE ");
                 quotes.appendFQN(sql, getEntity().getCatalog(), getEntity().getSchema(), getEntity().getName());
                 sql.append(" DROP ");
@@ -57,9 +54,7 @@ public class FirebirdMergerTokenFactory extends DefaultMergerTokenFactory {
     public MergerToken createSetNotNullToDb(DbEntity entity, DbAttribute column) {
         return new SetNotNullToDb(entity, column) {
             public List<String> createSql(DbAdapter adapter) {
-                DataMap dataMap = getEntity().getDataMap();
-                QuotingStrategy quotes = dataMap != null && dataMap.isQuotingSQLIdentifiers()
-                        ? adapter.getQuotingStrategy() : QuotingStrategy.NONE;
+                QuotingStrategy quotes = adapter.getQuotingStrategy(getEntity());
                 String entityName = quotes.quotedFQN(getEntity().getCatalog(), getEntity().getSchema(),
                         getEntity().getName());
                 String columnName = quotes.quoted(getColumn().getName());
@@ -75,9 +70,7 @@ public class FirebirdMergerTokenFactory extends DefaultMergerTokenFactory {
     public MergerToken createSetAllowNullToDb(DbEntity entity, DbAttribute column) {
         return new SetAllowNullToDb(entity, column) {
             public List<String> createSql(DbAdapter adapter) {
-                DataMap dataMap = getEntity().getDataMap();
-                QuotingStrategy quotes = dataMap != null && dataMap.isQuotingSQLIdentifiers()
-                        ? adapter.getQuotingStrategy() : QuotingStrategy.NONE;
+                QuotingStrategy quotes = adapter.getQuotingStrategy(getEntity());
                 String entityName = quotes.quotedFQN(getEntity().getCatalog(), getEntity().getSchema(),
                         getEntity().getName());
                 String columnName = quotes.quoted(getColumn().getName());

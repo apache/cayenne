@@ -25,7 +25,6 @@ import org.apache.cayenne.dbsync.merge.token.db.AddColumnToDb;
 import org.apache.cayenne.dbsync.merge.token.db.SetAllowNullToDb;
 import org.apache.cayenne.dbsync.merge.token.db.SetColumnTypeToDb;
 import org.apache.cayenne.dbsync.merge.token.db.SetNotNullToDb;
-import org.apache.cayenne.map.DataMap;
 import org.apache.cayenne.map.DbAttribute;
 import org.apache.cayenne.map.DbEntity;
 
@@ -81,9 +80,7 @@ public class OracleMergerTokenFactory extends DefaultMergerTokenFactory {
             public List<String> createSql(DbAdapter adapter) {
                 StringBuffer sqlBuffer = new StringBuffer();
 
-                DataMap dataMap = getEntity().getDataMap();
-                QuotingStrategy quotes = dataMap != null && dataMap.isQuotingSQLIdentifiers()
-                        ? adapter.getQuotingStrategy() : QuotingStrategy.NONE;
+                QuotingStrategy quotes = adapter.getQuotingStrategy(getEntity());
                 sqlBuffer.append("ALTER TABLE ");
                 quotes.appendFQN(sqlBuffer, getEntity().getCatalog(), getEntity().getSchema(), getEntity().getName());
                 sqlBuffer.append(" MODIFY ");
@@ -105,9 +102,7 @@ public class OracleMergerTokenFactory extends DefaultMergerTokenFactory {
             public List<String> createSql(DbAdapter adapter) {
                 StringBuffer sqlBuffer = new StringBuffer();
 
-                DataMap dataMap = getEntity().getDataMap();
-                QuotingStrategy quotes = dataMap != null && dataMap.isQuotingSQLIdentifiers()
-                        ? adapter.getQuotingStrategy() : QuotingStrategy.NONE;
+                QuotingStrategy quotes = adapter.getQuotingStrategy(getEntity());
                 sqlBuffer.append("ALTER TABLE ");
                 quotes.appendFQN(sqlBuffer, getEntity().getCatalog(), getEntity().getSchema(), getEntity().getName());
                 sqlBuffer.append(" MODIFY ");

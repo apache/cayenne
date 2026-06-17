@@ -27,7 +27,6 @@ import org.apache.cayenne.dbsync.merge.token.db.SetColumnTypeToDb;
 import org.apache.cayenne.dbsync.merge.token.db.SetGeneratedFlagToDb;
 import org.apache.cayenne.dbsync.merge.token.db.SetNotNullToDb;
 import org.apache.cayenne.dbsync.merge.token.db.SetPrimaryKeyToDb;
-import org.apache.cayenne.map.DataMap;
 import org.apache.cayenne.map.DbAttribute;
 import org.apache.cayenne.map.DbEntity;
 import org.apache.cayenne.map.DbRelationship;
@@ -49,9 +48,7 @@ public class MySQLMergerTokenFactory extends DefaultMergerTokenFactory {
             public List<String> createSql(DbAdapter adapter) {
                 StringBuffer sqlBuffer = new StringBuffer();
 
-                DataMap dataMap = getEntity().getDataMap();
-                QuotingStrategy quotes = dataMap != null && dataMap.isQuotingSQLIdentifiers()
-                        ? adapter.getQuotingStrategy() : QuotingStrategy.NONE;
+                QuotingStrategy quotes = adapter.getQuotingStrategy(getEntity());
 
                 sqlBuffer.append("ALTER TABLE ");
                 quotes.appendFQN(sqlBuffer, getEntity().getCatalog(), getEntity().getSchema(), getEntity().getName());
@@ -78,9 +75,7 @@ public class MySQLMergerTokenFactory extends DefaultMergerTokenFactory {
             public List<String> createSql(DbAdapter adapter) {
                 StringBuffer sqlBuffer = new StringBuffer();
 
-                DataMap dataMap = getEntity().getDataMap();
-                QuotingStrategy quotes = dataMap != null && dataMap.isQuotingSQLIdentifiers()
-                        ? adapter.getQuotingStrategy() : QuotingStrategy.NONE;
+                QuotingStrategy quotes = adapter.getQuotingStrategy(getEntity());
 
                 sqlBuffer.append("ALTER TABLE ");
                 quotes.appendFQN(sqlBuffer, getEntity().getCatalog(), getEntity().getSchema(), getEntity().getName());
@@ -134,9 +129,7 @@ public class MySQLMergerTokenFactory extends DefaultMergerTokenFactory {
                 if (fkName == null) {
                     return Collections.emptyList();
                 }
-                DataMap dataMap = entity.getDataMap();
-                QuotingStrategy quotes = dataMap != null && dataMap.isQuotingSQLIdentifiers()
-                        ? adapter.getQuotingStrategy() : QuotingStrategy.NONE;
+                QuotingStrategy quotes = adapter.getQuotingStrategy(entity);
 
                 // http://dev.mysql.com/tech-resources/articles/mysql-cluster-50.html
                 StringBuilder sql = new StringBuilder("ALTER TABLE ");

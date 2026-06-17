@@ -31,6 +31,7 @@ import org.apache.cayenne.dba.QuotingStrategy;
 import org.apache.cayenne.di.AdhocObjectFactory;
 import org.apache.cayenne.di.Module;
 import org.apache.cayenne.map.DataMap;
+import org.apache.cayenne.map.DbEntity;
 import org.apache.cayenne.map.EntityResolver;
 import org.apache.cayenne.map.Procedure;
 import org.apache.cayenne.runtime.CayenneRuntime;
@@ -117,9 +118,8 @@ public class CayenneTestsEnv implements BeforeEachCallback, AfterEachCallback {
         TestDbAdapter testDbAdapter = TestDbAdapter.of(firstAdapter);
         tweakProcedures(runtime, testDbAdapter);
 
-        DataMap firstDataMap = context.getEntityResolver().getDataMaps().iterator().next();
-        QuotingStrategy quotingStrategy = firstDataMap.isQuotingSQLIdentifiers()
-                ? firstAdapter.getQuotingStrategy() : QuotingStrategy.NONE;
+        DbEntity firstDbEntity = context.getEntityResolver().getDbEntities().iterator().next();
+        QuotingStrategy quotingStrategy = firstAdapter.getQuotingStrategy(firstDbEntity);
 
         DbHelper dbHelper = new FlavorAwareDbHelper(COMMON_SCHEMA.dataSource(), quotingStrategy);
 

@@ -20,7 +20,6 @@
 package org.apache.cayenne.access.sqlbuilder;
 
 import org.apache.cayenne.dba.QuotingStrategy;
-import org.apache.cayenne.map.DbEntity;
 
 /**
  * @since 4.2
@@ -38,14 +37,9 @@ public class DefaultSQLAppendable implements SQLAppendable {
     }
 
     private static QuotingStrategy resolveQuotes(SQLGenerationContext context) {
-        if (context == null) {
-            return QuotingStrategy.NONE;
-        }
-        DbEntity rootDbEntity = context.getRootDbEntity();
-        boolean quoting = rootDbEntity != null
-                && rootDbEntity.getDataMap() != null
-                && rootDbEntity.getDataMap().isQuotingSQLIdentifiers();
-        return quoting ? context.getAdapter().getQuotingStrategy() : QuotingStrategy.NONE;
+        return context == null
+                ? QuotingStrategy.NONE
+                : context.getAdapter().getQuotingStrategy(context.getRootDbEntity());
     }
 
     @Override

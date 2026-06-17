@@ -140,9 +140,7 @@ public abstract class TestDbAdapter {
                 continue;
             }
 
-            DataMap dataMap = entity.getDataMap();
-            QuotingStrategy quotes = dataMap != null && dataMap.isQuotingSQLIdentifiers()
-                    ? adapter.getQuotingStrategy() : QuotingStrategy.NONE;
+            QuotingStrategy quotes = adapter.getQuotingStrategy(entity);
 
             for (String constraint : constraints) {
 
@@ -331,9 +329,7 @@ public abstract class TestDbAdapter {
                 continue;
             }
 
-            DataMap dataMap = entity.getDataMap();
-            QuotingStrategy quotes = dataMap != null && dataMap.isQuotingSQLIdentifiers()
-                    ? adapter.getQuotingStrategy() : QuotingStrategy.NONE;
+            QuotingStrategy quotes = adapter.getQuotingStrategy(entity);
 
             // Get all constraints for the table
             try (ResultSet rs = metadata.getExportedKeys(entity.getCatalog(), entity.getSchema(), entity.getName())) {

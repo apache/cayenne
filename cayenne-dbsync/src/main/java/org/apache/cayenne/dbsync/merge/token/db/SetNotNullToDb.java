@@ -23,7 +23,6 @@ import org.apache.cayenne.dba.DbAdapter;
 import org.apache.cayenne.dba.QuotingStrategy;
 import org.apache.cayenne.dbsync.merge.factory.MergerTokenFactory;
 import org.apache.cayenne.dbsync.merge.token.MergerToken;
-import org.apache.cayenne.map.DataMap;
 import org.apache.cayenne.map.DbAttribute;
 import org.apache.cayenne.map.DbEntity;
 
@@ -41,9 +40,7 @@ public class SetNotNullToDb extends AbstractToDbToken.EntityAndColumn {
 
     @Override
     public List<String> createSql(DbAdapter adapter) {
-        DataMap dataMap = getEntity().getDataMap();
-        QuotingStrategy quotes = dataMap != null && dataMap.isQuotingSQLIdentifiers()
-                ? adapter.getQuotingStrategy() : QuotingStrategy.NONE;
+        QuotingStrategy quotes = adapter.getQuotingStrategy(getEntity());
         StringBuilder sql = new StringBuilder("ALTER TABLE ");
         quotes.appendFQN(sql, getEntity().getCatalog(), getEntity().getSchema(), getEntity().getName());
         sql.append(" ALTER COLUMN ");

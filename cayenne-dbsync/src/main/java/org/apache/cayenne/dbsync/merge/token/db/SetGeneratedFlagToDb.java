@@ -26,7 +26,6 @@ import org.apache.cayenne.dba.DbAdapter;
 import org.apache.cayenne.dba.QuotingStrategy;
 import org.apache.cayenne.dbsync.merge.factory.MergerTokenFactory;
 import org.apache.cayenne.dbsync.merge.token.MergerToken;
-import org.apache.cayenne.map.DataMap;
 import org.apache.cayenne.map.DbAttribute;
 import org.apache.cayenne.map.DbEntity;
 
@@ -71,9 +70,7 @@ public class SetGeneratedFlagToDb extends AbstractToDbToken.EntityAndColumn {
     }
 
     private QuotingStrategy resolveQuotes(DbAdapter adapter) {
-        DataMap dataMap = getEntity().getDataMap();
-        return dataMap != null && dataMap.isQuotingSQLIdentifiers()
-                ? adapter.getQuotingStrategy() : QuotingStrategy.NONE;
+        return adapter.getQuotingStrategy(getEntity());
     }
 
     @SuppressWarnings("unchecked")

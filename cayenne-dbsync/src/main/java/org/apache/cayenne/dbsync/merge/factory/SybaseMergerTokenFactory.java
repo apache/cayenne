@@ -26,7 +26,6 @@ import org.apache.cayenne.dbsync.merge.token.db.DropColumnToDb;
 import org.apache.cayenne.dbsync.merge.token.db.SetAllowNullToDb;
 import org.apache.cayenne.dbsync.merge.token.db.SetColumnTypeToDb;
 import org.apache.cayenne.dbsync.merge.token.db.SetNotNullToDb;
-import org.apache.cayenne.map.DataMap;
 import org.apache.cayenne.map.DbAttribute;
 import org.apache.cayenne.map.DbEntity;
 
@@ -49,9 +48,7 @@ public class SybaseMergerTokenFactory extends DefaultMergerTokenFactory {
             public List<String> createSql(DbAdapter adapter) {
 
                 StringBuffer sqlBuffer = new StringBuffer();
-                DataMap dataMap = getEntity().getDataMap();
-                QuotingStrategy quotes = dataMap != null && dataMap.isQuotingSQLIdentifiers()
-                        ? adapter.getQuotingStrategy() : QuotingStrategy.NONE;
+                QuotingStrategy quotes = adapter.getQuotingStrategy(getEntity());
                 sqlBuffer.append("ALTER TABLE ");
                 quotes.appendFQN(sqlBuffer, getEntity().getCatalog(), getEntity().getSchema(), getEntity().getName());
                 sqlBuffer.append(" ADD ");
@@ -77,9 +74,7 @@ public class SybaseMergerTokenFactory extends DefaultMergerTokenFactory {
             @Override
             public List<String> createSql(DbAdapter adapter) {
                 StringBuilder sqlBuffer = new StringBuilder();
-                DataMap dataMap = getEntity().getDataMap();
-                QuotingStrategy quotes = dataMap != null && dataMap.isQuotingSQLIdentifiers()
-                        ? adapter.getQuotingStrategy() : QuotingStrategy.NONE;
+                QuotingStrategy quotes = adapter.getQuotingStrategy(getEntity());
                 sqlBuffer.append("ALTER TABLE ");
                 quotes.appendFQN(sqlBuffer, getEntity().getCatalog(), getEntity().getSchema(), getEntity().getName());
                 sqlBuffer.append(" DROP ");
@@ -163,9 +158,7 @@ public class SybaseMergerTokenFactory extends DefaultMergerTokenFactory {
             DbEntity entity,
             DbAttribute column) {
         StringBuffer sqlBuffer = new StringBuffer();
-        DataMap dataMap = entity.getDataMap();
-        QuotingStrategy quotes = dataMap != null && dataMap.isQuotingSQLIdentifiers()
-                ? adapter.getQuotingStrategy() : QuotingStrategy.NONE;
+        QuotingStrategy quotes = adapter.getQuotingStrategy(entity);
         sqlBuffer.append("ALTER TABLE ");
         quotes.appendFQN(sqlBuffer, entity.getCatalog(), entity.getSchema(), entity.getName());
         sqlBuffer.append(" MODIFY ");

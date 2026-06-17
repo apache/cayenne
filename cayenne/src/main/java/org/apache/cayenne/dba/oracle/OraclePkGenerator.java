@@ -24,7 +24,6 @@ import org.apache.cayenne.access.DataNode;
 import org.apache.cayenne.dba.QuotingStrategy;
 import org.apache.cayenne.dba.JdbcAdapter;
 import org.apache.cayenne.dba.JdbcPkGenerator;
-import org.apache.cayenne.map.DataMap;
 import org.apache.cayenne.map.DbEntity;
 import org.apache.cayenne.map.DbKeyGenerator;
 
@@ -205,10 +204,7 @@ public class OraclePkGenerator extends JdbcPkGenerator {
      * Returns expected primary key sequence name for a DbEntity.
      */
     protected String sequenceName(DbEntity entity) {
-        DataMap dataMap = entity.getDataMap();
-        QuotingStrategy quotes = dataMap != null && dataMap.isQuotingSQLIdentifiers()
-                ? adapter.getQuotingStrategy() : QuotingStrategy.NONE;
-        return sequenceName(entity, quotes);
+        return sequenceName(entity, adapter.getQuotingStrategy(entity));
     }
 
     /**
