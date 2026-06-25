@@ -50,8 +50,9 @@ public interface QuotingStrategy {
     void appendEnd(Appendable out);
 
     /**
-     * Appends a fully-qualified name, joining non-null parts with {@code '.'} and wrapping each part
-     * in start/end quotes. {@code null} parts are skipped.
+     * Appends a fully-qualified name, joining non-empty parts with {@code '.'} and wrapping each part
+     * in start/end quotes. {@code null} and empty parts are skipped (e.g. an absent catalog reported
+     * as an empty string by JDBC metadata).
      *
      * @since 5.0
      */
@@ -59,7 +60,7 @@ public interface QuotingStrategy {
         try {
             boolean first = true;
             for (String part : parts) {
-                if (part == null) {
+                if (part == null || part.isEmpty()) {
                     continue;
                 }
                 if (!first) {
@@ -89,8 +90,8 @@ public interface QuotingStrategy {
     }
 
     /**
-     * Returns a quoted fully-qualified name, joining non-null parts with {@code '.'} and wrapping
-     * each part in start/end quotes. {@code null} parts are skipped.
+     * Returns a quoted fully-qualified name, joining non-empty parts with {@code '.'} and wrapping
+     * each part in start/end quotes. {@code null} and empty parts are skipped.
      *
      * @since 5.0
      */
