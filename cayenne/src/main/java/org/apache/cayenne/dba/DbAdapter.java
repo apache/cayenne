@@ -26,7 +26,6 @@ import org.apache.cayenne.access.translator.ejbql.EJBQLTranslator;
 import org.apache.cayenne.access.translator.procedure.ProcedureTranslator;
 import org.apache.cayenne.access.translator.select.SelectTranslator;
 import org.apache.cayenne.access.types.ExtendedTypeMap;
-import org.apache.cayenne.map.DataMap;
 import org.apache.cayenne.map.DbAttribute;
 import org.apache.cayenne.map.DbEntity;
 import org.apache.cayenne.map.DbRelationship;
@@ -304,14 +303,10 @@ public interface DbAdapter {
      *
      * @since 5.0
      */
-    default QuotingStrategy getQuotingStrategy(DbEntity entity) {
-        DataMap dataMap = entity != null ? entity.getDataMap() : null;
-        return dataMap != null && dataMap.isQuotingSQLIdentifiers() ? getQuotingStrategy() : QuotingStrategy.NONE;
-    }
+    QuotingStrategy getQuotingStrategy(DbEntity entity);
 
     /**
-     * Allows the users to get access to the adapter decorated by a given
-     * adapter.
+     * Allows the users to get access to the adapter decorated by a given adapter.
      *
      * @since 4.0
      */

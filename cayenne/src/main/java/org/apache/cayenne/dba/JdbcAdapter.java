@@ -38,6 +38,7 @@ import org.apache.cayenne.configuration.Constants;
 import org.apache.cayenne.configuration.RuntimeProperties;
 import org.apache.cayenne.di.Inject;
 import org.apache.cayenne.log.JdbcEventLogger;
+import org.apache.cayenne.map.DataMap;
 import org.apache.cayenne.map.DbAttribute;
 import org.apache.cayenne.map.DbEntity;
 import org.apache.cayenne.map.DbJoin;
@@ -707,6 +708,12 @@ public class JdbcAdapter implements DbAdapter {
     @Override
     public QuotingStrategy getQuotingStrategy() {
         return quotingStrategy;
+    }
+
+    @Override
+    public QuotingStrategy getQuotingStrategy(DbEntity entity) {
+        DataMap dataMap = entity != null ? entity.getDataMap() : null;
+        return dataMap != null && dataMap.isQuotingSQLIdentifiers() ? quotingStrategy : QuotingStrategy.NONE;
     }
 
     /**
