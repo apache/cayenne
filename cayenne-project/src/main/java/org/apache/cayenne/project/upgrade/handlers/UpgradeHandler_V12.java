@@ -62,6 +62,7 @@ public class UpgradeHandler_V12 implements UpgradeHandler {
         updateDataMapSchemaAndVersion(upgradeUnit);
         updateExtensionSchema(upgradeUnit, CGEN);
         updateExtensionSchema(upgradeUnit, DB_IMPORT);
+        updateInfoSchema(upgradeUnit);
     }
 
     private void removeGraphIncludes(UpgradeUnit upgradeUnit) {

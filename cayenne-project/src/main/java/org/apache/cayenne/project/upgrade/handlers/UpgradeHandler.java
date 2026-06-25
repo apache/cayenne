@@ -39,24 +39,28 @@ public interface UpgradeHandler {
 
     /**
      * root tag for the cgen extension
+     *
      * @since 5.0-M1
      */
     String CGEN = "cgen";
 
     /**
      * root tag for the dbImport extension
+     *
      * @since 5.0-M1
      */
     String DB_IMPORT = "dbImport";
 
     /**
      * root tag for the graph extension
+     *
      * @since 5.0-M1
      */
     String GRAPH = "graph";
 
     /**
      * root tag for the validation extension
+     *
      * @since 5.0-M2
      */
     String VALIDATION = "validation";
@@ -86,71 +90,99 @@ public interface UpgradeHandler {
 
     /**
      * Upgrade Domain schema and version info
+     *
      * @param upgradeUnit for the datamap
      */
     default void updateDomainSchemaAndVersion(UpgradeUnit upgradeUnit) {
         Element domain = upgradeUnit.getDocument().getDocumentElement();
         // update schema
-        domain.setAttribute("xmlns","http://cayenne.apache.org/schema/"+getVersion()+"/domain");
-        domain.setAttribute("xmlns:xsi","http://www.w3.org/2001/XMLSchema-instance");
-        domain.setAttribute("xsi:schemaLocation", "http://cayenne.apache.org/schema/"+getVersion()+"/domain " +
-                "https://cayenne.apache.org/schema/"+getVersion()+"/domain.xsd");
+        domain.setAttribute("xmlns", "http://cayenne.apache.org/schema/" + getVersion() + "/domain");
+        domain.setAttribute("xmlns:xsi", "http://www.w3.org/2001/XMLSchema-instance");
+        domain.setAttribute("xsi:schemaLocation", "http://cayenne.apache.org/schema/" + getVersion() + "/domain " +
+                "https://cayenne.apache.org/schema/" + getVersion() + "/domain.xsd");
         // update version
         domain.setAttribute("project-version", getVersion());
     }
 
     /**
      * Upgrade DataMap schema and version info
+     *
      * @param upgradeUnit for the datamap
      */
     default void updateDataMapSchemaAndVersion(UpgradeUnit upgradeUnit) {
         Element dataMap = upgradeUnit.getDocument().getDocumentElement();
         // update schema
-        dataMap.setAttribute("xmlns","http://cayenne.apache.org/schema/"+getVersion()+"/modelMap");
-        dataMap.setAttribute("xsi:schemaLocation", "http://cayenne.apache.org/schema/"+getVersion()+"/modelMap " +
-                "https://cayenne.apache.org/schema/"+getVersion()+"/modelMap.xsd");
+        dataMap.setAttribute("xmlns", "http://cayenne.apache.org/schema/" + getVersion() + "/modelMap");
+        dataMap.setAttribute("xsi:schemaLocation", "http://cayenne.apache.org/schema/" + getVersion() + "/modelMap " +
+                "https://cayenne.apache.org/schema/" + getVersion() + "/modelMap.xsd");
         // update version
         dataMap.setAttribute("project-version", getVersion());
     }
 
     /**
      * Update schema for the given extension in a datamap file (root element: data-map)
+     *
      * @param upgradeUnit a unit to work with
-     * @param extension name of the extension (cgen, dbImport, etc.)
+     * @param extension   name of the extension (cgen, dbImport, etc.)
      */
     default void updateExtensionSchema(UpgradeUnit upgradeUnit, String extension) {
         XPath xpath = XPathFactory.newInstance().newXPath();
         NodeList nodes;
         try {
-            nodes = (NodeList) xpath.evaluate("/data-map/*[local-name()='"+extension+"']",
+            nodes = (NodeList) xpath.evaluate("/data-map/*[local-name()='" + extension + "']",
                     upgradeUnit.getDocument(), XPathConstants.NODESET);
         } catch (XPathExpressionException e) {
             return;
         }
         for (int j = 0; j < nodes.getLength(); j++) {
             Element element = (Element) nodes.item(j);
-            element.setAttribute("xmlns", "http://cayenne.apache.org/schema/"+getVersion()+"/"+extension.toLowerCase());
+            element.setAttribute("xmlns", "http://cayenne.apache.org/schema/" + getVersion() + "/" + extension.toLowerCase());
         }
     }
 
     /**
      * Update schema for the given extension in a project file (root element: domain)
+     *
      * @param upgradeUnit a unit to work with
-     * @param extension name of the extension (e.g. validation)
+     * @param extension   name of the extension (e.g. validation)
      * @since 5.0-M2
      */
     default void updateDomainExtensionSchema(UpgradeUnit upgradeUnit, String extension) {
         XPath xpath = XPathFactory.newInstance().newXPath();
         NodeList nodes;
         try {
-            nodes = (NodeList) xpath.evaluate("/domain/*[local-name()='"+extension+"']",
+            nodes = (NodeList) xpath.evaluate("/domain/*[local-name()='" + extension + "']",
                     upgradeUnit.getDocument(), XPathConstants.NODESET);
         } catch (XPathExpressionException e) {
             return;
         }
         for (int j = 0; j < nodes.getLength(); j++) {
             Element element = (Element) nodes.item(j);
-            element.setAttribute("xmlns", "http://cayenne.apache.org/schema/"+getVersion()+"/"+extension.toLowerCase());
+            element.setAttribute("xmlns", "http://cayenne.apache.org/schema/" + getVersion() + "/" + extension.toLowerCase());
+        }
+    }
+
+    /**
+     * Update the version-stamped namespace on {@code info:property} elements
+     * (entity/attribute comments) in a datamap file.
+     *
+     * @param upgradeUnit a unit to work with
+     * @since 5.0
+     */
+    default void updateInfoSchema(UpgradeUnit upgradeUnit) {
+        XPath xpath = XPathFactory.newInstance().newXPath();
+        NodeList nodes;
+        try {
+            nodes = (NodeList) xpath.evaluate("//*[local-name()='property']",
+                    upgradeUnit.getDocument(), XPathConstants.NODESET);
+        } catch (XPathExpressionException e) {
+            return;
+        }
+        for (int j = 0; j < nodes.getLength(); j++) {
+            Element element = (Element) nodes.item(j);
+            if (element.hasAttribute("xmlns:info")) {
+                element.setAttribute("xmlns:info", "http://cayenne.apache.org/schema/" + getVersion() + "/info");
+            }
         }
     }
 }

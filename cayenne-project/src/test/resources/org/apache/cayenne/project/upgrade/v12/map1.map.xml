@@ -6,6 +6,7 @@
 	<property name="defaultPackage" value="org.apache.cayenne.x"/>
 	<db-entity name="db_entity">
 		<db-attribute name="untitledAttr" type="INTEGER" isPrimaryKey="true" isMandatory="true"/>
+		<info:property xmlns:info="http://cayenne.apache.org/schema/11/info" name="comment" value="mixed case column names"/>
 	</db-entity>
 	<db-entity name="db_entity1">
 		<db-attribute name="untitledAttr" type="INTEGER" isPrimaryKey="true" isMandatory="true"/>

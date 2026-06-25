@@ -79,31 +79,13 @@ public class UpgradeHandler_V11 implements UpgradeHandler {
         updateExtensionSchema(upgradeUnit, CGEN);
         updateExtensionSchema(upgradeUnit, DB_IMPORT);
         updateExtensionSchema(upgradeUnit, GRAPH);
-        upgradeComments(upgradeUnit);
+        updateInfoSchema(upgradeUnit);
 
         dropROPProperties(upgradeUnit);
         dropObjEntityClientInfo(upgradeUnit);
         upgradeGenericObjEntity(upgradeUnit);
         updateCgenConfig(upgradeUnit);
         updateDbImportConfig(upgradeUnit);
-    }
-
-    private void upgradeComments(UpgradeUnit upgradeUnit) {
-        XPath xpath = XPathFactory.newInstance().newXPath();
-        NodeList infoNodes;
-        try {
-            infoNodes = (NodeList) xpath.evaluate("//*[local-name()='property']",
-                    upgradeUnit.getDocument(), XPathConstants.NODESET);
-        } catch (Exception e) {
-            throw new RuntimeException(e);
-        }
-
-        for (int j = 0; j < infoNodes.getLength(); j++) {
-            Element infoElement = (Element) infoNodes.item(j);
-            if (infoElement.hasAttribute("xmlns:info")) {
-                infoElement.setAttribute("xmlns:info", "http://cayenne.apache.org/schema/11/info");
-            }
-        }
     }
 
     private void dropROPProperties(UpgradeUnit upgradeUnit) {

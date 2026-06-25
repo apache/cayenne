@@ -113,6 +113,18 @@ public class UpgradeHandler_V12Test extends BaseUpgradeHandlerTest {
         assertEquals(1, dbImport.getLength());
         assertEquals("http://cayenne.apache.org/schema/12/dbimport",
                 ((Element) dbImport.item(0)).getAttribute("xmlns"));
+
+        NodeList properties = (NodeList) xpath.evaluate("//*[local-name()='property']",
+                document, XPathConstants.NODESET);
+        int infoComments = 0;
+        for (int i = 0; i < properties.getLength(); i++) {
+            Element property = (Element) properties.item(i);
+            if (property.hasAttribute("xmlns:info")) {
+                infoComments++;
+                assertEquals("http://cayenne.apache.org/schema/12/info", property.getAttribute("xmlns:info"));
+            }
+        }
+        assertEquals(1, infoComments, "info:property comment must be preserved and namespace-bumped");
     }
 
     @Test
