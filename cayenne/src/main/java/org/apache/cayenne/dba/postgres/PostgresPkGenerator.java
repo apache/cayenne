@@ -45,7 +45,8 @@ public class PostgresPkGenerator extends OraclePkGenerator {
         // note that PostgreSQL 7.4 and newer supports INCREMENT BY and START WITH
         // however 7.3 doesn't like BY and WITH, so using older more neutral
         // syntax that works with all tested versions.
-        return "CREATE SEQUENCE " + sequenceName(ent) + " INCREMENT " + pkCacheSize(ent) + " START " + pkStartValue;
+        return "CREATE SEQUENCE " + adapter.getQuotingStrategy(ent).quotedFQN(ent.getCatalog(), ent.getSchema(),
+                sequenceName(ent)) + " INCREMENT " + pkCacheSize(ent) + " START " + pkStartValue;
     }
 
     @Override

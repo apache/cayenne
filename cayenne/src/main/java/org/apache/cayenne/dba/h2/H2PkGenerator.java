@@ -44,8 +44,8 @@ public class H2PkGenerator extends OraclePkGenerator {
 
     @Override
     protected String createSequenceString(DbEntity ent) {
-        return "CREATE SEQUENCE " + sequenceName(ent) + " START WITH " + pkStartValue + " INCREMENT BY "
-                + pkCacheSize(ent) + " CACHE 1";
+        return "CREATE SEQUENCE " + adapter.getQuotingStrategy(ent).quotedFQN(ent.getCatalog(), ent.getSchema(),
+                sequenceName(ent)) + " START WITH " + pkStartValue + " INCREMENT BY " + pkCacheSize(ent) + " CACHE 1";
     }
 
     @Override

@@ -21,7 +21,6 @@ package org.apache.cayenne.dba.oracle;
 
 import org.apache.cayenne.CayenneRuntimeException;
 import org.apache.cayenne.access.DataNode;
-import org.apache.cayenne.dba.QuotingStrategy;
 import org.apache.cayenne.dba.JdbcAdapter;
 import org.apache.cayenne.dba.JdbcPkGenerator;
 import org.apache.cayenne.map.DbEntity;
@@ -54,6 +53,7 @@ public class OraclePkGenerator extends JdbcPkGenerator {
 
     /**
      * Used by DI
+     *
      * @since 4.1
      */
     public OraclePkGenerator() {
@@ -99,17 +99,7 @@ public class OraclePkGenerator extends JdbcPkGenerator {
 
         // drop obsolete sequences
         for (DbEntity dbEntity : dbEntities) {
-            String name;
-            if (dbEntity.getDataMap() != null && dbEntity.getDataMap().isQuotingSQLIdentifiers()) {
-                // the comparison name must be unquoted; render the bare sequence name without
-                // catalog/schema, matching the legacy behavior
-                StringBuilder buf = new StringBuilder();
-                QuotingStrategy.NONE.appendFQN(buf, getSequencePrefix() + dbEntity.getName().toLowerCase());
-                name = stripSchemaName(buf.toString());
-            } else {
-                name = stripSchemaName(sequenceName(dbEntity, QuotingStrategy.NONE));
-            }
-            if (sequences.contains(name)) {
+            if (sequences.contains(sequenceName(dbEntity))) {
                 runUpdate(node, dropSequenceString(dbEntity));
             }
         }
@@ -129,7 +119,8 @@ public class OraclePkGenerator extends JdbcPkGenerator {
     }
 
     protected String createSequenceString(DbEntity ent) {
-        return "CREATE SEQUENCE " + sequenceName(ent) + " START WITH " + pkStartValue + " INCREMENT BY " + pkCacheSize(ent);
+        String seqFQN = adapter.getQuotingStrategy(ent).quotedFQN(ent.getCatalog(), ent.getSchema(), sequenceName(ent));
+        return "CREATE SEQUENCE " + seqFQN + " START WITH " + pkStartValue + " INCREMENT BY " + pkCacheSize(ent);
     }
 
     /**
@@ -137,7 +128,8 @@ public class OraclePkGenerator extends JdbcPkGenerator {
      * automatic primary key generation process for a specific DbEntity.
      */
     protected String dropSequenceString(DbEntity ent) {
-        return "DROP SEQUENCE " + sequenceName(ent);
+        String seqFQN = adapter.getQuotingStrategy(ent).quotedFQN(ent.getCatalog(), ent.getSchema(), sequenceName(ent));
+        return "DROP SEQUENCE " + seqFQN;
     }
 
     protected String selectNextValQuery(String pkGeneratingSequenceName) {
@@ -167,7 +159,8 @@ public class OraclePkGenerator extends JdbcPkGenerator {
                 && pkGenerator.getGeneratorName() != null) {
             pkGeneratingSequenceName = pkGenerator.getGeneratorName();
         } else {
-            pkGeneratingSequenceName = sequenceName(entity);
+            pkGeneratingSequenceName = adapter.getQuotingStrategy(entity).quotedFQN(entity.getCatalog(),
+                    entity.getSchema(), sequenceName(entity));
         }
 
         try (Connection con = node.getDataSource().getConnection()) {
@@ -200,39 +193,22 @@ public class OraclePkGenerator extends JdbcPkGenerator {
         }
     }
 
-    /**
-     * Returns expected primary key sequence name for a DbEntity.
-     */
     protected String sequenceName(DbEntity entity) {
-        return sequenceName(entity, adapter.getQuotingStrategy(entity));
-    }
-
-    /**
-     * Renders the sequence name for the entity using the provided quoting style.
-     */
-    private String sequenceName(DbEntity entity, QuotingStrategy quotes) {
 
         // use custom generator if possible
         DbKeyGenerator keyGenerator = entity.getPrimaryKeyGenerator();
-        if (keyGenerator != null && DbKeyGenerator.ORACLE_TYPE.equals(keyGenerator.getGeneratorType())
+        if (keyGenerator != null
+                && DbKeyGenerator.ORACLE_TYPE.equals(keyGenerator.getGeneratorType())
                 && keyGenerator.getGeneratorName() != null) {
 
             return keyGenerator.getGeneratorName().toLowerCase();
         } else {
-            String seqName = getSequencePrefix() + entity.getName().toLowerCase();
-            StringBuilder buf = new StringBuilder();
-            quotes.appendFQN(buf, entity.getCatalog(), entity.getSchema(), seqName);
-            return buf.toString();
+            return getSequencePrefix() + entity.getName().toLowerCase();
         }
     }
 
     protected String getSequencePrefix() {
         return _SEQUENCE_PREFIX;
-    }
-
-    private String stripSchemaName(String sequenceName) {
-        int ind = sequenceName.indexOf('.');
-        return ind >= 0 ? sequenceName.substring(ind + 1) : sequenceName;
     }
 
     /**

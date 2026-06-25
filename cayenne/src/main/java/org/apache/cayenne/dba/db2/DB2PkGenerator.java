@@ -63,12 +63,14 @@ public class DB2PkGenerator extends OraclePkGenerator {
 
     @Override
     protected String dropSequenceString(DbEntity entity) {
-        return "DROP SEQUENCE " + sequenceName(entity) + " RESTRICT ";
+        return "DROP SEQUENCE " + adapter.getQuotingStrategy(entity).quotedFQN(entity.getCatalog(), entity.getSchema(),
+                sequenceName(entity)) + " RESTRICT ";
     }
 
     @Override
     protected String createSequenceString(DbEntity entity) {
-        return "CREATE SEQUENCE " + sequenceName(entity) + " AS BIGINT START WITH " + pkStartValue +
-                " INCREMENT BY " + getPkCacheSize() + " NO MAXVALUE NO CYCLE CACHE " + getPkCacheSize();
+        return "CREATE SEQUENCE " + adapter.getQuotingStrategy(entity).quotedFQN(entity.getCatalog(),
+                entity.getSchema(), sequenceName(entity)) + " AS BIGINT START WITH "
+                + pkStartValue + " INCREMENT BY " + getPkCacheSize() + " NO MAXVALUE NO CYCLE CACHE " + getPkCacheSize();
     }
 }
