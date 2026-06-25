@@ -20,7 +20,7 @@
 package org.apache.cayenne.dba.h2;
 
 import org.apache.cayenne.dba.JdbcAdapter;
-import org.apache.cayenne.dba.oracle.OraclePkGenerator;
+import org.apache.cayenne.dba.SequencePkGenerator;
 import org.apache.cayenne.map.DbEntity;
 
 /**
@@ -28,7 +28,7 @@ import org.apache.cayenne.map.DbEntity;
  *
  * @since 4.0
  */
-public class H2PkGenerator extends OraclePkGenerator {
+public class H2PkGenerator extends SequencePkGenerator {
 
     /**
      * Used by DI

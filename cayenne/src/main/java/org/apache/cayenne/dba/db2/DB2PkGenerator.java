@@ -19,13 +19,13 @@
 package org.apache.cayenne.dba.db2;
 
 import org.apache.cayenne.dba.JdbcAdapter;
-import org.apache.cayenne.dba.oracle.OraclePkGenerator;
+import org.apache.cayenne.dba.SequencePkGenerator;
 import org.apache.cayenne.map.DbEntity;
 
 /**
  * A sequence-based PK generator used by {@link DB2Adapter}.
  */
-public class DB2PkGenerator extends OraclePkGenerator {
+public class DB2PkGenerator extends SequencePkGenerator {
 
     /**
      * Used by DI

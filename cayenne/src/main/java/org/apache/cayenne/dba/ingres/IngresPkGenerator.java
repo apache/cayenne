@@ -20,14 +20,14 @@
 package org.apache.cayenne.dba.ingres;
 
 import org.apache.cayenne.dba.JdbcAdapter;
-import org.apache.cayenne.dba.oracle.OraclePkGenerator;
+import org.apache.cayenne.dba.SequencePkGenerator;
 
 /**
  * Ingres-specific sequence based PK generator.
  *
  * @since 1.2
  */
-public class IngresPkGenerator extends OraclePkGenerator {
+public class IngresPkGenerator extends SequencePkGenerator {
 
     /**
      * Used by DI

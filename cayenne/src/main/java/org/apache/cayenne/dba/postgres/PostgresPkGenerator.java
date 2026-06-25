@@ -20,13 +20,13 @@
 package org.apache.cayenne.dba.postgres;
 
 import org.apache.cayenne.dba.JdbcAdapter;
-import org.apache.cayenne.dba.oracle.OraclePkGenerator;
+import org.apache.cayenne.dba.SequencePkGenerator;
 import org.apache.cayenne.map.DbEntity;
 
 /**
  * Default PK generator for PostgreSQL that uses sequences for PK generation.
  */
-public class PostgresPkGenerator extends OraclePkGenerator {
+public class PostgresPkGenerator extends SequencePkGenerator {
 
     /**
      * Used by DI

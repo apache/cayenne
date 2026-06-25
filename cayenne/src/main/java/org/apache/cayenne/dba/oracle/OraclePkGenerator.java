@@ -19,37 +19,13 @@
 
 package org.apache.cayenne.dba.oracle;
 
-import org.apache.cayenne.CayenneRuntimeException;
-import org.apache.cayenne.access.DataNode;
 import org.apache.cayenne.dba.JdbcAdapter;
-import org.apache.cayenne.dba.JdbcPkGenerator;
-import org.apache.cayenne.map.DbEntity;
-import org.apache.cayenne.map.DbKeyGenerator;
-
-import java.sql.Connection;
-import java.sql.ResultSet;
-import java.sql.SQLException;
-import java.sql.Statement;
-import java.util.ArrayList;
-import java.util.List;
+import org.apache.cayenne.dba.SequencePkGenerator;
 
 /**
- * Sequence-based primary key generator implementation for Oracle. Uses Oracle
- * sequences to generate primary key values. This approach is at least 50%
- * faster when tested with Oracle compared to the lookup table approach.
- * <p>
- * When using Cayenne key caching mechanism, make sure that sequences in the
- * database have "INCREMENT BY" greater or equal to OraclePkGenerator
- * "pkCacheSize" property value. If this is not the case, you will need to
- * adjust PkGenerator value accordingly. For example when sequence is
- * incremented by 1 each time, use the following code:
- * </p>
- *
- * <pre>
- * dataNode.getAdapter().getPkGenerator().setPkCacheSize(1);
- * </pre>
+ * Sequence-based primary key generator implementation for Oracle. Uses Oracle sequences to generate primary key values.
  */
-public class OraclePkGenerator extends JdbcPkGenerator {
+public class OraclePkGenerator extends SequencePkGenerator {
 
     /**
      * Used by DI
@@ -64,178 +40,13 @@ public class OraclePkGenerator extends JdbcPkGenerator {
         super(adapter);
     }
 
-    private static final String _SEQUENCE_PREFIX = "pk_";
-
     @Override
-    public void createAutoPk(DataNode node, List<DbEntity> dbEntities) {
-        List<String> sequences = getExistingSequences(node);
-        // create needed sequences
-        for (DbEntity dbEntity : dbEntities) {
-            if (!sequences.contains(sequenceName(dbEntity))) {
-                runUpdate(node, createSequenceString(dbEntity));
-            }
-        }
-    }
-
-    /**
-     * Creates a list of CREATE SEQUENCE statements for the list of DbEntities.
-     */
-    @Override
-    public List<String> createAutoPkStatements(List<DbEntity> dbEntities) {
-        List<String> list = new ArrayList<>(dbEntities.size());
-        for (DbEntity dbEntity : dbEntities) {
-            list.add(createSequenceString(dbEntity));
-        }
-
-        return list;
-    }
-
-    /**
-     * Drops PK sequences for all specified DbEntities.
-     */
-    @Override
-    public void dropAutoPk(DataNode node, List<DbEntity> dbEntities) {
-        List<String> sequences = getExistingSequences(node);
-
-        // drop obsolete sequences
-        for (DbEntity dbEntity : dbEntities) {
-            if (sequences.contains(sequenceName(dbEntity))) {
-                runUpdate(node, dropSequenceString(dbEntity));
-            }
-        }
-    }
-
-    /**
-     * Creates a list of DROP SEQUENCE statements for the list of DbEntities.
-     */
-    @Override
-    public List<String> dropAutoPkStatements(List<DbEntity> dbEntities) {
-        List<String> list = new ArrayList<>(dbEntities.size());
-        for (DbEntity dbEntity : dbEntities) {
-            list.add(dropSequenceString(dbEntity));
-        }
-
-        return list;
-    }
-
-    protected String createSequenceString(DbEntity ent) {
-        String seqFQN = adapter.getQuotingStrategy(ent).quotedFQN(ent.getCatalog(), ent.getSchema(), sequenceName(ent));
-        return "CREATE SEQUENCE " + seqFQN + " START WITH " + pkStartValue + " INCREMENT BY " + pkCacheSize(ent);
-    }
-
-    /**
-     * Returns a SQL string needed to drop any database objects associated with
-     * automatic primary key generation process for a specific DbEntity.
-     */
-    protected String dropSequenceString(DbEntity ent) {
-        String seqFQN = adapter.getQuotingStrategy(ent).quotedFQN(ent.getCatalog(), ent.getSchema(), sequenceName(ent));
-        return "DROP SEQUENCE " + seqFQN;
-    }
-
     protected String selectNextValQuery(String pkGeneratingSequenceName) {
         return "SELECT " + pkGeneratingSequenceName + ".nextval FROM DUAL";
     }
 
+    @Override
     protected String selectAllSequencesQuery() {
         return "SELECT LOWER(SEQUENCE_NAME) FROM ALL_SEQUENCES";
-    }
-
-    /**
-     * Generates primary key by calling Oracle sequence corresponding to the
-     * <code>dbEntity</code>. Executed SQL looks like this:
-     *
-     * <pre>
-     *   SELECT pk_table_name.nextval FROM DUAL
-     * </pre>
-     *
-     * @since 3.0
-     */
-    @Override
-    protected long longPkFromDatabase(DataNode node, DbEntity entity) {
-
-        DbKeyGenerator pkGenerator = entity.getPrimaryKeyGenerator();
-        String pkGeneratingSequenceName;
-        if (pkGenerator != null && DbKeyGenerator.ORACLE_TYPE.equals(pkGenerator.getGeneratorType())
-                && pkGenerator.getGeneratorName() != null) {
-            pkGeneratingSequenceName = pkGenerator.getGeneratorName();
-        } else {
-            pkGeneratingSequenceName = adapter.getQuotingStrategy(entity).quotedFQN(entity.getCatalog(),
-                    entity.getSchema(), sequenceName(entity));
-        }
-
-        try (Connection con = node.getDataSource().getConnection()) {
-            try (Statement st = con.createStatement()) {
-                String sql = selectNextValQuery(pkGeneratingSequenceName);
-                adapter.getJdbcEventLogger().log(sql);
-
-                try (ResultSet rs = st.executeQuery(sql)) {
-                    if (!rs.next()) {
-                        throw new CayenneRuntimeException("Error generating pk for DbEntity %s", entity.getName());
-                    }
-                    return rs.getLong(1);
-                }
-            }
-        } catch (SQLException e) {
-            throw new CayenneRuntimeException("Error generating pk for DbEntity %s", e, entity.getName());
-        }
-    }
-
-    protected int pkCacheSize(DbEntity entity) {
-        // use custom generator if possible
-        DbKeyGenerator keyGenerator = entity.getPrimaryKeyGenerator();
-        if (keyGenerator != null && DbKeyGenerator.ORACLE_TYPE.equals(keyGenerator.getGeneratorType())
-                && keyGenerator.getGeneratorName() != null) {
-
-            Integer size = keyGenerator.getKeyCacheSize();
-            return (size != null && size >= 1) ? size : getPkCacheSize();
-        } else {
-            return getPkCacheSize();
-        }
-    }
-
-    protected String sequenceName(DbEntity entity) {
-
-        // use custom generator if possible
-        DbKeyGenerator keyGenerator = entity.getPrimaryKeyGenerator();
-        if (keyGenerator != null
-                && DbKeyGenerator.ORACLE_TYPE.equals(keyGenerator.getGeneratorType())
-                && keyGenerator.getGeneratorName() != null) {
-
-            return keyGenerator.getGeneratorName().toLowerCase();
-        } else {
-            return getSequencePrefix() + entity.getName().toLowerCase();
-        }
-    }
-
-    protected String getSequencePrefix() {
-        return _SEQUENCE_PREFIX;
-    }
-
-    /**
-     * Fetches a list of existing sequences that might match Cayenne generated
-     * ones.
-     */
-    protected List<String> getExistingSequences(DataNode node) {
-
-        // check existing sequences
-        try (Connection con = node.getDataSource().getConnection()) {
-            try (Statement sel = con.createStatement()) {
-                String sql = selectAllSequencesQuery();
-                adapter.getJdbcEventLogger().log(sql);
-
-                try (ResultSet rs = sel.executeQuery(sql)) {
-                    List<String> sequenceList = new ArrayList<>();
-                    while (rs.next()) {
-                        String name = rs.getString(1);
-                        if (name != null) {
-                            sequenceList.add(name.trim());
-                        }
-                    }
-                    return sequenceList;
-                }
-            }
-        } catch (SQLException e) {
-            throw new CayenneRuntimeException("Error fetching existing sequences", e);
-        }
     }
 }

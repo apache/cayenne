@@ -17,43 +17,34 @@
  *  under the License.
  ****************************************************************/
 
-package org.apache.cayenne.dba.oracle;
+package org.apache.cayenne.dba;
 
-import org.apache.cayenne.di.AdhocObjectFactory;
+import org.apache.cayenne.dba.oracle.OraclePkGenerator;
 import org.apache.cayenne.map.DbEntity;
 import org.apache.cayenne.map.DbKeyGenerator;
-import org.apache.cayenne.unit.CayenneProjects;
-import org.apache.cayenne.unit.CayenneTestsEnv;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
-import org.junit.jupiter.api.extension.RegisterExtension;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 
-public class OraclePkGeneratorIT {
+public class SequencePkGeneratorTest {
 
-    @RegisterExtension
-    static final CayenneTestsEnv env = CayenneTestsEnv.forProject(CayenneProjects.TESTMAP_PROJECT);
-
-    protected AdhocObjectFactory objectFactory;
-
-    private OraclePkGenerator pkGenerator;
+    private SequencePkGenerator pkGenerator;
 
     @BeforeEach
-    public void setUp() throws Exception {
-        objectFactory = env.adhocObjectFactory();
-        OracleAdapter adapter = objectFactory.newInstance(OracleAdapter.class, OracleAdapter.class.getName());
-        pkGenerator = new OraclePkGenerator(adapter);
+    public void setUp() {
+        // use a concrete subclass to exercise the shared sequence naming logic
+        pkGenerator = new OraclePkGenerator();
     }
 
     @Test
-    public void sequenceNameDefault() throws Exception {
+    public void sequenceNameDefault() {
         DbEntity entity = new DbEntity("TEST_ENTITY");
         assertEquals("pk_test_entity", pkGenerator.sequenceName(entity));
     }
 
     @Test
-    public void sequenceNameCustom1() throws Exception {
+    public void sequenceNameCustom1() {
         DbEntity entity = new DbEntity("TEST_ENTITY");
         DbKeyGenerator customGenerator = new DbKeyGenerator();
         customGenerator.setGeneratorType(DbKeyGenerator.ORACLE_TYPE);
@@ -63,7 +54,7 @@ public class OraclePkGeneratorIT {
     }
 
     @Test
-    public void sequenceNameCustom2() throws Exception {
+    public void sequenceNameCustom2() {
         DbEntity entity = new DbEntity("TEST_ENTITY");
         DbKeyGenerator customGenerator = new DbKeyGenerator();
         customGenerator.setGeneratorType(DbKeyGenerator.NAMED_SEQUENCE_TABLE_TYPE);
