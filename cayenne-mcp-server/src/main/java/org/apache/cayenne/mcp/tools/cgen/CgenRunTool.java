@@ -28,6 +28,7 @@ import org.apache.cayenne.gen.CgenConfigList;
 import org.apache.cayenne.gen.CgenConfiguration;
 import org.apache.cayenne.gen.MetadataUtils;
 import org.apache.cayenne.gen.ToolsUtilsFactory;
+import org.apache.cayenne.gen.internal.Utils;
 import org.apache.cayenne.map.DataMap;
 import org.apache.cayenne.mcp.project.McpProjectLoaderModule;
 import org.apache.cayenne.mcp.log.McpLoggingHandler;
@@ -157,16 +158,15 @@ public class CgenRunTool {
                     new CgenValidation(true, false, null, null, null));
         }
 
-        // Step 4 — cgen configuration present?
+        // Step 4 — cgen configuration: use the <cgen> block stored in the DataMap, or, if there is none,
+        // synthesize a default. This mirrors CayenneModeler and the Maven/Gradle plugins, all of which
+        // fall back to a default config rather than failing — a missing <cgen> block is not an error.
         DataChannelMetaData metaData = injector.getInstance(DataChannelMetaData.class);
         CgenConfigList configList = metaData.get(dataMap, CgenConfigList.class);
-        if (configList == null || configList.getAll().isEmpty()) {
-            return validationFailed(CgenErrorCode.cgen_config_missing,
-                    "DataMap '" + dataMapName + "' has no <cgen> configuration. "
-                            + "Configure code generation for this DataMap in CayenneModeler before invoking the tool.",
-                    new CgenValidation(true, true, false, null, null));
-        }
-        CgenConfiguration cgenConfig = configList.getAll().getFirst();
+        boolean usedDefaultConfig = configList == null || configList.getAll().isEmpty();
+        CgenConfiguration cgenConfig = usedDefaultConfig
+                ? defaultConfig(dataMap)
+                : configList.getAll().getFirst();
 
         // Set the DataMap file's mtime as the timestamp so fileNeedUpdate() can detect DataMap changes correctly.
         if (dataMap.getConfigurationSource() != null) {
@@ -244,6 +244,26 @@ public class CgenRunTool {
                 allPassed,
                 null
         );
+    }
+
+    /**
+     * Builds a default cgen configuration for a DataMap that has no embedded {@code <cgen>} block.
+     * Mirrors {@code CgenPanel.createDefaultCgenConfiguration} in CayenneModeler: generate every
+     * entity and embeddable, with the destination derived from the standard Maven source layout
+     * ({@code src/main/resources} → {@code src/main/java}, likewise for {@code test}). For projects
+     * that don't follow the Maven layout the destination falls back to the DataMap's own directory.
+     */
+    private static CgenConfiguration defaultConfig(DataMap dataMap) {
+        Path mapDir = Utils.getRootPathForDataMap(dataMap);
+        Path outputPath = Utils.getMavenSrcPathForPath(mapDir).map(Path::of).orElse(mapDir);
+
+        CgenConfiguration config = new CgenConfiguration();
+        config.setDataMap(dataMap);
+        dataMap.getObjEntities().forEach(config::loadEntity);
+        dataMap.getEmbeddables().forEach(config::loadEmbeddable);
+        config.setRootPath(mapDir);
+        config.updateOutputPath(outputPath);
+        return config;
     }
 
     private static CgenRunResult validationFailed(CgenErrorCode code, String message, CgenValidation validation) {

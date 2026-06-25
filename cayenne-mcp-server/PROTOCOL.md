@@ -9,7 +9,7 @@ A result always carries:
 
 ## `cgen_run`
 
-Runs Cayenne class generation for a named DataMap.
+Runs Cayenne class generation for a named DataMap. If the DataMap has an embedded `<cgen>` block it is used; otherwise the tool synthesizes a default config (all entities and embeddables, `makePairs=true`, destination derived from the Maven layout) and generates anyway. A missing `<cgen>` block is not an error.
 
 ### Input
 
@@ -50,7 +50,7 @@ Both fields are required.
     "destDirWritable":   true
   },
   "error": {
-    "code":    "project_not_found | project_parse_failed | datamap_not_found | cgen_config_missing | destdir_not_specified | destdir_not_writable | cgen_runtime_error",
+    "code":    "project_not_found | project_parse_failed | datamap_not_found | destdir_not_specified | destdir_not_writable | cgen_runtime_error",
     "message": "string"
   }
 }

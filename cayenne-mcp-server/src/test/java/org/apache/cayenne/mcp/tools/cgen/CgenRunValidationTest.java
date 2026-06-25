@@ -97,22 +97,6 @@ public class CgenRunValidationTest {
     }
 
     @Test
-    public void cgenConfigMissing() throws URISyntaxException {
-        String projectPath = fixtureProject("no-cgen");
-
-        CgenRunResult result = tool.run(projectPath, "TestMap");
-
-        assertEquals("validation_failed", result.status());
-        assertEquals(CgenErrorCode.cgen_config_missing, result.error().code());
-
-        assertTrue(result.validation().projectFound());
-        assertTrue(result.validation().dataMapFound());
-        assertFalse(result.validation().cgenConfigPresent());
-        assertNull(result.validation().destDirSpecified());
-        assertNull(result.validation().destDirWritable());
-    }
-
-    @Test
     public void destDirNotSpecified() throws URISyntaxException {
         String projectPath = fixtureProject("no-destdir");
 

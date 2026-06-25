@@ -28,7 +28,6 @@ public enum CgenErrorCode {
     project_not_found,
     project_parse_failed,
     datamap_not_found,
-    cgen_config_missing,
     destdir_not_specified,
     destdir_not_writable,
     cgen_runtime_error

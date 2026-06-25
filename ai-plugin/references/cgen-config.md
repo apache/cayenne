@@ -106,11 +106,13 @@ The MCP tool:
 
 1. Loads the project at `projectPath`.
 2. Finds the named DataMap (`dataMap` argument).
-3. Reads its embedded `<cgen>` block.
+3. Reads its embedded `<cgen>` block — or, if there is none, synthesizes a default config (see below).
 4. Resolves `destDir` relative to the `*.map.xml` file.
 5. Runs the generator. Returns a JSON object listing files `written`, files `skipped` (already up-to-date), and any `errors`.
 
-If the DataMap has no `<cgen>` block, the tool returns an error and the user must add one — typically via the `cayenne-modeling` skill or the Modeler GUI.
+If the DataMap has no `<cgen>` block, the tool does **not** fail. It synthesizes a default config — all entities and embeddables, `makePairs=true`, with `destDir` derived from the Maven layout (`src/main/resources` → `src/main/java`, likewise for `test`; non-Maven layouts fall back to the DataMap's own directory). This mirrors what the Maven plugin and CayenneModeler do.
+
+The synthesized config is **not** written back to the DataMap — it is used for that one run only. If the user wants to persist or customize it (different destination, templates, entity filtering), add a `<cgen>` block via the `cayenne-modeling` skill or the Modeler GUI. The starting config below is a good template for that.
 
 ## Determining `destDir`
 

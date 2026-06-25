@@ -142,6 +142,47 @@ public class CgenRunIT {
         assertTrue(second.summary().filesWritten() > 0);
     }
 
+    @Test
+    public void generatesWithDefaultConfigWhenNoCgenBlock() throws IOException {
+        // A DataMap with no <cgen> block, laid out in a standard Maven structure. The tool must
+        // synthesize a default config rather than failing, deriving destDir from src/main/resources
+        // → src/main/java.
+        Path resources = tempDir.resolve("src/main/resources");
+        Path mapFile = resources.resolve("DefaultMap.map.xml");
+        Files.createDirectories(resources);
+        Files.writeString(resources.resolve("cayenne-project.xml"), """
+                <?xml version="1.0" encoding="utf-8"?>
+                <domain xmlns="http://cayenne.apache.org/schema/12/domain" project-version="12">
+                    <map name="DefaultMap"/>
+                </domain>
+                """);
+        Files.writeString(mapFile, """
+                <?xml version="1.0" encoding="utf-8"?>
+                <data-map xmlns="http://cayenne.apache.org/schema/12/modelMap"
+                          xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+                          project-version="12">
+                    <property name="defaultPackage" value="com.example"/>
+                    <obj-entity name="Person" className="com.example.Person"/>
+                </data-map>
+                """);
+
+        CgenRunResult result = tool.run(resources.resolve("cayenne-project.xml").toString(), "DefaultMap");
+
+        assertEquals("generated", result.status(), "Missing <cgen> block must not block generation");
+        assertNull(result.error());
+        assertNotNull(result.resolved());
+
+        // src/main/resources → src/main/java
+        Path expectedDest = tempDir.resolve("src/main/java");
+        assertEquals(expectedDest.toAbsolutePath().toString(), result.resolved().destDir());
+
+        // makePairs defaults to true → superclass under the ".auto" package + user subclass
+        assertTrue(Files.exists(expectedDest.resolve("com/example/auto/_Person.java")),
+                "Expected generated superclass");
+        assertTrue(Files.exists(expectedDest.resolve("com/example/Person.java")),
+                "Expected generated subclass");
+    }
+
     private Path writeFixture(String mapName, String pkg, Path destDir, boolean makePairs) throws IOException {
 
         // Project descriptor

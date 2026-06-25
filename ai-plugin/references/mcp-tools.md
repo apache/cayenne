@@ -32,7 +32,7 @@ Verify the server is registered with `claude mcp list` — you should see an ent
 
 ## Tool: `cgen_run`
 
-Runs Cayenne's class generator for one DataMap, using the `<cgen>` config block embedded in that DataMap.
+Runs Cayenne's class generator for one DataMap. Uses the `<cgen>` config block embedded in that DataMap if present; if the DataMap has no `<cgen>` block, the tool synthesizes a default config (all entities and embeddables, `makePairs=true`, destination derived from the standard Maven layout) and generates anyway — a missing block is **not** an error.
 
 **Arguments:**
 
@@ -47,7 +47,7 @@ Runs Cayenne's class generator for one DataMap, using the `<cgen>` config block 
 {
   "status": "ok" | "error",
   "summary": { "writtenCount": 3, "skippedCount": 12, "errorCount": 0 },
-  "resolvedConfig": { "destDir": "...", "mode": "entity", ... },
+  "resolvedConfig": { "destDir": "..." },
   "writtenFiles": [{ "path": "...", "size": 1234 }],
   "skippedFiles": [{ "path": "...", "reason": "up-to-date" }],
   "errors": []
@@ -56,11 +56,13 @@ Runs Cayenne's class generator for one DataMap, using the `<cgen>` config block 
 
 Surface the `summary` to the user verbatim. List the first few `writtenFiles` paths; full list is informational. If `errors` is non-empty, those are blocking — show them.
 
+When the DataMap had no `<cgen>` block, the tool generated from a synthesized default config. The default destination is derived from the Maven layout (`src/main/resources` → `src/main/java`); for non-Maven layouts it falls back to the DataMap's own directory, so check `resolvedConfig.destDir` and confirm with the user if it looks wrong. Offer to persist a `<cgen>` block (via `cayenne-modeling` or the Modeler) if they want to customize destination, templates, or filtering.
+
 **Failure modes:**
 
-- DataMap has no `<cgen>` block → error; user must add one (see `cgen-config.md` for the XML to insert).
 - `projectPath` not readable or not a valid Cayenne project → validation error.
 - `dataMap` doesn't match any `<map name="...">` → validation error.
+- `<cgen>` block present but specifies no resolvable destination directory → `destdir_not_specified`.
 
 **Source:** `cayenne-mcp-server/src/main/java/org/apache/cayenne/mcp/tools/cgen/CgenRunTool.java`.
 

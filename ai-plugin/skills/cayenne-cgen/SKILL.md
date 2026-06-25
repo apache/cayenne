@@ -23,7 +23,7 @@ description: "Use this skill whenever the user wants to (re)generate Cayenne ent
 -->
 # cayenne-cgen
 
-Run Cayenne's class generator on a DataMap via the `mcp__cayenne__cgen_run` MCP tool. The tool reads the embedded `<cgen>` block in the DataMap to determine destination, mode, templates, etc.; if no block is present the tool reports an error and the skill adds a default one then retries.
+Run Cayenne's class generator on a DataMap via the `mcp__cayenne__cgen_run` MCP tool. The tool reads the embedded `<cgen>` block in the DataMap to determine destination, mode, templates, etc.; **if no block is present the tool generates anyway using a sensible default config** (all entities, `makePairs=true`, destination derived from the Maven layout). A missing `<cgen>` block is **not** an error and must never stop you from running the tool.
 
 ## Required reading
 
@@ -51,11 +51,9 @@ mcp__cayenne__cgen_run({
 })
 ```
 
+Call the tool directly for each DataMap — never inspect the DataMap for a `<cgen>` block first, and never treat its absence as a blocker. The tool generates with a default config when no block exists.
+
 If the tool is not available (MCP server not registered), surface `cayenne-mcp-server/README.md` and stop. **Do not** suggest `mvn cayenne:cgen` or the Gradle cgen task.
-
-If the tool errors because no `<cgen>` block is present in the DataMap, add a minimal one using the starting config approach from `cgen-config.md`
-
-If the `destDir` can't be determined reliably (non-standard project layout, empty project, etc.), conform it with the user
 
 ## Step 3 — Surface the result
 
@@ -64,6 +62,7 @@ The tool returns structured JSON. Report:
 - `summary.writtenCount`, `summary.skippedCount`, `summary.errorCount` verbatim — these are the headline.
 - The first few entries in `writtenFiles` (relative paths). Full list is informational; offer to dump it if the user asks.
 - Any entries in `errors` — these are blocking. Read the messages and explain in user terms (a missing entity class name, a bad template path, an invalid `<destDir>`, etc.).
+- `resolvedConfig.destDir` — the absolute output directory. If the DataMap had no `<cgen>` block, the tool generated from a synthesized default; report this destination so the user can confirm it's right, and offer to persist a `<cgen>` block (via `cayenne-modeling`) if they want to customize destination, templates, or entity filtering.
 
 If `writtenCount` is 0 and `skippedCount` covers everything, say so — it means everything is already up-to-date and no work was needed.
 
@@ -74,7 +73,7 @@ If `writtenCount` is 0 and `skippedCount` covers everything, say so — it means
 
 ## Anti-patterns
 
-- **Do not** pre-check the DataMap for a `<cgen>` block before calling `cgen_run`. Call the tool first; add the default config only if the tool reports it is missing.
+- **Do not** pre-check the DataMap for a `<cgen>` block before calling `cgen_run`, and **do not** add a block before running. A missing block is not an error — the tool generates with defaults. Only add a `<cgen>` block afterward if the user wants to persist or customize the config.
 - **Do not** suggest Maven (`mvn cayenne:cgen`) or Gradle (`cayenneCgen`) goals when MCP is unavailable. Those build plugins are out of scope. Point at MCP setup instead.
 - **Do not** edit `_<Entity>.java` files. Generated superclasses. Edit `<Entity>.java` subclasses.
 - **Do not** confuse `projectPath` and `dataMap` arguments. `projectPath` is a file system path to `cayenne-*.xml`. `dataMap` is a logical name (e.g. `mydb`), not a path to `mydb.map.xml`.

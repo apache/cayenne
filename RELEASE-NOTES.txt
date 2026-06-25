@@ -26,6 +26,7 @@ CAY-2959 Modeler: DbRelationship dialog "Cancel" doesn't cancel
 CAY-2960 Undoing renamed relationship change throws
 CAY-2961 PostgreSQL "text" column is reverse-engineered as CLOB
 CAY-2964 ClassCastException for non-generated meaningful PKs
+CAY-2965 MCP Cgen should not fail on an absent "<cgen>" tag
 
 ----------------------------------
 Release: 5.0-M2
