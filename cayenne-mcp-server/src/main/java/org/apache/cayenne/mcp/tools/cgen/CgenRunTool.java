@@ -28,7 +28,6 @@ import org.apache.cayenne.gen.CgenConfigList;
 import org.apache.cayenne.gen.CgenConfiguration;
 import org.apache.cayenne.gen.MetadataUtils;
 import org.apache.cayenne.gen.ToolsUtilsFactory;
-import org.apache.cayenne.gen.internal.Utils;
 import org.apache.cayenne.map.DataMap;
 import org.apache.cayenne.mcp.project.McpProjectLoaderModule;
 import org.apache.cayenne.mcp.log.McpLoggingHandler;
@@ -165,7 +164,7 @@ public class CgenRunTool {
         CgenConfigList configList = metaData.get(dataMap, CgenConfigList.class);
         boolean usedDefaultConfig = configList == null || configList.getAll().isEmpty();
         CgenConfiguration cgenConfig = usedDefaultConfig
-                ? defaultConfig(dataMap)
+                ? CgenConfiguration.createDefault(dataMap, CgenConfiguration.defaultOutputDir(dataMap))
                 : configList.getAll().getFirst();
 
         // Set the DataMap file's mtime as the timestamp so fileNeedUpdate() can detect DataMap changes correctly.
@@ -244,26 +243,6 @@ public class CgenRunTool {
                 allPassed,
                 null
         );
-    }
-
-    /**
-     * Builds a default cgen configuration for a DataMap that has no embedded {@code <cgen>} block.
-     * Mirrors {@code CgenPanel.createDefaultCgenConfiguration} in CayenneModeler: generate every
-     * entity and embeddable, with the destination derived from the standard Maven source layout
-     * ({@code src/main/resources} → {@code src/main/java}, likewise for {@code test}). For projects
-     * that don't follow the Maven layout the destination falls back to the DataMap's own directory.
-     */
-    private static CgenConfiguration defaultConfig(DataMap dataMap) {
-        Path mapDir = Utils.getRootPathForDataMap(dataMap);
-        Path outputPath = Utils.getMavenSrcPathForPath(mapDir).map(Path::of).orElse(mapDir);
-
-        CgenConfiguration config = new CgenConfiguration();
-        config.setDataMap(dataMap);
-        dataMap.getObjEntities().forEach(config::loadEntity);
-        dataMap.getEmbeddables().forEach(config::loadEmbeddable);
-        config.setRootPath(mapDir);
-        config.updateOutputPath(outputPath);
-        return config;
     }
 
     private static CgenRunResult validationFailed(CgenErrorCode code, String message, CgenValidation validation) {

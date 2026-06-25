@@ -20,6 +20,7 @@
 package org.apache.cayenne.gen;
 
 import org.apache.cayenne.configuration.ConfigurationNodeVisitor;
+import org.apache.cayenne.gen.internal.Utils;
 import org.apache.cayenne.gen.xml.CgenExtension;
 import org.apache.cayenne.map.DataMap;
 import org.apache.cayenne.map.Embeddable;
@@ -125,6 +126,39 @@ public class CgenConfiguration implements Serializable, XMLSerializable {
 
         this.embeddableTemplate = TemplateType.EMBEDDABLE_SUBCLASS.defaultTemplate();
         this.embeddableSuperTemplate = TemplateType.EMBEDDABLE_SUPERCLASS.defaultTemplate();
+    }
+
+    /**
+     * Builds a default configuration for a DataMap that has no stored cgen config, generating every
+     * non-generic entity and embeddable into the given output directory.
+     *
+     * @param outputDir directory to generate classes into; if {@code null}, the output path is left unset
+     * @since 5.0
+     */
+    public static CgenConfiguration createDefault(DataMap dataMap, Path outputDir) {
+        CgenConfiguration config = new CgenConfiguration();
+        config.setDataMap(dataMap);
+        dataMap.getObjEntities().forEach(config::loadEntity);
+        dataMap.getEmbeddables().forEach(config::loadEmbeddable);
+        if (dataMap.getConfigurationSource() != null) {
+            config.setRootPath(Utils.getRootPathForDataMap(dataMap));
+        }
+        if (outputDir != null) {
+            config.updateOutputPath(outputDir);
+        }
+        return config;
+    }
+
+    /**
+     * Returns the default output directory for a saved DataMap, derived from the standard Maven
+     * source layout ({@code src/main/resources} &rarr; {@code src/main/java}, likewise for
+     * {@code test}), falling back to the DataMap's own directory for non-Maven layouts.
+     *
+     * @since 5.0
+     */
+    public static Path defaultOutputDir(DataMap dataMap) {
+        Path mapDir = Utils.getRootPathForDataMap(dataMap);
+        return Utils.getMavenSrcPathForPath(mapDir).map(Path::of).orElse(mapDir);
     }
 
     public void resetCollections() {

@@ -85,13 +85,8 @@ public class DataDomainCgenTab extends DataDomainGeneratorsTab<CgenConfiguration
     }
 
     public CgenConfiguration createConfiguration(DataMap dataMap) {
-        CgenConfiguration cgenConfiguration = new CgenConfiguration();
-        cgenConfiguration.setDataMap(dataMap);
-        cgenConfiguration.updateOutputPath(CgenOps.baseDir(session));
+        CgenConfiguration cgenConfiguration = CgenConfiguration.createDefault(dataMap, CgenOps.baseDir(session));
         cgenConfiguration.setEncoding(new GeneralPrefs(app.getPrefsLocator().appNode(GeneralPrefs.NODE)).getEncoding());
-
-        cgenConfiguration.resolveExcludedEntities();
-        cgenConfiguration.resolveExcludedEmbeddables();
         return cgenConfiguration;
     }
 

@@ -31,7 +31,6 @@ import org.apache.cayenne.gen.CgenConfigList;
 import org.apache.cayenne.gen.CgenConfiguration;
 import org.apache.cayenne.gen.ClassGenerationAction;
 import org.apache.cayenne.gen.ClassGenerationActionFactory;
-import org.apache.cayenne.gen.internal.Utils;
 import org.apache.cayenne.map.DataMap;
 import org.apache.cayenne.map.Embeddable;
 import org.apache.cayenne.map.Entity;
@@ -437,18 +436,9 @@ public class CgenPanel extends ProjectPanel implements ObjEntityListener, Embedd
     }
 
     private CgenConfiguration createDefaultCgenConfiguration(DataMap map) {
-        CgenConfiguration configuration = new CgenConfiguration();
-        configuration.setName(CgenConfigList.DEFAULT_CONFIG_NAME);
+        Path basePath = map.getLocation() != null ? CgenOps.baseDir(session) : null;
+        CgenConfiguration configuration = CgenConfiguration.createDefault(map, basePath);
         configuration.setForce(true);
-        configuration.setDataMap(map);
-
-        map.getObjEntities().forEach(configuration::loadEntity);
-        map.getEmbeddables().forEach(configuration::loadEmbeddable);
-        if (map.getLocation() != null) {
-            Path basePath = CgenOps.baseDir(session);
-            configuration.setRootPath(Utils.getRootPathForDataMap(map));
-            configuration.updateOutputPath(basePath);
-        }
         configuration.setEncoding(new GeneralPrefs(app.getPrefsLocator().appNode(GeneralPrefs.NODE)).getEncoding());
         return configuration;
     }
