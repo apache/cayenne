@@ -18,34 +18,25 @@
  ****************************************************************/
 package org.apache.cayenne.modeler.platform.win;
 
-import com.jgoodies.looks.windows.WindowsLookAndFeel;
+import com.formdev.flatlaf.FlatLightLaf;
 import org.apache.cayenne.modeler.platform.UIInitializer;
 import org.apache.cayenne.modeler.toolkit.icon.IconFactory;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 import javax.swing.*;
 import java.awt.*;
 
 public class WinUIInitializer implements UIInitializer {
 
-    private static final Logger LOGGER = LoggerFactory.getLogger(WinUIInitializer.class);
-
     @Override
     public void beforeSwingLaunch() {
-        try {
-            UIManager.setLookAndFeel(WindowsLookAndFeel.class.getName());
-            // override some default styles and colors
-            overrideUIDefaults();
-        } catch (Exception e) {
-            LOGGER.warn("Error installing L&F: {}", WindowsLookAndFeel.class.getName(), e);
-        }
+        FlatLightLaf.setup();
+        // override some default styles and colors
+        overrideUIDefaults();
     }
 
     private void overrideUIDefaults() {
         Color darkGrey = new Color(203, 203, 203);
 
-        UIManager.put("TextFieldUI", WinCustomTextFieldUI.class.getName());
         UIManager.put("Tree.expandedIcon", IconFactory.buildIcon("icon-arrow-open.png"));
         UIManager.put("Tree.collapsedIcon", IconFactory.buildIcon("icon-arrow-closed.png"));
         UIManager.put("Tree.paintLines", Boolean.FALSE);

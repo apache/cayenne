@@ -71,8 +71,8 @@
 			<artifactId>forms</artifactId>
 		</dependency>
 		<dependency>
-			<groupId>com.jgoodies</groupId>
-			<artifactId>jgoodies-looks</artifactId>
+			<groupId>com.formdev</groupId>
+			<artifactId>flatlaf</artifactId>
 		</dependency>
 		<dependency>
 			<groupId>com.fifesoft</groupId>

@@ -18,49 +18,25 @@
  ****************************************************************/
 package org.apache.cayenne.modeler.platform.generic;
 
-import com.jgoodies.looks.plastic.PlasticLookAndFeel;
-import com.jgoodies.looks.plastic.PlasticTheme;
-import com.jgoodies.looks.plastic.PlasticXPLookAndFeel;
+import com.formdev.flatlaf.FlatLightLaf;
 import org.apache.cayenne.modeler.platform.UIInitializer;
 import org.apache.cayenne.modeler.toolkit.icon.IconFactory;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 import javax.swing.*;
 import java.awt.*;
 
 public class GenericUIInitializer implements UIInitializer {
 
-    private static final Logger LOGGER = LoggerFactory.getLogger(GenericUIInitializer.class);
-
-    private static final String DEFAULT_LAF_NAME = PlasticXPLookAndFeel.class.getName();
-
-    // note that another theme - "Desert Blue" doesn't support Chinese and Japanese chars
-    private static final String DEFAULT_THEME_NAME = "Sky Bluer";
-
     @Override
     public void beforeSwingLaunch() {
-
-        PlasticTheme theme = findTheme();
-
-        if (theme != null) {
-            PlasticLookAndFeel.setCurrentTheme(theme);
-        }
-
-        try {
-            UIManager.setLookAndFeel(DEFAULT_LAF_NAME);
-            // override some default styles and colors
-            overrideUIDefaults();
-        } catch (Exception e) {
-            LOGGER.warn("Error installing L&F: {}", DEFAULT_LAF_NAME, e);
-        }
+        FlatLightLaf.setup();
+        // override some default styles and colors
+        overrideUIDefaults();
     }
 
     private void overrideUIDefaults() {
         Color greyHighlight = new Color(0xCBCBCB);
 
-        UIManager.put("ButtonUI",                       GenericButtonUI.class.getName());
-        UIManager.put("HiResGrayFilterEnabled",         Boolean.TRUE);
         UIManager.put("Tree.expandedIcon",              IconFactory.buildIcon("icon-arrow-open.png"));
         UIManager.put("Tree.collapsedIcon",             IconFactory.buildIcon("icon-arrow-closed.png"));
         UIManager.put("Tree.paintLines",                Boolean.FALSE);
@@ -83,16 +59,5 @@ public class GenericUIInitializer implements UIInitializer {
         UIManager.put("RadioButtonMenuItem.selectionForeground", Color.BLACK);
         // this one is custom for MainToolBar
         UIManager.put("MainToolBar.border",             BorderFactory.createLineBorder(Color.GRAY));
-    }
-
-    private PlasticTheme findTheme() {
-
-        for (Object object : PlasticLookAndFeel.getInstalledThemes()) {
-            PlasticTheme theme = (PlasticTheme) object;
-            if (DEFAULT_THEME_NAME.equals(theme.getName())) {
-                return theme;
-            }
-        }
-        return null;
     }
 }
