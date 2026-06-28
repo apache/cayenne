@@ -26,15 +26,15 @@ import org.apache.cayenne.map.DbAttribute;
  *
  * @since 4.0
  */
-public class ParameterBinding {
+public class ParameterBinding<T> {
 
     private final DbAttribute attribute;
     private final int jdbcType;
     private final int scale;
 
-    private Object value;
+    private T value;
     private int statementPosition;
-    private ExtendedType<?> extendedType;
+    private ExtendedType<T> extendedType;
 
     /**
      * @since 5.0
@@ -59,14 +59,14 @@ public class ParameterBinding {
      *
      * @since 5.0
      */
-    public ParameterBinding reset(int statementPosition, Object value, ExtendedType<?> extendedType) {
+    public ParameterBinding<T> reset(int statementPosition, T value, ExtendedType<T> extendedType) {
         this.statementPosition = statementPosition;
         this.value = value;
         this.extendedType = extendedType;
         return this;
     }
 
-    public Object getValue() {
+    public T getValue() {
         return value;
     }
 
@@ -74,7 +74,7 @@ public class ParameterBinding {
         return statementPosition;
     }
 
-    public ExtendedType getExtendedType() {
+    public ExtendedType<T> getExtendedType() {
         return extendedType;
     }
 
