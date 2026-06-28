@@ -21,8 +21,7 @@ package org.apache.cayenne.access.jdbc.reader;
 import java.sql.ResultSet;
 
 /**
- * A strategy class that encapsulates an algorithm for converting a single
- * ResultSet row into a DataRow.
+ * A strategy class that encapsulates an algorithm for converting a single ResultSet row into a DataRow.
  * 
  * @since 3.0
  */

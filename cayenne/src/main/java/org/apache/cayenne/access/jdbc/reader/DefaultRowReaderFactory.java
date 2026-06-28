@@ -22,6 +22,9 @@ import org.apache.cayenne.CayenneRuntimeException;
 import org.apache.cayenne.access.jdbc.RSColumn;
 import org.apache.cayenne.access.types.ExtendedType;
 import org.apache.cayenne.dba.DbAdapter;
+import org.apache.cayenne.map.DbAttribute;
+import org.apache.cayenne.map.DbEntity;
+import org.apache.cayenne.map.ObjEntity;
 import org.apache.cayenne.query.EmbeddableResultSegment;
 import org.apache.cayenne.query.EntityResultSegment;
 import org.apache.cayenne.query.QueryMetadata;
@@ -37,26 +40,22 @@ public class DefaultRowReaderFactory implements RowReaderFactory {
     @Override
     public RowReader<?> rowReader(RSColumn[] columns, QueryMetadata queryMetadata, DbAdapter adapter) {
 
-        List<Object> rsMapping = queryMetadata.getResultSetMapping();
-        if (rsMapping == null) {
+        List<Object> segments = queryMetadata.getResultSetMapping();
+        if (segments == null || segments.isEmpty()) {
             return createFullRowReader(columns, queryMetadata);
         }
 
-        int resultWidth = rsMapping.size();
-        if (resultWidth == 0) {
-            throw new CayenneRuntimeException("Empty result columns");
-        }
-
         if (queryMetadata.isSingleResultSetMapping()) {
-            return segmentRowReader(rsMapping.getFirst(), columns, queryMetadata);
-        } else {
-            CompoundRowReader reader = new CompoundRowReader(resultWidth);
-            for (int i = 0; i < resultWidth; i++) {
-                reader.addRowReader(i, segmentRowReader(rsMapping.get(i), columns, queryMetadata));
-            }
-
-            return reader;
+            return segmentRowReader(segments.getFirst(), columns, queryMetadata);
         }
+
+        int w = segments.size();
+        RowReader<?>[] readers = new RowReader[w];
+        for (int i = 0; i < w; i++) {
+            readers[i] = segmentRowReader(segments.get(i), columns, queryMetadata);
+        }
+
+        return new CompoundRowReader(readers);
     }
 
     private RowReader<?> segmentRowReader(Object segment, RSColumn[] columns, QueryMetadata queryMetadata) {
@@ -93,27 +92,89 @@ public class DefaultRowReaderFactory implements RowReaderFactory {
                 columns[scalarIndex].rsType());
     }
 
-    protected RowReader<?> createEntityRowReader(RSColumn[] columns, QueryMetadata queryMetadata,
-                                                 EntityResultSegment resultMetadata) {
+    protected RowReader<?> createEntityRowReader(
+            RSColumn[] columns,
+            QueryMetadata queryMetadata,
+            EntityResultSegment resultMetadata) {
 
         if (queryMetadata.getPageSize() > 0) {
-            return new IdRowReader<>(columns, queryMetadata, resultMetadata);
-        } else if (resultMetadata.getClassDescriptor() != null && resultMetadata.getClassDescriptor().hasSubclasses()) {
-            return new InheritanceAwareEntityRowReader(columns, resultMetadata);
-        } else {
-            return new EntityRowReader(columns, resultMetadata);
+            return createIdRowReader(columns, queryMetadata, resultMetadata);
         }
+
+        int startIndex = resultMetadata.getColumnOffset();
+        int segmentWidth = resultMetadata.getFields().size();
+        ExtendedType<?>[] readers = new ExtendedType[segmentWidth];
+        int[] types = new int[segmentWidth];
+        String[] labels = new String[segmentWidth];
+
+        for (int i = 0; i < segmentWidth; i++) {
+            RSColumn column = columns[startIndex + i];
+            readers[i] = column.reader();
+            types[i] = column.rsType();
+
+            // the query translator may reorder fields compared to the entity result, so resolve the
+            // DataRow label by reverse lookup of the column name...
+            if (column.dataRowName().contains(".")) {
+                // a dotted dataRowName is a prefetched column - use it directly instead of by alias
+                labels[i] = column.dataRowName();
+            } else {
+                labels[i] = resultMetadata.getColumnPath(column.dataRowName());
+            }
+        }
+
+        return EntityRowReader.of(readers, types, labels, startIndex, resultMetadata.getClassDescriptor());
     }
 
     protected RowReader<?> createFullRowReader(RSColumn[] columns, QueryMetadata queryMetadata) {
 
         if (queryMetadata.getPageSize() > 0) {
-            return new IdRowReader<>(columns, queryMetadata, null);
-        } else if (queryMetadata.getClassDescriptor() != null && queryMetadata.getClassDescriptor().hasSubclasses()) {
-            return new InheritanceAwareRowReader(columns, queryMetadata);
-        } else {
-            return new FullRowReader(columns, queryMetadata);
+            return createIdRowReader(columns, queryMetadata, null);
         }
+
+        return FullRowReader.of(columns, queryMetadata);
+    }
+
+    private RowReader<?> createIdRowReader(RSColumn[] columns, QueryMetadata queryMetadata,
+                                           EntityResultSegment resultMetadata) {
+        int[] pk = pkIndices(columns, queryMetadata, resultMetadata);
+
+        // single-column PK - read the value directly as a scalar
+        if (pk.length == 1) {
+            RSColumn column = columns[pk[0]];
+            // jdbc column indexes start from 1
+            return new ScalarRowReader<>(column.reader(), pk[0] + 1, column.rsType());
+        }
+
+        return new IndexedRowReader(columns, entityName(queryMetadata), pk);
+    }
+
+    private static String entityName(QueryMetadata queryMetadata) {
+        ObjEntity objEntity = queryMetadata.getObjEntity();
+        return objEntity != null ? objEntity.getName() : null;
+    }
+
+    private static int[] pkIndices(RSColumn[] columns, QueryMetadata queryMetadata, EntityResultSegment resultMetadata) {
+        DbEntity dbEntity = resultMetadata == null
+                ? queryMetadata.getDbEntity()
+                : resultMetadata.getClassDescriptor().getEntity().getDbEntity();
+        if (dbEntity == null) {
+            throw new CayenneRuntimeException("Null root DbEntity, can't index PK");
+        }
+
+        int len = dbEntity.getPrimaryKeys().size();
+        if (len == 0) {
+            throw new CayenneRuntimeException("Root DBEntity has no PK defined: %s", dbEntity);
+        }
+
+        int[] pk = new int[len];
+        int offset = resultMetadata != null ? resultMetadata.getColumnOffset() : 0;
+        for (int i = offset, j = 0; i < offset + len; i++) {
+            DbAttribute a = dbEntity.getAttribute(columns[i].rsName());
+            if (a != null && a.isPrimaryKey()) {
+                pk[j++] = i;
+            }
+        }
+        return pk;
     }
 
 }

@@ -18,9 +18,6 @@
  ****************************************************************/
 package org.apache.cayenne.crypto.reader;
 
-import java.sql.ResultSet;
-import java.util.Map;
-
 import org.apache.cayenne.access.jdbc.RSColumn;
 import org.apache.cayenne.access.jdbc.reader.DefaultRowReaderFactory;
 import org.apache.cayenne.access.jdbc.reader.RowReader;
@@ -40,6 +37,9 @@ import org.apache.cayenne.map.DbAttribute;
 import org.apache.cayenne.query.EntityResultSegment;
 import org.apache.cayenne.query.QueryMetadata;
 import org.apache.cayenne.query.ScalarResultSegment;
+
+import java.sql.ResultSet;
+import java.util.Map;
 
 public class CryptoRowReaderFactoryDecorator extends DefaultRowReaderFactory {
 
@@ -208,8 +208,7 @@ public class CryptoRowReaderFactoryDecorator extends DefaultRowReaderFactory {
 
     private class DecoratedFullRowReader extends DecoratedEntityFullRowReader {
 
-        DecoratedFullRowReader(RSColumn[] columns,
-                               RowReader<?> delegateReader) {
+        DecoratedFullRowReader(RSColumn[] columns, RowReader<?> delegateReader) {
             super(columns, delegateReader, null);
         }
 

@@ -18,59 +18,48 @@
  ****************************************************************/
 package org.apache.cayenne.access.jdbc.reader;
 
-import java.sql.ResultSet;
-
 import org.apache.cayenne.CayenneRuntimeException;
 import org.apache.cayenne.DataRow;
-import org.apache.cayenne.access.jdbc.RSColumn;
 import org.apache.cayenne.access.types.ExtendedType;
-import org.apache.cayenne.query.EntityResultSegment;
+import org.apache.cayenne.map.EntityInheritanceTree;
+import org.apache.cayenne.map.ObjEntity;
 import org.apache.cayenne.reflect.ClassDescriptor;
 import org.apache.cayenne.util.Util;
+
+import java.sql.ResultSet;
 
 /**
  * @since 3.0
  */
 class EntityRowReader implements RowReader<DataRow> {
 
-    private ExtendedType[] converters;
-    private String[] labels;
-    private int[] types;
+    private final ExtendedType<?>[] readers;
+    private final String[] labels;
+    private final int[] types;
+    private final int mapCapacity;
+    private final int startIndex;
+    protected final String entityName;
 
-    String entityName;
-    private int mapCapacity;
-    private int startIndex;
+    static RowReader<DataRow> of(
+            ExtendedType<?>[] readers,
+            int[] types,
+            String[] labels,
+            int startIndex,
+            ClassDescriptor classDescriptor) {
 
-    EntityRowReader(RSColumn[] columns, EntityResultSegment segmentMetadata) {
+        String entityName = classDescriptor != null ? classDescriptor.getEntity().getName() : null;
+        return classDescriptor != null && classDescriptor.hasSubclasses()
+                ? new InheritanceAwareEntityRowReader(readers, types, labels, startIndex, entityName, classDescriptor.getEntityInheritanceTree())
+                : new EntityRowReader(readers, types, labels, startIndex, entityName);
+    }
 
-        ClassDescriptor classDescriptor = segmentMetadata.getClassDescriptor();
-
-        if (classDescriptor != null) {
-            this.entityName = classDescriptor.getEntity().getName();
-        }
-
-        int segmentWidth = segmentMetadata.getFields().size();
-        this.startIndex = segmentMetadata.getColumnOffset();
-        this.converters = new ExtendedType[segmentWidth];
-        this.types = new int[segmentWidth];
-        this.labels = new String[segmentWidth];
-
-        for (int i = 0; i < segmentWidth; i++) {
-            this.converters[i] = columns[startIndex + i].reader();
-            types[i] = columns[startIndex + i].rsType();
-
-            // query translator may change the order of fields compare to the entity
-            // result, so figure out DataRow labels by doing reverse lookup of
-            // RowDescriptor labels...
-            if (columns[startIndex + i].dataRowName().contains(".")) {
-                // if the dataRowKey contains ".", it is prefetched column and
-                // we can use it instead of search the name by alias
-                labels[i] = columns[startIndex + i].dataRowName();
-            } else {
-                labels[i] = segmentMetadata.getColumnPath(columns[startIndex + i].dataRowName());
-            }
-        }
-        this.mapCapacity = (int) Math.ceil(segmentWidth / 0.75);
+    protected EntityRowReader(ExtendedType<?>[] readers, int[] types, String[] labels, int startIndex, String entityName) {
+        this.readers = readers;
+        this.types = types;
+        this.labels = labels;
+        this.startIndex = startIndex;
+        this.entityName = entityName;
+        this.mapCapacity = (int) Math.ceil(readers.length / 0.75);
     }
 
     @Override
@@ -78,12 +67,12 @@ class EntityRowReader implements RowReader<DataRow> {
 
         try {
             DataRow row = new DataRow(mapCapacity);
-            int len = converters.length;
+            int len = readers.length;
 
             for (int i = 0; i < len; i++) {
 
                 // note: jdbc column indexes start from 1, not 0 as in arrays
-                Object val = converters[i].materializeObject(resultSet, startIndex + i + 1, types[i]);
+                Object val = readers[i].materializeObject(resultSet, startIndex + i + 1, types[i]);
                 row.put(labels[i], val);
             }
 
@@ -98,7 +87,30 @@ class EntityRowReader implements RowReader<DataRow> {
         }
     }
 
-    void postprocessRow(ResultSet resultSet, DataRow dataRow) throws Exception {
+    protected void postprocessRow(ResultSet resultSet, DataRow dataRow) {
         dataRow.setEntityName(entityName);
+    }
+
+    private static class InheritanceAwareEntityRowReader extends EntityRowReader {
+
+        private final EntityInheritanceTree entityInheritanceTree;
+
+        InheritanceAwareEntityRowReader(
+                ExtendedType<?>[] readers,
+                int[] types,
+                String[] labels,
+                int startIndex,
+                String entityName,
+                EntityInheritanceTree entityInheritanceTree) {
+
+            super(readers, types, labels, startIndex, entityName);
+            this.entityInheritanceTree = entityInheritanceTree;
+        }
+
+        @Override
+        protected void postprocessRow(ResultSet resultSet, DataRow dataRow) {
+            ObjEntity entity = entityInheritanceTree.entityMatchingRow(dataRow);
+            dataRow.setEntityName(entity != null ? entity.getName() : entityName);
+        }
     }
 }
