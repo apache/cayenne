@@ -65,21 +65,20 @@ public class CryptoRowReaderFactoryDecorator extends DefaultRowReaderFactory {
 
     @Override
     protected RowReader<?> scalarSegmentReader(RSColumn[] columns, QueryMetadata metadata, ScalarResultSegment segment) {
-        RowReader<?> scalarRowReader = super.scalarSegmentReader(columns, metadata, segment);
-        return new DecoratedScalarRowReader(columns[segment.getColumnOffset()], scalarRowReader);
+        RowReader<?> reader = super.scalarSegmentReader(columns, metadata, segment);
+        return new DecoratedScalarRowReader(columns[segment.getColumnOffset()], reader);
     }
 
     @Override
     protected RowReader<?> entitySegmentReader(RSColumn[] columns, QueryMetadata metadata, EntityResultSegment segment) {
-        RowReader<?> entityRowReader = super.entitySegmentReader(columns, metadata, segment);
-        return new DecoratedEntityRowReader(columns, entityRowReader, segment);
+        RowReader<?> reader = super.entitySegmentReader(columns, metadata, segment);
+        return new DecoratedEntityRowReader(columns, reader, segment);
     }
 
     @Override
-    protected RowReader<?> fullRowReader(RSColumn[] columns, QueryMetadata metadata) {
-        RowReader<?> fullRowReader = super
-                .fullRowReader(columns, metadata);
-        return new DecoratedFullRowReader(columns, fullRowReader);
+    protected RowReader<?> noSegmentReader(RSColumn[] columns, QueryMetadata metadata) {
+        RowReader<?> reader = super.noSegmentReader(columns, metadata);
+        return new DecoratedFullRowReader(columns, reader);
     }
 
     protected RSColumn[] encryptedColumns(RSColumn[] columns, ExtendedTypeMap typeMap) {

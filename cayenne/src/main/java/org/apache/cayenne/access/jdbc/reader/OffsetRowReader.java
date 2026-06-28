@@ -37,8 +37,8 @@ class OffsetRowReader implements RowReader<DataRow> {
     private final int offset;
     private final int mapCapacity;
 
-    // possible inherotance
-    static RowReader<DataRow> of(RSColumn[] columns, int offset, ClassDescriptor cd) {
+    // possible inheritance
+    static OffsetRowReader of(RSColumn[] columns, int offset, ClassDescriptor cd) {
         String entityName = cd != null ? cd.getEntity().getName() : null;
         return cd != null && cd.hasSubclasses()
                 ? new InheritanceAwareOffsetRowReader(columns, offset, entityName, cd.getEntityInheritanceTree())
@@ -46,12 +46,12 @@ class OffsetRowReader implements RowReader<DataRow> {
     }
 
     // fixed entity name, no inheritance
-    static RowReader<DataRow> of(RSColumn[] columns, int offset, String entityName) {
+    static OffsetRowReader of(RSColumn[] columns, int offset, String entityName) {
         return new OffsetRowReader(columns, offset, entityName);
     }
 
     // no entity name, no inheritance
-    static RowReader<DataRow> of(RSColumn[] columns, int offset) {
+    static OffsetRowReader of(RSColumn[] columns, int offset) {
         return new OffsetRowReader(columns, offset, null);
     }
 

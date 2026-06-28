@@ -42,23 +42,23 @@ public class DefaultRowReaderFactory implements RowReaderFactory {
 
         List<Object> segments = metadata.getResultSetMapping();
         if (segments == null || segments.isEmpty()) {
-            return fullRowReader(columns, metadata);
+            return noSegmentReader(columns, metadata);
         }
 
         if (metadata.isSingleResultSetMapping()) {
-            return segmentRowReader(segments.getFirst(), columns, metadata);
+            return segmentReader(segments.getFirst(), columns, metadata);
         }
 
         int w = segments.size();
         RowReader<?>[] readers = new RowReader[w];
         for (int i = 0; i < w; i++) {
-            readers[i] = segmentRowReader(segments.get(i), columns, metadata);
+            readers[i] = segmentReader(segments.get(i), columns, metadata);
         }
 
         return new CompoundRowReader(readers);
     }
 
-    private RowReader<?> segmentRowReader(Object segment, RSColumn[] columns, QueryMetadata metadata) {
+    private RowReader<?> segmentReader(Object segment, RSColumn[] columns, QueryMetadata metadata) {
         return switch (segment) {
             case EntityResultSegment ers -> entitySegmentReader(columns, metadata, ers);
             case EmbeddableResultSegment ers -> embeddableSegmentReader(columns, ers);
@@ -131,13 +131,10 @@ public class DefaultRowReaderFactory implements RowReaderFactory {
         return OffsetRowReader.of(relabeled, startIndex, segment.getClassDescriptor());
     }
 
-    protected RowReader<?> fullRowReader(RSColumn[] columns, QueryMetadata metadata) {
-
-        if (metadata.getPageSize() > 0) {
-            return idReader(columns, metadata, null);
-        }
-
-        return FullRowReader.of(columns, metadata);
+    protected RowReader<?> noSegmentReader(RSColumn[] columns, QueryMetadata metadata) {
+        return metadata.getPageSize() > 0
+                ? idReader(columns, metadata, null)
+                : FullRowReader.of(columns, metadata);
     }
 
     private RowReader<?> idReader(RSColumn[] columns, QueryMetadata metadata, EntityResultSegment segment) {
