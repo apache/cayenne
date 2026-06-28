@@ -178,7 +178,8 @@ public class ProcedureAction extends BaseSQLAction {
 				throw new CayenneRuntimeException("No descriptor for result set at index '%d' configured.", setIndex);
 			}
 
-			builder.columns(toColumnDescriptors(descriptors.get(setIndex),
+			builder.columns(toColumnDescriptors(
+					descriptors.get(setIndex),
 					dataNode.getAdapter().getExtendedTypes()));
 		}
 
@@ -194,12 +195,6 @@ public class ProcedureAction extends BaseSQLAction {
 		return builder.build(dataNode.getAdapter().getExtendedTypes());
 	}
 
-	/**
-	 * Translates the adapter-independent {@link ProcedureColumn} specs configured on the query into runtime
-	 * {@link ColumnDescriptor}s.
-	 *
-	 * @since 5.0
-	 */
 	private static ColumnDescriptor[] toColumnDescriptors(ProcedureColumn[] columns, ExtendedTypeMap typeMap) {
 		ColumnDescriptor[] result = new ColumnDescriptor[columns.length];
 		for (int i = 0; i < columns.length; i++) {

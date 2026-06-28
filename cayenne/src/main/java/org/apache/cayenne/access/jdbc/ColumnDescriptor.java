@@ -92,15 +92,12 @@ public record ColumnDescriptor(String name, String dataRowKey, int jdbcType, Ext
         private static final Function<String, String> LOWERCASE_TRANSFORMER = input ->
                 input != null ? input.toLowerCase() : null;
 
-        protected ColumnDescriptor[] columns;
-        protected ResultSetMetaData resultSetMetadata;
-
-        protected Function<String, String> caseTransformer;
-        protected Map<String, String> typeOverrides;
-
+        private ColumnDescriptor[] columns;
+        private ResultSetMetaData resultSetMetadata;
+        private Function<String, String> caseTransformer;
+        private Map<String, String> typeOverrides;
         private boolean mergeColumnsWithRsMetadata;
-
-        protected boolean validateDuplicateColumnNames;
+        private boolean validateDuplicateColumnNames;
 
         /**
          * Returns the array of {@link ColumnDescriptor}s describing the result row, with an {@link ExtendedType}
@@ -175,8 +172,8 @@ public record ColumnDescriptor(String name, String dataRowKey, int jdbcType, Ext
             }
 
             if (validateDuplicateColumnNames && !duplicates.isEmpty()) {
-                LOGGER.warn("Found duplicated columns '{}' in row descriptor. " +
-                                "This can lead to errors when converting result to persistent objects.",
+                LOGGER.warn(
+                        "Found duplicated columns '{}' in row descriptor. This can lead to errors when converting result to persistent objects.",
                         String.join("', '", duplicates));
             }
 
@@ -220,10 +217,8 @@ public record ColumnDescriptor(String name, String dataRowKey, int jdbcType, Ext
             return new ColumnDescriptor(rowKey, rowKey, jdbcType, type, null);
         }
 
-        /**
-         * Return not empty string with ColumnLabel or ColumnName or "column_" + position for
-         * for specified (by it's position) column in ResultSetMetaData.
-         */
+        // Return a non-empty string with ColumnLabel or ColumnName or "column_<pos>" for positional column
+        // in ResultSetMetaData.
         private String resolveDataRowKeyFromResultSet(int position) throws SQLException {
             String name = resultSetMetadata.getColumnLabel(position);
             if (name == null || name.isEmpty()) {
@@ -270,7 +265,7 @@ public record ColumnDescriptor(String name, String dataRowKey, int jdbcType, Ext
          * Sets an explicit set of columns. The builder may replace these with new instances to enforce the column
          * capitalization policy and column Java type overrides.
          */
-        public RowBuilder columns(ColumnDescriptor[] columns) {
+        public RowBuilder columns(ColumnDescriptor... columns) {
             this.columns = columns;
             return this;
         }

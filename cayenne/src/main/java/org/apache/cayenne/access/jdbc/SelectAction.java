@@ -107,11 +107,7 @@ public class SelectAction extends BaseSQLAction {
             throw ex;
         }
 
-        ColumnDescriptor[] columns = ColumnDescriptor.rowBuilder()
-                .columns(translated.resultColumns())
-                .build(dataNode.getAdapter().getExtendedTypes());
-
-        RowReader<?> rowReader = dataNode.getRowReaderFactory().rowReader(columns, queryMetadata, dataNode.getAdapter());
+        RowReader<?> rowReader = dataNode.getRowReaderFactory().rowReader(translated.resultColumns(), queryMetadata, dataNode.getAdapter());
 
         ResultIterator<?> it = new JDBCResultIterator<>(statement, rs, rowReader);
         it = forIteratedResult(it, observer, connection, t1, translated.sql());

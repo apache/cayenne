@@ -276,8 +276,6 @@ public class BatchAction extends BaseSQLAction {
 			if (generated.size() == 1 && keysRS.getMetaData().getColumnCount() == 1) {
 				DbAttribute key = generated.iterator().next();
 
-				ColumnDescriptor[] columns = new ColumnDescriptor[1];
-
 				// use column name from result set, but type and Java class from DB attribute
 				ResultSetMetaData md = keysRS.getMetaData();
 				String columnName = md.getColumnLabel(1);
@@ -288,8 +286,7 @@ public class BatchAction extends BaseSQLAction {
 					}
 				}
 				ExtendedType type = dataNode.getAdapter().getExtendedTypes().getRegisteredType(typeForGeneratedPK(key));
-				columns[0] = new ColumnDescriptor(columnName, columnName, key.getType(), type, null);
-				rowBuilder.columns(columns);
+				rowBuilder.columns(new ColumnDescriptor(columnName, columnName, key.getType(), type, null));
 			} else {
 				rowBuilder.resultSet(keysRS);
 			}
