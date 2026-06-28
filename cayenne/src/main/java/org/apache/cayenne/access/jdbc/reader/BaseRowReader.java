@@ -18,12 +18,12 @@
  ****************************************************************/
 package org.apache.cayenne.access.jdbc.reader;
 
-import java.sql.ResultSet;
-
 import org.apache.cayenne.access.jdbc.RSColumn;
 import org.apache.cayenne.access.types.ExtendedType;
 import org.apache.cayenne.map.ObjEntity;
 import org.apache.cayenne.query.QueryMetadata;
+
+import java.sql.ResultSet;
 
 /**
  * @since 3.0
@@ -47,9 +47,9 @@ abstract class BaseRowReader<T> implements RowReader<T> {
         this.types = new int[width];
 
         for (int i = 0; i < width; i++) {
-            converters[i] = columns[i].type();
-            labels[i] = columns[i].dataRowKey();
-            types[i] = columns[i].jdbcType();
+            converters[i] = columns[i].reader();
+            labels[i] = columns[i].dataRowName();
+            types[i] = columns[i].rsType();
         }
     }
 

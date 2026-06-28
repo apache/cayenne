@@ -18,35 +18,31 @@
  ****************************************************************/
 package org.apache.cayenne.access.jdbc.reader;
 
-import java.sql.ResultSet;
-
 import org.apache.cayenne.CayenneRuntimeException;
-import org.apache.cayenne.access.jdbc.RSColumn;
 import org.apache.cayenne.access.types.ExtendedType;
-import org.apache.cayenne.query.ScalarResultSegment;
 import org.apache.cayenne.util.Util;
+
+import java.sql.ResultSet;
 
 /**
  * @since 3.0
  */
 class ScalarRowReader<T> implements RowReader<T> {
 
-    private final ExtendedType<T> converter;
+    private final ExtendedType<T> reader;
     private final int index;
     private final int type;
 
-    @SuppressWarnings("unchecked")
-    ScalarRowReader(RSColumn[] columns, ScalarResultSegment segmentMetadata) {
-        int scalarIndex = segmentMetadata.getColumnOffset();
-        this.converter = (ExtendedType<T>) columns[scalarIndex].type();
-        this.type = columns[scalarIndex].jdbcType();
-        this.index = scalarIndex + 1;
+    public ScalarRowReader(ExtendedType<T> reader, int index, int type) {
+        this.reader = reader;
+        this.index = index;
+        this.type = type;
     }
 
     @Override
     public T readRow(ResultSet resultSet) {
         try {
-            return converter.materializeObject(resultSet, index, type);
+            return reader.materializeObject(resultSet, index, type);
         } catch (CayenneRuntimeException cex) {
             // rethrow unmodified
             throw cex;

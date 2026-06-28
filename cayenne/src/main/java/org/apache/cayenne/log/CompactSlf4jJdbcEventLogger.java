@@ -117,8 +117,8 @@ public class CompactSlf4jJdbcEventLogger extends Slf4jJdbcEventLogger {
                 key = attribute.getName();
             }
 
-            if (b.extendedType() != null) {
-                value = b.extendedType().toString(b.value());
+            if (b.binder() != null) {
+                value = b.binder().toString(b.value());
             } else if (b.value() == null) {
                 value = "NULL";
             } else {

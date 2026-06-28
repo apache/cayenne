@@ -97,7 +97,7 @@ public class CryptoRowReaderFactoryDecorator extends DefaultRowReaderFactory {
             RSColumn column = columns[i];
             DbAttribute attribute = column.attribute();
 
-            ExtendedType type = column.type();
+            ExtendedType type = column.reader();
 
             if (attribute != null && columnMapper.isEncrypted(attribute)) {
 
@@ -110,9 +110,9 @@ public class CryptoRowReaderFactoryDecorator extends DefaultRowReaderFactory {
                 // else - warning?
             }
 
-            encrypted[i] = type == column.type()
+            encrypted[i] = type == column.reader()
                     ? column
-                    : new RSColumn(column.name(), column.dataRowKey(), column.jdbcType(), type, attribute);
+                    : new RSColumn(column.rsName(), column.rsType(), column.dataRowName(), type, attribute);
         }
 
         return encrypted;

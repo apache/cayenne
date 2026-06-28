@@ -135,10 +135,10 @@ public class ValueNode extends Node {
         // literals not bound to a column); fall back to deriving the JDBC type from the value
         int statementPosition = context.getBindings().size() + 1;
         PSParameter binding = (attribute != null)
-                ? new PSParameter(context.getAdapter().preferredBindingType(attribute.getType()),
-                        attribute.getScale(), attribute, statementPosition, value, extendedType)
-                : new PSParameter(context.getAdapter().preferredBindingType(TypesMapping.getSqlTypeByJava(value.getClass())),
-                        -1, null, statementPosition, value, extendedType);
+                ? new PSParameter(value, statementPosition, context.getAdapter().preferredBindingType(attribute.getType()),
+                        attribute.getScale(), extendedType, attribute)
+                : new PSParameter(value, statementPosition, context.getAdapter().preferredBindingType(TypesMapping.getSqlTypeByJava(value.getClass())),
+                        -1, extendedType, null);
 
         context.getBindings().add(binding);
     }

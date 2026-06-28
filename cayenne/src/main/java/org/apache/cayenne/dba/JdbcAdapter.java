@@ -625,14 +625,14 @@ public class JdbcAdapter implements DbAdapter {
     public void bindParameter(PreparedStatement statement, PSParameter<?> parameter) throws Exception {
 
         if (parameter.value() == null) {
-            statement.setNull(parameter.statementPosition(), parameter.jdbcType());
+            statement.setNull(parameter.psPosition(), parameter.psType());
         } else {
-            ExtendedType t = parameter.extendedType();
+            ExtendedType t = parameter.binder();
             t.setJdbcObject(statement,
                     parameter.value(),
-                    parameter.statementPosition(),
-                    parameter.jdbcType(),
-                    parameter.scale());
+                    parameter.psPosition(),
+                    parameter.psType(),
+                    parameter.psScale());
         }
     }
 

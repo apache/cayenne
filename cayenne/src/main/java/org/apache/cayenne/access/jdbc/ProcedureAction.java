@@ -199,7 +199,7 @@ public class ProcedureAction extends BaseSQLAction {
 		for (int i = 0; i < columns.length; i++) {
 			ProcedureColumn c = columns[i];
 			ExtendedType type = typeMap.getRegisteredType(c.javaClass());
-			result[i] = new RSColumn(c.name(), c.dataRowKey(), c.jdbcType(), type, null);
+			result[i] = new RSColumn(c.name(), c.jdbcType(), c.dataRowKey(), type, null);
 		}
 		return result;
 	}

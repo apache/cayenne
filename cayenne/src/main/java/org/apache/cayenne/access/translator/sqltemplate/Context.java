@@ -128,8 +128,8 @@ public class Context {
         }
         // a binding's statement position is its 1-based ordinal among the bound parameters; the
         // ExtendedType is resolved from the value via the adapter
-        parameterBindings.add(new PSParameter(jdbcType, scale, null,
-                parameterBindings.size() + 1, value, extendedType(value)));
+        parameterBindings.add(new PSParameter(value, parameterBindings.size() + 1, jdbcType, scale, extendedType(value), null
+        ));
     }
 
     private ExtendedType<?> extendedType(Object value) {

@@ -19,15 +19,11 @@
 
 package org.apache.cayenne.access.jdbc.reader;
 
-import java.sql.ResultSet;
-
 import org.apache.cayenne.CayenneRuntimeException;
 import org.apache.cayenne.DataRow;
-import org.apache.cayenne.access.jdbc.RSColumn;
 import org.apache.cayenne.access.types.ExtendedType;
-import org.apache.cayenne.query.EmbeddableResultSegment;
-import org.apache.cayenne.query.QueryMetadata;
-import org.apache.cayenne.util.Util;
+
+import java.sql.ResultSet;
 
 /**
  * @since 4.2
@@ -36,23 +32,16 @@ class EmbeddableRowReader implements RowReader<DataRow> {
 
     private final int startIndex;
     private final int mapCapacity;
-    private final ExtendedType[] converters;
+    private final ExtendedType<?>[] converters;
     private final String[] labels;
     private final int[] types;
 
-    EmbeddableRowReader(RSColumn[] columns, QueryMetadata queryMetadata, EmbeddableResultSegment segment) {
-        int segmentWidth = segment.getFields().size();
-        this.startIndex = segment.getColumnOffset();
-        this.converters = new ExtendedType[segmentWidth];
-        this.types = new int[segmentWidth];
-        this.labels = new String[segmentWidth];
-
-        for (int i = 0; i < segmentWidth; i++) {
-            this.converters[i] = columns[startIndex + i].type();
-            types[i] = columns[startIndex + i].jdbcType();
-            labels[i] = segment.getFields().get(columns[startIndex +i].name());
-        }
-        this.mapCapacity = (int) Math.ceil(segmentWidth / 0.75);
+    EmbeddableRowReader(ExtendedType<?>[] converters, int[] types, String[] labels, int startIndex) {
+        this.converters = converters;
+        this.types = types;
+        this.labels = labels;
+        this.startIndex = startIndex;
+        this.mapCapacity = (int) Math.ceil(converters.length / 0.75);
     }
 
     @Override
@@ -66,11 +55,10 @@ class EmbeddableRowReader implements RowReader<DataRow> {
                 row.put(labels[i], val);
             }
             return row;
-        } catch (CayenneRuntimeException cex) {
-            // rethrow unmodified
-            throw cex;
-        } catch (Exception otherex) {
-            throw new CayenneRuntimeException("Exception materializing column.", Util.unwindException(otherex));
+        } catch (CayenneRuntimeException ex) {
+            throw ex;
+        } catch (Exception ex) {
+            throw new CayenneRuntimeException("Exception materializing column.", ex);
         }
     }
 }

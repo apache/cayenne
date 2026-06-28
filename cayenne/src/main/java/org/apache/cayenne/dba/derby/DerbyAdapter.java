@@ -216,8 +216,8 @@ public class DerbyAdapter extends JdbcAdapter {
     @Override
     public void bindParameter(PreparedStatement statement, PSParameter<?> parameter) throws Exception {
 
-        if (parameter.value() == null && parameter.jdbcType() == 0) {
-            statement.setNull(parameter.statementPosition(), Types.VARCHAR);
+        if (parameter.value() == null && parameter.psType() == 0) {
+            statement.setNull(parameter.psPosition(), Types.VARCHAR);
         } else {
             super.bindParameter(statement, parameter);
         }

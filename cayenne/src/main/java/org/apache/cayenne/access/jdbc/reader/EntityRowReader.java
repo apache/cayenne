@@ -56,18 +56,18 @@ class EntityRowReader implements RowReader<DataRow> {
         this.labels = new String[segmentWidth];
 
         for (int i = 0; i < segmentWidth; i++) {
-            this.converters[i] = columns[startIndex + i].type();
-            types[i] = columns[startIndex + i].jdbcType();
+            this.converters[i] = columns[startIndex + i].reader();
+            types[i] = columns[startIndex + i].rsType();
 
             // query translator may change the order of fields compare to the entity
             // result, so figure out DataRow labels by doing reverse lookup of
             // RowDescriptor labels...
-            if (columns[startIndex + i].dataRowKey().contains(".")) {
+            if (columns[startIndex + i].dataRowName().contains(".")) {
                 // if the dataRowKey contains ".", it is prefetched column and
                 // we can use it instead of search the name by alias
-                labels[i] = columns[startIndex + i].dataRowKey();
+                labels[i] = columns[startIndex + i].dataRowName();
             } else {
-                labels[i] = segmentMetadata.getColumnPath(columns[startIndex + i].dataRowKey());
+                labels[i] = segmentMetadata.getColumnPath(columns[startIndex + i].dataRowName());
             }
         }
         this.mapCapacity = (int) Math.ceil(segmentWidth / 0.75);

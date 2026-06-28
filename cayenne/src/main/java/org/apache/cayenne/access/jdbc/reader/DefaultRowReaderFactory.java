@@ -18,94 +18,102 @@
  ****************************************************************/
 package org.apache.cayenne.access.jdbc.reader;
 
-import java.util.List;
-
 import org.apache.cayenne.CayenneRuntimeException;
 import org.apache.cayenne.access.jdbc.RSColumn;
+import org.apache.cayenne.access.types.ExtendedType;
 import org.apache.cayenne.dba.DbAdapter;
 import org.apache.cayenne.query.EmbeddableResultSegment;
 import org.apache.cayenne.query.EntityResultSegment;
 import org.apache.cayenne.query.QueryMetadata;
 import org.apache.cayenne.query.ScalarResultSegment;
 
+import java.util.List;
+
 /**
  * @since 4.0
  */
 public class DefaultRowReaderFactory implements RowReaderFactory {
 
-	@Override
-	public RowReader<?> rowReader(RSColumn[] columns, QueryMetadata queryMetadata, DbAdapter adapter) {
+    @Override
+    public RowReader<?> rowReader(RSColumn[] columns, QueryMetadata queryMetadata, DbAdapter adapter) {
 
-		List<Object> rsMapping = queryMetadata.getResultSetMapping();
-		if (rsMapping == null) {
-			return createFullRowReader(columns, queryMetadata);
-		}
+        List<Object> rsMapping = queryMetadata.getResultSetMapping();
+        if (rsMapping == null) {
+            return createFullRowReader(columns, queryMetadata);
+        }
 
-		int resultWidth = rsMapping.size();
-		if (resultWidth == 0) {
-			throw new CayenneRuntimeException("Empty result columns");
-		}
+        int resultWidth = rsMapping.size();
+        if (resultWidth == 0) {
+            throw new CayenneRuntimeException("Empty result columns");
+        }
 
-		if (queryMetadata.isSingleResultSetMapping()) {
+        if (queryMetadata.isSingleResultSetMapping()) {
+            return segmentRowReader(rsMapping.getFirst(), columns, queryMetadata);
+        } else {
+            CompoundRowReader reader = new CompoundRowReader(resultWidth);
+            for (int i = 0; i < resultWidth; i++) {
+                reader.addRowReader(i, segmentRowReader(rsMapping.get(i), columns, queryMetadata));
+            }
 
-			Object segment = rsMapping.get(0);
+            return reader;
+        }
+    }
 
-			if (segment instanceof EntityResultSegment) {
-				return createEntityRowReader(columns, queryMetadata, (EntityResultSegment) segment);
-			} else if (segment instanceof EmbeddableResultSegment) {
-				return createEmbeddableRowReader(columns, queryMetadata, (EmbeddableResultSegment) segment);
-			} else {
-				return createScalarRowReader(columns, queryMetadata, (ScalarResultSegment) segment);
-			}
-		} else {
-			CompoundRowReader reader = new CompoundRowReader(resultWidth);
+    private RowReader<?> segmentRowReader(Object segment, RSColumn[] columns, QueryMetadata queryMetadata) {
+        return switch (segment) {
+            case EntityResultSegment ers -> createEntityRowReader(columns, queryMetadata, ers);
+            case EmbeddableResultSegment ers -> createEmbeddableRowReader(columns, ers);
+            case ScalarResultSegment srs -> createScalarRowReader(columns, queryMetadata, srs);
+            case null, default -> throw new IllegalStateException("Unknown segment type: " + segment);
+        };
+    }
 
-			for (int i = 0; i < resultWidth; i++) {
-				Object segment = rsMapping.get(i);
+    private RowReader<?> createEmbeddableRowReader(RSColumn[] columns, EmbeddableResultSegment segment) {
+        int segmentWidth = segment.getFields().size();
+        int startIndex = segment.getColumnOffset();
+        ExtendedType<?>[] converters = new ExtendedType[segmentWidth];
+        int[] types = new int[segmentWidth];
+        String[] labels = new String[segmentWidth];
 
-				if (segment instanceof EntityResultSegment) {
-					reader.addRowReader(i,
-							createEntityRowReader(columns, queryMetadata, (EntityResultSegment) segment));
-				} else if(segment instanceof EmbeddableResultSegment) {
-					reader.addRowReader(i, createEmbeddableRowReader(columns, queryMetadata, (EmbeddableResultSegment) segment));
-				} else {
-					reader.addRowReader(i, createScalarRowReader(columns, queryMetadata, (ScalarResultSegment) segment));
-				}
-			}
+        for (int i = 0; i < segmentWidth; i++) {
+            converters[i] = columns[startIndex + i].reader();
+            types[i] = columns[startIndex + i].rsType();
+            labels[i] = segment.getFields().get(columns[startIndex + i].rsName());
+        }
 
-			return reader;
-		}
-	}
+        return new EmbeddableRowReader(converters, types, labels, startIndex);
+    }
 
-	private RowReader<?> createEmbeddableRowReader(RSColumn[] columns, QueryMetadata queryMetadata, EmbeddableResultSegment segment) {
-		return new EmbeddableRowReader(columns, queryMetadata, segment);
-	}
+    protected RowReader<?> createScalarRowReader(RSColumn[] columns, QueryMetadata queryMetadata, ScalarResultSegment segment) {
+        int scalarIndex = segment.getColumnOffset();
+        return new ScalarRowReader<>(
+                columns[scalarIndex].reader(),
+                // jdbc column indexes start from 1
+                scalarIndex + 1,
+                columns[scalarIndex].rsType());
+    }
 
-	protected RowReader<?> createScalarRowReader(RSColumn[] columns, QueryMetadata queryMetadata, ScalarResultSegment segment) {
-		return new ScalarRowReader<>(columns, segment);
-	}
-
-	protected RowReader<?> createEntityRowReader(RSColumn[] columns, QueryMetadata queryMetadata,
+    protected RowReader<?> createEntityRowReader(RSColumn[] columns, QueryMetadata queryMetadata,
                                                  EntityResultSegment resultMetadata) {
 
-		if (queryMetadata.getPageSize() > 0) {
-			return new IdRowReader<>(columns, queryMetadata, resultMetadata);
-		} else if (resultMetadata.getClassDescriptor() != null && resultMetadata.getClassDescriptor().hasSubclasses()) {
-			return new InheritanceAwareEntityRowReader(columns, resultMetadata);
-		} else {
-			return new EntityRowReader(columns, resultMetadata);
-		}
-	}
+        if (queryMetadata.getPageSize() > 0) {
+            return new IdRowReader<>(columns, queryMetadata, resultMetadata);
+        } else if (resultMetadata.getClassDescriptor() != null && resultMetadata.getClassDescriptor().hasSubclasses()) {
+            return new InheritanceAwareEntityRowReader(columns, resultMetadata);
+        } else {
+            return new EntityRowReader(columns, resultMetadata);
+        }
+    }
 
-	protected RowReader<?> createFullRowReader(RSColumn[] columns, QueryMetadata queryMetadata) {
+    protected RowReader<?> createFullRowReader(RSColumn[] columns, QueryMetadata queryMetadata) {
 
-		if (queryMetadata.getPageSize() > 0) {
-			return new IdRowReader<>(columns, queryMetadata, null);
-		} else if (queryMetadata.getClassDescriptor() != null && queryMetadata.getClassDescriptor().hasSubclasses()) {
-			return new InheritanceAwareRowReader(columns, queryMetadata);
-		} else {
-			return new FullRowReader(columns, queryMetadata);
-		}
-	}
+        if (queryMetadata.getPageSize() > 0) {
+            return new IdRowReader<>(columns, queryMetadata, null);
+        } else if (queryMetadata.getClassDescriptor() != null && queryMetadata.getClassDescriptor().hasSubclasses()) {
+            return new InheritanceAwareRowReader(columns, queryMetadata);
+        } else {
+            return new FullRowReader(columns, queryMetadata);
+        }
+    }
 
 }

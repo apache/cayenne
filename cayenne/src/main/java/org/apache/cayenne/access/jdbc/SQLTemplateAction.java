@@ -309,7 +309,7 @@ public class SQLTemplateAction implements SQLAction {
         for (int i = 0; i < size; i++) {
             // only the Java class is known here; name and jdbcType are resolved later from ResultSet metadata
             ExtendedType type = extendedTypes.getRegisteredType(query.getResultColumnsTypes().get(i));
-            columns[i] = new RSColumn(null, null, 0, type, null);
+            columns[i] = new RSColumn(null, 0, null, type, null);
         }
         return columns;
     }

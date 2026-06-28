@@ -67,8 +67,8 @@ public class VelocitySQLTemplateTranslator_SelectTest {
 		assertEquals("SELECT A FROM ME", compiled.sql());
 		assertEquals(0, compiled.bindings().length);
 		assertEquals(1, compiled.resultColumns().length);
-		assertEquals("A", compiled.resultColumns()[0].name());
-		assertSame(adapter.getExtendedTypes().getDefaultType(), compiled.resultColumns()[0].type());
+		assertEquals("A", compiled.resultColumns()[0].rsName());
+		assertSame(adapter.getExtendedTypes().getDefaultType(), compiled.resultColumns()[0].reader());
 	}
 
 	@Test
@@ -81,8 +81,8 @@ public class VelocitySQLTemplateTranslator_SelectTest {
 		assertEquals(0, compiled.bindings().length);
 
 		assertEquals(1, compiled.resultColumns().length);
-		assertEquals("A", compiled.resultColumns()[0].name());
-		assertSame(adapter.getExtendedTypes().getRegisteredType(String.class), compiled.resultColumns()[0].type());
+		assertEquals("A", compiled.resultColumns()[0].rsName());
+		assertSame(adapter.getExtendedTypes().getRegisteredType(String.class), compiled.resultColumns()[0].reader());
 	}
 
 	@Test
@@ -96,9 +96,9 @@ public class VelocitySQLTemplateTranslator_SelectTest {
 
 		assertEquals(1, compiled.resultColumns().length);
 		RSColumn column = compiled.resultColumns()[0];
-		assertEquals("A", column.name());
-		assertEquals("B", column.dataRowKey());
-		assertSame(adapter.getExtendedTypes().getRegisteredType(String.class), column.type());
+		assertEquals("A", column.rsName());
+		assertEquals("B", column.dataRowName());
+		assertSame(adapter.getExtendedTypes().getRegisteredType(String.class), column.reader());
 	}
 
 	@Test
@@ -111,8 +111,8 @@ public class VelocitySQLTemplateTranslator_SelectTest {
 		assertEquals(0, compiled.bindings().length);
 
 		assertEquals(3, compiled.resultColumns().length);
-		assertEquals("A", compiled.resultColumns()[0].name());
-		assertEquals("B", compiled.resultColumns()[1].name());
-		assertEquals("C", compiled.resultColumns()[2].name());
+		assertEquals("A", compiled.resultColumns()[0].rsName());
+		assertEquals("B", compiled.resultColumns()[1].rsName());
+		assertEquals("C", compiled.resultColumns()[2].rsName());
 	}
 }

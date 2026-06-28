@@ -45,15 +45,15 @@ import java.util.function.Function;
  * @since 5.0
  */
 public record RSColumn(
-        String name,
-        String dataRowKey,
-        int jdbcType,
-        ExtendedType<?> type,
+        String rsName,
+        int rsType,
+        String dataRowName,
+        ExtendedType<?> reader,
         DbAttribute attribute) {
 
     public RSColumn {
-        if (dataRowKey == null) {
-            dataRowKey = name;
+        if (dataRowName == null) {
+            dataRowName = rsName;
         }
     }
 
@@ -67,8 +67,8 @@ public record RSColumn(
             return false;
         }
 
-        return Objects.equals(name, rhs.name)
-                && Objects.equals(dataRowKey, rhs.dataRowKey);
+        return Objects.equals(rsName, rhs.rsName)
+                && Objects.equals(dataRowName, rhs.dataRowName);
     }
 
     /**
@@ -76,7 +76,7 @@ public record RSColumn(
      */
     @Override
     public int hashCode() {
-        return Objects.hash(name, dataRowKey);
+        return Objects.hash(rsName, dataRowName);
     }
 
     /**
@@ -169,8 +169,8 @@ public record RSColumn(
 
                 // validate uniqueness of names
                 if (validateDuplicateColumnNames) {
-                    if (!uniqueNames.add(column.dataRowKey())) {
-                        duplicates.add(column.dataRowKey());
+                    if (!uniqueNames.add(column.dataRowName())) {
+                        duplicates.add(column.dataRowName());
                     }
                 }
                 rsColumns[outputLen] = column;
@@ -203,9 +203,9 @@ public record RSColumn(
             for (int i = 0; i < len; i++) {
                 if (columnArray[i] != null) {
                     if (mergeColumnsWithRsMetadata) {
-                        return new RSColumn(rowKey, rowKey, resultSetMetadata.getColumnType(position), columnArray[position - 1].type(), null);
+                        return new RSColumn(rowKey, resultSetMetadata.getColumnType(position), rowKey, columnArray[position - 1].reader(), null);
                     } else {
-                        String columnRowKey = columnArray[i].dataRowKey();
+                        String columnRowKey = columnArray[i].dataRowName();
 
                         // TODO: andrus, 10/14/2009 - 'equalsIgnoreCase' check can result in
                         // subtle bugs in DBs with case-sensitive column names (or when quotes are
@@ -220,7 +220,7 @@ public record RSColumn(
             // columnArray doesn't contain ColumnDescriptor for specified column
             int jdbcType = resultSetMetadata.getColumnType(position);
             ExtendedType<?> type = typeMap.getRegisteredType(TypesMapping.getJavaBySqlType(jdbcType));
-            return new RSColumn(rowKey, rowKey, jdbcType, type, null);
+            return new RSColumn(rowKey, jdbcType, rowKey, type, null);
         }
 
         // Return a non-empty string with ColumnLabel or ColumnName or "column_<pos>" for positional column
@@ -245,9 +245,9 @@ public record RSColumn(
             for (int i = 0; i < columnArray.length; i++) {
                 RSColumn column = columnArray[i];
 
-                String name = column.name();
-                String dataRowKey = column.dataRowKey();
-                ExtendedType<?> type = column.type();
+                String name = column.rsName();
+                String dataRowKey = column.dataRowName();
+                ExtendedType<?> type = column.reader();
 
                 if (caseTransformer != null) {
                     name = caseTransformer.apply(name);
@@ -262,7 +262,7 @@ public record RSColumn(
                     }
                 }
 
-                result[i] = new RSColumn(name, dataRowKey, column.jdbcType(), type, column.attribute());
+                result[i] = new RSColumn(name, column.rsType(), dataRowKey, type, column.attribute());
             }
             return result;
         }

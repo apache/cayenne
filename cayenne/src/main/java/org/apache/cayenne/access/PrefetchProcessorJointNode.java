@@ -106,8 +106,8 @@ class PrefetchProcessorJointNode extends PrefetchProcessorNode {
 
         Map<String, Object> id = new TreeMap<>();
         for (int idIndex : idIndices) {
-            Object value = flatRow.get(columns[idIndex].dataRowKey());
-            id.put(columns[idIndex].name(), value);
+            Object value = flatRow.get(columns[idIndex].dataRowName());
+            id.put(columns[idIndex].rsName(), value);
         }
 
         return id;
@@ -137,7 +137,7 @@ class PrefetchProcessorJointNode extends PrefetchProcessorNode {
 
         // extract subset of flat row columns, recasting to the target keys
         for (RSColumn column : columns) {
-            row.put(column.name(), flatRow.get(column.dataRowKey()));
+            row.put(column.rsName(), flatRow.get(column.dataRowName()));
         }
 
         // since JDBC row reader won't inject JOINED entity name, we have to detect it here...
@@ -247,7 +247,7 @@ class PrefetchProcessorJointNode extends PrefetchProcessorNode {
         RSColumn column = map.get(name);
 
         if (column == null) {
-            column = new RSColumn(name, label, 0, null, null);
+            column = new RSColumn(name, 0, label, null, null);
             map.put(name, column);
         }
 
@@ -273,7 +273,7 @@ class PrefetchProcessorJointNode extends PrefetchProcessorNode {
             DbAttribute pk = it.next();
 
             for (int j = 0; j < columns.length; j++) {
-                if (pk.getName().equals(columns[j].name())) {
+                if (pk.getName().equals(columns[j].rsName())) {
                     idIndices[i] = j;
                     break;
                 }

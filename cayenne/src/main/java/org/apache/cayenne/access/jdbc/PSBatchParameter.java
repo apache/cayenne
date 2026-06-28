@@ -24,16 +24,16 @@ import org.apache.cayenne.map.DbAttribute;
 
 /**
  * An immutable per-batch parameter binding template, carrying only the static column metadata shared by all
- * rows of a batch. A per-row {@link PSParameter} is produced by {@link #bind(int, Object, ExtendedType)}.
+ * rows of a batch. A per-row {@link PSParameter} is produced by {@link #bind(Object, int, ExtendedType)}.
  *
  * @since 5.0
  */
-public record PSBatchParameter(int jdbcType, int scale, DbAttribute attribute) {
+public record PSBatchParameter(int psType, int psScale, DbAttribute attribute) {
 
     /**
      * Resolves this per-batch template into a per-row {@link PSParameter}.
      */
-    public <T> PSParameter<T> bind(int statementPosition, T value, ExtendedType<T> extendedType) {
-        return new PSParameter<>(jdbcType, scale, attribute, statementPosition, value, extendedType);
+    public <T> PSParameter<T> bind(T value, int psPosition, ExtendedType<T> extendedType) {
+        return new PSParameter<>(value, psPosition, psType, psScale, extendedType, attribute);
     }
 }

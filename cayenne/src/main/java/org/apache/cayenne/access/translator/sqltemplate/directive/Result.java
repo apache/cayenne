@@ -100,7 +100,7 @@ public class Result implements Directive {
             jdbcType = (int) expressions[4].evaluateAsLong(context);
         }
 
-        context.addColumnDescriptor(new RSColumn(column, label, jdbcType, context.getExtendedType(javaClass), null));
+        context.addColumnDescriptor(new RSColumn(column, jdbcType, label, context.getExtendedType(javaClass), null));
 
         context.getBuilder().append(column);
         if (!Util.isEmptyString(alias) && !alias.equals(column)) {

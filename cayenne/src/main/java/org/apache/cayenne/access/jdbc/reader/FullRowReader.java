@@ -18,13 +18,12 @@
  ****************************************************************/
 package org.apache.cayenne.access.jdbc.reader;
 
-import java.sql.ResultSet;
-
 import org.apache.cayenne.CayenneRuntimeException;
 import org.apache.cayenne.DataRow;
 import org.apache.cayenne.access.jdbc.RSColumn;
 import org.apache.cayenne.query.QueryMetadata;
-import org.apache.cayenne.util.Util;
+
+import java.sql.ResultSet;
 
 /**
  * @since 3.0
@@ -56,11 +55,10 @@ class FullRowReader extends BaseRowReader<DataRow> {
             postprocessRow(resultSet, dataRow);
 
             return dataRow;
-        } catch (CayenneRuntimeException cex) {
-            // rethrow unmodified
-            throw cex;
-        } catch (Exception otherex) {
-            throw new CayenneRuntimeException("Exception materializing column.", Util.unwindException(otherex));
+        } catch (CayenneRuntimeException ex) {
+            throw ex;
+        } catch (Exception ex) {
+            throw new CayenneRuntimeException("Exception materializing column.", ex);
         }
     }
 

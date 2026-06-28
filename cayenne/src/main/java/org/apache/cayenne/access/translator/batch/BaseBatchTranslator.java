@@ -54,7 +54,7 @@ public abstract class BaseBatchTranslator<T extends BatchQuery> implements Batch
 
     protected PSBatchParameter[] createBindings(BatchTranslatorContext<T> context) {
         return context.getBindings().stream()
-                .map(b -> new PSBatchParameter(b.jdbcType(), b.scale(), b.attribute()))
+                .map(b -> new PSBatchParameter(b.psType(), b.psScale(), b.attribute()))
                 .toArray(PSBatchParameter[]::new);
     }
 

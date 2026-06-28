@@ -35,7 +35,7 @@ public class DefaultValueForNullProvider implements ValueForNullProvider {
     public void set(DbEntity entity, DbAttribute column, Object value, int type) {
         // the binding is only ever read for its value (inlined into the UPDATE below), never bound to a
         // statement, so the position is irrelevant here
-        PSParameter binding = new PSParameter(type, column.getAttributePrecision(), null, 1, value, null);
+        PSParameter binding = new PSParameter(value, 1, type, column.getAttributePrecision(), null, null);
         values.put(createKey(entity, column), binding);
     }
 

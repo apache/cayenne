@@ -79,7 +79,7 @@ public class SelectAction extends BaseSQLAction {
             // and therefore only supports standard java types now) hence, a
             // special moronic case here:
             if (b.attribute() == null) {
-                statement.setObject(b.statementPosition(), b.value());
+                statement.setObject(b.psPosition(), b.value());
             } else {
                 adapter.bindParameter(statement, b);
             }

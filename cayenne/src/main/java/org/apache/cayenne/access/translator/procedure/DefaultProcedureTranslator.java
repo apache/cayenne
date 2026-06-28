@@ -19,8 +19,6 @@
 
 package org.apache.cayenne.access.translator.procedure;
 
-import java.util.Map;
-
 import org.apache.cayenne.access.jdbc.PSParameter;
 import org.apache.cayenne.access.types.ExtendedType;
 import org.apache.cayenne.dba.DbAdapter;
@@ -28,6 +26,8 @@ import org.apache.cayenne.map.EntityResolver;
 import org.apache.cayenne.map.Procedure;
 import org.apache.cayenne.map.ProcedureParameter;
 import org.apache.cayenne.query.ProcedureQuery;
+
+import java.util.Map;
 
 /**
  * A {@link ProcedureTranslator} returned by the base {@link org.apache.cayenne.dba.JdbcAdapter}. Adapters may subclass
@@ -76,12 +76,12 @@ public class DefaultProcedureTranslator implements ProcedureTranslator {
      * Builds a {@link PSParameter} for a single call parameter. IN (and INOUT) parameters carry the actual value
      * and its {@link ExtendedType}; pure OUT parameters carry an "[OUT]" marker value so that logging renders nicely.
      */
-    protected PSParameter createBinding(DbAdapter adapter, ProcedureParameter param,
+    protected PSParameter<?> createBinding(DbAdapter adapter, ProcedureParameter param,
                                         Map<String, ?> queryValues, int position) {
 
         // match values with parameters in the correct order, assuming a missing value is NULL
         if (param.getDirection() == ProcedureParameter.OUT_PARAMETER) {
-            return new PSParameter(param.getType(), param.getPrecision(), null, position, OUT_PARAM, null);
+            return new PSParameter<>(OUT_PARAM, position, param.getType(), param.getPrecision(), null, null);
         }
 
         Object value = queryValues.get(param.getName());
@@ -89,8 +89,8 @@ public class DefaultProcedureTranslator implements ProcedureTranslator {
                 ? adapter.getExtendedTypes().getRegisteredType(value.getClass())
                 : adapter.getExtendedTypes().getDefaultType();
 
-        return new PSParameter(adapter.preferredBindingType(param.getType()), param.getPrecision(), null,
-                position, value, extendedType);
+        return new PSParameter<>(
+                value, position, adapter.preferredBindingType(param.getType()), param.getPrecision(), extendedType, null);
     }
 
     /**

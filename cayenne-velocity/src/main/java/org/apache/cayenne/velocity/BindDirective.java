@@ -172,8 +172,8 @@ public class BindDirective extends Directive {
 		if (bindings != null) {
 			// a binding's statement position is its 1-based ordinal among the bound parameters; the
 			// ExtendedType is resolved from the value via the adapter
-			bindings.add(new PSParameter(jdbcType, scale, null,
-					bindings.size() + 1, value, extendedType(context, value)));
+			bindings.add(new PSParameter(value, bindings.size() + 1, jdbcType, scale, extendedType(context, value), null
+			));
 		}
 	}
 

@@ -90,7 +90,7 @@ public class SoftDeleteBatchTranslator extends DeleteBatchTranslator {
         DbAttribute deleteAttribute = deleteBatch.getDbEntity().getAttribute(deletedFieldName);
         String typeName = TypesMapping.getJavaBySqlType(deleteAttribute);
         ExtendedType extendedType = context.getAdapter().getExtendedTypes().getRegisteredType(typeName);
-        bindings[0] = template[0].bind(1, Boolean.TRUE, extendedType);
+        bindings[0] = template[0].bind(Boolean.TRUE, 1, extendedType);
 
         // bindings[0] holds the constant 'deleted' flag, so qualifier values start at position 1
         for(int i=0, position=1; i<deleteBatch.getDbAttributes().size(); i++) {

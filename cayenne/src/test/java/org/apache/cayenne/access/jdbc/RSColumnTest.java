@@ -31,22 +31,22 @@ public class RSColumnTest {
 
     @Test
     public void name() {
-        RSColumn column = new RSColumn("abc", null, 0, null, null);
-        assertEquals("abc", column.name());
+        RSColumn column = new RSColumn("abc", 0, null, null, null);
+        assertEquals("abc", column.rsName());
     }
 
     @Test
     public void label() {
-        RSColumn column = new RSColumn(null, "abc", 0, null, null);
-        assertEquals("abc", column.dataRowKey());
+        RSColumn column = new RSColumn(null, 0, "abc", null, null);
+        assertEquals("abc", column.dataRowName());
     }
 
     @Test
     public void equals() {
         // type should be ignored in the comparison
-        RSColumn column1 = new RSColumn("n1", "k1", Types.VARCHAR, null, null);
-        RSColumn column2 = new RSColumn("n1", "k1", Types.BOOLEAN, null, null);
-        RSColumn column3 = new RSColumn("n1", "k3", 0, null, null);
+        RSColumn column1 = new RSColumn("n1", Types.VARCHAR, "k1", null, null);
+        RSColumn column2 = new RSColumn("n1", Types.BOOLEAN, "k1", null, null);
+        RSColumn column3 = new RSColumn("n1", 0, "k3", null, null);
 
         assertEquals(column1, column2);
         assertFalse(column1.equals(column3));
@@ -56,9 +56,9 @@ public class RSColumnTest {
     @Test
     public void hashCodeTest() {
         // type should be ignored in the comparison
-        RSColumn column1 = new RSColumn("n1", "k1", Types.VARCHAR, null, null);
-        RSColumn column2 = new RSColumn("n1", "k1", Types.BOOLEAN, null, null);
-        RSColumn column3 = new RSColumn("n1", "k3", 0, null, null);
+        RSColumn column1 = new RSColumn("n1", Types.VARCHAR, "k1", null, null);
+        RSColumn column2 = new RSColumn("n1", Types.BOOLEAN, "k1", null, null);
+        RSColumn column3 = new RSColumn("n1", 0, "k3", null, null);
 
         assertEquals(column1.hashCode(), column2.hashCode());
 

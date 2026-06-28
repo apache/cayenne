@@ -27,10 +27,11 @@ import org.apache.cayenne.map.DbAttribute;
  * @since 5.0
  */
 public record PSParameter<T>(
-        int jdbcType,
-        int scale,
-        DbAttribute attribute,
-        int statementPosition,
         T value,
-        ExtendedType<T> extendedType) {
+        int psPosition,
+        int psType,
+        int psScale,
+        ExtendedType<T> binder,
+        DbAttribute attribute
+) {
 }

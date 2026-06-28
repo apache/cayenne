@@ -142,7 +142,7 @@ public class ResultDirective extends Directive {
 		Object jdbcTypeChild = getChild(context, node, 4);
 		int jdbcType = (jdbcTypeChild instanceof Number) ? ((Number) jdbcTypeChild).intValue() : 0;
 
-		RSColumn columnDescriptor = new RSColumn(column, label, jdbcType, extendedType, null);
+		RSColumn columnDescriptor = new RSColumn(column, jdbcType, label, extendedType, null);
 
 		writer.write(column);
 

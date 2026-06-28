@@ -285,7 +285,7 @@ public class BatchAction extends BaseSQLAction {
 					}
 				}
 				ExtendedType type = dataNode.getAdapter().getExtendedTypes().getRegisteredType(typeForGeneratedPK(key));
-				rowBuilder.columns(new RSColumn(columnName, columnName, key.getType(), type, null));
+				rowBuilder.columns(new RSColumn(columnName, key.getType(), columnName, type, null));
 			} else {
 				rowBuilder.resultSet(keysRS);
 			}

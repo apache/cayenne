@@ -118,8 +118,8 @@ public class Slf4jJdbcEventLogger implements JdbcEventLogger {
 
 				buffer.append(":");
 
-				if (b.extendedType() != null) {
-					buffer.append(b.extendedType().toString(b.value()));
+				if (b.binder() != null) {
+					buffer.append(b.binder().toString(b.value()));
 				} else if(b.value() == null) {
 				    buffer.append("NULL");
                 } else {

@@ -241,7 +241,7 @@ public class DefaultSQLTemplateTranslatorTest {
 
     private void assertBindingType(Integer expectedType, Object binding) {
         assertTrue(binding instanceof PSParameter, "Not a binding!");
-        assertEquals(expectedType, ((PSParameter) binding).jdbcType());
+        assertEquals(expectedType, ((PSParameter) binding).psType());
     }
 
 }

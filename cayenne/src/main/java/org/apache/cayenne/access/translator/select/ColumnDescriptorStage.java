@@ -49,7 +49,7 @@ class ColumnDescriptorStage implements TranslationStage {
 
             ExtendedType type = context.getAdapter().getExtendedTypes().getRegisteredType(resultNode.getJavaType());
             RSColumn descriptor = new RSColumn(
-                    name, resultNode.getDataRowKey(), resultNode.getJdbcType(), type, attribute);
+                    name, resultNode.getJdbcType(), resultNode.getDataRowKey(), type, attribute);
 
             context.getColumnDescriptors().add(descriptor);
         }

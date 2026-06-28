@@ -80,7 +80,7 @@ public class DefaultTransformerFactory implements TransformerFactory {
             for (int i = 0; i < dlen; i++) {
 
                 RSColumn cd = columns[cryptoColumns.get(i)];
-                mapKeys[i] = cd.dataRowKey();
+                mapKeys[i] = cd.dataRowName();
                 transformers[i] = transformerFactory.decryptor(cd.attribute());
             }
 

@@ -75,13 +75,13 @@ class PostgresSelectAction extends SelectAction {
 
 	private static boolean readsLargeObjects(TranslatedSelect translated) {
 		for (RSColumn column : translated.resultColumns()) {
-			if (isLargeObject(column.jdbcType())) {
+			if (isLargeObject(column.rsType())) {
 				return true;
 			}
 		}
 		// a large object bound as a parameter (e.g. in a qualifier) also needs a transaction
 		for (PSParameter binding : translated.bindings()) {
-			if (isLargeObject(binding.jdbcType())) {
+			if (isLargeObject(binding.psType())) {
 				return true;
 			}
 		}

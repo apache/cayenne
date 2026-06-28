@@ -720,7 +720,7 @@ public class DbAdapterDelegatedSelectTranslatorIT {
 		tr.sql();
 
 		List<RSColumn> columns = Arrays.asList(tr.resultColumns());
-		columns.sort(Comparator.comparing(RSColumn::name));
+		columns.sort(Comparator.comparing(RSColumn::rsName));
 
 		DbEntity entity = env.context().getEntityResolver().getDbEntity("PAINTING");
 		List<DbAttribute> attributes = new ArrayList<>(entity.getAttributes());
@@ -733,9 +733,9 @@ public class DbAdapterDelegatedSelectTranslatorIT {
 			DbAttribute attribute = attributes.get(i);
 			RSColumn descriptor = columns.get(i);
 			assertEquals(attribute, descriptor.attribute());
-			assertEquals(attribute.getName(), descriptor.name());
-			assertEquals(attribute.getName(), descriptor.dataRowKey());
-			assertEquals(attribute.getType(), descriptor.jdbcType());
+			assertEquals(attribute.getName(), descriptor.rsName());
+			assertEquals(attribute.getName(), descriptor.dataRowName());
+			assertEquals(attribute.getType(), descriptor.rsType());
 		}
 	}
 
@@ -750,7 +750,7 @@ public class DbAdapterDelegatedSelectTranslatorIT {
 		tr.sql();
 
 		List<RSColumn> columns = Arrays.asList(tr.resultColumns());
-		columns.sort(Comparator.comparing(RSColumn::name));
+		columns.sort(Comparator.comparing(RSColumn::rsName));
 
 		DbEntity rootEntity = env.context().getEntityResolver().getDbEntity("PAINTING");
 		List<DbAttribute> attributes = new ArrayList<>(rootEntity.getAttributes());
@@ -762,13 +762,13 @@ public class DbAdapterDelegatedSelectTranslatorIT {
 			DbAttribute attribute = attributes.get(i);
 			RSColumn descriptor = columns.get(i);
 			assertEquals(attribute, descriptor.attribute());
-			assertEquals(attribute.getName(), descriptor.name());
+			assertEquals(attribute.getName(), descriptor.rsName());
 			if("ARTIST".equals(attribute.getEntity().getName())) {
-				assertEquals("toArtist." + attribute.getName(), descriptor.dataRowKey());
+				assertEquals("toArtist." + attribute.getName(), descriptor.dataRowName());
 			} else {
-				assertEquals(attribute.getName(), descriptor.dataRowKey());
+				assertEquals(attribute.getName(), descriptor.dataRowName());
 			}
-			assertEquals(attribute.getType(), descriptor.jdbcType());
+			assertEquals(attribute.getType(), descriptor.rsType());
 		}
 	}
 

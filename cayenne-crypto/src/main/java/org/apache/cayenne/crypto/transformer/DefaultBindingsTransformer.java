@@ -58,8 +58,8 @@ public class DefaultBindingsTransformer implements BindingsTransformer {
                     ? extendedTypeMap.getRegisteredType(transformed.getClass())
                     : extendedTypeMap.getDefaultType();
 
-            bindings[positions[i]] = new PSParameter(b.jdbcType(), b.scale(), b.attribute(),
-                    b.statementPosition(), transformed, extendedType);
+            bindings[positions[i]] = new PSParameter(transformed, b.psPosition(), b.psType(), b.psScale(), extendedType, b.attribute()
+            );
         }
     }
 

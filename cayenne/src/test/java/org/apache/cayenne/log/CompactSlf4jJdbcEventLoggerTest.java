@@ -111,6 +111,6 @@ public class CompactSlf4jJdbcEventLoggerTest {
 
     private PSParameter createBinding(String name, int position, Object object, ExtendedType type){
         DbAttribute attribute = new DbAttribute(name);
-        return new PSParameter(attribute.getType(), -1, attribute, position, object, type);
+        return new PSParameter(object, position, attribute.getType(), -1, type, attribute);
     }
 }

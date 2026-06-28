@@ -18,8 +18,6 @@
  ****************************************************************/
 package org.apache.cayenne.access.jdbc.reader;
 
-import java.sql.ResultSet;
-
 import org.apache.cayenne.CayenneRuntimeException;
 import org.apache.cayenne.DataRow;
 import org.apache.cayenne.access.jdbc.RSColumn;
@@ -28,6 +26,8 @@ import org.apache.cayenne.map.DbEntity;
 import org.apache.cayenne.query.EntityResultSegment;
 import org.apache.cayenne.query.QueryMetadata;
 import org.apache.cayenne.util.Util;
+
+import java.sql.ResultSet;
 
 /**
  * @since 3.0
@@ -58,7 +58,7 @@ class IdRowReader<T> extends BaseRowReader<T> {
                 resultMetadata.getColumnOffset() :
                 0;
         for(int i = offset, j = 0; i < offset + len; i++) {
-            DbAttribute a = dbEntity.getAttribute(columns[i].name());
+            DbAttribute a = dbEntity.getAttribute(columns[i].rsName());
             if(a != null && a.isPrimaryKey()) {
                 pk[j++] = i;
             }
