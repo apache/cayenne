@@ -47,7 +47,6 @@ import java.sql.SQLException;
 import java.sql.Statement;
 import java.util.ArrayList;
 import java.util.Collection;
-import java.util.Collections;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
@@ -109,7 +108,7 @@ public class SQLTemplateAction implements SQLAction {
         // should go away after 4.0; newer positional parameter only support a
         // single set of values.
         if (query.getPositionalParams().isEmpty()) {
-            runWithNamedParametersBatch(connection, callback, template, counts, loggable);
+            runWithNamedParameters(connection, callback, template, counts, loggable);
         } else {
             runWithPositionalParameters(connection, callback, template, counts, loggable);
         }
@@ -137,34 +136,37 @@ public class SQLTemplateAction implements SQLAction {
         execute(connection, callback, compiled, counts);
     }
 
-    @SuppressWarnings("unchecked")
-    private void runWithNamedParametersBatch(Connection connection, OperationObserver callback, String template,
-                                             Collection<Number> counts, boolean loggable) throws Exception {
+    private void runWithNamedParameters(
+            Connection connection,
+            OperationObserver callback,
+            String template,
+            Collection<Number> counts,
+            boolean loggable) throws Exception {
 
-        int size = query.parametersSize();
-
-        // zero size indicates a one-shot query with no parameters
-        // so fake a single entry batch...
-        int batchSize = (size > 0) ? size : 1;
-
-        // for now supporting deprecated batch parameters...
-        Iterator<Map<String, ?>> it;
-        if (size == 0) {
-            it = (Iterator) Collections.singleton(Collections.emptyMap()).iterator();
+        if (query.parametersSize() == 0) {
+            runParametersBatch(connection, callback, template, counts, loggable, Map.of());
         } else {
-            it = query.parametersIterator();
-        }
-
-        for (int i = 0; i < batchSize; i++) {
-            Map<String, ?> nextParameters = it.next();
-            TranslatedSQL compiled = dataNode.getSqlTemplateTranslator().translate(template, nextParameters, getAdapter());
-            if (loggable) {
-                dataNode.getJdbcEventLogger().logQuery(compiled.sql(), compiled.bindings());
+            Iterator<Map<String, ?>> it = query.parametersIterator();
+            while (it.hasNext()) {
+                runParametersBatch(connection, callback, template, counts, loggable, it.next());
             }
+        }
+    }
 
-            execute(connection, callback, compiled, counts);
+    private void runParametersBatch(
+            Connection connection,
+            OperationObserver callback,
+            String template,
+            Collection<Number> counts,
+            boolean loggable,
+            Map<String, ?> nextParameters) throws Exception {
+
+        TranslatedSQL compiled = dataNode.getSqlTemplateTranslator().translate(template, nextParameters, getAdapter());
+        if (loggable) {
+            dataNode.getJdbcEventLogger().logQuery(compiled.sql(), compiled.bindings());
         }
 
+        execute(connection, callback, compiled, counts);
     }
 
     protected void execute(Connection connection, OperationObserver callback, TranslatedSQL compiled,
