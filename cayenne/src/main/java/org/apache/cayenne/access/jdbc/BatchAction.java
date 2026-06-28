@@ -42,6 +42,7 @@ import org.apache.cayenne.query.UpdateBatchQuery;
 import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
+import java.sql.ResultSetMetaData;
 import java.sql.SQLException;
 import java.sql.Statement;
 import java.util.ArrayList;
@@ -277,9 +278,15 @@ public class BatchAction extends BaseSQLAction {
 				ColumnDescriptor[] columns = new ColumnDescriptor[1];
 
 				// use column name from result set, but type and Java class from DB attribute
-				columns[0] = new ColumnDescriptor(keysRS.getMetaData(), 1);
-				columns[0].setJdbcType(key.getType());
-				columns[0].setJavaClass(typeForGeneratedPK(key));
+				ResultSetMetaData md = keysRS.getMetaData();
+				String columnName = md.getColumnLabel(1);
+				if (columnName == null || columnName.isEmpty()) {
+					columnName = md.getColumnName(1);
+					if (columnName == null || columnName.isEmpty()) {
+						columnName = "column_1";
+					}
+				}
+				columns[0] = new ColumnDescriptor(columnName, columnName, key.getType(), typeForGeneratedPK(key), null);
 				builder.setColumns(columns);
 			} else {
 				builder.setResultSet(keysRS);

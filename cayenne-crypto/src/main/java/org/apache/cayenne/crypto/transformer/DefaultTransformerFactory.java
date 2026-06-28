@@ -61,7 +61,7 @@ public class DefaultTransformerFactory implements TransformerFactory {
 
         for (int i = 0; i < len; i++) {
 
-            DbAttribute a = columns[i].getAttribute();
+            DbAttribute a = columns[i].attribute();
             if (a != null && columnMapper.isEncrypted(a)) {
                 if (cryptoColumns == null) {
                     cryptoColumns = new ArrayList<>(len - i);
@@ -80,8 +80,8 @@ public class DefaultTransformerFactory implements TransformerFactory {
             for (int i = 0; i < dlen; i++) {
 
                 ColumnDescriptor cd = columns[cryptoColumns.get(i)];
-                mapKeys[i] = cd.getDataRowKey();
-                transformers[i] = transformerFactory.decryptor(cd.getAttribute());
+                mapKeys[i] = cd.dataRowKey();
+                transformers[i] = transformerFactory.decryptor(cd.attribute());
             }
 
             return new DefaultMapTransformer(mapKeys, transformers, bytesTransformerFactory.decryptor());

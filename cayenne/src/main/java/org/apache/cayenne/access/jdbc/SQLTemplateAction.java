@@ -306,9 +306,8 @@ public class SQLTemplateAction implements SQLAction {
         int size = query.getResultColumnsTypes().size();
         ColumnDescriptor[] columnDescriptors = new ColumnDescriptor[size];
         for (int i = 0; i < size; i++) {
-            ColumnDescriptor columnDescriptor = new ColumnDescriptor();
-            columnDescriptor.setJavaClass(query.getResultColumnsTypes().get(i).getCanonicalName());
-            columnDescriptors[i] = columnDescriptor;
+            // only the Java class is known here; name and type are resolved later from ResultSet metadata
+            columnDescriptors[i] = new ColumnDescriptor(null, null, 0, query.getResultColumnsTypes().get(i).getCanonicalName(), null);
         }
         return columnDescriptors;
     }

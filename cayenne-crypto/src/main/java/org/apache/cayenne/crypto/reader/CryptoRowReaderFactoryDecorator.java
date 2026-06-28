@@ -100,7 +100,7 @@ public class CryptoRowReaderFactoryDecorator extends DefaultRowReaderFactory {
         ExtendedType[] encryptedConverters = new ExtendedType[len];
 
         for (int i = 0; i < len; i++) {
-            DbAttribute attribute = originalColumns[i].getAttribute();
+            DbAttribute attribute = originalColumns[i].attribute();
 
             ExtendedType t = originalConverters[i];
 
@@ -143,8 +143,8 @@ public class CryptoRowReaderFactoryDecorator extends DefaultRowReaderFactory {
 
         DecoratedScalarRowReader(ColumnDescriptor descriptor, RowReader<?> delegateReader) {
             this.delegateReader = delegateReader;
-            if(descriptor.getAttribute() != null && columnMapper.isEncrypted(descriptor.getAttribute())) {
-                this.valueDecryptor = valueTransformerFactory.decryptor(descriptor.getAttribute());
+            if(descriptor.attribute() != null && columnMapper.isEncrypted(descriptor.attribute())) {
+                this.valueDecryptor = valueTransformerFactory.decryptor(descriptor.attribute());
                 this.bytesDecryptor = bytesTransformerFactory.decryptor();
             } else {
                 this.valueDecryptor = null;

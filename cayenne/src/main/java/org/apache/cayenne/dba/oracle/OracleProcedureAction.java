@@ -31,6 +31,7 @@ import org.apache.cayenne.access.OperationObserver;
 import org.apache.cayenne.access.jdbc.ColumnDescriptor;
 import org.apache.cayenne.access.jdbc.ProcedureAction;
 import org.apache.cayenne.access.jdbc.RowDescriptor;
+import org.apache.cayenne.dba.TypesMapping;
 import org.apache.cayenne.access.types.ExtendedType;
 import org.apache.cayenne.map.ProcedureParameter;
 import org.apache.cayenne.query.ProcedureQuery;
@@ -79,12 +80,13 @@ class OracleProcedureAction extends ProcedureAction {
 					result = new DataRow(2);
 				}
 
-				ColumnDescriptor descriptor = new ColumnDescriptor(parameter);
+				ColumnDescriptor descriptor = new ColumnDescriptor(
+						parameter.getName(), parameter.getName(), parameter.getType(), TypesMapping.getJavaBySqlType(parameter.getType()), null);
 				ExtendedType type = dataNode.getAdapter().getExtendedTypes()
-						.getRegisteredType(descriptor.getJavaClass());
-				Object val = type.materializeObject(statement, i + 1, descriptor.getJdbcType());
+						.getRegisteredType(descriptor.javaClass());
+				Object val = type.materializeObject(statement, i + 1, descriptor.jdbcType());
 
-				result.put(descriptor.getDataRowKey(), val);
+				result.put(descriptor.dataRowKey(), val);
 			}
 		}
 

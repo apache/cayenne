@@ -67,8 +67,8 @@ public class VelocitySQLTemplateTranslator_SelectTest {
 		assertEquals("SELECT A FROM ME", compiled.sql());
 		assertEquals(0, compiled.bindings().length);
 		assertEquals(1, compiled.resultColumns().length);
-		assertEquals("A", compiled.resultColumns()[0].getName());
-		assertNull(compiled.resultColumns()[0].getJavaClass());
+		assertEquals("A", compiled.resultColumns()[0].name());
+		assertNull(compiled.resultColumns()[0].javaClass());
 	}
 
 	@Test
@@ -81,8 +81,8 @@ public class VelocitySQLTemplateTranslator_SelectTest {
 		assertEquals(0, compiled.bindings().length);
 
 		assertEquals(1, compiled.resultColumns().length);
-		assertEquals("A", compiled.resultColumns()[0].getName());
-		assertEquals("java.lang.String", compiled.resultColumns()[0].getJavaClass());
+		assertEquals("A", compiled.resultColumns()[0].name());
+		assertEquals("java.lang.String", compiled.resultColumns()[0].javaClass());
 	}
 
 	@Test
@@ -96,9 +96,9 @@ public class VelocitySQLTemplateTranslator_SelectTest {
 
 		assertEquals(1, compiled.resultColumns().length);
 		ColumnDescriptor column = compiled.resultColumns()[0];
-		assertEquals("A", column.getName());
-		assertEquals("B", column.getDataRowKey());
-		assertEquals("java.lang.String", column.getJavaClass());
+		assertEquals("A", column.name());
+		assertEquals("B", column.dataRowKey());
+		assertEquals("java.lang.String", column.javaClass());
 	}
 
 	@Test
@@ -111,8 +111,8 @@ public class VelocitySQLTemplateTranslator_SelectTest {
 		assertEquals(0, compiled.bindings().length);
 
 		assertEquals(3, compiled.resultColumns().length);
-		assertEquals("A", compiled.resultColumns()[0].getName());
-		assertEquals("B", compiled.resultColumns()[1].getName());
-		assertEquals("C", compiled.resultColumns()[2].getName());
+		assertEquals("A", compiled.resultColumns()[0].name());
+		assertEquals("B", compiled.resultColumns()[1].name());
+		assertEquals("C", compiled.resultColumns()[2].name());
 	}
 }

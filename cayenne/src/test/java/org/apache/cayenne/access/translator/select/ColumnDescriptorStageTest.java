@@ -48,6 +48,6 @@ public class ColumnDescriptorStageTest {
 
         assertEquals(1, context.getColumnDescriptors().size());
         ColumnDescriptor descriptor = context.getColumnDescriptors().iterator().next();
-        assertEquals("key", descriptor.getDataRowKey());
+        assertEquals("key", descriptor.dataRowKey());
     }
 }

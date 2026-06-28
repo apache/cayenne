@@ -126,23 +126,17 @@ public class ResultDirective extends Directive {
 		// determine what we want to name this column in a resulting DataRow...
 		String label = (!Util.isEmptyString(dataRowKey)) ? dataRowKey : (!Util.isEmptyString(alias)) ? alias : null;
 
-		ColumnDescriptor columnDescriptor = new ColumnDescriptor();
-		columnDescriptor.setName(column);
-		columnDescriptor.setDataRowKey(label);
-
 		String type = getChildAsString(context, node, 1);
-		if (type != null) {
-			columnDescriptor.setJavaClass(guessType(type));
-		}
+		String javaClass = (type != null) ? guessType(type) : null;
 
 		// TODO: andrus 6/27/2007 - this is an unofficial jdbcType parameter
 		// that is added
 		// temporarily pending CAY-813 implementation for the sake of EJBQL
 		// query...
-		Object jdbcType = getChild(context, node, 4);
-		if (jdbcType instanceof Number) {
-			columnDescriptor.setJdbcType(((Number) jdbcType).intValue());
-		}
+		Object jdbcTypeChild = getChild(context, node, 4);
+		int jdbcType = (jdbcTypeChild instanceof Number) ? ((Number) jdbcTypeChild).intValue() : 0;
+
+		ColumnDescriptor columnDescriptor = new ColumnDescriptor(column, label, jdbcType, javaClass, null);
 
 		writer.write(column);
 

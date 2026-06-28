@@ -21,6 +21,7 @@ package org.apache.cayenne.access.jdbc;
 import org.apache.cayenne.CayenneRuntimeException;
 import org.apache.cayenne.access.types.ExtendedType;
 import org.apache.cayenne.access.types.ExtendedTypeMap;
+import org.apache.cayenne.dba.TypesMapping;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -80,10 +81,10 @@ public class RowDescriptorBuilder {
                     "Can't build RowDescriptor, both 'columns' and 'resultSetMetadata' are null");
         }
 
-        performTransformAndTypeOverride(columnsForRD);
+        columnsForRD = performTransformAndTypeOverride(columnsForRD);
         ExtendedType[] converters = new ExtendedType[columnsForRD.length];
         for (int i = 0; i < columnsForRD.length; i++) {
-            converters[i] = typeMap.getRegisteredType(columnsForRD[i].getJavaClass());
+            converters[i] = typeMap.getRegisteredType(columnsForRD[i].javaClass());
         }
 
         return new RowDescriptor(columnsForRD, converters);
@@ -129,8 +130,8 @@ public class RowDescriptorBuilder {
 
             // validate uniqueness of names
             if(validateDuplicateColumnNames) {
-                if(!uniqueNames.add(descriptor.getDataRowKey())) {
-                    duplicates.add(descriptor.getDataRowKey());
+                if(!uniqueNames.add(descriptor.dataRowKey())) {
+                    duplicates.add(descriptor.dataRowKey());
                 }
             }
             rsColumns[outputLen] = descriptor;
@@ -166,9 +167,9 @@ public class RowDescriptorBuilder {
         for (int i = 0; i < len; i++) {
             if (columnArray[i] != null) {
                 if(mergeColumnsWithRsMetadata) {
-                    return new ColumnDescriptor(rowKey, resultSetMetadata.getColumnType(position), columnArray[position - 1].getJavaClass());
+                    return new ColumnDescriptor(rowKey, rowKey, resultSetMetadata.getColumnType(position), columnArray[position - 1].javaClass(), null);
                 } else {
-                    String columnRowKey = columnArray[i].getDataRowKey();
+                    String columnRowKey = columnArray[i].dataRowKey();
 
                     // TODO: andrus, 10/14/2009 - 'equalsIgnoreCase' check can result in
                     // subtle bugs in DBs with case-sensitive column names (or when quotes are
@@ -181,7 +182,8 @@ public class RowDescriptorBuilder {
             }
         }
         // columnArray doesn't contain ColumnDescriptor for specified column
-        return new ColumnDescriptor(rowKey, resultSetMetadata, position);
+        int jdbcType = resultSetMetadata.getColumnType(position);
+        return new ColumnDescriptor(rowKey, rowKey, jdbcType, TypesMapping.getJavaBySqlType(jdbcType), null);
     }
 
     /**
@@ -199,21 +201,35 @@ public class RowDescriptorBuilder {
         return name;
     }
 
-    private void performTransformAndTypeOverride(ColumnDescriptor[] columnArray) {
-        if (caseTransformer != null) {
-            for (ColumnDescriptor aColumnArray : columnArray) {
-                aColumnArray.setDataRowKey(caseTransformer.apply(aColumnArray.getDataRowKey()));
-                aColumnArray.setName(caseTransformer.apply(aColumnArray.getName()));
-            }
+    private ColumnDescriptor[] performTransformAndTypeOverride(ColumnDescriptor[] columnArray) {
+        if (caseTransformer == null && typeOverrides == null) {
+            return columnArray;
         }
-        if (typeOverrides != null) {
-            for (ColumnDescriptor aColumnArray : columnArray) {
-                String type = typeOverrides.get(aColumnArray.getName());
+
+        ColumnDescriptor[] result = new ColumnDescriptor[columnArray.length];
+        for (int i = 0; i < columnArray.length; i++) {
+            ColumnDescriptor column = columnArray[i];
+
+            String name = column.name();
+            String dataRowKey = column.dataRowKey();
+            String javaClass = column.javaClass();
+
+            if (caseTransformer != null) {
+                name = caseTransformer.apply(name);
+                dataRowKey = caseTransformer.apply(dataRowKey);
+            }
+
+            // type overrides are keyed by the (possibly transformed) column name
+            if (typeOverrides != null) {
+                String type = typeOverrides.get(name);
                 if (type != null) {
-                    aColumnArray.setJavaClass(type);
+                    javaClass = type;
                 }
             }
+
+            result[i] = new ColumnDescriptor(name, dataRowKey, column.jdbcType(), javaClass, column.attribute());
         }
+        return result;
     }
 
     /**

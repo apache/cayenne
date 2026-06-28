@@ -39,7 +39,7 @@ class ScalarRowReader<T> implements RowReader<T> {
     ScalarRowReader(RowDescriptor descriptor, ScalarResultSegment segmentMetadata) {
         int scalarIndex = segmentMetadata.getColumnOffset();
         this.converter = descriptor.getConverters()[scalarIndex];
-        this.type = descriptor.getColumns()[scalarIndex].getJdbcType();
+        this.type = descriptor.getColumns()[scalarIndex].jdbcType();
         this.index = scalarIndex + 1;
     }
 

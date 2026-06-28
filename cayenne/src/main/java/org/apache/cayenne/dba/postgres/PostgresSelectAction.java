@@ -75,7 +75,7 @@ class PostgresSelectAction extends SelectAction {
 
 	private static boolean readsLargeObjects(TranslatedSelect translated) {
 		for (ColumnDescriptor column : translated.resultColumns()) {
-			if (isLargeObject(column.getJdbcType())) {
+			if (isLargeObject(column.jdbcType())) {
 				return true;
 			}
 		}

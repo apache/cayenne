@@ -46,9 +46,8 @@ class ColumnDescriptorStage implements TranslationStage {
                 name = "__c" + i++;
             }
 
-            ColumnDescriptor descriptor = new ColumnDescriptor(name, resultNode.getJdbcType(), resultNode.getJavaType());
-            descriptor.setAttribute(attribute);
-            descriptor.setDataRowKey(resultNode.getDataRowKey());
+            ColumnDescriptor descriptor = new ColumnDescriptor(
+                    name, resultNode.getDataRowKey(), resultNode.getJdbcType(), resultNode.getJavaType(), attribute);
 
             context.getColumnDescriptors().add(descriptor);
         }

@@ -27,6 +27,7 @@ import org.apache.cayenne.access.translator.ParameterBinding;
 import org.apache.cayenne.access.translator.procedure.TranslatedProcedure;
 import org.apache.cayenne.access.types.ExtendedType;
 import org.apache.cayenne.dba.DbAdapter;
+import org.apache.cayenne.dba.TypesMapping;
 import org.apache.cayenne.map.Procedure;
 import org.apache.cayenne.map.ProcedureParameter;
 import org.apache.cayenne.query.ProcedureQuery;
@@ -219,11 +220,12 @@ public class ProcedureAction extends BaseSQLAction {
 				result = new DataRow(2);
 			}
 
-			ColumnDescriptor descriptor = new ColumnDescriptor(parameter);
-			ExtendedType type = dataNode.getAdapter().getExtendedTypes().getRegisteredType(descriptor.getJavaClass());
-			Object val = type.materializeObject(statement, i + 1, descriptor.getJdbcType());
+			ColumnDescriptor descriptor = new ColumnDescriptor(
+					parameter.getName(), parameter.getName(), parameter.getType(), TypesMapping.getJavaBySqlType(parameter.getType()), null);
+			ExtendedType type = dataNode.getAdapter().getExtendedTypes().getRegisteredType(descriptor.javaClass());
+			Object val = type.materializeObject(statement, i + 1, descriptor.jdbcType());
 
-			result.put(descriptor.getDataRowKey(), val);
+			result.put(descriptor.dataRowKey(), val);
 		}
 
 		if (result != null && !result.isEmpty()) {
@@ -232,7 +234,7 @@ public class ProcedureAction extends BaseSQLAction {
 			delegate.nextRows(query, Collections.singletonList(result));
 		}
 	}
-	
+
 	protected void initStatement(CallableStatement statement) throws Exception {
 		QueryMetadata queryMetadata = query.getMetaData(dataNode.getEntityResolver());
 		int statementFetchSize = queryMetadata.getStatementFetchSize();

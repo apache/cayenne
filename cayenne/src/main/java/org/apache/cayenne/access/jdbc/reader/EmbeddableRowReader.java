@@ -52,8 +52,8 @@ class EmbeddableRowReader implements RowReader<DataRow> {
         ColumnDescriptor[] columns = descriptor.getColumns();
         for (int i = 0; i < segmentWidth; i++) {
             this.converters[i] = converters[startIndex + i];
-            types[i] = columns[startIndex + i].getJdbcType();
-            labels[i] = segment.getFields().get(columns[startIndex +i].getName());
+            types[i] = columns[startIndex + i].jdbcType();
+            labels[i] = segment.getFields().get(columns[startIndex +i].name());
         }
         this.mapCapacity = (int) Math.ceil(segmentWidth / 0.75);
     }

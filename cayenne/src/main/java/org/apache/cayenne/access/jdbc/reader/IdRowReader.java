@@ -61,7 +61,7 @@ class IdRowReader<T> extends BaseRowReader<T> {
                 resultMetadata.getColumnOffset() :
                 0;
         for(int i = offset, j = 0; i < offset + len; i++) {
-            DbAttribute a = dbEntity.getAttribute(columns[i].getName());
+            DbAttribute a = dbEntity.getAttribute(columns[i].name());
             if(a != null && a.isPrimaryKey()) {
                 pk[j++] = i;
             }
