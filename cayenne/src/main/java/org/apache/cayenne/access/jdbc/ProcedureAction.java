@@ -73,7 +73,7 @@ public class ProcedureAction extends BaseSQLAction {
 
 		dataNode.getJdbcEventLogger().logQuery(translated.sql(), translated.bindings());
 
-		try (CallableStatement statement = connection.prepareCall(translated.sql());) {
+		try (CallableStatement statement = connection.prepareCall(translated.sql())) {
 			initStatement(statement);
 			bindParameters(statement, translated);
 
@@ -103,7 +103,7 @@ public class ProcedureAction extends BaseSQLAction {
 			while (true) {
 				if (statement.getMoreResults()) {
 
-					try (ResultSet rs = statement.getResultSet();) {
+					try (ResultSet rs = statement.getResultSet()) {
 						RowDescriptor descriptor = describeResultSet(rs, processedResultSets++);
 						readResultSet(rs, descriptor, query, observer);
 					}
@@ -201,8 +201,7 @@ public class ProcedureAction extends BaseSQLAction {
 	/**
 	 * Helper method that reads OUT parameters of a CallableStatement.
 	 */
-	protected void readProcedureOutParameters(CallableStatement statement, OperationObserver delegate)
-			throws SQLException, Exception {
+	protected void readProcedureOutParameters(CallableStatement statement, OperationObserver delegate) throws Exception {
 
 		long t1 = System.currentTimeMillis();
 
@@ -233,12 +232,7 @@ public class ProcedureAction extends BaseSQLAction {
 			delegate.nextRows(query, Collections.singletonList(result));
 		}
 	}
-
-	/**
-	 * Initializes statement with query parameters
-	 * 
-	 * @throws Exception
-	 */
+	
 	protected void initStatement(CallableStatement statement) throws Exception {
 		QueryMetadata queryMetadata = query.getMetaData(dataNode.getEntityResolver());
 		int statementFetchSize = queryMetadata.getStatementFetchSize();
