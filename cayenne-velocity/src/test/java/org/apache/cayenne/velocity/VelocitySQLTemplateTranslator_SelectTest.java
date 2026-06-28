@@ -27,7 +27,7 @@ import static org.mockito.Mockito.when;
 
 import java.util.Collections;
 
-import org.apache.cayenne.access.jdbc.ColumnDescriptor;
+import org.apache.cayenne.access.jdbc.RSColumn;
 import org.apache.cayenne.access.translator.sqltemplate.TranslatedSQL;
 import org.apache.cayenne.access.types.ExtendedTypeMap;
 import org.apache.cayenne.dba.DbAdapter;
@@ -95,7 +95,7 @@ public class VelocitySQLTemplateTranslator_SelectTest {
 		assertEquals(0, compiled.bindings().length);
 
 		assertEquals(1, compiled.resultColumns().length);
-		ColumnDescriptor column = compiled.resultColumns()[0];
+		RSColumn column = compiled.resultColumns()[0];
 		assertEquals("A", column.name());
 		assertEquals("B", column.dataRowKey());
 		assertSame(adapter.getExtendedTypes().getRegisteredType(String.class), column.type());

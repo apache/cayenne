@@ -21,7 +21,7 @@ package org.apache.cayenne.crypto.reader;
 import java.sql.ResultSet;
 import java.util.Map;
 
-import org.apache.cayenne.access.jdbc.ColumnDescriptor;
+import org.apache.cayenne.access.jdbc.RSColumn;
 import org.apache.cayenne.access.jdbc.reader.DefaultRowReaderFactory;
 import org.apache.cayenne.access.jdbc.reader.RowReader;
 import org.apache.cayenne.access.types.ExtendedType;
@@ -59,12 +59,12 @@ public class CryptoRowReaderFactoryDecorator extends DefaultRowReaderFactory {
     }
 
     @Override
-    public RowReader<?> rowReader(ColumnDescriptor[] columns, QueryMetadata queryMetadata, DbAdapter adapter) {
+    public RowReader<?> rowReader(RSColumn[] columns, QueryMetadata queryMetadata, DbAdapter adapter) {
         return super.rowReader(encryptedColumns(columns, adapter.getExtendedTypes()), queryMetadata, adapter);
     }
 
     @Override
-    protected RowReader<?> createScalarRowReader(ColumnDescriptor[] columns, QueryMetadata queryMetadata,
+    protected RowReader<?> createScalarRowReader(RSColumn[] columns, QueryMetadata queryMetadata,
                                                  ScalarResultSegment segment) {
         RowReader<?> scalarRowReader = super
                 .createScalarRowReader(columns, queryMetadata, segment);
@@ -72,7 +72,7 @@ public class CryptoRowReaderFactoryDecorator extends DefaultRowReaderFactory {
     }
 
     @Override
-    protected RowReader<?> createEntityRowReader(ColumnDescriptor[] columns, QueryMetadata queryMetadata,
+    protected RowReader<?> createEntityRowReader(RSColumn[] columns, QueryMetadata queryMetadata,
                                                  EntityResultSegment resultMetadata) {
         RowReader<?> entityRowReader = super
                 .createEntityRowReader(columns, queryMetadata, resultMetadata);
@@ -80,21 +80,21 @@ public class CryptoRowReaderFactoryDecorator extends DefaultRowReaderFactory {
     }
 
     @Override
-    protected RowReader<?> createFullRowReader(ColumnDescriptor[] columns, QueryMetadata queryMetadata) {
+    protected RowReader<?> createFullRowReader(RSColumn[] columns, QueryMetadata queryMetadata) {
         RowReader<?> fullRowReader = super
                 .createFullRowReader(columns, queryMetadata);
         return new DecoratedFullRowReader(columns, fullRowReader);
     }
 
-    protected ColumnDescriptor[] encryptedColumns(ColumnDescriptor[] columns, ExtendedTypeMap typeMap) {
+    protected RSColumn[] encryptedColumns(RSColumn[] columns, ExtendedTypeMap typeMap) {
 
         // need to tweak the columns to ensure encrypted columns are read as binary or char, even if the plain Java
         // type is not a byte[] / String
 
-        ColumnDescriptor[] encrypted = new ColumnDescriptor[columns.length];
+        RSColumn[] encrypted = new RSColumn[columns.length];
 
         for (int i = 0; i < columns.length; i++) {
-            ColumnDescriptor column = columns[i];
+            RSColumn column = columns[i];
             DbAttribute attribute = column.attribute();
 
             ExtendedType type = column.type();
@@ -112,7 +112,7 @@ public class CryptoRowReaderFactoryDecorator extends DefaultRowReaderFactory {
 
             encrypted[i] = type == column.type()
                     ? column
-                    : new ColumnDescriptor(column.name(), column.dataRowKey(), column.jdbcType(), type, attribute);
+                    : new RSColumn(column.name(), column.dataRowKey(), column.jdbcType(), type, attribute);
         }
 
         return encrypted;
@@ -123,7 +123,7 @@ public class CryptoRowReaderFactoryDecorator extends DefaultRowReaderFactory {
         private final ValueDecryptor valueDecryptor;
         private final BytesDecryptor bytesDecryptor;
 
-        DecoratedScalarRowReader(ColumnDescriptor descriptor, RowReader<?> delegateReader) {
+        DecoratedScalarRowReader(RSColumn descriptor, RowReader<?> delegateReader) {
             this.delegateReader = delegateReader;
             if(descriptor.attribute() != null && columnMapper.isEncrypted(descriptor.attribute())) {
                 this.valueDecryptor = valueTransformerFactory.decryptor(descriptor.attribute());
@@ -146,15 +146,15 @@ public class CryptoRowReaderFactoryDecorator extends DefaultRowReaderFactory {
 
     private abstract class DecoratedEntityFullRowReader implements RowReader<Object> {
 
-        final ColumnDescriptor[] columns;
+        final RSColumn[] columns;
         final RowReader<?> delegateReader;
         final EntityResultSegment resultMetadata;
         boolean decryptorCompiled;
         MapTransformer decryptor;
 
-        DecoratedEntityFullRowReader(ColumnDescriptor[] columns,
-                                 RowReader<?> delegateReader,
-                                 EntityResultSegment resultMetadata) {
+        DecoratedEntityFullRowReader(RSColumn[] columns,
+                                     RowReader<?> delegateReader,
+                                     EntityResultSegment resultMetadata) {
             this.columns = columns;
             this.delegateReader = delegateReader;
             this.resultMetadata = resultMetadata;
@@ -180,7 +180,7 @@ public class CryptoRowReaderFactoryDecorator extends DefaultRowReaderFactory {
 
     private class DecoratedEntityRowReader extends DecoratedEntityFullRowReader {
 
-        DecoratedEntityRowReader(ColumnDescriptor[] columns,
+        DecoratedEntityRowReader(RSColumn[] columns,
                                  RowReader<?> delegateReader,
                                  EntityResultSegment resultMetadata) {
             super(columns, delegateReader, resultMetadata);
@@ -190,12 +190,12 @@ public class CryptoRowReaderFactoryDecorator extends DefaultRowReaderFactory {
             if (!decryptorCompiled) {
                 int offset = resultMetadata.getColumnOffset();
                 int fieldsSize = resultMetadata.getFields().size();
-                ColumnDescriptor[] columnDescriptors =
-                        new ColumnDescriptor[fieldsSize];
+                RSColumn[] columns =
+                        new RSColumn[fieldsSize];
                 for(int i = offset, j = 0; i < offset + fieldsSize; i++) {
-                    columnDescriptors[j++] = columns[i];
+                    columns[j++] = this.columns[i];
                 }
-                decryptor = transformerFactory.decryptor(columnDescriptors, row);
+                decryptor = transformerFactory.decryptor(columns, row);
                 decryptorCompiled = true;
             }
         }
@@ -208,7 +208,7 @@ public class CryptoRowReaderFactoryDecorator extends DefaultRowReaderFactory {
 
     private class DecoratedFullRowReader extends DecoratedEntityFullRowReader {
 
-        DecoratedFullRowReader(ColumnDescriptor[] columns,
+        DecoratedFullRowReader(RSColumn[] columns,
                                RowReader<?> delegateReader) {
             super(columns, delegateReader, null);
         }

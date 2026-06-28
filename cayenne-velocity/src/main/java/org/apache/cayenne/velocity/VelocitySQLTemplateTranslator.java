@@ -20,10 +20,10 @@
 package org.apache.cayenne.velocity;
 
 import org.apache.cayenne.CayenneRuntimeException;
-import org.apache.cayenne.access.jdbc.ColumnDescriptor;
+import org.apache.cayenne.access.jdbc.RSColumn;
 import org.apache.cayenne.access.translator.sqltemplate.TranslatedSQL;
 import org.apache.cayenne.access.translator.sqltemplate.SQLTemplateTranslator;
-import org.apache.cayenne.access.translator.ParameterBinding;
+import org.apache.cayenne.access.jdbc.PSParameter;
 import org.apache.cayenne.dba.DbAdapter;
 import org.apache.cayenne.exp.ExpressionException;
 import org.apache.cayenne.access.translator.sqltemplate.SQLTemplateRenderingUtils;
@@ -149,8 +149,8 @@ public class VelocitySQLTemplateTranslator implements SQLTemplateTranslator {
 	}
 
 	TranslatedSQL translate(String template, SimpleNode parsedTemplate, Map<String, Object> parameters, DbAdapter adapter) {
-		List<ParameterBinding> bindings = new ArrayList<>();
-		List<ColumnDescriptor> results = new ArrayList<>();
+		List<PSParameter> bindings = new ArrayList<>();
+		List<RSColumn> results = new ArrayList<>();
 		parameters.put(BINDINGS_LIST_KEY, bindings);
 		parameters.put(RESULT_COLUMNS_LIST_KEY, results);
 		parameters.put(HELPER_KEY, renderingUtils);
@@ -163,10 +163,10 @@ public class VelocitySQLTemplateTranslator implements SQLTemplateTranslator {
 			throw new CayenneRuntimeException("Error processing Velocity template", e);
 		}
 
-		ParameterBinding[] bindingsArray = new ParameterBinding[bindings.size()];
+		PSParameter[] bindingsArray = new PSParameter[bindings.size()];
 		bindings.toArray(bindingsArray);
 
-		ColumnDescriptor[] resultsArray = new ColumnDescriptor[results.size()];
+		RSColumn[] resultsArray = new RSColumn[results.size()];
 		results.toArray(resultsArray);
 
 		return new TranslatedSQL(sql, resultsArray, bindingsArray);

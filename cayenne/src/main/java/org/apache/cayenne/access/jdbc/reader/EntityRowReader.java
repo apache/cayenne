@@ -22,7 +22,7 @@ import java.sql.ResultSet;
 
 import org.apache.cayenne.CayenneRuntimeException;
 import org.apache.cayenne.DataRow;
-import org.apache.cayenne.access.jdbc.ColumnDescriptor;
+import org.apache.cayenne.access.jdbc.RSColumn;
 import org.apache.cayenne.access.types.ExtendedType;
 import org.apache.cayenne.query.EntityResultSegment;
 import org.apache.cayenne.reflect.ClassDescriptor;
@@ -41,7 +41,7 @@ class EntityRowReader implements RowReader<DataRow> {
     private int mapCapacity;
     private int startIndex;
 
-    EntityRowReader(ColumnDescriptor[] columns, EntityResultSegment segmentMetadata) {
+    EntityRowReader(RSColumn[] columns, EntityResultSegment segmentMetadata) {
 
         ClassDescriptor classDescriptor = segmentMetadata.getClassDescriptor();
 

@@ -18,7 +18,7 @@
  ****************************************************************/
 package org.apache.cayenne.log;
 
-import org.apache.cayenne.access.translator.ParameterBinding;
+import org.apache.cayenne.access.jdbc.PSParameter;
 import org.apache.cayenne.map.DbAttribute;
 
 /**
@@ -46,11 +46,11 @@ public class NoopJdbcEventLogger implements JdbcEventLogger {
 	}
 	
 	@Override
-	public void logQuery(String sql, ParameterBinding[] bindings) {
+	public void logQuery(String sql, PSParameter[] bindings) {
 	}
 
 	@Override
-	public void logQueryParameters(String label, ParameterBinding[] bindings) {
+	public void logQueryParameters(String label, PSParameter[] bindings) {
 	}
 
 	@Override

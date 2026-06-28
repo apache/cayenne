@@ -18,8 +18,8 @@
  ****************************************************************/
 package org.apache.cayenne.crypto.transformer;
 
-import org.apache.cayenne.access.jdbc.ColumnDescriptor;
-import org.apache.cayenne.access.translator.batch.BatchParameterBinding;
+import org.apache.cayenne.access.jdbc.RSColumn;
+import org.apache.cayenne.access.jdbc.PSBatchParameter;
 import org.apache.cayenne.access.types.ExtendedTypeMap;
 
 /**
@@ -30,7 +30,7 @@ import org.apache.cayenne.access.types.ExtendedTypeMap;
  */
 public interface TransformerFactory {
 
-    BindingsTransformer encryptor(BatchParameterBinding[] bindings, ExtendedTypeMap extendedTypeMap);
+    BindingsTransformer encryptor(PSBatchParameter[] bindings, ExtendedTypeMap extendedTypeMap);
 
-    MapTransformer decryptor(ColumnDescriptor[] columns, Object sampleRow);
+    MapTransformer decryptor(RSColumn[] columns, Object sampleRow);
 }

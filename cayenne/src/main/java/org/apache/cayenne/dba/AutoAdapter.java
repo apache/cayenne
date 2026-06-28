@@ -22,7 +22,7 @@ package org.apache.cayenne.dba;
 import org.apache.cayenne.CayenneRuntimeException;
 import org.apache.cayenne.access.DataNode;
 import org.apache.cayenne.access.sqlbuilder.sqltree.SQLTreeProcessor;
-import org.apache.cayenne.access.translator.ParameterBinding;
+import org.apache.cayenne.access.jdbc.PSParameter;
 import org.apache.cayenne.access.translator.ejbql.EJBQLTranslator;
 import org.apache.cayenne.access.translator.procedure.ProcedureTranslator;
 import org.apache.cayenne.access.translator.select.SelectTranslator;
@@ -239,8 +239,8 @@ public class AutoAdapter implements DbAdapter {
 	}
 
 	@Override
-	public void bindParameter(PreparedStatement statement, ParameterBinding parameterBinding) throws Exception {
-		getAdapter().bindParameter(statement, parameterBinding);
+	public void bindParameter(PreparedStatement statement, PSParameter<?> parameter) throws Exception {
+		getAdapter().bindParameter(statement, parameter);
 	}
 
 	/**

@@ -22,7 +22,7 @@ package org.apache.cayenne.dba.db2;
 import org.apache.cayenne.dba.NativeColumnType;
 import org.apache.cayenne.access.DataNode;
 import org.apache.cayenne.access.sqlbuilder.sqltree.SQLTreeProcessor;
-import org.apache.cayenne.access.translator.ParameterBinding;
+import org.apache.cayenne.access.jdbc.PSParameter;
 import org.apache.cayenne.access.translator.ejbql.EJBQLTranslator;
 import org.apache.cayenne.access.translator.ejbql.JdbcEJBQLTranslator;
 import org.apache.cayenne.access.types.BooleanType;
@@ -190,11 +190,11 @@ public class DB2Adapter extends JdbcAdapter {
     }
 
     @Override
-    public void bindParameter(PreparedStatement statement, ParameterBinding binding) throws Exception {
-        if (binding.value() == null && (binding.jdbcType() == 0 || binding.jdbcType() == Types.BOOLEAN)) {
-            statement.setNull(binding.statementPosition(), Types.VARCHAR);
+    public void bindParameter(PreparedStatement statement, PSParameter<?> parameter) throws Exception {
+        if (parameter.value() == null && (parameter.jdbcType() == 0 || parameter.jdbcType() == Types.BOOLEAN)) {
+            statement.setNull(parameter.statementPosition(), Types.VARCHAR);
         } else {
-            super.bindParameter(statement, binding);
+            super.bindParameter(statement, parameter);
         }
     }
     

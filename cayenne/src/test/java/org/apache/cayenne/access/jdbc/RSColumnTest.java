@@ -27,26 +27,26 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
-public class ColumnDescriptorTest {
+public class RSColumnTest {
 
     @Test
     public void name() {
-        ColumnDescriptor column = new ColumnDescriptor("abc", null, 0, null, null);
+        RSColumn column = new RSColumn("abc", null, 0, null, null);
         assertEquals("abc", column.name());
     }
 
     @Test
     public void label() {
-        ColumnDescriptor column = new ColumnDescriptor(null, "abc", 0, null, null);
+        RSColumn column = new RSColumn(null, "abc", 0, null, null);
         assertEquals("abc", column.dataRowKey());
     }
 
     @Test
     public void equals() {
         // type should be ignored in the comparison
-        ColumnDescriptor column1 = new ColumnDescriptor("n1", "k1", Types.VARCHAR, null, null);
-        ColumnDescriptor column2 = new ColumnDescriptor("n1", "k1", Types.BOOLEAN, null, null);
-        ColumnDescriptor column3 = new ColumnDescriptor("n1", "k3", 0, null, null);
+        RSColumn column1 = new RSColumn("n1", "k1", Types.VARCHAR, null, null);
+        RSColumn column2 = new RSColumn("n1", "k1", Types.BOOLEAN, null, null);
+        RSColumn column3 = new RSColumn("n1", "k3", 0, null, null);
 
         assertEquals(column1, column2);
         assertFalse(column1.equals(column3));
@@ -56,9 +56,9 @@ public class ColumnDescriptorTest {
     @Test
     public void hashCodeTest() {
         // type should be ignored in the comparison
-        ColumnDescriptor column1 = new ColumnDescriptor("n1", "k1", Types.VARCHAR, null, null);
-        ColumnDescriptor column2 = new ColumnDescriptor("n1", "k1", Types.BOOLEAN, null, null);
-        ColumnDescriptor column3 = new ColumnDescriptor("n1", "k3", 0, null, null);
+        RSColumn column1 = new RSColumn("n1", "k1", Types.VARCHAR, null, null);
+        RSColumn column2 = new RSColumn("n1", "k1", Types.BOOLEAN, null, null);
+        RSColumn column3 = new RSColumn("n1", "k3", 0, null, null);
 
         assertEquals(column1.hashCode(), column2.hashCode());
 

@@ -23,7 +23,7 @@ import java.util.Iterator;
 import java.util.Map;
 import java.util.TreeMap;
 
-import org.apache.cayenne.access.translator.ParameterBinding;
+import org.apache.cayenne.access.jdbc.PSParameter;
 import org.apache.cayenne.configuration.RuntimeProperties;
 import org.apache.cayenne.di.Inject;
 
@@ -120,7 +120,7 @@ public class FormattedSlf4jJdbcEventLogger extends Slf4jJdbcEventLogger {
     }
 
     @Override
-    public void logQuery(String sql, ParameterBinding[] bindings) {
+    public void logQuery(String sql, PSParameter[] bindings) {
         if (isLoggable()) {
             super.logQuery(formatQuery(sql), bindings);
         }

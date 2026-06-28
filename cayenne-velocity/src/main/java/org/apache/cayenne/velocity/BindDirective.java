@@ -24,7 +24,7 @@ import java.io.Writer;
 import java.util.Collection;
 import java.util.Iterator;
 
-import org.apache.cayenne.access.translator.ParameterBinding;
+import org.apache.cayenne.access.jdbc.PSParameter;
 import org.apache.cayenne.access.types.ExtendedType;
 import org.apache.cayenne.access.types.ExtendedTypeMap;
 import org.apache.cayenne.dba.DbAdapter;
@@ -84,7 +84,7 @@ public class BindDirective extends Directive {
 
 	/**
 	 * Extracts the value of the object property to render and passes control to
-	 * {@link #render(InternalContextAdapter, Writer, ParameterBinding)} to do
+	 * {@link #render(InternalContextAdapter, Writer, PSParameter)} to do
 	 * the actual rendering.
 	 */
 	@Override
@@ -166,13 +166,13 @@ public class BindDirective extends Directive {
 	protected void bind(InternalContextAdapter context, int jdbcType, int scale, Object value) {
 
 		@SuppressWarnings("unchecked")
-		Collection<ParameterBinding> bindings = (Collection<ParameterBinding>)
+		Collection<PSParameter> bindings = (Collection<PSParameter>)
 				context.getInternalUserContext().get(VelocitySQLTemplateTranslator.BINDINGS_LIST_KEY);
 
 		if (bindings != null) {
 			// a binding's statement position is its 1-based ordinal among the bound parameters; the
 			// ExtendedType is resolved from the value via the adapter
-			bindings.add(new ParameterBinding(jdbcType, scale, null,
+			bindings.add(new PSParameter(jdbcType, scale, null,
 					bindings.size() + 1, value, extendedType(context, value)));
 		}
 	}

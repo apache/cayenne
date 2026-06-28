@@ -23,7 +23,6 @@ import org.apache.cayenne.ResultIterator;
 import org.apache.cayenne.access.DataNode;
 import org.apache.cayenne.access.OperationObserver;
 import org.apache.cayenne.access.jdbc.reader.RowReader;
-import org.apache.cayenne.access.translator.ParameterBinding;
 import org.apache.cayenne.access.translator.select.TranslatedSelect;
 import org.apache.cayenne.dba.DbAdapter;
 import org.apache.cayenne.log.JdbcEventLogger;
@@ -73,7 +72,7 @@ public class SelectAction extends BaseSQLAction {
         DbAdapter adapter = dataNode.getAdapter();
         PreparedStatement statement = connection.prepareStatement(translated.sql());
 
-        for (ParameterBinding b : translated.bindings()) {
+        for (PSParameter b : translated.bindings()) {
 
             // null DbAttributes are a result of inferior qualifier
             // processing (qualifier can't map parameters to DbAttributes
@@ -109,7 +108,7 @@ public class SelectAction extends BaseSQLAction {
 
         RowReader<?> rowReader = dataNode.getRowReaderFactory().rowReader(translated.resultColumns(), queryMetadata, dataNode.getAdapter());
 
-        ResultIterator<?> it = new JDBCResultIterator<>(statement, rs, rowReader);
+        ResultIterator<?> it = new RSIterator<>(statement, rs, rowReader);
         it = forIteratedResult(it, observer, connection, t1, translated.sql());
         it = forSuppressedDistinct(it, translated);
         it = forFetchLimit(it, translated);

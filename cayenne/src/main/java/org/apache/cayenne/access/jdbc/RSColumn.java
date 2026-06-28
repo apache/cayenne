@@ -40,12 +40,18 @@ import java.util.Set;
 import java.util.function.Function;
 
 /**
- * A descriptor of a ResultSet column, carrying the {@link ExtendedType} used to materialize the column value.
+ * A descriptor of a ResultSet column.
+ *
+ * @since 5.0
  */
-public record ColumnDescriptor(String name, String dataRowKey, int jdbcType, ExtendedType<?> type,
-                               DbAttribute attribute) {
+public record RSColumn(
+        String name,
+        String dataRowKey,
+        int jdbcType,
+        ExtendedType<?> type,
+        DbAttribute attribute) {
 
-    public ColumnDescriptor {
+    public RSColumn {
         if (dataRowKey == null) {
             dataRowKey = name;
         }
@@ -57,7 +63,7 @@ public record ColumnDescriptor(String name, String dataRowKey, int jdbcType, Ext
      */
     @Override
     public boolean equals(Object o) {
-        if (!(o instanceof ColumnDescriptor rhs)) {
+        if (!(o instanceof RSColumn rhs)) {
             return false;
         }
 
@@ -74,7 +80,7 @@ public record ColumnDescriptor(String name, String dataRowKey, int jdbcType, Ext
     }
 
     /**
-     * Creates a {@link RowBuilder} that assembles the array of {@link ColumnDescriptor}s describing a result row.
+     * Creates a {@link RowBuilder} that assembles the array of {@link RSColumn}s describing a result row.
      *
      * @since 5.0
      */
@@ -92,7 +98,7 @@ public record ColumnDescriptor(String name, String dataRowKey, int jdbcType, Ext
         private static final Function<String, String> LOWERCASE_TRANSFORMER = input ->
                 input != null ? input.toLowerCase() : null;
 
-        private ColumnDescriptor[] columns;
+        private RSColumn[] columns;
         private ResultSetMetaData resultSetMetadata;
         private Function<String, String> caseTransformer;
         private Map<String, String> typeOverrides;
@@ -100,12 +106,12 @@ public record ColumnDescriptor(String name, String dataRowKey, int jdbcType, Ext
         private boolean validateDuplicateColumnNames;
 
         /**
-         * Returns the array of {@link ColumnDescriptor}s describing the result row, with an {@link ExtendedType}
+         * Returns the array of {@link RSColumn}s describing the result row, with an {@link ExtendedType}
          * resolved for each column.
          */
-        public ColumnDescriptor[] build(ExtendedTypeMap typeMap) throws SQLException, IllegalStateException {
+        public RSColumn[] build(ExtendedTypeMap typeMap) throws SQLException, IllegalStateException {
 
-            ColumnDescriptor[] columnsForRD;
+            RSColumn[] columnsForRD;
 
             if (this.resultSetMetadata != null) {
                 // do merge between explicitly-set columns and ResultSetMetadata
@@ -126,7 +132,7 @@ public record ColumnDescriptor(String name, String dataRowKey, int jdbcType, Ext
          * @return array of columns for ResultSet with overriding ColumnDescriptors from
          * 'columns' Note: column will be overlooked, if column name is empty
          */
-        protected ColumnDescriptor[] mergeResultSetAndPresetColumns(ExtendedTypeMap typeMap) throws SQLException {
+        protected RSColumn[] mergeResultSetAndPresetColumns(ExtendedTypeMap typeMap) throws SQLException {
 
             int rsLen = resultSetMetadata.getColumnCount();
             if (rsLen == 0) {
@@ -145,7 +151,7 @@ public record ColumnDescriptor(String name, String dataRowKey, int jdbcType, Ext
                 return columns;
             }
 
-            ColumnDescriptor[] rsColumns = new ColumnDescriptor[rsLen];
+            RSColumn[] rsColumns = new RSColumn[rsLen];
             List<String> duplicates = null;
             Set<String> uniqueNames = null;
 
@@ -159,7 +165,7 @@ public record ColumnDescriptor(String name, String dataRowKey, int jdbcType, Ext
                 String rowkey = resolveDataRowKeyFromResultSet(i + 1);
 
                 // resolve column descriptor from 'columns' or create new
-                ColumnDescriptor column = getOrCreateColumn(rowkey, columns, i + 1, typeMap);
+                RSColumn column = getOrCreateColumn(rowkey, columns, i + 1, typeMap);
 
                 // validate uniqueness of names
                 if (validateDuplicateColumnNames) {
@@ -179,7 +185,7 @@ public record ColumnDescriptor(String name, String dataRowKey, int jdbcType, Ext
 
             if (outputLen < rsLen) {
                 // cut ColumnDescriptor array
-                ColumnDescriptor[] rsColumnsCut = new ColumnDescriptor[outputLen];
+                RSColumn[] rsColumnsCut = new RSColumn[outputLen];
                 System.arraycopy(rsColumns, 0, rsColumnsCut, 0, outputLen);
                 return rsColumnsCut;
             }
@@ -187,9 +193,9 @@ public record ColumnDescriptor(String name, String dataRowKey, int jdbcType, Ext
             return rsColumns;
         }
 
-        private ColumnDescriptor getOrCreateColumn(
+        private RSColumn getOrCreateColumn(
                 String rowKey,
-                ColumnDescriptor[] columnArray,
+                RSColumn[] columnArray,
                 int position,
                 ExtendedTypeMap typeMap) throws SQLException {
             int len = (columnArray != null) ? columnArray.length : 0;
@@ -197,7 +203,7 @@ public record ColumnDescriptor(String name, String dataRowKey, int jdbcType, Ext
             for (int i = 0; i < len; i++) {
                 if (columnArray[i] != null) {
                     if (mergeColumnsWithRsMetadata) {
-                        return new ColumnDescriptor(rowKey, rowKey, resultSetMetadata.getColumnType(position), columnArray[position - 1].type(), null);
+                        return new RSColumn(rowKey, rowKey, resultSetMetadata.getColumnType(position), columnArray[position - 1].type(), null);
                     } else {
                         String columnRowKey = columnArray[i].dataRowKey();
 
@@ -214,7 +220,7 @@ public record ColumnDescriptor(String name, String dataRowKey, int jdbcType, Ext
             // columnArray doesn't contain ColumnDescriptor for specified column
             int jdbcType = resultSetMetadata.getColumnType(position);
             ExtendedType<?> type = typeMap.getRegisteredType(TypesMapping.getJavaBySqlType(jdbcType));
-            return new ColumnDescriptor(rowKey, rowKey, jdbcType, type, null);
+            return new RSColumn(rowKey, rowKey, jdbcType, type, null);
         }
 
         // Return a non-empty string with ColumnLabel or ColumnName or "column_<pos>" for positional column
@@ -230,14 +236,14 @@ public record ColumnDescriptor(String name, String dataRowKey, int jdbcType, Ext
             return name;
         }
 
-        private ColumnDescriptor[] performTransformAndTypeOverride(ColumnDescriptor[] columnArray, ExtendedTypeMap typeMap) {
+        private RSColumn[] performTransformAndTypeOverride(RSColumn[] columnArray, ExtendedTypeMap typeMap) {
             if (caseTransformer == null && typeOverrides == null) {
                 return columnArray;
             }
 
-            ColumnDescriptor[] result = new ColumnDescriptor[columnArray.length];
+            RSColumn[] result = new RSColumn[columnArray.length];
             for (int i = 0; i < columnArray.length; i++) {
-                ColumnDescriptor column = columnArray[i];
+                RSColumn column = columnArray[i];
 
                 String name = column.name();
                 String dataRowKey = column.dataRowKey();
@@ -256,7 +262,7 @@ public record ColumnDescriptor(String name, String dataRowKey, int jdbcType, Ext
                     }
                 }
 
-                result[i] = new ColumnDescriptor(name, dataRowKey, column.jdbcType(), type, column.attribute());
+                result[i] = new RSColumn(name, dataRowKey, column.jdbcType(), type, column.attribute());
             }
             return result;
         }
@@ -265,7 +271,7 @@ public record ColumnDescriptor(String name, String dataRowKey, int jdbcType, Ext
          * Sets an explicit set of columns. The builder may replace these with new instances to enforce the column
          * capitalization policy and column Java type overrides.
          */
-        public RowBuilder columns(ColumnDescriptor... columns) {
+        public RowBuilder columns(RSColumn... columns) {
             this.columns = columns;
             return this;
         }

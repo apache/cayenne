@@ -22,7 +22,7 @@ package org.apache.cayenne.dba.ingres;
 import org.apache.cayenne.dba.NativeColumnType;
 import org.apache.cayenne.access.DataNode;
 import org.apache.cayenne.access.sqlbuilder.sqltree.SQLTreeProcessor;
-import org.apache.cayenne.access.translator.ParameterBinding;
+import org.apache.cayenne.access.jdbc.PSParameter;
 import org.apache.cayenne.access.types.ExtendedType;
 import org.apache.cayenne.access.types.ExtendedTypeFactory;
 import org.apache.cayenne.access.types.ExtendedTypeMap;
@@ -116,12 +116,12 @@ public class IngresAdapter extends JdbcAdapter {
     }
 
     @Override
-    public void bindParameter(PreparedStatement statement, ParameterBinding binding) throws Exception {
+    public void bindParameter(PreparedStatement statement, PSParameter<?> parameter) throws Exception {
 
-        if (binding.value() == null && (binding.jdbcType() == Types.BIT)) {
-            statement.setNull(binding.statementPosition(), Types.SMALLINT);
+        if (parameter.value() == null && (parameter.jdbcType() == Types.BIT)) {
+            statement.setNull(parameter.statementPosition(), Types.SMALLINT);
         } else {
-            super.bindParameter(statement, binding);
+            super.bindParameter(statement, parameter);
         }
     }
 

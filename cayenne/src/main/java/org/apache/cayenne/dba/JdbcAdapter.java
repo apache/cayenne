@@ -22,7 +22,7 @@ package org.apache.cayenne.dba;
 import org.apache.cayenne.CayenneRuntimeException;
 import org.apache.cayenne.access.DataNode;
 import org.apache.cayenne.access.sqlbuilder.sqltree.SQLTreeProcessor;
-import org.apache.cayenne.access.translator.ParameterBinding;
+import org.apache.cayenne.access.jdbc.PSParameter;
 import org.apache.cayenne.access.translator.ejbql.EJBQLTranslator;
 import org.apache.cayenne.access.translator.ejbql.JdbcEJBQLTranslator;
 import org.apache.cayenne.access.translator.procedure.DefaultProcedureTranslator;
@@ -621,18 +621,18 @@ public class JdbcAdapter implements DbAdapter {
         return node -> node;
     }
 
-    @SuppressWarnings("unchecked")
     @Override
-    public void bindParameter(PreparedStatement statement, ParameterBinding binding) throws Exception {
+    public void bindParameter(PreparedStatement statement, PSParameter<?> parameter) throws Exception {
 
-        if (binding.value() == null) {
-            statement.setNull(binding.statementPosition(), binding.jdbcType());
+        if (parameter.value() == null) {
+            statement.setNull(parameter.statementPosition(), parameter.jdbcType());
         } else {
-            binding.extendedType().setJdbcObject(statement,
-                    binding.value(),
-                    binding.statementPosition(),
-                    binding.jdbcType(),
-                    binding.scale());
+            ExtendedType t = parameter.extendedType();
+            t.setJdbcObject(statement,
+                    parameter.value(),
+                    parameter.statementPosition(),
+                    parameter.jdbcType(),
+                    parameter.scale());
         }
     }
 

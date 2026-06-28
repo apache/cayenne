@@ -19,7 +19,7 @@
 
 package org.apache.cayenne.access.translator.select;
 
-import org.apache.cayenne.access.jdbc.ColumnDescriptor;
+import org.apache.cayenne.access.jdbc.RSColumn;
 import org.apache.cayenne.access.types.ExtendedType;
 import org.apache.cayenne.map.DbAttribute;
 
@@ -48,7 +48,7 @@ class ColumnDescriptorStage implements TranslationStage {
             }
 
             ExtendedType type = context.getAdapter().getExtendedTypes().getRegisteredType(resultNode.getJavaType());
-            ColumnDescriptor descriptor = new ColumnDescriptor(
+            RSColumn descriptor = new RSColumn(
                     name, resultNode.getDataRowKey(), resultNode.getJdbcType(), type, attribute);
 
             context.getColumnDescriptors().add(descriptor);

@@ -23,7 +23,7 @@ import java.sql.ResultSet;
 
 import org.apache.cayenne.CayenneRuntimeException;
 import org.apache.cayenne.DataRow;
-import org.apache.cayenne.access.jdbc.ColumnDescriptor;
+import org.apache.cayenne.access.jdbc.RSColumn;
 import org.apache.cayenne.access.types.ExtendedType;
 import org.apache.cayenne.query.EmbeddableResultSegment;
 import org.apache.cayenne.query.QueryMetadata;
@@ -40,7 +40,7 @@ class EmbeddableRowReader implements RowReader<DataRow> {
     private final String[] labels;
     private final int[] types;
 
-    EmbeddableRowReader(ColumnDescriptor[] columns, QueryMetadata queryMetadata, EmbeddableResultSegment segment) {
+    EmbeddableRowReader(RSColumn[] columns, QueryMetadata queryMetadata, EmbeddableResultSegment segment) {
         int segmentWidth = segment.getFields().size();
         this.startIndex = segment.getColumnOffset();
         this.converters = new ExtendedType[segmentWidth];

@@ -24,7 +24,6 @@ import org.apache.cayenne.ResultIterator;
 import org.apache.cayenne.access.DataNode;
 import org.apache.cayenne.access.OperationObserver;
 import org.apache.cayenne.access.jdbc.reader.RowReader;
-import org.apache.cayenne.access.translator.ParameterBinding;
 import org.apache.cayenne.access.translator.sqltemplate.TranslatedSQL;
 import org.apache.cayenne.access.types.ExtendedType;
 import org.apache.cayenne.access.types.ExtendedTypeMap;
@@ -240,11 +239,11 @@ public class SQLTemplateAction implements SQLAction {
 
         boolean iteratedResult = callback.isIteratedResult();
         ExtendedTypeMap types = dataNode.getAdapter().getExtendedTypes();
-        ColumnDescriptor.RowBuilder rowBuilder = rowBuilder(compiled, resultSet);
+        RSColumn.RowBuilder rowBuilder = rowBuilder(compiled, resultSet);
         recreateQueryMetadata(resultSet);
         RowReader<?> rowReader = dataNode.getRowReaderFactory()
                 .rowReader(rowBuilder.build(types), queryMetadata, dataNode.getAdapter());
-        ResultIterator<?> it = new JDBCResultIterator<>(statement, resultSet, rowReader);
+        ResultIterator<?> it = new RSIterator<>(statement, resultSet, rowReader);
 
         if (iteratedResult) {
 
@@ -289,7 +288,7 @@ public class SQLTemplateAction implements SQLAction {
     /**
      * Creates column descriptors based on compiled statement and query metadata
      */
-    private ColumnDescriptor[] createColumnDescriptors(TranslatedSQL compiled) {
+    private RSColumn[] createColumnDescriptors(TranslatedSQL compiled) {
         // SQLTemplate #result columns take precedence over other ways to determine the type
         if (compiled.resultColumns().length > 0) {
             if (query.getResultColumnsTypes() != null) {
@@ -306,21 +305,21 @@ public class SQLTemplateAction implements SQLAction {
 
         ExtendedTypeMap extendedTypes = dataNode.getAdapter().getExtendedTypes();
         int size = query.getResultColumnsTypes().size();
-        ColumnDescriptor[] columnDescriptors = new ColumnDescriptor[size];
+        RSColumn[] columns = new RSColumn[size];
         for (int i = 0; i < size; i++) {
             // only the Java class is known here; name and jdbcType are resolved later from ResultSet metadata
             ExtendedType type = extendedTypes.getRegisteredType(query.getResultColumnsTypes().get(i));
-            columnDescriptors[i] = new ColumnDescriptor(null, null, 0, type, null);
+            columns[i] = new RSColumn(null, null, 0, type, null);
         }
-        return columnDescriptors;
+        return columns;
     }
 
     /**
      * @since 3.0
      */
-    protected ColumnDescriptor.RowBuilder rowBuilder(TranslatedSQL compiled, ResultSet resultSet)
+    protected RSColumn.RowBuilder rowBuilder(TranslatedSQL compiled, ResultSet resultSet)
             throws SQLException {
-        ColumnDescriptor.RowBuilder builder = ColumnDescriptor.rowBuilder()
+        RSColumn.RowBuilder builder = RSColumn.rowBuilder()
                 .resultSet(resultSet)
                 .columns(createColumnDescriptors(compiled))
                 .validateDuplicateColumnNames();
@@ -386,9 +385,9 @@ public class SQLTemplateAction implements SQLAction {
     /**
      * Binds parameters to the PreparedStatement.
      */
-    protected void bind(PreparedStatement preparedStatement, ParameterBinding[] bindings) throws Exception {
+    protected void bind(PreparedStatement preparedStatement, PSParameter[] bindings) throws Exception {
         // bind parameters
-        for (ParameterBinding binding : bindings) {
+        for (PSParameter binding : bindings) {
             dataNode.getAdapter().bindParameter(preparedStatement, binding);
         }
 

@@ -22,7 +22,7 @@ import java.sql.ResultSet;
 
 import org.apache.cayenne.CayenneRuntimeException;
 import org.apache.cayenne.DataRow;
-import org.apache.cayenne.access.jdbc.ColumnDescriptor;
+import org.apache.cayenne.access.jdbc.RSColumn;
 import org.apache.cayenne.query.QueryMetadata;
 import org.apache.cayenne.util.Util;
 
@@ -33,7 +33,7 @@ class FullRowReader extends BaseRowReader<DataRow> {
 
     int mapCapacity;
 
-    FullRowReader(ColumnDescriptor[] columns, QueryMetadata queryMetadata) {
+    FullRowReader(RSColumn[] columns, QueryMetadata queryMetadata) {
         super(columns, queryMetadata);
         this.mapCapacity = (int) Math.ceil(columns.length / 0.75);
     }

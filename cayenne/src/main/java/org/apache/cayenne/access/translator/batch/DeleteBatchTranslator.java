@@ -19,9 +19,10 @@
 
 package org.apache.cayenne.access.translator.batch;
 
+import org.apache.cayenne.access.jdbc.PSBatchParameter;
 import org.apache.cayenne.access.sqlbuilder.DeleteBuilder;
 import org.apache.cayenne.access.sqlbuilder.SQLBuilder;
-import org.apache.cayenne.access.translator.ParameterBinding;
+import org.apache.cayenne.access.jdbc.PSParameter;
 import org.apache.cayenne.access.types.ExtendedType;
 import org.apache.cayenne.map.DbAttribute;
 import org.apache.cayenne.query.BatchQueryRow;
@@ -46,13 +47,13 @@ public class DeleteBatchTranslator extends BaseBatchTranslator<DeleteBatchQuery>
     }
 
     @Override
-    protected ParameterBinding[] updateBindings(
+    protected PSParameter[] updateBindings(
             BatchTranslatorContext<DeleteBatchQuery> context,
-            BatchParameterBinding[] template,
+            PSBatchParameter[] template,
             BatchQueryRow row) {
 
         DeleteBatchQuery deleteBatch = context.getQuery();
-        ParameterBinding[] bindings = new ParameterBinding[template.length];
+        PSParameter[] bindings = new PSParameter[template.length];
         for (int i = 0, position = 0; i < deleteBatch.getDbAttributes().size(); i++) {
             position = updateBinding(context, template, bindings, row.getValue(i), position);
         }
@@ -61,8 +62,8 @@ public class DeleteBatchTranslator extends BaseBatchTranslator<DeleteBatchQuery>
 
     protected int updateBinding(
             BatchTranslatorContext<DeleteBatchQuery> context,
-            BatchParameterBinding[] template,
-            ParameterBinding[] bindings,
+            PSBatchParameter[] template,
+            PSParameter[] bindings,
             Object value, int position) {
 
         // skip null attributes... they are translated as "IS NULL"

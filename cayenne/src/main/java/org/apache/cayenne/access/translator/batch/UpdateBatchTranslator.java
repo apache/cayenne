@@ -19,9 +19,10 @@
 
 package org.apache.cayenne.access.translator.batch;
 
+import org.apache.cayenne.access.jdbc.PSBatchParameter;
 import org.apache.cayenne.access.sqlbuilder.SQLBuilder;
 import org.apache.cayenne.access.sqlbuilder.UpdateBuilder;
-import org.apache.cayenne.access.translator.ParameterBinding;
+import org.apache.cayenne.access.jdbc.PSParameter;
 import org.apache.cayenne.access.types.ExtendedType;
 import org.apache.cayenne.map.DbAttribute;
 import org.apache.cayenne.query.BatchQueryRow;
@@ -54,10 +55,10 @@ public class UpdateBatchTranslator extends BaseBatchTranslator<UpdateBatchQuery>
     }
 
     @Override
-    protected ParameterBinding[] updateBindings(BatchTranslatorContext<UpdateBatchQuery> context,
-                                                BatchParameterBinding[] template, BatchQueryRow row) {
+    protected PSParameter[] updateBindings(BatchTranslatorContext<UpdateBatchQuery> context,
+                                           PSBatchParameter[] template, BatchQueryRow row) {
         UpdateBatchQuery updateBatch = context.getQuery();
-        ParameterBinding[] bindings = new ParameterBinding[template.length];
+        PSParameter[] bindings = new PSParameter[template.length];
 
         int i = 0;
         int j = 0;

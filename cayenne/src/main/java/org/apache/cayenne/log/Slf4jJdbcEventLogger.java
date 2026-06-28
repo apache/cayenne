@@ -19,7 +19,7 @@
 package org.apache.cayenne.log;
 
 import org.apache.cayenne.CayenneRuntimeException;
-import org.apache.cayenne.access.translator.ParameterBinding;
+import org.apache.cayenne.access.jdbc.PSParameter;
 import org.apache.cayenne.configuration.Constants;
 import org.apache.cayenne.configuration.RuntimeProperties;
 import org.apache.cayenne.di.Inject;
@@ -63,7 +63,7 @@ public class Slf4jJdbcEventLogger implements JdbcEventLogger {
 	}
 
 	@Override
-	public void logQuery(String sql, ParameterBinding[] bindings) {
+	public void logQuery(String sql, PSParameter[] bindings) {
 		if (isLoggable()) {
 
 			StringBuilder buffer = new StringBuilder(sql).append(" ");
@@ -76,7 +76,7 @@ public class Slf4jJdbcEventLogger implements JdbcEventLogger {
 	}
 
 	@Override
-	public void logQueryParameters(String label, ParameterBinding[] bindings) {
+	public void logQueryParameters(String label, PSParameter[] bindings) {
 
 		if (isLoggable() && bindings.length > 0) {
 
@@ -90,7 +90,7 @@ public class Slf4jJdbcEventLogger implements JdbcEventLogger {
 	}
 
 	@SuppressWarnings("unchecked")
-	protected void appendParameters(StringBuilder buffer, String label, ParameterBinding[] bindings) {
+	protected void appendParameters(StringBuilder buffer, String label, PSParameter[] bindings) {
 
 		int len = bindings.length;
 		if (len > 0) {
@@ -98,7 +98,7 @@ public class Slf4jJdbcEventLogger implements JdbcEventLogger {
 			boolean hasIncluded = false;
 
 			for (int i = 0, j = 1; i < len; i++) {
-				ParameterBinding b = bindings[i];
+				PSParameter b = bindings[i];
 
 				if (hasIncluded) {
 					buffer.append(", ");

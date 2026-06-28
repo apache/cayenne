@@ -26,7 +26,6 @@ import org.apache.cayenne.access.DataNode;
 import org.apache.cayenne.access.OperationObserver;
 import org.apache.cayenne.access.OptimisticLockException;
 import org.apache.cayenne.access.jdbc.reader.RowReader;
-import org.apache.cayenne.access.translator.ParameterBinding;
 import org.apache.cayenne.access.types.ExtendedType;
 import org.apache.cayenne.access.translator.batch.TranslatedBatch;
 import org.apache.cayenne.dba.DbAdapter;
@@ -58,7 +57,7 @@ public class BatchAction extends BaseSQLAction {
 
 	protected boolean runningAsBatch;
 	protected BatchQuery query;
-	protected ColumnDescriptor[] keyColumns;
+	protected RSColumn[] keyColumns;
 
 	/**
 	 * @since 4.0
@@ -127,9 +126,9 @@ public class BatchAction extends BaseSQLAction {
 		try (PreparedStatement statement = prepareStatement(con, sql, adapter, generatesKeys)) {
 			for (BatchQueryRow row : query.getRows()) {
 
-				ParameterBinding[] bindings = translated.updateBindings(row);
+				PSParameter<?>[] bindings = translated.updateBindings(row);
 				logger.logQueryParameters("batch bind", bindings);
-				for (ParameterBinding b : bindings) {
+				for (PSParameter<?> b : bindings) {
 					adapter.bindParameter(statement, b);
 				}
 
@@ -188,10 +187,10 @@ public class BatchAction extends BaseSQLAction {
 		try (PreparedStatement statement = prepareStatement(connection, queryStr, adapter, generatesKeys)) {
 			for (BatchQueryRow row : query.getRows()) {
 
-				ParameterBinding[] bindings = translated.updateBindings(row);
+				PSParameter<?>[] bindings = translated.updateBindings(row);
 				logger.logQueryParameters("bind", bindings);
 
-				for (ParameterBinding b : bindings) {
+				for (PSParameter<?> b : bindings) {
 					adapter.bindParameter(statement, b);
 				}
 
@@ -268,7 +267,7 @@ public class BatchAction extends BaseSQLAction {
 		// (this way we can support multiple columns..
 		// although need to check how well this works with most common drivers)
 
-		ColumnDescriptor.RowBuilder rowBuilder = ColumnDescriptor.rowBuilder();
+		RSColumn.RowBuilder rowBuilder = RSColumn.rowBuilder();
 
 		if (this.keyColumns == null) {
 			// attempt to figure out the right descriptor from the mapping...
@@ -286,7 +285,7 @@ public class BatchAction extends BaseSQLAction {
 					}
 				}
 				ExtendedType type = dataNode.getAdapter().getExtendedTypes().getRegisteredType(typeForGeneratedPK(key));
-				rowBuilder.columns(new ColumnDescriptor(columnName, columnName, key.getType(), type, null));
+				rowBuilder.columns(new RSColumn(columnName, columnName, key.getType(), type, null));
 			} else {
 				rowBuilder.resultSet(keysRS);
 			}
@@ -296,7 +295,7 @@ public class BatchAction extends BaseSQLAction {
 
 		RowReader<?> rowReader = dataNode.getRowReaderFactory()
 				.rowReader(keyColumns, query.getMetaData(dataNode.getEntityResolver()), dataNode.getAdapter());
-		ResultIterator iterator = new JDBCResultIterator(null, keysRS, rowReader);
+		ResultIterator iterator = new RSIterator(null, keysRS, rowReader);
 
 		List<ObjectId> objectIds = new ArrayList<>(rows.size());
 		for(BatchQueryRow row : rows) {

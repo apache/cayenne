@@ -19,9 +19,10 @@
 
 package org.apache.cayenne.access.translator.batch;
 
+import org.apache.cayenne.access.jdbc.PSBatchParameter;
 import org.apache.cayenne.access.sqlbuilder.SQLBuilder;
 import org.apache.cayenne.access.sqlbuilder.UpdateBuilder;
-import org.apache.cayenne.access.translator.ParameterBinding;
+import org.apache.cayenne.access.jdbc.PSParameter;
 import org.apache.cayenne.access.types.ExtendedType;
 import org.apache.cayenne.dba.TypesMapping;
 import org.apache.cayenne.map.DbAttribute;
@@ -76,14 +77,14 @@ public class SoftDeleteBatchTranslator extends DeleteBatchTranslator {
     }
 
     @Override
-    protected ParameterBinding[] updateBindings(BatchTranslatorContext<DeleteBatchQuery> context,
-                                                BatchParameterBinding[] template, BatchQueryRow row) {
+    protected PSParameter[] updateBindings(BatchTranslatorContext<DeleteBatchQuery> context,
+                                           PSBatchParameter[] template, BatchQueryRow row) {
         DeleteBatchQuery deleteBatch = context.getQuery();
         if (isHardDelete(deleteBatch)) {
             return super.updateBindings(context, template, row);
         }
 
-        ParameterBinding[] bindings = new ParameterBinding[template.length];
+        PSParameter[] bindings = new PSParameter[template.length];
 
         // the 'deleted' flag is the first binding and stays constant across all rows of the batch
         DbAttribute deleteAttribute = deleteBatch.getDbEntity().getAttribute(deletedFieldName);

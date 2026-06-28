@@ -21,7 +21,7 @@ package org.apache.cayenne.access.jdbc.reader;
 import java.util.List;
 
 import org.apache.cayenne.CayenneRuntimeException;
-import org.apache.cayenne.access.jdbc.ColumnDescriptor;
+import org.apache.cayenne.access.jdbc.RSColumn;
 import org.apache.cayenne.dba.DbAdapter;
 import org.apache.cayenne.query.EmbeddableResultSegment;
 import org.apache.cayenne.query.EntityResultSegment;
@@ -34,7 +34,7 @@ import org.apache.cayenne.query.ScalarResultSegment;
 public class DefaultRowReaderFactory implements RowReaderFactory {
 
 	@Override
-	public RowReader<?> rowReader(ColumnDescriptor[] columns, QueryMetadata queryMetadata, DbAdapter adapter) {
+	public RowReader<?> rowReader(RSColumn[] columns, QueryMetadata queryMetadata, DbAdapter adapter) {
 
 		List<Object> rsMapping = queryMetadata.getResultSetMapping();
 		if (rsMapping == null) {
@@ -77,16 +77,16 @@ public class DefaultRowReaderFactory implements RowReaderFactory {
 		}
 	}
 
-	private RowReader<?> createEmbeddableRowReader(ColumnDescriptor[] columns, QueryMetadata queryMetadata, EmbeddableResultSegment segment) {
+	private RowReader<?> createEmbeddableRowReader(RSColumn[] columns, QueryMetadata queryMetadata, EmbeddableResultSegment segment) {
 		return new EmbeddableRowReader(columns, queryMetadata, segment);
 	}
 
-	protected RowReader<?> createScalarRowReader(ColumnDescriptor[] columns, QueryMetadata queryMetadata, ScalarResultSegment segment) {
+	protected RowReader<?> createScalarRowReader(RSColumn[] columns, QueryMetadata queryMetadata, ScalarResultSegment segment) {
 		return new ScalarRowReader<>(columns, segment);
 	}
 
-	protected RowReader<?> createEntityRowReader(ColumnDescriptor[] columns, QueryMetadata queryMetadata,
-			EntityResultSegment resultMetadata) {
+	protected RowReader<?> createEntityRowReader(RSColumn[] columns, QueryMetadata queryMetadata,
+                                                 EntityResultSegment resultMetadata) {
 
 		if (queryMetadata.getPageSize() > 0) {
 			return new IdRowReader<>(columns, queryMetadata, resultMetadata);
@@ -97,7 +97,7 @@ public class DefaultRowReaderFactory implements RowReaderFactory {
 		}
 	}
 
-	protected RowReader<?> createFullRowReader(ColumnDescriptor[] columns, QueryMetadata queryMetadata) {
+	protected RowReader<?> createFullRowReader(RSColumn[] columns, QueryMetadata queryMetadata) {
 
 		if (queryMetadata.getPageSize() > 0) {
 			return new IdRowReader<>(columns, queryMetadata, null);

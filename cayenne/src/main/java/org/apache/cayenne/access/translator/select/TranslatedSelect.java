@@ -19,8 +19,8 @@
 
 package org.apache.cayenne.access.translator.select;
 
-import org.apache.cayenne.access.jdbc.ColumnDescriptor;
-import org.apache.cayenne.access.translator.ParameterBinding;
+import org.apache.cayenne.access.jdbc.RSColumn;
+import org.apache.cayenne.access.jdbc.PSParameter;
 
 /**
  * An immutable result of translating a {@link org.apache.cayenne.query.Select} query to SQL,
@@ -30,8 +30,8 @@ import org.apache.cayenne.access.translator.ParameterBinding;
  */
 public record TranslatedSelect(
         String sql,
-        ColumnDescriptor[] resultColumns,
-        ParameterBinding[] bindings,
+        RSColumn[] resultColumns,
+        PSParameter[] bindings,
         boolean suppressingDistinct,
         boolean hasJoins) {
 }

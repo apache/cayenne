@@ -19,7 +19,7 @@
 
 package org.apache.cayenne.access.translator.select;
 
-import org.apache.cayenne.access.jdbc.ColumnDescriptor;
+import org.apache.cayenne.access.jdbc.RSColumn;
 import org.apache.cayenne.exp.ExpressionException;
 import org.apache.cayenne.exp.ExpressionFactory;
 import org.apache.cayenne.map.DbAttribute;
@@ -719,8 +719,8 @@ public class DbAdapterDelegatedSelectTranslatorIT {
 
 		tr.sql();
 
-		List<ColumnDescriptor> columns = Arrays.asList(tr.resultColumns());
-		columns.sort(Comparator.comparing(ColumnDescriptor::name));
+		List<RSColumn> columns = Arrays.asList(tr.resultColumns());
+		columns.sort(Comparator.comparing(RSColumn::name));
 
 		DbEntity entity = env.context().getEntityResolver().getDbEntity("PAINTING");
 		List<DbAttribute> attributes = new ArrayList<>(entity.getAttributes());
@@ -731,7 +731,7 @@ public class DbAdapterDelegatedSelectTranslatorIT {
 
 		for(int i=0; i<attributes.size(); i++) {
 			DbAttribute attribute = attributes.get(i);
-			ColumnDescriptor descriptor = columns.get(i);
+			RSColumn descriptor = columns.get(i);
 			assertEquals(attribute, descriptor.attribute());
 			assertEquals(attribute.getName(), descriptor.name());
 			assertEquals(attribute.getName(), descriptor.dataRowKey());
@@ -749,8 +749,8 @@ public class DbAdapterDelegatedSelectTranslatorIT {
 
 		tr.sql();
 
-		List<ColumnDescriptor> columns = Arrays.asList(tr.resultColumns());
-		columns.sort(Comparator.comparing(ColumnDescriptor::name));
+		List<RSColumn> columns = Arrays.asList(tr.resultColumns());
+		columns.sort(Comparator.comparing(RSColumn::name));
 
 		DbEntity rootEntity = env.context().getEntityResolver().getDbEntity("PAINTING");
 		List<DbAttribute> attributes = new ArrayList<>(rootEntity.getAttributes());
@@ -760,7 +760,7 @@ public class DbAdapterDelegatedSelectTranslatorIT {
 
 		for(int i=0; i<attributes.size(); i++) {
 			DbAttribute attribute = attributes.get(i);
-			ColumnDescriptor descriptor = columns.get(i);
+			RSColumn descriptor = columns.get(i);
 			assertEquals(attribute, descriptor.attribute());
 			assertEquals(attribute.getName(), descriptor.name());
 			if("ARTIST".equals(attribute.getEntity().getName())) {

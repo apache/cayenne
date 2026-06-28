@@ -28,7 +28,7 @@ import java.util.Map;
 import org.apache.cayenne.GenericPersistentObject;
 import org.apache.cayenne.ObjectId;
 import org.apache.cayenne.Persistent;
-import org.apache.cayenne.access.translator.ParameterBinding;
+import org.apache.cayenne.access.jdbc.PSParameter;
 import org.apache.cayenne.access.types.ExtendedTypeMap;
 import org.apache.cayenne.dba.DbAdapter;
 import org.junit.jupiter.api.BeforeEach;
@@ -235,13 +235,13 @@ public class DefaultSQLTemplateTranslatorTest {
     }
 
     private void assertBindingValue(Object expectedValue, Object binding) {
-        assertTrue(binding instanceof ParameterBinding, "Not a binding!");
-        assertEquals(expectedValue, ((ParameterBinding) binding).value());
+        assertTrue(binding instanceof PSParameter, "Not a binding!");
+        assertEquals(expectedValue, ((PSParameter) binding).value());
     }
 
     private void assertBindingType(Integer expectedType, Object binding) {
-        assertTrue(binding instanceof ParameterBinding, "Not a binding!");
-        assertEquals(expectedType, ((ParameterBinding) binding).jdbcType());
+        assertTrue(binding instanceof PSParameter, "Not a binding!");
+        assertEquals(expectedType, ((PSParameter) binding).jdbcType());
     }
 
 }

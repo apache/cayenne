@@ -23,7 +23,7 @@ import org.apache.cayenne.dba.NativeColumnType;
 import org.apache.cayenne.CayenneRuntimeException;
 import org.apache.cayenne.access.DataNode;
 import org.apache.cayenne.access.sqlbuilder.sqltree.SQLTreeProcessor;
-import org.apache.cayenne.access.translator.ParameterBinding;
+import org.apache.cayenne.access.jdbc.PSParameter;
 import org.apache.cayenne.access.translator.ejbql.EJBQLTranslator;
 import org.apache.cayenne.access.types.ByteArrayType;
 import org.apache.cayenne.access.types.ByteType;
@@ -138,18 +138,18 @@ public class SQLServerAdapter extends JdbcAdapter {
     }
 
     @Override
-    public void bindParameter(PreparedStatement statement, ParameterBinding binding) throws Exception {
+    public void bindParameter(PreparedStatement statement, PSParameter<?> parameter) throws Exception {
 
         // SQL Server driver doesn't like CLOBs and BLOBs as parameters
-        if (binding.value() == null) {
-            int jdbcType = switch (binding.jdbcType()) {
+        if (parameter.value() == null) {
+            int jdbcType = switch (parameter.jdbcType()) {
                 case Types.CLOB, 0 -> Types.VARCHAR;
                 case Types.BLOB -> Types.VARBINARY;
-                default -> binding.jdbcType();
+                default -> parameter.jdbcType();
             };
-            statement.setNull(binding.statementPosition(), jdbcType);
+            statement.setNull(parameter.statementPosition(), jdbcType);
         } else {
-            super.bindParameter(statement, binding);
+            super.bindParameter(statement, parameter);
         }
     }
 

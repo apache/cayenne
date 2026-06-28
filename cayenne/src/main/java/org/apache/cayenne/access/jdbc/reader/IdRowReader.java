@@ -22,7 +22,7 @@ import java.sql.ResultSet;
 
 import org.apache.cayenne.CayenneRuntimeException;
 import org.apache.cayenne.DataRow;
-import org.apache.cayenne.access.jdbc.ColumnDescriptor;
+import org.apache.cayenne.access.jdbc.RSColumn;
 import org.apache.cayenne.map.DbAttribute;
 import org.apache.cayenne.map.DbEntity;
 import org.apache.cayenne.query.EntityResultSegment;
@@ -36,7 +36,7 @@ class IdRowReader<T> extends BaseRowReader<T> {
 
     protected int[] pkIndices;
 
-    public IdRowReader(ColumnDescriptor[] columns, QueryMetadata queryMetadata, EntityResultSegment resultMetadata) {
+    public IdRowReader(RSColumn[] columns, QueryMetadata queryMetadata, EntityResultSegment resultMetadata) {
         super(columns, queryMetadata);
 
         DbEntity dbEntity = resultMetadata == null

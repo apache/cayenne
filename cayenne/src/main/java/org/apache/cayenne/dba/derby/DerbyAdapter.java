@@ -19,10 +19,9 @@
 
 package org.apache.cayenne.dba.derby;
 
-import org.apache.cayenne.dba.NativeColumnType;
 import org.apache.cayenne.access.DataNode;
+import org.apache.cayenne.access.jdbc.PSParameter;
 import org.apache.cayenne.access.sqlbuilder.sqltree.SQLTreeProcessor;
-import org.apache.cayenne.access.translator.ParameterBinding;
 import org.apache.cayenne.access.translator.ejbql.EJBQLTranslator;
 import org.apache.cayenne.access.translator.ejbql.JdbcEJBQLTranslator;
 import org.apache.cayenne.access.types.ByteType;
@@ -35,15 +34,15 @@ import org.apache.cayenne.access.types.ShortType;
 import org.apache.cayenne.access.types.ValueObjectTypeRegistry;
 import org.apache.cayenne.configuration.Constants;
 import org.apache.cayenne.configuration.RuntimeProperties;
-import org.apache.cayenne.dba.QuotingStrategy;
 import org.apache.cayenne.dba.JdbcAdapter;
+import org.apache.cayenne.dba.NativeColumnType;
+import org.apache.cayenne.dba.QuotingStrategy;
 import org.apache.cayenne.di.Inject;
 import org.apache.cayenne.map.DbAttribute;
 import org.apache.cayenne.query.Query;
 import org.apache.cayenne.query.SQLAction;
 
 import java.sql.PreparedStatement;
-import java.sql.SQLException;
 import java.sql.Types;
 import java.util.List;
 
@@ -215,14 +214,12 @@ public class DerbyAdapter extends JdbcAdapter {
     }
 
     @Override
-    public void bindParameter(
-            PreparedStatement statement,
-            ParameterBinding binding) throws SQLException, Exception {
+    public void bindParameter(PreparedStatement statement, PSParameter<?> parameter) throws Exception {
 
-        if (binding.value() == null && binding.jdbcType() == 0) {
-            statement.setNull(binding.statementPosition(), Types.VARCHAR);
+        if (parameter.value() == null && parameter.jdbcType() == 0) {
+            statement.setNull(parameter.statementPosition(), Types.VARCHAR);
         } else {
-            super.bindParameter(statement, binding);
+            super.bindParameter(statement, parameter);
         }
     }
 

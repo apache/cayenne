@@ -21,7 +21,7 @@ package org.apache.cayenne.dba.db2;
 import org.apache.cayenne.access.DataNode;
 import org.apache.cayenne.access.OperationObserver;
 import org.apache.cayenne.access.jdbc.ProcedureAction;
-import org.apache.cayenne.access.jdbc.ColumnDescriptor;
+import org.apache.cayenne.access.jdbc.RSColumn;
 import org.apache.cayenne.access.translator.procedure.TranslatedProcedure;
 import org.apache.cayenne.query.ProcedureQuery;
 
@@ -64,7 +64,7 @@ class DB2ProcedureAction extends ProcedureAction {
 				if (hasResultSet) {
 
 					try (ResultSet rs = statement.getResultSet();) {
-						ColumnDescriptor[] columns = describeResultSet(rs, processedResultSets++);
+						RSColumn[] columns = describeResultSet(rs, processedResultSets++);
 						readResultSet(rs, columns, query, observer);
 					}
 				} else {

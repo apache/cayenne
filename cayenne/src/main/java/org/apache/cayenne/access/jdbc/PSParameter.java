@@ -16,25 +16,21 @@
  *  specific language governing permissions and limitations
  *  under the License.
  ****************************************************************/
+package org.apache.cayenne.access.jdbc;
 
-package org.apache.cayenne.access.translator.batch;
-
-import org.apache.cayenne.access.translator.ParameterBinding;
 import org.apache.cayenne.access.types.ExtendedType;
 import org.apache.cayenne.map.DbAttribute;
 
 /**
- * An immutable per-batch parameter binding template, carrying only the static column metadata shared by all
- * rows of a batch. A per-row {@link ParameterBinding} is produced by {@link #bind(int, Object, ExtendedType)}.
+ * Describes a single immutable PreparedStatement parameter binding.
  *
  * @since 5.0
  */
-public record BatchParameterBinding(int jdbcType, int scale, DbAttribute attribute) {
-
-    /**
-     * Resolves this per-batch template into a per-row {@link ParameterBinding}.
-     */
-    public <T> ParameterBinding<T> bind(int statementPosition, T value, ExtendedType<T> extendedType) {
-        return new ParameterBinding<>(jdbcType, scale, attribute, statementPosition, value, extendedType);
-    }
+public record PSParameter<T>(
+        int jdbcType,
+        int scale,
+        DbAttribute attribute,
+        int statementPosition,
+        T value,
+        ExtendedType<T> extendedType) {
 }

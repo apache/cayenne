@@ -24,7 +24,7 @@ import org.apache.cayenne.ObjectId;
 import org.apache.cayenne.Persistent;
 import org.apache.cayenne.access.sqlbuilder.SQLAppendable;
 import org.apache.cayenne.access.sqlbuilder.SQLGenerationContext;
-import org.apache.cayenne.access.translator.ParameterBinding;
+import org.apache.cayenne.access.jdbc.PSParameter;
 import org.apache.cayenne.access.types.ExtendedType;
 import org.apache.cayenne.dba.TypesMapping;
 import org.apache.cayenne.map.DbAttribute;
@@ -134,10 +134,10 @@ public class ValueNode extends Node {
         // 'attribute' is only a type hint and may be absent (e.g. function arguments and other
         // literals not bound to a column); fall back to deriving the JDBC type from the value
         int statementPosition = context.getBindings().size() + 1;
-        ParameterBinding binding = (attribute != null)
-                ? new ParameterBinding(context.getAdapter().preferredBindingType(attribute.getType()),
+        PSParameter binding = (attribute != null)
+                ? new PSParameter(context.getAdapter().preferredBindingType(attribute.getType()),
                         attribute.getScale(), attribute, statementPosition, value, extendedType)
-                : new ParameterBinding(context.getAdapter().preferredBindingType(TypesMapping.getSqlTypeByJava(value.getClass())),
+                : new PSParameter(context.getAdapter().preferredBindingType(TypesMapping.getSqlTypeByJava(value.getClass())),
                         -1, null, statementPosition, value, extendedType);
 
         context.getBindings().add(binding);

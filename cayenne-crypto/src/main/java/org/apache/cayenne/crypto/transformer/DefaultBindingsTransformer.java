@@ -18,7 +18,7 @@
  ****************************************************************/
 package org.apache.cayenne.crypto.transformer;
 
-import org.apache.cayenne.access.translator.ParameterBinding;
+import org.apache.cayenne.access.jdbc.PSParameter;
 import org.apache.cayenne.access.types.ExtendedType;
 import org.apache.cayenne.access.types.ExtendedTypeMap;
 import org.apache.cayenne.crypto.transformer.bytes.BytesEncryptor;
@@ -29,15 +29,16 @@ import org.apache.cayenne.crypto.transformer.value.ValueEncryptor;
  */
 public class DefaultBindingsTransformer implements BindingsTransformer {
 
-    private int[] positions;
-    private ValueEncryptor[] transformers;
-    private BytesEncryptor encryptor;
-    private ExtendedTypeMap extendedTypeMap;
+    private final int[] positions;
+    private final ValueEncryptor[] transformers;
+    private final BytesEncryptor encryptor;
+    private final ExtendedTypeMap extendedTypeMap;
 
-    public DefaultBindingsTransformer(int[] positions,
-                                      ValueEncryptor[] transformers,
-                                      BytesEncryptor encryptor,
-                                      ExtendedTypeMap extendedTypeMap) {
+    public DefaultBindingsTransformer(
+            int[] positions,
+            ValueEncryptor[] transformers,
+            BytesEncryptor encryptor,
+            ExtendedTypeMap extendedTypeMap) {
         this.positions = positions;
         this.transformers = transformers;
         this.encryptor = encryptor;
@@ -45,19 +46,19 @@ public class DefaultBindingsTransformer implements BindingsTransformer {
     }
 
     @Override
-    public void transform(ParameterBinding[] bindings) {
+    public void transform(PSParameter<?>[] bindings) {
 
         int len = positions.length;
 
         for (int i = 0; i < len; i++) {
-            ParameterBinding b = bindings[positions[i]];
+            PSParameter<?> b = bindings[positions[i]];
             Object transformed = transformers[i].encrypt(encryptor, b.value());
 
-            ExtendedType extendedType = transformed != null
+            ExtendedType<?> extendedType = transformed != null
                     ? extendedTypeMap.getRegisteredType(transformed.getClass())
                     : extendedTypeMap.getDefaultType();
 
-            bindings[positions[i]] = new ParameterBinding(b.jdbcType(), b.scale(), b.attribute(),
+            bindings[positions[i]] = new PSParameter(b.jdbcType(), b.scale(), b.attribute(),
                     b.statementPosition(), transformed, extendedType);
         }
     }

@@ -25,8 +25,8 @@ import java.util.List;
 import java.util.Map;
 
 import org.apache.cayenne.CayenneRuntimeException;
-import org.apache.cayenne.access.jdbc.ColumnDescriptor;
-import org.apache.cayenne.access.translator.ParameterBinding;
+import org.apache.cayenne.access.jdbc.RSColumn;
+import org.apache.cayenne.access.jdbc.PSParameter;
 import org.apache.cayenne.access.translator.sqltemplate.directive.Directive;
 import org.apache.cayenne.access.types.ExtendedType;
 import org.apache.cayenne.dba.DbAdapter;
@@ -42,8 +42,8 @@ public class Context {
     private final Map<String, Directive> directives;
     private final DbAdapter adapter;
 
-    private List<ParameterBinding> parameterBindings;
-    private List<ColumnDescriptor> columnDescriptors;
+    private List<PSParameter> parameterBindings;
+    private List<RSColumn> columnDescriptors;
     private int counter;
 
     public Context(Map<String, Directive> directives, Map<String, ?> parameters, boolean positionalMode,
@@ -128,7 +128,7 @@ public class Context {
         }
         // a binding's statement position is its 1-based ordinal among the bound parameters; the
         // ExtendedType is resolved from the value via the adapter
-        parameterBindings.add(new ParameterBinding(jdbcType, scale, null,
+        parameterBindings.add(new PSParameter(jdbcType, scale, null,
                 parameterBindings.size() + 1, value, extendedType(value)));
     }
 
@@ -138,24 +138,24 @@ public class Context {
                 : adapter.getExtendedTypes().getDefaultType();
     }
 
-    public void addColumnDescriptor(ColumnDescriptor descriptor) {
+    public void addColumnDescriptor(RSColumn descriptor) {
         if(columnDescriptors == null) {
             columnDescriptors = new ArrayList<>();
         }
         columnDescriptors.add(descriptor);
     }
 
-    public ColumnDescriptor[] getColumnDescriptors() {
+    public RSColumn[] getColumnDescriptors() {
         if(columnDescriptors == null) {
-            return new ColumnDescriptor[0];
+            return new RSColumn[0];
         }
-        return columnDescriptors.toArray(new ColumnDescriptor[columnDescriptors.size()]);
+        return columnDescriptors.toArray(new RSColumn[columnDescriptors.size()]);
     }
 
-    public ParameterBinding[] getParameterBindings() {
+    public PSParameter[] getParameterBindings() {
         if(parameterBindings == null) {
-            return new ParameterBinding[0];
+            return new PSParameter[0];
         }
-        return parameterBindings.toArray(new ParameterBinding[parameterBindings.size()]);
+        return parameterBindings.toArray(new PSParameter[parameterBindings.size()]);
     }
 }

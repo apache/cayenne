@@ -23,7 +23,6 @@ import org.apache.cayenne.CayenneRuntimeException;
 import org.apache.cayenne.DataRow;
 import org.apache.cayenne.access.DataNode;
 import org.apache.cayenne.access.OperationObserver;
-import org.apache.cayenne.access.translator.ParameterBinding;
 import org.apache.cayenne.access.translator.procedure.TranslatedProcedure;
 import org.apache.cayenne.access.types.ExtendedType;
 import org.apache.cayenne.access.types.ExtendedTypeMap;
@@ -107,7 +106,7 @@ public class ProcedureAction extends BaseSQLAction {
 				if (statement.getMoreResults()) {
 
 					try (ResultSet rs = statement.getResultSet()) {
-						ColumnDescriptor[] columns = describeResultSet(rs, processedResultSets++);
+						RSColumn[] columns = describeResultSet(rs, processedResultSets++);
 						readResultSet(rs, columns, query, observer);
 					}
 				} else {
@@ -131,7 +130,7 @@ public class ProcedureAction extends BaseSQLAction {
 	protected void bindParameters(CallableStatement statement, TranslatedProcedure translated) throws Exception {
 		DbAdapter adapter = dataNode.getAdapter();
 		ProcedureParameter[] callParams = translated.callParams();
-		ParameterBinding[] bindings = translated.bindings();
+		PSParameter[] bindings = translated.bindings();
 
 		for (int i = 0; i < callParams.length; i++) {
 			ProcedureParameter param = callParams[i];
@@ -159,13 +158,13 @@ public class ProcedureAction extends BaseSQLAction {
 	 * @param setIndex
 	 *            a zero-based index of the ResultSet in the query results.
 	 */
-	protected ColumnDescriptor[] describeResultSet(ResultSet resultSet, int setIndex) throws SQLException {
+	protected RSColumn[] describeResultSet(ResultSet resultSet, int setIndex) throws SQLException {
 
 		if (setIndex < 0) {
 			throw new IllegalArgumentException("Expected a non-negative result set index. Got: " + setIndex);
 		}
 
-		ColumnDescriptor.RowBuilder builder = ColumnDescriptor.rowBuilder();
+		RSColumn.RowBuilder builder = RSColumn.rowBuilder();
 
 		List<ProcedureColumn[]> descriptors = query.getResultDescriptors();
 
@@ -195,12 +194,12 @@ public class ProcedureAction extends BaseSQLAction {
 		return builder.build(dataNode.getAdapter().getExtendedTypes());
 	}
 
-	private static ColumnDescriptor[] toColumnDescriptors(ProcedureColumn[] columns, ExtendedTypeMap typeMap) {
-		ColumnDescriptor[] result = new ColumnDescriptor[columns.length];
+	private static RSColumn[] toColumnDescriptors(ProcedureColumn[] columns, ExtendedTypeMap typeMap) {
+		RSColumn[] result = new RSColumn[columns.length];
 		for (int i = 0; i < columns.length; i++) {
 			ProcedureColumn c = columns[i];
 			ExtendedType type = typeMap.getRegisteredType(c.javaClass());
-			result[i] = new ColumnDescriptor(c.name(), c.dataRowKey(), c.jdbcType(), type, null);
+			result[i] = new RSColumn(c.name(), c.dataRowKey(), c.jdbcType(), type, null);
 		}
 		return result;
 	}

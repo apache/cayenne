@@ -19,7 +19,7 @@
 
 package org.apache.cayenne.access.translator.select;
 
-import org.apache.cayenne.access.jdbc.ColumnDescriptor;
+import org.apache.cayenne.access.jdbc.RSColumn;
 import org.apache.cayenne.access.sqlbuilder.sqltree.EmptyNode;
 import org.apache.cayenne.exp.path.CayennePath;
 import org.apache.cayenne.exp.property.PropertyFactory;
@@ -47,7 +47,7 @@ public class ColumnDescriptorStageTest {
         stage.perform(context);
 
         assertEquals(1, context.getColumnDescriptors().size());
-        ColumnDescriptor descriptor = context.getColumnDescriptors().iterator().next();
+        RSColumn descriptor = context.getColumnDescriptors().iterator().next();
         assertEquals("key", descriptor.dataRowKey());
     }
 }

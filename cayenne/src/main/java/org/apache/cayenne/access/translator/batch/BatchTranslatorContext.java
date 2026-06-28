@@ -20,7 +20,7 @@
 package org.apache.cayenne.access.translator.batch;
 
 import org.apache.cayenne.access.sqlbuilder.SQLGenerationContext;
-import org.apache.cayenne.access.translator.ParameterBinding;
+import org.apache.cayenne.access.jdbc.PSParameter;
 import org.apache.cayenne.dba.DbAdapter;
 import org.apache.cayenne.map.DbEntity;
 import org.apache.cayenne.query.BatchQuery;
@@ -37,7 +37,7 @@ class BatchTranslatorContext<T extends BatchQuery> implements SQLGenerationConte
 
     private final T query;
     private final DbAdapter adapter;
-    private final List<ParameterBinding> bindings;
+    private final List<PSParameter> bindings;
 
     BatchTranslatorContext(T query, DbAdapter adapter) {
         this.query = query;
@@ -51,7 +51,7 @@ class BatchTranslatorContext<T extends BatchQuery> implements SQLGenerationConte
     }
 
     @Override
-    public Collection<ParameterBinding> getBindings() {
+    public Collection<PSParameter> getBindings() {
         return bindings;
     }
 

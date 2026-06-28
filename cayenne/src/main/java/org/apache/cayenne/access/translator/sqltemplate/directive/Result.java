@@ -27,7 +27,7 @@ import java.sql.Timestamp;
 import java.util.HashMap;
 import java.util.Map;
 
-import org.apache.cayenne.access.jdbc.ColumnDescriptor;
+import org.apache.cayenne.access.jdbc.RSColumn;
 import org.apache.cayenne.access.translator.sqltemplate.Context;
 import org.apache.cayenne.access.translator.sqltemplate.parser.ASTExpression;
 import org.apache.cayenne.util.Util;
@@ -100,7 +100,7 @@ public class Result implements Directive {
             jdbcType = (int) expressions[4].evaluateAsLong(context);
         }
 
-        context.addColumnDescriptor(new ColumnDescriptor(column, label, jdbcType, context.getExtendedType(javaClass), null));
+        context.addColumnDescriptor(new RSColumn(column, label, jdbcType, context.getExtendedType(javaClass), null));
 
         context.getBuilder().append(column);
         if (!Util.isEmptyString(alias) && !alias.equals(column)) {

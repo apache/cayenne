@@ -30,7 +30,7 @@ import java.util.Collection;
 import java.util.HashMap;
 import java.util.Map;
 
-import org.apache.cayenne.access.jdbc.ColumnDescriptor;
+import org.apache.cayenne.access.jdbc.RSColumn;
 import org.apache.cayenne.access.types.ExtendedType;
 import org.apache.cayenne.dba.DbAdapter;
 import org.apache.cayenne.util.Util;
@@ -142,7 +142,7 @@ public class ResultDirective extends Directive {
 		Object jdbcTypeChild = getChild(context, node, 4);
 		int jdbcType = (jdbcTypeChild instanceof Number) ? ((Number) jdbcTypeChild).intValue() : 0;
 
-		ColumnDescriptor columnDescriptor = new ColumnDescriptor(column, label, jdbcType, extendedType, null);
+		RSColumn columnDescriptor = new RSColumn(column, label, jdbcType, extendedType, null);
 
 		writer.write(column);
 
@@ -190,14 +190,14 @@ public class ResultDirective extends Directive {
 	/**
 	 * Adds value to the list of result columns in the context.
 	 */
-	protected void bindResult(InternalContextAdapter context, ColumnDescriptor columnDescriptor) {
+	protected void bindResult(InternalContextAdapter context, RSColumn column) {
 
 		@SuppressWarnings("unchecked")
 		Collection<Object> resultColumns = (Collection<Object>) context
 				.getInternalUserContext().get(VelocitySQLTemplateTranslator.RESULT_COLUMNS_LIST_KEY);
 
 		if (resultColumns != null) {
-			resultColumns.add(columnDescriptor);
+			resultColumns.add(column);
 		}
 	}
 }

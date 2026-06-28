@@ -19,17 +19,18 @@
 
 package org.apache.cayenne.access.translator.batch;
 
-import org.apache.cayenne.access.translator.ParameterBinding;
+import org.apache.cayenne.access.jdbc.PSBatchParameter;
+import org.apache.cayenne.access.jdbc.PSParameter;
 import org.apache.cayenne.query.BatchQueryRow;
 
 /**
  * A stateless strategy that resolves a batch query's binding templates against the values of a single
- * {@link BatchQueryRow}, returning a fresh array of per-row {@link ParameterBinding}s.
+ * {@link BatchQueryRow}, returning a fresh array of per-row {@link PSParameter}s.
  *
  * @since 5.0
  */
 @FunctionalInterface
 public interface BatchRowBinder {
 
-    ParameterBinding[] bind(BatchParameterBinding[] template, BatchQueryRow row);
+    PSParameter<?>[] bind(PSBatchParameter[] template, BatchQueryRow row);
 }
