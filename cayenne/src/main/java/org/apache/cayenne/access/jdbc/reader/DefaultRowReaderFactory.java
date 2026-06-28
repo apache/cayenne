@@ -20,7 +20,6 @@ package org.apache.cayenne.access.jdbc.reader;
 
 import org.apache.cayenne.CayenneRuntimeException;
 import org.apache.cayenne.access.jdbc.RSColumn;
-import org.apache.cayenne.access.types.ExtendedType;
 import org.apache.cayenne.dba.DbAdapter;
 import org.apache.cayenne.map.DbAttribute;
 import org.apache.cayenne.map.DbEntity;
@@ -30,6 +29,7 @@ import org.apache.cayenne.query.EntityResultSegment;
 import org.apache.cayenne.query.QueryMetadata;
 import org.apache.cayenne.query.ScalarResultSegment;
 
+import java.util.Arrays;
 import java.util.List;
 
 /**
@@ -38,52 +38,58 @@ import java.util.List;
 public class DefaultRowReaderFactory implements RowReaderFactory {
 
     @Override
-    public RowReader<?> rowReader(RSColumn[] columns, QueryMetadata queryMetadata, DbAdapter adapter) {
+    public RowReader<?> rowReader(RSColumn[] columns, QueryMetadata metadata, DbAdapter adapter) {
 
-        List<Object> segments = queryMetadata.getResultSetMapping();
+        List<Object> segments = metadata.getResultSetMapping();
         if (segments == null || segments.isEmpty()) {
-            return createFullRowReader(columns, queryMetadata);
+            return fullRowReader(columns, metadata);
         }
 
-        if (queryMetadata.isSingleResultSetMapping()) {
-            return segmentRowReader(segments.getFirst(), columns, queryMetadata);
+        if (metadata.isSingleResultSetMapping()) {
+            return segmentRowReader(segments.getFirst(), columns, metadata);
         }
 
         int w = segments.size();
         RowReader<?>[] readers = new RowReader[w];
         for (int i = 0; i < w; i++) {
-            readers[i] = segmentRowReader(segments.get(i), columns, queryMetadata);
+            readers[i] = segmentRowReader(segments.get(i), columns, metadata);
         }
 
         return new CompoundRowReader(readers);
     }
 
-    private RowReader<?> segmentRowReader(Object segment, RSColumn[] columns, QueryMetadata queryMetadata) {
+    private RowReader<?> segmentRowReader(Object segment, RSColumn[] columns, QueryMetadata metadata) {
         return switch (segment) {
-            case EntityResultSegment ers -> createEntityRowReader(columns, queryMetadata, ers);
-            case EmbeddableResultSegment ers -> createEmbeddableRowReader(columns, ers);
-            case ScalarResultSegment srs -> createScalarRowReader(columns, queryMetadata, srs);
+            case EntityResultSegment ers -> entitySegmentReader(columns, metadata, ers);
+            case EmbeddableResultSegment ers -> embeddableSegmentReader(columns, ers);
+            case ScalarResultSegment srs -> scalarSegmentReader(columns, metadata, srs);
             case null, default -> throw new IllegalStateException("Unknown segment type: " + segment);
         };
     }
 
-    private RowReader<?> createEmbeddableRowReader(RSColumn[] columns, EmbeddableResultSegment segment) {
-        int segmentWidth = segment.getFields().size();
+    private RowReader<?> embeddableSegmentReader(RSColumn[] columns, EmbeddableResultSegment segment) {
         int startIndex = segment.getColumnOffset();
-        ExtendedType<?>[] converters = new ExtendedType[segmentWidth];
-        int[] types = new int[segmentWidth];
-        String[] labels = new String[segmentWidth];
+        int segmentWidth = segment.getFields().size();
+
+        // recast the segment's columns into a compact array so their dataRowName carries the embeddable field
+        // label (keyed by the result-set column name); OffsetRowReader reads them from startIndex onward
+        RSColumn[] relabeled = new RSColumn[segmentWidth];
 
         for (int i = 0; i < segmentWidth; i++) {
-            converters[i] = columns[startIndex + i].reader();
-            types[i] = columns[startIndex + i].rsType();
-            labels[i] = segment.getFields().get(columns[startIndex + i].rsName());
+            RSColumn column = columns[startIndex + i];
+            relabeled[i] = new RSColumn(
+                    column.rsName(),
+                    column.rsType(),
+                    segment.getFields().get(column.rsName()),
+                    column.reader(),
+                    column.attribute());
         }
 
-        return new EmbeddableRowReader(converters, types, labels, startIndex);
+        // an embeddable segment carries no entity - no entity name, no inheritance
+        return OffsetRowReader.of(relabeled, startIndex);
     }
 
-    protected RowReader<?> createScalarRowReader(RSColumn[] columns, QueryMetadata queryMetadata, ScalarResultSegment segment) {
+    protected RowReader<?> scalarSegmentReader(RSColumn[] columns, QueryMetadata metadata, ScalarResultSegment segment) {
         int scalarIndex = segment.getColumnOffset();
         return new ScalarRowReader<>(
                 columns[scalarIndex].reader(),
@@ -92,51 +98,50 @@ public class DefaultRowReaderFactory implements RowReaderFactory {
                 columns[scalarIndex].rsType());
     }
 
-    protected RowReader<?> createEntityRowReader(
-            RSColumn[] columns,
-            QueryMetadata queryMetadata,
-            EntityResultSegment resultMetadata) {
+    protected RowReader<?> entitySegmentReader(RSColumn[] columns, QueryMetadata metadata, EntityResultSegment segment) {
 
-        if (queryMetadata.getPageSize() > 0) {
-            return createIdRowReader(columns, queryMetadata, resultMetadata);
+        if (metadata.getPageSize() > 0) {
+            return idReader(columns, metadata, segment);
         }
 
-        int startIndex = resultMetadata.getColumnOffset();
-        int segmentWidth = resultMetadata.getFields().size();
-        ExtendedType<?>[] readers = new ExtendedType[segmentWidth];
-        int[] types = new int[segmentWidth];
-        String[] labels = new String[segmentWidth];
+        int startIndex = segment.getColumnOffset();
+        int segmentWidth = segment.getFields().size();
+
+        // recast the segment's columns into a compact array so their dataRowName carries the resolved DataRow
+        // label (which is how the reader keys the DataRow); OffsetRowReader reads them from startIndex onward
+        RSColumn[] relabeled = new RSColumn[segmentWidth];
 
         for (int i = 0; i < segmentWidth; i++) {
             RSColumn column = columns[startIndex + i];
-            readers[i] = column.reader();
-            types[i] = column.rsType();
 
             // the query translator may reorder fields compared to the entity result, so resolve the
-            // DataRow label by reverse lookup of the column name...
-            if (column.dataRowName().contains(".")) {
-                // a dotted dataRowName is a prefetched column - use it directly instead of by alias
-                labels[i] = column.dataRowName();
-            } else {
-                labels[i] = resultMetadata.getColumnPath(column.dataRowName());
-            }
+            // DataRow label by reverse lookup of the column name; a dotted dataRowName is a prefetched
+            // column, used directly instead of by alias
+            String name = column.dataRowName();
+            String label = name.contains(".") ? name : segment.getColumnPath(name);
+
+            relabeled[i] = new RSColumn(
+                    column.rsName(),
+                    column.rsType(),
+                    label,
+                    column.reader(),
+                    column.attribute());
         }
 
-        return EntityRowReader.of(readers, types, labels, startIndex, resultMetadata.getClassDescriptor());
+        return OffsetRowReader.of(relabeled, startIndex, segment.getClassDescriptor());
     }
 
-    protected RowReader<?> createFullRowReader(RSColumn[] columns, QueryMetadata queryMetadata) {
+    protected RowReader<?> fullRowReader(RSColumn[] columns, QueryMetadata metadata) {
 
-        if (queryMetadata.getPageSize() > 0) {
-            return createIdRowReader(columns, queryMetadata, null);
+        if (metadata.getPageSize() > 0) {
+            return idReader(columns, metadata, null);
         }
 
-        return FullRowReader.of(columns, queryMetadata);
+        return FullRowReader.of(columns, metadata);
     }
 
-    private RowReader<?> createIdRowReader(RSColumn[] columns, QueryMetadata queryMetadata,
-                                           EntityResultSegment resultMetadata) {
-        int[] pk = pkIndices(columns, queryMetadata, resultMetadata);
+    private RowReader<?> idReader(RSColumn[] columns, QueryMetadata metadata, EntityResultSegment segment) {
+        int[] pk = pkIndices(columns, metadata, segment);
 
         // single-column PK - read the value directly as a scalar
         if (pk.length == 1) {
@@ -145,18 +150,17 @@ public class DefaultRowReaderFactory implements RowReaderFactory {
             return new ScalarRowReader<>(column.reader(), pk[0] + 1, column.rsType());
         }
 
-        return new IndexedRowReader(columns, entityName(queryMetadata), pk);
+        // a multi-column PK occupies a contiguous run starting at pk[0] - read it as a compact segment
+        RSColumn[] pkColumns = Arrays.copyOfRange(columns, pk[0], pk[0] + pk.length);
+
+        ObjEntity objEntity = metadata.getObjEntity();
+        return OffsetRowReader.of(pkColumns, pk[0], objEntity != null ? objEntity.getName() : null);
     }
 
-    private static String entityName(QueryMetadata queryMetadata) {
-        ObjEntity objEntity = queryMetadata.getObjEntity();
-        return objEntity != null ? objEntity.getName() : null;
-    }
-
-    private static int[] pkIndices(RSColumn[] columns, QueryMetadata queryMetadata, EntityResultSegment resultMetadata) {
-        DbEntity dbEntity = resultMetadata == null
-                ? queryMetadata.getDbEntity()
-                : resultMetadata.getClassDescriptor().getEntity().getDbEntity();
+    private static int[] pkIndices(RSColumn[] columns, QueryMetadata metadata, EntityResultSegment segment) {
+        DbEntity dbEntity = segment == null
+                ? metadata.getDbEntity()
+                : segment.getClassDescriptor().getEntity().getDbEntity();
         if (dbEntity == null) {
             throw new CayenneRuntimeException("Null root DbEntity, can't index PK");
         }
@@ -167,7 +171,7 @@ public class DefaultRowReaderFactory implements RowReaderFactory {
         }
 
         int[] pk = new int[len];
-        int offset = resultMetadata != null ? resultMetadata.getColumnOffset() : 0;
+        int offset = segment != null ? segment.getColumnOffset() : 0;
         for (int i = offset, j = 0; i < offset + len; i++) {
             DbAttribute a = dbEntity.getAttribute(columns[i].rsName());
             if (a != null && a.isPrimaryKey()) {

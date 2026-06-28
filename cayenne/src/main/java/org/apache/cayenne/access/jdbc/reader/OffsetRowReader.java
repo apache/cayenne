@@ -23,35 +23,41 @@ import org.apache.cayenne.DataRow;
 import org.apache.cayenne.access.jdbc.RSColumn;
 import org.apache.cayenne.map.EntityInheritanceTree;
 import org.apache.cayenne.map.ObjEntity;
-import org.apache.cayenne.query.QueryMetadata;
 import org.apache.cayenne.reflect.ClassDescriptor;
 
 import java.sql.ResultSet;
 
 /**
- * @since 3.0
+ * A {@link RowReader} that materializes a contiguous run of result-set columns starting at a given offset.
  */
-class FullRowReader implements RowReader<DataRow> {
+class OffsetRowReader implements RowReader<DataRow> {
 
-    private final RSColumn[] columns;
-    private final int mapCapacity;
     protected final String entityName;
+    private final RSColumn[] columns;
+    private final int offset;
+    private final int mapCapacity;
 
-    static RowReader<DataRow> of(RSColumn[] columns, QueryMetadata queryMetadata) {
-
-        ObjEntity objEntity = queryMetadata.getObjEntity();
-        String entityName = objEntity != null ? objEntity.getName() : null;
-
-        ClassDescriptor classDescriptor = queryMetadata.getClassDescriptor();
-        if (classDescriptor != null && classDescriptor.hasSubclasses()) {
-            return new InheritanceAwareRowReader(columns, entityName, classDescriptor.getEntityInheritanceTree());
-        }
-
-        return new FullRowReader(columns, entityName);
+    // possible inherotance
+    static RowReader<DataRow> of(RSColumn[] columns, int offset, ClassDescriptor cd) {
+        String entityName = cd != null ? cd.getEntity().getName() : null;
+        return cd != null && cd.hasSubclasses()
+                ? new InheritanceAwareOffsetRowReader(columns, offset, entityName, cd.getEntityInheritanceTree())
+                : new OffsetRowReader(columns, offset, entityName);
     }
 
-    public FullRowReader(RSColumn[] columns, String entityName) {
+    // fixed entity name, no inheritance
+    static RowReader<DataRow> of(RSColumn[] columns, int offset, String entityName) {
+        return new OffsetRowReader(columns, offset, entityName);
+    }
+
+    // no entity name, no inheritance
+    static RowReader<DataRow> of(RSColumn[] columns, int offset) {
+        return new OffsetRowReader(columns, offset, null);
+    }
+
+    private OffsetRowReader(RSColumn[] columns, int offset, String entityName) {
         this.columns = columns;
+        this.offset = offset;
         this.entityName = entityName;
         this.mapCapacity = (int) Math.ceil(columns.length / 0.75);
     }
@@ -66,7 +72,7 @@ class FullRowReader implements RowReader<DataRow> {
             for (int i = 0; i < w; i++) {
                 RSColumn column = columns[i];
                 // jdbc column indexes start from 1, not 0 unlike everywhere else
-                Object val = column.reader().materializeObject(resultSet, i + 1, column.rsType());
+                Object val = column.reader().materializeObject(resultSet, offset + i + 1, column.rsType());
                 dataRow.put(column.dataRowName(), val);
             }
 
@@ -84,12 +90,13 @@ class FullRowReader implements RowReader<DataRow> {
         return entityName;
     }
 
-    private static class InheritanceAwareRowReader extends FullRowReader {
+    private static class InheritanceAwareOffsetRowReader extends OffsetRowReader {
 
         private final EntityInheritanceTree entityInheritanceTree;
 
-        InheritanceAwareRowReader(RSColumn[] columns, String entityName, EntityInheritanceTree entityInheritanceTree) {
-            super(columns, entityName);
+        InheritanceAwareOffsetRowReader(RSColumn[] columns, int startIndex, String entityName,
+                                        EntityInheritanceTree entityInheritanceTree) {
+            super(columns, startIndex, entityName);
             this.entityInheritanceTree = entityInheritanceTree;
         }
 

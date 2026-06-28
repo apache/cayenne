@@ -59,30 +59,26 @@ public class CryptoRowReaderFactoryDecorator extends DefaultRowReaderFactory {
     }
 
     @Override
-    public RowReader<?> rowReader(RSColumn[] columns, QueryMetadata queryMetadata, DbAdapter adapter) {
-        return super.rowReader(encryptedColumns(columns, adapter.getExtendedTypes()), queryMetadata, adapter);
+    public RowReader<?> rowReader(RSColumn[] columns, QueryMetadata metadata, DbAdapter adapter) {
+        return super.rowReader(encryptedColumns(columns, adapter.getExtendedTypes()), metadata, adapter);
     }
 
     @Override
-    protected RowReader<?> createScalarRowReader(RSColumn[] columns, QueryMetadata queryMetadata,
-                                                 ScalarResultSegment segment) {
-        RowReader<?> scalarRowReader = super
-                .createScalarRowReader(columns, queryMetadata, segment);
+    protected RowReader<?> scalarSegmentReader(RSColumn[] columns, QueryMetadata metadata, ScalarResultSegment segment) {
+        RowReader<?> scalarRowReader = super.scalarSegmentReader(columns, metadata, segment);
         return new DecoratedScalarRowReader(columns[segment.getColumnOffset()], scalarRowReader);
     }
 
     @Override
-    protected RowReader<?> createEntityRowReader(RSColumn[] columns, QueryMetadata queryMetadata,
-                                                 EntityResultSegment resultMetadata) {
-        RowReader<?> entityRowReader = super
-                .createEntityRowReader(columns, queryMetadata, resultMetadata);
-        return new DecoratedEntityRowReader(columns, entityRowReader, resultMetadata);
+    protected RowReader<?> entitySegmentReader(RSColumn[] columns, QueryMetadata metadata, EntityResultSegment segment) {
+        RowReader<?> entityRowReader = super.entitySegmentReader(columns, metadata, segment);
+        return new DecoratedEntityRowReader(columns, entityRowReader, segment);
     }
 
     @Override
-    protected RowReader<?> createFullRowReader(RSColumn[] columns, QueryMetadata queryMetadata) {
+    protected RowReader<?> fullRowReader(RSColumn[] columns, QueryMetadata metadata) {
         RowReader<?> fullRowReader = super
-                .createFullRowReader(columns, queryMetadata);
+                .fullRowReader(columns, metadata);
         return new DecoratedFullRowReader(columns, fullRowReader);
     }
 
