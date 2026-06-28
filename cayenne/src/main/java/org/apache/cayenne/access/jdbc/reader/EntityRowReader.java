@@ -23,7 +23,6 @@ import java.sql.ResultSet;
 import org.apache.cayenne.CayenneRuntimeException;
 import org.apache.cayenne.DataRow;
 import org.apache.cayenne.access.jdbc.ColumnDescriptor;
-import org.apache.cayenne.access.jdbc.RowDescriptor;
 import org.apache.cayenne.access.types.ExtendedType;
 import org.apache.cayenne.query.EntityResultSegment;
 import org.apache.cayenne.reflect.ClassDescriptor;
@@ -42,7 +41,7 @@ class EntityRowReader implements RowReader<DataRow> {
     private int mapCapacity;
     private int startIndex;
 
-    EntityRowReader(RowDescriptor descriptor, EntityResultSegment segmentMetadata) {
+    EntityRowReader(ColumnDescriptor[] columns, EntityResultSegment segmentMetadata) {
 
         ClassDescriptor classDescriptor = segmentMetadata.getClassDescriptor();
 
@@ -56,10 +55,8 @@ class EntityRowReader implements RowReader<DataRow> {
         this.types = new int[segmentWidth];
         this.labels = new String[segmentWidth];
 
-        ExtendedType[] converters = descriptor.getConverters();
-        ColumnDescriptor[] columns = descriptor.getColumns();
         for (int i = 0; i < segmentWidth; i++) {
-            this.converters[i] = converters[startIndex + i];
+            this.converters[i] = columns[startIndex + i].type();
             types[i] = columns[startIndex + i].jdbcType();
 
             // query translator may change the order of fields compare to the entity

@@ -19,17 +19,25 @@
 
 package org.apache.cayenne.access.translator.select;
 
+import org.apache.cayenne.access.types.ExtendedTypeMap;
 import org.apache.cayenne.dba.DbAdapter;
 import org.apache.cayenne.map.EntityResolver;
 
 import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.when;
 
 public class MockSelectTranslatorContext extends SelectTranslatorContext {
     MockSelectTranslatorContext(TranslatableQueryWrapper query) {
-        super(query, mock(DbAdapter.class), null, null);
+        super(query, mockAdapter(), null, null);
     }
 
     MockSelectTranslatorContext(TranslatableQueryWrapper query, EntityResolver resolver) {
-        super(query, mock(DbAdapter.class), resolver, null);
+        super(query, mockAdapter(), resolver, null);
+    }
+
+    private static DbAdapter mockAdapter() {
+        DbAdapter adapter = mock(DbAdapter.class);
+        when(adapter.getExtendedTypes()).thenReturn(new ExtendedTypeMap());
+        return adapter;
     }
 }

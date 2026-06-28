@@ -20,7 +20,7 @@
 package org.apache.cayenne.velocity;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertNull;
+import static org.junit.jupiter.api.Assertions.assertSame;
 import static org.mockito.ArgumentMatchers.anyInt;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
@@ -68,7 +68,7 @@ public class VelocitySQLTemplateTranslator_SelectTest {
 		assertEquals(0, compiled.bindings().length);
 		assertEquals(1, compiled.resultColumns().length);
 		assertEquals("A", compiled.resultColumns()[0].name());
-		assertNull(compiled.resultColumns()[0].javaClass());
+		assertSame(adapter.getExtendedTypes().getDefaultType(), compiled.resultColumns()[0].type());
 	}
 
 	@Test
@@ -82,7 +82,7 @@ public class VelocitySQLTemplateTranslator_SelectTest {
 
 		assertEquals(1, compiled.resultColumns().length);
 		assertEquals("A", compiled.resultColumns()[0].name());
-		assertEquals("java.lang.String", compiled.resultColumns()[0].javaClass());
+		assertSame(adapter.getExtendedTypes().getRegisteredType(String.class), compiled.resultColumns()[0].type());
 	}
 
 	@Test
@@ -98,7 +98,7 @@ public class VelocitySQLTemplateTranslator_SelectTest {
 		ColumnDescriptor column = compiled.resultColumns()[0];
 		assertEquals("A", column.name());
 		assertEquals("B", column.dataRowKey());
-		assertEquals("java.lang.String", column.javaClass());
+		assertSame(adapter.getExtendedTypes().getRegisteredType(String.class), column.type());
 	}
 
 	@Test

@@ -31,6 +31,8 @@ import java.util.HashMap;
 import java.util.Map;
 
 import org.apache.cayenne.access.jdbc.ColumnDescriptor;
+import org.apache.cayenne.access.types.ExtendedType;
+import org.apache.cayenne.dba.DbAdapter;
 import org.apache.cayenne.util.Util;
 import org.apache.velocity.context.InternalContextAdapter;
 import org.apache.velocity.exception.MethodInvocationException;
@@ -129,6 +131,10 @@ public class ResultDirective extends Directive {
 		String type = getChildAsString(context, node, 1);
 		String javaClass = (type != null) ? guessType(type) : null;
 
+		DbAdapter adapter = (DbAdapter) context.getInternalUserContext()
+				.get(VelocitySQLTemplateTranslator.ADAPTER_KEY);
+		ExtendedType extendedType = adapter.getExtendedTypes().getRegisteredType(javaClass);
+
 		// TODO: andrus 6/27/2007 - this is an unofficial jdbcType parameter
 		// that is added
 		// temporarily pending CAY-813 implementation for the sake of EJBQL
@@ -136,7 +142,7 @@ public class ResultDirective extends Directive {
 		Object jdbcTypeChild = getChild(context, node, 4);
 		int jdbcType = (jdbcTypeChild instanceof Number) ? ((Number) jdbcTypeChild).intValue() : 0;
 
-		ColumnDescriptor columnDescriptor = new ColumnDescriptor(column, label, jdbcType, javaClass, null);
+		ColumnDescriptor columnDescriptor = new ColumnDescriptor(column, label, jdbcType, extendedType, null);
 
 		writer.write(column);
 

@@ -24,7 +24,6 @@ import java.sql.ResultSet;
 import org.apache.cayenne.CayenneRuntimeException;
 import org.apache.cayenne.DataRow;
 import org.apache.cayenne.access.jdbc.ColumnDescriptor;
-import org.apache.cayenne.access.jdbc.RowDescriptor;
 import org.apache.cayenne.access.types.ExtendedType;
 import org.apache.cayenne.query.EmbeddableResultSegment;
 import org.apache.cayenne.query.QueryMetadata;
@@ -41,17 +40,15 @@ class EmbeddableRowReader implements RowReader<DataRow> {
     private final String[] labels;
     private final int[] types;
 
-    EmbeddableRowReader(RowDescriptor descriptor, QueryMetadata queryMetadata, EmbeddableResultSegment segment) {
+    EmbeddableRowReader(ColumnDescriptor[] columns, QueryMetadata queryMetadata, EmbeddableResultSegment segment) {
         int segmentWidth = segment.getFields().size();
         this.startIndex = segment.getColumnOffset();
         this.converters = new ExtendedType[segmentWidth];
         this.types = new int[segmentWidth];
         this.labels = new String[segmentWidth];
 
-        ExtendedType[] converters = descriptor.getConverters();
-        ColumnDescriptor[] columns = descriptor.getColumns();
         for (int i = 0; i < segmentWidth; i++) {
-            this.converters[i] = converters[startIndex + i];
+            this.converters[i] = columns[startIndex + i].type();
             types[i] = columns[startIndex + i].jdbcType();
             labels[i] = segment.getFields().get(columns[startIndex +i].name());
         }

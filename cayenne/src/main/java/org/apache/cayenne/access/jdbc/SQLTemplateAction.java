@@ -26,6 +26,7 @@ import org.apache.cayenne.access.OperationObserver;
 import org.apache.cayenne.access.jdbc.reader.RowReader;
 import org.apache.cayenne.access.translator.ParameterBinding;
 import org.apache.cayenne.access.translator.sqltemplate.TranslatedSQL;
+import org.apache.cayenne.access.types.ExtendedType;
 import org.apache.cayenne.access.types.ExtendedTypeMap;
 import org.apache.cayenne.dba.DbAdapter;
 import org.apache.cayenne.dba.TypesMapping;
@@ -239,10 +240,10 @@ public class SQLTemplateAction implements SQLAction {
 
         boolean iteratedResult = callback.isIteratedResult();
         ExtendedTypeMap types = dataNode.getAdapter().getExtendedTypes();
-        RowDescriptorBuilder builder = configureRowDescriptorBuilder(compiled, resultSet);
+        ColumnDescriptor.RowBuilder rowBuilder = rowBuilder(compiled, resultSet);
         recreateQueryMetadata(resultSet);
         RowReader<?> rowReader = dataNode.getRowReaderFactory()
-                .rowReader(builder.getDescriptor(types), queryMetadata, dataNode.getAdapter());
+                .rowReader(rowBuilder.build(types), queryMetadata, dataNode.getAdapter());
         ResultIterator<?> it = new JDBCResultIterator<>(statement, resultSet, rowReader);
 
         if (iteratedResult) {
@@ -303,11 +304,13 @@ public class SQLTemplateAction implements SQLAction {
             return null;
         }
 
+        ExtendedTypeMap extendedTypes = dataNode.getAdapter().getExtendedTypes();
         int size = query.getResultColumnsTypes().size();
         ColumnDescriptor[] columnDescriptors = new ColumnDescriptor[size];
         for (int i = 0; i < size; i++) {
-            // only the Java class is known here; name and type are resolved later from ResultSet metadata
-            columnDescriptors[i] = new ColumnDescriptor(null, null, 0, query.getResultColumnsTypes().get(i).getCanonicalName(), null);
+            // only the Java class is known here; name and jdbcType are resolved later from ResultSet metadata
+            ExtendedType type = extendedTypes.getRegisteredType(query.getResultColumnsTypes().get(i));
+            columnDescriptors[i] = new ColumnDescriptor(null, null, 0, type, null);
         }
         return columnDescriptors;
     }
@@ -315,11 +318,11 @@ public class SQLTemplateAction implements SQLAction {
     /**
      * @since 3.0
      */
-    protected RowDescriptorBuilder configureRowDescriptorBuilder(TranslatedSQL compiled, ResultSet resultSet)
+    protected ColumnDescriptor.RowBuilder rowBuilder(TranslatedSQL compiled, ResultSet resultSet)
             throws SQLException {
-        RowDescriptorBuilder builder = new RowDescriptorBuilder()
-                .setResultSet(resultSet)
-                .setColumns(createColumnDescriptors(compiled))
+        ColumnDescriptor.RowBuilder builder = ColumnDescriptor.rowBuilder()
+                .resultSet(resultSet)
+                .columns(createColumnDescriptors(compiled))
                 .validateDuplicateColumnNames();
 
         if (query.getResultColumnsTypes() != null) {
@@ -340,10 +343,11 @@ public class SQLTemplateAction implements SQLAction {
 
         // override numeric Java types based on JDBC defaults for DbAttributes, as Oracle
         // ResultSetMetadata is not very precise about NUMERIC distinctions...
-        // (BigDecimal vs Long vs. Integer)
+        // (BigDecimal vs Long vs. Integer). These are fallbacks: the ObjAttribute overrides
+        // registered above take precedence, as the builder keeps the first override per column.
         if (dbEntity != null && isResultColumnTypesEmpty()) {
             for (DbAttribute attribute : dbEntity.getAttributes()) {
-                if (!builder.isOverriden(attribute.getName()) && TypesMapping.isNumeric(attribute.getType())) {
+                if (TypesMapping.isNumeric(attribute.getType())) {
                     builder.overrideColumnType(attribute.getName(), TypesMapping.getJavaBySqlType(attribute));
                 }
             }

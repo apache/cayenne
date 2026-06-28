@@ -21,7 +21,6 @@ package org.apache.cayenne.access.jdbc.reader;
 import java.sql.ResultSet;
 
 import org.apache.cayenne.access.jdbc.ColumnDescriptor;
-import org.apache.cayenne.access.jdbc.RowDescriptor;
 import org.apache.cayenne.access.types.ExtendedType;
 import org.apache.cayenne.map.ObjEntity;
 import org.apache.cayenne.query.QueryMetadata;
@@ -36,20 +35,19 @@ abstract class BaseRowReader<T> implements RowReader<T> {
     int[] types;
     String entityName;
 
-    BaseRowReader(RowDescriptor descriptor, QueryMetadata queryMetadata) {
+    BaseRowReader(ColumnDescriptor[] columns, QueryMetadata queryMetadata) {
         ObjEntity rootObjEntity = queryMetadata.getObjEntity();
         if (rootObjEntity != null) {
             this.entityName = rootObjEntity.getName();
         }
 
-        this.converters = descriptor.getConverters();
-
-        ColumnDescriptor[] columns = descriptor.getColumns();
         int width = columns.length;
+        this.converters = new ExtendedType[width];
         this.labels = new String[width];
         this.types = new int[width];
 
         for (int i = 0; i < width; i++) {
+            converters[i] = columns[i].type();
             labels[i] = columns[i].dataRowKey();
             types[i] = columns[i].jdbcType();
         }

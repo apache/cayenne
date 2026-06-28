@@ -21,7 +21,7 @@ package org.apache.cayenne.access.jdbc.reader;
 import java.util.List;
 
 import org.apache.cayenne.CayenneRuntimeException;
-import org.apache.cayenne.access.jdbc.RowDescriptor;
+import org.apache.cayenne.access.jdbc.ColumnDescriptor;
 import org.apache.cayenne.dba.DbAdapter;
 import org.apache.cayenne.query.EmbeddableResultSegment;
 import org.apache.cayenne.query.EntityResultSegment;
@@ -34,16 +34,16 @@ import org.apache.cayenne.query.ScalarResultSegment;
 public class DefaultRowReaderFactory implements RowReaderFactory {
 
 	@Override
-	public RowReader<?> rowReader(RowDescriptor descriptor, QueryMetadata queryMetadata, DbAdapter adapter) {
+	public RowReader<?> rowReader(ColumnDescriptor[] columns, QueryMetadata queryMetadata, DbAdapter adapter) {
 
 		List<Object> rsMapping = queryMetadata.getResultSetMapping();
 		if (rsMapping == null) {
-			return createFullRowReader(descriptor, queryMetadata);
+			return createFullRowReader(columns, queryMetadata);
 		}
 
 		int resultWidth = rsMapping.size();
 		if (resultWidth == 0) {
-			throw new CayenneRuntimeException("Empty result descriptor");
+			throw new CayenneRuntimeException("Empty result columns");
 		}
 
 		if (queryMetadata.isSingleResultSetMapping()) {
@@ -51,11 +51,11 @@ public class DefaultRowReaderFactory implements RowReaderFactory {
 			Object segment = rsMapping.get(0);
 
 			if (segment instanceof EntityResultSegment) {
-				return createEntityRowReader(descriptor, queryMetadata, (EntityResultSegment) segment);
+				return createEntityRowReader(columns, queryMetadata, (EntityResultSegment) segment);
 			} else if (segment instanceof EmbeddableResultSegment) {
-				return createEmbeddableRowReader(descriptor, queryMetadata, (EmbeddableResultSegment) segment);
+				return createEmbeddableRowReader(columns, queryMetadata, (EmbeddableResultSegment) segment);
 			} else {
-				return createScalarRowReader(descriptor, queryMetadata, (ScalarResultSegment) segment);
+				return createScalarRowReader(columns, queryMetadata, (ScalarResultSegment) segment);
 			}
 		} else {
 			CompoundRowReader reader = new CompoundRowReader(resultWidth);
@@ -65,11 +65,11 @@ public class DefaultRowReaderFactory implements RowReaderFactory {
 
 				if (segment instanceof EntityResultSegment) {
 					reader.addRowReader(i,
-							createEntityRowReader(descriptor, queryMetadata, (EntityResultSegment) segment));
+							createEntityRowReader(columns, queryMetadata, (EntityResultSegment) segment));
 				} else if(segment instanceof EmbeddableResultSegment) {
-					reader.addRowReader(i, createEmbeddableRowReader(descriptor, queryMetadata, (EmbeddableResultSegment) segment));
+					reader.addRowReader(i, createEmbeddableRowReader(columns, queryMetadata, (EmbeddableResultSegment) segment));
 				} else {
-					reader.addRowReader(i, createScalarRowReader(descriptor, queryMetadata, (ScalarResultSegment) segment));
+					reader.addRowReader(i, createScalarRowReader(columns, queryMetadata, (ScalarResultSegment) segment));
 				}
 			}
 
@@ -77,34 +77,34 @@ public class DefaultRowReaderFactory implements RowReaderFactory {
 		}
 	}
 
-	private RowReader<?> createEmbeddableRowReader(RowDescriptor descriptor, QueryMetadata queryMetadata, EmbeddableResultSegment segment) {
-		return new EmbeddableRowReader(descriptor, queryMetadata, segment);
+	private RowReader<?> createEmbeddableRowReader(ColumnDescriptor[] columns, QueryMetadata queryMetadata, EmbeddableResultSegment segment) {
+		return new EmbeddableRowReader(columns, queryMetadata, segment);
 	}
 
-	protected RowReader<?> createScalarRowReader(RowDescriptor descriptor, QueryMetadata queryMetadata, ScalarResultSegment segment) {
-		return new ScalarRowReader<>(descriptor, segment);
+	protected RowReader<?> createScalarRowReader(ColumnDescriptor[] columns, QueryMetadata queryMetadata, ScalarResultSegment segment) {
+		return new ScalarRowReader<>(columns, segment);
 	}
 
-	protected RowReader<?> createEntityRowReader(RowDescriptor descriptor, QueryMetadata queryMetadata,
+	protected RowReader<?> createEntityRowReader(ColumnDescriptor[] columns, QueryMetadata queryMetadata,
 			EntityResultSegment resultMetadata) {
 
 		if (queryMetadata.getPageSize() > 0) {
-			return new IdRowReader<>(descriptor, queryMetadata, resultMetadata);
+			return new IdRowReader<>(columns, queryMetadata, resultMetadata);
 		} else if (resultMetadata.getClassDescriptor() != null && resultMetadata.getClassDescriptor().hasSubclasses()) {
-			return new InheritanceAwareEntityRowReader(descriptor, resultMetadata);
+			return new InheritanceAwareEntityRowReader(columns, resultMetadata);
 		} else {
-			return new EntityRowReader(descriptor, resultMetadata);
+			return new EntityRowReader(columns, resultMetadata);
 		}
 	}
 
-	protected RowReader<?> createFullRowReader(RowDescriptor descriptor, QueryMetadata queryMetadata) {
+	protected RowReader<?> createFullRowReader(ColumnDescriptor[] columns, QueryMetadata queryMetadata) {
 
 		if (queryMetadata.getPageSize() > 0) {
-			return new IdRowReader<>(descriptor, queryMetadata, null);
+			return new IdRowReader<>(columns, queryMetadata, null);
 		} else if (queryMetadata.getClassDescriptor() != null && queryMetadata.getClassDescriptor().hasSubclasses()) {
-			return new InheritanceAwareRowReader(descriptor, queryMetadata);
+			return new InheritanceAwareRowReader(columns, queryMetadata);
 		} else {
-			return new FullRowReader(descriptor, queryMetadata);
+			return new FullRowReader(columns, queryMetadata);
 		}
 	}
 

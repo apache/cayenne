@@ -27,6 +27,7 @@ import org.apache.cayenne.access.OperationObserver;
 import org.apache.cayenne.access.OptimisticLockException;
 import org.apache.cayenne.access.jdbc.reader.RowReader;
 import org.apache.cayenne.access.translator.ParameterBinding;
+import org.apache.cayenne.access.types.ExtendedType;
 import org.apache.cayenne.access.translator.batch.TranslatedBatch;
 import org.apache.cayenne.dba.DbAdapter;
 import org.apache.cayenne.log.JdbcEventLogger;
@@ -57,7 +58,7 @@ public class BatchAction extends BaseSQLAction {
 
 	protected boolean runningAsBatch;
 	protected BatchQuery query;
-	protected RowDescriptor keyRowDescriptor;
+	protected ColumnDescriptor[] keyColumns;
 
 	/**
 	 * @since 4.0
@@ -267,9 +268,9 @@ public class BatchAction extends BaseSQLAction {
 		// (this way we can support multiple columns..
 		// although need to check how well this works with most common drivers)
 
-		RowDescriptorBuilder builder = new RowDescriptorBuilder();
+		ColumnDescriptor.RowBuilder rowBuilder = ColumnDescriptor.rowBuilder();
 
-		if (this.keyRowDescriptor == null) {
+		if (this.keyColumns == null) {
 			// attempt to figure out the right descriptor from the mapping...
 			Collection<DbAttribute> generated = query.getDbEntity().getGeneratedAttributes();
 			if (generated.size() == 1 && keysRS.getMetaData().getColumnCount() == 1) {
@@ -286,17 +287,18 @@ public class BatchAction extends BaseSQLAction {
 						columnName = "column_1";
 					}
 				}
-				columns[0] = new ColumnDescriptor(columnName, columnName, key.getType(), typeForGeneratedPK(key), null);
-				builder.setColumns(columns);
+				ExtendedType type = dataNode.getAdapter().getExtendedTypes().getRegisteredType(typeForGeneratedPK(key));
+				columns[0] = new ColumnDescriptor(columnName, columnName, key.getType(), type, null);
+				rowBuilder.columns(columns);
 			} else {
-				builder.setResultSet(keysRS);
+				rowBuilder.resultSet(keysRS);
 			}
 
-			this.keyRowDescriptor = builder.getDescriptor(dataNode.getAdapter().getExtendedTypes());
+			this.keyColumns = rowBuilder.build(dataNode.getAdapter().getExtendedTypes());
 		}
 
 		RowReader<?> rowReader = dataNode.getRowReaderFactory()
-				.rowReader(keyRowDescriptor, query.getMetaData(dataNode.getEntityResolver()), dataNode.getAdapter());
+				.rowReader(keyColumns, query.getMetaData(dataNode.getEntityResolver()), dataNode.getAdapter());
 		ResultIterator iterator = new JDBCResultIterator(null, keysRS, rowReader);
 
 		List<ObjectId> objectIds = new ArrayList<>(rows.size());
@@ -307,7 +309,7 @@ public class BatchAction extends BaseSQLAction {
 	}
 
 	private String typeForGeneratedPK(DbAttribute key) {
-		String entityName = getQuery().getRows().get(0).getObjectId().getEntityName();
+		String entityName = getQuery().getRows().getFirst().getObjectId().getEntityName();
 		ObjEntity objEntity = dataNode.getEntityResolver().getObjEntity(entityName);
 		if(objEntity != null) {
 			ObjAttribute attributeForDbAttribute = objEntity.getAttributeForDbAttribute(key);

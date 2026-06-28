@@ -21,7 +21,7 @@ package org.apache.cayenne.access.jdbc.reader;
 import java.sql.ResultSet;
 
 import org.apache.cayenne.CayenneRuntimeException;
-import org.apache.cayenne.access.jdbc.RowDescriptor;
+import org.apache.cayenne.access.jdbc.ColumnDescriptor;
 import org.apache.cayenne.access.types.ExtendedType;
 import org.apache.cayenne.query.ScalarResultSegment;
 import org.apache.cayenne.util.Util;
@@ -36,10 +36,10 @@ class ScalarRowReader<T> implements RowReader<T> {
     private final int type;
 
     @SuppressWarnings("unchecked")
-    ScalarRowReader(RowDescriptor descriptor, ScalarResultSegment segmentMetadata) {
+    ScalarRowReader(ColumnDescriptor[] columns, ScalarResultSegment segmentMetadata) {
         int scalarIndex = segmentMetadata.getColumnOffset();
-        this.converter = descriptor.getConverters()[scalarIndex];
-        this.type = descriptor.getColumns()[scalarIndex].jdbcType();
+        this.converter = (ExtendedType<T>) columns[scalarIndex].type();
+        this.type = columns[scalarIndex].jdbcType();
         this.index = scalarIndex + 1;
     }
 

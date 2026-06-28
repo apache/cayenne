@@ -68,6 +68,16 @@ public class Context {
         return adapter.preferredBindingType(jdbcType);
     }
 
+    /**
+     * Resolves the {@link ExtendedType} for the given Java class name via the target adapter. A null class name resolves
+     * to the adapter's default type.
+     *
+     * @since 5.0
+     */
+    public ExtendedType<?> getExtendedType(String javaClassName) {
+        return adapter.getExtendedTypes().getRegisteredType(javaClassName);
+    }
+
     public Directive getDirective(String name) {
         return directives.get(name);
     }

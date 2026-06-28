@@ -21,7 +21,7 @@ package org.apache.cayenne.dba.mysql;
 import org.apache.cayenne.access.DataNode;
 import org.apache.cayenne.access.OperationObserver;
 import org.apache.cayenne.access.jdbc.ProcedureAction;
-import org.apache.cayenne.access.jdbc.RowDescriptor;
+import org.apache.cayenne.access.jdbc.ColumnDescriptor;
 import org.apache.cayenne.access.translator.procedure.TranslatedProcedure;
 import org.apache.cayenne.query.ProcedureQuery;
 
@@ -86,8 +86,8 @@ class MySQLProcedureAction extends ProcedureAction {
 		ResultSet rs = Objects.requireNonNull(statement.getResultSet());
 
 		try {
-			RowDescriptor descriptor = describeResultSet(rs, processedResultSets++);
-			readResultSet(rs, descriptor, query, observer);
+			ColumnDescriptor[] columns = describeResultSet(rs, processedResultSets++);
+			readResultSet(rs, columns, query, observer);
 		} finally {
 			try {
 				rs.close();

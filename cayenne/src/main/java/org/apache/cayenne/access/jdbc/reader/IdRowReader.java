@@ -23,7 +23,6 @@ import java.sql.ResultSet;
 import org.apache.cayenne.CayenneRuntimeException;
 import org.apache.cayenne.DataRow;
 import org.apache.cayenne.access.jdbc.ColumnDescriptor;
-import org.apache.cayenne.access.jdbc.RowDescriptor;
 import org.apache.cayenne.map.DbAttribute;
 import org.apache.cayenne.map.DbEntity;
 import org.apache.cayenne.query.EntityResultSegment;
@@ -37,8 +36,8 @@ class IdRowReader<T> extends BaseRowReader<T> {
 
     protected int[] pkIndices;
 
-    public IdRowReader(RowDescriptor descriptor, QueryMetadata queryMetadata, EntityResultSegment resultMetadata) {
-        super(descriptor, queryMetadata);
+    public IdRowReader(ColumnDescriptor[] columns, QueryMetadata queryMetadata, EntityResultSegment resultMetadata) {
+        super(columns, queryMetadata);
 
         DbEntity dbEntity = resultMetadata == null
                 ? queryMetadata.getDbEntity()
@@ -53,8 +52,6 @@ class IdRowReader<T> extends BaseRowReader<T> {
         if (len == 0) {
             throw new CayenneRuntimeException("Root DBEntity has no PK defined: %s", dbEntity);
         }
-
-        ColumnDescriptor[] columns = descriptor.getColumns();
 
         int[] pk = new int[len];
         int offset = resultMetadata != null ?

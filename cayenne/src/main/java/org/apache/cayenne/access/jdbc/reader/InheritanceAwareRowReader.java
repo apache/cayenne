@@ -21,7 +21,7 @@ package org.apache.cayenne.access.jdbc.reader;
 import java.sql.ResultSet;
 
 import org.apache.cayenne.DataRow;
-import org.apache.cayenne.access.jdbc.RowDescriptor;
+import org.apache.cayenne.access.jdbc.ColumnDescriptor;
 import org.apache.cayenne.map.EntityInheritanceTree;
 import org.apache.cayenne.map.ObjEntity;
 import org.apache.cayenne.query.QueryMetadata;
@@ -33,8 +33,8 @@ class InheritanceAwareRowReader extends FullRowReader {
 
     private EntityInheritanceTree entityInheritanceTree;
 
-    InheritanceAwareRowReader(RowDescriptor descriptor, QueryMetadata queryMetadata) {
-        super(descriptor, queryMetadata);
+    InheritanceAwareRowReader(ColumnDescriptor[] columns, QueryMetadata queryMetadata) {
+        super(columns, queryMetadata);
         this.entityInheritanceTree = queryMetadata.getClassDescriptor().getEntityInheritanceTree();
     }
 

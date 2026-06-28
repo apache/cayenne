@@ -48,8 +48,8 @@ public class JDBCResultIteratorTest {
 		TestResultSet rs = new TestResultSet("rs");
 		rs.addColumn("a", new Object[] { "1", "2", "3" });
 
-		RowDescriptor descriptor = new RowDescriptorBuilder().setResultSet(rs).getDescriptor(new ExtendedTypeMap());
-		RowReader<?> rowReader = new DefaultRowReaderFactory().rowReader(descriptor, new MockQueryMetadata(),
+		ColumnDescriptor[] columns = ColumnDescriptor.rowBuilder().resultSet(rs).build(new ExtendedTypeMap());
+		RowReader<?> rowReader = new DefaultRowReaderFactory().rowReader(columns, new MockQueryMetadata(),
 				mock(DbAdapter.class));
 
 		JDBCResultIterator it = new JDBCResultIterator(s, rs, rowReader);

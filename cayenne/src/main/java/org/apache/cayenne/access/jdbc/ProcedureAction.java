@@ -26,6 +26,7 @@ import org.apache.cayenne.access.OperationObserver;
 import org.apache.cayenne.access.translator.ParameterBinding;
 import org.apache.cayenne.access.translator.procedure.TranslatedProcedure;
 import org.apache.cayenne.access.types.ExtendedType;
+import org.apache.cayenne.access.types.ExtendedTypeMap;
 import org.apache.cayenne.dba.DbAdapter;
 import org.apache.cayenne.dba.TypesMapping;
 import org.apache.cayenne.map.Procedure;
@@ -106,8 +107,8 @@ public class ProcedureAction extends BaseSQLAction {
 				if (statement.getMoreResults()) {
 
 					try (ResultSet rs = statement.getResultSet()) {
-						RowDescriptor descriptor = describeResultSet(rs, processedResultSets++);
-						readResultSet(rs, descriptor, query, observer);
+						ColumnDescriptor[] columns = describeResultSet(rs, processedResultSets++);
+						readResultSet(rs, columns, query, observer);
 					}
 				} else {
 					int updateCount = statement.getUpdateCount();
@@ -151,25 +152,25 @@ public class ProcedureAction extends BaseSQLAction {
 	}
 
 	/**
-	 * Creates a RowDescriptor for result set.
-	 * 
+	 * Describes the result set columns, resolving an {@link ExtendedType} for each.
+	 *
 	 * @param resultSet
 	 *            JDBC ResultSet
 	 * @param setIndex
 	 *            a zero-based index of the ResultSet in the query results.
 	 */
-	protected RowDescriptor describeResultSet(ResultSet resultSet, int setIndex) throws SQLException {
+	protected ColumnDescriptor[] describeResultSet(ResultSet resultSet, int setIndex) throws SQLException {
 
 		if (setIndex < 0) {
 			throw new IllegalArgumentException("Expected a non-negative result set index. Got: " + setIndex);
 		}
 
-		RowDescriptorBuilder builder = new RowDescriptorBuilder();
+		ColumnDescriptor.RowBuilder builder = ColumnDescriptor.rowBuilder();
 
 		List<ProcedureColumn[]> descriptors = query.getResultDescriptors();
 
 		if (descriptors.isEmpty()) {
-			builder.setResultSet(resultSet);
+			builder.resultSet(resultSet);
 		} else {
 
 			// if one result is described, all of them must be present...
@@ -177,7 +178,8 @@ public class ProcedureAction extends BaseSQLAction {
 				throw new CayenneRuntimeException("No descriptor for result set at index '%d' configured.", setIndex);
 			}
 
-			builder.setColumns(toColumnDescriptors(descriptors.get(setIndex)));
+			builder.columns(toColumnDescriptors(descriptors.get(setIndex),
+					dataNode.getAdapter().getExtendedTypes()));
 		}
 
 		switch (query.getColumnNamesCapitalization()) {
@@ -189,7 +191,7 @@ public class ProcedureAction extends BaseSQLAction {
 			break;
 		}
 
-		return builder.getDescriptor(dataNode.getAdapter().getExtendedTypes());
+		return builder.build(dataNode.getAdapter().getExtendedTypes());
 	}
 
 	/**
@@ -198,11 +200,12 @@ public class ProcedureAction extends BaseSQLAction {
 	 *
 	 * @since 5.0
 	 */
-	private static ColumnDescriptor[] toColumnDescriptors(ProcedureColumn[] columns) {
+	private static ColumnDescriptor[] toColumnDescriptors(ProcedureColumn[] columns, ExtendedTypeMap typeMap) {
 		ColumnDescriptor[] result = new ColumnDescriptor[columns.length];
 		for (int i = 0; i < columns.length; i++) {
 			ProcedureColumn c = columns[i];
-			result[i] = new ColumnDescriptor(c.name(), c.dataRowKey(), c.jdbcType(), c.javaClass(), null);
+			ExtendedType type = typeMap.getRegisteredType(c.javaClass());
+			result[i] = new ColumnDescriptor(c.name(), c.dataRowKey(), c.jdbcType(), type, null);
 		}
 		return result;
 	}
