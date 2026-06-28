@@ -20,7 +20,6 @@ package org.apache.cayenne.query;
 
 import org.apache.cayenne.DataRow;
 import org.apache.cayenne.ProcedureResult;
-import org.apache.cayenne.access.jdbc.ColumnDescriptor;
 import org.apache.cayenne.dba.TypesMapping;
 import org.apache.cayenne.log.NoopJdbcEventLogger;
 import org.apache.cayenne.testdo.testmap.Artist;
@@ -240,12 +239,12 @@ public class ProcedureCallIT {
 
         // TESTING THIS ***
         // A.ARTIST_ID, A.DATE_OF_BIRTH, A.ARTIST_NAME
-        ColumnDescriptor[] columns = new ColumnDescriptor[3];
+        ProcedureColumn[] columns = new ProcedureColumn[3];
 
         // read ID as Long, and everything else as default types
-        columns[0] = new ColumnDescriptor("ARTIST_ID", "ARTIST_ID", Types.BIGINT, TypesMapping.getJavaBySqlType(Types.BIGINT), null);
-        columns[1] = new ColumnDescriptor("ARTIST_NAME", "ARTIST_NAME", Types.CHAR, TypesMapping.getJavaBySqlType(Types.CHAR), null);
-        columns[2] = new ColumnDescriptor("DATE_OF_BIRTH", "DATE_OF_BIRTH", Types.DATE, TypesMapping.getJavaBySqlType(Types.DATE), null);
+        columns[0] = new ProcedureColumn("ARTIST_ID", "ARTIST_ID", Types.BIGINT, TypesMapping.getJavaBySqlType(Types.BIGINT));
+        columns[1] = new ProcedureColumn("ARTIST_NAME", "ARTIST_NAME", Types.CHAR, TypesMapping.getJavaBySqlType(Types.CHAR));
+        columns[2] = new ProcedureColumn("DATE_OF_BIRTH", "DATE_OF_BIRTH", Types.DATE, TypesMapping.getJavaBySqlType(Types.DATE));
 
         List<?> rows = runProcedureSelect(ProcedureCall.dataRowQuery(SELECT_STORED_PROCEDURE)
                 .param("aName", "An Artist")

@@ -30,6 +30,7 @@ import org.apache.cayenne.dba.DbAdapter;
 import org.apache.cayenne.dba.TypesMapping;
 import org.apache.cayenne.map.Procedure;
 import org.apache.cayenne.map.ProcedureParameter;
+import org.apache.cayenne.query.ProcedureColumn;
 import org.apache.cayenne.query.ProcedureQuery;
 import org.apache.cayenne.query.QueryMetadata;
 
@@ -165,7 +166,7 @@ public class ProcedureAction extends BaseSQLAction {
 
 		RowDescriptorBuilder builder = new RowDescriptorBuilder();
 
-		List<ColumnDescriptor[]> descriptors = query.getResultDescriptors();
+		List<ProcedureColumn[]> descriptors = query.getResultDescriptors();
 
 		if (descriptors.isEmpty()) {
 			builder.setResultSet(resultSet);
@@ -176,8 +177,7 @@ public class ProcedureAction extends BaseSQLAction {
 				throw new CayenneRuntimeException("No descriptor for result set at index '%d' configured.", setIndex);
 			}
 
-			ColumnDescriptor[] columns = descriptors.get(setIndex);
-			builder.setColumns(columns);
+			builder.setColumns(toColumnDescriptors(descriptors.get(setIndex)));
 		}
 
 		switch (query.getColumnNamesCapitalization()) {
@@ -190,6 +190,21 @@ public class ProcedureAction extends BaseSQLAction {
 		}
 
 		return builder.getDescriptor(dataNode.getAdapter().getExtendedTypes());
+	}
+
+	/**
+	 * Translates the adapter-independent {@link ProcedureColumn} specs configured on the query into runtime
+	 * {@link ColumnDescriptor}s.
+	 *
+	 * @since 5.0
+	 */
+	private static ColumnDescriptor[] toColumnDescriptors(ProcedureColumn[] columns) {
+		ColumnDescriptor[] result = new ColumnDescriptor[columns.length];
+		for (int i = 0; i < columns.length; i++) {
+			ProcedureColumn c = columns[i];
+			result[i] = new ColumnDescriptor(c.name(), c.dataRowKey(), c.jdbcType(), c.javaClass(), null);
+		}
+		return result;
 	}
 
 	/**
@@ -220,12 +235,11 @@ public class ProcedureAction extends BaseSQLAction {
 				result = new DataRow(2);
 			}
 
-			ColumnDescriptor descriptor = new ColumnDescriptor(
-					parameter.getName(), parameter.getName(), parameter.getType(), TypesMapping.getJavaBySqlType(parameter.getType()), null);
-			ExtendedType type = dataNode.getAdapter().getExtendedTypes().getRegisteredType(descriptor.javaClass());
-			Object val = type.materializeObject(statement, i + 1, descriptor.jdbcType());
+			ExtendedType type = dataNode.getAdapter().getExtendedTypes()
+					.getRegisteredType(TypesMapping.getJavaBySqlType(parameter.getType()));
+			Object val = type.materializeObject(statement, i + 1, parameter.getType());
 
-			result.put(descriptor.dataRowKey(), val);
+			result.put(parameter.getName(), val);
 		}
 
 		if (result != null && !result.isEmpty()) {

@@ -23,7 +23,6 @@ import org.apache.cayenne.DataRow;
 import org.apache.cayenne.ObjectContext;
 import org.apache.cayenne.ProcedureResult;
 import org.apache.cayenne.QueryResponse;
-import org.apache.cayenne.access.jdbc.ColumnDescriptor;
 import org.apache.cayenne.map.EntityResolver;
 import org.apache.cayenne.util.ProcedureResultBuilder;
 
@@ -71,7 +70,7 @@ public class ProcedureCall<T> extends IndirectQuery {
     protected Integer fetchOffset;
     protected CapsStrategy capsStrategy;
     protected Boolean fetchingDataRows;
-    protected ColumnDescriptor[] resultDescriptor;
+    protected ProcedureColumn[] resultDescriptor;
 
     public ProcedureCall(String procedureName) {
         this.procedureName = procedureName;
@@ -125,7 +124,7 @@ public class ProcedureCall<T> extends IndirectQuery {
         return this;
     }
 
-    public ProcedureCall<T> resultDescriptor(ColumnDescriptor[] resultDescriptor) {
+    public ProcedureCall<T> resultDescriptor(ProcedureColumn[] resultDescriptor) {
         this.resultDescriptor = resultDescriptor;
 
         return this;

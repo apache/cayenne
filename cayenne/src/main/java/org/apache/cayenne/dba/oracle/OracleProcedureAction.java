@@ -28,7 +28,6 @@ import java.util.List;
 import org.apache.cayenne.DataRow;
 import org.apache.cayenne.access.DataNode;
 import org.apache.cayenne.access.OperationObserver;
-import org.apache.cayenne.access.jdbc.ColumnDescriptor;
 import org.apache.cayenne.access.jdbc.ProcedureAction;
 import org.apache.cayenne.access.jdbc.RowDescriptor;
 import org.apache.cayenne.dba.TypesMapping;
@@ -80,13 +79,11 @@ class OracleProcedureAction extends ProcedureAction {
 					result = new DataRow(2);
 				}
 
-				ColumnDescriptor descriptor = new ColumnDescriptor(
-						parameter.getName(), parameter.getName(), parameter.getType(), TypesMapping.getJavaBySqlType(parameter.getType()), null);
 				ExtendedType type = dataNode.getAdapter().getExtendedTypes()
-						.getRegisteredType(descriptor.javaClass());
-				Object val = type.materializeObject(statement, i + 1, descriptor.jdbcType());
+						.getRegisteredType(TypesMapping.getJavaBySqlType(parameter.getType()));
+				Object val = type.materializeObject(statement, i + 1, parameter.getType());
 
-				result.put(descriptor.dataRowKey(), val);
+				result.put(parameter.getName(), val);
 			}
 		}
 

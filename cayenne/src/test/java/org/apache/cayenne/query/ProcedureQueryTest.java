@@ -19,7 +19,6 @@
 
 package org.apache.cayenne.query;
 
-import org.apache.cayenne.access.jdbc.ColumnDescriptor;
 import org.junit.jupiter.api.Test;
 
 import java.util.Collections;
@@ -79,7 +78,7 @@ public class ProcedureQueryTest {
         assertNotNull(query.getResultDescriptors());
         assertTrue(query.getResultDescriptors().isEmpty());
 
-        ColumnDescriptor[] descriptor = new ColumnDescriptor[5];
+        ProcedureColumn[] descriptor = new ProcedureColumn[5];
         query.addResultDescriptor(descriptor);
         assertEquals(1, query.getResultDescriptors().size());
         assertTrue(query.getResultDescriptors().contains(descriptor));
