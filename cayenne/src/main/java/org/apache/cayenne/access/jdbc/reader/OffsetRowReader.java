@@ -94,8 +94,12 @@ class OffsetRowReader implements RowReader<DataRow> {
 
         private final EntityInheritanceTree entityInheritanceTree;
 
-        InheritanceAwareOffsetRowReader(RSColumn[] columns, int startIndex, String entityName,
-                                        EntityInheritanceTree entityInheritanceTree) {
+        private InheritanceAwareOffsetRowReader(
+                RSColumn[] columns,
+                int startIndex,
+                String entityName,
+                EntityInheritanceTree entityInheritanceTree) {
+
             super(columns, startIndex, entityName);
             this.entityInheritanceTree = entityInheritanceTree;
         }

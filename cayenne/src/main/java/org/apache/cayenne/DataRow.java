@@ -19,13 +19,13 @@
 
 package org.apache.cayenne;
 
+import org.apache.cayenne.map.DbRelationship;
+import org.apache.cayenne.util.ToStringBuilder;
+
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Objects;
 import java.util.concurrent.atomic.AtomicLong;
-
-import org.apache.cayenne.map.DbRelationship;
-import org.apache.cayenne.util.ToStringBuilder;
 
 /**
  * DataRow a map that holds values retrieved from the database for a given query row.
@@ -76,11 +76,7 @@ public class DataRow extends HashMap<String, Object> {
      */
     public DataRow applyDiff(DataRow diff) {
         DataRow merged = new DataRow(this);
-
-        for (Map.Entry<String, Object> entry : diff.entrySet()) {
-            merged.put(entry.getKey(), entry.getValue());
-        }
-
+        merged.putAll(diff);
         return merged;
     }
 

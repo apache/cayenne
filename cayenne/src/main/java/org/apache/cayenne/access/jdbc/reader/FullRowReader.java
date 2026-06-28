@@ -50,7 +50,7 @@ class FullRowReader implements RowReader<DataRow> {
         return new FullRowReader(columns, entityName);
     }
 
-    public FullRowReader(RSColumn[] columns, String entityName) {
+    private FullRowReader(RSColumn[] columns, String entityName) {
         this.columns = columns;
         this.entityName = entityName;
         this.mapCapacity = (int) Math.ceil(columns.length / 0.75);
@@ -88,7 +88,7 @@ class FullRowReader implements RowReader<DataRow> {
 
         private final EntityInheritanceTree entityInheritanceTree;
 
-        InheritanceAwareRowReader(RSColumn[] columns, String entityName, EntityInheritanceTree entityInheritanceTree) {
+        private InheritanceAwareRowReader(RSColumn[] columns, String entityName, EntityInheritanceTree entityInheritanceTree) {
             super(columns, entityName);
             this.entityInheritanceTree = entityInheritanceTree;
         }
