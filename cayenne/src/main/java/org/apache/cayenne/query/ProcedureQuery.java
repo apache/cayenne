@@ -45,7 +45,7 @@ import java.util.Map;
  * {@link org.apache.cayenne.access.DataContext#performQuery(Query)} makes sense only if
  * the stored procedure returns a single result set (or alternatively returns a result via
  * OUT parameters and no other result sets). It is still OK if data modification occurs as
- * a side effect. However if the query returns more then one result set, a more generic
+ * a side effect. However, if the query returns more then one result set, a more generic
  * form should be used:
  * {@link org.apache.cayenne.access.DataContext#performGenericQuery(Query)}.
  * </p>
@@ -141,13 +141,13 @@ public class ProcedureQuery extends AbstractQuery implements ParameterizedQuery 
      * <p>
      * <i>Note that if a procedure returns ResultSet in an OUT parameter, it is returned
      * prior to any other result sets (though in practice database engines usually support
-     * only one mechanism for returning result sets. </i>
+     * only one mechanism for returning result sets).</i>
      * </p>
      * 
      * @since 5.0
      */
     public List<ProcedureColumn[]> getResultDescriptors() {
-        return resultDescriptors != null ? resultDescriptors : Collections.<ProcedureColumn[]>emptyList();
+        return resultDescriptors != null ? resultDescriptors : Collections.emptyList();
     }
 
     /**
