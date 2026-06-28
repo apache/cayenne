@@ -44,20 +44,22 @@ public abstract class BaseBatchTranslator<T extends BatchQuery> implements Batch
         BatchTranslatorContext<T> context = new BatchTranslatorContext<>(query, adapter);
 
         String sql = createSql(context);
-        ParameterBinding[] bindings = createBindings(context);
+        BatchParameterBinding[] bindings = createBindings(context);
 
-        return new TranslatedBatch(sql, bindings, (b, row) -> updateBindings(context, b, row));
+        return new TranslatedBatch(sql, bindings, (template, row) -> updateBindings(context, template, row));
     }
 
     protected abstract String createSql(BatchTranslatorContext<T> context);
 
-    protected ParameterBinding[] createBindings(BatchTranslatorContext<T> context) {
-        return context.getBindings().toArray(new ParameterBinding[0]);
+    protected BatchParameterBinding[] createBindings(BatchTranslatorContext<T> context) {
+        return context.getBindings().stream()
+                .map(b -> new BatchParameterBinding(b.jdbcType(), b.scale(), b.attribute()))
+                .toArray(BatchParameterBinding[]::new);
     }
 
     protected abstract ParameterBinding[] updateBindings(
             BatchTranslatorContext<T> context,
-            ParameterBinding[] bindings,
+            BatchParameterBinding[] template,
             BatchQueryRow row);
 
     protected String doTranslate(BatchTranslatorContext<T> context, NodeBuilder nodeBuilder) {

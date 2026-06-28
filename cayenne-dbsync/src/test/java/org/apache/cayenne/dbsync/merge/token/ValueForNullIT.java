@@ -105,7 +105,7 @@ public class ValueForNullIT extends MergeCase {
                 int type = column.getType();
                 switch (type) {
                     case Types.VARCHAR:
-                        return new ParameterBinding(type, -1).reset(1, DEFAULT_VALUE_STRING, null);
+                        return new ParameterBinding(type, -1, null, 1, DEFAULT_VALUE_STRING, null);
                     default:
                         throw new AssertionError("should not get here");
                 }

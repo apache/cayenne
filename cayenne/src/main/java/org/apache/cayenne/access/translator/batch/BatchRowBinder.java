@@ -23,14 +23,13 @@ import org.apache.cayenne.access.translator.ParameterBinding;
 import org.apache.cayenne.query.BatchQueryRow;
 
 /**
- * A stateless strategy that populates a batch query's binding template with the values of a single
- * {@link BatchQueryRow}. The same template array is reused for every row, so the returned array is the
- * one passed in, only with the per-row state applied.
+ * A stateless strategy that resolves a batch query's binding templates against the values of a single
+ * {@link BatchQueryRow}, returning a fresh array of per-row {@link ParameterBinding}s.
  *
  * @since 5.0
  */
 @FunctionalInterface
 public interface BatchRowBinder {
 
-    ParameterBinding[] bind(ParameterBinding[] bindings, BatchQueryRow row);
+    ParameterBinding[] bind(BatchParameterBinding[] template, BatchQueryRow row);
 }

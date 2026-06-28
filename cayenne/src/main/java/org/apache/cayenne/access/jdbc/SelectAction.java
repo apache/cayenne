@@ -79,8 +79,8 @@ public class SelectAction extends BaseSQLAction {
             // processing (qualifier can't map parameters to DbAttributes
             // and therefore only supports standard java types now) hence, a
             // special moronic case here:
-            if (b.getAttribute() == null) {
-                statement.setObject(b.getStatementPosition(), b.getValue());
+            if (b.attribute() == null) {
+                statement.setObject(b.statementPosition(), b.value());
             } else {
                 adapter.bindParameter(statement, b);
             }

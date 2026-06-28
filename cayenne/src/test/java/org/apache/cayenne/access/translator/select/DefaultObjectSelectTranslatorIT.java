@@ -72,8 +72,8 @@ public class DefaultObjectSelectTranslatorIT {
         assertTrue(sql.indexOf("WHERE") > sql.indexOf("JOIN PAINTING t1"));
 
         assertEquals(2, translator.bindings().length);
-        assertEquals("ARTIST_NAME", translator.bindings()[0].getAttribute().getName());
-        assertEquals("PAINTING_TITLE", translator.bindings()[1].getAttribute().getName());
+        assertEquals("ARTIST_NAME", translator.bindings()[0].attribute().getName());
+        assertEquals("PAINTING_TITLE", translator.bindings()[1].attribute().getName());
 
         assertEquals(3, translator.resultColumns().length);
         assertEquals("ARTIST_NAME", translator.resultColumns()[0].dataRowKey());

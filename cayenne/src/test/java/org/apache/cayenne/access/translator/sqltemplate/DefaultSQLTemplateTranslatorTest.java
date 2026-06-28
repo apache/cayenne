@@ -236,12 +236,12 @@ public class DefaultSQLTemplateTranslatorTest {
 
     private void assertBindingValue(Object expectedValue, Object binding) {
         assertTrue(binding instanceof ParameterBinding, "Not a binding!");
-        assertEquals(expectedValue, ((ParameterBinding) binding).getValue());
+        assertEquals(expectedValue, ((ParameterBinding) binding).value());
     }
 
     private void assertBindingType(Integer expectedType, Object binding) {
         assertTrue(binding instanceof ParameterBinding, "Not a binding!");
-        assertEquals(expectedType, ((ParameterBinding) binding).getJdbcType());
+        assertEquals(expectedType, ((ParameterBinding) binding).jdbcType());
     }
 
 }

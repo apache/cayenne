@@ -54,8 +54,9 @@ public class InsertBatchTranslator extends BaseBatchTranslator<InsertBatchQuery>
 
     @Override
     protected ParameterBinding[] updateBindings(BatchTranslatorContext<InsertBatchQuery> context,
-                                                ParameterBinding[] bindings, BatchQueryRow row) {
+                                                BatchParameterBinding[] template, BatchQueryRow row) {
         InsertBatchQuery query = context.getQuery();
+        ParameterBinding[] bindings = new ParameterBinding[template.length];
         int i=0;
         int j=0;
         for(DbAttribute attribute : query.getDbAttributes()) {
@@ -65,10 +66,10 @@ public class InsertBatchTranslator extends BaseBatchTranslator<InsertBatchQuery>
             }
 
             Object value = row.getValue(i++);
-            ExtendedType<?> extendedType = value != null
+            ExtendedType extendedType = value != null
                     ? context.getAdapter().getExtendedTypes().getRegisteredType(value.getClass())
                     : context.getAdapter().getExtendedTypes().getDefaultType();
-            bindings[j].reset(++j, value, extendedType);
+            bindings[j] = template[j].bind(++j, value, extendedType);
         }
         return bindings;
     }

@@ -122,14 +122,14 @@ public class Context {
         return null;
     }
 
-    public void addParameterBinding(ParameterBinding binding, Object value) {
+    public void addParameterBinding(int jdbcType, int scale, Object value) {
         if(parameterBindings == null) {
             parameterBindings = new ArrayList<>();
         }
         // a binding's statement position is its 1-based ordinal among the bound parameters; the
         // ExtendedType is resolved from the value via the adapter
-        binding.reset(parameterBindings.size() + 1, value, extendedType(value));
-        parameterBindings.add(binding);
+        parameterBindings.add(new ParameterBinding(jdbcType, scale, null,
+                parameterBindings.size() + 1, value, extendedType(value)));
     }
 
     private ExtendedType<?> extendedType(Object value) {

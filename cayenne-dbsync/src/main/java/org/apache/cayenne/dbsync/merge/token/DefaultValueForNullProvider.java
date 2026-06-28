@@ -35,8 +35,7 @@ public class DefaultValueForNullProvider implements ValueForNullProvider {
     public void set(DbEntity entity, DbAttribute column, Object value, int type) {
         // the binding is only ever read for its value (inlined into the UPDATE below), never bound to a
         // statement, so the position is irrelevant here
-        ParameterBinding binding = new ParameterBinding(type, column.getAttributePrecision())
-                .reset(1, value, null);
+        ParameterBinding binding = new ParameterBinding(type, column.getAttributePrecision(), null, 1, value, null);
         values.put(createKey(entity, column), binding);
     }
 
@@ -52,7 +51,7 @@ public class DefaultValueForNullProvider implements ValueForNullProvider {
 
         // TODO: change things so it is possible to use prepared statements here
         return Collections.singletonList("UPDATE " + entity.getFullyQualifiedName()
-                + " SET " + column.getName() + "='" + value.getValue() + "' WHERE " + column.getName() + " IS NULL");
+                + " SET " + column.getName() + "='" + value.value() + "' WHERE " + column.getName() + " IS NULL");
     }
 
     public boolean hasValueFor(DbEntity entity, DbAttribute column) {

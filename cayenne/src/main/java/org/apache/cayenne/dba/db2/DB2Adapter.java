@@ -191,8 +191,8 @@ public class DB2Adapter extends JdbcAdapter {
 
     @Override
     public void bindParameter(PreparedStatement statement, ParameterBinding binding) throws Exception {
-        if (binding.getValue() == null && (binding.getJdbcType() == 0 || binding.getJdbcType() == Types.BOOLEAN)) {
-            statement.setNull(binding.getStatementPosition(), Types.VARCHAR);
+        if (binding.value() == null && (binding.jdbcType() == 0 || binding.jdbcType() == Types.BOOLEAN)) {
+            statement.setNull(binding.statementPosition(), Types.VARCHAR);
         } else {
             super.bindParameter(statement, binding);
         }

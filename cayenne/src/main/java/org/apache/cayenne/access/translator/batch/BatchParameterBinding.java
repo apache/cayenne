@@ -20,21 +20,21 @@
 package org.apache.cayenne.access.translator.batch;
 
 import org.apache.cayenne.access.translator.ParameterBinding;
-import org.apache.cayenne.query.BatchQueryRow;
+import org.apache.cayenne.access.types.ExtendedType;
+import org.apache.cayenne.map.DbAttribute;
 
 /**
- * An immutable result of translating a batch query: the SQL String shared by all rows of the batch,
- * the widest possible array of per-batch binding templates, and a stateless {@link BatchRowBinder} that
- * resolves a single row's state into per-row bindings.
+ * An immutable per-batch parameter binding template, carrying only the static column metadata shared by all
+ * rows of a batch. A per-row {@link ParameterBinding} is produced by {@link #bind(int, Object, ExtendedType)}.
  *
  * @since 5.0
  */
-public record TranslatedBatch(String sql, BatchParameterBinding[] bindings, BatchRowBinder binder) {
+public record BatchParameterBinding(int jdbcType, int scale, DbAttribute attribute) {
 
     /**
-     * Resolves the given row's state against the binding templates, returning a fresh per-row bindings array.
+     * Resolves this per-batch template into a per-row {@link ParameterBinding}.
      */
-    public ParameterBinding[] updateBindings(BatchQueryRow row) {
-        return binder.bind(bindings, row);
+    public <T> ParameterBinding<T> bind(int statementPosition, T value, ExtendedType<T> extendedType) {
+        return new ParameterBinding<>(jdbcType, scale, attribute, statementPosition, value, extendedType);
     }
 }

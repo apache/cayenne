@@ -22,74 +22,10 @@ import org.apache.cayenne.access.types.ExtendedType;
 import org.apache.cayenne.map.DbAttribute;
 
 /**
- * Describes a single PreparedStatement parameter binding. Partially mutable
+ * Describes a single immutable PreparedStatement parameter binding.
  *
  * @since 4.0
  */
-public class ParameterBinding<T> {
-
-    private final DbAttribute attribute;
-    private final int jdbcType;
-    private final int scale;
-
-    private T value;
-    private int statementPosition;
-    private ExtendedType<T> extendedType;
-
-    /**
-     * @since 5.0
-     */
-    public ParameterBinding(int jdbcType, int scale) {
-        this(jdbcType, scale, null);
-    }
-
-    /**
-     * @since 5.0
-     */
-    public ParameterBinding(int jdbcType, int scale, DbAttribute attribute) {
-        this.attribute = attribute;
-        this.jdbcType = jdbcType;
-        this.scale = scale;
-
-        this.statementPosition = -1;
-    }
-
-    /**
-     * Sets the value, statement position and {@link ExtendedType} of the binding.
-     *
-     * @since 5.0
-     */
-    public ParameterBinding<T> reset(int statementPosition, T value, ExtendedType<T> extendedType) {
-        this.statementPosition = statementPosition;
-        this.value = value;
-        this.extendedType = extendedType;
-        return this;
-    }
-
-    public T getValue() {
-        return value;
-    }
-
-    public int getStatementPosition() {
-        return statementPosition;
-    }
-
-    public ExtendedType<T> getExtendedType() {
-        return extendedType;
-    }
-
-    public int getJdbcType() {
-        return jdbcType;
-    }
-
-    public int getScale() {
-        return scale;
-    }
-
-    /**
-     * @since 5.0
-     */
-    public DbAttribute getAttribute() {
-        return attribute;
-    }
+public record ParameterBinding<T>(int jdbcType, int scale, DbAttribute attribute,
+                                  int statementPosition, T value, ExtendedType<T> extendedType) {
 }

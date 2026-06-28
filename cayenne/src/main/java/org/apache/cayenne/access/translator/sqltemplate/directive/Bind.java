@@ -22,7 +22,6 @@ package org.apache.cayenne.access.translator.sqltemplate.directive;
 import java.util.Collection;
 import java.util.Iterator;
 
-import org.apache.cayenne.access.translator.ParameterBinding;
 import org.apache.cayenne.dba.TypesMapping;
 import org.apache.cayenne.access.translator.sqltemplate.Context;
 import org.apache.cayenne.access.translator.sqltemplate.parser.ASTExpression;
@@ -67,11 +66,11 @@ public class Bind implements Directive {
             jdbcType = TypesMapping.getSqlTypeByName(TypesMapping.SQL_NULL);
         }
 
-        processBinding(context, new ParameterBinding(context.preferredBindingType(jdbcType), scale), value);
+        processBinding(context, context.preferredBindingType(jdbcType), scale, value);
     }
 
-    protected void processBinding(Context context, ParameterBinding binding, Object value) {
-        context.addParameterBinding(binding, value);
+    protected void processBinding(Context context, int jdbcType, int scale, Object value) {
+        context.addParameterBinding(jdbcType, scale, value);
         context.getBuilder().append('?');
     }
 }

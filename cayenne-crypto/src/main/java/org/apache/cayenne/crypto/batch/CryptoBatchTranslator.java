@@ -19,6 +19,7 @@
 package org.apache.cayenne.crypto.batch;
 
 import org.apache.cayenne.access.translator.ParameterBinding;
+import org.apache.cayenne.access.translator.batch.BatchParameterBinding;
 import org.apache.cayenne.access.translator.batch.BatchTranslator;
 import org.apache.cayenne.access.translator.batch.TranslatedBatch;
 import org.apache.cayenne.crypto.transformer.BindingsTransformer;
@@ -55,11 +56,11 @@ public class CryptoBatchTranslator<T extends BatchQuery> implements BatchTransla
     }
 
     private static ParameterBinding[] transform(
-            ParameterBinding[] bindings,
+            BatchParameterBinding[] template,
             BatchQueryRow row,
             TranslatedBatch translated,
             BindingsTransformer encryptor) {
-        ParameterBinding[] updated = translated.binder().bind(bindings, row);
+        ParameterBinding[] updated = translated.binder().bind(template, row);
         encryptor.transform(updated);
         return updated;
     }

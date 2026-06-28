@@ -81,7 +81,7 @@ public class DefaultProcedureTranslator implements ProcedureTranslator {
 
         // match values with parameters in the correct order, assuming a missing value is NULL
         if (param.getDirection() == ProcedureParameter.OUT_PARAMETER) {
-            return new ParameterBinding(param.getType(), param.getPrecision()).reset(position, OUT_PARAM, null);
+            return new ParameterBinding(param.getType(), param.getPrecision(), null, position, OUT_PARAM, null);
         }
 
         Object value = queryValues.get(param.getName());
@@ -89,8 +89,8 @@ public class DefaultProcedureTranslator implements ProcedureTranslator {
                 ? adapter.getExtendedTypes().getRegisteredType(value.getClass())
                 : adapter.getExtendedTypes().getDefaultType();
 
-        return new ParameterBinding(adapter.preferredBindingType(param.getType()), param.getPrecision())
-                .reset(position, value, extendedType);
+        return new ParameterBinding(adapter.preferredBindingType(param.getType()), param.getPrecision(), null,
+                position, value, extendedType);
     }
 
     /**

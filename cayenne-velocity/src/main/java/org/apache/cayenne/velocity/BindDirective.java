@@ -133,7 +133,7 @@ public class BindDirective extends Directive {
 					+ ") at line " + node.getLine() + ", column " + node.getColumn());
 		}
 
-		render(context, writer, new ParameterBinding(preferredBindingType(context, jdbcType), scale), value);
+		render(context, writer, preferredBindingType(context, jdbcType), scale, value);
 	}
 
 	/**
@@ -149,10 +149,10 @@ public class BindDirective extends Directive {
 		return (DbAdapter) context.getInternalUserContext().get(VelocitySQLTemplateTranslator.ADAPTER_KEY);
 	}
 
-	protected void render(InternalContextAdapter context, Writer writer, ParameterBinding binding, Object value)
+	protected void render(InternalContextAdapter context, Writer writer, int jdbcType, int scale, Object value)
 			throws IOException {
 
-		bind(context, binding, value);
+		bind(context, jdbcType, scale, value);
 		writer.write('?');
 	}
 
@@ -163,7 +163,7 @@ public class BindDirective extends Directive {
 	/**
 	 * Adds value to the list of bindings in the context.
 	 */
-	protected void bind(InternalContextAdapter context, ParameterBinding binding, Object value) {
+	protected void bind(InternalContextAdapter context, int jdbcType, int scale, Object value) {
 
 		@SuppressWarnings("unchecked")
 		Collection<ParameterBinding> bindings = (Collection<ParameterBinding>)
@@ -172,8 +172,8 @@ public class BindDirective extends Directive {
 		if (bindings != null) {
 			// a binding's statement position is its 1-based ordinal among the bound parameters; the
 			// ExtendedType is resolved from the value via the adapter
-			binding.reset(bindings.size() + 1, value, extendedType(context, value));
-			bindings.add(binding);
+			bindings.add(new ParameterBinding(jdbcType, scale, null,
+					bindings.size() + 1, value, extendedType(context, value)));
 		}
 	}
 

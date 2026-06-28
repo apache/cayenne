@@ -625,14 +625,14 @@ public class JdbcAdapter implements DbAdapter {
     @Override
     public void bindParameter(PreparedStatement statement, ParameterBinding binding) throws Exception {
 
-        if (binding.getValue() == null) {
-            statement.setNull(binding.getStatementPosition(), binding.getJdbcType());
+        if (binding.value() == null) {
+            statement.setNull(binding.statementPosition(), binding.jdbcType());
         } else {
-            binding.getExtendedType().setJdbcObject(statement,
-                    binding.getValue(),
-                    binding.getStatementPosition(),
-                    binding.getJdbcType(),
-                    binding.getScale());
+            binding.extendedType().setJdbcObject(statement,
+                    binding.value(),
+                    binding.statementPosition(),
+                    binding.jdbcType(),
+                    binding.scale());
         }
     }
 

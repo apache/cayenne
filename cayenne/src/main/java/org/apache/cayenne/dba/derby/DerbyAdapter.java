@@ -219,8 +219,8 @@ public class DerbyAdapter extends JdbcAdapter {
             PreparedStatement statement,
             ParameterBinding binding) throws SQLException, Exception {
 
-        if (binding.getValue() == null && binding.getJdbcType() == 0) {
-            statement.setNull(binding.getStatementPosition(), Types.VARCHAR);
+        if (binding.value() == null && binding.jdbcType() == 0) {
+            statement.setNull(binding.statementPosition(), Types.VARCHAR);
         } else {
             super.bindParameter(statement, binding);
         }

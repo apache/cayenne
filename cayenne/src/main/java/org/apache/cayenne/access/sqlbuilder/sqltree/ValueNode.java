@@ -133,11 +133,13 @@ public class ValueNode extends Node {
 
         // 'attribute' is only a type hint and may be absent (e.g. function arguments and other
         // literals not bound to a column); fall back to deriving the JDBC type from the value
+        int statementPosition = context.getBindings().size() + 1;
         ParameterBinding binding = (attribute != null)
-                ? new ParameterBinding(context.getAdapter().preferredBindingType(attribute.getType()), attribute.getScale(), attribute)
-                : new ParameterBinding(context.getAdapter().preferredBindingType(TypesMapping.getSqlTypeByJava(value.getClass())), -1);
+                ? new ParameterBinding(context.getAdapter().preferredBindingType(attribute.getType()),
+                        attribute.getScale(), attribute, statementPosition, value, extendedType)
+                : new ParameterBinding(context.getAdapter().preferredBindingType(TypesMapping.getSqlTypeByJava(value.getClass())),
+                        -1, null, statementPosition, value, extendedType);
 
-        binding.reset(context.getBindings().size() + 1, value, extendedType);
         context.getBindings().add(binding);
     }
 

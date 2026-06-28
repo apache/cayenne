@@ -81,7 +81,7 @@ class PostgresSelectAction extends SelectAction {
 		}
 		// a large object bound as a parameter (e.g. in a qualifier) also needs a transaction
 		for (ParameterBinding binding : translated.bindings()) {
-			if (isLargeObject(binding.getJdbcType())) {
+			if (isLargeObject(binding.jdbcType())) {
 				return true;
 			}
 		}

@@ -48,25 +48,27 @@ public class DeleteBatchTranslator extends BaseBatchTranslator<DeleteBatchQuery>
     @Override
     protected ParameterBinding[] updateBindings(
             BatchTranslatorContext<DeleteBatchQuery> context,
-            ParameterBinding[] bindings,
+            BatchParameterBinding[] template,
             BatchQueryRow row) {
 
         DeleteBatchQuery deleteBatch = context.getQuery();
+        ParameterBinding[] bindings = new ParameterBinding[template.length];
         for (int i = 0, position = 0; i < deleteBatch.getDbAttributes().size(); i++) {
-            position = updateBinding(context, bindings, row.getValue(i), position);
+            position = updateBinding(context, template, bindings, row.getValue(i), position);
         }
         return bindings;
     }
 
     protected int updateBinding(
             BatchTranslatorContext<DeleteBatchQuery> context,
+            BatchParameterBinding[] template,
             ParameterBinding[] bindings,
             Object value, int position) {
-        
+
         // skip null attributes... they are translated as "IS NULL"
         if (value != null) {
-            ExtendedType<?> extendedType = context.getAdapter().getExtendedTypes().getRegisteredType(value.getClass());
-            bindings[position].reset(++position, value, extendedType);
+            ExtendedType extendedType = context.getAdapter().getExtendedTypes().getRegisteredType(value.getClass());
+            bindings[position] = template[position].bind(++position, value, extendedType);
         }
         return position;
     }

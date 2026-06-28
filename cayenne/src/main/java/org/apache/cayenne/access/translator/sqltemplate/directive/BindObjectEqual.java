@@ -27,7 +27,6 @@ import java.util.Map;
 import org.apache.cayenne.CayenneRuntimeException;
 import org.apache.cayenne.ObjectId;
 import org.apache.cayenne.Persistent;
-import org.apache.cayenne.access.translator.ParameterBinding;
 import org.apache.cayenne.dba.TypesMapping;
 import org.apache.cayenne.access.translator.sqltemplate.Context;
 import org.apache.cayenne.access.translator.sqltemplate.parser.ASTExpression;
@@ -81,7 +80,7 @@ public class BindObjectEqual implements Directive {
             int jdbcType = (value != null) ? TypesMapping.getSqlTypeByJava(value.getClass()) : Types.INTEGER;
 
             renderColumn(context, sqlColumnsArray[i], i);
-            render(context, new ParameterBinding(context.preferredBindingType(jdbcType), -1), value);
+            render(context, context.preferredBindingType(jdbcType), -1, value);
         }
     }
 
@@ -93,9 +92,9 @@ public class BindObjectEqual implements Directive {
         context.getBuilder().append(columnName).append(' ');
     }
 
-    protected void render(Context context, ParameterBinding binding, Object value) {
+    protected void render(Context context, int jdbcType, int scale, Object value) {
         if (value != null) {
-            context.addParameterBinding(binding, value);
+            context.addParameterBinding(jdbcType, scale, value);
             context.getBuilder().append("= ?");
         } else {
             context.getBuilder().append("IS NULL");

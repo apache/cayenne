@@ -76,32 +76,24 @@ public class SoftDeleteBatchTranslator extends DeleteBatchTranslator {
     }
 
     @Override
-    protected ParameterBinding[] createBindings(BatchTranslatorContext<DeleteBatchQuery> context) {
-        ParameterBinding[] bindings = super.createBindings(context);
-        if (isHardDelete(context.getQuery())) {
-            return bindings;
-        }
-
-        // the 'deleted' flag is the first binding and stays constant across all rows of the batch
-        DbAttribute deleteAttribute = context.getQuery().getDbEntity().getAttribute(deletedFieldName);
-        String typeName = TypesMapping.getJavaBySqlType(deleteAttribute);
-        ExtendedType<?> extendedType = context.getAdapter().getExtendedTypes().getRegisteredType(typeName);
-        bindings[0].reset(1, true, extendedType);
-
-        return bindings;
-    }
-
-    @Override
     protected ParameterBinding[] updateBindings(BatchTranslatorContext<DeleteBatchQuery> context,
-                                                ParameterBinding[] bindings, BatchQueryRow row) {
+                                                BatchParameterBinding[] template, BatchQueryRow row) {
         DeleteBatchQuery deleteBatch = context.getQuery();
         if (isHardDelete(deleteBatch)) {
-            return super.updateBindings(context, bindings, row);
+            return super.updateBindings(context, template, row);
         }
+
+        ParameterBinding[] bindings = new ParameterBinding[template.length];
+
+        // the 'deleted' flag is the first binding and stays constant across all rows of the batch
+        DbAttribute deleteAttribute = deleteBatch.getDbEntity().getAttribute(deletedFieldName);
+        String typeName = TypesMapping.getJavaBySqlType(deleteAttribute);
+        ExtendedType extendedType = context.getAdapter().getExtendedTypes().getRegisteredType(typeName);
+        bindings[0] = template[0].bind(1, Boolean.TRUE, extendedType);
 
         // bindings[0] holds the constant 'deleted' flag, so qualifier values start at position 1
         for(int i=0, position=1; i<deleteBatch.getDbAttributes().size(); i++) {
-            position = updateBinding(context, bindings, row.getValue(i), position);
+            position = updateBinding(context, template, bindings, row.getValue(i), position);
         }
 
         return bindings;

@@ -112,19 +112,19 @@ public class CompactSlf4jJdbcEventLogger extends Slf4jJdbcEventLogger {
         String key = null;
         String value;
         for (ParameterBinding b : bindings) {
-            DbAttribute attribute = b.getAttribute();
+            DbAttribute attribute = b.attribute();
             if (attribute != null) {
                 key = attribute.getName();
             }
 
-            if (b.getExtendedType() != null) {
-                value = b.getExtendedType().toString(b.getValue());
-            } else if (b.getValue() == null) {
+            if (b.extendedType() != null) {
+                value = b.extendedType().toString(b.value());
+            } else if (b.value() == null) {
                 value = "NULL";
             } else {
-                value = b.getValue().getClass().getName() +
+                value = b.value().getClass().getName() +
                         "@" +
-                        System.identityHashCode(b.getValue());
+                        System.identityHashCode(b.value());
             }
 
             List<String> objects = bindingsMap.computeIfAbsent(key, k -> new ArrayList<>());

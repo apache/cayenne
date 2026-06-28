@@ -51,13 +51,14 @@ public class DefaultBindingsTransformer implements BindingsTransformer {
 
         for (int i = 0; i < len; i++) {
             ParameterBinding b = bindings[positions[i]];
-            Object transformed = transformers[i].encrypt(encryptor, b.getValue());
+            Object transformed = transformers[i].encrypt(encryptor, b.value());
 
             ExtendedType extendedType = transformed != null
                     ? extendedTypeMap.getRegisteredType(transformed.getClass())
                     : extendedTypeMap.getDefaultType();
 
-            b.reset(b.getStatementPosition(), transformed, extendedType);
+            bindings[positions[i]] = new ParameterBinding(b.jdbcType(), b.scale(), b.attribute(),
+                    b.statementPosition(), transformed, extendedType);
         }
     }
 

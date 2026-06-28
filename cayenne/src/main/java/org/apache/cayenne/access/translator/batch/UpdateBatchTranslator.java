@@ -55,17 +55,18 @@ public class UpdateBatchTranslator extends BaseBatchTranslator<UpdateBatchQuery>
 
     @Override
     protected ParameterBinding[] updateBindings(BatchTranslatorContext<UpdateBatchQuery> context,
-                                                ParameterBinding[] bindings, BatchQueryRow row) {
+                                                BatchParameterBinding[] template, BatchQueryRow row) {
         UpdateBatchQuery updateBatch = context.getQuery();
+        ParameterBinding[] bindings = new ParameterBinding[template.length];
 
         int i = 0;
         int j = 0;
         for(; i < updateBatch.getUpdatedAttributes().size(); i++) {
             Object value = row.getValue(i);
-            ExtendedType<?> extendedType = value == null
+            ExtendedType extendedType = value == null
                 ? context.getAdapter().getExtendedTypes().getDefaultType()
                 : context.getAdapter().getExtendedTypes().getRegisteredType(value.getClass());
-            bindings[j].reset(++j, value, extendedType);
+            bindings[j] = template[j].bind(++j, value, extendedType);
         }
 
         for(DbAttribute attribute : updateBatch.getQualifierAttributes()) {
@@ -74,8 +75,8 @@ public class UpdateBatchTranslator extends BaseBatchTranslator<UpdateBatchQuery>
                 continue;
             }
             Object value = row.getValue(i);
-            ExtendedType<?> extendedType = context.getAdapter().getExtendedTypes().getRegisteredType(value.getClass());
-            bindings[j].reset(++j, value, extendedType);
+            ExtendedType extendedType = context.getAdapter().getExtendedTypes().getRegisteredType(value.getClass());
+            bindings[j] = template[j].bind(++j, value, extendedType);
             i++;
         }
         return bindings;

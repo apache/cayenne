@@ -118,8 +118,8 @@ public class IngresAdapter extends JdbcAdapter {
     @Override
     public void bindParameter(PreparedStatement statement, ParameterBinding binding) throws Exception {
 
-        if (binding.getValue() == null && (binding.getJdbcType() == Types.BIT)) {
-            statement.setNull(binding.getStatementPosition(), Types.SMALLINT);
+        if (binding.value() == null && (binding.jdbcType() == Types.BIT)) {
+            statement.setNull(binding.statementPosition(), Types.SMALLINT);
         } else {
             super.bindParameter(statement, binding);
         }

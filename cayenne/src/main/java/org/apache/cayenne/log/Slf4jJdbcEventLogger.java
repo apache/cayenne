@@ -110,7 +110,7 @@ public class Slf4jJdbcEventLogger implements JdbcEventLogger {
 
 				buffer.append(j++);
 
-				DbAttribute attribute = b.getAttribute();
+				DbAttribute attribute = b.attribute();
 				if (attribute != null) {
 					buffer.append("->");
 					buffer.append(attribute.getName());
@@ -118,14 +118,14 @@ public class Slf4jJdbcEventLogger implements JdbcEventLogger {
 
 				buffer.append(":");
 
-				if (b.getExtendedType() != null) {
-					buffer.append(b.getExtendedType().toString(b.getValue()));
-				} else if(b.getValue() == null) {
+				if (b.extendedType() != null) {
+					buffer.append(b.extendedType().toString(b.value()));
+				} else if(b.value() == null) {
 				    buffer.append("NULL");
                 } else {
-					buffer.append(b.getValue().getClass().getName())
+					buffer.append(b.value().getClass().getName())
                             .append("@")
-                            .append(System.identityHashCode(b.getValue()));
+                            .append(System.identityHashCode(b.value()));
 				}
 			}
 
