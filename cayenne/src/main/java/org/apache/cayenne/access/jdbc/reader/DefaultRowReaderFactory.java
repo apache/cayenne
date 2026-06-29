@@ -18,17 +18,13 @@
  ****************************************************************/
 package org.apache.cayenne.access.jdbc.reader;
 
-import org.apache.cayenne.CayenneRuntimeException;
 import org.apache.cayenne.access.jdbc.RSColumn;
 import org.apache.cayenne.dba.DbAdapter;
-import org.apache.cayenne.map.DbEntity;
-import org.apache.cayenne.map.ObjEntity;
 import org.apache.cayenne.query.EmbeddableResultSegment;
 import org.apache.cayenne.query.EntityResultSegment;
 import org.apache.cayenne.query.QueryMetadata;
 import org.apache.cayenne.query.ScalarResultSegment;
 
-import java.util.Arrays;
 import java.util.List;
 
 /**
@@ -99,12 +95,14 @@ public class DefaultRowReaderFactory implements RowReaderFactory {
 
     protected RowReader<?> entitySegmentReader(RSColumn[] columns, QueryMetadata metadata, EntityResultSegment segment) {
 
-        if (metadata.getPageSize() > 0) {
-            ObjEntity objEntity = metadata.getObjEntity();
-            return idReader(columns,
-                    segment.getColumnOffset(),
-                    objEntity != null ? objEntity.getName() : null,
-                    segment.getClassDescriptor().getEntity().getDbEntity());
+        // For a paginated query the result columns are trimmed to the root PK (see IdColumnExtractor). A single-column
+        // PK is read as a scalar (consumed by SimpleIdIncrementalFaultList); a compound PK falls through to the regular
+        // DataRow reader below, which over PK-only columns yields exactly the id map IncrementalFaultList expects.
+        if (metadata.getPageSize() > 0
+                && segment.getClassDescriptor().getEntity().getDbEntity().getPrimaryKeys().size() == 1) {
+            int pk = segment.getColumnOffset();
+            // jdbc column indexes start from 1
+            return new ScalarRowReader<>(columns[pk].reader(), pk + 1, columns[pk].rsType());
         }
 
         int startIndex = segment.getColumnOffset();
@@ -135,39 +133,8 @@ public class DefaultRowReaderFactory implements RowReaderFactory {
     }
 
     protected RowReader<?> noSegmentReader(RSColumn[] columns, QueryMetadata metadata) {
-        if (metadata.getPageSize() > 0) {
-            ObjEntity objEntity = metadata.getObjEntity();
-            return idReader(
-                    columns,
-                    0,
-                    objEntity != null ? objEntity.getName() : null,
-                    metadata.getDbEntity());
-        }
-        return FullRowReader.of(columns, metadata);
+        return metadata.getPageSize() > 0 && metadata.getDbEntity().getPrimaryKeys().size() == 1
+                ? new ScalarRowReader<>(columns[0].reader(), 1, columns[0].rsType())
+                : FullRowReader.of(columns, metadata);
     }
-
-    private RowReader<?> idReader(RSColumn[] columns, int offset, String entityName, DbEntity dbEntity) {
-        if (dbEntity == null) {
-            throw new CayenneRuntimeException("Null root DbEntity, can't index PK");
-        }
-
-        int pkLen = dbEntity.getPrimaryKeys().size();
-        if (pkLen == 0) {
-            throw new CayenneRuntimeException("Root DBEntity has no PK defined: %s", dbEntity);
-        }
-
-        // TODO: An implicit assumption below is that "RSColumn[] columns" starts with a PK block (with an optional
-        //  segment offset), and PK columns are contiguous. If the upstream algorithm ever changes, this will no longer
-        //  work.
-
-        if (pkLen == 1) {
-            RSColumn column = columns[offset];
-            // jdbc column indexes start from 1
-            return new ScalarRowReader<>(column.reader(), offset + 1, column.rsType());
-        }
-
-        RSColumn[] pkColumns = Arrays.copyOfRange(columns, offset, offset + pkLen);
-        return OffsetRowReader.of(pkColumns, offset, entityName);
-    }
-
 }
