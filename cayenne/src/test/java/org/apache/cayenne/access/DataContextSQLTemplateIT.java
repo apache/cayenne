@@ -27,6 +27,7 @@ import org.apache.cayenne.map.DataMap;
 import org.apache.cayenne.map.EntityResult;
 import org.apache.cayenne.map.SQLResult;
 import org.apache.cayenne.query.CapsStrategy;
+import org.apache.cayenne.query.SQLSelect;
 import org.apache.cayenne.query.SQLTemplate;
 import org.apache.cayenne.test.jdbc.TableHelper;
 import org.apache.cayenne.testdo.testmap.Artist;
@@ -494,6 +495,50 @@ public class DataContextSQLTemplateIT {
 		}
 		assertEquals(expectUnresolved, pagedList.getUnfetchedObjects());
 		assertEquals("artist" + (pageSize + 2), artist.getArtistName());
+	}
+
+	@Test
+	public void pageSizePkNotFirstColumn() throws Exception {
+		createFourArtists();
+
+		int pageSize = 3;
+
+		// the PK is the SECOND result column - exercises the paginated id reader's column indexing
+		String template = "SELECT ARTIST_NAME, ARTIST_ID FROM ARTIST ORDER BY ARTIST_ID";
+		SQLTemplate query = sqlTemplateCustomizer.createSQLTemplate(Artist.class, template);
+
+		query.setPageSize(pageSize);
+
+		List<?> objects = context.performQuery(query);
+
+		assertEquals(4, objects.size());
+
+		// resolving the first page must materialize the right rows by their actual PK
+		assertTrue(objects.get(0) instanceof Artist);
+		assertEquals("artist2", ((Artist) objects.get(0)).getArtistName());
+
+		// resolving a subsequent page exercises id-to-object resolution from the stored ids
+		Artist artist = (Artist) objects.get(pageSize);
+		assertEquals("artist" + (pageSize + 2), artist.getArtistName());
+	}
+
+	@Test
+	public void pageSizeSQLSelectPkNotFirstColumn() throws Exception {
+		createFourArtists();
+
+		int pageSize = 3;
+
+		// SQLSelect builds a replacement SQLTemplate, so it goes through the same paginated id reader
+		SQLSelect<Artist> query = SQLSelect
+				.query(Artist.class, "SELECT ARTIST_NAME, ARTIST_ID FROM ARTIST ORDER BY ARTIST_ID")
+				.columnNameCaps(CapsStrategy.UPPER)
+				.pageSize(pageSize);
+
+		List<Artist> objects = query.select(context);
+
+		assertEquals(4, objects.size());
+		assertEquals("artist2", objects.get(0).getArtistName());
+		assertEquals("artist" + (pageSize + 2), objects.get(pageSize).getArtistName());
 	}
 
 	@Test

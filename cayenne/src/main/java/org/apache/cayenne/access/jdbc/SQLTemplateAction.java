@@ -234,15 +234,18 @@ public class SQLTemplateAction implements SQLAction {
     }
 
     @SuppressWarnings({"unchecked", "rawtypes"})
-    protected void processSelectResult(TranslatedSQL compiled, Connection connection, Statement statement,
-                                       ResultSet resultSet, OperationObserver callback, final long startTime) throws Exception {
+    protected void processSelectResult(
+            TranslatedSQL compiled,
+            Connection connection, Statement statement,
+            ResultSet resultSet,
+            OperationObserver callback,
+            long startTime) throws Exception {
 
-        boolean iteratedResult = callback.isIteratedResult();
-        ExtendedTypeMap types = dataNode.getAdapter().getExtendedTypes();
-        RSColumn.RowBuilder rowBuilder = rowBuilder(compiled, resultSet);
         recreateQueryMetadata(resultSet);
-        RowReader<?> rowReader = dataNode.getRowReaderFactory()
-                .rowReader(rowBuilder.build(types), queryMetadata, dataNode.getAdapter());
+        boolean iteratedResult = callback.isIteratedResult();
+        RSColumn[] columns = rowBuilder(compiled, resultSet).build(dataNode.getAdapter().getExtendedTypes());
+
+        RowReader<?> rowReader = dataNode.getRowReaderFactory().rowReader(columns, queryMetadata, dataNode.getAdapter());
         ResultIterator<?> it = new RSIterator<>(statement, resultSet, rowReader);
 
         if (iteratedResult) {
@@ -317,12 +320,14 @@ public class SQLTemplateAction implements SQLAction {
     /**
      * @since 3.0
      */
-    protected RSColumn.RowBuilder rowBuilder(TranslatedSQL compiled, ResultSet resultSet)
-            throws SQLException {
+    protected RSColumn.RowBuilder rowBuilder(TranslatedSQL compiled, ResultSet resultSet) throws SQLException {
         RSColumn.RowBuilder builder = RSColumn.rowBuilder()
                 .resultSet(resultSet)
                 .columns(createColumnDescriptors(compiled))
-                .validateDuplicateColumnNames();
+                .validateDuplicateColumnNames()
+                // resolve column DbAttributes so the row reader factory can tell e.g. PK columns apart, the same way
+                // it can for ObjectSelect; lets pagination read the PK regardless of column order
+                .dbEntity(dbEntity);
 
         if (query.getResultColumnsTypes() != null) {
             builder.mergeColumnsWithRsMetadata();

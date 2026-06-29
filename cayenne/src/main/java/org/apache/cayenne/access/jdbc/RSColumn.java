@@ -24,6 +24,7 @@ import org.apache.cayenne.access.types.ExtendedType;
 import org.apache.cayenne.access.types.ExtendedTypeMap;
 import org.apache.cayenne.dba.TypesMapping;
 import org.apache.cayenne.map.DbAttribute;
+import org.apache.cayenne.map.DbEntity;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -104,6 +105,7 @@ public record RSColumn(
         private Map<String, String> typeOverrides;
         private boolean mergeColumnsWithRsMetadata;
         private boolean validateDuplicateColumnNames;
+        private DbEntity dbEntity;
 
         /**
          * Returns the array of {@link RSColumn}s describing the result row, with an {@link ExtendedType}
@@ -111,21 +113,24 @@ public record RSColumn(
          */
         public RSColumn[] build(ExtendedTypeMap typeMap) throws SQLException, IllegalStateException {
 
-            RSColumn[] columnsForRD;
+            RSColumn[] columns1;
 
             if (this.resultSetMetadata != null) {
                 // do merge between explicitly-set columns and ResultSetMetadata
                 // explicitly-set columns take precedence
-                columnsForRD = mergeResultSetAndPresetColumns(typeMap);
+                columns1 = mergeResultSetAndPresetColumns(typeMap);
             } else if (this.columns != null) {
                 // use explicitly-set columns
-                columnsForRD = this.columns;
+                columns1 = this.columns;
             } else {
                 throw new IllegalStateException(
                         "Can't build row descriptor, both 'columns' and 'resultSetMetadata' are null");
             }
 
-            return performTransformAndTypeOverride(columnsForRD, typeMap);
+            RSColumn[] columns2 = performTransformAndTypeOverride(columns1, typeMap);
+
+            // match with DbAttributes after the final names are resolved
+            return resolveDbAttributes(columns2);
         }
 
         /**
@@ -267,6 +272,29 @@ public record RSColumn(
             return result;
         }
 
+        private RSColumn[] resolveDbAttributes(RSColumn[] columnArray) {
+            if (dbEntity == null) {
+                return columnArray;
+            }
+
+            RSColumn[] result = null;
+            for (int i = 0; i < columnArray.length; i++) {
+                RSColumn column = columnArray[i];
+                if (column.attribute() != null) {
+                    continue;
+                }
+                DbAttribute attribute = dbEntity.getAttribute(column.rsName());
+                if (attribute != null) {
+                    if (result == null) {
+                        result = columnArray.clone();
+                    }
+                    result[i] = new RSColumn(
+                            column.rsName(), column.rsType(), column.dataRowName(), column.reader(), attribute);
+                }
+            }
+            return result != null ? result : columnArray;
+        }
+
         /**
          * Sets an explicit set of columns. The builder may replace these with new instances to enforce the column
          * capitalization policy and column Java type overrides.
@@ -313,6 +341,15 @@ public record RSColumn(
 
         public RowBuilder mergeColumnsWithRsMetadata() {
             this.mergeColumnsWithRsMetadata = true;
+            return this;
+        }
+
+        /**
+         * Sets the root DbEntity used to resolve each column's {@link DbAttribute} by name. Optional - when not set,
+         * column attributes are left as provided.
+         */
+        public RowBuilder dbEntity(DbEntity dbEntity) {
+            this.dbEntity = dbEntity;
             return this;
         }
     }

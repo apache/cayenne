@@ -18,14 +18,20 @@
  ****************************************************************/
 package org.apache.cayenne.access.jdbc.reader;
 
+import org.apache.cayenne.CayenneRuntimeException;
 import org.apache.cayenne.access.jdbc.RSColumn;
 import org.apache.cayenne.dba.DbAdapter;
+import org.apache.cayenne.map.DbAttribute;
+import org.apache.cayenne.map.DbEntity;
+import org.apache.cayenne.map.ObjEntity;
 import org.apache.cayenne.query.EmbeddableResultSegment;
 import org.apache.cayenne.query.EntityResultSegment;
 import org.apache.cayenne.query.QueryMetadata;
 import org.apache.cayenne.query.ScalarResultSegment;
 
+import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
 
 /**
  * @since 4.0
@@ -95,14 +101,15 @@ public class DefaultRowReaderFactory implements RowReaderFactory {
 
     protected RowReader<?> entitySegmentReader(RSColumn[] columns, QueryMetadata metadata, EntityResultSegment segment) {
 
-        // For a paginated query the result columns are trimmed to the root PK (see IdColumnExtractor). A single-column
-        // PK is read as a scalar (consumed by SimpleIdIncrementalFaultList); a compound PK falls through to the regular
-        // DataRow reader below, which over PK-only columns yields exactly the id map IncrementalFaultList expects.
-        if (metadata.getPageSize() > 0
-                && segment.getClassDescriptor().getEntity().getDbEntity().getPrimaryKeys().size() == 1) {
-            int pk = segment.getColumnOffset();
-            // jdbc column indexes start from 1
-            return new ScalarRowReader<>(columns[pk].reader(), pk + 1, columns[pk].rsType());
+        // For a paginated query only the root PK is read into the IncrementalFaultList - locate the PK columns within
+        // this segment by their DbAttribute (see idReader).
+        if (metadata.getPageSize() > 0) {
+            ObjEntity objEntity = segment.getClassDescriptor().getEntity();
+            return idReader(columns,
+                    segment.getColumnOffset(),
+                    segment.getColumnOffset() + columns.length,
+                    objEntity.getDbEntity(),
+                    objEntity.getName());
         }
 
         int startIndex = segment.getColumnOffset();
@@ -133,8 +140,57 @@ public class DefaultRowReaderFactory implements RowReaderFactory {
     }
 
     protected RowReader<?> noSegmentReader(RSColumn[] columns, QueryMetadata metadata) {
-        return metadata.getPageSize() > 0 && metadata.getDbEntity().getPrimaryKeys().size() == 1
-                ? new ScalarRowReader<>(columns[0].reader(), 1, columns[0].rsType())
-                : FullRowReader.of(columns, metadata);
+        if (metadata.getPageSize() > 0) {
+            ObjEntity objEntity = metadata.getObjEntity();
+            return idReader(columns, 0, columns.length, metadata.getDbEntity(),
+                    objEntity != null ? objEntity.getName() : null);
+        }
+        return FullRowReader.of(columns, metadata);
     }
+
+    private RowReader<?> idReader(RSColumn[] columns, int from, int to, DbEntity dbEntity, String entityName) {
+        if (dbEntity == null) {
+            throw new CayenneRuntimeException("Null root DbEntity, can't index PK");
+        }
+
+        int pkLen = dbEntity.getPrimaryKeys().size();
+        if (pkLen == 0) {
+            throw new CayenneRuntimeException("Root DbEntity has no PK defined: %s", dbEntity.getName());
+        }
+
+        RSColumn[] pkColumns = new RSColumn[pkLen];
+        int[] pkIndexes = new int[pkLen];
+        int found = 0;
+
+        Set<DbAttribute> seen = new HashSet<>();
+        for (int i = from; i < to && found < pkLen; i++) {
+            DbAttribute attribute = columns[i].attribute();
+            if (attribute != null && attribute.isPrimaryKey() && seen.add(attribute)) {
+                pkColumns[found] = columns[i];
+                pkIndexes[found] = i + 1;
+                found++;
+            }
+        }
+
+        if (found != pkLen) {
+            // TODO: HACK: the result columns don't carry resolvable PK DbAttributes (these are most likely aliased
+            //  EJBQL columns). Fall back to the legacy assumption that the PK is the first pkLen columns starting at
+            //  'from'.
+            if (from + pkLen > columns.length) {
+                throw new CayenneRuntimeException(
+                        "Result set for paginated query is missing PK column(s) of entity '%s'; expected %s",
+                        entityName, dbEntity.getPrimaryKeys().stream().map(DbAttribute::getName).toList());
+            }
+            for (int i = 0; i < pkLen; i++) {
+                pkColumns[i] = columns[from + i];
+                // jdbc column indexes start from 1
+                pkIndexes[i] = from + i + 1;
+            }
+        }
+
+        return pkLen == 1
+                ? new ScalarRowReader<>(pkColumns[0].reader(), pkIndexes[0], pkColumns[0].rsType())
+                : IndexRowReader.of(pkColumns, pkIndexes, entityName);
+    }
+
 }

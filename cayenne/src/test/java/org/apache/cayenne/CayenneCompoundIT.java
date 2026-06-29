@@ -20,8 +20,11 @@
 package org.apache.cayenne;
 
 import org.apache.cayenne.exp.property.PropertyFactory;
+import org.apache.cayenne.query.CapsStrategy;
 import org.apache.cayenne.query.EJBQLQuery;
 import org.apache.cayenne.query.ObjectSelect;
+import org.apache.cayenne.query.SQLSelect;
+import org.apache.cayenne.query.SQLTemplate;
 import org.apache.cayenne.test.jdbc.TableHelper;
 import org.apache.cayenne.testdo.compound.CharPkTestEntity;
 import org.apache.cayenne.testdo.compound.CompoundPkTestEntity;
@@ -177,6 +180,49 @@ public class CayenneCompoundIT {
         });
 
         assertEquals(4, queriesCount);
+    }
+
+    @Test
+    public void pageSizeCompoundPkSQLTemplate() throws Exception {
+        createCompoundPKs(20);
+
+        int pageSize = 7;
+
+        // the compound PK columns (KEY1, KEY2) are NOT the first selected columns and are read as a
+        // DataRow id map by the paginated id reader
+        SQLTemplate query = new SQLTemplate(CompoundPkTestEntity.class,
+                "SELECT NAME, KEY1, KEY2 FROM COMPOUND_PK_TEST ORDER BY NAME");
+        query.setColumnNamesCapitalization(CapsStrategy.UPPER);
+        query.setPageSize(pageSize);
+
+        List<?> result = env.context().performQuery(query);
+        assertEquals(20, result.size());
+
+        // resolve every page, including subsequent pages faulted in by compound id
+        for (int i = 0; i < result.size(); i++) {
+            CompoundPkTestEntity e = (CompoundPkTestEntity) result.get(i);
+            assertEquals(String.format("BBB%02d", i), e.getName());
+        }
+    }
+
+    @Test
+    public void pageSizeCompoundPkSQLSelect() throws Exception {
+        createCompoundPKs(20);
+
+        int pageSize = 7;
+
+        // SQLSelect builds a replacement SQLTemplate, so it exercises the same compound-PK paginated id reader
+        SQLSelect<CompoundPkTestEntity> query = SQLSelect
+                .query(CompoundPkTestEntity.class, "SELECT NAME, KEY1, KEY2 FROM COMPOUND_PK_TEST ORDER BY NAME")
+                .columnNameCaps(CapsStrategy.UPPER)
+                .pageSize(pageSize);
+
+        List<CompoundPkTestEntity> result = query.select(env.context());
+        assertEquals(20, result.size());
+
+        for (int i = 0; i < result.size(); i++) {
+            assertEquals(String.format("BBB%02d", i), result.get(i).getName());
+        }
     }
 
     @Test
