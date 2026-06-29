@@ -21,7 +21,6 @@ package org.apache.cayenne.access.jdbc.reader;
 import org.apache.cayenne.CayenneRuntimeException;
 import org.apache.cayenne.access.jdbc.RSColumn;
 import org.apache.cayenne.dba.DbAdapter;
-import org.apache.cayenne.map.DbAttribute;
 import org.apache.cayenne.map.DbEntity;
 import org.apache.cayenne.map.ObjEntity;
 import org.apache.cayenne.query.EmbeddableResultSegment;
@@ -101,7 +100,11 @@ public class DefaultRowReaderFactory implements RowReaderFactory {
     protected RowReader<?> entitySegmentReader(RSColumn[] columns, QueryMetadata metadata, EntityResultSegment segment) {
 
         if (metadata.getPageSize() > 0) {
-            return idReader(columns, metadata, segment);
+            ObjEntity objEntity = metadata.getObjEntity();
+            return idReader(columns,
+                    segment.getColumnOffset(),
+                    objEntity != null ? objEntity.getName() : null,
+                    segment.getClassDescriptor().getEntity().getDbEntity());
         }
 
         int startIndex = segment.getColumnOffset();
@@ -132,50 +135,39 @@ public class DefaultRowReaderFactory implements RowReaderFactory {
     }
 
     protected RowReader<?> noSegmentReader(RSColumn[] columns, QueryMetadata metadata) {
-        return metadata.getPageSize() > 0
-                ? idReader(columns, metadata, null)
-                : FullRowReader.of(columns, metadata);
-    }
-
-    private RowReader<?> idReader(RSColumn[] columns, QueryMetadata metadata, EntityResultSegment segment) {
-        int[] pk = pkIndices(columns, metadata, segment);
-
-        // single-column PK - read the value directly as a scalar
-        if (pk.length == 1) {
-            RSColumn column = columns[pk[0]];
-            // jdbc column indexes start from 1
-            return new ScalarRowReader<>(column.reader(), pk[0] + 1, column.rsType());
+        if (metadata.getPageSize() > 0) {
+            ObjEntity objEntity = metadata.getObjEntity();
+            return idReader(
+                    columns,
+                    0,
+                    objEntity != null ? objEntity.getName() : null,
+                    metadata.getDbEntity());
         }
-
-        // a multi-column PK occupies a contiguous run starting at pk[0] - read it as a compact segment
-        RSColumn[] pkColumns = Arrays.copyOfRange(columns, pk[0], pk[0] + pk.length);
-
-        ObjEntity objEntity = metadata.getObjEntity();
-        return OffsetRowReader.of(pkColumns, pk[0], objEntity != null ? objEntity.getName() : null);
+        return FullRowReader.of(columns, metadata);
     }
 
-    private static int[] pkIndices(RSColumn[] columns, QueryMetadata metadata, EntityResultSegment segment) {
-        DbEntity dbEntity = segment == null
-                ? metadata.getDbEntity()
-                : segment.getClassDescriptor().getEntity().getDbEntity();
+    private RowReader<?> idReader(RSColumn[] columns, int offset, String entityName, DbEntity dbEntity) {
         if (dbEntity == null) {
             throw new CayenneRuntimeException("Null root DbEntity, can't index PK");
         }
 
-        int len = dbEntity.getPrimaryKeys().size();
-        if (len == 0) {
+        int pkLen = dbEntity.getPrimaryKeys().size();
+        if (pkLen == 0) {
             throw new CayenneRuntimeException("Root DBEntity has no PK defined: %s", dbEntity);
         }
 
-        int[] pk = new int[len];
-        int offset = segment != null ? segment.getColumnOffset() : 0;
-        for (int i = offset, j = 0; i < offset + len; i++) {
-            DbAttribute a = dbEntity.getAttribute(columns[i].rsName());
-            if (a != null && a.isPrimaryKey()) {
-                pk[j++] = i;
-            }
+        // TODO: An implicit assumption below is that "RSColumn[] columns" starts with a PK block (with an optional
+        //  segment offset), and PK columns are contiguous. If the upstream algorithm ever changes, this will no longer
+        //  work.
+
+        if (pkLen == 1) {
+            RSColumn column = columns[offset];
+            // jdbc column indexes start from 1
+            return new ScalarRowReader<>(column.reader(), offset + 1, column.rsType());
         }
-        return pk;
+
+        RSColumn[] pkColumns = Arrays.copyOfRange(columns, offset, offset + pkLen);
+        return OffsetRowReader.of(pkColumns, offset, entityName);
     }
 
 }
