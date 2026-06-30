@@ -186,8 +186,7 @@ class ObjectResolver {
 	    for(Map.Entry<CayennePath, AdditionalDbEntityDescriptor> entry : classDescriptor.getAdditionalDbEntities().entrySet()) {
             DbEntity dbEntity = entry.getValue().getDbEntity();
             CayennePath path = entry.getKey();
-            CayennePath prefix = path.length() == 1 ? path : path.tail(path.length() - 1);
-            ObjectId objectId = createObjectId(row, "db:" + dbEntity.getName(), dbEntity.getPrimaryKeys(), prefix, false);
+            ObjectId objectId = createObjectId(row, "db:" + dbEntity.getName(), dbEntity.getPrimaryKeys(), path, false);
             if(objectId != null) {
 				context.getObjectStore().markFlattenedPath(object.getObjectId(), path, objectId);
             }
