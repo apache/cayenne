@@ -26,6 +26,7 @@ import org.apache.cayenne.access.flush.operation.GraphBasedDbRowOpSorter;
 import org.apache.cayenne.query.ColumnSelect;
 import org.apache.cayenne.query.EJBQLQuery;
 import org.apache.cayenne.query.ObjectSelect;
+import org.apache.cayenne.query.PrefetchTreeNode;
 import org.apache.cayenne.query.SelectById;
 import org.apache.cayenne.runtime.CayenneRuntime;
 import org.apache.cayenne.test.jdbc.TableHelper;
@@ -1193,5 +1194,99 @@ public class VerticalInheritanceIT {
 		assertEquals(1, girls.size());
 		final List<Persistent> boys = ObjectSelect.query(Persistent.class, "GenBoy").select(env.context());
 		assertEquals(1, boys.size());
+	}
+
+	private void updateFlattenedAttributeOfPrefetchedInheritedChild(int prefetchSemantics) throws SQLException {
+		TableHelper ivOtherTable = env.table("IV_OTHER", "ID");
+		TableHelper ivBaseTable = env.table("IV_BASE", "ID", "NAME", "TYPE");
+		TableHelper ivImplTable = env.table("IV_IMPL", "ID", "ATTR1", "OTHER3_ID");
+
+		ivOtherTable.insert(1);
+		ivBaseTable.insert(1, "name", "I");
+		ivImplTable.insert(1, "attr1", 1);
+
+		IvOther other = ObjectSelect.query(IvOther.class)
+		                            .prefetch(IvOther.IMPLS_WITH_INVERSE.getName(), prefetchSemantics)
+		                            .selectOne(env.context());
+
+		IvImpl impl = other.getImplsWithInverse().getFirst();
+		assertEquals("attr1", impl.getAttr1());
+
+		impl.setAttr1("attr1-updated");
+		env.context().commitChanges();
+
+		assertEquals(1, ivImplTable.getRowCount());
+		ObjectContext cleanContext = runtime.newContext();
+		IvImpl reread = SelectById.queryId(IvImpl.class, 1).selectOne(cleanContext);
+		assertEquals("attr1-updated", reread.getAttr1());
+	}
+
+	@Test
+	public void updateFlattenedAttributeOfInheritedChildJointPrefetch() throws SQLException {
+		updateFlattenedAttributeOfPrefetchedInheritedChild(PrefetchTreeNode.JOINT_PREFETCH_SEMANTICS);
+	}
+
+	@Test
+	public void updateFlattenedAttributeOfInheritedChildDisjointPrefetch() throws SQLException {
+		updateFlattenedAttributeOfPrefetchedInheritedChild(PrefetchTreeNode.DISJOINT_PREFETCH_SEMANTICS);
+	}
+
+	@Test
+	public void updateFlattenedAttributeOfInheritedChildDisjointByIdPrefetch() throws SQLException {
+		updateFlattenedAttributeOfPrefetchedInheritedChild(PrefetchTreeNode.DISJOINT_BY_ID_PREFETCH_SEMANTICS);
+	}
+
+	@Test
+	public void updateFlattenedAttributeOfInheritedChildRepeatedSaveResolvedFromCachedSnapshot() throws SQLException {
+		TableHelper ivBaseTable = env.table("IV_BASE", "ID", "NAME", "TYPE");
+		TableHelper ivImplTable = env.table("IV_IMPL", "ID", "ATTR1");
+
+		ivBaseTable.insert(1, "name", "I");
+		ivImplTable.insert(1, "attr1");
+
+		// First request: loads the child fresh (cold cache)
+		// This rebuilds the shared cached snapshot for the child.
+		{
+			ObjectContext freshContext = runtime.newContext();
+			IvImpl impl = Cayenne.objectForPK(freshContext, IvImpl.class, 1);
+			impl.setAttr1("attr1-first");
+			freshContext.commitChanges();
+		}
+
+		// Second request: (new context, shared snapshot cache)
+		// objectForPK is served from the cached snapshot
+		{
+			ObjectContext freshContext = runtime.newContext();
+			IvImpl impl = Cayenne.objectForPK(freshContext, IvImpl.class, 1);
+			impl.setAttr1("attr1-second");
+			freshContext.commitChanges();
+		}
+
+		assertEquals(1, ivImplTable.getRowCount());
+		ObjectContext cleanContext = runtime.newContext();
+		IvImpl reread = SelectById.queryId(IvImpl.class, 1).selectOne(cleanContext);
+		assertEquals("attr1-second", reread.getAttr1());
+	}
+
+	@Test
+	public void updateFlattenedAttributeOfThreeLevelInheritanceChild() throws SQLException {
+		TableHelper ivRootTable = env.table("IV_ROOT", "ID", "DISCRIMINATOR");
+		TableHelper ivSub1Table = env.table("IV_SUB1", "ID");
+		TableHelper ivSub1Sub1Table = env.table("IV_SUB1_SUB1", "ID", "SUB1_SUB1_NAME");
+
+		ivRootTable.insert(1, "IvSub1Sub1");
+		ivSub1Table.insert(1);
+		ivSub1Sub1Table.insert(1, "sub1sub1name");
+
+		IvSub1Sub1 sub1Sub1 = SelectById.queryId(IvSub1Sub1.class, 1).selectOne(env.context());
+		assertEquals("sub1sub1name", sub1Sub1.getSub1Sub1Name());
+
+		sub1Sub1.setSub1Sub1Name("sub1sub1name-updated");
+		env.context().commitChanges();
+
+		assertEquals(1, ivSub1Sub1Table.getRowCount());
+		ObjectContext cleanContext = runtime.newContext();
+		IvSub1Sub1 reread = SelectById.queryId(IvSub1Sub1.class, 1).selectOne(cleanContext);
+		assertEquals("sub1sub1name-updated", reread.getSub1Sub1Name());
 	}
 }
