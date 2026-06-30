@@ -29,6 +29,7 @@ CAY-2964 ClassCastException for non-generated meaningful PKs
 CAY-2965 MCP Cgen should not fail on an absent "<cgen>" tag
 CAY-2966 "comment" field is lost when upgrading from v10 to v12
 CAY-2967 SQLTemplate/SQLSelect broken pagination
+CAY-2968 Vertical Inheritance: INSERT instead of UPDATE after updating flattened attribute
 
 ----------------------------------
 Release: 5.0-M2
