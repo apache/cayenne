@@ -18,7 +18,10 @@
  ****************************************************************/
 package org.apache.cayenne.modeler.platform.mac;
 
+import com.formdev.flatlaf.FlatLightLaf;
+import com.jgoodies.forms.util.LayoutStyle;
 import org.apache.cayenne.modeler.Application;
+import org.apache.cayenne.modeler.platform.FlatLafLayoutStyle;
 import org.apache.cayenne.modeler.service.action.GlobalActions;
 import org.apache.cayenne.modeler.platform.UIInitializer;
 import org.apache.cayenne.modeler.toolkit.filechooser.CMFileChooserFactory;
@@ -37,21 +40,24 @@ public class MacUIInitializer implements UIInitializer {
 
     @Override
     public void beforeSwingLaunch() {
-        // must be set before Aqua L&F initializes — it reads this property during init
+        FlatLightLaf.setup();
+        LayoutStyle.setCurrent(FlatLafLayoutStyle.INSTANCE);
+
+        // must be set before the L&F initializes — it reads this property during init
         System.setProperty("apple.awt.application.name", "CayenneModeler");
 
-        // override some default styles and colors, assuming that Aqua theme will be used
+        // override some default styles and colors for the mac-specific UI
         Color lightGrey = new Color(0xEEEEEE);
         Color darkGrey = new Color(225, 225, 225);
         Border darkBorder = BorderFactory.createLineBorder(darkGrey);
 
-        UIManager.put("ToolBarSeparatorUI", MacToolBarSeparatorUI.class.getName());
         UIManager.put("PanelUI", MacPanelUI.class.getName());
         // next two is custom-made for Cayenne's MainToolBar
         UIManager.put("ToolBar.background", lightGrey);
         UIManager.put("MainToolBar.background", lightGrey);
         UIManager.put("MainToolBar.border", BorderFactory.createEmptyBorder(0, 7, 0, 7));
         UIManager.put("ToolBar.border", darkBorder);
+        UIManager.put("ToolBar.buttonMargin", new Insets(4, 8, 4, 8));
         UIManager.put("ScrollPane.border", darkBorder);
         UIManager.put("Table.scrollPaneBorder", darkBorder);
         UIManager.put("SplitPane.border", BorderFactory.createEmptyBorder());

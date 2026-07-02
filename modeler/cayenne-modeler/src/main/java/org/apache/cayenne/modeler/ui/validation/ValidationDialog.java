@@ -86,7 +86,7 @@ public class ValidationDialog extends AppDialog {
         CellConstraints cc = new CellConstraints();
         PanelBuilder builder = new PanelBuilder(new FormLayout(
                 "fill:min(50dlu;pref):grow",
-                "fill:20dlu, 9dlu, p, 3dlu, fill:40dlu:grow"));
+                "fill:20dlu, $pgap, p, $rgap, fill:40dlu:grow"));
         builder.setDefaultDialogBorder();
         builder.add(messageArea, cc.xy(1, 1));
         builder.addSeparator("Details", cc.xy(1, 3));

@@ -104,7 +104,7 @@ public class DuplicatedAttributesDialog extends AppDialog {
 
         // assemble
         CellConstraints cc = new CellConstraints();
-        PanelBuilder builder = new PanelBuilder(new FormLayout("fill:200dlu:grow", "pref, 3dlu, top:40dlu:grow"));
+        PanelBuilder builder = new PanelBuilder(new FormLayout("fill:200dlu:grow", "pref, $rgap, top:40dlu:grow"));
 
         builder.setDefaultDialogBorder();
 

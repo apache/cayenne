@@ -109,7 +109,7 @@ public class DataNodeEditorPanel extends ProjectPanel {
 
     private void initLayout() {
         DefaultFormBuilder topPanelBuilder = new DefaultFormBuilder(new FormLayout(
-                "right:80dlu, 3dlu, fill:177dlu, 3dlu, fill:20dlu",
+                "right:80dlu, $lcgap, fill:177dlu, $lcgap, fill:20dlu",
                 ""));
         topPanelBuilder.setDefaultDialogBorder();
 

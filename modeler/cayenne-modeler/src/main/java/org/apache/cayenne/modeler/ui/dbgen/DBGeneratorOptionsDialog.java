@@ -173,7 +173,7 @@ public class DBGeneratorOptionsDialog extends ProjectDialog {
         CellConstraints cc = new CellConstraints();
         PanelBuilder builder = new PanelBuilder(new FormLayout(
                 "fill:min(50dlu;pref):grow",
-                "p, 3dlu, p, 9dlu, p, 3dlu, p, 3dlu, p, 3dlu, fill:40dlu:grow"));
+                "p, $rgap, p, $pgap, p, $rgap, p, $rgap, p, $rgap, fill:40dlu:grow"));
         builder.addSeparator("Options", cc.xywh(1, 1, 1, 1));
         builder.add(optionsPane, cc.xy(1, 3, "left,fill"));
         builder.addSeparator("Adapter", cc.xywh(1, 5, 1, 1));

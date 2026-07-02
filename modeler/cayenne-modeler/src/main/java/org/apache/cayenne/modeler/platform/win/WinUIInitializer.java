@@ -18,34 +18,28 @@
  ****************************************************************/
 package org.apache.cayenne.modeler.platform.win;
 
-import com.jgoodies.looks.windows.WindowsLookAndFeel;
+import com.formdev.flatlaf.FlatLightLaf;
+import com.jgoodies.forms.util.LayoutStyle;
+import org.apache.cayenne.modeler.platform.FlatLafLayoutStyle;
 import org.apache.cayenne.modeler.platform.UIInitializer;
 import org.apache.cayenne.modeler.toolkit.icon.IconFactory;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 import javax.swing.*;
 import java.awt.*;
 
 public class WinUIInitializer implements UIInitializer {
 
-    private static final Logger LOGGER = LoggerFactory.getLogger(WinUIInitializer.class);
-
     @Override
     public void beforeSwingLaunch() {
-        try {
-            UIManager.setLookAndFeel(WindowsLookAndFeel.class.getName());
-            // override some default styles and colors
-            overrideUIDefaults();
-        } catch (Exception e) {
-            LOGGER.warn("Error installing L&F: {}", WindowsLookAndFeel.class.getName(), e);
-        }
+        FlatLightLaf.setup();
+        LayoutStyle.setCurrent(FlatLafLayoutStyle.INSTANCE);
+        // override some default styles and colors
+        overrideUIDefaults();
     }
 
     private void overrideUIDefaults() {
         Color darkGrey = new Color(203, 203, 203);
 
-        UIManager.put("TextFieldUI", WinCustomTextFieldUI.class.getName());
         UIManager.put("Tree.expandedIcon", IconFactory.buildIcon("icon-arrow-open.png"));
         UIManager.put("Tree.collapsedIcon", IconFactory.buildIcon("icon-arrow-closed.png"));
         UIManager.put("Tree.paintLines", Boolean.FALSE);
@@ -70,10 +64,8 @@ public class WinUIInitializer implements UIInitializer {
         UIManager.put("MenuItem.selectionForeground", Color.BLACK);
         UIManager.put("CheckBoxMenuItem.selectionForeground", Color.BLACK);
         UIManager.put("RadioButtonMenuItem.selectionForeground", Color.BLACK);
-        UIManager.put("MenuItem.opaque", Boolean.TRUE);
-        UIManager.put("CheckBoxMenuItem.opaque", Boolean.TRUE);
-        UIManager.put("RadioButtonMenuItem.opaque", Boolean.TRUE);
-        UIManager.put("Button.border", BorderFactory.createEmptyBorder());
-        UIManager.put("ToolBar.buttonMargin", new Insets(4, 4, 4, 4));
+        UIManager.put("ToolBar.buttonMargin", new Insets(4, 8, 4, 8));
+        UIManager.put("Table.showHorizontalLines", Boolean.TRUE);
+        UIManager.put("Table.showVerticalLines", Boolean.TRUE);
     }
 }

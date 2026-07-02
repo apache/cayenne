@@ -49,7 +49,7 @@ public class PKDBGeneratorPanel extends PKGeneratorPanel {
         attributes.setRenderer(new AttributeRenderer());
 
         DefaultFormBuilder builder = new DefaultFormBuilder(new FormLayout(
-                "right:70dlu, 3dlu, fill:200dlu",
+                "right:70dlu, $lcgap, fill:200dlu",
                 ""));
         builder.setDefaultDialogBorder();
         builder.append("Auto Incremented:", attributes);

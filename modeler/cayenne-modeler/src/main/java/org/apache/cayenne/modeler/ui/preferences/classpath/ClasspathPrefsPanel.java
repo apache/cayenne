@@ -113,14 +113,14 @@ public class ClasspathPrefsPanel extends AppPanel {
         JScrollPane scrollPane = new JScrollPane(table);
         scrollPane.setBorder(BorderFactory.createEmptyBorder());
 
-        JPanel content = new JPanel(new BorderLayout());
+        JPanel content = new JPanel(new BorderLayout(10, 0));
         content.add(scrollPane, BorderLayout.CENTER);
         content.add(sidebar.getPanel(), BorderLayout.EAST);
 
         CellConstraints cc = new CellConstraints();
         PanelBuilder outer = new PanelBuilder(new FormLayout(
                 "fill:default:grow",
-                "p, 3dlu, fill:default:grow"));
+                "p, $rgap, fill:default:grow"));
         outer.setDefaultDialogBorder();
         outer.addSeparator("Extra Classpath", cc.xy(1, 1));
         outer.add(content, cc.xy(1, 3));
