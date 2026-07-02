@@ -16,31 +16,21 @@
  *  specific language governing permissions and limitations
  *  under the License.
  ****************************************************************/
-package org.apache.cayenne.access.jdbc.reader;
 
-import java.sql.ResultSet;
-
-import org.apache.cayenne.DataRow;
-import org.apache.cayenne.access.jdbc.RowDescriptor;
-import org.apache.cayenne.map.EntityInheritanceTree;
-import org.apache.cayenne.map.ObjEntity;
-import org.apache.cayenne.query.QueryMetadata;
+package org.apache.cayenne.query;
 
 /**
- * @since 3.0
+ * An adapter-independent description of a single column in a {@link ProcedureQuery} result set. Used to explicitly
+ * describe procedure results when ResultSet metadata is insufficient. Translated into a runtime {@code ColumnDescriptor}
+ * at query execution time.
+ *
+ * @since 5.0
  */
-class InheritanceAwareRowReader extends FullRowReader {
+public record ProcedureColumn(String name, String dataRowKey, int jdbcType, String javaClass) {
 
-    private EntityInheritanceTree entityInheritanceTree;
-
-    InheritanceAwareRowReader(RowDescriptor descriptor, QueryMetadata queryMetadata) {
-        super(descriptor, queryMetadata);
-        this.entityInheritanceTree = queryMetadata.getClassDescriptor().getEntityInheritanceTree();
-    }
-
-    @Override
-    void postprocessRow(ResultSet resultSet, DataRow dataRow) throws Exception {
-        ObjEntity entity = entityInheritanceTree.entityMatchingRow(dataRow);
-        dataRow.setEntityName(entity != null ? entity.getName() : entityName);
+    public ProcedureColumn {
+        if (dataRowKey == null) {
+            dataRowKey = name;
+        }
     }
 }

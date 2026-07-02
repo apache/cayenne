@@ -48,9 +48,9 @@ public class DefaultObjectSelectTranslatorIT {
 
         assertEquals(0, translator.bindings().length);
         assertEquals(3, translator.resultColumns().length);
-        assertEquals("ARTIST_NAME", translator.resultColumns()[0].getDataRowKey());
-        assertEquals("DATE_OF_BIRTH", translator.resultColumns()[1].getDataRowKey());
-        assertEquals("ARTIST_ID", translator.resultColumns()[2].getDataRowKey());
+        assertEquals("ARTIST_NAME", translator.resultColumns()[0].dataRowName());
+        assertEquals("DATE_OF_BIRTH", translator.resultColumns()[1].dataRowName());
+        assertEquals("ARTIST_ID", translator.resultColumns()[2].dataRowName());
         assertFalse(translator.hasJoins());
         assertFalse(translator.suppressingDistinct());
     }
@@ -72,13 +72,13 @@ public class DefaultObjectSelectTranslatorIT {
         assertTrue(sql.indexOf("WHERE") > sql.indexOf("JOIN PAINTING t1"));
 
         assertEquals(2, translator.bindings().length);
-        assertEquals("ARTIST_NAME", translator.bindings()[0].getAttribute().getName());
-        assertEquals("PAINTING_TITLE", translator.bindings()[1].getAttribute().getName());
+        assertEquals("ARTIST_NAME", translator.bindings()[0].attribute().getName());
+        assertEquals("PAINTING_TITLE", translator.bindings()[1].attribute().getName());
 
         assertEquals(3, translator.resultColumns().length);
-        assertEquals("ARTIST_NAME", translator.resultColumns()[0].getDataRowKey());
-        assertEquals("DATE_OF_BIRTH", translator.resultColumns()[1].getDataRowKey());
-        assertEquals("ARTIST_ID", translator.resultColumns()[2].getDataRowKey());
+        assertEquals("ARTIST_NAME", translator.resultColumns()[0].dataRowName());
+        assertEquals("DATE_OF_BIRTH", translator.resultColumns()[1].dataRowName());
+        assertEquals("ARTIST_ID", translator.resultColumns()[2].dataRowName());
 
         assertTrue(translator.hasJoins());
         assertFalse(translator.suppressingDistinct());
@@ -108,16 +108,16 @@ public class DefaultObjectSelectTranslatorIT {
         assertEquals(0, translator.bindings().length);
 
         assertEquals(9, translator.resultColumns().length);
-        assertEquals("ESTIMATED_PRICE", translator.resultColumns()[0].getDataRowKey());
-        assertEquals("PAINTING_DESCRIPTION", translator.resultColumns()[1].getDataRowKey());
-        assertEquals("PAINTING_TITLE", translator.resultColumns()[2].getDataRowKey());
-        assertEquals("ARTIST_ID", translator.resultColumns()[3].getDataRowKey());
-        assertEquals("GALLERY_ID", translator.resultColumns()[4].getDataRowKey());
-        assertEquals("PAINTING_ID", translator.resultColumns()[5].getDataRowKey());
+        assertEquals("ESTIMATED_PRICE", translator.resultColumns()[0].dataRowName());
+        assertEquals("PAINTING_DESCRIPTION", translator.resultColumns()[1].dataRowName());
+        assertEquals("PAINTING_TITLE", translator.resultColumns()[2].dataRowName());
+        assertEquals("ARTIST_ID", translator.resultColumns()[3].dataRowName());
+        assertEquals("GALLERY_ID", translator.resultColumns()[4].dataRowName());
+        assertEquals("PAINTING_ID", translator.resultColumns()[5].dataRowName());
 
-        assertEquals("toArtist.ARTIST_ID", translator.resultColumns()[6].getDataRowKey());
-        assertEquals("toArtist.DATE_OF_BIRTH", translator.resultColumns()[7].getDataRowKey());
-        assertEquals("toArtist.ARTIST_NAME", translator.resultColumns()[8].getDataRowKey());
+        assertEquals("toArtist.ARTIST_ID", translator.resultColumns()[6].dataRowName());
+        assertEquals("toArtist.DATE_OF_BIRTH", translator.resultColumns()[7].dataRowName());
+        assertEquals("toArtist.ARTIST_NAME", translator.resultColumns()[8].dataRowName());
 
         assertTrue(translator.hasJoins());
         assertFalse(translator.suppressingDistinct());

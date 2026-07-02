@@ -19,7 +19,6 @@
 
 package org.apache.cayenne.access.translator.sqltemplate.directive;
 
-import org.apache.cayenne.access.translator.ParameterBinding;
 import org.apache.cayenne.access.translator.sqltemplate.Context;
 
 /**
@@ -30,9 +29,9 @@ public class BindNotEqual extends Bind {
     public static final BindNotEqual INSTANCE = new BindNotEqual();
 
     @Override
-    protected void processBinding(Context context, ParameterBinding binding, Object value) {
+    protected void processBinding(Context context, int jdbcType, int scale, Object value) {
         if (value != null) {
-            context.addParameterBinding(binding, value);
+            context.addParameterBinding(jdbcType, scale, value);
             context.getBuilder().append("<> ?");
         } else {
             context.getBuilder().append("IS NOT NULL");

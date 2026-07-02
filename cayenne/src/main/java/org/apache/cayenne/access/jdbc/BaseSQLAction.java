@@ -49,16 +49,16 @@ public abstract class BaseSQLAction implements SQLAction {
      * Helper method to process a ResultSet.
      */
     @SuppressWarnings({ "rawtypes", "unchecked" })
-    protected void readResultSet(ResultSet resultSet, RowDescriptor descriptor, Query query, OperationObserver delegate)
+    protected void readResultSet(ResultSet resultSet, RSColumn[] columns, Query query, OperationObserver delegate)
             throws Exception {
 
         long t1 = System.currentTimeMillis();
 
         QueryMetadata metadata = query.getMetaData(dataNode.getEntityResolver());
 
-        RowReader<?> rowReader = dataNode.getRowReaderFactory().rowReader(descriptor, metadata, dataNode.getAdapter());
+        RowReader<?> rowReader = dataNode.getRowReaderFactory().rowReader(columns, metadata, dataNode.getAdapter());
 
-        JDBCResultIterator resultReader = new JDBCResultIterator(null, resultSet, rowReader);
+        RSIterator resultReader = new RSIterator(null, resultSet, rowReader);
 
         LimitResultIterator it = new LimitResultIterator(resultReader, getInMemoryOffset(metadata.getFetchOffset()),
                 metadata.getFetchLimit());

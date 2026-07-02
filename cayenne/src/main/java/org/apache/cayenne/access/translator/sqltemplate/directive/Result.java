@@ -27,7 +27,7 @@ import java.sql.Timestamp;
 import java.util.HashMap;
 import java.util.Map;
 
-import org.apache.cayenne.access.jdbc.ColumnDescriptor;
+import org.apache.cayenne.access.jdbc.RSColumn;
 import org.apache.cayenne.access.translator.sqltemplate.Context;
 import org.apache.cayenne.access.translator.sqltemplate.parser.ASTExpression;
 import org.apache.cayenne.util.Util;
@@ -75,14 +75,11 @@ public class Result implements Directive {
     @Override
     public void apply(Context context, ASTExpression... expressions) {
 
-        ColumnDescriptor columnDescriptor = new ColumnDescriptor();
-
         String column = expressions[0].evaluateAsString(context);
-        columnDescriptor.setName(column);
 
+        String javaClass = null;
         if (expressions.length > 1) {
-            String type = expressions[1].evaluateAsString(context);
-            columnDescriptor.setJavaClass(guessType(type));
+            javaClass = guessType(expressions[1].evaluateAsString(context));
         }
 
         String alias = null;
@@ -97,14 +94,13 @@ public class Result implements Directive {
 
         // determine what we want to name this column in a resulting DataRow...
         String label = (!Util.isEmptyString(dataRowKey)) ? dataRowKey : (!Util.isEmptyString(alias)) ? alias : null;
-        columnDescriptor.setDataRowKey(label);
 
+        int jdbcType = 0;
         if (expressions.length > 4) {
-            int jdbcType = (int) expressions[4].evaluateAsLong(context);
-            columnDescriptor.setJdbcType(jdbcType);
+            jdbcType = (int) expressions[4].evaluateAsLong(context);
         }
 
-        context.addColumnDescriptor(columnDescriptor);
+        context.addColumnDescriptor(new RSColumn(column, jdbcType, label, context.getExtendedType(javaClass), null));
 
         context.getBuilder().append(column);
         if (!Util.isEmptyString(alias) && !alias.equals(column)) {

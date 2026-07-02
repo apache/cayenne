@@ -18,7 +18,7 @@
  ****************************************************************/
 package org.apache.cayenne.log;
 
-import org.apache.cayenne.access.translator.ParameterBinding;
+import org.apache.cayenne.access.jdbc.PSParameter;
 import org.apache.cayenne.access.types.BooleanType;
 import org.apache.cayenne.access.types.CharType;
 import org.apache.cayenne.access.types.ExtendedType;
@@ -98,7 +98,7 @@ public class CompactSlf4jJdbcEventLoggerTest {
     @Test
     public void compactBindings() {
         StringBuilder buffer = new StringBuilder();
-        ParameterBinding[] bindings = new ParameterBinding[] {
+        PSParameter[] bindings = new PSParameter[] {
                 createBinding("t0.NAME", 1, "", new CharType(false, false)),
                 createBinding("t0.NAME", 2, 52, new IntegerType()),
                 createBinding("t0.NAME", 3, true, new BooleanType()),
@@ -109,10 +109,8 @@ public class CompactSlf4jJdbcEventLoggerTest {
         assertEquals("[bind: 1->t0.NAME: {'', 52, 'true'}, 2->t0.F_KEY1: 'true']", buffer.toString());
     }
 
-    private ParameterBinding createBinding(String name, int position, Object object, ExtendedType type){
+    private PSParameter createBinding(String name, int position, Object object, ExtendedType type){
         DbAttribute attribute = new DbAttribute(name);
-        ParameterBinding binding = new ParameterBinding(attribute.getType(), -1, attribute);
-        binding.reset(position, object, type);
-        return binding;
+        return new PSParameter(object, position, attribute.getType(), -1, type, attribute);
     }
 }

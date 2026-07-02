@@ -19,7 +19,7 @@
 
 package org.apache.cayenne.access.sqlbuilder;
 
-import org.apache.cayenne.access.translator.ParameterBinding;
+import org.apache.cayenne.access.jdbc.PSParameter;
 import org.apache.cayenne.dba.DbAdapter;
 import org.apache.cayenne.map.DbEntity;
 
@@ -32,7 +32,7 @@ public interface SQLGenerationContext {
 
     DbAdapter getAdapter();
 
-    Collection<ParameterBinding> getBindings();
+    Collection<PSParameter> getBindings();
 
     DbEntity getRootDbEntity();
 }

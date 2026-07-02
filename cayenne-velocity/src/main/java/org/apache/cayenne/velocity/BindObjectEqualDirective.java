@@ -27,7 +27,6 @@ import java.util.Map;
 
 import org.apache.cayenne.ObjectId;
 import org.apache.cayenne.Persistent;
-import org.apache.cayenne.access.translator.ParameterBinding;
 import org.apache.cayenne.dba.TypesMapping;
 import org.apache.velocity.context.InternalContextAdapter;
 import org.apache.velocity.exception.MethodInvocationException;
@@ -94,7 +93,7 @@ public class BindObjectEqualDirective extends BindDirective {
 
             renderColumn(context, writer, sqlColumnsArray[i], i);
             writer.write(' ');
-            render(context, writer, new ParameterBinding(preferredBindingType(context, jdbcType), -1), value);
+            render(context, writer, preferredBindingType(context, jdbcType), -1, value);
         }
 
         return true;
@@ -151,11 +150,12 @@ public class BindObjectEqualDirective extends BindDirective {
     protected void render(
             InternalContextAdapter context,
             Writer writer,
-            ParameterBinding binding,
+            int jdbcType,
+            int scale,
             Object value) throws IOException {
 
         if (value != null) {
-            bind(context, binding, value);
+            bind(context, jdbcType, scale, value);
             writer.write("= ?");
         }
         else {

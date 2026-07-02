@@ -25,8 +25,8 @@ import java.util.List;
 import java.util.Map;
 
 import org.apache.cayenne.CayenneRuntimeException;
-import org.apache.cayenne.access.jdbc.ColumnDescriptor;
-import org.apache.cayenne.access.translator.ParameterBinding;
+import org.apache.cayenne.access.jdbc.RSColumn;
+import org.apache.cayenne.access.jdbc.PSParameter;
 import org.apache.cayenne.access.translator.sqltemplate.directive.Directive;
 import org.apache.cayenne.access.types.ExtendedType;
 import org.apache.cayenne.dba.DbAdapter;
@@ -42,8 +42,8 @@ public class Context {
     private final Map<String, Directive> directives;
     private final DbAdapter adapter;
 
-    private List<ParameterBinding> parameterBindings;
-    private List<ColumnDescriptor> columnDescriptors;
+    private List<PSParameter> parameterBindings;
+    private List<RSColumn> columnDescriptors;
     private int counter;
 
     public Context(Map<String, Directive> directives, Map<String, ?> parameters, boolean positionalMode,
@@ -66,6 +66,16 @@ public class Context {
      */
     public int preferredBindingType(int jdbcType) {
         return adapter.preferredBindingType(jdbcType);
+    }
+
+    /**
+     * Resolves the {@link ExtendedType} for the given Java class name via the target adapter. A null class name resolves
+     * to the adapter's default type.
+     *
+     * @since 5.0
+     */
+    public ExtendedType<?> getExtendedType(String javaClassName) {
+        return adapter.getExtendedTypes().getRegisteredType(javaClassName);
     }
 
     public Directive getDirective(String name) {
@@ -112,14 +122,14 @@ public class Context {
         return null;
     }
 
-    public void addParameterBinding(ParameterBinding binding, Object value) {
+    public void addParameterBinding(int jdbcType, int scale, Object value) {
         if(parameterBindings == null) {
             parameterBindings = new ArrayList<>();
         }
         // a binding's statement position is its 1-based ordinal among the bound parameters; the
         // ExtendedType is resolved from the value via the adapter
-        binding.reset(parameterBindings.size() + 1, value, extendedType(value));
-        parameterBindings.add(binding);
+        parameterBindings.add(new PSParameter(value, parameterBindings.size() + 1, jdbcType, scale, extendedType(value), null
+        ));
     }
 
     private ExtendedType<?> extendedType(Object value) {
@@ -128,24 +138,24 @@ public class Context {
                 : adapter.getExtendedTypes().getDefaultType();
     }
 
-    public void addColumnDescriptor(ColumnDescriptor descriptor) {
+    public void addColumnDescriptor(RSColumn descriptor) {
         if(columnDescriptors == null) {
             columnDescriptors = new ArrayList<>();
         }
         columnDescriptors.add(descriptor);
     }
 
-    public ColumnDescriptor[] getColumnDescriptors() {
+    public RSColumn[] getColumnDescriptors() {
         if(columnDescriptors == null) {
-            return new ColumnDescriptor[0];
+            return new RSColumn[0];
         }
-        return columnDescriptors.toArray(new ColumnDescriptor[columnDescriptors.size()]);
+        return columnDescriptors.toArray(new RSColumn[columnDescriptors.size()]);
     }
 
-    public ParameterBinding[] getParameterBindings() {
+    public PSParameter[] getParameterBindings() {
         if(parameterBindings == null) {
-            return new ParameterBinding[0];
+            return new PSParameter[0];
         }
-        return parameterBindings.toArray(new ParameterBinding[parameterBindings.size()]);
+        return parameterBindings.toArray(new PSParameter[parameterBindings.size()]);
     }
 }

@@ -33,26 +33,26 @@ import java.util.List;
 import java.util.NoSuchElementException;
 
 /**
- * A ResultIterator over the underlying JDBC ResultSet.
- * 
- * @since 1.2
+ * A ResultIterator over a JDBC ResultSet.
+ *
+ * @since 5.0
  */
-public class JDBCResultIterator<T> implements ResultIterator<T> {
+public class RSIterator<T> implements ResultIterator<T> {
 
-    protected Statement statement;
-    protected ResultSet resultSet;
+    private final RowReader<T> rowReader;
+    private final Statement statement;
+    private final ResultSet resultSet;
 
     protected boolean closed;
     protected boolean nextRow;
 
-    private RowReader<T> rowReader;
 
     /**
      * Creates new JDBCResultIterator that reads from provided ResultSet.
-     * 
+     *
      * @since 4.0
      */
-    public JDBCResultIterator(Statement statement, ResultSet resultSet, RowReader<T> rowReader) {
+    public RSIterator(Statement statement, ResultSet resultSet, RowReader<T> rowReader) {
 
         this.statement = statement;
         this.resultSet = resultSet;
@@ -66,7 +66,7 @@ public class JDBCResultIterator<T> implements ResultIterator<T> {
      */
     @Override
     public Iterator<T> iterator() {
-        return new ResultIteratorIterator<T>(this);
+        return new ResultIteratorIterator<>(this);
     }
 
     /**
@@ -143,7 +143,7 @@ public class JDBCResultIterator<T> implements ResultIterator<T> {
                 }
             }
 
-            if (errors.length() > 0) {
+            if (!errors.isEmpty()) {
                 throw new CayenneRuntimeException("Error closing ResultIterator: %s", errors);
             }
 

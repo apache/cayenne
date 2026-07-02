@@ -19,12 +19,12 @@
 
 package org.apache.cayenne.access.translator.select;
 
-import org.apache.cayenne.access.jdbc.ColumnDescriptor;
+import org.apache.cayenne.access.jdbc.RSColumn;
 import org.apache.cayenne.access.sqlbuilder.SQLBuilder;
 import org.apache.cayenne.access.sqlbuilder.SQLGenerationContext;
 import org.apache.cayenne.access.sqlbuilder.SelectBuilder;
 import org.apache.cayenne.access.sqlbuilder.sqltree.Node;
-import org.apache.cayenne.access.translator.ParameterBinding;
+import org.apache.cayenne.access.jdbc.PSParameter;
 import org.apache.cayenne.dba.DbAdapter;
 import org.apache.cayenne.exp.parser.ASTAggregateFunctionCall;
 import org.apache.cayenne.exp.path.CayennePath;
@@ -79,7 +79,7 @@ class SelectTranslatorContext implements SQLGenerationContext {
      * - prefetched objects attributes and additional db attributes (PKs and FKs)
      * - order by expressions if query is distinct?
      */
-    private final List<ColumnDescriptor> columnDescriptors;
+    private final List<RSColumn> columns;
 
 
     /**
@@ -91,7 +91,7 @@ class SelectTranslatorContext implements SQLGenerationContext {
      * - order by expressions
      * - where expression (including qualifiers from all used DbEntities and ObjEntities)
      */
-    private final Collection<ParameterBinding> bindings;
+    private final Collection<PSParameter> bindings;
 
     // Translated query
     private final TranslatableQueryWrapper query;
@@ -137,7 +137,7 @@ class SelectTranslatorContext implements SQLGenerationContext {
         this.metadata = query.getMetaData(resolver);
         this.parentContext = parentContext;
         this.tableTree = new TableTree(metadata.getDbEntity(), parentContext == null ? null : parentContext.getTableTree());
-        this.columnDescriptors = new ArrayList<>();
+        this.columns = new ArrayList<>();
         this.bindings = new ArrayList<>(4);
         this.selectBuilder = SQLBuilder.select();
         this.pathTranslator = new PathTranslator(this);
@@ -157,8 +157,8 @@ class SelectTranslatorContext implements SQLGenerationContext {
     public TranslatedSelect getTranslation() {
         return new TranslatedSelect(
                 getFinalSQL(),
-                getColumnDescriptors().toArray(new ColumnDescriptor[0]),
-                getBindings().toArray(new ParameterBinding[0]),
+                getColumnDescriptors().toArray(new RSColumn[0]),
+                getBindings().toArray(new PSParameter[0]),
                 isDistinctSuppression(),
                 getTableCount() > 1);
     }
@@ -187,11 +187,11 @@ class SelectTranslatorContext implements SQLGenerationContext {
         return selectBuilder;
     }
 
-    Collection<ColumnDescriptor> getColumnDescriptors() {
-        return columnDescriptors;
+    Collection<RSColumn> getColumnDescriptors() {
+        return columns;
     }
 
-    public Collection<ParameterBinding> getBindings() {
+    public Collection<PSParameter> getBindings() {
         return bindings;
     }
 

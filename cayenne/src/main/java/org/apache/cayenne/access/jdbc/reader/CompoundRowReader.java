@@ -27,14 +27,10 @@ import java.sql.ResultSet;
  */
 class CompoundRowReader implements RowReader<Object[]> {
 
-    private RowReader<?>[] readers;
+    private final RowReader<?>[] readers;
 
-    CompoundRowReader(int width) {
-        this.readers = new RowReader[width];
-    }
-
-    void addRowReader(int pos, RowReader<?> reader) {
-        this.readers[pos] = reader;
+    public CompoundRowReader(RowReader<?>[] readers) {
+        this.readers = readers;
     }
 
     @Override

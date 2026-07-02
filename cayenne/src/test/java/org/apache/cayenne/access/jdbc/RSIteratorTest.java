@@ -39,7 +39,7 @@ import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.mockito.Mockito.mock;
 
-public class JDBCResultIteratorTest {
+public class RSIteratorTest {
 
 	@Test
 	public void nextDataRow() throws Exception {
@@ -48,11 +48,11 @@ public class JDBCResultIteratorTest {
 		TestResultSet rs = new TestResultSet("rs");
 		rs.addColumn("a", new Object[] { "1", "2", "3" });
 
-		RowDescriptor descriptor = new RowDescriptorBuilder().setResultSet(rs).getDescriptor(new ExtendedTypeMap());
-		RowReader<?> rowReader = new DefaultRowReaderFactory().rowReader(descriptor, new MockQueryMetadata(),
+		RSColumn[] columns = RSColumn.rowBuilder().resultSet(rs).build(new ExtendedTypeMap());
+		RowReader<?> rowReader = new DefaultRowReaderFactory().rowReader(columns, new MockQueryMetadata(),
 				mock(DbAdapter.class));
 
-		JDBCResultIterator it = new JDBCResultIterator(s, rs, rowReader);
+		RSIterator it = new RSIterator(s, rs, rowReader);
 
 		DataRow row = (DataRow) it.nextRow();
 
@@ -70,7 +70,7 @@ public class JDBCResultIteratorTest {
 
 		RowReader<?> rowReader = mock(RowReader.class);
 
-		try (JDBCResultIterator it = new JDBCResultIterator(s, rs, rowReader);) {
+		try (RSIterator it = new RSIterator(s, rs, rowReader);) {
 
 			assertFalse(rs.isClosed());
 			assertFalse(s.isClosed());

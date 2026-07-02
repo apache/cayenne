@@ -18,7 +18,7 @@
  ****************************************************************/
 package org.apache.cayenne.access.jdbc.reader;
 
-import org.apache.cayenne.access.jdbc.RowDescriptor;
+import org.apache.cayenne.access.jdbc.RSColumn;
 import org.apache.cayenne.dba.DbAdapter;
 import org.apache.cayenne.query.QueryMetadata;
 
@@ -29,5 +29,5 @@ import org.apache.cayenne.query.QueryMetadata;
  */
 public interface RowReaderFactory {
 
-    RowReader<?> rowReader(RowDescriptor descriptor, QueryMetadata queryMetadata, DbAdapter adapter);
+    RowReader<?> rowReader(RSColumn[] columns, QueryMetadata queryMetadata, DbAdapter adapter);
 }

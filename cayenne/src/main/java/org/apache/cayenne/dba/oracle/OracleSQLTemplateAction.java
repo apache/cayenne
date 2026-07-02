@@ -18,18 +18,16 @@
  ****************************************************************/
 package org.apache.cayenne.dba.oracle;
 
-import java.sql.Connection;
-import java.sql.ResultSet;
-import java.sql.SQLException;
-import java.sql.Statement;
-
 import org.apache.cayenne.access.DataNode;
 import org.apache.cayenne.access.OperationObserver;
-import org.apache.cayenne.access.jdbc.RowDescriptorBuilder;
-import org.apache.cayenne.access.translator.sqltemplate.TranslatedSQL;
 import org.apache.cayenne.access.jdbc.SQLTemplateAction;
+import org.apache.cayenne.access.translator.sqltemplate.TranslatedSQL;
 import org.apache.cayenne.map.DbEntity;
 import org.apache.cayenne.query.SQLTemplate;
+
+import java.sql.Connection;
+import java.sql.ResultSet;
+import java.sql.Statement;
 
 /**
  * @since 3.0
@@ -56,17 +54,5 @@ class OracleSQLTemplateAction extends SQLTemplateAction {
 		}
 
 		super.processSelectResult(compiled, connection, statement, resultSet, callback, startTime);
-	}
-
-	/**
-	 * @since 3.0
-	 */
-	@Override
-	protected RowDescriptorBuilder configureRowDescriptorBuilder(TranslatedSQL compiled, ResultSet resultSet)
-			throws SQLException {
-
-		RowDescriptorBuilder builder = super.configureRowDescriptorBuilder(compiled, resultSet);
-
-		return builder;
 	}
 }

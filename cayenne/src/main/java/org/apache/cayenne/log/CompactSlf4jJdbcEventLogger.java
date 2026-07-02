@@ -26,7 +26,7 @@ import java.util.Map;
 import java.util.regex.Pattern;
 import java.util.stream.Collectors;
 
-import org.apache.cayenne.access.translator.ParameterBinding;
+import org.apache.cayenne.access.jdbc.PSParameter;
 import org.apache.cayenne.configuration.RuntimeProperties;
 import org.apache.cayenne.di.Inject;
 import org.apache.cayenne.map.DbAttribute;
@@ -48,7 +48,7 @@ public class CompactSlf4jJdbcEventLogger extends Slf4jJdbcEventLogger {
     }
 
     @Override
-    public void logQuery(String sql, ParameterBinding[] bindings) {
+    public void logQuery(String sql, PSParameter[] bindings) {
         if (!isLoggable()) {
             return;
         }
@@ -96,7 +96,7 @@ public class CompactSlf4jJdbcEventLogger extends Slf4jJdbcEventLogger {
     }
 
     @Override
-    protected void appendParameters(StringBuilder buffer, String label, ParameterBinding[] bindings) {
+    protected void appendParameters(StringBuilder buffer, String label, PSParameter[] bindings) {
         int bindingLength = bindings.length;
         if (bindingLength == 0) {
             return;
@@ -106,25 +106,25 @@ public class CompactSlf4jJdbcEventLogger extends Slf4jJdbcEventLogger {
     }
 
     @SuppressWarnings("unchecked")
-    private Map<String, List<String>> collectBindings(ParameterBinding[] bindings) {
+    private Map<String, List<String>> collectBindings(PSParameter[] bindings) {
         Map<String, List<String>> bindingsMap = new HashMap<>();
 
         String key = null;
         String value;
-        for (ParameterBinding b : bindings) {
-            DbAttribute attribute = b.getAttribute();
+        for (PSParameter b : bindings) {
+            DbAttribute attribute = b.attribute();
             if (attribute != null) {
                 key = attribute.getName();
             }
 
-            if (b.getExtendedType() != null) {
-                value = b.getExtendedType().toString(b.getValue());
-            } else if (b.getValue() == null) {
+            if (b.binder() != null) {
+                value = b.binder().toString(b.value());
+            } else if (b.value() == null) {
                 value = "NULL";
             } else {
-                value = b.getValue().getClass().getName() +
+                value = b.value().getClass().getName() +
                         "@" +
-                        System.identityHashCode(b.getValue());
+                        System.identityHashCode(b.value());
             }
 
             List<String> objects = bindingsMap.computeIfAbsent(key, k -> new ArrayList<>());

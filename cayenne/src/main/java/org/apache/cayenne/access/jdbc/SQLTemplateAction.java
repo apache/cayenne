@@ -24,8 +24,8 @@ import org.apache.cayenne.ResultIterator;
 import org.apache.cayenne.access.DataNode;
 import org.apache.cayenne.access.OperationObserver;
 import org.apache.cayenne.access.jdbc.reader.RowReader;
-import org.apache.cayenne.access.translator.ParameterBinding;
 import org.apache.cayenne.access.translator.sqltemplate.TranslatedSQL;
+import org.apache.cayenne.access.types.ExtendedType;
 import org.apache.cayenne.access.types.ExtendedTypeMap;
 import org.apache.cayenne.dba.DbAdapter;
 import org.apache.cayenne.dba.TypesMapping;
@@ -47,7 +47,6 @@ import java.sql.SQLException;
 import java.sql.Statement;
 import java.util.ArrayList;
 import java.util.Collection;
-import java.util.Collections;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
@@ -109,7 +108,7 @@ public class SQLTemplateAction implements SQLAction {
         // should go away after 4.0; newer positional parameter only support a
         // single set of values.
         if (query.getPositionalParams().isEmpty()) {
-            runWithNamedParametersBatch(connection, callback, template, counts, loggable);
+            runWithNamedParameters(connection, callback, template, counts, loggable);
         } else {
             runWithPositionalParameters(connection, callback, template, counts, loggable);
         }
@@ -137,34 +136,37 @@ public class SQLTemplateAction implements SQLAction {
         execute(connection, callback, compiled, counts);
     }
 
-    @SuppressWarnings("unchecked")
-    private void runWithNamedParametersBatch(Connection connection, OperationObserver callback, String template,
-                                             Collection<Number> counts, boolean loggable) throws Exception {
+    private void runWithNamedParameters(
+            Connection connection,
+            OperationObserver callback,
+            String template,
+            Collection<Number> counts,
+            boolean loggable) throws Exception {
 
-        int size = query.parametersSize();
-
-        // zero size indicates a one-shot query with no parameters
-        // so fake a single entry batch...
-        int batchSize = (size > 0) ? size : 1;
-
-        // for now supporting deprecated batch parameters...
-        Iterator<Map<String, ?>> it;
-        if (size == 0) {
-            it = (Iterator) Collections.singleton(Collections.emptyMap()).iterator();
+        if (query.parametersSize() == 0) {
+            runParametersBatch(connection, callback, template, counts, loggable, Map.of());
         } else {
-            it = query.parametersIterator();
-        }
-
-        for (int i = 0; i < batchSize; i++) {
-            Map<String, ?> nextParameters = it.next();
-            TranslatedSQL compiled = dataNode.getSqlTemplateTranslator().translate(template, nextParameters, getAdapter());
-            if (loggable) {
-                dataNode.getJdbcEventLogger().logQuery(compiled.sql(), compiled.bindings());
+            Iterator<Map<String, ?>> it = query.parametersIterator();
+            while (it.hasNext()) {
+                runParametersBatch(connection, callback, template, counts, loggable, it.next());
             }
+        }
+    }
 
-            execute(connection, callback, compiled, counts);
+    private void runParametersBatch(
+            Connection connection,
+            OperationObserver callback,
+            String template,
+            Collection<Number> counts,
+            boolean loggable,
+            Map<String, ?> nextParameters) throws Exception {
+
+        TranslatedSQL compiled = dataNode.getSqlTemplateTranslator().translate(template, nextParameters, getAdapter());
+        if (loggable) {
+            dataNode.getJdbcEventLogger().logQuery(compiled.sql(), compiled.bindings());
         }
 
+        execute(connection, callback, compiled, counts);
     }
 
     protected void execute(Connection connection, OperationObserver callback, TranslatedSQL compiled,
@@ -232,16 +234,19 @@ public class SQLTemplateAction implements SQLAction {
     }
 
     @SuppressWarnings({"unchecked", "rawtypes"})
-    protected void processSelectResult(TranslatedSQL compiled, Connection connection, Statement statement,
-                                       ResultSet resultSet, OperationObserver callback, final long startTime) throws Exception {
+    protected void processSelectResult(
+            TranslatedSQL compiled,
+            Connection connection, Statement statement,
+            ResultSet resultSet,
+            OperationObserver callback,
+            long startTime) throws Exception {
 
-        boolean iteratedResult = callback.isIteratedResult();
-        ExtendedTypeMap types = dataNode.getAdapter().getExtendedTypes();
-        RowDescriptorBuilder builder = configureRowDescriptorBuilder(compiled, resultSet);
         recreateQueryMetadata(resultSet);
-        RowReader<?> rowReader = dataNode.getRowReaderFactory()
-                .rowReader(builder.getDescriptor(types), queryMetadata, dataNode.getAdapter());
-        ResultIterator<?> it = new JDBCResultIterator<>(statement, resultSet, rowReader);
+        boolean iteratedResult = callback.isIteratedResult();
+        RSColumn[] columns = rowBuilder(compiled, resultSet).build(dataNode.getAdapter().getExtendedTypes());
+
+        RowReader<?> rowReader = dataNode.getRowReaderFactory().rowReader(columns, queryMetadata, dataNode.getAdapter());
+        ResultIterator<?> it = new RSIterator<>(statement, resultSet, rowReader);
 
         if (iteratedResult) {
 
@@ -286,7 +291,7 @@ public class SQLTemplateAction implements SQLAction {
     /**
      * Creates column descriptors based on compiled statement and query metadata
      */
-    private ColumnDescriptor[] createColumnDescriptors(TranslatedSQL compiled) {
+    private RSColumn[] createColumnDescriptors(TranslatedSQL compiled) {
         // SQLTemplate #result columns take precedence over other ways to determine the type
         if (compiled.resultColumns().length > 0) {
             if (query.getResultColumnsTypes() != null) {
@@ -301,25 +306,28 @@ public class SQLTemplateAction implements SQLAction {
             return null;
         }
 
+        ExtendedTypeMap extendedTypes = dataNode.getAdapter().getExtendedTypes();
         int size = query.getResultColumnsTypes().size();
-        ColumnDescriptor[] columnDescriptors = new ColumnDescriptor[size];
+        RSColumn[] columns = new RSColumn[size];
         for (int i = 0; i < size; i++) {
-            ColumnDescriptor columnDescriptor = new ColumnDescriptor();
-            columnDescriptor.setJavaClass(query.getResultColumnsTypes().get(i).getCanonicalName());
-            columnDescriptors[i] = columnDescriptor;
+            // only the Java class is known here; name and jdbcType are resolved later from ResultSet metadata
+            ExtendedType type = extendedTypes.getRegisteredType(query.getResultColumnsTypes().get(i));
+            columns[i] = new RSColumn(null, 0, null, type, null);
         }
-        return columnDescriptors;
+        return columns;
     }
 
     /**
      * @since 3.0
      */
-    protected RowDescriptorBuilder configureRowDescriptorBuilder(TranslatedSQL compiled, ResultSet resultSet)
-            throws SQLException {
-        RowDescriptorBuilder builder = new RowDescriptorBuilder()
-                .setResultSet(resultSet)
-                .setColumns(createColumnDescriptors(compiled))
-                .validateDuplicateColumnNames();
+    protected RSColumn.RowBuilder rowBuilder(TranslatedSQL compiled, ResultSet resultSet) throws SQLException {
+        RSColumn.RowBuilder builder = RSColumn.rowBuilder()
+                .resultSet(resultSet)
+                .columns(createColumnDescriptors(compiled))
+                .validateDuplicateColumnNames()
+                // resolve column DbAttributes so the row reader factory can tell e.g. PK columns apart, the same way
+                // it can for ObjectSelect; lets pagination read the PK regardless of column order
+                .dbEntity(dbEntity);
 
         if (query.getResultColumnsTypes() != null) {
             builder.mergeColumnsWithRsMetadata();
@@ -339,10 +347,11 @@ public class SQLTemplateAction implements SQLAction {
 
         // override numeric Java types based on JDBC defaults for DbAttributes, as Oracle
         // ResultSetMetadata is not very precise about NUMERIC distinctions...
-        // (BigDecimal vs Long vs. Integer)
+        // (BigDecimal vs Long vs. Integer). These are fallbacks: the ObjAttribute overrides
+        // registered above take precedence, as the builder keeps the first override per column.
         if (dbEntity != null && isResultColumnTypesEmpty()) {
             for (DbAttribute attribute : dbEntity.getAttributes()) {
-                if (!builder.isOverriden(attribute.getName()) && TypesMapping.isNumeric(attribute.getType())) {
+                if (TypesMapping.isNumeric(attribute.getType())) {
                     builder.overrideColumnType(attribute.getName(), TypesMapping.getJavaBySqlType(attribute));
                 }
             }
@@ -381,9 +390,9 @@ public class SQLTemplateAction implements SQLAction {
     /**
      * Binds parameters to the PreparedStatement.
      */
-    protected void bind(PreparedStatement preparedStatement, ParameterBinding[] bindings) throws Exception {
+    protected void bind(PreparedStatement preparedStatement, PSParameter[] bindings) throws Exception {
         // bind parameters
-        for (ParameterBinding binding : bindings) {
+        for (PSParameter binding : bindings) {
             dataNode.getAdapter().bindParameter(preparedStatement, binding);
         }
 

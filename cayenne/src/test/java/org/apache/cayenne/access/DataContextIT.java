@@ -443,7 +443,7 @@ public class DataContextIT {
 	}
 
 	@Test
-	public void performPaginatedQuery1() throws Exception {
+	public void performPaginatedQuery_EJBQL() throws Exception {
 		createArtistsDataSet();
 
 		EJBQLQuery query = new EJBQLQuery("select a FROM Artist a");

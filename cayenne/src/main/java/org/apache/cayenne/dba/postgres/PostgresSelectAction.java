@@ -20,9 +20,9 @@ package org.apache.cayenne.dba.postgres;
 
 import org.apache.cayenne.access.DataNode;
 import org.apache.cayenne.access.OperationObserver;
-import org.apache.cayenne.access.jdbc.ColumnDescriptor;
+import org.apache.cayenne.access.jdbc.RSColumn;
 import org.apache.cayenne.access.jdbc.SelectAction;
-import org.apache.cayenne.access.translator.ParameterBinding;
+import org.apache.cayenne.access.jdbc.PSParameter;
 import org.apache.cayenne.access.translator.select.TranslatedSelect;
 import org.apache.cayenne.query.Select;
 
@@ -74,14 +74,14 @@ class PostgresSelectAction extends SelectAction {
 	}
 
 	private static boolean readsLargeObjects(TranslatedSelect translated) {
-		for (ColumnDescriptor column : translated.resultColumns()) {
-			if (isLargeObject(column.getJdbcType())) {
+		for (RSColumn column : translated.resultColumns()) {
+			if (isLargeObject(column.rsType())) {
 				return true;
 			}
 		}
 		// a large object bound as a parameter (e.g. in a qualifier) also needs a transaction
-		for (ParameterBinding binding : translated.bindings()) {
-			if (isLargeObject(binding.getJdbcType())) {
+		for (PSParameter binding : translated.bindings()) {
+			if (isLargeObject(binding.psType())) {
 				return true;
 			}
 		}

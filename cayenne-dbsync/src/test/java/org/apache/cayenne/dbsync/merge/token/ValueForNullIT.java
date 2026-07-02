@@ -20,7 +20,7 @@
 package org.apache.cayenne.dbsync.merge.token;
 
 import org.apache.cayenne.Persistent;
-import org.apache.cayenne.access.translator.ParameterBinding;
+import org.apache.cayenne.access.jdbc.PSParameter;
 import org.apache.cayenne.dbsync.merge.DataMapMerger;
 import org.apache.cayenne.dbsync.merge.MergeCase;
 import org.apache.cayenne.exp.Expression;
@@ -101,11 +101,11 @@ public class ValueForNullIT extends MergeCase {
         return super.merger().valueForNullProvider(new DefaultValueForNullProvider() {
 
             @Override
-            protected ParameterBinding get(DbEntity entity, DbAttribute column) {
+            protected PSParameter get(DbEntity entity, DbAttribute column) {
                 int type = column.getType();
                 switch (type) {
                     case Types.VARCHAR:
-                        return new ParameterBinding(type, -1).reset(1, DEFAULT_VALUE_STRING, null);
+                        return new PSParameter(DEFAULT_VALUE_STRING, 1, type, -1, null, null);
                     default:
                         throw new AssertionError("should not get here");
                 }

@@ -96,7 +96,7 @@ public class SQLTemplateParserTest {
         String sql = parseString(template, context);
         assertEquals("SELECT  ?  FROM a", sql);
         assertEquals(1, context.getParameterBindings().length);
-        assertEquals("var", context.getParameterBindings()[0].getValue());
+        assertEquals("var", context.getParameterBindings()[0].value());
     }
 
     @Test
@@ -129,7 +129,7 @@ public class SQLTemplateParserTest {
                 "     \tAND \n" +
                 "COLUMN2 ?\n\n", sql);
         assertEquals(2, context.getParameterBindings().length);
-        assertEquals("aaaa", context.getParameterBindings()[0].getValue());
+        assertEquals("aaaa", context.getParameterBindings()[0].value());
     }
 
     @Test

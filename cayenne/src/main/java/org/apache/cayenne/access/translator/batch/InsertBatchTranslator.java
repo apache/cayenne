@@ -19,9 +19,10 @@
 
 package org.apache.cayenne.access.translator.batch;
 
+import org.apache.cayenne.access.jdbc.PSBatchParameter;
 import org.apache.cayenne.access.sqlbuilder.InsertBuilder;
 import org.apache.cayenne.access.sqlbuilder.SQLBuilder;
-import org.apache.cayenne.access.translator.ParameterBinding;
+import org.apache.cayenne.access.jdbc.PSParameter;
 import org.apache.cayenne.access.types.ExtendedType;
 import org.apache.cayenne.map.DbAttribute;
 import org.apache.cayenne.query.BatchQueryRow;
@@ -53,9 +54,10 @@ public class InsertBatchTranslator extends BaseBatchTranslator<InsertBatchQuery>
     }
 
     @Override
-    protected ParameterBinding[] updateBindings(BatchTranslatorContext<InsertBatchQuery> context,
-                                                ParameterBinding[] bindings, BatchQueryRow row) {
+    protected PSParameter[] updateBindings(BatchTranslatorContext<InsertBatchQuery> context,
+                                           PSBatchParameter[] template, BatchQueryRow row) {
         InsertBatchQuery query = context.getQuery();
+        PSParameter[] bindings = new PSParameter[template.length];
         int i=0;
         int j=0;
         for(DbAttribute attribute : query.getDbAttributes()) {
@@ -65,10 +67,10 @@ public class InsertBatchTranslator extends BaseBatchTranslator<InsertBatchQuery>
             }
 
             Object value = row.getValue(i++);
-            ExtendedType<?> extendedType = value != null
+            ExtendedType extendedType = value != null
                     ? context.getAdapter().getExtendedTypes().getRegisteredType(value.getClass())
                     : context.getAdapter().getExtendedTypes().getDefaultType();
-            bindings[j].reset(++j, value, extendedType);
+            bindings[j] = template[j].bind(value, ++j, extendedType);
         }
         return bindings;
     }

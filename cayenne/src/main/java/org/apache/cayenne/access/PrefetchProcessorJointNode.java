@@ -22,7 +22,7 @@ package org.apache.cayenne.access;
 import org.apache.cayenne.CayenneRuntimeException;
 import org.apache.cayenne.DataRow;
 import org.apache.cayenne.Persistent;
-import org.apache.cayenne.access.jdbc.ColumnDescriptor;
+import org.apache.cayenne.access.jdbc.RSColumn;
 import org.apache.cayenne.exp.Expression;
 import org.apache.cayenne.exp.ExpressionFactory;
 import org.apache.cayenne.exp.parser.ASTPath;
@@ -56,7 +56,7 @@ import java.util.TreeMap;
  */
 class PrefetchProcessorJointNode extends PrefetchProcessorNode {
 
-    ColumnDescriptor[] columns;
+    RSColumn[] columns;
     int[] idIndices;
     int rowCapacity;
     Map<Map, Persistent> resolved;
@@ -106,8 +106,8 @@ class PrefetchProcessorJointNode extends PrefetchProcessorNode {
 
         Map<String, Object> id = new TreeMap<>();
         for (int idIndex : idIndices) {
-            Object value = flatRow.get(columns[idIndex].getDataRowKey());
-            id.put(columns[idIndex].getName(), value);
+            Object value = flatRow.get(columns[idIndex].dataRowName());
+            id.put(columns[idIndex].rsName(), value);
         }
 
         return id;
@@ -136,8 +136,8 @@ class PrefetchProcessorJointNode extends PrefetchProcessorNode {
         DataRow row = new DataRow(rowCapacity);
 
         // extract subset of flat row columns, recasting to the target keys
-        for (ColumnDescriptor column : columns) {
-            row.put(column.getName(), flatRow.get(column.getDataRowKey()));
+        for (RSColumn column : columns) {
+            row.put(column.rsName(), flatRow.get(column.dataRowName()));
         }
 
         // since JDBC row reader won't inject JOINED entity name, we have to detect it here...
@@ -151,7 +151,7 @@ class PrefetchProcessorJointNode extends PrefetchProcessorNode {
      * Configures row columns mapping for this node entity.
      */
     private void buildRowMapping() {
-        final Map<String, ColumnDescriptor> targetSource = new TreeMap<>();
+        final Map<String, RSColumn> targetSource = new TreeMap<>();
 
         // build a DB path .. find parent node that terminates the joint group...
         PrefetchTreeNode jointRoot = this;
@@ -236,20 +236,18 @@ class PrefetchProcessorJointNode extends PrefetchProcessorNode {
 
         int size = targetSource.size();
         this.rowCapacity = (int) Math.ceil(size / 0.75);
-        this.columns = new ColumnDescriptor[size];
+        this.columns = new RSColumn[size];
         targetSource.values().toArray(columns);
     }
 
-    private ColumnDescriptor appendColumn(
-            Map<String, ColumnDescriptor> map,
+    private RSColumn appendColumn(
+            Map<String, RSColumn> map,
             String name,
             String label) {
-        ColumnDescriptor column = map.get(name);
+        RSColumn column = map.get(name);
 
         if (column == null) {
-            column = new ColumnDescriptor();
-            column.setName(name);
-            column.setDataRowKey(label);
+            column = new RSColumn(name, 0, label, null, null);
             map.put(name, column);
         }
 
@@ -275,7 +273,7 @@ class PrefetchProcessorJointNode extends PrefetchProcessorNode {
             DbAttribute pk = it.next();
 
             for (int j = 0; j < columns.length; j++) {
-                if (pk.getName().equals(columns[j].getName())) {
+                if (pk.getName().equals(columns[j].rsName())) {
                     idIndices[i] = j;
                     break;
                 }

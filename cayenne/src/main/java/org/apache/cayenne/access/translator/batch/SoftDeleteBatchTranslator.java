@@ -19,9 +19,10 @@
 
 package org.apache.cayenne.access.translator.batch;
 
+import org.apache.cayenne.access.jdbc.PSBatchParameter;
 import org.apache.cayenne.access.sqlbuilder.SQLBuilder;
 import org.apache.cayenne.access.sqlbuilder.UpdateBuilder;
-import org.apache.cayenne.access.translator.ParameterBinding;
+import org.apache.cayenne.access.jdbc.PSParameter;
 import org.apache.cayenne.access.types.ExtendedType;
 import org.apache.cayenne.dba.TypesMapping;
 import org.apache.cayenne.map.DbAttribute;
@@ -76,32 +77,24 @@ public class SoftDeleteBatchTranslator extends DeleteBatchTranslator {
     }
 
     @Override
-    protected ParameterBinding[] createBindings(BatchTranslatorContext<DeleteBatchQuery> context) {
-        ParameterBinding[] bindings = super.createBindings(context);
-        if (isHardDelete(context.getQuery())) {
-            return bindings;
-        }
-
-        // the 'deleted' flag is the first binding and stays constant across all rows of the batch
-        DbAttribute deleteAttribute = context.getQuery().getDbEntity().getAttribute(deletedFieldName);
-        String typeName = TypesMapping.getJavaBySqlType(deleteAttribute);
-        ExtendedType<?> extendedType = context.getAdapter().getExtendedTypes().getRegisteredType(typeName);
-        bindings[0].reset(1, true, extendedType);
-
-        return bindings;
-    }
-
-    @Override
-    protected ParameterBinding[] updateBindings(BatchTranslatorContext<DeleteBatchQuery> context,
-                                                ParameterBinding[] bindings, BatchQueryRow row) {
+    protected PSParameter[] updateBindings(BatchTranslatorContext<DeleteBatchQuery> context,
+                                           PSBatchParameter[] template, BatchQueryRow row) {
         DeleteBatchQuery deleteBatch = context.getQuery();
         if (isHardDelete(deleteBatch)) {
-            return super.updateBindings(context, bindings, row);
+            return super.updateBindings(context, template, row);
         }
+
+        PSParameter[] bindings = new PSParameter[template.length];
+
+        // the 'deleted' flag is the first binding and stays constant across all rows of the batch
+        DbAttribute deleteAttribute = deleteBatch.getDbEntity().getAttribute(deletedFieldName);
+        String typeName = TypesMapping.getJavaBySqlType(deleteAttribute);
+        ExtendedType extendedType = context.getAdapter().getExtendedTypes().getRegisteredType(typeName);
+        bindings[0] = template[0].bind(Boolean.TRUE, 1, extendedType);
 
         // bindings[0] holds the constant 'deleted' flag, so qualifier values start at position 1
         for(int i=0, position=1; i<deleteBatch.getDbAttributes().size(); i++) {
-            position = updateBinding(context, bindings, row.getValue(i), position);
+            position = updateBinding(context, template, bindings, row.getValue(i), position);
         }
 
         return bindings;

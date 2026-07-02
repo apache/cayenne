@@ -30,7 +30,9 @@ import java.util.Collection;
 import java.util.HashMap;
 import java.util.Map;
 
-import org.apache.cayenne.access.jdbc.ColumnDescriptor;
+import org.apache.cayenne.access.jdbc.RSColumn;
+import org.apache.cayenne.access.types.ExtendedType;
+import org.apache.cayenne.dba.DbAdapter;
 import org.apache.cayenne.util.Util;
 import org.apache.velocity.context.InternalContextAdapter;
 import org.apache.velocity.exception.MethodInvocationException;
@@ -126,23 +128,21 @@ public class ResultDirective extends Directive {
 		// determine what we want to name this column in a resulting DataRow...
 		String label = (!Util.isEmptyString(dataRowKey)) ? dataRowKey : (!Util.isEmptyString(alias)) ? alias : null;
 
-		ColumnDescriptor columnDescriptor = new ColumnDescriptor();
-		columnDescriptor.setName(column);
-		columnDescriptor.setDataRowKey(label);
-
 		String type = getChildAsString(context, node, 1);
-		if (type != null) {
-			columnDescriptor.setJavaClass(guessType(type));
-		}
+		String javaClass = (type != null) ? guessType(type) : null;
+
+		DbAdapter adapter = (DbAdapter) context.getInternalUserContext()
+				.get(VelocitySQLTemplateTranslator.ADAPTER_KEY);
+		ExtendedType extendedType = adapter.getExtendedTypes().getRegisteredType(javaClass);
 
 		// TODO: andrus 6/27/2007 - this is an unofficial jdbcType parameter
 		// that is added
 		// temporarily pending CAY-813 implementation for the sake of EJBQL
 		// query...
-		Object jdbcType = getChild(context, node, 4);
-		if (jdbcType instanceof Number) {
-			columnDescriptor.setJdbcType(((Number) jdbcType).intValue());
-		}
+		Object jdbcTypeChild = getChild(context, node, 4);
+		int jdbcType = (jdbcTypeChild instanceof Number) ? ((Number) jdbcTypeChild).intValue() : 0;
+
+		RSColumn columnDescriptor = new RSColumn(column, jdbcType, label, extendedType, null);
 
 		writer.write(column);
 
@@ -190,14 +190,14 @@ public class ResultDirective extends Directive {
 	/**
 	 * Adds value to the list of result columns in the context.
 	 */
-	protected void bindResult(InternalContextAdapter context, ColumnDescriptor columnDescriptor) {
+	protected void bindResult(InternalContextAdapter context, RSColumn column) {
 
 		@SuppressWarnings("unchecked")
 		Collection<Object> resultColumns = (Collection<Object>) context
 				.getInternalUserContext().get(VelocitySQLTemplateTranslator.RESULT_COLUMNS_LIST_KEY);
 
 		if (resultColumns != null) {
-			resultColumns.add(columnDescriptor);
+			resultColumns.add(column);
 		}
 	}
 }

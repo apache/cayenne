@@ -18,8 +18,8 @@
  ****************************************************************/
 package org.apache.cayenne.crypto.transformer;
 
-import org.apache.cayenne.access.jdbc.ColumnDescriptor;
-import org.apache.cayenne.access.translator.ParameterBinding;
+import org.apache.cayenne.access.jdbc.RSColumn;
+import org.apache.cayenne.access.jdbc.PSBatchParameter;
 import org.apache.cayenne.access.types.ExtendedTypeMap;
 import org.apache.cayenne.crypto.map.ColumnMapper;
 import org.apache.cayenne.crypto.transformer.bytes.BytesTransformerFactory;
@@ -50,7 +50,7 @@ public class DefaultTransformerFactory implements TransformerFactory {
     }
 
     @Override
-    public MapTransformer decryptor(ColumnDescriptor[] columns, Object sampleRow) {
+    public MapTransformer decryptor(RSColumn[] columns, Object sampleRow) {
 
         if (!(sampleRow instanceof Map)) {
             return null;
@@ -61,7 +61,7 @@ public class DefaultTransformerFactory implements TransformerFactory {
 
         for (int i = 0; i < len; i++) {
 
-            DbAttribute a = columns[i].getAttribute();
+            DbAttribute a = columns[i].attribute();
             if (a != null && columnMapper.isEncrypted(a)) {
                 if (cryptoColumns == null) {
                     cryptoColumns = new ArrayList<>(len - i);
@@ -79,9 +79,9 @@ public class DefaultTransformerFactory implements TransformerFactory {
 
             for (int i = 0; i < dlen; i++) {
 
-                ColumnDescriptor cd = columns[cryptoColumns.get(i)];
-                mapKeys[i] = cd.getDataRowKey();
-                transformers[i] = transformerFactory.decryptor(cd.getAttribute());
+                RSColumn cd = columns[cryptoColumns.get(i)];
+                mapKeys[i] = cd.dataRowName();
+                transformers[i] = transformerFactory.decryptor(cd.attribute());
             }
 
             return new DefaultMapTransformer(mapKeys, transformers, bytesTransformerFactory.decryptor());
@@ -91,13 +91,13 @@ public class DefaultTransformerFactory implements TransformerFactory {
     }
 
     @Override
-    public BindingsTransformer encryptor(ParameterBinding[] bindings, ExtendedTypeMap extendedTypeMap) {
+    public BindingsTransformer encryptor(PSBatchParameter[] bindings, ExtendedTypeMap extendedTypeMap) {
         int len = bindings.length;
         List<Integer> cryptoColumns = null;
 
         for (int i = 0; i < len; i++) {
 
-            DbAttribute a = bindings[i].getAttribute();
+            DbAttribute a = bindings[i].attribute();
             if (columnMapper.isEncrypted(a)) {
 
                 if (cryptoColumns == null) {
@@ -116,9 +116,9 @@ public class DefaultTransformerFactory implements TransformerFactory {
 
             for (int i = 0; i < dlen; i++) {
                 int pos = cryptoColumns.get(i);
-                ParameterBinding b = bindings[pos];
+                PSBatchParameter b = bindings[pos];
                 positions[i] = pos;
-                transformers[i] = transformerFactory.encryptor(b.getAttribute());
+                transformers[i] = transformerFactory.encryptor(b.attribute());
             }
 
             return new DefaultBindingsTransformer(positions, transformers, bytesTransformerFactory.encryptor(), extendedTypeMap);

@@ -19,9 +19,10 @@
 
 package org.apache.cayenne.access.translator.batch;
 
+import org.apache.cayenne.access.jdbc.PSBatchParameter;
 import org.apache.cayenne.access.sqlbuilder.SQLBuilder;
 import org.apache.cayenne.access.sqlbuilder.UpdateBuilder;
-import org.apache.cayenne.access.translator.ParameterBinding;
+import org.apache.cayenne.access.jdbc.PSParameter;
 import org.apache.cayenne.access.types.ExtendedType;
 import org.apache.cayenne.map.DbAttribute;
 import org.apache.cayenne.query.BatchQueryRow;
@@ -54,18 +55,19 @@ public class UpdateBatchTranslator extends BaseBatchTranslator<UpdateBatchQuery>
     }
 
     @Override
-    protected ParameterBinding[] updateBindings(BatchTranslatorContext<UpdateBatchQuery> context,
-                                                ParameterBinding[] bindings, BatchQueryRow row) {
+    protected PSParameter[] updateBindings(BatchTranslatorContext<UpdateBatchQuery> context,
+                                           PSBatchParameter[] template, BatchQueryRow row) {
         UpdateBatchQuery updateBatch = context.getQuery();
+        PSParameter[] bindings = new PSParameter[template.length];
 
         int i = 0;
         int j = 0;
         for(; i < updateBatch.getUpdatedAttributes().size(); i++) {
             Object value = row.getValue(i);
-            ExtendedType<?> extendedType = value == null
+            ExtendedType extendedType = value == null
                 ? context.getAdapter().getExtendedTypes().getDefaultType()
                 : context.getAdapter().getExtendedTypes().getRegisteredType(value.getClass());
-            bindings[j].reset(++j, value, extendedType);
+            bindings[j] = template[j].bind(value, ++j, extendedType);
         }
 
         for(DbAttribute attribute : updateBatch.getQualifierAttributes()) {
@@ -74,8 +76,8 @@ public class UpdateBatchTranslator extends BaseBatchTranslator<UpdateBatchQuery>
                 continue;
             }
             Object value = row.getValue(i);
-            ExtendedType<?> extendedType = context.getAdapter().getExtendedTypes().getRegisteredType(value.getClass());
-            bindings[j].reset(++j, value, extendedType);
+            ExtendedType extendedType = context.getAdapter().getExtendedTypes().getRegisteredType(value.getClass());
+            bindings[j] = template[j].bind(value, ++j, extendedType);
             i++;
         }
         return bindings;

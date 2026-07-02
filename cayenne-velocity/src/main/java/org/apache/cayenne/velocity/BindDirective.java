@@ -24,7 +24,7 @@ import java.io.Writer;
 import java.util.Collection;
 import java.util.Iterator;
 
-import org.apache.cayenne.access.translator.ParameterBinding;
+import org.apache.cayenne.access.jdbc.PSParameter;
 import org.apache.cayenne.access.types.ExtendedType;
 import org.apache.cayenne.access.types.ExtendedTypeMap;
 import org.apache.cayenne.dba.DbAdapter;
@@ -84,7 +84,7 @@ public class BindDirective extends Directive {
 
 	/**
 	 * Extracts the value of the object property to render and passes control to
-	 * {@link #render(InternalContextAdapter, Writer, ParameterBinding)} to do
+	 * {@link #render(InternalContextAdapter, Writer, PSParameter)} to do
 	 * the actual rendering.
 	 */
 	@Override
@@ -133,7 +133,7 @@ public class BindDirective extends Directive {
 					+ ") at line " + node.getLine() + ", column " + node.getColumn());
 		}
 
-		render(context, writer, new ParameterBinding(preferredBindingType(context, jdbcType), scale), value);
+		render(context, writer, preferredBindingType(context, jdbcType), scale, value);
 	}
 
 	/**
@@ -149,10 +149,10 @@ public class BindDirective extends Directive {
 		return (DbAdapter) context.getInternalUserContext().get(VelocitySQLTemplateTranslator.ADAPTER_KEY);
 	}
 
-	protected void render(InternalContextAdapter context, Writer writer, ParameterBinding binding, Object value)
+	protected void render(InternalContextAdapter context, Writer writer, int jdbcType, int scale, Object value)
 			throws IOException {
 
-		bind(context, binding, value);
+		bind(context, jdbcType, scale, value);
 		writer.write('?');
 	}
 
@@ -163,17 +163,17 @@ public class BindDirective extends Directive {
 	/**
 	 * Adds value to the list of bindings in the context.
 	 */
-	protected void bind(InternalContextAdapter context, ParameterBinding binding, Object value) {
+	protected void bind(InternalContextAdapter context, int jdbcType, int scale, Object value) {
 
 		@SuppressWarnings("unchecked")
-		Collection<ParameterBinding> bindings = (Collection<ParameterBinding>)
+		Collection<PSParameter> bindings = (Collection<PSParameter>)
 				context.getInternalUserContext().get(VelocitySQLTemplateTranslator.BINDINGS_LIST_KEY);
 
 		if (bindings != null) {
 			// a binding's statement position is its 1-based ordinal among the bound parameters; the
 			// ExtendedType is resolved from the value via the adapter
-			binding.reset(bindings.size() + 1, value, extendedType(context, value));
-			bindings.add(binding);
+			bindings.add(new PSParameter(value, bindings.size() + 1, jdbcType, scale, extendedType(context, value), null
+			));
 		}
 	}
 

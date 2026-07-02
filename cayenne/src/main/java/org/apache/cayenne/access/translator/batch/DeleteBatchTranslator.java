@@ -19,9 +19,10 @@
 
 package org.apache.cayenne.access.translator.batch;
 
+import org.apache.cayenne.access.jdbc.PSBatchParameter;
 import org.apache.cayenne.access.sqlbuilder.DeleteBuilder;
 import org.apache.cayenne.access.sqlbuilder.SQLBuilder;
-import org.apache.cayenne.access.translator.ParameterBinding;
+import org.apache.cayenne.access.jdbc.PSParameter;
 import org.apache.cayenne.access.types.ExtendedType;
 import org.apache.cayenne.map.DbAttribute;
 import org.apache.cayenne.query.BatchQueryRow;
@@ -46,27 +47,29 @@ public class DeleteBatchTranslator extends BaseBatchTranslator<DeleteBatchQuery>
     }
 
     @Override
-    protected ParameterBinding[] updateBindings(
+    protected PSParameter[] updateBindings(
             BatchTranslatorContext<DeleteBatchQuery> context,
-            ParameterBinding[] bindings,
+            PSBatchParameter[] template,
             BatchQueryRow row) {
 
         DeleteBatchQuery deleteBatch = context.getQuery();
+        PSParameter[] bindings = new PSParameter[template.length];
         for (int i = 0, position = 0; i < deleteBatch.getDbAttributes().size(); i++) {
-            position = updateBinding(context, bindings, row.getValue(i), position);
+            position = updateBinding(context, template, bindings, row.getValue(i), position);
         }
         return bindings;
     }
 
     protected int updateBinding(
             BatchTranslatorContext<DeleteBatchQuery> context,
-            ParameterBinding[] bindings,
+            PSBatchParameter[] template,
+            PSParameter[] bindings,
             Object value, int position) {
-        
+
         // skip null attributes... they are translated as "IS NULL"
         if (value != null) {
-            ExtendedType<?> extendedType = context.getAdapter().getExtendedTypes().getRegisteredType(value.getClass());
-            bindings[position].reset(++position, value, extendedType);
+            ExtendedType extendedType = context.getAdapter().getExtendedTypes().getRegisteredType(value.getClass());
+            bindings[position] = template[position].bind(value, ++position, extendedType);
         }
         return position;
     }

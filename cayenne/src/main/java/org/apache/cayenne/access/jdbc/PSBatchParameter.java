@@ -16,32 +16,24 @@
  *  specific language governing permissions and limitations
  *  under the License.
  ****************************************************************/
-package org.apache.cayenne.access.jdbc.reader;
 
-import java.sql.ResultSet;
+package org.apache.cayenne.access.jdbc;
 
-import org.apache.cayenne.DataRow;
-import org.apache.cayenne.access.jdbc.RowDescriptor;
-import org.apache.cayenne.map.EntityInheritanceTree;
-import org.apache.cayenne.map.ObjEntity;
-import org.apache.cayenne.query.EntityResultSegment;
+import org.apache.cayenne.access.types.ExtendedType;
+import org.apache.cayenne.map.DbAttribute;
 
 /**
- * @since 3.0
+ * An immutable per-batch parameter binding template, carrying only the static column metadata shared by all
+ * rows of a batch. A per-row {@link PSParameter} is produced by {@link #bind(Object, int, ExtendedType)}.
+ *
+ * @since 5.0
  */
-class InheritanceAwareEntityRowReader extends EntityRowReader {
+public record PSBatchParameter(int psType, int psScale, DbAttribute attribute) {
 
-    private EntityInheritanceTree entityInheritanceTree;
-
-    public InheritanceAwareEntityRowReader(RowDescriptor descriptor, EntityResultSegment segmentMetadata) {
-
-        super(descriptor, segmentMetadata);
-        this.entityInheritanceTree = segmentMetadata.getClassDescriptor().getEntityInheritanceTree();
-    }
-
-    @Override
-    void postprocessRow(ResultSet resultSet, DataRow dataRow) throws Exception {
-        ObjEntity entity = entityInheritanceTree.entityMatchingRow(dataRow);
-        dataRow.setEntityName(entity != null ? entity.getName() : entityName);
+    /**
+     * Resolves this per-batch template into a per-row {@link PSParameter}.
+     */
+    public <T> PSParameter<T> bind(T value, int psPosition, ExtendedType<T> extendedType) {
+        return new PSParameter<>(value, psPosition, psType, psScale, extendedType, attribute);
     }
 }

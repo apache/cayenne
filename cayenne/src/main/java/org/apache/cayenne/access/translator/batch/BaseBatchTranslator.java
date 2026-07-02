@@ -19,13 +19,14 @@
 
 package org.apache.cayenne.access.translator.batch;
 
+import org.apache.cayenne.access.jdbc.PSBatchParameter;
 import org.apache.cayenne.access.sqlbuilder.ExpressionNodeBuilder;
 import org.apache.cayenne.access.sqlbuilder.NodeBuilder;
 import org.apache.cayenne.access.sqlbuilder.SQLBuilder;
 import org.apache.cayenne.access.sqlbuilder.SQLGenerationVisitor;
 import org.apache.cayenne.access.sqlbuilder.DefaultSQLAppendable;
 import org.apache.cayenne.access.sqlbuilder.sqltree.Node;
-import org.apache.cayenne.access.translator.ParameterBinding;
+import org.apache.cayenne.access.jdbc.PSParameter;
 import org.apache.cayenne.dba.DbAdapter;
 import org.apache.cayenne.map.DbAttribute;
 import org.apache.cayenne.query.BatchQuery;
@@ -44,20 +45,22 @@ public abstract class BaseBatchTranslator<T extends BatchQuery> implements Batch
         BatchTranslatorContext<T> context = new BatchTranslatorContext<>(query, adapter);
 
         String sql = createSql(context);
-        ParameterBinding[] bindings = createBindings(context);
+        PSBatchParameter[] bindings = createBindings(context);
 
-        return new TranslatedBatch(sql, bindings, (b, row) -> updateBindings(context, b, row));
+        return new TranslatedBatch(sql, bindings, (template, row) -> updateBindings(context, template, row));
     }
 
     protected abstract String createSql(BatchTranslatorContext<T> context);
 
-    protected ParameterBinding[] createBindings(BatchTranslatorContext<T> context) {
-        return context.getBindings().toArray(new ParameterBinding[0]);
+    protected PSBatchParameter[] createBindings(BatchTranslatorContext<T> context) {
+        return context.getBindings().stream()
+                .map(b -> new PSBatchParameter(b.psType(), b.psScale(), b.attribute()))
+                .toArray(PSBatchParameter[]::new);
     }
 
-    protected abstract ParameterBinding[] updateBindings(
+    protected abstract PSParameter[] updateBindings(
             BatchTranslatorContext<T> context,
-            ParameterBinding[] bindings,
+            PSBatchParameter[] template,
             BatchQueryRow row);
 
     protected String doTranslate(BatchTranslatorContext<T> context, NodeBuilder nodeBuilder) {

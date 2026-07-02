@@ -23,7 +23,6 @@ import org.apache.cayenne.ResultIterator;
 import org.apache.cayenne.access.DataNode;
 import org.apache.cayenne.access.OperationObserver;
 import org.apache.cayenne.access.jdbc.reader.RowReader;
-import org.apache.cayenne.access.translator.ParameterBinding;
 import org.apache.cayenne.access.translator.select.TranslatedSelect;
 import org.apache.cayenne.dba.DbAdapter;
 import org.apache.cayenne.log.JdbcEventLogger;
@@ -73,14 +72,14 @@ public class SelectAction extends BaseSQLAction {
         DbAdapter adapter = dataNode.getAdapter();
         PreparedStatement statement = connection.prepareStatement(translated.sql());
 
-        for (ParameterBinding b : translated.bindings()) {
+        for (PSParameter b : translated.bindings()) {
 
             // null DbAttributes are a result of inferior qualifier
             // processing (qualifier can't map parameters to DbAttributes
             // and therefore only supports standard java types now) hence, a
             // special moronic case here:
-            if (b.getAttribute() == null) {
-                statement.setObject(b.getStatementPosition(), b.getValue());
+            if (b.attribute() == null) {
+                statement.setObject(b.psPosition(), b.value());
             } else {
                 adapter.bindParameter(statement, b);
             }
@@ -107,13 +106,9 @@ public class SelectAction extends BaseSQLAction {
             throw ex;
         }
 
-        RowDescriptor descriptor = new RowDescriptorBuilder()
-                .setColumns(translated.resultColumns())
-                .getDescriptor(dataNode.getAdapter().getExtendedTypes());
+        RowReader<?> rowReader = dataNode.getRowReaderFactory().rowReader(translated.resultColumns(), queryMetadata, dataNode.getAdapter());
 
-        RowReader<?> rowReader = dataNode.getRowReaderFactory().rowReader(descriptor, queryMetadata, dataNode.getAdapter());
-
-        ResultIterator<?> it = new JDBCResultIterator<>(statement, rs, rowReader);
+        ResultIterator<?> it = new RSIterator<>(statement, rs, rowReader);
         it = forIteratedResult(it, observer, connection, t1, translated.sql());
         it = forSuppressedDistinct(it, translated);
         it = forFetchLimit(it, translated);

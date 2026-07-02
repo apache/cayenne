@@ -19,7 +19,7 @@
 
 package org.apache.cayenne.access.translator.procedure;
 
-import org.apache.cayenne.access.translator.ParameterBinding;
+import org.apache.cayenne.access.jdbc.PSParameter;
 import org.apache.cayenne.map.ProcedureParameter;
 
 /**
@@ -27,5 +27,5 @@ import org.apache.cayenne.map.ProcedureParameter;
  *
  * @since 5.0
  */
-public record TranslatedProcedure(String sql, ProcedureParameter[] callParams, ParameterBinding[] bindings) {
+public record TranslatedProcedure(String sql, ProcedureParameter[] callParams, PSParameter[] bindings) {
 }

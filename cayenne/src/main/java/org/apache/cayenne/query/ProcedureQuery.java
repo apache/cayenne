@@ -19,16 +19,15 @@
 
 package org.apache.cayenne.query;
 
+import org.apache.cayenne.map.EntityResolver;
+import org.apache.cayenne.map.Procedure;
+
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-
-import org.apache.cayenne.access.jdbc.ColumnDescriptor;
-import org.apache.cayenne.map.EntityResolver;
-import org.apache.cayenne.map.Procedure;
 
 /**
  * A query based on Procedure. Can be used as a select query, or as a query of an
@@ -46,7 +45,7 @@ import org.apache.cayenne.map.Procedure;
  * {@link org.apache.cayenne.access.DataContext#performQuery(Query)} makes sense only if
  * the stored procedure returns a single result set (or alternatively returns a result via
  * OUT parameters and no other result sets). It is still OK if data modification occurs as
- * a side effect. However if the query returns more then one result set, a more generic
+ * a side effect. However, if the query returns more then one result set, a more generic
  * form should be used:
  * {@link org.apache.cayenne.access.DataContext#performGenericQuery(Query)}.
  * </p>
@@ -55,26 +54,12 @@ public class ProcedureQuery extends AbstractQuery implements ParameterizedQuery 
 
     public static final String COLUMN_NAME_CAPITALIZATION_PROPERTY = "cayenne.ProcedureQuery.columnNameCapitalization";
 
-    /**
-     * @since 1.2
-     */
     protected String resultEntityName;
-
-    /**
-     * @since 1.2
-     */
     protected Class<?> resultClass;
     protected CapsStrategy columnNamesCapitalization;
-
     protected Map<String, Object> parameters = new HashMap<>();
-
     ProcedureQueryMetadata metaData = new ProcedureQueryMetadata();
-
-    // TODO: ColumnDescriptor is not XMLSerializable so we can't store it in a DataMap
-    /**
-     * @since 1.2
-     */
-    protected List<ColumnDescriptor[]> resultDescriptors;
+    protected List<ProcedureColumn[]> resultDescriptors;
 
     /**
      * Creates an empty procedure query. The query would fetch DataRows. Fetching
@@ -156,13 +141,13 @@ public class ProcedureQuery extends AbstractQuery implements ParameterizedQuery 
      * <p>
      * <i>Note that if a procedure returns ResultSet in an OUT parameter, it is returned
      * prior to any other result sets (though in practice database engines usually support
-     * only one mechanism for returning result sets. </i>
+     * only one mechanism for returning result sets).</i>
      * </p>
      * 
-     * @since 1.2
+     * @since 5.0
      */
-    public List<ColumnDescriptor[]> getResultDescriptors() {
-        return resultDescriptors != null ? resultDescriptors : Collections.<ColumnDescriptor[]>emptyList();
+    public List<ProcedureColumn[]> getResultDescriptors() {
+        return resultDescriptors != null ? resultDescriptors : Collections.emptyList();
     }
 
     /**
@@ -170,9 +155,9 @@ public class ProcedureQuery extends AbstractQuery implements ParameterizedQuery 
      * calling this method multiple times in the order of described ResultSet appearance
      * in the procedure results.
      * 
-     * @since 1.2
+     * @since 5.0
      */
-    public synchronized void addResultDescriptor(ColumnDescriptor[] descriptor) {
+    public synchronized void addResultDescriptor(ProcedureColumn[] descriptor) {
         if (resultDescriptors == null) {
             resultDescriptors = new ArrayList<>(2);
         }
@@ -183,9 +168,9 @@ public class ProcedureQuery extends AbstractQuery implements ParameterizedQuery 
     /**
      * Removes result descriptor from the list of descriptors.
      * 
-     * @since 1.2
+     * @since 5.0
      */
-    public void removeResultDescriptor(ColumnDescriptor[] descriptor) {
+    public void removeResultDescriptor(ProcedureColumn[] descriptor) {
         if (resultDescriptors != null) {
             resultDescriptors.remove(descriptor);
         }

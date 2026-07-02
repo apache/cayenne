@@ -28,9 +28,9 @@ import java.util.List;
 import org.apache.cayenne.DataRow;
 import org.apache.cayenne.access.DataNode;
 import org.apache.cayenne.access.OperationObserver;
-import org.apache.cayenne.access.jdbc.ColumnDescriptor;
+import org.apache.cayenne.access.jdbc.RSColumn;
 import org.apache.cayenne.access.jdbc.ProcedureAction;
-import org.apache.cayenne.access.jdbc.RowDescriptor;
+import org.apache.cayenne.dba.TypesMapping;
 import org.apache.cayenne.access.types.ExtendedType;
 import org.apache.cayenne.map.ProcedureParameter;
 import org.apache.cayenne.query.ProcedureQuery;
@@ -69,8 +69,8 @@ class OracleProcedureAction extends ProcedureAction {
 			if (parameter.getType() == OracleAdapter.getOracleCursorType()) {
 
 				try (ResultSet rs = (ResultSet) statement.getObject(i + 1);) {
-					RowDescriptor rsDescriptor = describeResultSet(rs, processedResultSets++);
-					readResultSet(rs, rsDescriptor, query, delegate);
+					RSColumn[] rsColumns = describeResultSet(rs, processedResultSets++);
+					readResultSet(rs, rsColumns, query, delegate);
 				}
 			}
 			// ==== end Oracle-specific part
@@ -79,12 +79,11 @@ class OracleProcedureAction extends ProcedureAction {
 					result = new DataRow(2);
 				}
 
-				ColumnDescriptor descriptor = new ColumnDescriptor(parameter);
 				ExtendedType type = dataNode.getAdapter().getExtendedTypes()
-						.getRegisteredType(descriptor.getJavaClass());
-				Object val = type.materializeObject(statement, i + 1, descriptor.getJdbcType());
+						.getRegisteredType(TypesMapping.getJavaBySqlType(parameter.getType()));
+				Object val = type.materializeObject(statement, i + 1, parameter.getType());
 
-				result.put(descriptor.getDataRowKey(), val);
+				result.put(parameter.getName(), val);
 			}
 		}
 

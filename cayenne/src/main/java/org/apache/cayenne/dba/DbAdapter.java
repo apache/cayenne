@@ -21,7 +21,7 @@ package org.apache.cayenne.dba;
 import org.apache.cayenne.CayenneRuntimeException;
 import org.apache.cayenne.access.DataNode;
 import org.apache.cayenne.access.sqlbuilder.sqltree.SQLTreeProcessor;
-import org.apache.cayenne.access.translator.ParameterBinding;
+import org.apache.cayenne.access.jdbc.PSParameter;
 import org.apache.cayenne.access.translator.ejbql.EJBQLTranslator;
 import org.apache.cayenne.access.translator.procedure.ProcedureTranslator;
 import org.apache.cayenne.access.translator.select.SelectTranslator;
@@ -248,14 +248,16 @@ public interface DbAdapter {
 
     /**
      * Binds an object value to PreparedStatement's parameter.
+     *
+     * @since 5.0
      */
-    void bindParameter(PreparedStatement statement, ParameterBinding parameterBinding) throws Exception;
+    void bindParameter(PreparedStatement statement, PSParameter<?> parameter) throws Exception;
 
     /**
      * Returns the JDBC type that this adapter prefers to bind for a given mapped JDBC type. The
      * default implementation is an identity function; adapters whose drivers require a different
      * type (e.g. remapping the {@code N*} character types to their non-national counterparts)
-     * override this. The returned type is resolved into the {@link ParameterBinding} at binding
+     * override this. The returned type is resolved into the {@link PSParameter} at binding
      * creation time, so it matches the type actually sent to the PreparedStatement.
      *
      * @since 5.0

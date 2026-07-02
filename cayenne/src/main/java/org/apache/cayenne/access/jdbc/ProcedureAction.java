@@ -23,12 +23,14 @@ import org.apache.cayenne.CayenneRuntimeException;
 import org.apache.cayenne.DataRow;
 import org.apache.cayenne.access.DataNode;
 import org.apache.cayenne.access.OperationObserver;
-import org.apache.cayenne.access.translator.ParameterBinding;
 import org.apache.cayenne.access.translator.procedure.TranslatedProcedure;
 import org.apache.cayenne.access.types.ExtendedType;
+import org.apache.cayenne.access.types.ExtendedTypeMap;
 import org.apache.cayenne.dba.DbAdapter;
+import org.apache.cayenne.dba.TypesMapping;
 import org.apache.cayenne.map.Procedure;
 import org.apache.cayenne.map.ProcedureParameter;
+import org.apache.cayenne.query.ProcedureColumn;
 import org.apache.cayenne.query.ProcedureQuery;
 import org.apache.cayenne.query.QueryMetadata;
 
@@ -73,7 +75,7 @@ public class ProcedureAction extends BaseSQLAction {
 
 		dataNode.getJdbcEventLogger().logQuery(translated.sql(), translated.bindings());
 
-		try (CallableStatement statement = connection.prepareCall(translated.sql());) {
+		try (CallableStatement statement = connection.prepareCall(translated.sql())) {
 			initStatement(statement);
 			bindParameters(statement, translated);
 
@@ -103,9 +105,9 @@ public class ProcedureAction extends BaseSQLAction {
 			while (true) {
 				if (statement.getMoreResults()) {
 
-					try (ResultSet rs = statement.getResultSet();) {
-						RowDescriptor descriptor = describeResultSet(rs, processedResultSets++);
-						readResultSet(rs, descriptor, query, observer);
+					try (ResultSet rs = statement.getResultSet()) {
+						RSColumn[] columns = describeResultSet(rs, processedResultSets++);
+						readResultSet(rs, columns, query, observer);
 					}
 				} else {
 					int updateCount = statement.getUpdateCount();
@@ -128,7 +130,7 @@ public class ProcedureAction extends BaseSQLAction {
 	protected void bindParameters(CallableStatement statement, TranslatedProcedure translated) throws Exception {
 		DbAdapter adapter = dataNode.getAdapter();
 		ProcedureParameter[] callParams = translated.callParams();
-		ParameterBinding[] bindings = translated.bindings();
+		PSParameter[] bindings = translated.bindings();
 
 		for (int i = 0; i < callParams.length; i++) {
 			ProcedureParameter param = callParams[i];
@@ -149,25 +151,25 @@ public class ProcedureAction extends BaseSQLAction {
 	}
 
 	/**
-	 * Creates a RowDescriptor for result set.
-	 * 
+	 * Describes the result set columns, resolving an {@link ExtendedType} for each.
+	 *
 	 * @param resultSet
 	 *            JDBC ResultSet
 	 * @param setIndex
 	 *            a zero-based index of the ResultSet in the query results.
 	 */
-	protected RowDescriptor describeResultSet(ResultSet resultSet, int setIndex) throws SQLException {
+	protected RSColumn[] describeResultSet(ResultSet resultSet, int setIndex) throws SQLException {
 
 		if (setIndex < 0) {
 			throw new IllegalArgumentException("Expected a non-negative result set index. Got: " + setIndex);
 		}
 
-		RowDescriptorBuilder builder = new RowDescriptorBuilder();
+		RSColumn.RowBuilder builder = RSColumn.rowBuilder();
 
-		List<ColumnDescriptor[]> descriptors = query.getResultDescriptors();
+		List<ProcedureColumn[]> descriptors = query.getResultDescriptors();
 
 		if (descriptors.isEmpty()) {
-			builder.setResultSet(resultSet);
+			builder.resultSet(resultSet);
 		} else {
 
 			// if one result is described, all of them must be present...
@@ -175,8 +177,9 @@ public class ProcedureAction extends BaseSQLAction {
 				throw new CayenneRuntimeException("No descriptor for result set at index '%d' configured.", setIndex);
 			}
 
-			ColumnDescriptor[] columns = descriptors.get(setIndex);
-			builder.setColumns(columns);
+			builder.columns(toColumnDescriptors(
+					descriptors.get(setIndex),
+					dataNode.getAdapter().getExtendedTypes()));
 		}
 
 		switch (query.getColumnNamesCapitalization()) {
@@ -188,7 +191,17 @@ public class ProcedureAction extends BaseSQLAction {
 			break;
 		}
 
-		return builder.getDescriptor(dataNode.getAdapter().getExtendedTypes());
+		return builder.build(dataNode.getAdapter().getExtendedTypes());
+	}
+
+	private static RSColumn[] toColumnDescriptors(ProcedureColumn[] columns, ExtendedTypeMap typeMap) {
+		RSColumn[] result = new RSColumn[columns.length];
+		for (int i = 0; i < columns.length; i++) {
+			ProcedureColumn c = columns[i];
+			ExtendedType type = typeMap.getRegisteredType(c.javaClass());
+			result[i] = new RSColumn(c.name(), c.jdbcType(), c.dataRowKey(), type, null);
+		}
+		return result;
 	}
 
 	/**
@@ -201,8 +214,7 @@ public class ProcedureAction extends BaseSQLAction {
 	/**
 	 * Helper method that reads OUT parameters of a CallableStatement.
 	 */
-	protected void readProcedureOutParameters(CallableStatement statement, OperationObserver delegate)
-			throws SQLException, Exception {
+	protected void readProcedureOutParameters(CallableStatement statement, OperationObserver delegate) throws Exception {
 
 		long t1 = System.currentTimeMillis();
 
@@ -220,11 +232,11 @@ public class ProcedureAction extends BaseSQLAction {
 				result = new DataRow(2);
 			}
 
-			ColumnDescriptor descriptor = new ColumnDescriptor(parameter);
-			ExtendedType type = dataNode.getAdapter().getExtendedTypes().getRegisteredType(descriptor.getJavaClass());
-			Object val = type.materializeObject(statement, i + 1, descriptor.getJdbcType());
+			ExtendedType type = dataNode.getAdapter().getExtendedTypes()
+					.getRegisteredType(TypesMapping.getJavaBySqlType(parameter.getType()));
+			Object val = type.materializeObject(statement, i + 1, parameter.getType());
 
-			result.put(descriptor.getDataRowKey(), val);
+			result.put(parameter.getName(), val);
 		}
 
 		if (result != null && !result.isEmpty()) {
@@ -234,11 +246,6 @@ public class ProcedureAction extends BaseSQLAction {
 		}
 	}
 
-	/**
-	 * Initializes statement with query parameters
-	 * 
-	 * @throws Exception
-	 */
 	protected void initStatement(CallableStatement statement) throws Exception {
 		QueryMetadata queryMetadata = query.getMetaData(dataNode.getEntityResolver());
 		int statementFetchSize = queryMetadata.getStatementFetchSize();

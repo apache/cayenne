@@ -16,56 +16,22 @@
  *  specific language governing permissions and limitations
  *  under the License.
  ****************************************************************/
-
 package org.apache.cayenne.access.jdbc;
 
 import org.apache.cayenne.access.types.ExtendedType;
+import org.apache.cayenne.map.DbAttribute;
 
 /**
- * A descriptor of a result row obtained from a database.
- * 
- * @since 1.2
+ * Describes a single immutable PreparedStatement parameter binding.
+ *
+ * @since 5.0
  */
-public class RowDescriptor {
-
-    protected ColumnDescriptor[] columns;
-    protected ExtendedType[] converters;
-
-    /**
-     * Creates an empty RowDescriptor. Intended mainly for testing and use by subclasses.
-     */
-    protected RowDescriptor() {
-
-    }
-
-    /**
-     * Creates a fully initialized RowDescriptor.
-     * 
-     * @since 3.0
-     */
-    public RowDescriptor(ColumnDescriptor[] columns, ExtendedType[] converters) {
-        this.columns = columns;
-        this.converters = converters;
-    }
-
-    /**
-     * Returns a number of columns in a row.
-     */
-    public int getWidth() {
-        return columns.length;
-    }
-
-    /**
-     * Returns column descriptors.
-     */
-    public ColumnDescriptor[] getColumns() {
-        return columns;
-    }
-
-    /**
-     * Returns extended types for columns.
-     */
-    public ExtendedType[] getConverters() {
-        return converters;
-    }
+public record PSParameter<T>(
+        T value,
+        int psPosition,
+        int psType,
+        int psScale,
+        ExtendedType<T> binder,
+        DbAttribute attribute
+) {
 }

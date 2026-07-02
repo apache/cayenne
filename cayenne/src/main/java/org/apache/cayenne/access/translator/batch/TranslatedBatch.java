@@ -19,22 +19,23 @@
 
 package org.apache.cayenne.access.translator.batch;
 
-import org.apache.cayenne.access.translator.ParameterBinding;
+import org.apache.cayenne.access.jdbc.PSBatchParameter;
+import org.apache.cayenne.access.jdbc.PSParameter;
 import org.apache.cayenne.query.BatchQueryRow;
 
 /**
  * An immutable result of translating a batch query: the SQL String shared by all rows of the batch,
- * the widest possible array of parameter bindings, and a stateless {@link BatchRowBinder} that applies
- * a single row's state to those bindings.
+ * the widest possible array of per-batch binding templates, and a stateless {@link BatchRowBinder} that
+ * resolves a single row's state into per-row bindings.
  *
  * @since 5.0
  */
-public record TranslatedBatch(String sql, ParameterBinding[] bindings, BatchRowBinder binder) {
+public record TranslatedBatch(String sql, PSBatchParameter[] bindings, BatchRowBinder binder) {
 
     /**
-     * Applies the given row's state to the binding template, returning the (reused) bindings array.
+     * Resolves the given row's state against the binding templates, returning a fresh per-row bindings array.
      */
-    public ParameterBinding[] updateBindings(BatchQueryRow row) {
+    public PSParameter<?>[] updateBindings(BatchQueryRow row) {
         return binder.bind(bindings, row);
     }
 }

@@ -18,7 +18,7 @@
  ****************************************************************/
 package org.apache.cayenne.log;
 
-import org.apache.cayenne.access.translator.ParameterBinding;
+import org.apache.cayenne.access.jdbc.PSParameter;
 import org.apache.cayenne.map.DbAttribute;
 
 /**
@@ -38,12 +38,12 @@ public interface JdbcEventLogger {
 	/**
 	 * @since 4.0
 	 */
-	void logQuery(String sql, ParameterBinding[] bindings);
+	void logQuery(String sql, PSParameter[] bindings);
 
 	/**
 	 * @since 4.0
 	 */
-	void logQueryParameters(String label, ParameterBinding[] bindings);
+	void logQueryParameters(String label, PSParameter[] bindings);
 
 	void logSelectCount(int count, long time);
 
