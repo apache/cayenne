@@ -196,7 +196,7 @@ public class MergerTokenSelector extends JPanel {
         CellConstraints cc = new CellConstraints();
         PanelBuilder builder = new PanelBuilder(new FormLayout(
                 "fill:min(50dlu;pref):grow",
-                "p, 3dlu, fill:40dlu:grow"));
+                "p, $rgap, fill:40dlu:grow"));
         builder.setDefaultDialogBorder();
         builder.addSeparator("Select Operations", cc.xy(1, 1));
         builder.add(new JScrollPane(

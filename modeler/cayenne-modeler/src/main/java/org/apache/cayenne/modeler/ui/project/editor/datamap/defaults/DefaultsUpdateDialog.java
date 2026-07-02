@@ -84,7 +84,7 @@ public abstract class DefaultsUpdateDialog extends ProjectDialog {
         getRootPane().setDefaultButton(updateButton);
 
         CellConstraints cc = new CellConstraints();
-        FormLayout layout = new FormLayout("left:max(180dlu;pref)", "p, 3dlu, p, 3dlu");
+        FormLayout layout = new FormLayout("left:max(180dlu;pref)", "p, $rgap, p, $rgap");
         PanelBuilder builder = new PanelBuilder(layout);
         builder.setDefaultDialogBorder();
         builder.add(updateAll, cc.xy(1, 1));

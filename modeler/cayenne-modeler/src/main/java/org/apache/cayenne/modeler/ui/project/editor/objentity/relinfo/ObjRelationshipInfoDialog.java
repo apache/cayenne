@@ -167,8 +167,8 @@ public class ObjRelationshipInfoDialog extends ProjectDialog implements TreeSele
         CellConstraints cc = new CellConstraints();
         PanelBuilder builder = new PanelBuilder(
                 new FormLayout(
-                        "right:max(50dlu;pref), 3dlu, fill:min(150dlu;pref), 3dlu, 300dlu, 3dlu, fill:min(120dlu;pref)",
-                        "p, 3dlu, p, 3dlu, p, 3dlu, p, 3dlu, p, 3dlu, p, 3dlu, p, 3dlu, p, 3dlu, p, 3dlu, p, 3dlu, p, 3dlu, p, 3dlu, top:14dlu, 3dlu, top:p:grow"));
+                        "right:max(50dlu;pref), $lcgap, fill:min(150dlu;pref), $lcgap, 300dlu, $lcgap, fill:min(120dlu;pref)",
+                        "p, $rgap, p, $rgap, p, $rgap, p, $rgap, p, $rgap, p, $rgap, p, $rgap, p, $rgap, p, $rgap, p, $rgap, p, $rgap, p, $rgap, top:14dlu, $rgap, top:p:grow"));
         builder.setDefaultDialogBorder();
 
         builder.addSeparator("ObjRelationship Information", cc.xywh(1, 1, 5, 1));

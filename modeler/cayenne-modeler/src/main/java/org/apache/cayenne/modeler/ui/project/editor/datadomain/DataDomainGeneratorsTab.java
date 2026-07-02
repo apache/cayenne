@@ -86,7 +86,7 @@ public abstract class DataDomainGeneratorsTab<T> extends ProjectPanel implements
         removeAll();
         createPanels();
 
-        FormLayout layout = new FormLayout("left:pref, 4dlu", "");
+        FormLayout layout = new FormLayout("left:pref, $rgap", "");
         DefaultFormBuilder builder = new DefaultFormBuilder(layout);
         builder.setDefaultDialogBorder();
 
@@ -212,7 +212,7 @@ public abstract class DataDomainGeneratorsTab<T> extends ProjectPanel implements
         TopGeneratorPanel(String icon, String runTooltip) {
             setLayout(new BorderLayout());
             FormLayout layout = new FormLayout(
-                    "left:pref, 4dlu, fill:70dlu, 3dlu, fill:120, 3dlu, fill:120", "");
+                    "left:pref, $rgap, fill:70dlu, $lcgap, fill:120, $lcgap, fill:120", "");
             DefaultFormBuilder builder = new DefaultFormBuilder(layout);
             this.selectAll = new JCheckBox();
             this.generateAll = new JButton("Run");

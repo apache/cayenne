@@ -26,6 +26,7 @@ import org.apache.cayenne.modeler.event.display.TablePopupHandler;
 import org.apache.cayenne.modeler.project.ProjectSession;
 import org.apache.cayenne.modeler.service.action.GlobalActions;
 import org.apache.cayenne.modeler.toolkit.ProjectDialog;
+import org.apache.cayenne.modeler.toolkit.buttons.CMButtonPanel;
 import org.apache.cayenne.modeler.ui.action.DisableValidationInspectionAction;
 import org.apache.cayenne.modeler.ui.action.ShowValidationOptionAction;
 import org.apache.cayenne.modeler.ui.action.ValidateAction;
@@ -78,8 +79,10 @@ public class ProjectValidatorDialog extends ProjectDialog {
         problemsTable.setCellSelectionEnabled(false);
         problemsTable.setRowSelectionAllowed(true);
         problemsTable.setTableHeader(null);
+        problemsTable.setPreferredScrollableViewportSize(new Dimension(400, 150));
+        problemsTable.setFillsViewportHeight(true);
         problemsTable.setDefaultRenderer(ValidationFailure.class, new ValidationRenderer());
-        problemsTable.getSelectionModel().setSelectionMode(ListSelectionModel.SINGLE_SELECTION);
+        problemsTable.setSelectionMode(ListSelectionModel.SINGLE_SELECTION);
 
         GlobalActions globalActions = app.getActionManager();
         JPopupMenu popup = new JPopupMenu();
@@ -88,23 +91,18 @@ public class ProjectValidatorDialog extends ProjectDialog {
         TablePopupHandler.install(problemsTable, popup);
 
         CellConstraints cc = new CellConstraints();
-        PanelBuilder builder = new PanelBuilder(new FormLayout("fill:200dlu:grow", "pref, 3dlu, fill:40dlu:grow"));
+        PanelBuilder builder = new PanelBuilder(new FormLayout("fill:200dlu:grow", "pref, $rgap, fill:150dlu:grow"));
         builder.setDefaultDialogBorder();
         builder.addLabel("Click on any row below to go to the object that has a validation problem:", cc.xy(1, 1));
-        builder.add(new JScrollPane(problemsTable), cc.xy(1, 3));
+        builder.add(new JScrollPane(problemsTable,
+                JScrollPane.VERTICAL_SCROLLBAR_AS_NEEDED,
+                JScrollPane.HORIZONTAL_SCROLLBAR_AS_NEEDED), cc.xy(1, 3));
 
         getRootPane().setDefaultButton(refreshButton);
 
-        JPanel buttons = new JPanel(new FlowLayout(FlowLayout.RIGHT));
-        buttons.add(closeButton);
-        buttons.add(refreshButton);
-
-        JPanel content = builder.getPanel();
-        content.setPreferredSize(new Dimension(450, 300));
-
         getContentPane().setLayout(new BorderLayout());
-        getContentPane().add(content, BorderLayout.CENTER);
-        getContentPane().add(buttons, BorderLayout.SOUTH);
+        getContentPane().add(builder.getPanel(), BorderLayout.CENTER);
+        getContentPane().add(new CMButtonPanel(closeButton, refreshButton), BorderLayout.SOUTH);
     }
 
     private void initBindings() {

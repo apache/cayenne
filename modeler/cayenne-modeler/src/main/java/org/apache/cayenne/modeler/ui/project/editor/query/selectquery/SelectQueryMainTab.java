@@ -85,8 +85,8 @@ public class SelectQueryMainTab extends BaseQueryMainTab {
         // assemble
         CellConstraints cc = new CellConstraints();
         FormLayout layout = new FormLayout(
-                "right:max(80dlu;pref), 3dlu, fill:200dlu",
-                "p, 3dlu, p, 3dlu, p, 3dlu, p, 3dlu, p, 3dlu, p");
+                "right:max(80dlu;pref), $lcgap, fill:200dlu",
+                "p, $rgap, p, $rgap, p, $rgap, p, $rgap, p, $rgap, p");
         PanelBuilder builder = new PanelBuilder(layout);
         builder.setDefaultDialogBorder();
 

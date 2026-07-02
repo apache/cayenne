@@ -19,6 +19,8 @@
 package org.apache.cayenne.modeler.platform.win;
 
 import com.formdev.flatlaf.FlatLightLaf;
+import com.jgoodies.forms.util.LayoutStyle;
+import org.apache.cayenne.modeler.platform.FlatLafLayoutStyle;
 import org.apache.cayenne.modeler.platform.UIInitializer;
 import org.apache.cayenne.modeler.toolkit.icon.IconFactory;
 
@@ -30,6 +32,7 @@ public class WinUIInitializer implements UIInitializer {
     @Override
     public void beforeSwingLaunch() {
         FlatLightLaf.setup();
+        LayoutStyle.setCurrent(FlatLafLayoutStyle.INSTANCE);
         // override some default styles and colors
         overrideUIDefaults();
     }
@@ -61,10 +64,8 @@ public class WinUIInitializer implements UIInitializer {
         UIManager.put("MenuItem.selectionForeground", Color.BLACK);
         UIManager.put("CheckBoxMenuItem.selectionForeground", Color.BLACK);
         UIManager.put("RadioButtonMenuItem.selectionForeground", Color.BLACK);
-        UIManager.put("MenuItem.opaque", Boolean.TRUE);
-        UIManager.put("CheckBoxMenuItem.opaque", Boolean.TRUE);
-        UIManager.put("RadioButtonMenuItem.opaque", Boolean.TRUE);
-        UIManager.put("Button.border", BorderFactory.createEmptyBorder());
-        UIManager.put("ToolBar.buttonMargin", new Insets(4, 4, 4, 4));
+        UIManager.put("ToolBar.buttonMargin", new Insets(4, 8, 4, 8));
+        UIManager.put("Table.showHorizontalLines", Boolean.TRUE);
+        UIManager.put("Table.showVerticalLines", Boolean.TRUE);
     }
 }

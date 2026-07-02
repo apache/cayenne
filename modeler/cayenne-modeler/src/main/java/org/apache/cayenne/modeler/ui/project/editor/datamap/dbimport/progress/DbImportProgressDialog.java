@@ -47,7 +47,7 @@ public class DbImportProgressDialog extends AppDialog {
         cancelButton = new JButton("Cancel");
 
         CellConstraints cc = new CellConstraints();
-        FormLayout layout = new FormLayout("fill:max(250dlu;pref)", "p, 3dlu, p, 3dlu, p");
+        FormLayout layout = new FormLayout("fill:max(250dlu;pref)", "p, $rgap, p, $rgap, p");
         PanelBuilder builder = new PanelBuilder(layout);
         builder.setDefaultDialogBorder();
 

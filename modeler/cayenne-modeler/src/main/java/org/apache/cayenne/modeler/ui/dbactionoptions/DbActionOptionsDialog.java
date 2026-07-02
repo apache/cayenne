@@ -68,7 +68,7 @@ public class DbActionOptionsDialog extends AppDialog {
         getRootPane().setDefaultButton(selectButton);
 
         FormLayout layout = new FormLayout(
-                "right:pref, 3dlu, fill:max(170dlu;pref):grow",
+                "right:pref, $lcgap, fill:max(170dlu;pref):grow",
                 "");
         DefaultFormBuilder builder = new DefaultFormBuilder(layout);
         builder.setDefaultDialogBorder();

@@ -69,8 +69,8 @@ public class DataDomainMainView extends ProjectPanel implements DomainDisplayLis
         // assemble
         CellConstraints cc = new CellConstraints();
         FormLayout layout = new FormLayout(
-                "right:pref, 3dlu, fill:50dlu, 3dlu, fill:47dlu, 3dlu, fill:100",
-                "p, 3dlu, p, 3dlu, p, 3dlu, p, 3dlu, p, 3dlu, p, 3dlu, p, 3dlu, p");
+                "right:pref, $lcgap, fill:50dlu, $lcgap, fill:47dlu, $lcgap, fill:100",
+                "p, $rgap, p, $rgap, p, $rgap, p, $rgap, p, $rgap, p, $rgap, p, $rgap, p");
 
         PanelBuilder builder = new PanelBuilder(layout);
         builder.setDefaultDialogBorder();
