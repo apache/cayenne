@@ -18,8 +18,6 @@
  ****************************************************************/
 package org.apache.cayenne.crypto.batch;
 
-import org.apache.cayenne.access.jdbc.PSParameter;
-import org.apache.cayenne.access.jdbc.PSBatchParameter;
 import org.apache.cayenne.access.translator.batch.BatchTranslator;
 import org.apache.cayenne.access.translator.batch.TranslatedBatch;
 import org.apache.cayenne.crypto.transformer.BindingsTransformer;
@@ -27,7 +25,6 @@ import org.apache.cayenne.crypto.transformer.TransformerFactory;
 import org.apache.cayenne.dba.DbAdapter;
 import org.apache.cayenne.di.Inject;
 import org.apache.cayenne.query.BatchQuery;
-import org.apache.cayenne.query.BatchQueryRow;
 
 /**
  * @since 5.0
@@ -48,20 +45,10 @@ public class CryptoBatchTranslator<T extends BatchQuery> implements BatchTransla
     @Override
     public TranslatedBatch translate(T query, DbAdapter adapter) {
         TranslatedBatch translated = delegate.translate(query, adapter);
-        BindingsTransformer encryptor = transformerFactory.encryptor(translated.bindings(), adapter.getExtendedTypes());
+        BindingsTransformer encryptor = transformerFactory.encryptor(translated.bindings());
 
         return encryptor != null
-                ? new TranslatedBatch(translated.sql(), translated.bindings(), (bindings, row) -> transform(bindings, row, translated, encryptor))
+                ? new TranslatedBatch(translated.sql(), encryptor.transform(translated.bindings()))
                 : translated;
-    }
-
-    private static PSParameter[] transform(
-            PSBatchParameter[] template,
-            BatchQueryRow row,
-            TranslatedBatch translated,
-            BindingsTransformer encryptor) {
-        PSParameter<?>[] updated = translated.binder().bind(template, row);
-        encryptor.transform(updated);
-        return updated;
     }
 }

@@ -234,8 +234,9 @@ class ArcValuesCreationHandler implements GraphChangeHandler {
                 }
             }
 
-            // propagated master -> child PK
-            if(id != null && attribute.isPrimaryKey()) {
+            // propagated master -> child PK; only an arc creation defines the new id value, an arc deletion
+            // must not stomp it with the old target's value
+            if(add && id != null && attribute.isPrimaryKey()) {
                 id.getReplacementIdMap().put(attribute.getName(), valueToUse);
             }
             if(rowOp != null) {

@@ -19,13 +19,11 @@
 
 package org.apache.cayenne.access.translator.batch;
 
-import org.apache.cayenne.access.jdbc.PSBatchParameter;
+import java.util.Arrays;
+
 import org.apache.cayenne.access.sqlbuilder.InsertBuilder;
 import org.apache.cayenne.access.sqlbuilder.SQLBuilder;
-import org.apache.cayenne.access.jdbc.PSParameter;
-import org.apache.cayenne.access.types.ExtendedType;
 import org.apache.cayenne.map.DbAttribute;
-import org.apache.cayenne.query.BatchQueryRow;
 import org.apache.cayenne.query.InsertBatchQuery;
 
 /**
@@ -46,7 +44,7 @@ public class InsertBatchTranslator extends BaseBatchTranslator<InsertBatchQuery>
             insertBuilder
                     .column(SQLBuilder.column(attribute.getName()).attribute(attribute))
                     // We can use here any non-null value, to create attribute binding,
-                    // actual value and ExtendedType will be set at updateBindings() call.
+                    // actual values and ExtendedTypes are resolved when binding each row.
                     .value(SQLBuilder.value(1).attribute(attribute));
         }
 
@@ -54,26 +52,18 @@ public class InsertBatchTranslator extends BaseBatchTranslator<InsertBatchQuery>
     }
 
     @Override
-    protected PSParameter[] updateBindings(BatchTranslatorContext<InsertBatchQuery> context,
-                                           PSBatchParameter[] template, BatchQueryRow row) {
+    protected int[] createRowValueIndexes(BatchTranslatorContext<InsertBatchQuery> context) {
         InsertBatchQuery query = context.getQuery();
-        PSParameter[] bindings = new PSParameter[template.length];
+        int[] indexes = new int[query.getDbAttributes().size()];
         int i = 0;
         int j = 0;
         for (DbAttribute attribute : query.getDbAttributes()) {
-            if (excludeInBatch(context, attribute)) {
-                i++;
-                continue;
+            if (!excludeInBatch(context, attribute)) {
+                indexes[j++] = i;
             }
-
-            Object value = row.getValue(i++);
-            ExtendedType extendedType = value != null
-                    ? context.getAdapter().getExtendedTypes().getRegisteredType(value.getClass())
-                    : context.getAdapter().getExtendedTypes().getDefaultType();
-            bindings[j] = template[j].bind(value, extendedType);
-            j++;
+            i++;
         }
-        return bindings;
+        return Arrays.copyOf(indexes, j);
     }
 
     protected boolean excludeInBatch(BatchTranslatorContext<InsertBatchQuery> context, DbAttribute attribute) {

@@ -19,13 +19,11 @@
 
 package org.apache.cayenne.access.translator.batch;
 
-import org.apache.cayenne.access.jdbc.PSBatchParameter;
+import java.util.Arrays;
+
 import org.apache.cayenne.access.sqlbuilder.SQLBuilder;
 import org.apache.cayenne.access.sqlbuilder.UpdateBuilder;
-import org.apache.cayenne.access.jdbc.PSParameter;
-import org.apache.cayenne.access.types.ExtendedType;
 import org.apache.cayenne.map.DbAttribute;
-import org.apache.cayenne.query.BatchQueryRow;
 import org.apache.cayenne.query.UpdateBatchQuery;
 
 /**
@@ -55,33 +53,24 @@ public class UpdateBatchTranslator extends BaseBatchTranslator<UpdateBatchQuery>
     }
 
     @Override
-    protected PSParameter[] updateBindings(BatchTranslatorContext<UpdateBatchQuery> context,
-                                           PSBatchParameter[] template, BatchQueryRow row) {
+    protected int[] createRowValueIndexes(BatchTranslatorContext<UpdateBatchQuery> context) {
         UpdateBatchQuery updateBatch = context.getQuery();
-        PSParameter[] bindings = new PSParameter[template.length];
+        int updatedCount = updateBatch.getUpdatedAttributes().size();
+        int[] indexes = new int[updatedCount + updateBatch.getQualifierAttributes().size()];
 
         int i = 0;
         int j = 0;
-        for (; i < updateBatch.getUpdatedAttributes().size(); i++) {
-            Object value = row.getValue(i);
-            ExtendedType extendedType = value == null
-                    ? context.getAdapter().getExtendedTypes().getDefaultType()
-                    : context.getAdapter().getExtendedTypes().getRegisteredType(value.getClass());
-            bindings[j] = template[j].bind(value, extendedType);
-            j++;
+        for (; i < updatedCount; i++) {
+            indexes[j++] = i;
         }
 
+        // qualifier attributes with null values render as "IS NULL" and have no placeholder
         for (DbAttribute attribute : updateBatch.getQualifierAttributes()) {
-            if (updateBatch.isNull(attribute)) {
-                i++;
-                continue;
+            if (!updateBatch.isNull(attribute)) {
+                indexes[j++] = i;
             }
-            Object value = row.getValue(i);
-            ExtendedType extendedType = context.getAdapter().getExtendedTypes().getRegisteredType(value.getClass());
-            bindings[j] = template[j].bind(value, extendedType);
-            j++;
             i++;
         }
-        return bindings;
+        return Arrays.copyOf(indexes, j);
     }
 }

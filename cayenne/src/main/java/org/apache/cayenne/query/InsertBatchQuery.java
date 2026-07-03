@@ -51,8 +51,8 @@ public class InsertBatchQuery extends BatchQuery {
      * Adds a snapshot to batch. Optionally stores the object id for the
      * snapshot. Note that snapshot can hold either the real values or the
      * instances of java.util.Supplier that will be resolved
-     * to the actual value on the spot, thus allowing deferred propagated keys
-     * resolution.
+     * to the actual value when the row is bound to a PreparedStatement, thus
+     * allowing deferred propagated keys resolution.
      * 
      * @since 1.2
      */

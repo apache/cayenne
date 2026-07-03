@@ -89,11 +89,15 @@ class ReplacementIdVisitor implements DbRowOpVisitor<Void> {
             return;
         }
         Map<String, Object> replacement = id.getReplacementIdMap();
-        replacement.forEach((attr, val) -> {
-            if(val instanceof IdGenerationMarker) {
+        for (Map.Entry<String, Object> next : replacement.entrySet()) {
+            if (next.getValue() instanceof IdGenerationMarker) {
                 throw new CayenneRuntimeException("PK for the object %s is not set during insert.", object);
             }
-        });
+            // resolve lazy suppliers, as by now the DB values they refer to are known
+            if (next.getValue() instanceof Supplier) {
+                next.setValue(((Supplier<?>) next.getValue()).get());
+            }
+        }
 
         ObjectId replacementId = id.createReplacementId();
         if (object.getObjectId() == id && !replacementId.getEntityName().startsWith(ASTDbPath.DB_PREFIX)) {

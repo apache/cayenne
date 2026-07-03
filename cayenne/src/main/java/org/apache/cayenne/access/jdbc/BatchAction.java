@@ -27,6 +27,7 @@ import org.apache.cayenne.access.OperationObserver;
 import org.apache.cayenne.access.OptimisticLockException;
 import org.apache.cayenne.access.jdbc.reader.RowReader;
 import org.apache.cayenne.access.types.ExtendedType;
+import org.apache.cayenne.access.types.ExtendedTypeMap;
 import org.apache.cayenne.access.translator.batch.TranslatedBatch;
 import org.apache.cayenne.dba.DbAdapter;
 import org.apache.cayenne.log.JdbcEventLogger;
@@ -124,9 +125,9 @@ public class BatchAction extends BaseSQLAction {
 		DbAdapter adapter = dataNode.getAdapter();
 
 		try (PreparedStatement statement = prepareStatement(con, sql, adapter, generatesKeys)) {
-			for (BatchQueryRow row : query.getRows()) {
+			for (int row = 0; row < query.getRows().size(); row++) {
 
-				PSParameter<?>[] bindings = translated.updateBindings(row);
+				PSParameter<?>[] bindings = rowBindings(translated, row, adapter.getExtendedTypes());
 				logger.logQueryParameters("batch bind", bindings);
 				for (PSParameter<?> b : bindings) {
 					adapter.bindParameter(statement, b);
@@ -185,9 +186,11 @@ public class BatchAction extends BaseSQLAction {
 		DbAdapter adapter = dataNode.getAdapter();
 
 		try (PreparedStatement statement = prepareStatement(connection, queryStr, adapter, generatesKeys)) {
-			for (BatchQueryRow row : query.getRows()) {
+			List<BatchQueryRow> rows = query.getRows();
+			for (int i = 0; i < rows.size(); i++) {
+				BatchQueryRow row = rows.get(i);
 
-				PSParameter<?>[] bindings = translated.updateBindings(row);
+				PSParameter<?>[] bindings = rowBindings(translated, i, adapter.getExtendedTypes());
 				logger.logQueryParameters("bind", bindings);
 
 				for (PSParameter<?> b : bindings) {
@@ -210,6 +213,36 @@ public class BatchAction extends BaseSQLAction {
 			}
 		}
 	}
+
+	/**
+	 * Resolves the given batch row against the translated batch parameters, returning per-row bindings.
+	 */
+	protected PSParameter<?>[] rowBindings(TranslatedBatch translated, int row, ExtendedTypeMap extendedTypes) {
+		PSBatchParameter[] template = translated.bindings();
+		PSParameter<?>[] bindings = new PSParameter[template.length];
+		for (int j = 0; j < template.length; j++) {
+			bindings[j] = bind(template[j], row, extendedTypes);
+		}
+		return bindings;
+	}
+
+	@SuppressWarnings("unchecked")
+	private static <T> PSParameter<T> bind(PSBatchParameter parameter, int row, ExtendedTypeMap extendedTypes) {
+		Object value = parameter.getValue(row);
+
+		DbAttribute attribute = parameter.attribute();
+		if (value == null && attribute.isPrimaryKey()) {
+			String entity = attribute.getEntity() != null ? attribute.getEntity().getName() : "<null>";
+			throw new CayenneRuntimeException("Failed to generate PK: %s.%s", entity, attribute.getName());
+		}
+
+		ExtendedType<T> extendedType = value != null
+				? extendedTypes.getRegisteredType(value.getClass())
+				: extendedTypes.getDefaultType();
+		return new PSParameter<>((T) value, parameter.psPosition(), parameter.psType(), parameter.psScale(),
+				extendedType, parameter.attribute());
+	}
+
 
 	protected PreparedStatement prepareStatement(Connection connection,	String queryStr,
 												 DbAdapter adapter,	boolean generatedKeys) throws SQLException {

@@ -19,13 +19,11 @@
 
 package org.apache.cayenne.access.translator.batch;
 
-import org.apache.cayenne.access.jdbc.PSBatchParameter;
+import java.util.Arrays;
+
 import org.apache.cayenne.access.sqlbuilder.DeleteBuilder;
 import org.apache.cayenne.access.sqlbuilder.SQLBuilder;
-import org.apache.cayenne.access.jdbc.PSParameter;
-import org.apache.cayenne.access.types.ExtendedType;
 import org.apache.cayenne.map.DbAttribute;
-import org.apache.cayenne.query.BatchQueryRow;
 import org.apache.cayenne.query.DeleteBatchQuery;
 
 /**
@@ -47,31 +45,19 @@ public class DeleteBatchTranslator extends BaseBatchTranslator<DeleteBatchQuery>
     }
 
     @Override
-    protected PSParameter[] updateBindings(
-            BatchTranslatorContext<DeleteBatchQuery> context,
-            PSBatchParameter[] template,
-            BatchQueryRow row) {
-
+    protected int[] createRowValueIndexes(BatchTranslatorContext<DeleteBatchQuery> context) {
         DeleteBatchQuery deleteBatch = context.getQuery();
-        PSParameter[] bindings = new PSParameter[template.length];
-        for (int i = 0, position = 0; i < deleteBatch.getDbAttributes().size(); i++) {
-            position = updateBinding(context, template, bindings, row.getValue(i), position);
-        }
-        return bindings;
-    }
+        int[] indexes = new int[deleteBatch.getDbAttributes().size()];
 
-    protected int updateBinding(
-            BatchTranslatorContext<DeleteBatchQuery> context,
-            PSBatchParameter[] template,
-            PSParameter[] bindings,
-            Object value, int position) {
-
-        // skip null attributes... they are translated as "IS NULL"
-        if (value != null) {
-            ExtendedType extendedType = context.getAdapter().getExtendedTypes().getRegisteredType(value.getClass());
-            bindings[position] = template[position].bind(value, extendedType);
-            position++;
+        int i = 0;
+        int j = 0;
+        // attributes with null values render as "IS NULL" and have no placeholder
+        for (DbAttribute attribute : deleteBatch.getDbAttributes()) {
+            if (!deleteBatch.isNull(attribute)) {
+                indexes[j++] = i;
+            }
+            i++;
         }
-        return position;
+        return Arrays.copyOf(indexes, j);
     }
 }

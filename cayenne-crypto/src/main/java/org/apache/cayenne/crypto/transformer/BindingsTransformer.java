@@ -18,12 +18,17 @@
  ****************************************************************/
 package org.apache.cayenne.crypto.transformer;
 
-import org.apache.cayenne.access.jdbc.PSParameter;
+import org.apache.cayenne.access.jdbc.PSBatchParameter;
 
 /**
  * @since 4.0
  */
 public interface BindingsTransformer {
 
-    void transform(PSParameter<?>[] bindings);
+    /**
+     * Returns a copy of the given batch parameters with the values of encrypted columns transformed.
+     *
+     * @since 5.0
+     */
+    PSBatchParameter[] transform(PSBatchParameter[] bindings);
 }

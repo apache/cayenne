@@ -20,7 +20,6 @@ package org.apache.cayenne.crypto.transformer;
 
 import org.apache.cayenne.access.jdbc.RSColumn;
 import org.apache.cayenne.access.jdbc.PSBatchParameter;
-import org.apache.cayenne.access.types.ExtendedTypeMap;
 import org.apache.cayenne.crypto.map.ColumnMapper;
 import org.apache.cayenne.crypto.transformer.bytes.BytesTransformerFactory;
 import org.apache.cayenne.crypto.transformer.value.ValueDecryptor;
@@ -91,7 +90,7 @@ public class DefaultTransformerFactory implements TransformerFactory {
     }
 
     @Override
-    public BindingsTransformer encryptor(PSBatchParameter[] bindings, ExtendedTypeMap extendedTypeMap) {
+    public BindingsTransformer encryptor(PSBatchParameter[] bindings) {
         int len = bindings.length;
         List<Integer> cryptoColumns = null;
 
@@ -121,7 +120,7 @@ public class DefaultTransformerFactory implements TransformerFactory {
                 transformers[i] = transformerFactory.encryptor(b.attribute());
             }
 
-            return new DefaultBindingsTransformer(positions, transformers, bytesTransformerFactory.encryptor(), extendedTypeMap);
+            return new DefaultBindingsTransformer(positions, transformers, bytesTransformerFactory.encryptor());
         }
 
         return null;
