@@ -18,8 +18,8 @@
  ****************************************************************/
 package org.apache.cayenne.testdo.soft_delete;
 
-import org.apache.cayenne.testdo.soft_delete.auto._SoftDelete;
+import org.apache.cayenne.testdo.soft_delete.auto._HardDelete;
 
-public class SoftDelete extends _SoftDelete {
+public class HardDelete extends _HardDelete {
 
 }
