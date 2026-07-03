@@ -62,22 +62,24 @@ public class UpdateBatchTranslator extends BaseBatchTranslator<UpdateBatchQuery>
 
         int i = 0;
         int j = 0;
-        for(; i < updateBatch.getUpdatedAttributes().size(); i++) {
+        for (; i < updateBatch.getUpdatedAttributes().size(); i++) {
             Object value = row.getValue(i);
             ExtendedType extendedType = value == null
-                ? context.getAdapter().getExtendedTypes().getDefaultType()
-                : context.getAdapter().getExtendedTypes().getRegisteredType(value.getClass());
-            bindings[j] = template[j].bind(value, ++j, extendedType);
+                    ? context.getAdapter().getExtendedTypes().getDefaultType()
+                    : context.getAdapter().getExtendedTypes().getRegisteredType(value.getClass());
+            bindings[j] = template[j].bind(value, extendedType);
+            j++;
         }
 
-        for(DbAttribute attribute : updateBatch.getQualifierAttributes()) {
-            if(updateBatch.isNull(attribute)) {
+        for (DbAttribute attribute : updateBatch.getQualifierAttributes()) {
+            if (updateBatch.isNull(attribute)) {
                 i++;
                 continue;
             }
             Object value = row.getValue(i);
             ExtendedType extendedType = context.getAdapter().getExtendedTypes().getRegisteredType(value.getClass());
-            bindings[j] = template[j].bind(value, ++j, extendedType);
+            bindings[j] = template[j].bind(value, extendedType);
+            j++;
             i++;
         }
         return bindings;

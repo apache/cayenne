@@ -23,17 +23,18 @@ import org.apache.cayenne.access.types.ExtendedType;
 import org.apache.cayenne.map.DbAttribute;
 
 /**
- * An immutable per-batch parameter binding template, carrying only the static column metadata shared by all
- * rows of a batch. A per-row {@link PSParameter} is produced by {@link #bind(Object, int, ExtendedType)}.
+ * An immutable per-batch parameter binding template, carrying the static PreparedStatement position and column
+ * metadata shared by all rows of a batch. A per-row {@link PSParameter} is produced by
+ * {@link #bind(Object, ExtendedType)}.
  *
  * @since 5.0
  */
-public record PSBatchParameter(int psType, int psScale, DbAttribute attribute) {
+public record PSBatchParameter(int psPosition, int psType, int psScale, DbAttribute attribute) {
 
     /**
      * Resolves this per-batch template into a per-row {@link PSParameter}.
      */
-    public <T> PSParameter<T> bind(T value, int psPosition, ExtendedType<T> extendedType) {
+    public <T> PSParameter<T> bind(T value, ExtendedType<T> extendedType) {
         return new PSParameter<>(value, psPosition, psType, psScale, extendedType, attribute);
     }
 }

@@ -38,9 +38,9 @@ public class InsertBatchTranslator extends BaseBatchTranslator<InsertBatchQuery>
         InsertBatchQuery query = context.getQuery();
         InsertBuilder insertBuilder = SQLBuilder.insert(context.getRootDbEntity());
 
-        for(DbAttribute attribute : query.getDbAttributes()) {
+        for (DbAttribute attribute : query.getDbAttributes()) {
             // skip generated attributes, if needed
-            if(excludeInBatch(context, attribute)) {
+            if (excludeInBatch(context, attribute)) {
                 continue;
             }
             insertBuilder
@@ -58,10 +58,10 @@ public class InsertBatchTranslator extends BaseBatchTranslator<InsertBatchQuery>
                                            PSBatchParameter[] template, BatchQueryRow row) {
         InsertBatchQuery query = context.getQuery();
         PSParameter[] bindings = new PSParameter[template.length];
-        int i=0;
-        int j=0;
-        for(DbAttribute attribute : query.getDbAttributes()) {
-            if(excludeInBatch(context, attribute)) {
+        int i = 0;
+        int j = 0;
+        for (DbAttribute attribute : query.getDbAttributes()) {
+            if (excludeInBatch(context, attribute)) {
                 i++;
                 continue;
             }
@@ -70,7 +70,8 @@ public class InsertBatchTranslator extends BaseBatchTranslator<InsertBatchQuery>
             ExtendedType extendedType = value != null
                     ? context.getAdapter().getExtendedTypes().getRegisteredType(value.getClass())
                     : context.getAdapter().getExtendedTypes().getDefaultType();
-            bindings[j] = template[j].bind(value, ++j, extendedType);
+            bindings[j] = template[j].bind(value, extendedType);
+            j++;
         }
         return bindings;
     }
