@@ -194,8 +194,7 @@ public class DataNode {
     }
 
     /**
-     * Returns DbAdapter object. This is a plugin that handles RDBMS
-     * vendor-specific features.
+     * Returns DbAdapter object. This is a plugin that handles RDBMS vendor-specific features.
      */
     public DbAdapter getAdapter() {
         return adapter;
@@ -222,26 +221,25 @@ public class DataNode {
      *
      * @since 1.1
      */
-    public void performQueries(Collection<? extends Query> queries, OperationObserver operationObserver) {
+    public void performQueries(Collection<? extends Query> queries, OperationObserver callback) {
 
         int listSize = queries.size();
         if (listSize == 0) {
             return;
         }
 
-        if (operationObserver.isIteratedResult() && listSize > 1) {
+        if (callback.isIteratedResult() && listSize > 1) {
             throw new CayenneRuntimeException("Iterated queries are not allowed in a batch. Batch size: %d", listSize);
         }
-
 
         // do this meaningless inexpensive operation to trigger AutoAdapter lazy initialization before opening a
         // connection. Otherwise, we may end up with two connections open simultaneously, possibly hitting connection
         // pool upper limit.
         getAdapter().getExtendedTypes();
 
-        OperationObserver instrumentedObserver = sqlLogger.isEnabled()
-                ? new LoggingObserver(operationObserver, sqlLogger)
-                : operationObserver;
+        OperationObserver instrumentedCallback = sqlLogger.isEnabled()
+                ? new LoggingObserver(callback, sqlLogger)
+                : callback;
 
         Transaction tx = BaseTransaction.getThreadTransaction();
         Connection connection;
@@ -253,20 +251,20 @@ public class DataNode {
                 tx.setRollbackOnly();
             }
 
-            instrumentedObserver.nextGlobalException(globalEx);
+            instrumentedCallback.nextGlobalException(globalEx);
             return;
         }
 
         try {
-            DataNodeQueryAction queryRunner = new DataNodeQueryAction(this, instrumentedObserver);
-
             for (Query nextQuery : queries) {
 
                 // catch exceptions for each individual query
                 try {
-                    queryRunner.runQuery(connection, nextQuery);
+                    getAdapter()
+                            .getAction(nextQuery, this)
+                            .performAction(connection, new OriginalQueryObserver(instrumentedCallback, nextQuery));
                 } catch (Exception queryEx) {
-                    instrumentedObserver.nextQueryException(nextQuery, queryEx);
+                    instrumentedCallback.nextQueryException(nextQuery, queryEx);
 
                     if (tx != null) {
                         tx.setRollbackOnly();
@@ -275,7 +273,7 @@ public class DataNode {
                 }
             }
 
-            instrumentedObserver.afterLastStatement();
+            instrumentedCallback.onSuccess();
         } finally {
             try {
                 connection.close();

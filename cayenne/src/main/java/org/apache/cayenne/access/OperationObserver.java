@@ -43,9 +43,11 @@ public interface OperationObserver extends OperationHints {
     }
 
     /**
+     * Called at the end of a multi-query DataNode operation.
+     *
      * @since 5.0
      */
-    default void afterLastStatement() {
+    default void onSuccess() {
     }
 
     /**
@@ -60,7 +62,7 @@ public interface OperationObserver extends OperationHints {
 
     /**
      * Callback method invoked for each processed ResultSet.
-     * 
+     *
      * @since 3.0
      */
     void nextRows(Query query, List<?> dataRows);
@@ -69,13 +71,14 @@ public interface OperationObserver extends OperationHints {
      * Callback method invoked for each opened ResultIterator. If this observer requested
      * results to be returned as a ResultIterator, this method is invoked instead of
      * {@link #nextRows(Query, List)}.
-     * 
+     *
      * @since 3.0
      */
     void nextRows(Query q, ResultIterator<?> it);
 
     /**
      * Callback method invoked after each batch of generated values is read during an update.
+     *
      * @since 4.2
      */
     void nextGeneratedRows(Query query, ResultIterator<?> keys, List<ObjectId> idsToUpdate);

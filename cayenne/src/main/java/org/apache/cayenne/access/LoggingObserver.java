@@ -90,7 +90,7 @@ class LoggingObserver implements OperationObserver {
     }
 
     @Override
-    public void afterLastStatement() {
+    public void onSuccess() {
         flushPending();
         current = null;
     }

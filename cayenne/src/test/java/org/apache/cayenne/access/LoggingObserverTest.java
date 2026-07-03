@@ -117,7 +117,7 @@ public class LoggingObserverTest {
 
         observer.nextStatement(null, select());
         observer.nextRows(null, asList(new Object(), new Object()));
-        observer.afterLastStatement();
+        observer.onSuccess();
 
         assertEquals(List.of("selected:2"), logger.calls);
     }
@@ -131,7 +131,7 @@ public class LoggingObserverTest {
         observer.nextCount(null, 1);
         observer.nextCount(null, 1);
         observer.nextCount(null, 1);
-        observer.afterLastStatement();
+        observer.onSuccess();
 
         assertEquals(List.of("updated:3"), logger.calls);
     }
@@ -145,7 +145,7 @@ public class LoggingObserverTest {
         observer.nextRows(null, List.of(new Object(), new Object(), new Object(), new Object(), new Object()));
         observer.nextCount(null, 10);
         observer.nextCount(null, 20);
-        observer.afterLastStatement();
+        observer.onSuccess();
 
         assertEquals(List.of("selected:5", "also updated:10", "also updated:20"), logger.calls);
     }
@@ -159,7 +159,7 @@ public class LoggingObserverTest {
         observer.nextStatement(null, select());
         observer.nextRows(null, asList(new Object(), new Object()));
         observer.nextBatchCount(null, new int[0]);
-        observer.afterLastStatement();
+        observer.onSuccess();
 
         assertEquals(List.of("selected:2"), logger.calls);
     }
@@ -174,7 +174,7 @@ public class LoggingObserverTest {
         // a second batch statement should flush the first
         observer.nextStatement(null, batch());
         observer.nextCount(null, 3);
-        observer.afterLastStatement();
+        observer.onSuccess();
 
         assertEquals(List.of("updated:2", "updated:3"), logger.calls);
     }

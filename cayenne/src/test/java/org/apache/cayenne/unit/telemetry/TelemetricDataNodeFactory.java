@@ -44,11 +44,11 @@ public class TelemetricDataNodeFactory extends DefaultDataNodeFactory {
         }
 
         @Override
-        public void performQueries(Collection<? extends Query> queries, OperationObserver operationObserver) {
+        public void performQueries(Collection<? extends Query> queries, OperationObserver callback) {
             if (blockingQueries) {
                 Assertions.fail("Query is unexpected: " + queries);
             }
-            super.performQueries(queries, operationObserver);
+            super.performQueries(queries, callback);
             queryCounter.addAndGet(queries.size());
         }
 
