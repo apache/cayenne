@@ -34,7 +34,7 @@ abstract class ResultSetTemplate<T> {
 	abstract T readResultSet(ResultSet rs, String sql) throws SQLException;
 
 	T execute(String sql) throws SQLException {
-		UtilityLogger.log(sql);
+		TestSqlLogger.log(sql);
 
 		try (Connection c = parent.getConnection();) {
 

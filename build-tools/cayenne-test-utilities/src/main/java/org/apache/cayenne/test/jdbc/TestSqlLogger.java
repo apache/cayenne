@@ -21,9 +21,9 @@ package org.apache.cayenne.test.jdbc;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-class UtilityLogger {
+class TestSqlLogger {
 
-    private static Logger LOGGER = LoggerFactory.getLogger(UtilityLogger.class);
+    private static Logger LOGGER = LoggerFactory.getLogger("cayenne-test-sql");
 
     static void log(String sql) {
         LOGGER.info(sql);

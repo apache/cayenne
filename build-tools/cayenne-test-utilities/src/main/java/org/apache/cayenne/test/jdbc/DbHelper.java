@@ -142,7 +142,7 @@ public class DbHelper {
 		try (Connection c = getConnection()) {
 
 			String sqlString = sql.toString();
-			UtilityLogger.log(sqlString);
+			TestSqlLogger.log(sqlString);
 
 			ParameterMetaData parameters = null;
 			try (PreparedStatement st = c.prepareStatement(sqlString)) {

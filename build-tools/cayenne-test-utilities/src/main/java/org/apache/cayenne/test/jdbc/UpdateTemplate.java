@@ -59,7 +59,7 @@ class UpdateTemplate {
 	}
 
 	int execute(String sql, Collection<Object> bindings, Collection<Integer> bindingTypes) throws SQLException {
-		UtilityLogger.log(sql);
+		TestSqlLogger.log(sql);
 
 		try (Connection c = parent.getConnection();) {
 
