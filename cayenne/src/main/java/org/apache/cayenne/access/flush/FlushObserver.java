@@ -19,8 +19,6 @@
 
 package org.apache.cayenne.access.flush;
 
-import java.util.List;
-
 import org.apache.cayenne.CayenneRuntimeException;
 import org.apache.cayenne.DataRow;
 import org.apache.cayenne.ObjectId;
@@ -28,19 +26,20 @@ import org.apache.cayenne.ResultIterator;
 import org.apache.cayenne.access.OperationObserver;
 import org.apache.cayenne.log.SqlLogger;
 import org.apache.cayenne.map.DbAttribute;
-import org.apache.cayenne.query.BatchQuery;
 import org.apache.cayenne.query.InsertBatchQuery;
 import org.apache.cayenne.query.Query;
 import org.apache.cayenne.util.Util;
+
+import java.util.List;
 
 /**
  * @since 4.2
  */
 class FlushObserver implements OperationObserver {
 
-    private SqlLogger logger;
+    private final SqlLogger logger;
 
-    FlushObserver(SqlLogger logger) {
+    public FlushObserver(SqlLogger logger) {
         this.logger = logger;
     }
 
@@ -63,13 +62,11 @@ class FlushObserver implements OperationObserver {
 
         // read and close the iterator before doing anything else
         List<DataRow> keys;
-        try {
+        try (keysIterator) {
             keys = (List<DataRow>) keysIterator.allRows();
-        } finally {
-            keysIterator.close();
         }
 
-        if (!(query instanceof InsertBatchQuery)) {
+        if (!(query instanceof InsertBatchQuery batch)) {
             throw new CayenneRuntimeException("Generated keys only supported for InsertBatchQuery, instead got %s", query);
         }
 
@@ -80,8 +77,7 @@ class FlushObserver implements OperationObserver {
         for (int i = 0; i < keys.size(); i++) {
 	        DataRow key = keys.get(i);
 	
-	        // empty key?
-	        if (key.size() == 0) {
+	        if (key.isEmpty()) {
 	            throw new CayenneRuntimeException("Empty key generated.");
 	        }
 	
@@ -91,8 +87,7 @@ class FlushObserver implements OperationObserver {
 	            return;
 	        }
 
-	        BatchQuery batch = (BatchQuery) query;
-	        for (DbAttribute attribute : batch.getDbEntity().getGeneratedAttributes()) {
+            for (DbAttribute attribute : batch.getDbEntity().getGeneratedAttributes()) {
 	
 	            // batch can have generated attributes that are not PKs, e.g.
 	            // columns with
@@ -119,26 +114,6 @@ class FlushObserver implements OperationObserver {
 	            }
 	        }
         }
-    }
-
-    public void setSqlLogger(SqlLogger logger) {
-        this.logger = logger;
-    }
-
-    public SqlLogger getSqlLogger() {
-        return this.logger;
-    }
-
-    @Override
-    public void nextBatchCount(Query query, int[] resultCount) {
-    }
-
-    @Override
-    public void nextCount(Query query, int resultCount) {
-    }
-
-    @Override
-    public void nextRows(Query query, List<?> dataRows) {
     }
 
     @Override

@@ -18,10 +18,13 @@
  ****************************************************************/
 package org.apache.cayenne.access.jdbc;
 
+import org.apache.cayenne.ObjectId;
+import org.apache.cayenne.ResultIterator;
 import org.apache.cayenne.access.DataNode;
 import org.apache.cayenne.access.OperationObserver;
 import org.apache.cayenne.access.translator.ejbql.EJBQLTranslationContext;
 import org.apache.cayenne.access.translator.EJBQLTranslator;
+import org.apache.cayenne.access.translator.TranslatedStatement;
 import org.apache.cayenne.dba.QuotingStrategy;
 import org.apache.cayenne.ejbql.EJBQLBaseVisitor;
 import org.apache.cayenne.ejbql.EJBQLCompiledExpression;
@@ -29,11 +32,13 @@ import org.apache.cayenne.map.DbEntity;
 import org.apache.cayenne.ejbql.EJBQLExpression;
 import org.apache.cayenne.ejbql.EJBQLExpressionVisitor;
 import org.apache.cayenne.query.EJBQLQuery;
+import org.apache.cayenne.query.Query;
 import org.apache.cayenne.query.QueryMetadata;
 import org.apache.cayenne.query.SQLActionVisitor;
 import org.apache.cayenne.query.SQLTemplate;
 
 import java.sql.Connection;
+import java.util.List;
 
 /**
  * Parses an EJBQL statement, converting it to SQL. Executes the resulting SQL.
@@ -110,6 +115,69 @@ public class EJBQLAction extends BaseSQLAction {
             sqlQuery.setQueryTimeout(queryTimeout);
         }
 
-        actionFactory.sqlAction(sqlQuery).performAction(connection, observer);
+        // the SQLTemplate is a substitute for the original EJBQLQuery; wrap the observer so that results are reported
+        // against the EJBQLQuery the caller submitted rather than the internally compiled SQLTemplate
+        actionFactory.sqlAction(sqlQuery).performAction(connection, new OriginalQueryObserver(observer, query));
+    }
+    
+    static class OriginalQueryObserver implements OperationObserver {
+
+        private final OperationObserver delegate;
+        private final Query originalQuery;
+
+        OriginalQueryObserver(OperationObserver delegate, Query originalQuery) {
+            this.delegate = delegate;
+            this.originalQuery = originalQuery;
+        }
+
+        @Override
+        public void nextStatement(Query query, TranslatedStatement statement) {
+            delegate.nextStatement(originalQuery, statement);
+        }
+
+        @Override
+        public void onSuccess() {
+            delegate.onSuccess();
+        }
+
+        @Override
+        public void nextCount(Query query, int resultCount) {
+            delegate.nextCount(originalQuery, resultCount);
+        }
+
+        @Override
+        public void nextBatchCount(Query query, int[] resultCount) {
+            delegate.nextBatchCount(originalQuery, resultCount);
+        }
+
+        @Override
+        public void nextRows(Query query, List<?> dataRows) {
+            delegate.nextRows(originalQuery, dataRows);
+        }
+
+        @Override
+        public void nextRows(Query query, ResultIterator<?> it) {
+            delegate.nextRows(originalQuery, it);
+        }
+
+        @Override
+        public void nextGeneratedRows(Query query, ResultIterator<?> keys, List<ObjectId> idsToUpdate) {
+            delegate.nextGeneratedRows(originalQuery, keys, idsToUpdate);
+        }
+
+        @Override
+        public void nextQueryException(Query query, Exception ex) {
+            delegate.nextQueryException(originalQuery, ex);
+        }
+
+        @Override
+        public void nextGlobalException(Exception ex) {
+            delegate.nextGlobalException(ex);
+        }
+
+        @Override
+        public boolean isIteratedResult() {
+            return delegate.isIteratedResult();
+        }
     }
 }

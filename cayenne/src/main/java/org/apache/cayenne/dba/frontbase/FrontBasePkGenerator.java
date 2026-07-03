@@ -19,20 +19,19 @@
 
 package org.apache.cayenne.dba.frontbase;
 
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.List;
-
 import org.apache.cayenne.CayenneRuntimeException;
 import org.apache.cayenne.DataRow;
 import org.apache.cayenne.access.DataNode;
 import org.apache.cayenne.access.OperationObserver;
-import org.apache.cayenne.access.util.DoNothingOperationObserver;
 import org.apache.cayenne.dba.JdbcAdapter;
 import org.apache.cayenne.dba.JdbcPkGenerator;
 import org.apache.cayenne.map.DbEntity;
 import org.apache.cayenne.query.Query;
 import org.apache.cayenne.query.SQLTemplate;
+
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.List;
 
 /**
  * @since 1.2
@@ -93,16 +92,12 @@ public class FrontBasePkGenerator extends JdbcPkGenerator {
 
     @Override
     protected String pkCreateString(String entName) {
-        StringBuilder buf = new StringBuilder();
-        buf.append("SET UNIQUE = ").append(pkStartValue).append(" FOR \"").append(entName).append("\"");
-        return buf.toString();
+        return "SET UNIQUE = " + pkStartValue + " FOR \"" + entName + "\"";
     }
 
     @Override
     protected String pkSelectString(String entName) {
-        StringBuilder buf = new StringBuilder();
-        buf.append("SELECT UNIQUE FROM \"").append(entName).append("\"");
-        return buf.toString();
+        return "SELECT UNIQUE FROM \"" + entName + "\"";
     }
 
     @Override
@@ -126,7 +121,7 @@ public class FrontBasePkGenerator extends JdbcPkGenerator {
         final long[] pkHolder = new long[1];
 
         SQLTemplate query = new SQLTemplate(entity, template);
-        OperationObserver observer = new DoNothingOperationObserver() {
+        OperationObserver observer = new OperationObserver() {
 
             @Override
             public void nextRows(Query query, List<?> dataRows) {
@@ -134,7 +129,7 @@ public class FrontBasePkGenerator extends JdbcPkGenerator {
                     throw new CayenneRuntimeException("Error fetching PK. Expected one row, got %d", dataRows.size());
                 }
 
-                DataRow row = (DataRow) dataRows.get(0);
+                DataRow row = (DataRow) dataRows.getFirst();
                 Number pk = (Number) row.get("UNIQUE");
                 pkHolder[0] = pk.longValue();
             }

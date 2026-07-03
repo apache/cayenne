@@ -62,7 +62,7 @@ public class SQLServerProcedureAction extends ProcedureAction {
 
 		observer.nextStatement(query, translated);
 
-		try (CallableStatement statement = connection.prepareCall(translated.sql());) {
+		try (CallableStatement statement = connection.prepareCall(translated.sql())) {
 			bindParameters(statement, translated);
 
 			// stored procedure may contain a mixture of update counts and
@@ -82,7 +82,7 @@ public class SQLServerProcedureAction extends ProcedureAction {
 			while (true) {
 				if (hasResultSet) {
 
-					try (ResultSet rs = statement.getResultSet();) {
+					try (ResultSet rs = statement.getResultSet()) {
 						RSColumn[] columns = describeResultSet(rs, processedResultSets++);
 						readResultSet(rs, columns, query, localObserver);
 					}
@@ -110,7 +110,7 @@ public class SQLServerProcedureAction extends ProcedureAction {
 		}
 	}
 
-	class Observer implements OperationObserver {
+	static class Observer implements OperationObserver {
 
 		List<List<?>> results;
 		List<Integer> counts;
@@ -149,7 +149,7 @@ public class SQLServerProcedureAction extends ProcedureAction {
 				counts = new ArrayList<>();
 			}
 
-			counts.add(Integer.valueOf(resultCount));
+			counts.add(resultCount);
 		}
 
 		@Override
@@ -164,7 +164,7 @@ public class SQLServerProcedureAction extends ProcedureAction {
 		}
 
 		@Override
-		public void nextRows(Query q, ResultIterator it) {
+		public void nextRows(Query q, ResultIterator<?> it) {
 			observer.nextRows(q, it);
 		}
 

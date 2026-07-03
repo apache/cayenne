@@ -262,7 +262,7 @@ public class DataNode {
                 try {
                     getAdapter()
                             .getAction(nextQuery, this)
-                            .performAction(connection, new OriginalQueryObserver(instrumentedCallback, nextQuery));
+                            .performAction(connection, instrumentedCallback);
                 } catch (Exception queryEx) {
                     instrumentedCallback.nextQueryException(nextQuery, queryEx);
 
