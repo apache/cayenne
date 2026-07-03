@@ -88,8 +88,8 @@ import org.apache.cayenne.di.Key;
 import org.apache.cayenne.di.Module;
 import org.apache.cayenne.di.spi.DefaultAdhocObjectFactory;
 import org.apache.cayenne.di.spi.DefaultClassLoaderManager;
-import org.apache.cayenne.log.JdbcEventLogger;
-import org.apache.cayenne.log.Slf4jJdbcEventLogger;
+import org.apache.cayenne.log.SqlLogger;
+import org.apache.cayenne.log.Slf4jSqlLogger;
 import org.apache.cayenne.project.extension.ExtensionAwareHandlerFactory;
 import org.apache.cayenne.reflect.generic.DefaultValueComparisonStrategyFactory;
 import org.apache.cayenne.reflect.generic.ValueComparisonStrategyFactory;
@@ -160,7 +160,7 @@ public class ToolsModule implements Module {
         binder.bind(Key.get(BatchTranslator.class, BatchTranslator.INSERT)).to(InsertBatchTranslator.class);
         binder.bind(Key.get(BatchTranslator.class, BatchTranslator.UPDATE)).to(UpdateBatchTranslator.class);
         binder.bind(Key.get(BatchTranslator.class, BatchTranslator.DELETE)).to(DeleteBatchTranslator.class);
-        binder.bind(JdbcEventLogger.class).to(Slf4jJdbcEventLogger.class);
+        binder.bind(SqlLogger.class).to(Slf4jSqlLogger.class);
         binder.bind(PkGeneratorFactoryProvider.class).to(PkGeneratorFactoryProvider.class);
         binder.bind(PkGenerator.class).to(JdbcPkGenerator.class);
 

@@ -20,7 +20,7 @@
 package org.apache.cayenne.tx;
 
 import org.apache.cayenne.CayenneRuntimeException;
-import org.apache.cayenne.log.JdbcEventLogger;
+import org.apache.cayenne.log.SqlLogger;
 
 import java.sql.Connection;
 import java.sql.SQLException;
@@ -32,16 +32,16 @@ import java.sql.SQLException;
  */
 public class CayenneTransaction extends BaseTransaction {
 
-    protected JdbcEventLogger logger;
+    protected SqlLogger logger;
 
-    public CayenneTransaction(JdbcEventLogger logger) {
+    public CayenneTransaction(SqlLogger logger) {
         this(logger, TransactionDescriptor.defaultDescriptor());
     }
 
     /**
      * @since 4.1
      */
-    public CayenneTransaction(JdbcEventLogger jdbcEventLogger, TransactionDescriptor descriptor) {
+    public CayenneTransaction(SqlLogger jdbcEventLogger, TransactionDescriptor descriptor) {
         super(descriptor);
         this.logger = jdbcEventLogger;
     }
@@ -49,7 +49,7 @@ public class CayenneTransaction extends BaseTransaction {
     @Override
     public void begin() {
         super.begin();
-        logger.logBeginTransaction("transaction started.");
+        logger.logTransactionStart();
     }
 
     @Override
@@ -107,10 +107,10 @@ public class CayenneTransaction extends BaseTransaction {
         }
 
         if (deferredException != null) {
-            logger.logRollbackTransaction("transaction rolledback.");
+            logger.logTransactionRollback();
             throw new CayenneRuntimeException(deferredException);
         } else {
-            logger.logCommitTransaction("transaction committed.");
+            logger.logTransactionCommit();
         }
     }
 
@@ -135,7 +135,7 @@ public class CayenneTransaction extends BaseTransaction {
             }
         }
 
-        logger.logRollbackTransaction("transaction rolledback.");
+        logger.logTransactionRollback();
         if (deferredException != null) {
             throw new CayenneRuntimeException(deferredException);
         }

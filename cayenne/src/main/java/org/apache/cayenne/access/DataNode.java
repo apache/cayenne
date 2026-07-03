@@ -25,12 +25,11 @@ import org.apache.cayenne.access.jdbc.reader.RowReaderFactory;
 import org.apache.cayenne.access.translator.BatchTranslator;
 import org.apache.cayenne.access.translator.EJBQLTranslator;
 import org.apache.cayenne.access.translator.ProcedureTranslator;
-import org.apache.cayenne.access.translator.SelectTranslator;
 import org.apache.cayenne.access.translator.SQLTemplateTranslator;
+import org.apache.cayenne.access.translator.SelectTranslator;
 import org.apache.cayenne.dba.DbAdapter;
-import org.apache.cayenne.dba.JdbcAdapter;
-import org.apache.cayenne.log.JdbcEventLogger;
-import org.apache.cayenne.log.NoopJdbcEventLogger;
+import org.apache.cayenne.log.NoopSqlLogger;
+import org.apache.cayenne.log.SqlLogger;
 import org.apache.cayenne.map.DataMap;
 import org.apache.cayenne.map.EntityResolver;
 import org.apache.cayenne.query.DeleteBatchQuery;
@@ -66,7 +65,7 @@ public class DataNode {
     protected Map<String, DataMap> dataMaps;
 
     private DataSource dataSource;
-    private JdbcEventLogger jdbcEventLogger;
+    private SqlLogger sqlLogger;
     private RowReaderFactory rowReaderFactory;
     private BatchTranslator<InsertBatchQuery> insertBatchTranslator;
     private BatchTranslator<UpdateBatchQuery> updateBatchTranslator;
@@ -92,7 +91,7 @@ public class DataNode {
         this.dataMaps = new HashMap<>();
 
         // make sure logger is not null
-        this.jdbcEventLogger = NoopJdbcEventLogger.getInstance();
+        this.sqlLogger = NoopSqlLogger.getInstance();
     }
 
     /**
@@ -112,19 +111,15 @@ public class DataNode {
     /**
      * @since 3.1
      */
-    public JdbcEventLogger getJdbcEventLogger() {
-        if (jdbcEventLogger == null && adapter instanceof JdbcAdapter jdbcAdapter) {
-            jdbcEventLogger = jdbcAdapter.getJdbcEventLogger();
-        }
-
-        return jdbcEventLogger;
+    public SqlLogger getSqlLogger() {
+        return sqlLogger;
     }
 
     /**
      * @since 3.1
      */
-    public void setJdbcEventLogger(JdbcEventLogger logger) {
-        this.jdbcEventLogger = logger;
+    public void setSqlLogger(SqlLogger logger) {
+        this.sqlLogger = logger;
     }
 
     /**
@@ -249,8 +244,6 @@ public class DataNode {
         try {
             connection = dataSource.getConnection();
         } catch (Exception globalEx) {
-            getJdbcEventLogger().logQueryError(globalEx);
-
             if (tx != null) {
                 tx.setRollbackOnly();
             }
@@ -259,26 +252,39 @@ public class DataNode {
             return;
         }
 
-		try {
-			DataNodeQueryAction queryRunner = new DataNodeQueryAction(this, callback);
+        // when logging is enabled, wrap the observer so it can correlate each executed statement with its results
+        // and emit compact log lines; otherwise pass the caller's observer through untouched
+        SqlLogger logger = getSqlLogger();
+        LoggingObserver loggingObserver = logger != null && logger.isEnabled()
+                ? new LoggingObserver(callback, logger)
+                : null;
+        OperationObserver observer = loggingObserver != null ? loggingObserver : callback;
 
+		try {
+			DataNodeQueryAction queryRunner = new DataNodeQueryAction(this, observer);
+
+            boolean failed = false;
             for (Query nextQuery : queries) {
 
                 // catch exceptions for each individual query
                 try {
                     queryRunner.runQuery(connection, nextQuery);
                 } catch (Exception queryEx) {
-                    getJdbcEventLogger().logQueryError(queryEx);
-
-                    // notify consumer of the exception,
-                    // stop running further queries
-                    callback.nextQueryException(nextQuery, queryEx);
+                    // notify consumer of the exception, stop running further queries. The failing statement is not
+                    // logged - its SQL and bindings travel with the thrown exception instead.
+                    failed = true;
+                    observer.nextQueryException(nextQuery, queryEx);
 
                     if (tx != null) {
                         tx.setRollbackOnly();
                     }
                     break;
                 }
+            }
+
+            // flush any pending statement line (e.g. a summed batch) that completed successfully
+            if (!failed && loggingObserver != null) {
+                loggingObserver.flush();
             }
         } finally {
             try {

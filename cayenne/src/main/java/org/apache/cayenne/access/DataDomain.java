@@ -37,7 +37,7 @@ import org.apache.cayenne.di.Inject;
 import org.apache.cayenne.event.EventManager;
 import org.apache.cayenne.graph.CompoundDiff;
 import org.apache.cayenne.graph.GraphDiff;
-import org.apache.cayenne.log.JdbcEventLogger;
+import org.apache.cayenne.log.SqlLogger;
 import org.apache.cayenne.map.DataMap;
 import org.apache.cayenne.map.EntityResolver;
 import org.apache.cayenne.map.EntitySorter;
@@ -73,7 +73,7 @@ public class DataDomain implements DataChannel {
      * @since 3.1
      */
     @Inject
-    protected JdbcEventLogger jdbcEventLogger;
+    protected SqlLogger jdbcEventLogger;
 
     /**
      * @since 4.0
@@ -603,7 +603,7 @@ public class DataDomain implements DataChannel {
     /**
      * @since 3.1
      */
-    JdbcEventLogger getJdbcEventLogger() {
+    SqlLogger getSqlLogger() {
         return jdbcEventLogger;
     }
 

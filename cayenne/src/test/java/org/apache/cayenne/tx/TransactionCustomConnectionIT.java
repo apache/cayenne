@@ -20,7 +20,7 @@
 package org.apache.cayenne.tx;
 
 import org.apache.cayenne.access.DataContext;
-import org.apache.cayenne.log.NoopJdbcEventLogger;
+import org.apache.cayenne.log.NoopSqlLogger;
 import org.apache.cayenne.query.ObjectSelect;
 import org.apache.cayenne.runtime.CayenneRuntime;
 import org.apache.cayenne.testdo.testmap.Artist;
@@ -73,7 +73,7 @@ public class TransactionCustomConnectionIT {
      */
     @Test
     public void connectionDecorationWithListeners() {
-        Transaction t = new CayenneTransaction(NoopJdbcEventLogger.getInstance());
+        Transaction t = new CayenneTransaction(NoopSqlLogger.getInstance());
         //add listeners which will check if connection object will be changed after every decorate call
         List<TransactionListener> listeners = addAndGetListenersWithCustomReadonlyTo(t);
         BaseTransaction.bindThreadTransaction(t);
@@ -180,7 +180,7 @@ public class TransactionCustomConnectionIT {
 
     @Test
     public void defaultConnectionInDescriptor() {
-        Transaction t = new CayenneTransaction(NoopJdbcEventLogger.getInstance());
+        Transaction t = new CayenneTransaction(NoopSqlLogger.getInstance());
         BaseTransaction.bindThreadTransaction(t);
         try {
             ObjectSelect.query(Artist.class).select(context);

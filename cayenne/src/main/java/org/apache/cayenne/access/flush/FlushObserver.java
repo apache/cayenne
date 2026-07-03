@@ -26,7 +26,7 @@ import org.apache.cayenne.DataRow;
 import org.apache.cayenne.ObjectId;
 import org.apache.cayenne.ResultIterator;
 import org.apache.cayenne.access.OperationObserver;
-import org.apache.cayenne.log.JdbcEventLogger;
+import org.apache.cayenne.log.SqlLogger;
 import org.apache.cayenne.map.DbAttribute;
 import org.apache.cayenne.query.BatchQuery;
 import org.apache.cayenne.query.InsertBatchQuery;
@@ -38,9 +38,9 @@ import org.apache.cayenne.util.Util;
  */
 class FlushObserver implements OperationObserver {
 
-    private JdbcEventLogger logger;
+    private SqlLogger logger;
 
-    FlushObserver(JdbcEventLogger logger) {
+    FlushObserver(SqlLogger logger) {
         this.logger = logger;
     }
 
@@ -108,9 +108,10 @@ class FlushObserver implements OperationObserver {
 	                	value = key.values().iterator().next();
 	                }
 	                
-	                // Log the generated PK
-	                logger.logGeneratedKey(attribute, value);
 	
+	                // log the generated PK
+	                logger.logGeneratedKey(attribute, value);
+
 	                // I guess we should override any existing value,
 	                // as generated key is the latest thing that exists in the DB.
 	                idToUpdate.getReplacementIdMap().put(attribute.getName(), value);
@@ -120,11 +121,11 @@ class FlushObserver implements OperationObserver {
         }
     }
 
-    public void setJdbcEventLogger(JdbcEventLogger logger) {
+    public void setSqlLogger(SqlLogger logger) {
         this.logger = logger;
     }
 
-    public JdbcEventLogger getJdbcEventLogger() {
+    public SqlLogger getSqlLogger() {
         return this.logger;
     }
 

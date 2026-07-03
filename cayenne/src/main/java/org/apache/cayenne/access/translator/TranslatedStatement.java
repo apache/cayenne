@@ -16,28 +16,22 @@
  *  specific language governing permissions and limitations
  *  under the License.
  ****************************************************************/
-package org.apache.cayenne.log;
 
-import org.apache.cayenne.util.IDUtil;
-import org.junit.jupiter.api.Test;
+package org.apache.cayenne.access.translator;
 
-import static org.junit.jupiter.api.Assertions.assertEquals;
+/**
+ * A common supertype for the immutable results of translating a query to SQL. It bundles the final SQL string with
+ * the typed, self-describing bindings needed to both execute and log a statement, and lets logging and error-reporting
+ * treat all four translation flavors ({@link TranslatedSelect}, {@link TranslatedBatch}, {@link TranslatedProcedure},
+ * {@link TranslatedSQL}) uniformly.
+ *
+ * @since 5.0
+ */
+public sealed interface TranslatedStatement
+        permits TranslatedSelect, TranslatedBatch, TranslatedProcedure, TranslatedSQL {
 
-public class Slf4jJdbcEventLoggerTest {
-
-    @Test
-    public void appendFormattedByte() throws Exception {
-        assertFormatting((byte) 0, "00");
-        assertFormatting((byte) 1, "01");
-        assertFormatting((byte) 10, "0A");
-        assertFormatting(Byte.MAX_VALUE, "7F");
-        assertFormatting((byte) -1, "FF");
-        assertFormatting(Byte.MIN_VALUE, "80");
-    }
-
-    private void assertFormatting(byte b, String formatted) throws Exception {
-        StringBuffer buffer = new StringBuffer();
-        IDUtil.appendFormattedByte(buffer, b);
-        assertEquals(formatted, buffer.toString());
-    }
+    /**
+     * Returns the SQL string of the translated statement.
+     */
+    String sql();
 }

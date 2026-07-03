@@ -21,7 +21,7 @@ package org.apache.cayenne.tx;
 import org.apache.cayenne.configuration.Constants;
 import org.apache.cayenne.configuration.RuntimeProperties;
 import org.apache.cayenne.di.Inject;
-import org.apache.cayenne.log.JdbcEventLogger;
+import org.apache.cayenne.log.SqlLogger;
 
 /**
  * @since 4.0
@@ -29,9 +29,9 @@ import org.apache.cayenne.log.JdbcEventLogger;
 public class DefaultTransactionFactory implements TransactionFactory {
 
     protected boolean externalTransactions;
-    protected JdbcEventLogger jdbcEventLogger;
+    protected SqlLogger jdbcEventLogger;
 
-    public DefaultTransactionFactory(@Inject RuntimeProperties properties, @Inject JdbcEventLogger jdbcEventLogger) {
+    public DefaultTransactionFactory(@Inject RuntimeProperties properties, @Inject SqlLogger jdbcEventLogger) {
         this.externalTransactions = properties.getBoolean(Constants.EXTERNAL_TX_PROPERTY, false);
         this.jdbcEventLogger = jdbcEventLogger;
     }

@@ -38,7 +38,7 @@ import org.apache.cayenne.access.types.ValueObjectTypeRegistry;
 import org.apache.cayenne.configuration.Constants;
 import org.apache.cayenne.configuration.RuntimeProperties;
 import org.apache.cayenne.di.Inject;
-import org.apache.cayenne.log.JdbcEventLogger;
+import org.apache.cayenne.log.SqlLogger;
 import org.apache.cayenne.map.DataMap;
 import org.apache.cayenne.map.DbAttribute;
 import org.apache.cayenne.map.DbEntity;
@@ -83,7 +83,8 @@ public class JdbcAdapter implements DbAdapter {
     protected boolean caseInsensitiveCollations;
 
     @Inject
-    protected JdbcEventLogger logger;
+    @Deprecated(since = "5.0", forRemoval = true)
+    protected SqlLogger logger;
 
     /**
      * Creates new JdbcAdapter with a set of default parameters.
@@ -120,8 +121,10 @@ public class JdbcAdapter implements DbAdapter {
 
     /**
      * @since 3.1
+     * @deprecated logger should be taken from the DataNode
      */
-    public JdbcEventLogger getJdbcEventLogger() {
+    @Deprecated(since = "5.0", forRemoval = true)
+    public SqlLogger getSqlLogger() {
         return this.logger;
     }
 

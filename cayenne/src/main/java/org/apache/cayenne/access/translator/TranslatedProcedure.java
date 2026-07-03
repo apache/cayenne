@@ -26,5 +26,5 @@ import org.apache.cayenne.access.jdbc.CSParameter;
  *
  * @since 5.0
  */
-public record TranslatedProcedure(String sql, CSParameter<?>[] params) {
+public record TranslatedProcedure(String sql, CSParameter<?>[] params) implements TranslatedStatement {
 }

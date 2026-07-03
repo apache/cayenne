@@ -100,7 +100,6 @@ public class SQLTemplateAction implements SQLAction {
             throw new CayenneRuntimeException("No template string configured for adapter " + dbAdapter.getClass().getName());
         }
 
-        boolean loggable = dataNode.getJdbcEventLogger().isLoggable();
         List<Number> counts = new ArrayList<>();
 
         // bind either positional or named parameters;
@@ -108,9 +107,9 @@ public class SQLTemplateAction implements SQLAction {
         // should go away after 4.0; newer positional parameter only support a
         // single set of values.
         if (query.getPositionalParams().isEmpty()) {
-            runWithNamedParameters(connection, callback, template, counts, loggable);
+            runWithNamedParameters(connection, callback, template, counts);
         } else {
-            runWithPositionalParameters(connection, callback, template, counts, loggable);
+            runWithPositionalParameters(connection, callback, template, counts);
         }
 
         // notify of combined counts of all queries inside SQLTemplate
@@ -124,14 +123,12 @@ public class SQLTemplateAction implements SQLAction {
     }
 
     private void runWithPositionalParameters(Connection connection, OperationObserver callback, String template,
-                                             Collection<Number> counts, boolean loggable) throws Exception {
+                                             Collection<Number> counts) throws Exception {
 
         TranslatedSQL compiled = dataNode.getSqlTemplateTranslator().translate(template,
                 query.getPositionalParams(), getAdapter());
 
-        if (loggable) {
-            dataNode.getJdbcEventLogger().logQuery(compiled.sql(), compiled.bindings());
-        }
+        callback.nextStatement(query, compiled);
 
         execute(connection, callback, compiled, counts);
     }
@@ -140,15 +137,14 @@ public class SQLTemplateAction implements SQLAction {
             Connection connection,
             OperationObserver callback,
             String template,
-            Collection<Number> counts,
-            boolean loggable) throws Exception {
+            Collection<Number> counts) throws Exception {
 
         if (query.parametersSize() == 0) {
-            runParametersBatch(connection, callback, template, counts, loggable, Map.of());
+            runParametersBatch(connection, callback, template, counts, Map.of());
         } else {
             Iterator<Map<String, ?>> it = query.parametersIterator();
             while (it.hasNext()) {
-                runParametersBatch(connection, callback, template, counts, loggable, it.next());
+                runParametersBatch(connection, callback, template, counts, it.next());
             }
         }
     }
@@ -158,13 +154,10 @@ public class SQLTemplateAction implements SQLAction {
             OperationObserver callback,
             String template,
             Collection<Number> counts,
-            boolean loggable,
             Map<String, ?> nextParameters) throws Exception {
 
         TranslatedSQL compiled = dataNode.getSqlTemplateTranslator().translate(template, nextParameters, getAdapter());
-        if (loggable) {
-            dataNode.getJdbcEventLogger().logQuery(compiled.sql(), compiled.bindings());
-        }
+        callback.nextStatement(query, compiled);
 
         execute(connection, callback, compiled, counts);
     }
@@ -223,7 +216,6 @@ public class SQLTemplateAction implements SQLAction {
                     }
 
                     updateCounts.add(updateCount);
-                    dataNode.getJdbcEventLogger().logUpdateCount(updateCount);
                 }
             }
         } finally {
@@ -249,14 +241,7 @@ public class SQLTemplateAction implements SQLAction {
         ResultIterator<?> it = new RSIterator<>(statement, resultSet, rowReader);
 
         if (iteratedResult) {
-
-            it = new ConnectionAwareResultIterator(it, connection) {
-                @Override
-                protected void doClose() {
-                    dataNode.getJdbcEventLogger().logSelectCount(rowCounter, System.currentTimeMillis() - startTime);
-                    super.doClose();
-                }
-            };
+            it = new ConnectionAwareResultIterator(it, connection);
         }
 
         it = new LimitResultIterator<>(it, getFetchOffset(), query.getFetchLimit());
@@ -273,8 +258,6 @@ public class SQLTemplateAction implements SQLAction {
             // to close the underlying ResultSet on its own... this is a hack,
             // maybe a cleaner flow is due here.
             List<?> resultRows = it.allRows();
-
-            dataNode.getJdbcEventLogger().logSelectCount(resultRows.size(), System.currentTimeMillis() - startTime);
 
             callback.nextRows(query, resultRows);
         }

@@ -19,7 +19,7 @@
 
 package org.apache.cayenne.tx;
 
-import org.apache.cayenne.log.NoopJdbcEventLogger;
+import org.apache.cayenne.log.NoopSqlLogger;
 import org.apache.cayenne.query.ObjectSelect;
 import org.apache.cayenne.testdo.testmap.Artist;
 import org.apache.cayenne.unit.CayenneProjects;
@@ -37,7 +37,7 @@ public class TransactionThreadIT {
     @Test
     public void threadConnectionReuseOnSelect() {
 
-        Transaction t = new CayenneTransaction(NoopJdbcEventLogger.getInstance());
+        Transaction t = new CayenneTransaction(NoopSqlLogger.getInstance());
         BaseTransaction.bindThreadTransaction(t);
 
         try {

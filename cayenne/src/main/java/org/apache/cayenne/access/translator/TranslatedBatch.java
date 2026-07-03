@@ -28,5 +28,5 @@ import org.apache.cayenne.access.jdbc.PSBatchParameter;
  *
  * @since 5.0
  */
-public record TranslatedBatch(String sql, PSBatchParameter[] bindings) {
+public record TranslatedBatch(String sql, PSBatchParameter[] bindings) implements TranslatedStatement {
 }

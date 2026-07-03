@@ -25,7 +25,7 @@ import com.jgoodies.forms.layout.CellConstraints;
 import com.jgoodies.forms.layout.FormLayout;
 import org.apache.cayenne.access.DbGenerator;
 import org.apache.cayenne.dba.DbAdapter;
-import org.apache.cayenne.log.NoopJdbcEventLogger;
+import org.apache.cayenne.log.NoopSqlLogger;
 import org.apache.cayenne.map.DataMap;
 import org.apache.cayenne.modeler.pref.dbconnector.DBConnector;
 import org.apache.cayenne.modeler.dbconnector.DBConnectorFactory;
@@ -268,7 +268,7 @@ public class DBGeneratorOptionsDialog extends ProjectDialog {
                         dataMap,
                         tables.getExcludedTables(),
                         null,
-                        NoopJdbcEventLogger.getInstance()));
+                        NoopSqlLogger.getInstance()));
             }
         } catch (Exception ex) {
             reportError("Error loading adapter", ex);

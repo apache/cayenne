@@ -23,7 +23,7 @@ import org.apache.cayenne.access.DataDomain;
 import org.apache.cayenne.access.flush.operation.DbRowOpSorter;
 import org.apache.cayenne.access.flush.operation.DeleteDbRowOpFactory;
 import org.apache.cayenne.di.Inject;
-import org.apache.cayenne.log.JdbcEventLogger;
+import org.apache.cayenne.log.SqlLogger;
 
 /**
  * Factory that produces {@link DefaultDataDomainFlushAction}.
@@ -36,7 +36,7 @@ public class DefaultDataDomainFlushActionFactory implements DataDomainFlushActio
     private DbRowOpSorter operationSorter;
 
     @Inject
-    private JdbcEventLogger jdbcEventLogger;
+    private SqlLogger jdbcEventLogger;
 
     @Inject
     private DeleteDbRowOpFactory deleteDbRowOpFactory;

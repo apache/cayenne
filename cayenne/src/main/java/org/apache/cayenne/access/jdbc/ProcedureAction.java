@@ -73,7 +73,7 @@ public class ProcedureAction extends BaseSQLAction {
 		TranslatedProcedure translated = dataNode.getProcedureTranslator()
 				.translate(query, dataNode.getAdapter(), dataNode.getEntityResolver());
 
-		dataNode.getJdbcEventLogger().logQuery(translated.sql(), translated.params());
+		observer.nextStatement(query, translated);
 
 		try (CallableStatement statement = connection.prepareCall(translated.sql())) {
 			initStatement(statement);
@@ -110,7 +110,6 @@ public class ProcedureAction extends BaseSQLAction {
 					if (updateCount == -1) {
 						break;
 					}
-					dataNode.getJdbcEventLogger().logUpdateCount(updateCount);
 					observer.nextCount(query, updateCount);
 				}
 			}
@@ -212,8 +211,6 @@ public class ProcedureAction extends BaseSQLAction {
 	 */
 	protected void readProcedureOutParameters(CallableStatement statement, OperationObserver delegate) throws Exception {
 
-		long t1 = System.currentTimeMillis();
-
 		// build result row...
 		DataRow result = null;
 		List<ProcedureParameter> parameters = getProcedure().getCallParameters();
@@ -238,7 +235,6 @@ public class ProcedureAction extends BaseSQLAction {
 
 		if (result != null && !result.isEmpty()) {
 			// treat out parameters as a separate data row set
-			dataNode.getJdbcEventLogger().logSelectCount(1, System.currentTimeMillis() - t1);
 			delegate.nextRows(query, Collections.singletonList(result));
 		}
 	}

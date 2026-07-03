@@ -21,7 +21,7 @@ package org.apache.cayenne.crypto.map;
 import org.apache.cayenne.CayenneRuntimeException;
 import org.apache.cayenne.configuration.DataMapLoader;
 import org.apache.cayenne.di.Inject;
-import org.apache.cayenne.log.JdbcEventLogger;
+import org.apache.cayenne.log.SqlLogger;
 import org.apache.cayenne.map.DataMap;
 import org.apache.cayenne.map.ObjAttribute;
 import org.apache.cayenne.map.ObjEntity;
@@ -41,12 +41,12 @@ public class CryptoDataMapLoader implements DataMapLoader {
 
 	protected final DataMapLoader delegate;
 	protected final ColumnMapper columnMapper;
-	protected final JdbcEventLogger jdbcEventLogger;
+	protected final SqlLogger jdbcEventLogger;
 		
 	public CryptoDataMapLoader(
 			@Inject DataMapLoader delegate, 
 			@Inject ColumnMapper columnMapper, 
-			@Inject JdbcEventLogger jdbcEventLogger) {
+			@Inject SqlLogger jdbcEventLogger) {
 		
 		this.delegate = delegate;
 		this.columnMapper = columnMapper;
@@ -65,7 +65,7 @@ public class CryptoDataMapLoader implements DataMapLoader {
 						columnMapper.isEncrypted(attr.getDbAttribute())) {
 						
 						String attrName = entity.getName() + "." + attr.getName();
-						jdbcEventLogger.log("WARN: Encrypted attributes like '" + attrName + "' cannot be used for " +
+						jdbcEventLogger.logMessage("WARN: Encrypted attributes like '" + attrName + "' cannot be used for " +
 								"optimistic locking. Locking will be disabled for this attribute.");
 						
 						attr.setUsedForLocking(false);

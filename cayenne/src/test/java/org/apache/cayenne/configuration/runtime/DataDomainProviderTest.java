@@ -106,8 +106,8 @@ import org.apache.cayenne.event.EventBridge;
 import org.apache.cayenne.event.EventManager;
 import org.apache.cayenne.event.MockEventManager;
 import org.apache.cayenne.event.NoopEventBridgeProvider;
-import org.apache.cayenne.log.JdbcEventLogger;
-import org.apache.cayenne.log.Slf4jJdbcEventLogger;
+import org.apache.cayenne.log.SqlLogger;
+import org.apache.cayenne.log.Slf4jSqlLogger;
 import org.apache.cayenne.map.DataMap;
 import org.apache.cayenne.map.EntitySorter;
 import org.apache.cayenne.map.LifecycleEvent;
@@ -230,7 +230,7 @@ public class DataDomainProviderTest {
             b.bind(EJBQLTranslator.class).to(DbAdapterDelegatedEJBQLTranslator.class);
 
             b.bind(DataSourceFactory.class).toInstance(new MockDataSourceFactory());
-            b.bind(JdbcEventLogger.class).to(Slf4jJdbcEventLogger.class);
+            b.bind(SqlLogger.class).to(Slf4jSqlLogger.class);
             b.bind(QueryCache.class).toInstance(mock(QueryCache.class));
             b.bind(RowReaderFactory.class).toInstance(mock(RowReaderFactory.class));
             b.bind(DataNodeFactory.class).to(DefaultDataNodeFactory.class);

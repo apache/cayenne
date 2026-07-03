@@ -20,7 +20,7 @@
 package org.apache.cayenne.access;
 
 import org.apache.cayenne.Cayenne;
-import org.apache.cayenne.log.NoopJdbcEventLogger;
+import org.apache.cayenne.log.NoopSqlLogger;
 import org.apache.cayenne.query.SQLTemplate;
 import org.apache.cayenne.test.jdbc.TableHelper;
 import org.apache.cayenne.testdo.testmap.Artist;
@@ -120,7 +120,7 @@ public class DataContextPerformQueryAPIIT {
         List<?> artists;
 
         // Sybase blows whenever a transaction wraps a SP, so turn of transactions
-        Transaction t = new ExternalTransaction(NoopJdbcEventLogger.getInstance());
+        Transaction t = new ExternalTransaction(NoopSqlLogger.getInstance());
         BaseTransaction.bindThreadTransaction(t);
         try {
             artists = context.performQuery("ProcedureQuery", parameters, true);

@@ -23,7 +23,7 @@ import org.apache.cayenne.ashwood.AshwoodEntitySorter;
 import org.apache.cayenne.dba.DbAdapter;
 import org.apache.cayenne.dba.PkGenerator;
 import org.apache.cayenne.dba.TypesMapping;
-import org.apache.cayenne.log.JdbcEventLogger;
+import org.apache.cayenne.log.SqlLogger;
 import org.apache.cayenne.map.DataMap;
 import org.apache.cayenne.map.DbAttribute;
 import org.apache.cayenne.map.DbEntity;
@@ -64,7 +64,7 @@ public class DbGenerator {
 	// situations
 	protected DataDomain domain;
 
-	protected JdbcEventLogger jdbcEventLogger;
+	protected SqlLogger jdbcEventLogger;
 
 	// stores generated SQL statements
 	protected Map<String, Collection<String>> dropTables;
@@ -91,14 +91,14 @@ public class DbGenerator {
 	/**
 	 * @since 3.1
 	 */
-	public DbGenerator(DbAdapter adapter, DataMap map, JdbcEventLogger logger) {
+	public DbGenerator(DbAdapter adapter, DataMap map, SqlLogger logger) {
 		this(adapter, map, logger, Collections.emptyList());
 	}
 
 	/**
 	 * @since 3.1
 	 */
-	public DbGenerator(DbAdapter adapter, DataMap map, JdbcEventLogger logger, Collection<DbEntity> excludedEntities) {
+	public DbGenerator(DbAdapter adapter, DataMap map, SqlLogger logger, Collection<DbEntity> excludedEntities) {
 		this(adapter, map, excludedEntities, null, logger);
 	}
 
@@ -117,7 +117,7 @@ public class DbGenerator {
 	 * @since 3.1
 	 */
 	public DbGenerator(DbAdapter adapter, DataMap map, Collection<DbEntity> excludedEntities, DataDomain domain,
-			JdbcEventLogger logger) {
+			SqlLogger logger) {
 		// sanity check
 		if (adapter == null) {
 			throw new IllegalArgumentException("Adapter must not be null.");
@@ -321,7 +321,7 @@ public class DbGenerator {
 	protected boolean safeExecute(Connection connection, String sql) {
 
 		try (Statement statement = connection.createStatement()) {
-			jdbcEventLogger.log(sql);
+			jdbcEventLogger.logMessage(sql);
 			statement.execute(sql);
 			return true;
 		} catch (SQLException ex) {
@@ -329,8 +329,8 @@ public class DbGenerator {
 				this.failures = new ValidationResult();
 			}
 
+			// the failure is recorded and surfaced to the caller via getFailures()
 			failures.addFailure(new SimpleValidationFailure(sql, ex.getMessage()));
-			jdbcEventLogger.logQueryError(ex);
 			return false;
 		}
 	}

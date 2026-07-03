@@ -52,8 +52,6 @@ public abstract class BaseSQLAction implements SQLAction {
     protected void readResultSet(ResultSet resultSet, RSColumn[] columns, Query query, OperationObserver delegate)
             throws Exception {
 
-        long t1 = System.currentTimeMillis();
-
         QueryMetadata metadata = query.getMetaData(dataNode.getEntityResolver());
 
         RowReader<?> rowReader = dataNode.getRowReaderFactory().rowReader(columns, metadata, dataNode.getAdapter());
@@ -65,8 +63,6 @@ public abstract class BaseSQLAction implements SQLAction {
 
         if (!delegate.isIteratedResult()) {
             List resultRows = it.allRows();
-            dataNode.getJdbcEventLogger().logSelectCount(resultRows.size(), System.currentTimeMillis() - t1);
-
             delegate.nextRows(query, resultRows);
         } else {
             try {

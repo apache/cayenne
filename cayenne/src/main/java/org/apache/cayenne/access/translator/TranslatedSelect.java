@@ -33,5 +33,5 @@ public record TranslatedSelect(
         PSParameter<?>[] bindings,
         RSColumn[] resultColumns,
         boolean suppressingDistinct,
-        boolean hasJoins) {
+        boolean hasJoins) implements TranslatedStatement {
 }

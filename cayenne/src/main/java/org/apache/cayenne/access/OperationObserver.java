@@ -21,6 +21,7 @@ package org.apache.cayenne.access;
 
 import org.apache.cayenne.ObjectId;
 import org.apache.cayenne.ResultIterator;
+import org.apache.cayenne.access.translator.TranslatedStatement;
 import org.apache.cayenne.query.Query;
 
 import java.util.List;
@@ -30,6 +31,16 @@ import java.util.List;
  * results and notify caller about exceptions.
  */
 public interface OperationObserver extends OperationHints {
+
+    /**
+     * Callback invoked with the translated form of a query (its SQL and bindings) just before the statement is
+     * executed. It lets a logging observer correlate a statement with the results reported through the other
+     * {@code next*} callbacks. The default implementation does nothing.
+     *
+     * @since 5.0
+     */
+    default void nextStatement(Query query, TranslatedStatement statement) {
+    }
 
     /**
      * Callback method invoked after an updating query is executed.

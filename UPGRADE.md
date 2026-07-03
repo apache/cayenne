@@ -56,6 +56,19 @@ Expression caseWhenExp = caseWhen(
 ## Upgrading to 5.0-M3
 
 
+* Per [CAY-2912](https://issues.apache.org/jira/browse/CAY-2912) SQL logging was redesigned to be compact and
+  single-line. The `JdbcEventLogger` interface and its `Slf4jJdbcEventLogger` / `FormattedSlf4jJdbcEventLogger`
+  implementations were removed and replaced by `org.apache.cayenne.log.SqlLogger` (default implementation
+  `Slf4jSqlLogger`). Log output now goes to a logger named `cayenne-sql` (previously `org.apache.cayenne.log.JdbcEventLogger`) —
+  update your logging configuration accordingly. Each statement is logged as one line combining the SQL, its bindings
+  and the result count (e.g. `... bind:[user_id:15] selected:1`); transaction boundaries moved to `DEBUG`. If you bound
+  a custom `JdbcEventLogger` in a DI module, rebind `SqlLogger` instead.
+
+  As part of this change the `cayenne.query_execution_time_logging_threshold` property no longer has any effect — the
+  slow-query threshold warning it controlled has been removed. The `Constants.QUERY_EXECUTION_TIME_LOGGING_THRESHOLD_PROPERTY`
+  constant is retained (deprecated) but ignored. A new `cayenne.jdbc.log.batch.threshold` property (default 3) controls how
+  many batch rows are logged in full before the bindings are truncated to `[first]..N..[last]`.
+
 * Per [CAY-2954](https://issues.apache.org/jira/browse/CAY-2954) selecting queries are no longer wrapped in
 transactions internally by Cayenne. Using connections in "auto-commit" mode instead has a significant positive impact 
 on DB performance. This should not affect manually-managed transactions. But in theory, in some rare cases this may 

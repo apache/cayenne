@@ -39,8 +39,8 @@ import org.apache.cayenne.di.Key;
 import org.apache.cayenne.di.Module;
 import org.apache.cayenne.di.spi.DefaultAdhocObjectFactory;
 import org.apache.cayenne.di.spi.DefaultClassLoaderManager;
-import org.apache.cayenne.log.JdbcEventLogger;
-import org.apache.cayenne.log.Slf4jJdbcEventLogger;
+import org.apache.cayenne.log.SqlLogger;
+import org.apache.cayenne.log.Slf4jSqlLogger;
 import org.apache.cayenne.map.DbEntity;
 import org.apache.cayenne.reflect.generic.DefaultValueComparisonStrategyFactory;
 import org.apache.cayenne.reflect.generic.ValueComparisonStrategyFactory;
@@ -80,7 +80,7 @@ public class DefaultDbAdapterFactoryTest {
 
             binder.bind(PkGenerator.class).to(JdbcPkGenerator.class);
             binder.bind(PkGeneratorFactoryProvider.class).to(PkGeneratorFactoryProvider.class);
-            binder.bind(JdbcEventLogger.class).to(Slf4jJdbcEventLogger.class);
+            binder.bind(SqlLogger.class).to(Slf4jSqlLogger.class);
             binder.bind(ClassLoaderManager.class).to(DefaultClassLoaderManager.class);
             binder.bind(AdhocObjectFactory.class).to(DefaultAdhocObjectFactory.class);
             binder.bind(RuntimeProperties.class).to(DefaultRuntimeProperties.class);
@@ -110,7 +110,7 @@ public class DefaultDbAdapterFactoryTest {
 
             b.bind(PkGenerator.class).to(JdbcPkGenerator.class);
             b.bind(PkGeneratorFactoryProvider.class).to(PkGeneratorFactoryProvider.class);
-            b.bind(JdbcEventLogger.class).to(Slf4jJdbcEventLogger.class);
+            b.bind(SqlLogger.class).to(Slf4jSqlLogger.class);
             b.bind(ClassLoaderManager.class).to(DefaultClassLoaderManager.class);
             b.bind(AdhocObjectFactory.class).to(DefaultAdhocObjectFactory.class);
             b.bind(ResourceLocator.class).to(ClassLoaderResourceLocator.class);
@@ -147,7 +147,7 @@ public class DefaultDbAdapterFactoryTest {
 
             b.bind(PkGenerator.class).to(JdbcPkGenerator.class);
             b.bind(PkGeneratorFactoryProvider.class).to(PkGeneratorFactoryProvider.class);
-            b.bind(JdbcEventLogger.class).to(Slf4jJdbcEventLogger.class);
+            b.bind(SqlLogger.class).to(Slf4jSqlLogger.class);
             b.bind(ClassLoaderManager.class).to(DefaultClassLoaderManager.class);
             b.bind(AdhocObjectFactory.class).to(DefaultAdhocObjectFactory.class);
             b.bind(ResourceLocator.class).to(ClassLoaderResourceLocator.class);
@@ -192,7 +192,7 @@ public class DefaultDbAdapterFactoryTest {
             binder.bind(PkGenerator.class).to(JdbcPkGenerator.class);
             binder.bind(PkGeneratorFactoryProvider.class).to(PkGeneratorFactoryProvider.class);
             binder.bind(ClassLoaderManager.class).to(DefaultClassLoaderManager.class);
-            binder.bind(JdbcEventLogger.class).to(Slf4jJdbcEventLogger.class);
+            binder.bind(SqlLogger.class).to(Slf4jSqlLogger.class);
             binder.bind(AdhocObjectFactory.class).to(DefaultAdhocObjectFactory.class);
             binder.bind(RuntimeProperties.class).to(DefaultRuntimeProperties.class);
             binder.bind(Key.get(BatchTranslator.class, BatchTranslator.INSERT)).toInstance(mock(BatchTranslator.class));

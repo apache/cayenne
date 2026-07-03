@@ -49,7 +49,7 @@ class DB2ProcedureAction extends ProcedureAction {
 		TranslatedProcedure translated = dataNode.getProcedureTranslator()
 				.translate(query, dataNode.getAdapter(), dataNode.getEntityResolver());
 
-		dataNode.getJdbcEventLogger().logQuery(translated.sql(), translated.params());
+		observer.nextStatement(query, translated);
 
 		try (CallableStatement statement = connection.prepareCall(translated.sql());) {
 			initStatement(statement);
@@ -72,7 +72,6 @@ class DB2ProcedureAction extends ProcedureAction {
 					if (updateCount == -1) {
 						break;
 					}
-					dataNode.getJdbcEventLogger().logUpdateCount(updateCount);
 					observer.nextCount(query, updateCount);
 				}
 				hasResultSet = statement.getMoreResults();

@@ -28,7 +28,7 @@ import org.apache.cayenne.dba.PkGenerator;
 import org.apache.cayenne.di.AdhocObjectFactory;
 import org.apache.cayenne.di.Inject;
 import org.apache.cayenne.di.Injector;
-import org.apache.cayenne.log.JdbcEventLogger;
+import org.apache.cayenne.log.SqlLogger;
 
 import javax.sql.DataSource;
 import java.sql.Connection;
@@ -49,7 +49,7 @@ public class DefaultDbAdapterFactory implements DbAdapterFactory {
 	protected Injector injector;
 
 	@Inject
-	protected JdbcEventLogger jdbcEventLogger;
+	protected SqlLogger jdbcEventLogger;
 
 	@Inject
 	protected AdhocObjectFactory objectFactory;
@@ -112,7 +112,7 @@ public class DefaultDbAdapterFactory implements DbAdapterFactory {
 			DbAdapter adapter = detector.createAdapter(metaData);
 
 			if (adapter != null) {
-				jdbcEventLogger.log("Detected and installed adapter: " + adapter.getClass().getName());
+				jdbcEventLogger.logMessage("Detected and installed adapter: " + adapter.getClass().getName());
 
 				// TODO: should detector do this??
 				injector.injectMembers(adapter);
@@ -125,7 +125,7 @@ public class DefaultDbAdapterFactory implements DbAdapterFactory {
 	}
 
 	protected DbAdapter defaultAdapter() {
-		jdbcEventLogger.log("Failed to detect database type, using generic adapter");
+		jdbcEventLogger.logMessage("Failed to detect database type, using generic adapter");
 		return objectFactory.newInstance(DbAdapter.class, JdbcAdapter.class.getName());
 	}
 

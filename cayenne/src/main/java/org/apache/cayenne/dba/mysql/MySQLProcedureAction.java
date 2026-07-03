@@ -48,7 +48,7 @@ class MySQLProcedureAction extends ProcedureAction {
 		TranslatedProcedure translated = dataNode.getProcedureTranslator()
 				.translate(query, dataNode.getAdapter(), dataNode.getEntityResolver());
 
-		dataNode.getJdbcEventLogger().logQuery(translated.sql(), translated.params());
+		observer.nextStatement(query, translated);
 
 		try (CallableStatement statement = connection.prepareCall(translated.sql());) {
 			bindParameters(statement, translated);
@@ -101,7 +101,6 @@ class MySQLProcedureAction extends ProcedureAction {
 		if (updateCount == -1) {
 			return false;
 		}
-		dataNode.getJdbcEventLogger().logUpdateCount(updateCount);
 		observer.nextCount(query, updateCount);
 
 		return true;

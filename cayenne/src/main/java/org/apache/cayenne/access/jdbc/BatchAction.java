@@ -30,7 +30,6 @@ import org.apache.cayenne.access.types.ExtendedType;
 import org.apache.cayenne.access.types.ExtendedTypeMap;
 import org.apache.cayenne.access.translator.TranslatedBatch;
 import org.apache.cayenne.dba.DbAdapter;
-import org.apache.cayenne.log.JdbcEventLogger;
 import org.apache.cayenne.map.DbAttribute;
 import org.apache.cayenne.map.ObjAttribute;
 import org.apache.cayenne.map.ObjEntity;
@@ -86,6 +85,8 @@ public class BatchAction extends BaseSQLAction {
 			case null, default -> throw new CayenneRuntimeException("Unsupported batch query: %s", query);
 		};
 
+		observer.nextStatement(query, translated);
+
 		boolean isBatch = canRunAsBatch();
 		boolean generatesKeys = hasGeneratedKeys() && supportsGeneratedKeys(isBatch);
 
@@ -114,21 +115,12 @@ public class BatchAction extends BaseSQLAction {
 			throws Exception {
 
 		String sql = translated.sql();
-		JdbcEventLogger logger = dataNode.getJdbcEventLogger();
-		boolean isLoggable = logger.isLoggable();
-
-		// log batch SQL execution
-		logger.log(sql);
-
-		// run batch
-
 		DbAdapter adapter = dataNode.getAdapter();
 
 		try (PreparedStatement statement = prepareStatement(con, sql, adapter, generatesKeys)) {
 			for (int row = 0; row < query.getRows().size(); row++) {
 
 				PSParameter<?>[] bindings = rowBindings(translated, row, adapter.getExtendedTypes());
-				logger.logQueryParameters("batch bind", bindings);
 				for (PSParameter<?> b : bindings) {
 					adapter.bindParameter(statement, b);
 				}
@@ -143,23 +135,6 @@ public class BatchAction extends BaseSQLAction {
 			if (generatesKeys) {
 				processGeneratedKeys(statement, delegate, query.getRows());
 			}
-			
-			if (isLoggable) {
-				int totalUpdateCount = 0;
-				for (int result : results) {
-
-					// this means Statement.SUCCESS_NO_INFO or
-					// Statement.EXECUTE_FAILED
-					if (result < 0) {
-						totalUpdateCount = Statement.SUCCESS_NO_INFO;
-						break;
-					}
-
-					totalUpdateCount += result;
-				}
-
-				logger.logUpdateCount(totalUpdateCount);
-			}
 		}
 	}
 
@@ -173,16 +148,9 @@ public class BatchAction extends BaseSQLAction {
 			return;
 		}
 
-		JdbcEventLogger logger = dataNode.getJdbcEventLogger();
 		boolean useOptimisticLock = query.isUsingOptimisticLocking();
 
 		String queryStr = translated.sql();
-
-		// log batch SQL execution
-		logger.log(queryStr);
-
-		// run batch queries one by one
-
 		DbAdapter adapter = dataNode.getAdapter();
 
 		try (PreparedStatement statement = prepareStatement(connection, queryStr, adapter, generatesKeys)) {
@@ -191,8 +159,6 @@ public class BatchAction extends BaseSQLAction {
 				BatchQueryRow row = rows.get(i);
 
 				PSParameter<?>[] bindings = rowBindings(translated, i, adapter.getExtendedTypes());
-				logger.logQueryParameters("bind", bindings);
-
 				for (PSParameter<?> b : bindings) {
 					adapter.bindParameter(statement, b);
 				}
@@ -208,8 +174,6 @@ public class BatchAction extends BaseSQLAction {
 				if (generatesKeys) {
 					processGeneratedKeys(statement, delegate, row);
 				}
-
-				logger.logUpdateCount(updated);
 			}
 		}
 	}

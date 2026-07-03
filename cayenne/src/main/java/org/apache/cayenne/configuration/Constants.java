@@ -237,14 +237,22 @@ public interface Constants {
     String CI_PROPERTY = "cayenne.runtime.db.collation.assume.ci";
 
     /**
-     * A integer property that enables logging for just long running queries
-     * (rather than all queries). The value is the minimum number of
-     * milliseconds a query must run before is logged. A value less than or
-     * equal to zero (the default) disables this feature.
+     * A integer property that used to enable logging for just long running queries (rather than all queries).
      *
      * @since 4.0
+     * @deprecated since 5.0 this property is ignored. The slow-query threshold warning was removed as part of the
+     * compact SQL logger redesign (CAY-2912).
      */
+    @Deprecated(since = "5.0")
     String QUERY_EXECUTION_TIME_LOGGING_THRESHOLD_PROPERTY = "cayenne.query_execution_time_logging_threshold";
+
+    /**
+     * An integer property defining the maximum number of batch rows whose bindings are logged in full before the
+     * compact SQL logger truncates them to "first row .. elided count .. last row". Default is 20.
+     *
+     * @since 5.0
+     */
+    String JDBC_LOG_BATCH_ROW_THRESHOLD_PROPERTY = "cayenne.jdbc.log.batch.threshold";
 
     /**
      * Snapshot cache max size

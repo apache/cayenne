@@ -21,7 +21,7 @@ package org.apache.cayenne.query;
 import org.apache.cayenne.DataRow;
 import org.apache.cayenne.ProcedureResult;
 import org.apache.cayenne.dba.TypesMapping;
-import org.apache.cayenne.log.NoopJdbcEventLogger;
+import org.apache.cayenne.log.NoopSqlLogger;
 import org.apache.cayenne.testdo.testmap.Artist;
 import org.apache.cayenne.testdo.testmap.Painting;
 import org.apache.cayenne.tx.BaseTransaction;
@@ -276,7 +276,7 @@ public class ProcedureCallIT {
         // e.g.
         // http://stackoverflow.com/questions/16921942/porting-apache-cayenne-from-oracle-to-postgresql
 
-        BaseTransaction t = new ExternalTransaction(NoopJdbcEventLogger.getInstance());
+        BaseTransaction t = new ExternalTransaction(NoopSqlLogger.getInstance());
         BaseTransaction.bindThreadTransaction(t);
 
         try {

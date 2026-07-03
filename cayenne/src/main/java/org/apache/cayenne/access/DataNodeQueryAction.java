@@ -21,6 +21,7 @@ package org.apache.cayenne.access;
 
 import org.apache.cayenne.ObjectId;
 import org.apache.cayenne.ResultIterator;
+import org.apache.cayenne.access.translator.TranslatedStatement;
 import org.apache.cayenne.query.Query;
 import org.apache.cayenne.query.SQLAction;
 
@@ -49,6 +50,11 @@ class DataNodeQueryAction {
         // wrap to ensure that the result is mapped back to the original query, even if
         // the underlying SQLAction uses query substitute...
         OperationObserver wrapper = new OperationObserver() {
+
+            @Override
+            public void nextStatement(Query query, TranslatedStatement statement) {
+                observer.nextStatement(originalQuery, statement);
+            }
 
             @Override
             public void nextBatchCount(Query query, int[] resultCount) {

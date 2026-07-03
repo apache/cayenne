@@ -48,8 +48,8 @@ import org.apache.cayenne.event.EventBridge;
 import org.apache.cayenne.event.EventManager;
 import org.apache.cayenne.event.MockEventManager;
 import org.apache.cayenne.event.NoopEventBridgeProvider;
-import org.apache.cayenne.log.JdbcEventLogger;
-import org.apache.cayenne.log.Slf4jJdbcEventLogger;
+import org.apache.cayenne.log.SqlLogger;
+import org.apache.cayenne.log.Slf4jSqlLogger;
 import org.apache.cayenne.map.EntitySorter;
 import org.apache.cayenne.tx.DefaultTransactionFactory;
 import org.apache.cayenne.tx.DefaultTransactionManager;
@@ -72,7 +72,7 @@ public class DataContextFactoryTest {
         domain.setSharedCacheEnabled(false);
 
         Module testModule = binder -> {
-            binder.bind(JdbcEventLogger.class).to(Slf4jJdbcEventLogger.class);
+            binder.bind(SqlLogger.class).to(Slf4jSqlLogger.class);
             binder.bind(DataDomain.class).toInstance(domain);
             binder.bind(EventManager.class).toInstance(eventManager);
             binder.bind(QueryCache.class).toInstance(new MapQueryCache(5));
@@ -115,7 +115,7 @@ public class DataContextFactoryTest {
         domain.setValidatingObjectsOnCommit(true);
 
         Module testModule = binder -> {
-            binder.bind(JdbcEventLogger.class).to(Slf4jJdbcEventLogger.class);
+            binder.bind(SqlLogger.class).to(Slf4jSqlLogger.class);
             binder.bind(DataDomain.class).toInstance(domain);
             binder.bind(EventManager.class).toInstance(eventManager);
             binder.bind(QueryCache.class).toInstance(new MapQueryCache(5));

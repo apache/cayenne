@@ -20,7 +20,7 @@
 package org.apache.cayenne.dba;
 
 import org.apache.cayenne.access.jdbc.SQLTemplateAction;
-import org.apache.cayenne.log.NoopJdbcEventLogger;
+import org.apache.cayenne.log.NoopSqlLogger;
 import org.apache.cayenne.map.DbEntity;
 import org.apache.cayenne.query.ObjectSelect;
 import org.apache.cayenne.query.SQLTemplate;
@@ -39,7 +39,7 @@ public class AutoAdapterIT {
 
     @Test
     public void getAdapter_Proxy() {
-        AutoAdapter adapter = new AutoAdapter(() -> env.dataNode().getAdapter(), NoopJdbcEventLogger.getInstance());
+        AutoAdapter adapter = new AutoAdapter(() -> env.dataNode().getAdapter(), NoopSqlLogger.getInstance());
         DbAdapter detected = adapter.getAdapter();
         assertSame(env.dataNode().getAdapter(), detected);
     }
@@ -62,7 +62,7 @@ public class AutoAdapterIT {
     @Test
     public void correctProxyMethods() {
         DbAdapter adapter = env.dataNode().getAdapter();
-        AutoAdapter autoAdapter = new AutoAdapter(() -> adapter, NoopJdbcEventLogger.getInstance());
+        AutoAdapter autoAdapter = new AutoAdapter(() -> adapter, NoopSqlLogger.getInstance());
 
         ObjectSelect<Artist> select = ObjectSelect.query(Artist.class);
 

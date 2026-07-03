@@ -25,7 +25,6 @@ import org.apache.cayenne.access.OperationObserver;
 import org.apache.cayenne.access.jdbc.reader.RowReader;
 import org.apache.cayenne.access.translator.TranslatedSelect;
 import org.apache.cayenne.dba.DbAdapter;
-import org.apache.cayenne.log.JdbcEventLogger;
 import org.apache.cayenne.query.PrefetchProcessor;
 import org.apache.cayenne.query.PrefetchTreeNode;
 import org.apache.cayenne.query.QueryMetadata;
@@ -63,11 +62,7 @@ public class SelectAction extends BaseSQLAction {
 
     protected void performAction(Connection connection, OperationObserver observer, TranslatedSelect translated) throws Exception {
 
-        long t1 = System.currentTimeMillis();
-
-        JdbcEventLogger logger = dataNode.getJdbcEventLogger();
-
-        logger.logQuery(translated.sql(), translated.bindings());
+        observer.nextStatement(query, translated);
 
         DbAdapter adapter = dataNode.getAdapter();
         PreparedStatement statement = connection.prepareStatement(translated.sql());
@@ -100,7 +95,7 @@ public class SelectAction extends BaseSQLAction {
         RowReader<?> rowReader = dataNode.getRowReaderFactory().rowReader(translated.resultColumns(), queryMetadata, dataNode.getAdapter());
 
         ResultIterator<?> it = new RSIterator<>(statement, rs, rowReader);
-        it = forIteratedResult(it, observer, connection, t1, translated.sql());
+        it = forIteratedResult(it, observer, connection);
         it = forSuppressedDistinct(it, translated);
         it = forFetchLimit(it, translated);
 
@@ -123,25 +118,17 @@ public class SelectAction extends BaseSQLAction {
                 it.close();
             }
 
-            dataNode.getJdbcEventLogger().logSelectCount(resultRows.size(), System.currentTimeMillis() - t1, translated.sql());
-
             observer.nextRows(query, resultRows);
         }
     }
 
     private <T> ResultIterator<T> forIteratedResult(ResultIterator<T> iterator, OperationObserver observer,
-                                                    Connection connection, final long queryStartedAt, final String sql) {
+                                                    Connection connection) {
         if (!observer.isIteratedResult()) {
             return iterator;
         }
 
-        return new ConnectionAwareResultIterator<>(iterator, connection) {
-            @Override
-            protected void doClose() {
-                dataNode.getJdbcEventLogger().logSelectCount(rowCounter, System.currentTimeMillis() - queryStartedAt, sql);
-                super.doClose();
-            }
-        };
+        return new ConnectionAwareResultIterator<>(iterator, connection);
     }
 
     private <T> ResultIterator<T> forFetchLimit(ResultIterator<T> iterator, TranslatedSelect translated) {

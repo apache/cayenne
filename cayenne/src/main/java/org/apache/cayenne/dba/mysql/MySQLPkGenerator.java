@@ -19,21 +19,21 @@
 
 package org.apache.cayenne.dba.mysql;
 
-import java.sql.Connection;
-import java.sql.ResultSet;
-import java.sql.SQLException;
-import java.sql.Statement;
-import java.util.Collections;
-
 import org.apache.cayenne.CayenneRuntimeException;
 import org.apache.cayenne.access.DataNode;
 import org.apache.cayenne.dba.JdbcAdapter;
 import org.apache.cayenne.dba.JdbcPkGenerator;
+import org.apache.cayenne.log.SqlLogger;
 import org.apache.cayenne.map.DbEntity;
 import org.apache.cayenne.tx.BaseTransaction;
 import org.apache.cayenne.tx.Transaction;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+
+import java.sql.Connection;
+import java.sql.ResultSet;
+import java.sql.SQLException;
+import java.sql.Statement;
 
 public class MySQLPkGenerator extends JdbcPkGenerator {
 
@@ -85,7 +85,7 @@ public class MySQLPkGenerator extends JdbcPkGenerator {
 
             try (Statement st = con.createStatement()) {
                 try {
-                    pk = getLongPrimaryKey(st, entity.getName());
+                    pk = getLongPrimaryKey(node.getSqlLogger(), st, entity.getName());
                     con.commit();
                 } catch (SQLException pkEx) {
                     try {
@@ -99,7 +99,7 @@ public class MySQLPkGenerator extends JdbcPkGenerator {
                     // THIS MUST BE EXECUTED NO MATTER WHAT, OR WE WILL LOCK THE PRIMARY KEY TABLE!!
                     try {
                         String unlockString = "UNLOCK TABLES";
-                        adapter.getJdbcEventLogger().log(unlockString);
+                        node.getSqlLogger().logMessage(unlockString);
                         st.execute(unlockString);
                     } catch (SQLException unlockEx) {
                         exception = processSQLException(unlockEx, exception);
@@ -149,15 +149,15 @@ public class MySQLPkGenerator extends JdbcPkGenerator {
     /**
      * @since 3.0
      */
-    protected long getLongPrimaryKey(Statement statement, String entityName) throws SQLException {
+    protected long getLongPrimaryKey(SqlLogger logger, Statement statement, String entityName) throws SQLException {
         // lock
         String lockString = "LOCK TABLES AUTO_PK_SUPPORT WRITE";
-        adapter.getJdbcEventLogger().log(lockString);
+        logger.logMessage(lockString);
         statement.execute(lockString);
 
         // select
         String selectString = pkSelectString(entityName);
-        adapter.getJdbcEventLogger().log(selectString);
+        logger.logMessage(selectString);
         long pk;
         try (ResultSet rs = statement.executeQuery(selectString)) {
             if (!rs.next()) {
@@ -172,7 +172,7 @@ public class MySQLPkGenerator extends JdbcPkGenerator {
 
         // update
         String updateString = pkUpdateString(entityName) + " AND NEXT_ID = " + pk;
-        adapter.getJdbcEventLogger().log(updateString);
+        logger.logMessage(updateString);
         int updated = statement.executeUpdate(updateString);
         // optimistic lock failure...
         if (updated != 1) {

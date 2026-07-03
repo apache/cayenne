@@ -38,7 +38,7 @@ import org.apache.cayenne.access.flush.operation.OpIdFactory;
 import org.apache.cayenne.access.flush.operation.UpdateDbRowOp;
 import org.apache.cayenne.graph.CompoundDiff;
 import org.apache.cayenne.graph.GraphDiff;
-import org.apache.cayenne.log.JdbcEventLogger;
+import org.apache.cayenne.log.SqlLogger;
 import org.apache.cayenne.map.EntityResolver;
 import org.apache.cayenne.query.Query;
 
@@ -61,12 +61,12 @@ public class DefaultDataDomainFlushAction implements DataDomainFlushAction {
 
     protected final DataDomain dataDomain;
     protected final DbRowOpSorter dbRowOpSorter;
-    protected final JdbcEventLogger jdbcEventLogger;
+    protected final SqlLogger jdbcEventLogger;
     protected final OperationObserver observer;
     protected final DeleteDbRowOpFactory deleteDbRowOpFactory;
 
     protected DefaultDataDomainFlushAction(DataDomain dataDomain, DbRowOpSorter dbRowOpSorter,
-                                           JdbcEventLogger jdbcEventLogger, DeleteDbRowOpFactory deleteDbRowOpFactory) {
+                                           SqlLogger jdbcEventLogger, DeleteDbRowOpFactory deleteDbRowOpFactory) {
         this.dataDomain = dataDomain;
         this.dbRowOpSorter = dbRowOpSorter;
         this.jdbcEventLogger = jdbcEventLogger;

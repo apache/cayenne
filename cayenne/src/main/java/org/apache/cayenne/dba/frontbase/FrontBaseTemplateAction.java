@@ -95,7 +95,6 @@ public class FrontBaseTemplateAction extends SQLTemplateAction {
                     }
 
                     updateCounts.add(updateCount);
-                    dataNode.getJdbcEventLogger().logUpdateCount(updateCount);
                 }
             }
         } finally {

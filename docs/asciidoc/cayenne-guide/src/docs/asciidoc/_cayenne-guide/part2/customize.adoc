@@ -433,9 +433,18 @@ As shown in the example above, ExtendedTypes are stored by DbAdapter. In fact Db
 
 ==== Noteworthy Built-in Services
 
-===== JdbcEventLogger
+===== SqlLogger
 
-`org.apache.cayenne.log.JdbcEventLogger` is the service that defines logging API for Cayenne internals. It provides facilities for logging queries, commits, transactions, etc. The default implementation is `org.apache.cayenne.log.Slf4jJdbcEventLogger` that performs logging via slf4j-api library. Cayenne library includes another potentially useful logger - `org.apache.cayenne.log.FormattedSlf4jJdbcEventLogger` that produces formatted multiline SQL output that can be easier to read.
+`org.apache.cayenne.log.SqlLogger` is the service that defines the SQL logging API for Cayenne internals. It logs each executed statement as a single compact line combining the SQL, its bindings and the result count, e.g.:
+
+----
+SELECT t0.id FROM my_table t0 WHERE t0.user_id = ? [bind:[user_id:15]] [selected:1]
+INSERT INTO table1(id, name) VALUES(?, ?) [bind:[id:3,name:'n3']..3..[id:2,name:'n2']] [updated:5]
+----
+
+A statement that produces more than one result (such as a stored procedure) reports the extra results on `also ...` continuation lines. The default implementation is `org.apache.cayenne.log.Slf4jSqlLogger`, which logs via the slf4j-api library under the fixed logger name `cayenne-sql`. Statement lines are logged at `INFO`; transaction boundaries (`tx started`, `tx committed`, `tx rolled back`) at `DEBUG`. To silence SQL logging entirely, set the `cayenne-sql` logger level above `INFO`.
+
+Batch bindings are truncated to the first row, an elided-row count, and the last row once the batch exceeds `cayenne.jdbc.log.batch.threshold` rows (default 3).
 
 ===== DataSourceFactory
 

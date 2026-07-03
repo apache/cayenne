@@ -29,7 +29,7 @@ import org.apache.cayenne.access.translator.ProcedureTranslator;
 import org.apache.cayenne.access.translator.SelectTranslator;
 import org.apache.cayenne.access.types.ExtendedTypeMap;
 import org.apache.cayenne.di.Provider;
-import org.apache.cayenne.log.JdbcEventLogger;
+import org.apache.cayenne.log.SqlLogger;
 import org.apache.cayenne.map.DbAttribute;
 import org.apache.cayenne.map.DbEntity;
 import org.apache.cayenne.map.DbRelationship;
@@ -55,7 +55,7 @@ public class AutoAdapter implements DbAdapter {
 
 	protected Provider<DbAdapter> adapterProvider;
 	protected PkGenerator pkGenerator;
-	protected JdbcEventLogger logger;
+	protected SqlLogger logger;
 
 	/**
 	 * The actual adapter that is delegated methods execution.
@@ -68,7 +68,7 @@ public class AutoAdapter implements DbAdapter {
 	 *
 	 * @since 3.1
 	 */
-	public AutoAdapter(Provider<DbAdapter> adapterProvider, JdbcEventLogger logger) {
+	public AutoAdapter(Provider<DbAdapter> adapterProvider, SqlLogger logger) {
 
 		if (adapterProvider == null) {
 			throw new CayenneRuntimeException("Null adapterProvider");

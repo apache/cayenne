@@ -32,8 +32,8 @@ import org.apache.cayenne.di.Key;
 import org.apache.cayenne.di.Module;
 import org.apache.cayenne.di.spi.DefaultAdhocObjectFactory;
 import org.apache.cayenne.di.spi.DefaultClassLoaderManager;
-import org.apache.cayenne.log.Slf4jJdbcEventLogger;
-import org.apache.cayenne.log.JdbcEventLogger;
+import org.apache.cayenne.log.Slf4jSqlLogger;
+import org.apache.cayenne.log.SqlLogger;
 import org.apache.cayenne.resource.ResourceLocator;
 import org.apache.cayenne.resource.mock.MockResourceLocator;
 import org.junit.jupiter.api.BeforeEach;
@@ -58,7 +58,7 @@ public class DefaultDataSourceFactoryLoaderTest {
             binder.bind(ResourceLocator.class).to(MockResourceLocator.class);
             binder.bind(Key.get(ResourceLocator.class, Constants.RESOURCE_LOCATOR)).to(MockResourceLocator.class);
             binder.bind(RuntimeProperties.class).toInstance(mock(RuntimeProperties.class));
-            binder.bind(JdbcEventLogger.class).to(Slf4jJdbcEventLogger.class);
+            binder.bind(SqlLogger.class).to(Slf4jSqlLogger.class);
         };
 
         this.injector = DIBootstrap.createInjector(testModule);
@@ -117,7 +117,7 @@ public class DefaultDataSourceFactoryLoaderTest {
             binder.bind(ResourceLocator.class).to(MockResourceLocator.class);
             binder.bind(Key.get(ResourceLocator.class, Constants.RESOURCE_LOCATOR)).to(MockResourceLocator.class);
             binder.bind(RuntimeProperties.class).toInstance(properties);
-            binder.bind(JdbcEventLogger.class).to(Slf4jJdbcEventLogger.class);
+            binder.bind(SqlLogger.class).to(Slf4jSqlLogger.class);
         };
 
         Injector injector = DIBootstrap.createInjector(testModule);
@@ -162,7 +162,7 @@ public class DefaultDataSourceFactoryLoaderTest {
             binder.bind(ResourceLocator.class).to(MockResourceLocator.class);
             binder.bind(Key.get(ResourceLocator.class, Constants.RESOURCE_LOCATOR)).to(MockResourceLocator.class);
             binder.bind(RuntimeProperties.class).toInstance(properties);
-            binder.bind(JdbcEventLogger.class).to(Slf4jJdbcEventLogger.class);
+            binder.bind(SqlLogger.class).to(Slf4jSqlLogger.class);
         };
 
         Injector injector = DIBootstrap.createInjector(testModule);

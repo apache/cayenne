@@ -19,7 +19,7 @@
 
 package org.apache.cayenne.tx;
 
-import org.apache.cayenne.log.JdbcEventLogger;
+import org.apache.cayenne.log.SqlLogger;
 
 /**
  * Represents a container-managed transaction.
@@ -28,28 +28,28 @@ import org.apache.cayenne.log.JdbcEventLogger;
  */
 public class ExternalTransaction extends BaseTransaction {
 
-    protected JdbcEventLogger logger;
+    protected SqlLogger logger;
 
-    public ExternalTransaction(JdbcEventLogger jdbcEventLogger) {
+    public ExternalTransaction(SqlLogger jdbcEventLogger) {
         this(jdbcEventLogger, TransactionDescriptor.defaultDescriptor());
     }
 
     /**
      * @since 4.1
      */
-    public ExternalTransaction(JdbcEventLogger jdbcEventLogger, TransactionDescriptor descriptor) {
+    public ExternalTransaction(SqlLogger jdbcEventLogger, TransactionDescriptor descriptor) {
         super(descriptor);
         this.logger = jdbcEventLogger;
     }
 
     @Override
     protected void processCommit() {
-        logger.logCommitTransaction("no commit - transaction controlled externally.");
+        logger.logTransactionCommit();
     }
 
     @Override
     protected void processRollback() {
-        logger.logRollbackTransaction("no rollback - transaction controlled externally.");
+        logger.logTransactionRollback();
     }
 
     @Override

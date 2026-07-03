@@ -178,7 +178,7 @@ public class JdbcPkGenerator implements PkGenerator {
      * number of objects returned from update.
      */
     public int runUpdate(DataNode node, String sql) {
-        adapter.getJdbcEventLogger().log(sql);
+        node.getSqlLogger().logMessage(sql);
 
         try (Connection con = node.getDataSource().getConnection()) {
             try (Statement upd = con.createStatement()) {
