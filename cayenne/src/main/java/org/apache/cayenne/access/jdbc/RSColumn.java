@@ -212,10 +212,9 @@ public record RSColumn(
                     } else {
                         String columnRowKey = columnArray[i].dataRowName();
 
-                        // TODO: andrus, 10/14/2009 - 'equalsIgnoreCase' check can result in
-                        // subtle bugs in DBs with case-sensitive column names (or when quotes are
-                        // used to force case sensitivity). Alternatively using 'equals' may miss
-                        // columns in case-insensitive situations.
+                        // TODO: 'equalsIgnoreCase' check can result in subtle bugs in DBs with case-sensitive column
+                        //  names (or when quotes are used to force case sensitivity). Alternatively, 'equals' may miss
+                        //  columns in case-insensitive situations.
                         if (columnRowKey != null && columnRowKey.equalsIgnoreCase(rowKey)) {
                             return columnArray[i];
                         }
