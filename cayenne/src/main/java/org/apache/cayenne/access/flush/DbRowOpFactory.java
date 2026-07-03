@@ -19,12 +19,6 @@
 
 package org.apache.cayenne.access.flush;
 
-import java.util.Collection;
-import java.util.HashMap;
-import java.util.Map;
-import java.util.Objects;
-import java.util.Set;
-
 import org.apache.cayenne.CayenneRuntimeException;
 import org.apache.cayenne.ObjectId;
 import org.apache.cayenne.Persistent;
@@ -32,14 +26,18 @@ import org.apache.cayenne.access.ObjectDiff;
 import org.apache.cayenne.access.ObjectStore;
 import org.apache.cayenne.access.flush.operation.DbRowOp;
 import org.apache.cayenne.access.flush.operation.DbRowOpType;
-import org.apache.cayenne.access.flush.operation.DeleteDbRowOp;
+import org.apache.cayenne.access.flush.operation.DeleteDbRowOpFactory;
 import org.apache.cayenne.access.flush.operation.InsertDbRowOp;
 import org.apache.cayenne.access.flush.operation.UpdateDbRowOp;
-import org.apache.cayenne.exp.parser.ASTDbPath;
 import org.apache.cayenne.map.DbEntity;
 import org.apache.cayenne.map.EntityResolver;
-import org.apache.cayenne.map.ObjEntity;
 import org.apache.cayenne.reflect.ClassDescriptor;
+
+import java.util.Collection;
+import java.util.HashMap;
+import java.util.Map;
+import java.util.Objects;
+import java.util.Set;
 
 /**
  * Factory that produces a collection of {@link DbRowOp} from given {@link ObjectDiff}.
@@ -53,21 +51,27 @@ class DbRowOpFactory {
     private final Set<ArcTarget> processedArcs;
     private final Map<ObjectId, DbRowOp> dbRows;
     private final RootRowOpProcessor rootRowOpProcessor;
+    private final DeleteDbRowOpFactory deleteDbRowOpFactory;
 
     private ClassDescriptor descriptor;
     private Persistent object;
     private ObjectDiff diff;
 
-    DbRowOpFactory(EntityResolver resolver, ObjectStore store, Set<ArcTarget> processedArcs) {
+    DbRowOpFactory(EntityResolver resolver,
+                   ObjectStore store,
+                   Set<ArcTarget> processedArcs,
+                   DeleteDbRowOpFactory deleteDbRowOpFactory) {
+
         this.resolver = resolver;
         this.store = store;
         this.dbRows = new HashMap<>(4);
         this.processedArcs = processedArcs;
         this.rootRowOpProcessor = new RootRowOpProcessor(this);
+        this.deleteDbRowOpFactory = deleteDbRowOpFactory;
     }
 
     private void updateDiff(ObjectDiff diff) {
-        ObjectId id = (ObjectId)diff.getNodeId();
+        ObjectId id = (ObjectId) diff.getNodeId();
         this.diff = diff;
         this.descriptor = resolver.getClassDescriptor(id.getEntityName());
         this.object = (Persistent) store.getNode(id);
@@ -95,7 +99,7 @@ class DbRowOpFactory {
 
     private DbRowOp createRow(DbEntity entity, ObjectId id, DbRowOpType type) {
         // skip phantom nodes, this could be a created and immediately deleted relationship
-        if(store.getNode(id) == null && !id.getEntityName().startsWith("db:")) {
+        if (store.getNode(id) == null && !id.getEntityName().startsWith("db:")) {
             return null;
         }
         switch (type) {
@@ -104,7 +108,7 @@ class DbRowOpFactory {
             case UPDATE:
                 return new UpdateDbRowOp(object, entity, id);
             case DELETE:
-                return new DeleteDbRowOp(object, entity, id);
+                return deleteDbRowOpFactory.createOp(object, entity, id);
         }
         throw new CayenneRuntimeException("Unknown DbRowType '%s'", type);
     }
@@ -123,17 +127,6 @@ class DbRowOpFactory {
 
     ObjectDiff getDiff() {
         return diff;
-    }
-
-    DbEntity getDbEntity(ObjectId id) {
-        String entityName = id.getEntityName();
-        if(entityName.startsWith(ASTDbPath.DB_PREFIX)) {
-            entityName = entityName.substring(ASTDbPath.DB_PREFIX.length());
-            return resolver.getDbEntity(entityName);
-        } else {
-            ObjEntity objEntity = resolver.getObjEntity(entityName);
-            return objEntity.getDbEntity();
-        }
     }
 
     Set<ArcTarget> getProcessedArcs() {

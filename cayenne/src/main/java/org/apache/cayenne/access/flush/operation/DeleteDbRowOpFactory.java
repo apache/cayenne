@@ -17,32 +17,26 @@
  *  under the License.
  ****************************************************************/
 
-package org.apache.cayenne.access.flush;
+package org.apache.cayenne.access.flush.operation;
 
-import org.apache.cayenne.access.DataDomain;
-import org.apache.cayenne.access.flush.operation.DbRowOpSorter;
-import org.apache.cayenne.access.flush.operation.DeleteDbRowOpFactory;
-import org.apache.cayenne.di.Inject;
-import org.apache.cayenne.log.JdbcEventLogger;
+import org.apache.cayenne.ObjectId;
+import org.apache.cayenne.Persistent;
+import org.apache.cayenne.map.DbEntity;
 
 /**
- * Factory that produces {@link DefaultDataDomainFlushAction}.
+ * A factory of delete row ops used by the commit pipeline.
  *
- * @since 4.2
+ * @since 5.0
  */
-public class DefaultDataDomainFlushActionFactory implements DataDomainFlushActionFactory {
+public interface DeleteDbRowOpFactory {
 
-    @Inject
-    private DbRowOpSorter operationSorter;
-
-    @Inject
-    private JdbcEventLogger jdbcEventLogger;
-
-    @Inject
-    private DeleteDbRowOpFactory deleteDbRowOpFactory;
-
-    @Override
-    public DataDomainFlushAction createFlushAction(DataDomain dataDomain) {
-        return new DefaultDataDomainFlushAction(dataDomain, operationSorter, jdbcEventLogger, deleteDbRowOpFactory);
-    }
+    /**
+     * Creates a delete op for a given object and target table.
+     *
+     * @param object the object being deleted
+     * @param entity the target DbEntity (may be the root table or an additional / flattened table)
+     * @param id     the id of the row being deleted
+     * @return a delete op
+     */
+    DeleteDbRowOp createOp(Persistent object, DbEntity entity, ObjectId id);
 }

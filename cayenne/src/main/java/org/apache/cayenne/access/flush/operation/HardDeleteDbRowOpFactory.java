@@ -17,32 +17,22 @@
  *  under the License.
  ****************************************************************/
 
-package org.apache.cayenne.access.flush;
+package org.apache.cayenne.access.flush.operation;
 
-import org.apache.cayenne.access.DataDomain;
-import org.apache.cayenne.access.flush.operation.DbRowOpSorter;
-import org.apache.cayenne.access.flush.operation.DeleteDbRowOpFactory;
-import org.apache.cayenne.di.Inject;
-import org.apache.cayenne.log.JdbcEventLogger;
+import org.apache.cayenne.ObjectId;
+import org.apache.cayenne.Persistent;
+import org.apache.cayenne.map.DbEntity;
 
 /**
- * Factory that produces {@link DefaultDataDomainFlushAction}.
+ * Default implementation of {@link DeleteDbRowOpFactory} producing plain {@link DeleteDbRowOp} that translate to SQL
+ * DELETE.
  *
- * @since 4.2
+ * @since 5.0
  */
-public class DefaultDataDomainFlushActionFactory implements DataDomainFlushActionFactory {
-
-    @Inject
-    private DbRowOpSorter operationSorter;
-
-    @Inject
-    private JdbcEventLogger jdbcEventLogger;
-
-    @Inject
-    private DeleteDbRowOpFactory deleteDbRowOpFactory;
+public class HardDeleteDbRowOpFactory implements DeleteDbRowOpFactory {
 
     @Override
-    public DataDomainFlushAction createFlushAction(DataDomain dataDomain) {
-        return new DefaultDataDomainFlushAction(dataDomain, operationSorter, jdbcEventLogger, deleteDbRowOpFactory);
+    public DeleteDbRowOp createOp(Persistent object, DbEntity entity, ObjectId id) {
+        return new DeleteDbRowOp(object, entity, id);
     }
 }

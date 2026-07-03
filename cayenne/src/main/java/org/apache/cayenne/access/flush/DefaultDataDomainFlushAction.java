@@ -42,6 +42,7 @@ import org.apache.cayenne.access.flush.operation.DbRowOpSorter;
 import org.apache.cayenne.access.flush.operation.DbRowOp;
 import org.apache.cayenne.access.flush.operation.DbRowOpVisitor;
 import org.apache.cayenne.access.flush.operation.DeleteDbRowOp;
+import org.apache.cayenne.access.flush.operation.DeleteDbRowOpFactory;
 import org.apache.cayenne.access.flush.operation.InsertDbRowOp;
 import org.apache.cayenne.access.flush.operation.OpIdFactory;
 import org.apache.cayenne.access.flush.operation.UpdateDbRowOp;
@@ -62,12 +63,15 @@ public class DefaultDataDomainFlushAction implements DataDomainFlushAction {
     protected final DbRowOpSorter dbRowOpSorter;
     protected final JdbcEventLogger jdbcEventLogger;
     protected final OperationObserver observer;
+    protected final DeleteDbRowOpFactory deleteDbRowOpFactory;
 
-    protected DefaultDataDomainFlushAction(DataDomain dataDomain, DbRowOpSorter dbRowOpSorter, JdbcEventLogger jdbcEventLogger) {
+    protected DefaultDataDomainFlushAction(DataDomain dataDomain, DbRowOpSorter dbRowOpSorter,
+                                           JdbcEventLogger jdbcEventLogger, DeleteDbRowOpFactory deleteDbRowOpFactory) {
         this.dataDomain = dataDomain;
         this.dbRowOpSorter = dbRowOpSorter;
         this.jdbcEventLogger = jdbcEventLogger;
         this.observer = new FlushObserver(jdbcEventLogger);
+        this.deleteDbRowOpFactory = deleteDbRowOpFactory;
     }
 
     @Override
@@ -111,7 +115,7 @@ public class DefaultDataDomainFlushAction implements DataDomainFlushAction {
         List<DbRowOp> ops = new ArrayList<>(changesByObjectId.size());
         Set<ArcTarget> processedArcs = new HashSet<>();
 
-        DbRowOpFactory factory = new DbRowOpFactory(resolver, objectStore, processedArcs);
+        DbRowOpFactory factory = new DbRowOpFactory(resolver, objectStore, processedArcs, deleteDbRowOpFactory);
         // ops.addAll() method is slower in this case as it will allocate new array for all values
         //noinspection UseBulkOperation
         changesByObjectId.forEach((obj, diff) -> factory.createRows(diff).forEach(ops::add));

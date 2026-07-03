@@ -23,6 +23,8 @@ import org.apache.cayenne.access.flush.DataDomainFlushActionFactory;
 import org.apache.cayenne.access.flush.operation.DbRowOpSorter;
 import org.apache.cayenne.access.flush.DefaultDataDomainFlushActionFactory;
 import org.apache.cayenne.access.flush.operation.DefaultDbRowOpSorter;
+import org.apache.cayenne.access.flush.operation.HardDeleteDbRowOpFactory;
+import org.apache.cayenne.access.flush.operation.DeleteDbRowOpFactory;
 import org.apache.cayenne.configuration.DefaultRuntimeProperties;
 import org.apache.cayenne.configuration.RuntimeProperties;
 import org.apache.cayenne.configuration.runtime.CoreModule;
@@ -115,6 +117,7 @@ public class DefaultDataRowStoreFactoryIT {
             binder.bind(DataRowStoreFactory.class).to(DefaultDataRowStoreFactory.class);
             binder.bind(DataDomainFlushActionFactory.class).to(DefaultDataDomainFlushActionFactory.class);
             binder.bind(DbRowOpSorter.class).to(DefaultDbRowOpSorter.class);
+            binder.bind(DeleteDbRowOpFactory.class).to(HardDeleteDbRowOpFactory.class);
             binder.bind(AdhocObjectFactory.class).to(DefaultAdhocObjectFactory.class);
             binder.bind(ClassLoaderManager.class).to(DefaultClassLoaderManager.class);
             new TestExtender(binder).initAllExtensions();

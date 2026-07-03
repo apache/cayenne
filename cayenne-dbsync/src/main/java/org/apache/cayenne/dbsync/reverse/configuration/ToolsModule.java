@@ -23,6 +23,8 @@ import org.apache.cayenne.access.flush.DataDomainFlushActionFactory;
 import org.apache.cayenne.access.flush.DefaultDataDomainFlushActionFactory;
 import org.apache.cayenne.access.flush.operation.DbRowOpSorter;
 import org.apache.cayenne.access.flush.operation.DefaultDbRowOpSorter;
+import org.apache.cayenne.access.flush.operation.HardDeleteDbRowOpFactory;
+import org.apache.cayenne.access.flush.operation.DeleteDbRowOpFactory;
 import org.apache.cayenne.access.translator.batch.BatchTranslator;
 import org.apache.cayenne.access.translator.batch.DeleteBatchTranslator;
 import org.apache.cayenne.access.translator.batch.InsertBatchTranslator;
@@ -172,6 +174,7 @@ public class ToolsModule implements Module {
         binder.bind(XMLReader.class).toProviderInstance(new XMLReaderProvider(true)).withoutScope();
         binder.bind(DataDomainFlushActionFactory.class).to(DefaultDataDomainFlushActionFactory.class);
         binder.bind(DbRowOpSorter.class).to(DefaultDbRowOpSorter.class);
+        binder.bind(DeleteDbRowOpFactory.class).to(HardDeleteDbRowOpFactory.class);
     }
 
 }

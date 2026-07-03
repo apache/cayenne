@@ -140,6 +140,29 @@ public class SoftDeleteIT {
         assertEquals(0, ObjectSelect.query(HardDelete.class).selectCount(context));
     }
 
+    @Test
+    public void mixedSoftAndHardDeleteInOneCommit() throws Exception {
+        TableHelper tHardDelete = env.table("HARD_DELETE", "ID", "NAME");
+        DataContext context = env.context();
+
+        SoftDelete soft = context.newObject(SoftDelete.class);
+        soft.setName("soft");
+        HardDelete hard = context.newObject(HardDelete.class);
+        hard.setName("hard");
+        context.commitChanges();
+
+        context.deleteObjects(soft, hard);
+        context.commitChanges();
+
+        // the SoftDelete row survives, flagged as deleted, and is hidden by the qualifier
+        assertEquals(1, tSoftDelete.getRowCount());
+        assertTrue(toBoolean(tSoftDelete.selectAll().getFirst()[2]), "DELETED flag should be true");
+        assertEquals(0, ObjectSelect.query(SoftDelete.class).selectCount(context));
+
+        // the HardDelete row is physically gone
+        assertEquals(0, tHardDelete.getRowCount());
+    }
+
     private static boolean toBoolean(Object value) {
         if (value instanceof Boolean b) {
             return b;

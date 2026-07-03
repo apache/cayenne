@@ -21,8 +21,8 @@ package org.apache.cayenne.configuration.runtime;
 
 import org.apache.cayenne.DataChannelQueryFilter;
 import org.apache.cayenne.DataChannelSyncFilter;
-import org.apache.cayenne.access.translator.batch.BatchTranslator;
-import org.apache.cayenne.access.translator.batch.SoftDeleteBatchTranslator;
+import org.apache.cayenne.access.flush.operation.DeleteDbRowOpFactory;
+import org.apache.cayenne.access.flush.operation.ConditionalSoftDeleteDbRowOpFactory;
 import org.apache.cayenne.access.types.ExtendedType;
 import org.apache.cayenne.access.types.ExtendedTypeFactory;
 import org.apache.cayenne.access.types.ValueObjectType;
@@ -34,7 +34,6 @@ import org.apache.cayenne.configuration.Constants;
 import org.apache.cayenne.dba.DbAdapter;
 import org.apache.cayenne.dba.PkGenerator;
 import org.apache.cayenne.di.Binder;
-import org.apache.cayenne.di.Key;
 import org.apache.cayenne.di.ListBuilder;
 import org.apache.cayenne.di.MapBuilder;
 import org.apache.cayenne.graph.GraphChangeHandler;
@@ -118,12 +117,10 @@ public class CoreModuleExtender {
      * of the mapping, e.g. a DbEntity qualifier like {@code DELETED = false or DELETED = null}.
      *
      * @param columnName the name of the BOOLEAN column marking soft-deleted rows
-     * @see SoftDeleteBatchTranslator
      * @since 5.0
      */
     public CoreModuleExtender useSoftDeleteIfColumnPresent(String columnName) {
-        binder.bind(Key.get(BatchTranslator.class, BatchTranslator.DELETE))
-                .toInstance(new SoftDeleteBatchTranslator(columnName));
+        binder.bind(DeleteDbRowOpFactory.class).toInstance(new ConditionalSoftDeleteDbRowOpFactory(columnName));
         return this;
     }
 
