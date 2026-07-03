@@ -37,8 +37,6 @@ import java.util.Map;
  * An {@link OperationObserver} decorator that correlates each executed statement (reported via
  * {@link #nextStatement}) with its results (reported via the {@code next*} callbacks) and drives a {@link SqlLogger}
  * to emit compact, single-line log messages. All callbacks are delegated to the wrapped observer unchanged.
- *
- * @since 5.0
  */
 class LoggingObserver implements OperationObserver {
 
@@ -49,7 +47,9 @@ class LoggingObserver implements OperationObserver {
     private boolean headerEmitted;
     private boolean batchHasUpdate;
     private int batchUpdateSum;
-    private final List<Map<String, ?>> generatedKeys = new ArrayList<>();
+
+    // lazily allocated on the first nextGeneratedRows call, since most statements produce no generated keys
+    private List<Map<String, ?>> generatedKeys;
 
     LoggingObserver(OperationObserver delegate, SqlLogger logger) {
         this.delegate = delegate;
@@ -58,7 +58,7 @@ class LoggingObserver implements OperationObserver {
 
     private void flushPending() {
         if (!headerEmitted && batchHasUpdate && current != null) {
-            logger.logUpdate(current, batchUpdateSum, generatedKeys);
+            logger.logUpdate(current, batchUpdateSum, generatedKeys != null ? generatedKeys : List.of());
             headerEmitted = true;
         }
     }
@@ -76,7 +76,7 @@ class LoggingObserver implements OperationObserver {
         if (headerEmitted) {
             logger.logAlsoUpdate(rowCount);
         } else {
-            logger.logUpdate(current, rowCount, generatedKeys);
+            logger.logUpdate(current, rowCount, generatedKeys != null ? generatedKeys : List.of());
             headerEmitted = true;
         }
     }
@@ -106,7 +106,7 @@ class LoggingObserver implements OperationObserver {
         this.headerEmitted = false;
         this.batchHasUpdate = false;
         this.batchUpdateSum = 0;
-        this.generatedKeys.clear();
+        this.generatedKeys = null;
         delegate.nextStatement(query, statement);
     }
 
@@ -158,6 +158,9 @@ class LoggingObserver implements OperationObserver {
     public void nextGeneratedRows(Query query, List<DataRow> keys, List<ObjectId> idsToUpdate) {
         // buffer the keys and emit them as a trailing "generated:[...]" block on the statement's own update line,
         // rather than as separate lines that would print before the INSERT that produced them
+        if (generatedKeys == null) {
+            generatedKeys = new ArrayList<>();
+        }
         generatedKeys.addAll(keys);
         delegate.nextGeneratedRows(query, keys, idsToUpdate);
     }

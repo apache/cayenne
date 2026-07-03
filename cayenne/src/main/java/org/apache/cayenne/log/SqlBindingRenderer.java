@@ -109,13 +109,30 @@ class SqlBindingRenderer {
             return;
         }
 
+        // sanity-check the threshold: <= 0 disables truncation (including a misconfigured negative), while 1 or 2
+        // clamp to 2 - the smallest value that yields a head/tail split (one row on each side)
+        if (batchRowThreshold <= 0) {
+            batchRowThreshold = Integer.MAX_VALUE;
+        } else if (batchRowThreshold < 2) {
+            batchRowThreshold = 2;
+        }
+
         // rows are delimited by their own [...] brackets, so no extra list bracket is needed: a single-row batch
         // reads as [bind:[...]] and a multi-row batch as [bind:[...][...]] - never a doubled [[...]]
         buffer.append("[bind:");
-        if (rows > batchRowThreshold && rows > 2) {
-            appendBatchRow(buffer, bindings, 0);
-            buffer.append("..").append(rows - 2).append("..");
-            appendBatchRow(buffer, bindings, rows - 1);
+        if (rows > batchRowThreshold) {
+            // show up to batchRowThreshold rows split evenly between head and tail, eliding the middle. For an odd
+            // threshold the head gets the extra row, so head + tail == batchRowThreshold and the elided count is
+            // exactly rows - batchRowThreshold
+            int head = (batchRowThreshold + 1) / 2;
+            int tail = batchRowThreshold / 2;
+            for (int r = 0; r < head; r++) {
+                appendBatchRow(buffer, bindings, r);
+            }
+            buffer.append("..").append(rows - head - tail).append("..");
+            for (int r = rows - tail; r < rows; r++) {
+                appendBatchRow(buffer, bindings, r);
+            }
         } else {
             for (int r = 0; r < rows; r++) {
                 appendBatchRow(buffer, bindings, r);

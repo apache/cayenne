@@ -49,8 +49,24 @@ public class Slf4jSqlLoggerTest {
         logger = new Slf4jSqlLogger(props);
     }
 
+    private static Slf4jSqlLogger loggerWithThreshold(int threshold) {
+        RuntimeProperties props = mock(RuntimeProperties.class);
+        when(props.getInt(eq(Constants.JDBC_LOG_BATCH_ROW_THRESHOLD_PROPERTY), anyInt())).thenReturn(threshold);
+        return new Slf4jSqlLogger(props);
+    }
+
     private static PSParameter<?> ps(String name, Object value) {
         return new PSParameter<>(value, 1, Types.INTEGER, 0, null, new DbAttribute(name));
+    }
+
+    // a single-placeholder batch whose id values are 0..rows-1, so each logged row is identifiable by its value
+    private static TranslatedBatch idBatch(int rows) {
+        Object[] values = new Object[rows];
+        for (int i = 0; i < rows; i++) {
+            values[i] = i;
+        }
+        PSBatchParameter id = new PSBatchParameter(values, 1, Types.INTEGER, 0, new DbAttribute("id"));
+        return new TranslatedBatch("INSERT INTO t(id) VALUES(?)", new PSBatchParameter[]{id});
     }
 
     @Test
@@ -74,8 +90,8 @@ public class Slf4jSqlLoggerTest {
     }
 
     @Test
-    public void batchLineTruncatesToFirstAndLastRow() {
-        // 5 rows, 2 placeholders (id, name); with threshold 3 the middle 3 rows are elided
+    public void batchLineSplitsHeadAndTailAroundElision() {
+        // 5 rows, 2 placeholders (id, name); odd threshold 3 -> head 2, tail 1, middle 2 rows elided
         PSBatchParameter id = new PSBatchParameter(
                 new Object[]{3, 1, 5, 4, 2}, 1, Types.INTEGER, 0, new DbAttribute("id"));
         PSBatchParameter name = new PSBatchParameter(
@@ -84,7 +100,8 @@ public class Slf4jSqlLoggerTest {
         TranslatedBatch batch = new TranslatedBatch(
                 "INSERT INTO table1(id, name) VALUES(?, ?)", new PSBatchParameter[]{id, name});
 
-        assertEquals("INSERT INTO table1(id, name) VALUES(?, ?) [bind:[id:3,name:'n3']..3..[id:2,name:'n2']] [updated:5]",
+        assertEquals("INSERT INTO table1(id, name) VALUES(?, ?) "
+                        + "[bind:[id:3,name:'n3'][id:1,name:'n1']..2..[id:2,name:'n2']] [updated:5]",
                 logger.buildStatementLine(batch, "updated:", 5));
     }
 
@@ -112,5 +129,44 @@ public class Slf4jSqlLoggerTest {
 
         assertEquals("INSERT INTO table1(id) VALUES(?) [bind:[id:3][id:2]] [updated:2]",
                 logger.buildStatementLine(batch, "updated:", 2));
+    }
+
+    @Test
+    public void batchLineEvenThresholdSplitsEvenly() {
+        // even threshold 4 -> head 2, tail 2; 10 rows -> middle 6 elided
+        assertEquals("INSERT INTO t(id) VALUES(?) [bind:[id:0][id:1]..6..[id:8][id:9]] [updated:10]",
+                loggerWithThreshold(4).buildStatementLine(idBatch(10), "updated:", 10));
+    }
+
+    @Test
+    public void batchLineShowsAllRowsAtThreshold() {
+        // exactly threshold rows -> nothing elided
+        assertEquals("INSERT INTO t(id) VALUES(?) [bind:[id:0][id:1][id:2][id:3]] [updated:4]",
+                loggerWithThreshold(4).buildStatementLine(idBatch(4), "updated:", 4));
+    }
+
+    @Test
+    public void batchLineElidesExactlyOneAboveThreshold() {
+        // one row above threshold 4 -> head 2, tail 2, a single row elided
+        assertEquals("INSERT INTO t(id) VALUES(?) [bind:[id:0][id:1]..1..[id:3][id:4]] [updated:5]",
+                loggerWithThreshold(4).buildStatementLine(idBatch(5), "updated:", 5));
+    }
+
+    @Test
+    public void batchLineThresholdOfOneOrTwoClampsToTwo() {
+        // threshold 1 and 2 both clamp to 2 -> head 1, tail 1
+        assertEquals("INSERT INTO t(id) VALUES(?) [bind:[id:0]..3..[id:4]] [updated:5]",
+                loggerWithThreshold(1).buildStatementLine(idBatch(5), "updated:", 5));
+        assertEquals("INSERT INTO t(id) VALUES(?) [bind:[id:0]..3..[id:4]] [updated:5]",
+                loggerWithThreshold(2).buildStatementLine(idBatch(5), "updated:", 5));
+    }
+
+    @Test
+    public void batchLineNonPositiveThresholdDisablesTruncation() {
+        // threshold 0 or negative -> no truncation, every row logged
+        assertEquals("INSERT INTO t(id) VALUES(?) [bind:[id:0][id:1][id:2][id:3][id:4]] [updated:5]",
+                loggerWithThreshold(0).buildStatementLine(idBatch(5), "updated:", 5));
+        assertEquals("INSERT INTO t(id) VALUES(?) [bind:[id:0][id:1][id:2][id:3][id:4]] [updated:5]",
+                loggerWithThreshold(-1).buildStatementLine(idBatch(5), "updated:", 5));
     }
 }
