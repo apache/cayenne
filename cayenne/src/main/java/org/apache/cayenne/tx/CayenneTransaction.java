@@ -32,24 +32,24 @@ import java.sql.SQLException;
  */
 public class CayenneTransaction extends BaseTransaction {
 
-    protected SqlLogger logger;
+    protected SqlLogger sqlLogger;
 
-    public CayenneTransaction(SqlLogger logger) {
-        this(logger, TransactionDescriptor.defaultDescriptor());
+    public CayenneTransaction(SqlLogger sqlLogger) {
+        this(sqlLogger, TransactionDescriptor.defaultDescriptor());
     }
 
     /**
      * @since 4.1
      */
-    public CayenneTransaction(SqlLogger jdbcEventLogger, TransactionDescriptor descriptor) {
+    public CayenneTransaction(SqlLogger sqlLogger, TransactionDescriptor descriptor) {
         super(descriptor);
-        this.logger = jdbcEventLogger;
+        this.sqlLogger = sqlLogger;
     }
 
     @Override
     public void begin() {
         super.begin();
-        logger.logTransactionStart();
+        sqlLogger.logTransactionStart();
     }
 
     @Override
@@ -107,10 +107,10 @@ public class CayenneTransaction extends BaseTransaction {
         }
 
         if (deferredException != null) {
-            logger.logTransactionRollback();
+            sqlLogger.logTransactionRollback();
             throw new CayenneRuntimeException(deferredException);
         } else {
-            logger.logTransactionCommit();
+            sqlLogger.logTransactionCommit();
         }
     }
 
@@ -135,7 +135,7 @@ public class CayenneTransaction extends BaseTransaction {
             }
         }
 
-        logger.logTransactionRollback();
+        sqlLogger.logTransactionRollback();
         if (deferredException != null) {
             throw new CayenneRuntimeException(deferredException);
         }

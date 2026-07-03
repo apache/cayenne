@@ -64,7 +64,7 @@ public class DbGenerator {
 	// situations
 	protected DataDomain domain;
 
-	protected SqlLogger jdbcEventLogger;
+	protected SqlLogger sqlLogger;
 
 	// stores generated SQL statements
 	protected Map<String, Collection<String>> dropTables;
@@ -130,7 +130,7 @@ public class DbGenerator {
 		this.domain = domain;
 		this.map = map;
 		this.adapter = adapter;
-		this.jdbcEventLogger = logger;
+		this.sqlLogger = logger;
 
 		prepareDbEntities(excludedEntities);
 		resetToDefaults();
@@ -321,7 +321,7 @@ public class DbGenerator {
 	protected boolean safeExecute(Connection connection, String sql) {
 
 		try (Statement statement = connection.createStatement()) {
-			jdbcEventLogger.logMessage(sql);
+			sqlLogger.logMessage(sql);
 			statement.execute(sql);
 			return true;
 		} catch (SQLException ex) {

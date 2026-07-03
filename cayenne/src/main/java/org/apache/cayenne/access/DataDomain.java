@@ -37,7 +37,6 @@ import org.apache.cayenne.di.Inject;
 import org.apache.cayenne.event.EventManager;
 import org.apache.cayenne.graph.CompoundDiff;
 import org.apache.cayenne.graph.GraphDiff;
-import org.apache.cayenne.log.SqlLogger;
 import org.apache.cayenne.map.DataMap;
 import org.apache.cayenne.map.EntityResolver;
 import org.apache.cayenne.map.EntitySorter;
@@ -69,80 +68,33 @@ public class DataDomain implements DataChannel {
     public static final String VALIDATING_OBJECTS_ON_COMMIT_PROPERTY = "cayenne.DataDomain.validatingObjectsOnCommit";
     public static final boolean VALIDATING_OBJECTS_ON_COMMIT_DEFAULT = true;
 
-    /**
-     * @since 3.1
-     */
-    @Inject
-    protected SqlLogger jdbcEventLogger;
-
-    /**
-     * @since 4.0
-     */
     @Inject
     protected TransactionManager transactionManager;
-
-    /**
-     * @since 5.0
-     */
     @Inject
     protected TransactionFactory transactionFactory;
-
-    /**
-     * @since 4.0
-     */
-    protected DataRowStoreFactory dataRowStoreFactory;
-
-    /**
-     * @since 3.1
-     */
-    protected int maxIdQualifierSize;
-
-    /**
-     * @since 4.1
-     */
-    protected List<DataChannelQueryFilter> queryFilters;
-
-    /**
-     * @since 4.1
-     */
-    protected List<DataChannelSyncFilter> syncFilters;
-
-    /**
-     * @since 4.2
-     */
     @Inject
     protected DataDomainFlushActionFactory flushActionFactory;
-
-    /**
-     * @since 4.2
-     */
     @Inject
     protected AdhocObjectFactory objectFactory;
 
+    protected DataRowStoreFactory dataRowStoreFactory;
+    protected int maxIdQualifierSize;
+    protected List<DataChannelQueryFilter> queryFilters;
+    protected List<DataChannelSyncFilter> syncFilters;
     protected Map<String, DataNode> nodes;
     protected Map<String, DataNode> nodesByDataMapName;
     protected DataNode defaultNode;
-
     protected EntityResolver entityResolver;
     protected DataRowStore sharedSnapshotCache;
     protected String name;
     protected QueryCache queryCache;
+    protected EventManager eventManager;
+    protected EntitySorter entitySorter;
+    protected boolean stopped;
 
     // these are initialized from properties...
     protected boolean sharedCacheEnabled;
     protected boolean validatingObjectsOnCommit;
-
-    /**
-     * @since 1.2
-     */
-    protected EventManager eventManager;
-
-    /**
-     * @since 1.2
-     */
-    protected EntitySorter entitySorter;
-
-    protected boolean stopped;
 
     /**
      * Creates a DataDomain and assigns it a name.
@@ -598,13 +550,6 @@ public class DataDomain implements DataChannel {
      */
     public void setDataRowStoreFactory(DataRowStoreFactory dataRowStoreFactory) {
         this.dataRowStoreFactory = dataRowStoreFactory;
-    }
-
-    /**
-     * @since 3.1
-     */
-    SqlLogger getSqlLogger() {
-        return jdbcEventLogger;
     }
 
     void refreshEntitySorter() {

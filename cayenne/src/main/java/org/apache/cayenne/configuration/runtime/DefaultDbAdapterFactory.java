@@ -28,7 +28,8 @@ import org.apache.cayenne.dba.PkGenerator;
 import org.apache.cayenne.di.AdhocObjectFactory;
 import org.apache.cayenne.di.Inject;
 import org.apache.cayenne.di.Injector;
-import org.apache.cayenne.log.SqlLogger;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import javax.sql.DataSource;
 import java.sql.Connection;
@@ -45,102 +46,95 @@ import java.util.Objects;
  */
 public class DefaultDbAdapterFactory implements DbAdapterFactory {
 
-	@Inject
-	protected Injector injector;
+    private static final Logger LOGGER = LoggerFactory.getLogger(DefaultDbAdapterFactory.class);
 
-	@Inject
-	protected SqlLogger jdbcEventLogger;
+    @Inject
+    protected Injector injector;
 
-	@Inject
-	protected AdhocObjectFactory objectFactory;
+    @Inject
+    protected AdhocObjectFactory objectFactory;
 
-	@Inject
-	protected PkGeneratorFactoryProvider pkGeneratorProvider;
+    @Inject
+    protected PkGeneratorFactoryProvider pkGeneratorProvider;
 
-	protected List<DbAdapterDetector> detectors;
+    protected List<DbAdapterDetector> detectors;
 
-	public DefaultDbAdapterFactory(@Inject(Constants.ADAPTER_DETECTORS_LIST) List<DbAdapterDetector> detectors) {
-		if (detectors == null) {
-			throw new NullPointerException("Null detectors list");
-		}
-		this.detectors = detectors;
-	}
+    public DefaultDbAdapterFactory(@Inject(Constants.ADAPTER_DETECTORS_LIST) List<DbAdapterDetector> detectors) {
+        if (detectors == null) {
+            throw new NullPointerException("Null detectors list");
+        }
+        this.detectors = detectors;
+    }
 
-	@Override
-	public DbAdapter createAdapter(DataNodeDescriptor nodeDescriptor, DataSource dataSource) {
+    @Override
+    public DbAdapter createAdapter(DataNodeDescriptor nodeDescriptor, DataSource dataSource) {
 
-		String adapterType = null;
+        String adapterType = null;
 
-		if (nodeDescriptor != null) {
-			adapterType = nodeDescriptor.getAdapterType();
-		}
+        if (nodeDescriptor != null) {
+            adapterType = nodeDescriptor.getAdapterType();
+        }
 
-		// must not create AutoAdapter via objectFactory, so treat explicit
-		// AutoAdapter as null and let it fall through to the default. (explicit
-		// AutoAdapter is often passed from the cdbimport pligin).
-		if (adapterType != null && adapterType.equals(AutoAdapter.class.getName())) {
-			adapterType = null;
-		}
+        // must not create AutoAdapter via objectFactory, so treat explicit
+        // AutoAdapter as null and let it fall through to the default. (explicit
+        // AutoAdapter is often passed from the cdbimport pligin).
+        if (adapterType != null && adapterType.equals(AutoAdapter.class.getName())) {
+            adapterType = null;
+        }
 
-		if (adapterType != null) {
-			DbAdapter dbAdapter = objectFactory.newInstance(DbAdapter.class, adapterType);
-			return setupPkGenerator(dbAdapter);
-		} else {
-			return new AutoAdapter(() -> detectAdapter(dataSource), jdbcEventLogger);
-		}
-	}
+        if (adapterType != null) {
+            DbAdapter dbAdapter = objectFactory.newInstance(DbAdapter.class, adapterType);
+            return setupPkGenerator(dbAdapter);
+        } else {
+            return new AutoAdapter(() -> detectAdapter(dataSource));
+        }
+    }
 
-	protected DbAdapter detectAdapter(DataSource dataSource) {
+    protected DbAdapter detectAdapter(DataSource dataSource) {
 
-		if (detectors.isEmpty()) {
-			return defaultAdapter();
-		}
+        if (detectors.isEmpty()) {
+            return defaultAdapter();
+        }
 
-		try (Connection c = dataSource.getConnection()) {
-			return detectAdapter(c.getMetaData());
-		} catch (SQLException e) {
-			throw new CayenneRuntimeException("Error detecting database type: " + e.getLocalizedMessage(), e);
-		}
-	}
+        try (Connection c = dataSource.getConnection()) {
+            return detectAdapter(c.getMetaData());
+        } catch (SQLException e) {
+            throw new CayenneRuntimeException("Error detecting database type: " + e.getLocalizedMessage(), e);
+        }
+    }
 
-	protected DbAdapter detectAdapter(DatabaseMetaData metaData) throws SQLException {
-		// iterate in reverse order to allow custom factories to take precedence
-		// over the
-		// default ones configured in constructor
-		for (int i = detectors.size() - 1; i >= 0; i--) {
-			DbAdapterDetector detector = detectors.get(i);
-			DbAdapter adapter = detector.createAdapter(metaData);
+    protected DbAdapter detectAdapter(DatabaseMetaData metaData) throws SQLException {
+        // iterate in reverse order to allow custom factories to take precedence
+        // over the
+        // default ones configured in constructor
+        for (int i = detectors.size() - 1; i >= 0; i--) {
+            DbAdapterDetector detector = detectors.get(i);
+            DbAdapter adapter = detector.createAdapter(metaData);
 
-			if (adapter != null) {
-				jdbcEventLogger.logMessage("Detected and installed adapter: " + adapter.getClass().getName());
+            if (adapter != null) {
+                LOGGER.info("Detected and installed adapter: {}", adapter.getClass().getName());
 
-				// TODO: should detector do this??
-				injector.injectMembers(adapter);
+                // TODO: should detector do this??
+                injector.injectMembers(adapter);
 
-				return setupPkGenerator(adapter);
-			}
-		}
+                return setupPkGenerator(adapter);
+            }
+        }
 
-		return defaultAdapter();
-	}
+        return defaultAdapter();
+    }
 
-	protected DbAdapter defaultAdapter() {
-		jdbcEventLogger.logMessage("Failed to detect database type, using generic adapter");
-		return objectFactory.newInstance(DbAdapter.class, JdbcAdapter.class.getName());
-	}
+    protected DbAdapter defaultAdapter() {
+        LOGGER.warn("Failed to detect database type, using generic adapter");
+        return objectFactory.newInstance(DbAdapter.class, JdbcAdapter.class.getName());
+    }
 
-	/**
-	 * Setup PK generator for the adapter
-	 * @param dbAdapter to process
-	 * @return db adapter
-	 * @since 4.1
-	 */
-	protected DbAdapter setupPkGenerator(DbAdapter dbAdapter) {
-		PkGenerator pkGenerator = pkGeneratorProvider.get(Objects.requireNonNull(dbAdapter));
-		if(pkGenerator != null) {
-			pkGenerator.setAdapter(dbAdapter);
-			dbAdapter.setPkGenerator(pkGenerator);
-		}
-		return dbAdapter;
-	}
+    protected DbAdapter setupPkGenerator(DbAdapter dbAdapter) {
+        PkGenerator pkGenerator = pkGeneratorProvider.get(Objects.requireNonNull(dbAdapter));
+        if (pkGenerator != null) {
+            pkGenerator.setAdapter(dbAdapter);
+            dbAdapter.setPkGenerator(pkGenerator);
+        }
+        return dbAdapter;
+    }
 }

@@ -29,11 +29,11 @@ import org.apache.cayenne.log.SqlLogger;
 public class DefaultTransactionFactory implements TransactionFactory {
 
     protected boolean externalTransactions;
-    protected SqlLogger jdbcEventLogger;
+    protected SqlLogger sqlLogger;
 
-    public DefaultTransactionFactory(@Inject RuntimeProperties properties, @Inject SqlLogger jdbcEventLogger) {
+    public DefaultTransactionFactory(@Inject RuntimeProperties properties, @Inject SqlLogger sqlLogger) {
         this.externalTransactions = properties.getBoolean(Constants.EXTERNAL_TX_PROPERTY, false);
-        this.jdbcEventLogger = jdbcEventLogger;
+        this.sqlLogger = sqlLogger;
     }
 
     /**
@@ -42,8 +42,8 @@ public class DefaultTransactionFactory implements TransactionFactory {
     @Override
     public Transaction createTransaction(TransactionDescriptor descriptor) {
         return externalTransactions
-                ? new ExternalTransaction(jdbcEventLogger, descriptor)
-                : new CayenneTransaction(jdbcEventLogger, descriptor);
+                ? new ExternalTransaction(sqlLogger, descriptor)
+                : new CayenneTransaction(sqlLogger, descriptor);
     }
 
 }

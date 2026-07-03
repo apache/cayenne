@@ -36,13 +36,13 @@ public class DefaultDataDomainFlushActionFactory implements DataDomainFlushActio
     private DbRowOpSorter operationSorter;
 
     @Inject
-    private SqlLogger jdbcEventLogger;
+    private SqlLogger sqlLogger;
 
     @Inject
     private DeleteDbRowOpFactory deleteDbRowOpFactory;
 
     @Override
     public DataDomainFlushAction createFlushAction(DataDomain dataDomain) {
-        return new DefaultDataDomainFlushAction(dataDomain, operationSorter, jdbcEventLogger, deleteDbRowOpFactory);
+        return new DefaultDataDomainFlushAction(dataDomain, operationSorter, sqlLogger, deleteDbRowOpFactory);
     }
 }

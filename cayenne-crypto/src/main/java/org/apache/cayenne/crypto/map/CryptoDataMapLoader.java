@@ -41,16 +41,16 @@ public class CryptoDataMapLoader implements DataMapLoader {
 
 	protected final DataMapLoader delegate;
 	protected final ColumnMapper columnMapper;
-	protected final SqlLogger jdbcEventLogger;
+	protected final SqlLogger sqlLogger;
 		
 	public CryptoDataMapLoader(
 			@Inject DataMapLoader delegate, 
 			@Inject ColumnMapper columnMapper, 
-			@Inject SqlLogger jdbcEventLogger) {
+			@Inject SqlLogger sqlLogger) {
 		
 		this.delegate = delegate;
 		this.columnMapper = columnMapper;
-		this.jdbcEventLogger = jdbcEventLogger;
+		this.sqlLogger = sqlLogger;
 	}
 	
 	@Override
@@ -65,7 +65,7 @@ public class CryptoDataMapLoader implements DataMapLoader {
 						columnMapper.isEncrypted(attr.getDbAttribute())) {
 						
 						String attrName = entity.getName() + "." + attr.getName();
-						jdbcEventLogger.logMessage("WARN: Encrypted attributes like '" + attrName + "' cannot be used for " +
+						sqlLogger.logMessage("WARN: Encrypted attributes like '" + attrName + "' cannot be used for " +
 								"optimistic locking. Locking will be disabled for this attribute.");
 						
 						attr.setUsedForLocking(false);

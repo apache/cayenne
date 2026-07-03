@@ -61,16 +61,16 @@ public class DefaultDataDomainFlushAction implements DataDomainFlushAction {
 
     protected final DataDomain dataDomain;
     protected final DbRowOpSorter dbRowOpSorter;
-    protected final SqlLogger jdbcEventLogger;
+    protected final SqlLogger sqlLogger;
     protected final OperationObserver observer;
     protected final DeleteDbRowOpFactory deleteDbRowOpFactory;
 
     protected DefaultDataDomainFlushAction(DataDomain dataDomain, DbRowOpSorter dbRowOpSorter,
-                                           SqlLogger jdbcEventLogger, DeleteDbRowOpFactory deleteDbRowOpFactory) {
+                                           SqlLogger sqlLogger, DeleteDbRowOpFactory deleteDbRowOpFactory) {
         this.dataDomain = dataDomain;
         this.dbRowOpSorter = dbRowOpSorter;
-        this.jdbcEventLogger = jdbcEventLogger;
-        this.observer = new FlushObserver(jdbcEventLogger);
+        this.sqlLogger = sqlLogger;
+        this.observer = new FlushObserver(sqlLogger);
         this.deleteDbRowOpFactory = deleteDbRowOpFactory;
     }
 

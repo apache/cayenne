@@ -28,28 +28,28 @@ import org.apache.cayenne.log.SqlLogger;
  */
 public class ExternalTransaction extends BaseTransaction {
 
-    protected SqlLogger logger;
+    protected SqlLogger sqlLogger;
 
-    public ExternalTransaction(SqlLogger jdbcEventLogger) {
-        this(jdbcEventLogger, TransactionDescriptor.defaultDescriptor());
+    public ExternalTransaction(SqlLogger sqlLogger) {
+        this(sqlLogger, TransactionDescriptor.defaultDescriptor());
     }
 
     /**
      * @since 4.1
      */
-    public ExternalTransaction(SqlLogger jdbcEventLogger, TransactionDescriptor descriptor) {
+    public ExternalTransaction(SqlLogger sqlLogger, TransactionDescriptor descriptor) {
         super(descriptor);
-        this.logger = jdbcEventLogger;
+        this.sqlLogger = sqlLogger;
     }
 
     @Override
     protected void processCommit() {
-        logger.logTransactionCommit();
+        sqlLogger.logTransactionCommit();
     }
 
     @Override
     protected void processRollback() {
-        logger.logTransactionRollback();
+        sqlLogger.logTransactionRollback();
     }
 
     @Override

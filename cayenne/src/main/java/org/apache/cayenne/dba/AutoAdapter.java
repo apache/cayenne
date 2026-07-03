@@ -21,23 +21,22 @@ package org.apache.cayenne.dba;
 
 import org.apache.cayenne.CayenneRuntimeException;
 import org.apache.cayenne.access.DataNode;
-import org.apache.cayenne.access.sqlbuilder.sqltree.SQLTreeProcessor;
 import org.apache.cayenne.access.jdbc.CSParameter;
 import org.apache.cayenne.access.jdbc.PSParameter;
+import org.apache.cayenne.access.sqlbuilder.sqltree.SQLTreeProcessor;
 import org.apache.cayenne.access.translator.EJBQLTranslator;
 import org.apache.cayenne.access.translator.ProcedureTranslator;
 import org.apache.cayenne.access.translator.SelectTranslator;
 import org.apache.cayenne.access.types.ExtendedTypeMap;
 import org.apache.cayenne.di.Provider;
-import org.apache.cayenne.log.SqlLogger;
 import org.apache.cayenne.map.DbAttribute;
 import org.apache.cayenne.map.DbEntity;
 import org.apache.cayenne.map.DbRelationship;
 import org.apache.cayenne.map.EntityResolver;
 import org.apache.cayenne.query.ProcedureQuery;
-import org.apache.cayenne.query.Select;
 import org.apache.cayenne.query.Query;
 import org.apache.cayenne.query.SQLAction;
+import org.apache.cayenne.query.Select;
 
 import java.sql.CallableStatement;
 import java.sql.PreparedStatement;
@@ -55,7 +54,6 @@ public class AutoAdapter implements DbAdapter {
 
 	protected Provider<DbAdapter> adapterProvider;
 	protected PkGenerator pkGenerator;
-	protected SqlLogger logger;
 
 	/**
 	 * The actual adapter that is delegated methods execution.
@@ -68,14 +66,13 @@ public class AutoAdapter implements DbAdapter {
 	 *
 	 * @since 3.1
 	 */
-	public AutoAdapter(Provider<DbAdapter> adapterProvider, SqlLogger logger) {
+	public AutoAdapter(Provider<DbAdapter> adapterProvider) {
 
 		if (adapterProvider == null) {
 			throw new CayenneRuntimeException("Null adapterProvider");
 		}
 
 		this.adapterProvider = adapterProvider;
-		this.logger = logger;
 	}
 
 	/**
