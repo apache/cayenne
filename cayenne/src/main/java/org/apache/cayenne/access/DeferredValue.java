@@ -20,6 +20,7 @@
 package org.apache.cayenne.access;
 
 import org.apache.cayenne.CayenneRuntimeException;
+import org.apache.cayenne.access.types.InternalUnsupportedTypeFactory;
 
 /**
  * A value that is not known until a preceding row of the same transaction has been executed, e.g. a generated PK
@@ -29,7 +30,7 @@ import org.apache.cayenne.CayenneRuntimeException;
  * @since 5.0
  */
 @FunctionalInterface
-public interface DeferredValue {
+public interface DeferredValue extends InternalUnsupportedTypeFactory.Marker {
 
     int MAX_NESTED_LEVEL = 1000;
 

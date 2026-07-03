@@ -35,16 +35,8 @@ import java.util.List;
  */
 public abstract class BatchQuery implements Query {
 
-    /**
-     * @since 1.2
-     */
     protected DbEntity dbEntity;
-
-    /**
-     * @since 4.0
-     */
     protected List<BatchQueryRow> rows;
-
     protected List<DbAttribute> dbAttributes;
 
     /**

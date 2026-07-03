@@ -36,33 +36,17 @@ public class UpdateBatchQuery extends BatchQuery {
 
     protected boolean usingOptimisticLocking;
 
-    private List<DbAttribute> updatedAttributes;
-    private List<DbAttribute> qualifierAttributes;
-    private Collection<String> nullQualifierNames;
+    private final List<DbAttribute> updatedAttributes;
+    private final List<DbAttribute> qualifierAttributes;
+    private final Collection<String> nullQualifierNames;
 
-    private static List<DbAttribute> toDbAttributes(List<DbAttribute> qualifierAttributes,
-            List<DbAttribute> updatedAttributes) {
-        List<DbAttribute> dbAttributes = new ArrayList<>(updatedAttributes.size()
-                + qualifierAttributes.size());
+    private static List<DbAttribute> toDbAttributes(List<DbAttribute> qualifierAttributes, List<DbAttribute> updatedAttributes) {
+        List<DbAttribute> dbAttributes = new ArrayList<>(updatedAttributes.size() + qualifierAttributes.size());
         dbAttributes.addAll(updatedAttributes);
         dbAttributes.addAll(qualifierAttributes);
         return dbAttributes;
     }
 
-    /**
-     * Creates new UpdateBatchQuery.
-     * 
-     * @param dbEntity
-     *            Table or view to update.
-     * @param qualifierAttributes
-     *            DbAttributes used in the WHERE clause.
-     * @param nullQualifierNames
-     *            DbAttribute names in the WHERE clause that have null values.
-     * @param updatedAttributes
-     *            DbAttributes describing updated columns.
-     * @param batchCapacity
-     *            Estimated size of the batch.
-     */
     public UpdateBatchQuery(DbEntity dbEntity, List<DbAttribute> qualifierAttributes,
             List<DbAttribute> updatedAttributes, Collection<String> nullQualifierNames, int batchCapacity) {
 
@@ -124,11 +108,6 @@ public class UpdateBatchQuery extends BatchQuery {
                 return getValue(snapshot, dbAttributes.get(i));
             }
         });
-    }
-
-    @Override
-    public List<DbAttribute> getDbAttributes() {
-        return dbAttributes;
     }
 
     /**
