@@ -26,6 +26,7 @@ import org.apache.cayenne.di.Inject;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import java.util.List;
 import java.util.Map;
 
 /**
@@ -55,8 +56,18 @@ public class Slf4jSqlLogger implements SqlLogger {
     }
 
     @Override
-    public void logUpdate(TranslatedStatement statement, int rowCount) {
-        logStatement(statement, "updated:", rowCount);
+    public void logUpdate(TranslatedStatement statement, int rowCount, List<? extends Map<String, ?>> generatedKeys) {
+        if (LOGGER.isInfoEnabled()) {
+            StringBuilder buffer = new StringBuilder(buildStatementLine(statement, "updated:", rowCount));
+            if (generatedKeys != null && !generatedKeys.isEmpty()) {
+                buffer.append(" [generated:");
+                for (Map<String, ?> keys : generatedKeys) {
+                    SqlBindingRenderer.appendGeneratedKeys(buffer, keys);
+                }
+                buffer.append(']');
+            }
+            LOGGER.info(buffer.toString());
+        }
     }
 
     protected void logStatement(TranslatedStatement statement, String resultLabel, int rowCount) {
@@ -85,15 +96,6 @@ public class Slf4jSqlLogger implements SqlLogger {
     public void logAlsoUpdate(int rowCount) {
         if (LOGGER.isInfoEnabled()) {
             LOGGER.info("also [updated:{}]", rowCount);
-        }
-    }
-
-    @Override
-    public void logGeneratedKey(Map<String, ?> keys) {
-        if (LOGGER.isInfoEnabled()) {
-            StringBuilder buffer = new StringBuilder("generated PK ");
-            SqlBindingRenderer.appendGeneratedKeys(buffer, keys);
-            LOGGER.info(buffer.toString());
         }
     }
 

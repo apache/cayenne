@@ -21,6 +21,7 @@ package org.apache.cayenne.log;
 
 import org.apache.cayenne.access.translator.TranslatedStatement;
 
+import java.util.List;
 import java.util.Map;
 
 /**
@@ -45,9 +46,14 @@ public interface SqlLogger {
     void logSelect(TranslatedStatement statement, int rowCount);
 
     /**
-     * Logs the main line for a statement that performed an update.
+     * Logs the main line for a statement that performed an update: SQL + {@code bind:[...]} + {@code updated:N},
+     * optionally followed by a {@code generated:[...]} block listing any database-generated keys.
+     *
+     * @param statement     the translated statement carrying SQL and bindings
+     * @param rowCount      the number of updated rows
+     * @param generatedKeys the database-generated keys of the inserted rows, or an empty list if none
      */
-    void logUpdate(TranslatedStatement statement, int rowCount);
+    void logUpdate(TranslatedStatement statement, int rowCount, List<? extends Map<String, ?>> generatedKeys);
 
     /**
      * Logs a select count continuation line for the statement whose header was already logged.
@@ -58,11 +64,6 @@ public interface SqlLogger {
      * Logs an update count continuation line for the statement whose header was already logged.
      */
     void logAlsoUpdate(int rowCount);
-
-    /**
-     * Logs the database-generated keys of a single inserted row as one compact, comma-separated line.
-     */
-    void logGeneratedKey(Map<String, ?> keys);
 
     /**
      * Logs a transaction start boundary (emitted at DEBUG level).

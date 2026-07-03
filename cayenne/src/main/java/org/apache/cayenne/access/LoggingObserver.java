@@ -28,8 +28,10 @@ import org.apache.cayenne.log.SqlLogger;
 import org.apache.cayenne.query.Query;
 
 import java.sql.Statement;
+import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
+import java.util.Map;
 
 /**
  * An {@link OperationObserver} decorator that correlates each executed statement (reported via
@@ -47,6 +49,7 @@ class LoggingObserver implements OperationObserver {
     private boolean headerEmitted;
     private boolean batchHasUpdate;
     private int batchUpdateSum;
+    private final List<Map<String, ?>> generatedKeys = new ArrayList<>();
 
     LoggingObserver(OperationObserver delegate, SqlLogger logger) {
         this.delegate = delegate;
@@ -55,7 +58,7 @@ class LoggingObserver implements OperationObserver {
 
     private void flushPending() {
         if (!headerEmitted && batchHasUpdate && current != null) {
-            logger.logUpdate(current, batchUpdateSum);
+            logger.logUpdate(current, batchUpdateSum, generatedKeys);
             headerEmitted = true;
         }
     }
@@ -73,7 +76,7 @@ class LoggingObserver implements OperationObserver {
         if (headerEmitted) {
             logger.logAlsoUpdate(rowCount);
         } else {
-            logger.logUpdate(current, rowCount);
+            logger.logUpdate(current, rowCount, generatedKeys);
             headerEmitted = true;
         }
     }
@@ -103,6 +106,7 @@ class LoggingObserver implements OperationObserver {
         this.headerEmitted = false;
         this.batchHasUpdate = false;
         this.batchUpdateSum = 0;
+        this.generatedKeys.clear();
         delegate.nextStatement(query, statement);
     }
 
@@ -152,9 +156,9 @@ class LoggingObserver implements OperationObserver {
 
     @Override
     public void nextGeneratedRows(Query query, List<DataRow> keys, List<ObjectId> idsToUpdate) {
-        for (DataRow key : keys) {
-            logger.logGeneratedKey(key);
-        }
+        // buffer the keys and emit them as a trailing "generated:[...]" block on the statement's own update line,
+        // rather than as separate lines that would print before the INSERT that produced them
+        generatedKeys.addAll(keys);
         delegate.nextGeneratedRows(query, keys, idsToUpdate);
     }
 

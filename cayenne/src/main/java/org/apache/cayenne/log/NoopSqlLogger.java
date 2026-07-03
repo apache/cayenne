@@ -20,6 +20,7 @@ package org.apache.cayenne.log;
 
 import org.apache.cayenne.access.translator.TranslatedStatement;
 
+import java.util.List;
 import java.util.Map;
 
 /**
@@ -50,7 +51,7 @@ public class NoopSqlLogger implements SqlLogger {
     }
 
     @Override
-    public void logUpdate(TranslatedStatement statement, int rowCount) {
+    public void logUpdate(TranslatedStatement statement, int rowCount, List<? extends Map<String, ?>> generatedKeys) {
     }
 
     @Override
@@ -59,10 +60,6 @@ public class NoopSqlLogger implements SqlLogger {
 
     @Override
     public void logAlsoUpdate(int rowCount) {
-    }
-
-    @Override
-    public void logGeneratedKey(Map<String, ?> keys) {
     }
 
     @Override

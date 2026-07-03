@@ -68,8 +68,12 @@ public class LoggingObserverTest {
         }
 
         @Override
-        public void logUpdate(TranslatedStatement statement, int rowCount) {
-            calls.add("updated:" + rowCount);
+        public void logUpdate(TranslatedStatement statement, int rowCount, List<? extends Map<String, ?>> generatedKeys) {
+            StringBuilder buffer = new StringBuilder("updated:").append(rowCount);
+            for (Map<String, ?> keys : generatedKeys) {
+                keys.forEach((name, value) -> buffer.append(" generated:").append(name).append('=').append(value));
+            }
+            calls.add(buffer.toString());
         }
 
         @Override
@@ -80,13 +84,6 @@ public class LoggingObserverTest {
         @Override
         public void logAlsoUpdate(int rowCount) {
             calls.add("also updated:" + rowCount);
-        }
-
-        @Override
-        public void logGeneratedKey(Map<String, ?> keys) {
-            StringBuilder buffer = new StringBuilder("generated PK");
-            keys.forEach((name, value) -> buffer.append(' ').append(name).append('=').append(value));
-            calls.add(buffer.toString());
         }
 
         @Override
@@ -165,16 +162,22 @@ public class LoggingObserverTest {
     }
 
     @Test
-    public void generatedRowsLogKeysUsingDataRowLabels() {
+    public void generatedKeysAppendedToUpdateLine() {
         CapturingLogger logger = new CapturingLogger();
         LoggingObserver observer = observer(logger);
 
-        DataRow row = new DataRow(1);
-        row.put("ARTIST_ID", 42L);
+        DataRow row1 = new DataRow(1);
+        row1.put("ARTIST_ID", 1L);
+        DataRow row2 = new DataRow(1);
+        row2.put("ARTIST_ID", 2L);
 
-        observer.nextGeneratedRows(null, List.of(row), List.of());
+        observer.nextStatement(null, batch());
+        observer.nextGeneratedRows(null, asList(row1, row2), List.of());
+        observer.nextCount(null, 1);
+        observer.nextCount(null, 1);
+        observer.onSuccess();
 
-        assertEquals(List.of("generated PK ARTIST_ID=42"), logger.calls);
+        assertEquals(List.of("updated:2 generated:ARTIST_ID=1 generated:ARTIST_ID=2"), logger.calls);
     }
 
     @Test
