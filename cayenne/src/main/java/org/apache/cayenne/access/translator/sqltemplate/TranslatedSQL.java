@@ -25,7 +25,7 @@ import org.apache.cayenne.access.jdbc.PSParameter;
 /**
  * A translated form of a Query used to generated PreparedStatements.
  *
- * @since 1.1
+ * @since 5.0
  */
 public record TranslatedSQL(
         String sql,

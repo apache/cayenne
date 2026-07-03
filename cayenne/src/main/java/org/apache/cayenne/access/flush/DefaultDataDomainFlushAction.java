@@ -19,16 +19,6 @@
 
 package org.apache.cayenne.access.flush;
 
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.Collections;
-import java.util.HashMap;
-import java.util.HashSet;
-import java.util.List;
-import java.util.Map;
-import java.util.Set;
-import java.util.stream.Collectors;
-
 import org.apache.cayenne.CayenneRuntimeException;
 import org.apache.cayenne.ObjectId;
 import org.apache.cayenne.access.DataContext;
@@ -37,9 +27,9 @@ import org.apache.cayenne.access.ObjectDiff;
 import org.apache.cayenne.access.ObjectStore;
 import org.apache.cayenne.access.ObjectStoreGraphDiff;
 import org.apache.cayenne.access.OperationObserver;
+import org.apache.cayenne.access.flush.operation.DbRowOp;
 import org.apache.cayenne.access.flush.operation.DbRowOpMerger;
 import org.apache.cayenne.access.flush.operation.DbRowOpSorter;
-import org.apache.cayenne.access.flush.operation.DbRowOp;
 import org.apache.cayenne.access.flush.operation.DbRowOpVisitor;
 import org.apache.cayenne.access.flush.operation.DeleteDbRowOp;
 import org.apache.cayenne.access.flush.operation.DeleteDbRowOpFactory;
@@ -51,6 +41,16 @@ import org.apache.cayenne.graph.GraphDiff;
 import org.apache.cayenne.log.JdbcEventLogger;
 import org.apache.cayenne.map.EntityResolver;
 import org.apache.cayenne.query.Query;
+
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.Collections;
+import java.util.HashMap;
+import java.util.HashSet;
+import java.util.List;
+import java.util.Map;
+import java.util.Set;
+import java.util.stream.Collectors;
 
 /**
  * Default implementation of {@link DataDomainFlushAction}.
@@ -80,12 +80,11 @@ public class DefaultDataDomainFlushAction implements DataDomainFlushAction {
         if (changes == null) {
             return afterCommitDiff;
         }
-        if(!(changes instanceof ObjectStoreGraphDiff)) {
+        if(!(changes instanceof ObjectStoreGraphDiff objectStoreGraphDiff)) {
             throw new CayenneRuntimeException("Instance of ObjectStoreGraphDiff expected, got %s", changes.getClass());
         }
 
         ObjectStore objectStore = context.getObjectStore();
-        ObjectStoreGraphDiff objectStoreGraphDiff = (ObjectStoreGraphDiff) changes;
 
         List<DbRowOp> dbRowOps = createDbRowOps(objectStore, objectStoreGraphDiff);
         updateObjectIds(dbRowOps);
