@@ -56,7 +56,9 @@ class LoggingObserver implements OperationObserver {
         this.logger = logger;
     }
 
-    private void flushPending() {
+    // a batch reports its counts across several next*Count callbacks; the accumulated total can only be logged as a
+    // single "updated:N" line once the batch is done, i.e. at the next statement or on success.
+    private void flushPendingBatchUpdate() {
         if (!headerEmitted && batchHasUpdate && current != null) {
             logger.logUpdate(current, batchUpdateSum, generatedKeys != null ? generatedKeys : List.of());
             headerEmitted = true;
@@ -95,13 +97,13 @@ class LoggingObserver implements OperationObserver {
 
     @Override
     public void onSuccess() {
-        flushPending();
+        flushPendingBatchUpdate();
         current = null;
     }
 
     @Override
     public void nextStatement(Query query, TranslatedStatement statement) {
-        flushPending();
+        flushPendingBatchUpdate();
         this.current = statement;
         this.headerEmitted = false;
         this.batchHasUpdate = false;
