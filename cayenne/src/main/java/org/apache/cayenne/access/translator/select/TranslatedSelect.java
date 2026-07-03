@@ -31,7 +31,7 @@ import org.apache.cayenne.access.jdbc.PSParameter;
 public record TranslatedSelect(
         String sql,
         RSColumn[] resultColumns,
-        PSParameter[] bindings,
+        PSParameter<?>[] bindings,
         boolean suppressingDistinct,
         boolean hasJoins) {
 }

@@ -30,5 +30,5 @@ import org.apache.cayenne.access.jdbc.PSParameter;
 public record TranslatedSQL(
         String sql,
         RSColumn[] resultColumns,
-        PSParameter[] bindings) {
+        PSParameter<?>[] bindings) {
 }

@@ -72,7 +72,7 @@ public class SelectAction extends BaseSQLAction {
         DbAdapter adapter = dataNode.getAdapter();
         PreparedStatement statement = connection.prepareStatement(translated.sql());
 
-        for (PSParameter b : translated.bindings()) {
+        for (PSParameter<?> b : translated.bindings()) {
 
             // null DbAttributes are a result of inferior qualifier
             // processing (qualifier can't map parameters to DbAttributes
