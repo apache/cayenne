@@ -130,7 +130,7 @@ public class ProcedureAction extends BaseSQLAction {
 	protected void bindParameters(CallableStatement statement, TranslatedProcedure translated) throws Exception {
 		DbAdapter adapter = dataNode.getAdapter();
 		ProcedureParameter[] callParams = translated.callParams();
-		PSParameter[] bindings = translated.bindings();
+		PSParameter<?>[] bindings = translated.bindings();
 
 		for (int i = 0; i < callParams.length; i++) {
 			ProcedureParameter param = callParams[i];
@@ -198,7 +198,7 @@ public class ProcedureAction extends BaseSQLAction {
 		RSColumn[] result = new RSColumn[columns.length];
 		for (int i = 0; i < columns.length; i++) {
 			ProcedureColumn c = columns[i];
-			ExtendedType type = typeMap.getRegisteredType(c.javaClass());
+			ExtendedType<?> type = typeMap.getRegisteredType(c.javaClass());
 			result[i] = new RSColumn(c.name(), c.jdbcType(), c.dataRowKey(), type, null);
 		}
 		return result;
@@ -232,7 +232,8 @@ public class ProcedureAction extends BaseSQLAction {
 				result = new DataRow(2);
 			}
 
-			ExtendedType type = dataNode.getAdapter().getExtendedTypes()
+			ExtendedType<?> type = dataNode.getAdapter()
+					.getExtendedTypes()
 					.getRegisteredType(TypesMapping.getJavaBySqlType(parameter.getType()));
 			Object val = type.materializeObject(statement, i + 1, parameter.getType());
 

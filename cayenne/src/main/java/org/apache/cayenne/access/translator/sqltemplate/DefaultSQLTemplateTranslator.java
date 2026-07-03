@@ -84,6 +84,6 @@ public class DefaultSQLTemplateTranslator implements SQLTemplateTranslator {
 
         node.evaluate(context);
 
-        return new TranslatedSQL(context.buildTemplate(), context.getColumnDescriptors(), context.getParameterBindings());
+        return new TranslatedSQL(context.buildTemplate(), context.getParameterBindings(), context.getColumnDescriptors());
     }
 }

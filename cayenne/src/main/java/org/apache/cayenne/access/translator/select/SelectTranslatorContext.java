@@ -157,8 +157,7 @@ class SelectTranslatorContext implements SQLGenerationContext {
     public TranslatedSelect getTranslation() {
         return new TranslatedSelect(
                 getFinalSQL(),
-                getColumnDescriptors().toArray(new RSColumn[0]),
-                getBindings().toArray(new PSParameter[0]),
+                getBindings().toArray(new PSParameter[0]), getColumnDescriptors().toArray(new RSColumn[0]),
                 isDistinctSuppression(),
                 getTableCount() > 1);
     }

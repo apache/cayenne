@@ -27,5 +27,5 @@ import org.apache.cayenne.map.ProcedureParameter;
  *
  * @since 5.0
  */
-public record TranslatedProcedure(String sql, ProcedureParameter[] callParams, PSParameter<?>[] bindings) {
+public record TranslatedProcedure(String sql, PSParameter<?>[] bindings, ProcedureParameter[] callParams) {
 }

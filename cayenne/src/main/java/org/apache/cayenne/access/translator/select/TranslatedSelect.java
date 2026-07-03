@@ -30,8 +30,8 @@ import org.apache.cayenne.access.jdbc.PSParameter;
  */
 public record TranslatedSelect(
         String sql,
-        RSColumn[] resultColumns,
         PSParameter<?>[] bindings,
+        RSColumn[] resultColumns,
         boolean suppressingDistinct,
         boolean hasJoins) {
 }

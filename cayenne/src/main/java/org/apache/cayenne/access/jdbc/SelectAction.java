@@ -72,19 +72,10 @@ public class SelectAction extends BaseSQLAction {
         DbAdapter adapter = dataNode.getAdapter();
         PreparedStatement statement = connection.prepareStatement(translated.sql());
 
-        for (PSParameter<?> b : translated.bindings()) {
-
-            // null DbAttributes are a result of inferior qualifier
-            // processing (qualifier can't map parameters to DbAttributes
-            // and therefore only supports standard java types now) hence, a
-            // special moronic case here:
-            if (b.attribute() == null) {
-                statement.setObject(b.psPosition(), b.value());
-            } else {
-                adapter.bindParameter(statement, b);
-            }
+        for (PSParameter<?> p : translated.bindings()) {
+            adapter.bindParameter(statement, p);
         }
-        
+
         int fetchSize = queryMetadata.getStatementFetchSize();
         if (fetchSize != 0) {
             statement.setFetchSize(fetchSize);

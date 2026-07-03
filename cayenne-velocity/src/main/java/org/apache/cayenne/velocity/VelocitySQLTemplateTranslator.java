@@ -169,7 +169,7 @@ public class VelocitySQLTemplateTranslator implements SQLTemplateTranslator {
 		RSColumn[] resultsArray = new RSColumn[results.size()];
 		results.toArray(resultsArray);
 
-		return new TranslatedSQL(sql, resultsArray, bindingsArray);
+		return new TranslatedSQL(sql, bindingsArray, resultsArray);
 	}
 
 	String buildStatement(VelocityContext context, String template, SimpleNode parsedTemplate) throws Exception {

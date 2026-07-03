@@ -69,7 +69,7 @@ public class DefaultProcedureTranslator implements ProcedureTranslator {
         }
 
         String sql = createSqlString(procedure, callParams.length);
-        return new TranslatedProcedure(sql, callParams, bindings);
+        return new TranslatedProcedure(sql, bindings, callParams);
     }
 
     /**

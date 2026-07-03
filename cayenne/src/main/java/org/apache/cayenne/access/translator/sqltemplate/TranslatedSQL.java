@@ -27,8 +27,5 @@ import org.apache.cayenne.access.jdbc.PSParameter;
  *
  * @since 5.0
  */
-public record TranslatedSQL(
-        String sql,
-        RSColumn[] resultColumns,
-        PSParameter<?>[] bindings) {
+public record TranslatedSQL(String sql, PSParameter<?>[] bindings, RSColumn[] resultColumns) {
 }
