@@ -20,7 +20,6 @@
 package org.apache.cayenne.dba.derby;
 
 import org.apache.cayenne.access.DataNode;
-import org.apache.cayenne.access.jdbc.PSParameter;
 import org.apache.cayenne.access.sqlbuilder.sqltree.SQLTreeProcessor;
 import org.apache.cayenne.access.translator.ejbql.EJBQLTranslator;
 import org.apache.cayenne.access.translator.ejbql.JdbcEJBQLTranslator;
@@ -214,12 +213,13 @@ public class DerbyAdapter extends JdbcAdapter {
     }
 
     @Override
-    public void bindParameter(PreparedStatement statement, PSParameter<?> parameter) throws Exception {
-
-        if (parameter.value() == null && parameter.psType() == 0) {
-            statement.setNull(parameter.psPosition(), Types.VARCHAR);
+    @SuppressWarnings("rawtypes")
+    protected void bind(PreparedStatement statement, Object value, int psPosition, int psType, int psScale,
+                        ExtendedType binder) throws Exception {
+        if (value == null && psType == 0) {
+            statement.setNull(psPosition, Types.VARCHAR);
         } else {
-            super.bindParameter(statement, parameter);
+            super.bind(statement, value, psPosition, psType, psScale, binder);
         }
     }
 

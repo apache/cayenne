@@ -18,6 +18,7 @@
  ****************************************************************/
 package org.apache.cayenne.log;
 
+import org.apache.cayenne.access.jdbc.CSParameter;
 import org.apache.cayenne.access.jdbc.PSParameter;
 import org.apache.cayenne.map.DbAttribute;
 
@@ -39,6 +40,11 @@ public interface JdbcEventLogger {
 	 * @since 4.0
 	 */
 	void logQuery(String sql, PSParameter<?>[] bindings);
+
+	/**
+	 * @since 5.0
+	 */
+	void logQuery(String sql, CSParameter<?>[] bindings);
 
 	/**
 	 * @since 4.0

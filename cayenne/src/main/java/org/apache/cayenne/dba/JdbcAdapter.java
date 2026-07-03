@@ -22,6 +22,7 @@ package org.apache.cayenne.dba;
 import org.apache.cayenne.CayenneRuntimeException;
 import org.apache.cayenne.access.DataNode;
 import org.apache.cayenne.access.sqlbuilder.sqltree.SQLTreeProcessor;
+import org.apache.cayenne.access.jdbc.CSParameter;
 import org.apache.cayenne.access.jdbc.PSParameter;
 import org.apache.cayenne.access.translator.ejbql.EJBQLTranslator;
 import org.apache.cayenne.access.translator.ejbql.JdbcEJBQLTranslator;
@@ -49,6 +50,7 @@ import org.apache.cayenne.query.Select;
 import org.apache.cayenne.query.Query;
 import org.apache.cayenne.query.SQLAction;
 
+import java.sql.CallableStatement;
 import java.sql.PreparedStatement;
 import java.sql.Types;
 import java.util.ArrayList;
@@ -623,16 +625,30 @@ public class JdbcAdapter implements DbAdapter {
 
     @Override
     public void bindParameter(PreparedStatement statement, PSParameter<?> parameter) throws Exception {
+        bind(statement, parameter.value(), parameter.psPosition(), parameter.psType(), parameter.psScale(),
+                parameter.binder());
+    }
 
-        if (parameter.value() == null) {
-            statement.setNull(parameter.psPosition(), parameter.psType());
+    @Override
+    public void bindParameter(CallableStatement statement, CSParameter<?> parameter) throws Exception {
+        bind(statement, parameter.value(), parameter.psPosition(), parameter.psType(), parameter.psScale(),
+                parameter.binder());
+    }
+
+    /**
+     * Binds a raw value to a statement parameter. This is the single extension point shared by both
+     * {@code bindParameter} overloads; adapters that need database-specific handling (e.g. of NULLs) should
+     * override this method rather than the public overloads.
+     *
+     * @since 5.0
+     */
+    @SuppressWarnings({"rawtypes", "unchecked"})
+    protected void bind(PreparedStatement statement, Object value, int psPosition, int psType, int psScale,
+                        ExtendedType binder) throws Exception {
+        if (value == null) {
+            statement.setNull(psPosition, psType);
         } else {
-            ExtendedType t = parameter.binder();
-            t.setJdbcObject(statement,
-                    parameter.value(),
-                    parameter.psPosition(),
-                    parameter.psType(),
-                    parameter.psScale());
+            binder.setJdbcObject(statement, value, psPosition, psType, psScale);
         }
     }
 

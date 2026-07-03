@@ -73,7 +73,7 @@ public class ProcedureAction extends BaseSQLAction {
 		TranslatedProcedure translated = dataNode.getProcedureTranslator()
 				.translate(query, dataNode.getAdapter(), dataNode.getEntityResolver());
 
-		dataNode.getJdbcEventLogger().logQuery(translated.sql(), translated.bindings());
+		dataNode.getJdbcEventLogger().logQuery(translated.sql(), translated.params());
 
 		try (CallableStatement statement = connection.prepareCall(translated.sql())) {
 			initStatement(statement);
@@ -129,11 +129,11 @@ public class ProcedureAction extends BaseSQLAction {
 	 */
 	protected void bindParameters(CallableStatement statement, TranslatedProcedure translated) throws Exception {
 		DbAdapter adapter = dataNode.getAdapter();
-		ProcedureParameter[] callParams = translated.callParams();
-		PSParameter<?>[] bindings = translated.bindings();
+		CSParameter<?>[] params = translated.params();
 
-		for (int i = 0; i < callParams.length; i++) {
-			ProcedureParameter param = callParams[i];
+		for (int i = 0; i < params.length; i++) {
+			CSParameter<?> binding = params[i];
+			ProcedureParameter param = binding.param();
 
 			if (param.isOutParam()) {
 				int precision = param.getPrecision();
@@ -145,7 +145,7 @@ public class ProcedureAction extends BaseSQLAction {
 			}
 
 			if (param.isInParameter()) {
-				adapter.bindParameter(statement, bindings[i]);
+				adapter.bindParameter(statement, binding);
 			}
 		}
 	}

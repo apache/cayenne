@@ -16,15 +16,23 @@
  *  specific language governing permissions and limitations
  *  under the License.
  ****************************************************************/
+package org.apache.cayenne.access.jdbc;
 
-package org.apache.cayenne.access.translator.procedure;
-
-import org.apache.cayenne.access.jdbc.CSParameter;
+import org.apache.cayenne.access.types.ExtendedType;
+import org.apache.cayenne.map.ProcedureParameter;
 
 /**
- * An immutable result of translating a {@link org.apache.cayenne.query.ProcedureQuery} to a stored procedure call.
+ * Describes a single immutable CallableStatement parameter binding, pairing a bound value with the
+ * {@link ProcedureParameter} that describes it.
  *
  * @since 5.0
  */
-public record TranslatedProcedure(String sql, CSParameter<?>[] params) {
+public record CSParameter<T>(
+        T value,
+        int psPosition,
+        int psType,
+        int psScale,
+        ExtendedType<T> binder,
+        ProcedureParameter param
+) {
 }

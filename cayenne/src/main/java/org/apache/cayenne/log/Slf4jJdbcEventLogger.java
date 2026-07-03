@@ -19,7 +19,9 @@
 package org.apache.cayenne.log;
 
 import org.apache.cayenne.CayenneRuntimeException;
+import org.apache.cayenne.access.jdbc.CSParameter;
 import org.apache.cayenne.access.jdbc.PSParameter;
+import org.apache.cayenne.access.types.ExtendedType;
 import org.apache.cayenne.configuration.Constants;
 import org.apache.cayenne.configuration.RuntimeProperties;
 import org.apache.cayenne.di.Inject;
@@ -76,6 +78,19 @@ public class Slf4jJdbcEventLogger implements JdbcEventLogger {
     }
 
     @Override
+    public void logQuery(String sql, CSParameter<?>[] bindings) {
+        if (isLoggable()) {
+
+            StringBuilder buffer = new StringBuilder(sql).append(" ");
+            appendParameters(buffer, "bind", bindings);
+
+            if (!buffer.isEmpty()) {
+                LOGGER.info(buffer.toString());
+            }
+        }
+    }
+
+    @Override
     public void logQueryParameters(String label, PSParameter<?>[] bindings) {
 
         if (isLoggable() && bindings.length > 0) {
@@ -89,7 +104,6 @@ public class Slf4jJdbcEventLogger implements JdbcEventLogger {
         }
     }
 
-    @SuppressWarnings("unchecked")
     protected void appendParameters(StringBuilder buffer, String label, PSParameter<?>[] bindings) {
 
         int len = bindings.length;
@@ -98,38 +112,61 @@ public class Slf4jJdbcEventLogger implements JdbcEventLogger {
             boolean hasIncluded = false;
 
             for (int i = 0, j = 1; i < len; i++) {
-                PSParameter b = bindings[i];
-
-                if (hasIncluded) {
-                    buffer.append(", ");
-                } else {
-                    hasIncluded = true;
-                    buffer.append("[").append(label).append(": ");
-                }
-
-
-                buffer.append(j++);
-
+                PSParameter<?> b = bindings[i];
                 DbAttribute attribute = b.attribute();
-                if (attribute != null) {
-                    buffer.append("->");
-                    buffer.append(attribute.getName());
-                }
-
-                buffer.append(":");
-
-                if (b.binder() != null) {
-                    buffer.append(b.binder().toString(b.value()));
-                } else if (b.value() == null) {
-                    buffer.append("NULL");
-                } else {
-                    buffer.append(b.value().getClass().getName())
-                            .append("@")
-                            .append(System.identityHashCode(b.value()));
-                }
+                appendParameter(buffer, label, hasIncluded, j++,
+                        attribute != null ? attribute.getName() : null, b.binder(), b.value());
+                hasIncluded = true;
             }
 
             buffer.append("]");
+        }
+    }
+
+    protected void appendParameters(StringBuilder buffer, String label, CSParameter<?>[] bindings) {
+
+        int len = bindings.length;
+        if (len > 0) {
+
+            boolean hasIncluded = false;
+
+            for (int i = 0, j = 1; i < len; i++) {
+                CSParameter<?> b = bindings[i];
+                appendParameter(buffer, label, hasIncluded, j++, b.param().getName(), b.binder(), b.value());
+                hasIncluded = true;
+            }
+
+            buffer.append("]");
+        }
+    }
+
+    @SuppressWarnings({"rawtypes", "unchecked"})
+    private void appendParameter(StringBuilder buffer, String label, boolean hasIncluded, int position, String name,
+                                 ExtendedType binder, Object value) {
+
+        if (hasIncluded) {
+            buffer.append(", ");
+        } else {
+            buffer.append("[").append(label).append(": ");
+        }
+
+        buffer.append(position);
+
+        if (name != null) {
+            buffer.append("->");
+            buffer.append(name);
+        }
+
+        buffer.append(":");
+
+        if (binder != null) {
+            buffer.append(binder.toString(value));
+        } else if (value == null) {
+            buffer.append("NULL");
+        } else {
+            buffer.append(value.getClass().getName())
+                    .append("@")
+                    .append(System.identityHashCode(value));
         }
     }
 

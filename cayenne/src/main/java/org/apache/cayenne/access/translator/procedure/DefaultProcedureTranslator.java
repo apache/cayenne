@@ -19,7 +19,7 @@
 
 package org.apache.cayenne.access.translator.procedure;
 
-import org.apache.cayenne.access.jdbc.PSParameter;
+import org.apache.cayenne.access.jdbc.CSParameter;
 import org.apache.cayenne.access.types.ExtendedType;
 import org.apache.cayenne.dba.DbAdapter;
 import org.apache.cayenne.map.EntityResolver;
@@ -63,25 +63,25 @@ public class DefaultProcedureTranslator implements ProcedureTranslator {
         ProcedureParameter[] callParams = procedure.getCallParameters().toArray(new ProcedureParameter[0]);
         Map<String, ?> queryValues = query.getParameters();
 
-        PSParameter[] bindings = new PSParameter[callParams.length];
+        CSParameter<?>[] params = new CSParameter[callParams.length];
         for (int i = 0; i < callParams.length; i++) {
-            bindings[i] = createBinding(adapter, callParams[i], queryValues, i + 1);
+            params[i] = createBinding(adapter, callParams[i], queryValues, i + 1);
         }
 
         String sql = createSqlString(procedure, callParams.length);
-        return new TranslatedProcedure(sql, bindings, callParams);
+        return new TranslatedProcedure(sql, params);
     }
 
     /**
-     * Builds a {@link PSParameter} for a single call parameter. IN (and INOUT) parameters carry the actual value
+     * Builds a {@link CSParameter} for a single call parameter. IN (and INOUT) parameters carry the actual value
      * and its {@link ExtendedType}; pure OUT parameters carry an "[OUT]" marker value so that logging renders nicely.
      */
-    protected PSParameter<?> createBinding(DbAdapter adapter, ProcedureParameter param,
+    protected CSParameter<?> createBinding(DbAdapter adapter, ProcedureParameter param,
                                         Map<String, ?> queryValues, int position) {
 
         // match values with parameters in the correct order, assuming a missing value is NULL
         if (param.getDirection() == ProcedureParameter.OUT_PARAMETER) {
-            return new PSParameter<>(OUT_PARAM, position, param.getType(), param.getPrecision(), null, null);
+            return new CSParameter<>(OUT_PARAM, position, param.getType(), param.getPrecision(), null, param);
         }
 
         Object value = queryValues.get(param.getName());
@@ -89,8 +89,9 @@ public class DefaultProcedureTranslator implements ProcedureTranslator {
                 ? adapter.getExtendedTypes().getRegisteredType(value.getClass())
                 : adapter.getExtendedTypes().getDefaultType();
 
-        return new PSParameter<>(
-                value, position, adapter.preferredBindingType(param.getType()), param.getPrecision(), extendedType, null);
+        return new CSParameter<>(
+                value, position, adapter.preferredBindingType(param.getType()), param.getPrecision(), extendedType,
+                param);
     }
 
     /**
