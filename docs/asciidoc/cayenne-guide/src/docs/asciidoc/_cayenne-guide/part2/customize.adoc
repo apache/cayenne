@@ -265,16 +265,6 @@ While we describe some of them in the following sections, the best way to get a 
 is to check the source code of the Cayenne version you are using and
 namely look in `org.apache.cayenne.configuration.runtime.CoreModule` - the main built-in module in Cayenne.
 
-Now an example of overriding `JdbcEventLogger` service. The default implementation of this service
-is provided by `Slf4jJdbcEventLogger`. But if we want to use `FormattedSlf4jJdbcEventLogger`
-(a logger with basic SQL formatting), we can define it like this:
-
-[source, Java]
-----
-binder.bind(JdbcEventLogger.class)
-    .to(FormattedSlf4jJdbcEventLogger.class);
-----
-
 ==== Using custom data types
 
 ===== Value object type
