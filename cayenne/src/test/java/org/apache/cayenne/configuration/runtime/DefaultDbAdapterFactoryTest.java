@@ -18,7 +18,7 @@
  ****************************************************************/
 package org.apache.cayenne.configuration.runtime;
 
-import org.apache.cayenne.access.translator.batch.BatchTranslator;
+import org.apache.cayenne.access.translator.BatchTranslator;
 import org.apache.cayenne.access.types.DefaultValueObjectTypeRegistry;
 import org.apache.cayenne.access.types.ValueObjectTypeRegistry;
 import org.apache.cayenne.configuration.Constants;

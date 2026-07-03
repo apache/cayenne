@@ -20,6 +20,8 @@
 package org.apache.cayenne.access.translator.procedure;
 
 import org.apache.cayenne.access.jdbc.CSParameter;
+import org.apache.cayenne.access.translator.ProcedureTranslator;
+import org.apache.cayenne.access.translator.TranslatedProcedure;
 import org.apache.cayenne.access.types.ExtendedType;
 import org.apache.cayenne.dba.DbAdapter;
 import org.apache.cayenne.map.EntityResolver;

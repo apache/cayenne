@@ -17,21 +17,15 @@
  *  under the License.
  ****************************************************************/
 
-package org.apache.cayenne.access.translator.select;
+package org.apache.cayenne.access.translator;
 
 import org.apache.cayenne.access.jdbc.RSColumn;
 import org.apache.cayenne.access.jdbc.PSParameter;
 
 /**
- * An immutable result of translating a {@link org.apache.cayenne.query.Select} query to SQL,
- * produced by {@link SelectTranslator#translate}.
+ * A translated form of a Query used to generated PreparedStatements.
  *
  * @since 5.0
  */
-public record TranslatedSelect(
-        String sql,
-        PSParameter<?>[] bindings,
-        RSColumn[] resultColumns,
-        boolean suppressingDistinct,
-        boolean hasJoins) {
+public record TranslatedSQL(String sql, PSParameter<?>[] bindings, RSColumn[] resultColumns) {
 }

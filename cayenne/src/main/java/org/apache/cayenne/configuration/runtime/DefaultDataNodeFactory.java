@@ -20,12 +20,12 @@ package org.apache.cayenne.configuration.runtime;
 
 import org.apache.cayenne.access.DataNode;
 import org.apache.cayenne.access.dbsync.SchemaUpdateStrategyFactory;
-import org.apache.cayenne.access.translator.sqltemplate.SQLTemplateTranslator;
+import org.apache.cayenne.access.translator.SQLTemplateTranslator;
 import org.apache.cayenne.access.jdbc.reader.RowReaderFactory;
-import org.apache.cayenne.access.translator.batch.BatchTranslator;
-import org.apache.cayenne.access.translator.ejbql.EJBQLTranslator;
-import org.apache.cayenne.access.translator.procedure.ProcedureTranslator;
-import org.apache.cayenne.access.translator.select.SelectTranslator;
+import org.apache.cayenne.access.translator.BatchTranslator;
+import org.apache.cayenne.access.translator.EJBQLTranslator;
+import org.apache.cayenne.access.translator.ProcedureTranslator;
+import org.apache.cayenne.access.translator.SelectTranslator;
 import org.apache.cayenne.query.DeleteBatchQuery;
 import org.apache.cayenne.query.InsertBatchQuery;
 import org.apache.cayenne.query.UpdateBatchQuery;

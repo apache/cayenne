@@ -17,14 +17,16 @@
  *  under the License.
  ****************************************************************/
 
-package org.apache.cayenne.access.translator.procedure;
+package org.apache.cayenne.access.translator;
 
-import org.apache.cayenne.access.jdbc.CSParameter;
+import org.apache.cayenne.access.jdbc.PSBatchParameter;
 
 /**
- * An immutable result of translating a {@link org.apache.cayenne.query.ProcedureQuery} to a stored procedure call.
+ * An immutable result of translating a batch query: the SQL String shared by all rows of the batch, and one
+ * {@link PSBatchParameter} per PreparedStatement placeholder, each carrying the values of all batch rows for
+ * its placeholder.
  *
  * @since 5.0
  */
-public record TranslatedProcedure(String sql, CSParameter<?>[] params) {
+public record TranslatedBatch(String sql, PSBatchParameter[] bindings) {
 }

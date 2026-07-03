@@ -18,8 +18,8 @@
  ****************************************************************/
 package org.apache.cayenne.crypto.batch;
 
-import org.apache.cayenne.access.translator.batch.BatchTranslator;
-import org.apache.cayenne.access.translator.batch.TranslatedBatch;
+import org.apache.cayenne.access.translator.BatchTranslator;
+import org.apache.cayenne.access.translator.TranslatedBatch;
 import org.apache.cayenne.crypto.transformer.BindingsTransformer;
 import org.apache.cayenne.crypto.transformer.TransformerFactory;
 import org.apache.cayenne.dba.DbAdapter;

@@ -25,7 +25,7 @@ import org.apache.cayenne.access.DataNode;
 import org.apache.cayenne.access.OperationObserver;
 import org.apache.cayenne.access.jdbc.ProcedureAction;
 import org.apache.cayenne.access.jdbc.RSColumn;
-import org.apache.cayenne.access.translator.procedure.TranslatedProcedure;
+import org.apache.cayenne.access.translator.TranslatedProcedure;
 import org.apache.cayenne.query.ProcedureQuery;
 import org.apache.cayenne.query.Query;
 

@@ -17,16 +17,21 @@
  *  under the License.
  ****************************************************************/
 
-package org.apache.cayenne.access.translator.batch;
+package org.apache.cayenne.access.translator;
 
-import org.apache.cayenne.access.jdbc.PSBatchParameter;
+import org.apache.cayenne.access.jdbc.RSColumn;
+import org.apache.cayenne.access.jdbc.PSParameter;
 
 /**
- * An immutable result of translating a batch query: the SQL String shared by all rows of the batch, and one
- * {@link PSBatchParameter} per PreparedStatement placeholder, each carrying the values of all batch rows for
- * its placeholder.
+ * An immutable result of translating a {@link org.apache.cayenne.query.Select} query to SQL,
+ * produced by {@link SelectTranslator#translate}.
  *
  * @since 5.0
  */
-public record TranslatedBatch(String sql, PSBatchParameter[] bindings) {
+public record TranslatedSelect(
+        String sql,
+        PSParameter<?>[] bindings,
+        RSColumn[] resultColumns,
+        boolean suppressingDistinct,
+        boolean hasJoins) {
 }

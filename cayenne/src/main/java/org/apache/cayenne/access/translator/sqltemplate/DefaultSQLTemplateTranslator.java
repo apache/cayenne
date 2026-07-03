@@ -20,6 +20,8 @@
 package org.apache.cayenne.access.translator.sqltemplate;
 
 import org.apache.cayenne.CayenneRuntimeException;
+import org.apache.cayenne.access.translator.SQLTemplateTranslator;
+import org.apache.cayenne.access.translator.TranslatedSQL;
 import org.apache.cayenne.dba.DbAdapter;
 import org.apache.cayenne.di.Inject;
 import org.apache.cayenne.access.translator.sqltemplate.parser.Node;

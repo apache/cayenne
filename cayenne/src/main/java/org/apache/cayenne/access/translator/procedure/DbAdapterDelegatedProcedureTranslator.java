@@ -19,6 +19,8 @@
 
 package org.apache.cayenne.access.translator.procedure;
 
+import org.apache.cayenne.access.translator.ProcedureTranslator;
+import org.apache.cayenne.access.translator.TranslatedProcedure;
 import org.apache.cayenne.dba.DbAdapter;
 import org.apache.cayenne.map.EntityResolver;
 import org.apache.cayenne.query.ProcedureQuery;

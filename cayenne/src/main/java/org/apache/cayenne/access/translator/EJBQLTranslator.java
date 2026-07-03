@@ -16,8 +16,10 @@
  *  specific language governing permissions and limitations
  *  under the License.
  ****************************************************************/
-package org.apache.cayenne.access.translator.ejbql;
+package org.apache.cayenne.access.translator;
 
+import org.apache.cayenne.access.translator.ejbql.EJBQLJoinAppender;
+import org.apache.cayenne.access.translator.ejbql.EJBQLTranslationContext;
 import org.apache.cayenne.ejbql.EJBQLExpressionVisitor;
 
 /**

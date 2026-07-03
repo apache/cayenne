@@ -17,23 +17,14 @@
  *  under the License.
  ****************************************************************/
 
-package org.apache.cayenne.access.translator.select;
+package org.apache.cayenne.access.translator;
 
-import org.apache.cayenne.dba.DbAdapter;
-import org.apache.cayenne.map.EntityResolver;
-import org.apache.cayenne.query.Select;
+import org.apache.cayenne.access.jdbc.CSParameter;
 
 /**
- * A service that translates a {@link Select} query into a {@link TranslatedSelect}.
+ * An immutable result of translating a {@link org.apache.cayenne.query.ProcedureQuery} to a stored procedure call.
  *
- * @since 4.0
+ * @since 5.0
  */
-public interface SelectTranslator {
-
-    /**
-     * Translates the provided query into a {@link TranslatedSelect}.
-     *
-     * @since 5.0
-     */
-    TranslatedSelect translate(Select<?> query, DbAdapter adapter, EntityResolver resolver);
+public record TranslatedProcedure(String sql, CSParameter<?>[] params) {
 }

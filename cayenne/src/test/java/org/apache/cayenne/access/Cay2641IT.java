@@ -20,7 +20,7 @@ package org.apache.cayenne.access;
 
 import org.apache.cayenne.Fault;
 import org.apache.cayenne.access.translator.select.DbAdapterDelegatedSelectTranslator;
-import org.apache.cayenne.access.translator.select.TranslatedSelect;
+import org.apache.cayenne.access.translator.TranslatedSelect;
 import org.apache.cayenne.dba.DbAdapter;
 import org.apache.cayenne.query.ColumnSelect;
 import org.apache.cayenne.query.ObjectSelect;

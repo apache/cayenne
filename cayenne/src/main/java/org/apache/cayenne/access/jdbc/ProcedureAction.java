@@ -23,7 +23,7 @@ import org.apache.cayenne.CayenneRuntimeException;
 import org.apache.cayenne.DataRow;
 import org.apache.cayenne.access.DataNode;
 import org.apache.cayenne.access.OperationObserver;
-import org.apache.cayenne.access.translator.procedure.TranslatedProcedure;
+import org.apache.cayenne.access.translator.TranslatedProcedure;
 import org.apache.cayenne.access.types.ExtendedType;
 import org.apache.cayenne.access.types.ExtendedTypeMap;
 import org.apache.cayenne.dba.DbAdapter;
@@ -80,16 +80,12 @@ public class ProcedureAction extends BaseSQLAction {
 			bindParameters(statement, translated);
 
 			// stored procedure may contain a mixture of update counts and
-			// result sets,
-			// and out parameters. Read out parameters first, then
+			// result sets, and out parameters. Read out parameters first, then
 			// iterate until we exhaust all results
 
 			// TODO: andrus, 4/2/2007 - according to the docs we should store
-			// the boolean
-			// return value of this method and avoid calling 'getMoreResults' if
-			// it is
-			// true.
-			// some db's handle this well, some don't (MySQL).
+			// the boolean return value of this method and avoid calling 'getMoreResults' if
+			// it is true. some db's handle this well, some don't (MySQL).
 
 			// 09/23/2013: almost all adapters except Oracle (and maybe a few
 			// more?) are actually using the correct strategy, so making it a

@@ -17,7 +17,7 @@
  * under the License.
  ****************************************************************/
 
-package org.apache.cayenne.access.translator.procedure;
+package org.apache.cayenne.access.translator;
 
 import org.apache.cayenne.dba.DbAdapter;
 import org.apache.cayenne.map.EntityResolver;

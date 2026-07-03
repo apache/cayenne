@@ -19,7 +19,7 @@
 
 package org.apache.cayenne.velocity;
 
-import org.apache.cayenne.access.translator.sqltemplate.SQLTemplateTranslator;
+import org.apache.cayenne.access.translator.SQLTemplateTranslator;
 import org.apache.cayenne.di.Binder;
 import org.apache.cayenne.di.Module;
 

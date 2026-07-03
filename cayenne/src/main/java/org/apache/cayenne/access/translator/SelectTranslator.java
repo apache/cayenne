@@ -17,15 +17,23 @@
  *  under the License.
  ****************************************************************/
 
-package org.apache.cayenne.access.translator.sqltemplate;
+package org.apache.cayenne.access.translator;
 
-import org.apache.cayenne.access.jdbc.RSColumn;
-import org.apache.cayenne.access.jdbc.PSParameter;
+import org.apache.cayenne.dba.DbAdapter;
+import org.apache.cayenne.map.EntityResolver;
+import org.apache.cayenne.query.Select;
 
 /**
- * A translated form of a Query used to generated PreparedStatements.
+ * A service that translates a {@link Select} query into a {@link TranslatedSelect}.
  *
- * @since 5.0
+ * @since 4.0
  */
-public record TranslatedSQL(String sql, PSParameter<?>[] bindings, RSColumn[] resultColumns) {
+public interface SelectTranslator {
+
+    /**
+     * Translates the provided query into a {@link TranslatedSelect}.
+     *
+     * @since 5.0
+     */
+    TranslatedSelect translate(Select<?> query, DbAdapter adapter, EntityResolver resolver);
 }
