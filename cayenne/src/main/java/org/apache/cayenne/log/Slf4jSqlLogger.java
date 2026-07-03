@@ -20,12 +20,13 @@
 package org.apache.cayenne.log;
 
 import org.apache.cayenne.access.translator.TranslatedStatement;
-import org.apache.cayenne.map.DbAttribute;
 import org.apache.cayenne.configuration.Constants;
 import org.apache.cayenne.configuration.RuntimeProperties;
 import org.apache.cayenne.di.Inject;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+
+import java.util.Map;
 
 /**
  * A {@link SqlLogger} that emits compact, single-line messages through slf4j-api under the fixed logger name
@@ -88,9 +89,11 @@ public class Slf4jSqlLogger implements SqlLogger {
     }
 
     @Override
-    public void logGeneratedKey(DbAttribute attribute, Object value) {
+    public void logGeneratedKey(Map<String, ?> keys) {
         if (LOGGER.isInfoEnabled()) {
-            LOGGER.info("generated PK {}:{}", attribute.getName(), value);
+            StringBuilder buffer = new StringBuilder("generated PK ");
+            SqlBindingRenderer.appendGeneratedKeys(buffer, keys);
+            LOGGER.info(buffer.toString());
         }
     }
 

@@ -20,7 +20,8 @@
 package org.apache.cayenne.log;
 
 import org.apache.cayenne.access.translator.TranslatedStatement;
-import org.apache.cayenne.map.DbAttribute;
+
+import java.util.Map;
 
 /**
  * A logging service used by Cayenne to output database interactions as compact, single-line messages.
@@ -59,9 +60,9 @@ public interface SqlLogger {
     void logAlsoUpdate(int rowCount);
 
     /**
-     * Logs a database-generated primary key value.
+     * Logs the database-generated keys of a single inserted row as one compact, comma-separated line.
      */
-    void logGeneratedKey(DbAttribute attribute, Object value);
+    void logGeneratedKey(Map<String, ?> keys);
 
     /**
      * Logs a transaction start boundary (emitted at DEBUG level).

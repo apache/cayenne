@@ -29,13 +29,13 @@ import org.apache.cayenne.access.translator.TranslatedSelect;
 import org.apache.cayenne.access.translator.TranslatedStatement;
 import org.apache.cayenne.access.types.ExtendedType;
 
+import java.util.Map;
+
 /**
  * Renders the parameter bindings of a {@link TranslatedStatement} in the compact {@code bind:[...]} form used by
  * {@link SqlLogger} and by exception messages. Shared so that logged and thrown SQL look identical.
- *
- * @since 5.0
  */
-public class SqlBindingRenderer {
+class SqlBindingRenderer {
 
     /**
      * Appends the {@code bind:[...]} fragment for the given statement to the buffer, or nothing if the statement has
@@ -50,6 +50,23 @@ public class SqlBindingRenderer {
             case TranslatedProcedure p -> appendCallParameters(buffer, p.params());
             case TranslatedBatch b -> appendBatch(buffer, b.bindings(), batchRowThreshold);
         }
+    }
+
+    /**
+     * Appends the generated keys of a single row as a {@code [name:value,...]} fragment, using the same value
+     * formatting as parameter bindings.
+     */
+    public static void appendGeneratedKeys(StringBuilder buffer, Map<String, ?> keys) {
+        buffer.append('[');
+        boolean first = true;
+        for (Map.Entry<String, ?> entry : keys.entrySet()) {
+            if (!first) {
+                buffer.append(',');
+            }
+            first = false;
+            appendNamedValue(buffer, entry.getKey(), null, entry.getValue());
+        }
+        buffer.append(']');
     }
 
     private static void appendParameters(StringBuilder buffer, PSParameter<?>[] bindings) {

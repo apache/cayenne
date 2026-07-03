@@ -18,6 +18,7 @@
  ****************************************************************/
 package org.apache.cayenne.access.jdbc;
 
+import org.apache.cayenne.DataRow;
 import org.apache.cayenne.ObjectId;
 import org.apache.cayenne.ResultIterator;
 import org.apache.cayenne.access.DataNode;
@@ -161,7 +162,7 @@ public class EJBQLAction extends BaseSQLAction {
         }
 
         @Override
-        public void nextGeneratedRows(Query query, ResultIterator<?> keys, List<ObjectId> idsToUpdate) {
+        public void nextGeneratedRows(Query query, List<DataRow> keys, List<ObjectId> idsToUpdate) {
             delegate.nextGeneratedRows(originalQuery, keys, idsToUpdate);
         }
 

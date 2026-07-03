@@ -19,6 +19,7 @@
 
 package org.apache.cayenne.access;
 
+import org.apache.cayenne.DataRow;
 import org.apache.cayenne.ObjectId;
 import org.apache.cayenne.ResultIterator;
 import org.apache.cayenne.access.translator.TranslatedBatch;
@@ -150,7 +151,10 @@ class LoggingObserver implements OperationObserver {
     }
 
     @Override
-    public void nextGeneratedRows(Query query, ResultIterator<?> keys, List<ObjectId> idsToUpdate) {
+    public void nextGeneratedRows(Query query, List<DataRow> keys, List<ObjectId> idsToUpdate) {
+        for (DataRow key : keys) {
+            logger.logGeneratedKey(key);
+        }
         delegate.nextGeneratedRows(query, keys, idsToUpdate);
     }
 

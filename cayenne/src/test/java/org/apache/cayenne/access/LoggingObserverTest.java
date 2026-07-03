@@ -19,6 +19,7 @@
 
 package org.apache.cayenne.access;
 
+import org.apache.cayenne.DataRow;
 import org.apache.cayenne.access.jdbc.CSParameter;
 import org.apache.cayenne.access.jdbc.PSBatchParameter;
 import org.apache.cayenne.access.jdbc.PSParameter;
@@ -28,11 +29,11 @@ import org.apache.cayenne.access.translator.TranslatedProcedure;
 import org.apache.cayenne.access.translator.TranslatedSelect;
 import org.apache.cayenne.access.translator.TranslatedStatement;
 import org.apache.cayenne.log.SqlLogger;
-import org.apache.cayenne.map.DbAttribute;
 import org.junit.jupiter.api.Test;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
 
 import static java.util.Arrays.asList;
 import static org.junit.jupiter.api.Assertions.assertEquals;
@@ -53,9 +54,6 @@ public class LoggingObserverTest {
         return new TranslatedProcedure("call p()", new CSParameter<?>[0]);
     }
 
-    /**
-     * A capturing {@link SqlLogger} that records the sequence of statement calls for assertions.
-     */
     private static class CapturingLogger implements SqlLogger {
         final List<String> calls = new ArrayList<>();
 
@@ -85,8 +83,10 @@ public class LoggingObserverTest {
         }
 
         @Override
-        public void logGeneratedKey(DbAttribute attribute, Object value) {
-            calls.add("generated PK " + attribute.getName() + ":" + value);
+        public void logGeneratedKey(Map<String, ?> keys) {
+            StringBuilder buffer = new StringBuilder("generated PK");
+            keys.forEach((name, value) -> buffer.append(' ').append(name).append('=').append(value));
+            calls.add(buffer.toString());
         }
 
         @Override
@@ -162,6 +162,19 @@ public class LoggingObserverTest {
         observer.onSuccess();
 
         assertEquals(List.of("selected:2"), logger.calls);
+    }
+
+    @Test
+    public void generatedRowsLogKeysUsingDataRowLabels() {
+        CapturingLogger logger = new CapturingLogger();
+        LoggingObserver observer = observer(logger);
+
+        DataRow row = new DataRow(1);
+        row.put("ARTIST_ID", 42L);
+
+        observer.nextGeneratedRows(null, List.of(row), List.of());
+
+        assertEquals(List.of("generated PK ARTIST_ID=42"), logger.calls);
     }
 
     @Test

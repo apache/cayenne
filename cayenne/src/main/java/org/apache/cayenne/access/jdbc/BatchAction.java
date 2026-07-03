@@ -20,6 +20,7 @@
 package org.apache.cayenne.access.jdbc;
 
 import org.apache.cayenne.CayenneRuntimeException;
+import org.apache.cayenne.DataRow;
 import org.apache.cayenne.ObjectId;
 import org.apache.cayenne.ResultIterator;
 import org.apache.cayenne.access.DataNode;
@@ -292,13 +293,19 @@ public class BatchAction extends BaseSQLAction {
 
 		RowReader<?> rowReader = dataNode.getRowReaderFactory()
 				.rowReader(keyColumns, query.getMetaData(dataNode.getEntityResolver()), dataNode.getAdapter());
-		ResultIterator iterator = new RSIterator(null, keysRS, rowReader);
+
+		// generated keys are small (one row per inserted row), so materialize them here rather than passing a live,
+		// single-use iterator to the observer
+		List<DataRow> keys;
+		try (ResultIterator<?> iterator = new RSIterator(null, keysRS, rowReader)) {
+			keys = (List<DataRow>) iterator.allRows();
+		}
 
 		List<ObjectId> objectIds = new ArrayList<>(rows.size());
 		for(BatchQueryRow row : rows) {
 			objectIds.add(row.getObjectId());
 		}
-		observer.nextGeneratedRows(query, iterator, objectIds);
+		observer.nextGeneratedRows(query, keys, objectIds);
 	}
 
 	private String typeForGeneratedPK(DbAttribute key) {

@@ -24,7 +24,6 @@ import org.apache.cayenne.DataRow;
 import org.apache.cayenne.ObjectId;
 import org.apache.cayenne.ResultIterator;
 import org.apache.cayenne.access.OperationObserver;
-import org.apache.cayenne.log.SqlLogger;
 import org.apache.cayenne.map.DbAttribute;
 import org.apache.cayenne.query.InsertBatchQuery;
 import org.apache.cayenne.query.Query;
@@ -36,12 +35,6 @@ import java.util.List;
  * @since 4.2
  */
 class FlushObserver implements OperationObserver {
-
-    private final SqlLogger logger;
-
-    public FlushObserver(SqlLogger logger) {
-        this.logger = logger;
-    }
 
     @Override
     public void nextQueryException(Query query, Exception ex) {
@@ -57,14 +50,7 @@ class FlushObserver implements OperationObserver {
      * Processes generated keys.
      */
     @Override
-    @SuppressWarnings("unchecked")
-    public void nextGeneratedRows(Query query, ResultIterator<?> keysIterator, List<ObjectId> idsToUpdate) {
-
-        // read and close the iterator before doing anything else
-        List<DataRow> keys;
-        try (keysIterator) {
-            keys = (List<DataRow>) keysIterator.allRows();
-        }
+    public void nextGeneratedRows(Query query, List<DataRow> keys, List<ObjectId> idsToUpdate) {
 
         if (!(query instanceof InsertBatchQuery batch)) {
             throw new CayenneRuntimeException("Generated keys only supported for InsertBatchQuery, instead got %s", query);
@@ -104,9 +90,6 @@ class FlushObserver implements OperationObserver {
 	                }
 	                
 	
-	                // log the generated PK
-	                logger.logGeneratedKey(attribute, value);
-
 	                // I guess we should override any existing value,
 	                // as generated key is the latest thing that exists in the DB.
 	                idToUpdate.getReplacementIdMap().put(attribute.getName(), value);

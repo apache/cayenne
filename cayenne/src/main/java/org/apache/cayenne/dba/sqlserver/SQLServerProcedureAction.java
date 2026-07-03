@@ -19,6 +19,7 @@
 
 package org.apache.cayenne.dba.sqlserver;
 
+import org.apache.cayenne.DataRow;
 import org.apache.cayenne.ObjectId;
 import org.apache.cayenne.ResultIterator;
 import org.apache.cayenne.access.DataNode;
@@ -174,7 +175,7 @@ public class SQLServerProcedureAction extends ProcedureAction {
 		}
 
 		@Override
-		public void nextGeneratedRows(Query query, ResultIterator<?> keys, List<ObjectId> idsToUpdate) {
+		public void nextGeneratedRows(Query query, List<DataRow> keys, List<ObjectId> idsToUpdate) {
 			observer.nextGeneratedRows(query, keys, idsToUpdate);
 		}
 

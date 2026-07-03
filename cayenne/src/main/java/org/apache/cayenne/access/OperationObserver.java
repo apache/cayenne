@@ -20,6 +20,7 @@
 package org.apache.cayenne.access;
 
 import org.apache.cayenne.CayenneRuntimeException;
+import org.apache.cayenne.DataRow;
 import org.apache.cayenne.ObjectId;
 import org.apache.cayenne.ResultIterator;
 import org.apache.cayenne.access.translator.TranslatedStatement;
@@ -96,9 +97,9 @@ public interface OperationObserver extends OperationHints {
     /**
      * Callback method invoked after each batch of generated values is read during an update.
      *
-     * @since 4.2
+     * @since 5.0
      */
-    default void nextGeneratedRows(Query query, ResultIterator<?> keys, List<ObjectId> idsToUpdate) {
+    default void nextGeneratedRows(Query query, List<DataRow> keys, List<ObjectId> idsToUpdate) {
     }
 
     /**

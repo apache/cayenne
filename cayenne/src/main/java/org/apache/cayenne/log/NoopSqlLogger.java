@@ -19,7 +19,8 @@
 package org.apache.cayenne.log;
 
 import org.apache.cayenne.access.translator.TranslatedStatement;
-import org.apache.cayenne.map.DbAttribute;
+
+import java.util.Map;
 
 /**
  * A no-op {@link SqlLogger}. Used as a null-object default in contexts that run without a configured logger, such as
@@ -61,7 +62,7 @@ public class NoopSqlLogger implements SqlLogger {
     }
 
     @Override
-    public void logGeneratedKey(DbAttribute attribute, Object value) {
+    public void logGeneratedKey(Map<String, ?> keys) {
     }
 
     @Override
