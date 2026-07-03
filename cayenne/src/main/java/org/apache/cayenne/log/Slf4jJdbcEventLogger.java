@@ -32,187 +32,185 @@ import java.sql.SQLException;
 
 /**
  * A {@link JdbcEventLogger} built on top of slf4j-api LOGGER.
- * 
+ *
  * @since 3.1
  * @since 4.0 renamed from CommonsJdbcEventLogger to Slf4jJdbcEventLogger as part of migration to SLF4J
  */
 public class Slf4jJdbcEventLogger implements JdbcEventLogger {
 
-	private static final Logger LOGGER = LoggerFactory.getLogger(JdbcEventLogger.class);
+    private static final Logger LOGGER = LoggerFactory.getLogger(JdbcEventLogger.class);
 
-	protected long queryExecutionTimeLoggingThreshold;
+    protected long queryExecutionTimeLoggingThreshold;
 
-	public Slf4jJdbcEventLogger(@Inject RuntimeProperties runtimeProperties) {
-		this.queryExecutionTimeLoggingThreshold = runtimeProperties.getLong(
-				Constants.QUERY_EXECUTION_TIME_LOGGING_THRESHOLD_PROPERTY, 0);
-	}
+    public Slf4jJdbcEventLogger(@Inject RuntimeProperties runtimeProperties) {
+        this.queryExecutionTimeLoggingThreshold = runtimeProperties.getLong(
+                Constants.QUERY_EXECUTION_TIME_LOGGING_THRESHOLD_PROPERTY, 0);
+    }
 
-	@Override
-	public void log(String message) {
-		if (message != null) {
-			LOGGER.info(message);
-		}
-	}
+    @Override
+    public void log(String message) {
+        if (message != null) {
+            LOGGER.info(message);
+        }
+    }
 
-	@Override
-	public void logGeneratedKey(DbAttribute attribute, Object value) {
-		if (isLoggable()) {
-			String entity = attribute.getEntity().getName();
-			LOGGER.info("Generated PK: {}.{} = {}", entity, attribute.getName(), value);
-		}
-	}
+    @Override
+    public void logGeneratedKey(DbAttribute attribute, Object value) {
+        if (isLoggable()) {
+            String entity = attribute.getEntity().getName();
+            LOGGER.info("Generated PK: {}.{} = {}", entity, attribute.getName(), value);
+        }
+    }
 
-	@Override
-	public void logQuery(String sql, PSParameter[] bindings) {
-		if (isLoggable()) {
+    @Override
+    public void logQuery(String sql, PSParameter<?>[] bindings) {
+        if (isLoggable()) {
 
-			StringBuilder buffer = new StringBuilder(sql).append(" ");
-			appendParameters(buffer, "bind", bindings);
+            StringBuilder buffer = new StringBuilder(sql).append(" ");
+            appendParameters(buffer, "bind", bindings);
 
-			if (buffer.length() > 0) {
-				LOGGER.info(buffer.toString());
-			}
-		}
-	}
+            if (!buffer.isEmpty()) {
+                LOGGER.info(buffer.toString());
+            }
+        }
+    }
 
-	@Override
-	public void logQueryParameters(String label, PSParameter[] bindings) {
+    @Override
+    public void logQueryParameters(String label, PSParameter<?>[] bindings) {
 
-		if (isLoggable() && bindings.length > 0) {
+        if (isLoggable() && bindings.length > 0) {
 
-			StringBuilder buffer = new StringBuilder();
-			appendParameters(buffer, label, bindings);
+            StringBuilder buffer = new StringBuilder();
+            appendParameters(buffer, label, bindings);
 
-			if (buffer.length() > 0) {
-				LOGGER.info(buffer.toString());
-			}
-		}
-	}
+            if (!buffer.isEmpty()) {
+                LOGGER.info(buffer.toString());
+            }
+        }
+    }
 
-	@SuppressWarnings("unchecked")
-	protected void appendParameters(StringBuilder buffer, String label, PSParameter[] bindings) {
+    @SuppressWarnings("unchecked")
+    protected void appendParameters(StringBuilder buffer, String label, PSParameter<?>[] bindings) {
 
-		int len = bindings.length;
-		if (len > 0) {
+        int len = bindings.length;
+        if (len > 0) {
 
-			boolean hasIncluded = false;
+            boolean hasIncluded = false;
 
-			for (int i = 0, j = 1; i < len; i++) {
-				PSParameter b = bindings[i];
+            for (int i = 0, j = 1; i < len; i++) {
+                PSParameter b = bindings[i];
 
-				if (hasIncluded) {
-					buffer.append(", ");
-				} else {
-					hasIncluded = true;
-					buffer.append("[").append(label).append(": ");
-				}
-
-
-				buffer.append(j++);
-
-				DbAttribute attribute = b.attribute();
-				if (attribute != null) {
-					buffer.append("->");
-					buffer.append(attribute.getName());
-				}
-
-				buffer.append(":");
-
-				if (b.binder() != null) {
-					buffer.append(b.binder().toString(b.value()));
-				} else if(b.value() == null) {
-				    buffer.append("NULL");
+                if (hasIncluded) {
+                    buffer.append(", ");
                 } else {
-					buffer.append(b.value().getClass().getName())
+                    hasIncluded = true;
+                    buffer.append("[").append(label).append(": ");
+                }
+
+
+                buffer.append(j++);
+
+                DbAttribute attribute = b.attribute();
+                if (attribute != null) {
+                    buffer.append("->");
+                    buffer.append(attribute.getName());
+                }
+
+                buffer.append(":");
+
+                if (b.binder() != null) {
+                    buffer.append(b.binder().toString(b.value()));
+                } else if (b.value() == null) {
+                    buffer.append("NULL");
+                } else {
+                    buffer.append(b.value().getClass().getName())
                             .append("@")
                             .append(System.identityHashCode(b.value()));
-				}
-			}
+                }
+            }
 
-			if (hasIncluded) {
-				buffer.append("]");
-			}
-		}
-	}
+            buffer.append("]");
+        }
+    }
 
-	@Override
-	public void logSelectCount(int count, long time) {
-		logSelectCount(count, time, null);
-	}
+    @Override
+    public void logSelectCount(int count, long time) {
+        logSelectCount(count, time, null);
+    }
 
-	@Override
-	public void logSelectCount(int count, long time, String sql) {
+    @Override
+    public void logSelectCount(int count, long time, String sql) {
 
-		if (isLoggable()) {
-			StringBuilder buf = new StringBuilder();
+        if (isLoggable()) {
+            StringBuilder buf = new StringBuilder();
 
-			if (count == 1) {
-				buf.append("=== returned 1 row.");
-			} else {
-				buf.append("=== returned ").append(count).append(" rows.");
-			}
+            if (count == 1) {
+                buf.append("=== returned 1 row.");
+            } else {
+                buf.append("=== returned ").append(count).append(" rows.");
+            }
 
-			if (time >= 0) {
-				buf.append(" - took ").append(time).append(" ms.");
-			}
+            if (time >= 0) {
+                buf.append(" - took ").append(time).append(" ms.");
+            }
 
-			LOGGER.info(buf.toString());
-		}
+            LOGGER.info(buf.toString());
+        }
 
-		if (queryExecutionTimeLoggingThreshold > 0 && time > queryExecutionTimeLoggingThreshold) {
-			String message = "Query time exceeded threshold (" + time + " ms): ";
-			LOGGER.warn("{}{}", message, sql, new CayenneRuntimeException(message + "%s", sql));
-		}
-	}
+        if (queryExecutionTimeLoggingThreshold > 0 && time > queryExecutionTimeLoggingThreshold) {
+            String message = "Query time exceeded threshold (" + time + " ms): ";
+            LOGGER.warn("{}{}", message, sql, new CayenneRuntimeException(message + "%s", sql));
+        }
+    }
 
-	@Override
-	public void logUpdateCount(int count) {
-		if (isLoggable()) {
-			if (count < 0) {
-				LOGGER.info("=== updated ? rows");
-			} else {
-				String countStr = (count == 1) ? "=== updated 1 row." : "=== updated " + count + " rows.";
-				LOGGER.info(countStr);
-			}
-		}
-	}
+    @Override
+    public void logUpdateCount(int count) {
+        if (isLoggable()) {
+            if (count < 0) {
+                LOGGER.info("=== updated ? rows");
+            } else {
+                String countStr = (count == 1) ? "=== updated 1 row." : "=== updated " + count + " rows.";
+                LOGGER.info(countStr);
+            }
+        }
+    }
 
-	@Override
-	public void logBeginTransaction(String transactionLabel) {
-		LOGGER.info("--- {}", transactionLabel);
-	}
+    @Override
+    public void logBeginTransaction(String transactionLabel) {
+        LOGGER.info("--- {}", transactionLabel);
+    }
 
-	@Override
-	public void logCommitTransaction(String transactionLabel) {
-		LOGGER.info("+++ {}", transactionLabel);
-	}
+    @Override
+    public void logCommitTransaction(String transactionLabel) {
+        LOGGER.info("+++ {}", transactionLabel);
+    }
 
-	@Override
-	public void logRollbackTransaction(String transactionLabel) {
-		LOGGER.info("*** {}", transactionLabel);
-	}
+    @Override
+    public void logRollbackTransaction(String transactionLabel) {
+        LOGGER.info("*** {}", transactionLabel);
+    }
 
-	@Override
-	public void logQueryError(Throwable th) {
-		if (isLoggable()) {
-			if (th != null) {
-				th = Util.unwindException(th);
-			}
+    @Override
+    public void logQueryError(Throwable th) {
+        if (isLoggable()) {
+            if (th != null) {
+                th = Util.unwindException(th);
+            }
 
-			LOGGER.info("*** error.", th);
+            LOGGER.info("*** error.", th);
 
-			if (th instanceof SQLException) {
-				SQLException sqlException = ((SQLException) th).getNextException();
-				while (sqlException != null) {
-					LOGGER.info("*** nested SQL error.", sqlException);
-					sqlException = sqlException.getNextException();
-				}
-			}
-		}
-	}
+            if (th instanceof SQLException) {
+                SQLException sqlException = ((SQLException) th).getNextException();
+                while (sqlException != null) {
+                    LOGGER.info("*** nested SQL error.", sqlException);
+                    sqlException = sqlException.getNextException();
+                }
+            }
+        }
+    }
 
-	@Override
-	public boolean isLoggable() {
-		return LOGGER.isInfoEnabled();
-	}
+    @Override
+    public boolean isLoggable() {
+        return LOGGER.isInfoEnabled();
+    }
 }

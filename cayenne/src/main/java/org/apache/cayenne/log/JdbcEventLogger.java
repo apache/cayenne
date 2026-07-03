@@ -38,12 +38,12 @@ public interface JdbcEventLogger {
 	/**
 	 * @since 4.0
 	 */
-	void logQuery(String sql, PSParameter[] bindings);
+	void logQuery(String sql, PSParameter<?>[] bindings);
 
 	/**
 	 * @since 4.0
 	 */
-	void logQueryParameters(String label, PSParameter[] bindings);
+	void logQueryParameters(String label, PSParameter<?>[] bindings);
 
 	void logSelectCount(int count, long time);
 

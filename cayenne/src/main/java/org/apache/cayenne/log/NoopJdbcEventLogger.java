@@ -46,11 +46,11 @@ public class NoopJdbcEventLogger implements JdbcEventLogger {
 	}
 	
 	@Override
-	public void logQuery(String sql, PSParameter[] bindings) {
+	public void logQuery(String sql, PSParameter<?>[] bindings) {
 	}
 
 	@Override
-	public void logQueryParameters(String label, PSParameter[] bindings) {
+	public void logQueryParameters(String label, PSParameter<?>[] bindings) {
 	}
 
 	@Override
