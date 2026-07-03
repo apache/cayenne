@@ -19,12 +19,11 @@
 
 package org.apache.cayenne.access.flush;
 
+import org.apache.cayenne.ObjectId;
+import org.apache.cayenne.access.DeferredValue;
+
 import java.util.HashMap;
 import java.util.Map;
-import java.util.function.Supplier;
-
-import org.apache.cayenne.CayenneRuntimeException;
-import org.apache.cayenne.ObjectId;
 
 /**
  * Helper value-object class that used to compare operations by "effective" id (i.e. by id snapshot,
@@ -33,7 +32,6 @@ import org.apache.cayenne.ObjectId;
  * @since 4.2
  */
 public class EffectiveOpId {
-    private static final int MAX_NESTED_SUPPLIER_LEVEL = 1000;
 
     private final String entityName;
     private final Map<String, Object> snapshot;
@@ -53,28 +51,14 @@ public class EffectiveOpId {
 
     private EffectiveOpId(ObjectId id, String entityName, Map<String, Object> idSnapshot) {
         this.entityName = entityName;
-        if(idSnapshot.size() == 1 && !(idSnapshot.values().iterator().next() instanceof Supplier)) {
+        if(idSnapshot.size() == 1 && !(idSnapshot.values().iterator().next() instanceof DeferredValue)) {
             this.snapshot = idSnapshot;
         } else {
             this.snapshot = new HashMap<>(idSnapshot.size());
             idSnapshot.forEach((key, value) -> {
-                Object initial = value;
-                int safeguard = 0;
-                while (value instanceof Supplier && safeguard < MAX_NESTED_SUPPLIER_LEVEL) {
-                    value = ((Supplier<?>) value).get();
-                    safeguard++;
-                }
-
-                // simple guard from recursive Suppliers
-                if (safeguard == MAX_NESTED_SUPPLIER_LEVEL) {
-                    throw new CayenneRuntimeException("Possible recursive supplier chain for PK value: key '%s'", key);
-                }
-
-                if (value != null) {
-                    this.snapshot.put(key, value);
-                } else {
-                    this.snapshot.put(key, initial);
-                }
+                Object resolved = DeferredValue.resolve(value);
+                // keep the unresolved value if it resolves to null, preserving the original snapshot entry
+                this.snapshot.put(key, resolved != null ? resolved : value);
             });
         }
         this.id = id;

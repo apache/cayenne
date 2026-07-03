@@ -19,17 +19,15 @@
 
 package org.apache.cayenne.access.jdbc;
 
-import org.apache.cayenne.CayenneRuntimeException;
+import org.apache.cayenne.access.DeferredValue;
 import org.apache.cayenne.map.DbAttribute;
-
-import java.util.function.Supplier;
 
 /**
  * An immutable batch parameter corresponding to a single PreparedStatement placeholder, carrying the values of all
  * batch rows for that placeholder alongside the static position and column metadata. The value of a given row is
  * resolved via {@link #getValue(int)}.
  *
- * <p>A value may be a deferred {@link Supplier}, e.g. when it comes from a generated key of another row in the same
+ * <p>A value may be a {@link DeferredValue}, e.g. when it comes from a generated key of another row in the same
  * transaction. Deferred values are resolved when the corresponding row is bound, i.e. after the rows preceding it
  * have been executed.
  *
@@ -37,30 +35,8 @@ import java.util.function.Supplier;
  */
 public record PSBatchParameter(Object[] values, int psPosition, int psType, int psScale, DbAttribute attribute) {
 
-    private static final int MAX_NESTED_SUPPLIER_LEVEL = 1000;
-
     public Object getValue(int row) {
-        Object value = values[row];
-
-        if (!(value instanceof Supplier)) {
-            return value;
-        }
-
-        int safeguard = 0;
-
-        // Suppliers can be nested, resolve all the way down
-        while (value instanceof Supplier<?> s && safeguard < MAX_NESTED_SUPPLIER_LEVEL) {
-            value = s.get();
-            safeguard++;
-        }
-
-        // guard against recursive Suppliers
-        if (safeguard == MAX_NESTED_SUPPLIER_LEVEL) {
-            throw new CayenneRuntimeException(
-                    "Possible recursive supplier chain for the batch value of attribute %s",
-                    attribute.getName());
-        }
-
+        Object value = DeferredValue.resolve(values[row]);
         values[row] = value;
         return value;
     }

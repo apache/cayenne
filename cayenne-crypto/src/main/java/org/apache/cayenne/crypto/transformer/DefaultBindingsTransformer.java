@@ -19,9 +19,9 @@
 package org.apache.cayenne.crypto.transformer;
 
 import java.util.Arrays;
-import java.util.function.Supplier;
 
 import org.apache.cayenne.access.jdbc.PSBatchParameter;
+import org.apache.cayenne.access.DeferredValue;
 import org.apache.cayenne.crypto.transformer.bytes.BytesEncryptor;
 import org.apache.cayenne.crypto.transformer.value.ValueEncryptor;
 
@@ -52,9 +52,9 @@ public class DefaultBindingsTransformer implements BindingsTransformer {
             Object[] encrypted = new Object[values.length];
             for (int r = 0; r < values.length; r++) {
                 Object value = values[r];
-                if (value instanceof Supplier<?> deferred) {
+                if (value instanceof DeferredValue deferred) {
                     // a deferred value can only be encrypted after it is resolved at bind time
-                    encrypted[r] = (Supplier<Object>) () -> transformer.encrypt(encryptor, deferred.get());
+                    encrypted[r] = (DeferredValue) () -> transformer.encrypt(encryptor, deferred.get());
                 } else {
                     encrypted[r] = transformer.encrypt(encryptor, value);
                 }

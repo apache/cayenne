@@ -18,15 +18,14 @@
  ****************************************************************/
 package org.apache.cayenne.lifecycle.relationship;
 
-import java.util.function.Supplier;
-
 import org.apache.cayenne.Persistent;
+import org.apache.cayenne.access.DeferredValue;
 import org.apache.cayenne.lifecycle.id.IdCoder;
 
 /**
  * @since 3.1
  */
-class ObjectIdPropagatedValueFactory implements Supplier {
+class ObjectIdPropagatedValueFactory implements DeferredValue {
 
     private IdCoder referenceableHandler;
     private Persistent to;

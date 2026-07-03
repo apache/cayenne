@@ -53,7 +53,7 @@ Expression caseWhenExp = caseWhen(
 ```
 
 
-## Upgrading to 5.0.M3
+## Upgrading to 5.0-M3
 
 
 * Per [CAY-2954](https://issues.apache.org/jira/browse/CAY-2954) selecting queries are no longer wrapped in
@@ -73,7 +73,15 @@ solution may be changing to "joint" prefetches.
   `org.apache.cayenne.dba.hsqldb.HSQLDBNoSchemaAdapter` no longer exists, and the `HSQLDBSniffer` now maps all. If you
   happen to be on those older HSQL versions, update to the latest one.
 
-## Upgrading to 5.0.M2
+* Per [CAY-2970](https://issues.apache.org/jira/browse/CAY-2970) deferred batch parameter values (e.g. a generated PK
+  propagated to a dependent PK or FK within the same transaction) are now represented by the dedicated
+  `org.apache.cayenne.access.DeferredValue` type instead of a bare `java.util.function.Supplier`. Cayenne now resolves
+  only its own `DeferredValue` instances, leaving user-supplied `Supplier` attribute values untouched. If you have
+  custom code that fed deferred values into batch bindings or `ObjectId` snapshots via `Supplier`, implement
+  `DeferredValue` instead — it is a `@FunctionalInterface`, so an existing lambda or `Supplier` implementation can
+  usually be adapted with a minimal change.
+
+## Upgrading to 5.0-M2
 
 * Per [CAY-2947](https://issues.apache.org/jira/browse/CAY-2947) the `cayenne-commitlog` artifact has been removed. Commit log support is now part of the
   core `cayenne` artifact — no extra dependency needed. Migrate as follows:
@@ -129,7 +137,7 @@ solution may be changing to "joint" prefetches.
   `DataNode` is now used directly wherever `QueryEngine` was previously referenced. So you must subclass `DataNode` 
   and override `performQueries()` if you previously implemented a custom `QueryEngine`.
 
-## Upgrading to 5.0.M1
+## Upgrading to 5.0-M1
 
 * Per [CAY-2737](https://issues.apache.org/jira/browse/CAY-2737) All code deprecated in Cayenne 4.1 and 4.2 was deleted — please review your code before
   upgrading. Most notable removals are `SelectQuery` and these Cayenne modules:

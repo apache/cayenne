@@ -19,6 +19,7 @@ CAY-2957 Get rid of adapter for legacy HSQLDB <= 1.8
 CAY-2962 Allow unconstrained VARCHAR
 CAY-2963 Replace TypesHandler / types.xml with hardcoded map
 CAY-2969 Extender API for "soft" delete 
+CAY-2970 Tighten deferred value resolution contract on commit
 
 Bug Fixes:
 
