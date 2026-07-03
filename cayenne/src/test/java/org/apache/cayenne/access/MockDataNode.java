@@ -78,14 +78,14 @@ public class MockDataNode extends DataNode {
     }
 
     @Override
-    public void performQueries(Collection queries, OperationObserver resultConsumer) {
+    public void performQueries(Collection queries, OperationObserver operationObserver) {
         runCount += queries.size();
 
         if (replaceResults) {
-            initWithPresetResults(queries, resultConsumer);
+            initWithPresetResults(queries, operationObserver);
         }
         else {
-            node.performQueries(queries, resultConsumer);
+            node.performQueries(queries, operationObserver);
         }
     }
 

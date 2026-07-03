@@ -43,6 +43,12 @@ public interface OperationObserver extends OperationHints {
     }
 
     /**
+     * @since 5.0
+     */
+    default void afterLastStatement() {
+    }
+
+    /**
      * Callback method invoked after an updating query is executed.
      */
     void nextCount(Query query, int resultCount);

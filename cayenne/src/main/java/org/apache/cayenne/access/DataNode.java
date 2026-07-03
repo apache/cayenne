@@ -222,21 +222,26 @@ public class DataNode {
      *
      * @since 1.1
      */
-    public void performQueries(Collection<? extends Query> queries, OperationObserver callback) {
+    public void performQueries(Collection<? extends Query> queries, OperationObserver operationObserver) {
 
         int listSize = queries.size();
         if (listSize == 0) {
             return;
         }
 
-        if (callback.isIteratedResult() && listSize > 1) {
+        if (operationObserver.isIteratedResult() && listSize > 1) {
             throw new CayenneRuntimeException("Iterated queries are not allowed in a batch. Batch size: %d", listSize);
         }
+
 
         // do this meaningless inexpensive operation to trigger AutoAdapter lazy initialization before opening a
         // connection. Otherwise, we may end up with two connections open simultaneously, possibly hitting connection
         // pool upper limit.
         getAdapter().getExtendedTypes();
+
+        OperationObserver instrumentedObserver = sqlLogger.isEnabled()
+                ? new LoggingObserver(operationObserver, sqlLogger)
+                : operationObserver;
 
         Transaction tx = BaseTransaction.getThreadTransaction();
         Connection connection;
@@ -248,32 +253,20 @@ public class DataNode {
                 tx.setRollbackOnly();
             }
 
-            callback.nextGlobalException(globalEx);
+            instrumentedObserver.nextGlobalException(globalEx);
             return;
         }
 
-        // when logging is enabled, wrap the observer so it can correlate each executed statement with its results
-        // and emit compact log lines; otherwise pass the caller's observer through untouched
-        SqlLogger logger = getSqlLogger();
-        LoggingObserver loggingObserver = logger != null && logger.isEnabled()
-                ? new LoggingObserver(callback, logger)
-                : null;
-        OperationObserver observer = loggingObserver != null ? loggingObserver : callback;
+        try {
+            DataNodeQueryAction queryRunner = new DataNodeQueryAction(this, instrumentedObserver);
 
-		try {
-			DataNodeQueryAction queryRunner = new DataNodeQueryAction(this, observer);
-
-            boolean failed = false;
             for (Query nextQuery : queries) {
 
                 // catch exceptions for each individual query
                 try {
                     queryRunner.runQuery(connection, nextQuery);
                 } catch (Exception queryEx) {
-                    // notify consumer of the exception, stop running further queries. The failing statement is not
-                    // logged - its SQL and bindings travel with the thrown exception instead.
-                    failed = true;
-                    observer.nextQueryException(nextQuery, queryEx);
+                    instrumentedObserver.nextQueryException(nextQuery, queryEx);
 
                     if (tx != null) {
                         tx.setRollbackOnly();
@@ -282,10 +275,7 @@ public class DataNode {
                 }
             }
 
-            // flush any pending statement line (e.g. a summed batch) that completed successfully
-            if (!failed && loggingObserver != null) {
-                loggingObserver.flush();
-            }
+            instrumentedObserver.afterLastStatement();
         } finally {
             try {
                 connection.close();
@@ -295,12 +285,12 @@ public class DataNode {
         }
     }
 
-	/**
-	 * Returns EntityResolver that handles DataMaps of this node.
-	 */
-	public EntityResolver getEntityResolver() {
-		return entityResolver;
-	}
+    /**
+     * Returns EntityResolver that handles DataMaps of this node.
+     */
+    public EntityResolver getEntityResolver() {
+        return entityResolver;
+    }
 
     /**
      * Sets EntityResolver. DataNode relies on externally set EntityResolver, so

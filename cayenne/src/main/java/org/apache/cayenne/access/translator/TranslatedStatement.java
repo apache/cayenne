@@ -20,10 +20,7 @@
 package org.apache.cayenne.access.translator;
 
 /**
- * A common supertype for the immutable results of translating a query to SQL. It bundles the final SQL string with
- * the typed, self-describing bindings needed to both execute and log a statement, and lets logging and error-reporting
- * treat all four translation flavors ({@link TranslatedSelect}, {@link TranslatedBatch}, {@link TranslatedProcedure},
- * {@link TranslatedSQL}) uniformly.
+ * A common supertype for the immutable results of translating a query to SQL.
  *
  * @since 5.0
  */

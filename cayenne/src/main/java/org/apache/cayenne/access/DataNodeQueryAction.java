@@ -37,8 +37,8 @@ import java.util.List;
  */
 class DataNodeQueryAction {
 
-    OperationObserver observer;
-    DataNode node;
+    final OperationObserver observer;
+    final DataNode node;
 
     public DataNodeQueryAction(DataNode node, OperationObserver observer) {
         this.observer = observer;
@@ -54,6 +54,11 @@ class DataNodeQueryAction {
             @Override
             public void nextStatement(Query query, TranslatedStatement statement) {
                 observer.nextStatement(originalQuery, statement);
+            }
+
+            @Override
+            public void afterLastStatement() {
+                observer.afterLastStatement();
             }
 
             @Override

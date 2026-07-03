@@ -34,11 +34,6 @@ import java.util.List;
  * An {@link OperationObserver} decorator that correlates each executed statement (reported via
  * {@link #nextStatement}) with its results (reported via the {@code next*} callbacks) and drives a {@link SqlLogger}
  * to emit compact, single-line log messages. All callbacks are delegated to the wrapped observer unchanged.
- * <p>
- * The first result of a statement produces the main line (SQL + bindings + {@code selected:N}/{@code updated:N}); a
- * statement that yields more results reports them as {@code also ...} lines — except batches, whose per-row update
- * counts are summed into a single {@code updated:N} line. Exceptions are not logged (the SQL travels with the thrown
- * exception instead).
  *
  * @since 5.0
  */
@@ -55,15 +50,6 @@ class LoggingObserver implements OperationObserver {
     LoggingObserver(OperationObserver delegate, SqlLogger logger) {
         this.delegate = delegate;
         this.logger = logger;
-    }
-
-    /**
-     * Emits any pending statement line (currently only summed batch updates) that has not been logged yet. Called by
-     * {@link DataNode} after the query loop completes.
-     */
-    void flush() {
-        flushPending();
-        current = null;
     }
 
     private void flushPending() {
@@ -101,6 +87,12 @@ class LoggingObserver implements OperationObserver {
             total += c;
         }
         return total;
+    }
+
+    @Override
+    public void afterLastStatement() {
+        flushPending();
+        current = null;
     }
 
     @Override
