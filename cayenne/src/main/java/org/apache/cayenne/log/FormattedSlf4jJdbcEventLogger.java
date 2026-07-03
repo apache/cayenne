@@ -18,14 +18,14 @@
  ****************************************************************/
 package org.apache.cayenne.log;
 
+import org.apache.cayenne.access.jdbc.PSParameter;
+import org.apache.cayenne.configuration.RuntimeProperties;
+import org.apache.cayenne.di.Inject;
+
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.Map;
 import java.util.TreeMap;
-
-import org.apache.cayenne.access.jdbc.PSParameter;
-import org.apache.cayenne.configuration.RuntimeProperties;
-import org.apache.cayenne.di.Inject;
 
 /**
  * A {@link Slf4jJdbcEventLogger} extension that provides pretty formatting of the logged SQL messages.
@@ -57,7 +57,7 @@ public class FormattedSlf4jJdbcEventLogger extends Slf4jJdbcEventLogger {
     	super(runtimeProperties);
     }
     
-    private String formatQuery(String sql) {
+    static String formatQuery(String sql) {
         Map<Integer, String> scanResult = scanQuery(sql);
         Iterator<Integer> iter = scanResult.keySet().iterator();
         int nextKeyIdx = (iter.hasNext()) ? iter.next() : -1;
@@ -101,7 +101,7 @@ public class FormattedSlf4jJdbcEventLogger extends Slf4jJdbcEventLogger {
         return result;
     }
 
-    private Map<Integer, String> scanQuery(String sql) {
+    private static Map<Integer, String> scanQuery(String sql) {
         Map<Integer, String> result = new TreeMap<>();
         String sql2Lower = sql.toLowerCase();
         for (String keyWrd : KEYWORDS.keySet()) {
