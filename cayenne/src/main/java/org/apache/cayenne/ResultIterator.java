@@ -22,12 +22,9 @@ package org.apache.cayenne;
 import java.util.List;
 
 /**
- * Defines API of an iterator over the records returned as a result of
- * Select queries execution. Usually a ResultIterator is supported by an open
- * java.sql.ResultSet, therefore ResultIterators must be explicitly closed when
- * the user is done working with them. An alternative to that is
- * {@link ObjectContext#iterate(org.apache.cayenne.query.Select, ResultIteratorCallback)}
- * method that handles resource management.
+ * Defines API of an iterator over the records returned as a result of selecting queries execution. A ResultIterator is
+ * backed by an open java.sql.ResultSet, therefore ResultIterators must be explicitly closed when the user is done
+ * working with them.
  *
  * @since 3.0
  */
