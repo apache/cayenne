@@ -19,9 +19,7 @@
 package org.apache.cayenne.access;
 
 import org.apache.cayenne.PersistenceState;
-import org.apache.cayenne.access.translator.batch.BatchTranslator;
-import org.apache.cayenne.access.translator.batch.SoftDeleteBatchTranslator;
-import org.apache.cayenne.di.Key;
+import org.apache.cayenne.configuration.runtime.CoreModule;
 import org.apache.cayenne.query.ObjectSelect;
 import org.apache.cayenne.test.jdbc.TableHelper;
 import org.apache.cayenne.testdo.soft_delete.HardDelete;
@@ -41,7 +39,7 @@ public class SoftDeleteIT {
     @RegisterExtension
     static final CayenneTestsEnv env = CayenneTestsEnv
             .forProject(CayenneProjects.SOFT_DELETE_PROJECT)
-            .withExtraModules(b -> b.bind(Key.get(BatchTranslator.class, BatchTranslator.DELETE)).toInstance(new SoftDeleteBatchTranslator()));
+            .withExtraModules(b -> CoreModule.extend(b).useSoftDeleteIfColumnPresent("DELETED"));
 
     private TableHelper tSoftDelete;
 

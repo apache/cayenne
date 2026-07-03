@@ -37,7 +37,9 @@ import static org.apache.cayenne.access.sqlbuilder.SQLBuilder.*;
  * A delete {@link BatchTranslator} that performs a 'soft' delete (an UPDATE setting the 'deleted' field
  * to true) for entities that have a boolean 'deleted' field, and falls back to the regular SQL DELETE of
  * the {@link DeleteBatchTranslator} superclass for the rest. Bind it under the {@link BatchTranslator#DELETE}
- * name to enable soft deletes.
+ * name to enable soft deletes. The preferred way to do this is
+ * {@code CoreModule.extend(binder).useSoftDeleteIfColumnPresent(columnName)} (see
+ * {@link org.apache.cayenne.configuration.runtime.CoreModuleExtender#useSoftDeleteIfColumnPresent(String)}).
  *
  * @since 4.2
  */

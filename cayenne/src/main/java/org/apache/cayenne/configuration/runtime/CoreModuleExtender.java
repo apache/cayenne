@@ -21,6 +21,8 @@ package org.apache.cayenne.configuration.runtime;
 
 import org.apache.cayenne.DataChannelQueryFilter;
 import org.apache.cayenne.DataChannelSyncFilter;
+import org.apache.cayenne.access.translator.batch.BatchTranslator;
+import org.apache.cayenne.access.translator.batch.SoftDeleteBatchTranslator;
 import org.apache.cayenne.access.types.ExtendedType;
 import org.apache.cayenne.access.types.ExtendedTypeFactory;
 import org.apache.cayenne.access.types.ValueObjectType;
@@ -32,6 +34,7 @@ import org.apache.cayenne.configuration.Constants;
 import org.apache.cayenne.dba.DbAdapter;
 import org.apache.cayenne.dba.PkGenerator;
 import org.apache.cayenne.di.Binder;
+import org.apache.cayenne.di.Key;
 import org.apache.cayenne.di.ListBuilder;
 import org.apache.cayenne.di.MapBuilder;
 import org.apache.cayenne.graph.GraphChangeHandler;
@@ -102,6 +105,25 @@ public class CoreModuleExtender {
      */
     public CoreModuleExtender externalTransactions() {
         contributeProperties().put(Constants.EXTERNAL_TX_PROPERTY, "true");
+        return this;
+    }
+
+    /**
+     * Enables "soft delete" for entities whose tables contain a BOOLEAN column with the given name. Instead of a SQL
+     * DELETE, such entities are deleted by an {@code UPDATE ... SET <columnName> = true}, so the row physically stays
+     * in the table. Tables that have no column with the given name (or whose column of that name is not BOOLEAN) are
+     * unaffected and are deleted with a regular SQL DELETE. A NULL value in the column is treated as "not deleted".
+     *
+     * <p>This setting only affects the delete path. Hiding soft-deleted rows from queries remains the responsibility
+     * of the mapping, e.g. a DbEntity qualifier like {@code DELETED = false or DELETED = null}.
+     *
+     * @param columnName the name of the BOOLEAN column marking soft-deleted rows
+     * @see SoftDeleteBatchTranslator
+     * @since 5.0
+     */
+    public CoreModuleExtender useSoftDeleteIfColumnPresent(String columnName) {
+        binder.bind(Key.get(BatchTranslator.class, BatchTranslator.DELETE))
+                .toInstance(new SoftDeleteBatchTranslator(columnName));
         return this;
     }
 
