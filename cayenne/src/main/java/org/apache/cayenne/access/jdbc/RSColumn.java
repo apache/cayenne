@@ -212,7 +212,7 @@ public record RSColumn(
                     } else {
                         String columnRowKey = columnArray[i].dataRowName();
 
-                        // TODO: 'equalsIgnoreCase' check can result in subtle bugs in DBs with case-sensitive column
+                        // 'equalsIgnoreCase' check can result in subtle bugs in DBs with case-sensitive column
                         //  names (or when quotes are used to force case sensitivity). Alternatively, 'equals' may miss
                         //  columns in case-insensitive situations.
                         if (columnRowKey != null && columnRowKey.equalsIgnoreCase(rowKey)) {
@@ -277,12 +277,29 @@ public record RSColumn(
             }
 
             RSColumn[] result = null;
+            Map<String, DbAttribute> ciAttributeIndex = null;
             for (int i = 0; i < columnArray.length; i++) {
                 RSColumn column = columnArray[i];
                 if (column.attribute() != null) {
                     continue;
                 }
                 DbAttribute attribute = dbEntity.getAttribute(column.rsName());
+                if (attribute == null) {
+
+                    // Similar to the comment above, we are reverting to the case-insensitive attribute lookup
+                    //   if there are no exact matches. This may create subtle bugs, but in most common cases, it allows
+                    //   to match ResultSet columns to the existing DbAttributes more reliably
+                    // TODO: move CI attribute retrieval to DbEntity with checks for CI-induced conflicts
+                    if (ciAttributeIndex == null) {
+                        ciAttributeIndex = new HashMap<>();
+                        for (DbAttribute a : dbEntity.getAttributes()) {
+                            ciAttributeIndex.putIfAbsent(a.getName().toLowerCase(), a);
+                        }
+                    }
+
+                    attribute = ciAttributeIndex.get(column.rsName().toLowerCase());
+                }
+                
                 if (attribute != null) {
                     if (result == null) {
                         result = columnArray.clone();
