@@ -94,7 +94,7 @@ public class UpdateBatchTranslatorIT {
         String generatedSql = new UpdateBatchTranslator().translate(updateQuery, adapter).sql();
         assertNotNull(generatedSql);
 
-        assertEquals("UPDATE " + entity.getName() + " SET DESCRIPTION = ? WHERE (LOCKING_TEST_ID = ?) AND (NAME IS NULL)",
+        assertEquals("UPDATE " + entity.getName() + " SET DESCRIPTION = ? WHERE LOCKING_TEST_ID = ? AND NAME IS NULL",
                 generatedSql);
     }
 
@@ -145,8 +145,8 @@ public class UpdateBatchTranslatorIT {
             String charStart = unitAdapter.getIdentifiersStartQuote();
             String charEnd = unitAdapter.getIdentifiersEndQuote();
             assertEquals("UPDATE " + charStart + entity.getName() + charEnd + " SET " + charStart + "DESCRIPTION"
-                    + charEnd + " = ? WHERE (" + charStart + "LOCKING_TEST_ID" + charEnd + " = ?) AND (" + charStart
-                    + "NAME" + charEnd + " IS NULL)", generatedSql);
+                    + charEnd + " = ? WHERE " + charStart + "LOCKING_TEST_ID" + charEnd + " = ? AND " + charStart
+                    + "NAME" + charEnd + " IS NULL", generatedSql);
 
         } finally {
             entity.getDataMap().setQuotingSQLIdentifiers(false);

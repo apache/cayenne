@@ -40,6 +40,19 @@ public class OpExpressionNode extends ExpressionNode {
     }
 
     @Override
+    protected String logicalOperator() {
+        return "AND".equals(op) || "OR".equals(op) ? op : null;
+    }
+
+    @Override
+    protected boolean isComparison() {
+        return switch (op) {
+            case "<", "<=", ">", ">=" -> true;
+            default -> false;
+        };
+    }
+
+    @Override
     public Node copy() {
         return new OpExpressionNode(op);
     }

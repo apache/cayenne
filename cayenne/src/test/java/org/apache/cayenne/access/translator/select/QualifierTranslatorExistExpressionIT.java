@@ -113,7 +113,7 @@ public class QualifierTranslatorExistExpressionIT {
 
         assertSQL(" EXISTS (" +
                 "SELECT t1.PAINTING_ID FROM PAINTING t1 " +
-                "WHERE (t1.PAINTING_TITLE IS NOT NULL) AND (t1.ARTIST_ID = t0.ARTIST_ID)" +
+                "WHERE t1.PAINTING_TITLE IS NOT NULL AND t1.ARTIST_ID = t0.ARTIST_ID" +
                 ")", node);
     }
 
@@ -134,7 +134,7 @@ public class QualifierTranslatorExistExpressionIT {
 
         assertSQL(" EXISTS (" +
                 "SELECT t1.PAINTING_ID FROM PAINTING t1 " +
-                "WHERE (t1.GALLERY_ID IS NOT NULL) AND (t1.ARTIST_ID = t0.ARTIST_ID)" +
+                "WHERE t1.GALLERY_ID IS NOT NULL AND t1.ARTIST_ID = t0.ARTIST_ID" +
                 ")", node);
     }
 
@@ -157,7 +157,7 @@ public class QualifierTranslatorExistExpressionIT {
                 "SELECT DISTINCT t1.ARTIST_ID, t1.GROUP_ID FROM ARTIST_GROUP t1 " +
                 "JOIN ARTGROUP t2 ON t1.GROUP_ID = t2.GROUP_ID " +
                 "JOIN ARTGROUP t3 ON t2.GROUP_ID = t3.PARENT_GROUP_ID " +
-                "WHERE (t3.GROUP_ID IS NOT NULL) AND (t1.ARTIST_ID = t0.ARTIST_ID)" +
+                "WHERE t3.GROUP_ID IS NOT NULL AND t1.ARTIST_ID = t0.ARTIST_ID" +
                 ")", node);
     }
 
@@ -178,7 +178,7 @@ public class QualifierTranslatorExistExpressionIT {
 
         assertSQL(" EXISTS (" +
                 "SELECT t1.PAINTING_ID FROM PAINTING t1 " +
-                "WHERE (t1.PAINTING_TITLE = 'test') AND (t1.ARTIST_ID = t0.ARTIST_ID)" +
+                "WHERE t1.PAINTING_TITLE = 'test' AND t1.ARTIST_ID = t0.ARTIST_ID" +
                 ")", node);
     }
 
@@ -200,8 +200,8 @@ public class QualifierTranslatorExistExpressionIT {
 
         assertSQL(" EXISTS (" +
                 "SELECT t1.PAINTING_ID FROM PAINTING t1 " +
-                "WHERE ((t1.PAINTING_TITLE = 'test') OR (t1.PAINTING_TITLE = 'test2')) " +
-                        "AND (t1.ARTIST_ID = t0.ARTIST_ID)" +
+                "WHERE (t1.PAINTING_TITLE = 'test' OR t1.PAINTING_TITLE = 'test2') " +
+                        "AND t1.ARTIST_ID = t0.ARTIST_ID" +
                 ")", node);
     }
 
@@ -222,8 +222,8 @@ public class QualifierTranslatorExistExpressionIT {
 
         assertSQL(" EXISTS (" +
                 "SELECT t1.PAINTING_ID FROM PAINTING t1 " +
-                "WHERE ((t1.PAINTING_TITLE = 'test') OR (t1.PAINTING_TITLE = 'test2')) " +
-                "AND (t1.ARTIST_ID = t0.ARTIST_ID)" +
+                "WHERE (t1.PAINTING_TITLE = 'test' OR t1.PAINTING_TITLE = 'test2') " +
+                "AND t1.ARTIST_ID = t0.ARTIST_ID" +
                 ")", node);
     }
 
@@ -245,13 +245,13 @@ public class QualifierTranslatorExistExpressionIT {
 
         assertSQL(" EXISTS (" +
                     "SELECT t1.PAINTING_ID FROM PAINTING t1 " +
-                    "WHERE ((t1.PAINTING_TITLE = 'test') OR (t1.PAINTING_TITLE = 'test2')) " +
-                            "AND (t1.ARTIST_ID = t0.ARTIST_ID)" +
+                    "WHERE (t1.PAINTING_TITLE = 'test' OR t1.PAINTING_TITLE = 'test2') " +
+                            "AND t1.ARTIST_ID = t0.ARTIST_ID" +
                 ") " +
                 "AND EXISTS (" +
                     "SELECT t2.ARTIST_ID, t2.GROUP_ID FROM ARTIST_GROUP t2 " +
                     "JOIN ARTGROUP t3 ON t2.GROUP_ID = t3.GROUP_ID " +
-                    "WHERE (t3.NAME = 'test') AND (t2.ARTIST_ID = t0.ARTIST_ID))", node);
+                    "WHERE t3.NAME = 'test' AND t2.ARTIST_ID = t0.ARTIST_ID)", node);
     }
 
     @Test
@@ -272,18 +272,18 @@ public class QualifierTranslatorExistExpressionIT {
 
         assertSQL(" EXISTS (" +
                     "SELECT t1.PAINTING_ID FROM PAINTING t1 " +
-                    "WHERE (t1.PAINTING_TITLE = 'test') AND (t1.ARTIST_ID = t0.ARTIST_ID)" +
+                    "WHERE t1.PAINTING_TITLE = 'test' AND t1.ARTIST_ID = t0.ARTIST_ID" +
                 ") " +
                 "AND (" +
                     "EXISTS (" +
                         "SELECT t2.ARTIST_ID, t2.GROUP_ID FROM ARTIST_GROUP t2 " +
                         "JOIN ARTGROUP t3 ON t2.GROUP_ID = t3.GROUP_ID " +
-                        "WHERE (t3.NAME = 'test') AND (t2.ARTIST_ID = t0.ARTIST_ID)" +
+                        "WHERE t3.NAME = 'test' AND t2.ARTIST_ID = t0.ARTIST_ID" +
                     ") " +
                     "OR " +
                     "EXISTS (" +
                         "SELECT t4.PAINTING_ID FROM PAINTING t4 " +
-                        "WHERE (t4.PAINTING_TITLE = 'test2') AND (t4.ARTIST_ID = t0.ARTIST_ID)" +
+                        "WHERE t4.PAINTING_TITLE = 'test2' AND t4.ARTIST_ID = t0.ARTIST_ID" +
                     ")" +
                 ")", node);
     }
@@ -305,12 +305,12 @@ public class QualifierTranslatorExistExpressionIT {
 
         assertSQL(" EXISTS (" +
                     "SELECT t1.PAINTING_ID FROM PAINTING t1 " +
-                    "WHERE LENGTH(t1.PAINTING_TITLE) IN (1, 2, 3) AND (t1.ARTIST_ID = t0.ARTIST_ID)" +
+                    "WHERE LENGTH(t1.PAINTING_TITLE) IN (1, 2, 3) AND t1.ARTIST_ID = t0.ARTIST_ID" +
                 ") OR " +
                 "EXISTS (" +
                     "SELECT t2.ARTIST_ID, t2.GROUP_ID FROM ARTIST_GROUP t2 " +
                     "JOIN ARTGROUP t3 ON t2.GROUP_ID = t3.GROUP_ID " +
-                    "WHERE (LENGTH(t3.NAME) < 10) AND (t2.ARTIST_ID = t0.ARTIST_ID)" +
+                    "WHERE LENGTH(t3.NAME) < 10 AND t2.ARTIST_ID = t0.ARTIST_ID" +
                 ")", node);
     }
 

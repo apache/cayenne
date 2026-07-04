@@ -26,6 +26,10 @@ import org.apache.cayenne.access.sqlbuilder.SQLAppendable;
  */
 public class ElseNode extends Node {
 
+    public ElseNode() {
+        super(NodeType.ELSE);
+    }
+
     @Override
     public SQLAppendable append(SQLAppendable buffer) {
         return buffer.appendTokenSeparator().append("ELSE");

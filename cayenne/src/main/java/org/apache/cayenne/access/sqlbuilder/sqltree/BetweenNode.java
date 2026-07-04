@@ -48,6 +48,11 @@ public class BetweenNode extends ExpressionNode {
     }
 
     @Override
+    protected boolean isComparison() {
+        return true;
+    }
+
+    @Override
     public Node copy() {
         return new BetweenNode(not);
     }

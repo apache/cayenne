@@ -26,6 +26,10 @@ import org.apache.cayenne.access.sqlbuilder.SQLAppendable;
  */
 public class ThenNode extends Node {
 
+    public ThenNode() {
+        super(NodeType.THEN);
+    }
+
     @Override
     public SQLAppendable append(SQLAppendable buffer) {
         return buffer.appendTokenSeparator().append("THEN");

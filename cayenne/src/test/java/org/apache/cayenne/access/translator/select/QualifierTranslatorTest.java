@@ -485,7 +485,7 @@ public class QualifierTranslatorTest {
 
         SQLGenerationVisitor visitor = new SQLGenerationVisitor(new DefaultSQLAppendable(null));
         and.visit(visitor);
-        assertEquals(" (t0.a < 2) AND t0.b IN (5, 6) AND (t0.b = 7)", visitor.getSQLString());
+        assertEquals(" t0.a < 2 AND t0.b IN (5, 6) AND t0.b = 7", visitor.getSQLString());
     }
 
     @Test

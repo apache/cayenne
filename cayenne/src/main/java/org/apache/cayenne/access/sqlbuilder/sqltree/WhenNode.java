@@ -26,6 +26,10 @@ import org.apache.cayenne.access.sqlbuilder.SQLAppendable;
  */
 public class WhenNode extends Node {
 
+    public WhenNode() {
+        super(NodeType.WHEN);
+    }
+
     @Override
     public SQLAppendable append(SQLAppendable buffer) {
         return buffer.appendTokenSeparator().append("WHEN");

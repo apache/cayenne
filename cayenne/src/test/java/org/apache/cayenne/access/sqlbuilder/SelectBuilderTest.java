@@ -96,7 +96,7 @@ public class SelectBuilderTest extends BaseSqlBuilderTest  {
                 .where(column("a").eq(value(123)).and(column("c").lt(column("d"))));
         Node node = builder.build();
         assertInstanceOf(SelectNode.class, node);
-        assertSQL("SELECT a FROM b WHERE (a = 123) AND (c < d)", node);
+        assertSQL("SELECT a FROM b WHERE a = 123 AND c < d", node);
     }
 
     @Test
@@ -112,13 +112,14 @@ public class SelectBuilderTest extends BaseSqlBuilderTest  {
 
         Node node = builder.build();
         assertInstanceOf(SelectNode.class, node);
-        assertSQL("SELECT OrderID, Quantity, " +
-                "CASE " +
-                    "WHEN ((Quantity > 30) AND (Quantity < 100)) THEN 'The quantity from 30 to 100' " +
-                    "WHEN (Quantity = 30) THEN 'The quantity is 30' " +
-                    "ELSE 'The quantity is under 30' " +
-                    "END QuantityText " +
-                "FROM OrderDetails", node);
+        assertSQL("""
+                SELECT OrderID, Quantity, \
+                CASE \
+                WHEN Quantity > 30 AND Quantity < 100 THEN 'The quantity from 30 to 100' \
+                WHEN Quantity = 30 THEN 'The quantity is 30' \
+                ELSE 'The quantity is under 30' \
+                END QuantityText \
+                FROM OrderDetails""", node);
     }
 
     @Test
@@ -179,16 +180,17 @@ public class SelectBuilderTest extends BaseSqlBuilderTest  {
                 .orderBy(count(table("p").column("PAINTING_TITLE")).as("p_count").desc(), column("a_id").asc())
                 .build();
         assertInstanceOf(SelectNode.class, node);
-        assertSQL("SELECT DISTINCT" +
-                    " a.ARTIST_ID a_id, COUNT(p.PAINTING_TITLE) p_count" +
-                " FROM ARTIST a" +
-                " LEFT JOIN PAINTING p ON (a.ARTIST_ID = p.ARTIST_ID) AND (p.ESTIMATED_PRICE > 10)" +
-                " WHERE (((a.ARTIST_NAME = 'Picasso')" +
-                    " AND EXISTS (SELECT * FROM GALLERY g WHERE g.GALLERY_ID = p.GALLERY_ID))" +
-                    " AND (1 = 1)) OR false" +
-                " GROUP BY a.ARTIST_ID" +
-                " HAVING NOT (COUNT(p.PAINTING_TITLE) > 3)" +
-                " ORDER BY p_count DESC, a_id", node);
+        assertSQL("""
+                SELECT DISTINCT \
+                a.ARTIST_ID a_id, COUNT(p.PAINTING_TITLE) p_count \
+                FROM ARTIST a \
+                LEFT JOIN PAINTING p ON a.ARTIST_ID = p.ARTIST_ID AND p.ESTIMATED_PRICE > 10 \
+                WHERE (a.ARTIST_NAME = 'Picasso' \
+                AND EXISTS (SELECT * FROM GALLERY g WHERE g.GALLERY_ID = p.GALLERY_ID) \
+                AND 1 = 1) OR false \
+                GROUP BY a.ARTIST_ID \
+                HAVING NOT (COUNT(p.PAINTING_TITLE) > 3) \
+                ORDER BY p_count DESC, a_id""", node);
     }
 
 }
