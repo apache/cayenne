@@ -33,16 +33,10 @@ import java.util.Map;
 
 /**
  * Renders the parameter bindings of a {@link TranslatedStatement} in the compact {@code bind:[...]} form used by
- * {@link SqlLogger} and by exception messages. Shared so that logged and thrown SQL look identical.
+ * {@link SqlLogger}.
  */
 class SqlBindingRenderer {
 
-    /**
-     * Appends the {@code bind:[...]} fragment for the given statement to the buffer, or nothing if the statement has
-     * no bindings. Batch bindings with more rows than {@code batchRowThreshold} are truncated to first row,
-     * {@code ..<eliddedCount>..}, last row.
-     */
-    @SuppressWarnings({"rawtypes", "unchecked"})
     public static void appendBindings(StringBuilder buffer, TranslatedStatement statement, int batchRowThreshold) {
         switch (statement) {
             case TranslatedSelect s -> appendParameters(buffer, s.bindings());
@@ -73,7 +67,7 @@ class SqlBindingRenderer {
         if (bindings.length == 0) {
             return;
         }
-        buffer.append("[bind:[");
+        buffer.append("bind:[");
         for (int i = 0; i < bindings.length; i++) {
             if (i > 0) {
                 buffer.append(",");
@@ -81,14 +75,14 @@ class SqlBindingRenderer {
             PSParameter<?> b = bindings[i];
             appendNamedValue(buffer, b.attribute() != null ? b.attribute().getName() : null, b.binder(), b.value());
         }
-        buffer.append("]]");
+        buffer.append("]");
     }
 
     private static void appendCallParameters(StringBuilder buffer, CSParameter<?>[] params) {
         if (params.length == 0) {
             return;
         }
-        buffer.append("[bind:[");
+        buffer.append("bind:[");
         for (int i = 0; i < params.length; i++) {
             if (i > 0) {
                 buffer.append(",");
@@ -96,7 +90,7 @@ class SqlBindingRenderer {
             CSParameter<?> b = params[i];
             appendNamedValue(buffer, b.param() != null ? b.param().getName() : null, b.binder(), b.value());
         }
-        buffer.append("]]");
+        buffer.append("]");
     }
 
     private static void appendBatch(StringBuilder buffer, PSBatchParameter[] bindings, int batchRowThreshold) {
@@ -118,8 +112,8 @@ class SqlBindingRenderer {
         }
 
         // rows are delimited by their own [...] brackets, so no extra list bracket is needed: a single-row batch
-        // reads as [bind:[...]] and a multi-row batch as [bind:[...][...]] - never a doubled [[...]]
-        buffer.append("[bind:");
+        // reads as bind:[...] and a multi-row batch as bind:[...][...] - never a doubled [[...]]
+        buffer.append("bind:");
         if (rows > batchRowThreshold) {
             // show up to batchRowThreshold rows split evenly between head and tail, eliding the middle. For an odd
             // threshold the head gets the extra row, so head + tail == batchRowThreshold and the elided count is
@@ -138,7 +132,6 @@ class SqlBindingRenderer {
                 appendBatchRow(buffer, bindings, r);
             }
         }
-        buffer.append(']');
     }
 
     private static void appendBatchRow(StringBuilder buffer, PSBatchParameter[] bindings, int row) {
@@ -157,8 +150,7 @@ class SqlBindingRenderer {
         }
     }
 
-    @SuppressWarnings({"rawtypes", "unchecked"})
-    private static void appendNamedValue(StringBuilder buffer, String name, ExtendedType binder, Object value) {
+    private static void appendNamedValue(StringBuilder buffer, String name, ExtendedType<?> binder, Object value) {
         if (name != null) {
             buffer.append(name).append(':');
         }

@@ -24,6 +24,7 @@ import org.apache.cayenne.access.jdbc.PSParameter;
 import org.apache.cayenne.access.jdbc.RSColumn;
 import org.apache.cayenne.access.translator.TranslatedBatch;
 import org.apache.cayenne.access.translator.TranslatedSelect;
+import org.apache.cayenne.access.translator.TranslatedStatement;
 import org.apache.cayenne.configuration.Constants;
 import org.apache.cayenne.configuration.RuntimeProperties;
 import org.apache.cayenne.map.DbAttribute;
@@ -55,8 +56,16 @@ public class Slf4jSqlLoggerTest {
         return new Slf4jSqlLogger(props);
     }
 
-    private static PSParameter<?> ps(String name, Object value) {
-        return new PSParameter<>(value, 1, Types.INTEGER, 0, null, new DbAttribute(name));
+    private static String line(Slf4jSqlLogger logger, TranslatedStatement statement, String label, int count) {
+        StringBuilder buffer = new StringBuilder();
+        logger.appendStatementLine(buffer, statement, label, count);
+        return buffer.toString();
+    }
+
+    private static String errorLine(Slf4jSqlLogger logger, TranslatedStatement statement, Throwable error, long durationMillis) {
+        StringBuilder buffer = new StringBuilder();
+        logger.appendErrorLine(buffer, statement, error, durationMillis);
+        return buffer.toString();
     }
 
     // a single-placeholder batch whose id values are 0..rows-1, so each logged row is identifiable by its value
@@ -73,23 +82,24 @@ public class Slf4jSqlLoggerTest {
     public void selectLineWithSingleBinding() {
         TranslatedSelect select = new TranslatedSelect(
                 "SELECT t0.id FROM my_table t0 WHERE t0.user_id = ?",
-                new PSParameter<?>[]{ps("user_id", 15)},
+                new PSParameter<?>[]{new PSParameter<>(15, 1, Types.INTEGER, 0, null, new DbAttribute("user_id"))},
                 new RSColumn[0], false, false);
 
-        assertEquals("SELECT t0.id FROM my_table t0 WHERE t0.user_id = ? [bind:[user_id:15]] [selected:1]",
-                logger.buildStatementLine(select, "selected:", 1));
+        assertEquals(
+                "SELECT t0.id FROM my_table t0 WHERE t0.user_id = ? | bind:[user_id:15] selected:1",
+                line(logger, select, "selected:", 1));
     }
 
     @Test
     public void errorLineCarriesBindingsMessageAndDuration() {
         TranslatedSelect select = new TranslatedSelect(
                 "SELECT t0.id FROM my_table t0 WHERE t0.user_id = ?",
-                new PSParameter<?>[]{ps("user_id", 15)},
+                new PSParameter<?>[]{new PSParameter<>(15, 1, Types.INTEGER, 0, null, new DbAttribute("user_id"))},
                 new RSColumn[0], false, false);
 
-        assertEquals("SELECT t0.id FROM my_table t0 WHERE t0.user_id = ? [bind:[user_id:15]] "
-                        + "[time_ms:1000] [*** error: bad column]",
-                logger.buildErrorLine(select, new RuntimeException("bad column"), 1000));
+        assertEquals(
+                "SELECT t0.id FROM my_table t0 WHERE t0.user_id = ? | bind:[user_id:15] time_ms:1000 error: bad column",
+                errorLine(logger, select, new RuntimeException("bad column"), 1000));
     }
 
     @Test
@@ -97,8 +107,9 @@ public class Slf4jSqlLoggerTest {
         TranslatedSelect select = new TranslatedSelect(
                 "SELECT t0.id FROM my_table t0", new PSParameter<?>[0], new RSColumn[0], false, false);
 
-        assertEquals("SELECT t0.id FROM my_table t0 [selected:0]",
-                logger.buildStatementLine(select, "selected:", 0));
+        assertEquals(
+                "SELECT t0.id FROM my_table t0 | selected:0",
+                line(logger, select, "selected:", 0));
     }
 
     @Test
@@ -112,9 +123,9 @@ public class Slf4jSqlLoggerTest {
         TranslatedBatch batch = new TranslatedBatch(
                 "INSERT INTO table1(id, name) VALUES(?, ?)", new PSBatchParameter[]{id, name});
 
-        assertEquals("INSERT INTO table1(id, name) VALUES(?, ?) "
-                        + "[bind:[id:3,name:'n3'][id:1,name:'n1']..2..[id:2,name:'n2']] [updated:5]",
-                logger.buildStatementLine(batch, "updated:", 5));
+        assertEquals(
+                "INSERT INTO table1(id, name) VALUES(?, ?) | bind:[id:3,name:'n3'][id:1,name:'n1']..2..[id:2,name:'n2'] updated:5",
+                line(logger, batch, "updated:", 5));
     }
 
     @Test
@@ -127,8 +138,9 @@ public class Slf4jSqlLoggerTest {
         TranslatedBatch batch = new TranslatedBatch(
                 "INSERT INTO ARTIST(ARTIST_ID, ARTIST_NAME) VALUES(?, ?)", new PSBatchParameter[]{id, name});
 
-        assertEquals("INSERT INTO ARTIST(ARTIST_ID, ARTIST_NAME) VALUES(?, ?) [bind:[ARTIST_ID:200,ARTIST_NAME:'Test']] [updated:1]",
-                logger.buildStatementLine(batch, "updated:", 1));
+        assertEquals(
+                "INSERT INTO ARTIST(ARTIST_ID, ARTIST_NAME) VALUES(?, ?) | bind:[ARTIST_ID:200,ARTIST_NAME:'Test'] updated:1",
+                line(logger, batch, "updated:", 1));
     }
 
     @Test
@@ -136,49 +148,47 @@ public class Slf4jSqlLoggerTest {
         PSBatchParameter id = new PSBatchParameter(
                 new Object[]{3, 2}, 1, Types.INTEGER, 0, new DbAttribute("id"));
 
-        TranslatedBatch batch = new TranslatedBatch(
-                "INSERT INTO table1(id) VALUES(?)", new PSBatchParameter[]{id});
-
-        assertEquals("INSERT INTO table1(id) VALUES(?) [bind:[id:3][id:2]] [updated:2]",
-                logger.buildStatementLine(batch, "updated:", 2));
+        TranslatedBatch batch = new TranslatedBatch("INSERT INTO table1(id) VALUES(?)", new PSBatchParameter[]{id});
+        assertEquals("INSERT INTO table1(id) VALUES(?) | bind:[id:3][id:2] updated:2",
+                line(logger, batch, "updated:", 2));
     }
 
     @Test
     public void batchLineEvenThresholdSplitsEvenly() {
         // even threshold 4 -> head 2, tail 2; 10 rows -> middle 6 elided
-        assertEquals("INSERT INTO t(id) VALUES(?) [bind:[id:0][id:1]..6..[id:8][id:9]] [updated:10]",
-                loggerWithThreshold(4).buildStatementLine(idBatch(10), "updated:", 10));
+        assertEquals("INSERT INTO t(id) VALUES(?) | bind:[id:0][id:1]..6..[id:8][id:9] updated:10",
+                line(loggerWithThreshold(4), idBatch(10), "updated:", 10));
     }
 
     @Test
     public void batchLineShowsAllRowsAtThreshold() {
         // exactly threshold rows -> nothing elided
-        assertEquals("INSERT INTO t(id) VALUES(?) [bind:[id:0][id:1][id:2][id:3]] [updated:4]",
-                loggerWithThreshold(4).buildStatementLine(idBatch(4), "updated:", 4));
+        assertEquals("INSERT INTO t(id) VALUES(?) | bind:[id:0][id:1][id:2][id:3] updated:4",
+                line(loggerWithThreshold(4), idBatch(4), "updated:", 4));
     }
 
     @Test
     public void batchLineElidesExactlyOneAboveThreshold() {
         // one row above threshold 4 -> head 2, tail 2, a single row elided
-        assertEquals("INSERT INTO t(id) VALUES(?) [bind:[id:0][id:1]..1..[id:3][id:4]] [updated:5]",
-                loggerWithThreshold(4).buildStatementLine(idBatch(5), "updated:", 5));
+        assertEquals("INSERT INTO t(id) VALUES(?) | bind:[id:0][id:1]..1..[id:3][id:4] updated:5",
+                line(loggerWithThreshold(4), idBatch(5), "updated:", 5));
     }
 
     @Test
     public void batchLineThresholdOfOneOrTwoClampsToTwo() {
         // threshold 1 and 2 both clamp to 2 -> head 1, tail 1
-        assertEquals("INSERT INTO t(id) VALUES(?) [bind:[id:0]..3..[id:4]] [updated:5]",
-                loggerWithThreshold(1).buildStatementLine(idBatch(5), "updated:", 5));
-        assertEquals("INSERT INTO t(id) VALUES(?) [bind:[id:0]..3..[id:4]] [updated:5]",
-                loggerWithThreshold(2).buildStatementLine(idBatch(5), "updated:", 5));
+        assertEquals("INSERT INTO t(id) VALUES(?) | bind:[id:0]..3..[id:4] updated:5",
+                line(loggerWithThreshold(1), idBatch(5), "updated:", 5));
+        assertEquals("INSERT INTO t(id) VALUES(?) | bind:[id:0]..3..[id:4] updated:5",
+                line(loggerWithThreshold(2), idBatch(5), "updated:", 5));
     }
 
     @Test
     public void batchLineNonPositiveThresholdDisablesTruncation() {
         // threshold 0 or negative -> no truncation, every row logged
-        assertEquals("INSERT INTO t(id) VALUES(?) [bind:[id:0][id:1][id:2][id:3][id:4]] [updated:5]",
-                loggerWithThreshold(0).buildStatementLine(idBatch(5), "updated:", 5));
-        assertEquals("INSERT INTO t(id) VALUES(?) [bind:[id:0][id:1][id:2][id:3][id:4]] [updated:5]",
-                loggerWithThreshold(-1).buildStatementLine(idBatch(5), "updated:", 5));
+        assertEquals("INSERT INTO t(id) VALUES(?) | bind:[id:0][id:1][id:2][id:3][id:4] updated:5",
+                line(loggerWithThreshold(0), idBatch(5), "updated:", 5));
+        assertEquals("INSERT INTO t(id) VALUES(?) | bind:[id:0][id:1][id:2][id:3][id:4] updated:5",
+                line(loggerWithThreshold(-1), idBatch(5), "updated:", 5));
     }
 }

@@ -53,8 +53,9 @@ public class Slf4jSqlLogger implements SqlLogger {
     @Override
     public void logSelect(TranslatedStatement statement, int rowCount, long durationMillis) {
         if (LOGGER.isInfoEnabled()) {
-            StringBuilder buffer = new StringBuilder(buildStatementLine(statement, "selected:", rowCount));
-            appendDuration(buffer, durationMillis);
+            StringBuilder buffer = new StringBuilder();
+            appendStatementLine(buffer, statement, "selected:", rowCount);
+            buffer.append(" time_ms:").append(durationMillis);
             LOGGER.info(buffer.toString());
         }
     }
@@ -63,15 +64,15 @@ public class Slf4jSqlLogger implements SqlLogger {
     public void logUpdate(TranslatedStatement statement, int rowCount, List<? extends Map<String, ?>> generatedKeys,
                           long durationMillis) {
         if (LOGGER.isInfoEnabled()) {
-            StringBuilder buffer = new StringBuilder(buildStatementLine(statement, "updated:", rowCount));
+            StringBuilder buffer = new StringBuilder();
+            appendStatementLine(buffer, statement, "updated:", rowCount);
             if (generatedKeys != null && !generatedKeys.isEmpty()) {
-                buffer.append(" [generated:");
+                buffer.append(" generated:");
                 for (Map<String, ?> keys : generatedKeys) {
                     SqlBindingRenderer.appendGeneratedKeys(buffer, keys);
                 }
-                buffer.append(']');
             }
-            appendDuration(buffer, durationMillis);
+            buffer.append(" time_ms:").append(durationMillis);
             LOGGER.info(buffer.toString());
         }
     }
@@ -79,47 +80,45 @@ public class Slf4jSqlLogger implements SqlLogger {
     @Override
     public void logQueryError(TranslatedStatement statement, Throwable error, long durationMillis) {
         if (LOGGER.isErrorEnabled()) {
-            LOGGER.error(buildErrorLine(statement, error, durationMillis));
+            StringBuilder buffer = new StringBuilder();
+            appendErrorLine(buffer, statement, error, durationMillis);
+            LOGGER.error(buffer.toString());
         }
     }
 
-    protected String buildStatementLine(TranslatedStatement statement, String resultLabel, int rowCount) {
-        StringBuilder buffer = buildSqlAndBindings(statement);
-        return buffer.append('[').append(resultLabel).append(rowCount).append(']').toString();
+    void appendStatementLine(StringBuilder buffer, TranslatedStatement statement, String resultLabel, int rowCount) {
+        appendSqlAndBindings(buffer, statement);
+        buffer.append(' ').append(resultLabel).append(rowCount);
     }
 
-    protected String buildErrorLine(TranslatedStatement statement, Throwable error, long durationMillis) {
-        StringBuilder buffer = buildSqlAndBindings(statement);
-        buffer.append("[time_ms:").append(durationMillis).append(']');
-        buffer.append(" [*** error: ").append(error != null ? error.getMessage() : null).append(']');
-        return buffer.toString();
+    void appendErrorLine(StringBuilder buffer, TranslatedStatement statement, Throwable error, long durationMillis) {
+        appendSqlAndBindings(buffer, statement);
+        buffer.append(" time_ms:").append(durationMillis);
+        buffer.append(" error: ").append(error != null ? error.getMessage() : null);
     }
 
-    // builds "SQL [bind:[...]] " with a guaranteed trailing space, ready for a result or error suffix
-    private StringBuilder buildSqlAndBindings(TranslatedStatement statement) {
-        StringBuilder buffer = new StringBuilder(statement.sql()).append(' ');
+    private void appendSqlAndBindings(StringBuilder buffer, TranslatedStatement statement) {
+        buffer.append(statement.sql()).append(" |");
+        int lengthWithoutBindings = buffer.length();
+        buffer.append(' ');
         SqlBindingRenderer.appendBindings(buffer, statement, batchRowThreshold);
-        if (buffer.charAt(buffer.length() - 1) != ' ') {
-            buffer.append(' ');
+        if (buffer.length() == lengthWithoutBindings + 1) {
+            // no bindings were rendered - drop the separator space so the next block follows "|" directly
+            buffer.setLength(lengthWithoutBindings);
         }
-        return buffer;
-    }
-
-    private static void appendDuration(StringBuilder buffer, long durationMillis) {
-        buffer.append(" [time_ms:").append(durationMillis).append(']');
     }
 
     @Override
     public void logAlsoSelect(int rowCount) {
         if (LOGGER.isInfoEnabled()) {
-            LOGGER.info("also [selected:{}]", rowCount);
+            LOGGER.info("also selected:{}", rowCount);
         }
     }
 
     @Override
     public void logAlsoUpdate(int rowCount) {
         if (LOGGER.isInfoEnabled()) {
-            LOGGER.info("also [updated:{}]", rowCount);
+            LOGGER.info("also updated:{}", rowCount);
         }
     }
 

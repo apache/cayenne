@@ -161,6 +161,21 @@ public class LoggingObserverTest {
     }
 
     @Test
+    public void trailingZeroUpdateCountNotReportedAsAlso() {
+        // a stored procedure reports its completion status as a 0 update count after the result set - this must not
+        // surface as a stray "also updated:0" line
+        CapturingLogger logger = new CapturingLogger();
+        LoggingObserver observer = observer(logger);
+
+        observer.nextStatement(null, procedure());
+        observer.nextRows(null, List.of(new Object()));
+        observer.nextCount(null, 0);
+        observer.onSuccess();
+
+        assertEquals(List.of("selected:1"), logger.calls);
+    }
+
+    @Test
     public void emptyBatchCountDoesNotEmitStrayUpdate() {
         // a SQLTemplate SELECT reports its (absent) update counts via an empty nextBatchCount - must not log
         CapturingLogger logger = new CapturingLogger();

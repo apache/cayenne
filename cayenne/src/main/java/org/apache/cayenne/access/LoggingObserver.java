@@ -77,7 +77,11 @@ class LoggingObserver implements OperationObserver {
 
     private void reportUpdate(int rowCount) {
         if (headerEmitted) {
-            logger.logAlsoUpdate(rowCount);
+            // a trailing zero update count is driver noise (e.g. a stored procedure's completion status reported
+            // after its result set), so skip the stray "also updated:0" line
+            if (rowCount != 0) {
+                logger.logAlsoUpdate(rowCount);
+            }
         } else {
             logger.logUpdate(current, rowCount, generatedKeys != null ? generatedKeys : List.of(), elapsedMillis());
             headerEmitted = true;
