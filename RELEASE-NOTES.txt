@@ -26,6 +26,7 @@ CAY-2972 Fewer parentheses in generated SQL
 
 Bug Fixes:
 
+CAY-2892 Modeler: Exception when deleting a callback 
 CAY-2958 Empty join is saved
 CAY-2959 Modeler: DbRelationship dialog "Cancel" doesn't cancel
 CAY-2960 Undoing renamed relationship change throws
