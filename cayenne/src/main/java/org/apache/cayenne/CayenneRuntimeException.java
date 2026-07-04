@@ -27,7 +27,7 @@ import org.apache.cayenne.util.LocalizedStringsHandler;
  */
 public class CayenneRuntimeException extends RuntimeException {
 
-    private static String exceptionLabel;
+    private static final String exceptionLabel;
 
     static {
         String version = LocalizedStringsHandler.getString("cayenne.version");

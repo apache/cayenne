@@ -18,9 +18,6 @@
  ****************************************************************/
 package org.apache.cayenne.modeler.undo;
 
-import javax.swing.undo.CannotRedoException;
-import javax.swing.undo.CannotUndoException;
-
 import org.apache.cayenne.configuration.DataChannelDescriptor;
 import org.apache.cayenne.configuration.DataNodeDescriptor;
 import org.apache.cayenne.map.DataMap;
@@ -34,25 +31,28 @@ import org.apache.cayenne.map.ObjEntity;
 import org.apache.cayenne.map.ObjRelationship;
 import org.apache.cayenne.map.Procedure;
 import org.apache.cayenne.map.ProcedureParameter;
+import org.apache.cayenne.map.QueryDescriptor;
+import org.apache.cayenne.modeler.project.ProjectSession;
 import org.apache.cayenne.modeler.ui.action.PasteAction;
 import org.apache.cayenne.modeler.ui.action.RemoveAction;
 import org.apache.cayenne.modeler.ui.action.RemoveAttributeAction;
 import org.apache.cayenne.modeler.ui.action.RemoveCallbackMethodAction;
 import org.apache.cayenne.modeler.ui.action.RemoveProcedureParameterAction;
 import org.apache.cayenne.modeler.ui.action.RemoveRelationshipAction;
-import org.apache.cayenne.modeler.project.ProjectSession;
 import org.apache.cayenne.modeler.ui.project.editor.objentity.callbacks.ObjCallbackMethod;
-import org.apache.cayenne.map.QueryDescriptor;
+
+import javax.swing.undo.CannotRedoException;
+import javax.swing.undo.CannotUndoException;
 
 public class PasteUndoableEdit extends CayenneUndoableEdit {
 
-    private DataChannelDescriptor domain;
-    private DataMap map;
-    private Object where;
-    private Object content;
+    private final DataChannelDescriptor domain;
+    private final DataMap map;
+    private final Object where;
+    private final Object content;
 
-    public PasteUndoableEdit(ProjectSession session, DataChannelDescriptor domain, DataMap map, Object where,
-            Object content) {
+    public PasteUndoableEdit(
+            ProjectSession session, DataChannelDescriptor domain, DataMap map, Object where, Object content) {
         super(session);
         this.domain = domain;
         this.map = map;
@@ -74,7 +74,7 @@ public class PasteUndoableEdit extends CayenneUndoableEdit {
     public void redo() throws CannotRedoException {
         PasteAction action = globalActions.getAction(PasteAction.class);
 
-        action.paste(where, content, domain, map);
+        action.paste(where, content, domain);
     }
 
     @Override
