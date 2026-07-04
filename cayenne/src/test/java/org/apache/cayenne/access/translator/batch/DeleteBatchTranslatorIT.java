@@ -90,7 +90,7 @@ public class DeleteBatchTranslatorIT {
         DbAdapter adapter = objectFactory.newInstance(DbAdapter.class, JdbcAdapter.class.getName());
         String generatedSql = new DeleteBatchTranslator().translate(deleteQuery, adapter).sql();
         assertNotNull(generatedSql);
-        assertEquals("DELETE FROM " + entity.getName() + " WHERE ( LOCKING_TEST_ID = ? ) AND ( NAME IS NULL )", generatedSql);
+        assertEquals("DELETE FROM " + entity.getName() + " WHERE (LOCKING_TEST_ID = ?) AND (NAME IS NULL)", generatedSql);
     }
 
     @Test
@@ -138,8 +138,8 @@ public class DeleteBatchTranslatorIT {
             String charEnd = unitAdapter.getIdentifiersEndQuote();
             assertNotNull(generatedSql);
 
-            assertEquals("DELETE FROM " + charStart + entity.getName() + charEnd + " WHERE ( " + charStart
-                    + "LOCKING_TEST_ID" + charEnd + " = ? ) AND ( " + charStart + "NAME" + charEnd + " IS NULL )",
+            assertEquals("DELETE FROM " + charStart + entity.getName() + charEnd + " WHERE (" + charStart
+                    + "LOCKING_TEST_ID" + charEnd + " = ?) AND (" + charStart + "NAME" + charEnd + " IS NULL)",
                     generatedSql);
         } finally {
             entity.getDataMap().setQuotingSQLIdentifiers(false);

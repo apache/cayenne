@@ -47,7 +47,7 @@ public class TableNode extends Node {
 
     @Override
     public SQLAppendable append(SQLAppendable buffer) {
-        buffer.append(' ');
+        buffer.appendTokenSeparator();
 
         if(dbEntity != null) {
             if(dbEntity.getCatalog() != null) {
@@ -62,7 +62,7 @@ public class TableNode extends Node {
         }
 
         if (alias != null) {
-            buffer.append(' ').appendQuoted(alias);
+            buffer.appendTokenSeparator().appendQuoted(alias);
         }
         return buffer;
     }

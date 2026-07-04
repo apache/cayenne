@@ -27,7 +27,7 @@ import org.apache.cayenne.access.sqlbuilder.SQLAppendable;
 public class HavingNode extends Node {
     @Override
     public SQLAppendable append(SQLAppendable buffer) {
-        return buffer.append(" HAVING");
+        return buffer.appendTokenSeparator().append("HAVING");
     }
 
     @Override

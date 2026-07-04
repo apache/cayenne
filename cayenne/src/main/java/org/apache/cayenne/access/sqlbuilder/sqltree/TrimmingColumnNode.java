@@ -66,7 +66,7 @@ public class TrimmingColumnNode extends Node {
     }
 
     protected void appendRtrim(SQLAppendable buffer) {
-        buffer.append(" RTRIM(");
+        buffer.appendTokenSeparator().append("RTRIM(");
         appendColumnNode(buffer);
         buffer.append(")");
     }
@@ -110,9 +110,9 @@ public class TrimmingColumnNode extends Node {
     }
 
     protected void appendClobColumnNode(SQLAppendable buffer) {
-        buffer.append(" CAST(");
+        buffer.appendTokenSeparator().append("CAST(");
         appendColumnNode(buffer);
-        buffer.append(" AS VARCHAR(").append(getColumnSize()).append("))");
+        buffer.appendTokenSeparator().append("AS").appendTokenSeparator().append("VARCHAR(").append(getColumnSize()).append("))");
     }
 
     protected void appendColumnNode(SQLAppendable buffer) {
@@ -127,7 +127,7 @@ public class TrimmingColumnNode extends Node {
             return;
         }
         if (columnNode.getAlias() != null) {
-            buffer.append(' ').appendQuoted(columnNode.getAlias());
+            buffer.appendTokenSeparator().appendQuoted(columnNode.getAlias());
         }
     }
 

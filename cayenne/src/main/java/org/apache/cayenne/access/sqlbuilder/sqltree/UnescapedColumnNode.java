@@ -33,13 +33,13 @@ public class UnescapedColumnNode extends ColumnNode {
 
     @Override
     public SQLAppendable append(SQLAppendable buffer) {
-        buffer.append(' ');
+        buffer.appendTokenSeparator();
         if (table != null) {
             buffer.append(table).append('.');
         }
         buffer.append(column);
         if (alias != null) {
-            buffer.append(' ').appendQuoted(alias);
+            buffer.appendTokenSeparator().appendQuoted(alias);
         }
 
         return buffer;

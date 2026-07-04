@@ -28,7 +28,7 @@ public class ElseNode extends Node {
 
     @Override
     public SQLAppendable append(SQLAppendable buffer) {
-        return buffer.append(" ELSE");
+        return buffer.appendTokenSeparator().append("ELSE");
     }
 
     @Override

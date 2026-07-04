@@ -45,7 +45,7 @@ public class ExpressionNode extends Node {
                 && parent.type != NodeType.WHERE
                 && parent.type != NodeType.JOIN
                 && parent.type != NodeType.UPDATE_SET) {
-            buffer.append(" (");
+            buffer.appendTokenSeparator().append('(').suppressNextTokenSeparator();
         }
     }
 
@@ -55,7 +55,7 @@ public class ExpressionNode extends Node {
                 && parent.type != NodeType.WHERE
                 && parent.type != NodeType.JOIN
                 && parent.type != NodeType.UPDATE_SET) {
-            buffer.append(" )");
+            buffer.append(")");
         }
     }
 

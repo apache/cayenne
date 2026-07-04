@@ -36,7 +36,7 @@ public class OpExpressionNode extends ExpressionNode {
 
     @Override
     public void appendChildrenSeparator(SQLAppendable buffer, int childInd) {
-        buffer.append(' ').append(op);
+        buffer.appendTokenSeparator().append(op);
     }
 
     @Override

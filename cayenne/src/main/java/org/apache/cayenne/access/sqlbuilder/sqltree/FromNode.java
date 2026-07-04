@@ -32,7 +32,7 @@ public class FromNode extends Node {
 
     @Override
     public SQLAppendable append(SQLAppendable buffer) {
-        return buffer.append(" FROM");
+        return buffer.appendTokenSeparator().append("FROM");
     }
 
     @Override

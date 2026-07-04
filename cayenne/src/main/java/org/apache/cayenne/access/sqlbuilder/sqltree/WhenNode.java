@@ -28,7 +28,7 @@ public class WhenNode extends Node {
 
     @Override
     public SQLAppendable append(SQLAppendable buffer) {
-        return buffer.append(" WHEN");
+        return buffer.appendTokenSeparator().append("WHEN");
     }
 
     @Override

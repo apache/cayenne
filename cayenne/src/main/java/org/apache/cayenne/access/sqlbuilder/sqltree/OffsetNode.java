@@ -35,7 +35,7 @@ public class OffsetNode extends Node {
 
     @Override
     public SQLAppendable append(SQLAppendable buffer) {
-        return buffer.append(" OFFSET ").append(offset);
+        return buffer.appendTokenSeparator().append("OFFSET").appendTokenSeparator().append(offset);
     }
 
     @Override

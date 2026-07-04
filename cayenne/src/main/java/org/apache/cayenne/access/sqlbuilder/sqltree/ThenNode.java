@@ -28,7 +28,7 @@ public class ThenNode extends Node {
 
     @Override
     public SQLAppendable append(SQLAppendable buffer) {
-        return buffer.append(" THEN");
+        return buffer.appendTokenSeparator().append("THEN");
     }
 
     @Override

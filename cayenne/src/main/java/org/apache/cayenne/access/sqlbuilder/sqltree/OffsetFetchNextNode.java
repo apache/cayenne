@@ -38,10 +38,10 @@ public class OffsetFetchNextNode extends LimitOffsetNode {
     public SQLAppendable append(SQLAppendable buffer) {
         // OFFSET X ROWS FETCH NEXT Y ROWS ONLY
         if(offset > 0) {
-            buffer.append(" OFFSET ").append(offset).append(" ROWS");
+            buffer.appendTokenSeparator().append("OFFSET").appendTokenSeparator().append(offset).appendTokenSeparator().append("ROWS");
         }
         if(limit > 0) {
-            buffer.append(" FETCH NEXT ").append(limit).append(" ROWS ONLY");
+            buffer.appendTokenSeparator().append("FETCH NEXT").appendTokenSeparator().append(limit).appendTokenSeparator().append("ROWS ONLY");
         }
         return buffer;
     }

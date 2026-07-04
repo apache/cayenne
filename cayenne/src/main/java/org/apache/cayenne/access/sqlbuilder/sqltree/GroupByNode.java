@@ -28,7 +28,7 @@ public class GroupByNode extends Node {
 
     @Override
     public SQLAppendable append(SQLAppendable buffer) {
-        return buffer.append(" GROUP BY");
+        return buffer.appendTokenSeparator().append("GROUP BY");
     }
 
     @Override

@@ -29,7 +29,7 @@ public class SelectNode extends Node {
     @Override
     public SQLAppendable append(SQLAppendable builder) {
         if(parent != null) {
-            builder.append(" (");
+            builder.appendTokenSeparator().append('(');
         }
         return builder.append("SELECT");
     }

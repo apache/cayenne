@@ -27,7 +27,7 @@ import org.apache.cayenne.access.sqlbuilder.SQLAppendable;
 public class NotNode extends Node {
     @Override
     public SQLAppendable append(SQLAppendable buffer) {
-        return buffer.append(" NOT");
+        return buffer.appendTokenSeparator().append("NOT");
     }
 
     @Override

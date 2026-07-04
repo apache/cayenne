@@ -32,7 +32,7 @@ public class DistinctNode extends Node {
 
     @Override
     public SQLAppendable append(SQLAppendable buffer) {
-        return buffer.append(" DISTINCT");
+        return buffer.appendTokenSeparator().append("DISTINCT");
     }
 
     @Override

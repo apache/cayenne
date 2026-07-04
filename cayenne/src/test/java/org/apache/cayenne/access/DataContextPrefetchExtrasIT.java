@@ -19,7 +19,6 @@
 
 package org.apache.cayenne.access;
 
-import java.util.List;
 import org.apache.cayenne.PersistenceState;
 import org.apache.cayenne.Persistent;
 import org.apache.cayenne.PersistentObject;
@@ -34,8 +33,10 @@ import org.apache.cayenne.testdo.compound.CompoundPkTestEntity;
 import org.apache.cayenne.unit.CayenneProjects;
 import org.apache.cayenne.unit.CayenneTestsEnv;
 import org.junit.jupiter.api.BeforeEach;
-import org.junit.jupiter.api.extension.RegisterExtension;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.RegisterExtension;
+
+import java.util.List;
 
 import static org.junit.jupiter.api.Assertions.*;
 
@@ -96,14 +97,14 @@ public class DataContextPrefetchExtrasIT  {
         List<CharPkTestEntity> pks = q.select(env.context());
         assertEquals(2, pks.size());
 
-        CharPkTestEntity pk1 = pks.get(0);
+        CharPkTestEntity pk1 = pks.getFirst();
         assertEquals("n1", pk1.getOtherCol());
         List<?> toMany = (List<?>) pk1.readPropertyDirectly("charFKs");
         assertNotNull(toMany);
         assertFalse(((ValueHolder) toMany).isFault());
         assertEquals(3, toMany.size());
 
-        CharFkTestEntity fk1 = (CharFkTestEntity) toMany.get(0);
+        CharFkTestEntity fk1 = (CharFkTestEntity) toMany.getFirst();
         assertEquals(PersistenceState.COMMITTED, fk1.getPersistenceState());
         assertSame(pk1, fk1.getToCharPK());
     }
@@ -121,13 +122,11 @@ public class DataContextPrefetchExtrasIT  {
 
         List<CompoundFkTestEntity> objects = q.select(env.context());
         assertEquals(1, objects.size());
-        PersistentObject fk1 = objects.get(0);
+        PersistentObject fk1 = objects.getFirst();
 
         Object toOnePrefetch = fk1.readNestedProperty("toCompoundPk");
         assertNotNull(toOnePrefetch);
-        assertTrue(
-                toOnePrefetch instanceof Persistent,
-                "Expected Persistent, got: " + toOnePrefetch.getClass().getName());
+        assertInstanceOf(Persistent.class, toOnePrefetch, "Expected Persistent, got: " + toOnePrefetch.getClass().getName());
 
         Persistent pk1 = (Persistent) toOnePrefetch;
         assertEquals(PersistenceState.COMMITTED, pk1.getPersistenceState());
@@ -147,7 +146,7 @@ public class DataContextPrefetchExtrasIT  {
 
         List<CompoundPkTestEntity> pks = q.select(env.context());
         assertEquals(1, pks.size());
-        PersistentObject pk1 = pks.get(0);
+        PersistentObject pk1 = pks.getFirst();
 
         List<?> toMany = (List<?>) pk1.readPropertyDirectly("compoundFkArray");
         assertNotNull(toMany);

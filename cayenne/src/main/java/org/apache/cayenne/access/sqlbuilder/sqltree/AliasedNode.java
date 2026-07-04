@@ -43,7 +43,7 @@ public class AliasedNode extends Node {
     @Override
     public SQLAppendable append(SQLAppendable buffer) {
         if(skipContent()) {
-            buffer.append(' ').append(alias);
+            buffer.appendTokenSeparator().append(alias);
         }
         return buffer;
     }
@@ -63,7 +63,7 @@ public class AliasedNode extends Node {
         if(skipContent()){
             return;
         }
-        buffer.append(" ").append(alias);
+        buffer.appendTokenSeparator().append(alias);
     }
 
     public String getAlias() {

@@ -37,12 +37,12 @@ public class InsertValuesNode extends Node {
 
     @Override
     public SQLAppendable append(SQLAppendable buffer) {
-        return buffer.append(" VALUES");
+        return buffer.appendTokenSeparator().append("VALUES");
     }
 
     @Override
     public void appendChildrenStart(SQLAppendable buffer) {
-        buffer.append('(');
+        buffer.append('(').suppressNextTokenSeparator();
     }
 
     @Override

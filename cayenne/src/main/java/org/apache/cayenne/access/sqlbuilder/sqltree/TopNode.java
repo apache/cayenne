@@ -36,7 +36,7 @@ public class TopNode extends Node {
 
     @Override
     public SQLAppendable append(SQLAppendable buffer) {
-        return buffer.append(" TOP ").append(count);
+        return buffer.appendTokenSeparator().append("TOP").appendTokenSeparator().append(count);
     }
 
     @Override

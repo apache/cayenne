@@ -32,7 +32,7 @@ public class WhereNode extends Node {
 
     @Override
     public SQLAppendable append(SQLAppendable buffer) {
-        return buffer.append(" WHERE");
+        return buffer.appendTokenSeparator().append("WHERE");
     }
 
     @Override

@@ -69,7 +69,7 @@ public class ValueNode extends Node {
     }
 
     protected void appendNullValue(SQLAppendable buffer) {
-        buffer.append(" NULL");
+        buffer.appendTokenSeparator().append("NULL");
     }
 
     private void appendValue(Object val, SQLAppendable buffer) {
@@ -108,19 +108,19 @@ public class ValueNode extends Node {
             return;
         }
         if (buffer.getContext() == null || !needBinding) {
-            buffer.append(' ').append(value.toString());
+            buffer.appendTokenSeparator().append(value.toString());
         } else {
-            buffer.append(" ?");
+            buffer.appendTokenSeparator().append('?');
             addValueBinding(buffer, value);
         }
     }
 
     protected void appendStringValue(SQLAppendable buffer, CharSequence value) {
         if (buffer.getContext() == null || !needBinding) {
-            buffer.append(" '").append(value.toString()).append("'");
+            buffer.appendTokenSeparator().append('\'').append(value.toString()).append('\'');
         } else {
             // value can't be null here
-            buffer.append(" ?");
+            buffer.appendTokenSeparator().append('?');
             addValueBinding(buffer, value);
         }
     }

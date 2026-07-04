@@ -29,6 +29,7 @@ public class DefaultSQLAppendable implements SQLAppendable {
     final StringBuilder builder;
     private final SQLGenerationContext context;
     private final QuotingStrategy quotingStrategy;
+    private boolean suppressNextSeparator;
 
     public DefaultSQLAppendable(SQLGenerationContext context) {
         this.builder = new StringBuilder();
@@ -44,27 +45,47 @@ public class DefaultSQLAppendable implements SQLAppendable {
 
     @Override
     public SQLAppendable append(String str) {
+        suppressNextSeparator = false;
         builder.append(str);
         return this;
     }
 
     @Override
     public SQLAppendable append(char c) {
+        suppressNextSeparator = false;
         builder.append(c);
         return this;
     }
 
     @Override
     public SQLAppendable append(int c) {
+        suppressNextSeparator = false;
         builder.append(c);
         return this;
     }
 
     @Override
     public SQLAppendable appendQuoted(String str) {
+        suppressNextSeparator = false;
         quotingStrategy.appendStart(builder);
         builder.append(str);
         quotingStrategy.appendEnd(builder);
+        return this;
+    }
+
+    @Override
+    public SQLAppendable appendTokenSeparator() {
+        if (suppressNextSeparator) {
+            suppressNextSeparator = false;
+        } else {
+            builder.append(' ');
+        }
+        return this;
+    }
+
+    @Override
+    public SQLAppendable suppressNextTokenSeparator() {
+        suppressNextSeparator = true;
         return this;
     }
 

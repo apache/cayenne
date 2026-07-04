@@ -46,7 +46,7 @@ public class DeleteBuilderTest extends BaseSqlBuilderTest {
                         .and(column("col3").eq(value(null)))
         ).build();
         assertInstanceOf(DeleteNode.class, node);
-        assertSQL("DELETE FROM test WHERE ( ( col1 = 1 ) AND ( col2 = 'test' ) ) AND ( col3 IS NULL )", node);
+        assertSQL("DELETE FROM test WHERE ((col1 = 1) AND (col2 = 'test')) AND (col3 IS NULL)", node);
     }
 
     @Test

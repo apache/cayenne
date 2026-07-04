@@ -70,7 +70,7 @@ public class InsertBuilderTest extends BaseSqlBuilderTest  {
         Node node = builder.build();
 
         assertInstanceOf(InsertNode.class, node);
-        assertSQL("INSERT INTO test( col1, col2, col3)", node);
+        assertSQL("INSERT INTO test(col1, col2, col3)", node);
     }
 
     @Test
@@ -83,7 +83,7 @@ public class InsertBuilderTest extends BaseSqlBuilderTest  {
         Node node = builder.build();
 
         assertInstanceOf(InsertNode.class, node);
-        assertSQL("INSERT INTO test VALUES( 1, 'test', NULL)", node);
+        assertSQL("INSERT INTO test VALUES(1, 'test', NULL)", node);
     }
 
     @Test
@@ -99,7 +99,7 @@ public class InsertBuilderTest extends BaseSqlBuilderTest  {
         Node node = builder.build();
 
         assertInstanceOf(InsertNode.class, node);
-        assertSQL("INSERT INTO test( col1, col2, col3) VALUES( 1, 'test', NULL)", node);
+        assertSQL("INSERT INTO test(col1, col2, col3) VALUES(1, 'test', NULL)", node);
     }
 
 }

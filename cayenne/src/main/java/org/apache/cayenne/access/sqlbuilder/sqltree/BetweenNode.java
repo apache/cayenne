@@ -39,11 +39,11 @@ public class BetweenNode extends ExpressionNode {
     public void appendChildrenSeparator(SQLAppendable buffer, int childIdx) {
         if (childIdx == 0) {
             if (not) {
-                buffer.append(" NOT");
+                buffer.appendTokenSeparator().append("NOT");
             }
-            buffer.append(" BETWEEN");
+            buffer.appendTokenSeparator().append("BETWEEN");
         } else {
-            buffer.append(" AND");
+            buffer.appendTokenSeparator().append("AND");
         }
     }
 

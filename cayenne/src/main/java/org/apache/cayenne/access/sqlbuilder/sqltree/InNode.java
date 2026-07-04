@@ -44,9 +44,9 @@ public class InNode extends Node {
     public void appendChildrenSeparator(SQLAppendable buffer, int childInd) {
         if (childInd == 0) {
             if (not) {
-                buffer.append(" NOT");
+                buffer.appendTokenSeparator().append("NOT");
             }
-            buffer.append(" IN (");
+            buffer.appendTokenSeparator().append("IN").appendTokenSeparator().append('(').suppressNextTokenSeparator();
         }
     }
 

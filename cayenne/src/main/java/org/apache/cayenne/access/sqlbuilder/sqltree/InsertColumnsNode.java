@@ -52,6 +52,6 @@ public class InsertColumnsNode extends Node {
 
     @Override
     public void appendChildrenStart(SQLAppendable buffer) {
-        buffer.append('(');
+        buffer.append('(').suppressNextTokenSeparator();
     }
 }

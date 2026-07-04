@@ -46,6 +46,6 @@ public class JoinNode extends Node {
 
     @Override
     public void appendChildrenSeparator(SQLAppendable buffer, int childInd) {
-        buffer.append(" ON");
+        buffer.appendTokenSeparator().append("ON");
     }
 }

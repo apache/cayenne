@@ -28,7 +28,7 @@ public class ExistsNode extends Node {
 
     @Override
     public SQLAppendable append(SQLAppendable buffer) {
-        return buffer.append(" EXISTS");
+        return buffer.appendTokenSeparator().append("EXISTS");
     }
 
     @Override

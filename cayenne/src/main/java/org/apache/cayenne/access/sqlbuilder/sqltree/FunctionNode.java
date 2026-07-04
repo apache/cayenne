@@ -53,9 +53,9 @@ public class FunctionNode extends Node {
     @Override
     public SQLAppendable append(SQLAppendable buffer) {
         if(skipContent()) {
-            buffer.append(' ').append(alias);
+            buffer.appendTokenSeparator().append(alias);
         } else {
-            buffer.append(' ').append(functionName);
+            buffer.appendTokenSeparator().append(functionName);
         }
         return buffer;
     }
@@ -76,7 +76,7 @@ public class FunctionNode extends Node {
             return;
         }
         if (needParentheses) {
-            buffer.append('(');
+            buffer.append('(').suppressNextTokenSeparator();
         }
     }
 
@@ -87,11 +87,11 @@ public class FunctionNode extends Node {
         }
 
         if (needParentheses) {
-            buffer.append(" )");
+            buffer.append(")");
         }
 
         if (alias != null) {
-            buffer.append(" ").appendQuoted(alias);
+            buffer.appendTokenSeparator().appendQuoted(alias);
         }
     }
 

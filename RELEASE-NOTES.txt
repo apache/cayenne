@@ -21,6 +21,7 @@ CAY-2962 Allow unconstrained VARCHAR
 CAY-2963 Replace TypesHandler / types.xml with hardcoded map
 CAY-2969 Extender API for "soft" delete 
 CAY-2970 Tighten deferred value resolution contract on commit
+CAY-2971 Remove extra spaces within SQL parenthesis
 
 Bug Fixes:
 

@@ -37,9 +37,9 @@ public class EqualNode extends ExpressionNode {
                 && ((ValueNode) child).getValue() == null
                 && getParent() != null
                 && getParent().getType() != NodeType.UPDATE_SET) {
-            buffer.append(" IS");
+            buffer.appendTokenSeparator().append("IS");
         } else {
-            buffer.append(" =");
+            buffer.appendTokenSeparator().append('=');
         }
     }
 

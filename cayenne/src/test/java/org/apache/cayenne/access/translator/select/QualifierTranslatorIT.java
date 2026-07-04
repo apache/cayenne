@@ -73,7 +73,7 @@ public class QualifierTranslatorIT {
         SQLGenerationVisitor visitor = new SQLGenerationVisitor(new DefaultSQLAppendable(null));
         node.visit(visitor);
 
-        assertEquals(" ( ( ( t0.F_KEY1 = 'PK1' ) AND ( t0.F_KEY2 = 'PK2' ) ) AND t0.NAME LIKE 'test%' ) AND t0.NAME LIKE '%a%'", visitor.getSQLString());
+        assertEquals(" (((t0.F_KEY1 = 'PK1') AND (t0.F_KEY2 = 'PK2')) AND t0.NAME LIKE 'test%') AND t0.NAME LIKE '%a%'", visitor.getSQLString());
     }
 
     @Test
@@ -98,7 +98,7 @@ public class QualifierTranslatorIT {
         SQLGenerationVisitor visitor = new SQLGenerationVisitor(new DefaultSQLAppendable(null));
         node.visit(visitor);
 
-        assertEquals(" ( ( t0.F_KEY1 = 'PK1' ) AND ( t0.F_KEY2 = 'PK2' ) ) OR ( ( t0.F_KEY1 = 'PK3' ) AND ( t0.F_KEY2 = 'PK4' ) )", visitor.getSQLString());
+        assertEquals(" ((t0.F_KEY1 = 'PK1') AND (t0.F_KEY2 = 'PK2')) OR ((t0.F_KEY1 = 'PK3') AND (t0.F_KEY2 = 'PK4'))", visitor.getSQLString());
     }
 
     @Test

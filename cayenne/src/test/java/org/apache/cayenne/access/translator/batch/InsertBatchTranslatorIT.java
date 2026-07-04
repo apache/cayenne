@@ -64,8 +64,8 @@ public class InsertBatchTranslatorIT {
         InsertBatchQuery insertQuery = new InsertBatchQuery(entity, 1);
         String generatedSql = new InsertBatchTranslator().translate(insertQuery, adapter).sql();
         assertNotNull(generatedSql);
-        assertEquals("INSERT INTO " + entity.getName() + "( DESCRIPTION, INT_COLUMN_NOTNULL, INT_COLUMN_NULL, LOCKING_TEST_ID, NAME) " +
-                        "VALUES( ?, ?, ?, ?, ?)",
+        assertEquals("INSERT INTO " + entity.getName() + "(DESCRIPTION, INT_COLUMN_NOTNULL, INT_COLUMN_NULL, LOCKING_TEST_ID, NAME) " +
+                        "VALUES(?, ?, ?, ?, ?)",
                 generatedSql);
     }
 
@@ -83,11 +83,11 @@ public class InsertBatchTranslatorIT {
             String charEnd = unitAdapter.getIdentifiersEndQuote();
             assertNotNull(generatedSql);
             assertEquals("INSERT INTO " + charStart + entity.getName() + charEnd
-                    + "( " + charStart + "DESCRIPTION" + charEnd + ", "
+                    + "(" + charStart + "DESCRIPTION" + charEnd + ", "
                     + charStart + "INT_COLUMN_NOTNULL" + charEnd + ", "
                     + charStart + "INT_COLUMN_NULL" + charEnd + ", "
                     + charStart + "LOCKING_TEST_ID" + charEnd + ", "
-                    + charStart + "NAME" + charEnd + ") VALUES( ?, ?, ?, ?, ?)", generatedSql);
+                    + charStart + "NAME" + charEnd + ") VALUES(?, ?, ?, ?, ?)", generatedSql);
         } finally {
             entity.getDataMap().setQuotingSQLIdentifiers(false);
         }

@@ -44,13 +44,13 @@ public class ColumnNode extends Node {
 
     @Override
     public SQLAppendable append(SQLAppendable buffer) {
-        buffer.append(' ');
+        buffer.appendTokenSeparator();
         if (table != null) {
             buffer.appendQuoted(table).append('.');
         }
         buffer.appendQuoted(column);
         if (alias != null) {
-            buffer.append(' ').appendQuoted(alias);
+            buffer.appendTokenSeparator().appendQuoted(alias);
         }
         return buffer;
     }

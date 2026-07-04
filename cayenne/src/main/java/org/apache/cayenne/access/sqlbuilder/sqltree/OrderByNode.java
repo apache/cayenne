@@ -28,7 +28,7 @@ public class OrderByNode extends Node {
 
     @Override
     public SQLAppendable append(SQLAppendable buffer) {
-        return buffer.append(" ORDER BY");
+        return buffer.appendTokenSeparator().append("ORDER BY");
     }
 
     @Override

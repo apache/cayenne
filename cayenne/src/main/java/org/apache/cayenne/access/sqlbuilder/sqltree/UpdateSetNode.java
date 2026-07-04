@@ -37,7 +37,7 @@ public class UpdateSetNode extends Node {
 
     @Override
     public SQLAppendable append(SQLAppendable buffer) {
-        return buffer.append(" SET");
+        return buffer.appendTokenSeparator().append("SET");
     }
 
     @Override

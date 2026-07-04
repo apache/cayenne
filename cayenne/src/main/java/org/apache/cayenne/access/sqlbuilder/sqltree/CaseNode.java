@@ -28,7 +28,7 @@ public class CaseNode extends Node {
 
     @Override
     public SQLAppendable append(SQLAppendable buffer) {
-        return buffer.append(" CASE");
+        return buffer.appendTokenSeparator().append("CASE");
     }
 
     @Override
@@ -38,6 +38,6 @@ public class CaseNode extends Node {
 
     @Override
     public void appendChildrenEnd(SQLAppendable buffer) {
-            buffer.append(" END");
+            buffer.appendTokenSeparator().append("END");
     }
 }
