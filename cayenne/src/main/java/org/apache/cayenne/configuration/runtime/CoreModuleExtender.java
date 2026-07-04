@@ -119,7 +119,7 @@ public class CoreModuleExtender {
      * @param columnName the name of the BOOLEAN column marking soft-deleted rows
      * @since 5.0
      */
-    public CoreModuleExtender useSoftDeleteIfColumnPresent(String columnName) {
+    public CoreModuleExtender softDeleteIfColumnPresent(String columnName) {
         binder.bind(DeleteDbRowOpFactory.class).toInstance(new ConditionalSoftDeleteDbRowOpFactory(columnName));
         return this;
     }

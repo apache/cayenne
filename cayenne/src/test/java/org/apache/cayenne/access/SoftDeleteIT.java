@@ -39,7 +39,7 @@ public class SoftDeleteIT {
     @RegisterExtension
     static final CayenneTestsEnv env = CayenneTestsEnv
             .forProject(CayenneProjects.SOFT_DELETE_PROJECT)
-            .withExtraModules(b -> CoreModule.extend(b).useSoftDeleteIfColumnPresent("DELETED"));
+            .withExtraModules(b -> CoreModule.extend(b).softDeleteIfColumnPresent("DELETED"));
 
     private TableHelper tSoftDelete;
 
