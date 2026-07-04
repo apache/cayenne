@@ -406,7 +406,7 @@ public class PasteAction extends AppAction implements FlavorListener {
                         .name());
 
                 objEntity.getCallbackMap()
-                        .getCallbackDescriptor(session.getSelectedCallbackType().getType())
+                        .getCallbackDescriptor(method.getCallbackType().getType())
                         .addCallbackMethod(method.getName());
 
                 CallbackMethodEvent ce = CallbackMethodEvent.ofAdd(this, method.getName());
