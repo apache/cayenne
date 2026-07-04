@@ -991,9 +991,10 @@ public class DataContext implements ObjectContext {
                     // this event is caught by peer nested DataContexts to synchronize the state
                     fireDataChannelCommitted(this, changes);
                 }
-                // "catch" is needed to unwrap OptimisticLockExceptions
+                // "catch" is needed to unwrap meaningful CayenneRuntimeExceptions (e.g. OptimisticLockException, or a
+                // CayenneSqlException carrying the failing SQL) without unwinding past them into their lower-level cause
                 catch (CayenneRuntimeException ex) {
-                    Throwable unwound = Util.unwindException(ex);
+                    Throwable unwound = Util.unwindException(ex, CayenneRuntimeException.class);
 
                     if (unwound instanceof CayenneRuntimeException cayenneRuntimeException) {
                         throw cayenneRuntimeException;

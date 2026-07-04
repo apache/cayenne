@@ -26,6 +26,7 @@ import org.junit.jupiter.api.Test;
 
 import java.io.File;
 import java.io.FileWriter;
+import java.sql.SQLException;
 import java.util.Map;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
@@ -326,5 +327,42 @@ public class UtilTest {
 	@Test
 	public void underscoredToJavaSpecialChars() throws Exception {
 		assertEquals("ABCpoundXyz", Util.underscoredToJava("ABC#_XYZ", true));
+	}
+
+	@Test
+	public void unwindException() {
+		SQLException sql = new SQLException("bad sql");
+		CayenneRuntimeException wrapper = new CayenneRuntimeException(sql);
+
+		// the plain form unwinds all the way to the non-Cayenne root
+		assertSame(sql, Util.unwindException(wrapper));
+	}
+
+	@Test
+	public void unwindExceptionUpTo_stopsAtWrapper() {
+		SQLException sql = new SQLException("bad sql");
+		CayenneRuntimeException wrapper = new CayenneRuntimeException(sql);
+
+		// does not unwind past the CayenneRuntimeException into its lower-level SQLException cause
+		assertSame(wrapper, Util.unwindException(wrapper, CayenneRuntimeException.class));
+	}
+
+	@Test
+	public void unwindExceptionUpTo_returnsInnermostMatch() {
+		SQLException sql = new SQLException("bad sql");
+		CayenneRuntimeException inner = new CayenneRuntimeException("inner", sql);
+		CayenneRuntimeException outer = new CayenneRuntimeException("outer", inner);
+
+		// generic outer wrapper is stripped, but unwinding stops at the innermost matching exception
+		assertSame(inner, Util.unwindException(outer, CayenneRuntimeException.class));
+	}
+
+	@Test
+	public void unwindExceptionUpTo_noMatchUnwindsToRoot() {
+		IllegalArgumentException root = new IllegalArgumentException("root");
+		RuntimeException wrapper = new RuntimeException(root);
+
+		// no exception of the requested type in the chain, so behaves like the plain unwind
+		assertSame(root, Util.unwindException(wrapper, SQLException.class));
 	}
 }

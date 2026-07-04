@@ -173,20 +173,43 @@ public class Util {
      * recursively "unwraps" it, and returns the result to the user.
      */
     public static Throwable unwindException(Throwable th) {
-        if (th instanceof SAXException sax) {
-            if (sax.getException() != null) {
-                return unwindException(sax.getException());
-            }
-        } else if (th instanceof SQLException) {
-            SQLException sql = (SQLException) th;
-            if (sql.getNextException() != null) {
-                return unwindException(sql.getNextException());
-            }
-        } else if (th.getCause() != null) {
-            return unwindException(th.getCause());
+        Throwable next = nextInChain(th);
+        return next != null ? unwindException(next) : th;
+    }
+
+    /**
+     * Unwinds an exception chain like {@link #unwindException(Throwable)}, but never unwinds past the innermost
+     * exception that is an instance of {@code upTo}. If the chain contains such an exception, the innermost matching one
+     * is returned; otherwise the fully unwound root cause is returned. This lets callers strip generic wrappers while
+     * preserving a meaningful exception type that itself wraps a lower-level cause.
+     *
+     * @since 5.0
+     */
+    public static Throwable unwindException(Throwable th, Class<? extends Throwable> upTo) {
+        Throwable next = nextInChain(th);
+        if (next == null) {
+            return th;
         }
 
-        return th;
+        Throwable deeper = unwindException(next, upTo);
+        if (upTo.isInstance(deeper)) {
+            return deeper;
+        }
+        return upTo.isInstance(th) ? th : deeper;
+    }
+
+    /**
+     * Returns the next exception to unwind to (a nested SAX exception, a chained SQL exception, or the cause), or null
+     * if this is the end of the chain.
+     */
+    private static Throwable nextInChain(Throwable th) {
+        if (th instanceof SAXException sax) {
+            return sax.getException();
+        } else if (th instanceof SQLException sql) {
+            return sql.getNextException();
+        } else {
+            return th.getCause();
+        }
     }
 
     /**

@@ -20,6 +20,7 @@
 package org.apache.cayenne.access;
 
 import org.apache.cayenne.CayenneRuntimeException;
+import org.apache.cayenne.CayenneSqlException;
 import org.apache.cayenne.DataRow;
 import org.apache.cayenne.EmbeddableObject;
 import org.apache.cayenne.ObjectContext;
@@ -27,6 +28,7 @@ import org.apache.cayenne.ObjectId;
 import org.apache.cayenne.Persistent;
 import org.apache.cayenne.QueryResponse;
 import org.apache.cayenne.ResultIterator;
+import org.apache.cayenne.access.translator.TranslatedStatement;
 import org.apache.cayenne.cache.QueryCache;
 import org.apache.cayenne.cache.QueryCacheEntryFactory;
 import org.apache.cayenne.di.AdhocObjectFactory;
@@ -99,6 +101,9 @@ class DataDomainQueryAction implements QueryRouter, OperationObserver {
     private Map<CayennePath, List<?>> prefetchResultsByPath;
     private Map<DataNode, Collection<Query>> queriesByNode;
     private boolean noObjectConversion;
+
+    // the latest statement reported via nextStatement, used to correlate a failure with a specific SQL statement
+    private TranslatedStatement statement;
 
     // True when using a caching strategy (shared or local cache), indicating lists are immutable and need copying
     private boolean cachedResult;
@@ -686,8 +691,20 @@ class DataDomainQueryAction implements QueryRouter, OperationObserver {
     }
 
     @Override
+    public void nextStatement(Query query, TranslatedStatement statement) {
+        this.statement = statement;
+    }
+
+    @Override
     public void nextQueryException(Query query, Exception ex) {
-        throw new CayenneRuntimeException("Query exception.", Util.unwindException(ex));
+        // preserve meaningful Cayenne exceptions, even when they wrap a lower-level cause; only wrap raw lower-level
+        // failures in a CayenneSqlException so they can be correlated with the failing statement
+        Throwable unwound = Util.unwindException(ex, CayenneRuntimeException.class);
+
+        if (unwound instanceof CayenneRuntimeException cayenneException) {
+            throw cayenneException;
+        }
+        throw new CayenneSqlException("Query exception.", query, statement, unwound);
     }
 
     @Override

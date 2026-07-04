@@ -20,10 +20,12 @@
 package org.apache.cayenne.access.flush;
 
 import org.apache.cayenne.CayenneRuntimeException;
+import org.apache.cayenne.CayenneSqlException;
 import org.apache.cayenne.DataRow;
 import org.apache.cayenne.ObjectId;
 import org.apache.cayenne.ResultIterator;
 import org.apache.cayenne.access.OperationObserver;
+import org.apache.cayenne.access.translator.TranslatedStatement;
 import org.apache.cayenne.map.DbAttribute;
 import org.apache.cayenne.query.InsertBatchQuery;
 import org.apache.cayenne.query.Query;
@@ -36,14 +38,30 @@ import java.util.List;
  */
 class FlushObserver implements OperationObserver {
 
+    // the latest statement reported via nextStatement, used to correlate a failure with a specific SQL statement
+    private TranslatedStatement statement;
+
+    @Override
+    public void nextStatement(Query query, TranslatedStatement statement) {
+        this.statement = statement;
+    }
+
     @Override
     public void nextQueryException(Query query, Exception ex) {
-        throw new CayenneRuntimeException("Raising from query exception.", Util.unwindException(ex));
+        // preserve meaningful Cayenne exceptions (e.g. OptimisticLockException), even when they wrap a lower-level
+        // cause; only wrap raw lower-level failures in a CayenneSqlException so they can be correlated with the
+        // failing statement
+        Throwable unwound = Util.unwindException(ex, CayenneRuntimeException.class);
+
+        if (unwound instanceof CayenneRuntimeException cayenneException) {
+            throw cayenneException;
+        }
+        throw new CayenneSqlException("Flush exception.", query, statement, unwound);
     }
 
     @Override
     public void nextGlobalException(Exception ex) {
-        throw new CayenneRuntimeException("Raising from underlyingQueryEngine exception.", Util.unwindException(ex));
+        throw new CayenneRuntimeException("Flush exception.", Util.unwindException(ex));
     }
 
     /**
