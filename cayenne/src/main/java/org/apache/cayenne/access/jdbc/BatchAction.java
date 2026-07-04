@@ -56,267 +56,272 @@ import java.util.List;
  */
 public class BatchAction extends BaseSQLAction {
 
-	protected boolean runningAsBatch;
-	protected BatchQuery query;
-	protected RSColumn[] keyColumns;
+    protected boolean runningAsBatch;
+    protected BatchQuery query;
+    protected RSColumn[] keyColumns;
 
-	/**
-	 * @since 4.0
-	 */
-	public BatchAction(BatchQuery query, DataNode dataNode, boolean runningAsBatch) {
-		super(dataNode);
-		this.query = query;
-		this.runningAsBatch = runningAsBatch;
-	}
+    /**
+     * @since 4.0
+     */
+    public BatchAction(BatchQuery query, DataNode dataNode, boolean runningAsBatch) {
+        super(dataNode);
+        this.query = query;
+        this.runningAsBatch = runningAsBatch;
+    }
 
-	/**
-	 * @return Query which originated this action
-	 */
-	public BatchQuery getQuery() {
-		return query;
-	}
+    /**
+     * @return Query which originated this action
+     */
+    public BatchQuery getQuery() {
+        return query;
+    }
 
-	@Override
-	public void performAction(Connection connection, OperationObserver observer) throws Exception {
-		DbAdapter adapter = dataNode.getAdapter();
-		TranslatedBatch translated = switch (query) {
-			case InsertBatchQuery insert -> dataNode.getInsertBatchTranslator().translate(insert, adapter);
-			case UpdateBatchQuery update -> dataNode.getUpdateBatchTranslator().translate(update, adapter);
-			case DeleteBatchQuery delete -> dataNode.getDeleteBatchTranslator().translate(delete, adapter);
-			case null, default -> throw new CayenneRuntimeException("Unsupported batch query: %s", query);
-		};
+    @Override
+    public void performAction(Connection connection, OperationObserver observer) throws Exception {
+        DbAdapter adapter = dataNode.getAdapter();
+        TranslatedBatch translated = switch (query) {
+            case InsertBatchQuery insert -> dataNode.getInsertBatchTranslator().translate(insert, adapter);
+            case UpdateBatchQuery update -> dataNode.getUpdateBatchTranslator().translate(update, adapter);
+            case DeleteBatchQuery delete -> dataNode.getDeleteBatchTranslator().translate(delete, adapter);
+            case null, default -> throw new CayenneRuntimeException("Unsupported batch query: %s", query);
+        };
 
-		observer.nextStatement(query, translated);
+        observer.nextStatement(query, translated);
 
-		boolean isBatch = canRunAsBatch();
-		boolean generatesKeys = hasGeneratedKeys() && supportsGeneratedKeys(isBatch);
+        boolean isBatch = canRunAsBatch();
+        boolean generatesKeys = hasGeneratedKeys() && supportsGeneratedKeys(isBatch);
 
-		if (isBatch) {
-			runAsBatch(connection, translated, observer, generatesKeys);
-		} else {
-			runAsIndividualQueries(connection, translated, observer, generatesKeys);
-		}
-	}
+        if (isBatch) {
+            runAsBatch(connection, translated, observer, generatesKeys);
+        } else {
+            runAsIndividualQueries(connection, translated, observer, generatesKeys);
+        }
+    }
 
-	protected boolean canRunAsBatch() {
-		if(!runningAsBatch || query.getRows().size() <= 1) {
-			return false;
-		}
+    protected boolean canRunAsBatch() {
+        if (!runningAsBatch || query.getRows().size() <= 1) {
+            return false;
+        }
 
-		if (hasGeneratedKeys()) {
-			// turn off batch mode if we generate keys but can't do so in a batch
-			return supportsGeneratedKeys(true) &&
-					!dataNode.getEntityResolver().getEntitySorter().isReflexive(query.getDbEntity());
-		}
+        if (hasGeneratedKeys()) {
+            // turn off batch mode if we generate keys but can't do so in a batch
+            return supportsGeneratedKeys(true) &&
+                    !dataNode.getEntityResolver().getEntitySorter().isReflexive(query.getDbEntity());
+        }
 
-		return true;
-	}
+        return true;
+    }
 
-	protected void runAsBatch(Connection con, TranslatedBatch translated, OperationObserver delegate, boolean generatesKeys)
-			throws Exception {
+    protected void runAsBatch(
+            Connection con,
+            TranslatedBatch translated,
+            OperationObserver delegate,
+            boolean generatesKeys) throws Exception {
 
-		String sql = translated.sql();
-		DbAdapter adapter = dataNode.getAdapter();
+        String sql = translated.sql();
+        DbAdapter adapter = dataNode.getAdapter();
 
-		try (PreparedStatement statement = prepareStatement(con, sql, adapter, generatesKeys)) {
-			for (int row = 0; row < query.getRows().size(); row++) {
+        try (PreparedStatement statement = prepareStatement(con, sql, adapter, generatesKeys)) {
+            for (int row = 0; row < query.getRows().size(); row++) {
 
-				PSParameter<?>[] bindings = rowBindings(translated, row, adapter.getExtendedTypes());
-				for (PSParameter<?> b : bindings) {
-					adapter.bindParameter(statement, b);
-				}
+                PSParameter<?>[] bindings = rowBindings(translated, row, adapter.getExtendedTypes());
+                for (PSParameter<?> b : bindings) {
+                    adapter.bindParameter(statement, b);
+                }
 
-				statement.addBatch();
-			}
+                statement.addBatch();
+            }
 
-			// execute the whole batch
-			int[] results = statement.executeBatch();
-			delegate.nextBatchCount(query, results);
+            // execute the whole batch
+            int[] results = statement.executeBatch();
+            delegate.nextBatchCount(query, results);
 
-			if (generatesKeys) {
-				processGeneratedKeys(statement, delegate, query.getRows());
-			}
-		}
-	}
+            if (generatesKeys) {
+                processGeneratedKeys(statement, delegate, query.getRows());
+            }
+        }
+    }
 
-	/**
-	 * Executes batch as individual queries over the same prepared statement.
-	 */
-	protected void runAsIndividualQueries(Connection connection, TranslatedBatch translated,
-			OperationObserver delegate, boolean generatesKeys) throws Exception {
+    /**
+     * Executes batch as individual queries over the same prepared statement.
+     */
+    protected void runAsIndividualQueries(
+            Connection connection,
+            TranslatedBatch translated,
+            OperationObserver delegate,
+            boolean generatesKeys) throws Exception {
 
-		if(query.getRows().isEmpty()) {
-			return;
-		}
+        if (query.getRows().isEmpty()) {
+            return;
+        }
 
-		boolean useOptimisticLock = query.isUsingOptimisticLocking();
+        boolean useOptimisticLock = query.isUsingOptimisticLocking();
 
-		String queryStr = translated.sql();
-		DbAdapter adapter = dataNode.getAdapter();
+        String queryStr = translated.sql();
+        DbAdapter adapter = dataNode.getAdapter();
 
-		try (PreparedStatement statement = prepareStatement(connection, queryStr, adapter, generatesKeys)) {
-			List<BatchQueryRow> rows = query.getRows();
-			for (int i = 0; i < rows.size(); i++) {
-				BatchQueryRow row = rows.get(i);
+        try (PreparedStatement statement = prepareStatement(connection, queryStr, adapter, generatesKeys)) {
+            List<BatchQueryRow> rows = query.getRows();
+            for (int i = 0; i < rows.size(); i++) {
+                BatchQueryRow row = rows.get(i);
 
-				PSParameter<?>[] bindings = rowBindings(translated, i, adapter.getExtendedTypes());
-				for (PSParameter<?> b : bindings) {
-					adapter.bindParameter(statement, b);
-				}
+                PSParameter<?>[] bindings = rowBindings(translated, i, adapter.getExtendedTypes());
+                for (PSParameter<?> b : bindings) {
+                    adapter.bindParameter(statement, b);
+                }
 
-				int updated = statement.executeUpdate();
-				if (useOptimisticLock && updated != 1) {
-					throw new OptimisticLockException(row.getObjectId(), query.getDbEntity(), queryStr,
-							row.getQualifier());
-				}
+                int updated = statement.executeUpdate();
+                if (useOptimisticLock && updated != 1) {
+                    throw new OptimisticLockException(row.getObjectId(), query.getDbEntity(), row.getQualifier(), translated);
+                }
 
-				delegate.nextCount(query, updated);
+                delegate.nextCount(query, updated);
 
-				if (generatesKeys) {
-					processGeneratedKeys(statement, delegate, row);
-				}
-			}
-		}
-	}
+                if (generatesKeys) {
+                    processGeneratedKeys(statement, delegate, row);
+                }
+            }
+        }
+    }
 
-	/**
-	 * Resolves the given batch row against the translated batch parameters, returning per-row bindings.
-	 */
-	protected PSParameter<?>[] rowBindings(TranslatedBatch translated, int row, ExtendedTypeMap extendedTypes) {
-		PSBatchParameter[] template = translated.bindings();
-		PSParameter<?>[] bindings = new PSParameter[template.length];
-		for (int j = 0; j < template.length; j++) {
-			bindings[j] = bind(template[j], row, extendedTypes);
-		}
-		return bindings;
-	}
+    /**
+     * Resolves the given batch row against the translated batch parameters, returning per-row bindings.
+     */
+    protected PSParameter<?>[] rowBindings(TranslatedBatch translated, int row, ExtendedTypeMap extendedTypes) {
+        PSBatchParameter[] template = translated.bindings();
+        PSParameter<?>[] bindings = new PSParameter[template.length];
+        for (int j = 0; j < template.length; j++) {
+            bindings[j] = bind(template[j], row, extendedTypes);
+        }
+        return bindings;
+    }
 
-	@SuppressWarnings("unchecked")
-	private static <T> PSParameter<T> bind(PSBatchParameter parameter, int row, ExtendedTypeMap extendedTypes) {
-		Object value = parameter.getValue(row);
+    @SuppressWarnings("unchecked")
+    private static <T> PSParameter<T> bind(PSBatchParameter parameter, int row, ExtendedTypeMap extendedTypes) {
+        Object value = parameter.getValue(row);
 
-		DbAttribute attribute = parameter.attribute();
-		if (value == null && attribute.isPrimaryKey()) {
-			String entity = attribute.getEntity() != null ? attribute.getEntity().getName() : "<null>";
-			throw new CayenneRuntimeException("Failed to generate PK: %s.%s", entity, attribute.getName());
-		}
+        DbAttribute attribute = parameter.attribute();
+        if (value == null && attribute.isPrimaryKey()) {
+            String entity = attribute.getEntity() != null ? attribute.getEntity().getName() : "<null>";
+            throw new CayenneRuntimeException("Failed to generate PK: %s.%s", entity, attribute.getName());
+        }
 
-		ExtendedType<T> extendedType = value != null
-				? extendedTypes.getRegisteredType(value.getClass())
-				: extendedTypes.getDefaultType();
-		return new PSParameter<>((T) value, parameter.psPosition(), parameter.psType(), parameter.psScale(),
-				extendedType, parameter.attribute());
-	}
+        ExtendedType<T> extendedType = value != null
+                ? extendedTypes.getRegisteredType(value.getClass())
+                : extendedTypes.getDefaultType();
+        return new PSParameter<>((T) value, parameter.psPosition(), parameter.psType(), parameter.psScale(),
+                extendedType, parameter.attribute());
+    }
 
 
-	protected PreparedStatement prepareStatement(Connection connection,	String queryStr,
-												 DbAdapter adapter,	boolean generatedKeys) throws SQLException {
-		return (generatedKeys)
-				? connection.prepareStatement(queryStr, Statement.RETURN_GENERATED_KEYS)
-				: connection.prepareStatement(queryStr);
-	}
+    protected PreparedStatement prepareStatement(Connection connection, String queryStr,
+                                                 DbAdapter adapter, boolean generatedKeys) throws SQLException {
+        return (generatedKeys)
+                ? connection.prepareStatement(queryStr, Statement.RETURN_GENERATED_KEYS)
+                : connection.prepareStatement(queryStr);
+    }
 
-	protected boolean supportsGeneratedKeys(boolean isBatch) {
-		// see if we are configured to support generated keys
-		return isBatch
-				? dataNode.getAdapter().supportsGeneratedKeysForBatchInserts()
-				: dataNode.getAdapter().supportsGeneratedKeys();
-	}
-				
-	/**
-	 * Returns whether BatchQuery generates any keys.
-	 */
-	protected boolean hasGeneratedKeys() {
-		// see if the query needs them
-		if (query instanceof InsertBatchQuery) {
+    protected boolean supportsGeneratedKeys(boolean isBatch) {
+        // see if we are configured to support generated keys
+        return isBatch
+                ? dataNode.getAdapter().supportsGeneratedKeysForBatchInserts()
+                : dataNode.getAdapter().supportsGeneratedKeys();
+    }
 
-			// see if any of the generated attributes is PK
-			for (final DbAttribute attr : query.getDbEntity().getGeneratedAttributes()) {
-				if (attr.isPrimaryKey()) {
-					return true;
-				}
-			}
-		}
+    /**
+     * Returns whether BatchQuery generates any keys.
+     */
+    protected boolean hasGeneratedKeys() {
+        // see if the query needs them
+        if (query instanceof InsertBatchQuery) {
 
-		return false;
-	}
+            // see if any of the generated attributes is PK
+            for (final DbAttribute attr : query.getDbEntity().getGeneratedAttributes()) {
+                if (attr.isPrimaryKey()) {
+                    return true;
+                }
+            }
+        }
 
-	/**
-	 * Implements generated keys extraction supported in JDBC 3.0 specification.
-	 * 
-	 * @since 4.0
-	 */
-	protected void processGeneratedKeys(Statement statement, OperationObserver observer, BatchQueryRow row)
-			throws SQLException {
-		processGeneratedKeys(statement, observer, Collections.singletonList(row));
-	}
+        return false;
+    }
 
-	/**
-	 * @since 4.2
-	 */
-	@SuppressWarnings({ "rawtypes", "unchecked" })
-	protected void processGeneratedKeys(Statement statement, OperationObserver observer, List<BatchQueryRow> rows)
-			throws SQLException {
+    /**
+     * Implements generated keys extraction supported in JDBC 3.0 specification.
+     *
+     * @since 4.0
+     */
+    protected void processGeneratedKeys(Statement statement, OperationObserver observer, BatchQueryRow row)
+            throws SQLException {
+        processGeneratedKeys(statement, observer, Collections.singletonList(row));
+    }
 
-		ResultSet keysRS = statement.getGeneratedKeys();
+    /**
+     * @since 4.2
+     */
+    @SuppressWarnings({"rawtypes", "unchecked"})
+    protected void processGeneratedKeys(Statement statement, OperationObserver observer, List<BatchQueryRow> rows)
+            throws SQLException {
 
-		// TODO: andrus, 7/4/2007 - use a different form of Statement.execute -
-		//  "execute(String,String[])" to be able to map generated column names
-		// (this way we can support multiple columns..
-		// although need to check how well this works with most common drivers)
+        ResultSet keysRS = statement.getGeneratedKeys();
 
-		RSColumn.RowBuilder rowBuilder = RSColumn.rowBuilder();
+        // TODO: andrus, 7/4/2007 - use a different form of Statement.execute -
+        //  "execute(String,String[])" to be able to map generated column names
+        // (this way we can support multiple columns..
+        // although need to check how well this works with most common drivers)
 
-		if (this.keyColumns == null) {
-			// attempt to figure out the right descriptor from the mapping...
-			Collection<DbAttribute> generated = query.getDbEntity().getGeneratedAttributes();
-			if (generated.size() == 1 && keysRS.getMetaData().getColumnCount() == 1) {
-				DbAttribute key = generated.iterator().next();
+        RSColumn.RowBuilder rowBuilder = RSColumn.rowBuilder();
 
-				// use column name from result set, but type and Java class from DB attribute
-				ResultSetMetaData md = keysRS.getMetaData();
-				String columnName = md.getColumnLabel(1);
-				if (columnName == null || columnName.isEmpty()) {
-					columnName = md.getColumnName(1);
-					if (columnName == null || columnName.isEmpty()) {
-						columnName = "column_1";
-					}
-				}
-				ExtendedType type = dataNode.getAdapter().getExtendedTypes().getRegisteredType(typeForGeneratedPK(key));
-				rowBuilder.columns(new RSColumn(columnName, key.getType(), columnName, type, null));
-			} else {
-				rowBuilder.resultSet(keysRS);
-			}
+        if (this.keyColumns == null) {
+            // attempt to figure out the right descriptor from the mapping...
+            Collection<DbAttribute> generated = query.getDbEntity().getGeneratedAttributes();
+            if (generated.size() == 1 && keysRS.getMetaData().getColumnCount() == 1) {
+                DbAttribute key = generated.iterator().next();
 
-			this.keyColumns = rowBuilder.build(dataNode.getAdapter().getExtendedTypes());
-		}
+                // use column name from result set, but type and Java class from DB attribute
+                ResultSetMetaData md = keysRS.getMetaData();
+                String columnName = md.getColumnLabel(1);
+                if (columnName == null || columnName.isEmpty()) {
+                    columnName = md.getColumnName(1);
+                    if (columnName == null || columnName.isEmpty()) {
+                        columnName = "column_1";
+                    }
+                }
+                ExtendedType type = dataNode.getAdapter().getExtendedTypes().getRegisteredType(typeForGeneratedPK(key));
+                rowBuilder.columns(new RSColumn(columnName, key.getType(), columnName, type, null));
+            } else {
+                rowBuilder.resultSet(keysRS);
+            }
 
-		RowReader<?> rowReader = dataNode.getRowReaderFactory()
-				.rowReader(keyColumns, query.getMetaData(dataNode.getEntityResolver()), dataNode.getAdapter());
+            this.keyColumns = rowBuilder.build(dataNode.getAdapter().getExtendedTypes());
+        }
 
-		// generated keys are small (one row per inserted row), so materialize them here rather than passing a live,
-		// single-use iterator to the observer
-		List<DataRow> keys;
-		try (ResultIterator<?> iterator = new RSIterator(null, keysRS, rowReader)) {
-			keys = (List<DataRow>) iterator.allRows();
-		}
+        RowReader<?> rowReader = dataNode.getRowReaderFactory()
+                .rowReader(keyColumns, query.getMetaData(dataNode.getEntityResolver()), dataNode.getAdapter());
 
-		List<ObjectId> objectIds = new ArrayList<>(rows.size());
-		for(BatchQueryRow row : rows) {
-			objectIds.add(row.getObjectId());
-		}
-		observer.nextGeneratedRows(query, keys, objectIds);
-	}
+        // generated keys are small (one row per inserted row), so materialize them here rather than passing a live,
+        // single-use iterator to the observer
+        List<DataRow> keys;
+        try (ResultIterator<?> iterator = new RSIterator(null, keysRS, rowReader)) {
+            keys = (List<DataRow>) iterator.allRows();
+        }
 
-	private String typeForGeneratedPK(DbAttribute key) {
-		String entityName = getQuery().getRows().getFirst().getObjectId().getEntityName();
-		ObjEntity objEntity = dataNode.getEntityResolver().getObjEntity(entityName);
-		if(objEntity != null) {
-			ObjAttribute attributeForDbAttribute = objEntity.getAttributeForDbAttribute(key);
-			if(attributeForDbAttribute != null) {
-				return attributeForDbAttribute.getType();
-			}
-		}
-		return key.getJavaClassName();
-	}
+        List<ObjectId> objectIds = new ArrayList<>(rows.size());
+        for (BatchQueryRow row : rows) {
+            objectIds.add(row.getObjectId());
+        }
+        observer.nextGeneratedRows(query, keys, objectIds);
+    }
+
+    private String typeForGeneratedPK(DbAttribute key) {
+        String entityName = getQuery().getRows().getFirst().getObjectId().getEntityName();
+        ObjEntity objEntity = dataNode.getEntityResolver().getObjEntity(entityName);
+        if (objEntity != null) {
+            ObjAttribute attributeForDbAttribute = objEntity.getAttributeForDbAttribute(key);
+            if (attributeForDbAttribute != null) {
+                return attributeForDbAttribute.getType();
+            }
+        }
+        return key.getJavaClassName();
+    }
 }
