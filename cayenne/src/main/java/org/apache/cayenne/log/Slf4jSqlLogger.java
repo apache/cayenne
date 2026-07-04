@@ -51,12 +51,17 @@ public class Slf4jSqlLogger implements SqlLogger {
     }
 
     @Override
-    public void logSelect(TranslatedStatement statement, int rowCount) {
-        logStatement(statement, "selected:", rowCount);
+    public void logSelect(TranslatedStatement statement, int rowCount, long durationMillis) {
+        if (LOGGER.isInfoEnabled()) {
+            StringBuilder buffer = new StringBuilder(buildStatementLine(statement, "selected:", rowCount));
+            appendDuration(buffer, durationMillis);
+            LOGGER.info(buffer.toString());
+        }
     }
 
     @Override
-    public void logUpdate(TranslatedStatement statement, int rowCount, List<? extends Map<String, ?>> generatedKeys) {
+    public void logUpdate(TranslatedStatement statement, int rowCount, List<? extends Map<String, ?>> generatedKeys,
+                          long durationMillis) {
         if (LOGGER.isInfoEnabled()) {
             StringBuilder buffer = new StringBuilder(buildStatementLine(statement, "updated:", rowCount));
             if (generatedKeys != null && !generatedKeys.isEmpty()) {
@@ -66,23 +71,42 @@ public class Slf4jSqlLogger implements SqlLogger {
                 }
                 buffer.append(']');
             }
+            appendDuration(buffer, durationMillis);
             LOGGER.info(buffer.toString());
         }
     }
 
-    protected void logStatement(TranslatedStatement statement, String resultLabel, int rowCount) {
-        if (LOGGER.isInfoEnabled()) {
-            LOGGER.info(buildStatementLine(statement, resultLabel, rowCount));
+    @Override
+    public void logQueryError(TranslatedStatement statement, Throwable error, long durationMillis) {
+        if (LOGGER.isErrorEnabled()) {
+            LOGGER.error(buildErrorLine(statement, error, durationMillis));
         }
     }
 
     protected String buildStatementLine(TranslatedStatement statement, String resultLabel, int rowCount) {
+        StringBuilder buffer = buildSqlAndBindings(statement);
+        return buffer.append('[').append(resultLabel).append(rowCount).append(']').toString();
+    }
+
+    protected String buildErrorLine(TranslatedStatement statement, Throwable error, long durationMillis) {
+        StringBuilder buffer = buildSqlAndBindings(statement);
+        buffer.append("[time_ms:").append(durationMillis).append(']');
+        buffer.append(" [*** error: ").append(error != null ? error.getMessage() : null).append(']');
+        return buffer.toString();
+    }
+
+    // builds "SQL [bind:[...]] " with a guaranteed trailing space, ready for a result or error suffix
+    private StringBuilder buildSqlAndBindings(TranslatedStatement statement) {
         StringBuilder buffer = new StringBuilder(statement.sql()).append(' ');
         SqlBindingRenderer.appendBindings(buffer, statement, batchRowThreshold);
         if (buffer.charAt(buffer.length() - 1) != ' ') {
             buffer.append(' ');
         }
-        return buffer.append('[').append(resultLabel).append(rowCount).append(']').toString();
+        return buffer;
+    }
+
+    private static void appendDuration(StringBuilder buffer, long durationMillis) {
+        buffer.append(" [time_ms:").append(durationMillis).append(']');
     }
 
     @Override

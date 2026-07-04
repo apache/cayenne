@@ -47,11 +47,16 @@ public class NoopSqlLogger implements SqlLogger {
     }
 
     @Override
-    public void logSelect(TranslatedStatement statement, int rowCount) {
+    public void logSelect(TranslatedStatement statement, int rowCount, long durationMillis) {
     }
 
     @Override
-    public void logUpdate(TranslatedStatement statement, int rowCount, List<? extends Map<String, ?>> generatedKeys) {
+    public void logUpdate(TranslatedStatement statement, int rowCount, List<? extends Map<String, ?>> generatedKeys,
+                          long durationMillis) {
+    }
+
+    @Override
+    public void logQueryError(TranslatedStatement statement, Throwable error, long durationMillis) {
     }
 
     @Override

@@ -47,6 +47,7 @@ class LoggingObserver implements OperationObserver {
     private boolean headerEmitted;
     private boolean batchHasUpdate;
     private int batchUpdateSum;
+    private long startNanos;
 
     // lazily allocated on the first nextGeneratedRows call, since most statements produce no generated keys
     private List<Map<String, ?>> generatedKeys;
@@ -60,7 +61,7 @@ class LoggingObserver implements OperationObserver {
     // single "updated:N" line once the batch is done, i.e. at the next statement or on success.
     private void flushPendingBatchUpdate() {
         if (!headerEmitted && batchHasUpdate && current != null) {
-            logger.logUpdate(current, batchUpdateSum, generatedKeys != null ? generatedKeys : List.of());
+            logger.logUpdate(current, batchUpdateSum, generatedKeys != null ? generatedKeys : List.of(), elapsedMillis());
             headerEmitted = true;
         }
     }
@@ -69,7 +70,7 @@ class LoggingObserver implements OperationObserver {
         if (headerEmitted) {
             logger.logAlsoSelect(rowCount);
         } else {
-            logger.logSelect(current, rowCount);
+            logger.logSelect(current, rowCount, elapsedMillis());
             headerEmitted = true;
         }
     }
@@ -78,9 +79,13 @@ class LoggingObserver implements OperationObserver {
         if (headerEmitted) {
             logger.logAlsoUpdate(rowCount);
         } else {
-            logger.logUpdate(current, rowCount, generatedKeys != null ? generatedKeys : List.of());
+            logger.logUpdate(current, rowCount, generatedKeys != null ? generatedKeys : List.of(), elapsedMillis());
             headerEmitted = true;
         }
+    }
+
+    private long elapsedMillis() {
+        return (System.nanoTime() - startNanos) / 1_000_000;
     }
 
     private static int sum(int[] counts) {
@@ -109,6 +114,7 @@ class LoggingObserver implements OperationObserver {
         this.batchHasUpdate = false;
         this.batchUpdateSum = 0;
         this.generatedKeys = null;
+        this.startNanos = System.nanoTime();
         delegate.nextStatement(query, statement);
     }
 
@@ -169,6 +175,13 @@ class LoggingObserver implements OperationObserver {
 
     @Override
     public void nextQueryException(Query query, Exception ex) {
+        // if a statement was in progress, emit an immediate ERROR line identifying the SQL that failed, then clear
+        // it so the trailing onSuccess() (still called by DataNode after a failed query) won't re-log it as a
+        // pending batch update
+        if (current != null) {
+            logger.logQueryError(current, ex, elapsedMillis());
+            current = null;
+        }
         delegate.nextQueryException(query, ex);
     }
 
@@ -224,7 +237,7 @@ class LoggingObserver implements OperationObserver {
         @Override
         public void close() {
             delegate.close();
-            logger.logSelect(statement, count);
+            logger.logSelect(statement, count, elapsedMillis());
         }
 
         @Override

@@ -81,6 +81,18 @@ public class Slf4jSqlLoggerTest {
     }
 
     @Test
+    public void errorLineCarriesBindingsMessageAndDuration() {
+        TranslatedSelect select = new TranslatedSelect(
+                "SELECT t0.id FROM my_table t0 WHERE t0.user_id = ?",
+                new PSParameter<?>[]{ps("user_id", 15)},
+                new RSColumn[0], false, false);
+
+        assertEquals("SELECT t0.id FROM my_table t0 WHERE t0.user_id = ? [bind:[user_id:15]] "
+                        + "[time_ms:1000] [*** error: bad column]",
+                logger.buildErrorLine(select, new RuntimeException("bad column"), 1000));
+    }
+
+    @Test
     public void selectLineWithoutBindings() {
         TranslatedSelect select = new TranslatedSelect(
                 "SELECT t0.id FROM my_table t0", new PSParameter<?>[0], new RSColumn[0], false, false);

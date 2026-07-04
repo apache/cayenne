@@ -37,6 +37,7 @@ import java.util.Map;
 
 import static java.util.Arrays.asList;
 import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.mockito.Mockito.mock;
 
 public class LoggingObserverTest {
@@ -62,18 +63,30 @@ public class LoggingObserverTest {
             return true;
         }
 
+        // captured durations are non-deterministic, so they are asserted separately from the result strings
+        final List<Long> durations = new ArrayList<>();
+
         @Override
-        public void logSelect(TranslatedStatement statement, int rowCount) {
+        public void logSelect(TranslatedStatement statement, int rowCount, long durationMillis) {
+            durations.add(durationMillis);
             calls.add("selected:" + rowCount);
         }
 
         @Override
-        public void logUpdate(TranslatedStatement statement, int rowCount, List<? extends Map<String, ?>> generatedKeys) {
+        public void logUpdate(TranslatedStatement statement, int rowCount, List<? extends Map<String, ?>> generatedKeys,
+                              long durationMillis) {
+            durations.add(durationMillis);
             StringBuilder buffer = new StringBuilder("updated:").append(rowCount);
             for (Map<String, ?> keys : generatedKeys) {
                 keys.forEach((name, value) -> buffer.append(" generated:").append(name).append('=').append(value));
             }
             calls.add(buffer.toString());
+        }
+
+        @Override
+        public void logQueryError(TranslatedStatement statement, Throwable error, long durationMillis) {
+            durations.add(durationMillis);
+            calls.add("error:" + error.getMessage());
         }
 
         @Override
@@ -193,5 +206,54 @@ public class LoggingObserverTest {
         observer.onSuccess();
 
         assertEquals(List.of("updated:2", "updated:3"), logger.calls);
+    }
+
+    @Test
+    public void queryExceptionLogsErrorForCurrentStatement() {
+        CapturingLogger logger = new CapturingLogger();
+        LoggingObserver observer = observer(logger);
+
+        observer.nextStatement(null, select());
+        observer.nextQueryException(null, new RuntimeException("boom"));
+
+        assertEquals(List.of("error:boom"), logger.calls);
+    }
+
+    @Test
+    public void queryExceptionWithoutCurrentStatementLogsNothing() {
+        CapturingLogger logger = new CapturingLogger();
+        LoggingObserver observer = observer(logger);
+
+        observer.nextQueryException(null, new RuntimeException("boom"));
+
+        assertEquals(List.of(), logger.calls);
+    }
+
+    @Test
+    public void failedBatchNotReloggedOnTrailingSuccess() {
+        // DataNode still calls onSuccess() after a failed query - the pending batch update must not be flushed on
+        // top of the error line
+        CapturingLogger logger = new CapturingLogger();
+        LoggingObserver observer = observer(logger);
+
+        observer.nextStatement(null, batch());
+        observer.nextCount(null, 1);
+        observer.nextQueryException(null, new RuntimeException("boom"));
+        observer.onSuccess();
+
+        assertEquals(List.of("error:boom"), logger.calls);
+    }
+
+    @Test
+    public void everyLoggedLineCarriesNonNegativeDuration() {
+        CapturingLogger logger = new CapturingLogger();
+        LoggingObserver observer = observer(logger);
+
+        observer.nextStatement(null, select());
+        observer.nextRows(null, asList(new Object(), new Object()));
+        observer.onSuccess();
+
+        assertEquals(1, logger.durations.size());
+        assertTrue(logger.durations.get(0) >= 0);
     }
 }

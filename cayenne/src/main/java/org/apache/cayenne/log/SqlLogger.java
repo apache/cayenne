@@ -38,22 +38,38 @@ public interface SqlLogger {
     boolean isEnabled();
 
     /**
-     * Logs the main line for a statement that returned a result set: SQL + {@code bind:[...]} + {@code selected:N}.
+     * Logs the main line for a statement that returned a result set: SQL + {@code bind:[...]} + {@code selected:N},
+     * followed by a trailing {@code time_ms:N} block with the statement's execution time.
      *
-     * @param statement the translated statement carrying SQL and bindings
-     * @param rowCount  the number of selected rows
+     * @param statement      the translated statement carrying SQL and bindings
+     * @param rowCount       the number of selected rows
+     * @param durationMillis the statement's execution time in milliseconds
      */
-    void logSelect(TranslatedStatement statement, int rowCount);
+    void logSelect(TranslatedStatement statement, int rowCount, long durationMillis);
 
     /**
      * Logs the main line for a statement that performed an update: SQL + {@code bind:[...]} + {@code updated:N},
-     * optionally followed by a {@code generated:[...]} block listing any database-generated keys.
+     * optionally followed by a {@code generated:[...]} block listing any database-generated keys, and a trailing
+     * {@code time_ms:N} block with the statement's execution time.
      *
-     * @param statement     the translated statement carrying SQL and bindings
-     * @param rowCount      the number of updated rows
-     * @param generatedKeys the database-generated keys of the inserted rows, or an empty list if none
+     * @param statement      the translated statement carrying SQL and bindings
+     * @param rowCount       the number of updated rows
+     * @param generatedKeys  the database-generated keys of the inserted rows, or an empty list if none
+     * @param durationMillis the statement's execution time in milliseconds
      */
-    void logUpdate(TranslatedStatement statement, int rowCount, List<? extends Map<String, ?>> generatedKeys);
+    void logUpdate(TranslatedStatement statement, int rowCount, List<? extends Map<String, ?>> generatedKeys,
+                   long durationMillis);
+
+    /**
+     * Logs, at the ERROR level, the statement that was in progress when a query exception occurred:
+     * SQL + {@code bind:[...]} + the error message, followed by a trailing {@code time_ms:N} block with the time
+     * elapsed until the failure.
+     *
+     * @param statement      the translated statement carrying SQL and bindings
+     * @param error          the exception thrown while executing the statement
+     * @param durationMillis the time in milliseconds elapsed until the failure
+     */
+    void logQueryError(TranslatedStatement statement, Throwable error, long durationMillis);
 
     /**
      * Logs a select count continuation line for the statement whose header was already logged.
