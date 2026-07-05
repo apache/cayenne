@@ -29,19 +29,19 @@ public class BaseSqlBuilderTest {
     }
 
     protected void assertQuotedSQL(String expected, Node node) {
-        assertSQL(expected, node, new TestSQLAppendable(null));
+        assertSQL(expected, node, new TestSQLAppendable());
     }
 
     protected void assertSQL(String expected, Node node, SQLAppendable appendable) {
-        SQLGenerationVisitor visitor = new SQLGenerationVisitor(appendable);
+        SQLGenerationVisitor visitor = new SQLGenerationVisitor(appendable, null);
         node.visit(visitor);
         assertEquals(expected, visitor.getSQLString());
     }
 
     protected static class TestSQLAppendable extends DefaultSQLAppendable {
 
-        public TestSQLAppendable(SQLGenerationContext context) {
-            super(context);
+        public TestSQLAppendable() {
+            super(null);
         }
 
         @Override

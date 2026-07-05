@@ -54,8 +54,8 @@ public class QualifierTranslatorExistExpressionIT {
         Node node = qualifierTranslator.translate(query.getWhere());
 
         assertSQL(" EXISTS (" +
-                "SELECT t1.PAINTING_ID FROM PAINTING t1 " +
-                "WHERE t1.ARTIST_ID = t0.ARTIST_ID" +
+                "SELECT p.PAINTING_ID FROM PAINTING p " +
+                "WHERE p.ARTIST_ID = a.ARTIST_ID" +
                 ")", node);
     }
 
@@ -73,8 +73,8 @@ public class QualifierTranslatorExistExpressionIT {
         Node node = qualifierTranslator.translate(query.getWhere());
 
         assertSQL(" EXISTS (" +
-                "SELECT t1.PAINTING_ID FROM PAINTING t1 " +
-                "WHERE t1.ARTIST_ID = t0.ARTIST_ID" +
+                "SELECT p.PAINTING_ID FROM PAINTING p " +
+                "WHERE p.ARTIST_ID = a.ARTIST_ID" +
                 ")", node);
     }
 
@@ -93,7 +93,7 @@ public class QualifierTranslatorExistExpressionIT {
 
         Node node = qualifierTranslator.translate(query.getWhere());
 
-        assertSQL(" t0.ARTIST_NAME IS NOT NULL", node);
+        assertSQL(" a.ARTIST_NAME IS NOT NULL", node);
     }
 
     @Test
@@ -112,8 +112,8 @@ public class QualifierTranslatorExistExpressionIT {
         Node node = qualifierTranslator.translate(query.getWhere());
 
         assertSQL(" EXISTS (" +
-                "SELECT t1.PAINTING_ID FROM PAINTING t1 " +
-                "WHERE t1.PAINTING_TITLE IS NOT NULL AND t1.ARTIST_ID = t0.ARTIST_ID" +
+                "SELECT p.PAINTING_ID FROM PAINTING p " +
+                "WHERE p.PAINTING_TITLE IS NOT NULL AND p.ARTIST_ID = a.ARTIST_ID" +
                 ")", node);
     }
 
@@ -133,8 +133,8 @@ public class QualifierTranslatorExistExpressionIT {
         Node node = qualifierTranslator.translate(query.getWhere());
 
         assertSQL(" EXISTS (" +
-                "SELECT t1.PAINTING_ID FROM PAINTING t1 " +
-                "WHERE t1.GALLERY_ID IS NOT NULL AND t1.ARTIST_ID = t0.ARTIST_ID" +
+                "SELECT p.PAINTING_ID FROM PAINTING p " +
+                "WHERE p.GALLERY_ID IS NOT NULL AND p.ARTIST_ID = a.ARTIST_ID" +
                 ")", node);
     }
 
@@ -154,10 +154,10 @@ public class QualifierTranslatorExistExpressionIT {
         Node node = qualifierTranslator.translate(query.getWhere());
 
         assertSQL(" EXISTS (" +
-                "SELECT DISTINCT t1.ARTIST_ID, t1.GROUP_ID FROM ARTIST_GROUP t1 " +
-                "JOIN ARTGROUP t2 ON t1.GROUP_ID = t2.GROUP_ID " +
-                "JOIN ARTGROUP t3 ON t2.GROUP_ID = t3.PARENT_GROUP_ID " +
-                "WHERE t3.GROUP_ID IS NOT NULL AND t1.ARTIST_ID = t0.ARTIST_ID" +
+                "SELECT DISTINCT ag.ARTIST_ID, ag.GROUP_ID FROM ARTIST_GROUP ag " +
+                "JOIN ARTGROUP a1 ON ag.GROUP_ID = a1.GROUP_ID " +
+                "JOIN ARTGROUP a2 ON a1.GROUP_ID = a2.PARENT_GROUP_ID " +
+                "WHERE a2.GROUP_ID IS NOT NULL AND ag.ARTIST_ID = a.ARTIST_ID" +
                 ")", node);
     }
 
@@ -177,8 +177,8 @@ public class QualifierTranslatorExistExpressionIT {
         Node node = qualifierTranslator.translate(query.getWhere());
 
         assertSQL(" EXISTS (" +
-                "SELECT t1.PAINTING_ID FROM PAINTING t1 " +
-                "WHERE t1.PAINTING_TITLE = 'test' AND t1.ARTIST_ID = t0.ARTIST_ID" +
+                "SELECT p.PAINTING_ID FROM PAINTING p " +
+                "WHERE p.PAINTING_TITLE = 'test' AND p.ARTIST_ID = a.ARTIST_ID" +
                 ")", node);
     }
 
@@ -199,9 +199,9 @@ public class QualifierTranslatorExistExpressionIT {
         Node node = qualifierTranslator.translate(query.getWhere());
 
         assertSQL(" EXISTS (" +
-                "SELECT t1.PAINTING_ID FROM PAINTING t1 " +
-                "WHERE (t1.PAINTING_TITLE = 'test' OR t1.PAINTING_TITLE = 'test2') " +
-                        "AND t1.ARTIST_ID = t0.ARTIST_ID" +
+                "SELECT p.PAINTING_ID FROM PAINTING p " +
+                "WHERE (p.PAINTING_TITLE = 'test' OR p.PAINTING_TITLE = 'test2') " +
+                        "AND p.ARTIST_ID = a.ARTIST_ID" +
                 ")", node);
     }
 
@@ -221,9 +221,9 @@ public class QualifierTranslatorExistExpressionIT {
         Node node = qualifierTranslator.translate(query.getWhere());
 
         assertSQL(" EXISTS (" +
-                "SELECT t1.PAINTING_ID FROM PAINTING t1 " +
-                "WHERE (t1.PAINTING_TITLE = 'test' OR t1.PAINTING_TITLE = 'test2') " +
-                "AND t1.ARTIST_ID = t0.ARTIST_ID" +
+                "SELECT p.PAINTING_ID FROM PAINTING p " +
+                "WHERE (p.PAINTING_TITLE = 'test' OR p.PAINTING_TITLE = 'test2') " +
+                "AND p.ARTIST_ID = a.ARTIST_ID" +
                 ")", node);
     }
 
@@ -244,14 +244,14 @@ public class QualifierTranslatorExistExpressionIT {
         Node node = qualifierTranslator.translate(query.getWhere());
 
         assertSQL(" EXISTS (" +
-                    "SELECT t1.PAINTING_ID FROM PAINTING t1 " +
-                    "WHERE (t1.PAINTING_TITLE = 'test' OR t1.PAINTING_TITLE = 'test2') " +
-                            "AND t1.ARTIST_ID = t0.ARTIST_ID" +
+                    "SELECT p.PAINTING_ID FROM PAINTING p " +
+                    "WHERE (p.PAINTING_TITLE = 'test' OR p.PAINTING_TITLE = 'test2') " +
+                            "AND p.ARTIST_ID = a.ARTIST_ID" +
                 ") " +
                 "AND EXISTS (" +
-                    "SELECT t2.ARTIST_ID, t2.GROUP_ID FROM ARTIST_GROUP t2 " +
-                    "JOIN ARTGROUP t3 ON t2.GROUP_ID = t3.GROUP_ID " +
-                    "WHERE t3.NAME = 'test' AND t2.ARTIST_ID = t0.ARTIST_ID)", node);
+                    "SELECT ag.ARTIST_ID, ag.GROUP_ID FROM ARTIST_GROUP ag " +
+                    "JOIN ARTGROUP a1 ON ag.GROUP_ID = a1.GROUP_ID " +
+                    "WHERE a1.NAME = 'test' AND ag.ARTIST_ID = a.ARTIST_ID)", node);
     }
 
     @Test
@@ -271,19 +271,19 @@ public class QualifierTranslatorExistExpressionIT {
         Node node = qualifierTranslator.translate(query.getWhere());
 
         assertSQL(" EXISTS (" +
-                    "SELECT t1.PAINTING_ID FROM PAINTING t1 " +
-                    "WHERE t1.PAINTING_TITLE = 'test' AND t1.ARTIST_ID = t0.ARTIST_ID" +
+                    "SELECT p.PAINTING_ID FROM PAINTING p " +
+                    "WHERE p.PAINTING_TITLE = 'test' AND p.ARTIST_ID = a.ARTIST_ID" +
                 ") " +
                 "AND (" +
                     "EXISTS (" +
-                        "SELECT t2.ARTIST_ID, t2.GROUP_ID FROM ARTIST_GROUP t2 " +
-                        "JOIN ARTGROUP t3 ON t2.GROUP_ID = t3.GROUP_ID " +
-                        "WHERE t3.NAME = 'test' AND t2.ARTIST_ID = t0.ARTIST_ID" +
+                        "SELECT ag.ARTIST_ID, ag.GROUP_ID FROM ARTIST_GROUP ag " +
+                        "JOIN ARTGROUP a1 ON ag.GROUP_ID = a1.GROUP_ID " +
+                        "WHERE a1.NAME = 'test' AND ag.ARTIST_ID = a.ARTIST_ID" +
                     ") " +
                     "OR " +
                     "EXISTS (" +
-                        "SELECT t4.PAINTING_ID FROM PAINTING t4 " +
-                        "WHERE t4.PAINTING_TITLE = 'test2' AND t4.ARTIST_ID = t0.ARTIST_ID" +
+                        "SELECT p1.PAINTING_ID FROM PAINTING p1 " +
+                        "WHERE p1.PAINTING_TITLE = 'test2' AND p1.ARTIST_ID = a.ARTIST_ID" +
                     ")" +
                 ")", node);
     }
@@ -304,20 +304,20 @@ public class QualifierTranslatorExistExpressionIT {
         Node node = qualifierTranslator.translate(query.getWhere());
 
         assertSQL(" EXISTS (" +
-                    "SELECT t1.PAINTING_ID FROM PAINTING t1 " +
-                    "WHERE LENGTH(t1.PAINTING_TITLE) IN (1, 2, 3) AND t1.ARTIST_ID = t0.ARTIST_ID" +
+                    "SELECT p.PAINTING_ID FROM PAINTING p " +
+                    "WHERE LENGTH(p.PAINTING_TITLE) IN (1, 2, 3) AND p.ARTIST_ID = a.ARTIST_ID" +
                 ") OR " +
                 "EXISTS (" +
-                    "SELECT t2.ARTIST_ID, t2.GROUP_ID FROM ARTIST_GROUP t2 " +
-                    "JOIN ARTGROUP t3 ON t2.GROUP_ID = t3.GROUP_ID " +
-                    "WHERE LENGTH(t3.NAME) < 10 AND t2.ARTIST_ID = t0.ARTIST_ID" +
+                    "SELECT ag.ARTIST_ID, ag.GROUP_ID FROM ARTIST_GROUP ag " +
+                    "JOIN ARTGROUP a1 ON ag.GROUP_ID = a1.GROUP_ID " +
+                    "WHERE LENGTH(a1.NAME) < 10 AND ag.ARTIST_ID = a.ARTIST_ID" +
                 ")", node);
     }
 
     protected void assertSQL(String expected, Node node) {
         assertNotNull(node);
 
-        SQLGenerationVisitor visitor = new SQLGenerationVisitor(new DefaultSQLAppendable(null));
+        SQLGenerationVisitor visitor = new SQLGenerationVisitor(new DefaultSQLAppendable(null), null);
         node.visit(visitor);
         assertEquals(expected, visitor.getSQLString());
     }

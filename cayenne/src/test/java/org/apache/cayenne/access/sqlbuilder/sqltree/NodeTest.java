@@ -20,6 +20,7 @@
 package org.apache.cayenne.access.sqlbuilder.sqltree;
 
 import org.apache.cayenne.access.sqlbuilder.SQLAppendable;
+import org.apache.cayenne.access.sqlbuilder.SQLGenerationContext;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
@@ -34,7 +35,7 @@ public class NodeTest {
         }
 
         @Override
-        public SQLAppendable append(SQLAppendable buffer) {
+        public SQLAppendable append(SQLAppendable buffer, SQLGenerationContext context) {
             return buffer.append("test");
         }
     }

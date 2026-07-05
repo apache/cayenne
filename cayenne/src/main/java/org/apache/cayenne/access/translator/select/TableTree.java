@@ -19,8 +19,11 @@
 
 package org.apache.cayenne.access.translator.select;
 
+import java.util.HashMap;
+import java.util.HashSet;
 import java.util.LinkedHashMap;
 import java.util.Map;
+import java.util.Set;
 import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.stream.Collectors;
 
@@ -52,13 +55,18 @@ class TableTree {
     private final TableTreeNode rootNode;
 
     private TableTreeNode activeNode;
-    private int tableAliasSequence;
+
+    // alias bookkeeping, maintained only in the root tree (parentTree == null); nested trees
+    // delegate generation upwards so that aliases stay unique across the whole statement
+    private final Set<String> usedAliases;
+    private final Map<String, Integer> nextAliasSuffix;
 
     TableTree(DbEntity root, TableTree parentTree) {
-        this.tableAliasSequence = 0;
         this.parentTree = parentTree;
+        this.usedAliases = new HashSet<>();
+        this.nextAliasSuffix = new HashMap<>();
         this.tableNodes = new LinkedHashMap<>();
-        this.rootNode = new TableTreeNode(root, nextTableAlias());
+        this.rootNode = new TableTreeNode(root, nextTableAlias(root));
     }
 
     void addJoinTable(CayennePath path, DbRelationship relationship, JoinType joinType) {
@@ -71,7 +79,8 @@ class TableTree {
             return;
         }
 
-        TableTreeNode node = new TableTreeNode(path, relationship, nextTableAlias(), joinType, additionalQualifier);
+        String alias = nextTableAlias(relationship.getTargetEntity());
+        TableTreeNode node = new TableTreeNode(path, relationship, alias, joinType, additionalQualifier);
         tableNodes.put(path, node);
     }
 
@@ -90,12 +99,23 @@ class TableTree {
         return node.getTableAlias();
     }
 
-    String nextTableAlias() {
-        // delegate actual generation to parent if any
+    String nextTableAlias(DbEntity entity) {
+        // delegate actual generation to parent if any, so that aliases stay unique across the
+        // whole statement (including correlated subqueries)
         if(parentTree != null) {
-            return parentTree.nextTableAlias();
+            return parentTree.nextTableAlias(entity);
         }
-        return 't' + String.valueOf(tableAliasSequence++);
+
+        // the base is already guaranteed to be non-reserved (see DbEntity.getTableAliasBase), and a
+        // numeric suffix can never produce a reserved word, so we only need to resolve collisions
+        String base = entity == null ? "t" : entity.getTableAliasBase();
+        int suffix = nextAliasSuffix.getOrDefault(base, 0);
+        String candidate = suffix == 0 ? base : base + suffix;
+        while (!usedAliases.add(candidate)) {
+            candidate = base + (++suffix);
+        }
+        nextAliasSuffix.put(base, suffix + 1);
+        return candidate;
     }
 
     TableTreeNode nonNullActiveNode() {
@@ -111,6 +131,16 @@ class TableTree {
 
     public int getNodeCount() {
         return tableNodes.size() + 1;
+    }
+
+    /**
+     * Returns the number of distinct table aliases used across the whole statement, including nested
+     * (subquery) trees, as tracked during translation. A value of 1 means the statement uses a single
+     * table and aliases can be omitted from the generated SQL.
+     */
+    int totalAliasCount() {
+        // all aliases are registered in the root tree, as nested trees delegate generation upwards
+        return parentTree != null ? parentTree.totalAliasCount() : usedAliases.size();
     }
 
     boolean hasToManyJoin() {

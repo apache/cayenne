@@ -63,8 +63,8 @@ public class ValueNode extends Node {
     }
 
     @Override
-    public SQLAppendable append(SQLAppendable buffer) {
-        appendValue(value, buffer);
+    public SQLAppendable append(SQLAppendable buffer, SQLGenerationContext context) {
+        appendValue(value, buffer, context);
         return buffer;
     }
 
@@ -72,7 +72,7 @@ public class ValueNode extends Node {
         buffer.appendTokenSeparator().append("NULL");
     }
 
-    private void appendValue(Object val, SQLAppendable buffer) {
+    private void appendValue(Object val, SQLAppendable buffer, SQLGenerationContext context) {
         if (val == null) {
             appendNullValue(buffer);
             return;
@@ -80,54 +80,53 @@ public class ValueNode extends Node {
 
         if (isArray && val.getClass().isArray()) {
             switch (val) {
-                case short[] shorts -> appendValue(shorts, buffer);
-                case char[] chars -> appendValue(chars, buffer);
-                case int[] ints -> appendValue(ints, buffer);
-                case long[] longs -> appendValue(longs, buffer);
-                case float[] floats -> appendValue(floats, buffer);
-                case double[] doubles -> appendValue(doubles, buffer);
-                case boolean[] booleans -> appendValue(booleans, buffer);
-                case Object[] objects -> appendValue(objects, buffer);
+                case short[] shorts -> appendValue(shorts, buffer, context);
+                case char[] chars -> appendValue(chars, buffer, context);
+                case int[] ints -> appendValue(ints, buffer, context);
+                case long[] longs -> appendValue(longs, buffer, context);
+                case float[] floats -> appendValue(floats, buffer, context);
+                case double[] doubles -> appendValue(doubles, buffer, context);
+                case boolean[] booleans -> appendValue(booleans, buffer, context);
+                case Object[] objects -> appendValue(objects, buffer, context);
                 // append byte[] array as a single object
-                case byte[] bytes -> appendValue(bytes, buffer);
+                case byte[] bytes -> appendValue(bytes, buffer, context);
                 default -> throw new CayenneRuntimeException("Unsupported array type %s", val.getClass().getName());
             }
         } else {
             switch (val) {
-                case Persistent persistent -> appendValue(persistent, buffer);
-                case ObjectId objectId -> appendValue(objectId, buffer);
-                case Supplier<?> supplier -> appendValue(supplier.get(), buffer);
-                case CharSequence charSequence -> appendStringValue(buffer, charSequence);
-                default -> appendObjectValue(buffer, val);
+                case Persistent persistent -> appendValue(persistent, buffer, context);
+                case ObjectId objectId -> appendValue(objectId, buffer, context);
+                case Supplier<?> supplier -> appendValue(supplier.get(), buffer, context);
+                case CharSequence charSequence -> appendStringValue(buffer, context, charSequence);
+                default -> appendObjectValue(buffer, context, val);
             }
         }
     }
 
-    protected void appendObjectValue(SQLAppendable buffer, Object value) {
+    protected void appendObjectValue(SQLAppendable buffer, SQLGenerationContext context, Object value) {
         if (value == null) {
             return;
         }
-        if (buffer.getContext() == null || !needBinding) {
+        if (context == null || !needBinding) {
             buffer.appendTokenSeparator().append(value.toString());
         } else {
             buffer.appendTokenSeparator().append('?');
-            addValueBinding(buffer, value);
+            addValueBinding(context, value);
         }
     }
 
-    protected void appendStringValue(SQLAppendable buffer, CharSequence value) {
-        if (buffer.getContext() == null || !needBinding) {
+    protected void appendStringValue(SQLAppendable buffer, SQLGenerationContext context, CharSequence value) {
+        if (context == null || !needBinding) {
             buffer.appendTokenSeparator().append('\'').append(value.toString()).append('\'');
         } else {
             // value can't be null here
             buffer.appendTokenSeparator().append('?');
-            addValueBinding(buffer, value);
+            addValueBinding(context, value);
         }
     }
 
-    protected void addValueBinding(SQLAppendable buffer, Object value) {
+    protected void addValueBinding(SQLGenerationContext context, Object value) {
         // value can't be null here
-        SQLGenerationContext context = buffer.getContext();
         // allow translation in out-of-context scope, to be able to use as a standalone SQL generator
         ExtendedType<?> extendedType = context.getAdapter().getExtendedTypes().getRegisteredType(value.getClass());
 
@@ -143,17 +142,17 @@ public class ValueNode extends Node {
         context.getBindings().add(binding);
     }
 
-    private void appendValue(Persistent value, SQLAppendable buffer) {
-        appendValue(value.getObjectId(), buffer);
+    private void appendValue(Persistent value, SQLAppendable buffer, SQLGenerationContext context) {
+        appendValue(value.getObjectId(), buffer, context);
     }
 
-    private void appendValue(ObjectId value, SQLAppendable buffer) {
+    private void appendValue(ObjectId value, SQLAppendable buffer, SQLGenerationContext context) {
         for (Object idVal : value.getIdSnapshot().values()) {
-            appendValue(idVal, buffer);
+            appendValue(idVal, buffer, context);
         }
     }
 
-    private void appendValue(short[] val, SQLAppendable buffer) {
+    private void appendValue(short[] val, SQLAppendable buffer, SQLGenerationContext context) {
         boolean first = true;
         for (short i : val) {
             if (first) {
@@ -161,11 +160,11 @@ public class ValueNode extends Node {
             } else {
                 buffer.append(',');
             }
-            appendValue(i, buffer);
+            appendValue(i, buffer, context);
         }
     }
 
-    private void appendValue(char[] val, SQLAppendable buffer) {
+    private void appendValue(char[] val, SQLAppendable buffer, SQLGenerationContext context) {
         boolean first = true;
         for (char i : val) {
             if (first) {
@@ -173,11 +172,11 @@ public class ValueNode extends Node {
             } else {
                 buffer.append(',');
             }
-            appendValue(i, buffer);
+            appendValue(i, buffer, context);
         }
     }
 
-    private void appendValue(int[] val, SQLAppendable buffer) {
+    private void appendValue(int[] val, SQLAppendable buffer, SQLGenerationContext context) {
         boolean first = true;
         for (int i : val) {
             if (first) {
@@ -185,11 +184,11 @@ public class ValueNode extends Node {
             } else {
                 buffer.append(',');
             }
-            appendValue(i, buffer);
+            appendValue(i, buffer, context);
         }
     }
 
-    private void appendValue(long[] val, SQLAppendable buffer) {
+    private void appendValue(long[] val, SQLAppendable buffer, SQLGenerationContext context) {
         boolean first = true;
         for (long i : val) {
             if (first) {
@@ -197,11 +196,11 @@ public class ValueNode extends Node {
             } else {
                 buffer.append(',');
             }
-            appendValue(i, buffer);
+            appendValue(i, buffer, context);
         }
     }
 
-    private void appendValue(float[] val, SQLAppendable buffer) {
+    private void appendValue(float[] val, SQLAppendable buffer, SQLGenerationContext context) {
         boolean first = true;
         for (float i : val) {
             if (first) {
@@ -209,11 +208,11 @@ public class ValueNode extends Node {
             } else {
                 buffer.append(',');
             }
-            appendValue(i, buffer);
+            appendValue(i, buffer, context);
         }
     }
 
-    private void appendValue(double[] val, SQLAppendable buffer) {
+    private void appendValue(double[] val, SQLAppendable buffer, SQLGenerationContext context) {
         boolean first = true;
         for (double i : val) {
             if (first) {
@@ -221,11 +220,11 @@ public class ValueNode extends Node {
             } else {
                 buffer.append(',');
             }
-            appendValue(i, buffer);
+            appendValue(i, buffer, context);
         }
     }
 
-    private void appendValue(boolean[] val, SQLAppendable buffer) {
+    private void appendValue(boolean[] val, SQLAppendable buffer, SQLGenerationContext context) {
         boolean first = true;
         for (boolean i : val) {
             if (first) {
@@ -233,11 +232,11 @@ public class ValueNode extends Node {
             } else {
                 buffer.append(',');
             }
-            appendValue(i, buffer);
+            appendValue(i, buffer, context);
         }
     }
 
-    private void appendValue(byte[] val, SQLAppendable buffer) {
+    private void appendValue(byte[] val, SQLAppendable buffer, SQLGenerationContext context) {
         boolean first = true;
         for (byte i : val) {
             if (first) {
@@ -245,11 +244,11 @@ public class ValueNode extends Node {
             } else {
                 buffer.append(',');
             }
-            appendValue(i, buffer);
+            appendValue(i, buffer, context);
         }
     }
 
-    private void appendValue(Object[] val, SQLAppendable buffer) {
+    private void appendValue(Object[] val, SQLAppendable buffer, SQLGenerationContext context) {
         boolean first = true;
         for (Object i : val) {
             if (first) {
@@ -257,7 +256,7 @@ public class ValueNode extends Node {
             } else {
                 buffer.append(',');
             }
-            appendValue(i, buffer);
+            appendValue(i, buffer, context);
         }
     }
 

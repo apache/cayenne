@@ -54,7 +54,5 @@ public interface SQLAppendable {
 
     SQLAppendable appendQuoted(String str);
 
-    SQLGenerationContext getContext();
-
     String getSql();
 }

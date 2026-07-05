@@ -70,16 +70,17 @@ public class Cay2641IT {
         TranslatedSelect translator = new DbAdapterDelegatedSelectTranslator().translate(artists, adapter, env.context().getEntityResolver());
 
         String sql = translator.sql();
-        assertFalse(sql.contains("t0.NAME"));
+        // single-table query: no alias, so the lazy NAME column is simply absent
+        assertFalse(sql.contains(" NAME"));
 
-        String pattern = "SELECT t0.SURNAME( c0)?, t0.ID( c1)? FROM ArtistLazy t0";
+        String pattern = "SELECT SURNAME( c0)?, ID( c1)? FROM ArtistLazy";
         MatcherAssert.assertThat(sql, Matchers.matchesPattern(pattern));
 
         ColumnSelect<String> select = ObjectSelect.columnQuery(ArtistLazy.class, ArtistLazy.NAME);
         translator = new DbAdapterDelegatedSelectTranslator().translate(select, adapter, env.context().getEntityResolver());
         sql = translator.sql();
 
-        assertTrue(sql.contains("t0.NAME"));
+        assertTrue(sql.contains("NAME"));
     }
 
     @Test
@@ -110,10 +111,10 @@ public class Cay2641IT {
         ObjectSelect<PaintingLazy> paintingLazyObjectSelect = ObjectSelect.query(PaintingLazy.class).prefetch(PaintingLazy.ARTIST.joint());
         TranslatedSelect translator = new DbAdapterDelegatedSelectTranslator().translate(paintingLazyObjectSelect, adapter, env.context().getEntityResolver());
         String sql = translator.sql();
-        assertFalse(sql.contains("t0.NAME"));
+        assertFalse(sql.contains(".NAME"));
 
-        String pattern = "SELECT t0.ARTIST_ID( c0)?, t0.ID( c1)?, t1.ID( c2)?, t1.SURNAME( c3)?"
-                + " FROM PaintingLazy t0 LEFT JOIN ArtistLazy t1 ON t0.ARTIST_ID = t1.ID";
+        String pattern = "SELECT p.ARTIST_ID( c0)?, p.ID( c1)?, a.ID( c2)?, a.SURNAME( c3)?"
+                + " FROM PaintingLazy p LEFT JOIN ArtistLazy a ON p.ARTIST_ID = a.ID";
         MatcherAssert.assertThat(sql, Matchers.matchesPattern(pattern));
     }
 

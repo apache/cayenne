@@ -20,6 +20,7 @@
 package org.apache.cayenne.dba.ingres;
 
 import org.apache.cayenne.access.sqlbuilder.SQLAppendable;
+import org.apache.cayenne.access.sqlbuilder.SQLGenerationContext;
 import org.apache.cayenne.access.sqlbuilder.sqltree.ColumnNode;
 import org.apache.cayenne.access.sqlbuilder.sqltree.FunctionNode;
 import org.apache.cayenne.access.sqlbuilder.sqltree.LimitOffsetNode;
@@ -43,7 +44,7 @@ public class IngressSQLTreeProcessor extends BaseSQLTreeProcessor {
     protected void onLimitOffsetNode(Node parent, LimitOffsetNode child, int index) {
         replaceChild(parent, index, new OffsetFetchNextNode(child) {
             @Override
-            public SQLAppendable append(SQLAppendable buffer) {
+            public SQLAppendable append(SQLAppendable buffer, SQLGenerationContext context) {
                 // OFFSET X FETCH NEXT Y ROWS ONLY
                 if(offset > 0) {
                     buffer.append("OFFSET ").append(offset);

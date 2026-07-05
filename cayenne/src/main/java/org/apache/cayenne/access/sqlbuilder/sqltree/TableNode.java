@@ -19,10 +19,11 @@
 
 package org.apache.cayenne.access.sqlbuilder.sqltree;
 
-import java.util.Objects;
-
 import org.apache.cayenne.access.sqlbuilder.SQLAppendable;
+import org.apache.cayenne.access.sqlbuilder.SQLGenerationContext;
 import org.apache.cayenne.map.DbEntity;
+
+import java.util.Objects;
 
 /**
  * @since 4.2
@@ -46,7 +47,7 @@ public class TableNode extends Node {
     }
 
     @Override
-    public SQLAppendable append(SQLAppendable buffer) {
+    public SQLAppendable append(SQLAppendable buffer, SQLGenerationContext context) {
         buffer.appendTokenSeparator();
 
         if(dbEntity != null) {
@@ -61,7 +62,8 @@ public class TableNode extends Node {
             buffer.appendQuoted(tableName);
         }
 
-        if (alias != null) {
+        // omit the alias for a single-table statement
+        if (alias != null && (context == null || !context.isSingleTableSQL())) {
             buffer.appendTokenSeparator().appendQuoted(alias);
         }
         return buffer;

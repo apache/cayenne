@@ -259,14 +259,10 @@ public class DbAdapterDelegatedSelectTranslatorIT {
 		assertTrue(generatedSql.indexOf(" FROM ") > 0);
 		assertTrue(generatedSql.indexOf(" WHERE ") > generatedSql.indexOf(" FROM "));
 
-		// check that there are 2 distinct aliases for the ARTIST table
-		int ind1 = generatedSql.indexOf("ARTIST t", generatedSql.indexOf(" FROM "));
-		assertTrue(ind1 > 0);
-
-		int ind2 = generatedSql.indexOf("ARTIST t", ind1 + 1);
-		assertTrue(ind2 > 0);
-
-		assertTrue(generatedSql.charAt(ind1 + "ARTIST t".length()) != generatedSql.charAt(ind2 + "ARTIST t".length()));
+		// check that there are 2 distinct aliases for the ARTIST table (leading space excludes
+		// ARTIST_EXHIBIT / ARTIST_GROUP, trailing space excludes the second one for the first match)
+		assertTrue(generatedSql.contains(" ARTIST a "), generatedSql);
+		assertTrue(generatedSql.contains(" ARTIST a1 "), generatedSql);
 	}
 
 	/**
@@ -289,12 +285,12 @@ public class DbAdapterDelegatedSelectTranslatorIT {
 		assertTrue(generatedSql.indexOf(" FROM ") > 0);
 		assertTrue(generatedSql.indexOf(" WHERE ") > generatedSql.indexOf(" FROM "));
 
-		// check that there is only one distinct alias for the ARTIST
-		// table
-		int ind1 = generatedSql.indexOf("ARTIST t", generatedSql.indexOf(" FROM "));
-		assertTrue(ind1 > 0);
+		// check that there is only one distinct alias for the ARTIST table (leading and trailing
+		// spaces exclude ARTIST_EXHIBIT and the ARTIST_ID / ARTIST_NAME columns)
+		int ind1 = generatedSql.indexOf(" ARTIST ", generatedSql.indexOf(" FROM "));
+		assertTrue(ind1 > 0, generatedSql);
 
-		int ind2 = generatedSql.indexOf("ARTIST t", ind1 + 1);
+		int ind2 = generatedSql.indexOf(" ARTIST ", ind1 + 1);
 		assertTrue(ind2 < 0, generatedSql);
 	}
 
@@ -501,20 +497,20 @@ public class DbAdapterDelegatedSelectTranslatorIT {
 			String charEnd = env.testDbAdapter().getIdentifiersEndQuote();
 
 			String s = new DbAdapterDelegatedSelectTranslator().translate(q, env.dataNode().getAdapter(), env.dataNode().getEntityResolver()).sql();
+			// single-table query: no table aliases are generated
 			assertTrue(s.startsWith("SELECT "));
 			int iFrom = s.indexOf(" FROM ");
 			assertTrue(iFrom > 0);
-			int artistName = s.indexOf(charStart + "t0" + charEnd + "." + charStart + "ARTIST_NAME" + charEnd);
+			int artistName = s.indexOf(charStart + "ARTIST_NAME" + charEnd);
 			assertTrue(artistName > 0 && artistName < iFrom);
-			int artistId = s.indexOf(charStart + "t0" + charEnd + "." + charStart + "ARTIST_ID" + charEnd);
+			int artistId = s.indexOf(charStart + "ARTIST_ID" + charEnd);
 			assertTrue(artistId > 0 && artistId < iFrom);
-			int dateOfBirth = s.indexOf(charStart + "t0" + charEnd + "." + charStart + "DATE_OF_BIRTH" + charEnd);
+			int dateOfBirth = s.indexOf(charStart + "DATE_OF_BIRTH" + charEnd);
 			assertTrue(dateOfBirth > 0 && dateOfBirth < iFrom);
-			int iArtist = s.indexOf(charStart + "ARTIST" + charEnd + " " + charStart + "t0" + charEnd);
+			int iArtist = s.indexOf(charStart + "ARTIST" + charEnd);
 			assertTrue(iArtist > iFrom);
 			int iOrderBy = s.indexOf(" ORDER BY ");
-			int dateOfBirth2 = s.indexOf(charStart + "t0" + charEnd + "." + charStart + "DATE_OF_BIRTH" + charEnd,
-					iOrderBy);
+			int dateOfBirth2 = s.indexOf(charStart + "DATE_OF_BIRTH" + charEnd, iOrderBy);
 			assertTrue(iOrderBy > iArtist);
 			assertTrue(dateOfBirth2 > iOrderBy);
 
@@ -541,26 +537,27 @@ public class DbAdapterDelegatedSelectTranslatorIT {
 
 			String s = new DbAdapterDelegatedSelectTranslator().translate(q, env.dataNode().getAdapter(), env.dataNode().getEntityResolver()).sql();
 
+			// single-table query: no table aliases are generated
 			assertTrue(s.startsWith("SELECT "));
 			int iFrom = s.indexOf(" FROM ");
 			assertTrue(iFrom > 0);
-			int artistName = s.indexOf(charStart + "t0" + charEnd + "." + charStart + "ARTIST_NAME" + charEnd);
+			int artistName = s.indexOf(charStart + "ARTIST_NAME" + charEnd);
 			assertTrue(artistName > 0 && artistName < iFrom);
-			int artistId = s.indexOf(charStart + "t0" + charEnd + "." + charStart + "ARTIST_ID" + charEnd);
+			int artistId = s.indexOf(charStart + "ARTIST_ID" + charEnd);
 			assertTrue(artistId > 0 && artistId < iFrom);
-			int dateOfBirth = s.indexOf(charStart + "t0" + charEnd + "." + charStart + "DATE_OF_BIRTH" + charEnd);
+			int dateOfBirth = s.indexOf(charStart + "DATE_OF_BIRTH" + charEnd);
 			assertTrue(dateOfBirth > 0 && dateOfBirth < iFrom);
-			int iArtist = s.indexOf(charStart + "ARTIST" + charEnd + " " + charStart + "t0" + charEnd);
+			int iArtist = s.indexOf(charStart + "ARTIST" + charEnd);
 			assertTrue(iArtist > iFrom);
 			int iWhere = s.indexOf(" WHERE ");
 			assertTrue(iWhere > iArtist);
 
-			int dateOfBirth2 = s.indexOf(charStart + "t0" + charEnd + "." + charStart + "DATE_OF_BIRTH" + charEnd + " > ?");
+			int dateOfBirth2 = s.indexOf(charStart + "DATE_OF_BIRTH" + charEnd + " > ?");
 			assertTrue(dateOfBirth2 > iWhere);
 
 			int iAnd = s.indexOf(" AND ");
 			assertTrue(iAnd > iWhere);
-			int dateOfBirth3 = s.indexOf(charStart + "t0" + charEnd + "." + charStart + "DATE_OF_BIRTH" + charEnd + " < ?");
+			int dateOfBirth3 = s.indexOf(charStart + "DATE_OF_BIRTH" + charEnd + " < ?");
 			assertTrue(dateOfBirth3 > iAnd);
 
 		} finally {
@@ -587,59 +584,60 @@ public class DbAdapterDelegatedSelectTranslatorIT {
 
 			String s = new DbAdapterDelegatedSelectTranslator().translate(q, env.dataNode().getAdapter(), env.dataNode().getEntityResolver()).sql();
 
+			// root ARTIST -> "a", PAINTING (where join) -> "p", PAINTING (prefetch left join) -> "p1"
 			assertTrue(s.startsWith("SELECT DISTINCT "), s);
 			int iFrom = s.indexOf(" FROM ");
 			assertTrue(iFrom > 0, s);
-			int artistName = s.indexOf(charStart + "t0" + charEnd + "." + charStart + "ARTIST_NAME" + charEnd);
+			int artistName = s.indexOf(charStart + "a" + charEnd + "." + charStart + "ARTIST_NAME" + charEnd);
 			assertTrue(artistName > 0 && artistName < iFrom, s);
-			int artistId = s.indexOf(charStart + "t0" + charEnd + "." + charStart + "ARTIST_ID" + charEnd);
+			int artistId = s.indexOf(charStart + "a" + charEnd + "." + charStart + "ARTIST_ID" + charEnd);
 			assertTrue(artistId > 0 && artistId < iFrom, s);
-			int dateOfBirth = s.indexOf(charStart + "t0" + charEnd + "." + charStart + "DATE_OF_BIRTH" + charEnd);
+			int dateOfBirth = s.indexOf(charStart + "a" + charEnd + "." + charStart + "DATE_OF_BIRTH" + charEnd);
 			assertTrue(dateOfBirth > 0 && dateOfBirth < iFrom, s);
-			int estimatedPrice = s.indexOf(charStart + "t2" + charEnd + "." + charStart + "ESTIMATED_PRICE" + charEnd);
+			int estimatedPrice = s.indexOf(charStart + "p1" + charEnd + "." + charStart + "ESTIMATED_PRICE" + charEnd);
 			assertTrue(estimatedPrice > 0 && estimatedPrice < iFrom, s);
-			int paintingDescription = s.indexOf(charStart + "t2" + charEnd + "." + charStart + "PAINTING_DESCRIPTION"
+			int paintingDescription = s.indexOf(charStart + "p1" + charEnd + "." + charStart + "PAINTING_DESCRIPTION"
 					+ charEnd);
 			assertTrue(paintingDescription > 0 && paintingDescription < iFrom, s);
-			int paintingTitle = s.indexOf(charStart + "t2" + charEnd + "." + charStart + "PAINTING_TITLE" + charEnd);
+			int paintingTitle = s.indexOf(charStart + "p1" + charEnd + "." + charStart + "PAINTING_TITLE" + charEnd);
 			assertTrue(paintingTitle > 0 && paintingTitle < iFrom, s);
-			int artistIdT2 = s.indexOf(charStart + "t2" + charEnd + "." + charStart + "ARTIST_ID" + charEnd);
+			int artistIdT2 = s.indexOf(charStart + "p1" + charEnd + "." + charStart + "ARTIST_ID" + charEnd);
 			assertTrue(artistIdT2 > 0 && artistIdT2 < iFrom, s);
-			int galleryId = s.indexOf(charStart + "t2" + charEnd + "." + charStart + "GALLERY_ID" + charEnd);
+			int galleryId = s.indexOf(charStart + "p1" + charEnd + "." + charStart + "GALLERY_ID" + charEnd);
 			assertTrue(galleryId > 0 && galleryId < iFrom, s);
-			int paintingId = s.indexOf(charStart + "t2" + charEnd + "." + charStart + "PAINTING_ID" + charEnd);
+			int paintingId = s.indexOf(charStart + "p1" + charEnd + "." + charStart + "PAINTING_ID" + charEnd);
 			assertTrue(paintingId > 0 && paintingId < iFrom, s);
-			int iArtist = s.indexOf(charStart + "ARTIST" + charEnd + " " + charStart + "t0" + charEnd);
+			int iArtist = s.indexOf(charStart + "ARTIST" + charEnd + " " + charStart + "a" + charEnd);
 			assertTrue(iArtist > iFrom, s);
 			int iJoin = s.indexOf("JOIN");
 			assertTrue(iJoin > iFrom, s);
-			int iPainting2 = s.indexOf(charStart + "PAINTING" + charEnd + " " + charStart + "t1" + charEnd);
+			int iPainting2 = s.indexOf(charStart + "PAINTING" + charEnd + " " + charStart + "p" + charEnd);
 			assertTrue(iPainting2 > iJoin, s);
 			int iOn2 = s.indexOf(" ON ", iJoin);
 			assertTrue(iOn2 > iJoin, s);
-			int iArtistId2 = s.indexOf(charStart + "t0" + charEnd + "." + charStart + "ARTIST_ID" + charEnd, iJoin);
+			int iArtistId2 = s.indexOf(charStart + "a" + charEnd + "." + charStart + "ARTIST_ID" + charEnd, iJoin);
 			assertTrue(iArtistId2 > iOn2, s);
-			int iArtistId2T1 = s.indexOf(charStart + "t1" + charEnd + "." + charStart + "ARTIST_ID" + charEnd, iJoin);
+			int iArtistId2T1 = s.indexOf(charStart + "p" + charEnd + "." + charStart + "ARTIST_ID" + charEnd, iJoin);
 			assertTrue(iArtistId2T1 > iOn2, s);
 			int i2 = s.indexOf("=", iJoin);
 			assertTrue(iArtistId2T1 > i2 || iArtistId2 > i2, s);
 			int iLeftJoin = s.indexOf("LEFT JOIN");
 			assertTrue(iLeftJoin > iJoin, s);
-			int iPainting = s.indexOf(charStart + "PAINTING" + charEnd + " " + charStart + "t2" + charEnd);
+			int iPainting = s.indexOf(charStart + "PAINTING" + charEnd + " " + charStart + "p1" + charEnd);
 			assertTrue(iPainting > iLeftJoin, s);
 			int iOn = s.indexOf(" ON ", iLeftJoin);
 			assertTrue(iOn > iLeftJoin, s);
-			int iArtistId = s.indexOf(charStart + "t0" + charEnd + "." + charStart + "ARTIST_ID" + charEnd, iLeftJoin);
+			int iArtistId = s.indexOf(charStart + "a" + charEnd + "." + charStart + "ARTIST_ID" + charEnd, iLeftJoin);
 			assertTrue(iArtistId > iOn, s);
 			int iArtistIdT2 = s
-					.indexOf(charStart + "t2" + charEnd + "." + charStart + "ARTIST_ID" + charEnd, iLeftJoin);
+					.indexOf(charStart + "p1" + charEnd + "." + charStart + "ARTIST_ID" + charEnd, iLeftJoin);
 			assertTrue(iArtistIdT2 > iOn, s);
 			int i = s.indexOf("=", iLeftJoin);
 			assertTrue(iArtistIdT2 > i || iArtistId > i, s);
 			int iWhere = s.indexOf(" WHERE ");
 			assertTrue(iWhere > iLeftJoin, s);
 
-			int paintingTitle2 = s.indexOf(charStart + "t1" + charEnd + "." + charStart + "PAINTING_TITLE" + charEnd + " = ?");
+			int paintingTitle2 = s.indexOf(charStart + "p" + charEnd + "." + charStart + "PAINTING_TITLE" + charEnd + " = ?");
 			assertTrue(paintingTitle2 > iWhere, s);
 
 		} finally {
@@ -664,42 +662,43 @@ public class DbAdapterDelegatedSelectTranslatorIT {
 
 			String s = new DbAdapterDelegatedSelectTranslator().translate(q, env.dataNode().getAdapter(), env.dataNode().getEntityResolver()).sql();
 
+			// root PAINTING -> "p", ARTIST (prefetch left join) -> "a"
 			assertTrue(s.startsWith("SELECT "), s);
 			int iFrom = s.indexOf(" FROM ");
 			assertTrue(iFrom > 0, s);
 
-			int paintingDescription = s.indexOf(charStart + "t0" + charEnd + "." + charStart + "PAINTING_DESCRIPTION"
+			int paintingDescription = s.indexOf(charStart + "p" + charEnd + "." + charStart + "PAINTING_DESCRIPTION"
 					+ charEnd);
 			assertTrue(paintingDescription > 0 && paintingDescription < iFrom, s);
-			int paintingTitle = s.indexOf(charStart + "t0" + charEnd + "." + charStart + "PAINTING_TITLE" + charEnd);
+			int paintingTitle = s.indexOf(charStart + "p" + charEnd + "." + charStart + "PAINTING_TITLE" + charEnd);
 			assertTrue(paintingTitle > 0 && paintingTitle < iFrom, s);
-			int artistIdT1 = s.indexOf(charStart + "t0" + charEnd + "." + charStart + "ARTIST_ID" + charEnd);
+			int artistIdT1 = s.indexOf(charStart + "p" + charEnd + "." + charStart + "ARTIST_ID" + charEnd);
 			assertTrue(artistIdT1 > 0 && artistIdT1 < iFrom, s);
-			int estimatedPrice = s.indexOf(charStart + "t0" + charEnd + "." + charStart + "ESTIMATED_PRICE" + charEnd);
+			int estimatedPrice = s.indexOf(charStart + "p" + charEnd + "." + charStart + "ESTIMATED_PRICE" + charEnd);
 			assertTrue(estimatedPrice > 0 && estimatedPrice < iFrom, s);
-			int galleryId = s.indexOf(charStart + "t0" + charEnd + "." + charStart + "GALLERY_ID" + charEnd);
+			int galleryId = s.indexOf(charStart + "p" + charEnd + "." + charStart + "GALLERY_ID" + charEnd);
 			assertTrue(galleryId > 0 && galleryId < iFrom, s);
-			int paintingId = s.indexOf(charStart + "t0" + charEnd + "." + charStart + "PAINTING_ID" + charEnd);
+			int paintingId = s.indexOf(charStart + "p" + charEnd + "." + charStart + "PAINTING_ID" + charEnd);
 			assertTrue(paintingId > 0 && paintingId < iFrom, s);
-			int artistName = s.indexOf(charStart + "t1" + charEnd + "." + charStart + "ARTIST_NAME" + charEnd);
+			int artistName = s.indexOf(charStart + "a" + charEnd + "." + charStart + "ARTIST_NAME" + charEnd);
 			assertTrue(artistName > 0 && artistName < iFrom, s);
-			int artistId = s.indexOf(charStart + "t1" + charEnd + "." + charStart + "ARTIST_ID" + charEnd);
+			int artistId = s.indexOf(charStart + "a" + charEnd + "." + charStart + "ARTIST_ID" + charEnd);
 			assertTrue(artistId > 0 && artistId < iFrom, s);
-			int dateOfBirth = s.indexOf(charStart + "t1" + charEnd + "." + charStart + "DATE_OF_BIRTH" + charEnd);
+			int dateOfBirth = s.indexOf(charStart + "a" + charEnd + "." + charStart + "DATE_OF_BIRTH" + charEnd);
 			assertTrue(dateOfBirth > 0 && dateOfBirth < iFrom, s);
-			int iPainting = s.indexOf(charStart + "PAINTING" + charEnd + " " + charStart + "t0" + charEnd);
+			int iPainting = s.indexOf(charStart + "PAINTING" + charEnd + " " + charStart + "p" + charEnd);
 			assertTrue(iPainting > iFrom, s);
 
 			int iLeftJoin = s.indexOf("LEFT JOIN");
 			assertTrue(iLeftJoin > iFrom, s);
-			int iArtist = s.indexOf(charStart + "ARTIST" + charEnd + " " + charStart + "t1" + charEnd);
+			int iArtist = s.indexOf(charStart + "ARTIST" + charEnd + " " + charStart + "a" + charEnd);
 			assertTrue(iArtist > iLeftJoin, s);
 			int iOn = s.indexOf(" ON ");
 			assertTrue(iOn > iLeftJoin, s);
-			int iArtistId = s.indexOf(charStart + "t0" + charEnd + "." + charStart + "ARTIST_ID" + charEnd, iLeftJoin);
+			int iArtistId = s.indexOf(charStart + "p" + charEnd + "." + charStart + "ARTIST_ID" + charEnd, iLeftJoin);
 			assertTrue(iArtistId > iOn, s);
 			int iArtistIdT1 = s
-					.indexOf(charStart + "t1" + charEnd + "." + charStart + "ARTIST_ID" + charEnd, iLeftJoin);
+					.indexOf(charStart + "a" + charEnd + "." + charStart + "ARTIST_ID" + charEnd, iLeftJoin);
 			assertTrue(iArtistIdT1 > iOn, s);
 			int i = s.indexOf("=", iLeftJoin);
 			assertTrue(iArtistIdT1 > i || iArtistId > i, s);

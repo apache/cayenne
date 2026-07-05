@@ -20,6 +20,7 @@
 package org.apache.cayenne.access.sqlbuilder.sqltree;
 
 import org.apache.cayenne.access.sqlbuilder.SQLAppendable;
+import org.apache.cayenne.access.sqlbuilder.SQLGenerationContext;
 
 /**
  * @since 4.2
@@ -27,7 +28,7 @@ import org.apache.cayenne.access.sqlbuilder.SQLAppendable;
 public class SelectNode extends Node {
 
     @Override
-    public SQLAppendable append(SQLAppendable builder) {
+    public SQLAppendable append(SQLAppendable builder, SQLGenerationContext context) {
         if(parent != null) {
             builder.appendTokenSeparator().append('(');
         }

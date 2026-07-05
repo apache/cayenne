@@ -20,6 +20,7 @@
 package org.apache.cayenne.access.sqlbuilder.sqltree;
 
 import org.apache.cayenne.access.sqlbuilder.SQLAppendable;
+import org.apache.cayenne.access.sqlbuilder.SQLGenerationContext;
 
 /**
  * @since 5.0
@@ -27,7 +28,7 @@ import org.apache.cayenne.access.sqlbuilder.SQLAppendable;
 public class CaseNode extends Node {
 
     @Override
-    public SQLAppendable append(SQLAppendable buffer) {
+    public SQLAppendable append(SQLAppendable buffer, SQLGenerationContext context) {
         return buffer.appendTokenSeparator().append("CASE");
     }
 

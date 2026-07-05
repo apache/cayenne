@@ -20,6 +20,7 @@
 package org.apache.cayenne.dba.sqlserver.sqltree;
 
 import org.apache.cayenne.access.sqlbuilder.SQLAppendable;
+import org.apache.cayenne.access.sqlbuilder.SQLGenerationContext;
 import org.apache.cayenne.access.sqlbuilder.sqltree.ColumnNode;
 import org.apache.cayenne.access.sqlbuilder.sqltree.TrimmingColumnNode;
 
@@ -33,9 +34,9 @@ public class SQLServerColumnNode extends TrimmingColumnNode {
     }
 
     @Override
-    protected void appendClobColumnNode(SQLAppendable buffer) {
+    protected void appendClobColumnNode(SQLAppendable buffer, SQLGenerationContext context) {
         buffer.append(" CAST(");
-        appendColumnNode(buffer);
+        appendColumnNode(buffer, context);
         buffer.append(" AS NVARCHAR(MAX))");
     }
 

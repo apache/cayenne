@@ -27,14 +27,16 @@ import org.apache.cayenne.access.sqlbuilder.sqltree.Node;
 public class SQLGenerationVisitor implements NodeTreeVisitor {
 
     private final SQLAppendable appendable;
+    private final SQLGenerationContext context;
 
-    public SQLGenerationVisitor(SQLAppendable appendable) {
+    public SQLGenerationVisitor(SQLAppendable appendable, SQLGenerationContext context) {
         this.appendable = appendable;
+        this.context = context;
     }
 
     @Override
     public boolean onNodeStart(Node node) {
-        node.append(appendable);
+        node.append(appendable, context);
         node.appendChildrenStart(appendable);
         return true;
     }

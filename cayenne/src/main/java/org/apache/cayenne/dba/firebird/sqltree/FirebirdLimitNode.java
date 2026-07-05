@@ -20,6 +20,7 @@
 package org.apache.cayenne.dba.firebird.sqltree;
 
 import org.apache.cayenne.access.sqlbuilder.SQLAppendable;
+import org.apache.cayenne.access.sqlbuilder.SQLGenerationContext;
 import org.apache.cayenne.access.sqlbuilder.sqltree.Node;
 
 /**
@@ -35,7 +36,7 @@ public class FirebirdLimitNode extends Node {
     }
 
     @Override
-    public SQLAppendable append(SQLAppendable buffer) {
+    public SQLAppendable append(SQLAppendable buffer, SQLGenerationContext context) {
         buffer.append(" ROWS ");
         if(from > 0) {
             buffer.append(from).append(" TO ");

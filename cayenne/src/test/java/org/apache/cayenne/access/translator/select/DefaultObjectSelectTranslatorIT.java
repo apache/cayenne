@@ -42,10 +42,10 @@ public class DefaultObjectSelectTranslatorIT {
 
         String sql = translator.sql();
         assertTrue(sql.startsWith("SELECT "));
-        assertTrue(sql.contains("t0.ARTIST_NAME"));
-        assertTrue(sql.contains("t0.DATE_OF_BIRTH"));
-        assertTrue(sql.contains("t0.ARTIST_ID"));
-        assertTrue(sql.indexOf("FROM ARTIST t0") > sql.indexOf("t0.ARTIST_ID"));
+        assertTrue(sql.contains("ARTIST_NAME"));
+        assertTrue(sql.contains("DATE_OF_BIRTH"));
+        assertTrue(sql.contains("ARTIST_ID"));
+        assertTrue(sql.indexOf("FROM ARTIST") > sql.indexOf("ARTIST_ID"));
 
         assertEquals(0, translator.bindings().length);
         assertEquals(3, translator.resultColumns().length);
@@ -65,12 +65,12 @@ public class DefaultObjectSelectTranslatorIT {
 
         String sql = translator.sql();
         assertTrue(sql.startsWith("SELECT DISTINCT"));
-        assertTrue(sql.contains("t0.ARTIST_NAME"));
-        assertTrue(sql.contains("t0.DATE_OF_BIRTH"));
-        assertTrue(sql.contains("t0.ARTIST_ID"));
-        assertTrue(sql.indexOf("FROM ARTIST t0") > sql.indexOf("t0.ARTIST_ID"));
-        assertTrue(sql.indexOf("JOIN PAINTING t1") > sql.indexOf("FROM ARTIST t0"));
-        assertTrue(sql.indexOf("WHERE") > sql.indexOf("JOIN PAINTING t1"));
+        assertTrue(sql.contains("a.ARTIST_NAME"));
+        assertTrue(sql.contains("a.DATE_OF_BIRTH"));
+        assertTrue(sql.contains("a.ARTIST_ID"));
+        assertTrue(sql.indexOf("FROM ARTIST a") > sql.indexOf("a.ARTIST_ID"));
+        assertTrue(sql.indexOf("JOIN PAINTING p") > sql.indexOf("FROM ARTIST a"));
+        assertTrue(sql.indexOf("WHERE") > sql.indexOf("JOIN PAINTING p"));
 
         assertEquals(2, translator.bindings().length);
         assertEquals("ARTIST_NAME", translator.bindings()[0].attribute().getName());
@@ -94,17 +94,17 @@ public class DefaultObjectSelectTranslatorIT {
         String sql = translator.sql();
 
         assertTrue(sql.startsWith("SELECT "));
-        assertTrue(sql.contains("t0.ESTIMATED_PRICE"));
-        assertTrue(sql.contains("t0.PAINTING_DESCRIPTION"));
-        assertTrue(sql.contains("t0.PAINTING_TITLE"));
-        assertTrue(sql.contains("t0.ARTIST_ID"));
-        assertTrue(sql.contains("t0.GALLERY_ID"));
-        assertTrue(sql.contains("t0.PAINTING_ID"));
-        assertTrue(sql.contains("t1.ARTIST_ID"));
-        assertTrue(sql.contains("t1.DATE_OF_BIRTH"));
-        assertTrue(sql.contains("t1.ARTIST_NAME"));
-        assertTrue(sql.indexOf("FROM PAINTING t0") > sql.indexOf("t1.ARTIST_NAME"));
-        assertTrue(sql.indexOf("LEFT JOIN ARTIST t1") > sql.indexOf("FROM PAINTING t0"));
+        assertTrue(sql.contains("p.ESTIMATED_PRICE"));
+        assertTrue(sql.contains("p.PAINTING_DESCRIPTION"));
+        assertTrue(sql.contains("p.PAINTING_TITLE"));
+        assertTrue(sql.contains("p.ARTIST_ID"));
+        assertTrue(sql.contains("p.GALLERY_ID"));
+        assertTrue(sql.contains("p.PAINTING_ID"));
+        assertTrue(sql.contains("a.ARTIST_ID"));
+        assertTrue(sql.contains("a.DATE_OF_BIRTH"));
+        assertTrue(sql.contains("a.ARTIST_NAME"));
+        assertTrue(sql.indexOf("FROM PAINTING p") > sql.indexOf("a.ARTIST_NAME"));
+        assertTrue(sql.indexOf("LEFT JOIN ARTIST a") > sql.indexOf("FROM PAINTING p"));
 
         assertEquals(0, translator.bindings().length);
 

@@ -92,7 +92,7 @@ class SelectTranslatorContext implements SQLGenerationContext {
      * - order by expressions
      * - where expression (including qualifiers from all used DbEntities and ObjEntities)
      */
-    private final Collection<PSParameter> bindings;
+    private final List<PSParameter<?>> bindings;
 
     // Translated query
     private final TranslatableQueryWrapper query;
@@ -139,7 +139,7 @@ class SelectTranslatorContext implements SQLGenerationContext {
         this.parentContext = parentContext;
         this.tableTree = new TableTree(metadata.getDbEntity(), parentContext == null ? null : parentContext.getTableTree());
         this.columns = new ArrayList<>();
-        this.bindings = new ArrayList<>(4);
+        this.bindings = new ArrayList<>();
         this.selectBuilder = SQLBuilder.select();
         this.pathTranslator = new PathTranslator(this);
         this.qualifierTranslator = new QualifierTranslator(this);
@@ -191,7 +191,7 @@ class SelectTranslatorContext implements SQLGenerationContext {
         return columns;
     }
 
-    public Collection<PSParameter> getBindings() {
+    public List<PSParameter<?>> getBindings() {
         return bindings;
     }
 
@@ -231,6 +231,11 @@ class SelectTranslatorContext implements SQLGenerationContext {
     @Override
     public DbEntity getRootDbEntity() {
         return metadata.getDbEntity();
+    }
+
+    @Override
+    public boolean isSingleTableSQL() {
+        return tableTree.totalAliasCount() == 1;
     }
 
     boolean hasAggregate() {

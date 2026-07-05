@@ -23,7 +23,7 @@ import org.apache.cayenne.access.jdbc.PSParameter;
 import org.apache.cayenne.dba.DbAdapter;
 import org.apache.cayenne.map.DbEntity;
 
-import java.util.Collection;
+import java.util.List;
 
 /**
  * @since 4.2
@@ -32,7 +32,16 @@ public interface SQLGenerationContext {
 
     DbAdapter getAdapter();
 
-    Collection<PSParameter> getBindings();
+    List<PSParameter<?>> getBindings();
 
     DbEntity getRootDbEntity();
+
+    /**
+     * Returns true if the statement being generated uses a single table, in which case table nodes
+     * and column nodes omit the table alias / prefix for readability (e.g. {@code SELECT NAME FROM
+     * ARTIST} rather than {@code SELECT a.NAME FROM ARTIST a}).
+     *
+     * @since 5.0
+     */
+    boolean isSingleTableSQL();
 }

@@ -31,6 +31,40 @@ import static org.junit.jupiter.api.Assertions.*;
 public class DbEntityTest {
 
     @Test
+    public void tableAliasBase() {
+        assertEquals("ur", new DbEntity("USER_ROLE").getTableAliasBase());
+        assertEquals("a", new DbEntity("ARTIST").getTableAliasBase());
+        assertEquals("aeg", new DbEntity("ARTIST_EXHIBIT_GROUP").getTableAliasBase());
+        // mixed case, no underscores -> first letter of the single part
+        assertEquals("a", new DbEntity("ArtistLazy").getTableAliasBase());
+    }
+
+    @Test
+    public void tableAliasBaseReservedWord() {
+        // "IV_SUB1" -> "is", which is a SQL reserved word, so a numeric suffix is appended
+        assertEquals("is1", new DbEntity("IV_SUB1").getTableAliasBase());
+        // "ORDER" -> "o" is fine, but a name abbreviating to a reserved word is escaped
+        assertEquals("or1", new DbEntity("OWNER_ROLE").getTableAliasBase());
+    }
+
+    @Test
+    public void tableAliasBaseFallback() {
+        assertEquals("t", new DbEntity().getTableAliasBase());
+        assertEquals("t", new DbEntity("").getTableAliasBase());
+        // does not start with a letter -> fall back to a safe alias
+        assertEquals("t", new DbEntity("1_TABLE").getTableAliasBase());
+    }
+
+    @Test
+    public void tableAliasBaseInvalidatedOnRename() {
+        DbEntity entity = new DbEntity("USER_ROLE");
+        assertEquals("ur", entity.getTableAliasBase());
+
+        entity.setName("PAINTING");
+        assertEquals("p", entity.getTableAliasBase());
+    }
+
+    @Test
     public void encodeAsXML() {
         DbEntity entity = new DbEntity("X");
         entity.setSchema("s");

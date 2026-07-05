@@ -27,20 +27,12 @@ import org.apache.cayenne.dba.QuotingStrategy;
 public class DefaultSQLAppendable implements SQLAppendable {
 
     final StringBuilder builder;
-    private final SQLGenerationContext context;
     private final QuotingStrategy quotingStrategy;
     private boolean suppressNextSeparator;
 
-    public DefaultSQLAppendable(SQLGenerationContext context) {
+    public DefaultSQLAppendable(QuotingStrategy quotingStrategy) {
         this.builder = new StringBuilder();
-        this.context = context;
-        this.quotingStrategy = resolveQuotes(context);
-    }
-
-    private static QuotingStrategy resolveQuotes(SQLGenerationContext context) {
-        return context == null
-                ? QuotingStrategy.NONE
-                : context.getAdapter().getQuotingStrategy(context.getRootDbEntity());
+        this.quotingStrategy = quotingStrategy == null ? QuotingStrategy.NONE : quotingStrategy;
     }
 
     @Override
@@ -87,11 +79,6 @@ public class DefaultSQLAppendable implements SQLAppendable {
     public SQLAppendable suppressNextTokenSeparator() {
         suppressNextSeparator = true;
         return this;
-    }
-
-    @Override
-    public SQLGenerationContext getContext() {
-        return context;
     }
 
     @Override

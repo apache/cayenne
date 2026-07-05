@@ -21,7 +21,9 @@ package org.apache.cayenne.access.sqlbuilder.sqltree;
 
 import org.apache.cayenne.access.sqlbuilder.NodeTreeVisitor;
 import org.apache.cayenne.access.sqlbuilder.SQLAppendable;
+import org.apache.cayenne.access.sqlbuilder.SQLGenerationContext;
 import org.apache.cayenne.access.sqlbuilder.DefaultSQLAppendable;
+import org.apache.cayenne.dba.QuotingStrategy;
 
 /**
  * @since 4.2
@@ -130,7 +132,7 @@ public abstract class Node {
 
     @Override
     public String toString() {
-        return "Node {" + append(new DefaultSQLAppendable(null)).getSql() + "}";
+        return "Node {" + append(new DefaultSQLAppendable(QuotingStrategy.NONE), null).getSql() + "}";
     }
 
     public NodeType getType() {
@@ -139,7 +141,7 @@ public abstract class Node {
 
     public abstract Node copy();
 
-    public abstract SQLAppendable append(SQLAppendable buffer);
+    public abstract SQLAppendable append(SQLAppendable buffer, SQLGenerationContext context);
 
     public void appendChildrenSeparator(SQLAppendable buffer, int childInd) {
     }

@@ -80,7 +80,9 @@ public abstract class BaseBatchTranslator<T extends BatchQuery> implements Batch
     protected String doTranslate(BatchTranslatorContext<T> context, NodeBuilder nodeBuilder) {
         Node node = context.getAdapter().getSqlTreeProcessor().process(nodeBuilder.build());
 
-        SQLGenerationVisitor visitor = new SQLGenerationVisitor(new DefaultSQLAppendable(context));
+        DefaultSQLAppendable buffer = new DefaultSQLAppendable(
+                context.getAdapter().getQuotingStrategy(context.getRootDbEntity()));
+        SQLGenerationVisitor visitor = new SQLGenerationVisitor(buffer, context);
         node.visit(visitor);
 
         return visitor.getSQLString();

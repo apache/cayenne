@@ -21,6 +21,7 @@ package org.apache.cayenne.access.sqlbuilder.sqltree;
 
 import org.apache.cayenne.access.sqlbuilder.NodeTreeVisitor;
 import org.apache.cayenne.access.sqlbuilder.SQLAppendable;
+import org.apache.cayenne.access.sqlbuilder.SQLGenerationContext;
 
 import java.util.Objects;
 
@@ -51,7 +52,7 @@ public class FunctionNode extends Node {
     }
 
     @Override
-    public SQLAppendable append(SQLAppendable buffer) {
+    public SQLAppendable append(SQLAppendable buffer, SQLGenerationContext context) {
         if(skipContent()) {
             buffer.appendTokenSeparator().append(alias);
         } else {

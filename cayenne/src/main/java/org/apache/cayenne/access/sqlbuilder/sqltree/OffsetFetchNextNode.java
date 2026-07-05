@@ -20,6 +20,7 @@
 package org.apache.cayenne.access.sqlbuilder.sqltree;
 
 import org.apache.cayenne.access.sqlbuilder.SQLAppendable;
+import org.apache.cayenne.access.sqlbuilder.SQLGenerationContext;
 
 /**
  * @since 4.2
@@ -35,7 +36,7 @@ public class OffsetFetchNextNode extends LimitOffsetNode {
     }
 
     @Override
-    public SQLAppendable append(SQLAppendable buffer) {
+    public SQLAppendable append(SQLAppendable buffer, SQLGenerationContext context) {
         // OFFSET X ROWS FETCH NEXT Y ROWS ONLY
         if(offset > 0) {
             buffer.appendTokenSeparator().append("OFFSET").appendTokenSeparator().append(offset).appendTokenSeparator().append("ROWS");
