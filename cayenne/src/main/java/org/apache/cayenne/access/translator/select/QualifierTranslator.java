@@ -34,6 +34,7 @@ import org.apache.cayenne.access.sqlbuilder.sqltree.EqualNode;
 import org.apache.cayenne.access.sqlbuilder.sqltree.FunctionNode;
 import org.apache.cayenne.access.sqlbuilder.sqltree.InNode;
 import org.apache.cayenne.access.sqlbuilder.sqltree.LikeNode;
+import org.apache.cayenne.access.sqlbuilder.sqltree.NegateNode;
 import org.apache.cayenne.access.sqlbuilder.sqltree.Node;
 import org.apache.cayenne.access.sqlbuilder.sqltree.NotEqualNode;
 import org.apache.cayenne.access.sqlbuilder.sqltree.NotNode;
@@ -241,8 +242,8 @@ class QualifierTranslator implements TraversalHandler {
                     expressionsToSkip.add(node);
                     return new ValueNode(null, false, null, false);
                 }
-                // we need to add minus sign as a prefix, not a separator
-                return new FunctionNode(expToStr(node.getType()), null, false);
+                // the minus sign is a prefix that hugs its operand (-1, not - 1)
+                return new NegateNode();
             case TRUE:
             case FALSE:
             case ASTERISK:

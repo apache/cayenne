@@ -168,11 +168,11 @@ public class QualifierTranslatorTest {
     @Test
     public void translateNegate_NumberScalar() {
         Node node = translate("-1");
-        assertInstanceOf(FunctionNode.class, node);
+        assertInstanceOf(NegateNode.class, node);
 
         SQLGenerationVisitor visitor = new SQLGenerationVisitor(new DefaultSQLAppendable(null), null);
         node.visit(visitor);
-        assertEquals(" - 1", visitor.getSQLString());
+        assertEquals(" -1", visitor.getSQLString());
     }
 
     @Test
@@ -339,9 +339,7 @@ public class QualifierTranslatorTest {
 
         {
             Node op = translate("-2");
-            assertInstanceOf(FunctionNode.class, op);
-            assertEquals("-", ((FunctionNode)op).getFunctionName());
-            assertNull(((FunctionNode) op).getAlias());
+            assertInstanceOf(NegateNode.class, op);
             assertEquals(1, op.getChildrenCount());
         }
 

@@ -116,7 +116,7 @@ public class QualifierTranslatorIT {
         SQLGenerationVisitor visitor = new SQLGenerationVisitor(new DefaultSQLAppendable(null), null);
         node.visit(visitor);
 
-        assertEquals(" cft.NAME = - 1", visitor.getSQLString());
+        assertEquals(" cft.NAME = -1", visitor.getSQLString());
 
     }
 
