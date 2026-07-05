@@ -21,7 +21,7 @@ package org.apache.cayenne.crypto.map;
 import org.apache.cayenne.CayenneRuntimeException;
 import org.apache.cayenne.configuration.DataMapLoader;
 import org.apache.cayenne.di.Inject;
-import org.apache.cayenne.log.SqlLogger;
+import org.apache.cayenne.log.SQLLogger;
 import org.apache.cayenne.map.DataMap;
 import org.apache.cayenne.map.ObjAttribute;
 import org.apache.cayenne.map.ObjEntity;
@@ -41,12 +41,12 @@ public class CryptoDataMapLoader implements DataMapLoader {
 
 	protected final DataMapLoader delegate;
 	protected final ColumnMapper columnMapper;
-	protected final SqlLogger sqlLogger;
+	protected final SQLLogger sqlLogger;
 		
 	public CryptoDataMapLoader(
 			@Inject DataMapLoader delegate, 
 			@Inject ColumnMapper columnMapper, 
-			@Inject SqlLogger sqlLogger) {
+			@Inject SQLLogger sqlLogger) {
 		
 		this.delegate = delegate;
 		this.columnMapper = columnMapper;

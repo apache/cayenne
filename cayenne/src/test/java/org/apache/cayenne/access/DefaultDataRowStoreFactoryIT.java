@@ -43,8 +43,8 @@ import org.apache.cayenne.event.EventManager;
 import org.apache.cayenne.event.MockEventBridge;
 import org.apache.cayenne.event.MockEventBridgeProvider;
 import org.apache.cayenne.event.NoopEventBridgeProvider;
-import org.apache.cayenne.log.SqlLogger;
-import org.apache.cayenne.log.Slf4jSqlLogger;
+import org.apache.cayenne.log.SQLLogger;
+import org.apache.cayenne.log.Slf4jSQLLogger;
 import org.apache.cayenne.runtime.CayenneRuntime;
 import org.apache.cayenne.tx.DefaultTransactionFactory;
 import org.apache.cayenne.tx.DefaultTransactionManager;
@@ -85,7 +85,7 @@ public class DefaultDataRowStoreFactoryIT {
             binder.bind(EventManager.class).toInstance(EVENT_MANAGER);
             binder.bind(TransactionManager.class).to(DefaultTransactionManager.class);
             binder.bind(TransactionFactory.class).to(DefaultTransactionFactory.class);
-            binder.bind(SqlLogger.class).to(Slf4jSqlLogger.class);
+            binder.bind(SQLLogger.class).to(Slf4jSQLLogger.class);
             binder.bind(RuntimeProperties.class).to(DefaultRuntimeProperties.class);
             binder.bind(EventBridge.class).toProvider(NoopEventBridgeProvider.class);
             binder.bind(DataRowStoreFactory.class).to(DefaultDataRowStoreFactory.class);
@@ -111,7 +111,7 @@ public class DefaultDataRowStoreFactoryIT {
             binder.bind(EventManager.class).toInstance(EVENT_MANAGER);
             binder.bind(TransactionManager.class).to(DefaultTransactionManager.class);
             binder.bind(TransactionFactory.class).to(DefaultTransactionFactory.class);
-            binder.bind(SqlLogger.class).to(Slf4jSqlLogger.class);
+            binder.bind(SQLLogger.class).to(Slf4jSQLLogger.class);
             binder.bind(RuntimeProperties.class).to(DefaultRuntimeProperties.class);
             binder.bind(EventBridge.class).toProvider(MockEventBridgeProvider.class);
             binder.bind(DataRowStoreFactory.class).to(DefaultDataRowStoreFactory.class);

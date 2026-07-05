@@ -24,7 +24,7 @@ import org.apache.cayenne.ObjectId;
 import org.apache.cayenne.ResultIterator;
 import org.apache.cayenne.access.translator.TranslatedBatch;
 import org.apache.cayenne.access.translator.TranslatedStatement;
-import org.apache.cayenne.log.SqlLogger;
+import org.apache.cayenne.log.SQLLogger;
 import org.apache.cayenne.query.Query;
 
 import java.sql.Statement;
@@ -35,13 +35,13 @@ import java.util.Map;
 
 /**
  * An {@link OperationObserver} decorator that correlates each executed statement (reported via
- * {@link #nextStatement}) with its results (reported via the {@code next*} callbacks) and drives a {@link SqlLogger}
+ * {@link #nextStatement}) with its results (reported via the {@code next*} callbacks) and drives a {@link SQLLogger}
  * to emit compact, single-line log messages. All callbacks are delegated to the wrapped observer unchanged.
  */
 class LoggingObserver implements OperationObserver {
 
     private final OperationObserver delegate;
-    private final SqlLogger logger;
+    private final SQLLogger logger;
 
     private TranslatedStatement current;
     private boolean headerEmitted;
@@ -52,7 +52,7 @@ class LoggingObserver implements OperationObserver {
     // lazily allocated on the first nextGeneratedRows call, since most statements produce no generated keys
     private List<Map<String, ?>> generatedKeys;
 
-    LoggingObserver(OperationObserver delegate, SqlLogger logger) {
+    LoggingObserver(OperationObserver delegate, SQLLogger logger) {
         this.delegate = delegate;
         this.logger = logger;
     }

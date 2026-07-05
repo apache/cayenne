@@ -33,9 +33,9 @@ import java.util.Map;
 
 /**
  * Renders the parameter bindings of a {@link TranslatedStatement} in the compact {@code bind:[...]} form used by
- * {@link SqlLogger}.
+ * {@link SQLLogger}.
  */
-class SqlBindingRenderer {
+class SQLBindingRenderer {
 
     public static void appendBindings(StringBuilder buffer, TranslatedStatement statement, int batchRowThreshold) {
         switch (statement) {

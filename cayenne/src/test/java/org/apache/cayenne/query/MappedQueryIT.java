@@ -21,7 +21,7 @@ package org.apache.cayenne.query;
 import org.apache.cayenne.DataRow;
 import org.apache.cayenne.QueryResponse;
 import org.apache.cayenne.ResultBatchIterator;
-import org.apache.cayenne.log.NoopSqlLogger;
+import org.apache.cayenne.log.NoopSQLLogger;
 import org.apache.cayenne.test.jdbc.TableHelper;
 import org.apache.cayenne.testdo.testmap.Artist;
 import org.apache.cayenne.testdo.testmap.Painting;
@@ -175,7 +175,7 @@ public class MappedQueryIT {
         // e.g.
         // http://stackoverflow.com/questions/16921942/porting-apache-cayenne-from-oracle-to-postgresql
 
-        BaseTransaction t = new ExternalTransaction(NoopSqlLogger.getInstance());
+        BaseTransaction t = new ExternalTransaction(NoopSQLLogger.getInstance());
         BaseTransaction.bindThreadTransaction(t);
 
         try {

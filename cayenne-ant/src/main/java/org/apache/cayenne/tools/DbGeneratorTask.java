@@ -25,7 +25,7 @@ import org.apache.cayenne.dba.DbAdapter;
 import org.apache.cayenne.dbsync.DbSyncModule;
 import org.apache.cayenne.di.DIBootstrap;
 import org.apache.cayenne.di.Injector;
-import org.apache.cayenne.log.NoopSqlLogger;
+import org.apache.cayenne.log.NoopSQLLogger;
 import org.apache.cayenne.map.DataMap;
 import org.apache.cayenne.map.DbEntity;
 import org.apache.cayenne.dbsync.reverse.configuration.ToolsModule;
@@ -84,7 +84,7 @@ public class DbGeneratorTask extends CayenneTask {
 			DbAdapter adapter = getAdapter(injector, dataSource);
 
 			DbGenerator generator = new DbGenerator(adapter, dataMap, Collections.<DbEntity> emptyList(), null,
-					NoopSqlLogger.getInstance());
+					NoopSQLLogger.getInstance());
 			generator.setShouldCreateFKConstraints(createFK);
 			generator.setShouldCreatePKSupport(createPK);
 			generator.setShouldCreateTables(createTables);

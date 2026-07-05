@@ -38,7 +38,7 @@ import org.apache.cayenne.access.types.ValueObjectTypeRegistry;
 import org.apache.cayenne.configuration.Constants;
 import org.apache.cayenne.configuration.RuntimeProperties;
 import org.apache.cayenne.di.Inject;
-import org.apache.cayenne.log.SqlLogger;
+import org.apache.cayenne.log.SQLLogger;
 import org.apache.cayenne.map.DataMap;
 import org.apache.cayenne.map.DbAttribute;
 import org.apache.cayenne.map.DbEntity;
@@ -84,7 +84,7 @@ public class JdbcAdapter implements DbAdapter {
 
     @Inject
     @Deprecated(since = "5.0", forRemoval = true)
-    protected SqlLogger logger;
+    protected SQLLogger logger;
 
     /**
      * Creates new JdbcAdapter with a set of default parameters.
@@ -124,7 +124,7 @@ public class JdbcAdapter implements DbAdapter {
      * @deprecated logger should be taken from the DataNode
      */
     @Deprecated(since = "5.0", forRemoval = true)
-    public SqlLogger getSqlLogger() {
+    public SQLLogger getSQLLogger() {
         return this.logger;
     }
 

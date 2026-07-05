@@ -28,8 +28,8 @@ import org.apache.cayenne.access.translator.ProcedureTranslator;
 import org.apache.cayenne.access.translator.SQLTemplateTranslator;
 import org.apache.cayenne.access.translator.SelectTranslator;
 import org.apache.cayenne.dba.DbAdapter;
-import org.apache.cayenne.log.NoopSqlLogger;
-import org.apache.cayenne.log.SqlLogger;
+import org.apache.cayenne.log.NoopSQLLogger;
+import org.apache.cayenne.log.SQLLogger;
 import org.apache.cayenne.map.DataMap;
 import org.apache.cayenne.map.EntityResolver;
 import org.apache.cayenne.query.DeleteBatchQuery;
@@ -65,7 +65,7 @@ public class DataNode {
     protected Map<String, DataMap> dataMaps;
 
     private DataSource dataSource;
-    private SqlLogger sqlLogger;
+    private SQLLogger sqlLogger;
     private RowReaderFactory rowReaderFactory;
     private BatchTranslator<InsertBatchQuery> insertBatchTranslator;
     private BatchTranslator<UpdateBatchQuery> updateBatchTranslator;
@@ -91,7 +91,7 @@ public class DataNode {
         this.dataMaps = new HashMap<>();
 
         // make sure logger is not null
-        this.sqlLogger = NoopSqlLogger.getInstance();
+        this.sqlLogger = NoopSQLLogger.getInstance();
     }
 
     /**
@@ -111,14 +111,14 @@ public class DataNode {
     /**
      * @since 3.1
      */
-    public SqlLogger getSqlLogger() {
+    public SQLLogger getSqlLogger() {
         return sqlLogger;
     }
 
     /**
      * @since 3.1
      */
-    public void setSqlLogger(SqlLogger logger) {
+    public void setSQLLogger(SQLLogger logger) {
         this.sqlLogger = logger;
     }
 

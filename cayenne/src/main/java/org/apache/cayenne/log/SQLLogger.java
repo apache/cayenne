@@ -29,7 +29,7 @@ import java.util.Map;
  *
  * @since 5.0
  */
-public interface SqlLogger {
+public interface SQLLogger {
 
     /**
      * Returns true if statement logging is enabled. Callers should skip the work of assembling results when this

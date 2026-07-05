@@ -19,7 +19,7 @@
 
 package org.apache.cayenne.tx;
 
-import org.apache.cayenne.log.SqlLogger;
+import org.apache.cayenne.log.SQLLogger;
 
 /**
  * Represents a container-managed transaction.
@@ -28,16 +28,16 @@ import org.apache.cayenne.log.SqlLogger;
  */
 public class ExternalTransaction extends BaseTransaction {
 
-    protected SqlLogger sqlLogger;
+    protected SQLLogger sqlLogger;
 
-    public ExternalTransaction(SqlLogger sqlLogger) {
+    public ExternalTransaction(SQLLogger sqlLogger) {
         this(sqlLogger, TransactionDescriptor.defaultDescriptor());
     }
 
     /**
      * @since 4.1
      */
-    public ExternalTransaction(SqlLogger sqlLogger, TransactionDescriptor descriptor) {
+    public ExternalTransaction(SQLLogger sqlLogger, TransactionDescriptor descriptor) {
         super(descriptor);
         this.sqlLogger = sqlLogger;
     }

@@ -30,18 +30,18 @@ import java.util.List;
 import java.util.Map;
 
 /**
- * A {@link SqlLogger} that emits compact, single-line messages through slf4j-api under the fixed logger name
+ * A {@link SQLLogger} that emits compact, single-line messages through slf4j-api under the fixed logger name
  * {@code cayenne-sql}. Statement lines are logged at INFO; transaction boundaries at DEBUG.
  *
  * @since 5.0
  */
-public class Slf4jSqlLogger implements SqlLogger {
+public class Slf4jSQLLogger implements SQLLogger {
 
     private static final Logger LOGGER = LoggerFactory.getLogger("cayenne-sql");
 
     protected final int batchRowThreshold;
 
-    public Slf4jSqlLogger(@Inject RuntimeProperties runtimeProperties) {
+    public Slf4jSQLLogger(@Inject RuntimeProperties runtimeProperties) {
         this.batchRowThreshold = runtimeProperties.getInt(Constants.JDBC_LOG_BATCH_ROW_THRESHOLD_PROPERTY, 20);
     }
 
@@ -69,7 +69,7 @@ public class Slf4jSqlLogger implements SqlLogger {
             if (generatedKeys != null && !generatedKeys.isEmpty()) {
                 buffer.append(" generated:");
                 for (Map<String, ?> keys : generatedKeys) {
-                    SqlBindingRenderer.appendGeneratedKeys(buffer, keys);
+                    SQLBindingRenderer.appendGeneratedKeys(buffer, keys);
                 }
             }
             buffer.append(" time_ms:").append(durationMillis);
@@ -101,7 +101,7 @@ public class Slf4jSqlLogger implements SqlLogger {
         buffer.append(statement.sql()).append(" |");
         int lengthWithoutBindings = buffer.length();
         buffer.append(' ');
-        SqlBindingRenderer.appendBindings(buffer, statement, batchRowThreshold);
+        SQLBindingRenderer.appendBindings(buffer, statement, batchRowThreshold);
         if (buffer.length() == lengthWithoutBindings + 1) {
             // no bindings were rendered - drop the separator space so the next block follows "|" directly
             buffer.setLength(lengthWithoutBindings);

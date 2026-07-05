@@ -19,7 +19,7 @@
 
 package org.apache.cayenne.tx;
 
-import org.apache.cayenne.log.NoopSqlLogger;
+import org.apache.cayenne.log.NoopSQLLogger;
 import org.apache.cayenne.testdo.testmap.Artist;
 import org.apache.cayenne.unit.CayenneProjects;
 import org.apache.cayenne.unit.CayenneTestsEnv;
@@ -44,7 +44,7 @@ public class UserTransactionIT {
         Artist a = env.context().newObject(Artist.class);
         a.setArtistName("AAA");
 
-        TxWrapper t = new TxWrapper(new CayenneTransaction(NoopSqlLogger.getInstance()));
+        TxWrapper t = new TxWrapper(new CayenneTransaction(NoopSQLLogger.getInstance()));
         BaseTransaction.bindThreadTransaction(t);
 
         try {

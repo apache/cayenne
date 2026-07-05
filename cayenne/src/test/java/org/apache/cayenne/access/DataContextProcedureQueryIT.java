@@ -21,7 +21,7 @@ package org.apache.cayenne.access;
 
 import org.apache.cayenne.DataRow;
 import org.apache.cayenne.dba.TypesMapping;
-import org.apache.cayenne.log.NoopSqlLogger;
+import org.apache.cayenne.log.NoopSQLLogger;
 import org.apache.cayenne.map.Procedure;
 import org.apache.cayenne.query.CapsStrategy;
 import org.apache.cayenne.query.ObjectSelect;
@@ -70,7 +70,7 @@ public class DataContextProcedureQueryIT  {
         // since stored procedure commits its stuff, we must use an explicit
         // non-committing transaction
 
-        BaseTransaction t = new ExternalTransaction(NoopSqlLogger.getInstance());
+        BaseTransaction t = new ExternalTransaction(NoopSQLLogger.getInstance());
         BaseTransaction.bindThreadTransaction(t);
 
         try {
@@ -106,7 +106,7 @@ public class DataContextProcedureQueryIT  {
         // since stored procedure commits its stuff, we must use an explicit
         // non-committing transaction
 
-        BaseTransaction t = new ExternalTransaction(NoopSqlLogger.getInstance());
+        BaseTransaction t = new ExternalTransaction(NoopSQLLogger.getInstance());
         BaseTransaction.bindThreadTransaction(t);
 
         try {
@@ -381,7 +381,7 @@ public class DataContextProcedureQueryIT  {
         // e.g.
         // http://stackoverflow.com/questions/16921942/porting-apache-cayenne-from-oracle-to-postgresql
 
-        BaseTransaction t = new ExternalTransaction(NoopSqlLogger.getInstance());
+        BaseTransaction t = new ExternalTransaction(NoopSQLLogger.getInstance());
         BaseTransaction.bindThreadTransaction(t);
 
         try {

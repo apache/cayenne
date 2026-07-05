@@ -24,7 +24,7 @@ import org.apache.cayenne.dbsync.merge.context.MergeDirection;
 import org.apache.cayenne.dbsync.merge.context.MergerContext;
 import org.apache.cayenne.dbsync.merge.token.AbstractMergerToken;
 import org.apache.cayenne.dbsync.merge.token.MergerToken;
-import org.apache.cayenne.log.SqlLogger;
+import org.apache.cayenne.log.SQLLogger;
 import org.apache.cayenne.map.DbAttribute;
 import org.apache.cayenne.map.DbEntity;
 import org.apache.cayenne.validation.SimpleValidationFailure;
@@ -52,7 +52,7 @@ public abstract class AbstractToDbToken extends AbstractMergerToken {
 	}
 
 	void executeSql(MergerContext mergerContext, String sql) {
-		SqlLogger logger = mergerContext.getDataNode().getSqlLogger();
+		SQLLogger logger = mergerContext.getDataNode().getSqlLogger();
 		logger.logMessage(sql);
 
 		try (Connection conn = mergerContext.getDataNode().getDataSource().getConnection()) {

@@ -29,7 +29,7 @@ import org.apache.cayenne.dbsync.DbSyncModule;
 import org.apache.cayenne.di.ClassLoaderManager;
 import org.apache.cayenne.di.DIBootstrap;
 import org.apache.cayenne.di.Injector;
-import org.apache.cayenne.log.NoopSqlLogger;
+import org.apache.cayenne.log.NoopSQLLogger;
 import org.apache.cayenne.map.DataMap;
 import org.apache.cayenne.dbsync.reverse.configuration.ToolsModule;
 import org.apache.cayenne.resource.URLResource;
@@ -146,7 +146,7 @@ public class DbGeneratorMojo extends AbstractMojo {
 
             // Load the data map and run the db generator.
             DataMap dataMap = loadDataMap(injector);
-            DbGenerator generator = new DbGenerator(dbAdapter, dataMap, NoopSqlLogger.getInstance());
+            DbGenerator generator = new DbGenerator(dbAdapter, dataMap, NoopSQLLogger.getInstance());
             generator.setShouldCreateFKConstraints(createFK);
             generator.setShouldCreatePKSupport(createPK);
             generator.setShouldCreateTables(createTables);

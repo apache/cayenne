@@ -32,7 +32,7 @@ import org.apache.cayenne.query.UpdateBatchQuery;
 import org.apache.cayenne.configuration.DataNodeDescriptor;
 import org.apache.cayenne.di.AdhocObjectFactory;
 import org.apache.cayenne.di.Inject;
-import org.apache.cayenne.log.SqlLogger;
+import org.apache.cayenne.log.SQLLogger;
 
 import javax.sql.DataSource;
 
@@ -42,7 +42,7 @@ import javax.sql.DataSource;
 public class DefaultDataNodeFactory implements DataNodeFactory {
 
     @Inject
-    protected SqlLogger sqlLogger;
+    protected SQLLogger sqlLogger;
 
     @Inject
     protected RowReaderFactory rowReaderFactory;
@@ -85,7 +85,7 @@ public class DefaultDataNodeFactory implements DataNodeFactory {
 
         DataNode dataNode = doCreateDataNode(nodeDescriptor.getName());
 
-        dataNode.setSqlLogger(sqlLogger);
+        dataNode.setSQLLogger(sqlLogger);
         dataNode.setRowReaderFactory(rowReaderFactory);
         dataNode.setInsertBatchTranslator(insertBatchTranslator);
         dataNode.setUpdateBatchTranslator(updateBatchTranslator);

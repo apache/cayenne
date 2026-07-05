@@ -122,8 +122,8 @@ import org.apache.cayenne.event.EventBridge;
 import org.apache.cayenne.event.EventManager;
 import org.apache.cayenne.event.EventManagerProvider;
 import org.apache.cayenne.event.NoopEventBridgeProvider;
-import org.apache.cayenne.log.SqlLogger;
-import org.apache.cayenne.log.Slf4jSqlLogger;
+import org.apache.cayenne.log.SQLLogger;
+import org.apache.cayenne.log.Slf4jSQLLogger;
 import org.apache.cayenne.map.EntitySorter;
 import org.apache.cayenne.reflect.generic.DefaultValueComparisonStrategyFactory;
 import org.apache.cayenne.reflect.generic.ValueComparisonStrategyFactory;
@@ -422,7 +422,7 @@ public class CoreModule implements Module {
         binder.bind(ValueObjectTypeRegistry.class).to(DefaultValueObjectTypeRegistry.class);
         binder.bind(ValueComparisonStrategyFactory.class).to(DefaultValueComparisonStrategyFactory.class);
 
-        binder.bind(SqlLogger.class).to(Slf4jSqlLogger.class);
+        binder.bind(SQLLogger.class).to(Slf4jSQLLogger.class);
         binder.bind(ClassLoaderManager.class).to(DefaultClassLoaderManager.class);
         binder.bind(AdhocObjectFactory.class).to(DefaultAdhocObjectFactory.class);
         binder.bind(PkGeneratorFactoryProvider.class).to(PkGeneratorFactoryProvider.class);

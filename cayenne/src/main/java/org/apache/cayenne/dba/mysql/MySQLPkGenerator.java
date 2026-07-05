@@ -23,7 +23,7 @@ import org.apache.cayenne.CayenneRuntimeException;
 import org.apache.cayenne.access.DataNode;
 import org.apache.cayenne.dba.JdbcAdapter;
 import org.apache.cayenne.dba.JdbcPkGenerator;
-import org.apache.cayenne.log.SqlLogger;
+import org.apache.cayenne.log.SQLLogger;
 import org.apache.cayenne.map.DbEntity;
 import org.apache.cayenne.tx.BaseTransaction;
 import org.apache.cayenne.tx.Transaction;
@@ -149,7 +149,7 @@ public class MySQLPkGenerator extends JdbcPkGenerator {
     /**
      * @since 3.0
      */
-    protected long getLongPrimaryKey(SqlLogger logger, Statement statement, String entityName) throws SQLException {
+    protected long getLongPrimaryKey(SQLLogger logger, Statement statement, String entityName) throws SQLException {
         // lock
         String lockString = "LOCK TABLES AUTO_PK_SUPPORT WRITE";
         logger.logMessage(lockString);

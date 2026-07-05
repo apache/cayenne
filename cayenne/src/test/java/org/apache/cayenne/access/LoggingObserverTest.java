@@ -28,7 +28,7 @@ import org.apache.cayenne.access.translator.TranslatedBatch;
 import org.apache.cayenne.access.translator.TranslatedProcedure;
 import org.apache.cayenne.access.translator.TranslatedSelect;
 import org.apache.cayenne.access.translator.TranslatedStatement;
-import org.apache.cayenne.log.SqlLogger;
+import org.apache.cayenne.log.SQLLogger;
 import org.junit.jupiter.api.Test;
 
 import java.util.ArrayList;
@@ -55,7 +55,7 @@ public class LoggingObserverTest {
         return new TranslatedProcedure("call p()", new CSParameter<?>[0]);
     }
 
-    private static class CapturingLogger implements SqlLogger {
+    private static class CapturingLogger implements SQLLogger {
         final List<String> calls = new ArrayList<>();
 
         @Override

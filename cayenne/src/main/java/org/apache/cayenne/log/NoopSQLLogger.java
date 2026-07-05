@@ -24,21 +24,21 @@ import java.util.List;
 import java.util.Map;
 
 /**
- * A no-op {@link SqlLogger}. Used as a null-object default in contexts that run without a configured logger, such as
+ * A no-op {@link SQLLogger}. Used as a null-object default in contexts that run without a configured logger, such as
  * schema-generation tools and tests. It always reports {@link #isEnabled()} as false; to actually disable logging in a
  * running application, set the {@code cayenne-sql} log level instead.
  *
  * @since 5.0
  */
-public class NoopSqlLogger implements SqlLogger {
+public class NoopSQLLogger implements SQLLogger {
 
-    private static final NoopSqlLogger instance = new NoopSqlLogger();
+    private static final NoopSQLLogger instance = new NoopSQLLogger();
 
-    public static NoopSqlLogger getInstance() {
+    public static NoopSQLLogger getInstance() {
         return instance;
     }
 
-    private NoopSqlLogger() {
+    private NoopSQLLogger() {
     }
 
     @Override

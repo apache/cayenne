@@ -20,7 +20,7 @@
 package org.apache.cayenne.access;
 
 import org.apache.cayenne.dba.DbAdapter;
-import org.apache.cayenne.log.NoopSqlLogger;
+import org.apache.cayenne.log.NoopSQLLogger;
 import org.apache.cayenne.map.DataMap;
 import org.apache.cayenne.map.DbEntity;
 import org.apache.cayenne.runtime.CayenneRuntime;
@@ -47,7 +47,7 @@ public class DbGeneratorIT {
         runtime = env.runtime();
         generator = new DbGenerator(adapter, runtime
                 .getDataDomain()
-                .getDataMap("testmap"), NoopSqlLogger.getInstance());
+                .getDataMap("testmap"), NoopSQLLogger.getInstance());
     }
 
     @Test

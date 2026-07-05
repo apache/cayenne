@@ -39,30 +39,30 @@ import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
-public class Slf4jSqlLoggerTest {
+public class Slf4jSQLLoggerTest {
 
-    private Slf4jSqlLogger logger;
+    private Slf4jSQLLogger logger;
 
     @BeforeEach
     public void setUp() {
         RuntimeProperties props = mock(RuntimeProperties.class);
         when(props.getInt(eq(Constants.JDBC_LOG_BATCH_ROW_THRESHOLD_PROPERTY), anyInt())).thenReturn(3);
-        logger = new Slf4jSqlLogger(props);
+        logger = new Slf4jSQLLogger(props);
     }
 
-    private static Slf4jSqlLogger loggerWithThreshold(int threshold) {
+    private static Slf4jSQLLogger loggerWithThreshold(int threshold) {
         RuntimeProperties props = mock(RuntimeProperties.class);
         when(props.getInt(eq(Constants.JDBC_LOG_BATCH_ROW_THRESHOLD_PROPERTY), anyInt())).thenReturn(threshold);
-        return new Slf4jSqlLogger(props);
+        return new Slf4jSQLLogger(props);
     }
 
-    private static String line(Slf4jSqlLogger logger, TranslatedStatement statement, String label, int count) {
+    private static String line(Slf4jSQLLogger logger, TranslatedStatement statement, String label, int count) {
         StringBuilder buffer = new StringBuilder();
         logger.appendStatementLine(buffer, statement, label, count);
         return buffer.toString();
     }
 
-    private static String errorLine(Slf4jSqlLogger logger, TranslatedStatement statement, Throwable error, long durationMillis) {
+    private static String errorLine(Slf4jSQLLogger logger, TranslatedStatement statement, Throwable error, long durationMillis) {
         StringBuilder buffer = new StringBuilder();
         logger.appendErrorLine(buffer, statement, error, durationMillis);
         return buffer.toString();

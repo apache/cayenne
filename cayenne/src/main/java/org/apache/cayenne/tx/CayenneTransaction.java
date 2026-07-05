@@ -20,7 +20,7 @@
 package org.apache.cayenne.tx;
 
 import org.apache.cayenne.CayenneRuntimeException;
-import org.apache.cayenne.log.SqlLogger;
+import org.apache.cayenne.log.SQLLogger;
 
 import java.sql.Connection;
 import java.sql.SQLException;
@@ -32,16 +32,16 @@ import java.sql.SQLException;
  */
 public class CayenneTransaction extends BaseTransaction {
 
-    protected SqlLogger sqlLogger;
+    protected SQLLogger sqlLogger;
 
-    public CayenneTransaction(SqlLogger sqlLogger) {
+    public CayenneTransaction(SQLLogger sqlLogger) {
         this(sqlLogger, TransactionDescriptor.defaultDescriptor());
     }
 
     /**
      * @since 4.1
      */
-    public CayenneTransaction(SqlLogger sqlLogger, TransactionDescriptor descriptor) {
+    public CayenneTransaction(SQLLogger sqlLogger, TransactionDescriptor descriptor) {
         super(descriptor);
         this.sqlLogger = sqlLogger;
     }

@@ -23,7 +23,7 @@ import org.apache.cayenne.ashwood.AshwoodEntitySorter;
 import org.apache.cayenne.dba.DbAdapter;
 import org.apache.cayenne.dba.PkGenerator;
 import org.apache.cayenne.dba.TypesMapping;
-import org.apache.cayenne.log.SqlLogger;
+import org.apache.cayenne.log.SQLLogger;
 import org.apache.cayenne.map.DataMap;
 import org.apache.cayenne.map.DbAttribute;
 import org.apache.cayenne.map.DbEntity;
@@ -64,7 +64,7 @@ public class DbGenerator {
 	// situations
 	protected DataDomain domain;
 
-	protected SqlLogger sqlLogger;
+	protected SQLLogger sqlLogger;
 
 	// stores generated SQL statements
 	protected Map<String, Collection<String>> dropTables;
@@ -91,14 +91,14 @@ public class DbGenerator {
 	/**
 	 * @since 3.1
 	 */
-	public DbGenerator(DbAdapter adapter, DataMap map, SqlLogger logger) {
+	public DbGenerator(DbAdapter adapter, DataMap map, SQLLogger logger) {
 		this(adapter, map, logger, Collections.emptyList());
 	}
 
 	/**
 	 * @since 3.1
 	 */
-	public DbGenerator(DbAdapter adapter, DataMap map, SqlLogger logger, Collection<DbEntity> excludedEntities) {
+	public DbGenerator(DbAdapter adapter, DataMap map, SQLLogger logger, Collection<DbEntity> excludedEntities) {
 		this(adapter, map, excludedEntities, null, logger);
 	}
 
@@ -117,7 +117,7 @@ public class DbGenerator {
 	 * @since 3.1
 	 */
 	public DbGenerator(DbAdapter adapter, DataMap map, Collection<DbEntity> excludedEntities, DataDomain domain,
-			SqlLogger logger) {
+			SQLLogger logger) {
 		// sanity check
 		if (adapter == null) {
 			throw new IllegalArgumentException("Adapter must not be null.");
