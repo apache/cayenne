@@ -37,7 +37,7 @@ public class DataContextBinaryPKIT {
     static final CayenneTestsEnv env = CayenneTestsEnv.forProject(CayenneProjects.BINARY_PK_PROJECT);
 
     @Test
-    public void insertBinaryPK() throws Exception {
+    public void insertBinaryPK() {
         if (!env.testDbAdapter().supportsBinaryPK()) {
             return;
         }
@@ -55,7 +55,7 @@ public class DataContextBinaryPKIT {
     }
 
     @Test
-    public void fetchRelationshipBinaryPK() throws Exception {
+    public void fetchRelationshipBinaryPK() {
         if (!env.testDbAdapter().supportsBinaryPK()) {
             return;
         }
