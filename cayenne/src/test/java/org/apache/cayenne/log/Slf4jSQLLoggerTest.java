@@ -144,6 +144,21 @@ public class Slf4jSQLLoggerTest {
     }
 
     @Test
+    public void batchLineRendersByteArrayAsHex() {
+        PSBatchParameter binId = new PSBatchParameter(
+                new Object[]{new byte[]{1, 2, (byte) 0xAB}}, 1, Types.BINARY, 0, new DbAttribute("BIN_ID"));
+        PSBatchParameter name = new PSBatchParameter(
+                new Object[]{"master1"}, 2, Types.VARCHAR, 0, new DbAttribute("NAME"));
+
+        TranslatedBatch batch = new TranslatedBatch(
+                "INSERT INTO BINARY_PK_TEST1(BIN_ID, NAME) VALUES(?, ?)", new PSBatchParameter[]{binId, name});
+
+        assertEquals(
+                "INSERT INTO BINARY_PK_TEST1(BIN_ID, NAME) VALUES(?, ?) | bind:[BIN_ID:<0102AB>,NAME:'master1'] updated:1",
+                line(logger, batch, "updated:", 1));
+    }
+
+    @Test
     public void batchLineShowsAllRowsBelowThreshold() {
         PSBatchParameter id = new PSBatchParameter(
                 new Object[]{3, 2}, 1, Types.INTEGER, 0, new DbAttribute("id"));
