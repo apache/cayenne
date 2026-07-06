@@ -31,7 +31,7 @@ import java.util.Map;
 
 /**
  * A {@link SQLLogger} that emits compact, single-line messages through slf4j-api under the fixed logger name
- * {@code cayenne-sql}. Statement lines are logged at INFO; transaction boundaries at DEBUG.
+ * {@code cayenne-sql}.
  *
  * @since 5.0
  */
@@ -124,17 +124,17 @@ public class Slf4jSQLLogger implements SQLLogger {
 
     @Override
     public void logTransactionStart() {
-        LOGGER.debug("tx started");
+        LOGGER.info("tx started");
     }
 
     @Override
     public void logTransactionCommit() {
-        LOGGER.debug("tx committed");
+        LOGGER.info("tx committed");
     }
 
     @Override
     public void logTransactionRollback() {
-        LOGGER.debug("tx rolled back");
+        LOGGER.info("tx rolled back");
     }
 
     @Override
