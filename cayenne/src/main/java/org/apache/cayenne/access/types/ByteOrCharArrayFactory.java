@@ -18,9 +18,7 @@
  ****************************************************************/
 package org.apache.cayenne.access.types;
 
-import org.apache.cayenne.util.IDUtil;
-
-import java.lang.reflect.Array;
+import org.apache.cayenne.util.ArrayUtil;
 
 /**
  * A factory that dynamically creates ExtendedTypes for Character, Character[], Byte[] and
@@ -119,24 +117,7 @@ class ByteOrCharArrayFactory implements ExtendedTypeFactory {
             }
 
             StringBuilder buffer = new StringBuilder();
-            buffer.append("<");
-
-            int len = Array.getLength(value);
-            boolean trimming = false;
-            if (len > TRIM_VALUES_THRESHOLD) {
-                len = TRIM_VALUES_THRESHOLD;
-                trimming = true;
-            }
-
-            for (int i = 0; i < len; i++) {
-                buffer.append(Array.get(value, i));
-            }
-
-            if (trimming) {
-                buffer.append("...");
-            }
-
-            buffer.append('>');
+            ArrayUtil.appendTruncated(buffer, value);
             return buffer.toString();
         }
     }
@@ -187,24 +168,7 @@ class ByteOrCharArrayFactory implements ExtendedTypeFactory {
             }
 
             StringBuilder buffer = new StringBuilder();
-            buffer.append("<");
-
-            int len = Array.getLength(value);
-            boolean trimming = false;
-            if (len > TRIM_VALUES_THRESHOLD) {
-                len = TRIM_VALUES_THRESHOLD;
-                trimming = true;
-            }
-
-            for (int i = 0; i < len; i++) {
-                buffer.append(Array.get(value, i));
-            }
-
-            if (trimming) {
-                buffer.append("...");
-            }
-
-            buffer.append('>');
+            ArrayUtil.appendTruncated(buffer, value);
             return buffer.toString();
         }
     }
@@ -255,24 +219,7 @@ class ByteOrCharArrayFactory implements ExtendedTypeFactory {
             }
 
             StringBuilder buffer = new StringBuilder();
-            buffer.append("<");
-
-            int len = value.length;
-            boolean trimming = false;
-            if (len > TRIM_VALUES_THRESHOLD) {
-                len = TRIM_VALUES_THRESHOLD;
-                trimming = true;
-            }
-
-            for (int i = 0; i < len; i++) {
-                IDUtil.appendFormattedByte(buffer, value[i]);
-            }
-
-            if (trimming) {
-                buffer.append("...");
-            }
-
-            buffer.append('>');
+            ArrayUtil.appendTruncated(buffer, value);
             return buffer.toString();
         }
     }

@@ -27,7 +27,7 @@ import org.apache.cayenne.access.translator.TranslatedProcedure;
 import org.apache.cayenne.access.translator.TranslatedSQL;
 import org.apache.cayenne.access.translator.TranslatedSelect;
 import org.apache.cayenne.access.translator.TranslatedStatement;
-import org.apache.cayenne.access.types.ByteArrayType;
+import org.apache.cayenne.util.ArrayUtil;
 import org.apache.cayenne.access.types.ExtendedType;
 
 import java.util.Map;
@@ -171,7 +171,7 @@ class SQLBindingRenderer {
         }
         if (value instanceof byte[] bytes) {
             StringBuilder buffer = new StringBuilder();
-            ByteArrayType.logBytes(buffer, bytes);
+            ArrayUtil.appendTruncated(buffer, bytes);
             return buffer.toString();
         }
         return "'" + value + "'";

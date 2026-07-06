@@ -154,7 +154,7 @@ public class Slf4jSQLLoggerTest {
                 "INSERT INTO BINARY_PK_TEST1(BIN_ID, NAME) VALUES(?, ?)", new PSBatchParameter[]{binId, name});
 
         assertEquals(
-                "INSERT INTO BINARY_PK_TEST1(BIN_ID, NAME) VALUES(?, ?) | bind:[BIN_ID:<0102AB>,NAME:'master1'] updated:1",
+                "INSERT INTO BINARY_PK_TEST1(BIN_ID, NAME) VALUES(?, ?) | bind:[BIN_ID:0102AB,NAME:'master1'] updated:1",
                 line(logger, batch, "updated:", 1));
     }
 
