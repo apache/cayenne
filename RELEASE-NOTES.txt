@@ -19,7 +19,7 @@ CAY-2956 Get rid of a dedicated adapter for Oracle 8
 CAY-2957 Get rid of adapter for legacy HSQLDB <= 1.8
 CAY-2962 Allow unconstrained VARCHAR
 CAY-2963 Replace TypesHandler / types.xml with hardcoded map
-CAY-2969 Extender API for "soft" delete 
+CAY-2969 Extender API for "soft" delete
 CAY-2970 Tighten deferred value resolution contract on commit
 CAY-2971 Remove extra spaces within SQL parenthesis
 CAY-2972 Fewer parentheses in generated SQL
@@ -28,7 +28,7 @@ CAY-2975 Mnemonic table aliases in generated SQL
 
 Bug Fixes:
 
-CAY-2892 Modeler: Exception when deleting a callback 
+CAY-2892 Modeler: Exception when deleting a callback
 CAY-2958 Empty join is saved
 CAY-2959 Modeler: DbRelationship dialog "Cancel" doesn't cancel
 CAY-2960 Undoing renamed relationship change throws
@@ -38,6 +38,7 @@ CAY-2965 MCP Cgen should not fail on an absent "<cgen>" tag
 CAY-2966 "comment" field is lost when upgrading from v10 to v12
 CAY-2967 SQLTemplate/SQLSelect broken pagination
 CAY-2973 Exception trying to copy/paste a callback
+CAY-2968 Vertical Inheritance: INSERT instead of UPDATE after updating flattened attribute
 
 ----------------------------------
 Release: 5.0-M2
