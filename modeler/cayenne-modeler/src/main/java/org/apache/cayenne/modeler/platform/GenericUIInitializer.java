@@ -16,12 +16,10 @@
  *  specific language governing permissions and limitations
  *  under the License.
  ****************************************************************/
-package org.apache.cayenne.modeler.platform.generic;
+package org.apache.cayenne.modeler.platform;
 
 import com.formdev.flatlaf.FlatLightLaf;
 import com.jgoodies.forms.util.LayoutStyle;
-import org.apache.cayenne.modeler.platform.FlatLafLayoutStyle;
-import org.apache.cayenne.modeler.platform.UIInitializer;
 import org.apache.cayenne.modeler.toolkit.icon.IconFactory;
 
 import javax.swing.*;
@@ -37,33 +35,35 @@ public class GenericUIInitializer implements UIInitializer {
         overrideUIDefaults();
     }
 
-    private void overrideUIDefaults() {
-        Color greyHighlight = new Color(0xCBCBCB);
+    protected void overrideUIDefaults() {
+        Color darkGrey = new Color(203, 203, 203);
 
-        UIManager.put("Tree.expandedIcon", IconFactory.buildIcon("icon-arrow-open.png"));
-        UIManager.put("Tree.collapsedIcon", IconFactory.buildIcon("icon-arrow-closed.png"));
-        UIManager.put("Tree.paintLines", Boolean.FALSE);
-        UIManager.put("Tree.selectionForeground", Color.BLACK);
-        UIManager.put("Tree.selectionBackground", greyHighlight);
-        UIManager.put("Tree.selectionBorderColor", UIManager.get("Tree.selectionBackground"));
-        UIManager.put("Table.selectionForeground", Color.BLACK);
-        UIManager.put("Table.selectionBackground", greyHighlight);
-        UIManager.put("Table.focusCellHighlightBorder", BorderFactory.createEmptyBorder());
-        UIManager.put("ScrollPane.border", BorderFactory.createEmptyBorder());
-        UIManager.put("Table.scrollPaneBorder", BorderFactory.createEmptyBorder());
-        UIManager.put("SplitPane.border", BorderFactory.createEmptyBorder());
-        UIManager.put("ToolBar.border", BorderFactory.createEmptyBorder(1, 1, 1, 1));
         UIManager.put("CheckBoxHeader.border", BorderFactory.createEmptyBorder(0, 15, 0, 0));
-        UIManager.put("MenuItem.selectionBackground", greyHighlight);
-        UIManager.put("CheckBoxMenuItem.selectionBackground", greyHighlight);
-        UIManager.put("RadioButtonMenuItem.selectionBackground", greyHighlight);
-        UIManager.put("MenuItem.selectionForeground", Color.BLACK);
+        UIManager.put("CheckBoxMenuItem.selectionBackground", darkGrey);
         UIManager.put("CheckBoxMenuItem.selectionForeground", Color.BLACK);
+        UIManager.put("MenuItem.selectionBackground", darkGrey);
+        UIManager.put("MenuItem.selectionForeground", Color.BLACK);
+        UIManager.put("RadioButtonMenuItem.selectionBackground", darkGrey);
         UIManager.put("RadioButtonMenuItem.selectionForeground", Color.BLACK);
-        UIManager.put("ToolBar.buttonMargin", new Insets(4, 8, 4, 8));
+        UIManager.put("ScrollPane.border", BorderFactory.createEmptyBorder());
+        UIManager.put("Separator.background", darkGrey);
+        UIManager.put("Separator.foreground", darkGrey);
+        UIManager.put("Separator.opaque", Boolean.TRUE);
+        UIManager.put("SplitPane.background", darkGrey);
+        UIManager.put("SplitPane.border", BorderFactory.createEmptyBorder());
+        UIManager.put("Table.focusCellHighlightBorder", BorderFactory.createEmptyBorder());
+        UIManager.put("Table.scrollPaneBorder", BorderFactory.createEmptyBorder());
+        UIManager.put("Table.selectionBackground", darkGrey);
+        UIManager.put("Table.selectionForeground", Color.BLACK);
         UIManager.put("Table.showHorizontalLines", Boolean.TRUE);
         UIManager.put("Table.showVerticalLines", Boolean.TRUE);
-        // this one is custom for MainToolBar
-        UIManager.put("MainToolBar.border", BorderFactory.createLineBorder(Color.GRAY));
+        UIManager.put("ToolBar.buttonMargin", new Insets(4, 8, 4, 8));
+        UIManager.put("Tree.collapsedIcon", IconFactory.buildIcon("icon-arrow-closed.png"));
+        UIManager.put("Tree.drawDashedFocusIndicator", Boolean.FALSE);
+        UIManager.put("Tree.expandedIcon", IconFactory.buildIcon("icon-arrow-open.png"));
+        UIManager.put("Tree.paintLines", Boolean.FALSE);
+        UIManager.put("Tree.selectionBackground", darkGrey);
+        UIManager.put("Tree.selectionBorderColor", UIManager.get("Tree.selectionBackground"));
+        UIManager.put("Tree.selectionForeground", Color.BLACK);
     }
 }
