@@ -29,4 +29,7 @@ GUI TOOLS
 
 * CayenneModeler includes JGraph library developed by JGraph Ltd
 (http://www.jgraph.com)
+
+* CayenneModeler includes FlatLaf library developed by FormDev Software GmbH.
+(https://www.formdev.com/flatlaf/)
 #end
