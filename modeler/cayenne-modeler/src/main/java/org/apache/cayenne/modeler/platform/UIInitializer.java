@@ -18,7 +18,6 @@
  ****************************************************************/
 package org.apache.cayenne.modeler.platform;
 
-import com.jgoodies.forms.util.LayoutStyle;
 import org.apache.cayenne.modeler.Application;
 import org.apache.cayenne.modeler.toolkit.filechooser.CMFileChooserFactory;
 import org.apache.cayenne.modeler.toolkit.filechooser.SwingFileChooser;
