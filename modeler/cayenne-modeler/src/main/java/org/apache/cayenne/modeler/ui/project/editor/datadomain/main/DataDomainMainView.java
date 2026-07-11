@@ -76,7 +76,7 @@ public class DataDomainMainView extends ProjectPanel implements DomainDisplayLis
         builder.setDefaultDialogBorder();
 
         builder.addSeparator("DataDomain Configuration", cc.xywh(1, 1, 7, 1));
-        builder.addLabel("DataDomain Name:", cc.xy(1, 3));
+        builder.addLabel("Name:", cc.xy(1, 3));
         builder.add(name, cc.xywh(3, 3, 5, 1));
 
         builder.addLabel("Object Validation:", cc.xy(1, 5));

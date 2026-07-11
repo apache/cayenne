@@ -27,30 +27,24 @@ import org.apache.cayenne.map.DbEntity;
 import org.apache.cayenne.modeler.event.display.DbEntityDisplayEvent;
 import org.apache.cayenne.modeler.event.display.DbEntityDisplayListener;
 import org.apache.cayenne.modeler.event.model.DbEntityEvent;
+import org.apache.cayenne.modeler.project.ProjectSession;
 import org.apache.cayenne.modeler.service.action.GlobalActions;
-import org.apache.cayenne.modeler.toolkit.text.CMUndoableTextField;
 import org.apache.cayenne.modeler.toolkit.ProjectPanel;
+import org.apache.cayenne.modeler.toolkit.text.CMUndoableTextField;
 import org.apache.cayenne.modeler.ui.action.CreateAttributeAction;
 import org.apache.cayenne.modeler.ui.action.CreateObjEntityFromDbAction;
 import org.apache.cayenne.modeler.ui.action.CreateRelationshipAction;
 import org.apache.cayenne.modeler.ui.action.DbEntityCounterpartAction;
 import org.apache.cayenne.modeler.ui.action.DbEntitySyncAction;
-import org.apache.cayenne.modeler.project.ProjectSession;
 import org.apache.cayenne.modeler.ui.project.editor.ExpressionConvertor;
 import org.apache.cayenne.modeler.ui.project.editor.query.ExistingSelectionProcessor;
 import org.apache.cayenne.project.extension.info.ObjectInfo;
-import java.util.Objects;
 import org.apache.cayenne.validation.ValidationException;
 
-import javax.swing.BorderFactory;
-import javax.swing.DefaultComboBoxModel;
-import javax.swing.JComboBox;
-import javax.swing.JLabel;
-import javax.swing.JPanel;
-import javax.swing.JToolBar;
-import java.awt.BorderLayout;
-import java.awt.CardLayout;
+import javax.swing.*;
+import java.awt.*;
 import java.util.EventObject;
+import java.util.Objects;
 
 public class DbEntityMainView extends ProjectPanel implements ExistingSelectionProcessor, DbEntityDisplayListener {
 
@@ -113,7 +107,7 @@ public class DbEntityMainView extends ProjectPanel implements ExistingSelectionP
         DefaultFormBuilder builder = new DefaultFormBuilder(layout);
         builder.setDefaultDialogBorder();
         builder.appendSeparator("DbEntity Configuration");
-        builder.append("DbEntity Name:", name);
+        builder.append("Name:", name);
         builder.append(catalogLabel, catalog);
         builder.append(schemaLabel, schema);
         builder.append("Qualifier:", qualifier);

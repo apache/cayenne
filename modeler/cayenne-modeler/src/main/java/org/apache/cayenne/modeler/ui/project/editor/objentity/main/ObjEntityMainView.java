@@ -19,7 +19,6 @@
 
 package org.apache.cayenne.modeler.ui.project.editor.objentity.main;
 
-import org.apache.cayenne.modeler.event.model.ObjEntityEvent;
 import com.jgoodies.forms.builder.DefaultFormBuilder;
 import com.jgoodies.forms.layout.FormLayout;
 import org.apache.cayenne.configuration.DataChannelDescriptor;
@@ -28,28 +27,28 @@ import org.apache.cayenne.map.DbEntity;
 import org.apache.cayenne.map.EntityResolver;
 import org.apache.cayenne.map.ObjAttribute;
 import org.apache.cayenne.map.ObjEntity;
-import org.apache.cayenne.modeler.service.action.GlobalActions;
-import org.apache.cayenne.modeler.ui.action.CreateAttributeAction;
-import org.apache.cayenne.modeler.ui.action.CreateRelationshipAction;
-import org.apache.cayenne.modeler.ui.action.ObjEntityCounterpartAction;
-import org.apache.cayenne.modeler.ui.action.ObjEntitySyncAction;
 import org.apache.cayenne.modeler.event.display.DbEntityDisplayEvent;
 import org.apache.cayenne.modeler.event.display.ObjEntityDisplayEvent;
 import org.apache.cayenne.modeler.event.display.ObjEntityDisplayListener;
+import org.apache.cayenne.modeler.event.model.ObjEntityEvent;
+import org.apache.cayenne.modeler.project.ProjectComparators;
+import org.apache.cayenne.modeler.project.ProjectSession;
+import org.apache.cayenne.modeler.service.action.GlobalActions;
+import org.apache.cayenne.modeler.toolkit.ProjectPanel;
 import org.apache.cayenne.modeler.toolkit.Renderers;
 import org.apache.cayenne.modeler.toolkit.checkbox.CMCheckBox;
 import org.apache.cayenne.modeler.toolkit.combobox.AutoCompletion;
 import org.apache.cayenne.modeler.toolkit.combobox.CMComboBox;
 import org.apache.cayenne.modeler.toolkit.text.CMUndoableTextField;
-import org.apache.cayenne.modeler.toolkit.ProjectPanel;
-import org.apache.cayenne.modeler.project.ProjectSession;
+import org.apache.cayenne.modeler.ui.action.CreateAttributeAction;
+import org.apache.cayenne.modeler.ui.action.CreateRelationshipAction;
+import org.apache.cayenne.modeler.ui.action.ObjEntityCounterpartAction;
+import org.apache.cayenne.modeler.ui.action.ObjEntitySyncAction;
 import org.apache.cayenne.modeler.ui.project.editor.ExpressionConvertor;
 import org.apache.cayenne.modeler.ui.project.editor.objentity.classname.ClassNameUpdaterController;
 import org.apache.cayenne.modeler.ui.project.editor.objentity.duplicates.DuplicatedAttributesDialog;
 import org.apache.cayenne.modeler.ui.project.editor.query.ExistingSelectionProcessor;
-import org.apache.cayenne.modeler.project.ProjectComparators;
 import org.apache.cayenne.project.extension.info.ObjectInfo;
-import java.util.Objects;
 import org.apache.cayenne.validation.ValidationException;
 
 import javax.swing.*;
@@ -58,6 +57,7 @@ import java.util.Arrays;
 import java.util.EventObject;
 import java.util.LinkedList;
 import java.util.List;
+import java.util.Objects;
 import java.util.stream.Collectors;
 
 public class ObjEntityMainView extends ProjectPanel implements ObjEntityDisplayListener, ExistingSelectionProcessor {
@@ -121,7 +121,7 @@ public class ObjEntityMainView extends ProjectPanel implements ObjEntityDisplayL
         builder.setDefaultDialogBorder();
 
         builder.appendSeparator("ObjEntity Configuration");
-        builder.append("ObjEntity Name:", name);
+        builder.append("Name:", name);
         builder.append("Inheritance:", superEntityCombo);
         builder.append(tableLabel, dbEntityCombo);
         builder.append("Comment:", comment);

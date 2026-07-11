@@ -60,7 +60,7 @@ public class ObjEntityView extends ProjectTabbedPane {
 
     private void initLayout() {
         setTabPlacement(JTabbedPane.TOP);
-        addTab("Entity", entityPanel);
+        addTab("ObjEntity", entityPanel);
         addTab("Properties", attributeRelationshipTab);
         addTab("Callbacks", callbacksPanel);
     }

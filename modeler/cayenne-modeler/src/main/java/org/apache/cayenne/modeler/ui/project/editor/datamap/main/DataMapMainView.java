@@ -102,7 +102,7 @@ public class DataMapMainView extends ProjectPanel {
         builder.setDefaultDialogBorder();
 
         builder.appendSeparator("DataMap Configuration");
-        builder.append("DataMap Name:", name, 2);
+        builder.append("Name:", name, 2);
         builder.append("Quote SQL Identifiers:", quoteSQLIdentifiers, 3);
         builder.append("Comment:", comment, 2);
 
