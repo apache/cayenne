@@ -86,9 +86,11 @@ public class CreateRelationshipAction extends AppAction {
         ObjEntity objEnt = getProjectSession().getSelectedObjEntity();
         if (objEnt != null) {
 
-            new ObjRelationshipInfoDialog(getProjectSession(), app.getFrame())
-                    .createRelationship(objEnt)
-                    .open();
+            if (ObjRelationshipInfoDialog.canMap(objEnt, app.getFrame())) {
+                new ObjRelationshipInfoDialog(getProjectSession(), app.getFrame())
+                        .createRelationship(objEnt)
+                        .open();
+            }
 
         } else {
             DbEntity dbEnt = getProjectSession().getSelectedDbEntity();

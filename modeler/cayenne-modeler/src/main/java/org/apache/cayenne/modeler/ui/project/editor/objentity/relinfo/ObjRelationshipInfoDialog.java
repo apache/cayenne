@@ -21,7 +21,6 @@ package org.apache.cayenne.modeler.ui.project.editor.objentity.relinfo;
 import com.jgoodies.forms.builder.PanelBuilder;
 import com.jgoodies.forms.layout.CellConstraints;
 import com.jgoodies.forms.layout.FormLayout;
-import org.apache.cayenne.CayenneRuntimeException;
 import org.apache.cayenne.configuration.DataChannelDescriptor;
 import org.apache.cayenne.dbsync.naming.NameBuilder;
 import org.apache.cayenne.map.DbEntity;
@@ -150,10 +149,6 @@ public class ObjRelationshipInfoDialog extends ProjectDialog implements TreeSele
     public ObjRelationshipInfoDialog modifyRelationship(ObjRelationship rel) {
         this.relationship = rel;
         this.undo = new ObjRelationshipUndoableEdit(session, rel);
-
-        // current limitation is that an ObjRelationship must have source
-        // and target entities present, with DbEntities chosen.
-        validateCanMap();
 
         initFromModel();
         initBindings();
@@ -587,17 +582,28 @@ public class ObjRelationshipInfoDialog extends ProjectDialog implements TreeSele
     }
 
     /**
-     * Checks if the entity can be edited with this inspector.
+     * Checks whether the given source entity can be mapped with this inspector, showing an
+     * informative message and returning false if not. Callers must use this to decide whether to
+     * open the inspector at all — the dialog assumes a mappable source entity.
      * NOTE: As of CAY-1077, the inspector can be opened even with no target entity set.
      */
-    private void validateCanMap() {
-        if (relationship.getSourceEntity() == null) {
-            throw new CayenneRuntimeException("Can't map relationship without source entity.");
+    public static boolean canMap(ObjEntity source, Window owner) {
+        if (source == null) {
+            showCannotMapMessage(owner, "This relationship has no source ObjEntity, so it can't be mapped.");
+            return false;
         }
-        if (getStartEntity() == null) {
-            JOptionPane.showMessageDialog(this, "Can't map relationship without source DbEntity. Set source DbEntity.");
-            throw new CayenneRuntimeException("Can't map relationship without source DbEntity.");
+        if (source.getDbEntity() == null) {
+            String message = """
+                    "ObjEntity '%s' is not mapped to a DbEntity. Set either DbEntity or super ObjEntity on the \
+                    "ObjEntity" tab before mapping relationships.""".formatted(source.getName());
+            showCannotMapMessage(owner, message);
+            return false;
         }
+        return true;
+    }
+
+    private static void showCannotMapMessage(Window owner, String message) {
+        JOptionPane.showMessageDialog(owner, message, "Can't Map Relationship", JOptionPane.WARNING_MESSAGE);
     }
 
     private DbEntity getStartEntity() {

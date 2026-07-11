@@ -377,8 +377,12 @@ public class ObjRelationshipPanel extends ProjectPanel implements ObjEntityDispl
         }
 
         ObjRelationshipTableModel model = (ObjRelationshipTableModel) table.getModel();
+        ObjRelationship relationship = model.getRelationship(row);
+        if (!ObjRelationshipInfoDialog.canMap(relationship.getSourceEntity(), app.getFrame())) {
+            return;
+        }
         new ObjRelationshipInfoDialog(session, app.getFrame())
-                .modifyRelationship(model.getRelationship(row))
+                .modifyRelationship(relationship)
                 .open();
 
         // This is required for a table to be updated properly
