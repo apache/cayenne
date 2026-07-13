@@ -60,10 +60,10 @@ public class RelationshipLoader extends AbstractLoader {
                 throw new IllegalStateException();
             }
 
-            ExportedKey.KeyData PK = key.getPk();
-            ExportedKey.KeyData FK = key.getFk();
-            DbEntity pkEntity = map.getDbEntity(PK.getTable());
-            DbEntity fkEntity = map.getDbEntity(FK.getTable());
+            ExportedKeySide PK = key.pk();
+            ExportedKeySide FK = key.fk();
+            DbEntity pkEntity = map.getDbEntity(PK.table());
+            DbEntity fkEntity = map.getDbEntity(FK.table());
             if (pkEntity == null || fkEntity == null) {
                 // Check for existence of this entities were made in creation of ExportedKey
                 throw new IllegalStateException();
@@ -78,7 +78,7 @@ public class RelationshipLoader extends AbstractLoader {
             // TODO: dirty and non-transparent... using DbRelationshipDetected for the benefit of the merge package.
             // This info is available from joins....
             DbRelationshipDetected reverseRelationship = new DbRelationshipDetected();
-            reverseRelationship.setFkName(FK.getName());
+            reverseRelationship.setFkName(FK.name());
             reverseRelationship.setSourceEntity(fkEntity);
             reverseRelationship.setTargetEntityName(pkEntity);
             reverseRelationship.setToMany(false);
@@ -163,8 +163,8 @@ public class RelationshipLoader extends AbstractLoader {
 
         for (ExportedKey exportedKey : exportedKeys) {
             // Create and append joins
-            String pkName = exportedKey.getPk().getColumn();
-            String fkName = exportedKey.getFk().getColumn();
+            String pkName = exportedKey.pk().column();
+            String fkName = exportedKey.fk().column();
 
             // skip invalid joins...
             DbAttribute pkAtt = pkEntity.getAttribute(pkName);

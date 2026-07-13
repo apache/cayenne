@@ -19,13 +19,11 @@
 
 package org.apache.cayenne.dbsync.reverse.dbload;
 
+import org.apache.cayenne.util.CompareToBuilder;
+
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.Objects;
-
-import org.apache.cayenne.map.DbEntity;
-import org.apache.cayenne.util.CompareToBuilder;
-import org.apache.cayenne.util.Util;
 
 /**
  * A representation of relationship between two tables in database. It can be used for creating names
@@ -33,65 +31,29 @@ import org.apache.cayenne.util.Util;
  *
  * @since 4.0
  */
-public class ExportedKey implements Comparable<ExportedKey> {
-
-    private final KeyData pk;
-    private final KeyData fk;
-    private final short keySeq;
+public record ExportedKey(ExportedKeySide pk, ExportedKeySide fk, short keySeq) implements Comparable<ExportedKey> {
 
     /**
-     * Extracts data from a resultset pointing to a exported key to
-     * ExportedKey class instance
+     * Extracts data from a resultset pointing to an exported key into an ExportedKey instance.
      *
-     * @param rs ResultSet pointing to a exported key, fetched using
-     *           DataBaseMetaData.getExportedKeys(...)
+     * @param rs ResultSet pointing to an exported key, fetched using DataBaseMetaData.getExportedKeys(...)
      */
-    ExportedKey(ResultSet rs) throws SQLException {
-        String pkCatalog = rs.getString("PKTABLE_CAT");
-        String pkSchema = rs.getString("PKTABLE_SCHEM");
-        String pkTable = rs.getString("PKTABLE_NAME");
-        String pkColumn = rs.getString("PKCOLUMN_NAME");
-        String pkName = rs.getString("PK_NAME");
-        pk = new KeyData(pkCatalog, pkSchema, pkTable, pkColumn, pkName);
+    static ExportedKey fromResultSet(ResultSet rs) throws SQLException {
+        ExportedKeySide pk = new ExportedKeySide(
+                rs.getString("PKTABLE_CAT"),
+                rs.getString("PKTABLE_SCHEM"),
+                rs.getString("PKTABLE_NAME"),
+                rs.getString("PKCOLUMN_NAME"),
+                rs.getString("PK_NAME"));
 
-        String fkCatalog = rs.getString("FKTABLE_CAT");
-        String fkSchema = rs.getString("FKTABLE_SCHEM");
-        String fkTable = rs.getString("FKTABLE_NAME");
-        String fkColumn = rs.getString("FKCOLUMN_NAME");
-        String fkName = rs.getString("FK_NAME");
-        fk = new KeyData(fkCatalog, fkSchema, fkTable, fkColumn, fkName);
+        ExportedKeySide fk = new ExportedKeySide(
+                rs.getString("FKTABLE_CAT"),
+                rs.getString("FKTABLE_SCHEM"),
+                rs.getString("FKTABLE_NAME"),
+                rs.getString("FKCOLUMN_NAME"),
+                rs.getString("FK_NAME"));
 
-        keySeq = rs.getShort("KEY_SEQ");
-    }
-
-    public KeyData getPk() {
-        return pk;
-    }
-
-    public KeyData getFk() {
-        return fk;
-    }
-
-    @Override
-    public boolean equals(Object obj) {
-        if (obj == null) {
-            return false;
-        }
-        if (obj == this) {
-            return true;
-        }
-        if (obj.getClass() != getClass()) {
-            return false;
-        }
-        ExportedKey rhs = (ExportedKey) obj;
-        return Objects.equals(pk, rhs.pk)
-                && Objects.equals(fk, rhs.fk)
-                && keySeq == rhs.keySeq;
-    }
-
-    @Override
-    public int hashCode() {
-        return Objects.hash(pk, fk, keySeq);
+        return new ExportedKey(pk, fk, rs.getShort("KEY_SEQ"));
     }
 
     @Override
@@ -109,133 +71,16 @@ public class ExportedKey implements Comparable<ExportedKey> {
 
     @Override
     public String toString() {
-        return getStrKey() + " # " + keySeq;
-    }
-
-    String getStrKey() {
-        return pk + " <- " + fk;
+        return fk + " -> " + pk + " # " + keySeq;
     }
 
     /**
      * Returns a key that identifies the single FK constraint this row belongs to, so that all columns of a
-     * multi-column FK are grouped into one relationship. Uses the FK constraint name (FK_NAME) reported by the
-     * driver; falls back to the per-column {@link #getStrKey()} when the name is unavailable, preserving the
-     * historical behavior for drivers that don't report constraint names.
+     * multi-column FK are grouped into one relationship.
      */
-    String getGroupKey() {
-        String fkName = fk.getName();
-        if (Util.isEmptyString(fkName)) {
-            return getStrKey();
-        }
-        return fk.getCatalog() + "." + fk.getSchema() + "." + fk.getTable() + "." + fkName
-                + " -> " + pk.getCatalog() + "." + pk.getSchema() + "." + pk.getTable();
-    }
-
-    public static class KeyData implements Comparable<KeyData> {
-        private final String catalog;
-        private final String schema;
-        private final String table;
-        private final String column;
-        private final String name;
-
-        KeyData(String catalog, String schema, String table, String column, String name) {
-            this.catalog = catalog;
-            this.schema = schema;
-            this.table = table;
-            this.column = column;
-            this.name = name;
-        }
-
-        public String getCatalog() {
-            return catalog;
-        }
-
-        public String getSchema() {
-            return schema;
-        }
-
-        public String getTable() {
-            return table;
-        }
-
-        public String getColumn() {
-            return column;
-        }
-
-        public String getName() {
-            return name;
-        }
-
-        @Override
-        public String toString() {
-            return catalog + "." + schema + "." + table + "." + column;
-        }
-
-        @Override
-        public int compareTo(KeyData rhs) {
-            Objects.requireNonNull(rhs);
-            if (rhs == this) {
-                return 0;
-            }
-
-            return new CompareToBuilder()
-                    .append(catalog, rhs.catalog)
-                    .append(schema, rhs.schema)
-                    .append(table, rhs.table)
-                    .append(column, rhs.column)
-                    .append(name, rhs.name)
-                    .toComparison();
-        }
-
-        @Override
-        public boolean equals(Object obj) {
-            if (obj == null) {
-                return false;
-            }
-            if (obj == this) {
-                return true;
-            }
-            if (obj.getClass() != getClass()) {
-                return false;
-            }
-            KeyData rhs = (KeyData) obj;
-            return Objects.equals(catalog, rhs.catalog)
-                    && Objects.equals(schema, rhs.schema)
-                    && Objects.equals(table, rhs.table)
-                    && Objects.equals(column, rhs.column)
-                    && Objects.equals(name, rhs.name);
-        }
-
-        @Override
-        public int hashCode() {
-            return Objects.hash(catalog, schema, table, column, name);
-        }
-
-        /**
-         * Validate that entity is for this key (exists and has same catalog/schema)
-         * @param entity to validate
-         * @return is entity matches for this key
-         */
-        public boolean validateEntity(DbEntity entity) {
-            if (entity == null) {
-                return false;
-            }
-
-            if(Util.isEmptyString(catalog)) {
-                if(!Util.isEmptyString(entity.getCatalog())) {
-                    return false;
-                }
-            } else {
-                if(!catalog.equals(entity.getCatalog())) {
-                    return false;
-                }
-            }
-
-            if(Util.isEmptyString(schema)) {
-                return Util.isEmptyString(entity.getSchema());
-            } else {
-                return schema.equals(entity.getSchema());
-            }
-        }
+    public String groupKey() {
+        return "%s.%s.%s.%s -> %s.%s.%s".formatted(
+                fk.catalog(), fk.schema(), fk.table(), fk.name(),
+                pk.catalog(), pk.schema(), pk.table());
     }
 }

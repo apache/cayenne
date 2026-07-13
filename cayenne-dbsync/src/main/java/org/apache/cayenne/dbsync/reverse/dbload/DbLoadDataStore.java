@@ -19,34 +19,32 @@
 
 package org.apache.cayenne.dbsync.reverse.dbload;
 
+import org.apache.cayenne.dbsync.model.DetectedDbEntity;
+import org.apache.cayenne.map.DataMap;
+import org.apache.cayenne.map.DbEntity;
+import org.apache.cayenne.map.Procedure;
+
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Set;
 import java.util.TreeSet;
 
-import org.apache.cayenne.map.DataMap;
-import org.apache.cayenne.map.DbEntity;
-import org.apache.cayenne.dbsync.model.DetectedDbEntity;
-import org.apache.cayenne.map.Procedure;
-
 /**
- * Temporary storage for loaded from DB DbEntities and Procedures.
- * DataMap is used but it's functionality is excessive and
- * there can be unwanted side effects.
- * But we can't get rid of it right now as parallel data structure
- * for dbEntity, attributes, procedures etc.. must be created
- * or some other work around should be implemented because
- * some functionality relies on side effects (e.g. entity resolution
- * in relationship)
+ * Temporary storage for loaded from DB DbEntities and Procedures. DataMap is used, but its functionality is excessive
+ * and there can be unwanted side effects.
  */
+// TODO: We can't get rid of it right now as parallel data structure for dbEntity, attributes, procedures etc. must be
+//  created or some other work around should be implemented because some functionality relies on side effects (e.g.
+//  entity resolution in relationship)
 public class DbLoadDataStore extends DataMap {
 
-    private Map<String, Set<ExportedKey>> exportedKeys = new HashMap<>();
-
-    private Map<String, DbEntity> upperCaseNames = new HashMap<>();
+    private final Map<String, Set<ExportedKey>> exportedKeys;
+    private final Map<String, DbEntity> upperCaseNames;
 
     DbLoadDataStore() {
         super("__generated_by_dbloader__");
+        exportedKeys = new HashMap<>();
+        upperCaseNames = new HashMap<>();
     }
 
     @Override
@@ -56,7 +54,7 @@ public class DbLoadDataStore extends DataMap {
 
     @Override
     public void addDbEntity(DbEntity entity) {
-        if(!(entity instanceof DetectedDbEntity)) {
+        if (!(entity instanceof DetectedDbEntity)) {
             throw new IllegalArgumentException("Only DetectedDbEntity can be inserted in this map");
         }
         super.addDbEntity(entity);
@@ -64,11 +62,11 @@ public class DbLoadDataStore extends DataMap {
     }
 
     DbEntity addDbEntitySafe(DbEntity entity) {
-        if(!(entity instanceof DetectedDbEntity)) {
+        if (!(entity instanceof DetectedDbEntity)) {
             throw new IllegalArgumentException("Only DetectedDbEntity can be inserted in this map");
         }
         DbEntity old = getDbEntity(entity.getName());
-        if(old != null) {
+        if (old != null) {
             removeDbEntity(old.getName());
         }
         addDbEntity(entity);
@@ -77,7 +75,7 @@ public class DbLoadDataStore extends DataMap {
 
     void addProcedureSafe(Procedure procedure) {
         Procedure old = getProcedure(procedure.getName());
-        if(old != null) {
+        if (old != null) {
             removeProcedure(old.getName());
         }
         addProcedure(procedure);
@@ -85,12 +83,7 @@ public class DbLoadDataStore extends DataMap {
 
     void addExportedKey(ExportedKey key) {
         // group by the FK constraint, so that all columns of a multi-column FK end up in a single relationship
-        Set<ExportedKey> exportedKeys = this.exportedKeys.get(key.getGroupKey());
-        if (exportedKeys == null) {
-            exportedKeys = new TreeSet<>();
-            this.exportedKeys.put(key.getGroupKey(), exportedKeys);
-        }
-        exportedKeys.add(key);
+        exportedKeys.computeIfAbsent(key.groupKey(), k -> new TreeSet<>()).add(key);
     }
 
     Set<Map.Entry<String, Set<ExportedKey>>> getExportedKeysEntrySet() {

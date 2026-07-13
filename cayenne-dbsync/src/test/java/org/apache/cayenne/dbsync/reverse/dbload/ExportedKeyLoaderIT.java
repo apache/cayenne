@@ -81,17 +81,17 @@ public class ExportedKeyLoaderIT extends BaseLoaderIT {
         ExportedKey artistIdFk = findArtistExportedKey();
         assertNotNull(artistIdFk);
 
-        assertEquals("ARTIST", artistIdFk.getPk().getTable().toUpperCase());
-        assertEquals("ARTIST_ID", artistIdFk.getPk().getColumn().toUpperCase());
+        assertEquals("ARTIST", artistIdFk.pk().table().toUpperCase());
+        assertEquals("ARTIST_ID", artistIdFk.pk().column().toUpperCase());
 
-        assertEquals("PAINTING", artistIdFk.getFk().getTable().toUpperCase());
-        assertEquals("ARTIST_ID", artistIdFk.getFk().getColumn().toUpperCase());
+        assertEquals("PAINTING", artistIdFk.fk().table().toUpperCase());
+        assertEquals("ARTIST_ID", artistIdFk.fk().column().toUpperCase());
     }
 
     private ExportedKey findArtistExportedKey() {
         for(Map.Entry<String, Set<ExportedKey>> entry : store.getExportedKeysEntrySet()) {
             ExportedKey key = entry.getValue().iterator().next();
-            if("ARTIST_ID".equalsIgnoreCase(key.getFk().getColumn())) {
+            if("ARTIST_ID".equalsIgnoreCase(key.fk().column())) {
                 return key;
             }
         }

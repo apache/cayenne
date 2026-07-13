@@ -40,6 +40,7 @@ CAY-2967 SQLTemplate/SQLSelect broken pagination
 CAY-2968 Vertical Inheritance: INSERT instead of UPDATE after updating flattened attribute
 CAY-2973 Exception trying to copy/paste a callback
 CAY-2976 Exception creating a relationship for an Incomplete ObjEntity
+CAY-2977 DbImport confused by multi-key relationships
 
 ----------------------------------
 Release: 5.0-M2

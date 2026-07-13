@@ -34,8 +34,8 @@ public class ExportedKeyTest {
     @Test
     public void equalsKeyData() throws SQLException {
 
-        ExportedKey.KeyData keyData1 = new ExportedKey.KeyData("Catalog", null, "Table", "Column", "Name");
-        ExportedKey.KeyData keyData2 = new ExportedKey.KeyData("Catalog", null, "Table", "Column", "Name");
+        ExportedKeySide keyData1 = new ExportedKeySide("Catalog", null, "Table", "Column", "Name");
+        ExportedKeySide keyData2 = new ExportedKeySide("Catalog", null, "Table", "Column", "Name");
 
         assertTrue(keyData1.equals(keyData2));
         assertTrue(keyData2.equals(keyData1));
@@ -60,7 +60,7 @@ public class ExportedKeyTest {
 
         when(rs1.getShort("KEY_SEQ")).thenReturn((short) 1);
 
-        ExportedKey keyData1 = new ExportedKey(rs1);
+        ExportedKey keyData1 = ExportedKey.fromResultSet(rs1);
 
         ResultSet rs2 = mock(ResultSet.class);
         when(rs2.getString("PKTABLE_CAT")).thenReturn("PKCatalog");
@@ -77,7 +77,7 @@ public class ExportedKeyTest {
 
         when(rs2.getShort("KEY_SEQ")).thenReturn((short)1);
 
-        ExportedKey keyData2 = new ExportedKey(rs2);
+        ExportedKey keyData2 = ExportedKey.fromResultSet(rs2);
 
         assertTrue(keyData1.equals(keyData2));
         assertTrue(keyData2.equals(keyData1));
