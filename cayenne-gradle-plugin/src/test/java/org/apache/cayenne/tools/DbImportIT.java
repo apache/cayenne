@@ -104,7 +104,7 @@ public class DbImportIT extends BaseTaskIT {
         assertTrue(result.getOutput().contains("Db Relationship : toMany (GALLERY.GALLERY_ID, PAINTING.GALLERY_ID)"));
         assertTrue(result.getOutput().contains("Create Table         ARTIST"));
         assertFalse(result.getOutput().contains("Create Table         PAINTING1"));
-        assertTrue(result.getOutput().contains("Skip relation: '.APP.ARTIST.ARTIST_ID <- .APP.PAINTING1.ARTIST_ID # 1'"));
+        assertTrue(result.getOutput().contains("Skip relation: '.APP.PAINTING1.ARTIST_ID -> .APP.ARTIST.ARTIST_ID # 1'"));
         assertTrue(result.getOutput().contains("Migration Complete Successfully."));
     }
 
@@ -152,7 +152,7 @@ public class DbImportIT extends BaseTaskIT {
         assertTrue(result.getOutput().contains("Db Relationship : toMany (GALLERY.GALLERY_ID, PAINTING.GALLERY_ID)"));
         assertTrue(result.getOutput().contains("Create Table         ARTIST"));
         assertFalse(result.getOutput().contains("Create Table         PAINTING1"));
-        assertTrue(result.getOutput().contains("Skip relation: '.APP.ARTIST.ARTIST_ID <- .APP.PAINTING1.ARTIST_ID # 1'"));
+        assertTrue(result.getOutput().contains("Skip relation: '.APP.PAINTING1.ARTIST_ID -> .APP.ARTIST.ARTIST_ID # 1'"));
         assertTrue(result.getOutput().contains("Migration Complete Successfully."));
     }
 
