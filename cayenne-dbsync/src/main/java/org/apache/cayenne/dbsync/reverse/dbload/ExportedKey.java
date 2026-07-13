@@ -116,6 +116,21 @@ public class ExportedKey implements Comparable<ExportedKey> {
         return pk + " <- " + fk;
     }
 
+    /**
+     * Returns a key that identifies the single FK constraint this row belongs to, so that all columns of a
+     * multi-column FK are grouped into one relationship. Uses the FK constraint name (FK_NAME) reported by the
+     * driver; falls back to the per-column {@link #getStrKey()} when the name is unavailable, preserving the
+     * historical behavior for drivers that don't report constraint names.
+     */
+    String getGroupKey() {
+        String fkName = fk.getName();
+        if (Util.isEmptyString(fkName)) {
+            return getStrKey();
+        }
+        return fk.getCatalog() + "." + fk.getSchema() + "." + fk.getTable() + "." + fkName
+                + " -> " + pk.getCatalog() + "." + pk.getSchema() + "." + pk.getTable();
+    }
+
     public static class KeyData implements Comparable<KeyData> {
         private final String catalog;
         private final String schema;

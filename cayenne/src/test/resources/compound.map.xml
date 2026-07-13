@@ -43,6 +43,15 @@
 		<db-attribute name="order_line_number" type="INTEGER" isPrimaryKey="true" isMandatory="true"/>
 		<db-attribute name="order_number" type="INTEGER" isPrimaryKey="true" isMandatory="true"/>
 	</db-entity>
+	<db-entity name="TWO_FK_A">
+		<db-attribute name="ID" type="INTEGER" isPrimaryKey="true" isMandatory="true"/>
+		<db-attribute name="NAME" type="VARCHAR" length="100"/>
+	</db-entity>
+	<db-entity name="TWO_FK_B">
+		<db-attribute name="ID" type="INTEGER" isPrimaryKey="true" isMandatory="true"/>
+		<db-attribute name="A_ID1" type="INTEGER"/>
+		<db-attribute name="A_ID2" type="INTEGER"/>
+	</db-entity>
 	<obj-entity name="CharFkTestEntity" className="org.apache.cayenne.testdo.compound.CharFkTestEntity" dbEntityName="CHAR_FK_TEST">
 		<obj-attribute name="name" type="java.lang.String" db-attribute-path="NAME"/>
 	</obj-entity>
@@ -99,6 +108,18 @@
 	<db-relationship name="line" source="compound_order_line_info" target="compound_order_line">
 		<db-attribute-pair source="order_number" target="order_number"/>
 		<db-attribute-pair source="order_line_number" target="order_line_number"/>
+	</db-relationship>
+	<db-relationship name="toA1" source="TWO_FK_B" target="TWO_FK_A">
+		<db-attribute-pair source="A_ID1" target="ID"/>
+	</db-relationship>
+	<db-relationship name="toA2" source="TWO_FK_B" target="TWO_FK_A">
+		<db-attribute-pair source="A_ID2" target="ID"/>
+	</db-relationship>
+	<db-relationship name="bs1" source="TWO_FK_A" target="TWO_FK_B" toMany="true">
+		<db-attribute-pair source="ID" target="A_ID1"/>
+	</db-relationship>
+	<db-relationship name="bs2" source="TWO_FK_A" target="TWO_FK_B" toMany="true">
+		<db-attribute-pair source="ID" target="A_ID2"/>
 	</db-relationship>
 	<obj-relationship name="toCharPK" source="CharFkTestEntity" target="CharPkTestEntity" db-relationship-path="toCharPK"/>
 	<obj-relationship name="charFKs" source="CharPkTestEntity" target="CharFkTestEntity" db-relationship-path="charFKs"/>

@@ -90,8 +90,9 @@ public class ExportedKeyLoaderIT extends BaseLoaderIT {
 
     private ExportedKey findArtistExportedKey() {
         for(Map.Entry<String, Set<ExportedKey>> entry : store.getExportedKeysEntrySet()) {
-            if(entry.getKey().toUpperCase().endsWith(".ARTIST_ID")) {
-                return entry.getValue().iterator().next();
+            ExportedKey key = entry.getValue().iterator().next();
+            if("ARTIST_ID".equalsIgnoreCase(key.getFk().getColumn())) {
+                return key;
             }
         }
 

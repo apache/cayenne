@@ -84,10 +84,11 @@ public class DbLoadDataStore extends DataMap {
     }
 
     void addExportedKey(ExportedKey key) {
-        Set<ExportedKey> exportedKeys = this.exportedKeys.get(key.getStrKey());
+        // group by the FK constraint, so that all columns of a multi-column FK end up in a single relationship
+        Set<ExportedKey> exportedKeys = this.exportedKeys.get(key.getGroupKey());
         if (exportedKeys == null) {
             exportedKeys = new TreeSet<>();
-            this.exportedKeys.put(key.getStrKey(), exportedKeys);
+            this.exportedKeys.put(key.getGroupKey(), exportedKeys);
         }
         exportedKeys.add(key);
     }
