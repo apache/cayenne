@@ -20,9 +20,6 @@
 package org.apache.cayenne.dbsync.merge.context;
 
 import org.apache.cayenne.dba.TypesMapping;
-import org.apache.cayenne.exp.path.CayennePath;
-import org.apache.cayenne.value.Json;
-import org.apache.cayenne.value.Wkt;
 import org.apache.cayenne.dbsync.filter.NameFilter;
 import org.apache.cayenne.dbsync.model.DetectedDbAttribute;
 import org.apache.cayenne.dbsync.naming.NameBuilder;
@@ -37,6 +34,8 @@ import org.apache.cayenne.map.ObjEntity;
 import org.apache.cayenne.map.ObjRelationship;
 import org.apache.cayenne.util.DeleteRuleUpdater;
 import org.apache.cayenne.util.EntityMergeListener;
+import org.apache.cayenne.value.Json;
+import org.apache.cayenne.value.Wkt;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -258,7 +257,6 @@ public class EntityMergeSupport {
                 boolean needGeneratedEntity = createObjRelationship(entity, dbRelationship, nameGenerator.objEntityName(targetEntity));
                 if (needGeneratedEntity) {
                     LOGGER.warn("Can't find ObjEntity for {}", dbRelationship.getTargetEntityName());
-                    LOGGER.warn("Db Relationship ({}) will have GUESSED Obj Relationship reflection. ", dbRelationship);
                 }
             }
         } else {
