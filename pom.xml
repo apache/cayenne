@@ -393,11 +393,6 @@
                 <version>1.11.0</version>
             </dependency>
             <dependency>
-                <groupId>net.java.dev.inflector</groupId>
-                <artifactId>inflector</artifactId>
-                <version>0.7.0</version>
-            </dependency>
-            <dependency>
                 <groupId>org.junit</groupId>
                 <artifactId>junit-bom</artifactId>
                 <version>${junit.version}</version>

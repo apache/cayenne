@@ -24,9 +24,6 @@ GUI TOOLS
 * CayenneModeler includes JGoodies library developed by Karsten Lentzsch.
 (http://www.jgoodies.com/)
 
-* CayenneModeler includes Inflector library developed by the Inflector project
-(https://inflector.dev.java.net/)
-
 * CayenneModeler includes JGraph library developed by JGraph Ltd
 (http://www.jgraph.com)
 #end

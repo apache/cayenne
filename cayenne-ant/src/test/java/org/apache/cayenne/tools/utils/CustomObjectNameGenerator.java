@@ -20,10 +20,10 @@
 package org.apache.cayenne.tools.utils;
 
 import java.util.List;
-import java.util.Locale;
 import java.util.Objects;
 
 import org.apache.cayenne.dbsync.naming.DbEntityNameStemmer;
+import org.apache.cayenne.dbsync.naming.EnglishInflector;
 import org.apache.cayenne.dbsync.naming.NoStemStemmer;
 import org.apache.cayenne.dbsync.naming.ObjectNameGenerator;
 import org.apache.cayenne.map.DbAttribute;
@@ -31,7 +31,6 @@ import org.apache.cayenne.map.DbEntity;
 import org.apache.cayenne.map.DbJoin;
 import org.apache.cayenne.map.DbRelationship;
 import org.apache.cayenne.util.Util;
-import org.jvnet.inflector.Noun;
 
 public class CustomObjectNameGenerator implements ObjectNameGenerator {
 
@@ -83,16 +82,8 @@ public class CustomObjectNameGenerator implements ObjectNameGenerator {
 
         String baseName = stemmed(last.getTargetEntityName());
 
-        try {
-            // by default we use English rules here...
-            return Noun.pluralOf(baseName.toLowerCase(), Locale.ENGLISH);
-        } catch (Exception inflectorError) {
-            //  seems that Inflector cannot be trusted. For instance, it
-            // throws an exception when invoked for word "ADDRESS" (although
-            // lower case works fine). To feel safe, we use superclass'
-            // behavior if something's gone wrong
-            return baseName;
-        }
+        // by default we use English rules here...
+        return EnglishInflector.pluralOf(baseName.toLowerCase());
     }
 
     protected String toOneRelationshipName(DbRelationship... relationshipChain) {
