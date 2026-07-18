@@ -1,6 +1,6 @@
 ---
 name: cayenne-model-naming
-description: "Use this skill to clean up Object-layer names in a Cayenne DataMap — ObjEntity, ObjAttribute, and ObjRelationship names (plus the paired DbRelationship names, which are arbitrary and conventionally mirror the ObjRelationship) — so they read as descriptive, consistent Java. Trigger on phrases like 'clean up the model names', 'fix the entity names', 'these names look ugly', 'make the names descriptive', 'normalize the ObjEntity/attribute/relationship names', 'why is this relationship called team1', 'rename entities to be consistent', 'the import produced Gametype instead of GameType'. Invoke it on an explicit user request, or as a manual follow-up after a `cayenne-db-import` to polish the just-imported additions — it is never triggered automatically. IMPORTANT: this is a LIGHT polish pass — CayenneModeler's reverse-engineering already produces good names for the common case; only improve the specific things its deterministic algorithm cannot (run-together names with no separators like `gametype`, meaningless numbered names like `team1` from multiple relationships between two tables, and a common entity prefix that leaks into relationship names like `aaOrders`). Do NOT rewrite names that are already correct. This is Obj-layer naming polish; for structural model edits use `cayenne-modeling`, and for regenerating classes afterward use `cayenne-cgen`."
+description: "Use this skill to clean up Object-layer names in a Cayenne DataMap — ObjEntity, ObjAttribute, and ObjRelationship names, plus DbRelationship names (the first-class unit of relationship cleanup — every FK has one whether or not an ObjRelationship was generated; the ObjRelationship name is synced to it when one exists) — so they read as descriptive, consistent Java. Trigger on phrases like 'clean up the model names', 'fix the entity names', 'these names look ugly', 'make the names descriptive', 'normalize the ObjEntity/attribute/relationship names', 'why is this relationship called team1', 'rename entities to be consistent', 'the import produced Gametype instead of GameType'. Invoke it on an explicit user request, or as a manual follow-up after a `cayenne-db-import` to polish the just-imported additions — it is never triggered automatically. IMPORTANT: this is a LIGHT polish pass — CayenneModeler's reverse-engineering already produces good names for the common case; only improve the specific things its deterministic algorithm cannot (run-together names with no separators like `gametype`, meaningless numbered names like `team1` from multiple relationships between two tables, and a common entity prefix that leaks into relationship names like `aaOrders`). Do NOT rewrite names that are already correct. This is Obj-layer naming polish; for structural model edits use `cayenne-modeling`, and for regenerating classes afterward use `cayenne-cgen`."
 ---
 
 <!--
@@ -92,8 +92,14 @@ correct — leave them.** Flag only the cases the deterministic generator can't 
    abbreviations applied consistently, plural-table-to-singular-entity. Conservative by default; when
    unsure, leave the baseline name and ask.
 
-Remember DbRelationship names are arbitrary and conventionally mirror the paired ObjRelationship
-name — when you rename a relationship, plan the mirrored DbRelationship rename too.
+Relationship cleanup is anchored on the **DbRelationship** — it's the first-class citizen, since
+every FK has one whether or not an ObjRelationship was generated on top. The rules above (run-together,
+numbered collisions, prefix leak) apply to DbRelationship names directly, derived from their own DB
+metadata (FK column for to-one, pluralized target DbEntity for to-many). When an ObjRelationship *is*
+built on a DbRelationship, keep the two names **in sync** — rename both together, per direction.
+DbRelationships with no ObjRelationship (an ungenerated reverse direction, a skipped FK, a hop inside
+a flattened many-to-many) are cleaned the same way — don't skip them. Any rename must update every
+`db-relationship-path` segment that names it (see Step 4).
 
 ## Step 3 — Present the rename plan
 
@@ -117,7 +123,8 @@ Edit the `*.map.xml`. For **every** rename, walk the matching checklist in
 - ObjRelationship → prefetch/expression/EJBQL paths (its `db-relationship-path` is unaffected).
 - ObjAttribute → qualifier/ordering/EJBQL paths (its `db-attribute-path` is unaffected).
 - DbRelationship → every `db-relationship-path` segment that names it, including inside dotted
-  flattened chains.
+  flattened chains. This holds whether or not the DbRelationship backs an ObjRelationship — a
+  standalone DbRelationship can still be named as a segment in another entity's flattened path.
 
 Keep every name unique within its scope, and preserve the file's existing formatting and element
 order.
@@ -143,6 +150,8 @@ order.
   bare rename orphans the old class and dangles relationship `source`/`target` and query `root-name`.
 - **Don't rename a DbRelationship without fixing every `db-relationship-path` segment**, including
   flattened chains on other entities.
+- **Don't skip a DbRelationship just because it has no ObjRelationship.** Standalone DbRelationships
+  are in scope — clean them on their own merits from their DB metadata, not by mirroring.
 - **Don't repoint `db-attribute-path` / `db-relationship-path` targets.** You rename the element; you
   never change what a path points to.
 - **Don't run cgen yourself.** Hand off to `cayenne-cgen`.

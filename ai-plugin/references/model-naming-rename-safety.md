@@ -79,8 +79,10 @@ name. Uniqueness is within the owning ObjEntity.
 | `db-relationship-path` **segments** | Every `<obj-relationship>` whose `db-relationship-path` contains `a` — **including inside dotted flattened chains**. E.g. path `artistGroupArray.toArtist`, renaming `toArtist` → `b` gives `artistGroupArray.b`. These references can live on entities other than the DbRelationship's source. |
 
 No Java impact — DbRelationships are a DB-layer concept. Uniqueness is within the source DbEntity
-(attrs + rels). Keep the name mirrored with its paired ObjRelationship per direction (see
-`model-naming-conventions.md`).
+(attrs + rels). If the DbRelationship backs an ObjRelationship, keep the name mirrored with it per
+direction; if it is **standalone** (no ObjRelationship built on it — see `model-naming-conventions.md`),
+there is nothing to mirror, but the `db-relationship-path` update above still applies: a standalone
+DbRelationship can appear as a segment in another entity's flattened path.
 
 ## Paired renames
 

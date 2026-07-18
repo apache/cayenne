@@ -159,16 +159,25 @@ guessing.
 - **ObjRelationship, to-many** — plural camelCase.
 - **DbRelationship `name`** — mirror the paired ObjRelationship name (see below).
 
-## DbRelationship names
+## DbRelationship names — the first-class unit of relationship cleanup
 
-A DbRelationship name is **arbitrary** — there is no DB metadata behind it (unlike a DbEntity/
-DbAttribute, which mirror a real table/column). The working convention is that a DbRelationship's
-name matches the ObjRelationship built on it, **per direction**. So when you rename a to-one
-ObjRelationship to `homeTeam`, rename its backing single-hop DbRelationship to `homeTeam` as well,
-and the reverse-direction pair (`homeGames`) likewise.
+A DbRelationship `name` is **arbitrary** (not derived from a real table/column like a DbEntity/
+DbAttribute), but it is **not** exempt from cleanup — treat it as the first-class citizen here, since
+every FK produces a DbRelationship whether or not an ObjRelationship was generated on it. Reverse
+engineering names it with the **same generator** as ObjRelationships (`relationshipName()`: to-one =
+FK column minus a trailing `_ID`/`ID`, else target entity name; to-many = English plural of the
+target entity, all `underscoredToJava`-cased), so it inherits the same gaps — run-together names,
+numbered collisions (`toArtist` / `toArtist1`), a leaked common prefix. Apply §1–§5 to DbRelationship
+names directly, deriving the fix from the DbRelationship's own DB metadata (its FK column for to-one,
+its target DbEntity pluralized for to-many).
 
-Flattened (many-to-many) ObjRelationships traverse more than one DbRelationship
-(`db-relationship-path="artistGroupArray.toArtist"`), so there is no 1:1 name to mirror — just keep
-each individual DbRelationship name sane on its own and fix any that are numbered collisions.
+**Sync the ObjRelationship when one exists.** An ObjRelationship built on a DbRelationship is linked
+by its `db-relationship-path` naming that DbRelationship. Keep the two names matched **per direction**:
+rename both together (`homeTeam` ↔ `homeTeam`, `homeGames` ↔ `homeGames`); if one is already good,
+both are. A DbRelationship with **no** ObjRelationship — an ungenerated reverse direction, a FK where
+`Create ObjRelationships` was unchecked, or a hop inside a flattened many-to-many
+(`db-relationship-path="artistGroupArray.toArtist"`) — is cleaned exactly the same way; there's just
+no ObjRelationship to sync.
 
-See `model-naming-rename-safety.md` for exactly what to update when you rename any of these.
+Its name stays unique within its source DbEntity. See `model-naming-rename-safety.md` for what to
+update on any rename.
