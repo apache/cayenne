@@ -26,13 +26,14 @@ This plugin teaches Claude how to:
 - Reverse-engineer a database schema into a DataMap by driving CayenneModeler.
 - Polish the reverse-engineered Object-layer names (entities, attributes, relationships) into idiomatic Java, fixing the few cases the deterministic name generator can't.
 - Regenerate Java entity classes from a DataMap.
+- Run a full DB sync — import, name cleanup, and class regeneration — as a single end-to-end workflow.
 - Bootstrap `CayenneRuntime` in a Java application and write `ObjectSelect` / `SQLSelect` queries.
 
 The plugin assumes downstream **users of Cayenne** writing their own Java apps. It does *not* cover contributor workflows for hacking on Cayenne itself.
 
 ## Install
 
-**Cayenne 5.0+ only.** The MCP server ships with Cayenne 5.0. Skills that depend on it (`cayenne-cgen`, `cayenne-modeler`, `cayenne-db-import`) will not work against earlier Cayenne versions. The XML-editing, runtime, and query skills also target 5.0 idioms — for older Cayenne, this plugin is not the right tool.
+**Cayenne 5.0+ only.** The MCP server ships with Cayenne 5.0. Skills that depend on it (`cayenne-cgen`, `cayenne-modeler`, `cayenne-db-import`, `cayenne-full-db-sync`) will not work against earlier Cayenne versions. The XML-editing, runtime, and query skills also target 5.0 idioms — for older Cayenne, this plugin is not the right tool.
 
 The plugin is distributed from the Apache Cayenne GitHub repository: **https://github.com/apache/cayenne**. Inside Claude Code:
 
@@ -59,9 +60,10 @@ ai-plugin/
 ├── README.md                    # this file
 ├── skills/                      # auto-triggering workflows
 │   ├── cayenne-modeling/        # edit *.map.xml and cayenne-*.xml
-│   ├── cayenne-db-import/       # import a DB schema (Modeler GUI)
+│   ├── cayenne-db-import/       # import a DB schema into the DataMap (model only)
 │   ├── cayenne-model-naming/    # polish Obj-layer names after import / on request
 │   ├── cayenne-cgen/            # regenerate Java classes via MCP
+│   ├── cayenne-full-db-sync/    # orchestrate import → name cleanup → cgen
 │   ├── cayenne-modeler/         # open the GUI on a project
 │   ├── cayenne-runtime/         # bootstrap CayenneRuntime in an app
 │   └── cayenne-query/           # write ObjectSelect / SQLSelect queries
