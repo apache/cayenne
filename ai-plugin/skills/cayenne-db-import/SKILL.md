@@ -118,6 +118,7 @@ Once the import succeeds:
 
 - Tell the user to **save the project** in the Modeler if it is open (File → Save). The dialog settings persist as a `<dbImport>` block inside the DataMap for repeat runs.
 - Hand off to `cayenne-cgen` to regenerate Java classes for the new/changed entities. Quote the DataMap name so the cgen skill can pass it to `cgen_run`.
+- If the imported names look awkward (run-together words, `team1`-style relationship names, a table prefix leaking into relationships), you can **offer** the `cayenne-model-naming` skill to polish them — ideally before cgen. Only run it if the user asks; do not invoke it automatically.
 - If the DB has columns that don't follow the user's preferred naming, recommend tweaking the naming strategy and re-running.
 
 ## Anti-patterns

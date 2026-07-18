@@ -24,6 +24,7 @@ This plugin teaches Claude how to:
 
 - Edit Cayenne DataMap (`*.map.xml`) and project descriptor (`cayenne-*.xml`) files a-la-carte (add entities, relationships, queries, embeddables).
 - Reverse-engineer a database schema into a DataMap by driving CayenneModeler.
+- Polish the reverse-engineered Object-layer names (entities, attributes, relationships) into idiomatic Java, fixing the few cases the deterministic name generator can't.
 - Regenerate Java entity classes from a DataMap.
 - Bootstrap `CayenneRuntime` in a Java application and write `ObjectSelect` / `SQLSelect` queries.
 
@@ -59,6 +60,7 @@ ai-plugin/
 ├── skills/                      # auto-triggering workflows
 │   ├── cayenne-modeling/        # edit *.map.xml and cayenne-*.xml
 │   ├── cayenne-db-import/       # import a DB schema (Modeler GUI)
+│   ├── cayenne-model-naming/    # polish Obj-layer names after import / on request
 │   ├── cayenne-cgen/            # regenerate Java classes via MCP
 │   ├── cayenne-modeler/         # open the GUI on a project
 │   ├── cayenne-runtime/         # bootstrap CayenneRuntime in an app
@@ -68,6 +70,8 @@ ai-plugin/
     ├── datamap-schema.md
     ├── project-descriptor-schema.md
     ├── dbimport-config.md
+    ├── model-naming-conventions.md
+    ├── model-naming-rename-safety.md
     ├── cgen-config.md
     ├── runtime-api.md
     ├── query-api.md

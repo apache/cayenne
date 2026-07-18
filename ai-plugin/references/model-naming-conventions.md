@@ -1,0 +1,174 @@
+<!--
+	Licensed to the Apache Software Foundation (ASF) under one
+	or more contributor license agreements.  See the NOTICE file
+	distributed with this work for additional information
+	regarding copyright ownership.  The ASF licenses this file
+	to you under the Apache License, Version 2.0 (the
+	"License"); you may not use this file except in compliance
+	with the License.  You may obtain a copy of the License at
+	
+	https://www.apache.org/licenses/LICENSE-2.0
+	
+	Unless required by applicable law or agreed to in writing,
+	software distributed under the License is distributed on an
+	"AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY
+	KIND, either express or implied.  See the License for the
+	specific language governing permissions and limitations
+	under the License.   
+-->
+# Obj-layer naming conventions — what to fix, what to leave alone
+
+Reference for the `cayenne-model-naming` skill. The governing rule: **the Modeler already
+generates good names for the common case. This is a polish pass, not a rewrite.** Read the
+"deterministic baseline" first so you can recognize a name that is already correct and skip it.
+
+## The deterministic baseline (leave these names alone)
+
+Reverse engineering (`dbimport_run`, the Modeler's DB Import) generates the Obj-layer names before
+you ever see the model, then de-duplicates any collisions. It already applies these principles — and
+you must preserve them:
+
+1. **Obj names stay as close to the DB names as possible** — the object name is a transliteration
+   of the table/column, not a re-invention.
+2. **Java identifier / class conventions** — classes PascalCase, properties camelCase.
+3. **snake_case → camelCase / PascalCase** — split on `_`, drop the underscores, camel-join.
+4. **Relationship names from entity name + cardinality** — see below.
+
+Concretely, the generator produces:
+
+| DB element | Rule | Result |
+|---|---|---|
+| `db-entity` name | stem, split on `_`, capitalize each token | `ARTIST_GROUP` → `ArtistGroup` |
+| `db-attribute` name | split on `_`, camelCase | `FIRST_NAME` → `firstName` |
+| to-one relationship | FK column minus trailing `_ID`/`ID`; else target entity name | `MANAGER_ID` → `manager` |
+| to-many relationship | English plural of the target entity name | `PAINTING` → `paintings` |
+| name collision within an entity | append a numeric suffix | `team`, `team1`, `team2` … |
+
+Generation also collapses all-upper tokens to lowercase and preserves already-mixed
+case. So `GameType`, `gameType`, `firstName`, `ArtistGroup`, `paintings`, `manager` are **all
+already correct** — do not re-case, re-spell, re-pluralize, or "prettify" them. If a name is a
+clean camelCase/PascalCase transliteration of its DB element with the right cardinality, it is
+done. Touch nothing.
+
+## Where the deterministic algorithm falls short — the AI job
+
+The cases below are the ones we've identified where the generator can't do better and your judgment
+adds real value. They are **illustrative, not exhaustive** — the generator is a deterministic
+transliteration, so any place where a *human* reading the DB name would produce a clearly better
+Java name than a mechanical `_`-split is fair game (§5). Focus your attention on these gaps; don't
+touch names the baseline already got right.
+
+### 1. Run-together DB names with no separators
+
+Word-splitting happens **only on `_`**. A single-token, uniform-case DB name has no boundary to
+split on, so a multi-word concept collapses into one lowercased chunk. This is the classic case:
+
+| DB name | Generator output | Correct |
+|---|---|---|
+| `gametype` / `GAMETYPE` | `Gametype` | `GameType` |
+| `dateofbirth` | `Dateofbirth` | `dateOfBirth` |
+| `ordernumber` | `Ordernumber` | `orderNumber` |
+| `custaddr` | `Custaddr` | `CustomerAddress` (with expansion — see §3) |
+
+Split on the **real** word boundary, using domain knowledge, and re-apply the Java convention
+(PascalCase for entities, camelCase for attributes and relationships). Only split where you are confident a boundary
+exists — never invent one (`status` is not `sta` + `tus`; `metadata` is one word). Names that are
+**already** mixed-case (`GameType`, `gameType`) were handled by the generator — leave them.
+
+### 2. More than one relationship between the same two tables
+
+When two FKs point at the same target table (or two relationships otherwise share a target),
+generation can't invent a role, so it disambiguates with numbers. But **the two
+directions are not equally affected** — the to-one and to-many sides are named by different rules:
+
+- **to-many side always collides.** To-many naming ignores the FK column entirely and always uses
+  the pluralized target entity name, so two relationships to the same target both become e.g.
+  `games` / `games1` (or `people` / `people1`) no matter how well the FKs are named. This is the
+  common case and the main reason this rule exists. Name each collection by the **logically opposite**
+  role instead: on `Team`, the two reverse collections of `Game` become `homeGames` / `awayGames`.
+
+- **to-one side usually does NOT collide.** To-one naming is FK-column-based — it strips a trailing
+  `_ID`/`ID`, so distinct `*_ID` FKs already yield distinct, good names (`HOME_TEAM_ID` → `homeTeam`,
+  `AWAY_TEAM_ID` → `awayTeam`). Leave those alone. It **only** collides in the fallback path: when a
+  FK column does *not* end in `ID`/`_ID` (or is null / has no joins), the generator drops to the
+  target entity name, so two such FKs both become e.g. `employee` / `employee1`. There, derive the
+  role from the FK column yourself even though it lacks the `_ID` suffix (`MANAGER` → `manager`,
+  `SUPERVISOR` → `supervisor`).
+
+So in the typical "two well-named `*_ID` FKs" model you'll rename **only the to-many collections**
+(`games`/`games1`), and the to-one ends are already fine. When you do rename both ends, give them
+matching opposite-role names so the pair is legible from either side (`homeTeam` ↔ `homeGames`,
+`awayTeam` ↔ `awayGames`).
+
+### 3. Genuinely cryptic abbreviations (secondary, be conservative)
+
+Expand an abbreviation only when the win is clear **and** you apply it consistently across the whole
+model: `qty` → `quantity`, `amt` → `amount`, `dob` → `dateOfBirth`. An unfamiliar or ambiguous
+abbreviation stays as-is (case-normalized) rather than becoming a wrong guess. If the model is full
+of domain-specific abbreviations, ask the user for a glossary instead of guessing element by element.
+
+### 4. A common entity prefix leaking into relationship names
+
+Many schemas tag every table with the same prefix (`AA_CUSTOMER`, `AA_ORDER`, or `os_t1`, `os_t2`).
+The reverse-engineering **"Strip from Table Names"** (`stripFromTableNames`) setting handles this
+cleanly *when it's used*: entity names come through stripped (`AA_CUSTOMER` → `Customer`) and there's
+no problem — leave that model alone.
+
+The case that needs you is when the prefix is **kept on the entity names** (stripping was not
+configured — often intentional, treating the prefix as a class-name namespace). Then the prefix
+**leaks into the relationship names**, which you almost never want:
+
+- to-many names are the pluralized target entity name; with the prefix kept, the target's prefixed
+  name flows straight in → `aaOrders`, `aaCustomers`.
+- to-one names built from a prefixed FK column (`AA_CUSTOMER_ID`) carry it too → `aaCustomer`.
+
+A relationship name is a **role/property** on a class (`order.getAaCustomer()`), and the shared
+prefix is pure noise there. **Strip the common prefix from the relationship names** — `aaOrders` →
+`orders`, `aaCustomer` → `customer` — and mirror the change onto the paired DbRelationship.
+
+**Leave the ObjEntity names as they are.** The prefix on the class names is the user's choice (if
+they'd wanted it gone from entities they would have set `stripFromTableNames`); renaming entities is
+a bigger, class-regenerating change. This case cleans relationship names only.
+
+### 5. Other cases — use judgment
+
+The three cases above don't exhaust the ways a purely mechanical transliteration can miss. Whenever
+you spot a name where a human reading the underlying DB name would obviously do better, and the fix
+is defensible (not a guess), apply the same conservative treatment. Some more examples:
+
+- **Reserved words / illegal identifiers** the generator passed through — a column literally named
+  `class`, `package`, `default`, or one starting with a digit needs a legal Java name.
+- **Lost acronym casing** — `HTTPURL` → `Gametype`-style collapse loses the acronym; `httpUrl` /
+  `url` may read better than `httpurl`.
+- **Plural table → singular entity** — a `CUSTOMERS` table yields `Customers`; an entity is a single
+  row, so `Customer` is usually the intent (be careful: only when clearly a pluralized table name,
+  and check for a resulting collision).
+- **Redundant entity-name prefix on an attribute** — `Artist.artistName` → `name` — only when it's
+  clearly noise and doesn't collide.
+
+The bar is the same throughout: a clear, defensible improvement over the mechanical output, applied
+consistently. When in doubt, leave the baseline name and surface the question to the user rather than
+guessing.
+
+## Target forms (for the names you actually change)
+
+- **ObjEntity `name`** — PascalCase, singular preferred; keep it equal to the `className` simple name.
+- **ObjAttribute `name`** — camelCase; strip type/Hungarian prefixes (`strName` → `name`, `n_count`
+  → `count`) only when unambiguous.
+- **ObjRelationship, to-one** — singular camelCase role.
+- **ObjRelationship, to-many** — plural camelCase.
+- **DbRelationship `name`** — mirror the paired ObjRelationship name (see below).
+
+## DbRelationship names
+
+A DbRelationship name is **arbitrary** — there is no DB metadata behind it (unlike a DbEntity/
+DbAttribute, which mirror a real table/column). The working convention is that a DbRelationship's
+name matches the ObjRelationship built on it, **per direction**. So when you rename a to-one
+ObjRelationship to `homeTeam`, rename its backing single-hop DbRelationship to `homeTeam` as well,
+and the reverse-direction pair (`homeGames`) likewise.
+
+Flattened (many-to-many) ObjRelationships traverse more than one DbRelationship
+(`db-relationship-path="artistGroupArray.toArtist"`), so there is no 1:1 name to mirror — just keep
+each individual DbRelationship name sane on its own and fix any that are numbered collisions.
+
+See `model-naming-rename-safety.md` for exactly what to update when you rename any of these.
