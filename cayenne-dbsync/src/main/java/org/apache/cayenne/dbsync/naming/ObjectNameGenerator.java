@@ -20,12 +20,13 @@ package org.apache.cayenne.dbsync.naming;
 
 import org.apache.cayenne.map.DbAttribute;
 import org.apache.cayenne.map.DbEntity;
+import org.apache.cayenne.map.DbJoin;
 import org.apache.cayenne.map.DbRelationship;
 
+import java.util.List;
+
 /**
- * A strategy for creating names for object layer metadata artifacts based on their DB counterpart naming or structure.
- * Generated names should normally be further cleaned by passing them through
- * {@link org.apache.cayenne.dbsync.naming.NameBuilder}, that will resolve duplication conflicts.
+ * A strategy for creating mapping artifact names based on DB tier metadata.
  *
  * @since 4.0
  */
@@ -42,13 +43,19 @@ public interface ObjectNameGenerator {
     String objAttributeName(DbAttribute dbAttribute);
 
     /**
-     * Generates a String that can be used as a name of an ObjRelationship, derived from join semantics of a chain of
-     * connected DbRelationships.
+     * Generates a name for an ObjRelationship, derived from join semantics of a chain of connected DbRelationships.
      * <p>The chain must contain at least one relationship. Though if we are dealing with a flattened
      * relationship, more than one can be passed, in the same order as they are present in a flattened
      * relationship.
-     * <p>Generated name can be used for DbRelationship itself (in which case the chain must have exactly one parameter).
+     *
+     * @since 5.0
      */
-    String relationshipName(DbRelationship... relationshipChain);
+    String objRelationshipName(DbRelationship... relationshipChain);
 
+    /**
+     * Generates a name for a DbRelationship, derived from the semantics of its joins and direction.
+     *
+     * @since 5.0
+     */
+    String dbRelationshipName(List<DbJoin> joins, boolean toMany);
 }

@@ -19,6 +19,7 @@
 
 package org.apache.cayenne.stubs;
 
+import java.util.List;
 import java.util.Objects;
 
 import org.apache.cayenne.dbsync.naming.DbEntityNameStemmer;
@@ -26,6 +27,7 @@ import org.apache.cayenne.dbsync.naming.NoStemStemmer;
 import org.apache.cayenne.dbsync.naming.ObjectNameGenerator;
 import org.apache.cayenne.map.DbAttribute;
 import org.apache.cayenne.map.DbEntity;
+import org.apache.cayenne.map.DbJoin;
 import org.apache.cayenne.map.DbRelationship;
 import org.apache.cayenne.util.Util;
 
@@ -42,7 +44,12 @@ public class CustomObjectNameGenerator implements ObjectNameGenerator {
     }
 
     @Override
-    public String relationshipName(DbRelationship... relationshipChain) {
+    public String objRelationshipName(DbRelationship... relationshipChain) {
+        return null;
+    }
+
+    @Override
+    public String dbRelationshipName(List<DbJoin> joins, boolean toMany) {
         return null;
     }
 

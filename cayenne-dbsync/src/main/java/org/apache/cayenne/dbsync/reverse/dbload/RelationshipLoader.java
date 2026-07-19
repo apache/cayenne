@@ -105,7 +105,7 @@ public class RelationshipLoader extends AbstractLoader {
     private void setRelationshipName(DbEntity entity, DbRelationship relationship) {
         relationship.setName(NameBuilder
                 .of(relationship, entity)
-                .baseName(nameGenerator.relationshipName(relationship))
+                .baseName(nameGenerator.dbRelationshipName(relationship.getJoins(), relationship.isToMany()))
                 .name());
     }
 

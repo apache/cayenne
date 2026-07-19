@@ -134,14 +134,14 @@ public class DbEntitySyncAction extends AppAction {
         }
 
         @Override
-        public String relationshipName(DbRelationship... relationshipChain) {
+        public String objRelationshipName(DbRelationship... relationshipChain) {
             if (relationshipChain.length == 0) {
-                return super.relationshipName(relationshipChain);
+                return super.objRelationshipName(relationshipChain);
             }
 
             DbRelationship last = relationshipChain[relationshipChain.length - 1];
             if (last.getName().startsWith("untitledRel")) {
-                return super.relationshipName(relationshipChain);
+                return super.objRelationshipName(relationshipChain);
             }
 
             // keep manually set relationship name

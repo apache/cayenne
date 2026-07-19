@@ -69,7 +69,7 @@ public class AddRelationshipToModel extends AbstractToModelToken.Entity {
         // Set name to relationship if it was created without it, e.g. in createReverse() action
         if (relationship.getName() == null) {
             relationship.setName(NameBuilder.of(relationship, getEntity())
-                    .baseName(context.getNameGenerator().relationshipName(relationship))
+                    .baseName(context.getNameGenerator().dbRelationshipName(relationship.getJoins(), relationship.isToMany()))
                     .name());
         }
 

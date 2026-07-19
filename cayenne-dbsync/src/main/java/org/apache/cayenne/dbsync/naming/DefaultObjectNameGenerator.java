@@ -41,18 +41,35 @@ public class DefaultObjectNameGenerator implements ObjectNameGenerator {
     }
 
     @Override
-    public String relationshipName(DbRelationship... relationshipChain) {
+    public String objRelationshipName(DbRelationship... relationshipChain) {
 
         if (relationshipChain == null || relationshipChain.length < 1) {
-            throw new IllegalArgumentException("At least on relationship is expected: " + relationshipChain);
+            throw new IllegalArgumentException("At least one relationship is expected");
         }
 
-        // ignore the name of DbRelationship itself (FWIW we may be generating a new name for it here)...
+        // ignore the name of DbRelationships themselves...
         // generate the name based on join semantics...
 
-        String name = isToMany(relationshipChain)
-                ? toManyRelationshipName(relationshipChain)
-                : toOneRelationshipName(relationshipChain);
+        DbRelationship first = relationshipChain[0];
+        DbRelationship last = relationshipChain[relationshipChain.length - 1];
+        return relationshipName(first.getJoins(), last.getTargetEntityName(), isToMany(relationshipChain));
+    }
+
+    @Override
+    public String dbRelationshipName(List<DbJoin> joins, boolean toMany) {
+
+        if (joins == null || joins.isEmpty()) {
+            throw new IllegalArgumentException("At least one join is expected");
+        }
+
+        String targetEntityName = joins.getFirst().getRelationship().getTargetEntityName();
+        return relationshipName(joins, targetEntityName, toMany);
+    }
+
+    protected String relationshipName(List<DbJoin> joins, String targetEntityName, boolean toMany) {
+        String name = toMany
+                ? toManyRelationshipName(targetEntityName)
+                : toOneRelationshipName(joins, targetEntityName);
 
         return Util.underscoredToJava(name, false);
     }
@@ -72,22 +89,17 @@ public class DefaultObjectNameGenerator implements ObjectNameGenerator {
         return dbEntityNameStemmer.stem(Objects.requireNonNull(dbEntityName));
     }
 
-    protected String toManyRelationshipName(DbRelationship... relationshipChain) {
-        DbRelationship last = relationshipChain[relationshipChain.length - 1];
-        String baseName = stemmed(last.getTargetEntityName());
+    protected String toManyRelationshipName(String targetEntityName) {
+        String baseName = stemmed(targetEntityName);
         return EnglishInflector.pluralOf(baseName.toLowerCase());
     }
 
-    protected String toOneRelationshipName(DbRelationship... relationshipChain) {
+    protected String toOneRelationshipName(List<DbJoin> joins, String targetEntityName) {
 
-        DbRelationship first = relationshipChain[0];
-        DbRelationship last = relationshipChain[relationshipChain.length - 1];
-
-        List<DbJoin> joins = first.getJoins();
         if (joins.isEmpty()) {
             // In case, when uses EditRelationship button, relationship doesn't exist => it doesn't have joins
             // and just return targetName
-            return stemmed(last.getTargetEntityName());
+            return stemmed(targetEntityName);
         }
 
         DbJoin join1 = joins.getFirst();
@@ -97,13 +109,13 @@ public class DefaultObjectNameGenerator implements ObjectNameGenerator {
         // return the name of the FK column sans ID
         String fkColName = join1.getSourceName();
         if (fkColName == null) {
-            return stemmed(last.getTargetEntityName());
+            return stemmed(targetEntityName);
         } else if (fkColName.toUpperCase().endsWith("_ID") && fkColName.length() > 3) {
             return fkColName.substring(0, fkColName.length() - 3);
         } else if (fkColName.toUpperCase().endsWith("ID") && fkColName.length() > 2) {
             return fkColName.substring(0, fkColName.length() - 2);
         } else {
-            return stemmed(last.getTargetEntityName());
+            return stemmed(targetEntityName);
         }
     }
 
