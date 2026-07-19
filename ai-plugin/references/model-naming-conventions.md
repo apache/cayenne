@@ -41,7 +41,7 @@ Concretely, the generator produces:
 | `db-entity` name | stem, split on `_`, capitalize each token | `ARTIST_GROUP` → `ArtistGroup` |
 | `db-attribute` name | split on `_`, camelCase | `FIRST_NAME` → `firstName` |
 | to-one relationship | FK column minus trailing `_ID`/`ID`; else target entity name | `MANAGER_ID` → `manager` |
-| to-many relationship | English plural of the target entity name | `PAINTING` → `paintings` |
+| to-many relationship | English plural of the target entity name, prefixed with the FK role qualifier when the FK column embeds the source entity name | `PAINTING` → `paintings`; `HOME_TEAM_ID` → `homeGames` |
 | name collision within an entity | append a numeric suffix | `team`, `team1`, `team2` … |
 
 Generation also collapses all-upper tokens to lowercase and preserves already-mixed
@@ -77,15 +77,19 @@ exists — never invent one (`status` is not `sta` + `tus`; `metadata` is one wo
 
 ### 2. More than one relationship between the same two tables
 
-When two FKs point at the same target table (or two relationships otherwise share a target),
-generation can't invent a role, so it disambiguates with numbers. But **the two
+When two FKs point at the same target table (or two relationships otherwise share a target), and a
+role can't be derived from the FK column, generation disambiguates with numbers. **The two
 directions are not equally affected** — the to-one and to-many sides are named by different rules:
 
-- **to-many side always collides.** To-many naming ignores the FK column entirely and always uses
-  the pluralized target entity name, so two relationships to the same target both become e.g.
-  `games` / `games1` (or `people` / `people1`) no matter how well the FKs are named. This is the
-  common case and the main reason this rule exists. Name each collection by the **logically opposite**
-  role instead: on `Team`, the two reverse collections of `Game` become `homeGames` / `awayGames`.
+- **to-many side collides when the FK doesn't embed the source entity name.** When the FK column is
+  `<ROLE>_<SOURCE_ENTITY>[_ID]`, the generator prepends the role qualifier to the pluralized target
+  (`HOME_TEAM_ID` / `AWAY_TEAM_ID` on FKs to `TEAM` → `homeGames` / `awayGames`) — those are already
+  correct, leave them. The entity-name part may drop a common table prefix: `home_team_id`
+  referencing `aa_team` still yields `homeAaGames`. It still collides when the FK carries a role
+  unrelated to the source entity name:
+  `MANAGER_ID` / `AUDITOR_ID` FKs to `EMPLOYEE` both produce `projects` / `projects1` on
+  `Employee`, because the role can't be mechanically tied to the entity. Name each collection by its
+  role yourself: `managedProjects` / `auditedProjects`.
 
 - **to-one side usually does NOT collide.** To-one naming is FK-column-based — it strips a trailing
   `_ID`/`ID`, so distinct `*_ID` FKs already yield distinct, good names (`HOME_TEAM_ID` → `homeTeam`,
@@ -95,10 +99,10 @@ directions are not equally affected** — the to-one and to-many sides are named
   role from the FK column yourself even though it lacks the `_ID` suffix (`MANAGER` → `manager`,
   `SUPERVISOR` → `supervisor`).
 
-So in the typical "two well-named `*_ID` FKs" model you'll rename **only the to-many collections**
-(`games`/`games1`), and the to-one ends are already fine. When you do rename both ends, give them
-matching opposite-role names so the pair is legible from either side (`homeTeam` ↔ `homeGames`,
-`awayTeam` ↔ `awayGames`).
+So in the typical "two `<ROLE>_<ENTITY>_ID` FKs" model **both directions are already fine**
+(`homeTeam` ↔ `homeGames`, `awayTeam` ↔ `awayGames`) — nothing to rename. When you do rename, give
+the two ends matching opposite-role names so the pair is legible from either side
+(`manager` ↔ `managedProjects`).
 
 ### 3. Genuinely cryptic abbreviations (secondary, be conservative)
 
@@ -164,9 +168,10 @@ guessing.
 A DbRelationship `name` is **arbitrary** (not derived from a real table/column like a DbEntity/
 DbAttribute), but it is **not** exempt from cleanup — treat it as the first-class citizen here, since
 every FK produces a DbRelationship whether or not an ObjRelationship was generated on it. Reverse
-engineering names it with the **same generator** as ObjRelationships (`relationshipName()`: to-one =
-FK column minus a trailing `_ID`/`ID`, else target entity name; to-many = English plural of the
-target entity, all `underscoredToJava`-cased), so it inherits the same gaps — run-together names,
+engineering names it with the **same generator** as ObjRelationships (to-one = FK column minus a
+trailing `_ID`/`ID`, else target entity name; to-many = English plural of the target entity with a
+FK role qualifier when the FK embeds the source entity name, all `underscoredToJava`-cased), so it
+inherits the same gaps — run-together names,
 numbered collisions (`toArtist` / `toArtist1`), a leaked common prefix. Apply §1–§5 to DbRelationship
 names directly, deriving the fix from the DbRelationship's own DB metadata (its FK column for to-one,
 its target DbEntity pluralized for to-many).

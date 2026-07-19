@@ -91,6 +91,64 @@ public class DefaultObjectNameGeneratorTest {
     }
 
     @Test
+    public void objRelationshipName_ToMany_RoleQualifiedFk() {
+
+        // two FKs from GAME to TEAM: the reverse collections take the role from the FK column
+        DbRelationship r1 = makeRelationship("TEAM", "TEAM_ID", "GAME", "HOME_TEAM_ID", true);
+        assertEquals("homeGames", generator.objRelationshipName(r1));
+
+        DbRelationship r2 = makeRelationship("TEAM", "TEAM_ID", "GAME", "AWAY_TEAM_ID", true);
+        assertEquals("awayGames", generator.objRelationshipName(r2));
+
+        DbRelationship r3 = makeRelationship("team", "team_id", "game", "home_team_id", true);
+        assertEquals("homeGames", generator.objRelationshipName(r3));
+
+        // FK without an ID suffix still carries the role
+        DbRelationship r4 = makeRelationship("TEAM", "TEAM_ID", "GAME", "HOME_TEAM", true);
+        assertEquals("homeGames", generator.objRelationshipName(r4));
+
+        // multi-word qualifier and entity name
+        DbRelationship r5 = makeRelationship("ARTIST_GROUP", "ID", "EXHIBIT", "PRIMARY_ARTIST_GROUP_ID", true);
+        assertEquals("primaryExhibits", generator.objRelationshipName(r5));
+
+        // FK role unrelated to the source entity name gets no qualifier
+        DbRelationship r6 = makeRelationship("PERSON", "PERSON_ID", "PERSON", "MOTHER_ID", true);
+        assertEquals("people", generator.objRelationshipName(r6));
+
+        // FK ending with the entity name without a "_" boundary gets no qualifier
+        DbRelationship r7 = makeRelationship("TEAM", "TEAM_ID", "GAME", "STEAM_ID", true);
+        assertEquals("games", generator.objRelationshipName(r7));
+    }
+
+    @Test
+    public void objRelationshipName_ToMany_RoleQualifiedFk_FkDropsTablePrefix() {
+
+        // FK columns matching a "_"-token suffix of the entity name still carry the role...
+        DbRelationship r1 = makeRelationship("nhl_team", "id", "nhl_game", "home_team_id", true);
+        assertEquals("homeNhlGames", generator.objRelationshipName(r1));
+
+        DbRelationship r2 = makeRelationship("nhl_team", "id", "nhl_game", "visiting_team_id", true);
+        assertEquals("visitingNhlGames", generator.objRelationshipName(r2));
+
+        // ... and a plain suffix reference gets no qualifier
+        DbRelationship r3 = makeRelationship("nhl_team", "id", "nhl_award", "team_id", true);
+        assertEquals("nhlAwards", generator.objRelationshipName(r3));
+
+        DbRelationship r4 = makeRelationship("nhl_game_type", "id", "nhl_game", "type_id", true);
+        assertEquals("nhlGames", generator.objRelationshipName(r4));
+    }
+
+    @Test
+    public void dbRelationshipName_ToMany_RoleQualifiedFk() {
+
+        DbRelationship r1 = makeRelationship("TEAM", "TEAM_ID", "GAME", "HOME_TEAM_ID", true);
+        assertEquals("homeGames", generator.dbRelationshipName(r1.getJoins(), r1.isToMany()));
+
+        DbRelationship r2 = makeRelationship("TEAM", "TEAM_ID", "GAME", "AWAY_TEAM_ID", true);
+        assertEquals("awayGames", generator.dbRelationshipName(r2.getJoins(), r2.isToMany()));
+    }
+
+    @Test
     public void dbRelationshipName() {
 
         DbRelationship r1 = makeRelationship("painting", "artist_id", "artist", "artist_id", false);

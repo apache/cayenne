@@ -77,12 +77,14 @@ correct — leave them.** Flag only the cases the deterministic generator can't 
 
 1. **Run-together names with no separators** — `gametype` → `GameType`, `dateofbirth` → `dateOfBirth`.
    Split on a real word boundary you're confident about; never invent one.
-2. **Numbered collision names** (`games` / `games1`, `people` / `people1`) from more than one
-   relationship between the same two tables. This almost always hits the **to-many** side, which
-   ignores FK columns and just pluralizes the target — rename those by the logical inverse role
-   (`homeGames` / `awayGames`). The **to-one** side is usually already fine (it's FK-based:
-   `HOME_TEAM_ID` → `homeTeam`); only fix it in the fallback case where FK columns lack an `_ID`
-   suffix and collapse to `employee` / `employee1`.
+2. **Numbered collision names** (`projects` / `projects1`, `people` / `people1`) from more than one
+   relationship between the same two tables. The generator resolves the common cases itself: to-one
+   names are FK-based (`HOME_TEAM_ID` → `homeTeam`), and to-many names pick up a FK role qualifier
+   when the FK embeds the source entity name, even one sans a common table prefix (`HOME_TEAM_ID` →
+   `homeGames`; `home_team_id` referencing `aa_team` → `homeAaGames`). What still collides:
+   to-many collections whose FK role is unrelated to the entity name (`MANAGER_ID` / `AUDITOR_ID` →
+   `projects` / `projects1` — rename by role: `managedProjects` / `auditedProjects`), and to-one
+   ends whose FK columns lack an `_ID` suffix and collapse to `employee` / `employee1`.
 3. **A common entity prefix leaking into relationship names** — when every entity shares a prefix
    that was **kept** on the class names (`AaCustomer`, `AaOrder`), the relationship names inherit it
    (`aaOrders`, `aaCustomer`). Strip the prefix from the relationship names (`orders`, `customer`);

@@ -81,15 +81,55 @@ public abstract class BaseObjectNameGenerator implements ObjectNameGenerator {
 
     protected String relationshipBase(List<DbJoin> joins, String targetEntityName, boolean toMany) {
         return toMany
-                ? toManyBase(targetEntityName)
+                ? toManyBase(joins, targetEntityName)
                 : toOneBase(joins, targetEntityName);
     }
 
-    protected String toManyBase(String targetEntityName) {
-        String baseName = dbEntityBaseName(targetEntityName);
-        return EnglishInflector.pluralOf(baseName.toLowerCase());
+    protected String toManyBase(List<DbJoin> joins, String targetEntityName) {
+        String plural = EnglishInflector.pluralOf(dbEntityBaseName(targetEntityName).toLowerCase());
+        String qualifier = toManyRoleQualifier(joins);
+        return qualifier != null ? qualifier + "_" + plural : plural;
     }
 
+    private String toManyRoleQualifier(List<DbJoin> joins) {
+
+        if (joins.isEmpty()) {
+            return null;
+        }
+
+        DbJoin join1 = joins.getFirst();
+        DbEntity sourceEntity = join1.getRelationship().getSourceEntity();
+
+        // the FK column of a to-many relationship is on the target side of the join
+        String fkColName = join1.getTargetName();
+        if (sourceEntity == null || fkColName == null) {
+            return null;
+        }
+
+        String fkBase = stripIdSuffix(fkColName);
+        String role = dbEntityBaseName(fkBase != null ? fkBase : fkColName);
+        String roleUpper = role.toUpperCase();
+
+        // match the role against the source entity name, then against its shorter "_"-token suffixes,
+        // as FK columns often drop a common table-name prefix ("home_team_id" referencing "nhl_team")
+        String suffix = dbEntityBaseName(sourceEntity.getName()).toUpperCase();
+        while (true) {
+            if (roleUpper.equals(suffix)) {
+                return null;
+            }
+
+            if (roleUpper.endsWith("_" + suffix)) {
+                String qualifier = role.substring(0, role.length() - suffix.length() - 1);
+                return qualifier.isEmpty() ? null : qualifier;
+            }
+
+            int underscore = suffix.indexOf('_');
+            if (underscore < 0) {
+                return null;
+            }
+            suffix = suffix.substring(underscore + 1);
+        }
+    }
 
     protected String toOneBase(List<DbJoin> joins, String targetEntityName) {
 
@@ -107,12 +147,19 @@ public abstract class BaseObjectNameGenerator implements ObjectNameGenerator {
         String fkColName = join1.getSourceName();
         if (fkColName == null) {
             return dbEntityBaseName(targetEntityName);
-        } else if (fkColName.toUpperCase().endsWith("_ID") && fkColName.length() > 3) {
+        }
+
+        String fkBase = stripIdSuffix(fkColName);
+        return fkBase != null ? fkBase : dbEntityBaseName(targetEntityName);
+    }
+
+    private static String stripIdSuffix(String fkColName) {
+        if (fkColName.toUpperCase().endsWith("_ID") && fkColName.length() > 3) {
             return fkColName.substring(0, fkColName.length() - 3);
         } else if (fkColName.toUpperCase().endsWith("ID") && fkColName.length() > 2) {
             return fkColName.substring(0, fkColName.length() - 2);
         } else {
-            return dbEntityBaseName(targetEntityName);
+            return null;
         }
     }
 }
