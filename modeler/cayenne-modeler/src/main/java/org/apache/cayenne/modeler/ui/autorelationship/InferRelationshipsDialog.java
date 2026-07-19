@@ -18,6 +18,7 @@
  ****************************************************************/
 package org.apache.cayenne.modeler.ui.autorelationship;
 
+import org.apache.cayenne.dbsync.naming.NameBuilder;
 import org.apache.cayenne.dbsync.naming.ObjectNameGenerator;
 import org.apache.cayenne.map.DataMap;
 import org.apache.cayenne.map.DbAttribute;
@@ -310,7 +311,9 @@ public class InferRelationshipsDialog extends ProjectDialog {
                 localRelationship.setTargetEntityName(myir.getSource().getName());
             }
 
-            myir.setName(strategy.relationshipName(localRelationship));
+            myir.setName(NameBuilder.of(localRelationship, localRelationship.getSourceEntity())
+                    .baseName(strategy.relationshipName(localRelationship))
+                    .name());
         }
     }
 

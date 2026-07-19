@@ -18,6 +18,7 @@
  ****************************************************************/
 package org.apache.cayenne.modeler.ui.action;
 
+import org.apache.cayenne.dbsync.naming.CallbackNode;
 import org.apache.cayenne.dbsync.naming.NameBuilder;
 import org.apache.cayenne.map.CallbackMap;
 import org.apache.cayenne.map.LifecycleEvent;
@@ -56,7 +57,7 @@ public class CreateCallbackMethodAction extends AppAction {
         CallbackType callbackType = getProjectSession().getSelectedCallbackType();
 
         String methodName = NameBuilder
-                .ofCallbackMethod().parent(getProjectSession().getSelectedObjEntity())
+                .of(new CallbackNode(), getProjectSession().getSelectedObjEntity())
                 .baseName(toMethodName(callbackType.getType()))
                 .name();
 

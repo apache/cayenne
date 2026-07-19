@@ -285,7 +285,7 @@ public class ImportEOModelAction extends AppAction {
             // fix DataMap name, as there maybe a map with the same name already
             ConfigurationNode root = session.project().getRootNode();
             map.setName(NameBuilder
-                    .of(map).parent(root)
+                    .of(map, root)
                     .baseName(map.getName())
                     .name());
 

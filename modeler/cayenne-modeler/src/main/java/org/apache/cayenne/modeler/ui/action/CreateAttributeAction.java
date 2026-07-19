@@ -110,7 +110,7 @@ public class CreateAttributeAction extends AppAction {
 
             EmbeddableAttribute attr = new EmbeddableAttribute();
             attr.setName(NameBuilder
-                    .of(attr).parent(embeddable)
+                    .of(attr, embeddable)
                     .name());
 
             createEmbAttribute(embeddable, attr);
@@ -124,7 +124,7 @@ public class CreateAttributeAction extends AppAction {
             ObjEntity objEntity = session.getSelectedObjEntity();
 
             ObjAttribute attr = new ObjAttribute();
-            attr.setName(NameBuilder.of(attr).parent(objEntity).name());
+            attr.setName(NameBuilder.of(attr, objEntity).name());
 
             createObjAttribute(session.getSelectedDataMap(), objEntity, attr);
 
@@ -135,7 +135,7 @@ public class CreateAttributeAction extends AppAction {
             DbEntity dbEntity = getProjectSession().getSelectedDbEntity();
 
             DbAttribute attr = new DbAttribute();
-            attr.setName(NameBuilder.of(attr).parent(dbEntity).name());
+            attr.setName(NameBuilder.of(attr, dbEntity).name());
             attr.setType(TypesMapping.NOT_DEFINED);
             attr.setEntity(dbEntity);
 

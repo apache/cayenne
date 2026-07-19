@@ -61,7 +61,7 @@ public class CreateProcedureAction extends AppAction {
         DataMap map = getProjectSession().getSelectedDataMap();
 
         Procedure procedure = new Procedure();
-        procedure.setName(NameBuilder.of(procedure).parent(map).name());
+        procedure.setName(NameBuilder.of(procedure, map).name());
         createProcedure(map, procedure);
 
         app.getUndoManager().addEdit(new CreateProcedureUndoableEdit(getProjectSession(), map, procedure));

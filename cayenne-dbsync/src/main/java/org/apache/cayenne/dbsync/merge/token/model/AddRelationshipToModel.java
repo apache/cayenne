@@ -22,6 +22,7 @@ package org.apache.cayenne.dbsync.merge.token.model;
 import org.apache.cayenne.dbsync.merge.context.MergerContext;
 import org.apache.cayenne.dbsync.merge.factory.MergerTokenFactory;
 import org.apache.cayenne.dbsync.merge.token.MergerToken;
+import org.apache.cayenne.dbsync.naming.NameBuilder;
 import org.apache.cayenne.map.DbEntity;
 import org.apache.cayenne.map.DbJoin;
 import org.apache.cayenne.map.DbRelationship;
@@ -67,7 +68,9 @@ public class AddRelationshipToModel extends AbstractToModelToken.Entity {
     public void execute(MergerContext context) {
         // Set name to relationship if it was created without it, e.g. in createReverse() action
         if (relationship.getName() == null) {
-            relationship.setName(context.getNameGenerator().relationshipName(relationship));
+            relationship.setName(NameBuilder.of(relationship, getEntity())
+                    .baseName(context.getNameGenerator().relationshipName(relationship))
+                    .name());
         }
 
         getEntity().addRelationship(relationship);

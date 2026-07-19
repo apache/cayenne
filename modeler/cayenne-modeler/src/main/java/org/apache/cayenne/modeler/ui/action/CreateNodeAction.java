@@ -91,7 +91,7 @@ public class CreateNodeAction extends AppAction {
      */
     DataNodeDescriptor buildDataNode(DataChannelDescriptor dataChannelDescriptor) {
         DataNodeDescriptor node = new DataNodeDescriptor();
-        node.setName(NameBuilder.of(node).parent(dataChannelDescriptor).name());
+        node.setName(NameBuilder.of(node, dataChannelDescriptor).name());
         node.setDataChannelDescriptor(dataChannelDescriptor);
 
         return node;

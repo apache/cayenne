@@ -93,7 +93,7 @@ public class DbRelationshipDialog extends ProjectDialog {
 
     public static Optional<DbRelationship> openForCreate(ProjectSession session, Window owner, DbEntity sourceEntity) {
         DbRelationship relationship = new DbRelationship();
-        relationship.setName(NameBuilder.of(relationship).parent(sourceEntity).name());
+        relationship.setName(NameBuilder.of(relationship, sourceEntity).name());
         relationship.setSourceEntity(sourceEntity);
 
         DbRelationshipDialog dialog = new DbRelationshipDialog(session, owner, relationship, true);
@@ -347,7 +347,7 @@ public class DbRelationshipDialog extends ProjectDialog {
             if (reverse == null) {
                 reverse = new DbRelationship();
                 reverse.setName(NameBuilder
-                        .of(reverse).parent(relationship.getTargetEntity())
+                        .of(reverse, relationship.getTargetEntity())
                         .baseName(reverseName.getText().trim())
                         .name());
 
@@ -455,7 +455,7 @@ public class DbRelationshipDialog extends ProjectDialog {
         }
 
         String newName = NameBuilder
-                .of(rel).parent(rel.getSourceEntity())
+                .of(rel, rel.getSourceEntity())
                 .baseName(userInputName)
                 .name();
 

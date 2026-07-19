@@ -139,7 +139,7 @@ public class ObjRelationshipInfoDialog extends ProjectDialog implements TreeSele
 
     public ObjRelationshipInfoDialog createRelationship(ObjEntity objEntity) {
         ObjRelationship rel = new ObjRelationship();
-        rel.setName(NameBuilder.of(rel).parent(objEntity).name());
+        rel.setName(NameBuilder.of(rel, objEntity).name());
         rel.setSourceEntity(objEntity);
         DeleteRuleUpdater.updateObjRelationship(rel);
         isCreate = true;
