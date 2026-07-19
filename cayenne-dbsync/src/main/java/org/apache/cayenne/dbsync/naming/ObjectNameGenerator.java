@@ -44,9 +44,6 @@ public interface ObjectNameGenerator {
 
     /**
      * Generates a name for an ObjRelationship, derived from join semantics of a chain of connected DbRelationships.
-     * <p>The chain must contain at least one relationship. Though if we are dealing with a flattened
-     * relationship, more than one can be passed, in the same order as they are present in a flattened
-     * relationship.
      *
      * @since 5.0
      */
