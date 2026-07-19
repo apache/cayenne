@@ -286,8 +286,8 @@ public class ImportEOModelAction extends AppAction {
             ConfigurationNode root = session.project().getRootNode();
             map.setName(NameBuilder
                     .of(map, root)
-                    .baseName(map.getName())
-                    .name());
+                    .preferredName(map.getName())
+                    .build());
 
             // side effect of this operation is that if a node was created, this DataMap
             // will be linked with it...

@@ -115,7 +115,7 @@ public class QueryTypeDialog extends ProjectDialog {
 
     private void createQuery() {
         QueryDescriptor query = QueryDescriptor.descriptor(selectedQueryType());
-        query.setName(NameBuilder.of(query, dataMap).name());
+        query.setName(NameBuilder.of(query, dataMap).build());
         query.setDataMap(dataMap);
 
         dataMap.addQueryDescriptor(query);

@@ -686,8 +686,8 @@ public class EOModelProcessor {
 				DbRelationship reverse = relationship.createReverseRelationship();
 				reverse.setName(NameBuilder.of(reverse, reverse.getSourceEntity())
 						// TODO: we can do better with ObjectNameGenerator
-						.baseName(relationship.getName() + "Reverse")
-						.name());
+						.preferredName(relationship.getName() + "Reverse")
+						.build());
 				relationship.getTargetEntity().addRelationship(reverse);
 			}
 		}

@@ -39,233 +39,233 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 public class NameBuilderTest {
 
     @Test
-    public void name_Root() {
-        assertEquals("project", NameBuilder.of(new DataChannelDescriptor(), null).name());
+    public void build_Root() {
+        assertEquals("project", NameBuilder.of(new DataChannelDescriptor(), null).build());
     }
 
     @Test
-    public void name_DataChannelDescriptorContext() throws Exception {
+    public void build_DataChannelDescriptorContext() throws Exception {
         DataChannelDescriptor descriptor = new DataChannelDescriptor();
 
         DataMap m0 = new DataMap();
-        m0.setName(NameBuilder.of(m0, descriptor).name());
+        m0.setName(NameBuilder.of(m0, descriptor).build());
         assertEquals("datamap", m0.getName());
         descriptor.getDataMaps().add(m0);
 
         DataMap m1 = new DataMap();
-        m1.setName(NameBuilder.of(m1, descriptor).name());
+        m1.setName(NameBuilder.of(m1, descriptor).build());
         assertEquals("datamap1", m1.getName());
         descriptor.getDataMaps().add(m1);
 
         DataNodeDescriptor nd0 = new DataNodeDescriptor();
-        nd0.setName(NameBuilder.of(nd0, descriptor).name());
+        nd0.setName(NameBuilder.of(nd0, descriptor).build());
         assertEquals("datanode", nd0.getName());
         descriptor.getNodeDescriptors().add(nd0);
 
         DataNodeDescriptor nd1 = new DataNodeDescriptor();
-        nd1.setName(NameBuilder.of(nd1, descriptor).name());
+        nd1.setName(NameBuilder.of(nd1, descriptor).build());
         assertEquals("datanode1", nd1.getName());
         descriptor.getNodeDescriptors().add(nd1);
     }
 
 
     @Test
-    public void name_DataMapContext() {
+    public void build_DataMapContext() {
         DataMap map = new DataMap();
         map.setDefaultPackage("com.foo");
 
         DbEntity de0 = new DbEntity();
-        de0.setName(NameBuilder.of(de0, map).name());
+        de0.setName(NameBuilder.of(de0, map).build());
         assertEquals("db_entity", de0.getName());
         map.addDbEntity(de0);
 
         DbEntity de1 = new DbEntity();
-        de1.setName(NameBuilder.of(de1, map).name());
+        de1.setName(NameBuilder.of(de1, map).build());
         assertEquals("db_entity1", de1.getName());
         map.addDbEntity(de1);
 
         ObjEntity oe0 = new ObjEntity();
-        oe0.setName(NameBuilder.of(oe0, map).name());
+        oe0.setName(NameBuilder.of(oe0, map).build());
         assertEquals("ObjEntity", oe0.getName());
         map.addObjEntity(oe0);
 
         ObjEntity oe1 = new ObjEntity();
-        oe1.setName(NameBuilder.of(oe1, map).name());
+        oe1.setName(NameBuilder.of(oe1, map).build());
         assertEquals("ObjEntity1", oe1.getName());
         map.addObjEntity(oe1);
 
         ObjEntity oe2 = new ObjEntity();
-        oe2.setName(NameBuilder.of(oe0, map).baseName("db_entity").name());
+        oe2.setName(NameBuilder.of(oe0, map).preferredName("db_entity").build());
         assertEquals("Db_entity", oe2.getName(), "Should not conflict with similarly named DbEntity");
         map.addObjEntity(oe2);
 
         Procedure p0 = new Procedure();
-        p0.setName(NameBuilder.of(p0, map).name());
+        p0.setName(NameBuilder.of(p0, map).build());
         assertEquals("procedure", p0.getName());
         map.addProcedure(p0);
 
         Procedure p1 = new Procedure();
-        p1.setName(NameBuilder.of(p1, map).name());
+        p1.setName(NameBuilder.of(p1, map).build());
         assertEquals("procedure1", p1.getName());
         map.addProcedure(p1);
 
         Procedure p2 = new Procedure();
-        p2.setName(NameBuilder.of(p1, map).baseName("db_enity").name());
+        p2.setName(NameBuilder.of(p1, map).preferredName("db_enity").build());
         assertEquals("db_enity", p2.getName(), "Should not conflict with similarly named DbEntity");
         map.addProcedure(p2);
 
         QueryDescriptor q0 = QueryDescriptor.selectQueryDescriptor();
-        q0.setName(NameBuilder.of(q0, map).name());
+        q0.setName(NameBuilder.of(q0, map).build());
         assertEquals("query", q0.getName());
         map.addQueryDescriptor(q0);
 
         QueryDescriptor q1 = QueryDescriptor.ejbqlQueryDescriptor();
-        q1.setName(NameBuilder.of(q1, map).name());
+        q1.setName(NameBuilder.of(q1, map).build());
         assertEquals("query1", q1.getName());
         map.addQueryDescriptor(q1);
 
         Embeddable e0 = new Embeddable();
-        e0.setClassName("com.foo." + NameBuilder.of(e0, map).name());
+        e0.setClassName("com.foo." + NameBuilder.of(e0, map).build());
         assertEquals("com.foo.Embeddable", e0.getClassName());
         map.addEmbeddable(e0);
 
         Embeddable e1 = new Embeddable();
-        e1.setClassName("com.foo." + NameBuilder.of(e1, map).name());
+        e1.setClassName("com.foo." + NameBuilder.of(e1, map).build());
         assertEquals("com.foo.Embeddable1", e1.getClassName());
         map.addEmbeddable(e1);
     }
 
     @Test
-    public void name_ObjEntityContext() {
+    public void build_ObjEntityContext() {
 
         ObjEntity entity = new ObjEntity();
 
         entity.getCallbackMap().getPostAdd().addCallbackMethod("getMe");
 
         ObjAttribute a0 = new ObjAttribute();
-        String na0 = NameBuilder.of(a0, entity).name();
+        String na0 = NameBuilder.of(a0, entity).build();
         assertEquals("untitledAttr", na0);
         a0.setName(na0);
         entity.addAttribute(a0);
 
         ObjAttribute a1 = new ObjAttribute();
-        String na1 = NameBuilder.of(a1, entity).name();
+        String na1 = NameBuilder.of(a1, entity).build();
         assertEquals("untitledAttr1", na1);
         a1.setName(na1);
         entity.addAttribute(a1);
 
         ObjAttribute a2 = new ObjAttribute();
-        String na2 = NameBuilder.of(a2, entity).baseName("me").name();
+        String na2 = NameBuilder.of(a2, entity).preferredName("me").build();
         assertEquals("me1", na2, "Conflict with callback method was not detected");
         a2.setName(na2);
         entity.addAttribute(a2);
 
         ObjRelationship r0 = new ObjRelationship();
-        String nr0 = NameBuilder.of(r0, entity).name();
+        String nr0 = NameBuilder.of(r0, entity).build();
         assertEquals("untitledRel", nr0);
         r0.setName(nr0);
         entity.addRelationship(r0);
 
         ObjRelationship r1 = new ObjRelationship();
-        String nr1 = NameBuilder.of(r1, entity).name();
+        String nr1 = NameBuilder.of(r1, entity).build();
         assertEquals("untitledRel1", nr1);
         r1.setName(nr1);
         entity.addRelationship(r1);
     }
 
     @Test
-    public void name_DbEntityContext() {
+    public void build_DbEntityContext() {
         DbEntity entity = new DbEntity();
 
         DbAttribute a0 = new DbAttribute();
-        String na0 = NameBuilder.of(a0, entity).name();
+        String na0 = NameBuilder.of(a0, entity).build();
         assertEquals("untitledAttr", na0);
         a0.setName(na0);
         entity.addAttribute(a0);
 
         DbAttribute a1 = new DbAttribute();
-        String na1 = NameBuilder.of(a1, entity).name();
+        String na1 = NameBuilder.of(a1, entity).build();
         assertEquals("untitledAttr1", na1);
         a1.setName(na1);
         entity.addAttribute(a1);
 
         DbRelationship r0 = new DbRelationship();
-        String nr0 = NameBuilder.of(r0, entity).name();
+        String nr0 = NameBuilder.of(r0, entity).build();
         assertEquals("untitledRel", nr0);
         r0.setName(nr0);
         entity.addRelationship(r0);
 
         DbRelationship r1 = new DbRelationship();
-        String nr1 = NameBuilder.of(r1, entity).name();
+        String nr1 = NameBuilder.of(r1, entity).build();
         assertEquals("untitledRel1", nr1);
         r1.setName(nr1);
         entity.addRelationship(r1);
     }
 
     @Test
-    public void name_ProcedureContext() {
+    public void build_ProcedureContext() {
         Procedure procedure = new Procedure();
 
         ProcedureParameter p0 = new ProcedureParameter();
-        p0.setName(NameBuilder.of(p0, procedure).name());
+        p0.setName(NameBuilder.of(p0, procedure).build());
         assertEquals("UntitledProcedureParameter", p0.getName());
         procedure.addCallParameter(p0);
 
         ProcedureParameter p1 = new ProcedureParameter();
-        p1.setName(NameBuilder.of(p1, procedure).name());
+        p1.setName(NameBuilder.of(p1, procedure).build());
         assertEquals("UntitledProcedureParameter1", p1.getName());
         procedure.addCallParameter(p1);
     }
 
     @Test
-    public void name_EmbeddableContext() {
+    public void build_EmbeddableContext() {
         Embeddable embeddable = new Embeddable();
 
         EmbeddableAttribute ea0 = new EmbeddableAttribute();
-        ea0.setName(NameBuilder.of(ea0, embeddable).name());
+        ea0.setName(NameBuilder.of(ea0, embeddable).build());
         assertEquals("untitledAttr", ea0.getName());
         embeddable.addAttribute(ea0);
 
         EmbeddableAttribute ea1 = new EmbeddableAttribute();
-        ea1.setName(NameBuilder.of(ea1, embeddable).name());
+        ea1.setName(NameBuilder.of(ea1, embeddable).build());
         assertEquals("untitledAttr1", ea1.getName());
         embeddable.addAttribute(ea1);
     }
 
     @Test
-    public void name_UncapitalizeAttributeNames() throws Exception {
+    public void build_UncapitalizeAttributeNames() throws Exception {
 
         ObjEntity entity = new ObjEntity();
 
         ObjAttribute a0 = new ObjAttribute();
-        String na0 = NameBuilder.of(a0, entity).baseName("myName").name();
+        String na0 = NameBuilder.of(a0, entity).preferredName("myName").build();
         assertEquals("myName", na0);
         a0.setName(na0);
         entity.addAttribute(a0);
 
         ObjAttribute a1 = new ObjAttribute();
-        String na1 = NameBuilder.of(a1, entity).baseName("MyName").name();
+        String na1 = NameBuilder.of(a1, entity).preferredName("MyName").build();
         assertEquals("myName1", na1);
         a1.setName(na1);
         entity.addAttribute(a1);
     }
 
     @Test
-    public void name_Callbacks_ObjEntityContext() {
+    public void build_Callbacks_ObjEntityContext() {
 
         ObjEntity entity = new ObjEntity();
 
-        String c0 = NameBuilder.of(new CallbackNode(), entity).name();
+        String c0 = NameBuilder.of(new CallbackNode(), entity).build();
         assertEquals("onEvent", c0);
         entity.getCallbackMap().getPostAdd().addCallbackMethod(c0);
 
-        String c1 = NameBuilder.of(new CallbackNode(), entity).name();
+        String c1 = NameBuilder.of(new CallbackNode(), entity).build();
         assertEquals("onEvent1", c1);
         entity.getCallbackMap().getPostAdd().addCallbackMethod(c1);
 
         entity.addAttribute(new ObjAttribute("untitledAttr"));
 
-        String c3 = NameBuilder.of(new CallbackNode(), entity).baseName("getUntitledAttr").name();
+        String c3 = NameBuilder.of(new CallbackNode(), entity).preferredName("getUntitledAttr").build();
         assertEquals("getUntitledAttr1", c3);
         entity.getCallbackMap().getPostAdd().addCallbackMethod(c3);
     }

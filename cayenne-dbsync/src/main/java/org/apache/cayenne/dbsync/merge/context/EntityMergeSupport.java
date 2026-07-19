@@ -202,8 +202,8 @@ public class EntityMergeSupport {
     private boolean createObjRelationship(ObjEntity entity, DbRelationship dr, String targetEntityName) {
         ObjRelationship or = new ObjRelationship();
         or.setName(NameBuilder.of(or, entity)
-                .baseName(nameGenerator.objRelationshipName(dr))
-                .name());
+                .preferredName(nameGenerator.objRelationshipName(dr))
+                .build());
 
         or.addDbRelationship(dr);
         Map<String, ObjEntity> objEntities = entity.getDataMap().getSubclassesForObjEntity(entity);
@@ -268,7 +268,7 @@ public class EntityMergeSupport {
 
     private void addMissingAttribute(ObjEntity entity, DbAttribute da) {
         ObjAttribute oa = new ObjAttribute();
-        oa.setName(NameBuilder.of(oa, entity).baseName(nameGenerator.objAttributeName(da)).name());
+        oa.setName(NameBuilder.of(oa, entity).preferredName(nameGenerator.objAttributeName(da)).build());
         oa.setEntity(entity);
         oa.setType(getTypeForObjAttribute(da));
         oa.setDbAttributePath(da.getName());

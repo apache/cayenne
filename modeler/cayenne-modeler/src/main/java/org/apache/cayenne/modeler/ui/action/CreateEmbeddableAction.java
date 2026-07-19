@@ -68,7 +68,7 @@ public class CreateEmbeddableAction extends AppAction {
         DataMap dataMap = getProjectSession().getSelectedDataMap();
 
         Embeddable embeddable = new Embeddable();
-        String baseName = NameBuilder.of(embeddable, dataMap).name();
+        String baseName = NameBuilder.of(embeddable, dataMap).build();
         String nameWithPackage = dataMap.getNameWithDefaultPackage(baseName);
         embeddable.setClassName(nameWithPackage);
         createEmbeddable(dataMap, embeddable);

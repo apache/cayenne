@@ -57,7 +57,7 @@ public class NameBuilder {
     private final ConfigurationNode nodeToName;
     private final ConfigurationNode parent;
     private String dupesPattern;
-    private String baseName;
+    private String preferredName;
 
     private NameBuilder(ConfigurationNode nodeToName, ConfigurationNode parent) {
         this.nodeToName = Objects.requireNonNull(nodeToName);
@@ -70,14 +70,14 @@ public class NameBuilder {
         return this;
     }
 
-    public NameBuilder baseName(String baseName) {
-        this.baseName = baseName;
+    public NameBuilder preferredName(String preferredName) {
+        this.preferredName = preferredName;
         return this;
     }
 
-    public String name() {
-        String baseName = this.baseName != null && !this.baseName.isEmpty()
-                ? this.baseName
+    public String build() {
+        String baseName = this.preferredName != null && !this.preferredName.isEmpty()
+                ? this.preferredName
                 : defaultBaseName(nodeToName);
 
         String normalizedBaseName = normalize(nodeToName, baseName);

@@ -62,7 +62,7 @@ public class NewProjectAction extends AppAction {
 
         dataChannelDescriptor.setName(NameBuilder
                 .of(dataChannelDescriptor, null)
-                .name());
+                .build());
 
         Project project = new Project(new ConfigurationTree<>(dataChannelDescriptor));
 

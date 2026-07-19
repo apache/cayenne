@@ -312,8 +312,8 @@ public class InferRelationshipsDialog extends ProjectDialog {
             }
 
             myir.setName(NameBuilder.of(localRelationship, localRelationship.getSourceEntity())
-                    .baseName(strategy.dbRelationshipName(localRelationship.getJoins(), localRelationship.isToMany()))
-                    .name());
+                    .preferredName(strategy.dbRelationshipName(localRelationship.getJoins(), localRelationship.isToMany()))
+                    .build());
         }
     }
 

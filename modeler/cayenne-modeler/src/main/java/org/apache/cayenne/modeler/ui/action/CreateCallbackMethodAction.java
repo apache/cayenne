@@ -58,8 +58,8 @@ public class CreateCallbackMethodAction extends AppAction {
 
         String methodName = NameBuilder
                 .of(new CallbackNode(), getProjectSession().getSelectedObjEntity())
-                .baseName(toMethodName(callbackType.getType()))
-                .name();
+                .preferredName(toMethodName(callbackType.getType()))
+                .build();
 
         createCallbackMethod(callbackType, methodName);
         app.getUndoManager().addEdit(

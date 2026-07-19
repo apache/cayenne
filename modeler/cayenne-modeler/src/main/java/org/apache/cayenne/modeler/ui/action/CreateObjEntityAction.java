@@ -76,7 +76,7 @@ public class CreateObjEntityAction extends AppAction {
 
         DataMap dataMap = session.getSelectedDataMap();
         ObjEntity entity = new ObjEntity();
-        entity.setName(NameBuilder.of(entity, dataMap).name());
+        entity.setName(NameBuilder.of(entity, dataMap).build());
 
         // init defaults
         entity.setSuperClassName(dataMap.getDefaultSuperclass());
@@ -90,8 +90,8 @@ public class CreateObjEntityAction extends AppAction {
             String baseName = new DefaultObjectNameGenerator(NoStemStemmer.getInstance()).objEntityName(dbEntity);
             entity.setName(NameBuilder
                     .of(entity, dbEntity.getDataMap())
-                    .baseName(baseName)
-                    .name());
+                    .preferredName(baseName)
+                    .build());
         }
 
         entity.setClassName(dataMap.getNameWithDefaultPackage(entity.getName()));

@@ -63,7 +63,7 @@ public class CreateDbEntityAction extends AppAction {
     public void performAction(ActionEvent e) {
         DataMap map = getProjectSession().getSelectedDataMap();
         DbEntity entity = new DbEntity();
-        entity.setName(NameBuilder.of(entity, map).name());
+        entity.setName(NameBuilder.of(entity, map).build());
         createEntity(map, entity);
 
         app.getUndoManager().addEdit(new CreateDbEntityUndoableEdit(getProjectSession(), map, entity));

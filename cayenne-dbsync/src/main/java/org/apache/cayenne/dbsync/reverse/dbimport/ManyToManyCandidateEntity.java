@@ -101,8 +101,8 @@ class ManyToManyCandidateEntity {
         ObjRelationship newRelationship = new ObjRelationship();
         newRelationship.setName(NameBuilder
                 .of(newRelationship, srcEntity)
-                .baseName(nameGenerator.objRelationshipName(rel1, rel2))
-                .name());
+                .preferredName(nameGenerator.objRelationshipName(rel1, rel2))
+                .build());
 
         newRelationship.setSourceEntity(srcEntity);
         newRelationship.setTargetEntityName(dstEntity);
