@@ -73,7 +73,7 @@ public class CreateDataMapAction extends AppAction {
                 .getRootNode();
 
         DataMap map = new DataMap();
-        map.setName(NameBuilder.builder(map, dataChannelDescriptor).name());
+        map.setName(NameBuilder.of(map).parent(dataChannelDescriptor).name());
         onMapCreated(this, getProjectSession(), map);
 
         app.getUndoManager().addEdit(new CreateDataMapUndoableEdit(getProjectSession(), dataChannelDescriptor, map));

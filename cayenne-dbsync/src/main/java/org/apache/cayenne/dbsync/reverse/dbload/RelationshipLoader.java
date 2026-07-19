@@ -19,11 +19,6 @@
 
 package org.apache.cayenne.dbsync.reverse.dbload;
 
-import java.sql.DatabaseMetaData;
-import java.sql.SQLException;
-import java.util.Map;
-import java.util.Set;
-
 import org.apache.cayenne.dbsync.naming.NameBuilder;
 import org.apache.cayenne.dbsync.naming.ObjectNameGenerator;
 import org.apache.cayenne.dbsync.reverse.filters.TableFilter;
@@ -33,6 +28,11 @@ import org.apache.cayenne.map.DbJoin;
 import org.apache.cayenne.map.DbRelationship;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+
+import java.sql.DatabaseMetaData;
+import java.sql.SQLException;
+import java.util.Map;
+import java.util.Set;
 
 public class RelationshipLoader extends AbstractLoader {
 
@@ -104,7 +104,7 @@ public class RelationshipLoader extends AbstractLoader {
 
     private void setRelationshipName(DbEntity entity, DbRelationship relationship) {
         relationship.setName(NameBuilder
-                .builder(relationship, entity)
+                .of(relationship).parent(entity)
                 .baseName(nameGenerator.relationshipName(relationship))
                 .name());
     }

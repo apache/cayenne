@@ -61,11 +61,10 @@ public class NewProjectAction extends AppAction {
         DataChannelDescriptor dataChannelDescriptor = new DataChannelDescriptor();
 
         dataChannelDescriptor.setName(NameBuilder
-                .builder(dataChannelDescriptor)
+                .of(dataChannelDescriptor)
                 .name());
 
-        Project project = new Project(
-                new ConfigurationTree<DataChannelDescriptor>(dataChannelDescriptor));
+        Project project = new Project(new ConfigurationTree<>(dataChannelDescriptor));
 
         controller.onProjectOpened(project, null);
 

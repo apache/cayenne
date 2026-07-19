@@ -76,7 +76,7 @@ public class CreateObjEntityAction extends AppAction {
 
         DataMap dataMap = session.getSelectedDataMap();
         ObjEntity entity = new ObjEntity();
-        entity.setName(NameBuilder.builder(entity, dataMap).name());
+        entity.setName(NameBuilder.of(entity).parent(dataMap).name());
 
         // init defaults
         entity.setSuperClassName(dataMap.getDefaultSuperclass());
@@ -89,7 +89,7 @@ public class CreateObjEntityAction extends AppAction {
             // TODO: use injectable name generator
             String baseName = new DefaultObjectNameGenerator(NoStemStemmer.getInstance()).objEntityName(dbEntity);
             entity.setName(NameBuilder
-                    .builder(entity, dbEntity.getDataMap())
+                    .of(entity).parent(dbEntity.getDataMap())
                     .baseName(baseName)
                     .name());
         }
@@ -101,7 +101,7 @@ public class CreateObjEntityAction extends AppAction {
         // TODO: Modeler-controlled defaults for all the hardcoded boolean flags here.
         EntityMergeSupport merger = new EntityMergeSupport(new DefaultObjectNameGenerator(NoStemStemmer.getInstance()),
                 NamePatternMatcher.EXCLUDE_ALL, true, false);
-        merger.setNameGenerator(new DbEntitySyncAction.PreserveRelationshipNameGenerator());
+        merger.setNameGenerator(new DbEntitySyncAction.PreserveRelationshipNameGenerator(NoStemStemmer.getInstance()));
         merger.addEntityMergeListener(DeleteRuleUpdater.getEntityMergeListener());
         merger.synchronizeWithDbEntity(entity);
 

@@ -65,7 +65,7 @@ public class CreateTableToModel extends AbstractToModelToken.Entity {
         ObjEntity objEntity = new ObjEntity();
 
         objEntity.setName(NameBuilder
-                .builder(objEntity, dbEntity.getDataMap())
+                .of(objEntity).parent(dbEntity.getDataMap())
                 .baseName(context.getNameGenerator().objEntityName(dbEntity))
                 .name());
         objEntity.setDbEntity(getEntity());

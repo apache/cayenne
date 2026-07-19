@@ -26,7 +26,7 @@ import java.util.regex.Pattern;
  */
 public class PatternStemmer implements DbEntityNameStemmer {
 
-    private Pattern pattern;
+    private final Pattern pattern;
 
     public PatternStemmer(String stripPattern, boolean caseSensitive) {
 

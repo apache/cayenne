@@ -21,7 +21,9 @@ package org.apache.cayenne.modeler.ui.action;
 
 import org.apache.cayenne.configuration.DataChannelDescriptor;
 import org.apache.cayenne.dbsync.merge.context.EntityMergeSupport;
+import org.apache.cayenne.dbsync.naming.DbEntityNameStemmer;
 import org.apache.cayenne.dbsync.naming.DefaultObjectNameGenerator;
+import org.apache.cayenne.dbsync.naming.NoStemStemmer;
 import org.apache.cayenne.map.DbAttribute;
 import org.apache.cayenne.map.DbEntity;
 import org.apache.cayenne.map.DbRelationship;
@@ -40,8 +42,7 @@ import java.awt.event.KeyEvent;
 import java.util.Collection;
 
 /**
- * Action that synchronizes all ObjEntities with the current state of the
- * selected DbEntity.
+ * Action that synchronizes all ObjEntities with the current state of the selected DbEntity.
  */
 public class DbEntitySyncAction extends AppAction {
 
@@ -54,18 +55,13 @@ public class DbEntitySyncAction extends AppAction {
         return KeyStroke.getKeyStroke(KeyEvent.VK_U, Toolkit.getDefaultToolkit().getMenuShortcutKeyMaskEx());
     }
 
+    @Override
     public String getIconName() {
         return "icon-sync.png";
     }
 
-    /**
-     * @see AppAction#performAction(ActionEvent)
-     */
+    @Override
     public void performAction(ActionEvent e) {
-        syncDbEntity();
-    }
-
-    protected void syncDbEntity() {
         ProjectSession session = getProjectSession();
         DbEntity dbEntity = session.getSelectedDbEntity();
 
@@ -85,7 +81,7 @@ public class DbEntitySyncAction extends AppAction {
                 return;
             }
 
-            merger.setNameGenerator(new PreserveRelationshipNameGenerator());
+            merger.setNameGenerator(new PreserveRelationshipNameGenerator(NoStemStemmer.getInstance()));
 
             DbEntitySyncUndoableEdit undoableEdit = new DbEntitySyncUndoableEdit(session,
                     (DataChannelDescriptor) session.project().getRootNode(), session.getSelectedDataMap());
@@ -132,6 +128,10 @@ public class DbEntitySyncAction extends AppAction {
     }
 
     static class PreserveRelationshipNameGenerator extends DefaultObjectNameGenerator {
+
+        public PreserveRelationshipNameGenerator(DbEntityNameStemmer dbEntityNameStemmer) {
+            super(dbEntityNameStemmer);
+        }
 
         @Override
         public String relationshipName(DbRelationship... relationshipChain) {

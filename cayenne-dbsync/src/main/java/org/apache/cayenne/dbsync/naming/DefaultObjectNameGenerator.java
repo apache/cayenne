@@ -36,10 +36,6 @@ public class DefaultObjectNameGenerator implements ObjectNameGenerator {
 
     private final DbEntityNameStemmer dbEntityNameStemmer;
 
-    public DefaultObjectNameGenerator() {
-        this.dbEntityNameStemmer = NoStemStemmer.getInstance();
-    }
-
     public DefaultObjectNameGenerator(DbEntityNameStemmer dbEntityNameStemmer) {
         this.dbEntityNameStemmer = dbEntityNameStemmer;
     }
@@ -77,12 +73,8 @@ public class DefaultObjectNameGenerator implements ObjectNameGenerator {
     }
 
     protected String toManyRelationshipName(DbRelationship... relationshipChain) {
-
         DbRelationship last = relationshipChain[relationshipChain.length - 1];
-
         String baseName = stemmed(last.getTargetEntityName());
-
-        // by default we use English rules here...
         return EnglishInflector.pluralOf(baseName.toLowerCase());
     }
 

@@ -56,7 +56,7 @@ public class CreateCallbackMethodAction extends AppAction {
         CallbackType callbackType = getProjectSession().getSelectedCallbackType();
 
         String methodName = NameBuilder
-                .builderForCallbackMethod(getProjectSession().getSelectedObjEntity())
+                .ofCallbackMethod().parent(getProjectSession().getSelectedObjEntity())
                 .baseName(toMethodName(callbackType.getType()))
                 .name();
 

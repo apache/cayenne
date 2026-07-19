@@ -21,6 +21,7 @@ package org.apache.cayenne.modeler.ui.action;
 
 import org.apache.cayenne.configuration.DataChannelDescriptor;
 import org.apache.cayenne.dbsync.merge.context.EntityMergeSupport;
+import org.apache.cayenne.dbsync.naming.NoStemStemmer;
 import org.apache.cayenne.map.ObjEntity;
 import org.apache.cayenne.modeler.event.model.ObjEntityEvent;
 import org.apache.cayenne.modeler.Application;
@@ -78,7 +79,7 @@ public class ObjEntitySyncAction extends AppAction {
                 return;
             }
 
-            merger.setNameGenerator(new DbEntitySyncAction.PreserveRelationshipNameGenerator());
+            merger.setNameGenerator(new DbEntitySyncAction.PreserveRelationshipNameGenerator(NoStemStemmer.getInstance()));
 
             if (merger.synchronizeWithDbEntity(entity)) {
                 session

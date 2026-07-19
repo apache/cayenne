@@ -38,14 +38,11 @@ import org.apache.cayenne.map.QueryDescriptor;
 import java.util.Objects;
 import java.util.function.Predicate;
 
-/**
- * @since 4.0
- */
 class DeduplicationVisitor implements ConfigurationNodeVisitor<String> {
 
-    private ConfigurationNode parent;
-    private String baseName;
-    private String dupesPattern;
+    private final ConfigurationNode parent;
+    private final String baseName;
+    private final String dupesPattern;
 
     DeduplicationVisitor(ConfigurationNode parent, String baseName, String dupesPattern) {
         this.parent = parent;
@@ -76,14 +73,12 @@ class DeduplicationVisitor implements ConfigurationNodeVisitor<String> {
     @Override
     public String visitDataMap(DataMap dataMap) {
         return resolve(name -> {
-            // null context is a situation when DataMap is a
-            // top level object of the project
+            // null context is a situation when DataMap is a top level object of the project
             if (parent == null) {
                 return false;
             }
 
-            if (parent instanceof DataChannelDescriptor) {
-                DataChannelDescriptor domain = (DataChannelDescriptor) parent;
+            if (parent instanceof DataChannelDescriptor domain) {
                 return domain.getDataMap(name) != null;
             }
             return false;

@@ -71,7 +71,7 @@ public class CreateProcedureParameterAction extends AppAction {
         if (getProjectSession().getSelectedProcedure() != null) {
             Procedure procedure = getProjectSession().getSelectedProcedure();
             ProcedureParameter parameter = new ProcedureParameter();
-            parameter.setName(NameBuilder.builder(parameter, procedure).name());
+            parameter.setName(NameBuilder.of(parameter).parent(procedure).name());
 
             createProcedureParameter(procedure, parameter);
 

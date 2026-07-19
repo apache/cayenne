@@ -158,7 +158,7 @@ public class PasteAction extends AppAction implements FlavorListener {
             // paste DataMap to DataDomain or DataNode
 
             dataMap.setName(NameBuilder
-                    .builder(dataMap, dataChannelDescriptor)
+                    .of(dataMap).parent(dataChannelDescriptor)
                     .baseName(dataMap.getName())
                     .dupesPattern(COPY_PATTERN)
                     .name());
@@ -173,7 +173,7 @@ public class PasteAction extends AppAction implements FlavorListener {
             for (DbEntity dbEntity : dataMap.getDbEntities()) {
                 String oldName = dbEntity.getName();
                 dbEntity.setName(NameBuilder
-                        .builder(dbEntity, dataMap)
+                        .of(dbEntity).parent(dataMap)
                         .baseName(dbEntity.getName())
                         .dupesPattern(COPY_PATTERN)
                         .name());
@@ -186,7 +186,7 @@ public class PasteAction extends AppAction implements FlavorListener {
             for (ObjEntity objEntity : dataMap.getObjEntities()) {
                 String oldName = objEntity.getName();
                 objEntity.setName(NameBuilder
-                        .builder(objEntity, dataMap)
+                        .of(objEntity).parent(dataMap)
                         .baseName(objEntity.getName())
                         .dupesPattern(COPY_PATTERN)
                         .name());
@@ -198,7 +198,7 @@ public class PasteAction extends AppAction implements FlavorListener {
 
             for (Embeddable embeddable : dataMap.getEmbeddables()) {
                 embeddable.setClassName(NameBuilder
-                        .builder(embeddable, dataMap)
+                        .of(embeddable).parent(dataMap)
                         .baseName(embeddable.getClassName())
                         .dupesPattern(COPY_PATTERN)
                         .name());
@@ -206,14 +206,14 @@ public class PasteAction extends AppAction implements FlavorListener {
 
             for (Procedure procedure : dataMap.getProcedures()) {
                 procedure.setName(NameBuilder
-                        .builder(procedure, dataMap)
+                        .of(procedure).parent(dataMap)
                         .baseName(procedure.getName())
                         .dupesPattern(COPY_PATTERN)
                         .name());
             }
 
             for (QueryDescriptor query : dataMap.getQueryDescriptors()) {
-                query.setName(NameBuilder.builder(query, dataMap)
+                query.setName(NameBuilder.of(query).parent(dataMap)
                         .baseName(query.getName())
                         .dupesPattern(COPY_PATTERN)
                         .name());
@@ -256,7 +256,7 @@ public class PasteAction extends AppAction implements FlavorListener {
 
             if (content instanceof DbEntity dbEntity) {
                 dbEntity.setName(NameBuilder
-                        .builder(dbEntity, dataMap)
+                        .of(dbEntity).parent(dataMap)
                         .baseName(dbEntity.getName())
                         .dupesPattern(COPY_PATTERN)
                         .name());
@@ -265,7 +265,7 @@ public class PasteAction extends AppAction implements FlavorListener {
                 CreateDbEntityAction.onDbEntityCreated(this, session, dbEntity);
             } else if (content instanceof ObjEntity objEntity) {
                 // paste ObjEntity to DataMap
-                objEntity.setName(NameBuilder.builder(objEntity, dataMap)
+                objEntity.setName(NameBuilder.of(objEntity).parent(dataMap)
                         .baseName(objEntity.getName())
                         .dupesPattern(COPY_PATTERN)
                         .name());
@@ -279,7 +279,7 @@ public class PasteAction extends AppAction implements FlavorListener {
             } else if (content instanceof Embeddable embeddable) {
                 // paste Embeddable to DataMap
                 embeddable.setClassName(NameBuilder
-                        .builder(embeddable, dataMap)
+                        .of(embeddable).parent(dataMap)
                         .baseName(embeddable.getClassName())
                         .dupesPattern(COPY_PATTERN)
                         .name());
@@ -293,7 +293,7 @@ public class PasteAction extends AppAction implements FlavorListener {
             } else if (content instanceof QueryDescriptor query) {
 
                 query.setName(NameBuilder
-                        .builder(query, dataMap)
+                        .of(query).parent(dataMap)
                         .dupesPattern(COPY_PATTERN)
                         .baseName(query.getName())
                         .name());
@@ -304,7 +304,7 @@ public class PasteAction extends AppAction implements FlavorListener {
             } else if (content instanceof Procedure procedure) {
                 // paste Procedure to DataMap
                 procedure.setName(NameBuilder
-                        .builder(procedure, dataMap)
+                        .of(procedure).parent(dataMap)
                         .dupesPattern(COPY_PATTERN)
                         .baseName(procedure.getName())
                         .name());
@@ -320,7 +320,7 @@ public class PasteAction extends AppAction implements FlavorListener {
 
             if (content instanceof DbAttribute attr) {
                 attr.setName(NameBuilder
-                        .builder(attr, dbEntity)
+                        .of(attr).parent(dbEntity)
                         .dupesPattern(COPY_PATTERN)
                         .baseName(attr.getName())
                         .name());
@@ -330,7 +330,7 @@ public class PasteAction extends AppAction implements FlavorListener {
                         .getSelectedDataMap(), dbEntity, attr);
             } else if (content instanceof DbRelationship rel) {
                 rel.setName(NameBuilder
-                        .builder(rel, dbEntity)
+                        .of(rel).parent(dbEntity)
                         .baseName(rel.getName())
                         .dupesPattern(COPY_PATTERN)
                         .name());
@@ -346,7 +346,7 @@ public class PasteAction extends AppAction implements FlavorListener {
 
             if (content instanceof ObjAttribute attr) {
                 attr.setName(NameBuilder
-                        .builder(attr, objEntity)
+                        .of(attr).parent(objEntity)
                         .baseName(attr.getName())
                         .dupesPattern(COPY_PATTERN)
                         .name());
@@ -356,7 +356,7 @@ public class PasteAction extends AppAction implements FlavorListener {
                         .getSelectedDataMap(), objEntity, attr);
             } else if (content instanceof ObjRelationship rel) {
                 rel.setName(NameBuilder
-                        .builder(rel, objEntity)
+                        .of(rel).parent(objEntity)
                         .baseName(rel.getName())
                         .dupesPattern(COPY_PATTERN)
                         .name());
@@ -370,7 +370,7 @@ public class PasteAction extends AppAction implements FlavorListener {
             } else if (content instanceof ObjCallbackMethod method) {
 
                 method.setName(NameBuilder
-                        .builderForCallbackMethod(objEntity)
+                        .ofCallbackMethod().parent(objEntity)
                         .baseName(method.getName())
                         .dupesPattern(COPY_PATTERN)
                         .name());
@@ -387,7 +387,7 @@ public class PasteAction extends AppAction implements FlavorListener {
 
             if (content instanceof EmbeddableAttribute attr) {
                 attr.setName(NameBuilder
-                        .builder(attr, embeddable)
+                        .of(attr).parent(embeddable)
                         .baseName(attr.getName())
                         .dupesPattern(COPY_PATTERN)
                         .name());
@@ -406,7 +406,7 @@ public class PasteAction extends AppAction implements FlavorListener {
             if (content instanceof ProcedureParameter param) {
 
                 param.setName(NameBuilder
-                        .builder(param, procedure)
+                        .of(param).parent(procedure)
                         .baseName(param.getName())
                         .dupesPattern(COPY_PATTERN)
                         .name());

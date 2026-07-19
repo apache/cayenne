@@ -74,7 +74,7 @@ public class NameGeneratorPreferences {
 
         // move to top
         strategies.remove(strategy);
-        strategies.add(0, strategy);
+        strategies.addFirst(strategy);
 
         StringBuilder res = new StringBuilder();
         for (String str : strategies) {
@@ -88,6 +88,6 @@ public class NameGeneratorPreferences {
     public ObjectNameGenerator createNamingStrategy(Application application) throws Exception {
 
         return application.getClassLoader()
-                .loadClass(ObjectNameGenerator.class, getLastUsedStrategies(application).get(0)).getDeclaredConstructor().newInstance();
+                .loadClass(ObjectNameGenerator.class, getLastUsedStrategies(application).getFirst()).getDeclaredConstructor().newInstance();
     }
 }

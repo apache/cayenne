@@ -39,7 +39,6 @@ import org.apache.cayenne.wocompat.parser.Parser;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import java.io.File;
 import java.io.InputStream;
 import java.net.URL;
 import java.sql.Types;
@@ -685,7 +684,7 @@ public class EOModelProcessor {
 
 			if (relationship.getReverseRelationship() == null) {
 				DbRelationship reverse = relationship.createReverseRelationship();
-				reverse.setName(NameBuilder.builder(reverse, reverse.getSourceEntity())
+				reverse.setName(NameBuilder.of(reverse).parent(reverse.getSourceEntity())
 						// TODO: we can do better with ObjectNameGenerator
 						.baseName(relationship.getName() + "Reverse")
 						.name());
