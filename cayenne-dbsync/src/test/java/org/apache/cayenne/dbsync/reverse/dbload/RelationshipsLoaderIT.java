@@ -20,7 +20,6 @@
 package org.apache.cayenne.dbsync.reverse.dbload;
 
 import org.apache.cayenne.dbsync.naming.DefaultObjectNameGenerator;
-import org.apache.cayenne.dbsync.naming.NoStemStemmer;
 import org.apache.cayenne.map.DbEntity;
 import org.apache.cayenne.map.DbRelationship;
 import org.junit.jupiter.api.Test;
@@ -56,7 +55,7 @@ public class RelationshipsLoaderIT extends BaseLoaderIT {
         exportedKeyLoader.load(metaData, store);
 
         // *** TESTING THIS ***
-        RelationshipLoader relationshipLoader = new RelationshipLoader(EMPTY_CONFIG, delegate, new DefaultObjectNameGenerator(NoStemStemmer.getInstance()));
+        RelationshipLoader relationshipLoader = new RelationshipLoader(EMPTY_CONFIG, delegate, new DefaultObjectNameGenerator());
         relationshipLoader.load(metaData, store);
 
         Collection<DbRelationship> rels = getDbEntity("ARTIST").getRelationships();
@@ -95,7 +94,7 @@ public class RelationshipsLoaderIT extends BaseLoaderIT {
         new PrimaryKeyLoader(EMPTY_CONFIG, delegate).load(metaData, store);
         new ExportedKeyLoader(EMPTY_CONFIG, delegate).load(metaData, store);
 
-        new RelationshipLoader(EMPTY_CONFIG, delegate, new DefaultObjectNameGenerator(NoStemStemmer.getInstance())).load(metaData, store);
+        new RelationshipLoader(EMPTY_CONFIG, delegate, new DefaultObjectNameGenerator()).load(metaData, store);
 
         // COMPOUND_FK_TEST has a 2-column FK (F_KEY1, F_KEY2) -> COMPOUND_PK_TEST (KEY1, KEY2)
         DbEntity fkEntity = getDbEntity("COMPOUND_FK_TEST");
@@ -132,7 +131,7 @@ public class RelationshipsLoaderIT extends BaseLoaderIT {
         new PrimaryKeyLoader(EMPTY_CONFIG, delegate).load(metaData, store);
         new ExportedKeyLoader(EMPTY_CONFIG, delegate).load(metaData, store);
 
-        new RelationshipLoader(EMPTY_CONFIG, delegate, new DefaultObjectNameGenerator(NoStemStemmer.getInstance())).load(metaData, store);
+        new RelationshipLoader(EMPTY_CONFIG, delegate, new DefaultObjectNameGenerator()).load(metaData, store);
 
         // TWO_FK_B has two separate single-column FKs (A_ID1, A_ID2) -> TWO_FK_A (ID)
         DbEntity bEntity = getDbEntity("TWO_FK_B");

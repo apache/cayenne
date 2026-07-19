@@ -21,7 +21,6 @@ package org.apache.cayenne.dbsync.reverse.dbload;
 
 import org.apache.cayenne.dba.DbAdapter;
 import org.apache.cayenne.dbsync.naming.DefaultObjectNameGenerator;
-import org.apache.cayenne.dbsync.naming.NoStemStemmer;
 import org.apache.cayenne.dbsync.reverse.dbimport.ExcludeColumn;
 import org.apache.cayenne.dbsync.reverse.dbimport.IncludeTable;
 import org.apache.cayenne.dbsync.reverse.dbimport.ReverseEngineering;
@@ -31,8 +30,8 @@ import org.apache.cayenne.map.DataMap;
 import org.apache.cayenne.map.DbAttribute;
 import org.apache.cayenne.map.DbEntity;
 import org.apache.cayenne.map.DbRelationship;
-import org.apache.cayenne.unit.CayenneTestsEnv;
 import org.apache.cayenne.unit.CayenneProjects;
+import org.apache.cayenne.unit.CayenneTestsEnv;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -142,11 +141,11 @@ public class DbLoaderIT {
     }
 
     private DbLoader createDbLoader() {
-        return new DbLoader(adapter, connection, CONFIG, null, new DefaultObjectNameGenerator(NoStemStemmer.getInstance()));
+        return new DbLoader(adapter, connection, CONFIG, null, new DefaultObjectNameGenerator());
     }
 
     private DbLoader createDbLoader(DbLoaderConfiguration configuration) {
-        return new DbLoader(adapter, connection, configuration, null, new DefaultObjectNameGenerator(NoStemStemmer.getInstance()));
+        return new DbLoader(adapter, connection, configuration, null, new DefaultObjectNameGenerator());
     }
 
     @AfterEach

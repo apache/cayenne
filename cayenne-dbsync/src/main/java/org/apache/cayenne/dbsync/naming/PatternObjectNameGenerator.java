@@ -16,10 +16,28 @@
  *  specific language governing permissions and limitations
  *  under the License.
  ****************************************************************/
+package org.apache.cayenne.dbsync.naming;
 
-package org.apache.cayenne.tools.utils;
+import java.util.Objects;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
-import org.apache.cayenne.dbsync.naming.DefaultObjectNameGenerator;
+/**
+ * Pattern-based generator that strips of certain DB name pieces.
+ *
+ * @since 5.0
+ */
+public class PatternObjectNameGenerator extends BaseObjectNameGenerator {
 
-public class CustomObjectNameGenerator extends DefaultObjectNameGenerator {
+    private final Pattern pattern;
+
+    public PatternObjectNameGenerator(String stripPattern) {
+        this.pattern = Pattern.compile(stripPattern, Pattern.CASE_INSENSITIVE);
+    }
+
+    @Override
+    protected String dbEntityBaseName(String dbEntityName) {
+        Matcher m = pattern.matcher(Objects.requireNonNull(dbEntityName));
+        return m.replaceAll("");
+    }
 }

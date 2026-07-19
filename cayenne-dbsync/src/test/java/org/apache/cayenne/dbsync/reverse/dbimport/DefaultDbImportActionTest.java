@@ -34,9 +34,8 @@ import org.apache.cayenne.dbsync.merge.token.db.CreateTableToDb;
 import org.apache.cayenne.dbsync.merge.token.model.AddColumnToModel;
 import org.apache.cayenne.dbsync.merge.token.model.AddRelationshipToModel;
 import org.apache.cayenne.dbsync.merge.token.model.CreateTableToModel;
-import org.apache.cayenne.dbsync.naming.DefaultObjectNameGenerator;
-import org.apache.cayenne.dbsync.naming.NoStemStemmer;
 import org.apache.cayenne.dbsync.naming.ObjectNameGenerator;
+import org.apache.cayenne.dbsync.naming.DefaultObjectNameGenerator;
 import org.apache.cayenne.dbsync.reverse.configuration.ToolsModule;
 import org.apache.cayenne.dbsync.reverse.dbload.DbLoader;
 import org.apache.cayenne.dbsync.reverse.dbload.DbLoaderConfiguration;
@@ -51,9 +50,9 @@ import org.apache.cayenne.project.Project;
 import org.apache.cayenne.resource.Resource;
 import org.apache.cayenne.resource.URLResource;
 import org.apache.cayenne.util.Util;
-import org.slf4j.Logger;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
+import org.slf4j.Logger;
 
 import javax.sql.DataSource;
 import java.io.File;
@@ -67,12 +66,8 @@ import java.util.LinkedList;
 import java.util.List;
 
 import static java.util.Arrays.asList;
-import static org.apache.cayenne.dbsync.merge.builders.ObjectMother.dbAttr;
-import static org.apache.cayenne.dbsync.merge.builders.ObjectMother.dbEntity;
-import static org.apache.cayenne.dbsync.merge.builders.ObjectMother.objAttr;
-import static org.apache.cayenne.dbsync.merge.builders.ObjectMother.objEntity;
+import static org.apache.cayenne.dbsync.merge.builders.ObjectMother.*;
 import static org.junit.jupiter.api.Assertions.*;
-import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.*;
 
@@ -110,7 +105,7 @@ public class DefaultDbImportActionTest {
         when(config.createMergeDelegate()).thenReturn(new DefaultModelMergeDelegate());
         when(config.getDbLoaderConfig()).thenReturn(new DbLoaderConfiguration());
         when(config.getTargetDataMap()).thenReturn(new File("xyz.map.xml"));
-        when(config.createNameGenerator()).thenReturn(new DefaultObjectNameGenerator(NoStemStemmer.getInstance()));
+        when(config.createNameGenerator()).thenReturn(new DefaultObjectNameGenerator());
         when(config.createMeaningfulPKFilter()).thenReturn(NamePatternMatcher.EXCLUDE_ALL);
 
         DbLoader dbLoader = new DbLoader(mockAdapter, mockConnection, config.getDbLoaderConfig(), mockDelegate, mockNameGenerator) {
@@ -146,7 +141,7 @@ public class DefaultDbImportActionTest {
         when(config.getTargetDataMap()).thenReturn(FILE_STUB);
         when(config.createMergeDelegate()).thenReturn(new DefaultModelMergeDelegate());
         when(config.getDbLoaderConfig()).thenReturn(new DbLoaderConfiguration());
-        when(config.createNameGenerator()).thenReturn(new DefaultObjectNameGenerator(NoStemStemmer.getInstance()));
+        when(config.createNameGenerator()).thenReturn(new DefaultObjectNameGenerator());
         when(config.createMeaningfulPKFilter()).thenReturn(NamePatternMatcher.EXCLUDE_ALL);
 
         DbLoader dbLoader = new DbLoader(mockAdapter, mockConnection, config.getDbLoaderConfig(), mockDelegate, mockNameGenerator) {

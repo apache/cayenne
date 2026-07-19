@@ -33,7 +33,6 @@ import org.apache.cayenne.dbsync.merge.factory.MergerTokenFactoryProvider;
 import org.apache.cayenne.dbsync.merge.token.MergerToken;
 import org.apache.cayenne.dbsync.merge.token.db.AbstractToDbToken;
 import org.apache.cayenne.dbsync.naming.DefaultObjectNameGenerator;
-import org.apache.cayenne.dbsync.naming.NoStemStemmer;
 import org.apache.cayenne.dbsync.reverse.dbimport.DefaultDbImportAction;
 import org.apache.cayenne.dbsync.reverse.dbload.DbLoader;
 import org.apache.cayenne.dbsync.reverse.dbload.DbLoaderConfiguration;
@@ -46,33 +45,22 @@ import org.apache.cayenne.dbsync.reverse.filters.PatternFilter;
 import org.apache.cayenne.dbsync.reverse.filters.TableFilter;
 import org.apache.cayenne.map.DataMap;
 import org.apache.cayenne.map.ObjEntity;
-import org.apache.cayenne.modeler.pref.adapters.FileChooserPrefs;
-import org.apache.cayenne.modeler.pref.dbconnector.DBConnector;
 import org.apache.cayenne.modeler.dbconnector.DBConnectorFactory;
 import org.apache.cayenne.modeler.event.model.DataMapEvent;
+import org.apache.cayenne.modeler.pref.adapters.FileChooserPrefs;
+import org.apache.cayenne.modeler.pref.dbconnector.DBConnector;
+import org.apache.cayenne.modeler.project.ProjectSession;
+import org.apache.cayenne.modeler.toolkit.ProjectDialog;
 import org.apache.cayenne.modeler.toolkit.border.TopBorder;
 import org.apache.cayenne.modeler.toolkit.text.CMTextArea;
-import org.apache.cayenne.modeler.toolkit.ProjectDialog;
-import org.apache.cayenne.modeler.project.ProjectSession;
 import org.apache.cayenne.modeler.ui.validation.ValidationDialog;
 import org.apache.cayenne.project.Project;
 import org.apache.cayenne.validation.ValidationResult;
 import org.slf4j.LoggerFactory;
 
 import javax.sql.DataSource;
-import javax.swing.Box;
-import javax.swing.JButton;
-import javax.swing.JOptionPane;
-import javax.swing.JPanel;
-import javax.swing.JScrollPane;
-import javax.swing.JTabbedPane;
-import javax.swing.ScrollPaneConstants;
-import javax.swing.SwingConstants;
-import java.awt.BorderLayout;
-import java.awt.Container;
-import java.awt.Dimension;
-import java.awt.FlowLayout;
-import java.awt.Window;
+import javax.swing.*;
+import java.awt.*;
 import java.io.File;
 import java.io.FileWriter;
 import java.io.IOException;
@@ -215,7 +203,7 @@ public class MergerOptionsDialog extends ProjectDialog {
                 dbImport = new DbLoader(adapter, conn,
                         config,
                         new LoggingDbLoaderDelegate(LoggerFactory.getLogger(DbLoader.class)),
-                        new DefaultObjectNameGenerator(NoStemStemmer.getInstance()))
+                        new DefaultObjectNameGenerator())
                         .load();
             } catch (SQLException e) {
                 throw new CayenneRuntimeException("Can't doLoad dataMap from db.", e);

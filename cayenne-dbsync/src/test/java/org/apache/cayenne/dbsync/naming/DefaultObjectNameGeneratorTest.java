@@ -28,10 +28,14 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 
 public class DefaultObjectNameGeneratorTest {
 
-    private DefaultObjectNameGenerator generator = new DefaultObjectNameGenerator(NoStemStemmer.getInstance());
+    private final DefaultObjectNameGenerator generator = new DefaultObjectNameGenerator();
 
-    private DbRelationship makeRelationship(String srcEntity, String srcKey, String targetEntity, String targetKey,
-                                            boolean toMany) {
+    private DbRelationship makeRelationship(
+            String srcEntity,
+            String srcKey,
+            String targetEntity,
+            String targetKey,
+            boolean toMany) {
 
         DbRelationship relationship = new DbRelationship();
         relationship.addJoin(new DbJoin(relationship, srcKey, targetKey));

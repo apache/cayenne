@@ -19,11 +19,6 @@
 
 package org.apache.cayenne.stubs;
 
-import java.util.List;
-import java.util.Objects;
-
-import org.apache.cayenne.dbsync.naming.DbEntityNameStemmer;
-import org.apache.cayenne.dbsync.naming.NoStemStemmer;
 import org.apache.cayenne.dbsync.naming.ObjectNameGenerator;
 import org.apache.cayenne.map.DbAttribute;
 import org.apache.cayenne.map.DbEntity;
@@ -31,17 +26,9 @@ import org.apache.cayenne.map.DbJoin;
 import org.apache.cayenne.map.DbRelationship;
 import org.apache.cayenne.util.Util;
 
+import java.util.List;
+
 public class CustomObjectNameGenerator implements ObjectNameGenerator {
-
-    private DbEntityNameStemmer dbEntityNameStemmer;
-
-    public CustomObjectNameGenerator() {
-        this.dbEntityNameStemmer = NoStemStemmer.getInstance();
-    }
-
-    public CustomObjectNameGenerator(DbEntityNameStemmer dbEntityNameStemmer) {
-        this.dbEntityNameStemmer = dbEntityNameStemmer;
-    }
 
     @Override
     public String objRelationshipName(DbRelationship... relationshipChain) {
@@ -53,14 +40,9 @@ public class CustomObjectNameGenerator implements ObjectNameGenerator {
         return null;
     }
 
-    protected String stemmed(String dbEntityName) {
-        return dbEntityNameStemmer.stem(Objects.requireNonNull(dbEntityName));
-    }
-
     @Override
     public String objEntityName(DbEntity dbEntity) {
-        String baseName = stemmed(dbEntity.getName());
-        return "Custom" + Util.underscoredToJava(baseName, true);
+        return "Custom" + Util.underscoredToJava(dbEntity.getName(), true);
     }
 
     @Override

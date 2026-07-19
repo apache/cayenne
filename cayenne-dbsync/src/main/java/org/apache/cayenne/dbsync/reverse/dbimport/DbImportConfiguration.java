@@ -18,20 +18,15 @@
  ****************************************************************/
 package org.apache.cayenne.dbsync.reverse.dbimport;
 
-import java.io.File;
-import java.util.regex.Pattern;
-
 import org.apache.cayenne.CayenneRuntimeException;
 import org.apache.cayenne.configuration.DataNodeDescriptor;
 import org.apache.cayenne.configuration.DataSourceDescriptor;
 import org.apache.cayenne.dba.DbAdapter;
 import org.apache.cayenne.dbsync.filter.NameFilter;
 import org.apache.cayenne.dbsync.filter.NamePatternMatcher;
-import org.apache.cayenne.dbsync.naming.DbEntityNameStemmer;
 import org.apache.cayenne.dbsync.naming.DefaultObjectNameGenerator;
-import org.apache.cayenne.dbsync.naming.NoStemStemmer;
 import org.apache.cayenne.dbsync.naming.ObjectNameGenerator;
-import org.apache.cayenne.dbsync.naming.PatternStemmer;
+import org.apache.cayenne.dbsync.naming.PatternObjectNameGenerator;
 import org.apache.cayenne.dbsync.reverse.dbload.DbLoaderConfiguration;
 import org.apache.cayenne.dbsync.reverse.dbload.DbLoaderDelegate;
 import org.apache.cayenne.dbsync.reverse.dbload.DefaultDbLoaderDelegate;
@@ -40,6 +35,9 @@ import org.apache.cayenne.dbsync.reverse.dbload.LoggingDbLoaderDelegate;
 import org.apache.cayenne.dbsync.reverse.dbload.ModelMergeDelegate;
 import org.apache.cayenne.dbsync.reverse.filters.FiltersConfig;
 import org.slf4j.Logger;
+
+import java.io.File;
+import java.util.regex.Pattern;
 
 /**
  * @since 4.0
@@ -149,6 +147,7 @@ public class DbImportConfiguration {
 
     /**
      * does nothing
+     *
      * @param usePrimitives not used
      */
     @Deprecated(since = "5.0", forRemoval = true)
@@ -204,13 +203,9 @@ public class DbImportConfiguration {
             }
         }
 
-        return new DefaultObjectNameGenerator(createStemmer());
-    }
-
-    protected DbEntityNameStemmer createStemmer() {
-        return (stripFromTableNames == null || stripFromTableNames.length() == 0)
-                ? NoStemStemmer.getInstance()
-                : new PatternStemmer(stripFromTableNames, false);
+        return stripFromTableNames == null || stripFromTableNames.isEmpty()
+                ? new DefaultObjectNameGenerator()
+                : new PatternObjectNameGenerator(stripFromTableNames);
     }
 
     public String getDriver() {

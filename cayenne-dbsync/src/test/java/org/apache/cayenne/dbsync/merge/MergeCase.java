@@ -30,7 +30,6 @@ import org.apache.cayenne.dbsync.merge.token.MergerToken;
 import org.apache.cayenne.dbsync.merge.token.db.AbstractToDbToken;
 import org.apache.cayenne.dbsync.merge.token.db.SetColumnTypeToDb;
 import org.apache.cayenne.dbsync.naming.DefaultObjectNameGenerator;
-import org.apache.cayenne.dbsync.naming.NoStemStemmer;
 import org.apache.cayenne.dbsync.reverse.dbload.DbLoader;
 import org.apache.cayenne.dbsync.reverse.dbload.DbLoaderConfiguration;
 import org.apache.cayenne.dbsync.reverse.dbload.LoggingDbLoaderDelegate;
@@ -42,9 +41,9 @@ import org.apache.cayenne.map.DbAttribute;
 import org.apache.cayenne.map.DbEntity;
 import org.apache.cayenne.map.EntityResolver;
 import org.apache.cayenne.runtime.CayenneRuntime;
+import org.apache.cayenne.unit.CayenneProjects;
 import org.apache.cayenne.unit.CayenneTestsEnv;
 import org.apache.cayenne.unit.dba.TestDbAdapter;
-import org.apache.cayenne.unit.CayenneProjects;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.extension.RegisterExtension;
 import org.slf4j.Logger;
@@ -120,7 +119,7 @@ public abstract class MergeCase {
             dbImport = new DbLoader(node.getAdapter(), conn,
                     loaderConfiguration,
                     new LoggingDbLoaderDelegate(LoggerFactory.getLogger(DbLoader.class)),
-                    new DefaultObjectNameGenerator(NoStemStemmer.getInstance()))
+                    new DefaultObjectNameGenerator())
                     .load();
 
         } catch (SQLException e) {

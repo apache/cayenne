@@ -21,15 +21,13 @@ package org.apache.cayenne.modeler.ui.action;
 
 import org.apache.cayenne.configuration.DataChannelDescriptor;
 import org.apache.cayenne.dbsync.merge.context.EntityMergeSupport;
-import org.apache.cayenne.dbsync.naming.DbEntityNameStemmer;
 import org.apache.cayenne.dbsync.naming.DefaultObjectNameGenerator;
-import org.apache.cayenne.dbsync.naming.NoStemStemmer;
 import org.apache.cayenne.map.DbAttribute;
 import org.apache.cayenne.map.DbEntity;
 import org.apache.cayenne.map.DbRelationship;
 import org.apache.cayenne.map.ObjEntity;
-import org.apache.cayenne.modeler.event.model.ObjEntityEvent;
 import org.apache.cayenne.modeler.Application;
+import org.apache.cayenne.modeler.event.model.ObjEntityEvent;
 import org.apache.cayenne.modeler.project.ProjectSession;
 import org.apache.cayenne.modeler.toolkit.AppAction;
 import org.apache.cayenne.modeler.ui.entitysync.EntitySyncDialog;
@@ -81,7 +79,7 @@ public class DbEntitySyncAction extends AppAction {
                 return;
             }
 
-            merger.setNameGenerator(new PreserveRelationshipNameGenerator(NoStemStemmer.getInstance()));
+            merger.setNameGenerator(new PreserveRelationshipNameGenerator());
 
             DbEntitySyncUndoableEdit undoableEdit = new DbEntitySyncUndoableEdit(session,
                     (DataChannelDescriptor) session.project().getRootNode(), session.getSelectedDataMap());
@@ -128,10 +126,6 @@ public class DbEntitySyncAction extends AppAction {
     }
 
     static class PreserveRelationshipNameGenerator extends DefaultObjectNameGenerator {
-
-        public PreserveRelationshipNameGenerator(DbEntityNameStemmer dbEntityNameStemmer) {
-            super(dbEntityNameStemmer);
-        }
 
         @Override
         public String objRelationshipName(DbRelationship... relationshipChain) {

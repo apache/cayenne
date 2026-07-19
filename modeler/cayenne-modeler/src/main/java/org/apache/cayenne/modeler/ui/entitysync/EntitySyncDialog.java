@@ -24,23 +24,16 @@ import com.jgoodies.forms.layout.CellConstraints;
 import com.jgoodies.forms.layout.FormLayout;
 import org.apache.cayenne.dbsync.filter.NamePatternMatcher;
 import org.apache.cayenne.dbsync.merge.context.EntityMergeSupport;
-import org.apache.cayenne.dbsync.naming.DefaultObjectNameGenerator;
-import org.apache.cayenne.dbsync.naming.NoStemStemmer;
 import org.apache.cayenne.dbsync.naming.ObjectNameGenerator;
+import org.apache.cayenne.dbsync.naming.DefaultObjectNameGenerator;
 import org.apache.cayenne.map.DbEntity;
 import org.apache.cayenne.map.ObjEntity;
 import org.apache.cayenne.modeler.Application;
-import org.apache.cayenne.modeler.toolkit.AppDialog;
 import org.apache.cayenne.modeler.NameGeneratorPreferences;
+import org.apache.cayenne.modeler.toolkit.AppDialog;
 
-import javax.swing.JButton;
-import javax.swing.JCheckBox;
-import javax.swing.JLabel;
-import javax.swing.JPanel;
-import java.awt.BorderLayout;
-import java.awt.Container;
-import java.awt.FlowLayout;
-import java.awt.Window;
+import javax.swing.*;
+import java.awt.*;
 import java.util.Collection;
 import java.util.Collections;
 
@@ -97,7 +90,7 @@ public class EntitySyncDialog extends AppDialog {
         try {
             namingStrategy = NameGeneratorPreferences.getInstance().createNamingStrategy(app);
         } catch (Throwable e) {
-            namingStrategy = new DefaultObjectNameGenerator(NoStemStemmer.getInstance());
+            namingStrategy = new DefaultObjectNameGenerator();
         }
 
         // TODO: Modeler-controlled defaults for all the hardcoded boolean flags here.
