@@ -235,7 +235,12 @@ public class Util {
      * of the two objects is null.
      *
      * @since 1.1
+     * @deprecated since 5.0 in favor of the JDK's
+     *             {@link java.util.Comparator#nullsFirst(java.util.Comparator)} /
+     *             {@link java.util.Comparator#nullsLast(java.util.Comparator)} combined with
+     *             {@link java.util.Comparator#naturalOrder()}.
      */
+    @Deprecated(since = "5.0")
     public static <T> int nullSafeCompare(boolean nullsFirst, Comparable<T> o1, T o2) {
         if (o1 == null && o2 == null) {
             return 0;

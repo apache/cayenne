@@ -39,7 +39,6 @@ import org.apache.cayenne.modeler.toolkit.valuetype.ValueTypes;
 import org.apache.cayenne.modeler.toolkit.table.CMTableModel;
 import org.apache.cayenne.modeler.project.ProjectSession;
 import org.apache.cayenne.project.extension.info.ObjectInfo;
-import org.apache.cayenne.util.Util;
 import java.util.Objects;
 
 import java.util.ArrayList;
@@ -76,13 +75,10 @@ public class ObjAttributeTableModel extends CMTableModel<ObjAttribute> {
     }
 
     public Class<?> getColumnClass(int col) {
-        switch (col) {
-            case LOCKING:
-            case LAZY:
-                return Boolean.class;
-            default:
-                return String.class;
-        }
+        return switch (col) {
+            case LOCKING, LAZY -> Boolean.class;
+            default -> String.class;
+        };
     }
 
     /**
@@ -131,48 +127,32 @@ public class ObjAttributeTableModel extends CMTableModel<ObjAttribute> {
     }
 
     public String getColumnName(int column) {
-        switch (column) {
-            case OBJ_ATTRIBUTE:
-                return "Name";
-            case OBJ_ATTRIBUTE_TYPE:
-                return "Java Type";
-            case DB_ATTRIBUTE:
-                return "DbAttribute Path";
-            case DB_ATTRIBUTE_TYPE:
-                return "DB Type";
-            case LOCKING:
-                return "Lock";
-            case LAZY:
-                return "Lazy";
-            case COMMENT:
-                return "Comment";
-            default:
-                return "";
-        }
+        return switch (column) {
+            case OBJ_ATTRIBUTE -> "Name";
+            case OBJ_ATTRIBUTE_TYPE -> "Java Type";
+            case DB_ATTRIBUTE -> "DbAttribute Path";
+            case DB_ATTRIBUTE_TYPE -> "DB Type";
+            case LOCKING -> "Lock";
+            case LAZY -> "Lazy";
+            case COMMENT -> "Comment";
+            default -> "";
+        };
     }
 
     public Object getValueAt(int row, int column) {
         ObjAttribute attribute = getAttribute(row);
         DbAttribute dbAttribute = safeGetDbAttribute(attribute);
 
-        switch (column) {
-            case OBJ_ATTRIBUTE:
-                return attribute.getName();
-            case OBJ_ATTRIBUTE_TYPE:
-                return attribute.getType();
-            case DB_ATTRIBUTE:
-                return getDBAttribute(attribute, dbAttribute);
-            case DB_ATTRIBUTE_TYPE:
-                return getDBAttributeType(attribute, dbAttribute);
-            case LOCKING:
-                return attribute.isUsedForLocking();
-            case LAZY:
-                return attribute.isLazy();
-            case COMMENT:
-                return getComment(attribute);
-            default:
-                return null;
-        }
+        return switch (column) {
+            case OBJ_ATTRIBUTE -> attribute.getName();
+            case OBJ_ATTRIBUTE_TYPE -> attribute.getType();
+            case DB_ATTRIBUTE -> getDBAttribute(attribute, dbAttribute);
+            case DB_ATTRIBUTE_TYPE -> getDBAttributeType(attribute, dbAttribute);
+            case LOCKING -> attribute.isUsedForLocking();
+            case LAZY -> attribute.isLazy();
+            case COMMENT -> getComment(attribute);
+            default -> null;
+        };
     }
 
     private static DbAttribute safeGetDbAttribute(ObjAttribute attribute) {
@@ -369,7 +349,7 @@ public class ObjAttributeTableModel extends CMTableModel<ObjAttribute> {
             int delta = getWeight(a1) - getWeight(a2);
             return (delta != 0)
                     ? delta
-                    : Util.nullSafeCompare(true, a1.getName(), a2.getName());
+                    : Comparator.<String>nullsFirst(Comparator.naturalOrder()).compare(a1.getName(), a2.getName());
         }
 
         private int getWeight(ObjAttribute a) {
@@ -418,16 +398,17 @@ public class ObjAttributeTableModel extends CMTableModel<ObjAttribute> {
             }
             String valToCompare1 = getDBAttribute(o1, safeGetDbAttribute(o1));
             String valToCompare2 = getDBAttribute(o2, safeGetDbAttribute(o2));
-            switch (sortCol) {
-                case DB_ATTRIBUTE:
+            valToCompare2 = switch (sortCol) {
+                case DB_ATTRIBUTE -> {
                     valToCompare1 = getDBAttribute(o1, safeGetDbAttribute(o1));
-                    valToCompare2 = getDBAttribute(o2, safeGetDbAttribute(o2));
-                    break;
-                case DB_ATTRIBUTE_TYPE:
+                    yield getDBAttribute(o2, safeGetDbAttribute(o2));
+                }
+                case DB_ATTRIBUTE_TYPE -> {
                     valToCompare1 = getDBAttributeType(o1, safeGetDbAttribute(o1));
-                    valToCompare2 = getDBAttributeType(o2, safeGetDbAttribute(o2));
-                    break;
-            }
+                    yield getDBAttributeType(o2, safeGetDbAttribute(o2));
+                }
+                default -> valToCompare2;
+            };
             return (valToCompare1 == null)
                     ? -1
                     : (valToCompare2 == null)
