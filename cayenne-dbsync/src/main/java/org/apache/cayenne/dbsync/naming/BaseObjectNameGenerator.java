@@ -69,7 +69,10 @@ public abstract class BaseObjectNameGenerator implements ObjectNameGenerator {
         }
 
         String targetEntityName = joins.getFirst().getRelationship().getTargetEntityName();
-        return Util.underscoredToJava(relationshipBase(joins, targetEntityName, toMany), false);
+        String baseName = toMany
+                ? toManyBase(joins, targetEntityName)
+                : toOneBase(joins, targetEntityName);
+        return Util.underscoredToJava(baseName, false);
     }
 
     protected boolean isToMany(DbRelationship... relationshipChain) {
@@ -81,12 +84,6 @@ public abstract class BaseObjectNameGenerator implements ObjectNameGenerator {
         }
 
         return false;
-    }
-
-    protected String relationshipBase(List<DbJoin> joins, String targetEntityName, boolean toMany) {
-        return toMany
-                ? toManyBase(joins, targetEntityName)
-                : toOneBase(joins, targetEntityName);
     }
 
     protected String toManyBase(List<DbJoin> joins, String targetEntityName) {
