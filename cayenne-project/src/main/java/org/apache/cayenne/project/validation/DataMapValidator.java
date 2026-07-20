@@ -103,6 +103,10 @@ class DataMapValidator extends ConfigurationNodeValidator<DataMap> {
         if (invalidChars != null) {
             addFailure(validationResult, map, "DataMap '%s' Java package '%s' contains invalid characters: %s",
                     map.getName(), javaPackage, invalidChars);
+        } else if (NameValidator.invalidJavaClassComponents(javaPackage)) {
+            addFailure(validationResult, map,
+                    "DataMap '%s' Java package '%s' contains a reserved word or an empty name component",
+                    map.getName(), javaPackage);
         }
     }
 }

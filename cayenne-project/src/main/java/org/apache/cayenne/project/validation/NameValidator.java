@@ -128,14 +128,18 @@ public class NameValidator {
         return !invalidChars.isEmpty() ? invalidChars : null;
     }
 
+    /**
+     * Returns whether a "."-separated class or package name contains invalid components: reserved Java
+     * keywords or empty segments ("com.default.Foo", "com..Foo", ".Foo", "Foo.").
+     */
     public static boolean invalidJavaClassComponents(String classFQN) {
         if (classFQN == null) {
             return true;
         }
 
-        StringTokenizer toks = new StringTokenizer(classFQN, ".");
-        while (toks.hasMoreTokens()) {
-            if (RESERVED_JAVA_KEYWORDS.contains(toks.nextToken())) {
+        // the -1 limit keeps trailing empty segments that StringTokenizer would silently skip
+        for (String component : classFQN.split("\\.", -1)) {
+            if (component.isEmpty() || RESERVED_JAVA_KEYWORDS.contains(component)) {
                 return true;
             }
         }
