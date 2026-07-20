@@ -143,8 +143,11 @@ The three cases above don't exhaust the ways a purely mechanical transliteration
 you spot a name where a human reading the underlying DB name would obviously do better, and the fix
 is defensible (not a guess), apply the same conservative treatment. Some more examples:
 
-- **Reserved words / illegal identifiers** the generator passed through — a column literally named
-  `class`, `package`, `default`, or one starting with a digit needs a legal Java name.
+- **Genuinely illegal identifiers** the generator passed through — a name starting with a digit, or
+  literally `class`, whose getter `getClass()` collides with the final `Object.getClass()`. Java
+  *keywords* are **not** a problem — `default`, `package`, `return` and the like compile fine, since
+  class generation prefixes the field/parameter name with `_` and embeds the capitalized name in the
+  accessors (`getDefault()` / `setDefault()`). Leave keyword-named properties alone.
 - **Lost acronym casing** — `HTTPURL` → `Gametype`-style collapse loses the acronym; `httpUrl` /
   `url` may read better than `httpurl`.
 - **Plural table → singular entity** — a `CUSTOMERS` table yields `Customers`; an entity is a single
