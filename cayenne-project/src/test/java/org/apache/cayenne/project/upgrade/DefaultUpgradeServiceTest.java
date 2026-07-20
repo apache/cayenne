@@ -22,7 +22,6 @@ package org.apache.cayenne.project.upgrade;
 import org.apache.cayenne.project.upgrade.handlers.UpgradeHandler;
 import org.apache.cayenne.resource.Resource;
 import org.apache.cayenne.resource.URLResource;
-import org.apache.cayenne.util.Util;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.params.ParameterizedTest;
@@ -37,6 +36,7 @@ import java.io.InputStreamReader;
 import java.net.URL;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Objects;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertTrue;
@@ -84,14 +84,14 @@ public class DefaultUpgradeServiceTest {
 
     @Test
     public void getAdditionalDatamapResources() throws Exception {
-        URL url = getClass().getResource("../cayenne-PROJECT1.xml");
+        URL url = Objects.requireNonNull(getClass().getResource("../cayenne-PROJECT1.xml"));
         Resource resource = new URLResource(url);
         Document document = readDocument(url);
         UpgradeUnit unit = new UpgradeUnit(resource, document);
         List<Resource> resources = upgradeService.getAdditionalDatamapResources(unit);
 
         assertEquals(2, resources.size());
-        assertTrue(resources.get(0).getURL().sameFile(getClass().getResource("../testProjectMap1_1.map.xml")));
+        assertTrue(resources.getFirst().getURL().sameFile(getClass().getResource("../testProjectMap1_1.map.xml")));
     }
 
     @Test
@@ -136,7 +136,7 @@ public class DefaultUpgradeServiceTest {
 
     @Test
     public void readDocument() {
-        Document document = Util.readDocument(getClass().getResource("../cayenne-PROJECT1.xml"));
+        Document document = DefaultUpgradeService.readDocument(getClass().getResource("../cayenne-PROJECT1.xml"));
         assertEquals("12", document.getDocumentElement().getAttribute("project-version"));
     }
 

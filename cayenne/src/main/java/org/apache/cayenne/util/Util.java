@@ -105,17 +105,21 @@ public class Util {
     }
 
     /**
-     * Reads file contents, returning it as a String, using System default line
-     * separator.
+     * Reads file contents, returning it as a String, using System default line separator.
+     *
+     * @deprecated unused
      */
+    @Deprecated(since = "5.0", forRemoval = true)
     public static String stringFromFile(File file) throws IOException {
         return stringFromFile(file, System.lineSeparator());
     }
 
     /**
-     * Reads file contents, returning it as a String, joining lines with
-     * provided separator.
+     * Reads file contents, returning it as a String, joining lines with provided separator.
+     *
+     * @deprecated unused
      */
+    @Deprecated(since = "5.0", forRemoval = true)
     public static String stringFromFile(File file, String joinWith) throws IOException {
         StringBuilder buf = new StringBuilder();
 
@@ -265,10 +269,8 @@ public class Util {
                 }
             }
 
-            return true;
-        } else {
-            return true;
         }
+        return true;
     }
 
     /**
@@ -311,7 +313,9 @@ public class Util {
      * Capitalizes the first letter of the property name.
      *
      * @since 4.1
+     * @deprecated unused
      */
+    @Deprecated(since = "5.0", forRemoval = true)
     public static String capitalized(String name) {
         if (name == null || name.isEmpty()) {
             return name;
@@ -325,7 +329,9 @@ public class Util {
      * Returns string with lowercased first letter
      *
      * @since 4.2
+     * @deprecated unused
      */
+    @Deprecated(since = "5.0", forRemoval = true)
     public static String uncapitalized(String aString) {
         if (aString == null || aString.isEmpty()) {
             return aString;
@@ -377,10 +383,10 @@ public class Util {
     }
 
     /**
-     * @param url to read
-     * @return org.w3c.dom.Document from the given URL
      * @since 4.1
+     * @deprecated unused
      */
+    @Deprecated(since = "5.0", forRemoval = true)
     public static Document readDocument(URL url) {
         DocumentBuilderFactory documentBuilderFactory = DocumentBuilderFactory.newInstance();
         documentBuilderFactory.setNamespaceAware(false);
@@ -442,7 +448,7 @@ public class Util {
      *
      * @since 1.2
      * @deprecated use {@link java.util.stream.IntStream#range} with
-     *             {@link java.util.stream.Collectors#toMap} to build a map from parallel arrays
+     * {@link java.util.stream.Collectors#toMap} to build a map from parallel arrays
      */
     @Deprecated(since = "5.0", forRemoval = true)
     public static <K, V> Map<K, V> toMap(K[] keys, V[] values) {
@@ -567,11 +573,9 @@ public class Util {
     /**
      * Trims long strings substituting middle part with "...".
      *
-     * @param str       String to trim.
-     * @param maxLength maximum allowable length. Must be at least 5, or an
-     *                  IllegalArgumentException is thrown.
-     * @return String
+     * @deprecated unused
      */
+    @Deprecated(since = "5.0", forRemoval = true)
     public static String prettyTrim(String str, int maxLength) {
         if (maxLength < 5) {
             throw new IllegalArgumentException("Algorithm for 'prettyTrim' works only with length >= 5. "
@@ -624,7 +628,9 @@ public class Util {
 
     /**
      * @since 1.2
+     * @deprecated unused
      */
+    @Deprecated(since = "5.0", forRemoval = true)
     public static Pattern sqlPatternToPattern(String pattern, boolean ignoreCase) {
         String preprocessed = RegexUtil.sqlPatternToRegex(pattern);
 
@@ -710,7 +716,7 @@ public class Util {
             }
 
             if (len > 1) {
-                buf.append(token.substring(1, len));
+                buf.append(token, 1, len);
             }
         }
         return buf.toString();

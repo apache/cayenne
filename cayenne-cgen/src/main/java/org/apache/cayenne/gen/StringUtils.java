@@ -65,7 +65,7 @@ public class StringUtils {
      * @since 1.2
      */
     public String stripClass(String aString) {
-        if (aString == null || aString.length() == 0) {
+        if (aString == null || aString.isEmpty()) {
             return aString;
         }
 
@@ -80,20 +80,30 @@ public class StringUtils {
 
     /**
      * Capitalizes the first letter of the property name.
-     * 
+     *
      * @since 1.1
      */
     public String capitalized(String name) {
-        return Util.capitalized(name);
+        if (name == null || name.isEmpty()) {
+            return name;
+        }
+
+        char c = Character.toUpperCase(name.charAt(0));
+        return (name.length() == 1) ? Character.toString(c) : c + name.substring(1);
     }
 
     /**
      * Returns string with lowercased first letter
-     * 
+     *
      * @since 1.2
      */
     public String uncapitalized(String aString) {
-        return Util.uncapitalized(aString);
+        if (aString == null || aString.isEmpty()) {
+            return aString;
+        }
+
+        char c = Character.toLowerCase(aString.charAt(0));
+        return (aString.length() == 1) ? Character.toString(c) : c + aString.substring(1);
     }
 
     /**
@@ -102,7 +112,7 @@ public class StringUtils {
      * @since 1.1
      */
     public String capitalizedAsConstant(String name) {
-        if (name == null || name.length() == 0) {
+        if (name == null || name.isEmpty()) {
             return name;
         }
 
@@ -111,7 +121,7 @@ public class StringUtils {
         // check is a good idea
         name = Util.specialCharsToJava(name);
 
-        char charArray[] = name.toCharArray();
+        char[] charArray = name.toCharArray();
         StringBuilder buffer = new StringBuilder();
 
         for (int i = 0; i < charArray.length; i++) {
@@ -144,7 +154,7 @@ public class StringUtils {
      * @since 3.1
      */
     public String pluralize(String str) {
-        if (str == null || str.length() == 0) {
+        if (str == null || str.isEmpty()) {
             return str;
         }
         else if (str.endsWith("s") || str.endsWith("x")) {

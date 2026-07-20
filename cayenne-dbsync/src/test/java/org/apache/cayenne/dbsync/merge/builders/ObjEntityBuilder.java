@@ -20,7 +20,6 @@ package org.apache.cayenne.dbsync.merge.builders;
 
 import org.apache.cayenne.map.ObjAttribute;
 import org.apache.cayenne.map.ObjEntity;
-import org.apache.cayenne.util.Util;
 
 public class ObjEntityBuilder extends DefaultBuilder<ObjEntity> {
 
@@ -65,7 +64,7 @@ public class ObjEntityBuilder extends DefaultBuilder<ObjEntity> {
     @Override
     public ObjEntity build() {
         if (obj.getName() == null) {
-            obj.setName(Util.capitalized(getRandomJavaName()));
+            obj.setName(capitalized(getRandomJavaName()));
         }
 
         return obj;

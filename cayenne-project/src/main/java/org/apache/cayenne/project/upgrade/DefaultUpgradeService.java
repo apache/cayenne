@@ -19,25 +19,6 @@
 
 package org.apache.cayenne.project.upgrade;
 
-import java.io.InputStream;
-import java.net.URL;
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.Comparator;
-import java.util.List;
-import java.util.Map;
-import java.util.TreeMap;
-
-import javax.xml.transform.Result;
-import javax.xml.transform.Source;
-import javax.xml.transform.Transformer;
-import javax.xml.transform.TransformerFactory;
-import javax.xml.transform.dom.DOMSource;
-import javax.xml.transform.stream.StreamResult;
-import javax.xml.xpath.XPath;
-import javax.xml.xpath.XPathConstants;
-import javax.xml.xpath.XPathFactory;
-
 import org.apache.cayenne.ConfigurationException;
 import org.apache.cayenne.configuration.ConfigurationTree;
 import org.apache.cayenne.configuration.DataChannelDescriptor;
@@ -60,6 +41,28 @@ import org.xml.sax.InputSource;
 import org.xml.sax.SAXException;
 import org.xml.sax.XMLReader;
 import org.xml.sax.helpers.DefaultHandler;
+
+import javax.xml.parsers.DocumentBuilder;
+import javax.xml.parsers.DocumentBuilderFactory;
+import javax.xml.parsers.ParserConfigurationException;
+import javax.xml.transform.Result;
+import javax.xml.transform.Source;
+import javax.xml.transform.Transformer;
+import javax.xml.transform.TransformerFactory;
+import javax.xml.transform.dom.DOMSource;
+import javax.xml.transform.stream.StreamResult;
+import javax.xml.xpath.XPath;
+import javax.xml.xpath.XPathConstants;
+import javax.xml.xpath.XPathFactory;
+import java.io.IOException;
+import java.io.InputStream;
+import java.net.URL;
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.Comparator;
+import java.util.List;
+import java.util.Map;
+import java.util.TreeMap;
 
 import static org.apache.cayenne.util.Util.isBlank;
 
@@ -170,14 +173,14 @@ public class DefaultUpgradeService implements UpgradeService {
         List<UpgradeUnit> allUnits = new ArrayList<>();
 
         // Load DOM for all resources
-        Document projectDocument = Util.readDocument(resource.getURL());
+        Document projectDocument = readDocument(resource.getURL());
         UpgradeUnit projectUnit = new UpgradeUnit(resource, projectDocument);
         allUnits.add(projectUnit);
 
         List<Resource> dataMapResources = getAdditionalDatamapResources(projectUnit);
         List<UpgradeUnit> dataMapUnits = new ArrayList<>(dataMapResources.size());
         for (Resource dataMapResource : dataMapResources) {
-            dataMapUnits.add(new UpgradeUnit(dataMapResource, Util.readDocument(dataMapResource.getURL())));
+            dataMapUnits.add(new UpgradeUnit(dataMapResource, readDocument(dataMapResource.getURL())));
         }
         allUnits.addAll(dataMapUnits);
 
@@ -301,6 +304,33 @@ public class DefaultUpgradeService implements UpgradeService {
         }
 
         return Double.parseDouble(buffer.toString());
+    }
+
+    protected static Document readDocument(URL url) {
+        DocumentBuilderFactory documentBuilderFactory = DocumentBuilderFactory.newInstance();
+        documentBuilderFactory.setNamespaceAware(false);
+        documentBuilderFactory.setXIncludeAware(false);
+        documentBuilderFactory.setExpandEntityReferences(false);
+
+        try {
+            documentBuilderFactory.setFeature("http://apache.org/xml/features/disallow-doctype-decl", true);
+            documentBuilderFactory.setFeature("http://xml.org/sax/features/external-general-entities", false);
+            documentBuilderFactory.setFeature("http://xml.org/sax/features/external-parameter-entities", false);
+            documentBuilderFactory.setFeature("http://apache.org/xml/features/nonvalidating/load-external-dtd", false);
+        } catch (ParserConfigurationException ex) {
+            throw new ConfigurationException("Unable to configure DocumentBuilderFactory", ex);
+        }
+
+        try {
+            DocumentBuilder domBuilder = documentBuilderFactory.newDocumentBuilder();
+            try (InputStream inputStream = url.openStream()) {
+                return domBuilder.parse(inputStream);
+            } catch (IOException | SAXException e) {
+                throw new ConfigurationException("Error loading configuration from %s", e, url);
+            }
+        } catch (ParserConfigurationException e) {
+            throw new ConfigurationException(e);
+        }
     }
 
     private static class VersionComparator implements Comparator<String> {

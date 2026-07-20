@@ -19,16 +19,15 @@
 
 package org.apache.cayenne.project.compatibility;
 
-import java.util.List;
-
 import org.apache.cayenne.configuration.DataChannelDescriptor;
 import org.apache.cayenne.di.Inject;
 import org.apache.cayenne.project.upgrade.DefaultUpgradeService;
 import org.apache.cayenne.project.upgrade.UpgradeUnit;
 import org.apache.cayenne.project.upgrade.handlers.UpgradeHandler;
 import org.apache.cayenne.resource.Resource;
-import org.apache.cayenne.util.Util;
 import org.w3c.dom.Document;
+
+import java.util.List;
 
 /**
  * @since 4.1
@@ -56,7 +55,7 @@ public class CompatibilityUpgradeService extends DefaultUpgradeService {
 
     public Resource upgradeDataMap(Resource resource) {
         List<UpgradeHandler> handlerList = getHandlersForVersion(loadProjectVersion(resource));
-        Document document =  Util.readDocument(resource.getURL());
+        Document document =  readDocument(resource.getURL());
         UpgradeUnit upgradeUnit = new UpgradeUnit(resource, document);
         for(UpgradeHandler handler : handlerList) {
             handler.processDataMapDom(upgradeUnit);

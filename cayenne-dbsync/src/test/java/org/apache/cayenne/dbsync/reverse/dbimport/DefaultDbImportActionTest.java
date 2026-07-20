@@ -55,7 +55,10 @@ import org.junit.jupiter.api.Test;
 import org.slf4j.Logger;
 
 import javax.sql.DataSource;
+import java.io.BufferedReader;
 import java.io.File;
+import java.io.FileReader;
+import java.io.IOException;
 import java.net.URL;
 import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
@@ -319,7 +322,7 @@ public class DefaultDbImportActionTest {
 
         assertTrue(out.isFile());
 
-        String contents = Util.stringFromFile(out);
+        String contents = stringFromFile(out);
         assertTrue(contents.contains("project-version=\""), "Has no project version saved");
     }
 
@@ -351,10 +354,10 @@ public class DefaultDbImportActionTest {
         assertTrue(dataMapFile.isFile());
         assertTrue(projectFile.isFile());
 
-        String dataMapContents = Util.stringFromFile(dataMapFile);
+        String dataMapContents = stringFromFile(dataMapFile);
         assertTrue(dataMapContents.contains("project-version=\""), "Has no project version saved");
 
-        String projectContents = Util.stringFromFile(projectFile);
+        String projectContents = stringFromFile(projectFile);
         assertTrue(projectContents.contains("project-version=\""), "Has no project version saved");
         assertTrue(projectContents.contains("<map name=\"testSaveLoaded2\"/>"), "Has no datamap in project");
     }
@@ -396,10 +399,10 @@ public class DefaultDbImportActionTest {
         assertTrue(dataMapFile.isFile());
         assertTrue(projectFile.isFile());
 
-        String dataMapContents = Util.stringFromFile(dataMapFile);
+        String dataMapContents = stringFromFile(dataMapFile);
         assertTrue(dataMapContents.contains("project-version=\""), "Has no project version saved");
 
-        String projectContents = Util.stringFromFile(projectFile);
+        String projectContents = stringFromFile(projectFile);
         assertTrue(projectContents.contains("project-version=\""), "Has no project version saved");
         assertTrue(projectContents.contains("<map name=\"testSaveLoaded3\"/>"), "Has no datamap in project");
     }
@@ -453,11 +456,11 @@ public class DefaultDbImportActionTest {
         assertTrue(dataMapFile.isFile());
         assertTrue(projectFile.isFile());
 
-        String dataMapContents = Util.stringFromFile(dataMapFile);
+        String dataMapContents = stringFromFile(dataMapFile);
         assertTrue(dataMapContents.contains("project-version=\""), "Has no project version saved");
         assertFalse(dataMapContents.contains("<db-entity"));
 
-        String projectContents = Util.stringFromFile(projectFile);
+        String projectContents = stringFromFile(projectFile);
         assertTrue(projectContents.contains("project-version=\""), "Has no project version saved");
         assertEquals(1, Util.countMatches(projectContents, "<map name=\"testSaveLoaded4\"/>"), "Has no or too many datamaps in project");
     }
@@ -480,5 +483,17 @@ public class DefaultDbImportActionTest {
             res.add(mergerToken.getClass().getSimpleName());
         }
         return res;
+    }
+
+    private static String stringFromFile(File file) throws IOException {
+        StringBuilder buf = new StringBuilder();
+
+        try (BufferedReader in = new BufferedReader(new FileReader(file))) {
+            String line;
+            while ((line = in.readLine()) != null) {
+                buf.append(line).append(System.lineSeparator());
+            }
+        }
+        return buf.toString();
     }
 }

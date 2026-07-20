@@ -19,17 +19,16 @@
 
 package org.apache.cayenne.exp.parser;
 
+import org.apache.cayenne.CayenneRuntimeException;
+
 import java.io.IOException;
 import java.util.List;
 import java.util.regex.Pattern;
 
-import org.apache.cayenne.CayenneRuntimeException;
-import org.apache.cayenne.util.Util;
-
 /**
  * Superclass of pattern matching nodes. Assumes that subclass is a binary expression with
  * the second operand being a pattern.
- * 
+ *
  * @since 1.1
  */
 public abstract class PatternMatchNode extends ConditionNode {
@@ -51,8 +50,8 @@ public abstract class PatternMatchNode extends ConditionNode {
     }
 
     SimpleNode wrap(Object pattern) {
-        if(pattern instanceof SimpleNode) {
-            return (SimpleNode)pattern;
+        if (pattern instanceof SimpleNode) {
+            return (SimpleNode) pattern;
         }
         return new ASTScalar(pattern);
     }
@@ -110,7 +109,7 @@ public abstract class PatternMatchNode extends ConditionNode {
 
                     // precompile pattern
                     Node node = jjtGetChild(1);
-                    if(node instanceof ASTScalar) {
+                    if (node instanceof ASTScalar) {
                         ASTScalar patternNode = (ASTScalar) node;
                         if (patternNode == null) {
                             patternCompiled = true;
@@ -123,7 +122,7 @@ public abstract class PatternMatchNode extends ConditionNode {
                             return null;
                         }
 
-                        pattern = Util.sqlPatternToPattern(srcPattern, ignoringCase);
+                        pattern = sqlPatternToPattern(srcPattern, ignoringCase);
                         patternCompiled = true;
                     }
                 }
@@ -147,9 +146,9 @@ public abstract class PatternMatchNode extends ConditionNode {
     protected void appendChildrenAsEJBQL(List<Object> parameterAccumulator, Appendable out, String rootId) throws IOException {
         super.appendChildrenAsEJBQL(parameterAccumulator, out, rootId);
 
-        if(0 != getEscapeChar()) {
+        if (0 != getEscapeChar()) {
 
-            if('\'' == getEscapeChar()) {
+            if ('\'' == getEscapeChar()) {
                 throw new CayenneRuntimeException("unable to escape an EJBQL like clause with a single quote character");
             }
 
@@ -159,4 +158,44 @@ public abstract class PatternMatchNode extends ConditionNode {
         }
     }
 
+    private static Pattern sqlPatternToPattern(String pattern, boolean ignoreCase) {
+        if (pattern == null) {
+            throw new NullPointerException("Null pattern.");
+        }
+
+        if (pattern.length() == 0) {
+            throw new IllegalArgumentException("Empty pattern.");
+        }
+
+        StringBuilder buffer = new StringBuilder();
+
+        // convert * into regex syntax
+        // e.g. abc*x becomes ^abc.*x$
+        // or abc?x becomes ^abc.?x$
+        buffer.append("^");
+        for (int j = 0; j < pattern.length(); j++) {
+            char nextChar = pattern.charAt(j);
+            if (nextChar == '%') {
+                nextChar = '*';
+            }
+
+            if (nextChar == '*' || nextChar == '?') {
+                buffer.append('.');
+            }
+            // escape special chars
+            else if (nextChar == '.'
+                    || nextChar == '/'
+                    || nextChar == '$'
+                    || nextChar == '^') {
+                buffer.append('\\');
+            }
+
+            buffer.append(nextChar);
+        }
+
+        buffer.append("$");
+
+        int flag = ignoreCase ? Pattern.CASE_INSENSITIVE | Pattern.UNICODE_CASE : 0;
+        return Pattern.compile(buffer.toString(), flag);
+    }
 }
