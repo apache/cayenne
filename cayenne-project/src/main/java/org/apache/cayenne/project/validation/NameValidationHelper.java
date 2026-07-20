@@ -30,7 +30,7 @@ import java.util.StringTokenizer;
  */
 public class NameValidationHelper {
 
-    static final Collection<String> RESERVED_JAVA_KEYWORDS = List.of(
+    private static final Collection<String> RESERVED_JAVA_KEYWORDS = List.of(
             "abstract",
             "assert",
             "default",
@@ -88,7 +88,7 @@ public class NameValidationHelper {
 
     // a property is considered invalid if there is a getter or a setter for it in
     // java.lang.Object or PersistentObject
-    static final Collection<String> INVALID_JAVA_PROPERTIES = List.of(
+    private static final Collection<String> PERSISTENT_BASE_PROPERTIES = List.of(
             "class",
             "committedSnapshot",
             "currentSnapshot",
@@ -186,6 +186,6 @@ public class NameValidationHelper {
      */
     public boolean invalidPersistentObjectProperty(String persistentObjectProperty) {
         return persistentObjectProperty == null
-                || INVALID_JAVA_PROPERTIES.contains(persistentObjectProperty);
+                || PERSISTENT_BASE_PROPERTIES.contains(persistentObjectProperty);
     }
 }
