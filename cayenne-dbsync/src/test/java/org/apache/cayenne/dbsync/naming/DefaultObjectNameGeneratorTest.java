@@ -166,21 +166,55 @@ public class DefaultObjectNameGeneratorTest {
     }
 
     @Test
+    public void dbRelationshipName_ToOne_FkWithoutIdSuffix() {
+
+        // an FK without an ID suffix still names the relationship after the column, not the target table
+        DbRelationship r1 = makeRelationship("employee", "birth_country", "country", "id", false);
+        assertEquals("birthCountry", dbRelationshipName(r1));
+
+        DbRelationship r2 = makeRelationship("PERSON", "SHIPPING_ADDRESS", "ADDRESS", "ID", false);
+        assertEquals("shippingAddress", dbRelationshipName(r2));
+
+        // an FK named after the bare target concept keeps the column name
+        DbRelationship r3 = makeRelationship("employee", "country", "acme_country", "id", false);
+        assertEquals("country", dbRelationshipName(r3));
+    }
+
+    @Test
     public void dbRelationshipName_ToMany_RoleQualifiedFk_FkDropsTablePrefix() {
 
         // FK columns matching a "_"-token suffix of the entity name still carry the role...
-        DbRelationship r1 = makeRelationship("nhl_team", "id", "nhl_game", "home_team_id", true);
-        assertEquals("homeNhlGames", dbRelationshipName(r1));
+        DbRelationship r1 = makeRelationship("acme_team", "id", "acme_game", "home_team_id", true);
+        assertEquals("homeAcmeGames", dbRelationshipName(r1));
 
-        DbRelationship r2 = makeRelationship("nhl_team", "id", "nhl_game", "visiting_team_id", true);
-        assertEquals("visitingNhlGames", dbRelationshipName(r2));
+        DbRelationship r2 = makeRelationship("acme_team", "id", "acme_game", "visiting_team_id", true);
+        assertEquals("visitingAcmeGames", dbRelationshipName(r2));
 
         // ... and a plain suffix reference gets no qualifier
-        DbRelationship r3 = makeRelationship("nhl_team", "id", "nhl_award", "team_id", true);
-        assertEquals("nhlAwards", dbRelationshipName(r3));
+        DbRelationship r3 = makeRelationship("acme_team", "id", "acme_award", "team_id", true);
+        assertEquals("acmeAwards", dbRelationshipName(r3));
 
-        DbRelationship r4 = makeRelationship("nhl_game_type", "id", "nhl_game", "type_id", true);
-        assertEquals("nhlGames", dbRelationshipName(r4));
+        DbRelationship r4 = makeRelationship("acme_game_type", "id", "acme_game", "type_id", true);
+        assertEquals("acmeGames", dbRelationshipName(r4));
+    }
+
+    @Test
+    public void dbRelationshipName_MultiJoin() {
+
+        // a compound FK's columns describe PK components, so the to-one side is named after the target entity
+        DbRelationship r1 = makeRelationship("shipment", "order_id", "order_line", "order_id", false);
+        r1.addJoin(new DbJoin(r1, "line_num", "line_num"));
+        assertEquals("orderLine", dbRelationshipName(r1));
+
+        // ... and the to-many side gets an unqualified plural
+        DbRelationship r2 = makeRelationship("order_line", "order_id", "shipment", "order_id", true);
+        r2.addJoin(new DbJoin(r2, "line_num", "line_num"));
+        assertEquals("shipments", dbRelationshipName(r2));
+
+        // no role qualifier even when the first FK column alone would suggest one
+        DbRelationship r3 = makeRelationship("team", "team_id", "game", "home_team_id", true);
+        r3.addJoin(new DbJoin(r3, "season_id", "season_id"));
+        assertEquals("games", dbRelationshipName(r3));
     }
 
     @Test

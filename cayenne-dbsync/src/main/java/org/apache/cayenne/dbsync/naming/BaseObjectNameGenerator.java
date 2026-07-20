@@ -97,7 +97,8 @@ public abstract class BaseObjectNameGenerator implements ObjectNameGenerator {
 
     private String toManyRoleQualifier(List<DbJoin> joins) {
 
-        if (joins.isEmpty()) {
+        // a role is only derivable from a single-column FK; a compound FK's columns describe PK components
+        if (joins.size() != 1) {
             return null;
         }
 
@@ -115,7 +116,7 @@ public abstract class BaseObjectNameGenerator implements ObjectNameGenerator {
         String roleUpper = role.toUpperCase();
 
         // match the role against the source entity name, then against its shorter "_"-token suffixes,
-        // as FK columns often drop a common table-name prefix ("home_team_id" referencing "nhl_team")
+        // as FK columns often drop a common table-name prefix ("home_team_id" referencing "acme_team")
         String suffix = dbEntityBaseName(sourceEntity.getName()).toUpperCase();
         while (true) {
             if (roleUpper.equals(suffix)) {
@@ -137,24 +138,22 @@ public abstract class BaseObjectNameGenerator implements ObjectNameGenerator {
 
     protected String toOneBase(List<DbJoin> joins, String targetEntityName) {
 
-        if (joins.isEmpty()) {
-            // In case, when uses EditRelationship button, relationship doesn't exist => it doesn't have joins
-            // and just return targetName
+        // the FK column is a name source only for a single-join relationship: with no joins (e.g. the Modeler's
+        // EditRelationship dialog) there is no FK, and a compound FK's column names describe PK components,
+        // not the relationship role
+        if (joins.size() != 1) {
             return dbEntityBaseName(targetEntityName);
         }
 
-        DbJoin join1 = joins.getFirst();
-
-        // TODO: multi-join relationships
-
         // return the name of the FK column sans ID
-        String fkColName = join1.getSourceName();
+        String fkColName = joins.getFirst().getSourceName();
         if (fkColName == null) {
             return dbEntityBaseName(targetEntityName);
         }
 
+        // an FK without an ID suffix ("birth_country" referencing "country") is still the best name source
         String fkBase = stripIdSuffix(fkColName);
-        return fkBase != null ? fkBase : dbEntityBaseName(targetEntityName);
+        return fkBase != null ? fkBase : fkColName;
     }
 
     private static String stripIdSuffix(String fkColName) {

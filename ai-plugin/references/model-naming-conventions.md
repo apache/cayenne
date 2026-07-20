@@ -40,7 +40,7 @@ Concretely, the generator produces:
 |---|---|---|
 | `db-entity` name | stem, split on `_`, capitalize each token | `ARTIST_GROUP` → `ArtistGroup` |
 | `db-attribute` name | split on `_`, camelCase | `FIRST_NAME` → `firstName` |
-| to-one relationship | FK column minus trailing `_ID`/`ID`; else target entity name | `MANAGER_ID` → `manager` |
+| to-one relationship | FK column, minus its trailing `_ID`/`ID` when present; target entity name for a compound (multi-column) FK or when there are no joins | `MANAGER_ID` → `manager`; `BIRTH_COUNTRY` → `birthCountry` |
 | to-many relationship | English plural of the target entity name, prefixed with the FK role qualifier when the FK column embeds the source entity name | `PAINTING` → `paintings`; `HOME_TEAM_ID` → `homeGames` |
 | name collision within an entity | append a numeric suffix | `team`, `team1`, `team2` … |
 
@@ -91,13 +91,15 @@ directions are not equally affected** — the to-one and to-many sides are named
   `Employee`, because the role can't be mechanically tied to the entity. Name each collection by its
   role yourself: `managedProjects` / `auditedProjects`.
 
-- **to-one side usually does NOT collide.** To-one naming is FK-column-based — it strips a trailing
-  `_ID`/`ID`, so distinct `*_ID` FKs already yield distinct, good names (`HOME_TEAM_ID` → `homeTeam`,
-  `AWAY_TEAM_ID` → `awayTeam`). Leave those alone. It **only** collides in the fallback path: when a
-  FK column does *not* end in `ID`/`_ID` (or is null / has no joins), the generator drops to the
-  target entity name, so two such FKs both become e.g. `employee` / `employee1`. There, derive the
-  role from the FK column yourself even though it lacks the `_ID` suffix (`MANAGER` → `manager`,
-  `SUPERVISOR` → `supervisor`).
+- **to-one side does NOT collide.** To-one naming is FK-column-based — the name is the FK column
+  with a trailing `_ID`/`ID` stripped when present (`HOME_TEAM_ID` → `homeTeam`, `BIRTH_COUNTRY` →
+  `birthCountry`), so distinct FK columns yield distinct, good names. Leave those alone. The
+  generator falls back to the target entity name only for a compound (multi-column) FK — whose
+  column names describe PK components, not a role — or when the relationship has no joins at all.
+  Models imported by **older Cayenne versions** used that fallback whenever the FK column lacked an
+  `ID`/`_ID` suffix, producing target-entity names and numbered collisions (`employee` /
+  `employee1`); when you see those, derive the role from the FK column yourself (`MANAGER` →
+  `manager`, `SUPERVISOR` → `supervisor`).
 
 So in the typical "two `<ROLE>_<ENTITY>_ID` FKs" model **both directions are already fine**
 (`homeTeam` ↔ `homeGames`, `awayTeam` ↔ `awayGames`) — nothing to rename. When you do rename, give
@@ -169,7 +171,7 @@ A DbRelationship `name` is **arbitrary** (not derived from a real table/column l
 DbAttribute), but it is **not** exempt from cleanup — treat it as the first-class citizen here, since
 every FK produces a DbRelationship whether or not an ObjRelationship was generated on it. Reverse
 engineering names it with the **same generator** as ObjRelationships (to-one = FK column minus a
-trailing `_ID`/`ID`, else target entity name; to-many = English plural of the target entity with a
+trailing `_ID`/`ID` when present; to-many = English plural of the target entity with a
 FK role qualifier when the FK embeds the source entity name, all `underscoredToJava`-cased), so it
 inherits the same gaps — run-together names,
 numbered collisions (`toArtist` / `toArtist1`), a leaked common prefix. Apply §1–§5 to DbRelationship
