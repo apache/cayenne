@@ -32,7 +32,7 @@
 
     <dependencies>
         <!--
-        using org.apache.cayenne.project.validation.NameValidationHelper from cayenne-project
+        using org.apache.cayenne.project.validation.NameValidator from cayenne-project
         and org.apache.cayenne.dbsync.filter.NameFilter from cayenne-dbsync
         -->
         <dependency>

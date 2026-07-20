@@ -99,8 +99,7 @@ class DataMapValidator extends ConfigurationNodeValidator<DataMap> {
             return;
         }
 
-        NameValidationHelper helper = NameValidationHelper.getInstance();
-        String invalidChars = helper.invalidCharsInJavaClassName(javaPackage);
+        String invalidChars = NameValidator.invalidCharsInJavaClassName(javaPackage);
         if (invalidChars != null) {
             addFailure(validationResult, map, "DataMap '%s' Java package '%s' contains invalid characters: %s",
                     map.getName(), javaPackage, invalidChars);

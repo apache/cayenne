@@ -71,13 +71,12 @@ class ObjRelationshipValidator extends ConfigurationNodeValidator<ObjRelationshi
     }
 
     private void validateName(ObjRelationship relationship, ValidationResult validationResult) {
-        NameValidationHelper helper = NameValidationHelper.getInstance();
-        String invalidChars = helper.invalidCharsInObjPathComponent(relationship.getName());
+        String invalidChars = NameValidator.invalidCharsInObjPathComponent(relationship.getName());
 
         if (invalidChars != null) {
             addFailure(validationResult, relationship, "ObjRelationship name '%s' contains invalid characters: %s",
                     toString(relationship), invalidChars);
-        } else if (helper.invalidPersistentObjectProperty(relationship.getName())) {
+        } else if (NameValidator.invalidPersistentProperty(relationship.getName())) {
             addFailure(validationResult, relationship, "ObjRelationship name '%s' is a reserved word",
                     toString(relationship));
         }

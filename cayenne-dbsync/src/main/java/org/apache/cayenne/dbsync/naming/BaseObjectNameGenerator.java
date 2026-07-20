@@ -22,7 +22,7 @@ import org.apache.cayenne.map.DbAttribute;
 import org.apache.cayenne.map.DbEntity;
 import org.apache.cayenne.map.DbJoin;
 import org.apache.cayenne.map.DbRelationship;
-import org.apache.cayenne.project.validation.NameValidationHelper;
+import org.apache.cayenne.project.validation.NameValidator;
 import org.apache.cayenne.util.Util;
 
 import java.util.List;
@@ -87,7 +87,7 @@ public abstract class BaseObjectNameGenerator implements ObjectNameGenerator {
      */
     private String fixPersistentBaseProperty(String name, String entityName) {
 
-        if (entityName == null || !NameValidationHelper.getInstance().invalidPersistentObjectProperty(name)) {
+        if (entityName == null || !NameValidator.invalidPersistentProperty(name)) {
             return name;
         }
 

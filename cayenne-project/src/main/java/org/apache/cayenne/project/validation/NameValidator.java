@@ -25,10 +25,10 @@ import java.util.StringTokenizer;
 
 /**
  * Defines a set of rules for validating java and db mapping identifiers.
- * 
- * @since 1.1
+ *
+ * @since 5.0
  */
-public class NameValidationHelper {
+public class NameValidator {
 
     private static final Collection<String> RESERVED_JAVA_KEYWORDS = List.of(
             "abstract",
@@ -90,16 +90,10 @@ public class NameValidationHelper {
             "persistenceState",
             "snapshotVersion");
 
-    static final NameValidationHelper sharedInstance = new NameValidationHelper();
-
-    /**
-     * Returns shared instance of the validator.
-     */
-    public static NameValidationHelper getInstance() {
-        return sharedInstance;
+    private NameValidator() {
     }
 
-    public boolean isReservedJavaKeyword(String word) {
+    public static boolean isReservedJavaKeyword(String word) {
         return RESERVED_JAVA_KEYWORDS.contains(word);
     }
 
@@ -107,19 +101,19 @@ public class NameValidationHelper {
      * This is more of a sanity check than a real validation. As different DBs allow
      * different chars in identifiers, here we simply check for dots.
      */
-    public String invalidCharsInDbPathComponent(String dbPathComponent) {
+    public static String invalidCharsInDbPathComponent(String dbPathComponent) {
         return (dbPathComponent.indexOf('.') >= 0) ? "." : null;
     }
 
     /**
      * Scans a name of ObjAttribute or ObjRelationship for invalid characters.
      */
-    public String invalidCharsInObjPathComponent(String objPathComponent) {
+    public static String invalidCharsInObjPathComponent(String objPathComponent) {
         String invalidChars = validateJavaIdentifier(objPathComponent, "");
         return (!invalidChars.isEmpty()) ? invalidChars : null;
     }
 
-    public String invalidCharsInJavaClassName(String javaClassName) {
+    public static String invalidCharsInJavaClassName(String javaClassName) {
         if (javaClassName == null) {
             return null;
         }
@@ -134,12 +128,12 @@ public class NameValidationHelper {
         return !invalidChars.isEmpty() ? invalidChars : null;
     }
 
-    public boolean invalidPersistentObjectClass(String persistentObjectClassFQN) {
-        if (persistentObjectClassFQN == null) {
+    public static boolean invalidJavaClassComponents(String classFQN) {
+        if (classFQN == null) {
             return true;
         }
 
-        StringTokenizer toks = new StringTokenizer(persistentObjectClassFQN, ".");
+        StringTokenizer toks = new StringTokenizer(classFQN, ".");
         while (toks.hasMoreTokens()) {
             if (RESERVED_JAVA_KEYWORDS.contains(toks.nextToken())) {
                 return true;
@@ -149,7 +143,7 @@ public class NameValidationHelper {
         return false;
     }
 
-    private String validateJavaIdentifier(String id, String invalidChars) {
+    private static String validateJavaIdentifier(String id, String invalidChars) {
         // TODO: Java spec seems to allow "$" char in identifiers...
         // Cayenne expressions do not, so we should probably check for this char presence...
 
@@ -183,7 +177,7 @@ public class NameValidationHelper {
      * considered invalid if there is a getter or a setter for it in java.lang.Object or
      * PersistentObject.
      */
-    public boolean invalidPersistentObjectProperty(String persistentObjectProperty) {
+    public static boolean invalidPersistentProperty(String persistentObjectProperty) {
         return persistentObjectProperty == null
                 || PERSISTENT_BASE_PROPERTIES.contains(persistentObjectProperty);
     }

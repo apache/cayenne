@@ -109,13 +109,12 @@ class ObjEntityValidator extends ConfigurationNodeValidator<ObjEntity> {
             return;
         }
 
-        NameValidationHelper helper = NameValidationHelper.getInstance();
-        String invalidChars = helper.invalidCharsInJavaClassName(className);
+        String invalidChars = NameValidator.invalidCharsInJavaClassName(className);
 
         if (invalidChars != null) {
             addFailure(validationResult, entity, "ObjEntity '%s' Java class '%s' contains invalid characters: %s",
                     entity.getName(), className, invalidChars);
-        } else if (helper.invalidPersistentObjectClass(className)) {
+        } else if (NameValidator.invalidJavaClassComponents(className)) {
             addFailure(validationResult, entity, "Java class '%s' of ObjEntity '%s' is a reserved word",
                     className, entity.getName());
         } else if (className.indexOf('.') < 0) {
@@ -131,13 +130,12 @@ class ObjEntityValidator extends ConfigurationNodeValidator<ObjEntity> {
             return; // null is Ok
         }
 
-        NameValidationHelper helper = NameValidationHelper.getInstance();
-        String invalidChars = helper.invalidCharsInJavaClassName(superClassName);
+        String invalidChars = NameValidator.invalidCharsInJavaClassName(superClassName);
 
         if (invalidChars != null) {
             addFailure(validationResult, entity, "ObjEntity '%s' Java superclass '%s' contains invalid characters: %s",
                     entity.getName(), superClassName, invalidChars);
-        } else if (helper.invalidPersistentObjectClass(superClassName)) {
+        } else if (NameValidator.invalidJavaClassComponents(superClassName)) {
             addFailure(validationResult, entity, "ObjEntity '%s' Java superclass '%s' is a reserved word",
                     entity.getName(), superClassName);
         }

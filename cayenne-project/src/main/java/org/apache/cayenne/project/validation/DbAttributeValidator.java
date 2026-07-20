@@ -52,9 +52,8 @@ class DbAttributeValidator extends ConfigurationNodeValidator<DbAttribute> {
     }
 
     private void validateName(DbAttribute attribute, ValidationResult validationResult) {
-        NameValidationHelper helper = NameValidationHelper.getInstance();
         String name = attribute.getName();
-        String invalidChars = helper.invalidCharsInDbPathComponent(name);
+        String invalidChars = NameValidator.invalidCharsInDbPathComponent(name);
         if (Util.isEmptyString(name)) {
             return;
         }
