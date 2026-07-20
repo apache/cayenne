@@ -87,9 +87,38 @@ public abstract class BaseObjectNameGenerator implements ObjectNameGenerator {
     }
 
     protected String toManyBase(List<DbJoin> joins, String targetEntityName) {
-        String plural = EnglishInflector.pluralOf(dbEntityBaseName(targetEntityName).toLowerCase());
+
+        String targetBase = dbEntityBaseName(targetEntityName);
+
+        DbEntity sourceEntity = joins.isEmpty() ? null : joins.getFirst().getRelationship().getSourceEntity();
+        if (sourceEntity != null) {
+            targetBase = stripSharedPrefix(dbEntityBaseName(sourceEntity.getName()), targetBase);
+        }
+
+        String plural = EnglishInflector.pluralOf(targetBase.toLowerCase());
         String qualifier = toManyRoleQualifier(joins);
         return qualifier != null ? qualifier + "_" + plural : plural;
+    }
+    
+    private static String stripSharedPrefix(String sourceName, String targetName) {
+
+        String[] sourceTokens = sourceName.split("_");
+        String[] targetTokens = targetName.split("_");
+
+        // strip every leading "_"-token shared by both names...
+        int maxShared = Math.min(sourceTokens.length, targetTokens.length);
+        int strip = 0;
+        for (int i = 0; i < maxShared && sourceTokens[i].equalsIgnoreCase(targetTokens[i]); i++) {
+            int next = strip + targetTokens[i].length() + 1;
+
+            // ... but stop before the base name degenerates to a single letter or less
+            if (targetName.length() - next <= 1) {
+                break;
+            }
+            strip = next;
+        }
+
+        return targetName.substring(strip);
     }
 
     private String toManyRoleQualifier(List<DbJoin> joins) {

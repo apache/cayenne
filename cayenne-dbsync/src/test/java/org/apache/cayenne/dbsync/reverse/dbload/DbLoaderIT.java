@@ -117,7 +117,8 @@ public class DbLoaderIT {
         // DbRelationship
         assertEquals(5, artist.getRelationships().size());
 
-        DbRelationship exhibits = artist.getRelationship("artistExhibits");
+        // the "artist" prefix shared with the source table is stripped from the relationship name
+        DbRelationship exhibits = artist.getRelationship("exhibits");
         assertNotNull(exhibits);
         assertEquals("ARTIST_EXHIBIT", exhibits.getTargetEntityName().toUpperCase());
         DbEntity target = exhibits.getTargetEntity();

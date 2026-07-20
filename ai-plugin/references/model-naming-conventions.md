@@ -41,7 +41,7 @@ Concretely, the generator produces:
 | `db-entity` name | stem, split on `_`, capitalize each token | `ARTIST_GROUP` → `ArtistGroup` |
 | `db-attribute` name | split on `_`, camelCase | `FIRST_NAME` → `firstName` |
 | to-one relationship | FK column, minus its trailing `_ID`/`ID` when present; target entity name for a compound (multi-column) FK or when there are no joins | `MANAGER_ID` → `manager`; `BIRTH_COUNTRY` → `birthCountry` |
-| to-many relationship | English plural of the target entity name, prefixed with the FK role qualifier when the FK column embeds the source entity name | `PAINTING` → `paintings`; `HOME_TEAM_ID` → `homeGames` |
+| to-many relationship | English plural of the target entity name (minus the leading `_`-tokens shared with the source table name), prefixed with the FK role qualifier when the FK column embeds the source entity name | `PAINTING` → `paintings`; `HOME_TEAM_ID` → `homeGames`; `AA_TEAM` referencing `AA_GAME` → `games` |
 | name collision within an entity | append a numeric suffix | `team`, `team1`, `team2` … |
 
 Generation also collapses all-upper tokens to lowercase and preserves already-mixed
@@ -84,8 +84,8 @@ directions are not equally affected** — the to-one and to-many sides are named
 - **to-many side collides when the FK doesn't embed the source entity name.** When the FK column is
   `<ROLE>_<SOURCE_ENTITY>[_ID]`, the generator prepends the role qualifier to the pluralized target
   (`HOME_TEAM_ID` / `AWAY_TEAM_ID` on FKs to `TEAM` → `homeGames` / `awayGames`) — those are already
-  correct, leave them. The entity-name part may drop a common table prefix: `home_team_id`
-  referencing `aa_team` still yields `homeAaGames`. It still collides when the FK carries a role
+  correct, leave them. The FK column may drop a common table prefix: `home_team_id` referencing
+  `aa_team` still yields the `home` qualifier. It still collides when the FK carries a role
   unrelated to the source entity name:
   `MANAGER_ID` / `AUDITOR_ID` FKs to `EMPLOYEE` both produce `projects` / `projects1` on
   `Employee`, because the role can't be mechanically tied to the entity. Name each collection by its
@@ -121,12 +121,13 @@ cleanly *when it's used*: entity names come through stripped (`AA_CUSTOMER` → 
 no problem — leave that model alone.
 
 The case that needs you is when the prefix is **kept on the entity names** (stripping was not
-configured — often intentional, treating the prefix as a class-name namespace). Then the prefix
-**leaks into the relationship names**, which you almost never want:
+configured — often intentional, treating the prefix as a class-name namespace). The generator keeps
+the prefix out of **to-many** names on its own: the leading `_`-tokens the source and target table
+names share are dropped from the pluralized target (`aa_customer` referencing `aa_order` →
+`orders`) — those are already clean. What still **leaks**:
 
-- to-many names are the pluralized target entity name; with the prefix kept, the target's prefixed
-  name flows straight in → `aaOrders`, `aaCustomers`.
-- to-one names built from a prefixed FK column (`AA_CUSTOMER_ID`) carry it too → `aaCustomer`.
+- to-one names built from a prefixed FK column (`AA_CUSTOMER_ID`) carry it → `aaCustomer`.
+- models imported by **older Cayenne versions** kept the prefix in to-many names too → `aaOrders`.
 
 A relationship name is a **role/property** on a class (`order.getAaCustomer()`), and the shared
 prefix is pure noise there. **Strip the common prefix from the relationship names** — `aaOrders` →

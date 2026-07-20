@@ -82,15 +82,19 @@ correct — leave them.** Flag only the cases the deterministic generator can't 
    names are FK-based even without an `_ID` suffix (`HOME_TEAM_ID` → `homeTeam`, `BIRTH_COUNTRY` →
    `birthCountry`), and to-many names pick up a FK role qualifier when the FK embeds the source
    entity name, even one sans a common table prefix (`HOME_TEAM_ID` → `homeGames`; `home_team_id`
-   referencing `aa_team` → `homeAaGames`). What still collides: to-many collections whose FK role is
+   referencing `aa_team` → `homeGames` too). What still collides: to-many collections whose FK role is
    unrelated to the entity name (`MANAGER_ID` / `AUDITOR_ID` → `projects` / `projects1` — rename by
    role: `managedProjects` / `auditedProjects`), and — in models imported by older Cayenne versions —
    to-one ends whose FK columns lack an `_ID` suffix and collapsed to `employee` / `employee1`.
 3. **A common entity prefix leaking into relationship names** — when every entity shares a prefix
-   that was **kept** on the class names (`AaCustomer`, `AaOrder`), the relationship names inherit it
-   (`aaOrders`, `aaCustomer`). Strip the prefix from the relationship names (`orders`, `customer`);
-   a relationship is a role/property, and the prefix is noise there. **Leave the entity names alone**
-   — the prefix on classes is the user's choice, and renaming entities regenerates classes.
+   that was **kept** on the class names (`AaCustomer`, `AaOrder`), the prefix can leak into
+   relationship names. The generator already keeps it out of to-many names (the leading `_`-tokens
+   shared by the source and target table names are dropped → `orders`, not `aaOrders`); what leaks is
+   to-one names built from prefixed FK columns (`AA_CUSTOMER_ID` → `aaCustomer`) and to-many names in
+   models imported by older Cayenne versions (`aaOrders`). Strip the prefix from those relationship
+   names (`customer`, `orders`); a relationship is a role/property, and the prefix is noise there.
+   **Leave the entity names alone** — the prefix on classes is the user's choice, and renaming
+   entities regenerates classes.
 4. **Other clear, defensible improvements** — reserved words, lost acronym casing, obvious cryptic
    abbreviations applied consistently, plural-table-to-singular-entity. Conservative by default; when
    unsure, leave the baseline name and ask.

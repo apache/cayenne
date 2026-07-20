@@ -185,17 +185,49 @@ public class DefaultObjectNameGeneratorTest {
 
         // FK columns matching a "_"-token suffix of the entity name still carry the role...
         DbRelationship r1 = makeRelationship("acme_team", "id", "acme_game", "home_team_id", true);
-        assertEquals("homeAcmeGames", dbRelationshipName(r1));
+        assertEquals("homeGames", dbRelationshipName(r1));
 
         DbRelationship r2 = makeRelationship("acme_team", "id", "acme_game", "visiting_team_id", true);
-        assertEquals("visitingAcmeGames", dbRelationshipName(r2));
+        assertEquals("visitingGames", dbRelationshipName(r2));
 
         // ... and a plain suffix reference gets no qualifier
         DbRelationship r3 = makeRelationship("acme_team", "id", "acme_award", "team_id", true);
-        assertEquals("acmeAwards", dbRelationshipName(r3));
+        assertEquals("awards", dbRelationshipName(r3));
 
         DbRelationship r4 = makeRelationship("acme_game_type", "id", "acme_game", "type_id", true);
-        assertEquals("acmeGames", dbRelationshipName(r4));
+        assertEquals("games", dbRelationshipName(r4));
+    }
+
+    @Test
+    public void dbRelationshipName_ToMany_SharedTablePrefix() {
+
+        // a leading "_"-token shared by both table names is schema vocabulary, not a part of the role,
+        // and is stripped to mirror the FK-based to-one names that never carry it
+        DbRelationship r1 = makeRelationship("acme_team", "id", "acme_game", "team_id", true);
+        assertEquals("games", dbRelationshipName(r1));
+
+        DbRelationship r2 = makeRelationship("acme_country", "id", "acme_draft_pick", "drafted_by_country_id", true);
+        assertEquals("draftedByDraftPicks", dbRelationshipName(r2));
+
+        // all shared tokens are stripped, including a source name that is a full token-prefix of the target
+        DbRelationship r3 = makeRelationship("acme_playoff_series", "id", "acme_playoff_series_game",
+                "playoff_series_id", true);
+        assertEquals("games", dbRelationshipName(r3));
+
+        DbRelationship r4 = makeRelationship("aa_bb_team", "id", "aa_bb_game", "team_id", true);
+        assertEquals("games", dbRelationshipName(r4));
+
+        // a prefix on the target alone is kept...
+        DbRelationship r5 = makeRelationship("team", "id", "acme_game", "team_id", true);
+        assertEquals("acmeGames", dbRelationshipName(r5));
+
+        // ... as are differing prefixes
+        DbRelationship r6 = makeRelationship("aa_team", "id", "bb_game", "team_id", true);
+        assertEquals("bbGames", dbRelationshipName(r6));
+
+        // stripping backs off when the base name would shrink to a single letter
+        DbRelationship r7 = makeRelationship("acme_team", "id", "acme_a", "team_id", true);
+        assertEquals("acmeAs", dbRelationshipName(r7));
     }
 
     @Test
