@@ -82,18 +82,11 @@ public class NameValidationHelper {
             "package",
             "synchronized");
 
-    public boolean isReservedJavaKeyword(String word) {
-        return RESERVED_JAVA_KEYWORDS.contains(word);
-    }
-
-    // a property is considered invalid if there is a getter or a setter for it in
-    // java.lang.Object or PersistentObject
+    // property getter or setter would conflict with Object or Persistent
     private static final Collection<String> PERSISTENT_BASE_PROPERTIES = List.of(
             "class",
-            "committedSnapshot",
-            "currentSnapshot",
-            "dataContext",
             "objectId",
+            "objectContext",
             "persistenceState",
             "snapshotVersion");
 
@@ -104,6 +97,10 @@ public class NameValidationHelper {
      */
     public static NameValidationHelper getInstance() {
         return sharedInstance;
+    }
+
+    public boolean isReservedJavaKeyword(String word) {
+        return RESERVED_JAVA_KEYWORDS.contains(word);
     }
 
     /**
@@ -119,7 +116,7 @@ public class NameValidationHelper {
      */
     public String invalidCharsInObjPathComponent(String objPathComponent) {
         String invalidChars = validateJavaIdentifier(objPathComponent, "");
-        return (invalidChars.length() > 0) ? invalidChars : null;
+        return (!invalidChars.isEmpty()) ? invalidChars : null;
     }
 
     public String invalidCharsInJavaClassName(String javaClassName) {
@@ -134,7 +131,7 @@ public class NameValidationHelper {
             invalidChars = validateJavaIdentifier(toks.nextToken(), invalidChars);
         }
 
-        return (invalidChars.length() > 0) ? invalidChars : null;
+        return !invalidChars.isEmpty() ? invalidChars : null;
     }
 
     public boolean invalidPersistentObjectClass(String persistentObjectClassFQN) {
@@ -167,14 +164,16 @@ public class NameValidationHelper {
             }
         }
 
+        StringBuilder buf = new StringBuilder(invalidChars);
         for (int i = 1; i < len; i++) {
 
             if (!Character.isJavaIdentifierPart(id.charAt(i))) {
-                if (invalidChars.indexOf(id.charAt(i)) < 0) {
-                    invalidChars = invalidChars + id.charAt(i);
+                if (buf.toString().indexOf(id.charAt(i)) < 0) {
+                    buf.append(id.charAt(i));
                 }
             }
         }
+        invalidChars = buf.toString();
 
         return invalidChars;
     }

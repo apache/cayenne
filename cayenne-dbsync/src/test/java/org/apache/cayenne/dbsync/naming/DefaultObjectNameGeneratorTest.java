@@ -18,6 +18,8 @@
  ****************************************************************/
 package org.apache.cayenne.dbsync.naming;
 
+import java.sql.Types;
+
 import org.apache.cayenne.map.DbAttribute;
 import org.apache.cayenne.map.DbEntity;
 import org.apache.cayenne.map.DbJoin;
@@ -259,5 +261,31 @@ public class DefaultObjectNameGeneratorTest {
     public void objAttributeName() {
         assertEquals("name", generator.objAttributeName(new DbAttribute("NAME")));
         assertEquals("artistName", generator.objAttributeName(new DbAttribute("ARTIST_NAME")));
+    }
+
+    @Test
+    public void objAttributeName_PersistentBaseProperty() {
+
+        // names with a getter in Object or PersistentObject are qualified with the entity name
+        DbEntity student = new DbEntity("STUDENT");
+        assertEquals("studentClass", generator.objAttributeName(new DbAttribute("CLASS", Types.VARCHAR, student)));
+        assertEquals("studentObjectId",
+                generator.objAttributeName(new DbAttribute("OBJECT_ID", Types.INTEGER, student)));
+        assertEquals("studentSnapshotVersion",
+                generator.objAttributeName(new DbAttribute("SNAPSHOT_VERSION", Types.INTEGER, student)));
+
+        // ordinary names are unaffected
+        assertEquals("classRoom", generator.objAttributeName(new DbAttribute("CLASS_ROOM", Types.VARCHAR, student)));
+    }
+
+    @Test
+    public void dbRelationshipName_ToOne_PersistentBaseProperty() {
+
+        // an FK-derived name with a getter in Object or PersistentObject is qualified with the source entity name
+        DbRelationship r1 = makeRelationship("student", "class_id", "class", "id", false);
+        assertEquals("studentClass", dbRelationshipName(r1));
+
+        DbRelationship r2 = makeRelationship("AUDIT", "OBJECT_CONTEXT_ID", "CONTEXT", "ID", false);
+        assertEquals("auditObjectContext", dbRelationshipName(r2));
     }
 }

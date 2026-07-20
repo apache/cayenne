@@ -143,11 +143,15 @@ The three cases above don't exhaust the ways a purely mechanical transliteration
 you spot a name where a human reading the underlying DB name would obviously do better, and the fix
 is defensible (not a guess), apply the same conservative treatment. Some more examples:
 
-- **Genuinely illegal identifiers** the generator passed through — a name starting with a digit, or
-  literally `class`, whose getter `getClass()` collides with the final `Object.getClass()`. Java
-  *keywords* are **not** a problem — `default`, `package`, `return` and the like compile fine, since
-  class generation prefixes the field/parameter name with `_` and embeds the capitalized name in the
-  accessors (`getDefault()` / `setDefault()`). Leave keyword-named properties alone.
+- **Genuinely illegal identifiers** the generator passed through — chiefly a name starting with a
+  digit. Java *keywords* are **not** a problem — `default`, `package`, `return` and the like compile
+  fine, since class generation prefixes the field/parameter name with `_` and embeds the capitalized
+  name in the accessors (`getDefault()` / `setDefault()`); leave keyword-named properties alone.
+  Property names clashing with base-class getters (`class`, `objectId`, `objectContext`,
+  `persistenceState`, `snapshotVersion` — e.g. `getClass()` collides with the final
+  `Object.getClass()`) are qualified with the entity name by the generator itself (`class` on
+  `student` → `studentClass`) — already handled; models imported by older Cayenne versions may still
+  carry them raw, and those do need the same entity-qualified rename.
 - **Lost acronym casing** — `HTTPURL` → `Gametype`-style collapse loses the acronym; `httpUrl` /
   `url` may read better than `httpurl`.
 - **Plural table → singular entity** — a `CUSTOMERS` table yields `Customers`; an entity is a single

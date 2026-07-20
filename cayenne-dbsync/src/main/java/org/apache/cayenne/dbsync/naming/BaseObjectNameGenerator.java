@@ -22,6 +22,7 @@ import org.apache.cayenne.map.DbAttribute;
 import org.apache.cayenne.map.DbEntity;
 import org.apache.cayenne.map.DbJoin;
 import org.apache.cayenne.map.DbRelationship;
+import org.apache.cayenne.project.validation.NameValidationHelper;
 import org.apache.cayenne.util.Util;
 
 import java.util.List;
@@ -43,7 +44,9 @@ public abstract class BaseObjectNameGenerator implements ObjectNameGenerator {
 
     @Override
     public String objAttributeName(DbAttribute dbAttribute) {
-        return Util.underscoredToJava(dbAttribute.getName(), false);
+        String name = Util.underscoredToJava(dbAttribute.getName(), false);
+        String entityName = dbAttribute.getEntity() != null ? dbAttribute.getEntity().getName() : null;
+        return fixPersistentBaseProperty(name, entityName);
     }
 
     @Override
@@ -72,7 +75,23 @@ public abstract class BaseObjectNameGenerator implements ObjectNameGenerator {
         String baseName = toMany
                 ? toManyBase(joins, targetEntityName)
                 : toOneBase(joins, targetEntityName);
-        return Util.underscoredToJava(baseName, false);
+        String name = Util.underscoredToJava(baseName, false);
+
+        DbEntity sourceEntity = joins.getFirst().getRelationship().getSourceEntity();
+        return fixPersistentBaseProperty(name, sourceEntity != null ? sourceEntity.getName() : null);
+    }
+
+    /**
+     * Qualifies a property name that has a getter in Object or PersistentObject with the entity name, the way
+     * a human would ("class" on "student" becomes "studentClass") — such a name can't be generated as-is.
+     */
+    private String fixPersistentBaseProperty(String name, String entityName) {
+
+        if (entityName == null || !NameValidationHelper.getInstance().invalidPersistentObjectProperty(name)) {
+            return name;
+        }
+
+        return Util.underscoredToJava(dbEntityBaseName(entityName) + "_" + name, false);
     }
 
     protected boolean isToMany(DbRelationship... relationshipChain) {

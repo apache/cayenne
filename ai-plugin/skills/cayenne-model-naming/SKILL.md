@@ -95,11 +95,12 @@ correct — leave them.** Flag only the cases the deterministic generator can't 
    names (`customer`, `orders`); a relationship is a role/property, and the prefix is noise there.
    **Leave the entity names alone** — the prefix on classes is the user's choice, and renaming
    entities regenerates classes.
-4. **Other clear, defensible improvements** — illegal identifiers (digit-leading names, or `class`,
-   whose getter would clash with `Object.getClass()` — Java keywords are fine, cgen escapes them),
-   lost acronym casing, obvious cryptic abbreviations applied consistently,
-   plural-table-to-singular-entity. Conservative by default; when unsure, leave the baseline name
-   and ask.
+4. **Other clear, defensible improvements** — illegal identifiers (digit-leading names; Java
+   keywords are fine — cgen escapes them — and properties clashing with base-class getters like
+   `class` / `objectId` are auto-qualified with the entity name by the generator, though older
+   imports may carry them raw), lost acronym casing, obvious cryptic abbreviations applied
+   consistently, plural-table-to-singular-entity. Conservative by default; when unsure, leave the
+   baseline name and ask.
 
 Relationship cleanup is anchored on the **DbRelationship** — it's the first-class citizen, since
 every FK has one whether or not an ObjRelationship was generated on top. The rules above (run-together,

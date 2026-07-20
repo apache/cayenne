@@ -27,6 +27,7 @@ CAY-2974 CayenneSqlException with a reference to translated query
 CAY-2975 Mnemonic table aliases in generated SQL
 CAY-2978 AI skill: "cayenne-model-naming"
 CAY-2979 AI skill: "cayenne-full-db-sync"
+CAY-2980 Improve model name generation
 
 Bug Fixes:
 
