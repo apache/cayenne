@@ -21,10 +21,8 @@ package org.apache.cayenne.modeler.ui.action;
 
 import org.apache.cayenne.configuration.DataChannelDescriptor;
 import org.apache.cayenne.dbsync.merge.context.EntityMergeSupport;
-import org.apache.cayenne.dbsync.naming.DefaultObjectNameGenerator;
 import org.apache.cayenne.map.DbAttribute;
 import org.apache.cayenne.map.DbEntity;
-import org.apache.cayenne.map.DbRelationship;
 import org.apache.cayenne.map.ObjEntity;
 import org.apache.cayenne.modeler.Application;
 import org.apache.cayenne.modeler.event.model.ObjEntityEvent;
@@ -79,8 +77,6 @@ public class DbEntitySyncAction extends AppAction {
                 return;
             }
 
-            merger.setNameGenerator(new PreserveRelationshipNameGenerator());
-
             DbEntitySyncUndoableEdit undoableEdit = new DbEntitySyncUndoableEdit(session,
                     (DataChannelDescriptor) session.project().getRootNode(), session.getSelectedDataMap());
 
@@ -123,23 +119,5 @@ public class DbEntitySyncAction extends AppAction {
      */
     private void filterInheritedEntities(final Collection<ObjEntity> entities) {
         entities.removeIf(e -> e.getSuperEntity() != null);
-    }
-
-    static class PreserveRelationshipNameGenerator extends DefaultObjectNameGenerator {
-
-        @Override
-        public String objRelationshipName(DbRelationship... relationshipChain) {
-            if (relationshipChain.length == 0) {
-                return super.objRelationshipName(relationshipChain);
-            }
-
-            DbRelationship last = relationshipChain[relationshipChain.length - 1];
-            if (last.getName().startsWith("untitledRel")) {
-                return super.objRelationshipName(relationshipChain);
-            }
-
-            // keep manually set relationship name
-            return last.getName();
-        }
     }
 }

@@ -84,7 +84,7 @@ public class EntityMergeSupport {
         SQL_ADDITIONAL_TYPES_TO_JAVA_TYPE.put("geometry", Wkt.class.getName());
     }
 
-    private ObjectNameGenerator nameGenerator;
+    private final ObjectNameGenerator nameGenerator;
     private final List<EntityMergeListener> listeners;
     private final boolean removingMeaningfulFKs;
     private final NameFilter meaningfulPKsFilter;
@@ -526,9 +526,5 @@ public class EntityMergeSupport {
         for (EntityMergeListener listener : listeners) {
             listener.objRelationshipAdded(rel);
         }
-    }
-
-    public void setNameGenerator(ObjectNameGenerator nameGenerator) {
-        this.nameGenerator = nameGenerator;
     }
 }

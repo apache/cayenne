@@ -25,6 +25,7 @@ import org.apache.cayenne.map.DbRelationship;
 import org.apache.cayenne.util.Util;
 
 import java.util.List;
+import java.util.Objects;
 
 /**
  * The default strategy for converting DB-layer to Object-layer names.
@@ -52,9 +53,12 @@ public abstract class BaseObjectNameGenerator implements ObjectNameGenerator {
             throw new IllegalArgumentException("At least one relationship is expected");
         }
 
-        DbRelationship first = relationshipChain[0];
+        // the DbRelationship name is the source of truth for the Obj layer
         DbRelationship last = relationshipChain[relationshipChain.length - 1];
-        return Util.underscoredToJava(relationshipBase(first.getJoins(), last.getTargetEntityName(), isToMany(relationshipChain)), false);
+        String name = Util.underscoredToJava(Objects.requireNonNull(last.getName(), "Unnamed DbRelationship"), false);
+
+        // a to-many chain ending in a to-one (e.g. a flattened many-to-many) mirrors a singular name
+        return isToMany(relationshipChain) && !last.isToMany() ? EnglishInflector.pluralOf(name) : name;
     }
 
     @Override

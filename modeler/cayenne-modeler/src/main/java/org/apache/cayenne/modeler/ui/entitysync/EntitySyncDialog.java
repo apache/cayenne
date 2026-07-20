@@ -24,12 +24,11 @@ import com.jgoodies.forms.layout.CellConstraints;
 import com.jgoodies.forms.layout.FormLayout;
 import org.apache.cayenne.dbsync.filter.NamePatternMatcher;
 import org.apache.cayenne.dbsync.merge.context.EntityMergeSupport;
-import org.apache.cayenne.dbsync.naming.ObjectNameGenerator;
 import org.apache.cayenne.dbsync.naming.DefaultObjectNameGenerator;
+import org.apache.cayenne.dbsync.naming.ObjectNameGenerator;
 import org.apache.cayenne.map.DbEntity;
 import org.apache.cayenne.map.ObjEntity;
 import org.apache.cayenne.modeler.Application;
-import org.apache.cayenne.modeler.NameGeneratorPreferences;
 import org.apache.cayenne.modeler.toolkit.AppDialog;
 
 import javax.swing.*;
@@ -86,37 +85,33 @@ public class EntitySyncDialog extends AppDialog {
             return null;
         }
 
-        ObjectNameGenerator namingStrategy;
-        try {
-            namingStrategy = NameGeneratorPreferences.getInstance().createNamingStrategy(app);
-        } catch (Throwable e) {
-            namingStrategy = new DefaultObjectNameGenerator();
-        }
+        ObjectNameGenerator nameGenerator = new DefaultObjectNameGenerator();
 
-        // TODO: Modeler-controlled defaults for all the hardcoded boolean flags here.
-        EntityMergeSupport merger = new EntityMergeSupport(namingStrategy, NamePatternMatcher.EXCLUDE_ALL, true, false);
+        EntityMergeSupport merger = new EntityMergeSupport(
+                nameGenerator,
+                NamePatternMatcher.EXCLUDE_ALL,
+                true,
+                false);
 
         for (ObjEntity entity : entities) {
             if (!merger.getMeaningfulFKs(entity).isEmpty()) {
-                return confirmMeaningfulFKs(namingStrategy);
+                return confirmMeaningfulFKs(nameGenerator);
             }
         }
 
         return merger;
     }
 
-    private EntityMergeSupport confirmMeaningfulFKs(ObjectNameGenerator namingStrategy) {
+    private EntityMergeSupport confirmMeaningfulFKs(ObjectNameGenerator nameGenerator) {
         pack();
         setDefaultCloseOperation(DISPOSE_ON_CLOSE);
         centerOnOwner();
         makeCloseableOnEscape();
         setVisible(true);
 
-        if (cancelled) {
-            return null;
-        }
-        // TODO: Modeler-controlled defaults for all the hardcoded flags here.
-        return new EntityMergeSupport(namingStrategy, NamePatternMatcher.EXCLUDE_ALL, removeFKs.isSelected(), false);
+        return cancelled
+                ? null
+                : new EntityMergeSupport(nameGenerator, NamePatternMatcher.EXCLUDE_ALL, removeFKs.isSelected(), false);
     }
 
     private Collection<ObjEntity> objEntities() {

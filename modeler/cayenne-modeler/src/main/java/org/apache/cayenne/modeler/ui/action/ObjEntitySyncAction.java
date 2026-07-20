@@ -78,8 +78,6 @@ public class ObjEntitySyncAction extends AppAction {
                 return;
             }
 
-            merger.setNameGenerator(new DbEntitySyncAction.PreserveRelationshipNameGenerator());
-
             if (merger.synchronizeWithDbEntity(entity)) {
                 session
                         .fireObjEntityEvent(ObjEntityEvent.ofChange(this, entity));

@@ -43,7 +43,7 @@ public interface ObjectNameGenerator {
     String objAttributeName(DbAttribute dbAttribute);
 
     /**
-     * Generates a name for an ObjRelationship, derived from join semantics of a chain of connected DbRelationships.
+     * Generates a name for an ObjRelationship mapped to a chain of one or more connected DbRelationships.
      *
      * @since 5.0
      */

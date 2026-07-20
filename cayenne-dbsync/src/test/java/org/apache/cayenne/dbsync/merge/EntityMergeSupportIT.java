@@ -93,11 +93,12 @@ public class EntityMergeSupportIT extends MergeCase {
 				false);
 		assertTrue(entityMergeSupport.synchronizeWithDbEntities(Arrays.asList(objEntity1, objEntity2)));
 		assertNotNull(objEntity1.getAttribute("name"));
-		assertNotNull(objEntity1.getRelationship("newTable2s"));
-		assertNotNull(objEntity2.getRelationship("newTable"));
 
-		assertEquals(objEntity1.getRelationship("newTable2s").getDeleteRule(), DeleteRule.DEFAULT_DELETE_RULE_TO_MANY);
-		assertEquals(objEntity2.getRelationship("newTable").getDeleteRule(), DeleteRule.DEFAULT_DELETE_RULE_TO_ONE);
+		assertNotNull(objEntity1.getRelationship("rel1To2"));
+		assertNotNull(objEntity2.getRelationship("rel2To1"));
+
+		assertEquals(DeleteRule.DEFAULT_DELETE_RULE_TO_MANY, objEntity1.getRelationship("rel1To2").getDeleteRule());
+		assertEquals(DeleteRule.DEFAULT_DELETE_RULE_TO_ONE, objEntity2.getRelationship("rel2To1").getDeleteRule());
 
 		map.removeObjEntity(objEntity2.getName());
 		map.removeObjEntity(objEntity1.getName());

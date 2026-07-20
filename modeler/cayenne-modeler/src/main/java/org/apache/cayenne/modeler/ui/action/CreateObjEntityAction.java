@@ -97,10 +97,12 @@ public class CreateObjEntityAction extends AppAction {
 
         dataMap.addObjEntity(entity);
 
-        // TODO: Modeler-controlled defaults for all the hardcoded boolean flags here.
-        EntityMergeSupport merger = new EntityMergeSupport(new DefaultObjectNameGenerator(),
-                NamePatternMatcher.EXCLUDE_ALL, true, false);
-        merger.setNameGenerator(new DbEntitySyncAction.PreserveRelationshipNameGenerator());
+        EntityMergeSupport merger = new EntityMergeSupport(
+                new DefaultObjectNameGenerator(),
+                NamePatternMatcher.EXCLUDE_ALL,
+                true,
+                false);
+
         merger.addEntityMergeListener(DeleteRuleUpdater.getEntityMergeListener());
         merger.synchronizeWithDbEntity(entity);
 

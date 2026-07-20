@@ -44,16 +44,16 @@ public class PatternObjectNameGeneratorTest {
     }
 
     @Test
-    public void objRelationshipName_ToMany_RoleQualifiedFk() {
+    public void dbRelationshipName_ToMany_RoleQualifiedFk() {
         PatternObjectNameGenerator generator = new PatternObjectNameGenerator("^AA_");
 
         // the stripped prefix is transparent to role qualifier matching...
         DbRelationship r1 = makeRelationship("AA_TEAM", "TEAM_ID", "AA_GAME", "HOME_TEAM_ID", true);
-        assertEquals("homeGames", generator.objRelationshipName(r1));
+        assertEquals("homeGames", generator.dbRelationshipName(r1.getJoins(), r1.isToMany()));
 
         // ... and doesn't itself become a qualifier when the FK column carries it too
         DbRelationship r2 = makeRelationship("AA_TEAM", "TEAM_ID", "AA_GAME", "AA_TEAM_ID", true);
-        assertEquals("games", generator.objRelationshipName(r2));
+        assertEquals("games", generator.dbRelationshipName(r2.getJoins(), r2.isToMany()));
     }
 
     @Test
