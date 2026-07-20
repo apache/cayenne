@@ -76,12 +76,12 @@ public class EntityMergeSupport {
         CLASS_TO_PRIMITIVE.put(Short.class.getName(), "short");
         CLASS_TO_PRIMITIVE.put(Integer.class.getName(), "int");
 
-        SQL_TYPE_TO_JAVA8_TYPE.put(Types.DATE,      "java.time.LocalDate");
-        SQL_TYPE_TO_JAVA8_TYPE.put(Types.TIME,      "java.time.LocalTime");
+        SQL_TYPE_TO_JAVA8_TYPE.put(Types.DATE, "java.time.LocalDate");
+        SQL_TYPE_TO_JAVA8_TYPE.put(Types.TIME, "java.time.LocalTime");
         SQL_TYPE_TO_JAVA8_TYPE.put(Types.TIMESTAMP, "java.time.LocalDateTime");
 
-        SQL_ADDITIONAL_TYPES_TO_JAVA_TYPE.put("json",       Json.class.getName());
-        SQL_ADDITIONAL_TYPES_TO_JAVA_TYPE.put("geometry",   Wkt.class.getName());
+        SQL_ADDITIONAL_TYPES_TO_JAVA_TYPE.put("json", Json.class.getName());
+        SQL_ADDITIONAL_TYPES_TO_JAVA_TYPE.put("geometry", Wkt.class.getName());
     }
 
     private ObjectNameGenerator nameGenerator;
@@ -90,10 +90,11 @@ public class EntityMergeSupport {
     private final NameFilter meaningfulPKsFilter;
     private final boolean usingJava7Types;
 
-    public EntityMergeSupport(ObjectNameGenerator nameGenerator,
-                              NameFilter meaningfulPKsFilter,
-                              boolean removingMeaningfulFKs,
-                              boolean usingJava7Types) {
+    public EntityMergeSupport(
+            ObjectNameGenerator nameGenerator,
+            NameFilter meaningfulPKsFilter,
+            boolean removingMeaningfulFKs,
+            boolean usingJava7Types) {
 
         this.listeners = new ArrayList<>();
         this.nameGenerator = nameGenerator;
@@ -278,15 +279,15 @@ public class EntityMergeSupport {
 
     private String getTypeForObjAttribute(DbAttribute dbAttribute) {
         String java8Type;
-        if(!usingJava7Types && (java8Type = SQL_TYPE_TO_JAVA8_TYPE.get(dbAttribute.getType())) != null) {
+        if (!usingJava7Types && (java8Type = SQL_TYPE_TO_JAVA8_TYPE.get(dbAttribute.getType())) != null) {
             return java8Type;
         }
 
         // Check additional common DB types, like 'json' or 'geometry'
-        if(dbAttribute instanceof DetectedDbAttribute) {
-            DetectedDbAttribute detectedDbAttribute = (DetectedDbAttribute)dbAttribute;
+        if (dbAttribute instanceof DetectedDbAttribute) {
+            DetectedDbAttribute detectedDbAttribute = (DetectedDbAttribute) dbAttribute;
             String jdbcTypeName = detectedDbAttribute.getJdbcTypeName();
-            if(jdbcTypeName != null) {
+            if (jdbcTypeName != null) {
                 String type = SQL_ADDITIONAL_TYPES_TO_JAVA_TYPE.get(jdbcTypeName.toLowerCase());
                 if (type != null) {
                     return type;
@@ -367,7 +368,7 @@ public class EntityMergeSupport {
         }
 
         // check FK's
-        if(isFK(dbAttribute, dbAttribute.getEntity().getRelationships(), true)) {
+        if (isFK(dbAttribute, dbAttribute.getEntity().getRelationships(), true)) {
             return false;
         }
         // check incoming relationships
@@ -388,12 +389,12 @@ public class EntityMergeSupport {
     }
 
     private boolean shouldAddToObjEntity(ObjEntity entity, DbRelationship dbRelationship) {
-        if(dbRelationship.getName() == null) {
+        if (dbRelationship.getName() == null) {
             return false;
         }
 
-        for(ObjRelationship objRelationship : entity.getRelationships()) {
-            if(objRelationshipHasDbRelationship(objRelationship, dbRelationship)) {
+        for (ObjRelationship objRelationship : entity.getRelationships()) {
+            if (objRelationshipHasDbRelationship(objRelationship, dbRelationship)) {
                 return false;
             }
         }
@@ -405,9 +406,9 @@ public class EntityMergeSupport {
      * @return true if objRelationship includes given dbRelationship
      */
     private boolean objRelationshipHasDbRelationship(ObjRelationship objRelationship, DbRelationship dbRelationship) {
-        for(DbRelationship relationship : objRelationship.getDbRelationships()) {
+        for (DbRelationship relationship : objRelationship.getDbRelationships()) {
 
-            if(relationship.getSourceEntityName().equals(dbRelationship.getSourceEntityName())
+            if (relationship.getSourceEntityName().equals(dbRelationship.getSourceEntityName())
                     && relationship.getTargetEntityName().equals(dbRelationship.getTargetEntityName())
                     && isSameAttributes(relationship.getSourceAttributes(), dbRelationship.getSourceAttributes())
                     && isSameAttributes(relationship.getTargetAttributes(), dbRelationship.getTargetAttributes())) {
@@ -425,37 +426,37 @@ public class EntityMergeSupport {
      * @return true if collections have same size and attributes in them have same names
      */
     private boolean isSameAttributes(Collection<DbAttribute> collection1, Collection<DbAttribute> collection2) {
-        if(collection1.size() != collection2.size()) {
+        if (collection1.size() != collection2.size()) {
             return false;
         }
 
-        if(collection1.isEmpty()) {
+        if (collection1.isEmpty()) {
             return true;
         }
 
         Iterator<DbAttribute> iterator1 = collection1.iterator();
         Iterator<DbAttribute> iterator2 = collection2.iterator();
-        for(int i=0; i<collection1.size(); i++) {
+        for (int i = 0; i < collection1.size(); i++) {
             DbAttribute attr1 = iterator1.next();
             DbAttribute attr2 = iterator2.next();
             // attribute can be null, see DbJoin.getSource() and DbJoin.getTarget()
-            if(attr1 == null) {
-                if(attr2 != null) {
+            if (attr1 == null) {
+                if (attr2 != null) {
                     return false;
                 }
                 continue;
             }
-            if(attr2 == null) {
+            if (attr2 == null) {
                 return false;
             }
             // name is unlikely to be null, but we don't want NPE anyway
-            if(attr1.getName() == null) {
-                if(attr2.getName() != null) {
+            if (attr1.getName() == null) {
+                if (attr2.getName() != null) {
                     return false;
                 }
                 continue;
             }
-            if(!attr1.getName().equals(attr2.getName())) {
+            if (!attr1.getName().equals(attr2.getName())) {
                 return false;
             }
         }
