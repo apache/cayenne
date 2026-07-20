@@ -33,12 +33,12 @@ import java.util.regex.Pattern;
  */
 public final class EnglishInflector {
 
-    // nouns whose plural form is identical to the singular (including silent-s loanwords that must be
-    // shielded from the generic "-s -> -ses" rule below)
+    // nouns whose plural form is identical to the singular (including silent-s loanwords and plural-only
+    // words like "stats" that must be shielded from the generic "-s -> -ses" rule below)
     private static final Set<String> UNCOUNTABLE = Set.of(
             "equipment", "information", "rice", "money", "species", "series",
             "fish", "sheep", "deer", "news", "police", "aircraft",
-            "corps", "chassis", "debris");
+            "corps", "chassis", "debris", "stats");
 
     // nouns that don't follow any regular rule
     private static final Map<String, String> IRREGULAR = Map.ofEntries(
@@ -97,14 +97,18 @@ public final class EnglishInflector {
             return noun;
         }
 
-        String lower = noun.toLowerCase();
-        if (UNCOUNTABLE.contains(lower)) {
+        // irregular and uncountable forms are matched on the last "_"-separated word, so that compound
+        // names inflect their final noun ("playoff_series", "art_person")
+        int lastWordStart = noun.lastIndexOf('_') + 1;
+        String lastWord = noun.substring(lastWordStart).toLowerCase();
+
+        if (UNCOUNTABLE.contains(lastWord)) {
             return noun;
         }
 
-        String irregular = IRREGULAR.get(lower);
+        String irregular = IRREGULAR.get(lastWord);
         if (irregular != null) {
-            return irregular;
+            return noun.substring(0, lastWordStart) + irregular;
         }
 
         for (Map.Entry<Pattern, String> e : RULES.entrySet()) {

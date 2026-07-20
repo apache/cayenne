@@ -112,6 +112,16 @@ public class EnglishInflectorTest {
         assertEquals("series", EnglishInflector.pluralOf("series"));
         assertEquals("fish", EnglishInflector.pluralOf("fish"));
         assertEquals("equipment", EnglishInflector.pluralOf("equipment"));
+        assertEquals("stats", EnglishInflector.pluralOf("stats"));
+    }
+
+    @Test
+    public void compoundNames() {
+        // irregular and uncountable forms apply to the last "_"-separated word
+        assertEquals("playoff_series", EnglishInflector.pluralOf("playoff_series"));
+        assertEquals("team_season_stats", EnglishInflector.pluralOf("team_season_stats"));
+        assertEquals("art_people", EnglishInflector.pluralOf("art_person"));
+        assertEquals("order_lines", EnglishInflector.pluralOf("order_line"));
     }
 
     @Test
