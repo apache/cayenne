@@ -35,7 +35,6 @@ import org.apache.cayenne.tx.TransactionFactory;
 import org.apache.cayenne.tx.TransactionalOperation;
 import org.junit.jupiter.api.Test;
 
-import java.util.Collection;
 import java.util.Collections;
 
 import static java.util.Arrays.asList;
@@ -85,8 +84,7 @@ public class CayenneRuntimeTest {
 
         CayenneRuntime runtime = new CayenneRuntime(asList(m1, m2));
 
-        Collection<Module> modules = runtime.getModules();
-        assertEquals(2, modules.size());
+        assertEquals(2, runtime.modules.size());
 
         assertTrue(configured[0]);
         assertTrue(configured[1]);
