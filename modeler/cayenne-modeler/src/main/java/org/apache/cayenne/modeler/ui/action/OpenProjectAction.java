@@ -195,9 +195,25 @@ public class OpenProjectAction extends AppAction {
     }
 
     private void showPostUpgradeMessages(List<String> messages) {
+        JTextArea messageText = new JTextArea(String.join("\n\n", messages));
+        messageText.setEditable(false);
+        messageText.setLineWrap(true);
+        messageText.setWrapStyleWord(true);
+        messageText.setRows(8);
+        messageText.setColumns(60);
+
+        JScrollPane messageScroll = new JScrollPane(
+                messageText,
+                ScrollPaneConstants.VERTICAL_SCROLLBAR_AS_NEEDED,
+                ScrollPaneConstants.HORIZONTAL_SCROLLBAR_NEVER);
+
+        JPanel messagePanel = new JPanel(new BorderLayout(0, 10));
+        messagePanel.add(new JLabel("The project was upgraded, but some manual steps are required:"), BorderLayout.NORTH);
+        messagePanel.add(messageScroll, BorderLayout.CENTER);
+
         JOptionPane.showMessageDialog(
                 app.getFrame(),
-                "The project was upgraded, but some manual steps are required:\n\n" + String.join("\n\n", messages),
+                messagePanel,
                 "Manual Steps Required",
                 JOptionPane.INFORMATION_MESSAGE);
     }
