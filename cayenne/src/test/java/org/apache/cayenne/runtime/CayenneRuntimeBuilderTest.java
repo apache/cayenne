@@ -26,7 +26,6 @@ import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.Test;
 
 import java.util.Arrays;
-import java.util.Collection;
 import java.util.List;
 
 import static org.junit.jupiter.api.Assertions.*;
@@ -58,9 +57,8 @@ public class CayenneRuntimeBuilderTest {
 
 		assertEquals(List.of(), locations);
 
-		Collection<Module> modules = runtime.getModules();
-		assertEquals(2, modules.size());
-		assertInstanceOf(CoreModule.class, modules.iterator().next());
+		assertEquals(2, runtime.modules.size());
+		assertInstanceOf(CoreModule.class, runtime.modules.iterator().next());
 	}
 
 	@Test
@@ -73,9 +71,8 @@ public class CayenneRuntimeBuilderTest {
 
 		assertEquals(List.of("xxxx"), locations);
 
-		Collection<Module> modules = runtime.getModules();
-		assertEquals(2, modules.size());
-		assertInstanceOf(CoreModule.class, modules.iterator().next());
+		assertEquals(2, runtime.modules.size());
+		assertInstanceOf(CoreModule.class, runtime.modules.iterator().next());
 
 	}
 
@@ -89,9 +86,8 @@ public class CayenneRuntimeBuilderTest {
 
 		assertEquals(Arrays.asList("xxxx", "yyyy"), locations);
 
-		Collection<Module> modules = runtime.getModules();
-		assertEquals(3, modules.size());
-		assertInstanceOf(CoreModule.class, modules.iterator().next());
+		assertEquals(3, runtime.modules.size());
+		assertInstanceOf(CoreModule.class, runtime.modules.iterator().next());
 	}
 
 	@Test
@@ -101,9 +97,8 @@ public class CayenneRuntimeBuilderTest {
 
 		runtime = new CayenneRuntimeBuilder(null).addModule(m).build();
 
-		Collection<Module> modules = runtime.getModules();
-		assertEquals(3, modules.size());
-		Module[] array = modules.toArray(new Module[3]);
+		assertEquals(3, runtime.modules.size());
+		Module[] array = runtime.modules.toArray(new Module[3]);
 		assertInstanceOf(CoreModule.class, array[0]);
 		assertSame(m, array[1]);
 	}
