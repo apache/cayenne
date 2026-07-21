@@ -33,7 +33,7 @@ public class IdCoderTest {
 
     @BeforeEach
     public void setUp() throws Exception {
-        runtime = CayenneRuntime.builder().addConfig("cayenne-lifecycle.xml").build();
+        runtime = CayenneRuntime.of().addConfig("cayenne-lifecycle.xml").build();
     }
 
     @AfterEach

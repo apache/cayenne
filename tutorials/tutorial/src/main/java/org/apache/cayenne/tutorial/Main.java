@@ -33,7 +33,7 @@ public class Main {
     public static void main(String[] args) {
 
         // starting Cayenne
-        CayenneRuntime cayenneRuntime = CayenneRuntime.builder()
+        CayenneRuntime cayenneRuntime = CayenneRuntime.of()
                 .addConfig("cayenne-project.xml")
                 .build();
 

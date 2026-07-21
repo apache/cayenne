@@ -203,7 +203,7 @@ public class MyExtensionsModule implements Module {
 [source, Java]
 ----
 Module extensions = new MyExtensionsModule();
-CayenneRuntime runtime = CayenneRuntime.builder()
+CayenneRuntime runtime = CayenneRuntime.of()
         .addConfig("com/example/cayenne-mydomain.xml")
         .addModule(extensions)
         .build();
@@ -327,7 +327,7 @@ Last step is to register this new type in `CayenneRuntime`:
 
 [source, Java]
 ----
-CayenneRuntime runtime = CayenneRuntime.builder()
+CayenneRuntime runtime = CayenneRuntime.of()
     .addConfig("cayenne-project.xml")
     .addModule(binder ->
         CoreModule.extend(binder)
@@ -419,7 +419,7 @@ public class DoubleArrayType implements ExtendedType {
 [source, Java]
 ----
 // add DoubleArrayType to list of user types
-CayenneRuntime runtime = CayenneRuntime.builder()
+CayenneRuntime runtime = CayenneRuntime.of()
                 .addConfig("cayenne-project.xml")
                 .addModule(binder ->
                     CoreModule.contributeUserTypes(binder)

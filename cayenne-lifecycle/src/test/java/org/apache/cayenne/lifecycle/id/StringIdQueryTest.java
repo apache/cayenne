@@ -43,7 +43,7 @@ public class StringIdQueryTest {
 
     @BeforeEach
     public void setUp() {
-        runtime = CayenneRuntime.builder().addConfig("cayenne-lifecycle.xml").build();
+        runtime = CayenneRuntime.of().addConfig("cayenne-lifecycle.xml").build();
         DbHelper dbHelper = new DbHelper(runtime.getDataSource("lifecycle-db"));
         e1Helper = new TableHelper(dbHelper, "E1", "ID");
         e2Helper = new TableHelper(dbHelper, "E2", "ID");

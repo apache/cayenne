@@ -60,7 +60,7 @@ public class Runtime_AES128_Base {
     }
 
     protected CayenneRuntime createRuntime(Module crypto) {
-        return CayenneRuntime.builder().addConfig("cayenne-crypto.xml").addModule(crypto).build();
+        return CayenneRuntime.of().addConfig("cayenne-crypto.xml").addModule(crypto).build();
     }
 
     protected Module createCryptoModule(boolean compress, boolean useHMAC) {

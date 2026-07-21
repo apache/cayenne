@@ -44,7 +44,7 @@ import org.apache.cayenne.runtime.CayenneRuntime;
 public class Main {
 
     public static void main(String[] args) {
-        CayenneRuntime cayenneRuntime = CayenneRuntime.builder()
+        CayenneRuntime cayenneRuntime = CayenneRuntime.of()
             .dataSource(CayenneDataSource
                     .of("jdbc:mysql://127.0.0.1:3306/cayenne_demo")
                     .userName("root") // TODO: change to your actual username and password

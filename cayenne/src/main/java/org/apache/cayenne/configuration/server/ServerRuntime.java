@@ -44,12 +44,12 @@ public class ServerRuntime extends CayenneRuntime {
      *
      * @return a builder of CayenneRuntime.
      * @since 4.0
-     * @deprecated use {@link CayenneRuntime#builder()} instead
+     * @deprecated use {@link CayenneRuntime#of()} instead
      */
     @Deprecated(since = "5.0", forRemoval = true)
     public static CayenneRuntimeBuilder builder() {
         LOGGER.warn("ServerRuntime is deprecated, use CayenneRuntime instead");
-        return CayenneRuntime.builder();
+        return CayenneRuntime.of();
     }
 
     /**
@@ -57,12 +57,12 @@ public class ServerRuntime extends CayenneRuntime {
      *
      * @param name optional symbolic name of the created runtime.
      * @return a named builder of CayenneRuntime.
-     * @deprecated use {@link CayenneRuntime#builder(String)} instead
+     * @deprecated use {@link CayenneRuntime#of(String)} instead
      */
     @Deprecated(since = "5.0", forRemoval = true)
     public static CayenneRuntimeBuilder builder(String name) {
         LOGGER.warn("ServerRuntime is deprecated, use CayenneRuntime instead");
-        return CayenneRuntime.builder(name);
+        return CayenneRuntime.of(name);
     }
 
     private ServerRuntime() {

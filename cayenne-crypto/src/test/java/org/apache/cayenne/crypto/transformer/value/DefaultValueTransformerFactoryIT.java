@@ -53,7 +53,7 @@ public class DefaultValueTransformerFactoryIT {
 
     @BeforeAll
     public static void beforeClass() throws Exception {
-        CayenneRuntime runtime = CayenneRuntime.builder().addConfig("cayenne-crypto.xml").build();
+        CayenneRuntime runtime = CayenneRuntime.of().addConfig("cayenne-crypto.xml").build();
         t1 = runtime.getChannel().getEntityResolver().getDbEntity("TABLE1");
         t2 = runtime.getChannel().getEntityResolver().getDbEntity("TABLE2");
         t3 = runtime.getChannel().getEntityResolver().getDbEntity("TABLE3");

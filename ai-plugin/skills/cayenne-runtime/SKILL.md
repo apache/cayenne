@@ -41,7 +41,7 @@ Where does the user's app construct `CayenneRuntime`? Common patterns:
 If none exists yet, create one. Apply `runtime-api.md` patterns:
 
 ```java
-CayenneRuntime runtime = CayenneRuntime.builder()
+CayenneRuntime runtime = CayenneRuntime.of()
         .addConfig("cayenne-mydb.xml")
         .dataSource(externalDataSource)   // or .url(...).jdbcDriver(...).user(...).password(...)
         .build();

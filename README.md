@@ -67,7 +67,7 @@ compile cayenne.dependency('server')
 #### Create Cayenne Runtime
 
 ```java
-CayenneRuntime cayenneRuntime = CayenneRuntime.builder()
+CayenneRuntime cayenneRuntime = CayenneRuntime.of()
     .addConfig("cayenne-demo.xml")
     .dataSource(CayenneDataSource
              .of("jdbc:mysql://localhost:3306/cayenne_demo")

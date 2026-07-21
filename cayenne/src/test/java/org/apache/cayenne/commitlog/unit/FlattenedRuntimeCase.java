@@ -49,7 +49,7 @@ public class FlattenedRuntimeCase {
 	}
 
 	protected CayenneRuntimeBuilder configureCayenne() {
-		return CayenneRuntime.builder().addConfig("cayenne-lifecycle.xml");
+		return CayenneRuntime.of().addConfig("cayenne-lifecycle.xml");
 	}
 
 	@AfterEach

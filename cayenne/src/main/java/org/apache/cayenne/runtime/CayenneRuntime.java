@@ -42,17 +42,17 @@ import java.util.Objects;
  * dependency injection (DI) container.
  * In fact implementation-wise, Runtime object is just a convenience thin wrapper around a DI {@link Injector}.
  * <p>
- * To create CayenneRuntime use builder available with one of the {@link #builder()} methods:
+ * To create CayenneRuntime use builder available with one of the {@link #of()} methods:
  * <pre>
  * {@code
- * CayenneRuntime cayenneRuntime = CayenneRuntime.builder()
+ * CayenneRuntime cayenneRuntime = CayenneRuntime.of()
  *         .addConfig("cayenne-project.xml")
  *         .build();
  * }
  * </pre>
  *
- * @see #builder()
- * @see #builder(String)
+ * @see #of()
+ * @see #of(String)
  * @see CayenneRuntimeBuilder
  * @since 3.1 is introduced
  * @since 5.0 is repurposed as a single implementation of Cayenne runtime and moved to {@link org.apache.cayenne.runtime} package.
@@ -95,11 +95,9 @@ public class CayenneRuntime {
      * Creates a builder of CayenneRuntime.
      *
      * @return a builder of CayenneRuntime.
-     * @see #builder(String)
-     * @see CayenneRuntimeBuilder
      * @since 5.0
      */
-    public static CayenneRuntimeBuilder builder() {
+    public static CayenneRuntimeBuilder of() {
         return new CayenneRuntimeBuilder(null);
     }
 
@@ -108,12 +106,30 @@ public class CayenneRuntime {
      *
      * @param name optional symbolic name of the created runtime.
      * @return a named builder of CayenneRuntime.
-     * @see #builder()
-     * @see CayenneRuntimeBuilder
      * @since 5.0
      */
-    public static CayenneRuntimeBuilder builder(String name) {
+    public static CayenneRuntimeBuilder of(String name) {
         return new CayenneRuntimeBuilder(name);
+    }
+
+    /**
+     * Creates a builder of CayenneRuntime.
+     *
+     * @deprecated use {@link #of()} instead
+     */
+    @Deprecated(since = "5.0", forRemoval = true)
+    public static CayenneRuntimeBuilder builder() {
+        return of();
+    }
+
+    /**
+     * Creates a builder of CayenneRuntime.
+     *
+     * @deprecated use {@link #of(String)} instead
+     */
+    @Deprecated(since = "5.0", forRemoval = true)
+    public static CayenneRuntimeBuilder builder(String name) {
+        return of(name);
     }
 
     /**

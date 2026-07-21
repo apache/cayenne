@@ -180,7 +180,7 @@ solution may be changing to "joint" prefetches.
   extensions. If you encounter those, change how you configure the modules, following this general pattern
   (using `CacheInvalidationModule` as an example):
   ```java
-  CayenneRuntime.builder(..)
+  CayenneRuntime.of(..)
       .addModule(b -> CacheInvalidationModule.extend(b).addHandler(MyHandler.class))
       .build();
   ```
@@ -208,7 +208,7 @@ solution may be changing to "joint" prefetches.
 
 * Per [CAY-2826](https://issues.apache.org/jira/browse/CAY-2826) `ServerModule` renamed to `CoreModule`. The new builder pattern combining both changes:
   ```java
-  CayenneRuntime runtime = CayenneRuntime.builder()
+  CayenneRuntime runtime = CayenneRuntime.of()
           .addConfig("cayenne-project.xml")
           .module(b -> CoreModule.extend(b).setProperty("some_property", "some_value"))
           .build();

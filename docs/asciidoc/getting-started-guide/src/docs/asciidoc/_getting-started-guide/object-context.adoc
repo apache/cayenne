@@ -44,7 +44,7 @@ import org.apache.cayenne.runtime.CayenneRuntime;
 public class Main {
 
     public static void main(String[] args) {
-        CayenneRuntime cayenneRuntime = CayenneRuntime.builder()
+        CayenneRuntime cayenneRuntime = CayenneRuntime.of()
                         .addConfig("cayenne-project.xml")
                         .build();
         ObjectContext context = cayenneRuntime.newContext();

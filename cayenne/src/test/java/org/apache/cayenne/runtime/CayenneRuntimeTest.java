@@ -55,7 +55,7 @@ public class CayenneRuntimeTest {
 
         Module module = binder -> binder.bind(TransactionFactory.class).toInstance(txFactory);
 
-        CayenneRuntime runtime = CayenneRuntime.builder().addConfig("xxxx").addModule(module).build();
+        CayenneRuntime runtime = CayenneRuntime.of().addConfig("xxxx").addModule(module).build();
         try {
 
             final Object expectedResult = new Object();

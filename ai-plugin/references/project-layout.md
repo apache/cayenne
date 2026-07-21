@@ -50,7 +50,7 @@ Filter out `target/`, `build/`, and any test-resource paths unless the user is e
 
 If multiple `cayenne-*.xml` files exist, identify the one the application actually uses:
 
-- Search the Java code for `CayenneRuntime.builder().addConfig("...")` — the string argument is the descriptor file name (e.g. `"cayenne-mydb.xml"`).
+- Search the Java code for `CayenneRuntime.of().addConfig("...")` — the string argument is the descriptor file name (e.g. `"cayenne-mydb.xml"`).
 - Or look for `addConfigs("...")` for multi-config setups.
 - If none is found, the runtime may rely on auto-loading (`cayenne-project.xml` is *not* a Cayenne convention — Cayenne does not auto-load by a default name).
 

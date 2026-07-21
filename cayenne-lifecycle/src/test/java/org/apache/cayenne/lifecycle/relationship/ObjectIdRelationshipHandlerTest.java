@@ -44,7 +44,7 @@ public class ObjectIdRelationshipHandlerTest {
 
     @BeforeEach
     public void setUp() throws Exception {
-        runtime = CayenneRuntime.builder().addConfig("cayenne-lifecycle.xml").build();
+        runtime = CayenneRuntime.of().addConfig("cayenne-lifecycle.xml").build();
 
         // a filter is required to invalidate root objects after commit
         ObjectIdRelationshipFilter filter = new ObjectIdRelationshipFilter();

@@ -150,7 +150,7 @@ public class CayenneTestsEnv implements BeforeEachCallback, AfterEachCallback {
         modules.add(b -> b.bind(DataNodeFactory.class).to(TelemetricDataNodeFactory.class));
         Collections.addAll(modules, extraModules);
 
-        return CayenneRuntime.builder()
+        return CayenneRuntime.of()
                 .addConfig(project)
                 .addModules(modules)
                 .dataSource(COMMON_SCHEMA.dataSource())

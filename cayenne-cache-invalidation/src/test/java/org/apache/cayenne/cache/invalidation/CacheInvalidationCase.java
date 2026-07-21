@@ -57,7 +57,7 @@ public abstract class CacheInvalidationCase {
     }
 
     protected CayenneRuntimeBuilder configureCayenne() {
-        return CayenneRuntime.builder()
+        return CayenneRuntime.of()
                 .addModule(b -> extend(CacheInvalidationModule.extend(b)))
                 .addModule(buildCustomModule())
                 .addConfig("cayenne-lifecycle.xml");
