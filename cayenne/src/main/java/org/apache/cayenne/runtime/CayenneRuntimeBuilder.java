@@ -23,7 +23,7 @@ import org.apache.cayenne.configuration.Constants;
 import org.apache.cayenne.configuration.runtime.CoreModule;
 import org.apache.cayenne.configuration.runtime.DataSourceFactory;
 import org.apache.cayenne.configuration.runtime.CoreModuleExtender;
-import org.apache.cayenne.datasource.DataSourceBuilder;
+import org.apache.cayenne.datasource.CayenneDataSource;
 import org.apache.cayenne.di.Module;
 import org.apache.cayenne.di.spi.ModuleLoader;
 
@@ -88,7 +88,7 @@ public class CayenneRuntimeBuilder {
      * mapping. If the mapping contains no DataNodes, and the DataSource is set
      * with this method, the builder would create a single default DataNode.
      *
-     * @see DataSourceBuilder
+     * @see CayenneDataSource
      */
     public CayenneRuntimeBuilder dataSource(DataSource dataSource) {
         this.dataSourceFactory = new FixedDataSourceFactory(dataSource);

@@ -21,8 +21,7 @@ package org.apache.cayenne.datasource;
 import javax.sql.DataSource;
 
 /**
- * A {@link DataSource} that pools connections and requires to be explicitly
- * closed.
+ * A {@link DataSource} that pools connections and requires to be explicitly closed.
  * 
  * @since 4.0
  */

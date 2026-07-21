@@ -23,15 +23,13 @@ import org.apache.cayenne.configuration.Constants;
 import org.apache.cayenne.configuration.DataNodeDescriptor;
 import org.apache.cayenne.configuration.DataSourceDescriptor;
 import org.apache.cayenne.configuration.RuntimeProperties;
-import org.apache.cayenne.datasource.DataSourceBuilder;
 import org.apache.cayenne.datasource.UnmanagedPoolingDataSource;
-import org.apache.cayenne.di.AdhocObjectFactory;
 import org.apache.cayenne.di.Inject;
+import org.apache.cayenne.datasource.CayenneDataSource;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import javax.sql.DataSource;
-import java.sql.Driver;
 
 /**
  * A {@link DataSourceFactory} that loads JDBC connection information from an
@@ -48,9 +46,6 @@ public class XMLPoolingDataSourceFactory implements DataSourceFactory {
     @Inject
     private RuntimeProperties properties;
 
-    @Inject
-    private AdhocObjectFactory objectFactory;
-
     @Override
     public DataSource getDataSource(DataNodeDescriptor nodeDescriptor) {
 
@@ -64,10 +59,8 @@ public class XMLPoolingDataSourceFactory implements DataSourceFactory {
         long maxQueueWaitTime = properties
                 .getLong(Constants.JDBC_MAX_QUEUE_WAIT_TIME, UnmanagedPoolingDataSource.MAX_QUEUE_WAIT_DEFAULT);
 
-        Driver driver = objectFactory.newInstance(Driver.class, descriptor.getJdbcDriver(), true);
-
-        return DataSourceBuilder.url(descriptor.getDataSourceUrl())
-                .driver(driver)
+        return CayenneDataSource.of(descriptor.getDataSourceUrl())
+                .driverClass(descriptor.getJdbcDriver())
                 .userName(descriptor.getUserName())
                 .password(descriptor.getPassword())
                 .pool(descriptor.getMinConnections(), descriptor.getMaxConnections())

@@ -18,17 +18,19 @@
  ****************************************************************/
 package org.apache.cayenne.datasource;
 
-import javax.sql.DataSource;
-
 import org.apache.cayenne.CayenneRuntimeException;
+
+import javax.sql.DataSource;
 
 /**
  * Turns unpooled DataSource to a connection pool. Normally you won't be
  * creating this builder explicitly. Call
  * {@link DataSourceBuilder#pool(int, int)} method instead.
- * 
+ *
  * @since 4.0
+ * @deprecated in favor of {@link CayenneDataSource}
  */
+@Deprecated(since = "5.0", forRemoval = true)
 public class PoolingDataSourceBuilder {
 
 	private DataSourceBuilder nonPoolingBuilder;

@@ -26,7 +26,7 @@ import org.apache.cayenne.configuration.DataNodeDescriptor;
 import org.apache.cayenne.configuration.runtime.DataSourceFactory;
 import org.apache.cayenne.configuration.runtime.DbAdapterFactory;
 import org.apache.cayenne.configuration.runtime.PkGeneratorFactoryProvider;
-import org.apache.cayenne.datasource.DataSourceBuilder;
+import org.apache.cayenne.datasource.CayenneDataSource;
 import org.apache.cayenne.dba.DbAdapter;
 import org.apache.cayenne.dba.JdbcAdapter;
 import org.apache.cayenne.dba.PkGenerator;
@@ -165,8 +165,8 @@ public class DbGenerateTask extends BaseCayenneTask {
     }
 
     DataSource createDataSource() {
-        return DataSourceBuilder.url(dataSource.getUrl())
-                .driver(dataSource.getDriver())
+        return CayenneDataSource.of(dataSource.getUrl())
+                .driverClass(dataSource.getDriver())
                 .userName(dataSource.getUsername())
                 .password(dataSource.getPassword())
                 .build();

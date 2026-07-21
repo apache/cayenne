@@ -45,9 +45,8 @@ public class Main {
 
     public static void main(String[] args) {
         CayenneRuntime cayenneRuntime = CayenneRuntime.builder()
-            .dataSource(DataSourceBuilder
-                    .url("jdbc:mysql://127.0.0.1:3306/cayenne_demo")
-                    .driver("com.mysql.cj.jdbc.Driver")
+            .dataSource(CayenneDataSource
+                    .of("jdbc:mysql://127.0.0.1:3306/cayenne_demo")
                     .userName("root") // TODO: change to your actual username and password
                     .password("your-password").build())
             .addConfig("cayenne-project.xml")

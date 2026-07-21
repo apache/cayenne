@@ -18,15 +18,14 @@
  ****************************************************************/
 package org.apache.cayenne.datasource;
 
+import org.apache.cayenne.di.ScopeEventListener;
+
+import javax.sql.DataSource;
 import java.io.PrintWriter;
 import java.sql.Connection;
 import java.sql.SQLException;
 import java.sql.SQLFeatureNotSupportedException;
 import java.util.logging.Logger;
-
-import javax.sql.DataSource;
-
-import org.apache.cayenne.di.ScopeEventListener;
 
 /**
  * A wrapper for {@link UnmanagedPoolingDataSource} that automatically manages
@@ -57,10 +56,6 @@ public class ManagedPoolingDataSource implements PoolingDataSource, ScopeEventLi
 
 	int poolSize() {
 		return dataSourceManager.getDataSource().poolSize();
-	}
-
-	int availableSize() {
-		return dataSourceManager.getDataSource().availableSize();
 	}
 	
 	int canExpandSize() {

@@ -25,7 +25,7 @@ import org.apache.cayenne.configuration.Constants;
 import org.apache.cayenne.configuration.DataSourceDescriptor;
 import org.apache.cayenne.configuration.runtime.CoreModule;
 import org.apache.cayenne.configuration.runtime.DataNodeFactory;
-import org.apache.cayenne.datasource.DataSourceBuilder;
+import org.apache.cayenne.datasource.CayenneDataSource;
 import org.apache.cayenne.dba.DbAdapter;
 import org.apache.cayenne.dba.QuotingStrategy;
 import org.apache.cayenne.di.AdhocObjectFactory;
@@ -64,9 +64,9 @@ public class CayenneTestsEnv implements BeforeEachCallback, AfterEachCallback {
 
     static {
         DataSourceDescriptor dsDescriptor = DataSourceConfigLoader.load();
-        DataSource ds = DataSourceBuilder
-                .url(dsDescriptor.getDataSourceUrl())
-                .driver(dsDescriptor.getJdbcDriver())
+        DataSource ds = CayenneDataSource
+                .of(dsDescriptor.getDataSourceUrl())
+                .driverClass(dsDescriptor.getJdbcDriver())
                 .userName(dsDescriptor.getUserName())
                 .password(dsDescriptor.getPassword())
                 .pool(dsDescriptor.getMinConnections(), dsDescriptor.getMaxConnections())
