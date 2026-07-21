@@ -16,34 +16,21 @@
  *  specific language governing permissions and limitations
  *  under the License.
  ****************************************************************/
+package org.apache.cayenne.project.upgrade;
 
-package org.apache.cayenne.project.upgrade.handlers;
+import org.apache.cayenne.resource.Resource;
 
-import org.apache.cayenne.project.upgrade.UpgradeContext;
+import java.util.List;
 
 /**
- * Upgrade handler for the project version "10" introduced by 4.1.M1 release.
- * Changes highlight:
- *      - strict schema for domain (e.g. main project document)
- *      - new schema for data map allowing usage of additional elements (e.g. XML extensions)
+ * A result of a project upgrade: the resource of the upgraded project plus optional messages from individual upgrade
+ * handlers, describing manual steps the user must perform to complete the upgrade.
  *
- * @since 4.1
+ * @since 5.0
  */
-public class UpgradeHandler_V10 implements UpgradeHandler {
+public record PostUpgradeState(Resource resource, List<String> messages) {
 
-    @Override
-    public String getVersion() {
-        return "10";
-    }
-
-    @Override
-    public void processProjectDom(UpgradeContext upgradeUnit) {
-        // introduce xml namespace and schema for domain
-        updateDomainSchemaAndVersion(upgradeUnit);
-    }
-
-    @Override
-    public void processDataMapDom(UpgradeContext upgradeUnit) {
-        updateDataMapSchemaAndVersion(upgradeUnit);
+    public PostUpgradeState {
+        messages = List.copyOf(messages);
     }
 }

@@ -60,8 +60,10 @@ import java.net.URL;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Comparator;
+import java.util.LinkedHashSet;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 import java.util.TreeMap;
 
 import static org.apache.cayenne.util.Util.isBlank;
@@ -70,27 +72,27 @@ import static org.apache.cayenne.util.Util.isBlank;
  *
  * Upgrade service sequence is following:
  * 1. This cycle should be done by Modeler and will result in a full project upgrade
- *
- *  - find all project and datamap resources
- *  - define set of upgrade handlers to process those resources
- *  - process DOM (project + N data maps)
- *  - save & load cycle to flush all DOM changes
- *  - process project model
- *  - save once again to cleanup and sort final XML
- *
+ * <p>
+ * - find all project and datamap resources
+ * - define set of upgrade handlers to process those resources
+ * - process DOM (project + N data maps)
+ * - save & load cycle to flush all DOM changes
+ * - process project model
+ * - save once again to cleanup and sort final XML
+ * <p>
  * 2. This cycle can be used by CayenneRuntime to optionally support old project versions
- *
- *  - find all project and datamap resources
- *  - define set of upgrade handlers to process those resources
- *  - process DOM (project + N data maps)
- *  - directly load model from DOM w/o saving
- *  - process project model
+ * <p>
+ * - find all project and datamap resources
+ * - define set of upgrade handlers to process those resources
+ * - process DOM (project + N data maps)
+ * - directly load model from DOM w/o saving
+ * - process project model
  *
  * @since 4.1
  */
-public class DefaultUpgradeService implements UpgradeService {
+public class DefaultProjectUpgrader implements ProjectUpgrader {
 
-    private static final Logger LOGGER = LoggerFactory.getLogger(DefaultUpgradeService.class);
+    private static final Logger LOGGER = LoggerFactory.getLogger(DefaultProjectUpgrader.class);
 
     public static final String UNKNOWN_VERSION = "0";
     public static final String MIN_SUPPORTED_VERSION = "6";
@@ -103,48 +105,48 @@ public class DefaultUpgradeService implements UpgradeService {
     @Inject
     private DataChannelDescriptorLoader loader;
 
-    public DefaultUpgradeService(@Inject List<UpgradeHandler> handlerList) {
-        for(UpgradeHandler handler : handlerList) {
+    public DefaultProjectUpgrader(@Inject List<UpgradeHandler> handlerList) {
+        for (UpgradeHandler handler : handlerList) {
             handlers.put(handler.getVersion(), handler);
         }
     }
 
     @Override
-    public UpgradeMetaData getUpgradeType(Resource resource) {
-        UpgradeMetaData metaData = new UpgradeMetaData();
-
+    public PreUpgradeState checkUpgradeNeeded(Resource resource) {
         String version = loadProjectVersion(resource);
-        metaData.setProjectVersion(version);
-        metaData.setSupportedVersion(String.valueOf(Project.VERSION));
+        String supportedVersion = String.valueOf(Project.VERSION);
 
         int c1 = VersionComparator.INSTANCE.compare(version, MIN_SUPPORTED_VERSION);
         if (c1 < 0) {
-            metaData.setIntermediateUpgradeVersion(MIN_SUPPORTED_VERSION);
-            metaData.setUpgradeType(UpgradeType.INTERMEDIATE_UPGRADE_NEEDED);
-            return metaData;
+            return new PreUpgradeState(
+                    UpgradeType.INTERMEDIATE_UPGRADE_NEEDED,
+                    version,
+                    supportedVersion,
+                    MIN_SUPPORTED_VERSION);
         }
 
-        int c2 = VersionComparator.INSTANCE.compare(String.valueOf(Project.VERSION), version);
+        int c2 = VersionComparator.INSTANCE.compare(supportedVersion, version);
+        UpgradeType upgradeType;
         if (c2 < 0) {
-            metaData.setUpgradeType(UpgradeType.DOWNGRADE_NEEDED);
+            upgradeType = UpgradeType.DOWNGRADE_NEEDED;
         } else if (c2 == 0) {
-            metaData.setUpgradeType(UpgradeType.UPGRADE_NOT_NEEDED);
+            upgradeType = UpgradeType.UPGRADE_NOT_NEEDED;
         } else {
-            metaData.setUpgradeType(UpgradeType.UPGRADE_NEEDED);
+            upgradeType = UpgradeType.UPGRADE_NEEDED;
         }
-        return metaData;
+        return new PreUpgradeState(upgradeType, version, supportedVersion, null);
     }
 
     protected List<UpgradeHandler> getHandlersForVersion(String version) {
         boolean found = MIN_SUPPORTED_VERSION.equals(version);
         List<UpgradeHandler> handlerList = new ArrayList<>();
 
-        for(Map.Entry<String, UpgradeHandler> entry : handlers.entrySet()) {
-            if(entry.getKey().equals(version)) {
+        for (Map.Entry<String, UpgradeHandler> entry : handlers.entrySet()) {
+            if (entry.getKey().equals(version)) {
                 found = true;
                 continue;
             }
-            if(!found) {
+            if (!found) {
                 continue;
             }
 
@@ -155,39 +157,51 @@ public class DefaultUpgradeService implements UpgradeService {
     }
 
     @Override
-    public Resource upgradeProject(Resource resource) {
+    public PostUpgradeState upgrade(Resource resource) {
         List<UpgradeHandler> handlerList = getHandlersForVersion(loadProjectVersion(resource));
 
-        List<UpgradeUnit> upgradeUnits = upgradeDOM(resource, handlerList);
+        List<UpgradeContext> upgradeUnits = upgradeDOM(resource, handlerList);
         saveDOM(upgradeUnits);
 
-        resource = upgradeUnits.get(0).getResource();
+        resource = upgradeUnits.getFirst().getResource();
 
         ConfigurationTree<DataChannelDescriptor> configurationTree = upgradeModel(resource, handlerList);
         saveModel(configurationTree);
 
-        return resource;
+        return new PostUpgradeState(resource, collectPostUpgradeMessages(upgradeUnits));
     }
 
-    protected List<UpgradeUnit> upgradeDOM(Resource resource, List<UpgradeHandler> handlerList) {
-        List<UpgradeUnit> allUnits = new ArrayList<>();
+    /**
+     * Collects user-facing messages recorded by upgrade handlers while processing the units, deduplicating repeats
+     * of the same message across units.
+     */
+    protected static List<String> collectPostUpgradeMessages(Collection<UpgradeContext> upgradeUnits) {
+        Set<String> messages = new LinkedHashSet<>();
+        for (UpgradeContext unit : upgradeUnits) {
+            messages.addAll(unit.getPostUpgradeMessages());
+        }
+        return new ArrayList<>(messages);
+    }
+
+    protected List<UpgradeContext> upgradeDOM(Resource resource, List<UpgradeHandler> handlerList) {
+        List<UpgradeContext> allUnits = new ArrayList<>();
 
         // Load DOM for all resources
         Document projectDocument = readDocument(resource.getURL());
-        UpgradeUnit projectUnit = new UpgradeUnit(resource, projectDocument);
+        UpgradeContext projectUnit = new UpgradeContext(resource, projectDocument);
         allUnits.add(projectUnit);
 
         List<Resource> dataMapResources = getAdditionalDatamapResources(projectUnit);
-        List<UpgradeUnit> dataMapUnits = new ArrayList<>(dataMapResources.size());
+        List<UpgradeContext> dataMapUnits = new ArrayList<>(dataMapResources.size());
         for (Resource dataMapResource : dataMapResources) {
-            dataMapUnits.add(new UpgradeUnit(dataMapResource, readDocument(dataMapResource.getURL())));
+            dataMapUnits.add(new UpgradeContext(dataMapResource, readDocument(dataMapResource.getURL())));
         }
         allUnits.addAll(dataMapUnits);
 
         // Update DOM
-        for(UpgradeHandler handler : handlerList) {
+        for (UpgradeHandler handler : handlerList) {
             handler.processProjectDom(projectUnit);
-            for(UpgradeUnit dataMapUnit : dataMapUnits) {
+            for (UpgradeContext dataMapUnit : dataMapUnits) {
                 handler.processDataMapDom(dataMapUnit);
             }
         }
@@ -195,8 +209,8 @@ public class DefaultUpgradeService implements UpgradeService {
         return allUnits;
     }
 
-    protected void saveDOM(Collection<UpgradeUnit> upgradeUnits) {
-        for(UpgradeUnit unit : upgradeUnits) {
+    protected void saveDOM(Collection<UpgradeContext> upgradeUnits) {
+        for (UpgradeContext unit : upgradeUnits) {
             saveDocument(unit);
         }
     }
@@ -206,7 +220,7 @@ public class DefaultUpgradeService implements UpgradeService {
         ConfigurationTree<DataChannelDescriptor> configurationTree = loadProject(resource);
 
         // Update model level if needed
-        for(UpgradeHandler handler : handlerList) {
+        for (UpgradeHandler handler : handlerList) {
             handler.processModel(configurationTree.getRootNode());
         }
 
@@ -219,7 +233,7 @@ public class DefaultUpgradeService implements UpgradeService {
 
         // link all datamaps, or else we will lose cross-datamaps relationships
         EntityResolver resolver = new EntityResolver();
-        for(DataMap dataMap : configurationTree.getRootNode().getDataMaps()) {
+        for (DataMap dataMap : configurationTree.getRootNode().getDataMaps()) {
             resolver.addDataMap(dataMap);
             dataMap.setNamespace(resolver);
         }
@@ -232,7 +246,7 @@ public class DefaultUpgradeService implements UpgradeService {
         projectSaver.save(project);
     }
 
-    List<Resource> getAdditionalDatamapResources(UpgradeUnit upgradeUnit) {
+    List<Resource> getAdditionalDatamapResources(UpgradeContext upgradeUnit) {
         List<Resource> resources = new ArrayList<>();
         try {
             XPath xpath = XPathFactory.newInstance().newXPath();
@@ -250,7 +264,7 @@ public class DefaultUpgradeService implements UpgradeService {
         return resources;
     }
 
-    protected void saveDocument(UpgradeUnit upgradeUnit) {
+    protected void saveDocument(UpgradeContext upgradeUnit) {
         try {
             Source input = new DOMSource(upgradeUnit.getDocument());
             Result output = new StreamResult(Util.toFile(upgradeUnit.getResource().getURL()));
@@ -348,7 +362,7 @@ public class DefaultUpgradeService implements UpgradeService {
         }
     }
 
-    class RootTagHandler extends DefaultHandler {
+    static class RootTagHandler extends DefaultHandler {
 
         private String projectVersion;
 

@@ -16,18 +16,16 @@
  *  specific language governing permissions and limitations
  *  under the License.
  ****************************************************************/
-
 package org.apache.cayenne.project.upgrade;
 
-import org.apache.cayenne.resource.Resource;
-
 /**
- * @since 4.1
+ * An object providing upgrade information about a specific project in the context of enclosing Cayenne runtime.
+ *
+ * @since 3.1
  */
-public interface UpgradeService {
-
-    UpgradeMetaData getUpgradeType(Resource resource);
-
-    Resource upgradeProject(Resource resource);
-
+public record PreUpgradeState(
+        UpgradeType requiredUpgrade,
+        String projectVersion,
+        String supportedVersion,
+        String intermediateUpgradeVersion) {
 }

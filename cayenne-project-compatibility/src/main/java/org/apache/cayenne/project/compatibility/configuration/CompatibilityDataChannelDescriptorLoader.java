@@ -35,10 +35,10 @@ import org.apache.cayenne.configuration.xml.LoaderContext;
 import org.apache.cayenne.configuration.xml.XMLDataChannelDescriptorLoader;
 import org.apache.cayenne.di.Inject;
 import org.apache.cayenne.di.Provider;
-import org.apache.cayenne.project.compatibility.CompatibilityUpgradeService;
+import org.apache.cayenne.project.compatibility.CompatibilityProjectUpgrader;
 import org.apache.cayenne.project.compatibility.DocumentProvider;
-import org.apache.cayenne.project.upgrade.UpgradeMetaData;
-import org.apache.cayenne.project.upgrade.UpgradeService;
+import org.apache.cayenne.project.upgrade.PreUpgradeState;
+import org.apache.cayenne.project.upgrade.ProjectUpgrader;
 import org.apache.cayenne.project.upgrade.UpgradeType;
 import org.apache.cayenne.resource.Resource;
 import org.apache.cayenne.util.Util;
@@ -57,7 +57,7 @@ public class CompatibilityDataChannelDescriptorLoader extends XMLDataChannelDesc
     private static final Logger LOGGER = LoggerFactory.getLogger(XMLDataChannelDescriptorLoader.class);
 
     @Inject
-    Provider<UpgradeService> upgradeServiceProvider;
+    Provider<ProjectUpgrader> upgradeServiceProvider;
 
     @Inject
     DocumentProvider documentProvider;
@@ -68,30 +68,30 @@ public class CompatibilityDataChannelDescriptorLoader extends XMLDataChannelDesc
             throw new NullPointerException("Null configurationResource");
         }
 
-        if(!(upgradeServiceProvider.get() instanceof CompatibilityUpgradeService)) {
+        if(!(upgradeServiceProvider.get() instanceof CompatibilityProjectUpgrader)) {
             throw new ConfigurationException("CompatibilityUpgradeService expected");
         }
 
-        CompatibilityUpgradeService upgradeService = (CompatibilityUpgradeService)upgradeServiceProvider.get();
+        CompatibilityProjectUpgrader upgradeService = (CompatibilityProjectUpgrader)upgradeServiceProvider.get();
 
-        UpgradeMetaData metaData = upgradeService.getUpgradeType(configurationResource);
-        if(metaData.getUpgradeType() == UpgradeType.UPGRADE_NOT_NEEDED) {
+        PreUpgradeState metaData = upgradeService.checkUpgradeNeeded(configurationResource);
+        if(metaData.requiredUpgrade() == UpgradeType.UPGRADE_NOT_NEEDED) {
             return super.load(configurationResource);
         }
 
-        if(metaData.getUpgradeType() == UpgradeType.DOWNGRADE_NEEDED) {
+        if(metaData.requiredUpgrade() == UpgradeType.DOWNGRADE_NEEDED) {
             throw new ConfigurationException("Unable to load configuration from %s: " +
                     "It was created using a newer version of the Modeler", configurationResource.getURL());
         }
 
-        if(metaData.getUpgradeType() == UpgradeType.INTERMEDIATE_UPGRADE_NEEDED) {
+        if(metaData.requiredUpgrade() == UpgradeType.INTERMEDIATE_UPGRADE_NEEDED) {
             throw new ConfigurationException("Unable to load configuration from %s: " +
                     "Open the project in the older Modeler to do an intermediate upgrade.", configurationResource.getURL());
         }
 
         URL configurationURL = configurationResource.getURL();
 
-        upgradeService.upgradeProject(configurationResource);
+        upgradeService.upgrade(configurationResource);
         Document projectDocument = documentProvider.getDocument(configurationURL);
         if(projectDocument == null) {
             throw new ConfigurationException("Unable to upgrade " + configurationURL);

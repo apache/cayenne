@@ -22,18 +22,22 @@ package org.apache.cayenne.project.upgrade;
 import org.apache.cayenne.resource.Resource;
 import org.w3c.dom.Document;
 
+import java.util.ArrayList;
+import java.util.List;
+
 /**
  * @since 4.1
  */
-public class UpgradeUnit {
+public class UpgradeContext {
 
-    private Resource resource;
+    private final Resource resource;
+    private final Document document;
+    private final List<String> postUpgradeMessages;
 
-    private Document document;
-
-    public UpgradeUnit(Resource resource, Document document) {
+    public UpgradeContext(Resource resource, Document document) {
         this.resource = resource;
         this.document = document;
+        this.postUpgradeMessages = new ArrayList<>();
     }
 
     public Document getDocument() {
@@ -44,11 +48,21 @@ public class UpgradeUnit {
         return resource;
     }
 
-    public void setDocument(Document document) {
-        this.document = document;
+    /**
+     * Records a message shown to the user once the upgrade is done, describing manual steps required to complete
+     * the transition (e.g. regenerating classes or updating application code). Intended for upgrade handlers that
+     * detect a condition in this unit that they can't fix automatically.
+     *
+     * @since 5.0
+     */
+    public void addPostUpgradeMessage(String message) {
+        postUpgradeMessages.add(message);
     }
 
-    public void setResource(Resource resource) {
-        this.resource = resource;
+    /**
+     * @since 5.0
+     */
+    public List<String> getPostUpgradeMessages() {
+        return postUpgradeMessages;
     }
 }

@@ -21,8 +21,9 @@ package org.apache.cayenne.project.compatibility;
 
 import org.apache.cayenne.configuration.DataChannelDescriptor;
 import org.apache.cayenne.di.Inject;
-import org.apache.cayenne.project.upgrade.DefaultUpgradeService;
-import org.apache.cayenne.project.upgrade.UpgradeUnit;
+import org.apache.cayenne.project.upgrade.DefaultProjectUpgrader;
+import org.apache.cayenne.project.upgrade.PostUpgradeState;
+import org.apache.cayenne.project.upgrade.UpgradeContext;
 import org.apache.cayenne.project.upgrade.handlers.UpgradeHandler;
 import org.apache.cayenne.resource.Resource;
 import org.w3c.dom.Document;
@@ -32,31 +33,31 @@ import java.util.List;
 /**
  * @since 4.1
  */
-public class CompatibilityUpgradeService extends DefaultUpgradeService {
+public class CompatibilityProjectUpgrader extends DefaultProjectUpgrader {
 
     @Inject
     DocumentProvider documentProvider;
 
-    public CompatibilityUpgradeService(@Inject List<UpgradeHandler> handlerList) {
+    public CompatibilityProjectUpgrader(@Inject List<UpgradeHandler> handlerList) {
         super(handlerList);
     }
 
     @Override
-    public Resource upgradeProject(Resource resource) {
+    public PostUpgradeState upgrade(Resource resource) {
         List<UpgradeHandler> handlerList = getHandlersForVersion(loadProjectVersion(resource));
-        List<UpgradeUnit> upgradeUnits = upgradeDOM(resource, handlerList);
+        List<UpgradeContext> upgradeUnits = upgradeDOM(resource, handlerList);
 
-        for(UpgradeUnit unit : upgradeUnits) {
+        for(UpgradeContext unit : upgradeUnits) {
             documentProvider.putDocument(unit.getResource().getURL(), unit.getDocument());
         }
 
-        return resource;
+        return new PostUpgradeState(resource, collectPostUpgradeMessages(upgradeUnits));
     }
 
     public Resource upgradeDataMap(Resource resource) {
         List<UpgradeHandler> handlerList = getHandlersForVersion(loadProjectVersion(resource));
         Document document =  readDocument(resource.getURL());
-        UpgradeUnit upgradeUnit = new UpgradeUnit(resource, document);
+        UpgradeContext upgradeUnit = new UpgradeContext(resource, document);
         for(UpgradeHandler handler : handlerList) {
             handler.processDataMapDom(upgradeUnit);
         }

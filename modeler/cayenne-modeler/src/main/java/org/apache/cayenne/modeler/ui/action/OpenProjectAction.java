@@ -26,8 +26,9 @@ import org.apache.cayenne.modeler.toolkit.filechooser.FileFilters;
 import org.apache.cayenne.modeler.ui.MainFrame;
 import org.apache.cayenne.modeler.ui.errors.ErrorDialog;
 import org.apache.cayenne.project.Project;
-import org.apache.cayenne.project.upgrade.UpgradeMetaData;
-import org.apache.cayenne.project.upgrade.UpgradeService;
+import org.apache.cayenne.project.upgrade.PostUpgradeState;
+import org.apache.cayenne.project.upgrade.PreUpgradeState;
+import org.apache.cayenne.project.upgrade.ProjectUpgrader;
 import org.apache.cayenne.resource.Resource;
 import org.apache.cayenne.resource.URLResource;
 import org.slf4j.Logger;
@@ -42,6 +43,7 @@ import java.awt.event.ActionEvent;
 import java.awt.event.KeyEvent;
 import java.io.File;
 import java.net.URL;
+import java.util.List;
 import java.util.Map;
 
 public class OpenProjectAction extends AppAction {
@@ -137,11 +139,13 @@ public class OpenProjectAction extends AppAction {
             URL url = file.toURI().toURL();
             Resource rootSource = new URLResource(url);
 
-            UpgradeService upgradeService = app.getUpgradeService();
-            UpgradeMetaData metaData = upgradeService.getUpgradeType(rootSource);
-            switch (metaData.getUpgradeType()) {
+            List<String> upgradeMessages = List.of();
+
+            ProjectUpgrader projectUpgrader = app.getUpgradeService();
+            PreUpgradeState metaData = projectUpgrader.checkUpgradeNeeded(rootSource);
+            switch (metaData.requiredUpgrade()) {
                 case INTERMEDIATE_UPGRADE_NEEDED:
-                    String modelerVersion = PROJECT_TO_MODELER_VERSION.get(metaData.getProjectVersion());
+                    String modelerVersion = PROJECT_TO_MODELER_VERSION.get(metaData.projectVersion());
                     if (modelerVersion == null) {
                         modelerVersion = "";
                     }
@@ -161,7 +165,9 @@ public class OpenProjectAction extends AppAction {
 
                 case UPGRADE_NEEDED:
                     if (processUpgrades()) {
-                        rootSource = upgradeService.upgradeProject(rootSource);
+                        PostUpgradeState postUpgrade = projectUpgrader.upgrade(rootSource);
+                        rootSource = postUpgrade.resource();
+                        upgradeMessages = postUpgrade.messages();
                     } else {
                         CloseProjectAction.closeProject(app, false);
                         return;
@@ -170,6 +176,10 @@ public class OpenProjectAction extends AppAction {
             }
 
             openProjectResource(rootSource, controller, mcpHandshakeNonce);
+
+            if (!upgradeMessages.isEmpty()) {
+                showPostUpgradeMessages(upgradeMessages);
+            }
 
 
         } catch (Exception ex) {
@@ -182,6 +192,14 @@ public class OpenProjectAction extends AppAction {
         Project project = app.getProjectLoader().loadProject(resource);
         controller.onProjectOpened(project, mcpHandshakeNonce);
         return project;
+    }
+
+    private void showPostUpgradeMessages(List<String> messages) {
+        JOptionPane.showMessageDialog(
+                app.getFrame(),
+                "The project was upgraded, but some manual steps are required:\n\n" + String.join("\n\n", messages),
+                "Manual Steps Required",
+                JOptionPane.INFORMATION_MESSAGE);
     }
 
     private boolean processUpgrades() {

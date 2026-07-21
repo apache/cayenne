@@ -17,33 +17,17 @@
  *  under the License.
  ****************************************************************/
 
-package org.apache.cayenne.project.upgrade.handlers;
+package org.apache.cayenne.project.upgrade;
 
-import org.apache.cayenne.project.upgrade.UpgradeContext;
+import org.apache.cayenne.resource.Resource;
 
 /**
- * Upgrade handler for the project version "10" introduced by 4.1.M1 release.
- * Changes highlight:
- *      - strict schema for domain (e.g. main project document)
- *      - new schema for data map allowing usage of additional elements (e.g. XML extensions)
- *
- * @since 4.1
+ * @since 5.0
  */
-public class UpgradeHandler_V10 implements UpgradeHandler {
+public interface ProjectUpgrader {
 
-    @Override
-    public String getVersion() {
-        return "10";
-    }
+    PreUpgradeState checkUpgradeNeeded(Resource resource);
 
-    @Override
-    public void processProjectDom(UpgradeContext upgradeUnit) {
-        // introduce xml namespace and schema for domain
-        updateDomainSchemaAndVersion(upgradeUnit);
-    }
+    PostUpgradeState upgrade(Resource resource);
 
-    @Override
-    public void processDataMapDom(UpgradeContext upgradeUnit) {
-        updateDataMapSchemaAndVersion(upgradeUnit);
-    }
 }

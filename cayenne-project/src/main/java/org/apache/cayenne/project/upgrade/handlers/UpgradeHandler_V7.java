@@ -19,19 +19,19 @@
 
 package org.apache.cayenne.project.upgrade.handlers;
 
-import java.util.ArrayList;
-import java.util.List;
-import javax.xml.xpath.XPath;
-import javax.xml.xpath.XPathConstants;
-import javax.xml.xpath.XPathFactory;
-
 import org.apache.cayenne.configuration.DataChannelDescriptor;
 import org.apache.cayenne.map.DataMap;
 import org.apache.cayenne.map.ObjAttribute;
 import org.apache.cayenne.map.ObjEntity;
-import org.apache.cayenne.project.upgrade.UpgradeUnit;
+import org.apache.cayenne.project.upgrade.UpgradeContext;
 import org.w3c.dom.Element;
 import org.w3c.dom.Node;
+
+import javax.xml.xpath.XPath;
+import javax.xml.xpath.XPathConstants;
+import javax.xml.xpath.XPathFactory;
+import java.util.ArrayList;
+import java.util.List;
 
 /**
  * @since 4.1
@@ -44,7 +44,7 @@ public class UpgradeHandler_V7 implements UpgradeHandler {
     }
 
     @Override
-    public void processProjectDom(UpgradeUnit upgradeUnit) {
+    public void processProjectDom(UpgradeContext upgradeUnit) {
         Element domain = upgradeUnit.getDocument().getDocumentElement();
         domain.setAttribute("project-version", getVersion());
 
@@ -63,7 +63,7 @@ public class UpgradeHandler_V7 implements UpgradeHandler {
     }
 
     @Override
-    public void processDataMapDom(UpgradeUnit upgradeUnit) {
+    public void processDataMapDom(UpgradeContext upgradeUnit) {
         updateDataMapSchemaAndVersion(upgradeUnit);
     }
 

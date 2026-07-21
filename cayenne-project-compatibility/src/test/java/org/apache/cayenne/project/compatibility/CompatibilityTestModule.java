@@ -31,7 +31,7 @@ import org.apache.cayenne.di.Module;
 import org.apache.cayenne.di.spi.DefaultAdhocObjectFactory;
 import org.apache.cayenne.di.spi.DefaultClassLoaderManager;
 import org.apache.cayenne.project.ProjectSaver;
-import org.apache.cayenne.project.upgrade.UpgradeService;
+import org.apache.cayenne.project.upgrade.ProjectUpgrader;
 import org.apache.cayenne.project.upgrade.handlers.UpgradeHandler;
 import org.apache.cayenne.project.upgrade.handlers.UpgradeHandler_V10;
 import org.apache.cayenne.project.upgrade.handlers.UpgradeHandler_V11;
@@ -46,7 +46,7 @@ public class CompatibilityTestModule implements Module {
 
     @Override
     public void configure(Binder binder) {
-        binder.bind(UpgradeService.class).to(CompatibilityUpgradeService.class);
+        binder.bind(ProjectUpgrader.class).to(CompatibilityProjectUpgrader.class);
         binder.bind(DocumentProvider.class).to(DefaultDocumentProvider.class);
 
         binder.bind(HandlerFactory.class).to(DefaultHandlerFactory.class);

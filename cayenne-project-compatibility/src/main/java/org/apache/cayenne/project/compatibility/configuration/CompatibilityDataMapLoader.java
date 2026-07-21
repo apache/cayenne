@@ -34,9 +34,9 @@ import org.apache.cayenne.configuration.xml.XMLDataMapLoader;
 import org.apache.cayenne.di.Inject;
 import org.apache.cayenne.di.Provider;
 import org.apache.cayenne.map.DataMap;
-import org.apache.cayenne.project.compatibility.CompatibilityUpgradeService;
+import org.apache.cayenne.project.compatibility.CompatibilityProjectUpgrader;
 import org.apache.cayenne.project.compatibility.DocumentProvider;
-import org.apache.cayenne.project.upgrade.UpgradeService;
+import org.apache.cayenne.project.upgrade.ProjectUpgrader;
 import org.apache.cayenne.resource.Resource;
 import org.apache.cayenne.util.Util;
 import org.w3c.dom.Document;
@@ -49,7 +49,7 @@ import org.xml.sax.XMLReader;
 public class CompatibilityDataMapLoader extends XMLDataMapLoader {
 
     @Inject
-    Provider<UpgradeService> upgradeServiceProvider;
+    Provider<ProjectUpgrader> upgradeServiceProvider;
 
     @Inject
     DocumentProvider documentProvider;
@@ -59,11 +59,11 @@ public class CompatibilityDataMapLoader extends XMLDataMapLoader {
         Document document = documentProvider.getDocument(configurationResource.getURL());
         // no document yet in provider, maybe DataMap is directly loaded
         if(document == null) {
-            if(!(upgradeServiceProvider.get() instanceof CompatibilityUpgradeService)) {
+            if(!(upgradeServiceProvider.get() instanceof CompatibilityProjectUpgrader)) {
                 throw new ConfigurationException("CompatibilityUpgradeService expected");
             }
             // try to upgrade datamap directly
-            CompatibilityUpgradeService upgradeService = (CompatibilityUpgradeService)upgradeServiceProvider.get();
+            CompatibilityProjectUpgrader upgradeService = (CompatibilityProjectUpgrader)upgradeServiceProvider.get();
             upgradeService.upgradeDataMap(configurationResource);
             document = documentProvider.getDocument(configurationResource.getURL());
 

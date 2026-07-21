@@ -43,16 +43,16 @@ import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.*;
 
-public class DefaultUpgradeServiceTest {
+public class DefaultProjectUpgraderTest {
 
-    DefaultUpgradeService upgradeService;
+    DefaultProjectUpgrader upgradeService;
 
     List<UpgradeHandler> handlers;
 
     @BeforeEach
     public void createService() {
         createHandlers();
-        upgradeService = new DefaultUpgradeService(handlers);
+        upgradeService = new DefaultProjectUpgrader(handlers);
     }
 
     @ParameterizedTest
@@ -64,9 +64,9 @@ public class DefaultUpgradeServiceTest {
         "12, UPGRADE_NOT_NEEDED",
         "13, DOWNGRADE_NEEDED"
     })
-    public void getUpgradeType(String version, UpgradeType expectedType) {
-        UpgradeMetaData metaData = upgradeService.getUpgradeType(getResourceForVersion(version));
-        assertEquals(expectedType, metaData.getUpgradeType());
+    public void checkUpgradeNeeded(String version, UpgradeType expectedType) {
+        PreUpgradeState metaData = upgradeService.checkUpgradeNeeded(getResourceForVersion(version));
+        assertEquals(expectedType, metaData.requiredUpgrade());
     }
 
     @Test
@@ -87,7 +87,7 @@ public class DefaultUpgradeServiceTest {
         URL url = Objects.requireNonNull(getClass().getResource("../cayenne-PROJECT1.xml"));
         Resource resource = new URLResource(url);
         Document document = readDocument(url);
-        UpgradeUnit unit = new UpgradeUnit(resource, document);
+        UpgradeContext unit = new UpgradeContext(resource, document);
         List<Resource> resources = upgradeService.getAdditionalDatamapResources(unit);
 
         assertEquals(2, resources.size());
@@ -107,7 +107,7 @@ public class DefaultUpgradeServiceTest {
         "10,        10.0"
     })
     public void decodeVersion(String version, double expected) {
-        assertEquals(expected, DefaultUpgradeService.decodeVersion(version), 0.000001);
+        assertEquals(expected, DefaultProjectUpgrader.decodeVersion(version), 0.000001);
     }
 
     @Test
@@ -115,10 +115,10 @@ public class DefaultUpgradeServiceTest {
         Resource resource = new URLResource(getClass().getResource("../cayenne-PROJECT1.xml"));
 
         // Mock service so it will use actual reading but skip actual saving part
-        upgradeService = mock(DefaultUpgradeService.class);
+        upgradeService = mock(DefaultProjectUpgrader.class);
         when(upgradeService.upgradeDOM(any(Resource.class), ArgumentMatchers.anyList()))
                 .thenCallRealMethod();
-        when(upgradeService.getAdditionalDatamapResources(any(UpgradeUnit.class)))
+        when(upgradeService.getAdditionalDatamapResources(any(UpgradeContext.class)))
                 .thenCallRealMethod();
 
         upgradeService.upgradeDOM(resource, handlers);
@@ -127,16 +127,16 @@ public class DefaultUpgradeServiceTest {
 //        verify(upgradeService, times(3)).saveDocument(any(UpgradeUnit.class));
         for(UpgradeHandler handler : handlers) {
             verify(handler).getVersion();
-            verify(handler).processProjectDom(any(UpgradeUnit.class));
+            verify(handler).processProjectDom(any(UpgradeContext.class));
             // two data maps
-            verify(handler, times(2)).processDataMapDom(any(UpgradeUnit.class));
+            verify(handler, times(2)).processDataMapDom(any(UpgradeContext.class));
             verifyNoMoreInteractions(handler);
         }
     }
 
     @Test
     public void readDocument() {
-        Document document = DefaultUpgradeService.readDocument(getClass().getResource("../cayenne-PROJECT1.xml"));
+        Document document = DefaultProjectUpgrader.readDocument(getClass().getResource("../cayenne-PROJECT1.xml"));
         assertEquals("12", document.getDocumentElement().getAttribute("project-version"));
     }
 

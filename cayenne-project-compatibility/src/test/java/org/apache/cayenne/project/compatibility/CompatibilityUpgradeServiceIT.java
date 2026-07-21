@@ -23,7 +23,7 @@ import java.net.URL;
 
 import org.apache.cayenne.di.DIBootstrap;
 import org.apache.cayenne.di.Injector;
-import org.apache.cayenne.project.upgrade.UpgradeService;
+import org.apache.cayenne.project.upgrade.ProjectUpgrader;
 import org.apache.cayenne.resource.Resource;
 import org.apache.cayenne.resource.URLResource;
 import org.junit.jupiter.api.Test;
@@ -37,14 +37,14 @@ public class CompatibilityUpgradeServiceIT {
     public void upgradeFullProjectDom() {
         Injector injector = getInjector();
 
-        CompatibilityUpgradeService upgradeService = (CompatibilityUpgradeService)injector
-                .getInstance(UpgradeService.class);
+        CompatibilityProjectUpgrader upgradeService = (CompatibilityProjectUpgrader)injector
+                .getInstance(ProjectUpgrader.class);
 
         DocumentProvider documentProvider = injector.getInstance(DocumentProvider.class);
 
         URL resourceUrl = getClass().getResource("cayenne-project-v6.xml");
         Resource resource = new URLResource(resourceUrl);
-        upgradeService.upgradeProject(resource);
+        upgradeService.upgrade(resource);
 
         Document domainDocument = documentProvider.getDocument(resourceUrl);
 
@@ -64,8 +64,8 @@ public class CompatibilityUpgradeServiceIT {
     public void upgradeStandAloneDataMapDom() {
         Injector injector = getInjector();
 
-        CompatibilityUpgradeService upgradeService = (CompatibilityUpgradeService)injector
-                .getInstance(UpgradeService.class);
+        CompatibilityProjectUpgrader upgradeService = (CompatibilityProjectUpgrader)injector
+                .getInstance(ProjectUpgrader.class);
 
         DocumentProvider documentProvider = injector.getInstance(DocumentProvider.class);
 
