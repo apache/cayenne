@@ -18,12 +18,8 @@
  ****************************************************************/
 package org.apache.cayenne.configuration.runtime;
 
-import org.apache.cayenne.DataChannel;
 import org.apache.cayenne.DataChannelQueryFilter;
 import org.apache.cayenne.DataChannelSyncFilter;
-import org.apache.cayenne.commitlog.CommitLogFilter;
-import org.apache.cayenne.commitlog.meta.IncludeAllCommitLogEntityFactory;
-import org.apache.cayenne.commitlog.meta.CommitLogEntityFactory;
 import org.apache.cayenne.access.DataDomain;
 import org.apache.cayenne.access.DataRowStoreFactory;
 import org.apache.cayenne.access.DefaultDataRowStoreFactory;
@@ -35,25 +31,31 @@ import org.apache.cayenne.access.flush.DataDomainFlushActionFactory;
 import org.apache.cayenne.access.flush.DefaultDataDomainFlushActionFactory;
 import org.apache.cayenne.access.flush.operation.DbRowOpSorter;
 import org.apache.cayenne.access.flush.operation.DefaultDbRowOpSorter;
-import org.apache.cayenne.access.flush.operation.HardDeleteDbRowOpFactory;
 import org.apache.cayenne.access.flush.operation.DeleteDbRowOpFactory;
-import org.apache.cayenne.access.translator.SQLTemplateTranslator;
+import org.apache.cayenne.access.flush.operation.HardDeleteDbRowOpFactory;
 import org.apache.cayenne.access.jdbc.reader.DefaultRowReaderFactory;
 import org.apache.cayenne.access.jdbc.reader.RowReaderFactory;
 import org.apache.cayenne.access.translator.BatchTranslator;
+import org.apache.cayenne.access.translator.EJBQLTranslator;
+import org.apache.cayenne.access.translator.ProcedureTranslator;
+import org.apache.cayenne.access.translator.SQLTemplateTranslator;
+import org.apache.cayenne.access.translator.SelectTranslator;
 import org.apache.cayenne.access.translator.batch.DeleteBatchTranslator;
 import org.apache.cayenne.access.translator.batch.InsertBatchTranslator;
 import org.apache.cayenne.access.translator.batch.UpdateBatchTranslator;
 import org.apache.cayenne.access.translator.ejbql.DbAdapterDelegatedEJBQLTranslator;
-import org.apache.cayenne.access.translator.EJBQLTranslator;
 import org.apache.cayenne.access.translator.procedure.DbAdapterDelegatedProcedureTranslator;
-import org.apache.cayenne.access.translator.ProcedureTranslator;
 import org.apache.cayenne.access.translator.select.DbAdapterDelegatedSelectTranslator;
-import org.apache.cayenne.access.translator.SelectTranslator;
+import org.apache.cayenne.access.translator.sqltemplate.DefaultSQLTemplateTranslator;
+import org.apache.cayenne.access.translator.sqltemplate.DefaultTemplateContextFactory;
+import org.apache.cayenne.access.translator.sqltemplate.TemplateContextFactory;
 import org.apache.cayenne.access.types.*;
 import org.apache.cayenne.ashwood.AshwoodEntitySorter;
 import org.apache.cayenne.cache.MapQueryCacheProvider;
 import org.apache.cayenne.cache.QueryCache;
+import org.apache.cayenne.commitlog.CommitLogFilter;
+import org.apache.cayenne.commitlog.meta.CommitLogEntityFactory;
+import org.apache.cayenne.commitlog.meta.IncludeAllCommitLogEntityFactory;
 import org.apache.cayenne.configuration.ConfigurationNameMapper;
 import org.apache.cayenne.configuration.Constants;
 import org.apache.cayenne.configuration.DataChannelDescriptorLoader;
@@ -129,9 +131,6 @@ import org.apache.cayenne.reflect.generic.DefaultValueComparisonStrategyFactory;
 import org.apache.cayenne.reflect.generic.ValueComparisonStrategyFactory;
 import org.apache.cayenne.resource.ClassLoaderResourceLocator;
 import org.apache.cayenne.resource.ResourceLocator;
-import org.apache.cayenne.access.translator.sqltemplate.DefaultSQLTemplateTranslator;
-import org.apache.cayenne.access.translator.sqltemplate.DefaultTemplateContextFactory;
-import org.apache.cayenne.access.translator.sqltemplate.TemplateContextFactory;
 import org.apache.cayenne.tx.DefaultTransactionFactory;
 import org.apache.cayenne.tx.DefaultTransactionManager;
 import org.apache.cayenne.tx.TransactionFactory;
@@ -437,8 +436,6 @@ public class CoreModule implements Module {
         binder.bind(DataDomain.class).toProvider(DataDomainProvider.class);
         binder.bind(DataNodeFactory.class).to(DefaultDataNodeFactory.class);
 
-        // will return DataDomain for request for a DataChannel
-        binder.bind(DataChannel.class).toProvider(DomainDataChannelProvider.class);
         binder.bind(ObjectContextFactory.class).to(DataContextFactory.class);
         binder.bind(TransactionFactory.class).to(DefaultTransactionFactory.class);
 

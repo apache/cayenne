@@ -43,7 +43,7 @@ public class IdCoderTest {
 
     @Test
     public void getStringId() {
-        IdCoder handler = new IdCoder(runtime.getChannel().getEntityResolver());
+        IdCoder handler = new IdCoder(runtime.getDataDomain().getEntityResolver());
 
         E1 e1 = new E1();
         e1.setObjectId(ObjectId.of("E1", "ID", 5));
@@ -52,13 +52,13 @@ public class IdCoderTest {
 
     @Test
     public void getStringId_ObjectId() {
-        IdCoder handler = new IdCoder(runtime.getChannel().getEntityResolver());
+        IdCoder handler = new IdCoder(runtime.getDataDomain().getEntityResolver());
         assertEquals("E1:5", handler.getStringId(ObjectId.of("E1", "ID", 5)));
     }
 
     @Test
     public void getStringId_Temp() {
-        IdCoder handler = new IdCoder(runtime.getChannel().getEntityResolver());
+        IdCoder handler = new IdCoder(runtime.getDataDomain().getEntityResolver());
 
         byte[] key = new byte[] { 1, 2, 10, 100 };
 
@@ -70,7 +70,7 @@ public class IdCoderTest {
 
     @Test
     public void getObjectId_Temp() {
-        IdCoder handler = new IdCoder(runtime.getChannel().getEntityResolver());
+        IdCoder handler = new IdCoder(runtime.getDataDomain().getEntityResolver());
 
         byte[] key = new byte[] { 1, (byte) 0xD7, 10, 100 };
 
@@ -80,7 +80,7 @@ public class IdCoderTest {
 
     @Test
     public void getSringId_TempWithReplacement() {
-        IdCoder handler = new IdCoder(runtime.getChannel().getEntityResolver());
+        IdCoder handler = new IdCoder(runtime.getDataDomain().getEntityResolver());
 
         byte[] key = new byte[] { 5, 2, 11, 99 };
         ObjectId id = ObjectId.of("E1", key);

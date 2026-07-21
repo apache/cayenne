@@ -223,7 +223,7 @@ public class DataContext implements ObjectContext {
      * @since 3.1
      */
     protected void attachToRuntime(Injector injector) {
-        attachToChannel(injector.getInstance(DataChannel.class));
+        attachToChannel(injector.getInstance(DataDomain.class));
         setQueryCache(new NestedQueryCache(injector.getInstance(QueryCache.class)));
     }
 

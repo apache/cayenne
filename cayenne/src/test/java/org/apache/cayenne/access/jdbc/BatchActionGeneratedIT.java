@@ -40,7 +40,7 @@ public class BatchActionGeneratedIT {
 
     @Test
     public void hasGeneratedKeys1() throws Exception {
-        EntityResolver resolver = env.runtime().getChannel().getEntityResolver();
+        EntityResolver resolver = env.runtime().getDataDomain().getEntityResolver();
 
         // test with adapter that supports keys
         JdbcAdapter adapter = buildAdapter(true);
@@ -57,8 +57,8 @@ public class BatchActionGeneratedIT {
     }
 
     @Test
-    public void hasGeneratedKeys2() throws Exception {
-        EntityResolver resolver = env.runtime().getChannel().getEntityResolver();
+    public void hasGeneratedKeys2() {
+        EntityResolver resolver = env.runtime().getDataDomain().getEntityResolver();
 
         // test with adapter that does not support keys...
         JdbcAdapter adapter = buildAdapter(false);

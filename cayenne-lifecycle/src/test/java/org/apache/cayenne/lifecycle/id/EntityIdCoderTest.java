@@ -59,8 +59,7 @@ public class EntityIdCoderTest {
     @Test
     public void tempId() {
 
-        ObjEntity e1 = runtime.getChannel().getEntityResolver()
-                .getObjEntity("E1");
+        ObjEntity e1 = runtime.getDataDomain().getEntityResolver().getObjEntity("E1");
         EntityIdCoder coder = new EntityIdCoder(e1);
 
         byte[] key = new byte[] { 2, 2, 10, 100 };

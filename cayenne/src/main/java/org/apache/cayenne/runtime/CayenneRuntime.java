@@ -213,19 +213,24 @@ public class CayenneRuntime {
     }
 
     /**
-     * Returns the main runtime DataDomain. Note that by default the returned
-     * DataDomain is the same as the main DataChannel returned by
-     * {@link #getChannel()}. Although users may redefine DataChannel provider
-     * in the DI registry, for instance to decorate this DataDomain with a
-     * custom wrapper.
+     * Returns the runtime {@link DataChannel}.
+     *
+     * @deprecated in favor of {@link #getDataDomain()}
+     */
+    @Deprecated(since = "5.0", forRemoval = true)
+    public DataChannel getChannel() {
+        return getDataDomain();
+    }
+
+    /**
+     * Returns the main runtime DataDomain.
      */
     public DataDomain getDataDomain() {
         return injector.getInstance(DataDomain.class);
     }
 
     /**
-     * Returns a default DataSource for this runtime. If no default DataSource
-     * exists, an exception is thrown.
+     * Returns a default DataSource for this runtime. If no default DataSource exists, an exception is thrown.
      *
      * @since 4.0
      */
@@ -296,13 +301,6 @@ public class CayenneRuntime {
     @BeforeScopeEnd
     public void shutdown() {
         injector.shutdown();
-    }
-
-    /**
-     * Returns the runtime {@link DataChannel}.
-     */
-    public DataChannel getChannel() {
-        return injector.getInstance(DataChannel.class);
     }
 
     /**
