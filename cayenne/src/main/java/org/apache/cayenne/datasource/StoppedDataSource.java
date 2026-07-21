@@ -18,13 +18,12 @@
  ****************************************************************/
 package org.apache.cayenne.datasource;
 
+import javax.sql.DataSource;
 import java.io.PrintWriter;
 import java.sql.Connection;
 import java.sql.SQLException;
 import java.sql.SQLFeatureNotSupportedException;
 import java.util.logging.Logger;
-
-import javax.sql.DataSource;
 
 /**
  * A DataSource wrapper that prevents callers from obtaining connections from
@@ -34,7 +33,7 @@ import javax.sql.DataSource;
  */
 class StoppedDataSource implements DataSource {
 
-	private DataSource dataSource;
+	private final DataSource dataSource;
 
 	public StoppedDataSource(DataSource dataSource) {
 		this.dataSource = dataSource;

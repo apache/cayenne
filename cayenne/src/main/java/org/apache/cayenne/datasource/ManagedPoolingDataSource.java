@@ -33,7 +33,7 @@ import java.util.logging.Logger;
  * 
  * @since 4.0
  */
-public class ManagedPoolingDataSource implements PoolingDataSource, ScopeEventListener {
+public class ManagedPoolingDataSource implements DataSource, AutoCloseable, ScopeEventListener {
 
 	private final PoolingDataSourceManager dataSourceManager;
 	private DataSource dataSource;
@@ -74,8 +74,7 @@ public class ManagedPoolingDataSource implements PoolingDataSource, ScopeEventLi
 	@Override
 	public void close() {
 
-		// swap the underlying DataSource to prevent further interaction with
-		// the callers
+		// swap the underlying DataSource to prevent further interaction with the callers
 		this.dataSource = new StoppedDataSource(dataSource);
 
 		// shut down the thread..

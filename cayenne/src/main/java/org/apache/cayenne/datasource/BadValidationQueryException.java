@@ -21,8 +21,7 @@ package org.apache.cayenne.datasource;
 import java.sql.SQLException;
 
 /**
- * Thrown when the pool fails to validate a fresh connection that is known to be
- * in a good state.
+ * Thrown when the pool fails to validate a fresh connection that is known to be in a good state.
  * 
  * @since 4.0
  */

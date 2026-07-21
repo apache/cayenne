@@ -55,7 +55,7 @@ public class CayenneDataSourceTest {
                 .pool(1, 2)
                 .build();
 
-        try (PoolingDataSource pooling = assertInstanceOf(ManagedPoolingDataSource.class, dataSource);
+        try (ManagedPoolingDataSource pooling = assertInstanceOf(ManagedPoolingDataSource.class, dataSource);
              Connection c = pooling.getConnection()) {
             assertFalse(c.isClosed());
         }
@@ -135,7 +135,7 @@ public class CayenneDataSourceTest {
 
         DataSource dataSource = CayenneDataSource.fromProperties(properties).build();
 
-        try (PoolingDataSource pooling = assertInstanceOf(ManagedPoolingDataSource.class, dataSource);
+        try (ManagedPoolingDataSource pooling = assertInstanceOf(ManagedPoolingDataSource.class, dataSource);
              Connection c = pooling.getConnection()) {
             assertFalse(c.isClosed());
         }

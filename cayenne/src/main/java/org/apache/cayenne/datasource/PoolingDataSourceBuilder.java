@@ -69,7 +69,7 @@ public class PoolingDataSourceBuilder {
 	 * Builds a pooling DataSource that needs to be explicitly closed by the
 	 * caller when no longer in use.
 	 */
-	public PoolingDataSource build() {
+	public ManagedPoolingDataSource build() {
 
 		// sanity checks...
 		if (poolParameters.getMaxConnections() < 0) {
@@ -94,7 +94,7 @@ public class PoolingDataSourceBuilder {
 		return new UnmanagedPoolingDataSource(nonPoolingDataSource, poolParameters);
 	}
 
-	private PoolingDataSource buildManaged(UnmanagedPoolingDataSource dataSource) {
+	private ManagedPoolingDataSource buildManaged(UnmanagedPoolingDataSource dataSource) {
 		return new ManagedPoolingDataSource(dataSource);
 	}
 

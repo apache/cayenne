@@ -228,7 +228,7 @@ public class CayenneDataSource {
 
         /**
          * Builds a DataSource that is pooling if {@link #pool(int, int)} was called, and non-pooling otherwise. A
-         * pooling DataSource implements {@link PoolingDataSource} and must be explicitly closed by the caller when no
+         * pooling DataSource is {@link AutoCloseable} and must be explicitly closed by the caller when no
          * longer in use.
          */
         public DataSource build() {
@@ -247,7 +247,7 @@ public class CayenneDataSource {
             return minConnections != null ? pool(nonPooling) : nonPooling;
         }
 
-        private PoolingDataSource pool(DataSource nonPooling) {
+        private DataSource pool(DataSource nonPooling) {
 
             PoolingDataSourceParameters parameters = new PoolingDataSourceParameters();
             parameters.setMinConnections(minConnections);
