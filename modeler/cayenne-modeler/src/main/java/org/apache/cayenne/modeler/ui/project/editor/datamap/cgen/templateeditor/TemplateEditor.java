@@ -206,7 +206,7 @@ public class TemplateEditor extends AppFrame {
 
         CellConstraints constraintsTop = new CellConstraints();
         PanelBuilder topPanelBuilder = new PanelBuilder(new FormLayout(
-                "left:pref:grow, right:pref", "p, 3dlu, p, 3dlu, p"));
+                "left:pref:grow, right:pref", "p, $rgap, p, $rgap, p"));
         topPanelBuilder.setDefaultDialogBorder();
         topPanelBuilder.add(toolBar, constraintsTop.xy(1, 1));
         topPanelBuilder.addSeparator("", constraintsTop.xyw(1, 3, 2));

@@ -137,7 +137,7 @@ public class MergerOptionsDialog extends ProjectDialog {
         CellConstraints cc = new CellConstraints();
         PanelBuilder builder = new PanelBuilder(new FormLayout(
                 "fill:min(50dlu;pref):grow",
-                "p, 9dlu, p, 3dlu, fill:40dlu:grow"));
+                "p, $pgap, p, $rgap, fill:40dlu:grow"));
         builder.addSeparator("Generated SQL", cc.xywh(1, 3, 1, 1));
         builder.add(sqlTextPanel, cc.xy(1, 5));
         builder.setBorder(Borders.DIALOG_BORDER);

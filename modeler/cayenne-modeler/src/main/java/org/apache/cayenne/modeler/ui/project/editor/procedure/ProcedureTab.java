@@ -79,7 +79,7 @@ public class ProcedureTab extends ProjectPanel implements ProcedureDisplayListen
         this.returnsValue = new CMCheckBox(app.getUndoManager());
         this.returnsValue.setToolTipText("first parameter will be used as return value");
 
-        FormLayout layout = new FormLayout("right:pref, 3dlu, fill:200dlu", "");
+        FormLayout layout = new FormLayout("right:pref, $lcgap, fill:200dlu", "");
         DefaultFormBuilder builder = new DefaultFormBuilder(layout);
         builder.setDefaultDialogBorder();
 

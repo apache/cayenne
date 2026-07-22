@@ -85,7 +85,7 @@ public class DBConnectorEditor extends JPanel {
     }
 
     private void initLayout() {
-        FormLayout layout = new FormLayout("right:pref, 3dlu, fill:160dlu:grow", "");
+        FormLayout layout = new FormLayout("right:pref, $lcgap, fill:160dlu:grow", "");
         DefaultFormBuilder builder = new DefaultFormBuilder(layout);
         builder.setDefaultDialogBorder();
 

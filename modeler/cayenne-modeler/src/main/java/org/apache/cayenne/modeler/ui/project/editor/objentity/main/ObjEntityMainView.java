@@ -111,12 +111,13 @@ public class ObjEntityMainView extends ProjectPanel implements ObjEntityDisplayL
         add(toolBar, BorderLayout.NORTH);
 
         tableLabel.setBorderPainted(false);
+        tableLabel.setContentAreaFilled(false);
         tableLabel.setHorizontalAlignment(SwingConstants.LEFT);
         tableLabel.setFocusPainted(false);
         tableLabel.setMargin(new Insets(0, 0, 0, 0));
         tableLabel.setBorder(null);
 
-        FormLayout layout = new FormLayout("right:pref, 3dlu, fill:200dlu", "");
+        FormLayout layout = new FormLayout("right:pref, $lcgap, fill:200dlu", "");
         DefaultFormBuilder builder = new DefaultFormBuilder(layout);
         builder.setDefaultDialogBorder();
 

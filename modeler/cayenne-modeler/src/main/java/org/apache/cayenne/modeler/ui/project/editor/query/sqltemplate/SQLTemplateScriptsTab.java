@@ -120,8 +120,8 @@ public class SQLTemplateScriptsTab extends ProjectPanel {
         panes.add(textPane);
 
         builder = new PanelBuilder(new FormLayout(
-                "fill:100dlu, 3dlu, fill:100dlu:grow",
-                "3dlu, fill:100dlu:grow"));
+                "fill:100dlu, $lcgap, fill:100dlu:grow",
+                "$rgap, fill:100dlu:grow"));
 
         // orderings table must grow as the panel is resized
         builder.add(new JScrollPane(

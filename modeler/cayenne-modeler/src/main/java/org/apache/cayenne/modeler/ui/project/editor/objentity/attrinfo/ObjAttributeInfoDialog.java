@@ -177,8 +177,8 @@ public class ObjAttributeInfoDialog extends ProjectDialog implements TreeSelecti
         CellConstraints cc = new CellConstraints();
         PanelBuilder builder = new PanelBuilder(
                 new FormLayout(
-                        "right:max(50dlu;pref), 3dlu, 200dlu, 15dlu, right:max(30dlu;pref), 3dlu, 200dlu",
-                        "p, 3dlu, p, 3dlu, p, 3dlu, p, 3dlu, p, 3dlu, p, 3dlu, p, 3dlu, p, 6dlu, p, 6dlu, p, 3dlu, fill:p:grow"));
+                        "right:max(50dlu;pref), $lcgap, 200dlu, 15dlu, right:max(30dlu;pref), $lcgap, 200dlu",
+                        "p, $rgap, p, $rgap, p, $rgap, p, $rgap, p, $rgap, p, $rgap, p, $rgap, p, $lgap, p, $lgap, p, $rgap, fill:p:grow"));
         builder.setDefaultDialogBorder();
         builder.addSeparator("ObjAttribute Information", cc.xywh(1, 1, 7, 1));
 
@@ -200,7 +200,7 @@ public class ObjAttributeInfoDialog extends ProjectDialog implements TreeSelecti
 
         FormLayout fL = new FormLayout(
                 "493dlu",
-                "p, 3dlu, fill:min(128dlu;pref):grow");
+                "p, $rgap, fill:min(128dlu;pref):grow");
         PanelBuilder builderPathPane = new PanelBuilder(fL);
 
         JPanel buttonsPane = new JPanel(new FlowLayout(FlowLayout.LEADING));

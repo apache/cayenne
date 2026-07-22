@@ -77,7 +77,7 @@ public class EmbeddableMainView extends ProjectPanel implements EmbeddableDispla
         comment.addCommitListener(this::setComment);
 
         FormLayout layout = new FormLayout(
-                "right:50dlu, 3dlu, fill:150dlu, 3dlu, fill:100",
+                "right:50dlu, $lcgap, fill:150dlu, $lcgap, fill:100",
                 "");
         DefaultFormBuilder builder = new DefaultFormBuilder(layout);
         builder.setDefaultDialogBorder();

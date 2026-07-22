@@ -42,18 +42,19 @@ import org.apache.cayenne.modeler.event.model.EmbeddableListener;
 import org.apache.cayenne.modeler.event.model.ObjEntityEvent;
 import org.apache.cayenne.modeler.event.model.ObjEntityListener;
 import org.apache.cayenne.modeler.event.model.ProjectAfterSaveEvent;
-import org.apache.cayenne.modeler.pref.adapters.GeneralPrefs;
 import org.apache.cayenne.modeler.project.CgenOps;
 import org.apache.cayenne.modeler.project.ProjectSession;
 import org.apache.cayenne.modeler.toolkit.ProjectPanel;
 import org.apache.cayenne.modeler.toolkit.icon.IconFactory;
+import org.apache.cayenne.modeler.ui.project.editor.datamap.cgen.action.AddCgenConfigAction;
+import org.apache.cayenne.modeler.ui.project.editor.datamap.cgen.action.EditCgenConfigAction;
+import org.apache.cayenne.modeler.ui.project.editor.datamap.cgen.action.RemoveCgenConfigAction;
 import org.apache.cayenne.tools.ToolsInjectorBuilder;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import javax.swing.*;
 import java.awt.*;
-import java.nio.file.Path;
 import java.util.Collection;
 import java.util.Comparator;
 import java.util.Set;
@@ -100,12 +101,9 @@ public class CgenPanel extends ProjectPanel implements ObjEntityListener, Embedd
         this.generateButton.setIcon(IconFactory.buildIcon("icon-gen_java.png"));
         this.generateButton.setEnabled(false);
         this.configurationsComboBox = new JComboBox<>();
-        this.addConfigBtn = new JButton(IconFactory.buildIcon("icon-new.png"));
-        this.addConfigBtn.setToolTipText("New configuration");
-        this.editConfigBtn = new JButton(IconFactory.buildIcon("icon-edit.png"));
-        this.editConfigBtn.setToolTipText("Rename configuration");
-        this.removeConfigBtn = new JButton(IconFactory.buildIcon("icon-trash.png"));
-        this.removeConfigBtn.setToolTipText("Remove configuration");
+        this.addConfigBtn = new AddCgenConfigAction(app, configurationsComboBox, () -> cgenConfigList).buildButton();
+        this.editConfigBtn = new EditCgenConfigAction(app, configurationsComboBox, () -> cgenConfigList, () -> cgenConfiguration).buildButton();
+        this.removeConfigBtn = new RemoveCgenConfigAction(app, configurationsComboBox, () -> cgenConfigList, () -> cgenConfiguration).buildButton();
 
         this.cgenConfigPanel = new CgenConfigPanel(session, this);
         this.classesSelector = new CgenArtefactSelectorPanel(this);
@@ -254,7 +252,7 @@ public class CgenPanel extends ProjectPanel implements ObjEntityListener, Embedd
         }
 
         DataMap dataMap = session.getSelectedDataMap();
-        cgenConfiguration = createDefaultCgenConfiguration(dataMap);
+        cgenConfiguration = CgenOps.createDefaultCgenConfiguration(dataMap, session);
         addToSelectedEntities(dataMap.getObjEntities()
                 .stream()
                 .map(Entity::getName)
@@ -289,7 +287,7 @@ public class CgenPanel extends ProjectPanel implements ObjEntityListener, Embedd
 
     private JPanel buildConfigurationsPanel() {
         FormLayout layout = new FormLayout(
-                "109dlu,3dlu,pref,3dlu,pref,3dlu,pref",
+                "109dlu,$lcgap,pref,$lcgap,pref,$lcgap,pref",
                 "p");
         PanelBuilder builder = new PanelBuilder(layout);
         CellConstraints cc = new CellConstraints();
@@ -317,7 +315,7 @@ public class CgenPanel extends ProjectPanel implements ObjEntityListener, Embedd
         cgenConfigList = app.getMetaData().get(dataMap, CgenConfigList.class);
         if (cgenConfigList == null) {
             cgenConfigList = new CgenConfigList();
-            cgenConfigList.add(createDefaultCgenConfiguration(dataMap));
+            cgenConfigList.add(CgenOps.createDefaultCgenConfiguration(dataMap, session));
             app.getMetaData().add(dataMap, cgenConfigList);
         }
     }
@@ -331,9 +329,6 @@ public class CgenPanel extends ProjectPanel implements ObjEntityListener, Embedd
 
     private void initBindings() {
         generateButton.addActionListener(e -> generateAction());
-        addConfigBtn.addActionListener(e -> addConfigAction());
-        editConfigBtn.addActionListener(e -> editConfigAction());
-        removeConfigBtn.addActionListener(e -> removeConfigAction());
         configurationsComboBox.addActionListener(e -> {
             // ignore events fired while initFromModel() is rebuilding the combo box
             if (initFromModel) {
@@ -374,73 +369,12 @@ public class CgenPanel extends ProjectPanel implements ObjEntityListener, Embedd
         }
     }
 
-    private void addConfigAction() {
-        String name = JOptionPane.showInputDialog(
-                this,
-                "Type the name for new cgenConfiguration",
-                configurationsComboBox.getSelectedItem());
-        CgenConfiguration configuration = createDefaultCgenConfiguration(session.getSelectedDataMap());
-        if (name != null) {
-            if (!cgenConfigList.isExist(name) && !name.isEmpty()) {
-                configuration.setName(name);
-                cgenConfigList.add(configuration);
-                configurationsComboBox.addItem(name);
-                configurationsComboBox.setSelectedItem(name);
-            } else {
-                JOptionPane.showMessageDialog(this,
-                        "Can't create new configuration, same name is already exist or empty");
-            }
-        }
-    }
-
-    private void editConfigAction() {
-        String name = JOptionPane.showInputDialog(
-                this,
-                "Type the new name for cgenConfiguration",
-                configurationsComboBox.getSelectedItem());
-        if (name != null) {
-            if (!cgenConfigList.isExist(name) && !name.isEmpty()) {
-                cgenConfiguration.setName(name);
-                configurationsComboBox.removeItem(configurationsComboBox.getSelectedItem());
-                configurationsComboBox.addItem(name);
-                configurationsComboBox.setSelectedItem(name);
-            } else {
-                JOptionPane.showMessageDialog(this,
-                        "Can't rename configuration, name is already exist or empty");
-            }
-        }
-    }
-
-    private void removeConfigAction() {
-        int result = JOptionPane.showConfirmDialog(this,
-                "Configuration will be remove\n               Are you sure?",
-                "Delete cgenConfiguration",
-                JOptionPane.YES_NO_OPTION);
-        if (result == JOptionPane.OK_OPTION) {
-            if (configurationsComboBox.getItemCount() > 1) {
-                cgenConfigList.removeByName(cgenConfiguration.getName());
-                configurationsComboBox.removeItem(configurationsComboBox.getSelectedItem());
-                configurationsComboBox.setSelectedIndex(0);
-            } else {
-                JOptionPane.showMessageDialog(this, "At least one configuration must exist");
-            }
-        }
-    }
-
     private void prepareClasses(DataMap dataMap) {
         classes.clear();
         classes.add(dataMap);
         classes.addAll(dataMap.getObjEntities());
         classes.addAll(dataMap.getEmbeddables());
         selectionModel.initCollectionsForSelection(dataMap);
-    }
-
-    private CgenConfiguration createDefaultCgenConfiguration(DataMap map) {
-        Path basePath = map.getLocation() != null ? CgenOps.baseDir(session) : null;
-        CgenConfiguration configuration = CgenConfiguration.createDefault(map, basePath);
-        configuration.setForce(true);
-        configuration.setEncoding(new GeneralPrefs(app.getPrefsLocator().appNode(GeneralPrefs.NODE)).getEncoding());
-        return configuration;
     }
 
     private void updateArtifactGenerationMode(boolean selected) {

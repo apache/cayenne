@@ -74,8 +74,8 @@ public class JDBCDataSourcePanel extends DataSourcePanel {
     private void initLayout() {
         CellConstraints cc = new CellConstraints();
         FormLayout layout = new FormLayout(
-                "right:80dlu, 3dlu, fill:50dlu, 3dlu, fill:74dlu, 3dlu, fill:70dlu",
-                "p, 3dlu, p, 3dlu, p, 3dlu, p, 3dlu, p, 3dlu, p, 3dlu, p, 3dlu, p, 3dlu, p, 3dlu, p, 3dlu, p, 3dlu, p, 3dlu, p");
+                "right:80dlu, $lcgap, fill:50dlu, $lcgap, fill:74dlu, $lcgap, fill:70dlu",
+                "p, $rgap, p, $rgap, p, $rgap, p, $rgap, p, $rgap, p, $rgap, p, $rgap, p, $rgap, p, $rgap, p, $rgap, p, $rgap, p, $rgap, p");
 
         PanelBuilder builder = new PanelBuilder(layout);
         builder.setDefaultDialogBorder();

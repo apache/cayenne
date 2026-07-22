@@ -45,7 +45,7 @@ public class CustomDataSourcePanel extends DataSourcePanel {
     }
 
     private void initLayout() {
-        FormLayout layout = new FormLayout("right:80dlu, 3dlu, fill:200dlu", "");
+        FormLayout layout = new FormLayout("right:80dlu, $lcgap, fill:200dlu", "");
         DefaultFormBuilder builder = new DefaultFormBuilder(layout);
         builder.setDefaultDialogBorder();
 

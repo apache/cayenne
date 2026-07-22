@@ -216,8 +216,8 @@ public class CgenConfigPanel extends ProjectPanel {
         setLayout(new BorderLayout());
         CellConstraints cc = new CellConstraints();
         FormLayout layout = new FormLayout(
-                "left:10dlu, 3dlu, 97dlu, 3dlu, 40dlu, 3dlu, 50dlu, 3dlu, 20dlu",
-                "p, 3dlu, p, 10dlu, 11*(p, 3dlu),10dlu,9*(p, 3dlu)");
+                "left:10dlu, $lcgap, 97dlu, $lcgap, 40dlu, $lcgap, 50dlu, $lcgap, 20dlu",
+                "p, $lgap, p, 10dlu, 11*(p, $lgap),10dlu,9*(p, $lgap)");
         PanelBuilder builder = new PanelBuilder(layout);
         builder.setDefaultDialogBorder();
         builder.addLabel("Output Directory", cc.xyw(1, 1, 3));

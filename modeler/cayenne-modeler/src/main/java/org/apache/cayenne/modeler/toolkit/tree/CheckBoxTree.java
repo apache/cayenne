@@ -79,6 +79,10 @@ public class CheckBoxTree extends JPanel {
         checkBoxTree.setCellRenderer(new CheckBoxTreeCellRenderer());
         checkBoxTree.setCellEditor(new CheckBoxTreeCellEditor(checkBoxTree));
 
+        int rowHeight = Math.max(new JCheckBox().getPreferredSize().height, new JLabel().getPreferredSize().height);
+        labelTree.setRowHeight(rowHeight);
+        checkBoxTree.setRowHeight(rowHeight);
+
         setLayout(new BorderLayout());
         add(labelTree, BorderLayout.CENTER);
         add(checkBoxTree, BorderLayout.EAST);

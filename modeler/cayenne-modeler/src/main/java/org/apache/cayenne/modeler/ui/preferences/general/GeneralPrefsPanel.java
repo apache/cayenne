@@ -78,8 +78,8 @@ public class GeneralPrefsPanel extends AppPanel {
 
     private void initLayout() {
         FormLayout layout = new FormLayout(
-                "right:pref, 3dlu, fill:120dlu, default:grow",
-                "p, 3dlu, p, 3dlu, p, 3dlu, p, fill:40dlu:grow");
+                "right:pref, $lcgap, fill:120dlu, default:grow",
+                "p, $rgap, p, $rgap, p, $rgap, p, fill:40dlu:grow");
 
         CellConstraints cc = new CellConstraints();
         PanelBuilder builder = new PanelBuilder(layout);

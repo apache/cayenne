@@ -19,13 +19,19 @@
 
 package org.apache.cayenne.modeler.toolkit.buttons;
 
+import com.jgoodies.forms.util.LayoutStyle;
+
 import javax.swing.BorderFactory;
 import javax.swing.JButton;
 import javax.swing.JPanel;
 import java.awt.FlowLayout;
+import java.util.Collections;
+import java.util.Arrays;
+import java.util.List;
 
 /**
  * A panel that lays out a row of right-aligned buttons, typically used at the bottom of a dialog.
+ * Button order respects {@link LayoutStyle#isLeftToRightButtonOrder()}.
  */
 public class CMButtonPanel extends JPanel {
 
@@ -33,7 +39,11 @@ public class CMButtonPanel extends JPanel {
         setBorder(BorderFactory.createEmptyBorder(3, 20, 3, 7));
         setLayout(new FlowLayout(FlowLayout.RIGHT));
 
-        for (JButton button : buttons) {
+        List<JButton> buttonList = Arrays.asList(buttons);
+        if (!LayoutStyle.getCurrent().isLeftToRightButtonOrder()) {
+            Collections.reverse(buttonList);
+        }
+        for (JButton button : buttonList) {
             add(button);
         }
     }

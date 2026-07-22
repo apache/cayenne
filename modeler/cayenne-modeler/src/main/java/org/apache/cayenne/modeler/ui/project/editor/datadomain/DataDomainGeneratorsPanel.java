@@ -53,7 +53,7 @@ class DataDomainGeneratorsPanel extends JPanel {
     private void initLayout(Application application) {
         setLayout(new BorderLayout());
         FormLayout layout = new FormLayout(
-                "left:pref, 4dlu, fill:70dlu, 3dlu, fill:120, 3dlu, fill:120", "");
+                "left:pref, $rgap, fill:70dlu, $lcgap, fill:120, $lcgap, fill:120", "");
         DefaultFormBuilder builder = new DefaultFormBuilder(layout);
         JLabel dataMapLabel = new JLabel(dataMap.getName());
         dataMapLabel.setToolTipText(dataMap.getName());

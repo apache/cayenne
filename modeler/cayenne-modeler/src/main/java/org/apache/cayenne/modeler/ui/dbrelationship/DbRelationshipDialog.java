@@ -147,9 +147,9 @@ public class DbRelationshipDialog extends ProjectDialog {
         CellConstraints cc = new CellConstraints();
         PanelBuilder builder = new PanelBuilder(
                 new FormLayout(
-                        "right:max(50dlu;pref), 3dlu, fill:min(150dlu;pref), 3dlu, fill:min(50dlu;pref)",
-                        "p, 3dlu, p, 3dlu, p, 3dlu, p, 3dlu, p, 3dlu, p, 3dlu, p, 3dlu, " +
-                                "p, 3dlu, p, 9dlu, p, 3dlu, top:14dlu, 3dlu, top:p:grow"));
+                        "right:max(50dlu;pref), $lcgap, fill:min(150dlu;pref), $lcgap, fill:min(50dlu;pref)",
+                        "p, $rgap, p, $rgap, p, $rgap, p, $rgap, p, $rgap, p, $rgap, p, $rgap, " +
+                                "p, $rgap, p, $pgap, p, $rgap, top:14dlu, $rgap, top:p:grow"));
         builder.setDefaultDialogBorder();
 
         builder.addSeparator("Create dbRelationship", cc.xywh(1, 1, 5, 1));

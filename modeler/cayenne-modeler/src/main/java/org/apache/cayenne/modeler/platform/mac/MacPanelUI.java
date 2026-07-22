@@ -19,8 +19,6 @@
 
 package org.apache.cayenne.modeler.platform.mac;
 
-import org.apache.cayenne.modeler.ui.SearchPanel;
-
 import javax.swing.*;
 import javax.swing.plaf.ComponentUI;
 import javax.swing.plaf.basic.BasicPanelUI;
@@ -59,11 +57,7 @@ public class MacPanelUI extends BasicPanelUI {
     @Override
     protected void installDefaults(JPanel p) {
         super.installDefaults(p);
-        if (p instanceof SearchPanel) {
-            SwingUtilities.invokeLater(((SearchPanel) p)::hideSearchLabel);
-        } else {
-            p.setBackground(BACKGROUND);
-        }
+        p.setBackground(BACKGROUND);
     }
 
     @Override
