@@ -17,32 +17,31 @@
 	specific language governing permissions and limitations
 	under the License.
 -->
-<data-map xmlns="http://cayenne.apache.org/schema/11/modelMap"
-          xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-          xsi:schemaLocation="http://cayenne.apache.org/schema/11/modelMap http://cayenne.apache.org/schema/11/modelMap.xsd"
-          project-version="11">
-    <property name="defaultPackage" value="org.not.my.home"/>
-    <db-entity name="A" schema="APP">
-        <db-attribute name="ID" type="INTEGER" isPrimaryKey="true" isMandatory="true" length="10"/>
-    </db-entity>
-    <db-entity name="A_A" schema="APP">
-        <db-attribute name="A1_ID" type="INTEGER" isPrimaryKey="true" isMandatory="true" length="10"/>
-        <db-attribute name="A2_ID" type="INTEGER" isPrimaryKey="true" isMandatory="true" length="10"/>
-    </db-entity>
-    <obj-entity name="A" className="org.not.my.home.A" dbEntityName="A">
-    </obj-entity>
-    <db-relationship name="aAArray" source="A" target="A_A" toDependentPK="true" toMany="true">
-        <db-attribute-pair source="ID" target="A1_ID"/>
-    </db-relationship>
-    <db-relationship name="aAArray1" source="A" target="A_A" toDependentPK="true" toMany="true">
-        <db-attribute-pair source="ID" target="A2_ID"/>
-    </db-relationship>
-    <db-relationship name="toA" source="A_A" target="A">
-        <db-attribute-pair source="A1_ID" target="ID"/>
-    </db-relationship>
-    <db-relationship name="toA1" source="A_A" target="A">
-        <db-attribute-pair source="A2_ID" target="ID"/>
-    </db-relationship>
-    <obj-relationship name="aArray" source="A" target="A" db-relationship-path="aAArray.toA1"/>
-    <obj-relationship name="aArray1" source="A" target="A" db-relationship-path="aAArray1.toA"/>
+<data-map xmlns="http://cayenne.apache.org/schema/12/modelMap"
+	 xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	 xsi:schemaLocation="http://cayenne.apache.org/schema/12/modelMap https://cayenne.apache.org/schema/12/modelMap.xsd"
+	 project-version="12">
+	<property name="defaultPackage" value="org.not.my.home"/>
+	<db-entity name="A" schema="APP">
+		<db-attribute name="ID" type="INTEGER" isPrimaryKey="true" isMandatory="true" length="10"/>
+	</db-entity>
+	<db-entity name="A_A" schema="APP">
+		<db-attribute name="A1_ID" type="INTEGER" isPrimaryKey="true" isMandatory="true" length="10"/>
+		<db-attribute name="A2_ID" type="INTEGER" isPrimaryKey="true" isMandatory="true" length="10"/>
+	</db-entity>
+	<obj-entity name="A" className="org.not.my.home.A" dbEntityName="A"/>
+	<db-relationship name="aAs" source="A" target="A_A" toDependentPK="true" toMany="true">
+		<db-attribute-pair source="ID" target="A2_ID"/>
+	</db-relationship>
+	<db-relationship name="aAs1" source="A" target="A_A" toDependentPK="true" toMany="true">
+		<db-attribute-pair source="ID" target="A1_ID"/>
+	</db-relationship>
+	<db-relationship name="a1" source="A_A" target="A">
+		<db-attribute-pair source="A1_ID" target="ID"/>
+	</db-relationship>
+	<db-relationship name="a2" source="A_A" target="A">
+		<db-attribute-pair source="A2_ID" target="ID"/>
+	</db-relationship>
+	<obj-relationship name="a1s" source="A" target="A" db-relationship-path="aAs.a1"/>
+	<obj-relationship name="a2s" source="A" target="A" db-relationship-path="aAs1.a2"/>
 </data-map>

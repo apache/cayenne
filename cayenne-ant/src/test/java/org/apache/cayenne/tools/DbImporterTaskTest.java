@@ -29,7 +29,6 @@ import org.junit.jupiter.api.io.TempDir;
 import org.xmlunit.matchers.CompareMatcher;
 
 import java.io.File;
-import java.io.FileReader;
 import java.io.IOException;
 import java.net.URL;
 import java.nio.file.Files;
@@ -173,12 +172,13 @@ public class DbImporterTaskTest {
         }
     }
 
-    @SuppressWarnings("unchecked")
-    private void verifyResult(File map, File mapFileCopy) throws IOException {
-        try (FileReader control = new FileReader(map.getAbsolutePath() + "-result");
-             FileReader test = new FileReader(mapFileCopy)) {
-            assertThat(test, CompareMatcher.isSimilarTo(control).ignoreWhitespace());
-        }
+    private void verifyResult(File map, File mapFileCopy) {
+        // compare Files, not Readers: XMLUnit's Input.from() has no Reader branch and would silently fall back to
+        // its JAXB builder, making the comparison a no-op. Comments are ignored, as the "-result" files carry an
+        // ASF license header that the DataMap writer does not emit.
+        File control = new File(map.getAbsolutePath() + "-result");
+
+        assertThat(mapFileCopy, CompareMatcher.isSimilarTo(control).ignoreWhitespace().ignoreComments());
     }
 
     private void prepareDatabase(String sqlFile, DbImportConfiguration dbImportConfiguration) throws Exception {
