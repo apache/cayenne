@@ -27,8 +27,6 @@ import org.apache.cayenne.configuration.DataChannelDescriptor;
  */
 public class DataDomainLoadException extends ConfigurationException {
 
-    private static final long serialVersionUID = 7969847819485380271L;
-
     private final ConfigurationTree<DataChannelDescriptor> configurationTree;
 
     public DataDomainLoadException(

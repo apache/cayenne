@@ -24,8 +24,6 @@ package org.apache.cayenne;
  */
 public class ConfigurationException extends CayenneRuntimeException {
 
-	private static final long serialVersionUID = 3991782831459956981L;
-
 	/**
 	 * Creates new <code>ConfigurationException</code> without detail message.
 	 */

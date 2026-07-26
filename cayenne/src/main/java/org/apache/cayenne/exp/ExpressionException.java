@@ -26,8 +26,6 @@ import org.apache.cayenne.CayenneRuntimeException;
  */
 public class ExpressionException extends CayenneRuntimeException {
 
-	private static final long serialVersionUID = -4933472762330859309L;
-	
 	protected String expressionString;
 
 	public ExpressionException() {

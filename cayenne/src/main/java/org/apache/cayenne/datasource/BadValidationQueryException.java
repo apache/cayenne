@@ -27,8 +27,6 @@ import java.sql.SQLException;
  */
 public class BadValidationQueryException extends SQLException {
 
-	private static final long serialVersionUID = -3690715196865727679L;
-
 	public BadValidationQueryException(String message) {
 		super(message);
 	}
