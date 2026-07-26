@@ -94,6 +94,23 @@ solution may be changing to "joint" prefetches.
   `DeferredValue` instead — it is a `@FunctionalInterface`, so an existing lambda or `Supplier` implementation can
   usually be adapted with a minimal change.
 
+* Per [CAY-2985](https://issues.apache.org/jira/browse/CAY-2985) `DataDomain` became mostly immutable. The `DataDomain(String)` constructor and all the setters 
+below were removed in favor of a single full constructor that takes every collaborator and setting. Only DataNodes, 
+DataMaps, filters and listeners can still be added (and removed) after creation. Replacements for the removed setters:
+  - `setName(String)` — the name comes from the project XML, and can be overridden with the
+    `cayenne.domain.name` property (`Constants.DOMAIN_NAME_PROPERTY`).
+  - `setEntityResolver(EntityResolver)` — keep using `addDataMap(..)` / `removeDataMap(..)` to change resolver contents.
+  - `setEntitySorter(EntitySorter)` — the sorter is produced by the new `EntitySorterFactory` DI service. Bind your
+    own `EntitySorterFactory` to replace it.
+  - `setEventManager(EventManager)` — bind `EventManager` in a DI module instead.
+  - `setQueryCache(QueryCache)` — bind `QueryCache` in a DI module instead.
+  - `setSharedSnapshotCache(DataRowStore)`, `setDataRowStoreFactory(DataRowStoreFactory)` and
+    `getDataRowStoreFactory()` — bind `DataRowStoreFactory` in a DI module to customize the cache.
+  - `setSharedCacheEnabled(boolean)` — use the "Shared Cache" checkbox in the Modeler.
+  - `setValidatingObjectsOnCommit(boolean)` — use the "Object Validation" checkbox in the Modeler.
+  - `setMaxIdQualifierSize(int)` — use the `cayenne.max_id_qualifier_size` property
+    (`Constants.MAX_ID_QUALIFIER_SIZE_PROPERTY`).
+
 ## Upgrading to 5.0-M2
 
 * Per [CAY-2947](https://issues.apache.org/jira/browse/CAY-2947) the `cayenne-commitlog` artifact has been removed. Commit log support is now part of the

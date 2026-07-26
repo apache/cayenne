@@ -23,7 +23,8 @@ import org.apache.cayenne.CayenneRuntimeException;
 import org.apache.cayenne.ObjectContext;
 import org.apache.cayenne.Persistent;
 import org.apache.cayenne.annotation.PostAdd;
-import org.apache.cayenne.event.DefaultEventManager;
+import org.apache.cayenne.di.Inject;
+import org.apache.cayenne.event.EventManager;
 import org.apache.cayenne.map.DataMap;
 import org.apache.cayenne.map.EntityResolver;
 import org.apache.cayenne.map.ObjEntity;
@@ -43,7 +44,8 @@ import static org.junit.jupiter.api.Assertions.*;
 public class DataDomainIT {
 
     @RegisterExtension
-    final CayenneTestsEnv env = CayenneTestsEnv.forProject(CayenneProjects.TESTMAP_PROJECT);
+    final CayenneTestsEnv env = CayenneTestsEnv.forProject(CayenneProjects.TESTMAP_PROJECT)
+            .withExtraModules(b -> b.bind(DataRowStoreFactory.class).to(ShutdownTrackingRowStoreFactory.class));
 
     @Test
     public void lookupDataNode() {
@@ -146,26 +148,11 @@ public class DataDomainIT {
     public void shutdownCache() {
         DataDomain domain = env.runtime().getDataDomain();
 
-        final boolean[] cacheShutdown = new boolean[1];
+        ShutdownTrackingRowStore cache = (ShutdownTrackingRowStore) domain.getSharedSnapshotCache();
+        assertFalse(cache.shutdown);
 
-        DefaultEventManager eventManager = new DefaultEventManager();
-        try {
-            DataRowStore cache = new DataRowStore("Y",
-                    DefaultDataRowStoreFactory.SNAPSHOT_CACHE_SIZE_DEFAULT,
-                    eventManager) {
-                @Override
-                public void shutdown() {
-                    cacheShutdown[0] = true;
-                }
-            };
-
-            domain.setSharedSnapshotCache(cache);
-            domain.shutdown();
-        } finally {
-            eventManager.shutdown();
-        }
-
-        assertTrue(cacheShutdown[0]);
+        domain.shutdown();
+        assertTrue(cache.shutdown);
     }
 
     @Test
@@ -188,6 +175,35 @@ public class DataDomainIT {
 
         context.newObject(Painting.class);
         assertEquals("e:Painting;", listener.getAndReset());
+    }
+
+    public static class ShutdownTrackingRowStoreFactory implements DataRowStoreFactory {
+
+        private final EventManager eventManager;
+
+        public ShutdownTrackingRowStoreFactory(@Inject EventManager eventManager) {
+            this.eventManager = eventManager;
+        }
+
+        @Override
+        public DataRowStore createDataRowStore(String name) {
+            return new ShutdownTrackingRowStore(name, eventManager);
+        }
+    }
+
+    public static class ShutdownTrackingRowStore extends DataRowStore {
+
+        boolean shutdown;
+
+        public ShutdownTrackingRowStore(String name, EventManager eventManager) {
+            super(name, DefaultDataRowStoreFactory.SNAPSHOT_CACHE_SIZE_DEFAULT, eventManager);
+        }
+
+        @Override
+        public void shutdown() {
+            shutdown = true;
+            super.shutdown();
+        }
     }
 
     class PostAddListener {

@@ -19,34 +19,49 @@
 package org.apache.cayenne.configuration.runtime;
 
 import org.apache.cayenne.access.DataContext;
-import org.apache.cayenne.access.DataDomain;
 import org.apache.cayenne.configuration.ObjectContextFactory;
 import org.apache.cayenne.unit.CayenneProjects;
 import org.apache.cayenne.unit.CayenneTestsEnv;
+import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.RegisterExtension;
 
 import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
+/**
+ * "validatingObjectsOnCommit" is immutable and comes from the project descriptor, so each of its values needs its own
+ * stack.
+ */
 public class DataContextFactory_ValidationIT {
 
-    @RegisterExtension
-    static final CayenneTestsEnv env = CayenneTestsEnv.forProject(CayenneProjects.MULTI_TIER_PROJECT);
-
-    @Test
-    public void createDataContextValidation() {
-        DataDomain domain = env.runtime().getDataDomain();
-        domain.setValidatingObjectsOnCommit(true);
-
-        ObjectContextFactory factory = env.runtime().getInjector().getInstance(ObjectContextFactory.class);
-        DataContext c1 = (DataContext) factory.createContext();
-        assertTrue(c1.isValidatingObjectsOnCommit());
-
-        domain.setValidatingObjectsOnCommit(false);
-
-        DataContext c2 = (DataContext) factory.createContext();
-        assertFalse(c2.isValidatingObjectsOnCommit());
+    private static DataContext createContext(CayenneTestsEnv env) {
+        return (DataContext) env.runtime().getInjector().getInstance(ObjectContextFactory.class).createContext();
     }
 
+    @Nested
+    public class ValidatingOnCommit {
+
+        // validation on commit is on by default
+        @RegisterExtension
+        final CayenneTestsEnv env = CayenneTestsEnv.forProject(CayenneProjects.MULTI_TIER_PROJECT);
+
+        @Test
+        public void createDataContext() {
+            assertTrue(createContext(env).isValidatingObjectsOnCommit());
+        }
+    }
+
+    @Nested
+    public class NotValidatingOnCommit {
+
+        // the project turns validation on commit off
+        @RegisterExtension
+        final CayenneTestsEnv env = CayenneTestsEnv.forProject(CayenneProjects.NO_VALIDATION_PROJECT);
+
+        @Test
+        public void createDataContext() {
+            assertFalse(createContext(env).isValidatingObjectsOnCommit());
+        }
+    }
 }

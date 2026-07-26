@@ -151,6 +151,10 @@ public class DataDomainProvider implements Provider<DataDomain> {
         EntityResolver entityResolver = createEntityResolver(descriptor);
         EntitySorter entitySorter = entitySorterFactory.createEntitySorter(entityResolver);
 
+        Map<String, String> properties = descriptor.getProperties();
+        boolean validatingOnCommit = "true".equals(
+                properties.getOrDefault(VALIDATING_OBJECTS_ON_COMMIT_PROPERTY, VALIDATING_OBJECTS_ON_COMMIT_DEFAULT));
+
         DataDomain domain = new DataDomain(
                 descriptor.getName(),
                 transactionManager,
@@ -159,22 +163,12 @@ public class DataDomainProvider implements Provider<DataDomain> {
                 objectFactory,
                 eventManager,
                 new NestedQueryCache(queryCache),
+                createSharedSnapshotCache(descriptor),
                 runtimeProperties.getInt(Constants.MAX_ID_QUALIFIER_SIZE_PROPERTY, -1),
+                validatingOnCommit,
                 entityResolver,
                 entitySorter
         );
-
-        Map<String, String> properties = descriptor.getProperties();
-
-        boolean sharedCache = "true".equals(properties.getOrDefault(SHARED_CACHE_ENABLED_PROPERTY, SHARED_CACHE_ENABLED_DEFAULT));
-        if (sharedCache) {
-            DataRowStore cache = injector.getInstance(DataRowStoreFactory.class).createDataRowStore(descriptor.getName());
-            // TODO: setSharedSnapshotCache mutates cache internally
-            domain.setSharedSnapshotCache(cache);
-        }
-
-        boolean validatingOnCommit = "true".equals(properties.getOrDefault(VALIDATING_OBJECTS_ON_COMMIT_PROPERTY, VALIDATING_OBJECTS_ON_COMMIT_DEFAULT));
-        domain.setValidatingObjectsOnCommit(validatingOnCommit);
 
         for (DataNodeDescriptor nodeDescriptor : descriptor.getNodeDescriptors()) {
             addDataNode(domain, nodeDescriptor);
@@ -199,6 +193,22 @@ public class DataDomainProvider implements Provider<DataDomain> {
         }
 
         return domain;
+    }
+
+    /**
+     * Returns a snapshot cache shared by all DataContexts of the domain, or null if the descriptor turns the shared
+     * cache off, and each DataContext is to use a cache of its own.
+     *
+     * @since 5.0
+     */
+    protected DataRowStore createSharedSnapshotCache(DataChannelDescriptor descriptor) {
+
+        String sharedCache = descriptor.getProperties()
+                .getOrDefault(SHARED_CACHE_ENABLED_PROPERTY, SHARED_CACHE_ENABLED_DEFAULT);
+
+        return "true".equals(sharedCache)
+                ? injector.getInstance(DataRowStoreFactory.class).createDataRowStore(descriptor.getName())
+                : null;
     }
 
     /**

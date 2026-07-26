@@ -26,6 +26,7 @@ public class CayenneProjects {
     public static final String CAY_2032 = "cayenne-cay-2032.xml";
     public static final String COMPOUND_PROJECT = "cayenne-compound.xml";
     public static final String DATE_TIME_PROJECT = "cayenne-date-time.xml";
+    public static final String DEDICATED_CACHE_PROJECT = "cayenne-dedicated-cache.xml";
     public static final String DOMAIN_PROVIDER_PROJECT = "cayenne-domain-provider.xml";
     public static final String EMBEDDABLE_PROJECT = "cayenne-embeddable.xml";
     public static final String EMPTY_PROJECT = "cayenne-empty.xml";
@@ -48,6 +49,7 @@ public class CayenneProjects {
     public static final String MULTI_TIER_PROJECT = "cayenne-multi-tier.xml";
     public static final String MULTINODE_PROJECT = "cayenne-multinode.xml";
     public static final String NO_PK_PROJECT = "cayenne-no-pk.xml";
+    public static final String NO_VALIDATION_PROJECT = "cayenne-no-validation.xml";
     public static final String NUMERIC_TYPES_PROJECT = "cayenne-numeric-types.xml";
     public static final String ONEWAY_PROJECT = "cayenne-oneway-rels.xml";
     public static final String PEOPLE_PROJECT = "cayenne-people.xml";

@@ -69,18 +69,18 @@ public class DataDomain implements DataChannel {
     protected final EventManager eventManager;
     protected final EntitySorter entitySorter;
     protected final QueryCache queryCache;
+    protected final DataRowStore sharedSnapshotCache;
 
     protected final EntityResolver entityResolver;
     protected final int maxIdQualifierSize;
+    protected final boolean validatingObjectsOnCommit;
 
     protected List<DataChannelQueryFilter> queryFilters;
     protected List<DataChannelSyncFilter> syncFilters;
     protected Map<String, DataNode> nodes;
     protected Map<String, DataNode> nodesByDataMapName;
     protected DataNode defaultNode;
-    protected DataRowStore sharedSnapshotCache;
 
-    protected boolean validatingObjectsOnCommit;
     protected boolean stopped;
 
     public DataDomain(
@@ -92,7 +92,9 @@ public class DataDomain implements DataChannel {
             AdhocObjectFactory objectFactory,
             EventManager eventManager,
             QueryCache queryCache,
+            DataRowStore sharedSnapshotCache,
             int maxIdQualifierSize,
+            boolean validatingObjectsOnCommit,
 
             EntityResolver entityResolver,
             EntitySorter entitySorter
@@ -106,8 +108,10 @@ public class DataDomain implements DataChannel {
         this.eventManager = eventManager;
         this.entitySorter = entitySorter;
         this.queryCache = queryCache;
+        this.sharedSnapshotCache = sharedSnapshotCache;
         this.entityResolver = entityResolver;
         this.maxIdQualifierSize = maxIdQualifierSize;
+        this.validatingObjectsOnCommit = validatingObjectsOnCommit;
 
         this.queryFilters = new CopyOnWriteArrayList<>();
         this.syncFilters = new CopyOnWriteArrayList<>();
@@ -171,40 +175,11 @@ public class DataDomain implements DataChannel {
     }
 
     /**
-     * Sets the property defining whether child DataContexts should perform
-     * object validation before commit is executed.
-     *
-     * @since 1.1
-     */
-    public void setValidatingObjectsOnCommit(boolean flag) {
-        this.validatingObjectsOnCommit = flag;
-    }
-
-    /**
-     * Returns snapshots cache for this DataDomain, lazily initializing it on
-     * the first call if 'sharedCacheEnabled' flag is true.
+     * Returns the snapshots cache shared by the DataContexts of this DataDomain, or null if the domain runs with
+     * per-DataContext caches.
      */
     public DataRowStore getSharedSnapshotCache() {
         return sharedSnapshotCache;
-    }
-
-    /**
-     * Shuts down the previous cache instance, sets cache to the new
-     * DataSowStore instance and updates two properties of the new DataSowStore:
-     * name and eventManager.
-     */
-    public synchronized void setSharedSnapshotCache(DataRowStore snapshotCache) {
-        if (this.sharedSnapshotCache != snapshotCache) {
-            if (this.sharedSnapshotCache != null) {
-                this.sharedSnapshotCache.shutdown();
-            }
-            this.sharedSnapshotCache = snapshotCache;
-
-            if (snapshotCache != null) {
-                snapshotCache.setEventManager(getEventManager());
-                snapshotCache.setName(getName());
-            }
-        }
     }
 
     public void addDataMap(DataMap dataMap) {

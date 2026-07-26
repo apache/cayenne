@@ -30,14 +30,14 @@ import static org.junit.jupiter.api.Assertions.*;
 
 public class DataContextFactory_DedicatedCacheIT {
 
+    // the project turns the shared snapshot cache off, so each DataContext gets a cache of its own
     @RegisterExtension
-    static final CayenneTestsEnv env = CayenneTestsEnv.forProject(CayenneProjects.MULTI_TIER_PROJECT);
+    static final CayenneTestsEnv env = CayenneTestsEnv.forProject(CayenneProjects.DEDICATED_CACHE_PROJECT);
 
     @Test
     public void createDataContextWithDedicatedCache() {
 
         DataDomain domain = env.runtime().getDataDomain();
-        domain.setSharedSnapshotCache(null);
 
         DataContext c3 = (DataContext) env.runtime().getInjector()
                 .getInstance(ObjectContextFactory.class)
