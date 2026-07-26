@@ -18,7 +18,6 @@
  ****************************************************************/
 package org.apache.cayenne.configuration.runtime;
 
-import org.apache.cayenne.ConfigurationException;
 import org.apache.cayenne.DataChannel;
 import org.apache.cayenne.DataChannelQueryFilter;
 import org.apache.cayenne.DataChannelSyncFilter;
@@ -38,6 +37,7 @@ import org.apache.cayenne.configuration.DataChannelDescriptorMerger;
 import org.apache.cayenne.configuration.DataNodeDescriptor;
 import org.apache.cayenne.configuration.RuntimeProperties;
 import org.apache.cayenne.di.AdhocObjectFactory;
+import org.apache.cayenne.di.DIRuntimeException;
 import org.apache.cayenne.di.Inject;
 import org.apache.cayenne.di.Injector;
 import org.apache.cayenne.di.Provider;
@@ -132,20 +132,7 @@ public class DataDomainProvider implements Provider<DataDomain> {
     protected EntitySorterFactory entitySorterFactory;
 
     @Override
-    public DataDomain get() throws ConfigurationException {
-
-        try {
-            return createAndInitDataDomain();
-        } catch (ConfigurationException e) {
-            throw e;
-        } catch (Exception e) {
-            String causeMessage = e.getMessage();
-            String message = causeMessage != null && !causeMessage.isEmpty() ? causeMessage : e.getClass().getName();
-            throw new DataDomainLoadException("DataDomain startup failed: %s", e, message);
-        }
-    }
-
-    protected DataDomain createAndInitDataDomain() throws Exception {
+    public DataDomain get() {
 
         DataChannelDescriptor descriptor = loadDescriptor();
         EntityResolver entityResolver = createEntityResolver(descriptor);
@@ -264,7 +251,7 @@ public class DataDomainProvider implements Provider<DataDomain> {
     /**
      * @since 4.0
      */
-    protected DataNode addDataNode(DataDomain dataDomain, DataNodeDescriptor nodeDescriptor) throws Exception {
+    protected DataNode addDataNode(DataDomain dataDomain, DataNodeDescriptor nodeDescriptor) {
         DataNode dataNode = dataNodeFactory.createDataNode(nodeDescriptor);
 
         // DataMaps
@@ -289,22 +276,22 @@ public class DataDomainProvider implements Provider<DataDomain> {
             String location = locations.get(i);
 
             Collection<Resource> configurations = resourceLocator.findResources(location);
-
             if (configurations.isEmpty()) {
-                throw new DataDomainLoadException("Configuration resource \"%s\" is not found.", location);
+                throw new DIRuntimeException("Configuration resource \"%s\" is not found.", location);
             }
 
             Resource configurationResource = configurations.iterator().next();
 
             // no support for multiple configs yet, but this is not a hard error
             if (configurations.size() > 1) {
-                LOGGER.info("found {} configurations for {}, will use the first one: {}", configurations.size(),
-                        location, configurationResource.getURL());
+                LOGGER.info("found {} configurations for {}, will use the first one: {}",
+                        configurations.size(),
+                        location,
+                        configurationResource.getURL());
             }
 
             ConfigurationTree<DataChannelDescriptor> tree = loader.load(configurationResource);
             if (!tree.getLoadFailures().isEmpty()) {
-                // TODO: andrus 03/10/2010 - log the errors before throwing?
                 throw new DataDomainLoadException(tree, "Error loading DataChannelDescriptor");
             }
 

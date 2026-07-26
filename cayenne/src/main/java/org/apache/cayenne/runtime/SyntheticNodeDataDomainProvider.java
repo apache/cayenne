@@ -18,6 +18,7 @@
  ****************************************************************/
 package org.apache.cayenne.runtime;
 
+import org.apache.cayenne.ConfigurationException;
 import org.apache.cayenne.access.DataDomain;
 import org.apache.cayenne.access.DataNode;
 import org.apache.cayenne.configuration.DataChannelDescriptor;
@@ -31,9 +32,9 @@ import org.apache.cayenne.map.DataMap;
 class SyntheticNodeDataDomainProvider extends DataDomainProvider {
 
 	@Override
-	protected DataDomain createAndInitDataDomain() throws Exception {
+	public DataDomain get() throws ConfigurationException {
 
-		DataDomain dataDomain = super.createAndInitDataDomain();
+		DataDomain dataDomain = super.get();
 
 		// no nodes... add a synthetic node... it will become the default
 		if (dataDomain.getDataNodes().isEmpty()) {

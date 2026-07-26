@@ -27,33 +27,19 @@ import org.apache.cayenne.configuration.DataChannelDescriptor;
  */
 public class DataDomainLoadException extends ConfigurationException {
 
-	private static final long serialVersionUID = 7969847819485380271L;
-	
-	private ConfigurationTree<DataChannelDescriptor> configurationTree;
+    private static final long serialVersionUID = 7969847819485380271L;
 
-	public DataDomainLoadException() {
-	}
+    private final ConfigurationTree<DataChannelDescriptor> configurationTree;
 
-	public DataDomainLoadException(String messageFormat, Object... messageArgs) {
-		super(messageFormat, messageArgs);
-	}
+    public DataDomainLoadException(
+            ConfigurationTree<DataChannelDescriptor> configurationTree,
+            String messageFormat,
+            Object... messageArgs) {
+        super(messageFormat, messageArgs);
+        this.configurationTree = configurationTree;
+    }
 
-	public DataDomainLoadException(ConfigurationTree<DataChannelDescriptor> configurationTree, String messageFormat,
-			Object... messageArgs) {
-		super(messageFormat, messageArgs);
-		this.configurationTree = configurationTree;
-	}
-
-	public DataDomainLoadException(Throwable cause) {
-		super(cause);
-	}
-
-	public DataDomainLoadException(String messageFormat, Throwable cause, Object... messageArgs) {
-		super(messageFormat, cause, messageArgs);
-	}
-
-	public ConfigurationTree<DataChannelDescriptor> getConfigurationTree() {
-		return configurationTree;
-	}
-
+    public ConfigurationTree<DataChannelDescriptor> getConfigurationTree() {
+        return configurationTree;
+    }
 }
