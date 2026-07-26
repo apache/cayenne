@@ -23,7 +23,6 @@ import org.apache.cayenne.CayenneRuntimeException;
 import org.apache.cayenne.ObjectContext;
 import org.apache.cayenne.Persistent;
 import org.apache.cayenne.annotation.PostAdd;
-import org.apache.cayenne.configuration.DefaultRuntimeProperties;
 import org.apache.cayenne.event.DefaultEventManager;
 import org.apache.cayenne.map.DataMap;
 import org.apache.cayenne.map.EntityResolver;
@@ -38,7 +37,6 @@ import org.apache.cayenne.unit.CayenneTestsEnv;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.RegisterExtension;
 
-import java.util.Collections;
 
 import static org.junit.jupiter.api.Assertions.*;
 
@@ -153,7 +151,7 @@ public class DataDomainIT {
         DefaultEventManager eventManager = new DefaultEventManager();
         try {
             DataRowStore cache = new DataRowStore("Y",
-                    new DefaultRuntimeProperties(Collections.<String, String>emptyMap()),
+                    DefaultDataRowStoreFactory.SNAPSHOT_CACHE_SIZE_DEFAULT,
                     eventManager) {
                 @Override
                 public void shutdown() {

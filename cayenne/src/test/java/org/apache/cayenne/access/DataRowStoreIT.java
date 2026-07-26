@@ -21,8 +21,6 @@ package org.apache.cayenne.access;
 
 import org.apache.cayenne.DataRow;
 import org.apache.cayenne.ObjectId;
-import org.apache.cayenne.configuration.Constants;
-import org.apache.cayenne.configuration.DefaultRuntimeProperties;
 import org.apache.cayenne.testdo.testmap.Artist;
 import org.apache.cayenne.unit.CayenneProjects;
 import org.apache.cayenne.unit.CayenneTestsEnv;
@@ -61,10 +59,7 @@ public class DataRowStoreIT {
 
     @Test
     public void defaultConstructor() {
-        cache = new DataRowStore(
-                "cacheXYZ",
-                new DefaultRuntimeProperties(Collections.<String, String>emptyMap()),
-                null);
+        cache = new DataRowStore("cacheXYZ", DefaultDataRowStoreFactory.SNAPSHOT_CACHE_SIZE_DEFAULT, null);
         assertEquals("cacheXYZ", cache.getName());
         assertNotNull(cache.getSnapshotEventSubject());
         assertTrue(cache.getSnapshotEventSubject().getSubjectName().contains("cacheXYZ"));
@@ -75,13 +70,7 @@ public class DataRowStoreIT {
      */
     @Test
     public void maxSize() throws Exception {
-        Map<String, String> props = new HashMap<>();
-        props.put(Constants.SNAPSHOT_CACHE_SIZE_PROPERTY, String.valueOf(2));
-
-        cache = new DataRowStore(
-                "cacheXYZ",
-                new DefaultRuntimeProperties(props),
-                null);
+        cache = new DataRowStore("cacheXYZ", 2, null);
         assertEquals(2, cache.maximumSize());
         assertEquals(0, cache.size());
 

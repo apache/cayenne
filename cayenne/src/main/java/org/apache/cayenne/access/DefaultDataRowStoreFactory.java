@@ -20,6 +20,7 @@
 package org.apache.cayenne.access;
 
 import org.apache.cayenne.CayenneRuntimeException;
+import org.apache.cayenne.configuration.Constants;
 import org.apache.cayenne.configuration.RuntimeProperties;
 import org.apache.cayenne.di.DIRuntimeException;
 import org.apache.cayenne.di.Inject;
@@ -27,6 +28,8 @@ import org.apache.cayenne.di.Provider;
 import org.apache.cayenne.event.EventBridge;
 import org.apache.cayenne.event.EventManager;
 import org.apache.cayenne.event.NoopEventBridge;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
  * A default implementation of {@link DataRowStoreFactory}
@@ -35,15 +38,24 @@ import org.apache.cayenne.event.NoopEventBridge;
  */
 public class DefaultDataRowStoreFactory implements DataRowStoreFactory {
 
-    Provider<EventBridge> eventBridgeProvider;
+    /**
+     * Default max size of a DataRowStore, used when {@link Constants#SNAPSHOT_CACHE_SIZE_PROPERTY} is not set.
+     *
+     * @since 5.0
+     */
+    static final int SNAPSHOT_CACHE_SIZE_DEFAULT = 10000;
 
-    EventManager eventManager;
+    private static final Logger LOGGER = LoggerFactory.getLogger(DefaultDataRowStoreFactory.class);
 
-    RuntimeProperties properties;
+    private final Provider<EventBridge> eventBridgeProvider;
+    private final EventManager eventManager;
+    private final RuntimeProperties properties;
 
-    public DefaultDataRowStoreFactory(@Inject Provider<EventBridge> eventBridgeProvider,
-                                      @Inject EventManager eventManager,
-                                      @Inject RuntimeProperties properties) {
+    public DefaultDataRowStoreFactory(
+            @Inject Provider<EventBridge> eventBridgeProvider,
+            @Inject EventManager eventManager,
+            @Inject RuntimeProperties properties) {
+
         this.eventBridgeProvider = eventBridgeProvider;
         this.eventManager = eventManager;
         this.properties = properties;
@@ -51,7 +63,11 @@ public class DefaultDataRowStoreFactory implements DataRowStoreFactory {
 
     @Override
     public DataRowStore createDataRowStore(String name) throws DIRuntimeException {
-        DataRowStore store = new DataRowStore(name, properties, eventManager);
+
+        int maxSize = properties.getInt(Constants.SNAPSHOT_CACHE_SIZE_PROPERTY, SNAPSHOT_CACHE_SIZE_DEFAULT);
+        LOGGER.debug("DataRowStore property {} = {}", Constants.SNAPSHOT_CACHE_SIZE_PROPERTY, maxSize);
+
+        DataRowStore store = new DataRowStore(name, maxSize, eventManager);
         setUpEventBridge(store);
         return store;
     }
