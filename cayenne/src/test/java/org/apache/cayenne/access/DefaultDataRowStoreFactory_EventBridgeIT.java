@@ -19,27 +19,28 @@
 
 package org.apache.cayenne.access;
 
-import org.apache.cayenne.runtime.CayenneRuntime;
+import org.apache.cayenne.event.EventBridge;
+import org.apache.cayenne.event.MockEventBridge;
+import org.apache.cayenne.event.MockEventBridgeProvider;
 import org.apache.cayenne.unit.CayenneProjects;
 import org.apache.cayenne.unit.CayenneTestsEnv;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.RegisterExtension;
 
-import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.junit.jupiter.api.Assertions.assertEquals;
 
-public class DefaultDataRowStoreFactoryIT {
+public class DefaultDataRowStoreFactory_EventBridgeIT {
 
     @RegisterExtension
-    static final CayenneTestsEnv env = CayenneTestsEnv.forProject(CayenneProjects.MULTI_TIER_PROJECT);
+    static final CayenneTestsEnv env = CayenneTestsEnv.forProject(CayenneProjects.MULTI_TIER_PROJECT)
+            .withExtraModules(b -> b.bind(EventBridge.class).toProvider(MockEventBridgeProvider.class));
 
     @Test
     public void createDataRowStore() {
-        CayenneRuntime runtime = env.runtime();
-        DataRowStore dataStore = runtime
-                .getInjector()
+        DataRowStore dataStore = env.runtime().getInjector()
                 .getInstance(DataRowStoreFactory.class)
                 .createDataRowStore("test");
 
-        assertNotNull(dataStore);
+        assertEquals(MockEventBridge.class, dataStore.getEventBridge().getClass());
     }
 }

@@ -18,9 +18,6 @@
  ****************************************************************/
 package org.apache.cayenne.access;
 
-import java.io.Serializable;
-import java.util.List;
-
 import org.apache.cayenne.cache.MockQueryCache;
 import org.apache.cayenne.cache.QueryCache;
 import org.apache.cayenne.cache.QueryCacheEntryFactory;
@@ -30,21 +27,37 @@ import org.apache.cayenne.query.QueryMetadata;
 import org.apache.cayenne.testdo.testmap.Painting;
 import org.apache.cayenne.unit.CayenneProjects;
 import org.apache.cayenne.unit.CayenneTestsEnv;
-import org.junit.jupiter.api.extension.RegisterExtension;
-import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.RegisterExtension;
 
+import java.io.Serializable;
+import java.util.List;
+
+import static org.junit.jupiter.api.Assertions.assertInstanceOf;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
 public class DataDomainQueryActionIT {
 
-    @RegisterExtension
-    static final CayenneTestsEnv env = CayenneTestsEnv.forProject(CayenneProjects.TESTMAP_PROJECT);
+    static QueryCache testQQ = new MockQueryCache() {
 
-    @AfterEach
-    public void tearDown() {
-        env.runtime().getDataDomain().resetProperties();
-    }
+        @Override
+        public List<?> get(QueryMetadata metadata, QueryCacheEntryFactory factory) {
+            Object results = factory.createObject();
+            assertInstanceOf(Serializable.class, results, "Query cache is not serializable.");
+
+            return null;
+        }
+
+        @SuppressWarnings("all")
+        @Override
+        public void put(QueryMetadata metadata, List results) {
+            assertTrue(results instanceof Serializable, "Query cache is not serializable.");
+        }
+    };
+
+    @RegisterExtension
+    static final CayenneTestsEnv env = CayenneTestsEnv.forProject(CayenneProjects.TESTMAP_PROJECT)
+            .withExtraModules(b -> b.bind(QueryCache.class).toInstance(testQQ));
 
     @Test
     public void cachedQuery() {
@@ -61,29 +74,8 @@ public class DataDomainQueryActionIT {
                 .cacheStrategy(QueryCacheStrategy.SHARED_CACHE)
                 .pageSize(5);
 
-        QueryCache cache = domain.queryCache;
 
-        domain.queryCache = new MockQueryCache() {
-
-            @Override
-            public List<?> get(QueryMetadata metadata, QueryCacheEntryFactory factory) {
-                Object results = factory.createObject();
-                assertTrue(results instanceof Serializable, "Query cache is not serializable.");
-
-                return null;
-            }
-
-            @SuppressWarnings("all")
-            @Override
-            public void put(QueryMetadata metadata, List results) {
-                assertTrue(results instanceof Serializable, "Query cache is not serializable.");
-            }
-        };
-
-        DataDomainQueryAction action = new DataDomainQueryAction(env.context(), domain, query);
-        action.execute();
-
-        domain.queryCache = cache;
+        new DataDomainQueryAction(env.context(), domain, query).execute();
     }
 
 }

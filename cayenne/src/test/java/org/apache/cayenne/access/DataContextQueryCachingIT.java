@@ -21,8 +21,6 @@ package org.apache.cayenne.access;
 
 import org.apache.cayenne.DataRow;
 import org.apache.cayenne.Persistent;
-import org.apache.cayenne.cache.MapQueryCache;
-import org.apache.cayenne.cache.QueryCache;
 import org.apache.cayenne.query.ObjectSelect;
 import org.apache.cayenne.query.QueryCacheStrategy;
 import org.apache.cayenne.query.QueryMetadata;
@@ -30,38 +28,30 @@ import org.apache.cayenne.test.jdbc.TableHelper;
 import org.apache.cayenne.testdo.testmap.Artist;
 import org.apache.cayenne.unit.CayenneProjects;
 import org.apache.cayenne.unit.CayenneTestsEnv;
-import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
-import org.junit.jupiter.api.extension.RegisterExtension;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.RegisterExtension;
 
 import java.util.ArrayList;
 import java.util.List;
 
-import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertNull;
-import static org.junit.jupiter.api.Assertions.assertSame;
-import static org.junit.jupiter.api.Assertions.assertTrue;
+import static org.junit.jupiter.api.Assertions.*;
 
-public class DataContextQueryCachingIT  {
+public class DataContextQueryCachingIT {
 
     @RegisterExtension
     static final CayenneTestsEnv env = CayenneTestsEnv.forProject(CayenneProjects.TESTMAP_PROJECT);
 
-        protected DataContext context;
-
-
     protected TableHelper tArtist;
     protected TableHelper tPainting;
 
-    protected QueryCache oldCache;
+    protected DataContext context;
     protected DataDomain domain;
 
     protected DataNode getNode() {
         return this.domain.getDataNodes().iterator().next();
     }
 
-    
     @BeforeEach
     public void setUp() throws Exception {
         context = env.context();
@@ -73,15 +63,6 @@ public class DataContextQueryCachingIT  {
                 "ESTIMATED_PRICE");
 
         domain = context.getParentDataDomain();
-        oldCache = domain.getQueryCache();
-        domain.setQueryCache(new MapQueryCache(50));
-        context.setQueryCache(new MapQueryCache(50));
-    }
-
-    
-    @AfterEach
-    public void tearDown() throws Exception {
-        domain.setQueryCache(oldCache);
     }
 
     protected void createInsertDataSet() throws Exception {
@@ -128,8 +109,7 @@ public class DataContextQueryCachingIT  {
             assertEquals(rows2, freshResultRows);
             assertNull(context.getParentDataDomain().getQueryCache().get(cacheKey));
             assertEquals(rows2, context.getQueryCache().get(cacheKey));
-        }
-        finally {
+        } finally {
             engine.stopInterceptNode();
         }
     }
@@ -168,8 +148,7 @@ public class DataContextQueryCachingIT  {
             assertEquals(rows2, context.getParentDataDomain().getQueryCache().get(
                     cacheKey));
             assertNull(context.getQueryCache().get(cacheKey));
-        }
-        finally {
+        } finally {
             engine.stopInterceptNode();
         }
     }
@@ -207,8 +186,7 @@ public class DataContextQueryCachingIT  {
             assertTrue(resultRows.get(0) instanceof Persistent);
             assertNull(context.getParentDataDomain().getQueryCache().get(cacheKey));
             assertEquals(freshResultRows, context.getQueryCache().get(cacheKey));
-        }
-        finally {
+        } finally {
             engine.stopInterceptNode();
         }
     }

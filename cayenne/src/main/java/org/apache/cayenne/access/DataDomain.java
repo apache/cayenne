@@ -33,7 +33,6 @@ import org.apache.cayenne.cache.QueryCache;
 import org.apache.cayenne.configuration.Constants;
 import org.apache.cayenne.di.AdhocObjectFactory;
 import org.apache.cayenne.di.BeforeScopeEnd;
-import org.apache.cayenne.di.Inject;
 import org.apache.cayenne.event.EventManager;
 import org.apache.cayenne.graph.CompoundDiff;
 import org.apache.cayenne.graph.GraphDiff;
@@ -61,57 +60,57 @@ import java.util.concurrent.CopyOnWriteArrayList;
  * transparently routed to an appropriate DataNode.
  */
 public class DataDomain implements DataChannel {
+    
+    protected final String name;
+    protected final TransactionManager transactionManager;
+    protected final TransactionFactory transactionFactory;
+    protected final DataDomainFlushActionFactory flushActionFactory;
+    protected final AdhocObjectFactory objectFactory;
+    protected final EventManager eventManager;
+    protected final EntitySorter entitySorter;
+    protected final QueryCache queryCache;
 
-    public static final String SHARED_CACHE_ENABLED_PROPERTY = "cayenne.DataDomain.sharedCache";
-    public static final boolean SHARED_CACHE_ENABLED_DEFAULT = true;
+    protected final EntityResolver entityResolver;
 
-    public static final String VALIDATING_OBJECTS_ON_COMMIT_PROPERTY = "cayenne.DataDomain.validatingObjectsOnCommit";
-    public static final boolean VALIDATING_OBJECTS_ON_COMMIT_DEFAULT = true;
-
-    @Inject
-    protected TransactionManager transactionManager;
-    @Inject
-    protected TransactionFactory transactionFactory;
-    @Inject
-    protected DataDomainFlushActionFactory flushActionFactory;
-    @Inject
-    protected AdhocObjectFactory objectFactory;
-
-    protected DataRowStoreFactory dataRowStoreFactory;
     protected int maxIdQualifierSize;
     protected List<DataChannelQueryFilter> queryFilters;
     protected List<DataChannelSyncFilter> syncFilters;
     protected Map<String, DataNode> nodes;
     protected Map<String, DataNode> nodesByDataMapName;
     protected DataNode defaultNode;
-    protected EntityResolver entityResolver;
     protected DataRowStore sharedSnapshotCache;
-    protected String name;
-    protected QueryCache queryCache;
-    protected EventManager eventManager;
-    protected EntitySorter entitySorter;
+
+    protected boolean validatingObjectsOnCommit;
     protected boolean stopped;
 
-    // these are initialized from properties...
-    protected boolean sharedCacheEnabled;
-    protected boolean validatingObjectsOnCommit;
+    public DataDomain(
+            String name,
+            TransactionManager transactionManager,
+            TransactionFactory transactionFactory,
+            DataDomainFlushActionFactory flushActionFactory,
+            AdhocObjectFactory objectFactory,
+            EventManager eventManager,
+            EntitySorter entitySorter,
+            QueryCache queryCache,
+            EntityResolver entityResolver
+    ) {
 
-    /**
-     * Creates a DataDomain and assigns it a name.
-     */
-    public DataDomain(String name) {
-        init(name);
-        resetProperties();
-    }
-
-    private void init(String name) {
+        this.name = name;
+        this.transactionManager = transactionManager;
+        this.transactionFactory = transactionFactory;
+        this.flushActionFactory = flushActionFactory;
+        this.objectFactory = objectFactory;
+        this.eventManager = eventManager;
+        this.entitySorter = entitySorter;
+        this.queryCache = queryCache;
+        this.entityResolver = entityResolver;
 
         this.queryFilters = new CopyOnWriteArrayList<>();
         this.syncFilters = new CopyOnWriteArrayList<>();
         this.nodesByDataMapName = new ConcurrentHashMap<>();
         this.nodes = new ConcurrentHashMap<>();
 
-        setName(name);
+        refreshEntitySorter();
     }
 
     /**
@@ -135,42 +134,12 @@ public class DataDomain implements DataChannel {
     }
 
     /**
-     * @since 3.1
-     */
-    public void setEntitySorter(EntitySorter entitySorter) {
-        this.entitySorter = entitySorter;
-    }
-
-    /**
-     * Resets the domain's behavioral flags to their defaults.
-     *
-     * @since 1.1
-     */
-    protected void resetProperties() {
-        sharedCacheEnabled = SHARED_CACHE_ENABLED_DEFAULT;
-        validatingObjectsOnCommit = VALIDATING_OBJECTS_ON_COMMIT_DEFAULT;
-    }
-
-    /**
      * Returns EventManager used by this DataDomain.
      *
      * @since 1.2
      */
     public EventManager getEventManager() {
         return eventManager;
-    }
-
-    /**
-     * Sets EventManager used by this DataDomain.
-     *
-     * @since 1.2
-     */
-    public void setEventManager(EventManager eventManager) {
-        this.eventManager = eventManager;
-
-        if (sharedSnapshotCache != null) {
-            sharedSnapshotCache.setEventManager(eventManager);
-        }
     }
 
     /**
@@ -181,27 +150,13 @@ public class DataDomain implements DataChannel {
     }
 
     /**
-     * Sets "name" property to a new value.
-     */
-    public synchronized void setName(String name) {
-        this.name = name;
-        if (sharedSnapshotCache != null) {
-            this.sharedSnapshotCache.setName(name);
-        }
-    }
-
-    /**
      * Returns <code>true</code> if DataContexts produced by this DataDomain are
      * using shared DataRowStore. Returns <code>false</code> if each DataContext
      * would work with its own DataRowStore. Note that this setting can be
      * overwritten per DataContext.
      */
     public boolean isSharedCacheEnabled() {
-        return sharedCacheEnabled;
-    }
-
-    public void setSharedCacheEnabled(boolean sharedCacheEnabled) {
-        this.sharedCacheEnabled = sharedCacheEnabled;
+        return sharedSnapshotCache != null;
     }
 
     /**
@@ -229,22 +184,6 @@ public class DataDomain implements DataChannel {
      * the first call if 'sharedCacheEnabled' flag is true.
      */
     public DataRowStore getSharedSnapshotCache() {
-        if (sharedSnapshotCache == null && sharedCacheEnabled) {
-            this.sharedSnapshotCache = nonNullSharedSnapshotCache();
-        }
-
-        return sharedSnapshotCache;
-    }
-
-    /**
-     * Returns a guaranteed non-null shared snapshot cache regardless of the
-     * 'sharedCacheEnabled' flag setting.
-     */
-    synchronized DataRowStore nonNullSharedSnapshotCache() {
-        if (sharedSnapshotCache == null) {
-            this.sharedSnapshotCache = dataRowStoreFactory.createDataRowStore(name);
-        }
-
         return sharedSnapshotCache;
     }
 
@@ -401,25 +340,6 @@ public class DataDomain implements DataChannel {
     }
 
     /**
-     * Sets EntityResolver. If not set explicitly, DataDomain creates a default
-     * EntityResolver internally on demand.
-     *
-     * @since 1.1
-     */
-    public void setEntityResolver(EntityResolver entityResolver) {
-        this.entityResolver = entityResolver;
-    }
-
-    // creates default entity resolver if there is none set yet
-    private synchronized void createEntityResolver() {
-        if (entityResolver == null) {
-            // entity resolver will be self-indexing as we add all our maps
-            // to it as they are added to the DataDomain
-            entityResolver = new EntityResolver();
-        }
-    }
-
-    /**
      * Shutdowns all owned data nodes and marks this domain as stopped.
      */
     @BeforeScopeEnd
@@ -467,10 +387,6 @@ public class DataDomain implements DataChannel {
      */
     @Override
     public EntityResolver getEntityResolver() {
-        if (entityResolver == null) {
-            createEntityResolver();
-        }
-
         return entityResolver;
     }
 
@@ -532,24 +448,6 @@ public class DataDomain implements DataChannel {
      */
     public QueryCache getQueryCache() {
         return queryCache;
-    }
-
-    public void setQueryCache(QueryCache queryCache) {
-        this.queryCache = queryCache;
-    }
-
-    /**
-     * @since 4.0
-     */
-    public DataRowStoreFactory getDataRowStoreFactory() {
-        return dataRowStoreFactory;
-    }
-
-    /**
-     * @since 4.0
-     */
-    public void setDataRowStoreFactory(DataRowStoreFactory dataRowStoreFactory) {
-        this.dataRowStoreFactory = dataRowStoreFactory;
     }
 
     void refreshEntitySorter() {

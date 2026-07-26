@@ -26,6 +26,7 @@ public class CayenneProjects {
     public static final String CAY_2032 = "cayenne-cay-2032.xml";
     public static final String COMPOUND_PROJECT = "cayenne-compound.xml";
     public static final String DATE_TIME_PROJECT = "cayenne-date-time.xml";
+    public static final String DOMAIN_PROVIDER_PROJECT = "cayenne-domain-provider.xml";
     public static final String EMBEDDABLE_PROJECT = "cayenne-embeddable.xml";
     public static final String EMPTY_PROJECT = "cayenne-empty.xml";
     public static final String ENUM_PROJECT = "cayenne-enum.xml";

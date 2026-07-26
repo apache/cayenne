@@ -24,7 +24,9 @@ import org.apache.cayenne.DataChannelQueryFilter;
 import org.apache.cayenne.DataChannelSyncFilter;
 import org.apache.cayenne.access.DataDomain;
 import org.apache.cayenne.access.DataNode;
+import org.apache.cayenne.access.DataRowStore;
 import org.apache.cayenne.access.DataRowStoreFactory;
+import org.apache.cayenne.access.flush.DataDomainFlushActionFactory;
 import org.apache.cayenne.access.types.ValueObjectTypeRegistry;
 import org.apache.cayenne.cache.NestedQueryCache;
 import org.apache.cayenne.cache.QueryCache;
@@ -41,10 +43,13 @@ import org.apache.cayenne.di.Injector;
 import org.apache.cayenne.di.Provider;
 import org.apache.cayenne.event.EventManager;
 import org.apache.cayenne.map.DataMap;
+import org.apache.cayenne.map.EntityResolver;
 import org.apache.cayenne.map.EntitySorter;
 import org.apache.cayenne.reflect.generic.ValueComparisonStrategyFactory;
 import org.apache.cayenne.resource.Resource;
 import org.apache.cayenne.resource.ResourceLocator;
+import org.apache.cayenne.tx.TransactionFactory;
+import org.apache.cayenne.tx.TransactionManager;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -60,6 +65,11 @@ import java.util.Map;
  * @since 3.1
  */
 public class DataDomainProvider implements Provider<DataDomain> {
+
+    public static final String SHARED_CACHE_ENABLED_PROPERTY = "cayenne.DataDomain.sharedCache";
+    public static final String SHARED_CACHE_ENABLED_DEFAULT = "true";
+    public static final String VALIDATING_OBJECTS_ON_COMMIT_PROPERTY = "cayenne.DataDomain.validatingObjectsOnCommit";
+    public static final String VALIDATING_OBJECTS_ON_COMMIT_DEFAULT = "true";
 
     private static final Logger LOGGER = LoggerFactory.getLogger(DataDomainProvider.class);
 
@@ -102,6 +112,24 @@ public class DataDomainProvider implements Provider<DataDomain> {
     @Inject
     protected DataNodeFactory dataNodeFactory;
 
+    @Inject
+    protected TransactionManager transactionManager;
+
+    @Inject
+    protected TransactionFactory transactionFactory;
+
+    @Inject
+    protected DataDomainFlushActionFactory flushActionFactory;
+
+    @Inject
+    protected AdhocObjectFactory objectFactory;
+
+    @Inject
+    protected EventManager eventManager;
+
+    @Inject
+    protected EntitySorter entitySorter;
+
     @Override
     public DataDomain get() throws ConfigurationException {
 
@@ -116,54 +144,49 @@ public class DataDomainProvider implements Provider<DataDomain> {
         }
     }
 
-    protected DataDomain createDataDomain(String name) {
-        return new DataDomain(name);
-    }
-
     protected DataDomain createAndInitDataDomain() throws Exception {
 
         DataChannelDescriptor descriptor = loadDescriptor();
 
-        DataDomain dataDomain = createDataDomain(descriptor.getName());
+        DataDomain domain = new DataDomain(
+                descriptor.getName(),
+                transactionManager,
+                transactionFactory,
+                flushActionFactory,
+                objectFactory,
+                eventManager,
+                entitySorter,
+                new NestedQueryCache(queryCache),
+                createEntityResolver(descriptor));
 
-        dataDomain.setMaxIdQualifierSize(runtimeProperties.getInt(Constants.MAX_ID_QUALIFIER_SIZE_PROPERTY, -1));
+        domain.setMaxIdQualifierSize(runtimeProperties.getInt(Constants.MAX_ID_QUALIFIER_SIZE_PROPERTY, -1));
 
-        dataDomain.setQueryCache(new NestedQueryCache(queryCache));
-        dataDomain.setEntitySorter(injector.getInstance(EntitySorter.class));
-        dataDomain.setEventManager(injector.getInstance(EventManager.class));
-        dataDomain.setDataRowStoreFactory(injector.getInstance(DataRowStoreFactory.class));
 
         Map<String, String> properties = descriptor.getProperties();
-        if ("true".equalsIgnoreCase(properties.get(DataDomain.SHARED_CACHE_ENABLED_PROPERTY))) {
-            dataDomain.setSharedCacheEnabled(true);
+
+        boolean sharedCache = "true".equals(properties.getOrDefault(SHARED_CACHE_ENABLED_PROPERTY, SHARED_CACHE_ENABLED_DEFAULT));
+        if (sharedCache) {
+            DataRowStore cache = injector.getInstance(DataRowStoreFactory.class).createDataRowStore(descriptor.getName());
+            // TODO: setSharedSnapshotCache mutates cache internally; also DataDomain.setName() does
+            domain.setSharedSnapshotCache(cache);
         }
 
-        if ("true".equalsIgnoreCase(properties.get(DataDomain.VALIDATING_OBJECTS_ON_COMMIT_PROPERTY))) {
-            dataDomain.setValidatingObjectsOnCommit(true);
-        }
-
-        for (DataMap dataMap : descriptor.getDataMaps()) {
-            dataDomain.addDataMap(dataMap);
-        }
-
-        dataDomain.getEntityResolver().applyDBLayerDefaults();
-        dataDomain.getEntityResolver().setValueObjectTypeRegistry(injector.getInstance(ValueObjectTypeRegistry.class));
-        dataDomain.getEntityResolver().setValueComparisonStrategyFactory(injector.getInstance(ValueComparisonStrategyFactory.class));
-        dataDomain.getEntityResolver().setObjectFactory(injector.getInstance(AdhocObjectFactory.class));
+        boolean validatingOnCommit = "true".equals(properties.getOrDefault(VALIDATING_OBJECTS_ON_COMMIT_PROPERTY, VALIDATING_OBJECTS_ON_COMMIT_DEFAULT));
+        domain.setValidatingObjectsOnCommit(validatingOnCommit);
 
         for (DataNodeDescriptor nodeDescriptor : descriptor.getNodeDescriptors()) {
-            addDataNode(dataDomain, nodeDescriptor);
+            addDataNode(domain, nodeDescriptor);
         }
 
         // init default node
         DataNode defaultNode = null;
 
         if (descriptor.getDefaultNodeName() != null) {
-            defaultNode = dataDomain.getDataNode(descriptor.getDefaultNodeName());
+            defaultNode = domain.getDataNode(descriptor.getDefaultNodeName());
         }
 
         if (defaultNode == null) {
-            Collection<DataNode> allNodes = dataDomain.getDataNodes();
+            Collection<DataNode> allNodes = domain.getDataNodes();
             if (allNodes.size() == 1) {
                 defaultNode = allNodes.iterator().next();
             }
@@ -172,22 +195,45 @@ public class DataDomainProvider implements Provider<DataDomain> {
         if (defaultNode != null) {
             LOGGER.info("setting DataNode '{}' as default, used by all unlinked DataMaps", defaultNode.getName());
 
-            dataDomain.setDefaultNode(defaultNode);
+            domain.setDefaultNode(defaultNode);
         }
 
         for (DataChannelQueryFilter filter : queryFilters) {
-            dataDomain.addQueryFilter(filter);
+            domain.addQueryFilter(filter);
         }
 
         for (DataChannelSyncFilter filter : syncFilters) {
-            dataDomain.addSyncFilter(filter);
+            domain.addSyncFilter(filter);
         }
 
         for (Object listener : listeners) {
-            dataDomain.addListener(listener);
+            domain.addListener(listener);
         }
 
-        return dataDomain;
+        return domain;
+    }
+
+    /**
+     * Creates an EntityResolver fully configured off the descriptor, so that the DataDomain can take it as a
+     * constructor argument.
+     *
+     * @since 5.0
+     */
+    protected EntityResolver createEntityResolver(DataChannelDescriptor descriptor) {
+
+        EntityResolver entityResolver = new EntityResolver();
+
+        // must go through "addDataMap" - unlike the Collection constructor, it sets the map namespace
+        for (DataMap dataMap : descriptor.getDataMaps()) {
+            entityResolver.addDataMap(dataMap);
+        }
+
+        entityResolver.applyDBLayerDefaults();
+        entityResolver.setValueObjectTypeRegistry(injector.getInstance(ValueObjectTypeRegistry.class));
+        entityResolver.setValueComparisonStrategyFactory(injector.getInstance(ValueComparisonStrategyFactory.class));
+        entityResolver.setObjectFactory(objectFactory);
+
+        return entityResolver;
     }
 
     /**

@@ -16,30 +16,37 @@
  *  specific language governing permissions and limitations
  *  under the License.
  ****************************************************************/
+package org.apache.cayenne.configuration.runtime;
 
-package org.apache.cayenne.access;
-
-import org.apache.cayenne.runtime.CayenneRuntime;
+import org.apache.cayenne.access.DataContext;
+import org.apache.cayenne.access.DataDomain;
+import org.apache.cayenne.configuration.ObjectContextFactory;
 import org.apache.cayenne.unit.CayenneProjects;
 import org.apache.cayenne.unit.CayenneTestsEnv;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.RegisterExtension;
 
-import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.junit.jupiter.api.Assertions.*;
 
-public class DefaultDataRowStoreFactoryIT {
+public class DataContextFactory_DedicatedCacheIT {
 
     @RegisterExtension
     static final CayenneTestsEnv env = CayenneTestsEnv.forProject(CayenneProjects.MULTI_TIER_PROJECT);
 
     @Test
-    public void createDataRowStore() {
-        CayenneRuntime runtime = env.runtime();
-        DataRowStore dataStore = runtime
-                .getInjector()
-                .getInstance(DataRowStoreFactory.class)
-                .createDataRowStore("test");
+    public void createDataContextWithDedicatedCache() {
 
-        assertNotNull(dataStore);
+        DataDomain domain = env.runtime().getDataDomain();
+        domain.setSharedSnapshotCache(null);
+
+        DataContext c3 = (DataContext) env.runtime().getInjector()
+                .getInstance(ObjectContextFactory.class)
+                .createContext();
+
+        assertNotNull(c3.getObjectStore().getDataRowCache());
+        assertNull(domain.getSharedSnapshotCache());
+        assertNotSame(
+                c3.getObjectStore().getDataRowCache(),
+                domain.getSharedSnapshotCache());
     }
 }

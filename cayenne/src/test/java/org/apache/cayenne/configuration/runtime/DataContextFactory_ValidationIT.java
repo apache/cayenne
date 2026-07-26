@@ -16,30 +16,37 @@
  *  specific language governing permissions and limitations
  *  under the License.
  ****************************************************************/
+package org.apache.cayenne.configuration.runtime;
 
-package org.apache.cayenne.access;
-
-import org.apache.cayenne.runtime.CayenneRuntime;
+import org.apache.cayenne.access.DataContext;
+import org.apache.cayenne.access.DataDomain;
+import org.apache.cayenne.configuration.ObjectContextFactory;
 import org.apache.cayenne.unit.CayenneProjects;
 import org.apache.cayenne.unit.CayenneTestsEnv;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.RegisterExtension;
 
-import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 
-public class DefaultDataRowStoreFactoryIT {
+public class DataContextFactory_ValidationIT {
 
     @RegisterExtension
     static final CayenneTestsEnv env = CayenneTestsEnv.forProject(CayenneProjects.MULTI_TIER_PROJECT);
 
     @Test
-    public void createDataRowStore() {
-        CayenneRuntime runtime = env.runtime();
-        DataRowStore dataStore = runtime
-                .getInjector()
-                .getInstance(DataRowStoreFactory.class)
-                .createDataRowStore("test");
+    public void createDataContextValidation() {
+        DataDomain domain = env.runtime().getDataDomain();
+        domain.setValidatingObjectsOnCommit(true);
 
-        assertNotNull(dataStore);
+        ObjectContextFactory factory = env.runtime().getInjector().getInstance(ObjectContextFactory.class);
+        DataContext c1 = (DataContext) factory.createContext();
+        assertTrue(c1.isValidatingObjectsOnCommit());
+
+        domain.setValidatingObjectsOnCommit(false);
+
+        DataContext c2 = (DataContext) factory.createContext();
+        assertFalse(c2.isValidatingObjectsOnCommit());
     }
+
 }

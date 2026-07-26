@@ -26,6 +26,7 @@ import org.apache.cayenne.annotation.PostAdd;
 import org.apache.cayenne.configuration.DefaultRuntimeProperties;
 import org.apache.cayenne.event.DefaultEventManager;
 import org.apache.cayenne.map.DataMap;
+import org.apache.cayenne.map.EntityResolver;
 import org.apache.cayenne.map.ObjEntity;
 import org.apache.cayenne.testdo.testmap.Artist;
 import org.apache.cayenne.testdo.testmap.Exhibit;
@@ -44,20 +45,15 @@ import static org.junit.jupiter.api.Assertions.*;
 public class DataDomainIT {
 
     @RegisterExtension
-    static final CayenneTestsEnv env = CayenneTestsEnv.forProject(CayenneProjects.TESTMAP_PROJECT);
-
-    @Test
-    public void name() throws Exception {
-        DataDomain domain = new DataDomain("some name");
-        assertEquals("some name", domain.getName());
-        domain.setName("tst_name");
-        assertEquals("tst_name", domain.getName());
-    }
+    final CayenneTestsEnv env = CayenneTestsEnv.forProject(CayenneProjects.TESTMAP_PROJECT);
 
     @Test
     public void lookupDataNode() {
 
-        DataDomain domain = new DataDomain("test");
+        DataDomain domain = env.runtime().getDataDomain();
+
+        // an unmapped DataMap falls back to the default node, so drop it to test the "no node" case below
+        domain.setDefaultNode(null);
 
         DataMap m1 = new DataMap("m1");
         DataNode n1 = new DataNode("n1");
@@ -78,7 +74,7 @@ public class DataDomainIT {
     @Test
     public void lookupDataNode_Default() {
 
-        DataDomain domain = new DataDomain("test");
+        DataDomain domain = env.runtime().getDataDomain();
 
         DataMap m1 = new DataMap("m1");
         DataNode n1 = new DataNode("n1");
@@ -99,19 +95,19 @@ public class DataDomainIT {
 
     @Test
     public void nodes() throws Exception {
-        DataDomain domain = new DataDomain("dom1");
-        assertEquals(0, domain.getDataNodes().size());
+        DataDomain domain = env.runtime().getDataDomain();
+        assertEquals(1, domain.getDataNodes().size());
         DataNode node = new DataNode("1");
         domain.addNode(node);
-        assertEquals(1, domain.getDataNodes().size());
+        assertEquals(2, domain.getDataNodes().size());
         node = new DataNode("2");
         domain.addNode(node);
-        assertEquals(2, domain.getDataNodes().size());
+        assertEquals(3, domain.getDataNodes().size());
     }
 
     @Test
-    public void nodeMaps() throws Exception {
-        DataDomain domain = new DataDomain("dom1");
+    public void nodeMaps() {
+        DataDomain domain = env.runtime().getDataDomain();
         assertNull(domain.getDataMap("map"));
 
         DataNode node = new DataNode("1");
@@ -123,7 +119,7 @@ public class DataDomainIT {
 
     @Test
     public void maps() throws Exception {
-        DataDomain d1 = new DataDomain("dom1");
+        DataDomain d1 = env.runtime().getDataDomain();
 
         DataMap m1 = new DataMap("m1");
         d1.addDataMap(m1);
@@ -135,8 +131,8 @@ public class DataDomainIT {
 
     @Test
     public void entityResolverRefresh() throws Exception {
-        DataDomain domain = new DataDomain("dom1");
-        org.apache.cayenne.map.EntityResolver resolver = domain.getEntityResolver();
+        DataDomain domain = env.runtime().getDataDomain();
+        EntityResolver resolver = domain.getEntityResolver();
         assertNotNull(resolver);
 
         DataMap map = new DataMap("map");
@@ -149,40 +145,8 @@ public class DataDomainIT {
     }
 
     @Test
-    public void entityResolver() {
-        assertNotNull(env.runtime().getDataDomain().getEntityResolver());
-
-        DataDomain domain = new DataDomain("dom1");
-        assertNotNull(domain.getEntityResolver());
-    }
-
-    @Test
-    public void sharedCacheEnabledDefault() {
-        assertTrue(new DataDomain("d1").isSharedCacheEnabled());
-    }
-
-    @Test
-    public void sharedCacheEnabled() {
-        DataDomain domain = new DataDomain("d1");
-        domain.setSharedCacheEnabled(false);
-        assertFalse(domain.isSharedCacheEnabled());
-    }
-
-    @Test
-    public void validatingObjectsOnCommitDefault() {
-        assertTrue(new DataDomain("d1").isValidatingObjectsOnCommit());
-    }
-
-    @Test
-    public void validatingObjectsOnCommit() {
-        DataDomain domain = new DataDomain("d1");
-        domain.setValidatingObjectsOnCommit(false);
-        assertFalse(domain.isValidatingObjectsOnCommit());
-    }
-
-    @Test
     public void shutdownCache() {
-        DataDomain domain = new DataDomain("X");
+        DataDomain domain = env.runtime().getDataDomain();
 
         final boolean[] cacheShutdown = new boolean[1];
 
@@ -232,7 +196,7 @@ public class DataDomainIT {
 
         StringBuilder callbackBuffer = new StringBuilder();
 
-        @PostAdd({ Gallery.class, Painting.class })
+        @PostAdd({Gallery.class, Painting.class})
         void postAddEntities(Persistent object) {
             callbackBuffer.append("e:").append(object.getObjectId().getEntityName()).append(";");
         }
