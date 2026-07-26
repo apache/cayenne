@@ -135,6 +135,19 @@ public class CoreModuleExtender {
     }
 
     /**
+     * Sets the maximum number of object IDs to match in a single query for queries that select objects based on a
+     * collection of ObjectIds, such as paginated queries and DISJOINT_BY_ID prefetches. Zero or negative value means
+     * no limit.
+     *
+     * @param size max number of IDs per generated query
+     * @since 5.0
+     */
+    public CoreModuleExtender maxIdQualifierSize(int size) {
+        contributeProperties().put(Constants.MAX_ID_QUALIFIER_SIZE_PROPERTY, Integer.toString(size));
+        return this;
+    }
+
+    /**
      * Adds a custom project location.
      */
     public CoreModuleExtender addProjectLocation(String location) {

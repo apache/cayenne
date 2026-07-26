@@ -158,18 +158,18 @@ public class DataDomainProvider implements Provider<DataDomain> {
                 flushActionFactory,
                 objectFactory,
                 eventManager,
-                entitySorter,
                 new NestedQueryCache(queryCache),
-                entityResolver);
-
-        domain.setMaxIdQualifierSize(runtimeProperties.getInt(Constants.MAX_ID_QUALIFIER_SIZE_PROPERTY, -1));
+                runtimeProperties.getInt(Constants.MAX_ID_QUALIFIER_SIZE_PROPERTY, -1),
+                entityResolver,
+                entitySorter
+        );
 
         Map<String, String> properties = descriptor.getProperties();
 
         boolean sharedCache = "true".equals(properties.getOrDefault(SHARED_CACHE_ENABLED_PROPERTY, SHARED_CACHE_ENABLED_DEFAULT));
         if (sharedCache) {
             DataRowStore cache = injector.getInstance(DataRowStoreFactory.class).createDataRowStore(descriptor.getName());
-            // TODO: setSharedSnapshotCache mutates cache internally; also DataDomain.setName() does
+            // TODO: setSharedSnapshotCache mutates cache internally
             domain.setSharedSnapshotCache(cache);
         }
 
@@ -180,23 +180,9 @@ public class DataDomainProvider implements Provider<DataDomain> {
             addDataNode(domain, nodeDescriptor);
         }
 
-        // init default node
-        DataNode defaultNode = null;
-
-        if (descriptor.getDefaultNodeName() != null) {
-            defaultNode = domain.getDataNode(descriptor.getDefaultNodeName());
-        }
-
-        if (defaultNode == null) {
-            Collection<DataNode> allNodes = domain.getDataNodes();
-            if (allNodes.size() == 1) {
-                defaultNode = allNodes.iterator().next();
-            }
-        }
-
+        DataNode defaultNode = resolveDefaultNode(domain, descriptor);
         if (defaultNode != null) {
             LOGGER.info("setting DataNode '{}' as default, used by all unlinked DataMaps", defaultNode.getName());
-
             domain.setDefaultNode(defaultNode);
         }
 
@@ -213,6 +199,25 @@ public class DataDomainProvider implements Provider<DataDomain> {
         }
 
         return domain;
+    }
+
+    /**
+     * Returns a DataNode to use for DataMaps not linked to any node, either the one named in the descriptor, or the
+     * only node of the domain. Returns null if neither applies.
+     *
+     * @since 5.0
+     */
+    protected DataNode resolveDefaultNode(DataDomain domain, DataChannelDescriptor descriptor) {
+
+        if (descriptor.getDefaultNodeName() != null) {
+            DataNode namedNode = domain.getDataNode(descriptor.getDefaultNodeName());
+            if (namedNode != null) {
+                return namedNode;
+            }
+        }
+
+        Collection<DataNode> allNodes = domain.getDataNodes();
+        return allNodes.size() == 1 ? allNodes.iterator().next() : null;
     }
 
     protected EntityResolver createEntityResolver(DataChannelDescriptor descriptor) {

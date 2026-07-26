@@ -18,17 +18,16 @@
  ****************************************************************/
 package org.apache.cayenne;
 
-import org.apache.cayenne.access.DataContext;
+import org.apache.cayenne.configuration.runtime.CoreModule;
 import org.apache.cayenne.query.ObjectSelect;
-import org.apache.cayenne.runtime.CayenneRuntime;
 import org.apache.cayenne.test.jdbc.TableHelper;
 import org.apache.cayenne.testdo.testmap.Artist;
 import org.apache.cayenne.testdo.testmap.Painting;
 import org.apache.cayenne.unit.CayenneProjects;
 import org.apache.cayenne.unit.CayenneTestsEnv;
-import org.junit.jupiter.api.extension.RegisterExtension;
-import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.RegisterExtension;
 
 import java.sql.SQLException;
 import java.sql.Types;
@@ -37,161 +36,188 @@ import java.util.List;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 
+/**
+ * "maxIdQualifierSize" is immutable and comes from the runtime properties, so each size under test needs its own
+ * stack.
+ */
 public class DataContextMaxIdQualifierIT {
 
-    @RegisterExtension
-    static final CayenneTestsEnv env = CayenneTestsEnv.forProject(CayenneProjects.TESTMAP_PROJECT);
-
-    protected DataContext context;
-    protected CayenneRuntime runtime;
-    
-    private TableHelper tArtist;
-    private TableHelper tPainting;
-
-    @BeforeEach
-    public void setUp() throws Exception {
-        context = env.context();
-        runtime = env.runtime();
-        tArtist = env.table("ARTIST", "ARTIST_ID", "ARTIST_NAME");
-
-        tPainting = env.table("PAINTING").setColumns("PAINTING_ID", "ARTIST_ID", "PAINTING_TITLE").setColumnTypes(Types.INTEGER, Types.BIGINT,
-                Types.VARCHAR);
+    private static CayenneTestsEnv envWithMaxIdQualifierSize(int size) {
+        return CayenneTestsEnv.forProject(CayenneProjects.TESTMAP_PROJECT)
+                .withExtraModules(b -> CoreModule.extend(b).maxIdQualifierSize(size));
     }
 
-    private void insertData() throws SQLException {
-        
+    private static void insert100ArtistsWithAPaintingEach(CayenneTestsEnv env) throws SQLException {
+        TableHelper tArtist = artistTable(env);
+        TableHelper tPainting = paintingTable(env);
+
         for (int i = 1; i <= 100; i++) {
             tArtist.insert(i, "AA" + i);
             tPainting.insert(i, i, "P" + i);
         }
     }
 
-    private void insertData_OneBag_100Boxes() throws SQLException {
-        tArtist.insert(1, "AA1");
+    private static void insertOneArtistWith100Paintings(CayenneTestsEnv env) throws SQLException {
+        artistTable(env).insert(1, "AA1");
 
+        TableHelper tPainting = paintingTable(env);
         for (int i = 1; i <= 100; i++) {
             tPainting.insert(i, 1, "P" + i);
         }
     }
 
-    @Test
-    public void disjointByIdPrefetch() throws Exception {
-        insertData();
-        runtime.getDataDomain().setMaxIdQualifierSize(10);
-
-        int queriesCount = env.runWithQueryCounter(() ->
-                ObjectSelect.query(Artist.class)
-                        .prefetch(Artist.PAINTING_ARRAY.disjointById())
-                        .select(context));
-
-        assertEquals(11, queriesCount);
+    private static TableHelper artistTable(CayenneTestsEnv env) {
+        return env.table("ARTIST", "ARTIST_ID", "ARTIST_NAME");
     }
 
-    @Test
-    public void disjointByIdPrefetch_Zero() throws Exception {
-        insertData();
-        runtime.getDataDomain().setMaxIdQualifierSize(0);
-
-        int queriesCount = env.runWithQueryCounter(() ->
-                ObjectSelect.query(Artist.class)
-                        .prefetch(Artist.PAINTING_ARRAY.disjointById())
-                        .select(context));
-
-        assertEquals(2, queriesCount);
+    private static TableHelper paintingTable(CayenneTestsEnv env) {
+        return env.table("PAINTING")
+                .setColumns("PAINTING_ID", "ARTIST_ID", "PAINTING_TITLE")
+                .setColumnTypes(Types.INTEGER, Types.BIGINT, Types.VARCHAR);
     }
 
-    @Test
-    public void disjointByIdPrefetch_Negative() throws Exception {
-        insertData();
-        runtime.getDataDomain().setMaxIdQualifierSize(-1);
+    @Nested
+    public class Size10 {
 
-        int queriesCount = env.runWithQueryCounter(() ->
-                ObjectSelect.query(Artist.class)
-                        .prefetch(Artist.PAINTING_ARRAY.disjointById())
-                        .select(context));
+        @RegisterExtension
+        final CayenneTestsEnv env = envWithMaxIdQualifierSize(10);
 
-        assertEquals(2, queriesCount);
+        @Test
+        public void disjointByIdPrefetch() throws Exception {
+            insert100ArtistsWithAPaintingEach(env);
+
+            int queriesCount = env.runWithQueryCounter(() ->
+                    ObjectSelect.query(Artist.class)
+                            .prefetch(Artist.PAINTING_ARRAY.disjointById())
+                            .select(env.context()));
+
+            assertEquals(11, queriesCount);
+        }
     }
 
-    @Test
-    public void incrementalFaultList_Lower() throws Exception {
-        insertData_OneBag_100Boxes();
+    @Nested
+    public class Size5 {
 
-        runtime.getDataDomain().setMaxIdQualifierSize(5);
+        @RegisterExtension
+        final CayenneTestsEnv env = envWithMaxIdQualifierSize(5);
 
-        ObjectSelect<Painting> query = ObjectSelect.query(Painting.class).pageSize(10);
+        @Test
+        public void incrementalFaultList() throws Exception {
+            insertOneArtistWith100Paintings(env);
 
-        int queriesCount = env.runWithQueryCounter(() -> {
-            List<Painting> boxes = query.select(context);
-            for (Painting box : boxes) {
-                box.getToArtist();
-            }
-        });
+            ObjectSelect<Painting> query = ObjectSelect.query(Painting.class).pageSize(10);
 
-        assertEquals(21, queriesCount);
+            int queriesCount = env.runWithQueryCounter(() -> {
+                List<Painting> paintings = query.select(env.context());
+                for (Painting painting : paintings) {
+                    painting.getToArtist();
+                }
+            });
 
-        queriesCount = env.runWithQueryCounter(() -> {
-            List<Painting> boxes = query.select(context);
-            List<Painting> tempList = new ArrayList<>(boxes);
-        });
+            assertEquals(21, queriesCount);
 
-        assertEquals(21, queriesCount);
+            queriesCount = env.runWithQueryCounter(() -> {
+                List<Painting> paintings = query.select(env.context());
+                List<Painting> tempList = new ArrayList<>(paintings);
+            });
+
+            assertEquals(21, queriesCount);
+        }
     }
 
-    @Test
-    public void incrementalFaultList_Higher() throws Exception {
-        insertData_OneBag_100Boxes();
+    @Nested
+    public class Size101 {
 
-        runtime.getDataDomain().setMaxIdQualifierSize(101);
+        @RegisterExtension
+        final CayenneTestsEnv env = envWithMaxIdQualifierSize(101);
 
-        ObjectSelect<Painting> query = ObjectSelect.query(Painting.class).pageSize(10);
+        @Test
+        public void incrementalFaultList() throws Exception {
+            insertOneArtistWith100Paintings(env);
 
-        int queriesCount = env.runWithQueryCounter(() -> {
-            final List<Painting> boxes = query.select(context);
-            for (Painting box : boxes) {
-                box.getToArtist();
-            }
-        });
+            ObjectSelect<Painting> query = ObjectSelect.query(Painting.class).pageSize(10);
 
-        assertEquals(11, queriesCount);
+            int queriesCount = env.runWithQueryCounter(() -> {
+                List<Painting> paintings = query.select(env.context());
+                for (Painting painting : paintings) {
+                    painting.getToArtist();
+                }
+            });
 
-        queriesCount = env.runWithQueryCounter(() -> {
-             List<Painting> boxes = query.select(context);
-            List<Painting> tempList = new ArrayList<>(boxes);
-        });
+            assertEquals(11, queriesCount);
 
-        assertEquals(2, queriesCount);
+            queriesCount = env.runWithQueryCounter(() -> {
+                List<Painting> paintings = query.select(env.context());
+                List<Painting> tempList = new ArrayList<>(paintings);
+            });
+
+            assertEquals(2, queriesCount);
+        }
     }
 
-    @Test
-    public void incrementalFaultList_Zero() throws Exception {
-        insertData_OneBag_100Boxes();
+    @Nested
+    public class SizeZero {
 
-        runtime.getDataDomain().setMaxIdQualifierSize(0);
+        @RegisterExtension
+        final CayenneTestsEnv env = envWithMaxIdQualifierSize(0);
 
-        ObjectSelect<Painting> query = ObjectSelect.query(Painting.class).pageSize(10);
+        @Test
+        public void disjointByIdPrefetch() throws Exception {
+            insert100ArtistsWithAPaintingEach(env);
 
-        int queriesCount = env.runWithQueryCounter(() -> {
-            final List<Painting> boxes = query.select(context);
-            List<Painting> tempList = new ArrayList<>(boxes);
-        });
+            int queriesCount = env.runWithQueryCounter(() ->
+                    ObjectSelect.query(Artist.class)
+                            .prefetch(Artist.PAINTING_ARRAY.disjointById())
+                            .select(env.context()));
 
-        assertEquals(2, queriesCount);
+            assertEquals(2, queriesCount);
+        }
+
+        @Test
+        public void incrementalFaultList() throws Exception {
+            insertOneArtistWith100Paintings(env);
+
+            ObjectSelect<Painting> query = ObjectSelect.query(Painting.class).pageSize(10);
+
+            int queriesCount = env.runWithQueryCounter(() -> {
+                List<Painting> paintings = query.select(env.context());
+                List<Painting> tempList = new ArrayList<>(paintings);
+            });
+
+            assertEquals(2, queriesCount);
+        }
     }
 
-    @Test
-    public void incrementalFaultList_Negative() throws Exception {
-        insertData_OneBag_100Boxes();
+    @Nested
+    public class SizeNegative {
 
-        runtime.getDataDomain().setMaxIdQualifierSize(-1);
+        @RegisterExtension
+        final CayenneTestsEnv env = envWithMaxIdQualifierSize(-1);
 
-        ObjectSelect<Painting> query = ObjectSelect.query(Painting.class).pageSize(10);
+        @Test
+        public void disjointByIdPrefetch() throws Exception {
+            insert100ArtistsWithAPaintingEach(env);
 
-        int queriesCount = env.runWithQueryCounter(() -> {
-            final List<Painting> boxes = query.select(context);
-            List<Painting> tempList = new ArrayList<>(boxes);
-        });
+            int queriesCount = env.runWithQueryCounter(() ->
+                    ObjectSelect.query(Artist.class)
+                            .prefetch(Artist.PAINTING_ARRAY.disjointById())
+                            .select(env.context()));
 
-        assertEquals(2, queriesCount);
+            assertEquals(2, queriesCount);
+        }
+
+        @Test
+        public void incrementalFaultList() throws Exception {
+            insertOneArtistWith100Paintings(env);
+
+            ObjectSelect<Painting> query = ObjectSelect.query(Painting.class).pageSize(10);
+
+            int queriesCount = env.runWithQueryCounter(() -> {
+                List<Painting> paintings = query.select(env.context());
+                List<Painting> tempList = new ArrayList<>(paintings);
+            });
+
+            assertEquals(2, queriesCount);
+        }
     }
 }

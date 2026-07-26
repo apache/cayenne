@@ -71,8 +71,8 @@ public class DataDomain implements DataChannel {
     protected final QueryCache queryCache;
 
     protected final EntityResolver entityResolver;
+    protected final int maxIdQualifierSize;
 
-    protected int maxIdQualifierSize;
     protected List<DataChannelQueryFilter> queryFilters;
     protected List<DataChannelSyncFilter> syncFilters;
     protected Map<String, DataNode> nodes;
@@ -85,14 +85,17 @@ public class DataDomain implements DataChannel {
 
     public DataDomain(
             String name,
+
             TransactionManager transactionManager,
             TransactionFactory transactionFactory,
             DataDomainFlushActionFactory flushActionFactory,
             AdhocObjectFactory objectFactory,
             EventManager eventManager,
-            EntitySorter entitySorter,
             QueryCache queryCache,
-            EntityResolver entityResolver
+            int maxIdQualifierSize,
+
+            EntityResolver entityResolver,
+            EntitySorter entitySorter
     ) {
 
         this.name = name;
@@ -104,6 +107,7 @@ public class DataDomain implements DataChannel {
         this.entitySorter = entitySorter;
         this.queryCache = queryCache;
         this.entityResolver = entityResolver;
+        this.maxIdQualifierSize = maxIdQualifierSize;
 
         this.queryFilters = new CopyOnWriteArrayList<>();
         this.syncFilters = new CopyOnWriteArrayList<>();
@@ -588,21 +592,12 @@ public class DataDomain implements DataChannel {
      * and DISJOINT_BY_ID prefetches and is intended to address database
      * limitations on the size of SQL statements as well as to cap memory use in
      * Cayenne when generating such queries. The default is 10000. It can be
-     * changed either by calling {@link #setMaxIdQualifierSize(int)} or changing
-     * the value for property
-     * {@link Constants#MAX_ID_QUALIFIER_SIZE_PROPERTY}.
+     * changed by setting the {@link Constants#MAX_ID_QUALIFIER_SIZE_PROPERTY} property.
      *
      * @since 3.1
      */
     public int getMaxIdQualifierSize() {
         return maxIdQualifierSize;
-    }
-
-    /**
-     * @since 3.1
-     */
-    public void setMaxIdQualifierSize(int maxIdQualifierSize) {
-        this.maxIdQualifierSize = maxIdQualifierSize;
     }
 
     TransactionManager getTransactionManager() {
