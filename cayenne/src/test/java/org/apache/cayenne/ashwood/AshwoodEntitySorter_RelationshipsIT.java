@@ -46,8 +46,7 @@ public class AshwoodEntitySorter_RelationshipsIT {
 
 	@BeforeEach
 	public void setUp() throws Exception {
-		this.sorter = new AshwoodEntitySorter();
-		sorter.setEntityResolver(env.context().getEntityResolver());
+		this.sorter = new AshwoodEntitySorter(env.context().getEntityResolver());
 
 		tRelationshipHelper = env.table("RELATIONSHIP_HELPER", "RELATIONSHIP_HELPER_ID", "NAME");
 

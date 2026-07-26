@@ -45,6 +45,7 @@ import org.apache.cayenne.event.EventManager;
 import org.apache.cayenne.map.DataMap;
 import org.apache.cayenne.map.EntityResolver;
 import org.apache.cayenne.map.EntitySorter;
+import org.apache.cayenne.map.EntitySorterFactory;
 import org.apache.cayenne.reflect.generic.ValueComparisonStrategyFactory;
 import org.apache.cayenne.resource.Resource;
 import org.apache.cayenne.resource.ResourceLocator;
@@ -128,7 +129,7 @@ public class DataDomainProvider implements Provider<DataDomain> {
     protected EventManager eventManager;
 
     @Inject
-    protected EntitySorter entitySorter;
+    protected EntitySorterFactory entitySorterFactory;
 
     @Override
     public DataDomain get() throws ConfigurationException {
@@ -147,6 +148,8 @@ public class DataDomainProvider implements Provider<DataDomain> {
     protected DataDomain createAndInitDataDomain() throws Exception {
 
         DataChannelDescriptor descriptor = loadDescriptor();
+        EntityResolver entityResolver = createEntityResolver(descriptor);
+        EntitySorter entitySorter = entitySorterFactory.createEntitySorter(entityResolver);
 
         DataDomain domain = new DataDomain(
                 descriptor.getName(),
@@ -157,10 +160,9 @@ public class DataDomainProvider implements Provider<DataDomain> {
                 eventManager,
                 entitySorter,
                 new NestedQueryCache(queryCache),
-                createEntityResolver(descriptor));
+                entityResolver);
 
         domain.setMaxIdQualifierSize(runtimeProperties.getInt(Constants.MAX_ID_QUALIFIER_SIZE_PROPERTY, -1));
-
 
         Map<String, String> properties = descriptor.getProperties();
 
@@ -213,12 +215,6 @@ public class DataDomainProvider implements Provider<DataDomain> {
         return domain;
     }
 
-    /**
-     * Creates an EntityResolver fully configured off the descriptor, so that the DataDomain can take it as a
-     * constructor argument.
-     *
-     * @since 5.0
-     */
     protected EntityResolver createEntityResolver(DataChannelDescriptor descriptor) {
 
         EntityResolver entityResolver = new EntityResolver();

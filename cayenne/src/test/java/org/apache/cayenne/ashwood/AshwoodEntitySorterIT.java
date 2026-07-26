@@ -50,8 +50,7 @@ public class AshwoodEntitySorterIT {
 	public void before() {
 
 		this.resolver = env.context().getEntityResolver();
-		this.sorter = new AshwoodEntitySorter();
-		sorter.setEntityResolver(resolver);
+		this.sorter = new AshwoodEntitySorter(resolver);
 
 		this.artist = resolver.getDbEntity("ARTIST");
 		this.artistExhibit = resolver.getDbEntity("ARTIST_EXHIBIT");

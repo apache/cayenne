@@ -54,8 +54,7 @@ public class WeightedAshwoodEntitySorterIT {
 
         List<DbEntity> e2 = Arrays.asList(resolver.getDbEntity("SORT_DEP"), resolver.getDbEntity("SORT_ROOT"));
 
-        WeightedAshwoodEntitySorter sorter = new WeightedAshwoodEntitySorter();
-        sorter.setEntityResolver(resolver);
+        WeightedAshwoodEntitySorter sorter = new WeightedAshwoodEntitySorter(resolver);
 
         sorter.sortDbEntities(e1, false);
         assertEquals(eSorted, e1);

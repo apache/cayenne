@@ -32,6 +32,7 @@ import org.apache.cayenne.log.NoopSQLLogger;
 import org.apache.cayenne.log.SQLLogger;
 import org.apache.cayenne.map.DataMap;
 import org.apache.cayenne.map.EntityResolver;
+import org.apache.cayenne.map.EntitySorter;
 import org.apache.cayenne.query.DeleteBatchQuery;
 import org.apache.cayenne.query.InsertBatchQuery;
 import org.apache.cayenne.query.Query;
@@ -61,6 +62,7 @@ public class DataNode {
     protected DbAdapter adapter;
     protected String dataSourceFactory;
     protected EntityResolver entityResolver;
+    protected EntitySorter entitySorter;
     protected SchemaUpdateStrategy schemaUpdateStrategy;
     protected Map<String, DataMap> dataMaps;
 
@@ -299,6 +301,25 @@ public class DataNode {
      */
     public void setEntityResolver(EntityResolver entityResolver) {
         this.entityResolver = entityResolver;
+    }
+
+    /**
+     * Returns an EntitySorter that sorts the entities of this node based on their mutual dependencies.
+     *
+     * @since 5.0
+     */
+    public EntitySorter getEntitySorter() {
+        return entitySorter;
+    }
+
+    /**
+     * Sets EntitySorter. DataNode relies on an externally set sorter, so if the node is created outside of the
+     * DataDomain stack, a valid EntitySorter must be provided explicitly.
+     *
+     * @since 5.0
+     */
+    public void setEntitySorter(EntitySorter entitySorter) {
+        this.entitySorter = entitySorter;
     }
 
     @Override

@@ -106,7 +106,7 @@ public class BatchAction extends BaseSQLAction {
         if (hasGeneratedKeys()) {
             // turn off batch mode if we generate keys but can't do so in a batch
             return supportsGeneratedKeys(true) &&
-                    !dataNode.getEntityResolver().getEntitySorter().isReflexive(query.getDbEntity());
+                    !dataNode.getEntitySorter().isReflexive(query.getDbEntity());
         }
 
         return true;

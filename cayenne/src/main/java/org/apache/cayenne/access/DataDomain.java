@@ -60,7 +60,7 @@ import java.util.concurrent.CopyOnWriteArrayList;
  * transparently routed to an appropriate DataNode.
  */
 public class DataDomain implements DataChannel {
-    
+
     protected final String name;
     protected final TransactionManager transactionManager;
     protected final TransactionFactory transactionFactory;
@@ -109,13 +109,10 @@ public class DataDomain implements DataChannel {
         this.syncFilters = new CopyOnWriteArrayList<>();
         this.nodesByDataMapName = new ConcurrentHashMap<>();
         this.nodes = new ConcurrentHashMap<>();
-
-        refreshEntitySorter();
     }
 
     /**
-     * Checks that Domain is not stopped. Throws DomainStoppedException
-     * otherwise.
+     * Throws DomainStoppedException if the domain was previously shut down.
      *
      * @since 3.0
      */
@@ -208,7 +205,7 @@ public class DataDomain implements DataChannel {
 
     public void addDataMap(DataMap dataMap) {
         getEntityResolver().addDataMap(dataMap);
-        refreshEntitySorter();
+        entitySorter.reindex();
     }
 
     /**
@@ -240,7 +237,7 @@ public class DataDomain implements DataChannel {
         // remove from EntityResolver
         getEntityResolver().removeDataMap(map);
 
-        refreshEntitySorter();
+        entitySorter.reindex();
     }
 
     /**
@@ -252,6 +249,7 @@ public class DataDomain implements DataChannel {
         DataNode removed = nodes.remove(nodeName);
         if (removed != null) {
             removed.setEntityResolver(null);
+            removed.setEntitySorter(null);
             nodesByDataMapName.values().removeIf(dataNode -> dataNode == removed);
         }
     }
@@ -279,6 +277,7 @@ public class DataDomain implements DataChannel {
         // add node to name->node map
         nodes.put(node.getName(), node);
         node.setEntityResolver(getEntityResolver());
+        node.setEntitySorter(entitySorter);
 
         // add node to "ent name->node" map
         for (DataMap map : node.getDataMaps()) {
@@ -448,12 +447,6 @@ public class DataDomain implements DataChannel {
      */
     public QueryCache getQueryCache() {
         return queryCache;
-    }
-
-    void refreshEntitySorter() {
-        if (entitySorter != null) {
-            entitySorter.setEntityResolver(getEntityResolver());
-        }
     }
 
     /**

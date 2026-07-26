@@ -48,6 +48,7 @@ import java.util.Comparator;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Objects;
 import java.util.function.Function;
 
 /**
@@ -59,56 +60,32 @@ import java.util.function.Function;
  */
 public class AshwoodEntitySorter implements EntitySorter {
 
-	protected EntityResolver entityResolver;
-	protected Map<DbEntity, ComponentRecord> components;
-	protected Map<DbEntity, List<DbRelationship>> reflexiveDbEntities;
+	protected final EntityResolver entityResolver;
+
+	protected volatile Map<DbEntity, ComponentRecord> components;
+	protected volatile Map<DbEntity, List<DbRelationship>> reflexiveDbEntities;
 
 	protected Comparator<DbEntity> dbEntityComparator;
 	protected Comparator<ObjEntity> objEntityComparator;
 
-	private volatile boolean dirty;
+	public AshwoodEntitySorter(EntityResolver entityResolver) {
+		this.entityResolver = Objects.requireNonNull(entityResolver);
+		this.dbEntityComparator = new DbEntityComparator();
+		this.objEntityComparator = new ObjEntityComparator();
 
-	public AshwoodEntitySorter() {
-		dbEntityComparator = new DbEntityComparator();
-		objEntityComparator = new ObjEntityComparator();
-		dirty = true;
+		reindex();
 	}
 
 	/**
-	 * Reindexes internal sorter in a thread-safe manner.
+	 * @since 5.0
 	 */
-	protected void indexSorter() {
-
-		// correct double check locking per Joshua Bloch
-		// http://java.sun.com/developer/technicalArticles/Interviews/bloch_effective_08_qa.html
-		// (maybe we should use something like CountDownLatch or a Cyclic
-		// barrier
-		// instead?)
-
-		boolean localDirty = dirty;
-		if (localDirty) {
-			synchronized (this) {
-				localDirty = dirty;
-				if (localDirty) {
-					doIndexSorter();
-					dirty = false;
-				}
-			}
-		}
-	}
-
-	/**
-	 * Reindexes internal sorter without synchronization.
-	 */
-	protected void doIndexSorter() {
-
+	@Override
+	public synchronized void reindex() {
 		Map<DbEntity, List<DbRelationship>> reflexiveDbEntities = new HashMap<>();
 		Digraph<DbEntity, List<DbAttribute>> referentialDigraph = new MapDigraph<>();
 
-		if (entityResolver != null) {
-			for (DbEntity entity : entityResolver.getDbEntities()) {
-				referentialDigraph.addVertex(entity);
-			}
+		for (DbEntity entity : entityResolver.getDbEntities()) {
+			referentialDigraph.addVertex(entity);
 		}
 
 		for (DbEntity destination : entityResolver.getDbEntities()) {
@@ -164,43 +141,30 @@ public class AshwoodEntitySorter implements EntitySorter {
 		this.components = components;
 	}
 
-	/**
-	 * @since 3.1
-	 */
-	@Override
-	public void setEntityResolver(EntityResolver entityResolver) {
-		this.entityResolver = entityResolver;
-		this.entityResolver.setEntitySorter(this);
-		this.dirty = true;
-	}
-
 	@Override
 	public void sortDbEntities(List<DbEntity> dbEntities, boolean deleteOrder) {
-		indexSorter();
 		dbEntities.sort(getDbEntityComparator(deleteOrder));
 	}
 
 	@Override
 	public void sortObjEntities(List<ObjEntity> objEntities, boolean deleteOrder) {
-		indexSorter();
 		objEntities.sort(getObjEntityComparator(deleteOrder));
 	}
 
 	@SuppressWarnings("unchecked")
 	@Override
 	public void sortObjectsForEntity(ObjEntity objEntity, List<?> objects, boolean deleteOrder) {
-		if(objects == null || objects.size() == 0) {
+		if(objects == null || objects.isEmpty()) {
 			return;
 		}
 
-		indexSorter();
 		DbEntity dbEntity = objEntity.getDbEntity();
 		// if no sorting is required
 		if (!isReflexive(dbEntity)) {
 			return;
 		}
 
-		Object probe = objects.get(0);
+		Object probe = objects.getFirst();
 		if (probe instanceof DbRowOp) {
 			sortObjectsForEntity(objEntity, (List<DbRowOp>) objects, deleteOrder, DbRowOp::getObject);
 		} else if(probe instanceof Persistent) {
@@ -220,7 +184,7 @@ public class AshwoodEntitySorter implements EntitySorter {
 	}
 
 	protected <E> Digraph<E, Boolean> buildDigraph(ObjEntity objEntity, List<E> objects, Function<E, Persistent> converter) {
-		EntityResolver resolver = converter.apply(objects.get(0)).getObjectContext().getEntityResolver();
+		EntityResolver resolver = converter.apply(objects.getFirst()).getObjectContext().getEntityResolver();
 		ClassDescriptor descriptor = resolver.getClassDescriptor(objEntity.getName());
 		String[] reflexiveRelNames = getReflexiveRelationshipsNames(objEntity);
 
@@ -307,7 +271,7 @@ public class AshwoodEntitySorter implements EntitySorter {
 
 	protected Persistent findReflexiveMaster(Persistent object, ObjRelationship toOneRel, String targetEntityName) {
 
-		DbRelationship finalRel = toOneRel.getDbRelationships().get(0);
+		DbRelationship finalRel = toOneRel.getDbRelationships().getFirst();
 		ObjectContext context = object.getObjectContext();
 
 		// find committed snapshot - so we can't fetch from the context as it will return dirty snapshot;
@@ -321,11 +285,11 @@ public class AshwoodEntitySorter implements EntitySorter {
 		ObjectIdQuery query = new ObjectIdQuery(object.getObjectId(), true, ObjectIdQuery.CACHE);
 		QueryResponse response = context.getParent().onQuery(null, query);
 		List<?> result = response.firstList();
-		if (result == null || result.size() == 0) {
+		if (result == null || result.isEmpty()) {
 			return null;
 		}
 
-		DataRow snapshot = (DataRow) result.get(0);
+		DataRow snapshot = (DataRow) result.getFirst();
 
 		ObjectId id = snapshot.createTargetObjectId(targetEntityName, finalRel);
 
@@ -336,13 +300,11 @@ public class AshwoodEntitySorter implements EntitySorter {
 
 	@Override
 	public Comparator<DbEntity> getDbEntityComparator() {
-		indexSorter();
 		return dbEntityComparator;
 	}
 
 	@Override
 	public Comparator<ObjEntity> getObjEntityComparator() {
-		indexSorter();
 		return objEntityComparator;
 	}
 
@@ -364,7 +326,6 @@ public class AshwoodEntitySorter implements EntitySorter {
 
 	@Override
 	public boolean isReflexive(DbEntity metadata) {
-		indexSorter();
 		return reflexiveDbEntities.containsKey(metadata);
 	}
 

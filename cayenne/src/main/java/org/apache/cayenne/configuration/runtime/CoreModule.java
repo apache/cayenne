@@ -50,7 +50,7 @@ import org.apache.cayenne.access.translator.sqltemplate.DefaultSQLTemplateTransl
 import org.apache.cayenne.access.translator.sqltemplate.DefaultTemplateContextFactory;
 import org.apache.cayenne.access.translator.sqltemplate.TemplateContextFactory;
 import org.apache.cayenne.access.types.*;
-import org.apache.cayenne.ashwood.AshwoodEntitySorter;
+import org.apache.cayenne.ashwood.AshwoodEntitySorterFactory;
 import org.apache.cayenne.cache.MapQueryCacheProvider;
 import org.apache.cayenne.cache.QueryCache;
 import org.apache.cayenne.commitlog.CommitLogFilter;
@@ -126,7 +126,7 @@ import org.apache.cayenne.event.EventManagerProvider;
 import org.apache.cayenne.event.NoopEventBridgeProvider;
 import org.apache.cayenne.log.SQLLogger;
 import org.apache.cayenne.log.Slf4jSQLLogger;
-import org.apache.cayenne.map.EntitySorter;
+import org.apache.cayenne.map.EntitySorterFactory;
 import org.apache.cayenne.reflect.generic.DefaultValueComparisonStrategyFactory;
 import org.apache.cayenne.reflect.generic.ValueComparisonStrategyFactory;
 import org.apache.cayenne.resource.ClassLoaderResourceLocator;
@@ -462,10 +462,7 @@ public class CoreModule implements Module {
 
         // a default DBAdapterFactory used to load custom and automatic DbAdapters
         binder.bind(DbAdapterFactory.class).to(DefaultDbAdapterFactory.class);
-
-        // binding AshwoodEntitySorter without scope, as this is a stateful object and is
-        // configured by the owning domain
-        binder.bind(EntitySorter.class).to(AshwoodEntitySorter.class).withoutScope();
+        binder.bind(EntitySorterFactory.class).to(AshwoodEntitySorterFactory.class);
 
         binder.bind(Key.get(BatchTranslator.class, BatchTranslator.INSERT)).to(InsertBatchTranslator.class);
         binder.bind(Key.get(BatchTranslator.class, BatchTranslator.UPDATE)).to(UpdateBatchTranslator.class);

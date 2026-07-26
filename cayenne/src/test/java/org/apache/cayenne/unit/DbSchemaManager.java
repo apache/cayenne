@@ -89,8 +89,8 @@ public class DbSchemaManager {
             filterDataMap(map);
         }
 
-        // TODO: suspect
-        domain.getEntitySorter().setEntityResolver(domain.getEntityResolver());
+        // "filterDataMap" above mutated the maps, so the sorter index is stale
+        domain.getEntitySorter().reindex();
 
         this.dataMapsInSchemaSetupOrder = sortDataMapsInSchemaSetupOrder();
     }
