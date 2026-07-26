@@ -54,10 +54,8 @@ import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.CopyOnWriteArrayList;
 
 /**
- * DataDomain performs query routing functions in Cayenne. DataDomain creates
- * single data source abstraction hiding multiple physical data sources from the
- * user. When a child DataContext sends a query to the DataDomain, it is
- * transparently routed to an appropriate DataNode.
+ * DataDomain performs query routing functions in Cayenne. It creates single "ORM data source" abstraction over multiple
+ * physical DataNodes.
  */
 public class DataDomain implements DataChannel {
 
@@ -75,10 +73,12 @@ public class DataDomain implements DataChannel {
     protected final int maxIdQualifierSize;
     protected final boolean validatingObjectsOnCommit;
 
-    protected List<DataChannelQueryFilter> queryFilters;
-    protected List<DataChannelSyncFilter> syncFilters;
-    protected Map<String, DataNode> nodes;
-    protected Map<String, DataNode> nodesByDataMapName;
+    // these collections are final, but contents are changeable via DataDomain API
+    protected final List<DataChannelQueryFilter> queryFilters;
+    protected final List<DataChannelSyncFilter> syncFilters;
+    protected final Map<String, DataNode> nodes;
+    protected final Map<String, DataNode> nodesByDataMapName;
+
     protected DataNode defaultNode;
 
     protected boolean stopped;
