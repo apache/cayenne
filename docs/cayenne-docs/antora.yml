@@ -1,6 +1,7 @@
 name: cayenne
 title: Apache Cayenne Documentation
 version: '5.0'
+start_page: getting-started:index.adoc
 nav:
   - modules/getting-started/nav.adoc
   - modules/getting-started-db-first/nav.adoc
