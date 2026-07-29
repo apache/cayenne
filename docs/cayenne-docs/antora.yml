@@ -1,0 +1,15 @@
+name: cayenne
+title: Apache Cayenne Documentation
+version: '5.0'
+nav:
+  - modules/getting-started/nav.adoc
+  - modules/getting-started-db-first/nav.adoc
+  - modules/guide/nav.adoc
+  - modules/javadoc/nav.adoc
+asciidoc:
+  attributes:
+    sectnums: ''
+    sectnumlevels: '2'
+    project-version: '5.0'
+    project-major-version: '5.0'
+    version: '5.0'
