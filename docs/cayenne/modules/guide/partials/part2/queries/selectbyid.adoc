@@ -1,0 +1,27 @@
+// Licensed to the Apache Software Foundation (ASF) under one or more
+// contributor license agreements. See the NOTICE file distributed with
+// this work for additional information regarding copyright ownership.
+// The ASF licenses this file to you under the Apache License, Version
+// 2.0 (the "License"); you may not use this file except in compliance
+// with the License. You may obtain a copy of the License at
+//
+// https://www.apache.org/licenses/LICENSE-2.0 Unless required by
+// applicable law or agreed to in writing, software distributed under the
+// License is distributed on an "AS IS" BASIS, WITHOUT WARRANTIES OR
+// CONDITIONS OF ANY KIND, either express or implied. See the License for
+// the specific language governing permissions and limitations under the
+// License.
+
+[#build_tools]
+== Build Tools
+
+While we encourage the use of <<cayenne-modeler,CayenneModeler>> for tasks such as DB reverse-engineering and
+code generation, Cayenne also provides an option to execute them from your preferred build tool.
+It may be occasionally useful to keep them as a part of the build. This chapter shows how to use them in
+<<maven_plugin,Maven>>, <<gradle_plugin,Gradle>> or <<ant_tasks,Ant>>.
+
+include::part6/maven-plugin.adoc[]
+
+include::part6/gradle-plugin.adoc[]
+
+include::part6/ant-tasks.adoc[]

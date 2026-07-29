@@ -1,0 +1,65 @@
+// Licensed to the Apache Software Foundation (ASF) under one or more
+// contributor license agreements. See the NOTICE file distributed with
+// this work for additional information regarding copyright ownership.
+// The ASF licenses this file to you under the Apache License, Version
+// 2.0 (the "License"); you may not use this file except in compliance
+// with the License. You may obtain a copy of the License at
+//
+// https://www.apache.org/licenses/LICENSE-2.0 Unless required by
+// applicable law or agreed to in writing, software distributed under the
+// License is distributed on an "AS IS" BASIS, WITHOUT WARRANTIES OR
+// CONDITIONS OF ANY KIND, either express or implied. See the License for
+// the specific language governing permissions and limitations under the
+// License.
+==== ProcedureCall
+
+Stored procedures are mapped as separate objects in CayenneModeler.
+`ProcedureCall` provides a way to execute them with a certain set of parameters.
+This query is a "fluent" version of older `ProcedureQuery`. Just like with `SQLTemplate`,
+the outcome of a procedure can be anything - a single result set, multiple result sets,
+some data modification (returned as an update count), or a combination of these.
+So use root class to get a single result set, and use only procedure name for anything else:
+
+
+[source, java]
+----
+List<Artist> result = ProcedureCall.query("my_procedure", Artist.class)
+    .param("p1", "abc")
+    .param("p2", 3000)
+    .select(context);
+----
+
+[source, java]
+----
+// here we do not bother with root class.
+// Procedure name gives us needed routing information
+List<QueryResult> result = ProcedureCall.query("my_procedure")
+    .param("p1", "abc")
+    .param("p2", 3000)
+    .call(context);
+----
+
+`QueryResult` is a sealed interface with `Select`, `Update`, `Iterator` and `OutParameters` variants, listed in
+the order the procedure produced them, so the items can be accessed by index or scanned with a pattern-matching
+switch. A stored procedure can return data back to the application as result sets or via OUT parameters.
+The values of OUT and INOUT parameters are reported as a separate `QueryResult.OutParameters` item of the
+result, a map keyed by parameter name:
+
+[source, java]
+----
+for (QueryResult item : ProcedureCall.query("my_procedure").call(context)) {
+    switch (item) {
+        case QueryResult.Select<?> select -> process(select.objects());
+        case QueryResult.Update update -> process(update.counts());
+        case QueryResult.OutParameters out -> process(out.values().get("out_param"));
+        default -> {}
+    }
+}
+----
+
+There maybe a situation when a stored procedure handles its own transactions,
+but an application is configured to use Cayenne-managed transactions.
+This is obviously conflicting and undesirable behavior.
+In this case ProcedureQueries should be executed explicitly wrapped in an "external" Transaction.
+This is one of the few cases when a user should worry about transactions at all.
+See Transactions section for more details.

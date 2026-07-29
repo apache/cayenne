@@ -1,0 +1,15 @@
+= Cayenne Guide
+
+[small]#Copyright © 2011-{docyear} Apache Software Foundation and individual authors#
+
+== Table of Contents
+
+* xref:setup.adoc[Object Relational Mapping with Cayenne]
+* xref:including.adoc[Cayenne Framework]
+* xref:overview.adoc[Agentic Coding]
+* xref:introduction.adoc[DB-First Flow]
+* xref:cacheInvalidation.adoc[Additional Modules]
+* xref:maven-plugin.adoc[Build Tools]
+* xref:configurationProperties.adoc[Configuration Properties]
+* xref:serviceCollections.adoc[Service Collections]
+* xref:expressionsBNF.adoc[Expressions BNF]

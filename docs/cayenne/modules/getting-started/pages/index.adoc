@@ -1,0 +1,9 @@
+= Getting Started with Cayenne
+
+[small]#Copyright © 2011-{docyear} Apache Software Foundation and individual authors#
+
+== Table of Contents
+
+* xref:setup.adoc[Setting up the environment]
+* xref:part2.adoc[Learning mapping basics]
+* xref:part3.adoc[Learning Cayenne API]

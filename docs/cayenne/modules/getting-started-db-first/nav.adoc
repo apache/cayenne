@@ -1,0 +1,6 @@
+* xref:index.adoc[Database First Tutorial]
+** xref:part1.adoc[Setup]
+** xref:part2.adoc[Reverse Engineering]
+** xref:part3.adoc[Generating and Updating Model]
+** xref:part4.adoc[Creating Java Classes]
+** xref:part5.adoc[Java Code]

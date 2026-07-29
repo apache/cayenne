@@ -12,5 +12,4 @@ asciidoc:
     sectnums: ''
     sectnumlevels: '2'
     project-version: '5.0'
-    project-major-version: '5.0'
     version: '5.0'
