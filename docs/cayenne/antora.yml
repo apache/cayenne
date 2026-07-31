@@ -1,6 +1,7 @@
 name: cayenne
 title: Apache Cayenne
 version: '5.0'
+display_version: '5.0 (Alpha)'
 start_page: getting-started:index.adoc
 nav:
   - modules/getting-started/nav.adoc
@@ -19,4 +20,3 @@ asciidoc:
     sectnums: ''
     sectnumlevels: '2'
     project-version: '5.0-M2'
-    version: '5.0 (Alpha)'
