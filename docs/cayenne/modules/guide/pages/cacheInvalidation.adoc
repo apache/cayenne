@@ -12,14 +12,12 @@
 // the specific language governing permissions and limitations under the
 // License.
 
-include::../var.adoc[]
-
 [#ext-cache-invalidation]
-=== Cache Invalidation Extension
+= Cache Invalidation Extension
 
 Cache invalidation module is an extension that allows to define cache invalidation policy programmatically.
 
-==== Maven
+== Maven
 
 [source, XML,subs="verbatim,attributes"]
 ----
@@ -30,14 +28,14 @@ Cache invalidation module is an extension that allows to define cache invalidati
 </dependency>
 ----
 
-==== Gradle
+== Gradle
 
 [source, Groovy,subs="verbatim,attributes"]
 ----
 compile 'org.apache.cayenne:cayenne-cache-invalidation:{project-version}'
 ----
 
-==== Usage
+== Usage
 
 Module supports autoloading mechanism, so no other actions required to enable it. Just mark your entities with @CacheGroups
 annotation and you are ready to use it:
@@ -74,7 +72,7 @@ Now we'll set up it's usage by `CayenneRuntime`:
 
 [source, java]
 ----
-CayenneRuntime.of()
+CayenneRuntime.builder()
         .addModule(binder -> CacheInvalidationModule.extend(binder)
                 // optionally you can disable @CacheGroups annotation processing
                 .noCacheGroupsHandler()

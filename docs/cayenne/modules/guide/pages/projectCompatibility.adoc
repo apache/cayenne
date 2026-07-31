@@ -12,10 +12,8 @@
 // the specific language governing permissions and limitations under the
 // License.
 
-include::../var.adoc[]
-
 [[ext-project-compatibility]]
-=== Project compatibility extension
+= Project compatibility extension
 
 Since version 4.1 Cayenne doesn't allow to load project XML files from previous versions as this can lead to unexpected
 errors in runtime. This module allows to use project files from older versions performing their upgrade on the fly
@@ -23,7 +21,7 @@ errors in runtime. This module allows to use project files from older versions p
 
 NOTE: You should prefer explicit project upgrade via Cayenne Modeler.
 
-==== Maven
+== Maven
 
 [source, XML,subs="verbatim,attributes"]
 ----
@@ -34,14 +32,14 @@ NOTE: You should prefer explicit project upgrade via Cayenne Modeler.
 </dependency>
 ----
 
-==== Gradle
+== Gradle
 
 [source, Groovy,subs="verbatim,attributes"]
 ----
 compile 'org.apache.cayenne:cayenne-project-compatibility:{project-version}'
 ----
 
-==== Usage
+== Usage
 
 This module doesn't require any additional setup.
 

@@ -12,14 +12,12 @@
 // the specific language governing permissions and limitations under the
 // License.
 
-include::../var.adoc[]
-
 [[ext-crypto]]
-=== Crypto extension
+= Crypto extension
 
 Crypto module allows encrypt and decrypt values stored in DB transparently to your Java app.
 
-==== Maven
+== Maven
 
 [source, XML,subs="verbatim,attributes"]
 ----
@@ -30,16 +28,16 @@ Crypto module allows encrypt and decrypt values stored in DB transparently to yo
 </dependency>
 ----
 
-==== Gradle
+== Gradle
 
 [source, Groovy,subs="verbatim,attributes"]
 ----
 compile 'org.apache.cayenne:cayenne-crypto:{project-version}'
 ----
 
-==== Usage
+== Usage
 
-===== Setup your model and DB
+=== Setup your model and DB
 
 To use crypto module you must prepare your database to allow `byte[]` storage and properly name columns that will contain encrypted values.
 
@@ -56,35 +54,35 @@ strategy by injecting you own implementation of `o.a.c.crypto.map.ColumnMapper` 
 
 [source, java]
 ----
-CayenneRuntime runtime = CayenneRuntime.of()
+CayenneRuntime runtime = CayenneRuntime.builder()
         .addModule(binder -> CryptoModule.extend(binder)
                 .columnMapper(MyColumnMapper.class));
 ----
 
 Here is an example of how `ObjEntity` with two encrypted and two unencrypted properties can look like:
 
-image::../../images/ext-crypto-obj-entity.png[align="left"]
+image::ext-crypto-obj-entity.png[align="left"]
 
-===== Setup keystore
+=== Setup keystore
 
 To perform encryption you must provide `KEYSTORE_URL` and `KEY_PASSWORD`. Currently crypto module supports only Java "jceks"
 KeyStore.
 
 [source, java]
 ----
-CayenneRuntime runtime = CayenneRuntime.of()
+CayenneRuntime runtime = CayenneRuntime.builder()
         .addModule(binder -> CryptoModule.extend(binder)
                 .keyStore(this.getClass().getResource("keystore.jcek"), "my-password".toCharArray(), "my-key-alias"));
 ----
 
-===== Additional settings
+=== Additional settings
 
 In addition to `ColumnMapper` mentioned above you can customize other parts of `crypto module`. You can enable `gzip`
 compression and `HMAC` usage (later will ensure integrity of data).
 
 [source, java]
 ----
-CayenneRuntime runtime = CayenneRuntime.of()
+CayenneRuntime runtime = CayenneRuntime.builder()
         .addModule(binder -> CryptoModule.extend(binder)
                 .compress()
                 .useHMAC());
@@ -95,7 +93,7 @@ implement `o.a.c.crypto.transformer.value.BytesConverter` interface that will co
 
 [source, java]
 ----
-CayenneRuntime runtime = CayenneRuntime.of()
+CayenneRuntime runtime = CayenneRuntime.builder()
         .addModule(binder -> CryptoModule.extend(binder)
                 .objectToBytesConverter(MyClass.class, new MyClassBytesConverter()));
 ----

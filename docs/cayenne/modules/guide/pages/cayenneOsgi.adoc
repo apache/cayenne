@@ -12,14 +12,12 @@
 // the specific language governing permissions and limitations under the
 // License.
 
-include::../var.adoc[]
-
 [#ext-osgi]
-=== Cayenne OSGI extension
+= Cayenne OSGI extension
 
 Helps to bootstrap Cayenne in OSGi environment.
 
-==== Maven
+== Maven
 
 [source, XML,subs="verbatim,attributes"]
 ----
@@ -30,7 +28,7 @@ Helps to bootstrap Cayenne in OSGi environment.
 </dependency>
 ----
 
-==== Gradle
+== Gradle
 
 [source, Groovy,subs="verbatim,attributes"]
 ----

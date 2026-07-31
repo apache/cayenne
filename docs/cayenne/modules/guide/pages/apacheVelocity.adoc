@@ -12,14 +12,12 @@
 // the specific language governing permissions and limitations under the
 // License.
 
-include::../var.adoc[]
-
 [#ext-velocity]
-=== Apache Velocity Extension
+= Apache Velocity Extension
 
 Enables usage of full featured Apache Velocity templates in `SQLSelect` / `SQLExec` queries.
 
-==== Maven
+== Maven
 
 [source, XML,subs="verbatim,attributes"]
 ----
@@ -30,16 +28,16 @@ Enables usage of full featured Apache Velocity templates in `SQLSelect` / `SQLEx
 </dependency>
 ----
 
-==== Gradle
+== Gradle
 
 [source, Groovy, subs="verbatim,attributes"]
 ----
 compile 'org.apache.cayenne:cayenne-velocity:{project-version}'
 ----
 
-==== Usage
+== Usage
 
-This module doesn't require any additional setup. In addition of directives mentioned in <<directives,this chapter>>,
+This module doesn't require any additional setup. In addition of directives mentioned in xref:queries.adoc#directives[this chapter],
 this module also adds `#chain` and `#chunk` directives.
 
 `#chain` and `#chunk` directives are used for conditional inclusion of SQL code. They are used together with `#chain`
