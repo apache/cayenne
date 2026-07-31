@@ -26,7 +26,7 @@ Helps to bootstrap Cayenne in OSGi environment.
 <dependency>
     <groupId>org.apache.cayenne</groupId>
     <artifactId>cayenne-osgi</artifactId>
-    <version>{version}</version>
+    <version>{project-version}</version>
 </dependency>
 ----
 
@@ -34,7 +34,7 @@ Helps to bootstrap Cayenne in OSGi environment.
 
 [source, Groovy,subs="verbatim,attributes"]
 ----
-compile 'org.apache.cayenne:cayenne-osgi:{version}'
+compile 'org.apache.cayenne:cayenne-osgi:{project-version}'
 ----
 
 

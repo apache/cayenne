@@ -26,7 +26,7 @@ Allows to integrate any JCache (JSR 107) compatible caching provider with Cayenn
 <dependency>
     <groupId>org.apache.cayenne</groupId>
     <artifactId>cayenne-jcache</artifactId>
-    <version>{version}</version>
+    <version>{project-version}</version>
 </dependency>
 ----
 
@@ -34,7 +34,7 @@ Allows to integrate any JCache (JSR 107) compatible caching provider with Cayenn
 
 [source, Groovy,subs="verbatim,attributes"]
 ----
-compile 'org.apache.cayenne:cayenne-jcache:{version}'
+compile 'org.apache.cayenne:cayenne-jcache:{project-version}'
 ----
 
 ==== Usage

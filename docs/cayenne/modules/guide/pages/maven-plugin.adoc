@@ -127,7 +127,7 @@ Example - a typical class generation scenario, where pairs of classes are genera
 <plugin>
     <groupId>org.apache.cayenne.plugins</groupId>
     <artifactId>cayenne-maven-plugin</artifactId>
-    <version>{version}</version>
+    <version>{project-version}</version>
 
     <configuration>
         <map>${project.basedir}/src/main/resources/my.map.xml</map>
@@ -303,7 +303,7 @@ Example - loading a DB schema from a local HSQLDB database (essentially a revers
 <plugin>
     <groupId>org.apache.cayenne.plugins</groupId>
     <artifactId>cayenne-maven-plugin</artifactId>
-    <version>{version}</version>
+    <version>{project-version}</version>
 
     <executions>
         <execution>
@@ -417,7 +417,7 @@ Example - creating a DB schema on a local HSQLDB database:
 <plugin>
     <groupId>org.apache.cayenne.plugins</groupId>
     <artifactId>cayenne-maven-plugin</artifactId>
-    <version>{version}</version>
+    <version>{project-version}</version>
     <executions>
         <execution>
             <configuration>

@@ -26,7 +26,7 @@ Enables usage of full featured Apache Velocity templates in `SQLSelect` / `SQLEx
 <dependency>
     <groupId>org.apache.cayenne</groupId>
     <artifactId>cayenne-velocity</artifactId>
-    <version>{version}</version>
+    <version>{project-version}</version>
 </dependency>
 ----
 
@@ -34,7 +34,7 @@ Enables usage of full featured Apache Velocity templates in `SQLSelect` / `SQLEx
 
 [source, Groovy, subs="verbatim,attributes"]
 ----
-compile 'org.apache.cayenne:cayenne-velocity:{version}'
+compile 'org.apache.cayenne:cayenne-velocity:{project-version}'
 ----
 
 ==== Usage

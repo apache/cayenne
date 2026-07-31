@@ -105,7 +105,7 @@ the framework. Add the `cayenne-modeler` dependency and an `exec-maven-plugin` e
     <dependency>
         <groupId>org.apache.cayenne.modeler</groupId>
         <artifactId>cayenne-modeler</artifactId>
-        <version>{version}</version>
+        <version>{project-version}</version>
     </dependency>
 </dependencies>
 

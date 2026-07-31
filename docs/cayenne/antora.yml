@@ -18,4 +18,5 @@ asciidoc:
   attributes:
     sectnums: ''
     sectnumlevels: '2'
-    version: '5.0'
+    project-version: '5.0-M2'
+    version: '5.0 (Alpha)'

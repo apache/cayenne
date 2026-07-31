@@ -27,7 +27,7 @@ buildscript {
     }
     // add Cayenne Gradle Plugin
     dependencies {
-        classpath group: 'org.apache.cayenne.plugins', name: 'cayenne-gradle-plugin', version: '{version}'
+        classpath group: 'org.apache.cayenne.plugins', name: 'cayenne-gradle-plugin', version: '{project-version}'
     }
 }
 
@@ -39,7 +39,7 @@ cayenne.defaultDataMap 'datamap.map.xml'
 
 // add Cayenne dependencies to your project
 dependencies {
-    compile 'org.apache.cayenne:cayenne:{version}'
+    compile 'org.apache.cayenne:cayenne:{project-version}'
 }
 ----
 

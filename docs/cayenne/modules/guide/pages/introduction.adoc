@@ -42,7 +42,7 @@ Here is a simple Maven configuration of "cdbimport" (for details see <<mavenCdbi
 <plugin>
 	<groupId>org.apache.cayenne.plugins</groupId>
 	<artifactId>cayenne-maven-plugin</artifactId>
-	<version>{version}</version>
+	<version>{project-version}</version>
 
 	<configuration>
         <cayenneProject>${project.basedir}/src/main/resources/cayenne/cayenne-project.xml</cayenneProject>

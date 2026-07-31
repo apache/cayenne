@@ -30,7 +30,7 @@ NOTE: You should prefer explicit project upgrade via Cayenne Modeler.
 <dependency>
     <groupId>org.apache.cayenne</groupId>
     <artifactId>cayenne-project-compatibility</artifactId>
-    <version>{version}</version>
+    <version>{project-version}</version>
 </dependency>
 ----
 
@@ -38,7 +38,7 @@ NOTE: You should prefer explicit project upgrade via Cayenne Modeler.
 
 [source, Groovy,subs="verbatim,attributes"]
 ----
-compile 'org.apache.cayenne:cayenne-project-compatibility:{version}'
+compile 'org.apache.cayenne:cayenne-project-compatibility:{project-version}'
 ----
 
 ==== Usage

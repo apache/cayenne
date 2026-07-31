@@ -26,7 +26,7 @@ To add Cayenne to your Maven project, include `cayenne` in your POM:
 <dependency>
    <groupId>org.apache.cayenne</groupId>
    <artifactId>cayenne</artifactId>
-   <version>{version}</version>
+   <version>{project-version}</version>
 </dependency>
 ----
 
@@ -36,7 +36,7 @@ To add Cayenne to your Gradle project, include `cayenne` module:
 
 [source, Groovy,subs="verbatim,attributes"]
 ----
-compile 'org.apache.cayenne:cayenne:{version}'
+compile 'org.apache.cayenne:cayenne:{project-version}'
 ----
 
 ==== Ant, etc.
