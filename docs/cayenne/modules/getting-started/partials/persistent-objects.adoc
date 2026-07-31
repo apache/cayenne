@@ -31,7 +31,7 @@ changes later:
 
 [source,java]
 ----
-include::{java-include-dir}/persistent/Artist.java[tag=content]
+include::example$/persistent/Artist.java[tag=content]
 ----
 
 ==== Create New Objects
@@ -42,7 +42,7 @@ Add this code to the "main" method of the Main class:
 
 [source,java,indent=0]
 ----
-include::{java-include-dir}/Main.java[tag=new-artist]
+include::example$/Main.java[tag=new-artist]
 ----
 
 Note that at this point "picasso" object is only stored in memory and is not saved in
@@ -51,7 +51,7 @@ Picasso "Paintings":
 
 [source,java,indent=0]
 ----
-include::{java-include-dir}/Main.java[tag=new-painting]
+include::example$/Main.java[tag=new-painting]
 ----
 
 Now we can link the objects together, establishing relationships. Note that in each
@@ -61,14 +61,14 @@ case below relationships are automatically established in both directions (e.g.
 
 [source, java, indent=0]
 ----
-include::{java-include-dir}/Main.java[tag=link-objects]
+include::example$/Main.java[tag=link-objects]
 ----
 
 Now lets save all five new objects, in a single method call:
 
 [source, java, indent=0]
 ----
-include::{java-include-dir}/Main.java[tag=commit]
+include::example$/Main.java[tag=commit]
 ----
 
 Now you can run the application again as described in the previous chapter. The new

@@ -47,7 +47,7 @@ The resulting POM should look like this:
     <version>0.0.1-SNAPSHOT</version>
 
     <properties>
-        <cayenne.version>{project-version}</cayenne.version> <!--1-->
+        <cayenne.version>{version}</cayenne.version> <!--1-->
         <maven.compiler.source>21</maven.compiler.source> <!--2-->
         <maven.compiler.target>21</maven.compiler.target>
     </properties>

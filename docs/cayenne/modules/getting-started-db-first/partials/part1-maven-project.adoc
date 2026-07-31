@@ -32,7 +32,7 @@ For the convenience let's define Cayenne version that we will use across project
 [source,xml,subs="verbatim,attributes"]
 ----
 <properties>
-    <cayenne.version>{project-version}</cayenne.version>
+    <cayenne.version>{version}</cayenne.version>
 </properties>
 ----
 

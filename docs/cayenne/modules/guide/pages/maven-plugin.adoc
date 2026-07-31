@@ -127,7 +127,7 @@ Example - a typical class generation scenario, where pairs of classes are genera
 <plugin>
     <groupId>org.apache.cayenne.plugins</groupId>
     <artifactId>cayenne-maven-plugin</artifactId>
-    <version>{project-version}</version>
+    <version>{version}</version>
 
     <configuration>
         <map>${project.basedir}/src/main/resources/my.map.xml</map>
