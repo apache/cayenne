@@ -7,9 +7,15 @@ nav:
   - modules/getting-started-db-first/nav.adoc
   - modules/guide/nav.adoc
   - modules/javadoc/nav.adoc
+ext:
+  collector:
+    - scan:
+        dir: ./../../tutorials/tutorial/src/main/java/org/apache/cayenne/tutorial
+        into: modules/getting-started/examples
 asciidoc:
   attributes:
     sectnums: ''
     sectnumlevels: '2'
     project-version: '5.0'
     version: '5.0'
+    java-include-dir: 'example$'
