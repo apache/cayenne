@@ -2,6 +2,7 @@ name: cayenne
 title: Apache Cayenne
 version: '5.0'
 display_version: '5.0 (Alpha)'
+prerelease: true
 start_page: getting-started:index.adoc
 nav:
   - modules/getting-started/nav.adoc
