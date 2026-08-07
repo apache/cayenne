@@ -13,9 +13,9 @@
 // License.
 
 [#ant_tasks]
-=== Ant Tasks
+= Ant Tasks
 
-Ant tasks are the same as <<maven_plugin,Maven plugin goals>> described previously, namely "cgen", "cdbgen", "cdbimport".
+Ant tasks are the same as xref:maven-plugin.adoc[Maven plugin goals] described previously, namely "cgen", "cdbgen", "cdbimport".
 Configuration parameters are also similar (except Maven can guess many defaults that Ant can't). To include Ant tasks
 in the project, use the following Antlib:
 
@@ -39,11 +39,11 @@ in the project, use the following Antlib:
 </typedef>
 ----
 
-==== cgen
+== cgen
 
-==== cdbgen
+== cdbgen
 
-==== cdbimport
+== cdbimport
 
 This is an Ant counterpart of "cdbimport" goal of cayenne-maven-plugin described above. It has exactly the same
 properties. Here is a usage example:

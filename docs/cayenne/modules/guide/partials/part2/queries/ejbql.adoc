@@ -103,7 +103,7 @@ The following example is functionally identical to the one prior.
 select p from Painting p where p.paintingTitle in (?1)
 ----
 
-It is possible to convert an xref:expressions[Expression] object used with a xref:select[ObjectSelect] to EJBQL. Use the
+It is possible to convert an xref:expressions.adoc[Expression] object used with a xref:queries.adoc#select[ObjectSelect] to EJBQL. Use the
 Expression#appendAsEJBQL methods for this purpose.
 
 While Cayenne Expressions discussed previously can be thought of as identical to JPQL WHERE clause, and indeed they are

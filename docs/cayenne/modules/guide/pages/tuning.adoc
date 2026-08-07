@@ -12,9 +12,9 @@
 // the specific language governing permissions and limitations under the
 // License.
 
-=== Performance Tuning
+= Performance Tuning
 
-==== Prefetching
+== Prefetching
 
 Prefetching is a technique that allows to bring back in one query not only the queried objects, but also objects related to them.
 In other words it is a controlled eager relationship resolving mechanism. Prefetching is discussed in the "Performance Tuning" chapter,
@@ -95,10 +95,10 @@ Joint is the most efficient prefetch type of the three as far as generated SQL g
 Its downsides are the potentially increased amount of data that needs to get across the network between the application server and the database,
 and more data processing that needs to be done on the Cayenne side.
 
-`<<select,ObjectSelect>>` query supports all three types of semantics. You can mix and match them in the same query for
+`xref:queries.adoc#select[ObjectSelect]` query supports all three types of semantics. You can mix and match them in the same query for
 different prefetches.
 
-`<<sqlselect,SQLSelect>>` query supports "JOINT" and "DISJOINT_BY_ID". It does not work with "DISJOINT", as the query does not provide
+`xref:queries.adoc#sqlselect[SQLSelect]` query supports "JOINT" and "DISJOINT_BY_ID". It does not work with "DISJOINT", as the query does not provide
 enough information to Cayenne to build dependent prefetch queries. So "DISJOINT" will result in exception. "JOINT"
 prefetching requires a bit of effort shaping the SQL to include the right columns in the result and label them properly
 to be convertible into object properties. The main rules to follow are:
@@ -125,14 +125,14 @@ List<Artist> objects = SQLSelect.query(Artist.class, "SELECT "
     .select(context);
 ----
 
-`<<ejbql,EJBQLQuery>>` uses the "FETCH" keyword to enable prefetching:
+`xref:queries.adoc#ejbql[EJBQLQuery]` uses the "FETCH" keyword to enable prefetching:
 
 [source, SQL]
 ----
 SELECT a FROM Artist a LEFT JOIN FETCH a.paintings
 ----
 
-==== Data Rows
+== Data Rows
 
 Converting result set data to Persistent objects and registering these objects in the ObjectContext can be an expensive
  operation comparable to the time spent running the query (and frequently exceeding it). Internally Cayenne builds the result as a list of DataRows,
@@ -172,9 +172,9 @@ for(DataRow row : rows) {
 }
 ----
 
-==== Specific Attributes and Relationships with EJBQL
+== Specific Attributes and Relationships with EJBQL
 
-It is possible to fetch specific attributes and relationships from a model using <<EJBQLQuery>>.
+It is possible to fetch specific attributes and relationships from a model using xref:queries.adoc#ejbql[EJBQLQuery].
 The following example would return a java.util.List of String objects;
 
 [source, SQL]
@@ -191,7 +191,7 @@ SELECT a.name, a.dateOfBirth FROM Artist a
 
 Refer to third-party query language documentation for further detail on this mechanism.
 
-==== Iterated Queries
+== Iterated Queries
 
 While contemporary hardware may easily allow applications to fetch hundreds of thousands or even millions of objects into memory,
 it doesn't mean this is always a good idea to do so. You can optimize processing of very large result sets with two techniques discussed in this and the following chapter - iterated and paginated queries.
@@ -244,7 +244,7 @@ try(ResultBatchIterator<Artist> it = ObjectSelect.query(Artist.class).batchItera
 }
 ----
 
-==== Paginated Queries
+== Paginated Queries
 
 Enabling query pagination allows to load very large result sets in a Java app with very little memory overhead
 (much smaller than even the DataRows option discussed above). Moreover it is completely transparent to the application -
@@ -277,11 +277,11 @@ only a few top objects are normally accessed. At the same time pagination allows
 fetching all the objects. And again - it is completely transparent and looks like a normal query.
 
 [[caching]]
-==== Caching and Fresh Data
+== Caching and Fresh Data
 
-===== Object Caching
+=== Object Caching
 
-===== Query Result Caching
+=== Query Result Caching
 
 Cayenne supports mostly transparent caching of the query results. There are two levels of the cache: local
 (i.e. results cached by the ObjectContext) and shared (i.e. the results cached at the stack level and shared between all contexts).
@@ -301,26 +301,26 @@ Those are arbitrary names that allow to categorize queries for the purpose of se
 
 The above API is enough for the caching to work, but by default your cache is an unmanaged LRU map. You can't control its size,
 expiration policies, etc. For the managed cache, you will need to explicitly use one of the more advanced cache providers.
-Use can use <<ext-jcache,JCache integration module>> to enable any of JCache API compatible caching providers.
+Use can use xref:jCache.adoc[JCache integration module] to enable any of JCache API compatible caching providers.
 
 Often "passive" cache expiration policies used by caching providers are not sufficient, and the users want real-time cache invalidation when the data changes.
-So in addition to those policies, the app can invalidate individual cache groups explicitly via `QueryCache`:
+So in addition to those policies, the app can invalidate individual cache groups explicitly with `RefreshQuery`:
 
 [source, Java]
 ----
-QueryCache cache = runtime.getDataDomain().getQueryCache();
-cache.removeGroup("artist");
+RefreshQuery refresh = new RefreshQuery("artist");
+context.performGenericQuery(refresh);
 ----
 
 The above can be used e.g. to build UI for manual cache invalidation.
 It is also possible to automate cache refresh when certain entities are committed.
-This can be done with the help of <<ext-cache-invalidation,Cache invalidation extension>>.
+This can be done with the help of xref:cacheInvalidation.adoc[Cache invalidation extension].
 
 Finally you may cluster cache group events. They are very small and can be efficiently sent over the wire to other JVMs running Cayenne.
 An example of Cayenne setup with event clustering is https://github.com/andrus/wowodc13/tree/master/services/src/main/java/demo/services/cayenne[available on GitHub].
 
 
-==== Turning off Synchronization of ObjectContexts
+== Turning off Synchronization of ObjectContexts
 
 By default when a single ObjectContext commits its changes, all other contexts in the same runtime receive an event that contains all the committed changes.
 This allows them to update their cached object state to match the latest committed data. There are however many problems with this ostensibly helpful feature.

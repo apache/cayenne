@@ -50,7 +50,7 @@ public class MyEntity extends _MyEntity {
 
 After any modification of `MyEntity` objects cache group `"some-group"` will be dropped from cache automatically.
 
-NOTE: You can read more about cache and cache groups in corresponding xref:caching[chapter] of this documentation.
+NOTE: You can read more about cache and cache groups in corresponding xref:tuning.adoc#caching[chapter] of this documentation.
 
 In case you need some complex logic of cache invalidation you can disable default behaviour and provide your own.
 

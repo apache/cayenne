@@ -60,7 +60,7 @@ CayenneRuntime.builder()
 
 NOTE: You can read about using cache in Cayenne in xref:tuning.adoc#caching[this] chapter.
 
-You may else be interested in xref:cacheInvalidation.adoc#ext-cache-invalidation[Cache invalidation extension].
+You may else be interested in xref:cacheInvalidation.adoc[Cache invalidation extension].
 
 === Ehcache setup example
 Here is an example of using `ehcache` as cache manager.

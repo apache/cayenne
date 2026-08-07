@@ -13,9 +13,9 @@
 // License.
 
 [#gradle_plugin]
-=== Gradle Plugin
+= Gradle Plugin
 
-Cayenne Gradle plugin provides tasks similar to <<maven_plugin,Maven plugin>>. It also provides `cayenne` extension that
+Cayenne Gradle plugin provides tasks similar to xref:maven-plugin.adoc[Maven plugin]. It also provides `cayenne` extension that
 has some useful utility methods. Here is example of how to include Cayenne plugin into your project:
 
 [source, Groovy, subs="verbatim,attributes"]
@@ -45,9 +45,9 @@ dependencies {
 
 NOTE: Cayenne Gradle plugin is experimental and it's API may still change.
 
-==== cgen
+== cgen
 
-Cgen task generates Java classes based on your DataMap, it has same configuration parameters as in Maven Plugin version, described in xref:tablecgen[Table, “cgen required parameters”.]. If you provided default DataMap via `cayenne.defaultDataMap`, you can skip `cgen` configuration as default settings will suffice in common case.
+Cgen task generates Java classes based on your DataMap, it has same configuration parameters as in Maven Plugin version, described in xref:maven-plugin.adoc#tablecgen[Table, “cgen required parameters”.]. If you provided default DataMap via `cayenne.defaultDataMap`, you can skip `cgen` configuration as default settings will suffice in common case.
 
 Here is how you can change settings of the default `cgen` task:
 
@@ -60,10 +60,10 @@ cgen {
 }
 ----
 
-==== cdbimport
+== cdbimport
 
 This task is for creating and synchronizing your Cayenne model from database schema. Full list of parameters are same
-as in <<cdbimportTable,Maven Plugin>>, with the exception that Gradle version will use Groovy instead of XML. Here is
+as in xref:maven-plugin.adoc#cdbimportTable[Maven Plugin], with the exception that Gradle version will use Groovy instead of XML. Here is
 example of configuration for cdbimport task:
 
 [source, Groovy]
@@ -126,10 +126,10 @@ cdbimport {
 }
 ----
 
-==== cdbgen
+== cdbgen
 
 Cdbgen task drops and/or generates tables in a database on Cayenne DataMap. Full list of parameters is same as in the
-<<cdbgenTable,Maven plugin>>. Here is example of how to configure default `cdbgen` task:
+xref:maven-plugin.adoc#cdbgenTable[Maven plugin]. Here is example of how to configure default `cdbgen` task:
 
 [source, Groovy]
 ----
@@ -153,7 +153,7 @@ cdbgen {
 }
 ----
 
-==== Link tasks to Gradle build lifecycle
+== Link tasks to Gradle build lifecycle
 
 You can connect Cayenne tasks to the default build lifecycle. Here is short example of how to connect
 defaut `cgen` and `cdbimport` tasks with `compileJava` task:
