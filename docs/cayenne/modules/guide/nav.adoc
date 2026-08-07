@@ -12,7 +12,7 @@
 // the specific language governing permissions and limitations under the
 // License.
 
-﻿* xref:index.adoc[Cayenne Guide]
+* xref:index.adoc[Cayenne Guide]
 ** Object Relational Mapping with Cayenne
 *** xref:setup.adoc[Setup]
 *** xref:mapping.adoc[Cayenne Mapping Structure]
