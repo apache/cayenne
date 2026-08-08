@@ -44,8 +44,6 @@ import java.nio.file.Files;
 import java.nio.file.Path;
 import java.util.Arrays;
 import java.util.Collection;
-import java.util.HashMap;
-import java.util.Map;
 import java.util.Objects;
 import java.util.Properties;
 import java.util.stream.Collectors;
@@ -58,8 +56,6 @@ public class ClassGenerationAction {
 
     protected final CgenConfiguration configuration;
     protected final Logger logger;
-    protected final Map<String, Template> templateCache;
-
     private final ToolsUtilsFactory utilsFactory;
     private final MetadataUtils metadataUtils;
 
@@ -86,20 +82,22 @@ public class ClassGenerationAction {
         this.utilsFactory = Objects.requireNonNull(utilsFactory);
         this.metadataUtils = Objects.requireNonNull(metadataUtils);
         this.logger = Objects.requireNonNull(logger);
+        this.context = createContext(configuration.getExternalToolConfig());
+    }
 
-        String toolConfigFile = configuration.getExternalToolConfig();
+    private static Context createContext(String toolConfigFile) {
 
-        if (System.getProperty("org.apache.velocity.tools") != null || toolConfigFile != null) {
-            ToolManager manager = new ToolManager(true, true);
-            if (toolConfigFile != null) {
-                FactoryConfiguration config = ConfigurationUtils.find(toolConfigFile);
-                manager.getToolboxFactory().configure(config);
-            }
-            this.context = manager.createContext();
-        } else {
-            this.context = new VelocityContext();
+        if (System.getProperty("org.apache.velocity.tools") == null && toolConfigFile == null) {
+            return new VelocityContext();
         }
-        this.templateCache = new HashMap<>(5);
+        
+        ToolManager manager = new ToolManager(true, true);
+        if (toolConfigFile != null) {
+            FactoryConfiguration config = ConfigurationUtils.find(toolConfigFile);
+            manager.getToolboxFactory().configure(config);
+        }
+
+        return manager.createContext();
     }
 
     protected void resetContextForArtifact(Artifact artifact) {
@@ -207,13 +205,8 @@ public class ClassGenerationAction {
 
         validateAttributes();
 
-        try {
-            for (Artifact artifact : configuration.getArtifacts()) {
-                execute(artifact);
-            }
-        } finally {
-            // must reset engine at the end of class generator run to avoid memory leaks and stale templates
-            templateCache.clear();
+        for (Artifact artifact : configuration.getArtifacts()) {
+            execute(artifact);
         }
     }
 
