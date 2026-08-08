@@ -32,6 +32,7 @@ import org.apache.cayenne.modeler.project.CgenOps;
 import org.apache.cayenne.modeler.project.ProjectSession;
 import org.apache.cayenne.modeler.ui.project.editor.datadomain.DataDomainGeneratorsTab;
 import org.apache.cayenne.tools.ToolsInjectorBuilder;
+import org.slf4j.helpers.NOPLogger;
 
 import javax.swing.JOptionPane;
 import java.util.Set;
@@ -64,7 +65,8 @@ public class DataDomainCgenTab extends DataDomainGeneratorsTab<CgenConfiguration
                     cgenConfigList.add(createConfiguration(dataMap));
                 }
                 for (CgenConfiguration cgenConfiguration : cgenConfigList.getAll()) {
-                    ClassGenerationAction action = actionFactory.createAction(cgenConfiguration);
+                    ClassGenerationAction action = actionFactory.createAction(cgenConfiguration,
+                            NOPLogger.NOP_LOGGER);
                     action.prepareArtifacts();
                     action.execute();
                 }

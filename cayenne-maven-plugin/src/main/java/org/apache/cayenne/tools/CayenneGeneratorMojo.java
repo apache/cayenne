@@ -275,13 +275,12 @@ public class CayenneGeneratorMojo extends AbstractMojo {
         try {
             loaderAction.setAdditionalDataMapFiles(convertAdditionalDataMaps());
             DataMap dataMap = loaderAction.getMainDataMap();
-            for (ClassGenerationAction action : createActions(dataMap)) {
+            for (ClassGenerationAction action : createActions(dataMap, logger)) {
                 CayenneGeneratorEntityFilterAction filterEntityAction = new CayenneGeneratorEntityFilterAction();
                 filterEntityAction.setNameFilter(NamePatternMatcher.build(logger, includeEntities, excludeEntities));
 
                 CayenneGeneratorEmbeddableFilterAction filterEmbeddableAction = new CayenneGeneratorEmbeddableFilterAction();
                 filterEmbeddableAction.setNameFilter(NamePatternMatcher.build(logger, null, excludeEmbeddables));
-                action.setLogger(logger);
 
                 if (!hasConfig() && useConfigFromDataMap) {
                     action.prepareArtifacts();
@@ -323,10 +322,10 @@ public class CayenneGeneratorMojo extends AbstractMojo {
                 dataMapSuperTemplate != null || createPKProperties != null || externalToolConfig != null;
     }
 
-    private List<ClassGenerationAction> createActions(DataMap dataMap) {
+    private List<ClassGenerationAction> createActions(DataMap dataMap, Logger logger) {
         List<ClassGenerationAction> actions = new ArrayList<>();
         for (CgenConfiguration configuration : buildConfigurations(dataMap)) {
-            actions.add(injector.getInstance(ClassGenerationActionFactory.class).createAction(configuration));
+            actions.add(injector.getInstance(ClassGenerationActionFactory.class).createAction(configuration, logger));
         }
         return actions;
     }

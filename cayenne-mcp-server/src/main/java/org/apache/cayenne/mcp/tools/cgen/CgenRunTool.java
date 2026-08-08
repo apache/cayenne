@@ -43,6 +43,7 @@ import org.apache.cayenne.project.ProjectLoader;
 import org.apache.cayenne.project.ProjectModule;
 import org.apache.cayenne.resource.URLResource;
 import org.apache.cayenne.tools.ToolsInjectorBuilder;
+import org.slf4j.helpers.NOPLogger;
 
 import java.io.IOException;
 import java.nio.file.Files;
@@ -186,9 +187,11 @@ public class CgenRunTool {
         CgenValidation allPassed = new CgenValidation(true, true, true, true, true);
 
         // Execute cgen
-        InstrumentedClassGenerationAction action = new InstrumentedClassGenerationAction(cgenConfig);
-        action.setUtilsFactory(injector.getInstance(ToolsUtilsFactory.class));
-        action.setMetadataUtils(injector.getInstance(MetadataUtils.class));
+        InstrumentedClassGenerationAction action = new InstrumentedClassGenerationAction(
+                cgenConfig,
+                injector.getInstance(ToolsUtilsFactory.class),
+                injector.getInstance(MetadataUtils.class),
+                NOPLogger.NOP_LOGGER);
 
         action.prepareArtifacts();
         int filesConsidered = action.countFilesConsidered();

@@ -50,6 +50,7 @@ import org.apache.cayenne.modeler.toolkit.icon.IconFactory;
 import org.apache.cayenne.tools.ToolsInjectorBuilder;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.slf4j.helpers.NOPLogger;
 
 import javax.swing.*;
 import java.awt.*;
@@ -358,7 +359,7 @@ public class CgenPanel extends ProjectPanel implements ObjEntityListener, Embedd
                 .addModule(binder -> binder.bind(DataChannelMetaData.class).toInstance(app.getMetaData()))
                 .create()
                 .getInstance(ClassGenerationActionFactory.class)
-                .createAction(cgenConfiguration);
+                .createAction(cgenConfiguration, NOPLogger.NOP_LOGGER);
 
         try {
             generator.prepareArtifacts();

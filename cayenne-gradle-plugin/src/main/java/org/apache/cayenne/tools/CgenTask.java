@@ -284,7 +284,6 @@ public class CgenTask extends BaseCayenneTask {
 
                 CayenneGeneratorEmbeddableFilterAction filterEmbeddableAction = new CayenneGeneratorEmbeddableFilterAction();
                 filterEmbeddableAction.setNameFilter(NamePatternMatcher.build(getLogger(), null, excludeEmbeddables));
-                generator.setLogger(getLogger());
 
                 if (!hasConfig() && useConfigFromDataMap) {
                     generator.prepareArtifacts();
@@ -324,7 +323,8 @@ public class CgenTask extends BaseCayenneTask {
     List<ClassGenerationAction> createGenerators(DataMap dataMap) {
         List<ClassGenerationAction> generators = new ArrayList<>();
         for (CgenConfiguration configuration : buildConfigurations(dataMap)) {
-            generators.add(injector.getInstance(ClassGenerationActionFactory.class).createAction(configuration));
+            generators.add(injector.getInstance(ClassGenerationActionFactory.class)
+                    .createAction(configuration, getLogger()));
         }
         return generators;
     }

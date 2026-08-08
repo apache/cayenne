@@ -32,6 +32,7 @@ import org.apache.cayenne.map.SelectQueryDescriptor;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.io.TempDir;
+import org.slf4j.helpers.NOPLogger;
 
 import java.io.BufferedReader;
 import java.io.File;
@@ -47,7 +48,7 @@ import java.util.Collection;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 
-public class BaseTemplatesGenerationTest {
+public class BaseTemplatesGenerationTest extends CgenCase {
 
     @TempDir
     public File folder;
@@ -60,7 +61,11 @@ public class BaseTemplatesGenerationTest {
     @BeforeEach
     public void setUp() {
         cgenConfiguration = new CgenConfiguration();
-        action = new ClassGenerationAction(cgenConfiguration);
+        action = new ClassGenerationAction(
+                cgenConfiguration,
+                getUnitTestInjector().getInstance(ToolsUtilsFactory.class),
+                getUnitTestInjector().getInstance(MetadataUtils.class),
+                NOPLogger.NOP_LOGGER);
         dataMap = new DataMap();
         dataMap.setDefaultPackage("test");
         objEntity = new ObjEntity();
@@ -148,7 +153,6 @@ public class BaseTemplatesGenerationTest {
         cgenConfiguration.loadEntity(objEntity);
         cgenConfiguration.setDataMap(dataMap);
 
-        action.setUtilsFactory(new DefaultToolsUtilsFactory());
         action.execute();
 
         String targetName = dataMap.getName();

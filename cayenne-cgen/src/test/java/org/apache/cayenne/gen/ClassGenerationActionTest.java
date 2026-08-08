@@ -37,6 +37,7 @@ import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.io.TempDir;
+import org.slf4j.helpers.NOPLogger;
 
 import static org.junit.jupiter.api.Assertions.*;
 
@@ -54,14 +55,26 @@ public class ClassGenerationActionTest extends CgenCase {
 	public void setUp() throws Exception {
 		writers = new ArrayList<>(3);
 		cgenConfiguration = new CgenConfiguration();
-		action = new TestClassGenerationAction(getUnitTestInjector().getInstance(ClassGenerationActionFactory.class)
-				.createAction(cgenConfiguration), writers);
+		action = new TestClassGenerationAction(
+				cgenConfiguration,
+				getUnitTestInjector().getInstance(ToolsUtilsFactory.class),
+				getUnitTestInjector().getInstance(MetadataUtils.class),
+				NOPLogger.NOP_LOGGER,
+				writers);
 	}
 
 	@AfterEach
 	public void tearDown() throws Exception {
 		action = null;
 		writers = null;
+	}
+
+	private ClassGenerationAction newAction() {
+		return new ClassGenerationAction(
+				cgenConfiguration,
+				getUnitTestInjector().getInstance(ToolsUtilsFactory.class),
+				getUnitTestInjector().getInstance(MetadataUtils.class),
+				NOPLogger.NOP_LOGGER);
 	}
 
 	@Test
@@ -230,7 +243,7 @@ public class ClassGenerationActionTest extends CgenCase {
 
 		cgenConfiguration.setRootPath(tempFolder.toPath());
 		cgenConfiguration.updateOutputPath(Paths.get("."));
-		action = new ClassGenerationAction(cgenConfiguration);
+		action = newAction();
 		ObjEntity testEntity1 = new ObjEntity("TEST");
 		testEntity1.setClassName("TestClass1");
 		action.context.put(Artifact.SUPER_PACKAGE_KEY, "");
@@ -261,7 +274,7 @@ public class ClassGenerationActionTest extends CgenCase {
 
 		cgenConfiguration.setRootPath(tempFolder.toPath());
 		cgenConfiguration.updateOutputPath(Paths.get("."));
-		action = new ClassGenerationAction(cgenConfiguration);
+		action = newAction();
 		action.context.put(Artifact.SUPER_PACKAGE_KEY, "");
 		action.context.put(Artifact.SUPER_CLASS_KEY, "TestClass1");
 
@@ -289,7 +302,7 @@ public class ClassGenerationActionTest extends CgenCase {
 
 		cgenConfiguration.setRootPath(tempFolder.toPath());
 		cgenConfiguration.updateOutputPath(Paths.get("."));
-		action = new ClassGenerationAction(cgenConfiguration);
+		action = newAction();
 		ObjEntity testEntity1 = new ObjEntity("TEST");
 		testEntity1.setClassName("TestClass1");
 		action.context.put(Artifact.SUB_PACKAGE_KEY, "");

@@ -22,16 +22,20 @@ import java.io.StringWriter;
 import java.io.Writer;
 import java.util.Collection;
 
+import org.apache.cayenne.gen.CgenConfiguration;
 import org.apache.cayenne.gen.ClassGenerationAction;
+import org.apache.cayenne.gen.MetadataUtils;
 import org.apache.cayenne.gen.TemplateType;
+import org.apache.cayenne.gen.ToolsUtilsFactory;
+import org.slf4j.Logger;
 
 public class TestClassGenerationAction extends ClassGenerationAction {
 
-    private Collection<StringWriter> writers;
+    private final Collection<StringWriter> writers;
 
-    public TestClassGenerationAction(ClassGenerationAction classGenerationAction, Collection<StringWriter> writers){
-        super(classGenerationAction.getConfiguration());
-        setUtilsFactory(classGenerationAction.getUtilsFactory());
+    public TestClassGenerationAction(CgenConfiguration configuration, ToolsUtilsFactory utilsFactory,
+                                     MetadataUtils metadataUtils, Logger logger, Collection<StringWriter> writers) {
+        super(configuration, utilsFactory, metadataUtils, logger);
         this.writers = writers;
     }
 

@@ -21,7 +21,6 @@ package org.apache.cayenne.tools;
 
 import org.apache.cayenne.gen.CgenConfiguration;
 import org.apache.cayenne.gen.CgenTemplate;
-import org.apache.cayenne.gen.ClassGenerationAction;
 import org.apache.cayenne.map.DataMap;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.io.TempDir;
@@ -86,23 +85,20 @@ public class CgenTaskTest {
 
         for (CgenConfiguration configuration : task.buildConfigurations(dataMap)) {
 
-            ClassGenerationAction createdAction = new ClassGenerationAction(configuration);
+            CgenTemplate cgenTemplate = configuration.getTemplate();
+            assertNotNull(configuration.getEmbeddableSuperTemplate());
+            assertNotNull(configuration.getEmbeddableTemplate());
 
-            CgenConfiguration cgenConfiguration = createdAction.getCgenConfiguration();
-            CgenTemplate cgenTemplate = cgenConfiguration.getTemplate();
-            assertNotNull(cgenConfiguration.getEmbeddableSuperTemplate());
-            assertNotNull(cgenConfiguration.getEmbeddableTemplate());
-
-            assertEquals("UTF-8", cgenConfiguration.getEncoding());
-            assertEquals("entity", cgenConfiguration.getArtifactsGenerationMode());
-            assertEquals("pattern", cgenConfiguration.getOutputPattern());
-            assertEquals("org.example.model.auto", cgenConfiguration.getSuperPkg());
+            assertEquals("UTF-8", configuration.getEncoding());
+            assertEquals("entity", configuration.getArtifactsGenerationMode());
+            assertEquals("pattern", configuration.getOutputPattern());
+            assertEquals("org.example.model.auto", configuration.getSuperPkg());
             assertTrue(cgenTemplate.isFile());
             assertEquals("org/apache/cayenne/tools/velotemplate.vm", cgenTemplate.getData());
-            assertTrue(cgenConfiguration.isMakePairs());
-            assertTrue(cgenConfiguration.isCreatePropertyNames());
-            assertTrue(cgenConfiguration.isOverwrite());
-            assertTrue(cgenConfiguration.isUsePkgPath());
+            assertTrue(configuration.isMakePairs());
+            assertTrue(configuration.isCreatePropertyNames());
+            assertTrue(configuration.isOverwrite());
+            assertTrue(configuration.isUsePkgPath());
         }
     }
 

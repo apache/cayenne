@@ -22,11 +22,14 @@ import org.apache.cayenne.gen.Artifact;
 import org.apache.cayenne.gen.ArtifactGenerationMode;
 import org.apache.cayenne.gen.CgenConfiguration;
 import org.apache.cayenne.gen.ClassGenerationAction;
+import org.apache.cayenne.gen.MetadataUtils;
 import org.apache.cayenne.gen.TemplateType;
+import org.apache.cayenne.gen.ToolsUtilsFactory;
 import org.apache.cayenne.map.Embeddable;
 import org.apache.cayenne.map.ObjEntity;
 import org.apache.cayenne.mcp.tools.cgen.protocol.CgenFileEntry;
 import org.apache.cayenne.mcp.tools.cgen.protocol.CgenFileKind;
+import org.slf4j.Logger;
 
 import java.io.File;
 import java.util.ArrayList;
@@ -44,8 +47,13 @@ class InstrumentedClassGenerationAction extends ClassGenerationAction {
     private final List<CgenFileEntry> writtenFiles;
     private Artifact currentArtifact;
 
-    public InstrumentedClassGenerationAction(CgenConfiguration configuration) {
-        super(configuration);
+    public InstrumentedClassGenerationAction(
+            CgenConfiguration configuration,
+            ToolsUtilsFactory utilsFactory,
+            MetadataUtils metadataUtils,
+            Logger logger) {
+
+        super(configuration, utilsFactory, metadataUtils, logger);
         this.writtenFiles = new ArrayList<>();
     }
 

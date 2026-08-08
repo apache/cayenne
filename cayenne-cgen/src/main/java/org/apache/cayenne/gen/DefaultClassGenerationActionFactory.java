@@ -20,6 +20,7 @@
 package org.apache.cayenne.gen;
 
 import org.apache.cayenne.di.Inject;
+import org.slf4j.Logger;
 
 /**
  * @since 4.2
@@ -33,11 +34,8 @@ public class DefaultClassGenerationActionFactory implements ClassGenerationActio
     private MetadataUtils metadataUtils;
 
     @Override
-    public ClassGenerationAction createAction(CgenConfiguration configuration) {
-        ClassGenerationAction classGenerationAction = new ClassGenerationAction(configuration);
-        classGenerationAction.setUtilsFactory(utilsFactory);
-        classGenerationAction.setMetadataUtils(metadataUtils);
-        return classGenerationAction;
+    public ClassGenerationAction createAction(CgenConfiguration configuration, Logger logger) {
+        return new ClassGenerationAction(configuration, utilsFactory, metadataUtils, logger);
     }
 
 }

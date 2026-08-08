@@ -22,13 +22,14 @@ package org.apache.cayenne.gen;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.io.TempDir;
+import org.slf4j.helpers.NOPLogger;
 
 import java.io.File;
 import java.nio.file.Paths;
 
 import static org.junit.jupiter.api.Assertions.assertNotNull;
 
-public class TemplateLocationTest {
+public class TemplateLocationTest extends CgenCase {
 
     @TempDir
     public File tempFolder;
@@ -40,7 +41,11 @@ public class TemplateLocationTest {
     @BeforeEach
     public void setUp() {
         cgenConfiguration = new CgenConfiguration();
-        action = new ClassGenerationAction(cgenConfiguration);
+        action = new ClassGenerationAction(
+                cgenConfiguration,
+                getUnitTestInjector().getInstance(ToolsUtilsFactory.class),
+                getUnitTestInjector().getInstance(MetadataUtils.class),
+                NOPLogger.NOP_LOGGER);
         templateType = TemplateType.ENTITY_SUBCLASS;
     }
 

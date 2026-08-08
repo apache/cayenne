@@ -25,6 +25,7 @@ import org.apache.cayenne.gen.ClassGenerationAction;
 import org.apache.cayenne.gen.ClassGenerationActionFactory;
 import org.apache.cayenne.gen.MetadataUtils;
 import org.apache.cayenne.gen.ToolsUtilsFactory;
+import org.slf4j.Logger;
 
 import java.io.StringWriter;
 
@@ -41,12 +42,8 @@ public class PreviewClassGenerationFactory implements ClassGenerationActionFacto
     private StringWriter writer;
 
     @Override
-    public ClassGenerationAction createAction(CgenConfiguration configuration) {
-        PreviewGenerationAction action = new PreviewGenerationAction(configuration);
-        action.setUtilsFactory(utilsFactory);
-        action.setMetadataUtils(metadataUtils);
-        action.setWriter(writer);
-        return action;
+    public ClassGenerationAction createAction(CgenConfiguration configuration, Logger logger) {
+        return new PreviewGenerationAction(configuration, utilsFactory, metadataUtils, logger, writer);
     }
 
 }

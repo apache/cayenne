@@ -46,23 +46,24 @@ import java.util.Arrays;
 import java.util.Collection;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.Objects;
 import java.util.Properties;
 import java.util.stream.Collectors;
 
 public class ClassGenerationAction {
 
-    public static final String SUPERCLASS_PREFIX = "_";
+    private static final String SUPERCLASS_PREFIX = "_";
     private static final String WILDCARD = "*";
     private static final String CUSTOM_TEMPLATE_REPO = "customTemplateRepo";
 
-    protected CgenConfiguration configuration;
-    protected Logger logger;
-
-    protected Context context;
+    protected final CgenConfiguration configuration;
+    protected final Logger logger;
     protected final Map<String, Template> templateCache;
 
-    private ToolsUtilsFactory utilsFactory;
-    private MetadataUtils metadataUtils;
+    private final ToolsUtilsFactory utilsFactory;
+    private final MetadataUtils metadataUtils;
+
+    protected Context context;
 
     /**
      * Optionally allows user-defined tools besides {@link ImportUtils} for working with velocity templates.<br/>
@@ -75,8 +76,17 @@ public class ClassGenerationAction {
      * tools.application.myTool = com.mycompany.MyTool</pre>
      * Then the methods in the MyTool class will be available for use in the template like ${myTool.myMethod(arg)}
      */
-    public ClassGenerationAction(CgenConfiguration configuration) {
-        this.configuration = configuration;
+    public ClassGenerationAction(
+            CgenConfiguration configuration,
+            ToolsUtilsFactory utilsFactory,
+            MetadataUtils metadataUtils,
+            Logger logger) {
+
+        this.configuration = Objects.requireNonNull(configuration);
+        this.utilsFactory = Objects.requireNonNull(utilsFactory);
+        this.metadataUtils = Objects.requireNonNull(metadataUtils);
+        this.logger = Objects.requireNonNull(logger);
+
         String toolConfigFile = configuration.getExternalToolConfig();
 
         if (System.getProperty("org.apache.velocity.tools") != null || toolConfigFile != null) {
@@ -375,14 +385,6 @@ public class ClassGenerationAction {
     }
 
     /**
-     * Injects an optional logger that will be used to trace generated files at
-     * the info level.
-     */
-    public void setLogger(Logger logger) {
-        this.logger = logger;
-    }
-
-    /**
      * @since 4.1
      */
     public CgenConfiguration getConfiguration() {
@@ -395,22 +397,6 @@ public class ClassGenerationAction {
      */
     public void setContext(Context context) {
         this.context = context;
-    }
-
-    public ToolsUtilsFactory getUtilsFactory() {
-        return utilsFactory;
-    }
-
-    public void setUtilsFactory(ToolsUtilsFactory utilsFactory) {
-        this.utilsFactory = utilsFactory;
-    }
-
-    public void setMetadataUtils(MetadataUtils metadataUtils) {
-        this.metadataUtils = metadataUtils;
-    }
-
-    public MetadataUtils getMetadataUtils() {
-        return metadataUtils;
     }
 
     /**
@@ -454,10 +440,8 @@ public class ClassGenerationAction {
 
             Files.write(file.toPath(), generated);
 
-            if (logger != null) {
-                String label = templateType.isSuperclass() ? "superclass" : "class";
-                logger.info("Generating {} file: {}", label, file.getCanonicalPath());
-            }
+            String label = templateType.isSuperclass() ? "superclass" : "class";
+            logger.info("Generating {} file: {}", label, file.getCanonicalPath());
 
             fileWritten(file, templateType);
         }
