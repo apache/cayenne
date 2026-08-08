@@ -198,10 +198,12 @@ public class CgenTask extends BaseCayenneTask {
     private Boolean createPropertyNames;
 
     /**
-     * Force run (skip check for files modification time)
+     * No longer has any effect - cgen always regenerates classes.
      *
      * @since 4.1
+     * @deprecated cgen runs unconditionally
      */
+    @Deprecated(since = "5.0", forRemoval = true)
     @Input
     private boolean force;
 
@@ -260,6 +262,10 @@ public class CgenTask extends BaseCayenneTask {
     public void generate() {
         File dataMapFile = getDataMapFile();
 
+        if (force || getProject().hasProperty("force")) {
+            getLogger().warn("'force' is deprecated and ignored. cgen always regenerates classes.");
+        }
+
         injector = new ToolsInjectorBuilder()
                 .addModule(new ToolsModule(LoggerFactory.getLogger(CgenTask.class)))
                 .create();
@@ -279,11 +285,6 @@ public class CgenTask extends BaseCayenneTask {
                 CayenneGeneratorEmbeddableFilterAction filterEmbeddableAction = new CayenneGeneratorEmbeddableFilterAction();
                 filterEmbeddableAction.setNameFilter(NamePatternMatcher.build(getLogger(), null, excludeEmbeddables));
                 generator.setLogger(getLogger());
-
-                if (this.force || getProject().hasProperty("force")) {
-                    generator.getCgenConfiguration().setForce(true);
-                }
-                generator.getCgenConfiguration().setTimestamp(dataMapFile.lastModified());
 
                 if (!hasConfig() && useConfigFromDataMap) {
                     generator.prepareArtifacts();
@@ -399,7 +400,7 @@ public class CgenTask extends BaseCayenneTask {
         return destDir != null || destDirName != null || encoding != null || excludeEntities != null || excludeEmbeddables != null || includeEntities != null ||
                 makePairs != null || mode != null || outputPattern != null || overwrite != null || superPkg != null ||
                 superTemplate != null || template != null || embeddableTemplate != null || embeddableSuperTemplate != null ||
-                usePkgPath != null || createPropertyNames != null || force || dataMapTemplate != null ||
+                usePkgPath != null || createPropertyNames != null || dataMapTemplate != null ||
                 dataMapSuperTemplate != null || createPKProperties != null || externalToolConfig != null;
     }
 
@@ -723,14 +724,26 @@ public class CgenTask extends BaseCayenneTask {
         setCreatePropertyNames(createPropertyNames);
     }
 
+    /**
+     * @deprecated cgen runs unconditionally
+     */
+    @Deprecated(since = "5.0", forRemoval = true)
     public boolean isForce() {
         return force;
     }
 
+    /**
+     * @deprecated cgen runs unconditionally
+     */
+    @Deprecated(since = "5.0", forRemoval = true)
     public void setForce(boolean force) {
         this.force = force;
     }
 
+    /**
+     * @deprecated cgen runs unconditionally
+     */
+    @Deprecated(since = "5.0", forRemoval = true)
     public void force(boolean force) {
         setForce(force);
     }

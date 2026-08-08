@@ -167,18 +167,6 @@ public class CgenRunTool {
                 ? CgenConfiguration.createDefault(dataMap, CgenConfiguration.defaultOutputDir(dataMap))
                 : configList.getAll().getFirst();
 
-        // Set the DataMap file's mtime as the timestamp so fileNeedUpdate() can detect DataMap changes correctly.
-        if (dataMap.getConfigurationSource() != null) {
-            try {
-                Path dataMapFile = Path.of(dataMap.getConfigurationSource().getURL().toURI());
-                cgenConfig.setTimestamp(Files.getLastModifiedTime(dataMapFile).toMillis());
-            } catch (Exception e) {
-                // URI conversion failed (e.g. non-file: URL) or some problems with file mtime read,
-                // better to regen all, than silently fail.
-                cgenConfig.setForce(true);
-            }
-        }
-
         // Step 5 — destDir specified?
         Path destDir = cgenConfig.buildOutputPath();
         if (destDir == null) {

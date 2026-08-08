@@ -45,18 +45,20 @@ Runs Cayenne's class generator for one DataMap. Uses the `<cgen>` config block e
 
 ```json
 {
-  "status": "ok" | "error",
-  "summary": { "writtenCount": 3, "skippedCount": 12, "errorCount": 0 },
-  "resolvedConfig": { "destDir": "..." },
-  "writtenFiles": [{ "path": "...", "size": 1234 }],
-  "skippedFiles": [{ "path": "...", "reason": "up-to-date" }],
-  "errors": []
+  "status": "generated" | "up_to_date" | "validation_failed" | "error",
+  "summary": { "filesConsidered": 15, "filesWritten": 3 },
+  "files": [{ "path": "...", "kind": "entity_super", "sourceEntity": "Artist" }],
+  "resolved": { "destDir": "..." },
+  "warnings": [],
+  "validation": { "projectFound": true, "dataMapFound": true, "cgenConfigPresent": true,
+                  "destDirSpecified": true, "destDirWritable": true },
+  "error": null
 }
 ```
 
-Surface the `summary` to the user verbatim. List the first few `writtenFiles` paths; full list is informational. If `errors` is non-empty, those are blocking — show them.
+Surface the `summary` to the user verbatim. List the first few `files` paths; full list is informational.
 
-When the DataMap had no `<cgen>` block, the tool generated from a synthesized default config. The default destination is derived from the Maven layout (`src/main/resources` → `src/main/java`); for non-Maven layouts it falls back to the DataMap's own directory, so check `resolvedConfig.destDir` and confirm with the user if it looks wrong. Offer to persist a `<cgen>` block (via `cayenne-modeling` or the Modeler) if they want to customize destination, templates, or filtering.
+When the DataMap had no `<cgen>` block, the tool generated from a synthesized default config. The default destination is derived from the Maven layout (`src/main/resources` → `src/main/java`); for non-Maven layouts it falls back to the DataMap's own directory, so check `resolved.destDir` and confirm with the user if it looks wrong. Offer to persist a `<cgen>` block (via `cayenne-modeling` or the Modeler) if they want to customize destination, templates, or filtering.
 
 **Failure modes:**
 

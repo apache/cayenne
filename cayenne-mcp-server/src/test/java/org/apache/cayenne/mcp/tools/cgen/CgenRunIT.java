@@ -28,7 +28,6 @@ import org.junit.jupiter.api.io.TempDir;
 import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
-import java.nio.file.attribute.FileTime;
 import java.util.List;
 
 import static org.junit.jupiter.api.Assertions.*;
@@ -88,7 +87,10 @@ public class CgenRunIT {
 
     @Test
     public void upToDateOnSecondRun() {
-        tool.run(projectFile.toString(), "PersonMap");
+        CgenRunResult first = tool.run(projectFile.toString(), "PersonMap");
+
+        // cgen re-runs in full, but the regenerated content is identical, so nothing is touched on disk
+        long[] mtimes = first.files().stream().mapToLong(e -> Path.of(e.path()).toFile().lastModified()).toArray();
 
         CgenRunResult second = tool.run(projectFile.toString(), "PersonMap");
 
@@ -97,6 +99,33 @@ public class CgenRunIT {
         assertTrue(second.files().isEmpty());
         assertTrue(second.summary().filesConsidered() > 0);
         assertNull(second.error());
+
+        for (int i = 0; i < mtimes.length; i++) {
+            assertEquals(mtimes[i], Path.of(first.files().get(i).path()).toFile().lastModified(),
+                    "Unchanged file must not be rewritten: " + first.files().get(i).path());
+        }
+    }
+
+    @Test
+    public void regeneratesAfterDataMapChange() throws IOException {
+        CgenRunResult first = tool.run(projectFile.toString(), "PersonMap");
+        assertEquals("generated", first.status());
+
+        // add an attribute to the entity - the superclass must pick it up
+        Path dataMapFile = tempDir.resolve("PersonMap.map.xml");
+        Files.writeString(dataMapFile, Files.readString(dataMapFile).replace(
+                "<obj-entity name=\"Person\" className=\"com.example.Person\"/>",
+                """
+                <obj-entity name="Person" className="com.example.Person">
+                        <obj-attribute name="nickname" type="java.lang.String"/>
+                    </obj-entity>"""));
+
+        CgenRunResult second = tool.run(projectFile.toString(), "PersonMap");
+
+        assertEquals("generated", second.status());
+        assertEquals(List.of(CgenFileKind.entity_super),
+                second.files().stream().map(CgenFileEntry::kind).toList());
+        assertTrue(Files.readString(Path.of(second.files().getFirst().path())).contains("nickname"));
     }
 
     @Test
@@ -116,30 +145,6 @@ public class CgenRunIT {
 
         int skipped = result.summary().filesConsidered() - result.summary().filesWritten();
         assertTrue(skipped >= 1, "At least one file (the existing subclass) should have been skipped");
-    }
-
-    @Test
-    public void regeneratesAfterDataMapChange() throws IOException {
-        // First run — generates files
-        CgenRunResult first = tool.run(projectFile.toString(), "PersonMap");
-        assertEquals("generated", first.status());
-
-        // Bump the DataMap's mtime to be clearly newer than the generated files.
-        // Use setLastModifiedTime rather than a wall-clock sleep to avoid
-        // filesystem mtime granularity issues (Windows has 1-second resolution).
-        long maxGeneratedMtime = first.files().stream()
-                .mapToLong(e -> Path.of(e.path()).toFile().lastModified())
-                .max()
-                .orElseThrow();
-        Path dataMapFile = tempDir.resolve("PersonMap.map.xml");
-        Files.setLastModifiedTime(dataMapFile, FileTime.fromMillis(maxGeneratedMtime + 5_000L));
-
-        // Second run — must detect that the DataMap is newer than the generated files
-        // and regenerate the superclass(es).
-        CgenRunResult second = tool.run(projectFile.toString(), "PersonMap");
-        assertEquals("generated", second.status(),
-                "Expected regeneration after DataMap mtime was bumped past generated files");
-        assertTrue(second.summary().filesWritten() > 0);
     }
 
     @Test

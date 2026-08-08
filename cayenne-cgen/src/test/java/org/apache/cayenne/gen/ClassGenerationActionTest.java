@@ -20,6 +20,7 @@
 package org.apache.cayenne.gen;
 
 import java.io.*;
+import java.nio.file.Files;
 import java.nio.file.Paths;
 import java.util.ArrayList;
 import java.util.Collection;
@@ -38,8 +39,6 @@ import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.io.TempDir;
 
 import static org.junit.jupiter.api.Assertions.*;
-import static org.mockito.Mockito.mock;
-import static org.mockito.Mockito.when;
 
 public class ClassGenerationActionTest extends CgenCase {
 
@@ -225,44 +224,6 @@ public class ClassGenerationActionTest extends CgenCase {
 	}
 
 	@Test
-	public void isOld() {
-		File file = mock(File.class);
-		when(file.lastModified()).thenReturn(1000L);
-
-		cgenConfiguration.setTimestamp(0);
-		assertTrue(action.isOld(file));
-
-		cgenConfiguration.setTimestamp(2000L);
-		assertFalse(action.isOld(file));
-	}
-
-	@Test
-	public void fileNeedUpdate() {
-		File file = mock(File.class);
-		when(file.lastModified()).thenReturn(1000L);
-
-		cgenConfiguration.setTimestamp(0);
-		cgenConfiguration.setForce(false);
-
-		assertFalse(action.fileNeedUpdate(file, null));
-
-		cgenConfiguration.setTimestamp(2000L);
-		cgenConfiguration.setForce(false);
-
-		assertTrue(action.fileNeedUpdate(file, null));
-
-		cgenConfiguration.setTimestamp(0);
-		cgenConfiguration.setForce(true);
-
-		assertTrue(action.fileNeedUpdate(file, null));
-
-		cgenConfiguration.setTimestamp(2000L);
-		cgenConfiguration.setForce(true);
-
-		assertTrue(action.fileNeedUpdate(file, null));
-	}
-
-	@Test
 	public void fileForSuperclass() throws Exception {
 
 		TemplateType templateType = TemplateType.DATAMAP_SUPERCLASS;
@@ -278,11 +239,47 @@ public class ClassGenerationActionTest extends CgenCase {
 		File outFile = new File(tempFolder + "/TestClass1.java");
 		assertFalse(outFile.exists());
 
-		try(Writer ignored = action.openWriter(templateType)) {
-			assertTrue(outFile.exists());
+		try(Writer out = action.openWriter(templateType)) {
+			out.write("// generated");
+			// the file is written on close, not on open
+			assertFalse(outFile.exists());
+		}
+		assertEquals("// generated", Files.readString(outFile.toPath()));
+
+		// superclasses are regenerated unconditionally
+		try(Writer out = action.openWriter(templateType)) {
+			assertNotNull(out);
+			out.write("// regenerated");
+		}
+		assertEquals("// regenerated", Files.readString(outFile.toPath()));
+	}
+
+	@Test
+	public void unchangedFileLeftAlone() throws Exception {
+
+		TemplateType templateType = TemplateType.DATAMAP_SUPERCLASS;
+
+		cgenConfiguration.setRootPath(tempFolder.toPath());
+		cgenConfiguration.updateOutputPath(Paths.get("."));
+		action = new ClassGenerationAction(cgenConfiguration);
+		action.context.put(Artifact.SUPER_PACKAGE_KEY, "");
+		action.context.put(Artifact.SUPER_CLASS_KEY, "TestClass1");
+
+		File outFile = new File(tempFolder + "/TestClass1.java");
+		try(Writer out = action.openWriter(templateType)) {
+			out.write("// generated");
 		}
 
-		assertNull(action.openWriter(templateType));
+		// backdate the file, so that an actual rewrite would be detectable
+		assertTrue(outFile.setLastModified(outFile.lastModified() - 5_000L));
+		long backdated = outFile.lastModified();
+
+		try(Writer out = action.openWriter(templateType)) {
+			out.write("// generated");
+		}
+
+		assertEquals(backdated, outFile.lastModified(), "Identical file must not be rewritten");
+		assertEquals("// generated", Files.readString(outFile.toPath()));
 	}
 
 	@Test
@@ -301,16 +298,24 @@ public class ClassGenerationActionTest extends CgenCase {
 		File outFile = new File(tempFolder + "/TestClass1.java");
 		assertFalse(outFile.exists());
 
-		try(Writer ignored = action.openWriter(templateType)) {
-			assertTrue(outFile.exists());
+		try(Writer out = action.openWriter(templateType)) {
+			out.write("// generated");
 		}
+		assertTrue(outFile.exists());
 
+		// existing subclasses are preserved when generating class pairs...
 		assertNull(action.openWriter(templateType));
 
+		// ... and when generating single classes without "overwrite"
 		cgenConfiguration.setMakePairs(false);
 		assertNull(action.openWriter(templateType));
 
+		// "overwrite" regenerates the subclass unconditionally
 		cgenConfiguration.setOverwrite(true);
-		assertNull(action.openWriter(templateType));
+		try(Writer out = action.openWriter(templateType)) {
+			assertNotNull(out);
+			out.write("// regenerated");
+		}
+		assertEquals("// regenerated", Files.readString(outFile.toPath()));
 	}
 }

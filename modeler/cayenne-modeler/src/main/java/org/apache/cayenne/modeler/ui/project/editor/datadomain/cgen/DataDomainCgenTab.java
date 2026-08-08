@@ -64,7 +64,6 @@ public class DataDomainCgenTab extends DataDomainGeneratorsTab<CgenConfiguration
                     cgenConfigList.add(createConfiguration(dataMap));
                 }
                 for (CgenConfiguration cgenConfiguration : cgenConfigList.getAll()) {
-                    cgenConfiguration.setForce(true);
                     ClassGenerationAction action = actionFactory.createAction(cgenConfiguration);
                     action.prepareArtifacts();
                     action.execute();

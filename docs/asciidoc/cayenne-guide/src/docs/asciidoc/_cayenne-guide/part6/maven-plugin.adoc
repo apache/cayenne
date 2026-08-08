@@ -113,7 +113,7 @@ ${project.basedir}/src/main/resources/my.map.xml
 
 .^|force
 .^|boolean
-.^|If set to "true", will force run from maven/gradle.
+.^|_Deprecated and ignored since 5.0._ cgen always regenerates classes, so there is nothing left to force.
 
 .^|createPKProperties
 .^|boolean

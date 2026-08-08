@@ -19,21 +19,16 @@
 
 package org.apache.cayenne.tools;
 
-import java.io.File;
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.List;
-
 import org.apache.cayenne.configuration.xml.DataChannelMetaData;
 import org.apache.cayenne.dbsync.filter.NamePatternMatcher;
 import org.apache.cayenne.dbsync.reverse.configuration.ToolsModule;
 import org.apache.cayenne.di.Injector;
 import org.apache.cayenne.gen.ArtifactsGenerationMode;
-import org.apache.cayenne.gen.CgenConfiguration;
 import org.apache.cayenne.gen.CgenConfigList;
+import org.apache.cayenne.gen.CgenConfiguration;
+import org.apache.cayenne.gen.CgenTemplate;
 import org.apache.cayenne.gen.ClassGenerationAction;
 import org.apache.cayenne.gen.ClassGenerationActionFactory;
-import org.apache.cayenne.gen.CgenTemplate;
 import org.apache.cayenne.gen.TemplateType;
 import org.apache.cayenne.map.DataMap;
 import org.apache.maven.plugin.AbstractMojo;
@@ -44,6 +39,11 @@ import org.apache.maven.plugins.annotations.Mojo;
 import org.apache.maven.plugins.annotations.Parameter;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+
+import java.io.File;
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.List;
 
 /**
  * Maven mojo to perform class generation from data cgenConfiguration. This class is an Maven
@@ -201,11 +201,12 @@ public class CayenneGeneratorMojo extends AbstractMojo {
     private Boolean createPropertyNames;
 
     /**
-     * If set to <code>true</code>, will skip file modification time validation and regenerate all.
-     * Default is <code>false</code>.
+     * No longer has any effect - cgen always regenerates classes.
      *
      * @since 4.1
+     * @deprecated cgen runs unconditionally
      */
+    @Deprecated(since = "5.0", forRemoval = true)
     @Parameter(defaultValue = "false", property = "force")
     private boolean force;
 
@@ -264,6 +265,10 @@ public class CayenneGeneratorMojo extends AbstractMojo {
                 .create();
 
         Logger logger = new MavenLogger(this);
+        if (force) {
+            logger.warn("'force' is deprecated and ignored. cgen always regenerates classes.");
+        }
+
         CayenneGeneratorMapLoaderAction loaderAction = new CayenneGeneratorMapLoaderAction(injector);
         loaderAction.setMainDataMapFile(map);
 
@@ -278,11 +283,6 @@ public class CayenneGeneratorMojo extends AbstractMojo {
                 filterEmbeddableAction.setNameFilter(NamePatternMatcher.build(logger, null, excludeEmbeddables));
                 generator.setLogger(logger);
 
-                if (force) {
-                    // will (re-)generate all files
-                    generator.getCgenConfiguration().setForce(true);
-                }
-                generator.getCgenConfiguration().setTimestamp(map.lastModified());
                 if (!hasConfig() && useConfigFromDataMap) {
                     generator.prepareArtifacts();
                 } else {
@@ -319,7 +319,7 @@ public class CayenneGeneratorMojo extends AbstractMojo {
         return destDir != null || encoding != null || excludeEntities != null || excludeEmbeddables != null || includeEntities != null ||
                 makePairs != null || mode != null || outputPattern != null || overwrite != null || superPkg != null ||
                 superTemplate != null || template != null || embeddableTemplate != null || embeddableSuperTemplate != null ||
-                usePkgPath != null || createPropertyNames != null || force || dataMapTemplate != null ||
+                usePkgPath != null || createPropertyNames != null || dataMapTemplate != null ||
                 dataMapSuperTemplate != null || createPKProperties != null || externalToolConfig != null;
     }
 

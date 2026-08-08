@@ -111,6 +111,12 @@ DataMaps, filters and listeners can still be added (and removed) after creation.
   - `setMaxIdQualifierSize(int)` — use the `cayenne.max_id_qualifier_size` property
     (`Constants.MAX_ID_QUALIFIER_SIZE_PROPERTY`).
 
+* Per [CAY-2986](https://issues.apache.org/jira/browse/CAY-2986) cgen now runs unconditionally. Previously it compared
+  the DataMap file mtime against the mtime of the generated classes and skipped generation when the classes looked
+  newer. That optimization saved very little (cgen is idempotent and fast) while regularly producing stale classes
+  after project upgrades or when switching between machines and branches. Consequences:
+  - The `force` flag is now a deprecated no-op — its former behavior is the only behavior.
+
 ## Upgrading to 5.0-M2
 
 * Per [CAY-2947](https://issues.apache.org/jira/browse/CAY-2947) the `cayenne-commitlog` artifact has been removed. Commit log support is now part of the

@@ -22,7 +22,6 @@ import org.apache.cayenne.gen.Artifact;
 import org.apache.cayenne.gen.ArtifactGenerationMode;
 import org.apache.cayenne.gen.CgenConfiguration;
 import org.apache.cayenne.gen.ClassGenerationAction;
-import org.apache.cayenne.gen.StringUtils;
 import org.apache.cayenne.gen.TemplateType;
 import org.apache.cayenne.map.Embeddable;
 import org.apache.cayenne.map.ObjEntity;
@@ -30,15 +29,13 @@ import org.apache.cayenne.mcp.tools.cgen.protocol.CgenFileEntry;
 import org.apache.cayenne.mcp.tools.cgen.protocol.CgenFileKind;
 
 import java.io.File;
-import java.io.Writer;
-import java.nio.file.Path;
 import java.util.ArrayList;
 import java.util.List;
 
 /**
- * Extends {@link ClassGenerationAction} to record which files cgen wrote and how many
- * were considered. Placed in {@code org.apache.cayenne.gen} so it shares the same Java
- * package as {@link ClassGenerationAction} and can read its protected fields.
+ * Extends {@link ClassGenerationAction} to record which files cgen changed and how many were
+ * considered. Cgen rewrites a file only when its generated contents differ from what is on disk,
+ * so the recorded files are the ones that actually changed.
  *
  * @since 5.0
  */
@@ -63,12 +60,11 @@ class InstrumentedClassGenerationAction extends ClassGenerationAction {
     }
 
     @Override
-    protected Writer openWriter(TemplateType templateType) throws Exception {
-        Writer w = super.openWriter(templateType);
-        if (w != null && currentArtifact != null) {
-            writtenFiles.add(buildFileEntry(currentArtifact, templateType));
+    protected void fileWritten(File file, TemplateType templateType) {
+        if (currentArtifact != null) {
+            writtenFiles.add(new CgenFileEntry(
+                    file.getAbsolutePath(), toKind(templateType), sourceName(currentArtifact)));
         }
-        return w;
     }
 
     public List<CgenFileEntry> getWrittenFiles() {
@@ -88,28 +84,6 @@ class InstrumentedClassGenerationAction extends ClassGenerationAction {
             count += artifact.getTemplateTypes(mode).length;
         }
         return count;
-    }
-
-    private CgenFileEntry buildFileEntry(Artifact artifact, TemplateType templateType) {
-        String packageName;
-        String className;
-        if (templateType.isSuperclass()) {
-            packageName = (String) context.get(Artifact.SUPER_PACKAGE_KEY);
-            className = (String) context.get(Artifact.SUPER_CLASS_KEY);
-        } else {
-            packageName = (String) context.get(Artifact.SUB_PACKAGE_KEY);
-            className = (String) context.get(Artifact.SUB_CLASS_KEY);
-        }
-
-        String filename = StringUtils.getInstance().replaceWildcardInStringWithString(
-                "*", cgenConfiguration.getOutputPattern(), className);
-        Path dir = cgenConfiguration.buildOutputPath();
-        if (cgenConfiguration.isUsePkgPath() && packageName != null) {
-            dir = dir.resolve(packageName.replace('.', File.separatorChar));
-        }
-        Path filePath = dir.resolve(filename).toAbsolutePath();
-
-        return new CgenFileEntry(filePath.toString(), toKind(templateType), sourceName(artifact));
     }
 
     private static CgenFileKind toKind(TemplateType type) {

@@ -32,6 +32,7 @@ CAY-2982 Modeler: when upgrading projects allow upgraders to send outcome messag
 CAY-2983 CayenneDataSource: Public-facing DataSource builder
 CAY-2984 Remove "DataChannel" injectable dependency
 CAY-2985 DataDomain init and structure cleanup
+CAY-2986 Cgen to run unconditionally
 
 Bug Fixes:
 

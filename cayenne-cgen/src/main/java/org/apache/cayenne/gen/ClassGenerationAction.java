@@ -37,12 +37,12 @@ import org.apache.velocity.tools.config.FactoryConfiguration;
 import org.slf4j.Logger;
 
 import java.io.File;
-import java.io.FileOutputStream;
 import java.io.IOException;
-import java.io.OutputStreamWriter;
 import java.io.Writer;
+import java.nio.charset.Charset;
 import java.nio.file.Files;
 import java.nio.file.Path;
+import java.util.Arrays;
 import java.util.Collection;
 import java.util.HashMap;
 import java.util.Map;
@@ -308,34 +308,33 @@ public class ClassGenerationAction {
             return null;
         }
 
-        if (logger != null) {
-            String label = templateType.isSuperclass() ? "superclass" : "class";
-            logger.info("Generating {} file: {}", label, outFile.getCanonicalPath());
-        }
-
-        // return writer with specified encoding
-        FileOutputStream out = new FileOutputStream(outFile);
-
-        return (cgenConfiguration.getEncoding() != null) ? new OutputStreamWriter(out, cgenConfiguration.getEncoding()) : new OutputStreamWriter(out);
+        return new GeneratedFileWriter(outFile, templateType);
     }
 
     /**
-     * Returns a target file where a generated superclass must be saved. If null
-     * is returned, class shouldn't be generated.
+     * A callback invoked after a generated file was written to disk. Files whose generated contents match
+     * what is already on disk are left alone, so this is only called for files that actually changed.
+     *
+     * @since 5.0
+     */
+    protected void fileWritten(File file, TemplateType templateType) {
+    }
+
+    /**
+     * Returns a target file where a generated superclass must be saved. Superclasses are always
+     * regenerated, overwriting any previous version.
      */
     private File fileForSuperclass() throws Exception {
 
         String packageName = (String) context.get(Artifact.SUPER_PACKAGE_KEY);
         String className = (String) context.get(Artifact.SUPER_CLASS_KEY);
 
-        String filename = StringUtils.getInstance().replaceWildcardInStringWithString(WILDCARD, cgenConfiguration.getOutputPattern(), className);
-        File dest = new File(mkpath(cgenConfiguration.buildOutputPath().toFile(), packageName), filename);
+        File dir = mkpath(cgenConfiguration.buildOutputPath().toFile(), packageName);
+        String fileName = StringUtils
+                .getInstance()
+                .replaceWildcardInStringWithString(WILDCARD, cgenConfiguration.getOutputPattern(), className);
 
-        if (dest.exists() && !fileNeedUpdate(dest, cgenConfiguration.getSuperTemplate().getData())) {
-            return null;
-        }
-
-        return dest;
+        return new File(dir, fileName);
     }
 
     /**
@@ -360,41 +359,9 @@ public class ClassGenerationAction {
             if (!cgenConfiguration.isOverwrite()) {
                 return null;
             }
-
-            if (!fileNeedUpdate(dest, cgenConfiguration.getTemplate().getData())) {
-                return null;
-            }
         }
 
         return dest;
-    }
-
-    /**
-     * Ignore if the destination is newer than the map
-     * (internal timestamp), i.e. has been generated after the map was
-     * last saved AND the template is older than the destination file
-     */
-    protected boolean fileNeedUpdate(File dest, String templateFileName) {
-        if (cgenConfiguration.isForce()) {
-            return true;
-        }
-
-        if (isOld(dest)) {
-            if (templateFileName == null) {
-                return false;
-            }
-
-            File templateFile = new File(templateFileName);
-            return templateFile.lastModified() >= dest.lastModified();
-        }
-        return true;
-    }
-
-    /**
-     * Is file modified after internal timestamp (usually equal to mtime of datamap file)
-     */
-    protected boolean isOld(File file) {
-        return file.lastModified() > cgenConfiguration.getTimestamp();
     }
 
     /**
@@ -461,5 +428,55 @@ public class ClassGenerationAction {
 
     public MetadataUtils getMetadataUtils() {
         return metadataUtils;
+    }
+
+    /**
+     * Collects generated class text in memory, and on close writes it to the target file, but only if it
+     * differs from what the file already contains.
+     */
+    private class GeneratedFileWriter extends Writer {
+
+        private final File file;
+        private final TemplateType templateType;
+        private final StringBuilder buffer;
+
+        GeneratedFileWriter(File file, TemplateType templateType) {
+            this.file = file;
+            this.templateType = templateType;
+            this.buffer = new StringBuilder();
+        }
+
+        @Override
+        public void write(char[] chars, int offset, int length) {
+            buffer.append(chars, offset, length);
+        }
+
+        @Override
+        public void flush() {
+            // nothing to flush - the file is written on close
+        }
+
+        @Override
+        public void close() throws IOException {
+
+            String encoding = cgenConfiguration.getEncoding();
+            Charset charset = encoding != null ? Charset.forName(encoding) : Charset.defaultCharset();
+            byte[] generated = buffer.toString().getBytes(charset);
+
+            if (file.isFile()
+                    && file.length() == generated.length
+                    && Arrays.equals(generated, Files.readAllBytes(file.toPath()))) {
+                return;
+            }
+
+            Files.write(file.toPath(), generated);
+
+            if (logger != null) {
+                String label = templateType.isSuperclass() ? "superclass" : "class";
+                logger.info("Generating {} file: {}", label, file.getCanonicalPath());
+            }
+
+            fileWritten(file, templateType);
+        }
     }
 }

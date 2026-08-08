@@ -249,7 +249,6 @@ public class CgenPanel extends ProjectPanel implements ObjEntityListener, Embedd
             cgenConfiguration.resolveExcludedEmbeddables();
             addToSelectedEntities(cgenConfiguration.getEntities());
             addToSelectedEmbeddables(cgenConfiguration.getEmbeddables());
-            cgenConfiguration.setForce(true);
             return;
         }
 
@@ -438,7 +437,6 @@ public class CgenPanel extends ProjectPanel implements ObjEntityListener, Embedd
     private CgenConfiguration createDefaultCgenConfiguration(DataMap map) {
         Path basePath = map.getLocation() != null ? CgenOps.baseDir(session) : null;
         CgenConfiguration configuration = CgenConfiguration.createDefault(map, basePath);
-        configuration.setForce(true);
         configuration.setEncoding(new GeneralPrefs(app.getPrefsLocator().appNode(GeneralPrefs.NODE)).getEncoding());
         return configuration;
     }
