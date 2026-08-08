@@ -84,7 +84,7 @@ public class CgenPanel extends ProjectPanel implements ObjEntityListener, Embedd
 
     private CgenConfigList cgenConfigList;
     private Object currentClass;
-    private CgenConfiguration cgenConfiguration;
+    private CgenConfiguration configuration;
 
     private boolean initFromModel;
 
@@ -123,8 +123,8 @@ public class CgenPanel extends ProjectPanel implements ObjEntityListener, Embedd
         });
     }
 
-    public CgenConfiguration getCgenConfiguration() {
-        return cgenConfiguration;
+    public CgenConfiguration getConfiguration() {
+        return configuration;
     }
 
     public CgenConfigPanel getStandardModeController() {
@@ -212,14 +212,14 @@ public class CgenPanel extends ProjectPanel implements ObjEntityListener, Embedd
     }
 
     public void checkCgenConfigDirty() {
-        if (initFromModel || cgenConfiguration == null) {
+        if (initFromModel || configuration == null) {
             return;
         }
 
         DataMap map = session.getSelectedDataMap();
         CgenConfigList existingConfigurations = app.getMetaData().get(map, CgenConfigList.class);
         if (existingConfigurations == null) {
-            cgenConfigList.add(cgenConfiguration);
+            cgenConfigList.add(configuration);
             app.getMetaData().add(map, cgenConfigList);
         }
 
@@ -232,7 +232,7 @@ public class CgenPanel extends ProjectPanel implements ObjEntityListener, Embedd
         initCgenConfigurations(map);
         initConfigurationsComboBox();
         setConfiguration((String) configurationsComboBox.getSelectedItem());
-        cgenConfigPanel.initForm(cgenConfiguration);
+        cgenConfigPanel.initForm(configuration);
         classesSelector.startup();
         initFromModel = false;
         classesSelector.validate(classes);
@@ -242,19 +242,19 @@ public class CgenPanel extends ProjectPanel implements ObjEntityListener, Embedd
      * Builds a class generator for provided selections.
      */
     private void setConfiguration(String selectedConfig) {
-        cgenConfiguration = cgenConfigList.getByName(selectedConfig);
-        if (cgenConfiguration != null) {
+        configuration = cgenConfigList.getByName(selectedConfig);
+        if (configuration != null) {
             // Refresh entityArtifacts from the DataMap so any entities added since the config
             // was last loaded (e.g. by a dbimport run) are treated as included by default.
-            cgenConfiguration.resolveExcludedEntities();
-            cgenConfiguration.resolveExcludedEmbeddables();
-            addToSelectedEntities(cgenConfiguration.getEntities());
-            addToSelectedEmbeddables(cgenConfiguration.getEmbeddables());
+            configuration.resolveExcludedEntities();
+            configuration.resolveExcludedEmbeddables();
+            addToSelectedEntities(configuration.getEntities());
+            addToSelectedEmbeddables(configuration.getEmbeddables());
             return;
         }
 
         DataMap dataMap = session.getSelectedDataMap();
-        cgenConfiguration = createDefaultCgenConfiguration(dataMap);
+        configuration = createDefaultCgenConfiguration(dataMap);
         addToSelectedEntities(dataMap.getObjEntities()
                 .stream()
                 .map(Entity::getName)
@@ -341,7 +341,7 @@ public class CgenPanel extends ProjectPanel implements ObjEntityListener, Embedd
             }
             selectionModel.clearAll();
             setConfiguration((String) configurationsComboBox.getSelectedItem());
-            cgenConfigPanel.initForm(cgenConfiguration);
+            cgenConfigPanel.initForm(configuration);
             classesSelector.initBindings();
             classesSelector.validate(classes);
         });
@@ -359,7 +359,7 @@ public class CgenPanel extends ProjectPanel implements ObjEntityListener, Embedd
                 .addModule(binder -> binder.bind(DataChannelMetaData.class).toInstance(app.getMetaData()))
                 .create()
                 .getInstance(ClassGenerationActionFactory.class)
-                .createAction(cgenConfiguration, NOPLogger.NOP_LOGGER);
+                .createAction(configuration, NOPLogger.NOP_LOGGER);
 
         try {
             generator.prepareArtifacts();
@@ -400,7 +400,7 @@ public class CgenPanel extends ProjectPanel implements ObjEntityListener, Embedd
                 configurationsComboBox.getSelectedItem());
         if (name != null) {
             if (!cgenConfigList.isExist(name) && !name.isEmpty()) {
-                cgenConfiguration.setName(name);
+                configuration.setName(name);
                 configurationsComboBox.removeItem(configurationsComboBox.getSelectedItem());
                 configurationsComboBox.addItem(name);
                 configurationsComboBox.setSelectedItem(name);
@@ -418,7 +418,7 @@ public class CgenPanel extends ProjectPanel implements ObjEntityListener, Embedd
                 JOptionPane.YES_NO_OPTION);
         if (result == JOptionPane.OK_OPTION) {
             if (configurationsComboBox.getItemCount() > 1) {
-                cgenConfigList.removeByName(cgenConfiguration.getName());
+                cgenConfigList.removeByName(configuration.getName());
                 configurationsComboBox.removeItem(configurationsComboBox.getSelectedItem());
                 configurationsComboBox.setSelectedIndex(0);
             } else {
@@ -443,22 +443,22 @@ public class CgenPanel extends ProjectPanel implements ObjEntityListener, Embedd
     }
 
     private void updateArtifactGenerationMode(boolean selected) {
-        cgenConfiguration.setArtifactsGenerationMode(selected ? "all" : "entity");
+        configuration.setArtifactsGenerationMode(selected ? "all" : "entity");
         checkCgenConfigDirty();
     }
 
     private void updateEntities() {
-        if (cgenConfiguration != null) {
-            cgenConfiguration.getEntities().clear();
+        if (configuration != null) {
+            configuration.getEntities().clear();
             for (ObjEntity entity : selectionModel.getSelectedEntities(classes)) {
-                cgenConfiguration.loadEntity(entity);
+                configuration.loadEntity(entity);
             }
             // Keep excludedEntityArtifacts in sync so XML serialization stays correct
-            Collection<String> excluded = cgenConfiguration.getExcludedEntityArtifacts();
+            Collection<String> excluded = configuration.getExcludedEntityArtifacts();
             excluded.clear();
-            DataMap dataMap = cgenConfiguration.getDataMap();
+            DataMap dataMap = configuration.getDataMap();
             if (dataMap != null) {
-                Set<String> selected = cgenConfiguration.getEntities();
+                Set<String> selected = configuration.getEntities();
                 dataMap.getObjEntities().stream()
                         .map(ObjEntity::getName)
                         .filter(name -> !selected.contains(name))
@@ -469,17 +469,17 @@ public class CgenPanel extends ProjectPanel implements ObjEntityListener, Embedd
     }
 
     private void updateEmbeddables() {
-        if (cgenConfiguration != null) {
-            cgenConfiguration.getEmbeddables().clear();
+        if (configuration != null) {
+            configuration.getEmbeddables().clear();
             for (Embeddable embeddable : selectionModel.getSelectedEmbeddables(classes)) {
-                cgenConfiguration.loadEmbeddable(embeddable);
+                configuration.loadEmbeddable(embeddable);
             }
             // Keep excludedEmbeddableArtifacts in sync so XML serialization stays correct
-            Collection<String> excluded = cgenConfiguration.getExcludedEmbeddableArtifacts();
+            Collection<String> excluded = configuration.getExcludedEmbeddableArtifacts();
             excluded.clear();
-            DataMap dataMap = cgenConfiguration.getDataMap();
+            DataMap dataMap = configuration.getDataMap();
             if (dataMap != null) {
-                Set<String> selected = cgenConfiguration.getEmbeddables();
+                Set<String> selected = configuration.getEmbeddables();
                 dataMap.getEmbeddables().stream()
                         .map(Embeddable::getClassName)
                         .filter(name -> !selected.contains(name))
@@ -497,8 +497,8 @@ public class CgenPanel extends ProjectPanel implements ObjEntityListener, Embedd
     private void addEntity(DataMap dataMap, ObjEntity objEntity) {
         prepareClasses(dataMap);
         selectionModel.addSelectedEntity(objEntity.getName());
-        if (cgenConfiguration != null) {
-            cgenConfiguration.loadEntity(objEntity);
+        if (configuration != null) {
+            configuration.loadEntity(objEntity);
         }
         checkCgenConfigDirty();
     }
@@ -517,9 +517,9 @@ public class CgenPanel extends ProjectPanel implements ObjEntityListener, Embedd
             return;
         }
         selectionModel.renameSelectedEntity(entity.getDataMap(), oldName, newName);
-        if (cgenConfiguration != null) {
-            if (cgenConfiguration.getEntities().remove(oldName)) {
-                cgenConfiguration.getEntities().add(newName);
+        if (configuration != null) {
+            if (configuration.getEntities().remove(oldName)) {
+                configuration.getEntities().add(newName);
             }
         }
         checkCgenConfigDirty();
@@ -533,8 +533,8 @@ public class CgenPanel extends ProjectPanel implements ObjEntityListener, Embedd
     @Override
     public void objEntityRemoved(ObjEntityEvent e) {
         selectionModel.removeFromSelectedEntities(e.getEntity());
-        if (cgenConfiguration != null) {
-            cgenConfiguration.getEntities().remove(e.getEntity().getName());
+        if (configuration != null) {
+            configuration.getEntities().remove(e.getEntity().getName());
         }
         checkCgenConfigDirty();
     }
@@ -548,9 +548,9 @@ public class CgenPanel extends ProjectPanel implements ObjEntityListener, Embedd
             return;
         }
         selectionModel.renameSelectedEmbeddable(map, oldClassName, newClassName);
-        if (cgenConfiguration != null) {
-            if (cgenConfiguration.getEmbeddables().remove(oldClassName)) {
-                cgenConfiguration.getEmbeddables().add(newClassName);
+        if (configuration != null) {
+            if (configuration.getEmbeddables().remove(oldClassName)) {
+                configuration.getEmbeddables().add(newClassName);
             }
         }
         checkCgenConfigDirty();
@@ -561,8 +561,8 @@ public class CgenPanel extends ProjectPanel implements ObjEntityListener, Embedd
         prepareClasses(map);
         Embeddable embeddable = e.getEmbeddable();
         selectionModel.addSelectedEmbeddable(embeddable.getClassName());
-        if (cgenConfiguration != null) {
-            cgenConfiguration.loadEmbeddable(embeddable);
+        if (configuration != null) {
+            configuration.loadEmbeddable(embeddable);
         }
         checkCgenConfigDirty();
     }
@@ -570,8 +570,8 @@ public class CgenPanel extends ProjectPanel implements ObjEntityListener, Embedd
     @Override
     public void embeddableRemoved(EmbeddableEvent e, DataMap map) {
         selectionModel.removeFromSelectedEmbeddables(e.getEmbeddable());
-        if (cgenConfiguration != null) {
-            cgenConfiguration.getEmbeddables().remove(e.getEmbeddable().getClassName());
+        if (configuration != null) {
+            configuration.getEmbeddables().remove(e.getEmbeddable().getClassName());
         }
         checkCgenConfigDirty();
     }
@@ -585,7 +585,7 @@ public class CgenPanel extends ProjectPanel implements ObjEntityListener, Embedd
         // DbImportProjectSaver fires a pair of REMOVE / ADD events after merging new entities into a DataMap.
         // Re-initialize the panel so newly imported entities appear as included.
         DataMap map = e.getDataMap();
-        if (map != null && cgenConfiguration != null && map == cgenConfiguration.getDataMap()) {
+        if (map != null && configuration != null && map == configuration.getDataMap()) {
             initFromModel(map);
         }
     }
@@ -598,9 +598,9 @@ public class CgenPanel extends ProjectPanel implements ObjEntityListener, Embedd
      * Update cgen path on project save when no path is already set manually.
      */
     private void onProjectSaved(ProjectAfterSaveEvent e) {
-        if (cgenConfigPanel != null && cgenConfiguration != null) {
+        if (cgenConfigPanel != null && configuration != null) {
             cgenConfigPanel.getOutputFolder()
-                    .setText(cgenConfiguration.buildOutputPath().toString());
+                    .setText(configuration.buildOutputPath().toString());
         }
     }
 

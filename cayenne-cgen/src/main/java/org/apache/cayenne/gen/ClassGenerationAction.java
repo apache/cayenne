@@ -44,6 +44,8 @@ import java.nio.file.Files;
 import java.nio.file.Path;
 import java.util.Arrays;
 import java.util.Collection;
+import java.util.EnumMap;
+import java.util.Map;
 import java.util.Objects;
 import java.util.Properties;
 import java.util.stream.Collectors;
@@ -58,6 +60,8 @@ public class ClassGenerationAction {
     protected final Logger logger;
     private final ToolsUtilsFactory utilsFactory;
     private final MetadataUtils metadataUtils;
+    private final VelocityEngine velocityEngine;
+    private final Map<TemplateType, Template> templates;
 
     protected Context context;
 
@@ -71,6 +75,7 @@ public class ClassGenerationAction {
      * tools.toolbox = application
      * tools.application.myTool = com.mycompany.MyTool</pre>
      * Then the methods in the MyTool class will be available for use in the template like ${myTool.myMethod(arg)}
+     * <p>
      */
     public ClassGenerationAction(
             CgenConfiguration configuration,
@@ -83,6 +88,38 @@ public class ClassGenerationAction {
         this.metadataUtils = Objects.requireNonNull(metadataUtils);
         this.logger = Objects.requireNonNull(logger);
         this.context = createContext(configuration.getExternalToolConfig());
+        this.velocityEngine = createVelocityEngine(configuration);
+        this.templates = new EnumMap<>(TemplateType.class);
+    }
+
+    private static VelocityEngine createVelocityEngine(CgenConfiguration configuration) {
+
+        Properties props = new Properties();
+        props.put(RuntimeConstants.RESOURCE_LOADERS, "string,cayenne");
+
+        props.put("resource.loader.cayenne.class", ClassGeneratorResourceLoader.class.getName());
+        props.put("resource.loader.cayenne.cache", "false");
+        if (configuration.getRootPath() != null) {
+            props.put("resource.loader.cayenne.root", configuration.getRootPath());
+        }
+
+        props.put("resource.loader.string.class", StringResourceLoader.class.getName());
+        props.put("resource.loader.string.repository.name", CUSTOM_TEMPLATE_REPO);
+        // keep the repository local to this engine instead of sharing the global static registry
+        props.put("resource.loader.string.repository.static", "false");
+
+        StringResourceRepository repository = new StringResourceRepositoryImpl();
+        for (TemplateType type : TemplateType.values()) {
+            CgenTemplate template = configuration.getTemplateByType(type);
+            if (!template.isFile()) {
+                repository.putStringResource(template.getName(), template.getData());
+            }
+        }
+
+        VelocityEngine engine = new VelocityEngine();
+        engine.setApplicationAttribute(CUSTOM_TEMPLATE_REPO, repository);
+        engine.init(props);
+        return engine;
     }
 
     private static Context createContext(String toolConfigFile) {
@@ -90,7 +127,7 @@ public class ClassGenerationAction {
         if (System.getProperty("org.apache.velocity.tools") == null && toolConfigFile == null) {
             return new VelocityContext();
         }
-        
+
         ToolManager manager = new ToolManager(true, true);
         if (toolConfigFile != null) {
             FactoryConfiguration config = ConfigurationUtils.find(toolConfigFile);
@@ -148,9 +185,6 @@ public class ClassGenerationAction {
 
     /**
      * Adds entities to the internal entity list.
-     *
-     * @param entities collection
-     * @since 4.0 throws exception
      */
     public void addEntities(Collection<ObjEntity> entities) {
         if (entities != null) {
@@ -169,8 +203,7 @@ public class ClassGenerationAction {
     }
 
     /**
-     * @param dataMap to add to the list of artifacts to generate
-     * @since 5.0 replaces removed {@code addQueries()} method
+     * @since 5.0
      */
     public void addDataMap(DataMap dataMap) {
         // data map should be used only in ArtifactsGenerationMode.ALL
@@ -232,32 +265,13 @@ public class ClassGenerationAction {
         }
     }
 
+    /**
+     * Returns a parsed template for a given type. Templates are parsed on first use and cached, so that all the
+     * artifacts processed by this action share a single parsed copy.
+     */
     protected Template getTemplate(TemplateType type) {
-        Properties props = new Properties();
-        initVelocityProperties(props, type);
-        VelocityEngine velocityEngine = new VelocityEngine();
-        velocityEngine.init(props);
-        return velocityEngine.getTemplate(configuration.getTemplateByType(type).getName());
-    }
-
-    protected void initVelocityProperties(Properties props, TemplateType type) {
-        CgenTemplate template = configuration.getTemplateByType(type);
-        if (template.isFile()) {
-            props.put(RuntimeConstants.RESOURCE_LOADERS, "cayenne");
-            props.put("resource.loader.cayenne.class", ClassGeneratorResourceLoader.class.getName());
-            props.put("resource.loader.cayenne.cache", "false");
-            if (configuration.getRootPath() != null) {
-                props.put("resource.loader.cayenne.root", configuration.getRootPath());
-            }
-        } else {
-            props.put(RuntimeConstants.RESOURCE_LOADERS, "string");
-            props.put("resource.loader.string.class", StringResourceLoader.class.getName());
-            props.put("resource.loader.string.repository.name", CUSTOM_TEMPLATE_REPO);
-
-            StringResourceRepository repo = new StringResourceRepositoryImpl();
-            repo.putStringResource(template.getName(), template.getData());
-            StringResourceLoader.setRepository(CUSTOM_TEMPLATE_REPO, repo);
-        }
+        return templates.computeIfAbsent(type,
+                t -> velocityEngine.getTemplate(configuration.getTemplateByType(t).getName()));
     }
 
     /**
