@@ -55,15 +55,11 @@ public class ClassGenerationAction {
     private static final String WILDCARD = "*";
     private static final String CUSTOM_TEMPLATE_REPO = "customTemplateRepo";
 
-    /**
-     * @since 4.1
-     */
-    protected CgenConfiguration cgenConfiguration;
+    protected CgenConfiguration configuration;
     protected Logger logger;
 
-    // runtime ivars
     protected Context context;
-    protected Map<String, Template> templateCache;
+    protected final Map<String, Template> templateCache;
 
     private ToolsUtilsFactory utilsFactory;
     private MetadataUtils metadataUtils;
@@ -79,9 +75,9 @@ public class ClassGenerationAction {
      * tools.application.myTool = com.mycompany.MyTool</pre>
      * Then the methods in the MyTool class will be available for use in the template like ${myTool.myMethod(arg)}
      */
-    public ClassGenerationAction(CgenConfiguration cgenConfig) {
-        this.cgenConfiguration = cgenConfig;
-        String toolConfigFile = cgenConfig.getExternalToolConfig();
+    public ClassGenerationAction(CgenConfiguration configuration) {
+        this.configuration = configuration;
+        String toolConfigFile = configuration.getExternalToolConfig();
 
         if (System.getProperty("org.apache.velocity.tools") != null || toolConfigFile != null) {
             ToolManager manager = new ToolManager(true, true);
@@ -96,10 +92,7 @@ public class ClassGenerationAction {
         this.templateCache = new HashMap<>(5);
     }
 
-    /**
-     * VelocityContext initialization method called once per artifact.
-     */
-    public void resetContextForArtifact(Artifact artifact) {
+    protected void resetContextForArtifact(Artifact artifact) {
         StringUtils stringUtils = StringUtils.getInstance();
 
         String qualifiedClassName = artifact.getQualifiedClassName();
@@ -112,7 +105,7 @@ public class ClassGenerationAction {
 
         String superClassName = SUPERCLASS_PREFIX + stringUtils.stripPackageName(qualifiedClassName);
 
-        String superPackageName = cgenConfiguration.getSuperPkg();
+        String superPackageName = configuration.getSuperPkg();
         if (superPackageName == null || superPackageName.isEmpty()) {
             superPackageName = packageName + ".auto";
         }
@@ -129,8 +122,8 @@ public class ClassGenerationAction {
         context.put(Artifact.OBJECT_KEY, artifact.getObject());
         context.put(Artifact.STRING_UTILS_KEY, stringUtils);
 
-        context.put(Artifact.CREATE_PROPERTY_NAMES, cgenConfiguration.isCreatePropertyNames());
-        context.put(Artifact.CREATE_PK_PROPERTIES, cgenConfiguration.isCreatePKProperties());
+        context.put(Artifact.CREATE_PROPERTY_NAMES, configuration.isCreatePropertyNames());
+        context.put(Artifact.CREATE_PK_PROPERTIES, configuration.isCreatePKProperties());
     }
 
     /**
@@ -154,7 +147,7 @@ public class ClassGenerationAction {
     public void addEntities(Collection<ObjEntity> entities) {
         if (entities != null) {
             for (ObjEntity entity : entities) {
-                cgenConfiguration.addArtifact(new EntityArtifact(entity));
+                configuration.addArtifact(new EntityArtifact(entity));
             }
         }
     }
@@ -162,7 +155,7 @@ public class ClassGenerationAction {
     public void addEmbeddables(Collection<Embeddable> embeddables) {
         if (embeddables != null) {
             for (Embeddable embeddable : embeddables) {
-                cgenConfiguration.addArtifact(new EmbeddableArtifact(embeddable));
+                configuration.addArtifact(new EmbeddableArtifact(embeddable));
             }
         }
     }
@@ -173,13 +166,13 @@ public class ClassGenerationAction {
      */
     public void addDataMap(DataMap dataMap) {
         // data map should be used only in ArtifactsGenerationMode.ALL
-        if (!cgenConfiguration.getArtifactsGenerationMode().equals(ArtifactsGenerationMode.ALL.getLabel())) {
+        if (!configuration.getArtifactsGenerationMode().equals(ArtifactsGenerationMode.ALL.getLabel())) {
             return;
         }
 
-        Artifact artifact = new DataMapArtifact(cgenConfiguration.getDataMap(), dataMap.getQueryDescriptors());
-        if (!cgenConfiguration.getArtifacts().contains(artifact)) {
-            cgenConfiguration.addArtifact(artifact);
+        Artifact artifact = new DataMapArtifact(configuration.getDataMap(), dataMap.getQueryDescriptors());
+        if (!configuration.getArtifacts().contains(artifact)) {
+            configuration.addArtifact(artifact);
         }
     }
 
@@ -187,14 +180,14 @@ public class ClassGenerationAction {
      * @since 4.1
      */
     public void prepareArtifacts() {
-        cgenConfiguration.getArtifacts().clear();
-        addEntities(cgenConfiguration.getEntities().stream()
-                .map(entity -> cgenConfiguration.getDataMap().getObjEntity(entity))
+        configuration.getArtifacts().clear();
+        addEntities(configuration.getEntities().stream()
+                .map(entity -> configuration.getDataMap().getObjEntity(entity))
                 .collect(Collectors.toList()));
-        addEmbeddables(cgenConfiguration.getEmbeddables().stream()
-                .map(embeddable -> cgenConfiguration.getDataMap().getEmbeddable(embeddable))
+        addEmbeddables(configuration.getEmbeddables().stream()
+                .map(embeddable -> configuration.getDataMap().getEmbeddable(embeddable))
                 .collect(Collectors.toList()));
-        addDataMap(cgenConfiguration.getDataMap());
+        addDataMap(configuration.getDataMap());
     }
 
     /**
@@ -205,7 +198,7 @@ public class ClassGenerationAction {
         validateAttributes();
 
         try {
-            for (Artifact artifact : cgenConfiguration.getArtifacts()) {
+            for (Artifact artifact : configuration.getArtifacts()) {
                 execute(artifact);
             }
         } finally {
@@ -221,7 +214,7 @@ public class ClassGenerationAction {
 
         resetContextForArtifact(artifact);
 
-        ArtifactGenerationMode artifactMode = cgenConfiguration.isMakePairs()
+        ArtifactGenerationMode artifactMode = configuration.isMakePairs()
                 ? ArtifactGenerationMode.GENERATION_GAP
                 : ArtifactGenerationMode.SINGLE_CLASS;
 
@@ -241,30 +234,27 @@ public class ClassGenerationAction {
         initVelocityProperties(props, type);
         VelocityEngine velocityEngine = new VelocityEngine();
         velocityEngine.init(props);
-        return velocityEngine.getTemplate(cgenConfiguration.getTemplateByType(type).getName());
+        return velocityEngine.getTemplate(configuration.getTemplateByType(type).getName());
     }
 
     protected void initVelocityProperties(Properties props, TemplateType type) {
-        CgenTemplate template = cgenConfiguration.getTemplateByType(type);
+        CgenTemplate template = configuration.getTemplateByType(type);
         if (template.isFile()) {
             props.put(RuntimeConstants.RESOURCE_LOADERS, "cayenne");
             props.put("resource.loader.cayenne.class", ClassGeneratorResourceLoader.class.getName());
             props.put("resource.loader.cayenne.cache", "false");
-            if(cgenConfiguration.getRootPath() != null) {
-                props.put("resource.loader.cayenne.root", cgenConfiguration.getRootPath());
+            if (configuration.getRootPath() != null) {
+                props.put("resource.loader.cayenne.root", configuration.getRootPath());
             }
         } else {
             props.put(RuntimeConstants.RESOURCE_LOADERS, "string");
             props.put("resource.loader.string.class", StringResourceLoader.class.getName());
             props.put("resource.loader.string.repository.name", CUSTOM_TEMPLATE_REPO);
-            putTemplateTextInRepository(template);
-        }
-    }
 
-    private void putTemplateTextInRepository(CgenTemplate template) {
-        StringResourceRepository repo = new StringResourceRepositoryImpl();
-        repo.putStringResource(template.getName(), template.getData());
-        StringResourceLoader.setRepository(CUSTOM_TEMPLATE_REPO, repo);
+            StringResourceRepository repo = new StringResourceRepositoryImpl();
+            repo.putStringResource(template.getName(), template.getData());
+            StringResourceLoader.setRepository(CUSTOM_TEMPLATE_REPO, repo);
+        }
     }
 
     /**
@@ -273,7 +263,7 @@ public class ClassGenerationAction {
      * Called internally from "execute".
      */
     protected void validateAttributes() {
-        Path dir = cgenConfiguration.buildOutputPath();
+        Path dir = configuration.buildOutputPath();
         if (dir == null) {
             throw new CayenneRuntimeException("Output directory is not set.");
         }
@@ -329,10 +319,10 @@ public class ClassGenerationAction {
         String packageName = (String) context.get(Artifact.SUPER_PACKAGE_KEY);
         String className = (String) context.get(Artifact.SUPER_CLASS_KEY);
 
-        File dir = mkpath(cgenConfiguration.buildOutputPath().toFile(), packageName);
+        File dir = mkpath(configuration.buildOutputPath().toFile(), packageName);
         String fileName = StringUtils
                 .getInstance()
-                .replaceWildcardInStringWithString(WILDCARD, cgenConfiguration.getOutputPattern(), className);
+                .replaceWildcardInStringWithString(WILDCARD, configuration.getOutputPattern(), className);
 
         return new File(dir, fileName);
     }
@@ -346,17 +336,17 @@ public class ClassGenerationAction {
         String packageName = (String) context.get(Artifact.SUB_PACKAGE_KEY);
         String className = (String) context.get(Artifact.SUB_CLASS_KEY);
 
-        String filename = StringUtils.getInstance().replaceWildcardInStringWithString(WILDCARD, cgenConfiguration.getOutputPattern(), className);
-        File dest = new File(mkpath(cgenConfiguration.buildOutputPath().toFile(), packageName), filename);
+        String filename = StringUtils.getInstance().replaceWildcardInStringWithString(WILDCARD, configuration.getOutputPattern(), className);
+        File dest = new File(mkpath(configuration.buildOutputPath().toFile(), packageName), filename);
 
         if (dest.exists()) {
             // no overwrite of subclasses
-            if (cgenConfiguration.isMakePairs()) {
+            if (configuration.isMakePairs()) {
                 return null;
             }
 
             // skip if said so
-            if (!cgenConfiguration.isOverwrite()) {
+            if (!configuration.isOverwrite()) {
                 return null;
             }
         }
@@ -371,7 +361,7 @@ public class ClassGenerationAction {
      */
     private File mkpath(File dest, String pkgName) throws Exception {
 
-        if (!cgenConfiguration.isUsePkgPath() || pkgName == null) {
+        if (!configuration.isUsePkgPath() || pkgName == null) {
             return dest;
         }
 
@@ -395,8 +385,8 @@ public class ClassGenerationAction {
     /**
      * @since 4.1
      */
-    public CgenConfiguration getCgenConfiguration() {
-        return cgenConfiguration;
+    public CgenConfiguration getConfiguration() {
+        return configuration;
     }
 
     /**
@@ -405,13 +395,6 @@ public class ClassGenerationAction {
      */
     public void setContext(Context context) {
         this.context = context;
-    }
-
-    /**
-     * @since 4.1
-     */
-    public void setCgenConfiguration(CgenConfiguration cgenConfiguration) {
-        this.cgenConfiguration = cgenConfiguration;
     }
 
     public ToolsUtilsFactory getUtilsFactory() {
@@ -459,7 +442,7 @@ public class ClassGenerationAction {
         @Override
         public void close() throws IOException {
 
-            String encoding = cgenConfiguration.getEncoding();
+            String encoding = configuration.getEncoding();
             Charset charset = encoding != null ? Charset.forName(encoding) : Charset.defaultCharset();
             byte[] generated = buffer.toString().getBytes(charset);
 

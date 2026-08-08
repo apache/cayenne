@@ -44,8 +44,8 @@ class InstrumentedClassGenerationAction extends ClassGenerationAction {
     private final List<CgenFileEntry> writtenFiles;
     private Artifact currentArtifact;
 
-    public InstrumentedClassGenerationAction(CgenConfiguration cgenConfig) {
-        super(cgenConfig);
+    public InstrumentedClassGenerationAction(CgenConfiguration configuration) {
+        super(configuration);
         this.writtenFiles = new ArrayList<>();
     }
 
@@ -76,11 +76,11 @@ class InstrumentedClassGenerationAction extends ClassGenerationAction {
      * Must be called after {@link #prepareArtifacts()}.
      */
     public int countFilesConsidered() {
-        ArtifactGenerationMode mode = cgenConfiguration.isMakePairs()
+        ArtifactGenerationMode mode = configuration.isMakePairs()
                 ? ArtifactGenerationMode.GENERATION_GAP
                 : ArtifactGenerationMode.SINGLE_CLASS;
         int count = 0;
-        for (Artifact artifact : cgenConfiguration.getArtifacts()) {
+        for (Artifact artifact : configuration.getArtifacts()) {
             count += artifact.getTemplateTypes(mode).length;
         }
         return count;

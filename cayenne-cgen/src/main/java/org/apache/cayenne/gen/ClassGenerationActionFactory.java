@@ -23,5 +23,5 @@ package org.apache.cayenne.gen;
  */
 public interface ClassGenerationActionFactory {
 
-    ClassGenerationAction createAction(CgenConfiguration cgenConfiguration);
+    ClassGenerationAction createAction(CgenConfiguration configuration);
 }

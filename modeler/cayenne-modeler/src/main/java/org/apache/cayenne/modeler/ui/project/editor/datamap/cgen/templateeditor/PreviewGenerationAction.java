@@ -34,8 +34,8 @@ public class PreviewGenerationAction extends ClassGenerationAction {
 
     private StringWriter writer;
 
-    public PreviewGenerationAction(CgenConfiguration cgenConfig) {
-        super(cgenConfig);
+    public PreviewGenerationAction(CgenConfiguration configuration) {
+        super(configuration);
     }
 
     @Override

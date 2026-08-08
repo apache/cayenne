@@ -41,8 +41,8 @@ public class PreviewClassGenerationFactory implements ClassGenerationActionFacto
     private StringWriter writer;
 
     @Override
-    public ClassGenerationAction createAction(CgenConfiguration cgenConfiguration) {
-        PreviewGenerationAction action = new PreviewGenerationAction(cgenConfiguration);
+    public ClassGenerationAction createAction(CgenConfiguration configuration) {
+        PreviewGenerationAction action = new PreviewGenerationAction(configuration);
         action.setUtilsFactory(utilsFactory);
         action.setMetadataUtils(metadataUtils);
         action.setWriter(writer);

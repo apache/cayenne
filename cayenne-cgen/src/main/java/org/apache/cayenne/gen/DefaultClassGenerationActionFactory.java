@@ -33,8 +33,8 @@ public class DefaultClassGenerationActionFactory implements ClassGenerationActio
     private MetadataUtils metadataUtils;
 
     @Override
-    public ClassGenerationAction createAction(CgenConfiguration cgenConfiguration) {
-        ClassGenerationAction classGenerationAction = new ClassGenerationAction(cgenConfiguration);
+    public ClassGenerationAction createAction(CgenConfiguration configuration) {
+        ClassGenerationAction classGenerationAction = new ClassGenerationAction(configuration);
         classGenerationAction.setUtilsFactory(utilsFactory);
         classGenerationAction.setMetadataUtils(metadataUtils);
         return classGenerationAction;

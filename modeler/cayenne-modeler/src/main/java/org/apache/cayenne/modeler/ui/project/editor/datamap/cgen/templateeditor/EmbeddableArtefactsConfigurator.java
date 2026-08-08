@@ -44,7 +44,7 @@ public class EmbeddableArtefactsConfigurator implements ArtefactsConfigurator {
     }
 
     private Embeddable getSelectedEntity(String artifactName, ClassGenerationAction action) {
-        DataMap dataMap = action.getCgenConfiguration().getDataMap();
+        DataMap dataMap = action.getConfiguration().getDataMap();
         if (dataMap != null) {
             return dataMap.getEmbeddable(artifactName);
         }

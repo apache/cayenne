@@ -29,7 +29,7 @@ public class DataMapArtefactsConfigurator implements ArtefactsConfigurator {
 
     @Override
     public void config(ClassGenerationAction action, String artifactName) {
-        action.addDataMap(action.getCgenConfiguration().getDataMap());
+        action.addDataMap(action.getConfiguration().getDataMap());
     }
 
     @Override

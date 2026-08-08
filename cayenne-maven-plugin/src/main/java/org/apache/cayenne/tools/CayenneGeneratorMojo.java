@@ -275,22 +275,22 @@ public class CayenneGeneratorMojo extends AbstractMojo {
         try {
             loaderAction.setAdditionalDataMapFiles(convertAdditionalDataMaps());
             DataMap dataMap = loaderAction.getMainDataMap();
-            for (ClassGenerationAction generator : createGenerators(dataMap)) {
+            for (ClassGenerationAction action : createActions(dataMap)) {
                 CayenneGeneratorEntityFilterAction filterEntityAction = new CayenneGeneratorEntityFilterAction();
                 filterEntityAction.setNameFilter(NamePatternMatcher.build(logger, includeEntities, excludeEntities));
 
                 CayenneGeneratorEmbeddableFilterAction filterEmbeddableAction = new CayenneGeneratorEmbeddableFilterAction();
                 filterEmbeddableAction.setNameFilter(NamePatternMatcher.build(logger, null, excludeEmbeddables));
-                generator.setLogger(logger);
+                action.setLogger(logger);
 
                 if (!hasConfig() && useConfigFromDataMap) {
-                    generator.prepareArtifacts();
+                    action.prepareArtifacts();
                 } else {
-                    generator.addEntities(filterEntityAction.getFilteredEntities(dataMap));
-                    generator.addEmbeddables(filterEmbeddableAction.getFilteredEmbeddables(dataMap));
-                    generator.addDataMap(dataMap);
+                    action.addEntities(filterEntityAction.getFilteredEntities(dataMap));
+                    action.addEmbeddables(filterEmbeddableAction.getFilteredEmbeddables(dataMap));
+                    action.addDataMap(dataMap);
                 }
-                generator.execute();
+                action.execute();
             }
         } catch (Exception e) {
             throw new MojoExecutionException("Error generating classes: ", e);
@@ -323,11 +323,7 @@ public class CayenneGeneratorMojo extends AbstractMojo {
                 dataMapSuperTemplate != null || createPKProperties != null || externalToolConfig != null;
     }
 
-    /**
-     * Factory method to create internal class generator. Called from
-     * constructor.
-     */
-    private List<ClassGenerationAction> createGenerators(DataMap dataMap) {
+    private List<ClassGenerationAction> createActions(DataMap dataMap) {
         List<ClassGenerationAction> actions = new ArrayList<>();
         for (CgenConfiguration configuration : buildConfigurations(dataMap)) {
             actions.add(injector.getInstance(ClassGenerationActionFactory.class).createAction(configuration));

@@ -64,7 +64,7 @@ public class ArtifactsConfiguratorTest {
         embeddableArtefactsConfigurator.config(action,"embeddable");
         dataMapArtefactsConfigurator.config(action,"queryDescriptor");
 
-        CgenConfiguration configuration = action.getCgenConfiguration();
+        CgenConfiguration configuration = action.getConfiguration();
 
         Field artifactsField = configuration.getClass().getDeclaredField("artifacts");
         artifactsField.setAccessible(true);

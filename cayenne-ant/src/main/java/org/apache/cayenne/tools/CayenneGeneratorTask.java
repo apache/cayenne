@@ -115,21 +115,21 @@ public class CayenneGeneratorTask extends CayenneTask {
             Thread.currentThread().setContextClassLoader(CayenneGeneratorTask.class.getClassLoader());
 
             DataMap dataMap = loadAction.getMainDataMap();
-            for (ClassGenerationAction generatorAction : createGenerators(dataMap)) {
+            for (ClassGenerationAction action : createActions(dataMap)) {
                 CayenneGeneratorEntityFilterAction filterEntityAction = new CayenneGeneratorEntityFilterAction();
                 filterEntityAction.setNameFilter(NamePatternMatcher.build(logger, includeEntitiesPattern, excludeEntitiesPattern));
 
                 CayenneGeneratorEmbeddableFilterAction filterEmbeddableAction = new CayenneGeneratorEmbeddableFilterAction();
                 filterEmbeddableAction.setNameFilter(NamePatternMatcher.build(logger, null, excludeEmbeddablesPattern));
-                generatorAction.setLogger(logger);
+                action.setLogger(logger);
                 if (!hasConfig() && useConfigFromDataMap) {
-                    generatorAction.prepareArtifacts();
+                    action.prepareArtifacts();
                 } else {
-                    generatorAction.addEntities(filterEntityAction.getFilteredEntities(dataMap));
-                    generatorAction.addEmbeddables(filterEmbeddableAction.getFilteredEmbeddables(dataMap));
-                    generatorAction.addDataMap(dataMap);
+                    action.addEntities(filterEntityAction.getFilteredEntities(dataMap));
+                    action.addEmbeddables(filterEmbeddableAction.getFilteredEmbeddables(dataMap));
+                    action.addDataMap(dataMap);
                 }
-                generatorAction.execute();
+                action.execute();
             }
         } catch (Exception e) {
             throw new BuildException(e);
@@ -138,7 +138,7 @@ public class CayenneGeneratorTask extends CayenneTask {
         }
     }
 
-    private List<ClassGenerationAction> createGenerators(DataMap dataMap) {
+    private List<ClassGenerationAction> createActions(DataMap dataMap) {
         List<ClassGenerationAction> actions = new ArrayList<>();
         for (CgenConfiguration configuration : buildConfigurations(dataMap)) {
             actions.add(injector.getInstance(ClassGenerationActionFactory.class).createAction(configuration));
