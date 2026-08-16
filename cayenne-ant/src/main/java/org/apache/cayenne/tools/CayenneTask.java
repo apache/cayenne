@@ -19,11 +19,6 @@
 
 package org.apache.cayenne.tools;
 
-import java.io.File;
-import java.net.URL;
-
-import javax.sql.DataSource;
-
 import org.apache.cayenne.configuration.DataMapLoader;
 import org.apache.cayenne.configuration.DataNodeDescriptor;
 import org.apache.cayenne.configuration.runtime.DbAdapterFactory;
@@ -35,10 +30,13 @@ import org.apache.tools.ant.Task;
 import org.apache.tools.ant.types.Path;
 import org.apache.tools.ant.types.Reference;
 
+import javax.sql.DataSource;
+import java.io.File;
+import java.net.URL;
+
 /**
- * Base task for all Cayenne ant tasks, providing support for common
- * configuration items.
- * 
+ * Base task for all Cayenne ant tasks, providing support for common configuration items.
+ *
  * @since 1.2
  */
 public abstract class CayenneTask extends Task {
@@ -53,9 +51,8 @@ public abstract class CayenneTask extends Task {
 
     /**
      * Sets the classpath used by the task.
-     * 
-     * @param path
-     *            The classpath to set.
+     *
+     * @param path The classpath to set.
      */
     public void setClasspath(Path path) {
         createClasspath().append(path);
@@ -63,19 +60,15 @@ public abstract class CayenneTask extends Task {
 
     /**
      * Sets the classpath reference used by the task.
-     * 
-     * @param reference
-     *            The classpath reference to set.
+     *
+     * @param reference The classpath reference to set.
      */
     public void setClasspathRef(Reference reference) {
         createClasspath().setRefid(reference);
     }
 
     /**
-     * Convenience method for creating a classpath instance to be used for the
-     * task.
-     * 
-     * @return The new classpath.
+     * Convenience method for creating a classpath instance to be used for the task.
      */
     private Path createClasspath() {
         if (null == classpath) {
@@ -87,9 +80,6 @@ public abstract class CayenneTask extends Task {
 
     /**
      * Sets the map.
-     * 
-     * @param map
-     *            The map to set
      */
     public void setMap(File map) {
         this.map = map;
@@ -97,9 +87,6 @@ public abstract class CayenneTask extends Task {
 
     /**
      * Sets the db adapter.
-     * 
-     * @param adapter
-     *            The db adapter to set.
      */
     public void setAdapter(String adapter) {
         this.adapter = adapter;
@@ -107,9 +94,6 @@ public abstract class CayenneTask extends Task {
 
     /**
      * Sets the JDBC driver used to connect to the database server.
-     * 
-     * @param driver
-     *            The driver to set.
      */
     public void setDriver(String driver) {
         this.driver = driver;
@@ -117,9 +101,6 @@ public abstract class CayenneTask extends Task {
 
     /**
      * Sets the JDBC URL used to connect to the database server.
-     * 
-     * @param url
-     *            The url to set.
      */
     public void setUrl(String url) {
         this.url = url;
@@ -134,29 +115,24 @@ public abstract class CayenneTask extends Task {
 
     /**
      * Sets the password used to connect to the database server.
-     * 
-     * @param password
-     *            The password to set.
      */
     public void setPassword(String password) {
         this.password = password;
     }
 
-    /** Loads and returns DataMap based on <code>map</code> attribute. */
+    /**
+     * Loads and returns DataMap based on <code>map</code> attribute.
+     */
     protected DataMap loadDataMap(Injector injector) throws Exception {
         DataMapLoader loader = injector.getInstance(DataMapLoader.class);
         return loader.load(new URLResource(new URL(map.getCanonicalPath())));
     }
 
-    protected DbAdapter getAdapter(Injector injector, DataSource dataSource)
-            throws Exception {
-
-        DbAdapterFactory adapterFactory = injector
-                .getInstance(DbAdapterFactory.class);
+    protected DbAdapter getAdapter(Injector injector, DataSource dataSource) {
 
         DataNodeDescriptor nodeDescriptor = new DataNodeDescriptor();
         nodeDescriptor.setAdapterType(adapter);
 
-        return adapterFactory.createAdapter(nodeDescriptor, dataSource);
+        return injector.getInstance(DbAdapterFactory.class).createAdapter(nodeDescriptor, dataSource);
     }
 }

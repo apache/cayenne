@@ -72,7 +72,7 @@ public class DefaultDbAdapterFactory implements DbAdapterFactory {
 
         // must not create AutoAdapter via objectFactory, so treat explicit
         // AutoAdapter as null and let it fall through to the default. (explicit
-        // AutoAdapter is often passed from the cdbimport pligin).
+        // AutoAdapter is often passed from the cdbimport plugin).
         if (adapterType != null && adapterType.equals(AutoAdapter.class.getName())) {
             adapterType = null;
         }
