@@ -33,6 +33,7 @@ CAY-2983 CayenneDataSource: Public-facing DataSource builder
 CAY-2984 Remove "DataChannel" injectable dependency
 CAY-2985 DataDomain init and structure cleanup
 CAY-2986 Cgen to run unconditionally
+CAY-2987 DataNode to own PkGenerator
 
 Bug Fixes:
 

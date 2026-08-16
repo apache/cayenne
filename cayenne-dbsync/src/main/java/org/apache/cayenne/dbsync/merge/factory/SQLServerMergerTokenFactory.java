@@ -18,6 +18,7 @@
  ****************************************************************/
 package org.apache.cayenne.dbsync.merge.factory;
 
+import org.apache.cayenne.access.DataNode;
 import org.apache.cayenne.dba.DbAdapter;
 import org.apache.cayenne.dba.QuotingStrategy;
 import org.apache.cayenne.dbsync.merge.token.MergerToken;
@@ -79,7 +80,9 @@ public class SQLServerMergerTokenFactory extends DefaultMergerTokenFactory {
         return new SetAllowNullToDb(entity, column) {
 
             @Override
-            public List<String> createSql(DbAdapter adapter) {
+            public List<String> createSql(DataNode node) {
+                DbAdapter adapter = node.getAdapter();
+
                 StringBuffer sqlBuffer = new StringBuffer();
 
                 QuotingStrategy quotes = adapter.getQuotingStrategy(getEntity());
@@ -101,7 +104,9 @@ public class SQLServerMergerTokenFactory extends DefaultMergerTokenFactory {
         return new SetNotNullToDb(entity, column) {
 
             @Override
-            public List<String> createSql(DbAdapter adapter) {
+            public List<String> createSql(DataNode node) {
+                DbAdapter adapter = node.getAdapter();
+
                 StringBuffer sqlBuffer = new StringBuffer();
 
                 QuotingStrategy quotes = adapter.getQuotingStrategy(getEntity());

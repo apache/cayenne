@@ -39,47 +39,25 @@ import org.apache.cayenne.configuration.RuntimeProperties;
 import org.apache.cayenne.configuration.runtime.DataSourceFactory;
 import org.apache.cayenne.configuration.runtime.DbAdapterFactory;
 import org.apache.cayenne.configuration.runtime.DefaultDbAdapterFactory;
-import org.apache.cayenne.configuration.runtime.PkGeneratorFactoryProvider;
 import org.apache.cayenne.configuration.xml.DataChannelMetaData;
 import org.apache.cayenne.configuration.xml.DefaultDataChannelMetaData;
 import org.apache.cayenne.configuration.xml.HandlerFactory;
 import org.apache.cayenne.configuration.xml.XMLDataChannelDescriptorLoader;
 import org.apache.cayenne.configuration.xml.XMLDataMapLoader;
 import org.apache.cayenne.configuration.xml.XMLReaderProvider;
-import org.apache.cayenne.dba.JdbcPkGenerator;
-import org.apache.cayenne.dba.PkGenerator;
-import org.apache.cayenne.dba.db2.DB2Adapter;
-import org.apache.cayenne.dba.db2.DB2PkGenerator;
 import org.apache.cayenne.dba.db2.DB2Sniffer;
-import org.apache.cayenne.dba.derby.DerbyAdapter;
-import org.apache.cayenne.dba.derby.DerbyPkGenerator;
 import org.apache.cayenne.dba.derby.DerbySniffer;
 import org.apache.cayenne.dba.firebird.FirebirdSniffer;
-import org.apache.cayenne.dba.frontbase.FrontBaseAdapter;
-import org.apache.cayenne.dba.frontbase.FrontBasePkGenerator;
 import org.apache.cayenne.dba.frontbase.FrontBaseSniffer;
-import org.apache.cayenne.dba.h2.H2Adapter;
-import org.apache.cayenne.dba.h2.H2PkGenerator;
 import org.apache.cayenne.dba.h2.H2Sniffer;
 import org.apache.cayenne.dba.hsqldb.HSQLDBSniffer;
-import org.apache.cayenne.dba.ingres.IngresAdapter;
-import org.apache.cayenne.dba.ingres.IngresPkGenerator;
 import org.apache.cayenne.dba.ingres.IngresSniffer;
 import org.apache.cayenne.dba.mariadb.MariaDBSniffer;
-import org.apache.cayenne.dba.mysql.MySQLAdapter;
-import org.apache.cayenne.dba.mysql.MySQLPkGenerator;
 import org.apache.cayenne.dba.mysql.MySQLSniffer;
-import org.apache.cayenne.dba.oracle.OracleAdapter;
-import org.apache.cayenne.dba.oracle.OraclePkGenerator;
 import org.apache.cayenne.dba.oracle.OracleSniffer;
-import org.apache.cayenne.dba.postgres.PostgresAdapter;
-import org.apache.cayenne.dba.postgres.PostgresPkGenerator;
 import org.apache.cayenne.dba.postgres.PostgresSniffer;
 import org.apache.cayenne.dba.sqlite.SQLiteSniffer;
-import org.apache.cayenne.dba.sqlserver.SQLServerAdapter;
 import org.apache.cayenne.dba.sqlserver.SQLServerSniffer;
-import org.apache.cayenne.dba.sybase.SybaseAdapter;
-import org.apache.cayenne.dba.sybase.SybasePkGenerator;
 import org.apache.cayenne.dba.sybase.SybaseSniffer;
 import org.apache.cayenne.di.AdhocObjectFactory;
 import org.apache.cayenne.di.Binder;
@@ -133,18 +111,7 @@ public class ToolsModule implements Module {
                 .addAdapterDetector(OracleSniffer.class)
                 .addAdapterDetector(PostgresSniffer.class)
                 .addAdapterDetector(MySQLSniffer.class)
-                .addAdapterDetector(MariaDBSniffer.class)
-
-                .addPkGenerator(DB2Adapter.class, DB2PkGenerator.class)
-                .addPkGenerator(DerbyAdapter.class, DerbyPkGenerator.class)
-                .addPkGenerator(FrontBaseAdapter.class, FrontBasePkGenerator.class)
-                .addPkGenerator(H2Adapter.class, H2PkGenerator.class)
-                .addPkGenerator(IngresAdapter.class, IngresPkGenerator.class)
-                .addPkGenerator(MySQLAdapter.class, MySQLPkGenerator.class)
-                .addPkGenerator(OracleAdapter.class, OraclePkGenerator.class)
-                .addPkGenerator(PostgresAdapter.class, PostgresPkGenerator.class)
-                .addPkGenerator(SQLServerAdapter.class, SybasePkGenerator.class)
-                .addPkGenerator(SybaseAdapter.class, SybasePkGenerator.class);
+                .addAdapterDetector(MariaDBSniffer.class);
 
         binder.bind(Logger.class).toInstance(logger);
 
@@ -161,8 +128,6 @@ public class ToolsModule implements Module {
         binder.bind(Key.get(BatchTranslator.class, BatchTranslator.UPDATE)).to(UpdateBatchTranslator.class);
         binder.bind(Key.get(BatchTranslator.class, BatchTranslator.DELETE)).to(DeleteBatchTranslator.class);
         binder.bind(SQLLogger.class).to(Slf4jSQLLogger.class);
-        binder.bind(PkGeneratorFactoryProvider.class).to(PkGeneratorFactoryProvider.class);
-        binder.bind(PkGenerator.class).to(JdbcPkGenerator.class);
 
         binder.bind(DbAdapterFactory.class).to(DefaultDbAdapterFactory.class);
         binder.bind(DataSourceFactory.class).to(DriverDataSourceFactory.class);

@@ -18,6 +18,7 @@
  ****************************************************************/
 package org.apache.cayenne.dbsync.merge.factory;
 
+import org.apache.cayenne.access.DataNode;
 import org.apache.cayenne.dba.DbAdapter;
 import org.apache.cayenne.dba.QuotingStrategy;
 import org.apache.cayenne.dbsync.merge.token.MergerToken;
@@ -60,7 +61,9 @@ public class DerbyMergerTokenFactory extends DefaultMergerTokenFactory {
         return new SetNotNullToDb(entity, column) {
 
             @Override
-            public List<String> createSql(DbAdapter adapter) {
+            public List<String> createSql(DataNode node) {
+                DbAdapter adapter = node.getAdapter();
+
                 QuotingStrategy quotes = adapter.getQuotingStrategy(getEntity());
                 StringBuilder sql = new StringBuilder("ALTER TABLE ");
                 quotes.appendFQN(sql, getEntity().getCatalog(), getEntity().getSchema(), getEntity().getName());
@@ -81,7 +84,9 @@ public class DerbyMergerTokenFactory extends DefaultMergerTokenFactory {
         return new SetAllowNullToDb(entity, column) {
 
             @Override
-            public List<String> createSql(DbAdapter adapter) {
+            public List<String> createSql(DataNode node) {
+                DbAdapter adapter = node.getAdapter();
+
                 QuotingStrategy quotes = adapter.getQuotingStrategy(getEntity());
                 StringBuilder sql = new StringBuilder("ALTER TABLE ");
                 quotes.appendFQN(sql, getEntity().getCatalog(), getEntity().getSchema(), getEntity().getName());

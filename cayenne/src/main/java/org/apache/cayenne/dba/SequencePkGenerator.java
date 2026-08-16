@@ -46,7 +46,7 @@ import java.util.List;
  * </p>
  *
  * <pre>
- * dataNode.getAdapter().getPkGenerator().setPkCacheSize(1);
+ * dataNode.getPkGenerator().setPkCacheSize(1);
  * </pre>
  *
  * @since 5.0
@@ -54,10 +54,6 @@ import java.util.List;
 public abstract class SequencePkGenerator extends JdbcPkGenerator {
 
     private static final String _SEQUENCE_PREFIX = "pk_";
-
-    public SequencePkGenerator() {
-        super();
-    }
 
     protected SequencePkGenerator(JdbcAdapter adapter) {
         super(adapter);

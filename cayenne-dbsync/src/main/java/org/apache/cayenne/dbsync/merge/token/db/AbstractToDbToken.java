@@ -19,7 +19,7 @@
 
 package org.apache.cayenne.dbsync.merge.token.db;
 
-import org.apache.cayenne.dba.DbAdapter;
+import org.apache.cayenne.access.DataNode;
 import org.apache.cayenne.dbsync.merge.context.MergeDirection;
 import org.apache.cayenne.dbsync.merge.context.MergerContext;
 import org.apache.cayenne.dbsync.merge.token.AbstractMergerToken;
@@ -46,7 +46,7 @@ public abstract class AbstractToDbToken extends AbstractMergerToken {
 
 	@Override
 	public void execute(MergerContext mergerContext) {
-		for (String sql : createSql(mergerContext.getDataNode().getAdapter())) {
+		for (String sql : createSql(mergerContext.getDataNode())) {
 			executeSql(mergerContext, sql);
 		}
 	}
@@ -64,7 +64,7 @@ public abstract class AbstractToDbToken extends AbstractMergerToken {
 		}
 	}
 
-	public abstract List<String> createSql(DbAdapter adapter);
+	public abstract List<String> createSql(DataNode node);
 
 	@Override
 	public final MergeDirection getDirection() {

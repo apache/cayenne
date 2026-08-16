@@ -30,6 +30,7 @@ import org.apache.cayenne.access.types.ValueObjectTypeRegistry;
 import org.apache.cayenne.configuration.Constants;
 import org.apache.cayenne.configuration.RuntimeProperties;
 import org.apache.cayenne.dba.JdbcAdapter;
+import org.apache.cayenne.dba.PkGenerator;
 import org.apache.cayenne.dba.QuotingStrategy;
 import org.apache.cayenne.dba.TypesMapping;
 import org.apache.cayenne.di.Inject;
@@ -98,6 +99,14 @@ public class FrontBaseAdapter extends JdbcAdapter {
             NativeColumnType.of(Types.VARBINARY, "BIT VARYING"),
             NativeColumnType.of(Types.VARCHAR, "CHAR VARYING"),
         };
+    }
+
+    /**
+     * Returns a {@link FrontBasePkGenerator}.
+     */
+    @Override
+    public PkGenerator createPkGenerator() {
+        return new FrontBasePkGenerator(this);
     }
 
     /**

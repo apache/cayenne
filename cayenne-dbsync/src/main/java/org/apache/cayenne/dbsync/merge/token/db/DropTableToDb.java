@@ -19,7 +19,7 @@
 
 package org.apache.cayenne.dbsync.merge.token.db;
 
-import org.apache.cayenne.dba.DbAdapter;
+import org.apache.cayenne.access.DataNode;
 import org.apache.cayenne.dbsync.merge.factory.MergerTokenFactory;
 import org.apache.cayenne.dbsync.merge.token.MergerToken;
 import org.apache.cayenne.map.DbEntity;
@@ -34,14 +34,14 @@ public class DropTableToDb extends AbstractToDbToken.Entity {
     }
 
     @Override
-    public List<String> createSql(DbAdapter adapter) {
+    public List<String> createSql(DataNode node) {
         List<String> sqls = new ArrayList<>();
         // TODO: fix. some adapters drop the complete AUTO_PK_SUPPORT here
         /*
-        sqls.addAll(adapter.getPkGenerator().dropAutoPkStatements(
+        sqls.addAll(node.getPkGenerator().dropAutoPkStatements(
                 Collections.singletonList(entity)));
          */
-        sqls.addAll(adapter.dropTableStatements(getEntity()));
+        sqls.addAll(node.getAdapter().dropTableStatements(getEntity()));
         return sqls;
     }
 

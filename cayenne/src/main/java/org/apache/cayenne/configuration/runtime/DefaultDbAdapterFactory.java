@@ -24,7 +24,6 @@ import org.apache.cayenne.configuration.DataNodeDescriptor;
 import org.apache.cayenne.dba.AutoAdapter;
 import org.apache.cayenne.dba.DbAdapter;
 import org.apache.cayenne.dba.JdbcAdapter;
-import org.apache.cayenne.dba.PkGenerator;
 import org.apache.cayenne.di.AdhocObjectFactory;
 import org.apache.cayenne.di.Inject;
 import org.apache.cayenne.di.Injector;
@@ -36,7 +35,6 @@ import java.sql.Connection;
 import java.sql.DatabaseMetaData;
 import java.sql.SQLException;
 import java.util.List;
-import java.util.Objects;
 
 /**
  * A factory of DbAdapters that either loads user-provided adapter or guesses
@@ -53,9 +51,6 @@ public class DefaultDbAdapterFactory implements DbAdapterFactory {
 
     @Inject
     protected AdhocObjectFactory objectFactory;
-
-    @Inject
-    protected PkGeneratorFactoryProvider pkGeneratorProvider;
 
     protected List<DbAdapterDetector> detectors;
 
@@ -83,8 +78,7 @@ public class DefaultDbAdapterFactory implements DbAdapterFactory {
         }
 
         if (adapterType != null) {
-            DbAdapter dbAdapter = objectFactory.newInstance(DbAdapter.class, adapterType);
-            return setupPkGenerator(dbAdapter);
+            return objectFactory.newInstance(DbAdapter.class, adapterType);
         } else {
             return new AutoAdapter(() -> detectAdapter(dataSource));
         }
@@ -117,7 +111,7 @@ public class DefaultDbAdapterFactory implements DbAdapterFactory {
                 // TODO: should detector do this??
                 injector.injectMembers(adapter);
 
-                return setupPkGenerator(adapter);
+                return adapter;
             }
         }
 
@@ -127,14 +121,5 @@ public class DefaultDbAdapterFactory implements DbAdapterFactory {
     protected DbAdapter defaultAdapter() {
         LOGGER.warn("Failed to detect database type, using generic adapter");
         return objectFactory.newInstance(DbAdapter.class, JdbcAdapter.class.getName());
-    }
-
-    protected DbAdapter setupPkGenerator(DbAdapter dbAdapter) {
-        PkGenerator pkGenerator = pkGeneratorProvider.get(Objects.requireNonNull(dbAdapter));
-        if (pkGenerator != null) {
-            pkGenerator.setAdapter(dbAdapter);
-            dbAdapter.setPkGenerator(pkGenerator);
-        }
-        return dbAdapter;
     }
 }

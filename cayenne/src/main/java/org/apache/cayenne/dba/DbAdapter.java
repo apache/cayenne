@@ -221,21 +221,16 @@ public interface DbAdapter {
     ExtendedTypeMap getExtendedTypes();
 
     /**
-     * Returns primary key generator associated with this DbAdapter.
-     */
-    PkGenerator getPkGenerator();
-
-    /**
-     * Set custom PK generator  associated with this DbAdapter.
+     * Returns a new primary key generator of the default type associated with this adapter. DataNode would use this
+     * generator, unless explicitly overridden. DbAdapter does not cache the generator as it is often stateful.
      *
-     * @param pkGenerator to set
-     * @since 4.1
+     * @since 5.0
      */
-    void setPkGenerator(PkGenerator pkGenerator);
+    PkGenerator createPkGenerator();
 
     /**
      * Creates and returns a DbAttribute based on supplied parameters (usually
-     * obtained from database meta data).
+     * obtained from database metadata).
      *
      * @param name       database column name
      * @param typeName   database specific type name, may be used as a hint to

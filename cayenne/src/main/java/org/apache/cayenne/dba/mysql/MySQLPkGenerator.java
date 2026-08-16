@@ -39,15 +39,7 @@ public class MySQLPkGenerator extends JdbcPkGenerator {
 
     private static final Logger LOGGER = LoggerFactory.getLogger(MySQLPkGenerator.class);
 
-    /**
-     * Used by DI
-     * @since 4.1
-     */
-    public MySQLPkGenerator() {
-        super();
-    }
-
-    MySQLPkGenerator(JdbcAdapter adapter) {
+    public MySQLPkGenerator(JdbcAdapter adapter) {
         super(adapter);
     }
 

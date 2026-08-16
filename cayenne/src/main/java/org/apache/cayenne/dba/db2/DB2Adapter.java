@@ -36,6 +36,7 @@ import org.apache.cayenne.configuration.Constants;
 import org.apache.cayenne.configuration.RuntimeProperties;
 import org.apache.cayenne.dba.QuotingStrategy;
 import org.apache.cayenne.dba.JdbcAdapter;
+import org.apache.cayenne.dba.PkGenerator;
 import org.apache.cayenne.di.Inject;
 import org.apache.cayenne.map.DbAttribute;
 import org.apache.cayenne.query.Query;
@@ -168,6 +169,14 @@ public class DB2Adapter extends JdbcAdapter {
     @Override
     public boolean typeSupportsScale(int type) {
         return type != Types.TIME && super.typeSupportsScale(type);
+    }
+
+    /**
+     * Returns a {@link DB2PkGenerator}.
+     */
+    @Override
+    public PkGenerator createPkGenerator() {
+        return new DB2PkGenerator(this);
     }
 
     /**

@@ -74,8 +74,9 @@ public class AutoAdapterIT {
                 autoAdapter.supportsGeneratedKeysForBatchInserts());
         assertSame(adapter.getBatchTerminator(),
                 autoAdapter.getBatchTerminator());
-        assertSame(adapter.getPkGenerator(),
-                autoAdapter.getPkGenerator());
+        // returns a new instance for each call
+        assertSame(adapter.createPkGenerator().getClass(),
+                autoAdapter.createPkGenerator().getClass());
         DbEntity artistDbEntity = env.dataNode().getEntityResolver().getObjEntity(Artist.class).getDbEntity();
         assertSame(adapter.getQuotingStrategy(artistDbEntity),
                 autoAdapter.getQuotingStrategy(artistDbEntity));

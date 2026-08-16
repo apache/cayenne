@@ -42,15 +42,7 @@ import java.util.List;
  */
 public class SQLServerPkGenerator extends JdbcPkGenerator {
 
-	/**
-	 * Used by DI
-	 * @since 4.1
-	 */
-	public SQLServerPkGenerator(){
-		super();
-	}
-
-	protected SQLServerPkGenerator(JdbcAdapter adapter) {
+	public SQLServerPkGenerator(JdbcAdapter adapter) {
 		super(adapter);
 	}
 

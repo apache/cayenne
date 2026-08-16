@@ -28,6 +28,7 @@ import org.apache.cayenne.access.translator.ProcedureTranslator;
 import org.apache.cayenne.access.translator.SQLTemplateTranslator;
 import org.apache.cayenne.access.translator.SelectTranslator;
 import org.apache.cayenne.dba.DbAdapter;
+import org.apache.cayenne.dba.PkGenerator;
 import org.apache.cayenne.log.NoopSQLLogger;
 import org.apache.cayenne.log.SQLLogger;
 import org.apache.cayenne.map.DataMap;
@@ -65,6 +66,11 @@ public class DataNode {
     protected EntitySorter entitySorter;
     protected SchemaUpdateStrategy schemaUpdateStrategy;
     protected Map<String, DataMap> dataMaps;
+
+    private PkGenerator pkGenerator;
+
+    // tells whether "pkGenerator" was installed by the user, and hence must not be replaced when the adapter changes
+    private boolean customPkGenerator;
 
     private DataSource dataSource;
     private SQLLogger sqlLogger;
@@ -204,6 +210,38 @@ public class DataNode {
 
     public void setAdapter(DbAdapter adapter) {
         this.adapter = adapter;
+
+        // a generator built for the old adapter is meaningless for the new one. A generator explicitly installed
+        // by the user is left alone.
+        if (!customPkGenerator) {
+            this.pkGenerator = adapter != null ? adapter.createPkGenerator() : null;
+        }
+    }
+
+    /**
+     * Returns the PkGenerator used by this node to generate primary keys. Unless an explicit generator was installed
+     * with {@link #setPkGenerator(PkGenerator)}, this is the default generator of the node's {@link DbAdapter}.
+     *
+     * @since 5.0
+     */
+    public PkGenerator getPkGenerator() {
+        return pkGenerator;
+    }
+
+    /**
+     * Installs a custom PkGenerator, overriding the default generator of the node's {@link DbAdapter}. A custom
+     * generator is retained across {@link #setAdapter(DbAdapter)} calls. Passing null restores the adapter default.
+     *
+     * @since 5.0
+     */
+    public void setPkGenerator(PkGenerator pkGenerator) {
+        if (pkGenerator != null) {
+            this.pkGenerator = pkGenerator;
+            this.customPkGenerator = true;
+        } else {
+            this.customPkGenerator = false;
+            this.pkGenerator = adapter != null ? adapter.createPkGenerator() : null;
+        }
     }
 
     /**

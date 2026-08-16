@@ -75,41 +75,19 @@ import org.apache.cayenne.configuration.xml.NoopDataChannelMetaData;
 import org.apache.cayenne.configuration.xml.XMLDataChannelDescriptorLoader;
 import org.apache.cayenne.configuration.xml.XMLDataMapLoader;
 import org.apache.cayenne.configuration.xml.XMLReaderProvider;
-import org.apache.cayenne.dba.JdbcPkGenerator;
-import org.apache.cayenne.dba.PkGenerator;
-import org.apache.cayenne.dba.db2.DB2Adapter;
-import org.apache.cayenne.dba.db2.DB2PkGenerator;
 import org.apache.cayenne.dba.db2.DB2Sniffer;
-import org.apache.cayenne.dba.derby.DerbyAdapter;
-import org.apache.cayenne.dba.derby.DerbyPkGenerator;
 import org.apache.cayenne.dba.derby.DerbySniffer;
 import org.apache.cayenne.dba.firebird.FirebirdSniffer;
-import org.apache.cayenne.dba.frontbase.FrontBaseAdapter;
-import org.apache.cayenne.dba.frontbase.FrontBasePkGenerator;
 import org.apache.cayenne.dba.frontbase.FrontBaseSniffer;
-import org.apache.cayenne.dba.h2.H2Adapter;
-import org.apache.cayenne.dba.h2.H2PkGenerator;
 import org.apache.cayenne.dba.h2.H2Sniffer;
 import org.apache.cayenne.dba.hsqldb.HSQLDBSniffer;
-import org.apache.cayenne.dba.ingres.IngresAdapter;
-import org.apache.cayenne.dba.ingres.IngresPkGenerator;
 import org.apache.cayenne.dba.ingres.IngresSniffer;
 import org.apache.cayenne.dba.mariadb.MariaDBSniffer;
-import org.apache.cayenne.dba.mysql.MySQLAdapter;
-import org.apache.cayenne.dba.mysql.MySQLPkGenerator;
 import org.apache.cayenne.dba.mysql.MySQLSniffer;
-import org.apache.cayenne.dba.oracle.OracleAdapter;
-import org.apache.cayenne.dba.oracle.OraclePkGenerator;
 import org.apache.cayenne.dba.oracle.OracleSniffer;
-import org.apache.cayenne.dba.postgres.PostgresAdapter;
-import org.apache.cayenne.dba.postgres.PostgresPkGenerator;
 import org.apache.cayenne.dba.postgres.PostgresSniffer;
 import org.apache.cayenne.dba.sqlite.SQLiteSniffer;
-import org.apache.cayenne.dba.sqlserver.SQLServerAdapter;
-import org.apache.cayenne.dba.sqlserver.SQLServerPkGenerator;
 import org.apache.cayenne.dba.sqlserver.SQLServerSniffer;
-import org.apache.cayenne.dba.sybase.SybaseAdapter;
-import org.apache.cayenne.dba.sybase.SybasePkGenerator;
 import org.apache.cayenne.dba.sybase.SybaseSniffer;
 import org.apache.cayenne.di.AdhocObjectFactory;
 import org.apache.cayenne.di.Binder;
@@ -255,20 +233,6 @@ public class CoreModule implements Module {
     }
 
     /**
-     * Provides access to a DI map builder for {@link PkGenerator}'s that allows downstream modules to
-     * "contribute" their own pk generators.
-     *
-     * @param binder DI binder passed to the module during injector startup.
-     * @return MapBuilder for properties.
-     * @since 4.1
-     * @deprecated in favor of {@link #extend(Binder)} API
-     */
-    @Deprecated(since = "5.0", forRemoval = true)
-    public static MapBuilder<PkGenerator> contributePkGenerators(Binder binder) {
-        return binder.bindMap(PkGenerator.class);
-    }
-
-    /**
      * Provides access to a DI map builder for runtime properties that allows downstream modules to
      * "contribute" their own properties.
      *
@@ -369,18 +333,6 @@ public class CoreModule implements Module {
                 .addAdapterDetector(MySQLSniffer.class)
                 .addAdapterDetector(MariaDBSniffer.class)
 
-                //  PkGenerators for the known DbAdapters
-                .addPkGenerator(DB2Adapter.class, DB2PkGenerator.class)
-                .addPkGenerator(DerbyAdapter.class, DerbyPkGenerator.class)
-                .addPkGenerator(FrontBaseAdapter.class, FrontBasePkGenerator.class)
-                .addPkGenerator(H2Adapter.class, H2PkGenerator.class)
-                .addPkGenerator(IngresAdapter.class, IngresPkGenerator.class)
-                .addPkGenerator(MySQLAdapter.class, MySQLPkGenerator.class)
-                .addPkGenerator(OracleAdapter.class, OraclePkGenerator.class)
-                .addPkGenerator(PostgresAdapter.class, PostgresPkGenerator.class)
-                .addPkGenerator(SQLServerAdapter.class, SQLServerPkGenerator.class)
-                .addPkGenerator(SybaseAdapter.class, SybasePkGenerator.class)
-
                 .addSyncFilter(TransactionFilter.class)
 
                 // ExtendedTypes
@@ -424,8 +376,6 @@ public class CoreModule implements Module {
         binder.bind(SQLLogger.class).to(Slf4jSQLLogger.class);
         binder.bind(ClassLoaderManager.class).to(DefaultClassLoaderManager.class);
         binder.bind(AdhocObjectFactory.class).to(DefaultAdhocObjectFactory.class);
-        binder.bind(PkGeneratorFactoryProvider.class).to(PkGeneratorFactoryProvider.class);
-        binder.bind(PkGenerator.class).to(JdbcPkGenerator.class);
         binder.bind(ConfigurationNameMapper.class).to(DefaultConfigurationNameMapper.class);
         binder.bind(EventManager.class).toProvider(EventManagerProvider.class);
         binder.bind(QueryCache.class).toProvider(MapQueryCacheProvider.class);

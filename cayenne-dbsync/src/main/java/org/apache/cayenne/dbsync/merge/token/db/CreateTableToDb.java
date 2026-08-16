@@ -20,7 +20,6 @@
 package org.apache.cayenne.dbsync.merge.token.db;
 
 import org.apache.cayenne.access.DataNode;
-import org.apache.cayenne.dba.DbAdapter;
 import org.apache.cayenne.dbsync.merge.context.MergerContext;
 import org.apache.cayenne.dbsync.merge.factory.MergerTokenFactory;
 import org.apache.cayenne.dbsync.merge.token.MergerToken;
@@ -39,13 +38,13 @@ public class CreateTableToDb extends AbstractToDbToken.Entity {
     }
 
     @Override
-    public List<String> createSql(DbAdapter adapter) {
+    public List<String> createSql(DataNode node) {
         List<String> sqls = new ArrayList<>();
         if(needAutoPkSupport()) {
-            sqls.addAll(adapter.getPkGenerator().createAutoPkStatements(
+            sqls.addAll(node.getPkGenerator().createAutoPkStatements(
                     Collections.singletonList(getEntity())));
         }
-        sqls.add(adapter.createTable(getEntity()));
+        sqls.add(node.getAdapter().createTable(getEntity()));
         return sqls;
     }
 
@@ -53,13 +52,12 @@ public class CreateTableToDb extends AbstractToDbToken.Entity {
     public void execute(MergerContext mergerContext) {
         try {
             DataNode node = mergerContext.getDataNode();
-            DbAdapter adapter = node.getAdapter();
             if(needAutoPkSupport()) {
-                adapter.getPkGenerator().createAutoPk(
+                node.getPkGenerator().createAutoPk(
                         node,
                         Collections.singletonList(getEntity()));
             }
-            executeSql(mergerContext, adapter.createTable(getEntity()));
+            executeSql(mergerContext, node.getAdapter().createTable(getEntity()));
         }
         catch (Exception e) {
             mergerContext.getValidationResult().addFailure(

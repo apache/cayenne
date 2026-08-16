@@ -22,6 +22,7 @@ package org.apache.cayenne.dbsync.merge.token.db;
 import java.util.Collections;
 import java.util.List;
 
+import org.apache.cayenne.access.DataNode;
 import org.apache.cayenne.dba.DbAdapter;
 import org.apache.cayenne.dba.QuotingStrategy;
 import org.apache.cayenne.dbsync.merge.factory.MergerTokenFactory;
@@ -75,7 +76,9 @@ public class SetGeneratedFlagToDb extends AbstractToDbToken.EntityAndColumn {
 
     @SuppressWarnings("unchecked")
     @Override
-    public List<String> createSql(DbAdapter adapter) {
+    public List<String> createSql(DataNode node) {
+        DbAdapter adapter = node.getAdapter();
+
         if(!adapter.supportsGeneratedKeys()) {
             return (List<String>)Collections.EMPTY_LIST;
         }

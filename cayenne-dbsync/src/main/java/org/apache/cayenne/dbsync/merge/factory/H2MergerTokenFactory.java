@@ -19,6 +19,7 @@
 
 package org.apache.cayenne.dbsync.merge.factory;
 
+import org.apache.cayenne.access.DataNode;
 import org.apache.cayenne.dba.DbAdapter;
 import org.apache.cayenne.dba.QuotingStrategy;
 import org.apache.cayenne.dbsync.merge.token.MergerToken;
@@ -61,7 +62,7 @@ public class H2MergerTokenFactory extends DefaultMergerTokenFactory {
         return new SetAllowNullToDb(entity, column) {
 
             @Override
-            public List<String> createSql(DbAdapter adapter) {
+            public List<String> createSql(DataNode node) {
                 return Collections.singletonList("ALTER TABLE " + getEntity().getFullyQualifiedName()
                         + " ALTER COLUMN " + getColumn().getName() + " SET NULL");
             }

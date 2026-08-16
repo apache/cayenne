@@ -35,6 +35,7 @@ import org.apache.cayenne.configuration.Constants;
 import org.apache.cayenne.configuration.RuntimeProperties;
 import org.apache.cayenne.dba.QuotingStrategy;
 import org.apache.cayenne.dba.JdbcAdapter;
+import org.apache.cayenne.dba.PkGenerator;
 import org.apache.cayenne.di.Inject;
 import org.apache.cayenne.map.DbAttribute;
 import org.apache.cayenne.map.DbEntity;
@@ -199,6 +200,14 @@ public class OracleAdapter extends JdbcAdapter {
             NativeColumnType.of(Types.VARBINARY, "RAW"),
             NativeColumnType.of(Types.VARCHAR, "VARCHAR2"),
         };
+    }
+
+    /**
+     * Returns a {@link OraclePkGenerator}.
+     */
+    @Override
+    public PkGenerator createPkGenerator() {
+        return new OraclePkGenerator(this);
     }
 
     /**

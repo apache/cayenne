@@ -117,6 +117,11 @@ DataMaps, filters and listeners can still be added (and removed) after creation.
   after project upgrades or when switching between machines and branches. Consequences:
   - The `force` flag is now a deprecated no-op — its former behavior is the only behavior.
 
+* Per [CAY-2987](https://issues.apache.org/jira/browse/CAY-2987), `PkGenerator` is now owned by `DataNode` rather than
+  by `DbAdapter`. A `DbAdapter` is only the source of the default generator for its database. This change is
+  entirely transparent unless you need to install a custom PkGenerator. You can do that via a custom injected 
+ `DefaultDataNodeFactory`, an explicit call to `dataNode.setPkGenerator(..)` or use a custom adapter.
+
 ## Upgrading to 5.0-M2
 
 * Per [CAY-2947](https://issues.apache.org/jira/browse/CAY-2947) the `cayenne-commitlog` artifact has been removed. Commit log support is now part of the

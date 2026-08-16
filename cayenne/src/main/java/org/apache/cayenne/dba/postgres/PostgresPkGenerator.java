@@ -28,15 +28,7 @@ import org.apache.cayenne.map.DbEntity;
  */
 public class PostgresPkGenerator extends SequencePkGenerator {
 
-    /**
-     * Used by DI
-     * @since 4.1
-     */
-    public PostgresPkGenerator() {
-        super();
-    }
-
-    protected PostgresPkGenerator(JdbcAdapter adapter) {
+    public PostgresPkGenerator(JdbcAdapter adapter) {
         super(adapter);
     }
 

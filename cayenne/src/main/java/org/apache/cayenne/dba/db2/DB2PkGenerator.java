@@ -27,19 +27,11 @@ import org.apache.cayenne.map.DbEntity;
  */
 public class DB2PkGenerator extends SequencePkGenerator {
 
-    /**
-     * Used by DI
-     * @since 4.1
-     */
-    public DB2PkGenerator() {
-        super();
-    }
+    private static final String _SEQUENCE_PREFIX = "S_";
 
-    DB2PkGenerator(JdbcAdapter adapter) {
+    public DB2PkGenerator(JdbcAdapter adapter) {
         super(adapter);
     }
-
-    private static final String _SEQUENCE_PREFIX = "S_";
 
     @Override
     protected String sequenceName(DbEntity entity) {

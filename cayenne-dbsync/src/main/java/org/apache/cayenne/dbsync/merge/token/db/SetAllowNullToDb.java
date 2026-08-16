@@ -19,6 +19,7 @@
 
 package org.apache.cayenne.dbsync.merge.token.db;
 
+import org.apache.cayenne.access.DataNode;
 import org.apache.cayenne.dba.DbAdapter;
 import org.apache.cayenne.dba.QuotingStrategy;
 import org.apache.cayenne.dbsync.merge.factory.MergerTokenFactory;
@@ -40,7 +41,9 @@ public class SetAllowNullToDb extends AbstractToDbToken.EntityAndColumn {
     }
 
     @Override
-    public List<String> createSql(DbAdapter adapter) {
+    public List<String> createSql(DataNode node) {
+        DbAdapter adapter = node.getAdapter();
+
         StringBuilder sqlBuffer = new StringBuilder();
         QuotingStrategy quotes = adapter.getQuotingStrategy(getEntity());
         sqlBuffer.append("ALTER TABLE ");

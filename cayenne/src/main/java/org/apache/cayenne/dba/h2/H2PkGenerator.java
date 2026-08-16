@@ -30,15 +30,7 @@ import org.apache.cayenne.map.DbEntity;
  */
 public class H2PkGenerator extends SequencePkGenerator {
 
-    /**
-     * Used by DI
-     * @since 4.1
-     */
-    public H2PkGenerator() {
-        super();
-    }
-
-    protected H2PkGenerator(JdbcAdapter adapter) {
+    public H2PkGenerator(JdbcAdapter adapter) {
         super(adapter);
     }
 

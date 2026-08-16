@@ -74,7 +74,7 @@ public class PregeneratedPKIT {
         DbEntity entity = context.getEntityResolver().getDbEntity("ARTIST");
         DataNode node = context.getParentDataDomain().lookupDataNode(entity.getDataMap());
 
-        Object pk = node.getAdapter().getPkGenerator().generatePk(
+        Object pk = node.getPkGenerator().generatePk(
                 node,
                 entity.getPrimaryKeys().iterator().next());
         id.getReplacementIdMap().put(Artist.ARTIST_ID_PK_COLUMN, pk);

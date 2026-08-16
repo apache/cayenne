@@ -270,7 +270,7 @@ public abstract class MergeCase {
 
         AbstractToDbToken t = (AbstractToDbToken) mergerFactory().createDropTableToDb(entity);
 
-        for (String sql : t.createSql(node.getAdapter())) {
+        for (String sql : t.createSql(node)) {
 
             try {
                 executeSql(sql);

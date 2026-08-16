@@ -54,16 +54,10 @@ public class JdbcPkGenerator implements PkGenerator {
     public static final int DEFAULT_PK_CACHE_SIZE = 20;
     static final long DEFAULT_PK_START_VALUE = 200;
 
-    protected JdbcAdapter adapter;
+    protected final JdbcAdapter adapter;
     protected ConcurrentMap<String, Queue<Long>> pkCache = new ConcurrentHashMap<>();
     protected int pkCacheSize = DEFAULT_PK_CACHE_SIZE;
     protected long pkStartValue = DEFAULT_PK_START_VALUE;
-
-    /**
-     * @since 4.1
-     */
-    public JdbcPkGenerator() {
-    }
 
     public JdbcPkGenerator(JdbcAdapter adapter) {
         this.adapter = adapter;
@@ -249,11 +243,6 @@ public class JdbcPkGenerator implements PkGenerator {
             // leaving it up to the user to ensure that PK does not exceed max int...
             return value.intValue();
         }
-    }
-
-    @Override
-    public void setAdapter(DbAdapter adapter) {
-        this.adapter = (JdbcAdapter) adapter;
     }
 
     /**

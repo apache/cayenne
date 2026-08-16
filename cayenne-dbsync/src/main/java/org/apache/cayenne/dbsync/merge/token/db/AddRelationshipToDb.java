@@ -19,6 +19,7 @@
 
 package org.apache.cayenne.dbsync.merge.token.db;
 
+import org.apache.cayenne.access.DataNode;
 import org.apache.cayenne.access.DbGenerator;
 import org.apache.cayenne.dba.DbAdapter;
 import org.apache.cayenne.dbsync.merge.factory.MergerTokenFactory;
@@ -42,7 +43,9 @@ public class AddRelationshipToDb extends AbstractToDbToken.Entity {
      * @see DbGenerator#createConstraintsQueries(org.apache.cayenne.map.DbEntity)
      */
     @Override
-    public List<String> createSql(DbAdapter adapter) {
+    public List<String> createSql(DataNode node) {
+        DbAdapter adapter = node.getAdapter();
+
         // TODO: skip FK to a different DB
         if (!this.isEmpty()) {
             String fksql = adapter.createFkConstraint(relationship);

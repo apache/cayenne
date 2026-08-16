@@ -30,15 +30,7 @@ import org.apache.cayenne.map.DbEntity;
  */
 public class DerbyPkGenerator extends SequencePkGenerator {
 
-    /**
-     * Used by DI
-     * @since 4.1
-     */
-    public DerbyPkGenerator() {
-        super();
-    }
-
-    DerbyPkGenerator(JdbcAdapter adapter) {
+    public DerbyPkGenerator(JdbcAdapter adapter) {
         super(adapter);
     }
 

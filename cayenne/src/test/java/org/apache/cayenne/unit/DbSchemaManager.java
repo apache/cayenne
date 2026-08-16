@@ -396,12 +396,12 @@ public class DbSchemaManager {
 
     private void dropPKSupport(DataNode node, DataMap map) throws Exception {
         List<DbEntity> filteredEntities = dbEntitiesInInsertOrder(map.getName());
-        node.getAdapter().getPkGenerator().dropAutoPk(node, filteredEntities);
+        node.getPkGenerator().dropAutoPk(node, filteredEntities);
     }
 
     private void createPKSupport(DataNode node, DataMap map) throws Exception {
         List<DbEntity> filteredEntities = dbEntitiesInInsertOrder(map.getName());
-        node.getAdapter().getPkGenerator().createAutoPk(node, filteredEntities);
+        node.getPkGenerator().createAutoPk(node, filteredEntities);
     }
 
     private void createSchema(DataNode node, DataMap map) throws Exception {

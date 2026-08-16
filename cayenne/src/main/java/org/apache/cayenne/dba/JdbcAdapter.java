@@ -68,7 +68,6 @@ import java.util.Map;
  */
 public class JdbcAdapter implements DbAdapter {
 
-    private PkGenerator pkGenerator;
     protected QuotingStrategy quotingStrategy;
 
     protected int defaultCharColumnLength;
@@ -229,21 +228,11 @@ public class JdbcAdapter implements DbAdapter {
     }
 
     /**
-     * Returns primary key generator associated with this DbAdapter.
+     * Returns a generic PK generator based on the "AUTO_PK_SUPPORT" lookup table.
      */
     @Override
-    public PkGenerator getPkGenerator() {
-        return pkGenerator;
-    }
-
-    /**
-     * Sets new primary key generator.
-     *
-     * @since 1.1
-     */
-    @Override
-    public void setPkGenerator(PkGenerator pkGenerator) {
-        this.pkGenerator = pkGenerator;
+    public PkGenerator createPkGenerator() {
+        return new JdbcPkGenerator(this);
     }
 
     /**

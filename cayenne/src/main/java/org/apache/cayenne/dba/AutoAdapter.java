@@ -53,7 +53,6 @@ import java.util.List;
 public class AutoAdapter implements DbAdapter {
 
 	protected Provider<DbAdapter> adapterProvider;
-	protected PkGenerator pkGenerator;
 
 	/**
 	 * The actual adapter that is delegated methods execution.
@@ -215,19 +214,11 @@ public class AutoAdapter implements DbAdapter {
 	}
 
 	/**
-	 * Returns a primary key generator.
+	 * Returns the default primary key generator of the wrapped adapter.
 	 */
 	@Override
-	public PkGenerator getPkGenerator() {
-		return (pkGenerator != null) ? pkGenerator : getAdapter().getPkGenerator();
-	}
-
-	/**
-	 * Sets a PK generator override. If set to non-null value, such PK generator
-	 * will be used instead of the one provided by wrapped adapter.
-	 */
-	public void setPkGenerator(PkGenerator pkGenerator) {
-		this.pkGenerator = pkGenerator;
+	public PkGenerator createPkGenerator() {
+		return getAdapter().createPkGenerator();
 	}
 
 	@Override

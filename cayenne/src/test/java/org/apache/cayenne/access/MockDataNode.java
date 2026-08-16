@@ -28,6 +28,7 @@ import java.util.Map;
 import javax.sql.DataSource;
 
 import org.apache.cayenne.dba.DbAdapter;
+import org.apache.cayenne.dba.PkGenerator;
 import org.apache.cayenne.map.DataMap;
 import org.apache.cayenne.map.EntityResolver;
 import org.apache.cayenne.map.EntitySorter;
@@ -115,6 +116,11 @@ public class MockDataNode extends DataNode {
     @Override
     public DbAdapter getAdapter() {
         return node.getAdapter();
+    }
+
+    @Override
+    public PkGenerator getPkGenerator() {
+        return node.getPkGenerator();
     }
 
     @Override

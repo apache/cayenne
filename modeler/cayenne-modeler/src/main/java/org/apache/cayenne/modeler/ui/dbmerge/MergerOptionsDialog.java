@@ -24,6 +24,7 @@ import com.jgoodies.forms.factories.Borders;
 import com.jgoodies.forms.layout.CellConstraints;
 import com.jgoodies.forms.layout.FormLayout;
 import org.apache.cayenne.CayenneRuntimeException;
+import org.apache.cayenne.access.DataNode;
 import org.apache.cayenne.dba.DbAdapter;
 import org.apache.cayenne.dbsync.merge.DataMapMerger;
 import org.apache.cayenne.dbsync.merge.context.MergeDirection;
@@ -222,10 +223,14 @@ public class MergerOptionsDialog extends ProjectDialog {
         String batchTerminator = adapter.getBatchTerminator();
         String lineEnd = batchTerminator != null ? "\n" + batchTerminator + "\n\n" : "\n\n";
 
+        // tokens generate SQL in the context of a DataNode. No DataSource is needed, as nothing is executed here
+        DataNode node = new DataNode();
+        node.setAdapter(adapter);
+
         while (it.hasNext()) {
             MergerToken token = it.next();
             if (token instanceof AbstractToDbToken tdb) {
-                for (String sql : tdb.createSql(adapter)) {
+                for (String sql : tdb.createSql(node)) {
                     buf.append(sql);
                     buf.append(lineEnd);
                 }

@@ -30,6 +30,7 @@ import org.apache.cayenne.configuration.Constants;
 import org.apache.cayenne.configuration.RuntimeProperties;
 import org.apache.cayenne.dba.QuotingStrategy;
 import org.apache.cayenne.dba.JdbcAdapter;
+import org.apache.cayenne.dba.PkGenerator;
 import org.apache.cayenne.dba.TypesMapping;
 import org.apache.cayenne.di.Inject;
 import org.apache.cayenne.map.DbAttribute;
@@ -90,6 +91,14 @@ public class IngresAdapter extends JdbcAdapter {
             NativeColumnType.of(Types.VARBINARY, "BYTE VARYING"),
             NativeColumnType.of(Types.VARCHAR, "VARCHAR"),
         };
+    }
+
+    /**
+     * Returns a {@link IngresPkGenerator}.
+     */
+    @Override
+    public PkGenerator createPkGenerator() {
+        return new IngresPkGenerator(this);
     }
 
     /**

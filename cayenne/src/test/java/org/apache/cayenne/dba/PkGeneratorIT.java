@@ -50,7 +50,7 @@ public class PkGeneratorIT {
     public void setUp() throws Exception {
         accessStackAdapter = env.testDbAdapter();
         node = env.dataNode();
-        pkGenerator = node.getAdapter().getPkGenerator();
+        pkGenerator = node.getPkGenerator();
         paintingEntity = node.getEntityResolver().getDbEntity("PAINTING");
 
         List<DbEntity> list = new ArrayList<DbEntity>();

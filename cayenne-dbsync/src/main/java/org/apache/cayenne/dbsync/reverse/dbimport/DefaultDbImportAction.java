@@ -151,7 +151,7 @@ public class DefaultDbImportAction implements DbImportAction {
         // Warm up the AutoAdapter by calling any method. This to avoid AutoAdapter opening a connection later in
         // the middle of import to detect the DB type. Opening two connections in the same thread causes issues with
         // some DBs (namely com.sap.cloud.db.jdbc:ngdbc:2.4.56)
-        adapter.getPkGenerator();
+        adapter.unwrap();
 
         return adapter;
     }

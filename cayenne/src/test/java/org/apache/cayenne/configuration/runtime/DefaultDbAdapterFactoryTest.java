@@ -28,8 +28,6 @@ import org.apache.cayenne.configuration.RuntimeProperties;
 import org.apache.cayenne.dba.AutoAdapter;
 import org.apache.cayenne.dba.DbAdapter;
 import org.apache.cayenne.dba.JdbcAdapter;
-import org.apache.cayenne.dba.JdbcPkGenerator;
-import org.apache.cayenne.dba.PkGenerator;
 import org.apache.cayenne.dba.sybase.SybaseAdapter;
 import org.apache.cayenne.di.AdhocObjectFactory;
 import org.apache.cayenne.di.ClassLoaderManager;
@@ -78,8 +76,6 @@ public class DefaultDbAdapterFactoryTest {
         Module testModule = binder -> {
             CoreModule.extend(binder).initAllExtensions();
 
-            binder.bind(PkGenerator.class).to(JdbcPkGenerator.class);
-            binder.bind(PkGeneratorFactoryProvider.class).to(PkGeneratorFactoryProvider.class);
             binder.bind(SQLLogger.class).to(Slf4jSQLLogger.class);
             binder.bind(ClassLoaderManager.class).to(DefaultClassLoaderManager.class);
             binder.bind(AdhocObjectFactory.class).to(DefaultAdhocObjectFactory.class);
@@ -108,8 +104,6 @@ public class DefaultDbAdapterFactoryTest {
 
             CoreModule.extend(b).initAllExtensions();
 
-            b.bind(PkGenerator.class).to(JdbcPkGenerator.class);
-            b.bind(PkGeneratorFactoryProvider.class).to(PkGeneratorFactoryProvider.class);
             b.bind(SQLLogger.class).to(Slf4jSQLLogger.class);
             b.bind(ClassLoaderManager.class).to(DefaultClassLoaderManager.class);
             b.bind(AdhocObjectFactory.class).to(DefaultAdhocObjectFactory.class);
@@ -145,8 +139,6 @@ public class DefaultDbAdapterFactoryTest {
         Module testModule = b -> {
             CoreModule.extend(b).initAllExtensions();
 
-            b.bind(PkGenerator.class).to(JdbcPkGenerator.class);
-            b.bind(PkGeneratorFactoryProvider.class).to(PkGeneratorFactoryProvider.class);
             b.bind(SQLLogger.class).to(Slf4jSQLLogger.class);
             b.bind(ClassLoaderManager.class).to(DefaultClassLoaderManager.class);
             b.bind(AdhocObjectFactory.class).to(DefaultAdhocObjectFactory.class);
@@ -189,8 +181,6 @@ public class DefaultDbAdapterFactoryTest {
         Module testModule = binder -> {
             CoreModule.extend(binder).initAllExtensions();
 
-            binder.bind(PkGenerator.class).to(JdbcPkGenerator.class);
-            binder.bind(PkGeneratorFactoryProvider.class).to(PkGeneratorFactoryProvider.class);
             binder.bind(ClassLoaderManager.class).to(DefaultClassLoaderManager.class);
             binder.bind(SQLLogger.class).to(Slf4jSQLLogger.class);
             binder.bind(AdhocObjectFactory.class).to(DefaultAdhocObjectFactory.class);

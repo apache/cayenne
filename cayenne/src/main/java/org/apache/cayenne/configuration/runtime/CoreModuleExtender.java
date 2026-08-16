@@ -31,8 +31,6 @@ import org.apache.cayenne.commitlog.CommitLogListener;
 import org.apache.cayenne.commitlog.meta.AnnotationCommitLogEntityFactory;
 import org.apache.cayenne.commitlog.meta.CommitLogEntityFactory;
 import org.apache.cayenne.configuration.Constants;
-import org.apache.cayenne.dba.DbAdapter;
-import org.apache.cayenne.dba.PkGenerator;
 import org.apache.cayenne.di.Binder;
 import org.apache.cayenne.di.ListBuilder;
 import org.apache.cayenne.di.MapBuilder;
@@ -52,7 +50,6 @@ public class CoreModuleExtender {
     private MapBuilder<String> properties;
     private ListBuilder<String> projectLocations;
     private ListBuilder<DbAdapterDetector> adapterDetectors;
-    private MapBuilder<PkGenerator> pkGenerators;
     private ListBuilder<DataChannelQueryFilter> queryFilters;
     private ListBuilder<DataChannelSyncFilter> syncFilters;
     private ListBuilder<Object> listeners;
@@ -71,7 +68,6 @@ public class CoreModuleExtender {
         contributeProperties();
         contributeProjectLocations();
         contributeAdapterDetectors();
-        contributePkGenerators();
         contributeQueryFilters();
         contributeSyncFilters();
         contributeListeners();
@@ -152,22 +148,6 @@ public class CoreModuleExtender {
      */
     public CoreModuleExtender addProjectLocation(String location) {
         contributeProjectLocations().add(location);
-        return this;
-    }
-
-    /**
-     * Adds a custom PK generator per DbAdapter
-     */
-    public CoreModuleExtender addPkGenerator(Class<? extends DbAdapter> adapter, PkGenerator pkGenerator) {
-        contributePkGenerators().put(adapter.getName(), pkGenerator);
-        return this;
-    }
-
-    /**
-     * Adds a custom PK generator per DbAdapter
-     */
-    public CoreModuleExtender addPkGenerator(Class<? extends DbAdapter> adapter, Class<? extends PkGenerator> pkGeneratorType) {
-        contributePkGenerators().put(adapter.getName(), pkGeneratorType);
         return this;
     }
 
@@ -482,12 +462,5 @@ public class CoreModuleExtender {
             valueObjectTypes = binder.bindList(ValueObjectType.class);
         }
         return valueObjectTypes;
-    }
-
-    private MapBuilder<PkGenerator> contributePkGenerators() {
-        if (pkGenerators == null) {
-            pkGenerators = binder.bindMap(PkGenerator.class);
-        }
-        return pkGenerators;
     }
 }

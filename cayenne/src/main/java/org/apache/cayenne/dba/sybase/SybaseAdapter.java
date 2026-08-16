@@ -35,6 +35,7 @@ import org.apache.cayenne.configuration.RuntimeProperties;
 import org.apache.cayenne.dba.DefaultQuotingStrategy;
 import org.apache.cayenne.dba.QuotingStrategy;
 import org.apache.cayenne.dba.JdbcAdapter;
+import org.apache.cayenne.dba.PkGenerator;
 import org.apache.cayenne.di.Inject;
 import org.apache.cayenne.map.DbAttribute;
 
@@ -101,6 +102,14 @@ public class SybaseAdapter extends JdbcAdapter {
     @Override
     protected EJBQLTranslator createEJBQLTranslator() {
         return new SybaseEJBQLTranslator();
+    }
+
+    /**
+     * Returns a {@link SybasePkGenerator}.
+     */
+    @Override
+    public PkGenerator createPkGenerator() {
+        return new SybasePkGenerator(this);
     }
 
     /**

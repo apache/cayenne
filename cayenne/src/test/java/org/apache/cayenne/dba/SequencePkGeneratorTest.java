@@ -34,7 +34,8 @@ public class SequencePkGeneratorTest {
     @BeforeEach
     public void setUp() {
         // use a concrete subclass to exercise the shared sequence naming logic
-        pkGenerator = new OraclePkGenerator();
+        // (naming does not depend on the adapter)
+        pkGenerator = new OraclePkGenerator(null);
     }
 
     @Test

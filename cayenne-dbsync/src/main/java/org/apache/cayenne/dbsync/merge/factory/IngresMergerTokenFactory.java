@@ -18,6 +18,7 @@
  ****************************************************************/
 package org.apache.cayenne.dbsync.merge.factory;
 
+import org.apache.cayenne.access.DataNode;
 import org.apache.cayenne.dba.DbAdapter;
 import org.apache.cayenne.dba.QuotingStrategy;
 import org.apache.cayenne.dbsync.merge.token.MergerToken;
@@ -62,7 +63,9 @@ public class IngresMergerTokenFactory extends DefaultMergerTokenFactory {
         return new DropColumnToDb(entity, column) {
 
             @Override
-            public List<String> createSql(DbAdapter adapter) {
+            public List<String> createSql(DataNode node) {
+                DbAdapter adapter = node.getAdapter();
+
                 StringBuilder buf = new StringBuilder();
                 QuotingStrategy quotes = adapter.getQuotingStrategy(getEntity());
                 buf.append("ALTER TABLE ");
@@ -83,7 +86,9 @@ public class IngresMergerTokenFactory extends DefaultMergerTokenFactory {
     public MergerToken createAddRelationshipToDb(DbEntity entity, final DbRelationship rel) {
         return new AddRelationshipToDb(entity, rel) {
             @Override
-            public List<String> createSql(DbAdapter adapter) {
+            public List<String> createSql(DataNode node) {
+                DbAdapter adapter = node.getAdapter();
+
                 if (!rel.isToMany() && rel.isToPK() && !rel.isToDependentPK()) {
 
                     DbEntity source = (DbEntity) rel.getSourceEntity();
@@ -145,7 +150,8 @@ public class IngresMergerTokenFactory extends DefaultMergerTokenFactory {
         return new SetNotNullToDb(entity, column) {
 
             @Override
-            public List<String> createSql(DbAdapter adapter) {
+            public List<String> createSql(DataNode node) {
+                DbAdapter adapter = node.getAdapter();
 
                 /*
                  * TODO: we generate this query as in ingres db documentation,
@@ -184,7 +190,9 @@ public class IngresMergerTokenFactory extends DefaultMergerTokenFactory {
         return new SetAllowNullToDb(entity, column) {
 
             @Override
-            public List<String> createSql(DbAdapter adapter) {
+            public List<String> createSql(DataNode node) {
+                DbAdapter adapter = node.getAdapter();
+
                 StringBuilder sqlBuffer = new StringBuilder();
                 QuotingStrategy quotes = adapter.getQuotingStrategy(getEntity());
                 sqlBuffer.append("ALTER TABLE ");
@@ -216,7 +224,9 @@ public class IngresMergerTokenFactory extends DefaultMergerTokenFactory {
         return new DropRelationshipToDb(entity, rel) {
 
             @Override
-            public List<String> createSql(DbAdapter adapter) {
+            public List<String> createSql(DataNode node) {
+                DbAdapter adapter = node.getAdapter();
+
                 String fkName = getFkName();
 
                 if (fkName == null) {

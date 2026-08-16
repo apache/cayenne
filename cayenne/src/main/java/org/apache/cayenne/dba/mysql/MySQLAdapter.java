@@ -41,6 +41,7 @@ import org.apache.cayenne.configuration.RuntimeProperties;
 import org.apache.cayenne.dba.DefaultQuotingStrategy;
 import org.apache.cayenne.dba.QuotingStrategy;
 import org.apache.cayenne.dba.JdbcAdapter;
+import org.apache.cayenne.dba.PkGenerator;
 import org.apache.cayenne.dba.TypesMapping;
 import org.apache.cayenne.di.Inject;
 import org.apache.cayenne.map.DbAttribute;
@@ -122,6 +123,14 @@ public class MySQLAdapter extends JdbcAdapter {
     @Override
     protected QuotingStrategy createQuotingStrategy() {
         return new DefaultQuotingStrategy('`', '`');
+    }
+
+    /**
+     * Returns a {@link MySQLPkGenerator}.
+     */
+    @Override
+    public PkGenerator createPkGenerator() {
+        return new MySQLPkGenerator(this);
     }
 
     /**

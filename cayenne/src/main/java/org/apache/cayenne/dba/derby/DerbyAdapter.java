@@ -34,6 +34,7 @@ import org.apache.cayenne.access.types.ValueObjectTypeRegistry;
 import org.apache.cayenne.configuration.Constants;
 import org.apache.cayenne.configuration.RuntimeProperties;
 import org.apache.cayenne.dba.JdbcAdapter;
+import org.apache.cayenne.dba.PkGenerator;
 import org.apache.cayenne.dba.NativeColumnType;
 import org.apache.cayenne.dba.QuotingStrategy;
 import org.apache.cayenne.di.Inject;
@@ -192,6 +193,14 @@ public class DerbyAdapter extends JdbcAdapter {
     @Override
     public boolean typeSupportsScale(int type) {
         return type != Types.TIME && super.typeSupportsScale(type);
+    }
+
+    /**
+     * Returns a {@link DerbyPkGenerator}.
+     */
+    @Override
+    public PkGenerator createPkGenerator() {
+        return new DerbyPkGenerator(this);
     }
 
     /**
