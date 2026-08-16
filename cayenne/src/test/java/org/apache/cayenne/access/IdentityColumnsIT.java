@@ -114,7 +114,7 @@ public class IdentityColumnsIT {
         // for comparison
         DbEntity joinTableEntity = env.context().getEntityResolver().getDbEntity(joinTable.getTableName());
         DbAttribute pkAttribute = joinTableEntity.getAttribute("ID");
-        Number pk = (Number) node.getPkGenerator().generatePk(node, pkAttribute);
+        Number pk = (Number) node.getPkGenerator().generatePk(node, pkAttribute, null);
 
         GeneratedF1 f1 = env.context().newObject(GeneratedF1.class);
         GeneratedF2 f2 = env.context().newObject(GeneratedF2.class);

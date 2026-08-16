@@ -76,7 +76,8 @@ public class PregeneratedPKIT {
 
         Object pk = node.getPkGenerator().generatePk(
                 node,
-                entity.getPrimaryKeys().iterator().next());
+                entity.getPrimaryKeys().iterator().next(),
+                null);
         id.getReplacementIdMap().put(Artist.ARTIST_ID_PK_COLUMN, pk);
     }
 }

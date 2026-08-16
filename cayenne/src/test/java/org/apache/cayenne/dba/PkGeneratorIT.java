@@ -71,10 +71,10 @@ public class PkGeneratorIT {
         }
 
         for (int i = 0; i < testSize; i++) {
-            Object pk = pkGenerator.generatePk(node, paintingEntity
-                    .getPrimaryKeys()
-                    .iterator()
-                    .next());
+            Object pk = pkGenerator.generatePk(
+                    node,
+                    paintingEntity.getPrimaryKeys().iterator().next(),
+                    null);
             assertNotNull(pk);
             assertTrue(pk instanceof Number);
 

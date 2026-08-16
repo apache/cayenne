@@ -71,12 +71,14 @@ public class DataNodeQueriesIT {
         DbEntity artistEnt = node.getEntityResolver().getDbEntity("ARTIST");
         assertNotNull(node.getPkGenerator().generatePk(
                 node,
-                artistEnt.getPrimaryKeys().iterator().next()));
+                artistEnt.getPrimaryKeys().iterator().next(),
+                null));
 
         DbEntity exhibitEnt = node.getEntityResolver().getDbEntity("EXHIBIT");
         assertNotNull(node.getPkGenerator().generatePk(
                 node,
-                exhibitEnt.getPrimaryKeys().iterator().next()));
+                exhibitEnt.getPrimaryKeys().iterator().next(),
+                null));
     }
 
     @Test
