@@ -29,17 +29,21 @@ import org.apache.cayenne.access.DataNode;
 import org.apache.cayenne.access.dbsync.SkipSchemaUpdateStrategy;
 import org.apache.cayenne.access.dbsync.ThrowOnPartialOrCreateSchemaStrategy;
 import org.apache.cayenne.annotation.PostLoad;
+import org.apache.cayenne.configuration.DataNodeDescriptor;
 import org.apache.cayenne.event.EventManager;
 import org.apache.cayenne.graph.GraphDiff;
 import org.apache.cayenne.map.DataMap;
 import org.apache.cayenne.map.LifecycleEvent;
 import org.apache.cayenne.query.Query;
+import org.apache.cayenne.runtime.CayenneRuntime;
 import org.apache.cayenne.testdo.db1.CrossdbM1E1;
 import org.apache.cayenne.unit.CayenneProjects;
 import org.apache.cayenne.unit.CayenneTestsEnv;
+import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.RegisterExtension;
 
+import javax.sql.DataSource;
 import java.util.concurrent.atomic.AtomicInteger;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
@@ -50,7 +54,7 @@ import static org.junit.jupiter.api.Assertions.assertSame;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
 /**
- * Tests a fully DI-initialized {@link DataDomain} produced by {@link DataDomainProvider} off a two-node project.
+ * Tests a fully DI-initialized {@link DataDomain} produced by {@link DataDomainProvider}.
  */
 public class DataDomainProviderIT {
 
@@ -64,6 +68,35 @@ public class DataDomainProviderIT {
                     .addListener(LISTENER)
                     .addQueryFilter(QUERY_FILTER)
                     .addSyncFilter(SYNC_FILTER));
+
+    private CayenneRuntime twoNodeRuntime;
+
+    @AfterEach
+    public void stopTwoNodeRuntime() {
+        if (twoNodeRuntime != null) {
+            twoNodeRuntime.shutdown();
+            twoNodeRuntime = null;
+        }
+    }
+
+    /**
+     * A runtime with two explicitly linked DataNodes and no default node. DataNodes are no longer a part of the XML
+     * mapping, so they can only be configured via the runtime builder.
+     */
+    private CayenneRuntime twoNodeRuntime() {
+        DataSource dataSource = CayenneTestsEnv.COMMON_SCHEMA.dataSource();
+
+        twoNodeRuntime = CayenneRuntime.of()
+                .addConfig(CayenneProjects.DOMAIN_PROVIDER_PROJECT)
+                .addDataNode(DataNodeDescriptor.of("node1")
+                        .dataSource(dataSource)
+                        .schemaUpdateStrategy(ThrowOnPartialOrCreateSchemaStrategy.class)
+                        .build(), "map-db1")
+                .addDataNode(DataNodeDescriptor.of("node2").dataSource(dataSource).build(), "map-db2")
+                .build();
+
+        return twoNodeRuntime;
+    }
 
     @Test
     public void dataMaps() {
@@ -84,7 +117,7 @@ public class DataDomainProviderIT {
 
     @Test
     public void dataNodes() {
-        DataDomain domain = env.runtime().getDataDomain();
+        DataDomain domain = twoNodeRuntime().getDataDomain();
         assertEquals(2, domain.getDataNodes().size());
 
         DataMap map1 = domain.getDataMap("map-db1");
@@ -104,7 +137,7 @@ public class DataDomainProviderIT {
 
     @Test
     public void dataNodeConfig() {
-        DataDomain domain = env.runtime().getDataDomain();
+        DataDomain domain = twoNodeRuntime().getDataDomain();
 
         for (DataNode node : domain.getDataNodes()) {
             assertNotNull(node.getDataSource());
@@ -121,9 +154,56 @@ public class DataDomainProviderIT {
     }
 
     @Test
-    public void noDefaultNodeWithMultipleNodes() {
-        // a default node is only inferred when the project declares exactly one node
-        assertNull(env.runtime().getDataDomain().getDefaultNode());
+    public void noDefaultNodeWhenNoneIsConfigured() {
+        assertNull(twoNodeRuntime().getDataDomain().getDefaultNode());
+    }
+
+    @Test
+    public void defaultNodeTakesOverUnlinkedMapsOnly() {
+        DataSource dataSource = CayenneTestsEnv.COMMON_SCHEMA.dataSource();
+
+        twoNodeRuntime = CayenneRuntime.of()
+                .addConfig(CayenneProjects.DOMAIN_PROVIDER_PROJECT)
+                .addDataNode(DataNodeDescriptor.of("node1").dataSource(dataSource).build(), "map-db1")
+                .defaultDataNode(DataNodeDescriptor.of("default").dataSource(dataSource).build())
+                .build();
+
+        DataDomain domain = twoNodeRuntime.getDataDomain();
+        DataMap linked = domain.getDataMap("map-db1");
+        DataMap unlinked = domain.getDataMap("map-db2");
+
+        DataNode node1 = domain.getDataNode("node1");
+        DataNode defaultNode = domain.getDefaultNode();
+
+        // the default node is a regular node of the domain, addressable by name
+        assertEquals(2, domain.getDataNodes().size());
+        assertSame(defaultNode, domain.getDataNode("default"));
+
+        // "map-db1" stays with its own node, "map-db2" is taken over by the default node
+        assertEquals(1, node1.getDataMaps().size());
+        assertSame(linked, node1.getDataMaps().iterator().next());
+        assertSame(node1, domain.lookupDataNode(linked));
+
+        assertEquals(1, defaultNode.getDataMaps().size());
+        assertSame(unlinked, defaultNode.getDataMaps().iterator().next());
+        assertSame(defaultNode, domain.lookupDataNode(unlinked));
+    }
+
+    @Test
+    public void nodeLinkedToMissingDataMapIsStillRegistered() {
+        DataSource dataSource = CayenneTestsEnv.COMMON_SCHEMA.dataSource();
+
+        twoNodeRuntime = CayenneRuntime.of()
+                .addConfig(CayenneProjects.DOMAIN_PROVIDER_PROJECT)
+                .addDataNode(DataNodeDescriptor.of("node1").dataSource(dataSource).build(), "no-such-map")
+                .build();
+
+        DataDomain domain = twoNodeRuntime.getDataDomain();
+
+        // the missing DataMap is ignored, but the node itself is still a part of the domain
+        DataNode node1 = domain.getDataNode("node1");
+        assertNotNull(node1);
+        assertTrue(node1.getDataMaps().isEmpty());
     }
 
     @Test

@@ -22,7 +22,7 @@ package org.apache.cayenne.modeler.ui.preferences.dbconnector;
 import com.jgoodies.forms.builder.PanelBuilder;
 import com.jgoodies.forms.layout.CellConstraints;
 import com.jgoodies.forms.layout.FormLayout;
-import org.apache.cayenne.datasource.DriverDataSource;
+import org.apache.cayenne.datasource.CayenneDataSource;
 import org.apache.cayenne.modeler.Application;
 import org.apache.cayenne.modeler.pref.dbconnector.DBConnector;
 import org.apache.cayenne.modeler.pref.dbconnector.DBConnectors;
@@ -263,11 +263,14 @@ public class DBConnectorPrefsPanel extends AppPanel {
             Class<Driver> driverClass = classLoader.loadClass(Driver.class, currentConnector.getJdbcDriver());
             Driver driver = driverClass.getDeclaredConstructor().newInstance();
 
-            // connect via Cayenne DriverDataSource - it addresses some driver
-            // issues...
+            // connect via a Cayenne DataSource - it addresses some driver issues...
             // can't use try with resource here as we can lose meaningful exception
-            Connection c = new DriverDataSource(driver, currentConnector.getUrl(),
-                    currentConnector.getUserName(), currentConnector.getPassword()).getConnection();
+            Connection c = CayenneDataSource.of(currentConnector.getUrl())
+                    .driver(driver)
+                    .userName(currentConnector.getUserName())
+                    .password(currentConnector.getPassword())
+                    .build()
+                    .getConnection();
             try {
                 c.close();
             } catch (SQLException ignored) {

@@ -22,7 +22,6 @@ import org.apache.cayenne.configuration.ConfigurationNameMapper;
 import org.apache.cayenne.configuration.ConfigurationNodeVisitor;
 import org.apache.cayenne.configuration.ConfigurationTree;
 import org.apache.cayenne.configuration.DataChannelDescriptor;
-import org.apache.cayenne.configuration.DataNodeDescriptor;
 import org.apache.cayenne.configuration.DefaultConfigurationNameMapper;
 import org.apache.cayenne.di.DIBootstrap;
 import org.apache.cayenne.di.Injector;
@@ -45,7 +44,6 @@ import javax.xml.xpath.XPathConstants;
 import javax.xml.xpath.XPathFactory;
 import java.io.File;
 import java.net.URL;
-import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
 
@@ -76,21 +74,10 @@ public class FileProjectSaverTest {
         DataChannelDescriptor rootNode = new DataChannelDescriptor();
         rootNode.setName("test");
 
-        // add maps and nodes in reverse alpha order. Check that they are saved in alpha order
+        // add maps in reverse alpha order. Check that they are saved in alpha order
         rootNode.getDataMaps().add(new DataMap("C"));
         rootNode.getDataMaps().add(new DataMap("B"));
         rootNode.getDataMaps().add(new DataMap("A"));
-
-        DataNodeDescriptor[] nodes = new DataNodeDescriptor[3];
-        nodes[0] = new DataNodeDescriptor("Z");
-        nodes[1] = new DataNodeDescriptor("Y");
-        nodes[2] = new DataNodeDescriptor("X");
-
-        nodes[0].getDataMapNames().add("C");
-        nodes[0].getDataMapNames().add("B");
-        nodes[0].getDataMapNames().add("A");
-
-        rootNode.getNodeDescriptors().addAll(Arrays.asList(nodes));
 
         Project project = new Project(new ConfigurationTree<DataChannelDescriptor>(rootNode));
 
@@ -118,26 +105,6 @@ public class FileProjectSaverTest {
         assertEquals("A", xpath.evaluate("@name", maps.item(0)));
         assertEquals("B", xpath.evaluate("@name", maps.item(1)));
         assertEquals("C", xpath.evaluate("@name", maps.item(2)));
-
-        NodeList nodes = (NodeList) xpath.evaluate(
-                "/domain/node",
-                document,
-                XPathConstants.NODESET);
-        assertEquals(3, nodes.getLength());
-
-        assertEquals("X", xpath.evaluate("@name", nodes.item(0)));
-        assertEquals("Y", xpath.evaluate("@name", nodes.item(1)));
-        assertEquals("Z", xpath.evaluate("@name", nodes.item(2)));
-
-        NodeList mapRefs = (NodeList) xpath.evaluate(
-                "map-ref",
-                nodes.item(2),
-                XPathConstants.NODESET);
-        assertEquals(3, mapRefs.getLength());
-
-        assertEquals("A", xpath.evaluate("@name", mapRefs.item(0)));
-        assertEquals("B", xpath.evaluate("@name", mapRefs.item(1)));
-        assertEquals("C", xpath.evaluate("@name", mapRefs.item(2)));
     }
 
     @Test

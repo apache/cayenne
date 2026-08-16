@@ -94,56 +94,8 @@ public class DefaultDataChannelDescriptorMerger implements DataChannelDescriptor
                     merged.getDataMaps().add(map);
                 }
             }
-
-            // DataNodes are merged by copy as we may modify them (changing map linking)
-            for (DataNodeDescriptor node : descriptor.getNodeDescriptors()) {
-
-                DataNodeDescriptor existing = merged.getNodeDescriptor(node.getName());
-                if (existing != null) {
-                    LOGGER.info("Discarding overridden DataNode '"
-                            + node.getName()
-                            + "' from descriptor '"
-                            + descriptor.getName()
-                            + "'");
-
-                    for (String mapName : node.getDataMapNames()) {
-                        if (!existing.getDataMapNames().contains(mapName)) {
-                            existing.getDataMapNames().add(mapName);
-                        }
-                    }
-                }
-                else {
-                    LOGGER.info("Using DataNode '"
-                            + node.getName()
-                            + "' from descriptor '"
-                            + descriptor.getName()
-                            + "' in merged descriptor");
-                    merged
-                            .getNodeDescriptors()
-                            .add(cloneDataNodeDescriptor(node, merged));
-                }
-            }
         }
 
         return merged;
-    }
-
-    protected DataNodeDescriptor cloneDataNodeDescriptor(
-            DataNodeDescriptor original,
-            DataChannelDescriptor targetOwner) {
-        DataNodeDescriptor clone = new DataNodeDescriptor(original.getName());
-
-        // do not clone 'configurationSource' as we may change the structure of the node
-
-        clone.setAdapterType(original.getAdapterType());
-        clone.setDataChannelDescriptor(targetOwner);
-        clone.setDataSourceDescriptor(original.getDataSourceDescriptor());
-        clone.setDataSourceFactoryType(original.getDataSourceFactoryType());
-        clone.setParameters(original.getParameters());
-        clone.setSchemaUpdateStrategyType(original.getSchemaUpdateStrategyType());
-
-        clone.getDataMapNames().addAll(original.getDataMapNames());
-
-        return clone;
     }
 }

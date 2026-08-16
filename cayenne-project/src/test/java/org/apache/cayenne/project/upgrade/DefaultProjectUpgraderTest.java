@@ -61,8 +61,9 @@ public class DefaultProjectUpgraderTest {
         "6,  UPGRADE_NEEDED",
         "10, UPGRADE_NEEDED",
         "11, UPGRADE_NEEDED",
-        "12, UPGRADE_NOT_NEEDED",
-        "13, DOWNGRADE_NEEDED"
+        "12, UPGRADE_NEEDED",
+        "13, UPGRADE_NOT_NEEDED",
+        "14, DOWNGRADE_NEEDED"
     })
     public void checkUpgradeNeeded(String version, UpgradeType expectedType) {
         PreUpgradeState metaData = upgradeService.checkUpgradeNeeded(getResourceForVersion(version));
@@ -73,13 +74,14 @@ public class DefaultProjectUpgraderTest {
     public void getHandlersForVersion() {
 
         List<UpgradeHandler> handlers = upgradeService.getHandlersForVersion("6");
-        assertEquals(6, handlers.size());
+        assertEquals(7, handlers.size());
 
         handlers = upgradeService.getHandlersForVersion("9");
-        assertEquals(3, handlers.size());
+        assertEquals(4, handlers.size());
         assertEquals("10", handlers.get(0).getVersion());
         assertEquals("11", handlers.get(1).getVersion());
         assertEquals("12", handlers.get(2).getVersion());
+        assertEquals("13", handlers.get(3).getVersion());
     }
 
     @Test
@@ -137,7 +139,7 @@ public class DefaultProjectUpgraderTest {
     @Test
     public void readDocument() {
         Document document = DefaultProjectUpgrader.readDocument(getClass().getResource("../cayenne-PROJECT1.xml"));
-        assertEquals("12", document.getDocumentElement().getAttribute("project-version"));
+        assertEquals("13", document.getDocumentElement().getAttribute("project-version"));
     }
 
     private Document readDocument(URL url) throws Exception {
@@ -147,7 +149,7 @@ public class DefaultProjectUpgraderTest {
 
     private void createHandlers() {
         handlers = new ArrayList<>();
-        String[] versions = {"7", "8", "9", "10", "11", "12"};
+        String[] versions = {"7", "8", "9", "10", "11", "12", "13"};
         for(String version : versions) {
             handlers.add(createHandler(version));
         }

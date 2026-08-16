@@ -25,13 +25,8 @@ package org.apache.cayenne.project.validation;
 public enum Inspection {
     DATA_CHANNEL_NO_NAME(Group.DATA_CHANNEL, "Empty data domain name"),
 
-    DATA_NODE_NO_NAME(Group.DATA_NODE, "Empty data node name"),
-    DATA_NODE_NAME_DUPLICATE(Group.DATA_NODE, "Duplicate of a data node name"),
-    DATA_NODE_CONNECTION_PARAMS(Group.DATA_NODE, "Empty params of a data node connection"),
-
     DATA_MAP_NO_NAME(Group.DATA_MAP, "Empty data map name"),
     DATA_MAP_NAME_DUPLICATE(Group.DATA_MAP, "Duplicate of a data map name"),
-    DATA_MAP_NODE_LINKAGE(Group.DATA_MAP, "Data map is not linked to a data node"),
     DATA_MAP_JAVA_PACKAGE(Group.DATA_MAP, "Invalid java package of a data map"),
 
     OBJ_ENTITY_NO_NAME(Group.OBJ_ENTITY, "Empty obj entity name"),
@@ -172,7 +167,6 @@ public enum Inspection {
      */
     public enum Group {
         DATA_CHANNEL("Data domain"),
-        DATA_NODE("Data node"),
         DATA_MAP("Data map"),
         OBJ_ENTITY("Obj entity"),
         OBJ_ATTRIBUTE("Obj attribute"),

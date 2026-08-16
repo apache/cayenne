@@ -21,7 +21,6 @@ package org.apache.cayenne.modeler.ui.project.tree;
 import org.apache.cayenne.configuration.BaseConfigurationNodeVisitor;
 import org.apache.cayenne.configuration.ConfigurationNode;
 import org.apache.cayenne.configuration.DataChannelDescriptor;
-import org.apache.cayenne.configuration.DataNodeDescriptor;
 import org.apache.cayenne.map.DataMap;
 import org.apache.cayenne.modeler.project.ProjectComparators;
 
@@ -92,36 +91,6 @@ class ProjectTreeFactory {
 
             for (DataMap map : sort(channelDescriptor.getDataMaps())) {
                 map.acceptVisitor(this);
-            }
-
-            for (DataNodeDescriptor node : sort(channelDescriptor.getNodeDescriptors())) {
-                node.acceptVisitor(this);
-            }
-
-            return popNode();
-        }
-
-        @Override
-        public DefaultMutableTreeNode visitDataNodeDescriptor(
-                DataNodeDescriptor nodeDescriptor) {
-
-            DataChannelDescriptor parent = null;
-
-            if (!stack.isEmpty()) {
-                DefaultMutableTreeNode parentNode = stack.getLast();
-                if (parentNode.getUserObject() instanceof DataChannelDescriptor) {
-                    parent = (DataChannelDescriptor) parentNode.getUserObject();
-                }
-            }
-
-            pushNode(nodeDescriptor);
-
-            if (parent != null) {
-                List<String> mapNames = new ArrayList<>(nodeDescriptor.getDataMapNames());
-                Collections.sort(mapNames);
-                for (String mapName : mapNames) {
-                    makeNode(parent.getDataMap(mapName));
-                }
             }
 
             return popNode();

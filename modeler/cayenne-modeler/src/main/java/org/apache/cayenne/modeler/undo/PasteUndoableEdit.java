@@ -19,7 +19,6 @@
 package org.apache.cayenne.modeler.undo;
 
 import org.apache.cayenne.configuration.DataChannelDescriptor;
-import org.apache.cayenne.configuration.DataNodeDescriptor;
 import org.apache.cayenne.map.DataMap;
 import org.apache.cayenne.map.DbAttribute;
 import org.apache.cayenne.map.DbEntity;
@@ -96,8 +95,6 @@ public class PasteUndoableEdit extends CayenneUndoableEdit {
         if (content instanceof DataMap dataMap) {
             if (where instanceof DataChannelDescriptor) {
                 rAction.removeDataMap(dataMap);
-            } else if (where instanceof DataNodeDescriptor whereNode) {
-                rAction.removeDataMapFromDataNode(whereNode, dataMap);
             }
         } else if (where instanceof DataMap) {
             if (content instanceof DbEntity dbEntity) {

@@ -43,24 +43,21 @@ public class DataChannelDescriptor implements ConfigurationNode, Serializable, X
 	/**
 	 * The namespace in which the data map XML file will be created.
 	 */
-	public static final String SCHEMA_XSD = "http://cayenne.apache.org/schema/12/domain";
-	public static final String SCHEMA_XSD_LOCATION = "https://cayenne.apache.org/schema/12/domain.xsd";
+	public static final String SCHEMA_XSD = "http://cayenne.apache.org/schema/13/domain";
+	public static final String SCHEMA_XSD_LOCATION = "https://cayenne.apache.org/schema/13/domain.xsd";
 
 	protected String name;
 	protected Map<String, String> properties;
 	protected Collection<DataMap> dataMaps;
-	protected Collection<DataNodeDescriptor> nodeDescriptors;
 	protected transient Resource configurationSource;
-	protected String defaultNodeName;
 
 	public DataChannelDescriptor() {
 		properties = new HashMap<>();
 		dataMaps = new ArrayList<>(5);
-		nodeDescriptors = new ArrayList<>(3);
 	}
 
 	@Override
-	public void encodeAsXML(XMLEncoder encoder, ConfigurationNodeVisitor delegate) {
+	public void encodeAsXML(XMLEncoder encoder, ConfigurationNodeVisitor<?> delegate) {
 
 		encoder.start("domain")
 				.attribute("xmlns", SCHEMA_XSD)
@@ -84,12 +81,6 @@ public class DataChannelDescriptor implements ConfigurationNode, Serializable, X
 			for (DataMap dataMap : maps) {
 				encoder.start("map").attribute("name", dataMap.getName().trim()).end();
 			}
-		}
-
-		if (!nodeDescriptors.isEmpty()) {
-			List<DataNodeDescriptor> nodes = new ArrayList<>(nodeDescriptors);
-			Collections.sort(nodes);
-			encoder.nested(nodes, delegate);
 		}
 
 		delegate.visitDataChannelDescriptor(this);
@@ -125,37 +116,11 @@ public class DataChannelDescriptor implements ConfigurationNode, Serializable, X
 		return null;
 	}
 
-	public Collection<DataNodeDescriptor> getNodeDescriptors() {
-		return nodeDescriptors;
-	}
-
-	public DataNodeDescriptor getNodeDescriptor(String name) {
-		for (DataNodeDescriptor node : nodeDescriptors) {
-			if (name.equals(node.getName())) {
-				return node;
-			}
-		}
-
-		return null;
-	}
-
 	public Resource getConfigurationSource() {
 		return configurationSource;
 	}
 
 	public void setConfigurationSource(Resource configurationSource) {
 		this.configurationSource = configurationSource;
-	}
-
-	/**
-	 * Returns the name of the DataNode that should be used as the default if a
-	 * DataMap is not explicitly linked to a node.
-	 */
-	public String getDefaultNodeName() {
-		return defaultNodeName;
-	}
-
-	public void setDefaultNodeName(String defaultDataNodeName) {
-		this.defaultNodeName = defaultDataNodeName;
 	}
 }

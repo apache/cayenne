@@ -94,6 +94,65 @@ solution may be changing to "joint" prefetches.
   `DeferredValue` instead — it is a `@FunctionalInterface`, so an existing lambda or `Supplier` implementation can
   usually be adapted with a minimal change.
 
+* Per [CAY-2981](https://issues.apache.org/jira/browse/CAY-2981) DataNodes are no longer a part of the XML mapping. DataNodes / DataSources are defined in 
+  runtime. DataMaps are linked to them in runtime as well. Opening a project in the Modeler upgrades it to version 
+  13, which drops every `<node>` element (reporting any encountered removals). The new API to replace
+  XML mapping is described below.
+
+  A node is defined either from a bare `DataSource`, or from a `DataNodeDescriptor`. The `DataSource` flavor is a
+  shortcut for a node that needs no customization — it gets a generated name and the default settings:
+  ```java
+  DataSource dataSource = CayenneDataSource.of("jdbc:postgresql://localhost:5432/mydb")
+          .userName("user")
+          .password("secret")
+          .pool(1, 5)
+          .build();
+
+  CayenneRuntime runtime = CayenneRuntime.of()
+          .addConfig("cayenne-project.xml")
+          .defaultDataNode(dataSource)
+          .build();
+  ```
+
+  Switch to a `DataNodeDescriptor` when the node has to be customized, e.g., to let Cayenne create the
+  schema on the first connection, pin the adapter, give the node a stable name, etc.:
+  ```java
+  DataNodeDescriptor node = DataNodeDescriptor.of("node1")
+                  .dataSource(dataSource)
+                  .createSchemaIfNeeded()
+                  .build();
+  CayenneRuntime runtime = CayenneRuntime.of()
+          .addConfig("cayenne-project.xml")
+          .defaultDataNode(node)
+          .build();
+  ```
+
+  Both flavors work with any number of nodes. Projects that used to declare several `<node>`s link each node to its
+  DataMaps by name, mixing the two forms as needed. A default node remains optional, and picks up every DataMap not
+  linked to a node explicitly:
+  ```java
+  CayenneRuntime runtime = CayenneRuntime.of()
+          .addConfig("cayenne-project.xml")
+          .addDataNode(ds1, "map1", "map2")
+          .addDataNode(DataNodeDescriptor.of("node2").dataSource(ds2).createSchemaIfNeeded().build(), "map3")
+          .defaultDataNode(ds3)
+          .build();
+  ```
+  `cayenne.jdbc.*` properties are still recognized.
+
+  Core API changes:
+  - The set of DataNodes is supplied to the stack as a single `DataNodeDescriptors` DI binding.
+  - Nodes defined from a bare `DataSource` are named after the domain (`cayenne-0`, `cayenne-1`, ...). Use a
+    `DataNodeDescriptor` if you need a stable name for `DataDomain.getDataNode(String)`,
+    `CayenneRuntime.getDataSource(String)` or `SQLTemplate.setDataNodeName(String)`.
+  - In CayenneModeler, the DataNode editors and the "Create DataNode" / "Link DataMap" actions were removed
+  - `org.apache.cayenne.configuration.runtime.DataSourceFactory` was removed and is no longer an extension point
+  - `org.apache.cayenne.configuration.runtime.DbAdapterFactory` was removed and is no longer an extension point. 
+     A recommended way to add a custom adapter is `CoreModule.extend(binder).addAdapterDetector(...)`, or you can set
+     it directly on DataNodeDescriptor
+  - `org.apache.cayenne.access.dbsync.SchemaUpdateStrategyFactory` was removed and is no longer an extension point.
+    Set it directly on DataNodeDescriptor if needed.
+
 * Per [CAY-2985](https://issues.apache.org/jira/browse/CAY-2985) `DataDomain` became mostly immutable. The `DataDomain(String)` constructor and all the setters 
 below were removed in favor of a single full constructor that takes every collaborator and setting. Only DataNodes, 
 DataMaps, filters and listeners can still be added (and removed) after creation. Replacements for the removed setters:

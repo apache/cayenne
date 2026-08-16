@@ -19,188 +19,74 @@
 package org.apache.cayenne.configuration;
 
 import org.apache.cayenne.access.DataNode;
-import org.apache.cayenne.configuration.runtime.XMLPoolingDataSourceFactory;
-import org.apache.cayenne.resource.Resource;
-import org.apache.cayenne.util.XMLEncoder;
-import org.apache.cayenne.util.XMLSerializable;
+import org.apache.cayenne.access.dbsync.CreateIfNoSchemaStrategy;
+import org.apache.cayenne.access.dbsync.SchemaUpdateStrategy;
+import org.apache.cayenne.access.dbsync.ThrowOnPartialSchemaStrategy;
+import org.apache.cayenne.dba.DbAdapter;
 
-import java.io.Serializable;
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.Collections;
-import java.util.List;
+import javax.sql.DataSource;
 
 /**
- * A descriptor of {@link DataNode} configuration.
- * 
- * @since 3.1
+ * Contains {@link DataNode} configuration.
+ *
+ * @since 5.0
  */
-public class DataNodeDescriptor implements ConfigurationNode, XMLSerializable,
-        Serializable, Comparable<DataNodeDescriptor> {
-
-    protected String name;
-    protected Collection<String> dataMapNames;
-
-    protected String parameters;
-    protected String adapterType;
-    protected String dataSourceFactoryType;
-    protected String schemaUpdateStrategyType;
-
-    protected DataSourceDescriptor dataSourceDescriptor;
-
-    protected transient Resource configurationSource;
+public record DataNodeDescriptor(
+        String name,
+        DataSource dataSource,
+        Class<? extends DbAdapter> adapterType,
+        Class<? extends SchemaUpdateStrategy> schemaUpdateStrategyType) {
 
     /**
-     * @since 3.1
+     * @since 5.0
      */
-    protected DataChannelDescriptor dataChannelDescriptor;
-
-    public DataNodeDescriptor() {
-        this(null);
-    }
-
-    public DataNodeDescriptor(String name) {
-        this.dataMapNames = new ArrayList<>();
-        this.name = name;
+    public static Builder of(String name) {
+        return new Builder(name);
     }
 
     /**
-     * @since 3.1
+     * @since 5.0
      */
-    public DataChannelDescriptor getDataChannelDescriptor() {
-        return dataChannelDescriptor;
-    }
+    public static class Builder {
 
-    /**
-     * @since 3.1
-     */
-    public void setDataChannelDescriptor(DataChannelDescriptor dataChannelDescriptor) {
-        this.dataChannelDescriptor = dataChannelDescriptor;
-    }
+        private final String name;
+        private DataSource dataSource;
+        private Class<? extends DbAdapter> adapterType;
+        private Class<? extends SchemaUpdateStrategy> schemaUpdateStrategyType;
 
-    @Override
-    public int compareTo(DataNodeDescriptor o) {
-        String o1 = getName();
-        String o2 = o.getName();
-
-        if (o1 == null) {
-            return (o2 != null) ? -1 : 0;
-        } else if (o2 == null) {
-            return 1;
-        }
-        return o1.compareTo(o2);
-    }
-
-    @Override
-    public <T> T acceptVisitor(ConfigurationNodeVisitor<T> visitor) {
-        return visitor.visitDataNodeDescriptor(this);
-    }
-
-    @Override
-    public void encodeAsXML(XMLEncoder encoder, ConfigurationNodeVisitor delegate) {
-        encoder.start("node")
-                .attribute("name", name, false)
-                .attribute("adapter", adapterType, true)
-                .attribute("factory", dataSourceFactoryType, true);
-        
-        if (!XMLPoolingDataSourceFactory.class.getName().equals(dataSourceFactoryType)) {
-            encoder.attribute("parameters", parameters);
-        }
-        encoder.attribute("schema-update-strategy", schemaUpdateStrategyType, true);
-
-        if (!dataMapNames.isEmpty()) {
-            List<String> names = new ArrayList<>(dataMapNames);
-            Collections.sort(names);
-            for (String mapName : names) {
-                encoder.start("map-ref").attribute("name", mapName).end();
-            }
+        public Builder(String name) {
+            this.name = name;
         }
 
-        if (dataSourceDescriptor != null && XMLPoolingDataSourceFactory.class.getName().equals(dataSourceFactoryType)) {
-            dataSourceDescriptor.encodeAsXML(encoder, delegate);
+        public Builder adapter(Class<? extends DbAdapter> adapterType) {
+            this.adapterType = adapterType;
+            return this;
         }
 
-        delegate.visitDataNodeDescriptor(this);
-        encoder.end();
-    }
+        public Builder dataSource(DataSource dataSource) {
+            this.dataSource = dataSource;
+            return this;
+        }
 
-    public String getName() {
-        return name;
-    }
+        public Builder schemaUpdateStrategy(Class<? extends SchemaUpdateStrategy> schemaUpdateStrategyType) {
+            this.schemaUpdateStrategyType = schemaUpdateStrategyType;
+            return this;
+        }
 
-    public void setName(String name) {
-        this.name = name;
-    }
+        public Builder createSchemaIfNeeded() {
+            return schemaUpdateStrategy(CreateIfNoSchemaStrategy.class);
+        }
 
-    public Collection<String> getDataMapNames() {
-        return dataMapNames;
-    }
+        public Builder throwOnPartialSchema() {
+            return schemaUpdateStrategy(ThrowOnPartialSchemaStrategy.class);
+        }
 
-    /**
-     * Returns extra DataNodeDescriptor parameters. This property is often used by custom
-     * {@link org.apache.cayenne.configuration.runtime.DataSourceFactory} to configure a DataSource. E.g. JNDIDataSourceFactory may
-     * treat parameters String as a JNDI location of the DataSource, etc.
-     */
-    public String getParameters() {
-        return parameters;
+        public DataNodeDescriptor build() {
+            return new DataNodeDescriptor(
+                    name,
+                    dataSource,
+                    adapterType,
+                    schemaUpdateStrategyType);
+        }
     }
-
-    /**
-     * Sets extra DataNodeDescriptor parameters. This property is often used by custom
-     * {@link org.apache.cayenne.configuration.runtime.DataSourceFactory} to configure a DataSource. E.g. JNDIDataSourceFactory may
-     * treat parameters String as a JNDI location of the DataSource, etc.
-     */
-    public void setParameters(String parameters) {
-        this.parameters = parameters;
-    }
-
-    public String getAdapterType() {
-        return adapterType;
-    }
-
-    public void setAdapterType(String adapter) {
-        this.adapterType = adapter;
-    }
-
-    public String getDataSourceFactoryType() {
-        return dataSourceFactoryType;
-    }
-
-    public void setDataSourceFactoryType(String dataSourceFactory) {
-        this.dataSourceFactoryType = dataSourceFactory;
-    }
-
-    public String getSchemaUpdateStrategyType() {
-        return schemaUpdateStrategyType;
-    }
-
-    public void setSchemaUpdateStrategyType(String schemaUpdateStrategyClass) {
-        this.schemaUpdateStrategyType = schemaUpdateStrategyClass;
-    }
-
-    public DataSourceDescriptor getDataSourceDescriptor() {
-        return dataSourceDescriptor;
-    }
-
-    public void setDataSourceDescriptor(DataSourceDescriptor dataSourceDescriptor) {
-        this.dataSourceDescriptor = dataSourceDescriptor;
-    }
-
-    /**
-     * Returns configuration resource for this descriptor. Configuration is usually shared
-     * with the parent {@link DataChannelDescriptor}.
-     */
-    public Resource getConfigurationSource() {
-        return configurationSource;
-    }
-
-    /**
-     * Sets configuration resource for this descriptor. Configuration is usually shared
-     * with the parent {@link DataChannelDescriptor} and has to be synchronized when it
-     * changes in the parent.
-     */
-    public void setConfigurationSource(Resource configurationResource) {
-        this.configurationSource = configurationResource;
-    }
-
 }

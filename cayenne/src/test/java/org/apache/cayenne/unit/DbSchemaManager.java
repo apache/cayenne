@@ -74,7 +74,7 @@ public class DbSchemaManager {
         this.dataSource = dataSource;
         this.domain = CayenneRuntime.of()
                 .addConfig(project)
-                .dataSource(dataSource)
+                .defaultDataNode(dataSource)
                 .build()
                 .getDataDomain();
 

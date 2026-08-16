@@ -25,8 +25,6 @@ import org.apache.cayenne.access.DataRowStoreFactory;
 import org.apache.cayenne.access.DefaultDataRowStoreFactory;
 import org.apache.cayenne.access.DefaultObjectMapRetainStrategy;
 import org.apache.cayenne.access.ObjectMapRetainStrategy;
-import org.apache.cayenne.access.dbsync.DefaultSchemaUpdateStrategyFactory;
-import org.apache.cayenne.access.dbsync.SchemaUpdateStrategyFactory;
 import org.apache.cayenne.access.flush.DataDomainFlushActionFactory;
 import org.apache.cayenne.access.flush.DefaultDataDomainFlushActionFactory;
 import org.apache.cayenne.access.flush.operation.DbRowOpSorter;
@@ -403,15 +401,6 @@ public class CoreModule implements Module {
         // a global properties object
         binder.bind(RuntimeProperties.class).to(DefaultRuntimeProperties.class);
 
-        // a service to load DataSourceFactories. DelegatingDataSourceFactory
-        // will attempt to find the actual worker factory dynamically on each
-        // call depending on DataNodeDescriptor data and the environment
-        binder.bind(DataSourceFactory.class).to(DelegatingDataSourceFactory.class);
-
-        binder.bind(SchemaUpdateStrategyFactory.class).to(DefaultSchemaUpdateStrategyFactory.class);
-
-        // a default DBAdapterFactory used to load custom and automatic DbAdapters
-        binder.bind(DbAdapterFactory.class).to(DefaultDbAdapterFactory.class);
         binder.bind(EntitySorterFactory.class).to(AshwoodEntitySorterFactory.class);
 
         binder.bind(Key.get(BatchTranslator.class, BatchTranslator.INSERT)).to(InsertBatchTranslator.class);

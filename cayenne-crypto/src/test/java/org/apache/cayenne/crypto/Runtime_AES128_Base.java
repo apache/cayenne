@@ -18,11 +18,15 @@
  ****************************************************************/
 package org.apache.cayenne.crypto;
 
+import org.apache.cayenne.configuration.DataNodeDescriptor;
 import org.apache.cayenne.crypto.key.JceksKeySourceTest;
+import org.apache.cayenne.datasource.CayenneDataSource;
 import org.apache.cayenne.di.Module;
 import org.apache.cayenne.runtime.CayenneRuntime;
 import org.apache.cayenne.test.jdbc.DbHelper;
 import org.apache.cayenne.test.jdbc.TableHelper;
+
+import javax.sql.DataSource;
 
 import java.net.URL;
 import java.sql.SQLException;
@@ -60,7 +64,22 @@ public class Runtime_AES128_Base {
     }
 
     protected CayenneRuntime createRuntime(Module crypto) {
-        return CayenneRuntime.of().addConfig("cayenne-crypto.xml").addModule(crypto).build();
+        DataSource dataSource = CayenneDataSource.of("jdbc:hsqldb:mem:crypto")
+                .driverClass("org.hsqldb.jdbcDriver")
+                .userName("sa")
+                .pool(1, 1)
+                .build();
+
+        DataNodeDescriptor dataNode = DataNodeDescriptor.of("crypto")
+                .dataSource(dataSource)
+                .createSchemaIfNeeded()
+                .build();
+
+        return CayenneRuntime.of()
+                .addConfig("cayenne-crypto.xml")
+                .addModule(crypto)
+                .defaultDataNode(dataNode)
+                .build();
     }
 
     protected Module createCryptoModule(boolean compress, boolean useHMAC) {

@@ -20,7 +20,6 @@
 package org.apache.cayenne.modeler.ui.project.tree;
 
 import org.apache.cayenne.configuration.ConfigurationNode;
-import org.apache.cayenne.configuration.DataNodeDescriptor;
 import org.apache.cayenne.map.DataMap;
 import org.apache.cayenne.map.DbEntity;
 import org.apache.cayenne.map.Embeddable;
@@ -259,7 +258,6 @@ public class ProjectTreeModel extends DefaultTreeModel {
 
 			return (pass
 					|| (root instanceof DataMap)
-					|| (root instanceof DataNodeDescriptor)
 					|| (firstLeaf instanceof DbEntity && dbEntity)
 					|| (firstLeaf instanceof ObjEntity && objEntity)
 					|| (firstLeaf instanceof Embeddable && embeddable)

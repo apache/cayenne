@@ -16,19 +16,15 @@
  *  specific language governing permissions and limitations
  *  under the License.
  ****************************************************************/
-package org.apache.cayenne.configuration.runtime;
+package org.apache.cayenne.configuration;
 
-import org.apache.cayenne.configuration.DataNodeDescriptor;
-
-import javax.sql.DataSource;
+import java.util.Map;
+import java.util.Set;
 
 /**
- * @since 3.1
+ * @since 5.0
  */
-public interface DataSourceFactory {
-
-    /**
-     * Returns DataSource object based on the configuration provided in the "nodeDescriptor".
-     */
-    DataSource getDataSource(DataNodeDescriptor nodeDescriptor);
+public record DataNodeDescriptors(
+        Map<DataNodeDescriptor, Set<String>> mapsByNode,
+        DataNodeDescriptor defaultNode) {
 }

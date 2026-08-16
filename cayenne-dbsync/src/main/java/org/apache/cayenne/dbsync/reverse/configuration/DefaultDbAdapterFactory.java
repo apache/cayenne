@@ -19,37 +19,39 @@
 
 package org.apache.cayenne.dbsync.reverse.configuration;
 
-import org.apache.cayenne.configuration.DataNodeDescriptor;
-import org.apache.cayenne.configuration.DataSourceDescriptor;
-import org.apache.cayenne.configuration.runtime.DataSourceFactory;
-import org.apache.cayenne.datasource.DriverDataSource;
+import org.apache.cayenne.configuration.Constants;
+import org.apache.cayenne.configuration.runtime.DbAdapterDetector;
+import org.apache.cayenne.dba.AutoAdapter;
+import org.apache.cayenne.dba.DbAdapter;
 import org.apache.cayenne.di.AdhocObjectFactory;
 import org.apache.cayenne.di.Inject;
 
 import javax.sql.DataSource;
-import java.sql.Driver;
+import java.util.List;
+import java.util.Objects;
 
 /**
- * @since 4.0
+ * @since 5.0
  */
-public class DriverDataSourceFactory implements DataSourceFactory {
+public class DefaultDbAdapterFactory implements DbAdapterFactory {
 
     private final AdhocObjectFactory objectFactory;
+    private final List<DbAdapterDetector> detectors;
 
-    public DriverDataSourceFactory(@Inject AdhocObjectFactory objectFactory) {
+    public DefaultDbAdapterFactory(
+            @Inject AdhocObjectFactory objectFactory,
+            @Inject(Constants.ADAPTER_DETECTORS_LIST) List<DbAdapterDetector> detectors) {
         this.objectFactory = objectFactory;
+        this.detectors = Objects.requireNonNull(detectors, "Null detectors list");
     }
 
-    public DataSource getDataSource(DataNodeDescriptor nodeDescriptor) {
-        DataSourceDescriptor dataSourceDescriptor = nodeDescriptor.getDataSourceDescriptor();
-        if (dataSourceDescriptor == null) {
-            throw new IllegalArgumentException("'nodeDescriptor' contains no datasource descriptor");
-        }
+    @Override
+    public DbAdapter createAdapter(String adapterType, DataSource dataSource) {
 
-        return new DriverDataSource(
-                objectFactory.newInstance(Driver.class, dataSourceDescriptor.getJdbcDriver(), true),
-                dataSourceDescriptor.getDataSourceUrl(),
-                dataSourceDescriptor.getUserName(),
-                dataSourceDescriptor.getPassword());
+        // AutoAdapter must not be created via the object factory, so an explicit AutoAdapter is treated the same as
+        // no adapter at all (an explicit AutoAdapter is often passed from the cdbimport plugin)
+        return adapterType == null || AutoAdapter.class.getName().equals(adapterType)
+                ? new AutoAdapter(objectFactory, dataSource, detectors)
+                : objectFactory.newInstance(DbAdapter.class, adapterType);
     }
 }

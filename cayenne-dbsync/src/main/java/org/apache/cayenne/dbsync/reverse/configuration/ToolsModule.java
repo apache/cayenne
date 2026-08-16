@@ -23,8 +23,8 @@ import org.apache.cayenne.access.flush.DataDomainFlushActionFactory;
 import org.apache.cayenne.access.flush.DefaultDataDomainFlushActionFactory;
 import org.apache.cayenne.access.flush.operation.DbRowOpSorter;
 import org.apache.cayenne.access.flush.operation.DefaultDbRowOpSorter;
-import org.apache.cayenne.access.flush.operation.HardDeleteDbRowOpFactory;
 import org.apache.cayenne.access.flush.operation.DeleteDbRowOpFactory;
+import org.apache.cayenne.access.flush.operation.HardDeleteDbRowOpFactory;
 import org.apache.cayenne.access.translator.BatchTranslator;
 import org.apache.cayenne.access.translator.batch.DeleteBatchTranslator;
 import org.apache.cayenne.access.translator.batch.InsertBatchTranslator;
@@ -36,9 +36,6 @@ import org.apache.cayenne.configuration.DataChannelDescriptorLoader;
 import org.apache.cayenne.configuration.DataMapLoader;
 import org.apache.cayenne.configuration.DefaultRuntimeProperties;
 import org.apache.cayenne.configuration.RuntimeProperties;
-import org.apache.cayenne.configuration.runtime.DataSourceFactory;
-import org.apache.cayenne.configuration.runtime.DbAdapterFactory;
-import org.apache.cayenne.configuration.runtime.DefaultDbAdapterFactory;
 import org.apache.cayenne.configuration.xml.DataChannelMetaData;
 import org.apache.cayenne.configuration.xml.DefaultDataChannelMetaData;
 import org.apache.cayenne.configuration.xml.HandlerFactory;
@@ -130,7 +127,6 @@ public class ToolsModule implements Module {
         binder.bind(SQLLogger.class).to(Slf4jSQLLogger.class);
 
         binder.bind(DbAdapterFactory.class).to(DefaultDbAdapterFactory.class);
-        binder.bind(DataSourceFactory.class).to(DriverDataSourceFactory.class);
 
         binder.bind(DataMapLoader.class).to(XMLDataMapLoader.class);
         binder.bind(DataChannelDescriptorLoader.class).to(XMLDataChannelDescriptorLoader.class);

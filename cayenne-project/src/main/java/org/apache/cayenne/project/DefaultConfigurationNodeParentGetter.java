@@ -21,7 +21,6 @@ package org.apache.cayenne.project;
 import org.apache.cayenne.configuration.BaseConfigurationNodeVisitor;
 import org.apache.cayenne.configuration.ConfigurationNode;
 import org.apache.cayenne.configuration.ConfigurationNodeVisitor;
-import org.apache.cayenne.configuration.DataNodeDescriptor;
 import org.apache.cayenne.map.DataMap;
 import org.apache.cayenne.map.DbAttribute;
 import org.apache.cayenne.map.DbEntity;
@@ -52,11 +51,6 @@ public class DefaultConfigurationNodeParentGetter implements ConfigurationNodePa
         @Override
         public ConfigurationNode visitDataMap(DataMap dataMap) {
             return dataMap.getDataChannelDescriptor();
-        }
-
-        @Override
-        public ConfigurationNode visitDataNodeDescriptor(DataNodeDescriptor nodeDescriptor) {
-            return nodeDescriptor.getDataChannelDescriptor();
         }
 
         @Override

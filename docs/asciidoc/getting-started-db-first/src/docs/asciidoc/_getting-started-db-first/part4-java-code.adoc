@@ -45,7 +45,7 @@ public class Main {
 
     public static void main(String[] args) {
         CayenneRuntime cayenneRuntime = CayenneRuntime.of()
-            .dataSource(CayenneDataSource
+            .defaultDataNode(CayenneDataSource
                     .of("jdbc:mysql://127.0.0.1:3306/cayenne_demo")
                     .userName("root") // TODO: change to your actual username and password
                     .password("your-password").build())

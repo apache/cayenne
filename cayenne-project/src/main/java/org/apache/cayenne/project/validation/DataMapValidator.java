@@ -19,7 +19,6 @@
 package org.apache.cayenne.project.validation;
 
 import org.apache.cayenne.configuration.DataChannelDescriptor;
-import org.apache.cayenne.configuration.DataNodeDescriptor;
 import org.apache.cayenne.map.DataMap;
 import org.apache.cayenne.util.Util;
 import org.apache.cayenne.validation.ValidationResult;
@@ -41,7 +40,6 @@ class DataMapValidator extends ConfigurationNodeValidator<DataMap> {
         on(node, validationResult)
                 .performIfEnabled(Inspection.DATA_MAP_NO_NAME, this::checkForName)
                 .performIfEnabled(Inspection.DATA_MAP_NAME_DUPLICATE, this::checkForNameDuplicates)
-                .performIfEnabled(Inspection.DATA_MAP_NODE_LINKAGE, this::checkForNodeLinkage)
                 .performIfEnabled(Inspection.DATA_MAP_JAVA_PACKAGE, this::validateJavaPackage);
     }
 
@@ -68,27 +66,6 @@ class DataMapValidator extends ConfigurationNodeValidator<DataMap> {
                 addFailure(validationResult, map, "Duplicate DataMap name: %s", name);
                 return;
             }
-        }
-    }
-
-    private void checkForNodeLinkage(DataMap map, ValidationResult validationResult) {
-        DataChannelDescriptor domain = map.getDataChannelDescriptor();
-        if (domain == null) {
-            return;
-        }
-
-        boolean linked = false;
-        int nodeCount = 0;
-        for (DataNodeDescriptor node : domain.getNodeDescriptors()) {
-            nodeCount++;
-            if (node.getDataMapNames().contains(map.getName())) {
-                linked = true;
-                break;
-            }
-        }
-
-        if (!linked && nodeCount > 0) {
-            addFailure(validationResult, map, "DataMap is not linked to any DataNodes");
         }
     }
 

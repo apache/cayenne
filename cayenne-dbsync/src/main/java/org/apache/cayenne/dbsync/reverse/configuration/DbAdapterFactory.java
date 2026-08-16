@@ -16,25 +16,22 @@
  *  specific language governing permissions and limitations
  *  under the License.
  ****************************************************************/
-package org.apache.cayenne.configuration.mock;
 
-import org.apache.cayenne.configuration.DataNodeDescriptor;
-import org.apache.cayenne.configuration.runtime.DataSourceFactory;
-import org.apache.cayenne.di.Inject;
-import org.apache.cayenne.di.Injector;
+package org.apache.cayenne.dbsync.reverse.configuration;
+
+import org.apache.cayenne.dba.DbAdapter;
 
 import javax.sql.DataSource;
 
-public class MockDataSourceFactory1 implements DataSourceFactory {
+/**
+ * Creates a DbAdapter for a Cayenne tool, either of an explicitly requested type, or detected off the DataSource.
+ *
+ * @since 5.0
+ */
+public interface DbAdapterFactory {
 
-    @Inject
-    protected Injector injector;
-
-    public DataSource getDataSource(DataNodeDescriptor nodeDescriptor) {
-        return null;
-    }
-
-    public Injector getInjector() {
-        return injector;
-    }
+    /**
+     * @param adapterType a name of the DbAdapter class to use, or null to detect the adapter off the DataSource
+     */
+    DbAdapter createAdapter(String adapterType, DataSource dataSource);
 }

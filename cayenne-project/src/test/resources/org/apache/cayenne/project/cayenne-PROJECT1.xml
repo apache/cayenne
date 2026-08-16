@@ -1,15 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
-<domain xmlns="http://cayenne.apache.org/schema/12/domain"
-	 project-version="12">
+<domain xmlns="http://cayenne.apache.org/schema/13/domain"
+	 project-version="13">
 	<map name="testProjectMap1_1"/>
 	<map name="testProjectMap1_2"/>
-	<node name="testProjectNode1"
-		 adapter="org.example.test.Adapter"
-		 factory="org.example.test.DataSourceFactory">
-		<map-ref name="testProjectMap1_1"/>
-		<data-source>
-			<connectionPool min="1" max="1" />
-			<login />
-		</data-source>
-	</node>
 </domain>

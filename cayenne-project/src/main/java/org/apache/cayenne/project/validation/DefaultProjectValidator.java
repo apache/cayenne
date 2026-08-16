@@ -21,7 +21,6 @@ package org.apache.cayenne.project.validation;
 import org.apache.cayenne.configuration.ConfigurationNode;
 import org.apache.cayenne.configuration.ConfigurationNodeVisitor;
 import org.apache.cayenne.configuration.DataChannelDescriptor;
-import org.apache.cayenne.configuration.DataNodeDescriptor;
 import org.apache.cayenne.map.DataMap;
 import org.apache.cayenne.map.DbAttribute;
 import org.apache.cayenne.map.DbEntity;
@@ -69,7 +68,6 @@ public class DefaultProjectValidator implements ProjectValidator {
             Supplier<ValidationConfig> configSupplier) {
         Map<Class<? extends ConfigurationNode>, ConfigurationNodeValidator<?>> validators = new HashMap<>();
         validators.put(DataChannelDescriptor.class, new DataChannelValidator(configSupplier));
-        validators.put(DataNodeDescriptor.class, new DataNodeValidator(configSupplier));
         validators.put(DataMap.class, new DataMapValidator(configSupplier));
         validators.put(ObjEntity.class, new ObjEntityValidator(configSupplier));
         validators.put(ObjAttribute.class, new ObjAttributeValidator(configSupplier));
@@ -104,10 +102,6 @@ public class DefaultProjectValidator implements ProjectValidator {
         public ValidationResult visitDataChannelDescriptor(DataChannelDescriptor channelDescriptor) {
             getValidator(DataChannelDescriptor.class).validate(channelDescriptor, validationResult);
 
-            for (DataNodeDescriptor node : channelDescriptor.getNodeDescriptors()) {
-                visitDataNodeDescriptor(node);
-            }
-
             for (DataMap map : channelDescriptor.getDataMaps()) {
                 visitDataMap(map);
             }
@@ -137,11 +131,6 @@ public class DefaultProjectValidator implements ProjectValidator {
                 visitQuery(q);
             }
 
-            return validationResult;
-        }
-
-        public ValidationResult visitDataNodeDescriptor(DataNodeDescriptor nodeDescriptor) {
-            getValidator(DataNodeDescriptor.class).validate(nodeDescriptor, validationResult);
             return validationResult;
         }
 

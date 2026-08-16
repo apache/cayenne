@@ -19,7 +19,6 @@
 package org.apache.cayenne.dbsync.naming;
 
 import org.apache.cayenne.configuration.DataChannelDescriptor;
-import org.apache.cayenne.configuration.DataNodeDescriptor;
 import org.apache.cayenne.map.DataMap;
 import org.apache.cayenne.map.DbAttribute;
 import org.apache.cayenne.map.DbEntity;
@@ -44,7 +43,7 @@ public class NameBuilderTest {
     }
 
     @Test
-    public void build_DataChannelDescriptorContext() throws Exception {
+    public void build_DataChannelDescriptorContext() {
         DataChannelDescriptor descriptor = new DataChannelDescriptor();
 
         DataMap m0 = new DataMap();
@@ -56,16 +55,6 @@ public class NameBuilderTest {
         m1.setName(NameBuilder.of(m1, descriptor).build());
         assertEquals("datamap1", m1.getName());
         descriptor.getDataMaps().add(m1);
-
-        DataNodeDescriptor nd0 = new DataNodeDescriptor();
-        nd0.setName(NameBuilder.of(nd0, descriptor).build());
-        assertEquals("datanode", nd0.getName());
-        descriptor.getNodeDescriptors().add(nd0);
-
-        DataNodeDescriptor nd1 = new DataNodeDescriptor();
-        nd1.setName(NameBuilder.of(nd1, descriptor).build());
-        assertEquals("datanode1", nd1.getName());
-        descriptor.getNodeDescriptors().add(nd1);
     }
 
 
@@ -233,7 +222,7 @@ public class NameBuilderTest {
     }
 
     @Test
-    public void build_UncapitalizeAttributeNames() throws Exception {
+    public void build_UncapitalizeAttributeNames() {
 
         ObjEntity entity = new ObjEntity();
 

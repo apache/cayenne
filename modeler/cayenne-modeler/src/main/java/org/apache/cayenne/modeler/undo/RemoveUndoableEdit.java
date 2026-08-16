@@ -19,8 +19,6 @@
 package org.apache.cayenne.modeler.undo;
 
 import org.apache.cayenne.configuration.DataChannelDescriptor;
-import org.apache.cayenne.configuration.DataNodeDescriptor;
-import org.apache.cayenne.modeler.event.model.DataNodeEvent;
 import org.apache.cayenne.map.DataMap;
 import org.apache.cayenne.map.DbEntity;
 import org.apache.cayenne.map.DbRelationship;
@@ -33,7 +31,6 @@ import org.apache.cayenne.modeler.project.ProjectSession;
 import org.apache.cayenne.modeler.ui.action.CreateDataMapAction;
 import org.apache.cayenne.modeler.ui.action.CreateDbEntityAction;
 import org.apache.cayenne.modeler.ui.action.CreateEmbeddableAction;
-import org.apache.cayenne.modeler.ui.action.CreateNodeAction;
 import org.apache.cayenne.modeler.ui.action.CreateObjEntityAction;
 import org.apache.cayenne.modeler.ui.action.CreateProcedureAction;
 import org.apache.cayenne.modeler.ui.action.CreateQueryAction;
@@ -57,7 +54,6 @@ public class RemoveUndoableEdit extends CayenneUndoableEdit {
     private QueryDescriptor query;
     private Procedure procedure;
 
-    private DataNodeDescriptor dataNode;
     private DataChannelDescriptor domain;
 
     private Embeddable embeddable;
@@ -66,30 +62,16 @@ public class RemoveUndoableEdit extends CayenneUndoableEdit {
     private final Map<ObjEntity, List<ObjRelationship>> objRelationshipMap = new HashMap<>();
 
     private enum REMOVE_MODE {
-        OBJECT_ENTITY, DB_ENTITY, QUERY, PROCEDURE, MAP_FROM_NODE, MAP_FROM_DOMAIN, NODE, DOMAIN, EMBEDDABLE
+        OBJECT_ENTITY, DB_ENTITY, QUERY, PROCEDURE, MAP_FROM_DOMAIN, DOMAIN, EMBEDDABLE
     }
 
     private final REMOVE_MODE mode;
-
-    public RemoveUndoableEdit(ProjectSession session, DataNodeDescriptor node, DataMap map) {
-        super(session);
-        this.map = map;
-        this.dataNode = node;
-        this.mode = REMOVE_MODE.MAP_FROM_NODE;
-    }
 
     public RemoveUndoableEdit(ProjectSession session, DataMap map) {
         super(session);
         this.domain = (DataChannelDescriptor) session.project().getRootNode();
         this.map = map;
         this.mode = REMOVE_MODE.MAP_FROM_DOMAIN;
-    }
-
-    public RemoveUndoableEdit(ProjectSession session, DataNodeDescriptor node) {
-        super(session);
-        this.domain = (DataChannelDescriptor) session.project().getRootNode();
-        this.dataNode = node;
-        this.mode = REMOVE_MODE.NODE;
     }
 
     public RemoveUndoableEdit(ProjectSession session, DataMap map, ObjEntity objEntity) {
@@ -160,11 +142,8 @@ public class RemoveUndoableEdit extends CayenneUndoableEdit {
                 return "Remove Query";
             case PROCEDURE:
                 return "Remove Procedure";
-            case MAP_FROM_NODE:
             case MAP_FROM_DOMAIN:
                 return "Remove DataMap";
-            case NODE:
-                return "Remove DataNode";
             case DOMAIN:
                 return "Remove DataDomain";
             case EMBEDDABLE:
@@ -192,14 +171,8 @@ public class RemoveUndoableEdit extends CayenneUndoableEdit {
             case PROCEDURE:
                 action.removeProcedure(map, procedure);
                 break;
-            case MAP_FROM_NODE:
-                action.removeDataMapFromDataNode(dataNode, map);
-                break;
             case MAP_FROM_DOMAIN:
                 action.removeDataMap(map);
-                break;
-            case NODE:
-                action.removeDataNode(dataNode);
                 break;
             case EMBEDDABLE:
                 action.removeEmbeddable(map, embeddable);
@@ -246,18 +219,8 @@ public class RemoveUndoableEdit extends CayenneUndoableEdit {
                 action.createProcedure(map, procedure);
                 break;
             }
-            case MAP_FROM_NODE: {
-                this.dataNode.getDataMapNames().add(map.getName());
-                DataNodeEvent e = DataNodeEvent.ofChange(session.app().getFrame(), this.dataNode);
-                session.fireDataNodeEvent(e);
-                break;
-            }
             case MAP_FROM_DOMAIN: {
                 CreateDataMapAction.onMapCreated(this, session, map);
-                break;
-            }
-            case NODE: {
-                CreateNodeAction.createDataNode(this, session, dataNode);
                 break;
             }
             case EMBEDDABLE: {

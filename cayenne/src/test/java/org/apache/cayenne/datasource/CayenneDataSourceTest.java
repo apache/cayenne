@@ -23,6 +23,7 @@ import org.junit.jupiter.api.Test;
 
 import javax.sql.DataSource;
 import java.sql.Connection;
+import java.sql.Driver;
 import java.util.Map;
 
 import static org.junit.jupiter.api.Assertions.*;
@@ -30,6 +31,52 @@ import static org.junit.jupiter.api.Assertions.*;
 public class CayenneDataSourceTest {
 
     private static final String DRIVER = "org.hsqldb.jdbcDriver";
+
+    @Test
+    public void explicitDriver() throws Exception {
+        Driver driver = (Driver) Class.forName(DRIVER).getDeclaredConstructor().newInstance();
+
+        DataSource dataSource = CayenneDataSource.of("jdbc:hsqldb:mem:cds_explicit_driver")
+                .driver(driver)
+                .userName("sa")
+                .password("")
+                .build();
+
+        try (Connection c = dataSource.getConnection()) {
+            assertFalse(c.isClosed());
+        }
+    }
+
+    @Test
+    public void explicitDriver_ResetsDriverClass() throws Exception {
+        Driver driver = (Driver) Class.forName(DRIVER).getDeclaredConstructor().newInstance();
+
+        // the last of "driver" / "driverClass" wins, so a bogus class name must not fail the build
+        DataSource dataSource = CayenneDataSource.of("jdbc:hsqldb:mem:cds_driver_reset")
+                .driverClass("no.such.Driver")
+                .driver(driver)
+                .userName("sa")
+                .password("")
+                .build();
+
+        try (Connection c = dataSource.getConnection()) {
+            assertFalse(c.isClosed());
+        }
+    }
+
+    @Test
+    public void driverClass_ResetsExplicitDriver() throws Exception {
+        Driver driver = (Driver) Class.forName(DRIVER).getDeclaredConstructor().newInstance();
+
+        // the last of "driver" / "driverClass" wins, so the bogus class name is the one that must be resolved
+        CayenneDataSource.Builder builder = CayenneDataSource.of("jdbc:hsqldb:mem:cds_driver_class_reset")
+                .driver(driver)
+                .driverClass("no.such.Driver")
+                .userName("sa")
+                .password("");
+
+        assertThrows(CayenneRuntimeException.class, builder::build);
+    }
 
     @Test
     public void nonPoolingWhenNoPoolSettings() throws Exception {

@@ -57,7 +57,8 @@ public class CayenneRuntimeBuilderTest {
 
 		assertEquals(List.of(), locations);
 
-		assertEquals(2, runtime.modules.size());
+		// CoreModule + domain name override + DataNodeDescriptors
+		assertEquals(3, runtime.modules.size());
 		assertInstanceOf(CoreModule.class, runtime.modules.iterator().next());
 	}
 
@@ -71,7 +72,8 @@ public class CayenneRuntimeBuilderTest {
 
 		assertEquals(List.of("xxxx"), locations);
 
-		assertEquals(2, runtime.modules.size());
+		// CoreModule + project locations + DataNodeDescriptors
+		assertEquals(3, runtime.modules.size());
 		assertInstanceOf(CoreModule.class, runtime.modules.iterator().next());
 
 	}
@@ -86,7 +88,8 @@ public class CayenneRuntimeBuilderTest {
 
 		assertEquals(Arrays.asList("xxxx", "yyyy"), locations);
 
-		assertEquals(3, runtime.modules.size());
+		// CoreModule + project locations + domain name override + DataNodeDescriptors
+		assertEquals(4, runtime.modules.size());
 		assertInstanceOf(CoreModule.class, runtime.modules.iterator().next());
 	}
 
@@ -97,8 +100,9 @@ public class CayenneRuntimeBuilderTest {
 
 		runtime = new CayenneRuntimeBuilder(null).addModule(m).build();
 
-		assertEquals(3, runtime.modules.size());
-		Module[] array = runtime.modules.toArray(new Module[3]);
+		// CoreModule + custom module + domain name override + DataNodeDescriptors
+		assertEquals(4, runtime.modules.size());
+		Module[] array = runtime.modules.toArray(new Module[4]);
 		assertInstanceOf(CoreModule.class, array[0]);
 		assertSame(m, array[1]);
 	}

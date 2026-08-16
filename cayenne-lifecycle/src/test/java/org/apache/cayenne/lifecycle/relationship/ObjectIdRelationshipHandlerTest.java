@@ -20,6 +20,8 @@ package org.apache.cayenne.lifecycle.relationship;
 
 import org.apache.cayenne.Cayenne;
 import org.apache.cayenne.ObjectContext;
+import org.apache.cayenne.configuration.DataNodeDescriptor;
+import org.apache.cayenne.datasource.CayenneDataSource;
 import org.apache.cayenne.lifecycle.db.E1;
 import org.apache.cayenne.lifecycle.db.UuidRoot1;
 import org.apache.cayenne.lifecycle.id.IdCoder;
@@ -30,6 +32,8 @@ import org.apache.cayenne.test.jdbc.TableHelper;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
+
+import javax.sql.DataSource;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNotEquals;
@@ -44,7 +48,21 @@ public class ObjectIdRelationshipHandlerTest {
 
     @BeforeEach
     public void setUp() throws Exception {
-        runtime = CayenneRuntime.of().addConfig("cayenne-lifecycle.xml").build();
+        DataSource dataSource = CayenneDataSource.of("jdbc:hsqldb:mem:lifecycle")
+                .driverClass("org.hsqldb.jdbcDriver")
+                .userName("sa")
+                .pool(1, 1)
+                .build();
+
+        DataNodeDescriptor dataNode = DataNodeDescriptor.of("lifecycle")
+                .dataSource(dataSource)
+                .createSchemaIfNeeded()
+                .build();
+
+        runtime = CayenneRuntime.of()
+                .addConfig("cayenne-lifecycle.xml")
+                .defaultDataNode(dataNode)
+                .build();
 
         // a filter is required to invalidate root objects after commit
         ObjectIdRelationshipFilter filter = new ObjectIdRelationshipFilter();

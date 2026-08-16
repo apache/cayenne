@@ -114,7 +114,7 @@ public class CayenneTestsEnv implements BeforeEachCallback, AfterEachCallback {
         CayenneRuntime runtime = buildRuntime();
         DataContext context = (DataContext) runtime.newContext();
 
-        DbAdapter firstAdapter = runtime.getDataDomain().getDataNodes().iterator().next().getAdapter();
+        DbAdapter firstAdapter = runtime.getDataDomain().getDefaultNode().getAdapter();
         TestDbAdapter testDbAdapter = TestDbAdapter.of(firstAdapter);
         tweakProcedures(runtime, testDbAdapter);
 
@@ -153,7 +153,7 @@ public class CayenneTestsEnv implements BeforeEachCallback, AfterEachCallback {
         return CayenneRuntime.of()
                 .addConfig(project)
                 .addModules(modules)
-                .dataSource(COMMON_SCHEMA.dataSource())
+                .defaultDataNode(COMMON_SCHEMA.dataSource())
                 .build();
     }
 
@@ -187,7 +187,7 @@ public class CayenneTestsEnv implements BeforeEachCallback, AfterEachCallback {
 
     public DataNode dataNode() {
         DataDomain channel = scope.runtime().getDataDomain();
-        return channel.getDataNodes().iterator().next();
+        return channel.getDefaultNode();
     }
 
     public void runWithQueriesBlocked(Runnable task) {

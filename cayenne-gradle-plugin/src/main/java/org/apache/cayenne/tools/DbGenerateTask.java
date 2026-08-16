@@ -22,8 +22,7 @@ package org.apache.cayenne.tools;
 import groovy.lang.Closure;
 import org.apache.cayenne.access.DbGenerator;
 import org.apache.cayenne.configuration.DataMapLoader;
-import org.apache.cayenne.configuration.DataNodeDescriptor;
-import org.apache.cayenne.configuration.runtime.DbAdapterFactory;
+import org.apache.cayenne.dbsync.reverse.configuration.DbAdapterFactory;
 import org.apache.cayenne.datasource.CayenneDataSource;
 import org.apache.cayenne.dba.DbAdapter;
 import org.apache.cayenne.dba.JdbcAdapter;
@@ -153,11 +152,7 @@ public class DbGenerateTask extends BaseCayenneTask {
     }
 
     DbAdapter createDbAdapter(Injector injector, DataSource realDataSource) throws Exception {
-        DbAdapterFactory adapterFactory = injector.getInstance(DbAdapterFactory.class);
-        DataNodeDescriptor nodeDescriptor = new DataNodeDescriptor();
-        nodeDescriptor.setAdapterType(adapter);
-
-        return adapterFactory.createAdapter(nodeDescriptor, realDataSource);
+        return injector.getInstance(DbAdapterFactory.class).createAdapter(adapter, realDataSource);
     }
 
     DataSource createDataSource() {

@@ -157,6 +157,7 @@ public class CayenneDataSource {
         private String userName;
         private String password;
         private String driverClass;
+        private Driver driver;
 
         private Integer minConnections;
         private Integer maxConnections;
@@ -178,11 +179,25 @@ public class CayenneDataSource {
         }
 
         /**
-         * Sets a class name of the JDBC driver. This i optional and is only used in special circumstances. Normally,
+         * Sets a class name of the JDBC driver. This is optional and is only used in special circumstances. Normally,
          * JDBC-compliant drivers are discovered automatically, and resolved based on the URL.
          */
         public Builder driverClass(String driverClassName) {
             this.driverClass = driverClassName;
+            this.driver = null;
+            return this;
+        }
+
+        /**
+         * Sets an already instantiated JDBC driver, bypassing driver discovery and class loading. This is only needed
+         * when the driver can not be loaded by Cayenne's own ClassLoader, e.g. by tools that load JDBC drivers
+         * supplied by the user.
+         *
+         * @since 5.0
+         */
+        public Builder driver(Driver driver) {
+            this.driver = driver;
+            this.driverClass = null;
             return this;
         }
 
@@ -261,6 +276,10 @@ public class CayenneDataSource {
 
         private Driver loadDriver() {
 
+            if (driver != null) {
+                return driver;
+            }
+
             if (driverClass == null) {
                 try {
                     return DriverManager.getDriver(url);
@@ -281,10 +300,10 @@ public class CayenneDataSource {
 
             Class<?> driverClass;
             try {
-                // note: implicitly using current class's ClassLoader ....
-                driverClass = Class.forName(this.driverClass);
+                driverClass = Class.forName(this.driverClass, true, classLoader());
             } catch (Exception ex) {
                 throw new CayenneRuntimeException("Can not load JDBC driver named '%s': %s",
+                        ex,
                         this.driverClass,
                         ex.getMessage());
             }
@@ -293,9 +312,19 @@ public class CayenneDataSource {
                 return (Driver) driverClass.getDeclaredConstructor().newInstance();
             } catch (Exception ex) {
                 throw new CayenneRuntimeException("Error instantiating driver '%s': %s",
+                        ex,
                         this.driverClass,
                         ex.getMessage());
             }
+        }
+
+        /**
+         * Returns the ClassLoader to load the JDBC driver with. It is the thread context ClassLoader, as the driver is
+         * often invisible to the ClassLoader of Cayenne itself. E.g. tools load drivers supplied by the user.
+         */
+        private ClassLoader classLoader() {
+            ClassLoader classLoader = Thread.currentThread().getContextClassLoader();
+            return classLoader != null ? classLoader : CayenneDataSource.class.getClassLoader();
         }
     }
 }

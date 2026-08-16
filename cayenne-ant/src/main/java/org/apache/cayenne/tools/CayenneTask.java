@@ -20,8 +20,7 @@
 package org.apache.cayenne.tools;
 
 import org.apache.cayenne.configuration.DataMapLoader;
-import org.apache.cayenne.configuration.DataNodeDescriptor;
-import org.apache.cayenne.configuration.runtime.DbAdapterFactory;
+import org.apache.cayenne.dbsync.reverse.configuration.DbAdapterFactory;
 import org.apache.cayenne.dba.DbAdapter;
 import org.apache.cayenne.di.Injector;
 import org.apache.cayenne.map.DataMap;
@@ -130,9 +129,6 @@ public abstract class CayenneTask extends Task {
 
     protected DbAdapter getAdapter(Injector injector, DataSource dataSource) {
 
-        DataNodeDescriptor nodeDescriptor = new DataNodeDescriptor();
-        nodeDescriptor.setAdapterType(adapter);
-
-        return injector.getInstance(DbAdapterFactory.class).createAdapter(nodeDescriptor, dataSource);
+        return injector.getInstance(DbAdapterFactory.class).createAdapter(adapter, dataSource);
     }
 }

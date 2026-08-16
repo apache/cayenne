@@ -30,6 +30,7 @@ import org.apache.cayenne.project.upgrade.handlers.UpgradeHandler;
 import org.apache.cayenne.project.upgrade.handlers.UpgradeHandler_V10;
 import org.apache.cayenne.project.upgrade.handlers.UpgradeHandler_V11;
 import org.apache.cayenne.project.upgrade.handlers.UpgradeHandler_V12;
+import org.apache.cayenne.project.upgrade.handlers.UpgradeHandler_V13;
 import org.apache.cayenne.project.upgrade.handlers.UpgradeHandler_V7;
 import org.apache.cayenne.project.upgrade.handlers.UpgradeHandler_V8;
 import org.apache.cayenne.project.upgrade.handlers.UpgradeHandler_V9;
@@ -87,6 +88,7 @@ public class ProjectModule implements Module {
                 .addUpgradeHandler(UpgradeHandler_V9.class)
                 .addUpgradeHandler(UpgradeHandler_V10.class)
                 .addUpgradeHandler(UpgradeHandler_V11.class)
-                .addUpgradeHandler(UpgradeHandler_V12.class);
+                .addUpgradeHandler(UpgradeHandler_V12.class)
+                .addUpgradeHandler(UpgradeHandler_V13.class);
     }
 }

@@ -32,7 +32,7 @@ import java.sql.SQLException;
  */
 public class DB2Sniffer implements DbAdapterDetector {
 
-    protected AdhocObjectFactory objectFactory;
+    protected final AdhocObjectFactory objectFactory;
 
     public DB2Sniffer(@Inject AdhocObjectFactory objectFactory) {
         this.objectFactory = objectFactory;
@@ -45,8 +45,6 @@ public class DB2Sniffer implements DbAdapterDetector {
             return null;
         }
 
-        return objectFactory.newInstance(
-                DbAdapter.class,
-                DB2Adapter.class.getName());
+        return objectFactory.newInstance(DbAdapter.class, DB2Adapter.class, false);
     }
 }

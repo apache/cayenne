@@ -24,7 +24,6 @@ import org.apache.cayenne.configuration.ConfigurationNameMapper;
 import org.apache.cayenne.configuration.ConfigurationTree;
 import org.apache.cayenne.configuration.DataChannelDescriptor;
 import org.apache.cayenne.configuration.DataMapLoader;
-import org.apache.cayenne.configuration.DataNodeDescriptor;
 import org.apache.cayenne.configuration.DefaultConfigurationNameMapper;
 import org.apache.cayenne.di.AdhocObjectFactory;
 import org.apache.cayenne.di.ClassLoaderManager;
@@ -160,24 +159,5 @@ public class XMLDataChannelDescriptorLoaderTest {
 
         assertEquals("testConfigMap3_1", map1.getName());
         assertEquals("testConfigMap3_2", map2.getName());
-
-        Collection<DataNodeDescriptor> nodes = descriptor.getNodeDescriptors();
-        assertEquals(1, nodes.size());
-
-        DataNodeDescriptor node1 = nodes.iterator().next();
-        assertEquals("testConfigNode3", node1.getName());
-        assertNull(node1.getParameters());
-        assertNotNull(node1.getDataSourceDescriptor());
-        assertEquals(1, node1.getDataSourceDescriptor().getMinConnections());
-        assertEquals(1, node1.getDataSourceDescriptor().getMaxConnections());
-
-        assertEquals("org.example.test.Adapter", node1.getAdapterType());
-        assertEquals("org.example.test.DataSourceFactory", node1.getDataSourceFactoryType());
-        assertEquals("org.example.test.SchemaUpdateStartegy", node1.getSchemaUpdateStrategyType());
-        assertNotNull(node1.getDataMapNames());
-
-        assertEquals(1, node1.getDataMapNames().size());
-
-        assertEquals("testConfigMap3_2", node1.getDataMapNames().iterator().next());
     }
 }

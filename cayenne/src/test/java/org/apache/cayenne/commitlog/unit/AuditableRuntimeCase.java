@@ -18,12 +18,16 @@
  ****************************************************************/
 package org.apache.cayenne.commitlog.unit;
 
+import org.apache.cayenne.configuration.DataNodeDescriptor;
+import org.apache.cayenne.datasource.CayenneDataSource;
 import org.apache.cayenne.runtime.CayenneRuntime;
 import org.apache.cayenne.runtime.CayenneRuntimeBuilder;
 import org.apache.cayenne.test.jdbc.DbHelper;
 import org.apache.cayenne.test.jdbc.TableHelper;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
+
+import javax.sql.DataSource;
 
 /**
  * A superclass of integration tests for cayenne-lifecycle.
@@ -89,7 +93,18 @@ public abstract class AuditableRuntimeCase {
 	}
 
 	protected CayenneRuntimeBuilder configureCayenne() {
-		return CayenneRuntime.of().addConfig("cayenne-lifecycle.xml");
+		DataSource dataSource = CayenneDataSource.of("jdbc:hsqldb:mem:lifecycle")
+				.userName("sa")
+				.build();
+
+		DataNodeDescriptor dataNode = DataNodeDescriptor.of("node1")
+				.dataSource(dataSource)
+				.createSchemaIfNeeded()
+				.build();
+
+		return CayenneRuntime.of()
+				.addConfig("cayenne-lifecycle.xml")
+				.defaultDataNode(dataNode);
 	}
 
 	@AfterEach

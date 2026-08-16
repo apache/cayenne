@@ -17,6 +17,6 @@
 	specific language governing permissions and limitations
 	under the License.
 -->
-<domain xmlns="http://cayenne.apache.org/schema/12/domain" project-version="12">
+<domain xmlns="http://cayenne.apache.org/schema/13/domain" project-version="13">
 	<map name="testmap"/>
 </domain>

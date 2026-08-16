@@ -20,7 +20,6 @@ package org.apache.cayenne.modeler.ui.action;
 
 import org.apache.cayenne.configuration.ConfigurationNode;
 import org.apache.cayenne.configuration.DataChannelDescriptor;
-import org.apache.cayenne.configuration.DataNodeDescriptor;
 import org.apache.cayenne.dbsync.naming.CallbackNode;
 import org.apache.cayenne.dbsync.naming.NameBuilder;
 import org.apache.cayenne.map.DataMap;
@@ -155,8 +154,8 @@ public class PasteAction extends AppAction implements FlavorListener {
             where = session.getSelectedDataMap();
         }
 
-        if ((where instanceof DataChannelDescriptor || where instanceof DataNodeDescriptor) && content instanceof DataMap dataMap) {
-            // paste DataMap to DataDomain or DataNode
+        if (where instanceof DataChannelDescriptor && content instanceof DataMap dataMap) {
+            // paste DataMap to DataDomain
 
             dataMap.setName(NameBuilder
                     .of(dataMap, dataChannelDescriptor)
@@ -468,7 +467,7 @@ public class PasteAction extends AppAction implements FlavorListener {
             }
 
             //  Checking all available pairs source-pasting object
-            return ((currentObject instanceof DataChannelDescriptor || currentObject instanceof DataNodeDescriptor) && content instanceof DataMap)
+            return (currentObject instanceof DataChannelDescriptor && content instanceof DataMap)
                     ||
 
                     (currentObject instanceof DataMap && isTreeLeaf(content))

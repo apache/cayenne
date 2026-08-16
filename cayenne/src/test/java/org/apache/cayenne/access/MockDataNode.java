@@ -36,6 +36,7 @@ public class MockDataNode extends DataNode {
 
     protected DataDomain domain;
     protected DataNode node;
+    protected boolean wasDefaultNode;
 
     // mockup the actual results
     protected boolean replaceResults;
@@ -45,8 +46,16 @@ public class MockDataNode extends DataNode {
     public static MockDataNode interceptNode(DataDomain domain, DataNode node) {
         MockDataNode mockNode = new MockDataNode(node);
         mockNode.domain = domain;
+        mockNode.wasDefaultNode = domain.getDefaultNode() == node;
+
         domain.removeDataNode(node.getName());
         domain.addNode(mockNode);
+
+        // queries for DataMaps not linked to a node are routed via the default node, so it must be intercepted as well
+        if (mockNode.wasDefaultNode) {
+            domain.setDefaultNode(mockNode);
+        }
+
         return mockNode;
     }
 
@@ -61,6 +70,10 @@ public class MockDataNode extends DataNode {
 
         domain.removeDataNode(getName());
         domain.addNode(node);
+
+        if (wasDefaultNode) {
+            domain.setDefaultNode(node);
+        }
     }
 
     public void reset() {

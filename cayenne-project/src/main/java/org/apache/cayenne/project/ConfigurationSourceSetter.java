@@ -21,7 +21,6 @@ package org.apache.cayenne.project;
 import org.apache.cayenne.configuration.BaseConfigurationNodeVisitor;
 import org.apache.cayenne.configuration.ConfigurationNameMapper;
 import org.apache.cayenne.configuration.DataChannelDescriptor;
-import org.apache.cayenne.configuration.DataNodeDescriptor;
 import org.apache.cayenne.di.Inject;
 import org.apache.cayenne.map.DataMap;
 import org.apache.cayenne.resource.Resource;
@@ -49,12 +48,6 @@ class ConfigurationSourceSetter extends BaseConfigurationNodeVisitor<Void> {
     @Override
     public Void visitDataChannelDescriptor(DataChannelDescriptor node) {
         node.setConfigurationSource(configurationSource);
-
-        // update child configurations
-        for (DataNodeDescriptor childDescriptor : node.getNodeDescriptors()) {
-            childDescriptor.setDataChannelDescriptor(node);
-            childDescriptor.setConfigurationSource(configurationSource);
-        }
         return null;
     }
 

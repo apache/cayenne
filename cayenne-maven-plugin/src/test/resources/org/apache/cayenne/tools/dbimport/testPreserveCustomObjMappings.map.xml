@@ -17,10 +17,10 @@
 	specific language governing permissions and limitations
 	under the License.
 -->
-<data-map xmlns="http://cayenne.apache.org/schema/12/modelMap"
+<data-map xmlns="http://cayenne.apache.org/schema/13/modelMap"
           xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-          xsi:schemaLocation="http://cayenne.apache.org/schema/12/modelMap http://cayenne.apache.org/schema/12/modelMap.xsd"
-          project-version="12">
+          xsi:schemaLocation="http://cayenne.apache.org/schema/13/modelMap http://cayenne.apache.org/schema/13/modelMap.xsd"
+          project-version="13">
     <property name="defaultSchema" value="SCHEMA_01"/>
     <db-entity name="PARENT" schema="SCHEMA_01">
         <db-attribute name="COL2" type="CHAR" length="25"/>
@@ -29,6 +29,6 @@
     </db-entity>
     <obj-entity name="Parent" className="Parent" dbEntityName="PARENT">
         <obj-attribute name="col2" type="java.lang.String" db-attribute-path="COL2"/>
-        <info:property xmlns:info="http://cayenne.apache.org/schema/12/info" name="comment" value="test"/>
+        <info:property xmlns:info="http://cayenne.apache.org/schema/13/info" name="comment" value="test"/>
     </obj-entity>
 </data-map>

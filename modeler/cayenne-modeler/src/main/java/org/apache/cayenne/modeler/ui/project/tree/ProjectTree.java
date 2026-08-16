@@ -21,7 +21,6 @@ package org.apache.cayenne.modeler.ui.project.tree;
 
 import org.apache.cayenne.configuration.ConfigurationNode;
 import org.apache.cayenne.configuration.DataChannelDescriptor;
-import org.apache.cayenne.configuration.DataNodeDescriptor;
 import org.apache.cayenne.map.DataMap;
 import org.apache.cayenne.map.DbEntity;
 import org.apache.cayenne.map.Embeddable;
@@ -31,8 +30,6 @@ import org.apache.cayenne.map.Procedure;
 import org.apache.cayenne.map.QueryDescriptor;
 import org.apache.cayenne.modeler.event.display.DataMapDisplayEvent;
 import org.apache.cayenne.modeler.event.display.DataMapDisplayListener;
-import org.apache.cayenne.modeler.event.display.DataNodeDisplayEvent;
-import org.apache.cayenne.modeler.event.display.DataNodeDisplayListener;
 import org.apache.cayenne.modeler.event.display.DbEntityDisplayEvent;
 import org.apache.cayenne.modeler.event.display.DbEntityDisplayListener;
 import org.apache.cayenne.modeler.event.display.DomainDisplayEvent;
@@ -49,8 +46,6 @@ import org.apache.cayenne.modeler.event.display.QueryDisplayEvent;
 import org.apache.cayenne.modeler.event.display.QueryDisplayListener;
 import org.apache.cayenne.modeler.event.model.DataMapEvent;
 import org.apache.cayenne.modeler.event.model.DataMapListener;
-import org.apache.cayenne.modeler.event.model.DataNodeEvent;
-import org.apache.cayenne.modeler.event.model.DataNodeListener;
 import org.apache.cayenne.modeler.event.model.DbEntityEvent;
 import org.apache.cayenne.modeler.event.model.DbEntityListener;
 import org.apache.cayenne.modeler.event.model.DomainEvent;
@@ -69,13 +64,11 @@ import org.apache.cayenne.modeler.ui.action.CopyAction;
 import org.apache.cayenne.modeler.ui.action.CreateDataMapAction;
 import org.apache.cayenne.modeler.ui.action.CreateDbEntityAction;
 import org.apache.cayenne.modeler.ui.action.CreateEmbeddableAction;
-import org.apache.cayenne.modeler.ui.action.CreateNodeAction;
 import org.apache.cayenne.modeler.ui.action.CreateObjEntityAction;
 import org.apache.cayenne.modeler.ui.action.CreateProcedureAction;
 import org.apache.cayenne.modeler.ui.action.CreateQueryAction;
 import org.apache.cayenne.modeler.ui.action.CutAction;
 import org.apache.cayenne.modeler.ui.action.DbEntitySyncAction;
-import org.apache.cayenne.modeler.ui.action.LinkDataMapsAction;
 import org.apache.cayenne.modeler.toolkit.AppAction;
 import org.apache.cayenne.modeler.ui.action.ObjEntitySyncAction;
 import org.apache.cayenne.modeler.ui.action.PasteAction;
@@ -107,9 +100,6 @@ import java.awt.Color;
 import java.awt.Graphics;
 import java.awt.Rectangle;
 import java.awt.Toolkit;
-import java.awt.dnd.DnDConstants;
-import java.awt.dnd.DragSource;
-import java.awt.dnd.MouseDragGestureRecognizer;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
 import java.util.ArrayList;
@@ -122,7 +112,7 @@ import java.util.List;
  */
 public class ProjectTree extends JTree
         implements DomainDisplayListener, DomainListener, DataMapDisplayListener,
-        DataMapListener, DataNodeDisplayListener, DataNodeListener, ObjEntityListener,
+        DataMapListener, ObjEntityListener,
         ObjEntityDisplayListener, DbEntityListener, DbEntityDisplayListener, QueryListener,
         QueryDisplayListener, ProcedureListener, ProcedureDisplayListener,
         MultipleObjectsDisplayListener, EmbeddableDisplayListener, EmbeddableListener {
@@ -154,8 +144,6 @@ public class ProjectTree extends JTree
 
         session.addDomainListener(this);
         session.addDomainDisplayListener(this);
-        session.addDataNodeListener(this);
-        session.addDataNodeDisplayListener(this);
         session.addDataMapListener(this);
         session.addDataMapDisplayListener(this);
         session.addObjEntityListener(this);
@@ -174,14 +162,6 @@ public class ProjectTree extends JTree
                 this,
                 CutAction.class,
                 CopyAction.class);
-
-        DragSource dragSource = new DragSource();
-        Toolkit.getDefaultToolkit().createDragGestureRecognizer(
-                MouseDragGestureRecognizer.class,
-                dragSource,
-                this,
-                DnDConstants.ACTION_COPY,
-                new TreeDragSource(dragSource, this, session));
     }
 
     /**
@@ -390,11 +370,6 @@ public class ProjectTree extends JTree
     }
 
     @Override
-    public void dataNodeSlected(DataNodeDisplayEvent e) {
-        navigateTo(e.getDomain(), e.getDataNode());
-    }
-
-    @Override
     public void dataMapSelected(DataMapDisplayEvent e) {
         navigateTo(e.getDomain(), e.getDataMap());
     }
@@ -539,93 +514,6 @@ public class ProjectTree extends JTree
     }
 
     @Override
-    public void dataNodeChanged(DataNodeEvent e) {
-        DefaultMutableTreeNode node = getProjectModel().getNodeForObjectPath(
-                session.project().getRootNode(),
-                e.getDataNode());
-
-        if (node != null) {
-            if (e.isNameChange()) {
-                positionNode((DefaultMutableTreeNode) node.getParent(), node,
-                        ProjectComparators.forDataDomainChildren());
-                navigateTo(node);
-            } else {
-                getProjectModel().nodeChanged(node);
-
-                DataChannelDescriptor domain = (DataChannelDescriptor) session.project().getRootNode();
-
-                String[] mapsName = e.getDataNode().getDataMapNames().toArray(new String[0]);
-                int mapCount = mapsName.length;
-
-                // DataMap was linked
-                if (mapCount > node.getChildCount()) {
-                    for (String aMapsName : mapsName) {
-                        boolean found = false;
-                        for (int j = 0; j < node.getChildCount(); j++) {
-                            DefaultMutableTreeNode child = (DefaultMutableTreeNode) node.getChildAt(j);
-                            if (domain.getDataMap(aMapsName) == child.getUserObject()) {
-                                found = true;
-                                break;
-                            }
-                        }
-
-                        if (!found) {
-                            DefaultMutableTreeNode newMapNode =
-                                    new DefaultMutableTreeNode(domain.getDataMap(aMapsName), false);
-                            positionNode(node, newMapNode, ProjectComparators.forNamedObjects());
-                            break;
-                        }
-                    }
-                } else if (mapCount < node.getChildCount()) {
-                    // DataMap was unlinked
-                    int j = 0;
-                    while (j < node.getChildCount()) {
-                        boolean found = false;
-                        DefaultMutableTreeNode child = (DefaultMutableTreeNode) node.getChildAt(j);
-                        Object obj = child.getUserObject();
-                        for (Object aMapsName : mapsName) {
-                            if (domain.getDataMap(aMapsName.toString()) == obj) {
-                                found = true;
-                                j++;
-                            }
-                        }
-                        if (!found) {
-                            removeNode(child);
-                        }
-                    }
-                }
-            }
-        }
-    }
-
-    @Override
-    public void dataNodeAdded(DataNodeEvent e) {
-        if (e.getSource() == this) {
-            return;
-        }
-
-        DefaultMutableTreeNode node = getProjectModel().getNodeForObjectPath(session.project().getRootNode());
-
-        if (node == null) {
-            return;
-        }
-
-        DataNodeDescriptor dataNode = e.getDataNode();
-        DefaultMutableTreeNode currentNode = ProjectTreeFactory.wrapProjectNode(dataNode);
-        positionNode(node, currentNode, ProjectComparators.forDataDomainChildren());
-        navigateTo(currentNode);
-    }
-
-    @Override
-    public void dataNodeRemoved(DataNodeEvent e) {
-        if (e.getSource() == this) {
-            return;
-        }
-
-        removeNode(session.project().getRootNode(), e.getDataNode());
-    }
-
-    @Override
     public void dataMapChanged(DataMapEvent e) {
 
         Object[] path = new Object[]{
@@ -658,14 +546,6 @@ public class ProjectTree extends JTree
         } else {
             navigateTo(newMapNode);
         }
-
-        for (DataNodeDescriptor dataNode : new ArrayList<>(dataChannelDescriptor.getNodeDescriptors())) {
-            for (String dataMapName : dataNode.getDataMapNames()) {
-                if (e.getDataMap().getName().equals(dataMapName)) {
-                    session.fireDataNodeEvent(DataNodeEvent.ofChange(this, dataNode));
-                }
-            }
-        }
     }
 
     @Override
@@ -675,11 +555,6 @@ public class ProjectTree extends JTree
         removeNode(dataChannelDescriptor, map);
 
         session.entityResolver().removeDataMap(e.getDataMap());
-
-        // Clean up map from the nodes
-        for (DataNodeDescriptor dataNode : new ArrayList<>(dataChannelDescriptor.getNodeDescriptors())) {
-            removeNode(dataChannelDescriptor, dataNode, map);
-        }
     }
 
     @Override
@@ -829,25 +704,10 @@ public class ProjectTree extends JTree
         if (obj instanceof DataChannelDescriptor dcd) {
             session.displayDomain(new DomainDisplayEvent(this, dcd));
         } else if (obj instanceof DataMap dm) {
-            if (data.length == 2) {
-                session.displayDataMap(new DataMapDisplayEvent(
-                        this,
-                        domain,
-                        dm,
-                        (DataNodeDescriptor) data[data.length - 2]));
-            } else if (data.length == 1) {
-                session.displayDataMap(new DataMapDisplayEvent(
-                        this,
-                        domain,
-                        dm));
-            }
-        } else if (obj instanceof DataNodeDescriptor dnd) {
-            if (data.length == 1) {
-                session.displayDataNode(new DataNodeDisplayEvent(
-                        this,
-                        domain,
-                        dnd));
-            }
+            session.displayDataMap(new DataMapDisplayEvent(
+                    this,
+                    domain,
+                    dm));
         } else if (obj instanceof ObjEntity oe) {
             session.displayObjEntity(new ObjEntityDisplayEvent(
                     this,
@@ -965,7 +825,6 @@ public class ProjectTree extends JTree
     private JPopupMenu createJPopupMenu() {
         JPopupMenu popup = new JPopupMenu();
 
-        popup.add(buildMenu(CreateNodeAction.class));
         popup.add(buildMenu(CreateDataMapAction.class));
         popup.add(buildMenu(CreateObjEntityAction.class));
         popup.add(buildMenu(CreateEmbeddableAction.class));
@@ -975,7 +834,6 @@ public class ProjectTree extends JTree
         popup.addSeparator();
         popup.add(buildMenu(ObjEntitySyncAction.class));
         popup.add(buildMenu(DbEntitySyncAction.class));
-        popup.add(buildMenu(LinkDataMapsAction.class));
         popup.add(buildMenu(RemoveAction.class));
         popup.add(buildMenu(CutAction.class));
         popup.add(buildMenu(CopyAction.class));

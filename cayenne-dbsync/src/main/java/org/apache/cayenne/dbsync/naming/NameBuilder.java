@@ -20,7 +20,6 @@ package org.apache.cayenne.dbsync.naming;
 
 import org.apache.cayenne.configuration.ConfigurationNode;
 import org.apache.cayenne.configuration.DataChannelDescriptor;
-import org.apache.cayenne.configuration.DataNodeDescriptor;
 import org.apache.cayenne.map.DataMap;
 import org.apache.cayenne.map.DbAttribute;
 import org.apache.cayenne.map.DbEntity;
@@ -87,7 +86,6 @@ public class NameBuilder {
     private static String defaultBaseName(ConfigurationNode node) {
         return switch (node) {
             case DataChannelDescriptor ignored -> "project";
-            case DataNodeDescriptor ignored -> "datanode";
             case DataMap ignored -> "datamap";
             case ObjEntity ignored -> "ObjEntity";
             case DbEntity ignored -> "db_entity";
@@ -125,7 +123,6 @@ public class NameBuilder {
         }
 
         Predicate<String> nameChecker = switch (node) {
-            case DataNodeDescriptor ignored -> this::dataNodeExists;
             case DataMap ignored -> name -> ((DataChannelDescriptor) parent).getDataMap(name) != null;
             case ObjEntity ignored -> name -> ((DataMap) parent).getObjEntity(name) != null;
             case DbEntity ignored -> name -> ((DataMap) parent).getDbEntity(name) != null;
@@ -148,16 +145,6 @@ public class NameBuilder {
             name = String.format(dupesPattern, baseName, c++);
         }
         return name;
-    }
-
-    private boolean dataNodeExists(String name) {
-        DataChannelDescriptor dataChannelDescriptor = (DataChannelDescriptor) parent;
-        for (DataNodeDescriptor dataNodeDescriptor : dataChannelDescriptor.getNodeDescriptors()) {
-            if (dataNodeDescriptor.getName().equals(name)) {
-                return true;
-            }
-        }
-        return false;
     }
 
     private boolean embeddableExists(String name) {

@@ -20,12 +20,16 @@ package org.apache.cayenne.lifecycle.id;
 
 import org.apache.cayenne.DataRow;
 import org.apache.cayenne.QueryResponse;
+import org.apache.cayenne.configuration.DataNodeDescriptor;
+import org.apache.cayenne.datasource.CayenneDataSource;
 import org.apache.cayenne.runtime.CayenneRuntime;
 import org.apache.cayenne.test.jdbc.DbHelper;
 import org.apache.cayenne.test.jdbc.TableHelper;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
+
+import javax.sql.DataSource;
 
 import java.util.Arrays;
 import java.util.HashSet;
@@ -43,8 +47,22 @@ public class StringIdQueryTest {
 
     @BeforeEach
     public void setUp() {
-        runtime = CayenneRuntime.of().addConfig("cayenne-lifecycle.xml").build();
-        DbHelper dbHelper = new DbHelper(runtime.getDataSource("lifecycle-db"));
+        DataSource dataSource = CayenneDataSource.of("jdbc:hsqldb:mem:lifecycle")
+                .driverClass("org.hsqldb.jdbcDriver")
+                .userName("sa")
+                .pool(1, 1)
+                .build();
+
+        DataNodeDescriptor dataNode = DataNodeDescriptor.of("lifecycle")
+                .dataSource(dataSource)
+                .createSchemaIfNeeded()
+                .build();
+
+        runtime = CayenneRuntime.of()
+                .addConfig("cayenne-lifecycle.xml")
+                .defaultDataNode(dataNode)
+                .build();
+        DbHelper dbHelper = new DbHelper(runtime.getDataSource());
         e1Helper = new TableHelper(dbHelper, "E1", "ID");
         e2Helper = new TableHelper(dbHelper, "E2", "ID");
     }

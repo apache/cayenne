@@ -35,6 +35,7 @@ import org.apache.cayenne.configuration.DataChannelDescriptor;
 import org.apache.cayenne.configuration.DataChannelDescriptorLoader;
 import org.apache.cayenne.configuration.DataChannelDescriptorMerger;
 import org.apache.cayenne.configuration.DataNodeDescriptor;
+import org.apache.cayenne.configuration.DataNodeDescriptors;
 import org.apache.cayenne.configuration.RuntimeProperties;
 import org.apache.cayenne.di.AdhocObjectFactory;
 import org.apache.cayenne.di.DIRuntimeException;
@@ -57,6 +58,8 @@ import org.slf4j.LoggerFactory;
 import java.util.Collection;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
+import java.util.stream.Collectors;
 
 /**
  * A {@link DataChannel} provider that provides a single instance of DataDomain
@@ -131,6 +134,9 @@ public class DataDomainProvider implements Provider<DataDomain> {
     @Inject
     protected EntitySorterFactory entitySorterFactory;
 
+    @Inject
+    protected DataNodeDescriptors dataNodeDescriptors;
+
     @Override
     public DataDomain get() {
 
@@ -157,14 +163,10 @@ public class DataDomainProvider implements Provider<DataDomain> {
                 entitySorter
         );
 
-        for (DataNodeDescriptor nodeDescriptor : descriptor.getNodeDescriptors()) {
-            addDataNode(domain, nodeDescriptor);
-        }
+        dataNodeDescriptors.mapsByNode().forEach((n, maps) -> addDataNode(domain, n, maps));
 
-        DataNode defaultNode = resolveDefaultNode(domain, descriptor);
-        if (defaultNode != null) {
-            LOGGER.info("setting DataNode '{}' as default, used by all unlinked DataMaps", defaultNode.getName());
-            domain.setDefaultNode(defaultNode);
+        if (dataNodeDescriptors.defaultNode() != null) {
+            addDefaultDataNode(domain, dataNodeDescriptors.defaultNode());
         }
 
         for (DataChannelQueryFilter filter : queryFilters) {
@@ -182,6 +184,42 @@ public class DataDomainProvider implements Provider<DataDomain> {
         return domain;
     }
 
+    protected void addDataNode(DataDomain domain, DataNodeDescriptor descriptor, Set<String> mapNames) {
+        DataNode node = dataNodeFactory.createDataNode(domain.getName(), descriptor);
+        for (String mn : mapNames) {
+            DataMap dataMap = domain.getDataMap(mn);
+            if (dataMap == null) {
+                LOGGER.info("DataNode '{}' is linked to a non-existing DataMap '{}', ignoring", descriptor.name(), mn);
+            }
+            else {
+                node.addDataMap(dataMap);
+            }
+        }
+
+        domain.addNode(node);
+    }
+
+    protected void addDefaultDataNode(DataDomain domain, DataNodeDescriptor descriptor) {
+        LOGGER.info("setting DataNode '{}' as default, used by all unlinked DataMaps", descriptor.name());
+        DataNode node = dataNodeFactory.createDataNode(domain.getName(), descriptor);
+
+        // the default node takes ownership of every DataMap not explicitly linked to another node.
+        // ("lookupDataNode" can't be used here - it throws instead of returning null for an unlinked map)
+        Set<String> linkedMaps = domain.getDataNodes().stream()
+                .flatMap(n -> n.getDataMaps().stream())
+                .map(DataMap::getName)
+                .collect(Collectors.toSet());
+
+        for (DataMap map : domain.getDataMaps()) {
+            if (!linkedMaps.contains(map.getName())) {
+                node.addDataMap(map);
+            }
+        }
+
+        domain.addNode(node);
+        domain.setDefaultNode(node);
+    }
+
     /**
      * Returns a snapshot cache shared by all DataContexts of the domain, or null if the descriptor turns the shared
      * cache off, and each DataContext is to use a cache of its own.
@@ -196,25 +234,6 @@ public class DataDomainProvider implements Provider<DataDomain> {
         return "true".equals(sharedCache)
                 ? injector.getInstance(DataRowStoreFactory.class).createDataRowStore(descriptor.getName())
                 : null;
-    }
-
-    /**
-     * Returns a DataNode to use for DataMaps not linked to any node, either the one named in the descriptor, or the
-     * only node of the domain. Returns null if neither applies.
-     *
-     * @since 5.0
-     */
-    protected DataNode resolveDefaultNode(DataDomain domain, DataChannelDescriptor descriptor) {
-
-        if (descriptor.getDefaultNodeName() != null) {
-            DataNode namedNode = domain.getDataNode(descriptor.getDefaultNodeName());
-            if (namedNode != null) {
-                return namedNode;
-            }
-        }
-
-        Collection<DataNode> allNodes = domain.getDataNodes();
-        return allNodes.size() == 1 ? allNodes.iterator().next() : null;
     }
 
     protected EntityResolver createEntityResolver(DataChannelDescriptor descriptor) {
@@ -246,21 +265,6 @@ public class DataDomainProvider implements Provider<DataDomain> {
         }
 
         return descriptor;
-    }
-
-    /**
-     * @since 4.0
-     */
-    protected DataNode addDataNode(DataDomain dataDomain, DataNodeDescriptor nodeDescriptor) {
-        DataNode dataNode = dataNodeFactory.createDataNode(nodeDescriptor);
-
-        // DataMaps
-        for (String dataMapName : nodeDescriptor.getDataMapNames()) {
-            dataNode.addDataMap(dataDomain.getDataMap(dataMapName));
-        }
-
-        dataDomain.addNode(dataNode);
-        return dataNode;
     }
 
     private DataChannelDescriptor loadDescriptorFromConfigs() {

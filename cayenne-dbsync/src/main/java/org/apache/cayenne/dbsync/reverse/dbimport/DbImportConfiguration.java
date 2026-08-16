@@ -19,8 +19,8 @@
 package org.apache.cayenne.dbsync.reverse.dbimport;
 
 import org.apache.cayenne.CayenneRuntimeException;
-import org.apache.cayenne.configuration.DataNodeDescriptor;
 import org.apache.cayenne.configuration.DataSourceDescriptor;
+import org.apache.cayenne.datasource.CayenneDataSource;
 import org.apache.cayenne.dba.DbAdapter;
 import org.apache.cayenne.dbsync.filter.NameFilter;
 import org.apache.cayenne.dbsync.filter.NamePatternMatcher;
@@ -36,6 +36,7 @@ import org.apache.cayenne.dbsync.reverse.dbload.ModelMergeDelegate;
 import org.apache.cayenne.dbsync.reverse.filters.FiltersConfig;
 import org.slf4j.Logger;
 
+import javax.sql.DataSource;
 import java.io.File;
 import java.util.regex.Pattern;
 
@@ -240,12 +241,19 @@ public class DbImportConfiguration {
         dataSourceInfo.setDataSourceUrl(dataSourceUrl);
     }
 
-    public DataNodeDescriptor createDataNodeDescriptor() {
-        DataNodeDescriptor nodeDescriptor = new DataNodeDescriptor();
-        nodeDescriptor.setAdapterType(getAdapter());
-        nodeDescriptor.setDataSourceDescriptor(dataSourceInfo);
-
-        return nodeDescriptor;
+    /**
+     * Creates a DataSource for the JDBC connection parameters of this configuration. The JDBC driver is loaded with
+     * the thread context ClassLoader, that must include the user-supplied driver JAR. If no driver is specified, it is
+     * resolved from the URL by the JDBC DriverManager.
+     *
+     * @since 5.0
+     */
+    public DataSource createDataSource() {
+        return CayenneDataSource.of(dataSourceInfo.getDataSourceUrl())
+                .driverClass(dataSourceInfo.getJdbcDriver())
+                .userName(dataSourceInfo.getUserName())
+                .password(dataSourceInfo.getPassword())
+                .build();
     }
 
     public String getDataMapName() {

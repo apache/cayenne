@@ -20,7 +20,6 @@
 package org.apache.cayenne.modeler.project;
 
 import org.apache.cayenne.modeler.event.display.DataMapDisplayEvent;
-import org.apache.cayenne.modeler.event.display.DataNodeDisplayEvent;
 import org.apache.cayenne.modeler.event.display.DbEntityDisplayEvent;
 import org.apache.cayenne.modeler.event.display.DisplayEvent;
 import org.apache.cayenne.modeler.event.display.DomainDisplayEvent;
@@ -31,7 +30,6 @@ import org.apache.cayenne.modeler.event.display.QueryDisplayEvent;
 import org.apache.cayenne.modeler.event.model.ObjEntityEvent;
 import org.apache.cayenne.modeler.event.model.DbEntityEvent;
 import org.apache.cayenne.modeler.event.model.DataMapEvent;
-import org.apache.cayenne.modeler.event.model.DataNodeEvent;
 import org.apache.cayenne.modeler.event.model.DomainEvent;
 import org.apache.cayenne.modeler.event.model.EmbeddableEvent;
 import org.apache.cayenne.modeler.event.model.ProcedureEvent;
@@ -108,8 +106,6 @@ public class ProjectNavigationHistory {
             session.displayQuery(qe);
         } else if (e instanceof DataMapDisplayEvent dme) {
             session.displayDataMap(dme);
-        } else if (e instanceof DataNodeDisplayEvent dne) {
-            session.displayDataNode(dne);
         } else if (e instanceof DomainDisplayEvent doe) {
             session.displayDomain(doe);
         }
@@ -143,10 +139,6 @@ public class ProjectNavigationHistory {
                     }
                 } else if (e instanceof DataMapEvent && de instanceof DataMapDisplayEvent) {
                     if (((DataMapEvent) e).getDataMap() == ((DataMapDisplayEvent) de).getDataMap()) {
-                        it.remove();
-                    }
-                } else if (e instanceof DataNodeEvent && de instanceof DataNodeDisplayEvent) {
-                    if (((DataNodeEvent) e).getDataNode() == ((DataNodeDisplayEvent) de).getDataNode()) {
                         it.remove();
                     }
                 } else if (e instanceof DomainEvent && de instanceof DomainDisplayEvent) {

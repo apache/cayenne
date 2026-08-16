@@ -42,11 +42,6 @@ public class EmptyConfigurationNodeVisitor implements ConfigurationNodeVisitor<V
     }
 
     @Override
-    public Void visitDataNodeDescriptor(DataNodeDescriptor nodeDescriptor) {
-        return null;
-    }
-
-    @Override
     public Void visitDataMap(DataMap dataMap) {
         return null;
     }

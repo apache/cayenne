@@ -20,8 +20,7 @@ package org.apache.cayenne.dbsync.reverse.dbimport;
 
 import org.apache.cayenne.configuration.DataChannelDescriptorLoader;
 import org.apache.cayenne.configuration.DataMapLoader;
-import org.apache.cayenne.configuration.runtime.DataSourceFactory;
-import org.apache.cayenne.configuration.runtime.DbAdapterFactory;
+import org.apache.cayenne.dbsync.reverse.configuration.DbAdapterFactory;
 import org.apache.cayenne.configuration.xml.DataChannelMetaData;
 import org.apache.cayenne.dba.DbAdapter;
 import org.apache.cayenne.dbsync.DbSyncModule;
@@ -105,6 +104,7 @@ public class DefaultDbImportActionTest {
     public void newDataMapImport() throws Exception {
 
         DbImportConfiguration config = mock(DbImportConfiguration.class);
+        when(config.createDataSource()).thenReturn(mock(DataSource.class));
         when(config.createMergeDelegate()).thenReturn(new DefaultModelMergeDelegate());
         when(config.getDbLoaderConfig()).thenReturn(new DbLoaderConfiguration());
         when(config.getTargetDataMap()).thenReturn(new File("xyz.map.xml"));
@@ -141,6 +141,7 @@ public class DefaultDbImportActionTest {
 
         DbImportConfiguration config = mock(DbImportConfiguration.class);
 
+        when(config.createDataSource()).thenReturn(mock(DataSource.class));
         when(config.getTargetDataMap()).thenReturn(FILE_STUB);
         when(config.createMergeDelegate()).thenReturn(new DefaultModelMergeDelegate());
         when(config.getDbLoaderConfig()).thenReturn(new DbLoaderConfiguration());
@@ -207,6 +208,7 @@ public class DefaultDbImportActionTest {
     @Test
     public void importWithoutChanges() throws Exception {
         DbImportConfiguration config = mock(DbImportConfiguration.class);
+        when(config.createDataSource()).thenReturn(mock(DataSource.class));
         when(config.getTargetDataMap()).thenReturn(FILE_STUB);
         when(config.createMergeDelegate()).thenReturn(new DefaultModelMergeDelegate());
         when(config.getDbLoaderConfig()).thenReturn(new DbLoaderConfiguration());
@@ -247,6 +249,7 @@ public class DefaultDbImportActionTest {
         doThrow(new SQLException()).when(dbLoader).load();
 
         DbImportConfiguration params = mock(DbImportConfiguration.class);
+        when(params.createDataSource()).thenReturn(mock(DataSource.class));
 
         FileProjectSaver projectSaver = mock(FileProjectSaver.class);
         doNothing().when(projectSaver).save(any(Project.class));
@@ -274,16 +277,13 @@ public class DefaultDbImportActionTest {
         DbAdapterFactory adapterFactory = mock(DbAdapterFactory.class);
         when(adapterFactory.createAdapter(any(), any())).thenReturn(dbAdapter);
 
-        DataSourceFactory dataSourceFactory = mock(DataSourceFactory.class);
-        DataSource mock = mock(DataSource.class);
-        when(dataSourceFactory.getDataSource(any())).thenReturn(mock);
         DataChannelMetaData metaData = mock(DataChannelMetaData.class);
         MergerTokenFactoryProvider mergerTokenFactoryProvider = mock(MergerTokenFactoryProvider.class);
         when(mergerTokenFactoryProvider.get(any())).thenReturn(new DefaultMergerTokenFactory());
 
         DataChannelDescriptorLoader dataChannelDescriptorLoader = mock(DataChannelDescriptorLoader.class);
 
-        return new DefaultDbImportAction(log, projectSaver, dataSourceFactory, adapterFactory, mapLoader, mergerTokenFactoryProvider, dataChannelDescriptorLoader, metaData) {
+        return new DefaultDbImportAction(log, projectSaver, adapterFactory, mapLoader, mergerTokenFactoryProvider, dataChannelDescriptorLoader, metaData) {
 
             protected DbLoader createDbLoader(DbAdapter adapter,
                                                Connection connection,
@@ -374,10 +374,10 @@ public class DefaultDbImportActionTest {
         assertFalse(projectFile.exists());
 
         Files.write(projectFile.toPath(), ("<?xml version=\"1.0\" encoding=\"utf-8\"?>\n" +
-                "<domain xmlns=\"http://cayenne.apache.org/schema/12/domain\"\n" +
+                "<domain xmlns=\"http://cayenne.apache.org/schema/13/domain\"\n" +
                 "\t xmlns:xsi=\"http://www.w3.org/2001/XMLSchema-instance\"\n" +
-                "\t xsi:schemaLocation=\"http://cayenne.apache.org/schema/12/domain https://cayenne.apache.org/schema/12/domain.xsd\"\n" +
-                "\t project-version=\"12\">\n" +
+                "\t xsi:schemaLocation=\"http://cayenne.apache.org/schema/13/domain https://cayenne.apache.org/schema/13/domain.xsd\"\n" +
+                "\t project-version=\"13\">\n" +
                 "</domain>").getBytes(StandardCharsets.UTF_8));
         assertTrue(projectFile.isFile());
 
@@ -419,10 +419,10 @@ public class DefaultDbImportActionTest {
         assertFalse(projectFile.exists());
 
         Files.write(projectFile.toPath(), ("<?xml version=\"1.0\" encoding=\"utf-8\"?>\n" +
-                "<domain xmlns=\"http://cayenne.apache.org/schema/12/domain\"\n" +
+                "<domain xmlns=\"http://cayenne.apache.org/schema/13/domain\"\n" +
                 "\t xmlns:xsi=\"http://www.w3.org/2001/XMLSchema-instance\"\n" +
-                "\t xsi:schemaLocation=\"http://cayenne.apache.org/schema/12/domain https://cayenne.apache.org/schema/12/domain.xsd\"\n" +
-                "\t project-version=\"12\">\n" +
+                "\t xsi:schemaLocation=\"http://cayenne.apache.org/schema/13/domain https://cayenne.apache.org/schema/13/domain.xsd\"\n" +
+                "\t project-version=\"13\">\n" +
                 "\t<map name=\"testSaveLoaded4\"/>\n" +
                 "</domain>").getBytes(StandardCharsets.UTF_8));
         assertTrue(projectFile.isFile());
@@ -438,10 +438,10 @@ public class DefaultDbImportActionTest {
         assertFalse(dataMapFile.exists());
 
         Files.write(dataMapFile.toPath(), ("<?xml version=\"1.0\" encoding=\"utf-8\"?>\n" +
-                "<data-map xmlns=\"http://cayenne.apache.org/schema/12/modelMap\"\n" +
+                "<data-map xmlns=\"http://cayenne.apache.org/schema/13/modelMap\"\n" +
                 "\t xmlns:xsi=\"http://www.w3.org/2001/XMLSchema-instance\"\n" +
-                "\t xsi:schemaLocation=\"http://cayenne.apache.org/schema/12/modelMap https://cayenne.apache.org/schema/12/modelMap.xsd\"\n" +
-                "\t project-version=\"12\">\n" +
+                "\t xsi:schemaLocation=\"http://cayenne.apache.org/schema/13/modelMap https://cayenne.apache.org/schema/13/modelMap.xsd\"\n" +
+                "\t project-version=\"13\">\n" +
                 "\t<db-entity name=\"test\">\n" +
                 "\t\t<db-attribute name=\"test\" type=\"INT\"/>\n" +
                 "\t</db-entity>\n" +

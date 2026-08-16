@@ -19,12 +19,9 @@
 package org.apache.cayenne.jira;
 
 import org.apache.cayenne.access.DataDomain;
-import org.apache.cayenne.configuration.runtime.CoreModule;
-import org.apache.cayenne.di.Binder;
-import org.apache.cayenne.di.DIBootstrap;
-import org.apache.cayenne.di.Injector;
 import org.apache.cayenne.map.DataMap;
 import org.apache.cayenne.map.ObjEntity;
+import org.apache.cayenne.runtime.CayenneRuntime;
 import org.junit.jupiter.api.Test;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
@@ -35,16 +32,10 @@ public class CAY_743Test {
     @Test
     public void load2MapsWithCrossMapInheritance() throws Exception {
 
-        Injector injector = DIBootstrap.createInjector(new CoreModule(){
-            @Override
-            public void configure(Binder binder) {
-                super.configure(binder);
-                CoreModule.extend(binder).addProjectLocation("cay743/cayenne-domain.xml");
-            }
-        });
+        CayenneRuntime runtime = CayenneRuntime.of().addConfig("cay743/cayenne-domain.xml").build();
 
         try {
-            DataDomain domain = injector.getInstance(DataDomain.class);
+            DataDomain domain = runtime.getDataDomain();
             assertEquals(2, domain.getDataMaps().size());
 
             DataMap m1 = domain.getDataMap("map1");
@@ -64,7 +55,7 @@ public class CAY_743Test {
             assertSame(oe21Super, oe11);
         }
         finally {
-            injector.shutdown();
+            runtime.shutdown();
         }
     }
 }

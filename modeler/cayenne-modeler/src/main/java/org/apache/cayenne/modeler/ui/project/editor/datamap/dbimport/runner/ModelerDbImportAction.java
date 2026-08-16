@@ -22,8 +22,7 @@ package org.apache.cayenne.modeler.ui.project.editor.datamap.dbimport.runner;
 import org.apache.cayenne.CayenneRuntimeException;
 import org.apache.cayenne.configuration.DataChannelDescriptorLoader;
 import org.apache.cayenne.configuration.DataMapLoader;
-import org.apache.cayenne.configuration.runtime.DataSourceFactory;
-import org.apache.cayenne.configuration.runtime.DbAdapterFactory;
+import org.apache.cayenne.dbsync.reverse.configuration.DbAdapterFactory;
 import org.apache.cayenne.configuration.xml.DataChannelMetaData;
 import org.apache.cayenne.dbsync.merge.factory.MergerTokenFactoryProvider;
 import org.apache.cayenne.dbsync.merge.token.MergerToken;
@@ -54,7 +53,6 @@ public class ModelerDbImportAction extends DefaultDbImportAction {
             @Inject Application application,
             @Inject Logger logger,
             @Inject ProjectSaver projectSaver,
-            @Inject DataSourceFactory dataSourceFactory,
             @Inject DbAdapterFactory adapterFactory,
             @Inject DataMapLoader mapLoader,
             @Inject MergerTokenFactoryProvider mergerTokenFactoryProvider,
@@ -64,7 +62,6 @@ public class ModelerDbImportAction extends DefaultDbImportAction {
         super(
                 logger,
                 projectSaver,
-                dataSourceFactory,
                 adapterFactory,
                 mapLoader,
                 mergerTokenFactoryProvider,

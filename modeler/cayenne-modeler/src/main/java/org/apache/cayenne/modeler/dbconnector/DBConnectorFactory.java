@@ -19,9 +19,8 @@
 
 package org.apache.cayenne.modeler.dbconnector;
 
-import org.apache.cayenne.configuration.DataNodeDescriptor;
-import org.apache.cayenne.configuration.runtime.DbAdapterFactory;
-import org.apache.cayenne.datasource.DriverDataSource;
+import org.apache.cayenne.dbsync.reverse.configuration.DbAdapterFactory;
+import org.apache.cayenne.datasource.CayenneDataSource;
 import org.apache.cayenne.dba.DbAdapter;
 import org.apache.cayenne.modeler.pref.dbconnector.DBConnector;
 import org.apache.cayenne.modeler.service.classloader.ModelerClassLoader;
@@ -53,10 +52,8 @@ public class DBConnectorFactory {
 
     public DbAdapter makeAdapter(DBConnector connector, DbAdapterFactory adapterFactory,
                                  boolean allowDataSourceFailure) throws Exception {
-        DataNodeDescriptor descriptor = new DataNodeDescriptor();
-        descriptor.setAdapterType(connector.getDbAdapter());
         DataSource dataSource = makeDataSource(connector, allowDataSourceFailure);
-        return adapterFactory.createAdapter(descriptor, dataSource);
+        return adapterFactory.createAdapter(connector.getDbAdapter(), dataSource);
     }
 
     public DataSource makeDataSource(DBConnector connector) throws SQLException {
@@ -89,7 +86,11 @@ public class DBConnectorFactory {
             throw new SQLException("Driver load error: " + Util.unwindException(th).getLocalizedMessage());
         }
 
-        return new DriverDataSource(driver, connector.getUrl(), connector.getUserName(), connector.getPassword());
+        return CayenneDataSource.of(connector.getUrl())
+                .driver(driver)
+                .userName(connector.getUserName())
+                .password(connector.getPassword())
+                .build();
     }
 
     private class DeferredDataSource implements DataSource {
