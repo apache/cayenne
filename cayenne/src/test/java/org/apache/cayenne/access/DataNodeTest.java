@@ -42,15 +42,6 @@ public class DataNodeTest {
     }
 
     @Test
-    public void dataSourceFactory() {
-        DataNode node = new DataNode();
-        assertNull(node.getDataSourceFactory());
-
-        node.setDataSourceFactory("tst_name");
-        assertEquals("tst_name", node.getDataSourceFactory());
-    }
-
-    @Test
     public void entityResolver() {
         DataNode node = new DataNode();
         assertNull(node.getEntityResolver());

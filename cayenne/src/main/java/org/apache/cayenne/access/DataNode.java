@@ -61,7 +61,6 @@ public class DataNode {
 
     protected String name;
     protected DbAdapter adapter;
-    protected String dataSourceFactory;
     protected EntityResolver entityResolver;
     protected EntitySorter entitySorter;
     protected SchemaUpdateStrategy schemaUpdateStrategy;
@@ -140,17 +139,6 @@ public class DataNode {
 
     public void setName(String name) {
         this.name = name;
-    }
-
-    /**
-     * Returns a name of DataSourceFactory class for this node.
-     */
-    public String getDataSourceFactory() {
-        return dataSourceFactory;
-    }
-
-    public void setDataSourceFactory(String dataSourceFactory) {
-        this.dataSourceFactory = dataSourceFactory;
     }
 
     /**

@@ -107,7 +107,6 @@ public class DataDomainProviderIT {
         DataDomain domain = env.runtime().getDataDomain();
 
         for (DataNode node : domain.getDataNodes()) {
-            assertEquals(XMLPoolingDataSourceFactory.class.getName(), node.getDataSourceFactory());
             assertNotNull(node.getDataSource());
             assertNotNull(node.getAdapter());
         }

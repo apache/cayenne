@@ -19,20 +19,18 @@
 
 package org.apache.cayenne.access;
 
-import java.util.Collection;
-import java.util.HashMap;
-import java.util.Iterator;
-import java.util.List;
-import java.util.Map;
-
-import javax.sql.DataSource;
-
 import org.apache.cayenne.dba.DbAdapter;
 import org.apache.cayenne.dba.PkGenerator;
 import org.apache.cayenne.map.DataMap;
 import org.apache.cayenne.map.EntityResolver;
 import org.apache.cayenne.map.EntitySorter;
 import org.apache.cayenne.query.Query;
+
+import javax.sql.DataSource;
+import java.util.Collection;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
 
 public class MockDataNode extends DataNode {
 
@@ -96,9 +94,8 @@ public class MockDataNode extends DataNode {
             OperationObserver resultConsumer) {
 
         // stick preset results to the consumer
-        Iterator it = queries.iterator();
-        while (it.hasNext()) {
-            Query query = (Query) it.next();
+        for (Object o : queries) {
+            Query query = (Query) o;
             resultConsumer.nextRows(query, (List) results.get(query));
         }
     }
@@ -134,11 +131,6 @@ public class MockDataNode extends DataNode {
     }
 
     @Override
-    public String getDataSourceFactory() {
-        return node.getDataSourceFactory();
-    }
-
-    @Override
     public EntityResolver getEntityResolver() {
         return node.getEntityResolver();
     }
@@ -171,11 +163,6 @@ public class MockDataNode extends DataNode {
     @Override
     public void setDataSource(DataSource dataSource) {
         node.setDataSource(dataSource);
-    }
-
-    @Override
-    public void setDataSourceFactory(String dataSourceFactory) {
-        node.setDataSourceFactory(dataSourceFactory);
     }
 
     @Override

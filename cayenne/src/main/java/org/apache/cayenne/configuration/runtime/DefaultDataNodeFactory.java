@@ -96,12 +96,9 @@ public class DefaultDataNodeFactory implements DataNodeFactory {
         dataNode.setSqlTemplateTranslator(sqlTemplateTranslator);
 
         DataSource dataSource = dataSourceFactory.getDataSource(nodeDescriptor);
-
-        dataNode.setDataSourceFactory(nodeDescriptor.getDataSourceFactoryType());
         dataNode.setDataSource(dataSource);
 
         dataNode.setSchemaUpdateStrategy(schemaUpdateStrategyFactory.create(nodeDescriptor));
-
         dataNode.setAdapter(adapterFactory.createAdapter(nodeDescriptor, dataSource));
 
         return dataNode;
