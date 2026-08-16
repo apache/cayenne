@@ -42,6 +42,14 @@ public interface AdhocObjectFactory {
     <T> T newInstance(Class<? super T> superType, String className, boolean skipInjection);
 
     /**
+     * Returns an instance of "type" that implements "superType", injecting dependencies from the registry into it
+     * if requested
+     *
+     * @since 5.0
+     */
+    <T> T newInstance(Class<? super T> superType, Class<? extends T> type, boolean skipInjection);
+
+    /**
      * Returns a Java class loaded using ClassLoader returned from
      * {@link ClassLoaderManager#getClassLoader(String)} for a given class name.
      *

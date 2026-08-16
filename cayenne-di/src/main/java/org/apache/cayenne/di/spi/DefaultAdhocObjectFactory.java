@@ -45,21 +45,25 @@ public class DefaultAdhocObjectFactory implements AdhocObjectFactory {
         this.classLoaderManager = classLoaderManager;
     }
 
+    @SuppressWarnings("unchecked")
     @Override
     public <T> T newInstance(Class<? super T> superType, String className, boolean skipInjection) {
+        return newInstance(superType, (Class<? extends T>) getJavaClass(className), skipInjection);
+    }
+
+    @Override
+    public <T> T newInstance(Class<? super T> superType, Class<? extends T> type, boolean skipInjection) {
 
         if (superType == null) {
             throw new NullPointerException("Null superType");
         }
 
-        if (className == null) {
-            throw new NullPointerException("Null className");
+        if (type == null) {
+            throw new NullPointerException("Null type");
         }
 
-        Class<T> type = (Class<T>) getJavaClass(className);
-
         if (!superType.isAssignableFrom(type)) {
-            throw new DIRuntimeException("Class %s is not assignable to %s", className, superType.getName());
+            throw new DIRuntimeException("Class %s is not assignable to %s", type.getName(), superType.getName());
         }
 
         return skipInjection
