@@ -1,0 +1,54 @@
+<?xml version="1.0" encoding="utf-8"?>
+<data-map xmlns="http://cayenne.apache.org/schema/10/modelMap"
+	 xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	 xsi:schemaLocation="http://cayenne.apache.org/schema/10/modelMap https://cayenne.apache.org/schema/10/modelMap.xsd"
+	 project-version="10">
+	<property name="defaultPackage" value="org.apache.cayenne.testdo.many_to_many_joinTable_objEntity"/>
+	<db-entity name="course">
+		<db-attribute name="id" type="BIGINT" isPrimaryKey="true" isMandatory="true"/>
+	</db-entity>
+	<db-entity name="enrollments">
+		<db-attribute name="course_id" type="BIGINT" isPrimaryKey="true" isMandatory="true"/>
+		<db-attribute name="student_id" type="BIGINT" isPrimaryKey="true" isMandatory="true"/>
+	</db-entity>
+	<db-entity name="student">
+		<db-attribute name="id" type="BIGINT" isPrimaryKey="true" isMandatory="true"/>
+	</db-entity>
+	<obj-entity name="Course" className="org.apache.cayenne.testdo.many_to_many_joinTable_objEntity.Course" dbEntityName="course"/>
+	<obj-entity name="Enrollments" className="org.apache.cayenne.testdo.many_to_many_joinTable_objEntity.Enrollments" dbEntityName="enrollments"/>
+	<obj-entity name="Student" className="org.apache.cayenne.testdo.many_to_many_joinTable_objEntity.Student" dbEntityName="student"/>
+	<db-relationship name="enrollments" source="course" target="enrollments" toDependentPK="true" toMany="true">
+		<db-attribute-pair source="id" target="course_id"/>
+	</db-relationship>
+	<db-relationship name="enrollments_to_course" source="enrollments" target="course">
+		<db-attribute-pair source="course_id" target="id"/>
+	</db-relationship>
+	<db-relationship name="enrollments_to_student" source="enrollments" target="student">
+		<db-attribute-pair source="student_id" target="id"/>
+	</db-relationship>
+	<db-relationship name="enrollments" source="student" target="enrollments" toDependentPK="true" toMany="true">
+		<db-attribute-pair source="id" target="student_id"/>
+	</db-relationship>
+<!--	<obj-relationship name="enrollments" source="Course" target="Enrollments" deleteRule="Deny" db-relationship-path="enrollments"/>-->
+	<obj-relationship name="enrollments_to_course" source="Enrollments" target="Course" deleteRule="Nullify" db-relationship-path="enrollments_to_course"/>
+	<obj-relationship name="enrollments_to_student" source="Enrollments" target="Student" deleteRule="Nullify" db-relationship-path="enrollments_to_student"/>
+	<obj-relationship name="enrollments" source="Student" target="Enrollments" deleteRule="Cascade" db-relationship-path="enrollments"/>
+	<cgen xmlns="http://cayenne.apache.org/schema/10/cgen">
+		<excludeEntities>Enrollments,Student,Course</excludeEntities>
+		<destDir>../java</destDir>
+		<mode>entity</mode>
+		<template>templates/v4_1/subclass.vm</template>
+		<superTemplate>templates/v4_1/superclass.vm</superTemplate>
+		<embeddableTemplate>templates/v4_1/embeddable-subclass.vm</embeddableTemplate>
+		<embeddableSuperTemplate>templates/v4_1/embeddable-superclass.vm</embeddableSuperTemplate>
+		<queryTemplate>templates/v4_1/datamap-subclass.vm</queryTemplate>
+		<querySuperTemplate>templates/v4_1/datamap-superclass.vm</querySuperTemplate>
+		<outputPattern>*.java</outputPattern>
+		<makePairs>true</makePairs>
+		<usePkgPath>true</usePkgPath>
+		<overwrite>false</overwrite>
+		<createPropertyNames>false</createPropertyNames>
+		<createPKProperties>false</createPKProperties>
+		<client>false</client>
+	</cgen>
+</data-map>

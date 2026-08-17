@@ -22,7 +22,9 @@ package org.apache.cayenne.access.flush;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
+import java.util.LinkedHashMap;
 import java.util.List;
+import java.util.Map;
 
 import org.apache.cayenne.ObjectId;
 import org.apache.cayenne.PersistenceState;
@@ -119,6 +121,56 @@ public class DefaultDataDomainFlushActionTest {
         assertThat(merged, hasItems(op[0], op[2], op[3]));
         assertThat(merged, not(hasItem(sameInstance(op[1]))));
     }
+
+    @Test
+    public void mergeSameObjectIdCompoundId() {
+        Map<String, Object> keyMap1_1 = new LinkedHashMap<>();
+        keyMap1_1.put("student_id", 1);
+        keyMap1_1.put("course_id", 1);
+
+        Map<String, Object> keyMap1_2 = new LinkedHashMap<>();
+        keyMap1_2.put("student_id", 1);
+        keyMap1_2.put("course_id", 2);
+
+        Map<String, Object> keyMap1_3 = new LinkedHashMap<>();
+        keyMap1_3.put("student_id", 1);
+        keyMap1_3.put("course_id", 3);
+
+        ObjectId studentObjectId1  = ObjectId.of("student", "id", 1);
+
+        ObjectId enrollmentObjectId1_1  = ObjectId.of("enrollment",  keyMap1_1);
+        enrollmentObjectId1_1.getReplacementIdMap().put("student_id",1);
+
+        ObjectId enrollmentObjectId1_2  = ObjectId.of("enrollment",  keyMap1_2);
+        enrollmentObjectId1_2.getReplacementIdMap().put("student_id",1);
+
+        ObjectId enrollmentObjectId1_3  = ObjectId.of("enrollment",  keyMap1_3);
+        enrollmentObjectId1_3.getReplacementIdMap().put("student_id",1);
+
+        DbEntity student = mockEntity("student");
+        DbEntity enrollment = mockEntity("enrollment");
+
+        List<DbRowOp> ops = new ArrayList<>();
+
+        ops.add(new DeleteDbRowOp(mockObject(studentObjectId1),  student, studentObjectId1));
+        ops.add(new UpdateDbRowOp(mockObject(enrollmentObjectId1_1),  enrollment, enrollmentObjectId1_1));
+        ops.add(new UpdateDbRowOp(mockObject(enrollmentObjectId1_3),  enrollment, enrollmentObjectId1_3));
+        ops.add(new UpdateDbRowOp(mockObject(enrollmentObjectId1_2),  enrollment, enrollmentObjectId1_2));
+
+        ops.add(new DeleteDbRowOp(mockObject(enrollmentObjectId1_3),  enrollment, enrollmentObjectId1_3));
+        ops.add(new DeleteDbRowOp(mockObject(enrollmentObjectId1_2),  enrollment, enrollmentObjectId1_2));
+        ops.add(new DeleteDbRowOp(mockObject(enrollmentObjectId1_1),  enrollment, enrollmentObjectId1_1));
+
+
+        DefaultDataDomainFlushAction action = mock(DefaultDataDomainFlushAction.class);
+        when(action.mergeSameObjectIds((List<DbRowOp>) any(List.class))).thenCallRealMethod();
+
+        Collection<DbRowOp> merged = action.mergeSameObjectIds(ops);
+        assertEquals(4, merged.size());
+
+        merged.forEach(dbRowOp -> assertThat(dbRowOp, instanceOf(DeleteDbRowOp.class)));
+    }
+
 
     @Test
     public void createQueries() {
