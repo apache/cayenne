@@ -27,7 +27,9 @@ import org.apache.cayenne.test.jdbc.DBHelper;
 import org.apache.cayenne.test.jdbc.TableHelper;
 import org.apache.cayenne.testdo.testmap.Artist;
 import org.apache.cayenne.testdo.testmap.Painting;
+import org.apache.cayenne.configuration.server.ServerRuntime;
 import org.apache.cayenne.tx.BaseTransaction;
+import org.apache.cayenne.tx.TransactionManager;
 import org.apache.cayenne.unit.di.server.CayenneProjects;
 import org.apache.cayenne.unit.di.server.ServerCase;
 import org.apache.cayenne.unit.di.server.UseServerRuntime;
@@ -39,12 +41,15 @@ import java.util.List;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertNull;
+import static org.junit.Assert.assertTrue;
 
 @UseServerRuntime(CayenneProjects.TESTMAP_PROJECT)
 public class DataContextIteratedQueryIT extends ServerCase {
 
     @Inject
     protected DBHelper dbHelper;
+    @Inject
+    private ServerRuntime runtime;
     @Inject
     private DataContext context;
     private TableHelper tArtist;
@@ -216,5 +221,58 @@ public class DataContextIteratedQueryIT extends ServerCase {
         }
 
         // TODO: how do we test that transaction unbound from the thread is closed/committed at the end?
+    }
+
+    @Test
+    public void testIterator_CallerTransaction() throws Exception {
+        createArtistsDataSet();
+
+        TransactionManager txManager = runtime.getInjector().getInstance(TransactionManager.class);
+
+        int count = txManager.performInTransaction(() -> {
+            int c = 0;
+            try (ResultIterator<Artist> it = ObjectSelect.query(Artist.class).iterator(context)) {
+                while (it.hasNextRow()) {
+                    it.nextRow();
+                    c++;
+                }
+            }
+
+            // The caller transaction must survive the iterator, as the iterator doesn't own it. A committed
+            // transaction would refuse to open a connection for the query below.
+            assertNotNull("Caller transaction was unbound by the iterator", BaseTransaction.getThreadTransaction());
+            assertEquals(7, ObjectSelect.query(Artist.class).select(context).size());
+            return c;
+        });
+
+        assertEquals(7, count);
+    }
+
+    @Test
+    public void testIterator_NestedIteratorInCallerTransaction() throws Exception {
+        createArtistsAndPaintingsDataSet();
+
+        TransactionManager txManager = runtime.getInjector().getInstance(TransactionManager.class);
+
+        int count = txManager.performInTransaction(() -> {
+            int c = 0;
+            try (ResultIterator<Artist> outer = ObjectSelect.query(Artist.class).iterator(context)) {
+
+                // open and close a nested iterator over another entity while "outer" is still open. Closing it
+                // must not commit the caller transaction, as that would close the "outer" ResultSet as well
+                assertTrue(outer.hasNextRow());
+                try (ResultIterator<Painting> inner = ObjectSelect.query(Painting.class).iterator(context)) {
+                    assertEquals(7, inner.allRows().size());
+                }
+
+                while (outer.hasNextRow()) {
+                    outer.nextRow();
+                    c++;
+                }
+            }
+            return c;
+        });
+
+        assertEquals(7, count);
     }
 }
