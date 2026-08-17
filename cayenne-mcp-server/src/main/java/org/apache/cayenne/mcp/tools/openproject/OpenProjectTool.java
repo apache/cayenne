@@ -78,15 +78,14 @@ public class OpenProjectTool {
                 """
                         Launch CayenneModeler with the given project file. Non-blocking; waits for \
                         the Modeler to report a startup handshake before returning.""",
-                new McpSchema.JsonSchema(
-                        "object",
-                        Map.of(
+                Map.of(
+                        "type", "object",
+                        "properties", Map.of(
                                 "projectPath", Map.of(
                                         "type", "string",
                                         "description", "Absolute path to the top-level Cayenne project descriptor (cayenne-*.xml)")
                         ),
-                        List.of("projectPath"),
-                        null, null, null
+                        "required", List.of("projectPath")
                 ),
                 null, null, null
         );

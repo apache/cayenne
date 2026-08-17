@@ -113,9 +113,9 @@ public class DbImportRunTool {
                         the full database schema is imported. Returns token-count summary and \
                         resolved connection metadata; actual schema changes are written to the \
                         DataMap XML on disk.""",
-                new McpSchema.JsonSchema(
-                        "object",
-                        Map.of(
+                Map.of(
+                        "type", "object",
+                        "properties", Map.of(
                                 "projectPath", Map.of(
                                         "type", "string",
                                         "description", "Absolute path to the top-level Cayenne project descriptor (cayenne-*.xml), not a DataMap file"),
@@ -123,8 +123,7 @@ public class DbImportRunTool {
                                         "type", "string",
                                         "description", "Name of the target DataMap as it appears in the <map name='...'> element of the project descriptor")
                         ),
-                        List.of("projectPath", "dataMap"),
-                        null, null, null
+                        "required", List.of("projectPath", "dataMap")
                 ),
                 null, null, null
         );

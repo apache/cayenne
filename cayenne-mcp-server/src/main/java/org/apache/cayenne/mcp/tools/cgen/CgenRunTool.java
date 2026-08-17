@@ -81,9 +81,9 @@ public class CgenRunTool {
                 """
                         Run Cayenne class generator (cgen) for a named DataMap. Returns a JSON report of what was \
                         written, what was already up-to-date, and any errors.""",
-                new McpSchema.JsonSchema(
-                        "object",
-                        Map.of(
+                Map.of(
+                        "type", "object",
+                        "properties", Map.of(
                                 "projectPath", Map.of(
                                         "type", "string",
                                         "description", "Absolute path to the top-level Cayenne project descriptor (cayenne-*.xml), not a DataMap file"),
@@ -91,8 +91,7 @@ public class CgenRunTool {
                                         "type", "string",
                                         "description", "Name of the target DataMap as it appears in the <map name='...'> element of the project descriptor")
                         ),
-                        List.of("projectPath", "dataMap"),
-                        null, null, null
+                        "required", List.of("projectPath", "dataMap")
                 ),
                 null, null, null
         );
