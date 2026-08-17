@@ -59,7 +59,7 @@ public class ConcurrentPkGeneratorIT {
 		testDbAdapter = env.testDbAdapter();
 		//use to fix random test failures on derby db
 		if(testDbAdapter instanceof DerbyTestDbAdapter) {
-			try(Connection connection = runtime.getDataDomain().getDataNode("qualified").getDataSource().getConnection()){
+			try(Connection connection = env.dataNode().getDataSource().getConnection()){
 				CallableStatement cs =
 						connection.prepareCall("CALL SYSCS_UTIL.SYSCS_SET_DATABASE_PROPERTY(?, ?)");
 				cs.setString(1, "derby.language.sequence.preallocator");
