@@ -51,7 +51,7 @@ CAY-2968 Vertical Inheritance: INSERT instead of UPDATE after updating flattened
 CAY-2973 Exception trying to copy/paste a callback
 CAY-2976 Exception creating a relationship for an Incomplete ObjEntity
 CAY-2977 DbImport confused by multi-key relationships
-CAY-2988 Nested iterated queries transaction handling
+CAY-2988 Iterated queries commit transactions they don't own
 
 ----------------------------------
 Release: 5.0-M2
