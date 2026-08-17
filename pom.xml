@@ -62,7 +62,7 @@
         <ingres.driver.version>4.0.7</ingres.driver.version>
         <jaybird.version>4.0.6.java11</jaybird.version>
         <mariadb.connector.version>3.0.6</mariadb.connector.version>
-        <mssql.jdbc.version>12.10.0.jre11</mssql.jdbc.version>
+        <mssql.jdbc.version>12.10.2.jre11</mssql.jdbc.version>
         <mysql.connector.version>9.5.0</mysql.connector.version>
         <ojdbc.version>21.8.0.0</ojdbc.version>
         <postgres.jdbc.version>42.7.2</postgres.jdbc.version>
