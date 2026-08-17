@@ -73,6 +73,7 @@ import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
+import java.util.Objects;
 import java.util.Set;
 import java.util.function.Function;
 
@@ -179,16 +180,27 @@ class DataDomainQueryAction implements QueryRouter, OperationObserver {
     }
 
     private void performIteratedQuery() {
-        Transaction tx = BaseTransaction.getThreadTransaction();
-        if (tx != null) {
-            runIteratedQuery(tx);
-        } else {
-            tx = domain.getTransactionFactory().createTransaction();
+
+        // The transaction is owned by the caller, and is not aligned with the iterator scope
+        if (BaseTransaction.getThreadTransaction() != null) {
+            runQuery();
+            Objects.requireNonNull(fullResponse.firstIterator(), "Iterator response expected");
+        }
+
+        // The transaction will be owned by the iterator, and will outlive the query action
+        else {
+            Transaction tx = domain.getTransactionFactory().createTransaction();
             BaseTransaction.bindThreadTransaction(tx);
             try {
-                runIteratedQuery(tx);
-            } catch (Exception e) {
-                throw new CayenneRuntimeException(e);
+                runQuery();
+                ResultIterator<?> it = Objects.requireNonNull(fullResponse.firstIterator(), "Iterator response expected");
+                fullResponse.replaceResult(it, new TransactionResultIteratorDecorator<>(it, tx));
+            } catch (Throwable th) {
+                // No iterator will be returned to the caller, so nothing will ever commit this transaction. Mark it
+                // for rollback below, so that its connections are not leaked. Note that a DataNode marks the
+                // transaction on its own, but a failure may as well originate outside of the node.
+                tx.setRollbackOnly();
+                throw th;
             } finally {
                 BaseTransaction.bindThreadTransaction(null);
                 if (tx.isRollbackOnly()) {
@@ -199,6 +211,8 @@ class DataDomainQueryAction implements QueryRouter, OperationObserver {
                 }
             }
         }
+
+        fullResponse.reset();
     }
 
     private boolean interceptOIDQuery() {
@@ -523,16 +537,6 @@ class DataDomainQueryAction implements QueryRouter, OperationObserver {
                 nextNode.performQueries(nodeQueries, this);
             }
         }
-    }
-
-    private void runIteratedQuery(Transaction tx) {
-        runQuery();
-        ResultIterator<?> iterator = fullResponse.firstIterator();
-        if (iterator == null) {
-            throw new IllegalStateException("Iterator response expected");
-        }
-        fullResponse.replaceResult(iterator, new TransactionResultIteratorDecorator<>(iterator, tx));
-        fullResponse.reset();
     }
 
     @SuppressWarnings({"unchecked", "rawtypes"})
