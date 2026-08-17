@@ -65,7 +65,7 @@
         <mssql.jdbc.version>12.10.0.jre11</mssql.jdbc.version>
         <mysql.connector.version>9.5.0</mysql.connector.version>
         <ojdbc.version>21.8.0.0</ojdbc.version>
-        <postgres.jdbc.version>42.7.2</postgres.jdbc.version>
+        <postgres.jdbc.version>42.7.12</postgres.jdbc.version>
         <sqlite.jdbc.version>3.46.0.1</sqlite.jdbc.version>
         <sybase.driver.version>12</sybase.driver.version>
 
