@@ -21,38 +21,72 @@ package org.apache.cayenne.tools;
 
 import java.io.File;
 import java.io.IOException;
-import java.net.URISyntaxException;
-import java.nio.file.FileSystems;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.StandardCopyOption;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Comparator;
 import java.util.List;
+import java.util.stream.Stream;
 
 import org.gradle.testkit.runner.GradleRunner;
+import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
-import org.junit.jupiter.api.io.TempDir;
 
 public class BaseTaskIT {
 
-    @TempDir
-    protected File tempFolder;
+    /**
+     * Tear-down Derby logic, appended to every build script under test.
+     */
+    private static final String DERBY_SHUTDOWN = """
+
+            tasks.configureEach { t ->
+                t.doLast {
+                    try {
+                        new org.apache.derby.jdbc.EmbeddedDriver()
+                                .connect('jdbc:derby:;shutdown=true', new Properties())
+                    } catch (java.sql.SQLException expected) {
+                        // Derby reports a successful shutdown by throwing (XJ015 / 08006)
+                    }
+                }
+            }
+            """;
 
     protected File projectDir;
 
     @BeforeEach
     public void createProjectDir() throws IOException {
-        projectDir = tempFolder;
+        String root = System.getProperty("cayenne.testProjectsDir", System.getProperty("java.io.tmpdir"));
+        projectDir = Files.createTempDirectory(Files.createDirectories(Path.of(root)), "p").toFile();
+
+        // Gradle still searches parent directories for a settings file. Without one of our own the
+        // nested build would find and evaluate the settings script of the plugin module itself.
+        Files.writeString(projectDir.toPath().resolve("settings.gradle"),
+                "rootProject.name = '" + projectDir.getName() + "'\n");
+    }
+
+    @AfterEach
+    public void deleteProjectDir() {
+        try (Stream<Path> paths = Files.walk(projectDir.toPath())) {
+            paths.sorted(Comparator.reverseOrder()).forEach(path -> {
+                try {
+                    Files.deleteIfExists(path);
+                } catch (IOException ignored) {
+                }
+            });
+        } catch (IOException ignored) {
+        }
     }
 
     protected GradleRunner createRunner(String projectName, String... args) throws Exception {
         prepareBuildScript(projectName);
         prepareDataMap(args);
 
-        List<String> gradleArguments = new ArrayList<>();
-        gradleArguments.addAll(Arrays.asList(args));
+        List<String> gradleArguments = new ArrayList<>(Arrays.asList(args));
         gradleArguments.add("--stacktrace");
+        // move the Derby log out of the module root
+        gradleArguments.add("-Dderby.stream.error.file=" + new File(projectDir, "derby.log").getAbsolutePath());
 
         return GradleRunner.create()
                 .withProjectDir(projectDir)
@@ -61,9 +95,9 @@ public class BaseTaskIT {
     }
 
     private void prepareBuildScript(String name) throws Exception {
-        Path src = new File(getClass().getResource(name + ".gradle").toURI()).toPath();
-        Path dst = FileSystems.getDefault().getPath(projectDir.getAbsolutePath(), "build.gradle");
-        Files.copy(src, dst, StandardCopyOption.REPLACE_EXISTING);
+        Path src = Path.of(getClass().getResource(name + ".gradle").toURI());
+        Path dst = projectDir.toPath().resolve("build.gradle");
+        Files.writeString(dst, Files.readString(src) + DERBY_SHUTDOWN);
     }
 
     private void prepareDataMap(String... args) throws Exception {
@@ -71,11 +105,10 @@ public class BaseTaskIT {
         for(String arg : args) {
             if(arg.startsWith(pattern)) {
                 String path = arg.substring(pattern.length());
-                Path src = new File(getClass().getResource(path).toURI()).toPath();
-                Path dst = FileSystems.getDefault().getPath(projectDir.getAbsolutePath(), path);
+                Path src = Path.of(getClass().getResource(path).toURI());
+                Path dst = projectDir.toPath().resolve(path);
                 Files.copy(src, dst, StandardCopyOption.REPLACE_EXISTING);
             }
         }
-
     }
 }
