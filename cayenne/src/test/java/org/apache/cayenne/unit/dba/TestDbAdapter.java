@@ -143,10 +143,10 @@ public abstract class TestDbAdapter {
             QuotingStrategy quotes = adapter.getQuotingStrategy(entity);
 
             for (String constraint : constraints) {
-
                 String drop = "ALTER TABLE "
                         + quotes.quotedFQN(entity.getCatalog(), entity.getSchema(), entity.getName()) +
-                        " DROP CONSTRAINT " + constraint;
+                        " DROP CONSTRAINT "
+                        + getIdentifiersStartQuote() + constraint + getIdentifiersEndQuote();
                 executeDDL(conn, drop);
             }
         }
@@ -329,8 +329,6 @@ public abstract class TestDbAdapter {
                 continue;
             }
 
-            QuotingStrategy quotes = adapter.getQuotingStrategy(entity);
-
             // Get all constraints for the table
             try (ResultSet rs = metadata.getExportedKeys(entity.getCatalog(), entity.getSchema(), entity.getName())) {
                 while (rs.next()) {
@@ -341,7 +339,7 @@ public abstract class TestDbAdapter {
                         Collection<String> constraints = constraintMap
                                 .computeIfAbsent(fkTable, k -> new HashSet<String>());
                         // use a set to avoid duplicate constraints
-                        constraints.add(quotes.quoted(fk));
+                        constraints.add(fk);
                     }
                 }
             }

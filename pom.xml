@@ -54,7 +54,7 @@
         <xmlunit.version>2.9.1</xmlunit.version>
 
         <!-- JDBC driver versions -->
-        <derby.version>10.14.2.0</derby.version>
+        <derby.version>10.17.1.0</derby.version>
         <frontbase.driver.version>4.1</frontbase.driver.version>
         <h2.version>2.2.220</h2.version>
         <hsqldb.version>2.7.4</hsqldb.version>
@@ -415,6 +415,11 @@
                 <version>${derby.version}</version>
             </dependency>
             <dependency>
+                <groupId>org.apache.derby</groupId>
+                <artifactId>derbytools</artifactId>
+                <version>${derby.version}</version>
+            </dependency>
+            <dependency>
                 <groupId>com.mysql</groupId>
                 <artifactId>mysql-connector-j</artifactId>
                 <version>${mysql.connector.version}</version>
@@ -603,6 +608,11 @@
         <dependency>
             <groupId>org.apache.derby</groupId>
             <artifactId>derby</artifactId>
+            <scope>test</scope>
+        </dependency>
+        <dependency>
+            <groupId>org.apache.derby</groupId>
+            <artifactId>derbytools</artifactId>
             <scope>test</scope>
         </dependency>
         <dependency>
@@ -892,6 +902,7 @@
                         </property>
                         <org.slf4j.simpleLogger.defaultLogLevel>${cayenneLogLevel}
                         </org.slf4j.simpleLogger.defaultLogLevel>
+                        <derby.stream.error.file>${project.build.directory}/derby.log</derby.stream.error.file>
                     </systemPropertyVariables>
                 </configuration>
             </plugin>
@@ -906,6 +917,7 @@
                     <systemPropertyVariables>
                         <org.slf4j.simpleLogger.defaultLogLevel>${cayenneLogLevel}
                         </org.slf4j.simpleLogger.defaultLogLevel>
+                        <derby.stream.error.file>${project.build.directory}/derby.log</derby.stream.error.file>
                     </systemPropertyVariables>
                 </configuration>
             </plugin>

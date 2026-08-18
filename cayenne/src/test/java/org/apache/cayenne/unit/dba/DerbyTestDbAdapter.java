@@ -24,12 +24,6 @@ import org.apache.cayenne.exp.parser.ASTExtract;
 
 public class DerbyTestDbAdapter extends TestDbAdapter {
 
-    static {
-        // as of Derby 10.1 Alpha, this is needed for Mac OS X:
-        // http://issues.apache.org/jira/browse/DERBY-1
-        System.setProperty("derby.storage.fileSyncTransactionLog", "true");
-    }
-
     public DerbyTestDbAdapter(DbAdapter adapter) {
         super(adapter);
     }

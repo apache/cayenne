@@ -484,7 +484,8 @@ public class DbImporterMojoTest {
                             String fkTableSchem = keys.getString("FKTABLE_SCHEM");
                             String fkTableName = keys.getString("FKTABLE_NAME");
                             String fkTableNameFull = (isBlank(fkTableSchem) ? "" : fkTableSchem + ".") + fkTableName;
-                            execute(stmt, "ALTER TABLE " + fkTableNameFull + " DROP CONSTRAINT " + keys.getString("FK_NAME"));
+                            execute(stmt, "ALTER TABLE " + fkTableNameFull
+                                    + " DROP CONSTRAINT \"" + keys.getString("FK_NAME") + "\"");
                         }
 
                         String sql = "DROP TABLE " + tableNameFull;
