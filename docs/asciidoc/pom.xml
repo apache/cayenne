@@ -46,7 +46,7 @@
         <cayenne.version>${project.version}</cayenne.version>
         <cayenne.major.version>5.0</cayenne.major.version>
         <hugo.asciidoctorj.extension.version>1.0-M4</hugo.asciidoctorj.extension.version>
-        <jsoup.version>1.15.3</jsoup.version>
+        <jsoup.version>1.23.1</jsoup.version>
     </properties>
 
     <dependencyManagement>
