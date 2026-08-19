@@ -21,6 +21,8 @@ package org.apache.cayenne.dbsync.reverse.dbload;
 import org.apache.cayenne.dba.DbAdapter;
 import org.apache.cayenne.dbsync.naming.ObjectNameGenerator;
 import org.apache.cayenne.map.DataMap;
+import org.apache.cayenne.map.DbEntity;
+import org.apache.cayenne.map.Procedure;
 
 import java.sql.Connection;
 import java.sql.DatabaseMetaData;
@@ -82,7 +84,21 @@ public class DbLoader {
         for(AbstractLoader loader : loaders) {
             loader.load(metaData, loadedData);
         }
+
+        if (!adapter.supportsCatalogsOnReverseEngineering()) {
+            stripCatalogs(loadedData);
+        }
+
         return loadedData;
+    }
+
+    static void stripCatalogs(DataMap map) {
+        for (DbEntity entity : map.getDbEntities()) {
+            entity.setCatalog(null);
+        }
+        for (Procedure procedure : map.getProcedures()) {
+            procedure.setCatalog(null);
+        }
     }
 
     //// Utility methods that better be moved somewhere ////

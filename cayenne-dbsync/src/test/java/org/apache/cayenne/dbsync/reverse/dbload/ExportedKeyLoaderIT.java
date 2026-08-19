@@ -46,25 +46,19 @@ public class ExportedKeyLoaderIT extends BaseLoaderIT {
         String schema = connection.getSchema();
 
         DbEntity artist = getDbEntity("ARTIST");
-        if(adapter.supportsCatalogsOnReverseEngineering()) {
-            artist.setCatalog(catalog);
-        }
+        artist.setCatalog(catalog);
         artist.setSchema(schema);
         DbAttribute artistId = new DbAttribute("ARTIST_ID");
         artist.addAttribute(artistId);
 
         DbEntity gallery = getDbEntity("GALLERY");
-        if(adapter.supportsCatalogsOnReverseEngineering()) {
-            gallery.setCatalog(catalog);
-        }
+        gallery.setCatalog(catalog);
         gallery.setSchema(schema);
         DbAttribute galleryId = new DbAttribute("GALLERY_ID");
         gallery.addAttribute(galleryId);
 
         DbEntity painting = getDbEntity("PAINTING");
-        if(adapter.supportsCatalogsOnReverseEngineering()) {
-            painting.setCatalog(catalog);
-        }
+        painting.setCatalog(catalog);
         painting.setSchema(schema);
         DbAttribute paintingId = new DbAttribute("PAINTING_ID");
         DbAttribute paintingArtistId = new DbAttribute("ARTIST_ID");
