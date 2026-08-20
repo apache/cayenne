@@ -15,7 +15,6 @@ Changes/New Features:
 
 CAY-2861 Derby version upgrade
 CAY-2912 Compact SQL logger
-CAY-2941 Replace jgoodies-looks with FlatLaf
 CAY-2954 Don't wrap selecting queries in transactions
 CAY-2956 Get rid of a dedicated adapter for Oracle 8
 CAY-2957 Get rid of adapter for legacy HSQLDB <= 1.8
@@ -39,6 +38,7 @@ CAY-2986 Cgen to run unconditionally
 CAY-2987 DataNode to own PkGenerator
 CAY-2989 Upgrade MCP SDK to 2.0
 CAY-2992 dbimport: support posgres drivers newer than 42.7.4
+CAY-2995 Migrate Modeler to FlatLaf library
 
 Bug Fixes:
 
