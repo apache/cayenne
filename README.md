@@ -66,7 +66,7 @@ implementation 'org.apache.cayenne:cayenne:5.0-M2'
 ```java
 CayenneRuntime cayenneRuntime = CayenneRuntime.of()
     .addConfig("cayenne-demo.xml")
-    .dataSource(CayenneDataSource
+    .defaultDataNode(CayenneDataSource
              .of("jdbc:mysql://localhost:3306/cayenne_demo")
              .userName("username")
              .password("password")
@@ -112,13 +112,19 @@ List<Painting> paintings = ObjectSelect.query(Painting.class)
         .select(context);
 ```
 
+#### Exists Subqueries
+
+```java
+long count = ObjectSelect.query(Artist.class)
+    .where(Artist.PAINTING_ARRAY.dot(Painting.PAINTING_TITLE).like("painting%").exists())
+    .selectCount(context);
+```
+
 #### Aggregate Functions
 
 ```java
-// this is artificial property signaling that we want to get full object
-Property<Artist> artistProperty = Property.createSelf(Artist.class);
-
-List<Object[]> artistAndPaintingCount = ObjectSelect.columnQuery(Artist.class, artistProperty, Artist.PAINTING_ARRAY.count())
+List<Object[]> artistAndPaintingCount = ObjectSelect
+    .columnQuery(Artist.class, Artist.SELF, Artist.PAINTING_ARRAY.count())
     .where(Artist.ARTIST_NAME.like("a%"))
     .having(Artist.PAINTING_ARRAY.count().lt(5L))
     .orderBy(Artist.PAINTING_ARRAY.count().desc(), Artist.ARTIST_NAME.asc())
@@ -138,7 +144,7 @@ for(Object[] next : artistAndPaintingCount) {
 // Selecting objects
 List<Painting> paintings = SQLSelect
     .query(Painting.class, "SELECT * FROM PAINTING WHERE PAINTING_TITLE LIKE #bind($title)")
-    .params("title", "painting%")
+    .param("title", "painting%")
     .upperColumnNames()
     .localCache()
     .limit(100)
@@ -146,8 +152,8 @@ List<Painting> paintings = SQLSelect
 
 // Selecting scalar values
 List<String> paintingNames = SQLSelect
-    .scalarQuery(String.class, "SELECT PAINTING_TITLE FROM PAINTING WHERE ESTIMATED_PRICE > #bind($price)")
-    .params("price", 100000)
+    .scalarQuery("SELECT PAINTING_TITLE FROM PAINTING WHERE ESTIMATED_PRICE > #bind($price)", String.class)
+    .param("price", 100000)
     .select(context);
 
 // Insert values
