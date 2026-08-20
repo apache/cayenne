@@ -27,7 +27,6 @@ import org.apache.cayenne.gen.ClassGenerationAction;
 import org.apache.cayenne.gen.ClassGenerationActionFactory;
 import org.apache.cayenne.map.DataMap;
 import org.apache.cayenne.modeler.event.display.DataMapDisplayEvent;
-import org.apache.cayenne.modeler.pref.adapters.GeneralPrefs;
 import org.apache.cayenne.modeler.project.CgenOps;
 import org.apache.cayenne.modeler.project.ProjectSession;
 import org.apache.cayenne.modeler.ui.project.editor.datadomain.DataDomainGeneratorsTab;
@@ -62,7 +61,7 @@ public class DataDomainCgenTab extends DataDomainGeneratorsTab<CgenConfiguration
                 CgenConfigList cgenConfigList = metaData.get(dataMap, CgenConfigList.class);
                 if (cgenConfigList == null) {
                     cgenConfigList = new CgenConfigList();
-                    cgenConfigList.add(createConfiguration(dataMap));
+                    cgenConfigList.add(CgenOps.createDefaultCgenConfiguration(dataMap, session));
                 }
                 for (CgenConfiguration cgenConfiguration : cgenConfigList.getAll()) {
                     ClassGenerationAction action = actionFactory.createAction(cgenConfiguration,
@@ -83,13 +82,6 @@ public class DataDomainCgenTab extends DataDomainGeneratorsTab<CgenConfiguration
         if (!generationFail) {
             showSuccessMessage();
         }
-    }
-
-    public CgenConfiguration createConfiguration(DataMap dataMap) {
-        CgenConfiguration cgenConfiguration = CgenConfiguration.createDefault(dataMap,
-                CgenOps.baseDir(session).orElse(null));
-        cgenConfiguration.setEncoding(new GeneralPrefs(app.getPrefsLocator().appNode(GeneralPrefs.NODE)).getEncoding());
-        return cgenConfiguration;
     }
 
     @Override

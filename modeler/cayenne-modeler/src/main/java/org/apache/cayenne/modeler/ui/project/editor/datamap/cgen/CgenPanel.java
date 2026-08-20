@@ -56,6 +56,7 @@ import org.slf4j.helpers.NOPLogger;
 
 import javax.swing.*;
 import java.awt.*;
+import java.nio.file.Path;
 import java.util.Collection;
 import java.util.Comparator;
 import java.util.Set;

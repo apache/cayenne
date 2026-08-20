@@ -36,8 +36,7 @@ import java.util.Optional;
 public class CgenOps {
 
     public static CgenConfiguration createDefaultCgenConfiguration(DataMap map, ProjectSession session) {
-        Path basePath = map.getLocation() != null ? CgenOps.baseDir(session) : null;
-        CgenConfiguration configuration = CgenConfiguration.createDefault(map, basePath);
+        CgenConfiguration configuration = CgenConfiguration.createDefault(map, baseDir(session).orElse(null));
 
         Preferences preferences = session.app().getPrefsLocator().appNode(GeneralPrefs.NODE);
         configuration.setEncoding(new GeneralPrefs(preferences).getEncoding());
