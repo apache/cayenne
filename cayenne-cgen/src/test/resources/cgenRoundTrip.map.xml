@@ -1,0 +1,21 @@
+<?xml version="1.0" encoding="utf-8"?>
+<data-map xmlns="http://cayenne.apache.org/schema/13/modelMap"
+          xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+          xsi:schemaLocation="http://cayenne.apache.org/schema/13/modelMap https://cayenne.apache.org/schema/13/modelMap.xsd"
+          project-version="13">
+    <obj-entity name="Artist" className="org.example.Artist">
+    </obj-entity>
+    <cgen xmlns="http://cayenne.apache.org/schema/13/cgen">
+        <name>Default</name>
+        <destDir>../java</destDir>
+        <mode>entity</mode>
+        <embeddableSuperTemplate><![CDATA[custom embeddable superclass template]]></embeddableSuperTemplate>
+        <outputPattern>*.java</outputPattern>
+        <makePairs>true</makePairs>
+        <usePkgPath>true</usePkgPath>
+        <overwrite>false</overwrite>
+        <createPropertyNames>false</createPropertyNames>
+        <createPKProperties>true</createPKProperties>
+        <externalToolConfig>tools.properties</externalToolConfig>
+    </cgen>
+</data-map>

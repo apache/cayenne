@@ -106,6 +106,7 @@ public class CgenConfigHandler extends NamespaceAwareNestedTagHandler {
                 break;
             case EMBEDDABLE_SUPER_TEMPLATE_TAG:
                 createEmbeddableSuperTemplate(data);
+                break;
             case DATAMAP_TEMPLATE_TAG:
                 createDataMapTemplate(data);
                 break;
@@ -132,6 +133,9 @@ public class CgenConfigHandler extends NamespaceAwareNestedTagHandler {
                 break;
             case SUPER_PKG_TAG:
                 createSuperPkg(data);
+                break;
+            case EXTERNAL_TOOL_CONFIG_TAG:
+                createExternalToolConfig(data);
                 break;
         }
         return true;

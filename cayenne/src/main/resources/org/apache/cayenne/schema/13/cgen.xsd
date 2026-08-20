@@ -45,6 +45,7 @@
                     <xs:element name="createPropertyNames" minOccurs="0" type="xs:boolean"/>
                     <xs:element name="superPkg" minOccurs="0" type="xs:string"/>
                     <xs:element name="createPKProperties" minOccurs="0" type="xs:boolean"/>
+                    <xs:element name="externalToolConfig" minOccurs="0" type="xs:string"/>
                 </xs:sequence>
         </xs:complexType>
     </xs:element>
