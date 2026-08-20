@@ -33,14 +33,18 @@ import java.awt.*;
 import java.util.HashSet;
 import java.util.Set;
 
+/**
+ * @see org.apache.cayenne.modeler.Main for usage
+ */
+@SuppressWarnings("unused")
 public class MacUIInitializer extends GenericUIInitializer {
 
     @Override
     public void beforeSwingLaunch() {
-        super.beforeSwingLaunch();
-
         // must be set before the L&F initializes — it reads this property during init
         System.setProperty("apple.awt.application.name", "CayenneModeler");
+
+        super.beforeSwingLaunch();
 
         Color lightGrey = new Color(0xEEEEEE);
         UIManager.put("PanelUI", MacPanelUI.class.getName());

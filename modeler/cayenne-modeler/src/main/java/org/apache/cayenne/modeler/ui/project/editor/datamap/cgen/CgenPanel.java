@@ -379,13 +379,6 @@ public class CgenPanel extends ProjectPanel implements ObjEntityListener, Embedd
         selectionModel.initCollectionsForSelection(dataMap);
     }
 
-    private CgenConfiguration createDefaultCgenConfiguration(DataMap map) {
-        Path basePath = map.getLocation() != null ? CgenOps.baseDir(session) : null;
-        CgenConfiguration configuration = CgenConfiguration.createDefault(map, basePath);
-        configuration.setEncoding(new GeneralPrefs(app.getPrefsLocator().appNode(GeneralPrefs.NODE)).getEncoding());
-        return configuration;
-    }
-
     private void updateArtifactGenerationMode(boolean selected) {
         configuration.setArtifactsGenerationMode(selected ? "all" : "entity");
         checkCgenConfigDirty();

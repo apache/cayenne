@@ -37,7 +37,6 @@ public class CgenOps {
     public static CgenConfiguration createDefaultCgenConfiguration(DataMap map, ProjectSession session) {
         Path basePath = map.getLocation() != null ? CgenOps.baseDir(session) : null;
         CgenConfiguration configuration = CgenConfiguration.createDefault(map, basePath);
-        configuration.setForce(true);
 
         Preferences preferences = session.app().getPrefsLocator().appNode(GeneralPrefs.NODE);
         configuration.setEncoding(new GeneralPrefs(preferences).getEncoding());
