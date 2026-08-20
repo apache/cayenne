@@ -39,9 +39,20 @@ public interface SQLAppendable {
 
     SQLAppendable append(int i);
 
-    SQLAppendable appendQuoted(String str);
+    /**
+     * Emits a token separator (a single space) ahead of the next SQL token. SQL tree nodes call this instead of
+     * embedding a leading space in their literals, so inter-token spacing is owned by the appendable rather than
+     * scattered across nodes. The separator is skipped when {@link #suppressNextTokenSeparator()} was just called.
+     */
+    SQLAppendable appendTokenSeparator();
 
-    SQLGenerationContext getContext();
+    /**
+     * Suppresses the separator that the next {@link #appendTokenSeparator()} call would emit. A node calls this right
+     * after opening a parenthesis so the group hugs its first token — {@code (NAME)} rather than {@code ( NAME)}.
+     */
+    SQLAppendable suppressNextTokenSeparator();
+
+    SQLAppendable appendQuoted(String str);
 
     String getSql();
 }

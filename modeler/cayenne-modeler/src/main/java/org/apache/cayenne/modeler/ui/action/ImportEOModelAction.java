@@ -21,10 +21,6 @@ package org.apache.cayenne.modeler.ui.action;
 
 import org.apache.cayenne.configuration.ConfigurationNode;
 import org.apache.cayenne.configuration.DataChannelDescriptor;
-import org.apache.cayenne.configuration.DataNodeDescriptor;
-import org.apache.cayenne.configuration.DataSourceDescriptor;
-import org.apache.cayenne.configuration.runtime.XMLPoolingDataSourceFactory;
-import org.apache.cayenne.dba.DbAdapter;
 import org.apache.cayenne.dba.db2.DB2Adapter;
 import org.apache.cayenne.dba.derby.DerbyAdapter;
 import org.apache.cayenne.dba.firebird.FirebirdAdapter;
@@ -45,8 +41,6 @@ import org.apache.cayenne.map.ObjEntity;
 import org.apache.cayenne.map.QueryDescriptor;
 import org.apache.cayenne.modeler.Application;
 import org.apache.cayenne.modeler.event.display.DataMapDisplayEvent;
-import org.apache.cayenne.modeler.event.display.DataNodeDisplayEvent;
-import org.apache.cayenne.modeler.event.model.DataNodeEvent;
 import org.apache.cayenne.modeler.event.model.DbEntityEvent;
 import org.apache.cayenne.modeler.event.model.ObjEntityEvent;
 import org.apache.cayenne.modeler.event.model.QueryEvent;
@@ -135,71 +129,11 @@ public class ImportEOModelAction extends AppAction {
         try {
             URL url = file.toURI().toURL();
             EOModelProcessor processor = new EOModelProcessor();
-            if (currentMap == null) {
-                loadDataNode(processor.loadModeIndex(url));
-            }
             DataMap map = processor.loadEOModel(url);
             addDataMap(map, currentMap);
         } catch (Exception ex) {
             LOGGER.info("EOModel Loading Exception", ex);
             new ErrorDialog(app, "Import EOModel Error", ex).open();
-        }
-    }
-
-    protected void loadDataNode(Map eomodelIndex) {
-        // if this is a JDBC node and connection dictionary is specified, load a DataNode,
-        // otherwise ignore it (meaning that pre 5.* EOModels will not have a node).
-
-        String adapter = (String) eomodelIndex.get("adaptorName");
-        Map<?, ?> connection = (Map) eomodelIndex.get("connectionDictionary");
-
-        if (adapter != null && connection != null && !"JNDI".equalsIgnoreCase(adapter)) {
-            CreateNodeAction nodeBuilder = app.getActionManager().getAction(CreateNodeAction.class);
-
-            // this should make created node current, resulting in the new map being added
-            // to the node automatically once it is loaded
-            DataNodeDescriptor node = nodeBuilder.buildDataNode();
-
-            // guess adapter from plugin or driver
-            String cayenneAdapter = adaptersByEofPlugin.get(connection.get("plugin"));
-            if (cayenneAdapter == null) {
-                cayenneAdapter = adaptersByDriver.get(connection.get("driver"));
-            }
-
-            if (cayenneAdapter != null) {
-                try {
-                    Class<DbAdapter> adapterClass = app
-                            .getClassLoader()
-                            .loadClass(DbAdapter.class, cayenneAdapter);
-                    node.setAdapterType(adapterClass.toString());
-                } catch (Throwable ex) {
-                    // ignore...
-                }
-            }
-
-            node.setDataSourceFactoryType(XMLPoolingDataSourceFactory.class.getName());
-
-            DataSourceDescriptor dsi = node.getDataSourceDescriptor();
-            dsi.setDataSourceUrl(keyAsString(connection, "URL"));
-            dsi.setJdbcDriver(keyAsString(connection, "driver"));
-            dsi.setPassword(keyAsString(connection, "password"));
-            dsi.setUserName(keyAsString(connection, "username"));
-
-            DataChannelDescriptor domain = (DataChannelDescriptor) getProjectSession()
-                    .project()
-                    .getRootNode();
-            domain.getNodeDescriptors().add(node);
-
-            // send events after the node creation is complete
-            getProjectSession().fireDataNodeEvent(
-                    DataNodeEvent.ofAdd(this, node));
-            getProjectSession().displayDataNode(
-                    new DataNodeDisplayEvent(
-                            this,
-                            (DataChannelDescriptor) getProjectSession()
-                                    .project()
-                                    .getRootNode(),
-                            node));
         }
     }
 
@@ -279,18 +213,15 @@ public class ImportEOModelAction extends AppAction {
                     (DataChannelDescriptor) session
                             .project()
                             .getRootNode(),
-                    map,
-                    session.getSelectedDataNode()));
+                    map));
         } else {
             // fix DataMap name, as there maybe a map with the same name already
             ConfigurationNode root = session.project().getRootNode();
             map.setName(NameBuilder
-                    .builder(map, root)
-                    .baseName(map.getName())
-                    .name());
+                    .of(map, root)
+                    .preferredName(map.getName())
+                    .build());
 
-            // side effect of this operation is that if a node was created, this DataMap
-            // will be linked with it...
             CreateDataMapAction.onMapCreated(app.getFrame(), getProjectSession(), map);
 
         }

@@ -19,10 +19,6 @@
 
 package org.apache.cayenne.dbsync.reverse.configuration;
 
-import org.apache.cayenne.configuration.DataNodeDescriptor;
-import org.apache.cayenne.configuration.runtime.DataSourceFactory;
-import org.apache.cayenne.configuration.runtime.DbAdapterFactory;
-import org.apache.cayenne.configuration.runtime.DefaultDbAdapterFactory;
 import org.apache.cayenne.dba.AutoAdapter;
 import org.apache.cayenne.di.AdhocObjectFactory;
 import org.apache.cayenne.di.DIBootstrap;
@@ -46,7 +42,6 @@ public class ToolsModuleTest {
         Injector i = DIBootstrap.createInjector(new ToolsModule(log));
 
         assertSame(log, i.getInstance(Logger.class));
-        assertTrue(i.getInstance(DataSourceFactory.class) instanceof DriverDataSourceFactory);
         assertTrue(i.getInstance(AdhocObjectFactory.class) instanceof DefaultAdhocObjectFactory);
         assertTrue(i.getInstance(DbAdapterFactory.class) instanceof DefaultDbAdapterFactory);
     }
@@ -58,9 +53,9 @@ public class ToolsModuleTest {
 
         DbAdapterFactory factory = i.getInstance(DbAdapterFactory.class);
 
-        DataNodeDescriptor nodeDescriptor = mock(DataNodeDescriptor.class);
         DataSource dataSource = mock(DataSource.class);
 
-        assertTrue(factory.createAdapter(nodeDescriptor, dataSource) instanceof AutoAdapter);
+        // no explicit adapter type - must fall back to the auto-detecting adapter
+        assertTrue(factory.createAdapter(null, dataSource) instanceof AutoAdapter);
     }
 }

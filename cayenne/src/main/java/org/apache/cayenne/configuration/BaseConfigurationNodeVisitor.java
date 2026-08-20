@@ -50,10 +50,6 @@ public abstract class BaseConfigurationNodeVisitor<T> implements
         throw new UnsupportedOperationException("Not implemented for DataMap");
     }
 
-    public T visitDataNodeDescriptor(DataNodeDescriptor nodeDescriptor) {
-        throw new UnsupportedOperationException("Not implemented for DataNodeDescriptor");
-    }
-
     public T visitDbAttribute(DbAttribute attribute) {
         throw new UnsupportedOperationException("Not implemented for DbAttribute");
     }

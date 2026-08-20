@@ -19,21 +19,25 @@
 
 package org.apache.cayenne.access.jdbc;
 
-import org.apache.cayenne.access.types.ExtendedType;
+import org.apache.cayenne.access.DeferredValue;
 import org.apache.cayenne.map.DbAttribute;
 
 /**
- * An immutable per-batch parameter binding template, carrying only the static column metadata shared by all
- * rows of a batch. A per-row {@link PSParameter} is produced by {@link #bind(Object, int, ExtendedType)}.
+ * An immutable batch parameter corresponding to a single PreparedStatement placeholder, carrying the values of all
+ * batch rows for that placeholder alongside the static position and column metadata. The value of a given row is
+ * resolved via {@link #getValue(int)}.
+ *
+ * <p>A value may be a {@link DeferredValue}, e.g. when it comes from a generated key of another row in the same
+ * transaction. Deferred values are resolved when the corresponding row is bound, i.e. after the rows preceding it
+ * have been executed.
  *
  * @since 5.0
  */
-public record PSBatchParameter(int psType, int psScale, DbAttribute attribute) {
+public record PSBatchParameter(Object[] values, int psPosition, int psType, int psScale, DbAttribute attribute) {
 
-    /**
-     * Resolves this per-batch template into a per-row {@link PSParameter}.
-     */
-    public <T> PSParameter<T> bind(T value, int psPosition, ExtendedType<T> extendedType) {
-        return new PSParameter<>(value, psPosition, psType, psScale, extendedType, attribute);
+    public Object getValue(int row) {
+        Object value = DeferredValue.resolve(values[row]);
+        values[row] = value;
+        return value;
     }
 }

@@ -20,12 +20,12 @@
 package org.apache.cayenne.access.flush;
 
 import java.util.Map;
-import java.util.function.Supplier;
 
 import org.apache.cayenne.CayenneRuntimeException;
 import org.apache.cayenne.ObjectId;
 import org.apache.cayenne.Persistent;
 import org.apache.cayenne.access.ObjectStore;
+import org.apache.cayenne.access.DeferredValue;
 import org.apache.cayenne.access.flush.operation.DbRowOp;
 import org.apache.cayenne.access.flush.operation.DbRowOpVisitor;
 import org.apache.cayenne.access.flush.operation.InsertDbRowOp;
@@ -56,11 +56,9 @@ class ReplacementIdVisitor implements DbRowOpVisitor<Void> {
         updateId(dbRow);
         dbRow.getValues().getFlattenedIds().forEach((path, id) -> {
             if(id.isTemporary() && id.isReplacementIdAttached()) {
-                // resolve lazy suppliers
+                // resolve lazy deferred values
                 for (Map.Entry<String, Object> next : id.getReplacementIdMap().entrySet()) {
-                    if (next.getValue() instanceof Supplier) {
-                        next.setValue(((Supplier<?>) next.getValue()).get());
-                    }
+                    next.setValue(DeferredValue.resolve(next.getValue()));
                 }
                 store.markFlattenedPath(dbRow.getChangeId(), path, id.createReplacementId());
             } else {
@@ -89,11 +87,13 @@ class ReplacementIdVisitor implements DbRowOpVisitor<Void> {
             return;
         }
         Map<String, Object> replacement = id.getReplacementIdMap();
-        replacement.forEach((attr, val) -> {
-            if(val instanceof IdGenerationMarker) {
+        for (Map.Entry<String, Object> next : replacement.entrySet()) {
+            if (next.getValue() instanceof IdGenerationMarker) {
                 throw new CayenneRuntimeException("PK for the object %s is not set during insert.", object);
             }
-        });
+            // resolve lazy deferred values, as by now the DB values they refer to are known
+            next.setValue(DeferredValue.resolve(next.getValue()));
+        }
 
         ObjectId replacementId = id.createReplacementId();
         if (object.getObjectId() == id && !replacementId.getEntityName().startsWith(ASTDbPath.DB_PREFIX)) {

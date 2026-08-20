@@ -29,6 +29,7 @@ import org.apache.cayenne.GenericPersistentObject;
 import org.apache.cayenne.ObjectId;
 import org.apache.cayenne.Persistent;
 import org.apache.cayenne.access.jdbc.PSParameter;
+import org.apache.cayenne.access.translator.TranslatedSQL;
 import org.apache.cayenne.access.types.ExtendedTypeMap;
 import org.apache.cayenne.dba.DbAdapter;
 import org.junit.jupiter.api.BeforeEach;

@@ -23,7 +23,7 @@ import org.apache.cayenne.ashwood.AshwoodEntitySorter;
 import org.apache.cayenne.dba.DbAdapter;
 import org.apache.cayenne.dba.PkGenerator;
 import org.apache.cayenne.dba.TypesMapping;
-import org.apache.cayenne.log.JdbcEventLogger;
+import org.apache.cayenne.log.SQLLogger;
 import org.apache.cayenne.map.DataMap;
 import org.apache.cayenne.map.DbAttribute;
 import org.apache.cayenne.map.DbEntity;
@@ -64,7 +64,7 @@ public class DbGenerator {
 	// situations
 	protected DataDomain domain;
 
-	protected JdbcEventLogger jdbcEventLogger;
+	protected SQLLogger sqlLogger;
 
 	// stores generated SQL statements
 	protected Map<String, Collection<String>> dropTables;
@@ -91,14 +91,14 @@ public class DbGenerator {
 	/**
 	 * @since 3.1
 	 */
-	public DbGenerator(DbAdapter adapter, DataMap map, JdbcEventLogger logger) {
+	public DbGenerator(DbAdapter adapter, DataMap map, SQLLogger logger) {
 		this(adapter, map, logger, Collections.emptyList());
 	}
 
 	/**
 	 * @since 3.1
 	 */
-	public DbGenerator(DbAdapter adapter, DataMap map, JdbcEventLogger logger, Collection<DbEntity> excludedEntities) {
+	public DbGenerator(DbAdapter adapter, DataMap map, SQLLogger logger, Collection<DbEntity> excludedEntities) {
 		this(adapter, map, excludedEntities, null, logger);
 	}
 
@@ -117,7 +117,7 @@ public class DbGenerator {
 	 * @since 3.1
 	 */
 	public DbGenerator(DbAdapter adapter, DataMap map, Collection<DbEntity> excludedEntities, DataDomain domain,
-			JdbcEventLogger logger) {
+			SQLLogger logger) {
 		// sanity check
 		if (adapter == null) {
 			throw new IllegalArgumentException("Adapter must not be null.");
@@ -130,7 +130,7 @@ public class DbGenerator {
 		this.domain = domain;
 		this.map = map;
 		this.adapter = adapter;
-		this.jdbcEventLogger = logger;
+		this.sqlLogger = logger;
 
 		prepareDbEntities(excludedEntities);
 		resetToDefaults();
@@ -156,7 +156,7 @@ public class DbGenerator {
 		createConstraints = new HashMap<>();
 
 		DbAdapter adapter = getAdapter();
-		for (final DbEntity dbe : this.dbEntitiesInInsertOrder) {
+		for (DbEntity dbe : this.dbEntitiesInInsertOrder) {
 
 			String name = dbe.getName();
 
@@ -170,7 +170,7 @@ public class DbGenerator {
 			createConstraints.put(name, createConstraintsQueries(dbe));
 		}
 
-		PkGenerator pkGenerator = adapter.getPkGenerator();
+		PkGenerator pkGenerator = adapter.createPkGenerator();
 		dropPK = pkGenerator.dropAutoPkStatements(dbEntitiesRequiringAutoPK);
 		createPK = pkGenerator.createAutoPkStatements(dbEntitiesRequiringAutoPK);
 	}
@@ -214,13 +214,13 @@ public class DbGenerator {
 		}
 
 		if (shouldCreateTables) {
-			for (final DbEntity ent : dbEntitiesInInsertOrder) {
+			for (DbEntity ent : dbEntitiesInInsertOrder) {
 				list.add(createTables.get(ent.getName()));
 			}
 		}
 
 		if (shouldCreateFKConstraints) {
-			for (final DbEntity ent : dbEntitiesInInsertOrder) {
+			for (DbEntity ent : dbEntitiesInInsertOrder) {
 				List<String> fks = createConstraints.get(ent.getName());
 				list.addAll(fks);
 			}
@@ -264,7 +264,7 @@ public class DbGenerator {
 				// create tables
 				List<String> createdTables = new ArrayList<>();
 				if (shouldCreateTables) {
-					for (final DbEntity ent : dbEntitiesInInsertOrder) {
+					for (DbEntity ent : dbEntitiesInInsertOrder) {
 
 						// only create missing tables
 
@@ -288,18 +288,14 @@ public class DbGenerator {
 
 				// drop PK
 				if (shouldDropPKSupport) {
-					List<String> dropAutoPKSQL = getAdapter().getPkGenerator().dropAutoPkStatements(
-							dbEntitiesRequiringAutoPK);
-					for (final String sql : dropAutoPKSQL) {
+					for (String sql : dropPK) {
 						safeExecute(connection, sql);
 					}
 				}
 
 				// create pk
 				if (shouldCreatePKSupport) {
-					List<String> createAutoPKSQL = getAdapter().getPkGenerator().createAutoPkStatements(
-							dbEntitiesRequiringAutoPK);
-					for (final String sql : createAutoPKSQL) {
+					for (String sql : createPK) {
 						safeExecute(connection, sql);
 					}
 				}
@@ -321,7 +317,7 @@ public class DbGenerator {
 	protected boolean safeExecute(Connection connection, String sql) {
 
 		try (Statement statement = connection.createStatement()) {
-			jdbcEventLogger.log(sql);
+			sqlLogger.logMessage(sql);
 			statement.execute(sql);
 			return true;
 		} catch (SQLException ex) {
@@ -329,8 +325,8 @@ public class DbGenerator {
 				this.failures = new ValidationResult();
 			}
 
+			// the failure is recorded and surfaced to the caller via getFailures()
 			failures.addFailure(new SimpleValidationFailure(sql, ex.getMessage()));
-			jdbcEventLogger.logQueryError(ex);
 			return false;
 		}
 	}
@@ -342,7 +338,7 @@ public class DbGenerator {
 	 */
 	public List<String> createConstraintsQueries(DbEntity table) {
 		List<String> list = new ArrayList<>();
-		for (final DbRelationship rel : table.getRelationships()) {
+		for (DbRelationship rel : table.getRelationships()) {
 
 			if (rel.isToMany()) {
 				continue;
@@ -489,7 +485,7 @@ public class DbGenerator {
 
 			// tables with invalid DbAttributes are not included
 			boolean invalidAttributes = false;
-			for (final DbAttribute attr : nextEntity.getAttributes()) {
+			for (DbAttribute attr : nextEntity.getAttributes()) {
 				if (attr.getType() == TypesMapping.NOT_DEFINED) {
 					LOGGER.info("Skipping entity, attribute type is undefined: {}.{}", nextEntity.getName(),
 							attr.getName());
@@ -535,8 +531,7 @@ public class DbGenerator {
 
 		// sort table list
 		if (tables.size() > 1) {
-			EntitySorter sorter = new AshwoodEntitySorter();
-			sorter.setEntityResolver(new EntityResolver(Collections.singleton(map)));
+			EntitySorter sorter = new AshwoodEntitySorter(new EntityResolver(Collections.singleton(map)));
 			sorter.sortDbEntities(tables, false);
 		}
 

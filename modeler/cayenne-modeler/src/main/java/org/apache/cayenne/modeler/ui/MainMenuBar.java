@@ -85,7 +85,6 @@ class MainMenuBar extends JMenuBar {
         projectMenu.add(actions.getAction(ValidateAction.class).buildMenu());
         projectMenu.add(actions.getAction(ShowValidationConfigAction.class).buildMenu());
         projectMenu.addSeparator();
-        projectMenu.add(actions.getAction(CreateNodeAction.class).buildMenu());
         projectMenu.add(actions.getAction(CreateDataMapAction.class).buildMenu());
 
         projectMenu.add(actions.getAction(CreateObjEntityAction.class).buildMenu());

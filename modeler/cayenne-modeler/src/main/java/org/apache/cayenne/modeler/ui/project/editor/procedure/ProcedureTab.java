@@ -84,7 +84,7 @@ public class ProcedureTab extends ProjectPanel implements ProcedureDisplayListen
         builder.setDefaultDialogBorder();
 
         builder.appendSeparator("Stored Procedure Configuration");
-        builder.append("Procedure Name:", name);
+        builder.append("Name:", name);
         builder.append("Catalog:", catalog);
         builder.append("Schema:", schema);
         builder.append("Returns Value:", returnsValue);

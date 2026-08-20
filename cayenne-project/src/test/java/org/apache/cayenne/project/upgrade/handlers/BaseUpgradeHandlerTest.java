@@ -20,11 +20,10 @@
 package org.apache.cayenne.project.upgrade.handlers;
 
 import java.io.InputStreamReader;
-import java.io.StringReader;
 import javax.xml.parsers.DocumentBuilder;
 import javax.xml.parsers.DocumentBuilderFactory;
 
-import org.apache.cayenne.project.upgrade.UpgradeUnit;
+import org.apache.cayenne.project.upgrade.UpgradeContext;
 import org.apache.cayenne.resource.URLResource;
 import org.junit.jupiter.api.BeforeEach;
 import org.w3c.dom.Document;
@@ -42,14 +41,14 @@ abstract class BaseUpgradeHandlerTest {
     abstract UpgradeHandler newHandler();
 
     Document processProjectDom(String xmlResourceName) throws Exception {
-        UpgradeUnit unit = new UpgradeUnit(new URLResource(getClass().getResource(xmlResourceName)),
+        UpgradeContext unit = new UpgradeContext(new URLResource(getClass().getResource(xmlResourceName)),
                 documentFromResource(xmlResourceName));
         handler.processProjectDom(unit);
         return unit.getDocument();
     }
 
     Document processDataMapDom(String xmlResourceName) throws Exception {
-        UpgradeUnit unit = new UpgradeUnit(new URLResource(getClass().getResource(xmlResourceName)),
+        UpgradeContext unit = new UpgradeContext(new URLResource(getClass().getResource(xmlResourceName)),
                 documentFromResource(xmlResourceName));
         handler.processDataMapDom(unit);
         return unit.getDocument();

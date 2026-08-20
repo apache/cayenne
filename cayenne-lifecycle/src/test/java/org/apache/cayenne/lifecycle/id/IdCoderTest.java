@@ -19,11 +19,15 @@
 package org.apache.cayenne.lifecycle.id;
 
 import org.apache.cayenne.ObjectId;
+import org.apache.cayenne.configuration.DataNodeDescriptor;
+import org.apache.cayenne.datasource.CayenneDataSource;
 import org.apache.cayenne.lifecycle.db.E1;
 import org.apache.cayenne.runtime.CayenneRuntime;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
+
+import javax.sql.DataSource;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 
@@ -33,7 +37,21 @@ public class IdCoderTest {
 
     @BeforeEach
     public void setUp() throws Exception {
-        runtime = CayenneRuntime.builder().addConfig("cayenne-lifecycle.xml").build();
+        DataSource dataSource = CayenneDataSource.of("jdbc:hsqldb:mem:lifecycle")
+                .driverClass("org.hsqldb.jdbcDriver")
+                .userName("sa")
+                .pool(1, 1)
+                .build();
+
+        DataNodeDescriptor dataNode = DataNodeDescriptor.of("lifecycle")
+                .dataSource(dataSource)
+                .createSchemaIfNeeded()
+                .build();
+
+        runtime = CayenneRuntime.of()
+                .addConfig("cayenne-lifecycle.xml")
+                .defaultDataNode(dataNode)
+                .build();
     }
 
     @AfterEach
@@ -43,7 +61,7 @@ public class IdCoderTest {
 
     @Test
     public void getStringId() {
-        IdCoder handler = new IdCoder(runtime.getChannel().getEntityResolver());
+        IdCoder handler = new IdCoder(runtime.getDataDomain().getEntityResolver());
 
         E1 e1 = new E1();
         e1.setObjectId(ObjectId.of("E1", "ID", 5));
@@ -52,13 +70,13 @@ public class IdCoderTest {
 
     @Test
     public void getStringId_ObjectId() {
-        IdCoder handler = new IdCoder(runtime.getChannel().getEntityResolver());
+        IdCoder handler = new IdCoder(runtime.getDataDomain().getEntityResolver());
         assertEquals("E1:5", handler.getStringId(ObjectId.of("E1", "ID", 5)));
     }
 
     @Test
     public void getStringId_Temp() {
-        IdCoder handler = new IdCoder(runtime.getChannel().getEntityResolver());
+        IdCoder handler = new IdCoder(runtime.getDataDomain().getEntityResolver());
 
         byte[] key = new byte[] { 1, 2, 10, 100 };
 
@@ -70,7 +88,7 @@ public class IdCoderTest {
 
     @Test
     public void getObjectId_Temp() {
-        IdCoder handler = new IdCoder(runtime.getChannel().getEntityResolver());
+        IdCoder handler = new IdCoder(runtime.getDataDomain().getEntityResolver());
 
         byte[] key = new byte[] { 1, (byte) 0xD7, 10, 100 };
 
@@ -80,7 +98,7 @@ public class IdCoderTest {
 
     @Test
     public void getSringId_TempWithReplacement() {
-        IdCoder handler = new IdCoder(runtime.getChannel().getEntityResolver());
+        IdCoder handler = new IdCoder(runtime.getDataDomain().getEntityResolver());
 
         byte[] key = new byte[] { 5, 2, 11, 99 };
         ObjectId id = ObjectId.of("E1", key);

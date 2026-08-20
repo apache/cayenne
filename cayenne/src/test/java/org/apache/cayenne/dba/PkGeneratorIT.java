@@ -50,7 +50,7 @@ public class PkGeneratorIT {
     public void setUp() throws Exception {
         accessStackAdapter = env.testDbAdapter();
         node = env.dataNode();
-        pkGenerator = node.getAdapter().getPkGenerator();
+        pkGenerator = node.getPkGenerator();
         paintingEntity = node.getEntityResolver().getDbEntity("PAINTING");
 
         List<DbEntity> list = new ArrayList<DbEntity>();
@@ -71,10 +71,10 @@ public class PkGeneratorIT {
         }
 
         for (int i = 0; i < testSize; i++) {
-            Object pk = pkGenerator.generatePk(node, paintingEntity
-                    .getPrimaryKeys()
-                    .iterator()
-                    .next());
+            Object pk = pkGenerator.generatePk(
+                    node,
+                    paintingEntity.getPrimaryKeys().iterator().next(),
+                    null);
             assertNotNull(pk);
             assertTrue(pk instanceof Number);
 

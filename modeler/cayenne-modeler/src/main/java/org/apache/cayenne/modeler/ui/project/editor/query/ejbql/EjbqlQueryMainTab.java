@@ -64,7 +64,7 @@ public class EjbqlQueryMainTab extends ProjectPanel {
         PanelBuilder builder = new PanelBuilder(layout);
         builder.setDefaultDialogBorder();
         builder.addSeparator("EJBQL Query Settings", cc.xywh(1, 1, 3, 1));
-        builder.addLabel("Query Name:", cc.xy(1, 3));
+        builder.addLabel("Name:", cc.xy(1, 3));
         builder.add(name, cc.xy(3, 3));
         builder.addLabel("Comment:", cc.xy(1, 5));
         builder.add(comment, cc.xy(3, 5));

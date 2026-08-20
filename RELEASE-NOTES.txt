@@ -13,14 +13,35 @@ Date:
 ----------------------------------
 Changes/New Features:
 
+CAY-2861 Derby version upgrade
+CAY-2912 Compact SQL logger
 CAY-2954 Don't wrap selecting queries in transactions
 CAY-2956 Get rid of a dedicated adapter for Oracle 8
 CAY-2957 Get rid of adapter for legacy HSQLDB <= 1.8
 CAY-2962 Allow unconstrained VARCHAR
 CAY-2963 Replace TypesHandler / types.xml with hardcoded map
+CAY-2969 Extender API for "soft" delete
+CAY-2970 Tighten deferred value resolution contract on commit
+CAY-2971 Remove extra spaces within SQL parenthesis
+CAY-2972 Fewer parentheses in generated SQL
+CAY-2974 CayenneSqlException with a reference to translated query
+CAY-2975 Mnemonic table aliases in generated SQL
+CAY-2978 AI skill: "cayenne-model-naming"
+CAY-2979 AI skill: "cayenne-full-db-sync"
+CAY-2980 Improve model name generation
+CAY-2981 Remove DataNode from XML mapping
+CAY-2982 Modeler: when upgrading projects allow upgraders to send outcome messages
+CAY-2983 CayenneDataSource: Public-facing DataSource builder
+CAY-2984 Remove "DataChannel" injectable dependency
+CAY-2985 DataDomain init and structure cleanup
+CAY-2986 Cgen to run unconditionally
+CAY-2987 DataNode to own PkGenerator
+CAY-2989 Upgrade MCP SDK to 2.0
+CAY-2992 dbimport: support posgres drivers newer than 42.7.4
 
 Bug Fixes:
 
+CAY-2892 Modeler: Exception when deleting a callback
 CAY-2958 Empty join is saved
 CAY-2959 Modeler: DbRelationship dialog "Cancel" doesn't cancel
 CAY-2960 Undoing renamed relationship change throws
@@ -29,6 +50,12 @@ CAY-2964 ClassCastException for non-generated meaningful PKs
 CAY-2965 MCP Cgen should not fail on an absent "<cgen>" tag
 CAY-2966 "comment" field is lost when upgrading from v10 to v12
 CAY-2967 SQLTemplate/SQLSelect broken pagination
+CAY-2968 Vertical Inheritance: INSERT instead of UPDATE after updating flattened attribute
+CAY-2973 Exception trying to copy/paste a callback
+CAY-2976 Exception creating a relationship for an Incomplete ObjEntity
+CAY-2977 DbImport confused by multi-key relationships
+CAY-2988 Iterated queries commit transactions they don't own
+CAY-2990 Gradle plugin tests are failing on Windows
 
 ----------------------------------
 Release: 5.0-M2

@@ -18,10 +18,17 @@
  ****************************************************************/
 package org.apache.cayenne.gen;
 
+import org.slf4j.Logger;
+
 /**
  * @since 4.2
  */
 public interface ClassGenerationActionFactory {
 
-    ClassGenerationAction createAction(CgenConfiguration cgenConfiguration);
+    /**
+     * @param logger a logger used to trace generated files. Callers embedded in a build tool normally pass a
+     *               logger that routes to that tool's own output.
+     * @since 5.0 takes a logger
+     */
+    ClassGenerationAction createAction(CgenConfiguration configuration, Logger logger);
 }

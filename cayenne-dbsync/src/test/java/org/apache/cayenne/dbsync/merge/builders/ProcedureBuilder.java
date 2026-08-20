@@ -19,11 +19,10 @@
 
 package org.apache.cayenne.dbsync.merge.builders;
 
-import java.util.Arrays;
-
 import org.apache.cayenne.map.Procedure;
 import org.apache.cayenne.map.ProcedureParameter;
-import org.apache.cayenne.util.Util;
+
+import java.util.Arrays;
 
 public class ProcedureBuilder extends DefaultBuilder<Procedure> {
 
@@ -48,7 +47,7 @@ public class ProcedureBuilder extends DefaultBuilder<Procedure> {
 
     public Procedure build() {
         if(obj.getName() == null) {
-            obj.setName(Util.capitalized(getRandomJavaName()));
+            obj.setName(capitalized(getRandomJavaName()));
         }
 
         return obj;

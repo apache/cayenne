@@ -23,7 +23,7 @@ import org.apache.cayenne.access.OperationObserver;
 import org.apache.cayenne.access.jdbc.RSColumn;
 import org.apache.cayenne.access.jdbc.SelectAction;
 import org.apache.cayenne.access.jdbc.PSParameter;
-import org.apache.cayenne.access.translator.select.TranslatedSelect;
+import org.apache.cayenne.access.translator.TranslatedSelect;
 import org.apache.cayenne.query.Select;
 
 import java.sql.Connection;

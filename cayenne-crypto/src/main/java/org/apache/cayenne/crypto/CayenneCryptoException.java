@@ -25,8 +25,6 @@ import org.apache.cayenne.CayenneRuntimeException;
  */
 public class CayenneCryptoException extends CayenneRuntimeException {
 
-    private static final long serialVersionUID = -281186275324369949L;
-
     public CayenneCryptoException() {
     }
 

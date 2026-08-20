@@ -33,11 +33,9 @@ import org.apache.cayenne.cache.QueryCache;
 import org.apache.cayenne.configuration.Constants;
 import org.apache.cayenne.di.AdhocObjectFactory;
 import org.apache.cayenne.di.BeforeScopeEnd;
-import org.apache.cayenne.di.Inject;
 import org.apache.cayenne.event.EventManager;
 import org.apache.cayenne.graph.CompoundDiff;
 import org.apache.cayenne.graph.GraphDiff;
-import org.apache.cayenne.log.JdbcEventLogger;
 import org.apache.cayenne.map.DataMap;
 import org.apache.cayenne.map.EntityResolver;
 import org.apache.cayenne.map.EntitySorter;
@@ -56,115 +54,73 @@ import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.CopyOnWriteArrayList;
 
 /**
- * DataDomain performs query routing functions in Cayenne. DataDomain creates
- * single data source abstraction hiding multiple physical data sources from the
- * user. When a child DataContext sends a query to the DataDomain, it is
- * transparently routed to an appropriate DataNode.
+ * DataDomain performs query routing functions in Cayenne. It creates single "ORM data source" abstraction over multiple
+ * physical DataNodes.
  */
 public class DataDomain implements DataChannel {
 
-    public static final String SHARED_CACHE_ENABLED_PROPERTY = "cayenne.DataDomain.sharedCache";
-    public static final boolean SHARED_CACHE_ENABLED_DEFAULT = true;
+    protected final String name;
+    protected final TransactionManager transactionManager;
+    protected final TransactionFactory transactionFactory;
+    protected final DataDomainFlushActionFactory flushActionFactory;
+    protected final AdhocObjectFactory objectFactory;
+    protected final EventManager eventManager;
+    protected final EntitySorter entitySorter;
+    protected final QueryCache queryCache;
+    protected final DataRowStore sharedSnapshotCache;
 
-    public static final String VALIDATING_OBJECTS_ON_COMMIT_PROPERTY = "cayenne.DataDomain.validatingObjectsOnCommit";
-    public static final boolean VALIDATING_OBJECTS_ON_COMMIT_DEFAULT = true;
+    protected final EntityResolver entityResolver;
+    protected final int maxIdQualifierSize;
+    protected final boolean validatingObjectsOnCommit;
 
-    /**
-     * @since 3.1
-     */
-    @Inject
-    protected JdbcEventLogger jdbcEventLogger;
+    // these collections are final, but contents are changeable via DataDomain API
+    protected final List<DataChannelQueryFilter> queryFilters;
+    protected final List<DataChannelSyncFilter> syncFilters;
+    protected final Map<String, DataNode> nodes;
+    protected final Map<String, DataNode> nodesByDataMapName;
 
-    /**
-     * @since 4.0
-     */
-    @Inject
-    protected TransactionManager transactionManager;
-
-    /**
-     * @since 5.0
-     */
-    @Inject
-    protected TransactionFactory transactionFactory;
-
-    /**
-     * @since 4.0
-     */
-    protected DataRowStoreFactory dataRowStoreFactory;
-
-    /**
-     * @since 3.1
-     */
-    protected int maxIdQualifierSize;
-
-    /**
-     * @since 4.1
-     */
-    protected List<DataChannelQueryFilter> queryFilters;
-
-    /**
-     * @since 4.1
-     */
-    protected List<DataChannelSyncFilter> syncFilters;
-
-    /**
-     * @since 4.2
-     */
-    @Inject
-    protected DataDomainFlushActionFactory flushActionFactory;
-
-    /**
-     * @since 4.2
-     */
-    @Inject
-    protected AdhocObjectFactory objectFactory;
-
-    protected Map<String, DataNode> nodes;
-    protected Map<String, DataNode> nodesByDataMapName;
     protected DataNode defaultNode;
-
-    protected EntityResolver entityResolver;
-    protected DataRowStore sharedSnapshotCache;
-    protected String name;
-    protected QueryCache queryCache;
-
-    // these are initialized from properties...
-    protected boolean sharedCacheEnabled;
-    protected boolean validatingObjectsOnCommit;
-
-    /**
-     * @since 1.2
-     */
-    protected EventManager eventManager;
-
-    /**
-     * @since 1.2
-     */
-    protected EntitySorter entitySorter;
 
     protected boolean stopped;
 
-    /**
-     * Creates a DataDomain and assigns it a name.
-     */
-    public DataDomain(String name) {
-        init(name);
-        resetProperties();
-    }
+    public DataDomain(
+            String name,
 
-    private void init(String name) {
+            TransactionManager transactionManager,
+            TransactionFactory transactionFactory,
+            DataDomainFlushActionFactory flushActionFactory,
+            AdhocObjectFactory objectFactory,
+            EventManager eventManager,
+            QueryCache queryCache,
+            DataRowStore sharedSnapshotCache,
+            int maxIdQualifierSize,
+            boolean validatingObjectsOnCommit,
+
+            EntityResolver entityResolver,
+            EntitySorter entitySorter
+    ) {
+
+        this.name = name;
+        this.transactionManager = transactionManager;
+        this.transactionFactory = transactionFactory;
+        this.flushActionFactory = flushActionFactory;
+        this.objectFactory = objectFactory;
+        this.eventManager = eventManager;
+        this.entitySorter = entitySorter;
+        this.queryCache = queryCache;
+        this.sharedSnapshotCache = sharedSnapshotCache;
+        this.entityResolver = entityResolver;
+        this.maxIdQualifierSize = maxIdQualifierSize;
+        this.validatingObjectsOnCommit = validatingObjectsOnCommit;
 
         this.queryFilters = new CopyOnWriteArrayList<>();
         this.syncFilters = new CopyOnWriteArrayList<>();
         this.nodesByDataMapName = new ConcurrentHashMap<>();
         this.nodes = new ConcurrentHashMap<>();
-
-        setName(name);
     }
 
     /**
-     * Checks that Domain is not stopped. Throws DomainStoppedException
-     * otherwise.
+     * Throws DomainStoppedException if the domain was previously shut down.
      *
      * @since 3.0
      */
@@ -183,42 +139,12 @@ public class DataDomain implements DataChannel {
     }
 
     /**
-     * @since 3.1
-     */
-    public void setEntitySorter(EntitySorter entitySorter) {
-        this.entitySorter = entitySorter;
-    }
-
-    /**
-     * Resets the domain's behavioral flags to their defaults.
-     *
-     * @since 1.1
-     */
-    protected void resetProperties() {
-        sharedCacheEnabled = SHARED_CACHE_ENABLED_DEFAULT;
-        validatingObjectsOnCommit = VALIDATING_OBJECTS_ON_COMMIT_DEFAULT;
-    }
-
-    /**
      * Returns EventManager used by this DataDomain.
      *
      * @since 1.2
      */
     public EventManager getEventManager() {
         return eventManager;
-    }
-
-    /**
-     * Sets EventManager used by this DataDomain.
-     *
-     * @since 1.2
-     */
-    public void setEventManager(EventManager eventManager) {
-        this.eventManager = eventManager;
-
-        if (sharedSnapshotCache != null) {
-            sharedSnapshotCache.setEventManager(eventManager);
-        }
     }
 
     /**
@@ -229,27 +155,13 @@ public class DataDomain implements DataChannel {
     }
 
     /**
-     * Sets "name" property to a new value.
-     */
-    public synchronized void setName(String name) {
-        this.name = name;
-        if (sharedSnapshotCache != null) {
-            this.sharedSnapshotCache.setName(name);
-        }
-    }
-
-    /**
      * Returns <code>true</code> if DataContexts produced by this DataDomain are
      * using shared DataRowStore. Returns <code>false</code> if each DataContext
      * would work with its own DataRowStore. Note that this setting can be
      * overwritten per DataContext.
      */
     public boolean isSharedCacheEnabled() {
-        return sharedCacheEnabled;
-    }
-
-    public void setSharedCacheEnabled(boolean sharedCacheEnabled) {
-        this.sharedCacheEnabled = sharedCacheEnabled;
+        return sharedSnapshotCache != null;
     }
 
     /**
@@ -263,61 +175,16 @@ public class DataDomain implements DataChannel {
     }
 
     /**
-     * Sets the property defining whether child DataContexts should perform
-     * object validation before commit is executed.
-     *
-     * @since 1.1
-     */
-    public void setValidatingObjectsOnCommit(boolean flag) {
-        this.validatingObjectsOnCommit = flag;
-    }
-
-    /**
-     * Returns snapshots cache for this DataDomain, lazily initializing it on
-     * the first call if 'sharedCacheEnabled' flag is true.
+     * Returns the snapshots cache shared by the DataContexts of this DataDomain, or null if the domain runs with
+     * per-DataContext caches.
      */
     public DataRowStore getSharedSnapshotCache() {
-        if (sharedSnapshotCache == null && sharedCacheEnabled) {
-            this.sharedSnapshotCache = nonNullSharedSnapshotCache();
-        }
-
         return sharedSnapshotCache;
-    }
-
-    /**
-     * Returns a guaranteed non-null shared snapshot cache regardless of the
-     * 'sharedCacheEnabled' flag setting.
-     */
-    synchronized DataRowStore nonNullSharedSnapshotCache() {
-        if (sharedSnapshotCache == null) {
-            this.sharedSnapshotCache = dataRowStoreFactory.createDataRowStore(name);
-        }
-
-        return sharedSnapshotCache;
-    }
-
-    /**
-     * Shuts down the previous cache instance, sets cache to the new
-     * DataSowStore instance and updates two properties of the new DataSowStore:
-     * name and eventManager.
-     */
-    public synchronized void setSharedSnapshotCache(DataRowStore snapshotCache) {
-        if (this.sharedSnapshotCache != snapshotCache) {
-            if (this.sharedSnapshotCache != null) {
-                this.sharedSnapshotCache.shutdown();
-            }
-            this.sharedSnapshotCache = snapshotCache;
-
-            if (snapshotCache != null) {
-                snapshotCache.setEventManager(getEventManager());
-                snapshotCache.setName(getName());
-            }
-        }
     }
 
     public void addDataMap(DataMap dataMap) {
         getEntityResolver().addDataMap(dataMap);
-        refreshEntitySorter();
+        entitySorter.reindex();
     }
 
     /**
@@ -349,7 +216,7 @@ public class DataDomain implements DataChannel {
         // remove from EntityResolver
         getEntityResolver().removeDataMap(map);
 
-        refreshEntitySorter();
+        entitySorter.reindex();
     }
 
     /**
@@ -361,6 +228,7 @@ public class DataDomain implements DataChannel {
         DataNode removed = nodes.remove(nodeName);
         if (removed != null) {
             removed.setEntityResolver(null);
+            removed.setEntitySorter(null);
             nodesByDataMapName.values().removeIf(dataNode -> dataNode == removed);
         }
     }
@@ -388,6 +256,7 @@ public class DataDomain implements DataChannel {
         // add node to name->node map
         nodes.put(node.getName(), node);
         node.setEntityResolver(getEntityResolver());
+        node.setEntitySorter(entitySorter);
 
         // add node to "ent name->node" map
         for (DataMap map : node.getDataMaps()) {
@@ -449,25 +318,6 @@ public class DataDomain implements DataChannel {
     }
 
     /**
-     * Sets EntityResolver. If not set explicitly, DataDomain creates a default
-     * EntityResolver internally on demand.
-     *
-     * @since 1.1
-     */
-    public void setEntityResolver(EntityResolver entityResolver) {
-        this.entityResolver = entityResolver;
-    }
-
-    // creates default entity resolver if there is none set yet
-    private synchronized void createEntityResolver() {
-        if (entityResolver == null) {
-            // entity resolver will be self-indexing as we add all our maps
-            // to it as they are added to the DataDomain
-            entityResolver = new EntityResolver();
-        }
-    }
-
-    /**
      * Shutdowns all owned data nodes and marks this domain as stopped.
      */
     @BeforeScopeEnd
@@ -515,10 +365,6 @@ public class DataDomain implements DataChannel {
      */
     @Override
     public EntityResolver getEntityResolver() {
-        if (entityResolver == null) {
-            createEntityResolver();
-        }
-
         return entityResolver;
     }
 
@@ -580,37 +426,6 @@ public class DataDomain implements DataChannel {
      */
     public QueryCache getQueryCache() {
         return queryCache;
-    }
-
-    public void setQueryCache(QueryCache queryCache) {
-        this.queryCache = queryCache;
-    }
-
-    /**
-     * @since 4.0
-     */
-    public DataRowStoreFactory getDataRowStoreFactory() {
-        return dataRowStoreFactory;
-    }
-
-    /**
-     * @since 4.0
-     */
-    public void setDataRowStoreFactory(DataRowStoreFactory dataRowStoreFactory) {
-        this.dataRowStoreFactory = dataRowStoreFactory;
-    }
-
-    /**
-     * @since 3.1
-     */
-    JdbcEventLogger getJdbcEventLogger() {
-        return jdbcEventLogger;
-    }
-
-    void refreshEntitySorter() {
-        if (entitySorter != null) {
-            entitySorter.setEntityResolver(getEntityResolver());
-        }
     }
 
     /**
@@ -752,21 +567,12 @@ public class DataDomain implements DataChannel {
      * and DISJOINT_BY_ID prefetches and is intended to address database
      * limitations on the size of SQL statements as well as to cap memory use in
      * Cayenne when generating such queries. The default is 10000. It can be
-     * changed either by calling {@link #setMaxIdQualifierSize(int)} or changing
-     * the value for property
-     * {@link Constants#MAX_ID_QUALIFIER_SIZE_PROPERTY}.
+     * changed by setting the {@link Constants#MAX_ID_QUALIFIER_SIZE_PROPERTY} property.
      *
      * @since 3.1
      */
     public int getMaxIdQualifierSize() {
         return maxIdQualifierSize;
-    }
-
-    /**
-     * @since 3.1
-     */
-    public void setMaxIdQualifierSize(int maxIdQualifierSize) {
-        this.maxIdQualifierSize = maxIdQualifierSize;
     }
 
     TransactionManager getTransactionManager() {

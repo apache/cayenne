@@ -21,9 +21,7 @@ package org.apache.cayenne.tools;
 import javax.sql.DataSource;
 import java.io.File;
 
-import org.apache.cayenne.configuration.DataNodeDescriptor;
-import org.apache.cayenne.configuration.runtime.DataSourceFactory;
-import org.apache.cayenne.configuration.runtime.DbAdapterFactory;
+import org.apache.cayenne.dbsync.reverse.configuration.DbAdapterFactory;
 import org.apache.cayenne.dba.DbAdapter;
 import org.apache.cayenne.dbsync.DbSyncModule;
 import org.apache.cayenne.dbsync.reverse.configuration.ToolsModule;
@@ -111,12 +109,10 @@ public class DbImporterMojo extends AbstractMojo {
 
         final DbImportConfiguration config = createConfig(logger);
 
-        DataSourceFactory dataSourceFactory = injector.getInstance(DataSourceFactory.class);
         DbAdapterFactory dbAdapterFactory = injector.getInstance(DbAdapterFactory.class);
-        DataNodeDescriptor dataNodeDescriptor = config.createDataNodeDescriptor();
         try {
-            DataSource dataSource = dataSourceFactory.getDataSource(dataNodeDescriptor);
-            DbAdapter dbAdapter = dbAdapterFactory.createAdapter(dataNodeDescriptor, dataSource);
+            DataSource dataSource = config.createDataSource();
+            DbAdapter dbAdapter = dbAdapterFactory.createAdapter(config.getAdapter(), dataSource);
             config.setFiltersConfig(new FiltersConfigBuilder(dbImportConfig)
                     .dataSource(dataSource)
                     .dbAdapter(dbAdapter)

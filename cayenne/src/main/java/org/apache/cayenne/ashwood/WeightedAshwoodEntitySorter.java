@@ -18,13 +18,13 @@
  ****************************************************************/
 package org.apache.cayenne.ashwood;
 
-import java.util.Collections;
+import org.apache.cayenne.map.DbEntity;
+import org.apache.cayenne.map.EntityResolver;
+import org.apache.cayenne.map.ObjEntity;
+
 import java.util.Comparator;
 import java.util.HashMap;
 import java.util.Map;
-
-import org.apache.cayenne.map.DbEntity;
-import org.apache.cayenne.map.ObjEntity;
 
 /**
  * EntitySorter that takes into account entity "weights", and otherwise delegating to
@@ -34,20 +34,23 @@ import org.apache.cayenne.map.ObjEntity;
  */
 public class WeightedAshwoodEntitySorter extends AshwoodEntitySorter {
 
-    private Comparator<DbEntity> weightedDbEntityComparator;
-    private Comparator<ObjEntity> weightedObjEntityComparator;
+    private final Comparator<DbEntity> weightedDbEntityComparator;
+    private final Comparator<ObjEntity> weightedObjEntityComparator;
 
-    protected Map<DbEntity, Integer> entityWeights;
+    protected volatile Map<DbEntity, Integer> entityWeights;
 
-    public WeightedAshwoodEntitySorter() {
+    public WeightedAshwoodEntitySorter(EntityResolver entityResolver) {
+        super(entityResolver);
+
+        // the comparators are stateless, reading the sorter fields only when actually comparing, so creating them
+        // after super() (i.e. after the initial indexing) is safe
         this.weightedDbEntityComparator = new WeightedDbEntityComparator();
         this.weightedObjEntityComparator = new WeightedObjEntityComparator();
-        this.entityWeights = Collections.emptyMap();
     }
 
     @Override
-    protected void doIndexSorter() {
-        super.doIndexSorter();
+    public synchronized void reindex() {
+        super.reindex();
 
         entityWeights = new HashMap<>();
 
@@ -66,7 +69,6 @@ public class WeightedAshwoodEntitySorter extends AshwoodEntitySorter {
         }
     }
 
-    @SuppressWarnings("unchecked")
     @Override
     protected Comparator<DbEntity> getDbEntityComparator(boolean dependantFirst) {
         Comparator<DbEntity> c = weightedDbEntityComparator;
@@ -76,7 +78,6 @@ public class WeightedAshwoodEntitySorter extends AshwoodEntitySorter {
         return c;
     }
 
-    @SuppressWarnings("unchecked")
     @Override
     protected Comparator<ObjEntity> getObjEntityComparator(boolean dependantFirst) {
         Comparator<ObjEntity> c = weightedObjEntityComparator;

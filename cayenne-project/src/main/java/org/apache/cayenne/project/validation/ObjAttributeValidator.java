@@ -59,15 +59,14 @@ class ObjAttributeValidator extends ConfigurationNodeValidator<ObjAttribute> {
     }
 
     private void validateName(ObjAttribute attribute, ValidationResult validationResult) {
-        NameValidationHelper helper = NameValidationHelper.getInstance();
-        String invalidChars = helper.invalidCharsInObjPathComponent(attribute.getName());
+        String invalidChars = NameValidator.invalidCharsInObjPathComponent(attribute.getName());
 
         if (invalidChars != null) {
             addFailure(validationResult, attribute,
                     "ObjAttribute name '%s' contains invalid characters: %s",
                     attribute.getName(),
                     invalidChars);
-        } else if (helper.invalidPersistentObjectProperty(attribute.getName())) {
+        } else if (NameValidator.invalidPersistentProperty(attribute.getName())) {
             addFailure(validationResult, attribute,
                     "ObjAttribute name '%s' is invalid",
                     attribute.getName());

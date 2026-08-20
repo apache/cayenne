@@ -28,7 +28,6 @@ import org.junit.jupiter.api.io.TempDir;
 import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
-import java.nio.file.attribute.FileTime;
 import java.util.List;
 
 import static org.junit.jupiter.api.Assertions.*;
@@ -88,7 +87,10 @@ public class CgenRunIT {
 
     @Test
     public void upToDateOnSecondRun() {
-        tool.run(projectFile.toString(), "PersonMap");
+        CgenRunResult first = tool.run(projectFile.toString(), "PersonMap");
+
+        // cgen re-runs in full, but the regenerated content is identical, so nothing is touched on disk
+        long[] mtimes = first.files().stream().mapToLong(e -> Path.of(e.path()).toFile().lastModified()).toArray();
 
         CgenRunResult second = tool.run(projectFile.toString(), "PersonMap");
 
@@ -97,6 +99,33 @@ public class CgenRunIT {
         assertTrue(second.files().isEmpty());
         assertTrue(second.summary().filesConsidered() > 0);
         assertNull(second.error());
+
+        for (int i = 0; i < mtimes.length; i++) {
+            assertEquals(mtimes[i], Path.of(first.files().get(i).path()).toFile().lastModified(),
+                    "Unchanged file must not be rewritten: " + first.files().get(i).path());
+        }
+    }
+
+    @Test
+    public void regeneratesAfterDataMapChange() throws IOException {
+        CgenRunResult first = tool.run(projectFile.toString(), "PersonMap");
+        assertEquals("generated", first.status());
+
+        // add an attribute to the entity - the superclass must pick it up
+        Path dataMapFile = tempDir.resolve("PersonMap.map.xml");
+        Files.writeString(dataMapFile, Files.readString(dataMapFile).replace(
+                "<obj-entity name=\"Person\" className=\"com.example.Person\"/>",
+                """
+                <obj-entity name="Person" className="com.example.Person">
+                        <obj-attribute name="nickname" type="java.lang.String"/>
+                    </obj-entity>"""));
+
+        CgenRunResult second = tool.run(projectFile.toString(), "PersonMap");
+
+        assertEquals("generated", second.status());
+        assertEquals(List.of(CgenFileKind.entity_super),
+                second.files().stream().map(CgenFileEntry::kind).toList());
+        assertTrue(Files.readString(Path.of(second.files().getFirst().path())).contains("nickname"));
     }
 
     @Test
@@ -119,30 +148,6 @@ public class CgenRunIT {
     }
 
     @Test
-    public void regeneratesAfterDataMapChange() throws IOException {
-        // First run — generates files
-        CgenRunResult first = tool.run(projectFile.toString(), "PersonMap");
-        assertEquals("generated", first.status());
-
-        // Bump the DataMap's mtime to be clearly newer than the generated files.
-        // Use setLastModifiedTime rather than a wall-clock sleep to avoid
-        // filesystem mtime granularity issues (Windows has 1-second resolution).
-        long maxGeneratedMtime = first.files().stream()
-                .mapToLong(e -> Path.of(e.path()).toFile().lastModified())
-                .max()
-                .orElseThrow();
-        Path dataMapFile = tempDir.resolve("PersonMap.map.xml");
-        Files.setLastModifiedTime(dataMapFile, FileTime.fromMillis(maxGeneratedMtime + 5_000L));
-
-        // Second run — must detect that the DataMap is newer than the generated files
-        // and regenerate the superclass(es).
-        CgenRunResult second = tool.run(projectFile.toString(), "PersonMap");
-        assertEquals("generated", second.status(),
-                "Expected regeneration after DataMap mtime was bumped past generated files");
-        assertTrue(second.summary().filesWritten() > 0);
-    }
-
-    @Test
     public void generatesWithDefaultConfigWhenNoCgenBlock() throws IOException {
         // A DataMap with no <cgen> block, laid out in a standard Maven structure. The tool must
         // synthesize a default config rather than failing, deriving destDir from src/main/resources
@@ -152,15 +157,15 @@ public class CgenRunIT {
         Files.createDirectories(resources);
         Files.writeString(resources.resolve("cayenne-project.xml"), """
                 <?xml version="1.0" encoding="utf-8"?>
-                <domain xmlns="http://cayenne.apache.org/schema/12/domain" project-version="12">
+                <domain xmlns="http://cayenne.apache.org/schema/13/domain" project-version="13">
                     <map name="DefaultMap"/>
                 </domain>
                 """);
         Files.writeString(mapFile, """
                 <?xml version="1.0" encoding="utf-8"?>
-                <data-map xmlns="http://cayenne.apache.org/schema/12/modelMap"
+                <data-map xmlns="http://cayenne.apache.org/schema/13/modelMap"
                           xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-                          project-version="12">
+                          project-version="13">
                     <property name="defaultPackage" value="com.example"/>
                     <obj-entity name="Person" className="com.example.Person"/>
                 </data-map>
@@ -189,7 +194,7 @@ public class CgenRunIT {
         Path projectDescriptor = tempDir.resolve("cayenne-project.xml");
         Files.writeString(projectDescriptor, String.format("""
                 <?xml version="1.0" encoding="utf-8"?>
-                <domain xmlns="http://cayenne.apache.org/schema/12/domain" project-version="12">
+                <domain xmlns="http://cayenne.apache.org/schema/13/domain" project-version="13">
                     <map name="%s"/>
                 </domain>
                 """, mapName));
@@ -197,12 +202,12 @@ public class CgenRunIT {
         // DataMap with one entity and embedded cgen config
         Files.writeString(tempDir.resolve(mapName + ".map.xml"), String.format("""
                 <?xml version="1.0" encoding="utf-8"?>
-                <data-map xmlns="http://cayenne.apache.org/schema/12/modelMap"
+                <data-map xmlns="http://cayenne.apache.org/schema/13/modelMap"
                           xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-                          project-version="12">
+                          project-version="13">
                     <property name="defaultPackage" value="%s"/>
                     <obj-entity name="Person" className="%s.Person"/>
-                    <cgen xmlns="http://cayenne.apache.org/schema/12/cgen">
+                    <cgen xmlns="http://cayenne.apache.org/schema/13/cgen">
                         <destDir>%s</destDir>
                         <mode>entity</mode>
                         <makePairs>%s</makePairs>

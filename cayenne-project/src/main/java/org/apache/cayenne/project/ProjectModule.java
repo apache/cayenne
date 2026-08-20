@@ -24,12 +24,13 @@ import org.apache.cayenne.di.Binder;
 import org.apache.cayenne.di.ListBuilder;
 import org.apache.cayenne.di.Module;
 import org.apache.cayenne.project.extension.ProjectExtension;
-import org.apache.cayenne.project.upgrade.DefaultUpgradeService;
-import org.apache.cayenne.project.upgrade.UpgradeService;
+import org.apache.cayenne.project.upgrade.DefaultProjectUpgrader;
+import org.apache.cayenne.project.upgrade.ProjectUpgrader;
 import org.apache.cayenne.project.upgrade.handlers.UpgradeHandler;
 import org.apache.cayenne.project.upgrade.handlers.UpgradeHandler_V10;
 import org.apache.cayenne.project.upgrade.handlers.UpgradeHandler_V11;
 import org.apache.cayenne.project.upgrade.handlers.UpgradeHandler_V12;
+import org.apache.cayenne.project.upgrade.handlers.UpgradeHandler_V13;
 import org.apache.cayenne.project.upgrade.handlers.UpgradeHandler_V7;
 import org.apache.cayenne.project.upgrade.handlers.UpgradeHandler_V8;
 import org.apache.cayenne.project.upgrade.handlers.UpgradeHandler_V9;
@@ -76,7 +77,7 @@ public class ProjectModule implements Module {
         binder.bind(ConfigurationNodeParentGetter.class).to(DefaultConfigurationNodeParentGetter.class);
         binder.bind(ConfigurationNameMapper.class).to(DefaultConfigurationNameMapper.class);
 
-        binder.bind(UpgradeService.class).to(DefaultUpgradeService.class);
+        binder.bind(ProjectUpgrader.class).to(DefaultProjectUpgrader.class);
 
         extend(binder)
                 .initAllExtensions()
@@ -87,6 +88,7 @@ public class ProjectModule implements Module {
                 .addUpgradeHandler(UpgradeHandler_V9.class)
                 .addUpgradeHandler(UpgradeHandler_V10.class)
                 .addUpgradeHandler(UpgradeHandler_V11.class)
-                .addUpgradeHandler(UpgradeHandler_V12.class);
+                .addUpgradeHandler(UpgradeHandler_V12.class)
+                .addUpgradeHandler(UpgradeHandler_V13.class);
     }
 }

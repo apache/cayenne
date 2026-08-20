@@ -55,7 +55,7 @@ public class DbEntityView extends ProjectTabbedPane {
 
     private void initLayout() {
         setTabPlacement(JTabbedPane.TOP);
-        addTab("Entity", entityPanel);
+        addTab("DbEntity", entityPanel);
         addTab("Properties", attributeRelationshipTab);
     }
 

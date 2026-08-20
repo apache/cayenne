@@ -44,7 +44,7 @@ public class LikeNode extends ExpressionNode {
     @Override
     public void appendChildrenStart(SQLAppendable buffer) {
         if(ignoreCase) {
-            buffer.append(" UPPER(");
+            buffer.appendTokenSeparator().append("UPPER(");
         }
     }
 
@@ -54,11 +54,11 @@ public class LikeNode extends ExpressionNode {
             buffer.append(')');
         }
         if(not) {
-            buffer.append(" NOT");
+            buffer.appendTokenSeparator().append("NOT");
         }
-        buffer.append(" LIKE");
+        buffer.appendTokenSeparator().append("LIKE");
         if(ignoreCase) {
-            buffer.append(" UPPER(");
+            buffer.appendTokenSeparator().append("UPPER(");
         }
     }
 
@@ -68,7 +68,7 @@ public class LikeNode extends ExpressionNode {
             buffer.append(')');
         }
         if(escape != 0) {
-            buffer.append(" ESCAPE '").append(escape).append('\'');
+            buffer.appendTokenSeparator().append("ESCAPE").appendTokenSeparator().append('\'').append(escape).append('\'');
         }
     }
 

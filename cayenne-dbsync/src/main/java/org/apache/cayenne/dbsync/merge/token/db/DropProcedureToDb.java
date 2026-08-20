@@ -21,7 +21,7 @@ package org.apache.cayenne.dbsync.merge.token.db;
 
 import java.util.List;
 
-import org.apache.cayenne.dba.DbAdapter;
+import org.apache.cayenne.access.DataNode;
 import org.apache.cayenne.dbsync.merge.factory.MergerTokenFactory;
 import org.apache.cayenne.dbsync.merge.token.MergerToken;
 import org.apache.cayenne.map.Procedure;
@@ -39,7 +39,7 @@ public class DropProcedureToDb extends AbstractToDbToken {
     }
 
     @Override
-    public List<String> createSql(DbAdapter adapter) {
+    public List<String> createSql(DataNode node) {
         throw new UnsupportedOperationException("Can't drop procedure to db.");
     }
 

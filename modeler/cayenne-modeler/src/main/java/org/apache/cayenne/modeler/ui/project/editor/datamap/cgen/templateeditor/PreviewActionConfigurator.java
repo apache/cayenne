@@ -29,6 +29,7 @@ import org.apache.cayenne.gen.ClassGenerationActionFactory;
 import org.apache.cayenne.gen.CgenTemplate;
 import org.apache.cayenne.gen.TemplateType;
 import org.apache.cayenne.tools.ToolsInjectorBuilder;
+import org.slf4j.helpers.NOPLogger;
 
 import java.io.StringWriter;
 import java.io.Writer;
@@ -68,7 +69,7 @@ public class PreviewActionConfigurator {
 
         ClassGenerationAction action = injector
                 .getInstance(ClassGenerationActionFactory.class)
-                .createAction(previewCgenConfiguration);
+                .createAction(previewCgenConfiguration, NOPLogger.NOP_LOGGER);
         artefactsConfigurator.config(action, editor.getSelectedArtifactName());
         return action;
     }

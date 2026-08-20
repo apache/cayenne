@@ -20,8 +20,7 @@ package org.apache.cayenne.mcp.tools.dbimport;
 
 import org.apache.cayenne.configuration.DataChannelDescriptorLoader;
 import org.apache.cayenne.configuration.DataMapLoader;
-import org.apache.cayenne.configuration.runtime.DataSourceFactory;
-import org.apache.cayenne.configuration.runtime.DbAdapterFactory;
+import org.apache.cayenne.dbsync.reverse.configuration.DbAdapterFactory;
 import org.apache.cayenne.configuration.xml.DataChannelMetaData;
 import org.apache.cayenne.dbsync.merge.token.MergerToken;
 import org.apache.cayenne.dbsync.merge.token.model.AddRelationshipToModel;
@@ -53,13 +52,12 @@ public class InstrumentedDbImportAction extends DefaultDbImportAction {
     public InstrumentedDbImportAction(
             @Inject Logger logger,
             @Inject ProjectSaver projectSaver,
-            @Inject DataSourceFactory dataSourceFactory,
             @Inject DbAdapterFactory adapterFactory,
             @Inject DataMapLoader mapLoader,
             @Inject MergerTokenFactoryProvider mergerTokenFactoryProvider,
             @Inject DataChannelDescriptorLoader dataChannelDescriptorLoader,
             @Inject DataChannelMetaData metaData) {
-        super(logger, projectSaver, dataSourceFactory, adapterFactory, mapLoader,
+        super(logger, projectSaver, adapterFactory, mapLoader,
                 mergerTokenFactoryProvider, dataChannelDescriptorLoader, metaData);
     }
 

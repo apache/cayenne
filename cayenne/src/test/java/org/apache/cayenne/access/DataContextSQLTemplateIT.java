@@ -130,7 +130,7 @@ public class DataContextSQLTemplateIT {
 		createFourArtists();
 
 		SQLTemplate query = new SQLTemplate("SELECT * FROM ARTIST", true);
-		query.setDataNodeName("testmap");
+		query.setDataNodeName(env.dataNode().getName());
 		assertEquals(4, context.performQuery(query).size());
 	}
 

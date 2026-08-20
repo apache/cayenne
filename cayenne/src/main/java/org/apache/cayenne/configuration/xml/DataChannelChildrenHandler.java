@@ -19,9 +19,7 @@
 
 package org.apache.cayenne.configuration.xml;
 
-import org.apache.cayenne.ConfigurationException;
 import org.apache.cayenne.configuration.DataChannelDescriptor;
-import org.apache.cayenne.configuration.DataNodeDescriptor;
 import org.apache.cayenne.map.DataMap;
 import org.apache.cayenne.resource.Resource;
 import org.slf4j.Logger;
@@ -37,7 +35,6 @@ final class DataChannelChildrenHandler extends NamespaceAwareNestedTagHandler {
     private static final Logger LOGGER = LoggerFactory.getLogger(XMLDataChannelDescriptorLoader.class);
 
     static final String OLD_MAP_TAG = "map";
-    static final String NODE_TAG = "node";
     static final String PROPERTY_TAG = "property";
     static final String DATA_MAP_TAG = "data-map";
     static final String DOMAIN_TAG = "domain";
@@ -45,8 +42,6 @@ final class DataChannelChildrenHandler extends NamespaceAwareNestedTagHandler {
 
     private XMLDataChannelDescriptorLoader xmlDataChannelDescriptorLoader;
     private DataChannelDescriptor descriptor;
-
-    private DataNodeDescriptor nodeDescriptor;
 
     DataChannelChildrenHandler(XMLDataChannelDescriptorLoader xmlDataChannelDescriptorLoader, DataChannelHandler parentHandler) {
         super(parentHandler);
@@ -65,10 +60,6 @@ final class DataChannelChildrenHandler extends NamespaceAwareNestedTagHandler {
                 addMap(attributes);
                 return true;
 
-            case NODE_TAG:
-                addNode(attributes);
-                return true;
-
             case DOMAIN_TAG:
                 return true;
         }
@@ -79,11 +70,6 @@ final class DataChannelChildrenHandler extends NamespaceAwareNestedTagHandler {
     @Override
     protected ContentHandler createChildTagHandler(String namespaceURI, String localName,
                                                    String name, Attributes attributes) {
-        if (NODE_TAG.equals(localName)) {
-            nodeDescriptor = new DataNodeDescriptor();
-            return new DataNodeChildrenHandler(xmlDataChannelDescriptorLoader, this, nodeDescriptor);
-        }
-
         if (DATA_MAP_TAG.equals(localName)) {
             return new DataMapHandler(loaderContext);
         }
@@ -115,22 +101,5 @@ final class DataChannelChildrenHandler extends NamespaceAwareNestedTagHandler {
         dataMap.setDataChannelDescriptor(descriptor);
 
         descriptor.getDataMaps().add(dataMap);
-    }
-
-    private void addNode(Attributes attributes) {
-        String nodeName = attributes.getValue("name");
-        if (nodeName == null) {
-            throw new ConfigurationException("Error: <node> without 'name'.");
-        }
-
-        nodeDescriptor.setConfigurationSource(descriptor.getConfigurationSource());
-        nodeDescriptor.setName(nodeName);
-        nodeDescriptor.setAdapterType(attributes.getValue("adapter"));
-        nodeDescriptor.setParameters(attributes.getValue("parameters"));
-        nodeDescriptor.setDataSourceFactoryType(attributes.getValue("factory"));
-        nodeDescriptor.setSchemaUpdateStrategyType(attributes.getValue("schema-update-strategy"));
-        nodeDescriptor.setDataChannelDescriptor(descriptor);
-
-        descriptor.getNodeDescriptors().add(nodeDescriptor);
     }
 }

@@ -20,7 +20,7 @@ package org.apache.cayenne.modeler.ui.action;
 
 import org.apache.cayenne.configuration.ConfigurationNode;
 import org.apache.cayenne.configuration.DataChannelDescriptor;
-import org.apache.cayenne.configuration.DataNodeDescriptor;
+import org.apache.cayenne.dbsync.naming.CallbackNode;
 import org.apache.cayenne.dbsync.naming.NameBuilder;
 import org.apache.cayenne.map.DataMap;
 import org.apache.cayenne.map.DbAttribute;
@@ -136,9 +136,7 @@ public class PasteAction extends AppAction implements FlavorListener {
     }
 
     private void paste(Object where, Object content) {
-        paste(where, content, (DataChannelDescriptor) getProjectSession()
-                .project()
-                .getRootNode(), getProjectSession().getSelectedDataMap());
+        paste(where, content, (DataChannelDescriptor) getProjectSession().project().getRootNode());
     }
 
     /**
@@ -147,48 +145,38 @@ public class PasteAction extends AppAction implements FlavorListener {
     public void paste(
             Object where,
             Object content,
-            DataChannelDescriptor dataChannelDescriptor,
-            DataMap map) {
+            DataChannelDescriptor dataChannelDescriptor) {
 
         ProjectSession session = getProjectSession();
 
-        /**
-         * Add a little intelligence - if a tree leaf is selected, we can paste to a
-         * parent datamap
-         */
+        // Add a little intelligence - if a tree leaf is selected, we can paste to a parent datamap
         if (isTreeLeaf(where) && isTreeLeaf(content)) {
             where = session.getSelectedDataMap();
         }
 
-        if ((where instanceof DataChannelDescriptor || where instanceof DataNodeDescriptor)
-                && content instanceof DataMap) {
-            // paste DataMap to DataDomain or DataNode
-            DataMap dataMap = ((DataMap) content);
+        if (where instanceof DataChannelDescriptor && content instanceof DataMap dataMap) {
+            // paste DataMap to DataDomain
 
             dataMap.setName(NameBuilder
-                    .builder(dataMap, dataChannelDescriptor)
-                    .baseName(dataMap.getName())
+                    .of(dataMap, dataChannelDescriptor)
+                    .preferredName(dataMap.getName())
                     .dupesPattern(COPY_PATTERN)
-                    .name());
+                    .build());
 
-            /**
-             * Update all names in the new DataMap, so that they would not conflict with
-             * names from other datamaps of this domain
-             */
-
-            // add some intelligence - if we rename an entity, we should rename all links
+            // Update all names in the new DataMap, so that they would not conflict with
+            // names from other datamaps of this domain.
+            // Add some intelligence - if we rename an entity, we should rename all links
             // to it as well
             Map<String, String> renamedDbEntities = new HashMap<>();
             Map<String, String> renamedObjEntities = new HashMap<>();
-            Map<String, String> renamedEmbeddables = new HashMap<>();
 
             for (DbEntity dbEntity : dataMap.getDbEntities()) {
                 String oldName = dbEntity.getName();
                 dbEntity.setName(NameBuilder
-                        .builder(dbEntity, dataMap)
-                        .baseName(dbEntity.getName())
+                        .of(dbEntity, dataMap)
+                        .preferredName(dbEntity.getName())
                         .dupesPattern(COPY_PATTERN)
-                        .name());
+                        .build());
 
                 if (!oldName.equals(dbEntity.getName())) {
                     renamedDbEntities.put(oldName, dbEntity.getName());
@@ -198,10 +186,10 @@ public class PasteAction extends AppAction implements FlavorListener {
             for (ObjEntity objEntity : dataMap.getObjEntities()) {
                 String oldName = objEntity.getName();
                 objEntity.setName(NameBuilder
-                        .builder(objEntity, dataMap)
-                        .baseName(objEntity.getName())
+                        .of(objEntity, dataMap)
+                        .preferredName(objEntity.getName())
                         .dupesPattern(COPY_PATTERN)
-                        .name());
+                        .build());
 
                 if (!oldName.equals(objEntity.getName())) {
                     renamedObjEntities.put(oldName, objEntity.getName());
@@ -209,31 +197,26 @@ public class PasteAction extends AppAction implements FlavorListener {
             }
 
             for (Embeddable embeddable : dataMap.getEmbeddables()) {
-                String oldName = embeddable.getClassName();
                 embeddable.setClassName(NameBuilder
-                        .builder(embeddable, dataMap)
-                        .baseName(embeddable.getClassName())
+                        .of(embeddable, dataMap)
+                        .preferredName(embeddable.getClassName())
                         .dupesPattern(COPY_PATTERN)
-                        .name());
-
-                if (!oldName.equals(embeddable.getClassName())) {
-                    renamedEmbeddables.put(oldName, embeddable.getClassName());
-                }
+                        .build());
             }
 
             for (Procedure procedure : dataMap.getProcedures()) {
                 procedure.setName(NameBuilder
-                        .builder(procedure, dataMap)
-                        .baseName(procedure.getName())
+                        .of(procedure, dataMap)
+                        .preferredName(procedure.getName())
                         .dupesPattern(COPY_PATTERN)
-                        .name());
+                        .build());
             }
 
             for (QueryDescriptor query : dataMap.getQueryDescriptors()) {
-                query.setName(NameBuilder.builder(query, dataMap)
-                        .baseName(query.getName())
+                query.setName(NameBuilder.of(query, dataMap)
+                        .preferredName(query.getName())
                         .dupesPattern(COPY_PATTERN)
-                        .name());
+                        .build());
             }
 
             // if an entity was renamed, we rename all links to it too
@@ -265,30 +248,27 @@ public class PasteAction extends AppAction implements FlavorListener {
             }
 
             CreateDataMapAction.onMapCreated(this, getProjectSession(), dataMap);
-        } else if (where instanceof DataMap) {
+        } else if (where instanceof DataMap dataMap) {
             // paste DbEntity to DataMap
-            final DataMap dataMap = ((DataMap) where);
 
             // clear data map parent cache
             clearDataMapCache(dataMap);
 
-            if (content instanceof DbEntity) {
-                DbEntity dbEntity = (DbEntity) content;
+            if (content instanceof DbEntity dbEntity) {
                 dbEntity.setName(NameBuilder
-                        .builder(dbEntity, dataMap)
-                        .baseName(dbEntity.getName())
+                        .of(dbEntity, dataMap)
+                        .preferredName(dbEntity.getName())
                         .dupesPattern(COPY_PATTERN)
-                        .name());
+                        .build());
 
                 dataMap.addDbEntity(dbEntity);
                 CreateDbEntityAction.onDbEntityCreated(this, session, dbEntity);
-            } else if (content instanceof ObjEntity) {
+            } else if (content instanceof ObjEntity objEntity) {
                 // paste ObjEntity to DataMap
-                ObjEntity objEntity = (ObjEntity) content;
-                objEntity.setName(NameBuilder.builder(objEntity, dataMap)
-                        .baseName(objEntity.getName())
+                objEntity.setName(NameBuilder.of(objEntity, dataMap)
+                        .preferredName(objEntity.getName())
                         .dupesPattern(COPY_PATTERN)
-                        .name());
+                        .build());
 
                 dataMap.addObjEntity(objEntity);
                 CreateObjEntityAction.onObjEntityCreated(
@@ -296,14 +276,13 @@ public class PasteAction extends AppAction implements FlavorListener {
                         session,
                         dataMap,
                         objEntity);
-            } else if (content instanceof Embeddable) {
+            } else if (content instanceof Embeddable embeddable) {
                 // paste Embeddable to DataMap
-                Embeddable embeddable = (Embeddable) content;
                 embeddable.setClassName(NameBuilder
-                        .builder(embeddable, dataMap)
-                        .baseName(embeddable.getClassName())
+                        .of(embeddable, dataMap)
+                        .preferredName(embeddable.getClassName())
                         .dupesPattern(COPY_PATTERN)
-                        .name());
+                        .build());
 
                 dataMap.addEmbeddable(embeddable);
                 CreateEmbeddableAction.fireEmbeddableEvent(
@@ -311,26 +290,24 @@ public class PasteAction extends AppAction implements FlavorListener {
                         session,
                         dataMap,
                         embeddable);
-            } else if (content instanceof QueryDescriptor) {
-                QueryDescriptor query = (QueryDescriptor) content;
+            } else if (content instanceof QueryDescriptor query) {
 
                 query.setName(NameBuilder
-                        .builder(query, dataMap)
+                        .of(query, dataMap)
                         .dupesPattern(COPY_PATTERN)
-                        .baseName(query.getName())
-                        .name());
+                        .preferredName(query.getName())
+                        .build());
                 query.setDataMap(dataMap);
 
                 dataMap.addQueryDescriptor(query);
                 QueryTypeDialog.fireQueryEvent(this, session, dataMap, query);
-            } else if (content instanceof Procedure) {
+            } else if (content instanceof Procedure procedure) {
                 // paste Procedure to DataMap
-                Procedure procedure = (Procedure) content;
                 procedure.setName(NameBuilder
-                        .builder(procedure, dataMap)
+                        .of(procedure, dataMap)
                         .dupesPattern(COPY_PATTERN)
-                        .baseName(procedure.getName())
-                        .name());
+                        .preferredName(procedure.getName())
+                        .build());
 
                 dataMap.addProcedure(procedure);
                 CreateProcedureAction.fireProcedureEvent(
@@ -339,27 +316,24 @@ public class PasteAction extends AppAction implements FlavorListener {
                         dataMap,
                         procedure);
             }
-        } else if (where instanceof DbEntity) {
-            final DbEntity dbEntity = (DbEntity) where;
+        } else if (where instanceof DbEntity dbEntity) {
 
-            if (content instanceof DbAttribute) {
-                DbAttribute attr = (DbAttribute) content;
+            if (content instanceof DbAttribute attr) {
                 attr.setName(NameBuilder
-                        .builder(attr, dbEntity)
+                        .of(attr, dbEntity)
                         .dupesPattern(COPY_PATTERN)
-                        .baseName(attr.getName())
-                        .name());
+                        .preferredName(attr.getName())
+                        .build());
 
                 dbEntity.addAttribute(attr);
                 CreateAttributeAction.fireDbAttributeEvent(this, session, session
                         .getSelectedDataMap(), dbEntity, attr);
-            } else if (content instanceof DbRelationship) {
-                DbRelationship rel = (DbRelationship) content;
+            } else if (content instanceof DbRelationship rel) {
                 rel.setName(NameBuilder
-                        .builder(rel, dbEntity)
-                        .baseName(rel.getName())
+                        .of(rel, dbEntity)
+                        .preferredName(rel.getName())
                         .dupesPattern(COPY_PATTERN)
-                        .name());
+                        .build());
 
                 dbEntity.addRelationship(rel);
                 CreateRelationshipAction.fireDbRelationshipEvent(
@@ -368,27 +342,24 @@ public class PasteAction extends AppAction implements FlavorListener {
                         dbEntity,
                         rel);
             }
-        } else if (where instanceof ObjEntity) {
-            ObjEntity objEntity = (ObjEntity) where;
+        } else if (where instanceof ObjEntity objEntity) {
 
-            if (content instanceof ObjAttribute) {
-                ObjAttribute attr = (ObjAttribute) content;
+            if (content instanceof ObjAttribute attr) {
                 attr.setName(NameBuilder
-                        .builder(attr, objEntity)
-                        .baseName(attr.getName())
+                        .of(attr, objEntity)
+                        .preferredName(attr.getName())
                         .dupesPattern(COPY_PATTERN)
-                        .name());
+                        .build());
 
                 objEntity.addAttribute(attr);
                 CreateAttributeAction.fireObjAttributeEvent(this, session, session
                         .getSelectedDataMap(), objEntity, attr);
-            } else if (content instanceof ObjRelationship) {
-                ObjRelationship rel = (ObjRelationship) content;
+            } else if (content instanceof ObjRelationship rel) {
                 rel.setName(NameBuilder
-                        .builder(rel, objEntity)
-                        .baseName(rel.getName())
+                        .of(rel, objEntity)
+                        .preferredName(rel.getName())
                         .dupesPattern(COPY_PATTERN)
-                        .name());
+                        .build());
 
                 objEntity.addRelationship(rel);
                 CreateRelationshipAction.fireObjRelationshipEvent(
@@ -396,33 +367,30 @@ public class PasteAction extends AppAction implements FlavorListener {
                         session,
                         objEntity,
                         rel);
-            } else if (content instanceof ObjCallbackMethod) {
-                ObjCallbackMethod method = (ObjCallbackMethod) content;
+            } else if (content instanceof ObjCallbackMethod method) {
 
                 method.setName(NameBuilder
-                        .builderForCallbackMethod(objEntity)
-                        .baseName(method.getName())
+                        .of(new CallbackNode(), objEntity)
+                        .preferredName(method.getName())
                         .dupesPattern(COPY_PATTERN)
-                        .name());
+                        .build());
 
                 objEntity.getCallbackMap()
-                        .getCallbackDescriptor(session.getSelectedCallbackType().getType())
+                        .getCallbackDescriptor(method.getCallbackType().getType())
                         .addCallbackMethod(method.getName());
 
                 CallbackMethodEvent ce = CallbackMethodEvent.ofAdd(this, method.getName());
 
                 getProjectSession().fireCallbackMethodEvent(ce);
             }
-        } else if (where instanceof Embeddable) {
-            final Embeddable embeddable = (Embeddable) where;
+        } else if (where instanceof Embeddable embeddable) {
 
-            if (content instanceof EmbeddableAttribute) {
-                EmbeddableAttribute attr = (EmbeddableAttribute) content;
+            if (content instanceof EmbeddableAttribute attr) {
                 attr.setName(NameBuilder
-                        .builder(attr, embeddable)
-                        .baseName(attr.getName())
+                        .of(attr, embeddable)
+                        .preferredName(attr.getName())
                         .dupesPattern(COPY_PATTERN)
-                        .name());
+                        .build());
 
                 embeddable.addAttribute(attr);
                 CreateAttributeAction.fireEmbeddableAttributeEvent(
@@ -432,18 +400,16 @@ public class PasteAction extends AppAction implements FlavorListener {
                         attr);
             }
 
-        } else if (where instanceof Procedure) {
+        } else if (where instanceof Procedure procedure) {
             // paste param to procedure
-            final Procedure procedure = (Procedure) where;
 
-            if (content instanceof ProcedureParameter) {
-                ProcedureParameter param = (ProcedureParameter) content;
+            if (content instanceof ProcedureParameter param) {
 
                 param.setName(NameBuilder
-                        .builder(param, procedure)
-                        .baseName(param.getName())
+                        .of(param, procedure)
+                        .preferredName(param.getName())
                         .dupesPattern(COPY_PATTERN)
-                        .name());
+                        .build());
 
                 procedure.addCallParameter(param);
                 CreateProcedureParameterAction.fireProcedureParameterEvent(
@@ -491,7 +457,7 @@ public class PasteAction extends AppAction implements FlavorListener {
                     CMTransferable.CAYENNE_FLAVOR);
 
             if (content instanceof List) {
-                content = ((List) content).get(0);
+                content = ((List) content).getFirst();
             }
 
             Object currentObject = getProjectSession().getSelectedObject();
@@ -500,11 +466,8 @@ public class PasteAction extends AppAction implements FlavorListener {
                 return false;
             }
 
-            /**
-             * Checking all available pairs source-pasting object
-             */
-
-            return ((currentObject instanceof DataChannelDescriptor || currentObject instanceof DataNodeDescriptor) && content instanceof DataMap)
+            //  Checking all available pairs source-pasting object
+            return (currentObject instanceof DataChannelDescriptor && content instanceof DataMap)
                     ||
 
                     (currentObject instanceof DataMap && isTreeLeaf(content))

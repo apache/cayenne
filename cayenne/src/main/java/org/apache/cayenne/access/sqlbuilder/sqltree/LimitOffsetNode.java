@@ -20,6 +20,7 @@
 package org.apache.cayenne.access.sqlbuilder.sqltree;
 
 import org.apache.cayenne.access.sqlbuilder.SQLAppendable;
+import org.apache.cayenne.access.sqlbuilder.SQLGenerationContext;
 
 import java.util.Objects;
 
@@ -38,11 +39,12 @@ public class LimitOffsetNode extends Node {
     }
 
     @Override
-    public SQLAppendable append(SQLAppendable buffer) {
+    public SQLAppendable append(SQLAppendable buffer, SQLGenerationContext context) {
         if(limit == 0 && offset == 0) {
             return buffer;
         }
-        return buffer.append(" LIMIT ").append(limit).append(" OFFSET ").append(offset);
+        return buffer.appendTokenSeparator().append("LIMIT").appendTokenSeparator().append(limit)
+                .appendTokenSeparator().append("OFFSET").appendTokenSeparator().append(offset);
     }
 
     public int getLimit() {

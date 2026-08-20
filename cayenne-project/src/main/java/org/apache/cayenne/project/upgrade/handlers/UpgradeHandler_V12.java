@@ -19,7 +19,7 @@
 
 package org.apache.cayenne.project.upgrade.handlers;
 
-import org.apache.cayenne.project.upgrade.UpgradeUnit;
+import org.apache.cayenne.project.upgrade.UpgradeContext;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.w3c.dom.Element;
@@ -51,21 +51,21 @@ public class UpgradeHandler_V12 implements UpgradeHandler {
     }
 
     @Override
-    public void processProjectDom(UpgradeUnit upgradeUnit) {
+    public void processProjectDom(UpgradeContext upgradeUnit) {
         updateDomainSchemaAndVersion(upgradeUnit);
         removeGraphIncludes(upgradeUnit);
         updateDomainExtensionSchema(upgradeUnit, VALIDATION);
     }
 
     @Override
-    public void processDataMapDom(UpgradeUnit upgradeUnit) {
+    public void processDataMapDom(UpgradeContext upgradeUnit) {
         updateDataMapSchemaAndVersion(upgradeUnit);
         updateExtensionSchema(upgradeUnit, CGEN);
         updateExtensionSchema(upgradeUnit, DB_IMPORT);
         updateInfoSchema(upgradeUnit);
     }
 
-    private void removeGraphIncludes(UpgradeUnit upgradeUnit) {
+    private void removeGraphIncludes(UpgradeContext upgradeUnit) {
         XPath xpath = XPathFactory.newInstance().newXPath();
         NodeList nodes;
         try {
@@ -79,9 +79,10 @@ public class UpgradeHandler_V12 implements UpgradeHandler {
         for (int j = 0; j < nodes.getLength(); j++) {
             Element element = (Element) nodes.item(j);
             String href = element.getAttribute("href");
-            if (href != null && href.endsWith(GRAPH_SUFFIX)) {
+            if (href.endsWith(GRAPH_SUFFIX)) {
                 deleteGraphFile(upgradeUnit, href);
                 toRemove.add(element);
+                upgradeUnit.addPostUpgradeMessage("The 'graph' diagram layout is no longer supported and was deleted from the project");
             }
         }
         for (Element element : toRemove) {
@@ -89,7 +90,7 @@ public class UpgradeHandler_V12 implements UpgradeHandler {
         }
     }
 
-    private void deleteGraphFile(UpgradeUnit upgradeUnit, String href) {
+    private void deleteGraphFile(UpgradeContext upgradeUnit, String href) {
         try {
             File projectFile = new File(upgradeUnit.getResource().getURL().toURI());
             File graphFile = new File(projectFile.getParentFile(), href);

@@ -86,7 +86,7 @@ public class TemplateEditor extends AppFrame {
         super(app);
         this.parent = parent;
         this.templateType = templateType;
-        this.configuration = parent.getCodeGeneratorController().getCgenConfiguration();
+        this.configuration = parent.getCodeGeneratorController().getConfiguration();
         this.currentDataMap = configuration.getDataMap();
         this.artefactsConfigurator = setupArtefactConfigurator(templateType);
 

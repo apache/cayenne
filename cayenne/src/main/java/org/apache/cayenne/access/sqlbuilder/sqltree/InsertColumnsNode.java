@@ -20,6 +20,7 @@
 package org.apache.cayenne.access.sqlbuilder.sqltree;
 
 import org.apache.cayenne.access.sqlbuilder.SQLAppendable;
+import org.apache.cayenne.access.sqlbuilder.SQLGenerationContext;
 
 /**
  * @since 4.2
@@ -36,7 +37,7 @@ public class InsertColumnsNode extends Node {
     }
 
     @Override
-    public SQLAppendable append(SQLAppendable buffer) {
+    public SQLAppendable append(SQLAppendable buffer, SQLGenerationContext context) {
         return buffer;
     }
 
@@ -52,6 +53,6 @@ public class InsertColumnsNode extends Node {
 
     @Override
     public void appendChildrenStart(SQLAppendable buffer) {
-        buffer.append('(');
+        buffer.append('(').suppressNextTokenSeparator();
     }
 }

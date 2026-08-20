@@ -71,7 +71,7 @@ public class ValidationConfigSaveTest {
         // disable one deprecated inspection and one regular inspection
         EnumSet<Inspection> enabled = EnumSet.complementOf(EnumSet.of(
                 Inspection.DB_ATTRIBUTE_NO_LENGTH,
-                Inspection.DATA_NODE_NO_NAME));
+                Inspection.DATA_MAP_NO_NAME));
         metaData.add(descriptor, new ValidationConfig(enabled));
 
         Project project = new Project(new ConfigurationTree<>(descriptor));
@@ -81,6 +81,6 @@ public class ValidationConfigSaveTest {
 
         // the deprecated inspection is dropped, the regular one is round-tripped
         assertFalse(xml.contains("DB_ATTRIBUTE_NO_LENGTH"), xml);
-        assertTrue(xml.contains("DATA_NODE_NO_NAME"), xml);
+        assertTrue(xml.contains("DATA_MAP_NO_NAME"), xml);
     }
 }

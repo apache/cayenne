@@ -23,7 +23,7 @@ import org.apache.cayenne.CayenneRuntimeException;
 import org.apache.cayenne.DataRow;
 import org.apache.cayenne.access.DataNode;
 import org.apache.cayenne.access.OperationObserver;
-import org.apache.cayenne.access.translator.procedure.TranslatedProcedure;
+import org.apache.cayenne.access.translator.TranslatedProcedure;
 import org.apache.cayenne.access.types.ExtendedType;
 import org.apache.cayenne.access.types.ExtendedTypeMap;
 import org.apache.cayenne.dba.DbAdapter;
@@ -73,23 +73,19 @@ public class ProcedureAction extends BaseSQLAction {
 		TranslatedProcedure translated = dataNode.getProcedureTranslator()
 				.translate(query, dataNode.getAdapter(), dataNode.getEntityResolver());
 
-		dataNode.getJdbcEventLogger().logQuery(translated.sql(), translated.bindings());
+		observer.nextStatement(query, translated);
 
 		try (CallableStatement statement = connection.prepareCall(translated.sql())) {
 			initStatement(statement);
 			bindParameters(statement, translated);
 
 			// stored procedure may contain a mixture of update counts and
-			// result sets,
-			// and out parameters. Read out parameters first, then
+			// result sets, and out parameters. Read out parameters first, then
 			// iterate until we exhaust all results
 
 			// TODO: andrus, 4/2/2007 - according to the docs we should store
-			// the boolean
-			// return value of this method and avoid calling 'getMoreResults' if
-			// it is
-			// true.
-			// some db's handle this well, some don't (MySQL).
+			// the boolean return value of this method and avoid calling 'getMoreResults' if
+			// it is true. some db's handle this well, some don't (MySQL).
 
 			// 09/23/2013: almost all adapters except Oracle (and maybe a few
 			// more?) are actually using the correct strategy, so making it a
@@ -114,7 +110,6 @@ public class ProcedureAction extends BaseSQLAction {
 					if (updateCount == -1) {
 						break;
 					}
-					dataNode.getJdbcEventLogger().logUpdateCount(updateCount);
 					observer.nextCount(query, updateCount);
 				}
 			}
@@ -129,11 +124,11 @@ public class ProcedureAction extends BaseSQLAction {
 	 */
 	protected void bindParameters(CallableStatement statement, TranslatedProcedure translated) throws Exception {
 		DbAdapter adapter = dataNode.getAdapter();
-		ProcedureParameter[] callParams = translated.callParams();
-		PSParameter[] bindings = translated.bindings();
+		CSParameter<?>[] params = translated.params();
 
-		for (int i = 0; i < callParams.length; i++) {
-			ProcedureParameter param = callParams[i];
+		for (int i = 0; i < params.length; i++) {
+			CSParameter<?> binding = params[i];
+			ProcedureParameter param = binding.param();
 
 			if (param.isOutParam()) {
 				int precision = param.getPrecision();
@@ -145,7 +140,7 @@ public class ProcedureAction extends BaseSQLAction {
 			}
 
 			if (param.isInParameter()) {
-				adapter.bindParameter(statement, bindings[i]);
+				adapter.bindParameter(statement, binding);
 			}
 		}
 	}
@@ -198,7 +193,7 @@ public class ProcedureAction extends BaseSQLAction {
 		RSColumn[] result = new RSColumn[columns.length];
 		for (int i = 0; i < columns.length; i++) {
 			ProcedureColumn c = columns[i];
-			ExtendedType type = typeMap.getRegisteredType(c.javaClass());
+			ExtendedType<?> type = typeMap.getRegisteredType(c.javaClass());
 			result[i] = new RSColumn(c.name(), c.jdbcType(), c.dataRowKey(), type, null);
 		}
 		return result;
@@ -216,8 +211,6 @@ public class ProcedureAction extends BaseSQLAction {
 	 */
 	protected void readProcedureOutParameters(CallableStatement statement, OperationObserver delegate) throws Exception {
 
-		long t1 = System.currentTimeMillis();
-
 		// build result row...
 		DataRow result = null;
 		List<ProcedureParameter> parameters = getProcedure().getCallParameters();
@@ -232,7 +225,8 @@ public class ProcedureAction extends BaseSQLAction {
 				result = new DataRow(2);
 			}
 
-			ExtendedType type = dataNode.getAdapter().getExtendedTypes()
+			ExtendedType<?> type = dataNode.getAdapter()
+					.getExtendedTypes()
 					.getRegisteredType(TypesMapping.getJavaBySqlType(parameter.getType()));
 			Object val = type.materializeObject(statement, i + 1, parameter.getType());
 
@@ -241,7 +235,6 @@ public class ProcedureAction extends BaseSQLAction {
 
 		if (result != null && !result.isEmpty()) {
 			// treat out parameters as a separate data row set
-			dataNode.getJdbcEventLogger().logSelectCount(1, System.currentTimeMillis() - t1);
 			delegate.nextRows(query, Collections.singletonList(result));
 		}
 	}

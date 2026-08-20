@@ -90,7 +90,7 @@ public class DbImporterMojoConfigurationTest {
         List<Pattern> excludes = new ArrayList<>();
         excludes.add(PatternFilter.pattern("^ETL_.*"));
 
-        assertEquals(filters.tableFilter(null, "NHL_STATS"),
+        assertEquals(filters.tableFilter(null, "GAME_STATS"),
                 new TableFilter(includes, excludes));
     }
 

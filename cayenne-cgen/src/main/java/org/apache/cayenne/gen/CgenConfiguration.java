@@ -86,11 +86,9 @@ public class CgenConfiguration implements Serializable, XMLSerializable {
      * @since 5.0 renamed from querySuperTemplate
      */
     private CgenTemplate dataMapSuperTemplate;
-    private long timestamp;
     private String outputPattern;
     private String encoding;
     private boolean createPropertyNames;
-    private boolean force; // force run generator
     /**
      * @since 4.1
      */
@@ -106,7 +104,6 @@ public class CgenConfiguration implements Serializable, XMLSerializable {
 
         // isDefault() method should be in sync with the following values
         this.outputPattern = "*.java";
-        this.timestamp = 0L;
         this.usePkgPath = true;
         this.makePairs = true;
         this.createPKProperties = true;
@@ -357,14 +354,6 @@ public class CgenConfiguration implements Serializable, XMLSerializable {
         this.dataMapSuperTemplate = dataMapSuperTemplate;
     }
 
-    public long getTimestamp() {
-        return timestamp;
-    }
-
-    public void setTimestamp(long timestamp) {
-        this.timestamp = timestamp;
-    }
-
     public String getOutputPattern() {
         return outputPattern;
     }
@@ -389,12 +378,23 @@ public class CgenConfiguration implements Serializable, XMLSerializable {
         this.createPropertyNames = createPropertyNames;
     }
 
+    /**
+     * @return false
+     * @deprecated cgen always regenerates classes, so there is nothing left to force
+     */
+    @Deprecated(since = "5.0", forRemoval = true)
     public boolean isForce() {
-        return force;
+        return true;
     }
 
+    /**
+     * does nothing
+     *
+     * @param force not used
+     * @deprecated cgen always regenerates classes, so there is nothing left to force
+     */
+    @Deprecated(since = "5.0", forRemoval = true)
     public void setForce(boolean force) {
-        this.force = force;
     }
 
     public boolean isCreatePKProperties() {

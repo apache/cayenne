@@ -96,7 +96,7 @@ class PermanentObjectIdVisitor implements DbRowOpVisitor<Void> {
     private void createPermanentId(InsertDbRowOp dbRow) {
         ObjectId id = dbRow.getChangeId();
         boolean supportsGeneratedKeys = lastNode.getAdapter().supportsGeneratedKeys();
-        PkGenerator pkGenerator = lastNode.getAdapter().getPkGenerator();
+        PkGenerator pkGenerator = lastNode.getPkGenerator();
 
         // modify replacement id directly...
         Map<String, Object> idMap = id.getReplacementIdMap();

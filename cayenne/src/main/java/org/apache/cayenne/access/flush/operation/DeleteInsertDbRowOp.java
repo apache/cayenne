@@ -38,8 +38,9 @@ public class DeleteInsertDbRowOp extends BaseDbRowOp {
 
     @Override
     public <T> T accept(DbRowOpVisitor<T> visitor) {
-        visitor.visitDelete(delete);
-        return visitor.visitInsert(insert);
+        // double-dispatch through the wrapped ops, so their subclasses (e.g. SoftDeleteDbRowOp) route correctly
+        delete.accept(visitor);
+        return insert.accept(visitor);
     }
 
     @Override

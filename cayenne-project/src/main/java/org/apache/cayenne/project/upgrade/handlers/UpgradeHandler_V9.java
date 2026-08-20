@@ -24,7 +24,7 @@ import javax.xml.xpath.XPath;
 import javax.xml.xpath.XPathConstants;
 import javax.xml.xpath.XPathFactory;
 
-import org.apache.cayenne.project.upgrade.UpgradeUnit;
+import org.apache.cayenne.project.upgrade.UpgradeContext;
 import org.apache.cayenne.util.Util;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -45,13 +45,13 @@ public class UpgradeHandler_V9 implements UpgradeHandler {
     }
 
     @Override
-    public void processProjectDom(UpgradeUnit upgradeUnit) {
+    public void processProjectDom(UpgradeContext upgradeUnit) {
         Element domain = upgradeUnit.getDocument().getDocumentElement();
         domain.setAttribute("project-version", getVersion());
     }
 
     @Override
-    public void processDataMapDom(UpgradeUnit upgradeUnit) {
+    public void processDataMapDom(UpgradeContext upgradeUnit) {
         Document document = upgradeUnit.getDocument();
         Element dataMap = document.getDocumentElement();
         updateDataMapSchemaAndVersion(upgradeUnit);

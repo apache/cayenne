@@ -19,11 +19,6 @@
 
 package org.apache.cayenne.dbsync.reverse.dbload;
 
-import java.sql.DatabaseMetaData;
-import java.sql.SQLException;
-import java.util.Map;
-import java.util.Set;
-
 import org.apache.cayenne.dbsync.naming.NameBuilder;
 import org.apache.cayenne.dbsync.naming.ObjectNameGenerator;
 import org.apache.cayenne.dbsync.reverse.filters.TableFilter;
@@ -33,6 +28,11 @@ import org.apache.cayenne.map.DbJoin;
 import org.apache.cayenne.map.DbRelationship;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+
+import java.sql.DatabaseMetaData;
+import java.sql.SQLException;
+import java.util.Map;
+import java.util.Set;
 
 public class RelationshipLoader extends AbstractLoader {
 
@@ -60,10 +60,10 @@ public class RelationshipLoader extends AbstractLoader {
                 throw new IllegalStateException();
             }
 
-            ExportedKey.KeyData PK = key.getPk();
-            ExportedKey.KeyData FK = key.getFk();
-            DbEntity pkEntity = map.getDbEntity(PK.getTable());
-            DbEntity fkEntity = map.getDbEntity(FK.getTable());
+            ExportedKeySide PK = key.pk();
+            ExportedKeySide FK = key.fk();
+            DbEntity pkEntity = map.getDbEntity(PK.table());
+            DbEntity fkEntity = map.getDbEntity(FK.table());
             if (pkEntity == null || fkEntity == null) {
                 // Check for existence of this entities were made in creation of ExportedKey
                 throw new IllegalStateException();
@@ -78,7 +78,7 @@ public class RelationshipLoader extends AbstractLoader {
             // TODO: dirty and non-transparent... using DbRelationshipDetected for the benefit of the merge package.
             // This info is available from joins....
             DbRelationshipDetected reverseRelationship = new DbRelationshipDetected();
-            reverseRelationship.setFkName(FK.getName());
+            reverseRelationship.setFkName(FK.name());
             reverseRelationship.setSourceEntity(fkEntity);
             reverseRelationship.setTargetEntityName(pkEntity);
             reverseRelationship.setToMany(false);
@@ -104,9 +104,9 @@ public class RelationshipLoader extends AbstractLoader {
 
     private void setRelationshipName(DbEntity entity, DbRelationship relationship) {
         relationship.setName(NameBuilder
-                .builder(relationship, entity)
-                .baseName(nameGenerator.relationshipName(relationship))
-                .name());
+                .of(relationship, entity)
+                .preferredName(nameGenerator.dbRelationshipName(relationship.getJoins(), relationship.isToMany()))
+                .build());
     }
 
     private void checkAndAddRelationship(DbEntity entity, DbRelationship relationship){
@@ -163,8 +163,8 @@ public class RelationshipLoader extends AbstractLoader {
 
         for (ExportedKey exportedKey : exportedKeys) {
             // Create and append joins
-            String pkName = exportedKey.getPk().getColumn();
-            String fkName = exportedKey.getFk().getColumn();
+            String pkName = exportedKey.pk().column();
+            String fkName = exportedKey.fk().column();
 
             // skip invalid joins...
             DbAttribute pkAtt = pkEntity.getAttribute(pkName);

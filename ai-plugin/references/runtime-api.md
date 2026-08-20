@@ -34,7 +34,7 @@ Two creation paths:
 import org.apache.cayenne.runtime.CayenneRuntime;
 import org.apache.cayenne.runtime.CayenneRuntimeBuilder;
 
-CayenneRuntime runtime = CayenneRuntime.builder()
+CayenneRuntime runtime = CayenneRuntime.of()
         .addConfig("cayenne-mydb.xml")
         .url("jdbc:postgresql://localhost:5432/mydb")
         .jdbcDriver("org.postgresql.Driver")
@@ -52,7 +52,7 @@ import javax.sql.DataSource;
 
 DataSource ds = ...; // created elsewhere in your app
 
-CayenneRuntime runtime = CayenneRuntime.builder()
+CayenneRuntime runtime = CayenneRuntime.of()
         .addConfig("cayenne-mydb.xml")
         .dataSource(ds)
         .build();

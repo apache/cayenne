@@ -20,17 +20,16 @@ package org.apache.cayenne.crypto.transformer;
 
 import org.apache.cayenne.access.jdbc.RSColumn;
 import org.apache.cayenne.access.jdbc.PSBatchParameter;
-import org.apache.cayenne.access.types.ExtendedTypeMap;
 
 /**
  * A factory that creates encryption transformers used for processing batch
  * bindings and decryption transformers - for result rows.
- * 
+ *
  * @since 4.0
  */
 public interface TransformerFactory {
 
-    BindingsTransformer encryptor(PSBatchParameter[] bindings, ExtendedTypeMap extendedTypeMap);
+    BindingsTransformer encryptor(PSBatchParameter[] bindings);
 
     MapTransformer decryptor(RSColumn[] columns, Object sampleRow);
 }

@@ -26,9 +26,11 @@ import java.sql.Driver;
 /**
  * A builder class that allows to build a {@link DataSource} with optional
  * pooling.
- * 
+ *
  * @since 4.0
+ * @deprecated in favor of {@link CayenneDataSource}
  */
+@Deprecated(since = "5.0", forRemoval = true)
 public class DataSourceBuilder {
 
 	private String userName;

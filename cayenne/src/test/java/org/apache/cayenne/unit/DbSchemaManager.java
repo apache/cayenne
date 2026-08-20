@@ -72,9 +72,9 @@ public class DbSchemaManager {
 
         this.dataSourceDescriptor = dataSourceDescriptor;
         this.dataSource = dataSource;
-        this.domain = CayenneRuntime.builder()
+        this.domain = CayenneRuntime.of()
                 .addConfig(project)
-                .dataSource(dataSource)
+                .defaultDataNode(dataSource)
                 .build()
                 .getDataDomain();
 
@@ -89,8 +89,8 @@ public class DbSchemaManager {
             filterDataMap(map);
         }
 
-        // TODO: suspect
-        domain.getEntitySorter().setEntityResolver(domain.getEntityResolver());
+        // "filterDataMap" above mutated the maps, so the sorter index is stale
+        domain.getEntitySorter().reindex();
 
         this.dataMapsInSchemaSetupOrder = sortDataMapsInSchemaSetupOrder();
     }
@@ -396,12 +396,12 @@ public class DbSchemaManager {
 
     private void dropPKSupport(DataNode node, DataMap map) throws Exception {
         List<DbEntity> filteredEntities = dbEntitiesInInsertOrder(map.getName());
-        node.getAdapter().getPkGenerator().dropAutoPk(node, filteredEntities);
+        node.getPkGenerator().dropAutoPk(node, filteredEntities);
     }
 
     private void createPKSupport(DataNode node, DataMap map) throws Exception {
         List<DbEntity> filteredEntities = dbEntitiesInInsertOrder(map.getName());
-        node.getAdapter().getPkGenerator().createAutoPk(node, filteredEntities);
+        node.getPkGenerator().createAutoPk(node, filteredEntities);
     }
 
     private void createSchema(DataNode node, DataMap map) throws Exception {

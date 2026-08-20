@@ -22,8 +22,10 @@ package org.apache.cayenne.access;
 import org.apache.cayenne.CayenneRuntimeException;
 import org.apache.cayenne.DataRow;
 import org.apache.cayenne.Fault;
+import org.apache.cayenne.ObjectId;
 import org.apache.cayenne.PersistenceState;
 import org.apache.cayenne.Persistent;
+import org.apache.cayenne.exp.path.CayennePath;
 import org.apache.cayenne.map.DbJoin;
 import org.apache.cayenne.map.DbRelationship;
 import org.apache.cayenne.map.EntityResolver;
@@ -76,6 +78,16 @@ class DataContextSnapshotBuilder implements PropertyVisitor {
                 String nextKey = entry.getKey();
                 if (!snapshot.containsKey(nextKey)) {
                     snapshot.put(nextKey, entry.getValue());
+                }
+            }
+        }
+
+        // Ensure primary keys of additional entities are also included in the snapshot
+        for (CayennePath path : descriptor.getAdditionalDbEntities().keySet()) {
+            ObjectId flattenedId = objectStore.getFlattenedId(object.getObjectId(), path);
+            if (flattenedId != null) {
+                for (Map.Entry<String, Object> idEntry : flattenedId.getIdSnapshot().entrySet()) {
+                    snapshot.putIfAbsent(path.dot(idEntry.getKey()).value(), idEntry.getValue());
                 }
             }
         }

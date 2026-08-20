@@ -28,7 +28,7 @@ import java.util.Collection;
 import java.util.Comparator;
 import java.util.List;
 
-import org.apache.cayenne.configuration.runtime.DbAdapterFactory;
+import org.apache.cayenne.dbsync.reverse.configuration.DbAdapterFactory;
 import org.apache.cayenne.dba.DbAdapter;
 import org.apache.cayenne.dbsync.reverse.dbimport.Catalog;
 import org.apache.cayenne.dbsync.reverse.dbimport.FilterContainer;

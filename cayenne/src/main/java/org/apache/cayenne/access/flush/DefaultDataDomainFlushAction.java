@@ -19,6 +19,28 @@
 
 package org.apache.cayenne.access.flush;
 
+import org.apache.cayenne.CayenneRuntimeException;
+import org.apache.cayenne.ObjectId;
+import org.apache.cayenne.access.DataContext;
+import org.apache.cayenne.access.DataDomain;
+import org.apache.cayenne.access.ObjectDiff;
+import org.apache.cayenne.access.ObjectStore;
+import org.apache.cayenne.access.ObjectStoreGraphDiff;
+import org.apache.cayenne.access.OperationObserver;
+import org.apache.cayenne.access.flush.operation.DbRowOp;
+import org.apache.cayenne.access.flush.operation.DbRowOpMerger;
+import org.apache.cayenne.access.flush.operation.DbRowOpSorter;
+import org.apache.cayenne.access.flush.operation.DbRowOpVisitor;
+import org.apache.cayenne.access.flush.operation.DeleteDbRowOp;
+import org.apache.cayenne.access.flush.operation.DeleteDbRowOpFactory;
+import org.apache.cayenne.access.flush.operation.InsertDbRowOp;
+import org.apache.cayenne.access.flush.operation.OpIdFactory;
+import org.apache.cayenne.access.flush.operation.UpdateDbRowOp;
+import org.apache.cayenne.graph.CompoundDiff;
+import org.apache.cayenne.graph.GraphDiff;
+import org.apache.cayenne.map.EntityResolver;
+import org.apache.cayenne.query.Query;
+
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
@@ -29,28 +51,6 @@ import java.util.Map;
 import java.util.Set;
 import java.util.stream.Collectors;
 
-import org.apache.cayenne.CayenneRuntimeException;
-import org.apache.cayenne.ObjectId;
-import org.apache.cayenne.access.DataContext;
-import org.apache.cayenne.access.DataDomain;
-import org.apache.cayenne.access.ObjectDiff;
-import org.apache.cayenne.access.ObjectStore;
-import org.apache.cayenne.access.ObjectStoreGraphDiff;
-import org.apache.cayenne.access.OperationObserver;
-import org.apache.cayenne.access.flush.operation.DbRowOpMerger;
-import org.apache.cayenne.access.flush.operation.DbRowOpSorter;
-import org.apache.cayenne.access.flush.operation.DbRowOp;
-import org.apache.cayenne.access.flush.operation.DbRowOpVisitor;
-import org.apache.cayenne.access.flush.operation.DeleteDbRowOp;
-import org.apache.cayenne.access.flush.operation.InsertDbRowOp;
-import org.apache.cayenne.access.flush.operation.OpIdFactory;
-import org.apache.cayenne.access.flush.operation.UpdateDbRowOp;
-import org.apache.cayenne.graph.CompoundDiff;
-import org.apache.cayenne.graph.GraphDiff;
-import org.apache.cayenne.log.JdbcEventLogger;
-import org.apache.cayenne.map.EntityResolver;
-import org.apache.cayenne.query.Query;
-
 /**
  * Default implementation of {@link DataDomainFlushAction}.
  *
@@ -60,14 +60,15 @@ public class DefaultDataDomainFlushAction implements DataDomainFlushAction {
 
     protected final DataDomain dataDomain;
     protected final DbRowOpSorter dbRowOpSorter;
-    protected final JdbcEventLogger jdbcEventLogger;
     protected final OperationObserver observer;
+    protected final DeleteDbRowOpFactory deleteDbRowOpFactory;
 
-    protected DefaultDataDomainFlushAction(DataDomain dataDomain, DbRowOpSorter dbRowOpSorter, JdbcEventLogger jdbcEventLogger) {
+    protected DefaultDataDomainFlushAction(DataDomain dataDomain, DbRowOpSorter dbRowOpSorter,
+                                           DeleteDbRowOpFactory deleteDbRowOpFactory) {
         this.dataDomain = dataDomain;
         this.dbRowOpSorter = dbRowOpSorter;
-        this.jdbcEventLogger = jdbcEventLogger;
-        this.observer = new FlushObserver(jdbcEventLogger);
+        this.observer = new FlushObserver();
+        this.deleteDbRowOpFactory = deleteDbRowOpFactory;
     }
 
     @Override
@@ -76,12 +77,11 @@ public class DefaultDataDomainFlushAction implements DataDomainFlushAction {
         if (changes == null) {
             return afterCommitDiff;
         }
-        if(!(changes instanceof ObjectStoreGraphDiff)) {
+        if(!(changes instanceof ObjectStoreGraphDiff objectStoreGraphDiff)) {
             throw new CayenneRuntimeException("Instance of ObjectStoreGraphDiff expected, got %s", changes.getClass());
         }
 
         ObjectStore objectStore = context.getObjectStore();
-        ObjectStoreGraphDiff objectStoreGraphDiff = (ObjectStoreGraphDiff) changes;
 
         List<DbRowOp> dbRowOps = createDbRowOps(objectStore, objectStoreGraphDiff);
         updateObjectIds(dbRowOps);
@@ -111,7 +111,7 @@ public class DefaultDataDomainFlushAction implements DataDomainFlushAction {
         List<DbRowOp> ops = new ArrayList<>(changesByObjectId.size());
         Set<ArcTarget> processedArcs = new HashSet<>();
 
-        DbRowOpFactory factory = new DbRowOpFactory(resolver, objectStore, processedArcs);
+        DbRowOpFactory factory = new DbRowOpFactory(resolver, objectStore, processedArcs, deleteDbRowOpFactory);
         // ops.addAll() method is slower in this case as it will allocate new array for all values
         //noinspection UseBulkOperation
         changesByObjectId.forEach((obj, diff) -> factory.createRows(diff).forEach(ops::add));

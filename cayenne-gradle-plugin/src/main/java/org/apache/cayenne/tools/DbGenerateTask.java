@@ -22,20 +22,15 @@ package org.apache.cayenne.tools;
 import groovy.lang.Closure;
 import org.apache.cayenne.access.DbGenerator;
 import org.apache.cayenne.configuration.DataMapLoader;
-import org.apache.cayenne.configuration.DataNodeDescriptor;
-import org.apache.cayenne.configuration.runtime.DataSourceFactory;
-import org.apache.cayenne.configuration.runtime.DbAdapterFactory;
-import org.apache.cayenne.configuration.runtime.PkGeneratorFactoryProvider;
-import org.apache.cayenne.datasource.DataSourceBuilder;
+import org.apache.cayenne.dbsync.reverse.configuration.DbAdapterFactory;
+import org.apache.cayenne.datasource.CayenneDataSource;
 import org.apache.cayenne.dba.DbAdapter;
 import org.apache.cayenne.dba.JdbcAdapter;
-import org.apache.cayenne.dba.PkGenerator;
 import org.apache.cayenne.dbsync.DbSyncModule;
 import org.apache.cayenne.dbsync.reverse.configuration.ToolsModule;
-import org.apache.cayenne.di.AdhocObjectFactory;
 import org.apache.cayenne.di.DIBootstrap;
 import org.apache.cayenne.di.Injector;
-import org.apache.cayenne.log.NoopJdbcEventLogger;
+import org.apache.cayenne.log.NoopSQLLogger;
 import org.apache.cayenne.map.DataMap;
 import org.apache.cayenne.resource.URLResource;
 import org.apache.cayenne.tools.model.DataSourceConfig;
@@ -147,7 +142,7 @@ public class DbGenerateTask extends BaseCayenneTask {
     DbGenerator createGenerator(DataMap dataMap, Injector injector, DataSource realDataSource) throws Exception {
         DbAdapter dbAdapter = createDbAdapter(injector, realDataSource);
 
-        DbGenerator generator = new DbGenerator(dbAdapter, dataMap, NoopJdbcEventLogger.getInstance());
+        DbGenerator generator = new DbGenerator(dbAdapter, dataMap, NoopSQLLogger.getInstance());
         generator.setShouldCreateFKConstraints(createFK);
         generator.setShouldCreatePKSupport(createPK);
         generator.setShouldCreateTables(createTables);
@@ -157,16 +152,12 @@ public class DbGenerateTask extends BaseCayenneTask {
     }
 
     DbAdapter createDbAdapter(Injector injector, DataSource realDataSource) throws Exception {
-        DbAdapterFactory adapterFactory = injector.getInstance(DbAdapterFactory.class);
-        DataNodeDescriptor nodeDescriptor = new DataNodeDescriptor();
-        nodeDescriptor.setAdapterType(adapter);
-
-        return adapterFactory.createAdapter(nodeDescriptor, realDataSource);
+        return injector.getInstance(DbAdapterFactory.class).createAdapter(adapter, realDataSource);
     }
 
     DataSource createDataSource() {
-        return DataSourceBuilder.url(dataSource.getUrl())
-                .driver(dataSource.getDriver())
+        return CayenneDataSource.of(dataSource.getUrl())
+                .driverClass(dataSource.getDriver())
                 .userName(dataSource.getUsername())
                 .password(dataSource.getPassword())
                 .build();

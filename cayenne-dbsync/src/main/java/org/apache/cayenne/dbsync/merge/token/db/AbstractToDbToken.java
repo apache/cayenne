@@ -19,12 +19,12 @@
 
 package org.apache.cayenne.dbsync.merge.token.db;
 
-import org.apache.cayenne.dba.DbAdapter;
+import org.apache.cayenne.access.DataNode;
 import org.apache.cayenne.dbsync.merge.context.MergeDirection;
 import org.apache.cayenne.dbsync.merge.context.MergerContext;
 import org.apache.cayenne.dbsync.merge.token.AbstractMergerToken;
 import org.apache.cayenne.dbsync.merge.token.MergerToken;
-import org.apache.cayenne.log.JdbcEventLogger;
+import org.apache.cayenne.log.SQLLogger;
 import org.apache.cayenne.map.DbAttribute;
 import org.apache.cayenne.map.DbEntity;
 import org.apache.cayenne.validation.SimpleValidationFailure;
@@ -46,14 +46,14 @@ public abstract class AbstractToDbToken extends AbstractMergerToken {
 
 	@Override
 	public void execute(MergerContext mergerContext) {
-		for (String sql : createSql(mergerContext.getDataNode().getAdapter())) {
+		for (String sql : createSql(mergerContext.getDataNode())) {
 			executeSql(mergerContext, sql);
 		}
 	}
 
 	void executeSql(MergerContext mergerContext, String sql) {
-		JdbcEventLogger logger = mergerContext.getDataNode().getJdbcEventLogger();
-		logger.log(sql);
+		SQLLogger logger = mergerContext.getDataNode().getSqlLogger();
+		logger.logMessage(sql);
 
 		try (Connection conn = mergerContext.getDataNode().getDataSource().getConnection()) {
 			try (Statement st = conn.createStatement()) {
@@ -61,11 +61,10 @@ public abstract class AbstractToDbToken extends AbstractMergerToken {
 			}
 		} catch (SQLException e) {
 			mergerContext.getValidationResult().addFailure(new SimpleValidationFailure(sql, e.getMessage()));
-			logger.logQueryError(e);
 		}
 	}
 
-	public abstract List<String> createSql(DbAdapter adapter);
+	public abstract List<String> createSql(DataNode node);
 
 	@Override
 	public final MergeDirection getDirection() {

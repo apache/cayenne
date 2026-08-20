@@ -22,7 +22,6 @@ import java.util.concurrent.atomic.AtomicInteger;
 import java.util.function.Supplier;
 
 import org.apache.cayenne.CayenneRuntimeException;
-import org.apache.cayenne.log.JdbcEventLogger;
 import org.junit.jupiter.api.Test;
 
 import static org.junit.jupiter.api.Assertions.assertNull;
@@ -185,10 +184,7 @@ public class DefaultTransactionManagerIT {
     }
 
     private DefaultTransactionManager createDefaultTxManager(final Supplier<Transaction> txSupplier) {
-        return new DefaultTransactionManager(
-                createMockFactory(txSupplier),
-                mock(JdbcEventLogger.class)
-        );
+        return new DefaultTransactionManager(createMockFactory(txSupplier));
     }
 
     private TransactionFactory createMockFactory(final Supplier<Transaction> supplier) {

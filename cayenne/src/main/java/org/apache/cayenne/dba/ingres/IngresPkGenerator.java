@@ -29,15 +29,7 @@ import org.apache.cayenne.dba.SequencePkGenerator;
  */
 public class IngresPkGenerator extends SequencePkGenerator {
 
-    /**
-     * Used by DI
-     * @since 4.1
-     */
-    public IngresPkGenerator() {
-        super();
-    }
-
-    protected IngresPkGenerator(JdbcAdapter adapter) {
+    public IngresPkGenerator(JdbcAdapter adapter) {
         super(adapter);
     }
 

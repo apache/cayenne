@@ -36,7 +36,20 @@ public class OpExpressionNode extends ExpressionNode {
 
     @Override
     public void appendChildrenSeparator(SQLAppendable buffer, int childInd) {
-        buffer.append(' ').append(op);
+        buffer.appendTokenSeparator().append(op);
+    }
+
+    @Override
+    protected String logicalOperator() {
+        return "AND".equals(op) || "OR".equals(op) ? op : null;
+    }
+
+    @Override
+    protected boolean isComparison() {
+        return switch (op) {
+            case "<", "<=", ">", ">=" -> true;
+            default -> false;
+        };
     }
 
     @Override

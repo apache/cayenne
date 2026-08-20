@@ -19,6 +19,7 @@
  
 package org.apache.cayenne.dbsync.merge.factory;
 
+import org.apache.cayenne.access.DataNode;
 import org.apache.cayenne.dba.DbAdapter;
 import org.apache.cayenne.dba.QuotingStrategy;
 import org.apache.cayenne.dbsync.merge.token.MergerToken;
@@ -37,7 +38,9 @@ public class FirebirdMergerTokenFactory extends DefaultMergerTokenFactory {
     @Override
     public MergerToken createDropColumnToDb(DbEntity entity, DbAttribute column) {
         return new DropColumnToDb(entity, column) {
-            public List<String> createSql(DbAdapter adapter) {
+            public List<String> createSql(DataNode node) {
+                DbAdapter adapter = node.getAdapter();
+
                 QuotingStrategy quotes = adapter.getQuotingStrategy(getEntity());
                 StringBuilder sql = new StringBuilder("ALTER TABLE ");
                 quotes.appendFQN(sql, getEntity().getCatalog(), getEntity().getSchema(), getEntity().getName());
@@ -53,7 +56,9 @@ public class FirebirdMergerTokenFactory extends DefaultMergerTokenFactory {
     @Override
     public MergerToken createSetNotNullToDb(DbEntity entity, DbAttribute column) {
         return new SetNotNullToDb(entity, column) {
-            public List<String> createSql(DbAdapter adapter) {
+            public List<String> createSql(DataNode node) {
+                DbAdapter adapter = node.getAdapter();
+
                 QuotingStrategy quotes = adapter.getQuotingStrategy(getEntity());
                 String entityName = quotes.quotedFQN(getEntity().getCatalog(), getEntity().getSchema(),
                         getEntity().getName());
@@ -69,7 +74,9 @@ public class FirebirdMergerTokenFactory extends DefaultMergerTokenFactory {
     @Override
     public MergerToken createSetAllowNullToDb(DbEntity entity, DbAttribute column) {
         return new SetAllowNullToDb(entity, column) {
-            public List<String> createSql(DbAdapter adapter) {
+            public List<String> createSql(DataNode node) {
+                DbAdapter adapter = node.getAdapter();
+
                 QuotingStrategy quotes = adapter.getQuotingStrategy(getEntity());
                 String entityName = quotes.quotedFQN(getEntity().getCatalog(), getEntity().getSchema(),
                         getEntity().getName());

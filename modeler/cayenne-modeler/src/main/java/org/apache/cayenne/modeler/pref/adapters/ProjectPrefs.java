@@ -21,7 +21,6 @@ package org.apache.cayenne.modeler.pref.adapters;
 
 import org.apache.cayenne.configuration.ConfigurationNode;
 import org.apache.cayenne.configuration.DataChannelDescriptor;
-import org.apache.cayenne.configuration.DataNodeDescriptor;
 import org.apache.cayenne.map.Attribute;
 import org.apache.cayenne.map.DataMap;
 import org.apache.cayenne.map.DbAttribute;
@@ -38,7 +37,6 @@ import org.apache.cayenne.map.ProcedureParameter;
 import org.apache.cayenne.map.QueryDescriptor;
 import org.apache.cayenne.map.Relationship;
 import org.apache.cayenne.modeler.event.display.DataMapDisplayEvent;
-import org.apache.cayenne.modeler.event.display.DataNodeDisplayEvent;
 import org.apache.cayenne.modeler.event.display.DbAttributeDisplayEvent;
 import org.apache.cayenne.modeler.event.display.DbEntityDisplayEvent;
 import org.apache.cayenne.modeler.event.display.DbRelationshipDisplayEvent;
@@ -70,7 +68,6 @@ public final class ProjectPrefs extends PrefsAdapter {
     private static final String EVENT_KEY = "event";
 
     private static final String DOMAIN_KEY = "domain";
-    private static final String NODE_KEY = "node";
     private static final String DATA_MAP_KEY = "dataMap";
     private static final String OBJ_ENTITY_KEY = "objEntity";
     private static final String DB_ENTITY_KEY = "dbEntity";
@@ -87,7 +84,7 @@ public final class ProjectPrefs extends PrefsAdapter {
     private static final String PARENT_OBJECT_KEY = "parentObject";
 
     private enum Kind {
-        domain, dataNode, dataMap,
+        domain, dataMap,
         objEntity, dbEntity,
         objAttributes, dbAttributes,
         objRelationships, dbRelationships,
@@ -114,9 +111,6 @@ public final class ProjectPrefs extends PrefsAdapter {
         switch (kind) {
             case domain:
                 session.displayDomain(new DomainDisplayEvent(ProjectPrefs.class, domain));
-                break;
-            case dataNode:
-                restoreDataNode(session, domain);
                 break;
             case dataMap:
                 restoreDataMap(session, domain);
@@ -173,9 +167,6 @@ public final class ProjectPrefs extends PrefsAdapter {
         switch (kind) {
             case domain:
                 saveDomainPath(session);
-                break;
-            case dataNode:
-                saveNodePath(session);
                 break;
             case dataMap:
                 saveDataMapPath(session);
@@ -260,9 +251,6 @@ public final class ProjectPrefs extends PrefsAdapter {
         if (c.getSelectedDataMap() != null) {
             return Kind.dataMap;
         }
-        if (c.getSelectedDataNode() != null) {
-            return Kind.dataNode;
-        }
         if (c.getSelectedPaths() != null && c.getSelectedPaths().length > 0) {
             return Kind.multipleObjects;
         }
@@ -289,19 +277,12 @@ public final class ProjectPrefs extends PrefsAdapter {
         prefs.put(DOMAIN_KEY, session.getSelectedDataDomain().getName());
     }
 
-    private void saveNodePath(ProjectSession session) {
-        prefs.put(DOMAIN_KEY, session.getSelectedDataDomain().getName());
-        prefs.put(NODE_KEY, session.getSelectedDataNode().getName());
-    }
-
     private void saveDataMapPath(ProjectSession session) {
         DataChannelDescriptor domain = session.getSelectedDataDomain();
         if (domain == null) {
             return;
         }
         prefs.put(DOMAIN_KEY, domain.getName());
-        DataNodeDescriptor node = session.getSelectedDataNode();
-        prefs.put(NODE_KEY, node != null ? node.getName() : "");
         DataMap dataMap = session.getSelectedDataMap();
         if (dataMap != null) {
             prefs.put(DATA_MAP_KEY, dataMap.getName());
@@ -310,8 +291,6 @@ public final class ProjectPrefs extends PrefsAdapter {
 
     private void saveEntityPath(ProjectSession session) {
         prefs.put(DOMAIN_KEY, session.getSelectedDataDomain().getName());
-        DataNodeDescriptor node = session.getSelectedDataNode();
-        prefs.put(NODE_KEY, node != null ? node.getName() : "");
         prefs.put(DATA_MAP_KEY, session.getSelectedDataMap().getName());
 
         ObjEntity objEntity = session.getSelectedObjEntity();
@@ -362,21 +341,12 @@ public final class ProjectPrefs extends PrefsAdapter {
 
     // -------------------- restore helpers --------------------
 
-    private void restoreDataNode(ProjectSession session, DataChannelDescriptor domain) {
-        DataNodeDescriptor node = domain.getNodeDescriptor(prefs.get(NODE_KEY, ""));
-        if (node == null) {
-            return;
-        }
-        session.displayDataNode(new DataNodeDisplayEvent(ProjectPrefs.class, domain, node));
-    }
-
     private void restoreDataMap(ProjectSession session, DataChannelDescriptor domain) {
         DataMap dataMap = domain.getDataMap(prefs.get(DATA_MAP_KEY, ""));
         if (dataMap == null) {
             return;
         }
-        DataNodeDescriptor node = domain.getNodeDescriptor(prefs.get(NODE_KEY, ""));
-        session.displayDataMap(new DataMapDisplayEvent(ProjectPrefs.class, domain, dataMap, node));
+        session.displayDataMap(new DataMapDisplayEvent(ProjectPrefs.class, domain, dataMap));
     }
 
     private void restoreEntity(ProjectSession session, DataChannelDescriptor domain) {
@@ -531,14 +501,10 @@ public final class ProjectPrefs extends PrefsAdapter {
         ConfigurationNode[] objects;
 
         DataMap parentMap = domain.getDataMap(parentName);
-        DataNodeDescriptor parentNode = domain.getNodeDescriptor(parentName);
 
         if (parentMap != null) {
             parent = parentMap;
             objects = lookupMultipleObjects(parentMap);
-        } else if (parentNode != null) {
-            parent = parentNode;
-            objects = lookupMultipleObjects(parentNode);
         } else {
             parent = domain;
             objects = lookupMultipleObjects(domain);
@@ -630,20 +596,6 @@ public final class ProjectPrefs extends PrefsAdapter {
         return result.toArray(new ConfigurationNode[0]);
     }
 
-    private ConfigurationNode[] lookupMultipleObjects(DataNodeDescriptor node) {
-        String stored = prefs.get(MULTIPLE_OBJECTS_KEY, "");
-        if (stored.isEmpty()) {
-            return new ConfigurationNode[0];
-        }
-        List<ConfigurationNode> result = new ArrayList<>();
-        for (String name : stored.split(",")) {
-            if (node.getDataMapNames().contains(name)) {
-                result.add(node.getDataChannelDescriptor().getDataMap(name));
-            }
-        }
-        return result.toArray(new ConfigurationNode[0]);
-    }
-
     private ConfigurationNode[] lookupMultipleObjects(DataMap dataMap) {
         String stored = prefs.get(MULTIPLE_OBJECTS_KEY, "");
         if (stored.isEmpty()) {
@@ -669,11 +621,6 @@ public final class ProjectPrefs extends PrefsAdapter {
     private static ConfigurationNode findInDomain(DataChannelDescriptor domain, String name) {
         if (domain.getName().equals(name)) {
             return domain;
-        }
-        for (DataNodeDescriptor n : domain.getNodeDescriptors()) {
-            if (n.getName().equals(name)) {
-                return n;
-            }
         }
         for (DataMap m : domain.getDataMaps()) {
             if (m.getName().equals(name)) {
@@ -718,8 +665,6 @@ public final class ProjectPrefs extends PrefsAdapter {
             return cme.getName();
         } else if (object instanceof DataChannelDescriptor dcd) {
             return dcd.getName();
-        } else if (object instanceof DataNodeDescriptor dnd) {
-            return dnd.getName();
         } else if (object instanceof DataMap dm) {
             return dm.getName();
         } else if (object instanceof Embeddable e) {

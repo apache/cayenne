@@ -24,6 +24,7 @@ import java.util.List;
 import java.util.Map;
 
 import org.apache.cayenne.CayenneRuntimeException;
+import org.apache.cayenne.DataRow;
 import org.apache.cayenne.ObjectId;
 import org.apache.cayenne.ResultIterator;
 import org.apache.cayenne.query.Query;
@@ -74,7 +75,7 @@ public class MockOperationObserver implements OperationObserver {
     }
 
     @Override
-    public void nextGeneratedRows(Query query, ResultIterator<?> keys, List<ObjectId> idsToUpdate) {
+    public void nextGeneratedRows(Query query, List<DataRow> keys, List<ObjectId> idsToUpdate) {
     }
 
     public boolean isIteratedResult() {

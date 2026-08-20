@@ -26,7 +26,6 @@ import org.apache.cayenne.modeler.ui.action.CopyAction;
 import org.apache.cayenne.modeler.ui.action.CreateDataMapAction;
 import org.apache.cayenne.modeler.ui.action.CreateDbEntityAction;
 import org.apache.cayenne.modeler.ui.action.CreateEmbeddableAction;
-import org.apache.cayenne.modeler.ui.action.CreateNodeAction;
 import org.apache.cayenne.modeler.ui.action.CreateObjEntityAction;
 import org.apache.cayenne.modeler.ui.action.CreateProcedureAction;
 import org.apache.cayenne.modeler.ui.action.CreateQueryAction;
@@ -93,7 +92,6 @@ class MainToolBar extends AppToolBar {
 
         addSeparator();
 
-        add(actions.getAction(CreateNodeAction.class).buildButton(1));
         add(actions.getAction(CreateDataMapAction.class).buildButton(3));
 
         addSeparator();

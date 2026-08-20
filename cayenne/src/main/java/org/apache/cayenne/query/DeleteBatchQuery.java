@@ -19,17 +19,16 @@
 
 package org.apache.cayenne.query;
 
-import java.util.Collection;
-import java.util.List;
-import java.util.Map;
-import java.util.function.Supplier;
-
 import org.apache.cayenne.map.DbAttribute;
 import org.apache.cayenne.map.DbEntity;
 
+import java.util.Collection;
+import java.util.List;
+import java.util.Map;
+
 /**
  * Batched delete query.
- * 
+ *
  */
 public class DeleteBatchQuery extends BatchQuery {
 
@@ -37,20 +36,11 @@ public class DeleteBatchQuery extends BatchQuery {
 
     private Collection<String> nullQualifierNames;
 
-    /**
-     * Creates new DeleteBatchQuery.
-     * 
-     * @param dbEntity
-     *            Table or view to delete.
-     * @param qualifierAttributes
-     *            DbAttributes used in the WHERE clause.
-     * @param nullQualifierNames
-     *            DbAttribute names in the WHERE clause that have null values.
-     * @param batchCapacity
-     *            Estimated size of the batch.
-     */
-    public DeleteBatchQuery(DbEntity dbEntity, List<DbAttribute> qualifierAttributes,
-            Collection<String> nullQualifierNames, int batchCapacity) {
+    public DeleteBatchQuery(
+            DbEntity dbEntity,
+            List<DbAttribute> qualifierAttributes,
+            Collection<String> nullQualifierNames,
+            int batchCapacity) {
 
         super(dbEntity, qualifierAttributes, batchCapacity);
 
@@ -63,7 +53,7 @@ public class DeleteBatchQuery extends BatchQuery {
 
     /**
      * Returns true if a given attribute always has a null value in the batch.
-     * 
+     *
      * @since 1.2
      */
     public boolean isNull(DbAttribute attribute) {
@@ -72,7 +62,7 @@ public class DeleteBatchQuery extends BatchQuery {
 
     /**
      * Returns true if the batch query uses optimistic locking.
-     * 
+     *
      * @since 1.2
      */
     @Override
@@ -92,11 +82,7 @@ public class DeleteBatchQuery extends BatchQuery {
         rows.add(new BatchQueryRow(null, objectId) {
             @Override
             public Object getValue(int i) {
-                Object value = qualifier.get(dbAttributes.get(i).getName());
-                if(value instanceof Supplier) {
-                    return ((Supplier) value).get();
-                }
-                return value;
+                return getValue(qualifier, dbAttributes.get(i));
             }
         });
     }

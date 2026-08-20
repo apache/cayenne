@@ -22,13 +22,14 @@ package org.apache.cayenne.dba;
 import org.apache.cayenne.CayenneRuntimeException;
 import org.apache.cayenne.access.DataNode;
 import org.apache.cayenne.access.sqlbuilder.sqltree.SQLTreeProcessor;
+import org.apache.cayenne.access.jdbc.CSParameter;
 import org.apache.cayenne.access.jdbc.PSParameter;
-import org.apache.cayenne.access.translator.ejbql.EJBQLTranslator;
+import org.apache.cayenne.access.translator.EJBQLTranslator;
 import org.apache.cayenne.access.translator.ejbql.JdbcEJBQLTranslator;
 import org.apache.cayenne.access.translator.procedure.DefaultProcedureTranslator;
-import org.apache.cayenne.access.translator.procedure.ProcedureTranslator;
+import org.apache.cayenne.access.translator.ProcedureTranslator;
 import org.apache.cayenne.access.translator.select.DefaultSelectTranslator;
-import org.apache.cayenne.access.translator.select.SelectTranslator;
+import org.apache.cayenne.access.translator.SelectTranslator;
 import org.apache.cayenne.access.types.ExtendedType;
 import org.apache.cayenne.access.types.ExtendedTypeFactory;
 import org.apache.cayenne.access.types.ExtendedTypeMap;
@@ -37,7 +38,7 @@ import org.apache.cayenne.access.types.ValueObjectTypeRegistry;
 import org.apache.cayenne.configuration.Constants;
 import org.apache.cayenne.configuration.RuntimeProperties;
 import org.apache.cayenne.di.Inject;
-import org.apache.cayenne.log.JdbcEventLogger;
+import org.apache.cayenne.log.SQLLogger;
 import org.apache.cayenne.map.DataMap;
 import org.apache.cayenne.map.DbAttribute;
 import org.apache.cayenne.map.DbEntity;
@@ -49,6 +50,7 @@ import org.apache.cayenne.query.Select;
 import org.apache.cayenne.query.Query;
 import org.apache.cayenne.query.SQLAction;
 
+import java.sql.CallableStatement;
 import java.sql.PreparedStatement;
 import java.sql.Types;
 import java.util.ArrayList;
@@ -66,7 +68,6 @@ import java.util.Map;
  */
 public class JdbcAdapter implements DbAdapter {
 
-    private PkGenerator pkGenerator;
     protected QuotingStrategy quotingStrategy;
 
     protected int defaultCharColumnLength;
@@ -81,7 +82,8 @@ public class JdbcAdapter implements DbAdapter {
     protected boolean caseInsensitiveCollations;
 
     @Inject
-    protected JdbcEventLogger logger;
+    @Deprecated(since = "5.0", forRemoval = true)
+    protected SQLLogger logger;
 
     /**
      * Creates new JdbcAdapter with a set of default parameters.
@@ -118,8 +120,10 @@ public class JdbcAdapter implements DbAdapter {
 
     /**
      * @since 3.1
+     * @deprecated logger should be taken from the DataNode
      */
-    public JdbcEventLogger getJdbcEventLogger() {
+    @Deprecated(since = "5.0", forRemoval = true)
+    public SQLLogger getSQLLogger() {
         return this.logger;
     }
 
@@ -224,21 +228,11 @@ public class JdbcAdapter implements DbAdapter {
     }
 
     /**
-     * Returns primary key generator associated with this DbAdapter.
+     * Returns a generic PK generator based on the "AUTO_PK_SUPPORT" lookup table.
      */
     @Override
-    public PkGenerator getPkGenerator() {
-        return pkGenerator;
-    }
-
-    /**
-     * Sets new primary key generator.
-     *
-     * @since 1.1
-     */
-    @Override
-    public void setPkGenerator(PkGenerator pkGenerator) {
-        this.pkGenerator = pkGenerator;
+    public PkGenerator createPkGenerator() {
+        return new JdbcPkGenerator(this);
     }
 
     /**
@@ -623,16 +617,30 @@ public class JdbcAdapter implements DbAdapter {
 
     @Override
     public void bindParameter(PreparedStatement statement, PSParameter<?> parameter) throws Exception {
+        bind(statement, parameter.value(), parameter.psPosition(), parameter.psType(), parameter.psScale(),
+                parameter.binder());
+    }
 
-        if (parameter.value() == null) {
-            statement.setNull(parameter.psPosition(), parameter.psType());
+    @Override
+    public void bindParameter(CallableStatement statement, CSParameter<?> parameter) throws Exception {
+        bind(statement, parameter.value(), parameter.psPosition(), parameter.psType(), parameter.psScale(),
+                parameter.binder());
+    }
+
+    /**
+     * Binds a raw value to a statement parameter. This is the single extension point shared by both
+     * {@code bindParameter} overloads; adapters that need database-specific handling (e.g. of NULLs) should
+     * override this method rather than the public overloads.
+     *
+     * @since 5.0
+     */
+    @SuppressWarnings({"rawtypes", "unchecked"})
+    protected void bind(PreparedStatement statement, Object value, int psPosition, int psType, int psScale,
+                        ExtendedType binder) throws Exception {
+        if (value == null) {
+            statement.setNull(psPosition, psType);
         } else {
-            ExtendedType t = parameter.binder();
-            t.setJdbcObject(statement,
-                    parameter.value(),
-                    parameter.psPosition(),
-                    parameter.psType(),
-                    parameter.psScale());
+            binder.setJdbcObject(statement, value, psPosition, psType, psScale);
         }
     }
 

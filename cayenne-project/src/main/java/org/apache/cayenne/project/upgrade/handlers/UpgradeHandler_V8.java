@@ -25,7 +25,7 @@ import javax.xml.xpath.XPathFactory;
 
 import org.apache.cayenne.ConfigurationException;
 import org.apache.cayenne.map.QueryDescriptor;
-import org.apache.cayenne.project.upgrade.UpgradeUnit;
+import org.apache.cayenne.project.upgrade.UpgradeContext;
 import org.w3c.dom.Element;
 import org.w3c.dom.NodeList;
 
@@ -40,13 +40,13 @@ public class UpgradeHandler_V8 implements UpgradeHandler {
     }
 
     @Override
-    public void processProjectDom(UpgradeUnit upgradeUnit) {
+    public void processProjectDom(UpgradeContext upgradeUnit) {
         Element domain = upgradeUnit.getDocument().getDocumentElement();
         domain.setAttribute("project-version", getVersion());
     }
 
     @Override
-    public void processDataMapDom(UpgradeUnit upgradeUnit) {
+    public void processDataMapDom(UpgradeContext upgradeUnit) {
         updateDataMapSchemaAndVersion(upgradeUnit);
 
         XPath xpath = XPathFactory.newInstance().newXPath();

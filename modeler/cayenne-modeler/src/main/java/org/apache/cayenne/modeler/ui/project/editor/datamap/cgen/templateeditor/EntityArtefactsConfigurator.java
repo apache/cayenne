@@ -44,7 +44,7 @@ public class EntityArtefactsConfigurator implements ArtefactsConfigurator {
     }
 
     private ObjEntity getSelectedEntity(String artifactName, ClassGenerationAction action) {
-        DataMap dataMap = action.getCgenConfiguration().getDataMap();
+        DataMap dataMap = action.getConfiguration().getDataMap();
         if (dataMap != null) {
             return dataMap.getObjEntity(artifactName);
         }

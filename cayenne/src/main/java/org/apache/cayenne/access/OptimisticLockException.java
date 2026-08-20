@@ -19,55 +19,64 @@
 
 package org.apache.cayenne.access;
 
-import java.util.Collections;
-import java.util.Iterator;
-import java.util.Map;
-
 import org.apache.cayenne.CayenneRuntimeException;
 import org.apache.cayenne.ObjectContext;
 import org.apache.cayenne.ObjectId;
+import org.apache.cayenne.access.translator.TranslatedStatement;
 import org.apache.cayenne.exp.Expression;
 import org.apache.cayenne.exp.ExpressionFactory;
 import org.apache.cayenne.map.DbAttribute;
 import org.apache.cayenne.map.DbEntity;
 import org.apache.cayenne.query.ObjectSelect;
 
+import java.util.Collections;
+import java.util.Iterator;
+import java.util.Map;
+import java.util.Objects;
+
 /**
  * An exception thrown on optimistic lock failure.
- * 
+ *
  * @since 1.1
  */
 public class OptimisticLockException extends CayenneRuntimeException {
 
-    protected ObjectId failedObjectId;
-    protected String querySQL;
-    protected DbEntity rootEntity;
-    protected Map qualifierSnapshot;
+    private final ObjectId failedObjectId;
+    private final DbEntity rootEntity;
+    private final Map<String, ?> qualifierSnapshot;
+    private final TranslatedStatement statement;
 
-    public OptimisticLockException(ObjectId id, DbEntity rootEntity, String querySQL,
-            Map qualifierSnapshot) {
+    public OptimisticLockException(ObjectId id, DbEntity rootEntity, Map<String, ?> qualifierSnapshot, TranslatedStatement statement) {
         super("Optimistic Lock Failure");
 
         this.failedObjectId = id;
         this.rootEntity = rootEntity;
-        this.querySQL = querySQL;
-        this.qualifierSnapshot = (qualifierSnapshot != null)
-                ? qualifierSnapshot
-                : Collections.EMPTY_MAP;
+        this.qualifierSnapshot = qualifierSnapshot != null ? qualifierSnapshot : Collections.emptyMap();
+        this.statement = Objects.requireNonNull(statement);
+    }
+
+    /**
+     * @since 5.0
+     */
+    public TranslatedStatement getStatement() {
+        return statement;
     }
 
     public Map getQualifierSnapshot() {
         return qualifierSnapshot;
     }
 
+    /**
+     * @deprecated in favor of {@link #getStatement()}
+     */
+    @Deprecated(since = "5.0", forRemoval = true)
     public String getQuerySQL() {
-        return querySQL;
+        return statement.sql();
     }
 
     /**
-     * Retrieves fresh snapshot for the failed row. Null row indicates that it was
-     * deleted.
-     * 
+     * Retrieves fresh snapshot for the failed row. Null row indicates that it was deleted.
+     *
      * @since 3.0
      */
     public Map<?, ?> getFreshSnapshot(ObjectContext context) {
@@ -94,10 +103,7 @@ public class OptimisticLockException extends CayenneRuntimeException {
     @Override
     public String getMessage() {
         StringBuilder buffer = new StringBuilder(super.getMessage());
-
-        if (querySQL != null) {
-            buffer.append(", SQL: [").append(querySQL.trim()).append("]");
-        }
+        buffer.append(", SQL: [").append(statement.sql()).append("]");
 
         if (!qualifierSnapshot.isEmpty()) {
             buffer.append(", WHERE clause bindings: [");
@@ -119,7 +125,7 @@ public class OptimisticLockException extends CayenneRuntimeException {
 
     /**
      * Returns the ObjectId of the object that caused the OptimisticLockException.
-     * 
+     *
      * @since 3.1
      */
     public ObjectId getFailedObjectId() {

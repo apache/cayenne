@@ -40,12 +40,8 @@ public class JdbcPkGeneratorIT {
     @RegisterExtension
     static final CayenneTestsEnv env = CayenneTestsEnv.forProject(CayenneProjects.TESTMAP_PROJECT);
 
-    private DataNode node;
-
     @BeforeEach
     public void setUp() throws Exception {
-        node = env.dataNode();
-
         // TODO: we should have a dedicated DbSchemaManager for such destructive operations working off of its own DB
         CayenneTestsEnv.COMMON_SCHEMA.dropPKSupport();
     }
@@ -53,40 +49,34 @@ public class JdbcPkGeneratorIT {
     @AfterEach
     public void tearDown() throws Exception {
 
-        if (JdbcPkGenerator.class.isAssignableFrom(node.getAdapter().getPkGenerator().getClass())) {
-            // reset PK gen properly before updating PKs in DB
-            JdbcPkGenerator pkGenerator = (JdbcPkGenerator) node.getAdapter().getPkGenerator();
+        // the test leaves PK support in the DB starting way past Integer.MAX_VALUE, so rebuild it for whoever runs
+        // next.
 
-            pkGenerator.setPkStartValue(JdbcPkGenerator.DEFAULT_PK_START_VALUE);
-
-            // TODO: we should have a dedicated DbSchemaManager for such destructive operations working off of its own DB
-            CayenneTestsEnv.COMMON_SCHEMA.dropPKSupport();
-            CayenneTestsEnv.COMMON_SCHEMA.createPKSupport();
-        }
+        // TODO: we should have a dedicated DbSchemaManager for such destructive operations working off of its own DB
+        CayenneTestsEnv.COMMON_SCHEMA.dropPKSupport();
+        CayenneTestsEnv.COMMON_SCHEMA.createPKSupport();
     }
 
     @Test
-    public void longPk() throws Exception {
+    public void longPk() {
 
-        if (!JdbcPkGenerator.class.isAssignableFrom(node.getAdapter().getPkGenerator().getClass())) {
-            return;
-        }
+        DataNode node = env.dataNode();
 
         DbEntity artistEntity = node.getEntityResolver().getObjEntity(Artist.class).getDbEntity();
-
         DbAttribute pkAttribute = artistEntity.getAttribute(Artist.ARTIST_ID_PK_COLUMN);
 
-        JdbcPkGenerator pkGenerator = (JdbcPkGenerator) node.getAdapter().getPkGenerator();
+        JdbcPkGenerator pkGenerator = (JdbcPkGenerator) node.getPkGenerator();
 
         pkGenerator.setPkStartValue(Integer.MAX_VALUE * 2L);
-        if (!JdbcPkGenerator.class.equals(node.getAdapter().getPkGenerator().getClass()) &&
-        		!DerbyPkGenerator.class.equals(node.getAdapter().getPkGenerator().getClass())) { // AUTO_PK_SUPPORT doesn't allow dropping PK support for a single entity
+        if (!JdbcPkGenerator.class.equals(node.getPkGenerator().getClass()) &&
+                // AUTO_PK_SUPPORT doesn't allow dropping PK support for a single entity
+                !DerbyPkGenerator.class.equals(node.getPkGenerator().getClass())) {
             pkGenerator.dropAutoPk(node, Collections.singletonList(artistEntity));
         }
         pkGenerator.createAutoPk(node, Collections.singletonList(artistEntity));
         pkGenerator.reset();
-        
-        Object pk = pkGenerator.generatePk(node, pkAttribute);
+
+        Object pk = pkGenerator.generatePk(node, pkAttribute, null);
         assertInstanceOf(Long.class, pk);
         assertTrue((Long) pk > Integer.MAX_VALUE, "PK is too small: " + pk);
     }

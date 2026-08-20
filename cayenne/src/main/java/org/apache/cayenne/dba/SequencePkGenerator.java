@@ -46,7 +46,7 @@ import java.util.List;
  * </p>
  *
  * <pre>
- * dataNode.getAdapter().getPkGenerator().setPkCacheSize(1);
+ * dataNode.getPkGenerator().setPkCacheSize(1);
  * </pre>
  *
  * @since 5.0
@@ -54,10 +54,6 @@ import java.util.List;
 public abstract class SequencePkGenerator extends JdbcPkGenerator {
 
     private static final String _SEQUENCE_PREFIX = "pk_";
-
-    public SequencePkGenerator() {
-        super();
-    }
 
     protected SequencePkGenerator(JdbcAdapter adapter) {
         super(adapter);
@@ -163,7 +159,7 @@ public abstract class SequencePkGenerator extends JdbcPkGenerator {
         try (Connection con = node.getDataSource().getConnection()) {
             try (Statement st = con.createStatement()) {
                 String sql = selectNextValQuery(pkGeneratingSequenceName);
-                adapter.getJdbcEventLogger().log(sql);
+                node.getSqlLogger().logMessage(sql);
 
                 try (ResultSet rs = st.executeQuery(sql)) {
                     if (!rs.next()) {
@@ -218,7 +214,7 @@ public abstract class SequencePkGenerator extends JdbcPkGenerator {
         try (Connection con = node.getDataSource().getConnection()) {
             try (Statement sel = con.createStatement()) {
                 String sql = selectAllSequencesQuery();
-                adapter.getJdbcEventLogger().log(sql);
+                node.getSqlLogger().logMessage(sql);
 
                 try (ResultSet rs = sel.executeQuery(sql)) {
                     List<String> sequenceList = new ArrayList<>();

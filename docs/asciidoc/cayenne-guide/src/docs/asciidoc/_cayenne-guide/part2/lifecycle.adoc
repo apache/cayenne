@@ -148,7 +148,7 @@ Ignore the annotations for a minute. The important point here is that the listen
 
 [source,Java]
 ----
-CayenneRuntime runtime = CayenneRuntime.builder()
+CayenneRuntime runtime = CayenneRuntime.of()
        // ..
        .addModule(binder ->
             CoreModule.extend(bidner)
@@ -272,7 +272,7 @@ Now since this is both a filter and a listener, it needs to be registered as suc
 [source, Java]
 ----
 // this will also add filter as a listener
-CayenneRuntime runtime = CayenneRuntime.builder()
+CayenneRuntime runtime = CayenneRuntime.of()
         // ..
         .addModule(b ->
                 CoreModule.extend(b)

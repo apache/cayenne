@@ -45,10 +45,6 @@
 			<artifactId>cayenne-project</artifactId>
 			<version>${project.version}</version>
 		</dependency>
-        <dependency>
-            <groupId>net.java.dev.inflector</groupId>
-            <artifactId>inflector</artifactId>
-        </dependency>
 		<!-- Test dependencies -->
 		<dependency>
 			<groupId>org.junit.jupiter</groupId>

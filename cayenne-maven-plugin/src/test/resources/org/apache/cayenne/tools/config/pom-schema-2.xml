@@ -28,7 +28,7 @@
                 <configuration>
                     <dbimport>
                         <schema>
-                            <name>NHL_STATS</name>
+                            <name>GAME_STATS</name>
                             <excludeTable>^ETL_.*</excludeTable>
                             <excludeColumn>^ETL_.*</excludeColumn>
                         </schema>

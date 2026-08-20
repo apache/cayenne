@@ -19,23 +19,24 @@
 
 package org.apache.cayenne.access;
 
-import java.util.Collection;
-import java.util.HashMap;
-import java.util.Iterator;
-import java.util.List;
-import java.util.Map;
-
-import javax.sql.DataSource;
-
 import org.apache.cayenne.dba.DbAdapter;
+import org.apache.cayenne.dba.PkGenerator;
 import org.apache.cayenne.map.DataMap;
 import org.apache.cayenne.map.EntityResolver;
+import org.apache.cayenne.map.EntitySorter;
 import org.apache.cayenne.query.Query;
+
+import javax.sql.DataSource;
+import java.util.Collection;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
 
 public class MockDataNode extends DataNode {
 
     protected DataDomain domain;
     protected DataNode node;
+    protected boolean wasDefaultNode;
 
     // mockup the actual results
     protected boolean replaceResults;
@@ -45,8 +46,16 @@ public class MockDataNode extends DataNode {
     public static MockDataNode interceptNode(DataDomain domain, DataNode node) {
         MockDataNode mockNode = new MockDataNode(node);
         mockNode.domain = domain;
+        mockNode.wasDefaultNode = domain.getDefaultNode() == node;
+
         domain.removeDataNode(node.getName());
         domain.addNode(mockNode);
+
+        // queries for DataMaps not linked to a node are routed via the default node, so it must be intercepted as well
+        if (mockNode.wasDefaultNode) {
+            domain.setDefaultNode(mockNode);
+        }
+
         return mockNode;
     }
 
@@ -61,6 +70,10 @@ public class MockDataNode extends DataNode {
 
         domain.removeDataNode(getName());
         domain.addNode(node);
+
+        if (wasDefaultNode) {
+            domain.setDefaultNode(node);
+        }
     }
 
     public void reset() {
@@ -78,14 +91,14 @@ public class MockDataNode extends DataNode {
     }
 
     @Override
-    public void performQueries(Collection queries, OperationObserver resultConsumer) {
+    public void performQueries(Collection queries, OperationObserver callback) {
         runCount += queries.size();
 
         if (replaceResults) {
-            initWithPresetResults(queries, resultConsumer);
+            initWithPresetResults(queries, callback);
         }
         else {
-            node.performQueries(queries, resultConsumer);
+            node.performQueries(queries, callback);
         }
     }
 
@@ -94,9 +107,8 @@ public class MockDataNode extends DataNode {
             OperationObserver resultConsumer) {
 
         // stick preset results to the consumer
-        Iterator it = queries.iterator();
-        while (it.hasNext()) {
-            Query query = (Query) it.next();
+        for (Object o : queries) {
+            Query query = (Query) o;
             resultConsumer.nextRows(query, (List) results.get(query));
         }
     }
@@ -117,6 +129,11 @@ public class MockDataNode extends DataNode {
     }
 
     @Override
+    public PkGenerator getPkGenerator() {
+        return node.getPkGenerator();
+    }
+
+    @Override
     public Collection getDataMaps() {
         return node.getDataMaps();
     }
@@ -127,13 +144,13 @@ public class MockDataNode extends DataNode {
     }
 
     @Override
-    public String getDataSourceFactory() {
-        return node.getDataSourceFactory();
+    public EntityResolver getEntityResolver() {
+        return node.getEntityResolver();
     }
 
     @Override
-    public EntityResolver getEntityResolver() {
-        return node.getEntityResolver();
+    public EntitySorter getEntitySorter() {
+        return node.getEntitySorter();
     }
 
     @Override
@@ -162,13 +179,13 @@ public class MockDataNode extends DataNode {
     }
 
     @Override
-    public void setDataSourceFactory(String dataSourceFactory) {
-        node.setDataSourceFactory(dataSourceFactory);
+    public void setEntityResolver(EntityResolver entityResolver) {
+        node.setEntityResolver(entityResolver);
     }
 
     @Override
-    public void setEntityResolver(EntityResolver entityResolver) {
-        node.setEntityResolver(entityResolver);
+    public void setEntitySorter(EntitySorter entitySorter) {
+        node.setEntitySorter(entitySorter);
     }
 
     @Override

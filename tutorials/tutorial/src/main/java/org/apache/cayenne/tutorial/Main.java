@@ -22,19 +22,34 @@ import java.time.LocalDate;
 import java.util.List;
 
 import org.apache.cayenne.ObjectContext;
+import org.apache.cayenne.configuration.DataNodeDescriptor;
+import org.apache.cayenne.datasource.CayenneDataSource;
 import org.apache.cayenne.query.ObjectSelect;
 import org.apache.cayenne.runtime.CayenneRuntime;
 import org.apache.cayenne.tutorial.persistent.Artist;
 import org.apache.cayenne.tutorial.persistent.Gallery;
 import org.apache.cayenne.tutorial.persistent.Painting;
 
+import javax.sql.DataSource;
+
 public class Main {
 
     public static void main(String[] args) {
 
         // starting Cayenne
-        CayenneRuntime cayenneRuntime = CayenneRuntime.builder()
+        DataSource dataSource = CayenneDataSource.of("jdbc:derby:memory:testdb;create=true")
+                .driverClass("org.apache.derby.jdbc.EmbeddedDriver")
+                .pool(1, 1)
+                .build();
+
+        DataNodeDescriptor dataNode = DataNodeDescriptor.of("tutorial")
+                .dataSource(dataSource)
+                .createSchemaIfNeeded()
+                .build();
+
+        CayenneRuntime cayenneRuntime = CayenneRuntime.of()
                 .addConfig("cayenne-project.xml")
+                .defaultDataNode(dataNode)
                 .build();
 
         // getting a hold of ObjectContext

@@ -19,14 +19,13 @@
 package org.apache.cayenne.datasource;
 
 import org.apache.cayenne.configuration.DataSourceDescriptor;
-import org.apache.cayenne.di.AdhocObjectFactory;
 import org.apache.cayenne.unit.CayenneProjects;
 import org.apache.cayenne.unit.CayenneTestsEnv;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.extension.RegisterExtension;
 
-import java.sql.Driver;
+import javax.sql.DataSource;
 import java.sql.SQLException;
 
 public class BasePoolingDataSourceIT {
@@ -41,11 +40,12 @@ public class BasePoolingDataSourceIT {
 	@BeforeEach
 	public void before() throws SQLException {
         DataSourceDescriptor dataSourceInfo = CayenneTestsEnv.COMMON_SCHEMA.dataSourceDescriptor();
-        AdhocObjectFactory objectFactory = env.adhocObjectFactory();
 
-		Driver driver = objectFactory.newInstance(Driver.class, dataSourceInfo.getJdbcDriver());
-		DriverDataSource nonPooling = new DriverDataSource(driver, dataSourceInfo.getDataSourceUrl(),
-				dataSourceInfo.getUserName(), dataSourceInfo.getPassword());
+		DataSource nonPooling = CayenneDataSource.of(dataSourceInfo.getDataSourceUrl())
+				.driverClass(dataSourceInfo.getJdbcDriver())
+				.userName(dataSourceInfo.getUserName())
+				.password(dataSourceInfo.getPassword())
+				.build();
 
 		PoolingDataSourceParameters poolParameters = createParameters();
 		this.dataSource = new UnmanagedPoolingDataSource(nonPooling, poolParameters);

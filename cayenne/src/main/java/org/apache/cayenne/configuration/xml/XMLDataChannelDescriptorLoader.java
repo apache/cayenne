@@ -47,7 +47,7 @@ public class XMLDataChannelDescriptorLoader implements DataChannelDescriptorLoad
     /**
      * Versions of project XML files that this loader can read.
      */
-    static final String[] SUPPORTED_PROJECT_VERSIONS = {"12"};
+    static final String[] SUPPORTED_PROJECT_VERSIONS = {"13"};
 
     static {
         Arrays.sort(SUPPORTED_PROJECT_VERSIONS);

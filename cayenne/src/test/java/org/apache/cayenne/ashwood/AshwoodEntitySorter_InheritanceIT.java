@@ -49,8 +49,7 @@ public class AshwoodEntitySorter_InheritanceIT extends PeopleTestBase {
 		context = env.context();
 
 		this.resolver = context.getEntityResolver();
-		this.sorter = new AshwoodEntitySorter();
-		sorter.setEntityResolver(resolver);
+		this.sorter = new AshwoodEntitySorter(resolver);
 
 		this.address = resolver.getDbEntity("ADDRESS");
 		this.clientCompany = resolver.getDbEntity("CLIENT_COMPANY");

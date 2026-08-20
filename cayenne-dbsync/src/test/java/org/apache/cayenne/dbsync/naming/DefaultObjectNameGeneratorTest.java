@@ -18,6 +18,8 @@
  ****************************************************************/
 package org.apache.cayenne.dbsync.naming;
 
+import java.sql.Types;
+
 import org.apache.cayenne.map.DbAttribute;
 import org.apache.cayenne.map.DbEntity;
 import org.apache.cayenne.map.DbJoin;
@@ -28,10 +30,14 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 
 public class DefaultObjectNameGeneratorTest {
 
-    private DefaultObjectNameGenerator generator = new DefaultObjectNameGenerator(NoStemStemmer.getInstance());
+    private final DefaultObjectNameGenerator generator = new DefaultObjectNameGenerator();
 
-    private DbRelationship makeRelationship(String srcEntity, String srcKey, String targetEntity, String targetKey,
-                                            boolean toMany) {
+    private DbRelationship makeRelationship(
+            String srcEntity,
+            String srcKey,
+            String targetEntity,
+            String targetKey,
+            boolean toMany) {
 
         DbRelationship relationship = new DbRelationship();
         relationship.addJoin(new DbJoin(relationship, srcKey, targetKey));
@@ -42,48 +48,207 @@ public class DefaultObjectNameGeneratorTest {
         return relationship;
     }
 
-    @Test
-    public void relationshipName_LowerCase_Underscores() {
-
-        DbRelationship r1 = makeRelationship("painting", "artist_id", "artist", "artist_id", false);
-        assertEquals("artist", generator.relationshipName(r1));
-
-        DbRelationship r2 = makeRelationship("artist", "artist_id", "painting", "artist_id", true);
-        assertEquals("paintings", generator.relationshipName(r2));
-
-        DbRelationship r3 = makeRelationship("person", "mother_id", "person", "person_id", false);
-        assertEquals("mother", generator.relationshipName(r3));
-
-        DbRelationship r4 = makeRelationship("person", "person_id", "person", "mother_id", true);
-        assertEquals("people", generator.relationshipName(r4));
-
-        DbRelationship r5 = makeRelationship("person", "shipping_address_id", "address", "id", false);
-        assertEquals("shippingAddress", generator.relationshipName(r5));
-
-        DbRelationship r6 = makeRelationship("person", "id", "address", "person_id", true);
-        assertEquals("addresses", generator.relationshipName(r6));
+    private String dbRelationshipName(DbRelationship relationship) {
+        return generator.dbRelationshipName(relationship.getJoins(), relationship.isToMany());
     }
 
     @Test
-    public void relationshipName_UpperCase_Underscores() {
+    public void objRelationshipName_MirrorsDbRelationshipName() {
+
+        // the DbRelationship name is the source of truth for the ObjRelationship name
+        DbRelationship r1 = makeRelationship("painting", "artist_id", "artist", "artist_id", false);
+        r1.setName("creator");
+        assertEquals("creator", generator.objRelationshipName(r1));
+
+        // a to-many DbRelationship name is already plural and is mirrored as-is
+        DbRelationship r2 = makeRelationship("artist", "artist_id", "painting", "artist_id", true);
+        r2.setName("works");
+        assertEquals("works", generator.objRelationshipName(r2));
+
+        // underscored db names are converted to Java style
+        DbRelationship r3 = makeRelationship("TEAM", "TEAM_ID", "GAME", "HOME_TEAM_ID", true);
+        r3.setName("HOME_GAMES");
+        assertEquals("homeGames", generator.objRelationshipName(r3));
+
+        // even the NameBuilder placeholder is mirrored, not regenerated
+        DbRelationship r4 = makeRelationship("painting", "artist_id", "artist", "artist_id", false);
+        r4.setName("untitledRel2");
+        assertEquals("untitledRel2", generator.objRelationshipName(r4));
+    }
+
+    @Test
+    public void objRelationshipName_FlattenedChain() {
+
+        // flattened many-to-many: a to-many leg to the join table, then a to-one leg to the target;
+        // the last leg's singular name is mirrored and pluralized
+        DbRelationship r1 = makeRelationship("movie", "movie_id", "person_movie", "movie_id", true);
+        r1.setName("personMovies");
+
+        DbRelationship r2 = makeRelationship("person_movie", "actor_id", "person", "person_id", false);
+        r2.setName("actor");
+        assertEquals("actors", generator.objRelationshipName(r1, r2));
+
+        DbRelationship r3 = makeRelationship("person_movie", "director_id", "person", "person_id", false);
+        r3.setName("director");
+        assertEquals("directors", generator.objRelationshipName(r1, r3));
+    }
+
+    @Test
+    public void dbRelationshipName_LowerCase_Underscores() {
+
+        DbRelationship r1 = makeRelationship("painting", "artist_id", "artist", "artist_id", false);
+        assertEquals("artist", dbRelationshipName(r1));
+
+        DbRelationship r2 = makeRelationship("artist", "artist_id", "painting", "artist_id", true);
+        assertEquals("paintings", dbRelationshipName(r2));
+
+        DbRelationship r3 = makeRelationship("person", "mother_id", "person", "person_id", false);
+        assertEquals("mother", dbRelationshipName(r3));
+
+        DbRelationship r4 = makeRelationship("person", "person_id", "person", "mother_id", true);
+        assertEquals("people", dbRelationshipName(r4));
+
+        DbRelationship r5 = makeRelationship("person", "shipping_address_id", "address", "id", false);
+        assertEquals("shippingAddress", dbRelationshipName(r5));
+
+        DbRelationship r6 = makeRelationship("person", "id", "address", "person_id", true);
+        assertEquals("addresses", dbRelationshipName(r6));
+    }
+
+    @Test
+    public void dbRelationshipName_UpperCase_Underscores() {
 
         DbRelationship r1 = makeRelationship("PAINTING", "ARTIST_ID", "ARTIST", "ARTIST_ID", false);
-        assertEquals("artist", generator.relationshipName(r1));
+        assertEquals("artist", dbRelationshipName(r1));
 
         DbRelationship r2 = makeRelationship("ARTIST", "ARTIST_ID", "PAINTING", "ARTIST_ID", true);
-        assertEquals("paintings", generator.relationshipName(r2));
+        assertEquals("paintings", dbRelationshipName(r2));
 
         DbRelationship r3 = makeRelationship("PERSON", "MOTHER_ID", "PERSON", "PERSON_ID", false);
-        assertEquals("mother", generator.relationshipName(r3));
+        assertEquals("mother", dbRelationshipName(r3));
 
         DbRelationship r4 = makeRelationship("PERSON", "PERSON_ID", "PERSON", "MOTHER_ID", true);
-        assertEquals("people", generator.relationshipName(r4));
+        assertEquals("people", dbRelationshipName(r4));
 
         DbRelationship r5 = makeRelationship("PERSON", "SHIPPING_ADDRESS_ID", "ADDRESS", "ID", false);
-        assertEquals("shippingAddress", generator.relationshipName(r5));
+        assertEquals("shippingAddress", dbRelationshipName(r5));
 
         DbRelationship r6 = makeRelationship("PERSON", "ID", "ADDRESS", "PERSON_ID", true);
-        assertEquals("addresses", generator.relationshipName(r6));
+        assertEquals("addresses", dbRelationshipName(r6));
+    }
+
+    @Test
+    public void dbRelationshipName_ToMany_RoleQualifiedFk() {
+
+        // two FKs from GAME to TEAM: the reverse collections take the role from the FK column
+        DbRelationship r1 = makeRelationship("TEAM", "TEAM_ID", "GAME", "HOME_TEAM_ID", true);
+        assertEquals("homeGames", dbRelationshipName(r1));
+
+        DbRelationship r2 = makeRelationship("TEAM", "TEAM_ID", "GAME", "AWAY_TEAM_ID", true);
+        assertEquals("awayGames", dbRelationshipName(r2));
+
+        DbRelationship r3 = makeRelationship("team", "team_id", "game", "home_team_id", true);
+        assertEquals("homeGames", dbRelationshipName(r3));
+
+        // FK without an ID suffix still carries the role
+        DbRelationship r4 = makeRelationship("TEAM", "TEAM_ID", "GAME", "HOME_TEAM", true);
+        assertEquals("homeGames", dbRelationshipName(r4));
+
+        // multi-word qualifier and entity name
+        DbRelationship r5 = makeRelationship("ARTIST_GROUP", "ID", "EXHIBIT", "PRIMARY_ARTIST_GROUP_ID", true);
+        assertEquals("primaryExhibits", dbRelationshipName(r5));
+
+        // FK role unrelated to the source entity name gets no qualifier
+        DbRelationship r6 = makeRelationship("PERSON", "PERSON_ID", "PERSON", "MOTHER_ID", true);
+        assertEquals("people", dbRelationshipName(r6));
+
+        // FK ending with the entity name without a "_" boundary gets no qualifier
+        DbRelationship r7 = makeRelationship("TEAM", "TEAM_ID", "GAME", "STEAM_ID", true);
+        assertEquals("games", dbRelationshipName(r7));
+    }
+
+    @Test
+    public void dbRelationshipName_ToOne_FkWithoutIdSuffix() {
+
+        // an FK without an ID suffix still names the relationship after the column, not the target table
+        DbRelationship r1 = makeRelationship("employee", "birth_country", "country", "id", false);
+        assertEquals("birthCountry", dbRelationshipName(r1));
+
+        DbRelationship r2 = makeRelationship("PERSON", "SHIPPING_ADDRESS", "ADDRESS", "ID", false);
+        assertEquals("shippingAddress", dbRelationshipName(r2));
+
+        // an FK named after the bare target concept keeps the column name
+        DbRelationship r3 = makeRelationship("employee", "country", "acme_country", "id", false);
+        assertEquals("country", dbRelationshipName(r3));
+    }
+
+    @Test
+    public void dbRelationshipName_ToMany_RoleQualifiedFk_FkDropsTablePrefix() {
+
+        // FK columns matching a "_"-token suffix of the entity name still carry the role...
+        DbRelationship r1 = makeRelationship("acme_team", "id", "acme_game", "home_team_id", true);
+        assertEquals("homeGames", dbRelationshipName(r1));
+
+        DbRelationship r2 = makeRelationship("acme_team", "id", "acme_game", "visiting_team_id", true);
+        assertEquals("visitingGames", dbRelationshipName(r2));
+
+        // ... and a plain suffix reference gets no qualifier
+        DbRelationship r3 = makeRelationship("acme_team", "id", "acme_award", "team_id", true);
+        assertEquals("awards", dbRelationshipName(r3));
+
+        DbRelationship r4 = makeRelationship("acme_game_type", "id", "acme_game", "type_id", true);
+        assertEquals("games", dbRelationshipName(r4));
+    }
+
+    @Test
+    public void dbRelationshipName_ToMany_SharedTablePrefix() {
+
+        // a leading "_"-token shared by both table names is schema vocabulary, not a part of the role,
+        // and is stripped to mirror the FK-based to-one names that never carry it
+        DbRelationship r1 = makeRelationship("acme_team", "id", "acme_game", "team_id", true);
+        assertEquals("games", dbRelationshipName(r1));
+
+        DbRelationship r2 = makeRelationship("acme_country", "id", "acme_draft_pick", "drafted_by_country_id", true);
+        assertEquals("draftedByDraftPicks", dbRelationshipName(r2));
+
+        // all shared tokens are stripped, including a source name that is a full token-prefix of the target
+        DbRelationship r3 = makeRelationship("acme_playoff_series", "id", "acme_playoff_series_game",
+                "playoff_series_id", true);
+        assertEquals("games", dbRelationshipName(r3));
+
+        DbRelationship r4 = makeRelationship("aa_bb_team", "id", "aa_bb_game", "team_id", true);
+        assertEquals("games", dbRelationshipName(r4));
+
+        // a prefix on the target alone is kept...
+        DbRelationship r5 = makeRelationship("team", "id", "acme_game", "team_id", true);
+        assertEquals("acmeGames", dbRelationshipName(r5));
+
+        // ... as are differing prefixes
+        DbRelationship r6 = makeRelationship("aa_team", "id", "bb_game", "team_id", true);
+        assertEquals("bbGames", dbRelationshipName(r6));
+
+        // stripping backs off when the base name would shrink to a single letter
+        DbRelationship r7 = makeRelationship("acme_team", "id", "acme_a", "team_id", true);
+        assertEquals("acmeAs", dbRelationshipName(r7));
+    }
+
+    @Test
+    public void dbRelationshipName_MultiJoin() {
+
+        // a compound FK's columns describe PK components, so the to-one side is named after the target entity
+        DbRelationship r1 = makeRelationship("shipment", "order_id", "order_line", "order_id", false);
+        r1.addJoin(new DbJoin(r1, "line_num", "line_num"));
+        assertEquals("orderLine", dbRelationshipName(r1));
+
+        // ... and the to-many side gets an unqualified plural
+        DbRelationship r2 = makeRelationship("order_line", "order_id", "shipment", "order_id", true);
+        r2.addJoin(new DbJoin(r2, "line_num", "line_num"));
+        assertEquals("shipments", dbRelationshipName(r2));
+
+        // no role qualifier even when the first FK column alone would suggest one
+        DbRelationship r3 = makeRelationship("team", "team_id", "game", "home_team_id", true);
+        r3.addJoin(new DbJoin(r3, "season_id", "season_id"));
+        assertEquals("games", dbRelationshipName(r3));
     }
 
     @Test
@@ -96,5 +261,31 @@ public class DefaultObjectNameGeneratorTest {
     public void objAttributeName() {
         assertEquals("name", generator.objAttributeName(new DbAttribute("NAME")));
         assertEquals("artistName", generator.objAttributeName(new DbAttribute("ARTIST_NAME")));
+    }
+
+    @Test
+    public void objAttributeName_PersistentBaseProperty() {
+
+        // names with a getter in Object or PersistentObject are qualified with the entity name
+        DbEntity student = new DbEntity("STUDENT");
+        assertEquals("studentClass", generator.objAttributeName(new DbAttribute("CLASS", Types.VARCHAR, student)));
+        assertEquals("studentObjectId",
+                generator.objAttributeName(new DbAttribute("OBJECT_ID", Types.INTEGER, student)));
+        assertEquals("studentSnapshotVersion",
+                generator.objAttributeName(new DbAttribute("SNAPSHOT_VERSION", Types.INTEGER, student)));
+
+        // ordinary names are unaffected
+        assertEquals("classRoom", generator.objAttributeName(new DbAttribute("CLASS_ROOM", Types.VARCHAR, student)));
+    }
+
+    @Test
+    public void dbRelationshipName_ToOne_PersistentBaseProperty() {
+
+        // an FK-derived name with a getter in Object or PersistentObject is qualified with the source entity name
+        DbRelationship r1 = makeRelationship("student", "class_id", "class", "id", false);
+        assertEquals("studentClass", dbRelationshipName(r1));
+
+        DbRelationship r2 = makeRelationship("AUDIT", "OBJECT_CONTEXT_ID", "CONTEXT", "ID", false);
+        assertEquals("auditObjectContext", dbRelationshipName(r2));
     }
 }

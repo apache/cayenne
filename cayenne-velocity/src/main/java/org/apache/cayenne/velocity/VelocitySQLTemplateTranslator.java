@@ -21,8 +21,8 @@ package org.apache.cayenne.velocity;
 
 import org.apache.cayenne.CayenneRuntimeException;
 import org.apache.cayenne.access.jdbc.RSColumn;
-import org.apache.cayenne.access.translator.sqltemplate.TranslatedSQL;
-import org.apache.cayenne.access.translator.sqltemplate.SQLTemplateTranslator;
+import org.apache.cayenne.access.translator.TranslatedSQL;
+import org.apache.cayenne.access.translator.SQLTemplateTranslator;
 import org.apache.cayenne.access.jdbc.PSParameter;
 import org.apache.cayenne.dba.DbAdapter;
 import org.apache.cayenne.exp.ExpressionException;
@@ -169,7 +169,7 @@ public class VelocitySQLTemplateTranslator implements SQLTemplateTranslator {
 		RSColumn[] resultsArray = new RSColumn[results.size()];
 		results.toArray(resultsArray);
 
-		return new TranslatedSQL(sql, resultsArray, bindingsArray);
+		return new TranslatedSQL(sql, bindingsArray, resultsArray);
 	}
 
 	String buildStatement(VelocityContext context, String template, SimpleNode parsedTemplate) throws Exception {

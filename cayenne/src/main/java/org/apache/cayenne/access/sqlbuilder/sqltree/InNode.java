@@ -20,6 +20,7 @@
 package org.apache.cayenne.access.sqlbuilder.sqltree;
 
 import org.apache.cayenne.access.sqlbuilder.SQLAppendable;
+import org.apache.cayenne.access.sqlbuilder.SQLGenerationContext;
 
 import java.util.Objects;
 
@@ -36,7 +37,7 @@ public class InNode extends Node {
     }
 
     @Override
-    public SQLAppendable append(SQLAppendable buffer) {
+    public SQLAppendable append(SQLAppendable buffer, SQLGenerationContext context) {
         return buffer;
     }
 
@@ -44,9 +45,9 @@ public class InNode extends Node {
     public void appendChildrenSeparator(SQLAppendable buffer, int childInd) {
         if (childInd == 0) {
             if (not) {
-                buffer.append(" NOT");
+                buffer.appendTokenSeparator().append("NOT");
             }
-            buffer.append(" IN (");
+            buffer.appendTokenSeparator().append("IN").appendTokenSeparator().append('(').suppressNextTokenSeparator();
         }
     }
 

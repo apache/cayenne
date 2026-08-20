@@ -21,7 +21,6 @@ package org.apache.cayenne.modeler.project;
 
 import org.apache.cayenne.configuration.ConfigurationNode;
 import org.apache.cayenne.configuration.DataChannelDescriptor;
-import org.apache.cayenne.configuration.DataNodeDescriptor;
 import org.apache.cayenne.map.DataMap;
 import org.apache.cayenne.map.DbAttribute;
 import org.apache.cayenne.map.DbEntity;
@@ -120,8 +119,6 @@ public class ProjectSession {
             return getSelectedProcedure();
         } else if (getSelectedDataMap() != null) {
             return getSelectedDataMap();
-        } else if (getSelectedDataNode() != null) {
-            return getSelectedDataNode();
         } else if (getSelectedDataDomain() != null) {
             return getSelectedDataDomain();
         } else if (getSelectedPaths() != null) { // multiple objects
@@ -170,7 +167,6 @@ public class ProjectSession {
 
         GlobalActions globalActions = app.getActionManager();
 
-        addDataNodeDisplayListener(e -> globalActions.dataNodeSelected());
         addDataMapDisplayListener(e -> globalActions.dataMapSelected());
         addObjEntityDisplayListener(e -> globalActions.objEntitySelected());
         addDbEntityDisplayListener(e -> globalActions.dbEntitySelected());
@@ -219,10 +215,6 @@ public class ProjectSession {
 
     public DataChannelDescriptor getSelectedDataDomain() {
         return state.dataDomain;
-    }
-
-    public DataNodeDescriptor getSelectedDataNode() {
-        return state.dataNode;
     }
 
     public DataMap getSelectedDataMap() {
@@ -300,14 +292,6 @@ public class ProjectSession {
 
     public void removeValidationConfigDisplayListener(ValidationConfigDisplayListener listener) {
         listeners.remove(ValidationConfigDisplayListener.class, listener);
-    }
-
-    public void addDataNodeDisplayListener(DataNodeDisplayListener listener) {
-        listeners.add(DataNodeDisplayListener.class, listener);
-    }
-
-    public void addDataNodeListener(DataNodeListener listener) {
-        listeners.add(DataNodeListener.class, listener);
     }
 
     public void addDataMapDisplayListener(DataMapDisplayListener listener) {
@@ -440,7 +424,7 @@ public class ProjectSession {
 
     public void displayDomain(DomainDisplayEvent e) {
         boolean changed = e.getDomain() != state.dataDomain || (
-                state.dataNode != null || state.dataMap != null || state.dbEntity != null || state.objEntity != null || state.procedure != null || state.query != null || state.embeddable != null
+                state.dataMap != null || state.dbEntity != null || state.objEntity != null || state.procedure != null || state.query != null || state.embeddable != null
         );
 
         if (changed) {
@@ -481,47 +465,6 @@ public class ProjectSession {
         }
     }
 
-    public void displayDataNode(DataNodeDisplayEvent e) {
-        boolean changed = e.getDataNode() != state.dataNode || (
-                state.dataMap != null || state.dbEntity != null || state.objEntity != null || state.procedure != null || state.query != null || state.embeddable != null
-        );
-
-        if (changed) {
-            state = new State();
-            state.dataDomain = e.getDomain();
-            state.dataNode = e.getDataNode();
-            navigationHistory.recordEvent(e);
-
-            for (DataNodeDisplayListener listener : listeners.getListeners(DataNodeDisplayListener.class)) {
-                listener.dataNodeSlected(e);
-            }
-        }
-    }
-
-    public void fireDataNodeEvent(DataNodeEvent e) {
-        setDirty(true);
-
-        if (e.getType() == ModelEvent.Type.REMOVE) {
-            navigationHistory.forgetObject(e);
-        }
-
-        for (DataNodeListener listener : listeners.getListeners(DataNodeListener.class)) {
-            switch (e.getType()) {
-                case ADD:
-                    listener.dataNodeAdded(e);
-                    break;
-                case CHANGE:
-                    listener.dataNodeChanged(e);
-                    break;
-                case REMOVE:
-                    listener.dataNodeRemoved(e);
-                    break;
-                default:
-                    throw new IllegalArgumentException("Invalid DataNodeEvent type: " + e.getType());
-            }
-        }
-    }
-
     public void displayDataMap(DataMapDisplayEvent e) {
         boolean changed = e.getDataMap() != state.dataMap || (
                 state.dbEntity != null || state.objEntity != null || state.procedure != null || state.query != null || state.embeddable != null
@@ -530,7 +473,6 @@ public class ProjectSession {
         if (changed) {
             state = new State();
             state.dataDomain = e.getDomain();
-            state.dataNode = e.getDataNode();
             state.dataMap = e.getDataMap();
 
             navigationHistory.recordEvent(e);
@@ -1164,7 +1106,6 @@ public class ProjectSession {
     static class State {
 
         DataChannelDescriptor dataDomain;
-        DataNodeDescriptor dataNode;
         DataMap dataMap;
         ObjEntity objEntity;
         DbEntity dbEntity;

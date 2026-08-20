@@ -19,7 +19,7 @@
 package org.apache.cayenne.crypto;
 
 import org.apache.cayenne.access.jdbc.reader.RowReaderFactory;
-import org.apache.cayenne.access.translator.batch.BatchTranslator;
+import org.apache.cayenne.access.translator.BatchTranslator;
 import org.apache.cayenne.configuration.DataMapLoader;
 import org.apache.cayenne.crypto.batch.CryptoBatchTranslator;
 import org.apache.cayenne.di.Key;

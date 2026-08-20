@@ -327,7 +327,7 @@ public abstract class EventBridge implements EventListener {
                 // make sure external event has the right subject, if not make a clone
                 // with the right one...
                 if (!subject.equals(event.getSubject())) {
-                    CayenneEvent clone = (CayenneEvent) Util.cloneViaSerialization(event);
+                    CayenneEvent clone = Util.cloneViaSerialization(event);
                     clone.setSubject(subject);
                     clone.setPostedBy(event.getPostedBy());
                     clone.setSource(event.getSource());

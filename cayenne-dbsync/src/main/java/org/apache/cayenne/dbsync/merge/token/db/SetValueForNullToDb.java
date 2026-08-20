@@ -19,7 +19,7 @@
 
 package org.apache.cayenne.dbsync.merge.token.db;
 
-import org.apache.cayenne.dba.DbAdapter;
+import org.apache.cayenne.access.DataNode;
 import org.apache.cayenne.dbsync.merge.factory.MergerTokenFactory;
 import org.apache.cayenne.dbsync.merge.token.DummyReverseToken;
 import org.apache.cayenne.dbsync.merge.token.MergerToken;
@@ -40,7 +40,7 @@ public class SetValueForNullToDb extends AbstractToDbToken.EntityAndColumn {
     }
     
     @Override
-    public List<String> createSql(DbAdapter adapter) {
+    public List<String> createSql(DataNode node) {
         return valueForNullProvider.createSql(getEntity(), getColumn());
     }
 

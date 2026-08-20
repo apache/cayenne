@@ -20,7 +20,7 @@
 package org.apache.cayenne.access.types;
 
 import org.apache.cayenne.CayenneRuntimeException;
-import org.apache.cayenne.util.IDUtil;
+import org.apache.cayenne.util.ArrayUtil;
 import org.apache.cayenne.util.MemoryBlob;
 
 import java.io.ByteArrayOutputStream;
@@ -34,8 +34,8 @@ import java.sql.SQLException;
 import java.sql.Types;
 
 /**
- * Handles <code>byte[]</code>, mapping it as either of JDBC types - BLOB or
- * (VAR)BINARY. Can be configured to trim trailing zero bytes.
+ * Handles <code>byte[]</code>, mapping it as either of JDBC types - BLOB or (VAR)BINARY. Can be configured to trim
+ * trailing zero bytes.
  */
 public class ByteArrayType implements ExtendedType<byte[]> {
 
@@ -44,25 +44,12 @@ public class ByteArrayType implements ExtendedType<byte[]> {
 	protected boolean trimmingBytes;
 	protected boolean usingBlobs;
 
+    /**
+     * @deprecated in favor of {@link ArrayUtil#appendTruncated(StringBuilder, byte[])}
+     */
+    @Deprecated(since = "5.0", forRemoval = true)
     public static void logBytes(StringBuilder buffer, byte[] bytes) {
-        buffer.append("<");
-
-        int len = bytes.length;
-        boolean trimming = false;
-        if (len > TRIM_VALUES_THRESHOLD) {
-            len = TRIM_VALUES_THRESHOLD;
-            trimming = true;
-        }
-
-        for (int i = 0; i < len; i++) {
-            IDUtil.appendFormattedByte(buffer, bytes[i]);
-        }
-
-        if (trimming) {
-            buffer.append("...");
-        }
-
-        buffer.append('>');
+        ArrayUtil.appendTruncated(buffer, bytes);
     }
 
 	/**
@@ -166,7 +153,7 @@ public class ByteArrayType implements ExtendedType<byte[]> {
 		}
 
 		StringBuilder buffer = new StringBuilder();
-		logBytes(buffer, value);
+		ArrayUtil.appendTruncated(buffer, value);
 		return buffer.toString();
 	}
 

@@ -21,8 +21,8 @@ package org.apache.cayenne.commitlog.meta;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.ConcurrentMap;
 
-import org.apache.cayenne.DataChannel;
 import org.apache.cayenne.ObjectId;
+import org.apache.cayenne.access.DataDomain;
 import org.apache.cayenne.annotation.CommitLog;
 import org.apache.cayenne.di.Inject;
 import org.apache.cayenne.di.Provider;
@@ -59,15 +59,15 @@ public class AnnotationCommitLogEntityFactory implements CommitLogEntityFactory 
 		}
 	};
 
-	private Provider<DataChannel> channelProvider;
+	private Provider<DataDomain> domainProvider;
 	private ConcurrentMap<String, CommitLogEntity> entities;
 
-	public AnnotationCommitLogEntityFactory(@Inject Provider<DataChannel> channelProvider) {
+	public AnnotationCommitLogEntityFactory(@Inject Provider<DataDomain> domainProvider) {
 		this.entities = new ConcurrentHashMap<>();
 
-		// injecting provider instead of DataChannel, as otherwise we end up
+		// injecting provider instead of DataDomain, as otherwise we end up
 		// with circular dependency.
-		this.channelProvider = channelProvider;
+		this.domainProvider = domainProvider;
 	}
 
 	@Override
@@ -85,7 +85,7 @@ public class AnnotationCommitLogEntityFactory implements CommitLogEntityFactory 
 	}
 
 	private EntityResolver getEntityResolver() {
-		return channelProvider.get().getEntityResolver();
+		return domainProvider.get().getEntityResolver();
 	}
 
 	private CommitLogEntity createDescriptor(String entityName) {

@@ -19,7 +19,7 @@
 
 package org.apache.cayenne.project.upgrade.handlers;
 
-import org.apache.cayenne.project.upgrade.UpgradeUnit;
+import org.apache.cayenne.project.upgrade.UpgradeContext;
 
 /**
  * Upgrade handler for the project version "10" introduced by 4.1.M1 release.
@@ -37,13 +37,13 @@ public class UpgradeHandler_V10 implements UpgradeHandler {
     }
 
     @Override
-    public void processProjectDom(UpgradeUnit upgradeUnit) {
+    public void processProjectDom(UpgradeContext upgradeUnit) {
         // introduce xml namespace and schema for domain
         updateDomainSchemaAndVersion(upgradeUnit);
     }
 
     @Override
-    public void processDataMapDom(UpgradeUnit upgradeUnit) {
+    public void processDataMapDom(UpgradeContext upgradeUnit) {
         updateDataMapSchemaAndVersion(upgradeUnit);
     }
 }

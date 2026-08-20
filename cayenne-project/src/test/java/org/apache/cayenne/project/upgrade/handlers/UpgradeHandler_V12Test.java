@@ -20,7 +20,7 @@
 package org.apache.cayenne.project.upgrade.handlers;
 
 import org.apache.cayenne.configuration.DataChannelDescriptor;
-import org.apache.cayenne.project.upgrade.UpgradeUnit;
+import org.apache.cayenne.project.upgrade.UpgradeContext;
 import org.apache.cayenne.resource.URLResource;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.io.TempDir;
@@ -57,7 +57,8 @@ public class UpgradeHandler_V12Test extends BaseUpgradeHandlerTest {
         File graphFile = copyResourceToTemp("../v12/project1.graph.xml", "project1.graph.xml");
         assertTrue(graphFile.exists(), "precondition: graph file exists");
 
-        Document document = processProjectDomFromFile(projectFile);
+        UpgradeContext unit = processProjectDomFromFile(projectFile);
+        Document document = unit.getDocument();
 
         Element root = document.getDocumentElement();
         assertEquals("12", root.getAttribute("project-version"));
@@ -75,6 +76,9 @@ public class UpgradeHandler_V12Test extends BaseUpgradeHandlerTest {
                 ((Element) validation.item(0)).getAttribute("xmlns"));
 
         assertFalse(graphFile.exists(), "graph file must be deleted");
+
+        assertEquals(1, unit.getPostUpgradeMessages().size());
+        assertEquals("The 'graph' diagram layout is no longer supported and was deleted from the project", unit.getPostUpgradeMessages().getFirst());
     }
 
     @Test
@@ -82,7 +86,7 @@ public class UpgradeHandler_V12Test extends BaseUpgradeHandlerTest {
         File projectFile = copyResourceToTemp("../v12/cayenne-project1.xml", "cayenne-project.xml");
 
         // graph file intentionally absent — upgrade must complete without exception
-        Document document = processProjectDomFromFile(projectFile);
+        Document document = processProjectDomFromFile(projectFile).getDocument();
 
         Element root = document.getDocumentElement();
         assertEquals("12", root.getAttribute("project-version"));
@@ -142,14 +146,14 @@ public class UpgradeHandler_V12Test extends BaseUpgradeHandlerTest {
         return target;
     }
 
-    private Document processProjectDomFromFile(File file) throws Exception {
+    private UpgradeContext processProjectDomFromFile(File file) throws Exception {
         DocumentBuilder db = DocumentBuilderFactory.newInstance().newDocumentBuilder();
         Document doc;
         try (InputStream in = Files.newInputStream(file.toPath())) {
             doc = db.parse(in);
         }
-        UpgradeUnit unit = new UpgradeUnit(new URLResource(file.toURI().toURL()), doc);
+        UpgradeContext unit = new UpgradeContext(new URLResource(file.toURI().toURL()), doc);
         handler.processProjectDom(unit);
-        return doc;
+        return unit;
     }
 }

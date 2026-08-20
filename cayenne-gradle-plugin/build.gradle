@@ -49,6 +49,8 @@ dependencies {
 
 test {
     useJUnitPlatform()
+    systemProperty 'cayenne.testProjectsDir', layout.buildDirectory.dir('test-projects').get().asFile.absolutePath
+    systemProperty 'derby.stream.error.file', layout.buildDirectory.file('derby.log').get().asFile.absolutePath
 }
 
 def projectVersion = getProjectVersion()

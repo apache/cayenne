@@ -22,7 +22,7 @@ package org.apache.cayenne.modeler;
 import org.apache.cayenne.configuration.ConfigurationNameMapper;
 import org.apache.cayenne.configuration.DataMapLoader;
 import org.apache.cayenne.configuration.runtime.CoreModule;
-import org.apache.cayenne.configuration.runtime.DbAdapterFactory;
+import org.apache.cayenne.dbsync.reverse.configuration.DbAdapterFactory;
 import org.apache.cayenne.configuration.xml.DataChannelMetaData;
 import org.apache.cayenne.dbsync.DbSyncModule;
 import org.apache.cayenne.dbsync.merge.factory.MergerTokenFactoryProvider;
@@ -50,7 +50,7 @@ import org.apache.cayenne.project.ConfigurationNodeParentGetter;
 import org.apache.cayenne.project.ProjectLoader;
 import org.apache.cayenne.project.ProjectModule;
 import org.apache.cayenne.project.ProjectSaver;
-import org.apache.cayenne.project.upgrade.UpgradeService;
+import org.apache.cayenne.project.upgrade.ProjectUpgrader;
 import org.apache.cayenne.project.validation.ProjectValidator;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -140,8 +140,8 @@ public class Application {
         return injector.getInstance(DataMapLoader.class);
     }
 
-    public UpgradeService getUpgradeService() {
-        return injector.getInstance(UpgradeService.class);
+    public ProjectUpgrader getUpgradeService() {
+        return injector.getInstance(ProjectUpgrader.class);
     }
 
     public CMFileChooser getFileChooser(Component parent, String title) {

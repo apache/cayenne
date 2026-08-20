@@ -21,13 +21,11 @@ package org.apache.cayenne.modeler.ui.action;
 
 import org.apache.cayenne.configuration.DataChannelDescriptor;
 import org.apache.cayenne.dbsync.merge.context.EntityMergeSupport;
-import org.apache.cayenne.dbsync.naming.DefaultObjectNameGenerator;
 import org.apache.cayenne.map.DbAttribute;
 import org.apache.cayenne.map.DbEntity;
-import org.apache.cayenne.map.DbRelationship;
 import org.apache.cayenne.map.ObjEntity;
-import org.apache.cayenne.modeler.event.model.ObjEntityEvent;
 import org.apache.cayenne.modeler.Application;
+import org.apache.cayenne.modeler.event.model.ObjEntityEvent;
 import org.apache.cayenne.modeler.project.ProjectSession;
 import org.apache.cayenne.modeler.toolkit.AppAction;
 import org.apache.cayenne.modeler.ui.entitysync.EntitySyncDialog;
@@ -40,8 +38,7 @@ import java.awt.event.KeyEvent;
 import java.util.Collection;
 
 /**
- * Action that synchronizes all ObjEntities with the current state of the
- * selected DbEntity.
+ * Action that synchronizes all ObjEntities with the current state of the selected DbEntity.
  */
 public class DbEntitySyncAction extends AppAction {
 
@@ -54,18 +51,13 @@ public class DbEntitySyncAction extends AppAction {
         return KeyStroke.getKeyStroke(KeyEvent.VK_U, Toolkit.getDefaultToolkit().getMenuShortcutKeyMaskEx());
     }
 
+    @Override
     public String getIconName() {
         return "icon-sync.png";
     }
 
-    /**
-     * @see AppAction#performAction(ActionEvent)
-     */
+    @Override
     public void performAction(ActionEvent e) {
-        syncDbEntity();
-    }
-
-    protected void syncDbEntity() {
         ProjectSession session = getProjectSession();
         DbEntity dbEntity = session.getSelectedDbEntity();
 
@@ -84,8 +76,6 @@ public class DbEntitySyncAction extends AppAction {
             if (merger == null) {
                 return;
             }
-
-            merger.setNameGenerator(new PreserveRelationshipNameGenerator());
 
             DbEntitySyncUndoableEdit undoableEdit = new DbEntitySyncUndoableEdit(session,
                     (DataChannelDescriptor) session.project().getRootNode(), session.getSelectedDataMap());
@@ -129,23 +119,5 @@ public class DbEntitySyncAction extends AppAction {
      */
     private void filterInheritedEntities(final Collection<ObjEntity> entities) {
         entities.removeIf(e -> e.getSuperEntity() != null);
-    }
-
-    static class PreserveRelationshipNameGenerator extends DefaultObjectNameGenerator {
-
-        @Override
-        public String relationshipName(DbRelationship... relationshipChain) {
-            if (relationshipChain.length == 0) {
-                return super.relationshipName(relationshipChain);
-            }
-
-            DbRelationship last = relationshipChain[relationshipChain.length - 1];
-            if (last.getName().startsWith("untitledRel")) {
-                return super.relationshipName(relationshipChain);
-            }
-
-            // keep manually set relationship name
-            return last.getName();
-        }
     }
 }

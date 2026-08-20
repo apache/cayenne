@@ -19,21 +19,20 @@
 
 package org.apache.cayenne.event;
 
-import org.apache.cayenne.access.DataDomain;
 import org.apache.cayenne.di.DIRuntimeException;
-import org.apache.cayenne.di.Inject;
 import org.apache.cayenne.di.Provider;
 
 import java.util.Collections;
 
+/**
+ * Note that this provider can't depend on the DataDomain: the shared snapshot cache, and hence the EventBridge, is
+ * created while the DataDomain itself is being assembled.
+ */
 public class MockEventBridgeProvider implements Provider<EventBridge> {
-
-    @Inject
-    protected DataDomain dataDomain;
 
     @Override
     public EventBridge get() throws DIRuntimeException {
-        EventSubject snapshotEventSubject = EventSubject.getSubject(this.getClass(), dataDomain.getName());;
+        EventSubject snapshotEventSubject = EventSubject.getSubject(this.getClass(), "mock-snapshot-events");
 
         return new MockEventBridge(
                 Collections.singleton(snapshotEventSubject),

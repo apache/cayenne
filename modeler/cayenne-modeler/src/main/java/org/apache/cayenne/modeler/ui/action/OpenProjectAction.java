@@ -26,8 +26,9 @@ import org.apache.cayenne.modeler.toolkit.filechooser.FileFilters;
 import org.apache.cayenne.modeler.ui.MainFrame;
 import org.apache.cayenne.modeler.ui.errors.ErrorDialog;
 import org.apache.cayenne.project.Project;
-import org.apache.cayenne.project.upgrade.UpgradeMetaData;
-import org.apache.cayenne.project.upgrade.UpgradeService;
+import org.apache.cayenne.project.upgrade.PostUpgradeState;
+import org.apache.cayenne.project.upgrade.PreUpgradeState;
+import org.apache.cayenne.project.upgrade.ProjectUpgrader;
 import org.apache.cayenne.resource.Resource;
 import org.apache.cayenne.resource.URLResource;
 import org.slf4j.Logger;
@@ -42,8 +43,7 @@ import java.awt.event.ActionEvent;
 import java.awt.event.KeyEvent;
 import java.io.File;
 import java.net.URL;
-import java.util.Collections;
-import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
 public class OpenProjectAction extends AppAction {
@@ -55,13 +55,7 @@ public class OpenProjectAction extends AppAction {
     static {
         // Correspondence between project version and latest Modeler version that can upgrade it.
         // Modeler v4.1 can handle versions from 3.1 and 4.0 (including intermediate versions) modeler.
-        Map<String, String> map = new HashMap<>();
-        map.put("1.0", "v3.0");
-        map.put("1.1", "v3.0");
-        map.put("1.2", "v3.0");
-        map.put("2.0", "v3.0");
-        map.put("3.0.0.1", "v3.1");
-        PROJECT_TO_MODELER_VERSION = Collections.unmodifiableMap(map);
+        PROJECT_TO_MODELER_VERSION = Map.of("1.0", "v3.0", "1.1", "v3.0", "1.2", "v3.0", "2.0", "v3.0", "3.0.0.1", "v3.1");
     }
 
     public OpenProjectAction(Application application) {
@@ -124,11 +118,9 @@ public class OpenProjectAction extends AppAction {
     }
 
     /**
-     * Opens the specified project file. File must already exist. When
-     * {@code mcpHandshakeNonce} is non-null, the MCP-driven launch contract is honoured:
-     * on successful open, a handshake entry is written to {@link java.util.prefs.Preferences}
-     * so the MCP server's wait loop can confirm the project loaded. Pass {@code null}
-     * for normal user-driven opens.
+     * Opens the specified project file. File must already exist. When {@code mcpHandshakeNonce} is non-null, the
+     * MCP-driven launch contract is honored: on successful open, a handshake entry is written to Preferences so the
+     * MCP server's wait loop can confirm the project loaded. Pass {@code null} for normal user-driven opens.
      */
     public void openProject(File file, String mcpHandshakeNonce) {
         try {
@@ -147,11 +139,13 @@ public class OpenProjectAction extends AppAction {
             URL url = file.toURI().toURL();
             Resource rootSource = new URLResource(url);
 
-            UpgradeService upgradeService = app.getUpgradeService();
-            UpgradeMetaData metaData = upgradeService.getUpgradeType(rootSource);
-            switch (metaData.getUpgradeType()) {
+            List<String> upgradeMessages = List.of();
+
+            ProjectUpgrader projectUpgrader = app.getUpgradeService();
+            PreUpgradeState metaData = projectUpgrader.checkUpgradeNeeded(rootSource);
+            switch (metaData.requiredUpgrade()) {
                 case INTERMEDIATE_UPGRADE_NEEDED:
-                    String modelerVersion = PROJECT_TO_MODELER_VERSION.get(metaData.getProjectVersion());
+                    String modelerVersion = PROJECT_TO_MODELER_VERSION.get(metaData.projectVersion());
                     if (modelerVersion == null) {
                         modelerVersion = "";
                     }
@@ -171,7 +165,9 @@ public class OpenProjectAction extends AppAction {
 
                 case UPGRADE_NEEDED:
                     if (processUpgrades()) {
-                        rootSource = upgradeService.upgradeProject(rootSource);
+                        PostUpgradeState postUpgrade = projectUpgrader.upgrade(rootSource);
+                        rootSource = postUpgrade.resource();
+                        upgradeMessages = postUpgrade.messages();
                     } else {
                         CloseProjectAction.closeProject(app, false);
                         return;
@@ -179,7 +175,11 @@ public class OpenProjectAction extends AppAction {
                     break;
             }
 
-            openProjectResourse(rootSource, controller, mcpHandshakeNonce);
+            openProjectResource(rootSource, controller, mcpHandshakeNonce);
+
+            if (!upgradeMessages.isEmpty()) {
+                showPostUpgradeMessages(upgradeMessages);
+            }
 
 
         } catch (Exception ex) {
@@ -188,10 +188,34 @@ public class OpenProjectAction extends AppAction {
         }
     }
 
-    private Project openProjectResourse(Resource resource, MainFrame controller, String mcpHandshakeNonce) {
+    private Project openProjectResource(Resource resource, MainFrame controller, String mcpHandshakeNonce) {
         Project project = app.getProjectLoader().loadProject(resource);
         controller.onProjectOpened(project, mcpHandshakeNonce);
         return project;
+    }
+
+    private void showPostUpgradeMessages(List<String> messages) {
+        JTextArea messageText = new JTextArea(String.join("\n\n", messages));
+        messageText.setEditable(false);
+        messageText.setLineWrap(true);
+        messageText.setWrapStyleWord(true);
+        messageText.setRows(8);
+        messageText.setColumns(60);
+
+        JScrollPane messageScroll = new JScrollPane(
+                messageText,
+                ScrollPaneConstants.VERTICAL_SCROLLBAR_AS_NEEDED,
+                ScrollPaneConstants.HORIZONTAL_SCROLLBAR_NEVER);
+
+        JPanel messagePanel = new JPanel(new BorderLayout(0, 10));
+        messagePanel.add(new JLabel("The project was upgraded, but some manual steps are required:"), BorderLayout.NORTH);
+        messagePanel.add(messageScroll, BorderLayout.CENTER);
+
+        JOptionPane.showMessageDialog(
+                app.getFrame(),
+                messagePanel,
+                "Manual Steps Required",
+                JOptionPane.INFORMATION_MESSAGE);
     }
 
     private boolean processUpgrades() {

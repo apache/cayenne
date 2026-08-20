@@ -27,6 +27,8 @@ import org.apache.cayenne.access.sqlbuilder.SQLGenerationVisitor;
 import org.apache.cayenne.access.sqlbuilder.DefaultSQLAppendable;
 import org.apache.cayenne.access.sqlbuilder.sqltree.Node;
 import org.apache.cayenne.access.jdbc.PSParameter;
+import org.apache.cayenne.access.translator.BatchTranslator;
+import org.apache.cayenne.access.translator.TranslatedBatch;
 import org.apache.cayenne.dba.DbAdapter;
 import org.apache.cayenne.map.DbAttribute;
 import org.apache.cayenne.query.BatchQuery;
@@ -47,26 +49,40 @@ public abstract class BaseBatchTranslator<T extends BatchQuery> implements Batch
         String sql = createSql(context);
         PSBatchParameter[] bindings = createBindings(context);
 
-        return new TranslatedBatch(sql, bindings, (template, row) -> updateBindings(context, template, row));
+        return new TranslatedBatch(sql, bindings);
     }
 
     protected abstract String createSql(BatchTranslatorContext<T> context);
 
     protected PSBatchParameter[] createBindings(BatchTranslatorContext<T> context) {
-        return context.getBindings().stream()
-                .map(b -> new PSBatchParameter(b.psType(), b.psScale(), b.attribute()))
-                .toArray(PSBatchParameter[]::new);
+        int[] rowValueIndexes = createRowValueIndexes(context);
+        List<BatchQueryRow> rows = context.getQuery().getRows();
+
+        PSBatchParameter[] bindings = new PSBatchParameter[context.getBindings().size()];
+        int j = 0;
+        for (PSParameter<?> b : context.getBindings()) {
+            Object[] values = new Object[rows.size()];
+            for (int r = 0; r < values.length; r++) {
+                values[r] = rows.get(r).getValue(rowValueIndexes[j]);
+            }
+            bindings[j] = new PSBatchParameter(values, j + 1, b.psType(), b.psScale(), b.attribute());
+            j++;
+        }
+        return bindings;
     }
 
-    protected abstract PSParameter[] updateBindings(
-            BatchTranslatorContext<T> context,
-            PSBatchParameter[] template,
-            BatchQueryRow row);
+    /**
+     * Returns, for each PreparedStatement placeholder in the order {@link #createSql(BatchTranslatorContext)} emits
+     * them, the index of the {@link BatchQueryRow} value that feeds it.
+     */
+    protected abstract int[] createRowValueIndexes(BatchTranslatorContext<T> context);
 
     protected String doTranslate(BatchTranslatorContext<T> context, NodeBuilder nodeBuilder) {
         Node node = context.getAdapter().getSqlTreeProcessor().process(nodeBuilder.build());
 
-        SQLGenerationVisitor visitor = new SQLGenerationVisitor(new DefaultSQLAppendable(context));
+        DefaultSQLAppendable buffer = new DefaultSQLAppendable(
+                context.getAdapter().getQuotingStrategy(context.getRootDbEntity()));
+        SQLGenerationVisitor visitor = new SQLGenerationVisitor(buffer, context);
         node.visit(visitor);
 
         return visitor.getSQLString();

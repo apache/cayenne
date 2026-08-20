@@ -22,7 +22,10 @@ package org.apache.cayenne.modeler.editor.templateeditor;
 import org.apache.cayenne.gen.Artifact;
 import org.apache.cayenne.gen.ArtifactsGenerationMode;
 import org.apache.cayenne.gen.CgenConfiguration;
+import org.apache.cayenne.configuration.xml.DataChannelMetaData;
+import org.apache.cayenne.configuration.xml.DefaultDataChannelMetaData;
 import org.apache.cayenne.gen.ClassGenerationAction;
+import org.apache.cayenne.gen.ClassGenerationActionFactory;
 import org.apache.cayenne.map.DataMap;
 import org.apache.cayenne.map.Embeddable;
 import org.apache.cayenne.map.ObjEntity;
@@ -30,9 +33,11 @@ import org.apache.cayenne.map.QueryDescriptor;
 import org.apache.cayenne.modeler.ui.project.editor.datamap.cgen.templateeditor.DataMapArtefactsConfigurator;
 import org.apache.cayenne.modeler.ui.project.editor.datamap.cgen.templateeditor.EmbeddableArtefactsConfigurator;
 import org.apache.cayenne.modeler.ui.project.editor.datamap.cgen.templateeditor.EntityArtefactsConfigurator;
+import org.apache.cayenne.tools.ToolsInjectorBuilder;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
+import org.slf4j.helpers.NOPLogger;
 
 import java.lang.reflect.Field;
 import java.util.Collection;
@@ -50,7 +55,11 @@ public class ArtifactsConfiguratorTest {
     @BeforeEach
     public void config(){
         this.dataMap = configureDataMap();
-        this.action = new ClassGenerationAction(createCgenConfiguration());
+        this.action = new ToolsInjectorBuilder()
+                .addModule(binder -> binder.bind(DataChannelMetaData.class).to(DefaultDataChannelMetaData.class))
+                .create()
+                .getInstance(ClassGenerationActionFactory.class)
+                .createAction(createCgenConfiguration(), NOPLogger.NOP_LOGGER);
         this.entityArtefactsConfigurator = new EntityArtefactsConfigurator();
         this.embeddableArtefactsConfigurator = new EmbeddableArtefactsConfigurator();
         this.dataMapArtefactsConfigurator = new DataMapArtefactsConfigurator();
@@ -64,7 +73,7 @@ public class ArtifactsConfiguratorTest {
         embeddableArtefactsConfigurator.config(action,"embeddable");
         dataMapArtefactsConfigurator.config(action,"queryDescriptor");
 
-        CgenConfiguration configuration = action.getCgenConfiguration();
+        CgenConfiguration configuration = action.getConfiguration();
 
         Field artifactsField = configuration.getClass().getDeclaredField("artifacts");
         artifactsField.setAccessible(true);

@@ -18,16 +18,21 @@
  ****************************************************************/
 package org.apache.cayenne.dbsync.merge.factory;
 
+import org.apache.cayenne.access.DataNode;
 import org.apache.cayenne.dba.DbAdapter;
 import org.apache.cayenne.dba.QuotingStrategy;
 import org.apache.cayenne.dbsync.merge.token.MergerToken;
+import org.apache.cayenne.dbsync.merge.token.db.DropRelationshipToDb;
 import org.apache.cayenne.dbsync.merge.token.db.SetAllowNullToDb;
 import org.apache.cayenne.dbsync.merge.token.db.SetColumnTypeToDb;
 import org.apache.cayenne.dbsync.merge.token.db.SetGeneratedFlagToDb;
 import org.apache.cayenne.dbsync.merge.token.db.SetNotNullToDb;
+import org.apache.cayenne.dbsync.merge.token.db.SetPrimaryKeyToDb;
 import org.apache.cayenne.map.DbAttribute;
 import org.apache.cayenne.map.DbEntity;
+import org.apache.cayenne.map.DbRelationship;
 
+import java.util.Collection;
 import java.util.Collections;
 import java.util.List;
 
@@ -60,7 +65,9 @@ public class DerbyMergerTokenFactory extends DefaultMergerTokenFactory {
         return new SetNotNullToDb(entity, column) {
 
             @Override
-            public List<String> createSql(DbAdapter adapter) {
+            public List<String> createSql(DataNode node) {
+                DbAdapter adapter = node.getAdapter();
+
                 QuotingStrategy quotes = adapter.getQuotingStrategy(getEntity());
                 StringBuilder sql = new StringBuilder("ALTER TABLE ");
                 quotes.appendFQN(sql, getEntity().getCatalog(), getEntity().getSchema(), getEntity().getName());
@@ -81,7 +88,9 @@ public class DerbyMergerTokenFactory extends DefaultMergerTokenFactory {
         return new SetAllowNullToDb(entity, column) {
 
             @Override
-            public List<String> createSql(DbAdapter adapter) {
+            public List<String> createSql(DataNode node) {
+                DbAdapter adapter = node.getAdapter();
+
                 QuotingStrategy quotes = adapter.getQuotingStrategy(getEntity());
                 StringBuilder sql = new StringBuilder("ALTER TABLE ");
                 quotes.appendFQN(sql, getEntity().getCatalog(), getEntity().getSchema(), getEntity().getName());
@@ -94,6 +103,46 @@ public class DerbyMergerTokenFactory extends DefaultMergerTokenFactory {
                 return Collections.singletonList(sql.toString());
             }
 
+        };
+    }
+
+    @Override
+    public MergerToken createDropRelationshipToDb(final DbEntity entity, DbRelationship rel) {
+        return new DropRelationshipToDb(entity, rel) {
+
+            @Override
+            public List<String> createSql(DataNode node) {
+                if (isEmpty()) {
+                    return Collections.emptyList();
+                }
+
+                QuotingStrategy quotes = node.getAdapter().getQuotingStrategy(entity);
+                StringBuilder sql = new StringBuilder("ALTER TABLE ");
+                quotes.appendFQN(sql, entity.getCatalog(), entity.getSchema(), entity.getName());
+                sql.append(" DROP CONSTRAINT \"").append(getFkName()).append('"');
+
+                return Collections.singletonList(sql.toString());
+            }
+        };
+    }
+
+    @Override
+    public MergerToken createSetPrimaryKeyToDb(DbEntity entity, Collection<DbAttribute> primaryKeyOriginal,
+                                               Collection<DbAttribute> primaryKeyNew, String detectedPrimaryKeyName) {
+        return new SetPrimaryKeyToDb(entity, primaryKeyOriginal, primaryKeyNew, detectedPrimaryKeyName) {
+
+            @Override
+            protected void appendDropOriginalPrimaryKeySQL(DbAdapter adapter, List<String> sqls) {
+                if (detectedPrimaryKeyName == null) {
+                    return;
+                }
+
+                QuotingStrategy quotes = resolveQuotes(adapter);
+                StringBuilder sql = new StringBuilder("ALTER TABLE ");
+                quotes.appendFQN(sql, getEntity().getCatalog(), getEntity().getSchema(), getEntity().getName());
+                sql.append(" DROP CONSTRAINT \"").append(detectedPrimaryKeyName).append('"');
+                sqls.add(sql.toString());
+            }
         };
     }
 

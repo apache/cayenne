@@ -18,15 +18,14 @@
  ****************************************************************/
 package org.apache.cayenne.datasource;
 
+import org.apache.cayenne.di.ScopeEventListener;
+
+import javax.sql.DataSource;
 import java.io.PrintWriter;
 import java.sql.Connection;
 import java.sql.SQLException;
 import java.sql.SQLFeatureNotSupportedException;
 import java.util.logging.Logger;
-
-import javax.sql.DataSource;
-
-import org.apache.cayenne.di.ScopeEventListener;
 
 /**
  * A wrapper for {@link UnmanagedPoolingDataSource} that automatically manages
@@ -34,7 +33,7 @@ import org.apache.cayenne.di.ScopeEventListener;
  * 
  * @since 4.0
  */
-public class ManagedPoolingDataSource implements PoolingDataSource, ScopeEventListener {
+public class ManagedPoolingDataSource implements DataSource, AutoCloseable, ScopeEventListener {
 
 	private final PoolingDataSourceManager dataSourceManager;
 	private DataSource dataSource;
@@ -58,10 +57,6 @@ public class ManagedPoolingDataSource implements PoolingDataSource, ScopeEventLi
 	int poolSize() {
 		return dataSourceManager.getDataSource().poolSize();
 	}
-
-	int availableSize() {
-		return dataSourceManager.getDataSource().availableSize();
-	}
 	
 	int canExpandSize() {
 		return dataSourceManager.getDataSource().canExpandSize();
@@ -79,8 +74,7 @@ public class ManagedPoolingDataSource implements PoolingDataSource, ScopeEventLi
 	@Override
 	public void close() {
 
-		// swap the underlying DataSource to prevent further interaction with
-		// the callers
+		// swap the underlying DataSource to prevent further interaction with the callers
 		this.dataSource = new StoppedDataSource(dataSource);
 
 		// shut down the thread..

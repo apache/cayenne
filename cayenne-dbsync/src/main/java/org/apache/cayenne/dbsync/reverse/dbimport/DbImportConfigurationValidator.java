@@ -19,10 +19,8 @@
 
 package org.apache.cayenne.dbsync.reverse.dbimport;
 
-import org.apache.cayenne.configuration.DataNodeDescriptor;
-import org.apache.cayenne.configuration.runtime.DataSourceFactory;
-import org.apache.cayenne.configuration.runtime.DbAdapterFactory;
 import org.apache.cayenne.dba.DbAdapter;
+import org.apache.cayenne.dbsync.reverse.configuration.DbAdapterFactory;
 import org.apache.cayenne.di.Injector;
 
 import java.util.Collection;
@@ -43,14 +41,13 @@ public class DbImportConfigurationValidator implements Cloneable {
     }
 
     public void validate() throws Exception {
-        DataNodeDescriptor dataNodeDescriptor = config.createDataNodeDescriptor();
         DbAdapter adapter;
 
         try {
-            DataSource dataSource = injector.getInstance(DataSourceFactory.class).getDataSource(dataNodeDescriptor);
-            adapter = injector.getInstance(DbAdapterFactory.class).createAdapter(dataNodeDescriptor, dataSource);
+            DataSource dataSource = config.createDataSource();
+            adapter = injector.getInstance(DbAdapterFactory.class).createAdapter(config.getAdapter(), dataSource);
         } catch (Exception ex) {
-            throw new Exception("Error creating DataSource or DbAdapter for DataNodeDescriptor (" + dataNodeDescriptor + ")", ex);
+            throw new Exception("Error creating DataSource or DbAdapter for URL (" + config.getUrl() + ")", ex);
         }
 
         if (adapter != null && !adapter.supportsCatalogsOnReverseEngineering() && !isReverseEngineeringCatalogsEmpty()) {

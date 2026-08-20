@@ -74,8 +74,7 @@ class DbRelationshipValidator extends ConfigurationNodeValidator<DbRelationship>
     }
 
     private void validateName(DbRelationship relationship, ValidationResult validationResult) {
-        NameValidationHelper helper = NameValidationHelper.getInstance();
-        String invalidChars = helper.invalidCharsInDbPathComponent(relationship.getName());
+        String invalidChars = NameValidator.invalidCharsInDbPathComponent(relationship.getName());
         if (invalidChars != null) {
             addFailure(validationResult, relationship, "Name of DbRelationship '%s' contains invalid characters: %s",
                     toString(relationship), invalidChars);

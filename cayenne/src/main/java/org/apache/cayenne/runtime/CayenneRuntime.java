@@ -42,21 +42,20 @@ import java.util.Objects;
  * dependency injection (DI) container.
  * In fact implementation-wise, Runtime object is just a convenience thin wrapper around a DI {@link Injector}.
  * <p>
- * To create CayenneRuntime use builder available with one of the {@link #builder()} methods:
+ * To create CayenneRuntime use builder available with one of the {@link #of()} methods:
  * <pre>
  * {@code
- * CayenneRuntime cayenneRuntime = CayenneRuntime.builder()
+ * CayenneRuntime cayenneRuntime = CayenneRuntime.of()
  *         .addConfig("cayenne-project.xml")
  *         .build();
  * }
  * </pre>
  *
+ * @see #of()
+ * @see #of(String)
+ * @see CayenneRuntimeBuilder
  * @since 3.1 is introduced
  * @since 5.0 is repurposed as a single implementation of Cayenne runtime and moved to {@link org.apache.cayenne.runtime} package.
- *
- * @see #builder()
- * @see #builder(String)
- * @see CayenneRuntimeBuilder
  */
 public class CayenneRuntime {
 
@@ -96,12 +95,9 @@ public class CayenneRuntime {
      * Creates a builder of CayenneRuntime.
      *
      * @return a builder of CayenneRuntime.
-     *
-     * @see #builder(String)
-     * @see CayenneRuntimeBuilder
      * @since 5.0
      */
-    public static CayenneRuntimeBuilder builder() {
+    public static CayenneRuntimeBuilder of() {
         return new CayenneRuntimeBuilder(null);
     }
 
@@ -110,13 +106,30 @@ public class CayenneRuntime {
      *
      * @param name optional symbolic name of the created runtime.
      * @return a named builder of CayenneRuntime.
-     *
-     * @see #builder()
-     * @see CayenneRuntimeBuilder
      * @since 5.0
      */
-    public static CayenneRuntimeBuilder builder(String name) {
+    public static CayenneRuntimeBuilder of(String name) {
         return new CayenneRuntimeBuilder(name);
+    }
+
+    /**
+     * Creates a builder of CayenneRuntime.
+     *
+     * @deprecated use {@link #of()} instead
+     */
+    @Deprecated(since = "5.0", forRemoval = true)
+    public static CayenneRuntimeBuilder builder() {
+        return of();
+    }
+
+    /**
+     * Creates a builder of CayenneRuntime.
+     *
+     * @deprecated use {@link #of(String)} instead
+     */
+    @Deprecated(since = "5.0", forRemoval = true)
+    public static CayenneRuntimeBuilder builder(String name) {
+        return of(name);
     }
 
     /**
@@ -170,9 +183,8 @@ public class CayenneRuntime {
      *
      * @param op         an operation to perform within the transaction.
      * @param descriptor describes additional transaction parameters
-     * @param <T> result type
+     * @param <T>        result type
      * @return a value returned by the "op" operation.
-     *
      * @since 4.2
      */
     public <T> T performInTransaction(TransactionalOperation<T> op, TransactionDescriptor descriptor) {
@@ -191,9 +203,8 @@ public class CayenneRuntime {
      * @param op         an operation to perform within the transaction.
      * @param callback   a callback to notify as transaction progresses through stages.
      * @param descriptor describes additional transaction parameters
-     * @param <T> returned value type
+     * @param <T>        returned value type
      * @return a value returned by the "op" operation.
-     *
      * @since 4.2
      */
     public <T> T performInTransaction(TransactionalOperation<T> op, TransactionListener callback, TransactionDescriptor descriptor) {
@@ -202,19 +213,24 @@ public class CayenneRuntime {
     }
 
     /**
-     * Returns the main runtime DataDomain. Note that by default the returned
-     * DataDomain is the same as the main DataChannel returned by
-     * {@link #getChannel()}. Although users may redefine DataChannel provider
-     * in the DI registry, for instance to decorate this DataDomain with a
-     * custom wrapper.
+     * Returns the runtime {@link DataChannel}.
+     *
+     * @deprecated in favor of {@link #getDataDomain()}
+     */
+    @Deprecated(since = "5.0", forRemoval = true)
+    public DataChannel getChannel() {
+        return getDataDomain();
+    }
+
+    /**
+     * Returns the main runtime DataDomain.
      */
     public DataDomain getDataDomain() {
         return injector.getInstance(DataDomain.class);
     }
 
     /**
-     * Returns a default DataSource for this runtime. If no default DataSource
-     * exists, an exception is thrown.
+     * Returns a default DataSource for this runtime. If no default DataSource exists, an exception is thrown.
      *
      * @since 4.0
      */
@@ -262,7 +278,9 @@ public class CayenneRuntime {
      * Returns the collection of modules used to initialize this runtime.
      *
      * @since 4.0
+     * @deprecated this is fairly useless. Modules are opaque. {@link #getInjector()} is the closest useful thing.
      */
+    @Deprecated(since = "5.0", forRemoval = true)
     public Collection<Module> getModules() {
         return modules;
     }
@@ -283,13 +301,6 @@ public class CayenneRuntime {
     @BeforeScopeEnd
     public void shutdown() {
         injector.shutdown();
-    }
-
-    /**
-     * Returns the runtime {@link DataChannel}.
-     */
-    public DataChannel getChannel() {
-        return injector.getInstance(DataChannel.class);
     }
 
     /**

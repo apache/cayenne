@@ -18,7 +18,7 @@
  ****************************************************************/
 package org.apache.cayenne.dba.sqlite;
 
-import org.apache.cayenne.access.types.ByteArrayType;
+import org.apache.cayenne.util.ArrayUtil;
 import org.apache.cayenne.access.types.ExtendedType;
 
 import java.sql.CallableStatement;
@@ -74,7 +74,7 @@ class SQLiteByteArrayType implements ExtendedType<byte[]> {
         }
 
         StringBuilder buffer = new StringBuilder();
-        ByteArrayType.logBytes(buffer, value);
+        ArrayUtil.appendTruncated(buffer, value);
         return buffer.toString();
     }
 }

@@ -20,6 +20,7 @@
 package org.apache.cayenne.access;
 
 import org.apache.cayenne.CayenneRuntimeException;
+import org.apache.cayenne.CayenneSqlException;
 import org.apache.cayenne.DataRow;
 import org.apache.cayenne.EmbeddableObject;
 import org.apache.cayenne.ObjectContext;
@@ -27,6 +28,7 @@ import org.apache.cayenne.ObjectId;
 import org.apache.cayenne.Persistent;
 import org.apache.cayenne.QueryResponse;
 import org.apache.cayenne.ResultIterator;
+import org.apache.cayenne.access.translator.TranslatedStatement;
 import org.apache.cayenne.cache.QueryCache;
 import org.apache.cayenne.cache.QueryCacheEntryFactory;
 import org.apache.cayenne.di.AdhocObjectFactory;
@@ -71,6 +73,7 @@ import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
+import java.util.Objects;
 import java.util.Set;
 import java.util.function.Function;
 
@@ -99,6 +102,9 @@ class DataDomainQueryAction implements QueryRouter, OperationObserver {
     private Map<CayennePath, List<?>> prefetchResultsByPath;
     private Map<DataNode, Collection<Query>> queriesByNode;
     private boolean noObjectConversion;
+
+    // the latest statement reported via nextStatement, used to correlate a failure with a specific SQL statement
+    private TranslatedStatement statement;
 
     // True when using a caching strategy (shared or local cache), indicating lists are immutable and need copying
     private boolean cachedResult;
@@ -174,16 +180,27 @@ class DataDomainQueryAction implements QueryRouter, OperationObserver {
     }
 
     private void performIteratedQuery() {
-        Transaction tx = BaseTransaction.getThreadTransaction();
-        if (tx != null) {
-            runIteratedQuery(tx);
-        } else {
-            tx = domain.getTransactionFactory().createTransaction();
+
+        // The transaction is owned by the caller, and is not aligned with the iterator scope
+        if (BaseTransaction.getThreadTransaction() != null) {
+            runQuery();
+            Objects.requireNonNull(fullResponse.firstIterator(), "Iterator response expected");
+        }
+
+        // The transaction will be owned by the iterator, and will outlive the query action
+        else {
+            Transaction tx = domain.getTransactionFactory().createTransaction();
             BaseTransaction.bindThreadTransaction(tx);
             try {
-                runIteratedQuery(tx);
-            } catch (Exception e) {
-                throw new CayenneRuntimeException(e);
+                runQuery();
+                ResultIterator<?> it = Objects.requireNonNull(fullResponse.firstIterator(), "Iterator response expected");
+                fullResponse.replaceResult(it, new TransactionResultIteratorDecorator<>(it, tx));
+            } catch (Throwable th) {
+                // No iterator will be returned to the caller, so nothing will ever commit this transaction. Mark it
+                // for rollback below, so that its connections are not leaked. Note that a DataNode marks the
+                // transaction on its own, but a failure may as well originate outside of the node.
+                tx.setRollbackOnly();
+                throw th;
             } finally {
                 BaseTransaction.bindThreadTransaction(null);
                 if (tx.isRollbackOnly()) {
@@ -194,6 +211,8 @@ class DataDomainQueryAction implements QueryRouter, OperationObserver {
                 }
             }
         }
+
+        fullResponse.reset();
     }
 
     private boolean interceptOIDQuery() {
@@ -520,16 +539,6 @@ class DataDomainQueryAction implements QueryRouter, OperationObserver {
         }
     }
 
-    private void runIteratedQuery(Transaction tx) {
-        runQuery();
-        ResultIterator<?> iterator = fullResponse.firstIterator();
-        if (iterator == null) {
-            throw new IllegalStateException("Iterator response expected");
-        }
-        fullResponse.replaceResult(iterator, new TransactionResultIteratorDecorator<>(iterator, tx));
-        fullResponse.reset();
-    }
-
     @SuppressWarnings({"unchecked", "rawtypes"})
     private void interceptObjectConversion() {
         if (noObjectConversion()) {
@@ -679,17 +688,27 @@ class DataDomainQueryAction implements QueryRouter, OperationObserver {
     }
 
     @Override
-    public void nextGeneratedRows(Query query, ResultIterator<?> keys, List<ObjectId> idsToUpdate) {
+    public void nextGeneratedRows(Query query, List<DataRow> keys, List<ObjectId> idsToUpdate) {
         if (keys != null) {
-            try (keys) {
-                nextRows(query, keys.allRows());
-            }
+            nextRows(query, keys);
         }
     }
 
     @Override
+    public void nextStatement(Query query, TranslatedStatement statement) {
+        this.statement = statement;
+    }
+
+    @Override
     public void nextQueryException(Query query, Exception ex) {
-        throw new CayenneRuntimeException("Query exception.", Util.unwindException(ex));
+        // preserve meaningful Cayenne exceptions, even when they wrap a lower-level cause; only wrap raw lower-level
+        // failures in a CayenneSqlException so they can be correlated with the failing statement
+        Throwable unwound = Util.unwindException(ex, CayenneRuntimeException.class);
+
+        if (unwound instanceof CayenneRuntimeException cayenneException) {
+            throw cayenneException;
+        }
+        throw new CayenneSqlException("Query exception.", query, statement, unwound);
     }
 
     @Override

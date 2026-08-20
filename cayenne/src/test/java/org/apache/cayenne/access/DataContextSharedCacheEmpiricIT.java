@@ -19,12 +19,10 @@
 
 package org.apache.cayenne.access;
 
-import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 
 import org.apache.cayenne.DataRow;
-import org.apache.cayenne.configuration.DefaultRuntimeProperties;
 import org.apache.cayenne.configuration.runtime.CoreModule;
 import org.apache.cayenne.event.DefaultEventManager;
 import org.apache.cayenne.query.ObjectSelect;
@@ -66,7 +64,7 @@ public class DataContextSharedCacheEmpiricIT {
         eventManager = new DefaultEventManager();
         DataRowStore cache = new DataRowStore(
                 "cacheTest",
-                new DefaultRuntimeProperties(Collections.emptyMap()),
+                DefaultDataRowStoreFactory.SNAPSHOT_CACHE_SIZE_DEFAULT,
                 eventManager);
 
         c1 = new DataContext(runtime.getDataDomain(),

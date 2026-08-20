@@ -19,12 +19,13 @@
 
 package org.apache.cayenne.dba.derby.sqltree;
 
-import java.sql.Types;
-
 import org.apache.cayenne.access.sqlbuilder.SQLAppendable;
+import org.apache.cayenne.access.sqlbuilder.SQLGenerationContext;
 import org.apache.cayenne.access.sqlbuilder.sqltree.Node;
 import org.apache.cayenne.access.sqlbuilder.sqltree.ValueNode;
 import org.apache.cayenne.map.DbAttribute;
+
+import java.sql.Types;
 
 /**
  * @since 4.2
@@ -35,13 +36,14 @@ public class DerbyValueNode extends ValueNode {
         super(value, isArray, attribute, needBinding);
     }
 
-    protected void appendStringValue(SQLAppendable buffer, CharSequence value) {
+    @Override
+    protected void appendStringValue(SQLAppendable buffer, SQLGenerationContext context, CharSequence value) {
         if(getAttribute() == null || (getAttribute() != null && getAttribute().getType() == Types.CLOB)) {
             buffer.append(" CAST(? AS VARCHAR(").append(Math.max(1,value.length())).append("))");
         } else {
             buffer.append(" ?");
         }
-        addValueBinding(buffer, value);
+        addValueBinding(context, value);
     }
 
     @Override

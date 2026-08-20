@@ -28,7 +28,7 @@ import java.util.Collections;
 import java.util.HashMap;
 import java.util.Map;
 
-import org.apache.cayenne.access.translator.sqltemplate.TranslatedSQL;
+import org.apache.cayenne.access.translator.TranslatedSQL;
 import org.apache.cayenne.access.types.ExtendedTypeMap;
 import org.apache.cayenne.dba.DbAdapter;
 import org.junit.jupiter.api.BeforeEach;

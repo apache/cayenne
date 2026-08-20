@@ -78,7 +78,7 @@ public class ThrowOnPartialOrCreateSchemaStrategy extends ThrowOnPartialSchemaSt
         Iterator<DataMap> iterator = map.iterator();
         while (iterator.hasNext()) {
             DbGenerator gen = new DbGenerator(dataNode.getAdapter(), iterator.next(), 
-                    dataNode.getJdbcEventLogger());
+                    dataNode.getSqlLogger());
             gen.setShouldCreateTables(true);
             gen.setShouldDropTables(false);
             gen.setShouldCreateFKConstraints(false);

@@ -19,18 +19,17 @@
 
 package org.apache.cayenne.access.flush;
 
-import java.util.Objects;
-import java.util.function.Supplier;
-
 import org.apache.cayenne.ObjectId;
-import org.apache.cayenne.access.types.InternalUnsupportedTypeFactory;
+import org.apache.cayenne.access.DeferredValue;
+
+import java.util.Objects;
 
 /**
  * Deferred value extracted from ObjectId
  *
  * @since 4.2
  */
-class ObjectIdValueSupplier implements Supplier<Object>, InternalUnsupportedTypeFactory.Marker {
+class ObjectIdValueSupplier implements DeferredValue {
 
     private final ObjectId id;
     private final String attribute;

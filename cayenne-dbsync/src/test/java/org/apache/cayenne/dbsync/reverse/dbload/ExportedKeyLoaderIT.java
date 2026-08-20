@@ -46,25 +46,19 @@ public class ExportedKeyLoaderIT extends BaseLoaderIT {
         String schema = connection.getSchema();
 
         DbEntity artist = getDbEntity("ARTIST");
-        if(adapter.supportsCatalogsOnReverseEngineering()) {
-            artist.setCatalog(catalog);
-        }
+        artist.setCatalog(catalog);
         artist.setSchema(schema);
         DbAttribute artistId = new DbAttribute("ARTIST_ID");
         artist.addAttribute(artistId);
 
         DbEntity gallery = getDbEntity("GALLERY");
-        if(adapter.supportsCatalogsOnReverseEngineering()) {
-            gallery.setCatalog(catalog);
-        }
+        gallery.setCatalog(catalog);
         gallery.setSchema(schema);
         DbAttribute galleryId = new DbAttribute("GALLERY_ID");
         gallery.addAttribute(galleryId);
 
         DbEntity painting = getDbEntity("PAINTING");
-        if(adapter.supportsCatalogsOnReverseEngineering()) {
-            painting.setCatalog(catalog);
-        }
+        painting.setCatalog(catalog);
         painting.setSchema(schema);
         DbAttribute paintingId = new DbAttribute("PAINTING_ID");
         DbAttribute paintingArtistId = new DbAttribute("ARTIST_ID");
@@ -81,17 +75,18 @@ public class ExportedKeyLoaderIT extends BaseLoaderIT {
         ExportedKey artistIdFk = findArtistExportedKey();
         assertNotNull(artistIdFk);
 
-        assertEquals("ARTIST", artistIdFk.getPk().getTable().toUpperCase());
-        assertEquals("ARTIST_ID", artistIdFk.getPk().getColumn().toUpperCase());
+        assertEquals("ARTIST", artistIdFk.pk().table().toUpperCase());
+        assertEquals("ARTIST_ID", artistIdFk.pk().column().toUpperCase());
 
-        assertEquals("PAINTING", artistIdFk.getFk().getTable().toUpperCase());
-        assertEquals("ARTIST_ID", artistIdFk.getFk().getColumn().toUpperCase());
+        assertEquals("PAINTING", artistIdFk.fk().table().toUpperCase());
+        assertEquals("ARTIST_ID", artistIdFk.fk().column().toUpperCase());
     }
 
     private ExportedKey findArtistExportedKey() {
         for(Map.Entry<String, Set<ExportedKey>> entry : store.getExportedKeysEntrySet()) {
-            if(entry.getKey().toUpperCase().endsWith(".ARTIST_ID")) {
-                return entry.getValue().iterator().next();
+            ExportedKey key = entry.getValue().iterator().next();
+            if("ARTIST_ID".equalsIgnoreCase(key.fk().column())) {
+                return key;
             }
         }
 

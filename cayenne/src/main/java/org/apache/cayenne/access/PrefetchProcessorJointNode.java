@@ -228,6 +228,14 @@ class PrefetchProcessorJointNode extends PrefetchProcessorNode {
             appendColumn(targetSource, pkName, prefix + pkName);
         }
 
+        // append id columns of additional entities...
+        descriptor.getAdditionalDbEntities().forEach((additionalPath, additionalDescriptor) -> {
+            for (DbAttribute pk : additionalDescriptor.getDbEntity().getPrimaryKeys()) {
+                String name = additionalPath.dot(pk.getName()).value();
+                appendColumn(targetSource, name, prefix + name);
+            }
+        });
+
         // append inheritance discriminator columns...
         for (ObjAttribute column : descriptor.getDiscriminatorColumns()) {
             CayennePath target = column.getDbAttributePath();

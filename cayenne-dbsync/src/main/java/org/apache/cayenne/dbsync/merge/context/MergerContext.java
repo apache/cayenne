@@ -24,9 +24,8 @@ import org.apache.cayenne.dba.DbAdapter;
 import org.apache.cayenne.dbsync.filter.NameFilter;
 import org.apache.cayenne.dbsync.filter.NamePatternMatcher;
 import org.apache.cayenne.dbsync.merge.token.MergerToken;
-import org.apache.cayenne.dbsync.naming.DefaultObjectNameGenerator;
-import org.apache.cayenne.dbsync.naming.NoStemStemmer;
 import org.apache.cayenne.dbsync.naming.ObjectNameGenerator;
+import org.apache.cayenne.dbsync.naming.DefaultObjectNameGenerator;
 import org.apache.cayenne.dbsync.reverse.dbload.DefaultModelMergeDelegate;
 import org.apache.cayenne.dbsync.reverse.dbload.ModelMergeDelegate;
 import org.apache.cayenne.map.DataMap;
@@ -124,7 +123,7 @@ public class MergerContext {
             }
 
             if(context.nameGenerator == null) {
-                context.nameGenerator = new DefaultObjectNameGenerator(NoStemStemmer.getInstance());
+                context.nameGenerator = new DefaultObjectNameGenerator();
             }
 
             if(meaningfulPKsFilter == null) {

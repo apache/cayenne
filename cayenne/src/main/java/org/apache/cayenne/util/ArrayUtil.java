@@ -19,29 +19,31 @@
 
 package org.apache.cayenne.util;
 
+import java.util.function.IntConsumer;
+
 /**
  * @since 4.1
  */
 public final class ArrayUtil {
 
     public static int[][] sliceArray(int[] array, int batchSize) {
-        if(array == null) {
+        if (array == null) {
             return null;
         }
         int length = array.length;
 
-        if(length <= batchSize) {
+        if (length <= batchSize) {
             return new int[][]{array};
         }
 
         int batches = length / batchSize;
-        if(length % batchSize > 0) {
+        if (length % batchSize > 0) {
             batches++;
         }
 
         int[][] result = new int[batches][];
         int offset = 0;
-        for(int i=0; i<batches; i++) {
+        for (int i = 0; i < batches; i++) {
             int nextSize = i < batches - 1 ? batchSize : length - offset;
             result[i] = new int[nextSize];
             System.arraycopy(array, offset, result[i], 0, nextSize);
@@ -51,23 +53,23 @@ public final class ArrayUtil {
     }
 
     public static long[][] sliceArray(long[] array, int batchSize) {
-        if(array == null) {
+        if (array == null) {
             return null;
         }
         int length = array.length;
 
-        if(length <= batchSize) {
+        if (length <= batchSize) {
             return new long[][]{array};
         }
 
         int batches = length / batchSize;
-        if(length % batchSize > 0) {
+        if (length % batchSize > 0) {
             batches++;
         }
 
         long[][] result = new long[batches][];
         int offset = 0;
-        for(int i=0; i<batches; i++) {
+        for (int i = 0; i < batches; i++) {
             int nextSize = i < batches - 1 ? batchSize : length - offset;
             result[i] = new long[nextSize];
             System.arraycopy(array, offset, result[i], 0, nextSize);
@@ -77,23 +79,23 @@ public final class ArrayUtil {
     }
 
     public static float[][] sliceArray(float[] array, int batchSize) {
-        if(array == null) {
+        if (array == null) {
             return null;
         }
         int length = array.length;
 
-        if(length <= batchSize) {
+        if (length <= batchSize) {
             return new float[][]{array};
         }
 
         int batches = length / batchSize;
-        if(length % batchSize > 0) {
+        if (length % batchSize > 0) {
             batches++;
         }
 
         float[][] result = new float[batches][];
         int offset = 0;
-        for(int i=0; i<batches; i++) {
+        for (int i = 0; i < batches; i++) {
             int nextSize = i < batches - 1 ? batchSize : length - offset;
             result[i] = new float[nextSize];
             System.arraycopy(array, offset, result[i], 0, nextSize);
@@ -103,23 +105,23 @@ public final class ArrayUtil {
     }
 
     public static double[][] sliceArray(double[] array, int batchSize) {
-        if(array == null) {
+        if (array == null) {
             return null;
         }
         int length = array.length;
 
-        if(length <= batchSize) {
+        if (length <= batchSize) {
             return new double[][]{array};
         }
 
         int batches = length / batchSize;
-        if(length % batchSize > 0) {
+        if (length % batchSize > 0) {
             batches++;
         }
 
         double[][] result = new double[batches][];
         int offset = 0;
-        for(int i=0; i<batches; i++) {
+        for (int i = 0; i < batches; i++) {
             int nextSize = i < batches - 1 ? batchSize : length - offset;
             result[i] = new double[nextSize];
             System.arraycopy(array, offset, result[i], 0, nextSize);
@@ -129,23 +131,23 @@ public final class ArrayUtil {
     }
 
     public static short[][] sliceArray(short[] array, int batchSize) {
-        if(array == null) {
+        if (array == null) {
             return null;
         }
         int length = array.length;
 
-        if(length <= batchSize) {
+        if (length <= batchSize) {
             return new short[][]{array};
         }
 
         int batches = length / batchSize;
-        if(length % batchSize > 0) {
+        if (length % batchSize > 0) {
             batches++;
         }
 
         short[][] result = new short[batches][];
         int offset = 0;
-        for(int i=0; i<batches; i++) {
+        for (int i = 0; i < batches; i++) {
             int nextSize = i < batches - 1 ? batchSize : length - offset;
             result[i] = new short[nextSize];
             System.arraycopy(array, offset, result[i], 0, nextSize);
@@ -155,23 +157,23 @@ public final class ArrayUtil {
     }
 
     public static char[][] sliceArray(char[] array, int batchSize) {
-        if(array == null) {
+        if (array == null) {
             return null;
         }
         int length = array.length;
 
-        if(length <= batchSize) {
+        if (length <= batchSize) {
             return new char[][]{array};
         }
 
         int batches = length / batchSize;
-        if(length % batchSize > 0) {
+        if (length % batchSize > 0) {
             batches++;
         }
 
         char[][] result = new char[batches][];
         int offset = 0;
-        for(int i=0; i<batches; i++) {
+        for (int i = 0; i < batches; i++) {
             int nextSize = i < batches - 1 ? batchSize : length - offset;
             result[i] = new char[nextSize];
             System.arraycopy(array, offset, result[i], 0, nextSize);
@@ -181,23 +183,23 @@ public final class ArrayUtil {
     }
 
     public static boolean[][] sliceArray(boolean[] array, int batchSize) {
-        if(array == null) {
+        if (array == null) {
             return null;
         }
         int length = array.length;
 
-        if(length <= batchSize) {
+        if (length <= batchSize) {
             return new boolean[][]{array};
         }
 
         int batches = length / batchSize;
-        if(length % batchSize > 0) {
+        if (length % batchSize > 0) {
             batches++;
         }
 
         boolean[][] result = new boolean[batches][];
         int offset = 0;
-        for(int i=0; i<batches; i++) {
+        for (int i = 0; i < batches; i++) {
             int nextSize = i < batches - 1 ? batchSize : length - offset;
             result[i] = new boolean[nextSize];
             System.arraycopy(array, offset, result[i], 0, nextSize);
@@ -207,23 +209,23 @@ public final class ArrayUtil {
     }
 
     public static byte[][] sliceArray(byte[] array, int batchSize) {
-        if(array == null) {
+        if (array == null) {
             return null;
         }
         int length = array.length;
 
-        if(length <= batchSize) {
+        if (length <= batchSize) {
             return new byte[][]{array};
         }
 
         int batches = length / batchSize;
-        if(length % batchSize > 0) {
+        if (length % batchSize > 0) {
             batches++;
         }
 
         byte[][] result = new byte[batches][];
         int offset = 0;
-        for(int i=0; i<batches; i++) {
+        for (int i = 0; i < batches; i++) {
             int nextSize = i < batches - 1 ? batchSize : length - offset;
             result[i] = new byte[nextSize];
             System.arraycopy(array, offset, result[i], 0, nextSize);
@@ -233,28 +235,78 @@ public final class ArrayUtil {
     }
 
     public static Object[][] sliceArray(Object[] array, int batchSize) {
-        if(array == null) {
+        if (array == null) {
             return null;
         }
         int length = array.length;
 
-        if(length <= batchSize) {
+        if (length <= batchSize) {
             return new Object[][]{array};
         }
 
         int batches = length / batchSize;
-        if(length % batchSize > 0) {
+        if (length % batchSize > 0) {
             batches++;
         }
 
         Object[][] result = new Object[batches][];
         int offset = 0;
-        for(int i=0; i<batches; i++) {
+        for (int i = 0; i < batches; i++) {
             int nextSize = i < batches - 1 ? batchSize : length - offset;
             result[i] = new Object[nextSize];
             System.arraycopy(array, offset, result[i], 0, nextSize);
             offset += nextSize;
         }
         return result;
+    }
+
+    /**
+     * Appends a {@code byte[]} as a truncated hex fragment, e.g. {@code <AB12CD...>}.
+     *
+     * @since 5.0
+     */
+    public static void appendTruncated(StringBuilder buffer, byte[] bytes) {
+        appendTruncated(buffer, bytes.length, i -> IDUtil.appendFormattedByte(buffer, bytes[i]));
+    }
+
+    /**
+     * Appends a {@code Byte[]} as a truncated hex fragment, e.g. {@code <AB12CD...>}.
+     *
+     * @since 5.0
+     */
+    public static void appendTruncated(StringBuilder buffer, Byte[] bytes) {
+        appendTruncated(buffer, bytes.length, i -> IDUtil.appendFormattedByte(buffer, bytes[i]));
+    }
+
+    /**
+     * Appends a {@code char[]} as a truncated fragment, e.g. {@code <abc...>}.
+     *
+     * @since 5.0
+     */
+    public static void appendTruncated(StringBuilder buffer, char[] chars) {
+        appendTruncated(buffer, chars.length, i -> buffer.append(chars[i]));
+    }
+
+    /**
+     * Appends a {@code Character[]} as a truncated fragment, e.g. {@code <abc...>}.
+     *
+     * @since 5.0
+     */
+    public static void appendTruncated(StringBuilder buffer, Character[] chars) {
+        appendTruncated(buffer, chars.length, i -> buffer.append(chars[i]));
+    }
+
+    private static void appendTruncated(StringBuilder buffer, int length, IntConsumer appendElement) {
+
+        int trimThreshold = 30;
+
+        int shown = Math.min(length, trimThreshold);
+        for (int i = 0; i < shown; i++) {
+            appendElement.accept(i);
+        }
+
+        if (length > trimThreshold) {
+            buffer.append("...");
+        }
     }
 }

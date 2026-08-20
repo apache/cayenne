@@ -53,8 +53,6 @@ class OracleProcedureAction extends ProcedureAction {
 	protected void readProcedureOutParameters(CallableStatement statement, OperationObserver delegate)
 			throws SQLException, Exception {
 
-		long t1 = System.currentTimeMillis();
-
 		// build result row...
 		DataRow result = null;
 		List<ProcedureParameter> parameters = getProcedure().getCallParameters();
@@ -89,7 +87,6 @@ class OracleProcedureAction extends ProcedureAction {
 
 		if (result != null && !result.isEmpty()) {
 			// treat out parameters as a separate data row set
-			dataNode.getJdbcEventLogger().logSelectCount(1, System.currentTimeMillis() - t1);
 			delegate.nextRows(query, Collections.singletonList(result));
 		}
 	}

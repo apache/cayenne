@@ -19,6 +19,7 @@
 package org.apache.cayenne.dba.mysql.sqltree;
 
 import org.apache.cayenne.access.sqlbuilder.SQLAppendable;
+import org.apache.cayenne.access.sqlbuilder.SQLGenerationContext;
 import org.apache.cayenne.access.sqlbuilder.sqltree.Node;
 
 /**
@@ -32,7 +33,7 @@ public class ConvertNode extends Node {
     }
 
     @Override
-    public SQLAppendable append(SQLAppendable buffer) {
+    public SQLAppendable append(SQLAppendable buffer, SQLGenerationContext context) {
         return buffer.append("CONVERT(");
     }
 

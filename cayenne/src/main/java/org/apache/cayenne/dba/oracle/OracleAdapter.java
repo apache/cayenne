@@ -23,8 +23,7 @@ import org.apache.cayenne.dba.NativeColumnType;
 import org.apache.cayenne.CayenneRuntimeException;
 import org.apache.cayenne.access.DataNode;
 import org.apache.cayenne.access.sqlbuilder.sqltree.SQLTreeProcessor;
-import org.apache.cayenne.access.jdbc.PSParameter;
-import org.apache.cayenne.access.translator.ejbql.EJBQLTranslator;
+import org.apache.cayenne.access.translator.EJBQLTranslator;
 import org.apache.cayenne.access.types.ByteType;
 import org.apache.cayenne.access.types.ExtendedType;
 import org.apache.cayenne.access.types.ExtendedTypeFactory;
@@ -36,6 +35,7 @@ import org.apache.cayenne.configuration.Constants;
 import org.apache.cayenne.configuration.RuntimeProperties;
 import org.apache.cayenne.dba.QuotingStrategy;
 import org.apache.cayenne.dba.JdbcAdapter;
+import org.apache.cayenne.dba.PkGenerator;
 import org.apache.cayenne.di.Inject;
 import org.apache.cayenne.map.DbAttribute;
 import org.apache.cayenne.map.DbEntity;
@@ -203,6 +203,14 @@ public class OracleAdapter extends JdbcAdapter {
     }
 
     /**
+     * Returns a {@link OraclePkGenerator}.
+     */
+    @Override
+    public PkGenerator createPkGenerator() {
+        return new OraclePkGenerator(this);
+    }
+
+    /**
      * @since 4.2
      */
     @Override
@@ -261,21 +269,17 @@ public class OracleAdapter extends JdbcAdapter {
     }
 
     @Override
-    public void bindParameter(PreparedStatement statement, PSParameter<?> parameter) throws Exception {
+    @SuppressWarnings({"rawtypes", "unchecked"})
+    protected void bind(PreparedStatement statement, Object value, int psPosition, int psType, int psScale,
+                        ExtendedType binder) throws Exception {
 
-        // Oracle doesn't support BOOLEAN even when binding NULL, so have to
-        // intercept
-        // NULL Boolean here, as super doesn't pass it through ExtendedType...
-        if (parameter.value() == null && parameter.psType() == Types.BOOLEAN) {
+        // Oracle doesn't support BOOLEAN even when binding NULL, so have to intercept NULL Boolean here, as super
+        // doesn't pass it through ExtendedType...
+        if (value == null && psType == Types.BOOLEAN) {
             ExtendedType typeProcessor = getExtendedTypes().getRegisteredType(Boolean.class);
-            typeProcessor.setJdbcObject(
-                    statement,
-                    parameter.value(),
-                    parameter.psPosition(),
-                    parameter.psType(),
-                    parameter.psScale());
+            typeProcessor.setJdbcObject(statement, value, psPosition, psType, psScale);
         } else {
-            super.bindParameter(statement, parameter);
+            super.bind(statement, value, psPosition, psType, psScale, binder);
         }
     }
 

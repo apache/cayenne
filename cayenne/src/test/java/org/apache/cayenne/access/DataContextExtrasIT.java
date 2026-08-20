@@ -25,7 +25,6 @@ import org.apache.cayenne.DataRow;
 import org.apache.cayenne.ObjectId;
 import org.apache.cayenne.PersistenceState;
 import org.apache.cayenne.Persistent;
-import org.apache.cayenne.dba.DbAdapter;
 import org.apache.cayenne.dba.JdbcAdapter;
 import org.apache.cayenne.dba.JdbcPkGenerator;
 import org.apache.cayenne.dba.PkGenerator;
@@ -258,19 +257,10 @@ public class DataContextExtrasIT {
             }
         };
 
-        PkGenerator oldGenerator = domain
-                .getDataNodes()
-                .iterator()
-                .next()
-                .getAdapter()
-                .getPkGenerator();
-        DbAdapter adapter = domain
-                .getDataNodes()
-                .iterator()
-                .next()
-                .getAdapter();
+        DataNode node = domain.getDataNodes().iterator().next();
+        PkGenerator oldGenerator = node.getPkGenerator();
 
-        adapter.setPkGenerator(newGenerator);
+        node.setPkGenerator(newGenerator);
         try {
             assertThrows(CayenneRuntimeException.class, () -> {
                 Artist newArtist = context.newObject(Artist.class);
@@ -278,7 +268,7 @@ public class DataContextExtrasIT {
                 context.commitChanges();
             });
         } finally {
-            adapter.setPkGenerator(oldGenerator);
+            node.setPkGenerator(oldGenerator);
         }
     }
 

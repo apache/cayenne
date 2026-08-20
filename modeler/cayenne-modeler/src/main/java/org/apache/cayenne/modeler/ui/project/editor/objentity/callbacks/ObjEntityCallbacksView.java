@@ -131,13 +131,17 @@ public class ObjEntityCallbacksView extends ProjectPanel {
                 int row = -1, i;
 
                 for (i = 0; i < callbackTypes.length; i++) {
-                    if (callbackTypes[i] == session.getSelectedCallbackType()) {
+                    if (callbackTypes[i].equals(session.getSelectedCallbackType())) {
                         row = tables[i].getSelectedRow();
                         break;
                     }
                 }
 
                 rebuildTables();
+
+                if (i == callbackTypes.length) {
+                    return;
+                }
 
                 if (row == tables[i].getRowCount()) {
                     row--;

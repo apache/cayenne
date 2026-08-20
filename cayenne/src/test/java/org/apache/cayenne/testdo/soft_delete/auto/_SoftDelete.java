@@ -54,8 +54,6 @@ public abstract class _SoftDelete extends PersistentObject {
         return this.name;
     }
 
-    protected abstract void onPrePersist();
-
     @Override
     public Object readPropertyDirectly(String propName) {
         if(propName == null) {

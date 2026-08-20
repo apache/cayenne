@@ -53,8 +53,21 @@ Expression caseWhenExp = caseWhen(
 ```
 
 
-## Upgrading to 5.0.M3
+## Upgrading to 5.0-M3
 
+
+* Per [CAY-2912](https://issues.apache.org/jira/browse/CAY-2912) SQL logging was redesigned to be compact and
+  single-line. The `JdbcEventLogger` interface and its `Slf4jJdbcEventLogger` / `FormattedSlf4jJdbcEventLogger`
+  implementations were removed and replaced by `org.apache.cayenne.log.SqlLogger` (default implementation
+  `Slf4jSqlLogger`). Log output now goes to a logger named `cayenne-sql` (previously `org.apache.cayenne.log.JdbcEventLogger`) —
+  update your logging configuration accordingly. Each statement is logged as one line combining the SQL, its bindings
+  and the result count (e.g. `... bind:[user_id:15] selected:1`); transaction boundaries moved to `DEBUG`. If you bound
+  a custom `JdbcEventLogger` in a DI module, rebind `SqlLogger` instead.
+
+  As part of this change the `cayenne.query_execution_time_logging_threshold` property no longer has any effect — the
+  slow-query threshold warning it controlled has been removed. The `Constants.QUERY_EXECUTION_TIME_LOGGING_THRESHOLD_PROPERTY`
+  constant is retained (deprecated) but ignored. A new `cayenne.jdbc.log.batch.threshold` property (default 3) controls how
+  many batch rows are logged in full before the bindings are truncated to `[first]..N..[last]`.
 
 * Per [CAY-2954](https://issues.apache.org/jira/browse/CAY-2954) selecting queries are no longer wrapped in
 transactions internally by Cayenne. Using connections in "auto-commit" mode instead has a significant positive impact 
@@ -73,7 +86,102 @@ solution may be changing to "joint" prefetches.
   `org.apache.cayenne.dba.hsqldb.HSQLDBNoSchemaAdapter` no longer exists, and the `HSQLDBSniffer` now maps all. If you
   happen to be on those older HSQL versions, update to the latest one.
 
-## Upgrading to 5.0.M2
+* Per [CAY-2970](https://issues.apache.org/jira/browse/CAY-2970) deferred batch parameter values (e.g. a generated PK
+  propagated to a dependent PK or FK within the same transaction) are now represented by the dedicated
+  `org.apache.cayenne.access.DeferredValue` type instead of a bare `java.util.function.Supplier`. Cayenne now resolves
+  only its own `DeferredValue` instances, leaving user-supplied `Supplier` attribute values untouched. If you have
+  custom code that fed deferred values into batch bindings or `ObjectId` snapshots via `Supplier`, implement
+  `DeferredValue` instead — it is a `@FunctionalInterface`, so an existing lambda or `Supplier` implementation can
+  usually be adapted with a minimal change.
+
+* Per [CAY-2981](https://issues.apache.org/jira/browse/CAY-2981) DataNodes are no longer a part of the XML mapping. DataNodes / DataSources are defined in 
+  runtime. DataMaps are linked to them in runtime as well. Opening a project in the Modeler upgrades it to version 
+  13, which drops every `<node>` element (reporting any encountered removals). The new API to replace
+  XML mapping is described below.
+
+  A node is defined either from a bare `DataSource`, or from a `DataNodeDescriptor`. The `DataSource` flavor is a
+  shortcut for a node that needs no customization — it gets a generated name and the default settings:
+  ```java
+  DataSource dataSource = CayenneDataSource.of("jdbc:postgresql://localhost:5432/mydb")
+          .userName("user")
+          .password("secret")
+          .pool(1, 5)
+          .build();
+
+  CayenneRuntime runtime = CayenneRuntime.of()
+          .addConfig("cayenne-project.xml")
+          .defaultDataNode(dataSource)
+          .build();
+  ```
+
+  Switch to a `DataNodeDescriptor` when the node has to be customized, e.g., to let Cayenne create the
+  schema on the first connection, pin the adapter, give the node a stable name, etc.:
+  ```java
+  DataNodeDescriptor node = DataNodeDescriptor.of("node1")
+                  .dataSource(dataSource)
+                  .createSchemaIfNeeded()
+                  .build();
+  CayenneRuntime runtime = CayenneRuntime.of()
+          .addConfig("cayenne-project.xml")
+          .defaultDataNode(node)
+          .build();
+  ```
+
+  Both flavors work with any number of nodes. Projects that used to declare several `<node>`s link each node to its
+  DataMaps by name, mixing the two forms as needed. A default node remains optional, and picks up every DataMap not
+  linked to a node explicitly:
+  ```java
+  CayenneRuntime runtime = CayenneRuntime.of()
+          .addConfig("cayenne-project.xml")
+          .addDataNode(ds1, "map1", "map2")
+          .addDataNode(DataNodeDescriptor.of("node2").dataSource(ds2).createSchemaIfNeeded().build(), "map3")
+          .defaultDataNode(ds3)
+          .build();
+  ```
+  `cayenne.jdbc.*` properties are still recognized.
+
+  Core API changes:
+  - The set of DataNodes is supplied to the stack as a single `DataNodeDescriptors` DI binding.
+  - Nodes defined from a bare `DataSource` are named after the domain (`cayenne-0`, `cayenne-1`, ...). Use a
+    `DataNodeDescriptor` if you need a stable name for `DataDomain.getDataNode(String)`,
+    `CayenneRuntime.getDataSource(String)` or `SQLTemplate.setDataNodeName(String)`.
+  - In CayenneModeler, the DataNode editors and the "Create DataNode" / "Link DataMap" actions were removed
+  - `org.apache.cayenne.configuration.runtime.DataSourceFactory` was removed and is no longer an extension point
+  - `org.apache.cayenne.configuration.runtime.DbAdapterFactory` was removed and is no longer an extension point. 
+     A recommended way to add a custom adapter is `CoreModule.extend(binder).addAdapterDetector(...)`, or you can set
+     it directly on DataNodeDescriptor
+  - `org.apache.cayenne.access.dbsync.SchemaUpdateStrategyFactory` was removed and is no longer an extension point.
+    Set it directly on DataNodeDescriptor if needed.
+
+* Per [CAY-2985](https://issues.apache.org/jira/browse/CAY-2985) `DataDomain` became mostly immutable. The `DataDomain(String)` constructor and all the setters 
+below were removed in favor of a single full constructor that takes every collaborator and setting. Only DataNodes, 
+DataMaps, filters and listeners can still be added (and removed) after creation. Replacements for the removed setters:
+  - `setName(String)` — the name comes from the project XML, and can be overridden with the
+    `cayenne.domain.name` property (`Constants.DOMAIN_NAME_PROPERTY`).
+  - `setEntityResolver(EntityResolver)` — keep using `addDataMap(..)` / `removeDataMap(..)` to change resolver contents.
+  - `setEntitySorter(EntitySorter)` — the sorter is produced by the new `EntitySorterFactory` DI service. Bind your
+    own `EntitySorterFactory` to replace it.
+  - `setEventManager(EventManager)` — bind `EventManager` in a DI module instead.
+  - `setQueryCache(QueryCache)` — bind `QueryCache` in a DI module instead.
+  - `setSharedSnapshotCache(DataRowStore)`, `setDataRowStoreFactory(DataRowStoreFactory)` and
+    `getDataRowStoreFactory()` — bind `DataRowStoreFactory` in a DI module to customize the cache.
+  - `setSharedCacheEnabled(boolean)` — use the "Shared Cache" checkbox in the Modeler.
+  - `setValidatingObjectsOnCommit(boolean)` — use the "Object Validation" checkbox in the Modeler.
+  - `setMaxIdQualifierSize(int)` — use the `cayenne.max_id_qualifier_size` property
+    (`Constants.MAX_ID_QUALIFIER_SIZE_PROPERTY`).
+
+* Per [CAY-2986](https://issues.apache.org/jira/browse/CAY-2986) cgen now runs unconditionally. Previously it compared
+  the DataMap file mtime against the mtime of the generated classes and skipped generation when the classes looked
+  newer. That optimization saved very little (cgen is idempotent and fast) while regularly producing stale classes
+  after project upgrades or when switching between machines and branches. Consequences:
+  - The `force` flag is now a deprecated no-op — its former behavior is the only behavior.
+
+* Per [CAY-2987](https://issues.apache.org/jira/browse/CAY-2987), `PkGenerator` is now owned by `DataNode` rather than
+  by `DbAdapter`. A `DbAdapter` is only the source of the default generator for its database. This change is
+  entirely transparent unless you need to install a custom PkGenerator. You can do that via a custom injected 
+ `DefaultDataNodeFactory`, an explicit call to `dataNode.setPkGenerator(..)` or use a custom adapter.
+
+## Upgrading to 5.0-M2
 
 * Per [CAY-2947](https://issues.apache.org/jira/browse/CAY-2947) the `cayenne-commitlog` artifact has been removed. Commit log support is now part of the
   core `cayenne` artifact — no extra dependency needed. Migrate as follows:
@@ -129,7 +237,7 @@ solution may be changing to "joint" prefetches.
   `DataNode` is now used directly wherever `QueryEngine` was previously referenced. So you must subclass `DataNode` 
   and override `performQueries()` if you previously implemented a custom `QueryEngine`.
 
-## Upgrading to 5.0.M1
+## Upgrading to 5.0-M1
 
 * Per [CAY-2737](https://issues.apache.org/jira/browse/CAY-2737) All code deprecated in Cayenne 4.1 and 4.2 was deleted — please review your code before
   upgrading. Most notable removals are `SelectQuery` and these Cayenne modules:
@@ -159,7 +267,7 @@ solution may be changing to "joint" prefetches.
   extensions. If you encounter those, change how you configure the modules, following this general pattern
   (using `CacheInvalidationModule` as an example):
   ```java
-  CayenneRuntime.builder(..)
+  CayenneRuntime.of(..)
       .addModule(b -> CacheInvalidationModule.extend(b).addHandler(MyHandler.class))
       .build();
   ```
@@ -187,7 +295,7 @@ solution may be changing to "joint" prefetches.
 
 * Per [CAY-2826](https://issues.apache.org/jira/browse/CAY-2826) `ServerModule` renamed to `CoreModule`. The new builder pattern combining both changes:
   ```java
-  CayenneRuntime runtime = CayenneRuntime.builder()
+  CayenneRuntime runtime = CayenneRuntime.of()
           .addConfig("cayenne-project.xml")
           .module(b -> CoreModule.extend(b).setProperty("some_property", "some_value"))
           .build();

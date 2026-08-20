@@ -100,12 +100,12 @@ public class SQLTemplateMainTab extends BaseQueryMainTab {
         builder.setDefaultDialogBorder();
 
         builder.addSeparator("SQLTemplate Settings", cc.xywh(1, 1, 3, 1));
-        builder.addLabel("Query Name:", cc.xy(1, 3));
+        builder.addLabel("Name:", cc.xy(1, 3));
         builder.add(name, cc.xy(3, 3));
-        builder.addLabel("Comment:", cc.xy(1, 5));
-        builder.add(comment, cc.xy(3, 5));
-        builder.addLabel("Query Root:", cc.xy(1, 7));
-        builder.add(queryRoot, cc.xy(3, 7));
+        builder.addLabel("Root:", cc.xy(1, 5));
+        builder.add(queryRoot, cc.xy(3, 5));
+        builder.addLabel("Comment:", cc.xy(1, 7));
+        builder.add(comment, cc.xy(3, 7));
 
         this.setLayout(new BorderLayout());
         this.add(builder.getPanel(), BorderLayout.NORTH);

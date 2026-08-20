@@ -21,6 +21,8 @@ package org.apache.cayenne.configuration.runtime;
 
 import org.apache.cayenne.DataChannelQueryFilter;
 import org.apache.cayenne.DataChannelSyncFilter;
+import org.apache.cayenne.access.flush.operation.DeleteDbRowOpFactory;
+import org.apache.cayenne.access.flush.operation.ConditionalSoftDeleteDbRowOpFactory;
 import org.apache.cayenne.access.types.ExtendedType;
 import org.apache.cayenne.access.types.ExtendedTypeFactory;
 import org.apache.cayenne.access.types.ValueObjectType;
@@ -29,8 +31,6 @@ import org.apache.cayenne.commitlog.CommitLogListener;
 import org.apache.cayenne.commitlog.meta.AnnotationCommitLogEntityFactory;
 import org.apache.cayenne.commitlog.meta.CommitLogEntityFactory;
 import org.apache.cayenne.configuration.Constants;
-import org.apache.cayenne.dba.DbAdapter;
-import org.apache.cayenne.dba.PkGenerator;
 import org.apache.cayenne.di.Binder;
 import org.apache.cayenne.di.ListBuilder;
 import org.apache.cayenne.di.MapBuilder;
@@ -50,7 +50,6 @@ public class CoreModuleExtender {
     private MapBuilder<String> properties;
     private ListBuilder<String> projectLocations;
     private ListBuilder<DbAdapterDetector> adapterDetectors;
-    private MapBuilder<PkGenerator> pkGenerators;
     private ListBuilder<DataChannelQueryFilter> queryFilters;
     private ListBuilder<DataChannelSyncFilter> syncFilters;
     private ListBuilder<Object> listeners;
@@ -69,7 +68,6 @@ public class CoreModuleExtender {
         contributeProperties();
         contributeProjectLocations();
         contributeAdapterDetectors();
-        contributePkGenerators();
         contributeQueryFilters();
         contributeSyncFilters();
         contributeListeners();
@@ -106,6 +104,23 @@ public class CoreModuleExtender {
     }
 
     /**
+     * Enables "soft delete" for entities whose tables contain a BOOLEAN column with the given name. Instead of a SQL
+     * DELETE, such entities are deleted by an {@code UPDATE ... SET <columnName> = true}, so the row physically stays
+     * in the table. Tables that have no column with the given name (or whose column of that name is not BOOLEAN) are
+     * unaffected and are deleted with a regular SQL DELETE. A NULL value in the column is treated as "not deleted".
+     *
+     * <p>This setting only affects the delete path. Hiding soft-deleted rows from queries remains the responsibility
+     * of the mapping, e.g. a DbEntity qualifier like {@code DELETED = false or DELETED = null}.
+     *
+     * @param columnName the name of the BOOLEAN column marking soft-deleted rows
+     * @since 5.0
+     */
+    public CoreModuleExtender softDeleteIfColumnPresent(String columnName) {
+        binder.bind(DeleteDbRowOpFactory.class).toInstance(new ConditionalSoftDeleteDbRowOpFactory(columnName));
+        return this;
+    }
+
+    /**
      * Sets max size of snapshot cache.
      *
      * @param size max size of snapshot cache
@@ -116,26 +131,23 @@ public class CoreModuleExtender {
     }
 
     /**
+     * Sets the maximum number of object IDs to match in a single query for queries that select objects based on a
+     * collection of ObjectIds, such as paginated queries and DISJOINT_BY_ID prefetches. Zero or negative value means
+     * no limit.
+     *
+     * @param size max number of IDs per generated query
+     * @since 5.0
+     */
+    public CoreModuleExtender maxIdQualifierSize(int size) {
+        contributeProperties().put(Constants.MAX_ID_QUALIFIER_SIZE_PROPERTY, Integer.toString(size));
+        return this;
+    }
+
+    /**
      * Adds a custom project location.
      */
     public CoreModuleExtender addProjectLocation(String location) {
         contributeProjectLocations().add(location);
-        return this;
-    }
-
-    /**
-     * Adds a custom PK generator per DbAdapter
-     */
-    public CoreModuleExtender addPkGenerator(Class<? extends DbAdapter> adapter, PkGenerator pkGenerator) {
-        contributePkGenerators().put(adapter.getName(), pkGenerator);
-        return this;
-    }
-
-    /**
-     * Adds a custom PK generator per DbAdapter
-     */
-    public CoreModuleExtender addPkGenerator(Class<? extends DbAdapter> adapter, Class<? extends PkGenerator> pkGeneratorType) {
-        contributePkGenerators().put(adapter.getName(), pkGeneratorType);
         return this;
     }
 
@@ -450,12 +462,5 @@ public class CoreModuleExtender {
             valueObjectTypes = binder.bindList(ValueObjectType.class);
         }
         return valueObjectTypes;
-    }
-
-    private MapBuilder<PkGenerator> contributePkGenerators() {
-        if (pkGenerators == null) {
-            pkGenerators = binder.bindMap(PkGenerator.class);
-        }
-        return pkGenerators;
     }
 }

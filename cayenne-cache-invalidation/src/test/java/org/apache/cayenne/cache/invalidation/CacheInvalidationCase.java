@@ -18,6 +18,8 @@
  ****************************************************************/
 package org.apache.cayenne.cache.invalidation;
 
+import org.apache.cayenne.configuration.DataNodeDescriptor;
+import org.apache.cayenne.datasource.CayenneDataSource;
 import org.apache.cayenne.di.Module;
 import org.apache.cayenne.runtime.CayenneRuntime;
 import org.apache.cayenne.runtime.CayenneRuntimeBuilder;
@@ -25,6 +27,8 @@ import org.apache.cayenne.test.jdbc.DbHelper;
 import org.apache.cayenne.test.jdbc.TableHelper;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
+
+import javax.sql.DataSource;
 
 public abstract class CacheInvalidationCase {
 
@@ -57,10 +61,22 @@ public abstract class CacheInvalidationCase {
     }
 
     protected CayenneRuntimeBuilder configureCayenne() {
-        return CayenneRuntime.builder()
+        DataSource dataSource = CayenneDataSource.of("jdbc:hsqldb:mem:lifecycle")
+                .driverClass("org.hsqldb.jdbcDriver")
+                .userName("sa")
+                .pool(1, 1)
+                .build();
+
+        DataNodeDescriptor dataNode = DataNodeDescriptor.of("lifecycle")
+                .dataSource(dataSource)
+                .createSchemaIfNeeded()
+                .build();
+
+        return CayenneRuntime.of()
                 .addModule(b -> extend(CacheInvalidationModule.extend(b)))
                 .addModule(buildCustomModule())
-                .addConfig("cayenne-lifecycle.xml");
+                .addConfig("cayenne-lifecycle.xml")
+                .defaultDataNode(dataNode);
     }
 
     @AfterEach

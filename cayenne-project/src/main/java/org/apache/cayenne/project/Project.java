@@ -42,7 +42,7 @@ public class Project {
 	 *
 	 * @since 4.1
 	 */
-	static public final int VERSION = 12;
+	static public final int VERSION = 13;
 
 	protected boolean modified;
 

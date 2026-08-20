@@ -18,6 +18,7 @@
  ****************************************************************/
 package org.apache.cayenne.configuration;
 
+import java.util.HashMap;
 import java.util.Map;
 
 import org.apache.cayenne.di.Inject;
@@ -97,5 +98,17 @@ public class DefaultRuntimeProperties implements RuntimeProperties {
     public boolean getBoolean(String key, boolean defaultValue) {
         String string = get(key);
         return string != null ? "true".equalsIgnoreCase(string) : defaultValue;
+    }
+
+    @Override
+    public Map<String, String> toMap() {
+        Map<String, String> map = new HashMap<>(properties);
+
+        // system properties take precedence, matching the "get" behavior
+        for (String name : System.getProperties().stringPropertyNames()) {
+            map.put(name, System.getProperty(name));
+        }
+
+        return map;
     }
 }

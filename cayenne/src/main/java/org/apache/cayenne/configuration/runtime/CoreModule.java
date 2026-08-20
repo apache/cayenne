@@ -18,40 +18,42 @@
  ****************************************************************/
 package org.apache.cayenne.configuration.runtime;
 
-import org.apache.cayenne.DataChannel;
 import org.apache.cayenne.DataChannelQueryFilter;
 import org.apache.cayenne.DataChannelSyncFilter;
-import org.apache.cayenne.commitlog.CommitLogFilter;
-import org.apache.cayenne.commitlog.meta.IncludeAllCommitLogEntityFactory;
-import org.apache.cayenne.commitlog.meta.CommitLogEntityFactory;
 import org.apache.cayenne.access.DataDomain;
 import org.apache.cayenne.access.DataRowStoreFactory;
 import org.apache.cayenne.access.DefaultDataRowStoreFactory;
 import org.apache.cayenne.access.DefaultObjectMapRetainStrategy;
 import org.apache.cayenne.access.ObjectMapRetainStrategy;
-import org.apache.cayenne.access.dbsync.DefaultSchemaUpdateStrategyFactory;
-import org.apache.cayenne.access.dbsync.SchemaUpdateStrategyFactory;
 import org.apache.cayenne.access.flush.DataDomainFlushActionFactory;
 import org.apache.cayenne.access.flush.DefaultDataDomainFlushActionFactory;
 import org.apache.cayenne.access.flush.operation.DbRowOpSorter;
 import org.apache.cayenne.access.flush.operation.DefaultDbRowOpSorter;
-import org.apache.cayenne.access.translator.sqltemplate.SQLTemplateTranslator;
+import org.apache.cayenne.access.flush.operation.DeleteDbRowOpFactory;
+import org.apache.cayenne.access.flush.operation.HardDeleteDbRowOpFactory;
 import org.apache.cayenne.access.jdbc.reader.DefaultRowReaderFactory;
 import org.apache.cayenne.access.jdbc.reader.RowReaderFactory;
-import org.apache.cayenne.access.translator.batch.BatchTranslator;
+import org.apache.cayenne.access.translator.BatchTranslator;
+import org.apache.cayenne.access.translator.EJBQLTranslator;
+import org.apache.cayenne.access.translator.ProcedureTranslator;
+import org.apache.cayenne.access.translator.SQLTemplateTranslator;
+import org.apache.cayenne.access.translator.SelectTranslator;
 import org.apache.cayenne.access.translator.batch.DeleteBatchTranslator;
 import org.apache.cayenne.access.translator.batch.InsertBatchTranslator;
 import org.apache.cayenne.access.translator.batch.UpdateBatchTranslator;
 import org.apache.cayenne.access.translator.ejbql.DbAdapterDelegatedEJBQLTranslator;
-import org.apache.cayenne.access.translator.ejbql.EJBQLTranslator;
 import org.apache.cayenne.access.translator.procedure.DbAdapterDelegatedProcedureTranslator;
-import org.apache.cayenne.access.translator.procedure.ProcedureTranslator;
 import org.apache.cayenne.access.translator.select.DbAdapterDelegatedSelectTranslator;
-import org.apache.cayenne.access.translator.select.SelectTranslator;
+import org.apache.cayenne.access.translator.sqltemplate.DefaultSQLTemplateTranslator;
+import org.apache.cayenne.access.translator.sqltemplate.DefaultTemplateContextFactory;
+import org.apache.cayenne.access.translator.sqltemplate.TemplateContextFactory;
 import org.apache.cayenne.access.types.*;
-import org.apache.cayenne.ashwood.AshwoodEntitySorter;
+import org.apache.cayenne.ashwood.AshwoodEntitySorterFactory;
 import org.apache.cayenne.cache.MapQueryCacheProvider;
 import org.apache.cayenne.cache.QueryCache;
+import org.apache.cayenne.commitlog.CommitLogFilter;
+import org.apache.cayenne.commitlog.meta.CommitLogEntityFactory;
+import org.apache.cayenne.commitlog.meta.IncludeAllCommitLogEntityFactory;
 import org.apache.cayenne.configuration.ConfigurationNameMapper;
 import org.apache.cayenne.configuration.Constants;
 import org.apache.cayenne.configuration.DataChannelDescriptorLoader;
@@ -71,41 +73,19 @@ import org.apache.cayenne.configuration.xml.NoopDataChannelMetaData;
 import org.apache.cayenne.configuration.xml.XMLDataChannelDescriptorLoader;
 import org.apache.cayenne.configuration.xml.XMLDataMapLoader;
 import org.apache.cayenne.configuration.xml.XMLReaderProvider;
-import org.apache.cayenne.dba.JdbcPkGenerator;
-import org.apache.cayenne.dba.PkGenerator;
-import org.apache.cayenne.dba.db2.DB2Adapter;
-import org.apache.cayenne.dba.db2.DB2PkGenerator;
 import org.apache.cayenne.dba.db2.DB2Sniffer;
-import org.apache.cayenne.dba.derby.DerbyAdapter;
-import org.apache.cayenne.dba.derby.DerbyPkGenerator;
 import org.apache.cayenne.dba.derby.DerbySniffer;
 import org.apache.cayenne.dba.firebird.FirebirdSniffer;
-import org.apache.cayenne.dba.frontbase.FrontBaseAdapter;
-import org.apache.cayenne.dba.frontbase.FrontBasePkGenerator;
 import org.apache.cayenne.dba.frontbase.FrontBaseSniffer;
-import org.apache.cayenne.dba.h2.H2Adapter;
-import org.apache.cayenne.dba.h2.H2PkGenerator;
 import org.apache.cayenne.dba.h2.H2Sniffer;
 import org.apache.cayenne.dba.hsqldb.HSQLDBSniffer;
-import org.apache.cayenne.dba.ingres.IngresAdapter;
-import org.apache.cayenne.dba.ingres.IngresPkGenerator;
 import org.apache.cayenne.dba.ingres.IngresSniffer;
 import org.apache.cayenne.dba.mariadb.MariaDBSniffer;
-import org.apache.cayenne.dba.mysql.MySQLAdapter;
-import org.apache.cayenne.dba.mysql.MySQLPkGenerator;
 import org.apache.cayenne.dba.mysql.MySQLSniffer;
-import org.apache.cayenne.dba.oracle.OracleAdapter;
-import org.apache.cayenne.dba.oracle.OraclePkGenerator;
 import org.apache.cayenne.dba.oracle.OracleSniffer;
-import org.apache.cayenne.dba.postgres.PostgresAdapter;
-import org.apache.cayenne.dba.postgres.PostgresPkGenerator;
 import org.apache.cayenne.dba.postgres.PostgresSniffer;
 import org.apache.cayenne.dba.sqlite.SQLiteSniffer;
-import org.apache.cayenne.dba.sqlserver.SQLServerAdapter;
-import org.apache.cayenne.dba.sqlserver.SQLServerPkGenerator;
 import org.apache.cayenne.dba.sqlserver.SQLServerSniffer;
-import org.apache.cayenne.dba.sybase.SybaseAdapter;
-import org.apache.cayenne.dba.sybase.SybasePkGenerator;
 import org.apache.cayenne.dba.sybase.SybaseSniffer;
 import org.apache.cayenne.di.AdhocObjectFactory;
 import org.apache.cayenne.di.Binder;
@@ -120,16 +100,13 @@ import org.apache.cayenne.event.EventBridge;
 import org.apache.cayenne.event.EventManager;
 import org.apache.cayenne.event.EventManagerProvider;
 import org.apache.cayenne.event.NoopEventBridgeProvider;
-import org.apache.cayenne.log.JdbcEventLogger;
-import org.apache.cayenne.log.Slf4jJdbcEventLogger;
-import org.apache.cayenne.map.EntitySorter;
+import org.apache.cayenne.log.SQLLogger;
+import org.apache.cayenne.log.Slf4jSQLLogger;
+import org.apache.cayenne.map.EntitySorterFactory;
 import org.apache.cayenne.reflect.generic.DefaultValueComparisonStrategyFactory;
 import org.apache.cayenne.reflect.generic.ValueComparisonStrategyFactory;
 import org.apache.cayenne.resource.ClassLoaderResourceLocator;
 import org.apache.cayenne.resource.ResourceLocator;
-import org.apache.cayenne.access.translator.sqltemplate.DefaultSQLTemplateTranslator;
-import org.apache.cayenne.access.translator.sqltemplate.DefaultTemplateContextFactory;
-import org.apache.cayenne.access.translator.sqltemplate.TemplateContextFactory;
 import org.apache.cayenne.tx.DefaultTransactionFactory;
 import org.apache.cayenne.tx.DefaultTransactionManager;
 import org.apache.cayenne.tx.TransactionFactory;
@@ -254,20 +231,6 @@ public class CoreModule implements Module {
     }
 
     /**
-     * Provides access to a DI map builder for {@link PkGenerator}'s that allows downstream modules to
-     * "contribute" their own pk generators.
-     *
-     * @param binder DI binder passed to the module during injector startup.
-     * @return MapBuilder for properties.
-     * @since 4.1
-     * @deprecated in favor of {@link #extend(Binder)} API
-     */
-    @Deprecated(since = "5.0", forRemoval = true)
-    public static MapBuilder<PkGenerator> contributePkGenerators(Binder binder) {
-        return binder.bindMap(PkGenerator.class);
-    }
-
-    /**
      * Provides access to a DI map builder for runtime properties that allows downstream modules to
      * "contribute" their own properties.
      *
@@ -368,18 +331,6 @@ public class CoreModule implements Module {
                 .addAdapterDetector(MySQLSniffer.class)
                 .addAdapterDetector(MariaDBSniffer.class)
 
-                //  PkGenerators for the known DbAdapters
-                .addPkGenerator(DB2Adapter.class, DB2PkGenerator.class)
-                .addPkGenerator(DerbyAdapter.class, DerbyPkGenerator.class)
-                .addPkGenerator(FrontBaseAdapter.class, FrontBasePkGenerator.class)
-                .addPkGenerator(H2Adapter.class, H2PkGenerator.class)
-                .addPkGenerator(IngresAdapter.class, IngresPkGenerator.class)
-                .addPkGenerator(MySQLAdapter.class, MySQLPkGenerator.class)
-                .addPkGenerator(OracleAdapter.class, OraclePkGenerator.class)
-                .addPkGenerator(PostgresAdapter.class, PostgresPkGenerator.class)
-                .addPkGenerator(SQLServerAdapter.class, SQLServerPkGenerator.class)
-                .addPkGenerator(SybaseAdapter.class, SybasePkGenerator.class)
-
                 .addSyncFilter(TransactionFilter.class)
 
                 // ExtendedTypes
@@ -420,11 +371,9 @@ public class CoreModule implements Module {
         binder.bind(ValueObjectTypeRegistry.class).to(DefaultValueObjectTypeRegistry.class);
         binder.bind(ValueComparisonStrategyFactory.class).to(DefaultValueComparisonStrategyFactory.class);
 
-        binder.bind(JdbcEventLogger.class).to(Slf4jJdbcEventLogger.class);
+        binder.bind(SQLLogger.class).to(Slf4jSQLLogger.class);
         binder.bind(ClassLoaderManager.class).to(DefaultClassLoaderManager.class);
         binder.bind(AdhocObjectFactory.class).to(DefaultAdhocObjectFactory.class);
-        binder.bind(PkGeneratorFactoryProvider.class).to(PkGeneratorFactoryProvider.class);
-        binder.bind(PkGenerator.class).to(JdbcPkGenerator.class);
         binder.bind(ConfigurationNameMapper.class).to(DefaultConfigurationNameMapper.class);
         binder.bind(EventManager.class).toProvider(EventManagerProvider.class);
         binder.bind(QueryCache.class).toProvider(MapQueryCacheProvider.class);
@@ -435,8 +384,6 @@ public class CoreModule implements Module {
         binder.bind(DataDomain.class).toProvider(DataDomainProvider.class);
         binder.bind(DataNodeFactory.class).to(DefaultDataNodeFactory.class);
 
-        // will return DataDomain for request for a DataChannel
-        binder.bind(DataChannel.class).toProvider(DomainDataChannelProvider.class);
         binder.bind(ObjectContextFactory.class).to(DataContextFactory.class);
         binder.bind(TransactionFactory.class).to(DefaultTransactionFactory.class);
 
@@ -454,19 +401,7 @@ public class CoreModule implements Module {
         // a global properties object
         binder.bind(RuntimeProperties.class).to(DefaultRuntimeProperties.class);
 
-        // a service to load DataSourceFactories. DelegatingDataSourceFactory
-        // will attempt to find the actual worker factory dynamically on each
-        // call depending on DataNodeDescriptor data and the environment
-        binder.bind(DataSourceFactory.class).to(DelegatingDataSourceFactory.class);
-
-        binder.bind(SchemaUpdateStrategyFactory.class).to(DefaultSchemaUpdateStrategyFactory.class);
-
-        // a default DBAdapterFactory used to load custom and automatic DbAdapters
-        binder.bind(DbAdapterFactory.class).to(DefaultDbAdapterFactory.class);
-
-        // binding AshwoodEntitySorter without scope, as this is a stateful object and is
-        // configured by the owning domain
-        binder.bind(EntitySorter.class).to(AshwoodEntitySorter.class).withoutScope();
+        binder.bind(EntitySorterFactory.class).to(AshwoodEntitySorterFactory.class);
 
         binder.bind(Key.get(BatchTranslator.class, BatchTranslator.INSERT)).to(InsertBatchTranslator.class);
         binder.bind(Key.get(BatchTranslator.class, BatchTranslator.UPDATE)).to(UpdateBatchTranslator.class);
@@ -494,6 +429,7 @@ public class CoreModule implements Module {
 
         binder.bind(DataDomainFlushActionFactory.class).to(DefaultDataDomainFlushActionFactory.class);
         binder.bind(DbRowOpSorter.class).to(DefaultDbRowOpSorter.class);
+        binder.bind(DeleteDbRowOpFactory.class).to(HardDeleteDbRowOpFactory.class);
 
         binder.bind(CommitLogFilter.class).to(CommitLogFilter.class);
         binder.bind(CommitLogEntityFactory.class).to(IncludeAllCommitLogEntityFactory.class);

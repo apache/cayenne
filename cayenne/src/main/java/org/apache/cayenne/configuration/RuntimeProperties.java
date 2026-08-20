@@ -18,9 +18,11 @@
  ****************************************************************/
 package org.apache.cayenne.configuration;
 
+import java.util.Map;
+
 /**
  * Represents a properties map for a given {@link org.apache.cayenne.runtime.CayenneRuntime}.
- * 
+ *
  * @since 3.1
  */
 public interface RuntimeProperties {
@@ -43,4 +45,11 @@ public interface RuntimeProperties {
     long getLong(String key, long defaultValue);
 
     boolean getBoolean(String key, boolean defaultValue);
+
+    /**
+     * Returns a snapshot of the properties as a map, with the same key resolution rules as {@link #get(String)}.
+     *
+     * @since 5.0
+     */
+    Map<String, String> toMap();
 }

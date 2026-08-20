@@ -90,10 +90,10 @@ public class SelectQueryMainTab extends BaseQueryMainTab {
         PanelBuilder builder = new PanelBuilder(layout);
         builder.setDefaultDialogBorder();
 
-        builder.addSeparator("SelectQuery Settings", cc.xywh(1, 1, 3, 1));
-        builder.addLabel("Query Name:", cc.xy(1, 3));
+        builder.addSeparator("ObjectSelect Settings", cc.xywh(1, 1, 3, 1));
+        builder.addLabel("Name:", cc.xy(1, 3));
         builder.add(name, cc.xy(3, 3));
-        builder.addLabel("Query Root:", cc.xy(1, 5));
+        builder.addLabel("Root:", cc.xy(1, 5));
         builder.add(queryRoot, cc.xy(3, 5));
         builder.addLabel("Qualifier:", cc.xy(1, 7));
         builder.add(qualifier, cc.xy(3, 7));

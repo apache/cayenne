@@ -22,7 +22,6 @@ package org.apache.cayenne.dba.ingres;
 import org.apache.cayenne.dba.NativeColumnType;
 import org.apache.cayenne.access.DataNode;
 import org.apache.cayenne.access.sqlbuilder.sqltree.SQLTreeProcessor;
-import org.apache.cayenne.access.jdbc.PSParameter;
 import org.apache.cayenne.access.types.ExtendedType;
 import org.apache.cayenne.access.types.ExtendedTypeFactory;
 import org.apache.cayenne.access.types.ExtendedTypeMap;
@@ -31,6 +30,7 @@ import org.apache.cayenne.configuration.Constants;
 import org.apache.cayenne.configuration.RuntimeProperties;
 import org.apache.cayenne.dba.QuotingStrategy;
 import org.apache.cayenne.dba.JdbcAdapter;
+import org.apache.cayenne.dba.PkGenerator;
 import org.apache.cayenne.dba.TypesMapping;
 import org.apache.cayenne.di.Inject;
 import org.apache.cayenne.map.DbAttribute;
@@ -94,6 +94,14 @@ public class IngresAdapter extends JdbcAdapter {
     }
 
     /**
+     * Returns a {@link IngresPkGenerator}.
+     */
+    @Override
+    public PkGenerator createPkGenerator() {
+        return new IngresPkGenerator(this);
+    }
+
+    /**
      * @since 4.2
      */
     @Override
@@ -116,12 +124,13 @@ public class IngresAdapter extends JdbcAdapter {
     }
 
     @Override
-    public void bindParameter(PreparedStatement statement, PSParameter<?> parameter) throws Exception {
-
-        if (parameter.value() == null && (parameter.psType() == Types.BIT)) {
-            statement.setNull(parameter.psPosition(), Types.SMALLINT);
+    @SuppressWarnings("rawtypes")
+    protected void bind(PreparedStatement statement, Object value, int psPosition, int psType, int psScale,
+                        ExtendedType binder) throws Exception {
+        if (value == null && (psType == Types.BIT)) {
+            statement.setNull(psPosition, Types.SMALLINT);
         } else {
-            super.bindParameter(statement, parameter);
+            super.bind(statement, value, psPosition, psType, psScale, binder);
         }
     }
 

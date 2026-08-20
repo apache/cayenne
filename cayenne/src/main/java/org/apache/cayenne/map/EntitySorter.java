@@ -30,12 +30,12 @@ import java.util.List;
 public interface EntitySorter {
 
     /**
-     * Sets EntityResolver for this sorter. All entities present in the resolver will be
-     * used to determine sort ordering.
-     * 
-     * @since 3.1
+     * Rebuilds the internal index off the current state of the sorter's EntityResolver. Called when the set of
+     * entities changes.
+     *
+     * @since 5.0
      */
-    void setEntityResolver(EntityResolver resolver);
+    void reindex();
 
     /**
      * Sorts a list of DbEntities.

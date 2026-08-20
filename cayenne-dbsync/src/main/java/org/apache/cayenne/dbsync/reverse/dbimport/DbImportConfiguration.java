@@ -18,20 +18,15 @@
  ****************************************************************/
 package org.apache.cayenne.dbsync.reverse.dbimport;
 
-import java.io.File;
-import java.util.regex.Pattern;
-
 import org.apache.cayenne.CayenneRuntimeException;
-import org.apache.cayenne.configuration.DataNodeDescriptor;
 import org.apache.cayenne.configuration.DataSourceDescriptor;
+import org.apache.cayenne.datasource.CayenneDataSource;
 import org.apache.cayenne.dba.DbAdapter;
 import org.apache.cayenne.dbsync.filter.NameFilter;
 import org.apache.cayenne.dbsync.filter.NamePatternMatcher;
-import org.apache.cayenne.dbsync.naming.DbEntityNameStemmer;
 import org.apache.cayenne.dbsync.naming.DefaultObjectNameGenerator;
-import org.apache.cayenne.dbsync.naming.NoStemStemmer;
 import org.apache.cayenne.dbsync.naming.ObjectNameGenerator;
-import org.apache.cayenne.dbsync.naming.PatternStemmer;
+import org.apache.cayenne.dbsync.naming.PatternObjectNameGenerator;
 import org.apache.cayenne.dbsync.reverse.dbload.DbLoaderConfiguration;
 import org.apache.cayenne.dbsync.reverse.dbload.DbLoaderDelegate;
 import org.apache.cayenne.dbsync.reverse.dbload.DefaultDbLoaderDelegate;
@@ -40,6 +35,10 @@ import org.apache.cayenne.dbsync.reverse.dbload.LoggingDbLoaderDelegate;
 import org.apache.cayenne.dbsync.reverse.dbload.ModelMergeDelegate;
 import org.apache.cayenne.dbsync.reverse.filters.FiltersConfig;
 import org.slf4j.Logger;
+
+import javax.sql.DataSource;
+import java.io.File;
+import java.util.regex.Pattern;
 
 /**
  * @since 4.0
@@ -149,6 +148,7 @@ public class DbImportConfiguration {
 
     /**
      * does nothing
+     *
      * @param usePrimitives not used
      */
     @Deprecated(since = "5.0", forRemoval = true)
@@ -204,13 +204,9 @@ public class DbImportConfiguration {
             }
         }
 
-        return new DefaultObjectNameGenerator(createStemmer());
-    }
-
-    protected DbEntityNameStemmer createStemmer() {
-        return (stripFromTableNames == null || stripFromTableNames.length() == 0)
-                ? NoStemStemmer.getInstance()
-                : new PatternStemmer(stripFromTableNames, false);
+        return stripFromTableNames == null || stripFromTableNames.isEmpty()
+                ? new DefaultObjectNameGenerator()
+                : new PatternObjectNameGenerator(stripFromTableNames);
     }
 
     public String getDriver() {
@@ -245,12 +241,19 @@ public class DbImportConfiguration {
         dataSourceInfo.setDataSourceUrl(dataSourceUrl);
     }
 
-    public DataNodeDescriptor createDataNodeDescriptor() {
-        DataNodeDescriptor nodeDescriptor = new DataNodeDescriptor();
-        nodeDescriptor.setAdapterType(getAdapter());
-        nodeDescriptor.setDataSourceDescriptor(dataSourceInfo);
-
-        return nodeDescriptor;
+    /**
+     * Creates a DataSource for the JDBC connection parameters of this configuration. The JDBC driver is loaded with
+     * the thread context ClassLoader, that must include the user-supplied driver JAR. If no driver is specified, it is
+     * resolved from the URL by the JDBC DriverManager.
+     *
+     * @since 5.0
+     */
+    public DataSource createDataSource() {
+        return CayenneDataSource.of(dataSourceInfo.getDataSourceUrl())
+                .driverClass(dataSourceInfo.getJdbcDriver())
+                .userName(dataSourceInfo.getUserName())
+                .password(dataSourceInfo.getPassword())
+                .build();
     }
 
     public String getDataMapName() {

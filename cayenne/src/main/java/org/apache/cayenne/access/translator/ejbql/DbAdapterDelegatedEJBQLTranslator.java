@@ -19,6 +19,7 @@
 
 package org.apache.cayenne.access.translator.ejbql;
 
+import org.apache.cayenne.access.translator.EJBQLTranslator;
 import org.apache.cayenne.ejbql.EJBQLExpressionVisitor;
 
 /**

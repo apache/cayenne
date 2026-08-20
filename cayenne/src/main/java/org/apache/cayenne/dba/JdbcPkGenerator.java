@@ -21,8 +21,6 @@ package org.apache.cayenne.dba;
 
 import org.apache.cayenne.CayenneRuntimeException;
 import org.apache.cayenne.DataRow;
-import org.apache.cayenne.ObjectId;
-import org.apache.cayenne.ResultIterator;
 import org.apache.cayenne.access.DataNode;
 import org.apache.cayenne.access.OperationObserver;
 import org.apache.cayenne.access.types.ValueObjectType;
@@ -56,16 +54,10 @@ public class JdbcPkGenerator implements PkGenerator {
     public static final int DEFAULT_PK_CACHE_SIZE = 20;
     static final long DEFAULT_PK_START_VALUE = 200;
 
-    protected JdbcAdapter adapter;
+    protected final JdbcAdapter adapter;
     protected ConcurrentMap<String, Queue<Long>> pkCache = new ConcurrentHashMap<>();
     protected int pkCacheSize = DEFAULT_PK_CACHE_SIZE;
     protected long pkStartValue = DEFAULT_PK_START_VALUE;
-
-    /**
-     * @since 4.1
-     */
-    public JdbcPkGenerator() {
-    }
 
     public JdbcPkGenerator(JdbcAdapter adapter) {
         this.adapter = adapter;
@@ -178,7 +170,7 @@ public class JdbcPkGenerator implements PkGenerator {
      * number of objects returned from update.
      */
     public int runUpdate(DataNode node, String sql) {
-        adapter.getJdbcEventLogger().log(sql);
+        node.getSqlLogger().logMessage(sql);
 
         try (Connection con = node.getDataSource().getConnection()) {
             try (Statement upd = con.createStatement()) {
@@ -253,11 +245,6 @@ public class JdbcPkGenerator implements PkGenerator {
         }
     }
 
-    @Override
-    public void setAdapter(DbAdapter adapter) {
-        this.adapter = (JdbcAdapter) adapter;
-    }
-
     /**
      * Performs primary key generation ignoring cache. Generates a range of
      * primary keys as specified by "pkCacheSize" bean property.
@@ -321,20 +308,13 @@ public class JdbcPkGenerator implements PkGenerator {
         pkCache.clear();
     }
 
-    /**
-     * OperationObserver for primary key retrieval.
-     */
-    final class PkRetrieveProcessor implements OperationObserver {
+    static final class PkRetrieveProcessor implements OperationObserver {
 
         Number id;
         final String entityName;
 
         PkRetrieveProcessor(String entityName) {
             this.entityName = entityName;
-        }
-
-        public boolean isIteratedResult() {
-            return false;
         }
 
         public long getId() {
@@ -347,7 +327,7 @@ public class JdbcPkGenerator implements PkGenerator {
 
         public void nextRows(Query query, List<?> dataRows) {
             // process selected object, issue an update query
-            if (dataRows == null || dataRows.size() == 0) {
+            if (dataRows == null || dataRows.isEmpty()) {
                 throw new CayenneRuntimeException("Error generating PK : entity not supported: %s", entityName);
             }
 
@@ -355,7 +335,7 @@ public class JdbcPkGenerator implements PkGenerator {
                 throw new CayenneRuntimeException("Error generating PK : too many rows for entity: %s", entityName);
             }
 
-            DataRow lastPk = (DataRow) dataRows.get(0);
+            DataRow lastPk = (DataRow) dataRows.getFirst();
             id = (Number) lastPk.get("NEXT_ID");
         }
 
@@ -364,16 +344,6 @@ public class JdbcPkGenerator implements PkGenerator {
                 throw new CayenneRuntimeException("Error generating PK for entity '%s': update count is wrong - %d"
                         , entityName, resultCount);
             }
-        }
-
-        public void nextBatchCount(Query query, int[] resultCount) {
-        }
-
-        @Override
-        public void nextGeneratedRows(Query query, ResultIterator<?> keys, List<ObjectId> idsToUpdate) {
-        }
-
-        public void nextRows(Query q, ResultIterator it) {
         }
 
         public void nextQueryException(Query query, Exception ex) {

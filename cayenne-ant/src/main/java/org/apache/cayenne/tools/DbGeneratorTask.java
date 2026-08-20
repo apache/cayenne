@@ -20,12 +20,12 @@
 package org.apache.cayenne.tools;
 
 import org.apache.cayenne.access.DbGenerator;
-import org.apache.cayenne.datasource.DriverDataSource;
+import org.apache.cayenne.datasource.CayenneDataSource;
 import org.apache.cayenne.dba.DbAdapter;
 import org.apache.cayenne.dbsync.DbSyncModule;
 import org.apache.cayenne.di.DIBootstrap;
 import org.apache.cayenne.di.Injector;
-import org.apache.cayenne.log.NoopJdbcEventLogger;
+import org.apache.cayenne.log.NoopSQLLogger;
 import org.apache.cayenne.map.DataMap;
 import org.apache.cayenne.map.DbEntity;
 import org.apache.cayenne.dbsync.reverse.configuration.ToolsModule;
@@ -34,7 +34,7 @@ import org.slf4j.Logger;
 import org.apache.tools.ant.BuildException;
 import org.apache.tools.ant.Project;
 
-import java.sql.Driver;
+import javax.sql.DataSource;
 import java.util.Collections;
 
 /**
@@ -78,13 +78,16 @@ public class DbGeneratorTask extends CayenneTask {
 			DataMap dataMap = loadDataMap(injector);
 
 			// load driver taking custom CLASSPATH into account...
-			DriverDataSource dataSource = new DriverDataSource((Driver) Class.forName(driver).getDeclaredConstructor().newInstance(), url,
-					userName, password);
+			DataSource dataSource = CayenneDataSource.of(url)
+					.driverClass(driver)
+					.userName(userName)
+					.password(password)
+					.build();
 
 			DbAdapter adapter = getAdapter(injector, dataSource);
 
 			DbGenerator generator = new DbGenerator(adapter, dataMap, Collections.<DbEntity> emptyList(), null,
-					NoopJdbcEventLogger.getInstance());
+					NoopSQLLogger.getInstance());
 			generator.setShouldCreateFKConstraints(createFK);
 			generator.setShouldCreatePKSupport(createPK);
 			generator.setShouldCreateTables(createTables);

@@ -44,7 +44,7 @@ import org.apache.cayenne.runtime.CayenneRuntime;
 public class Main {
 
     public static void main(String[] args) {
-        CayenneRuntime cayenneRuntime = CayenneRuntime.builder()
+        CayenneRuntime cayenneRuntime = CayenneRuntime.of()
                         .addConfig("cayenne-project.xml")
                         .build();
         ObjectContext context = cayenneRuntime.newContext();
@@ -66,9 +66,14 @@ jars:
 [source,xml]
 ----
 <dependency>
-   <groupId>org.apache.derby</groupId>
+    <groupId>org.apache.derby</groupId>
     <artifactId>derby</artifactId>
-    <version>10.14.2.0</version>
+    <version>10.17.1.0</version>
+</dependency>
+<dependency>
+    <groupId>org.apache.derby</groupId>
+    <artifactId>derbytools</artifactId>
+    <version>10.17.1.0</version>
 </dependency>
 ----
 Now we are ready to run. Right click the "Main" class in IDEA and select "Run 'Main.main()'".

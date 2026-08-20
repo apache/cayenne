@@ -23,7 +23,7 @@ import org.apache.cayenne.map.EntityResolver;
 
 /**
  * A simple decorator for an iterated query.
- * @see org.apache.cayenne.access.DataContext#iterator(Select)
+ *
  * @since 5.0
  */
 public class IteratedQueryDecorator implements Query {

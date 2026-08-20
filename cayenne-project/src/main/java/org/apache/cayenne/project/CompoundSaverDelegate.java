@@ -20,7 +20,6 @@
 package org.apache.cayenne.project;
 
 import org.apache.cayenne.configuration.DataChannelDescriptor;
-import org.apache.cayenne.configuration.DataNodeDescriptor;
 import org.apache.cayenne.map.DataMap;
 import org.apache.cayenne.map.DbAttribute;
 import org.apache.cayenne.map.DbEntity;
@@ -55,14 +54,6 @@ class CompoundSaverDelegate implements SaverDelegate {
     public Void visitDataChannelDescriptor(DataChannelDescriptor channelDescriptor) {
         for(SaverDelegate delegate : delegates) {
             delegate.visitDataChannelDescriptor(channelDescriptor);
-        }
-        return null;
-    }
-
-    @Override
-    public Void visitDataNodeDescriptor(DataNodeDescriptor nodeDescriptor) {
-        for(SaverDelegate delegate : delegates) {
-            delegate.visitDataNodeDescriptor(nodeDescriptor);
         }
         return null;
     }

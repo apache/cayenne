@@ -23,7 +23,7 @@ import org.apache.cayenne.dba.NativeColumnType;
 import org.apache.cayenne.CayenneRuntimeException;
 import org.apache.cayenne.access.DataNode;
 import org.apache.cayenne.access.sqlbuilder.sqltree.SQLTreeProcessor;
-import org.apache.cayenne.access.translator.procedure.ProcedureTranslator;
+import org.apache.cayenne.access.translator.ProcedureTranslator;
 import org.apache.cayenne.access.types.CharType;
 import org.apache.cayenne.access.types.ExtendedType;
 import org.apache.cayenne.access.types.ExtendedTypeFactory;
@@ -34,6 +34,7 @@ import org.apache.cayenne.configuration.Constants;
 import org.apache.cayenne.configuration.RuntimeProperties;
 import org.apache.cayenne.dba.QuotingStrategy;
 import org.apache.cayenne.dba.JdbcAdapter;
+import org.apache.cayenne.dba.PkGenerator;
 import org.apache.cayenne.dba.TypesMapping;
 import org.apache.cayenne.di.Inject;
 import org.apache.cayenne.map.DbAttribute;
@@ -107,6 +108,14 @@ public class PostgresAdapter extends JdbcAdapter {
                 NativeColumnType.of(Types.VARCHAR, "varchar"),
                 NativeColumnType.of(Types.VARCHAR, "text").asUnconstrained(),
         };
+    }
+
+    /**
+     * Returns a {@link PostgresPkGenerator}.
+     */
+    @Override
+    public PkGenerator createPkGenerator() {
+        return new PostgresPkGenerator(this);
     }
 
     /**

@@ -55,8 +55,8 @@ public class DbImportIT extends BaseTaskIT {
 
     @Test
     public void emptyDbTaskSuccess() throws Exception {
-        prepareDerbyDatabase("empty_db"); // create empty db to avoid problems on Java 11
-        GradleRunner runner = createRunner("dbimport_empty_db", "cdbimport", "--info");
+        String dbUrl = prepareDerbyDatabase("empty_db");
+        GradleRunner runner = createRunner("dbimport_empty_db", "cdbimport", "--info", "-PdbUrl=" + dbUrl);
 
         BuildResult result = runner.build();
 
@@ -70,8 +70,8 @@ public class DbImportIT extends BaseTaskIT {
 
     @Test
     public void emptyDbTaskWithDependency() throws Exception {
-        prepareDerbyDatabase("empty_db"); // create empty db to avoid problems on Java 11
-        GradleRunner runner = createRunner("dbimport-with-project-dependency", "cdbimport", "--info");
+        String dbUrl = prepareDerbyDatabase("empty_db");
+        GradleRunner runner = createRunner("dbimport-with-project-dependency", "cdbimport", "--info", "-PdbUrl=" + dbUrl);
 
         BuildResult result = runner.build();
 
@@ -104,7 +104,7 @@ public class DbImportIT extends BaseTaskIT {
         assertTrue(result.getOutput().contains("Db Relationship : toMany (GALLERY.GALLERY_ID, PAINTING.GALLERY_ID)"));
         assertTrue(result.getOutput().contains("Create Table         ARTIST"));
         assertFalse(result.getOutput().contains("Create Table         PAINTING1"));
-        assertTrue(result.getOutput().contains("Skip relation: '.APP.ARTIST.ARTIST_ID <- .APP.PAINTING1.ARTIST_ID # 1'"));
+        assertTrue(result.getOutput().contains("Skip relation: '.APP.PAINTING1.ARTIST_ID -> .APP.ARTIST.ARTIST_ID # 1'"));
         assertTrue(result.getOutput().contains("Migration Complete Successfully."));
     }
 
@@ -152,7 +152,7 @@ public class DbImportIT extends BaseTaskIT {
         assertTrue(result.getOutput().contains("Db Relationship : toMany (GALLERY.GALLERY_ID, PAINTING.GALLERY_ID)"));
         assertTrue(result.getOutput().contains("Create Table         ARTIST"));
         assertFalse(result.getOutput().contains("Create Table         PAINTING1"));
-        assertTrue(result.getOutput().contains("Skip relation: '.APP.ARTIST.ARTIST_ID <- .APP.PAINTING1.ARTIST_ID # 1'"));
+        assertTrue(result.getOutput().contains("Skip relation: '.APP.PAINTING1.ARTIST_ID -> .APP.ARTIST.ARTIST_ID # 1'"));
         assertTrue(result.getOutput().contains("Migration Complete Successfully."));
     }
 

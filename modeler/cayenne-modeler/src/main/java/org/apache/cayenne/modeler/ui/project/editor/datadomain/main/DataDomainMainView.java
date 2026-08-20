@@ -22,21 +22,21 @@ package org.apache.cayenne.modeler.ui.project.editor.datadomain.main;
 import com.jgoodies.forms.builder.PanelBuilder;
 import com.jgoodies.forms.layout.CellConstraints;
 import com.jgoodies.forms.layout.FormLayout;
-import org.apache.cayenne.access.DataDomain;
 import org.apache.cayenne.configuration.DataChannelDescriptor;
+import org.apache.cayenne.configuration.runtime.DataDomainProvider;
 import org.apache.cayenne.modeler.event.display.DomainDisplayEvent;
 import org.apache.cayenne.modeler.event.display.DomainDisplayListener;
 import org.apache.cayenne.modeler.event.model.DomainEvent;
+import org.apache.cayenne.modeler.project.ProjectSession;
+import org.apache.cayenne.modeler.toolkit.ProjectPanel;
 import org.apache.cayenne.modeler.toolkit.checkbox.CMCheckBox;
 import org.apache.cayenne.modeler.toolkit.text.CMUndoableTextField;
-import org.apache.cayenne.modeler.toolkit.ProjectPanel;
-import org.apache.cayenne.modeler.project.ProjectSession;
-import java.util.Objects;
 import org.apache.cayenne.validation.ValidationException;
 
 import javax.swing.*;
 import java.awt.*;
 import java.util.Map;
+import java.util.Objects;
 
 /**
  * Panel for editing DataDomain.
@@ -76,7 +76,7 @@ public class DataDomainMainView extends ProjectPanel implements DomainDisplayLis
         builder.setDefaultDialogBorder();
 
         builder.addSeparator("DataDomain Configuration", cc.xywh(1, 1, 7, 1));
-        builder.addLabel("DataDomain Name:", cc.xy(1, 3));
+        builder.addLabel("Name:", cc.xy(1, 3));
         builder.add(name, cc.xywh(3, 3, 5, 1));
 
         builder.addLabel("Object Validation:", cc.xy(1, 5));
@@ -96,17 +96,17 @@ public class DataDomainMainView extends ProjectPanel implements DomainDisplayLis
         objectValidation.addItemListener(e -> {
             String value = objectValidation.isSelected() ? "true" : "false";
             setDomainProperty(
-                    DataDomain.VALIDATING_OBJECTS_ON_COMMIT_PROPERTY,
+                    DataDomainProvider.VALIDATING_OBJECTS_ON_COMMIT_PROPERTY,
                     value,
-                    Boolean.toString(DataDomain.VALIDATING_OBJECTS_ON_COMMIT_DEFAULT));
+                    DataDomainProvider.VALIDATING_OBJECTS_ON_COMMIT_DEFAULT);
         });
 
         sharedCache.addItemListener(e -> {
             String value = sharedCache.isSelected() ? "true" : "false";
             setDomainProperty(
-                    DataDomain.SHARED_CACHE_ENABLED_PROPERTY,
+                    DataDomainProvider.SHARED_CACHE_ENABLED_PROPERTY,
                     value,
-                    Boolean.toString(DataDomain.SHARED_CACHE_ENABLED_DEFAULT));
+                    DataDomainProvider.SHARED_CACHE_ENABLED_DEFAULT);
         });
 
     }
@@ -177,12 +177,12 @@ public class DataDomainMainView extends ProjectPanel implements DomainDisplayLis
         name.setText(domain.getName());
 
         objectValidation.setSelected(getDomainBooleanProperty(
-                DataDomain.VALIDATING_OBJECTS_ON_COMMIT_PROPERTY,
-                Boolean.toString(DataDomain.VALIDATING_OBJECTS_ON_COMMIT_DEFAULT)));
+                DataDomainProvider.VALIDATING_OBJECTS_ON_COMMIT_PROPERTY,
+                DataDomainProvider.VALIDATING_OBJECTS_ON_COMMIT_DEFAULT));
 
         sharedCache.setSelected(getDomainBooleanProperty(
-                DataDomain.SHARED_CACHE_ENABLED_PROPERTY,
-                Boolean.toString(DataDomain.SHARED_CACHE_ENABLED_DEFAULT)));
+                DataDomainProvider.SHARED_CACHE_ENABLED_PROPERTY,
+                DataDomainProvider.SHARED_CACHE_ENABLED_DEFAULT));
     }
 
     void setDomainName(String newName) {

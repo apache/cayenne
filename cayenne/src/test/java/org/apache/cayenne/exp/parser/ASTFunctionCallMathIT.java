@@ -94,4 +94,14 @@ public class ASTFunctionCallMathIT {
         Expression exp = ExpressionFactory.exp("10 - mod(sqrt(abs(-9)), 2)");
         assertEquals(BigDecimal.valueOf(9L), exp.evaluate(new Object()));
     }
+
+    @Test
+    public void aSTNegate() throws Exception {
+        TablePrimitives p1 = createPrimitives(-7);
+
+        // unary minus applied to a column translates to "-INT_COLUMN = ?"; verify it round-trips
+        TablePrimitives p2 = ObjectSelect.query(TablePrimitives.class)
+                .where(ExpressionFactory.exp("-intColumn = 7")).selectOne(env.context());
+        assertEquals(p1, p2);
+    }
 }

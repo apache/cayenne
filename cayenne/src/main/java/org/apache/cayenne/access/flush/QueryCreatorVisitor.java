@@ -19,18 +19,19 @@
 
 package org.apache.cayenne.access.flush;
 
-import java.util.ArrayList;
-import java.util.List;
-
 import org.apache.cayenne.access.flush.operation.DbRowOp;
 import org.apache.cayenne.access.flush.operation.DbRowOpVisitor;
 import org.apache.cayenne.access.flush.operation.DeleteDbRowOp;
 import org.apache.cayenne.access.flush.operation.InsertDbRowOp;
+import org.apache.cayenne.access.flush.operation.SoftDeleteDbRowOp;
 import org.apache.cayenne.access.flush.operation.UpdateDbRowOp;
 import org.apache.cayenne.query.BatchQuery;
 import org.apache.cayenne.query.DeleteBatchQuery;
 import org.apache.cayenne.query.InsertBatchQuery;
 import org.apache.cayenne.query.UpdateBatchQuery;
+
+import java.util.ArrayList;
+import java.util.List;
 
 /**
  * Visitor that creates batch queries.
@@ -59,12 +60,12 @@ class QueryCreatorVisitor implements DbRowOpVisitor<Void> {
     @Override
     public Void visitInsert(InsertDbRowOp dbRow) {
         InsertBatchQuery query;
-        if(lastRow == null || !lastRow.isSameBatch(dbRow)) {
+        if (lastRow == null || !lastRow.isSameBatch(dbRow)) {
             query = new InsertBatchQuery(dbRow.getEntity(), batchSize);
             queryList.add(query);
             lastBatch = query;
         } else {
-            query = (InsertBatchQuery)lastBatch;
+            query = (InsertBatchQuery) lastBatch;
         }
         query.add(dbRow.getValues().getSnapshot(), dbRow.getChangeId());
         lastRow = dbRow;
@@ -74,12 +75,12 @@ class QueryCreatorVisitor implements DbRowOpVisitor<Void> {
     @Override
     public Void visitUpdate(UpdateDbRowOp dbRow) {
         // skip empty update..
-        if(dbRow.getValues().isEmpty()) {
+        if (dbRow.getValues().isEmpty()) {
             return null;
         }
 
         UpdateBatchQuery query;
-        if(lastRow == null || !lastRow.isSameBatch(dbRow)) {
+        if (lastRow == null || !lastRow.isSameBatch(dbRow)) {
             query = new UpdateBatchQuery(
                     dbRow.getEntity(),
                     dbRow.getQualifier().getQualifierAttributes(),
@@ -91,7 +92,31 @@ class QueryCreatorVisitor implements DbRowOpVisitor<Void> {
             queryList.add(query);
             lastBatch = query;
         } else {
-            query = (UpdateBatchQuery)lastBatch;
+            query = (UpdateBatchQuery) lastBatch;
+        }
+        query.add(dbRow.getQualifier().getSnapshot(), dbRow.getValues().getSnapshot(), dbRow.getChangeId());
+        lastRow = dbRow;
+        return null;
+    }
+
+    @Override
+    public Void visitSoftDelete(SoftDeleteDbRowOp dbRow) {
+        // a soft delete is executed as an update of the soft-delete flag column
+        UpdateBatchQuery query;
+        if (lastRow == null || !lastRow.isSameBatch(dbRow)) {
+            query = new UpdateBatchQuery(
+                    dbRow.getEntity(),
+                    dbRow.getQualifier().getQualifierAttributes(),
+                    dbRow.getValues().getUpdatedAttributes(),
+                    dbRow.getQualifier().getNullQualifierNames(),
+                    batchSize
+            );
+            query.setUsingOptimisticLocking(dbRow.getQualifier().isUsingOptimisticLocking());
+            queryList.add(query);
+            lastBatch = query;
+        } else {
+            // dbRow.isSameBatch() guarantees the last batch is an update created by this method
+            query = (UpdateBatchQuery) lastBatch;
         }
         query.add(dbRow.getQualifier().getSnapshot(), dbRow.getValues().getSnapshot(), dbRow.getChangeId());
         lastRow = dbRow;
@@ -101,7 +126,7 @@ class QueryCreatorVisitor implements DbRowOpVisitor<Void> {
     @Override
     public Void visitDelete(DeleteDbRowOp dbRow) {
         DeleteBatchQuery query;
-        if(lastRow == null || !lastRow.isSameBatch(dbRow)) {
+        if (lastRow == null || !lastRow.isSameBatch(dbRow)) {
             query = new DeleteBatchQuery(
                     dbRow.getEntity(),
                     dbRow.getQualifier().getQualifierAttributes(),
@@ -112,7 +137,7 @@ class QueryCreatorVisitor implements DbRowOpVisitor<Void> {
             queryList.add(query);
             lastBatch = query;
         } else {
-            query = (DeleteBatchQuery)lastBatch;
+            query = (DeleteBatchQuery) lastBatch;
         }
         query.add(dbRow.getQualifier().getSnapshot());
         lastRow = dbRow;

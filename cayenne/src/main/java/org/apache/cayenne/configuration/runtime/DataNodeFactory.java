@@ -28,5 +28,5 @@ import org.apache.cayenne.configuration.DataNodeDescriptor;
  */
 public interface DataNodeFactory {
 
-    DataNode createDataNode(DataNodeDescriptor nodeDescriptor) throws Exception;
+    DataNode createDataNode(String dataChannelName, DataNodeDescriptor nodeDescriptor);
 }

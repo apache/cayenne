@@ -22,12 +22,12 @@ package org.apache.cayenne.modeler.ui.action;
 import org.apache.cayenne.configuration.DataChannelDescriptor;
 import org.apache.cayenne.dbsync.merge.context.EntityMergeSupport;
 import org.apache.cayenne.map.ObjEntity;
-import org.apache.cayenne.modeler.event.model.ObjEntityEvent;
 import org.apache.cayenne.modeler.Application;
+import org.apache.cayenne.modeler.event.display.ObjEntityDisplayEvent;
+import org.apache.cayenne.modeler.event.model.ObjEntityEvent;
 import org.apache.cayenne.modeler.project.ProjectSession;
 import org.apache.cayenne.modeler.toolkit.AppAction;
 import org.apache.cayenne.modeler.ui.entitysync.EntitySyncDialog;
-import org.apache.cayenne.modeler.event.display.ObjEntityDisplayEvent;
 
 import javax.swing.*;
 import java.awt.*;
@@ -77,8 +77,6 @@ public class ObjEntitySyncAction extends AppAction {
             if (merger == null) {
                 return;
             }
-
-            merger.setNameGenerator(new DbEntitySyncAction.PreserveRelationshipNameGenerator());
 
             if (merger.synchronizeWithDbEntity(entity)) {
                 session

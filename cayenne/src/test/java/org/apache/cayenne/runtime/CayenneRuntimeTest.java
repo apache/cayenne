@@ -20,22 +20,16 @@ package org.apache.cayenne.runtime;
 
 import org.apache.cayenne.DataChannel;
 import org.apache.cayenne.ObjectContext;
-import org.apache.cayenne.QueryResponse;
 import org.apache.cayenne.access.DataContext;
 import org.apache.cayenne.configuration.ObjectContextFactory;
 import org.apache.cayenne.di.Injector;
 import org.apache.cayenne.di.Module;
-import org.apache.cayenne.event.EventManager;
-import org.apache.cayenne.graph.GraphDiff;
-import org.apache.cayenne.map.EntityResolver;
-import org.apache.cayenne.query.Query;
 import org.apache.cayenne.tx.BaseTransaction;
 import org.apache.cayenne.tx.TransactionDescriptor;
 import org.apache.cayenne.tx.TransactionFactory;
 import org.apache.cayenne.tx.TransactionalOperation;
 import org.junit.jupiter.api.Test;
 
-import java.util.Collection;
 import java.util.Collections;
 
 import static java.util.Arrays.asList;
@@ -56,7 +50,7 @@ public class CayenneRuntimeTest {
 
         Module module = binder -> binder.bind(TransactionFactory.class).toInstance(txFactory);
 
-        CayenneRuntime runtime = CayenneRuntime.builder().addConfig("xxxx").addModule(module).build();
+        CayenneRuntime runtime = CayenneRuntime.of().addConfig("xxxx").addModule(module).build();
         try {
 
             final Object expectedResult = new Object();
@@ -85,42 +79,10 @@ public class CayenneRuntimeTest {
 
         CayenneRuntime runtime = new CayenneRuntime(asList(m1, m2));
 
-        Collection<Module> modules = runtime.getModules();
-        assertEquals(2, modules.size());
+        assertEquals(2, runtime.modules.size());
 
         assertTrue(configured[0]);
         assertTrue(configured[1]);
-    }
-
-    @Test
-    public void getDataChannel_CustomModule() {
-        final DataChannel channel = new DataChannel() {
-
-            public EntityResolver getEntityResolver() {
-                return null;
-            }
-
-            public EventManager getEventManager() {
-                return null;
-            }
-
-            public DataChannel getParent() {
-                return null;
-            }
-
-            public QueryResponse onQuery(ObjectContext originatingContext, Query query) {
-                return null;
-            }
-
-            public GraphDiff onSync(ObjectContext originatingContext, GraphDiff changes, int syncType) {
-                return null;
-            }
-        };
-
-        Module module = binder -> binder.bind(DataChannel.class).toInstance(channel);
-
-        CayenneRuntime runtime = new CayenneRuntime(Collections.singleton(module));
-        assertSame(channel, runtime.getChannel());
     }
 
     @Test

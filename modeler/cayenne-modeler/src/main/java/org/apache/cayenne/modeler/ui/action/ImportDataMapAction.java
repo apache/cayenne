@@ -78,9 +78,9 @@ public class ImportDataMapAction extends AppAction {
 
             ConfigurationNode root = getProjectSession().project().getRootNode();
             newMap.setName(NameBuilder
-                    .builder(newMap, root)
-                    .baseName(newMap.getName())
-                    .name());
+                    .of(newMap, root)
+                    .preferredName(newMap.getName())
+                    .build());
 
             Resource baseResource = ((DataChannelDescriptor) root).getConfigurationSource();
 

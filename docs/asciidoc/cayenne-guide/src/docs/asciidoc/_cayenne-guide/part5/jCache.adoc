@@ -46,7 +46,7 @@ For advanced configuration and management please use provider specific options a
 JCache module supports custom configuration files for cache managers.
 [source, java]
 ----
-CayenneRuntime runtime = CayenneRuntime.builder()
+CayenneRuntime runtime = CayenneRuntime.of()
         .addModule(binder -> JCacheModule.extend(binder)
             .setJCacheProviderConfig("cache-config.xml"));
 ----
@@ -55,7 +55,7 @@ Also JCache module supports contribution of pre-configured cache manager.
 
 [source, java]
 ----
-CayenneRuntime.builder()
+CayenneRuntime.of()
         .addModule(binder ->
                 binder.bind(CacheManager.class).toInstance(customCacheManager));
 ----
@@ -81,7 +81,7 @@ If you need custom configuration you can contribute configuration file to JCache
 
 [source, java]
 ----
-CayenneRuntime runtime = CayenneRuntime.builder()
+CayenneRuntime runtime = CayenneRuntime.of()
         .addModule(binder -> JCacheModule.extend(binder)
             .setJCacheProviderConfig("file:/ehcache.xml"));
 ----

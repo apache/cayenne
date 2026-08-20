@@ -20,7 +20,7 @@ In runtime Cayenne is accessed via `org.apache.cayenne.runtime.CayenneRuntime`. 
 
 [source, java]
 ----
-CayenneRuntime runtime = CayenneRuntime.builder()
+CayenneRuntime runtime = CayenneRuntime.of()
                 .addConfig("com/example/cayenne-project.xml")
                 .build();
 ----
@@ -34,7 +34,7 @@ CayenneRuntime encapsulates a single Cayenne stack. Most applications will just 
 Module extensions = binder ->
       CoreModule.extend(binder).setProperty(Constants.EXTERNAL_TX_PROPERTY, "true");
 
-CayenneRuntime runtime = CayenneRuntime.builder()
+CayenneRuntime runtime = CayenneRuntime.of()
       .addConfig("com/example/cayenne-project.xml")
       .addModule(extensions)
       .build();
@@ -55,7 +55,7 @@ CayenneRuntime requires at least one mapping project to run. But it can also tak
 
 [source, java]
 ----
-CayenneRuntime runtime = CayenneRuntime.builder()
+CayenneRuntime runtime = CayenneRuntime.of()
         .addConfig("com/example/cayenne-project.xml")
         .addConfig("org/foo/cayenne-library1.xml")
         .addConfig("org/foo/cayenne-library2.xml")

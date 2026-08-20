@@ -105,17 +105,21 @@ public class Util {
     }
 
     /**
-     * Reads file contents, returning it as a String, using System default line
-     * separator.
+     * Reads file contents, returning it as a String, using System default line separator.
+     *
+     * @deprecated unused
      */
+    @Deprecated(since = "5.0", forRemoval = true)
     public static String stringFromFile(File file) throws IOException {
         return stringFromFile(file, System.lineSeparator());
     }
 
     /**
-     * Reads file contents, returning it as a String, joining lines with
-     * provided separator.
+     * Reads file contents, returning it as a String, joining lines with provided separator.
+     *
+     * @deprecated unused
      */
+    @Deprecated(since = "5.0", forRemoval = true)
     public static String stringFromFile(File file, String joinWith) throws IOException {
         StringBuilder buf = new StringBuilder();
 
@@ -173,20 +177,43 @@ public class Util {
      * recursively "unwraps" it, and returns the result to the user.
      */
     public static Throwable unwindException(Throwable th) {
-        if (th instanceof SAXException sax) {
-            if (sax.getException() != null) {
-                return unwindException(sax.getException());
-            }
-        } else if (th instanceof SQLException) {
-            SQLException sql = (SQLException) th;
-            if (sql.getNextException() != null) {
-                return unwindException(sql.getNextException());
-            }
-        } else if (th.getCause() != null) {
-            return unwindException(th.getCause());
+        Throwable next = nextInChain(th);
+        return next != null ? unwindException(next) : th;
+    }
+
+    /**
+     * Unwinds an exception chain like {@link #unwindException(Throwable)}, but never unwinds past the innermost
+     * exception that is an instance of {@code upTo}. If the chain contains such an exception, the innermost matching one
+     * is returned; otherwise the fully unwound root cause is returned. This lets callers strip generic wrappers while
+     * preserving a meaningful exception type that itself wraps a lower-level cause.
+     *
+     * @since 5.0
+     */
+    public static Throwable unwindException(Throwable th, Class<? extends Throwable> upTo) {
+        Throwable next = nextInChain(th);
+        if (next == null) {
+            return th;
         }
 
-        return th;
+        Throwable deeper = unwindException(next, upTo);
+        if (upTo.isInstance(deeper)) {
+            return deeper;
+        }
+        return upTo.isInstance(th) ? th : deeper;
+    }
+
+    /**
+     * Returns the next exception to unwind to (a nested SAX exception, a chained SQL exception, or the cause), or null
+     * if this is the end of the chain.
+     */
+    private static Throwable nextInChain(Throwable th) {
+        if (th instanceof SAXException sax) {
+            return sax.getException();
+        } else if (th instanceof SQLException sql) {
+            return sql.getNextException();
+        } else {
+            return th.getCause();
+        }
     }
 
     /**
@@ -208,7 +235,12 @@ public class Util {
      * of the two objects is null.
      *
      * @since 1.1
+     * @deprecated since 5.0 in favor of the JDK's
+     *             {@link java.util.Comparator#nullsFirst(java.util.Comparator)} /
+     *             {@link java.util.Comparator#nullsLast(java.util.Comparator)} combined with
+     *             {@link java.util.Comparator#naturalOrder()}.
      */
+    @Deprecated(since = "5.0")
     public static <T> int nullSafeCompare(boolean nullsFirst, Comparable<T> o1, T o2) {
         if (o1 == null && o2 == null) {
             return 0;
@@ -242,10 +274,8 @@ public class Util {
                 }
             }
 
-            return true;
-        } else {
-            return true;
         }
+        return true;
     }
 
     /**
@@ -288,7 +318,9 @@ public class Util {
      * Capitalizes the first letter of the property name.
      *
      * @since 4.1
+     * @deprecated unused
      */
+    @Deprecated(since = "5.0", forRemoval = true)
     public static String capitalized(String name) {
         if (name == null || name.isEmpty()) {
             return name;
@@ -302,7 +334,9 @@ public class Util {
      * Returns string with lowercased first letter
      *
      * @since 4.2
+     * @deprecated unused
      */
+    @Deprecated(since = "5.0", forRemoval = true)
     public static String uncapitalized(String aString) {
         if (aString == null || aString.isEmpty()) {
             return aString;
@@ -354,10 +388,10 @@ public class Util {
     }
 
     /**
-     * @param url to read
-     * @return org.w3c.dom.Document from the given URL
      * @since 4.1
+     * @deprecated unused
      */
+    @Deprecated(since = "5.0", forRemoval = true)
     public static Document readDocument(URL url) {
         DocumentBuilderFactory documentBuilderFactory = DocumentBuilderFactory.newInstance();
         documentBuilderFactory.setNamespaceAware(false);
@@ -419,7 +453,7 @@ public class Util {
      *
      * @since 1.2
      * @deprecated use {@link java.util.stream.IntStream#range} with
-     *             {@link java.util.stream.Collectors#toMap} to build a map from parallel arrays
+     * {@link java.util.stream.Collectors#toMap} to build a map from parallel arrays
      */
     @Deprecated(since = "5.0", forRemoval = true)
     public static <K, V> Map<K, V> toMap(K[] keys, V[] values) {
@@ -544,11 +578,9 @@ public class Util {
     /**
      * Trims long strings substituting middle part with "...".
      *
-     * @param str       String to trim.
-     * @param maxLength maximum allowable length. Must be at least 5, or an
-     *                  IllegalArgumentException is thrown.
-     * @return String
+     * @deprecated unused
      */
+    @Deprecated(since = "5.0", forRemoval = true)
     public static String prettyTrim(String str, int maxLength) {
         if (maxLength < 5) {
             throw new IllegalArgumentException("Algorithm for 'prettyTrim' works only with length >= 5. "
@@ -601,7 +633,9 @@ public class Util {
 
     /**
      * @since 1.2
+     * @deprecated unused
      */
+    @Deprecated(since = "5.0", forRemoval = true)
     public static Pattern sqlPatternToPattern(String pattern, boolean ignoreCase) {
         String preprocessed = RegexUtil.sqlPatternToRegex(pattern);
 
@@ -687,7 +721,7 @@ public class Util {
             }
 
             if (len > 1) {
-                buf.append(token.substring(1, len));
+                buf.append(token, 1, len);
             }
         }
         return buf.toString();

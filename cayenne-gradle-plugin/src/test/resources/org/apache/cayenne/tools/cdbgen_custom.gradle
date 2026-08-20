@@ -29,7 +29,7 @@ task customCdbgen(type: cayenne.cdbgen) {
     dataSource {
         username 'sa'
         password ''
-        url 'jdbc:derby:build/testdb;create=true'
+        url dbUrl
         driver 'org.apache.derby.jdbc.EmbeddedDriver'
     }
 

@@ -57,17 +57,17 @@ class ExportedKeyLoader extends PerEntityLoader {
 
     @Override
     void processResultSet(DbEntity dbEntity, DbLoadDataStore map, ResultSet rs) throws SQLException {
-        ExportedKey key = new ExportedKey(rs);
+        ExportedKey key = ExportedKey.fromResultSet(rs);
 
-        DbEntity pkEntity = map.getDbEntity(key.getPk().getTable());
-        if (!key.getPk().validateEntity(pkEntity)) {
-            LOGGER.info("Skip relation: '{}' because table '{}' is not found or in different catalog/schema", key, key.getPk().getTable());
+        DbEntity pkEntity = map.getDbEntity(key.pk().table());
+        if (!key.pk().validateEntity(pkEntity)) {
+            LOGGER.info("Skip relation: '{}' because table '{}' is not found or in different catalog/schema", key, key.pk().table());
             return;
         }
 
-        DbEntity fkEntity = map.getDbEntity(key.getFk().getTable());
-        if (!key.getFk().validateEntity(fkEntity)) {
-            LOGGER.info("Skip relation: '{}' because table '{}' is not found or in different catalog/schema", key, key.getFk().getTable());
+        DbEntity fkEntity = map.getDbEntity(key.fk().table());
+        if (!key.fk().validateEntity(fkEntity)) {
+            LOGGER.info("Skip relation: '{}' because table '{}' is not found or in different catalog/schema", key, key.fk().table());
             return;
         }
 

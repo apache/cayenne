@@ -21,6 +21,7 @@ package org.apache.cayenne.access.translator.select;
 
 import org.apache.cayenne.CayenneRuntimeException;
 import org.apache.cayenne.access.sqlbuilder.sqltree.Node;
+import org.apache.cayenne.access.translator.SelectTranslator;
 import org.apache.cayenne.exp.parser.ASTPath;
 import org.apache.cayenne.exp.path.CayennePath;
 import org.apache.cayenne.exp.Expression;

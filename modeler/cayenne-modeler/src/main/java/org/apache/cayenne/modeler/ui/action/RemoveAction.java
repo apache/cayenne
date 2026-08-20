@@ -21,7 +21,6 @@ package org.apache.cayenne.modeler.ui.action;
 
 import org.apache.cayenne.configuration.ConfigurationNode;
 import org.apache.cayenne.configuration.DataChannelDescriptor;
-import org.apache.cayenne.configuration.DataNodeDescriptor;
 import org.apache.cayenne.map.Attribute;
 import org.apache.cayenne.map.CallbackMap;
 import org.apache.cayenne.map.DataMap;
@@ -41,7 +40,6 @@ import org.apache.cayenne.map.Relationship;
 import org.apache.cayenne.modeler.Application;
 import org.apache.cayenne.modeler.event.model.CallbackMethodEvent;
 import org.apache.cayenne.modeler.event.model.DataMapEvent;
-import org.apache.cayenne.modeler.event.model.DataNodeEvent;
 import org.apache.cayenne.modeler.event.model.DbAttributeEvent;
 import org.apache.cayenne.modeler.event.model.DbEntityEvent;
 import org.apache.cayenne.modeler.event.model.DbRelationshipEvent;
@@ -79,7 +77,7 @@ import java.util.ArrayList;
 import java.util.Collection;
 
 /**
- * Removes currently selected object from the project. This can be Domain, DataNode,
+ * Removes currently selected object from the project. This can be Domain,
  * Entity, Attribute or Relationship.
  */
 public class RemoveAction extends AppAction {
@@ -163,26 +161,9 @@ public class RemoveAction extends AppAction {
             }
         } else if (session.getSelectedDataMap() != null) {
             if (dialog.shouldDelete("data map", session.getSelectedDataMap().getName())) {
-
-                // In context of Data node just remove from Data Node
-                if (session.getSelectedDataNode() != null) {
-                    app.getUndoManager()
-                            .addEdit(new RemoveUndoableEdit(session, session.getSelectedDataNode(),
-                                    session.getSelectedDataMap()));
-                    removeDataMapFromDataNode(session.getSelectedDataNode(), session.getSelectedDataMap());
-                } else {
-                    // Not under Data Node, remove completely
-                    app.getUndoManager()
-                            .addEdit(new RemoveUndoableEdit(session, session.getSelectedDataMap()));
-                    removeDataMap(session.getSelectedDataMap());
-                }
-            }
-        } else if (session.getSelectedDataNode() != null) {
-            if (dialog.shouldDelete("data node", session.getSelectedDataNode().getName())) {
-
                 app.getUndoManager()
-                        .addEdit(new RemoveUndoableEdit(session, session.getSelectedDataNode()));
-                removeDataNode(session.getSelectedDataNode());
+                        .addEdit(new RemoveUndoableEdit(session, session.getSelectedDataMap()));
+                removeDataMap(session.getSelectedDataMap());
             }
         } else if (session.getSelectedPaths() != null) { // multiple deletion
             if (dialog.shouldDelete("selected objects")) {
@@ -349,22 +330,7 @@ ObjRelationshipEvent e = ObjRelationshipEvent.ofRemove(app.getFrame(), rel, enti
             unusedResources.add(mapURL);
         }
 
-        for (DataNodeDescriptor node : domain.getNodeDescriptors()) {
-            if (node.getDataMapNames().contains(map.getName())) {
-                removeDataMapFromDataNode(node, map);
-            }
-        }
-       
         session.fireDataMapEvent(e);
-    }
-
-    public void removeDataNode(DataNodeDescriptor node) {
-        ProjectSession session = getProjectSession();
-        DataChannelDescriptor domain = (DataChannelDescriptor) session.project().getRootNode();
-        DataNodeEvent e = DataNodeEvent.ofRemove(app.getFrame(), node);
-
-        domain.getNodeDescriptors().remove(node);
-        session.fireDataNodeEvent(e);
     }
 
     /**
@@ -438,17 +404,6 @@ ObjRelationshipEvent e = ObjRelationshipEvent.ofRemove(app.getFrame(), rel, enti
         session.fireEmbeddableEvent(e, map);
     }
 
-    public void removeDataMapFromDataNode(DataNodeDescriptor node, DataMap map) {
-        ProjectSession session = getProjectSession();
-
-        DataNodeEvent e = DataNodeEvent.ofChange(app.getFrame(), node);
-
-        node.getDataMapNames().remove(map.getName());
-
-        // Force reloading of the data node in the browse view
-        session.fireDataNodeEvent(e);
-    }
-
     /**
      * Returns <code>true</code> if last object in the path contains a removable object.
      */
@@ -456,7 +411,6 @@ ObjRelationshipEvent e = ObjRelationshipEvent.ofRemove(app.getFrame(), rel, enti
     public boolean enableForPath(ConfigurationNode object) {
         return (object instanceof DataChannelDescriptor)
                 || (object instanceof DataMap)
-                || (object instanceof DataNodeDescriptor)
                 || (object instanceof Entity)
                 || (object instanceof Attribute)
                 || (object instanceof Relationship)
@@ -476,17 +430,8 @@ ObjRelationshipEvent e = ObjRelationshipEvent.ofRemove(app.getFrame(), rel, enti
 
         ProjectSession session = getProjectSession();
         if (object instanceof DataMap) {
-            if (parentObject instanceof DataNodeDescriptor) {
-                undo = new RemoveUndoableEdit(session, (DataNodeDescriptor) parentObject, (DataMap) object);
-                removeDataMapFromDataNode((DataNodeDescriptor) parentObject, (DataMap) object);
-            } else {
-                // Not under Data Node, remove completely
-                undo = new RemoveUndoableEdit(session, (DataMap) object);
-                removeDataMap((DataMap) object);
-            }
-        } else if (object instanceof DataNodeDescriptor) {
-            undo = new RemoveUndoableEdit(session, (DataNodeDescriptor) object);
-            removeDataNode((DataNodeDescriptor) object);
+            undo = new RemoveUndoableEdit(session, (DataMap) object);
+            removeDataMap((DataMap) object);
         } else if (object instanceof DbEntity) {
             undo = new RemoveUndoableEdit(session, ((DbEntity) object).getDataMap(), (DbEntity) object);
             removeDbEntity(((DbEntity) object).getDataMap(), (DbEntity) object);

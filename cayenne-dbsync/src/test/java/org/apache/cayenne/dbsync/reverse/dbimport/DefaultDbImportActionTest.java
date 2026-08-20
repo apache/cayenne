@@ -20,8 +20,7 @@ package org.apache.cayenne.dbsync.reverse.dbimport;
 
 import org.apache.cayenne.configuration.DataChannelDescriptorLoader;
 import org.apache.cayenne.configuration.DataMapLoader;
-import org.apache.cayenne.configuration.runtime.DataSourceFactory;
-import org.apache.cayenne.configuration.runtime.DbAdapterFactory;
+import org.apache.cayenne.dbsync.reverse.configuration.DbAdapterFactory;
 import org.apache.cayenne.configuration.xml.DataChannelMetaData;
 import org.apache.cayenne.dba.DbAdapter;
 import org.apache.cayenne.dbsync.DbSyncModule;
@@ -34,9 +33,8 @@ import org.apache.cayenne.dbsync.merge.token.db.CreateTableToDb;
 import org.apache.cayenne.dbsync.merge.token.model.AddColumnToModel;
 import org.apache.cayenne.dbsync.merge.token.model.AddRelationshipToModel;
 import org.apache.cayenne.dbsync.merge.token.model.CreateTableToModel;
-import org.apache.cayenne.dbsync.naming.DefaultObjectNameGenerator;
-import org.apache.cayenne.dbsync.naming.NoStemStemmer;
 import org.apache.cayenne.dbsync.naming.ObjectNameGenerator;
+import org.apache.cayenne.dbsync.naming.DefaultObjectNameGenerator;
 import org.apache.cayenne.dbsync.reverse.configuration.ToolsModule;
 import org.apache.cayenne.dbsync.reverse.dbload.DbLoader;
 import org.apache.cayenne.dbsync.reverse.dbload.DbLoaderConfiguration;
@@ -51,12 +49,15 @@ import org.apache.cayenne.project.Project;
 import org.apache.cayenne.resource.Resource;
 import org.apache.cayenne.resource.URLResource;
 import org.apache.cayenne.util.Util;
-import org.slf4j.Logger;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
+import org.slf4j.Logger;
 
 import javax.sql.DataSource;
+import java.io.BufferedReader;
 import java.io.File;
+import java.io.FileReader;
+import java.io.IOException;
 import java.net.URL;
 import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
@@ -67,12 +68,8 @@ import java.util.LinkedList;
 import java.util.List;
 
 import static java.util.Arrays.asList;
-import static org.apache.cayenne.dbsync.merge.builders.ObjectMother.dbAttr;
-import static org.apache.cayenne.dbsync.merge.builders.ObjectMother.dbEntity;
-import static org.apache.cayenne.dbsync.merge.builders.ObjectMother.objAttr;
-import static org.apache.cayenne.dbsync.merge.builders.ObjectMother.objEntity;
+import static org.apache.cayenne.dbsync.merge.builders.ObjectMother.*;
 import static org.junit.jupiter.api.Assertions.*;
-import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.*;
 
@@ -107,10 +104,11 @@ public class DefaultDbImportActionTest {
     public void newDataMapImport() throws Exception {
 
         DbImportConfiguration config = mock(DbImportConfiguration.class);
+        when(config.createDataSource()).thenReturn(mock(DataSource.class));
         when(config.createMergeDelegate()).thenReturn(new DefaultModelMergeDelegate());
         when(config.getDbLoaderConfig()).thenReturn(new DbLoaderConfiguration());
         when(config.getTargetDataMap()).thenReturn(new File("xyz.map.xml"));
-        when(config.createNameGenerator()).thenReturn(new DefaultObjectNameGenerator(NoStemStemmer.getInstance()));
+        when(config.createNameGenerator()).thenReturn(new DefaultObjectNameGenerator());
         when(config.createMeaningfulPKFilter()).thenReturn(NamePatternMatcher.EXCLUDE_ALL);
 
         DbLoader dbLoader = new DbLoader(mockAdapter, mockConnection, config.getDbLoaderConfig(), mockDelegate, mockNameGenerator) {
@@ -143,10 +141,11 @@ public class DefaultDbImportActionTest {
 
         DbImportConfiguration config = mock(DbImportConfiguration.class);
 
+        when(config.createDataSource()).thenReturn(mock(DataSource.class));
         when(config.getTargetDataMap()).thenReturn(FILE_STUB);
         when(config.createMergeDelegate()).thenReturn(new DefaultModelMergeDelegate());
         when(config.getDbLoaderConfig()).thenReturn(new DbLoaderConfiguration());
-        when(config.createNameGenerator()).thenReturn(new DefaultObjectNameGenerator(NoStemStemmer.getInstance()));
+        when(config.createNameGenerator()).thenReturn(new DefaultObjectNameGenerator());
         when(config.createMeaningfulPKFilter()).thenReturn(NamePatternMatcher.EXCLUDE_ALL);
 
         DbLoader dbLoader = new DbLoader(mockAdapter, mockConnection, config.getDbLoaderConfig(), mockDelegate, mockNameGenerator) {
@@ -209,6 +208,7 @@ public class DefaultDbImportActionTest {
     @Test
     public void importWithoutChanges() throws Exception {
         DbImportConfiguration config = mock(DbImportConfiguration.class);
+        when(config.createDataSource()).thenReturn(mock(DataSource.class));
         when(config.getTargetDataMap()).thenReturn(FILE_STUB);
         when(config.createMergeDelegate()).thenReturn(new DefaultModelMergeDelegate());
         when(config.getDbLoaderConfig()).thenReturn(new DbLoaderConfiguration());
@@ -249,6 +249,7 @@ public class DefaultDbImportActionTest {
         doThrow(new SQLException()).when(dbLoader).load();
 
         DbImportConfiguration params = mock(DbImportConfiguration.class);
+        when(params.createDataSource()).thenReturn(mock(DataSource.class));
 
         FileProjectSaver projectSaver = mock(FileProjectSaver.class);
         doNothing().when(projectSaver).save(any(Project.class));
@@ -276,16 +277,13 @@ public class DefaultDbImportActionTest {
         DbAdapterFactory adapterFactory = mock(DbAdapterFactory.class);
         when(adapterFactory.createAdapter(any(), any())).thenReturn(dbAdapter);
 
-        DataSourceFactory dataSourceFactory = mock(DataSourceFactory.class);
-        DataSource mock = mock(DataSource.class);
-        when(dataSourceFactory.getDataSource(any())).thenReturn(mock);
         DataChannelMetaData metaData = mock(DataChannelMetaData.class);
         MergerTokenFactoryProvider mergerTokenFactoryProvider = mock(MergerTokenFactoryProvider.class);
         when(mergerTokenFactoryProvider.get(any())).thenReturn(new DefaultMergerTokenFactory());
 
         DataChannelDescriptorLoader dataChannelDescriptorLoader = mock(DataChannelDescriptorLoader.class);
 
-        return new DefaultDbImportAction(log, projectSaver, dataSourceFactory, adapterFactory, mapLoader, mergerTokenFactoryProvider, dataChannelDescriptorLoader, metaData) {
+        return new DefaultDbImportAction(log, projectSaver, adapterFactory, mapLoader, mergerTokenFactoryProvider, dataChannelDescriptorLoader, metaData) {
 
             protected DbLoader createDbLoader(DbAdapter adapter,
                                                Connection connection,
@@ -324,7 +322,7 @@ public class DefaultDbImportActionTest {
 
         assertTrue(out.isFile());
 
-        String contents = Util.stringFromFile(out);
+        String contents = stringFromFile(out);
         assertTrue(contents.contains("project-version=\""), "Has no project version saved");
     }
 
@@ -356,10 +354,10 @@ public class DefaultDbImportActionTest {
         assertTrue(dataMapFile.isFile());
         assertTrue(projectFile.isFile());
 
-        String dataMapContents = Util.stringFromFile(dataMapFile);
+        String dataMapContents = stringFromFile(dataMapFile);
         assertTrue(dataMapContents.contains("project-version=\""), "Has no project version saved");
 
-        String projectContents = Util.stringFromFile(projectFile);
+        String projectContents = stringFromFile(projectFile);
         assertTrue(projectContents.contains("project-version=\""), "Has no project version saved");
         assertTrue(projectContents.contains("<map name=\"testSaveLoaded2\"/>"), "Has no datamap in project");
     }
@@ -376,10 +374,10 @@ public class DefaultDbImportActionTest {
         assertFalse(projectFile.exists());
 
         Files.write(projectFile.toPath(), ("<?xml version=\"1.0\" encoding=\"utf-8\"?>\n" +
-                "<domain xmlns=\"http://cayenne.apache.org/schema/12/domain\"\n" +
+                "<domain xmlns=\"http://cayenne.apache.org/schema/13/domain\"\n" +
                 "\t xmlns:xsi=\"http://www.w3.org/2001/XMLSchema-instance\"\n" +
-                "\t xsi:schemaLocation=\"http://cayenne.apache.org/schema/12/domain https://cayenne.apache.org/schema/12/domain.xsd\"\n" +
-                "\t project-version=\"12\">\n" +
+                "\t xsi:schemaLocation=\"http://cayenne.apache.org/schema/13/domain https://cayenne.apache.org/schema/13/domain.xsd\"\n" +
+                "\t project-version=\"13\">\n" +
                 "</domain>").getBytes(StandardCharsets.UTF_8));
         assertTrue(projectFile.isFile());
 
@@ -401,10 +399,10 @@ public class DefaultDbImportActionTest {
         assertTrue(dataMapFile.isFile());
         assertTrue(projectFile.isFile());
 
-        String dataMapContents = Util.stringFromFile(dataMapFile);
+        String dataMapContents = stringFromFile(dataMapFile);
         assertTrue(dataMapContents.contains("project-version=\""), "Has no project version saved");
 
-        String projectContents = Util.stringFromFile(projectFile);
+        String projectContents = stringFromFile(projectFile);
         assertTrue(projectContents.contains("project-version=\""), "Has no project version saved");
         assertTrue(projectContents.contains("<map name=\"testSaveLoaded3\"/>"), "Has no datamap in project");
     }
@@ -421,10 +419,10 @@ public class DefaultDbImportActionTest {
         assertFalse(projectFile.exists());
 
         Files.write(projectFile.toPath(), ("<?xml version=\"1.0\" encoding=\"utf-8\"?>\n" +
-                "<domain xmlns=\"http://cayenne.apache.org/schema/12/domain\"\n" +
+                "<domain xmlns=\"http://cayenne.apache.org/schema/13/domain\"\n" +
                 "\t xmlns:xsi=\"http://www.w3.org/2001/XMLSchema-instance\"\n" +
-                "\t xsi:schemaLocation=\"http://cayenne.apache.org/schema/12/domain https://cayenne.apache.org/schema/12/domain.xsd\"\n" +
-                "\t project-version=\"12\">\n" +
+                "\t xsi:schemaLocation=\"http://cayenne.apache.org/schema/13/domain https://cayenne.apache.org/schema/13/domain.xsd\"\n" +
+                "\t project-version=\"13\">\n" +
                 "\t<map name=\"testSaveLoaded4\"/>\n" +
                 "</domain>").getBytes(StandardCharsets.UTF_8));
         assertTrue(projectFile.isFile());
@@ -440,10 +438,10 @@ public class DefaultDbImportActionTest {
         assertFalse(dataMapFile.exists());
 
         Files.write(dataMapFile.toPath(), ("<?xml version=\"1.0\" encoding=\"utf-8\"?>\n" +
-                "<data-map xmlns=\"http://cayenne.apache.org/schema/12/modelMap\"\n" +
+                "<data-map xmlns=\"http://cayenne.apache.org/schema/13/modelMap\"\n" +
                 "\t xmlns:xsi=\"http://www.w3.org/2001/XMLSchema-instance\"\n" +
-                "\t xsi:schemaLocation=\"http://cayenne.apache.org/schema/12/modelMap https://cayenne.apache.org/schema/12/modelMap.xsd\"\n" +
-                "\t project-version=\"12\">\n" +
+                "\t xsi:schemaLocation=\"http://cayenne.apache.org/schema/13/modelMap https://cayenne.apache.org/schema/13/modelMap.xsd\"\n" +
+                "\t project-version=\"13\">\n" +
                 "\t<db-entity name=\"test\">\n" +
                 "\t\t<db-attribute name=\"test\" type=\"INT\"/>\n" +
                 "\t</db-entity>\n" +
@@ -458,11 +456,11 @@ public class DefaultDbImportActionTest {
         assertTrue(dataMapFile.isFile());
         assertTrue(projectFile.isFile());
 
-        String dataMapContents = Util.stringFromFile(dataMapFile);
+        String dataMapContents = stringFromFile(dataMapFile);
         assertTrue(dataMapContents.contains("project-version=\""), "Has no project version saved");
         assertFalse(dataMapContents.contains("<db-entity"));
 
-        String projectContents = Util.stringFromFile(projectFile);
+        String projectContents = stringFromFile(projectFile);
         assertTrue(projectContents.contains("project-version=\""), "Has no project version saved");
         assertEquals(1, Util.countMatches(projectContents, "<map name=\"testSaveLoaded4\"/>"), "Has no or too many datamaps in project");
     }
@@ -485,5 +483,17 @@ public class DefaultDbImportActionTest {
             res.add(mergerToken.getClass().getSimpleName());
         }
         return res;
+    }
+
+    private static String stringFromFile(File file) throws IOException {
+        StringBuilder buf = new StringBuilder();
+
+        try (BufferedReader in = new BufferedReader(new FileReader(file))) {
+            String line;
+            while ((line = in.readLine()) != null) {
+                buf.append(line).append(System.lineSeparator());
+            }
+        }
+        return buf.toString();
     }
 }

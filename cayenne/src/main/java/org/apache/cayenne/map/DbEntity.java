@@ -67,6 +67,13 @@ public class DbEntity extends Entity<DbEntity, DbAttribute, DbRelationship>
     protected Expression qualifier;
 
     /**
+     * Lazily computed, cached mnemonic base for table aliases in generated SQL.
+     *
+     * @since 5.0
+     */
+    private volatile String tableAliasBase;
+
+    /**
      * Creates an unnamed DbEntity.
      */
     public DbEntity() {
@@ -131,6 +138,63 @@ public class DbEntity extends Entity<DbEntity, DbAttribute, DbRelationship>
         return ((catalog != null && !catalog.isEmpty()) ? catalog + '.' : "")
                 + ((schema != null && !schema.isEmpty()) ? schema + '.' : "")
                 + name;
+    }
+
+    @Override
+    public void setName(String name) {
+        super.setName(name);
+        // invalidate the cached alias base, as it is derived from the name
+        this.tableAliasBase = null;
+    }
+
+    /**
+     * Returns a short mnemonic base used to build table aliases in generated SQL. It is derived from
+     * the entity name treated as "snake case", taking the first letter of each name part, in lower
+     * case (e.g. "USER_ROLE" becomes "ur", "ARTIST" becomes "a"). If the result collides with a SQL
+     * reserved word (e.g. "IV_SUB1" would become "is"), a numeric suffix is appended to make it safe.
+     * The value is computed once and cached. Actual aliases in a query may append a further numeric
+     * suffix to this base to resolve conflicts between tables.
+     *
+     * @since 5.0
+     */
+    public String getTableAliasBase() {
+        String result = tableAliasBase;
+        if (result == null) {
+            result = computeTableAliasBase(name);
+            tableAliasBase = result;
+        }
+        return result;
+    }
+
+    private static String computeTableAliasBase(String name) {
+        if (name == null || name.isEmpty()) {
+            return "t";
+        }
+
+        StringBuilder base = new StringBuilder();
+        boolean newPart = true;
+        for (int i = 0; i < name.length(); i++) {
+            char c = name.charAt(i);
+            if (c == '_') {
+                newPart = true;
+            } else if (newPart) {
+                base.append(Character.toLowerCase(c));
+                newPart = false;
+            }
+        }
+
+        // fall back to a safe alias if the result is empty or not a valid identifier start
+        if (base.length() == 0 || !Character.isLetter(base.charAt(0))) {
+            return "t";
+        }
+
+        // avoid aliases that collide with a SQL reserved word; a numeric suffix always resolves it,
+        // as no reserved word ends with a digit
+        String result = base.toString();
+        for (int i = 1; SqlReservedWords.isReserved(result); i++) {
+            result = base.toString() + i;
+        }
+        return result;
     }
 
     /**

@@ -18,12 +18,12 @@
  ****************************************************************/
 package org.apache.cayenne.runtime;
 
-import org.apache.cayenne.access.DataDomain;
 import org.apache.cayenne.configuration.Constants;
+import org.apache.cayenne.configuration.DataNodeDescriptor;
+import org.apache.cayenne.configuration.DataNodeDescriptors;
 import org.apache.cayenne.configuration.runtime.CoreModule;
-import org.apache.cayenne.configuration.runtime.DataSourceFactory;
 import org.apache.cayenne.configuration.runtime.CoreModuleExtender;
-import org.apache.cayenne.datasource.DataSourceBuilder;
+import org.apache.cayenne.datasource.CayenneDataSource;
 import org.apache.cayenne.di.Module;
 import org.apache.cayenne.di.spi.ModuleLoader;
 
@@ -31,8 +31,11 @@ import javax.sql.DataSource;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
+import java.util.HashMap;
 import java.util.LinkedHashSet;
 import java.util.List;
+import java.util.Map;
+import java.util.Set;
 
 /**
  * A convenience class to assemble custom {@link CayenneRuntime}. It allows to easily
@@ -48,16 +51,35 @@ public class CayenneRuntimeBuilder {
     private final String name;
     private final Collection<String> configs;
     private final List<Module> modules;
-    private DataSourceFactory dataSourceFactory;
-    private String jdbcUrl;
-    private String jdbcDriver;
-    private String jdbcUser;
-    private String jdbcPassword;
-    private int jdbcMinConnections;
-    private int jdbcMaxConnections;
-    private long maxQueueWaitTime;
-    private String validationQuery;
     private boolean autoLoadModules;
+
+    private int autoNodeSuffix;
+    private DataNodeDescriptor defaultNode;
+    private final Map<DataNodeDescriptor, Set<String>> mapsByNode;
+
+    @Deprecated
+    private String jdbcUrl;
+
+    @Deprecated
+    private String jdbcDriver;
+
+    @Deprecated
+    private String jdbcUser;
+
+    @Deprecated
+    private String jdbcPassword;
+
+    @Deprecated
+    private int jdbcMinConnections;
+
+    @Deprecated
+    private int jdbcMaxConnections;
+
+    @Deprecated
+    private long maxQueueWaitTime;
+
+    @Deprecated
+    private String validationQuery;
 
     /**
      * Creates a builder with a fixed name of the DataDomain of the resulting
@@ -69,14 +91,12 @@ public class CayenneRuntimeBuilder {
         this.modules = new ArrayList<>();
         this.name = name;
         this.autoLoadModules = true;
+        this.mapsByNode = new HashMap<>();
     }
 
     /**
-     * Disables DI module auto-loading.
-     * By default, auto-loading is enabled based on {@link ModuleLoader} service provider interface.
-     * If you decide to disable auto-loading, make sure you provide all the modules that you need.
-     *
-     * @return this builder instance.
+     * Disables DI module autoloading. By default, autoloading is enabled based on {@link ModuleLoader} service provider
+     * interface. If you decide to disable it, make sure you explicitly provide all the modules that you need.
      */
     public CayenneRuntimeBuilder disableModulesAutoLoading() {
         this.autoLoadModules = false;
@@ -84,20 +104,48 @@ public class CayenneRuntimeBuilder {
     }
 
     /**
-     * Sets a DataSource that will override any DataSources found in the
-     * mapping. If the mapping contains no DataNodes, and the DataSource is set
-     * with this method, the builder would create a single default DataNode.
-     *
-     * @see DataSourceBuilder
+     * @deprecated in favor of {@link #defaultDataNode(DataSource)}
      */
+    @Deprecated(since = "5.0", forRemoval = true)
     public CayenneRuntimeBuilder dataSource(DataSource dataSource) {
-        this.dataSourceFactory = new FixedDataSourceFactory(dataSource);
+        return defaultDataNode(dataSource);
+    }
+
+    /**
+     * Will create a default DataNode based on the provided DataSource that will handle all DataMaps not explicitly
+     * linked to other DataNodes.
+     */
+    public CayenneRuntimeBuilder defaultDataNode(DataSource dataSource) {
+        return defaultDataNode(DataNodeDescriptor.of(nextAutoNodeName()).dataSource(dataSource).build());
+    }
+
+    public CayenneRuntimeBuilder addDataNode(DataNodeDescriptor node, String... linkedDataMaps) {
+        mapsByNode.put(node, Set.of(linkedDataMaps));
         return this;
+    }
+
+    public CayenneRuntimeBuilder addDataNode(DataSource dataSource, String... linkedDataMaps) {
+        DataNodeDescriptor node = DataNodeDescriptor.of(nextAutoNodeName()).dataSource(dataSource).build();
+        mapsByNode.put(node, Set.of(linkedDataMaps));
+        return this;
+    }
+
+    public CayenneRuntimeBuilder defaultDataNode(DataNodeDescriptor defaultNode) {
+        this.defaultNode = defaultNode;
+        return this;
+    }
+
+    private String nextAutoNodeName() {
+        String base = this.name != null ? this.name : CayenneRuntimeBuilder.DEFAULT_NAME;
+        return base + "-" + autoNodeSuffix++;
     }
 
     /**
      * Sets a database URL for the default DataSource.
+     *
+     * @deprecated in favor of {@link #defaultDataNode(DataSource)}
      */
+    @Deprecated(since = "5.0", forRemoval = true)
     public CayenneRuntimeBuilder url(String url) {
         this.jdbcUrl = url;
         return this;
@@ -105,7 +153,10 @@ public class CayenneRuntimeBuilder {
 
     /**
      * Sets a driver Java class for the default DataSource.
+     *
+     * @deprecated in favor of {@link #defaultDataNode(DataSource)}
      */
+    @Deprecated(since = "5.0", forRemoval = true)
     public CayenneRuntimeBuilder jdbcDriver(String driver) {
         this.jdbcDriver = driver;
         return this;
@@ -116,12 +167,18 @@ public class CayenneRuntimeBuilder {
      *
      * @param validationQuery a SQL string that returns some result. It will be used to
      *                        validate connections in the pool.
+     * @deprecated in favor of {@link #defaultDataNode(DataSource)}
      */
+    @Deprecated(since = "5.0", forRemoval = true)
     public CayenneRuntimeBuilder validationQuery(String validationQuery) {
         this.validationQuery = validationQuery;
         return this;
     }
 
+    /**
+     * @deprecated in favor of {@link #defaultDataNode(DataSource)}
+     */
+    @Deprecated(since = "5.0", forRemoval = true)
     public CayenneRuntimeBuilder maxQueueWaitTime(long maxQueueWaitTime) {
         this.maxQueueWaitTime = maxQueueWaitTime;
         return this;
@@ -129,7 +186,10 @@ public class CayenneRuntimeBuilder {
 
     /**
      * Sets a user name for the default DataSource.
+     *
+     * @deprecated in favor of {@link #defaultDataNode(DataSource)}
      */
+    @Deprecated(since = "5.0", forRemoval = true)
     public CayenneRuntimeBuilder user(String user) {
         this.jdbcUser = user;
         return this;
@@ -137,17 +197,28 @@ public class CayenneRuntimeBuilder {
 
     /**
      * Sets a password for the default DataSource.
+     *
+     * @deprecated in favor of {@link #defaultDataNode(DataSource)}
      */
+    @Deprecated(since = "5.0", forRemoval = true)
     public CayenneRuntimeBuilder password(String password) {
         this.jdbcPassword = password;
         return this;
     }
 
+    /**
+     * @deprecated in favor of {@link #defaultDataNode(DataSource)}
+     */
+    @Deprecated(since = "5.0", forRemoval = true)
     public CayenneRuntimeBuilder minConnections(int minConnections) {
         this.jdbcMinConnections = minConnections;
         return this;
     }
 
+    /**
+     * @deprecated in favor of {@link #defaultDataNode(DataSource)}
+     */
+    @Deprecated(since = "5.0", forRemoval = true)
     public CayenneRuntimeBuilder maxConnections(int maxConnections) {
         this.jdbcMaxConnections = maxConnections;
         return this;
@@ -184,13 +255,13 @@ public class CayenneRuntimeBuilder {
 
         Collection<Module> allModules = new ArrayList<>();
 
-        // first load default or auto-loaded modules...
+        // first load default or autoloaded modules...
         allModules.addAll(autoLoadModules ? autoLoadedModules() : defaultModules());
 
-        // custom modules override default and auto-loaded modules...
+        // custom modules override default and autoloaded modules...
         allModules.addAll(this.modules);
 
-        // builder modules override default, auto-loaded and custom modules...
+        // builder modules override default, autoloaded and custom modules...
         allModules.addAll(builderModules());
 
         return new CayenneRuntime(allModules);
@@ -209,8 +280,8 @@ public class CayenneRuntimeBuilder {
         Collection<Module> modules = new ArrayList<>();
 
         if (!configs.isEmpty()) {
-            modules.add(binder -> {
-                CoreModuleExtender extender = CoreModule.extend(binder);
+            modules.add(b -> {
+                CoreModuleExtender extender = CoreModule.extend(b);
                 configs.forEach(extender::addProjectLocation);
             });
         }
@@ -224,53 +295,33 @@ public class CayenneRuntimeBuilder {
         }
 
         if (nameOverride != null) {
-
-            final String finalNameOverride = nameOverride;
-            modules.add(binder -> CoreModule.extend(binder).setProperty(Constants.DOMAIN_NAME_PROPERTY, finalNameOverride));
+            String finalNameOverride = nameOverride;
+            modules.add(b -> CoreModule.extend(b).setProperty(Constants.DOMAIN_NAME_PROPERTY, finalNameOverride));
         }
 
-        if (dataSourceFactory != null) {
-
-            modules.add(binder -> {
-                binder.bind(DataDomain.class).toProvider(SyntheticNodeDataDomainProvider.class);
-                binder.bind(DataSourceFactory.class).toInstance(dataSourceFactory);
-            });
-
-        }
-        // URL and driver are the minimal requirement for DelegatingDataSourceFactory to work
-        else if (jdbcUrl != null && jdbcDriver != null) {
-            modules.add(binder -> {
-                binder.bind(DataDomain.class).toProvider(SyntheticNodeDataDomainProvider.class);
-                CoreModuleExtender extender = CoreModule.extend(binder)
-                        .setProperty(Constants.JDBC_DRIVER_PROPERTY, jdbcDriver)
-                        .setProperty(Constants.JDBC_URL_PROPERTY, jdbcUrl);
-
-                if (jdbcUser != null) {
-                    extender.setProperty(Constants.JDBC_USERNAME_PROPERTY, jdbcUser);
-                }
-
-                if (jdbcPassword != null) {
-                    extender.setProperty(Constants.JDBC_PASSWORD_PROPERTY, jdbcPassword);
-                }
-
-                if (jdbcMinConnections > 0) {
-                    extender.setProperty(Constants.JDBC_MIN_CONNECTIONS_PROPERTY, Integer.toString(jdbcMinConnections));
-                }
-
-                if (jdbcMaxConnections > 0) {
-                    extender.setProperty(Constants.JDBC_MAX_CONNECTIONS_PROPERTY, Integer.toString(jdbcMaxConnections));
-                }
-
-                if (maxQueueWaitTime > 0) {
-                    extender.setProperty(Constants.JDBC_MAX_QUEUE_WAIT_TIME, Long.toString(maxQueueWaitTime));
-                }
-
-                if (validationQuery != null) {
-                    extender.setProperty(Constants.JDBC_VALIDATION_QUERY_PROPERTY, validationQuery);
-                }
-            });
-        }
+        DataNodeDescriptor defaultNode = this.defaultNode != null ? this.defaultNode : defaultNodeFromConnectionInfo();
+        modules.add(b -> b.bind(DataNodeDescriptors.class).toInstance(new DataNodeDescriptors(mapsByNode, defaultNode)));
 
         return modules;
+    }
+
+    private DataNodeDescriptor defaultNodeFromConnectionInfo() {
+
+        if (jdbcUrl == null) {
+            return null;
+        }
+
+        CayenneDataSource.Builder builder = CayenneDataSource.of(jdbcUrl)
+                .driverClass(jdbcDriver)
+                .userName(jdbcUser)
+                .password(jdbcPassword)
+                .maxQueueWaitTime(maxQueueWaitTime)
+                .validationQuery(validationQuery);
+
+        if (jdbcMinConnections >= 0 && jdbcMaxConnections >= 0) {
+            builder.pool(jdbcMinConnections, jdbcMaxConnections);
+        }
+
+        return DataNodeDescriptor.of(nextAutoNodeName()).dataSource(builder.build()).build();
     }
 }

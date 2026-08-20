@@ -20,7 +20,7 @@
 package org.apache.cayenne.tx;
 
 import org.apache.cayenne.CayenneRuntimeException;
-import org.apache.cayenne.log.JdbcEventLogger;
+import org.apache.cayenne.log.SQLLogger;
 
 import java.sql.Connection;
 import java.sql.SQLException;
@@ -32,24 +32,24 @@ import java.sql.SQLException;
  */
 public class CayenneTransaction extends BaseTransaction {
 
-    protected JdbcEventLogger logger;
+    protected SQLLogger sqlLogger;
 
-    public CayenneTransaction(JdbcEventLogger logger) {
-        this(logger, TransactionDescriptor.defaultDescriptor());
+    public CayenneTransaction(SQLLogger sqlLogger) {
+        this(sqlLogger, TransactionDescriptor.defaultDescriptor());
     }
 
     /**
      * @since 4.1
      */
-    public CayenneTransaction(JdbcEventLogger jdbcEventLogger, TransactionDescriptor descriptor) {
+    public CayenneTransaction(SQLLogger sqlLogger, TransactionDescriptor descriptor) {
         super(descriptor);
-        this.logger = jdbcEventLogger;
+        this.sqlLogger = sqlLogger;
     }
 
     @Override
     public void begin() {
         super.begin();
-        logger.logBeginTransaction("transaction started.");
+        sqlLogger.logTransactionStart();
     }
 
     @Override
@@ -107,10 +107,10 @@ public class CayenneTransaction extends BaseTransaction {
         }
 
         if (deferredException != null) {
-            logger.logRollbackTransaction("transaction rolledback.");
+            sqlLogger.logTransactionRollback();
             throw new CayenneRuntimeException(deferredException);
         } else {
-            logger.logCommitTransaction("transaction committed.");
+            sqlLogger.logTransactionCommit();
         }
     }
 
@@ -135,7 +135,7 @@ public class CayenneTransaction extends BaseTransaction {
             }
         }
 
-        logger.logRollbackTransaction("transaction rolledback.");
+        sqlLogger.logTransactionRollback();
         if (deferredException != null) {
             throw new CayenneRuntimeException(deferredException);
         }

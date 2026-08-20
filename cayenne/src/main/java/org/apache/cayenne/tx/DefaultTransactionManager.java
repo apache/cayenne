@@ -20,19 +20,20 @@ package org.apache.cayenne.tx;
 
 import org.apache.cayenne.CayenneRuntimeException;
 import org.apache.cayenne.di.Inject;
-import org.apache.cayenne.log.JdbcEventLogger;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
  * @since 4.0
  */
 public class DefaultTransactionManager implements TransactionManager {
 
-    private final TransactionFactory txFactory;
-    private final JdbcEventLogger jdbcEventLogger;
+    private static final Logger LOGGER = LoggerFactory.getLogger(DefaultTransactionManager.class);
 
-    public DefaultTransactionManager(@Inject TransactionFactory txFactory, @Inject JdbcEventLogger jdbcEventLogger) {
+    private final TransactionFactory txFactory;
+
+    public DefaultTransactionManager(@Inject TransactionFactory txFactory) {
         this.txFactory = txFactory;
-        this.jdbcEventLogger = jdbcEventLogger;
     }
 
     @Override
@@ -68,27 +69,27 @@ public class DefaultTransactionManager implements TransactionManager {
     public <T> T performInTransaction(TransactionalOperation<T> op, TransactionFactory transactionFactory) {
         // TODO: feels kinda dirty to bypass the normal handler flow. Probably an indicator that handlers need to be
         //  refactored
-        return new NestedTransactionHandler(transactionFactory, jdbcEventLogger)
+        return new NestedTransactionHandler(transactionFactory)
                 .handle(op, DoNothingTransactionListener.getInstance(), TransactionDescriptor.defaultDescriptor());
     }
 
     protected BaseTransactionHandler getHandler(TransactionDescriptor descriptor) {
         return switch (descriptor.getPropagation()) {
             // MANDATORY requires transaction to exists
-            case MANDATORY -> new MandatoryTransactionHandler(txFactory, jdbcEventLogger);
+            case MANDATORY -> new MandatoryTransactionHandler(txFactory);
 
             // NESTED can join existing or create new
-            case NESTED -> new NestedTransactionHandler(txFactory, jdbcEventLogger);
+            case NESTED -> new NestedTransactionHandler(txFactory);
 
             // REQUIRES_NEW should always create new transaction
-            case REQUIRES_NEW -> new RequiresNewTransactionHandler(txFactory, jdbcEventLogger);
+            case REQUIRES_NEW -> new RequiresNewTransactionHandler(txFactory);
         };
     }
 
     private static class NestedTransactionHandler extends BaseTransactionHandler {
 
-        private NestedTransactionHandler(TransactionFactory txFactory, JdbcEventLogger jdbcEventLogger) {
-            super(txFactory, jdbcEventLogger);
+        private NestedTransactionHandler(TransactionFactory txFactory) {
+            super(txFactory);
         }
 
         @Override
@@ -104,8 +105,8 @@ public class DefaultTransactionManager implements TransactionManager {
 
     private static class MandatoryTransactionHandler extends BaseTransactionHandler {
 
-        private MandatoryTransactionHandler(TransactionFactory txFactory, JdbcEventLogger jdbcEventLogger) {
-            super(txFactory, jdbcEventLogger);
+        private MandatoryTransactionHandler(TransactionFactory txFactory) {
+            super(txFactory);
         }
 
         @Override
@@ -120,8 +121,8 @@ public class DefaultTransactionManager implements TransactionManager {
 
     private static class RequiresNewTransactionHandler extends BaseTransactionHandler {
 
-        private RequiresNewTransactionHandler(TransactionFactory txFactory, JdbcEventLogger jdbcEventLogger) {
-            super(txFactory, jdbcEventLogger);
+        private RequiresNewTransactionHandler(TransactionFactory txFactory) {
+            super(txFactory);
         }
 
         @Override
@@ -141,11 +142,9 @@ public class DefaultTransactionManager implements TransactionManager {
     protected static abstract class BaseTransactionHandler {
 
         private final TransactionFactory txFactory;
-        private final JdbcEventLogger jdbcEventLogger;
 
-        private BaseTransactionHandler(TransactionFactory txFactory, JdbcEventLogger jdbcEventLogger) {
+        private BaseTransactionHandler(TransactionFactory txFactory) {
             this.txFactory = txFactory;
-            this.jdbcEventLogger = jdbcEventLogger;
         }
 
         protected abstract <T> T handle(TransactionalOperation<T> op, TransactionListener callback, TransactionDescriptor descriptor);
@@ -174,7 +173,7 @@ public class DefaultTransactionManager implements TransactionManager {
                         // although we don't expect an exception here, print the
                         // stack, as there have been some Cayenne bugs already
                         // (CAY-557) that were masked by this 'catch' clause.
-                        jdbcEventLogger.logQueryError(e);
+                        LOGGER.warn("Error on transaction rollback", e);
                     }
                 }
             }

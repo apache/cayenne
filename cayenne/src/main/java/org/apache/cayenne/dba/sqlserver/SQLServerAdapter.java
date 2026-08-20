@@ -23,8 +23,7 @@ import org.apache.cayenne.dba.NativeColumnType;
 import org.apache.cayenne.CayenneRuntimeException;
 import org.apache.cayenne.access.DataNode;
 import org.apache.cayenne.access.sqlbuilder.sqltree.SQLTreeProcessor;
-import org.apache.cayenne.access.jdbc.PSParameter;
-import org.apache.cayenne.access.translator.ejbql.EJBQLTranslator;
+import org.apache.cayenne.access.translator.EJBQLTranslator;
 import org.apache.cayenne.access.types.ByteArrayType;
 import org.apache.cayenne.access.types.ByteType;
 import org.apache.cayenne.access.types.CharType;
@@ -39,6 +38,7 @@ import org.apache.cayenne.configuration.RuntimeProperties;
 import org.apache.cayenne.dba.DefaultQuotingStrategy;
 import org.apache.cayenne.dba.QuotingStrategy;
 import org.apache.cayenne.dba.JdbcAdapter;
+import org.apache.cayenne.dba.PkGenerator;
 import org.apache.cayenne.di.Inject;
 import org.apache.cayenne.map.DbAttribute;
 import org.apache.cayenne.map.DbEntity;
@@ -138,18 +138,20 @@ public class SQLServerAdapter extends JdbcAdapter {
     }
 
     @Override
-    public void bindParameter(PreparedStatement statement, PSParameter<?> parameter) throws Exception {
+    @SuppressWarnings("rawtypes")
+    protected void bind(PreparedStatement statement, Object value, int psPosition, int psType, int psScale,
+                        ExtendedType binder) throws Exception {
 
         // SQL Server driver doesn't like CLOBs and BLOBs as parameters
-        if (parameter.value() == null) {
-            int jdbcType = switch (parameter.psType()) {
+        if (value == null) {
+            int jdbcType = switch (psType) {
                 case Types.CLOB, 0 -> Types.VARCHAR;
                 case Types.BLOB -> Types.VARBINARY;
-                default -> parameter.psType();
+                default -> psType;
             };
-            statement.setNull(parameter.psPosition(), jdbcType);
+            statement.setNull(psPosition, jdbcType);
         } else {
-            super.bindParameter(statement, parameter);
+            super.bind(statement, value, psPosition, psType, psScale, binder);
         }
     }
 
@@ -173,6 +175,14 @@ public class SQLServerAdapter extends JdbcAdapter {
     @Override
     public boolean supportsGeneratedKeysForBatchInserts() {
         return false;
+    }
+
+    /**
+     * Returns a {@link SQLServerPkGenerator}.
+     */
+    @Override
+    public PkGenerator createPkGenerator() {
+        return new SQLServerPkGenerator(this);
     }
 
     /**

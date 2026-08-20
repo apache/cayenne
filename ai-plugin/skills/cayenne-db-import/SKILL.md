@@ -1,6 +1,6 @@
 ---
 name: cayenne-db-import
-description: "Use this skill whenever the user wants to import database schema metadata into a Cayenne DataMap — full-schema sync from a live DB. Trigger on phrases like 'reverse engineer the database', 'import the schema', 'generate a DataMap from my DB', 'sync the model with the database', 'add the new tables from the DB', 'import the customer table', 'pick up the latest schema changes', 'create entities from these tables', or any request that involves reading database metadata to populate or update a DataMap. This is for *full schema* or *bulk table* import; one-off a-la-carte entity additions belong in the cayenne-modeling skill. The skill runs reverse engineering directly via the `mcp__cayenne__dbimport_run` MCP tool when a DBConnector is already configured; otherwise it opens the CayenneModeler GUI via `mcp__cayenne__open_project` to configure the connection first."
+description: "Use this skill when the user wants to import database schema metadata into a Cayenne DataMap — the *model/mapping only*, not names or Java classes. Trigger on phrases like 'reverse engineer the database', 'import the schema', 'generate a DataMap from my DB', 'add the new tables from the DB into the model', 'import the customer table', 'create entities from these tables', or any request to read database metadata to populate or update a DataMap's XML. This is for *full schema* or *bulk table* import; one-off a-la-carte entity additions belong in the cayenne-modeling skill. IMPORTANT — scope: this imports the mapping ONLY; it does not clean up the Object-layer names or (re)generate Java classes. When the user wants their whole project brought in line with the DB ('sync my project with the database', 'my schema changed, update everything', 'update my entities/classes from the DB'), that is the end-to-end `cayenne-full-db-sync` skill, which runs this import and then name cleanup and class generation. To regenerate classes alone use `cayenne-cgen`. The skill runs reverse engineering directly via the `mcp__cayenne__dbimport_run` MCP tool when a DBConnector is already configured; otherwise it opens the CayenneModeler GUI via `mcp__cayenne__open_project` to configure the connection first."
 ---
 
 <!--
@@ -118,6 +118,7 @@ Once the import succeeds:
 
 - Tell the user to **save the project** in the Modeler if it is open (File → Save). The dialog settings persist as a `<dbImport>` block inside the DataMap for repeat runs.
 - Hand off to `cayenne-cgen` to regenerate Java classes for the new/changed entities. Quote the DataMap name so the cgen skill can pass it to `cgen_run`.
+- If the imported names look awkward (run-together words, `team1`-style relationship names, a table prefix leaking into relationships), you can **offer** the `cayenne-model-naming` skill to polish them — ideally before cgen. Only run it if the user asks; do not invoke it automatically.
 - If the DB has columns that don't follow the user's preferred naming, recommend tweaking the naming strategy and re-running.
 
 ## Anti-patterns

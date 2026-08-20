@@ -41,8 +41,6 @@ public interface ConfigurationNodeVisitor<T> {
 
     T visitDataChannelDescriptor(DataChannelDescriptor channelDescriptor);
 
-    T visitDataNodeDescriptor(DataNodeDescriptor nodeDescriptor);
-
     T visitDataMap(DataMap dataMap);
 
     T visitObjEntity(ObjEntity entity);

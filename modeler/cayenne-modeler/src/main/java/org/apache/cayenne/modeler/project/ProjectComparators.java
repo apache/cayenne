@@ -20,7 +20,6 @@
 package org.apache.cayenne.modeler.project;
 
 import org.apache.cayenne.configuration.ConfigurationNode;
-import org.apache.cayenne.configuration.DataNodeDescriptor;
 import org.apache.cayenne.map.Attribute;
 import org.apache.cayenne.map.DataMap;
 import org.apache.cayenne.map.DbEntity;
@@ -46,8 +45,7 @@ public class ProjectComparators {
 
     /**
      * Returns a comparator to order DataMap objects of mixed types. Objects of the same
-     * type are ordered based on "name" property. Objects of different types are ordered
-     * based on the following precedence: DataMap, DataNode.
+     * type are ordered based on "name" property.
      */
     public static Comparator<ConfigurationNode> forDataDomainChildren() {
         return dataDomainChildren;
@@ -111,8 +109,6 @@ public class ProjectComparators {
         private static int getClassWeight(ConfigurationNode o) {
             if (o instanceof DataMap) {
                 return 1;
-            } else if (o instanceof DataNodeDescriptor) {
-                return 2;
             } else {
                 // this should trap nulls among other things
                 return Integer.MAX_VALUE;

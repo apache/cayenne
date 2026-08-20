@@ -49,8 +49,10 @@ import java.util.function.Function;
  * To enable the invalidation filter, just include "cayenne-cache-invalidation" module in your project. To add
  * custom invalidation handlers, use CacheInvalidationModule "extender" API:
  * <pre>
- *  CayenneRuntime.builder("cayenne-project.xml")
- *     .addModule(b -> CacheInvalidationModule.extend(b).addHandler(MyHandler.class).build());
+ *  CayenneRuntime.of()
+ *     .addConfig("cayenne-project.xml")
+ *     .addModule(b -> CacheInvalidationModule.extend(b).addHandler(MyHandler.class))
+ *     .build();
  * </pre>
  * </p>
  *

@@ -29,13 +29,11 @@ import org.apache.maven.plugin.MojoExecutionException;
 import org.codehaus.plexus.util.FileUtils;
 import org.junit.jupiter.api.AfterAll;
 import org.junit.jupiter.api.BeforeAll;
-import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.Test;
 import org.slf4j.Logger;
 import org.xmlunit.matchers.CompareMatcher;
 
 import java.io.File;
-import java.io.FileReader;
 import java.io.IOException;
 import java.net.URL;
 import java.sql.Connection;
@@ -302,7 +300,6 @@ public class DbImporterMojoTest {
      * collection attributes in both directions
      */
     @Test
-    @Disabled("Investigate why on different environment entity relationships order are different.")
     public void flattensManyToManyWithRecursiveLink(
             @InjectMojo(goal = "cdbimport", pom = "src/test/resources/org/apache/cayenne/tools/dbimport/testFlattensManyToManyWithRecursiveLink-pom.xml")
             DbImporterMojo mojo) throws Exception {
@@ -487,7 +484,8 @@ public class DbImporterMojoTest {
                             String fkTableSchem = keys.getString("FKTABLE_SCHEM");
                             String fkTableName = keys.getString("FKTABLE_NAME");
                             String fkTableNameFull = (isBlank(fkTableSchem) ? "" : fkTableSchem + ".") + fkTableName;
-                            execute(stmt, "ALTER TABLE " + fkTableNameFull + " DROP CONSTRAINT " + keys.getString("FK_NAME"));
+                            execute(stmt, "ALTER TABLE " + fkTableNameFull
+                                    + " DROP CONSTRAINT \"" + keys.getString("FK_NAME") + "\"");
                         }
 
                         String sql = "DROP TABLE " + tableNameFull;
@@ -521,10 +519,12 @@ public class DbImporterMojoTest {
     }
 
     private void verifyResult(File map, File mapFileCopy) throws Exception {
-        FileReader control = new FileReader(map.getAbsolutePath() + "-result");
-        FileReader test = new FileReader(mapFileCopy);
+        // compare Files, not Readers: XMLUnit's Input.from() has no Reader branch and would silently fall back to
+        // its JAXB builder, making the comparison a no-op. Comments are ignored, as the "-result" files carry an
+        // ASF license header that the DataMap writer does not emit.
+        File control = new File(map.getAbsolutePath() + "-result");
 
-        assertThat(test, CompareMatcher.isSimilarTo(control).ignoreWhitespace());
+        assertThat(mapFileCopy, CompareMatcher.isSimilarTo(control).ignoreWhitespace().ignoreComments());
     }
 
     private void prepareDatabase(String sqlFile, DbImportDataSourceConfig dataSource) throws Exception {

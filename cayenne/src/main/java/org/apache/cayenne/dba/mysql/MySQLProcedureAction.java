@@ -22,7 +22,7 @@ import org.apache.cayenne.access.DataNode;
 import org.apache.cayenne.access.OperationObserver;
 import org.apache.cayenne.access.jdbc.ProcedureAction;
 import org.apache.cayenne.access.jdbc.RSColumn;
-import org.apache.cayenne.access.translator.procedure.TranslatedProcedure;
+import org.apache.cayenne.access.translator.TranslatedProcedure;
 import org.apache.cayenne.query.ProcedureQuery;
 
 import java.sql.CallableStatement;
@@ -48,7 +48,7 @@ class MySQLProcedureAction extends ProcedureAction {
 		TranslatedProcedure translated = dataNode.getProcedureTranslator()
 				.translate(query, dataNode.getAdapter(), dataNode.getEntityResolver());
 
-		dataNode.getJdbcEventLogger().logQuery(translated.sql(), translated.bindings());
+		observer.nextStatement(query, translated);
 
 		try (CallableStatement statement = connection.prepareCall(translated.sql());) {
 			bindParameters(statement, translated);
@@ -101,7 +101,6 @@ class MySQLProcedureAction extends ProcedureAction {
 		if (updateCount == -1) {
 			return false;
 		}
-		dataNode.getJdbcEventLogger().logUpdateCount(updateCount);
 		observer.nextCount(query, updateCount);
 
 		return true;

@@ -20,13 +20,15 @@
 package org.apache.cayenne.access;
 
 import org.apache.cayenne.CayenneRuntimeException;
-import org.apache.cayenne.DataChannel;
+import org.apache.cayenne.access.flush.DataDomainFlushActionFactory;
 import org.apache.cayenne.cache.QueryCache;
+import org.apache.cayenne.di.AdhocObjectFactory;
 import org.apache.cayenne.di.DIBootstrap;
 import org.apache.cayenne.di.Injector;
 import org.apache.cayenne.di.Module;
 import org.apache.cayenne.runtime.CayenneRuntime;
 import org.apache.cayenne.tx.TransactionFactory;
+import org.apache.cayenne.tx.TransactionManager;
 import org.junit.jupiter.api.Test;
 
 import java.util.Map;
@@ -48,14 +50,19 @@ public class DataContextTest {
     @Test
     public void attachToRuntimeIfNeeded() {
 
-        final DataChannel channel = mock(DataChannel.class);
+        final DataDomain domain = mock(DataDomain.class);
         final QueryCache cache = mock(QueryCache.class);
         final TransactionFactory factory = mock(TransactionFactory.class);
 
+        // DataDomain is a concrete class with @Inject fields, so its instance binding
+        // requires bindings for each of the injected services
         Module testModule = binder -> {
-            binder.bind(DataChannel.class).toInstance(channel);
+            binder.bind(DataDomain.class).toInstance(domain);
             binder.bind(QueryCache.class).toInstance(cache);
             binder.bind(TransactionFactory.class).toInstance(factory);
+            binder.bind(TransactionManager.class).toInstance(mock(TransactionManager.class));
+            binder.bind(DataDomainFlushActionFactory.class).toInstance(mock(DataDomainFlushActionFactory.class));
+            binder.bind(AdhocObjectFactory.class).toInstance(mock(AdhocObjectFactory.class));
         };
 
         Injector injector = DIBootstrap.createInjector(testModule);
@@ -70,7 +77,7 @@ public class DataContextTest {
             CayenneRuntime.bindThreadInjector(injector);
 
             assertTrue(context.attachToRuntimeIfNeeded());
-            assertSame(channel, context.getChannel());
+            assertSame(domain, context.getChannel());
 
             assertFalse(context.attachToRuntimeIfNeeded());
             assertFalse(context.attachToRuntimeIfNeeded());

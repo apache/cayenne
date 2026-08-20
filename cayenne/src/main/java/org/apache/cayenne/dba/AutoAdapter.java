@@ -21,24 +21,32 @@ package org.apache.cayenne.dba;
 
 import org.apache.cayenne.CayenneRuntimeException;
 import org.apache.cayenne.access.DataNode;
-import org.apache.cayenne.access.sqlbuilder.sqltree.SQLTreeProcessor;
+import org.apache.cayenne.access.jdbc.CSParameter;
 import org.apache.cayenne.access.jdbc.PSParameter;
-import org.apache.cayenne.access.translator.ejbql.EJBQLTranslator;
-import org.apache.cayenne.access.translator.procedure.ProcedureTranslator;
-import org.apache.cayenne.access.translator.select.SelectTranslator;
+import org.apache.cayenne.access.sqlbuilder.sqltree.SQLTreeProcessor;
+import org.apache.cayenne.access.translator.EJBQLTranslator;
+import org.apache.cayenne.access.translator.ProcedureTranslator;
+import org.apache.cayenne.access.translator.SelectTranslator;
 import org.apache.cayenne.access.types.ExtendedTypeMap;
-import org.apache.cayenne.di.Provider;
-import org.apache.cayenne.log.JdbcEventLogger;
+import org.apache.cayenne.configuration.runtime.DbAdapterDetector;
+import org.apache.cayenne.di.AdhocObjectFactory;
 import org.apache.cayenne.map.DbAttribute;
 import org.apache.cayenne.map.DbEntity;
 import org.apache.cayenne.map.DbRelationship;
 import org.apache.cayenne.map.EntityResolver;
 import org.apache.cayenne.query.ProcedureQuery;
-import org.apache.cayenne.query.Select;
 import org.apache.cayenne.query.Query;
 import org.apache.cayenne.query.SQLAction;
+import org.apache.cayenne.query.Select;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
+import javax.sql.DataSource;
+import java.sql.CallableStatement;
+import java.sql.Connection;
+import java.sql.DatabaseMetaData;
 import java.sql.PreparedStatement;
+import java.sql.SQLException;
 import java.util.Collection;
 import java.util.List;
 
@@ -51,259 +59,273 @@ import java.util.List;
  */
 public class AutoAdapter implements DbAdapter {
 
-	protected Provider<DbAdapter> adapterProvider;
-	protected PkGenerator pkGenerator;
-	protected JdbcEventLogger logger;
+    private static final Logger LOGGER = LoggerFactory.getLogger(AutoAdapter.class);
 
-	/**
-	 * The actual adapter that is delegated methods execution.
-	 */
-	volatile DbAdapter adapter;
+    protected final AdhocObjectFactory objectFactory;
+    protected final DataSource dataSource;
+    protected final List<DbAdapterDetector> detectors;
 
-	/**
-	 * Creates an {@link AutoAdapter} based on a delegate adapter obtained via
-	 * "adapterProvider".
-	 *
-	 * @since 3.1
-	 */
-	public AutoAdapter(Provider<DbAdapter> adapterProvider, JdbcEventLogger logger) {
+    volatile DbAdapter adapter;
 
-		if (adapterProvider == null) {
-			throw new CayenneRuntimeException("Null adapterProvider");
-		}
+    public AutoAdapter(AdhocObjectFactory objectFactory, DataSource dataSource, List<DbAdapterDetector> detectors) {
+        this.objectFactory = objectFactory;
+        this.dataSource = dataSource;
+        this.detectors = detectors;
+    }
 
-		this.adapterProvider = adapterProvider;
-		this.logger = logger;
-	}
+    /**
+     * Returns a proxied DbAdapter, lazily creating it on first invocation.
+     */
+    protected DbAdapter getAdapter() {
+        if (adapter == null) {
+            synchronized (this) {
+                if (adapter == null) {
+                    this.adapter = loadAdapter();
+                }
+            }
+        }
 
-	/**
-	 * Returns a proxied DbAdapter, lazily creating it on first invocation.
-	 */
-	protected DbAdapter getAdapter() {
-		if (adapter == null) {
-			synchronized (this) {
-				if (adapter == null) {
-					this.adapter = loadAdapter();
-				}
-			}
-		}
+        return adapter;
+    }
 
-		return adapter;
-	}
+    /**
+     * Loads underlying DbAdapter delegate.
+     */
+    protected DbAdapter loadAdapter() {
+        if (detectors.isEmpty()) {
+            return defaultAdapter();
+        }
 
-	/**
-	 * Loads underlying DbAdapter delegate.
-	 */
-	protected DbAdapter loadAdapter() {
-		return adapterProvider.get();
-	}
+        try (Connection c = dataSource.getConnection()) {
+            return detectAdapter(c.getMetaData());
+        } catch (SQLException e) {
+            throw new CayenneRuntimeException("Error detecting database type: " + e.getLocalizedMessage(), e);
+        }
+    }
 
-	/**
-	 * @since 4.2
-	 */
-	@Override
-	public SelectTranslator getSelectTranslator(Select<?> query, EntityResolver entityResolver) {
-		return getAdapter().getSelectTranslator(query, entityResolver);
-	}
+    /**
+     * @since 4.2
+     */
+    @Override
+    public SelectTranslator getSelectTranslator(Select<?> query, EntityResolver entityResolver) {
+        return getAdapter().getSelectTranslator(query, entityResolver);
+    }
 
-	/**
-	 * @since 5.0
-	 */
-	@Override
-	public ProcedureTranslator getProcedureTranslator(ProcedureQuery query, EntityResolver entityResolver) {
-		return getAdapter().getProcedureTranslator(query, entityResolver);
-	}
+    /**
+     * @since 5.0
+     */
+    @Override
+    public ProcedureTranslator getProcedureTranslator(ProcedureQuery query, EntityResolver entityResolver) {
+        return getAdapter().getProcedureTranslator(query, entityResolver);
+    }
 
-	@Override
-	public String getBatchTerminator() {
-		return getAdapter().getBatchTerminator();
-	}
+    @Override
+    public String getBatchTerminator() {
+        return getAdapter().getBatchTerminator();
+    }
 
-	@Override
-	public SQLTreeProcessor getSqlTreeProcessor() {
-		return getAdapter().getSqlTreeProcessor();
-	}
+    @Override
+    public SQLTreeProcessor getSqlTreeProcessor() {
+        return getAdapter().getSqlTreeProcessor();
+    }
 
-	@Override
-	public SQLAction getAction(Query query, DataNode node) {
-		return getAdapter().getAction(query, node);
-	}
+    @Override
+    public SQLAction getAction(Query query, DataNode node) {
+        return getAdapter().getAction(query, node);
+    }
 
-	@Override
-	public boolean supportsUniqueConstraints() {
-		return getAdapter().supportsUniqueConstraints();
-	}
+    @Override
+    public boolean supportsUniqueConstraints() {
+        return getAdapter().supportsUniqueConstraints();
+    }
 
-	@Override
-	public boolean supportsCatalogsOnReverseEngineering() {
-		return getAdapter().supportsCatalogsOnReverseEngineering();
-	}
+    @Override
+    public boolean supportsCatalogsOnReverseEngineering() {
+        return getAdapter().supportsCatalogsOnReverseEngineering();
+    }
 
-	@Override
-	public boolean supportsGeneratedKeys() {
-		return getAdapter().supportsGeneratedKeys();
-	}
+    @Override
+    public boolean supportsGeneratedKeys() {
+        return getAdapter().supportsGeneratedKeys();
+    }
 
-	/**
-	 * @since 4.2
-	 */
-	@Override
-	public boolean supportsGeneratedKeysForBatchInserts() {
-		return getAdapter().supportsGeneratedKeysForBatchInserts();
-	}
+    /**
+     * @since 4.2
+     */
+    @Override
+    public boolean supportsGeneratedKeysForBatchInserts() {
+        return getAdapter().supportsGeneratedKeysForBatchInserts();
+    }
 
 
-	@Override
-	public boolean supportsBatchUpdates() {
-		return getAdapter().supportsBatchUpdates();
-	}
+    @Override
+    public boolean supportsBatchUpdates() {
+        return getAdapter().supportsBatchUpdates();
+    }
 
-	@Override
-	public boolean typeSupportsLength(int type) {
-		return getAdapter().typeSupportsLength(type);
-	}
+    @Override
+    public boolean typeSupportsLength(int type) {
+        return getAdapter().typeSupportsLength(type);
+    }
 
-	/**
-	 * @since 5.0
-	 */
-	@Override
-	public boolean typeSupportsScale(int type) {
-		return getAdapter().typeSupportsScale(type);
-	}
+    /**
+     * @since 5.0
+     */
+    @Override
+    public boolean typeSupportsScale(int type) {
+        return getAdapter().typeSupportsScale(type);
+    }
 
-	/**
-	 * @since 5.0
-	 */
-	@Override
-	public int defaultCharColumnLength() {
-		return getAdapter().defaultCharColumnLength();
-	}
+    /**
+     * @since 5.0
+     */
+    @Override
+    public int defaultCharColumnLength() {
+        return getAdapter().defaultCharColumnLength();
+    }
 
-	@Override
-	public Collection<String> dropTableStatements(DbEntity table) {
-		return getAdapter().dropTableStatements(table);
-	}
+    @Override
+    public Collection<String> dropTableStatements(DbEntity table) {
+        return getAdapter().dropTableStatements(table);
+    }
 
-	@Override
-	public String createTable(DbEntity entity) {
-		return getAdapter().createTable(entity);
-	}
+    @Override
+    public String createTable(DbEntity entity) {
+        return getAdapter().createTable(entity);
+    }
 
-	@Override
-	public String createUniqueConstraint(DbEntity source, Collection<DbAttribute> columns) {
-		return getAdapter().createUniqueConstraint(source, columns);
-	}
+    @Override
+    public String createUniqueConstraint(DbEntity source, Collection<DbAttribute> columns) {
+        return getAdapter().createUniqueConstraint(source, columns);
+    }
 
-	@Override
-	public String createFkConstraint(DbRelationship rel) {
-		return getAdapter().createFkConstraint(rel);
-	}
+    @Override
+    public String createFkConstraint(DbRelationship rel) {
+        return getAdapter().createFkConstraint(rel);
+    }
 
-	@Deprecated(since = "5.0", forRemoval = true)
-	@Override
-	public String[] externalTypesForJdbcType(int type) {
-		return getAdapter().externalTypesForJdbcType(type);
-	}
+    @Deprecated(since = "5.0", forRemoval = true)
+    @Override
+    public String[] externalTypesForJdbcType(int type) {
+        return getAdapter().externalTypesForJdbcType(type);
+    }
 
-	@Override
-	public NativeColumnType[] nativeColumnTypes(int type) {
-		return getAdapter().nativeColumnTypes(type);
-	}
+    @Override
+    public NativeColumnType[] nativeColumnTypes(int type) {
+        return getAdapter().nativeColumnTypes(type);
+    }
 
-	@Override
-	public ExtendedTypeMap getExtendedTypes() {
-		return getAdapter().getExtendedTypes();
-	}
+    @Override
+    public ExtendedTypeMap getExtendedTypes() {
+        return getAdapter().getExtendedTypes();
+    }
 
-	/**
-	 * Returns a primary key generator.
-	 */
-	@Override
-	public PkGenerator getPkGenerator() {
-		return (pkGenerator != null) ? pkGenerator : getAdapter().getPkGenerator();
-	}
+    /**
+     * Returns the default primary key generator of the wrapped adapter.
+     */
+    @Override
+    public PkGenerator createPkGenerator() {
+        return getAdapter().createPkGenerator();
+    }
 
-	/**
-	 * Sets a PK generator override. If set to non-null value, such PK generator
-	 * will be used instead of the one provided by wrapped adapter.
-	 */
-	public void setPkGenerator(PkGenerator pkGenerator) {
-		this.pkGenerator = pkGenerator;
-	}
+    @Override
+    public DbAttribute buildAttribute(String name, String typeName, int type, int size, int precision,
+                                      boolean allowNulls) {
 
-	@Override
-	public DbAttribute buildAttribute(String name, String typeName, int type, int size, int precision,
-			boolean allowNulls) {
+        return getAdapter().buildAttribute(name, typeName, type, size, precision, allowNulls);
+    }
 
-		return getAdapter().buildAttribute(name, typeName, type, size, precision, allowNulls);
-	}
+    @Override
+    public void bindParameter(PreparedStatement statement, PSParameter<?> parameter) throws Exception {
+        getAdapter().bindParameter(statement, parameter);
+    }
 
-	@Override
-	public void bindParameter(PreparedStatement statement, PSParameter<?> parameter) throws Exception {
-		getAdapter().bindParameter(statement, parameter);
-	}
+    @Override
+    public void bindParameter(CallableStatement statement, CSParameter<?> parameter) throws Exception {
+        getAdapter().bindParameter(statement, parameter);
+    }
 
-	/**
-	 * @since 5.0
-	 */
-	@Override
-	public int preferredBindingType(int jdbcType) {
-		return getAdapter().preferredBindingType(jdbcType);
-	}
+    /**
+     * @since 5.0
+     */
+    @Override
+    public int preferredBindingType(int jdbcType) {
+        return getAdapter().preferredBindingType(jdbcType);
+    }
 
-	@Override
-	public String tableTypeForTable() {
-		return getAdapter().tableTypeForTable();
-	}
+    @Override
+    public String tableTypeForTable() {
+        return getAdapter().tableTypeForTable();
+    }
 
-	@Override
-	public String tableTypeForView() {
-		return getAdapter().tableTypeForView();
-	}
+    @Override
+    public String tableTypeForView() {
+        return getAdapter().tableTypeForView();
+    }
 
-	@Override
-	public void createTableAppendColumn(StringBuffer sqlBuffer, DbAttribute column) {
-		getAdapter().createTableAppendColumn(sqlBuffer, column);
-	}
+    @Override
+    public void createTableAppendColumn(StringBuffer sqlBuffer, DbAttribute column) {
+        getAdapter().createTableAppendColumn(sqlBuffer, column);
+    }
 
-	@Deprecated
-	@Override
-	public QuotingStrategy getQuotingStrategy() {
-		return getAdapter().getQuotingStrategy();
-	}
+    @Deprecated
+    @Override
+    public QuotingStrategy getQuotingStrategy() {
+        return getAdapter().getQuotingStrategy();
+    }
 
-	/**
-	 * @since 5.0
-	 */
-	@Override
-	public QuotingStrategy getQuotingStrategy(DbEntity entity) {
-		return getAdapter().getQuotingStrategy(entity);
-	}
+    /**
+     * @since 5.0
+     */
+    @Override
+    public QuotingStrategy getQuotingStrategy(DbEntity entity) {
+        return getAdapter().getQuotingStrategy(entity);
+    }
 
-	/**
-	 * @since 4.0
-	 */
-	@Override
-	public DbAdapter unwrap() {
-		return getAdapter();
-	}
+    /**
+     * @since 4.0
+     */
+    @Override
+    public DbAdapter unwrap() {
+        return getAdapter();
+    }
 
-	/**
-	 * @since 5.0
-	 */
-	@Override
-	public EJBQLTranslator getEjbqlTranslator() {
-		return getAdapter().getEjbqlTranslator();
-	}
+    /**
+     * @since 5.0
+     */
+    @Override
+    public EJBQLTranslator getEjbqlTranslator() {
+        return getAdapter().getEjbqlTranslator();
+    }
 
-	@Override
-	public List<String> getSystemCatalogs() {
-		return getAdapter().getSystemCatalogs();
-	}
+    @Override
+    public List<String> getSystemCatalogs() {
+        return getAdapter().getSystemCatalogs();
+    }
 
-	@Override
-	public List<String> getSystemSchemas() {
-		return getAdapter().getSystemSchemas();
-	}
+    @Override
+    public List<String> getSystemSchemas() {
+        return getAdapter().getSystemSchemas();
+    }
 
+    protected DbAdapter detectAdapter(DatabaseMetaData metaData) throws SQLException {
+        // iterate in reverse order to allow custom factories to take precedence
+        // over the default ones configured in constructor
+        for (int i = detectors.size() - 1; i >= 0; i--) {
+            DbAdapterDetector detector = detectors.get(i);
+            DbAdapter adapter = detector.createAdapter(metaData);
+
+            if (adapter != null) {
+                LOGGER.info("Detected and installed adapter: {}", adapter.getClass().getName());
+                return adapter;
+            }
+        }
+
+        return defaultAdapter();
+    }
+
+    protected DbAdapter defaultAdapter() {
+        LOGGER.warn("Failed to detect database type, using generic adapter");
+        return objectFactory.newInstance(DbAdapter.class, JdbcAdapter.class.getName());
+    }
 }

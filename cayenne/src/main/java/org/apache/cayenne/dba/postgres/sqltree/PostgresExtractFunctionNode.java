@@ -20,6 +20,7 @@
 package org.apache.cayenne.dba.postgres.sqltree;
 
 import org.apache.cayenne.access.sqlbuilder.SQLAppendable;
+import org.apache.cayenne.access.sqlbuilder.SQLGenerationContext;
 import org.apache.cayenne.access.sqlbuilder.sqltree.Node;
 
 /**
@@ -33,7 +34,7 @@ public class PostgresExtractFunctionNode extends Node {
     }
 
     @Override
-    public SQLAppendable append(SQLAppendable buffer) {
+    public SQLAppendable append(SQLAppendable buffer, SQLGenerationContext context) {
         buffer.append(" EXTRACT(");
         if ("DAY_OF_MONTH".equals(functionName)) {
             buffer.append("day");

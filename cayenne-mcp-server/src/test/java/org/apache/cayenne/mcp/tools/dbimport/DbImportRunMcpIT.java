@@ -179,7 +179,7 @@ public class DbImportRunMcpIT {
                     "jdbcDriver" : "%s",
                     "dbAdapter" : "%s"
                   },
-                  "warnings" : [ "Can't find ObjEntity for PAINTING", "Db Relationship (Db Relationship : toMany (ARTIST.ID, PAINTING.ARTIST_ID)) will have GUESSED Obj Relationship reflection. " ],
+                  "warnings" : [ "Can't find ObjEntity for PAINTING" ],
                   "validation" : {
                     "projectFound" : true,
                     "dataMapFound" : true,

@@ -21,14 +21,11 @@ package org.apache.cayenne.datasource;
 import java.sql.SQLException;
 
 /**
- * Thrown when the pool fails to validate a fresh connection that is known to be
- * in a good state.
+ * Thrown when the pool fails to validate a fresh connection that is known to be in a good state.
  * 
  * @since 4.0
  */
 public class BadValidationQueryException extends SQLException {
-
-	private static final long serialVersionUID = -3690715196865727679L;
 
 	public BadValidationQueryException(String message) {
 		super(message);

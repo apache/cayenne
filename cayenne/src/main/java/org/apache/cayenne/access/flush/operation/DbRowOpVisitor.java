@@ -35,4 +35,14 @@ public interface DbRowOpVisitor<T> {
     default T visitDelete(DeleteDbRowOp dbRow) {
         return null;
     }
+
+    /**
+     * Visits a "soft" delete op. The default implementation delegates to {@link #visitDelete(DeleteDbRowOp)}, so
+     * visitors that don't distinguish soft deletes from regular ones automatically get correct delete semantics.
+     *
+     * @since 5.0
+     */
+    default T visitSoftDelete(SoftDeleteDbRowOp dbRow) {
+        return visitDelete(dbRow);
+    }
 }

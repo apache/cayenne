@@ -20,6 +20,7 @@ package org.apache.cayenne.runtime;
 
 import org.apache.cayenne.DataRow;
 import org.apache.cayenne.ObjectContext;
+import org.apache.cayenne.access.DataDomain;
 import org.apache.cayenne.access.DataNode;
 import org.apache.cayenne.configuration.DataSourceDescriptor;
 import org.apache.cayenne.map.DataMap;
@@ -100,18 +101,18 @@ public class CayenneRuntimeBuilderIT {
     }
 
     @Test
-    public void configFree_WithDataSource() {
+    public void configFree_WithDefaultDataNode() {
 
-        localRuntime = new CayenneRuntimeBuilder(null).dataSource(dataSource).build();
+        localRuntime = new CayenneRuntimeBuilder(null).defaultDataNode(dataSource).build();
 
         List<DataRow> result = SQLSelect.dataRowQuery("SELECT * FROM ARTIST").select(localRuntime.newContext());
         assertEquals(2, result.size());
     }
 
     @Test
-    public void noNodeConfig_WithDataSource() {
+    public void noNodeConfig_WithDefaultDataNode() {
 
-        localRuntime = new CayenneRuntimeBuilder(null).addConfig(CayenneProjects.TESTMAP_PROJECT).dataSource(dataSource)
+        localRuntime = new CayenneRuntimeBuilder(null).addConfig(CayenneProjects.TESTMAP_PROJECT).defaultDataNode(dataSource)
                 .build();
 
         DataMap map = localRuntime.getDataDomain().getDataMap("testmap");
@@ -122,6 +123,41 @@ public class CayenneRuntimeBuilderIT {
         assertEquals(1, node.getDataMaps().size());
 
         assertSame(map, node.getDataMap("testmap"));
+    }
+
+    @Test
+    public void autoNodeName_UnnamedDomain() {
+        localRuntime = new CayenneRuntimeBuilder(null)
+                .addConfig(CayenneProjects.TESTMAP_PROJECT)
+                .defaultDataNode(dataSource)
+                .build();
+
+        assertEquals("cayenne-0", localRuntime.getDataDomain().getDefaultNode().getName());
+    }
+
+    @Test
+    public void autoNodeName_NamedDomain() {
+        localRuntime = new CayenneRuntimeBuilder("myd")
+                .addConfig(CayenneProjects.TESTMAP_PROJECT)
+                .defaultDataNode(dataSource)
+                .build();
+
+        assertEquals("myd-0", localRuntime.getDataDomain().getDefaultNode().getName());
+    }
+
+    @Test
+    public void autoNodeName_MultipleNodes() {
+        localRuntime = new CayenneRuntimeBuilder(null)
+                .addConfig(CayenneProjects.TESTMAP_PROJECT)
+                .addDataNode(dataSource, "testmap")
+                .defaultDataNode(dataSource)
+                .build();
+
+        DataDomain domain = localRuntime.getDataDomain();
+
+        // node names are auto-generated in the order the nodes are added to the builder
+        assertNotNull(domain.getDataNode("cayenne-0"));
+        assertEquals("cayenne-1", domain.getDefaultNode().getName());
     }
 
     @Test

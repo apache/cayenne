@@ -20,7 +20,6 @@
 package org.apache.cayenne.dba;
 
 import org.apache.cayenne.access.jdbc.SQLTemplateAction;
-import org.apache.cayenne.log.NoopJdbcEventLogger;
 import org.apache.cayenne.map.DbEntity;
 import org.apache.cayenne.query.ObjectSelect;
 import org.apache.cayenne.query.SQLTemplate;
@@ -39,9 +38,15 @@ public class AutoAdapterIT {
 
     @Test
     public void getAdapter_Proxy() {
-        AutoAdapter adapter = new AutoAdapter(() -> env.dataNode().getAdapter(), NoopJdbcEventLogger.getInstance());
+        AutoAdapter adapter = (AutoAdapter) env.dataNode().getAdapter();
+
         DbAdapter detected = adapter.getAdapter();
-        assertSame(env.dataNode().getAdapter(), detected);
+        assertNotNull(detected);
+        assertFalse(detected instanceof AutoAdapter);
+
+        // the delegate is resolved once and cached
+        assertSame(detected, adapter.getAdapter());
+        assertSame(detected, adapter.unwrap());
     }
 
     @Test
@@ -61,50 +66,36 @@ public class AutoAdapterIT {
 
     @Test
     public void correctProxyMethods() {
-        DbAdapter adapter = env.dataNode().getAdapter();
-        AutoAdapter autoAdapter = new AutoAdapter(() -> adapter, NoopJdbcEventLogger.getInstance());
+        AutoAdapter adapter = (AutoAdapter) env.dataNode().getAdapter();
+        DbAdapter detected = adapter.getAdapter();
 
         ObjectSelect<Artist> select = ObjectSelect.query(Artist.class);
 
         // query related methods
-        assertEquals(adapter.supportsBatchUpdates(),
-                autoAdapter.supportsBatchUpdates());
-        assertEquals(adapter.supportsGeneratedKeys(),
-                autoAdapter.supportsGeneratedKeys());
-        assertEquals(adapter.supportsGeneratedKeysForBatchInserts(),
-                autoAdapter.supportsGeneratedKeysForBatchInserts());
-        assertSame(adapter.getBatchTerminator(),
-                autoAdapter.getBatchTerminator());
-        assertSame(adapter.getPkGenerator(),
-                autoAdapter.getPkGenerator());
+        assertEquals(detected.supportsBatchUpdates(), adapter.supportsBatchUpdates());
+        assertEquals(detected.supportsGeneratedKeys(), adapter.supportsGeneratedKeys());
+        assertEquals(detected.supportsGeneratedKeysForBatchInserts(), adapter.supportsGeneratedKeysForBatchInserts());
+        assertSame(detected.getBatchTerminator(), adapter.getBatchTerminator());
+        // returns a new instance for each call
+        assertSame(detected.createPkGenerator().getClass(), adapter.createPkGenerator().getClass());
         DbEntity artistDbEntity = env.dataNode().getEntityResolver().getObjEntity(Artist.class).getDbEntity();
-        assertSame(adapter.getQuotingStrategy(artistDbEntity),
-                autoAdapter.getQuotingStrategy(artistDbEntity));
+        assertSame(detected.getQuotingStrategy(artistDbEntity), adapter.getQuotingStrategy(artistDbEntity));
         // returns a new instance for each call
-        assertSame(adapter.getSqlTreeProcessor().getClass(),
-                autoAdapter.getSqlTreeProcessor().getClass());
-        assertSame(adapter.getExtendedTypes(),
-                autoAdapter.getExtendedTypes());
-        assertSame(adapter.getEjbqlTranslator(),
-                autoAdapter.getEjbqlTranslator());
+        assertSame(detected.getSqlTreeProcessor().getClass(), adapter.getSqlTreeProcessor().getClass());
+        assertSame(detected.getExtendedTypes(), adapter.getExtendedTypes());
+        assertSame(detected.getEjbqlTranslator(), adapter.getEjbqlTranslator());
         // returns a new instance for each call
-        assertSame(adapter.getSelectTranslator(select, env.dataNode().getEntityResolver()).getClass(),
-                autoAdapter.getSelectTranslator(select, env.dataNode().getEntityResolver()).getClass());
+        assertSame(detected.getSelectTranslator(select, env.dataNode().getEntityResolver()).getClass(),
+                adapter.getSelectTranslator(select, env.dataNode().getEntityResolver()).getClass());
 
         // reverse engineering related methods
-        assertEquals(adapter.supportsCatalogsOnReverseEngineering(),
-                autoAdapter.supportsCatalogsOnReverseEngineering());
-        assertSame(adapter.getSystemCatalogs(),
-                autoAdapter.getSystemCatalogs());
-        assertSame(adapter.getSystemSchemas(),
-                autoAdapter.getSystemSchemas());
-        assertSame(adapter.tableTypeForTable(),
-                autoAdapter.tableTypeForTable());
-        assertSame(adapter.tableTypeForView(),
-                autoAdapter.tableTypeForView());
+        assertEquals(detected.supportsCatalogsOnReverseEngineering(), adapter.supportsCatalogsOnReverseEngineering());
+        assertSame(detected.getSystemCatalogs(), adapter.getSystemCatalogs());
+        assertSame(detected.getSystemSchemas(), adapter.getSystemSchemas());
+        assertSame(detected.tableTypeForTable(), adapter.tableTypeForTable());
+        assertSame(detected.tableTypeForView(), adapter.tableTypeForView());
 
         // db generation related methods
-        assertEquals(adapter.supportsUniqueConstraints(),
-                autoAdapter.supportsUniqueConstraints());
+        assertEquals(detected.supportsUniqueConstraints(), adapter.supportsUniqueConstraints());
     }
 }

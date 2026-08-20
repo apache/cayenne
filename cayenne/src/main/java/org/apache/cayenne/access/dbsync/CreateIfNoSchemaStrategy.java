@@ -68,7 +68,7 @@ public class CreateIfNoSchemaStrategy extends BaseSchemaUpdateStrategy {
         Collection<DataMap> map = dataNode.getDataMaps();
         Iterator<DataMap> iterator = map.iterator();
         while (iterator.hasNext()) {
-            DbGenerator gen = new DbGenerator(dataNode.getAdapter(), iterator.next(), dataNode.getJdbcEventLogger());
+            DbGenerator gen = new DbGenerator(dataNode.getAdapter(), iterator.next(), dataNode.getSqlLogger());
             gen.setShouldCreateTables(true);
             gen.setShouldDropTables(false);
             gen.setShouldCreateFKConstraints(true);

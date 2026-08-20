@@ -23,9 +23,8 @@ import org.apache.cayenne.ResultIterator;
 import org.apache.cayenne.access.DataNode;
 import org.apache.cayenne.access.OperationObserver;
 import org.apache.cayenne.access.jdbc.reader.RowReader;
-import org.apache.cayenne.access.translator.select.TranslatedSelect;
+import org.apache.cayenne.access.translator.TranslatedSelect;
 import org.apache.cayenne.dba.DbAdapter;
-import org.apache.cayenne.log.JdbcEventLogger;
 import org.apache.cayenne.query.PrefetchProcessor;
 import org.apache.cayenne.query.PrefetchTreeNode;
 import org.apache.cayenne.query.QueryMetadata;
@@ -63,28 +62,15 @@ public class SelectAction extends BaseSQLAction {
 
     protected void performAction(Connection connection, OperationObserver observer, TranslatedSelect translated) throws Exception {
 
-        long t1 = System.currentTimeMillis();
-
-        JdbcEventLogger logger = dataNode.getJdbcEventLogger();
-
-        logger.logQuery(translated.sql(), translated.bindings());
+        observer.nextStatement(query, translated);
 
         DbAdapter adapter = dataNode.getAdapter();
         PreparedStatement statement = connection.prepareStatement(translated.sql());
 
-        for (PSParameter b : translated.bindings()) {
-
-            // null DbAttributes are a result of inferior qualifier
-            // processing (qualifier can't map parameters to DbAttributes
-            // and therefore only supports standard java types now) hence, a
-            // special moronic case here:
-            if (b.attribute() == null) {
-                statement.setObject(b.psPosition(), b.value());
-            } else {
-                adapter.bindParameter(statement, b);
-            }
+        for (PSParameter<?> p : translated.bindings()) {
+            adapter.bindParameter(statement, p);
         }
-        
+
         int fetchSize = queryMetadata.getStatementFetchSize();
         if (fetchSize != 0) {
             statement.setFetchSize(fetchSize);
@@ -109,7 +95,7 @@ public class SelectAction extends BaseSQLAction {
         RowReader<?> rowReader = dataNode.getRowReaderFactory().rowReader(translated.resultColumns(), queryMetadata, dataNode.getAdapter());
 
         ResultIterator<?> it = new RSIterator<>(statement, rs, rowReader);
-        it = forIteratedResult(it, observer, connection, t1, translated.sql());
+        it = forIteratedResult(it, observer, connection);
         it = forSuppressedDistinct(it, translated);
         it = forFetchLimit(it, translated);
 
@@ -132,25 +118,17 @@ public class SelectAction extends BaseSQLAction {
                 it.close();
             }
 
-            dataNode.getJdbcEventLogger().logSelectCount(resultRows.size(), System.currentTimeMillis() - t1, translated.sql());
-
             observer.nextRows(query, resultRows);
         }
     }
 
     private <T> ResultIterator<T> forIteratedResult(ResultIterator<T> iterator, OperationObserver observer,
-                                                    Connection connection, final long queryStartedAt, final String sql) {
+                                                    Connection connection) {
         if (!observer.isIteratedResult()) {
             return iterator;
         }
 
-        return new ConnectionAwareResultIterator<>(iterator, connection) {
-            @Override
-            protected void doClose() {
-                dataNode.getJdbcEventLogger().logSelectCount(rowCounter, System.currentTimeMillis() - queryStartedAt, sql);
-                super.doClose();
-            }
-        };
+        return new ConnectionAwareResultIterator<>(iterator, connection);
     }
 
     private <T> ResultIterator<T> forFetchLimit(ResultIterator<T> iterator, TranslatedSelect translated) {

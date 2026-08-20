@@ -20,6 +20,7 @@
 package org.apache.cayenne.access.sqlbuilder.sqltree;
 
 import org.apache.cayenne.access.sqlbuilder.SQLAppendable;
+import org.apache.cayenne.access.sqlbuilder.SQLGenerationContext;
 
 /**
  * @since 4.2
@@ -27,8 +28,8 @@ import org.apache.cayenne.access.sqlbuilder.SQLAppendable;
 public class ExistsNode extends Node {
 
     @Override
-    public SQLAppendable append(SQLAppendable buffer) {
-        return buffer.append(" EXISTS");
+    public SQLAppendable append(SQLAppendable buffer, SQLGenerationContext context) {
+        return buffer.appendTokenSeparator().append("EXISTS");
     }
 
     @Override

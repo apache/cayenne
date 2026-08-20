@@ -70,7 +70,7 @@ public class SQLServerBatchAction extends BatchAction {
 		String flag = on ? " ON" : " OFF";
 		String configSQL = "SET IDENTITY_INSERT " + query.getDbEntity().getFullyQualifiedName() + flag;
 
-		dataNode.getJdbcEventLogger().log(configSQL);
+		dataNode.getSqlLogger().logMessage(configSQL);
 
 		try (Statement statement = connection.createStatement()) {
 			statement.execute(configSQL);

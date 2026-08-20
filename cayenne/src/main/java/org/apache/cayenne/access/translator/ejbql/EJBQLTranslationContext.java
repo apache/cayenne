@@ -18,6 +18,7 @@
  ****************************************************************/
 package org.apache.cayenne.access.translator.ejbql;
 
+import org.apache.cayenne.access.translator.EJBQLTranslator;
 import org.apache.cayenne.dba.DbAdapter;
 import org.apache.cayenne.dba.QuotingStrategy;
 import org.apache.cayenne.ejbql.EJBQLCompiledExpression;

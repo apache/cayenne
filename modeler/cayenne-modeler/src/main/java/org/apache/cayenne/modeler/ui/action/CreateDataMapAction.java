@@ -21,14 +21,12 @@ package org.apache.cayenne.modeler.ui.action;
 
 import org.apache.cayenne.configuration.ConfigurationNode;
 import org.apache.cayenne.configuration.DataChannelDescriptor;
-import org.apache.cayenne.configuration.DataNodeDescriptor;
 import org.apache.cayenne.dbsync.naming.NameBuilder;
 import org.apache.cayenne.map.DataMap;
 import org.apache.cayenne.modeler.Application;
 import org.apache.cayenne.modeler.project.ProjectSession;
 import org.apache.cayenne.modeler.event.display.DataMapDisplayEvent;
 import org.apache.cayenne.modeler.event.model.DataMapEvent;
-import org.apache.cayenne.modeler.event.model.DataNodeEvent;
 import org.apache.cayenne.modeler.toolkit.AppAction;
 import org.apache.cayenne.modeler.undo.CreateDataMapUndoableEdit;
 
@@ -45,15 +43,9 @@ public class CreateDataMapAction extends AppAction {
         map.setDataChannelDescriptor(domain);
         domain.getDataMaps().add(map);
 
-        DataNodeDescriptor node = session.getSelectedDataNode();
-        if (node != null && !node.getDataMapNames().contains(map.getName())) {
-            node.getDataMapNames().add(map.getName());
-            session.fireDataNodeEvent(DataNodeEvent.ofChange(src, node));
-        }
-
         session.fireDataMapEvent(DataMapEvent.ofAdd(src, map));
 
-        DataMapDisplayEvent displayEvent = new DataMapDisplayEvent(src, domain, map, node, true);
+        DataMapDisplayEvent displayEvent = new DataMapDisplayEvent(src, domain, map, true);
         session.displayDataMap(displayEvent);
     }
 
@@ -73,7 +65,7 @@ public class CreateDataMapAction extends AppAction {
                 .getRootNode();
 
         DataMap map = new DataMap();
-        map.setName(NameBuilder.builder(map, dataChannelDescriptor).name());
+        map.setName(NameBuilder.of(map, dataChannelDescriptor).build());
         onMapCreated(this, getProjectSession(), map);
 
         app.getUndoManager().addEdit(new CreateDataMapUndoableEdit(getProjectSession(), dataChannelDescriptor, map));
@@ -88,6 +80,6 @@ public class CreateDataMapAction extends AppAction {
             return false;
         }
 
-        return ((DataNodeDescriptor) object).getDataChannelDescriptor() != null;
+        return object instanceof DataChannelDescriptor;
     }
 }

@@ -28,7 +28,6 @@ import org.apache.cayenne.map.ObjRelationship;
 import org.apache.cayenne.modeler.project.ProjectSession;
 import org.apache.cayenne.modeler.toolkit.table.CMTableModel;
 import org.apache.cayenne.project.extension.info.ObjectInfo;
-import org.apache.cayenne.util.Util;
 
 import java.util.ArrayList;
 import java.util.Collections;
@@ -233,7 +232,10 @@ public class ObjRelationshipTableModel extends CMTableModel<ObjRelationship> {
     final class RelationshipComparator implements Comparator<ObjRelationship> {
         public int compare(ObjRelationship o1, ObjRelationship o2) {
             int delta = getWeight(o1) - getWeight(o2);
-            return (delta != 0) ? delta : Util.nullSafeCompare(true, o1.getName(), o2.getName());
+            return (delta != 0)
+                    ? delta
+                    : Comparator.<String>nullsFirst(Comparator.naturalOrder())
+                            .compare(o1.getName(), o2.getName());
         }
 
         private int getWeight(ObjRelationship r) {

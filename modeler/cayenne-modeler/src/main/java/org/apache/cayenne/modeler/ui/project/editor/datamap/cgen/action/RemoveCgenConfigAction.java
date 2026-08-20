@@ -52,7 +52,7 @@ public class RemoveCgenConfigAction extends AppAction {
     @Override
     public void performAction(ActionEvent e) {
         int result = JOptionPane.showConfirmDialog(app.getFrame(),
-                "Configuration will be remove\n               Are you sure?",
+                "Configuration will be removed\n               Are you sure?",
                 "Delete cgenConfiguration",
                 JOptionPane.YES_NO_OPTION);
         if (result == JOptionPane.OK_OPTION) {

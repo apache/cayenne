@@ -38,7 +38,9 @@ class SQLGenerationStage implements TranslationStage {
         // convert to database flavour
         node = context.getAdapter().getSqlTreeProcessor().process(node);
         // generate SQL
-        SQLGenerationVisitor visitor = new SQLGenerationVisitor(new DefaultSQLAppendable(context));
+        DefaultSQLAppendable buffer = new DefaultSQLAppendable(
+                context.getAdapter().getQuotingStrategy(context.getRootDbEntity()));
+        SQLGenerationVisitor visitor = new SQLGenerationVisitor(buffer, context);
         node.visit(visitor);
         context.setFinalSQL(visitor.getSQLString());
     }

@@ -19,57 +19,58 @@
 
 package org.apache.cayenne.access.flush;
 
-import java.util.List;
-
 import org.apache.cayenne.CayenneRuntimeException;
+import org.apache.cayenne.CayenneSqlException;
 import org.apache.cayenne.DataRow;
 import org.apache.cayenne.ObjectId;
 import org.apache.cayenne.ResultIterator;
 import org.apache.cayenne.access.OperationObserver;
-import org.apache.cayenne.log.JdbcEventLogger;
+import org.apache.cayenne.access.translator.TranslatedStatement;
 import org.apache.cayenne.map.DbAttribute;
-import org.apache.cayenne.query.BatchQuery;
 import org.apache.cayenne.query.InsertBatchQuery;
 import org.apache.cayenne.query.Query;
 import org.apache.cayenne.util.Util;
+
+import java.util.List;
 
 /**
  * @since 4.2
  */
 class FlushObserver implements OperationObserver {
 
-    private JdbcEventLogger logger;
+    // the latest statement reported via nextStatement, used to correlate a failure with a specific SQL statement
+    private TranslatedStatement statement;
 
-    FlushObserver(JdbcEventLogger logger) {
-        this.logger = logger;
+    @Override
+    public void nextStatement(Query query, TranslatedStatement statement) {
+        this.statement = statement;
     }
 
     @Override
     public void nextQueryException(Query query, Exception ex) {
-        throw new CayenneRuntimeException("Raising from query exception.", Util.unwindException(ex));
+        // preserve meaningful Cayenne exceptions (e.g. OptimisticLockException), even when they wrap a lower-level
+        // cause; only wrap raw lower-level failures in a CayenneSqlException so they can be correlated with the
+        // failing statement
+        Throwable unwound = Util.unwindException(ex, CayenneRuntimeException.class);
+
+        if (unwound instanceof CayenneRuntimeException cayenneException) {
+            throw cayenneException;
+        }
+        throw new CayenneSqlException("Flush exception.", query, statement, unwound);
     }
 
     @Override
     public void nextGlobalException(Exception ex) {
-        throw new CayenneRuntimeException("Raising from underlyingQueryEngine exception.", Util.unwindException(ex));
+        throw new CayenneRuntimeException("Flush exception.", Util.unwindException(ex));
     }
 
     /**
      * Processes generated keys.
      */
     @Override
-    @SuppressWarnings("unchecked")
-    public void nextGeneratedRows(Query query, ResultIterator<?> keysIterator, List<ObjectId> idsToUpdate) {
+    public void nextGeneratedRows(Query query, List<DataRow> keys, List<ObjectId> idsToUpdate) {
 
-        // read and close the iterator before doing anything else
-        List<DataRow> keys;
-        try {
-            keys = (List<DataRow>) keysIterator.allRows();
-        } finally {
-            keysIterator.close();
-        }
-
-        if (!(query instanceof InsertBatchQuery)) {
+        if (!(query instanceof InsertBatchQuery batch)) {
             throw new CayenneRuntimeException("Generated keys only supported for InsertBatchQuery, instead got %s", query);
         }
 
@@ -80,8 +81,7 @@ class FlushObserver implements OperationObserver {
         for (int i = 0; i < keys.size(); i++) {
 	        DataRow key = keys.get(i);
 	
-	        // empty key?
-	        if (key.size() == 0) {
+	        if (key.isEmpty()) {
 	            throw new CayenneRuntimeException("Empty key generated.");
 	        }
 	
@@ -91,8 +91,7 @@ class FlushObserver implements OperationObserver {
 	            return;
 	        }
 
-	        BatchQuery batch = (BatchQuery) query;
-	        for (DbAttribute attribute : batch.getDbEntity().getGeneratedAttributes()) {
+            for (DbAttribute attribute : batch.getDbEntity().getGeneratedAttributes()) {
 	
 	            // batch can have generated attributes that are not PKs, e.g.
 	            // columns with
@@ -108,8 +107,6 @@ class FlushObserver implements OperationObserver {
 	                	value = key.values().iterator().next();
 	                }
 	                
-	                // Log the generated PK
-	                logger.logGeneratedKey(attribute, value);
 	
 	                // I guess we should override any existing value,
 	                // as generated key is the latest thing that exists in the DB.
@@ -118,26 +115,6 @@ class FlushObserver implements OperationObserver {
 	            }
 	        }
         }
-    }
-
-    public void setJdbcEventLogger(JdbcEventLogger logger) {
-        this.logger = logger;
-    }
-
-    public JdbcEventLogger getJdbcEventLogger() {
-        return this.logger;
-    }
-
-    @Override
-    public void nextBatchCount(Query query, int[] resultCount) {
-    }
-
-    @Override
-    public void nextCount(Query query, int resultCount) {
-    }
-
-    @Override
-    public void nextRows(Query query, List<?> dataRows) {
     }
 
     @Override

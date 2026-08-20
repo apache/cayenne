@@ -22,51 +22,60 @@ package org.apache.cayenne.gen;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.io.TempDir;
+import org.slf4j.helpers.NOPLogger;
 
 import java.io.File;
 import java.nio.file.Paths;
 
 import static org.junit.jupiter.api.Assertions.assertNotNull;
 
-public class TemplateLocationTest {
+public class TemplateLocationTest extends CgenCase {
 
     @TempDir
     public File tempFolder;
 
-    private CgenConfiguration cgenConfiguration;
-    private ClassGenerationAction action;
-    private TemplateType templateType;
+    private CgenConfiguration configuration;
 
     @BeforeEach
     public void setUp() {
-        cgenConfiguration = new CgenConfiguration();
-        action = new ClassGenerationAction(cgenConfiguration);
-        templateType = TemplateType.ENTITY_SUBCLASS;
+        configuration = new CgenConfiguration();
     }
 
     @Test
     public void upperLevel() throws Exception {
         File subFolder = new File(tempFolder, "sub");
         subFolder.mkdir();
-        cgenConfiguration.setRootPath(subFolder.toPath());
+        configuration.setRootPath(subFolder.toPath());
         new File(tempFolder, "testTemplate.vm").createNewFile();
-        cgenConfiguration.setTemplate(new CgenTemplate("../testTemplate.vm", false, TemplateType.ENTITY_SUBCLASS));
-        assertNotNull(action.getTemplate(templateType));
+        configuration.setTemplate(new CgenTemplate("../testTemplate.vm", true, TemplateType.ENTITY_SUBCLASS));
+
+        assertNotNull(createAction().getTemplate(TemplateType.ENTITY_SUBCLASS));
     }
 
     @Test
     public void sameLevel() throws Exception {
-        cgenConfiguration.setRootPath(tempFolder.toPath());
+        configuration.setRootPath(tempFolder.toPath());
         new File(tempFolder, "testTemplate2.vm").createNewFile();
-        cgenConfiguration.setTemplate(new CgenTemplate("testTemplate2.vm", false, TemplateType.ENTITY_SUBCLASS));
-        assertNotNull(action.getTemplate(templateType));
+        configuration.setTemplate(new CgenTemplate("testTemplate2.vm", true, TemplateType.ENTITY_SUBCLASS));
+
+        assertNotNull(createAction().getTemplate(TemplateType.ENTITY_SUBCLASS));
     }
 
     @Test
     public void aboveLevel() throws Exception {
-        cgenConfiguration.setRootPath(Paths.get(tempFolder.getParent()));
+        configuration.setRootPath(Paths.get(tempFolder.getParent()));
         new File(tempFolder, "testTemplate3.vm").createNewFile();
-        cgenConfiguration.setTemplate(new CgenTemplate(tempFolder + "/testTemplate3.vm", false, TemplateType.ENTITY_SUBCLASS));
-        assertNotNull(action.getTemplate(templateType));
+        configuration.setTemplate(
+                new CgenTemplate(tempFolder + "/testTemplate3.vm", true, TemplateType.ENTITY_SUBCLASS));
+
+        assertNotNull(createAction().getTemplate(TemplateType.ENTITY_SUBCLASS));
+    }
+
+    private ClassGenerationAction createAction() {
+        return new ClassGenerationAction(
+                configuration,
+                getUnitTestInjector().getInstance(ToolsUtilsFactory.class),
+                getUnitTestInjector().getInstance(MetadataUtils.class),
+                NOPLogger.NOP_LOGGER);
     }
 }

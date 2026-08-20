@@ -57,8 +57,9 @@ Both fields are required.
 ```
 
 `status` semantics:
-- `generated` — at least one file was written; `files` is non-empty
-- `up_to_date` — all candidate files were already current; `files` is empty
+- `generated` — at least one file changed on disk; `files` lists exactly those files
+- `up_to_date` — cgen ran in full, but every generated file was byte-identical to what was already there,
+  so nothing was touched; `files` is empty
 - `validation_failed` — a pre-flight check failed; the failing slot in `validation` is `false`, later slots are `null`
 - `error` — cgen started but threw mid-run; `files` lists what was written before the failure
 

@@ -22,19 +22,14 @@ package org.apache.cayenne.modeler.ui.project.editor.datamap.main;
 import com.jgoodies.forms.builder.DefaultFormBuilder;
 import com.jgoodies.forms.layout.FormLayout;
 import org.apache.cayenne.configuration.DataChannelDescriptor;
-import org.apache.cayenne.configuration.DataNodeDescriptor;
 import org.apache.cayenne.map.DataMap;
 import org.apache.cayenne.map.ObjEntity;
 import org.apache.cayenne.modeler.event.model.DataMapEvent;
 import org.apache.cayenne.modeler.pref.adapters.DataMapPrefs;
-import org.apache.cayenne.modeler.project.ProjectComparators;
 import org.apache.cayenne.modeler.project.ProjectSession;
 import org.apache.cayenne.modeler.toolkit.ProjectPanel;
-import org.apache.cayenne.modeler.toolkit.Renderers;
 import org.apache.cayenne.modeler.toolkit.checkbox.CMCheckBox;
-import org.apache.cayenne.modeler.toolkit.combobox.CMUndoableComboBox;
 import org.apache.cayenne.modeler.toolkit.text.CMUndoableTextField;
-import org.apache.cayenne.modeler.ui.action.LinkDataMapAction;
 import org.apache.cayenne.modeler.ui.project.editor.datamap.main.catalog.CatalogUpdateDialog;
 import org.apache.cayenne.modeler.ui.project.editor.datamap.main.locking.LockingUpdateDialog;
 import org.apache.cayenne.modeler.ui.project.editor.datamap.main.pkg.PackageUpdateDialog;
@@ -56,8 +51,6 @@ import java.util.List;
 public class DataMapMainView extends ProjectPanel {
 
     private final CMUndoableTextField name;
-    private final JLabel nodeSelectorLabel;
-    private final JComboBox<DataNodeDescriptor> nodeSelector;
     private final JCheckBox defaultLockType;
     private final CMUndoableTextField defaultCatalog;
     private final CMUndoableTextField defaultSchema;
@@ -74,8 +67,6 @@ public class DataMapMainView extends ProjectPanel {
     public DataMapMainView(ProjectSession session) {
         super(session);
         name = new CMUndoableTextField(app.getUndoManager());
-        nodeSelectorLabel = new JLabel("DataNode:");
-        nodeSelector = new CMUndoableComboBox<>(app.getUndoManager());
         defaultCatalog = new CMUndoableTextField(app.getUndoManager());
         defaultSchema = new CMUndoableTextField(app.getUndoManager());
         quoteSQLIdentifiers = new CMCheckBox(app.getUndoManager());
@@ -93,8 +84,6 @@ public class DataMapMainView extends ProjectPanel {
     }
 
     private void initLayout() {
-        nodeSelector.setRenderer(Renderers.listRendererWithIcons());
-
         FormLayout layout = new FormLayout(
                 "right:70dlu, $lcgap, fill:180dlu, $lcgap, fill:120",
                 "");
@@ -102,7 +91,7 @@ public class DataMapMainView extends ProjectPanel {
         builder.setDefaultDialogBorder();
 
         builder.appendSeparator("DataMap Configuration");
-        builder.append("DataMap Name:", name, 2);
+        builder.append("Name:", name, 2);
         builder.append("Quote SQL Identifiers:", quoteSQLIdentifiers, 3);
         builder.append("Comment:", comment, 2);
 
@@ -112,10 +101,6 @@ public class DataMapMainView extends ProjectPanel {
         builder.append("Java Package:", defaultPackage, updateDefaultPackage);
         builder.append("Custom Superclass:", defaultSuperclass, updateDefaultSuperclass);
         builder.append("Optimistic Locking:", defaultLockType, updateDefaultLockType);
-
-        builder.appendSeparator("Linked DataNode");
-        builder.append(nodeSelectorLabel);
-        builder.append(nodeSelector, 2);
 
         setLayout(new BorderLayout());
         add(builder.getPanel(), BorderLayout.CENTER);
@@ -128,7 +113,6 @@ public class DataMapMainView extends ProjectPanel {
         comment.addCommitListener(this::updateComment);
         defaultPackage.addCommitListener(this::setDefaultPackage);
         defaultSuperclass.addCommitListener(this::setDefaultSuperclass);
-        nodeSelector.addActionListener(e -> setDataNode());
         quoteSQLIdentifiers.addItemListener(e -> setQuoteSQLIdentifiers(quoteSQLIdentifiers.isSelected()));
         defaultLockType.addItemListener(e -> setDefaultLockType(defaultLockType.isSelected()
                 ? ObjEntity.LOCK_TYPE_OPTIMISTIC
@@ -154,35 +138,6 @@ public class DataMapMainView extends ProjectPanel {
         name.setText(map.getName());
         quoteSQLIdentifiers.setSelected(map.isQuotingSQLIdentifiers());
         comment.setText(getComment(map));
-
-        // rebuild data node list
-
-        DataNodeDescriptor[] nodes = ((DataChannelDescriptor) session.project().getRootNode())
-                .getNodeDescriptors().toArray(new DataNodeDescriptor[0]);
-
-        // add an empty item to the front
-        DataNodeDescriptor[] objects = new DataNodeDescriptor[nodes.length + 1];
-
-        // now add the entities
-        if (nodes.length > 0) {
-            Arrays.sort(nodes, ProjectComparators.forNamedObjects());
-            System.arraycopy(nodes, 0, objects, 1, nodes.length);
-        }
-
-        DefaultComboBoxModel<DataNodeDescriptor> model = new DefaultComboBoxModel<>(objects);
-
-        // find selected node
-        for (DataNodeDescriptor node : nodes) {
-            if (node.getDataMapNames().contains(map.getName())) {
-                model.setSelectedItem(node);
-                break;
-            }
-        }
-
-        nodeSelector.setModel(model);
-        boolean hasNodes = nodes.length > 0;
-        nodeSelector.setEnabled(hasNodes);
-        nodeSelectorLabel.setEnabled(hasNodes);
 
         // init default fields
         defaultLockType.setSelected(map.getDefaultLockType() != ObjEntity.LOCK_TYPE_NONE);
@@ -334,30 +289,10 @@ public class DataMapMainView extends ProjectPanel {
 
         // completely new name, set new name for domain
         DataMapEvent e = DataMapEvent.ofChange(this, map, oldName);
-        DataChannelDescriptor domain = (DataChannelDescriptor) session.project().getRootNode();
-
-        // must fully relink renamed map across node descriptors
-        List<DataNodeDescriptor> nodesUsingMap = new ArrayList<>();
-        for (DataNodeDescriptor node : domain.getNodeDescriptors()) {
-            if (node.getDataMapNames().contains(oldName)) {
-                nodesUsingMap.add(node);
-            }
-        }
         app.getPrefsManager().stageDataMapRename(map, newName);
         map.setName(newName);
-        for (DataNodeDescriptor node : nodesUsingMap) {
-            node.getDataMapNames().remove(oldName);
-            node.getDataMapNames().add(newName);
-        }
 
         session.fireDataMapEvent(e);
-    }
-
-    void setDataNode() {
-        DataNodeDescriptor node = (DataNodeDescriptor) nodeSelector.getSelectedItem();
-        DataMap map = session.getSelectedDataMap();
-        LinkDataMapAction action = app.getActionManager().getAction(LinkDataMapAction.class);
-        action.linkDataMap(map, node);
     }
 
     void updateDefaultCatalog() {

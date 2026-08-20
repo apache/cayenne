@@ -20,6 +20,7 @@
 package org.apache.cayenne.access.sqlbuilder.sqltree;
 
 import org.apache.cayenne.access.sqlbuilder.SQLAppendable;
+import org.apache.cayenne.access.sqlbuilder.SQLGenerationContext;
 import org.apache.cayenne.map.DbAttribute;
 
 import java.util.Objects;
@@ -43,14 +44,15 @@ public class ColumnNode extends Node {
     }
 
     @Override
-    public SQLAppendable append(SQLAppendable buffer) {
-        buffer.append(' ');
-        if (table != null) {
+    public SQLAppendable append(SQLAppendable buffer, SQLGenerationContext context) {
+        buffer.appendTokenSeparator();
+        // omit the table prefix for a single-table statement
+        if (table != null && (context == null || !context.isSingleTableSQL())) {
             buffer.appendQuoted(table).append('.');
         }
         buffer.appendQuoted(column);
         if (alias != null) {
-            buffer.append(' ').appendQuoted(alias);
+            buffer.appendTokenSeparator().appendQuoted(alias);
         }
         return buffer;
     }

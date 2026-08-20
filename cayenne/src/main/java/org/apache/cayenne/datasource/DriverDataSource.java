@@ -19,151 +19,143 @@
 
 package org.apache.cayenne.datasource;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
+import javax.sql.DataSource;
 import java.io.PrintWriter;
 import java.sql.Connection;
 import java.sql.Driver;
 import java.sql.DriverManager;
 import java.sql.SQLException;
-import java.sql.SQLFeatureNotSupportedException;
+import java.util.Objects;
 import java.util.Properties;
-
-import javax.sql.DataSource;
-
-import org.apache.cayenne.CayenneRuntimeException;
-import org.apache.cayenne.util.Util;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 /**
  * A non-pooling DataSource implementation wrapping a JDBC driver.
  */
 public class DriverDataSource implements DataSource {
 
-	private static final Logger LOGGER = LoggerFactory.getLogger(DriverDataSource.class);
+    private static final Logger LOGGER = LoggerFactory.getLogger(DriverDataSource.class);
 
-	protected Driver driver;
-	protected String connectionUrl;
-	protected String userName;
-	protected String password;
+    protected final Driver driver;
+    protected final String connectionUrl;
+    protected final String userName;
+    protected final String password;
 
-	/**
-	 * Creates a DriverDataSource wrapping a given Driver. If "driver" is null,
-	 * DriverDataSource will consult DriverManager for a registered driver for
-	 * the given URL. So when specifying null, a user must take care of
-	 * registering the driver. "connectionUrl" on the other hand must NOT be
-	 * null.
-	 * 
-	 * @since 1.1
-	 */
-	public DriverDataSource(Driver driver, String connectionUrl, String userName, String password) {
+    /**
+     * Creates a DriverDataSource wrapping a given Driver. If "driver" is null,
+     * DriverDataSource will consult DriverManager for a registered driver for
+     * the given URL. So when specifying null, a user must take care of
+     * registering the driver. "connectionUrl" on the other hand must NOT be
+     * null.
+     *
+     * @since 1.1
+     */
+    public DriverDataSource(Driver driver, String connectionUrl, String userName, String password) {
+        this.driver = driver;
+        this.connectionUrl = Objects.requireNonNull(connectionUrl, "Null 'connectionUrl'");
+        this.userName = userName;
+        this.password = password;
+    }
 
-		if (connectionUrl == null) {
-			throw new NullPointerException("Null 'connectionUrl'");
-		}
+    /**
+     * Returns a new database connection, using preconfigured data to locate the
+     * database and obtain a connection.
+     */
+    @Override
+    public Connection getConnection() throws SQLException {
+        // login with internal credentials
+        return getConnection(userName, password);
+    }
 
-		this.driver = driver;
-		this.connectionUrl = connectionUrl;
-		this.userName = userName;
-		this.password = password;
-	}
+    /**
+     * Returns a new database connection using provided credentials to login to
+     * the database.
+     */
+    @Override
+    public Connection getConnection(String userName, String password) throws SQLException {
+        try {
 
-	/**
-	 * Returns a new database connection, using preconfigured data to locate the
-	 * database and obtain a connection.
-	 */
-	@Override
-	public Connection getConnection() throws SQLException {
-		// login with internal credentials
-		return getConnection(userName, password);
-	}
+            logConnect(connectionUrl, userName);
+            Connection c;
 
-	/**
-	 * Returns a new database connection using provided credentials to login to
-	 * the database.
-	 */
-	@Override
-	public Connection getConnection(String userName, String password) throws SQLException {
-		try {
+            if (driver == null) {
+                c = DriverManager.getConnection(connectionUrl, userName, password);
+            } else {
+                Properties connectProperties = new Properties();
 
-			logConnect(connectionUrl, userName, password);
-			Connection c = null;
+                if (userName != null) {
+                    connectProperties.put("user", userName);
+                }
 
-			if (driver == null) {
-				c = DriverManager.getConnection(connectionUrl, userName, password);
-			} else {
-				Properties connectProperties = new Properties();
+                if (password != null) {
+                    connectProperties.put("password", password);
+                }
+                c = driver.connect(connectionUrl, connectProperties);
+            }
 
-				if (userName != null) {
-					connectProperties.put("user", userName);
-				}
+            // some drivers (Oracle) return null connections instead of throwing
+            // an exception... fix it here
 
-				if (password != null) {
-					connectProperties.put("password", password);
-				}
-				c = driver.connect(connectionUrl, connectProperties);
-			}
+            if (c == null) {
+                throw new SQLException("Can't establish connection: " + connectionUrl);
+            }
 
-			// some drivers (Oracle) return null connections instead of throwing
-			// an exception... fix it here
+            LOGGER.info("+++ Connecting: SUCCESS.");
 
-			if (c == null) {
-				throw new SQLException("Can't establish connection: " + connectionUrl);
-			}
+            return c;
+        } catch (SQLException ex) {
+            LOGGER.info("*** Connecting: FAILURE.", ex);
+            throw ex;
+        }
+    }
 
-			LOGGER.info("+++ Connecting: SUCCESS.");
+    private void logConnect(String url, String userName) {
+        LOGGER.info("Connecting to '{}' as '{}'", url, userName);
+    }
 
-			return c;
-		} catch (SQLException ex) {
-			LOGGER.info("*** Connecting: FAILURE.", ex);
-			throw ex;
-		}
-	}
+    @Override
+    public int getLoginTimeout() {
+        return -1;
+    }
 
-	private void logConnect(String url, String userName, String password) {
-		LOGGER.info("Connecting to '{}' as '{}'", url, userName);
-	}
+    @Override
+    public void setLoginTimeout(int seconds) {
+        // noop
+    }
 
-	@Override
-	public int getLoginTimeout() throws SQLException {
-		return -1;
-	}
+    @Override
+    public PrintWriter getLogWriter() {
+        return DriverManager.getLogWriter();
+    }
 
-	@Override
-	public void setLoginTimeout(int seconds) throws SQLException {
-		// noop
-	}
+    @Override
+    public void setLogWriter(PrintWriter out) {
+        DriverManager.setLogWriter(out);
+    }
 
-	@Override
-	public PrintWriter getLogWriter() throws SQLException {
-		return DriverManager.getLogWriter();
-	}
+    /**
+     * @since 3.0
+     */
+    @Override
+    public boolean isWrapperFor(Class<?> iface) throws SQLException {
+        throw new UnsupportedOperationException();
+    }
 
-	@Override
-	public void setLogWriter(PrintWriter out) throws SQLException {
-		DriverManager.setLogWriter(out);
-	}
+    /**
+     * @since 3.0
+     */
+    @Override
+    public <T> T unwrap(Class<T> iface) throws SQLException {
+        throw new UnsupportedOperationException();
+    }
 
-	/**
-	 * @since 3.0
-	 */
-	@Override
-	public boolean isWrapperFor(Class<?> iface) throws SQLException {
-		throw new UnsupportedOperationException();
-	}
-
-	/**
-	 * @since 3.0
-	 */
-	@Override
-	public <T> T unwrap(Class<T> iface) throws SQLException {
-		throw new UnsupportedOperationException();
-	}
-
-	/**
-	 * @since 3.1
-	 */
-	@Override
-	public java.util.logging.Logger getParentLogger() throws SQLFeatureNotSupportedException {
-		throw new UnsupportedOperationException();
-	}
+    /**
+     * @since 3.1
+     */
+    @Override
+    public java.util.logging.Logger getParentLogger() {
+        throw new UnsupportedOperationException();
+    }
 }

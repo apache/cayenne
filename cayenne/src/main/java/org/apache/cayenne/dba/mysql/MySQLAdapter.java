@@ -22,9 +22,9 @@ package org.apache.cayenne.dba.mysql;
 import org.apache.cayenne.dba.NativeColumnType;
 import org.apache.cayenne.access.DataNode;
 import org.apache.cayenne.access.sqlbuilder.sqltree.SQLTreeProcessor;
-import org.apache.cayenne.access.translator.ejbql.EJBQLTranslator;
+import org.apache.cayenne.access.translator.EJBQLTranslator;
 import org.apache.cayenne.access.translator.ejbql.JdbcEJBQLTranslator;
-import org.apache.cayenne.access.translator.procedure.ProcedureTranslator;
+import org.apache.cayenne.access.translator.ProcedureTranslator;
 import org.apache.cayenne.access.types.ByteArrayType;
 import org.apache.cayenne.access.types.CharType;
 import org.apache.cayenne.access.types.DateType;
@@ -41,6 +41,7 @@ import org.apache.cayenne.configuration.RuntimeProperties;
 import org.apache.cayenne.dba.DefaultQuotingStrategy;
 import org.apache.cayenne.dba.QuotingStrategy;
 import org.apache.cayenne.dba.JdbcAdapter;
+import org.apache.cayenne.dba.PkGenerator;
 import org.apache.cayenne.dba.TypesMapping;
 import org.apache.cayenne.di.Inject;
 import org.apache.cayenne.map.DbAttribute;
@@ -122,6 +123,14 @@ public class MySQLAdapter extends JdbcAdapter {
     @Override
     protected QuotingStrategy createQuotingStrategy() {
         return new DefaultQuotingStrategy('`', '`');
+    }
+
+    /**
+     * Returns a {@link MySQLPkGenerator}.
+     */
+    @Override
+    public PkGenerator createPkGenerator() {
+        return new MySQLPkGenerator(this);
     }
 
     /**

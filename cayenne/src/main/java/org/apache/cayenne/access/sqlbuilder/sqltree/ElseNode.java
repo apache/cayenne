@@ -20,15 +20,20 @@
 package org.apache.cayenne.access.sqlbuilder.sqltree;
 
 import org.apache.cayenne.access.sqlbuilder.SQLAppendable;
+import org.apache.cayenne.access.sqlbuilder.SQLGenerationContext;
 
 /**
  * @since 5.0
  */
 public class ElseNode extends Node {
 
+    public ElseNode() {
+        super(NodeType.ELSE);
+    }
+
     @Override
-    public SQLAppendable append(SQLAppendable buffer) {
-        return buffer.append(" ELSE");
+    public SQLAppendable append(SQLAppendable buffer, SQLGenerationContext context) {
+        return buffer.appendTokenSeparator().append("ELSE");
     }
 
     @Override

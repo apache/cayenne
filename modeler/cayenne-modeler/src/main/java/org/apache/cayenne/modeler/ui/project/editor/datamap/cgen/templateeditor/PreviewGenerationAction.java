@@ -22,7 +22,10 @@ package org.apache.cayenne.modeler.ui.project.editor.datamap.cgen.templateeditor
 
 import org.apache.cayenne.gen.CgenConfiguration;
 import org.apache.cayenne.gen.ClassGenerationAction;
+import org.apache.cayenne.gen.MetadataUtils;
 import org.apache.cayenne.gen.TemplateType;
+import org.apache.cayenne.gen.ToolsUtilsFactory;
+import org.slf4j.Logger;
 
 import java.io.StringWriter;
 import java.io.Writer;
@@ -32,19 +35,22 @@ import java.io.Writer;
  */
 public class PreviewGenerationAction extends ClassGenerationAction {
 
-    private StringWriter writer;
+    private final StringWriter writer;
 
-    public PreviewGenerationAction(CgenConfiguration cgenConfig) {
-        super(cgenConfig);
+    public PreviewGenerationAction(
+            CgenConfiguration configuration,
+            ToolsUtilsFactory utilsFactory,
+            MetadataUtils metadataUtils,
+            Logger logger,
+            StringWriter writer) {
+
+        super(configuration, utilsFactory, metadataUtils, logger);
+        this.writer = writer;
     }
 
     @Override
     protected void validateAttributes() {
         //Mock
-    }
-
-    public void setWriter(StringWriter writer) {
-        this.writer = writer;
     }
 
     @Override

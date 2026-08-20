@@ -19,13 +19,14 @@
 
 package org.apache.cayenne.dba.sqlserver;
 
+import org.apache.cayenne.DataRow;
 import org.apache.cayenne.ObjectId;
 import org.apache.cayenne.ResultIterator;
 import org.apache.cayenne.access.DataNode;
 import org.apache.cayenne.access.OperationObserver;
 import org.apache.cayenne.access.jdbc.ProcedureAction;
 import org.apache.cayenne.access.jdbc.RSColumn;
-import org.apache.cayenne.access.translator.procedure.TranslatedProcedure;
+import org.apache.cayenne.access.translator.TranslatedProcedure;
 import org.apache.cayenne.query.ProcedureQuery;
 import org.apache.cayenne.query.Query;
 
@@ -60,9 +61,9 @@ public class SQLServerProcedureAction extends ProcedureAction {
 		TranslatedProcedure translated = dataNode.getProcedureTranslator()
 				.translate(query, dataNode.getAdapter(), dataNode.getEntityResolver());
 
-		dataNode.getJdbcEventLogger().logQuery(translated.sql(), translated.bindings());
+		observer.nextStatement(query, translated);
 
-		try (CallableStatement statement = connection.prepareCall(translated.sql());) {
+		try (CallableStatement statement = connection.prepareCall(translated.sql())) {
 			bindParameters(statement, translated);
 
 			// stored procedure may contain a mixture of update counts and
@@ -82,7 +83,7 @@ public class SQLServerProcedureAction extends ProcedureAction {
 			while (true) {
 				if (hasResultSet) {
 
-					try (ResultSet rs = statement.getResultSet();) {
+					try (ResultSet rs = statement.getResultSet()) {
 						RSColumn[] columns = describeResultSet(rs, processedResultSets++);
 						readResultSet(rs, columns, query, localObserver);
 					}
@@ -91,7 +92,6 @@ public class SQLServerProcedureAction extends ProcedureAction {
 					if (updateCount == -1) {
 						break;
 					}
-					dataNode.getJdbcEventLogger().logUpdateCount(updateCount);
 					localObserver.nextCount(query, updateCount);
 				}
 
@@ -111,7 +111,7 @@ public class SQLServerProcedureAction extends ProcedureAction {
 		}
 	}
 
-	class Observer implements OperationObserver {
+	static class Observer implements OperationObserver {
 
 		List<List<?>> results;
 		List<Integer> counts;
@@ -150,7 +150,7 @@ public class SQLServerProcedureAction extends ProcedureAction {
 				counts = new ArrayList<>();
 			}
 
-			counts.add(Integer.valueOf(resultCount));
+			counts.add(resultCount);
 		}
 
 		@Override
@@ -165,7 +165,7 @@ public class SQLServerProcedureAction extends ProcedureAction {
 		}
 
 		@Override
-		public void nextRows(Query q, ResultIterator it) {
+		public void nextRows(Query q, ResultIterator<?> it) {
 			observer.nextRows(q, it);
 		}
 
@@ -175,7 +175,7 @@ public class SQLServerProcedureAction extends ProcedureAction {
 		}
 
 		@Override
-		public void nextGeneratedRows(Query query, ResultIterator<?> keys, List<ObjectId> idsToUpdate) {
+		public void nextGeneratedRows(Query query, List<DataRow> keys, List<ObjectId> idsToUpdate) {
 			observer.nextGeneratedRows(query, keys, idsToUpdate);
 		}
 

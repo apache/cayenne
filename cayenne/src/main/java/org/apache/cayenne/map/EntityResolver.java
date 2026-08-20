@@ -93,16 +93,7 @@ public class EntityResolver implements MappingNamespace, Serializable {
     protected transient LifecycleCallbackRegistry callbackRegistry;
 
     protected transient ValueObjectTypeRegistry valueObjectTypeRegistry;
-
-    /**
-     * @since 4.2
-     */
     protected transient ValueComparisonStrategyFactory valueComparisonStrategyFactory;
-
-    /**
-     * @since 4.2
-     */
-    protected transient EntitySorter entitySorter;
 
     /**
      * @since 5.0
@@ -545,20 +536,6 @@ public class EntityResolver implements MappingNamespace, Serializable {
      */
     public void setValueComparisonStrategyFactory(ValueComparisonStrategyFactory valueComparisonStrategyFactory) {
         this.valueComparisonStrategyFactory = valueComparisonStrategyFactory;
-    }
-
-    /**
-     * @since 4.2
-     */
-    public void setEntitySorter(EntitySorter entitySorter) {
-        this.entitySorter = entitySorter;
-    }
-
-    /**
-     * @since 4.2
-     */
-    public EntitySorter getEntitySorter() {
-        return entitySorter;
     }
 
     /**

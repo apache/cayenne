@@ -83,9 +83,8 @@ public class CayenneModelerValidationIT {
         assertNotNull(config);
         assertEquals(EnumSet.complementOf(EnumSet.of(
                 Inspection.DATA_CHANNEL_NO_NAME,
-                Inspection.DATA_NODE_NO_NAME,
-                Inspection.DATA_NODE_NAME_DUPLICATE,
-                Inspection.DATA_NODE_CONNECTION_PARAMS
+                Inspection.DATA_MAP_NO_NAME,
+                Inspection.DATA_MAP_NAME_DUPLICATE
         )), config.getEnabledInspections());
     }
 }

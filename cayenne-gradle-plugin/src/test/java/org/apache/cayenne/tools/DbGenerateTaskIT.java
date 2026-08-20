@@ -46,7 +46,7 @@ public class DbGenerateTaskIT extends BaseTaskIT {
 
     @Test
     public void defaultConfigTaskSuccess() throws Exception {
-        String dbUrl = "jdbc:derby:build/testdb";
+        String dbUrl = "jdbc:derby:" + projectDir.getAbsolutePath() + "/build/testdb";
 
         GradleRunner runner = createRunner(
                 "cdbgen_simple",
@@ -75,9 +75,12 @@ public class DbGenerateTaskIT extends BaseTaskIT {
 
     @Test
     public void customConfigTaskSuccess() throws Exception {
+        String dbUrl = "jdbc:derby:" + projectDir.getAbsolutePath() + "/build/testdb;create=true";
+
         GradleRunner runner = createRunner(
                 "cdbgen_custom",
                 "customCdbgen",
+                "-PdbUrl=" + dbUrl,
                 "-PdataMap=test_datamap.map.xml",
                 "--info"
         );

@@ -22,17 +22,18 @@ package org.apache.cayenne.access;
 import org.apache.cayenne.CayenneRuntimeException;
 import org.apache.cayenne.access.dbsync.SchemaUpdateStrategy;
 import org.apache.cayenne.access.jdbc.reader.RowReaderFactory;
-import org.apache.cayenne.access.translator.batch.BatchTranslator;
-import org.apache.cayenne.access.translator.ejbql.EJBQLTranslator;
-import org.apache.cayenne.access.translator.procedure.ProcedureTranslator;
-import org.apache.cayenne.access.translator.select.SelectTranslator;
-import org.apache.cayenne.access.translator.sqltemplate.SQLTemplateTranslator;
+import org.apache.cayenne.access.translator.BatchTranslator;
+import org.apache.cayenne.access.translator.EJBQLTranslator;
+import org.apache.cayenne.access.translator.ProcedureTranslator;
+import org.apache.cayenne.access.translator.SQLTemplateTranslator;
+import org.apache.cayenne.access.translator.SelectTranslator;
 import org.apache.cayenne.dba.DbAdapter;
-import org.apache.cayenne.dba.JdbcAdapter;
-import org.apache.cayenne.log.JdbcEventLogger;
-import org.apache.cayenne.log.NoopJdbcEventLogger;
+import org.apache.cayenne.dba.PkGenerator;
+import org.apache.cayenne.log.NoopSQLLogger;
+import org.apache.cayenne.log.SQLLogger;
 import org.apache.cayenne.map.DataMap;
 import org.apache.cayenne.map.EntityResolver;
+import org.apache.cayenne.map.EntitySorter;
 import org.apache.cayenne.query.DeleteBatchQuery;
 import org.apache.cayenne.query.InsertBatchQuery;
 import org.apache.cayenne.query.Query;
@@ -60,13 +61,18 @@ public class DataNode {
 
     protected String name;
     protected DbAdapter adapter;
-    protected String dataSourceFactory;
     protected EntityResolver entityResolver;
+    protected EntitySorter entitySorter;
     protected SchemaUpdateStrategy schemaUpdateStrategy;
     protected Map<String, DataMap> dataMaps;
 
+    private PkGenerator pkGenerator;
+
+    // tells whether "pkGenerator" was installed by the user, and hence must not be replaced when the adapter changes
+    private boolean customPkGenerator;
+
     private DataSource dataSource;
-    private JdbcEventLogger jdbcEventLogger;
+    private SQLLogger sqlLogger;
     private RowReaderFactory rowReaderFactory;
     private BatchTranslator<InsertBatchQuery> insertBatchTranslator;
     private BatchTranslator<UpdateBatchQuery> updateBatchTranslator;
@@ -92,7 +98,7 @@ public class DataNode {
         this.dataMaps = new HashMap<>();
 
         // make sure logger is not null
-        this.jdbcEventLogger = NoopJdbcEventLogger.getInstance();
+        this.sqlLogger = NoopSQLLogger.getInstance();
     }
 
     /**
@@ -112,19 +118,15 @@ public class DataNode {
     /**
      * @since 3.1
      */
-    public JdbcEventLogger getJdbcEventLogger() {
-        if (jdbcEventLogger == null && adapter instanceof JdbcAdapter jdbcAdapter) {
-            jdbcEventLogger = jdbcAdapter.getJdbcEventLogger();
-        }
-
-        return jdbcEventLogger;
+    public SQLLogger getSqlLogger() {
+        return sqlLogger;
     }
 
     /**
      * @since 3.1
      */
-    public void setJdbcEventLogger(JdbcEventLogger logger) {
-        this.jdbcEventLogger = logger;
+    public void setSQLLogger(SQLLogger logger) {
+        this.sqlLogger = logger;
     }
 
     /**
@@ -137,17 +139,6 @@ public class DataNode {
 
     public void setName(String name) {
         this.name = name;
-    }
-
-    /**
-     * Returns a name of DataSourceFactory class for this node.
-     */
-    public String getDataSourceFactory() {
-        return dataSourceFactory;
-    }
-
-    public void setDataSourceFactory(String dataSourceFactory) {
-        this.dataSourceFactory = dataSourceFactory;
     }
 
     /**
@@ -199,8 +190,7 @@ public class DataNode {
     }
 
     /**
-     * Returns DbAdapter object. This is a plugin that handles RDBMS
-     * vendor-specific features.
+     * Returns DbAdapter object. This is a plugin that handles RDBMS vendor-specific features.
      */
     public DbAdapter getAdapter() {
         return adapter;
@@ -208,6 +198,38 @@ public class DataNode {
 
     public void setAdapter(DbAdapter adapter) {
         this.adapter = adapter;
+
+        // a generator built for the old adapter is meaningless for the new one. A generator explicitly installed
+        // by the user is left alone.
+        if (!customPkGenerator) {
+            this.pkGenerator = adapter != null ? adapter.createPkGenerator() : null;
+        }
+    }
+
+    /**
+     * Returns the PkGenerator used by this node to generate primary keys. Unless an explicit generator was installed
+     * with {@link #setPkGenerator(PkGenerator)}, this is the default generator of the node's {@link DbAdapter}.
+     *
+     * @since 5.0
+     */
+    public PkGenerator getPkGenerator() {
+        return pkGenerator;
+    }
+
+    /**
+     * Installs a custom PkGenerator, overriding the default generator of the node's {@link DbAdapter}. A custom
+     * generator is retained across {@link #setAdapter(DbAdapter)} calls. Passing null restores the adapter default.
+     *
+     * @since 5.0
+     */
+    public void setPkGenerator(PkGenerator pkGenerator) {
+        if (pkGenerator != null) {
+            this.pkGenerator = pkGenerator;
+            this.customPkGenerator = true;
+        } else {
+            this.customPkGenerator = false;
+            this.pkGenerator = adapter != null ? adapter.createPkGenerator() : null;
+        }
     }
 
     /**
@@ -243,36 +265,34 @@ public class DataNode {
         // pool upper limit.
         getAdapter().getExtendedTypes();
 
+        OperationObserver instrumentedCallback = sqlLogger.isEnabled()
+                ? new LoggingObserver(callback, sqlLogger)
+                : callback;
+
         Transaction tx = BaseTransaction.getThreadTransaction();
         Connection connection;
 
         try {
             connection = dataSource.getConnection();
         } catch (Exception globalEx) {
-            getJdbcEventLogger().logQueryError(globalEx);
-
             if (tx != null) {
                 tx.setRollbackOnly();
             }
 
-            callback.nextGlobalException(globalEx);
+            instrumentedCallback.nextGlobalException(globalEx);
             return;
         }
 
-		try {
-			DataNodeQueryAction queryRunner = new DataNodeQueryAction(this, callback);
-
+        try {
             for (Query nextQuery : queries) {
 
                 // catch exceptions for each individual query
                 try {
-                    queryRunner.runQuery(connection, nextQuery);
+                    getAdapter()
+                            .getAction(nextQuery, this)
+                            .performAction(connection, instrumentedCallback);
                 } catch (Exception queryEx) {
-                    getJdbcEventLogger().logQueryError(queryEx);
-
-                    // notify consumer of the exception,
-                    // stop running further queries
-                    callback.nextQueryException(nextQuery, queryEx);
+                    instrumentedCallback.nextQueryException(nextQuery, queryEx);
 
                     if (tx != null) {
                         tx.setRollbackOnly();
@@ -280,6 +300,8 @@ public class DataNode {
                     break;
                 }
             }
+
+            instrumentedCallback.onSuccess();
         } finally {
             try {
                 connection.close();
@@ -289,12 +311,12 @@ public class DataNode {
         }
     }
 
-	/**
-	 * Returns EntityResolver that handles DataMaps of this node.
-	 */
-	public EntityResolver getEntityResolver() {
-		return entityResolver;
-	}
+    /**
+     * Returns EntityResolver that handles DataMaps of this node.
+     */
+    public EntityResolver getEntityResolver() {
+        return entityResolver;
+    }
 
     /**
      * Sets EntityResolver. DataNode relies on externally set EntityResolver, so
@@ -305,6 +327,25 @@ public class DataNode {
      */
     public void setEntityResolver(EntityResolver entityResolver) {
         this.entityResolver = entityResolver;
+    }
+
+    /**
+     * Returns an EntitySorter that sorts the entities of this node based on their mutual dependencies.
+     *
+     * @since 5.0
+     */
+    public EntitySorter getEntitySorter() {
+        return entitySorter;
+    }
+
+    /**
+     * Sets EntitySorter. DataNode relies on an externally set sorter, so if the node is created outside of the
+     * DataDomain stack, a valid EntitySorter must be provided explicitly.
+     *
+     * @since 5.0
+     */
+    public void setEntitySorter(EntitySorter entitySorter) {
+        this.entitySorter = entitySorter;
     }
 
     @Override

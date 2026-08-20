@@ -21,10 +21,11 @@ package org.apache.cayenne.dba;
 import org.apache.cayenne.CayenneRuntimeException;
 import org.apache.cayenne.access.DataNode;
 import org.apache.cayenne.access.sqlbuilder.sqltree.SQLTreeProcessor;
+import org.apache.cayenne.access.jdbc.CSParameter;
 import org.apache.cayenne.access.jdbc.PSParameter;
-import org.apache.cayenne.access.translator.ejbql.EJBQLTranslator;
-import org.apache.cayenne.access.translator.procedure.ProcedureTranslator;
-import org.apache.cayenne.access.translator.select.SelectTranslator;
+import org.apache.cayenne.access.translator.EJBQLTranslator;
+import org.apache.cayenne.access.translator.ProcedureTranslator;
+import org.apache.cayenne.access.translator.SelectTranslator;
 import org.apache.cayenne.access.types.ExtendedTypeMap;
 import org.apache.cayenne.map.DbAttribute;
 import org.apache.cayenne.map.DbEntity;
@@ -35,6 +36,7 @@ import org.apache.cayenne.query.Query;
 import org.apache.cayenne.query.SQLAction;
 import org.apache.cayenne.query.Select;
 
+import java.sql.CallableStatement;
 import java.sql.PreparedStatement;
 import java.util.Collection;
 import java.util.List;
@@ -219,21 +221,16 @@ public interface DbAdapter {
     ExtendedTypeMap getExtendedTypes();
 
     /**
-     * Returns primary key generator associated with this DbAdapter.
-     */
-    PkGenerator getPkGenerator();
-
-    /**
-     * Set custom PK generator  associated with this DbAdapter.
+     * Returns a new primary key generator of the default type associated with this adapter. DataNode would use this
+     * generator, unless explicitly overridden. DbAdapter does not cache the generator as it is often stateful.
      *
-     * @param pkGenerator to set
-     * @since 4.1
+     * @since 5.0
      */
-    void setPkGenerator(PkGenerator pkGenerator);
+    PkGenerator createPkGenerator();
 
     /**
      * Creates and returns a DbAttribute based on supplied parameters (usually
-     * obtained from database meta data).
+     * obtained from database metadata).
      *
      * @param name       database column name
      * @param typeName   database specific type name, may be used as a hint to
@@ -252,6 +249,13 @@ public interface DbAdapter {
      * @since 5.0
      */
     void bindParameter(PreparedStatement statement, PSParameter<?> parameter) throws Exception;
+
+    /**
+     * Binds an object value to CallableStatement's parameter.
+     *
+     * @since 5.0
+     */
+    void bindParameter(CallableStatement statement, CSParameter<?> parameter) throws Exception;
 
     /**
      * Returns the JDBC type that this adapter prefers to bind for a given mapped JDBC type. The

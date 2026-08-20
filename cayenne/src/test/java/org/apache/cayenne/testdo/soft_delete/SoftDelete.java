@@ -22,9 +22,4 @@ import org.apache.cayenne.testdo.soft_delete.auto._SoftDelete;
 
 public class SoftDelete extends _SoftDelete {
 
-    @Override
-    protected void onPrePersist() {
-        setDeleted(false);
-    }
-
 }

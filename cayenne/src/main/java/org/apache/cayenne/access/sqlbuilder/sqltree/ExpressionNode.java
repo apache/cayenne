@@ -21,6 +21,7 @@ package org.apache.cayenne.access.sqlbuilder.sqltree;
 
 
 import org.apache.cayenne.access.sqlbuilder.SQLAppendable;
+import org.apache.cayenne.access.sqlbuilder.SQLGenerationContext;
 
 /**
  * @since 4.2
@@ -35,28 +36,61 @@ public class ExpressionNode extends Node {
     }
 
     @Override
-    public SQLAppendable append(SQLAppendable buffer) {
+    public SQLAppendable append(SQLAppendable buffer, SQLGenerationContext context) {
         return buffer;
     }
 
     @Override
     public void appendChildrenStart(SQLAppendable buffer) {
-        if(parent != null
-                && parent.type != NodeType.WHERE
-                && parent.type != NodeType.JOIN
-                && parent.type != NodeType.UPDATE_SET) {
-            buffer.append(" (");
+        if (needsParentheses()) {
+            buffer.appendTokenSeparator().append('(').suppressNextTokenSeparator();
         }
     }
 
     @Override
     public void appendChildrenEnd(SQLAppendable buffer) {
-        if(parent != null
-                && parent.type != NodeType.WHERE
-                && parent.type != NodeType.JOIN
-                && parent.type != NodeType.UPDATE_SET) {
-            buffer.append(" )");
+        if (needsParentheses()) {
+            buffer.append(")");
         }
+    }
+
+    protected boolean needsParentheses() {
+        if (parent == null
+                || parent.type == NodeType.WHERE
+                || parent.type == NodeType.JOIN
+                || parent.type == NodeType.UPDATE_SET
+                || parent.type == NodeType.WHEN
+                || parent.type == NodeType.THEN
+                || parent.type == NodeType.ELSE) {
+            return false;
+        }
+
+        if (parent instanceof ExpressionNode parentExpr) {
+            String parentOp = parentExpr.logicalOperator();
+            if (parentOp != null) {
+                if (isComparison()) {
+                    return false;
+                }
+
+                return !parentOp.equals(logicalOperator());
+            }
+        }
+        return true;
+    }
+
+    /**
+     * @return {@code "AND"} or {@code "OR"} if this node is a logical connective, otherwise {@code null}.
+     */
+    protected String logicalOperator() {
+        return null;
+    }
+
+    /**
+     * @return true for comparison operators that bind tighter than {@code AND}/{@code OR} and therefore don't need
+     * parentheses when nested directly under them.
+     */
+    protected boolean isComparison() {
+        return type == NodeType.EQUALITY || type == NodeType.LIKE;
     }
 
     @Override

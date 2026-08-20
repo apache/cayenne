@@ -20,15 +20,20 @@
 package org.apache.cayenne.access.sqlbuilder.sqltree;
 
 import org.apache.cayenne.access.sqlbuilder.SQLAppendable;
+import org.apache.cayenne.access.sqlbuilder.SQLGenerationContext;
 
 /**
  * @since 5.0
  */
 public class ThenNode extends Node {
 
+    public ThenNode() {
+        super(NodeType.THEN);
+    }
+
     @Override
-    public SQLAppendable append(SQLAppendable buffer) {
-        return buffer.append(" THEN");
+    public SQLAppendable append(SQLAppendable buffer, SQLGenerationContext context) {
+        return buffer.appendTokenSeparator().append("THEN");
     }
 
     @Override

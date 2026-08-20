@@ -21,23 +21,18 @@ package org.apache.cayenne.dbsync.merge;
 import org.apache.cayenne.dbsync.filter.NamePatternMatcher;
 import org.apache.cayenne.dbsync.merge.context.EntityMergeSupport;
 import org.apache.cayenne.dbsync.naming.DefaultObjectNameGenerator;
-import org.apache.cayenne.dbsync.naming.NoStemStemmer;
 import org.apache.cayenne.map.DbAttribute;
 import org.apache.cayenne.map.DbEntity;
 import org.apache.cayenne.map.DbJoin;
 import org.apache.cayenne.map.DbRelationship;
 import org.apache.cayenne.map.DeleteRule;
 import org.apache.cayenne.map.ObjEntity;
+import org.junit.jupiter.api.Test;
 
 import java.sql.Types;
 import java.util.Arrays;
 
-import org.junit.jupiter.api.Test;
-
-import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertNotNull;
-import static org.junit.jupiter.api.Assertions.assertSame;
-import static org.junit.jupiter.api.Assertions.assertTrue;
+import static org.junit.jupiter.api.Assertions.*;
 
 public class EntityMergeSupportIT extends MergeCase {
 
@@ -92,17 +87,18 @@ public class EntityMergeSupportIT extends MergeCase {
 		map.addObjEntity(objEntity2);
 
 		EntityMergeSupport entityMergeSupport = new EntityMergeSupport(
-				new DefaultObjectNameGenerator(NoStemStemmer.getInstance()),
+				new DefaultObjectNameGenerator(),
 				NamePatternMatcher.EXCLUDE_ALL,
 				true,
 				false);
 		assertTrue(entityMergeSupport.synchronizeWithDbEntities(Arrays.asList(objEntity1, objEntity2)));
 		assertNotNull(objEntity1.getAttribute("name"));
-		assertNotNull(objEntity1.getRelationship("newTable2s"));
-		assertNotNull(objEntity2.getRelationship("newTable"));
 
-		assertEquals(objEntity1.getRelationship("newTable2s").getDeleteRule(), DeleteRule.DEFAULT_DELETE_RULE_TO_MANY);
-		assertEquals(objEntity2.getRelationship("newTable").getDeleteRule(), DeleteRule.DEFAULT_DELETE_RULE_TO_ONE);
+		assertNotNull(objEntity1.getRelationship("rel1To2"));
+		assertNotNull(objEntity2.getRelationship("rel2To1"));
+
+		assertEquals(DeleteRule.DEFAULT_DELETE_RULE_TO_MANY, objEntity1.getRelationship("rel1To2").getDeleteRule());
+		assertEquals(DeleteRule.DEFAULT_DELETE_RULE_TO_ONE, objEntity2.getRelationship("rel2To1").getDeleteRule());
 
 		map.removeObjEntity(objEntity2.getName());
 		map.removeObjEntity(objEntity1.getName());

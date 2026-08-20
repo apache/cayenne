@@ -18,26 +18,26 @@
  ****************************************************************/
 package org.apache.cayenne.tools;
 
-import java.io.File;
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.List;
-
 import org.apache.cayenne.configuration.xml.DataChannelMetaData;
 import org.apache.cayenne.dbsync.filter.NamePatternMatcher;
 import org.apache.cayenne.dbsync.reverse.configuration.ToolsModule;
 import org.apache.cayenne.di.Injector;
 import org.apache.cayenne.gen.ArtifactsGenerationMode;
-import org.apache.cayenne.gen.CgenConfiguration;
 import org.apache.cayenne.gen.CgenConfigList;
+import org.apache.cayenne.gen.CgenConfiguration;
+import org.apache.cayenne.gen.CgenTemplate;
 import org.apache.cayenne.gen.ClassGenerationAction;
 import org.apache.cayenne.gen.ClassGenerationActionFactory;
-import org.apache.cayenne.gen.CgenTemplate;
 import org.apache.cayenne.gen.TemplateType;
 import org.apache.cayenne.map.DataMap;
 import org.apache.tools.ant.BuildException;
 import org.apache.tools.ant.types.Path;
 import org.slf4j.LoggerFactory;
+
+import java.io.File;
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.List;
 
 /**
  * An Ant task to perform class generation based on CayenneDataMap.
@@ -72,11 +72,6 @@ public class CayenneGeneratorTask extends CayenneTask {
     protected String datamapsupertemplate;
     protected Boolean usepkgpath;
     protected Boolean createpropertynames;
-
-    /**
-     * @since 4.1
-     */
-    private boolean force;
 
     private boolean useConfigFromDataMap;
 
@@ -120,26 +115,20 @@ public class CayenneGeneratorTask extends CayenneTask {
             Thread.currentThread().setContextClassLoader(CayenneGeneratorTask.class.getClassLoader());
 
             DataMap dataMap = loadAction.getMainDataMap();
-            for (ClassGenerationAction generatorAction : createGenerators(dataMap)) {
+            for (ClassGenerationAction action : createActions(dataMap)) {
                 CayenneGeneratorEntityFilterAction filterEntityAction = new CayenneGeneratorEntityFilterAction();
                 filterEntityAction.setNameFilter(NamePatternMatcher.build(logger, includeEntitiesPattern, excludeEntitiesPattern));
 
                 CayenneGeneratorEmbeddableFilterAction filterEmbeddableAction = new CayenneGeneratorEmbeddableFilterAction();
                 filterEmbeddableAction.setNameFilter(NamePatternMatcher.build(logger, null, excludeEmbeddablesPattern));
-                generatorAction.setLogger(logger);
-                if (force) {
-                    // will (re-)generate all files
-                    generatorAction.getCgenConfiguration().setForce(true);
-                }
-                generatorAction.getCgenConfiguration().setTimestamp(map.lastModified());
                 if (!hasConfig() && useConfigFromDataMap) {
-                    generatorAction.prepareArtifacts();
+                    action.prepareArtifacts();
                 } else {
-                    generatorAction.addEntities(filterEntityAction.getFilteredEntities(dataMap));
-                    generatorAction.addEmbeddables(filterEmbeddableAction.getFilteredEmbeddables(dataMap));
-                    generatorAction.addDataMap(dataMap);
+                    action.addEntities(filterEntityAction.getFilteredEntities(dataMap));
+                    action.addEmbeddables(filterEmbeddableAction.getFilteredEmbeddables(dataMap));
+                    action.addDataMap(dataMap);
                 }
-                generatorAction.execute();
+                action.execute();
             }
         } catch (Exception e) {
             throw new BuildException(e);
@@ -148,10 +137,10 @@ public class CayenneGeneratorTask extends CayenneTask {
         }
     }
 
-    private List<ClassGenerationAction> createGenerators(DataMap dataMap) {
+    private List<ClassGenerationAction> createActions(DataMap dataMap) {
         List<ClassGenerationAction> actions = new ArrayList<>();
         for (CgenConfiguration configuration : buildConfigurations(dataMap)) {
-            actions.add(injector.getInstance(ClassGenerationActionFactory.class).createAction(configuration));
+            actions.add(injector.getInstance(ClassGenerationActionFactory.class).createAction(configuration, logger));
         }
         return actions;
     }
@@ -161,7 +150,7 @@ public class CayenneGeneratorTask extends CayenneTask {
                 makepairs != null || mode != null || outputPattern != null || overwrite != null || superpkg != null ||
                 supertemplate != null || template != null || embeddabletemplate != null || embeddablesupertemplate != null ||
                 usepkgpath != null || createpropertynames != null || datamaptemplate != null ||
-                datamapsupertemplate != null || createpkproperties != null || force || externaltoolconfig != null;
+                datamapsupertemplate != null || createpkproperties != null || externaltoolconfig != null;
     }
 
     List<CgenConfiguration> buildConfigurations(DataMap dataMap) {
@@ -390,8 +379,15 @@ public class CayenneGeneratorTask extends CayenneTask {
         this.createpkproperties = createpkproperties;
     }
 
+    /**
+     * does nothing
+     *
+     * @param force not used
+     * @deprecated cgen runs unconditionally
+     */
+    @Deprecated(since = "5.0", forRemoval = true)
     public void setForce(boolean force) {
-        this.force = force;
+        log("'force' is deprecated and ignored. cgen always regenerates classes.");
     }
 
     /**

@@ -42,7 +42,6 @@ public class GlobalActions {
     private final Set<String> specialActions;
     private final Set<String> projectActions;
     private final Set<String> domainActions;
-    private final Set<String> dataNodeActions;
     private final Set<String> dataMapActions;
     private final Set<String> objEntityActions;
     private final Set<String> dbEntityActions;
@@ -81,7 +80,6 @@ public class GlobalActions {
         domainActions.addAll(Arrays.asList(
                 ImportDataMapAction.class.getName(),
                 CreateDataMapAction.class.getName(),
-                CreateNodeAction.class.getName(),
                 ImportEOModelAction.class.getName(),
                 GenerateDBAction.class.getName(),
                 PasteAction.class.getName(),
@@ -90,11 +88,6 @@ public class GlobalActions {
                 UpdateValidationConfigAction.class.getName(),
                 DisableValidationInspectionAction.class.getName()
         ));
-
-        dataNodeActions = new HashSet<>(domainActions);
-        dataNodeActions.addAll(Arrays.asList(
-                LinkDataMapsAction.class.getName(),
-                RemoveAction.class.getName()));
 
         dataMapActions = new HashSet<>(domainActions);
         dataMapActions.addAll(Arrays.asList(
@@ -155,7 +148,6 @@ public class GlobalActions {
         registerAction(new RevertAction(application));
         registerAction(new ValidateAction(application));
         registerAction(new RemoveAction(application));
-        registerAction(new CreateNodeAction(application));
         registerAction(new CreateDataMapAction(application));
         registerAction(new CreateObjEntityAction(application));
         registerAction(new CreateObjEntityFromDbAction(application));
@@ -220,8 +212,6 @@ public class GlobalActions {
         registerAction(new CollapseTreeAction(application));
         registerAction(new FilterAction(application));
 
-        registerAction(new LinkDataMapAction(application));
-        registerAction(new LinkDataMapsAction(application));
 
         registerAction(new ShowValidationConfigAction(application));
         registerAction(new ShowValidationOptionAction(application));
@@ -251,11 +241,6 @@ public class GlobalActions {
     public void domainSelected() {
         processActionsState(domainActions);
         updateActions("DataDomain");
-    }
-
-    public void dataNodeSelected() {
-        processActionsState(dataNodeActions);
-        updateActions("DataNode");
     }
 
     public void dataMapSelected() {

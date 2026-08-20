@@ -19,7 +19,7 @@
 
 package org.apache.cayenne.project.upgrade.handlers;
 
-import org.apache.cayenne.project.upgrade.UpgradeUnit;
+import org.apache.cayenne.project.upgrade.UpgradeContext;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.w3c.dom.Element;
@@ -68,13 +68,13 @@ public class UpgradeHandler_V11 implements UpgradeHandler {
     }
 
     @Override
-    public void processProjectDom(UpgradeUnit upgradeUnit) {
+    public void processProjectDom(UpgradeContext upgradeUnit) {
         updateDomainSchemaAndVersion(upgradeUnit);
         updateDataNodeConnectionPool(upgradeUnit);
     }
 
     @Override
-    public void processDataMapDom(UpgradeUnit upgradeUnit) {
+    public void processDataMapDom(UpgradeContext upgradeUnit) {
         updateDataMapSchemaAndVersion(upgradeUnit);
         updateExtensionSchema(upgradeUnit, CGEN);
         updateExtensionSchema(upgradeUnit, DB_IMPORT);
@@ -88,7 +88,7 @@ public class UpgradeHandler_V11 implements UpgradeHandler {
         updateDbImportConfig(upgradeUnit);
     }
 
-    private void dropROPProperties(UpgradeUnit upgradeUnit) {
+    private void dropROPProperties(UpgradeContext upgradeUnit) {
         Element dataMap = upgradeUnit.getDocument().getDocumentElement();
         NodeList propertyNodes;
         try {
@@ -112,7 +112,7 @@ public class UpgradeHandler_V11 implements UpgradeHandler {
         }
     }
 
-    private void dropObjEntityClientInfo(UpgradeUnit upgradeUnit) {
+    private void dropObjEntityClientInfo(UpgradeContext upgradeUnit) {
         NodeList objEntityNodes;
         try {
             XPath xpath = XPathFactory.newInstance().newXPath();
@@ -129,7 +129,7 @@ public class UpgradeHandler_V11 implements UpgradeHandler {
         }
     }
 
-    private void upgradeGenericObjEntity(UpgradeUnit upgradeUnit) {
+    private void upgradeGenericObjEntity(UpgradeContext upgradeUnit) {
         NodeList objEntityNodes;
         try {
             XPath xpath = XPathFactory.newInstance().newXPath();
@@ -147,7 +147,7 @@ public class UpgradeHandler_V11 implements UpgradeHandler {
         }
     }
 
-    private void updateDbImportConfig(UpgradeUnit upgradeUnit) {
+    private void updateDbImportConfig(UpgradeContext upgradeUnit) {
         XPath xpath = XPathFactory.newInstance().newXPath();
         NodeList nodes;
         try {
@@ -162,13 +162,13 @@ public class UpgradeHandler_V11 implements UpgradeHandler {
         }
     }
 
-    private void updateCgenConfig(UpgradeUnit upgradeUnit) {
+    private void updateCgenConfig(UpgradeContext upgradeUnit) {
         renameQueryTemplates(upgradeUnit);
         dropCgenClientConfig(upgradeUnit);
         updateTemplates(upgradeUnit);
     }
 
-    private void updateDataNodeConnectionPool(UpgradeUnit upgradeUnit) {
+    private void updateDataNodeConnectionPool(UpgradeContext upgradeUnit) {
         XPath xpath = XPathFactory.newInstance().newXPath();
         NodeList nodes;
         try {
@@ -187,7 +187,7 @@ public class UpgradeHandler_V11 implements UpgradeHandler {
         }
     }
 
-    private void renameQueryTemplates(UpgradeUnit upgradeUnit) {
+    private void renameQueryTemplates(UpgradeContext upgradeUnit) {
         XPath xpath = XPathFactory.newInstance().newXPath();
         NodeList queryTemplates;
         NodeList querySuperTemplates;
@@ -211,7 +211,7 @@ public class UpgradeHandler_V11 implements UpgradeHandler {
         }
     }
 
-    private void dropCgenClientConfig(UpgradeUnit upgradeUnit) {
+    private void dropCgenClientConfig(UpgradeContext upgradeUnit) {
         XPath xpath = XPathFactory.newInstance().newXPath();
         NodeList nodes;
         try {
@@ -233,7 +233,7 @@ public class UpgradeHandler_V11 implements UpgradeHandler {
      *
      * @param upgradeUnit - unit to upgrade
      */
-    private void updateTemplates(UpgradeUnit upgradeUnit) {
+    private void updateTemplates(UpgradeContext upgradeUnit) {
         updateTemplate(upgradeUnit, "template");
         updateTemplate(upgradeUnit, "superTemplate");
         updateTemplate(upgradeUnit, "embeddableTemplate");
@@ -242,7 +242,7 @@ public class UpgradeHandler_V11 implements UpgradeHandler {
         updateTemplate(upgradeUnit, "dataMapSuperTemplate");
     }
 
-    private void updateTemplate(UpgradeUnit upgradeUnit, String nodeName) {
+    private void updateTemplate(UpgradeContext upgradeUnit, String nodeName) {
         XPath xpath = XPathFactory.newInstance().newXPath();
         NodeList templates;
         try {

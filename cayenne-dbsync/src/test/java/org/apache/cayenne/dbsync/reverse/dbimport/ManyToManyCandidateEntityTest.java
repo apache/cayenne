@@ -32,7 +32,6 @@ import org.apache.cayenne.configuration.xml.XMLDataChannelDescriptorLoader;
 import org.apache.cayenne.configuration.xml.XMLDataMapLoader;
 import org.apache.cayenne.configuration.xml.XMLReaderProvider;
 import org.apache.cayenne.dbsync.naming.DefaultObjectNameGenerator;
-import org.apache.cayenne.dbsync.naming.NoStemStemmer;
 import org.apache.cayenne.di.AdhocObjectFactory;
 import org.apache.cayenne.di.ClassLoaderManager;
 import org.apache.cayenne.di.DIBootstrap;
@@ -101,7 +100,7 @@ public class ManyToManyCandidateEntityTest {
         ObjEntity manyToManyEntity = map.getObjEntity("Table1Table2");
 
         ManyToManyCandidateEntity.build(manyToManyEntity)
-                .optimizeRelationships(new DefaultObjectNameGenerator(NoStemStemmer.getInstance()));
+                .optimizeRelationships(new DefaultObjectNameGenerator());
 
         ObjEntity table1Entity = map.getObjEntity("Table1");
         ObjEntity table2Entity = map.getObjEntity("Table2");

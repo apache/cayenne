@@ -25,7 +25,7 @@ import org.apache.cayenne.configuration.Constants;
 import org.apache.cayenne.configuration.DataSourceDescriptor;
 import org.apache.cayenne.configuration.runtime.CoreModule;
 import org.apache.cayenne.configuration.runtime.DataNodeFactory;
-import org.apache.cayenne.datasource.DataSourceBuilder;
+import org.apache.cayenne.datasource.CayenneDataSource;
 import org.apache.cayenne.dba.DbAdapter;
 import org.apache.cayenne.dba.QuotingStrategy;
 import org.apache.cayenne.di.AdhocObjectFactory;
@@ -64,9 +64,9 @@ public class CayenneTestsEnv implements BeforeEachCallback, AfterEachCallback {
 
     static {
         DataSourceDescriptor dsDescriptor = DataSourceConfigLoader.load();
-        DataSource ds = DataSourceBuilder
-                .url(dsDescriptor.getDataSourceUrl())
-                .driver(dsDescriptor.getJdbcDriver())
+        DataSource ds = CayenneDataSource
+                .of(dsDescriptor.getDataSourceUrl())
+                .driverClass(dsDescriptor.getJdbcDriver())
                 .userName(dsDescriptor.getUserName())
                 .password(dsDescriptor.getPassword())
                 .pool(dsDescriptor.getMinConnections(), dsDescriptor.getMaxConnections())
@@ -114,7 +114,7 @@ public class CayenneTestsEnv implements BeforeEachCallback, AfterEachCallback {
         CayenneRuntime runtime = buildRuntime();
         DataContext context = (DataContext) runtime.newContext();
 
-        DbAdapter firstAdapter = runtime.getDataDomain().getDataNodes().iterator().next().getAdapter();
+        DbAdapter firstAdapter = runtime.getDataDomain().getDefaultNode().getAdapter();
         TestDbAdapter testDbAdapter = TestDbAdapter.of(firstAdapter);
         tweakProcedures(runtime, testDbAdapter);
 
@@ -150,10 +150,10 @@ public class CayenneTestsEnv implements BeforeEachCallback, AfterEachCallback {
         modules.add(b -> b.bind(DataNodeFactory.class).to(TelemetricDataNodeFactory.class));
         Collections.addAll(modules, extraModules);
 
-        return CayenneRuntime.builder()
+        return CayenneRuntime.of()
                 .addConfig(project)
                 .addModules(modules)
-                .dataSource(COMMON_SCHEMA.dataSource())
+                .defaultDataNode(COMMON_SCHEMA.dataSource())
                 .build();
     }
 
@@ -187,7 +187,7 @@ public class CayenneTestsEnv implements BeforeEachCallback, AfterEachCallback {
 
     public DataNode dataNode() {
         DataDomain channel = scope.runtime().getDataDomain();
-        return channel.getDataNodes().iterator().next();
+        return channel.getDefaultNode();
     }
 
     public void runWithQueriesBlocked(Runnable task) {

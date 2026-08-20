@@ -36,12 +36,10 @@ import org.apache.cayenne.configuration.ConfigurationTree;
 import org.apache.cayenne.configuration.DataChannelDescriptor;
 import org.apache.cayenne.configuration.DataChannelDescriptorLoader;
 import org.apache.cayenne.configuration.DataMapLoader;
-import org.apache.cayenne.configuration.DataNodeDescriptor;
-import org.apache.cayenne.configuration.runtime.DataSourceFactory;
-import org.apache.cayenne.configuration.runtime.DbAdapterFactory;
 import org.apache.cayenne.configuration.xml.DataChannelMetaData;
 import org.apache.cayenne.dba.DbAdapter;
 import org.apache.cayenne.dbsync.merge.DataMapMerger;
+import org.apache.cayenne.dbsync.reverse.configuration.DbAdapterFactory;
 import org.apache.cayenne.dbsync.merge.context.MergerContext;
 import org.apache.cayenne.dbsync.merge.factory.MergerTokenFactory;
 import org.apache.cayenne.dbsync.merge.factory.MergerTokenFactoryProvider;
@@ -81,7 +79,6 @@ public class DefaultDbImportAction implements DbImportAction {
 
     private final ProjectSaver projectSaver;
     protected final Logger logger;
-    private final DataSourceFactory dataSourceFactory;
     private final DbAdapterFactory adapterFactory;
     private final DataMapLoader mapLoader;
     private final MergerTokenFactoryProvider mergerTokenFactoryProvider;
@@ -93,7 +90,6 @@ public class DefaultDbImportAction implements DbImportAction {
 
     public DefaultDbImportAction(@Inject Logger logger,
                                  @Inject ProjectSaver projectSaver,
-                                 @Inject DataSourceFactory dataSourceFactory,
                                  @Inject DbAdapterFactory adapterFactory,
                                  @Inject DataMapLoader mapLoader,
                                  @Inject MergerTokenFactoryProvider mergerTokenFactoryProvider,
@@ -101,7 +97,6 @@ public class DefaultDbImportAction implements DbImportAction {
                                  @Inject DataChannelMetaData metaData) {
         this.logger = logger;
         this.projectSaver = projectSaver;
-        this.dataSourceFactory = dataSourceFactory;
         this.adapterFactory = adapterFactory;
         this.mapLoader = mapLoader;
         this.mergerTokenFactoryProvider = mergerTokenFactoryProvider;
@@ -145,13 +140,13 @@ public class DefaultDbImportAction implements DbImportAction {
         commit(config, loadDataMap(config));
     }
 
-    protected DbAdapter createAdapter(DataNodeDescriptor dataNodeDescriptor, DataSource dataSource) throws Exception {
-        DbAdapter adapter = adapterFactory.createAdapter(dataNodeDescriptor, dataSource);
+    protected DbAdapter createAdapter(String adapterType, DataSource dataSource) throws Exception {
+        DbAdapter adapter = adapterFactory.createAdapter(adapterType, dataSource);
 
         // Warm up the AutoAdapter by calling any method. This to avoid AutoAdapter opening a connection later in
         // the middle of import to detect the DB type. Opening two connections in the same thread causes issues with
         // some DBs (namely com.sap.cloud.db.jdbc:ngdbc:2.4.56)
-        adapter.getPkGenerator();
+        adapter.unwrap();
 
         return adapter;
     }
@@ -174,9 +169,8 @@ public class DefaultDbImportAction implements DbImportAction {
         logger.debug("DB connection: {}", config.getDataSourceInfo());
         logger.debug("{}", config);
 
-        DataNodeDescriptor dataNodeDescriptor = config.createDataNodeDescriptor();
-        DataSource dataSource = dataSourceFactory.getDataSource(dataNodeDescriptor);
-        DbAdapter adapter = createAdapter(dataNodeDescriptor, dataSource);
+        DataSource dataSource = config.createDataSource();
+        DbAdapter adapter = createAdapter(config.getAdapter(), dataSource);
 
         DataMap sourceDataMap;
         DataMap targetDataMap = existingTargetMap(config);

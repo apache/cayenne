@@ -25,8 +25,6 @@ import org.apache.cayenne.ObjectId;
 import org.apache.cayenne.PersistenceState;
 import org.apache.cayenne.Persistent;
 import org.apache.cayenne.access.event.SnapshotEvent;
-import org.apache.cayenne.configuration.Constants;
-import org.apache.cayenne.configuration.RuntimeProperties;
 import org.apache.cayenne.event.EventBridge;
 import org.apache.cayenne.event.EventManager;
 import org.apache.cayenne.event.EventSubject;
@@ -53,18 +51,21 @@ public class DataRowStore implements Serializable {
 
     private static final Logger LOGGER = LoggerFactory.getLogger(DataRowStore.class);
 
-    // default property values
-
     /**
      * @deprecated unused
      */
     @Deprecated(since = "5.0", forRemoval = true)
     public static final long SNAPSHOT_EXPIRATION_DEFAULT = 2 * 60 * 60;
-    public static final int SNAPSHOT_CACHE_SIZE_DEFAULT = 10000;
+
+    /**
+     * @deprecated use {@link DefaultDataRowStoreFactory#SNAPSHOT_CACHE_SIZE_DEFAULT}
+     */
+    @Deprecated(since = "5.0", forRemoval = true)
+    public static final int SNAPSHOT_CACHE_SIZE_DEFAULT = DefaultDataRowStoreFactory.SNAPSHOT_CACHE_SIZE_DEFAULT;
 
     protected String name;
-    private int maxSize;
-    protected ConcurrentMap<ObjectId, DataRow> snapshots;
+    private final int maxSize;
+    protected final ConcurrentMap<ObjectId, DataRow> snapshots;
 
     protected transient EventManager eventManager;
     protected transient EventBridge remoteNotificationsHandler;
@@ -74,18 +75,13 @@ public class DataRowStore implements Serializable {
     protected transient EventSubject eventSubject;
 
     /**
-     * Creates new DataRowStore with a specified name and a set of properties. If no
-     * properties are defined, default values are used.
-     *
-     * @param name         DataRowStore name. Used to identify this DataRowStore in events, etc.
-     *                     Can't be null.
-     * @param properties   Properties map used to configure DataRowStore parameters. Can be
-     *                     null.
-     * @param eventManager EventManager that should be used for posting and receiving
-     *                     events.
-     * @since 1.2
+     * @param name         DataRowStore name. Used to identify this DataRowStore in events, etc. Can't be null.
+     * @param maxSize      max number of cached snapshots. The cache is LRU, evicting the oldest snapshots past
+     *                     this size.
+     * @param eventManager EventManager that should be used for posting and receiving events.
+     * @since 5.0
      */
-    public DataRowStore(String name, RuntimeProperties properties, EventManager eventManager) {
+    public DataRowStore(String name, int maxSize, EventManager eventManager) {
         if (name == null) {
             throw new IllegalArgumentException("DataRowStore name can't be null.");
         }
@@ -93,23 +89,15 @@ public class DataRowStore implements Serializable {
         this.name = name;
         this.eventSubject = createSubject();
         this.eventManager = eventManager;
-        initWithProperties(properties);
-    }
-
-    private EventSubject createSubject() {
-        return EventSubject.getSubject(this.getClass(), name);
-    }
-
-    protected void initWithProperties(RuntimeProperties properties) {
-
-        // expiration time is never used actually
-        maxSize = properties.getInt(Constants.SNAPSHOT_CACHE_SIZE_PROPERTY, SNAPSHOT_CACHE_SIZE_DEFAULT);
-
-        LOGGER.debug("DataRowStore property {} = {}", Constants.SNAPSHOT_CACHE_SIZE_PROPERTY, maxSize);
+        this.maxSize = maxSize;
 
         this.snapshots = new ConcurrentLinkedHashMap.Builder<ObjectId, DataRow>()
                 .maximumWeightedCapacity(maxSize)
                 .build();
+    }
+
+    private EventSubject createSubject() {
+        return EventSubject.getSubject(this.getClass(), name);
     }
 
     protected void setEventBridge(EventBridge eventBridge) {

@@ -28,7 +28,7 @@ import static org.mockito.Mockito.when;
 import java.util.Collections;
 
 import org.apache.cayenne.access.jdbc.RSColumn;
-import org.apache.cayenne.access.translator.sqltemplate.TranslatedSQL;
+import org.apache.cayenne.access.translator.TranslatedSQL;
 import org.apache.cayenne.access.types.ExtendedTypeMap;
 import org.apache.cayenne.dba.DbAdapter;
 import org.junit.jupiter.api.BeforeEach;

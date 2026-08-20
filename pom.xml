@@ -47,14 +47,14 @@
         <ant.version>1.10.15</ant.version>
         <junit.version>5.14.4</junit.version>
         <logback.version>1.5.32</logback.version>
-        <mcp-sdk.version>1.1.2</mcp-sdk.version>
+        <mcp-sdk.version>2.0.0</mcp-sdk.version>
         <mockito.version>5.23.0</mockito.version>
         <slf4j.version>2.0.17</slf4j.version>
         <testcontainers.version>2.0.5</testcontainers.version>
         <xmlunit.version>2.9.1</xmlunit.version>
 
         <!-- JDBC driver versions -->
-        <derby.version>10.14.2.0</derby.version>
+        <derby.version>10.17.1.0</derby.version>
         <frontbase.driver.version>4.1</frontbase.driver.version>
         <h2.version>2.2.220</h2.version>
         <hsqldb.version>2.7.4</hsqldb.version>
@@ -62,10 +62,10 @@
         <ingres.driver.version>4.0.7</ingres.driver.version>
         <jaybird.version>4.0.6.java11</jaybird.version>
         <mariadb.connector.version>3.0.6</mariadb.connector.version>
-        <mssql.jdbc.version>12.10.0.jre11</mssql.jdbc.version>
+        <mssql.jdbc.version>12.10.2.jre11</mssql.jdbc.version>
         <mysql.connector.version>9.5.0</mysql.connector.version>
         <ojdbc.version>21.8.0.0</ojdbc.version>
-        <postgres.jdbc.version>42.7.2</postgres.jdbc.version>
+        <postgres.jdbc.version>42.7.13</postgres.jdbc.version>
         <sqlite.jdbc.version>3.46.0.1</sqlite.jdbc.version>
         <sybase.driver.version>12</sybase.driver.version>
 
@@ -393,11 +393,6 @@
                 <version>1.11.0</version>
             </dependency>
             <dependency>
-                <groupId>net.java.dev.inflector</groupId>
-                <artifactId>inflector</artifactId>
-                <version>0.7.0</version>
-            </dependency>
-            <dependency>
                 <groupId>org.junit</groupId>
                 <artifactId>junit-bom</artifactId>
                 <version>${junit.version}</version>
@@ -417,6 +412,11 @@
             <dependency>
                 <groupId>org.apache.derby</groupId>
                 <artifactId>derby</artifactId>
+                <version>${derby.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>org.apache.derby</groupId>
+                <artifactId>derbytools</artifactId>
                 <version>${derby.version}</version>
             </dependency>
             <dependency>
@@ -608,6 +608,11 @@
         <dependency>
             <groupId>org.apache.derby</groupId>
             <artifactId>derby</artifactId>
+            <scope>test</scope>
+        </dependency>
+        <dependency>
+            <groupId>org.apache.derby</groupId>
+            <artifactId>derbytools</artifactId>
             <scope>test</scope>
         </dependency>
         <dependency>
@@ -897,6 +902,7 @@
                         </property>
                         <org.slf4j.simpleLogger.defaultLogLevel>${cayenneLogLevel}
                         </org.slf4j.simpleLogger.defaultLogLevel>
+                        <derby.stream.error.file>${project.build.directory}/derby.log</derby.stream.error.file>
                     </systemPropertyVariables>
                 </configuration>
             </plugin>
@@ -911,6 +917,7 @@
                     <systemPropertyVariables>
                         <org.slf4j.simpleLogger.defaultLogLevel>${cayenneLogLevel}
                         </org.slf4j.simpleLogger.defaultLogLevel>
+                        <derby.stream.error.file>${project.build.directory}/derby.log</derby.stream.error.file>
                     </systemPropertyVariables>
                 </configuration>
             </plugin>

@@ -51,7 +51,7 @@ Maven
     <dependency>
         <groupId>org.apache.cayenne</groupId>
         <artifactId>cayenne-server</artifactId>
-        <version>5.0-M1</version>
+        <version>5.0-M2</version>
     </dependency>
 </dependencies>
 ```
@@ -67,11 +67,10 @@ compile cayenne.dependency('server')
 #### Create Cayenne Runtime
 
 ```java
-CayenneRuntime cayenneRuntime = CayenneRuntime.builder()
+CayenneRuntime cayenneRuntime = CayenneRuntime.of()
     .addConfig("cayenne-demo.xml")
-    .dataSource(DataSourceBuilder
-             .url("jdbc:mysql://localhost:3306/cayenne_demo")
-             .driver("com.mysql.cj.jdbc.Driver")
+    .dataSource(CayenneDataSource
+             .of("jdbc:mysql://localhost:3306/cayenne_demo")
              .userName("username")
              .password("password")
              .build())

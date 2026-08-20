@@ -26,7 +26,7 @@ public class DerbyDataSource {
         return DataSourceDescriptorFactory.create(
                 "sa",
                 "",
-                "jdbc:derby:target/testdb;create=true",
+                "jdbc:derby:memory:testdb;create=true",
                 "org.apache.derby.jdbc.EmbeddedDriver");
     }
 }

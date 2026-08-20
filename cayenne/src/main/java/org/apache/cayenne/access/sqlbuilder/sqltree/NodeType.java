@@ -40,5 +40,8 @@ public enum NodeType {
     INSERT_COLUMNS,
     INSERT_VALUES,
     ORDER_BY,
-    SELECT
+    SELECT,
+    WHEN,
+    THEN,
+    ELSE
 }

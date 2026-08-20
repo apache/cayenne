@@ -20,7 +20,6 @@
 package org.apache.cayenne.project.extension;
 
 import org.apache.cayenne.configuration.DataChannelDescriptor;
-import org.apache.cayenne.configuration.DataNodeDescriptor;
 import org.apache.cayenne.map.DataMap;
 import org.apache.cayenne.map.DbAttribute;
 import org.apache.cayenne.map.DbEntity;
@@ -51,11 +50,6 @@ public class BaseSaverDelegate implements SaverDelegate {
 
     @Override
     public Void visitDataChannelDescriptor(DataChannelDescriptor channelDescriptor) {
-        return null;
-    }
-
-    @Override
-    public Void visitDataNodeDescriptor(DataNodeDescriptor nodeDescriptor) {
         return null;
     }
 

@@ -19,6 +19,8 @@
 
 package org.apache.cayenne.access.translator.select;
 
+import org.apache.cayenne.access.translator.SelectTranslator;
+import org.apache.cayenne.access.translator.TranslatedSelect;
 import org.apache.cayenne.dba.DbAdapter;
 import org.apache.cayenne.map.EntityResolver;
 import org.apache.cayenne.query.Select;

@@ -160,7 +160,7 @@ public class QualifierTranslatorTest {
         assertInstanceOf(ValueNode.class, node);
         assertNull(((ValueNode) node).getValue());
 
-        SQLGenerationVisitor visitor = new SQLGenerationVisitor(new DefaultSQLAppendable(null));
+        SQLGenerationVisitor visitor = new SQLGenerationVisitor(new DefaultSQLAppendable(null), null);
         node.visit(visitor);
         assertEquals(" NULL", visitor.getSQLString());
     }
@@ -168,11 +168,11 @@ public class QualifierTranslatorTest {
     @Test
     public void translateNegate_NumberScalar() {
         Node node = translate("-1");
-        assertInstanceOf(FunctionNode.class, node);
+        assertInstanceOf(NegateNode.class, node);
 
-        SQLGenerationVisitor visitor = new SQLGenerationVisitor(new DefaultSQLAppendable(null));
+        SQLGenerationVisitor visitor = new SQLGenerationVisitor(new DefaultSQLAppendable(null), null);
         node.visit(visitor);
-        assertEquals(" - 1", visitor.getSQLString());
+        assertEquals(" -1", visitor.getSQLString());
     }
 
     @Test
@@ -182,7 +182,7 @@ public class QualifierTranslatorTest {
         assertInstanceOf(ValueNode.class, node);
         assertNull(((ValueNode) node).getValue());
 
-        SQLGenerationVisitor visitor = new SQLGenerationVisitor(new DefaultSQLAppendable(null));
+        SQLGenerationVisitor visitor = new SQLGenerationVisitor(new DefaultSQLAppendable(null), null);
         node.visit(visitor);
         assertEquals(" NULL", visitor.getSQLString());
     }
@@ -339,9 +339,7 @@ public class QualifierTranslatorTest {
 
         {
             Node op = translate("-2");
-            assertInstanceOf(FunctionNode.class, op);
-            assertEquals("-", ((FunctionNode)op).getFunctionName());
-            assertNull(((FunctionNode) op).getAlias());
+            assertInstanceOf(NegateNode.class, op);
             assertEquals(1, op.getChildrenCount());
         }
 
@@ -483,9 +481,9 @@ public class QualifierTranslatorTest {
         assertEquals("AND", ((OpExpressionNode)and).getOp());
         assertEquals(3, and.getChildrenCount());
 
-        SQLGenerationVisitor visitor = new SQLGenerationVisitor(new DefaultSQLAppendable(null));
+        SQLGenerationVisitor visitor = new SQLGenerationVisitor(new DefaultSQLAppendable(null), null);
         and.visit(visitor);
-        assertEquals(" ( t0.a < 2 ) AND t0.b IN ( 5, 6) AND ( t0.b = 7 )", visitor.getSQLString());
+        assertEquals(" m.a < 2 AND m.b IN (5, 6) AND m.b = 7", visitor.getSQLString());
     }
 
     @Test
@@ -570,7 +568,7 @@ public class QualifierTranslatorTest {
     public void translateStringScalar() {
         Expression scalarValue = ExpressionFactory.wrapScalarValue("abc");
         Node translate = translator.translate(scalarValue);
-        SQLGenerationVisitor visitor = new SQLGenerationVisitor(new DefaultSQLAppendable(null));
+        SQLGenerationVisitor visitor = new SQLGenerationVisitor(new DefaultSQLAppendable(null), null);
         translate.visit(visitor);
         assertInstanceOf(ASTScalar.class, scalarValue);
         assertEquals(" 'abc'",visitor.getSQLString());
@@ -580,7 +578,7 @@ public class QualifierTranslatorTest {
     public void translateNumberScalar() {
         Expression scalarValue = ExpressionFactory.wrapScalarValue(123);
         Node translate = translator.translate(scalarValue);
-        SQLGenerationVisitor visitor = new SQLGenerationVisitor(new DefaultSQLAppendable(null));
+        SQLGenerationVisitor visitor = new SQLGenerationVisitor(new DefaultSQLAppendable(null), null);
         translate.visit(visitor);
         assertInstanceOf(ASTScalar.class, scalarValue);
         assertEquals(" 123",visitor.getSQLString());

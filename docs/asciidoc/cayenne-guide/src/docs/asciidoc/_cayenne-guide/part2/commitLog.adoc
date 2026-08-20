@@ -86,7 +86,7 @@ Multiple listeners may be registered; all receive identical change data for the 
 
 [source,java]
 ----
-CayenneRuntime runtime = CayenneRuntime.builder()
+CayenneRuntime runtime = CayenneRuntime.of()
         .addConfig("cayenne-project.xml")
         .addModule(binder -> CoreModule.extend(binder)
                 .addCommitLogListener(AuditListener.class))

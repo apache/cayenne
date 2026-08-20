@@ -26,10 +26,11 @@ import org.apache.cayenne.project.compatibility.configuration.CompatibilityDataM
 import org.apache.cayenne.di.Binder;
 import org.apache.cayenne.di.Module;
 import org.apache.cayenne.project.ProjectModule;
-import org.apache.cayenne.project.upgrade.UpgradeService;
+import org.apache.cayenne.project.upgrade.ProjectUpgrader;
 import org.apache.cayenne.project.upgrade.handlers.UpgradeHandler_V10;
 import org.apache.cayenne.project.upgrade.handlers.UpgradeHandler_V11;
 import org.apache.cayenne.project.upgrade.handlers.UpgradeHandler_V12;
+import org.apache.cayenne.project.upgrade.handlers.UpgradeHandler_V13;
 import org.apache.cayenne.project.upgrade.handlers.UpgradeHandler_V7;
 import org.apache.cayenne.project.upgrade.handlers.UpgradeHandler_V8;
 import org.apache.cayenne.project.upgrade.handlers.UpgradeHandler_V9;
@@ -44,7 +45,7 @@ public class ProjectCompatibilityModule implements Module {
         binder.bind(DataChannelDescriptorLoader.class).to(CompatibilityDataChannelDescriptorLoader.class);
         binder.bind(DataMapLoader.class).to(CompatibilityDataMapLoader.class);
 
-        binder.bind(UpgradeService.class).to(CompatibilityUpgradeService.class);
+        binder.bind(ProjectUpgrader.class).to(CompatibilityProjectUpgrader.class);
         binder.bind(DocumentProvider.class).to(DefaultDocumentProvider.class);
 
         ProjectModule.extend(binder)
@@ -53,6 +54,7 @@ public class ProjectCompatibilityModule implements Module {
                 .addUpgradeHandler(UpgradeHandler_V9.class)
                 .addUpgradeHandler(UpgradeHandler_V10.class)
                 .addUpgradeHandler(UpgradeHandler_V11.class)
-                .addUpgradeHandler(UpgradeHandler_V12.class);
+                .addUpgradeHandler(UpgradeHandler_V12.class)
+                .addUpgradeHandler(UpgradeHandler_V13.class);
     }
 }

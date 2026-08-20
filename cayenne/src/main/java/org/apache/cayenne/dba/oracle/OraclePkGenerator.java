@@ -27,16 +27,7 @@ import org.apache.cayenne.dba.SequencePkGenerator;
  */
 public class OraclePkGenerator extends SequencePkGenerator {
 
-    /**
-     * Used by DI
-     *
-     * @since 4.1
-     */
-    public OraclePkGenerator() {
-        super();
-    }
-
-    protected OraclePkGenerator(JdbcAdapter adapter) {
+    public OraclePkGenerator(JdbcAdapter adapter) {
         super(adapter);
     }
 

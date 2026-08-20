@@ -20,7 +20,7 @@
 package org.apache.cayenne.project.upgrade.handlers;
 
 import org.apache.cayenne.configuration.DataChannelDescriptor;
-import org.apache.cayenne.project.upgrade.UpgradeUnit;
+import org.apache.cayenne.project.upgrade.UpgradeContext;
 import org.w3c.dom.Element;
 import org.w3c.dom.NodeList;
 
@@ -73,12 +73,12 @@ public interface UpgradeHandler {
     /**
      * Process DOM for the project root file (e.g. cayenne-project.xml)
      */
-    void processProjectDom(UpgradeUnit upgradeUnit);
+    void processProjectDom(UpgradeContext upgradeUnit);
 
     /**
      * Process DOM for the data map file (e.g. datamap.map.xml)
      */
-    void processDataMapDom(UpgradeUnit upgradeUnit);
+    void processDataMapDom(UpgradeContext upgradeUnit);
 
     /**
      * This method should be avoided as much as possible, as
@@ -93,7 +93,7 @@ public interface UpgradeHandler {
      *
      * @param upgradeUnit for the datamap
      */
-    default void updateDomainSchemaAndVersion(UpgradeUnit upgradeUnit) {
+    default void updateDomainSchemaAndVersion(UpgradeContext upgradeUnit) {
         Element domain = upgradeUnit.getDocument().getDocumentElement();
         // update schema
         domain.setAttribute("xmlns", "http://cayenne.apache.org/schema/" + getVersion() + "/domain");
@@ -109,7 +109,7 @@ public interface UpgradeHandler {
      *
      * @param upgradeUnit for the datamap
      */
-    default void updateDataMapSchemaAndVersion(UpgradeUnit upgradeUnit) {
+    default void updateDataMapSchemaAndVersion(UpgradeContext upgradeUnit) {
         Element dataMap = upgradeUnit.getDocument().getDocumentElement();
         // update schema
         dataMap.setAttribute("xmlns", "http://cayenne.apache.org/schema/" + getVersion() + "/modelMap");
@@ -125,7 +125,7 @@ public interface UpgradeHandler {
      * @param upgradeUnit a unit to work with
      * @param extension   name of the extension (cgen, dbImport, etc.)
      */
-    default void updateExtensionSchema(UpgradeUnit upgradeUnit, String extension) {
+    default void updateExtensionSchema(UpgradeContext upgradeUnit, String extension) {
         XPath xpath = XPathFactory.newInstance().newXPath();
         NodeList nodes;
         try {
@@ -147,7 +147,7 @@ public interface UpgradeHandler {
      * @param extension   name of the extension (e.g. validation)
      * @since 5.0-M2
      */
-    default void updateDomainExtensionSchema(UpgradeUnit upgradeUnit, String extension) {
+    default void updateDomainExtensionSchema(UpgradeContext upgradeUnit, String extension) {
         XPath xpath = XPathFactory.newInstance().newXPath();
         NodeList nodes;
         try {
@@ -169,7 +169,7 @@ public interface UpgradeHandler {
      * @param upgradeUnit a unit to work with
      * @since 5.0
      */
-    default void updateInfoSchema(UpgradeUnit upgradeUnit) {
+    default void updateInfoSchema(UpgradeContext upgradeUnit) {
         XPath xpath = XPathFactory.newInstance().newXPath();
         NodeList nodes;
         try {

@@ -20,41 +20,23 @@
 package org.apache.cayenne.modeler.event.display;
 
 import org.apache.cayenne.configuration.DataChannelDescriptor;
-import org.apache.cayenne.configuration.DataNodeDescriptor;
 import org.apache.cayenne.map.DataMap;
 
 public class DataMapDisplayEvent extends DisplayEvent {
 
     private final DataChannelDescriptor domain;
     private final DataMap dataMap;
-    private final DataNodeDescriptor dataNode;
     // True if the event should cause the editor to switch to the main DataMap tab
     private final boolean mainTabFocus;
 
     public DataMapDisplayEvent(Object src, DataChannelDescriptor domain, DataMap dataMap) {
-        this(src, domain, dataMap, null, false);
+        this(src, domain, dataMap, false);
     }
 
     public DataMapDisplayEvent(Object src, DataChannelDescriptor domain, DataMap dataMap, boolean mainTabFocus) {
-        this(src, domain, dataMap, null, mainTabFocus);
-    }
-
-    public DataMapDisplayEvent(Object src,
-                               DataChannelDescriptor domain,
-                               DataMap dataMap,
-                               DataNodeDescriptor dataNode) {
-        this(src, domain, dataMap, dataNode, false);
-    }
-
-    public DataMapDisplayEvent(Object src,
-                               DataChannelDescriptor domain,
-                               DataMap dataMap,
-                               DataNodeDescriptor dataNode,
-                               boolean mainTabFocus) {
         super(src);
         this.domain = domain;
         this.dataMap = dataMap;
-        this.dataNode = dataNode;
         this.mainTabFocus = mainTabFocus;
     }
 
@@ -64,10 +46,6 @@ public class DataMapDisplayEvent extends DisplayEvent {
 
     public DataMap getDataMap() {
         return dataMap;
-    }
-
-    public DataNodeDescriptor getDataNode() {
-        return dataNode;
     }
 
     public boolean isMainTabFocus() {

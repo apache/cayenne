@@ -27,17 +27,18 @@ package org.apache.cayenne.datasource;
  */
 class PoolingDataSourceManager extends Thread {
 
+	private final UnmanagedPoolingDataSource dataSource;
+	private final long managerWakeTime;
+
 	private volatile boolean shouldStop;
-	private UnmanagedPoolingDataSource dataSource;
-	private long managerWakeTime;
 
 	PoolingDataSourceManager(UnmanagedPoolingDataSource dataSource, long managerWakeTime) {
 		setName("PoolingDataSourceManager-" + dataSource.hashCode());
 		setDaemon(true);
 
 		this.dataSource = dataSource;
-		this.shouldStop = false;
 		this.managerWakeTime = managerWakeTime;
+		this.shouldStop = false;
 	}
 
 	void shutdown() {
