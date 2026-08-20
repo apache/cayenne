@@ -285,8 +285,8 @@ public class CMTable extends JTable {
     }
 
     private void sortByDefinedColumn(int col, int sortCol, boolean order) {
-        CMTableModel model = (CMTableModel) getModel();
-        if (renderer.isSortingEnabled() && model.isColumnSortable(sortCol)) {
+        CMTableModel model = getCayenneModel();
+        if (model != null && renderer.isSortingEnabled() && model.isColumnSortable(sortCol)) {
             renderer.setSelectedColumn(col, order);
             getTableHeader().repaint();
 
@@ -308,7 +308,8 @@ public class CMTable extends JTable {
             } else if (!isResizeCursor()) {
                 int col = header.columnAtPoint(e.getPoint());
                 int sortCol = convertColumnIndexToModel(col);
-                if (renderer.isSortingEnabled() && ((CMTableModel<?>) getModel()).isColumnSortable(sortCol)) {
+                CMTableModel model = getCayenneModel();
+                if (model != null && renderer.isSortingEnabled() && model.isColumnSortable(sortCol)) {
                     boolean isAscent = SortButtonRenderer.DOWN != renderer.getState(col);
                     sortByDefinedColumn(col, sortCol, isAscent);
                     if (sortChangedListener != null) {
