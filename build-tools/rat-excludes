@@ -13,26 +13,37 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
+#
+# The canonical Rat exclusion list: read by the "apache-rat-plugin" configuration in the root
+# "pom.xml" via <inputExcludeFile. "rat.sh" keeps its own copy of the same
+# list in regex form, as the standalone Rat jar can't read this file - keep the two in sync.
 
-#
-# Used by buildbot, but not by Maven or rat.sh
-#
-# For now manually keeping in sync with 'rat.sh'
-#
+# hidden files and directories: .github, .claude, .asf.yaml, .gitignore, ...
+**/.*
+**/.*/**
 
-**/.classpath
-**/.project
-**/.gitignore
+# markdown is documentation, no license header by project convention
+**/*.md
+
+# generated or structural files with no place for a header
 **/_*.java
-**/*.plist
-**/index.eomodeld
-**/*.fspec
-**/DiagramLayout
-**/excludes.txt
-**/*.map.xml
 **/cayenne-*.xml
 **/cayenne.xml
+**/*.map.xml
 **/*.driver.xml
-**/*.html
-**/*.css
-**/derby.log
+**/*.plist
+**/*.eomodeld
+**/*.fspec
+**/DiagramLayout
+**/META-INF/services/*
+
+# a template of a NOTICE file, included into the build artifacts
+**/NOTICE.txt.vm
+
+# opaque test fixture (crypto plaintext input), Rat can not classify it as binary
+**/transformer/bytes/plain
+
+# ASF and distribution text that carries no header by convention
+KEYS
+RELEASE-NOTES.txt
+modeler/cayenne-modeler-mac/src/main/resources/README.txt

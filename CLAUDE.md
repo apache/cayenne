@@ -20,6 +20,23 @@ mvn clean verify -DskipTests
 mvn clean verify -pl cayenne -am
 ```
 
+## License Headers
+
+Every source file needs an ASF license header. Apache Rat enforces this:
+
+```bash
+# Scans the whole source tree in a single pass from the root module. Skipped in every other
+# module, so a recursive run costs nothing extra.
+mvn apache-rat:check
+```
+
+The report lands in `target/rat.txt`. Exclusions live in `build-tools/rat-excludes` — the single
+canonical list, also mirrored in regex form in `rat.sh` (the standalone-jar fallback).
+
+Rat classifies generated files, binaries, archives, README-style notice files and anything matched
+by `.gitignore` on its own, so those need no exclusion entry. Prefer adding a header over adding an
+exclusion.
+
 ## Testing
 
 Tests split into two suites driven by different plugins, and **selecting a single test uses a different property for each**:

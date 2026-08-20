@@ -806,16 +806,6 @@
                     <groupId>org.apache.rat</groupId>
                     <artifactId>apache-rat-plugin</artifactId>
                     <version>${apache-rat-plugin.version}</version>
-                    <configuration>
-                        <licenses>
-                            <license implementation="org.apache.rat.analysis.license.ApacheSoftwareLicense20">
-                                <notes>Also allow the license url to be https.</notes>
-                                <patterns>
-                                    <pattern>https://www.apache.org/licenses/LICENSE-2.0</pattern>
-                                </patterns>
-                            </license>
-                        </licenses>
-                    </configuration>
                 </plugin>
                 <plugin>
                     <groupId>org.objectstyle.japp</groupId>
@@ -926,33 +916,9 @@
                 <groupId>org.apache.rat</groupId>
                 <artifactId>apache-rat-plugin</artifactId>
                 <configuration>
-                    <excludes>
-                        <exclude>build/**/*</exclude>
-                        <exclude>**/.*</exclude>
-                        <exclude>**/.*/**</exclude>
-
-                        <exclude>**/cayenne-*.xml</exclude>
-                        <exclude>**/cayenne.xml</exclude>
-                        <exclude>**/*.map.xml</exclude>
-                        <exclude>**/_*.java</exclude>
-                        <exclude>**/*.html</exclude>
-                        <exclude>**/*.css</exclude>
-                        <exclude>**/*.driver.xml</exclude>
-
-                        <exclude>**/test/**/ks1.jceks</exclude>
-                        <exclude>**/test/**/plain.txt</exclude>
-
-                        <exclude>**/DiagramLayout</exclude>
-                        <exclude>**/*.plist</exclude>
-                        <exclude>**/*.eomodeld</exclude>
-                        <exclude>**/*.fspec</exclude>
-
-                        <exclude>**/*.log</exclude>
-                        <exclude>**/*.iml</exclude>
-
-                        <!-- This is a template of a NOTICE file, that will be included to the build artifacts -->
-                        <exclude>**/NOTICE.txt.vm</exclude>
-                    </excludes>
+                    <!-- Rat scans the whole tree from the root in one pass, so it is skipped
+                         everywhere except the root module - see the "rat" profile below. -->
+                    <skip>true</skip>
                 </configuration>
             </plugin>
             <plugin>
@@ -983,6 +949,40 @@
     </distributionManagement>
 
     <profiles>
+        <!--
+            License header check: "mvn apache-rat:check".
+
+            Activated only in the root module, as Rat scans the entire source tree in a single pass
+            (see "excludeSubProjects" below) and running it per-module would just repeat that scan.
+            "build-tools/rat-excludes" is resolved against the module basedir, so only the root
+            matches.
+        -->
+        <profile>
+            <id>rat</id>
+            <activation>
+                <file>
+                    <exists>build-tools/rat-excludes</exists>
+                </file>
+            </activation>
+            <build>
+                <plugins>
+                    <plugin>
+                        <groupId>org.apache.rat</groupId>
+                        <artifactId>apache-rat-plugin</artifactId>
+                        <configuration>
+                            <skip>false</skip>
+                            <!-- "basedir" must be pinned to the root: Rat resolves
+                                 "inputExcludeFile" against it, and mangles absolute paths on
+                                 Windows, so the exclusion list can only be given as a path
+                                 relative to the scan root. -->
+                            <basedir>${maven.multiModuleProjectDirectory}</basedir>
+                            <excludeSubProjects>false</excludeSubProjects>
+                            <inputExcludeFile>build-tools/rat-excludes</inputExcludeFile>
+                        </configuration>
+                    </plugin>
+                </plugins>
+            </build>
+        </profile>
         <!-- Optional profile used to sign artifacts -->
         <profile>
             <id>gpg</id>

@@ -16,7 +16,8 @@
 # limitations under the License.
 
 #
-# Runs Rat checks on the source code. Prints report to STDOUT.
+# Fallback Rat check, for when a standalone Rat jar is preferred over Maven. The primary check is
+# "mvn apache-rat:check". Runs Rat checks on the source code, prints report to STDOUT.
 #
 # Usage:
 #    
@@ -47,28 +48,23 @@ echo "Deleting 'build' dirs..." 1>&2
 
 echo "Running rat, this may take a while..." 1>&2
 
-# TODO: read excludes from buildbot config at 'build-tools/rat-excludes'
+# Keep this in sync with 'build-tools/rat-excludes'.
 java -jar $RAT -d $DIR \
-	-e '\.classpath' \
-	-e '\.project' \
-	-e '\.gitignore' \
+	-e '\..+' \
 	-e '\_.+\.java' \
+	-e '.+\.md' \
+	-e 'cayenne-.+\.xml' \
+	-e 'cayenne\.xml' \
+	-e '.+\.map\.xml' \
+	-e '.+\.driver\.xml' \
 	-e '.+\.plist' \
-	-e 'index\.eomodeld' \
+	-e '.+\.eomodeld' \
 	-e '.+\.fspec' \
 	-e 'DiagramLayout' \
-	-e 'excludes\.txt' \
-	-e '.+\.map\.xml' \
-	-e 'cayenne-*.xml' \
-	-e 'cayenne\.xml' \
-	-e '.+\.driver\.xml' \
-	-e 'CLOVER\.txt' \
-	-e '.+\.html' \
-	-e '.+\.css' \
-	-e '.+\.jceks' \
-	-e 'plain\.txt' \
-	-e 'derby\.log' \
-	-e '.+\.iml' \
+	-e 'org\.slf4j\.spi\.SLF4JServiceProvider' \
+	-e 'NOTICE\.txt\.vm' \
+	-e 'plain' \
+	-e 'KEYS' \
+	-e 'RELEASE-NOTES\.txt' \
+	-e 'README\.txt' \
 	-e 'report.txt'
-
-
