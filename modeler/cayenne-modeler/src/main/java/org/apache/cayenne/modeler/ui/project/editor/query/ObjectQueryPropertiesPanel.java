@@ -53,8 +53,8 @@ public class ObjectQueryPropertiesPanel extends SelectPropertiesPanel {
         // assemble
         CellConstraints cc = new CellConstraints();
         FormLayout layout = new FormLayout(
-                "right:max(80dlu;pref), 3dlu, left:max(50dlu;pref), fill:max(150dlu;pref)",
-                "p, 3dlu, p, 3dlu, p, 3dlu, p, 3dlu, p, 3dlu, p, 3dlu, p, 3dlu, p, 3dlu, p");
+                "right:max(80dlu;pref), $lcgap, left:max(50dlu;pref), fill:max(150dlu;pref)",
+                "p, $rgap, p, $rgap, p, $rgap, p, $rgap, p, $rgap, p, $rgap, p, $rgap, p, $rgap, p");
         PanelBuilder builder = new PanelBuilder(layout);
         builder.setDefaultDialogBorder();
         builder.addSeparator("", cc.xywh(1, 1, 4, 1));

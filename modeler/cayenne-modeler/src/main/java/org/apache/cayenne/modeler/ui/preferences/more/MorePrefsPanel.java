@@ -58,7 +58,7 @@ public class MorePrefsPanel extends AppPanel {
     private void initLayout() {
         FormLayout layout = new FormLayout(
                 "12dlu, default:grow",
-                "p, 6dlu, p, 12dlu, p, 6dlu, p, 3dlu, p, fill:default:grow");
+                "p, $lgap, p, 12dlu, p, $lgap, p, $rgap, p, fill:default:grow");
 
         CellConstraints cc = new CellConstraints();
         PanelBuilder builder = new PanelBuilder(layout);

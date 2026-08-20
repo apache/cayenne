@@ -19,8 +19,8 @@
 package org.apache.cayenne.modeler.platform.mac;
 
 import org.apache.cayenne.modeler.Application;
+import org.apache.cayenne.modeler.platform.GenericUIInitializer;
 import org.apache.cayenne.modeler.service.action.GlobalActions;
-import org.apache.cayenne.modeler.platform.UIInitializer;
 import org.apache.cayenne.modeler.toolkit.filechooser.CMFileChooserFactory;
 import org.apache.cayenne.modeler.ui.action.AboutAction;
 import org.apache.cayenne.modeler.ui.action.ConfigurePreferencesAction;
@@ -33,43 +33,17 @@ import java.awt.*;
 import java.util.HashSet;
 import java.util.Set;
 
-public class MacUIInitializer implements UIInitializer {
+public class MacUIInitializer extends GenericUIInitializer {
 
     @Override
     public void beforeSwingLaunch() {
-        // must be set before Aqua L&F initializes — it reads this property during init
+        super.beforeSwingLaunch();
+
+        // must be set before the L&F initializes — it reads this property during init
         System.setProperty("apple.awt.application.name", "CayenneModeler");
 
-        // override some default styles and colors, assuming that Aqua theme will be used
         Color lightGrey = new Color(0xEEEEEE);
-        Color darkGrey = new Color(225, 225, 225);
-        Border darkBorder = BorderFactory.createLineBorder(darkGrey);
-
-        UIManager.put("ToolBarSeparatorUI", MacToolBarSeparatorUI.class.getName());
         UIManager.put("PanelUI", MacPanelUI.class.getName());
-        // next two is custom-made for Cayenne's MainToolBar
-        UIManager.put("ToolBar.background", lightGrey);
-        UIManager.put("MainToolBar.background", lightGrey);
-        UIManager.put("MainToolBar.border", BorderFactory.createEmptyBorder(0, 7, 0, 7));
-        UIManager.put("ToolBar.border", darkBorder);
-        UIManager.put("ScrollPane.border", darkBorder);
-        UIManager.put("Table.scrollPaneBorder", darkBorder);
-        UIManager.put("SplitPane.border", BorderFactory.createEmptyBorder());
-        UIManager.put("SplitPane.background", darkGrey);
-        UIManager.put("Tree.rendererFillBackground", Boolean.TRUE);
-        UIManager.put("Tree.paintLines", Boolean.FALSE);
-        UIManager.put("ComboBox.background", Color.WHITE);
-        UIManager.put("ComboBox.selectionBackground", darkGrey);
-        UIManager.put("ComboBox.selectionForeground", Color.BLACK);
-        UIManager.put("CheckBox.background", Color.WHITE);
-        UIManager.put("Tree.background", Color.WHITE);
-        UIManager.put("Tree.selectionForeground", Color.BLACK);
-        UIManager.put("Tree.selectionBackground", lightGrey);
-        UIManager.put("Tree.selectionBorderColor", lightGrey);
-        UIManager.put("Table.selectionForeground", Color.BLACK);
-        UIManager.put("Table.selectionBackground", lightGrey);
-        UIManager.put("Table.focusCellHighlightBorder", BorderFactory.createEmptyBorder());
-        UIManager.put("CheckBoxHeader.border", BorderFactory.createEmptyBorder(0, 9, 0, 0));
 
         // MacOS BigSur needs additional style tweaking for the tabs active state
         MacOSVersion version = MacOSVersion.fromSystemProperties();

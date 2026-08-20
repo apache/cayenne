@@ -30,6 +30,7 @@ import org.apache.cayenne.modeler.pref.adapters.DataMapPrefs;
 import org.apache.cayenne.modeler.pref.adapters.GeneralPrefs;
 import org.apache.cayenne.modeler.service.classloader.ModelerClassLoader;
 import org.apache.cayenne.modeler.toolkit.ProjectDialog;
+import org.apache.cayenne.modeler.toolkit.buttons.CMButtonPanel;
 import org.apache.cayenne.modeler.ui.preferences.PreferenceDialog;
 import org.apache.cayenne.modeler.ui.preferences.dbconnector.DBConnectorEditor;
 import org.apache.cayenne.modeler.project.ProjectSession;
@@ -41,7 +42,6 @@ import javax.swing.JComboBox;
 import javax.swing.JOptionPane;
 import javax.swing.JPanel;
 import java.awt.BorderLayout;
-import java.awt.FlowLayout;
 import java.awt.Window;
 import java.sql.Connection;
 import java.sql.SQLException;
@@ -116,21 +116,17 @@ public class DataSourceDialog extends ProjectDialog {
 
         CellConstraints cc = new CellConstraints();
         PanelBuilder builder = new PanelBuilder(new FormLayout(
-                "20dlu:grow, pref, 3dlu, fill:max(150dlu;pref), 3dlu, fill:20dlu",
+                "20dlu:grow, pref, $lcgap, fill:max(150dlu;pref), $lcgap, fill:20dlu",
                 "p"));
         builder.setDefaultDialogBorder();
         builder.addLabel("Saved DataSources:", cc.xy(2, 1));
         builder.add(dataSources, cc.xy(4, 1));
         builder.add(configButton, cc.xy(6, 1));
 
-        JPanel buttons = new JPanel(new FlowLayout(FlowLayout.RIGHT));
-        buttons.add(cancelButton);
-        buttons.add(okButton);
-
         getContentPane().setLayout(new BorderLayout());
         getContentPane().add(builder.getPanel(), BorderLayout.NORTH);
         getContentPane().add(editor, BorderLayout.CENTER);
-        getContentPane().add(buttons, BorderLayout.SOUTH);
+        getContentPane().add(new CMButtonPanel(cancelButton, okButton), BorderLayout.SOUTH);
     }
 
     private void initBindings() {

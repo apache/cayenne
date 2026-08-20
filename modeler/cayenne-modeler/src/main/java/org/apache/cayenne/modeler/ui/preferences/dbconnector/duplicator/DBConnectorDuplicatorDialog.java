@@ -93,7 +93,7 @@ public class DBConnectorDuplicatorDialog extends AppDialog {
     private void initLayout() {
         getRootPane().setDefaultButton(okButton);
 
-        FormLayout layout = new FormLayout("right:pref, 3dlu, fill:250", "");
+        FormLayout layout = new FormLayout("right:pref, $lcgap, fill:250", "");
         DefaultFormBuilder builder = new DefaultFormBuilder(layout);
         builder.setDefaultDialogBorder();
         builder.append("Name:", connectorName);

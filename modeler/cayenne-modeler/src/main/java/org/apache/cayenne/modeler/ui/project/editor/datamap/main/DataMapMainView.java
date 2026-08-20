@@ -85,7 +85,7 @@ public class DataMapMainView extends ProjectPanel {
 
     private void initLayout() {
         FormLayout layout = new FormLayout(
-                "right:70dlu, 3dlu, fill:180dlu, 3dlu, fill:120",
+                "right:70dlu, $lcgap, fill:180dlu, $lcgap, fill:120",
                 "");
         DefaultFormBuilder builder = new DefaultFormBuilder(layout);
         builder.setDefaultDialogBorder();

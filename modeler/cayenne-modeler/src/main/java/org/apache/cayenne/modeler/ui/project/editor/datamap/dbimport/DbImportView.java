@@ -152,6 +152,9 @@ public class DbImportView extends ProjectPanel {
         JButton hideButton = new JButton("Advanced Options");
         hideButton.setIcon(configPanel.isVisible() ? downArrow : rightArrow);
         hideButton.setBorderPainted(false);
+        hideButton.setContentAreaFilled(false);
+        hideButton.setFocusPainted(false);
+        hideButton.setRolloverEnabled(false);
         hideButton.addActionListener(new AbstractAction() {
             @Override
             public void actionPerformed(ActionEvent e) {

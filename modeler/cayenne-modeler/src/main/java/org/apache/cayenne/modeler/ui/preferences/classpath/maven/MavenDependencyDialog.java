@@ -83,8 +83,8 @@ public class MavenDependencyDialog extends AppDialog {
 
         CellConstraints cc = new CellConstraints();
         PanelBuilder builder = new PanelBuilder(new FormLayout(
-                "right:max(50dlu;pref), 3dlu, fill:min(100dlu;pref)",
-                "p, 3dlu, p, 3dlu, p, 3dlu"));
+                "right:max(50dlu;pref), $lcgap, fill:min(100dlu;pref)",
+                "p, $rgap, p, $rgap, p, $rgap"));
         builder.setDefaultDialogBorder();
 
         builder.addLabel("group id:", cc.xy(1, 1));

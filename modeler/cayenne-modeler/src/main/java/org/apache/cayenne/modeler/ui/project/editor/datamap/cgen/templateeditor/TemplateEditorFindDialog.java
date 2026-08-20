@@ -41,8 +41,8 @@ public class TemplateEditorFindDialog extends AppDialog {
     protected static final String FIND_NEXT = "FindNext";
     private static final String FIND_PREV = "FindPrev";
 
-    protected static final String COLUMN_SPECS = "left:pref, 3dlu, left:pref,3dlu, 110dlu, 3dlu, fill:p:grow";
-    protected static final String ROW_SPECS = "4 * (p, 3dlu)";
+    protected static final String COLUMN_SPECS = "left:pref, $lcgap, left:pref,$lcgap, 110dlu, $lcgap, fill:p:grow";
+    protected static final String ROW_SPECS = "4 * (p, $rgap)";
 
     protected final TemplateEditor templateEditor;
     protected final JTextField searchField;

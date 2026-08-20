@@ -122,7 +122,7 @@ public class EntitySyncDialog extends AppDialog {
     private void initLayout() {
         getRootPane().setDefaultButton(updateButton);
 
-        FormLayout layout = new FormLayout("pref, 3dlu, pref", "p, 3dlu");
+        FormLayout layout = new FormLayout("pref, $lcgap, pref", "p, $rgap");
         PanelBuilder builder = new PanelBuilder(layout);
         builder.setDefaultDialogBorder();
 

@@ -36,7 +36,7 @@ import java.util.Vector;
 
 public class ReverseEngineeringConfigPanel extends ProjectPanel {
 
-    private static final String DATA_FIELDS_LAYOUT = "right:pref, 3dlu, fill:235dlu";
+    private static final String DATA_FIELDS_LAYOUT = "right:pref, $lcgap, fill:235dlu";
 
     private final JComboBox<String> strategyCombo;
     private final CMUndoableTextField meaningfulPk;

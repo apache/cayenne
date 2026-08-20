@@ -153,7 +153,7 @@ public class DBConnectorPrefsPanel extends AppPanel {
         CellConstraints cc = new CellConstraints();
         PanelBuilder sidebar = new PanelBuilder(new FormLayout(
                 "fill:min(150dlu;pref)",
-                "p, 10dlu, p, 3dlu, p, 3dlu, p, 10dlu, p"));
+                "p, 10dlu, p, $rgap, p, $rgap, p, 10dlu, p"));
         sidebar.setDefaultDialogBorder();
 
         sidebar.add(connectorChoices, cc.xy(1, 1));
@@ -164,7 +164,7 @@ public class DBConnectorPrefsPanel extends AppPanel {
 
         PanelBuilder editorBuilder = new PanelBuilder(new FormLayout(
                 "fill:default:grow",
-                "p, 3dlu, fill:default:grow"));
+                "p, $rgap, fill:default:grow"));
         editorBuilder.setDefaultDialogBorder();
         editorBuilder.addSeparator("Edit DB Connector", cc.xy(1, 1));
         editorBuilder.add(editor, cc.xy(1, 3));

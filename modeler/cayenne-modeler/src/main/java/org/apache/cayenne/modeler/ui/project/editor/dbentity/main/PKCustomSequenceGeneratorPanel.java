@@ -56,7 +56,7 @@ public class PKCustomSequenceGeneratorPanel extends PKGeneratorPanel {
         // assemble
 
         DefaultFormBuilder builder = new DefaultFormBuilder(new FormLayout(
-                "right:70dlu, 3dlu, 20dlu, 3dlu, fill:177dlu",
+                "right:70dlu, $lcgap, 20dlu, $lcgap, fill:177dlu",
                 ""));
 
         builder.setDefaultDialogBorder();

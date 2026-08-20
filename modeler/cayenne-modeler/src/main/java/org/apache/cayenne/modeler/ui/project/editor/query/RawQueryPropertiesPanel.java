@@ -68,9 +68,9 @@ public abstract class RawQueryPropertiesPanel extends SelectPropertiesPanel {
     protected PanelBuilder createPanelBuilder() {
         CellConstraints cc = new CellConstraints();
         FormLayout layout = new FormLayout(
-                "right:max(80dlu;pref), 3dlu, left:max(10dlu;pref), "
-                        + "3dlu, left:max(37dlu;pref), 3dlu, fill:max(147dlu;pref)",
-                "p, 3dlu, p, 3dlu, p, 3dlu, p, 3dlu, p, 3dlu, p, 3dlu, p, 3dlu, p");
+                "right:max(80dlu;pref), $lcgap, left:max(10dlu;pref), "
+                        + "$lcgap, left:max(37dlu;pref), $lcgap, fill:max(147dlu;pref)",
+                "p, $rgap, p, $rgap, p, $rgap, p, $rgap, p, $rgap, p, $rgap, p, $rgap, p");
 
         PanelBuilder builder = new PanelBuilder(layout);
         builder.setDefaultDialogBorder();

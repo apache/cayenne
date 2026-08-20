@@ -105,6 +105,7 @@ class MainToolBar extends AppToolBar {
         add(actions.getAction(CreateEmbeddableAction.class).buildButton(2));
         add(actions.getAction(CreateQueryAction.class).buildButton(3));
 
+        add(Box.createHorizontalGlue());
         add(new SearchPanel(app));
     }
 

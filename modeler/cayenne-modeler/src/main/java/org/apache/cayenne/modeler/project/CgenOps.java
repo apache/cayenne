@@ -19,7 +19,10 @@
 
 package org.apache.cayenne.modeler.project;
 
+import org.apache.cayenne.gen.CgenConfiguration;
 import org.apache.cayenne.gen.internal.Utils;
+import org.apache.cayenne.map.DataMap;
+import org.apache.cayenne.modeler.pref.adapters.GeneralPrefs;
 import org.apache.cayenne.project.Project;
 import org.apache.cayenne.resource.Resource;
 
@@ -27,8 +30,19 @@ import java.net.URISyntaxException;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
+import java.util.prefs.Preferences;
 
 public class CgenOps {
+
+    public static CgenConfiguration createDefaultCgenConfiguration(DataMap map, ProjectSession session) {
+        Path basePath = map.getLocation() != null ? CgenOps.baseDir(session) : null;
+        CgenConfiguration configuration = CgenConfiguration.createDefault(map, basePath);
+        configuration.setForce(true);
+
+        Preferences preferences = session.app().getPrefsLocator().appNode(GeneralPrefs.NODE);
+        configuration.setEncoding(new GeneralPrefs(preferences).getEncoding());
+        return configuration;
+    }
 
     public static Path baseDir(ProjectSession session) {
         Path projectRoot = projectRoot(session);

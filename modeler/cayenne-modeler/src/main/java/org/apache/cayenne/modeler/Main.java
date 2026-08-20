@@ -29,11 +29,9 @@ public final class Main {
     }
 
     static UIInitializer loadPlatformInitializer(OperatingSystem os) {
-        String fqn = switch (os) {
-            case MAC_OS -> "org.apache.cayenne.modeler.platform.mac.MacUIInitializer";
-            case WINDOWS -> "org.apache.cayenne.modeler.platform.win.WinUIInitializer";
-            case OTHER -> "org.apache.cayenne.modeler.platform.generic.GenericUIInitializer";
-        };
+        String fqn = os == OperatingSystem.MAC_OS
+            ? "org.apache.cayenne.modeler.platform.mac.MacUIInitializer"
+            : "org.apache.cayenne.modeler.platform.GenericUIInitializer";
 
         try {
             return (UIInitializer) Class.forName(fqn).getDeclaredConstructor().newInstance();

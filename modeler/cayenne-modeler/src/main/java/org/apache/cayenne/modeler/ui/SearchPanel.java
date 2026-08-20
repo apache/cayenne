@@ -21,6 +21,7 @@ package org.apache.cayenne.modeler.ui;
 
 import org.apache.cayenne.modeler.Application;
 import org.apache.cayenne.modeler.toolkit.AppPanel;
+import org.apache.cayenne.modeler.toolkit.icon.IconFactory;
 import org.apache.cayenne.modeler.ui.action.FindAction;
 
 import javax.swing.*;
@@ -30,15 +31,11 @@ import java.awt.event.KeyListener;
 
 public class SearchPanel extends AppPanel {
 
-    private final JLabel searchLabel;
-    private final JPanel box;
     private final JTextField findField;
 
     public SearchPanel(Application app) {
         super(app);
 
-        this.searchLabel = new JLabel("Search: ");
-        this.box = new JPanel();
         this.findField = new JTextField(10);
 
         initLayout();
@@ -46,17 +43,16 @@ public class SearchPanel extends AppPanel {
     }
 
     private void initLayout() {
-        setLayout(new BorderLayout());
+        setLayout(new FlowLayout());
 
-        findField.putClientProperty("JTextField.variant", "search");
-        findField.setMaximumSize(new Dimension(100, 22));
-        findField.setPreferredSize(new Dimension(100, 22));
-        searchLabel.setLabelFor(findField);
-        // is used to place label and text field one after another
-        box.setLayout(new BoxLayout(box, BoxLayout.X_AXIS));
-        box.add(searchLabel);
-        box.add(findField);
-        add(box, BorderLayout.EAST);
+        findField.putClientProperty("JTextField.leadingIcon", IconFactory.buildIcon("icon-query.png"));
+        findField.setPreferredSize(new Dimension(150, 22));
+        add(findField);
+    }
+
+    @Override
+    public Dimension getMaximumSize() {
+        return getPreferredSize();
     }
 
     private void initBindings() {
@@ -85,12 +81,4 @@ public class SearchPanel extends AppPanel {
         }, AWTEvent.KEY_EVENT_MASK);
     }
 
-    public void hideSearchLabel() {
-        searchLabel.setVisible(false);
-        findField.setMaximumSize(null);
-        findField.setPreferredSize(new Dimension(100, 40));
-        findField.setToolTipText("Search");
-        box.setOpaque(false);
-        box.setBackground(null);
-    }
 }

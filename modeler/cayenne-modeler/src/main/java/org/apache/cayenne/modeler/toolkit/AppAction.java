@@ -232,7 +232,7 @@ public abstract class AppAction extends AbstractAction {
             if (margin != null) {
                 setMargin(margin);
             }
-            putClientProperty("JButton.buttonType", "segmentedTextured");
+            putClientProperty("JButton.buttonType", "toolBarButton");
             putClientProperty("JButton.segmentPosition", POSITIONS[position]);
         }
 

@@ -81,7 +81,7 @@ public class LockingUpdateDialog extends ProjectDialog {
         CellConstraints cc = new CellConstraints();
         FormLayout layout = new FormLayout(
                 "left:max(180dlu;pref)",
-                "p, 3dlu, p, 3dlu, p, 3dlu");
+                "p, $rgap, p, $rgap, p, $rgap");
         PanelBuilder builder = new PanelBuilder(layout);
         builder.setDefaultDialogBorder();
         builder.add(entities, cc.xy(1, 1));

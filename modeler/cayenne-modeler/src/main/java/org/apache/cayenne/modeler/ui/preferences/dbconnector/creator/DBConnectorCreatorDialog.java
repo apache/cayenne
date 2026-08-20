@@ -106,7 +106,7 @@ public class DBConnectorCreatorDialog extends AppDialog {
         getRootPane().setDefaultButton(okButton);
 
         FormLayout layout = new FormLayout(
-                "right:pref, 3dlu, fill:max(50dlu;pref):grow",
+                "right:pref, $lcgap, fill:max(50dlu;pref):grow",
                 "");
         DefaultFormBuilder builder = new DefaultFormBuilder(layout);
         builder.setDefaultDialogBorder();

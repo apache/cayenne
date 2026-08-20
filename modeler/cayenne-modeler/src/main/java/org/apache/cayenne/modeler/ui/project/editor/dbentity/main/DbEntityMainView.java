@@ -103,7 +103,7 @@ public class DbEntityMainView extends ProjectPanel implements ExistingSelectionP
         pkGeneratorDetail.add(new PKDBGeneratorPanel(session), PK_DB_GENERATOR);
         pkGeneratorDetail.add(new PKCustomSequenceGeneratorPanel(session), PK_CUSTOM_SEQUENCE_GENERATOR);
 
-        FormLayout layout = new FormLayout("right:pref, 3dlu, fill:200dlu", "");
+        FormLayout layout = new FormLayout("right:pref, $lcgap, fill:200dlu", "");
         DefaultFormBuilder builder = new DefaultFormBuilder(layout);
         builder.setDefaultDialogBorder();
         builder.appendSeparator("DbEntity Configuration");
