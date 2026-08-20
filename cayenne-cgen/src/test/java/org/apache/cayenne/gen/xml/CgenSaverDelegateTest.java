@@ -20,64 +20,86 @@
 package org.apache.cayenne.gen.xml;
 
 import java.net.URL;
+import java.nio.file.Path;
 import java.nio.file.Paths;
 
 import org.apache.cayenne.gen.CgenConfiguration;
 import org.junit.jupiter.api.Test;
 
-import static org.junit.jupiter.api.Assertions.*;
+import static org.junit.jupiter.api.Assertions.assertEquals;
 
 public class CgenSaverDelegateTest {
 
+    private static URL baseURL(String path) throws Exception {
+        return Paths.get(path).toAbsolutePath().toUri().toURL();
+    }
+
+    private static Path absolute(String path) {
+        return Paths.get(path).toAbsolutePath();
+    }
+
+    /**
+     * A configuration anchored somewhere else but with no output directory of its own: rebasing keeps it
+     * generating into the directory it already resolved to, {@code /tmp/src/main/java}. It used to silently
+     * jump to the new base instead, which is what the "do we care about this case?" note on this test was
+     * about; it now behaves the same way as {@link #existingRootAndRelPath()}.
+     */
     @Test
     public void existingRootOverride() throws Exception {
         CgenConfiguration config = new CgenConfiguration();
+        config.setRootPath(absolute("/tmp/src/main/java"));
 
-        config.setRootPath(Paths.get("/tmp/src/main/java").toAbsolutePath());
-        URL baseURL = Paths.get("/tmp/src/main/resources").toUri().toURL();
+        CgenSaverDelegate.resolveOutputDir(baseURL("/tmp/src/main/resources"), config);
 
-        CgenSaverDelegate.resolveOutputDir(baseURL, config);
-
-        assertEquals(Paths.get("/tmp/src/main/resources").toAbsolutePath(), config.getRootPath());
-        assertEquals(Paths.get(""), config.getRawOutputPath()); // TODO: do we care about this case?
+        assertEquals(absolute("/tmp/src/main/resources"), config.getRootPath());
+        assertEquals(absolute("/tmp/src/main/java"), config.requireOutputDirectory());
     }
 
     @Test
     public void existingRootAndRelPath() throws Exception {
         CgenConfiguration config = new CgenConfiguration();
+        config.setRootPath(absolute("/tmp/src/main/java"));
+        config.setOutputDir(Paths.get(""));
 
-        config.setRootPath(Paths.get("/tmp/src/main/java").toAbsolutePath());
-        config.updateOutputPath(Paths.get(""));
+        CgenSaverDelegate.resolveOutputDir(baseURL("/tmp/src/main/resources"), config);
 
-        URL baseURL = Paths.get("/tmp/src/main/resources").toUri().toURL();
-
-        CgenSaverDelegate.resolveOutputDir(baseURL, config);
-
-        assertEquals(Paths.get("/tmp/src/main/resources").toAbsolutePath(), config.getRootPath());
-        assertEquals(Paths.get("../java"), config.getRawOutputPath());
+        assertEquals(absolute("/tmp/src/main/resources"), config.getRootPath());
+        assertEquals(absolute("/tmp/src/main/java"), config.requireOutputDirectory());
     }
 
     @Test
     public void emptyRootInMavenTree() throws Exception {
         CgenConfiguration config = new CgenConfiguration();
 
-        URL baseURL = Paths.get("/tmp/src/main/resources").toUri().toURL();
+        CgenSaverDelegate.resolveOutputDir(baseURL("/tmp/src/main/resources"), config);
 
-        CgenSaverDelegate.resolveOutputDir(baseURL, config);
-
-        assertEquals(Paths.get("/tmp/src/main/resources").toAbsolutePath(), config.getRootPath());
-        assertEquals(Paths.get("../java"), config.getRawOutputPath());
+        assertEquals(absolute("/tmp/src/main/resources"), config.getRootPath());
+        assertEquals(absolute("/tmp/src/main/java"), config.requireOutputDirectory());
     }
 
     @Test
     public void emptyRoot() throws Exception {
         CgenConfiguration config = new CgenConfiguration();
 
-        URL baseURL = Paths.get("/tmp/somefolder").toUri().toURL();
+        CgenSaverDelegate.resolveOutputDir(baseURL("/tmp/somefolder"), config);
 
-        CgenSaverDelegate.resolveOutputDir(baseURL, config);
+        assertEquals(absolute("/tmp/somefolder"), config.getRootPath());
+        assertEquals(absolute("/tmp/somefolder"), config.requireOutputDirectory());
+    }
 
-        assertEquals(Paths.get("/tmp/somefolder").toAbsolutePath(), config.getRootPath());
-        assertEquals(Paths.get(""), config.getRawOutputPath());
+    /**
+     * An output directory the user picked explicitly stays pointing at the same physical directory when the
+     * project is saved somewhere else.
+     */
+    @Test
+    public void absoluteOutputDirSurvivesRebase() throws Exception {
+        CgenConfiguration config = new CgenConfiguration();
+        config.setRootPath(absolute("/tmp/project"));
+        config.setOutputDir(absolute("/tmp/generated"));
+
+        CgenSaverDelegate.resolveOutputDir(baseURL("/tmp/other/project"), config);
+
+        assertEquals(absolute("/tmp/other/project"), config.getRootPath());
+        assertEquals(absolute("/tmp/generated"), config.requireOutputDirectory());
     }
 }

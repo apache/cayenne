@@ -134,12 +134,13 @@ public class CgenConfigPanel extends ProjectPanel {
     public void initForm(CgenConfiguration cgenConfiguration) {
         this.cgenConfiguration = cgenConfiguration;
 
-        if (cgenConfiguration.getRootPath() != null) {
-            outputFolder.setText(cgenConfiguration.buildOutputPath().toString());
+        Path outputDir = cgenConfiguration.outputDirectory().orElse(null);
+        if (outputDir != null) {
+            outputFolder.setText(outputDir.toString());
             applyOutputFolder(outputFolder.getText());
         } else {
-            // unsaved project: no project root to resolve a relative output path against,
-            // so leave the field empty rather than running validation on a stale value
+            // unsaved project: no project root to resolve the output path against, so there is nothing
+            // to show. Leave the field empty rather than running validation on a stale value.
             outputFolder.setText("");
         }
         if (cgenConfiguration.getArtifactsGenerationMode().equalsIgnoreCase("all")) {
@@ -352,7 +353,7 @@ public class CgenConfigPanel extends ProjectPanel {
             updateGenerateButton(false);
             throw new ValidationException(NEED_TO_SAVE_PROJECT_MSG);
         }
-        cgenConfiguration.updateOutputPath(path);
+        cgenConfiguration.setOutputDir(path);
         updateGenerateButton(true);
         cgen.checkCgenConfigDirty();
     }
@@ -399,7 +400,7 @@ public class CgenConfigPanel extends ProjectPanel {
         String currentDir = outputFolder.getText();
         File initialDir = !Util.isEmptyString(currentDir)
                 ? new File(currentDir)
-                : CgenOps.baseDir(session).toFile();
+                : CgenOps.baseDir(session).map(Path::toFile).orElse(null);
 
         File selected = app.getFileChooser(this, "Select Output Folder").openDir(initialDir);
         if (selected != null) {

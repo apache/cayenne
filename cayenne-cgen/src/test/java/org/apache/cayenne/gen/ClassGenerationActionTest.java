@@ -242,7 +242,7 @@ public class ClassGenerationActionTest extends CgenCase {
 		TemplateType templateType = TemplateType.DATAMAP_SUPERCLASS;
 
 		cgenConfiguration.setRootPath(tempFolder.toPath());
-		cgenConfiguration.updateOutputPath(Paths.get("."));
+		cgenConfiguration.setOutputDir(Paths.get("."));
 		action = newAction();
 		ObjEntity testEntity1 = new ObjEntity("TEST");
 		testEntity1.setClassName("TestClass1");
@@ -273,7 +273,7 @@ public class ClassGenerationActionTest extends CgenCase {
 		TemplateType templateType = TemplateType.DATAMAP_SUPERCLASS;
 
 		cgenConfiguration.setRootPath(tempFolder.toPath());
-		cgenConfiguration.updateOutputPath(Paths.get("."));
+		cgenConfiguration.setOutputDir(Paths.get("."));
 		action = newAction();
 		action.context.put(Artifact.SUPER_PACKAGE_KEY, "");
 		action.context.put(Artifact.SUPER_CLASS_KEY, "TestClass1");
@@ -301,7 +301,7 @@ public class ClassGenerationActionTest extends CgenCase {
 		TemplateType templateType = TemplateType.DATAMAP_SINGLE_CLASS;
 
 		cgenConfiguration.setRootPath(tempFolder.toPath());
-		cgenConfiguration.updateOutputPath(Paths.get("."));
+		cgenConfiguration.setOutputDir(Paths.get("."));
 		action = newAction();
 		ObjEntity testEntity1 = new ObjEntity("TEST");
 		testEntity1.setClassName("TestClass1");

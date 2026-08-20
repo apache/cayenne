@@ -19,11 +19,11 @@
 
 package org.apache.cayenne.gen.internal;
 
-import org.apache.cayenne.CayenneRuntimeException;
 import org.apache.cayenne.map.DataMap;
 
 import java.io.File;
 import java.net.URISyntaxException;
+import java.nio.file.FileSystemNotFoundException;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.util.Optional;
@@ -59,20 +59,24 @@ public class Utils {
         return Optional.empty();
     }
 
-    public static Path getRootPathForDataMap(DataMap dataMap) {
-        if(dataMap.getConfigurationSource() == null) {
-            throw new CayenneRuntimeException("Unable to create path from the unsaved DataMap");
+    /**
+     * @return directory holding the DataMap, or {@code Optional.empty()} for a DataMap that has no resolvable location
+     */
+    public static Optional<Path> rootPathForDataMap(DataMap dataMap) {
+        if (dataMap.getConfigurationSource() == null) {
+            return Optional.empty();
         }
         Path resourcePath;
         try {
             resourcePath = Path.of(dataMap.getConfigurationSource().getURL().toURI());
-        } catch (URISyntaxException e) {
-            throw new CayenneRuntimeException("Unable to create path from the DataMap source location", e);
+        } catch (URISyntaxException | IllegalArgumentException | FileSystemNotFoundException e) {
+            // not a "file:" URL - e.g. a DataMap loaded from a jar
+            return Optional.empty();
         }
         if (Files.isRegularFile(resourcePath)) {
             resourcePath = resourcePath.getParent();
         }
-        return resourcePath;
+        return Optional.ofNullable(resourcePath);
     }
 
     private static String checkDefaultMavenResourceDir(String path, String dirType) {

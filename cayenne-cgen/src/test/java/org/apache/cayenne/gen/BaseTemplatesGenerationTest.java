@@ -149,7 +149,7 @@ public class BaseTemplatesGenerationTest extends CgenCase {
         cgenConfiguration.addArtifact(artifact);
 
         cgenConfiguration.setRootPath(folder.toPath());
-        cgenConfiguration.updateOutputPath(Paths.get("."));
+        cgenConfiguration.setOutputDir(Paths.get("."));
         cgenConfiguration.loadEntity(objEntity);
         cgenConfiguration.setDataMap(dataMap);
 

@@ -63,25 +63,19 @@ public class CgenSaverDelegate extends BaseSaverDelegate {
         }
 
         Path baseDirectory = getBaseDirectoryForURL(baseURL);
-        Path prevRootPath = cgenConfiguration.getRootPath();
-        Path prevOutputPath = cgenConfiguration.buildOutputPath();
-        // Update cgen root path.
-        cgenConfiguration.setRootPath(baseDirectory);
+        // A config with no root and no output dir has never been configured at all; anything else already
+        // points somewhere, and rebasing keeps it pointing at the same physical directory.
+        boolean neverConfigured = cgenConfiguration.getRootPath() == null
+                && cgenConfiguration.outputDirectory().isEmpty();
 
-        // If no root path was set, try to calculate if we are inside Maven tree structure and use it
-        if(prevRootPath == null) {
+        cgenConfiguration.rebase(baseDirectory);
+
+        if(neverConfigured) {
+            // Inside a Maven tree the sources dir is a better default than the project dir itself.
+            // Otherwise the empty output path already resolves to the new root.
             Utils.getMavenSrcPathForPath(baseDirectory)
                     .map(Path::of)
-                    .ifPresent(cgenConfiguration::updateOutputPath);
-        }
-
-        if(prevOutputPath != null) {
-            // Update relative path to match with the new root
-            cgenConfiguration.updateOutputPath(prevOutputPath);
-        } else if(cgenConfiguration.buildOutputPath() == null) {
-            // No path was set, and we are not in the Maven tree.
-            // Set output dir match with the root, nothing else we could do here.
-            cgenConfiguration.updateOutputPath(baseDirectory);
+                    .ifPresent(cgenConfiguration::setOutputDir);
         }
     }
 

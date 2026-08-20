@@ -280,10 +280,7 @@ public class ClassGenerationAction {
      * Called internally from "execute".
      */
     protected void validateAttributes() {
-        Path dir = configuration.buildOutputPath();
-        if (dir == null) {
-            throw new CayenneRuntimeException("Output directory is not set.");
-        }
+        Path dir = configuration.requireOutputDirectory();
         if (Files.notExists(dir)) {
             try {
                 Files.createDirectories(dir);
@@ -336,7 +333,7 @@ public class ClassGenerationAction {
         String packageName = (String) context.get(Artifact.SUPER_PACKAGE_KEY);
         String className = (String) context.get(Artifact.SUPER_CLASS_KEY);
 
-        File dir = mkpath(configuration.buildOutputPath().toFile(), packageName);
+        File dir = mkpath(configuration.requireOutputDirectory().toFile(), packageName);
         String fileName = StringUtils
                 .getInstance()
                 .replaceWildcardInStringWithString(WILDCARD, configuration.getOutputPattern(), className);
@@ -354,7 +351,7 @@ public class ClassGenerationAction {
         String className = (String) context.get(Artifact.SUB_CLASS_KEY);
 
         String filename = StringUtils.getInstance().replaceWildcardInStringWithString(WILDCARD, configuration.getOutputPattern(), className);
-        File dest = new File(mkpath(configuration.buildOutputPath().toFile(), packageName), filename);
+        File dest = new File(mkpath(configuration.requireOutputDirectory().toFile(), packageName), filename);
 
         if (dest.exists()) {
             // no overwrite of subclasses

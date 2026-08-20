@@ -25,10 +25,12 @@ import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.io.TempDir;
 
 import java.io.IOException;
+import java.net.URI;
 import java.net.URISyntaxException;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
+import java.util.stream.Stream;
 
 import static org.junit.jupiter.api.Assertions.*;
 
@@ -96,20 +98,38 @@ public class CgenRunValidationTest {
         assertNull(result.validation().destDirWritable());
     }
 
+    /**
+     * An absent {@code <destDir>} means the same thing as the {@code <destDir>.</destDir>} the Cayenne
+     * encoder writes when no output directory is configured: generate next to the DataMap. It used to be
+     * a validation failure, which made a saved project behave differently depending on whether the tag
+     * had ever been written out.
+     */
     @Test
-    public void destDirNotSpecified() throws URISyntaxException {
-        String projectPath = fixtureProject("no-destdir");
+    public void destDirDefaultsToTheDataMapDirectory(@TempDir Path tempDir) throws IOException {
+        Path projectFile = copyFixture("no-destdir", tempDir);
 
-        CgenRunResult result = tool.run(projectPath, "TestMap");
+        CgenRunResult result = tool.run(projectFile.toString(), "TestMap");
 
-        assertEquals("validation_failed", result.status());
-        assertEquals(CgenErrorCode.destdir_not_specified, result.error().code());
+        assertNull(result.error());
+        assertEquals("generated", result.status());
+        assertEquals(tempDir.toAbsolutePath().toString(), result.resolved().destDir());
 
         assertTrue(result.validation().projectFound());
         assertTrue(result.validation().dataMapFound());
         assertTrue(result.validation().cgenConfigPresent());
-        assertFalse(result.validation().destDirSpecified());
-        assertNull(result.validation().destDirWritable());
+        assertTrue(result.validation().destDirSpecified());
+        assertTrue(result.validation().destDirWritable());
+    }
+
+    private static Path copyFixture(String fixture, Path targetDir) throws IOException {
+        Path source = Paths.get(URI.create(CgenRunValidationTest.class
+                .getResource("/cgen-fixtures/" + fixture).toString()));
+        try (Stream<Path> files = Files.list(source)) {
+            for (Path file : files.toList()) {
+                Files.copy(file, targetDir.resolve(file.getFileName().toString()));
+            }
+        }
+        return targetDir.resolve("cayenne-project.xml");
     }
 
     private static String fixtureProject(String fixture) throws URISyntaxException {

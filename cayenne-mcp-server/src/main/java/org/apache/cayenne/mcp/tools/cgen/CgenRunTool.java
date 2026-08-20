@@ -50,6 +50,7 @@ import java.nio.file.Files;
 import java.nio.file.Path;
 import java.util.List;
 import java.util.Map;
+import java.util.Optional;
 import java.util.stream.Collectors;
 
 /**
@@ -164,16 +165,17 @@ public class CgenRunTool {
         CgenConfigList configList = metaData.get(dataMap, CgenConfigList.class);
         boolean usedDefaultConfig = configList == null || configList.getAll().isEmpty();
         CgenConfiguration cgenConfig = usedDefaultConfig
-                ? CgenConfiguration.createDefault(dataMap, CgenConfiguration.defaultOutputDir(dataMap))
+                ? CgenConfiguration.createDefault(dataMap, null)
                 : configList.getAll().getFirst();
 
         // Step 5 — destDir specified?
-        Path destDir = cgenConfig.buildOutputPath();
-        if (destDir == null) {
+        Optional<Path> resolvedDestDir = cgenConfig.outputDirectory();
+        if (resolvedDestDir.isEmpty()) {
             return validationFailed(CgenErrorCode.destdir_not_specified,
                     "cgen configuration for '" + dataMapName + "' does not specify a destination directory.",
                     new CgenValidation(true, true, true, false, null));
         }
+        Path destDir = resolvedDestDir.get();
 
         // Step 6 — destDir writable (create if absent)?
         if (!ensureWritable(destDir)) {

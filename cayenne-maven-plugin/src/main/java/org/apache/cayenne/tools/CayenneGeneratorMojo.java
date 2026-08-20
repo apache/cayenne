@@ -343,7 +343,7 @@ public class CayenneGeneratorMojo extends AbstractMojo {
             LOGGER.info("Using default cgen config.");
             CgenConfiguration cgenConfiguration = new CgenConfiguration();
             cgenConfiguration.setDataMap(dataMap);
-            cgenConfiguration.updateOutputPath(defaultDir.toPath());
+            cgenConfiguration.setOutputDir(defaultDir.toPath());
             return Collections.singletonList(cgenConfiguration);
         }
     }
@@ -351,7 +351,7 @@ public class CayenneGeneratorMojo extends AbstractMojo {
     private CgenConfiguration cgenConfigFromPom(DataMap dataMap) {
         CgenConfiguration cgenConfiguration = new CgenConfiguration();
         cgenConfiguration.setDataMap(dataMap);
-        cgenConfiguration.updateOutputPath(destDir != null ? destDir.toPath() : defaultDir.toPath());
+        cgenConfiguration.setOutputDir(destDir != null ? destDir.toPath() : defaultDir.toPath());
         cgenConfiguration.setEncoding(encoding != null ? encoding : cgenConfiguration.getEncoding());
         cgenConfiguration.setMakePairs(makePairs != null ? makePairs : cgenConfiguration.isMakePairs());
         if (mode != null && mode.equals("datamap")) {

@@ -535,7 +535,7 @@ public class CgenPanel extends ProjectPanel implements ObjEntityListener, Embedd
     private void onProjectSaved(ProjectAfterSaveEvent e) {
         if (cgenConfigPanel != null && configuration != null) {
             cgenConfigPanel.getOutputFolder()
-                    .setText(configuration.buildOutputPath().toString());
+                    .setText(configuration.outputDirectory().map(Path::toString).orElse(""));
         }
     }
 

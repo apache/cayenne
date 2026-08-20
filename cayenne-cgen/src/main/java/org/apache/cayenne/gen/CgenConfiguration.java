@@ -36,6 +36,7 @@ import java.util.Arrays;
 import java.util.Collection;
 import java.util.HashSet;
 import java.util.Objects;
+import java.util.Optional;
 import java.util.Set;
 import java.util.stream.Collectors;
 
@@ -48,16 +49,17 @@ import java.util.stream.Collectors;
 public class CgenConfiguration implements Serializable, XMLSerializable {
 
     /**
-     * Should point to the directory that holds Cayenne project XML.
-     * Could be null in some cases now.
+     * Absolute directory this configuration is anchored to, normally the one holding the Cayenne
+     * project XML. Null when cgen is driven directly by a tool (Ant, Maven or Gradle).
      */
     private Path rootProjectPath;
 
     /**
-     * Target directory for generated classes, relative to the {@code rootProjectPath}
-     * (if root path is set, and it's possible to relativize).
+     * Target directory for the generated classes, stored exactly as it was supplied - either absolute,
+     * or relative to the {@code rootProjectPath}. Never null: an empty path means "the root directory"
+     * when a root is known, and "not configured" when it isn't.
      */
-    private Path cgenOutputPath;
+    private Path cgenOutputPath = Path.of("");
 
     private final Collection<Artifact> artifacts;
     private Set<String> entityArtifacts;
@@ -129,7 +131,7 @@ public class CgenConfiguration implements Serializable, XMLSerializable {
      * Builds a default configuration for a DataMap that has no stored cgen config, generating every
      * non-generic entity and embeddable into the given output directory.
      *
-     * @param outputDir directory to generate classes into; if {@code null}, the output path is left unset
+     * @param outputDir directory to generate classes into, or {@code null} to derive a default
      * @since 5.0
      */
     public static CgenConfiguration createDefault(DataMap dataMap, Path outputDir) {
@@ -137,25 +139,17 @@ public class CgenConfiguration implements Serializable, XMLSerializable {
         config.setDataMap(dataMap);
         dataMap.getObjEntities().forEach(config::loadEntity);
         dataMap.getEmbeddables().forEach(config::loadEmbeddable);
-        if (dataMap.getConfigurationSource() != null) {
-            config.setRootPath(Utils.getRootPathForDataMap(dataMap));
+
+        Path root = Utils.rootPathForDataMap(dataMap).orElse(null);
+        if (root != null) {
+            config.setRootPath(root);
         }
         if (outputDir != null) {
-            config.updateOutputPath(outputDir);
+            config.setOutputDir(outputDir);
+        } else if (root != null) {
+            Utils.getMavenSrcPathForPath(root).map(Path::of).ifPresent(config::setOutputDir);
         }
         return config;
-    }
-
-    /**
-     * Returns the default output directory for a saved DataMap, derived from the standard Maven
-     * source layout ({@code src/main/resources} &rarr; {@code src/main/java}, likewise for
-     * {@code test}), falling back to the DataMap's own directory for non-Maven layouts.
-     *
-     * @since 5.0
-     */
-    public static Path defaultOutputDir(DataMap dataMap) {
-        Path mapDir = Utils.getRootPathForDataMap(dataMap);
-        return Utils.getMavenSrcPathForPath(mapDir).map(Path::of).orElse(mapDir);
     }
 
     public void resetCollections() {
@@ -214,7 +208,7 @@ public class CgenConfiguration implements Serializable, XMLSerializable {
 
     /**
      * @param rootProjectPath root path for the Cayenne project this config relates to
-     * @see #updateOutputPath(Path)
+     * @see #setOutputDir(Path)
      */
     public void setRootPath(Path rootProjectPath) {
         if (!Objects.requireNonNull(rootProjectPath).isAbsolute()) {
@@ -224,70 +218,83 @@ public class CgenConfiguration implements Serializable, XMLSerializable {
     }
 
     /**
-     * Method returns output path as is, without any processing.
+     * Stores the output directory exactly as supplied. Setting the output directory and setting
+     * the root path are independent operations that may happen in any order; they are combined
+     * lazily by {@link #outputDirectory()} and at serialization time.
      *
-     * @return cgen output relative path
-     * @see #buildOutputPath()
-     * @since 5.0 renamed from {@code getRelPath()}
+     * @param dir absolute directory, or a directory relative to the {@code rootProjectPath}
+     * @see #setRootPath(Path)
+     * @see #outputDirectory()
+     * @since 5.0 replaces {@code updateOutputPath()}
      */
-    public Path getRawOutputPath() {
-        return cgenOutputPath;
+    public void setOutputDir(Path dir) {
+        this.cgenOutputPath = Objects.requireNonNull(dir, "Null output directory");
     }
 
     /**
-     * Method that updates output path based on provided {@code Path} and {@code rootProjectPath}
+     * Calculates the effective output directory by combining the stored output directory with the {@code rootProjectPath}.
      *
-     * @param path to update output path with, could be an absolute path or a path
-     *             relative to the {@code rootProjectPath} or cgen tool environment
+     * @return the effective output directory, or an empty {@code Optional} when the stored path is
+     * relative and there is no root path to resolve it against
+     *
+     * @see #setRootPath(Path)
+     * @see #setOutputDir(Path)
+     * @since 5.0 replaces {@code buildOutputPath()}
+     */
+    public Optional<Path> outputDirectory() {
+        if (cgenOutputPath.isAbsolute()) {
+            return Optional.of(cgenOutputPath.normalize());
+        }
+        if (rootProjectPath != null) {
+            return Optional.of(rootProjectPath.resolve(cgenOutputPath).normalize());
+        }
+        return Optional.empty();
+    }
+
+    /**
+     * @return the effective output directory
+     * @throws ValidationException if no output directory has been configured
+     * @see #outputDirectory()
+     * @since 5.0
+     */
+    public Path requireOutputDirectory() {
+        return outputDirectory().orElseThrow(() -> new ValidationException("Output directory is not set."));
+    }
+
+    /**
+     * Moves this configuration to a new root path while keeping the effective output directory pointing
+     * at the same physical location. Used when a project is saved to a new location. A configuration
+     * that never had an output directory keeps following the root.
+     *
+     * @param newRoot new absolute root path
      * @see #setRootPath(Path)
      * @since 5.0
      */
-    public void updateOutputPath(Path path) {
-        if (rootProjectPath != null) {
-            if (path.isAbsolute() && rootProjectPath.getRoot().equals(path.getRoot())) {
-                this.cgenOutputPath = rootProjectPath.relativize(path);
-                return;
-            }
+    public void rebase(Path newRoot) {
+        Path effective = outputDirectory().orElse(null);
+        setRootPath(newRoot);
+        if (effective != null) {
+            this.cgenOutputPath = effective;
         }
-        this.cgenOutputPath = path;
     }
 
     /**
-     * @return normalized relative path
-     * @since 5.0 renamed from {@code buildRelPath()} and made package private
-     */
-    String getNormalizedOutputPath() {
-        if (cgenOutputPath == null || cgenOutputPath.toString().isEmpty()) {
-            return ".";
-        }
-        return cgenOutputPath.toString();
-    }
-
-    /**
-     * This method calculates effective output directory for the class generator.
-     * It uses {@code cgenOutputPath} and {@code rootProjectPath} (if set).
+     * Renders the output directory for the {@code destDir} XML tag: relative to the root path whenever
+     * the two can be relativized, absolute otherwise, always with Unix separators.
      *
-     * @return calculated output directory
-     * @see #setRootPath(Path)
-     * @see #updateOutputPath(Path)
-     * @since 5.0 renamed from {@code buildPath()}
+     * @return the {@code destDir} value, never empty
+     * @since 5.0
      */
-    public Path buildOutputPath() {
-        if (rootProjectPath == null) {
-            // this could be an unsaved project or direct usage in tools (Ant, Maven or Gradle)
-            return cgenOutputPath;
+    String encodedDestDir() {
+        Path out = cgenOutputPath;
+        if (rootProjectPath != null
+                && rootProjectPath.isAbsolute()
+                && out.isAbsolute()
+                && Objects.equals(rootProjectPath.getRoot(), out.getRoot())) {
+            out = rootProjectPath.relativize(out);
         }
-
-        if (cgenOutputPath == null) {
-            // this case should be invalid, but let the caller deal with it
-            return null;
-        }
-
-        if (cgenOutputPath.isAbsolute()) {
-            return cgenOutputPath.normalize();
-        } else {
-            return rootProjectPath.resolve(cgenOutputPath).toAbsolutePath().normalize();
-        }
+        String encoded = out.toString();
+        return encoded.isEmpty() ? "." : separatorsToUnix(encoded);
     }
 
     public boolean isOverwrite() {
@@ -508,13 +515,13 @@ public class CgenConfiguration implements Serializable, XMLSerializable {
     }
 
     @Override
-    public void encodeAsXML(XMLEncoder encoder, ConfigurationNodeVisitor delegate) {
+    public void encodeAsXML(XMLEncoder encoder, ConfigurationNodeVisitor<?> delegate) {
         encoder.start("cgen")
                 .attribute("xmlns", CgenExtension.NAMESPACE)
                 .simpleTag("name", this.name)
                 .simpleTag("excludeEntities", getExcludedEntities())
                 .simpleTag("excludeEmbeddables", getExcludedEmbeddables())
-                .simpleTag("destDir", separatorsToUnix(getNormalizedOutputPath()))
+                .simpleTag("destDir", encodedDestDir())
                 .simpleTag("mode", this.artifactsGenerationMode.getLabel())
                 .start("template").cdata(this.template.getData(), !this.template.isFile()).end()
                 .start("superTemplate").cdata(this.superTemplate.getData(), !this.superTemplate.isFile()).end()

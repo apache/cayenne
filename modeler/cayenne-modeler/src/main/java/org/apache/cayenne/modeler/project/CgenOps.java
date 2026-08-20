@@ -31,6 +31,7 @@ import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.prefs.Preferences;
+import java.util.Optional;
 
 public class CgenOps {
 
@@ -43,13 +44,19 @@ public class CgenOps {
         return configuration;
     }
 
-    public static Path baseDir(ProjectSession session) {
+    /**
+     * Default cgen output directory: the project directory, mapped through the standard Maven layout when it applies.
+     * Empty for a project that has not been saved yet.
+     */
+    public static Optional<Path> baseDir(ProjectSession session) {
         Path projectRoot = projectRoot(session);
         if (projectRoot == null) {
-            return Paths.get(".");
+            return Optional.empty();
         }
 
-        return Utils.getMavenSrcPathForPath(projectRoot).map(Paths::get).orElse(projectRoot);
+        return Optional.of(Utils.getMavenSrcPathForPath(projectRoot)
+                .map(Paths::get)
+                .orElse(projectRoot));
     }
 
     private static Path projectRoot(ProjectSession session) {

@@ -38,6 +38,7 @@ CAY-2986 Cgen to run unconditionally
 CAY-2987 DataNode to own PkGenerator
 CAY-2989 Upgrade MCP SDK to 2.0
 CAY-2992 dbimport: support posgres drivers newer than 42.7.4
+CAY-2994 cgen: improve path handling
 CAY-2995 Migrate Modeler to FlatLaf library
 
 Bug Fixes:

@@ -18,13 +18,8 @@
  ****************************************************************/
 package org.apache.cayenne.gen.xml;
 
-import java.net.URISyntaxException;
-import java.net.URL;
-import java.nio.file.Files;
-import java.nio.file.Path;
 import java.nio.file.Paths;
 
-import org.apache.cayenne.CayenneRuntimeException;
 import org.apache.cayenne.configuration.xml.DataChannelMetaData;
 import org.apache.cayenne.configuration.xml.NamespaceAwareNestedTagHandler;
 import org.apache.cayenne.gen.CgenConfiguration;
@@ -32,7 +27,6 @@ import org.apache.cayenne.gen.CgenConfigList;
 import org.apache.cayenne.gen.CgenTemplate;
 import org.apache.cayenne.gen.TemplateType;
 import org.apache.cayenne.gen.internal.Utils;
-import org.apache.cayenne.map.DataMap;
 import org.xml.sax.Attributes;
 
 /**
@@ -60,6 +54,7 @@ public class CgenConfigHandler extends NamespaceAwareNestedTagHandler {
     private static final String EXCLUDE_EMBEDDABLES_TAG = "excludeEmbeddables";
     private static final String CREATE_PK_PROPERTIES = "createPKProperties";
     private static final String SUPER_PKG_TAG = "superPkg";
+    private static final String EXTERNAL_TOOL_CONFIG_TAG = "externalToolConfig";
 
     public static final String TRUE = "true";
 
@@ -153,7 +148,7 @@ public class CgenConfigHandler extends NamespaceAwareNestedTagHandler {
         if (path.trim().length() == 0) {
             return;
         }
-        configuration.updateOutputPath(Paths.get(path));
+        configuration.setOutputDir(Paths.get(path));
     }
 
     private void createGenerationMode(String mode) {
@@ -293,10 +288,17 @@ public class CgenConfigHandler extends NamespaceAwareNestedTagHandler {
         configuration.setSuperPkg(data);
     }
 
+    private void createExternalToolConfig(String data) {
+        if (data.trim().length() == 0) {
+            return;
+        }
+        configuration.setExternalToolConfig(data);
+    }
+
     private void createConfig() {
         loaderContext.addDataMapListener(dataMap -> {
             configuration.setDataMap(dataMap);
-            configuration.setRootPath(Utils.getRootPathForDataMap(dataMap));
+            Utils.rootPathForDataMap(dataMap).ifPresent(configuration::setRootPath);
             configuration.resolveExcludedEntities();
             configuration.resolveExcludedEmbeddables();
 
