@@ -43,6 +43,7 @@ CAY-2995 Migrate Modeler to FlatLaf library
 Bug Fixes:
 
 CAY-2892 Modeler: Exception when deleting a callback
+CAY-2941 Modeler won't start on Windows on Java 25
 CAY-2958 Empty join is saved
 CAY-2959 Modeler: DbRelationship dialog "Cancel" doesn't cancel
 CAY-2960 Undoing renamed relationship change throws
