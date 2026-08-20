@@ -21,8 +21,8 @@ package org.apache.cayenne.modeler;
 
 import org.apache.cayenne.configuration.ConfigurationNameMapper;
 import org.apache.cayenne.configuration.DataMapLoader;
-import org.apache.cayenne.configuration.runtime.CoreModule;
 import org.apache.cayenne.dbsync.reverse.configuration.DbAdapterFactory;
+import org.apache.cayenne.dbsync.reverse.configuration.ToolsModule;
 import org.apache.cayenne.configuration.xml.DataChannelMetaData;
 import org.apache.cayenne.dbsync.DbSyncModule;
 import org.apache.cayenne.dbsync.merge.factory.MergerTokenFactoryProvider;
@@ -55,7 +55,7 @@ import org.apache.cayenne.project.validation.ProjectValidator;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import javax.swing.*;
+import javax.swing.SwingUtilities;
 import java.awt.Component;
 import java.io.File;
 import java.util.List;
@@ -77,12 +77,10 @@ public class Application {
         LOGGER.info("Starting CayenneModeler.");
         LOGGER.info("JRE v.{} at {}", System.getProperty("java.version"), System.getProperty("java.home"));
 
-        // TODO: this is dirty... CoreModule is out of place inside the Modeler...
-        // If we need CayenneRuntime for certain operations, those should start their own stack...
         Injector injector = DIBootstrap.createInjector(
-                new CoreModule(),
                 new ProjectModule(),
                 new DbSyncModule(),
+                new ToolsModule(LOGGER),
                 new ModelerModule());
 
         SwingUtilities.invokeLater(() ->

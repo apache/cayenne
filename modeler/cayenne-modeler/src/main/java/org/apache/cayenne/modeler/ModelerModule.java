@@ -18,19 +18,13 @@
  ****************************************************************/
 package org.apache.cayenne.modeler;
 
-import org.apache.cayenne.configuration.xml.DataChannelMetaData;
-import org.apache.cayenne.configuration.xml.DefaultDataChannelMetaData;
-import org.apache.cayenne.configuration.xml.HandlerFactory;
-import org.apache.cayenne.configuration.xml.XMLReaderProvider;
 import org.apache.cayenne.dbsync.xml.DbImportExtension;
 import org.apache.cayenne.di.Binder;
 import org.apache.cayenne.di.Module;
 import org.apache.cayenne.gen.xml.CgenExtension;
 import org.apache.cayenne.project.ProjectModule;
-import org.apache.cayenne.project.extension.ExtensionAwareHandlerFactory;
 import org.apache.cayenne.project.extension.info.InfoExtension;
 import org.apache.cayenne.project.extension.validation.ValidationExtension;
-import org.xml.sax.XMLReader;
 
 /**
  * A DI module for bootstrapping CayenneModeler services.
@@ -38,11 +32,6 @@ import org.xml.sax.XMLReader;
 public class ModelerModule implements Module {
 
     public void configure(Binder binder) {
-
-        binder.bind(HandlerFactory.class).to(ExtensionAwareHandlerFactory.class);
-        binder.bind(DataChannelMetaData.class).to(DefaultDataChannelMetaData.class);
-        binder.bind(XMLReader.class).toProviderInstance(new XMLReaderProvider(true)).withoutScope();
-
         ProjectModule.extend(binder)
                 .addExtension(InfoExtension.class)
                 .addExtension(DbImportExtension.class)
