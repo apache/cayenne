@@ -50,7 +50,7 @@ Maven
 <dependencies>
     <dependency>
         <groupId>org.apache.cayenne</groupId>
-        <artifactId>cayenne-server</artifactId>
+        <artifactId>cayenne</artifactId>
         <version>5.0-M2</version>
     </dependency>
 </dependencies>
@@ -58,10 +58,7 @@ Maven
 
 Gradle
 ```gradle
-compile group: 'org.apache.cayenne', name: 'cayenne-server', version: '5.0-M1'
- 
-// or, if Gradle plugin is used
-compile cayenne.dependency('server')
+implementation 'org.apache.cayenne:cayenne:5.0-M2'
 ```
 
 #### Create Cayenne Runtime
