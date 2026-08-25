@@ -18,7 +18,7 @@
 -->
 # Apache Cayenne
 
-[![Maven Central](https://img.shields.io/maven-central/v/org.apache.cayenne/cayenne-server/4.2.svg)](https://cayenne.apache.org/download/)
+[![Maven Central](https://img.shields.io/maven-central/v/org.apache.cayenne/cayenne/5.0.svg)](https://cayenne.apache.org/download/)
 [![Build Status](https://github.com/apache/cayenne/actions/workflows/verify-deploy-on-push.yml/badge.svg?branch=master)](https://github.com/apache/cayenne/actions/workflows/verify-deploy-on-push.yml)
 
 
