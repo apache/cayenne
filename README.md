@@ -51,14 +51,14 @@ Maven
     <dependency>
         <groupId>org.apache.cayenne</groupId>
         <artifactId>cayenne</artifactId>
-        <version>5.0-M2</version>
+        <version>5.0-M3</version>
     </dependency>
 </dependencies>
 ```
 
 Gradle
 ```gradle
-implementation 'org.apache.cayenne:cayenne:5.0-M2'
+implementation 'org.apache.cayenne:cayenne:5.0-M3'
 ```
 
 #### Create Cayenne Runtime
