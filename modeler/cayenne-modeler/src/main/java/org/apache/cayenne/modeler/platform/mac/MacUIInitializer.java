@@ -27,8 +27,6 @@ import org.apache.cayenne.modeler.ui.action.ConfigurePreferencesAction;
 import org.apache.cayenne.modeler.ui.action.ExitAction;
 
 import javax.swing.*;
-import javax.swing.border.AbstractBorder;
-import javax.swing.border.Border;
 import java.awt.*;
 import java.util.HashSet;
 import java.util.Set;
@@ -45,28 +43,6 @@ public class MacUIInitializer extends GenericUIInitializer {
         System.setProperty("apple.awt.application.name", "CayenneModeler");
 
         super.beforeSwingLaunch();
-
-        Color lightGrey = new Color(0xEEEEEE);
-        UIManager.put("PanelUI", MacPanelUI.class.getName());
-
-        // MacOS BigSur needs additional style tweaking for the tabs active state
-        MacOSVersion version = MacOSVersion.fromSystemProperties();
-        if (version.gt(MacOSVersion.CATALINA)) {
-            UIManager.put("TabbedPane.selectedTabTitlePressedColor", Color.BLACK);
-            UIManager.put("TabbedPane.selectedTabTitleNormalColor", Color.BLACK);
-            UIManager.put("TabbedPane.selectedTabTitleShadowDisabledColor", new Color(0, 0, 0, 0));
-            UIManager.put("TabbedPane.selectedTabTitleShadowNormalColor", new Color(0, 0, 0, 0));
-        }
-
-        Border backgroundPainter = new AbstractBorder() {
-            @Override
-            public void paintBorder(Component c, Graphics g, int x, int y, int width, int height) {
-                g.setColor(lightGrey);
-                g.fillRect(0, 0, width - 1, height - 1);
-            }
-        };
-        UIManager.put("MenuItem.selectedBackgroundPainter", backgroundPainter);
-        UIManager.put("MenuItem.selectionForeground", Color.BLACK);
     }
 
     @Override
@@ -87,9 +63,6 @@ public class MacUIInitializer extends GenericUIInitializer {
 
     @Override
     public void afterFrameCreated(Application app) {
-
-        // set additional look and feel for the window
-        app.getFrame().getRootPane().putClientProperty("apple.awt.brushMetalLook", Boolean.TRUE);
 
         // Only relocate About/Preferences/Quit to the macOS application menu when the
         // screen menu bar is actually in use. Otherwise the JMenuBar stays inside the
