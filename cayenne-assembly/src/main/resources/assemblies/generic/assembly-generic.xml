@@ -29,22 +29,6 @@
 			<outputDirectory>/</outputDirectory>
 		</fileSet>
 		<fileSet>
-			<directory>../tutorials/</directory>
-			<outputDirectory>tutorials</outputDirectory>
-			<includes>
-				<include>tutorial/**</include>
-			</includes>
-			<excludes>
-				<exclude>**/.gradle/**</exclude>
-				<exclude>**/build/**</exclude>
-				<exclude>**/target/**</exclude>
-				<exclude>**/derby.log</exclude>
-				<exclude>**/.gitignore</exclude>
-				<exclude>**/.classpath</exclude>
-				<exclude>**/.project</exclude>
-			</excludes>
-		</fileSet>
-		<fileSet>
 			<directory>../cayenne-cgen/src/main/resources/templates/v4_1</directory>
 			<outputDirectory>templates</outputDirectory>
 		</fileSet>
