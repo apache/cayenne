@@ -91,4 +91,103 @@
 			<scope>test</scope>
 		</dependency>
 	</dependencies>
+	<!--
+		Native Modeler launchers, built into "target/apps/<platform>" and picked up from there by
+		"cayenne-assembly". Bound to "verify" rather than "package", as "japp" bundles the module's
+		own jar into the launcher, and same-phase plugin ordering would not guarantee it exists yet.
+		Each platform gets its own directory, so any combination of the profiles can be active at once.
+	-->
+	<profiles>
+		<!-- GENERIC cross-platform launcher: a runnable "CayenneModeler.jar". Builds on any OS -->
+		<profile>
+			<id>generic</id>
+			<build>
+				<plugins>
+					<plugin>
+						<groupId>org.objectstyle.japp</groupId>
+						<artifactId>japp-maven-plugin</artifactId>
+						<executions>
+							<execution>
+								<id>japp-generic</id>
+								<phase>verify</phase>
+								<goals>
+									<goal>japp</goal>
+								</goals>
+								<configuration>
+									<destDir>${project.build.directory}/apps/generic</destDir>
+									<name>CayenneModeler</name>
+									<mainClass>org.apache.cayenne.modeler.Main</mainClass>
+									<os>java</os>
+								</configuration>
+							</execution>
+						</executions>
+					</plugin>
+				</plugins>
+			</build>
+		</profile>
+
+		<!-- MACOS launcher: a "CayenneModeler.app" bundle. Builds on macOS -->
+		<profile>
+			<id>mac</id>
+			<build>
+				<plugins>
+					<plugin>
+						<groupId>org.objectstyle.japp</groupId>
+						<artifactId>japp-maven-plugin</artifactId>
+						<executions>
+							<execution>
+								<id>japp-mac</id>
+								<phase>verify</phase>
+								<goals>
+									<goal>japp</goal>
+								</goals>
+								<configuration>
+									<destDir>${project.build.directory}/apps/mac</destDir>
+									<name>CayenneModeler</name>
+									<longName>${project.version}</longName>
+									<mainClass>org.apache.cayenne.modeler.Main</mainClass>
+									<icon>src/japplication/resources/CayenneModeler.icns</icon>
+									<os>mac</os>
+									<jvm0>21</jvm0>
+									<jvm0Options>-Xmx500m -Dapple.laf.useScreenMenuBar=true</jvm0Options>
+								</configuration>
+							</execution>
+						</executions>
+					</plugin>
+				</plugins>
+			</build>
+		</profile>
+
+		<!-- WINDOWS launcher: "CayenneModeler.jar" plus a "CayenneModeler.exe". Builds on Windows -->
+		<profile>
+			<id>windows</id>
+			<build>
+				<plugins>
+					<plugin>
+						<groupId>org.objectstyle.japp</groupId>
+						<artifactId>japp-maven-plugin</artifactId>
+						<executions>
+							<execution>
+								<id>japp-windows</id>
+								<phase>verify</phase>
+								<goals>
+									<goal>japp</goal>
+								</goals>
+								<configuration>
+									<destDir>${project.build.directory}/apps/windows</destDir>
+									<name>CayenneModeler</name>
+									<longName>${project.version}</longName>
+									<mainClass>org.apache.cayenne.modeler.Main</mainClass>
+									<icon>src/japplication/resources/CayenneModeler.ico</icon>
+									<os>windows</os>
+									<jvm0>21</jvm0>
+									<jvm0Options>-Xmx500m</jvm0Options>
+								</configuration>
+							</execution>
+						</executions>
+					</plugin>
+				</plugins>
+			</build>
+		</profile>
+	</profiles>
 </project>

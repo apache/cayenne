@@ -226,13 +226,6 @@
 		<profile>
 			<!-- GENERIC cross-platform assembly. Can be created on any platform -->
 			<id>generic</id>
-			<dependencies>
-				<dependency>
-					<groupId>org.apache.cayenne.modeler</groupId>
-					<artifactId>cayenne-modeler-generic</artifactId>
-					<version>${project.version}</version>
-				</dependency>
-			</dependencies>
 			<build>
 				<plugins>
 					<plugin>
@@ -276,13 +269,6 @@
 		<profile>
 			<!-- MAC assembly (can only be run on Mac) -->
 			<id>mac</id>
-			<dependencies>
-				<dependency>
-					<groupId>org.apache.cayenne.modeler</groupId>
-					<artifactId>cayenne-modeler-mac</artifactId>
-					<version>${project.version}</version>
-				</dependency>
-			</dependencies>
 			<properties>
 				<content.dir>cayenne-${project.version}</content.dir>
 			</properties>
@@ -348,9 +334,9 @@
 						<groupId>org.codehaus.mojo</groupId>
 						<artifactId>exec-maven-plugin</artifactId>
 						<executions>
-							<!-- chmod executable ... while japp plugin produces the correct 
-								permissions, jar/unjar operation resets 'x' flag, so the app becomes non-executable. 
-								Must fix that manually -->
+							<!-- chmod executable ... while japp plugin produces the correct permissions, the
+								 assembly copy resets the 'x' flag, so the app becomes non-executable.
+								 Must fix that manually -->
 							<execution>
 								<id>chmod-modeler</id>
 								<phase>package</phase>
@@ -388,13 +374,6 @@
 		<profile>
 			<!-- WINDOWS assembly (can only be run on Windows) -->
 			<id>windows</id>
-			<dependencies>
-				<dependency>
-					<groupId>org.apache.cayenne.modeler</groupId>
-					<artifactId>cayenne-modeler-win</artifactId>
-					<version>${project.version}</version>
-				</dependency>
-			</dependencies>
 			<build>
 				<plugins>
 					<!-- Make sure we are running on windows -->

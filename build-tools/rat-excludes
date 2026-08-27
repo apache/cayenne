@@ -46,4 +46,4 @@
 # ASF and distribution text that carries no header by convention
 KEYS
 RELEASE-NOTES.txt
-modeler/cayenne-modeler-mac/src/main/resources/README.txt
+cayenne-assembly/src/main/resources/assemblies/mac/README.txt

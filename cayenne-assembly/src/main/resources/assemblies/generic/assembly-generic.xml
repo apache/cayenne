@@ -61,6 +61,11 @@
 				<include>KEYS</include>
 			</includes>
 		</fileSet>
+		<!-- Native Modeler launchers, built by the matching "generic" profile of "cayenne-modeler" -->
+		<fileSet>
+			<directory>../modeler/cayenne-modeler/target/apps/generic</directory>
+			<outputDirectory>bin</outputDirectory>
+		</fileSet>
 	</fileSets>
 	
 	<dependencySets>
@@ -93,18 +98,6 @@
 			<outputDirectory>doc/api</outputDirectory>
 			<includes>
 				<include>org.apache.cayenne.docs:cayenne-doc</include>
-			</includes>
-			<unpack>true</unpack>
-			<unpackOptions>
-				<excludes>
-					<exclude>META-INF/**</exclude>
-				</excludes>
-			</unpackOptions>
-		</dependencySet>
-		<dependencySet>
-			<outputDirectory>bin</outputDirectory>
-			<includes>
-				<include>org.apache.cayenne.modeler:cayenne-modeler-generic</include>
 			</includes>
 			<unpack>true</unpack>
 			<unpackOptions>

@@ -15,22 +15,22 @@
 	limitations under the License.
 -->
 <assembly>
-	<id>mac</id>
+	<id>generic</id>
 
 	<formats>
-		<format>dir</format>
+		<format>zip</format>
 	</formats>
 
-	<includeBaseDirectory>false</includeBaseDirectory>
+	<includeBaseDirectory>true</includeBaseDirectory>
 
 	<fileSets>
 		<fileSet>
 			<directory>target/legal/META-INF/cayenne</directory>
-			<outputDirectory>${content.dir}/</outputDirectory>
+			<outputDirectory>/</outputDirectory>
 		</fileSet>
 		<fileSet>
 			<directory>../tutorials/</directory>
-			<outputDirectory>${content.dir}/tutorials/</outputDirectory>
+			<outputDirectory>tutorials</outputDirectory>
 			<includes>
 				<include>tutorial/**</include>
 			</includes>
@@ -44,26 +44,31 @@
 		</fileSet>
 		<fileSet>
 			<directory>../cayenne-cgen/src/main/resources/templates/v4_1</directory>
-			<outputDirectory>${content.dir}/templates/</outputDirectory>
+			<outputDirectory>templates</outputDirectory>
 		</fileSet>
 		<fileSet>
 			<directory>target/doc-staging</directory>
-			<outputDirectory>${content.dir}/doc</outputDirectory>
+			<outputDirectory>doc</outputDirectory>
 		</fileSet>
 		<fileSet>
 			<directory>../</directory>
-			<outputDirectory>${content.dir}/</outputDirectory>
+			<outputDirectory>.</outputDirectory>
 			<includes>
 				<include>RELEASE-NOTES.txt</include>
 				<include>UPGRADE.txt</include>
 				<include>KEYS</include>
 			</includes>
 		</fileSet>
+		<!-- Native Modeler launchers, built by the matching "windows" profile of "cayenne-modeler" -->
+		<fileSet>
+			<directory>../modeler/cayenne-modeler/target/apps/windows</directory>
+			<outputDirectory>bin</outputDirectory>
+		</fileSet>
 	</fileSets>
-
+	
 	<dependencySets>
 		<dependencySet>
-			<outputDirectory>${content.dir}/lib/</outputDirectory>
+			<outputDirectory>lib</outputDirectory>
 			<includes>
 				<include>org.apache.cayenne:cayenne</include>
 				<include>org.apache.cayenne:cayenne-ant</include>
@@ -81,14 +86,14 @@
 			</includes>
 		</dependencySet>
 		<dependencySet>
-			<outputDirectory>${content.dir}/lib/third-party/</outputDirectory>
+			<outputDirectory>lib/third-party</outputDirectory>
 			<!-- Include only a minimal set of dependencies to run cayenne and ant tasks -->
 			<includes>
 				<include>org.slf4j:slf4j-api</include>
 			</includes>
 		</dependencySet>
 		<dependencySet>
-			<outputDirectory>${content.dir}/doc/api</outputDirectory>
+			<outputDirectory>doc/api</outputDirectory>
 			<includes>
 				<include>org.apache.cayenne.docs:cayenne-doc</include>
 			</includes>
@@ -100,19 +105,7 @@
 			</unpackOptions>
 		</dependencySet>
 		<dependencySet>
-			<outputDirectory>/</outputDirectory>
-			<includes>
-				<include>org.apache.cayenne.modeler:cayenne-modeler-mac</include>
-			</includes>
-			<unpack>true</unpack>
-			<unpackOptions>
-				<excludes>
-					<exclude>META-INF/**</exclude>
-				</excludes>
-			</unpackOptions>
-		</dependencySet>
-		<dependencySet>
-			<outputDirectory>CayenneModeler.app/Contents/Resources/mcp/</outputDirectory>
+			<outputDirectory>bin</outputDirectory>
 			<includes>
 				<include>org.apache.cayenne:cayenne-mcp-server</include>
 			</includes>

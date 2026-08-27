@@ -126,7 +126,7 @@
         <module>modeler</module>
         <module>tutorials</module>
         <module>docs</module>
-        <module>assembly</module>
+        <module>cayenne-assembly</module>
     </modules>
     <issueManagement>
         <system>jira</system>
