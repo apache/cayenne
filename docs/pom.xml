@@ -18,7 +18,7 @@
 	under the License.   
 -->
 
-<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
 
 	<modelVersion>4.0.0</modelVersion>
 
@@ -34,14 +34,65 @@
 	<packaging>pom</packaging>
 
 	<modules>
-		<module>asciidoc</module>
+		<module>cayenne-asciidoc-extension</module>
+		<module>cayenne-guide</module>
+		<module>getting-started-guide</module>
+		<module>getting-started-db-first</module>
 	</modules>
 
 	<properties>
 		<build.docs>generate-resources</build.docs>
+		<project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
+		<asciidoctorj.version>3.0.1</asciidoctorj.version>
+		<asciidoctor.maven.plugin.version>3.1.1</asciidoctor.maven.plugin.version>
+		<asciidoctorj.pdf.version>2.3.23</asciidoctorj.pdf.version>
+		<cayenne.version>${project.version}</cayenne.version>
+		<cayenne.major.version>5.0</cayenne.major.version>
+		<hugo.asciidoctorj.extension.version>1.0-M4</hugo.asciidoctorj.extension.version>
+		<jsoup.version>1.23.1</jsoup.version>
 	</properties>
 
+	<dependencyManagement>
+		<dependencies>
+			<dependency>
+				<groupId>org.jsoup</groupId>
+				<artifactId>jsoup</artifactId>
+				<version>${jsoup.version}</version>
+			</dependency>
+		</dependencies>
+	</dependencyManagement>
+
+	<dependencies>
+		<dependency>
+			<groupId>org.apache.cayenne</groupId>
+			<artifactId>cayenne</artifactId>
+			<version>${project.version}</version>
+		</dependency>
+		<dependency>
+			<groupId>org.asciidoctor</groupId>
+			<artifactId>asciidoctorj</artifactId>
+			<version>${asciidoctorj.version}</version>
+		</dependency>
+	</dependencies>
+
 	<build>
+		<pluginManagement>
+			<plugins>
+				<plugin>
+					<groupId>org.asciidoctor</groupId>
+					<artifactId>asciidoctor-maven-plugin</artifactId>
+					<version>${asciidoctor.maven.plugin.version}</version>
+					<dependencies>
+						<dependency>
+							<groupId>org.asciidoctor</groupId>
+							<artifactId>asciidoctorj-pdf</artifactId>
+							<version>${asciidoctorj.pdf.version}</version>
+						</dependency>
+					</dependencies>
+				</plugin>
+			</plugins>
+		</pluginManagement>
+
 		<plugins>
 			<plugin>
 				<groupId>org.apache.maven.plugins</groupId>
@@ -49,6 +100,102 @@
 				<configuration>
 					<skip>true</skip>
 				</configuration>
+			</plugin>
+			<plugin>
+				<groupId>org.asciidoctor</groupId>
+				<artifactId>asciidoctor-maven-plugin</artifactId>
+				<configuration>
+					<sourceDirectory>src/docs/asciidoc</sourceDirectory>
+					<doctype>book</doctype>
+					<!-- Attributes common to all output formats -->
+					<attributes>
+						<endpoint-url>http://cayenne.apache.org</endpoint-url>
+
+						<basedir>${project.basedir}</basedir>
+						<sourcedir>${project.build.sourceDirectory}</sourcedir>
+						<project-version>${cayenne.version}</project-version>
+						<project-major-version>${cayenne.major.version}</project-major-version>
+
+						<imagesdir>images</imagesdir>
+						<icons>font</icons>
+
+						<sectnumlevels>4</sectnumlevels>
+						<sectanchors>true</sectanchors>
+						<idprefix /> <!-- set the idprefix to blank -->
+						<idseparator>-</idseparator>
+					</attributes>
+				</configuration>
+				<dependencies>
+					<dependency>
+						<groupId>org.asciidoctor</groupId>
+						<artifactId>asciidoctorj</artifactId>
+						<version>${asciidoctorj.version}</version>
+					</dependency>
+				</dependencies>
+			</plugin>
+			<!-- Move images to proper path for site -->
+			<plugin>
+				<artifactId>maven-resources-plugin</artifactId>
+				<executions>
+					<execution>
+						<id>copy docs for site</id>
+						<phase>package</phase>
+						<goals>
+							<goal>copy-resources</goal>
+						</goals>
+
+						<configuration>
+							<outputDirectory>${project.build.directory}/site/</outputDirectory>
+							<resources>
+								<resource>
+									<directory>${project.build.directory}/tmp/</directory>
+									<includes>
+										<include>${project.artifactId}.html</include>
+										<include>${project.artifactId}.toc.html</include>
+									</includes>
+								</resource>
+							</resources>
+						</configuration>
+					</execution>
+
+					<execution>
+						<id>copy additional docs for site</id>
+						<phase>package</phase>
+						<goals>
+							<goal>copy-resources</goal>
+						</goals>
+
+						<configuration>
+							<outputDirectory>${project.build.directory}/site/${project.artifactId}/</outputDirectory>
+							<resources>
+								<resource>
+									<directory>${project.build.directory}/tmp/${project.artifactId}/</directory>
+									<includes>
+										<include>*.html</include>
+									</includes>
+								</resource>
+							</resources>
+						</configuration>
+					</execution>
+
+					<execution>
+						<id>copy images for site</id>
+						<phase>package</phase>
+						<goals>
+							<goal>copy-resources</goal>
+						</goals>
+
+						<configuration>
+							<outputDirectory>${project.build.directory}/site/${project.artifactId}/images/</outputDirectory>
+							<resources>
+								<resource>
+									<directory>${project.build.directory}/tmp/images/</directory>
+									<filtering>true</filtering>
+								</resource>
+							</resources>
+						</configuration>
+					</execution>
+				</executions>
 			</plugin>
 		</plugins>
 	</build>

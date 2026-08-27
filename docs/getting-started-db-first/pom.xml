@@ -20,16 +20,16 @@
 
 <project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
     <parent>
-        <artifactId>cayenne-asciidoc-parent</artifactId>
+        <artifactId>cayenne-docs-parent</artifactId>
         <groupId>org.apache.cayenne.docs</groupId>
         <version>5.0-SNAPSHOT</version>
     </parent>
     <modelVersion>4.0.0</modelVersion>
 
-    <artifactId>getting-started-guide</artifactId>
+    <artifactId>getting-started-db-first</artifactId>
 
     <packaging>jar</packaging>
-    <name>getting-started-guide: AsciiDoc - Getting Started with Cayenne</name>
+    <name>getting-started-db-first: AsciiDoc - Cayenne Database First tutorial</name>
 
     <build>
         <plugins>
@@ -93,7 +93,7 @@
                                     <embedAssets>true</embedAssets>
                                     <attributes>
                                         <toc>left</toc>
-                                        <sourceHighlighter>coderay</sourceHighlighter>
+                                        <source-highlighter>coderay</source-highlighter>
                                     </attributes>
                                 </configuration>
                             </execution>
@@ -110,7 +110,7 @@
                                     <attributes>
                                         <pagenums />
                                         <toc />
-                                        <sourceHighlighter>coderay</sourceHighlighter>
+                                        <source-highlighter>coderay</source-highlighter>
                                     </attributes>
                                 </configuration>
                             </execution>
