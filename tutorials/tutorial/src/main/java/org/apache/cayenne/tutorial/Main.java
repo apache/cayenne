@@ -18,9 +18,6 @@
  ****************************************************************/
 package org.apache.cayenne.tutorial;
 
-import java.time.LocalDate;
-import java.util.List;
-
 import org.apache.cayenne.ObjectContext;
 import org.apache.cayenne.configuration.DataNodeDescriptor;
 import org.apache.cayenne.datasource.CayenneDataSource;
@@ -31,6 +28,8 @@ import org.apache.cayenne.tutorial.persistent.Gallery;
 import org.apache.cayenne.tutorial.persistent.Painting;
 
 import javax.sql.DataSource;
+import java.time.LocalDate;
+import java.util.List;
 
 public class Main {
 
@@ -38,7 +37,6 @@ public class Main {
 
         // starting Cayenne
         DataSource dataSource = CayenneDataSource.of("jdbc:derby:memory:testdb;create=true")
-                .driverClass("org.apache.derby.jdbc.EmbeddedDriver")
                 .pool(1, 1)
                 .build();
 
