@@ -117,13 +117,15 @@
         <module>cayenne-jcache</module>
         <module>cayenne-lifecycle</module>
         <module>cayenne-mcp-server</module>
+        <module>cayenne-modeler</module>
+        <module>cayenne-modeler-prefs</module>
         <module>cayenne-project</module>
         <module>cayenne-project-compatibility</module>
         <module>cayenne-velocity</module>
         <module>cayenne-osgi</module>
         <module>cayenne-maven-plugin</module>
         <module>cayenne-maven-plugin-itest</module>
-        <module>modeler</module>
+        <module>cayenne-wocompat</module>
         <module>tutorials</module>
         <module>docs</module>
         <module>cayenne-assembly</module>

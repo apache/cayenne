@@ -61,7 +61,7 @@
 		</fileSet>
 		<!-- Native Modeler launchers, built by the matching "windows" profile of "cayenne-modeler" -->
 		<fileSet>
-			<directory>../modeler/cayenne-modeler/target/apps/windows</directory>
+			<directory>../cayenne-modeler/target/apps/windows</directory>
 			<outputDirectory>bin</outputDirectory>
 		</fileSet>
 	</fileSets>

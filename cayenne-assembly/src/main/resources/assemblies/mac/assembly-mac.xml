@@ -68,7 +68,7 @@
 		</fileSet>
 		<!-- Native Modeler launchers, built by the matching "mac" profile of "cayenne-modeler" -->
 		<fileSet>
-			<directory>../modeler/cayenne-modeler/target/apps/mac</directory>
+			<directory>../cayenne-modeler/target/apps/mac</directory>
 			<outputDirectory>/</outputDirectory>
 		</fileSet>
 	</fileSets>

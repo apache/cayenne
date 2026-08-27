@@ -44,7 +44,7 @@
         </dependency>
 
         <dependency>
-            <groupId>org.apache.cayenne.modeler</groupId>
+            <groupId>org.apache.cayenne</groupId>
             <artifactId>cayenne-modeler-prefs</artifactId>
             <version>${project.version}</version>
         </dependency>

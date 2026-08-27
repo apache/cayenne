@@ -1,6 +1,6 @@
 ---
 paths:
-  - "modeler/**"
+  - "cayenne-modeler/**"
 description: CayenneModeler UI components architecture
 ---
 

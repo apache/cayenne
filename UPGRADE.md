@@ -53,6 +53,21 @@ Expression caseWhenExp = caseWhen(
 ```
 
 
+## Upgrading to 5.0-M4
+
+*  The `groupId` of `cayenne-modeler` and `cayenne-wocompat` changed from `org.apache.cayenne.modeler` to
+  `org.apache.cayenne`. Artifact ids and versions are unchanged. If you depend on any of them directly, update the
+  coordinates:
+
+  ```xml
+  <dependency>
+      <groupId>org.apache.cayenne</groupId>
+      <artifactId>cayenne-modeler</artifactId>
+      <version>5.0-XX</version>
+  </dependency>
+  ```
+
+
 ## Upgrading to 5.0-M3
 
 
