@@ -71,6 +71,15 @@
 			<directory>../cayenne-modeler/target/apps/mac</directory>
 			<outputDirectory>/</outputDirectory>
 		</fileSet>
+		<!-- API docs, built by the matching "assembly" profile of each module -->
+		<fileSet>
+			<directory>../cayenne/target/apidocs</directory>
+			<outputDirectory>${content.dir}/doc/api/cayenne</outputDirectory>
+		</fileSet>
+		<fileSet>
+			<directory>../cayenne-di/target/apidocs</directory>
+			<outputDirectory>${content.dir}/doc/api/cayenne-di</outputDirectory>
+		</fileSet>
 	</fileSets>
 
 	<dependencySets>
@@ -98,18 +107,6 @@
 			<includes>
 				<include>org.slf4j:slf4j-api</include>
 			</includes>
-		</dependencySet>
-		<dependencySet>
-			<outputDirectory>${content.dir}/doc/api</outputDirectory>
-			<includes>
-				<include>org.apache.cayenne.docs:cayenne-doc</include>
-			</includes>
-			<unpack>true</unpack>
-			<unpackOptions>
-				<excludes>
-					<exclude>META-INF/**</exclude>
-				</excludes>
-			</unpackOptions>
 		</dependencySet>
 		<dependencySet>
 			<outputDirectory>CayenneModeler.app/Contents/Resources/mcp/</outputDirectory>

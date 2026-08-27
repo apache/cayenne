@@ -172,4 +172,19 @@
             </plugin>
         </plugins>
     </build>
+
+    <profiles>
+        <!-- Build the API docs bundled into the binary distribution under "doc/api/cayenne".
+             All the config is inherited from the parent's <pluginManagement>. -->
+        <profile>
+            <id>assembly</id>
+            <build>
+                <plugins>
+                    <plugin>
+                        <artifactId>maven-javadoc-plugin</artifactId>
+                    </plugin>
+                </plugins>
+            </build>
+        </profile>
+    </profiles>
 </project>

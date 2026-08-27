@@ -95,12 +95,6 @@
 		</dependency>
 
 		<dependency>
-			<groupId>org.apache.cayenne.docs</groupId>
-			<artifactId>cayenne-doc</artifactId>
-			<version>${project.version}</version>
-		</dependency>
-
-		<dependency>
 			<groupId>org.apache.cayenne</groupId>
 			<artifactId>cayenne-velocity</artifactId>
 			<version>${project.version}</version>

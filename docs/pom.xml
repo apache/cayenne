@@ -34,9 +34,8 @@
 	<packaging>pom</packaging>
 
 	<modules>
-		<module>doc</module>
-        <module>asciidoc</module>
-    </modules>
+		<module>asciidoc</module>
+	</modules>
 
 	<properties>
 		<build.docs>generate-resources</build.docs>

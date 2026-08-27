@@ -797,7 +797,19 @@
                         <!-- Suppress errors in the JavaDocs (it should be cleaned one day...)  -->
                         <doclint>none</doclint>
                         <source>21</source>
+                        <outputDirectory>${project.build.directory}</outputDirectory>
+                        <detectOfflineLinks>false</detectOfflineLinks>
+                        <header><![CDATA[<a href="https://cayenne.apache.org" target="top">Apache Cayenne</a>]]></header>
                     </configuration>
+                    <executions>
+                        <execution>
+                            <id>javadoc</id>
+                            <phase>package</phase>
+                            <goals>
+                                <goal>javadoc</goal>
+                            </goals>
+                        </execution>
+                    </executions>
                 </plugin>
                 <plugin>
                     <groupId>org.codehaus.mojo</groupId>
