@@ -983,7 +983,7 @@
                 </plugins>
             </build>
         </profile>
-        <!-- Optional profiles used to build and sign artifacts -->
+        <!-- Optional profile for building and signing release artifacts -->
         <profile>
             <id>release</id>
             <build>
@@ -1012,13 +1012,6 @@
                             </execution>
                         </executions>
                     </plugin>
-                </plugins>
-            </build>
-        </profile>
-        <profile>
-            <id>gpg</id>
-            <build>
-                <plugins>
                     <plugin>
                         <groupId>org.apache.maven.plugins</groupId>
                         <artifactId>maven-gpg-plugin</artifactId>
