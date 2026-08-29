@@ -28,7 +28,7 @@ import org.apache.cayenne.modeler.ui.project.editor.datamap.DataMapView;
 import org.apache.cayenne.modeler.ui.project.editor.dbentity.DbEntityView;
 import org.apache.cayenne.modeler.ui.project.editor.embeddable.EmbeddableView;
 import org.apache.cayenne.modeler.ui.project.editor.objentity.ObjEntityView;
-import org.apache.cayenne.modeler.ui.project.editor.procedure.ProcedureQueryView;
+import org.apache.cayenne.modeler.ui.project.editor.procedure.ProcedureQueryTabbedView;
 import org.apache.cayenne.modeler.ui.project.editor.procedure.ProcedureTabbedView;
 import org.apache.cayenne.modeler.ui.project.editor.query.ejbql.EjbqlTabbedView;
 import org.apache.cayenne.modeler.ui.project.editor.query.selectquery.SelectQueryTabbedView;
@@ -94,7 +94,7 @@ public class EditorPanelView extends ProjectPanel {
         add(procedureView, PROCEDURE_VIEW);
         add(new SelectQueryTabbedView(session), SELECT_QUERY_VIEW);
         add(sqlTemplateView, SQL_TEMPLATE_VIEW);
-        add(new JScrollPane(new ProcedureQueryView(session)), PROCEDURE_QUERY_VIEW);
+        add(new ProcedureQueryTabbedView(session), PROCEDURE_QUERY_VIEW);
         add(ejbqlQueryView, EJBQL_QUERY_VIEW);
         add(embeddableView, EMBEDDABLE_VIEW);
         add(objDetailView, OBJ_VIEW);

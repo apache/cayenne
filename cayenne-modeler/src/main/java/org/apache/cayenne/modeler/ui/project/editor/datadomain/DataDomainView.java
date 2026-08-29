@@ -53,7 +53,7 @@ public class DataDomainView extends ProjectTabbedPane {
 
     private void initLayout() {
         setTabPlacement(JTabbedPane.TOP);
-        addTab("Main", new JScrollPane(new DataDomainMainView(session)));
+        addTab("Data Domain", new JScrollPane(new DataDomainMainView(session)));
         addTab("Db Import", dbImportView);
         addTab("Class Generation", cgenView);
         addTab("Validation", validationTab);

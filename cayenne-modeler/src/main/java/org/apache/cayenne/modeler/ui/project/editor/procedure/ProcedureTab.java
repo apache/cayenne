@@ -20,6 +20,7 @@
 package org.apache.cayenne.modeler.ui.project.editor.procedure;
 
 import org.apache.cayenne.modeler.toolkit.ProjectPanel;
+import org.apache.cayenne.modeler.ui.project.editor.EditorForm;
 import org.apache.cayenne.modeler.ui.project.editor.query.ExistingSelectionProcessor;
 import com.jgoodies.forms.builder.DefaultFormBuilder;
 import com.jgoodies.forms.layout.FormLayout;
@@ -33,6 +34,7 @@ import org.apache.cayenne.map.EntityResolver;
 import org.apache.cayenne.map.MappingNamespace;
 import org.apache.cayenne.modeler.event.model.ProcedureEvent;
 import org.apache.cayenne.modeler.toolkit.text.CMUndoableTextField;
+import org.apache.cayenne.modeler.ui.action.CreateProcedureParameterAction;
 import org.apache.cayenne.project.extension.info.ObjectInfo;
 import org.apache.cayenne.modeler.toolkit.checkbox.CMCheckBox;
 import java.util.Objects;
@@ -79,18 +81,23 @@ public class ProcedureTab extends ProjectPanel implements ProcedureDisplayListen
         this.returnsValue = new CMCheckBox(app.getUndoManager());
         this.returnsValue.setToolTipText("first parameter will be used as return value");
 
-        FormLayout layout = new FormLayout("right:pref, $lcgap, fill:200dlu", "");
+        FormLayout layout = new FormLayout(EditorForm.LABEL_COLUMN + ", $lcgap, fill:200dlu", "");
         DefaultFormBuilder builder = new DefaultFormBuilder(layout);
         builder.setDefaultDialogBorder();
 
-        builder.appendSeparator("Stored Procedure Configuration");
         builder.append("Name:", name);
         builder.append("Catalog:", catalog);
         builder.append("Schema:", schema);
         builder.append("Returns Value:", returnsValue);
         builder.append("Comment:", comment);
 
+        JToolBar toolBar = new JToolBar();
+        toolBar.setBorder(BorderFactory.createEmptyBorder());
+        toolBar.setFloatable(false);
+        toolBar.add(app.getActionManager().getAction(CreateProcedureParameterAction.class).buildButton());
+
         this.setLayout(new BorderLayout());
+        this.add(toolBar, BorderLayout.NORTH);
         this.add(builder.getPanel(), BorderLayout.CENTER);
     }
 

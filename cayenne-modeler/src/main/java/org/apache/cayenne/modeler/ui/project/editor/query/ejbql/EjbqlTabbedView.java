@@ -42,8 +42,8 @@ public class EjbqlTabbedView extends ProjectTabbedPane {
 
     private void initLayout() {
         setTabPlacement(JTabbedPane.TOP);
-        addTab("General", new JScrollPane(mainTab));
-        addTab("EJBQL", scriptsTab);
+        addTab("EJBQLQuery", new JScrollPane(mainTab));
+        addTab("QL", scriptsTab);
     }
 
     private void initBindings() {

@@ -44,6 +44,7 @@ import org.apache.cayenne.modeler.ui.action.CreateAttributeAction;
 import org.apache.cayenne.modeler.ui.action.CreateRelationshipAction;
 import org.apache.cayenne.modeler.ui.action.ObjEntityCounterpartAction;
 import org.apache.cayenne.modeler.ui.action.ObjEntitySyncAction;
+import org.apache.cayenne.modeler.ui.project.editor.EditorForm;
 import org.apache.cayenne.modeler.ui.project.editor.ExpressionConvertor;
 import org.apache.cayenne.modeler.ui.project.editor.objentity.classname.ClassNameUpdaterController;
 import org.apache.cayenne.modeler.ui.project.editor.objentity.duplicates.DuplicatedAttributesDialog;
@@ -117,21 +118,25 @@ public class ObjEntityMainView extends ProjectPanel implements ObjEntityDisplayL
         tableLabel.setMargin(new Insets(0, 0, 0, 0));
         tableLabel.setBorder(null);
 
-        FormLayout layout = new FormLayout("right:pref, $lcgap, fill:200dlu", "");
+        FormLayout layout = new FormLayout(EditorForm.LABEL_COLUMN + ", $lcgap, fill:200dlu", "");
         DefaultFormBuilder builder = new DefaultFormBuilder(layout);
         builder.setDefaultDialogBorder();
 
-        builder.appendSeparator("ObjEntity Configuration");
+        JPanel flags = new JPanel(new FlowLayout(FlowLayout.LEADING, 0, 0));
+        flags.add(readOnly);
+        flags.add(Box.createHorizontalStrut(20));
+        flags.add(new JLabel("Optimistic Locking:"));
+        flags.add(Box.createHorizontalStrut(6));
+        flags.add(optimisticLocking);
+
         builder.append("Name:", name);
         builder.append("Inheritance:", superEntityCombo);
         builder.append(tableLabel, dbEntityCombo);
-        builder.append("Comment:", comment);
-        builder.appendSeparator();
         builder.append("Java Class:", className);
         superclassLabel = builder.append("Superclass:", superClassName);
         builder.append("Qualifier:", qualifier);
-        builder.append("Read-Only:", readOnly);
-        builder.append("Optimistic Locking:", optimisticLocking);
+        builder.append("Read-Only:", flags);
+        builder.append("Comment:", comment);
 
         add(builder.getPanel(), BorderLayout.CENTER);
     }

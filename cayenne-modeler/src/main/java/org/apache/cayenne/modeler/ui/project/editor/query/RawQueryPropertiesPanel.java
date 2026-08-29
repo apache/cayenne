@@ -39,6 +39,7 @@ import com.jgoodies.forms.builder.PanelBuilder;
 import com.jgoodies.forms.layout.CellConstraints;
 import com.jgoodies.forms.layout.FormLayout;
 import org.apache.cayenne.map.QueryDescriptor;
+import org.apache.cayenne.modeler.ui.project.editor.EditorForm;
 import org.apache.cayenne.query.QueryMetadata;
 
 /**
@@ -68,26 +69,25 @@ public abstract class RawQueryPropertiesPanel extends SelectPropertiesPanel {
     protected PanelBuilder createPanelBuilder() {
         CellConstraints cc = new CellConstraints();
         FormLayout layout = new FormLayout(
-                "right:max(80dlu;pref), $lcgap, left:max(10dlu;pref), "
+                EditorForm.LABEL_COLUMN + ", $lcgap, left:max(10dlu;pref), "
                         + "$lcgap, left:max(37dlu;pref), $lcgap, fill:max(147dlu;pref)",
-                "p, $rgap, p, $rgap, p, $rgap, p, $rgap, p, $rgap, p, $rgap, p, $rgap, p");
+                "p, $rgap, p, $rgap, p, $rgap, p, $rgap, p, $rgap, p");
 
         PanelBuilder builder = new PanelBuilder(layout);
-        builder.setDefaultDialogBorder();
-        builder.addSeparator("Select Properties", cc.xywh(1, 1, 7, 1));
-        builder.addLabel("Result Caching:", cc.xy(1, 3));
-        builder.add(cacheStrategy, cc.xywh(3, 3, 5, 1));
-        cacheGroupsLabel = builder.addLabel("Cache Group:", cc.xy(1, 7));
-        builder.add(cacheGroups, cc.xywh(3, 7, 5, 1));
-        builder.addLabel("Fetch Persistent Objects:", cc.xy(1, 9));
-        builder.add(persistentObjects, cc.xy(3, 9));
-        builder.add(entities, cc.xywh(5, 9, 3, 1));
-        builder.addLabel("Fetch Offset, Rows:", cc.xy(1, 11));
-        builder.add(fetchOffset, cc.xywh(3, 11, 3, 1));
-        builder.addLabel("Fetch Limit, Rows:", cc.xy(1, 13));
-        builder.add(fetchLimit, cc.xywh(3, 13, 3, 1));
-        builder.addLabel("Page Size:", cc.xy(1, 15));
-        builder.add(pageSize, cc.xywh(3, 15, 3, 1));
+        builder.setBorder(EditorForm.sectionBorder());
+        builder.addLabel("Result Caching:", cc.xy(1, 1));
+        builder.add(cacheStrategy, cc.xywh(3, 1, 5, 1));
+        cacheGroupsLabel = builder.addLabel("Cache Group:", cc.xy(1, 3));
+        builder.add(cacheGroups, cc.xywh(3, 3, 5, 1));
+        builder.addLabel("Fetch Objects:", cc.xy(1, 5));
+        builder.add(persistentObjects, cc.xy(3, 5));
+        builder.add(entities, cc.xywh(5, 5, 3, 1));
+        builder.addLabel("Fetch Offset, Rows:", cc.xy(1, 7));
+        builder.add(fetchOffset, cc.xywh(3, 7, 3, 1));
+        builder.addLabel("Fetch Limit, Rows:", cc.xy(1, 9));
+        builder.add(fetchLimit, cc.xywh(3, 9, 3, 1));
+        builder.addLabel("Page Size:", cc.xy(1, 11));
+        builder.add(pageSize, cc.xywh(3, 11, 3, 1));
         return builder;
     }
 

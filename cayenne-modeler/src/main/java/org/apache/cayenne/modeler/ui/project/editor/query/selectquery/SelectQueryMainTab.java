@@ -34,6 +34,7 @@ import org.apache.cayenne.modeler.event.model.QueryEvent;
 import org.apache.cayenne.modeler.toolkit.checkbox.CMCheckBox;
 import org.apache.cayenne.modeler.toolkit.text.CMUndoableTextField;
 import org.apache.cayenne.modeler.project.ProjectSession;
+import org.apache.cayenne.modeler.ui.project.editor.EditorForm;
 import org.apache.cayenne.modeler.ui.project.editor.ExpressionConvertor;
 import org.apache.cayenne.modeler.ui.project.editor.query.BaseQueryMainTab;
 import org.apache.cayenne.modeler.ui.project.editor.query.ObjectQueryPropertiesPanel;
@@ -85,26 +86,39 @@ public class SelectQueryMainTab extends BaseQueryMainTab {
         // assemble
         CellConstraints cc = new CellConstraints();
         FormLayout layout = new FormLayout(
-                "right:max(80dlu;pref), $lcgap, fill:200dlu",
-                "p, $rgap, p, $rgap, p, $rgap, p, $rgap, p, $rgap, p");
+                EditorForm.LABEL_COLUMN + ", $lcgap, fill:200dlu",
+                "p, $rgap, p, $rgap, p, $rgap, p");
         PanelBuilder builder = new PanelBuilder(layout);
-        builder.setDefaultDialogBorder();
+        builder.setBorder(EditorForm.formBorder());
 
-        builder.addSeparator("ObjectSelect Settings", cc.xywh(1, 1, 3, 1));
-        builder.addLabel("Name:", cc.xy(1, 3));
-        builder.add(name, cc.xy(3, 3));
-        builder.addLabel("Root:", cc.xy(1, 5));
-        builder.add(queryRoot, cc.xy(3, 5));
-        builder.addLabel("Qualifier:", cc.xy(1, 7));
-        builder.add(qualifier, cc.xy(3, 7));
-        builder.addLabel("Distinct:", cc.xy(1, 9));
-        builder.add(distinct, cc.xy(3, 9));
-        builder.addLabel("Comment:", cc.xy(1, 11));
-        builder.add(comment, cc.xy(3, 11));
+        builder.addLabel("Name:", cc.xy(1, 1));
+        builder.add(name, cc.xy(3, 1));
+        builder.addLabel("Root:", cc.xy(1, 3));
+        builder.add(queryRoot, cc.xy(3, 3));
+        builder.addLabel("Qualifier:", cc.xy(1, 5));
+        builder.add(qualifier, cc.xy(3, 5));
+        builder.addLabel("Distinct:", cc.xy(1, 7));
+        builder.add(distinct, cc.xy(3, 7));
 
+        // the comment closes the form, below the query properties
+        PanelBuilder commentBuilder = new PanelBuilder(
+                new FormLayout(EditorForm.LABEL_COLUMN + ", $lcgap, fill:200dlu", "p"));
+        commentBuilder.setBorder(EditorForm.lastSectionBorder());
+        commentBuilder.addLabel("Comment:", cc.xy(1, 1));
+        commentBuilder.add(comment, cc.xy(3, 1));
+
+        JPanel propertiesAndComment = new JPanel(new BorderLayout());
+        propertiesAndComment.add(properties, BorderLayout.NORTH);
+        propertiesAndComment.add(commentBuilder.getPanel(), BorderLayout.CENTER);
+
+        JPanel sections = new JPanel(new BorderLayout());
+        sections.add(builder.getPanel(), BorderLayout.NORTH);
+        sections.add(propertiesAndComment, BorderLayout.CENTER);
+
+        // no toolbar in this editor, but its form should still start where the other editors' forms do
         this.setLayout(new BorderLayout());
-        this.add(builder.getPanel(), BorderLayout.NORTH);
-        this.add(properties, BorderLayout.CENTER);
+        this.add(EditorForm.toolBarSpacer(), BorderLayout.NORTH);
+        this.add(sections, BorderLayout.CENTER);
     }
 
     private void initController() {

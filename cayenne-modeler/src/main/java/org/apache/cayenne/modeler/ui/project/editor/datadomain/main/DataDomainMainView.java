@@ -31,6 +31,7 @@ import org.apache.cayenne.modeler.project.ProjectSession;
 import org.apache.cayenne.modeler.toolkit.ProjectPanel;
 import org.apache.cayenne.modeler.toolkit.checkbox.CMCheckBox;
 import org.apache.cayenne.modeler.toolkit.text.CMUndoableTextField;
+import org.apache.cayenne.modeler.ui.project.editor.EditorForm;
 import org.apache.cayenne.validation.ValidationException;
 
 import javax.swing.*;
@@ -69,23 +70,23 @@ public class DataDomainMainView extends ProjectPanel implements DomainDisplayLis
         // assemble
         CellConstraints cc = new CellConstraints();
         FormLayout layout = new FormLayout(
-                "right:pref, $lcgap, fill:50dlu, $lcgap, fill:47dlu, $lcgap, fill:100",
-                "p, $rgap, p, $rgap, p, $rgap, p, $rgap, p, $rgap, p, $rgap, p, $rgap, p");
+                EditorForm.LABEL_COLUMN + ", $lcgap, fill:50dlu, $lcgap, fill:47dlu, $lcgap, fill:100",
+                "p, $rgap, p, $rgap, p, $rgap, p, $rgap, p, $rgap, p, $rgap, p");
 
         PanelBuilder builder = new PanelBuilder(layout);
         builder.setDefaultDialogBorder();
 
-        builder.addSeparator("DataDomain Configuration", cc.xywh(1, 1, 7, 1));
-        builder.addLabel("Name:", cc.xy(1, 3));
-        builder.add(name, cc.xywh(3, 3, 5, 1));
+        builder.addLabel("Name:", cc.xy(1, 1));
+        builder.add(name, cc.xywh(3, 1, 5, 1));
 
-        builder.addLabel("Object Validation:", cc.xy(1, 5));
-        builder.add(objectValidation, cc.xy(3, 5));
+        builder.addLabel("Object Validation:", cc.xy(1, 3));
+        builder.add(objectValidation, cc.xy(3, 3));
 
-        builder.addLabel("Use Shared Cache:", cc.xy(1, 7));
-        builder.add(sharedCache, cc.xy(3, 7));
+        builder.addLabel("Shared Cache:", cc.xy(1, 5));
+        builder.add(sharedCache, cc.xy(3, 5));
 
         this.setLayout(new BorderLayout());
+        this.add(EditorForm.toolBarSpacer(), BorderLayout.NORTH);
         this.add(builder.getPanel(), BorderLayout.CENTER);
     }
 

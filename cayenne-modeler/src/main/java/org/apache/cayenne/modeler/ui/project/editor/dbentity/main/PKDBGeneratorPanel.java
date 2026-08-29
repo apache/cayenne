@@ -26,6 +26,7 @@ import org.apache.cayenne.map.DbAttribute;
 import org.apache.cayenne.map.DbEntity;
 import org.apache.cayenne.modeler.event.model.DbEntityEvent;
 import org.apache.cayenne.modeler.project.ProjectSession;
+import org.apache.cayenne.modeler.ui.project.editor.EditorForm;
 
 import javax.swing.*;
 import javax.swing.plaf.basic.BasicComboBoxRenderer;
@@ -49,10 +50,10 @@ public class PKDBGeneratorPanel extends PKGeneratorPanel {
         attributes.setRenderer(new AttributeRenderer());
 
         DefaultFormBuilder builder = new DefaultFormBuilder(new FormLayout(
-                "right:70dlu, $lcgap, fill:200dlu",
+                EditorForm.LABEL_COLUMN + ", $lcgap, fill:200dlu",
                 ""));
-        builder.setDefaultDialogBorder();
-        builder.append("Auto Incremented:", attributes);
+        builder.setBorder(EditorForm.sectionBorder());
+        builder.append("Auto Increment:", attributes);
 
         setLayout(new BorderLayout());
         add(builder.getPanel(), BorderLayout.CENTER);

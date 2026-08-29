@@ -29,9 +29,9 @@ import javax.swing.DefaultListCellRenderer;
 import javax.swing.JComboBox;
 import javax.swing.JComponent;
 import javax.swing.JList;
-import javax.swing.JPanel;
 
 import org.apache.cayenne.modeler.event.model.QueryEvent;
+import org.apache.cayenne.modeler.toolkit.ProjectPanel;
 import org.apache.cayenne.modeler.toolkit.combobox.CMUndoableComboBox;
 import org.apache.cayenne.modeler.toolkit.text.CMUndoableTextField;
 import org.apache.cayenne.modeler.project.ProjectSession;
@@ -48,7 +48,7 @@ import org.slf4j.LoggerFactory;
  * A panel that supports editing the properties of a GenericSelectQuery.
  * 
  */
-public abstract class SelectPropertiesPanel extends JPanel {
+public abstract class SelectPropertiesPanel extends ProjectPanel {
 
     private static final Logger LOGGER = LoggerFactory.getLogger(SelectPropertiesPanel.class);
 
@@ -79,10 +79,8 @@ public abstract class SelectPropertiesPanel extends JPanel {
     protected CMUndoableTextField cacheGroups;
     protected JComponent cacheGroupsLabel;
 
-    protected ProjectSession session;
-
     public SelectPropertiesPanel(ProjectSession session) {
-        this.session = session;
+        super(session);
         initView();
         initController();
     }

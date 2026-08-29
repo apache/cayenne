@@ -91,7 +91,7 @@ public abstract class DataDomainGeneratorsTab<T> extends ProjectPanel implements
         builder.setDefaultDialogBorder();
 
         if (generatorsPanels.isEmpty()) {
-            this.add(new JLabel("There are no datamaps."), BorderLayout.NORTH);
+            this.add(new JLabel("There are no datamaps.", SwingConstants.CENTER), BorderLayout.CENTER);
             return;
         }
 

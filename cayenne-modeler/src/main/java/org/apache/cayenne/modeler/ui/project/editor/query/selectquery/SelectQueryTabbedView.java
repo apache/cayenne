@@ -44,7 +44,7 @@ public class SelectQueryTabbedView extends ProjectTabbedPane {
 
     private void initLayout() {
         setTabPlacement(JTabbedPane.TOP);
-        addTab("General", new JScrollPane(mainTab));
+        addTab("ObjectSelect", new JScrollPane(mainTab));
         addTab("Orderings", orderingTab);
         addTab("Prefetches", prefetchTab);
     }

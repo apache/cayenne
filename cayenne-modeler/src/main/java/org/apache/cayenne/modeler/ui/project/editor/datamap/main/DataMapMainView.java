@@ -30,6 +30,7 @@ import org.apache.cayenne.modeler.project.ProjectSession;
 import org.apache.cayenne.modeler.toolkit.ProjectPanel;
 import org.apache.cayenne.modeler.toolkit.checkbox.CMCheckBox;
 import org.apache.cayenne.modeler.toolkit.text.CMUndoableTextField;
+import org.apache.cayenne.modeler.ui.project.editor.EditorForm;
 import org.apache.cayenne.modeler.ui.project.editor.datamap.main.catalog.CatalogUpdateDialog;
 import org.apache.cayenne.modeler.ui.project.editor.datamap.main.locking.LockingUpdateDialog;
 import org.apache.cayenne.modeler.ui.project.editor.datamap.main.pkg.PackageUpdateDialog;
@@ -85,24 +86,22 @@ public class DataMapMainView extends ProjectPanel {
 
     private void initLayout() {
         FormLayout layout = new FormLayout(
-                "right:70dlu, $lcgap, fill:180dlu, $lcgap, fill:120",
+                EditorForm.LABEL_COLUMN + ", $lcgap, fill:180dlu, $lcgap, fill:120",
                 "");
         DefaultFormBuilder builder = new DefaultFormBuilder(layout);
         builder.setDefaultDialogBorder();
 
-        builder.appendSeparator("DataMap Configuration");
         builder.append("Name:", name, 2);
-        builder.append("Quote SQL Identifiers:", quoteSQLIdentifiers, 3);
+        builder.append("SQL Quotes:", quoteSQLIdentifiers, 3);
+        builder.append("Default Catalog:", defaultCatalog, updateDefaultCatalog);
+        builder.append("Default Schema:", defaultSchema, updateDefaultSchema);
+        builder.append("Default Java Package:", defaultPackage, updateDefaultPackage);
+        builder.append("Default Superclass:", defaultSuperclass, updateDefaultSuperclass);
+        builder.append("Lock by Default:", defaultLockType, updateDefaultLockType);
         builder.append("Comment:", comment, 2);
 
-        builder.appendSeparator("Entity Defaults");
-        builder.append("DB Catalog:", defaultCatalog, updateDefaultCatalog);
-        builder.append("DB Schema:", defaultSchema, updateDefaultSchema);
-        builder.append("Java Package:", defaultPackage, updateDefaultPackage);
-        builder.append("Custom Superclass:", defaultSuperclass, updateDefaultSuperclass);
-        builder.append("Optimistic Locking:", defaultLockType, updateDefaultLockType);
-
         setLayout(new BorderLayout());
+        add(EditorForm.toolBarSpacer(), BorderLayout.NORTH);
         add(builder.getPanel(), BorderLayout.CENTER);
     }
 

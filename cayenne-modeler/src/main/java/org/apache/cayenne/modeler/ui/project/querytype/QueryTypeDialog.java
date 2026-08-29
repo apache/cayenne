@@ -59,10 +59,10 @@ public class QueryTypeDialog extends ProjectDialog {
         this.dataMap = session.getSelectedDataMap();
         this.domain = (DataChannelDescriptor) session.project().getRootNode();
 
-        this.objectSelect = new JRadioButton("Object Select Query");
-        this.sqlSelect = new JRadioButton("SQLTemplate Query");
-        this.procedureSelect = new JRadioButton("Stored Procedure Query");
-        this.ejbqlSelect = new JRadioButton("EJBQL Query");
+        this.objectSelect = new JRadioButton("ObjectSelect");
+        this.sqlSelect = new JRadioButton("SQLTemplate");
+        this.procedureSelect = new JRadioButton("ProcedureQuery");
+        this.ejbqlSelect = new JRadioButton("EJBQLQuery");
         objectSelect.setSelected(true);
 
         ButtonGroup buttonGroup = new ButtonGroup();

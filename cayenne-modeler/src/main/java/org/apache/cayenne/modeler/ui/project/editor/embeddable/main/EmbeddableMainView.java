@@ -35,6 +35,7 @@ import org.apache.cayenne.modeler.event.display.EmbeddableDisplayEvent;
 import org.apache.cayenne.modeler.event.display.EmbeddableDisplayListener;
 import org.apache.cayenne.modeler.toolkit.text.CMUndoableTextField;
 import org.apache.cayenne.modeler.project.ProjectComparators;
+import org.apache.cayenne.modeler.ui.project.editor.EditorForm;
 import org.apache.cayenne.project.extension.info.ObjectInfo;
 import java.util.Objects;
 import org.apache.cayenne.validation.ValidationException;
@@ -76,13 +77,11 @@ public class EmbeddableMainView extends ProjectPanel implements EmbeddableDispla
         comment = new CMUndoableTextField(app.getUndoManager());
         comment.addCommitListener(this::setComment);
 
-        FormLayout layout = new FormLayout(
-                "right:50dlu, $lcgap, fill:150dlu, $lcgap, fill:100",
-                "");
+        FormLayout layout = new FormLayout(EditorForm.LABEL_COLUMN + ", $lcgap, fill:200dlu", "");
         DefaultFormBuilder builder = new DefaultFormBuilder(layout);
         builder.setDefaultDialogBorder();
-        builder.append("Class Name:", className, 3);
-        builder.append("Comment:", comment, 3);
+        builder.append("Java Class:", className);
+        builder.append("Comment:", comment);
 
         add(builder.getPanel(), BorderLayout.CENTER);
     }

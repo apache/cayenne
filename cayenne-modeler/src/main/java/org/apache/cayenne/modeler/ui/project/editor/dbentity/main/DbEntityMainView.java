@@ -36,6 +36,7 @@ import org.apache.cayenne.modeler.ui.action.CreateObjEntityFromDbAction;
 import org.apache.cayenne.modeler.ui.action.CreateRelationshipAction;
 import org.apache.cayenne.modeler.ui.action.DbEntityCounterpartAction;
 import org.apache.cayenne.modeler.ui.action.DbEntitySyncAction;
+import org.apache.cayenne.modeler.ui.project.editor.EditorForm;
 import org.apache.cayenne.modeler.ui.project.editor.ExpressionConvertor;
 import org.apache.cayenne.modeler.ui.project.editor.query.ExistingSelectionProcessor;
 import org.apache.cayenne.project.extension.info.ObjectInfo;
@@ -81,7 +82,20 @@ public class DbEntityMainView extends ProjectPanel implements ExistingSelectionP
         comment = new CMUndoableTextField(app.getUndoManager());
         pkGeneratorType = new JComboBox<>();
         pkGeneratorDetailLayout = new CardLayout();
-        pkGeneratorDetail = new JPanel(pkGeneratorDetailLayout);
+
+        // unlike a plain CardLayout panel, this one takes the height of the visible card only, so that
+        // the comment row below it follows the PK fields instead of leaving a gap under the short cards
+        pkGeneratorDetail = new JPanel(pkGeneratorDetailLayout) {
+            @Override
+            public Dimension getPreferredSize() {
+                for (Component card : getComponents()) {
+                    if (card.isVisible()) {
+                        return card.getPreferredSize();
+                    }
+                }
+                return super.getPreferredSize();
+            }
+        };
         initLayout();
         initBindings();
     }
@@ -103,25 +117,38 @@ public class DbEntityMainView extends ProjectPanel implements ExistingSelectionP
         pkGeneratorDetail.add(new PKDBGeneratorPanel(session), PK_DB_GENERATOR);
         pkGeneratorDetail.add(new PKCustomSequenceGeneratorPanel(session), PK_CUSTOM_SEQUENCE_GENERATOR);
 
-        FormLayout layout = new FormLayout("right:pref, $lcgap, fill:200dlu", "");
+        FormLayout layout = new FormLayout(EditorForm.LABEL_COLUMN + ", $lcgap, fill:200dlu", "");
         DefaultFormBuilder builder = new DefaultFormBuilder(layout);
-        builder.setDefaultDialogBorder();
-        builder.appendSeparator("DbEntity Configuration");
+        builder.setBorder(EditorForm.formBorder());
         builder.append("Name:", name);
         builder.append(catalogLabel, catalog);
         builder.append(schemaLabel, schema);
         builder.append("Qualifier:", qualifier);
-        builder.append("Comment:", comment);
-        builder.appendSeparator("Primary Key");
-        builder.append("PK Generation Strategy:", pkGeneratorType);
+        builder.append("PK Strategy:", pkGeneratorType);
+
+        // the comment goes last, below the PK generator panel, which varies with the selected strategy
+        DefaultFormBuilder commentBuilder = new DefaultFormBuilder(
+                new FormLayout(EditorForm.LABEL_COLUMN + ", $lcgap, fill:200dlu", ""));
+        commentBuilder.setBorder(EditorForm.lastSectionBorder());
+        commentBuilder.append("Comment:", comment);
+
+        JPanel pkAndComment = new JPanel(new BorderLayout());
+        pkAndComment.add(pkGeneratorDetail, BorderLayout.NORTH);
+        pkAndComment.add(commentBuilder.getPanel(), BorderLayout.CENTER);
 
         JPanel mainPanel = new JPanel(new BorderLayout());
         mainPanel.add(builder.getPanel(), BorderLayout.NORTH);
-        mainPanel.add(pkGeneratorDetail, BorderLayout.CENTER);
+        mainPanel.add(pkAndComment, BorderLayout.CENTER);
 
         setLayout(new BorderLayout());
         add(toolBar, BorderLayout.NORTH);
         add(mainPanel, BorderLayout.CENTER);
+    }
+
+    private void showPKGeneratorDetail(String type) {
+        pkGeneratorDetailLayout.show(pkGeneratorDetail, type);
+        // cards differ in height, so the panels below have to be laid out again
+        pkGeneratorDetail.revalidate();
     }
 
     private void initBindings() {
@@ -132,7 +159,7 @@ public class DbEntityMainView extends ProjectPanel implements ExistingSelectionP
         comment.addCommitListener(this::setComment);
         session.addDbEntityDisplayListener(this);
         pkGeneratorType.addItemListener(e -> {
-            pkGeneratorDetailLayout.show(pkGeneratorDetail, (String) pkGeneratorType.getSelectedItem());
+            showPKGeneratorDetail((String) pkGeneratorType.getSelectedItem());
             for (int i = 0; i < pkGeneratorDetail.getComponentCount(); i++) {
                 if (pkGeneratorDetail.getComponent(i).isVisible()) {
                     DbEntity entity = session.getSelectedDbEntity();
@@ -192,7 +219,7 @@ public class DbEntityMainView extends ProjectPanel implements ExistingSelectionP
         pkGeneratorType.setVisible(true);
 
         pkGeneratorType.setSelectedItem(type);
-        pkGeneratorDetailLayout.show(pkGeneratorDetail, type);
+        showPKGeneratorDetail(type);
 
         if(entity.getDataMap().getMappedEntities(entity).isEmpty()) {
             toolBar.getComponentAtIndex(4).setEnabled(false);

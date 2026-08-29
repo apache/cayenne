@@ -26,6 +26,7 @@ import javax.swing.JCheckBox;
 import org.apache.cayenne.modeler.toolkit.checkbox.CMCheckBox;
 import org.apache.cayenne.modeler.project.ProjectSession;
 import org.apache.cayenne.map.QueryDescriptor;
+import org.apache.cayenne.modeler.ui.project.editor.EditorForm;
 import org.apache.cayenne.query.QueryMetadata;
 
 import com.jgoodies.forms.builder.PanelBuilder;
@@ -53,23 +54,22 @@ public class ObjectQueryPropertiesPanel extends SelectPropertiesPanel {
         // assemble
         CellConstraints cc = new CellConstraints();
         FormLayout layout = new FormLayout(
-                "right:max(80dlu;pref), $lcgap, left:max(50dlu;pref), fill:max(150dlu;pref)",
-                "p, $rgap, p, $rgap, p, $rgap, p, $rgap, p, $rgap, p, $rgap, p, $rgap, p, $rgap, p");
+                EditorForm.LABEL_COLUMN + ", $lcgap, left:max(50dlu;pref), fill:max(150dlu;pref)",
+                "p, $rgap, p, $rgap, p, $rgap, p, $rgap, p, $rgap, p");
         PanelBuilder builder = new PanelBuilder(layout);
-        builder.setDefaultDialogBorder();
-        builder.addSeparator("", cc.xywh(1, 1, 4, 1));
-        builder.addLabel("Result Caching:", cc.xy(1, 3));
-        builder.add(cacheStrategy, cc.xywh(3, 3, 2, 1));
-        cacheGroupsLabel = builder.addLabel("Cache Group:", cc.xy(1, 7));
-        builder.add(cacheGroups, cc.xywh(3, 7, 2, 1));
-        builder.addLabel("Fetch Data Rows:", cc.xy(1, 9));
-        builder.add(dataRows, cc.xy(3, 9));
-        builder.addLabel("Fetch Offset, Rows:", cc.xy(1, 11));
-        builder.add(fetchOffset, cc.xy(3, 11));
-        builder.addLabel("Fetch Limit, Rows:", cc.xy(1, 13));
-        builder.add(fetchLimit, cc.xy(3, 13));
-        builder.addLabel("Page Size:", cc.xy(1, 15));
-        builder.add(pageSize, cc.xy(3, 15));
+        builder.setBorder(EditorForm.sectionBorder());
+        builder.addLabel("Result Caching:", cc.xy(1, 1));
+        builder.add(cacheStrategy, cc.xywh(3, 1, 2, 1));
+        cacheGroupsLabel = builder.addLabel("Cache Group:", cc.xy(1, 3));
+        builder.add(cacheGroups, cc.xywh(3, 3, 2, 1));
+        builder.addLabel("Fetch Data Rows:", cc.xy(1, 5));
+        builder.add(dataRows, cc.xy(3, 5));
+        builder.addLabel("Fetch Offset, Rows:", cc.xy(1, 7));
+        builder.add(fetchOffset, cc.xy(3, 7));
+        builder.addLabel("Fetch Limit, Rows:", cc.xy(1, 9));
+        builder.add(fetchLimit, cc.xy(3, 9));
+        builder.addLabel("Page Size:", cc.xy(1, 11));
+        builder.add(pageSize, cc.xy(3, 11));
 
         this.setLayout(new BorderLayout());
         this.add(builder.getPanel(), BorderLayout.CENTER);

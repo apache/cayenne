@@ -45,7 +45,7 @@ public class SQLTemplateTabbedView extends ProjectTabbedPane {
 
     private void initLayout() {
         setTabPlacement(JTabbedPane.TOP);
-        addTab("General", new JScrollPane(mainTab));
+        addTab("SQLTemplate", new JScrollPane(mainTab));
         addTab("SQL Scripts", scriptsTab);
         addTab("Prefetches", prefetchTab);
     }

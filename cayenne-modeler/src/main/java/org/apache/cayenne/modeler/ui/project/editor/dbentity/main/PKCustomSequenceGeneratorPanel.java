@@ -27,6 +27,7 @@ import org.apache.cayenne.modeler.event.model.DbEntityEvent;
 import org.apache.cayenne.modeler.toolkit.text.CMUndoableTextField;
 import org.apache.cayenne.modeler.project.ProjectSession;
 import java.util.Objects;
+import org.apache.cayenne.modeler.ui.project.editor.EditorForm;
 import org.apache.cayenne.validation.ValidationException;
 
 import javax.swing.*;
@@ -56,10 +57,10 @@ public class PKCustomSequenceGeneratorPanel extends PKGeneratorPanel {
         // assemble
 
         DefaultFormBuilder builder = new DefaultFormBuilder(new FormLayout(
-                "right:70dlu, $lcgap, 20dlu, $lcgap, fill:177dlu",
+                EditorForm.LABEL_COLUMN + ", $lcgap, 20dlu, $lcgap, fill:177dlu",
                 ""));
 
-        builder.setDefaultDialogBorder();
+        builder.setBorder(EditorForm.sectionBorder());
 
         builder.append("Sequence Name:", customPKName, 3);
         builder.append("Cached PK Size:", customPKSize);

@@ -16,28 +16,23 @@
  *  specific language governing permissions and limitations
  *  under the License.
  ****************************************************************/
+package org.apache.cayenne.modeler.ui.project.editor.procedure;
 
-package org.apache.cayenne.modeler.ui.project.editor.dbentity.main;
-
-import org.apache.cayenne.map.DbEntity;
 import org.apache.cayenne.modeler.project.ProjectSession;
+import org.apache.cayenne.modeler.toolkit.ProjectTabbedPane;
 
-import java.awt.Dimension;
+import javax.swing.JScrollPane;
+import javax.swing.JTabbedPane;
 
-public class PKDefaultGeneratorPanel extends PKGeneratorPanel {
-    
-    public PKDefaultGeneratorPanel(ProjectSession session) {
+/**
+ * A single-tab container for the {@link ProcedureQueryView}, so that the editor looks like the other
+ * query editors, which are tabbed.
+ */
+public class ProcedureQueryTabbedView extends ProjectTabbedPane {
+
+    public ProcedureQueryTabbedView(ProjectSession session) {
         super(session);
-
-        // nothing to show for the default strategy, so the panel must not take up any space either
-        setPreferredSize(new Dimension(0, 0));
-    }
-
-    public void setDbEntity(DbEntity entity) {
-        // noop
-    }
-
-    protected void onInitInternal(DbEntity entity) {
-        resetStrategy(entity, true, true);
+        setTabPlacement(JTabbedPane.TOP);
+        addTab("ProcedureQuery", new JScrollPane(new ProcedureQueryView(session)));
     }
 }
