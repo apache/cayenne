@@ -245,11 +245,12 @@ abstract class PathChooserComboBoxCellEditor<T extends CMTableModel<?>> extends 
         public Component getListCellRendererComponent(
                 JList<?> list, Object value, int index, boolean isSelected, boolean cellHasFocus) {
 
-            JPanel panel = new JPanel(new BorderLayout());
-            JLabel label = new JLabel(value.toString());
-            panel.add(label);
+            String path = value != null ? value.toString() : "";
 
-            Object currentNode = getCurrentNode(value.toString());
+            JPanel panel = new JPanel(new BorderLayout());
+            panel.add(new JLabel(path));
+
+            Object currentNode = getCurrentNode(path);
             if (treeModel.isLeaf(currentNode)) {
                 ListCellRenderer<Object> leafRenderer = Renderers.listRenderer();
                 return leafRenderer.getListCellRendererComponent(list, value, index, isSelected, cellHasFocus);

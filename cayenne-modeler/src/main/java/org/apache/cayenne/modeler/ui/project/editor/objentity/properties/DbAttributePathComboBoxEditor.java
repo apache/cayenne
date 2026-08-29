@@ -79,8 +79,13 @@ class DbAttributePathComboBoxEditor extends PathChooserComboBoxCellEditor<ObjAtt
     @Override
     protected void initializeCombo(ObjAttributeTableModel model, int row, final JTable table) {
         super.initializeCombo(model, row, table);
-        pathChooser.setSelectedItem(model.getAttribute(row).getDbAttributePath());
-        savePath = this.model.getAttribute(row).getDbAttributePath().value();
+        // the path is null for an attribute that was never mapped to a DbAttribute
+        CayennePath path = model.getAttribute(row).getDbAttributePath();
+        if (path == null) {
+            path = CayennePath.EMPTY_PATH;
+        }
+        pathChooser.setSelectedItem(path);
+        savePath = path.value();
     }
 
 

@@ -62,9 +62,12 @@ public class ObjEntityOps {
         // check individual attributes
         for (ObjAttribute oa : oe.getAttributes()) {
 
+            // the path is null for an attribute that was never mapped to a DbAttribute
+            CayennePath path = oa.getDbAttributePath();
+            String dbAttributePath = path != null ? path.value() : "";
+
             // If flattened attribute
-            String dbAttributePath = oa.getDbAttributePath().value();
-            if (dbAttributePath != null && dbAttributePath.contains(".")) {
+            if (dbAttributePath.contains(".")) {
                 String[] pathSplit = dbAttributePath.split("\\.");
 
                 // If flattened attribute

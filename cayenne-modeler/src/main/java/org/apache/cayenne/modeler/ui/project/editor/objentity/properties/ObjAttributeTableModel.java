@@ -35,14 +35,12 @@ import org.apache.cayenne.modeler.event.display.ObjEntityDisplayEvent;
 import org.apache.cayenne.modeler.event.model.ObjAttributeEvent;
 import org.apache.cayenne.modeler.event.model.ObjEntityEvent;
 import org.apache.cayenne.modeler.project.DbEntityOps;
-import org.apache.cayenne.modeler.toolkit.valuetype.ValueTypes;
 import org.apache.cayenne.modeler.toolkit.table.CMTableModel;
 import org.apache.cayenne.modeler.project.ProjectSession;
 import org.apache.cayenne.project.extension.info.ObjectInfo;
 import java.util.Objects;
 
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.Collections;
 import java.util.Comparator;
 
@@ -224,17 +222,20 @@ public class ObjAttributeTableModel extends CMTableModel<ObjAttribute> {
         String newType = value != null ? value.toString() : null;
         attribute.setType(newType);
 
-        if (Arrays.asList(ValueTypes.getTypes()).contains(newType) || newType == null) {
+        boolean embedded = newType != null && session.entityResolver().getEmbeddable(newType) != null;
+        if (embedded == attribute instanceof EmbeddedAttribute) {
+            // the attribute is already of the right class, no need to rebuild it
             return;
         }
 
         ObjAttribute attributeNew;
-        if (session.entityResolver().getEmbeddable(newType) != null) {
+        if (embedded) {
+            // a fresh EmbeddedAttribute has a null path already, and an embedded attribute maps to no column
             attributeNew = new EmbeddedAttribute();
-            attributeNew.setDbAttributePath((String)null);
         } else {
             attributeNew = new ObjAttribute();
-            attributeNew.setDbAttributePath(attribute.getDbAttributePath().value());
+            // the CayennePath overload, unlike the String one, tolerates a null path
+            attributeNew.setDbAttributePath(attribute.getDbAttributePath());
         }
 
         ObjEntity entity = attribute.getEntity();
