@@ -26,7 +26,6 @@ import org.apache.cayenne.modeler.project.ProjectSession;
 import org.apache.cayenne.modeler.toolkit.AppAction;
 
 import javax.swing.JComboBox;
-import javax.swing.JOptionPane;
 import java.awt.event.ActionEvent;
 import java.util.function.Supplier;
 
@@ -50,23 +49,14 @@ public class AddCgenConfigAction extends AppAction {
 
     @Override
     public void performAction(ActionEvent e) {
-        String name = JOptionPane.showInputDialog(
-                app.getFrame(),
-                "Type the name for new cgenConfiguration",
-                configurationsComboBox.getSelectedItem());
         ProjectSession session = app.getFrame().getProjectSession();
+        CgenConfigList cgenConfigList = cgenConfigListProvider.get();
+
         CgenConfiguration configuration = CgenOps.createDefaultCgenConfiguration(session.getSelectedDataMap(), session);
-        if (name != null) {
-            CgenConfigList cgenConfigList = cgenConfigListProvider.get();
-            if (!cgenConfigList.isExist(name) && !name.isEmpty()) {
-                configuration.setName(name);
-                cgenConfigList.add(configuration);
-                configurationsComboBox.addItem(name);
-                configurationsComboBox.setSelectedItem(name);
-            } else {
-                JOptionPane.showMessageDialog(app.getFrame(),
-                        "Can't create new configuration, same name is already exist or empty");
-            }
-        }
+        configuration.setName(CgenOps.createUniqueConfigName(cgenConfigList));
+        cgenConfigList.add(configuration);
+
+        configurationsComboBox.addItem(configuration.getName());
+        configurationsComboBox.setSelectedItem(configuration.getName());
     }
 }

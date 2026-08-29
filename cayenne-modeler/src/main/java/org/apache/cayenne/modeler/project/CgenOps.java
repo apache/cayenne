@@ -19,6 +19,8 @@
 
 package org.apache.cayenne.modeler.project;
 
+import org.apache.cayenne.CayenneRuntimeException;
+import org.apache.cayenne.gen.CgenConfigList;
 import org.apache.cayenne.gen.CgenConfiguration;
 import org.apache.cayenne.gen.internal.Utils;
 import org.apache.cayenne.map.DataMap;
@@ -34,6 +36,25 @@ import java.util.prefs.Preferences;
 import java.util.Optional;
 
 public class CgenOps {
+
+    static final int MAX_NAME_ATTEMPTS = 1000;
+
+    /**
+     * Returns a name for a new configuration that doesn't clash with the existing ones, following the
+     * same "Default", "Default1", "Default2" pattern used for newly created ObjEntities. Gives up with
+     * an exception after {@link #MAX_NAME_ATTEMPTS} suffixes.
+     */
+    public static String createUniqueConfigName(CgenConfigList configurations) {
+        String name = CgenConfigList.DEFAULT_CONFIG_NAME;
+        for (int i = 1; configurations.isExist(name); i++) {
+            if (i > MAX_NAME_ATTEMPTS) {
+                throw new CayenneRuntimeException("Can't create a unique cgen configuration name after %d attempts",
+                        MAX_NAME_ATTEMPTS);
+            }
+            name = CgenConfigList.DEFAULT_CONFIG_NAME + i;
+        }
+        return name;
+    }
 
     public static CgenConfiguration createDefaultCgenConfiguration(DataMap map, ProjectSession session) {
         CgenConfiguration configuration = CgenConfiguration.createDefault(map, baseDir(session).orElse(null));

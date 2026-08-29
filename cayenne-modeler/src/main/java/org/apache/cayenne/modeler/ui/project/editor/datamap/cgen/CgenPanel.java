@@ -55,6 +55,8 @@ import org.slf4j.LoggerFactory;
 import org.slf4j.helpers.NOPLogger;
 
 import javax.swing.*;
+import javax.swing.event.ListDataEvent;
+import javax.swing.event.ListDataListener;
 import java.awt.*;
 import java.nio.file.Path;
 import java.util.Collection;
@@ -82,6 +84,7 @@ public class CgenPanel extends ProjectPanel implements ObjEntityListener, Embedd
     private final JComboBox<String> configurationsComboBox;
     private final JButton addConfigBtn;
     private final JButton editConfigBtn;
+    private final RemoveCgenConfigAction removeConfigAction;
     private final JButton removeConfigBtn;
 
     private CgenConfigList cgenConfigList;
@@ -105,7 +108,8 @@ public class CgenPanel extends ProjectPanel implements ObjEntityListener, Embedd
         this.configurationsComboBox = new JComboBox<>();
         this.addConfigBtn = new AddCgenConfigAction(app, configurationsComboBox, () -> cgenConfigList).buildButton();
         this.editConfigBtn = new EditCgenConfigAction(app, configurationsComboBox, () -> cgenConfigList, () -> configuration).buildButton();
-        this.removeConfigBtn = new RemoveCgenConfigAction(app, configurationsComboBox, () -> cgenConfigList, () -> configuration).buildButton();
+        this.removeConfigAction = new RemoveCgenConfigAction(app, configurationsComboBox, () -> cgenConfigList, () -> configuration);
+        this.removeConfigBtn = removeConfigAction.buildButton();
 
         this.cgenConfigPanel = new CgenConfigPanel(session, this);
         this.classesSelector = new CgenArtifactSelectorPanel(this);
@@ -200,6 +204,13 @@ public class CgenPanel extends ProjectPanel implements ObjEntityListener, Embedd
         return modified;
     }
 
+    /**
+     * The last configuration can't be removed, so the button is only active when there is a choice.
+     */
+    private void updateRemoveConfigButton() {
+        removeConfigAction.setEnabled(configurationsComboBox.getItemCount() > 1);
+    }
+
     public void updateGenerateButton() {
         boolean isOutputPathValid = cgenConfigPanel.isDataValid();
         generateButton.setEnabled(!selectionModel.isModelEmpty() && isOutputPathValid);
@@ -288,14 +299,15 @@ public class CgenPanel extends ProjectPanel implements ObjEntityListener, Embedd
 
     private JPanel buildConfigurationsPanel() {
         FormLayout layout = new FormLayout(
-                "109dlu,$lcgap,pref,$lcgap,pref,$lcgap,pref",
+                "pref,$lcgap,109dlu,$lcgap,pref,$lcgap,pref,$lcgap,pref",
                 "p");
         PanelBuilder builder = new PanelBuilder(layout);
         CellConstraints cc = new CellConstraints();
-        builder.add(configurationsComboBox, cc.xy(1, 1));
-        builder.add(addConfigBtn, cc.xy(3, 1));
-        builder.add(editConfigBtn, cc.xy(5, 1));
-        builder.add(removeConfigBtn, cc.xy(7, 1));
+        builder.addLabel("Cgen Configuration:", cc.xy(1, 1));
+        builder.add(configurationsComboBox, cc.xy(3, 1));
+        builder.add(addConfigBtn, cc.xy(5, 1));
+        builder.add(editConfigBtn, cc.xy(7, 1));
+        builder.add(removeConfigBtn, cc.xy(9, 1));
         return builder.getPanel();
     }
 
@@ -330,6 +342,8 @@ public class CgenPanel extends ProjectPanel implements ObjEntityListener, Embedd
 
     private void initBindings() {
         generateButton.addActionListener(e -> generateAction());
+        configurationsComboBox.getModel().addListDataListener(new ConfigCountListener());
+        updateRemoveConfigButton();
         configurationsComboBox.addActionListener(e -> {
             // ignore events fired while initFromModel() is rebuilding the combo box
             if (initFromModel) {
@@ -537,6 +551,27 @@ public class CgenPanel extends ProjectPanel implements ObjEntityListener, Embedd
         if (cgenConfigPanel != null && configuration != null) {
             cgenConfigPanel.getOutputFolder()
                     .setText(configuration.outputDirectory().map(Path::toString).orElse(""));
+        }
+    }
+
+    /**
+     * Keeps the "remove configuration" button in sync with the number of configurations.
+     */
+    private final class ConfigCountListener implements ListDataListener {
+
+        @Override
+        public void intervalAdded(ListDataEvent e) {
+            updateRemoveConfigButton();
+        }
+
+        @Override
+        public void intervalRemoved(ListDataEvent e) {
+            updateRemoveConfigButton();
+        }
+
+        @Override
+        public void contentsChanged(ListDataEvent e) {
+            updateRemoveConfigButton();
         }
     }
 

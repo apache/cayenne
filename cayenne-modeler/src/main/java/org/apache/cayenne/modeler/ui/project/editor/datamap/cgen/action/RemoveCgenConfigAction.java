@@ -22,9 +22,9 @@ import org.apache.cayenne.gen.CgenConfigList;
 import org.apache.cayenne.gen.CgenConfiguration;
 import org.apache.cayenne.modeler.Application;
 import org.apache.cayenne.modeler.toolkit.AppAction;
+import org.apache.cayenne.modeler.ui.confirmremove.ConfirmRemoveDialog;
 
 import javax.swing.JComboBox;
-import javax.swing.JOptionPane;
 import java.awt.event.ActionEvent;
 import java.util.function.Supplier;
 
@@ -41,7 +41,6 @@ public class RemoveCgenConfigAction extends AppAction {
         this.configurationsComboBox = configurationsComboBox;
         this.cgenConfigListProvider = cgenConfigListProvider;
         this.cgenConfigurationProvider = cgenConfigurationProvider;
-        setAlwaysOn(true);
     }
 
     @Override
@@ -51,19 +50,12 @@ public class RemoveCgenConfigAction extends AppAction {
 
     @Override
     public void performAction(ActionEvent e) {
-        int result = JOptionPane.showConfirmDialog(app.getFrame(),
-                "Configuration will be removed\n               Are you sure?",
-                "Delete cgenConfiguration",
-                JOptionPane.YES_NO_OPTION);
-        if (result == JOptionPane.OK_OPTION) {
-            if (configurationsComboBox.getItemCount() > 1) {
-                CgenConfigList cgenConfigList = cgenConfigListProvider.get();
-                cgenConfigList.removeByName(cgenConfigurationProvider.get().getName());
-                configurationsComboBox.removeItem(configurationsComboBox.getSelectedItem());
-                configurationsComboBox.setSelectedIndex(0);
-            } else {
-                JOptionPane.showMessageDialog(app.getFrame(), "At least one configuration must exist");
-            }
+        CgenConfiguration configuration = cgenConfigurationProvider.get();
+        if (new ConfirmRemoveDialog(app, true).shouldDelete("Cgen Configuration", configuration.getName())) {
+            CgenConfigList cgenConfigList = cgenConfigListProvider.get();
+            cgenConfigList.removeByName(configuration.getName());
+            configurationsComboBox.removeItem(configurationsComboBox.getSelectedItem());
+            configurationsComboBox.setSelectedIndex(0);
         }
     }
 }

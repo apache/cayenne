@@ -60,8 +60,7 @@ public class ConfirmRemoveDialog {
 
         shouldDelete = DELETE.equals(pane.getValue());
 
-        // If the user clicks "cancel" or window close button, we'll just ignore whatever's in the checkbox because
-        // it's non-sensical.
+        // If the user clicks "cancel" or window close button, we'll just ignore whatever's in the checkbox
         if (shouldDelete) {
             new GeneralPrefs(application.getPrefsLocator().appNode(GeneralPrefs.NODE)).setNoDeletePrompt(neverPromptAgainBox.isSelected());
         }
