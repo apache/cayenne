@@ -203,7 +203,11 @@ abstract class PathChooserComboBoxCellEditor<T extends CMTableModel<?>> extends 
 
     @Override
     public boolean stopCellEditing() {
-        pathChooser.actionPerformed(new ActionEvent(this, 0, ""));
+        // "pathChooser" is null when the cell editor was never initialized, i.e. when the ObjEntity has no
+        // DbEntity and "getTableCellEditorComponent()" returned a placeholder label instead of the combo box
+        if (pathChooser != null) {
+            pathChooser.actionPerformed(new ActionEvent(this, 0, ""));
+        }
         fireEditingStopped();
         return true;
     }

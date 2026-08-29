@@ -17,6 +17,7 @@ CAY-2998 Modeler: clickabe "Target" column to navigate relationships
 CAY-2999 Modeler: A restricted method in java.lang.System has been called
 CAY-3000 Modeler: unifying the main views of all model objects
 CAY-3001 Modeler: Auto-increment attribute is not picked up
+CAY-3002 Modeler: NPE after clicking path chooser
 
 ----------------------------------
 Release: 5.0-M3

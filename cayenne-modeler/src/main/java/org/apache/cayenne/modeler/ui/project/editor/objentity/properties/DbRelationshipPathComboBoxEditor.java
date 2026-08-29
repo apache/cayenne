@@ -57,6 +57,8 @@ class DbRelationshipPathComboBoxEditor extends PathChooserComboBoxCellEditor<Obj
         this.table = table;
         treeModel = createTreeModelForComboBox(row);
         if (treeModel == null) {
+            // no combo box for this cell; drop the one left over from a previously edited row
+            pathChooser = null;
             return new JLabel("You should select table for this ObjectEntity");
         }
         initializeCombo(model, row, table);
