@@ -18,6 +18,7 @@
  ****************************************************************/
 package org.apache.cayenne.modeler.ui.project.editor.objentity.properties;
 
+import org.apache.cayenne.configuration.DataChannelDescriptor;
 import org.apache.cayenne.map.DeleteRule;
 import org.apache.cayenne.map.ObjEntity;
 import org.apache.cayenne.map.ObjRelationship;
@@ -55,6 +56,7 @@ import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
+import java.awt.event.MouseMotionAdapter;
 import java.util.List;
 
 /**
@@ -123,6 +125,22 @@ public class ObjRelationshipPanel extends ProjectPanel implements ObjEntityDispl
                     }
                 }
             }
+
+            @Override
+            public void mouseClicked(MouseEvent e) {
+                if (e.getClickCount() == 2 && isTargetColumn(table.columnAtPoint(e.getPoint()))) {
+                    openTarget(targetAt(table.rowAtPoint(e.getPoint())));
+                }
+            }
+        });
+
+        table.addMouseMotionListener(new MouseMotionAdapter() {
+            @Override
+            public void mouseMoved(MouseEvent e) {
+                boolean link = isTargetColumn(table.columnAtPoint(e.getPoint()))
+                        && targetAt(table.rowAtPoint(e.getPoint())) != null;
+                table.setCursor(Cursor.getPredefinedCursor(link ? Cursor.HAND_CURSOR : Cursor.DEFAULT_CURSOR));
+            }
         });
 
         editMenu.addActionListener(this::edit);
@@ -141,6 +159,35 @@ public class ObjRelationshipPanel extends ProjectPanel implements ObjEntityDispl
 
     public CMTable getTable() {
         return table;
+    }
+
+    private boolean isTargetColumn(int viewColumn) {
+        return viewColumn >= 0
+                && table.getColumnModel().getColumn(viewColumn).getModelIndex() == ObjRelationshipTableModel.REL_TARGET;
+    }
+
+    private ObjEntity targetAt(int row) {
+        if (row < 0 || !(table.getModel() instanceof ObjRelationshipTableModel model)) {
+            return null;
+        }
+        ObjRelationship relationship = model.getRelationship(row);
+        return relationship != null ? relationship.getTargetEntity() : null;
+    }
+
+    /**
+     * Navigates to the entity on the other end of the relationship.
+     */
+    private void openTarget(ObjEntity target) {
+        if (target == null) {
+            return;
+        }
+
+        DataChannelDescriptor domain = (DataChannelDescriptor) session.project().getRootNode();
+        session.displayObjEntity(new ObjEntityDisplayEvent(
+                app.getFrame().getProjectView().getProjectTreeView(),
+                domain,
+                target.getDataMap(),
+                target));
     }
 
     /**

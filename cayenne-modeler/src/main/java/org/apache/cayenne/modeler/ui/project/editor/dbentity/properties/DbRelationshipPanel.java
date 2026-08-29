@@ -18,6 +18,7 @@
  ****************************************************************/
 package org.apache.cayenne.modeler.ui.project.editor.dbentity.properties;
 
+import org.apache.cayenne.configuration.DataChannelDescriptor;
 import org.apache.cayenne.map.DbEntity;
 import org.apache.cayenne.map.DbRelationship;
 import org.apache.cayenne.map.EntityResolver;
@@ -55,6 +56,9 @@ import javax.swing.table.TableCellRenderer;
 import javax.swing.table.TableColumn;
 import java.awt.*;
 import java.awt.event.ActionEvent;
+import java.awt.event.MouseAdapter;
+import java.awt.event.MouseEvent;
+import java.awt.event.MouseMotionAdapter;
 import java.util.List;
 
 /**
@@ -100,6 +104,24 @@ public class DbRelationshipPanel extends ProjectPanel implements DbEntityDisplay
     }
 
     private void initBindings() {
+        table.addMouseListener(new MouseAdapter() {
+            @Override
+            public void mouseClicked(MouseEvent e) {
+                if (e.getClickCount() == 2 && isTargetColumn(table.columnAtPoint(e.getPoint()))) {
+                    openTarget(targetAt(table.rowAtPoint(e.getPoint())));
+                }
+            }
+        });
+
+        table.addMouseMotionListener(new MouseMotionAdapter() {
+            @Override
+            public void mouseMoved(MouseEvent e) {
+                boolean link = isTargetColumn(table.columnAtPoint(e.getPoint()))
+                        && targetAt(table.rowAtPoint(e.getPoint())) != null;
+                table.setCursor(Cursor.getPredefinedCursor(link ? Cursor.HAND_CURSOR : Cursor.DEFAULT_CURSOR));
+            }
+        });
+
         session.addDbEntityDisplayListener(this);
         session.addDbEntityListener(this);
         session.addDbRelationshipListener(this);
@@ -116,6 +138,35 @@ public class DbRelationshipPanel extends ProjectPanel implements DbEntityDisplay
 
     public CMTable getTable() {
         return table;
+    }
+
+    private boolean isTargetColumn(int viewColumn) {
+        return viewColumn >= 0
+                && table.getColumnModel().getColumn(viewColumn).getModelIndex() == DbRelationshipTableModel.TARGET;
+    }
+
+    private DbEntity targetAt(int row) {
+        if (row < 0 || !(table.getModel() instanceof DbRelationshipTableModel model)) {
+            return null;
+        }
+        DbRelationship relationship = model.getRelationship(row);
+        return relationship != null ? relationship.getTargetEntity() : null;
+    }
+
+    /**
+     * Navigates to the entity on the other end of the relationship.
+     */
+    private void openTarget(DbEntity target) {
+        if (target == null) {
+            return;
+        }
+
+        DataChannelDescriptor domain = (DataChannelDescriptor) session.project().getRootNode();
+        session.displayDbEntity(new DbEntityDisplayEvent(
+                app.getFrame().getProjectView().getProjectTreeView(),
+                domain,
+                target.getDataMap(),
+                target));
     }
 
     @Override
