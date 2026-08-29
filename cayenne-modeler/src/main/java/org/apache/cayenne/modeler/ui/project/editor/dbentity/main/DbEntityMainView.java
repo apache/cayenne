@@ -26,6 +26,8 @@ import org.apache.cayenne.map.DbAttribute;
 import org.apache.cayenne.map.DbEntity;
 import org.apache.cayenne.modeler.event.display.DbEntityDisplayEvent;
 import org.apache.cayenne.modeler.event.display.DbEntityDisplayListener;
+import org.apache.cayenne.modeler.event.model.DbAttributeEvent;
+import org.apache.cayenne.modeler.event.model.DbAttributeListener;
 import org.apache.cayenne.modeler.event.model.DbEntityEvent;
 import org.apache.cayenne.modeler.project.ProjectSession;
 import org.apache.cayenne.modeler.service.action.GlobalActions;
@@ -47,7 +49,8 @@ import java.awt.*;
 import java.util.EventObject;
 import java.util.Objects;
 
-public class DbEntityMainView extends ProjectPanel implements ExistingSelectionProcessor, DbEntityDisplayListener {
+public class DbEntityMainView extends ProjectPanel
+        implements ExistingSelectionProcessor, DbEntityDisplayListener, DbAttributeListener {
 
     static final String PK_DEFAULT_GENERATOR = "Cayenne-Generated (Default)";
     static final String PK_DB_GENERATOR = "Database-Generated";
@@ -145,6 +148,18 @@ public class DbEntityMainView extends ProjectPanel implements ExistingSelectionP
         add(mainPanel, BorderLayout.CENTER);
     }
 
+    /**
+     * Returns the PK generator card currently in front of the CardLayout, or null if none is showing.
+     */
+    private PKGeneratorPanel visiblePKGeneratorPanel() {
+        for (Component card : pkGeneratorDetail.getComponents()) {
+            if (card.isVisible()) {
+                return (PKGeneratorPanel) card;
+            }
+        }
+        return null;
+    }
+
     private void showPKGeneratorDetail(String type) {
         pkGeneratorDetailLayout.show(pkGeneratorDetail, type);
         // cards differ in height, so the panels below have to be laid out again
@@ -158,15 +173,12 @@ public class DbEntityMainView extends ProjectPanel implements ExistingSelectionP
         qualifier.addCommitListener(this::setQualifier);
         comment.addCommitListener(this::setComment);
         session.addDbEntityDisplayListener(this);
+        session.addDbAttributeListener(this);
         pkGeneratorType.addItemListener(e -> {
             showPKGeneratorDetail((String) pkGeneratorType.getSelectedItem());
-            for (int i = 0; i < pkGeneratorDetail.getComponentCount(); i++) {
-                if (pkGeneratorDetail.getComponent(i).isVisible()) {
-                    DbEntity entity = session.getSelectedDbEntity();
-                    PKGeneratorPanel panel = (PKGeneratorPanel) pkGeneratorDetail.getComponent(i);
-                    panel.onInit(entity);
-                    break;
-                }
+            PKGeneratorPanel panel = visiblePKGeneratorPanel();
+            if (panel != null) {
+                panel.onInit(session.getSelectedDbEntity());
             }
         });
     }
@@ -227,6 +239,40 @@ public class DbEntityMainView extends ProjectPanel implements ExistingSelectionP
         } else {
             toolBar.getComponentAtIndex(4).setEnabled(true);
             toolBar.getComponentAtIndex(5).setEnabled(true);
+        }
+    }
+
+    @Override
+    public void dbAttributeAdded(DbAttributeEvent e) {
+        refreshPKGenerator(e);
+    }
+
+    @Override
+    public void dbAttributeChanged(DbAttributeEvent e) {
+        refreshPKGenerator(e);
+    }
+
+    @Override
+    public void dbAttributeRemoved(DbAttributeEvent e) {
+        refreshPKGenerator(e);
+    }
+
+    /**
+     * The PK generator panels are driven by the entity attributes, so they must be resynced whenever
+     * attributes change, and not just on entity selection. Without this the "Auto Increment" column
+     * list goes stale as soon as PKs are added or removed from the Properties tab.
+     */
+    private void refreshPKGenerator(DbAttributeEvent e) {
+        DbEntity entity = session.getSelectedDbEntity();
+
+        // attributes of some other entity, or a non-DbEntity node is selected
+        if (entity == null || e.getEntity() != entity) {
+            return;
+        }
+
+        PKGeneratorPanel panel = visiblePKGeneratorPanel();
+        if (panel != null) {
+            panel.onInit(entity);
         }
     }
 
