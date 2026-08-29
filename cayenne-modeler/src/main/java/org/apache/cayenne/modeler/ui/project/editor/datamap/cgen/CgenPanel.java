@@ -75,7 +75,7 @@ public class CgenPanel extends ProjectPanel implements ObjEntityListener, Embedd
 
     private final Set<ConfigurationNode> classes;
     private final SelectionModel selectionModel;
-    private final CgenArtefactSelectorPanel classesSelector;
+    private final CgenArtifactSelectorPanel classesSelector;
     private final CgenConfigPanel cgenConfigPanel;
 
     private final JButton generateButton;
@@ -108,7 +108,7 @@ public class CgenPanel extends ProjectPanel implements ObjEntityListener, Embedd
         this.removeConfigBtn = new RemoveCgenConfigAction(app, configurationsComboBox, () -> cgenConfigList, () -> configuration).buildButton();
 
         this.cgenConfigPanel = new CgenConfigPanel(session, this);
-        this.classesSelector = new CgenArtefactSelectorPanel(this);
+        this.classesSelector = new CgenArtifactSelectorPanel(this);
 
         initLayout();
         initBindings();
@@ -232,9 +232,9 @@ public class CgenPanel extends ProjectPanel implements ObjEntityListener, Embedd
         initConfigurationsComboBox();
         setConfiguration((String) configurationsComboBox.getSelectedItem());
         cgenConfigPanel.initForm(configuration);
+        classesSelector.validate(classes);
         classesSelector.startup();
         initFromModel = false;
-        classesSelector.validate(classes);
     }
 
     /**
@@ -338,8 +338,8 @@ public class CgenPanel extends ProjectPanel implements ObjEntityListener, Embedd
             selectionModel.clearAll();
             setConfiguration((String) configurationsComboBox.getSelectedItem());
             cgenConfigPanel.initForm(configuration);
-            classesSelector.initBindings();
             classesSelector.validate(classes);
+            classesSelector.refresh();
         });
         generatorSelectedAction();
     }

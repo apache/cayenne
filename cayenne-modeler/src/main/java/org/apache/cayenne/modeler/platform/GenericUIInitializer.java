@@ -38,7 +38,6 @@ public class GenericUIInitializer implements UIInitializer {
     protected void overrideUIDefaults() {
         Color darkGrey = new Color(203, 203, 203);
 
-        UIManager.put("CheckBoxHeader.border", BorderFactory.createEmptyBorder(0, 15, 0, 0));
         UIManager.put("CheckBoxMenuItem.selectionBackground", darkGrey);
         UIManager.put("CheckBoxMenuItem.selectionForeground", Color.BLACK);
         UIManager.put("MenuItem.selectionBackground", darkGrey);
