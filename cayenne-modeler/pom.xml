@@ -113,6 +113,9 @@
 		"cayenne-assembly". Bound to "verify" rather than "package", as "japp" bundles the module's
 		own jar into the launcher, and same-phase plugin ordering would not guarantee it exists yet.
 		Each platform gets its own directory, so any combination of the profiles can be active at once.
+
+		All three launchers grant FlatLaf native access, silencing the JDK 24+ warning about its
+		call to the restricted "System::load". So what is needed is "enable-native-access=ALL-UNNAMED"
 	-->
 	<profiles>
 		<!-- GENERIC cross-platform launcher: a runnable "CayenneModeler.jar". Builds on any OS -->
@@ -135,6 +138,9 @@
 									<name>CayenneModeler</name>
 									<mainClass>org.apache.cayenne.modeler.Main</mainClass>
 									<os>java</os>
+									<manifestEntries>
+										<Enable-Native-Access>ALL-UNNAMED</Enable-Native-Access>
+									</manifestEntries>
 								</configuration>
 							</execution>
 						</executions>
@@ -166,7 +172,7 @@
 									<icon>src/japplication/resources/CayenneModeler.icns</icon>
 									<os>mac</os>
 									<jvm0>21</jvm0>
-									<jvm0Options>-Xmx500m -Dapple.laf.useScreenMenuBar=true</jvm0Options>
+									<jvm0Options>-Xmx500m -Dapple.laf.useScreenMenuBar=true --enable-native-access=ALL-UNNAMED</jvm0Options>
 								</configuration>
 							</execution>
 						</executions>
@@ -198,7 +204,7 @@
 									<icon>src/japplication/resources/CayenneModeler.ico</icon>
 									<os>windows</os>
 									<jvm0>21</jvm0>
-									<jvm0Options>-Xmx500m</jvm0Options>
+									<jvm0Options>-Xmx500m --enable-native-access=ALL-UNNAMED</jvm0Options>
 								</configuration>
 							</execution>
 						</executions>
