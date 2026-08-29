@@ -106,7 +106,7 @@ public class DbRelationshipDialog extends ProjectDialog {
     }
 
     private DbRelationshipDialog(ProjectSession session, Window owner, DbRelationship relationship, boolean create) {
-        super(session, owner, "Create dbRelationship", ModalityType.APPLICATION_MODAL);
+        super(session, owner, "Create DbRelationship", ModalityType.APPLICATION_MODAL);
 
         if (relationship.getSourceEntity() == null) {
             throw new CayenneRuntimeException("Null source entity: %s", relationship);
@@ -148,33 +148,34 @@ public class DbRelationshipDialog extends ProjectDialog {
         PanelBuilder builder = new PanelBuilder(
                 new FormLayout(
                         "right:max(50dlu;pref), $lcgap, fill:min(150dlu;pref), $lcgap, fill:min(50dlu;pref)",
-                        "p, $rgap, p, $rgap, p, $rgap, p, $rgap, p, $rgap, p, $rgap, p, $rgap, " +
-                                "p, $rgap, p, $pgap, p, $rgap, top:14dlu, $rgap, top:p:grow"));
+                        "p, $rgap, p, $rgap, p, $rgap, p, $rgap, p, $rgap, p, $pgap, p, $rgap, top:14dlu, $rgap, top:p:grow"));
         builder.setDefaultDialogBorder();
 
-        builder.addSeparator("Create dbRelationship", cc.xywh(1, 1, 5, 1));
-        builder.addLabel("Relationship Name:", cc.xy(1, 3));
-        builder.add(name, cc.xywh(3, 3, 1, 1));
-        builder.addLabel("Source Entity:", cc.xy(1, 5));
-        builder.add(sourceName, cc.xywh(3, 5, 1, 1));
-        builder.addLabel("Target Entity:", cc.xy(1, 7));
-        builder.add(targetEntities, cc.xywh(3, 7, 1, 1));
-        builder.addLabel("To Dep PK:", cc.xy(1, 9));
-        builder.add(toDepPk, cc.xywh(3, 9, 1, 1));
-        builder.addLabel("To Many:", cc.xy(1, 11));
-        builder.add(toMany, cc.xywh(3, 11, 1, 1));
-        builder.addLabel("Comment:", cc.xy(1, 13));
-        builder.add(comment, cc.xywh(3, 13, 1, 1));
-        builder.addSeparator("DbRelationship Information", cc.xywh(1, 15, 5, 1));
-        builder.addLabel("Reverse Relationship Name:", cc.xy(1, 17));
-        builder.add(reverseName, cc.xywh(3, 17, 1, 1));
-        builder.addSeparator("Joins", cc.xywh(1, 19, 5, 1));
-        builder.add(new JScrollPane(table), cc.xywh(1, 21, 3, 3, "fill, fill"));
+        builder.addLabel("Relationship Name:", cc.xy(1, 1));
+        builder.add(name, cc.xywh(3, 1, 1, 1));
+        builder.addLabel("Source Entity:", cc.xy(1, 3));
+        builder.add(sourceName, cc.xywh(3, 3, 1, 1));
+        builder.addLabel("Target Entity:", cc.xy(1, 5));
+        builder.add(targetEntities, cc.xywh(3, 5, 1, 1));
+        JPanel flags = new JPanel(new FlowLayout(FlowLayout.LEADING, 0, 0));
+        flags.add(toMany);
+        flags.add(Box.createHorizontalStrut(20));
+        flags.add(new JLabel("To Dep PK:"));
+        flags.add(Box.createHorizontalStrut(6));
+        flags.add(toDepPk);
+        builder.addLabel("To Many:", cc.xy(1, 7));
+        builder.add(flags, cc.xywh(3, 7, 3, 1));
+        builder.addLabel("Comment:", cc.xy(1, 9));
+        builder.add(comment, cc.xywh(3, 9, 1, 1));
+        builder.addLabel("Reverse Relationship Name:", cc.xy(1, 11));
+        builder.add(reverseName, cc.xywh(3, 11, 1, 1));
+        builder.addSeparator("Joins", cc.xywh(1, 13, 5, 1));
+        builder.add(new JScrollPane(table), cc.xywh(1, 15, 3, 3, "fill, fill"));
 
         JPanel joinButtons = new JPanel(new FlowLayout(FlowLayout.LEADING));
         joinButtons.add(addButton);
         joinButtons.add(removeButton);
-        builder.add(joinButtons, cc.xywh(5, 21, 1, 3));
+        builder.add(joinButtons, cc.xywh(5, 15, 1, 3));
 
         getContentPane().add(builder.getPanel(), BorderLayout.CENTER);
         getContentPane().add(new CMButtonPanel(cancelButton, saveButton), BorderLayout.SOUTH);
