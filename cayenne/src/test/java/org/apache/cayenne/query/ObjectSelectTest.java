@@ -59,7 +59,7 @@ public class ObjectSelectTest {
 
 	@Test
 	public void query_RootType_WithQualifier() {
-		ObjectSelect<Artist> q = ObjectSelect.query(Artist.class, ExpressionFactory.matchExp("a", "A"));
+		ObjectSelect<Artist> q = ObjectSelect.query(Artist.class).where(ExpressionFactory.matchExp("a", "A"));
 		assertNotNull(q);
 		assertEquals("a = \"A\"", q.getWhere().toString());
 		assertFalse(q.isFetchingDataRows());

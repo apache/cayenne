@@ -65,7 +65,8 @@ public class ObjectSelect_SubqueryIT {
     @Test
     public void selectQuery_simpleExists() {
         long count = ObjectSelect.query(Artist.class)
-                .where(ExpressionFactory.exists(ObjectSelect.query(Painting.class, Painting.PAINTING_TITLE.like("painting%"))))
+                .where(ExpressionFactory.exists(ObjectSelect.query(Painting.class)
+                        .where(Painting.PAINTING_TITLE.like("painting%"))))
                 .selectCount(context);
         assertEquals(20L, count);
     }
@@ -122,7 +123,7 @@ public class ObjectSelect_SubqueryIT {
         Expression exp = Painting.PAINTING_TITLE.like("painting%")
                 .andExp(ExpressionFactory.exists(ObjectSelect.query(Gallery.class)));
         long count = ObjectSelect.query(Artist.class)
-                .where(ExpressionFactory.exists(ObjectSelect.query(Painting.class, exp)))
+                .where(ExpressionFactory.exists(ObjectSelect.query(Painting.class).where(exp)))
                 .selectCount(context);
         assertEquals(20L, count);
     }
@@ -133,11 +134,11 @@ public class ObjectSelect_SubqueryIT {
                 .andExp(Painting.TO_GALLERY.enclosing().eq(Gallery.SELF));
 
         Expression exp = Painting.PAINTING_TITLE.like("painting%")
-                .andExp(ExpressionFactory.exists(ObjectSelect.query(Gallery.class, deepNestedExp)))
+                .andExp(ExpressionFactory.exists(ObjectSelect.query(Gallery.class).where(deepNestedExp)))
                 .andExp(Painting.TO_ARTIST.eq(Artist.SELF.enclosing()));
 
         long count = ObjectSelect.query(Artist.class)
-                .where(ExpressionFactory.exists(ObjectSelect.query(Painting.class, exp)))
+                .where(ExpressionFactory.exists(ObjectSelect.query(Painting.class).where(exp)))
                 .selectCount(context);
         assertEquals(5L, count);
     }

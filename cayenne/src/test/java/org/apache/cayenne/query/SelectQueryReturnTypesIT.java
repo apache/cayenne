@@ -70,7 +70,7 @@ public class SelectQueryReturnTypesIT {
         greater.setOperand(0, left);
         greater.setOperand(1, right);
 
-        List<ReturnTypesMap1> objects = ObjectSelect.query(ReturnTypesMap1.class, greater).select(env.context());
+        List<ReturnTypesMap1> objects = ObjectSelect.query(ReturnTypesMap1.class).where(greater).select(env.context());
         assertEquals(2, objects.size());
     }
 
@@ -91,7 +91,7 @@ public class SelectQueryReturnTypesIT {
         equal.setOperand(0, left);
         equal.setOperand(1, right);
 
-        List<ReturnTypesMap1> objects = ObjectSelect.query(ReturnTypesMap1.class, equal).select(env.context());
+        List<ReturnTypesMap1> objects = ObjectSelect.query(ReturnTypesMap1.class).where(equal).select(env.context());
         assertEquals(2, objects.size());
     }
 
@@ -112,7 +112,7 @@ public class SelectQueryReturnTypesIT {
         equal.setOperand(0, left);
         equal.setOperand(1, right);
 
-        List<ReturnTypesMap1> objects = ObjectSelect.query(ReturnTypesMap1.class, equal).select(env.context());
+        List<ReturnTypesMap1> objects = ObjectSelect.query(ReturnTypesMap1.class).where(equal).select(env.context());
         assertEquals(3, objects.size());
     }
 
@@ -133,7 +133,7 @@ public class SelectQueryReturnTypesIT {
         equal.setOperand(0, left);
         equal.setOperand(1, right);
 
-        List<ReturnTypesMap1> objects = ObjectSelect.query(ReturnTypesMap1.class, equal).select(env.context());
+        List<ReturnTypesMap1> objects = ObjectSelect.query(ReturnTypesMap1.class).where(equal).select(env.context());
         assertEquals(1, objects.size());
         assertEquals(4, objects.get(0).getIntegerColumn().intValue());
     }

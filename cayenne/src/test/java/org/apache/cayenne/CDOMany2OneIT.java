@@ -121,7 +121,8 @@ public class CDOMany2OneIT {
 
         Artist a1 = Cayenne.objectForPK(env.context(), Artist.class, 8);
 
-        List<ROPainting> paints = ObjectSelect.query(ROPainting.class, ROPainting.TO_ARTIST.eq(a1)).select(env.context());
+        List<ROPainting> paints = ObjectSelect.query(ROPainting.class)
+                .where(ROPainting.TO_ARTIST.eq(a1)).select(env.context());
         assertEquals(1, paints.size());
 
         ROPainting rop1 = paints.get(0);
@@ -135,7 +136,8 @@ public class CDOMany2OneIT {
 
         Artist a1 = Cayenne.objectForPK(env.context(), Artist.class, 8);
 
-        List<ROPainting> paints = ObjectSelect.query(ROPainting.class, ROPainting.TO_ARTIST.eq(a1)).select(env.context());
+        List<ROPainting> paints = ObjectSelect.query(ROPainting.class)
+                .where(ROPainting.TO_ARTIST.eq(a1)).select(env.context());
         assertEquals(1, paints.size());
 
         ROPainting rop1 = paints.get(0);
@@ -153,7 +155,8 @@ public class CDOMany2OneIT {
         Artist a1 = Cayenne.objectForPK(env.context(), Artist.class, 8);
         Painting p1 = Cayenne.objectForPK(env.context(), Painting.class, 6);
 
-        List<Painting> paints = ObjectSelect.query(Painting.class, Painting.TO_ARTIST.eq(a1)).select(env.context());
+        List<Painting> paints = ObjectSelect.query(Painting.class)
+                .where(Painting.TO_ARTIST.eq(a1)).select(env.context());
         assertEquals(1, paints.size());
         assertSame(p1, paints.get(0));
     }

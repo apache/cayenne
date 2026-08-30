@@ -75,11 +75,11 @@ public class ASTFunctionCallDateIT {
     @Test
     public void currentDate() throws Exception {
         Expression exp = ExpressionFactory.greaterOrEqualExp("dateColumn", new ASTCurrentDate());
-        DateTestEntity res1 = ObjectSelect.query(DateTestEntity.class, exp).selectOne(env.context());
+        DateTestEntity res1 = ObjectSelect.query(DateTestEntity.class).where(exp).selectOne(env.context());
         assertNotNull(res1);
 
         Expression exp2 = ExpressionFactory.lessExp("dateColumn", new ASTCurrentDate());
-        DateTestEntity res2 = ObjectSelect.query(DateTestEntity.class, exp2).selectOne(env.context());
+        DateTestEntity res2 = ObjectSelect.query(DateTestEntity.class).where(exp2).selectOne(env.context());
         assertNotNull(res2);
 
         assertNotEquals(res1, res2);
@@ -88,7 +88,7 @@ public class ASTFunctionCallDateIT {
     @Test
     public void currentTime() throws Exception {
         Expression exp = ExpressionFactory.greaterOrEqualExp("timeColumn", new ASTCurrentTime());
-        List<DateTestEntity> res = ObjectSelect.query(DateTestEntity.class, exp).select(env.context());
+        List<DateTestEntity> res = ObjectSelect.query(DateTestEntity.class).where(exp).select(env.context());
         if(!testDbAdapter.supportsTimeSqlType()) {
             // check only that query is executed without error
             // result will be invalid most likely as DB doesn't support TIME data type
@@ -98,7 +98,7 @@ public class ASTFunctionCallDateIT {
         DateTestEntity res1 = res.get(0);
 
         Expression exp2 = ExpressionFactory.lessExp("timeColumn", new ASTCurrentTime());
-        DateTestEntity res2 = ObjectSelect.query(DateTestEntity.class, exp2).selectOne(env.context());
+        DateTestEntity res2 = ObjectSelect.query(DateTestEntity.class).where(exp2).selectOne(env.context());
         assertNotNull(res2);
 
         assertNotEquals(res1, res2);
@@ -107,11 +107,11 @@ public class ASTFunctionCallDateIT {
     @Test
     public void currentTimestamp() throws Exception {
         Expression exp = ExpressionFactory.greaterOrEqualExp("timestampColumn", new ASTCurrentTimestamp());
-        DateTestEntity res1 = ObjectSelect.query(DateTestEntity.class, exp).selectOne(env.context());
+        DateTestEntity res1 = ObjectSelect.query(DateTestEntity.class).where(exp).selectOne(env.context());
         assertNotNull(res1);
 
         Expression exp2 = ExpressionFactory.lessExp("timestampColumn", new ASTCurrentTimestamp());
-        DateTestEntity res2 = ObjectSelect.query(DateTestEntity.class, exp2).selectOne(env.context());
+        DateTestEntity res2 = ObjectSelect.query(DateTestEntity.class).where(exp2).selectOne(env.context());
         assertNotNull(res2);
 
         assertNotEquals(res1, res2);
@@ -120,14 +120,14 @@ public class ASTFunctionCallDateIT {
     @Test
     public void aSTCurrentDateParse() {
         Expression exp = ExpressionFactory.exp("dateColumn > currentDate()");
-        DateTestEntity res = ObjectSelect.query(DateTestEntity.class, exp).selectOne(env.context());
+        DateTestEntity res = ObjectSelect.query(DateTestEntity.class).where(exp).selectOne(env.context());
         assertNotNull(res);
     }
 
     @Test
     public void aSTCurrentTimeParse() {
         Expression exp = ExpressionFactory.exp("timeColumn > currentTime()");
-        DateTestEntity res = ObjectSelect.query(DateTestEntity.class, exp).selectOne(env.context());
+        DateTestEntity res = ObjectSelect.query(DateTestEntity.class).where(exp).selectOne(env.context());
         if(!testDbAdapter.supportsTimeSqlType()) {
             return;
         }
@@ -137,7 +137,7 @@ public class ASTFunctionCallDateIT {
     @Test
     public void aSTCurrentTimestampParse() {
         Expression exp = ExpressionFactory.exp("timestampColumn > now()");
-        DateTestEntity res = ObjectSelect.query(DateTestEntity.class, exp).selectOne(env.context());
+        DateTestEntity res = ObjectSelect.query(DateTestEntity.class).where(exp).selectOne(env.context());
         assertNotNull(res);
     }
 }

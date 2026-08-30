@@ -103,7 +103,7 @@ public class CAY_115IT {
         createDistinctClobFetchWithToManyJoin();
 
         Expression qual = ExpressionFactory.exp("details.name like 'cd%'");
-        List<?> result = ObjectSelect.query(ClobMaster.class, qual).select(context);
+        List<?> result = ObjectSelect.query(ClobMaster.class).where(qual).select(context);
 
         assertEquals(3, result.size());
     }

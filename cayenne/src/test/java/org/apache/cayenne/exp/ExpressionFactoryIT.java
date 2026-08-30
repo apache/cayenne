@@ -105,11 +105,11 @@ public class ExpressionFactoryIT {
         env.context().commitChanges();
 
         Expression ex1 = ExpressionFactory.likeIgnoreCaseDbExp("ARTIST_NAME", "A*_1", '*');
-        List<Artist> artists = ObjectSelect.query(Artist.class, ex1).select(env.context());
+        List<Artist> artists = ObjectSelect.query(Artist.class).where(ex1).select(env.context());
         assertEquals(1, artists.size());
 
         Expression ex2 = ExpressionFactory.likeExp("artistName", "A*_2", '*');
-        artists = ObjectSelect.query(Artist.class, ex2).select(env.context());
+        artists = ObjectSelect.query(Artist.class).where(ex2).select(env.context());
         assertEquals(1, artists.size());
     }
 
@@ -127,11 +127,11 @@ public class ExpressionFactoryIT {
         env.context().commitChanges();
 
         Expression ex1 = ExpressionFactory.containsExp(Artist.ARTIST_NAME.getName(), "A_1");
-        List<Artist> artists = ObjectSelect.query(Artist.class, ex1).select(env.context());
+        List<Artist> artists = ObjectSelect.query(Artist.class).where(ex1).select(env.context());
         assertEquals(1, artists.size());
 
         Expression ex2 = ExpressionFactory.containsExp(Artist.ARTIST_NAME.getName(), "A%2");
-        artists = ObjectSelect.query(Artist.class, ex2).select(env.context());
+        artists = ObjectSelect.query(Artist.class).where(ex2).select(env.context());
         assertEquals(1, artists.size());
     }
 
@@ -264,18 +264,18 @@ public class ExpressionFactoryIT {
 
         // First version via expression string
         Expression exp1 = exp("length(substring(artistName, 1, 3)) > length(trim(artistName))");
-        res = ObjectSelect.query(Artist.class, exp1).select(env.context());
+        res = ObjectSelect.query(Artist.class).where(exp1).select(env.context());
         assertEquals(0, res.size());
 
         // Second version via FunctionExpressionFactory API
         Expression exp2 = greaterExp(lengthExp(substringExp(Artist.ARTIST_NAME.getExpression(), 1, 3)),
                                      lengthExp(trimExp(Artist.ARTIST_NAME.getExpression())));
-        res = ObjectSelect.query(Artist.class, exp2).select(env.context());
+        res = ObjectSelect.query(Artist.class).where(exp2).select(env.context());
         assertEquals(0, res.size());
 
         // Third version via Property API
         Expression exp3 = Artist.ARTIST_NAME.substring(1, 3).length().gt(Artist.ARTIST_NAME.trim().length());
-        res = ObjectSelect.query(Artist.class, exp3).select(env.context());
+        res = ObjectSelect.query(Artist.class).where(exp3).select(env.context());
         assertEquals(0, res.size());
 
         // Check that all expressions are equal

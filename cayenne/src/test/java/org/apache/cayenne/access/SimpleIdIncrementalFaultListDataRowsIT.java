@@ -109,11 +109,11 @@ public class SimpleIdIncrementalFaultListDataRowsIT {
 
     @Test
     public void indexOf1() {
-        List<DataRow> artists = ObjectSelect.dataRowQuery(Artist.class, Artist.ARTIST_NAME.eq("artist20")).select(context);
+        List<DataRow> artists = ObjectSelect.dataRowQuery(Artist.class).where(Artist.ARTIST_NAME.eq("artist20")).select(context);
 
         assertEquals(1, artists.size());
 
-        DataRow row = artists.get(0);
+        DataRow row = artists.getFirst();
         assertEquals(19, list.indexOf(row));
 
         DataRow clone = new DataRow(row);
@@ -129,7 +129,7 @@ public class SimpleIdIncrementalFaultListDataRowsIT {
         // resolve first page
         list.get(0);
 
-        List<DataRow> artists =  ObjectSelect.dataRowQuery(Artist.class, Artist.ARTIST_NAME.eq("artist2")).select(context);
+        List<DataRow> artists =  ObjectSelect.dataRowQuery(Artist.class).where(Artist.ARTIST_NAME.eq("artist2")).select(context);
 
         assertEquals(1, artists.size());
 
@@ -146,7 +146,7 @@ public class SimpleIdIncrementalFaultListDataRowsIT {
         // resolve first page
         list.get(0);
 
-        List<DataRow> artists = ObjectSelect.dataRowQuery(Artist.class, Artist.ARTIST_NAME.eq("artist3")).select(context);
+        List<DataRow> artists = ObjectSelect.dataRowQuery(Artist.class).where(Artist.ARTIST_NAME.eq("artist3")).select(context);
 
         assertEquals(1, artists.size());
 
@@ -159,7 +159,7 @@ public class SimpleIdIncrementalFaultListDataRowsIT {
 
     @Test
     public void lastIndexOf2() {
-        List<DataRow> artists = ObjectSelect.dataRowQuery(Artist.class, Artist.ARTIST_NAME.eq("artist20")).select(context);
+        List<DataRow> artists = ObjectSelect.dataRowQuery(Artist.class).where(Artist.ARTIST_NAME.eq("artist20")).select(context);
 
         assertEquals(1, artists.size());
 

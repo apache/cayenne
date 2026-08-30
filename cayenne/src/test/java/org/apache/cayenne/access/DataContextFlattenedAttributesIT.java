@@ -164,7 +164,8 @@ public class DataContextFlattenedAttributesIT {
     public void selectCompound2() throws Exception {
         createTestDataSet();
 
-        List<CompoundPainting> objects = ObjectSelect.query(CompoundPainting.class, CompoundPainting.ARTIST_NAME.eq("artist2"))
+        List<CompoundPainting> objects = ObjectSelect.query(CompoundPainting.class)
+                .where(CompoundPainting.ARTIST_NAME.eq("artist2"))
                 .select(context);
 
         assertNotNull(objects);

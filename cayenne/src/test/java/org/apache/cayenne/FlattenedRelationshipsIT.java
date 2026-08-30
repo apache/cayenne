@@ -221,7 +221,8 @@ public class FlattenedRelationshipsIT {
 
         context.invalidateObjects(ft1, ft2, ft3);
 
-        List<FlattenedTest3> results = ObjectSelect.query(FlattenedTest3.class, FlattenedTest3.NAME.eq("FT3Name")).select(context);
+        List<FlattenedTest3> results = ObjectSelect.query(FlattenedTest3.class)
+                .where(FlattenedTest3.NAME.eq("FT3Name")).select(context);
 
         assertEquals(1, results.size());
 

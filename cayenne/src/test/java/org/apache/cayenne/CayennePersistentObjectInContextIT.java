@@ -195,7 +195,7 @@ public class CayennePersistentObjectInContextIT {
 
         tArtist.insert(7, "m6");
 
-        List<Artist> artists = ObjectSelect.query(Artist.class, Artist.ARTIST_NAME.eq("m6")).select(context);
+        List<Artist> artists = ObjectSelect.query(Artist.class).where(Artist.ARTIST_NAME.eq("m6")).select(context);
         assertEquals(1, artists.size());
         Artist o1 = artists.getFirst();
         assertNotNull(o1);
@@ -207,8 +207,10 @@ public class CayennePersistentObjectInContextIT {
 
         tArtist.insert(7, "m6");
 
-        Artist a1 = (Artist) Cayenne.objectForQuery(context, ObjectSelect.query(Artist.class, Artist.ARTIST_NAME.eq("m6")));
-        Artist a2 = (Artist) Cayenne.objectForQuery(context, ObjectSelect.query(Artist.class, Artist.ARTIST_NAME.eq("m6")));
+        Artist a1 = (Artist) Cayenne.objectForQuery(context, ObjectSelect.query(Artist.class)
+                .where(Artist.ARTIST_NAME.eq("m6")));
+        Artist a2 = (Artist) Cayenne.objectForQuery(context, ObjectSelect.query(Artist.class)
+                .where(Artist.ARTIST_NAME.eq("m6")));
 
         assertNotNull(a1);
         assertNotNull(a2);

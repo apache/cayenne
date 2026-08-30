@@ -104,7 +104,7 @@ public class CayennePersistentObjectFlattenedRelIT {
         Artist a1 = Cayenne.objectForPK(env.context(), Artist.class, 33001);
         assertEquals(0, a1.getGroupArray().size());
 
-        List<ArtGroup> results = ObjectSelect.query(ArtGroup.class, ArtGroup.NAME.eq("g1")).select(env.context());
+        List<ArtGroup> results = ObjectSelect.query(ArtGroup.class).where(ArtGroup.NAME.eq("g1")).select(env.context());
         assertEquals(1, results.size());
 
         assertFalse(env.context().hasChanges());
@@ -137,7 +137,7 @@ public class CayennePersistentObjectFlattenedRelIT {
 
         Artist a1 = Cayenne.objectForPK(env.context(), Artist.class, 33001);
 
-        List<ArtGroup> results = ObjectSelect.query(ArtGroup.class, ArtGroup.NAME.eq("g1")).select(env.context());
+        List<ArtGroup> results = ObjectSelect.query(ArtGroup.class).where(ArtGroup.NAME.eq("g1")).select(env.context());
         assertEquals(1, results.size());
 
         ArtGroup group = results.getFirst();
@@ -196,7 +196,7 @@ public class CayennePersistentObjectFlattenedRelIT {
 
         Artist a1 = Cayenne.objectForPK(env.context(), Artist.class, 33001);
 
-        List<ArtGroup> results = ObjectSelect.query(ArtGroup.class, ArtGroup.NAME.eq("g1")).select(env.context());
+        List<ArtGroup> results = ObjectSelect.query(ArtGroup.class).where(ArtGroup.NAME.eq("g1")).select(env.context());
         assertEquals(1, results.size());
 
         ArtGroup group = results.getFirst();

@@ -136,7 +136,7 @@ public class DataContextIT {
 	public void currentSnapshot1() throws Exception {
 		createSingleArtistDataSet();
 
-		Artist artist = ObjectSelect.query(Artist.class, Artist.ARTIST_NAME.eq("artist1")).selectFirst(context);
+		Artist artist = ObjectSelect.query(Artist.class).where(Artist.ARTIST_NAME.eq("artist1")).selectFirst(context);
 
 		DataRow snapshot = context.currentSnapshot(artist);
 		assertEquals(artist.getArtistName(), snapshot.get("ARTIST_NAME"));
@@ -149,7 +149,7 @@ public class DataContextIT {
 		createSingleArtistDataSet();
 
 		// test null values
-		Artist artist = ObjectSelect.query(Artist.class, Artist.ARTIST_NAME.eq("artist1")).selectFirst(context);
+		Artist artist = ObjectSelect.query(Artist.class).where(Artist.ARTIST_NAME.eq("artist1")).selectFirst(context);
 
 		artist.setArtistName(null);
 		artist.setDateOfBirth(null);
@@ -169,7 +169,7 @@ public class DataContextIT {
 		createSingleArtistDataSet();
 
 		// test null values
-		Artist artist = ObjectSelect.query(Artist.class, Artist.ARTIST_NAME.eq("artist1")).selectFirst(context);
+		Artist artist = ObjectSelect.query(Artist.class).where(Artist.ARTIST_NAME.eq("artist1")).selectFirst(context);
 
 		// test FK relationship snapshotting
 		Painting p1 = new Painting();
@@ -231,7 +231,7 @@ public class DataContextIT {
 	public void charInQualifier() throws Exception {
 		createArtistsDataSet();
 
-		List<Artist> artists = ObjectSelect.query(Artist.class, Artist.ARTIST_NAME.eq("artist1")).select(context);
+		List<Artist> artists = ObjectSelect.query(Artist.class).where(Artist.ARTIST_NAME.eq("artist1")).select(context);
 		assertEquals(1, artists.size());
 	}
 
@@ -311,7 +311,7 @@ public class DataContextIT {
 	public void select_DataRows() throws Exception {
 		createArtistsAndPaintingsDataSet();
 
-		List<DataRow> objects = ObjectSelect.dataRowQuery(Artist.class, null).select(context);
+		List<DataRow> objects = ObjectSelect.dataRowQuery(Artist.class).select(context);
 
 		assertNotNull(objects);
 		assertEquals(7, objects.size());
@@ -359,7 +359,7 @@ public class DataContextIT {
 
 		createSingleArtistDataSet();
 
-		ObjectSelect<Painting> query = ObjectSelect.query(Painting.class, ExpressionFactory.exp("db:PAINTING_ID = 1"));
+		ObjectSelect<Painting> query = ObjectSelect.query(Painting.class).where(ExpressionFactory.exp("db:PAINTING_ID = 1"));
 
 		assertEquals(0, query.select(context).size());
 
@@ -494,7 +494,7 @@ public class DataContextIT {
 	public void commitChangesRO2() throws Exception {
 		createArtistsDataSet();
 
-		ROArtist a1 = ObjectSelect.query(ROArtist.class, Artist.ARTIST_NAME.eq("artist1")).selectOne(context);
+		ROArtist a1 = ObjectSelect.query(ROArtist.class).where(Artist.ARTIST_NAME.eq("artist1")).selectOne(context);
 		a1.writeProperty(ROArtist.ARTIST_NAME.getName(), "abc");
 
 		assertThrows(Exception.class, context::commitChanges);
@@ -505,7 +505,7 @@ public class DataContextIT {
 
 		createArtistsDataSet();
 
-		ROArtist a1 = ObjectSelect.query(ROArtist.class, Artist.ARTIST_NAME.eq("artist1")).selectOne(context);
+		ROArtist a1 = ObjectSelect.query(ROArtist.class).where(Artist.ARTIST_NAME.eq("artist1")).selectOne(context);
 		context.deleteObjects(a1);
 
 		assertThrows(Exception.class, context::commitChanges);
@@ -515,7 +515,7 @@ public class DataContextIT {
 	public void commitChangesRO4() throws Exception {
 		createArtistsDataSet();
 
-		ROArtist a1 = ObjectSelect.query(ROArtist.class, Artist.ARTIST_NAME.eq("artist1")).selectOne(context);
+		ROArtist a1 = ObjectSelect.query(ROArtist.class).where(Artist.ARTIST_NAME.eq("artist1")).selectOne(context);
 
 		Painting painting = context.newObject(Painting.class);
 		painting.setPaintingTitle("paint");

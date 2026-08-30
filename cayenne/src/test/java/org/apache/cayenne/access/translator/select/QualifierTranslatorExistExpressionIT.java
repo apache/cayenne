@@ -44,7 +44,7 @@ public class QualifierTranslatorExistExpressionIT {
                 .exp("paintingArray")
                 .exists();
 
-        ObjectSelect<Artist> query = ObjectSelect.query(Artist.class, exp);
+        ObjectSelect<Artist> query = ObjectSelect.query(Artist.class).where(exp);
 
         SelectTranslatorContext context
                 = new SelectTranslatorContext(query, env.runtime().getDataDomain().getDefaultNode().getAdapter(), env.context().getEntityResolver(), null);
@@ -63,7 +63,7 @@ public class QualifierTranslatorExistExpressionIT {
     public void existsSimplePathParsed() {
         Expression exp = ExpressionFactory
                 .exp("exists paintingArray");
-        ObjectSelect<Artist> query = ObjectSelect.query(Artist.class, exp);
+        ObjectSelect<Artist> query = ObjectSelect.query(Artist.class).where(exp);
 
         SelectTranslatorContext context
                 = new SelectTranslatorContext(query, env.runtime().getDataDomain().getDefaultNode().getAdapter(), env.context().getEntityResolver(), null);
@@ -84,7 +84,7 @@ public class QualifierTranslatorExistExpressionIT {
                 .exp("artistName")
                 .exists();
 
-        ObjectSelect<Artist> query = ObjectSelect.query(Artist.class, exp);
+        ObjectSelect<Artist> query = ObjectSelect.query(Artist.class).where(exp);
 
         SelectTranslatorContext context
                 = new SelectTranslatorContext(query, env.runtime().getDataDomain().getDefaultNode().getAdapter(), env.context().getEntityResolver(), null);
@@ -102,7 +102,7 @@ public class QualifierTranslatorExistExpressionIT {
                 .exp("paintingArray.paintingTitle")
                 .exists();
 
-        ObjectSelect<Artist> query = ObjectSelect.query(Artist.class, exp);
+        ObjectSelect<Artist> query = ObjectSelect.query(Artist.class).where(exp);
 
         SelectTranslatorContext context
                 = new SelectTranslatorContext(query, env.runtime().getDataDomain().getDefaultNode().getAdapter(), env.context().getEntityResolver(), null);
@@ -123,7 +123,7 @@ public class QualifierTranslatorExistExpressionIT {
                 .exp("paintingArray.toGallery")
                 .exists();
 
-        ObjectSelect<Artist> query = ObjectSelect.query(Artist.class, exp);
+        ObjectSelect<Artist> query = ObjectSelect.query(Artist.class).where(exp);
 
         SelectTranslatorContext context
                 = new SelectTranslatorContext(query, env.runtime().getDataDomain().getDefaultNode().getAdapter(), env.context().getEntityResolver(), null);
@@ -144,7 +144,7 @@ public class QualifierTranslatorExistExpressionIT {
                 .exp("groupArray.childGroupsArray")
                 .exists();
 
-        ObjectSelect<Artist> query = ObjectSelect.query(Artist.class, exp);
+        ObjectSelect<Artist> query = ObjectSelect.query(Artist.class).where(exp);
 
         SelectTranslatorContext context
                 = new SelectTranslatorContext(query, env.runtime().getDataDomain().getDefaultNode().getAdapter(), env.context().getEntityResolver(), null);
@@ -167,7 +167,7 @@ public class QualifierTranslatorExistExpressionIT {
                 .exp("paintingArray.paintingTitle = 'test'")
                 .exists();
 
-        ObjectSelect<Artist> query = ObjectSelect.query(Artist.class, exp);
+        ObjectSelect<Artist> query = ObjectSelect.query(Artist.class).where(exp);
 
         SelectTranslatorContext context
                 = new SelectTranslatorContext(query, env.runtime().getDataDomain().getDefaultNode().getAdapter(), env.context().getEntityResolver(), null);
@@ -189,7 +189,7 @@ public class QualifierTranslatorExistExpressionIT {
                         "or paintingArray.paintingTitle = 'test2'")
                 .exists();
 
-        ObjectSelect<Artist> query = ObjectSelect.query(Artist.class, exp);
+        ObjectSelect<Artist> query = ObjectSelect.query(Artist.class).where(exp);
 
         SelectTranslatorContext context
                 = new SelectTranslatorContext(query, env.runtime().getDataDomain().getDefaultNode().getAdapter(), env.context().getEntityResolver(), null);
@@ -211,7 +211,7 @@ public class QualifierTranslatorExistExpressionIT {
                 .exp("exists (paintingArray.paintingTitle = 'test' " +
                         "or paintingArray.paintingTitle = 'test2')");
 
-        ObjectSelect<Artist> query = ObjectSelect.query(Artist.class, exp);
+        ObjectSelect<Artist> query = ObjectSelect.query(Artist.class).where(exp);
 
         SelectTranslatorContext context
                 = new SelectTranslatorContext(query, env.runtime().getDataDomain().getDefaultNode().getAdapter(), env.context().getEntityResolver(), null);
@@ -234,7 +234,7 @@ public class QualifierTranslatorExistExpressionIT {
                         "or paintingArray.paintingTitle = 'test2') and groupArray.name = 'test'")
                 .exists();
 
-        ObjectSelect<Artist> query = ObjectSelect.query(Artist.class, exp);
+        ObjectSelect<Artist> query = ObjectSelect.query(Artist.class).where(exp);
 
         SelectTranslatorContext context
                 = new SelectTranslatorContext(query, env.runtime().getDataDomain().getDefaultNode().getAdapter(), env.context().getEntityResolver(), null);
@@ -261,7 +261,7 @@ public class QualifierTranslatorExistExpressionIT {
                         "and (groupArray.name = 'test' or paintingArray.paintingTitle = 'test2')")
                 .exists();
 
-        ObjectSelect<Artist> query = ObjectSelect.query(Artist.class, exp);
+        ObjectSelect<Artist> query = ObjectSelect.query(Artist.class).where(exp);
 
         SelectTranslatorContext context
                 = new SelectTranslatorContext(query, env.runtime().getDataDomain().getDefaultNode().getAdapter(), env.context().getEntityResolver(), null);
@@ -294,7 +294,7 @@ public class QualifierTranslatorExistExpressionIT {
                 .exp("(length(paintingArray.paintingTitle) in (1, 2, 3)) " +
                     "or (length(groupArray.name) < 10)")
                 .exists();
-        ObjectSelect<Artist> query = ObjectSelect.query(Artist.class, exp);
+        ObjectSelect<Artist> query = ObjectSelect.query(Artist.class).where(exp);
 
         SelectTranslatorContext context
                 = new SelectTranslatorContext(query, env.runtime().getDataDomain().getDefaultNode().getAdapter(), env.context().getEntityResolver(), null);

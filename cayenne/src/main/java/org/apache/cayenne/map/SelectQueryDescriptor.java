@@ -18,11 +18,6 @@
  ****************************************************************/
 package org.apache.cayenne.map;
 
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-
 import org.apache.cayenne.CayenneRuntimeException;
 import org.apache.cayenne.configuration.ConfigurationNodeVisitor;
 import org.apache.cayenne.exp.Expression;
@@ -30,6 +25,11 @@ import org.apache.cayenne.query.ObjectSelect;
 import org.apache.cayenne.query.Ordering;
 import org.apache.cayenne.query.PrefetchTreeNode;
 import org.apache.cayenne.util.XMLEncoder;
+
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
 
 /**
  * @since 4.0
@@ -161,7 +161,7 @@ public class SelectQueryDescriptor extends QueryDescriptor {
             throw new CayenneRuntimeException("Unexpected root for the SelectQueryDescriptor '%s'.", root);
         }
 
-        ObjectSelect<?> query = ObjectSelect.query(Object.class, qualifier);
+        ObjectSelect<?> query = ObjectSelect.query(Object.class).where(qualifier);
         query.entityName(rootEntityName);
 
         List<Ordering> orderings = this.getOrderings();

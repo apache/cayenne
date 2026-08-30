@@ -18,8 +18,6 @@
  ****************************************************************/
 package org.apache.cayenne.query;
 
-import java.util.List;
-
 import org.apache.cayenne.DataRow;
 import org.apache.cayenne.ObjectContext;
 import org.apache.cayenne.exp.Expression;
@@ -32,6 +30,9 @@ import org.apache.cayenne.exp.property.PropertyFactory;
 import org.apache.cayenne.map.DbEntity;
 import org.apache.cayenne.map.EntityResolver;
 import org.apache.cayenne.map.ObjEntity;
+
+import java.util.Collection;
+import java.util.List;
 
 /**
  * A selecting query providing chainable API.
@@ -62,7 +63,10 @@ public class ObjectSelect<T> extends FluentSelect<T, ObjectSelect<T>> {
     /**
      * Creates a ObjectSelect that selects objects of a given persistent class
      * and uses provided expression for its qualifier.
+     *
+     * @deprecated use {@link #query(Class)} and then {@link ObjectSelect#where}
      */
+    @Deprecated(since = "5.0", forRemoval = true)
     public static <T> ObjectSelect<T> query(Class<T> entityType, Expression expression) {
         return new ObjectSelect<T>().entityType(entityType).where(expression);
     }
@@ -70,7 +74,10 @@ public class ObjectSelect<T> extends FluentSelect<T, ObjectSelect<T>> {
     /**
      * Creates a ObjectSelect that selects objects of a given persistent class
      * and uses provided expression for its qualifier.
+     *
+     * @deprecated use {@link #query(Class)} and then {@link ObjectSelect#where} and {@link #orderBy(Collection)}
      */
+    @Deprecated(since = "5.0", forRemoval = true)
     public static <T> ObjectSelect<T> query(Class<T> entityType, Expression expression, List<Ordering> orderings) {
         return new ObjectSelect<T>().entityType(entityType).where(expression).orderBy(orderings);
     }
@@ -87,7 +94,10 @@ public class ObjectSelect<T> extends FluentSelect<T, ObjectSelect<T>> {
      * Creates a ObjectSelect that fetches data for an {@link ObjEntity}
      * determined from a provided class and uses provided expression for its
      * qualifier.
+     *
+     * @deprecated use {@link #dataRowQuery(Class)} and then {@link ObjectSelect#where}
      */
+    @Deprecated(since = "5.0", forRemoval = true)
     public static ObjectSelect<DataRow> dataRowQuery(Class<?> entityType, Expression expression) {
         return query(entityType).fetchDataRows().where(expression);
     }
@@ -115,8 +125,9 @@ public class ObjectSelect<T> extends FluentSelect<T, ObjectSelect<T>> {
      * determined from provided "dbEntityName" and uses provided expression for
      * its qualifier.
      *
-     * @return this object
+     * @deprecated use {@link #dbQuery(String)} and then {@link ObjectSelect#where}
      */
+    @Deprecated(since = "5.0", forRemoval = true)
     public static ObjectSelect<DataRow> dbQuery(String dbEntityName, Expression expression) {
         return new ObjectSelect<DataRow>().fetchDataRows().dbEntityName(dbEntityName).where(expression);
     }
@@ -126,7 +137,7 @@ public class ObjectSelect<T> extends FluentSelect<T, ObjectSelect<T>> {
      * against a given {@link ObjEntity} class.
      *
      * @param entityType base persistent class that will be used as a root for this query
-     * @param column single column to select
+     * @param column     single column to select
      */
     public static <E> ColumnSelect<E> columnQuery(Class<?> entityType, Property<E> column) {
         return new ColumnSelect<>().entityType(entityType).column(column);
@@ -136,7 +147,7 @@ public class ObjectSelect<T> extends FluentSelect<T, ObjectSelect<T>> {
      * Creates a ColumnSelect that will fetch multiple columns of a given {@link ObjEntity}
      *
      * @param entityType base persistent class that will be used as a root for this query
-     * @param columns columns to select
+     * @param columns    columns to select
      */
     public static ColumnSelect<Object[]> columnQuery(Class<?> entityType, Property<?>... columns) {
         return new ColumnSelect<Object[]>().entityType(entityType).columns(columns);
@@ -176,8 +187,7 @@ public class ObjectSelect<T> extends FluentSelect<T, ObjectSelect<T>> {
     }
 
     /**
-     * Forces query to fetch DataRows. This automatically changes whatever
-     * result type was set previously to "DataRow".
+     * Forces query to fetch DataRows. This automatically changes whatever result type was set previously to "DataRow".
      *
      * @return this object
      */
@@ -220,6 +230,7 @@ public class ObjectSelect<T> extends FluentSelect<T, ObjectSelect<T>> {
      * }
      * </pre>
      * </p>
+     *
      * @param property single property to select
      * @see ObjectSelect#columns(Property[])
      */
@@ -229,6 +240,7 @@ public class ObjectSelect<T> extends FluentSelect<T, ObjectSelect<T>> {
 
     /**
      * Select COUNT(*)
+     *
      * @see ObjectSelect#column(Property)
      */
     public ColumnSelect<Long> count() {
@@ -238,6 +250,7 @@ public class ObjectSelect<T> extends FluentSelect<T, ObjectSelect<T>> {
     /**
      * <p>Select COUNT(property)</p>
      * <p>Can return different result than COUNT(*) as it will count only non null values</p>
+     *
      * @see ObjectSelect#count()
      * @see ObjectSelect#column(Property)
      */
@@ -247,6 +260,7 @@ public class ObjectSelect<T> extends FluentSelect<T, ObjectSelect<T>> {
 
     /**
      * <p>Select minimum value of property</p>
+     *
      * @see ObjectSelect#column(Property)
      */
     public <E> ColumnSelect<E> min(ComparableProperty<E> property) {
@@ -255,6 +269,7 @@ public class ObjectSelect<T> extends FluentSelect<T, ObjectSelect<T>> {
 
     /**
      * <p>Select minimum value of property</p>
+     *
      * @see ObjectSelect#column(Property)
      */
     public <E extends Number> ColumnSelect<E> min(NumericProperty<E> property) {
@@ -263,6 +278,7 @@ public class ObjectSelect<T> extends FluentSelect<T, ObjectSelect<T>> {
 
     /**
      * <p>Select maximum value of property</p>
+     *
      * @see ObjectSelect#column(Property)
      */
     public <E> ColumnSelect<E> max(ComparableProperty<E> property) {
@@ -271,6 +287,7 @@ public class ObjectSelect<T> extends FluentSelect<T, ObjectSelect<T>> {
 
     /**
      * <p>Select maximum value of property</p>
+     *
      * @see ObjectSelect#column(Property)
      */
     public <E extends Number> ColumnSelect<E> max(NumericProperty<E> property) {
@@ -279,6 +296,7 @@ public class ObjectSelect<T> extends FluentSelect<T, ObjectSelect<T>> {
 
     /**
      * <p>Select average value of property</p>
+     *
      * @see ObjectSelect#column(Property)
      */
     public <E extends Number> ColumnSelect<E> avg(NumericProperty<E> property) {
@@ -287,6 +305,7 @@ public class ObjectSelect<T> extends FluentSelect<T, ObjectSelect<T>> {
 
     /**
      * <p>Select sum of values</p>
+     *
      * @see ObjectSelect#column(Property)
      */
     public <E extends Number> ColumnSelect<E> sum(NumericProperty<E> property) {
@@ -295,8 +314,8 @@ public class ObjectSelect<T> extends FluentSelect<T, ObjectSelect<T>> {
 
     /**
      * <p>Select result of some function, that aggregates values.</p>
-     * @see ObjectSelect#column(Property)
      *
+     * @see ObjectSelect#column(Property)
      * @since 5.0
      */
     public <E> ColumnSelect<E> aggregate(BaseProperty<E> property, String function, Class<E> type) {
@@ -304,8 +323,8 @@ public class ObjectSelect<T> extends FluentSelect<T, ObjectSelect<T>> {
     }
 
     /**
-     * @since 4.2
      * @return this
+     * @since 4.2
      */
     public ObjectSelect<T> distinct() {
         this.distinct = true;
@@ -323,6 +342,7 @@ public class ObjectSelect<T> extends FluentSelect<T, ObjectSelect<T>> {
      * }
      * </pre>
      * </p>
+     *
      * @param context to perform query
      * @return count of rows
      */

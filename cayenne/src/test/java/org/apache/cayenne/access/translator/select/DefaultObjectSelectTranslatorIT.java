@@ -58,7 +58,7 @@ public class DefaultObjectSelectTranslatorIT {
 
     @Test
     public void selectWithComplexWhere() {
-        ObjectSelect<Artist> select = ObjectSelect.query(Artist.class, Artist.ARTIST_NAME.eq("artist")
+        ObjectSelect<Artist> select = ObjectSelect.query(Artist.class).where(Artist.ARTIST_NAME.eq("artist")
                 .andExp(Artist.PAINTING_ARRAY.dot(Painting.PAINTING_TITLE).eq("painting")));
 
         TranslatedSelect translator = new DbAdapterDelegatedSelectTranslator().translate(select, env.dataNode().getAdapter(), env.context().getEntityResolver());

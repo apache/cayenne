@@ -110,7 +110,7 @@ public class ASTNotExistsIT {
     }
 
     private void doEvaluateNoQuery(Expression exp) {
-        List<Artist> artistSelected = ObjectSelect.query(Artist.class, exp)
+        List<Artist> artistSelected = ObjectSelect.query(Artist.class).where(exp)
                 .orderBy(Artist.ARTIST_ID_PK_PROPERTY.asc())
                 .select(env.context());
 
@@ -128,7 +128,7 @@ public class ASTNotExistsIT {
     }
 
     private void doEvaluateWithQuery(Expression exp) {
-        List<Artist> artistSelected = ObjectSelect.query(Artist.class, exp).select(env.context());
+        List<Artist> artistSelected = ObjectSelect.query(Artist.class).where(exp).select(env.context());
 
         List<Artist> artists = ObjectSelect.query(Artist.class)
                 .prefetch(Artist.PAINTING_ARRAY.disjoint())

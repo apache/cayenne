@@ -127,13 +127,16 @@ public class QuotedIdentifiersIT {
         List<Quote_Person> objects4 = ObjectSelect.query(Quote_Person.class).select(env.context());
         assertEquals(2, objects4.size());
 
-        List<Quote_Person> objects5 = ObjectSelect.query(Quote_Person.class, Quote_Person.SALARY.eq(100)).select(env.context());
+        List<Quote_Person> objects5 = ObjectSelect.query(Quote_Person.class)
+                .where(Quote_Person.SALARY.eq(100)).select(env.context());
         assertEquals(1, objects5.size());
 
-        List<Quote_Person> objects6 =ObjectSelect.query(Quote_Person.class, Quote_Person.GROUP.eq("107324")).select(env.context());
+        List<Quote_Person> objects6 =ObjectSelect.query(Quote_Person.class)
+                .where(Quote_Person.GROUP.eq("107324")).select(env.context());
         assertEquals(1, objects6.size());
 
-        List<QuoteAdress> objects7 = ObjectSelect.query(QuoteAdress.class, QuoteAdress.GROUP.eq("324")).select(env.context());
+        List<QuoteAdress> objects7 = ObjectSelect.query(QuoteAdress.class)
+                .where(QuoteAdress.GROUP.eq("324")).select(env.context());
         assertEquals(1, objects7.size());
 
         ObjectIdQuery queryObjectId = new ObjectIdQuery(ObjectId.of("QuoteAdress", QuoteAdress.GROUP.getName(), "324"));
@@ -145,7 +148,8 @@ public class QuotedIdentifiersIT {
         List objects9 = env.context().performQuery(queryObjectId2);
         assertEquals(1, objects9.size());
 
-        Quote_Person quote_Person2 = ObjectSelect.query(Quote_Person.class, Quote_Person.NAME.eq("Name")).selectOne(env.context());
+        Quote_Person quote_Person2 = ObjectSelect.query(Quote_Person.class)
+                .where(Quote_Person.NAME.eq("Name")).selectOne(env.context());
 
         RelationshipQuery relationshipQuery = new RelationshipQuery(quote_Person2.getObjectId(), "address_Rel");
         List objects10 = env.context().performQuery(relationshipQuery);

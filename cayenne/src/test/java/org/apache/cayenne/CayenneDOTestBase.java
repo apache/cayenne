@@ -70,14 +70,16 @@ public abstract class CayenneDOTestBase {
     }
 
     protected Painting fetchPainting() {
-        List<Painting> pts = ObjectSelect.query(Painting.class, Painting.PAINTING_TITLE.eq(paintingName)).select(context);
+        List<Painting> pts = ObjectSelect.query(Painting.class)
+                .where(Painting.PAINTING_TITLE.eq(paintingName)).select(context);
         return (!pts.isEmpty()) ? pts.getFirst() : null;
     }
 
     protected PaintingInfo fetchPaintingInfo() {
         // we are using "LIKE" comparison, since Sybase does not allow
         // "=" comparisons on "text" columns
-        List<PaintingInfo> pts = ObjectSelect.query(PaintingInfo.class, PaintingInfo.TEXT_REVIEW.like(textReview)).select(context);
+        List<PaintingInfo> pts = ObjectSelect.query(PaintingInfo.class)
+                .where(PaintingInfo.TEXT_REVIEW.like(textReview)).select(context);
         return !pts.isEmpty() ? pts.getFirst() : null;
     }
 }

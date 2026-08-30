@@ -153,7 +153,8 @@ public class CayenneIT {
     public void objectForSelect() throws Exception {
         createOneArtist();
 
-        ObjectSelect<Artist> query = ObjectSelect.query(Artist.class, ExpressionFactory.matchDbExp("ARTIST_NAME", "artist2"));
+        ObjectSelect<Artist> query = ObjectSelect.query(Artist.class)
+                .where(ExpressionFactory.matchDbExp("ARTIST_NAME", "artist2"));
 
         Artist object = env.context().selectOne(query);
 

@@ -58,7 +58,7 @@ public class DbAdapterDelegatedSelectTranslatorIT {
 	@Test
 	public void createSqlString1() throws Exception {
 		// query with qualifier and ordering
-		ObjectSelect<Artist> q = ObjectSelect.query(Artist.class, Artist.ARTIST_NAME.like("a%"))
+		ObjectSelect<Artist> q = ObjectSelect.query(Artist.class).where(Artist.ARTIST_NAME.like("a%"))
 				.orderBy(Artist.DATE_OF_BIRTH.asc());
 
 		TranslatedSelect defaultSelectTranslator = new DbAdapterDelegatedSelectTranslator().translate(q, env.dataNode().getAdapter(), env.dataNode().getEntityResolver());
@@ -152,7 +152,7 @@ public class DbAdapterDelegatedSelectTranslatorIT {
 	@Test
 	public void dbEntityQualifier_FlattenedRel() throws Exception {
 
-		ObjectSelect<Artist> q = ObjectSelect.query(Artist.class, Artist.GROUP_ARRAY.dot(ArtGroup.NAME).eq("bar"));
+		ObjectSelect<Artist> q = ObjectSelect.query(Artist.class).where(Artist.GROUP_ARRAY.dot(ArtGroup.NAME).eq("bar"));
 
 		final DbEntity entity = env.context().getEntityResolver().getDbEntity("ARTIST");
 		final DbEntity middleEntity = env.context().getEntityResolver().getDbEntity("ARTIST_GROUP");
@@ -187,7 +187,8 @@ public class DbAdapterDelegatedSelectTranslatorIT {
 	@Test
 	public void dbEntityQualifier_RelatedMatch() throws Exception {
 
-		ObjectSelect<Painting> q = ObjectSelect.query(Painting.class, Painting.TO_ARTIST.dot(Artist.ARTIST_NAME).eq("foo"));
+		ObjectSelect<Painting> q = ObjectSelect.query(Painting.class)
+				.where(Painting.TO_ARTIST.dot(Artist.ARTIST_NAME).eq("foo"));
 
 		final DbEntity entity = env.context().getEntityResolver().getDbEntity("ARTIST");
 		final DbEntity middleEntity = env.context().getEntityResolver().getDbEntity("ARTIST_GROUP");
@@ -359,7 +360,8 @@ public class DbAdapterDelegatedSelectTranslatorIT {
 	@Test
 	public void createSqlString9() throws Exception {
 		// query for a compound ObjEntity with qualifier
-		ObjectSelect<CompoundPainting> q = ObjectSelect.query(CompoundPainting.class, CompoundPainting.ARTIST_NAME.like("a%"));
+		ObjectSelect<CompoundPainting> q = ObjectSelect.query(CompoundPainting.class)
+				.where(CompoundPainting.ARTIST_NAME.like("a%"));
 
 		String sql = new DbAdapterDelegatedSelectTranslator().translate(q, env.dataNode().getAdapter(), env.dataNode().getEntityResolver()).sql();
 

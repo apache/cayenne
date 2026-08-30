@@ -89,7 +89,7 @@ public class CDOOne2ManyIT {
         Expression e = ExpressionFactory.matchDbExp("paintingArray", p2);
 
         // *** TESTING THIS ***
-        List<Artist> artists = ObjectSelect.query(Artist.class, e).select(env.context());
+        List<Artist> artists = ObjectSelect.query(Artist.class).where(e).select(env.context());
         assertEquals(1, artists.size());
         assertSame(a1, artists.get(0));
     }
@@ -122,7 +122,7 @@ public class CDOOne2ManyIT {
         Expression e = ExpressionFactory.matchExp("paintingArray", p2);
 
         // *** TESTING THIS ***
-        List<Artist> artists = ObjectSelect.query(Artist.class, e).select(env.context());
+        List<Artist> artists = ObjectSelect.query(Artist.class).where(e).select(env.context());
         assertEquals(1, artists.size());
         assertSame(a1, artists.get(0));
     }

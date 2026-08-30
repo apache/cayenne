@@ -92,8 +92,8 @@ public class OptimisticLockException extends CayenneRuntimeException {
                     : attributeQualifier;
         }
 
-        return ObjectSelect.dbQuery(rootEntity.getName(), qualifier)
-                .fetchDataRows()
+        return ObjectSelect.dbQuery(rootEntity.getName())
+                .where(qualifier)
                 .selectFirst(context);
     }
 

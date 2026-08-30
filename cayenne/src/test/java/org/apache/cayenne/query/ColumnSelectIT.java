@@ -924,7 +924,7 @@ public class ColumnSelectIT {
 
     @Test
     public void objPropertyInWhere() {
-        Artist artist = ObjectSelect.query(Artist.class, Artist.ARTIST_NAME.eq("artist1"))
+        Artist artist = ObjectSelect.query(Artist.class).where(Artist.ARTIST_NAME.eq("artist1"))
                 .selectFirst(context);
         List<Painting> result = ObjectSelect.query(Painting.class)
                 .column(Painting.SELF)

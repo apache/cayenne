@@ -370,7 +370,7 @@ public class ExpressionEvaluationIT {
     private void compareSqlAndEval(Expression exp, int expectedCount) {
         // apply exp in SQL
         Ordering ordering = new Ordering("db:ARTIST_ID");
-        List<Artist> filteredInSQL = ObjectSelect.query(Artist.class, exp).orderBy(ordering).select(context);
+        List<Artist> filteredInSQL = ObjectSelect.query(Artist.class).where(exp).orderBy(ordering).select(context);
         // apply exp to in-memory collection
         List<Artist> filteredInMemory = exp.filterObjects(
                 ObjectSelect.query(Artist.class).prefetch(Artist.PAINTING_ARRAY.disjoint()).select(context)

@@ -41,7 +41,7 @@ public class FluentSelectPrefetchRouterActionIT {
     public void paintings1() {
         ObjEntity paintingEntity = env.entityResolver().getObjEntity(Painting.class);
 
-        ObjectSelect<Artist> query = ObjectSelect.query(Artist.class, Artist.ARTIST_NAME.eq("abc"))
+        ObjectSelect<Artist> query = ObjectSelect.query(Artist.class).where(Artist.ARTIST_NAME.eq("abc"))
                 .prefetch(Artist.PAINTING_ARRAY.disjoint());
 
         FluentSelectPrefetchRouterAction action = new FluentSelectPrefetchRouterAction();
@@ -81,7 +81,7 @@ public class FluentSelectPrefetchRouterActionIT {
     public void galleries() {
         ObjEntity galleryEntity = env.entityResolver().getObjEntity(Gallery.class);
 
-        ObjectSelect<Artist> query = ObjectSelect.query(Artist.class, Artist.ARTIST_NAME.eq("abc"))
+        ObjectSelect<Artist> query = ObjectSelect.query(Artist.class).where(Artist.ARTIST_NAME.eq("abc"))
                 .prefetch(Artist.PAINTING_ARRAY.dot(Painting.TO_GALLERY).disjoint());
         FluentSelectPrefetchRouterAction action = new FluentSelectPrefetchRouterAction();
 

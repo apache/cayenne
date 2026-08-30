@@ -71,7 +71,7 @@ public class ParsedExpQualifierCompatIT {
     }
 
     private <T> List<T> execute(Class<T> root, Expression qualifier, String prefetch) {
-        ObjectSelect<T> query = ObjectSelect.query(root, qualifier);
+        ObjectSelect<T> query = ObjectSelect.query(root).where(qualifier);
         if (prefetch != null) {
             query.prefetch(prefetch, PrefetchTreeNode.DISJOINT_PREFETCH_SEMANTICS);
         }

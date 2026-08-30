@@ -66,7 +66,7 @@ public class ExpressionIT {
 
 		assertNotSame(context2, env.context());
 
-		List<Painting> objects = ObjectSelect.query(Painting.class, Painting.TO_ARTIST.eq(a1)).select(context2);
+		List<Painting> objects = ObjectSelect.query(Painting.class).where(Painting.TO_ARTIST.eq(a1)).select(context2);
 		assertEquals(1, objects.size());
 
 		// 2 same objects in different contexts
@@ -120,7 +120,8 @@ public class ExpressionIT {
 
         List<Artist> artists;
 		try {
-            artists = ObjectSelect.query(Artist.class, Artist.ARTIST_NAME.lt((String) null)).select(env.context());
+            artists = ObjectSelect.query(Artist.class)
+                    .where(Artist.ARTIST_NAME.lt((String) null)).select(env.context());
         } catch (CayenneRuntimeException ex) {
 		    if(env.testDbAdapter().supportsNullComparison()) {
 		        throw ex;
@@ -140,7 +141,8 @@ public class ExpressionIT {
 
         List<Artist> artists;
         try {
-            artists = ObjectSelect.query(Artist.class, Artist.ARTIST_NAME.in("Picasso", (String) null)).select(env.context());
+            artists = ObjectSelect.query(Artist.class)
+                    .where(Artist.ARTIST_NAME.in("Picasso", (String) null)).select(env.context());
         } catch (CayenneRuntimeException ex) {
             if(env.testDbAdapter().supportsNullComparison()) {
                 throw ex;
@@ -157,7 +159,7 @@ public class ExpressionIT {
 		a1.setArtistName("Picasso");
 		env.context().commitChanges();
 
-		List<Artist> artists = ObjectSelect.query(Artist.class, Artist.ARTIST_NAME.in(List.of())).select(env.context());
+		List<Artist> artists = ObjectSelect.query(Artist.class).where(Artist.ARTIST_NAME.in(List.of())).select(env.context());
 		assertTrue(artists.isEmpty());
 	}
 
@@ -168,7 +170,7 @@ public class ExpressionIT {
 		env.context().commitChanges();
 
 		ASTIn in = new ASTIn((SimpleNode) Artist.ARTIST_NAME.getExpression(), new ASTList(List.of()));
-		List<Artist> artists = ObjectSelect.query(Artist.class, in).select(env.context());
+		List<Artist> artists = ObjectSelect.query(Artist.class).where(in).select(env.context());
 		assertTrue(artists.isEmpty());
 	}
 
@@ -179,7 +181,7 @@ public class ExpressionIT {
 		env.context().commitChanges();
 
 		ASTNotIn notIn = new ASTNotIn((SimpleNode) Artist.ARTIST_NAME.getExpression(), new ASTList(List.of()));
-		List<Artist> artists = ObjectSelect.query(Artist.class, notIn).select(env.context());
+		List<Artist> artists = ObjectSelect.query(Artist.class).where(notIn).select(env.context());
 		assertEquals(1, artists.size());
 		assertEquals("Picasso", artists.get(0).getArtistName());
 	}
