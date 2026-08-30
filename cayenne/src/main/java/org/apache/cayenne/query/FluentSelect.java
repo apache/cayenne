@@ -41,7 +41,7 @@ import org.apache.cayenne.map.ObjEntity;
  *
  * @since 4.0
  */
-public abstract class FluentSelect<T, S extends FluentSelect<T, S>> extends CacheableQuery implements Select<T> {
+public abstract class FluentSelect<T, S extends FluentSelect<T, S>> implements Select<T> {
 
     // root
     protected Class<?> entityType;
@@ -62,6 +62,8 @@ public abstract class FluentSelect<T, S extends FluentSelect<T, S>> extends Cach
     }
 
     protected abstract ObjectSelectMetadata createMetadata();
+
+    protected abstract ObjectSelectMetadata getBaseMetaData();
 
     protected Object resolveRoot(EntityResolver resolver) {
         Object root;
@@ -346,8 +348,8 @@ public abstract class FluentSelect<T, S extends FluentSelect<T, S>> extends Cach
     }
 
     public S cacheStrategy(QueryCacheStrategy strategy) {
-        setCacheStrategy(strategy);
-        setCacheGroup(null);
+        getBaseMetaData().setCacheStrategy(strategy);
+        getBaseMetaData().setCacheGroup(null);
         return castSelf();
     }
 
@@ -356,7 +358,7 @@ public abstract class FluentSelect<T, S extends FluentSelect<T, S>> extends Cach
     }
 
     public S cacheGroup(String cacheGroup) {
-        setCacheGroup(cacheGroup);
+        getBaseMetaData().setCacheGroup(cacheGroup);
         return castSelf();
     }
 
@@ -406,6 +408,79 @@ public abstract class FluentSelect<T, S extends FluentSelect<T, S>> extends Cach
      */
     public S sharedCache() {
         return cacheStrategy(QueryCacheStrategy.SHARED_CACHE);
+    }
+
+    /**
+     * @since 3.0
+     */
+    public QueryCacheStrategy getCacheStrategy() {
+        return getBaseMetaData().getCacheStrategy();
+    }
+
+    /**
+     * @since 4.0
+     */
+    public String getCacheGroup() {
+        return getBaseMetaData().getCacheGroup();
+    }
+
+    /**
+     * Note that unlike {@link #cacheStrategy(QueryCacheStrategy)} this method preserves the
+     * existing cache group. To reset it, use {@link #cacheStrategy(QueryCacheStrategy, String)}.
+     *
+     * @since 3.0
+     * @deprecated use {@link #cacheStrategy(QueryCacheStrategy, String)}
+     */
+    @Deprecated(since = "5.0", forRemoval = true)
+    public void setCacheStrategy(QueryCacheStrategy strategy) {
+        getBaseMetaData().setCacheStrategy(strategy);
+    }
+
+    /**
+     * @since 4.0
+     * @deprecated use {@link #cacheGroup(String)}
+     */
+    @Deprecated(since = "5.0", forRemoval = true)
+    public void setCacheGroup(String cacheGroup) {
+        getBaseMetaData().setCacheGroup(cacheGroup);
+    }
+
+    /**
+     * @since 4.0
+     * @deprecated use {@link #localCache()}
+     */
+    @Deprecated(since = "5.0", forRemoval = true)
+    public void useLocalCache() {
+        getBaseMetaData().setCacheStrategy(QueryCacheStrategy.LOCAL_CACHE);
+    }
+
+    /**
+     * @since 4.0
+     * @deprecated use {@link #localCache(String)}
+     */
+    @Deprecated(since = "5.0", forRemoval = true)
+    public void useLocalCache(String cacheGroup) {
+        getBaseMetaData().setCacheStrategy(QueryCacheStrategy.LOCAL_CACHE);
+        getBaseMetaData().setCacheGroup(cacheGroup);
+    }
+
+    /**
+     * @since 4.0
+     * @deprecated use {@link #sharedCache()}
+     */
+    @Deprecated(since = "5.0", forRemoval = true)
+    public void useSharedCache() {
+        getBaseMetaData().setCacheStrategy(QueryCacheStrategy.SHARED_CACHE);
+    }
+
+    /**
+     * @since 4.0
+     * @deprecated use {@link #sharedCache(String)}
+     */
+    @Deprecated(since = "5.0", forRemoval = true)
+    public void useSharedCache(String cacheGroup) {
+        getBaseMetaData().setCacheStrategy(QueryCacheStrategy.SHARED_CACHE);
+        getBaseMetaData().setCacheGroup(cacheGroup);
     }
 
     public int getStatementFetchSize() {

@@ -103,7 +103,7 @@ public class DataContextQueryCachingIT {
             List<?> rows2 = mockupDataRows(4);
             engine.reset();
             engine.addExpectedResult(select, rows2);
-            select.setCacheStrategy(QueryCacheStrategy.LOCAL_CACHE_REFRESH);
+            select.cacheStrategy(QueryCacheStrategy.LOCAL_CACHE_REFRESH);
             List<?> freshResultRows = context.performQuery(select);
             assertEquals(1, engine.getRunCount());
             assertEquals(rows2, freshResultRows);
@@ -141,7 +141,7 @@ public class DataContextQueryCachingIT {
             List<?> rows2 = mockupDataRows(5);
             engine.reset();
             engine.addExpectedResult(select, rows2);
-            select.setCacheStrategy(QueryCacheStrategy.SHARED_CACHE_REFRESH);
+            select.cacheStrategy(QueryCacheStrategy.SHARED_CACHE_REFRESH);
             List<?> freshResultRows = context.performQuery(select);
             assertEquals(1, engine.getRunCount());
             assertEquals(rows2, freshResultRows);
@@ -178,7 +178,7 @@ public class DataContextQueryCachingIT {
             List<?> rows2 = mockupDataRows(4);
             engine.reset();
             engine.addExpectedResult(select, rows2);
-            select.setCacheStrategy(QueryCacheStrategy.LOCAL_CACHE_REFRESH);
+            select.cacheStrategy(QueryCacheStrategy.LOCAL_CACHE_REFRESH);
             List<?> freshResultRows = context.performQuery(select);
 
             assertEquals(1, engine.getRunCount());

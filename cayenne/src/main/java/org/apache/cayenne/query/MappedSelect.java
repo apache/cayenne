@@ -18,14 +18,13 @@
  ****************************************************************/
 package org.apache.cayenne.query;
 
-import java.sql.Statement;
-import java.util.List;
-import java.util.Map;
-
 import org.apache.cayenne.CayenneRuntimeException;
 import org.apache.cayenne.ObjectContext;
 import org.apache.cayenne.map.EntityResolver;
 import org.apache.cayenne.map.QueryDescriptor;
+
+import java.sql.Statement;
+import java.util.Map;
 
 /**
  * A query that represents a named parameterized selecting query stored in the mapping. The
@@ -147,16 +146,11 @@ public class MappedSelect<T> extends AbstractMappedQuery implements Select<T> {
     public MappedSelect<T> param(String name, Object value) {
         return (MappedSelect<T>) super.param(name, value);
     }
-
-
-
+    
     @Override
     public T selectFirst(ObjectContext context) {
         return context.selectFirst(limit(1));
     }
-
-
-
 
     @Override
     protected Query createReplacementQuery(EntityResolver resolver) {
@@ -191,7 +185,7 @@ public class MappedSelect<T> extends AbstractMappedQuery implements Select<T> {
                     selectQuery.pageSize(pageSize);
                 }
                 if (cacheStrategyOverride != null) {
-                    selectQuery.setCacheStrategy(cacheStrategyOverride);
+                    selectQuery.cacheStrategy(cacheStrategyOverride, selectQuery.getCacheGroup());
                 }
             }
             case QueryDescriptor.SQL_TEMPLATE -> {

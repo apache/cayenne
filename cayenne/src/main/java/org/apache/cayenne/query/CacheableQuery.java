@@ -19,17 +19,12 @@
 
 package org.apache.cayenne.query;
 
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-
 /**
  * Shared functionality for cacheable queries.
  *
  * @since 4.0
  */
 public abstract class CacheableQuery implements Query {
-
-    protected static final Logger LOGGER = LoggerFactory.getLogger(CacheableQuery.class);
 
     abstract protected BaseQueryMetadata getBaseMetaData();
 
