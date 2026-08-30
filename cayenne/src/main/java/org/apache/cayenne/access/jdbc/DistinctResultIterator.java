@@ -38,24 +38,23 @@ import java.util.Set;
  * distinct rows. Distinct comparison is done by comparing ObjectIds created
  * from each row. Internally DistinctResultIterator wraps another ResultIterator
  * that provides the actual rows.
- * 
+ *
  * @since 3.0
  */
 public class DistinctResultIterator<T> implements ResultIterator<T> {
 
-    protected ResultIterator<T> delegate;
-    protected Set<Object> fetchedIds;
-    protected T nextDataRow;
-    protected DbEntity defaultEntity;
-    protected boolean compareFullRows;
+    private final ResultIterator<T> delegate;
+    private final Set<Object> fetchedIds;
+    private final DbEntity defaultEntity;
+    private final boolean compareFullRows;
+
+    private T nextDataRow;
 
     /**
      * Creates new DistinctResultIterator wrapping another ResultIterator.
-     * 
-     * @param delegate
-     *            actual result iterator, that will be decorated by this DistinctResultIterator
-     * @param defaultEntity
-     *            an entity needed to build ObjectIds for distinct comparison.
+     *
+     * @param delegate      actual result iterator, that will be decorated by this DistinctResultIterator
+     * @param defaultEntity an entity needed to build ObjectIds for distinct comparison.
      */
     public DistinctResultIterator(ResultIterator<T> delegate, DbEntity defaultEntity, boolean compareFullRows) {
         if (delegate == null) {
@@ -162,7 +161,7 @@ public class DistinctResultIterator<T> implements ResultIterator<T> {
 
             Map<String, Object> id = new HashMap<>();
             for (final DbAttribute pk : defaultEntity.getPrimaryKeys()) {
-                id.put(pk.getName(), ((DataRow)next).get(pk.getName()));
+                id.put(pk.getName(), ((DataRow) next).get(pk.getName()));
             }
 
             if (fetchedIds.add(id)) {

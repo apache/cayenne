@@ -18,13 +18,13 @@
  ****************************************************************/
 package org.apache.cayenne.access.jdbc;
 
+import org.apache.cayenne.CayenneRuntimeException;
+import org.apache.cayenne.ResultIterator;
+
 import java.sql.Connection;
 import java.sql.SQLException;
 import java.util.Iterator;
 import java.util.List;
-
-import org.apache.cayenne.CayenneRuntimeException;
-import org.apache.cayenne.ResultIterator;
 
 /**
  * A {@link ResultIterator} wrapper that handles closing a connection. Also
@@ -36,8 +36,9 @@ import org.apache.cayenne.ResultIterator;
  */
 public class ConnectionAwareResultIterator<T> implements ResultIterator<T> {
 
-    private ResultIterator<T> delegate;
-    private Connection connection;
+    private final ResultIterator<T> delegate;
+    private final Connection connection;
+    
     private boolean closed;
     protected int rowCounter;
 

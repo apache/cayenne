@@ -24,7 +24,6 @@ import org.apache.cayenne.util.ResultIteratorIterator;
 import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
-import java.util.Map;
 import java.util.NoSuchElementException;
 
 /**
@@ -59,7 +58,7 @@ public class LimitResultIterator<T> implements ResultIterator<T> {
      */
     @Override
     public Iterator<T> iterator() {
-        return new ResultIteratorIterator<T>(this);
+        return new ResultIteratorIterator<>(this);
     }
 
     private void checkOffset() {
