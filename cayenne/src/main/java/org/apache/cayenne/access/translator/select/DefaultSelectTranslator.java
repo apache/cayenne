@@ -38,11 +38,10 @@ public class DefaultSelectTranslator implements SelectTranslator {
 
     @Override
     public TranslatedSelect translate(Select<?> query, DbAdapter adapter, EntityResolver resolver) {
-        if (!(query instanceof FluentSelect)) {
+        if (!(query instanceof FluentSelect<?, ?> fluentSelect)) {
             throw new CayenneRuntimeException("Unsupported type of Select query %s", query);
         }
-        SelectTranslatorContext context = new SelectTranslatorContext(
-                new FluentSelectWrapper((FluentSelect<?, ?>) query), adapter, resolver, null);
+        SelectTranslatorContext context = new SelectTranslatorContext(fluentSelect, adapter, resolver, null);
         context.translate();
         return context.getTranslation();
     }

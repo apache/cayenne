@@ -64,7 +64,7 @@ public class QualifierTranslatorIT {
                 .and(CompoundFkTestEntity.NAME.contains("a"));
 
         SelectTranslatorContext context
-                = new SelectTranslatorContext(new FluentSelectWrapper(query), runtime.getDataDomain().getDefaultNode().getAdapter(), env.context().getEntityResolver(), null);
+                = new SelectTranslatorContext(query, runtime.getDataDomain().getDefaultNode().getAdapter(), env.context().getEntityResolver(), null);
 
         QualifierTranslator qualifierTranslator = context.getQualifierTranslator();
 
@@ -89,7 +89,7 @@ public class QualifierTranslatorIT {
                 .or(CompoundFkTestEntity.TO_COMPOUND_PK.eq(testEntity.get(1)));
 
         SelectTranslatorContext context
-                = new SelectTranslatorContext(new FluentSelectWrapper(query), runtime.getDataDomain().getDefaultNode().getAdapter(), env.context().getEntityResolver(), null);
+                = new SelectTranslatorContext(query, runtime.getDataDomain().getDefaultNode().getAdapter(), env.context().getEntityResolver(), null);
 
         QualifierTranslator qualifierTranslator = context.getQualifierTranslator();
 
@@ -107,7 +107,7 @@ public class QualifierTranslatorIT {
                 .where(ExpressionFactory.exp("name = -1"));
 
         SelectTranslatorContext context
-                = new SelectTranslatorContext(new FluentSelectWrapper(query), runtime.getDataDomain().getDefaultNode().getAdapter(), env.context().getEntityResolver(), null);
+                = new SelectTranslatorContext(query, runtime.getDataDomain().getDefaultNode().getAdapter(), env.context().getEntityResolver(), null);
 
         QualifierTranslator qualifierTranslator = context.getQualifierTranslator();
 

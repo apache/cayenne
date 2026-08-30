@@ -29,6 +29,7 @@ import org.apache.cayenne.exp.parser.ASTAsterisk;
 import org.apache.cayenne.exp.parser.ASTScalar;
 import org.apache.cayenne.exp.property.BaseProperty;
 import org.apache.cayenne.map.*;
+import org.apache.cayenne.query.FluentSelect;
 import org.apache.cayenne.query.ObjectSelect;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -78,13 +79,13 @@ public class QualifierTranslatorTest {
         EntityResolver resolver = new EntityResolver();
         resolver.addDataMap(dataMap);
 
-        TranslatableQueryWrapper wrapper = new MockQueryWrapperBuilder()
+        FluentSelect<?, ?> query = new MockFluentSelectBuilder()
                 .withMetaData(new MockQueryMetadataBuilder()
                         .withDbEntity(dbEntity)
                         .withObjEntity(entity)
                         .build())
                 .build();
-        SelectTranslatorContext context = new MockSelectTranslatorContext(wrapper, resolver);
+        SelectTranslatorContext context = new MockSelectTranslatorContext(query, resolver);
         translator = new QualifierTranslator(context);
     }
 

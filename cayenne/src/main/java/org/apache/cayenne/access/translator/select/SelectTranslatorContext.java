@@ -34,6 +34,7 @@ import org.apache.cayenne.map.DbEntity;
 import org.apache.cayenne.map.EntityResolver;
 import org.apache.cayenne.map.EntityResult;
 import org.apache.cayenne.map.SQLResult;
+import org.apache.cayenne.query.FluentSelect;
 import org.apache.cayenne.query.Ordering;
 import org.apache.cayenne.query.QueryMetadata;
 
@@ -95,8 +96,10 @@ class SelectTranslatorContext implements SQLGenerationContext {
     private final List<PSParameter<?>> bindings;
 
     // Translated query
-    private final TranslatableQueryWrapper query;
+    private final FluentSelect<?, ?> query;
     private final QueryMetadata metadata;
+    // whether the query result must be mapped explicitly, i.e. it selects a custom set of columns
+    private final boolean needsResultSetMapping;
 
     private final EntityResolver resolver;
     private final DbAdapter adapter;
@@ -131,7 +134,7 @@ class SelectTranslatorContext implements SQLGenerationContext {
     private SQLResult sqlResult;
     private EntityResult rootEntityResult;
 
-    SelectTranslatorContext(TranslatableQueryWrapper query, DbAdapter adapter, EntityResolver resolver, SelectTranslatorContext parentContext) {
+    SelectTranslatorContext(FluentSelect<?, ?> query, DbAdapter adapter, EntityResolver resolver, SelectTranslatorContext parentContext) {
         this.query = query;
         this.adapter = adapter;
         this.resolver = resolver;
@@ -144,7 +147,9 @@ class SelectTranslatorContext implements SQLGenerationContext {
         this.pathTranslator = new PathTranslator(this);
         this.qualifierTranslator = new QualifierTranslator(this);
         this.resultNodeList = new LinkedList<>();
-        if (query.needsResultSetMapping()) {
+        Collection<Property<?>> queryColumns = query.getColumns();
+        this.needsResultSetMapping = queryColumns != null && !queryColumns.isEmpty();
+        if (needsResultSetMapping) {
             this.sqlResult = new SQLResult();
         }
     }
@@ -211,8 +216,15 @@ class SelectTranslatorContext implements SQLGenerationContext {
         return tableTree.getNodeCount();
     }
 
-    TranslatableQueryWrapper getQuery() {
+    FluentSelect<?, ?> getQuery() {
         return query;
+    }
+
+    /**
+     * @return whether the query selects a custom set of columns and thus needs an explicit result set mapping
+     */
+    boolean needsResultSetMapping() {
+        return needsResultSetMapping;
     }
 
     QueryMetadata getMetadata() {
@@ -243,7 +255,7 @@ class SelectTranslatorContext implements SQLGenerationContext {
             return hasAggregate;
         }
 
-        if (getQuery().getHavingQualifier() != null) {
+        if (getQuery().getHaving() != null) {
             return (hasAggregate = true);
         }
 

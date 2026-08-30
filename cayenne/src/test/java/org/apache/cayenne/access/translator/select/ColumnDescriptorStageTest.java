@@ -23,6 +23,7 @@ import org.apache.cayenne.access.jdbc.RSColumn;
 import org.apache.cayenne.access.sqlbuilder.sqltree.EmptyNode;
 import org.apache.cayenne.exp.path.CayennePath;
 import org.apache.cayenne.exp.property.PropertyFactory;
+import org.apache.cayenne.query.FluentSelect;
 import org.junit.jupiter.api.Test;
 
 import static org.junit.jupiter.api.Assertions.*;
@@ -31,13 +32,13 @@ public class ColumnDescriptorStageTest {
 
     @Test
     public void perform() {
-        TranslatableQueryWrapper wrapper = new MockQueryWrapperBuilder()
+        FluentSelect<?, ?> query = new MockFluentSelectBuilder()
                 .withDistinct(true)
                 .withMetaData(new MockQueryMetadataBuilder()
                         .withSuppressDistinct()
                         .build())
                 .build();
-        SelectTranslatorContext context = new MockSelectTranslatorContext(wrapper);
+        SelectTranslatorContext context = new MockSelectTranslatorContext(query);
 
         context.addResultNode(new EmptyNode());
         context.addResultNode(new EmptyNode(), CayennePath.of("key"));

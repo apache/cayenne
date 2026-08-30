@@ -23,8 +23,6 @@ import java.io.IOException;
 
 import org.apache.cayenne.ObjectContext;
 import org.apache.cayenne.Persistent;
-import org.apache.cayenne.access.translator.select.FluentSelectWrapper;
-import org.apache.cayenne.access.translator.select.TranslatableQueryWrapper;
 import org.apache.cayenne.exp.Expression;
 import org.apache.cayenne.exp.TraversalHandler;
 import org.apache.cayenne.query.FluentSelect;
@@ -46,13 +44,9 @@ public class ASTSubquery extends SimpleNode {
         }
     };
 
-    private final TranslatableQueryWrapper query;
+    private final FluentSelect<?, ?> query;
 
     public ASTSubquery(FluentSelect<?, ?> query) {
-        this(new FluentSelectWrapper(query));
-    }
-
-    public ASTSubquery(TranslatableQueryWrapper query) {
         super(0);
         this.query = query;
     }
@@ -71,15 +65,15 @@ public class ASTSubquery extends SimpleNode {
             throw new UnsupportedOperationException("Can't evaluate subquery expression against non-persistent object");
         }
         validateForInmemory(query);
-        return context.select(query.unwrap());
+        return context.select(query);
     }
 
     /**
      * Check that we can execute this subquery directly
      */
-    private void validateForInmemory(TranslatableQueryWrapper query) {
-        query.getQualifier().traverse(IN_MEMORY_VALIDATOR);
-        query.getHavingQualifier().traverse(IN_MEMORY_VALIDATOR);
+    private void validateForInmemory(FluentSelect<?, ?> query) {
+        query.getWhere().traverse(IN_MEMORY_VALIDATOR);
+        query.getHaving().traverse(IN_MEMORY_VALIDATOR);
         for(Ordering ordering : query.getOrderings()) {
             ordering.getSortSpec().traverse(IN_MEMORY_VALIDATOR);
         }
@@ -100,7 +94,7 @@ public class ASTSubquery extends SimpleNode {
         out.append("EXISTS");
     }
 
-    public TranslatableQueryWrapper getQuery() {
+    public FluentSelect<?, ?> getQuery() {
         return query;
     }
 

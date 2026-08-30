@@ -29,7 +29,7 @@ class HavingTranslationStage implements TranslationStage {
 
     @Override
     public void perform(SelectTranslatorContext context) {
-        Expression expression = context.getQuery().getHavingQualifier();
+        Expression expression = context.getQuery().getHaving();
         QualifierTranslator translator = context.getQualifierTranslator();
         Node qualifier = translator.translate(expression);
         if(qualifier != null) {

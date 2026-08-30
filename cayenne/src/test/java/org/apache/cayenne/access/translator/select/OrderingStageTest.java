@@ -31,6 +31,7 @@ import org.apache.cayenne.map.DbAttribute;
 import org.apache.cayenne.map.DbEntity;
 import org.apache.cayenne.map.ObjAttribute;
 import org.apache.cayenne.map.ObjEntity;
+import org.apache.cayenne.query.FluentSelect;
 import org.apache.cayenne.query.Ordering;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -65,7 +66,7 @@ public class OrderingStageTest {
         Ordering ordering = new Ordering("path");
         ordering.setDescending();
 
-        TranslatableQueryWrapper wrapper = new MockQueryWrapperBuilder()
+        FluentSelect<?, ?> query = new MockFluentSelectBuilder()
                 .withOrderings(Collections.singleton(ordering))
                 .withMetaData(new MockQueryMetadataBuilder()
                         .withDbEntity(dbEntity)
@@ -73,7 +74,7 @@ public class OrderingStageTest {
                         .build())
                 .withDistinct( true )
                 .build();
-        context = new MockSelectTranslatorContext(wrapper);
+        context = new MockSelectTranslatorContext(query);
     }
 
     @Test

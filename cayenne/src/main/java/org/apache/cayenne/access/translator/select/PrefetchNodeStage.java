@@ -37,7 +37,6 @@ import org.apache.cayenne.map.ObjRelationship;
 import org.apache.cayenne.query.PrefetchSelectQuery;
 import org.apache.cayenne.query.PrefetchTreeNode;
 import org.apache.cayenne.query.QueryMetadata;
-import org.apache.cayenne.query.Select;
 import org.apache.cayenne.reflect.ClassDescriptor;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -131,13 +130,11 @@ class PrefetchNodeStage implements TranslationStage {
     }
 
     private void processPrefetchQuery(SelectTranslatorContext context) {
-        Select<?> select = context.getQuery().unwrap();
-        if(!(select instanceof PrefetchSelectQuery)) {
+        if(!(context.getQuery() instanceof PrefetchSelectQuery<?> prefetchSelectQuery)) {
             return;
         }
 
         PathTranslator pathTranslator = context.getPathTranslator();
-        PrefetchSelectQuery<?> prefetchSelectQuery = (PrefetchSelectQuery<?>) select;
         for(ASTPath prefetchPath: prefetchSelectQuery.getResultPaths()) {
             ASTDbPath pathExp = (ASTDbPath) context.getMetadata()
                     .getClassDescriptor().getEntity().translateToDbPath(prefetchPath);

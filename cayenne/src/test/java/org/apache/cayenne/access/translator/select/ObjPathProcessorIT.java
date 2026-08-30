@@ -41,7 +41,7 @@ public class ObjPathProcessorIT {
     @BeforeEach
     public void prepareTranslationContext() {
         SelectTranslatorContext translatorContext = new SelectTranslatorContext(
-                new FluentSelectWrapper(ObjectSelect.query(Object.class)),
+                ObjectSelect.query(Object.class),
                 Mockito.mock(DbAdapter.class),
                 env.context().getEntityResolver(),
                 null

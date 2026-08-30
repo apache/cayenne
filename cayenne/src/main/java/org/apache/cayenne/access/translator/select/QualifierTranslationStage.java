@@ -33,7 +33,7 @@ class QualifierTranslationStage implements TranslationStage {
     public void perform(SelectTranslatorContext context) {
         QualifierTranslator translator = context.getQualifierTranslator();
 
-        Expression expression = context.getQuery().getQualifier();
+        Expression expression = context.getQuery().getWhere();
 
         // Attaching Obj entity's qualifier
         ObjEntity entity = context.getMetadata().getObjEntity();

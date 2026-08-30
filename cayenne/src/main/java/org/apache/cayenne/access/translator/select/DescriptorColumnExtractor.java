@@ -66,14 +66,14 @@ class DescriptorColumnExtractor extends BaseColumnExtractor implements PropertyV
         if(prefix != null && prefix.hasMarker(CayennePath.PREFETCH_MARKER)) {
             type = SelectTranslatorContext.DescriptorType.PREFETCH;
             labelPrefix = prefix;
-            if(context.getQuery().needsResultSetMapping()) {
+            if(context.needsResultSetMapping()) {
                 entityResult = context.getRootEntityResult();
                 if (entityResult == null) {
                     throw new CayenneRuntimeException("Can't process prefetch descriptor without root.");
                 }
             }
         } else {
-            if(context.getQuery().needsResultSetMapping()) {
+            if(context.needsResultSetMapping()) {
                 entityResult = new EntityResult(descriptor.getObjectClass());
                 newEntityResult = true;
             }
@@ -175,13 +175,13 @@ class DescriptorColumnExtractor extends BaseColumnExtractor implements PropertyV
 
     private void addEntityResultField(DbAttribute attribute) {
         String name = labelPrefix.dot(attribute.getName()).value();
-        if(context.getQuery().needsResultSetMapping()) {
+        if(context.needsResultSetMapping()) {
             entityResult.addDbField(name, name);
         }
     }
 
     private void addEntityResultField(CayennePath pathForFlattenedAttribute) {
-        if (context.getQuery().needsResultSetMapping()) {
+        if (context.needsResultSetMapping()) {
             String nameForFlattenedAttribute = pathForFlattenedAttribute.value();
             entityResult.addDbField(nameForFlattenedAttribute, nameForFlattenedAttribute);
         }

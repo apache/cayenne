@@ -99,9 +99,9 @@ public class SelfPropertyTest {
         assertTrue(node instanceof ASTSubquery);
 
         ASTSubquery subquery = (ASTSubquery) node;
-        assertTrue(subquery.getQuery().unwrap() instanceof ObjectSelect);
+        assertTrue(subquery.getQuery() instanceof ObjectSelect);
 
-        ObjectSelect<?> subSelect = (ObjectSelect<?>) subquery.getQuery().unwrap();
+        ObjectSelect<?> subSelect = (ObjectSelect<?>) subquery.getQuery();
         assertEquals(Artist.class, subSelect.getEntityType());
         assertEquals(ExpressionFactory.exp("artistName = 'test'"), subSelect.getWhere());
     }
@@ -118,9 +118,9 @@ public class SelfPropertyTest {
         assertTrue(node instanceof ASTSubquery);
 
         ASTSubquery subquery = (ASTSubquery) node;
-        assertTrue(subquery.getQuery().unwrap() instanceof ObjectSelect);
+        assertTrue(subquery.getQuery() instanceof ObjectSelect);
 
-        ObjectSelect<?> subSelect = (ObjectSelect<?>) subquery.getQuery().unwrap();
+        ObjectSelect<?> subSelect = (ObjectSelect<?>) subquery.getQuery();
         assertEquals(Artist.class, subSelect.getEntityType());
         assertEquals(ExpressionFactory.exp("artistName = 'test'"), subSelect.getWhere());
     }

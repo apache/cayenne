@@ -26,6 +26,7 @@ import org.apache.cayenne.access.sqlbuilder.sqltree.ValueNode;
 import org.apache.cayenne.exp.ExpressionFactory;
 import org.apache.cayenne.map.DbAttribute;
 import org.apache.cayenne.map.DbEntity;
+import org.apache.cayenne.query.FluentSelect;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
@@ -43,13 +44,13 @@ public class QualifierTranslationStageTest {
         dbAttribute.setName("path");
         dbEntity.addAttribute(dbAttribute);
 
-        TranslatableQueryWrapper wrapper = new MockQueryWrapperBuilder()
-                .withQualifier(ExpressionFactory.greaterOrEqualDbExp("path", 10))
+        FluentSelect<?, ?> query = new MockFluentSelectBuilder()
+                .withWhere(ExpressionFactory.greaterOrEqualDbExp("path", 10))
                 .withMetaData(new MockQueryMetadataBuilder()
                         .withDbEntity(dbEntity)
                         .build())
                 .build();
-        context = new MockSelectTranslatorContext(wrapper);
+        context = new MockSelectTranslatorContext(query);
     }
 
     @Test

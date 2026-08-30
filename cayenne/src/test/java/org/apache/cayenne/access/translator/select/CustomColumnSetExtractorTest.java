@@ -33,6 +33,7 @@ import org.apache.cayenne.map.DbEntity;
 import org.apache.cayenne.map.EntityResolver;
 import org.apache.cayenne.map.ObjAttribute;
 import org.apache.cayenne.map.ObjEntity;
+import org.apache.cayenne.query.FluentSelect;
 import org.junit.jupiter.api.Test;
 
 import static org.junit.jupiter.api.Assertions.*;
@@ -42,13 +43,17 @@ public class CustomColumnSetExtractorTest extends BaseColumnExtractorTest {
     @Test
     public void extractWithoutPrefix() {
         DbEntity mockDbEntity = createMockDbEntity("mock");
-        TranslatableQueryWrapper wrapper = new MockQueryWrapperBuilder()
-                .withNeedsResultSetMapping(true)
+        BaseProperty<?> property0 = PropertyFactory.createBase(ExpressionFactory.dbPathExp("name"), String.class);
+        Collection<Property<?>> properties = Collections.singleton(property0);
+
+        // a query with an explicit column set is what triggers the result set mapping
+        FluentSelect<?, ?> query = new MockFluentSelectBuilder()
+                .withColumns(properties)
                 .withMetaData(new MockQueryMetadataBuilder()
                         .withDbEntity(mockDbEntity)
                         .build())
                 .build();
-        SelectTranslatorContext context = new MockSelectTranslatorContext(wrapper);
+        SelectTranslatorContext context = new MockSelectTranslatorContext(query);
 
         DataMap dataMap = new DataMap();
         dataMap.addDbEntity(mockDbEntity);
@@ -68,9 +73,6 @@ public class CustomColumnSetExtractorTest extends BaseColumnExtractorTest {
 
         EntityResolver resolver = new EntityResolver();
         resolver.addDataMap(dataMap);
-
-        BaseProperty<?> property0 = PropertyFactory.createBase(ExpressionFactory.dbPathExp("name"), String.class);
-        Collection<Property<?>> properties = Collections.singleton(property0);
 
         CustomColumnSetExtractor extractor = new CustomColumnSetExtractor(context, properties);
         extractor.extract();

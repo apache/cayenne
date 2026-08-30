@@ -22,16 +22,17 @@ package org.apache.cayenne.access.translator.select;
 import org.apache.cayenne.access.types.ExtendedTypeMap;
 import org.apache.cayenne.dba.DbAdapter;
 import org.apache.cayenne.map.EntityResolver;
+import org.apache.cayenne.query.FluentSelect;
 
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
 public class MockSelectTranslatorContext extends SelectTranslatorContext {
-    MockSelectTranslatorContext(TranslatableQueryWrapper query) {
+    MockSelectTranslatorContext(FluentSelect<?, ?> query) {
         super(query, mockAdapter(), null, null);
     }
 
-    MockSelectTranslatorContext(TranslatableQueryWrapper query, EntityResolver resolver) {
+    MockSelectTranslatorContext(FluentSelect<?, ?> query, EntityResolver resolver) {
         super(query, mockAdapter(), resolver, null);
     }
 

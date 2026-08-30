@@ -44,7 +44,7 @@ class IdColumnExtractor extends BaseColumnExtractor {
     IdColumnExtractor(SelectTranslatorContext context, ObjEntity objEntity) {
         this(context, objEntity.getDbEntity());
         this.objEntity = objEntity;
-        if(context.getQuery().needsResultSetMapping()) {
+        if(context.needsResultSetMapping()) {
             this.result = new EntityResult(objEntity.getName());
         }
     }
