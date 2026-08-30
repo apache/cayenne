@@ -1081,7 +1081,7 @@ public class DataContext implements ObjectContext {
      * <p>
      */
     @Override
-    public <T> ResultIterator<T> iterator(final Select<T> query) {
+    public <T> ResultIterator<T> iterator(Select<T> query) {
         return performIteratedQueryInternal(query, false);
     }
 
@@ -1097,7 +1097,9 @@ public class DataContext implements ObjectContext {
      * Note that {@code performIteratedQuery} always returns {@link ResultIterator} over DataRows.
      * <p>
      * Use {@link #iterate(Select, org.apache.cayenne.ResultIteratorCallback)} to get access to objects.
+     * @deprecated in favor of {@link #iterator(Select)}.
      */
+    @Deprecated(since = "5.0", forRemoval = true)
     @SuppressWarnings({ "rawtypes" })
     public ResultIterator performIteratedQuery(Query query) {
         return performIteratedQueryInternal(query, true);
