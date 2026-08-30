@@ -83,7 +83,7 @@ public class EOObjEntity extends ObjEntity {
      * @since 1.2
      */
     // TODO: andrus, 5/27/2006 - make public after 1.2. Also maybe move entity
-    // initialization code from EOModelProcessor to this class, kind of like EOQuery does.
+    // initialization code from EOModelProcessor to this class.
     Map getEoMap() {
         return eoMap;
     }
@@ -92,7 +92,7 @@ public class EOObjEntity extends ObjEntity {
      * @since 1.2
      */
     // TODO: andrus, 5/27/2006 - make public after 1.2. Also maybe move entity
-    // initialization code from EOModelProcessor to this class, kind of like EOQuery does.
+    // initialization code from EOModelProcessor to this class.
     void setEoMap(Map eoMap) {
         this.eoMap = eoMap;
     }

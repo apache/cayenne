@@ -20,48 +20,55 @@
 package org.apache.cayenne.wocompat;
 
 import org.apache.cayenne.map.DataMap;
+import org.apache.cayenne.map.QueryDescriptor;
+import org.apache.cayenne.map.SelectQueryDescriptor;
+import org.apache.cayenne.query.ObjectSelect;
+import org.apache.cayenne.query.Ordering;
 import org.apache.cayenne.query.PrefetchTreeNode;
 import org.junit.jupiter.api.Test;
 
 import java.net.URL;
 import java.util.Collection;
-import java.util.Map;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.junit.jupiter.api.Assertions.assertInstanceOf;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.junit.jupiter.api.Assertions.assertSame;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
-public class EOQueryTest {
+public class EOFetchSpecificationParserTest {
 
     @Test
-    public void constructor() throws Exception {
+    public void loadedFetchSpecification() throws Exception {
 
         URL url = getClass().getClassLoader().getResource("wotests/fetchspec.eomodeld/");
         assertNotNull(url);
 
-        EOModelProcessor processor = new EOModelProcessor();
-        DataMap map = processor.loadEOModel(url);
+        DataMap map = new EOModelProcessor().loadEOModel(url);
 
-        @SuppressWarnings("unchecked")
-        Map<String, ?> fspecMap = (Map<String, ?>) PropertyListSerialization.propertyListFromStream(getClass()
-                .getClassLoader()
-                .getResourceAsStream("wotests/fetchspec.eomodeld/Entity1.fspec"));
-        assertNotNull(fspecMap);
-        assertNotNull(fspecMap.get("E1FS1"));
+        QueryDescriptor descriptor = map.getQueryDescriptor("Entity1_E1FS1");
+        assertNotNull(descriptor);
+        SelectQueryDescriptor selectDescriptor = assertInstanceOf(SelectQueryDescriptor.class, descriptor);
+        assertSame(map.getObjEntity("Entity1"), selectDescriptor.getRoot());
 
-        @SuppressWarnings("unchecked")
-        EOQuery query = new EOQuery(map.getObjEntity("Entity1"), (Map<String, ?>) fspecMap.get("E1FS1"));
-
-        assertNotNull(query.getWhere());
+        assertNotNull(selectDescriptor.getQualifier());
         assertEquals(
                 "(name = \"aa\") and (db:ID >= 7) and ((e2.name = \"bb\") or (db:e2.ID != 5))",
-                query.getWhere().toString());
+                selectDescriptor.getQualifier().toString());
+
+        ObjectSelect<?> query = selectDescriptor.buildQuery();
 
         assertNotNull(query.getPrefetches());
+        Collection<PrefetchTreeNode> prefetches = query.getPrefetches().getChildren();
+        assertEquals(1, prefetches.size());
+        assertEquals("e2", prefetches.iterator().next().getName());
 
-        Collection children = query.getPrefetches().getChildren();
-        assertEquals(1, children.size());
-        assertEquals("e2", ((PrefetchTreeNode) children.iterator().next()).getName());
+        Collection<Ordering> orderings = query.getOrderings();
+        assertEquals(1, orderings.size());
+        Ordering ordering = orderings.iterator().next();
+        assertEquals("name", ordering.getSortSpecString());
+        assertFalse(ordering.isAscending());
 
         assertTrue(query.isFetchingDataRows());
         assertEquals(500, query.getLimit());

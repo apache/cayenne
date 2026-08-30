@@ -263,7 +263,7 @@ public class EOModelProcessor {
 		// qualifiers
 		Map<String, ?> qualifierMap = (Map<String, ?>) plistMap.get("qualifier");
 		if (qualifierMap != null && !qualifierMap.isEmpty()) {
-			descriptor.setQualifier(EOQuery.EOFetchSpecificationParser.makeQualifier((EOObjEntity) root, qualifierMap));
+			descriptor.setQualifier(EOFetchSpecificationParser.makeQualifier((EOObjEntity) root, qualifierMap));
 		}
 
 		// prefetches
