@@ -37,9 +37,7 @@ class ResultIteratorConverterDecorator<T, R> implements ResultIterator<R> {
     @SuppressWarnings("unchecked")
     @Override
     public List<R> allRows() {
-        List<T> mainRows = iterator.allRows();
-        converter.convert(mainRows);
-        return (List<R>) mainRows;
+        return (List<R>) converter.convert(iterator.allRows());
     }
 
     @Override

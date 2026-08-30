@@ -21,6 +21,7 @@ package org.apache.cayenne.access;
 import org.apache.cayenne.DataRow;
 import org.apache.cayenne.PersistenceState;
 import org.apache.cayenne.ResultBatchIterator;
+import org.apache.cayenne.ResultIterator;
 import org.apache.cayenne.query.ObjectSelect;
 import org.apache.cayenne.test.jdbc.TableHelper;
 import org.apache.cayenne.testdo.embeddable.EmbedChild;
@@ -351,6 +352,21 @@ public class EmbeddingIT {
         }
 
         env.context().commitChanges();
+    }
+
+    @Test
+    public void columnSelectIteratorAllRows() throws Exception {
+        createSelectDataSet2();
+
+        try (ResultIterator<Embeddable1> it = ObjectSelect.columnQuery(EmbedEntity1.class, EmbedEntity1.EMBEDDED2)
+                .orderBy(EmbedEntity1.EMBEDDED2.dot(Embeddable1.EMBEDDED10).asc())
+                .iterator(env.context())) {
+
+            List<Embeddable1> result = it.allRows();
+            assertEquals(2, result.size());
+            assertEquals("e3", result.get(0).getEmbedded10());
+            assertEquals("ex3", result.get(1).getEmbedded10());
+        }
     }
 
     @Test

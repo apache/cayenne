@@ -182,6 +182,49 @@ public class DataContextIteratedQueryIT {
     }
 
     @Test
+    public void iteratorAllRows() throws Exception {
+        createArtistsDataSet();
+
+        try (ResultIterator<Artist> it = context.iterator(ObjectSelect.query(Artist.class))) {
+            List<Artist> rows = it.allRows();
+
+            assertEquals(7, rows.size());
+            for (Artist a : rows) {
+                assertNotNull(a.getArtistName());
+            }
+        }
+    }
+
+    @Test
+    public void iteratorAllRows_DataRows() throws Exception {
+        createArtistsDataSet();
+
+        try (ResultIterator<DataRow> it = context.iterator(ObjectSelect.dataRowQuery(Artist.class))) {
+            List<DataRow> rows = it.allRows();
+
+            assertEquals(7, rows.size());
+            for (DataRow row : rows) {
+                assertNotNull(row.get("ARTIST_NAME"));
+            }
+        }
+    }
+
+    @Test
+    public void iteratorAllRows_Scalars() throws Exception {
+        createArtistsDataSet();
+
+        try (ResultIterator<String> it = context
+                .iterator(ObjectSelect.columnQuery(Artist.class, Artist.ARTIST_NAME))) {
+            List<String> rows = it.allRows();
+
+            assertEquals(7, rows.size());
+            for (String name : rows) {
+                assertNotNull(name);
+            }
+        }
+    }
+
+    @Test
     public void contextIterator() throws Exception {
         createArtistsAndPaintingsDataSet();
         try (ResultIterator<Artist> it = context

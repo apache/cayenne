@@ -96,9 +96,9 @@ public class DataContext implements ObjectContext {
     /**
      * Returns the ObjectContext bound to the current thread.
      *
-     * @since 3.0
      * @return the ObjectContext associated with caller thread.
      * @throws IllegalStateException if there is no ObjectContext bound to the current thread.
+     * @since 3.0
      * @deprecated if you are using thread context, you can create your own ThreadLocal
      */
     @Deprecated(since = "5.0", forRemoval = true)
@@ -162,7 +162,7 @@ public class DataContext implements ObjectContext {
 
     /**
      * Creates a new DataContext with parent DataChannel and ObjectStore.
-     * 
+     *
      * @since 1.2
      */
     public DataContext(DataChannel channel, ObjectStore objectStore) {
@@ -198,7 +198,7 @@ public class DataContext implements ObjectContext {
      * following deserialization.
      *
      * @return true if the context successfully attached to the thread runtime,
-     *         false - if it was already attached.
+     * false - if it was already attached.
      * @since 3.1
      */
     protected boolean attachToRuntimeIfNeeded() {
@@ -299,7 +299,7 @@ public class DataContext implements ObjectContext {
     /**
      * Returns a DataDomain used by this DataContext. DataDomain is looked up in the DataChannel hierarchy. If the final
      * channel is not a DataDomain, null is returned.
-     * 
+     *
      * @return DataDomain that is a direct or indirect parent of this DataContext in the DataChannel hierarchy.
      * @since 1.1
      */
@@ -321,7 +321,7 @@ public class DataContext implements ObjectContext {
      * Sets a DataContextDelegate for this context. Delegate is notified of
      * certain events in the DataContext lifecycle and can customize DataContext
      * behavior.
-     * 
+     *
      * @since 1.1
      */
     public void setDelegate(DataContextDelegate delegate) {
@@ -330,7 +330,7 @@ public class DataContext implements ObjectContext {
 
     /**
      * Returns a delegate currently associated with this DataContext.
-     * 
+     *
      * @since 1.1
      */
     public DataContextDelegate getDelegate() {
@@ -339,8 +339,8 @@ public class DataContext implements ObjectContext {
 
     /**
      * @return a delegate instance if it is initialized, or a shared noop
-     *         implementation the context has no delegate. Useful to prevent
-     *         extra null checks and conditional logic in the code.
+     * implementation the context has no delegate. Useful to prevent
+     * extra null checks and conditional logic in the code.
      * @since 1.1
      */
     DataContextDelegate nonNullDelegate() {
@@ -426,7 +426,7 @@ public class DataContext implements ObjectContext {
 
     /**
      * Returns a collection of all uncommitted registered objects.
-     * 
+     *
      * @since 1.2
      */
     @Override
@@ -595,7 +595,7 @@ public class DataContext implements ObjectContext {
     /**
      * Converts a list of DataRows to a List of Persistent registered with this
      * DataContext.
-     * 
+     *
      * @since 3.0
      */
     public List objectsFromDataRows(ClassDescriptor descriptor, List<? extends DataRow> dataRows) {
@@ -608,13 +608,13 @@ public class DataContext implements ObjectContext {
         return new ObjectResolver(this, descriptor, true).synchronizedObjectsFromDataRows(dataRows);
     }
 
-    private List <?> objectsFromDataRowsFromParentContext(ClassDescriptor descriptor, List<? extends DataRow> dataRows) {
+    private List<?> objectsFromDataRowsFromParentContext(ClassDescriptor descriptor, List<? extends DataRow> dataRows) {
         return getParent().onQuery(this, new ObjectsFromDataRowsQuery(descriptor, dataRows)).firstList();
     }
 
     /**
      * Creates a Persistent from DataRow.
-     * 
+     *
      * @see DataRow
      * @since 3.1
      */
@@ -633,7 +633,7 @@ public class DataContext implements ObjectContext {
     /**
      * Creates a Persistent from DataRow. This variety of the
      * 'objectFromDataRow' method is normally used for generic classes.
-     * 
+     *
      * @see DataRow
      * @since 3.1
      * @since 5.0 returns {@link Persistent} instead of the deprecated DataObject
@@ -647,7 +647,7 @@ public class DataContext implements ObjectContext {
 
     /**
      * Creates and registers a new persistent object.
-     * 
+     *
      * @since 1.2
      */
     @Override
@@ -673,7 +673,7 @@ public class DataContext implements ObjectContext {
      * <i>Note: in most cases {@link #newObject(Class)} method should be used,
      * however this method is helpful when generic persistent classes are
      * used.</i>
-     * 
+     *
      * @since 3.0
      */
     public Persistent newObject(String entityName) {
@@ -706,9 +706,8 @@ public class DataContext implements ObjectContext {
      * relationships.
      * <p>
      * <i>Note that since 3.0 this method takes Object as an argument instead of a {@link Persistent}.</i>
-     * 
-     * @param object
-     *            new object that needs to be made persistent.
+     *
+     * @param object new object that needs to be made persistent.
      */
     @Override
     public void registerNewObject(Object object) {
@@ -828,7 +827,7 @@ public class DataContext implements ObjectContext {
     /**
      * Unregisters a Collection of Persistent objects from the DataContext and the underlying ObjectStore.
      * This operation also unsets DataContext for each object and changes its state to {@link PersistenceState#TRANSIENT}
-     * 
+     *
      * @see #invalidateObjects(Collection)
      */
     public void unregisterObjects(Collection<?> objects) {
@@ -867,7 +866,7 @@ public class DataContext implements ObjectContext {
      * If the parent channel is a DataContext, reverts local changes to make
      * this context look like the parent, if the parent channel is a DataDomain,
      * reverts all changes.
-     * 
+     *
      * @since 1.2
      */
     @Override
@@ -911,9 +910,9 @@ public class DataContext implements ObjectContext {
      * changes, without a database update. If it is a DataDomain (the most
      * common case), the changes are written to the database. To cause cascading
      * commit all the way to the database, one must use {@link #commitChanges()} .
-     * 
-     * @since 1.2
+     *
      * @see #commitChanges()
+     * @since 1.2
      */
     @Override
     public void commitChangesToParent() {
@@ -950,7 +949,7 @@ public class DataContext implements ObjectContext {
 
     /**
      * Synchronizes with the parent channel, performing a flush or a commit.
-     * 
+     *
      * @since 1.2
      */
     GraphDiff flushToParent(boolean cascade) {
@@ -1096,11 +1095,11 @@ public class DataContext implements ObjectContext {
      * <p>
      * Note that {@code performIteratedQuery} always returns {@link ResultIterator} over DataRows.
      * <p>
-     * Use {@link #iterate(Select, org.apache.cayenne.ResultIteratorCallback)} to get access to objects.
+     *
      * @deprecated in favor of {@link #iterator(Select)}.
      */
     @Deprecated(since = "5.0", forRemoval = true)
-    @SuppressWarnings({ "rawtypes" })
+    @SuppressWarnings({"rawtypes"})
     public ResultIterator performIteratedQuery(Query query) {
         return performIteratedQueryInternal(query, true);
     }
@@ -1110,12 +1109,12 @@ public class DataContext implements ObjectContext {
         IteratedQueryDecorator queryDecorator = new IteratedQueryDecorator(query, fetchDataRows);
         Query queryToRun = nonNullDelegate().willPerformQuery(this, queryDecorator);
         QueryResponse queryResponse = onQuery(this, queryToRun);
-        return (ResultIterator<T>)queryResponse.firstIterator();
+        return (ResultIterator<T>) queryResponse.firstIterator();
     }
 
     /**
      * Executes a query returning a generic response.
-     * 
+     *
      * @since 1.2
      */
     @Override
@@ -1148,10 +1147,10 @@ public class DataContext implements ObjectContext {
      * <p>
      * <i>Since 1.2 takes any Query parameter, not just GenericSelectQuery</i>
      * </p>
-     * 
+     *
      * @return A list of Persistent objects or a DataRows, depending on the value
-     *         returned by {@link QueryMetadata#isFetchingDataRows()}.
-     *         Сan also return an iterator if the query is an instance of iteratedQuery.
+     * returned by {@link QueryMetadata#isFetchingDataRows()}.
+     * Сan also return an iterator if the query is an instance of iteratedQuery.
      */
     @Override
     public List performQuery(Query query) {
@@ -1167,7 +1166,7 @@ public class DataContext implements ObjectContext {
     /**
      * An implementation of a {@link DataChannel} method that is used by child
      * contexts to execute queries. Not intended for direct use.
-     * 
+     *
      * @since 1.2
      */
     public QueryResponse onQuery(ObjectContext context, Query query) {
@@ -1196,7 +1195,7 @@ public class DataContext implements ObjectContext {
     /**
      * Performs a single database query that does not select rows. Returns an
      * array of update counts.
-     * 
+     *
      * @since 1.1
      */
     public int[] performNonSelectingQuery(Query query) {
@@ -1207,7 +1206,7 @@ public class DataContext implements ObjectContext {
     /**
      * Performs a named mapped query that does not select rows. Returns an array
      * of update counts.
-     * 
+     *
      * @since 1.1
      */
     public int[] performNonSelectingQuery(String queryName) {
@@ -1217,7 +1216,7 @@ public class DataContext implements ObjectContext {
     /**
      * Performs a named mapped non-selecting query using a map of parameters.
      * Returns an array of update counts.
-     * 
+     *
      * @since 1.1
      */
     public int[] performNonSelectingQuery(String queryName, Map<String, ?> parameters) {
@@ -1229,14 +1228,12 @@ public class DataContext implements ObjectContext {
      * the DataMaps. Internally Cayenne uses a caching policy defined in the
      * named query. If refresh flag is true, a refresh is forced no matter what
      * the caching policy is.
-     * 
-     * @param queryName
-     *            a name of a GenericSelectQuery defined in one of the DataMaps.
-     *            If no such query is defined, this method will throw a
-     *            CayenneRuntimeException.
-     * @param expireCachedLists
-     *            A flag that determines whether refresh of <b>cached lists</b>
-     *            is required in case a query uses caching.
+     *
+     * @param queryName         a name of a GenericSelectQuery defined in one of the DataMaps.
+     *                          If no such query is defined, this method will throw a
+     *                          CayenneRuntimeException.
+     * @param expireCachedLists A flag that determines whether refresh of <b>cached lists</b>
+     *                          is required in case a query uses caching.
      * @since 1.1
      */
     public List<?> performQuery(String queryName, boolean expireCachedLists) {
@@ -1248,19 +1245,16 @@ public class DataContext implements ObjectContext {
      * the DataMaps. Internally Cayenne uses a caching policy defined in the
      * named query. If refresh flag is true, a refresh is forced no matter what
      * the caching policy is.
-     * 
-     * @param queryName
-     *            a name of a GenericSelectQuery defined in one of the DataMaps.
-     *            If no such query is defined, this method will throw a
-     *            CayenneRuntimeException.
-     * @param parameters
-     *            A map of parameters to use with stored query.
-     * @param expireCachedLists
-     *            A flag that determines whether refresh of <b>cached lists</b>
-     *            is required in case a query uses caching.
+     *
+     * @param queryName         a name of a GenericSelectQuery defined in one of the DataMaps.
+     *                          If no such query is defined, this method will throw a
+     *                          CayenneRuntimeException.
+     * @param parameters        A map of parameters to use with stored query.
+     * @param expireCachedLists A flag that determines whether refresh of <b>cached lists</b>
+     *                          is required in case a query uses caching.
      * @since 1.1
      */
-    public List<?> performQuery(String queryName, Map <String,?>parameters, boolean expireCachedLists) {
+    public List<?> performQuery(String queryName, Map<String, ?> parameters, boolean expireCachedLists) {
         return (List<?>) performQuery(expireCachedLists ?
                 MappedSelect.query(queryName).params(parameters).forceNoCache() :
                 MappedSelect.query(queryName).params(parameters));
@@ -1269,7 +1263,7 @@ public class DataContext implements ObjectContext {
     /**
      * Returns <code>true</code> if the ObjectStore uses shared cache of a
      * parent DataDomain.
-     * 
+     *
      * @since 1.1
      */
     public boolean isUsingSharedSnapshotCache() {
@@ -1329,7 +1323,7 @@ public class DataContext implements ObjectContext {
 
     /**
      * Returns this context's ObjectStore.
-     * 
+     *
      * @since 1.2
      */
     @Override
@@ -1341,7 +1335,7 @@ public class DataContext implements ObjectContext {
      * An internal version of {@link #localObject(Persistent)} that operates on
      * ObjectId instead of Persistent, and wouldn't attempt to look up an object
      * in the parent channel.
-     * 
+     *
      * @since 3.1
      */
     Persistent findOrCreateObject(ObjectId id) {
