@@ -21,13 +21,8 @@ package org.apache.cayenne.query;
 
 import org.junit.jupiter.api.Test;
 
-import java.util.Collections;
-import java.util.HashMap;
-import java.util.Map;
-
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
-import static org.junit.jupiter.api.Assertions.assertNotSame;
 import static org.junit.jupiter.api.Assertions.assertNull;
 import static org.junit.jupiter.api.Assertions.assertSame;
 import static org.junit.jupiter.api.Assertions.assertTrue;
@@ -35,31 +30,11 @@ import static org.junit.jupiter.api.Assertions.assertTrue;
 public class ProcedureQueryTest {
 
     @Test
-    public void createQuery() {
-        ProcedureQuery template = new ProcedureQuery();
-        Query clone = template.createQuery(Collections.EMPTY_MAP);
-        assertTrue(clone instanceof ProcedureQuery);
-        assertNotSame(template, clone);
-    }
-
-    @Test
     public void columnNameCapitalization() {
         ProcedureQuery q1 = new ProcedureQuery();
         assertSame(CapsStrategy.DEFAULT, q1.getColumnNamesCapitalization());
         q1.setColumnNamesCapitalization(CapsStrategy.UPPER);
         assertEquals(CapsStrategy.UPPER, q1.getColumnNamesCapitalization());
-    }
-
-    @Test
-    public void createQueryWithParameters() {
-        Map params = new HashMap();
-        params.put("a", "1");
-        params.put("b", "2");
-
-        ProcedureQuery template = new ProcedureQuery();
-        ProcedureQuery clone = (ProcedureQuery) template.createQuery(params);
-
-        assertEquals(params, clone.getParameters());
     }
 
     @Test

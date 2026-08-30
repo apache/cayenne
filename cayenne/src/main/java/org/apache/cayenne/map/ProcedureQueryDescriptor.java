@@ -63,6 +63,16 @@ public class ProcedureQueryDescriptor extends QueryDescriptor {
         return procedureQuery;
     }
 
+    /**
+     * @since 5.0
+     */
+    @Override
+    public ProcedureQuery buildQuery(Map<String, ?> parameters) {
+        ProcedureQuery procedureQuery = buildQuery();
+        procedureQuery.setParameters(parameters);
+        return procedureQuery;
+    }
+
     @Override
     public void encodeAsXML(XMLEncoder encoder, ConfigurationNodeVisitor delegate) {
         encoder.start("query")

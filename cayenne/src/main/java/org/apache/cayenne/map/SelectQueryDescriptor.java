@@ -137,6 +137,19 @@ public class SelectQueryDescriptor extends QueryDescriptor {
 
     @Override
     public ObjectSelect<?> buildQuery() {
+        return buildQuery(getQualifier());
+    }
+
+    /**
+     * @since 5.0
+     */
+    @Override
+    public ObjectSelect<?> buildQuery(Map<String, ?> parameters) {
+        Expression qualifier = getQualifier();
+        return buildQuery(qualifier != null ? qualifier.params(parameters, true) : null);
+    }
+
+    private ObjectSelect<?> buildQuery(Expression qualifier) {
         // resolve root
         Object root = getRoot();
         String rootEntityName;
@@ -148,7 +161,7 @@ public class SelectQueryDescriptor extends QueryDescriptor {
             throw new CayenneRuntimeException("Unexpected root for the SelectQueryDescriptor '%s'.", root);
         }
 
-        ObjectSelect<?> query = ObjectSelect.query(Object.class, getQualifier());
+        ObjectSelect<?> query = ObjectSelect.query(Object.class, qualifier);
         query.entityName(rootEntityName);
         query.setRoot(root);
 

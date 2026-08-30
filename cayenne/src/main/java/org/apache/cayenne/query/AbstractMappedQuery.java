@@ -90,16 +90,6 @@ public abstract class AbstractMappedQuery extends IndirectQuery {
 
     @Override
     protected Query createReplacementQuery(EntityResolver resolver) {
-        Query query = resolver.getQueryDescriptor(queryName).buildQuery();
-
-        if (query instanceof ParameterizedQuery) {
-            query = ((ParameterizedQuery) query).createQuery(normalizedParameters());
-        } else if (query instanceof EJBQLQuery) {
-            for (Map.Entry<String, ?> entry : normalizedParameters().entrySet()) {
-                ((EJBQLQuery) query).setParameter(entry.getKey(), entry.getValue());
-            }
-        }
-
-        return query;
+        return resolver.getQueryDescriptor(queryName).buildQuery(normalizedParameters());
     }
 }

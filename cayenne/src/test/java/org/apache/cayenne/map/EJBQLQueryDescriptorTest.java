@@ -17,23 +17,24 @@
  *  under the License.
  ****************************************************************/
 
-package org.apache.cayenne.query;
+package org.apache.cayenne.map;
 
 import java.util.Map;
 
-/**
- * Defines a query that can serve as a template for other queries. ParameterizedQuery
- * interface is used mainly in DataContext convenience methods, simplifying execution of
- * the mapped queries.
- * 
- * @since 1.1
- */
-public interface ParameterizedQuery extends Query {
+import org.apache.cayenne.query.EJBQLQuery;
+import org.junit.jupiter.api.Test;
 
-    /**
-     * Creates a new query based on current query as a template, and using a Map of named
-     * parameters. In case of select queries, it is up to the implementing query to name
-     * the new query to avoid cache key conflicts.
-     */
-    Query createQuery(Map<String, ?> parameters);
+import static org.junit.jupiter.api.Assertions.assertEquals;
+
+public class EJBQLQueryDescriptorTest {
+
+    @Test
+    public void buildQueryWithParameters() {
+        EJBQLQueryDescriptor descriptor = QueryDescriptor.ejbqlQueryDescriptor();
+        descriptor.setEjbql("select a from Artist a where a.name = :name");
+
+        EJBQLQuery query = descriptor.buildQuery(Map.of("name", "artist1"));
+
+        assertEquals(Map.of("name", "artist1"), query.getNamedParameters());
+    }
 }

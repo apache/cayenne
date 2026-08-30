@@ -65,7 +65,7 @@ import org.apache.cayenne.map.SQLResult;
  * 
  * @since 1.1
  */
-public class SQLTemplate extends AbstractQuery implements ParameterizedQuery {
+public class SQLTemplate extends AbstractQuery {
 
 	private static final long serialVersionUID = -3073521388289663641L;
 
@@ -305,32 +305,6 @@ public class SQLTemplate extends AbstractQuery implements ParameterizedQuery {
 
 		query.metaData.copyFromInfo(this.metaData);
 		query.setParameters(parameters);
-		query.setColumnNamesCapitalization(this.getColumnNamesCapitalization());
-
-		return query;
-	}
-
-	/**
-	 * Creates and returns a new SQLTemplate built using this query as a
-	 * prototype and substituting template parameters with the values from the
-	 * map.
-	 * 
-	 * @since 1.1
-	 */
-	@Override
-	public Query createQuery(Map<String, ?> parameters) {
-		// create a query replica
-		SQLTemplate query = new SQLTemplate();
-
-		query.setRoot(root);
-		query.setDefaultTemplate(getDefaultTemplate());
-
-		if (templates != null) {
-			query.templates = new HashMap<>(templates);
-		}
-
-		query.metaData.copyFromInfo(this.metaData);
-		query.setParams(parameters);
 		query.setColumnNamesCapitalization(this.getColumnNamesCapitalization());
 
 		return query;

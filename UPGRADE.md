@@ -55,6 +55,11 @@ Expression caseWhenExp = caseWhen(
 
 ## Upgrading to 5.0-M4
 
+*  The `org.apache.cayenne.query.ParameterizedQuery` interface was removed, together with the `createQuery(Map)`
+  methods of `SQLTemplate`, `ProcedureQuery` and `ObjectSelect` that implemented it. Applying parameters to a mapped
+  query is now the job of the query descriptor - override `QueryDescriptor.buildQuery(Map)` if you have a custom
+  `QueryDescriptor` that supports parameters. This does not affect the user-facing `MappedSelect` / `MappedExec` API.
+
 *  The `groupId` of `cayenne-modeler` and `cayenne-wocompat` changed from `org.apache.cayenne.modeler` to
   `org.apache.cayenne`. Artifact ids and versions are unchanged. If you depend on any of them directly, update the
   coordinates:

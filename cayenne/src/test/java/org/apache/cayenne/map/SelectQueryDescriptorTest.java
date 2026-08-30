@@ -19,6 +19,8 @@
 
 package org.apache.cayenne.map;
 
+import java.util.Map;
+
 import org.apache.cayenne.exp.ExpressionFactory;
 import org.apache.cayenne.query.ObjectSelect;
 import org.apache.cayenne.query.QueryMetadata;
@@ -57,6 +59,26 @@ public class SelectQueryDescriptorTest {
         ObjectSelect<?> query = builder.buildQuery();
 
         assertEquals(ExpressionFactory.exp("abc = 5"), query.getWhere());
+    }
+
+    @Test
+    public void buildQueryWithParameters() {
+        SelectQueryDescriptor builder = QueryDescriptor.selectQueryDescriptor();
+        builder.setRoot("FakeRoot");
+        builder.setQualifier(ExpressionFactory.exp("abc = $a and def = $b"));
+
+        ObjectSelect<?> query = builder.buildQuery(Map.of("a", 5));
+
+        // parameters with no matching value are pruned from the qualifier
+        assertEquals(ExpressionFactory.exp("abc = 5"), query.getWhere());
+    }
+
+    @Test
+    public void buildQueryWithoutParameters() {
+        SelectQueryDescriptor builder = QueryDescriptor.selectQueryDescriptor();
+        builder.setRoot("FakeRoot");
+
+        assertNull(builder.buildQuery(Map.of("a", 5)).getWhere());
     }
 
     @Test

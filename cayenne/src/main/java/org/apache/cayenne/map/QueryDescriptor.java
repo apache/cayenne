@@ -208,6 +208,17 @@ public class QueryDescriptor implements Serializable, ConfigurationNode, XMLSeri
         throw new CayenneRuntimeException("Unable to build query object of this type.");
     }
 
+    /**
+     * Assembles Cayenne query instance of appropriate type from this descriptor, applying a map of named
+     * parameters to it. Subclasses that support parameters must override this method. The default
+     * implementation ignores the parameters.
+     *
+     * @since 5.0
+     */
+    public Query buildQuery(Map<String, ?> parameters) {
+        return buildQuery();
+    }
+
     @Override
     public <T> T acceptVisitor(ConfigurationNodeVisitor<T> visitor) {
         return visitor.visitQuery(this);

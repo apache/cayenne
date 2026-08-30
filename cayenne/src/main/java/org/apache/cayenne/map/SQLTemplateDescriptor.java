@@ -133,6 +133,16 @@ public class SQLTemplateDescriptor extends QueryDescriptor {
         return template;
     }
 
+    /**
+     * @since 5.0
+     */
+    @Override
+    public SQLTemplate buildQuery(Map<String, ?> parameters) {
+        SQLTemplate template = buildQuery();
+        template.setParams(parameters);
+        return template;
+    }
+
     @Override
     public void encodeAsXML(XMLEncoder encoder, ConfigurationNodeVisitor delegate) {
         encoder.start("query")

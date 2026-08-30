@@ -19,6 +19,8 @@
 
 package org.apache.cayenne.map;
 
+import java.util.Map;
+
 import org.apache.cayenne.query.*;
 import org.junit.jupiter.api.Test;
 
@@ -71,6 +73,17 @@ public class SQLTemplateDescriptorTest {
 
         SQLTemplate query = builder.buildQuery();
         assertEquals("abc", query.getDefaultTemplate());
+    }
+
+    @Test
+    public void buildQueryWithParameters() {
+        SQLTemplateDescriptor builder = QueryDescriptor.sqlTemplateDescriptor();
+        builder.setSql("SELECT * FROM ARTIST WHERE ARTIST_NAME = #bind($name)");
+
+        Map<String, Object> params = Map.of("name", "artist1");
+        SQLTemplate query = builder.buildQuery(params);
+
+        assertEquals(params, query.getParams());
     }
 
     @Test

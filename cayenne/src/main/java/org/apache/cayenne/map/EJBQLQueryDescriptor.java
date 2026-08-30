@@ -57,6 +57,16 @@ public class EJBQLQueryDescriptor extends QueryDescriptor {
         return ejbqlQuery;
     }
 
+    /**
+     * @since 5.0
+     */
+    @Override
+    public EJBQLQuery buildQuery(Map<String, ?> parameters) {
+        EJBQLQuery ejbqlQuery = buildQuery();
+        parameters.forEach(ejbqlQuery::setParameter);
+        return ejbqlQuery;
+    }
+
     @Override
     public void encodeAsXML(XMLEncoder encoder, ConfigurationNodeVisitor delegate) {
         encoder.start("query").attribute("name", getName()).attribute("type", type);

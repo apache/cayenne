@@ -19,7 +19,6 @@
 package org.apache.cayenne.query;
 
 import java.util.List;
-import java.util.Map;
 
 import org.apache.cayenne.DataRow;
 import org.apache.cayenne.ObjectContext;
@@ -49,7 +48,7 @@ import org.apache.cayenne.map.ObjEntity;
  *
  * @since 4.0
  */
-public class ObjectSelect<T> extends FluentSelect<T, ObjectSelect<T>> implements ParameterizedQuery {
+public class ObjectSelect<T> extends FluentSelect<T, ObjectSelect<T>> {
 
     private static final long serialVersionUID = -156124021150949227L;
 
@@ -349,22 +348,5 @@ public class ObjectSelect<T> extends FluentSelect<T, ObjectSelect<T>> implements
     @Override
     protected ObjectSelectMetadata getBaseMetaData() {
         return metaData;
-    }
-
-    /**
-     * This method is intended for internal use in a {@link MappedSelect}.
-     *
-     * @param parameters to apply
-     * @return this query with parameters applied to the <b>where</b> qualifier
-     *
-     * @since 4.2
-     */
-    @Override
-    public Query createQuery(Map<String, ?> parameters) {
-        if(where == null) {
-            return this;
-        }
-        where = where.params(parameters, true);
-        return this;
     }
 }

@@ -50,7 +50,7 @@ import java.util.Map;
  * {@link org.apache.cayenne.access.DataContext#performGenericQuery(Query)}.
  * </p>
  */
-public class ProcedureQuery extends AbstractQuery implements ParameterizedQuery {
+public class ProcedureQuery extends AbstractQuery {
 
     public static final String COLUMN_NAME_CAPITALIZATION_PROPERTY = "cayenne.ProcedureQuery.columnNameCapitalization";
 
@@ -205,30 +205,6 @@ public class ProcedureQuery extends AbstractQuery implements ParameterizedQuery 
                 : null;
 
         metaData.initWithProperties(properties);
-    }
-
-    /**
-     * Creates and returns a new ProcedureQuery built using this query as a prototype and
-     * substituting template parameters with the values from the map.
-     * 
-     * @since 1.1
-     */
-    public Query createQuery(Map<String, ?> parameters) {
-        // create a query replica
-        ProcedureQuery query = new ProcedureQuery();
-
-        if (root != null) {
-            query.setRoot(root);
-        }
-
-        query.setResultEntityName(resultEntityName);
-        query.metaData.copyFromInfo(this.metaData);
-        query.setParameters(parameters);
-
-        // TODO: implement algorithm for building the name based on the original name and
-        // the hashcode of the map of parameters. This way query clone can take advantage
-        // of caching.
-        return query;
     }
 
     @Override
