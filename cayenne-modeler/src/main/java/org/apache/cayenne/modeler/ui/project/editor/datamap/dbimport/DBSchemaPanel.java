@@ -75,7 +75,7 @@ public class DBSchemaPanel extends JPanel {
 
     private final AppAction.CayenneToolbarButton moveButton;
     private final AppAction.CayenneToolbarButton moveInvertButton;
-    private final JScrollPane scrollPane;
+    private final DbImportTreeView sourceTreeView;
 
     private ImportSourceTree importSourceTree;
 
@@ -88,7 +88,7 @@ public class DBSchemaPanel extends JPanel {
         this.insertableLevels = new HashMap<>();
         this.moveButton = (AppAction.CayenneToolbarButton) actions.getMoveImportNodeAction().buildButton();
         this.moveInvertButton = (AppAction.CayenneToolbarButton) actions.getMoveInvertNodeAction().buildButton();
-        this.scrollPane = new JScrollPane(sourceTree);
+        this.sourceTreeView = new DbImportTreeView(sourceTree);
 
         initLayout();
         initBindings();
@@ -138,7 +138,7 @@ public class DBSchemaPanel extends JPanel {
         moveInvertButton.setText(MOVE_INV_BUTTON_LABEL);
 
         setLayout(new BorderLayout());
-        add(scrollPane, BorderLayout.CENTER);
+        add(sourceTreeView, BorderLayout.CENTER);
     }
 
     private void initBindings() {
@@ -175,7 +175,7 @@ public class DBSchemaPanel extends JPanel {
     }
 
     public void resetHorizontalScroll() {
-        scrollPane.getHorizontalScrollBar().setValue(0);
+        sourceTreeView.getScrollPane().getHorizontalScrollBar().setValue(0);
     }
 
     private boolean canBeMoved() {

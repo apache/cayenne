@@ -28,12 +28,10 @@ import javax.swing.tree.TreeNode;
 public class DbImportTreeModel extends DefaultTreeModel {
 
     private final boolean canBeCleaned;
-    private final String emptyText;
 
-    DbImportTreeModel(TreeNode root, boolean canBeCleaned, String emptyText) {
+    DbImportTreeModel(TreeNode root, boolean canBeCleaned) {
         super(root);
         this.canBeCleaned = canBeCleaned;
-        this.emptyText = emptyText;
     }
 
     private void clearReverseEngineering(ReverseEngineering reverseEngineering) {
@@ -49,12 +47,8 @@ public class DbImportTreeModel extends DefaultTreeModel {
 
     private void preprocessTree() {
         DbImportTreeNode rootNode = (DbImportTreeNode) getRoot();
-        if (rootNode.getChildCount() == 0) {
-            ReverseEngineering reverseEngineering = ((ReverseEngineering) rootNode.getUserObject());
-            if (canBeCleaned) {
-                clearReverseEngineering(reverseEngineering);
-            }
-            rootNode.add(new DbImportTreeNode(emptyText));
+        if (rootNode.getChildCount() == 0 && canBeCleaned) {
+            clearReverseEngineering((ReverseEngineering) rootNode.getUserObject());
         }
     }
 

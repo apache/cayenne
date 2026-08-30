@@ -92,7 +92,7 @@ class ReverseEngineeringTreePanel extends ProjectPanel {
         popups.put(ExcludeProcedure.class, new DefaultPopUpMenu(actions));
         changeIcons();
         setLayout(new BorderLayout());
-        add(new JScrollPane(reverseEngineeringTree), BorderLayout.CENTER);
+        add(new DbImportTreeView(reverseEngineeringTree), BorderLayout.CENTER);
     }
 
     private void initBindings() {

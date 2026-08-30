@@ -40,6 +40,7 @@ import javax.swing.plaf.basic.BasicTreeUI;
 import javax.swing.tree.TreeNode;
 import javax.swing.tree.TreePath;
 import java.awt.Color;
+import java.awt.Dimension;
 import java.awt.Graphics;
 import java.awt.Insets;
 import java.awt.Rectangle;
@@ -56,6 +57,7 @@ public class DbImportTree extends JTree {
     private boolean isTransferable;
     private ReverseEngineering reverseEngineering;
     private LoadDbSchemaAction loadDbSchemaAction;
+    private String emptyText;
 
     public DbImportTree(TreeNode node) {
         super(node);
@@ -66,6 +68,28 @@ public class DbImportTree extends JTree {
 
     public void setLoadDbSchemaAction(LoadDbSchemaAction loadDbSchemaAction) {
         this.loadDbSchemaAction = loadDbSchemaAction;
+    }
+
+    /**
+     * Sets a message shown in place of this tree while it is empty.
+     */
+    public void setEmptyText(String emptyText) {
+        this.emptyText = emptyText;
+    }
+
+    public String getEmptyText() {
+        return emptyText;
+    }
+
+    @Override
+    public Dimension getPreferredScrollableViewportSize() {
+        Dimension size = super.getPreferredScrollableViewportSize();
+        if (getRowCount() == 0) {
+            // an empty tree has no rows to measure, and JTree falls back to a 16 px guess. Use our own row
+            // height instead, so that an empty tree takes as much space as a populated one
+            size.height = getVisibleRowCount() * DbImportTreeCellRenderer.MIN_ROW_HEIGHT;
+        }
+        return size;
     }
 
     public void translateReverseEngineeringToTree(ReverseEngineering reverseEngineering, boolean isTransferable) {

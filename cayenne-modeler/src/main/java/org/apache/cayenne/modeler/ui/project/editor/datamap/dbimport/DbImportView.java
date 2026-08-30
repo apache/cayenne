@@ -58,14 +58,16 @@ public class DbImportView extends ProjectPanel {
 
         DbImportTreeNode configRoot = new DbImportTreeNode(new ReverseEngineering());
         DbImportTree configTree = new DbImportTree(configRoot);
-        DbImportTreeModel configModel = new DbImportTreeModel(configRoot, true, "Create DB Import Rules");
+        DbImportTreeModel configModel = new DbImportTreeModel(configRoot, true);
+        configTree.setEmptyText("Create DB Import rules");
         configTree.setRootVisible(false);
         configTree.setModel(configModel);
         configTree.setShowsRootHandles(true);
 
         DbImportTreeNode dbSchemaRootNode = new DbImportTreeNode(new ReverseEngineering());
         DbImportTree dbSchemaTree = new DbImportTree(new TransferableNode(dbSchemaRootNode));
-        DbImportTreeModel dbSchemaModel = new DbImportTreeModel(dbSchemaRootNode, false, "Click 'Refresh DB Schema' to load the schema.");
+        DbImportTreeModel dbSchemaModel = new DbImportTreeModel(dbSchemaRootNode, false);
+        dbSchemaTree.setEmptyText("Click 'Refresh DB Schema' to load the schema");
         dbSchemaTree.setRootVisible(false);
         dbSchemaTree.setShowsRootHandles(true);
         dbSchemaTree.setModel(dbSchemaModel);

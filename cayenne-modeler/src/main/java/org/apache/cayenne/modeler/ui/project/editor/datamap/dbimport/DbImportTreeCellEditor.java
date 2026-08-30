@@ -25,8 +25,11 @@ import org.apache.cayenne.modeler.ui.project.editor.datamap.dbimport.action.Edit
 import org.apache.cayenne.modeler.ui.project.editor.datamap.dbimport.tree.DbImportTreeNode;
 import org.apache.cayenne.util.Util;
 
+import javax.swing.DefaultCellEditor;
+import javax.swing.JTextField;
 import javax.swing.JTree;
 import javax.swing.UIManager;
+import javax.swing.border.Border;
 import javax.swing.event.CellEditorListener;
 import javax.swing.event.ChangeEvent;
 import javax.swing.tree.DefaultTreeCellEditor;
@@ -45,6 +48,7 @@ public class DbImportTreeCellEditor extends DefaultTreeCellEditor {
         super(tree, renderer);
         this.actions = actions;
         setFont(UIManager.getFont("Tree.font"));
+        initEditorFieldBorder();
         this.addCellEditorListener(new CellEditorListener() {
             @Override
             public void editingStopped(ChangeEvent e) {
@@ -57,6 +61,19 @@ public class DbImportTreeCellEditor extends DefaultTreeCellEditor {
             }
         });
 
+    }
+
+    /**
+     * Replaces the default "Tree.editorBorder" - a black line with no padding - with the border used by the
+     * regular text fields, so that the editor gets the same padding and the same (focus-aware) border color.
+     */
+    private void initEditorFieldBorder() {
+        Border border = UIManager.getBorder("TextField.border");
+        if (border != null
+                && realEditor instanceof DefaultCellEditor cellEditor
+                && cellEditor.getComponent() instanceof JTextField textField) {
+            textField.setBorder(border);
+        }
     }
 
     @Override

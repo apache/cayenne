@@ -44,6 +44,8 @@ import java.util.Map;
 
 public class DbImportTreeCellRenderer extends DefaultTreeCellRenderer {
 
+    static final int MIN_ROW_HEIGHT = 25;
+
     protected DbImportTreeNode node;
     private Map<Class<?>, String> icons;
     private Map<Class<?>, String> transferableTreeIcons;
@@ -110,7 +112,7 @@ public class DbImportTreeCellRenderer extends DefaultTreeCellRenderer {
     @Override
     public Dimension getPreferredSize() {
         Dimension size = super.getPreferredSize();
-        return new Dimension(size.width, Math.max(size.height, 25));
+        return new Dimension(size.width, Math.max(size.height, MIN_ROW_HEIGHT));
     }
 
     @Override

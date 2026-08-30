@@ -56,7 +56,7 @@ public class ColorTreeRenderer extends DbImportTreeCellRenderer {
                                                   boolean leaf, int row, boolean hasFocus) {
         super.getTreeCellRendererComponent(tree, value, selected, expanded, leaf, row, hasFocus);
 
-        if (this.node.isLabel() || selected) {
+        if (this.node.isLabel()) {
             return this;
         }
 
@@ -71,7 +71,7 @@ public class ColorTreeRenderer extends DbImportTreeCellRenderer {
             status = logicalTreeNode.getStatus(mask);
         }
 
-        setForeground(status.getColor());
+        setForeground(status.getColor(selected));
         return this;
     }
 

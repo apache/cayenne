@@ -22,17 +22,24 @@ package org.apache.cayenne.modeler.ui.project.editor.datamap.dbimport.tree;
 import java.awt.Color;
 
 enum Status {
-    INCLUDE             (new Color(60,179,113)),
-    EXCLUDE_EXPLICIT    (new Color(178, 0, 0)),
-    EXCLUDE_IMPLICIT    (Color.LIGHT_GRAY);
+
+    INCLUDE             (new Color(60,179,113), new Color(60,179,113)),
+    EXCLUDE_EXPLICIT    (Color.GRAY,            Color.WHITE),
+    EXCLUDE_IMPLICIT    (Color.BLACK,           Color.BLACK);
 
     private final Color color;
+    private final Color selectionColor;
 
-    Status(Color color) {
+    Status(Color color, Color selectionColor) {
         this.color = color;
+        this.selectionColor = selectionColor;
     }
 
-    public Color getColor() {
-        return color;
+    /**
+     * Returns the text color for this status. Selected rows keep their color, except for the grey of an
+     * explicit exclude, that is invisible against the selection background.
+     */
+    public Color getColor(boolean selected) {
+        return selected ? selectionColor : color;
     }
 }
