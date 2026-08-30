@@ -27,7 +27,7 @@ import org.apache.cayenne.commitlog.model.ObjectChange;
 import org.apache.cayenne.commitlog.model.ObjectChangeType;
 import org.apache.cayenne.commitlog.model.ToManyRelationshipChange;
 import org.apache.cayenne.commitlog.unit.FlattenedRuntimeCase;
-import org.apache.cayenne.query.SelectById;
+import org.apache.cayenne.query.ObjectSelect;
 import org.apache.cayenne.configuration.runtime.CoreModule;
 import org.apache.cayenne.runtime.CayenneRuntimeBuilder;
 import org.junit.jupiter.api.BeforeEach;
@@ -64,9 +64,9 @@ public class CommitLogFilter_All_FlattenedIT extends FlattenedRuntimeCase {
 		e4.insert(12);
 		e34.insert(1, 11);
 
-		E3 e3 = SelectById.query(E3.class, 1).selectOne(context);
-		E4 e4_1 = SelectById.query(E4.class, 11).selectOne(context);
-		E4 e4_2 = SelectById.query(E4.class, 12).selectOne(context);
+		E3 e3 = ObjectSelect.query(E3.class).where(E3.SELF.eqId(1)).selectOne(context);
+		E4 e4_1 = ObjectSelect.query(E4.class).where(E4.SELF.eqId(11)).selectOne(context);
+		E4 e4_2 = ObjectSelect.query(E4.class).where(E4.SELF.eqId(12)).selectOne(context);
 
 		doAnswer((Answer<Object>) invocation -> {
 

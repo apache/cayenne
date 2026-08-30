@@ -25,7 +25,6 @@ import org.apache.cayenne.ObjectId;
 import org.apache.cayenne.exp.ExpressionFactory;
 import org.apache.cayenne.CayenneRuntimeException;
 import org.apache.cayenne.query.ObjectSelect;
-import org.apache.cayenne.query.SelectById;
 import org.apache.cayenne.runtime.CayenneRuntime;
 import org.apache.cayenne.test.jdbc.TableHelper;
 import org.apache.cayenne.testdo.compound.CompoundFkTestEntity;
@@ -161,9 +160,6 @@ public class QualifierTranslatorIT {
                 .where(CompoundPkTestEntity.SELF.eqId(id)).selectOne(env.context());
         assertNotNull(viaSelf);
         assertEquals("CCC", viaSelf.getName());
-
-        // must agree with the dedicated by-id query
-        assertSame(SelectById.queryObjectId(CompoundPkTestEntity.class, id).selectOne(env.context()), viaSelf);
     }
 
     /**

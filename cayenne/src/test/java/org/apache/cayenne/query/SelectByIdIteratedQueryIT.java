@@ -39,6 +39,7 @@ import java.util.List;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 
 
+@SuppressWarnings("removal") // dedicated coverage for the deprecated SelectById
 public class SelectByIdIteratedQueryIT {
 
     @RegisterExtension

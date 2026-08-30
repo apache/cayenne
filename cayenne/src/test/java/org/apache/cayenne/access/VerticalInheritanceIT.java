@@ -27,7 +27,6 @@ import org.apache.cayenne.query.ColumnSelect;
 import org.apache.cayenne.query.EJBQLQuery;
 import org.apache.cayenne.query.ObjectSelect;
 import org.apache.cayenne.query.PrefetchTreeNode;
-import org.apache.cayenne.query.SelectById;
 import org.apache.cayenne.runtime.CayenneRuntime;
 import org.apache.cayenne.test.jdbc.TableHelper;
 import org.apache.cayenne.testdo.inheritance_vertical.*;
@@ -244,8 +243,8 @@ public class VerticalInheritanceIT {
 		TableHelper ivSub3Table = env.table("IV_SUB3", "ID", "IV_ROOT_ID");
 		ivSub3Table.insert(3, 1);
 
-		IvRoot root = SelectById.query(IvRoot.class, 2).selectOne(env.context());
-		IvSub3 sub3 = SelectById.query(IvSub3.class, 3).selectOne(env.context());
+		IvRoot root = ObjectSelect.query(IvRoot.class).where(IvRoot.SELF.eqId(2)).selectOne(env.context());
+		IvSub3 sub3 = ObjectSelect.query(IvSub3.class).where(IvSub3.SELF.eqId(3)).selectOne(env.context());
 		sub3.setName("new name");
 		sub3.setIvRoot(root);
 
@@ -254,7 +253,7 @@ public class VerticalInheritanceIT {
 		env.context().commitChanges();
 
 		ObjectContext cleanContext = runtime.newContext();
-		IvSub3 sub3Clean = SelectById.query(IvSub3.class, 3).selectOne(cleanContext);
+		IvSub3 sub3Clean = ObjectSelect.query(IvSub3.class).where(IvSub3.SELF.eqId(3)).selectOne(cleanContext);
 
 		assertNotNull(sub3Clean);
 		assertNotSame(sub3, sub3Clean);
@@ -623,7 +622,8 @@ public class VerticalInheritanceIT {
 		long id = Cayenne.longPKForObject(concrete);
 		{
 			ObjectContext cleanContext = runtime.newContext();
-			IvConcrete concreteFetched = SelectById.query(IvConcrete.class, id).selectOne(cleanContext);
+			IvConcrete concreteFetched = ObjectSelect.query(IvConcrete.class)
+					.where(IvConcrete.SELF.eqId(id)).selectOne(cleanContext);
 			assertNull(concreteFetched.getName());
 		}
 	}
@@ -646,7 +646,7 @@ public class VerticalInheritanceIT {
 		long id = Cayenne.longPKForObject(impl);
 		{
 			ObjectContext cleanContext = runtime.newContext();
-			IvImpl implFetched = SelectById.query(IvImpl.class, id).selectOne(cleanContext);
+			IvImpl implFetched = ObjectSelect.query(IvImpl.class).where(IvImpl.SELF.eqId(id)).selectOne(cleanContext);
 			assertEquals("Impl 1", implFetched.getName());
 			assertNull(implFetched.getOther1());
 		}
@@ -665,8 +665,8 @@ public class VerticalInheritanceIT {
 		ivBaseTable.insert(1, "Impl 1", "I");
 		ivImplTable.insert(1, "attr1", 1);
 
-		IvImpl impl = SelectById.query(IvImpl.class, 1).selectOne(env.context());
-		IvOther other = SelectById.query(IvOther.class, 2).selectOne(env.context());
+		IvImpl impl = ObjectSelect.query(IvImpl.class).where(IvImpl.SELF.eqId(1)).selectOne(env.context());
+		IvOther other = ObjectSelect.query(IvOther.class).where(IvOther.SELF.eqId(2)).selectOne(env.context());
 
 		impl.setOther3(other);
 		env.context().commitChanges();
@@ -676,8 +676,8 @@ public class VerticalInheritanceIT {
 
 		{
 			ObjectContext cleanContext = runtime.newContext();
-			IvImpl implFetched = SelectById.query(IvImpl.class, 1).selectOne(cleanContext);
-			IvOther otherFetched = SelectById.query(IvOther.class, 2).selectOne(cleanContext);
+			IvImpl implFetched = ObjectSelect.query(IvImpl.class).where(IvImpl.SELF.eqId(1)).selectOne(cleanContext);
+			IvOther otherFetched = ObjectSelect.query(IvOther.class).where(IvOther.SELF.eqId(2)).selectOne(cleanContext);
 			assertEquals("Impl 1", implFetched.getName());
 			assertEquals("attr1", implFetched.getAttr1());
 			assertEquals(implFetched.getOther3(), otherFetched);
@@ -688,7 +688,7 @@ public class VerticalInheritanceIT {
 	public void deleteFlattenedNoValues() throws SQLException {
 		ivAbstractTable.insert(1, null, "S");
 
-		IvConcrete concrete = SelectById.query(IvConcrete.class, 1).selectOne(env.context());
+		IvConcrete concrete = ObjectSelect.query(IvConcrete.class).where(IvConcrete.SELF.eqId(1)).selectOne(env.context());
 		assertNotNull(concrete);
 		assertNull(concrete.getName());
 
@@ -704,7 +704,7 @@ public class VerticalInheritanceIT {
 		ivAbstractTable.insert(1, null, "S");
 		ivConcreteTable.insert(1, null, null);
 
-		IvConcrete concrete = SelectById.query(IvConcrete.class, 1).selectOne(env.context());
+		IvConcrete concrete = ObjectSelect.query(IvConcrete.class).where(IvConcrete.SELF.eqId(1)).selectOne(env.context());
 		assertNotNull(concrete);
 		assertNull(concrete.getName());
 
@@ -720,7 +720,7 @@ public class VerticalInheritanceIT {
 		ivAbstractTable.insert(1, null, "S");
 		ivConcreteTable.insert(1, "test", null);
 
-		IvConcrete concrete = SelectById.query(IvConcrete.class, 1).selectOne(env.context());
+		IvConcrete concrete = ObjectSelect.query(IvConcrete.class).where(IvConcrete.SELF.eqId(1)).selectOne(env.context());
 		assertNotNull(concrete);
 		assertEquals("test", concrete.getName());
 
@@ -745,7 +745,7 @@ public class VerticalInheritanceIT {
 		ivAbstractTable.insert(2, null, "S");
 		ivConcreteTable.insert(2, "Two", 1);
 
-		IvConcrete concrete = SelectById.query(IvConcrete.class, 2).selectOne(env.context());
+		IvConcrete concrete = ObjectSelect.query(IvConcrete.class).where(IvConcrete.SELF.eqId(2)).selectOne(env.context());
 		concrete.setRelatedAbstract(null);
 
 		env.context().commitChanges();
@@ -753,7 +753,8 @@ public class VerticalInheritanceIT {
 
 		{
 			ObjectContext cleanContext = runtime.newContext();
-			IvConcrete concreteFetched = SelectById.query(IvConcrete.class, 2).selectOne(cleanContext);
+			IvConcrete concreteFetched = ObjectSelect.query(IvConcrete.class)
+					.where(IvConcrete.SELF.eqId(2)).selectOne(cleanContext);
 			assertEquals("Two", concreteFetched.getName());
 			assertNull(concreteFetched.getRelatedAbstract());
 		}
@@ -1217,7 +1218,7 @@ public class VerticalInheritanceIT {
 
 		assertEquals(1, ivImplTable.getRowCount());
 		ObjectContext cleanContext = runtime.newContext();
-		IvImpl reread = SelectById.queryId(IvImpl.class, 1).selectOne(cleanContext);
+		IvImpl reread = ObjectSelect.query(IvImpl.class).where(IvImpl.SELF.eqId(1)).selectOne(cleanContext);
 		assertEquals("attr1-updated", reread.getAttr1());
 	}
 
@@ -1264,7 +1265,7 @@ public class VerticalInheritanceIT {
 
 		assertEquals(1, ivImplTable.getRowCount());
 		ObjectContext cleanContext = runtime.newContext();
-		IvImpl reread = SelectById.queryId(IvImpl.class, 1).selectOne(cleanContext);
+		IvImpl reread = ObjectSelect.query(IvImpl.class).where(IvImpl.SELF.eqId(1)).selectOne(cleanContext);
 		assertEquals("attr1-second", reread.getAttr1());
 	}
 
@@ -1278,7 +1279,7 @@ public class VerticalInheritanceIT {
 		ivSub1Table.insert(1);
 		ivSub1Sub1Table.insert(1, "sub1sub1name");
 
-		IvSub1Sub1 sub1Sub1 = SelectById.queryId(IvSub1Sub1.class, 1).selectOne(env.context());
+		IvSub1Sub1 sub1Sub1 = ObjectSelect.query(IvSub1Sub1.class).where(IvSub1Sub1.SELF.eqId(1)).selectOne(env.context());
 		assertEquals("sub1sub1name", sub1Sub1.getSub1Sub1Name());
 
 		sub1Sub1.setSub1Sub1Name("sub1sub1name-updated");
@@ -1286,7 +1287,7 @@ public class VerticalInheritanceIT {
 
 		assertEquals(1, ivSub1Sub1Table.getRowCount());
 		ObjectContext cleanContext = runtime.newContext();
-		IvSub1Sub1 reread = SelectById.queryId(IvSub1Sub1.class, 1).selectOne(cleanContext);
+		IvSub1Sub1 reread = ObjectSelect.query(IvSub1Sub1.class).where(IvSub1Sub1.SELF.eqId(1)).selectOne(cleanContext);
 		assertEquals("sub1sub1name-updated", reread.getSub1Sub1Name());
 	}
 }

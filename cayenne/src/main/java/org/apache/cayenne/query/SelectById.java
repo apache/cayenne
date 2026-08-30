@@ -40,7 +40,34 @@ import static org.apache.cayenne.exp.ExpressionFactory.*;
  * A query to select objects by id.
  *
  * @since 4.0
+ * @deprecated this query is a thin wrapper around an {@link ObjectSelect} with a PK qualifier - use
+ *             {@link ObjectSelect} directly with one of the "id" expressions of the entity "self" property:
+ *             <table>
+ *               <caption>Migration</caption>
+ *               <tr><th>SelectById</th><th>ObjectSelect</th></tr>
+ *               <tr><td>{@code queryId(Artist.class, id)}</td>
+ *                   <td>{@code query(Artist.class).where(Artist.SELF.eqId(id))}</td></tr>
+ *               <tr><td>{@code queryIds(Artist.class, ids)}</td>
+ *                   <td>{@code query(Artist.class).where(Artist.SELF.idsIn(ids))}</td></tr>
+ *               <tr><td>{@code queryIdsCollection(Artist.class, ids)}</td>
+ *                   <td>{@code query(Artist.class).where(Artist.SELF.idsInCollection(ids))}</td></tr>
+ *               <tr><td>{@code queryMap(Artist.class, id)}</td>
+ *                   <td>{@code query(Artist.class).where(Artist.SELF.eqId(id))}</td></tr>
+ *               <tr><td>{@code queryMaps(Artist.class, ids)}</td>
+ *                   <td>{@code query(Artist.class).where(Artist.SELF.idMapsIn(ids))}</td></tr>
+ *               <tr><td>{@code queryMapsCollection(Artist.class, ids)}</td>
+ *                   <td>{@code query(Artist.class).where(Artist.SELF.idMapsInCollection(ids))}</td></tr>
+ *               <tr><td>{@code queryObjectId(Artist.class, id)}</td>
+ *                   <td>{@code query(Artist.class).where(Artist.SELF.eqId(id))}</td></tr>
+ *               <tr><td>{@code queryObjectIds(Artist.class, ids)}</td>
+ *                   <td>{@code query(Artist.class).where(Artist.SELF.objectIdsIn(ids))}</td></tr>
+ *               <tr><td>{@code queryObjectIdsCollection(Artist.class, ids)}</td>
+ *                   <td>{@code query(Artist.class).where(Artist.SELF.objectIdsInCollection(ids))}</td></tr>
+ *               <tr><td>{@code dataRowQuery*(..)}</td>
+ *                   <td>any of the above plus {@link ObjectSelect#fetchDataRows()}</td></tr>
+ *             </table>
  */
+@Deprecated(since = "5.0", forRemoval = true)
 public class SelectById<T> extends IndirectQuery implements Select<T> {
 
     private static final long serialVersionUID = -6589464349051607583L;

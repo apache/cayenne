@@ -25,7 +25,7 @@ import org.apache.cayenne.commitlog.db.AuditableChild1;
 import org.apache.cayenne.commitlog.db.AuditableChild1x;
 import org.apache.cayenne.commitlog.model.*;
 import org.apache.cayenne.commitlog.unit.AuditableRuntimeCase;
-import org.apache.cayenne.query.SelectById;
+import org.apache.cayenne.query.ObjectSelect;
 import org.apache.cayenne.configuration.runtime.CoreModule;
 import org.apache.cayenne.runtime.CayenneRuntimeBuilder;
 import org.junit.jupiter.api.BeforeEach;
@@ -87,7 +87,7 @@ public class CommitLogFilterIT extends AuditableRuntimeCase {
 
         auditable1.insert(1, "xx");
 
-        Auditable1 a1 = SelectById.query(Auditable1.class, 1).selectOne(context);
+        Auditable1 a1 = ObjectSelect.query(Auditable1.class).where(Auditable1.SELF.eqId(1)).selectOne(context);
         a1.setCharProperty1("yy");
 
         ObjectId preCommitId = a1.getObjectId();
@@ -120,7 +120,7 @@ public class CommitLogFilterIT extends AuditableRuntimeCase {
         auditableChild1.insert(1, 1, "cc1");
         auditableChild1.insert(2, 1, "cc2");
 
-        Auditable1 a1 = SelectById.query(Auditable1.class, 1).selectOne(context);
+        Auditable1 a1 = ObjectSelect.query(Auditable1.class).where(Auditable1.SELF.eqId(1)).selectOne(context);
         context.deleteObjects(a1.getChildren1());
         context.deleteObject(a1);
         context.commitChanges();
@@ -164,7 +164,8 @@ public class CommitLogFilterIT extends AuditableRuntimeCase {
         auditableChild1.insert(1, 1, "cc1");
         auditableChild1.insert(2, 1, "cc2");
 
-        AuditableChild1 ac1 = SelectById.query(AuditableChild1.class, 2).selectOne(context);
+        AuditableChild1 ac1 = ObjectSelect.query(AuditableChild1.class)
+                .where(AuditableChild1.SELF.eqId(2)).selectOne(context);
         context.deleteObject(ac1);
         context.commitChanges();
 
@@ -194,7 +195,8 @@ public class CommitLogFilterIT extends AuditableRuntimeCase {
         auditableChild1x.insert(1, 1, "cc1");
         auditableChild1x.insert(2, 1, "cc2");
 
-        AuditableChild1x ac1 = SelectById.query(AuditableChild1x.class, 2).selectOne(context);
+        AuditableChild1x ac1 = ObjectSelect.query(AuditableChild1x.class)
+                .where(AuditableChild1x.SELF.eqId(2)).selectOne(context);
         context.deleteObject(ac1);
         context.commitChanges();
 
@@ -228,12 +230,15 @@ public class CommitLogFilterIT extends AuditableRuntimeCase {
         auditableChild1.insert(2, 2, "cc2");
         auditableChild1.insert(3, null, "cc3");
 
-        AuditableChild1 ac1 = SelectById.query(AuditableChild1.class, 1).selectOne(context);
-        AuditableChild1 ac2 = SelectById.query(AuditableChild1.class, 2).selectOne(context);
-        AuditableChild1 ac3 = SelectById.query(AuditableChild1.class, 3).selectOne(context);
+        AuditableChild1 ac1 = ObjectSelect.query(AuditableChild1.class)
+                .where(AuditableChild1.SELF.eqId(1)).selectOne(context);
+        AuditableChild1 ac2 = ObjectSelect.query(AuditableChild1.class)
+                .where(AuditableChild1.SELF.eqId(2)).selectOne(context);
+        AuditableChild1 ac3 = ObjectSelect.query(AuditableChild1.class)
+                .where(AuditableChild1.SELF.eqId(3)).selectOne(context);
 
-        Auditable1 a1 = SelectById.query(Auditable1.class, 1).selectOne(context);
-        Auditable1 a2 = SelectById.query(Auditable1.class, 2).selectOne(context);
+        Auditable1 a1 = ObjectSelect.query(Auditable1.class).where(Auditable1.SELF.eqId(1)).selectOne(context);
+        Auditable1 a2 = ObjectSelect.query(Auditable1.class).where(Auditable1.SELF.eqId(2)).selectOne(context);
 
         a1.removeFromChildren1(ac1);
         a1.addToChildren1(ac2);
@@ -297,11 +302,14 @@ public class CommitLogFilterIT extends AuditableRuntimeCase {
         auditableChild1.insert(2, null, "cc2");
         auditableChild1.insert(3, null, "cc3");
 
-        AuditableChild1 ac1 = SelectById.query(AuditableChild1.class, 1).selectOne(context);
-        AuditableChild1 ac2 = SelectById.query(AuditableChild1.class, 2).selectOne(context);
-        AuditableChild1 ac3 = SelectById.query(AuditableChild1.class, 3).selectOne(context);
+        AuditableChild1 ac1 = ObjectSelect.query(AuditableChild1.class)
+                .where(AuditableChild1.SELF.eqId(1)).selectOne(context);
+        AuditableChild1 ac2 = ObjectSelect.query(AuditableChild1.class)
+                .where(AuditableChild1.SELF.eqId(2)).selectOne(context);
+        AuditableChild1 ac3 = ObjectSelect.query(AuditableChild1.class)
+                .where(AuditableChild1.SELF.eqId(3)).selectOne(context);
 
-        Auditable1 a1 = SelectById.query(Auditable1.class, 1).selectOne(context);
+        Auditable1 a1 = ObjectSelect.query(Auditable1.class).where(Auditable1.SELF.eqId(1)).selectOne(context);
 
         a1.removeFromChildren1(ac1);
         a1.addToChildren1(ac2);

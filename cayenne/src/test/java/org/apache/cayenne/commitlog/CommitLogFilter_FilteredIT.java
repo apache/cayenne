@@ -31,7 +31,7 @@ import org.apache.cayenne.commitlog.model.ObjectChange;
 import org.apache.cayenne.commitlog.model.ObjectChangeType;
 import org.apache.cayenne.commitlog.model.ToManyRelationshipChange;
 import org.apache.cayenne.commitlog.unit.AuditableRuntimeCase;
-import org.apache.cayenne.query.SelectById;
+import org.apache.cayenne.query.ObjectSelect;
 import org.apache.cayenne.configuration.runtime.CoreModule;
 import org.apache.cayenne.runtime.CayenneRuntimeBuilder;
 import org.junit.jupiter.api.BeforeEach;
@@ -116,7 +116,7 @@ public class CommitLogFilter_FilteredIT extends AuditableRuntimeCase {
 			return null;
 		}).when(mockListener).onPostCommit(any(ObjectContext.class), any(ChangeMap.class));
 
-		Auditable2 a1 = SelectById.query(Auditable2.class, 1).selectOne(context);
+		Auditable2 a1 = ObjectSelect.query(Auditable2.class).where(Auditable2.SELF.eqId(1)).selectOne(context);
 		a1.setCharProperty1("P1_2");
 		a1.setCharProperty2("P2_2");
 		context.commitChanges();
@@ -146,7 +146,7 @@ public class CommitLogFilter_FilteredIT extends AuditableRuntimeCase {
 			return null;
 		}).when(mockListener).onPostCommit(any(ObjectContext.class), any(ChangeMap.class));
 
-		Auditable2 a1 = SelectById.query(Auditable2.class, 1).selectOne(context);
+		Auditable2 a1 = ObjectSelect.query(Auditable2.class).where(Auditable2.SELF.eqId(1)).selectOne(context);
 		context.deleteObject(a1);
 		context.commitChanges();
 
@@ -160,11 +160,14 @@ public class CommitLogFilter_FilteredIT extends AuditableRuntimeCase {
 		auditableChild1.insert(2, null, "cc2");
 		auditableChild1.insert(3, null, "cc3");
 
-		final AuditableChild1 ac1 = SelectById.query(AuditableChild1.class, 1).selectOne(context);
-		final AuditableChild1 ac2 = SelectById.query(AuditableChild1.class, 2).selectOne(context);
-		final AuditableChild1 ac3 = SelectById.query(AuditableChild1.class, 3).selectOne(context);
+		final AuditableChild1 ac1 = ObjectSelect.query(AuditableChild1.class)
+				.where(AuditableChild1.SELF.eqId(1)).selectOne(context);
+		final AuditableChild1 ac2 = ObjectSelect.query(AuditableChild1.class)
+				.where(AuditableChild1.SELF.eqId(2)).selectOne(context);
+		final AuditableChild1 ac3 = ObjectSelect.query(AuditableChild1.class)
+				.where(AuditableChild1.SELF.eqId(3)).selectOne(context);
 
-		final Auditable1 a1 = SelectById.query(Auditable1.class, 1).selectOne(context);
+		final Auditable1 a1 = ObjectSelect.query(Auditable1.class).where(Auditable1.SELF.eqId(1)).selectOne(context);
 
 		doAnswer((Answer<Object>) invocation -> {
 
@@ -208,7 +211,7 @@ public class CommitLogFilter_FilteredIT extends AuditableRuntimeCase {
 
 		auditable3.insert(1, "31", "32");
 
-		final Auditable3 a3 = SelectById.query(Auditable3.class, 1).selectOne(context);
+		final Auditable3 a3 = ObjectSelect.query(Auditable3.class).where(Auditable3.SELF.eqId(1)).selectOne(context);
 
 		doAnswer((Answer<Object>) invocation -> {
 
@@ -235,9 +238,9 @@ public class CommitLogFilter_FilteredIT extends AuditableRuntimeCase {
 		auditable4.insert(11, "41", "42", 1);
 		auditable4.insert(12, "43", "44", 1);
 
-		final Auditable3 a3 = SelectById.query(Auditable3.class, 1).selectOne(context);
-		final Auditable4 a41 = SelectById.query(Auditable4.class, 11).selectOne(context);
-		final Auditable4 a42 = SelectById.query(Auditable4.class, 12).selectOne(context);
+		final Auditable3 a3 = ObjectSelect.query(Auditable3.class).where(Auditable3.SELF.eqId(1)).selectOne(context);
+		final Auditable4 a41 = ObjectSelect.query(Auditable4.class).where(Auditable4.SELF.eqId(11)).selectOne(context);
+		final Auditable4 a42 = ObjectSelect.query(Auditable4.class).where(Auditable4.SELF.eqId(12)).selectOne(context);
 
 		doAnswer((Answer<Object>) invocation -> {
 
@@ -264,9 +267,9 @@ public class CommitLogFilter_FilteredIT extends AuditableRuntimeCase {
 		auditable3.insert(2, "33", "34");
 		auditable4.insert(11, "41", "41", 1);
 
-		final Auditable3 a32 = SelectById.query(Auditable3.class, 2).selectOne(context);
+		final Auditable3 a32 = ObjectSelect.query(Auditable3.class).where(Auditable3.SELF.eqId(2)).selectOne(context);
 
-		final Auditable4 a4 = SelectById.query(Auditable4.class, 11).selectOne(context);
+		final Auditable4 a4 = ObjectSelect.query(Auditable4.class).where(Auditable4.SELF.eqId(11)).selectOne(context);
 
 		doAnswer((Answer<Object>) invocation -> {
 

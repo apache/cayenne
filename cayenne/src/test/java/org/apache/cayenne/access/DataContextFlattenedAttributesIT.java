@@ -28,7 +28,6 @@ import org.apache.cayenne.map.DefaultEntityResultSegment;
 import org.apache.cayenne.query.ColumnSelect;
 import org.apache.cayenne.query.EJBQLQuery;
 import org.apache.cayenne.query.ObjectSelect;
-import org.apache.cayenne.query.SelectById;
 import org.apache.cayenne.reflect.PersistentDescriptor;
 import org.apache.cayenne.runtime.CayenneRuntime;
 import org.apache.cayenne.test.jdbc.TableHelper;
@@ -558,7 +557,8 @@ public class DataContextFlattenedAttributesIT {
         {
             // read and update
             ObjectContext context2 = runtime.newContext();
-            CompoundPainting o2 = SelectById.query(CompoundPainting.class, id).selectFirst(context2);
+            CompoundPainting o2 = ObjectSelect.query(CompoundPainting.class)
+                    .where(CompoundPainting.SELF.eqId(id)).selectFirst(context2);
 
             o2.setArtistName("AX1");
             o2.setEstimatedPrice(BigDecimal.valueOf(2));
@@ -572,7 +572,8 @@ public class DataContextFlattenedAttributesIT {
         {
             // read and check
             ObjectContext context3 = runtime.newContext();
-            CompoundPainting o3 = SelectById.query(CompoundPainting.class, id).selectFirst(context3);
+            CompoundPainting o3 = ObjectSelect.query(CompoundPainting.class)
+                    .where(CompoundPainting.SELF.eqId(id)).selectFirst(context3);
 
             assertEquals("AX1", o3.getArtistName());
             assertEquals(0, BigDecimal.valueOf(2).compareTo(o3.getEstimatedPrice()));

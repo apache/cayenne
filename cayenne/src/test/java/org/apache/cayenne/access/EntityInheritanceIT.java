@@ -20,7 +20,7 @@
 package org.apache.cayenne.access;
 
 import org.apache.cayenne.Cayenne;
-import org.apache.cayenne.query.SelectById;
+import org.apache.cayenne.query.ObjectSelect;
 import org.apache.cayenne.testdo.inheritance.BaseEntity;
 import org.apache.cayenne.testdo.inheritance.DirectToSubEntity;
 import org.apache.cayenne.testdo.inheritance.RelatedEntity;
@@ -97,7 +97,8 @@ public class EntityInheritanceIT {
         BaseEntity forPkLoadedEntity = Cayenne.objectForPK(env.context(), BaseEntity.class, subEntityId);
         assertEquals(forPkLoadedEntity.getClass(), SubEntity.class);
 
-        BaseEntity selectLoadedEntity = SelectById.query(BaseEntity.class, subEntityId).selectOne(env.context());
+        BaseEntity selectLoadedEntity = ObjectSelect.query(BaseEntity.class)
+                .where(BaseEntity.SELF.eqId(subEntityId)).selectOne(env.context());
         assertEquals(selectLoadedEntity.getClass(), SubEntity.class);
     }
 }

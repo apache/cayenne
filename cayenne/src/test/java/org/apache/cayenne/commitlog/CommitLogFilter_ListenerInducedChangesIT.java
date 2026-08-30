@@ -29,7 +29,7 @@ import org.apache.cayenne.commitlog.model.ChangeMap;
 import org.apache.cayenne.commitlog.model.ObjectChange;
 import org.apache.cayenne.commitlog.model.ObjectChangeType;
 import org.apache.cayenne.commitlog.unit.AuditableRuntimeCase;
-import org.apache.cayenne.query.SelectById;
+import org.apache.cayenne.query.ObjectSelect;
 import org.apache.cayenne.configuration.runtime.CoreModule;
 import org.apache.cayenne.runtime.CayenneRuntimeBuilder;
 import org.junit.jupiter.api.BeforeEach;
@@ -111,7 +111,8 @@ public class CommitLogFilter_ListenerInducedChangesIT extends AuditableRuntimeCa
 		final DeleteListener listener = new DeleteListener();
 		runtime.getDataDomain().addListener(listener);
 
-		final Auditable1 a1 = SelectById.query(Auditable1.class, 1).prefetch(Auditable1.CHILDREN1.joint())
+		final Auditable1 a1 = ObjectSelect.query(Auditable1.class)
+				.where(Auditable1.SELF.eqId(1)).prefetch(Auditable1.CHILDREN1.joint())
 				.selectFirst(context);
 		a1.setCharProperty1("zz");
 
@@ -152,7 +153,8 @@ public class CommitLogFilter_ListenerInducedChangesIT extends AuditableRuntimeCa
 		final UpdateListener listener = new UpdateListener();
 		runtime.getDataDomain().addListener(listener);
 
-		final Auditable1 a1 = SelectById.query(Auditable1.class, 1).prefetch(Auditable1.CHILDREN1.joint())
+		final Auditable1 a1 = ObjectSelect.query(Auditable1.class)
+				.where(Auditable1.SELF.eqId(1)).prefetch(Auditable1.CHILDREN1.joint())
 				.selectFirst(context);
 		a1.setCharProperty1("zz");
 

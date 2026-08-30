@@ -21,7 +21,7 @@ package org.apache.cayenne;
 import java.util.Map;
 
 import org.apache.cayenne.query.RefreshQuery;
-import org.apache.cayenne.query.SelectById;
+import org.apache.cayenne.query.ObjectSelect;
 import org.apache.cayenne.test.jdbc.TableHelper;
 import org.apache.cayenne.testdo.map_to_many.IdMapToMany;
 import org.apache.cayenne.testdo.map_to_many.MapToMany;
@@ -124,7 +124,8 @@ public class CDOMapRelationshipIT {
     public void readToManyPrefetching() throws Exception {
         createTestDataSet();
 
-        MapToMany o1 = SelectById.query(MapToMany.class, 1).prefetch(MapToMany.TARGETS.disjoint()).selectOne(env.context());
+        MapToMany o1 = ObjectSelect.query(MapToMany.class)
+                .where(MapToMany.SELF.eqId(1)).prefetch(MapToMany.TARGETS.disjoint()).selectOne(env.context());
         Map targets = o1.getTargets();
 
         assertFalse(((ValueHolder) targets).isFault());

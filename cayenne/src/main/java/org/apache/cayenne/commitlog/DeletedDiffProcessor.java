@@ -56,7 +56,6 @@ class DeletedDiffProcessor implements GraphChangeHandler {
 
 		final MutableObjectChange objectChangeSet = changeSet.getOrCreate(id, ObjectChangeType.DELETE);
 
-		// TODO: rewrite with SelectById query after Cayenne upgrade
 		ObjectIdQuery query = new ObjectIdQuery(id, true, ObjectIdQuery.CACHE);
 		QueryResponse result = channel.onQuery(null, query);
 

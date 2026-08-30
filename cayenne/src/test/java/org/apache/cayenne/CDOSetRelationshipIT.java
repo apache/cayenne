@@ -19,7 +19,7 @@
 package org.apache.cayenne;
 
 import org.apache.cayenne.query.RefreshQuery;
-import org.apache.cayenne.query.SelectById;
+import org.apache.cayenne.query.ObjectSelect;
 import org.apache.cayenne.test.jdbc.TableHelper;
 import org.apache.cayenne.testdo.relationships_set_to_many.SetToMany;
 import org.apache.cayenne.testdo.relationships_set_to_many.SetToManyTarget;
@@ -93,7 +93,8 @@ public class CDOSetRelationshipIT {
     public void readToManyPrefetching() throws Exception {
         createTestDataSet();
 
-        SetToMany o1 = SelectById.query(SetToMany.class, 1).prefetch(SetToMany.TARGETS.disjoint()).selectOne(env.context());
+        SetToMany o1 = ObjectSelect.query(SetToMany.class)
+                .where(SetToMany.SELF.eqId(1)).prefetch(SetToMany.TARGETS.disjoint()).selectOne(env.context());
 
         Set targets = o1.getTargets();
 

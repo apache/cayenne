@@ -19,7 +19,7 @@
 
 package org.apache.cayenne;
 
-import org.apache.cayenne.query.SelectById;
+import org.apache.cayenne.query.ObjectSelect;
 import org.apache.cayenne.testdo.relationships.MeaningfulFK;
 import org.apache.cayenne.testdo.relationships.RelationshipHelper;
 import org.apache.cayenne.unit.CayenneProjects;
@@ -71,7 +71,8 @@ public class MeaningfulFKIT {
 
         env.context().commitChanges();
 
-        MeaningfulFK testObject2 = SelectById.query(MeaningfulFK.class, testObject.getObjectId()).selectOne(env.context());
+        MeaningfulFK testObject2 = ObjectSelect.query(MeaningfulFK.class)
+                .where(MeaningfulFK.SELF.eqId(testObject.getObjectId())).selectOne(env.context());
         assertNotEquals(0, testObject2.getRelationshipHelperID());
     }
 }

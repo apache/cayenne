@@ -19,8 +19,14 @@
 
 package org.apache.cayenne.exp.property;
 
+import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Collection;
+import java.util.List;
+import java.util.Map;
 
+import org.apache.cayenne.CayenneRuntimeException;
+import org.apache.cayenne.ObjectId;
 import org.apache.cayenne.Persistent;
 import org.apache.cayenne.exp.Expression;
 import org.apache.cayenne.exp.ExpressionFactory;
@@ -141,6 +147,98 @@ public class EntityProperty<E extends Persistent> extends BaseProperty<E> implem
      */
     public Expression idsNotIn(Object... ids) {
         return ExpressionFactory.notInExp(getExpression(), ids);
+    }
+
+
+    /**
+     * Matches an object by a possibly compound id, expressed as a map of DB attribute names to values.
+     * Unlike {@link #eqId(Object)} this form supports entities with a compound PK.
+     *
+     * @param id a map of the target entity PK attribute names to values
+     * @return an expression matching an object with the given id
+     * @since 5.0
+     */
+    public Expression eqIdMap(Map<String, ?> id) {
+        return idExp(id);
+    }
+
+    /**
+     * @param id a map of the target entity PK attribute names to values
+     * @return an expression excluding an object with the given id
+     * @since 5.0
+     * @see #eqIdMap(Map)
+     */
+    public Expression neqIdMap(Map<String, ?> id) {
+        return idExp(id).notExp();
+    }
+
+    /**
+     * Matches any of the objects identified by the provided ids. Unlike {@link #idsIn(Object...)} this form
+     * supports entities with a compound PK, expanding to an {@code OR} of per-id matches rather than an
+     * {@code IN}, as SQL {@code IN} can't be applied to a multi-column key.
+     *
+     * @param ids maps of the target entity PK attribute names to values
+     * @since 5.0
+     * @see #eqIdMap(Map)
+     */
+    @SafeVarargs
+    public final Expression idMapsIn(Map<String, ?>... ids) {
+        return idMapsInCollection(Arrays.asList(ids));
+    }
+
+    /**
+     * @param ids maps of the target entity PK attribute names to values
+     * @since 5.0
+     * @see #idMapsIn(Map[])
+     */
+    public Expression idMapsInCollection(Collection<Map<String, ?>> ids) {
+        List<Expression> expressions = new ArrayList<>(ids.size());
+        for (Map<String, ?> id : ids) {
+            expressions.add(idExp(id));
+        }
+        return expressions.isEmpty() ? ExpressionFactory.expFalse() : ExpressionFactory.joinExp(Expression.OR, expressions);
+    }
+
+    /**
+     * Matches any of the objects identified by the provided {@link ObjectId}s. Unlike
+     * {@link #idsIn(Object...)} this form supports entities with a compound PK.
+     *
+     * @since 5.0
+     * @see #idMapsIn(Map[])
+     */
+    public Expression objectIdsIn(ObjectId... ids) {
+        return objectIdsInCollection(Arrays.asList(ids));
+    }
+
+    /**
+     * @since 5.0
+     * @see #objectIdsIn(ObjectId...)
+     */
+    public Expression objectIdsInCollection(Collection<ObjectId> ids) {
+        List<Map<String, ?>> snapshots = new ArrayList<>(ids.size());
+        for (ObjectId id : ids) {
+            snapshots.add(id.getIdSnapshot());
+        }
+        return idMapsInCollection(snapshots);
+    }
+
+    /**
+     * Builds an {@code AND} of per-PK-attribute matches. Paths are built as "dbid:" paths relative to this
+     * property, so they resolve through the Obj layer and work for both the query root (an empty path, see
+     * {@link SelfProperty}) and a to-one relationship.
+     */
+    private Expression idExp(Map<String, ?> id) {
+        if (id == null || id.isEmpty()) {
+            throw new CayenneRuntimeException("Null or empty id map");
+        }
+
+        Expression result = null;
+        for (Map.Entry<String, ?> entry : id.entrySet()) {
+            Expression next = ExpressionFactory
+                    .matchExp(ExpressionFactory.dbIdPathExp(getPath().dot(entry.getKey())), entry.getValue());
+            result = result == null ? next : result.andExp(next);
+        }
+        return result;
     }
 
     /**

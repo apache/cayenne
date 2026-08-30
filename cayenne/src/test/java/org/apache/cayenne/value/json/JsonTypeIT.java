@@ -19,7 +19,7 @@
 
 package org.apache.cayenne.value.json;
 
-import org.apache.cayenne.query.SelectById;
+import org.apache.cayenne.query.ObjectSelect;
 import org.apache.cayenne.testdo.json.JsonOther;
 import org.apache.cayenne.testdo.json.JsonVarchar;
 import org.apache.cayenne.unit.CayenneProjects;
@@ -660,7 +660,8 @@ public class JsonTypeIT {
         jsonInsert.setData(new Json(jsonString));
         env.context().commitChanges();
 
-        JsonOther jsonSelect = env.context().selectOne(SelectById.query(JsonOther.class, jsonInsert.getObjectId()));
+        JsonOther jsonSelect = env.context().selectOne(ObjectSelect.query(JsonOther.class)
+                .where(JsonOther.SELF.eqId(jsonInsert.getObjectId())));
         assertEquals(jsonInsert.getData(), jsonSelect.getData());
     }
 
@@ -669,7 +670,8 @@ public class JsonTypeIT {
         jsonInsert.setData(new Json(jsonString));
         env.context().commitChanges();
 
-        JsonVarchar jsonSelect = env.context().selectOne(SelectById.query(JsonVarchar.class, jsonInsert.getObjectId()));
+        JsonVarchar jsonSelect = env.context().selectOne(ObjectSelect.query(JsonVarchar.class)
+                .where(JsonVarchar.SELF.eqId(jsonInsert.getObjectId())));
         assertEquals(jsonInsert.getData(), jsonSelect.getData());
     }
 }

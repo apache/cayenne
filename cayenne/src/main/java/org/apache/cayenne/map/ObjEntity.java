@@ -928,6 +928,17 @@ public class ObjEntity extends Entity<ObjEntity, ObjAttribute, ObjRelationship>
 
             Expression expression = (Expression) input;
 
+            if (expression.getType() == Expression.FULL_OBJECT && expression.getOperandCount() == 0) {
+                // A bare "self" reference carries no path, so there is nothing to rebase on the related
+                // entity. Resolve it to this entity's PK, which is what it means in the first place.
+                Collection<DbAttribute> pks = getDbEntity().getPrimaryKeys();
+                if (pks.size() > 1) {
+                    throw new CayenneRuntimeException("Can't transform a 'self' expression rooted in '%s': " +
+                            "entity has more than one PK. Match by id map or ObjectId instead.", getName());
+                }
+                return ExpressionFactory.dbPathExp(pks.iterator().next().getName());
+            }
+
             if (expression.getType() != Expression.OBJ_PATH) {
                 return input;
             }

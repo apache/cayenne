@@ -30,6 +30,7 @@ import org.apache.cayenne.ObjectContext;
 import org.apache.cayenne.ObjectId;
 import org.apache.cayenne.Persistent;
 import org.apache.cayenne.access.DataContext;
+import org.apache.cayenne.DataRow;
 import org.apache.cayenne.exp.Expression;
 import org.apache.cayenne.exp.ExpressionFactory;
 import org.apache.cayenne.exp.path.CayennePath;
@@ -38,7 +39,6 @@ import org.apache.cayenne.map.DbRelationship;
 import org.apache.cayenne.map.Entity;
 import org.apache.cayenne.map.ObjEntity;
 import org.apache.cayenne.query.ObjectSelect;
-import org.apache.cayenne.query.SelectById;
 import org.apache.cayenne.util.CayenneMapEntry;
 
 /**
@@ -149,7 +149,10 @@ public class ASTDbPath extends ASTPath {
 		}
 
 		if (oid != null) {
-			return SelectById.dataRowQuery(persistent.getObjectId()).selectOne(context);
+			return ObjectSelect.query(DataRow.class, oid.getEntityName())
+					.fetchDataRows()
+					.where(ExpressionFactory.matchExp(ExpressionFactory.fullObjectExp(), oid))
+					.selectOne(context);
 		}
 
 		// fallback to ID snapshot as a last resort

@@ -26,6 +26,7 @@ import org.junit.jupiter.api.Test;
 
 import static org.junit.jupiter.api.Assertions.*;
 
+@SuppressWarnings("removal") // dedicated coverage for the deprecated SelectById
 public class SelectByIdTest {
 
 	@Test

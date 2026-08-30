@@ -39,6 +39,7 @@ import java.util.Map;
 import static java.util.Collections.singletonMap;
 import static org.junit.jupiter.api.Assertions.*;
 
+@SuppressWarnings("removal") // dedicated coverage for the deprecated SelectById
 public class SelectById_RunIT {
 
     @RegisterExtension
