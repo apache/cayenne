@@ -19,6 +19,7 @@
 
 package org.apache.cayenne.modeler.pref.migration.toV5;
 
+import org.apache.cayenne.modeler.pref.InMemoryPreferences;
 import org.apache.cayenne.modeler.pref.PrefsLocator;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
@@ -38,7 +39,7 @@ public class _8_RemoveRedundantPathIndexMigrationTest {
 
     @BeforeEach
     public void setUp() {
-        testRoot = Preferences.userRoot().node("test-cayenne-prefs-" + UUID.randomUUID());
+        testRoot = new InMemoryPreferences().node("test-cayenne-prefs-" + UUID.randomUUID());
         locator = new PrefsLocator(testRoot);
     }
 

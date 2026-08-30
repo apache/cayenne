@@ -19,6 +19,7 @@
 
 package org.apache.cayenne.modeler.mcp;
 
+import org.apache.cayenne.modeler.pref.InMemoryPreferences;
 import org.apache.cayenne.modeler.pref.PrefsLocator;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.Test;
@@ -37,14 +38,13 @@ public class McpHandshakeWriterTest {
 
     // Unique per test method - keeps parallel runs and prior aborted runs from colliding.
     private final String nonce = UUID.randomUUID().toString().replace("-", "");
-    private final PrefsLocator locator = new PrefsLocator();
+    private final PrefsLocator locator = new PrefsLocator(new InMemoryPreferences());
 
     @AfterEach
     public void cleanup() throws BackingStoreException {
         Preferences node = locator.handshakeNode(nonce);
         if (node != null) {
             node.removeNode();
-            Preferences.userRoot().flush();
         }
     }
 

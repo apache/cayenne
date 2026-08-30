@@ -19,6 +19,7 @@
 package org.apache.cayenne.mcp.tools.dbimport;
 
 import org.apache.cayenne.modeler.pref.PreferenceNodeIds;
+import org.apache.cayenne.mcp.InMemoryPreferences;
 import org.apache.cayenne.modeler.pref.PrefsLocator;
 import org.apache.cayenne.modeler.pref.adapters.DataMapPrefs;
 import org.apache.cayenne.modeler.pref.dbconnector.DBConnector;
@@ -49,7 +50,7 @@ public class DbImportRunValidationTest {
 
     @BeforeAll
     public static void setUpClass() {
-        PrefsLocator prefsLocator = new PrefsLocator(Preferences.userRoot().node("cayenne-test/dbimport-validation"));
+        PrefsLocator prefsLocator = new PrefsLocator(new InMemoryPreferences());
         tool = new DbImportRunTool(prefsLocator);
     }
 
@@ -219,8 +220,7 @@ public class DbImportRunValidationTest {
     }
 
     private Preferences isolatedPrefsRoot() {
-        testPrefsRoot = Preferences.userRoot()
-                .node("cayenne-test/dbimport-val-" + UUID.randomUUID().toString().replace("-", ""));
+        testPrefsRoot = new InMemoryPreferences().node("dbimport-val-" + UUID.randomUUID().toString().replace("-", ""));
         return testPrefsRoot;
     }
 

@@ -18,9 +18,10 @@
  ****************************************************************/
 package org.apache.cayenne.mcp.tools.openproject;
 
-import org.apache.cayenne.modeler.pref.PrefsLocator;
+import org.apache.cayenne.mcp.InMemoryPreferences;
 import org.apache.cayenne.mcp.tools.openproject.HandshakeWatcher.Outcome;
 import org.apache.cayenne.mcp.tools.openproject.HandshakeWatcher.WatchResult;
+import org.apache.cayenne.modeler.pref.PrefsLocator;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.Test;
 
@@ -41,7 +42,7 @@ import static org.junit.jupiter.api.Assertions.assertTrue;
 public class HandshakeWatcherTest {
 
     private static final BooleanSupplier ALIVE = () -> true;
-    private static final PrefsLocator LOCATOR = new PrefsLocator();
+    private static final PrefsLocator LOCATOR = new PrefsLocator(new InMemoryPreferences());
     private final String nonce = "test-" + UUID.randomUUID().toString().replace("-", "");
 
     @AfterEach
