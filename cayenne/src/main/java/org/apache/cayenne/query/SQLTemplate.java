@@ -19,6 +19,14 @@
 
 package org.apache.cayenne.query;
 
+import org.apache.cayenne.CayenneRuntimeException;
+import org.apache.cayenne.access.DataNode;
+import org.apache.cayenne.map.DataMap;
+import org.apache.cayenne.map.DbEntity;
+import org.apache.cayenne.map.EntityResolver;
+import org.apache.cayenne.map.ObjEntity;
+import org.apache.cayenne.map.SQLResult;
+
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
@@ -29,14 +37,6 @@ import java.util.List;
 import java.util.Map;
 import java.util.function.Function;
 import java.util.stream.Stream;
-
-import org.apache.cayenne.CayenneRuntimeException;
-import org.apache.cayenne.access.DataNode;
-import org.apache.cayenne.map.DataMap;
-import org.apache.cayenne.map.DbEntity;
-import org.apache.cayenne.map.EntityResolver;
-import org.apache.cayenne.map.ObjEntity;
-import org.apache.cayenne.map.SQLResult;
 
 /**
  * A query that executes unchanged (except for template preprocessing) "raw" SQL
@@ -130,14 +130,14 @@ public class SQLTemplate extends AbstractQuery {
 	public void route(QueryRouter router, EntityResolver resolver, Query substitutedQuery) {
 		DataMap map = getMetaData(resolver).getDataMap();
 
-		DataNode engine;
+		DataNode dataNode;
 		if (map != null) {
-			engine = router.nodeForDataMap(map);
+			dataNode = router.nodeForDataMap(map);
 		} else {
-			engine = router.nodeForName(getDataNodeName());
+			dataNode = router.nodeForName(getDataNodeName());
 		}
 
-		router.route(engine, this, substitutedQuery);
+		router.route(dataNode, this, substitutedQuery);
 	}
 
 	/**

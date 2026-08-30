@@ -493,7 +493,7 @@ public abstract class FluentSelect<T, S extends FluentSelect<T, S>> extends Abst
 
     @Override
     public void route(QueryRouter router, EntityResolver resolver, Query substitutedQuery) {
-        super.route(router, resolver, substitutedQuery);
+        Select.super.route(router, resolver, substitutedQuery);
 
         // suppress prefetches for paginated queries.. instead prefetches will be resolved per row...
         if (getPageSize() <= 0) {

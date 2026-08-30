@@ -22,11 +22,9 @@ import java.util.Collections;
 import java.util.HashMap;
 import java.util.Map;
 
-import org.apache.cayenne.CayenneRuntimeException;
 import org.apache.cayenne.ejbql.EJBQLCompiledExpression;
 import org.apache.cayenne.ejbql.EJBQLException;
 import org.apache.cayenne.ejbql.EJBQLParserFactory;
-import org.apache.cayenne.map.DataMap;
 import org.apache.cayenne.map.EntityResolver;
 
 /**
@@ -76,16 +74,6 @@ public class EJBQLQuery extends CacheableQuery {
     @Override
     protected BaseQueryMetadata getBaseMetaData() {
         return metadata;
-    }
-
-    public void route(QueryRouter router, EntityResolver resolver, Query substitutedQuery) {
-        DataMap map = getMetaData(resolver).getDataMap();
-
-        if (map == null) {
-            throw new CayenneRuntimeException("No DataMap found, can't route query %s", this);
-        }
-
-        router.route(router.nodeForDataMap(map), this, substitutedQuery);
     }
 
     public SQLAction createSQLAction(SQLActionVisitor visitor) {

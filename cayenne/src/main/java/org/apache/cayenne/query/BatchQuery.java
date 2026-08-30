@@ -72,14 +72,6 @@ public abstract class BatchQuery implements Query {
     }
 
     /**
-     * @since 1.2
-     */
-    @Override
-    public void route(QueryRouter router, EntityResolver resolver, Query substitutedQuery) {
-        router.route(router.nodeForDataMap(dbEntity.getDataMap()), this, substitutedQuery);
-    }
-
-    /**
      * Calls "batchAction" on the visitor.
      * 
      * @since 1.2

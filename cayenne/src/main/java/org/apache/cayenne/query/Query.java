@@ -19,7 +19,9 @@
 
 package org.apache.cayenne.query;
 
+import org.apache.cayenne.CayenneRuntimeException;
 import org.apache.cayenne.access.DataNode;
+import org.apache.cayenne.map.DataMap;
 import org.apache.cayenne.map.EntityResolver;
 
 import java.io.Serializable;
@@ -45,10 +47,21 @@ public interface Query extends Serializable {
      * {@link QueryRouter#route(DataNode, Query, Query)} callback method to route
      * itself. Query can create one or more substitute queries or even provide its own
      * DataNode to execute itself.
+     * <p>
+     * The default implementation relies on the EntityResolver to find the DataMap based on
+     * the query metadata. This mechanism is sufficient for most queries that "know" their root.
      * 
      * @since 1.2
      */
-    void route(QueryRouter router, EntityResolver resolver, Query substitutedQuery);
+    default void route(QueryRouter router, EntityResolver resolver, Query substitutedQuery) {
+        DataMap map = getMetaData(resolver).getDataMap();
+
+        if (map == null) {
+            throw new CayenneRuntimeException("No DataMap found, can't route query %s", this);
+        }
+
+        router.route(router.nodeForDataMap(map), this, substitutedQuery);
+    }
 
     /**
      * A callback method invoked by Cayenne during the final execution phase of the query

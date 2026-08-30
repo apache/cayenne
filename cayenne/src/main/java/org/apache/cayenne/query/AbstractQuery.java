@@ -19,7 +19,6 @@
 
 package org.apache.cayenne.query;
 
-import org.apache.cayenne.CayenneRuntimeException;
 import org.apache.cayenne.map.DataMap;
 import org.apache.cayenne.map.DbEntity;
 import org.apache.cayenne.map.EntityResolver;
@@ -98,21 +97,4 @@ public abstract class AbstractQuery extends CacheableQuery {
      * @since 1.2
      */
     public abstract SQLAction createSQLAction(SQLActionVisitor visitor);
-
-    /**
-     * Implements default routing mechanism relying on the EntityResolver to find DataMap
-     * based on the query root. This mechanism should be sufficient for most queries that
-     * "know" their root.
-     * 
-     * @since 1.2
-     */
-    public void route(QueryRouter router, EntityResolver resolver, Query substitutedQuery) {
-        DataMap map = getMetaData(resolver).getDataMap();
-
-        if (map == null) {
-            throw new CayenneRuntimeException("No DataMap found, can't route query %s", this);
-        }
-
-        router.route(router.nodeForDataMap(map), this, substitutedQuery);
-    }
 }
