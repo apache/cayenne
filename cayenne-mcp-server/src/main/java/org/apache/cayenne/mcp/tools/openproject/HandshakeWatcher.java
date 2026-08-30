@@ -135,6 +135,11 @@ class HandshakeWatcher {
      * Removes handshake subnodes whose {@code startedAt} is older than {@link #STALE_NODE_TTL}.
      * Belt-and-suspenders cleanup against an MCP server that crashed between launching
      * the Modeler and reading the handshake.
+     * <p>
+     * A node with no readable {@code startedAt} is left alone: it is either a Modeler that is
+     * mid-write on its own nonce, or a value that is not visible in this process yet (the macOS
+     * CFPreferences store is shared by all JVMs of the user and refreshes asynchronously).
+     * Deleting those would kill a concurrent launch's handshake.
      */
     private static void pruneStaleSiblings(PrefsLocator locator) {
         if (!locator.handshakeRootNodeExists()) {
@@ -147,7 +152,7 @@ class HandshakeWatcher {
             for (String child : parent.childrenNames()) {
                 Preferences childNode = parent.node(child);
                 String startedAt = childNode.get("startedAt", null);
-                if (startedAt == null || isBefore(startedAt, cutoff)) {
+                if (startedAt != null && isBefore(startedAt, cutoff)) {
                     childNode.removeNode();
                 }
             }
