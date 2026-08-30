@@ -184,7 +184,7 @@ It also provides the reverse operation - finding an object given a known PK:
 Artist artist = Cayenne.objectForPK(context, Artist.class, 34579);
 ----
 
-For more flexibility, you could use the <<SelectById>> query instead.
+For more flexibility, you could <<selectbyid,select by ID>> with `ObjectSelect` instead.
 
 Feel free to explore the `Cayenne` class API for other useful methods.
 

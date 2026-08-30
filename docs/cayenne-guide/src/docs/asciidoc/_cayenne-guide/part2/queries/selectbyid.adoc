@@ -12,17 +12,64 @@
 // the specific language governing permissions and limitations under the
 // License.
 
-==== SelectById
+[[selectbyid]]
+==== Selecting by ID
 
-This query allows to search objects by their ID.
-It's introduced in Cayenne 4.0 and uses new "fluent" API same as `ObjectSelect` query.
-
-Here is example of how to use it:
+Every generated entity class has a `SELF` property that stands for the object itself. Used as a qualifier
+it matches on the entity's primary key:
 
 [source, java]
 ----
-Artist artistWithId1 = SelectById.query(Artist.class, 1)
+Artist artistWithId1 = ObjectSelect.query(Artist.class)
+    .where(Artist.SELF.eqId(1))
     .prefetch(Artist.PAINTING_ARRAY.joint())
     .localCache()
     .selectOne(context);
 ----
+
+Being an ordinary qualifier, it combines with everything else `ObjectSelect` offers - prefetching, caching,
+ordering, pagination and further conditions.
+
+To match any of a set of IDs:
+
+[source, java]
+----
+List<Artist> artists = ObjectSelect.query(Artist.class)
+    .where(Artist.SELF.idsIn(1, 2, 3))
+    .select(context);
+----
+
+An `ObjectId` can be used in place of a plain value:
+
+[source, java]
+----
+Artist artist = ObjectSelect.query(Artist.class)
+    .where(Artist.SELF.eqId(objectId))
+    .selectOne(context);
+----
+
+Entities with a compound primary key are matched by a map of DB attribute names to values:
+
+[source, java]
+----
+Map<String, Object> id = Map.of("KEY1", "x", "KEY2", "y");
+
+CompoundPk object = ObjectSelect.query(CompoundPk.class)
+    .where(CompoundPk.SELF.eqIdMap(id))
+    .selectOne(context);
+----
+
+To match several of them, use `idMapsIn(..)`, or `objectIdsIn(..)` for a set of `ObjectId`s.
+
+The same "id" methods are available on to-one relationship properties, matching related objects by their ID
+without fetching them first:
+
+[source, java]
+----
+List<Painting> paintings = ObjectSelect.query(Painting.class)
+    .where(Painting.TO_ARTIST.eqId(1))
+    .select(context);
+----
+
+To fetch a single object by a known PK, `Cayenne.objectForPK(..)` is often shorter still - see
+<<persistent-objects-objectcontext,the ObjectContext chapter>>.
