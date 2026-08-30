@@ -26,6 +26,7 @@ CAY-3002 Modeler: NPE after clicking path chooser
 CAY-3003 Modeler: NPE editing unmapped ObjAttribute
 CAY-3005 ResultIterator.allRows() doesn't convert to DataObjects
 CAY-3006 Can't match a "self" property of an entity with a compound PK
+CAY-3008 Disjoint prefetch returns wrong results when the query matches on a "self" property
 
 ----------------------------------
 Release: 5.0-M3
