@@ -84,10 +84,19 @@ While not commonly used, it is nevertheless important in some situations. E.g.:
 
 [source, java]
 ----
-Collection<Query> queries = ... // multiple queries that need to be run together
-QueryChain query = new QueryChain(queries);
-
 QueryResponse response = context.performGenericQuery(query);
+----
+
+When multiple such queries need to run together, execute them inside an explicit transaction:
+
+[source, java]
+----
+Collection<Query> queries = ... // multiple queries that need to be run together
+
+runtime.performInTransaction(() -> {
+    queries.forEach(context::performGenericQuery);
+    return null;
+});
 ----
 
 

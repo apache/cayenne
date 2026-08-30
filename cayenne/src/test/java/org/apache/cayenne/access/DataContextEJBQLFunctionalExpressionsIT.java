@@ -20,8 +20,7 @@ package org.apache.cayenne.access;
 
 import org.apache.cayenne.Cayenne;
 import org.apache.cayenne.query.EJBQLQuery;
-import org.apache.cayenne.query.QueryChain;
-import org.apache.cayenne.query.SQLTemplate;
+import org.apache.cayenne.test.jdbc.TableHelper;
 import org.apache.cayenne.testdo.testmap.Artist;
 import org.apache.cayenne.testdo.testmap.Painting;
 import org.apache.cayenne.unit.CayenneProjects;
@@ -29,6 +28,7 @@ import org.apache.cayenne.unit.CayenneTestsEnv;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.RegisterExtension;
 
+import java.sql.SQLException;
 import java.util.List;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
@@ -189,17 +189,12 @@ public class DataContextEJBQLFunctionalExpressionsIT {
     }
 
     @Test
-    public void tRIM() {
+    public void tRIM() throws SQLException {
 
-        // insert via a SQL template to prevent adapter trimming and such...
-        QueryChain inserts = new QueryChain();
-        inserts.addQuery(new SQLTemplate(
-                Artist.class,
-                "INSERT INTO ARTIST (ARTIST_ID,ARTIST_NAME) VALUES(1, '  A')"));
-        inserts.addQuery(new SQLTemplate(
-                Artist.class,
-                "INSERT INTO ARTIST (ARTIST_ID,ARTIST_NAME) VALUES(2, 'A  ')"));
-        env.context().performGenericQuery(inserts);
+        // insert via raw JDBC to prevent adapter trimming and such...
+        TableHelper tArtist = env.table("ARTIST", "ARTIST_ID", "ARTIST_NAME");
+        tArtist.insert(1, "  A");
+        tArtist.insert(2, "A  ");
 
         Artist a1 = Cayenne.objectForPK(env.context(), Artist.class, 1);
         Artist a2 = Cayenne.objectForPK(env.context(), Artist.class, 2);

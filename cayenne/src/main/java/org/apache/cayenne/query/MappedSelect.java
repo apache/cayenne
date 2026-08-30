@@ -146,7 +146,7 @@ public class MappedSelect<T> extends AbstractMappedQuery implements Select<T> {
     public MappedSelect<T> param(String name, Object value) {
         return (MappedSelect<T>) super.param(name, value);
     }
-    
+
     @Override
     public T selectFirst(ObjectContext context) {
         return context.selectFirst(limit(1));

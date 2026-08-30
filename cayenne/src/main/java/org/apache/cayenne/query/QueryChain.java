@@ -32,7 +32,11 @@ import java.util.List;
  * convert the results to objects.
  * 
  * @since 1.2
+ * @deprecated to run multiple queries together, execute them inside an explicit
+ *             transaction, e.g. via
+ *             {@link org.apache.cayenne.runtime.CayenneRuntime#performInTransaction(org.apache.cayenne.tx.TransactionalOperation)}
  */
+@Deprecated(since = "5.0", forRemoval = true)
 public class QueryChain implements Query {
 
     protected Collection<Query> chain;

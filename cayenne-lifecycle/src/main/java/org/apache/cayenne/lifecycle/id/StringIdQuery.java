@@ -18,14 +18,6 @@
  ****************************************************************/
 package org.apache.cayenne.lifecycle.id;
 
-import java.util.Arrays;
-import java.util.Collection;
-import java.util.Collections;
-import java.util.HashMap;
-import java.util.HashSet;
-import java.util.List;
-import java.util.Map;
-
 import org.apache.cayenne.ObjectContext;
 import org.apache.cayenne.exp.Expression;
 import org.apache.cayenne.exp.ExpressionFactory;
@@ -38,12 +30,19 @@ import org.apache.cayenne.query.ObjectSelect;
 import org.apache.cayenne.query.PrefetchTreeNode;
 import org.apache.cayenne.query.Query;
 import org.apache.cayenne.query.QueryCacheStrategy;
-import org.apache.cayenne.query.QueryChain;
 import org.apache.cayenne.query.QueryMetadata;
 import org.apache.cayenne.query.QueryRouter;
 import org.apache.cayenne.query.SQLAction;
 import org.apache.cayenne.query.SQLActionVisitor;
 import org.apache.cayenne.reflect.ClassDescriptor;
+
+import java.util.Arrays;
+import java.util.Collection;
+import java.util.Collections;
+import java.util.HashMap;
+import java.util.HashSet;
+import java.util.List;
+import java.util.Map;
 
 /**
  * A query that allows to fetch objects based on one or more String IDs. The returned
@@ -53,7 +52,7 @@ import org.apache.cayenne.reflect.ClassDescriptor;
  * contain separate lists of DataRows for each type in no particular order.
  * <p>
  * As of this writing, a limitation of this query is that it returns DataRows that need to
- * be manually converted to objects if needed. In that it is similar to {@link QueryChain}.
+ * be manually converted to objects if needed.
  * 
  * @since 3.1
  */
