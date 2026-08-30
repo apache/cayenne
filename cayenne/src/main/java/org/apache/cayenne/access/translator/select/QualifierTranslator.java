@@ -283,11 +283,11 @@ class QualifierTranslator implements TraversalHandler {
                 ASTFullObject fullObject = (ASTFullObject) node;
                 if (fullObject.getOperandCount() == 0) {
                     Collection<DbAttribute> dbAttributes = context.getMetadata().getDbEntity().getPrimaryKeys();
+                    String alias = context.getTableTree().aliasForPath(CayennePath.EMPTY_PATH);
                     if (dbAttributes.size() > 1) {
-                        throw new CayenneRuntimeException("Unable to translate reference on entity with more than one PK.");
+                        return createMultiPkMatch(node, parentNode, dbAttributes, alias);
                     }
                     DbAttribute attribute = dbAttributes.iterator().next();
-                    String alias = context.getTableTree().aliasForPath(CayennePath.EMPTY_PATH);
                     return table(alias).column(attribute).build();
                 } else {
                     return null;
@@ -404,6 +404,36 @@ class QualifierTranslator implements TraversalHandler {
         return null;
     }
 
+    /**
+     * Matches the root entity referenced as a whole (i.e. a bare {@link ASTFullObject}) against an
+     * {@link ObjectId} or a {@link Persistent}, expanding the comparison over all the PK columns. This is the
+     * root-entity counterpart of {@link #createMultiAttributeMatch(Expression, Expression, PathTranslationResult)}.
+     */
+    private Node createMultiPkMatch(Expression node, Expression parentNode,
+                                    Collection<DbAttribute> pkAttributes, String alias) {
+        if (parentNode == null) {
+            throw new CayenneRuntimeException("Unable to translate reference on entity with more than one PK.");
+        }
+
+        Map<String, Object> valueSnapshot = getMultiAttributeValueSnapshot(node, parentNode);
+        Node multiValueComparison = buildMultiValueComparison(pkAttributes, alias, valueSnapshot);
+
+        // replace current node with multi value comparison
+        Node currentNodeParent = currentNode.getParent();
+        currentNodeParent.replaceChild(currentNodeParent.getChildrenCount() - 1, multiValueComparison);
+        multiValueComparison.setParent(currentNodeParent);
+        currentNode = currentNodeParent;
+
+        // we should skip all related nodes as we build this part of the tree manually
+        expressionsToSkip.add(node);
+        expressionsToSkip.add(parentNode);
+        for (int i = 0; i < parentNode.getOperandCount(); i++) {
+            expressionsToSkip.add(parentNode.getOperand(i));
+        }
+
+        return null;
+    }
+
     private Map<String, Object> getMultiAttributeValueSnapshot(Expression node, Expression parentNode) {
         int siblings = parentNode.getOperandCount();
         for (int i = 0; i < siblings; i++) {
@@ -427,13 +457,17 @@ class QualifierTranslator implements TraversalHandler {
     }
 
     private Node buildMultiValueComparison(PathTranslationResult result, Map<String, Object> valueSnapshot) {
+        CayennePath path = result.getLastAttributePath();
+        String alias = context.getTableTree().aliasForPath(path);
+        return buildMultiValueComparison(result.getDbAttributes(), alias, valueSnapshot);
+    }
+
+    private Node buildMultiValueComparison(Collection<DbAttribute> attributes, String alias,
+                                           Map<String, Object> valueSnapshot) {
         ExpressionNodeBuilder expressionNodeBuilder = null;
         ExpressionNodeBuilder eq;
 
-        CayennePath path = result.getLastAttributePath();
-        String alias = context.getTableTree().aliasForPath(path);
-
-        for (DbAttribute attribute : result.getDbAttributes()) {
+        for (DbAttribute attribute : attributes) {
             Object nextValue = valueSnapshot.get(attribute.getName());
             eq = table(alias).column(attribute).eq(value(nextValue));
             if (expressionNodeBuilder == null) {

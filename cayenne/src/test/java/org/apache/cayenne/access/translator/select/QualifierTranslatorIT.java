@@ -21,8 +21,11 @@ package org.apache.cayenne.access.translator.select;
 import org.apache.cayenne.access.sqlbuilder.SQLGenerationVisitor;
 import org.apache.cayenne.access.sqlbuilder.DefaultSQLAppendable;
 import org.apache.cayenne.access.sqlbuilder.sqltree.Node;
+import org.apache.cayenne.ObjectId;
 import org.apache.cayenne.exp.ExpressionFactory;
+import org.apache.cayenne.CayenneRuntimeException;
 import org.apache.cayenne.query.ObjectSelect;
+import org.apache.cayenne.query.SelectById;
 import org.apache.cayenne.runtime.CayenneRuntime;
 import org.apache.cayenne.test.jdbc.TableHelper;
 import org.apache.cayenne.testdo.compound.CompoundFkTestEntity;
@@ -34,9 +37,13 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
 import java.util.List;
+import java.util.Map;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.junit.jupiter.api.Assertions.assertSame;
+import static org.junit.jupiter.api.Assertions.assertThrows;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 
 public class QualifierTranslatorIT {
 
@@ -120,4 +127,64 @@ public class QualifierTranslatorIT {
 
     }
 
+    /**
+     * A bare "self" reference on an entity with a compound PK must expand over all PK columns,
+     * the same way a to-one relationship path does.
+     */
+    @Test
+    public void compoundPKSelfWithObjectId() {
+        ObjectId id = ObjectId.of("CompoundPkTestEntity", Map.of("KEY1", "PK1", "KEY2", "PK2"));
+
+        ObjectSelect<CompoundPkTestEntity> query = ObjectSelect.query(CompoundPkTestEntity.class)
+                .where(CompoundPkTestEntity.SELF.eqId(id));
+
+        assertEquals(" cpt.KEY1 = 'PK1' AND cpt.KEY2 = 'PK2'", translate(query));
+    }
+
+    @Test
+    public void compoundPKSelfWithPersistent() {
+        CompoundPkTestEntity testEntity = ObjectSelect.query(CompoundPkTestEntity.class)
+                .where(CompoundPkTestEntity.NAME.eq("BBB")).selectOne(env.context());
+        assertNotNull(testEntity);
+
+        ObjectSelect<CompoundPkTestEntity> query = ObjectSelect.query(CompoundPkTestEntity.class)
+                .where(CompoundPkTestEntity.SELF.eqId(testEntity));
+
+        assertEquals(" cpt.KEY1 = 'PK1' AND cpt.KEY2 = 'PK2'", translate(query));
+    }
+
+    @Test
+    public void compoundPKSelfSelectsTheRightRow() {
+        ObjectId id = ObjectId.of("CompoundPkTestEntity", Map.of("KEY1", "PK3", "KEY2", "PK4"));
+
+        CompoundPkTestEntity viaSelf = ObjectSelect.query(CompoundPkTestEntity.class)
+                .where(CompoundPkTestEntity.SELF.eqId(id)).selectOne(env.context());
+        assertNotNull(viaSelf);
+        assertEquals("CCC", viaSelf.getName());
+
+        // must agree with the dedicated by-id query
+        assertSame(SelectById.queryObjectId(CompoundPkTestEntity.class, id).selectOne(env.context()), viaSelf);
+    }
+
+    /**
+     * A compound-PK "self" reference still cannot be matched against a scalar - there is no single
+     * PK column to compare it to.
+     */
+    @Test
+    public void compoundPKSelfWithScalarFails() {
+        ObjectSelect<CompoundPkTestEntity> query = ObjectSelect.query(CompoundPkTestEntity.class)
+                .where(CompoundPkTestEntity.SELF.eqId("PK1"));
+
+        CayenneRuntimeException e = assertThrows(CayenneRuntimeException.class, () -> translate(query));
+        assertTrue(e.getMessage().contains("Multi attribute ObjPath isn't matched with valid value"), e.getMessage());
+    }
+
+    private String translate(ObjectSelect<?> query) {
+        SelectTranslatorContext context = new SelectTranslatorContext(
+                query, runtime.getDataDomain().getDefaultNode().getAdapter(), env.context().getEntityResolver(), null);
+        Node node = context.getQualifierTranslator().translate(query.getWhere());
+        SQLGenerationVisitor visitor = new SQLGenerationVisitor(new DefaultSQLAppendable(null), null);
+        node.visit(visitor);
+        return visitor.getSQLString();
+    }
 }
