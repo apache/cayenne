@@ -26,6 +26,7 @@ import org.apache.cayenne.modeler.event.model.ObjRelationshipEvent;
 import org.apache.cayenne.modeler.event.model.ObjEntityEvent;
 import org.apache.cayenne.modeler.event.model.ObjEntityListener;
 import org.apache.cayenne.modeler.event.model.ObjRelationshipListener;
+import org.apache.cayenne.modeler.toolkit.table.BooleanTableCellRenderer;
 import org.apache.cayenne.modeler.toolkit.ProjectPanel;
 import org.apache.cayenne.modeler.toolkit.combobox.CMComboBox;
 import org.apache.cayenne.modeler.toolkit.combobox.CMComboBoxCellEditor;
@@ -94,6 +95,8 @@ public class ObjRelationshipPanel extends ProjectPanel implements ObjEntityDispl
         table.setSelectionMode(ListSelectionModel.MULTIPLE_INTERVAL_SELECTION);
         table.setAutoResizeMode(JTable.AUTO_RESIZE_OFF);
         table.setDefaultRenderer(String.class, new StringRenderer());
+        table.setDefaultRenderer(Boolean.class,
+                new BooleanTableCellRenderer(table.getDefaultRenderer(Boolean.class)));
         table.setDefaultRenderer(ObjEntity.class, new EntityRenderer());
 
         JPopupMenu popup = new JPopupMenu();

@@ -33,6 +33,7 @@ import org.apache.cayenne.modeler.event.model.ObjEntityEvent;
 import org.apache.cayenne.modeler.event.model.ObjEntityListener;
 import org.apache.cayenne.modeler.event.model.ProjectBeforeSaveEvent;
 import org.apache.cayenne.modeler.event.model.ProjectBeforeSaveListener;
+import org.apache.cayenne.modeler.toolkit.table.BooleanTableCellRenderer;
 import org.apache.cayenne.modeler.toolkit.ProjectPanel;
 import org.apache.cayenne.modeler.pref.adapters.CMTablePrefs;
 import org.apache.cayenne.modeler.project.ObjEntityOps;
@@ -99,6 +100,8 @@ public class ObjAttributePanel extends ProjectPanel implements ObjEntityDisplayL
         table.setSelectionMode(ListSelectionModel.MULTIPLE_INTERVAL_SELECTION);
         table.setAutoResizeMode(JTable.AUTO_RESIZE_OFF);
         table.setDefaultRenderer(String.class, new CellRenderer());
+        table.setDefaultRenderer(Boolean.class,
+                new BooleanTableCellRenderer(table.getDefaultRenderer(Boolean.class)));
 
         JPopupMenu popup = new JPopupMenu();
         popup.add(editMenu);

@@ -33,6 +33,7 @@ import org.apache.cayenne.modeler.toolkit.ProjectPanel;
 import org.apache.cayenne.modeler.toolkit.combobox.AutoCompletion;
 import org.apache.cayenne.modeler.toolkit.combobox.CMComboBox;
 import org.apache.cayenne.modeler.toolkit.table.BoardTableCellRenderer;
+import org.apache.cayenne.modeler.toolkit.table.BooleanTableCellRenderer;
 import org.apache.cayenne.modeler.toolkit.combobox.CMAutoCompleteComboBoxCellEditor;
 import org.apache.cayenne.modeler.toolkit.table.CMTable;
 import org.apache.cayenne.modeler.toolkit.table.CMTablePanel;
@@ -74,6 +75,8 @@ public class DbAttributePanel extends ProjectPanel implements DbEntityDisplayLis
         table.setSelectionMode(ListSelectionModel.MULTIPLE_INTERVAL_SELECTION);
         table.setAutoResizeMode(JTable.AUTO_RESIZE_OFF);
         table.setDefaultRenderer(String.class, new BoardTableCellRenderer());
+        table.setDefaultRenderer(Boolean.class,
+                new BooleanTableCellRenderer(table.getDefaultRenderer(Boolean.class)));
 
         JPopupMenu popup = new JPopupMenu();
         popup.add(globalActions.getAction(RemoveAttributeRelationshipAction.class).buildMenu());

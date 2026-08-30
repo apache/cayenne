@@ -24,6 +24,7 @@ import com.jgoodies.forms.layout.FormLayout;
 import org.apache.cayenne.map.DbEntity;
 import org.apache.cayenne.map.DbKeyGenerator;
 import org.apache.cayenne.modeler.event.model.DbEntityEvent;
+import org.apache.cayenne.modeler.toolkit.ProjectPanel;
 import org.apache.cayenne.modeler.toolkit.text.CMUndoableTextField;
 import org.apache.cayenne.modeler.project.ProjectSession;
 import java.util.Objects;
@@ -33,7 +34,7 @@ import org.apache.cayenne.validation.ValidationException;
 import javax.swing.*;
 import java.awt.*;
 
-public class PKCustomSequenceGeneratorPanel extends PKGeneratorPanel {
+public class PKCustomSequenceGeneratorPanel extends ProjectPanel {
 
     protected CMUndoableTextField customPKName;
     protected CMUndoableTextField customPKSize;
@@ -69,18 +70,6 @@ public class PKCustomSequenceGeneratorPanel extends PKGeneratorPanel {
 
         setLayout(new BorderLayout());
         add(builder.getPanel(), BorderLayout.CENTER);
-    }
-
-    protected void onInitInternal(DbEntity entity) {
-        resetStrategy(entity, false, true);
-
-        if (entity.getPrimaryKeyGenerator() == null) {
-            DbKeyGenerator generator = new DbKeyGenerator();
-            generator.setGeneratorType(DbKeyGenerator.ORACLE_TYPE);
-            entity.setPrimaryKeyGenerator(generator);
-        } else {
-            setDbEntity(entity);
-        }
     }
 
     public void setDbEntity(DbEntity entity) {
@@ -133,7 +122,7 @@ public class PKCustomSequenceGeneratorPanel extends PKGeneratorPanel {
         }
 
         DbKeyGenerator generator = session.getSelectedDbEntity().getPrimaryKeyGenerator();
-        if (!Objects.equals(text, generator.getName())) {
+        if (!Objects.equals(text, generator.getGeneratorName())) {
             generator.setGeneratorName(text);
             session.fireDbEntityEvent(DbEntityEvent.ofChange(this, generator.getDbEntity()));
         }

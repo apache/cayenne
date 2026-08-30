@@ -17,27 +17,30 @@
  *  under the License.
  ****************************************************************/
 
-package org.apache.cayenne.modeler.ui.project.editor.dbentity.main;
+package org.apache.cayenne.modeler.toolkit.table;
 
-import org.apache.cayenne.map.DbEntity;
-import org.apache.cayenne.modeler.project.ProjectSession;
+import javax.swing.JTable;
+import javax.swing.table.TableCellRenderer;
+import java.awt.Component;
 
-import java.awt.Dimension;
+/**
+ * Renders Boolean columns with the look and feel's own checkbox renderer, greying out the cells that
+ * the table model reports as non-editable. The stock renderer paints those as if they were editable.
+ */
+public class BooleanTableCellRenderer implements TableCellRenderer {
 
-public class PKDefaultGeneratorPanel extends PKGeneratorPanel {
-    
-    public PKDefaultGeneratorPanel(ProjectSession session) {
-        super(session);
+    private final TableCellRenderer lafRenderer;
 
-        // nothing to show for the default strategy, so the panel must not take up any space either
-        setPreferredSize(new Dimension(0, 0));
+    public BooleanTableCellRenderer(TableCellRenderer lafRenderer) {
+        this.lafRenderer = lafRenderer;
     }
 
-    public void setDbEntity(DbEntity entity) {
-        // noop
-    }
+    @Override
+    public Component getTableCellRendererComponent(JTable table, Object value, boolean isSelected,
+                                                   boolean hasFocus, int row, int col) {
 
-    protected void onInitInternal(DbEntity entity) {
-        resetStrategy(entity, true, true);
+        Component c = lafRenderer.getTableCellRendererComponent(table, value, isSelected, hasFocus, row, col);
+        c.setEnabled(table.isCellEditable(row, col));
+        return c;
     }
 }

@@ -27,6 +27,7 @@ import org.apache.cayenne.modeler.event.model.DbAttributeEvent;
 import org.apache.cayenne.modeler.project.DbAttributeOps;
 import org.apache.cayenne.modeler.toolkit.table.CMTableModel;
 import org.apache.cayenne.modeler.project.ProjectSession;
+import org.apache.cayenne.modeler.undo.ChangePKGeneratorUndoableEdit;
 import org.apache.cayenne.project.extension.info.ObjectInfo;
 import java.util.Objects;
 
@@ -34,6 +35,7 @@ import javax.swing.*;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
+import java.util.List;
 
 /**
  * Model for DbEntity attributes. Allows adding/removing attributes, modifying types and names.
@@ -43,10 +45,11 @@ public class DbAttributeTableModel extends CMTableModel<DbAttribute> {
     static final int DB_ATTRIBUTE_NAME = 0;
     static final int DB_ATTRIBUTE_TYPE = 1;
     static final int DB_ATTRIBUTE_PRIMARY_KEY = 2;
-    static final int DB_ATTRIBUTE_MANDATORY = 3;
-    static final int DB_ATTRIBUTE_MAX = 4;
-    static final int DB_ATTRIBUTE_SCALE = 5;
-    static final int DB_ATTRIBUTE_COMMENT = 6;
+    static final int DB_ATTRIBUTE_AUTO_INCREMENT = 3;
+    static final int DB_ATTRIBUTE_MANDATORY = 4;
+    static final int DB_ATTRIBUTE_MAX = 5;
+    static final int DB_ATTRIBUTE_SCALE = 6;
+    static final int DB_ATTRIBUTE_COMMENT = 7;
 
     private final DbEntity entity;
 
@@ -62,7 +65,7 @@ public class DbAttributeTableModel extends CMTableModel<DbAttribute> {
 
     @Override
     public int getColumnCount() {
-        return 7;
+        return 8;
     }
 
     public DbAttribute getAttribute(int row) {
@@ -79,6 +82,8 @@ public class DbAttributeTableModel extends CMTableModel<DbAttribute> {
                 return "Type";
             case DB_ATTRIBUTE_PRIMARY_KEY:
                 return "PK";
+            case DB_ATTRIBUTE_AUTO_INCREMENT:
+                return "Auto-Increment";
             case DB_ATTRIBUTE_SCALE:
                 return "Scale";
             case DB_ATTRIBUTE_MANDATORY:
@@ -96,6 +101,7 @@ public class DbAttributeTableModel extends CMTableModel<DbAttribute> {
     public Class<?> getColumnClass(int col) {
         switch (col) {
             case DB_ATTRIBUTE_PRIMARY_KEY:
+            case DB_ATTRIBUTE_AUTO_INCREMENT:
             case DB_ATTRIBUTE_MANDATORY:
                 return Boolean.class;
             default:
@@ -117,6 +123,8 @@ public class DbAttributeTableModel extends CMTableModel<DbAttribute> {
                 return getAttributeType(attr);
             case DB_ATTRIBUTE_PRIMARY_KEY:
                 return isPrimaryKey(attr);
+            case DB_ATTRIBUTE_AUTO_INCREMENT:
+                return isGenerated(attr);
             case DB_ATTRIBUTE_SCALE:
                 return getScale(attr);
             case DB_ATTRIBUTE_MANDATORY:
@@ -128,6 +136,32 @@ public class DbAttributeTableModel extends CMTableModel<DbAttribute> {
             default:
                 return "";
         }
+    }
+
+    @Override
+    public void setValueAt(Object newVal, int row, int col) {
+
+        // Auto-Increment is an entity-wide setting: turning it on for one attribute turns it off for
+        // another one. The single-cell edit registered by the superclass can't restore that, so use the
+        // edit that captures the entity PK generation state as a whole.
+        if (col == DB_ATTRIBUTE_AUTO_INCREMENT) {
+            if (Objects.deepEquals(newVal, getValueAt(row, col))) {
+                return;
+            }
+
+            ChangePKGeneratorUndoableEdit edit = new ChangePKGeneratorUndoableEdit(session, entity);
+            edit.captureOldState();
+
+            setUpdatedValueAt(newVal, row, col);
+
+            edit.captureNewState();
+            if (edit.hasRealChange()) {
+                session.app().getUndoManager().addEdit(edit);
+            }
+            return;
+        }
+
+        super.setValueAt(newVal, row, col);
     }
 
     public void setUpdatedValueAt(Object newVal, int row, int col) {
@@ -150,6 +184,9 @@ public class DbAttributeTableModel extends CMTableModel<DbAttribute> {
                 if (!setPrimaryKey(((Boolean) newVal), attr, row)) {
                     return;
                 }
+                break;
+            case DB_ATTRIBUTE_AUTO_INCREMENT:
+                setGenerated((Boolean) newVal, attr);
                 break;
             case DB_ATTRIBUTE_SCALE:
                 setScale((String) newVal, attr);
@@ -200,6 +237,10 @@ public class DbAttributeTableModel extends CMTableModel<DbAttribute> {
 
     public Boolean isPrimaryKey(DbAttribute attr) {
         return (attr.isPrimaryKey()) ? Boolean.TRUE : Boolean.FALSE;
+    }
+
+    public Boolean isGenerated(DbAttribute attr) {
+        return (attr.isGenerated()) ? Boolean.TRUE : Boolean.FALSE;
     }
 
     public Boolean isMandatory(DbAttribute attr) {
@@ -287,8 +328,33 @@ public class DbAttributeTableModel extends CMTableModel<DbAttribute> {
         if (flag) {
             attr.setMandatory(true);
             fireTableCellUpdated(row, DB_ATTRIBUTE_MANDATORY);
+        } else {
+            fireTableCellUpdated(row, DB_ATTRIBUTE_AUTO_INCREMENT);
         }
         return true;
+    }
+
+    /**
+     * An entity can have at most one generated attribute, so setting this flag clears it on all the
+     * other attributes.
+     */
+    public void setGenerated(Boolean newVal, DbAttribute attr) {
+
+        if (newVal) {
+            // copy, as setGenerated() mutates the entity's own collection
+            List<DbAttribute> generated = new ArrayList<>(entity.getGeneratedAttributes());
+            for (DbAttribute other : generated) {
+                if (other != attr) {
+                    other.setGenerated(false);
+                    int otherRow = objectList.indexOf(other);
+                    if (otherRow >= 0) {
+                        fireTableCellUpdated(otherRow, DB_ATTRIBUTE_AUTO_INCREMENT);
+                    }
+                }
+            }
+        }
+
+        attr.setGenerated(newVal);
     }
 
     public void setMandatory(Boolean newVal, DbAttribute attr) {
@@ -305,6 +371,9 @@ public class DbAttributeTableModel extends CMTableModel<DbAttribute> {
             return false;
         } else if (col == DB_ATTRIBUTE_MANDATORY) {
             return !attrib.isPrimaryKey();
+        } else if (col == DB_ATTRIBUTE_AUTO_INCREMENT) {
+            // DbAttribute.encodeAsXML() only stores "isGenerated" for PKs, so don't let it be set elsewhere
+            return attrib.isPrimaryKey();
         }
         return true;
     }
@@ -342,6 +411,9 @@ public class DbAttributeTableModel extends CMTableModel<DbAttribute> {
                 break;
             case DB_ATTRIBUTE_PRIMARY_KEY:
                 sortByElementProperty("primaryKey", isAscent);
+                break;
+            case DB_ATTRIBUTE_AUTO_INCREMENT:
+                sortByElementProperty("generated", isAscent);
                 break;
             case DB_ATTRIBUTE_SCALE:
                 sortByElementProperty("scale", isAscent);

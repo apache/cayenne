@@ -22,17 +22,16 @@ package org.apache.cayenne.modeler.ui.project.editor.dbentity.main;
 import com.jgoodies.forms.builder.DefaultFormBuilder;
 import com.jgoodies.forms.layout.FormLayout;
 import org.apache.cayenne.configuration.DataChannelDescriptor;
-import org.apache.cayenne.map.DbAttribute;
 import org.apache.cayenne.map.DbEntity;
+import org.apache.cayenne.map.DbKeyGenerator;
 import org.apache.cayenne.modeler.event.display.DbEntityDisplayEvent;
 import org.apache.cayenne.modeler.event.display.DbEntityDisplayListener;
-import org.apache.cayenne.modeler.event.model.DbAttributeEvent;
-import org.apache.cayenne.modeler.event.model.DbAttributeListener;
 import org.apache.cayenne.modeler.event.model.DbEntityEvent;
 import org.apache.cayenne.modeler.project.ProjectSession;
 import org.apache.cayenne.modeler.service.action.GlobalActions;
 import org.apache.cayenne.modeler.toolkit.ProjectPanel;
 import org.apache.cayenne.modeler.toolkit.text.CMUndoableTextField;
+import org.apache.cayenne.modeler.undo.ChangePKGeneratorUndoableEdit;
 import org.apache.cayenne.modeler.ui.action.CreateAttributeAction;
 import org.apache.cayenne.modeler.ui.action.CreateObjEntityFromDbAction;
 import org.apache.cayenne.modeler.ui.action.CreateRelationshipAction;
@@ -50,13 +49,7 @@ import java.util.EventObject;
 import java.util.Objects;
 
 public class DbEntityMainView extends ProjectPanel
-        implements ExistingSelectionProcessor, DbEntityDisplayListener, DbAttributeListener {
-
-    static final String PK_DEFAULT_GENERATOR = "Cayenne-Generated (Default)";
-    static final String PK_DB_GENERATOR = "Database-Generated";
-    static final String PK_CUSTOM_SEQUENCE_GENERATOR = "Custom Sequence";
-
-    static final String[] PK_GENERATOR_TYPES = { PK_DEFAULT_GENERATOR, PK_DB_GENERATOR, PK_CUSTOM_SEQUENCE_GENERATOR };
+        implements ExistingSelectionProcessor, DbEntityDisplayListener {
 
     private final CMUndoableTextField name;
     private final CMUndoableTextField catalog;
@@ -67,9 +60,8 @@ public class DbEntityMainView extends ProjectPanel
     private final JLabel catalogLabel;
     private final JLabel schemaLabel;
 
-    private final JComboBox<String> pkGeneratorType;
-    private final JPanel pkGeneratorDetail;
-    private final CardLayout pkGeneratorDetailLayout;
+    private final JCheckBox customPKSequence;
+    private final PKCustomSequenceGeneratorPanel customPKSequencePanel;
 
     private final JToolBar toolBar;
 
@@ -83,22 +75,8 @@ public class DbEntityMainView extends ProjectPanel
         schema = new CMUndoableTextField(app.getUndoManager());
         qualifier = new CMUndoableTextField(app.getUndoManager());
         comment = new CMUndoableTextField(app.getUndoManager());
-        pkGeneratorType = new JComboBox<>();
-        pkGeneratorDetailLayout = new CardLayout();
-
-        // unlike a plain CardLayout panel, this one takes the height of the visible card only, so that
-        // the comment row below it follows the PK fields instead of leaving a gap under the short cards
-        pkGeneratorDetail = new JPanel(pkGeneratorDetailLayout) {
-            @Override
-            public Dimension getPreferredSize() {
-                for (Component card : getComponents()) {
-                    if (card.isVisible()) {
-                        return card.getPreferredSize();
-                    }
-                }
-                return super.getPreferredSize();
-            }
-        };
+        customPKSequence = new JCheckBox();
+        customPKSequencePanel = new PKCustomSequenceGeneratorPanel(session);
         initLayout();
         initBindings();
     }
@@ -114,12 +92,6 @@ public class DbEntityMainView extends ProjectPanel
         toolBar.add(globalActions.getAction(DbEntitySyncAction.class).buildButton(2));
         toolBar.add(globalActions.getAction(DbEntityCounterpartAction.class).buildButton(3));
 
-        pkGeneratorType.setEditable(false);
-        pkGeneratorType.setModel(new DefaultComboBoxModel<>(PK_GENERATOR_TYPES));
-        pkGeneratorDetail.add(new PKDefaultGeneratorPanel(session), PK_DEFAULT_GENERATOR);
-        pkGeneratorDetail.add(new PKDBGeneratorPanel(session), PK_DB_GENERATOR);
-        pkGeneratorDetail.add(new PKCustomSequenceGeneratorPanel(session), PK_CUSTOM_SEQUENCE_GENERATOR);
-
         FormLayout layout = new FormLayout(EditorForm.LABEL_COLUMN + ", $lcgap, fill:200dlu", "");
         DefaultFormBuilder builder = new DefaultFormBuilder(layout);
         builder.setBorder(EditorForm.formBorder());
@@ -127,16 +99,18 @@ public class DbEntityMainView extends ProjectPanel
         builder.append(catalogLabel, catalog);
         builder.append(schemaLabel, schema);
         builder.append("Qualifier:", qualifier);
-        builder.append("PK Strategy:", pkGeneratorType);
+        builder.append("Custom PK Sequence:", customPKSequence);
 
-        // the comment goes last, below the PK generator panel, which varies with the selected strategy
+        // the comment goes last, below the sequence panel, which is only shown when the box is checked
         DefaultFormBuilder commentBuilder = new DefaultFormBuilder(
                 new FormLayout(EditorForm.LABEL_COLUMN + ", $lcgap, fill:200dlu", ""));
         commentBuilder.setBorder(EditorForm.lastSectionBorder());
         commentBuilder.append("Comment:", comment);
 
+        customPKSequencePanel.setVisible(false);
+
         JPanel pkAndComment = new JPanel(new BorderLayout());
-        pkAndComment.add(pkGeneratorDetail, BorderLayout.NORTH);
+        pkAndComment.add(customPKSequencePanel, BorderLayout.NORTH);
         pkAndComment.add(commentBuilder.getPanel(), BorderLayout.CENTER);
 
         JPanel mainPanel = new JPanel(new BorderLayout());
@@ -148,24 +122,6 @@ public class DbEntityMainView extends ProjectPanel
         add(mainPanel, BorderLayout.CENTER);
     }
 
-    /**
-     * Returns the PK generator card currently in front of the CardLayout, or null if none is showing.
-     */
-    private PKGeneratorPanel visiblePKGeneratorPanel() {
-        for (Component card : pkGeneratorDetail.getComponents()) {
-            if (card.isVisible()) {
-                return (PKGeneratorPanel) card;
-            }
-        }
-        return null;
-    }
-
-    private void showPKGeneratorDetail(String type) {
-        pkGeneratorDetailLayout.show(pkGeneratorDetail, type);
-        // cards differ in height, so the panels below have to be laid out again
-        pkGeneratorDetail.revalidate();
-    }
-
     private void initBindings() {
         name.addCommitListener(this::setEntityName);
         catalog.addCommitListener(this::setCatalog);
@@ -173,14 +129,49 @@ public class DbEntityMainView extends ProjectPanel
         qualifier.addCommitListener(this::setQualifier);
         comment.addCommitListener(this::setComment);
         session.addDbEntityDisplayListener(this);
-        session.addDbAttributeListener(this);
-        pkGeneratorType.addItemListener(e -> {
-            showPKGeneratorDetail((String) pkGeneratorType.getSelectedItem());
-            PKGeneratorPanel panel = visiblePKGeneratorPanel();
-            if (panel != null) {
-                panel.onInit(session.getSelectedDbEntity());
+        customPKSequence.addActionListener(e -> setCustomPKSequence(customPKSequence.isSelected()));
+    }
+
+    /**
+     * Attaches or drops the entity's own PK sequence generator. This is independent of the
+     * "Auto-Increment" attribute flag, matching the map XML, where "db-key-generator" and
+     * "db-attribute/@isGenerated" are unrelated.
+     */
+    private void setCustomPKSequence(boolean custom) {
+
+        DbEntity entity = session.getSelectedDbEntity();
+
+        if (entity == null) {
+            return;
+        }
+
+        ChangePKGeneratorUndoableEdit edit = new ChangePKGeneratorUndoableEdit(session, entity);
+        edit.captureOldState();
+
+        if (custom) {
+            if (entity.getPrimaryKeyGenerator() == null) {
+                DbKeyGenerator generator = new DbKeyGenerator();
+                generator.setGeneratorType(DbKeyGenerator.ORACLE_TYPE);
+                entity.setPrimaryKeyGenerator(generator);
             }
-        });
+        } else {
+            entity.setPrimaryKeyGenerator(null);
+        }
+
+        showCustomPKSequencePanel(entity, custom);
+        session.fireDbEntityEvent(DbEntityEvent.ofChange(this, entity));
+
+        edit.captureNewState();
+        if (edit.hasRealChange()) {
+            app.getUndoManager().addEdit(edit);
+        }
+    }
+
+    private void showCustomPKSequencePanel(DbEntity entity, boolean visible) {
+        customPKSequencePanel.setDbEntity(entity);
+        customPKSequencePanel.setVisible(visible);
+        // the panel appearing or collapsing shifts everything below it
+        customPKSequencePanel.getParent().revalidate();
     }
 
     public void processExistingSelection(EventObject e) {
@@ -198,40 +189,22 @@ public class DbEntityMainView extends ProjectPanel
             return;
         }
 
-        // if entity hasn't changed, still notify PK Generator panels, as entity PK may have changed...
-        for (int i = 0; i < pkGeneratorDetail.getComponentCount(); i++) {
-            ((PKGeneratorPanel) pkGeneratorDetail.getComponent(i)).setDbEntity(entity);
-        }
-
         name.setText(entity.getName());
         catalog.setText(entity.getCatalog());
         schema.setText(entity.getSchema());
         qualifier.setText(ExpressionConvertor.asString(entity.getQualifier()));
         comment.setText(getComment(entity));
 
-        String type = PK_DEFAULT_GENERATOR;
-
-        if (entity.getPrimaryKeyGenerator() != null) {
-            type = PK_CUSTOM_SEQUENCE_GENERATOR;
-        } else {
-            for (DbAttribute a : entity.getPrimaryKeys()) {
-                if (a.isGenerated()) {
-                    type = PK_DB_GENERATOR;
-                    break;
-                }
-            }
-        }
-
         catalogLabel.setEnabled(true);
         catalog.setEnabled(true);
 
         schemaLabel.setEnabled(true);
         schema.setEnabled(true);
-        pkGeneratorDetail.setVisible(true);
-        pkGeneratorType.setVisible(true);
 
-        pkGeneratorType.setSelectedItem(type);
-        showPKGeneratorDetail(type);
+        // setSelected() does not fire an ActionEvent, so this doesn't loop back into the model
+        boolean custom = entity.getPrimaryKeyGenerator() != null;
+        customPKSequence.setSelected(custom);
+        showCustomPKSequencePanel(entity, custom);
 
         if(entity.getDataMap().getMappedEntities(entity).isEmpty()) {
             toolBar.getComponentAtIndex(4).setEnabled(false);
@@ -239,40 +212,6 @@ public class DbEntityMainView extends ProjectPanel
         } else {
             toolBar.getComponentAtIndex(4).setEnabled(true);
             toolBar.getComponentAtIndex(5).setEnabled(true);
-        }
-    }
-
-    @Override
-    public void dbAttributeAdded(DbAttributeEvent e) {
-        refreshPKGenerator(e);
-    }
-
-    @Override
-    public void dbAttributeChanged(DbAttributeEvent e) {
-        refreshPKGenerator(e);
-    }
-
-    @Override
-    public void dbAttributeRemoved(DbAttributeEvent e) {
-        refreshPKGenerator(e);
-    }
-
-    /**
-     * The PK generator panels are driven by the entity attributes, so they must be resynced whenever
-     * attributes change, and not just on entity selection. Without this the "Auto Increment" column
-     * list goes stale as soon as PKs are added or removed from the Properties tab.
-     */
-    private void refreshPKGenerator(DbAttributeEvent e) {
-        DbEntity entity = session.getSelectedDbEntity();
-
-        // attributes of some other entity, or a non-DbEntity node is selected
-        if (entity == null || e.getEntity() != entity) {
-            return;
-        }
-
-        PKGeneratorPanel panel = visiblePKGeneratorPanel();
-        if (panel != null) {
-            panel.onInit(entity);
         }
     }
 

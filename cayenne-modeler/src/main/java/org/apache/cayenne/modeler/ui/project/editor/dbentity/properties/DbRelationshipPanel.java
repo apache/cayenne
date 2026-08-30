@@ -41,6 +41,7 @@ import org.apache.cayenne.modeler.event.display.DbRelationshipDisplayEvent;
 import org.apache.cayenne.modeler.event.display.TablePopupHandler;
 import org.apache.cayenne.modeler.pref.adapters.CMTablePrefs;
 import org.apache.cayenne.modeler.toolkit.table.BoardTableCellRenderer;
+import org.apache.cayenne.modeler.toolkit.table.BooleanTableCellRenderer;
 import org.apache.cayenne.modeler.toolkit.table.CMTable;
 import org.apache.cayenne.modeler.toolkit.table.CMTablePanel;
 import org.apache.cayenne.modeler.toolkit.Renderers;
@@ -52,7 +53,6 @@ import javax.swing.*;
 import javax.swing.event.ListSelectionEvent;
 import javax.swing.event.TableModelEvent;
 import javax.swing.event.TableModelListener;
-import javax.swing.table.TableCellRenderer;
 import javax.swing.table.TableColumn;
 import java.awt.*;
 import java.awt.event.ActionEvent;
@@ -90,6 +90,8 @@ public class DbRelationshipPanel extends ProjectPanel implements DbEntityDisplay
         table.setAutoResizeMode(JTable.AUTO_RESIZE_OFF);
         table.setDefaultRenderer(DbEntity.class, Renderers.entityTableRendererWithIcons(session));
         table.setDefaultRenderer(String.class, new BoardTableCellRenderer());
+        table.setDefaultRenderer(Boolean.class,
+                new BooleanTableCellRenderer(table.getDefaultRenderer(Boolean.class)));
 
         JPopupMenu popup = new JPopupMenu();
         popup.add(editMenu);
@@ -241,9 +243,6 @@ public class DbRelationshipPanel extends ProjectPanel implements DbEntityDisplay
         TableColumn targetColumn = table.getColumnModel().getColumn(DbRelationshipTableModel.TARGET);
         targetColumn.setCellEditor(new CMAutoCompleteComboBoxCellEditor(targetCombo));
 
-        TableColumn toDepPkColumn = table.getColumnModel().getColumn(DbRelationshipTableModel.TO_DEPENDENT_KEY);
-        toDepPkColumn.setCellRenderer(new CheckBoxCellRenderer());
-
         new CMTablePrefs(app.getPrefsManager().uiNode("dbEntity/relationshipTable"))
                 .bind(table, null, DbRelationshipTableModel.NAME);
     }
@@ -370,24 +369,5 @@ public class DbRelationshipPanel extends ProjectPanel implements DbEntityDisplay
                 rels));
 
         parentPanel.updateActions(rels);
-    }
-
-    private static class CheckBoxCellRenderer implements TableCellRenderer {
-
-        private final JCheckBox renderer;
-
-        public CheckBoxCellRenderer() {
-            renderer = new JCheckBox();
-            renderer.setHorizontalAlignment(SwingConstants.CENTER);
-        }
-
-        @Override
-        public Component getTableCellRendererComponent(JTable table, Object value, boolean isSelected, boolean hasFocus, int row, int column) {
-            Color color = isSelected ? table.getSelectionBackground() : table.getBackground();
-            renderer.setBackground(color);
-            renderer.setEnabled(table.isCellEditable(row, column));
-            renderer.setSelected(value != null && (Boolean) value);
-            return renderer;
-        }
     }
 }
