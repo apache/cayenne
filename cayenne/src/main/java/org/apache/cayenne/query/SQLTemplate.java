@@ -25,7 +25,9 @@ import org.apache.cayenne.map.DataMap;
 import org.apache.cayenne.map.DbEntity;
 import org.apache.cayenne.map.EntityResolver;
 import org.apache.cayenne.map.ObjEntity;
+import org.apache.cayenne.map.Procedure;
 import org.apache.cayenne.map.SQLResult;
+import org.apache.cayenne.util.ToStringBuilder;
 
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -65,7 +67,7 @@ import java.util.stream.Stream;
  * 
  * @since 1.1
  */
-public class SQLTemplate extends AbstractQuery {
+public class SQLTemplate extends CacheableQuery {
 
 	private static final long serialVersionUID = -3073521388289663641L;
 
@@ -116,14 +118,47 @@ public class SQLTemplate extends AbstractQuery {
 		Collections.addAll(resultColumnsTypes, types);
 	}
 
-	@Override
+	/**
+	 * The root object of this query. May be an entity name, Java class, ObjEntity or
+	 * DbEntity, depending on how the query was constructed. Null root is allowed.
+	 */
+	protected Object root;
+
+	/**
+	 * Returns the root of this query.
+	 */
+	public Object getRoot() {
+		return root;
+	}
+
+	/**
+	 * Sets the root of the query.
+	 *
+	 * @param value The new root
+	 * @throws IllegalArgumentException if value is not a String, ObjEntity, DbEntity,
+	 *             Procedure, DataMap, Class or null.
+	 */
 	public void setRoot(Object value) {
-		// allow null root...
-		if (value == null) {
-			this.root = null;
-		} else {
-			super.setRoot(value);
+		if (value != null && !(value instanceof String
+				|| value instanceof ObjEntity
+				|| value instanceof DbEntity
+				|| value instanceof Class
+				|| value instanceof Procedure
+				|| value instanceof DataMap)) {
+
+			throw new IllegalArgumentException(("%s: \"setRoot(..)\" takes a DataMap, String, ObjEntity, DbEntity, "
+					+ "Procedure, or Class. It was passed a %s")
+					.formatted(getClass().getName(), value.getClass().getName()));
 		}
+
+		this.root = value;
+	}
+
+	@Override
+	public String toString() {
+		return new ToStringBuilder(this)
+				.append("root", root)
+				.toString();
 	}
 
 	@Override

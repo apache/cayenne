@@ -19,15 +19,37 @@
 
 package org.apache.cayenne.query;
 
+import org.apache.cayenne.map.Procedure;
 import org.junit.jupiter.api.Test;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.junit.jupiter.api.Assertions.assertNull;
 import static org.junit.jupiter.api.Assertions.assertSame;
+import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
 public class ProcedureQueryTest {
+
+    @Test
+    public void setRootProcedureName() {
+        ProcedureQuery query = new ProcedureQuery("SomeProcedure");
+        assertSame("SomeProcedure", query.getRoot());
+    }
+
+    @Test
+    public void setRootProcedure() {
+        Procedure procedure = new Procedure("ABC");
+        ProcedureQuery query = new ProcedureQuery(procedure);
+        assertSame(procedure, query.getRoot());
+    }
+
+    @Test
+    public void setInvalidRoot() {
+        ProcedureQuery query = new ProcedureQuery();
+        assertNull(query.getRoot());
+        assertThrows(IllegalArgumentException.class, () -> query.setRoot(1));
+    }
 
     @Test
     public void columnNameCapitalization() {

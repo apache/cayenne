@@ -163,7 +163,6 @@ public class SelectQueryDescriptor extends QueryDescriptor {
 
         ObjectSelect<?> query = ObjectSelect.query(Object.class, qualifier);
         query.entityName(rootEntityName);
-        query.setRoot(root);
 
         List<Ordering> orderings = this.getOrderings();
         if (orderings != null && !orderings.isEmpty()) {

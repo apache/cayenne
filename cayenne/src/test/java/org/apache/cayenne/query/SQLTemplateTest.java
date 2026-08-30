@@ -23,6 +23,7 @@ import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertNotSame;
 import static org.junit.jupiter.api.Assertions.assertNull;
 import static org.junit.jupiter.api.Assertions.assertSame;
+import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.mockito.Mockito.mock;
 
@@ -32,10 +33,55 @@ import java.util.HashMap;
 import java.util.Map;
 
 import org.apache.cayenne.map.EntityResolver;
+import org.apache.cayenne.map.ObjEntity;
+import org.apache.cayenne.testdo.testmap.Artist;
 import org.apache.cayenne.util.Util;
 import org.junit.jupiter.api.Test;
 
 public class SQLTemplateTest {
+
+	@Test
+	public void setRootEntityName() {
+		SQLTemplate query = new SQLTemplate();
+		assertNull(query.getRoot());
+
+		query.setRoot("SomeEntity");
+		assertSame("SomeEntity", query.getRoot());
+	}
+
+	@Test
+	public void setRootObjEntity() {
+		SQLTemplate query = new SQLTemplate();
+		assertNull(query.getRoot());
+
+		ObjEntity e = new ObjEntity("ABC");
+		query.setRoot(e);
+		assertSame(e, query.getRoot());
+	}
+
+	@Test
+	public void setRootClass() {
+		SQLTemplate query = new SQLTemplate();
+		assertNull(query.getRoot());
+
+		query.setRoot(Artist.class);
+		assertSame(Artist.class, query.getRoot());
+	}
+
+	@Test
+	public void setRootNull() {
+		SQLTemplate query = new SQLTemplate();
+		query.setRoot("SomeEntity");
+
+		query.setRoot(null);
+		assertNull(query.getRoot());
+	}
+
+	@Test
+	public void setInvalidRoot() {
+		SQLTemplate query = new SQLTemplate();
+		assertThrows(IllegalArgumentException.class, () -> query.setRoot(1));
+	}
 
 	@Test
 	public void setParams() throws Exception {

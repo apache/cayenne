@@ -47,7 +47,7 @@ public class SelectQueryDescriptorTest {
         builder.setRoot(entity);
 
         assertTrue(builder.buildQuery() instanceof ObjectSelect);
-        assertSame(entity, builder.buildQuery().getRoot());
+        assertEquals(entity.getName(), builder.buildQuery().getEntityName());
     }
 
     @Test

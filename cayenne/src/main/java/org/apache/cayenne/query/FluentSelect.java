@@ -41,7 +41,7 @@ import org.apache.cayenne.map.ObjEntity;
  *
  * @since 4.0
  */
-public abstract class FluentSelect<T, S extends FluentSelect<T, S>> extends AbstractQuery implements Select<T> {
+public abstract class FluentSelect<T, S extends FluentSelect<T, S>> extends CacheableQuery implements Select<T> {
 
     // root
     protected Class<?> entityType;
