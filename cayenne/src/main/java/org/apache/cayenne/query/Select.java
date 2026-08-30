@@ -39,7 +39,9 @@ public interface Select<T> extends Query {
 	 *
 	 * @since 4.0
 	 */
-	List<T> select(ObjectContext context);
+	default List<T> select(ObjectContext context) {
+		return context.select(this);
+	}
 
 	/**
 	 * Selects a single object using provided context. The query is expected to
@@ -51,7 +53,9 @@ public interface Select<T> extends Query {
 	 *
 	 * @since 4.0
 	 */
-	T selectOne(ObjectContext context);
+	default T selectOne(ObjectContext context) {
+		return context.selectOne(this);
+	}
 
 	/**
 	 * Selects a single object using provided context. The query itself can
@@ -71,6 +75,8 @@ public interface Select<T> extends Query {
 	 *
 	 * @since 4.0
 	 */
+	// TODO: downstream implementors call context.selectFirst(limit(1)), so it has side effect
+	//  on "this" query. Limit optimizes generated SQL, so it is needed, but this is dirty
 	T selectFirst(ObjectContext context);
 
 	/**
@@ -83,7 +89,9 @@ public interface Select<T> extends Query {
 	 *
 	 * @since 4.0
 	 */
-	void iterate(ObjectContext context, ResultIteratorCallback<T> callback);
+	default void iterate(ObjectContext context, ResultIteratorCallback<T> callback) {
+		context.iterate(this, callback);
+	}
 
 	/**
 	 * Creates a ResultIterator based on the provided context. It is usually
@@ -98,7 +106,9 @@ public interface Select<T> extends Query {
 	 *
 	 * @since 4.0
 	 */
-	ResultIterator<T> iterator(ObjectContext context);
+	default ResultIterator<T> iterator(ObjectContext context) {
+		return context.iterator(this);
+	}
 
 	/**
 	 * Creates a ResultBatchIterator based on the provided context and batch
@@ -109,5 +119,7 @@ public interface Select<T> extends Query {
 	 *
 	 * @since 4.0
 	 */
-	ResultBatchIterator<T> batchIterator(ObjectContext context, int size);
+	default ResultBatchIterator<T> batchIterator(ObjectContext context, int size) {
+		return context.batchIterator(this, size);
+	}
 }

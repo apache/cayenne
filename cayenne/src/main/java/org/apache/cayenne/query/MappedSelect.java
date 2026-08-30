@@ -24,9 +24,6 @@ import java.util.Map;
 
 import org.apache.cayenne.CayenneRuntimeException;
 import org.apache.cayenne.ObjectContext;
-import org.apache.cayenne.ResultBatchIterator;
-import org.apache.cayenne.ResultIterator;
-import org.apache.cayenne.ResultIteratorCallback;
 import org.apache.cayenne.map.EntityResolver;
 import org.apache.cayenne.map.QueryDescriptor;
 
@@ -151,34 +148,15 @@ public class MappedSelect<T> extends AbstractMappedQuery implements Select<T> {
         return (MappedSelect<T>) super.param(name, value);
     }
 
-    public List<T> select(ObjectContext context) {
-        return context.select(this);
-    }
 
-    @Override
-    public T selectOne(ObjectContext context) {
-        return context.selectOne(this);
-    }
 
     @Override
     public T selectFirst(ObjectContext context) {
         return context.selectFirst(limit(1));
     }
 
-    @Override
-    public void iterate(ObjectContext context, ResultIteratorCallback<T> callback) {
-        context.iterate(this, callback);
-    }
 
-    @Override
-    public ResultIterator<T> iterator(ObjectContext context) {
-        return context.iterator(this);
-    }
 
-    @Override
-    public ResultBatchIterator<T> batchIterator(ObjectContext context, int size) {
-        return context.batchIterator(this, size);
-    }
 
     @Override
     protected Query createReplacementQuery(EntityResolver resolver) {

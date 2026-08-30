@@ -22,9 +22,6 @@ import org.apache.cayenne.CayenneRuntimeException;
 import org.apache.cayenne.DataRow;
 import org.apache.cayenne.ObjectContext;
 import org.apache.cayenne.ObjectId;
-import org.apache.cayenne.ResultBatchIterator;
-import org.apache.cayenne.ResultIterator;
-import org.apache.cayenne.ResultIteratorCallback;
 import org.apache.cayenne.exp.Expression;
 import org.apache.cayenne.map.EntityResolver;
 import org.apache.cayenne.map.ObjEntity;
@@ -452,35 +449,15 @@ public class SelectById<T> extends IndirectQuery implements Select<T> {
 		this(root, idSpec, false);
 	}
 
-	@Override
-	public List<T> select(ObjectContext context) {
-		return context.select(this);
-	}
 
-	@Override
-	public T selectOne(ObjectContext context) {
-		return context.selectOne(this);
-	}
 
 	@Override
 	public T selectFirst(ObjectContext context) {
 		return context.selectFirst(this);
 	}
 
-	@Override
-	public void iterate(ObjectContext context, ResultIteratorCallback<T> callback) {
-		context.iterate(this, callback);
-	}
 
-	@Override
-	public ResultIterator<T> iterator(ObjectContext context) {
-		return context.iterator(this);
-	}
 
-	@Override
-	public ResultBatchIterator<T> batchIterator(ObjectContext context, int size) {
-		return context.batchIterator(this, size);
-	}
 
 	/**
 	 * Instructs Cayenne to look for query results in the "local" cache when
