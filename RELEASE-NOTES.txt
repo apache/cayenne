@@ -20,6 +20,7 @@ CAY-3007 Deprecate SelectById
 
 Bug Fixes:
 
+CAY-2996 Javadocs are missing from the central artifacts
 CAY-2999 Modeler: A restricted method in java.lang.System has been called
 CAY-3001 Modeler: Auto-increment attribute is not picked up
 CAY-3002 Modeler: NPE after clicking path chooser
