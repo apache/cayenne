@@ -18,7 +18,9 @@
  ****************************************************************/
 package org.apache.cayenne.access.jdbc;
 
+import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
 
 import org.apache.cayenne.query.ObjectSelect;
 import org.apache.cayenne.testdo.lob.ClobTestEntity;
@@ -26,12 +28,10 @@ import org.apache.cayenne.testdo.lob.ClobTestRelation;
 import org.apache.cayenne.unit.CayenneProjects;
 import org.apache.cayenne.unit.CayenneTestsEnv;
 import org.junit.jupiter.api.extension.RegisterExtension;
-import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.Test;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
 
-@Disabled("Temporary ignore this test to debug GitHub Actions failure")
 public class SelectActionIT {
 
     @RegisterExtension
@@ -67,7 +67,33 @@ public class SelectActionIT {
             // this should be 80, but we got only single values and we forcing distinct on them
             // so here will be only 21 elements that are unique
             assertEquals(21, result.size());
+            assertEquals(expectedClobValues(), new HashSet<>(result));
         }
+    }
+
+    @Test
+    public void columnSelectWithoutJoin_DistinctResultIterator() {
+        if (env.testDbAdapter().supportsLobs()) {
+
+            insertClobDb();
+
+            List<String> result = ObjectSelect.query(ClobTestEntity.class)
+                    .column(ClobTestEntity.CLOB_COL)
+                    .distinct()
+                    .select(env.context());
+
+            assertEquals(21, result.size());
+            assertEquals(expectedClobValues(), new HashSet<>(result));
+        }
+    }
+
+    protected Set<String> expectedClobValues() {
+        Set<String> expected = new HashSet<>();
+        for (int i = 0; i < 20; i++) {
+            expected.add("a1" + i);
+        }
+        expected.add("a2");
+        return expected;
     }
 
     protected void insertClobDb() {
@@ -81,6 +107,10 @@ public class SelectActionIT {
             insertClobRel(obj);
         }
         env.context().commitChanges();
+
+        // sanity check
+        assertEquals(80L, ObjectSelect.query(ClobTestEntity.class).selectCount(env.context()));
+        assertEquals(1600L, ObjectSelect.query(ClobTestRelation.class).selectCount(env.context()));
     }
 
     protected void insertClobRel(ClobTestEntity clobId) {

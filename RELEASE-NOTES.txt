@@ -20,6 +20,7 @@ CAY-3007 Deprecate SelectById
 
 Bug Fixes:
 
+CAY-2832 SelectActionIT is failing on GitHub Actions
 CAY-2996 Javadocs are missing from the central artifacts
 CAY-2999 Modeler: A restricted method in java.lang.System has been called
 CAY-3001 Modeler: Auto-increment attribute is not picked up
@@ -28,6 +29,7 @@ CAY-3003 Modeler: NPE editing unmapped ObjAttribute
 CAY-3005 ResultIterator.allRows() doesn't convert to DataObjects
 CAY-3006 Can't match a "self" property of an entity with a compound PK
 CAY-3008 Disjoint prefetch returns wrong results when the query matches on a "self" property
+CAY-3009 Column select with CLOB attribute and distinct() fails
 
 ----------------------------------
 Release: 5.0-M3
