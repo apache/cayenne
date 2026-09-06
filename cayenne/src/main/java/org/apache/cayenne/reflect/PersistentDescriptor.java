@@ -18,7 +18,6 @@
  ****************************************************************/
 package org.apache.cayenne.reflect;
 
-import org.apache.cayenne.CayenneRuntimeException;
 import org.apache.cayenne.PersistenceState;
 import org.apache.cayenne.Persistent;
 import org.apache.cayenne.exp.Expression;
@@ -52,6 +51,7 @@ public class PersistentDescriptor implements ClassDescriptor {
 
 	// compiled properties ...
 	protected Class<?> objectClass;
+	protected DefaultConstructor<?> constructor;
 	protected Map<String, PropertyDescriptor> declaredProperties;
 	protected Map<String, PropertyDescriptor> properties;
 
@@ -252,6 +252,7 @@ public class PersistentDescriptor implements ClassDescriptor {
 
 	void setObjectClass(Class<?> objectClass) {
 		this.objectClass = objectClass;
+		this.constructor = objectClass != null ? new DefaultConstructor<>(objectClass) : null;
 	}
 
 	public ClassDescriptor getSubclassDescriptor(String entityName) {
@@ -319,15 +320,11 @@ public class PersistentDescriptor implements ClassDescriptor {
 	 * Creates a new instance of a class described by this object.
 	 */
 	public Object createObject() {
-		if (objectClass == null) {
+		if (constructor == null) {
 			throw new NullPointerException("Null objectClass. Descriptor wasn't initialized properly.");
 		}
 
-		try {
-			return objectClass.getDeclaredConstructor().newInstance();
-		} catch (Throwable e) {
-			throw new CayenneRuntimeException("Error creating object of class '" + objectClass.getName() + "'", e);
-		}
+		return constructor.newInstance();
 	}
 
 	/**

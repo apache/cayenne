@@ -54,6 +54,7 @@ import org.apache.cayenne.query.QueryRouter;
 import org.apache.cayenne.query.RefreshQuery;
 import org.apache.cayenne.query.RelationshipQuery;
 import org.apache.cayenne.reflect.ClassDescriptor;
+import org.apache.cayenne.reflect.DefaultConstructor;
 import org.apache.cayenne.reflect.LifecycleCallbackRegistry;
 import org.apache.cayenne.tx.BaseTransaction;
 import org.apache.cayenne.tx.ReadOnlyTransaction;
@@ -64,7 +65,6 @@ import org.apache.cayenne.util.Util;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import java.lang.reflect.Constructor;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
@@ -849,15 +849,10 @@ class DataDomainQueryAction implements QueryRouter, OperationObserver {
             EmbeddableResultSegment resultSegment = (EmbeddableResultSegment) metadata.getResultSetMapping().getFirst();
             Embeddable embeddable = resultSegment.getEmbeddable();
             Class<? extends EmbeddableObject> embeddableClass = objectFactory.getJavaClass(embeddable.getClassName());
+            DefaultConstructor<? extends EmbeddableObject> constructor = new DefaultConstructor<>(embeddableClass);
             List<EmbeddableObject> result = new ArrayList<>(mainRows.size());
             mainRows.forEach(dataRow -> {
-                EmbeddableObject eo;
-                try {
-                    eo = embeddableClass.getDeclaredConstructor().newInstance();
-                } catch (Exception e) {
-                    throw new CayenneRuntimeException("Unable to materialize embeddable '%s'", e,
-                            embeddable.getClassName());
-                }
+                EmbeddableObject eo = constructor.newInstance();
                 dataRow.forEach(eo::writePropertyDirectly);
                 result.add(eo);
             });
@@ -989,17 +984,12 @@ class DataDomainQueryAction implements QueryRouter, OperationObserver {
                     Embeddable embeddable = resultSegment.getEmbeddable();
                     Class<? extends EmbeddableObject> embeddableClass = objectFactory
                             .getJavaClass(embeddable.getClassName());
-                    try {
-                        Constructor<? extends EmbeddableObject> declaredConstructor = embeddableClass
-                                .getDeclaredConstructor();
-                        for (Object[] row : result) {
-                            DataRow dataRow = (DataRow) row[i];
-                            EmbeddableObject eo = declaredConstructor.newInstance();
-                            dataRow.forEach(eo::writePropertyDirectly);
-                            row[i] = eo;
-                        }
-                    } catch (Exception e) {
-                        throw new CayenneRuntimeException("Unable to materialize embeddable '%s'", e, embeddable.getClassName());
+                    DefaultConstructor<? extends EmbeddableObject> constructor = new DefaultConstructor<>(embeddableClass);
+                    for (Object[] row : result) {
+                        DataRow dataRow = (DataRow) row[i];
+                        EmbeddableObject eo = constructor.newInstance();
+                        dataRow.forEach(eo::writePropertyDirectly);
+                        row[i] = eo;
                     }
                 }
             }

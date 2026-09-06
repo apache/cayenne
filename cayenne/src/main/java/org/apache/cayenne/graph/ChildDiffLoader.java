@@ -28,7 +28,6 @@ import org.apache.cayenne.ObjectContext;
 import org.apache.cayenne.ObjectId;
 import org.apache.cayenne.Persistent;
 import org.apache.cayenne.QueryResponse;
-import org.apache.cayenne.map.ObjEntity;
 import org.apache.cayenne.query.ObjectIdQuery;
 import org.apache.cayenne.query.Query;
 import org.apache.cayenne.reflect.ArcProperty;
@@ -90,20 +89,8 @@ public class ChildDiffLoader implements GraphChangeHandler {
 				throw new NullPointerException("Null entity name in id " + id);
 			}
 
-			ObjEntity entity = context.getEntityResolver().getObjEntity(id.getEntityName());
-			if (entity == null) {
-				throw new IllegalArgumentException("Entity not mapped with Cayenne: " + id);
-			}
-
-			Persistent persistent;
-			Class<? extends Persistent> javaClass = context.getEntityResolver().getObjectFactory()
-					.getJavaClass(entity.getJavaClassName());
-			try {
-				persistent = javaClass.getDeclaredConstructor().newInstance();
-			} catch (Exception ex) {
-				throw new CayenneRuntimeException("Error instantiating object.", ex);
-			}
-
+			ClassDescriptor descriptor = context.getEntityResolver().getClassDescriptor(id.getEntityName());
+			Persistent persistent = (Persistent) descriptor.createObject();
 			persistent.setObjectId(id);
 			context.registerNewObject(persistent);
 		} finally {

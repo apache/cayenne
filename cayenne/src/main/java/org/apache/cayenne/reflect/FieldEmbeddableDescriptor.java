@@ -30,6 +30,7 @@ import org.apache.cayenne.map.Embeddable;
 public class FieldEmbeddableDescriptor implements EmbeddableDescriptor {
 
     protected Class<?> embeddableClass;
+    protected DefaultConstructor<?> constructor;
     protected Embeddable embeddable;
     protected Accessor ownerAccessor;
     protected Accessor embeddedPropertyAccessor;
@@ -38,17 +39,13 @@ public class FieldEmbeddableDescriptor implements EmbeddableDescriptor {
                                      String ownerProperty, String embeddedPropertyProperty) {
         this.embeddable = embeddable;
         this.embeddableClass = objectFactory.getJavaClass(embeddable.getClassName());
+        this.constructor = new DefaultConstructor<>(embeddableClass);
         this.ownerAccessor = new FieldAccessor(embeddableClass, ownerProperty, Persistent.class);
         this.embeddedPropertyAccessor = new FieldAccessor(embeddableClass, embeddedPropertyProperty, String.class);
     }
 
     public Object createObject(Object owner, String embeddedProperty) {
-        Object embeddable;
-        try {
-            embeddable = embeddableClass.getDeclaredConstructor().newInstance();
-        } catch (Throwable e) {
-            throw new PropertyException("Error creating embeddable object of class '" + embeddableClass.getName() + "'", e);
-        }
+        Object embeddable = constructor.newInstance();
 
         ownerAccessor.setValue(embeddable, owner);
         embeddedPropertyAccessor.setValue(embeddable, embeddedProperty);
