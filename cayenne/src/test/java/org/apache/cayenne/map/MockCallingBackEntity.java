@@ -44,4 +44,12 @@ public class MockCallingBackEntity {
     void defaultCallback() {
         defaultCallbackInvoked = true;
     }
+
+    public void uncheckedThrowingCallback() {
+        throw new IllegalStateException("unchecked");
+    }
+
+    public void checkedThrowingCallback() throws Exception {
+        throw new Exception("checked");
+    }
 }

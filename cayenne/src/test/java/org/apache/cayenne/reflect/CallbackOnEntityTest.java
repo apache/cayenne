@@ -18,9 +18,11 @@
  ****************************************************************/
 package org.apache.cayenne.reflect;
 
+import org.apache.cayenne.CayenneRuntimeException;
 import org.apache.cayenne.map.MockCallingBackEntity;
 import org.junit.jupiter.api.Test;
 
+import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.junit.jupiter.api.Assertions.assertTrue;
@@ -81,6 +83,24 @@ public class CallbackOnEntityTest {
         assertFalse(e.protectedCallbackInvoked);
         assertFalse(e.privateCallbackInvoked);
         assertTrue(e.defaultCallbackInvoked);
+    }
+
+    @Test
+    public void uncheckedExceptionPropagatesAsIs() {
+        CallbackOnEntity callback = new CallbackOnEntity(MockCallingBackEntity.class, "uncheckedThrowingCallback");
+
+        IllegalStateException e = assertThrows(IllegalStateException.class,
+                () -> callback.performCallback(new MockCallingBackEntity()));
+        assertEquals("unchecked", e.getMessage());
+    }
+
+    @Test
+    public void checkedExceptionIsWrapped() {
+        CallbackOnEntity callback = new CallbackOnEntity(MockCallingBackEntity.class, "checkedThrowingCallback");
+
+        CayenneRuntimeException e = assertThrows(CayenneRuntimeException.class,
+                () -> callback.performCallback(new MockCallingBackEntity()));
+        assertEquals("checked", e.getCause().getMessage());
     }
 
     @Test

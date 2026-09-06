@@ -18,10 +18,10 @@
  ****************************************************************/
 package org.apache.cayenne.reflect;
 
+import java.lang.invoke.MethodHandle;
 import java.lang.reflect.Method;
 import java.lang.reflect.Modifier;
 
-import org.apache.cayenne.CayenneRuntimeException;
 import org.apache.cayenne.util.Util;
 
 /**
@@ -33,8 +33,8 @@ import org.apache.cayenne.util.Util;
  */
 class CallbackOnListener extends AbstractCallback {
 
-    private Method callbackMethod;
-    private Object listener;
+    private final String callbackName;
+    private final MethodHandle callbackHandle;
 
     CallbackOnListener(Object listener, String methodName)
             throws IllegalArgumentException {
@@ -48,8 +48,9 @@ class CallbackOnListener extends AbstractCallback {
             throw new IllegalArgumentException("Null listener");
         }
 
-        this.callbackMethod = findMethod(listener.getClass(), methodName, entityType);
-        this.listener = listener;
+        Method method = findMethod(listener.getClass(), methodName, entityType);
+        this.callbackName = callbackName(method);
+        this.callbackHandle = unreflect(method).bindTo(listener).asType(CALLBACK_TYPE);
     }
 
     CallbackOnListener(Object listener, Method method, Class<?> entityType)
@@ -64,29 +65,22 @@ class CallbackOnListener extends AbstractCallback {
                     + method.getName());
         }
 
-        this.callbackMethod = method;
-        this.listener = listener;
+        this.callbackName = callbackName(method);
+        this.callbackHandle = unreflect(method).bindTo(listener).asType(CALLBACK_TYPE);
     }
 
     @Override
     public void performCallback(Object entity) {
         try {
-            callbackMethod.invoke(listener, entity);
-        }
-        catch (Exception e) {
-            throw new CayenneRuntimeException(
-                    "Error invoking entity listener callback method "
-                            + callbackMethod.getName(),
-                    e);
+            callbackHandle.invokeExact(entity);
+        } catch (Throwable th) {
+            throw callbackFailure(callbackName, th);
         }
     }
 
     @Override
     public String toString() {
-        return "callback-listener: "
-                + callbackMethod.getDeclaringClass().getName()
-                + "."
-                + callbackMethod.getName();
+        return "callback-listener: " + callbackName;
     }
 
     private boolean verifyMethod(Method method, Class<?> entityType) {

@@ -18,6 +18,13 @@
  ****************************************************************/
 package org.apache.cayenne.reflect;
 
+import org.apache.cayenne.CayenneRuntimeException;
+
+import java.lang.invoke.MethodHandle;
+import java.lang.invoke.MethodHandles;
+import java.lang.invoke.MethodType;
+import java.lang.reflect.Method;
+
 /**
  * Defines a callback operation.
  * 
@@ -25,5 +32,39 @@ package org.apache.cayenne.reflect;
  */
 abstract class AbstractCallback {
 
+    /**
+     * The uniform shape every callback handle is adapted to, so that it can be called with "invokeExact".
+     */
+    static final MethodType CALLBACK_TYPE = MethodType.methodType(void.class, Object.class);
+
     abstract void performCallback(Object entity);
+
+    /**
+     * Turns a validated (and, if needed, made accessible) callback method into a method handle.
+     */
+    static MethodHandle unreflect(Method method) {
+        try {
+            return MethodHandles.lookup().unreflect(method);
+        } catch (IllegalAccessException e) {
+            throw new IllegalArgumentException("Inaccessible callback method: " + method, e);
+        }
+    }
+
+    /**
+     * Rethrows an exception raised by a callback. Unchecked exceptions and errors propagate as they are, checked
+     * exceptions are wrapped.
+     */
+    static RuntimeException callbackFailure(String callbackName, Throwable th) {
+        if (th instanceof RuntimeException re) {
+            return re;
+        }
+        if (th instanceof Error error) {
+            throw error;
+        }
+        return new CayenneRuntimeException("Error invoking callback method " + callbackName, th);
+    }
+
+    static String callbackName(Method method) {
+        return method.getDeclaringClass().getName() + "." + method.getName();
+    }
 }

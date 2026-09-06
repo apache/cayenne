@@ -18,10 +18,10 @@
  ****************************************************************/
 package org.apache.cayenne.reflect;
 
+import java.lang.invoke.MethodHandle;
 import java.lang.reflect.Method;
 import java.lang.reflect.Modifier;
 
-import org.apache.cayenne.CayenneRuntimeException;
 import org.apache.cayenne.util.Util;
 
 /**
@@ -33,7 +33,8 @@ import org.apache.cayenne.util.Util;
  */
 class CallbackOnEntity extends AbstractCallback {
 
-    private final Method callbackMethod;
+    private final String callbackName;
+    private final MethodHandle callbackHandle;
 
     CallbackOnEntity(Class<?> objectClass, String methodName) throws IllegalArgumentException {
         this(findMethod(objectClass, methodName));
@@ -47,28 +48,25 @@ class CallbackOnEntity extends AbstractCallback {
             throw new IllegalArgumentException("Class " + method.getDeclaringClass().getName()
                     + " has no valid callback method '" + method.getName() + "'");
         }
-        this.callbackMethod = method;
-        if (!Util.isAccessible(callbackMethod)) {
-            callbackMethod.setAccessible(true);
+        if (!Util.isAccessible(method)) {
+            method.setAccessible(true);
         }
+        this.callbackName = callbackName(method);
+        this.callbackHandle = unreflect(method).asType(CALLBACK_TYPE);
     }
 
     @Override
     public void performCallback(Object entity) {
         try {
-            callbackMethod.invoke(entity, (Object[]) null);
-        } catch (Exception e) {
-            throw new CayenneRuntimeException("Error invoking entity callback method "
-                    + callbackMethod.getName(), e);
+            callbackHandle.invokeExact(entity);
+        } catch (Throwable th) {
+            throw callbackFailure(callbackName, th);
         }
     }
 
     @Override
     public String toString() {
-        return "callback-entity: "
-                + callbackMethod.getDeclaringClass().getName()
-                + "."
-                + callbackMethod.getName();
+        return "callback-entity: " + callbackName;
     }
 
     static private boolean validateMethod(Method method) {
