@@ -75,6 +75,18 @@ Expression caseWhenExp = caseWhen(
   engine / driver limitations. `LocalDateValueType`, `LocalTimeValueType` and `LocalDateTimeValueType` are deprecated
   and no longer registered.
 
+*  Per [CAY-3014](https://issues.apache.org/jira/browse/CAY-3014) `org.apache.cayenne.query.QueryChain`
+  (deprecated in 5.0-M3) was removed. To run several queries together, execute them one by one, wrapping them in an
+  explicit transaction if they must share one:
+
+  ```java
+  runtime.performInTransaction(() -> {
+      List<Artist> artists = ObjectSelect.query(Artist.class).select(context);
+      List<Painting> paintings = ObjectSelect.query(Painting.class).select(context);
+      return null;
+  });
+  ```
+
 *  The `org.apache.cayenne.query.ParameterizedQuery` interface was removed, together with the `createQuery(Map)`
   methods of `SQLTemplate`, `ProcedureQuery` and `ObjectSelect` that implemented it. Applying parameters to a mapped
   query is now the job of the query descriptor - override `QueryDescriptor.buildQuery(Map)` if you have a custom

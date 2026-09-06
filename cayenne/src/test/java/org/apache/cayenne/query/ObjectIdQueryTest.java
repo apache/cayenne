@@ -48,8 +48,8 @@ public class ObjectIdQueryTest {
     }
 
     /**
-     * Proper 'equals' and 'hashCode' implementations are important when mapping
-     * results obtained in a QueryChain back to the query.
+     * Proper 'equals' and 'hashCode' implementations are important when mapping results of a multi-query
+     * execution back to the query.
      */
     @Test
     public void equals() throws Exception {

@@ -20,6 +20,7 @@ CAY-3007 Deprecate SelectById
 CAY-3010 LocalDateTime and friends should be accessed directly via JDBC
 CAY-3012 Improve reflection performance
 CAY-3013 MySQL: JDBC-level streaming for iterators
+CAY-3014 Remove QueryChain
 
 Bug Fixes:
 

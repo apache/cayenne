@@ -140,8 +140,7 @@ public class StringIdQuery implements Query {
     public QueryMetadata getMetaData(EntityResolver resolver) {
 
         // Cayenne doesn't know how to handle multiple root entities, so this
-        // QueryMetadata, just like QueryChain's metadata is not very precise and won't
-        // result in correct PersistentObjects...
+        // QueryMetadata is not very precise and won't result in correct PersistentObjects...
         return new QueryMetadata() {
 
             public DataMap getDataMap() {
@@ -191,8 +190,7 @@ public class StringIdQuery implements Query {
 
             public boolean isFetchingDataRows() {
                 // overriding this... Can't fetch objects until DataDomainQueryAction
-                // starts converting multiple ResultSets to object... Same as QueryChain
-                // essentially.
+                // starts converting multiple ResultSets to objects.
                 return true;
             }
 
