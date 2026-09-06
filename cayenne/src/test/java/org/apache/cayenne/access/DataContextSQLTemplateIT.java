@@ -545,7 +545,10 @@ public class DataContextSQLTemplateIT {
 	public void iteratedQuery() throws Exception {
 		createFourArtists();
 
-		SQLSelect<DataRow> query = SQLSelect.dataRowQuery("SELECT * FROM ARTIST ORDER BY ARTIST_ID");
+		// "SELECT *" yields lowercase column names on some DBs (e.g. PostgreSQL), so normalize the DataRow keys
+		SQLSelect<DataRow> query = SQLSelect
+				.dataRowQuery("SELECT * FROM ARTIST ORDER BY ARTIST_ID")
+				.columnNameCaps(CapsStrategy.UPPER);
 
 		try (ResultIterator<DataRow> it = context.iterator(query)) {
 			long i = 0;
