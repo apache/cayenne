@@ -19,6 +19,7 @@ CAY-3004 Modeler: Rework DbEntity PK generation UI to match the XML model
 CAY-3007 Deprecate SelectById
 CAY-3010 LocalDateTime and friends should be accessed directly via JDBC
 CAY-3012 Improve reflection performance
+CAY-3013 MySQL: JDBC-level streaming for iterators
 
 Bug Fixes:
 

@@ -21,6 +21,7 @@ package org.apache.cayenne.access.jdbc;
 
 import org.apache.cayenne.ResultIterator;
 import org.apache.cayenne.access.DataNode;
+import org.apache.cayenne.access.OperationHints;
 import org.apache.cayenne.access.OperationObserver;
 import org.apache.cayenne.access.jdbc.reader.RowReader;
 import org.apache.cayenne.access.translator.TranslatedSelect;
@@ -72,7 +73,7 @@ public class SelectAction extends BaseSQLAction {
             adapter.bindParameter(statement, p);
         }
 
-        int fetchSize = queryMetadata.getStatementFetchSize();
+        int fetchSize = statementFetchSize(observer);
         if (fetchSize != 0) {
             statement.setFetchSize(fetchSize);
         }
@@ -126,6 +127,19 @@ public class SelectAction extends BaseSQLAction {
 
     protected RSColumn[] resultColumns(TranslatedSelect translated, ResultSet rs) throws SQLException {
         return translated.resultColumns();
+    }
+
+    /**
+     * Returns the fetch size to set on the PreparedStatement, or 0 to leave the driver default alone. The base
+     * implementation returns the fetch size of the query, whatever it is. Adapter-specific subclasses may substitute
+     * a default of their own when the query does not set one, but must always honor a non-zero query value.
+     *
+     * @param hints whether the result is handed to the caller as a ResultIterator that outlives this action, and if
+     *              so, whether that iterator has the connection to itself until it is closed.
+     * @since 5.0
+     */
+    protected int statementFetchSize(OperationHints hints) {
+        return queryMetadata.getStatementFetchSize();
     }
 
     private <T> ResultIterator<T> forIteratedResult(ResultIterator<T> iterator, OperationObserver observer,

@@ -19,6 +19,7 @@
 package org.apache.cayenne.dba.mysql;
 
 import org.apache.cayenne.access.DataNode;
+import org.apache.cayenne.access.OperationHints;
 import org.apache.cayenne.access.jdbc.SelectAction;
 import org.apache.cayenne.query.Select;
 
@@ -27,12 +28,28 @@ import org.apache.cayenne.query.Select;
  */
 class MySQLSelectAction extends SelectAction {
 
-	<T> MySQLSelectAction(Select<T> query, DataNode dataNode) {
-		super(query, dataNode);
-	}
+    <T> MySQLSelectAction(Select<T> query, DataNode dataNode) {
+        super(query, dataNode);
+    }
 
-	@Override
-	protected int getInMemoryOffset(int queryOffset) {
-		return 0;
-	}
+    @Override
+    protected int getInMemoryOffset(int queryOffset) {
+        return 0;
+    }
+
+    /**
+     * Streams an iterated result when the iterator has the connection to itself.
+     */
+    @Override
+    protected int statementFetchSize(OperationHints hints) {
+        int fetchSize = super.statementFetchSize(hints);
+        if (fetchSize != 0) {
+            return fetchSize;
+        }
+
+        // Integer.MIN_VALUE is an indicator specific to MySQL that switches the ResultSet to the streaming mode.
+        // It saves memory, as the driver does not batch the results. But it also speeds up large queries (> ~ 2-3K rows;
+        // up to 40% faster in our benchmarks). It makes small queries slower, so can't use it as a default.
+        return hints.isIteratedResult() && hints.isIteratorExclusiveConnection() ? Integer.MIN_VALUE : 0;
+    }
 }

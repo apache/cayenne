@@ -199,6 +199,11 @@ class LoggingObserver implements OperationObserver {
         return delegate.isIteratedResult();
     }
 
+    @Override
+    public boolean isIteratorExclusiveConnection() {
+        return delegate.isIteratorExclusiveConnection();
+    }
+
     /**
      * Wraps a user-facing {@link ResultIterator}, counting rows as they are read and logging the compact select line
      * once the iterator is closed.

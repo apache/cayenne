@@ -99,6 +99,7 @@ class DataDomainQueryAction implements QueryRouter, OperationObserver {
 
     private QueryResponse response;
     private GenericResponse fullResponse;
+    private boolean iteratorExclusiveConnection;
     private Map<CayennePath, List<?>> prefetchResultsByPath;
     private Map<DataNode, Collection<Query>> queriesByNode;
     private boolean noObjectConversion;
@@ -192,6 +193,9 @@ class DataDomainQueryAction implements QueryRouter, OperationObserver {
             Transaction tx = domain.getTransactionFactory().createTransaction();
             BaseTransaction.bindThreadTransaction(tx);
             try {
+                // the transaction is unbound from the thread below, so nothing but the iterator will ever use its
+                // connection
+                iteratorExclusiveConnection = true;
                 runQuery();
                 ResultIterator<?> it = Objects.requireNonNull(fullResponse.firstIterator(), "Iterator response expected");
                 fullResponse.replaceResult(it, new TransactionResultIteratorDecorator<>(it, tx));
@@ -719,6 +723,11 @@ class DataDomainQueryAction implements QueryRouter, OperationObserver {
     @Override
     public boolean isIteratedResult() {
         return (query instanceof IteratedQueryDecorator);
+    }
+
+    @Override
+    public boolean isIteratorExclusiveConnection() {
+        return iteratorExclusiveConnection;
     }
 
     protected <T, R> void updateResponse(List<T> sourceObjects, List<? extends R> targetObjects) {

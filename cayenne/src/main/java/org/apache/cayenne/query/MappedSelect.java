@@ -92,8 +92,9 @@ public class MappedSelect<T> extends AbstractMappedQuery implements Select<T> {
     }
 
     /**
-     * Sets fetch size of the PreparedStatement generated for this query. Only
-     * non-negative values would change the default size.
+     * Sets fetch size of the PreparedStatement generated for this query. Any non-zero value is passed to the driver
+     * as is; 0 (the default) leaves the fetch size to the adapter and the driver. A negative value is only meaningful
+     * for drivers that give it a special meaning, such as {@link Integer#MIN_VALUE} for streaming on MySQL.
      *
      * @see Statement#setFetchSize(int)
      */

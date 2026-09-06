@@ -31,4 +31,18 @@ public interface OperationHints {
      * results are expected as a list.
      */
     boolean isIteratedResult();
+
+    /**
+     * Returns <code>true</code> if an iterated result keeps its connection to itself until the ResultIterator is
+     * closed, so that no other statement can run on that connection while the ResultSet is open. Returns
+     * <code>false</code> if the connection belongs to a caller-managed transaction, which may run other statements
+     * (queries, fault resolution, commits) while the iterator is open. Only meaningful when
+     * {@link #isIteratedResult()} is true. Adapters use it to decide whether a result can be streamed, as some
+     * drivers lock the connection for the duration of a streamed result. The default is <code>false</code>.
+     *
+     * @since 5.0
+     */
+    default boolean isIteratorExclusiveConnection() {
+        return false;
+    }
 }
