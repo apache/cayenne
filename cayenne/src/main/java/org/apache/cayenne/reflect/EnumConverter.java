@@ -29,23 +29,17 @@ import java.util.Objects;
 class EnumConverter<T extends Enum<T> & ExtendedEnumeration> implements Converter<T> {
 
     @Override
-    @SuppressWarnings("unchecked")
     public T convert(Object object, Class<T> type) {
 
         if (ExtendedEnumeration.class.isAssignableFrom(type)) {
-            ExtendedEnumeration[] values;
-
-            try {
-                values = (ExtendedEnumeration[]) type.getMethod("values").invoke(null);
-            }
-            catch (Exception e) {
-                // unexpected, all enums should have values
-                throw new CayenneRuntimeException(e);
+            T[] values = type.getEnumConstants();
+            if (values == null) {
+                throw new CayenneRuntimeException("Not an enum type: %s", type.getName());
             }
 
-            for (ExtendedEnumeration en : values) {
+            for (T en : values) {
                 if (Objects.deepEquals(en.getDatabaseValue(), object)) {
-                    return (T) en;
+                    return en;
                 }
             }
 
@@ -56,6 +50,6 @@ class EnumConverter<T extends Enum<T> & ExtendedEnumeration> implements Converte
             return null;
         }
 
-        return (T) Enum.valueOf(type, object.toString());
+        return Enum.valueOf(type, object.toString());
     }
 }
