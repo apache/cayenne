@@ -20,8 +20,12 @@
 package org.apache.cayenne.dba.postgres;
 
 import org.apache.cayenne.access.DataNode;
+import org.apache.cayenne.access.jdbc.RSColumn;
 import org.apache.cayenne.dba.sqlserver.SQLServerProcedureAction;
 import org.apache.cayenne.query.ProcedureQuery;
+
+import java.sql.ResultSet;
+import java.sql.SQLException;
 
 /**
  * Current implementation simply relies on SQLServerProcedureAction superclass behavior.
@@ -36,5 +40,10 @@ class PostgresProcedureAction extends SQLServerProcedureAction {
 
     PostgresProcedureAction(ProcedureQuery query, DataNode dataNode) {
         super(query, dataNode);
+    }
+
+    @Override
+    protected RSColumn[] describeResultSet(ResultSet resultSet, int setIndex) throws SQLException {
+        return PostgresTimestampTzType.optimizeTimestampColumns(super.describeResultSet(resultSet, setIndex), resultSet);
     }
 }

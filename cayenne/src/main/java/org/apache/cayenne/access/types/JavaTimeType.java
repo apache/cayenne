@@ -16,57 +16,54 @@
  *  specific language governing permissions and limitations
  *  under the License.
  ****************************************************************/
-
-package org.apache.cayenne.dba.mysql;
-
-import org.apache.cayenne.access.types.ExtendedType;
+package org.apache.cayenne.access.types;
 
 import java.sql.CallableStatement;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
-import java.time.LocalDateTime;
+import java.time.temporal.Temporal;
 
 /**
- * An extended type for DST-safe LocalDateTime handling that bypasses timezone resolution by reading and writing
- * timestamps directly as LocalDateTime.
+ * A base for ExtendedTypes of the {@code java.time} classes that JDBC 4.2 drivers read and write natively via
+ * {@link ResultSet#getObject(int, Class)} and {@link PreparedStatement#setObject(int, Object, int)}.
  *
+ * @param <T> a {@code java.time} class
  * @since 5.0
  */
-// TODO: only used by MySQL now. Test compatibility on other engines, and make it a universal approach
-class MySQLLocalDateTimeType implements ExtendedType<LocalDateTime> {
+public abstract class JavaTimeType<T extends Temporal> implements ExtendedType<T> {
+
+    private final Class<T> javaClass;
+
+    protected JavaTimeType(Class<T> javaClass) {
+        this.javaClass = javaClass;
+    }
 
     @Override
     public String getClassName() {
-        return LocalDateTime.class.getName();
+        return javaClass.getName();
     }
 
     @Override
-    public LocalDateTime materializeObject(ResultSet rs, int index, int type) throws Exception {
-        return rs.getObject(index, LocalDateTime.class);
+    public T materializeObject(ResultSet rs, int index, int type) throws Exception {
+        return rs.getObject(index, javaClass);
     }
 
     @Override
-    public LocalDateTime materializeObject(CallableStatement rs, int index, int type) throws Exception {
-        return rs.getObject(index, LocalDateTime.class);
+    public T materializeObject(CallableStatement rs, int index, int type) throws Exception {
+        return rs.getObject(index, javaClass);
     }
 
     @Override
-    public void setJdbcObject(
-            PreparedStatement st,
-            LocalDateTime val,
-            int pos,
-            int type,
-            int precision) throws Exception {
-
-        if (val == null) {
-            st.setNull(pos, type);
+    public void setJdbcObject(PreparedStatement statement, T value, int pos, int type, int scale) throws Exception {
+        if (value == null) {
+            statement.setNull(pos, type);
         } else {
-            st.setObject(pos, val, type);
+            statement.setObject(pos, value, type);
         }
     }
 
     @Override
-    public String toString(LocalDateTime value) {
-        return String.valueOf(value);
+    public String toString(T value) {
+        return value == null ? "NULL" : "'" + value + "'";
     }
 }

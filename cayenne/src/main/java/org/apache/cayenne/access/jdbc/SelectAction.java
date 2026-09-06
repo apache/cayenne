@@ -33,6 +33,7 @@ import org.apache.cayenne.query.Select;
 import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
+import java.sql.SQLException;
 import java.util.List;
 
 /**
@@ -92,7 +93,8 @@ public class SelectAction extends BaseSQLAction {
             throw ex;
         }
 
-        RowReader<?> rowReader = dataNode.getRowReaderFactory().rowReader(translated.resultColumns(), queryMetadata, dataNode.getAdapter());
+        RSColumn[] columns = resultColumns(translated, rs);
+        RowReader<?> rowReader = dataNode.getRowReaderFactory().rowReader(columns, queryMetadata, dataNode.getAdapter());
 
         ResultIterator<?> it = new RSIterator<>(statement, rs, rowReader);
         it = forIteratedResult(it, observer, connection);
@@ -120,6 +122,10 @@ public class SelectAction extends BaseSQLAction {
 
             observer.nextRows(query, resultRows);
         }
+    }
+
+    protected RSColumn[] resultColumns(TranslatedSelect translated, ResultSet rs) throws SQLException {
+        return translated.resultColumns();
     }
 
     private <T> ResultIterator<T> forIteratedResult(ResultIterator<T> iterator, OperationObserver observer,

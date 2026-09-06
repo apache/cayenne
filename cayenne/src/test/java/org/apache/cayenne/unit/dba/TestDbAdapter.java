@@ -426,4 +426,42 @@ public abstract class TestDbAdapter {
     public boolean supportsPreciseTime() {
         return true;
     }
+
+    /**
+     * Returns a SQL literal for a DATE column value given as "yyyy-MM-dd".
+     */
+    public String dateLiteral(String value) {
+        return "'" + value + "'";
+    }
+
+    /**
+     * Returns a SQL literal for a TIME column value given as "HH:mm:ss" or "HH:mm:ss.SSS".
+     */
+    public String timeLiteral(String value) {
+        return "'" + value + "'";
+    }
+
+    /**
+     * Returns a SQL literal for a TIMESTAMP column value given as "yyyy-MM-dd HH:mm:ss".
+     */
+    public String timestampLiteral(String value) {
+        return "'" + value + "'";
+    }
+
+    /**
+     * Returns true if a TIMESTAMP column can hold a wall-clock value that does not exist in the JVM default time
+     * zone because of a DST gap (e.g. 2021-03-14 02:35 in America/New_York). False for DBs whose TIMESTAMP is an
+     * instant, or whose engine normalizes such values on its own.
+     */
+    public boolean supportsDstGapTimestamps() {
+        return true;
+    }
+
+    /**
+     * Returns true if a TIMESTAMP column stores an instant rather than a wall-clock value, so that a LocalDateTime
+     * is interpreted in the connection's session time zone, fixed when the connection was opened.
+     */
+    public boolean timestampIsInstant() {
+        return false;
+    }
 }

@@ -17,6 +17,7 @@ CAY-2998 Modeler: clickabe "Target" column to navigate relationships
 CAY-3000 Modeler: unifying the main views of all model objects
 CAY-3004 Modeler: Rework DbEntity PK generation UI to match the XML model
 CAY-3007 Deprecate SelectById
+CAY-3010 LocalDateTime and friends should be accessed directly via JDBC
 
 Bug Fixes:
 

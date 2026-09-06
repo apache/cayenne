@@ -29,7 +29,11 @@ import java.time.ZonedDateTime;
 
 /**
  * @since 4.0
+ * @deprecated no longer registered by default. Replaced by {@link LocalTimeType}, which reads and writes
+ * the value directly via JDBC without a {@code java.sql} intermediary and the JVM time zone conversion that comes
+ * with it.
  */
+@Deprecated(since = "5.0")
 public class LocalTimeValueType implements ValueObjectType<LocalTime, Time> {
 
     @Override

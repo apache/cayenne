@@ -55,6 +55,26 @@ Expression caseWhenExp = caseWhen(
 
 ## Upgrading to 5.0-M4
 
+*  Per [CAY-3010](https://issues.apache.org/jira/browse/CAY-3010) `LocalDate`, `LocalTime` and `LocalDateTime` are
+  passed to and from the JDBC driver directly, instead of being converted through `java.sql.Date` / `Time` /
+  `Timestamp` in the JVM default time zone. Reads are faster, and application behavior changes in these cases:
+
+  - A `LocalDateTime` inside a DST gap of the JVM zone is no longer shifted. E.g. with the JVM in `America/New_York`,
+    `LocalDateTime.of(2021, 3, 14, 2, 35)` (a time that does not exist in that zone) used to be stored and read back
+    as `03:35`; now it round-trips as `02:35`. MySQL already behaved this way.
+  - Values no longer depend on the JVM default zone: a value stored under one zone and read under another comes back
+    unchanged. Previously it was shifted by the offset difference on all databases except MySQL.
+  - Sub-millisecond precision is no longer truncated on write. `LocalTime.of(13, 45, 30, 123_456_000)` used to reach
+    the database as `13:45:30.123`; now it is sent as is and the database rounds to the column precision, so a
+    `TIME(3)` column may store `13:45:30.123` or `13:45:30.124` depending on the database.
+  - `java.time` attributes now work on SQLite, stored as `yyyy-MM-dd HH:mm:ss`, `yyyy-MM-dd` and `HH:mm:ss` text
+    with a seconds fraction appended only when non-zero.
+
+  Exceptions: PostgreSQL `timestamp with time zone` columns (Cayenne's default mapping of `TIMESTAMP`) are an instant
+  type and keep the previous JVM-zone conversion; Derby and SQL Server still shift DST-gap timestamps on write due to
+  engine / driver limitations. `LocalDateValueType`, `LocalTimeValueType` and `LocalDateTimeValueType` are deprecated
+  and no longer registered.
+
 *  The `org.apache.cayenne.query.ParameterizedQuery` interface was removed, together with the `createQuery(Map)`
   methods of `SQLTemplate`, `ProcedureQuery` and `ObjectSelect` that implemented it. Applying parameters to a mapped
   query is now the job of the query descriptor - override `QueryDescriptor.buildQuery(Map)` if you have a custom

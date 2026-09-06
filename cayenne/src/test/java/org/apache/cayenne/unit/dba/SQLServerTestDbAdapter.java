@@ -121,4 +121,12 @@ public class SQLServerTestDbAdapter extends TestDbAdapter {
     public boolean supportsCatalogs() {
         return true;
     }
+
+    /**
+     * The driver converts a bound LocalDateTime through the JVM default zone, shifting DST-gap values on write.
+     */
+    @Override
+    public boolean supportsDstGapTimestamps() {
+        return false;
+    }
 }

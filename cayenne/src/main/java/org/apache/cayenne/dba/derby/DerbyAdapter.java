@@ -136,6 +136,11 @@ public class DerbyAdapter extends JdbcAdapter {
         map.registerType(new ShortType(true));
         map.registerType(new ByteType(true));
         map.registerType(new JsonType(charType, true));
+
+        // Derby driver has no java.time support in getObject/setObject
+        map.registerType(new DerbyLocalDateType());
+        map.registerType(new DerbyLocalTimeType());
+        map.registerType(new DerbyLocalDateTimeType());
     }
 
     /**

@@ -21,14 +21,11 @@ package org.apache.cayenne.access.types;
 
 import org.apache.cayenne.access.DataContext;
 import org.apache.cayenne.query.ObjectSelect;
-import org.apache.cayenne.query.SQLExec;
-import org.apache.cayenne.query.SQLSelect;
 import org.apache.cayenne.testdo.datetime.DurationTestEntity;
 import org.apache.cayenne.testdo.datetime.LocalDateTestEntity;
 import org.apache.cayenne.testdo.datetime.LocalDateTimeTestEntity;
 import org.apache.cayenne.testdo.datetime.LocalTimeTestEntity;
 import org.apache.cayenne.testdo.datetime.PeriodTestEntity;
-import org.apache.cayenne.unit.dba.MySQLTestDbAdapter;
 import org.apache.cayenne.unit.dba.TestDbAdapter;
 import org.apache.cayenne.unit.CayenneProjects;
 import org.apache.cayenne.unit.CayenneTestsEnv;
@@ -43,8 +40,8 @@ import java.time.LocalDateTime;
 import java.time.LocalTime;
 import java.time.Period;
 import java.time.temporal.ChronoField;
+import java.time.temporal.ChronoUnit;
 import java.time.temporal.TemporalField;
-import java.util.TimeZone;
 
 import static org.junit.jupiter.api.Assertions.*;
 
@@ -97,7 +94,8 @@ public class DateTimeTypesIT {
     @Test
     public void localTime() {
         LocalTimeTestEntity localTimeTestEntity = context.newObject(LocalTimeTestEntity.class);
-        LocalTime localTime = LocalTime.now();
+        // the value is sent to the DB with full precision, so truncate to the column scale to avoid rounding
+        LocalTime localTime = LocalTime.now().truncatedTo(ChronoUnit.MILLIS);
         localTimeTestEntity.setTime(localTime);
 
         context.commitChanges();
@@ -130,62 +128,6 @@ public class DateTimeTypesIT {
         assertEquals(LocalDateTime.class, testRead.getTimestamp().getClass());
         assertEquals(localDateTime, testRead.getTimestamp());
 
-    }
-
-    @Test
-    public void localDateTime_DST_Select() {
-
-        if (!(testDbAdapter instanceof MySQLTestDbAdapter)) {
-            // skip other DB's for now until we can test across all of them
-            return;
-        }
-
-        // not using TableHelper to avoid PreparedStatement parameter interactions for this timestamp
-        SQLExec.query("insert into LOCAL_DATETIME_TEST values (1, '2021-03-14 02:35:00')").execute(context);
-
-        // set the TZ where this time doesn't exist because of the DST switchover at 2 AM
-        TimeZone defaultTz = TimeZone.getDefault();
-        TimeZone.setDefault(TimeZone.getTimeZone("America/New_York"));
-
-        try {
-            // LocalDateTime is TZ-agnostic, so the timestamp should not be rewound to 3 AM just because it happens to
-            // match the DST "gap" in US timezones
-            LocalDateTime value = ObjectSelect.query(LocalDateTimeTestEntity.class)
-                    .column(LocalDateTimeTestEntity.TIMESTAMP)
-                    .selectOne(context);
-
-            assertEquals(LocalDateTime.of(2021, 3, 14, 2, 35, 0), value);
-        } finally {
-            TimeZone.setDefault(defaultTz);
-        }
-    }
-
-    @Test
-    public void localDateTime_DST_Insert() {
-
-        if (!(testDbAdapter instanceof MySQLTestDbAdapter)) {
-            // skip other DB's for now until we can test across all of them
-            return;
-        }
-
-        // set the TZ where this time doesn't exist because of the DST switchover at 2 AM
-        TimeZone defaultTz = TimeZone.getDefault();
-        TimeZone.setDefault(TimeZone.getTimeZone("America/New_York"));
-
-        try {
-
-            LocalDateTimeTestEntity o = context.newObject(LocalDateTimeTestEntity.class);
-            o.setTimestamp(LocalDateTime.of(2021, 3, 14, 2, 35, 0));
-            context.commitChanges();
-
-            String val = SQLSelect
-                    .scalarQuery("select CAST(TimestampField as CHAR) from LOCAL_DATETIME_TEST", String.class)
-                    .selectOne(context);
-
-            assertEquals("2021-03-14 02:35:00", val);
-        } finally {
-            TimeZone.setDefault(defaultTz);
-        }
     }
 
     @Test

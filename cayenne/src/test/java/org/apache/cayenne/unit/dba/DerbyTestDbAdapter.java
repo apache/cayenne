@@ -68,4 +68,13 @@ public class DerbyTestDbAdapter extends TestDbAdapter {
     public boolean supportsPreciseTime() {
         return false;
     }
+
+    /**
+     * Derby engine converts timestamps through a Calendar in the JVM default zone, normalizing DST-gap values even
+     * when they come from SQL literals.
+     */
+    @Override
+    public boolean supportsDstGapTimestamps() {
+        return false;
+    }
 }

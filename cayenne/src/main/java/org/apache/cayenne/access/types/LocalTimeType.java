@@ -16,43 +16,16 @@
  *  specific language governing permissions and limitations
  *  under the License.
  ****************************************************************/
-
 package org.apache.cayenne.access.types;
 
-import java.sql.Date;
-import java.time.LocalDate;
+import java.time.LocalTime;
 
 /**
- * @since 4.0
- * @deprecated no longer registered by default. Replaced by {@link LocalDateType}, which reads and writes
- * the value directly via JDBC without a {@code java.sql} intermediary and the JVM time zone conversion that comes
- * with it.
+ * @since 5.0
  */
-@Deprecated(since = "5.0")
-public class LocalDateValueType implements ValueObjectType<LocalDate, Date> {
+public class LocalTimeType extends JavaTimeType<LocalTime> {
 
-    @Override
-    public Class<Date> getTargetType() {
-        return Date.class;
-    }
-
-    @Override
-    public Class<LocalDate> getValueType() {
-        return LocalDate.class;
-    }
-
-    @Override
-    public LocalDate toJavaObject(Date value) {
-        return value.toLocalDate();
-    }
-
-    @Override
-    public Date fromJavaObject(LocalDate object) {
-        return Date.valueOf(object);
-    }
-
-    @Override
-    public String toCacheKey(LocalDate object) {
-        return object.toString();
+    public LocalTimeType() {
+        super(LocalTime.class);
     }
 }

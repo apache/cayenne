@@ -16,43 +16,35 @@
  *  specific language governing permissions and limitations
  *  under the License.
  ****************************************************************/
+package org.apache.cayenne.dba.oracle;
 
-package org.apache.cayenne.access.types;
+import org.apache.cayenne.access.types.LocalDateTimeType;
 
+import java.sql.PreparedStatement;
 import java.sql.Timestamp;
 import java.time.LocalDateTime;
+import java.time.ZoneOffset;
+import java.util.Calendar;
+import java.util.TimeZone;
 
 /**
- * @since 4.0
- * @deprecated no longer registered by default. Replaced by {@link LocalDateTimeType}, which reads and writes
- * the value directly via JDBC without a {@code java.sql} intermediary and the JVM time zone conversion that comes
- * with it.
+ * Oracle driver converts a {@link LocalDateTime} passed to {@code setObject} through the JVM default time zone,
+ * shifting values that fall into a DST gap. Binding a {@link Timestamp} with a UTC calendar preserves the wall-clock
+ * value. Reads use the default {@code getObject} path, which is exact.
+ *
+ * @since 5.0
  */
-@Deprecated(since = "5.0")
-public class LocalDateTimeValueType implements ValueObjectType<LocalDateTime, Timestamp> {
+class OracleLocalDateTimeType extends LocalDateTimeType {
+
+    private static final TimeZone UTC = TimeZone.getTimeZone("UTC");
 
     @Override
-    public Class<Timestamp> getTargetType() {
-        return Timestamp.class;
-    }
-
-    @Override
-    public Class<LocalDateTime> getValueType() {
-        return LocalDateTime.class;
-    }
-
-    @Override
-    public LocalDateTime toJavaObject(Timestamp value) {
-        return value.toLocalDateTime();
-    }
-
-    @Override
-    public Timestamp fromJavaObject(LocalDateTime object) {
-        return Timestamp.valueOf(object);
-    }
-
-    @Override
-    public String toCacheKey(LocalDateTime object) {
-        return object.toString();
+    public void setJdbcObject(PreparedStatement statement, LocalDateTime value, int pos, int type, int scale)
+            throws Exception {
+        if (value == null) {
+            statement.setNull(pos, type);
+        } else {
+            statement.setTimestamp(pos, Timestamp.from(value.toInstant(ZoneOffset.UTC)), Calendar.getInstance(UTC));
+        }
     }
 }

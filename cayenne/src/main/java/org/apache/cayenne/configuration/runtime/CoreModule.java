@@ -349,6 +349,9 @@ public class CoreModule implements Module {
                 .addDefaultExtendedType(new TimeType())
                 .addDefaultExtendedType(new TimestampType())
                 .addDefaultExtendedType(new DurationType())
+                .addDefaultExtendedType(new LocalDateType())
+                .addDefaultExtendedType(new LocalTimeType())
+                .addDefaultExtendedType(new LocalDateTimeType())
                 // TODO: this one should be converted from ExtendedType to ValueType
                 .addDefaultExtendedType(new UtilDateType())
                 .addDefaultExtendedType(new CalendarType<>(GregorianCalendar.class))
@@ -362,9 +365,6 @@ public class CoreModule implements Module {
                 .addValueObjectType(BigIntegerValueType.class)
                 .addValueObjectType(BigDecimalValueType.class)
                 .addValueObjectType(UUIDValueType.class)
-                .addValueObjectType(LocalDateValueType.class)
-                .addValueObjectType(LocalTimeValueType.class)
-                .addValueObjectType(LocalDateTimeValueType.class)
                 .addValueObjectType(PeriodValueType.class)
                 .addValueObjectType(CharacterValueType.class);
 

@@ -148,4 +148,22 @@ public class OracleTestDbAdapter extends TestDbAdapter {
     public boolean supportsPreciseTime() {
         return false;
     }
+
+    @Override
+    public String dateLiteral(String value) {
+        return "DATE '" + value + "'";
+    }
+
+    /**
+     * TIME is mapped to DATE on Oracle, so the time is stored on the epoch date.
+     */
+    @Override
+    public String timeLiteral(String value) {
+        return "TO_DATE('1970-01-01 " + value.substring(0, 8) + "', 'YYYY-MM-DD HH24:MI:SS')";
+    }
+
+    @Override
+    public String timestampLiteral(String value) {
+        return "TIMESTAMP '" + value + "'";
+    }
 }

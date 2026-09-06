@@ -157,6 +157,7 @@ public class PostgresAdapter extends JdbcAdapter {
         map.registerType(charType);
         map.registerType(new PostgresByteArrayType(true, true));
         map.registerType(new JsonType(charType, false));
+        map.registerType(new PostgresTimestampTzType());
     }
 
     @Override

@@ -183,9 +183,6 @@ public class MySQLAdapter extends JdbcAdapter {
     protected void configureExtendedTypes(ExtendedTypeMap map) {
         super.configureExtendedTypes(map);
 
-        // TODO: this may need to be made universal across adapters
-        map.registerType(new MySQLLocalDateTimeType());
-
         // must handle CLOBs as strings, otherwise there
         // are problems with NULL clobs that are treated
         // as empty strings... somehow this doesn't happen

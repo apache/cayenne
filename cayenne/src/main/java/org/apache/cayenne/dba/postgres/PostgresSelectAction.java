@@ -27,6 +27,7 @@ import org.apache.cayenne.access.translator.TranslatedSelect;
 import org.apache.cayenne.query.Select;
 
 import java.sql.Connection;
+import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Types;
 
@@ -71,6 +72,11 @@ class PostgresSelectAction extends SelectAction {
 				// connection is being returned/closed anyway
 			}
 		}
+	}
+
+	@Override
+	protected RSColumn[] resultColumns(TranslatedSelect translated, ResultSet rs) throws SQLException {
+		return PostgresTimestampTzType.optimizeTimestampColumns(translated.resultColumns(), rs);
 	}
 
 	private static boolean readsLargeObjects(TranslatedSelect translated) {

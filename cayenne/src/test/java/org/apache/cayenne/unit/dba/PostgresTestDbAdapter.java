@@ -80,4 +80,21 @@ public class PostgresTestDbAdapter extends TestDbAdapter {
     public boolean supportsSerializableTransactionIsolation() {
         return true;
     }
+
+    /**
+     * Cayenne maps TIMESTAMP to "timestamp with time zone", an instant type, so DST-gap wall-clock values are
+     * normalized by the server in the session time zone.
+     */
+    @Override
+    public boolean supportsDstGapTimestamps() {
+        return false;
+    }
+
+    /**
+     * The driver sets the session time zone to the JVM default zone at connect time.
+     */
+    @Override
+    public boolean timestampIsInstant() {
+        return true;
+    }
 }
