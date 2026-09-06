@@ -25,6 +25,8 @@ import org.apache.cayenne.unit.CayenneTestsEnv;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.RegisterExtension;
 
+import java.util.List;
+
 import static org.junit.jupiter.api.Assertions.assertEquals;
 
 public class StatementFetchSizeIT {
@@ -40,6 +42,21 @@ public class StatementFetchSizeIT {
                 .getMetaData(env.context().getEntityResolver())
                 .getStatementFetchSize());
         env.context().performQuery(query);
+    }
+
+    @Test
+    public void objectSelectWithFetchSizeSmallerThanResult() {
+        // a fetch size below the row count forces a multi-batch read on drivers that honor it (a cursor on
+        // PostgreSQL, which needs the transaction opened by PostgresSelectAction); every row must still come back
+        for (int i = 0; i < 5; i++) {
+            env.context().newObject(Artist.class).setArtistName("artist" + i);
+        }
+        env.context().commitChanges();
+
+        List<Artist> artists = ObjectSelect.query(Artist.class)
+                .statementFetchSize(2)
+                .select(env.runtime().newContext());
+        assertEquals(5, artists.size());
     }
 
     @Test

@@ -48,12 +48,12 @@ class PostgresSelectAction extends SelectAction {
 	@Override
 	protected void performAction(Connection connection, OperationObserver observer, TranslatedSelect translated) throws Exception {
 
-		if (!connection.getAutoCommit() || !readsLargeObjects(translated)) {
+		if (!connection.getAutoCommit() || !needsTransaction(translated)) {
 			super.performAction(connection, observer, translated);
 			return;
 		}
 
-		// manual tx management for reading LOBs
+		// manual tx management for the cases listed in "needsTransaction"
 		connection.setAutoCommit(false);
 		try {
 			super.performAction(connection, observer, translated);
@@ -79,6 +79,15 @@ class PostgresSelectAction extends SelectAction {
 		return PostgresTimestampTzType.optimizeTimestampColumns(translated.resultColumns(), rs);
 	}
 
+	private boolean needsTransaction(TranslatedSelect translated) {
+		// Two things in pgjdbc only work inside a transaction, and are silently degraded in autocommit mode:
+		//
+		// 1. A fetch size. pgjdbc implements it with a server-side cursor (a portal), and the server closes portals
+		//    when the transaction ends. The cursor is used only for a positive fetch size, hence the "> 0" check.
+		// 2. Large objects. They are read through the LO API, which is bound to the current transaction.
+		return queryMetadata.getStatementFetchSize() > 0 || readsLargeObjects(translated);
+	}
+
 	private static boolean readsLargeObjects(TranslatedSelect translated) {
 		for (RSColumn column : translated.resultColumns()) {
 			if (isLargeObject(column.rsType())) {
@@ -86,7 +95,7 @@ class PostgresSelectAction extends SelectAction {
 			}
 		}
 		// a large object bound as a parameter (e.g. in a qualifier) also needs a transaction
-		for (PSParameter binding : translated.bindings()) {
+		for (PSParameter<?> binding : translated.bindings()) {
 			if (isLargeObject(binding.psType())) {
 				return true;
 			}
