@@ -89,7 +89,7 @@ public class MockDataChannel implements DataChannel {
         return commitResponse;
     }
 
-    public QueryResponse onQuery(ObjectContext context, Query query) {
+    public QueryResponse onQuery(ObjectContext context, Query query, boolean iteratedResult) {
         requestObjects.add(query);
         return response;
     }

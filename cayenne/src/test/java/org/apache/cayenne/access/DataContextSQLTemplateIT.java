@@ -545,16 +545,15 @@ public class DataContextSQLTemplateIT {
 	public void iteratedQuery() throws Exception {
 		createFourArtists();
 
-		String template = "SELECT * FROM ARTIST ORDER BY ARTIST_ID";
-		SQLTemplate query = sqlTemplateCustomizer.createSQLTemplate(Artist.class, template);
+		SQLSelect<DataRow> query = SQLSelect.dataRowQuery("SELECT * FROM ARTIST ORDER BY ARTIST_ID");
 
-		try (ResultIterator<?> it = context.performIteratedQuery(query);) {
+		try (ResultIterator<DataRow> it = context.iterator(query)) {
 			long i = 0;
 
 			while (it.hasNextRow()) {
 				i++;
 
-				DataRow row = (DataRow) it.nextRow();
+				DataRow row = it.nextRow();
 				assertEquals(3, row.size());
 				assertEquals("artist" + (1 + i), row.get("ARTIST_NAME"));
 			}

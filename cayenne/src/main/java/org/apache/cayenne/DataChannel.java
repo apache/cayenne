@@ -91,9 +91,14 @@ public interface DataChannel {
      *
      * @param originatingContext an ObjectContext that originated the query, used to
      *                           register result objects.
+     * @param query              a query to execute.
+     * @param iteratedResult     if true, the result is returned as a {@link ResultIterator} accessible via
+     *                           {@link QueryResponse#firstIterator()}, and the caller is responsible for closing
+     *                           it. If false, the result is fully read into a list.
      * @return a generic response object that encapsulates result of the execution.
+     * @since 5.0
      */
-    QueryResponse onQuery(ObjectContext originatingContext, Query query);
+    QueryResponse onQuery(ObjectContext originatingContext, Query query, boolean iteratedResult);
 
     /**
      * Processes synchronization request from a child ObjectContext, returning a GraphDiff

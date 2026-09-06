@@ -100,8 +100,8 @@ public class DataContextDecoratedStackIT {
             return channel.getEventManager();
         }
 
-        public QueryResponse onQuery(ObjectContext originatingContext, Query query) {
-            return channel.onQuery(originatingContext, query);
+        public QueryResponse onQuery(ObjectContext originatingContext, Query query, boolean iteratedResult) {
+            return channel.onQuery(originatingContext, query, iteratedResult);
         }
 
         public GraphDiff onSync(

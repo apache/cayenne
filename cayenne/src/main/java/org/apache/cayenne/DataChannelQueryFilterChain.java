@@ -28,6 +28,6 @@ import org.apache.cayenne.query.Query;
  */
 public interface DataChannelQueryFilterChain {
 
-    QueryResponse onQuery(ObjectContext originatingContext, Query query);
+    QueryResponse onQuery(ObjectContext originatingContext, Query query, boolean iteratedResult);
 
 }

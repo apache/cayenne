@@ -27,11 +27,11 @@ import org.apache.cayenne.query.Query;
  * <p>
  * Example: <pre>{@code
  * public class MyQueryFilter implements DataChannelQueryFilter {
- *     public QueryResponse onQuery(ObjectContext originatingContext, Query query,
+ *     public QueryResponse onQuery(ObjectContext originatingContext, Query query, boolean iteratedResult,
  *                                  DataChannelQueryFilterChain filterChain) {
  *         System.out.println("Do something before query");
  *         // process query or return some custom response
- *         QueryResponse response = filterChain.onQuery(originatingContext, query);
+ *         QueryResponse response = filterChain.onQuery(originatingContext, query, iteratedResult);
  *         System.out.println("Do something after query");
  *         return response;
  *     }
@@ -48,9 +48,11 @@ public interface DataChannelQueryFilter {
     /**
      * @param originatingContext originating context of query
      * @param query that is processed
+     * @param iteratedResult whether the result should be returned as a {@link ResultIterator} instead of a list
      * @param filterChain chain of query filters to invoke after this filter
      * @return query response
      */
-    QueryResponse onQuery(ObjectContext originatingContext, Query query, DataChannelQueryFilterChain filterChain);
+    QueryResponse onQuery(ObjectContext originatingContext, Query query, boolean iteratedResult,
+                          DataChannelQueryFilterChain filterChain);
 
 }

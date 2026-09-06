@@ -347,17 +347,17 @@ public class DataDomain implements DataChannel {
      * @since 1.2
      */
     @Override
-    public QueryResponse onQuery(ObjectContext originatingContext, Query query) {
+    public QueryResponse onQuery(ObjectContext originatingContext, Query query, boolean iteratedResult) {
         checkStopped();
-        return new DataDomainQueryFilterChain().onQuery(originatingContext, query);
+        return new DataDomainQueryFilterChain().onQuery(originatingContext, query, iteratedResult);
     }
 
-    QueryResponse onQueryNoFilters(ObjectContext originatingContext, Query query) {
+    QueryResponse onQueryNoFilters(ObjectContext originatingContext, Query query, boolean iteratedResult) {
         // transaction note:
         // we don't wrap this code in transaction to reduce transaction scope to
         // just the DB operation for better performance ... query action will
         // start a transaction itself when and if needed
-        return new DataDomainQueryAction(originatingContext, DataDomain.this, query).execute();
+        return new DataDomainQueryAction(originatingContext, DataDomain.this, query, iteratedResult).execute();
     }
 
     /**
@@ -520,10 +520,10 @@ public class DataDomain implements DataChannel {
         }
 
         @Override
-        public QueryResponse onQuery(ObjectContext originatingContext, Query query) {
+        public QueryResponse onQuery(ObjectContext originatingContext, Query query, boolean iteratedResult) {
             return --idx >= 0
-                    ? queryFilters.get(idx).onQuery(originatingContext, query, this)
-                    : onQueryNoFilters(originatingContext, query);
+                    ? queryFilters.get(idx).onQuery(originatingContext, query, iteratedResult, this)
+                    : onQueryNoFilters(originatingContext, query, iteratedResult);
         }
     }
 

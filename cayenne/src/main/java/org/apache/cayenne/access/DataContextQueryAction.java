@@ -29,7 +29,6 @@ import org.apache.cayenne.cache.QueryCacheEntryFactory;
 import org.apache.cayenne.map.DbEntity;
 import org.apache.cayenne.map.EntityInheritanceTree;
 import org.apache.cayenne.query.EntityResultSegment;
-import org.apache.cayenne.query.IteratedQueryDecorator;
 import org.apache.cayenne.query.ObjectIdQuery;
 import org.apache.cayenne.query.Query;
 import org.apache.cayenne.query.QueryCacheStrategy;
@@ -61,14 +60,17 @@ class DataContextQueryAction {
     private final Query query;
     private final QueryMetadata metadata;
     private final boolean queryOriginator;
+    private final boolean iteratedResult;
 
     private transient QueryResponse response;
 
-    public DataContextQueryAction(DataContext actingContext, ObjectContext targetContext, Query query) {
+    public DataContextQueryAction(DataContext actingContext, ObjectContext targetContext, Query query,
+                                  boolean iteratedResult) {
 
         this.actingContext = actingContext;
         this.actingDataContext = actingContext;
         this.query = query;
+        this.iteratedResult = iteratedResult;
 
         // this means that a caller must pass self as both acting context and target
         // context to indicate that a query originated here... null (ROP) or differing
@@ -103,7 +105,7 @@ class DataContextQueryAction {
     }
 
     private boolean interceptIteratedQuery() {
-        if (query instanceof IteratedQueryDecorator) {
+        if (iteratedResult) {
             runQuery();
             return DONE;
         }
@@ -521,6 +523,6 @@ class DataContextQueryAction {
      * Fetches data from the channel.
      */
     protected void runQuery() {
-        this.response = actingContext.getParent().onQuery(actingContext, query);
+        this.response = actingContext.getParent().onQuery(actingContext, query, iteratedResult);
     }
 }

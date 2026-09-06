@@ -104,6 +104,23 @@ Expression caseWhenExp = caseWhen(
   </dependency>
   ```
 
+*  `DataChannel.onQuery(..)`, `DataChannelQueryFilter.onQuery(..)` and `DataChannelQueryFilterChain.onQuery(..)`
+  take an extra `boolean iteratedResult` parameter, which is `true` when the caller expects a `ResultIterator` (via
+  `ObjectContext.iterator(..)` and friends) rather than a list. It replaces the internal `IteratedQueryDecorator`
+  wrapper, so query filters now see the actual query instead of the wrapper. Custom `DataChannel` implementations and
+  query filters need to add the parameter and pass it down the chain:
+
+  ```java
+  public QueryResponse onQuery(ObjectContext context, Query query, boolean iteratedResult,
+                               DataChannelQueryFilterChain chain) {
+      return chain.onQuery(context, query, iteratedResult);
+  }
+  ```
+
+*  `DataContext.performIteratedQuery(Query)` (deprecated earlier in 5.0) was removed. Use `ObjectContext.iterator(Select)`
+  instead; to iterate over `DataRow`s, pass a `DataRow` query, e.g. `ObjectSelect.dataRowQuery(Artist.class)` or
+  `SQLSelect.dataRowQuery(sql)`.
+
 
 ## Upgrading to 5.0-M3
 

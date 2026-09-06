@@ -75,7 +75,7 @@ public class DataDomainQueryActionIT {
                 .pageSize(5);
 
 
-        new DataDomainQueryAction(env.context(), domain, query).execute();
+        new DataDomainQueryAction(env.context(), domain, query, false).execute();
     }
 
 }

@@ -46,7 +46,6 @@ import org.apache.cayenne.graph.GraphManager;
 import org.apache.cayenne.map.EntityResolver;
 import org.apache.cayenne.map.LifecycleEvent;
 import org.apache.cayenne.map.ObjEntity;
-import org.apache.cayenne.query.IteratedQueryDecorator;
 import org.apache.cayenne.query.MappedExec;
 import org.apache.cayenne.query.MappedSelect;
 import org.apache.cayenne.query.ObjectIdQuery;
@@ -1089,35 +1088,10 @@ public class DataContext implements ObjectContext {
      * <p>
      */
     @Override
-    public <T> ResultIterator<T> iterator(Select<T> query) {
-        return performIteratedQueryInternal(query, false);
-    }
-
-    /**
-     * Performs a single database select query returning result as a {@link ResultIterator}.
-     * <p>
-     * It is caller's responsibility to explicitly close the {@link ResultIterator}.
-     * A failure to do so will result in a <b>database connection not being released</b>.
-     * Another side effect of an open {@link ResultIterator} is that an internal Cayenne transaction
-     * that originated in this method stays open until the iterator is closed.
-     * So users should normally close the iterator within the same thread that opened it.
-     * <p>
-     * Note that {@code performIteratedQuery} always returns {@link ResultIterator} over DataRows.
-     * <p>
-     *
-     * @deprecated in favor of {@link #iterator(Select)}.
-     */
-    @Deprecated(since = "5.0", forRemoval = true)
-    @SuppressWarnings({"rawtypes"})
-    public ResultIterator performIteratedQuery(Query query) {
-        return performIteratedQueryInternal(query, true);
-    }
-
     @SuppressWarnings("unchecked")
-    private <T> ResultIterator<T> performIteratedQueryInternal(Query query, boolean fetchDataRows) {
-        IteratedQueryDecorator queryDecorator = new IteratedQueryDecorator(query, fetchDataRows);
-        Query queryToRun = nonNullDelegate().willPerformQuery(this, queryDecorator);
-        QueryResponse queryResponse = onQuery(this, queryToRun);
+    public <T> ResultIterator<T> iterator(Select<T> query) {
+        Query queryToRun = nonNullDelegate().willPerformQuery(this, query);
+        QueryResponse queryResponse = onQuery(this, queryToRun, true);
         return (ResultIterator<T>) queryResponse.firstIterator();
     }
 
@@ -1138,7 +1112,7 @@ public class DataContext implements ObjectContext {
             throw new CayenneRuntimeException("Can't run query - parent DataChannel is not set.");
         }
 
-        return onQuery(this, query);
+        return onQuery(this, query, false);
     }
 
     /**
@@ -1168,7 +1142,7 @@ public class DataContext implements ObjectContext {
             return new ArrayList<>(1);
         }
 
-        List<?> result = onQuery(this, query).firstList();
+        List<?> result = onQuery(this, query, false).firstList();
         return result != null ? result : new ArrayList<>(1);
     }
 
@@ -1178,8 +1152,8 @@ public class DataContext implements ObjectContext {
      *
      * @since 1.2
      */
-    public QueryResponse onQuery(ObjectContext context, Query query) {
-        return new DataContextQueryAction(this, context, query).execute();
+    public QueryResponse onQuery(ObjectContext context, Query query, boolean iteratedResult) {
+        return new DataContextQueryAction(this, context, query, iteratedResult).execute();
     }
 
     @Override

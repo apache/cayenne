@@ -45,9 +45,10 @@ public class ObjectIdRelationshipFilter implements DataChannelQueryFilter {
         return new ObjectIdRelationshipBatchFaultingStrategy();
     }
 
-    public QueryResponse onQuery(ObjectContext context, Query query, DataChannelQueryFilterChain chain) {
+    public QueryResponse onQuery(ObjectContext context, Query query, boolean iteratedResult,
+                                 DataChannelQueryFilterChain chain) {
         try {
-            return chain.onQuery(context, query);
+            return chain.onQuery(context, query, iteratedResult);
         } finally {
             faultingStrategy.afterQuery();
         }

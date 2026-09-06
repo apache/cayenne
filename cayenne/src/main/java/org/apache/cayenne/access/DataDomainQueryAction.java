@@ -42,7 +42,6 @@ import org.apache.cayenne.map.LifecycleEvent;
 import org.apache.cayenne.map.ObjRelationship;
 import org.apache.cayenne.query.EmbeddableResultSegment;
 import org.apache.cayenne.query.EntityResultSegment;
-import org.apache.cayenne.query.IteratedQueryDecorator;
 import org.apache.cayenne.query.ObjectIdQuery;
 import org.apache.cayenne.query.PrefetchSelectQuery;
 import org.apache.cayenne.query.PrefetchTreeNode;
@@ -99,6 +98,7 @@ class DataDomainQueryAction implements QueryRouter, OperationObserver {
 
     private QueryResponse response;
     private GenericResponse fullResponse;
+    private final boolean iteratedResult;
     private boolean iteratorExclusiveConnection;
     private Map<CayennePath, List<?>> prefetchResultsByPath;
     private Map<DataNode, Collection<Query>> queriesByNode;
@@ -116,7 +116,7 @@ class DataDomainQueryAction implements QueryRouter, OperationObserver {
      * A constructor for the "new" way of performing a query via 'execute' with
      * QueryResponse created internally.
      */
-    DataDomainQueryAction(ObjectContext context, DataDomain domain, Query query) {
+    DataDomainQueryAction(ObjectContext context, DataDomain domain, Query query, boolean iteratedResult) {
         if (context != null && !(context instanceof DataContext)) {
             throw new IllegalArgumentException("DataDomain can only work with DataContext. "
                     + "Unsupported context type: " + context);
@@ -124,6 +124,7 @@ class DataDomainQueryAction implements QueryRouter, OperationObserver {
 
         this.domain = domain;
         this.query = query;
+        this.iteratedResult = iteratedResult;
         this.metadata = query.getMetaData(domain.getEntityResolver());
         this.context = (DataContext) context;
         this.objectFactory = domain.getObjectFactory();
@@ -155,8 +156,7 @@ class DataDomainQueryAction implements QueryRouter, OperationObserver {
     }
 
     private boolean interceptIteratedQuery() {
-        if (query instanceof IteratedQueryDecorator iteratedQueryDecorator) {
-            noObjectConversion = iteratedQueryDecorator.isFetchingDataRows();
+        if (iteratedResult) {
             validateIteratedQuery();
             performIteratedQuery();
             return DONE;
@@ -414,7 +414,7 @@ class DataDomainQueryAction implements QueryRouter, OperationObserver {
                 String cacheKey = cachedQuery.getMetaData(context.getEntityResolver()).getCacheKey();
                 context.getQueryCache().remove(cacheKey);
 
-                this.response = domain.onQuery(context, cachedQuery);
+                this.response = domain.onQuery(context, cachedQuery, false);
                 return DONE;
             }
 
@@ -722,7 +722,7 @@ class DataDomainQueryAction implements QueryRouter, OperationObserver {
 
     @Override
     public boolean isIteratedResult() {
-        return (query instanceof IteratedQueryDecorator);
+        return iteratedResult;
     }
 
     @Override

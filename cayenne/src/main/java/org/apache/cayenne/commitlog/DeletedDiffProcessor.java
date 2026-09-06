@@ -57,7 +57,7 @@ class DeletedDiffProcessor implements GraphChangeHandler {
 		final MutableObjectChange objectChangeSet = changeSet.getOrCreate(id, ObjectChangeType.DELETE);
 
 		ObjectIdQuery query = new ObjectIdQuery(id, true, ObjectIdQuery.CACHE);
-		QueryResponse result = channel.onQuery(null, query);
+		QueryResponse result = channel.onQuery(null, query, false);
 
 		@SuppressWarnings("unchecked")
 		List<DataRow> rows = (List<DataRow>)result.firstList();

@@ -60,16 +60,16 @@ public class DataDomainFiltersIT {
         DataDomain domain = env.runtime().getDataDomain();
         List<String> results = new ArrayList<>();
 
-        DataChannelQueryFilter f1 = (originatingContext, query, filterChain) -> {
+        DataChannelQueryFilter f1 = (originatingContext, query, iteratedResult, filterChain) -> {
             results.add("f1start");
-            QueryResponse response = filterChain.onQuery(originatingContext, query);
+            QueryResponse response = filterChain.onQuery(originatingContext, query, iteratedResult);
             results.add("f1end");
             return response;
         };
 
-        DataChannelQueryFilter f2 = (originatingContext, query, filterChain) -> {
+        DataChannelQueryFilter f2 = (originatingContext, query, iteratedResult, filterChain) -> {
             results.add("f2start");
-            QueryResponse response = filterChain.onQuery(originatingContext, query);
+            QueryResponse response = filterChain.onQuery(originatingContext, query, iteratedResult);
             results.add("f2end");
             return response;
         };
@@ -78,7 +78,7 @@ public class DataDomainFiltersIT {
         domain.queryFilters.add(f2);
 
         ObjectSelect<Artist> query = ObjectSelect.query(Artist.class);
-        QueryResponse response = domain.onQuery(env.context(), query);
+        QueryResponse response = domain.onQuery(env.context(), query, false);
         assertNotNull(response);
         assertEquals(4, results.size());
         assertEquals("f2start", results.get(0));
@@ -131,14 +131,14 @@ public class DataDomainFiltersIT {
         QueryResponse r1 = new ListResponse();
         QueryResponse r2 = new ListResponse();
 
-        DataChannelQueryFilter f1 = (originatingContext, query, filterChain) -> r1;
-        DataChannelQueryFilter f2 = (originatingContext, query, filterChain) -> r2;
+        DataChannelQueryFilter f1 = (originatingContext, query, iteratedResult, filterChain) -> r1;
+        DataChannelQueryFilter f2 = (originatingContext, query, iteratedResult, filterChain) -> r2;
 
         domain.queryFilters.add(f1);
         domain.queryFilters.add(f2);
 
         ObjectSelect<Artist> query = ObjectSelect.query(Artist.class);
-        QueryResponse response = domain.onQuery(env.context(), query);
+        QueryResponse response = domain.onQuery(env.context(), query, false);
 
         assertSame(r2, response);
     }
@@ -167,9 +167,10 @@ public class DataDomainFiltersIT {
         private List<String> results = new ArrayList<>();
 
         @Override
-        public QueryResponse onQuery(ObjectContext originatingContext, Query query, DataChannelQueryFilterChain filterChain) {
+        public QueryResponse onQuery(ObjectContext originatingContext, Query query, boolean iteratedResult,
+                                     DataChannelQueryFilterChain filterChain) {
             results.add("onQuery");
-            return filterChain.onQuery(originatingContext, query);
+            return filterChain.onQuery(originatingContext, query, iteratedResult);
         }
 
         @Override

@@ -164,31 +164,13 @@ public class DataContextIteratedQueryIT {
         }
     }
 
-
-    @Deprecated
     @Test
-    public void performIteratedQuery_Count() throws Exception {
-        createArtistsDataSet();
-
-        try (ResultIterator<?> it = context.performIteratedQuery(ObjectSelect.query(Artist.class))) {
-            int count = 0;
-            while (it.hasNextRow()) {
-                it.nextRow();
-                count++;
-            }
-
-            assertEquals(7, count);
-        }
-    }
-
-    @Deprecated
-    @Test
-    public void performIteratedQuery_resolve() throws Exception {
+    public void iterator_DataRows_Resolve() throws Exception {
         createArtistsAndPaintingsDataSet();
 
-        try (ResultIterator<?> it = context.performIteratedQuery(ObjectSelect.query(Artist.class))) {
+        try (ResultIterator<DataRow> it = context.iterator(ObjectSelect.dataRowQuery(Artist.class))) {
             while (it.hasNextRow()) {
-                DataRow row = (DataRow) it.nextRow();
+                DataRow row = it.nextRow();
 
                 // try instantiating an object and fetching its relationships
                 Artist artist = context.objectFromDataRow(Artist.class, row);
@@ -257,14 +239,14 @@ public class DataContextIteratedQueryIT {
     }
 
     @Test
-    public void performIteratedQuery_CommitWithinIterator() throws Exception {
+    public void iterator_DataRows_CommitWithinIterator() throws Exception {
         createArtistsAndPaintingsDataSet();
 
         assertEquals(7, tPainting.getRowCount());
 
-        try (ResultIterator<?> it = context.performIteratedQuery(ObjectSelect.query(Artist.class))) {
+        try (ResultIterator<DataRow> it = context.iterator(ObjectSelect.dataRowQuery(Artist.class))) {
             while (it.hasNextRow()) {
-                DataRow row = (DataRow) it.nextRow();
+                DataRow row = it.nextRow();
 
                 Artist artist = context.objectFromDataRow(Artist.class, row);
 
@@ -279,10 +261,10 @@ public class DataContextIteratedQueryIT {
     }
 
     @Test
-    public void performIteratedQuery_Transaction() throws Exception {
+    public void iterator_Transaction() throws Exception {
         createArtistsDataSet();
 
-        try (ResultIterator<?> it = context.performIteratedQuery(ObjectSelect.query(Artist.class))) {
+        try (ResultIterator<Artist> it = context.iterator(ObjectSelect.query(Artist.class))) {
             assertNull(BaseTransaction.getThreadTransaction(), "Iterator transaction was not unbound from thread");
         }
 

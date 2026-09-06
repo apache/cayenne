@@ -450,7 +450,7 @@ public class ObjectStore implements Serializable, SnapshotEventListener, GraphMa
 
         if (context != null && context.getParent() != null) {
             ObjectIdQuery query = new ObjectIdQuery(oid, true, ObjectIdQuery.CACHE_NOREFRESH);
-            List<?> results = context.getParent().onQuery(context, query).firstList();
+            List<?> results = context.getParent().onQuery(context, query, false).firstList();
             return results.isEmpty() ? null : (DataRow) results.get(0);
         }
         else {
@@ -470,7 +470,7 @@ public class ObjectStore implements Serializable, SnapshotEventListener, GraphMa
 
         if (context != null && context.getParent() != null) {
             ObjectIdQuery query = new ObjectIdQuery(oid, true, ObjectIdQuery.CACHE);
-            List<?> results = context.getParent().onQuery(context, query).firstList();
+            List<?> results = context.getParent().onQuery(context, query, false).firstList();
             return results.isEmpty() ? null : (DataRow) results.get(0);
         }
         else {
