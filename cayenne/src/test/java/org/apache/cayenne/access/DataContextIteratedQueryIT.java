@@ -19,6 +19,7 @@
 package org.apache.cayenne.access;
 
 import org.apache.cayenne.DataRow;
+import org.apache.cayenne.ObjectContext;
 import org.apache.cayenne.ResultBatchIterator;
 import org.apache.cayenne.ResultIterator;
 import org.apache.cayenne.query.ObjectSelect;
@@ -148,7 +149,23 @@ public class DataContextIteratedQueryIT {
         }
     }
 
+    @Test
+    public void iterator_Count() throws Exception {
+        createArtistsDataSet();
 
+        try (ResultIterator<?> it = context.iterator(ObjectSelect.query(Artist.class))) {
+            int count = 0;
+            while (it.hasNextRow()) {
+                it.nextRow();
+                count++;
+            }
+
+            assertEquals(7, count);
+        }
+    }
+
+
+    @Deprecated
     @Test
     public void performIteratedQuery_Count() throws Exception {
         createArtistsDataSet();
@@ -164,6 +181,7 @@ public class DataContextIteratedQueryIT {
         }
     }
 
+    @Deprecated
     @Test
     public void performIteratedQuery_resolve() throws Exception {
         createArtistsAndPaintingsDataSet();
@@ -322,5 +340,155 @@ public class DataContextIteratedQueryIT {
         });
 
         assertEquals(7, count);
+    }
+
+    @Test
+    public void iterator_ResolveFaultsInCallerTransaction() throws Exception {
+        createArtistsAndPaintingsDataSet();
+
+        TransactionManager txManager = env.runtime().getInjector().getInstance(TransactionManager.class);
+
+        int count = txManager.performInTransaction(() -> {
+            int c = 0;
+            try (ResultIterator<Artist> it = ObjectSelect.query(Artist.class).iterator(context)) {
+                for (Artist artist : it) {
+                    // resolving a to-many fault runs a query on the connection of the caller transaction while
+                    // the iterator's ResultSet is still open on it
+                    assertEquals(1, artist.getPaintingArray().size(), "Expected one painting for " + artist);
+                    c++;
+                }
+            }
+            return c;
+        });
+
+        assertEquals(7, count);
+    }
+
+    @Test
+    public void iterator_SelectWhileOpenInCallerTransaction() throws Exception {
+        createArtistsAndPaintingsDataSet();
+
+        TransactionManager txManager = env.runtime().getInjector().getInstance(TransactionManager.class);
+
+        int count = txManager.performInTransaction(() -> {
+            int c = 0;
+            try (ResultIterator<Artist> it = ObjectSelect.query(Artist.class).iterator(context)) {
+                for (Artist artist : it) {
+                    // a regular (non-iterated) select per row, on the same connection as the open iterator
+                    List<Painting> paintings = ObjectSelect.query(Painting.class)
+                            .where(Painting.TO_ARTIST.eq(artist))
+                            .select(context);
+                    assertEquals(1, paintings.size());
+                    c++;
+                }
+            }
+            return c;
+        });
+
+        assertEquals(7, count);
+    }
+
+    @Test
+    public void iterator_DisjointByIdPrefetch() throws Exception {
+        createArtistsAndPaintingsDataSet();
+
+        // a disjoint-by-id prefetch runs a separate query for each iterated row
+        try (ResultIterator<Artist> it = ObjectSelect.query(Artist.class)
+                .prefetch(Artist.PAINTING_ARRAY.disjointById())
+                .iterator(context)) {
+            int c = 0;
+            for (Artist artist : it) {
+                assertEquals(1, artist.getPaintingArray().size(), "Expected one painting for " + artist);
+                c++;
+            }
+            assertEquals(7, c);
+        }
+    }
+
+    @Test
+    public void iterator_DisjointByIdPrefetchInCallerTransaction() throws Exception {
+        createArtistsAndPaintingsDataSet();
+
+        TransactionManager txManager = env.runtime().getInjector().getInstance(TransactionManager.class);
+
+        int count = txManager.performInTransaction(() -> {
+            int c = 0;
+            try (ResultIterator<Artist> it = ObjectSelect.query(Artist.class)
+                    .prefetch(Artist.PAINTING_ARRAY.disjointById())
+                    .iterator(context)) {
+                for (Artist artist : it) {
+                    assertEquals(1, artist.getPaintingArray().size(), "Expected one painting for " + artist);
+                    c++;
+                }
+            }
+            return c;
+        });
+
+        assertEquals(7, count);
+    }
+
+    @Test
+    public void iterator_CommitInParallelContext() throws Exception {
+        createArtistsAndPaintingsDataSet();
+
+        // an ETL-style flow: read from one context via an iterator, write to another one, committing as we go
+        ObjectContext writeContext = env.runtime().newContext();
+
+        try (ResultIterator<Artist> it = ObjectSelect.query(Artist.class).iterator(context)) {
+            for (Artist artist : it) {
+                Painting painting = writeContext.newObject(Painting.class);
+                painting.setPaintingTitle("Copy of " + artist.getArtistName());
+                painting.setToArtist(writeContext.localObject(artist));
+                writeContext.commitChanges();
+            }
+        }
+
+        assertEquals(14, tPainting.getRowCount());
+    }
+
+    @Test
+    public void iterator_CommitInParallelContextInCallerTransaction() throws Exception {
+        createArtistsAndPaintingsDataSet();
+
+        TransactionManager txManager = env.runtime().getInjector().getInstance(TransactionManager.class);
+        ObjectContext writeContext = env.runtime().newContext();
+
+        int count = txManager.performInTransaction(() -> {
+            int c = 0;
+            try (ResultIterator<Artist> it = ObjectSelect.query(Artist.class).iterator(context)) {
+                for (Artist artist : it) {
+                    // the commit joins the caller transaction, i.e. runs on the connection of the open iterator
+                    Painting painting = writeContext.newObject(Painting.class);
+                    painting.setPaintingTitle("Copy of " + artist.getArtistName());
+                    painting.setToArtist(writeContext.localObject(artist));
+                    writeContext.commitChanges();
+                    c++;
+                }
+            }
+            return c;
+        });
+
+        assertEquals(7, count);
+        assertEquals(14, tPainting.getRowCount());
+    }
+
+    @Test
+    public void batchIterator_CommitInParallelContextPerBatch() throws Exception {
+        createLargeArtistsDataSet();
+
+        ObjectContext writeContext = env.runtime().newContext();
+
+        try (ResultBatchIterator<Artist> it = ObjectSelect.query(Artist.class).batchIterator(context, 5)) {
+            for (List<Artist> batch : it) {
+                for (Artist artist : batch) {
+                    Painting painting = writeContext.newObject(Painting.class);
+                    painting.setPaintingTitle("Copy of " + artist.getArtistName());
+                    painting.setToArtist(writeContext.localObject(artist));
+                }
+                writeContext.commitChanges();
+            }
+        }
+
+        assertEquals(20, tPainting.getRowCount());
     }
 }
