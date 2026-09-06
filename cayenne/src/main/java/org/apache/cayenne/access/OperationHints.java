@@ -30,7 +30,9 @@ public interface OperationHints {
      * should be returned as a ResultIterator. <code>false</code> is returned when the
      * results are expected as a list.
      */
-    boolean isIteratedResult();
+    default boolean isIteratedResult() {
+        return false;
+    }
 
     /**
      * Returns <code>true</code> if an iterated result keeps its connection to itself until the ResultIterator is

@@ -57,14 +57,6 @@ public interface OperationObserver extends OperationHints {
     }
 
     /**
-     * Returns whether results should be returned as a {@link ResultIterator}. Defaults to false.
-     */
-    @Override
-    default boolean isIteratedResult() {
-        return false;
-    }
-
-    /**
      * Callback method invoked after an updating query is executed.
      */
     default void nextCount(Query query, int resultCount) {
