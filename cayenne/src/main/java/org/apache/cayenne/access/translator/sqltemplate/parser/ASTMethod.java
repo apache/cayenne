@@ -19,10 +19,10 @@
 
 package org.apache.cayenne.access.translator.sqltemplate.parser;
 
-import java.lang.reflect.Method;
-
-import org.apache.cayenne.reflect.PropertyUtils;
 import org.apache.cayenne.access.translator.sqltemplate.Context;
+import org.apache.cayenne.reflect.PropertyUtils;
+
+import java.lang.reflect.Method;
 
 /**
  * @since 4.1
@@ -88,7 +88,6 @@ public class ASTMethod extends IdentifierNode {
                         return m.invoke(parentObject, arguments);
                     } catch (Exception ignored) {
                         // continue
-                        System.out.println("test");
                     }
                 }
             }
