@@ -449,7 +449,7 @@ public class ObjectStore implements Serializable, SnapshotEventListener, GraphMa
     public DataRow getCachedSnapshot(ObjectId oid) {
 
         if (context != null && context.getParent() != null) {
-            ObjectIdQuery query = new CachedSnapshotQuery(oid);
+            ObjectIdQuery query = new ObjectIdQuery(oid, true, ObjectIdQuery.CACHE_NOREFRESH);
             List<?> results = context.getParent().onQuery(context, query).firstList();
             return results.isEmpty() ? null : (DataRow) results.get(0);
         }
@@ -998,20 +998,6 @@ public class ObjectStore implements Serializable, SnapshotEventListener, GraphMa
     void onObjectKeyCleanup(Object key) {
         if(trackedFlattenedPaths != null) {
             trackedFlattenedPaths.remove(key);
-        }
-    }
-
-    // an ObjectIdQuery optimized for retrieval of multiple snapshots - it can be reset
-    // with the new id
-    static final class CachedSnapshotQuery extends ObjectIdQuery {
-
-        CachedSnapshotQuery(ObjectId oid) {
-            super(oid, true, ObjectIdQuery.CACHE_NOREFRESH);
-        }
-
-        void resetId(ObjectId oid) {
-            this.objectId = oid;
-            this.replacementQuery = null;
         }
     }
 
