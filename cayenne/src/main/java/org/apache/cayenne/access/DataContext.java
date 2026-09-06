@@ -63,6 +63,7 @@ import org.apache.cayenne.reflect.ToOneProperty;
 import org.apache.cayenne.runtime.CayenneRuntime;
 import org.apache.cayenne.util.EventUtil;
 import org.apache.cayenne.util.GenericResponse;
+import org.apache.cayenne.util.ShallowMergeOperation;
 import org.apache.cayenne.util.Util;
 
 import java.io.IOException;
@@ -599,17 +600,25 @@ public class DataContext implements ObjectContext {
      * @since 3.0
      */
     public List objectsFromDataRows(ClassDescriptor descriptor, List<? extends DataRow> dataRows) {
-        // TODO: If data row cache is not available it means that current data context is child.
-        //       We need to redirect this method call to parent data context as an internal query.
-        //       It is not obvious and has some overhead. Redesign for nested contexts should be done.
-        if (getObjectStore().getDataRowCache() == null) {
-            return objectsFromDataRowsFromParentContext(descriptor, dataRows);
-        }
-        return new ObjectResolver(this, descriptor, true).synchronizedObjectsFromDataRows(dataRows);
-    }
 
-    private List<?> objectsFromDataRowsFromParentContext(ClassDescriptor descriptor, List<? extends DataRow> dataRows) {
-        return getParent().onQuery(this, new ObjectsFromDataRowsQuery(descriptor, dataRows)).firstList();
+        // a child context has no snapshot cache, so it can't resolve rows on its own. Resolve them in the parent
+        // context and transfer the resulting objects here
+        if (getObjectStore().getDataRowCache() == null) {
+            if (!(getParent() instanceof DataContext parentContext)) {
+                throw new CayenneRuntimeException(
+                        "DataContext has no snapshot cache and no parent DataContext to resolve DataRows");
+            }
+
+            List<?> parentObjects = parentContext.objectsFromDataRows(descriptor, dataRows);
+            ShallowMergeOperation merger = new ShallowMergeOperation(this);
+            List<Persistent> objects = new ArrayList<>(parentObjects.size());
+            for (Object parentObject : parentObjects) {
+                objects.add(merger.merge((Persistent) parentObject));
+            }
+            return objects;
+        }
+
+        return new ObjectResolver(this, descriptor, true).synchronizedObjectsFromDataRows(dataRows);
     }
 
     /**

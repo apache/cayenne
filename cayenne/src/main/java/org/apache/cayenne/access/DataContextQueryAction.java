@@ -111,10 +111,8 @@ class DataContextQueryAction {
     }
 
     private void executePostCache() {
-        if (interceptInternalQuery() != DONE) {
-            if (interceptPaginatedQuery() != DONE) {
-                runQuery();
-            }
+        if (interceptPaginatedQuery() != DONE) {
+            runQuery();
         }
     }
 
@@ -186,16 +184,6 @@ class DataContextQueryAction {
             response = childResponse;
         }
 
-    }
-
-    protected boolean interceptInternalQuery() {
-        if (query instanceof ObjectsFromDataRowsQuery objectsFromDataRowsQuery) {
-            response = new ListResponse(actingDataContext.objectsFromDataRows(
-                    objectsFromDataRowsQuery.getDescriptor(),
-                    objectsFromDataRowsQuery.getDataRows()));
-            return DONE;
-        }
-        return !DONE;
     }
 
     /**
