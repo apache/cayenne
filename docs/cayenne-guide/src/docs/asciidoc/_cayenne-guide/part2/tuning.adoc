@@ -304,12 +304,12 @@ expiration policies, etc. For the managed cache, you will need to explicitly use
 Use can use <<ext-jcache,JCache integration module>> to enable any of JCache API compatible caching providers.
 
 Often "passive" cache expiration policies used by caching providers are not sufficient, and the users want real-time cache invalidation when the data changes.
-So in addition to those policies, the app can invalidate individual cache groups explicitly with `RefreshQuery`:
+So in addition to those policies, the app can invalidate individual cache groups explicitly via `QueryCache`:
 
 [source, Java]
 ----
-RefreshQuery refresh = new RefreshQuery("artist");
-context.performGenericQuery(refresh);
+QueryCache cache = runtime.getDataDomain().getQueryCache();
+cache.removeGroup("artist");
 ----
 
 The above can be used e.g. to build UI for manual cache invalidation.

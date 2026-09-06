@@ -51,7 +51,6 @@ import org.apache.cayenne.query.MappedSelect;
 import org.apache.cayenne.query.ObjectIdQuery;
 import org.apache.cayenne.query.Query;
 import org.apache.cayenne.query.QueryMetadata;
-import org.apache.cayenne.query.RefreshQuery;
 import org.apache.cayenne.query.Select;
 import org.apache.cayenne.reflect.AttributeProperty;
 import org.apache.cayenne.reflect.ClassDescriptor;
@@ -850,8 +849,16 @@ public class DataContext implements ObjectContext {
             throw new NullPointerException("Null collection of objects to invalidate");
         }
 
-        if (!objects.isEmpty()) {
-            performGenericQuery(new RefreshQuery(objects));
+        Collection<ObjectId> ids = new ArrayList<>(objects.size());
+        for (Object object : objects) {
+            Persistent persistent = (Persistent) object;
+            if (persistent.getPersistenceState() != PersistenceState.NEW) {
+                ids.add(persistent.getObjectId());
+            }
+        }
+
+        if (!ids.isEmpty()) {
+            onInvalidate(this, ids);
         }
     }
 
@@ -861,7 +868,24 @@ public class DataContext implements ObjectContext {
     @Override
     public <T> void invalidateObjects(T... objects) {
         if (objects != null && objects.length > 0) {
-            performGenericQuery(new RefreshQuery(Arrays.asList(objects)));
+            invalidateObjects(Arrays.asList(objects));
+        }
+    }
+
+    /**
+     * An implementation of a {@link DataChannel} method that invalidates objects in this context and propagates the
+     * invalidation to the parent channel. Not intended for direct use, call {@link #invalidateObjects(Collection)}
+     * instead.
+     *
+     * @since 5.0
+     */
+    @Override
+    public void onInvalidate(ObjectContext originatingContext, Collection<ObjectId> objectIds) {
+        getObjectStore().objectsInvalidated(objectIds);
+
+        DataChannel parent = getParent();
+        if (parent != null) {
+            parent.onInvalidate(this, objectIds);
         }
     }
 

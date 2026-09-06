@@ -174,9 +174,9 @@ public interface ObjectContext extends DataChannel, Serializable {
      * Executes a selecting query, returning a list of persistent objects or data rows.
      */
     // TODO: this will need to be deprecated at some point. The reason we can't do that yet is that
-    //  EJBQLQuery, SQLTemplate, RefreshQuery, RelationshipQuery, ObjectIdQuery do not implement "Select".
+    //  EJBQLQuery, SQLTemplate, RelationshipQuery, ObjectIdQuery do not implement "Select".
     //  Those queries should eventually either go away (EJBQLQuery, ObjectIdQuery, SQLTemplate) or made implement Select
-    //  (RelationshipQuery, RefreshQuery)
+    //  (RelationshipQuery)
     List performQuery(Query query);
 
     /**

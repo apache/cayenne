@@ -25,7 +25,6 @@ import org.apache.cayenne.map.EntityResolver;
 import org.apache.cayenne.map.LifecycleEvent;
 import org.apache.cayenne.query.EJBQLQuery;
 import org.apache.cayenne.query.ObjectSelect;
-import org.apache.cayenne.query.RefreshQuery;
 import org.apache.cayenne.reflect.LifecycleCallbackRegistry;
 import org.apache.cayenne.testdo.testmap.Artist;
 import org.apache.cayenne.testdo.testmap.Painting;
@@ -96,7 +95,7 @@ public class DataDomainCallbacksIT {
         assertEquals(0, a1.getPostLoaded());
         assertNull(listener.getPublicCalledbackEntity());
 
-        env.context().performQuery(new RefreshQuery(a1));
+        env.context().invalidateObjects(a1);
         assertEquals(0, a1.getPostLoaded());
         assertNull(listener.getPublicCalledbackEntity());
 

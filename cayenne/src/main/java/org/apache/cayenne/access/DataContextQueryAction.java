@@ -33,7 +33,6 @@ import org.apache.cayenne.query.ObjectIdQuery;
 import org.apache.cayenne.query.Query;
 import org.apache.cayenne.query.QueryCacheStrategy;
 import org.apache.cayenne.query.QueryMetadata;
-import org.apache.cayenne.query.RefreshQuery;
 import org.apache.cayenne.query.RelationshipQuery;
 import org.apache.cayenne.reflect.ArcProperty;
 import org.apache.cayenne.reflect.ClassDescriptor;
@@ -42,9 +41,7 @@ import org.apache.cayenne.util.ListResponse;
 import org.apache.cayenne.util.ShallowMergeOperation;
 
 import java.util.ArrayList;
-import java.util.Collection;
 import java.util.Collections;
-import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 import java.util.Objects;
@@ -91,10 +88,8 @@ class DataContextQueryAction {
         if (interceptIteratedQuery() != DONE) {
             if (interceptOIDQuery() != DONE) {
                 if (interceptRelationshipQuery() != DONE) {
-                    if (interceptRefreshQuery() != DONE) {
-                        if (interceptLocalCache() != DONE) {
-                            executePostCache();
-                        }
+                    if (interceptLocalCache() != DONE) {
+                        executePostCache();
                     }
                 }
             }
@@ -374,97 +369,6 @@ class DataContextQueryAction {
             }
         }
         return mixedResults;
-    }
-
-    protected boolean interceptRefreshQuery() {
-        if (query instanceof RefreshQuery refreshQuery) {
-
-            // handle four separate cases, but do not combine them as it will be
-            // unclear how to handle cascading behavior
-
-            // 1. refresh all
-            if (refreshQuery.isRefreshAll()) {
-                synchronized (actingDataContext.getObjectStore()) {
-
-                    invalidateLocally(actingDataContext.getObjectStore(), actingDataContext
-                            .getObjectStore()
-                            .getObjectIterator());
-
-                    actingDataContext.getQueryCache().clear();
-                }
-
-                // cascade
-                return !DONE;
-            }
-
-            // 2. invalidate object collection
-            Collection<?> objects = refreshQuery.getObjects();
-            if (objects != null && !objects.isEmpty()) {
-
-                synchronized (actingDataContext.getObjectStore()) {
-                    invalidateLocally(actingDataContext.getObjectStore(), objects.iterator());
-                }
-
-                // cascade
-                return !DONE;
-            }
-
-            // 3. refresh query - have to do it eagerly to refresh the objects involved
-            Query cachedQuery = refreshQuery.getQuery();
-            if (cachedQuery != null) {
-
-                String cacheKey = cachedQuery
-                        .getMetaData(actingDataContext.getEntityResolver())
-                        .getCacheKey();
-                actingDataContext.getQueryCache().remove(cacheKey);
-
-                this.response = actingDataContext.performGenericQuery(cachedQuery);
-
-                // do not cascade to avoid running query twice
-                return DONE;
-            }
-
-            // 4. refresh groups...
-            String[] groups = refreshQuery.getGroupKeys();
-            if (groups != null && groups.length > 0) {
-
-                for (String group : groups) {
-                    actingDataContext.getQueryCache().removeGroup(group);
-                }
-
-                // cascade group invalidation
-                return !DONE;
-            }
-
-            // shouldn't ever happen
-            return DONE;
-        }
-
-        return !DONE;
-    }
-
-    private void invalidateLocally(ObjectStore objectStore, Iterator it) {
-        Map<Object, ObjectDiff> diffMap = objectStore.getChangesByObjectId();
-
-        while (it.hasNext()) {
-            Persistent object = (Persistent) it.next();
-
-            int state = object.getPersistenceState();
-
-            // we don't care about NEW objects,
-            // but we still do care about HOLLOW, since snapshot might still
-            // be present
-            if (state == PersistenceState.NEW) {
-                continue;
-            }
-
-            if (state == PersistenceState.MODIFIED || state == PersistenceState.DELETED) {
-                // remove cached changes
-                diffMap.remove(object.getObjectId());
-            }
-
-            object.setPersistenceState(PersistenceState.HOLLOW);
-        }
     }
 
     protected boolean interceptLocalCache() {

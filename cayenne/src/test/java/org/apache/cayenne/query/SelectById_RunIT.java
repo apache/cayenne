@@ -421,7 +421,7 @@ public class SelectById_RunIT {
             assertSame(a3[0], a3cached);
         });
 
-        env.context().performGenericQuery(new RefreshQuery("g1"));
+        env.runtime().getDataDomain().getQueryCache().removeGroup("g1");
 
         assertEquals(1, env.runWithQueryCounter(() ->
                 SelectById.queryId(Artist.class, 3).localCache("g1").selectOne(env.context())));

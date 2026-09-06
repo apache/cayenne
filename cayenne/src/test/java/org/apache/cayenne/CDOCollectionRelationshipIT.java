@@ -20,7 +20,6 @@ package org.apache.cayenne;
 
 import org.apache.cayenne.exp.ExpressionFactory;
 import org.apache.cayenne.query.ObjectSelect;
-import org.apache.cayenne.query.RefreshQuery;
 import org.apache.cayenne.test.jdbc.TableHelper;
 import org.apache.cayenne.testdo.relationships_collection_to_many.CollectionToMany;
 import org.apache.cayenne.testdo.relationships_collection_to_many.CollectionToManyTarget;
@@ -128,7 +127,7 @@ public class CDOCollectionRelationshipIT {
 
         o1.getObjectContext().commitChanges();
 
-        o1.getObjectContext().performGenericQuery(new RefreshQuery());
+        o1.getObjectContext().invalidateObjects(o1);
         assertEquals(4, o1.getTargets().size());
     }
 
@@ -152,7 +151,7 @@ public class CDOCollectionRelationshipIT {
 
         o1.getObjectContext().commitChanges();
 
-        o1.getObjectContext().performGenericQuery(new RefreshQuery());
+        o1.getObjectContext().invalidateObjects(o1);
         assertEquals(2, o1.getTargets().size());
         assertFalse(o1.getTargets().contains(target));
     }
@@ -176,7 +175,7 @@ public class CDOCollectionRelationshipIT {
 
         o1.getObjectContext().commitChanges();
 
-        o1.getObjectContext().performGenericQuery(new RefreshQuery());
+        o1.getObjectContext().invalidateObjects(o1);
         assertEquals(4, o1.getTargets().size());
     }
 }

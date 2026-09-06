@@ -21,6 +21,7 @@ CAY-3010 LocalDateTime and friends should be accessed directly via JDBC
 CAY-3012 Improve reflection performance
 CAY-3013 MySQL: JDBC-level streaming for iterators
 CAY-3014 Remove QueryChain
+CAY-3015 Get rid of RefreshQuery
 
 Bug Fixes:
 

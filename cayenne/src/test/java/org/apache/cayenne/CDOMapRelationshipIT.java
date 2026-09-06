@@ -20,7 +20,6 @@ package org.apache.cayenne;
 
 import java.util.Map;
 
-import org.apache.cayenne.query.RefreshQuery;
 import org.apache.cayenne.query.ObjectSelect;
 import org.apache.cayenne.test.jdbc.TableHelper;
 import org.apache.cayenne.testdo.map_to_many.IdMapToMany;
@@ -159,7 +158,7 @@ public class CDOMapRelationshipIT {
 
         o1.getObjectContext().commitChanges();
 
-        o1.getObjectContext().performGenericQuery(new RefreshQuery());
+        o1.getObjectContext().invalidateObjects(o1);
         assertEquals(4, o1.getTargets().size());
     }
 
@@ -181,7 +180,7 @@ public class CDOMapRelationshipIT {
 
         o1.getObjectContext().commitChanges();
 
-        o1.getObjectContext().performGenericQuery(new RefreshQuery());
+        o1.getObjectContext().invalidateObjects(o1);
         assertEquals(2, o1.getTargets().size());
         assertNotNull(o1.getTargets().get("A"));
         assertNotNull(o1.getTargets().get("C"));
@@ -209,7 +208,7 @@ public class CDOMapRelationshipIT {
 
         o1.getObjectContext().commitChanges();
 
-        o1.getObjectContext().performGenericQuery(new RefreshQuery());
+        o1.getObjectContext().invalidateObjects(o1);
         assertEquals(4, o1.getTargets().size());
     }
 

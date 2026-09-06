@@ -18,7 +18,6 @@
  ****************************************************************/
 package org.apache.cayenne;
 
-import org.apache.cayenne.query.RefreshQuery;
 import org.apache.cayenne.query.ObjectSelect;
 import org.apache.cayenne.test.jdbc.TableHelper;
 import org.apache.cayenne.testdo.relationships_set_to_many.SetToMany;
@@ -138,7 +137,7 @@ public class CDOSetRelationshipIT {
 
         o1.getObjectContext().commitChanges();
 
-        o1.getObjectContext().performGenericQuery(new RefreshQuery());
+        o1.getObjectContext().invalidateObjects(o1);
         assertEquals(4, o1.getTargets().size());
     }
 
@@ -163,7 +162,7 @@ public class CDOSetRelationshipIT {
 
         o1.getObjectContext().commitChanges();
 
-        o1.getObjectContext().performGenericQuery(new RefreshQuery());
+        o1.getObjectContext().invalidateObjects(o1);
         assertEquals(2, o1.getTargets().size());
         assertFalse(o1.getTargets().contains(target));
     }
@@ -189,7 +188,7 @@ public class CDOSetRelationshipIT {
 
         o1.getObjectContext().commitChanges();
 
-        o1.getObjectContext().performGenericQuery(new RefreshQuery());
+        o1.getObjectContext().invalidateObjects(o1);
         assertEquals(4, o1.getTargets().size());
     }
 

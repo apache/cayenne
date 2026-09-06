@@ -20,6 +20,7 @@
 package org.apache.cayenne;
 
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.List;
 
 import org.apache.cayenne.DataChannel;
@@ -92,6 +93,10 @@ public class MockDataChannel implements DataChannel {
     public QueryResponse onQuery(ObjectContext context, Query query, boolean iteratedResult) {
         requestObjects.add(query);
         return response;
+    }
+
+    public void onInvalidate(ObjectContext originatingContext, Collection<ObjectId> objectIds) {
+        requestObjects.add(objectIds);
     }
 
     public EntityResolver getEntityResolver() {

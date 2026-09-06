@@ -50,7 +50,6 @@ import org.apache.cayenne.query.QueryCacheStrategy;
 import org.apache.cayenne.query.QueryMetadata;
 import org.apache.cayenne.query.QueryMetadataProxy;
 import org.apache.cayenne.query.QueryRouter;
-import org.apache.cayenne.query.RefreshQuery;
 import org.apache.cayenne.query.RelationshipQuery;
 import org.apache.cayenne.reflect.ClassDescriptor;
 import org.apache.cayenne.reflect.DefaultConstructor;
@@ -141,10 +140,8 @@ class DataDomainQueryAction implements QueryRouter, OperationObserver {
         if (interceptIteratedQuery() != DONE) {
             if (interceptOIDQuery() != DONE) {
                 if (interceptRelationshipQuery() != DONE) {
-                    if (interceptRefreshQuery() != DONE) {
-                        if (interceptSharedCache() != DONE) {
-                            runQueryInTransaction();
-                        }
+                    if (interceptSharedCache() != DONE) {
+                        runQueryInTransaction();
                     }
                 }
             }
@@ -347,88 +344,6 @@ class DataDomainQueryAction implements QueryRouter, OperationObserver {
                 Object object = context.findOrCreateObject(targetId);
 
                 this.response = new GenericResponse(Collections.singletonList(object));
-                return DONE;
-            }
-        }
-
-        return !DONE;
-    }
-
-    /**
-     * @since 3.0
-     */
-    @SuppressWarnings("deprecation")
-    private boolean interceptRefreshQuery() {
-
-        if (query instanceof RefreshQuery refreshQuery) {
-
-            if (refreshQuery.isRefreshAll()) {
-
-                // not sending any events - peer contexts will not get refreshed
-                if (domain.getSharedSnapshotCache() != null) {
-                    domain.getSharedSnapshotCache().clear();
-                } else {
-                    // remove snapshots from local ObjectStore only
-                    context.getObjectStore().getDataRowCache().clear();
-                }
-                context.getQueryCache().clear();
-
-                GenericResponse response = new GenericResponse();
-                response.addUpdateCount(1);
-                this.response = response;
-                return DONE;
-            }
-
-            @SuppressWarnings("unchecked")
-            Collection<Persistent> objects = (Collection<Persistent>) refreshQuery.getObjects();
-            if (objects != null && !objects.isEmpty()) {
-
-                Collection<ObjectId> ids = new ArrayList<>(objects.size());
-                for (final Persistent object : objects) {
-                    ids.add(object.getObjectId());
-                }
-
-                if (domain.getSharedSnapshotCache() != null) {
-                    // send an event for removed snapshots
-                    domain.getSharedSnapshotCache().processSnapshotChanges(context.getObjectStore(),
-                            Collections.emptyMap(), Collections.emptyList(), ids, Collections.emptyList());
-                } else {
-                    // remove snapshots from local ObjectStore only
-                    context.getObjectStore()
-                            .getDataRowCache()
-                            .processSnapshotChanges(context.getObjectStore(), Collections.emptyMap(),
-                                    Collections.emptyList(), ids, Collections.emptyList());
-                }
-
-                GenericResponse response = new GenericResponse();
-                response.addUpdateCount(1);
-                this.response = response;
-                return DONE;
-            }
-
-            // 3. refresh query - this shouldn't normally happen as child context
-            // usually does a cascading refresh
-            if (refreshQuery.getQuery() != null) {
-                Query cachedQuery = refreshQuery.getQuery();
-
-                String cacheKey = cachedQuery.getMetaData(context.getEntityResolver()).getCacheKey();
-                context.getQueryCache().remove(cacheKey);
-
-                this.response = domain.onQuery(context, cachedQuery, false);
-                return DONE;
-            }
-
-            // 4. refresh groups...
-            if (refreshQuery.getGroupKeys() != null && refreshQuery.getGroupKeys().length > 0) {
-
-                String[] groups = refreshQuery.getGroupKeys();
-                for (String group : groups) {
-                    domain.getQueryCache().removeGroup(group);
-                }
-
-                GenericResponse response = new GenericResponse();
-                response.addUpdateCount(1);
-                this.response = response;
                 return DONE;
             }
         }

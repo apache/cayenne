@@ -21,6 +21,7 @@ package org.apache.cayenne.access;
 import org.apache.cayenne.Cayenne;
 import org.apache.cayenne.DataChannel;
 import org.apache.cayenne.ObjectContext;
+import org.apache.cayenne.ObjectId;
 import org.apache.cayenne.QueryResponse;
 import org.apache.cayenne.dba.frontbase.FrontBaseAdapter;
 import org.apache.cayenne.dba.mysql.MySQLAdapter;
@@ -35,6 +36,7 @@ import org.apache.cayenne.unit.CayenneTestsEnv;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.RegisterExtension;
 
+import java.util.Collection;
 import java.util.Map;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
@@ -109,6 +111,10 @@ public class DataContextDecoratedStackIT {
                 GraphDiff changes,
                 int syncType) {
             return channel.onSync(originatingContext, changes, syncType);
+        }
+
+        public void onInvalidate(ObjectContext originatingContext, Collection<ObjectId> objectIds) {
+            channel.onInvalidate(originatingContext, objectIds);
         }
 
         public DataChannel getParent() {

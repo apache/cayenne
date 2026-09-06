@@ -25,6 +25,8 @@ import org.apache.cayenne.graph.GraphDiff;
 import org.apache.cayenne.map.EntityResolver;
 import org.apache.cayenne.query.Query;
 
+import java.util.Collection;
+
 /**
  * DataChannel is an abstraction used by ObjectContexts to obtain mapping metadata and
  * access a persistent store. There is rarely a need to use it directly.
@@ -99,6 +101,18 @@ public interface DataChannel {
      * @since 5.0
      */
     QueryResponse onQuery(ObjectContext originatingContext, Query query, boolean iteratedResult);
+
+    /**
+     * Invalidates objects with the given ids in this channel and all its parents, so that they are refetched on the
+     * next access. In a context, matching registered objects are turned HOLLOW and their uncommitted changes are
+     * discarded. At the root of the channel stack, their snapshots are evicted from the snapshot cache, and peer
+     * contexts are notified via a snapshot event. Objects unknown to a given channel are ignored.
+     *
+     * @param originatingContext an ObjectContext that originated the invalidation.
+     * @param objectIds          ids of the objects to invalidate.
+     * @since 5.0
+     */
+    void onInvalidate(ObjectContext originatingContext, Collection<ObjectId> objectIds);
 
     /**
      * Processes synchronization request from a child ObjectContext, returning a GraphDiff

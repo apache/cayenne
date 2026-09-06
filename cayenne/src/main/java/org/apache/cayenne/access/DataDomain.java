@@ -26,6 +26,7 @@ import org.apache.cayenne.DataChannelQueryFilterChain;
 import org.apache.cayenne.DataChannelSyncFilter;
 import org.apache.cayenne.DataChannelSyncFilterChain;
 import org.apache.cayenne.ObjectContext;
+import org.apache.cayenne.ObjectId;
 import org.apache.cayenne.QueryResponse;
 import org.apache.cayenne.access.flush.DataDomainFlushAction;
 import org.apache.cayenne.access.flush.DataDomainFlushActionFactory;
@@ -350,6 +351,35 @@ public class DataDomain implements DataChannel {
     public QueryResponse onQuery(ObjectContext originatingContext, Query query, boolean iteratedResult) {
         checkStopped();
         return new DataDomainQueryFilterChain().onQuery(originatingContext, query, iteratedResult);
+    }
+
+    /**
+     * Evicts snapshots of the given objects from the snapshot cache, notifying all contexts that share it.
+     *
+     * @since 5.0
+     */
+    @Override
+    public void onInvalidate(ObjectContext originatingContext, Collection<ObjectId> objectIds) {
+        checkStopped();
+
+        if (objectIds.isEmpty()) {
+            return;
+        }
+
+        if (!(originatingContext instanceof DataContext context)) {
+            throw new IllegalArgumentException("DataDomain can only work with DataContext. "
+                    + "Unsupported context type: " + originatingContext);
+        }
+
+        // a context either shares the domain snapshot cache, or has its own
+        DataRowStore snapshotCache = sharedSnapshotCache != null
+                ? sharedSnapshotCache
+                : context.getObjectStore().getDataRowCache();
+
+        if (snapshotCache != null) {
+            snapshotCache.processSnapshotChanges(context.getObjectStore(), Collections.emptyMap(),
+                    Collections.emptyList(), objectIds, Collections.emptyList());
+        }
     }
 
     QueryResponse onQueryNoFilters(ObjectContext originatingContext, Query query, boolean iteratedResult) {

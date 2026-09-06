@@ -87,6 +87,28 @@ Expression caseWhenExp = caseWhen(
   });
   ```
 
+*  Per [CAY-3015](https://issues.apache.org/jira/browse/CAY-3015) `org.apache.cayenne.query.RefreshQuery` was removed. It was not a query, but a carrier for 
+   four cache management operations, each of which has a direct replacement:
+
+- `new RefreshQuery(objects)` / `new RefreshQuery(object)` &rarr; `context.invalidateObjects(objects)`. In nested 
+  contexts, there was previously an issue with cascading invalidation (intermediate contexts would not get invalidated).
+  This was fixed in the current version of `invalidateObjects`.
+- `new RefreshQuery("group1", "group2")` &rarr; `runtime.getDataDomain().getQueryCache().removeGroup("group1")`,
+  once per group.
+- `new RefreshQuery(query)` &rarr; run the query itself, with its cache strategy set to `LOCAL_CACHE_REFRESH` or
+  `SHARED_CACHE_REFRESH`. A query with no caching needs no change, as refreshing it was the same as running it:
+
+  ```java
+  ObjectSelect.query(Artist.class)
+          .cacheStrategy(QueryCacheStrategy.SHARED_CACHE_REFRESH)
+          .cacheGroup("artists")
+          .select(context);
+  ```
+
+- `new RefreshQuery()` (refresh everything) has no direct replacement. To start over, create a new
+  `ObjectContext`. To also drop shared state, call `runtime.getDataDomain().getQueryCache().clear()` and
+  `runtime.getDataDomain().getSharedSnapshotCache().clear()`.
+
 *  The `org.apache.cayenne.query.ParameterizedQuery` interface was removed, together with the `createQuery(Map)`
   methods of `SQLTemplate`, `ProcedureQuery` and `ObjectSelect` that implemented it. Applying parameters to a mapped
   query is now the job of the query descriptor - override `QueryDescriptor.buildQuery(Map)` if you have a custom

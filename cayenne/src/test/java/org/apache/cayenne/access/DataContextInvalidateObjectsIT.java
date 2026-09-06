@@ -21,11 +21,11 @@ package org.apache.cayenne.access;
 import java.util.List;
 
 import org.apache.cayenne.Cayenne;
+import org.apache.cayenne.ObjectContext;
 import org.apache.cayenne.PersistenceState;
 import org.apache.cayenne.ValueHolder;
 import org.apache.cayenne.query.ObjectSelect;
 import org.apache.cayenne.query.QueryCacheStrategy;
-import org.apache.cayenne.query.RefreshQuery;
 import org.apache.cayenne.query.SortOrder;
 import org.apache.cayenne.test.jdbc.TableHelper;
 import org.apache.cayenne.testdo.testmap.Artist;
@@ -38,7 +38,7 @@ import org.junit.jupiter.api.Test;
 
 import static org.junit.jupiter.api.Assertions.*;
 
-public class DataContextRefreshQueryIT  {
+public class DataContextInvalidateObjectsIT {
 
     @RegisterExtension
     static final CayenneTestsEnv env = CayenneTestsEnv.forProject(CayenneProjects.TESTMAP_PROJECT);
@@ -83,7 +83,7 @@ public class DataContextRefreshQueryIT  {
     }
 
     @Test
-    public void refreshCollection() throws Exception {
+    public void invalidateCollection() throws Exception {
         createRefreshCollectionDataSet();
 
         List<Artist> artists = ObjectSelect.query(Artist.class)
@@ -105,8 +105,7 @@ public class DataContextRefreshQueryIT  {
                 .getSharedSnapshotCache()
                 .getCachedSnapshot(a2.getObjectId()));
 
-        RefreshQuery refresh = new RefreshQuery(artists);
-        context.performQuery(refresh);
+        context.invalidateObjects(artists);
 
         assertNull(context
                 .getParentDataDomain()
@@ -127,7 +126,7 @@ public class DataContextRefreshQueryIT  {
     }
 
     @Test
-    public void refreshCollectionToOne() throws Exception {
+    public void invalidateCollectionToOne() throws Exception {
         createRefreshCollectionDataSet();
 
         List<Painting> paints = ObjectSelect.query(Painting.class)
@@ -151,8 +150,7 @@ public class DataContextRefreshQueryIT  {
 
         createRefreshCollectionToOneUpdateDataSet();
 
-        RefreshQuery refresh = new RefreshQuery(paints);
-        context.performQuery(refresh);
+        context.invalidateObjects(paints);
 
         assertNull(context
                 .getParentDataDomain()
@@ -172,7 +170,7 @@ public class DataContextRefreshQueryIT  {
     }
 
     @Test
-    public void refreshSingleObject() throws Exception {
+    public void invalidateSingleObject() throws Exception {
         createRefreshCollectionDataSet();
 
         List<Artist> artists = ObjectSelect.query(Artist.class)
@@ -188,8 +186,7 @@ public class DataContextRefreshQueryIT  {
                 .getSharedSnapshotCache()
                 .getCachedSnapshot(a1.getObjectId()));
 
-        RefreshQuery refresh = new RefreshQuery(a1);
-        context.performQuery(refresh);
+        context.invalidateObjects(a1);
 
         assertNull(context
                 .getParentDataDomain()
@@ -203,7 +200,7 @@ public class DataContextRefreshQueryIT  {
     }
 
     @Test
-    public void refreshObjectToMany() throws Exception {
+    public void invalidateObjectToMany() throws Exception {
         createRefreshObjectToManyDataSet();
 
         Artist a = Cayenne.objectForPK(context, Artist.class, 33001L);
@@ -211,14 +208,13 @@ public class DataContextRefreshQueryIT  {
 
         createRefreshObjectToManyUpdateDataSet();
 
-        RefreshQuery refresh = new RefreshQuery(a);
-        context.performQuery(refresh);
+        context.invalidateObjects(a);
         assertEquals(PersistenceState.HOLLOW, a.getPersistenceState());
         assertEquals(1, a.getPaintingArray().size());
     }
 
     @Test
-    public void refreshQueryResultsLocalCache() throws Exception {
+    public void localCacheRefresh() throws Exception {
         createRefreshCollectionDataSet();
 
         ObjectSelect<Painting> q = ObjectSelect.query(Painting.class)
@@ -248,8 +244,7 @@ public class DataContextRefreshQueryIT  {
 
         createRefreshCollectionToOneUpdateDataSet();
 
-        RefreshQuery refresh = new RefreshQuery(q);
-        context.performQuery(refresh);
+        q.cacheStrategy(QueryCacheStrategy.LOCAL_CACHE_REFRESH).select(context);
 
         assertNotNull(context
                 .getParentDataDomain()
@@ -272,7 +267,7 @@ public class DataContextRefreshQueryIT  {
     }
 
     @Test
-    public void refreshQueryResultsSharedCache() throws Exception {
+    public void sharedCacheRefresh() throws Exception {
         createRefreshCollectionDataSet();
 
         ObjectSelect<Painting> q = ObjectSelect.query(Painting.class)
@@ -301,8 +296,7 @@ public class DataContextRefreshQueryIT  {
 
         createRefreshCollectionToOneUpdateDataSet();
 
-        RefreshQuery refresh = new RefreshQuery(q);
-        context.performQuery(refresh);
+        q.cacheStrategy(QueryCacheStrategy.SHARED_CACHE_REFRESH).select(context);
 
         assertNotNull(context
                 .getParentDataDomain()
@@ -325,7 +319,7 @@ public class DataContextRefreshQueryIT  {
     }
 
     @Test
-    public void refreshQueryResultGroupLocal() throws Exception {
+    public void removeCacheGroupLocal() throws Exception {
         createRefreshCollectionDataSet();
 
         ObjectSelect<Painting> q = ObjectSelect.query(Painting.class)
@@ -361,10 +355,8 @@ public class DataContextRefreshQueryIT  {
         assertEquals("c", p1.getToArtist().getArtistName());
         assertEquals("c", p2.getToArtist().getArtistName());
 
-        RefreshQuery refresh = new RefreshQuery("X");
-
         // this should invalidate results for the next query run
-        context.performQuery(refresh);
+        context.getParentDataDomain().getQueryCache().removeGroup("X");
 
         // this should force a refresh
         context.performQuery(q);
@@ -379,7 +371,7 @@ public class DataContextRefreshQueryIT  {
     }
 
     @Test
-    public void refreshAll() throws Exception {
+    public void invalidateAllRegistered() throws Exception {
         createRefreshCollectionDataSet();
         ObjectSelect<Artist> q = ObjectSelect.query(Artist.class)
                 .orderBy("db:ARTIST_ID", SortOrder.ASCENDING);
@@ -407,8 +399,7 @@ public class DataContextRefreshQueryIT  {
                 .getSharedSnapshotCache()
                 .getCachedSnapshot(p2.getObjectId()));
 
-        RefreshQuery refresh = new RefreshQuery();
-        context.performQuery(refresh);
+        context.invalidateObjects(context.getObjectStore().registeredNodes());
 
         assertNull(context
                 .getParentDataDomain()
@@ -431,5 +422,30 @@ public class DataContextRefreshQueryIT  {
         assertEquals(PersistenceState.HOLLOW, a2.getPersistenceState());
         assertEquals(PersistenceState.HOLLOW, p1.getPersistenceState());
         assertEquals(PersistenceState.HOLLOW, p2.getPersistenceState());
+    }
+
+    @Test
+    public void invalidateFromChildContext() throws Exception {
+        createRefreshCollectionDataSet();
+
+        Artist parentArtist = Cayenne.objectForPK(context, Artist.class, 33001);
+        parentArtist.setArtistName("modified in parent");
+        assertEquals(PersistenceState.MODIFIED, parentArtist.getPersistenceState());
+
+        ObjectContext child = env.runtime().newContext(context);
+        Artist childArtist = Cayenne.objectForPK(child, Artist.class, 33001);
+        assertNotSame(parentArtist, childArtist);
+
+        child.invalidateObjects(childArtist);
+
+        assertEquals(PersistenceState.HOLLOW, childArtist.getPersistenceState());
+        assertEquals(PersistenceState.HOLLOW, parentArtist.getPersistenceState());
+        assertFalse(context.hasChanges());
+        assertNull(context
+                .getParentDataDomain()
+                .getSharedSnapshotCache()
+                .getCachedSnapshot(parentArtist.getObjectId()));
+
+        assertEquals("c", parentArtist.getArtistName());
     }
 }

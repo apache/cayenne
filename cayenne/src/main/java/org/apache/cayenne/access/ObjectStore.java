@@ -289,6 +289,26 @@ public class ObjectStore implements Serializable, SnapshotEventListener, GraphMa
     }
 
     /**
+     * Turns registered objects with the given ids HOLLOW, discarding their uncommitted changes. Ids of unregistered
+     * or NEW objects are ignored. Does not touch the snapshot cache.
+     *
+     * @since 5.0
+     */
+    synchronized void objectsInvalidated(Collection<ObjectId> ids) {
+        for (ObjectId id : ids) {
+            Persistent object = (Persistent) objectMap.get(id);
+
+            // NEW objects have nothing to refetch. HOLLOW objects are still processed, as they may have pending changes
+            if (object == null || object.getPersistenceState() == PersistenceState.NEW) {
+                continue;
+            }
+
+            changes.remove(id);
+            object.setPersistenceState(PersistenceState.HOLLOW);
+        }
+    }
+
+    /**
      * Evicts a collection of Persistent objects from the ObjectStore, invalidates the underlying
      * cache snapshots. Changes objects state to TRANSIENT. This method can be used for
      * manual cleanup of Cayenne cache.
