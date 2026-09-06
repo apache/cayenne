@@ -74,7 +74,6 @@ public abstract class PersistentDescriptorFactory implements ClassDescriptorFact
         descriptor.setEntity(entity);
         descriptor.setSuperclassDescriptor(superDescriptor);
         descriptor.setObjectClass(entityClass);
-        descriptor.setPersistenceStateAccessor(new BeanAccessor(entityClass, "persistenceState", Integer.TYPE));
 
         // only include this entity attributes and skip superclasses...
         for (ObjAttribute attribute : descriptor.getEntity().getDeclaredAttributes()) {

@@ -45,8 +45,6 @@ import java.util.Map.Entry;
  */
 public class PersistentDescriptor implements ClassDescriptor {
 
-	static final Integer HOLLOW_STATE = PersistenceState.HOLLOW;
-
 	protected ClassDescriptor superclassDescriptor;
 
 	// compiled properties ...
@@ -56,7 +54,6 @@ public class PersistentDescriptor implements ClassDescriptor {
 	protected Map<String, PropertyDescriptor> properties;
 
 	protected Map<String, ClassDescriptor> subclassDescriptors;
-	protected Accessor persistenceStateAccessor;
 
 	protected ObjEntity entity;
 	protected Collection<DbEntity> rootDbEntities;
@@ -234,16 +231,13 @@ public class PersistentDescriptor implements ClassDescriptor {
 		return additionalDbEntities;
 	}
 
+	@Override
 	public boolean isFault(Object object) {
 		if (superclassDescriptor != null) {
 			return superclassDescriptor.isFault(object);
 		}
 
-		if (object == null) {
-			return false;
-		}
-
-		return HOLLOW_STATE.equals(persistenceStateAccessor.getValue(object));
+		return object instanceof Persistent persistent && persistent.getPersistenceState() == PersistenceState.HOLLOW;
 	}
 
 	public Class<?> getObjectClass() {
@@ -415,10 +409,6 @@ public class PersistentDescriptor implements ClassDescriptor {
 		}
 
 		return true;
-	}
-
-	public void setPersistenceStateAccessor(Accessor persistenceStateAccessor) {
-		this.persistenceStateAccessor = persistenceStateAccessor;
 	}
 
 	public void setEntity(ObjEntity entity) {
