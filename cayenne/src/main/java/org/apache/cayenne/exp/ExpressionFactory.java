@@ -78,7 +78,6 @@ import org.apache.cayenne.query.FluentSelect;
 
 import java.io.Reader;
 import java.io.StringReader;
-import java.lang.reflect.Constructor;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
@@ -100,105 +99,56 @@ public class ExpressionFactory {
 	 */
 	public static final char SPLIT_SEPARATOR = '|';
 
-	private static Constructor<? extends SimpleNode>[] typeLookup;
 	private static volatile int autoAliasId;
 
 	private static final int PARSE_BUFFER_MAX_SIZE = 4096;
 
-	static {
-		// make sure all types are small integers, then we can use them as indexes in lookup array
-		int[] allTypes = new int[] { Expression.AND, Expression.OR, Expression.NOT, Expression.EQUAL_TO,
-				Expression.NOT_EQUAL_TO, Expression.LESS_THAN, Expression.GREATER_THAN, Expression.LESS_THAN_EQUAL_TO,
-				Expression.GREATER_THAN_EQUAL_TO, Expression.BETWEEN, Expression.IN, Expression.LIKE,
-				Expression.LIKE_IGNORE_CASE, Expression.ADD, Expression.SUBTRACT, Expression.MULTIPLY,
-				Expression.DIVIDE, Expression.NEGATIVE, Expression.OBJ_PATH, Expression.DB_PATH, Expression.LIST,
-				Expression.NOT_BETWEEN, Expression.NOT_IN, Expression.NOT_LIKE, Expression.NOT_LIKE_IGNORE_CASE,
-				Expression.TRUE, Expression.FALSE, Expression.BITWISE_NOT, Expression.BITWISE_AND,
-				Expression.BITWISE_OR, Expression.BITWISE_XOR, Expression.BITWISE_LEFT_SHIFT,
-				Expression.BITWISE_RIGHT_SHIFT };
-
-		int max = 0;
-		for (int type : allTypes) {
-			// sanity check....
-			if (type > 500) {
-				throw new RuntimeException("Types values are too big: " + type);
-			} else if (type < 0) {
-				throw new RuntimeException("Types values are too small: " + type);
-			}
-			if (type > max) {
-				max = type;
-			}
-		}
-
-		// now we know that if types are used as indexes,
-		// they will fit in array "max + 1" long (though gaps are possible)
-		@SuppressWarnings("unchecked")
-		Constructor<? extends SimpleNode>[] lookupTable = (Constructor<? extends SimpleNode>[]) new Constructor[max + 1];
-		typeLookup = lookupTable;
-
-		try {
-			typeLookup[Expression.AND] = ASTAnd.class.getDeclaredConstructor();
-			typeLookup[Expression.OR] = ASTOr.class.getDeclaredConstructor();
-			typeLookup[Expression.BETWEEN] = ASTBetween.class.getDeclaredConstructor();
-			typeLookup[Expression.NOT_BETWEEN] = ASTNotBetween.class.getDeclaredConstructor();
-
-			// binary types
-			typeLookup[Expression.EQUAL_TO] = ASTEqual.class.getDeclaredConstructor();
-			typeLookup[Expression.NOT_EQUAL_TO] = ASTNotEqual.class.getDeclaredConstructor();
-			typeLookup[Expression.LESS_THAN] = ASTLess.class.getDeclaredConstructor();
-			typeLookup[Expression.GREATER_THAN] = ASTGreater.class.getDeclaredConstructor();
-			typeLookup[Expression.LESS_THAN_EQUAL_TO] = ASTLessOrEqual.class.getDeclaredConstructor();
-			typeLookup[Expression.GREATER_THAN_EQUAL_TO] = ASTGreaterOrEqual.class.getDeclaredConstructor();
-			typeLookup[Expression.IN] = ASTIn.class.getDeclaredConstructor();
-			typeLookup[Expression.NOT_IN] = ASTNotIn.class.getDeclaredConstructor();
-			typeLookup[Expression.LIKE] = ASTLike.class.getDeclaredConstructor();
-			typeLookup[Expression.LIKE_IGNORE_CASE] = ASTLikeIgnoreCase.class.getDeclaredConstructor();
-			typeLookup[Expression.NOT_LIKE] = ASTNotLike.class.getDeclaredConstructor();
-			typeLookup[Expression.NOT_LIKE_IGNORE_CASE] = ASTNotLikeIgnoreCase.class.getDeclaredConstructor();
-			typeLookup[Expression.ADD] = ASTAdd.class.getDeclaredConstructor();
-			typeLookup[Expression.SUBTRACT] = ASTSubtract.class.getDeclaredConstructor();
-			typeLookup[Expression.MULTIPLY] = ASTMultiply.class.getDeclaredConstructor();
-			typeLookup[Expression.DIVIDE] = ASTDivide.class.getDeclaredConstructor();
-
-			typeLookup[Expression.NOT] = ASTNot.class.getDeclaredConstructor();
-			typeLookup[Expression.NEGATIVE] = ASTNegate.class.getDeclaredConstructor();
-			typeLookup[Expression.OBJ_PATH] = ASTObjPath.class.getDeclaredConstructor();
-			typeLookup[Expression.DB_PATH] = ASTDbPath.class.getDeclaredConstructor();
-			typeLookup[Expression.LIST] = ASTList.class.getDeclaredConstructor();
-
-			typeLookup[Expression.TRUE] = ASTTrue.class.getDeclaredConstructor();
-			typeLookup[Expression.FALSE] = ASTFalse.class.getDeclaredConstructor();
-
-			typeLookup[Expression.BITWISE_NOT] = ASTBitwiseNot.class.getDeclaredConstructor();
-			typeLookup[Expression.BITWISE_OR] = ASTBitwiseOr.class.getDeclaredConstructor();
-			typeLookup[Expression.BITWISE_AND] = ASTBitwiseAnd.class.getDeclaredConstructor();
-			typeLookup[Expression.BITWISE_XOR] = ASTBitwiseXor.class.getDeclaredConstructor();
-			typeLookup[Expression.BITWISE_LEFT_SHIFT] = ASTBitwiseLeftShift.class.getDeclaredConstructor();
-			typeLookup[Expression.BITWISE_RIGHT_SHIFT] = ASTBitwiseRightShift.class.getDeclaredConstructor();
-		} catch (NoSuchMethodException ex) {
-			throw new ExpressionException("Wrong expression type found", ex);
-		}
-	}
-
 	/**
-	 * Creates a new expression for the type requested. If type is unknown,
-	 * ExpressionException is thrown.
+	 * Creates a new expression for the type requested. If type is unknown, xpressionException is thrown.
 	 */
 	public static Expression expressionOfType(int type) {
-		if (type < 0 || type >= typeLookup.length) {
-			throw new ExpressionException("Bad expression type: " + type);
-		}
+		return switch (type) {
+			case Expression.AND -> new ASTAnd();
+			case Expression.OR -> new ASTOr();
+			case Expression.BETWEEN -> new ASTBetween();
+			case Expression.NOT_BETWEEN -> new ASTNotBetween();
 
-		if (typeLookup[type] == null) {
-			throw new ExpressionException("Bad expression type: " + type);
-		}
+			// binary types
+			case Expression.EQUAL_TO -> new ASTEqual();
+			case Expression.NOT_EQUAL_TO -> new ASTNotEqual();
+			case Expression.LESS_THAN -> new ASTLess();
+			case Expression.GREATER_THAN -> new ASTGreater();
+			case Expression.LESS_THAN_EQUAL_TO -> new ASTLessOrEqual();
+			case Expression.GREATER_THAN_EQUAL_TO -> new ASTGreaterOrEqual();
+			case Expression.IN -> new ASTIn();
+			case Expression.NOT_IN -> new ASTNotIn();
+			case Expression.LIKE -> new ASTLike();
+			case Expression.LIKE_IGNORE_CASE -> new ASTLikeIgnoreCase();
+			case Expression.NOT_LIKE -> new ASTNotLike();
+			case Expression.NOT_LIKE_IGNORE_CASE -> new ASTNotLikeIgnoreCase();
+			case Expression.ADD -> new ASTAdd();
+			case Expression.SUBTRACT -> new ASTSubtract();
+			case Expression.MULTIPLY -> new ASTMultiply();
+			case Expression.DIVIDE -> new ASTDivide();
 
-		// expected this
-		try {
-			return typeLookup[type].newInstance();
-		} catch (Exception ex) {
-			throw new ExpressionException("Error creating expression", ex);
-		}
+			case Expression.NOT -> new ASTNot();
+			case Expression.NEGATIVE -> new ASTNegate();
+			case Expression.OBJ_PATH -> new ASTObjPath();
+			case Expression.DB_PATH -> new ASTDbPath();
+			case Expression.LIST -> new ASTList();
+
+			case Expression.TRUE -> new ASTTrue();
+			case Expression.FALSE -> new ASTFalse();
+
+			case Expression.BITWISE_NOT -> new ASTBitwiseNot();
+			case Expression.BITWISE_OR -> new ASTBitwiseOr();
+			case Expression.BITWISE_AND -> new ASTBitwiseAnd();
+			case Expression.BITWISE_XOR -> new ASTBitwiseXor();
+			case Expression.BITWISE_LEFT_SHIFT -> new ASTBitwiseLeftShift();
+			case Expression.BITWISE_RIGHT_SHIFT -> new ASTBitwiseRightShift();
+
+			default -> throw new ExpressionException("Bad expression type: " + type);
+		};
 	}
 
 	/**
