@@ -87,7 +87,7 @@ public class ToManyList<E> extends ToManyHolder<E> implements List<E> {
             synchronized (this) {
                 // now that we obtained the lock, check if another thread just resolved the list
                 if (isFault()) {
-                    objectList = resolveFromDB();
+                    objectList = resolveRelationship();
                 }
             }
         }

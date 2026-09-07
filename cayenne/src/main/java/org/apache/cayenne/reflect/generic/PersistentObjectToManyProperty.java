@@ -47,10 +47,12 @@ class PersistentObjectToManyProperty extends PersistentObjectBaseProperty implem
         this.fault = fault;
     }
 
+    @Override
     public ArcProperty getComplimentaryReverseArc() {
         return reverseName != null ? (ArcProperty) targetDescriptor.getProperty(reverseName) : null;
     }
 
+    @Override
     public ClassDescriptor getTargetDescriptor() {
         return targetDescriptor;
     }
@@ -69,10 +71,12 @@ class PersistentObjectToManyProperty extends PersistentObjectBaseProperty implem
         return relationship.getName();
     }
 
+    @Override
     public ObjRelationship getRelationship() {
         return relationship;
     }
 
+    @Override
     public void addTarget(Object source, Object target, boolean setReverse) throws PropertyException {
         try {
             toPersistent(source).addToManyTarget(getName(), toPersistent(target), setReverse);
@@ -81,6 +85,7 @@ class PersistentObjectToManyProperty extends PersistentObjectBaseProperty implem
         }
     }
 
+    @Override
     public void removeTarget(Object source, Object target, boolean setReverse) throws PropertyException {
         try {
             toPersistent(source).removeToManyTarget(getName(), toPersistent(target), setReverse);
@@ -96,8 +101,10 @@ class PersistentObjectToManyProperty extends PersistentObjectBaseProperty implem
         }
     }
 
+    @Override
     public boolean isFault(Object source) {
-        return readPropertyDirectly(source) instanceof Fault;
+        Object value = readPropertyDirectly(source);
+        return value instanceof Fault || value instanceof ToManyHolder<?> holder && holder.isFault();
     }
 
     @Override
@@ -105,6 +112,7 @@ class PersistentObjectToManyProperty extends PersistentObjectBaseProperty implem
         return visitor.visitToMany(this);
     }
 
+    @Override
     public void invalidate(Object object) {
         Object value = readPropertyDirectly(object);
         if (value instanceof Fault) {
@@ -116,10 +124,12 @@ class PersistentObjectToManyProperty extends PersistentObjectBaseProperty implem
         }
     }
 
+    @Override
     public void addTargetDirectly(Object source, Object target) throws PropertyException {
         addTarget(source, target, false);
     }
 
+    @Override
     public void removeTargetDirectly(Object source, Object target) throws PropertyException {
         removeTarget(source, target, false);
     }

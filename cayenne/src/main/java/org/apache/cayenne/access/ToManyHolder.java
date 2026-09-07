@@ -19,9 +19,9 @@
 
 package org.apache.cayenne.access;
 
+import org.apache.cayenne.ObjectContext;
 import org.apache.cayenne.PersistenceState;
 import org.apache.cayenne.Persistent;
-import org.apache.cayenne.query.RelationshipQuery;
 
 import java.io.Serializable;
 import java.util.ArrayList;
@@ -88,24 +88,21 @@ public abstract class ToManyHolder<E> implements Serializable {
     }
 
     /**
-     * Executes a query that returns related objects, merging in any local changes made while the relationship was
-     * unresolved. Subclasses invoke this method whenever they need to resolve a fault.
+     * Resolves related objects via the DataChannel stack of the owner's context, merging in any local changes made
+     * while the relationship was unresolved. Subclasses invoke this method whenever they need to resolve a fault.
      */
-    protected List<E> resolveFromDB() {
+    @SuppressWarnings("unchecked")
+    protected List<E> resolveRelationship() {
         // non-persistent objects shouldn't trigger a fetch
         if (isTransientParent()) {
             return new ArrayList<>();
         }
 
-        // refreshing query is used only for parent contexts (see CAY-2509)
-        boolean refresh = relationshipOwner.getObjectContext().getParent() instanceof DataDomain;
-        List<E> resolved = relationshipOwner.getObjectContext().performQuery(
-                new RelationshipQuery(relationshipOwner.getObjectId(), relationshipName, refresh));
-
-        // duplicating the list (see CAY-1194); happens only for nested contexts
-        if (resolved instanceof ToManyHolder) {
-            resolved = new ArrayList<>(resolved);
-        }
+        ObjectContext context = relationshipOwner.getObjectContext();
+        List<E> resolved = (List<E>) context.onResolveRelationship(
+                context,
+                relationshipOwner.getObjectId(),
+                relationshipName);
 
         mergeLocalChanges(resolved);
         return resolved;

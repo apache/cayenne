@@ -52,6 +52,7 @@ import org.apache.cayenne.query.ObjectIdQuery;
 import org.apache.cayenne.query.Query;
 import org.apache.cayenne.query.QueryMetadata;
 import org.apache.cayenne.query.Select;
+import org.apache.cayenne.reflect.ArcProperty;
 import org.apache.cayenne.reflect.AttributeProperty;
 import org.apache.cayenne.reflect.ClassDescriptor;
 import org.apache.cayenne.reflect.PropertyDescriptor;
@@ -728,7 +729,7 @@ public class DataContext implements ObjectContext {
                     + object.getClass().getName() + ", class is likely not mapped.");
         }
 
-        final Persistent persistent = (Persistent) object;
+        Persistent persistent = (Persistent) object;
 
         // sanity check - maybe already registered
         if (persistent.getObjectId() != null) {
@@ -758,20 +759,13 @@ public class DataContext implements ObjectContext {
             public boolean visitToMany(ToManyProperty property) {
                 property.injectValueHolder(persistent);
 
-                if (!property.isFault(persistent)) {
+                Object value = property.readProperty(persistent);
+                Collection<?> collection = value instanceof Map<?, ?> map ? map.values() : (Collection<?>) value;
 
-                    Object value = property.readProperty(persistent);
-                    @SuppressWarnings({"unchecked", "rawtypes"})
-                    Collection<Map.Entry<?, ?>> collection = (value instanceof Map)
-                            ? ((Map) value).entrySet()
-                            : (Collection<Map.Entry<?, ?>>) value;
-
-                    for (Object target : collection) {
-                        if (target instanceof Persistent targetDO) {
-                            // make sure it is registered
-                            registerNewObject(targetDO);
-                            getObjectStore().arcCreated(persistent.getObjectId(), targetDO.getObjectId(), new ArcId(property));
-                        }
+                for (Object target : collection) {
+                    if (target instanceof Persistent targetDO) {
+                        registerNewObject(targetDO);
+                        getObjectStore().arcCreated(persistent.getObjectId(), targetDO.getObjectId(), new ArcId(property));
                     }
                 }
                 return true;
@@ -887,6 +881,78 @@ public class DataContext implements ObjectContext {
         if (parent != null) {
             parent.onInvalidate(this, objectIds);
         }
+    }
+
+    /**
+     * An implementation of a {@link DataChannel} method that resolves a relationship from the objects already
+     * registered in this context, delegating to the parent channel on a miss. Not intended for direct use, read
+     * the relationship property of an object instead.
+     *
+     * @since 5.0
+     */
+    @Override
+    public List<Persistent> onResolveRelationship(ObjectContext originatingContext, ObjectId sourceId, String relationshipName) {
+
+        List<Persistent> related = resolvedRelationship(sourceId, relationshipName, originatingContext != this);
+        if (related == null) {
+            related = getParent().onResolveRelationship(this, sourceId, relationshipName);
+        }
+
+        if (originatingContext == this || related.isEmpty()) {
+            return related;
+        }
+
+        // transfer the objects to the child context that originated the request
+        ShallowMergeOperation merger = new ShallowMergeOperation(originatingContext);
+        List<Persistent> childObjects = new ArrayList<>(related.size());
+        for (Persistent object : related) {
+            childObjects.add(merger.merge(object));
+        }
+        return childObjects;
+    }
+
+    @SuppressWarnings("unchecked")
+    private List<Persistent> resolvedRelationship(ObjectId sourceId, String relationshipName, boolean resolveToMany) {
+
+        Persistent source = (Persistent) getGraphManager().getNode(sourceId);
+        if (source == null) {
+            return null;
+        }
+
+        ClassDescriptor descriptor = getEntityResolver().getClassDescriptor(sourceId.getEntityName());
+        if (descriptor.isFault(source)) {
+            return null;
+        }
+
+        ArcProperty arc = (ArcProperty) descriptor.getProperty(relationshipName);
+        if (arc == null) {
+            throw new CayenneRuntimeException("No relationship named %s found in entity %s; object id: %s",
+                    relationshipName, sourceId.getEntityName(), sourceId);
+        }
+
+        Object related = arc.readPropertyDirectly(source);
+        if (arc.isFault(source)) {
+
+            // a NEW object is unknown to the parent channels, so its unresolved relationship must be empty
+            // (CAY-1183)
+            if (source.getPersistenceState() == PersistenceState.NEW) {
+                return new ArrayList<>(1);
+            }
+
+            if (!resolveToMany || !(related instanceof ToManyHolder)) {
+                return null;
+            }
+        }
+
+        // copying a to-many holder iterates it, resolving it if it is still a fault
+        return switch (related) {
+            case null -> new ArrayList<>(1);
+            // to-many List or Set
+            case Collection<?> toMany -> new ArrayList<>((Collection<Persistent>) toMany);
+            case Map<?, ?> toManyMap -> new ArrayList<>((Collection<Persistent>) toManyMap.values());
+            // to-one
+            default -> new ArrayList<>(List.of((Persistent) related));
+        };
     }
 
     @Override

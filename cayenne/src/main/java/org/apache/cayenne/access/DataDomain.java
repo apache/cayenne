@@ -27,6 +27,7 @@ import org.apache.cayenne.DataChannelSyncFilter;
 import org.apache.cayenne.DataChannelSyncFilterChain;
 import org.apache.cayenne.ObjectContext;
 import org.apache.cayenne.ObjectId;
+import org.apache.cayenne.Persistent;
 import org.apache.cayenne.QueryResponse;
 import org.apache.cayenne.access.flush.DataDomainFlushAction;
 import org.apache.cayenne.access.flush.DataDomainFlushActionFactory;
@@ -380,6 +381,17 @@ public class DataDomain implements DataChannel {
             snapshotCache.processSnapshotChanges(context.getObjectStore(), Collections.emptyMap(),
                     Collections.emptyList(), objectIds, Collections.emptyList());
         }
+    }
+
+    /**
+     * Resolves a relationship from the snapshot cache, or from the database if the cache lookup fails.
+     *
+     * @since 5.0
+     */
+    @Override
+    public List<Persistent> onResolveRelationship(ObjectContext originatingContext, ObjectId sourceId, String relationshipName) {
+        checkStopped();
+        return new DataDomainRelationshipAction(this, originatingContext, sourceId, relationshipName).execute();
     }
 
     QueryResponse onQueryNoFilters(ObjectContext originatingContext, Query query, boolean iteratedResult) {

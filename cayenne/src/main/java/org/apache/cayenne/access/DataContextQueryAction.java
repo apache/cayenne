@@ -33,9 +33,6 @@ import org.apache.cayenne.query.ObjectIdQuery;
 import org.apache.cayenne.query.Query;
 import org.apache.cayenne.query.QueryCacheStrategy;
 import org.apache.cayenne.query.QueryMetadata;
-import org.apache.cayenne.query.RelationshipQuery;
-import org.apache.cayenne.reflect.ArcProperty;
-import org.apache.cayenne.reflect.ClassDescriptor;
 import org.apache.cayenne.util.GenericResponse;
 import org.apache.cayenne.util.ListResponse;
 import org.apache.cayenne.util.ShallowMergeOperation;
@@ -43,9 +40,7 @@ import org.apache.cayenne.util.ShallowMergeOperation;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
-import java.util.Map;
 import java.util.Objects;
-import java.util.Set;
 
 class DataContextQueryAction {
 
@@ -87,10 +82,8 @@ class DataContextQueryAction {
     public QueryResponse execute() {
         if (interceptIteratedQuery() != DONE) {
             if (interceptOIDQuery() != DONE) {
-                if (interceptRelationshipQuery() != DONE) {
-                    if (interceptLocalCache() != DONE) {
-                        executePostCache();
-                    }
+                if (interceptLocalCache() != DONE) {
+                    executePostCache();
                 }
             }
         }
@@ -246,83 +239,6 @@ class DataContextQueryAction {
         }
 
         return null;
-    }
-
-    protected boolean interceptRelationshipQuery() {
-
-        if (query instanceof RelationshipQuery relationshipQuery) {
-            if (!relationshipQuery.isRefreshing()) {
-
-                // don't intercept to-many relationships if fetch is done to the same
-                // context as the root context of this action - this will result in an
-                // infinite loop.
-
-                if (targetContext == null
-                        && relationshipQuery.getRelationship(
-                        actingContext.getEntityResolver()).isToMany()) {
-                    return !DONE;
-                }
-
-                ObjectId id = relationshipQuery.getObjectId();
-                Object object = actingContext.getGraphManager().getNode(id);
-
-                if (object != null) {
-
-                    ClassDescriptor descriptor = actingContext
-                            .getEntityResolver()
-                            .getClassDescriptor(id.getEntityName());
-
-                    if (!descriptor.isFault(object)) {
-
-                        ArcProperty property = (ArcProperty) descriptor
-                                .getProperty(relationshipQuery.getRelationshipName());
-
-                        if (!property.isFault(object)) {
-
-                            Object related = property.readPropertyDirectly(object);
-
-                            // null to-one
-                            List<?> result = switch (related) {
-                                case null -> new ArrayList<>(1);
-
-                                // to-many List
-                                case List list -> list;
-
-                                // to-many Set
-                                case Set set -> new ArrayList<>(set);
-
-                                // to-many Map
-                                case Map map -> new ArrayList<>(map.values());
-
-                                // non-null to-one
-                                // TODO: any risks of returning an immutable list here?
-                                default -> Collections.singletonList(related);
-                            };
-
-                            this.response = new ListResponse(result);
-                            return DONE;
-
-                        }
-
-                        // Workaround for CAY-1183. If a Relationship query is being sent
-                        // from child context, we assure that local object is not NEW and
-                        // relationship - unresolved (this way exception will occur). This
-                        // helps when faulting objects that were committed to parent
-                        // context (this), but not to database. Checking type of context's
-                        // channel is the only way to ensure that we are on the top level
-                        // of context hierarchy (there might be more than one-level-deep
-                        // nested contexts).
-                        if (((Persistent) object).getPersistenceState() == PersistenceState.NEW
-                                && !(actingContext.getParent() instanceof ObjectContext)) {
-                            this.response = new ListResponse();
-                            return DONE;
-                        }
-                    }
-                }
-            }
-        }
-
-        return !DONE;
     }
 
     protected boolean interceptPaginatedQuery() {

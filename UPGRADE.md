@@ -109,6 +109,20 @@ Expression caseWhenExp = caseWhen(
   `ObjectContext`. To also drop shared state, call `runtime.getDataDomain().getQueryCache().clear()` and
   `runtime.getDataDomain().getSharedSnapshotCache().clear()`.
 
+*  Per [CAY-3016](https://issues.apache.org/jira/browse/CAY-3016) `org.apache.cayenne.query.RelationshipQuery` was removed. It was an internal mechanism for 
+   resolving relationship faults. If you were running it explicitly, use `ObjectSelect` matching on the reverse 
+   relationship instead:
+
+  ```java
+  // before
+  // List<Painting> paintings = context.performQuery(new RelationshipQuery(artist.getObjectId(), "paintingArray"));
+
+  // after
+  List<Painting> paintings = ObjectSelect.query(Painting.class)
+          .where(Painting.TO_ARTIST.eq(artist))
+          .select(context);
+  ```
+
 *  The `org.apache.cayenne.query.ParameterizedQuery` interface was removed, together with the `createQuery(Map)`
   methods of `SQLTemplate`, `ProcedureQuery` and `ObjectSelect` that implemented it. Applying parameters to a mapped
   query is now the job of the query descriptor - override `QueryDescriptor.buildQuery(Map)` if you have a custom

@@ -99,6 +99,12 @@ public class MockDataChannel implements DataChannel {
         requestObjects.add(objectIds);
     }
 
+    public List<Persistent> onResolveRelationship(ObjectContext originatingContext, ObjectId sourceId,
+                                                  String relationshipName) {
+        requestObjects.add(sourceId);
+        return (List<Persistent>) response.firstList();
+    }
+
     public EntityResolver getEntityResolver() {
         return resolver;
     }

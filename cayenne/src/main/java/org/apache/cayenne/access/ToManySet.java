@@ -81,7 +81,7 @@ public class ToManySet<E> extends ToManyHolder<E> implements Set<E> {
             synchronized (this) {
                 // now that we obtained the lock, check if another thread just resolved the set
                 if (isFault()) {
-                    objectSet = new HashSet<>(resolveFromDB());
+                    objectSet = new HashSet<>(resolveRelationship());
                 }
             }
         }

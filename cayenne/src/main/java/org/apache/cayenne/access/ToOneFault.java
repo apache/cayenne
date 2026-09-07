@@ -25,7 +25,6 @@ import org.apache.cayenne.Fault;
 import org.apache.cayenne.ObjectContext;
 import org.apache.cayenne.PersistenceState;
 import org.apache.cayenne.Persistent;
-import org.apache.cayenne.query.RelationshipQuery;
 
 /**
  * @since 3.0
@@ -73,17 +72,16 @@ public class ToOneFault extends Fault {
     }
 
     Object doResolveFault(Persistent sourceObject, String relationshipName) {
-        RelationshipQuery query = new RelationshipQuery(
+        ObjectContext context = sourceObject.getObjectContext();
+        List<Persistent> objects = context.onResolveRelationship(
+                context,
                 sourceObject.getObjectId(),
-                relationshipName,
-                false);
-
-        List objects = sourceObject.getObjectContext().performQuery(query);
+                relationshipName);
 
         if (objects.isEmpty()) {
             return null;
         } else if (objects.size() == 1) {
-            return objects.get(0);
+            return objects.getFirst();
         } else {
             throw new CayenneRuntimeException("Error resolving to-one fault. "
                     + "More than one object found. Source Id: %s, relationship: %s"

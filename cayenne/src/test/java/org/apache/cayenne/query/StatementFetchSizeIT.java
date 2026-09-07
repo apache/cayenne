@@ -18,7 +18,6 @@
  ****************************************************************/
 package org.apache.cayenne.query;
 
-import org.apache.cayenne.ObjectId;
 import org.apache.cayenne.testdo.testmap.Artist;
 import org.apache.cayenne.unit.CayenneProjects;
 import org.apache.cayenne.unit.CayenneTestsEnv;
@@ -81,20 +80,5 @@ public class StatementFetchSizeIT {
                 .getMetaData(env.context().getEntityResolver())
                 .getStatementFetchSize());
         env.context().performQuery(ejbql);
-    }
-
-    @Test
-    public void relationshipQuery() {
-        ObjectId id = ObjectId.of("Artist", Artist.ARTIST_ID_PK_COLUMN, 1);
-        RelationshipQuery relationshipQuery = new RelationshipQuery(
-                id,
-                Artist.PAINTING_ARRAY.getName(),
-                true);
-        relationshipQuery.setStatementFetchSize(10);
-
-        assertEquals(10, relationshipQuery
-                .getMetaData(env.context().getEntityResolver())
-                .getStatementFetchSize());
-        env.context().performQuery(relationshipQuery);
     }
 }

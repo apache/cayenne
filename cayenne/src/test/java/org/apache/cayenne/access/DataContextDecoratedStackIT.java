@@ -22,6 +22,7 @@ import org.apache.cayenne.Cayenne;
 import org.apache.cayenne.DataChannel;
 import org.apache.cayenne.ObjectContext;
 import org.apache.cayenne.ObjectId;
+import org.apache.cayenne.Persistent;
 import org.apache.cayenne.QueryResponse;
 import org.apache.cayenne.dba.frontbase.FrontBaseAdapter;
 import org.apache.cayenne.dba.mysql.MySQLAdapter;
@@ -37,6 +38,7 @@ import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.RegisterExtension;
 
 import java.util.Collection;
+import java.util.List;
 import java.util.Map;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
@@ -115,6 +117,11 @@ public class DataContextDecoratedStackIT {
 
         public void onInvalidate(ObjectContext originatingContext, Collection<ObjectId> objectIds) {
             channel.onInvalidate(originatingContext, objectIds);
+        }
+
+        public List<Persistent> onResolveRelationship(ObjectContext originatingContext, ObjectId sourceId,
+                                                      String relationshipName) {
+            return channel.onResolveRelationship(originatingContext, sourceId, relationshipName);
         }
 
         public DataChannel getParent() {

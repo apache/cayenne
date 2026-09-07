@@ -18,12 +18,12 @@
  ****************************************************************/
 package org.apache.cayenne.access;
 import org.apache.cayenne.ObjectId;
+import org.apache.cayenne.Persistent;
 import org.apache.cayenne.map.DbAttribute;
 import org.apache.cayenne.map.DbEntity;
 import org.apache.cayenne.query.EJBQLQuery;
 import org.apache.cayenne.query.ObjectIdQuery;
 import org.apache.cayenne.query.ObjectSelect;
-import org.apache.cayenne.query.RelationshipQuery;
 import org.apache.cayenne.query.UpdateBatchQuery;
 import org.apache.cayenne.testdo.quotemap.QuoteAdress;
 import org.apache.cayenne.testdo.quotemap.Quote_Person;
@@ -151,8 +151,8 @@ public class QuotedIdentifiersIT {
         Quote_Person quote_Person2 = ObjectSelect.query(Quote_Person.class)
                 .where(Quote_Person.NAME.eq("Name")).selectOne(env.context());
 
-        RelationshipQuery relationshipQuery = new RelationshipQuery(quote_Person2.getObjectId(), "address_Rel");
-        List objects10 = env.context().performQuery(relationshipQuery);
+        List<Persistent> objects10 = env.context()
+                .onResolveRelationship(env.context(), quote_Person2.getObjectId(), "address_Rel");
         assertEquals(1, objects10.size());
     }
 

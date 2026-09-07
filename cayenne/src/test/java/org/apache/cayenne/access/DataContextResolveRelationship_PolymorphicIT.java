@@ -28,7 +28,7 @@ import org.junit.jupiter.api.Test;
 
 import static org.junit.jupiter.api.Assertions.assertInstanceOf;
 
-public class DataContextRelationshipQuery_PolymorphicIT extends PeopleTestBase {
+public class DataContextResolveRelationship_PolymorphicIT extends PeopleTestBase {
 
     private DataContext context1;
     private DataContext context2;

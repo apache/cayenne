@@ -34,12 +34,10 @@ import org.apache.cayenne.cache.QueryCacheEntryFactory;
 import org.apache.cayenne.di.AdhocObjectFactory;
 import org.apache.cayenne.exp.path.CayennePath;
 import org.apache.cayenne.map.DataMap;
-import org.apache.cayenne.map.DbEntity;
-import org.apache.cayenne.map.DbRelationship;
 import org.apache.cayenne.map.Embeddable;
 import org.apache.cayenne.map.EntityInheritanceTree;
+import org.apache.cayenne.map.EntityResolver;
 import org.apache.cayenne.map.LifecycleEvent;
-import org.apache.cayenne.map.ObjRelationship;
 import org.apache.cayenne.query.EmbeddableResultSegment;
 import org.apache.cayenne.query.EntityResultSegment;
 import org.apache.cayenne.query.ObjectIdQuery;
@@ -50,7 +48,6 @@ import org.apache.cayenne.query.QueryCacheStrategy;
 import org.apache.cayenne.query.QueryMetadata;
 import org.apache.cayenne.query.QueryMetadataProxy;
 import org.apache.cayenne.query.QueryRouter;
-import org.apache.cayenne.query.RelationshipQuery;
 import org.apache.cayenne.reflect.ClassDescriptor;
 import org.apache.cayenne.reflect.DefaultConstructor;
 import org.apache.cayenne.reflect.LifecycleCallbackRegistry;
@@ -139,10 +136,8 @@ class DataDomainQueryAction implements QueryRouter, OperationObserver {
         // run chain...
         if (interceptIteratedQuery() != DONE) {
             if (interceptOIDQuery() != DONE) {
-                if (interceptRelationshipQuery() != DONE) {
-                    if (interceptSharedCache() != DONE) {
-                        runQueryInTransaction();
-                    }
+                if (interceptSharedCache() != DONE) {
+                    runQueryInTransaction();
                 }
             }
         }
@@ -232,7 +227,7 @@ class DataDomainQueryAction implements QueryRouter, OperationObserver {
             DataRow row = null;
 
             if (cache != null && !oidQuery.isFetchMandatory()) {
-                row = polymorphicRowFromCache(oid);
+                row = polymorphicRowFromCache(cache, domain.getEntityResolver(), oid);
             }
 
             // refresh is forced or not found in cache
@@ -252,21 +247,25 @@ class DataDomainQueryAction implements QueryRouter, OperationObserver {
         return !DONE;
     }
 
-    private DataRow polymorphicRowFromCache(ObjectId superOid) {
+    /**
+     * Looks up a cached snapshot for the given id, checking the ids of the entity subclasses if the entity has any.
+     */
+    static DataRow polymorphicRowFromCache(DataRowStore cache, EntityResolver resolver, ObjectId superOid) {
         DataRow row = cache.getCachedSnapshot(superOid);
         if (row != null) {
             return row;
         }
 
-        EntityInheritanceTree inheritanceTree = domain.getEntityResolver().getInheritanceTree(superOid.getEntityName());
+        EntityInheritanceTree inheritanceTree = resolver.getInheritanceTree(superOid.getEntityName());
         if (!inheritanceTree.getChildren().isEmpty()) {
-            row = polymorphicRowFromCache(inheritanceTree, superOid);
+            row = polymorphicRowFromCache(cache, inheritanceTree, superOid);
         }
 
         return row;
     }
 
-    private DataRow polymorphicRowFromCache(EntityInheritanceTree superNode, ObjectId superOid) {
+    private static DataRow polymorphicRowFromCache(DataRowStore cache, EntityInheritanceTree superNode,
+                                                   ObjectId superOid) {
 
         for (EntityInheritanceTree child : superNode.getChildren()) {
             ObjectId id = ObjectId.of(child.getEntity().getName(), superOid);
@@ -275,80 +274,13 @@ class DataDomainQueryAction implements QueryRouter, OperationObserver {
                 return row;
             }
 
-            row = polymorphicRowFromCache(child, superOid);
+            row = polymorphicRowFromCache(cache, child, superOid);
             if (row != null) {
                 return row;
             }
         }
 
         return null;
-    }
-
-    private boolean interceptRelationshipQuery() {
-
-        if (query instanceof RelationshipQuery relationshipQuery) {
-
-            if (relationshipQuery.isRefreshing()) {
-                return !DONE;
-            }
-
-            ObjRelationship relationship = relationshipQuery.getRelationship(domain.getEntityResolver());
-
-            // check if we can derive target PK from FK...
-            if (relationship.isSourceIndependentFromTargetChange()) {
-                return !DONE;
-            }
-
-            // we can assume that there is one and only one DbRelationship as
-            // we previously checked that "!isSourceIndependentFromTargetChange"
-            DbRelationship dbRelationship = relationship.getDbRelationships().getFirst();
-
-            // FK pointing to a unique field that is a 'fake' PK (CAY-1755)...
-            // It is not sufficient to generate target ObjectId.
-            DbEntity targetEntity = dbRelationship.getTargetEntity();
-            if (dbRelationship.getJoins().size() < targetEntity.getPrimaryKeys().size()) {
-                return !DONE;
-            }
-
-            if (cache == null) {
-                return !DONE;
-            }
-
-            DataRow sourceRow = cache.getCachedSnapshot(relationshipQuery.getObjectId());
-            if (sourceRow == null) {
-                return !DONE;
-            }
-
-            ObjectId targetId = sourceRow.createTargetObjectId(relationship.getTargetEntityName(), dbRelationship);
-
-            // null id means that FK is null...
-            if (targetId == null) {
-                this.response = new GenericResponse(Collections.emptyList());
-                return DONE;
-            }
-
-            // target id resolution (unlike source) should be polymorphic
-            DataRow targetRow = polymorphicRowFromCache(targetId);
-
-            if (targetRow != null) {
-                this.response = new GenericResponse(Collections.singletonList(targetRow));
-                return DONE;
-            }
-
-            // check whether a non-null FK is enough to assume non-null target, and if so, create a fault
-            if (context != null && relationship.isSourceDefiningTargetPrecenseAndType(domain.getEntityResolver())) {
-
-                // prevent passing partial snapshots to ObjectResolver per CAY-724.
-                // Create a hollow object right here and skip object conversion downstream
-                this.noObjectConversion = true;
-                Object object = context.findOrCreateObject(targetId);
-
-                this.response = new GenericResponse(Collections.singletonList(object));
-                return DONE;
-            }
-        }
-
-        return !DONE;
     }
 
     /*

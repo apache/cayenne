@@ -26,6 +26,7 @@ import org.apache.cayenne.map.EntityResolver;
 import org.apache.cayenne.query.Query;
 
 import java.util.Collection;
+import java.util.List;
 
 /**
  * DataChannel is an abstraction used by ObjectContexts to obtain mapping metadata and
@@ -113,6 +114,19 @@ public interface DataChannel {
      * @since 5.0
      */
     void onInvalidate(ObjectContext originatingContext, Collection<ObjectId> objectIds);
+
+    /**
+     * Resolves objects related to a given object via a mapped relationship, returning them registered with the
+     * originating context.
+     *
+     * @param originatingContext an ObjectContext that originated the request and that the returned objects belong to.
+     * @param sourceId           id of the object on the source side of the relationship.
+     * @param relationshipName   name of the relationship to resolve.
+     * @return related objects registered with the originating context. An empty list means that a to-one target is
+     * null, or a to-many relationship has no matching objects.
+     * @since 5.0
+     */
+    List<Persistent> onResolveRelationship(ObjectContext originatingContext, ObjectId sourceId, String relationshipName);
 
     /**
      * Processes synchronization request from a child ObjectContext, returning a GraphDiff

@@ -85,7 +85,7 @@ class ToManyMap<K, V> extends ToManyHolder<V> implements Map<K, V> {
             synchronized (this) {
                 // now that we obtained the lock, check if another thread just resolved the map
                 if (isFault()) {
-                    objectMap = indexCollection(resolveFromDB());
+                    objectMap = indexCollection(resolveRelationship());
                 }
             }
         }
