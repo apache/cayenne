@@ -22,12 +22,12 @@ package org.apache.cayenne.access;
 import org.apache.cayenne.DataRow;
 import org.apache.cayenne.map.DbEntity;
 import org.apache.cayenne.query.Query;
+import org.apache.cayenne.query.CapsStrategy;
 import org.apache.cayenne.query.SQLTemplate;
 import org.apache.cayenne.test.jdbc.TableHelper;
 import org.apache.cayenne.unit.CayenneProjects;
 import org.apache.cayenne.unit.CayenneTestsEnv;
 import org.junit.jupiter.api.extension.RegisterExtension;
-import org.apache.cayenne.unit.util.SQLTemplateCustomizer;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
@@ -46,7 +46,6 @@ public class DataNodeQueriesIT {
     static final CayenneTestsEnv env = CayenneTestsEnv.forProject(CayenneProjects.TESTMAP_PROJECT);
 
     protected DataNode node;
-    protected SQLTemplateCustomizer sqlTemplateCustomizer;
 
     protected TableHelper tArtist;
 
@@ -54,7 +53,6 @@ public class DataNodeQueriesIT {
     @BeforeEach
     public void setUp() throws Exception {
         node = env.dataNode();
-        sqlTemplateCustomizer = env.sqlTemplateCustomizer();
         tArtist = env.table("ARTIST", "ARTIST_ID", "ARTIST_NAME");
     }
 
@@ -128,7 +126,7 @@ public class DataNodeQueriesIT {
 
         String template = "SELECT * FROM ARTIST ORDER BY ARTIST_ID";
         SQLTemplate query = new SQLTemplate(Object.class, template);
-        sqlTemplateCustomizer.updateSQLTemplate(query);
+        query.setColumnNamesCapitalization(CapsStrategy.UPPER);
 
         MockOperationObserver observer = new MockOperationObserver();
         node.performQueries(Collections.singletonList((Query) query), observer);

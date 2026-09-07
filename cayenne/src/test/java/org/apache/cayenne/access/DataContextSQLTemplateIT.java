@@ -34,7 +34,6 @@ import org.apache.cayenne.testdo.testmap.Artist;
 import org.apache.cayenne.testdo.testmap.Painting;
 import org.apache.cayenne.unit.CayenneTestsEnv;
 import org.apache.cayenne.unit.CayenneProjects;
-import org.apache.cayenne.unit.util.SQLTemplateCustomizer;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.RegisterExtension;
@@ -51,7 +50,6 @@ public class DataContextSQLTemplateIT {
 	static final CayenneTestsEnv env = CayenneTestsEnv.forProject(CayenneProjects.TESTMAP_PROJECT);
 
 	protected DataContext context;
-	protected SQLTemplateCustomizer sqlTemplateCustomizer;
 
 	protected TableHelper tPainting;
 	protected TableHelper tArtist;
@@ -60,7 +58,6 @@ public class DataContextSQLTemplateIT {
 	@BeforeEach
 	public void setUp() throws Exception {
 		context = env.context();
-		sqlTemplateCustomizer = env.sqlTemplateCustomizer();
 		tArtist = env.table("ARTIST", "ARTIST_ID", "ARTIST_NAME");
 
 		tPainting = env.table("PAINTING").setColumns("PAINTING_ID", "PAINTING_TITLE", "ARTIST_ID", "ESTIMATED_PRICE").setColumnTypes(
@@ -232,7 +229,7 @@ public class DataContextSQLTemplateIT {
 		String template = "SELECT * FROM ARTIST ORDER BY ARTIST_ID";
 		SQLTemplate query = new SQLTemplate(Artist.class, template);
 
-		sqlTemplateCustomizer.updateSQLTemplate(query);
+		query.setColumnNamesCapitalization(CapsStrategy.UPPER);
 
 		query.setFetchingDataRows(true);
 
@@ -250,7 +247,8 @@ public class DataContextSQLTemplateIT {
 		createFourArtists();
 
 		String template = "SELECT * FROM ARTIST ORDER BY ARTIST_ID";
-		SQLTemplate query = sqlTemplateCustomizer.createSQLTemplate(Artist.class, template);
+		SQLTemplate query = new SQLTemplate(Artist.class, template);
+		query.setColumnNamesCapitalization(CapsStrategy.UPPER);
 
 		query.setFetchingDataRows(false);
 
@@ -424,7 +422,8 @@ public class DataContextSQLTemplateIT {
 		// sanity check
 		assertTrue(fetchLimit < 4);
 		String template = "SELECT * FROM ARTIST ORDER BY ARTIST_ID";
-		SQLTemplate query = sqlTemplateCustomizer.createSQLTemplate(Artist.class, template);
+		SQLTemplate query = new SQLTemplate(Artist.class, template);
+		query.setColumnNamesCapitalization(CapsStrategy.UPPER);
 		query.setFetchLimit(fetchLimit);
 
 		List<?> objects = context.performQuery(query);
@@ -441,7 +440,8 @@ public class DataContextSQLTemplateIT {
 		// sanity check
 		assertTrue(fetchOffset < 4);
 		String template = "SELECT * FROM ARTIST ORDER BY ARTIST_ID";
-		SQLTemplate query = sqlTemplateCustomizer.createSQLTemplate(Artist.class, template);
+		SQLTemplate query = new SQLTemplate(Artist.class, template);
+		query.setColumnNamesCapitalization(CapsStrategy.UPPER);
 		query.setFetchOffset(fetchOffset);
 
 		List<?> objects = context.performQuery(query);
@@ -454,7 +454,8 @@ public class DataContextSQLTemplateIT {
 		createFourArtists();
 
 		String template = "SELECT * FROM ARTIST ORDER BY ARTIST_ID";
-		SQLTemplate query = sqlTemplateCustomizer.createSQLTemplate(Artist.class, template);
+		SQLTemplate query = new SQLTemplate(Artist.class, template);
+		query.setColumnNamesCapitalization(CapsStrategy.UPPER);
 		query.setFetchOffset(1);
 		query.setFetchLimit(2);
 
@@ -473,7 +474,8 @@ public class DataContextSQLTemplateIT {
 		assertTrue(pageSize < 4);
 
 		String template = "SELECT * FROM ARTIST ORDER BY ARTIST_ID";
-		SQLTemplate query = sqlTemplateCustomizer.createSQLTemplate(Artist.class, template);
+		SQLTemplate query = new SQLTemplate(Artist.class, template);
+		query.setColumnNamesCapitalization(CapsStrategy.UPPER);
 
 		query.setPageSize(pageSize);
 
@@ -505,7 +507,8 @@ public class DataContextSQLTemplateIT {
 
 		// the PK is the SECOND result column - exercises the paginated id reader's column indexing
 		String template = "SELECT ARTIST_NAME, ARTIST_ID FROM ARTIST ORDER BY ARTIST_ID";
-		SQLTemplate query = sqlTemplateCustomizer.createSQLTemplate(Artist.class, template);
+		SQLTemplate query = new SQLTemplate(Artist.class, template);
+		query.setColumnNamesCapitalization(CapsStrategy.UPPER);
 
 		query.setPageSize(pageSize);
 
@@ -572,7 +575,8 @@ public class DataContextSQLTemplateIT {
 
 		// see CAY-726 for details
 		String template = "SELECT #result('count(*)' 'int' 'X')" + System.getProperty("line.separator") + "FROM ARTIST";
-		SQLTemplate query = sqlTemplateCustomizer.createSQLTemplate(Artist.class, template);
+		SQLTemplate query = new SQLTemplate(Artist.class, template);
+		query.setColumnNamesCapitalization(CapsStrategy.UPPER);
 		query.setFetchingDataRows(true);
 
 		List<?> result = context.performQuery(query);

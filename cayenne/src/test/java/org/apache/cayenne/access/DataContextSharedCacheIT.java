@@ -37,7 +37,6 @@ import org.apache.cayenne.testdo.testmap.Painting;
 import org.apache.cayenne.unit.CayenneProjects;
 import org.apache.cayenne.unit.CayenneTestsEnv;
 import org.junit.jupiter.api.extension.RegisterExtension;
-import org.apache.cayenne.unit.util.SQLTemplateCustomizer;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
@@ -55,7 +54,6 @@ public class DataContextSharedCacheIT {
 
     private DataContext context;
     private DataContext context1;
-    private SQLTemplateCustomizer sqlTemplateCustomizer;
 
     private Artist artist;
 
@@ -64,7 +62,6 @@ public class DataContextSharedCacheIT {
     public void setUp() throws Exception {
         context = env.context();
         context1 = (DataContext) env.runtime().newContext();
-        sqlTemplateCustomizer = env.sqlTemplateCustomizer();
         // prepare a single artist record
         artist = (Artist) context.newObject("Artist");
         artist.setArtistName("version1");
@@ -82,10 +79,9 @@ public class DataContextSharedCacheIT {
         final String newName = "version2";
 
         // update artist using raw SQL
-        SQLTemplate query = sqlTemplateCustomizer.createSQLTemplate(
-                Artist.class,
-                "UPDATE ARTIST SET ARTIST_NAME = #bind($newName) "
-                        + "WHERE ARTIST_NAME = #bind($oldName)");
+        // RTRIM: on Oracle a CHAR column compared with a VARCHAR bind is not blank-padded
+        SQLTemplate query = new SQLTemplate(Artist.class,
+                "UPDATE ARTIST SET ARTIST_NAME = #bind($newName) WHERE RTRIM(ARTIST_NAME) = #bind($oldName)");
 
         Map<String, Object> map = new HashMap<>(3);
         map.put("newName", newName);
@@ -520,10 +516,9 @@ public class DataContextSharedCacheIT {
         assertEquals(originalName, oldSnapshot.get("ARTIST_NAME"));
 
         // update artist using raw SQL
-        SQLTemplate update = sqlTemplateCustomizer
-                .createSQLTemplate(
-                        Artist.class,
-                        "UPDATE ARTIST SET ARTIST_NAME = #bind($newName) WHERE ARTIST_NAME = #bind($oldName)");
+        // RTRIM: on Oracle a CHAR column compared with a VARCHAR bind is not blank-padded
+        SQLTemplate update = new SQLTemplate(Artist.class,
+                "UPDATE ARTIST SET ARTIST_NAME = #bind($newName) WHERE RTRIM(ARTIST_NAME) = #bind($oldName)");
         Map<String, Object> map = new HashMap<>(3);
         map.put("newName", newName);
         map.put("oldName", originalName);

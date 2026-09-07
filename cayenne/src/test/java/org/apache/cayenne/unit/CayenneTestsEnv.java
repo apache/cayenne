@@ -41,7 +41,6 @@ import org.apache.cayenne.unit.datasource.DataSourceConfigLoader;
 import org.apache.cayenne.unit.dba.TestDbAdapter;
 import org.apache.cayenne.unit.telemetry.TelemetricDataNodeFactory;
 import org.apache.cayenne.unit.telemetry.TestTelemetry;
-import org.apache.cayenne.unit.util.SQLTemplateCustomizer;
 import org.junit.jupiter.api.extension.AfterEachCallback;
 import org.junit.jupiter.api.extension.BeforeEachCallback;
 import org.junit.jupiter.api.extension.ExtensionContext;
@@ -204,10 +203,6 @@ public class CayenneTestsEnv implements BeforeEachCallback, AfterEachCallback {
 
     public DbCleaner dbCleaner() {
         return scope.dbCleaner();
-    }
-
-    public SQLTemplateCustomizer sqlTemplateCustomizer() {
-        return SQLTemplateCustomizer.of(dataNode().getAdapter());
     }
 
     private record TestScope(

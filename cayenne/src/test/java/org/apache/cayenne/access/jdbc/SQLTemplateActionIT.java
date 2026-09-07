@@ -33,7 +33,6 @@ import org.apache.cayenne.testdo.testmap.Artist;
 import org.apache.cayenne.unit.CayenneTestsEnv;
 import org.apache.cayenne.unit.dba.TestDbAdapter;
 import org.apache.cayenne.unit.CayenneProjects;
-import org.apache.cayenne.unit.util.SQLTemplateCustomizer;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.RegisterExtension;
@@ -56,7 +55,6 @@ public class SQLTemplateActionIT {
     private DataNode node;
     private TestDbAdapter testDbAdapter;
     private ObjectContext context;
-    private SQLTemplateCustomizer sqlTemplateCustomizer;
     private TableHelper tArtist;
 
     @BeforeEach
@@ -64,7 +62,6 @@ public class SQLTemplateActionIT {
         node = env.dataNode();
         testDbAdapter = env.testDbAdapter();
         context = env.context();
-        sqlTemplateCustomizer = env.sqlTemplateCustomizer();
         tArtist = env.table("ARTIST", "ARTIST_ID", "ARTIST_NAME", "DATE_OF_BIRTH");
     }
 
@@ -93,7 +90,7 @@ public class SQLTemplateActionIT {
 
         String templateString = "SELECT * FROM ARTIST WHERE ARTIST_ID = #bind($id)";
         SQLTemplate template = new SQLTemplate(Object.class, templateString);
-        sqlTemplateCustomizer.updateSQLTemplate(template);
+        template.setColumnNamesCapitalization(CapsStrategy.UPPER);
 
         Map<String, Object> bindings = new HashMap<>();
         bindings.put("id", 201L);
@@ -153,7 +150,7 @@ public class SQLTemplateActionIT {
         String templateString = "SELECT #result('DATE_OF_BIRTH' 'java.util.Date' 'DOB') "
                 + "FROM ARTIST WHERE ARTIST_ID = #bind($id)";
         SQLTemplate template = new SQLTemplate(Object.class, templateString);
-        sqlTemplateCustomizer.updateSQLTemplate(template);
+        template.setColumnNamesCapitalization(CapsStrategy.UPPER);
 
         Map<String, Object> bindings = new HashMap<>();
         bindings.put("id", 101);
@@ -183,7 +180,7 @@ public class SQLTemplateActionIT {
         String templateString = "SELECT #result('DATE_OF_BIRTH' 'java.sql.Date' 'DOB') "
                 + "FROM ARTIST WHERE ARTIST_ID = #bind($id)";
         SQLTemplate template = new SQLTemplate(Object.class, templateString);
-        sqlTemplateCustomizer.updateSQLTemplate(template);
+        template.setColumnNamesCapitalization(CapsStrategy.UPPER);
 
         Map<String, Object> bindings = new HashMap<>();
         bindings.put("id", 101);
@@ -213,7 +210,7 @@ public class SQLTemplateActionIT {
         String templateString = "SELECT #result('DATE_OF_BIRTH' 'java.sql.Timestamp' 'DOB') "
                 + "FROM ARTIST WHERE ARTIST_ID = #bind($id)";
         SQLTemplate template = new SQLTemplate(Object.class, templateString);
-        sqlTemplateCustomizer.updateSQLTemplate(template);
+        template.setColumnNamesCapitalization(CapsStrategy.UPPER);
 
         Map<String, Object> bindings = new HashMap<>();
         bindings.put("id", 201);
