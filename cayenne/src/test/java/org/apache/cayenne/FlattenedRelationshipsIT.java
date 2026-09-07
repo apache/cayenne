@@ -36,6 +36,7 @@ import org.apache.cayenne.testdo.relationships_flattened.FlattenedTest5;
 import org.apache.cayenne.unit.CayenneProjects;
 import org.apache.cayenne.unit.CayenneTestsEnv;
 import org.apache.cayenne.validation.ValidationResult;
+import org.apache.cayenne.access.ToManyHolder;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.RegisterExtension;
@@ -124,7 +125,7 @@ public class FlattenedRelationshipsIT {
         FlattenedTest1 fresh01 = Cayenne.objectForPK(context1, FlattenedTest1.class, pk);
 
         assertEquals("t01", fresh01.getName());
-        ValueHolder related = (ValueHolder) fresh01.getFt3OverComplex();
+        ToManyHolder related = (ToManyHolder) fresh01.getFt3OverComplex();
         assertTrue(related.isFault());
 
         assertEquals(2, ((List<?>) related).size());
@@ -144,7 +145,7 @@ public class FlattenedRelationshipsIT {
 
         assertEquals("ft12", ft1.getName());
         List<FlattenedTest3> related = ft1.getFt3OverComplex();
-        assertTrue(((ValueHolder) related).isFault());
+        assertTrue(((ToManyHolder) related).isFault());
 
         assertEquals(2, related.size());
 

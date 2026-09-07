@@ -22,7 +22,6 @@ package org.apache.cayenne.access;
 import org.apache.cayenne.Cayenne;
 import org.apache.cayenne.Fault;
 import org.apache.cayenne.PersistenceState;
-import org.apache.cayenne.ValueHolder;
 import org.apache.cayenne.exp.Expression;
 import org.apache.cayenne.exp.ExpressionFactory;
 import org.apache.cayenne.exp.property.PropertyFactory;
@@ -152,7 +151,7 @@ public class DataContextPrefetchIT {
                 Artist a = artists.get(i);
                 List<?> toMany = (List<?>) a.readPropertyDirectly("paintingArray");
                 assertNotNull(toMany);
-                assertFalse(((ValueHolder) toMany).isFault());
+                assertFalse(((ToManyHolder) toMany).isFault());
                 assertEquals(1, toMany.size());
 
                 Painting p = (Painting) toMany.getFirst();
@@ -182,7 +181,7 @@ public class DataContextPrefetchIT {
             Artist a1 = artists.getFirst();
             List<?> toMany = (List<?>) a1.readPropertyDirectly(Artist.PAINTING_ARRAY.getName());
             assertNotNull(toMany);
-            assertFalse(((ValueHolder) toMany).isFault());
+            assertFalse(((ToManyHolder) toMany).isFault());
             assertEquals(1, toMany.size());
 
             Painting p1 = (Painting) toMany.get(0);
@@ -191,7 +190,7 @@ public class DataContextPrefetchIT {
             Artist a2 = artists.get(1);
             List<?> toMany2 = (List<?>) a2.readPropertyDirectly(Artist.PAINTING_ARRAY.getName());
             assertNotNull(toMany2);
-            assertFalse(((ValueHolder) toMany2).isFault());
+            assertFalse(((ToManyHolder) toMany2).isFault());
             assertEquals(1, toMany2.size());
 
             Painting p2 = (Painting) toMany2.get(0);
@@ -216,7 +215,7 @@ public class DataContextPrefetchIT {
                 Artist a = artists.get(i);
                 List<?> toMany = (List<?>) a.readPropertyDirectly("paintingArray");
                 assertNotNull(toMany);
-                assertFalse(((ValueHolder) toMany).isFault());
+                assertFalse(((ToManyHolder) toMany).isFault());
                 assertEquals(1, toMany.size());
 
                 Painting p = (Painting) toMany.get(0);
@@ -241,7 +240,7 @@ public class DataContextPrefetchIT {
                 Artist a = artists.get(i);
                 List<?> toMany = (List<?>) a.readPropertyDirectly("paintingArray");
                 assertNotNull(toMany);
-                assertFalse(((ValueHolder) toMany).isFault());
+                assertFalse(((ToManyHolder) toMany).isFault());
                 assertEquals(1, toMany.size());
 
                 Painting p = (Painting) toMany.get(0);
@@ -272,7 +271,7 @@ public class DataContextPrefetchIT {
             assertEquals("artist2", a1.getArtistName());
             List<?> toMany = (List<?>) a1.readPropertyDirectly(Artist.ARTIST_EXHIBIT_ARRAY.getName());
             assertNotNull(toMany);
-            assertFalse(((ValueHolder) toMany).isFault());
+            assertFalse(((ToManyHolder) toMany).isFault());
             assertEquals(2, toMany.size());
 
             ArtistExhibit artistExhibit = (ArtistExhibit) toMany.get(0);
@@ -283,7 +282,7 @@ public class DataContextPrefetchIT {
             assertEquals("artist3", a2.getArtistName());
             List<?> toMany2 = (List<?>) a2.readPropertyDirectly(Artist.ARTIST_EXHIBIT_ARRAY.getName());
             assertNotNull(toMany2);
-            assertFalse(((ValueHolder) toMany2).isFault());
+            assertFalse(((ToManyHolder) toMany2).isFault());
             assertEquals(3, toMany2.size());
 
             ArtistExhibit artistExhibit2 = (ArtistExhibit) toMany2.get(0);
@@ -310,7 +309,7 @@ public class DataContextPrefetchIT {
             assertEquals("artist2", a1.getArtistName());
             List<?> toMany = (List<?>) a1.readPropertyDirectly(Artist.ARTIST_EXHIBIT_ARRAY.getName());
             assertNotNull(toMany);
-            assertFalse(((ValueHolder) toMany).isFault());
+            assertFalse(((ToManyHolder) toMany).isFault());
             assertEquals(2, toMany.size());
 
             ArtistExhibit artistExhibit = (ArtistExhibit) toMany.get(0);
@@ -321,7 +320,7 @@ public class DataContextPrefetchIT {
             assertEquals("artist3", a2.getArtistName());
             List<?> toMany2 = (List<?>) a2.readPropertyDirectly(Artist.ARTIST_EXHIBIT_ARRAY.getName());
             assertNotNull(toMany2);
-            assertFalse(((ValueHolder) toMany2).isFault());
+            assertFalse(((ToManyHolder) toMany2).isFault());
             assertEquals(3, toMany2.size());
 
             ArtistExhibit artistExhibit2 = (ArtistExhibit) toMany2.get(0);
@@ -353,7 +352,7 @@ public class DataContextPrefetchIT {
                 Artist a1 = result.get(0);
                 List<?> toMany = (List<?>) a1.readPropertyDirectly("paintingArray");
                 assertNotNull(toMany);
-                assertFalse(((ValueHolder) toMany).isFault());
+                assertFalse(((ToManyHolder) toMany).isFault());
             });
         } finally {
             paintingEntity.addRelationship(relationship);
@@ -380,7 +379,7 @@ public class DataContextPrefetchIT {
                 Artist a1 = result.get(0);
                 List<?> toMany = (List<?>) a1.readPropertyDirectly("paintingArray");
                 assertNotNull(toMany);
-                assertFalse(((ValueHolder) toMany).isFault());
+                assertFalse(((ToManyHolder) toMany).isFault());
             });
 
         } finally {

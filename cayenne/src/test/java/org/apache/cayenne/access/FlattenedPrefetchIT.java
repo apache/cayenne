@@ -20,7 +20,6 @@
 package org.apache.cayenne.access;
 
 import org.apache.cayenne.PersistenceState;
-import org.apache.cayenne.ValueHolder;
 import org.apache.cayenne.query.ObjectSelect;
 import org.apache.cayenne.test.jdbc.TableHelper;
 import org.apache.cayenne.testdo.testmap.ArtGroup;
@@ -159,7 +158,7 @@ public class FlattenedPrefetchIT {
 
     private void assertArtGroupResult(List<ArtGroup> list) {
         assertNotNull(list);
-        assertFalse(((ValueHolder) list).isFault(), "artist's groups not resolved: ");
+        assertFalse(((ToManyHolder) list).isFault(), "artist's groups not resolved: ");
         assertFalse(list.isEmpty());
 
         for (ArtGroup g : list) {

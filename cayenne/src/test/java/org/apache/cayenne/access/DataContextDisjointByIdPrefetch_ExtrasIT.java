@@ -19,7 +19,6 @@
 package org.apache.cayenne.access;
 
 import org.apache.cayenne.PersistenceState;
-import org.apache.cayenne.ValueHolder;
 import org.apache.cayenne.query.ObjectSelect;
 import org.apache.cayenne.test.jdbc.TableHelper;
 import org.apache.cayenne.testdo.things.Bag;
@@ -114,7 +113,7 @@ public class DataContextDisjointByIdPrefetch_ExtrasIT {
             @SuppressWarnings("unchecked")
             List<Ball> balls = (List<Ball>) b1.readPropertyDirectly(Bag.BALLS.getName());
             assertNotNull(balls);
-            assertFalse(((ValueHolder) balls).isFault());
+            assertFalse(((ToManyHolder) balls).isFault());
             assertEquals(6, balls.size());
 
             List<Integer> volumes = new ArrayList<>();
@@ -141,7 +140,7 @@ public class DataContextDisjointByIdPrefetch_ExtrasIT {
                 @SuppressWarnings("unchecked")
                 List<Thing> things = (List<Thing>) box.readPropertyDirectly(Box.THINGS.getName());
                 assertNotNull(things);
-                assertFalse(((ValueHolder) things).isFault());
+                assertFalse(((ToManyHolder) things).isFault());
                 for (Thing t : things) {
                     assertEquals(PersistenceState.COMMITTED, t.getPersistenceState());
                     volumes.add(t.getVolume());
@@ -166,7 +165,7 @@ public class DataContextDisjointByIdPrefetch_ExtrasIT {
             @SuppressWarnings("unchecked")
             List<Thing> things = (List<Thing>) b1.readPropertyDirectly(Bag.THINGS.getName());
             assertNotNull(things);
-            assertFalse(((ValueHolder) things).isFault());
+            assertFalse(((ToManyHolder) things).isFault());
             assertEquals(6, things.size());
 
             List<Integer> volumes = new ArrayList<>();
@@ -213,7 +212,7 @@ public class DataContextDisjointByIdPrefetch_ExtrasIT {
                 @SuppressWarnings("unchecked")
                 List<Ball> balls = (List<Ball>) box.readPropertyDirectly(Box.BALLS.getName());
                 assertNotNull(balls);
-                assertFalse(((ValueHolder) balls).isFault());
+                assertFalse(((ToManyHolder) balls).isFault());
                 for (Ball ball : balls) {
                     Thing thing = (Thing) ball.readPropertyDirectly(Ball.THING.getName());
                     assertNotNull(thing);
@@ -242,7 +241,7 @@ public class DataContextDisjointByIdPrefetch_ExtrasIT {
             @SuppressWarnings("unchecked")
             List<Box> boxes = (List<Box>) bag.readPropertyDirectly(Bag.BOXES.getName());
             assertNotNull(boxes);
-            assertFalse(((ValueHolder) boxes).isFault());
+            assertFalse(((ToManyHolder) boxes).isFault());
             assertEquals(2, boxes.size());
 
             Box big = null;
@@ -260,7 +259,7 @@ public class DataContextDisjointByIdPrefetch_ExtrasIT {
             @SuppressWarnings("unchecked")
             List<Ball> balls = (List<Ball>) big.readPropertyDirectly(Box.BALLS.getName());
             assertNotNull(balls);
-            assertFalse(((ValueHolder) balls).isFault());
+            assertFalse(((ToManyHolder) balls).isFault());
             assertEquals(2, balls.size());
             List<Integer> volumes = new ArrayList<>();
             for (Ball ball : balls) {

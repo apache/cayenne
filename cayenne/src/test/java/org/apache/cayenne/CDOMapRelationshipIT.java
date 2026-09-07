@@ -27,6 +27,7 @@ import org.apache.cayenne.testdo.map_to_many.MapToMany;
 import org.apache.cayenne.testdo.map_to_many.MapToManyTarget;
 import org.apache.cayenne.unit.CayenneProjects;
 import org.apache.cayenne.unit.CayenneTestsEnv;
+import org.apache.cayenne.access.ToManyHolder;
 import org.junit.jupiter.api.extension.RegisterExtension;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -85,7 +86,7 @@ public class CDOMapRelationshipIT {
 
         Map targets = o1.getTargets();
 
-        assertTrue(((ValueHolder) targets).isFault());
+        assertTrue(((ToManyHolder) targets).isFault());
 
         assertNotNull(targets);
         assertEquals(3, targets.size());
@@ -106,7 +107,7 @@ public class CDOMapRelationshipIT {
 
         Map targets = o1.getTargets();
 
-        assertTrue(((ValueHolder) targets).isFault());
+        assertTrue(((ToManyHolder) targets).isFault());
 
         assertNotNull(targets);
         assertEquals(3, targets.size());
@@ -127,7 +128,7 @@ public class CDOMapRelationshipIT {
                 .where(MapToMany.SELF.eqId(1)).prefetch(MapToMany.TARGETS.disjoint()).selectOne(env.context());
         Map targets = o1.getTargets();
 
-        assertFalse(((ValueHolder) targets).isFault());
+        assertFalse(((ToManyHolder) targets).isFault());
 
         assertNotNull(targets);
         assertEquals(3, targets.size());

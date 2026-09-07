@@ -29,7 +29,6 @@ import org.apache.cayenne.DataRow;
 import org.apache.cayenne.Fault;
 import org.apache.cayenne.PersistenceState;
 import org.apache.cayenne.Persistent;
-import org.apache.cayenne.ValueHolder;
 import org.apache.cayenne.graph.ArcId;
 import org.apache.cayenne.graph.GraphChangeHandler;
 import org.apache.cayenne.query.PrefetchTreeNode;
@@ -167,8 +166,9 @@ class PrefetchProcessorNode extends PrefetchTreeNode {
         if (incoming.getRelationship().isToMany()) {
             if(relationshipNotModified(object, incoming)) {
                 @SuppressWarnings("unchecked")
-                ValueHolder<List<?>> toManyList = (ValueHolder<List<?>>) incoming.readProperty(object);
-                toManyList.setValueDirectly(related != null ? related : new ArrayList<>(1));
+                ToManyHolder<Persistent> toMany =
+                        (ToManyHolder<Persistent>) incoming.readProperty(object);
+                toMany.resolveWith(related != null ? related : new ArrayList<>(1));
             }
         } else {
             // this should've been handled elsewhere

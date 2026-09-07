@@ -22,7 +22,6 @@ package org.apache.cayenne.access;
 import org.apache.cayenne.PersistenceState;
 import org.apache.cayenne.Persistent;
 import org.apache.cayenne.PersistentObject;
-import org.apache.cayenne.ValueHolder;
 import org.apache.cayenne.query.ObjectSelect;
 import org.apache.cayenne.query.PrefetchTreeNode;
 import org.apache.cayenne.test.jdbc.TableHelper;
@@ -101,7 +100,7 @@ public class DataContextPrefetchExtrasIT  {
         assertEquals("n1", pk1.getOtherCol());
         List<?> toMany = (List<?>) pk1.readPropertyDirectly("charFKs");
         assertNotNull(toMany);
-        assertFalse(((ValueHolder) toMany).isFault());
+        assertFalse(((ToManyHolder) toMany).isFault());
         assertEquals(3, toMany.size());
 
         CharFkTestEntity fk1 = (CharFkTestEntity) toMany.getFirst();
@@ -150,7 +149,7 @@ public class DataContextPrefetchExtrasIT  {
 
         List<?> toMany = (List<?>) pk1.readPropertyDirectly("compoundFkArray");
         assertNotNull(toMany);
-        assertFalse(((ValueHolder) toMany).isFault());
+        assertFalse(((ToManyHolder) toMany).isFault());
         assertEquals(2, toMany.size());
 
         PersistentObject fk1 = (PersistentObject) toMany.get(0);

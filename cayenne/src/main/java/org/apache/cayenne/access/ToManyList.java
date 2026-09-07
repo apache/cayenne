@@ -19,25 +19,26 @@
 
 package org.apache.cayenne.access;
 
-import java.io.Serializable;
-import java.util.Collection;
-import java.util.LinkedList;
-import java.util.List;
-
-import org.apache.cayenne.PersistenceState;
 import org.apache.cayenne.Persistent;
-import org.apache.cayenne.util.PersistentObjectList;
+
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.Iterator;
+import java.util.List;
+import java.util.ListIterator;
 
 /**
- * A list that holds objects for to-many relationships. All operations, except for
- * resolving the list from DB, are not synchronized. The safest way to implement custom
- * synchronization is to synchronize on parent ObjectStore.
+ * A list that holds objects for to-many relationships, lazily resolved on first access. All operations, except for
+ * resolving the list from DB, are not synchronized. The safest way to implement custom synchronization is to
+ * synchronize on parent ObjectStore.
  */
-public class ToManyList<E> extends PersistentObjectList<E> implements Serializable {
+public class ToManyList<E> extends ToManyHolder<E> implements List<E> {
+
+    protected List<E> objectList;
 
     /**
      * Creates ToManyList.
-     * 
+     *
      * @since 1.1
      */
     public ToManyList(Persistent source, String relationship) {
@@ -45,63 +46,198 @@ public class ToManyList<E> extends PersistentObjectList<E> implements Serializab
 
         // if source is new, set object list right away
         if (isTransientParent()) {
-            objectList = new LinkedList<>();
+            objectList = new ArrayList<>();
         }
+    }
+
+    @Override
+    public boolean isFault() {
+        if (objectList != null) {
+            return false;
+        }
+
+        // resolve on the fly if owner is transient... Can't do it in constructor, as
+        // object may be in an inconsistent state during construction time
+        if (isTransientParent()) {
+            objectList = new ArrayList<>();
+            return false;
+        }
+
+        return true;
+    }
+
+    @Override
+    public void invalidate() {
+        objectList = null;
+    }
+
+    /**
+     * Resolves the list with the given objects. A non-list collection is copied into a new list.
+     */
+    @Override
+    public void resolveWith(Collection<E> objects) {
+        objectList = objects instanceof List<E> list ? list : new ArrayList<>(objects);
+    }
+
+    /**
+     * Returns internal objects list resolving it if needed.
+     */
+    protected List<E> resolvedObjectList() {
+        if (isFault()) {
+            synchronized (this) {
+                // now that we obtained the lock, check if another thread just resolved the list
+                if (isFault()) {
+                    objectList = resolveFromDB();
+                }
+            }
+        }
+
+        return objectList;
     }
 
     // ====================================================
     // Standard List Methods.
     // ====================================================
+
     @Override
-    public int hashCode() {
-        return 15 + resolvedObjectList().hashCode();
+    public boolean add(E o) {
+        if (isFault()) {
+            addLocal(o);
+            return true;
+        }
+        return objectList.add(o);
     }
 
-    // ====================================================
-    // Tracking list modifications, and resolving it
-    // on demand
-    // ====================================================
+    @Override
+    public void add(int index, E o) {
+        resolvedObjectList().add(index, o);
+    }
 
     @Override
-    protected boolean shouldAddToRemovedFromUnresolvedList(Object object) {
-        // No point in adding a new or transient object -- these will never be fetched
-        // from the database.
-        if (object instanceof Persistent persistent) {
-            if ((persistent.getPersistenceState() == PersistenceState.TRANSIENT)
-                    || (persistent.getPersistenceState() == PersistenceState.NEW)) {
-                return false;
-            }
+    public boolean addAll(Collection<? extends E> c) {
+        return resolvedObjectList().addAll(c);
+    }
+
+    @Override
+    public boolean addAll(int index, Collection<? extends E> c) {
+        return resolvedObjectList().addAll(index, c);
+    }
+
+    @Override
+    public void clear() {
+        resolvedObjectList().clear();
+    }
+
+    @Override
+    public boolean contains(Object o) {
+        return resolvedObjectList().contains(o);
+    }
+
+    @Override
+    public boolean containsAll(Collection<?> c) {
+        return resolvedObjectList().containsAll(c);
+    }
+
+    @Override
+    public boolean equals(Object o) {
+        if (!(o instanceof ToManyList<?> other)) {
+            return false;
         }
-        return true;
+        return resolvedObjectList().equals(other.resolvedObjectList());
+    }
+
+    @Override
+    public int hashCode() {
+        return 37 + resolvedObjectList().hashCode();
+    }
+
+    @Override
+    public E get(int index) {
+        return resolvedObjectList().get(index);
+    }
+
+    @Override
+    public int indexOf(Object o) {
+        return resolvedObjectList().indexOf(o);
+    }
+
+    @Override
+    public boolean isEmpty() {
+        return resolvedObjectList().isEmpty();
+    }
+
+    @Override
+    public Iterator<E> iterator() {
+        return resolvedObjectList().iterator();
+    }
+
+    @Override
+    public int lastIndexOf(Object o) {
+        return resolvedObjectList().lastIndexOf(o);
+    }
+
+    @Override
+    public ListIterator<E> listIterator() {
+        return resolvedObjectList().listIterator();
+    }
+
+    @Override
+    public ListIterator<E> listIterator(int index) {
+        return resolvedObjectList().listIterator(index);
+    }
+
+    @Override
+    public E remove(int index) {
+        return resolvedObjectList().remove(index);
+    }
+
+    @SuppressWarnings("unchecked")
+    @Override
+    public boolean remove(Object o) {
+        if (isFault()) {
+            removeLocal((E) o);
+            return true;
+        }
+        return objectList.remove(o);
+    }
+
+    @Override
+    public boolean removeAll(Collection<?> c) {
+        return resolvedObjectList().removeAll(c);
+    }
+
+    @Override
+    public boolean retainAll(Collection<?> c) {
+        return resolvedObjectList().retainAll(c);
+    }
+
+    @Override
+    public E set(int index, E o) {
+        return resolvedObjectList().set(index, o);
+    }
+
+    @Override
+    public int size() {
+        return resolvedObjectList().size();
+    }
+
+    @Override
+    public List<E> subList(int fromIndex, int toIndex) {
+        return resolvedObjectList().subList(fromIndex, toIndex);
+    }
+
+    @Override
+    public Object[] toArray() {
+        return resolvedObjectList().toArray();
+    }
+
+    @Override
+    public <T> T[] toArray(T[] a) {
+        return resolvedObjectList().toArray(a);
     }
 
     @Override
     public String toString() {
-        return getClass().getName() + "@" + System.identityHashCode(this);
-    }
-
-    @Override
-    protected void postprocessAdd(Collection<? extends E> collection) {
-        // no need for this operation for Persistent objects...
-    }
-
-    @Override
-    protected void postprocessRemove(Collection<? extends E> collection) {
-        // no need for this operation for Persistent objects...
-    }
-
-    @Override
-    protected void postprocessAdd(E addedObject) {
-        // no need for this operation for Persistent objects...
-    }
-
-    @Override
-    protected void postprocessRemove(E removedObject) {
-        // no need for this operation for Persistent objects...
-    }
-
-    @Override
-    protected void updateReverse(List<E> resolved) {
-        // no need for this operation for Persistent objects...
+        return objectList != null ? objectList.toString() : "[<unresolved>]";
     }
 }

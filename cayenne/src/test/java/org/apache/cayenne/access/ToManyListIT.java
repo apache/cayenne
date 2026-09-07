@@ -25,10 +25,9 @@ import org.apache.cayenne.testdo.testmap.Painting;
 import org.apache.cayenne.unit.CayenneProjects;
 import org.apache.cayenne.unit.CayenneTestsEnv;
 import org.junit.jupiter.api.extension.RegisterExtension;
-import org.apache.cayenne.util.PersistentObjectList;
 import org.junit.jupiter.api.Test;
 import java.lang.reflect.Field;
-import java.util.LinkedList;
+import java.util.Collection;
 import java.util.List;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
@@ -76,7 +75,7 @@ public class ToManyListIT {
 
         // immediately tag Artist as MODIFIED, since we are messing up with relationship
         // bypassing normal PersistentObject methods
-        list.getRelationshipOwner().setPersistenceState(PersistenceState.MODIFIED);
+        list.relationshipOwner.setPersistenceState(PersistenceState.MODIFIED);
 
         assertTrue(list.isFault(), "List must be unresolved for an existing object");
 
@@ -111,12 +110,12 @@ public class ToManyListIT {
         // list being tested is a separate copy from
         // the relationship list that Artist has, so adding a painting
         // here will not add the painting to the array being tested
-        ((Artist) list.getRelationshipOwner()).addToPaintingArray(p1);
+        ((Artist) list.relationshipOwner).addToPaintingArray(p1);
         env.context().commitChanges();
 
         // immediately tag Artist as MODIFIED, since we are messing up with relationship
         // bypassing normal PersistentObject methods
-        list.getRelationshipOwner().setPersistenceState(PersistenceState.MODIFIED);
+        list.relationshipOwner.setPersistenceState(PersistenceState.MODIFIED);
 
         assertTrue(list.isFault(), "List must be unresolved...");
         list.add(p1);
@@ -148,13 +147,13 @@ public class ToManyListIT {
         // list being tested is a separate copy from
         // the relationship list that Artist has, so adding a painting
         // here will not add the painting to the array being tested
-        ((Artist) list.getRelationshipOwner()).addToPaintingArray(p1);
-        ((Artist) list.getRelationshipOwner()).addToPaintingArray(p2);
+        ((Artist) list.relationshipOwner).addToPaintingArray(p1);
+        ((Artist) list.relationshipOwner).addToPaintingArray(p2);
         env.context().commitChanges();
 
         // immediately tag Artist as MODIFIED, since we are messing up with relationship
         // bypassing normal PersistentObject methods
-        list.getRelationshipOwner().setPersistenceState(PersistenceState.MODIFIED);
+        list.relationshipOwner.setPersistenceState(PersistenceState.MODIFIED);
 
         assertTrue(list.isFault(), "List must be unresolved...");
         list.add(p1);
@@ -164,7 +163,7 @@ public class ToManyListIT {
         assertTrue(addedToUnresolved(list).contains(p1));
 
         // now delete p2 and resolve list
-        ((Artist) list.getRelationshipOwner()).removeFromPaintingArray(p2);
+        ((Artist) list.relationshipOwner).removeFromPaintingArray(p2);
         env.context().deleteObjects(p2);
         env.context().commitChanges();
 
@@ -246,12 +245,12 @@ public class ToManyListIT {
     }
 
     private List<?> getValue(ToManyList list) {
-        return (List<?>) list.getValueDirectly();
+        return list.objectList;
     }
 
-    private LinkedList<?> addedToUnresolved(ToManyList list) throws Exception {
-        Field f = PersistentObjectList.class.getDeclaredField("addedToUnresolved");
+    private Collection<?> addedToUnresolved(ToManyList list) throws Exception {
+        Field f = ToManyHolder.class.getDeclaredField("addedToUnresolved");
         f.setAccessible(true);
-        return (LinkedList<?>) f.get(list);
+        return (Collection<?>) f.get(list);
     }
 }

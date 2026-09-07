@@ -28,13 +28,16 @@ import org.apache.cayenne.reflect.ToManyMapProperty;
 /**
  * @since 3.0
  */
-class PersistentObjectToManyMapProperty extends PersistentObjectToManyProperty implements
-        ToManyMapProperty {
+class PersistentObjectToManyMapProperty extends PersistentObjectToManyProperty implements ToManyMapProperty {
 
-    private Accessor mapKeyAccessor;
+    private final Accessor mapKeyAccessor;
 
-    PersistentObjectToManyMapProperty(ObjRelationship relationship,
-                                      ClassDescriptor targetDescriptor, Fault fault, Accessor mapKeyAccessor) {
+    PersistentObjectToManyMapProperty(
+            ObjRelationship relationship,
+            ClassDescriptor targetDescriptor,
+            Fault fault,
+            Accessor mapKeyAccessor) {
+
         super(relationship, targetDescriptor, fault);
         this.mapKeyAccessor = mapKeyAccessor;
     }

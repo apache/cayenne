@@ -71,9 +71,9 @@ public interface PropertyDescriptor {
     boolean visit(PropertyVisitor visitor);
 
     /**
-     * If a property is implemented as a ValueHolder, this operation would
-     * create an unfaulted value holder and inject it into the object, if an
-     * object doesn't have it set yet.
+     * If a property is lazily resolved, this operation would create an
+     * unresolved fault and inject it into the object, if an object doesn't
+     * have it set yet.
      */
     void injectValueHolder(Object object) throws PropertyException;
 

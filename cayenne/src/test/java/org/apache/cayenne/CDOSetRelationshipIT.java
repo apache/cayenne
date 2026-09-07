@@ -24,6 +24,7 @@ import org.apache.cayenne.testdo.relationships_set_to_many.SetToMany;
 import org.apache.cayenne.testdo.relationships_set_to_many.SetToManyTarget;
 import org.apache.cayenne.unit.CayenneProjects;
 import org.apache.cayenne.unit.CayenneTestsEnv;
+import org.apache.cayenne.access.ToManyHolder;
 import org.junit.jupiter.api.extension.RegisterExtension;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -70,7 +71,7 @@ public class CDOSetRelationshipIT {
         Set targets = o1.getTargets();
 
         assertNotNull(targets);
-        assertTrue(((ValueHolder) targets).isFault());
+        assertTrue(((ToManyHolder) targets).isFault());
 
         assertEquals(3, targets.size());
 
@@ -97,7 +98,7 @@ public class CDOSetRelationshipIT {
 
         Set targets = o1.getTargets();
 
-        assertFalse(((ValueHolder) targets).isFault());
+        assertFalse(((ToManyHolder) targets).isFault());
 
         assertNotNull(targets);
         assertEquals(3, targets.size());

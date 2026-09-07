@@ -20,12 +20,12 @@
 package org.apache.cayenne.reflect;
 
 import org.apache.cayenne.Cayenne;
-import org.apache.cayenne.ValueHolder;
 import org.apache.cayenne.test.jdbc.TableHelper;
 import org.apache.cayenne.testdo.mixed_persistence_strategy.MixedPersistenceStrategy;
 import org.apache.cayenne.testdo.mixed_persistence_strategy.MixedPersistenceStrategy2;
 import org.apache.cayenne.unit.CayenneProjects;
 import org.apache.cayenne.unit.CayenneTestsEnv;
+import org.apache.cayenne.access.ToManyHolder;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.RegisterExtension;
@@ -68,7 +68,7 @@ public class MixedPersistenceStrategyIT {
                 1);
 
         assertEquals(2, object.getDetails().size());
-        assertTrue(object.getDetails() instanceof ValueHolder);
+        assertTrue(object.getDetails() instanceof ToManyHolder);
     }
 
     /**
@@ -93,6 +93,6 @@ public class MixedPersistenceStrategyIT {
         assertEquals("n1", detail1.getMaster().getName());
 
         assertEquals(2, detail2.getMaster().getDetails().size());
-        assertTrue(detail2.getMaster().getDetails() instanceof ValueHolder);
+        assertTrue(detail2.getMaster().getDetails() instanceof ToManyHolder);
     }
 }

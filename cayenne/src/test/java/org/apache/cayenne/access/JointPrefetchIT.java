@@ -23,7 +23,6 @@ import org.apache.cayenne.DataRow;
 import org.apache.cayenne.ObjectId;
 import org.apache.cayenne.PersistenceState;
 import org.apache.cayenne.Persistent;
-import org.apache.cayenne.ValueHolder;
 import org.apache.cayenne.map.ObjAttribute;
 import org.apache.cayenne.map.ObjEntity;
 import org.apache.cayenne.query.ObjectSelect;
@@ -201,7 +200,7 @@ public class JointPrefetchIT {
                 List<Painting> list = a.getPaintingArray();
 
                 assertNotNull(list);
-                assertFalse(((ValueHolder) list).isFault());
+                assertFalse(((ToManyHolder) list).isFault());
                 assertFalse(list.isEmpty());
 
                 for (Painting p : list) {
@@ -294,7 +293,7 @@ public class JointPrefetchIT {
                 List<Painting> list = a.getPaintingArray();
 
                 assertNotNull(list);
-                assertFalse(((ValueHolder) list).isFault());
+                assertFalse(((ToManyHolder) list).isFault());
 
                 for (Painting p : list) {
                     assertEquals(PersistenceState.COMMITTED, p.getPersistenceState());
@@ -322,7 +321,7 @@ public class JointPrefetchIT {
             List<Painting> list = a.getPaintingArray();
 
             assertNotNull(list);
-            assertFalse(((ValueHolder) list).isFault());
+            assertFalse(((ToManyHolder) list).isFault());
             assertEquals(2, list.size());
 
             for (Painting p : list) {
@@ -360,7 +359,7 @@ public class JointPrefetchIT {
             assertEquals(3, objects.size());
 
             for (Artist a : objects) {
-                ValueHolder list = (ValueHolder) a.getPaintingArray();
+                ToManyHolder list = (ToManyHolder) a.getPaintingArray();
 
                 assertNotNull(list);
 

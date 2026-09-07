@@ -19,7 +19,6 @@
 package org.apache.cayenne.access;
 
 import org.apache.cayenne.PersistenceState;
-import org.apache.cayenne.ValueHolder;
 import org.apache.cayenne.query.ObjectSelect;
 import org.apache.cayenne.query.SQLSelect;
 import org.apache.cayenne.query.SortOrder;
@@ -113,7 +112,7 @@ public class DataContextDisjointByIdPrefetchIT {
             @SuppressWarnings("unchecked")
             List<Painting> toMany = (List<Painting>) b1.readPropertyDirectly(Artist.PAINTING_ARRAY.getName());
             assertNotNull(toMany);
-            assertFalse(((ValueHolder) toMany).isFault());
+            assertFalse(((ToManyHolder) toMany).isFault());
             assertEquals(2, toMany.size());
 
             List<String> names = new ArrayList<>();
@@ -146,7 +145,7 @@ public class DataContextDisjointByIdPrefetchIT {
             @SuppressWarnings("unchecked")
             List<Painting> toMany = (List<Painting>) b1.readPropertyDirectly(Artist.PAINTING_ARRAY.getName());
             assertNotNull(toMany);
-            assertFalse(((ValueHolder) toMany).isFault());
+            assertFalse(((ToManyHolder) toMany).isFault());
             assertEquals(2, toMany.size());
 
             List<String> names = new ArrayList<>();

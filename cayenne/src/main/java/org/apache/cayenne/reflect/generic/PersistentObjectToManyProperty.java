@@ -21,13 +21,13 @@ package org.apache.cayenne.reflect.generic;
 
 import org.apache.cayenne.Fault;
 import org.apache.cayenne.Persistent;
-import org.apache.cayenne.ValueHolder;
 import org.apache.cayenne.map.ObjRelationship;
 import org.apache.cayenne.reflect.ArcProperty;
 import org.apache.cayenne.reflect.ClassDescriptor;
 import org.apache.cayenne.reflect.PropertyException;
 import org.apache.cayenne.reflect.PropertyVisitor;
 import org.apache.cayenne.reflect.ToManyProperty;
+import org.apache.cayenne.access.ToManyHolder;
 
 /**
  * @since 3.0
@@ -109,8 +109,8 @@ class PersistentObjectToManyProperty extends PersistentObjectBaseProperty implem
         Object value = readPropertyDirectly(object);
         if (value instanceof Fault) {
             // nothing to do
-        } else if (value instanceof ValueHolder) {
-            ((ValueHolder) value).invalidate();
+        } else if (value instanceof ToManyHolder<?> fault) {
+            fault.invalidate();
         } else {
             writePropertyDirectly(object, null, fault);
         }

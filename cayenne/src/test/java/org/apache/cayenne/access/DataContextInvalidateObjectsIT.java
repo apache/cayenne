@@ -23,7 +23,6 @@ import java.util.List;
 import org.apache.cayenne.Cayenne;
 import org.apache.cayenne.ObjectContext;
 import org.apache.cayenne.PersistenceState;
-import org.apache.cayenne.ValueHolder;
 import org.apache.cayenne.query.ObjectSelect;
 import org.apache.cayenne.query.QueryCacheStrategy;
 import org.apache.cayenne.query.SortOrder;
@@ -119,9 +118,9 @@ public class DataContextInvalidateObjectsIT {
         assertEquals(PersistenceState.HOLLOW, a1.getPersistenceState());
         assertEquals(PersistenceState.HOLLOW, a2.getPersistenceState());
 
-        assertTrue(((ValueHolder) a1.readProperty(Artist.PAINTING_ARRAY.getName()))
+        assertTrue(((ToManyHolder) a1.readProperty(Artist.PAINTING_ARRAY.getName()))
                 .isFault());
-        assertTrue(((ValueHolder) a2.readProperty(Artist.PAINTING_ARRAY.getName()))
+        assertTrue(((ToManyHolder) a2.readProperty(Artist.PAINTING_ARRAY.getName()))
                 .isFault());
     }
 
@@ -195,7 +194,7 @@ public class DataContextInvalidateObjectsIT {
 
         assertEquals(PersistenceState.HOLLOW, a1.getPersistenceState());
 
-        assertTrue(((ValueHolder) a1.readProperty(Artist.PAINTING_ARRAY.getName()))
+        assertTrue(((ToManyHolder) a1.readProperty(Artist.PAINTING_ARRAY.getName()))
                 .isFault());
     }
 

@@ -19,7 +19,6 @@
 package org.apache.cayenne.access;
 
 import org.apache.cayenne.PersistenceState;
-import org.apache.cayenne.ValueHolder;
 import org.apache.cayenne.query.EJBQLQuery;
 import org.apache.cayenne.test.jdbc.TableHelper;
 import org.apache.cayenne.testdo.testmap.Artist;
@@ -120,7 +119,7 @@ public class DataContextEJBQLFetchJoinIT {
                 List<Painting> list = a.getPaintingArray();
 
                 assertNotNull(list);
-                assertFalse(((ValueHolder) list).isFault());
+                assertFalse(((ToManyHolder) list).isFault());
 
                 for (Painting p : list) {
                     assertEquals(PersistenceState.COMMITTED, p.getPersistenceState());
@@ -153,7 +152,7 @@ public class DataContextEJBQLFetchJoinIT {
             List<Painting> paintings = a.getPaintingArray();
 
             assertNotNull(paintings);
-            assertFalse(((ValueHolder) paintings).isFault());
+            assertFalse(((ToManyHolder) paintings).isFault());
             assertEquals(2, paintings.size());
 
             List<String> expectedPaintingsNames = new ArrayList<>();
@@ -169,7 +168,7 @@ public class DataContextEJBQLFetchJoinIT {
             List<ArtistExhibit> exibits = a.getArtistExhibitArray();
 
             assertNotNull(exibits);
-            assertFalse(((ValueHolder) exibits).isFault());
+            assertFalse(((ToManyHolder) exibits).isFault());
             assertEquals(2, exibits.size());
 
             for (ArtistExhibit ae : exibits) {
@@ -221,7 +220,7 @@ public class DataContextEJBQLFetchJoinIT {
             List<Painting> paintings = a.getPaintingArray();
 
             assertNotNull(paintings);
-            assertFalse(((ValueHolder) paintings).isFault());
+            assertFalse(((ToManyHolder) paintings).isFault());
             assertEquals(2, paintings.size());
 
             List<String> expectedPaintingsNames = new ArrayList<>();
@@ -244,7 +243,7 @@ public class DataContextEJBQLFetchJoinIT {
             List<Exhibit> exibits = g1.getExhibitArray();
 
             assertNotNull(exibits);
-            assertFalse(((ValueHolder) exibits).isFault());
+            assertFalse(((ToManyHolder) exibits).isFault());
             assertEquals(2, exibits.size());
 
             Object[] secondRow = (Object[]) objects.get(1);
@@ -254,7 +253,7 @@ public class DataContextEJBQLFetchJoinIT {
             paintings = a.getPaintingArray();
 
             assertNotNull(paintings);
-            assertFalse(((ValueHolder) paintings).isFault());
+            assertFalse(((ToManyHolder) paintings).isFault());
             assertEquals(1, paintings.size());
 
             expectedPaintingsNames = new ArrayList<>();
@@ -297,7 +296,7 @@ public class DataContextEJBQLFetchJoinIT {
             List<Painting> paintings = a1.getPaintingArray();
 
             assertNotNull(paintings);
-            assertFalse(((ValueHolder) paintings).isFault());
+            assertFalse(((ToManyHolder) paintings).isFault());
             assertEquals(2, paintings.size());
 
             List<String> expectedPaintingsNames = new ArrayList<>();
@@ -318,7 +317,7 @@ public class DataContextEJBQLFetchJoinIT {
             List<?> exibits = g1.getExhibitArray();
 
             assertNotNull(exibits);
-            assertFalse(((ValueHolder) exibits).isFault());
+            assertFalse(((ToManyHolder) exibits).isFault());
             assertEquals(2, exibits.size());
 
             row = (Object[]) objects.get(1);

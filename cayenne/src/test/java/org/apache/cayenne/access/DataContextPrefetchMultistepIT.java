@@ -24,7 +24,6 @@ import org.apache.cayenne.ObjectContext;
 import org.apache.cayenne.ObjectId;
 import org.apache.cayenne.PersistenceState;
 import org.apache.cayenne.Persistent;
-import org.apache.cayenne.ValueHolder;
 import org.apache.cayenne.query.ObjectSelect;
 import org.apache.cayenne.runtime.CayenneRuntime;
 import org.apache.cayenne.test.jdbc.TableHelper;
@@ -167,18 +166,18 @@ public class DataContextPrefetchMultistepIT  {
         Gallery g2 = galleries.get(0);
 
         // this relationship should be resolved
-        assertTrue(g2.readPropertyDirectly("exhibitArray") instanceof ValueHolder);
+        assertTrue(g2.readPropertyDirectly("exhibitArray") instanceof ToManyHolder);
         List<Exhibit> exhibits = (List<Exhibit>) g2.readPropertyDirectly("exhibitArray");
-        assertFalse(((ValueHolder) exhibits).isFault());
+        assertFalse(((ToManyHolder) exhibits).isFault());
         assertEquals(1, exhibits.size());
 
         Exhibit e1 = exhibits.get(0);
         assertEquals(PersistenceState.COMMITTED, e1.getPersistenceState());
 
         // this to-many must also be resolved
-        assertTrue(e1.readPropertyDirectly("artistExhibitArray") instanceof ValueHolder);
+        assertTrue(e1.readPropertyDirectly("artistExhibitArray") instanceof ToManyHolder);
         List<ArtistExhibit> aexhibits = (List<ArtistExhibit>) e1.readPropertyDirectly("artistExhibitArray");
-        assertFalse(((ValueHolder) aexhibits).isFault());
+        assertFalse(((ToManyHolder) aexhibits).isFault());
         assertEquals(1, exhibits.size());
 
         ArtistExhibit ae1 = aexhibits.get(0);
@@ -199,18 +198,18 @@ public class DataContextPrefetchMultistepIT  {
         Gallery g2 = galleries.get(0);
 
         // this relationship should be resolved
-        assertTrue(g2.readPropertyDirectly("exhibitArray") instanceof ValueHolder);
+        assertTrue(g2.readPropertyDirectly("exhibitArray") instanceof ToManyHolder);
         List<Exhibit> exhibits = (List<Exhibit>) g2.readPropertyDirectly("exhibitArray");
-        assertFalse(((ValueHolder) exhibits).isFault());
+        assertFalse(((ToManyHolder) exhibits).isFault());
         assertEquals(1, exhibits.size());
 
         Exhibit e1 = exhibits.get(0);
         assertEquals(PersistenceState.COMMITTED, e1.getPersistenceState());
 
         // this to-many must also be resolved
-        assertTrue(e1.readPropertyDirectly("artistExhibitArray") instanceof ValueHolder);
+        assertTrue(e1.readPropertyDirectly("artistExhibitArray") instanceof ToManyHolder);
         List<ArtistExhibit> aexhibits = (List<ArtistExhibit>) e1.readPropertyDirectly("artistExhibitArray");
-        assertFalse(((ValueHolder) aexhibits).isFault());
+        assertFalse(((ToManyHolder) aexhibits).isFault());
         assertEquals(2, aexhibits.size());
 
         ArtistExhibit ae1 = aexhibits.get(0);
@@ -231,18 +230,18 @@ public class DataContextPrefetchMultistepIT  {
         Gallery g2 = galleries.get(0);
 
         // this relationship should be resolved
-        assertTrue(g2.readPropertyDirectly("exhibitArray") instanceof ValueHolder);
+        assertTrue(g2.readPropertyDirectly("exhibitArray") instanceof ToManyHolder);
         List<Exhibit> exhibits = (List<Exhibit>) g2.readPropertyDirectly("exhibitArray");
-        assertFalse(((ValueHolder) exhibits).isFault());
+        assertFalse(((ToManyHolder) exhibits).isFault());
         assertEquals(1, exhibits.size());
 
         Exhibit e1 = exhibits.get(0);
         assertEquals(PersistenceState.COMMITTED, e1.getPersistenceState());
 
         // this to-many must also be resolved
-        assertTrue(e1.readPropertyDirectly("artistExhibitArray") instanceof ValueHolder);
+        assertTrue(e1.readPropertyDirectly("artistExhibitArray") instanceof ToManyHolder);
         List<ArtistExhibit> aexhibits = (List<ArtistExhibit>) e1.readPropertyDirectly("artistExhibitArray");
-        assertFalse(((ValueHolder) aexhibits).isFault());
+        assertFalse(((ToManyHolder) aexhibits).isFault());
         assertEquals(2, aexhibits.size());
 
         ArtistExhibit ae1 = aexhibits.get(0);
@@ -263,9 +262,9 @@ public class DataContextPrefetchMultistepIT  {
         Gallery g2 = galleries.get(0);
 
         // this relationship should be resolved
-        assertTrue(g2.readPropertyDirectly(Gallery.PAINTING_ARRAY.getName()) instanceof ValueHolder);
+        assertTrue(g2.readPropertyDirectly(Gallery.PAINTING_ARRAY.getName()) instanceof ToManyHolder);
         List<Painting> exhibits = (List<Painting>) g2.readPropertyDirectly(Gallery.PAINTING_ARRAY.getName());
-        assertFalse(((ValueHolder) exhibits).isFault());
+        assertFalse(((ToManyHolder) exhibits).isFault());
         assertEquals(0, exhibits.size());
     }
 
@@ -282,9 +281,9 @@ public class DataContextPrefetchMultistepIT  {
         Gallery g = galleries.get(0);
 
         // this relationship should be resolved
-        assertTrue(g.readPropertyDirectly(Gallery.PAINTING_ARRAY.getName()) instanceof ValueHolder);
+        assertTrue(g.readPropertyDirectly(Gallery.PAINTING_ARRAY.getName()) instanceof ToManyHolder);
         List<Painting> exhibits = (List<Painting>) g.readPropertyDirectly(Gallery.PAINTING_ARRAY.getName());
-        assertFalse(((ValueHolder) exhibits).isFault());
+        assertFalse(((ToManyHolder) exhibits).isFault());
         assertEquals(0, exhibits.size());
     }
 

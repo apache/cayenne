@@ -21,7 +21,6 @@ package org.apache.cayenne.access;
 
 import org.apache.cayenne.PersistenceState;
 import org.apache.cayenne.Persistent;
-import org.apache.cayenne.ValueHolder;
 import org.apache.cayenne.query.ObjectSelect;
 import org.apache.cayenne.query.PrefetchTreeNode;
 import org.apache.cayenne.test.jdbc.TableHelper;
@@ -145,7 +144,7 @@ public class SimpleIdIncrementalFaultListPrefetchIT {
             Artist a = (Artist) result.get(i);
 
             List paintings = a.getPaintingArray();
-            assertFalse(((ValueHolder) paintings).isFault());
+            assertFalse(((ToManyHolder) paintings).isFault());
             assertEquals(1, paintings.size());
         }
     }

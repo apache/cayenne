@@ -35,6 +35,6 @@ public class ToManyMapFault extends Fault {
 
     @Override
     public Object resolveFault(Persistent sourceObject, String relationshipName) {
-        return new ToManyMap(sourceObject, relationshipName, mapKeyAccessor);
+        return new ToManyMap<>(sourceObject, relationshipName, mapKeyAccessor);
     }
 }
