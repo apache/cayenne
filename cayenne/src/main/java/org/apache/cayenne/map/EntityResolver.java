@@ -37,7 +37,6 @@ import org.apache.cayenne.reflect.LifecycleCallbackRegistry;
 import org.apache.cayenne.reflect.SingletonFaultFactory;
 import org.apache.cayenne.reflect.generic.PersistentObjectDescriptorFactory;
 import org.apache.cayenne.reflect.generic.ValueComparisonStrategyFactory;
-import org.apache.cayenne.reflect.valueholder.ValueHolderDescriptorFactory;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -495,8 +494,6 @@ public class EntityResolver implements MappingNamespace, Serializable {
                     ClassDescriptorMap classDescriptorMap = new ClassDescriptorMap(this);
                     FaultFactory faultFactory = new SingletonFaultFactory();
 
-                    // add factories in reverse of the desired chain order
-                    classDescriptorMap.addFactory(new ValueHolderDescriptorFactory(classDescriptorMap));
                     classDescriptorMap.addFactory(new PersistentObjectDescriptorFactory(classDescriptorMap, faultFactory, valueComparisonStrategyFactory));
 
                     // since ClassDescriptorMap is not synchronized, we need to prefill it with entity proxies here.
