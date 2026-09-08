@@ -108,6 +108,9 @@ public interface DataChannel {
      * next access. In a context, matching registered objects are turned HOLLOW and their uncommitted changes are
      * discarded. At the root of the channel stack, their snapshots are evicted from the snapshot cache, and peer
      * contexts are notified via a snapshot event. Objects unknown to a given channel are ignored.
+     * <p>
+     * This is a callback invoked by a child context after it has invalidated its own objects. Application code should
+     * call {@link ObjectContext#invalidateObjects(Collection)} instead.
      *
      * @param originatingContext an ObjectContext that originated the invalidation.
      * @param objectIds          ids of the objects to invalidate.

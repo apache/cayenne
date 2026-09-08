@@ -835,27 +835,6 @@ public class DataContext implements ObjectContext {
         getObjectStore().objectsUnregistered(objects);
     }
 
-    @Override
-    public void invalidateObjects(Collection<?> objects) {
-
-        // don't allow null collections as a matter of coding discipline
-        if (objects == null) {
-            throw new NullPointerException("Null collection of objects to invalidate");
-        }
-
-        Collection<ObjectId> ids = new ArrayList<>(objects.size());
-        for (Object object : objects) {
-            Persistent persistent = (Persistent) object;
-            if (persistent.getPersistenceState() != PersistenceState.NEW) {
-                ids.add(persistent.getObjectId());
-            }
-        }
-
-        if (!ids.isEmpty()) {
-            onInvalidate(this, ids);
-        }
-    }
-
     /**
      * @since 3.1
      */
@@ -866,20 +845,35 @@ public class DataContext implements ObjectContext {
         }
     }
 
+    @Override
+    public void invalidateObjects(Collection<?> objects) {
+
+        // don't allow null collections as a matter of coding discipline
+        if (objects == null) {
+            throw new NullPointerException("Null collection of objects to invalidate");
+        }
+
+        List<ObjectId> ids = objects.stream()
+                .map(Persistent.class::cast)
+                // NEW objects have nothing to refetch, and their temporary ids are unknown to the parent channel
+                .filter(p -> p.getPersistenceState() != PersistenceState.NEW)
+                .map(Persistent::getObjectId)
+                .toList();
+
+        if (!ids.isEmpty()) {
+            getObjectStore().objectsInvalidated(ids);
+            getParent().onInvalidate(this, ids);
+        }
+    }
+
     /**
-     * An implementation of a {@link DataChannel} method that invalidates objects in this context and propagates the
-     * invalidation to the parent channel. Not intended for direct use, call {@link #invalidateObjects(Collection)}
-     * instead.
-     *
      * @since 5.0
      */
     @Override
-    public void onInvalidate(ObjectContext originatingContext, Collection<ObjectId> objectIds) {
-        getObjectStore().objectsInvalidated(objectIds);
-
-        DataChannel parent = getParent();
-        if (parent != null) {
-            parent.onInvalidate(this, objectIds);
+    public void onInvalidate(ObjectContext originatingContext, Collection<ObjectId> ids) {
+        if (!ids.isEmpty()) {
+            getObjectStore().objectsInvalidated(ids);
+            getParent().onInvalidate(this, ids);
         }
     }
 
