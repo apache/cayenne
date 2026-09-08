@@ -55,6 +55,19 @@ Expression caseWhenExp = caseWhen(
 
 ## Upgrading to 5.0-M4
 
+*  Per [CAY-2875](https://issues.apache.org/jira/browse/CAY-2875) a `java.util.UUID` attribute now honors the JDBC
+  type of the column it is mapped to, instead of always being converted to a 36-char string:
+
+  - A binary column (`BINARY`, `VARBINARY`, `LONGVARBINARY`) stores the UUID in its 16-byte big-endian form, most
+    significant bits first. `VARBINARY(16)` is the recommended mapping for new models — it uses less than half the
+    space of `VARCHAR(36)` and indexes better.
+  - A character column keeps storing the canonical string, so existing models are unaffected and need no data
+    migration.
+  - Any other JDBC type is passed to the driver as an object, which makes a PostgreSQL native `uuid` column work.
+
+  `UUIDValueType` is deprecated and no longer registered, replaced by
+  `org.apache.cayenne.access.types.UUIDType`.
+
 *  Per [CAY-3010](https://issues.apache.org/jira/browse/CAY-3010) `LocalDate`, `LocalTime` and `LocalDateTime` are
   passed to and from the JDBC driver directly, instead of being converted through `java.sql.Date` / `Time` /
   `Timestamp` in the JVM default time zone. Reads are faster, and application behavior changes in these cases:

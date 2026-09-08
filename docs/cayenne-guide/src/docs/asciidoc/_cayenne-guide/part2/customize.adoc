@@ -336,7 +336,7 @@ CayenneRuntime runtime = CayenneRuntime.of()
 ----
 
 More examples of implementation you can find in
-https://github.com/apache/cayenne/blob/master/cayenne/src/main/java/org/apache/cayenne/access/types/UUIDValueType.java[cayenne core].
+https://github.com/apache/cayenne/blob/master/cayenne/src/main/java/org/apache/cayenne/access/types/PeriodValueType.java[cayenne core].
 
 ===== Extended Types
 

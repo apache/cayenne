@@ -24,7 +24,9 @@ import org.apache.cayenne.Cayenne;
 import org.apache.cayenne.exp.ExpressionFactory;
 import org.apache.cayenne.exp.property.PropertyFactory;
 import org.apache.cayenne.query.ObjectSelect;
+import org.apache.cayenne.access.types.UUIDType;
 import org.apache.cayenne.test.jdbc.TableHelper;
+import org.apache.cayenne.testdo.uuid.UuidBinTestEntity;
 import org.apache.cayenne.testdo.uuid.UuidPkEntity;
 import org.apache.cayenne.testdo.uuid.UuidTestEntity;
 import org.apache.cayenne.unit.CayenneProjects;
@@ -35,6 +37,7 @@ import org.junit.jupiter.api.Test;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.junit.jupiter.api.Assertions.assertNull;
 
 public class UUIDIT {
 
@@ -42,10 +45,12 @@ public class UUIDIT {
     static final CayenneTestsEnv env = CayenneTestsEnv.forProject(CayenneProjects.UUID_PROJECT);
 
     private TableHelper uuidPkEntity;
+    private TableHelper uuidBinTest;
 
     @BeforeEach
     public void setUp() throws Exception {
         uuidPkEntity = env.table("UUID_PK_ENTITY", "ID");
+        uuidBinTest = env.table("UUID_BIN_TEST", "ID", "UUID");
     }
 
     @Test
@@ -108,5 +113,68 @@ public class UUIDIT {
                 .column(PropertyFactory.createBase(ExpressionFactory.dbPathExp("UUID"), UUID.class)).selectOne(env.context());
 
         assertEquals(id, readValue2);
+    }
+
+    @Test
+    public void binaryUuid() throws Exception {
+        UuidBinTestEntity test = env.context().newObject(UuidBinTestEntity.class);
+
+        UUID id = UUID.randomUUID();
+        test.setUuid(id);
+        env.context().commitChanges();
+
+        UuidBinTestEntity testRead = ObjectSelect.query(UuidBinTestEntity.class)
+                .selectFirst(env.context());
+        assertNotNull(testRead.getUuid());
+        assertEquals(id, testRead.getUuid());
+
+        test.setUuid(null);
+        env.context().commitChanges();
+    }
+
+    @Test
+    public void binaryUuidStoredAsBytes() throws Exception {
+        UuidBinTestEntity test = env.context().newObject(UuidBinTestEntity.class);
+
+        UUID id = UUID.randomUUID();
+        test.setUuid(id);
+        env.context().commitChanges();
+
+        byte[] stored = uuidBinTest.getBytes("UUID");
+        assertEquals(16, stored.length);
+        assertEquals(id, UUIDType.fromBytes(stored));
+    }
+
+    @Test
+    public void binaryUuidMatch() throws Exception {
+        UuidBinTestEntity test = env.context().newObject(UuidBinTestEntity.class);
+
+        UUID id = UUID.randomUUID();
+        test.setUuid(id);
+        env.context().commitChanges();
+
+        UuidBinTestEntity testRead = ObjectSelect.query(UuidBinTestEntity.class)
+                .where(UuidBinTestEntity.UUID.eq(id))
+                .selectOne(env.context());
+        assertNotNull(testRead);
+        assertEquals(id, testRead.getUuid());
+
+        assertNull(ObjectSelect.query(UuidBinTestEntity.class)
+                .where(UuidBinTestEntity.UUID.eq(UUID.randomUUID()))
+                .selectOne(env.context()));
+    }
+
+    @Test
+    public void binaryUuidColumnSelect() throws Exception {
+        UuidBinTestEntity test = env.context().newObject(UuidBinTestEntity.class);
+
+        UUID id = UUID.randomUUID();
+        test.setUuid(id);
+        env.context().commitChanges();
+
+        UUID readValue = ObjectSelect.query(UuidBinTestEntity.class)
+                .column(UuidBinTestEntity.UUID).selectOne(env.context());
+
+        assertEquals(id, readValue);
     }
 }

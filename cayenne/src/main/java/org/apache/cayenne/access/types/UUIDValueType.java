@@ -25,7 +25,10 @@ import org.apache.cayenne.CayenneRuntimeException;
 
 /**
  * @since 4.0
+ * @deprecated no longer registered by default. Replaced by {@link UUIDType}, which stores the value in a binary
+ * column when the mapped JDBC type is binary, instead of always converting it to a 36-char string.
  */
+@Deprecated(since = "5.0")
 public class UUIDValueType implements ValueObjectType<UUID, String> {
 
     @Override

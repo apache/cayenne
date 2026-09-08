@@ -13,6 +13,7 @@ Date:
 ----------------------------------
 Changes/New Features:
 
+CAY-2875 Allow storing UUIDs in binary columns
 CAY-2998 Modeler: clickabe "Target" column to navigate relationships
 CAY-3000 Modeler: unifying the main views of all model objects
 CAY-3004 Modeler: Rework DbEntity PK generation UI to match the XML model
