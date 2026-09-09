@@ -92,16 +92,15 @@ public interface DataChannel {
      * Executes a query, using provided <em>context</em> to register persistent objects if
      * query returns any objects.
      *
-     * @param originatingContext an ObjectContext that originated the query, used to
-     *                           register result objects.
-     * @param query              a query to execute.
-     * @param iteratedResult     if true, the result is returned as a {@link ResultIterator} accessible via
-     *                           {@link QueryResponse#firstIterator()}, and the caller is responsible for closing
-     *                           it. If false, the result is fully read into a list.
+     * @param context        an ObjectContext that originated the query, used to register result objects.
+     * @param query          a query to execute.
+     * @param iteratedResult if true, the result is returned as a {@link ResultIterator} accessible via
+     *                       {@link QueryResponse#firstIterator()}, and the caller is responsible for closing
+     *                       it. If false, the result is fully read into a list.
      * @return a generic response object that encapsulates result of the execution.
      * @since 5.0
      */
-    QueryResponse onQuery(ObjectContext originatingContext, Query query, boolean iteratedResult);
+    QueryResponse onQuery(ObjectContext context, Query query, boolean iteratedResult);
 
     /**
      * Invalidates objects with the given ids in this channel and all its parents, so that they are refetched on the
@@ -112,34 +111,33 @@ public interface DataChannel {
      * This is a callback invoked by a child context after it has invalidated its own objects. Application code should
      * call {@link ObjectContext#invalidateObjects(Collection)} instead.
      *
-     * @param originatingContext an ObjectContext that originated the invalidation.
-     * @param objectIds          ids of the objects to invalidate.
+     * @param context   an ObjectContext that originated the invalidation.
+     * @param objectIds ids of the objects to invalidate.
      * @since 5.0
      */
-    void onInvalidate(ObjectContext originatingContext, Collection<ObjectId> objectIds);
+    void onInvalidate(ObjectContext context, Collection<ObjectId> objectIds);
 
     /**
      * Resolves objects related to a given object via a mapped relationship, returning them registered with the
      * originating context.
      *
-     * @param originatingContext an ObjectContext that originated the request and that the returned objects belong to.
-     * @param sourceId           id of the object on the source side of the relationship.
-     * @param relationshipName   name of the relationship to resolve.
+     * @param context          an ObjectContext that originated the request and that the returned objects belong to.
+     * @param sourceId         id of the object on the source side of the relationship.
+     * @param relationshipName name of the relationship to resolve.
      * @return related objects registered with the originating context. An empty list means that a to-one target is
      * null, or a to-many relationship has no matching objects.
      * @since 5.0
      */
-    List<? extends Persistent> onResolveRelationship(ObjectContext originatingContext, ObjectId sourceId, String relationshipName);
+    List<? extends Persistent> onResolveRelationship(ObjectContext context, ObjectId sourceId, String relationshipName);
 
     /**
      * Processes synchronization request from a child ObjectContext, returning a GraphDiff
      * that describes changes to objects made on the receiving end as a result of
      * synchronization.
      *
-     * @param originatingContext an ObjectContext that initiated the sync. Can be null.
-     * @param changes            diff from the context that initiated the sync.
-     * @param syncType           One of {@link #FLUSH_NOCASCADE_SYNC}, {@link #FLUSH_CASCADE_SYNC},
-     *                           {@link #ROLLBACK_CASCADE_SYNC}.
+     * @param context  an ObjectContext that initiated the sync. Can be null.
+     * @param changes  diff from the context that initiated the sync.
+     * @param syncType One of {@link #FLUSH_NOCASCADE_SYNC}, {@link #FLUSH_CASCADE_SYNC}, {@link #ROLLBACK_CASCADE_SYNC}.
      */
-    GraphDiff onSync(ObjectContext originatingContext, GraphDiff changes, int syncType);
+    GraphDiff onSync(ObjectContext context, GraphDiff changes, int syncType);
 }

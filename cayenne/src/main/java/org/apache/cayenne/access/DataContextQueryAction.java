@@ -19,7 +19,6 @@
 
 package org.apache.cayenne.access;
 
-import org.apache.cayenne.ObjectContext;
 import org.apache.cayenne.ObjectId;
 import org.apache.cayenne.PersistenceState;
 import org.apache.cayenne.Persistent;
@@ -33,11 +32,8 @@ import org.apache.cayenne.query.ObjectIdQuery;
 import org.apache.cayenne.query.Query;
 import org.apache.cayenne.query.QueryCacheStrategy;
 import org.apache.cayenne.query.QueryMetadata;
-import org.apache.cayenne.util.GenericResponse;
 import org.apache.cayenne.util.ListResponse;
-import org.apache.cayenne.util.ShallowMergeOperation;
 
-import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 import java.util.Objects;
@@ -46,33 +42,19 @@ class DataContextQueryAction {
 
     private static final boolean DONE = true;
 
-    private final ObjectContext actingContext;
-    private final ObjectContext targetContext;
-    private final DataContext actingDataContext;
+    private final DataContext context;
     private final Query query;
     private final QueryMetadata metadata;
-    private final boolean queryOriginator;
     private final boolean iteratedResult;
-
+    private final boolean ignoreLocalCache;
     private transient QueryResponse response;
 
-    public DataContextQueryAction(DataContext actingContext, ObjectContext targetContext, Query query, boolean iteratedResult) {
-
-        this.actingContext = actingContext;
-        this.actingDataContext = actingContext;
+    public DataContextQueryAction(DataContext context, Query query, boolean iteratedResult, boolean ignoreLocalCache) {
+        this.context = context;
         this.query = query;
+        this.metadata = query.getMetaData(context.getEntityResolver());
         this.iteratedResult = iteratedResult;
-
-        // this means that a caller must pass self as both acting context and target
-        // context to indicate that a query originated here... null (ROP) or differing
-        // context indicates that the query was originated elsewhere, which has
-        // consequences in LOCAL_CACHE handling
-        this.queryOriginator = targetContext != null && targetContext == actingContext;
-
-        // no special target context and same target context as acting context mean the
-        // same thing. "normalize" the internal state to avoid confusion
-        this.targetContext = targetContext != actingContext ? targetContext : null;
-        this.metadata = query.getMetaData(actingContext.getEntityResolver());
+        this.ignoreLocalCache = ignoreLocalCache;
     }
 
     /**
@@ -87,7 +69,6 @@ class DataContextQueryAction {
             }
         }
 
-        interceptObjectConversion();
         return response;
     }
 
@@ -105,75 +86,6 @@ class DataContextQueryAction {
         }
     }
 
-    /**
-     * Transfers fetched objects into the target context if it is different from "acting"
-     * context. Note that when this method is invoked, result objects are already
-     * registered with acting context by the parent channel.
-     */
-    protected void interceptObjectConversion() {
-
-        if (targetContext != null && !metadata.isFetchingDataRows()) {
-
-            // rewrite response to contain objects from the query context
-
-            GenericResponse childResponse = new GenericResponse();
-            ShallowMergeOperation merger = null;
-
-            for (response.reset(); response.next(); ) {
-                if (response.isList()) {
-                    List<?> objects = response.currentList();
-                    if (objects.isEmpty()) {
-                        childResponse.addResultList(objects);
-                    } else {
-
-                        // minor optimization, skip Object[] if there are no persistent objects
-                        boolean haveObjects = metadata.getResultSetMapping() == null;
-                        if (!haveObjects) {
-                            for (Object next : metadata.getResultSetMapping()) {
-                                if (next instanceof EntityResultSegment) {
-                                    haveObjects = true;
-                                    break;
-                                }
-                            }
-                        }
-
-                        if (merger == null) {
-                            merger = new ShallowMergeOperation(targetContext);
-                        }
-
-                        // TODO: Andrus 1/31/2006 - IncrementalFaultList is not properly
-                        // transferred between contexts....
-
-                        List<Object> childObjects = new ArrayList<>(objects.size());
-                        for (Object object1 : objects) {
-                            if (object1 instanceof Persistent object) {
-                                childObjects.add(merger.merge(object));
-                            } else if (haveObjects && object1 instanceof Object[] parentData) {
-                                // merge objects inside Object[]
-                                Object[] childData = new Object[parentData.length];
-                                System.arraycopy(parentData, 0, childData, 0, parentData.length);
-                                for (int i = 0; i < childData.length; i++) {
-                                    if (childData[i] instanceof Persistent) {
-                                        childData[i] = merger.merge((Persistent) childData[i]);
-                                    }
-                                }
-                                childObjects.add(childData);
-                            } else {
-                                childObjects.add(object1);
-                            }
-                        }
-
-                        childResponse.addResultList(childObjects);
-                    }
-                } else {
-                    childResponse.addBatchUpdateCount(response.currentUpdateCount());
-                }
-            }
-
-            response = childResponse;
-        }
-
-    }
 
     /**
      * Handles {@link ObjectIdQuery}, properly handling data row fetches.
@@ -191,7 +103,7 @@ class DataContextQueryAction {
                     // nice to implement an alternative algorithm that wouldn't require
                     // this hack.
                     if (oidQuery.isFetchingDataRows()) {
-                        object = actingDataContext.currentSnapshot((Persistent) object);
+                        object = context.currentSnapshot((Persistent) object);
                     }
                     // do not return hollow objects
                     else if (((Persistent) object).getPersistenceState() == PersistenceState.HOLLOW) {
@@ -209,12 +121,12 @@ class DataContextQueryAction {
 
     // TODO: bunch of copy/paset from DataDomainQueryAction
     protected Object polymorphicObjectFromCache(ObjectId superOid) {
-        Object object = actingContext.getGraphManager().getNode(superOid);
+        Object object = context.getGraphManager().getNode(superOid);
         if (object != null) {
             return object;
         }
 
-        EntityInheritanceTree inheritanceTree = actingContext.getEntityResolver().getInheritanceTree(superOid.getEntityName());
+        EntityInheritanceTree inheritanceTree = context.getEntityResolver().getInheritanceTree(superOid.getEntityName());
         if (!inheritanceTree.getChildren().isEmpty()) {
             object = polymorphicObjectFromCache(inheritanceTree, superOid);
         }
@@ -226,7 +138,7 @@ class DataContextQueryAction {
 
         for (EntityInheritanceTree child : superNode.getChildren()) {
             ObjectId id = ObjectId.of(child.getEntity().getName(), superOid);
-            Object object = actingContext.getGraphManager().getNode(id);
+            Object object = context.getGraphManager().getNode(id);
             if (object != null) {
                 return object;
             }
@@ -246,7 +158,7 @@ class DataContextQueryAction {
             runQuery();
 
             List<?> rawIds = response.firstList();
-            int maxIdQualifierSize = actingDataContext.getParentDataDomain().getMaxIdQualifierSize();
+            int maxIdQualifierSize = context.getParentDataDomain().getMaxIdQualifierSize();
             IncrementalFaultList<?> paginatedList = createIncrementalFaultList(rawIds, maxIdQualifierSize);
 
             // replace result with a paginated list that will deal with id-to-object resolution
@@ -261,13 +173,13 @@ class DataContextQueryAction {
         // just a sanity check
         Objects.requireNonNull(rawIds, "Trying to execute paginated query that is not a select query");
         if (isMixedResultsForPaginatedQuery()) {
-            return new MixedResultIncrementalFaultList<>(actingDataContext, query, maxIdQualifierSize, rawIds);
+            return new MixedResultIncrementalFaultList<>(context, query, maxIdQualifierSize, rawIds);
         } else {
             DbEntity dbEntity = metadata.getDbEntity();
             if (dbEntity != null && dbEntity.getPrimaryKeys().size() == 1) {
-                return new SimpleIdIncrementalFaultList<>(actingDataContext, query, maxIdQualifierSize, rawIds);
+                return new SimpleIdIncrementalFaultList<>(context, query, maxIdQualifierSize, rawIds);
             } else {
-                return new IncrementalFaultList<>(actingDataContext, query, maxIdQualifierSize, rawIds);
+                return new IncrementalFaultList<>(context, query, maxIdQualifierSize, rawIds);
             }
         }
     }
@@ -288,12 +200,15 @@ class DataContextQueryAction {
 
     protected boolean interceptLocalCache() {
 
-        if (metadata.getCacheKey() == null) {
+        // If the query was originated in a child context, don't use this context local cache...
+        // TODO: I suppose if the request came from a child context, instead of ignoring cache at this level, we should
+        //  attempt to read from it, but never write (we don't want another copy of the object list). Or maybe writing
+        //  is fine too. The objects are resolved here anyways
+        if (ignoreLocalCache) {
             return !DONE;
         }
 
-        // ignore local cache unless this context originated the query...
-        if (!queryOriginator) {
+        if (metadata.getCacheKey() == null) {
             return !DONE;
         }
 
@@ -326,7 +241,7 @@ class DataContextQueryAction {
     }
 
     protected QueryCache getQueryCache() {
-        return actingDataContext.getQueryCache();
+        return context.getQueryCache();
     }
 
     protected QueryCacheEntryFactory getCacheObjectFactory() {
@@ -342,6 +257,6 @@ class DataContextQueryAction {
      * Fetches data from the channel.
      */
     protected void runQuery() {
-        this.response = actingContext.getChannel().onQuery(actingContext, query, iteratedResult);
+        this.response = context.getChannel().onQuery(context, query, iteratedResult);
     }
 }

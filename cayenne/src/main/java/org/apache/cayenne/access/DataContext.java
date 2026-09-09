@@ -1148,7 +1148,7 @@ public class DataContext implements ObjectContext {
     @SuppressWarnings("unchecked")
     public <T> ResultIterator<T> iterator(Select<T> query) {
         Query queryToRun = nonNullDelegate().willPerformQuery(this, query);
-        QueryResponse queryResponse = onQuery(this, queryToRun, true);
+        QueryResponse queryResponse = onQuery(queryToRun, true, false);
         return (ResultIterator<T>) queryResponse.firstIterator();
     }
 
@@ -1169,7 +1169,7 @@ public class DataContext implements ObjectContext {
             throw new CayenneRuntimeException("Can't run query - parent DataChannel is not set.");
         }
 
-        return onQuery(this, query, false);
+        return onQuery(query, false, false);
     }
 
     /**
@@ -1199,21 +1199,12 @@ public class DataContext implements ObjectContext {
             return new ArrayList<>(1);
         }
 
-        List<?> result = onQuery(this, query, false).firstList();
+        List<?> result = onQuery(query, false, false).firstList();
         return result != null ? result : new ArrayList<>(1);
     }
 
-    QueryResponse onQuery(ObjectContext context, Query query, boolean iteratedResult) {
-        return new DataContextQueryAction(this, context, query, iteratedResult).execute();
-    }
-
-    GraphDiff onSync(ObjectContext originatingContext, GraphDiff changes, int syncType) {
-        return switch (syncType) {
-            case DataChannel.ROLLBACK_CASCADE_SYNC -> onContextRollback();
-            case DataChannel.FLUSH_NOCASCADE_SYNC -> onContextFlush(originatingContext, changes, false);
-            case DataChannel.FLUSH_CASCADE_SYNC -> onContextFlush(originatingContext, changes, true);
-            default -> throw new CayenneRuntimeException("Unrecognized SyncMessage type: %d", syncType);
-        };
+    QueryResponse onQuery(Query query, boolean iteratedResult, boolean ignoreLocalCache) {
+        return new DataContextQueryAction(this, query, iteratedResult, ignoreLocalCache).execute();
     }
 
     GraphDiff onContextRollback() {

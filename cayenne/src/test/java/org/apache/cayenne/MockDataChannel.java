@@ -85,7 +85,7 @@ public class MockDataChannel implements DataChannel {
         return requestObjects;
     }
 
-    public GraphDiff onSync(ObjectContext originatingContext, GraphDiff changes, int syncType) {
+    public GraphDiff onSync(ObjectContext context, GraphDiff changes, int syncType) {
         requestObjects.add(changes);
         return commitResponse;
     }
@@ -95,11 +95,11 @@ public class MockDataChannel implements DataChannel {
         return response;
     }
 
-    public void onInvalidate(ObjectContext originatingContext, Collection<ObjectId> objectIds) {
+    public void onInvalidate(ObjectContext context, Collection<ObjectId> objectIds) {
         requestObjects.add(objectIds);
     }
 
-    public List<Persistent> onResolveRelationship(ObjectContext originatingContext, ObjectId sourceId,
+    public List<Persistent> onResolveRelationship(ObjectContext context, ObjectId sourceId,
                                                   String relationshipName) {
         requestObjects.add(sourceId);
         return (List<Persistent>) response.firstList();

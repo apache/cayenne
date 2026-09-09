@@ -103,26 +103,26 @@ public class DataContextDecoratedStackIT {
         }
 
         @Override
-        public QueryResponse onQuery(ObjectContext originatingContext, Query query, boolean iteratedResult) {
-            return channel.onQuery(originatingContext, query, iteratedResult);
+        public QueryResponse onQuery(ObjectContext context, Query query, boolean iteratedResult) {
+            return channel.onQuery(context, query, iteratedResult);
         }
 
         @Override
         public GraphDiff onSync(
-                ObjectContext originatingContext,
+                ObjectContext context,
                 GraphDiff changes,
                 int syncType) {
-            return channel.onSync(originatingContext, changes, syncType);
+            return channel.onSync(context, changes, syncType);
         }
 
         @Override
-        public void onInvalidate(ObjectContext originatingContext, Collection<ObjectId> objectIds) {
-            channel.onInvalidate(originatingContext, objectIds);
+        public void onInvalidate(ObjectContext context, Collection<ObjectId> objectIds) {
+            channel.onInvalidate(context, objectIds);
         }
 
         @Override
-        public List<? extends Persistent> onResolveRelationship(ObjectContext originatingContext, ObjectId sourceId, String relationshipName) {
-            return channel.onResolveRelationship(originatingContext, sourceId, relationshipName);
+        public List<? extends Persistent> onResolveRelationship(ObjectContext context, ObjectId sourceId, String relationshipName) {
+            return channel.onResolveRelationship(context, sourceId, relationshipName);
         }
 
         @Override

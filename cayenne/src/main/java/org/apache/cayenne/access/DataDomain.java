@@ -349,9 +349,9 @@ public class DataDomain implements DataChannel {
      * @since 1.2
      */
     @Override
-    public QueryResponse onQuery(ObjectContext originatingContext, Query query, boolean iteratedResult) {
+    public QueryResponse onQuery(ObjectContext context, Query query, boolean iteratedResult) {
         checkStopped();
-        return new DataDomainQueryFilterChain().onQuery(originatingContext, query, iteratedResult);
+        return new DataDomainQueryFilterChain().onQuery(context, query, iteratedResult);
     }
 
     /**
@@ -389,9 +389,9 @@ public class DataDomain implements DataChannel {
      * @since 5.0
      */
     @Override
-    public List<Persistent> onResolveRelationship(ObjectContext originatingContext, ObjectId sourceId, String relationshipName) {
+    public List<Persistent> onResolveRelationship(ObjectContext context, ObjectId sourceId, String relationshipName) {
         checkStopped();
-        return new DataDomainRelationshipAction(this, originatingContext, sourceId, relationshipName).execute();
+        return new DataDomainRelationshipAction(this, context, sourceId, relationshipName).execute();
     }
 
     QueryResponse onQueryNoFilters(ObjectContext originatingContext, Query query, boolean iteratedResult) {
@@ -416,11 +416,11 @@ public class DataDomain implements DataChannel {
      * @since 1.2
      */
     @Override
-    public GraphDiff onSync(ObjectContext originatingContext, GraphDiff changes, int syncType) {
+    public GraphDiff onSync(ObjectContext context, GraphDiff changes, int syncType) {
 
         checkStopped();
 
-        return new DataDomainSyncFilterChain().onSync(originatingContext, changes, syncType);
+        return new DataDomainSyncFilterChain().onSync(context, changes, syncType);
     }
 
     GraphDiff onSyncNoFilters(ObjectContext originatingContext, GraphDiff changes, int syncType) {
