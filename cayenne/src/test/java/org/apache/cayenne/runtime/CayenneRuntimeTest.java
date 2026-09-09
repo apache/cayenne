@@ -21,13 +21,13 @@ package org.apache.cayenne.runtime;
 import org.apache.cayenne.DataChannel;
 import org.apache.cayenne.ObjectContext;
 import org.apache.cayenne.access.DataContext;
+import org.apache.cayenne.access.DataDomain;
 import org.apache.cayenne.configuration.ObjectContextFactory;
 import org.apache.cayenne.di.Injector;
 import org.apache.cayenne.di.Module;
 import org.apache.cayenne.tx.BaseTransaction;
 import org.apache.cayenne.tx.TransactionDescriptor;
 import org.apache.cayenne.tx.TransactionFactory;
-import org.apache.cayenne.tx.TransactionalOperation;
 import org.junit.jupiter.api.Test;
 
 import java.util.Collections;
@@ -54,11 +54,9 @@ public class CayenneRuntimeTest {
         try {
 
             final Object expectedResult = new Object();
-            Object result = runtime.performInTransaction(new TransactionalOperation<Object>() {
-                public Object perform() {
-                    assertSame(tx, BaseTransaction.getThreadTransaction());
-                    return expectedResult;
-                }
+            Object result = runtime.performInTransaction(() -> {
+                assertSame(tx, BaseTransaction.getThreadTransaction());
+                return expectedResult;
             });
 
             assertSame(expectedResult, result);
@@ -87,19 +85,25 @@ public class CayenneRuntimeTest {
 
     @Test
     public void getObjectContext_CustomModule() {
-        final ObjectContext context = new DataContext();
-        final ObjectContextFactory factory = new ObjectContextFactory() {
+        ObjectContext context = new DataContext();
+        ObjectContextFactory factory = new ObjectContextFactory() {
 
+            @Override
             public ObjectContext createContext(DataChannel parent) {
                 return context;
             }
 
-            public ObjectContext createContext() {
+            @Override
+            public ObjectContext createContext(ObjectContext parent) {
                 return context;
             }
         };
 
-        Module module = binder -> binder.bind(ObjectContextFactory.class).toInstance(factory);
+        // 'newContext()' resolves the DataDomain to pass to the factory, so a binding must exist
+        Module module = binder -> {
+            binder.bind(DataDomain.class).toInstance(mock(DataDomain.class));
+            binder.bind(ObjectContextFactory.class).toInstance(factory);
+        };
 
         CayenneRuntime runtime = new CayenneRuntime(Collections.singleton(module));
         assertSame(context, runtime.newContext());
@@ -116,8 +120,7 @@ public class CayenneRuntimeTest {
         try {
             CayenneRuntime.bindThreadInjector(injector);
             assertSame(injector, CayenneRuntime.getThreadInjector());
-        }
-        finally {
+        } finally {
             CayenneRuntime.bindThreadInjector(null);
         }
 

@@ -310,18 +310,29 @@ public class CayenneRuntime {
      * @since 4.0
      */
     public ObjectContext newContext() {
-        return injector.getInstance(ObjectContextFactory.class).createContext();
+        DataDomain domain = getDataDomain();
+        return injector.getInstance(ObjectContextFactory.class).createContext(domain);
     }
 
     /**
-     * Returns a new ObjectContext which is a child of the specified
-     * DataChannel. This method is used for creation of nested ObjectContexts,
-     * with parent ObjectContext passed as an argument.
+     * Returns a new ObjectContext attached to the specified DataChannel.
      *
      * @since 4.0
+     * @deprecated use either {@link #newContext()} or {@link #newContext(ObjectContext)}
      */
+    @Deprecated(since = "5.0", forRemoval = true)
     public ObjectContext newContext(DataChannel parentChannel) {
         return injector.getInstance(ObjectContextFactory.class).createContext(parentChannel);
+    }
+
+    /**
+     * Returns a new ObjectContext nested in the specified parent context. The nested context selects and commits its
+     * objects via the parent.
+     *
+     * @since 5.0
+     */
+    public ObjectContext newContext(ObjectContext parentContext) {
+        return injector.getInstance(ObjectContextFactory.class).createContext(parentContext);
     }
 
 }

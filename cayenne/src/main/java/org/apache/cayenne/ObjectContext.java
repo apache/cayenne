@@ -31,10 +31,15 @@ import java.util.List;
 /**
  * A Cayenne object facade to a persistent store. Instances of ObjectContext are
  * used in the application code to access Cayenne persistence features.
- * 
+ *
  * @since 1.2
  */
-public interface ObjectContext extends DataChannel, Serializable {
+public interface ObjectContext extends Serializable {
+
+    /**
+     * Returns a DataChannel that this context uses to access the persistent store.
+     */
+    DataChannel getChannel();
 
     /**
      * Returns EntityResolver that stores all mapping information accessible by
@@ -257,16 +262,6 @@ public interface ObjectContext extends DataChannel, Serializable {
      * context.
      */
     GraphManager getGraphManager();
-
-    /**
-     * Returns a DataChannel used by this context.
-     *
-     * @deprecated in favor of {@link DataChannel#getParent()}
-     */
-    @Deprecated(since = "5.0", forRemoval = true)
-    default DataChannel getChannel() {
-        return getParent();
-    }
 
     /**
      * Returns <code>true</code> if there are any modified, deleted or new

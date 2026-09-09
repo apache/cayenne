@@ -67,7 +67,7 @@ public class CommitLogFilter implements DataChannelSyncFilter {
 
 		// passing DataDomain, not ObjectContext to speed things up
 		// and avoid capturing changed state when fetching snapshots
-		DataChannel channel = originatingContext.getParent();
+		DataChannel channel = originatingContext.getChannel();
 
 		beforeCommit(changes, channel, beforeDiff);
 		GraphDiff afterDiff = filterChain.onSync(originatingContext, beforeDiff, syncType);

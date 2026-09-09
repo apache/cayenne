@@ -343,6 +343,6 @@ class DataContextQueryAction {
      * Fetches data from the channel.
      */
     protected void runQuery() {
-        this.response = actingContext.getParent().onQuery(actingContext, query, iteratedResult);
+        this.response = actingContext.getChannel().onQuery(actingContext, query, iteratedResult);
     }
 }

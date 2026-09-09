@@ -72,7 +72,7 @@ public class ToOneFault extends Fault {
     }
 
     Object doResolveFault(Persistent sourceObject, String relationshipName) {
-        ObjectContext context = sourceObject.getObjectContext();
+        DataContext context = (DataContext) sourceObject.getObjectContext();
         List<Persistent> objects = context.onResolveRelationship(
                 context,
                 sourceObject.getObjectId(),

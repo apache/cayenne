@@ -21,6 +21,7 @@ package org.apache.cayenne.configuration.runtime;
 import org.apache.cayenne.DataChannel;
 import org.apache.cayenne.ObjectContext;
 import org.apache.cayenne.access.DataContext;
+import org.apache.cayenne.access.DataContextChannel;
 import org.apache.cayenne.access.DataDomain;
 import org.apache.cayenne.access.DataRowStore;
 import org.apache.cayenne.access.DataRowStoreFactory;
@@ -30,7 +31,6 @@ import org.apache.cayenne.cache.QueryCache;
 import org.apache.cayenne.configuration.ObjectContextFactory;
 import org.apache.cayenne.configuration.ObjectStoreFactory;
 import org.apache.cayenne.di.Inject;
-import org.apache.cayenne.event.EventManager;
 
 /**
  * @since 3.1
@@ -38,81 +38,56 @@ import org.apache.cayenne.event.EventManager;
 public class DataContextFactory implements ObjectContextFactory {
 
     @Inject
-    protected DataDomain dataDomain;
-
-    @Inject
-    protected EventManager eventManager;
-
-    @Inject
     protected DataRowStoreFactory dataRowStoreFactory;
-    
+
     @Inject
     protected ObjectStoreFactory objectStoreFactory;
-    
+
     @Inject
     protected QueryCache queryCache;
 
     @Override
-    public ObjectContext createContext() {
-        return createdFromDataDomain(dataDomain);
-    }
-
-    @Override
     public ObjectContext createContext(DataChannel parent) {
 
-        // this switch may go away once we figure out clean property configuration...
-        if (parent instanceof DataDomain dataDomain) {
-            return createdFromDataDomain(dataDomain);
+        DataChannel c = parent;
+        while (c != null && !(c instanceof DataDomain)) {
+            c = c.getParent();
         }
-        else if (parent instanceof DataContext dataContext) {
-            return createFromDataContext(dataContext);
+
+        if (c == null) {
+            throw new IllegalArgumentException("Parent DataChannel is not attached to a DataDomain: " + parent);
         }
-        else {
-            return createFromGenericChannel(parent);
-        }
-    }
 
-    protected ObjectContext createFromGenericChannel(DataChannel parent) {
+        DataDomain domain = (DataDomain) c;
 
-        // for new dataRowStores use the same name for all stores
-        // it makes it easier to track the event subject
-        DataRowStore snapshotCache = (dataDomain.isSharedCacheEnabled())
-                ? dataDomain.getSharedSnapshotCache()
-                : dataRowStoreFactory.createDataRowStore(dataDomain.getName());
+        // for new dataRowStores use the same name for all stores it makes it easier to track the event subject
+        DataRowStore snapshotCache = domain.isSharedCacheEnabled()
+                ? domain.getSharedSnapshotCache()
+                : dataRowStoreFactory.createDataRowStore(domain.getName());
 
-        DataContext context = newInstance(
-                parent, objectStoreFactory.createObjectStore(snapshotCache));
-        context.setValidatingObjectsOnCommit(dataDomain.isValidatingObjectsOnCommit());
+        DataContext context = newInstance(parent, objectStoreFactory.createObjectStore(snapshotCache));
+        context.setValidatingObjectsOnCommit(domain.isValidatingObjectsOnCommit());
         context.setQueryCache(new NestedQueryCache(queryCache));
         return context;
     }
 
-    protected ObjectContext createFromDataContext(DataContext parent) {
+    @Override
+    public ObjectContext createContext(ObjectContext parent) {
+        if (!(parent instanceof DataContext dataContext)) {
+            throw new IllegalArgumentException("Only a DataContext can be a parent of a nested context. "
+                    + "Unsupported context type: " + parent);
+        }
+
         // child ObjectStore should not have direct access to snapshot cache, so do not
         // pass it in constructor.
         ObjectStore objectStore = objectStoreFactory.createObjectStore(null);
 
-        DataContext context = newInstance(parent, objectStore);
+        DataContext context = newInstance(new DataContextChannel(dataContext), objectStore);
 
-        context.setValidatingObjectsOnCommit(parent.isValidatingObjectsOnCommit());
-        context.setUsingSharedSnapshotCache(parent.isUsingSharedSnapshotCache());
+        context.setValidatingObjectsOnCommit(dataContext.isValidatingObjectsOnCommit());
+        context.setUsingSharedSnapshotCache(dataContext.isUsingSharedSnapshotCache());
         context.setQueryCache(new NestedQueryCache(queryCache));
 
-        return context;
-    }
-
-    protected ObjectContext createdFromDataDomain(DataDomain parent) {
-
-        // for new dataRowStores use the same name for all stores
-        // it makes it easier to track the event subject
-        DataRowStore snapshotCache = (parent.isSharedCacheEnabled())
-                ? parent.getSharedSnapshotCache()
-                : dataRowStoreFactory.createDataRowStore(parent.getName());
-
-        DataContext context = newInstance(
-                parent, objectStoreFactory.createObjectStore(snapshotCache));
-        context.setValidatingObjectsOnCommit(parent.isValidatingObjectsOnCommit());
-        context.setQueryCache(new NestedQueryCache(queryCache));
         return context;
     }
 

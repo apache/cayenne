@@ -103,7 +103,7 @@ public class NestedDataContextReadIT {
         ObjectContext child1 = runtime.newContext(context);
 
         assertNotNull(child1);
-        assertSame(context, child1.getChannel());
+        assertSame(context, ((DataContextChannel) child1.getChannel()).context());
         assertTrue(((DataContext) child1).isValidatingObjectsOnCommit());
 
         context.setValidatingObjectsOnCommit(false);
@@ -111,14 +111,14 @@ public class NestedDataContextReadIT {
         ObjectContext child2 = runtime.newContext(context);
 
         assertNotNull(child2);
-        assertSame(context, child2.getChannel());
+        assertSame(context, ((DataContextChannel) child2.getChannel()).context());
         assertFalse(((DataContext) child2).isValidatingObjectsOnCommit());
 
         // second level of nesting
         ObjectContext child21 = runtime.newContext(child2);
 
         assertNotNull(child21);
-        assertSame(child2, child21.getChannel());
+        assertSame(child2, ((DataContextChannel) child21.getChannel()).context());
         assertFalse(((DataContext) child2).isValidatingObjectsOnCommit());
     }
 

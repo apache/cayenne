@@ -44,10 +44,12 @@ import org.apache.cayenne.reflect.ToOneProperty;
 class DataContextMergeHandler implements GraphChangeHandler, DataChannelListener {
 
     private final DataContext context;
+    private final Object eventSource;
     private volatile boolean stopped;
 
-    DataContextMergeHandler(DataContext context) {
+    DataContextMergeHandler(DataContext context, Object eventSource) {
         this.context = context;
+        this.eventSource = eventSource;
     }
 
     void stop() {
@@ -65,11 +67,11 @@ class DataContextMergeHandler implements GraphChangeHandler, DataChannelListener
 
         // this effectively filters out all events that are not coming from peers or
         // grandparents...
-        return e.getSource() == context.getParent()
+        return e.getSource() == eventSource
                 && e.getPostedBy() != context
-                && e.getPostedBy() != context.getParent();
+                && e.getPostedBy() != eventSource;
 
-        // the first condition (e.getSource() == context.getParent()) is actually always
+        // the first condition (e.getSource() == eventSource) is actually always
         // 'true' because of how the listener is registered. Still keep it here as an
         // extra safegurad
     }

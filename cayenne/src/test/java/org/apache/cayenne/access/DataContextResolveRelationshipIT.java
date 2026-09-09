@@ -123,7 +123,7 @@ public class DataContextResolveRelationshipIT {
         Artist childA = child.localObject(a);
 
         env.runWithQueriesBlocked(() -> {
-            List<Persistent> related = child.onResolveRelationship(child, childA.getObjectId(),
+            List<Persistent> related = ((DataContext) child).onResolveRelationship(child, childA.getObjectId(),
                     Artist.PAINTING_ARRAY.getName());
             assertEquals(2, related.size());
             for (Persistent p : related) {
@@ -145,7 +145,7 @@ public class DataContextResolveRelationshipIT {
         Painting childP = child.localObject(p);
 
         env.runWithQueriesBlocked(() -> {
-            List<Persistent> related = child.onResolveRelationship(child, childP.getObjectId(),
+            List<Persistent> related = ((DataContext) child).onResolveRelationship(child, childP.getObjectId(),
                     Painting.TO_ARTIST.getName());
             assertEquals(1, related.size());
             assertSame(child, related.getFirst().getObjectContext());
@@ -166,7 +166,7 @@ public class DataContextResolveRelationshipIT {
 
         // a NEW object is unknown to the database, so its relationships must be resolved from the parent context
         env.runWithQueriesBlocked(() -> {
-            List<Persistent> related = child.onResolveRelationship(child, childA.getObjectId(),
+            List<Persistent> related = ((DataContext) child).onResolveRelationship(child, childA.getObjectId(),
                     Artist.PAINTING_ARRAY.getName());
             assertEquals(1, related.size());
             assertSame(child, related.getFirst().getObjectContext());

@@ -19,7 +19,6 @@
 
 package org.apache.cayenne.access;
 
-import org.apache.cayenne.ObjectContext;
 import org.apache.cayenne.PersistenceState;
 import org.apache.cayenne.Persistent;
 
@@ -98,7 +97,7 @@ public abstract class ToManyHolder<E> implements Serializable {
             return new ArrayList<>();
         }
 
-        ObjectContext context = relationshipOwner.getObjectContext();
+        DataContext context = (DataContext) relationshipOwner.getObjectContext();
         List<E> resolved = (List<E>) context.onResolveRelationship(
                 context,
                 relationshipOwner.getObjectId(),

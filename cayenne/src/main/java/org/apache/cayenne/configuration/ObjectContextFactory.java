@@ -23,19 +23,21 @@ import org.apache.cayenne.ObjectContext;
 
 /**
  * A factory for regular and nested contexts.
- * 
+ *
  * @since 3.1
  */
 public interface ObjectContextFactory {
 
     /**
-     * Creates an ObjectContext attached to a default DataChannel.
-     */
-    ObjectContext createContext();
-
-    /**
-     * Creates an ObjectContext attached to a provided channel. This is often used for
-     * nested context creation.
+     * Creates an ObjectContext attached to a provided channel
      */
     ObjectContext createContext(DataChannel parent);
+
+    /**
+     * Creates an ObjectContext nested in the provided parent context. The nested context selects and commits its
+     * objects via the parent.
+     *
+     * @since 5.0
+     */
+    ObjectContext createContext(ObjectContext parent);
 }

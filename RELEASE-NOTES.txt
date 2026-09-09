@@ -24,6 +24,7 @@ CAY-3013 MySQL: JDBC-level streaming for iterators
 CAY-3014 Remove QueryChain
 CAY-3015 Get rid of RefreshQuery
 CAY-3016 Get rid of RelationshipQuery
+CAY-3017 ObjectContext should not be a DataChannel
 
 Bug Fixes:
 

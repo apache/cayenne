@@ -19,7 +19,6 @@
 
 package org.apache.cayenne.access;
 
-import org.apache.cayenne.DataChannel;
 import org.apache.cayenne.DataChannelListener;
 import org.apache.cayenne.ObjectContext;
 import org.apache.cayenne.configuration.runtime.CoreModule;
@@ -162,7 +161,7 @@ public class DataContextDataChannelEventsIT {
         childPeer1.commitChanges();
 
         final MockChannelListener listener = new MockChannelListener();
-        EventUtil.listenForChannelEvents((DataChannel) childPeer1, listener);
+        EventUtil.listenForChannelEvents(childPeer1, listener);
 
         ObjectContext childPeer2 = env.runtime().newContext(context);
 

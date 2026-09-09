@@ -41,7 +41,7 @@ public class DataContextFactory_DedicatedCacheIT {
 
         DataContext c3 = (DataContext) env.runtime().getInjector()
                 .getInstance(ObjectContextFactory.class)
-                .createContext();
+                .createContext(domain);
 
         assertNotNull(c3.getObjectStore().getDataRowCache());
         assertNull(domain.getSharedSnapshotCache());

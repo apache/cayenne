@@ -249,13 +249,17 @@ public class DataContext implements ObjectContext {
         EventManager eventManager = channel.getEventManager();
 
         if (eventManager != null) {
-            mergeHandler = new DataContextMergeHandler(this);
 
-            // listen to our channel events...
-            // note that we must reset listener on channel switch, as there is
-            // no
-            // guarantee that a new channel uses the same EventManager.
-            EventUtil.listenForChannelEvents(channel, mergeHandler);
+            // listen to our channel events... note that we must reset listener on channel switch, as there is no
+            // guarantee that a new channel uses the same EventManager. A parent context posts its events on its own
+            // behalf, not on behalf of the channel adapter wrapping it, so listen to the context in that case
+            if (channel instanceof DataContextChannel channelAdapter) {
+                mergeHandler = new DataContextMergeHandler(this, channelAdapter.context());
+                EventUtil.listenForChannelEvents(channelAdapter.context(), mergeHandler);
+            } else {
+                mergeHandler = new DataContextMergeHandler(this, channel);
+                EventUtil.listenForChannelEvents(channel, mergeHandler);
+            }
         }
 
         if (!usingSharedSnapshotCache && getObjectStore() != null) {
@@ -268,7 +272,7 @@ public class DataContext implements ObjectContext {
     }
 
     @Override
-    public DataChannel getParent() {
+    public DataChannel getChannel() {
         attachToRuntimeIfNeeded();
         return channel;
     }
@@ -465,13 +469,7 @@ public class DataContext implements ObjectContext {
         this.queryCache = queryCache;
     }
 
-    /**
-     * Returns EventManager associated with the ObjectStore.
-     *
-     * @since 1.2
-     */
-    @Override
-    public EventManager getEventManager() {
+    private EventManager eventManager() {
         return channel != null ? channel.getEventManager() : null;
     }
 
@@ -479,7 +477,7 @@ public class DataContext implements ObjectContext {
      * @since 1.2
      */
     protected void fireDataChannelCommitted(Object postedBy, GraphDiff changes) {
-        EventManager manager = getEventManager();
+        EventManager manager = eventManager();
 
         if (manager != null) {
             GraphEvent e = new GraphEvent(this, postedBy, changes);
@@ -491,7 +489,7 @@ public class DataContext implements ObjectContext {
      * @since 1.2
      */
     protected void fireDataChannelRolledback(Object postedBy, GraphDiff changes) {
-        EventManager manager = getEventManager();
+        EventManager manager = eventManager();
 
         if (manager != null) {
             GraphEvent e = new GraphEvent(this, postedBy, changes);
@@ -603,12 +601,12 @@ public class DataContext implements ObjectContext {
         // a child context has no snapshot cache, so it can't resolve rows on its own. Resolve them in the parent
         // context and transfer the resulting objects here
         if (getObjectStore().getDataRowCache() == null) {
-            if (!(getParent() instanceof DataContext parentContext)) {
+            if (!(getChannel() instanceof DataContextChannel channelAdapter)) {
                 throw new CayenneRuntimeException(
                         "DataContext has no snapshot cache and no parent DataContext to resolve DataRows");
             }
 
-            List<?> parentObjects = parentContext.objectsFromDataRows(descriptor, dataRows);
+            List<?> parentObjects = channelAdapter.context().objectsFromDataRows(descriptor, dataRows);
             ShallowMergeOperation merger = new ShallowMergeOperation(this);
             List<Persistent> objects = new ArrayList<>(parentObjects.size());
             for (Object parentObject : parentObjects) {
@@ -862,34 +860,22 @@ public class DataContext implements ObjectContext {
 
         if (!ids.isEmpty()) {
             getObjectStore().objectsInvalidated(ids);
-            getParent().onInvalidate(this, ids);
+            getChannel().onInvalidate(this, ids);
         }
     }
 
-    /**
-     * @since 5.0
-     */
-    @Override
-    public void onInvalidate(ObjectContext originatingContext, Collection<ObjectId> ids) {
+    void onInvalidate(Collection<ObjectId> ids) {
         if (!ids.isEmpty()) {
             getObjectStore().objectsInvalidated(ids);
-            getParent().onInvalidate(this, ids);
+            getChannel().onInvalidate(this, ids);
         }
     }
 
-    /**
-     * An implementation of a {@link DataChannel} method that resolves a relationship from the objects already
-     * registered in this context, delegating to the parent channel on a miss. Not intended for direct use, read
-     * the relationship property of an object instead.
-     *
-     * @since 5.0
-     */
-    @Override
-    public List<Persistent> onResolveRelationship(ObjectContext originatingContext, ObjectId sourceId, String relationshipName) {
+    List<Persistent> onResolveRelationship(ObjectContext originatingContext, ObjectId sourceId, String relationshipName) {
 
         List<Persistent> related = resolvedRelationship(sourceId, relationshipName, originatingContext != this);
         if (related == null) {
-            related = getParent().onResolveRelationship(this, sourceId, relationshipName);
+            related = getChannel().onResolveRelationship(this, sourceId, relationshipName);
         }
 
         if (originatingContext == this || related.isEmpty()) {
@@ -1046,7 +1032,7 @@ public class DataContext implements ObjectContext {
      */
     GraphDiff flushToParent(boolean cascade) {
 
-        if (this.getParent() == null) {
+        if (this.getChannel() == null) {
             throw new CayenneRuntimeException("Cannot commit changes - channel is not set.");
         }
 
@@ -1067,7 +1053,7 @@ public class DataContext implements ObjectContext {
             } else {
 
                 try {
-                    parentChanges = getParent().onSync(this, changes, syncType);
+                    parentChanges = getChannel().onSync(this, changes, syncType);
 
                     // note that this is a hack resulting from a fix to CAY-766...
                     // To support valid object state in PostPersist callback,
@@ -1105,7 +1091,7 @@ public class DataContext implements ObjectContext {
 
             // this event is caught by child DataContexts to update temporary ObjectIds with permanent
             if (!diff.isNoop()) {
-                fireDataChannelCommitted(getParent(), diff);
+                fireDataChannelCommitted(getChannel(), diff);
             }
 
             return diff;
@@ -1192,7 +1178,7 @@ public class DataContext implements ObjectContext {
             return new GenericResponse();
         }
 
-        if (this.getParent() == null) {
+        if (this.getChannel() == null) {
             throw new CayenneRuntimeException("Can't run query - parent DataChannel is not set.");
         }
 
@@ -1230,28 +1216,17 @@ public class DataContext implements ObjectContext {
         return result != null ? result : new ArrayList<>(1);
     }
 
-    /**
-     * An implementation of a {@link DataChannel} method that is used by child
-     * contexts to execute queries. Not intended for direct use.
-     *
-     * @since 1.2
-     */
-    public QueryResponse onQuery(ObjectContext context, Query query, boolean iteratedResult) {
+    QueryResponse onQuery(ObjectContext context, Query query, boolean iteratedResult) {
         return new DataContextQueryAction(this, context, query, iteratedResult).execute();
     }
 
-    @Override
-    public GraphDiff onSync(ObjectContext originatingContext, GraphDiff changes, int syncType) {
-        switch (syncType) {
-            case DataChannel.ROLLBACK_CASCADE_SYNC:
-                return onContextRollback();
-            case DataChannel.FLUSH_NOCASCADE_SYNC:
-                return onContextFlush(originatingContext, changes, false);
-            case DataChannel.FLUSH_CASCADE_SYNC:
-                return onContextFlush(originatingContext, changes, true);
-            default:
-                throw new CayenneRuntimeException("Unrecognized SyncMessage type: %d", syncType);
-        }
+    GraphDiff onSync(ObjectContext originatingContext, GraphDiff changes, int syncType) {
+        return switch (syncType) {
+            case DataChannel.ROLLBACK_CASCADE_SYNC -> onContextRollback();
+            case DataChannel.FLUSH_NOCASCADE_SYNC -> onContextFlush(originatingContext, changes, false);
+            case DataChannel.FLUSH_CASCADE_SYNC -> onContextFlush(originatingContext, changes, true);
+            default -> throw new CayenneRuntimeException("Unrecognized SyncMessage type: %d", syncType);
+        };
     }
 
     GraphDiff onContextRollback() {
@@ -1450,7 +1425,7 @@ public class DataContext implements ObjectContext {
      * @since 1.2
      */
     protected void fireDataChannelChanged(Object postedBy, GraphDiff changes) {
-        EventManager manager = getEventManager();
+        EventManager manager = eventManager();
 
         if (manager != null) {
             GraphEvent e = new GraphEvent(this, postedBy, changes);

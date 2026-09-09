@@ -136,6 +136,11 @@ Expression caseWhenExp = caseWhen(
           .select(context);
   ```
 
+*  Per [CAY-3017](https://issues.apache.org/jira/browse/CAY-3017) `ObjectContext` no longer extends `DataChannel`. This 
+  doesn't change the overall architecture (there are still "channels" downstream from an ObjectContext). But the channel 
+  methods are no longer accessible on the context itself. Application code wasn't ever not supposed to use them, as 
+  everything you need to do, you can do via the ObjectContext API.
+
 *  The `org.apache.cayenne.query.ParameterizedQuery` interface was removed, together with the `createQuery(Map)`
   methods of `SQLTemplate`, `ProcedureQuery` and `ObjectSelect` that implemented it. Applying parameters to a mapped
   query is now the job of the query descriptor - override `QueryDescriptor.buildQuery(Map)` if you have a custom

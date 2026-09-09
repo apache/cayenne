@@ -36,7 +36,7 @@ import static org.junit.jupiter.api.Assertions.assertTrue;
 public class DataContextFactory_ValidationIT {
 
     private static DataContext createContext(CayenneTestsEnv env) {
-        return (DataContext) env.runtime().getInjector().getInstance(ObjectContextFactory.class).createContext();
+        return (DataContext) env.runtime().getInjector().getInstance(ObjectContextFactory.class).createContext(env.runtime().getDataDomain());
     }
 
     @Nested

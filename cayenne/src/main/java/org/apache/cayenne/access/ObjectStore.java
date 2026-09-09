@@ -468,9 +468,9 @@ public class ObjectStore implements Serializable, SnapshotEventListener, GraphMa
      */
     public DataRow getCachedSnapshot(ObjectId oid) {
 
-        if (context != null && context.getParent() != null) {
+        if (context != null && context.getChannel() != null) {
             ObjectIdQuery query = new ObjectIdQuery(oid, true, ObjectIdQuery.CACHE_NOREFRESH);
-            List<?> results = context.getParent().onQuery(context, query, false).firstList();
+            List<?> results = context.getChannel().onQuery(context, query, false).firstList();
             return results.isEmpty() ? null : (DataRow) results.get(0);
         }
         else {
@@ -488,9 +488,9 @@ public class ObjectStore implements Serializable, SnapshotEventListener, GraphMa
      */
     public synchronized DataRow getSnapshot(ObjectId oid) {
 
-        if (context != null && context.getParent() != null) {
+        if (context != null && context.getChannel() != null) {
             ObjectIdQuery query = new ObjectIdQuery(oid, true, ObjectIdQuery.CACHE);
-            List<?> results = context.getParent().onQuery(context, query, false).firstList();
+            List<?> results = context.getChannel().onQuery(context, query, false).firstList();
             return results.isEmpty() ? null : (DataRow) results.get(0);
         }
         else {

@@ -21,6 +21,7 @@ package org.apache.cayenne.util;
 
 import org.apache.cayenne.DataChannel;
 import org.apache.cayenne.DataChannelListener;
+import org.apache.cayenne.ObjectContext;
 import org.apache.cayenne.event.EventManager;
 import org.apache.cayenne.event.EventSubject;
 import org.apache.cayenne.graph.GraphEvent;
@@ -55,6 +56,27 @@ public class EventUtil {
         }
 
         listenForSubjects(manager, listener, channel, CHANNEL_SUBJECTS);
+        return true;
+    }
+
+    /**
+     * Utility method that sets up a GraphChangeListener to be notified when an ObjectContext posts an event, such as
+     * the events a parent context posts on flush, rollback, or a change merged from one of its nested contexts.
+     *
+     * @return false if the context's channel doesn't have an EventManager and therefore does not support events.
+     * @since 5.0
+     */
+    public static boolean listenForChannelEvents(
+            ObjectContext context,
+            DataChannelListener listener) {
+
+        EventManager manager = context.getChannel().getEventManager();
+
+        if (manager == null) {
+            return false;
+        }
+
+        listenForSubjects(manager, listener, context, CHANNEL_SUBJECTS);
         return true;
     }
 

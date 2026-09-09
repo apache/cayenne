@@ -84,8 +84,8 @@ public class DataContextSerializationIT {
 
         DataContext deserializedContext = Util.cloneViaSerialization(context);
 
-        assertNotNull(deserializedContext.getParent());
-        assertSame(context.getParent(), deserializedContext.getParent());
+        assertNotNull(deserializedContext.getChannel());
+        assertSame(context.getChannel(), deserializedContext.getChannel());
     }
 
     @Test
@@ -95,7 +95,7 @@ public class DataContextSerializationIT {
 
         ObjectContext deserializedContext = Util.cloneViaSerialization(child);
 
-        assertNotNull(deserializedContext.getParent());
+        assertNotNull(deserializedContext.getChannel());
         assertNotNull(deserializedContext.getEntityResolver());
     }
 
