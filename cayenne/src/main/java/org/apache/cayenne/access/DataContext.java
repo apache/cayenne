@@ -1207,11 +1207,6 @@ public class DataContext implements ObjectContext {
         return new DataContextQueryAction(this, query, iteratedResult, ignoreLocalCache).execute();
     }
 
-    GraphDiff onContextRollback() {
-        rollbackChanges();
-        return new CompoundDiff();
-    }
-
     /**
      * Performs a single database query that does not select rows. Returns an
      * array of update counts.

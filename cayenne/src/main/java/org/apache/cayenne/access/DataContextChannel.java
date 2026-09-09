@@ -26,6 +26,7 @@ import org.apache.cayenne.ObjectId;
 import org.apache.cayenne.Persistent;
 import org.apache.cayenne.QueryResponse;
 import org.apache.cayenne.event.EventManager;
+import org.apache.cayenne.graph.CompoundDiff;
 import org.apache.cayenne.graph.GraphDiff;
 import org.apache.cayenne.map.EntityResolver;
 import org.apache.cayenne.query.EntityResultSegment;
@@ -82,7 +83,7 @@ public record DataContextChannel(DataContext context) implements DataChannel {
     @Override
     public void onInvalidate(ObjectContext childContext, Collection<ObjectId> objectIds) {
         checkChildContext(childContext);
-        
+
         context.invalidateIds(objectIds);
     }
 
@@ -104,7 +105,10 @@ public record DataContextChannel(DataContext context) implements DataChannel {
         checkChildContext(childContext);
 
         return switch (syncType) {
-            case DataChannel.ROLLBACK_CASCADE_SYNC -> context.onContextRollback();
+            case DataChannel.ROLLBACK_CASCADE_SYNC -> {
+                context.rollbackChanges();
+                yield new CompoundDiff();
+            }
             case DataChannel.FLUSH_NOCASCADE_SYNC -> context.onContextFlush(childContext, changes, false);
             case DataChannel.FLUSH_CASCADE_SYNC -> context.onContextFlush(childContext, changes, true);
             default -> throw new CayenneRuntimeException("Unrecognized SyncMessage type: %d", syncType);
