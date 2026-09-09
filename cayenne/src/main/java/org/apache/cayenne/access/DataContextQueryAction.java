@@ -56,8 +56,7 @@ class DataContextQueryAction {
 
     private transient QueryResponse response;
 
-    public DataContextQueryAction(DataContext actingContext, ObjectContext targetContext, Query query,
-                                  boolean iteratedResult) {
+    public DataContextQueryAction(DataContext actingContext, ObjectContext targetContext, Query query, boolean iteratedResult) {
 
         this.actingContext = actingContext;
         this.actingDataContext = actingContext;

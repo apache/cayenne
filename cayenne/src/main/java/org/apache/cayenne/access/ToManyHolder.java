@@ -98,10 +98,10 @@ public abstract class ToManyHolder<E> implements Serializable {
         }
 
         DataContext context = (DataContext) relationshipOwner.getObjectContext();
-        List<E> resolved = (List<E>) context.onResolveRelationship(
-                context,
+        List<E> resolved = (List<E>) context.resolveRelationship(
                 relationshipOwner.getObjectId(),
-                relationshipName);
+                relationshipName,
+                false);
 
         mergeLocalChanges(resolved);
         return resolved;

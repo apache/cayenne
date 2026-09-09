@@ -864,35 +864,23 @@ public class DataContext implements ObjectContext {
         }
     }
 
-    void onInvalidate(Collection<ObjectId> ids) {
+    void invalidateIds(Collection<ObjectId> ids) {
         if (!ids.isEmpty()) {
             getObjectStore().objectsInvalidated(ids);
             getChannel().onInvalidate(this, ids);
         }
     }
 
-    List<Persistent> onResolveRelationship(ObjectContext originatingContext, ObjectId sourceId, String relationshipName) {
-
-        List<Persistent> related = resolvedRelationship(sourceId, relationshipName, originatingContext != this);
-        if (related == null) {
-            related = getChannel().onResolveRelationship(this, sourceId, relationshipName);
-        }
-
-        if (originatingContext == this || related.isEmpty()) {
-            return related;
-        }
-
-        // transfer the objects to the child context that originated the request
-        ShallowMergeOperation merger = new ShallowMergeOperation(originatingContext);
-        List<Persistent> childObjects = new ArrayList<>(related.size());
-        for (Persistent object : related) {
-            childObjects.add(merger.merge(object));
-        }
-        return childObjects;
+    // TODO: promote to public ObjectContext API? Perhaps split along as "resolveToOne" and "resolveToMany"?
+    List<? extends Persistent> resolveRelationship(ObjectId sourceId, String relationshipName, boolean resolveToMany) {
+        List<Persistent> related = resolveRelationshipInSelf(sourceId, relationshipName, resolveToMany);
+        return related != null
+                ? related
+                : getChannel().onResolveRelationship(this, sourceId, relationshipName);
     }
 
     @SuppressWarnings("unchecked")
-    private List<Persistent> resolvedRelationship(ObjectId sourceId, String relationshipName, boolean resolveToMany) {
+    private List<Persistent> resolveRelationshipInSelf(ObjectId sourceId, String relationshipName, boolean resolveToMany) {
 
         Persistent source = (Persistent) getGraphManager().getNode(sourceId);
         if (source == null) {
@@ -914,7 +902,6 @@ public class DataContext implements ObjectContext {
         if (arc.isFault(source)) {
 
             // a NEW object is unknown to the parent channels, so its unresolved relationship must be empty
-            // (CAY-1183)
             if (source.getPersistenceState() == PersistenceState.NEW) {
                 return new ArrayList<>(1);
             }

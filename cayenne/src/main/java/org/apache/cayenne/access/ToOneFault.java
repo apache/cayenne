@@ -18,13 +18,13 @@
  ****************************************************************/
 package org.apache.cayenne.access;
 
-import java.util.List;
-
 import org.apache.cayenne.CayenneRuntimeException;
 import org.apache.cayenne.Fault;
 import org.apache.cayenne.ObjectContext;
 import org.apache.cayenne.PersistenceState;
 import org.apache.cayenne.Persistent;
+
+import java.util.List;
 
 /**
  * @since 3.0
@@ -73,10 +73,10 @@ public class ToOneFault extends Fault {
 
     Object doResolveFault(Persistent sourceObject, String relationshipName) {
         DataContext context = (DataContext) sourceObject.getObjectContext();
-        List<Persistent> objects = context.onResolveRelationship(
-                context,
+        List<? extends Persistent> objects = context.resolveRelationship(
                 sourceObject.getObjectId(),
-                relationshipName);
+                relationshipName,
+                false);
 
         if (objects.isEmpty()) {
             return null;

@@ -17,8 +17,8 @@
  *  under the License.
  ****************************************************************/
 package org.apache.cayenne.access;
+
 import org.apache.cayenne.ObjectId;
-import org.apache.cayenne.Persistent;
 import org.apache.cayenne.map.DbAttribute;
 import org.apache.cayenne.map.DbEntity;
 import org.apache.cayenne.query.EJBQLQuery;
@@ -29,9 +29,9 @@ import org.apache.cayenne.testdo.quotemap.QuoteAdress;
 import org.apache.cayenne.testdo.quotemap.Quote_Person;
 import org.apache.cayenne.unit.CayenneProjects;
 import org.apache.cayenne.unit.CayenneTestsEnv;
-import org.junit.jupiter.api.extension.RegisterExtension;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.RegisterExtension;
 
 import java.util.Collections;
 import java.util.Date;
@@ -151,8 +151,7 @@ public class QuotedIdentifiersIT {
         Quote_Person quote_Person2 = ObjectSelect.query(Quote_Person.class)
                 .where(Quote_Person.NAME.eq("Name")).selectOne(env.context());
 
-        List<Persistent> objects10 = env.context()
-                .onResolveRelationship(env.context(), quote_Person2.getObjectId(), "address_Rel");
+        List<?> objects10 = env.context().resolveRelationship(quote_Person2.getObjectId(), "address_Rel", false);
         assertEquals(1, objects10.size());
     }
 

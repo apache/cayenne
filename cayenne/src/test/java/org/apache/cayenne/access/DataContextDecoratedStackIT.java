@@ -86,28 +86,28 @@ public class DataContextDecoratedStackIT {
 
     class DataChannelDecorator implements DataChannel {
 
-        protected DataChannel channel;
-
-        protected DataChannelDecorator() {
-
-        }
+        private final DataChannel channel;
 
         public DataChannelDecorator(DataChannel channel) {
-            setChannel(channel);
+            this.channel = channel;
         }
 
+        @Override
         public EntityResolver getEntityResolver() {
             return channel.getEntityResolver();
         }
 
+        @Override
         public EventManager getEventManager() {
             return channel.getEventManager();
         }
 
+        @Override
         public QueryResponse onQuery(ObjectContext originatingContext, Query query, boolean iteratedResult) {
             return channel.onQuery(originatingContext, query, iteratedResult);
         }
 
+        @Override
         public GraphDiff onSync(
                 ObjectContext originatingContext,
                 GraphDiff changes,
@@ -115,21 +115,19 @@ public class DataContextDecoratedStackIT {
             return channel.onSync(originatingContext, changes, syncType);
         }
 
+        @Override
         public void onInvalidate(ObjectContext originatingContext, Collection<ObjectId> objectIds) {
             channel.onInvalidate(originatingContext, objectIds);
         }
 
-        public List<Persistent> onResolveRelationship(ObjectContext originatingContext, ObjectId sourceId,
-                                                      String relationshipName) {
+        @Override
+        public List<? extends Persistent> onResolveRelationship(ObjectContext originatingContext, ObjectId sourceId, String relationshipName) {
             return channel.onResolveRelationship(originatingContext, sourceId, relationshipName);
         }
 
+        @Override
         public DataChannel getParent() {
             return channel;
-        }
-
-        public void setChannel(DataChannel channel) {
-            this.channel = channel;
         }
     }
 

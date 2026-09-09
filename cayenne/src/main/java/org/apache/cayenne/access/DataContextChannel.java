@@ -28,7 +28,9 @@ import org.apache.cayenne.event.EventManager;
 import org.apache.cayenne.graph.GraphDiff;
 import org.apache.cayenne.map.EntityResolver;
 import org.apache.cayenne.query.Query;
+import org.apache.cayenne.util.ShallowMergeOperation;
 
+import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
 import java.util.Objects;
@@ -63,21 +65,43 @@ public record DataContextChannel(DataContext context) implements DataChannel {
 
     @Override
     public QueryResponse onQuery(ObjectContext originatingContext, Query query, boolean iteratedResult) {
+        checkOriginatingContext(originatingContext);
         return context.onQuery(originatingContext, query, iteratedResult);
     }
 
     @Override
     public void onInvalidate(ObjectContext originatingContext, Collection<ObjectId> objectIds) {
-        context.onInvalidate(objectIds);
+        checkOriginatingContext(originatingContext);
+        context.invalidateIds(objectIds);
     }
 
     @Override
     public List<Persistent> onResolveRelationship(ObjectContext originatingContext, ObjectId sourceId, String relationshipName) {
-        return context.onResolveRelationship(originatingContext, sourceId, relationshipName);
+        checkOriginatingContext(originatingContext);
+
+        List<? extends Persistent> related = context.resolveRelationship(sourceId, relationshipName, true);
+        ShallowMergeOperation merger = new ShallowMergeOperation(originatingContext);
+        List<Persistent> childObjects = new ArrayList<>(related.size());
+        for (Persistent object : related) {
+            childObjects.add(merger.merge(object));
+        }
+        return childObjects;
     }
 
     @Override
     public GraphDiff onSync(ObjectContext originatingContext, GraphDiff changes, int syncType) {
+        checkOriginatingContext(originatingContext);
         return context.onSync(originatingContext, changes, syncType);
+    }
+
+    private void checkOriginatingContext(ObjectContext originatingContext) {
+        if (originatingContext == null) {
+            throw new IllegalArgumentException("Originating context must be a child of " + context + ", not null");
+        }
+
+        if (originatingContext == context) {
+            throw new IllegalArgumentException("Originating context must be a child of " + context
+                    + ", not the context itself");
+        }
     }
 }
