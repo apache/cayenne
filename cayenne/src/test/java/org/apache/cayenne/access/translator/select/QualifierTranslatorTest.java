@@ -190,11 +190,25 @@ public class QualifierTranslatorTest {
 
     @Test
     public void translateNot() {
-        Node not = translate("not true");
+        Node not = translate("not (a = 1)");
         assertInstanceOf(NotNode.class, not);
         assertEquals(1, not.getChildrenCount());
-        assertInstanceOf(TextNode.class, not.getChild(0));
-        assertEquals(" 1=1", ((TextNode)not.getChild(0)).getText());
+        assertInstanceOf(EqualNode.class, not.getChild(0));
+    }
+
+    @Test
+    public void translateNotConst() {
+        {
+            Node not = translate("not true");
+            assertInstanceOf(TextNode.class, not);
+            assertEquals(" 1=0", ((TextNode) not).getText());
+        }
+
+        {
+            Node not = translate("not false");
+            assertInstanceOf(TextNode.class, not);
+            assertEquals(" 1=1", ((TextNode) not).getText());
+        }
     }
 
     @Test
@@ -462,15 +476,114 @@ public class QualifierTranslatorTest {
 
     @Test
     public void translateAnd() {
-        Node and = translate("true and false");
+        Node and = translate("a < 2 and b = 7");
         assertNotNull(and);
         assertInstanceOf(OpExpressionNode.class, and);
         assertEquals("AND", ((OpExpressionNode)and).getOp());
         assertEquals(2, and.getChildrenCount());
-        assertInstanceOf(TextNode.class, and.getChild(0));
-        assertEquals(" 1=1", ((TextNode)and.getChild(0)).getText());
-        assertInstanceOf(TextNode.class, and.getChild(1));
-        assertEquals(" 1=0", ((TextNode)and.getChild(1)).getText());
+        assertInstanceOf(OpExpressionNode.class, and.getChild(0));
+        assertEquals("<", ((OpExpressionNode)and.getChild(0)).getOp());
+        assertInstanceOf(EqualNode.class, and.getChild(1));
+    }
+
+    @Test
+    public void translateAndFoldsTrue() {
+        // "true" operands are dropped, and a single remaining operand replaces the AND altogether
+        Node node = translate("a < 2 and true and true");
+        assertInstanceOf(OpExpressionNode.class, node);
+        assertEquals("<", ((OpExpressionNode) node).getOp());
+        assertEquals(2, node.getChildrenCount());
+        assertInstanceOf(ColumnNode.class, node.getChild(0));
+    }
+
+    @Test
+    public void translateAndFoldsTrueKeepingOthers() {
+        Node and = translate("a < 2 and true and b = 7");
+        assertInstanceOf(OpExpressionNode.class, and);
+        assertEquals("AND", ((OpExpressionNode) and).getOp());
+        assertEquals(2, and.getChildrenCount());
+
+        SQLGenerationVisitor visitor = new SQLGenerationVisitor(new DefaultSQLAppendable(null), null);
+        and.visit(visitor);
+        assertEquals(" m.a < 2 AND m.b = 7", visitor.getSQLString());
+    }
+
+    @Test
+    public void translateAndFoldsFalse() {
+        Node node = translate("a < 2 and false and b = 7");
+        assertInstanceOf(TextNode.class, node);
+        assertEquals(" 1=0", ((TextNode) node).getText());
+    }
+
+    @Test
+    public void translateAndFoldsAllTrue() {
+        Node node = translate("true and true");
+        assertInstanceOf(TextNode.class, node);
+        assertEquals(" 1=1", ((TextNode) node).getText());
+    }
+
+    @Test
+    public void translateOrFoldsFalse() {
+        Node or = translate("a < 2 or false or b = 7");
+        assertInstanceOf(OpExpressionNode.class, or);
+        assertEquals("OR", ((OpExpressionNode) or).getOp());
+        assertEquals(2, or.getChildrenCount());
+
+        SQLGenerationVisitor visitor = new SQLGenerationVisitor(new DefaultSQLAppendable(null), null);
+        or.visit(visitor);
+        assertEquals(" m.a < 2 OR m.b = 7", visitor.getSQLString());
+    }
+
+    @Test
+    public void translateOrFoldsTrue() {
+        Node node = translate("a < 2 or true");
+        assertInstanceOf(TextNode.class, node);
+        assertEquals(" 1=1", ((TextNode) node).getText());
+    }
+
+    @Test
+    public void translateFoldsNested() {
+        {
+            // the way chained "andExp(nin(emptyList))" calls nest: (((x AND true) AND true) AND y)
+            Node and = translate("((a < 2 and true) and true) and b = 7");
+            assertInstanceOf(OpExpressionNode.class, and);
+            assertEquals("AND", ((OpExpressionNode) and).getOp());
+
+            SQLGenerationVisitor visitor = new SQLGenerationVisitor(new DefaultSQLAppendable(null), null);
+            and.visit(visitor);
+            assertEquals(" m.a < 2 AND m.b = 7", visitor.getSQLString());
+        }
+
+        {
+            Node node = translate("(a < 2 and true) or false");
+            assertInstanceOf(OpExpressionNode.class, node);
+            assertEquals("<", ((OpExpressionNode) node).getOp());
+        }
+
+        {
+            Node node = translate("not (a < 2 and false)");
+            assertInstanceOf(TextNode.class, node);
+            assertEquals(" 1=1", ((TextNode) node).getText());
+        }
+    }
+
+    @Test
+    public void translatePredicate() {
+        assertNull(translator.translatePredicate(null));
+
+        // an always-true predicate is dropped rather than rendered as "1=1"
+        assertNull(translator.translatePredicate(ExpressionFactory.exp("true")));
+        assertNull(translator.translatePredicate(ExpressionFactory.exp("a < 2 or true")));
+        assertNull(translator.translatePredicate(ExpressionFactory.notInExp("a", Collections.emptyList())));
+
+        // an always-false predicate must stay, as it changes the result
+        Node alwaysFalse = translator.translatePredicate(ExpressionFactory.exp("false"));
+        assertInstanceOf(TextNode.class, alwaysFalse);
+        assertEquals(" 1=0", ((TextNode) alwaysFalse).getText());
+
+        Node node = translator.translatePredicate(ExpressionFactory.exp("a < 2 and true"));
+        assertInstanceOf(OpExpressionNode.class, node);
+        assertEquals("<", ((OpExpressionNode) node).getOp());
     }
 
     @Test
@@ -489,13 +602,13 @@ public class QualifierTranslatorTest {
 
     @Test
     public void translateOr() {
-        Node or = translate("true or false");
+        Node or = translate("a < 2 or b = 7");
         assertNotNull(or);
         assertInstanceOf(OpExpressionNode.class, or);
         assertEquals("OR", ((OpExpressionNode)or).getOp());
         assertEquals(2, or.getChildrenCount());
-        assertInstanceOf(TextNode.class, or.getChild(0));
-        assertInstanceOf(TextNode.class, or.getChild(1));
+        assertInstanceOf(OpExpressionNode.class, or.getChild(0));
+        assertInstanceOf(EqualNode.class, or.getChild(1));
     }
 
     @Test

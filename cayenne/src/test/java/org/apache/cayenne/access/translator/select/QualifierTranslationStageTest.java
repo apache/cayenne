@@ -22,13 +22,17 @@ package org.apache.cayenne.access.translator.select;
 import org.apache.cayenne.access.sqlbuilder.sqltree.ColumnNode;
 import org.apache.cayenne.access.sqlbuilder.sqltree.Node;
 import org.apache.cayenne.access.sqlbuilder.sqltree.OpExpressionNode;
+import org.apache.cayenne.access.sqlbuilder.sqltree.TextNode;
 import org.apache.cayenne.access.sqlbuilder.sqltree.ValueNode;
+import org.apache.cayenne.exp.Expression;
 import org.apache.cayenne.exp.ExpressionFactory;
 import org.apache.cayenne.map.DbAttribute;
 import org.apache.cayenne.map.DbEntity;
 import org.apache.cayenne.query.FluentSelect;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
+
+import java.util.Collections;
 
 import static org.junit.jupiter.api.Assertions.*;
 
@@ -38,6 +42,10 @@ public class QualifierTranslationStageTest {
 
     @BeforeEach
     public void prepareContext() {
+        context = contextWithWhere(ExpressionFactory.greaterOrEqualDbExp("path", 10));
+    }
+
+    private static SelectTranslatorContext contextWithWhere(Expression where) {
         DbEntity dbEntity = new DbEntity();
         dbEntity.setName("mock");
         DbAttribute dbAttribute = new DbAttribute();
@@ -45,12 +53,45 @@ public class QualifierTranslationStageTest {
         dbEntity.addAttribute(dbAttribute);
 
         FluentSelect<?, ?> query = new MockFluentSelectBuilder()
-                .withWhere(ExpressionFactory.greaterOrEqualDbExp("path", 10))
+                .withWhere(where)
                 .withMetaData(new MockQueryMetadataBuilder()
                         .withDbEntity(dbEntity)
                         .build())
                 .build();
-        context = new MockSelectTranslatorContext(query);
+        return new MockSelectTranslatorContext(query);
+    }
+
+    @Test
+    public void performAlwaysTrue() {
+        context = contextWithWhere(ExpressionFactory.expTrue());
+        new QualifierTranslationStage().perform(context);
+        assertNull(context.getQualifierNode());
+    }
+
+    @Test
+    public void performAlwaysFalse() {
+        context = contextWithWhere(ExpressionFactory.expFalse());
+        new QualifierTranslationStage().perform(context);
+
+        Node qualifier = context.getQualifierNode();
+        assertInstanceOf(TextNode.class, qualifier);
+        assertEquals(" 1=0", ((TextNode) qualifier).getText());
+    }
+
+    @Test
+    public void performFoldsTrue() {
+        // "x AND true AND true", the shape produced by chaining "andExp(nin(emptyCollection))"
+        context = contextWithWhere(ExpressionFactory.greaterOrEqualDbExp("path", 10)
+                .andExp(ExpressionFactory.notInDbExp("path", Collections.emptyList()))
+                .andExp(ExpressionFactory.expTrue()));
+        new QualifierTranslationStage().perform(context);
+
+        Node op = context.getQualifierNode();
+        assertInstanceOf(OpExpressionNode.class, op);
+        assertEquals(">=", ((OpExpressionNode)op).getOp());
+        assertEquals(2, op.getChildrenCount());
+        assertInstanceOf(ColumnNode.class, op.getChild(0));
+        assertInstanceOf(ValueNode.class, op.getChild(1));
     }
 
     @Test

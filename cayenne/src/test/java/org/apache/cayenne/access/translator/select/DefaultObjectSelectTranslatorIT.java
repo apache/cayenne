@@ -28,6 +28,8 @@ import org.apache.cayenne.unit.CayenneTestsEnv;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.RegisterExtension;
 
+import java.util.Collections;
+
 import static org.junit.jupiter.api.Assertions.*;
 
 public class DefaultObjectSelectTranslatorIT {
@@ -83,6 +85,53 @@ public class DefaultObjectSelectTranslatorIT {
 
         assertTrue(translator.hasJoins());
         assertFalse(translator.suppressingDistinct());
+    }
+
+    @Test
+    public void selectWithAlwaysTrueWhere() {
+        ObjectSelect<Artist> select = ObjectSelect.query(Artist.class)
+                .where(Artist.ARTIST_NAME.nin(Collections.emptyList()));
+
+        TranslatedSelect translator = new DbAdapterDelegatedSelectTranslator()
+                .translate(select, env.dataNode().getAdapter(), env.context().getEntityResolver());
+
+        String sql = translator.sql();
+        assertFalse(sql.contains("WHERE"), sql);
+        assertFalse(sql.contains("1=1"), sql);
+        assertEquals(0, translator.bindings().length);
+    }
+
+    @Test
+    public void selectWithTrueFoldedOutOfWhere() {
+        // the shape produced by chaining optional "nin(emptyCollection)" filters
+        ObjectSelect<Artist> select = ObjectSelect.query(Artist.class)
+                .where(Artist.ARTIST_NAME.eq("artist")
+                        .andExp(Artist.ARTIST_NAME.nin(Collections.emptyList()))
+                        .andExp(Artist.ARTIST_NAME.nin(Collections.emptyList()))
+                        .andExp(Artist.DATE_OF_BIRTH.isNotNull()));
+
+        TranslatedSelect translator = new DbAdapterDelegatedSelectTranslator()
+                .translate(select, env.dataNode().getAdapter(), env.context().getEntityResolver());
+
+        String sql = translator.sql();
+        assertFalse(sql.contains("1=1"), sql);
+        assertTrue(sql.contains("WHERE"), sql);
+        assertTrue(sql.contains("ARTIST_NAME) = ?") || sql.contains("ARTIST_NAME = ?"), sql);
+        assertTrue(sql.contains("DATE_OF_BIRTH IS NOT NULL"), sql);
+        assertEquals(1, translator.bindings().length);
+    }
+
+    @Test
+    public void selectWithAlwaysFalseWhere() {
+        ObjectSelect<Artist> select = ObjectSelect.query(Artist.class)
+                .where(Artist.ARTIST_NAME.in(Collections.emptyList()));
+
+        TranslatedSelect translator = new DbAdapterDelegatedSelectTranslator()
+                .translate(select, env.dataNode().getAdapter(), env.context().getEntityResolver());
+
+        String sql = translator.sql();
+        assertTrue(sql.contains("WHERE"), sql);
+        assertTrue(sql.contains("1=0"), sql);
     }
 
     @Test

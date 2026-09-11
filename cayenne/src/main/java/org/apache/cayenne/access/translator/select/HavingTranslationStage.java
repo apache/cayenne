@@ -31,7 +31,7 @@ class HavingTranslationStage implements TranslationStage {
     public void perform(SelectTranslatorContext context) {
         Expression expression = context.getQuery().getHaving();
         QualifierTranslator translator = context.getQualifierTranslator();
-        Node qualifier = translator.translate(expression);
+        Node qualifier = translator.translatePredicate(expression);
         if(qualifier != null) {
             context.getSelectBuilder().having(qualifier);
         }

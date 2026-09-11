@@ -45,7 +45,7 @@ class QualifierTranslationStage implements TranslationStage {
             }
         }
 
-        Node qualifierNode = translator.translate(expression);
+        Node qualifierNode = translator.translatePredicate(expression);
         context.setQualifierNode(qualifierNode);
     }
 }

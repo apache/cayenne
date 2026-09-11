@@ -47,7 +47,9 @@ class TableTreeQualifierStage implements TranslationStage {
             return;
         }
         dbQualifier = TableTreeStage.translateToDbPath(node, dbQualifier);
-        Node translatedQualifier = context.getQualifierTranslator().translate(dbQualifier);
-        context.appendQualifierNode(translatedQualifier);
+        Node translatedQualifier = context.getQualifierTranslator().translatePredicate(dbQualifier);
+        if (translatedQualifier != null) {
+            context.appendQualifierNode(translatedQualifier);
+        }
     }
 }

@@ -96,9 +96,9 @@ class TableTreeStage implements TranslationStage {
         dbQualifier = translateToDbPath(node, dbQualifier);
         // mark table tree node as current to process qualifier
         context.getTableTree().setActiveNode(node);
-        Node translatedQualifier = context.getQualifierTranslator().translate(dbQualifier);
+        Node translatedQualifier = context.getQualifierTranslator().translatePredicate(dbQualifier);
         context.getTableTree().setActiveNode(null);
-        return joinBuilder.and(() -> translatedQualifier);
+        return translatedQualifier == null ? joinBuilder : joinBuilder.and(() -> translatedQualifier);
     }
 
     static Expression translateToDbPath(TableTreeNode node, Expression dbQualifier) {

@@ -24,6 +24,7 @@ import org.apache.cayenne.access.sqlbuilder.sqltree.HavingNode;
 import org.apache.cayenne.access.sqlbuilder.sqltree.Node;
 import org.apache.cayenne.access.sqlbuilder.sqltree.OpExpressionNode;
 import org.apache.cayenne.access.sqlbuilder.sqltree.ValueNode;
+import org.apache.cayenne.exp.Expression;
 import org.apache.cayenne.exp.ExpressionFactory;
 import org.apache.cayenne.map.DbAttribute;
 import org.apache.cayenne.map.DbEntity;
@@ -39,6 +40,10 @@ public class HavingTranslationStageTest {
 
     @BeforeEach
     public void prepareContext() {
+        context = contextWithHaving(ExpressionFactory.greaterOrEqualDbExp("path", 10));
+    }
+
+    private static SelectTranslatorContext contextWithHaving(Expression having) {
         DbEntity dbEntity = new DbEntity();
         dbEntity.setName("mock");
         DbAttribute dbAttribute = new DbAttribute();
@@ -46,12 +51,35 @@ public class HavingTranslationStageTest {
         dbEntity.addAttribute(dbAttribute);
 
         FluentSelect<?, ?> query = new MockFluentSelectBuilder()
-                .withHaving(ExpressionFactory.greaterOrEqualDbExp("path", 10))
+                .withHaving(having)
                 .withMetaData(new MockQueryMetadataBuilder()
                         .withDbEntity(dbEntity)
                         .build())
                 .build();
-        context = new MockSelectTranslatorContext(query);
+        return new MockSelectTranslatorContext(query);
+    }
+
+    @Test
+    public void performAlwaysTrue() {
+        context = contextWithHaving(ExpressionFactory.expTrue());
+        new HavingTranslationStage().perform(context);
+
+        Node select = context.getSelectBuilder().build();
+        assertEquals(0, select.getChildrenCount());
+    }
+
+    @Test
+    public void performFoldsTrue() {
+        context = contextWithHaving(ExpressionFactory.greaterOrEqualDbExp("path", 10)
+                .andExp(ExpressionFactory.expTrue()));
+        new HavingTranslationStage().perform(context);
+
+        Node select = context.getSelectBuilder().build();
+        assertEquals(1, select.getChildrenCount());
+        assertInstanceOf(HavingNode.class, select.getChild(0));
+        Node op = select.getChild(0).getChild(0);
+        assertInstanceOf(OpExpressionNode.class, op);
+        assertEquals(">=", ((OpExpressionNode)op).getOp());
     }
 
     @Test

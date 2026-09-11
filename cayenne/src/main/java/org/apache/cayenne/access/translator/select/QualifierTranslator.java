@@ -45,16 +45,22 @@ import org.apache.cayenne.access.sqlbuilder.sqltree.ValueNode;
 import org.apache.cayenne.access.sqlbuilder.sqltree.WhenNode;
 import org.apache.cayenne.exp.Expression;
 import org.apache.cayenne.exp.TraversalHandler;
+import org.apache.cayenne.exp.parser.ASTAnd;
 import org.apache.cayenne.exp.parser.ASTCustomOperator;
 import org.apache.cayenne.exp.parser.ASTDbIdPath;
 import org.apache.cayenne.exp.parser.ASTDbPath;
 import org.apache.cayenne.exp.parser.ASTExists;
+import org.apache.cayenne.exp.parser.ASTFalse;
 import org.apache.cayenne.exp.parser.ASTFullObject;
 import org.apache.cayenne.exp.parser.ASTFunctionCall;
+import org.apache.cayenne.exp.parser.ASTNot;
 import org.apache.cayenne.exp.parser.ASTNotExists;
 import org.apache.cayenne.exp.parser.ASTObjPath;
+import org.apache.cayenne.exp.parser.ASTOr;
 import org.apache.cayenne.exp.parser.ASTScalar;
 import org.apache.cayenne.exp.parser.ASTSubquery;
+import org.apache.cayenne.exp.parser.ASTTrue;
+import org.apache.cayenne.exp.parser.AggregateConditionNode;
 import org.apache.cayenne.exp.parser.PatternMatchNode;
 import org.apache.cayenne.exp.parser.SimpleNode;
 import org.apache.cayenne.exp.path.CayennePath;
@@ -65,11 +71,13 @@ import org.apache.cayenne.map.DbRelationship;
 import org.apache.cayenne.map.Embeddable;
 
 import java.util.ArrayDeque;
+import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.Deque;
 import java.util.HashMap;
 import java.util.IdentityHashMap;
+import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
@@ -116,9 +124,24 @@ class QualifierTranslator implements TraversalHandler {
             return null;
         }
 
-        // expand complex expressions that could be only interpreted at the execution time
-        qualifier = expandExpression(qualifier);
+        return translateExpanded(expandExpression(qualifier));
+    }
 
+    /**
+     * Translates a boolean predicate, such as a WHERE, HAVING or join qualifier. Unlike
+     * {@link #translate(Expression)}, a predicate that folds to a constant "true" is translated to null, so that
+     * the caller can omit the clause entirely instead of emitting "1=1".
+     */
+    Node translatePredicate(Expression predicate) {
+        if (predicate == null) {
+            return null;
+        }
+
+        Expression expanded = expandExpression(predicate);
+        return expanded instanceof ASTTrue ? null : translateExpanded(expanded);
+    }
+
+    private Node translateExpanded(Expression qualifier) {
         Node rootNode = new EmptyNode();
         expressionsToSkip.clear();
         boolean hasCurrentNode = currentNode != null;
@@ -145,7 +168,9 @@ class QualifierTranslator implements TraversalHandler {
     }
 
     /**
-     * Preprocess complex expressions that ExpressionFactory can't handle at the creation time.
+     * Preprocess complex expressions that ExpressionFactory can't handle at the creation time, and fold boolean
+     * constants that sneak in via things like {@code notInExp(path, emptyCollection)}, so that they don't end up in
+     * SQL as "1=1" / "1=0" noise.
      * <br>
      * Right we only expand {@code EXIST} expressions that could spawn several subqueries.
      *
@@ -153,12 +178,70 @@ class QualifierTranslator implements TraversalHandler {
      * @return qualifier with preprocessed complex expressions
      */
     Expression expandExpression(Expression qualifier) {
+        // the transform is bottom-up, so by the time an AND / OR / NOT is visited, its children are already folded
         return qualifier.transform(o -> {
             if (o instanceof ASTExists || o instanceof ASTNotExists) {
                 return new ExistsExpressionTranslator(context, (SimpleNode) o).translate();
             }
+            if (o instanceof ASTAnd || o instanceof ASTOr) {
+                return foldAndOr((AggregateConditionNode) o);
+            }
+            if (o instanceof ASTNot not) {
+                return foldNot(not);
+            }
             return o;
         });
+    }
+
+    /**
+     * Applies boolean identities to an AND / OR node: "x AND true" is "x", "x AND false" is "false", "x OR false" is
+     * "x", "x OR true" is "true". Sound under SQL three-valued logic, as the identities hold for a NULL "x" too.
+     * Returns the node itself when there is nothing to fold.
+     */
+    private static Object foldAndOr(AggregateConditionNode node) {
+        boolean and = node.getType() == AND;
+        int count = node.getOperandCount();
+        List<Object> kept = new ArrayList<>(count);
+        for (int i = 0; i < count; i++) {
+            Object operand = node.getOperand(i);
+
+            // a constant that decides the whole expression: "false" for AND, "true" for OR
+            if (and ? operand instanceof ASTFalse : operand instanceof ASTTrue) {
+                return operand;
+            }
+
+            // a neutral constant: "true" for AND, "false" for OR
+            if (and ? operand instanceof ASTTrue : operand instanceof ASTFalse) {
+                continue;
+            }
+
+            kept.add(operand);
+        }
+
+        if (kept.size() == count) {
+            return node;
+        }
+
+        return switch (kept.size()) {
+            case 0 -> and ? new ASTTrue() : new ASTFalse();
+            case 1 -> kept.get(0);
+            default -> and ? new ASTAnd(kept.toArray()) : new ASTOr(kept.toArray());
+        };
+    }
+
+    private static Object foldNot(ASTNot node) {
+        if (node.getOperandCount() != 1) {
+            return node;
+        }
+
+        Object operand = node.getOperand(0);
+        if (operand instanceof ASTTrue) {
+            return new ASTFalse();
+        }
+        if (operand instanceof ASTFalse) {
+            return new ASTTrue();
+        }
+        return node;
     }
 
     @Override
