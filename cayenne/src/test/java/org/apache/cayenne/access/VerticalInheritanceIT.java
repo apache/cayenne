@@ -35,6 +35,7 @@ import org.apache.cayenne.unit.CayenneTestsEnv;
 import org.junit.jupiter.api.extension.RegisterExtension;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.Test;
 
 import java.sql.SQLException;
@@ -61,6 +62,8 @@ public class VerticalInheritanceIT {
 
 	TableHelper ivConcreteTable;
 
+	TableHelper ivRootTable;
+
 	@BeforeEach
 	public void setup() {
 		runtime = env.runtime();
@@ -68,6 +71,8 @@ public class VerticalInheritanceIT {
 				.setColumnTypes(Types.INTEGER, Types.INTEGER, Types.CHAR);
 		ivConcreteTable = env.table("IV_CONCRETE").setColumns("ID", "NAME", "RELATED_ABSTRACT_ID")
 				.setColumnTypes(Types.INTEGER, Types.VARCHAR, Types.INTEGER);
+		ivRootTable = env.table("IV_ROOT", "ID", "NAME", "DISCRIMINATOR")
+				.setColumnTypes(Types.INTEGER, Types.VARCHAR, Types.VARCHAR);
 	}
 
 	@AfterEach
@@ -81,9 +86,6 @@ public class VerticalInheritanceIT {
 
     @Test
 	public void insertRoot() throws Exception {
-
-		TableHelper ivRootTable = env.table("IV_ROOT", "ID", "NAME", "DISCRIMINATOR");
-
 		assertEquals(0, ivRootTable.getRowCount());
 
 		IvRoot root = env.context().newObject(IvRoot.class);
@@ -102,8 +104,6 @@ public class VerticalInheritanceIT {
 
     @Test
 	public void insertSub1() throws Exception {
-
-		TableHelper ivRootTable = env.table("IV_ROOT", "ID", "NAME", "DISCRIMINATOR");
 
 		TableHelper ivSub1Table = env.table("IV_SUB1", "ID", "SUB1_NAME");
 
@@ -144,9 +144,6 @@ public class VerticalInheritanceIT {
 
     @Test
 	public void insertSub2() throws Exception {
-
-		TableHelper ivRootTable = env.table("IV_ROOT", "ID", "NAME", "DISCRIMINATOR");
-
 		TableHelper ivSub2Table = env.table("IV_SUB2", "ID", "SUB2_NAME", "SUB2_ATTR");
 
 		IvSub2 sub2 = env.context().newObject(IvSub2.class);
@@ -216,9 +213,6 @@ public class VerticalInheritanceIT {
 	 */
 	@Test
 	public void validationOnInsertSub3Ok() throws Exception {
-
-		TableHelper ivRootTable = env.table("IV_ROOT", "ID", "NAME", "DISCRIMINATOR");
-
 		TableHelper ivSub3Table = env.table("IV_SUB3", "ID", "IV_ROOT_ID");
 
 		IvSub3 sub3 = env.context().newObject(IvSub3.class);
@@ -235,7 +229,6 @@ public class VerticalInheritanceIT {
 	 */
 	@Test
 	public void updateRelationSub3() throws Exception {
-		TableHelper ivRootTable = env.table("IV_ROOT", "ID", "NAME", "DISCRIMINATOR");
 		ivRootTable.insert(1, "root1", null);
 		ivRootTable.insert(2, "root2", null);
 		ivRootTable.insert(3, "name", "IvSub3");
@@ -266,9 +259,6 @@ public class VerticalInheritanceIT {
 
     @Test
 	public void insertSub1Sub1() throws Exception {
-
-		TableHelper ivRootTable = env.table("IV_ROOT", "ID", "NAME", "DISCRIMINATOR");
-
 		TableHelper ivSub1Table = env.table("IV_SUB1", "ID", "SUB1_NAME", "SUB1_PRICE");
 
 		TableHelper ivSub1Sub1Table = env.table("IV_SUB1_SUB1", "ID", "SUB1_SUB1_NAME", "SUB1_SUB1_PRICE");
@@ -306,10 +296,6 @@ public class VerticalInheritanceIT {
 
     @Test
 	public void selectQuerySuperSub() throws Exception {
-
-		TableHelper ivRootTable = env.table("IV_ROOT").setColumns("ID", "NAME", "DISCRIMINATOR").setColumnTypes(
-				Types.INTEGER, Types.VARCHAR, Types.VARCHAR);
-
 		TableHelper ivSub1Table = env.table("IV_SUB1", "ID", "SUB1_NAME");
 
 		// insert
@@ -346,10 +332,6 @@ public class VerticalInheritanceIT {
 
     @Test
 	public void selectQueryDeepAndWide() throws Exception {
-
-		TableHelper ivRootTable = env.table("IV_ROOT").setColumns("ID", "NAME", "DISCRIMINATOR").setColumnTypes(
-				Types.INTEGER, Types.VARCHAR, Types.VARCHAR);
-
 		TableHelper ivSub1Table = env.table("IV_SUB1", "ID", "SUB1_NAME");
 
 		TableHelper ivSub2Table = env.table("IV_SUB2", "ID", "SUB2_NAME");
@@ -412,10 +394,6 @@ public class VerticalInheritanceIT {
 
     @Test
 	public void selectQueryMiddleLeaf() throws Exception {
-
-		TableHelper ivRootTable = env.table("IV_ROOT").setColumns("ID", "NAME", "DISCRIMINATOR").setColumnTypes(
-				Types.INTEGER, Types.VARCHAR, Types.VARCHAR);
-
 		TableHelper ivSub1Table = env.table("IV_SUB1", "ID", "SUB1_NAME");
 
 		TableHelper ivSub2Table = env.table("IV_SUB2", "ID", "SUB2_NAME");
@@ -467,10 +445,6 @@ public class VerticalInheritanceIT {
 
     @Test
 	public void deleteMix() throws Exception {
-
-		TableHelper ivRootTable = env.table("IV_ROOT").setColumns("ID", "NAME", "DISCRIMINATOR").setColumnTypes(
-				Types.INTEGER, Types.VARCHAR, Types.VARCHAR);
-
 		TableHelper ivSub1Table = env.table("IV_SUB1", "ID", "SUB1_NAME");
 
 		TableHelper ivSub2Table = env.table("IV_SUB2", "ID", "SUB2_NAME");
@@ -1036,8 +1010,6 @@ public class VerticalInheritanceIT {
 
 	@Test
 	public void countEjbqlQuery() throws Exception {
-		TableHelper ivRootTable = env.table("IV_ROOT", "ID", "NAME", "DISCRIMINATOR");
-
 		TableHelper ivSub1Table = env.table("IV_SUB1", "ID", "SUB1_NAME");
 
 		TableHelper ivSub2Table = env.table("IV_SUB2", "ID", "SUB2_ATTR", "SUB2_NAME");
@@ -1075,8 +1047,6 @@ public class VerticalInheritanceIT {
 
 	@Test
 	public void columnSelectVerticalInheritanceSub1() throws SQLException {
-		TableHelper ivRootTable = env.table("IV_ROOT", "ID", "NAME", "DISCRIMINATOR");
-
 		TableHelper ivSub1Table = env.table("IV_SUB1", "ID", "SUB1_NAME", "SUB1_PRICE");
 
 		TableHelper ivSub1Sub1Table = env.table("IV_SUB1_SUB1", "ID", "SUB1_SUB1_NAME", "SUB1_SUB1_PRICE");
@@ -1120,8 +1090,6 @@ public class VerticalInheritanceIT {
 
 	@Test
 	public void columnSelectVerticalInheritanceSub1Sub1() throws SQLException {
-		TableHelper ivRootTable = env.table("IV_ROOT", "ID", "NAME", "DISCRIMINATOR");
-
 		TableHelper ivSub1Table = env.table("IV_SUB1", "ID", "SUB1_NAME", "SUB1_PRICE");
 
 		TableHelper ivSub1Sub1Table = env.table("IV_SUB1_SUB1", "ID", "SUB1_SUB1_NAME", "SUB1_SUB1_PRICE");
@@ -1167,7 +1135,7 @@ public class VerticalInheritanceIT {
 	@Test
 	public void insertTwoGenericVerticalInheritanceObjects() {
 		// Generic DataObjects play nicer with a DataContext
-		final DataContext dataContext = (DataContext) env.context();
+		final DataContext dataContext = env.context();
 
 		final Persistent girlEmma = dataContext.newObject("GenGirl");
 		final Persistent boyLuke = dataContext.newObject("GenBoy");
@@ -1271,7 +1239,6 @@ public class VerticalInheritanceIT {
 
 	@Test
 	public void updateFlattenedAttributeOfThreeLevelInheritanceChild() throws SQLException {
-		TableHelper ivRootTable = env.table("IV_ROOT", "ID", "DISCRIMINATOR");
 		TableHelper ivSub1Table = env.table("IV_SUB1", "ID");
 		TableHelper ivSub1Sub1Table = env.table("IV_SUB1_SUB1", "ID", "SUB1_SUB1_NAME");
 
@@ -1289,5 +1256,53 @@ public class VerticalInheritanceIT {
 		ObjectContext cleanContext = runtime.newContext();
 		IvSub1Sub1 reread = ObjectSelect.query(IvSub1Sub1.class).where(IvSub1Sub1.SELF.eqId(1)).selectOne(cleanContext);
 		assertEquals("sub1sub1name-updated", reread.getSub1Sub1Name());
+	}
+
+	/**
+	 * See CAY-2911.
+	 */
+	@Test
+	public void selectColumnsSelf() throws SQLException {
+		TableHelper ivSub1Table = env.table("IV_SUB1", "ID", "SUB1_NAME", "SUB1_PRICE");
+		TableHelper ivSub2Table = env.table("IV_SUB2", "ID", "SUB2_ATTR", "SUB2_NAME");
+
+		ivRootTable.insert(1, "root", null);
+		ivRootTable.insert(2, "s1", "IvSub1");
+		ivSub1Table.insert(2, "sub1name", 42.0);
+		ivRootTable.insert(3, "s2", "IvSub2");
+		ivSub2Table.insert(3, "sub2attr", "sub2name");
+
+		ObjectContext freshContext = runtime.newContext();
+		List<IvRoot> results = ObjectSelect.query(IvRoot.class)
+				.column(IvRoot.SELF)
+				.orderBy(IvRoot.NAME.asc())
+				.select(freshContext);
+
+		assertEquals(3, results.size());
+		assertFalse(results.contains(null), () -> "column select returned a null object: " + results);
+
+		assertEquals(IvRoot.class, results.get(0).getClass());
+		assertEquals("root", results.get(0).getName());
+		assertInstanceOf(IvSub1.class, results.get(1));
+		assertInstanceOf(IvSub2.class, results.get(2));
+	}
+
+	/**
+	 * See CAY-2911.
+	 */
+	@Test
+	public void selectColumnsSelfAndScalar() throws SQLException {
+		TableHelper ivSub3Table = env.table("IV_SUB3", "ID", "IV_ROOT_ID");
+
+		ivRootTable.insert(1, "sub3name", "IvSub3");
+		ivSub3Table.insert(1, 1);
+
+		ObjectContext freshContext = runtime.newContext();
+		Object[] row = ObjectSelect.query(IvSub3.class)
+				.columns(IvSub3.SELF, IvSub3.NAME)
+				.selectOne(freshContext);
+
+		assertInstanceOf(IvSub3.class, row[0]);
+		assertEquals("sub3name", row[1], () -> "scalar slot held " + row[1] + ", segment offset is wrong");
 	}
 }

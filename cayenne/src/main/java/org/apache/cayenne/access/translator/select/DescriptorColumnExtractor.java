@@ -151,8 +151,17 @@ class DescriptorColumnExtractor extends BaseColumnExtractor implements PropertyV
 
         int count = result.getDbAttributes().size();
         for(int i=0; i<count; i++) {
-            processTranslationResult(result, i);
-            addEntityResultField(result.getDbAttributes().get(i));
+            if(processTranslationResult(result, i) == null) {
+                // the column was already emitted for an earlier property, and its result field with it
+                continue;
+            }
+            DbAttribute dbAttribute = result.getDbAttributes().get(i);
+            if(count > 1) {
+                // See CAY-2911, and CAY-2552 for the same fix in visitAttribute().
+                addEntityResultField(result.getAttributePaths().get(i).dot(dbAttribute.getName()));
+            } else {
+                addEntityResultField(dbAttribute);
+            }
         }
 
         return true;

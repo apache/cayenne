@@ -29,6 +29,7 @@ CAY-3017 ObjectContext should not be a DataChannel
 Bug Fixes:
 
 CAY-2832 SelectActionIT is failing on GitHub Actions
+CAY-2911 Vertical Inheritance: Column Select Sometimes Null With Vertically Inherited Entity
 CAY-2996 Javadocs are missing from the central artifacts
 CAY-2999 Modeler: A restricted method in java.lang.System has been called
 CAY-3001 Modeler: Auto-increment attribute is not picked up
