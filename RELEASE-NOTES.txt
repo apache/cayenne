@@ -40,6 +40,7 @@ CAY-3006 Can't match a "self" property of an entity with a compound PK
 CAY-3008 Disjoint prefetch returns wrong results when the query matches on a "self" property
 CAY-3009 Column select with CLOB attribute and distinct() fails
 CAY-3011 PostgreSQL: use transactions on select with fetch size
+CAY-3018 EJBQL: broken joins when selecting a vertically inherited entity
 
 ----------------------------------
 Release: 5.0-M3

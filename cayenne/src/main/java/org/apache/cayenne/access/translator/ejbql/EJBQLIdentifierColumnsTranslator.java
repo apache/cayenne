@@ -82,6 +82,10 @@ class EJBQLIdentifierColumnsTranslator extends EJBQLBaseVisitor {
 
         ClassDescriptor descriptor = context.getEntityDescriptor(idVar);
 
+        // a table reached by the same path is joined only once, no matter how many attributes are
+        // mapped to it, otherwise its alias is declared more than once. See CAY-3018.
+        final Set<EJBQLTableId> joinedTables = new HashSet<>();
+
         PropertyVisitor visitor = new PropertyVisitor() {
 
             public boolean visitAttribute(AttributeProperty property) {
@@ -107,7 +111,9 @@ class EJBQLIdentifierColumnsTranslator extends EJBQLBaseVisitor {
                         DbRelationship dr = (DbRelationship) pathPart;
 
                         EJBQLTableId rhsId = new EJBQLTableId(lhsId, dr.getName());
-                        joinAppender.appendOuterJoin(marker, lhsId, rhsId);
+                        if (joinedTables.add(rhsId)) {
+                            joinAppender.appendOuterJoin(marker, lhsId, rhsId);
+                        }
                         lhsId = rhsId;
                     } else if (pathPart instanceof DbAttribute dbAttribute) {
                         appendColumn(idVar, oa, dbAttribute, fields, oa.getType());
