@@ -35,7 +35,6 @@ import org.apache.cayenne.unit.CayenneTestsEnv;
 import org.junit.jupiter.api.extension.RegisterExtension;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
-import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.Test;
 
 import java.sql.SQLException;
@@ -1242,7 +1241,7 @@ public class VerticalInheritanceIT {
 		TableHelper ivSub1Table = env.table("IV_SUB1", "ID");
 		TableHelper ivSub1Sub1Table = env.table("IV_SUB1_SUB1", "ID", "SUB1_SUB1_NAME");
 
-		ivRootTable.insert(1, "IvSub1Sub1");
+		ivRootTable.insert(1, "", "IvSub1Sub1");
 		ivSub1Table.insert(1);
 		ivSub1Sub1Table.insert(1, "sub1sub1name");
 
