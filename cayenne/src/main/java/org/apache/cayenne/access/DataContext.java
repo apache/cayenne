@@ -255,11 +255,6 @@ public class DataContext implements ObjectContext {
         return getObjectStore().objectsInState(PersistenceState.DELETED);
     }
 
-    @Override
-    public void deleteObject(Object object) throws DeleteDenyException {
-        deleteObjects(object);
-    }
-
     /**
      * @since 3.1
      */
@@ -272,20 +267,6 @@ public class DataContext implements ObjectContext {
         DataContextDeleteAction action = new DataContextDeleteAction(this);
 
         for (Object object : objects) {
-            action.performDelete((Persistent) object);
-        }
-    }
-
-    @Override
-    public void deleteObjects(Collection<?> objects) throws DeleteDenyException {
-        if (objects.isEmpty()) {
-            return;
-        }
-
-        DataContextDeleteAction action = new DataContextDeleteAction(this);
-
-        // Make a copy to iterate over to avoid ConcurrentModificationException
-        for (Object object : List.copyOf(objects)) {
             action.performDelete((Persistent) object);
         }
     }

@@ -199,29 +199,33 @@ public interface ObjectContext {
      */
     void registerNewObject(Object object);
 
-	/**
-	 * Schedules deletion of a persistent object.
-	 * 
-	 * @throws DeleteDenyException
-	 *             if a {@link org.apache.cayenne.map.DeleteRule#DENY} delete
-	 *             rule is applicable for object deletion.
-	 */
-	void deleteObject(Object object) throws DeleteDenyException;
-    
     /**
-     * Schedules deletion of a collection of persistent objects.
-     * 
+     * Schedules deletion of a persistent object.
+     *
      * @throws DeleteDenyException
      *             if a {@link org.apache.cayenne.map.DeleteRule#DENY} delete
      *             rule is applicable for object deletion.
      */
-    void deleteObjects(Collection<?> objects) throws DeleteDenyException;
+    default void deleteObject(Object object) throws DeleteDenyException {
+        deleteObjects(object);
+    }
 
     /**
-     * Schedules deletion of one or more persistent objects. Same as
-     * {@link #deleteObjects(Collection)} only with a vararg argument list for
-     * easier deletion of individual objects.
-     * 
+     * Schedules deletion of a collection of persistent objects.
+     *
+     * @throws DeleteDenyException
+     *             if a {@link org.apache.cayenne.map.DeleteRule#DENY} delete
+     *             rule is applicable for object deletion.
+     */
+    default void deleteObjects(Collection<?> objects) throws DeleteDenyException {
+        // toArray() copies, which also guards against ConcurrentModificationException when delete rules modify the
+        // source collection (e.g. a to-many list) mid-iteration
+        deleteObjects(objects.toArray());
+    }
+
+    /**
+     * Schedules deletion of one or more persistent objects.
+     *
      * @throws DeleteDenyException
      *             if a {@link org.apache.cayenne.map.DeleteRule#DENY} delete
      *             rule is applicable for object deletion.
