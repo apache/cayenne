@@ -57,7 +57,7 @@ public class SingleTableInheritance1IT {
         group1.removeFromGroupMembers(user);
         ObjectSelect<Group> query = ObjectSelect.query(Group.class)
                 .where(Role.ROLE_GROUPS.contains(group2));
-        env.context().performQuery(query);
+        env.context().select(query);
         env.context().commitChanges();
 
         env.context().deleteObjects(group1);

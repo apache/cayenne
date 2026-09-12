@@ -50,8 +50,8 @@ public class ProcedureQueryDescriptor extends QueryDescriptor {
     }
 
     @Override
-    public ProcedureQuery buildQuery() {
-        ProcedureQuery procedureQuery = new ProcedureQuery();
+    public ProcedureQuery<?> buildQuery() {
+        ProcedureQuery<?> procedureQuery = new ProcedureQuery<>();
 
         if (root != null) {
             procedureQuery.setRoot(root);
@@ -67,8 +67,8 @@ public class ProcedureQueryDescriptor extends QueryDescriptor {
      * @since 5.0
      */
     @Override
-    public ProcedureQuery buildQuery(Map<String, ?> parameters) {
-        ProcedureQuery procedureQuery = buildQuery();
+    public ProcedureQuery<?> buildQuery(Map<String, ?> parameters) {
+        ProcedureQuery<?> procedureQuery = buildQuery();
         procedureQuery.setParameters(parameters);
         return procedureQuery;
     }

@@ -1026,13 +1026,13 @@ public class VerticalInheritanceIT {
 		ivSub2Table.insert(4, "attr2", "sub_name2_2");
 
 		EJBQLQuery query1 = new EJBQLQuery("SELECT COUNT(a) FROM IvRoot a");
-		assertEquals(Collections.singletonList(4L), env.context().performQuery(query1));
+		assertEquals(Collections.singletonList(4L), env.context().select(query1));
 
 		EJBQLQuery query2 = new EJBQLQuery("SELECT COUNT(a) FROM IvSub1 a");
-		assertEquals(Collections.singletonList(1L), env.context().performQuery(query2));
+		assertEquals(Collections.singletonList(1L), env.context().select(query2));
 
 		EJBQLQuery query3 = new EJBQLQuery("SELECT COUNT(a) FROM IvSub2 a");
-		assertEquals(Collections.singletonList(2L), env.context().performQuery(query3));
+		assertEquals(Collections.singletonList(2L), env.context().select(query3));
 	}
 
 	@Test
@@ -1320,7 +1320,7 @@ public class VerticalInheritanceIT {
 		ivSub2Table.insert(3, "sub2attr", "sub2name");
 
 		ObjectContext freshContext = runtime.newContext();
-		List<IvRoot> results = freshContext.performQuery(new EJBQLQuery("select a from IvRoot a order by a.name"));
+		List<IvRoot> results = freshContext.select(new EJBQLQuery("select a from IvRoot a order by a.name"));
 
 		assertEquals(3, results.size());
 		assertFalse(results.contains(null));
@@ -1347,7 +1347,7 @@ public class VerticalInheritanceIT {
 		ivSub1Sub1Table.insert(2, "sub1sub1name", 7);
 
 		ObjectContext freshContext = runtime.newContext();
-		List<IvSub1> results = freshContext.performQuery(new EJBQLQuery("select a from IvSub1 a order by a.name"));
+		List<IvSub1> results = freshContext.select(new EJBQLQuery("select a from IvSub1 a order by a.name"));
 
 		assertEquals(2, results.size());
 

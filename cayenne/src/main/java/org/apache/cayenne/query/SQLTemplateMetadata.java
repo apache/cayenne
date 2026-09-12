@@ -42,7 +42,7 @@ public class SQLTemplateMetadata extends BaseQueryMetadata {
 		return isSingleResultSetMapping;
 	}
 
-	boolean resolve(Object root, EntityResolver resolver, SQLTemplate query) {
+	boolean resolve(Object root, EntityResolver resolver, SQLTemplate<?> query) {
 
 		if (super.resolve(root, resolver)) {
 
@@ -117,7 +117,7 @@ public class SQLTemplateMetadata extends BaseQueryMetadata {
 		return false;
 	}
 
-	private void buildResultSetMappingForColumns(SQLTemplate query) {
+	private void buildResultSetMappingForColumns(SQLTemplate<?> query) {
 		if(query.getResultColumnsTypes() == null || query.getResultColumnsTypes().isEmpty() || !query.isUseScalar()) {
 			return;
 		}

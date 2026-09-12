@@ -20,7 +20,6 @@ package org.apache.cayenne.access;
 
 import java.util.List;
 
-import org.apache.cayenne.Cayenne;
 import org.apache.cayenne.query.CapsStrategy;
 import org.apache.cayenne.query.ObjectSelect;
 import org.apache.cayenne.query.SQLTemplate;
@@ -77,7 +76,7 @@ public class EnumIT {
                 "SELECT * FROM ENUM_ENTITY WHERE ENUM_ATTRIBUTE = 'one'");
         q.setColumnNamesCapitalization(CapsStrategy.UPPER);
 
-        EnumEntity e = (EnumEntity) Cayenne.objectForQuery(env.context(), q);
+        EnumEntity e = (EnumEntity) env.context().selectOne(q);
         assertNotNull(e);
         assertSame(Enum1.one, e.getEnumAttribute());
     }

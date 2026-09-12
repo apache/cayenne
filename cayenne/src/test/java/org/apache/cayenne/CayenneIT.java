@@ -108,7 +108,7 @@ public class CayenneIT {
         rsMap.addColumnResult("X");
         query.setResult(rsMap);
 
-        Object object = Cayenne.objectForQuery(env.context(), query);
+        Object object = env.context().selectOne(query);
         assertNotNull(object);
         assertInstanceOf(Number.class, object);
         assertEquals(2, ((Number) object).intValue());
@@ -120,7 +120,7 @@ public class CayenneIT {
 
         String ejbql = "SELECT count(a) from Artist a";
         EJBQLQuery query = new EJBQLQuery(ejbql);
-        Object object = Cayenne.objectForQuery(env.context(), query);
+        Object object = env.context().selectOne(query);
         assertNotNull(object);
         assertInstanceOf(Number.class, object, "Object class: " + object.getClass().getName());
         assertEquals(2, ((Number) object).intValue());
@@ -134,6 +134,7 @@ public class CayenneIT {
     }
 
     @Test
+    @SuppressWarnings("removal")
     public void objectForQuery() throws Exception {
         createOneArtist();
 
@@ -168,7 +169,7 @@ public class CayenneIT {
         ObjectId id = ObjectId.of("Artist", Artist.ARTIST_ID_PK_COLUMN, 44001);
 
         ObjectSelect<Artist> query = ObjectSelect.query(Artist.class).where(Artist.SELF.eqId(id));
-        assertNull(Cayenne.objectForQuery(env.context(), query));
+        assertNull(env.context().selectOne(query));
     }
 
     @Test
@@ -267,7 +268,7 @@ public class CayenneIT {
     public void ejbql() throws Exception {
         createOneArtist();
 
-        List<?> objects = env.context().performQuery(new EJBQLQuery("select a from Artist a"));
+        List<?> objects = env.context().select(new EJBQLQuery("select a from Artist a"));
         assertEquals(1, objects.size());
         Artist object = (Artist) objects.getFirst();
 

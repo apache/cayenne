@@ -123,7 +123,7 @@ public class DataDomainCallbacksIT {
         assertNull(listener.getPublicCalledbackEntity());
 
         EJBQLQuery q = new EJBQLQuery("select a, a.artistName from Artist a");
-        env.context().performQuery(q);
+        env.context().select(q);
         assertEquals(1, a1.getPostLoaded());
         assertSame(a1, listener.getPublicCalledbackEntity());
     }

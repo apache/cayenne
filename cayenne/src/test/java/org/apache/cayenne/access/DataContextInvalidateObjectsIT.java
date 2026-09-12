@@ -348,7 +348,7 @@ public class DataContextInvalidateObjectsIT {
         createRefreshCollectionToOneUpdateDataSet();
 
         // results are served from cache and therefore are not refreshed
-        context.performQuery(q);
+        context.select(q);
         assertSame(a1, p1.getToArtist());
         assertSame(a1, p2.getToArtist());
         assertEquals("c", p1.getToArtist().getArtistName());
@@ -358,7 +358,7 @@ public class DataContextInvalidateObjectsIT {
         context.getChannel().getDataDomain().getQueryCache().removeGroup("X");
 
         // this should force a refresh
-        context.performQuery(q);
+        context.select(q);
 
         assertEquals(PersistenceState.COMMITTED, p1.getPersistenceState());
         assertEquals(PersistenceState.COMMITTED, p2.getPersistenceState());

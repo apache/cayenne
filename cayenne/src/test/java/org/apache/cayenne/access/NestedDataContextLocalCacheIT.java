@@ -50,7 +50,7 @@ public class NestedDataContextLocalCacheIT {
         assertNull(env.context().getQueryCache().get(
                 query.getMetaData(env.context().getEntityResolver())));
 
-        List<?> results = child1.performQuery(query);
+        List<?> results = child1.select(query);
         assertSame(results, ((DataContext) child1).getQueryCache().get(
                 query.getMetaData(child1.getEntityResolver())));
 

@@ -34,7 +34,7 @@ import java.util.Collection;
  */
 class SQLiteSQLTemplateAction extends SQLTemplateAction {
 
-    public SQLiteSQLTemplateAction(SQLTemplate query, DataNode dataNode) {
+    public SQLiteSQLTemplateAction(SQLTemplate<?> query, DataNode dataNode) {
         super(query, dataNode);
     }
 

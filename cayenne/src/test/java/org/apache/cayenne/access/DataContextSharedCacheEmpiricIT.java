@@ -114,7 +114,7 @@ public class DataContextSharedCacheEmpiricIT {
         List<Artist> altArtists = query.select(c2);
         final Artist a2 = altArtists.get(0);
 
-        List<?> artists = c1.performQuery(query);
+        List<?> artists = c1.select(query);
         Artist a1 = (Artist) artists.get(0);
 
         assertNotSame(a2, a1);

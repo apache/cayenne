@@ -18,7 +18,6 @@
  ****************************************************************/
 package org.apache.cayenne.access;
 
-import org.apache.cayenne.Cayenne;
 import org.apache.cayenne.DataChannel;
 import org.apache.cayenne.ObjectContext;
 import org.apache.cayenne.ObjectId;
@@ -70,7 +69,7 @@ public class DataContextDecoratedStackIT {
         query.setTemplate(
                 MySQLAdapter.class.getName(),
                 "select #result('COUNT(ARTIST_ID)' 'int' 'x') from ARTIST");
-        Map<?, ?> count = (Map<?, ?>) Cayenne.objectForQuery(context, query);
+        Map<?, ?> count = (Map<?, ?>) context.selectOne(query);
         assertNotNull(count);
         assertEquals(1, count.get("x"));
     }

@@ -191,9 +191,7 @@ public class SingleTableInheritanceIT extends PeopleTestBase {
         ObjectSelect<AbstractPerson> query = ObjectSelect.query(AbstractPerson.class)
                 .prefetch(AbstractPerson.NOTES.joint());
 
-        final AbstractPerson person = (AbstractPerson) Cayenne.objectForQuery(
-                context,
-                query);
+        final AbstractPerson person = (AbstractPerson) context.selectOne(query);
 
         assertTrue(person instanceof Employee);
 
@@ -227,9 +225,7 @@ public class SingleTableInheritanceIT extends PeopleTestBase {
         ObjectSelect<AbstractPerson> query = ObjectSelect.query(AbstractPerson.class)
                 .prefetch(AbstractPerson.NOTES.disjoint());
 
-        final AbstractPerson person = (AbstractPerson) Cayenne.objectForQuery(
-                context,
-                query);
+        final AbstractPerson person = (AbstractPerson) context.selectOne(query);
         assertTrue(person instanceof Employee);
 
         env.runWithQueriesBlocked(() -> {
@@ -284,7 +280,7 @@ public class SingleTableInheritanceIT extends PeopleTestBase {
         ObjectSelect<PersonNotes> query = ObjectSelect.query(PersonNotes.class)
                 .prefetch(PersonNotes.PERSON.joint());
 
-        PersonNotes note = (PersonNotes) Cayenne.objectForQuery(context, query);
+        PersonNotes note = (PersonNotes) context.selectOne(query);
         env.runWithQueriesBlocked(() -> assertEquals("AA", note.getPerson().getName()));
     }
 

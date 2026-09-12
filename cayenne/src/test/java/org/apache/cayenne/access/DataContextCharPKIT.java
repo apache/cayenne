@@ -51,7 +51,7 @@ public class DataContextCharPKIT {
 
         q.setFetchingDataRows(true);
 
-        List<?> rows = context.performQuery(q);
+        List<?> rows = context.select(q);
         assertNotNull(rows);
         assertEquals(1, rows.size());
         DataRow row = (DataRow) rows.get(0);
@@ -85,7 +85,7 @@ public class DataContextCharPKIT {
                 "SELECT * FROM CHAR_PK_TEST");
         q.setFetchingDataRows(true);
 
-        List<?> rows = context.performQuery(q);
+        List<?> rows = context.select(q);
         assertNotNull(rows);
         assertEquals(0, rows.size());
     }
@@ -106,7 +106,7 @@ public class DataContextCharPKIT {
                 "SELECT * FROM CHAR_PK_TEST");
         q.setFetchingDataRows(true);
 
-        List<?> rows = context.performQuery(q);
+        List<?> rows = context.select(q);
         assertNotNull(rows);
         assertEquals(1, rows.size());
         DataRow row = (DataRow) rows.get(0);

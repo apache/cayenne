@@ -22,6 +22,7 @@ import org.apache.cayenne.exp.path.CayennePath;
 import org.apache.cayenne.map.DbEntity;
 import org.apache.cayenne.map.ObjEntity;
 import org.apache.cayenne.query.Query;
+import org.apache.cayenne.query.Select;
 import org.apache.cayenne.reflect.ClassDescriptor;
 import org.apache.cayenne.reflect.PropertyDescriptor;
 import org.apache.cayenne.reflect.PropertyUtils;
@@ -394,7 +395,11 @@ public class Cayenne {
      * Returns an object or a DataRow that is a result of a given query. If
      * query returns more than one object, an exception is thrown. If query
      * returns no objects, null is returned.
+     *
+     * @deprecated use {@link ObjectContext#selectOne(Select)}
      */
+    @Deprecated(since = "5.0", forRemoval = true)
+    @SuppressWarnings("removal")
     public static Object objectForQuery(ObjectContext context, Query query) {
         List<?> objects = context.performQuery(query);
 

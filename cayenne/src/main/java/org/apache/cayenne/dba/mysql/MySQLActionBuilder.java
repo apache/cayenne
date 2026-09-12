@@ -43,7 +43,7 @@ class MySQLActionBuilder extends JdbcActionBuilder {
     }
 
     @Override
-    public SQLAction procedureAction(ProcedureQuery query) {
+    public SQLAction procedureAction(ProcedureQuery<?> query) {
         return new MySQLProcedureAction(query, dataNode);
     }
 }

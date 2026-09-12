@@ -22,6 +22,7 @@ import java.util.Collections;
 import java.util.HashMap;
 import java.util.Map;
 
+import org.apache.cayenne.ObjectContext;
 import org.apache.cayenne.ejbql.EJBQLCompiledExpression;
 import org.apache.cayenne.ejbql.EJBQLException;
 import org.apache.cayenne.ejbql.EJBQLParserFactory;
@@ -29,10 +30,13 @@ import org.apache.cayenne.map.EntityResolver;
 
 /**
  * An EJBQL query representation in Cayenne.
- * 
+ *
+ * @param <T> the type of the result elements. Depending on the SELECT clause, this may be a persistent object, a
+ *            scalar, an {@code Object[]} for multi-column queries, or a {@link org.apache.cayenne.DataRow} when
+ *            the query is fetching data rows.
  * @since 3.0
  */
-public class EJBQLQuery extends CacheableQuery {
+public class EJBQLQuery<T> extends CacheableQuery implements Select<T> {
 
     protected String ejbqlStatement;
     
@@ -78,6 +82,15 @@ public class EJBQLQuery extends CacheableQuery {
 
     public SQLAction createSQLAction(SQLActionVisitor visitor) {
         return visitor.ejbqlAction(this);
+    }
+
+    /**
+     * @since 5.0
+     */
+    @Override
+    public T selectFirst(ObjectContext context) {
+        setFetchLimit(1);
+        return context.selectFirst(this);
     }
 
     /**

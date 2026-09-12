@@ -42,7 +42,7 @@ import org.apache.cayenne.query.ProcedureQuery;
  */
 class OracleProcedureAction extends ProcedureAction {
 
-	OracleProcedureAction(ProcedureQuery query, DataNode dataNode) {
+	OracleProcedureAction(ProcedureQuery<?> query, DataNode dataNode) {
 		super(query, dataNode);
 	}
 

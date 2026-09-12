@@ -58,7 +58,7 @@ import java.util.Map;
  */
 public class SQLTemplateAction implements SQLAction {
 
-    protected SQLTemplate query;
+    protected SQLTemplate<?> query;
     protected QueryMetadata queryMetadata;
 
     protected DbEntity dbEntity;
@@ -68,7 +68,7 @@ public class SQLTemplateAction implements SQLAction {
     /**
      * @since 4.0
      */
-    public SQLTemplateAction(SQLTemplate query, DataNode dataNode) {
+    public SQLTemplateAction(SQLTemplate<?> query, DataNode dataNode) {
         this.query = query;
         this.dataNode = dataNode;
         this.queryMetadata = query.getMetaData(dataNode.getEntityResolver());
@@ -392,7 +392,7 @@ public class SQLTemplateAction implements SQLAction {
     /**
      * Returns a SQLTemplate for this action.
      */
-    public SQLTemplate getQuery() {
+    public SQLTemplate<?> getQuery() {
         return query;
     }
 

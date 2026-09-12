@@ -142,7 +142,7 @@ public class LegacyDateTimeTypesIT {
         test.setTimestampColumn(now);
         env.context().commitChanges();
 
-        DataRow testRead = (DataRow) env.context().performQuery(MappedSelect.query("SelectDateTest")).get(0);
+        DataRow testRead = (DataRow) env.context().select(MappedSelect.query("SelectDateTest")).get(0);
         Date columnValue = (Date) testRead.get("TIMESTAMP_COLUMN");
         assertNotNull(columnValue);
         assertEquals(now, columnValue);
@@ -163,7 +163,7 @@ public class LegacyDateTimeTypesIT {
         test.setDateColumn(now);
         env.context().commitChanges();
 
-        DataRow testRead = (DataRow) env.context().performQuery(MappedSelect.query("SelectDateTest")).get(0);
+        DataRow testRead = (DataRow) env.context().select(MappedSelect.query("SelectDateTest")).get(0);
         Date columnValue = (Date) testRead.get("DATE_COLUMN");
         assertNotNull(columnValue);
         assertEquals(now.toString(), new java.sql.Date(columnValue.getTime()).toString());
@@ -184,7 +184,7 @@ public class LegacyDateTimeTypesIT {
         test.setTimeColumn(now);
         env.context().commitChanges();
 
-        DataRow testRead = (DataRow) env.context().performQuery(MappedSelect.query("SelectDateTest")).get(0);
+        DataRow testRead = (DataRow) env.context().select(MappedSelect.query("SelectDateTest")).get(0);
         Date columnValue = (Date) testRead.get("TIME_COLUMN");
         assertNotNull(columnValue, testRead.toString());
         assertNotNull(columnValue);

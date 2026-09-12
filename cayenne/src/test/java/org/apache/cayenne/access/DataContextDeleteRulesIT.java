@@ -109,7 +109,7 @@ public class DataContextDeleteRulesIT {
 
         SQLTemplate checkQuery = new SQLTemplate(Artist.class, "SELECT * FROM ARTIST_GROUP");
         checkQuery.setFetchingDataRows(true);
-        List<?> joins1 = context.performQuery(checkQuery);
+        List<?> joins1 = context.select(checkQuery);
         assertEquals(1, joins1.size());
 
         context.deleteObjects(anArtist);
@@ -118,7 +118,7 @@ public class DataContextDeleteRulesIT {
         assertFalse(anArtist.getGroupArray().contains(aGroup));
         context.commitChanges();
 
-        List<?> joins2 = context.performQuery(checkQuery);
+        List<?> joins2 = context.select(checkQuery);
         assertEquals(0, joins2.size());
     }
 
@@ -143,14 +143,14 @@ public class DataContextDeleteRulesIT {
 
         SQLTemplate checkQuery = new SQLTemplate(Artist.class, "SELECT * FROM ARTIST_GROUP");
         checkQuery.setFetchingDataRows(true);
-        List<?> joins1 = context.performQuery(checkQuery);
+        List<?> joins1 = context.select(checkQuery);
         assertEquals(1, joins1.size());
 
         context.deleteObjects(aGroup);
         assertFalse(anArtist.getGroupArray().contains(aGroup));
         context.commitChanges();
 
-        List<?> joins2 = context.performQuery(checkQuery);
+        List<?> joins2 = context.select(checkQuery);
         assertEquals(0, joins2.size());
     }
 

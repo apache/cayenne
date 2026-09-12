@@ -190,7 +190,7 @@ public class JointPrefetchIT {
         q.setFetchingDataRows(false);
 
         @SuppressWarnings("unchecked")
-        final List<Artist> objects = (List<Artist>)context.performQuery(q);
+        final List<Artist> objects = (List<Artist>)context.select(q);
 
         env.runWithQueriesBlocked(() -> {
             // without OUTER join we will get fewer objects...

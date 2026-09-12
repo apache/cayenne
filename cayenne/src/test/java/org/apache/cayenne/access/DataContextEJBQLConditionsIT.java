@@ -112,7 +112,7 @@ public class DataContextEJBQLConditionsIT {
 
         EJBQLQuery query = new EJBQLQuery(ejbql);
         query.setParameter("x", dob);
-        List<?> objects = env.context().performQuery(query);
+        List<?> objects = env.context().select(query);
         assertEquals(1, objects.size());
 
         assertSame(allArtists.get(0), objects.get(0));
@@ -130,7 +130,7 @@ public class DataContextEJBQLConditionsIT {
         // - 1000.0)";
         //
         // EJBQLQuery query = new EJBQLQuery(ejbql);
-        // List<?> objects = createDataContext().performQuery(query);
+        // List<?> objects = createDataContext().select(query);
         // assertEquals(2, objects.size());
         //
         // Set<Object> ids = new HashSet<>();
@@ -151,7 +151,7 @@ public class DataContextEJBQLConditionsIT {
         String ejbql = "SELECT p FROM Painting p WHERE p.paintingTitle LIKE 'A%C'";
 
         EJBQLQuery query = new EJBQLQuery(ejbql);
-        List<?> objects = env.context().performQuery(query);
+        List<?> objects = env.context().select(query);
         assertEquals(1, objects.size());
 
         Set<Object> ids = new HashSet<>();
@@ -170,7 +170,7 @@ public class DataContextEJBQLConditionsIT {
         String ejbql = "SELECT p FROM Painting p WHERE p.paintingTitle NOT LIKE 'A%C'";
 
         EJBQLQuery query = new EJBQLQuery(ejbql);
-        List<?> objects = env.context().performQuery(query);
+        List<?> objects = env.context().select(query);
         assertEquals(4, objects.size());
 
         Set<Object> ids = new HashSet<>();
@@ -189,7 +189,7 @@ public class DataContextEJBQLConditionsIT {
         String ejbql = "SELECT p FROM Painting p WHERE p.paintingTitle LIKE '_DDDD'";
 
         EJBQLQuery query = new EJBQLQuery(ejbql);
-        List<?> objects = env.context().performQuery(query);
+        List<?> objects = env.context().select(query);
         assertEquals(3, objects.size());
 
         Set<Object> ids = new HashSet<>();
@@ -210,7 +210,7 @@ public class DataContextEJBQLConditionsIT {
         String ejbql = "SELECT p FROM Painting p WHERE p.paintingTitle LIKE 'X_DDDD' ESCAPE 'X'";
 
         EJBQLQuery query = new EJBQLQuery(ejbql);
-        List<?> objects = env.context().performQuery(query);
+        List<?> objects = env.context().select(query);
         assertEquals(1, objects.size());
 
         Set<Object> ids = new HashSet<>();
@@ -231,7 +231,7 @@ public class DataContextEJBQLConditionsIT {
 
         EJBQLQuery query = new EJBQLQuery(ejbql);
         query.setParameter(1, "X_DDDD");
-        List<?> objects = env.context().performQuery(query);
+        List<?> objects = env.context().select(query);
         assertEquals(1, objects.size());
 
         Set<Object> ids = new HashSet<>();
@@ -253,12 +253,12 @@ public class DataContextEJBQLConditionsIT {
         EJBQLQuery eq1 = new EJBQLQuery(
                 "select a from Artist a where a.dateOfBirth like :param");
         eq1.setParameter("param", null);
-        assertNotNull(Cayenne.objectForQuery(env.context(), eq1));
+        assertNotNull(env.context().selectOne(eq1));
 
         EJBQLQuery eq2 = new EJBQLQuery(
                 "select a from Artist a where a.dateOfBirth like ?1");
         eq2.setParameter(1, null);
-        assertNotNull(Cayenne.objectForQuery(env.context(), eq2));
+        assertNotNull(env.context().selectOne(eq2));
     }
 
     @Test
@@ -268,7 +268,7 @@ public class DataContextEJBQLConditionsIT {
         String ejbql = "SELECT p FROM Painting p WHERE p.paintingTitle IN ('A', 'B')";
 
         EJBQLQuery query = new EJBQLQuery(ejbql);
-        List<?> objects = env.context().performQuery(query);
+        List<?> objects = env.context().select(query);
         assertEquals(2, objects.size());
 
         Set<Object> ids = new HashSet<>();
@@ -288,7 +288,7 @@ public class DataContextEJBQLConditionsIT {
         String ejbql = "SELECT p FROM Painting p WHERE p.paintingTitle NOT IN ('A', 'B')";
 
         EJBQLQuery query = new EJBQLQuery(ejbql);
-        List<?> objects = env.context().performQuery(query);
+        List<?> objects = env.context().select(query);
         assertEquals(1, objects.size());
 
         Set<Object> ids = new HashSet<>();
@@ -309,7 +309,7 @@ public class DataContextEJBQLConditionsIT {
                 + ")";
 
         EJBQLQuery query = new EJBQLQuery(ejbql);
-        List<?> objects = env.context().performQuery(query);
+        List<?> objects = env.context().select(query);
         assertEquals(2, objects.size());
 
         Set<Object> ids = new HashSet<>();
@@ -329,7 +329,7 @@ public class DataContextEJBQLConditionsIT {
         String ejbql = "SELECT a FROM Artist a WHERE a.paintingArray IS EMPTY";
 
         EJBQLQuery query = new EJBQLQuery(ejbql);
-        List<?> objects = env.context().performQuery(query);
+        List<?> objects = env.context().select(query);
         assertEquals(1, objects.size());
 
         Set<Object> ids = new HashSet<>();
@@ -348,7 +348,7 @@ public class DataContextEJBQLConditionsIT {
         String ejbql = "SELECT a FROM Artist a WHERE a.paintingArray IS NOT EMPTY";
 
         EJBQLQuery query = new EJBQLQuery(ejbql);
-        List<?> objects = env.context().performQuery(query);
+        List<?> objects = env.context().select(query);
         assertEquals(2, objects.size());
 
         Set<Object> ids = new HashSet<>();
@@ -368,7 +368,7 @@ public class DataContextEJBQLConditionsIT {
         String ejbql = "SELECT DISTINCT a FROM Artist a WHERE a.paintingArray IS NOT EMPTY";
 
         EJBQLQuery query = new EJBQLQuery(ejbql);
-        List<?> objects = env.context().performQuery(query);
+        List<?> objects = env.context().select(query);
         assertEquals(2, objects.size());
 
         Set<Object> ids = new HashSet<>();
@@ -389,7 +389,7 @@ public class DataContextEJBQLConditionsIT {
 
         EJBQLQuery query = new EJBQLQuery(ejbql);
         query.setParameter("x", Cayenne.objectForPK(env.context(), Painting.class, 33010));
-        List<?> objects = env.context().performQuery(query);
+        List<?> objects = env.context().select(query);
         assertEquals(1, objects.size());
 
         Set<Object> ids = new HashSet<>();
@@ -409,7 +409,7 @@ public class DataContextEJBQLConditionsIT {
 
         EJBQLQuery query = new EJBQLQuery(ejbql);
         query.setParameter("estimatedPrice", new BigDecimal(4000));
-        List<?> objects = env.context().performQuery(query);
+        List<?> objects = env.context().select(query);
         assertEquals(4, objects.size());
     }
 
@@ -421,7 +421,7 @@ public class DataContextEJBQLConditionsIT {
 
         EJBQLQuery query = new EJBQLQuery(ejbql);
         query.setParameter("estimatedPrice", new BigDecimal(4000));
-        List<?> objects = env.context().performQuery(query);
+        List<?> objects = env.context().select(query);
         assertEquals(2, objects.size());
     }
 
@@ -433,7 +433,7 @@ public class DataContextEJBQLConditionsIT {
 
         EJBQLQuery query = new EJBQLQuery(ejbql);
         query.setParameter("x", Cayenne.objectForPK(env.context(), Painting.class, 33010));
-        List<?> objects = env.context().performQuery(query);
+        List<?> objects = env.context().select(query);
         assertEquals(2, objects.size());
 
         Set<Object> ids = new HashSet<>();
@@ -454,7 +454,7 @@ public class DataContextEJBQLConditionsIT {
                 + "WHERE p MEMBER OF a.paintingArray AND a.artistName = 'B'";
 
         EJBQLQuery query = new EJBQLQuery(ejbql);
-        List<?> objects = env.context().performQuery(query);
+        List<?> objects = env.context().select(query);
         assertEquals(2, objects.size());
 
         Set<Object> ids = new HashSet<>();

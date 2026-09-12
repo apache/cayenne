@@ -51,7 +51,7 @@ public class SQLServerProcedureAction extends ProcedureAction {
 	/**
 	 * @since 4.0
 	 */
-	public SQLServerProcedureAction(ProcedureQuery query, DataNode dataNode) {
+	public SQLServerProcedureAction(ProcedureQuery<?> query, DataNode dataNode) {
 		super(query, dataNode);
 	}
 

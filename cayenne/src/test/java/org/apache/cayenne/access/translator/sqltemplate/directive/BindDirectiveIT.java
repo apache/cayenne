@@ -134,7 +134,7 @@ public class BindDirectiveIT {
 
 		query.setColumnNamesCapitalization(CapsStrategy.UPPER);
 		query.setParams(Collections.singletonMap("ARTISTNAMES", artistNames));
-		List<?> result = env.context().performQuery(query);
+		List<?> result = env.context().select(query);
 		assertEquals(2, result.size());
 	}
 

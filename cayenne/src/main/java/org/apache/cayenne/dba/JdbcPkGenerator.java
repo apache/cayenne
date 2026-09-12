@@ -263,8 +263,8 @@ public class JdbcPkGenerator implements PkGenerator {
 
         // run queries via DataNode to utilize its transactional behavior
         List<Query> queries = new ArrayList<>(2);
-        queries.add(new SQLTemplate(entity, select));
-        queries.add(new SQLTemplate(entity, pkUpdateString(entity.getName())));
+        queries.add(new SQLTemplate<>(entity, select));
+        queries.add(new SQLTemplate<>(entity, pkUpdateString(entity.getName())));
 
         PkRetrieveProcessor observer = new PkRetrieveProcessor(entity.getName());
         node.performQueries(queries, observer);

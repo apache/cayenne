@@ -34,7 +34,7 @@ public class DB2ActionBuilder extends JdbcActionBuilder {
     }
 
     @Override
-    public SQLAction procedureAction(ProcedureQuery query) {
+    public SQLAction procedureAction(ProcedureQuery<?> query) {
         return new DB2ProcedureAction(query, dataNode);
     }
 

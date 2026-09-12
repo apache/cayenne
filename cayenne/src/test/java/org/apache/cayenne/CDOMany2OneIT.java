@@ -107,7 +107,7 @@ public class CDOMany2OneIT {
         q.setColumnNamesCapitalization(CapsStrategy.UPPER);
         q.setFetchingDataRows(true);
 
-        DataRow row = (DataRow) Cayenne.objectForQuery(env.context(), q);
+        DataRow row = (DataRow) env.context().selectOne(q);
         assertNotNull(row);
         assertEquals("P1", row.get("PAINTING_TITLE"));
         assertNull(row.get("ARTIST_ID"));

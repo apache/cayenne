@@ -140,7 +140,7 @@ public class PostgresAdapter extends JdbcAdapter {
      * @since 5.0
      */
     @Override
-    public ProcedureTranslator getProcedureTranslator(ProcedureQuery query, EntityResolver entityResolver) {
+    public ProcedureTranslator getProcedureTranslator(ProcedureQuery<?> query, EntityResolver entityResolver) {
         return new PostgresProcedureTranslator();
     }
 

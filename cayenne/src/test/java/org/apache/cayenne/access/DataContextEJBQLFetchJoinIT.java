@@ -108,7 +108,7 @@ public class DataContextEJBQLFetchJoinIT {
 
         EJBQLQuery query = new EJBQLQuery(ejbql);
 
-        List<?> objects = env.context().performQuery(query);
+        List<?> objects = env.context().select(query);
 
         env.runWithQueriesBlocked(() -> {
 
@@ -140,7 +140,7 @@ public class DataContextEJBQLFetchJoinIT {
 
         EJBQLQuery query = new EJBQLQuery(ejbql);
 
-        final List<?> objects = env.context().performQuery(query);
+        final List<?> objects = env.context().select(query);
 
         env.runWithQueriesBlocked(() -> {
 
@@ -188,7 +188,7 @@ public class DataContextEJBQLFetchJoinIT {
 
         EJBQLQuery query = new EJBQLQuery(ejbql);
 
-        final List<?> objects = env.context().performQuery(query);
+        final List<?> objects = env.context().select(query);
 
         env.runWithQueriesBlocked(() -> {
             assertNotNull(objects);
@@ -207,7 +207,7 @@ public class DataContextEJBQLFetchJoinIT {
 
         EJBQLQuery query = new EJBQLQuery(ejbql);
 
-        final List<?> objects = env.context().performQuery(query);
+        final List<?> objects = env.context().select(query);
 
         env.runWithQueriesBlocked(() -> {
 
@@ -284,7 +284,7 @@ public class DataContextEJBQLFetchJoinIT {
 
         EJBQLQuery query = new EJBQLQuery(ejbql);
 
-        List<?> objects = env.context().performQuery(query);
+        List<?> objects = env.context().select(query);
         env.runWithQueriesBlocked(() -> {
 
             assertEquals(6, objects.size());

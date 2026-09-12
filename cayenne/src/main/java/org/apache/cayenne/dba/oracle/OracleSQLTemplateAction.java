@@ -36,7 +36,7 @@ class OracleSQLTemplateAction extends SQLTemplateAction {
 
 	protected DbEntity dbEntity;
 
-	OracleSQLTemplateAction(SQLTemplate query, DataNode dataNode) {
+	OracleSQLTemplateAction(SQLTemplate<?> query, DataNode dataNode) {
 		super(query, dataNode);
 		this.dbEntity = query.getMetaData(dataNode.getEntityResolver()).getDbEntity();
 	}

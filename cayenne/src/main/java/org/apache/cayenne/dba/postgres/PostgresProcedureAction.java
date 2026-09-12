@@ -38,7 +38,7 @@ import java.sql.SQLException;
  */
 class PostgresProcedureAction extends SQLServerProcedureAction {
 
-    PostgresProcedureAction(ProcedureQuery query, DataNode dataNode) {
+    PostgresProcedureAction(ProcedureQuery<?> query, DataNode dataNode) {
         super(query, dataNode);
     }
 

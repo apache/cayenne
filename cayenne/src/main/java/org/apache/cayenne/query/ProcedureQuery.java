@@ -19,6 +19,7 @@
 
 package org.apache.cayenne.query;
 
+import org.apache.cayenne.ObjectContext;
 import org.apache.cayenne.QueryResultItem;
 import org.apache.cayenne.map.DataMap;
 import org.apache.cayenne.map.DbEntity;
@@ -44,18 +45,19 @@ import java.util.Map;
  * If a ProcedureQuery has OUT parameters, their values are reported as a separate item of the query response, a Map
  * keyed by parameter name (see {@link QueryResultItem.OutParameters}).
  * </p>
- * <h4>Using ProcedureQuery as a GenericSelectQuery</h4>
+ * <h4>Using ProcedureQuery as a Select</h4>
  * <p>
- * Executing ProcedureQuery via
- * {@link org.apache.cayenne.access.DataContext#performQuery(Query)} makes sense only if
+ * Executing ProcedureQuery via {@link ObjectContext#select(Select)} makes sense only if
  * the stored procedure returns a single result set (or alternatively returns a result via
  * OUT parameters and no other result sets). It is still OK if data modification occurs as
  * a side effect. However, if the query returns more then one result set, a more generic
- * form should be used:
- * {@link org.apache.cayenne.access.DataContext#performGenericQuery(Query)}.
+ * form should be used: {@link ObjectContext#performGenericQuery(Query)}.
  * </p>
+ *
+ * @param <T> the type of the result elements: a {@link org.apache.cayenne.DataRow} by default, or a persistent
+ *            object when a result type is specified.
  */
-public class ProcedureQuery extends CacheableQuery {
+public class ProcedureQuery<T> extends CacheableQuery implements Select<T> {
 
     public static final String COLUMN_NAME_CAPITALIZATION_PROPERTY = "cayenne.ProcedureQuery.columnNameCapitalization";
 
@@ -154,7 +156,7 @@ public class ProcedureQuery extends CacheableQuery {
     /**
      * @since 1.1
      */
-    public ProcedureQuery(Procedure procedure, Class<?> resultType) {
+    public ProcedureQuery(Procedure procedure, Class<T> resultType) {
         setRoot(procedure);
 
         this.resultClass = resultType;
@@ -163,7 +165,7 @@ public class ProcedureQuery extends CacheableQuery {
     /**
      * @since 1.1
      */
-    public ProcedureQuery(String procedureName, Class<?> resultType) {
+    public ProcedureQuery(String procedureName, Class<T> resultType) {
         setRoot(procedureName);
 
         this.resultClass = resultType;
@@ -232,6 +234,15 @@ public class ProcedureQuery extends CacheableQuery {
     @Override
     public SQLAction createSQLAction(SQLActionVisitor visitor) {
         return visitor.procedureAction(this);
+    }
+
+    /**
+     * @since 5.0
+     */
+    @Override
+    public T selectFirst(ObjectContext context) {
+        setFetchLimit(1);
+        return context.selectFirst(this);
     }
 
     /**

@@ -73,7 +73,7 @@ public class QueryWithCompoundJoinIT {
     public void ejbqlCompoundJoin() throws Exception {
         EJBQLQuery query = new EJBQLQuery(
                 "select f from CompoundFkTestEntity f inner join f.toCompoundPk p where p.name like 'a%'");
-        List res = context.performQuery(query);
+        List res = context.select(query);
         assertEquals(1, res.size());
         assertTrue(res.get(0) instanceof CompoundFkTestEntity);
         assertEquals("test", ((CompoundFkTestEntity)res.get(0)).getName());

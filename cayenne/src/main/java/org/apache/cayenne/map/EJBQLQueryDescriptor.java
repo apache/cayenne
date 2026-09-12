@@ -50,8 +50,8 @@ public class EJBQLQueryDescriptor extends QueryDescriptor {
     }
 
     @Override
-    public EJBQLQuery buildQuery() {
-        EJBQLQuery ejbqlQuery = new EJBQLQuery(this.getEjbql());
+    public EJBQLQuery<?> buildQuery() {
+        EJBQLQuery<?> ejbqlQuery = new EJBQLQuery<>(this.getEjbql());
         ejbqlQuery.initWithProperties(this.getProperties());
 
         return ejbqlQuery;
@@ -61,8 +61,8 @@ public class EJBQLQueryDescriptor extends QueryDescriptor {
      * @since 5.0
      */
     @Override
-    public EJBQLQuery buildQuery(Map<String, ?> parameters) {
-        EJBQLQuery ejbqlQuery = buildQuery();
+    public EJBQLQuery<?> buildQuery(Map<String, ?> parameters) {
+        EJBQLQuery<?> ejbqlQuery = buildQuery();
         parameters.forEach(ejbqlQuery::setParameter);
         return ejbqlQuery;
     }

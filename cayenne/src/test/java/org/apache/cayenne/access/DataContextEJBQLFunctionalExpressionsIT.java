@@ -61,13 +61,13 @@ public class DataContextEJBQLFunctionalExpressionsIT {
         // this fails:
         // EJBQLQuery query = new EJBQLQuery(
         // "SELECT d FROM Artist d WHERE SIZE(d.paintingArray) = 2");
-        // List<?> objects = context.performQuery(query);
+        // List<?> objects = context.select(query);
         // assertEquals(1, objects.size());
         // assertTrue(objects.contains(a2));
         //
         // EJBQLQuery query2 = new EJBQLQuery(
         // "SELECT d FROM Artist d WHERE SIZE(d.paintingArray) = 0");
-        // List<?> objects2 = context.performQuery(query2);
+        // List<?> objects2 = context.select(query2);
         // assertEquals(1, objects2.size());
         // assertTrue(objects2.contains(a1));
     }
@@ -84,7 +84,7 @@ public class DataContextEJBQLFunctionalExpressionsIT {
 
         EJBQLQuery query = new EJBQLQuery(
                 "SELECT a FROM Painting a WHERE CONCAT(a.paintingTitle, a.paintingTitle) = 'a1a1'");
-        List<?> objects = env.context().performQuery(query);
+        List<?> objects = env.context().select(query);
         assertEquals(1, objects.size());
         assertTrue(objects.contains(a1));
     }
@@ -101,7 +101,7 @@ public class DataContextEJBQLFunctionalExpressionsIT {
 
         EJBQLQuery query = new EJBQLQuery(
                 "SELECT a FROM Artist a WHERE SUBSTRING(a.artistName, 2, 3) = 'bcd'");
-        List<?> objects = env.context().performQuery(query);
+        List<?> objects = env.context().select(query);
         assertEquals(1, objects.size());
         assertTrue(objects.contains(a2));
     }
@@ -122,7 +122,7 @@ public class DataContextEJBQLFunctionalExpressionsIT {
 
         EJBQLQuery query = new EJBQLQuery(
                 "SELECT a FROM Artist a WHERE LOWER(a.artistName) = 'abcdefg'");
-        List<?> objects = env.context().performQuery(query);
+        List<?> objects = env.context().select(query);
         assertEquals(2, objects.size());
         assertTrue(objects.contains(a1));
         assertTrue(objects.contains(a2));
@@ -144,7 +144,7 @@ public class DataContextEJBQLFunctionalExpressionsIT {
 
         EJBQLQuery query = new EJBQLQuery(
                 "SELECT a FROM Artist a WHERE UPPER(a.artistName) = UPPER('abcdefg')");
-        List<?> objects = env.context().performQuery(query);
+        List<?> objects = env.context().select(query);
         assertEquals(2, objects.size());
         assertTrue(objects.contains(a1));
         assertTrue(objects.contains(a2));
@@ -165,7 +165,7 @@ public class DataContextEJBQLFunctionalExpressionsIT {
 
         EJBQLQuery query = new EJBQLQuery(
                 "SELECT a FROM Artist a WHERE LENGTH(a.artistName) > 7");
-        List<?> objects = env.context().performQuery(query);
+        List<?> objects = env.context().select(query);
         assertEquals(2, objects.size());
         assertTrue(objects.contains(a3));
         assertTrue(objects.contains(a2));
@@ -183,7 +183,7 @@ public class DataContextEJBQLFunctionalExpressionsIT {
 
         EJBQLQuery query = new EJBQLQuery(
                 "SELECT a FROM Artist a WHERE LOCATE('A', a.artistName) = 2");
-        List<?> objects = env.context().performQuery(query);
+        List<?> objects = env.context().select(query);
         assertEquals(1, objects.size());
         assertTrue(objects.contains(a2));
     }
@@ -201,27 +201,27 @@ public class DataContextEJBQLFunctionalExpressionsIT {
 
         EJBQLQuery query = new EJBQLQuery(
                 "SELECT a FROM Artist a WHERE TRIM(a.artistName) = 'A'");
-        List<?> objects = env.context().performQuery(query);
+        List<?> objects = env.context().select(query);
         assertEquals(2, objects.size());
         assertTrue(objects.contains(a1));
         assertTrue(objects.contains(a2));
 
         query = new EJBQLQuery(
                 "SELECT a FROM Artist a WHERE TRIM(LEADING FROM a.artistName) = 'A'");
-        objects = env.context().performQuery(query);
+        objects = env.context().select(query);
         // this is fuzzy cause some DB trim trailing data by default
         assertTrue(objects.size() == 1 || objects.size() == 2);
         assertTrue(objects.contains(a1));
 
         query = new EJBQLQuery(
                 "SELECT a FROM Artist a WHERE TRIM(TRAILING FROM a.artistName) = 'A'");
-        objects = env.context().performQuery(query);
+        objects = env.context().select(query);
         assertEquals(1, objects.size());
         assertTrue(objects.contains(a2));
 
         query = new EJBQLQuery(
                 "SELECT a FROM Artist a WHERE TRIM(BOTH FROM a.artistName) = 'A'");
-        objects = env.context().performQuery(query);
+        objects = env.context().select(query);
         assertEquals(2, objects.size());
         assertTrue(objects.contains(a1));
         assertTrue(objects.contains(a2));
@@ -244,26 +244,26 @@ public class DataContextEJBQLFunctionalExpressionsIT {
 
         EJBQLQuery query = new EJBQLQuery(
                 "SELECT a FROM Artist a WHERE TRIM('X' FROM a.artistName) = 'A'");
-        List<?> objects = env.context().performQuery(query);
+        List<?> objects = env.context().select(query);
         assertEquals(2, objects.size());
         assertTrue(objects.contains(a1));
         assertTrue(objects.contains(a2));
 
         query = new EJBQLQuery(
                 "SELECT a FROM Artist a WHERE TRIM(LEADING 'X' FROM a.artistName) = 'A'");
-        objects = env.context().performQuery(query);
+        objects = env.context().select(query);
         assertEquals(1, objects.size());
         assertTrue(objects.contains(a1));
 
         query = new EJBQLQuery(
                 "SELECT a FROM Artist a WHERE TRIM(TRAILING 'X' FROM a.artistName) = 'A'");
-        objects = env.context().performQuery(query);
+        objects = env.context().select(query);
         assertEquals(1, objects.size());
         assertTrue(objects.contains(a2));
 
         query = new EJBQLQuery(
                 "SELECT a FROM Artist a WHERE TRIM(BOTH 'X' FROM a.artistName) = 'A'");
-        objects = env.context().performQuery(query);
+        objects = env.context().select(query);
         assertEquals(2, objects.size());
         assertTrue(objects.contains(a1));
         assertTrue(objects.contains(a2));

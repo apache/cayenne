@@ -33,5 +33,5 @@ public interface ProcedureTranslator {
      *
      * @since 5.0
      */
-    TranslatedProcedure translate(ProcedureQuery query, DbAdapter adapter, EntityResolver resolver);
+    TranslatedProcedure translate(ProcedureQuery<?> query, DbAdapter adapter, EntityResolver resolver);
 }

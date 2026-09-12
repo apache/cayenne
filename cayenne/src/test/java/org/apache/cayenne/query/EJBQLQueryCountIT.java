@@ -53,7 +53,7 @@ public class EJBQLQueryCountIT {
 		EJBQLQuery query = new EJBQLQuery("SELECT COUNT(a) FROM Artist a");
 
 		// this should be simply a count of painting/artist joins
-		assertEquals(Collections.singletonList(3L), env.context().performQuery(query));
+		assertEquals(Collections.singletonList(3L), env.context().select(query));
 	}
 
 	@Test
@@ -69,7 +69,7 @@ public class EJBQLQueryCountIT {
 		EJBQLQuery query = new EJBQLQuery("SELECT COUNT(p.toArtist) FROM Painting p");
 
 		// this should be simply a count of painting/artist joins
-		assertEquals(Collections.singletonList(3L), env.context().performQuery(query));
+		assertEquals(Collections.singletonList(3L), env.context().select(query));
 	}
 
 	@Test
@@ -84,7 +84,7 @@ public class EJBQLQueryCountIT {
 
 		EJBQLQuery query = new EJBQLQuery("SELECT COUNT(DISTINCT p.toArtist) FROM Painting p");
 		// this should be a count of artists that have paintings
-		assertEquals(Collections.singletonList(2L), env.context().performQuery(query));
+		assertEquals(Collections.singletonList(2L), env.context().select(query));
 	}
 	
 	@Test
@@ -99,7 +99,7 @@ public class EJBQLQueryCountIT {
 
 		EJBQLQuery query = new EJBQLQuery("SELECT COUNT(DISTINCT p.toArtist.artistName) FROM Painting p");
 		// this should be a count of artists that have paintings
-		assertEquals(Collections.singletonList(1L), env.context().performQuery(query));
+		assertEquals(Collections.singletonList(1L), env.context().select(query));
 	}
 	
 }

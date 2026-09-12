@@ -34,7 +34,7 @@ import java.util.Map;
  */
 class EJBQLQueryMetadata extends BaseQueryMetadata {
 
-    boolean resolve(EntityResolver resolver, EJBQLQuery query) {
+    boolean resolve(EntityResolver resolver, EJBQLQuery<?> query) {
         EJBQLCompiledExpression expression = query.getExpression(resolver);
         setPrefetchTree(expression.getPrefetchTree());
         resultSetMapping = expression.getResult() != null

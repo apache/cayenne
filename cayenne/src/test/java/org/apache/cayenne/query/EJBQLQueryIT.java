@@ -132,13 +132,13 @@ public class EJBQLQueryIT {
         final String ejbql = "select a FROM Artist a";
         EJBQLQuery query = new EJBQLQuery(ejbql);
         query.setCacheStrategy(QueryCacheStrategy.LOCAL_CACHE);
-        final List<Artist> artist1 = context.performQuery(query);
+        final List<Artist> artist1 = context.select(query);
 
         env.runWithQueriesBlocked(() -> {
             List<Artist> artist2;
             EJBQLQuery query1 = new EJBQLQuery(ejbql);
             query1.setCacheStrategy(QueryCacheStrategy.LOCAL_CACHE);
-            artist2 = context.performQuery(query1);
+            artist2 = context.select(query1);
 
             assertEquals(artist1.get(0).getArtistName(), artist2
                     .get(0)
@@ -156,7 +156,7 @@ public class EJBQLQueryIT {
         String ejbql = "select a FROM Artist a";
         EJBQLQuery query = new EJBQLQuery(ejbql);
         query.setFetchingDataRows(true);
-        List<?> artists = context.performQuery(query);
+        List<?> artists = context.select(query);
 
         DataRow row = (DataRow) artists.get(0);
         String artistName = (String) row.get("ARTIST_NAME");
@@ -187,7 +187,7 @@ public class EJBQLQueryIT {
         String ejbql = "SELECT b FROM Artist a";
         EJBQLQuery query = new EJBQLQuery(ejbql);
 
-        EJBQLException e = assertThrows(EJBQLException.class, () -> context.performQuery(query));
+        EJBQLException e = assertThrows(EJBQLException.class, () -> context.select(query));
         assertEquals("the entity variable 'b' does not refer to any entity in the FROM clause", e.getUnlabeledMessage());
     }
 
@@ -238,7 +238,7 @@ public class EJBQLQueryIT {
         String ejbql = "SELECT p.toArtist FROM Painting p";
         EJBQLQuery query = new EJBQLQuery(ejbql);
 
-        List<?> result = context.performQuery(query);
+        List<?> result = context.select(query);
 
         assertNotNull(result);
         assertEquals(3, result.size());
@@ -248,7 +248,7 @@ public class EJBQLQueryIT {
         String ejbql2 = "SELECT p.toArtist, p FROM Painting p";
         EJBQLQuery query2 = new EJBQLQuery(ejbql2);
 
-        List<?> result2 = context.performQuery(query2);
+        List<?> result2 = context.select(query2);
 
         assertNotNull(result2);
         assertEquals(3, result2.size());
@@ -260,7 +260,7 @@ public class EJBQLQueryIT {
         String ejbql3 = "SELECT p.toArtist, p.paintingTitle FROM Painting p";
         EJBQLQuery query3 = new EJBQLQuery(ejbql3);
 
-        List<?> result3 = context.performQuery(query3);
+        List<?> result3 = context.select(query3);
 
         assertNotNull(result3);
         assertEquals(3, result3.size());
@@ -299,7 +299,7 @@ public class EJBQLQueryIT {
         query.setParameter(1,"title0");
         query.setParameter(2,"title1");
         query.setParameter(3,"title2");
-        List<Painting> paintings = context.performQuery(query);
+        List<Painting> paintings = context.select(query);
         assertEquals(2, paintings.size());
     }
 
@@ -308,7 +308,7 @@ public class EJBQLQueryIT {
         createPaintingsDataSet();
         EJBQLQuery query = new EJBQLQuery("select p from Painting p where p.paintingTitle in ?1");
         query.setParameter(1,"title0");
-        List<Painting> paintings = context.performQuery(query);
+        List<Painting> paintings = context.select(query);
         assertEquals(1, paintings.size());
     }
 
@@ -317,7 +317,7 @@ public class EJBQLQueryIT {
         createPaintingsDataSet();
         EJBQLQuery query = new EJBQLQuery("select p from Painting p where p.toArtist in :artists");
         query.setParameter("artists", ObjectSelect.query(Artist.class).select(context));
-        List<Painting> paintings = context.performQuery(query);
+        List<Painting> paintings = context.select(query);
         assertEquals(3, paintings.size());
     }
 
@@ -326,7 +326,7 @@ public class EJBQLQueryIT {
         createPaintingsDataSet();
         EJBQLQuery query = new EJBQLQuery("select p from Painting p where p.toArtist in ?1");
         query.setParameter(1, ObjectSelect.query(Artist.class).select(context));
-        List<Painting> paintings = context.performQuery(query);
+        List<Painting> paintings = context.select(query);
         assertEquals(3, paintings.size());
     }
 
@@ -335,7 +335,7 @@ public class EJBQLQueryIT {
         createPaintingsDataSet();
         EJBQLQuery query = new EJBQLQuery("select p from Painting p where p.toArtist in (:artists)");
         query.setParameter("artists", ObjectSelect.query(Artist.class).select(context));
-        List<Painting> paintings = context.performQuery(query);
+        List<Painting> paintings = context.select(query);
         assertEquals(3, paintings.size());
     }
 
@@ -344,7 +344,7 @@ public class EJBQLQueryIT {
         createPaintingsDataSet();
         EJBQLQuery query = new EJBQLQuery("select p from Painting p where p.toArtist in (?1)");
         query.setParameter(1, ObjectSelect.query(Artist.class).select(context));
-        List<Painting> paintings = context.performQuery(query);
+        List<Painting> paintings = context.select(query);
         assertEquals(3, paintings.size());
     }
 
@@ -352,21 +352,21 @@ public class EJBQLQueryIT {
     public void nullParameter() {
         EJBQLQuery query = new EJBQLQuery("select p from Painting p WHERE p.toArtist=:x");
         query.setParameter("x", null);
-        context.performQuery(query);
+        context.select(query);
     }
 
     @Test
     public void nullNotEqualsParameter() {
         EJBQLQuery query = new EJBQLQuery("select p from Painting p WHERE p.toArtist<>:x");
         query.setParameter("x", null);
-        context.performQuery(query);
+        context.select(query);
     }
 
     @Test
     public void nullPositionalParameter() {
         EJBQLQuery query = new EJBQLQuery("select p from Painting p WHERE p.toArtist=?1");
         query.setParameter(1, null);
-        context.performQuery(query);
+        context.select(query);
     }
 
     @Test
@@ -375,14 +375,14 @@ public class EJBQLQueryIT {
                 "select p from Painting p WHERE p.toArtist=:x OR p.toArtist.artistName=:b");
         query.setParameter("x", null);
         query.setParameter("b", "Y");
-        context.performQuery(query);
+        context.select(query);
     }
 
     @Test
     public void likeWithExplicitEscape() throws Exception {
         createPaintingsDataSet();
         EJBQLQuery query = new EJBQLQuery("SELECT p FROM Painting p WHERE p.paintingTitle LIKE '|%|%?|_title|%|%|_' ESCAPE '|'");
-        List<Painting> paintings = context.performQuery(query);
+        List<Painting> paintings = context.select(query);
         assertEquals(1, paintings.size());
         assertEquals("%%?_title%%_", paintings.get(0).getPaintingTitle());
     }
@@ -391,7 +391,7 @@ public class EJBQLQueryIT {
     public void joinToJoined() {
         EJBQLQuery query = new EJBQLQuery(
                 "select g from Gallery g inner join g.paintingArray p where p.toArtist.artistName like '%a%'");
-        context.performQuery(query);
+        context.select(query);
     }
 
     @Test
@@ -401,7 +401,7 @@ public class EJBQLQueryIT {
                         + "p.paintingTitle like '%a%' or "
                         + "p.toArtist.artistName like '%a%'"
                         + ")");
-        context.performQuery(query);
+        context.select(query);
     }
 
     @Test
@@ -416,7 +416,7 @@ public class EJBQLQueryIT {
         EJBQLQuery query = new EJBQLQuery("select p from Painting p where p.toArtist=:a");
         query.setParameter("a", a);
 
-        List<Painting> paintings = context.performQuery(query);
+        List<Painting> paintings = context.select(query);
         assertEquals(1, paintings.size());
         assertSame(p, paintings.get(0));
     }
@@ -427,7 +427,7 @@ public class EJBQLQueryIT {
         EJBQLQuery query = new EJBQLQuery("select p.toArtist from Painting p where "
                 + exp.toEJBQL("p"));
 
-        context.performQuery(query);
+        context.select(query);
     }
 
     @Test
@@ -441,7 +441,7 @@ public class EJBQLQueryIT {
         EJBQLQuery query = new EJBQLQuery("select a from Artist a "
                 + "where a.artistName <> a.artistName and "
                 + "(a.artistName <> a.artistName or a.artistName = a.artistName)");
-        assertEquals(context.performQuery(query).size(), 0);
+        assertEquals(context.select(query).size(), 0);
 
         // on the other hand, the following is equivalent to (false and false) or true)
         // and
@@ -449,19 +449,19 @@ public class EJBQLQueryIT {
         query = new EJBQLQuery("select a from Artist a "
                 + "where a.artistName <> a.artistName and "
                 + "a.artistName <> a.artistName or a.artistName = a.artistName");
-        assertTrue(context.performQuery(query).size() > 0);
+        assertTrue(context.select(query).size() > 0);
 
         // checking brackets around not
         query = new EJBQLQuery("select a from Artist a "
                 + "where not(a.artistName <> a.artistName and "
                 + "a.artistName <> a.artistName or a.artistName = a.artistName)");
-        assertEquals(context.performQuery(query).size(), 0);
+        assertEquals(context.select(query).size(), 0);
 
         // not is first to process
         query = new EJBQLQuery("select a from Artist a "
                 + "where not a.artistName <> a.artistName or "
                 + "a.artistName = a.artistName");
-        assertTrue(context.performQuery(query).size() > 0);
+        assertTrue(context.select(query).size() > 0);
     }
 
 	@Test
@@ -471,14 +471,14 @@ public class EJBQLQueryIT {
 		tPainting.insert(1, null, "title2");
 
 		EJBQLQuery asc = new EJBQLQuery("select p from Painting p order by p.paintingTitle");
-		List<Painting> paintingsAsc = context.performQuery(asc);
+		List<Painting> paintingsAsc = context.select(asc);
 		assertEquals(3, paintingsAsc.size());
 		assertEquals("title0", paintingsAsc.get(0).getPaintingTitle());
 		assertEquals("title1", paintingsAsc.get(1).getPaintingTitle());
 		assertEquals("title2", paintingsAsc.get(2).getPaintingTitle());
 
 		EJBQLQuery desc = new EJBQLQuery("select p from Painting p order by p.paintingTitle desc");
-		List<Painting> paintingsDesc = context.performQuery(desc);
+		List<Painting> paintingsDesc = context.select(desc);
 		assertEquals(3, paintingsDesc.size());
 		assertEquals("title2", paintingsDesc.get(0).getPaintingTitle());
 		assertEquals("title1", paintingsDesc.get(1).getPaintingTitle());
@@ -495,13 +495,13 @@ public class EJBQLQueryIT {
 		tPainting.insert(1, 2, "title2");
 
 		EJBQLQuery asc = new EJBQLQuery("select a, count(p) from Artist a INNER JOIN a.paintingArray p GROUP BY a order by count(p)");
-		List<Object[]> artistAsc = context.performQuery(asc);
+		List<Object[]> artistAsc = context.select(asc);
 		assertEquals(2, artistAsc.size());
 		assertEquals("a1", ((Artist) artistAsc.get(0)[0]).getArtistName());
 		assertEquals("a0", ((Artist) artistAsc.get(1)[0]).getArtistName());
 
 		EJBQLQuery desc = new EJBQLQuery("select a, count(p) from Artist a INNER JOIN a.paintingArray p GROUP BY a order by count(p) DESC");
-		List<Object[]> artistDesc = context.performQuery(desc);
+		List<Object[]> artistDesc = context.select(desc);
 		assertEquals(2, artistDesc.size());
 		assertEquals("a0", ((Artist) artistDesc.get(0)[0]).getArtistName());
 		assertEquals("a1", ((Artist) artistDesc.get(1)[0]).getArtistName());
@@ -519,7 +519,7 @@ public class EJBQLQueryIT {
 
         EJBQLQuery asc = new EJBQLQuery("select a, count(p) from Artist a LEFT JOIN a.paintingArray p " +
                 "GROUP BY a order by count(p) DESC");
-        List<Object[]> artistAsc = context.performQuery(asc);
+        List<Object[]> artistAsc = context.select(asc);
         assertEquals(3, artistAsc.size());
         assertEquals("a0", ((Artist) artistAsc.get(0)[0]).getArtistName());
         assertEquals("a1", ((Artist) artistAsc.get(1)[0]).getArtistName());
@@ -542,7 +542,7 @@ public class EJBQLQueryIT {
 
         EJBQLQuery asc = new EJBQLQuery("SELECT a, count(1) FROM Artist a LEFT JOIN a.paintingArray p " +
                 "GROUP BY a ORDER BY count(1) DESC, a.artistName");
-        List<Object[]> artistAsc = context.performQuery(asc);
+        List<Object[]> artistAsc = context.select(asc);
         assertEquals(3, artistAsc.size());
         assertEquals("a0", ((Artist) artistAsc.get(0)[0]).getArtistName());
         assertEquals("a1", ((Artist) artistAsc.get(1)[0]).getArtistName());
@@ -565,7 +565,7 @@ public class EJBQLQueryIT {
 
         EJBQLQuery asc = new EJBQLQuery("select a, count(a.paintingArray+) from Artist a " +
                 "GROUP BY a order by count(a.paintingArray+) DESC");
-        List<Object[]> artistAsc = context.performQuery(asc);
+        List<Object[]> artistAsc = context.select(asc);
         assertEquals(3, artistAsc.size());
         assertEquals("a0", ((Artist) artistAsc.get(0)[0]).getArtistName());
         assertEquals("a1", ((Artist) artistAsc.get(1)[0]).getArtistName());
@@ -587,7 +587,7 @@ public class EJBQLQueryIT {
         tPainting.insert(3, 1, "title3");
 
         EJBQLQuery queryFullProduct = new EJBQLQuery("select a, p from Artist a, Painting p");
-        List<Object[]> result1 = context.performQuery(queryFullProduct);
+        List<Object[]> result1 = context.select(queryFullProduct);
         assertEquals(9, result1.size());
         for(Object[] next : result1) {
             assertEquals(2, next.length);
@@ -596,7 +596,7 @@ public class EJBQLQueryIT {
         }
 
         EJBQLQuery queryToOneRel = new EJBQLQuery("select p.toGallery+, p.toArtist+, p from Painting p");
-        List<Object[]> result2 = context.performQuery(queryToOneRel);
+        List<Object[]> result2 = context.select(queryToOneRel);
         assertEquals(3, result2.size());
         for(Object[] next : result2) {
             assertNull(next[0]); // Gallery
@@ -624,7 +624,7 @@ public class EJBQLQueryIT {
 
         // select Paintings, where one of it will be null
         EJBQLQuery query = new EJBQLQuery("select a.paintingArray+ from Artist a order by a.artistName");
-        List<Painting> result1 = context.performQuery(query);
+        List<Painting> result1 = context.select(query);
         assertEquals(4, result1.size());
         assertNull(result1.get(3));
         for(int i=0; i<3; i++) {
@@ -640,7 +640,7 @@ public class EJBQLQueryIT {
         tArtist.insert(3, "a1");
 
         EJBQLQuery query = new EJBQLQuery("SELECT a FROM Artist a ORDER BY db:a.ARTIST_ID DESC");
-        List<Artist> result = context.performQuery(query);
+        List<Artist> result = context.select(query);
         assertEquals("a1", result.get(0).getArtistName());
         assertEquals("a2", result.get(1).getArtistName());
         assertEquals("a3", result.get(2).getArtistName());
@@ -658,7 +658,7 @@ public class EJBQLQueryIT {
         ObjectContext nested = runtime.newContext(context);
 
         EJBQLQuery query = new EJBQLQuery("SELECT a, COUNT(a.paintingArray) FROM Artist a GROUP BY a");
-        List<Object[]> result = nested.performQuery(query);
+        List<Object[]> result = nested.select(query);
         assertEquals(2, result.size());
         for(Object[] next : result) {
             assertInstanceOf(Artist.class, next[0]);

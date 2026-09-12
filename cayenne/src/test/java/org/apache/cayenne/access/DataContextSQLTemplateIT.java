@@ -101,7 +101,7 @@ public class DataContextSQLTemplateIT {
 		rsMap.addColumnResult("C");
 		query.setResult(rsMap);
 
-		List<?> objects = context.performQuery(query);
+		List<?> objects = context.select(query);
 		assertEquals(4, objects.size());
 
 		Object o1 = objects.get(0);
@@ -128,14 +128,14 @@ public class DataContextSQLTemplateIT {
 
 		SQLTemplate query = new SQLTemplate("SELECT * FROM ARTIST", true);
 		query.setDataNodeName(env.dataNode().getName());
-		assertEquals(4, context.performQuery(query).size());
+		assertEquals(4, context.select(query).size());
 	}
 
 	@Test
 	public void rootless_DefaultDataNode() throws Exception {
 		createFourArtists();
 		SQLTemplate query = new SQLTemplate("SELECT * FROM ARTIST", true);
-		assertEquals(4, context.performQuery(query).size());
+		assertEquals(4, context.select(query).size());
 	}
 
 	@Test
@@ -153,7 +153,7 @@ public class DataContextSQLTemplateIT {
 		rsMap.addColumnResult("X");
 		query.setResult(rsMap);
 
-		List<?> objects = context.performQuery(query);
+		List<?> objects = context.select(query);
 		assertEquals(1, objects.size());
 
 		Object o = objects.get(0);
@@ -177,7 +177,7 @@ public class DataContextSQLTemplateIT {
 		rsMap.addColumnResult("Y");
 		query.setResult(rsMap);
 
-		List<?> objects = context.performQuery(query);
+		List<?> objects = context.select(query);
 		assertEquals(1, objects.size());
 
 		Object o = objects.get(0);
@@ -199,7 +199,7 @@ public class DataContextSQLTemplateIT {
 		query.setColumnNamesCapitalization(CapsStrategy.LOWER);
 		query.setFetchingDataRows(true);
 
-		List<DataRow> rows = context.performQuery(query);
+		List<DataRow> rows = context.select(query);
 
 		DataRow row1 = rows.get(0);
 		assertFalse(row1.containsKey("ARTIST_ID"));
@@ -211,7 +211,7 @@ public class DataContextSQLTemplateIT {
 
 		query.setColumnNamesCapitalization(CapsStrategy.UPPER);
 
-		List<DataRow> rowsUpper = context.performQuery(query);
+		List<DataRow> rowsUpper = context.select(query);
 
 		DataRow row3 = rowsUpper.get(0);
 		assertFalse(row3.containsKey("artist_id"));
@@ -233,7 +233,7 @@ public class DataContextSQLTemplateIT {
 
 		query.setFetchingDataRows(true);
 
-		List<DataRow> rows = context.performQuery(query);
+		List<DataRow> rows = context.select(query);
 		assertEquals(4, rows.size());
 
 		DataRow row2 = rows.get(1);
@@ -252,7 +252,7 @@ public class DataContextSQLTemplateIT {
 
 		query.setFetchingDataRows(false);
 
-		List<?> objects = context.performQuery(query);
+		List<?> objects = context.select(query);
 		assertEquals(4, objects.size());
 		assertTrue(objects.get(1) instanceof Artist);
 
@@ -271,7 +271,7 @@ public class DataContextSQLTemplateIT {
 		query.setColumnNamesCapitalization(CapsStrategy.UPPER);
 		query.setParams(Collections.singletonMap("a", a));
 
-		List<?> objects = context.performQuery(query);
+		List<?> objects = context.select(query);
 		assertEquals(1, objects.size());
 
 		Painting p = (Painting) objects.get(0);
@@ -289,7 +289,7 @@ public class DataContextSQLTemplateIT {
 		query.setColumnNamesCapitalization(CapsStrategy.UPPER);
 		query.setParams(Collections.singletonMap("a", a));
 
-		List<?> objects = context.performQuery(query);
+		List<?> objects = context.select(query);
 
 		// null comparison is unpredictable across DB's ... some would return
 		// true on null
@@ -312,7 +312,7 @@ public class DataContextSQLTemplateIT {
 		query.setColumnNamesCapitalization(CapsStrategy.UPPER);
 		query.setParams(Collections.singletonMap("a", a));
 
-		List<?> objects = context.performQuery(query);
+		List<?> objects = context.select(query);
 		assertEquals(1, objects.size());
 
 		Painting p = (Painting) objects.get(0);
@@ -331,7 +331,7 @@ public class DataContextSQLTemplateIT {
 		query.setColumnNamesCapitalization(CapsStrategy.UPPER);
 		query.setParams(Collections.singletonMap("a", a));
 
-		List<?> objects = context.performQuery(query);
+		List<?> objects = context.select(query);
 		assertEquals(1, objects.size());
 
 		Painting p = (Painting) objects.get(0);
@@ -348,7 +348,7 @@ public class DataContextSQLTemplateIT {
 		query.setColumnNamesCapitalization(CapsStrategy.UPPER);
 		query.setParams(Collections.singletonMap("a", null));
 
-		List<?> objects = context.performQuery(query);
+		List<?> objects = context.select(query);
 		assertEquals(1, objects.size());
 
 		Painting p = (Painting) objects.get(0);
@@ -367,7 +367,7 @@ public class DataContextSQLTemplateIT {
 		query.setColumnNamesCapitalization(CapsStrategy.UPPER);
 		query.setParams(Collections.singletonMap("a", a));
 
-		List<?> objects = context.performQuery(query);
+		List<?> objects = context.select(query);
 		// null comparison is unpredictable across DB's ... some would return
 		// true on null
 		// <> value, some - false
@@ -387,7 +387,7 @@ public class DataContextSQLTemplateIT {
 		query.setColumnNamesCapitalization(CapsStrategy.UPPER);
 		query.setParams(Collections.singletonMap("a", null));
 
-		List<Painting> objects = context.performQuery(query);
+		List<Painting> objects = context.select(query);
 		assertEquals(2, objects.size());
 
 		Painting p1 = objects.get(0);
@@ -406,7 +406,7 @@ public class DataContextSQLTemplateIT {
 		query.setColumnNamesCapitalization(CapsStrategy.UPPER);
 		query.setParams(Collections.singletonMap("id", null));
 
-		List<Painting> objects = context.performQuery(query);
+		List<Painting> objects = context.select(query);
 		assertEquals(1, objects.size());
 
 		Painting p = objects.get(0);
@@ -426,7 +426,7 @@ public class DataContextSQLTemplateIT {
 		query.setColumnNamesCapitalization(CapsStrategy.UPPER);
 		query.setFetchLimit(fetchLimit);
 
-		List<?> objects = context.performQuery(query);
+		List<?> objects = context.select(query);
 		assertEquals(fetchLimit, objects.size());
 		assertTrue(objects.get(0) instanceof Artist);
 	}
@@ -444,7 +444,7 @@ public class DataContextSQLTemplateIT {
 		query.setColumnNamesCapitalization(CapsStrategy.UPPER);
 		query.setFetchOffset(fetchOffset);
 
-		List<?> objects = context.performQuery(query);
+		List<?> objects = context.select(query);
 		assertEquals(4 - fetchOffset, objects.size());
 		assertTrue(objects.get(0) instanceof Artist);
 	}
@@ -459,7 +459,7 @@ public class DataContextSQLTemplateIT {
 		query.setFetchOffset(1);
 		query.setFetchLimit(2);
 
-		List<?> objects = context.performQuery(query);
+		List<?> objects = context.select(query);
 		assertEquals(2, objects.size());
 		assertTrue(objects.get(0) instanceof Artist);
 	}
@@ -479,7 +479,7 @@ public class DataContextSQLTemplateIT {
 
 		query.setPageSize(pageSize);
 
-		List<?> objects = context.performQuery(query);
+		List<?> objects = context.select(query);
 
 		assertEquals(4, objects.size());
 		assertTrue(objects.get(0) instanceof Artist);
@@ -512,7 +512,7 @@ public class DataContextSQLTemplateIT {
 
 		query.setPageSize(pageSize);
 
-		List<?> objects = context.performQuery(query);
+		List<?> objects = context.select(query);
 
 		assertEquals(4, objects.size());
 
@@ -579,7 +579,7 @@ public class DataContextSQLTemplateIT {
 		query.setColumnNamesCapitalization(CapsStrategy.UPPER);
 		query.setFetchingDataRows(true);
 
-		List<?> result = context.performQuery(query);
+		List<?> result = context.select(query);
 
 		assertEquals(4, ((DataRow) result.get(0)).get("X"));
 	}

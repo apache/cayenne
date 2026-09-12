@@ -36,7 +36,7 @@ import java.util.Objects;
  */
 class MySQLProcedureAction extends ProcedureAction {
 
-	public MySQLProcedureAction(ProcedureQuery query, DataNode dataNode) {
+	public MySQLProcedureAction(ProcedureQuery<?> query, DataNode dataNode) {
 		super(query, dataNode);
 	}
 

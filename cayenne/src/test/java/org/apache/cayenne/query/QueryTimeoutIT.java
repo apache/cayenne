@@ -50,7 +50,7 @@ public class QueryTimeoutIT {
         assertEquals(10, sqlTemplate
                 .getMetaData(env.context().getEntityResolver())
                 .getQueryTimeout());
-        env.context().performQuery(sqlTemplate);
+        env.context().select(sqlTemplate);
     }
 
     @Test
@@ -61,7 +61,7 @@ public class QueryTimeoutIT {
         assertEquals(10, columnSelect
                 .getMetaData(env.context().getEntityResolver())
                 .getQueryTimeout());
-        env.context().performQuery(columnSelect);
+        env.context().select(columnSelect);
     }
 
     @Test
@@ -71,7 +71,7 @@ public class QueryTimeoutIT {
         assertEquals(10, ejbqlQuery
                 .getMetaData(env.context().getEntityResolver())
                 .getQueryTimeout());
-        env.context().performQuery(ejbqlQuery);
+        env.context().select(ejbqlQuery);
     }
 
     @Test
@@ -82,7 +82,7 @@ public class QueryTimeoutIT {
         assertEquals(10, sqlSelect
                 .getMetaData(env.context().getEntityResolver())
                 .getQueryTimeout());
-        env.context().performQuery(sqlSelect);
+        env.context().select(sqlSelect);
     }
 
     @Test
@@ -93,7 +93,7 @@ public class QueryTimeoutIT {
         assertEquals(10, sqlExec
                 .getMetaData(env.context().getEntityResolver())
                 .getQueryTimeout());
-        env.context().performQuery(sqlExec);
+        env.context().performGenericQuery(sqlExec);
     }
 
     @Test
@@ -105,6 +105,6 @@ public class QueryTimeoutIT {
         assertEquals(10, replacementQuery
                 .getMetaData(env.context().getEntityResolver())
                 .getQueryTimeout());
-        env.context().performQuery(replacementQuery);
+        env.context().performGenericQuery(replacementQuery);
     }
 }

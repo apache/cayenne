@@ -56,7 +56,7 @@ public class DataContextEJBQLInheritanceIT extends PeopleTestBase {
 
         EJBQLQuery superclass = new EJBQLQuery("select p from AbstractPerson p ORDER BY p.name");
 
-        List<?> superclassResult = context.performQuery(superclass);
+        List<?> superclassResult = context.select(superclass);
         assertEquals(5, superclassResult.size());
 
         assertEquals(Employee.class.getName(), superclassResult.get(0).getClass().getName());
@@ -67,7 +67,7 @@ public class DataContextEJBQLInheritanceIT extends PeopleTestBase {
 
         EJBQLQuery subclass = new EJBQLQuery("select e from Employee e ORDER BY e.name");
 
-        List<?> subclassResult = context.performQuery(subclass);
+        List<?> subclassResult = context.select(subclass);
         assertEquals(4, subclassResult.size());
 
         assertEquals(Employee.class.getName(), subclassResult.get(0).getClass().getName());

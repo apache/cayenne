@@ -73,16 +73,16 @@ public class QueryCacheIT {
         context1.commitChanges();
 
         ObjectSelect<Artist> q = ObjectSelect.query(Artist.class).localCache();
-        List<Artist> result1 = context1.performQuery(q);
+        List<Artist> result1 = context1.select(q);
         assertEquals(1, result1.size());
 
         // Mutate the returned list. This should not change the cache.
         assertThrows(UnsupportedOperationException.class, () -> result1.add(context1.newObject(Artist.class)));
-        List<Artist> result2 = context1.performQuery(q);
+        List<Artist> result2 = context1.select(q);
         assertEquals(1, result2.size(), "the list stored in the local query cache cannot be mutated after being returned");
 
         assertThrows(UnsupportedOperationException.class, () -> result2.add(context1.newObject(Artist.class)));
-        List<Artist> result3 = context1.performQuery(q);
+        List<Artist> result3 = context1.select(q);
         assertEquals(1, result3.size(), "the list stored in the local query cache cannot be mutated after being returned");
     }
     
@@ -94,7 +94,7 @@ public class QueryCacheIT {
         context1.commitChanges();
 
         ObjectSelect<Artist> q = ObjectSelect.query(Artist.class).sharedCache();
-        List<Artist> result1 = context1.performQuery(q);
+        List<Artist> result1 = context1.select(q);
         assertEquals(1, result1.size());
 
         // Mutate the returned list. This should not change the cache.
@@ -103,7 +103,7 @@ public class QueryCacheIT {
         } catch (UnsupportedOperationException ignored) {
             // list may be immutable depending on cache implementation
         }
-        List<Artist> result2 = context1.performQuery(q);
+        List<Artist> result2 = context1.select(q);
         assertEquals(1, result2.size(), "the list stored in the shared query cache cannot be mutated after being returned");
     }
     

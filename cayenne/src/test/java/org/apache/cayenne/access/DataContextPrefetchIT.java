@@ -583,7 +583,7 @@ public class DataContextPrefetchIT {
 
         // prefetch with query using date in qualifier used to fail on SQL Server
         // see CAY-119 for details
-        context.performQuery(q);
+        context.select(q);
     }
 
     @Test
@@ -633,7 +633,7 @@ public class DataContextPrefetchIT {
             assertEquals(PersistenceState.COMMITTED, a1.getPersistenceState());
 
             // and just in case - run one more time...
-            context.performQuery(q);
+            context.select(q);
         });
     }
 
@@ -665,7 +665,7 @@ public class DataContextPrefetchIT {
             assertEquals(PersistenceState.COMMITTED, a1.getPersistenceState());
 
             // and just in case - run one more time...
-            context.performQuery(q);
+            context.select(q);
         });
     }
 

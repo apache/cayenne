@@ -76,7 +76,7 @@ public class DataContextEJBQLQueryCompoundIT {
 		EJBQLQuery query = new EJBQLQuery(ejbql);
 		query.setParameter("param", a);
 
-		List<?> ps = env.context().performQuery(query);
+		List<?> ps = env.context().select(query);
 		assertEquals(1, ps.size());
 
 		CompoundFkTestEntity o1 = (CompoundFkTestEntity) ps.get(0);
@@ -100,7 +100,7 @@ public class DataContextEJBQLQueryCompoundIT {
 		EJBQLQuery query = new EJBQLQuery(ejbql);
 		query.setParameter("param", a);
 
-		List<?> ps = env.context().performQuery(query);
+		List<?> ps = env.context().select(query);
 		assertEquals(1, ps.size());
 
 		CompoundFkTestEntity o1 = (CompoundFkTestEntity) ps.get(0);
@@ -120,7 +120,7 @@ public class DataContextEJBQLQueryCompoundIT {
 		EJBQLQuery query = new EJBQLQuery(ejbql);
 		query.setParameter("param", a);
 
-		List<?> ps = env.context().performQuery(query);
+		List<?> ps = env.context().select(query);
 		assertEquals(1, ps.size());
 
 		CompoundFkTestEntity o1 = (CompoundFkTestEntity) ps.get(0);

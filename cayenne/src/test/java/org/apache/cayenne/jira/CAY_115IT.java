@@ -87,8 +87,8 @@ public class CAY_115IT {
         distinct.distinct();
         distinct.orderBy(ClobMaster.NAME.asc());
 
-        List<?> noDistinctResult = context.performQuery(noDistinct);
-        List<?> distinctResult = context.performQuery(distinct);
+        List<?> noDistinctResult = context.select(noDistinct);
+        List<?> distinctResult = context.select(distinct);
 
         assertEquals(3, noDistinctResult.size());
         assertEquals(noDistinctResult, distinctResult);

@@ -103,7 +103,7 @@ public class DataContextEJBQLQueryIT {
             String ejbql = "select count(p), count(distinct p.estimatedPrice), max(p.estimatedPrice), sum(p.estimatedPrice) from Painting p";
             EJBQLQuery query = new EJBQLQuery(ejbql);
 
-            List<?> data = env.context().performQuery(query);
+            List<?> data = env.context().select(query);
 
             assertFalse(listener.postLoad);
 
@@ -122,7 +122,7 @@ public class DataContextEJBQLQueryIT {
         String ejbql = "select count(p), count(distinct p.estimatedPrice), max(p.estimatedPrice), sum(p.estimatedPrice) from Painting p";
         EJBQLQuery query = new EJBQLQuery(ejbql);
 
-        List<?> data = env.context().performQuery(query);
+        List<?> data = env.context().select(query);
         assertEquals(1, data.size());
         assertTrue(data.get(0) instanceof Object[]);
         Object[] aggregates = (Object[]) data.get(0);
@@ -143,7 +143,7 @@ public class DataContextEJBQLQueryIT {
                 + "from Painting p WHERE p.paintingTitle = 'X'";
         EJBQLQuery query = new EJBQLQuery(ejbql);
 
-        List<?> data = env.context().performQuery(query);
+        List<?> data = env.context().select(query);
         assertEquals(1, data.size());
         assertTrue(data.get(0) instanceof Object[]);
         Object[] aggregates = (Object[]) data.get(0);
@@ -160,7 +160,7 @@ public class DataContextEJBQLQueryIT {
                 + " from Painting p order by p.paintingTitle DESC";
         EJBQLQuery query = new EJBQLQuery(ejbql);
 
-        List<?> data = env.context().performQuery(query);
+        List<?> data = env.context().select(query);
         assertEquals(2, data.size());
 
         assertEquals("P2", data.get(0));
@@ -175,7 +175,7 @@ public class DataContextEJBQLQueryIT {
                 + "from Painting p order by p.estimatedPrice";
         EJBQLQuery query = new EJBQLQuery(ejbql);
 
-        List<?> data = env.context().performQuery(query);
+        List<?> data = env.context().select(query);
         assertEquals(2, data.size());
 
         assertTrue(data.get(0) instanceof Object[]);
@@ -199,7 +199,7 @@ public class DataContextEJBQLQueryIT {
                 + "from Painting p order by p.estimatedPrice";
         EJBQLQuery query = new EJBQLQuery(ejbql);
 
-        List<?> data = env.context().performQuery(query);
+        List<?> data = env.context().select(query);
         assertEquals(2, data.size());
 
         assertEquals(3000d, ((BigDecimal) data.get(0)).doubleValue(), 0.00001);
@@ -214,7 +214,7 @@ public class DataContextEJBQLQueryIT {
                 + "from Painting p order by p.estimatedPrice";
         EJBQLQuery query = new EJBQLQuery(ejbql);
 
-        List<?> data = env.context().performQuery(query);
+        List<?> data = env.context().select(query);
         assertEquals(2, data.size());
 
         assertTrue(data.get(0) instanceof Artist);
@@ -231,7 +231,7 @@ public class DataContextEJBQLQueryIT {
         String ejbql = "select a FROM Artist a";
         EJBQLQuery query = new EJBQLQuery(ejbql);
 
-        List<?> artists = env.context().performQuery(query);
+        List<?> artists = env.context().select(query);
         assertEquals(4, artists.size());
         assertTrue(artists.get(0) instanceof Artist);
         assertTrue(((Artist) artists.get(0)).getPersistenceState() == PersistenceState.COMMITTED);
@@ -245,7 +245,7 @@ public class DataContextEJBQLQueryIT {
         EJBQLQuery query = new EJBQLQuery(ejbql);
         query.setFetchLimit(2);
 
-        List<?> artists = env.context().performQuery(query);
+        List<?> artists = env.context().select(query);
         assertEquals(2, artists.size());
     }
 
@@ -256,7 +256,7 @@ public class DataContextEJBQLQueryIT {
         String ejbql = "select a from Artist a where a.artistName = 'AA2'";
         EJBQLQuery query = new EJBQLQuery(ejbql);
 
-        List<?> artists = env.context().performQuery(query);
+        List<?> artists = env.context().select(query);
         assertEquals(1, artists.size());
         assertEquals("AA2", ((Artist) artists.get(0)).getArtistName());
     }
@@ -272,7 +272,7 @@ public class DataContextEJBQLQueryIT {
         String ejbql = "select a from Artist a where 'AA2' = a.artistName";
         EJBQLQuery query = new EJBQLQuery(ejbql);
 
-        List<?> artists = env.context().performQuery(query);
+        List<?> artists = env.context().select(query);
         assertEquals(1, artists.size());
         assertEquals("AA2", ((Artist) artists.get(0)).getArtistName());
     }
@@ -284,7 +284,7 @@ public class DataContextEJBQLQueryIT {
         String ejbql = "select a from Artist a where not a.artistName = 'AA2'";
         EJBQLQuery query = new EJBQLQuery(ejbql);
 
-        List<?> artists = env.context().performQuery(query);
+        List<?> artists = env.context().select(query);
         assertEquals(3, artists.size());
         Iterator<?> it = artists.iterator();
         while (it.hasNext()) {
@@ -300,7 +300,7 @@ public class DataContextEJBQLQueryIT {
         String ejbql = "select a from Artist a where a.artistName <> 'AA2'";
         EJBQLQuery query = new EJBQLQuery(ejbql);
 
-        List<?> artists = env.context().performQuery(query);
+        List<?> artists = env.context().select(query);
         assertEquals(3, artists.size());
         Iterator<?> it = artists.iterator();
         while (it.hasNext()) {
@@ -316,7 +316,7 @@ public class DataContextEJBQLQueryIT {
         String ejbql = "select a from Artist a where a.artistName = 'AA2' or a.artistName = 'BB1'";
         EJBQLQuery query = new EJBQLQuery(ejbql);
 
-        List<?> artists = env.context().performQuery(query);
+        List<?> artists = env.context().select(query);
         assertEquals(2, artists.size());
 
         Set<String> names = new HashSet<String>();
@@ -337,7 +337,7 @@ public class DataContextEJBQLQueryIT {
                 + "AND p.estimatedPrice = 3000";
         EJBQLQuery query = new EJBQLQuery(ejbql);
 
-        List<?> ps = env.context().performQuery(query);
+        List<?> ps = env.context().select(query);
         assertEquals(1, ps.size());
 
         Painting p = (Painting) ps.get(0);
@@ -352,7 +352,7 @@ public class DataContextEJBQLQueryIT {
         String ejbql = "select P from Painting P WHERE p.estimatedPrice BETWEEN 2000 AND 3500";
         EJBQLQuery query = new EJBQLQuery(ejbql);
 
-        List<?> ps = env.context().performQuery(query);
+        List<?> ps = env.context().select(query);
         assertEquals(1, ps.size());
 
         Painting p = (Painting) ps.get(0);
@@ -367,7 +367,7 @@ public class DataContextEJBQLQueryIT {
         String ejbql = "select P from Painting P WHERE p.estimatedPrice NOT BETWEEN 2000 AND 3500";
         EJBQLQuery query = new EJBQLQuery(ejbql);
 
-        List<?> ps = env.context().performQuery(query);
+        List<?> ps = env.context().select(query);
         assertEquals(1, ps.size());
 
         Painting p = (Painting) ps.get(0);
@@ -382,7 +382,7 @@ public class DataContextEJBQLQueryIT {
         String ejbql = "select P from Painting P WHERE p.estimatedPrice > 3000";
         EJBQLQuery query = new EJBQLQuery(ejbql);
 
-        List<?> ps = env.context().performQuery(query);
+        List<?> ps = env.context().select(query);
         assertEquals(1, ps.size());
 
         Painting p = (Painting) ps.get(0);
@@ -397,7 +397,7 @@ public class DataContextEJBQLQueryIT {
         String ejbql = "select P from Painting P WHERE p.estimatedPrice >= 3000";
         EJBQLQuery query = new EJBQLQuery(ejbql);
 
-        List<?> ps = env.context().performQuery(query);
+        List<?> ps = env.context().select(query);
         assertEquals(2, ps.size());
     }
 
@@ -408,7 +408,7 @@ public class DataContextEJBQLQueryIT {
         String ejbql = "select P from Painting P WHERE p.estimatedPrice < 5000";
         EJBQLQuery query = new EJBQLQuery(ejbql);
 
-        List<?> ps = env.context().performQuery(query);
+        List<?> ps = env.context().select(query);
         assertEquals(1, ps.size());
 
         Painting p = (Painting) ps.get(0);
@@ -423,7 +423,7 @@ public class DataContextEJBQLQueryIT {
         String ejbql = "select P from Painting P WHERE p.estimatedPrice <= 5000";
         EJBQLQuery query = new EJBQLQuery(ejbql);
 
-        List<?> ps = env.context().performQuery(query);
+        List<?> ps = env.context().select(query);
         assertEquals(2, ps.size());
     }
 
@@ -434,7 +434,7 @@ public class DataContextEJBQLQueryIT {
         String ejbql = "select P from Painting P WHERE p.estimatedPrice <= 5000.00";
         EJBQLQuery query = new EJBQLQuery(ejbql);
 
-        List<?> ps = env.context().performQuery(query);
+        List<?> ps = env.context().select(query);
         assertEquals(2, ps.size());
     }
 
@@ -446,7 +446,7 @@ public class DataContextEJBQLQueryIT {
         EJBQLQuery query = new EJBQLQuery(ejbql);
         query.setParameter(1, new BigDecimal(5000.00));
 
-        List<?> ps = env.context().performQuery(query);
+        List<?> ps = env.context().select(query);
         assertEquals(2, ps.size());
     }
 
@@ -458,7 +458,7 @@ public class DataContextEJBQLQueryIT {
         EJBQLQuery query = new EJBQLQuery(ejbql);
         query.setParameter("param", new BigDecimal(5000.00));
 
-        List<?> ps = env.context().performQuery(query);
+        List<?> ps = env.context().select(query);
         assertEquals(2, ps.size());
     }
 
@@ -472,7 +472,7 @@ public class DataContextEJBQLQueryIT {
         EJBQLQuery query = new EJBQLQuery(ejbql);
         query.setParameter("param", a);
 
-        List<?> ps = env.context().performQuery(query);
+        List<?> ps = env.context().select(query);
         assertEquals(1, ps.size());
 
         Painting p = (Painting) ps.get(0);
@@ -486,7 +486,7 @@ public class DataContextEJBQLQueryIT {
         String ejbql = "select P from Painting P WHERE p.toArtist = 33002";
         EJBQLQuery query = new EJBQLQuery(ejbql);
 
-        List<?> ps = env.context().performQuery(query);
+        List<?> ps = env.context().select(query);
         assertEquals(1, ps.size());
 
         Painting p = (Painting) ps.get(0);

@@ -84,7 +84,7 @@ public class DataContextSQLTemplateCompoundIT {
         query.setColumnNamesCapitalization(CapsStrategy.UPPER);
         query.setParams(Collections.singletonMap("a", a));
 
-        List<CompoundFkTestEntity> objects = context.performQuery(query);
+        List<CompoundFkTestEntity> objects = context.select(query);
         assertEquals(1, objects.size());
 
         CompoundFkTestEntity p = objects.get(0);
@@ -110,7 +110,7 @@ public class DataContextSQLTemplateCompoundIT {
         query.setColumnNamesCapitalization(CapsStrategy.UPPER);
         query.setParams(Collections.singletonMap("a", a));
 
-        List<CompoundFkTestEntity> objects = context.performQuery(query);
+        List<CompoundFkTestEntity> objects = context.select(query);
         assertEquals(1, objects.size());
 
         CompoundFkTestEntity p = objects.get(0);

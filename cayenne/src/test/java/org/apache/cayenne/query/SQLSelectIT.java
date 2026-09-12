@@ -237,7 +237,7 @@ public class SQLSelectIT {
 
 		assertThrows(CayenneRuntimeException.class, () -> {
 			SQLSelect<Object[]> query = SQLSelect.columnQuery("SELECT PAINTING_ID, PAINTING_TITLE, ESTIMATED_PRICE FROM PAINTING", Integer.class, String.class);
-			context.performQuery(query);
+			context.select(query);
 		});
 	}
 

@@ -207,9 +207,9 @@ public class CayennePersistentObjectInContextIT {
 
         tArtist.insert(7, "m6");
 
-        Artist a1 = (Artist) Cayenne.objectForQuery(context, ObjectSelect.query(Artist.class)
+        Artist a1 = (Artist) context.selectOne(ObjectSelect.query(Artist.class)
                 .where(Artist.ARTIST_NAME.eq("m6")));
-        Artist a2 = (Artist) Cayenne.objectForQuery(context, ObjectSelect.query(Artist.class)
+        Artist a2 = (Artist) context.selectOne(ObjectSelect.query(Artist.class)
                 .where(Artist.ARTIST_NAME.eq("m6")));
 
         assertNotNull(a1);

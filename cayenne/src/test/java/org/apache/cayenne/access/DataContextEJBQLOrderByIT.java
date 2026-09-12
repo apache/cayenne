@@ -85,7 +85,7 @@ public class DataContextEJBQLOrderByIT {
         String ejbql1 = "SELECT p FROM Painting p ORDER BY p.paintingTitle";
         EJBQLQuery query1 = new EJBQLQuery(ejbql1);
 
-        List<?> results1 = env.context().performQuery(query1);
+        List<?> results1 = env.context().select(query1);
         assertEquals(3, results1.size());
 
         assertEquals(33001, Cayenne.intPKForObject((Persistent) results1.get(0)));
@@ -95,7 +95,7 @@ public class DataContextEJBQLOrderByIT {
         String ejbql2 = "SELECT p FROM Painting p ORDER BY p.estimatedPrice";
         EJBQLQuery query2 = new EJBQLQuery(ejbql2);
 
-        List<?> results2 = env.context().performQuery(query2);
+        List<?> results2 = env.context().select(query2);
         assertEquals(3, results2.size());
 
         assertEquals(33003, Cayenne.intPKForObject((Persistent) results2.get(0)));
@@ -111,7 +111,7 @@ public class DataContextEJBQLOrderByIT {
         String ejbql1 = "SELECT p FROM Painting p ORDER BY p.paintingTitle ASC";
         EJBQLQuery query1 = new EJBQLQuery(ejbql1);
 
-        List<?> results1 = env.context().performQuery(query1);
+        List<?> results1 = env.context().select(query1);
         assertEquals(3, results1.size());
 
         assertEquals(33001, Cayenne.intPKForObject((Persistent) results1.get(0)));
@@ -121,7 +121,7 @@ public class DataContextEJBQLOrderByIT {
         String ejbql2 = "SELECT p FROM Painting p ORDER BY p.estimatedPrice ASC";
         EJBQLQuery query2 = new EJBQLQuery(ejbql2);
 
-        List<?> results2 = env.context().performQuery(query2);
+        List<?> results2 = env.context().select(query2);
         assertEquals(3, results2.size());
 
         assertEquals(33003, Cayenne.intPKForObject((Persistent) results2.get(0)));
@@ -136,7 +136,7 @@ public class DataContextEJBQLOrderByIT {
         String ejbql1 = "SELECT p FROM Painting p ORDER BY p.paintingTitle DESC";
         EJBQLQuery query1 = new EJBQLQuery(ejbql1);
 
-        List<?> results1 = env.context().performQuery(query1);
+        List<?> results1 = env.context().select(query1);
         assertEquals(3, results1.size());
 
         assertEquals(33003, Cayenne.intPKForObject((Persistent) results1.get(0)));
@@ -146,7 +146,7 @@ public class DataContextEJBQLOrderByIT {
         String ejbql2 = "SELECT p FROM Painting p ORDER BY p.estimatedPrice DESC";
         EJBQLQuery query2 = new EJBQLQuery(ejbql2);
 
-        List<?> results2 = env.context().performQuery(query2);
+        List<?> results2 = env.context().select(query2);
         assertEquals(3, results2.size());
 
         assertEquals(33001, Cayenne.intPKForObject((Persistent) results2.get(0)));
@@ -161,7 +161,7 @@ public class DataContextEJBQLOrderByIT {
         String ejbql1 = "SELECT p FROM Painting p WHERE p.estimatedPrice > 1000 ORDER BY p.paintingTitle ASC";
         EJBQLQuery query1 = new EJBQLQuery(ejbql1);
 
-        List<?> results1 = env.context().performQuery(query1);
+        List<?> results1 = env.context().select(query1);
         assertEquals(2, results1.size());
 
         assertEquals(33001, Cayenne.intPKForObject((Persistent) results1.get(0)));
@@ -170,7 +170,7 @@ public class DataContextEJBQLOrderByIT {
         String ejbql2 = "SELECT p FROM Painting p WHERE p.estimatedPrice > 1000 ORDER BY p.estimatedPrice ASC";
         EJBQLQuery query2 = new EJBQLQuery(ejbql2);
 
-        List<?> results2 = env.context().performQuery(query2);
+        List<?> results2 = env.context().select(query2);
         assertEquals(2, results2.size());
 
         assertEquals(33002, Cayenne.intPKForObject((Persistent) results2.get(0)));
@@ -184,7 +184,7 @@ public class DataContextEJBQLOrderByIT {
         String ejbql1 = "SELECT p FROM Painting p ORDER BY p.paintingTitle DESC, p.estimatedPrice DESC";
         EJBQLQuery query1 = new EJBQLQuery(ejbql1);
 
-        List<?> results1 = env.context().performQuery(query1);
+        List<?> results1 = env.context().select(query1);
         assertEquals(4, results1.size());
 
         assertEquals(33003, Cayenne.intPKForObject((Persistent) results1.get(0)));
@@ -200,7 +200,7 @@ public class DataContextEJBQLOrderByIT {
         String ejbql1 = "SELECT p FROM Painting p ORDER BY p.toArtist.artistName ASC";
         EJBQLQuery query1 = new EJBQLQuery(ejbql1);
 
-        List<?> results1 = env.context().performQuery(query1);
+        List<?> results1 = env.context().select(query1);
         assertEquals(2, results1.size());
 
         assertEquals(33005, Cayenne.intPKForObject((Persistent) results1.get(0)));
@@ -209,7 +209,7 @@ public class DataContextEJBQLOrderByIT {
         String ejbql2 = "SELECT p FROM Painting p ORDER BY p.toArtist.artistName DESC";
         EJBQLQuery query2 = new EJBQLQuery(ejbql2);
 
-        List<?> results2 = env.context().performQuery(query2);
+        List<?> results2 = env.context().select(query2);
         assertEquals(2, results2.size());
 
         assertEquals(33006, Cayenne.intPKForObject((Persistent) results2.get(0)));

@@ -58,7 +58,7 @@ public class DataContextEJBQLDeletePKIT {
         EJBQLQuery q = new EJBQLQuery("select m.pkAttribute from MeaningfulPKTest1 m");
 
         @SuppressWarnings("unchecked")
-        List<Integer> id = (List<Integer>)env.context().performQuery(q);
+        List<Integer> id = (List<Integer>)env.context().select(q);
 
         String ejbql = "delete from MeaningfulPKTest1 m WHERE m.pkAttribute in (:id)";
 

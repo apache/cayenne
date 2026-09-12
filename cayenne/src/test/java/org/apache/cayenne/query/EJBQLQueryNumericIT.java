@@ -52,7 +52,7 @@ public class EJBQLQueryNumericIT {
         String ejbql = "SELECT bie FROM BigIntegerEntity bie WHERE bie.bigIntegerField > ?1";
         EJBQLQuery query = new EJBQLQuery(ejbql);
         query.setParameter(1,744073709551615L);
-        List<BigIntegerEntity> result = env.context().performQuery(query);
+        List<BigIntegerEntity> result = env.context().select(query);
         assertEquals(1, result.size());
     }
 
@@ -61,7 +61,7 @@ public class EJBQLQueryNumericIT {
         createBigIntegerEntitiesDataSet();
         String ejbql = "SELECT bie FROM BigIntegerEntity bie WHERE bie.bigIntegerField > 744073709551615";
         EJBQLQuery query = new EJBQLQuery(ejbql);
-        List<BigIntegerEntity> result = env.context().performQuery(query);
+        List<BigIntegerEntity> result = env.context().select(query);
         assertEquals(1, result.size());
     }
 }

@@ -135,7 +135,7 @@ public class SQLTemplateActionIT {
         }
 
         @SuppressWarnings("unchecked")
-        List<Artist> artists = (List<Artist>) context.performQuery(sqlTemplate);
+        List<Artist> artists = (List<Artist>) context.select(sqlTemplate);
 
         assertEquals(4, artists.size());
         for (Artist artist : artists) {

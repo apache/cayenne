@@ -447,7 +447,7 @@ public class DataContextIT {
 
 		EJBQLQuery query = new EJBQLQuery("select a FROM Artist a");
 		query.setPageSize(5);
-		List<?> objects = context.performQuery(query);
+		List<?> objects = context.select(query);
 		assertNotNull(objects);
 		assertTrue(objects instanceof IncrementalFaultList<?>);
 		assertTrue(((IncrementalFaultList<?>) objects).elements.get(0) instanceof Long);

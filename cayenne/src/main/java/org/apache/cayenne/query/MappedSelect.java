@@ -190,7 +190,7 @@ public class MappedSelect<T> extends AbstractMappedQuery implements Select<T> {
                 }
             }
             case QueryDescriptor.SQL_TEMPLATE -> {
-                SQLTemplate sqlTemplate = (SQLTemplate) query;
+                SQLTemplate<?> sqlTemplate = (SQLTemplate<?>) query;
                 if (fetchLimit != null) {
                     sqlTemplate.setFetchLimit(fetchLimit);
                 }
@@ -211,7 +211,7 @@ public class MappedSelect<T> extends AbstractMappedQuery implements Select<T> {
                 }
             }
             case QueryDescriptor.EJBQL_QUERY -> {
-                EJBQLQuery ejbqlQuery = (EJBQLQuery) query;
+                EJBQLQuery<?> ejbqlQuery = (EJBQLQuery<?>) query;
                 if (fetchLimit != null) {
                     ejbqlQuery.setFetchLimit(fetchLimit);
                 }
@@ -232,7 +232,7 @@ public class MappedSelect<T> extends AbstractMappedQuery implements Select<T> {
                 }
             }
             case QueryDescriptor.PROCEDURE_QUERY -> {
-                ProcedureQuery procedureQuery = (ProcedureQuery) query;
+                ProcedureQuery<?> procedureQuery = (ProcedureQuery<?>) query;
                 if (fetchLimit != null) {
                     procedureQuery.setFetchLimit(fetchLimit);
                 }

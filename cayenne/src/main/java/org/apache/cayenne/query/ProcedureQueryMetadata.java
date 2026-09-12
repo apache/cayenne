@@ -46,7 +46,7 @@ class ProcedureQueryMetadata extends BaseQueryMetadata {
             Object root,
             Object resultRoot,
             EntityResolver resolver,
-            ProcedureQuery query) {
+            ProcedureQuery<?> query) {
         if (super.resolve(resultRoot, resolver)) {
             procedure = null;
 

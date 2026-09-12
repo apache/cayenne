@@ -47,7 +47,6 @@ import org.apache.cayenne.map.ObjEntity;
 import org.apache.cayenne.query.MappedExec;
 import org.apache.cayenne.query.MappedSelect;
 import org.apache.cayenne.query.Query;
-import org.apache.cayenne.query.QueryMetadata;
 import org.apache.cayenne.query.Select;
 import org.apache.cayenne.reflect.ArcProperty;
 import org.apache.cayenne.reflect.AttributeProperty;
@@ -961,7 +960,13 @@ public class DataContext implements ObjectContext {
     @SuppressWarnings("unchecked")
     @Override
     public <T> List<T> select(Select<T> query) {
-        return performQuery(query);
+        Query resolved = nonNullDelegate().willPerformQuery(this, query);
+        if (resolved == null) {
+            return new ArrayList<>(1);
+        }
+
+        List<T> result = (List<T>) QueryResultItems.firstList(onQuery(resolved, false, false));
+        return result != null ? result : new ArrayList<>(1);
     }
 
     /**
@@ -1041,37 +1046,6 @@ public class DataContext implements ObjectContext {
         return Collections.unmodifiableList(onQuery(query, false, false));
     }
 
-    /**
-     * Performs a single selecting query. Various query setting control the
-     * behavior of this method and the results returned:
-     * <ul>
-     * <li>Query caching policy defines whether the results are retrieved from
-     * cache or fetched from the database. Note that queries that use caching
-     * must have a name that is used as a caching key.</li>
-     * <li>Query refreshing policy controls whether to refresh existing data
-     * objects and ignore any cached values.</li>
-     * <li>Query data rows policy defines whether the result should be returned
-     * as Persistent objects or DataRows.</li>
-     * </ul>
-     * <p>
-     * <i>Since 1.2 takes any Query parameter, not just GenericSelectQuery</i>
-     * </p>
-     *
-     * @return A list of Persistent objects or a DataRows, depending on the value
-     * returned by {@link QueryMetadata#isFetchingDataRows()}.
-     * Сan also return an iterator if the query is an instance of iteratedQuery.
-     */
-    @Override
-    public List performQuery(Query query) {
-        query = nonNullDelegate().willPerformQuery(this, query);
-        if (query == null) {
-            return new ArrayList<>(1);
-        }
-
-        List<?> result = QueryResultItems.firstList(onQuery(query, false, false));
-        return result != null ? result : new ArrayList<>(1);
-    }
-
     List<QueryResultItem> onQuery(Query query, boolean iteratedResult, boolean ignoreLocalCache) {
         return new DataContextQueryAction(this, query, iteratedResult, ignoreLocalCache).execute();
     }
@@ -1139,9 +1113,11 @@ public class DataContext implements ObjectContext {
      * @since 1.1
      */
     public List<?> performQuery(String queryName, Map<String, ?> parameters, boolean expireCachedLists) {
-        return (List<?>) performQuery(expireCachedLists ?
-                MappedSelect.query(queryName).params(parameters).forceNoCache() :
-                MappedSelect.query(queryName).params(parameters));
+        MappedSelect<?> query = MappedSelect.query(queryName).params(parameters);
+        if (expireCachedLists) {
+            query.forceNoCache();
+        }
+        return select(query);
     }
 
     /**

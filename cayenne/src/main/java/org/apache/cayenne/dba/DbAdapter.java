@@ -71,7 +71,7 @@ public interface DbAdapter {
      *
      * @since 5.0
      */
-    ProcedureTranslator getProcedureTranslator(ProcedureQuery query, EntityResolver entityResolver);
+    ProcedureTranslator getProcedureTranslator(ProcedureQuery<?> query, EntityResolver entityResolver);
 
     /**
      * @return {@link SQLTreeProcessor} that can adjust SQL tree to specific database flavour

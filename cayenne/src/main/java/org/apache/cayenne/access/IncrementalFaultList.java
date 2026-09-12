@@ -236,7 +236,7 @@ public class IncrementalFaultList<E> implements List<E> {
 			int fetchBegin = 0;
 			while (fetchBegin < qualsSize) {
 				ObjectSelect<Persistent> query = createSelectQuery(quals.subList(fetchBegin, fetchEnd));
-				objects.addAll(dataContext.performQuery(query));
+				objects.addAll(dataContext.select(query));
 				fetchBegin = fetchEnd;
 				fetchEnd += Math.min(fetchSize, qualsSize - fetchEnd);
 			}

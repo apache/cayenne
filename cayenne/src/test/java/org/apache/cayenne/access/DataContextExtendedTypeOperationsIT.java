@@ -52,7 +52,7 @@ public class DataContextExtendedTypeOperationsIT {
                 "SELECT * FROM EXTENDED_TYPE_TEST WHERE NAME = 'X'");
         checkQ.setFetchingDataRows(true);
         checkQ.setColumnNamesCapitalization(CapsStrategy.UPPER);
-        assertEquals(1, e1.getObjectContext().performQuery(checkQ).size());
+        assertEquals(1, e1.getObjectContext().select(checkQ).size());
     }
 
     @Test
@@ -70,7 +70,7 @@ public class DataContextExtendedTypeOperationsIT {
 
         ObjectSelect<ExtendedTypeEntity> query = ObjectSelect.query(ExtendedTypeEntity.class)
                 .where(ExtendedTypeEntity.NAME.in(new StringET1("X"), new StringET1("Y")));
-        assertEquals(2, e1.getObjectContext().performQuery(query).size());
+        assertEquals(2, e1.getObjectContext().select(query).size());
     }
 
     @Test
@@ -88,6 +88,6 @@ public class DataContextExtendedTypeOperationsIT {
 
         ObjectSelect<ExtendedTypeEntity> query = ObjectSelect.query(ExtendedTypeEntity.class)
                 .where(ExtendedTypeEntity.NAME.in(Arrays.asList(new StringET1("X"), new StringET1("Y"))));
-        assertEquals(2, e1.getObjectContext().performQuery(query).size());
+        assertEquals(2, e1.getObjectContext().select(query).size());
     }
 }

@@ -23,7 +23,6 @@ import java.math.BigDecimal;
 import java.math.BigInteger;
 import java.util.List;
 
-import org.apache.cayenne.Cayenne;
 import org.apache.cayenne.QueryResultItem;
 import org.apache.cayenne.query.EJBQLQuery;
 import org.apache.cayenne.test.jdbc.TableHelper;
@@ -66,7 +65,7 @@ public class DataContextEJBQLNumericalFunctionalIT {
 
         EJBQLQuery query = new EJBQLQuery(
                 "SELECT d FROM BigDecimalEntity d WHERE ABS(d.bigDecimalNumeric) < 5.0");
-        List<?> objects = env.context().performQuery(query);
+        List<?> objects = env.context().select(query);
         assertEquals(1, objects.size());
         assertTrue(objects.contains(o1));
     }
@@ -84,7 +83,7 @@ public class DataContextEJBQLNumericalFunctionalIT {
 
         EJBQLQuery query = new EJBQLQuery(
                 "SELECT d FROM BigDecimalEntity d WHERE SQRT(d.bigDecimalNumeric) > 3.1");
-        List<?> objects = env.context().performQuery(query);
+        List<?> objects = env.context().select(query);
         assertEquals(1, objects.size());
         assertTrue(objects.contains(o2));
     }
@@ -102,7 +101,7 @@ public class DataContextEJBQLNumericalFunctionalIT {
 
         EJBQLQuery query = new EJBQLQuery(
                 "SELECT d FROM BigIntegerEntity d WHERE MOD(d.bigIntegerField, 4) = 2");
-        List<?> objects = env.context().performQuery(query);
+        List<?> objects = env.context().select(query);
         assertEquals(1, objects.size());
         assertTrue(objects.contains(o2));
     }
@@ -124,7 +123,7 @@ public class DataContextEJBQLNumericalFunctionalIT {
         EJBQLQuery check = new EJBQLQuery("select count(p) from BooleanTestEntity p "
                 + "WHERE p.booleanColumn = true");
 
-        Object notUpdated = Cayenne.objectForQuery(env.context(), check);
+        Object notUpdated = env.context().selectOne(check);
         assertEquals(1L, notUpdated);
 
         String ejbql = "UPDATE BooleanTestEntity AS p SET p.booleanColumn = true";
@@ -137,7 +136,7 @@ public class DataContextEJBQLNumericalFunctionalIT {
         assertEquals(1, count.length);
         assertEquals(3, count[0]);
 
-        notUpdated = Cayenne.objectForQuery(env.context(), check);
+        notUpdated = env.context().selectOne(check);
         assertEquals(3L, notUpdated);
     }
 }

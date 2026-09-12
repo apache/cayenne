@@ -313,7 +313,7 @@ public class DataContextFlattenedAttributesIT {
         createTestDataSet();
         EJBQLQuery query = new EJBQLQuery(
                 "SELECT a FROM CompoundPainting a WHERE a.artistName = 'artist2'");
-        List<?> objects = context.performQuery(query);
+        List<?> objects = context.select(query);
 
         assertNotNull(objects);
         assertEquals(2, objects.size());
@@ -333,7 +333,7 @@ public class DataContextFlattenedAttributesIT {
                 "SELECT DISTINCT a FROM CompoundPainting cp, Artist a "
                         + "WHERE a.artistName=cp.artistName ORDER BY a.artistName");
 
-        List<?> objects = context.performQuery(query);
+        List<?> objects = context.select(query);
 
         assertNotNull(objects);
         assertEquals(4, objects.size());
@@ -353,7 +353,7 @@ public class DataContextFlattenedAttributesIT {
                 "SELECT a FROM CompoundPainting a WHERE a.artistName LIKE 'artist%' "
                         + "ORDER BY a.paintingTitle");
 
-        List<?> objects = context.performQuery(query);
+        List<?> objects = context.select(query);
 
         assertNotNull(objects);
         assertEquals(8, objects.size());
@@ -373,7 +373,7 @@ public class DataContextFlattenedAttributesIT {
                 + "WHERE a.artistName BETWEEN 'artist1' AND 'artist4' "
                 + "ORDER BY a.paintingTitle");
 
-        List<?> objects = context.performQuery(query);
+        List<?> objects = context.select(query);
 
         assertNotNull(objects);
         assertEquals(8, objects.size());
@@ -393,7 +393,7 @@ public class DataContextFlattenedAttributesIT {
                 "SELECT g FROM Gallery g WHERE "
                         + "(SELECT COUNT(cp) FROM CompoundPainting cp WHERE g.galleryName=cp.galleryName) = 4");
 
-        List<?> objects = context.performQuery(query);
+        List<?> objects = context.select(query);
 
         assertNotNull(objects);
         assertEquals(1, objects.size());
@@ -411,7 +411,7 @@ public class DataContextFlattenedAttributesIT {
                         + "GROUP BY cp.galleryName "
                         + "HAVING cp.galleryName LIKE 'gallery1'");
 
-        List<Object[]> objects = context.performQuery(query);
+        List<Object[]> objects = context.select(query);
 
         assertNotNull(objects);
         assertEquals(1, objects.size());
@@ -431,14 +431,14 @@ public class DataContextFlattenedAttributesIT {
 
         context.commitChanges();
 
-        Number artistCount = (Number) Cayenne.objectForQuery(context, new EJBQLQuery(
+        Number artistCount = (Number) context.selectOne(new EJBQLQuery(
                 "select count(a) from Artist a"));
         assertEquals(1, artistCount.intValue());
-        Number paintingCount = (Number) Cayenne.objectForQuery(context, new EJBQLQuery(
+        Number paintingCount = (Number) context.selectOne(new EJBQLQuery(
                 "select count(a) from Painting a"));
         assertEquals(1, paintingCount.intValue());
 
-        Number galleryCount = (Number) Cayenne.objectForQuery(context, new EJBQLQuery(
+        Number galleryCount = (Number) context.selectOne(new EJBQLQuery(
                 "select count(a) from Gallery a"));
         assertEquals(1, galleryCount.intValue());
     }
@@ -463,14 +463,14 @@ public class DataContextFlattenedAttributesIT {
         context.deleteObjects(o1);
         context.commitChanges();
 
-        Number artistCount = (Number) Cayenne.objectForQuery(context, new EJBQLQuery(
+        Number artistCount = (Number) context.selectOne(new EJBQLQuery(
                 "select count(a) from Artist a"));
         assertEquals(2, artistCount.intValue());
-        Number paintingCount = (Number) Cayenne.objectForQuery(context, new EJBQLQuery(
+        Number paintingCount = (Number) context.selectOne(new EJBQLQuery(
                 "select count(a) from Painting a"));
         assertEquals(0, paintingCount.intValue());
 
-        Number galleryCount = (Number) Cayenne.objectForQuery(context, new EJBQLQuery(
+        Number galleryCount = (Number) context.selectOne(new EJBQLQuery(
                 "select count(a) from Gallery a"));
         assertEquals(1, galleryCount.intValue());
     }

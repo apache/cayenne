@@ -34,7 +34,7 @@ class SQLiteActionBuilder extends JdbcActionBuilder {
     }
 
     @Override
-    public SQLAction sqlAction(SQLTemplate query) {
+    public SQLAction sqlAction(SQLTemplate<?> query) {
         return new SQLiteSQLTemplateAction(query, dataNode);
     }
 

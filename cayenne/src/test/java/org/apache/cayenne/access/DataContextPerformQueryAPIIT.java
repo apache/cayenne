@@ -21,6 +21,7 @@ package org.apache.cayenne.access;
 
 import org.apache.cayenne.Cayenne;
 import org.apache.cayenne.log.NoopSQLLogger;
+import org.apache.cayenne.query.SQLExec;
 import org.apache.cayenne.query.SQLTemplate;
 import org.apache.cayenne.test.jdbc.TableHelper;
 import org.apache.cayenne.testdo.testmap.Artist;
@@ -44,6 +45,7 @@ import java.util.Map;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.junit.jupiter.api.Assertions.assertThrows;
 
 public class DataContextPerformQueryAPIIT {
 
@@ -78,6 +80,22 @@ public class DataContextPerformQueryAPIIT {
         tArtist.insert(101, "artist3");
         tPainting.insert(6, 101, "p_artist3", 1000);
         tPainting.insert(7, 11, "p_artist2", 2000);
+    }
+
+    @Test
+    @SuppressWarnings("removal")
+    public void performQuerySelect() throws Exception {
+        createTwoArtists();
+
+        List<?> artists = context.performQuery(new SQLTemplate<>(Artist.class, "SELECT * FROM ARTIST"));
+        assertEquals(2, artists.size());
+    }
+
+    @Test
+    @SuppressWarnings("removal")
+    public void performQueryNotSelect() {
+        assertThrows(ClassCastException.class,
+                () -> context.performQuery(SQLExec.query("DELETE FROM ARTIST")));
     }
 
     @Test
@@ -178,7 +196,7 @@ public class DataContextPerformQueryAPIIT {
 
         // this way of executing a query makes no sense, but it shouldn't blow
         // either...
-        List<?> result = context.performQuery(q);
+        List<?> result = context.select(q);
 
         assertNotNull(result);
         assertEquals(0, result.size());

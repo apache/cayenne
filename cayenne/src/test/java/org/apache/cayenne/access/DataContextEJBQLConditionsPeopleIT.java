@@ -97,7 +97,7 @@ public class DataContextEJBQLConditionsPeopleIT extends PeopleTestBase {
                 + " WHERE m MEMBER d.employees";
 
         EJBQLQuery query = new EJBQLQuery(ejbql);
-        List<?> objects = context.performQuery(query);
+        List<?> objects = context.select(query);
         assertEquals(2, objects.size());
 
         Set<String> ids = new HashSet<String>();
@@ -118,7 +118,7 @@ public class DataContextEJBQLConditionsPeopleIT extends PeopleTestBase {
                 + " WHERE m NOT MEMBER d.employees";
 
         EJBQLQuery query = new EJBQLQuery(ejbql);
-        List<?> objects = context.performQuery(query);
+        List<?> objects = context.select(query);
         assertEquals(1, objects.size());
 
         Set<String> ids = new HashSet<String>();
@@ -140,7 +140,7 @@ public class DataContextEJBQLConditionsPeopleIT extends PeopleTestBase {
                 + " WHERE m NOT MEMBER d.employees";
 
         EJBQLQuery query = new EJBQLQuery(ejbql);
-        List<?> objects = context.performQuery(query);
+        List<?> objects = context.select(query);
         assertEquals(0, objects.size());
     }
 }

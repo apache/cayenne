@@ -313,7 +313,7 @@ public class SQLSelect<T> extends IndirectQuery implements Select<T> {
 			root = null;
 		}
 
-		SQLTemplate template = new SQLTemplate();
+		SQLTemplate<?> template = new SQLTemplate<>();
 		template.setFetchingDataRows(isFetchingDataRows);
 		template.setRoot(root);
 		template.setDefaultTemplate(getSql());

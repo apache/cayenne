@@ -88,7 +88,7 @@ public class DataContextEJBQLSubqueryIT {
                 + ")";
 
         EJBQLQuery query = new EJBQLQuery(ejbql);
-        List<?> objects = env.context().performQuery(query);
+        List<?> objects = env.context().select(query);
         assertEquals(1, objects.size());
 
         Set<Object> ids = new HashSet<>();
@@ -111,7 +111,7 @@ public class DataContextEJBQLSubqueryIT {
                 + ")";
 
         EJBQLQuery query = new EJBQLQuery(ejbql);
-        List<?> objects = env.context().performQuery(query);
+        List<?> objects = env.context().select(query);
         assertEquals(1, objects.size());
 
         Set<Object> ids = new HashSet<>();
@@ -137,7 +137,7 @@ public class DataContextEJBQLSubqueryIT {
                 + ")";
 
         EJBQLQuery query = new EJBQLQuery(ejbql);
-        List<?> objects = env.context().performQuery(query);
+        List<?> objects = env.context().select(query);
         assertEquals(2, objects.size());
 
         Set<Object> ids = new HashSet<>();
@@ -165,7 +165,7 @@ public class DataContextEJBQLSubqueryIT {
                 + ")";
 
         EJBQLQuery query = new EJBQLQuery(ejbql);
-        List<?> objects = env.context().performQuery(query);
+        List<?> objects = env.context().select(query);
         assertEquals(2, objects.size());
 
         Set<Object> ids = new HashSet<>();
@@ -193,7 +193,7 @@ public class DataContextEJBQLSubqueryIT {
                 + ")";
 
         EJBQLQuery query = new EJBQLQuery(ejbql);
-        List<?> objects = env.context().performQuery(query);
+        List<?> objects = env.context().select(query);
         assertEquals(3, objects.size());
 
         Set<Object> ids = new HashSet<>();
@@ -222,7 +222,7 @@ public class DataContextEJBQLSubqueryIT {
                 + ")";
 
         EJBQLQuery query = new EJBQLQuery(ejbql);
-        List<?> objects = env.context().performQuery(query);
+        List<?> objects = env.context().select(query);
         assertEquals(3, objects.size());
 
         Set<Object> ids = new HashSet<>();

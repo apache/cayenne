@@ -195,7 +195,7 @@ public class CayenneCompoundIT {
         query.setColumnNamesCapitalization(CapsStrategy.UPPER);
         query.setPageSize(pageSize);
 
-        List<?> result = env.context().performQuery(query);
+        List<?> result = env.context().select(query);
         assertEquals(20, result.size());
 
         // resolve every page, including subsequent pages faulted in by compound id
@@ -233,6 +233,6 @@ public class CayenneCompoundIT {
         tCompoundIntPKTest.insert(2, 5, "test");
 
         EJBQLQuery query = new EJBQLQuery("SELECT COUNT(a) FROM CompoundIntPk a");
-        assertEquals(Collections.singletonList(4L), env.context().performQuery(query));
+        assertEquals(Collections.singletonList(4L), env.context().select(query));
     }
 }

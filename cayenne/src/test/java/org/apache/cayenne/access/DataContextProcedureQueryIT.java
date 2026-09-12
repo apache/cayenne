@@ -375,7 +375,7 @@ public class DataContextProcedureQueryIT  {
         assertTrue(id instanceof Long, "Expected Long, got: " + id.getClass().getName());
     }
 
-    protected List<QueryResultItem> runProcedureGeneric(ProcedureQuery q) throws Exception {
+    protected List<QueryResultItem> runProcedureGeneric(ProcedureQuery<?> q) throws Exception {
         BaseTransaction t = new ExternalTransaction(NoopSQLLogger.getInstance());
         BaseTransaction.bindThreadTransaction(t);
 
@@ -387,7 +387,7 @@ public class DataContextProcedureQueryIT  {
         }
     }
 
-    protected List<DataRow> runProcedureSelect(ProcedureQuery q) throws Exception {
+    protected List<DataRow> runProcedureSelect(ProcedureQuery<DataRow> q) throws Exception {
         // Sybase blows whenever a transaction wraps a SP, so turn off
         // transactions
 
@@ -401,7 +401,7 @@ public class DataContextProcedureQueryIT  {
         BaseTransaction.bindThreadTransaction(t);
 
         try {
-            return env.context().performQuery(q);
+            return env.context().select(q);
         } finally {
             BaseTransaction.bindThreadTransaction(null);
             t.commit();

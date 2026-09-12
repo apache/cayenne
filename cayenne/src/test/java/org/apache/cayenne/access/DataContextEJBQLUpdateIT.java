@@ -75,7 +75,7 @@ public class DataContextEJBQLUpdateIT {
         EJBQLQuery check = new EJBQLQuery("select count(p) from Painting p "
                 + "WHERE p.paintingTitle is NULL or p.paintingTitle <> 'XX'");
 
-        Object notUpdated = Cayenne.objectForQuery(env.context(), check);
+        Object notUpdated = env.context().selectOne(check);
         assertEquals(2L, notUpdated);
 
         String ejbql = "UPDATE Painting AS p SET p.paintingTitle = 'XX' WHERE p.paintingTitle = 'P1'";
@@ -88,7 +88,7 @@ public class DataContextEJBQLUpdateIT {
         assertEquals(1, count.length);
         assertEquals(1, count[0]);
 
-        notUpdated = Cayenne.objectForQuery(env.context(), check);
+        notUpdated = env.context().selectOne(check);
         assertEquals(1L, notUpdated);
     }
 
@@ -99,7 +99,7 @@ public class DataContextEJBQLUpdateIT {
         EJBQLQuery check = new EJBQLQuery("select count(p) from Painting p "
                 + "WHERE p.paintingTitle is NULL or p.paintingTitle <> 'XX'");
 
-        Object notUpdated = Cayenne.objectForQuery(env.context(), check);
+        Object notUpdated = env.context().selectOne(check);
         assertEquals(2L, notUpdated);
 
         String ejbql = "UPDATE Painting AS p SET p.paintingTitle = 'XX'";
@@ -112,7 +112,7 @@ public class DataContextEJBQLUpdateIT {
         assertEquals(1, count.length);
         assertEquals(2, count[0]);
 
-        notUpdated = Cayenne.objectForQuery(env.context(), check);
+        notUpdated = env.context().selectOne(check);
         assertEquals(0L, notUpdated);
     }
 
@@ -123,7 +123,7 @@ public class DataContextEJBQLUpdateIT {
         EJBQLQuery check = new EJBQLQuery("select count(p) from Painting p "
                 + "WHERE p.estimatedPrice is not null");
 
-        Object notUpdated = Cayenne.objectForQuery(env.context(), check);
+        Object notUpdated = env.context().selectOne(check);
         assertEquals(2L, notUpdated);
 
         String ejbql = "UPDATE Painting AS p SET p.estimatedPrice = NULL";
@@ -136,7 +136,7 @@ public class DataContextEJBQLUpdateIT {
         assertEquals(1, count.length);
         assertEquals(2, count[0]);
 
-        notUpdated = Cayenne.objectForQuery(env.context(), check);
+        notUpdated = env.context().selectOne(check);
         assertEquals(0L, notUpdated);
     }
 
@@ -149,7 +149,7 @@ public class DataContextEJBQLUpdateIT {
     // EJBQLQuery check = new EJBQLQuery("select count(p) from Painting p "
     // + "WHERE p.paintingTitle is NULL or p.estimatedPrice <= 5000");
     //
-    // Object notUpdated = Cayenne.objectForQuery(context, check);
+    // Object notUpdated = context.selectOne(check);
     // assertEquals(2L, notUpdated);
     //
     // String ejbql = "UPDATE Painting AS p SET p.estimatedPrice = p.estimatedPrice * 2";
@@ -162,7 +162,7 @@ public class DataContextEJBQLUpdateIT {
     // assertEquals(1, count.length);
     // assertEquals(2, count[0]);
     //
-    // notUpdated = Cayenne.objectForQuery(context, check);
+    // notUpdated = context.selectOne(check);
     // assertEquals(0L, notUpdated);
     // }
 
@@ -173,7 +173,7 @@ public class DataContextEJBQLUpdateIT {
         EJBQLQuery check = new EJBQLQuery("select count(p) from Painting p "
                 + "WHERE p.estimatedPrice is NULL or p.estimatedPrice <> 1");
 
-        Object notUpdated = Cayenne.objectForQuery(env.context(), check);
+        Object notUpdated = env.context().selectOne(check);
         assertEquals(2L, notUpdated);
 
         String ejbql = "UPDATE Painting AS p SET p.paintingTitle = 'XX', p.estimatedPrice = 1";
@@ -186,7 +186,7 @@ public class DataContextEJBQLUpdateIT {
         assertEquals(1, count.length);
         assertEquals(2, count[0]);
 
-        notUpdated = Cayenne.objectForQuery(env.context(), check);
+        notUpdated = env.context().selectOne(check);
         assertEquals(0L, notUpdated);
     }
 
@@ -197,7 +197,7 @@ public class DataContextEJBQLUpdateIT {
         EJBQLQuery check = new EJBQLQuery("select count(p) from Painting p "
                 + "WHERE p.estimatedPrice is NULL or p.estimatedPrice <> 1.1");
 
-        Object notUpdated = Cayenne.objectForQuery(env.context(), check);
+        Object notUpdated = env.context().selectOne(check);
         assertEquals(2L, notUpdated);
 
         String ejbql = "UPDATE Painting AS p SET p.estimatedPrice = 1.1";
@@ -210,7 +210,7 @@ public class DataContextEJBQLUpdateIT {
         assertEquals(1, count.length);
         assertEquals(2, count[0]);
 
-        notUpdated = Cayenne.objectForQuery(env.context(), check);
+        notUpdated = env.context().selectOne(check);
         assertEquals(0L, notUpdated);
     }
 
@@ -224,7 +224,7 @@ public class DataContextEJBQLUpdateIT {
                 + "WHERE p.toArtist <> :artist");
         check.setParameter("artist", object);
 
-        Object notUpdated = Cayenne.objectForQuery(env.context(), check);
+        Object notUpdated = env.context().selectOne(check);
         assertEquals(2L, notUpdated);
 
         String ejbql = "UPDATE Painting AS p SET p.toArtist = :artist";
@@ -238,7 +238,7 @@ public class DataContextEJBQLUpdateIT {
         assertEquals(1, count.length);
         assertEquals(2, count[0]);
 
-        notUpdated = Cayenne.objectForQuery(env.context(), check);
+        notUpdated = env.context().selectOne(check);
         assertEquals(0L, notUpdated);
     }
 

@@ -77,7 +77,7 @@ public class SQLTemplateIT {
 	public void testSQLTemplateForDataMap() {
 		DataMap testDataMap = context.getEntityResolver().getDataMap("testmap");
 		SQLTemplate q1 = new SQLTemplate(testDataMap, "SELECT * FROM ARTIST", true);
-		List<DataRow> result = context.performQuery(q1);
+		List<DataRow> result = context.select(q1);
 		assertEquals(0, result.size());
 	}
 
@@ -87,7 +87,7 @@ public class SQLTemplateIT {
 
 		DataMap testDataMap = context.getEntityResolver().getDataMap("testmap");
 		SQLTemplate q2 = new SQLTemplate(testDataMap, "SELECT * FROM ARTIST", true);
-		List<DataRow> result = context.performQuery(q2);
+		List<DataRow> result = context.select(q2);
 		assertEquals(2, result.size());
 	}
 
@@ -98,13 +98,13 @@ public class SQLTemplateIT {
 			String sql = "INSERT INTO GENERATED_COLUMN (NAME) VALUES ('Surikov')";
 			SQLTemplate q1 = new SQLTemplate(testDataMap, sql, true);
 			q1.setReturnGeneratedKeys(true);
-			List<DataRow> response = context.performQuery(q1);
+			List<DataRow> response = context.select(q1);
 			assertEquals(1, response.size());
 
 			String sql1 = "INSERT INTO GENERATED_COLUMN (NAME) VALUES ('Test')";
 			SQLTemplate q2 = new SQLTemplate(testDataMap, sql1, true);
 			q2.setReturnGeneratedKeys(false);
-			List<DataRow> response1 = context.performQuery(q2);
+			List<DataRow> response1 = context.select(q2);
 			assertEquals(0, response1.size());
 		}
 	}
@@ -117,7 +117,7 @@ public class SQLTemplateIT {
 		SQLTemplate q2 = new SQLTemplate(testDataMap, "SELECT * FROM ARTIST", false);
 		boolean gotRuntimeException = false;
 		try {
-			context.performQuery(q2);
+			context.select(q2);
 		} catch (CayenneRuntimeException e) {
 			gotRuntimeException = true;
 		}
@@ -134,7 +134,7 @@ public class SQLTemplateIT {
 			SQLResult resultDescriptor = new SQLResult();
 			resultDescriptor.addColumnResult("P");
 			query.setResult(resultDescriptor);
-			context.performQuery(query);
+			context.select(query);
 		});
 	}
 
@@ -151,7 +151,7 @@ public class SQLTemplateIT {
 			resultDescriptor.addColumnResult("P");
 			resultDescriptor.addColumnResult("N");
 			query.setResult(resultDescriptor);
-			context.performQuery(query);
+			context.select(query);
 		});
 	}
 
@@ -162,7 +162,7 @@ public class SQLTemplateIT {
 		SQLTemplate q3 = new SQLTemplate(Artist.class, "SELECT ARTIST_ID, ARTIST_NAME FROM ARTIST");
 		q3.setResultColumnsTypes(Double.class, String.class);
 		q3.setUseScalar(true);
-		List<Object[]> result = context.performQuery(q3);
+		List<Object[]> result = context.select(q3);
 		assertEquals(2, result.size());
 		assertTrue(result.get(0) instanceof Object[]);
 		assertTrue(result.get(0)[0] instanceof Double);
@@ -176,7 +176,7 @@ public class SQLTemplateIT {
 		q3.setResultColumnsTypes(Double.class, String.class);
 		q3.setFetchingDataRows(true);
 		q3.setColumnNamesCapitalization(CapsStrategy.UPPER);
-		List<DataRow> result = context.performQuery(q3);
+		List<DataRow> result = context.select(q3);
 		assertEquals(2, result.size());
 		assertTrue(result.get(0) instanceof DataRow);
 		assertInstanceOf(Double.class, result.get(0).get("ARTIST_ID"));
@@ -189,7 +189,7 @@ public class SQLTemplateIT {
 		assertThrows(CayenneRuntimeException.class, () -> {
 			SQLTemplate q3 = new SQLTemplate(Artist.class, "SELECT ARTIST_ID, ARTIST_NAME FROM ARTIST");
 			q3.setResultColumnsTypes(Double.class, String.class);
-			context.performQuery(q3);
+			context.select(q3);
 		});
 	}
 
@@ -201,7 +201,7 @@ public class SQLTemplateIT {
 			SQLTemplate q3 = new SQLTemplate(Artist.class, "SELECT ARTIST_ID, ARTIST_NAME FROM ARTIST");
 			q3.setUseScalar(true);
 			q3.setFetchingDataRows(true);
-			context.performQuery(q3);
+			context.select(q3);
 		});
 	}
 
@@ -213,7 +213,7 @@ public class SQLTemplateIT {
 		SQLTemplate q3 = new SQLTemplate(testDataMap, "SELECT ARTIST_ID, ARTIST_NAME FROM ARTIST", true);
 		q3.setResultColumnsTypes(Double.class, String.class);
 		q3.setColumnNamesCapitalization(CapsStrategy.UPPER);
-		List<DataRow> artists = context.performQuery(q3);
+		List<DataRow> artists = context.select(q3);
 		assertEquals(2, artists.size());
 		assertTrue(artists.get(0) instanceof DataRow);
 		assertInstanceOf(Double.class, artists.get(0).get("ARTIST_ID"));
@@ -225,7 +225,7 @@ public class SQLTemplateIT {
 
 		DataMap testDataMap = context.getEntityResolver().getDataMap("testmap");
 		SQLTemplate q3 = new SQLTemplate(testDataMap, "SELECT #result('ARTIST_ID' 'java.lang.Long'), #result('ARTIST_NAME' 'java.lang.String') FROM ARTIST", true);
-		List<DataRow> result = context.performQuery(q3);
+		List<DataRow> result = context.select(q3);
 		assertEquals(2, result.size());
 		assertTrue(result.get(0) instanceof DataRow);
 		assertEquals(2, result.get(0).size());
@@ -241,7 +241,7 @@ public class SQLTemplateIT {
 			DataMap testDataMap = context.getEntityResolver().getDataMap("testmap");
 			SQLTemplate q3 = new SQLTemplate(testDataMap, "SELECT #result('ARTIST_ID' 'java.lang.Long'), #result('ARTIST_NAME' 'java.lang.String') FROM ARTIST", true);
 			q3.setResultColumnsTypes(Integer.class, String.class);
-			context.performQuery(q3);
+			context.select(q3);
 		});
 	}
 
@@ -252,7 +252,7 @@ public class SQLTemplateIT {
 		DataMap testDataMap = context.getEntityResolver().getDataMap("testmap");
 		SQLTemplate q3 = new SQLTemplate(testDataMap, "SELECT #result('ARTIST_ID' 'java.lang.Long'), #result('ARTIST_NAME' 'java.lang.String') FROM ARTIST", false);
 		q3.setUseScalar(true);
-		List<Object[]> result = context.performQuery(q3);
+		List<Object[]> result = context.select(q3);
 		assertEquals(2, result.size());
 		assertTrue(result.get(0) instanceof Object[]);
 		assertEquals(2, result.get(0).length);
@@ -269,7 +269,7 @@ public class SQLTemplateIT {
 			SQLTemplate q3 = new SQLTemplate(testDataMap, "SELECT #result('ARTIST_ID' 'java.lang.Long'), #result('ARTIST_NAME' 'java.lang.String') FROM ARTIST", false);
 			q3.setResultColumnsTypes(Integer.class, String.class);
 			q3.setUseScalar(true);
-			context.performQuery(q3);
+			context.select(q3);
 		});
 	}
 
@@ -280,7 +280,7 @@ public class SQLTemplateIT {
 		DataMap testDataMap = context.getEntityResolver().getDataMap("testmap");
 		SQLTemplate q3 = new SQLTemplate(testDataMap, "SELECT #result('ARTIST_ID' 'java.lang.Long') FROM ARTIST", false);
 		q3.setUseScalar(true);
-		List<Object[]> result = context.performQuery(q3);
+		List<Object[]> result = context.select(q3);
 		assertEquals(2, result.size());
 		assertTrue(result.get(0) instanceof Object[]);
 		assertEquals(1, result.get(0).length);
@@ -296,7 +296,7 @@ public class SQLTemplateIT {
 			SQLTemplate q3 = new SQLTemplate(testDataMap, "SELECT ARTIST_ID, ARTIST_NAME FROM ARTIST", false);
 			q3.setResultColumnsTypes(Integer.class);
 			q3.setUseScalar(true);
-			context.performQuery(q3);
+			context.select(q3);
 		});
 	}
 
@@ -307,7 +307,7 @@ public class SQLTemplateIT {
 		DataMap testDataMap = context.getEntityResolver().getDataMap("testmap");
 		SQLTemplate q3 = new SQLTemplate(testDataMap, "SELECT ARTIST_ID FROM ARTIST", false);
 		q3.setUseScalar(true);
-		List<Object[]> artists = context.performQuery(q3);
+		List<Object[]> artists = context.select(q3);
 		assertEquals(2, artists.size());
 		assertEquals(1, artists.get(0).length);
 		assertTrue(artists.get(0) instanceof Object[]);
@@ -324,7 +324,7 @@ public class SQLTemplateIT {
 		DataMap testDataMap = context.getEntityResolver().getDataMap("testmap");
 		SQLTemplate q3 = new SQLTemplate(testDataMap, "SELECT ARTIST_ID, ARTIST_NAME FROM ARTIST", false);
 		q3.setUseScalar(true);
-		List<Object[]> artists = context.performQuery(q3);
+		List<Object[]> artists = context.select(q3);
 		assertEquals(2, artists.size());
 		assertEquals(2, artists.get(0).length);
 		assertTrue(artists.get(0) instanceof Object[]);
@@ -342,7 +342,7 @@ public class SQLTemplateIT {
 		SQLTemplate q5 = new SQLTemplate(testDataMap, "SELECT * FROM ARTIST", false);
 		q5.setResultColumnsTypes(Float.class, String.class, LocalDateTime.class);
 		q5.setUseScalar(true);
-		List dates = context.performQuery(q5);
+		List dates = context.select(q5);
 		assertEquals(2, dates.size());
 		assertTrue(dates.get(0) instanceof Object[]);
 		assertEquals(3, ((Object[])dates.get(0)).length);
@@ -357,7 +357,7 @@ public class SQLTemplateIT {
 		SQLTemplate q5 = new SQLTemplate(testDataMap, "SELECT ARTIST_NAME FROM ARTIST_CT", false);
 		q5.setResultColumnsTypes(String.class);
 		q5.setUseScalar(true);
-		List dates = context.performQuery(q5);
+		List dates = context.select(q5);
 		assertEquals(1, dates.size());
 		assertTrue(dates.get(0) instanceof String);
 		assertEquals("Test", dates.get(0));
@@ -425,7 +425,7 @@ public class SQLTemplateIT {
 		String sql = "SELECT p.GALLERY_ID FROM PAINTING p";
 		SQLTemplate q1 = new SQLTemplate(Gallery.class, sql);
 		q1.setColumnNamesCapitalization(CapsStrategy.UPPER);
-		List<Gallery> galleries = context.performQuery(q1);
+		List<Gallery> galleries = context.select(q1);
 
 		assertEquals(1, galleries.size());
 		assertNull(galleries.get(0));
@@ -441,7 +441,7 @@ public class SQLTemplateIT {
 			q1.setColumnNamesCapitalization(CapsStrategy.UPPER);
 
 			// this should fail as result can't be converted to Gallery class
-			context.performQuery(q1);
+			context.select(q1);
 		});
 	}
 
@@ -459,7 +459,7 @@ public class SQLTemplateIT {
 		q1.setColumnNamesCapitalization(CapsStrategy.UPPER);
 
 		@SuppressWarnings("unchecked")
-		List<Painting> paintings = context.performQuery(q1);
+		List<Painting> paintings = context.select(q1);
 
 		env.runWithQueriesBlocked(() -> {
 			for(Painting painting : paintings) {

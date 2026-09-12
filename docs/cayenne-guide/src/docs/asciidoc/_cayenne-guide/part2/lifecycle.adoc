@@ -53,7 +53,7 @@ Cayenne defines the following 8 types of lifecycle events for which callbacks ca
 
 .^|PostLoad
 a|
-- After an object is fetched inside ObjectContext.performQuery().
+- After an object is fetched inside ObjectContext.select().
 - After an object is reverted inside ObjectContext.rollbackChanges().
 - Anytime a faulted object is resolved (i.e. if a relationship is fetched).
 |===

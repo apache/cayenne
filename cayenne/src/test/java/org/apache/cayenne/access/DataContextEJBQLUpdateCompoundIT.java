@@ -76,7 +76,7 @@ public class DataContextEJBQLUpdateCompoundIT {
                 "select count(e) from CompoundFkTestEntity e WHERE e.toCompoundPk <> :param");
         check.setParameter("param", object);
 
-        Object notUpdated = Cayenne.objectForQuery(env.context(), check);
+        Object notUpdated = env.context().selectOne(check);
         assertEquals(1L, notUpdated);
 
         String ejbql = "UPDATE CompoundFkTestEntity e SET e.toCompoundPk = :param";
@@ -90,7 +90,7 @@ public class DataContextEJBQLUpdateCompoundIT {
         assertEquals(1, count.length);
         assertEquals(2, count[0]);
 
-        notUpdated = Cayenne.objectForQuery(env.context(), check);
+        notUpdated = env.context().selectOne(check);
         assertEquals(0L, notUpdated);
     }
 

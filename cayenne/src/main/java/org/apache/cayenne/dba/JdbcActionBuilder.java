@@ -62,7 +62,7 @@ public class JdbcActionBuilder implements SQLActionVisitor {
     }
 
     @Override
-    public SQLAction procedureAction(ProcedureQuery query) {
+    public SQLAction procedureAction(ProcedureQuery<?> query) {
         return new ProcedureAction(query, dataNode);
     }
 
@@ -75,7 +75,7 @@ public class JdbcActionBuilder implements SQLActionVisitor {
     }
 
     @Override
-    public SQLAction sqlAction(SQLTemplate query) {
+    public SQLAction sqlAction(SQLTemplate<?> query) {
         return new SQLTemplateAction(query, dataNode);
     }
 
@@ -83,7 +83,7 @@ public class JdbcActionBuilder implements SQLActionVisitor {
      * @since 3.0
      */
     @Override
-    public SQLAction ejbqlAction(EJBQLQuery query) {
+    public SQLAction ejbqlAction(EJBQLQuery<?> query) {
         return new EJBQLAction(query, this, dataNode);
     }
 }

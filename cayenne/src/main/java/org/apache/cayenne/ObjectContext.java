@@ -274,11 +274,14 @@ public interface ObjectContext {
 
     /**
      * Executes a selecting query, returning a list of persistent objects or data rows.
+     *
+     * @throws ClassCastException if the query does not implement {@link Select}
+     * @deprecated use {@link #select(Select)}. All selecting queries implement {@link Select}.
      */
-    // TODO: this will need to be deprecated at some point. The reason we can't do that yet is that
-    //  EJBQLQuery, SQLTemplate do not implement "Select".
-    //  Those queries should eventually go away
-    List performQuery(Query query);
+    @Deprecated(since = "5.0", forRemoval = true)
+    default List performQuery(Query query) {
+        return select((Select<?>) query);
+    }
 
     /**
      * Executes a selecting query, returning a list of persistent objects or

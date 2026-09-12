@@ -36,12 +36,12 @@ class OracleActionBuilder extends JdbcActionBuilder {
     }
 
     @Override
-    public SQLAction sqlAction(SQLTemplate query) {
+    public SQLAction sqlAction(SQLTemplate<?> query) {
         return new OracleSQLTemplateAction(query, dataNode);
     }
 
     @Override
-    public SQLAction procedureAction(ProcedureQuery query) {
+    public SQLAction procedureAction(ProcedureQuery<?> query) {
         return new OracleProcedureAction(query, dataNode);
     }
 

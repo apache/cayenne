@@ -67,7 +67,7 @@ public class DataContextEJBQLArrayResultIT {
 
         EJBQLQuery query = new EJBQLQuery(ejbql);
 
-        List<?> objects = env.context().performQuery(query);
+        List<?> objects = env.context().select(query);
         assertEquals(1, objects.size());
 
         Object o1 = objects.get(0);
@@ -81,7 +81,7 @@ public class DataContextEJBQLArrayResultIT {
 
         EJBQLQuery query = new EJBQLQuery(ejbql);
 
-        List<?> objects = env.context().performQuery(query);
+        List<?> objects = env.context().select(query);
         assertEquals(1, objects.size());
 
         Object o1 = objects.get(0);
@@ -102,7 +102,7 @@ public class DataContextEJBQLArrayResultIT {
 
         EJBQLQuery query = new EJBQLQuery(ejbql);
 
-        List<?> objects = env.context().performQuery(query);
+        List<?> objects = env.context().select(query);
         assertEquals(4, objects.size());
 
         Object o1 = objects.get(0);

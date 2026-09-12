@@ -101,7 +101,7 @@ public class SimpleIdIncrementalFaultListPrefetchIT {
                 .pageSize(3);
 
         final IncrementalFaultList<?> result = (IncrementalFaultList) env.context()
-                .performQuery(q);
+                .select(q);
 
         assertEquals(6, result.size());
 
@@ -132,7 +132,7 @@ public class SimpleIdIncrementalFaultListPrefetchIT {
                 .prefetch("paintingArray", PrefetchTreeNode.UNDEFINED_SEMANTICS)
                 .pageSize(3);
 
-        IncrementalFaultList result = (IncrementalFaultList) env.context().performQuery(q);
+        IncrementalFaultList result = (IncrementalFaultList) env.context().select(q);
 
         assertEquals(6, result.size());
 
@@ -160,7 +160,7 @@ public class SimpleIdIncrementalFaultListPrefetchIT {
                 .pageSize(3)
                 .prefetch("toArtist", PrefetchTreeNode.UNDEFINED_SEMANTICS);
 
-        IncrementalFaultList<?> result = (IncrementalFaultList<Painting>) env.context().performQuery(q);
+        IncrementalFaultList<?> result = (IncrementalFaultList<Painting>) env.context().select(q);
 
         // get an objects from the second page
         final Persistent p1 = (Persistent) result.get(q.getPageSize());

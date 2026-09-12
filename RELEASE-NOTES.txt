@@ -28,6 +28,7 @@ CAY-3017 ObjectContext should not be a DataChannel
 CAY-3019 Skip noop conditions in generated SQL
 CAY-3020 Remove serialization contracts
 CAY-3021 Get rid of ObjectIdQuery
+CAY-3022 Cleanup ObjectContext / DataContext query API
 CAY-3023 Replace QueryResult with a List of redesigned QueryResultItems
 CAY-3024 Replace QueryResponse with List<QueryResultItem>
 

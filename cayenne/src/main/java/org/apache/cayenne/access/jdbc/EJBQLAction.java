@@ -49,9 +49,9 @@ import java.util.List;
 public class EJBQLAction extends BaseSQLAction {
 
     protected SQLActionVisitor actionFactory;
-    protected EJBQLQuery query;
+    protected EJBQLQuery<?> query;
 
-    public EJBQLAction(EJBQLQuery query, SQLActionVisitor actionFactory, DataNode dataNode) {
+    public EJBQLAction(EJBQLQuery<?> query, SQLActionVisitor actionFactory, DataNode dataNode) {
         super(dataNode);
 
         this.query = query;
@@ -98,7 +98,7 @@ public class EJBQLAction extends BaseSQLAction {
             }
         });
 
-        SQLTemplate sqlQuery = context.getQuery();
+        SQLTemplate<?> sqlQuery = context.getQuery();
 
         // update with metadata
         QueryMetadata md = query.getMetaData(dataNode.getEntityResolver());

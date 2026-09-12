@@ -46,15 +46,15 @@ public interface SQLActionVisitor {
     /**
      * Creates an action to execute a SQLTemplate.
      */
-    SQLAction sqlAction(SQLTemplate query);
+    SQLAction sqlAction(SQLTemplate<?> query);
 
     /**
      * Creates an action to execute a ProcedureQuery.
      */
-    SQLAction procedureAction(ProcedureQuery query);
+    SQLAction procedureAction(ProcedureQuery<?> query);
 
     /**
      * Creates an action to execute EJBQL query.
      */
-    SQLAction ejbqlAction(EJBQLQuery query);
+    SQLAction ejbqlAction(EJBQLQuery<?> query);
 }

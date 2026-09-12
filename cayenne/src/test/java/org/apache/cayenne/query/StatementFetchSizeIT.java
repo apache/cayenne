@@ -40,7 +40,7 @@ public class StatementFetchSizeIT {
         assertEquals(10, query
                 .getMetaData(env.context().getEntityResolver())
                 .getStatementFetchSize());
-        env.context().performQuery(query);
+        env.context().select(query);
     }
 
     @Test
@@ -68,7 +68,7 @@ public class StatementFetchSizeIT {
         assertEquals(10, template
                 .getMetaData(env.context().getEntityResolver())
                 .getStatementFetchSize());
-        env.context().performQuery(template);
+        env.context().select(template);
     }
 
     @Test
@@ -79,6 +79,6 @@ public class StatementFetchSizeIT {
         assertEquals(10, ejbql
                 .getMetaData(env.context().getEntityResolver())
                 .getStatementFetchSize());
-        env.context().performQuery(ejbql);
+        env.context().select(ejbql);
     }
 }

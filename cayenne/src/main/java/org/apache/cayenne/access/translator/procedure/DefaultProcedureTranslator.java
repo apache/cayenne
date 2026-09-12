@@ -59,7 +59,7 @@ public class DefaultProcedureTranslator implements ProcedureTranslator {
     private static final NotInParam OUT_PARAM = new NotInParam("[OUT]");
 
     @Override
-    public TranslatedProcedure translate(ProcedureQuery query, DbAdapter adapter, EntityResolver resolver) {
+    public TranslatedProcedure translate(ProcedureQuery<?> query, DbAdapter adapter, EntityResolver resolver) {
 
         Procedure procedure = query.getMetaData(resolver).getProcedure();
         ProcedureParameter[] callParams = procedure.getCallParameters().toArray(new ProcedureParameter[0]);

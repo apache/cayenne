@@ -229,7 +229,7 @@ public class SQLExec extends IndirectQuery {
             root = null;
         }
 
-        SQLTemplate template = new SQLTemplate();
+        SQLTemplate<?> template = new SQLTemplate<>();
         template.setRoot(root);
         template.setDefaultTemplate(getSql());
         template.setFetchingDataRows(true); // in case result set will be returned

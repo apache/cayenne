@@ -91,7 +91,7 @@ public class DataContextEJBQLIsNullIT {
         // note that some databases (notably Sybase) actually allow = NULL comparison,
         // most do not; per JPA spec the result is undefined.. so we can't make any
         // assertions about the result. Just making sure the query doesn't blow up
-        env.context().performQuery(query1);
+        env.context().select(query1);
     }
 
     @Test
@@ -107,7 +107,7 @@ public class DataContextEJBQLIsNullIT {
         EJBQLQuery query1 = new EJBQLQuery(ejbql1);
         query1.setParameter("x", null);
 
-        env.context().performQuery(query1);
+        env.context().select(query1);
     }
 
     @Test
@@ -122,7 +122,7 @@ public class DataContextEJBQLIsNullIT {
         EJBQLQuery query1 = new EJBQLQuery(ejbql1);
         query1.setParameter("x", null);
 
-        env.context().performQuery(query1);
+        env.context().select(query1);
     }
 
     @Test
@@ -133,7 +133,7 @@ public class DataContextEJBQLIsNullIT {
         String ejbql1 = "SELECT p FROM Painting p WHERE p.estimatedPrice IS NULL";
         EJBQLQuery query1 = new EJBQLQuery(ejbql1);
 
-        List<?> results = env.context().performQuery(query1);
+        List<?> results = env.context().select(query1);
         assertEquals(1, results.size());
         assertEquals(33001, Cayenne.intPKForObject((Persistent) results.get(0)));
     }
@@ -146,7 +146,7 @@ public class DataContextEJBQLIsNullIT {
         String ejbql1 = "SELECT p FROM Painting p WHERE p.estimatedPrice IS NOT NULL";
         EJBQLQuery query1 = new EJBQLQuery(ejbql1);
 
-        List<?> results = env.context().performQuery(query1);
+        List<?> results = env.context().select(query1);
         assertEquals(1, results.size());
         assertEquals(33002, Cayenne.intPKForObject((Persistent) results.get(0)));
     }
@@ -159,7 +159,7 @@ public class DataContextEJBQLIsNullIT {
         String ejbql1 = "SELECT p FROM Painting p WHERE p.toArtist IS NULL";
         EJBQLQuery query1 = new EJBQLQuery(ejbql1);
 
-        List<?> results = env.context().performQuery(query1);
+        List<?> results = env.context().select(query1);
         assertEquals(1, results.size());
         assertEquals(33001, Cayenne.intPKForObject((Persistent) results.get(0)));
     }
@@ -172,7 +172,7 @@ public class DataContextEJBQLIsNullIT {
         String ejbql1 = "SELECT p FROM Painting p WHERE p.toArtist IS NOT NULL";
         EJBQLQuery query1 = new EJBQLQuery(ejbql1);
 
-        List<?> results = env.context().performQuery(query1);
+        List<?> results = env.context().select(query1);
         assertEquals(1, results.size());
         assertEquals(33003, Cayenne.intPKForObject((Persistent) results.get(0)));
     }

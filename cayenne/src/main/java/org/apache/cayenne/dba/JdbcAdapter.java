@@ -606,7 +606,7 @@ public class JdbcAdapter implements DbAdapter {
     }
 
     @Override
-    public ProcedureTranslator getProcedureTranslator(ProcedureQuery query, EntityResolver entityResolver) {
+    public ProcedureTranslator getProcedureTranslator(ProcedureQuery<?> query, EntityResolver entityResolver) {
         return new DefaultProcedureTranslator();
     }
 

@@ -139,7 +139,7 @@ public class FlattenedRelationshipsIT {
                 FlattenedTest1.class,
                 "SELECT * FROM COMPLEX_JOIN");
         joinSelect.setFetchingDataRows(true);
-        assertEquals(3, context.performQuery(joinSelect).size());
+        assertEquals(3, context.select(joinSelect).size());
 
         FlattenedTest1 ft1 = Cayenne.objectForPK(context, FlattenedTest1.class, 2);
 
@@ -159,7 +159,7 @@ public class FlattenedRelationshipsIT {
         // the thing here is that there are two join records between
         // FT1 and FT3 (emulating invalid data or extras in the join table that
         // are ignored in the object model).. all (2) joins must be deleted
-        assertEquals(1, context.performQuery(joinSelect).size());
+        assertEquals(1, context.select(joinSelect).size());
     }
 
     @Test

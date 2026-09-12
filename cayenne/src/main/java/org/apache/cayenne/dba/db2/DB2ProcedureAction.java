@@ -34,7 +34,7 @@ import java.sql.ResultSet;
  */
 class DB2ProcedureAction extends ProcedureAction {
 
-	DB2ProcedureAction(ProcedureQuery query, DataNode dataNode) {
+	DB2ProcedureAction(ProcedureQuery<?> query, DataNode dataNode) {
 		super(query, dataNode);
 	}
 

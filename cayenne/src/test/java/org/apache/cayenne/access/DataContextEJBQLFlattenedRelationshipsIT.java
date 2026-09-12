@@ -82,7 +82,7 @@ public class DataContextEJBQLFlattenedRelationshipsIT {
         EJBQLQuery query = new EJBQLQuery(ejbql);
         query.setParameter("ft", ft);
 
-        List<?> objects = env.context().performQuery(query);
+        List<?> objects = env.context().select(query);
         assertEquals(2, objects.size());
 
         Set<Object> ids = new HashSet<>();
@@ -108,7 +108,7 @@ public class DataContextEJBQLFlattenedRelationshipsIT {
         EJBQLQuery query = new EJBQLQuery(ejbql);
         query.setParameter("ft", ft);
 
-        List<?> objects = env.context().performQuery(query);
+        List<?> objects = env.context().select(query);
         assertEquals(1, objects.size());
 
         Set<Object> ids = new HashSet<>();
@@ -124,7 +124,7 @@ public class DataContextEJBQLFlattenedRelationshipsIT {
         query = new EJBQLQuery(ejbql);
         query.setParameter("ft", ft);
 
-        objects = env.context().performQuery(query);
+        objects = env.context().select(query);
         assertEquals(0, objects.size());
     }
 
@@ -138,7 +138,7 @@ public class DataContextEJBQLFlattenedRelationshipsIT {
         EJBQLQuery query = new EJBQLQuery(ejbql);
         query.setParameter("ft", ft);
 
-        List<?> objects = env.context().performQuery(query);
+        List<?> objects = env.context().select(query);
         assertNotNull(objects);
         assertFalse(objects.isEmpty());
         assertEquals(1, objects.size());
@@ -166,7 +166,7 @@ public class DataContextEJBQLFlattenedRelationshipsIT {
         EJBQLQuery query = new EJBQLQuery(ejbql);
         query.setParameter("ft", ft);
 
-        List<?> objects = env.context().performQuery(query);
+        List<?> objects = env.context().select(query);
         assertNotNull(objects);
         assertFalse(objects.isEmpty());
         assertEquals(1, objects.size());
@@ -190,7 +190,7 @@ public class DataContextEJBQLFlattenedRelationshipsIT {
 
         EJBQLQuery query = new EJBQLQuery(ejbql);
 
-        List<?> objects = env.context().performQuery(query);
+        List<?> objects = env.context().select(query);
         assertNotNull(objects);
         assertFalse(objects.isEmpty());
         assertEquals(2, objects.size());
@@ -216,7 +216,7 @@ public class DataContextEJBQLFlattenedRelationshipsIT {
         EJBQLQuery query = new EJBQLQuery(ejbql);
         query.setParameter("ft", ft);
 
-        List<?> objects = env.context().performQuery(query);
+        List<?> objects = env.context().select(query);
         assertNotNull(objects);
         assertFalse(objects.isEmpty());
         assertEquals(2, objects.size());
@@ -243,7 +243,7 @@ public class DataContextEJBQLFlattenedRelationshipsIT {
         EJBQLQuery query = new EJBQLQuery(ejbql);
         query.setParameter("ft", ft);
 
-        List<?> objects = env.context().performQuery(query);
+        List<?> objects = env.context().select(query);
         assertEquals(1, objects.size());
 
         Set<Object> ids = new HashSet<>();
@@ -271,7 +271,7 @@ public class DataContextEJBQLFlattenedRelationshipsIT {
         // the reason is that property "ft3Array" inside the subquery
         // parses as unmapped
         /*
-         * List<?> objects = context.performQuery(query); assertNotNull(objects);
+         * List<?> objects = context.select(query); assertNotNull(objects);
          * assertFalse(objects.isEmpty()); assertEquals(1, objects.size()); Set<Object>
          * ids = new HashSet<>(); Iterator<?> it = objects.iterator(); while
          * (it.hasNext()) { Object id = Cayenne.pkForObject((Persistent) it.next());
@@ -289,7 +289,7 @@ public class DataContextEJBQLFlattenedRelationshipsIT {
 
         EJBQLQuery query = new EJBQLQuery(ejbql);
 
-        List<?> objects = env.context().performQuery(query);
+        List<?> objects = env.context().select(query);
 
         assertNotNull(objects);
         assertFalse(objects.isEmpty());
@@ -314,7 +314,7 @@ public class DataContextEJBQLFlattenedRelationshipsIT {
         String ejbql = "SELECT COUNT(ft3), ft3.toFT1 FROM FlattenedTest3 ft3  GROUP BY ft3.toFT1 ";
 
         EJBQLQuery query = new EJBQLQuery(ejbql);
-        List<?> objects = env.context().performQuery(query);
+        List<?> objects = env.context().select(query);
         assertEquals(2, objects.size());
     }
 }

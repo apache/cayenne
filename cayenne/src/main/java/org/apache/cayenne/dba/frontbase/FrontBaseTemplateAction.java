@@ -37,7 +37,7 @@ public class FrontBaseTemplateAction extends SQLTemplateAction {
      * @param dataNode
      * @since 4.2
      */
-    public FrontBaseTemplateAction(SQLTemplate query, DataNode dataNode) {
+    public FrontBaseTemplateAction(SQLTemplate<?> query, DataNode dataNode) {
         super(query, dataNode);
     }
 

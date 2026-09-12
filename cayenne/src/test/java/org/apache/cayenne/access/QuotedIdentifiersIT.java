@@ -122,8 +122,7 @@ public class QuotedIdentifiersIT {
 
         UpdateBatchQuery updateQuery = new UpdateBatchQuery(entity, idAttributes, updatedAttributes, Collections.emptySet(), 1);
 
-        List objects3 = env.context().performQuery(updateQuery);
-        assertEquals(0, objects3.size());
+        env.context().performGenericQuery(updateQuery);
 
         List<Quote_Person> objects4 = ObjectSelect.query(Quote_Person.class).select(env.context());
         assertEquals(2, objects4.size());
@@ -155,7 +154,7 @@ public class QuotedIdentifiersIT {
     public void quotedEJBQLQuery() {
         String ejbql = "select a from QuoteAdress a where a.group = '324'";
         EJBQLQuery queryEJBQL = new EJBQLQuery(ejbql);
-        List objects11 = env.context().performQuery(queryEJBQL);
+        List objects11 = env.context().select(queryEJBQL);
         assertEquals(1, objects11.size());
     }
 
@@ -163,7 +162,7 @@ public class QuotedIdentifiersIT {
     public void quotedEJBQLQueryWithJoin() {
         String ejbql = "select p from Quote_Person p join p.address_Rel a where p.name = 'Arcadi'";
         EJBQLQuery queryEJBQL = new EJBQLQuery(ejbql);
-        List resultList = env.context().performQuery(queryEJBQL);
+        List resultList = env.context().select(queryEJBQL);
         assertEquals(1, resultList.size());
     }
 
@@ -172,7 +171,7 @@ public class QuotedIdentifiersIT {
         EJBQLQuery query = new EJBQLQuery("select p from Quote_Person p order by p.name");
 
         @SuppressWarnings("unchecked")
-        List<Quote_Person> resultList = (List<Quote_Person>) env.context().performQuery(query);
+        List<Quote_Person> resultList = (List<Quote_Person>) env.context().select(query);
 
         assertEquals(2, resultList.size());
         assertEquals("Arcadi", resultList.get(0).getName());
@@ -182,10 +181,10 @@ public class QuotedIdentifiersIT {
     @Test
     public void quotedEJBQLCountQuery() {
         EJBQLQuery query = new EJBQLQuery("select count(p) from Quote_Person p");
-        assertEquals(Collections.singletonList(2L), env.context().performQuery(query));
+        assertEquals(Collections.singletonList(2L), env.context().select(query));
 
         query = new EJBQLQuery("select count(p.fULL_name) from Quote_Person p");
-        assertEquals(Collections.singletonList(0L), env.context().performQuery(query));
+        assertEquals(Collections.singletonList(0L), env.context().select(query));
     }
 
 }

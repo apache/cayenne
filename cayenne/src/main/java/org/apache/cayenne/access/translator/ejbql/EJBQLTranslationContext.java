@@ -76,7 +76,7 @@ public class EJBQLTranslationContext {
 
     public EJBQLTranslationContext(
             EntityResolver entityResolver,
-            EJBQLQuery query,
+            EJBQLQuery<?> query,
             EJBQLCompiledExpression compiledExpression,
             EJBQLTranslator translator,
             DbAdapter adapter,
@@ -108,7 +108,7 @@ public class EJBQLTranslationContext {
         bufferStack.add(stackTop);
     }
 
-    public SQLTemplate getQuery() {
+    public SQLTemplate<?> getQuery() {
 
         // concatenate buffers...
         StringBuilder main = bufferChain.get(0);
@@ -117,7 +117,7 @@ public class EJBQLTranslationContext {
         }
 
         String sql = main.length() > 0 ? main.toString() : null;
-        SQLTemplate query = new SQLTemplate(compiledExpression
+        SQLTemplate<?> query = new SQLTemplate<>(compiledExpression
                 .getRootDescriptor()
                 .getObjectClass(), sql);
         query.setParams(boundParameters);

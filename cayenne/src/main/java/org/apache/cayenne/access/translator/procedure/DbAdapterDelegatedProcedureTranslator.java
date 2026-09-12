@@ -34,7 +34,7 @@ import org.apache.cayenne.query.ProcedureQuery;
 public class DbAdapterDelegatedProcedureTranslator implements ProcedureTranslator {
 
     @Override
-    public TranslatedProcedure translate(ProcedureQuery query, DbAdapter adapter, EntityResolver resolver) {
+    public TranslatedProcedure translate(ProcedureQuery<?> query, DbAdapter adapter, EntityResolver resolver) {
         return adapter.getProcedureTranslator(query, resolver).translate(query, adapter, resolver);
     }
 }

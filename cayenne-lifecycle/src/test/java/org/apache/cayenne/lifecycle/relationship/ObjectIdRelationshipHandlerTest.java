@@ -89,7 +89,7 @@ public class ObjectIdRelationshipHandlerTest {
         e1Table.insert(1);
 
         ObjectContext context = runtime.newContext();
-        E1 e1 = (E1) Cayenne.objectForQuery(context, ObjectSelect.query(E1.class));
+        E1 e1 = (E1) context.selectOne(ObjectSelect.query(E1.class));
 
         UuidRoot1 r1 = context.newObject(UuidRoot1.class);
 

@@ -115,7 +115,7 @@ public class AutoAdapter implements DbAdapter {
      * @since 5.0
      */
     @Override
-    public ProcedureTranslator getProcedureTranslator(ProcedureQuery query, EntityResolver entityResolver) {
+    public ProcedureTranslator getProcedureTranslator(ProcedureQuery<?> query, EntityResolver entityResolver) {
         return getAdapter().getProcedureTranslator(query, entityResolver);
     }
 

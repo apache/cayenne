@@ -100,8 +100,8 @@ public class SQLTemplateDescriptor extends QueryDescriptor {
     }
 
     @Override
-    public SQLTemplate buildQuery() {
-        SQLTemplate template = new SQLTemplate();
+    public SQLTemplate<?> buildQuery() {
+        SQLTemplate<?> template = new SQLTemplate<>();
 
         if (root != null) {
             template.setRoot(root);
@@ -137,8 +137,8 @@ public class SQLTemplateDescriptor extends QueryDescriptor {
      * @since 5.0
      */
     @Override
-    public SQLTemplate buildQuery(Map<String, ?> parameters) {
-        SQLTemplate template = buildQuery();
+    public SQLTemplate<?> buildQuery(Map<String, ?> parameters) {
+        SQLTemplate<?> template = buildQuery();
         template.setParams(parameters);
         return template;
     }

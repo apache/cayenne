@@ -183,7 +183,7 @@ public class ProcedureCall<T> extends IndirectQuery {
 
     @Override
     protected Query createReplacementQuery(EntityResolver resolver) {
-        ProcedureQuery procedureQuery = new ProcedureQuery(procedureName);
+        ProcedureQuery<?> procedureQuery = new ProcedureQuery<>(procedureName);
 
         if (fetchingDataRows != null) {
             procedureQuery.setFetchingDataRows(fetchingDataRows);

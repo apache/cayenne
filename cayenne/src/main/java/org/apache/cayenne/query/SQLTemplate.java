@@ -20,6 +20,7 @@
 package org.apache.cayenne.query;
 
 import org.apache.cayenne.CayenneRuntimeException;
+import org.apache.cayenne.ObjectContext;
 import org.apache.cayenne.access.DataNode;
 import org.apache.cayenne.map.DataMap;
 import org.apache.cayenne.map.DbEntity;
@@ -65,9 +66,11 @@ import java.util.stream.Stream;
  * database.
  * </p>
  * 
+ * @param <T> the type of the result elements. Depending on the query root and configuration, this may be a
+ *            persistent object, a {@link org.apache.cayenne.DataRow}, a scalar or an {@code Object[]}.
  * @since 1.1
  */
-public class SQLTemplate extends CacheableQuery {
+public class SQLTemplate<T> extends CacheableQuery implements Select<T> {
 
 	public static final String COLUMN_NAME_CAPITALIZATION_PROPERTY = "cayenne.SQLTemplate.columnNameCapitalization";
 
@@ -234,6 +237,15 @@ public class SQLTemplate extends CacheableQuery {
 	}
 
 	/**
+	 * @since 5.0
+	 */
+	@Override
+	public T selectFirst(ObjectContext context) {
+		setFetchLimit(1);
+		return context.selectFirst(this);
+	}
+
+	/**
 	 * Initializes query parameters using a set of properties.
 	 * 
 	 * @since 1.1
@@ -325,9 +337,9 @@ public class SQLTemplate extends CacheableQuery {
 	 * Returns a new query built using this query as a prototype and a new set
 	 * of parameters.
 	 */
-	public SQLTemplate queryWithParameters(Map<String, ?>... parameters) {
+	public SQLTemplate<T> queryWithParameters(Map<String, ?>... parameters) {
 		// create a query replica
-		SQLTemplate query = new SQLTemplate();
+		SQLTemplate<T> query = new SQLTemplate<>();
 
 		query.setRoot(root);
 		query.setDefaultTemplate(getDefaultTemplate());

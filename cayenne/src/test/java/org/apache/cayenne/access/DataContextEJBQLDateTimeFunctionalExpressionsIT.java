@@ -55,7 +55,7 @@ public class DataContextEJBQLDateTimeFunctionalExpressionsIT {
 
         EJBQLQuery query = new EJBQLQuery(
                 "SELECT d FROM DateTestEntity d WHERE d.dateColumn > CURRENT_DATE");
-        List<?> objects = env.context().performQuery(query);
+        List<?> objects = env.context().select(query);
         assertEquals(1, objects.size());
         assertTrue(objects.contains(o2));
     }
@@ -80,7 +80,7 @@ public class DataContextEJBQLDateTimeFunctionalExpressionsIT {
 
         EJBQLQuery query = new EJBQLQuery(
                 "SELECT d FROM DateTestEntity d WHERE d.timeColumn < CURRENT_TIME");
-        List<?> objects = env.context().performQuery(query);
+        List<?> objects = env.context().select(query);
         if(!env.testDbAdapter().supportsTimeSqlType()) {
             // check only that query is executed without error
             // result will be invalid most likely as DB doesn't support TIME data type
@@ -110,7 +110,7 @@ public class DataContextEJBQLDateTimeFunctionalExpressionsIT {
 
         EJBQLQuery query = new EJBQLQuery(
                 "SELECT d FROM DateTestEntity d WHERE d.timestampColumn < CURRENT_TIMESTAMP");
-        List<?> objects = env.context().performQuery(query);
+        List<?> objects = env.context().select(query);
         assertEquals(1, objects.size());
         assertTrue(objects.contains(o1));
     }

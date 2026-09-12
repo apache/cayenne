@@ -49,7 +49,7 @@ import java.util.Map;
  */
 public class ProcedureAction extends BaseSQLAction {
 
-	protected ProcedureQuery query;
+	protected ProcedureQuery<?> query;
 
 	/**
 	 * Holds a number of ResultSets processed by the action. This value is reset
@@ -60,7 +60,7 @@ public class ProcedureAction extends BaseSQLAction {
 	/**
 	 * @since 4.0
 	 */
-	public ProcedureAction(ProcedureQuery query, DataNode dataNode) {
+	public ProcedureAction(ProcedureQuery<?> query, DataNode dataNode) {
 		super(dataNode);
 		this.query = query;
 	}

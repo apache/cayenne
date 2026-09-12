@@ -37,9 +37,9 @@ database instead.
 
 [source, java]
 ----
-EJBQLQuery select =
-    new EJBQLQuery("select a FROM Artist a WHERE a.name = 'Salvador Dali'");
-List<Artist> artists = context.performQuery(select);
+EJBQLQuery<Artist> select =
+    new EJBQLQuery<>("select a FROM Artist a WHERE a.name = 'Salvador Dali'");
+List<Artist> artists = context.select(select);
 ----
 
 [source, java]
@@ -64,8 +64,8 @@ Just like `ObjectSelect` `EJBQLQuery` can return a `List` of `Object[]` elements
 `Persistent` or a scalar, depending on the query SELECT clause.
 [source, java]
 ----
-EJBQLQuery query = new EJBQLQuery("select a, COUNT(p) FROM Artist a JOIN a.paintings p GROUP BY a");
-List<Object[]> result = context.performQuery(query);
+EJBQLQuery<Object[]> query = new EJBQLQuery<>("select a, COUNT(p) FROM Artist a JOIN a.paintings p GROUP BY a");
+List<Object[]> result = context.select(query);
 for(Object[] artistWithCount : result) {
     Artist a = (Artist) artistWithCount[0];
     int hasPaintings = (Integer) artistWithCount[1];
@@ -75,8 +75,8 @@ for(Object[] artistWithCount : result) {
 A result can also be a list of scalars:
 [source, java]
 ----
-EJBQLQuery query = new EJBQLQuery("select a.name FROM Artist a");
-List<String> names = context.performQuery(query);
+EJBQLQuery<String> query = new EJBQLQuery<>("select a.name FROM Artist a");
+List<String> names = context.select(query);
 ----
 
 EJBQLQuery supports an "IN" clause with three different usage-patterns. The following example would require three
