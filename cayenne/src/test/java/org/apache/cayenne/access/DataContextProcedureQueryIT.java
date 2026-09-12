@@ -75,7 +75,7 @@ public class DataContextProcedureQueryIT  {
         BaseTransaction.bindThreadTransaction(t);
 
         try {
-            env.context().performGenericQuery(q);
+            env.context().execute(q);
         } finally {
             BaseTransaction.bindThreadTransaction(null);
             t.commit();
@@ -111,7 +111,7 @@ public class DataContextProcedureQueryIT  {
         BaseTransaction.bindThreadTransaction(t);
 
         try {
-            env.context().performGenericQuery(q);
+            env.context().execute(q);
         } finally {
             BaseTransaction.bindThreadTransaction(null);
             t.commit();
@@ -380,7 +380,7 @@ public class DataContextProcedureQueryIT  {
         BaseTransaction.bindThreadTransaction(t);
 
         try {
-            return env.context().performGenericQuery(q);
+            return env.context().execute(q);
         } finally {
             BaseTransaction.bindThreadTransaction(null);
             t.commit();

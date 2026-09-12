@@ -80,7 +80,7 @@ public class DataContextDelegateIT {
 
         // test that delegate is consulted before select
         MockQuery query = new MockQuery();
-        context.performGenericQuery(query);
+        context.execute(query);
 
         assertTrue(queriesPerformed.contains(query), "Delegate is not notified of a query being run.");
         assertEquals(1, queriesPerformed.size());
@@ -102,7 +102,7 @@ public class DataContextDelegateIT {
 
         context.setDelegate(delegate);
         MockQuery query = new MockQuery();
-        context.performGenericQuery(query);
+        context.execute(query);
 
         assertTrue(queriesPerformed.contains(query), "Delegate is not notified of a query being run.");
         assertEquals(1, queriesPerformed.size());

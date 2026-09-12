@@ -64,7 +64,7 @@ public class DataContextEJBQLDeletePKIT {
 
         EJBQLQuery query = new EJBQLQuery(ejbql);
         query.setParameter("id", id);
-        List<QueryResultItem> result = env.context().performGenericQuery(query);
+        List<QueryResultItem> result = env.context().execute(query);
 
         int[] count = ((QueryResultItem.Update) result.getFirst()).counts();
         assertNotNull(count);

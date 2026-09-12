@@ -79,12 +79,12 @@ we create a `ObjectSelect` that matches all `Artist` objects present in the data
 to get the result.
 
 Some queries can be quite complex, returning multiple result sets or even updating the database.
-For such queries, ObjectContext provides the `performGenericQuery()` method.
+For such queries, ObjectContext provides the `execute()` method.
 While not commonly used, it is nevertheless important in some situations. E.g.:
 
 [source, java]
 ----
-List<QueryResultItem> result = context.performGenericQuery(query);
+List<QueryResultItem> result = context.execute(query);
 for (QueryResultItem item : result) {
     switch (item) {
         case QueryResultItem.Select<?> select -> process(select.objects());
@@ -102,7 +102,7 @@ When multiple such queries need to run together, execute them inside an explicit
 Collection<Query> queries = ... // multiple queries that need to be run together
 
 runtime.performInTransaction(() -> {
-    queries.forEach(context::performGenericQuery);
+    queries.forEach(context::execute);
     return null;
 });
 ----

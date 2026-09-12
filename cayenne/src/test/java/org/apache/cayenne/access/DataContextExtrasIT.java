@@ -280,7 +280,7 @@ public class DataContextExtrasIT {
 
         SQLTemplate q = new SQLTemplate(Artist.class, "SELECT * FROM NON_EXISTENT_TABLE");
 
-        assertThrows(RuntimeException.class, () -> context.performGenericQuery(q));
+        assertThrows(RuntimeException.class, () -> context.execute(q));
 
     }
 

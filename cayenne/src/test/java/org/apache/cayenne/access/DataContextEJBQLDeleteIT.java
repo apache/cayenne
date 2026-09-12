@@ -73,7 +73,7 @@ public class DataContextEJBQLDeleteIT {
         String ejbql = "delete from Painting";
         EJBQLQuery query = new EJBQLQuery(ejbql);
 
-        List<QueryResultItem> result = env.context().performGenericQuery(query);
+        List<QueryResultItem> result = env.context().execute(query);
 
         int[] count = ((QueryResultItem.Update) result.getFirst()).counts();
         assertNotNull(count);
@@ -88,7 +88,7 @@ public class DataContextEJBQLDeleteIT {
         String ejbql = "delete from Painting AS p";
         EJBQLQuery query = new EJBQLQuery(ejbql);
 
-        List<QueryResultItem> result = env.context().performGenericQuery(query);
+        List<QueryResultItem> result = env.context().execute(query);
 
         int[] count = ((QueryResultItem.Update) result.getFirst()).counts();
         assertNotNull(count);
@@ -103,7 +103,7 @@ public class DataContextEJBQLDeleteIT {
         String ejbql = "delete from Painting AS p WHERE p.paintingTitle = 'P2'";
         EJBQLQuery query = new EJBQLQuery(ejbql);
 
-        List<QueryResultItem> result = env.context().performGenericQuery(query);
+        List<QueryResultItem> result = env.context().execute(query);
 
         int[] count = ((QueryResultItem.Update) result.getFirst()).counts();
         assertNotNull(count);

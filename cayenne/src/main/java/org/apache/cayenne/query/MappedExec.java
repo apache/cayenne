@@ -57,7 +57,7 @@ public class MappedExec extends AbstractMappedQuery {
      * were produced.
      */
     public List<QueryResultItem> execute(ObjectContext context) {
-        return context.performGenericQuery(this);
+        return context.execute(this);
     }
 
     /**

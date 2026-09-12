@@ -51,7 +51,7 @@ import java.util.Map;
  * the stored procedure returns a single result set (or alternatively returns a result via
  * OUT parameters and no other result sets). It is still OK if data modification occurs as
  * a side effect. However, if the query returns more then one result set, a more generic
- * form should be used: {@link ObjectContext#performGenericQuery(Query)}.
+ * form should be used: {@link ObjectContext#execute(Query)}.
  * </p>
  *
  * @param <T> the type of the result elements: a {@link org.apache.cayenne.DataRow} by default, or a persistent

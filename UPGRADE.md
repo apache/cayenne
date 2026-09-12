@@ -165,6 +165,24 @@ Expression caseWhenExp = caseWhen(
   DataRow row = context.getObjectStore().getCachedSnapshot(id);
   ```
 
+*  Per [CAY-3022](https://issues.apache.org/jira/browse/CAY-3022) the `ObjectContext` query API was cleaned up:
+
+   - `ObjectContext.performGenericQuery(Query)` was renamed to `execute(Query)`.
+   - `ObjectContext.performQuery(Query)` and `Cayenne.objectForQuery(ObjectContext, Query)` are deprecated in favor
+     of `ObjectContext.select(Select)` and `ObjectContext.selectOne(Select)`. `EJBQLQuery`, `SQLTemplate` and
+     `ProcedureQuery` now implement `Select<T>`, so every selecting query can be passed to
+     `select(..)`.
+
+  ```java
+  // before
+  List<Artist> artists = context.performQuery(new EJBQLQuery("select a from Artist a"));
+  List<QueryResultItem> result = context.performGenericQuery(SQLExec.query("DELETE FROM ARTIST"));
+
+  // after
+  List<Artist> artists = context.select(new EJBQLQuery<>("select a from Artist a"));
+  List<QueryResultItem> result = context.execute(SQLExec.query("DELETE FROM ARTIST"));
+  ```
+
 *  Per [CAY-3023](https://issues.apache.org/jira/browse/CAY-3023) the `QueryResult` was removed. `SQLExec.execute(..)`, `MappedExec.execute(..)` and 
    `ProcedureCall.call(..)` now return a `List<QueryResultItem>` holding the items in the order the query produced them,
    so callers that know the shape of their query should access them by index. `QueryResultItem` is a sealed interface with

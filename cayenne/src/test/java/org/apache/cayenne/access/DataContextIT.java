@@ -349,7 +349,7 @@ public class DataContextIT {
 		Query query = mock(Query.class);
 		QueryMetadata md = mock(QueryMetadata.class);
 		when(query.getMetaData(any(EntityResolver.class))).thenReturn(md);
-		context.performGenericQuery(query);
+		context.execute(query);
 		verify(query).route(any(QueryRouter.class), eq(context.getEntityResolver()), (Query) isNull());
 	}
 

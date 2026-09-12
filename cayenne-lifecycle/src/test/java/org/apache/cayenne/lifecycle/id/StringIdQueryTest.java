@@ -96,7 +96,7 @@ public class StringIdQueryTest {
         e1Helper.insert(3).insert(4);
 
         StringIdQuery query = new StringIdQuery("E1:3", "E1:4", "E1:5");
-        List<QueryResultItem> response = runtime.newContext().performGenericQuery(query);
+        List<QueryResultItem> response = runtime.newContext().execute(query);
         assertEquals(1, response.size());
         List<?> rows = ((QueryResultItem.Select<?>) response.getFirst()).objects();
         assertEquals(2, rows.size());
@@ -122,7 +122,7 @@ public class StringIdQueryTest {
         e2Helper.insert(5).insert(6).insert(7);
 
         StringIdQuery query = new StringIdQuery("E1:3", "E1:4", "E2:6", "E1:5");
-        List<QueryResultItem> response = runtime.newContext().performGenericQuery(query);
+        List<QueryResultItem> response = runtime.newContext().execute(query);
         assertEquals(2, response.size());
 
         Set<String> ids = new HashSet<>();

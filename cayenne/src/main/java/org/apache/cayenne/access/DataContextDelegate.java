@@ -45,7 +45,7 @@ public interface DataContextDelegate {
     Query willPerformQuery(DataContext context, Query query);
 
     /**
-     * Invoked before a Query is executed via <em>DataContext.performGenericQuery</em>.
+     * Invoked before a Query is executed via <em>DataContext.execute</em>.
      * The delegate may substitute the Query with a different one or may return null to
      * discard the query.
      * 

@@ -45,7 +45,7 @@ public class ObjectStoreGCIT {
 
     @Test
     public void releaseUnreferenced() throws Exception {
-        context.performGenericQuery(new SQLTemplate(
+        context.execute(new SQLTemplate(
                 Artist.class,
                 "insert into ARTIST (ARTIST_ID, ARTIST_NAME) values (1, 'aa')"));
 
@@ -97,7 +97,7 @@ public class ObjectStoreGCIT {
 
     @Test
     public void retainUnreferencedModified() throws Exception {
-        context.performGenericQuery(new SQLTemplate(
+        context.execute(new SQLTemplate(
                 Artist.class,
                 "insert into ARTIST (ARTIST_ID, ARTIST_NAME) values (1, 'aa')"));
 

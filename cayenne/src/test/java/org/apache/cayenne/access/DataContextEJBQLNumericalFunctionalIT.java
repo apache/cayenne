@@ -129,7 +129,7 @@ public class DataContextEJBQLNumericalFunctionalIT {
         String ejbql = "UPDATE BooleanTestEntity AS p SET p.booleanColumn = true";
         EJBQLQuery query = new EJBQLQuery(ejbql);
 
-        List<QueryResultItem> result = env.context().performGenericQuery(query);
+        List<QueryResultItem> result = env.context().execute(query);
 
         int[] count = ((QueryResultItem.Update) result.getFirst()).counts();
         assertNotNull(count);

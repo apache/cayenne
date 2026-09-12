@@ -160,11 +160,11 @@ public class SingleTableInheritanceIT extends PeopleTestBase {
     @Test
     public void relationshipToAbstractSuper() {
         context
-                .performGenericQuery(new SQLTemplate(
+                .execute(new SQLTemplate(
                         AbstractPerson.class,
                         "INSERT INTO PERSON (PERSON_ID, NAME, PERSON_TYPE) VALUES (1, 'AA', 'EE')"));
 
-        context.performGenericQuery(new SQLTemplate(
+        context.execute(new SQLTemplate(
                 PersonNotes.class,
                 "INSERT INTO PERSON_NOTES (ID, NOTES, PERSON_ID) VALUES (1, 'AA', 1)"));
 
@@ -177,14 +177,14 @@ public class SingleTableInheritanceIT extends PeopleTestBase {
     @Test
     public void relationshipAbstractFromSuperPrefetchingJoint() {
         context
-                .performGenericQuery(new SQLTemplate(
+                .execute(new SQLTemplate(
                         AbstractPerson.class,
                         "INSERT INTO PERSON (PERSON_ID, NAME, PERSON_TYPE) VALUES (3, 'AA', 'EE')"));
 
-        context.performGenericQuery(new SQLTemplate(
+        context.execute(new SQLTemplate(
                 PersonNotes.class,
                 "INSERT INTO PERSON_NOTES (ID, NOTES, PERSON_ID) VALUES (3, 'AA', 3)"));
-        context.performGenericQuery(new SQLTemplate(
+        context.execute(new SQLTemplate(
                 PersonNotes.class,
                 "INSERT INTO PERSON_NOTES (ID, NOTES, PERSON_ID) VALUES (4, 'BB', 3)"));
 
@@ -211,14 +211,14 @@ public class SingleTableInheritanceIT extends PeopleTestBase {
     @Test
     public void relationshipAbstractFromSuperPrefetchingDisjoint() {
         context
-                .performGenericQuery(new SQLTemplate(
+                .execute(new SQLTemplate(
                         AbstractPerson.class,
                         "INSERT INTO PERSON (PERSON_ID, NAME, PERSON_TYPE) VALUES (3, 'AA', 'EE')"));
 
-        context.performGenericQuery(new SQLTemplate(
+        context.execute(new SQLTemplate(
                 PersonNotes.class,
                 "INSERT INTO PERSON_NOTES (ID, NOTES, PERSON_ID) VALUES (3, 'AA', 3)"));
-        context.performGenericQuery(new SQLTemplate(
+        context.execute(new SQLTemplate(
                 PersonNotes.class,
                 "INSERT INTO PERSON_NOTES (ID, NOTES, PERSON_ID) VALUES (4, 'BB', 3)"));
 
@@ -244,15 +244,15 @@ public class SingleTableInheritanceIT extends PeopleTestBase {
     @Test
     public void relationshipAbstractToSuperPrefetchingDisjoint() {
         context
-                .performGenericQuery(new SQLTemplate(
+                .execute(new SQLTemplate(
                         AbstractPerson.class,
                         "INSERT INTO PERSON (PERSON_ID, NAME, PERSON_TYPE) VALUES (2, 'AA', 'EE')"));
 
-        context.performGenericQuery(new SQLTemplate(
+        context.execute(new SQLTemplate(
                 PersonNotes.class,
                 "INSERT INTO PERSON_NOTES (ID, NOTES, PERSON_ID) VALUES (2, 'AA', 2)"));
 
-        context.performGenericQuery(new SQLTemplate(
+        context.execute(new SQLTemplate(
                 PersonNotes.class,
                 "INSERT INTO PERSON_NOTES (ID, NOTES, PERSON_ID) VALUES (3, 'BB', 2)"));
 
@@ -269,11 +269,11 @@ public class SingleTableInheritanceIT extends PeopleTestBase {
     @Test
     public void relationshipAbstractToSuperPrefetchingJoint() {
         context
-                .performGenericQuery(new SQLTemplate(
+                .execute(new SQLTemplate(
                         AbstractPerson.class,
                         "INSERT INTO PERSON (PERSON_ID, NAME, PERSON_TYPE) VALUES (3, 'AA', 'EE')"));
 
-        context.performGenericQuery(new SQLTemplate(
+        context.execute(new SQLTemplate(
                 PersonNotes.class,
                 "INSERT INTO PERSON_NOTES (ID, NOTES, PERSON_ID) VALUES (3, 'AA', 3)"));
 

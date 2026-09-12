@@ -180,7 +180,7 @@ public class MappedQueryIT {
         BaseTransaction.bindThreadTransaction(t);
 
         try {
-            return env.context().performGenericQuery(q);
+            return env.context().execute(q);
         } finally {
             BaseTransaction.bindThreadTransaction(null);
             t.commit();

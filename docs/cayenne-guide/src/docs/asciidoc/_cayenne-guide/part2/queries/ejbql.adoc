@@ -45,14 +45,14 @@ List<Artist> artists = context.select(select);
 [source, java]
 ----
 EJBQLQuery delete = new EJBQLQuery("delete from Painting");
-context.performGenericQuery(delete);
+context.execute(delete);
 ----
 
 [source, java]
 ----
 EJBQLQuery update =
     new EJBQLQuery("UPDATE Painting AS p SET p.name = 'P2' WHERE p.name = 'P1'");
-context.performGenericQuery(update);
+context.execute(update);
 ----
 
 In most cases `ObjectSelect` is preferred to `EJBQLQuery`, as it is API-based, and provides you with better compile-time

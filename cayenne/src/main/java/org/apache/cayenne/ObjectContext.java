@@ -355,7 +355,7 @@ public interface ObjectContext {
      * Executes any kind of query, returning all of its result sets, update counts, iterators and OUT parameters as a
      * list of {@link QueryResultItem}s in the order they were produced.
      */
-    List<QueryResultItem> performGenericQuery(Query query);
+    List<QueryResultItem> execute(Query query);
 
     /**
      * Returns GraphManager that manages object graph associated with this

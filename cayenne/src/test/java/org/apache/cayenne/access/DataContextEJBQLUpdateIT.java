@@ -81,7 +81,7 @@ public class DataContextEJBQLUpdateIT {
         String ejbql = "UPDATE Painting AS p SET p.paintingTitle = 'XX' WHERE p.paintingTitle = 'P1'";
         EJBQLQuery query = new EJBQLQuery(ejbql);
 
-        List<QueryResultItem> result = env.context().performGenericQuery(query);
+        List<QueryResultItem> result = env.context().execute(query);
 
         int[] count = ((QueryResultItem.Update) result.getFirst()).counts();
         assertNotNull(count);
@@ -105,7 +105,7 @@ public class DataContextEJBQLUpdateIT {
         String ejbql = "UPDATE Painting AS p SET p.paintingTitle = 'XX'";
         EJBQLQuery query = new EJBQLQuery(ejbql);
 
-        List<QueryResultItem> result = env.context().performGenericQuery(query);
+        List<QueryResultItem> result = env.context().execute(query);
 
         int[] count = ((QueryResultItem.Update) result.getFirst()).counts();
         assertNotNull(count);
@@ -129,7 +129,7 @@ public class DataContextEJBQLUpdateIT {
         String ejbql = "UPDATE Painting AS p SET p.estimatedPrice = NULL";
         EJBQLQuery query = new EJBQLQuery(ejbql);
 
-        List<QueryResultItem> result = env.context().performGenericQuery(query);
+        List<QueryResultItem> result = env.context().execute(query);
 
         int[] count = ((QueryResultItem.Update) result.getFirst()).counts();
         assertNotNull(count);
@@ -155,7 +155,7 @@ public class DataContextEJBQLUpdateIT {
     // String ejbql = "UPDATE Painting AS p SET p.estimatedPrice = p.estimatedPrice * 2";
     // EJBQLQuery query = new EJBQLQuery(ejbql);
     //
-    // List<QueryResultItem> result = context.performGenericQuery(query);
+    // List<QueryResultItem> result = context.execute(query);
     //
     // int[] count = ((QueryResultItem.Update) result.getFirst()).counts();
     // assertNotNull(count);
@@ -179,7 +179,7 @@ public class DataContextEJBQLUpdateIT {
         String ejbql = "UPDATE Painting AS p SET p.paintingTitle = 'XX', p.estimatedPrice = 1";
         EJBQLQuery query = new EJBQLQuery(ejbql);
 
-        List<QueryResultItem> result = env.context().performGenericQuery(query);
+        List<QueryResultItem> result = env.context().execute(query);
 
         int[] count = ((QueryResultItem.Update) result.getFirst()).counts();
         assertNotNull(count);
@@ -203,7 +203,7 @@ public class DataContextEJBQLUpdateIT {
         String ejbql = "UPDATE Painting AS p SET p.estimatedPrice = 1.1";
         EJBQLQuery query = new EJBQLQuery(ejbql);
 
-        List<QueryResultItem> result = env.context().performGenericQuery(query);
+        List<QueryResultItem> result = env.context().execute(query);
 
         int[] count = ((QueryResultItem.Update) result.getFirst()).counts();
         assertNotNull(count);
@@ -231,7 +231,7 @@ public class DataContextEJBQLUpdateIT {
         EJBQLQuery query = new EJBQLQuery(ejbql);
         query.setParameter("artist", object);
 
-        List<QueryResultItem> result = env.context().performGenericQuery(query);
+        List<QueryResultItem> result = env.context().execute(query);
 
         int[] count = ((QueryResultItem.Update) result.getFirst()).counts();
         assertNotNull(count);

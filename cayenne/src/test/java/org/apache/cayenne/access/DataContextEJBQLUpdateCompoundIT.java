@@ -83,7 +83,7 @@ public class DataContextEJBQLUpdateCompoundIT {
         EJBQLQuery query = new EJBQLQuery(ejbql);
         query.setParameter("param", object);
 
-        List<QueryResultItem> result = env.context().performGenericQuery(query);
+        List<QueryResultItem> result = env.context().execute(query);
 
         int[] count = ((QueryResultItem.Update) result.getFirst()).counts();
         assertNotNull(count);

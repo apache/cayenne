@@ -122,7 +122,7 @@ public class QuotedIdentifiersIT {
 
         UpdateBatchQuery updateQuery = new UpdateBatchQuery(entity, idAttributes, updatedAttributes, Collections.emptySet(), 1);
 
-        env.context().performGenericQuery(updateQuery);
+        env.context().execute(updateQuery);
 
         List<Quote_Person> objects4 = ObjectSelect.query(Quote_Person.class).select(env.context());
         assertEquals(2, objects4.size());

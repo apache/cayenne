@@ -1032,7 +1032,7 @@ public class DataContext implements ObjectContext {
      * @since 1.2
      */
     @Override
-    public List<QueryResultItem> performGenericQuery(Query query) {
+    public List<QueryResultItem> execute(Query query) {
 
         query = nonNullDelegate().willPerformGenericQuery(this, query);
         if (query == null) {
@@ -1057,7 +1057,7 @@ public class DataContext implements ObjectContext {
      * @since 1.1
      */
     public int[] performNonSelectingQuery(Query query) {
-        int[] count = QueryResultItems.firstUpdateCount(performGenericQuery(query));
+        int[] count = QueryResultItems.firstUpdateCount(execute(query));
         return count != null ? count : new int[0];
     }
 

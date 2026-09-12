@@ -157,7 +157,7 @@ public class SQLExec extends IndirectQuery {
      * Executes the query, returning all of its result sets and update counts in the order they were produced.
      */
     public List<QueryResultItem> execute(ObjectContext context) {
-        return context.performGenericQuery(this);
+        return context.execute(this);
     }
 
     public int update(ObjectContext context) {

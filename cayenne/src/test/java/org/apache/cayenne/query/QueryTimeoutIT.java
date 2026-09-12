@@ -93,7 +93,7 @@ public class QueryTimeoutIT {
         assertEquals(10, sqlExec
                 .getMetaData(env.context().getEntityResolver())
                 .getQueryTimeout());
-        env.context().performGenericQuery(sqlExec);
+        env.context().execute(sqlExec);
     }
 
     @Test
@@ -105,6 +105,6 @@ public class QueryTimeoutIT {
         assertEquals(10, replacementQuery
                 .getMetaData(env.context().getEntityResolver())
                 .getQueryTimeout());
-        env.context().performGenericQuery(replacementQuery);
+        env.context().execute(replacementQuery);
     }
 }
