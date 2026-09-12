@@ -36,7 +36,6 @@ import org.apache.cayenne.cache.QueryCache;
 import org.apache.cayenne.event.EventManager;
 import org.apache.cayenne.exp.ValueInjector;
 import org.apache.cayenne.graph.ArcId;
-import org.apache.cayenne.graph.ChildDiffLoader;
 import org.apache.cayenne.graph.CompoundDiff;
 import org.apache.cayenne.graph.GraphDiff;
 import org.apache.cayenne.graph.GraphEvent;
@@ -877,25 +876,6 @@ public class DataContext implements ObjectContext {
     @Override
     public void commitChanges() throws CayenneRuntimeException {
         flushToParent(true);
-    }
-
-    protected GraphDiff onContextFlush(ObjectContext originatingContext, GraphDiff changes, boolean cascade) {
-
-        boolean childContext = this != originatingContext && changes != null;
-
-        try {
-            if (childContext) {
-                getObjectStore().childContextSyncStarted();
-                changes.apply(new ChildDiffLoader(this));
-                fireDataChannelChanged(originatingContext, changes);
-            }
-
-            return (cascade) ? flushToParent(true) : new CompoundDiff();
-        } finally {
-            if (childContext) {
-                getObjectStore().childContextSyncStopped();
-            }
-        }
     }
 
     /**

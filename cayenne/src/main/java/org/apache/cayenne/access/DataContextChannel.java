@@ -26,6 +26,7 @@ import org.apache.cayenne.ObjectId;
 import org.apache.cayenne.Persistent;
 import org.apache.cayenne.QueryResponse;
 import org.apache.cayenne.event.EventManager;
+import org.apache.cayenne.graph.ChildDiffLoader;
 import org.apache.cayenne.graph.CompoundDiff;
 import org.apache.cayenne.graph.GraphDiff;
 import org.apache.cayenne.map.EntityResolver;
@@ -109,10 +110,27 @@ public record DataContextChannel(DataContext context) implements DataChannel {
                 context.rollbackChanges();
                 yield new CompoundDiff();
             }
-            case DataChannel.FLUSH_NOCASCADE_SYNC -> context.onContextFlush(childContext, changes, false);
-            case DataChannel.FLUSH_CASCADE_SYNC -> context.onContextFlush(childContext, changes, true);
+            case DataChannel.FLUSH_NOCASCADE_SYNC -> flushChildChanges(childContext, changes, false);
+            case DataChannel.FLUSH_CASCADE_SYNC -> flushChildChanges(childContext, changes, true);
             default -> throw new CayenneRuntimeException("Unrecognized SyncMessage type: %d", syncType);
         };
+    }
+
+    /**
+     * Applies child context changes to the parent context objects, optionally cascading the flush further up the
+     * channel chain.
+     */
+    private GraphDiff flushChildChanges(ObjectContext childContext, GraphDiff changes, boolean cascade) {
+        ObjectStore objectStore = context.getObjectStore();
+
+        objectStore.childContextSyncStarted();
+        try {
+            changes.apply(new ChildDiffLoader(context));
+            context.fireDataChannelChanged(childContext, changes);
+            return cascade ? context.flushToParent(true) : new CompoundDiff();
+        } finally {
+            objectStore.childContextSyncStopped();
+        }
     }
 
     private void checkChildContext(ObjectContext childContext) {
