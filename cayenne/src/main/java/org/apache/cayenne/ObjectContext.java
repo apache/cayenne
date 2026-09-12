@@ -190,7 +190,10 @@ public interface ObjectContext {
      * Creates a new persistent object of a given class scheduled to be inserted
      * to the database on next commit.
      */
-    <T extends Persistent> T newObject(Class<T> persistentClass);
+    @SuppressWarnings("unchecked")
+    default <T extends Persistent> T newObject(Class<T> persistentClass) {
+        return (T) newObject(entityForClass(persistentClass).getName());
+    }
 
     /**
      * Creates a new persistent object of a given entity scheduled to be inserted to the database on next commit.

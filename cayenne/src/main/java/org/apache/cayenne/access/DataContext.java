@@ -487,25 +487,6 @@ public class DataContext implements ObjectContext {
         return (Persistent) list.getFirst();
     }
 
-    /**
-     * Creates and registers a new persistent object.
-     *
-     * @since 1.2
-     */
-    @Override
-    public <T extends Persistent> T newObject(Class<T> persistentClass) {
-        if (persistentClass == null) {
-            throw new NullPointerException("Null 'persistentClass'");
-        }
-
-        ObjEntity entity = getEntityResolver().getObjEntity(persistentClass);
-        if (entity == null) {
-            throw new IllegalArgumentException("Class is not mapped with Cayenne: " + persistentClass.getName());
-        }
-
-        return (T) newObject(entity.getName());
-    }
-
     @Override
     public Persistent newObject(String entityName) {
         ClassDescriptor descriptor = getEntityResolver().getClassDescriptor(entityName);
