@@ -48,8 +48,8 @@ import java.util.Map;
  * A query that allows to fetch objects based on one or more String IDs. The returned
  * objects do not have to be of the same type, be related via inheritance, or come from
  * the same DB table. Note that if you expect multiple types of objects, use
- * {@link ObjectContext#performGenericQuery(Query)}. The returned QueryResponse will
- * contain separate lists of DataRows for each type in no particular order.
+ * {@link ObjectContext#performGenericQuery(Query)}. The returned result will contain a separate
+ * {@link org.apache.cayenne.QueryResultItem.Select} of DataRows for each type in no particular order.
  * <p>
  * As of this writing, a limitation of this query is that it returns DataRows that need to
  * be manually converted to objects if needed.

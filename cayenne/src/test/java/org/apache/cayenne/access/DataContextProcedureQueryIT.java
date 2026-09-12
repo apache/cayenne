@@ -20,7 +20,7 @@
 package org.apache.cayenne.access;
 
 import org.apache.cayenne.DataRow;
-import org.apache.cayenne.QueryResponse;
+import org.apache.cayenne.QueryResultItem;
 import org.apache.cayenne.dba.TypesMapping;
 import org.apache.cayenne.log.NoopSQLLogger;
 import org.apache.cayenne.map.Procedure;
@@ -288,12 +288,12 @@ public class DataContextProcedureQueryIT  {
         ProcedureQuery q = new ProcedureQuery(OUT_STORED_PROCEDURE);
         q.addParameter("in_param", 20);
 
-        QueryResponse response = runProcedureGeneric(q);
+        List<QueryResultItem> response = runProcedureGeneric(q);
 
         Map<String, ?> outParams = null;
-        for (response.reset(); response.next(); ) {
-            if (response.isOutParameters()) {
-                outParams = response.currentOutParameters();
+        for (QueryResultItem item : response) {
+            if (item instanceof QueryResultItem.OutParameters out) {
+                outParams = out.values();
             }
         }
 
@@ -375,7 +375,7 @@ public class DataContextProcedureQueryIT  {
         assertTrue(id instanceof Long, "Expected Long, got: " + id.getClass().getName());
     }
 
-    protected QueryResponse runProcedureGeneric(ProcedureQuery q) throws Exception {
+    protected List<QueryResultItem> runProcedureGeneric(ProcedureQuery q) throws Exception {
         BaseTransaction t = new ExternalTransaction(NoopSQLLogger.getInstance());
         BaseTransaction.bindThreadTransaction(t);
 

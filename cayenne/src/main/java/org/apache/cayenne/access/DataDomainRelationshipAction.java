@@ -148,7 +148,7 @@ class DataDomainRelationshipAction {
                 .where(qualifier);
 
         @SuppressWarnings("unchecked")
-        List<Persistent> related = (List<Persistent>) domain.onQuery(context, query, false).firstList();
+        List<Persistent> related = (List<Persistent>) QueryResultItems.firstList(domain.onQuery(context, query, false));
         return related;
     }
 

@@ -28,7 +28,7 @@ import org.apache.cayenne.ObjectContext;
 import org.apache.cayenne.ObjectId;
 import org.apache.cayenne.PersistenceState;
 import org.apache.cayenne.Persistent;
-import org.apache.cayenne.QueryResponse;
+import org.apache.cayenne.QueryResultItem;
 import org.apache.cayenne.ResultBatchIterator;
 import org.apache.cayenne.ResultIterator;
 import org.apache.cayenne.ResultIteratorCallback;
@@ -57,7 +57,6 @@ import org.apache.cayenne.reflect.PropertyVisitor;
 import org.apache.cayenne.reflect.ToManyProperty;
 import org.apache.cayenne.reflect.ToOneProperty;
 import org.apache.cayenne.util.EventUtil;
-import org.apache.cayenne.util.GenericResponse;
 import org.apache.cayenne.util.ShallowMergeOperation;
 import org.apache.cayenne.util.Util;
 
@@ -1018,28 +1017,28 @@ public class DataContext implements ObjectContext {
     @SuppressWarnings("unchecked")
     public <T> ResultIterator<T> iterator(Select<T> query) {
         Query queryToRun = nonNullDelegate().willPerformQuery(this, query);
-        QueryResponse queryResponse = onQuery(queryToRun, true, false);
-        return (ResultIterator<T>) queryResponse.firstIterator();
+        return (ResultIterator<T>) QueryResultItems.firstIterator(onQuery(queryToRun, true, false));
     }
 
     /**
-     * Executes a query returning a generic response.
+     * Executes a query returning all of its result sets, update counts, iterators and OUT parameters in the order
+     * they were produced.
      *
      * @since 1.2
      */
     @Override
-    public QueryResponse performGenericQuery(Query query) {
+    public List<QueryResultItem> performGenericQuery(Query query) {
 
         query = nonNullDelegate().willPerformGenericQuery(this, query);
         if (query == null) {
-            return new GenericResponse();
+            return Collections.emptyList();
         }
 
         if (this.getChannel() == null) {
             throw new CayenneRuntimeException("Can't run query - parent DataChannel is not set.");
         }
 
-        return onQuery(query, false, false);
+        return Collections.unmodifiableList(onQuery(query, false, false));
     }
 
     /**
@@ -1069,11 +1068,11 @@ public class DataContext implements ObjectContext {
             return new ArrayList<>(1);
         }
 
-        List<?> result = onQuery(query, false, false).firstList();
+        List<?> result = QueryResultItems.firstList(onQuery(query, false, false));
         return result != null ? result : new ArrayList<>(1);
     }
 
-    QueryResponse onQuery(Query query, boolean iteratedResult, boolean ignoreLocalCache) {
+    List<QueryResultItem> onQuery(Query query, boolean iteratedResult, boolean ignoreLocalCache) {
         return new DataContextQueryAction(this, query, iteratedResult, ignoreLocalCache).execute();
     }
 
@@ -1084,7 +1083,7 @@ public class DataContext implements ObjectContext {
      * @since 1.1
      */
     public int[] performNonSelectingQuery(Query query) {
-        int[] count = performGenericQuery(query).firstUpdateCount();
+        int[] count = QueryResultItems.firstUpdateCount(performGenericQuery(query));
         return count != null ? count : new int[0];
     }
 

@@ -37,7 +37,7 @@ import java.util.Map;
 // of changing DataRowStore result caching API. Since we are doing it when already in 1.2
 // beta, I am choosing the least invasive way that doesn't affect public API.
 //
-// Future alternatives may include caching the entire QueryResponse... or maybe leaving
+// Future alternatives may include caching the entire query result... or maybe leaving
 // everything the way it is.
 class ListWithPrefetches implements List<Object> {
 

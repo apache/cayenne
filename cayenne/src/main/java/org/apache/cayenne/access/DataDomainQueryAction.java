@@ -26,7 +26,7 @@ import org.apache.cayenne.EmbeddableObject;
 import org.apache.cayenne.ObjectContext;
 import org.apache.cayenne.ObjectId;
 import org.apache.cayenne.Persistent;
-import org.apache.cayenne.QueryResponse;
+import org.apache.cayenne.QueryResultItem;
 import org.apache.cayenne.ResultIterator;
 import org.apache.cayenne.access.translator.TranslatedStatement;
 import org.apache.cayenne.cache.QueryCache;
@@ -51,8 +51,6 @@ import org.apache.cayenne.reflect.LifecycleCallbackRegistry;
 import org.apache.cayenne.tx.BaseTransaction;
 import org.apache.cayenne.tx.ReadOnlyTransaction;
 import org.apache.cayenne.tx.Transaction;
-import org.apache.cayenne.util.GenericResponse;
-import org.apache.cayenne.util.ListResponse;
 import org.apache.cayenne.util.Util;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -65,7 +63,6 @@ import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
-import java.util.Objects;
 import java.util.Set;
 import java.util.function.Function;
 
@@ -88,8 +85,8 @@ class DataDomainQueryAction implements QueryRouter, OperationObserver {
     private final QueryMetadata metadata;
     private final AdhocObjectFactory objectFactory;
 
-    private QueryResponse response;
-    private GenericResponse fullResponse;
+    private List<QueryResultItem> response;
+    private List<QueryResultItem> fullResponse;
     private final boolean iteratedResult;
     private boolean iteratorExclusiveConnection;
     private Map<CayennePath, List<?>> prefetchResultsByPath;
@@ -105,7 +102,7 @@ class DataDomainQueryAction implements QueryRouter, OperationObserver {
 
     /*
      * A constructor for the "new" way of performing a query via 'execute' with
-     * QueryResponse created internally.
+     * the result list created internally.
      */
     DataDomainQueryAction(ObjectContext context, DataDomain domain, Query query, boolean iteratedResult) {
         if (context != null && !(context instanceof DataContext)) {
@@ -121,7 +118,7 @@ class DataDomainQueryAction implements QueryRouter, OperationObserver {
         this.objectFactory = domain.getObjectFactory();
     }
 
-    QueryResponse execute() {
+    List<QueryResultItem> execute() {
 
         // run chain...
         if (interceptIteratedQuery() != DONE) {
@@ -165,7 +162,7 @@ class DataDomainQueryAction implements QueryRouter, OperationObserver {
         // The transaction is owned by the caller, and is not aligned with the iterator scope
         if (BaseTransaction.getThreadTransaction() != null) {
             runQuery();
-            Objects.requireNonNull(fullResponse.firstIterator(), "Iterator response expected");
+            firstIteratorIndex();
         }
 
         // The transaction will be owned by the iterator, and will outlive the query action
@@ -177,8 +174,9 @@ class DataDomainQueryAction implements QueryRouter, OperationObserver {
                 // connection
                 iteratorExclusiveConnection = true;
                 runQuery();
-                ResultIterator<?> it = Objects.requireNonNull(fullResponse.firstIterator(), "Iterator response expected");
-                fullResponse.replaceResult(it, new TransactionResultIteratorDecorator<>(it, tx));
+                int index = firstIteratorIndex();
+                ResultIterator<?> it = ((QueryResultItem.Iterator<?>) fullResponse.get(index)).iterator();
+                fullResponse.set(index, new QueryResultItem.Iterator<>(new TransactionResultIteratorDecorator<>(it, tx)));
             } catch (Throwable th) {
                 // No iterator will be returned to the caller, so nothing will ever commit this transaction. Mark it
                 // for rollback below, so that its connections are not leaked. Note that a DataNode marks the
@@ -195,8 +193,15 @@ class DataDomainQueryAction implements QueryRouter, OperationObserver {
                 }
             }
         }
+    }
 
-        fullResponse.reset();
+    private int firstIteratorIndex() {
+        for (int i = 0; i < fullResponse.size(); i++) {
+            if (fullResponse.get(i) instanceof QueryResultItem.Iterator) {
+                return i;
+            }
+        }
+        throw new CayenneRuntimeException("Iterator response expected");
     }
 
     /*
@@ -226,8 +231,12 @@ class DataDomainQueryAction implements QueryRouter, OperationObserver {
             // it is null if there was a preexisting cache entry
             cacheHit = (response == null);
 
+            // the cache may hold no list at all if the query produced no select result
             if (response == null || wasResponseNull) {
-                response = new ListResponse(cachedResults);
+                response = new ArrayList<>(1);
+                if (cachedResults != null) {
+                    response.add(new QueryResultItem.Select<>(cachedResults));
+                }
             }
 
             // Mark as cached result - lists need copying whether hit or miss
@@ -250,7 +259,7 @@ class DataDomainQueryAction implements QueryRouter, OperationObserver {
         return () -> {
             runQueryInTransaction();
 
-            List<?> list = response.firstList();
+            List<?> list = QueryResultItems.firstList(response);
             if (list != null) {
 
                 // make an immutable list to make sure callers don't mess it up
@@ -285,7 +294,7 @@ class DataDomainQueryAction implements QueryRouter, OperationObserver {
 
     private void runQuery() {
         // reset
-        this.fullResponse = new GenericResponse();
+        this.fullResponse = new ArrayList<>();
         this.response = this.fullResponse;
         this.queriesByNode = null;
 
@@ -313,24 +322,23 @@ class DataDomainQueryAction implements QueryRouter, OperationObserver {
         }
 
         ObjectConversionStrategy<?, ?> converter = getConverter();
-        // local copy because it can change while iterating
-        QueryResponse response = this.response;
-        for (response.reset(); response.next(); ) {
-            if (response.isList()) {
-                List<?> mainRows = response.currentList(); // List<DataRow> or List<Object[]>
-                if (mainRows != null && !mainRows.isEmpty()) {
-                    List<?> result = converter.convert((List) mainRows);
-                    if (result != mainRows) {
-                        updateResponse(mainRows, result);
+        for (int i = 0; i < response.size(); i++) {
+            switch (response.get(i)) {
+                case QueryResultItem.Select<?> select -> {
+                    List<?> mainRows = select.objects(); // List<DataRow> or List<Object[]>
+                    if (!mainRows.isEmpty()) {
+                        List<?> result = converter.convert((List) mainRows);
+                        if (result != mainRows) {
+                            response.set(i, new QueryResultItem.Select<>(result));
+                        }
                     }
                 }
-            } else if (response.isIterator()) {
-                // iterator should be a part of full response
-                ResultIterator<?> iterator = fullResponse.currentIterator();
-                fullResponse.replaceResult(iterator, new ResultIteratorConverterDecorator(iterator, converter));
+                case QueryResultItem.Iterator<?> iterator -> response.set(i, new QueryResultItem.Iterator<>(
+                        new ResultIteratorConverterDecorator(iterator.iterator(), converter)));
+                default -> {
+                }
             }
         }
-        response.reset();
     }
 
     private boolean noObjectConversion() {
@@ -424,12 +432,14 @@ class DataDomainQueryAction implements QueryRouter, OperationObserver {
 
     @Override
     public void nextCount(Query query, int resultCount) {
-        fullResponse.addUpdateCount(resultCount);
+        fullResponse.add(new QueryResultItem.Update(new int[]{resultCount}));
     }
 
     @Override
     public void nextBatchCount(Query query, int[] resultCount) {
-        fullResponse.addBatchUpdateCount(resultCount);
+        if (resultCount != null) {
+            fullResponse.add(new QueryResultItem.Update(resultCount));
+        }
     }
 
     @Override
@@ -438,7 +448,7 @@ class DataDomainQueryAction implements QueryRouter, OperationObserver {
         if (prefetchResultsByPath != null && query instanceof PrefetchSelectQuery<?> prefetchQuery) {
             prefetchResultsByPath.put(prefetchQuery.getPrefetchPath(), dataRows);
         } else {
-            fullResponse.addResultList(dataRows);
+            fullResponse.add(new QueryResultItem.Select<>(dataRows));
         }
     }
 
@@ -448,13 +458,13 @@ class DataDomainQueryAction implements QueryRouter, OperationObserver {
         if (prefetchResultsByPath != null && query instanceof PrefetchSelectQuery<?> prefetchQuery) {
             prefetchResultsByPath.put(prefetchQuery.getPrefetchPath(), (List<?>) it);
         } else {
-            this.fullResponse.addResultIterator(it);
+            fullResponse.add(new QueryResultItem.Iterator<>(it));
         }
     }
 
     @Override
     public void nextOutParameters(Query query, Map<String, ?> outParameters) {
-        fullResponse.addOutParameters(outParameters);
+        fullResponse.add(new QueryResultItem.OutParameters(outParameters));
     }
 
     @Override
@@ -494,16 +504,6 @@ class DataDomainQueryAction implements QueryRouter, OperationObserver {
     @Override
     public boolean isIteratorExclusiveConnection() {
         return iteratorExclusiveConnection;
-    }
-
-    protected <T, R> void updateResponse(List<T> sourceObjects, List<? extends R> targetObjects) {
-        if (response instanceof GenericResponse genericResponse) {
-            genericResponse.replaceResult(sourceObjects, targetObjects);
-        } else if (response instanceof ListResponse) {
-            response = new ListResponse(targetObjects);
-        } else {
-            throw new IllegalStateException("Unknown response object: " + response);
-        }
     }
 
     abstract class ObjectConversionStrategy<T, R> {

@@ -157,7 +157,7 @@ public class SQLExec extends IndirectQuery {
      * Executes the query, returning all of its result sets and update counts in the order they were produced.
      */
     public List<QueryResultItem> execute(ObjectContext context) {
-        return QueryResultItems.fromResponse(context.performGenericQuery(this));
+        return context.performGenericQuery(this);
     }
 
     public int update(ObjectContext context) {
@@ -192,7 +192,8 @@ public class SQLExec extends IndirectQuery {
 
     /**
      * Flag indicating that generated keys should be returned by this query execution.
-     * Generated keys could be read via {@link QueryResponse#currentList()} method
+     * Generated keys are returned as a {@link QueryResultItem.Select} item of {@link #execute(ObjectContext)}
+     * result.
      *
      * @param returnGeneratedKeys flag value
      * @see java.sql.Statement#RETURN_GENERATED_KEYS

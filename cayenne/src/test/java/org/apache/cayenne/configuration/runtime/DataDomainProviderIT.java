@@ -23,7 +23,7 @@ import org.apache.cayenne.DataChannelQueryFilterChain;
 import org.apache.cayenne.DataChannelSyncFilter;
 import org.apache.cayenne.DataChannelSyncFilterChain;
 import org.apache.cayenne.ObjectContext;
-import org.apache.cayenne.QueryResponse;
+import org.apache.cayenne.QueryResultItem;
 import org.apache.cayenne.access.DataDomain;
 import org.apache.cayenne.access.DataNode;
 import org.apache.cayenne.access.dbsync.SkipSchemaUpdateStrategy;
@@ -44,6 +44,7 @@ import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.RegisterExtension;
 
 import javax.sql.DataSource;
+import java.util.List;
 import java.util.concurrent.atomic.AtomicInteger;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
@@ -249,8 +250,8 @@ public class DataDomainProviderIT {
     static class NoopQueryFilter implements DataChannelQueryFilter {
 
         @Override
-        public QueryResponse onQuery(ObjectContext originatingContext, Query query, boolean iteratedResult,
-                                     DataChannelQueryFilterChain filterChain) {
+        public List<QueryResultItem> onQuery(ObjectContext originatingContext, Query query, boolean iteratedResult,
+                                             DataChannelQueryFilterChain filterChain) {
             return filterChain.onQuery(originatingContext, query, iteratedResult);
         }
     }

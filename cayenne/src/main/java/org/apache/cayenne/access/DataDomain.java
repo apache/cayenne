@@ -28,7 +28,7 @@ import org.apache.cayenne.DataChannelSyncFilterChain;
 import org.apache.cayenne.ObjectContext;
 import org.apache.cayenne.ObjectId;
 import org.apache.cayenne.Persistent;
-import org.apache.cayenne.QueryResponse;
+import org.apache.cayenne.QueryResultItem;
 import org.apache.cayenne.access.flush.DataDomainFlushAction;
 import org.apache.cayenne.access.flush.DataDomainFlushActionFactory;
 import org.apache.cayenne.cache.QueryCache;
@@ -344,12 +344,12 @@ public class DataDomain implements DataChannel {
     }
 
     /**
-     * Runs query returning generic QueryResponse.
+     * Runs a query, returning all of its results as a list of {@link QueryResultItem}s.
      *
      * @since 1.2
      */
     @Override
-    public QueryResponse onQuery(ObjectContext context, Query query, boolean iteratedResult) {
+    public List<QueryResultItem> onQuery(ObjectContext context, Query query, boolean iteratedResult) {
         checkStopped();
         return new DataDomainQueryFilterChain().onQuery(context, query, iteratedResult);
     }
@@ -405,7 +405,7 @@ public class DataDomain implements DataChannel {
         return new DataDomainRelationshipAction(this, context, sourceId, relationshipName).execute();
     }
 
-    QueryResponse onQueryNoFilters(ObjectContext originatingContext, Query query, boolean iteratedResult) {
+    List<QueryResultItem> onQueryNoFilters(ObjectContext originatingContext, Query query, boolean iteratedResult) {
         // transaction note:
         // we don't wrap this code in transaction to reduce transaction scope to
         // just the DB operation for better performance ... query action will
@@ -573,7 +573,7 @@ public class DataDomain implements DataChannel {
         }
 
         @Override
-        public QueryResponse onQuery(ObjectContext originatingContext, Query query, boolean iteratedResult) {
+        public List<QueryResultItem> onQuery(ObjectContext originatingContext, Query query, boolean iteratedResult) {
             return --idx >= 0
                     ? queryFilters.get(idx).onQuery(originatingContext, query, iteratedResult, this)
                     : onQueryNoFilters(originatingContext, query, iteratedResult);

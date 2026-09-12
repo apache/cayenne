@@ -134,7 +134,7 @@ public class ProcedureCall<T> extends IndirectQuery {
      * were produced.
      */
     public List<QueryResultItem> call(ObjectContext context) {
-        return QueryResultItems.fromResponse(context.performGenericQuery(this));
+        return context.performGenericQuery(this);
     }
 
     /**

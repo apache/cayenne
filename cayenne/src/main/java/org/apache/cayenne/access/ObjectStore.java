@@ -495,7 +495,7 @@ public class ObjectStore implements SnapshotEventListener, GraphManager {
                 .where(ExpressionFactory.matchAllDbExp(oid.getIdSnapshot(), Expression.EQUAL_TO))
                 .fetchDataRows();
 
-        List<?> rows = context.getChannel().onQuery(context, query, false).firstList();
+        List<?> rows = QueryResultItems.firstList(context.getChannel().onQuery(context, query, false));
         return switch (rows.size()) {
             case 0 -> null;
             case 1 -> (DataRow) rows.getFirst();

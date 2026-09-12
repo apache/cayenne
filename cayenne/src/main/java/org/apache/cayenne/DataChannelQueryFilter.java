@@ -21,17 +21,19 @@ package org.apache.cayenne;
 
 import org.apache.cayenne.query.Query;
 
+import java.util.List;
+
 /**
  * An interface of a filter that allows to intercept DataChannel query operations.
  * Query filters allow to implement chains of custom processors around a DataChannel.
  * <p>
  * Example: <pre>{@code
  * public class MyQueryFilter implements DataChannelQueryFilter {
- *     public QueryResponse onQuery(ObjectContext originatingContext, Query query, boolean iteratedResult,
- *                                  DataChannelQueryFilterChain filterChain) {
+ *     public List<QueryResultItem> onQuery(ObjectContext originatingContext, Query query, boolean iteratedResult,
+ *                                          DataChannelQueryFilterChain filterChain) {
  *         System.out.println("Do something before query");
  *         // process query or return some custom response
- *         QueryResponse response = filterChain.onQuery(originatingContext, query, iteratedResult);
+ *         List<QueryResultItem> response = filterChain.onQuery(originatingContext, query, iteratedResult);
  *         System.out.println("Do something after query");
  *         return response;
  *     }
@@ -50,9 +52,9 @@ public interface DataChannelQueryFilter {
      * @param query that is processed
      * @param iteratedResult whether the result should be returned as a {@link ResultIterator} instead of a list
      * @param filterChain chain of query filters to invoke after this filter
-     * @return query response
+     * @return query result items
      */
-    QueryResponse onQuery(ObjectContext originatingContext, Query query, boolean iteratedResult,
-                          DataChannelQueryFilterChain filterChain);
+    List<QueryResultItem> onQuery(ObjectContext originatingContext, Query query, boolean iteratedResult,
+                                  DataChannelQueryFilterChain filterChain);
 
 }

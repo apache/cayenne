@@ -18,6 +18,7 @@
  ****************************************************************/
 package org.apache.cayenne.query;
 
+import org.apache.cayenne.CayenneRuntimeException;
 import org.apache.cayenne.ObjectContext;
 import org.apache.cayenne.QueryResultItem;
 
@@ -56,10 +57,20 @@ public class MappedExec extends AbstractMappedQuery {
      * were produced.
      */
     public List<QueryResultItem> execute(ObjectContext context) {
-        return QueryResultItems.fromResponse(context.performGenericQuery(this));
+        return context.performGenericQuery(this);
     }
 
+    /**
+     * Executes the query, returning the counts of its first update result.
+     *
+     * @throws CayenneRuntimeException if the query produced no update results.
+     */
     public int[] update(ObjectContext context) {
-        return context.performGenericQuery(this).firstUpdateCount();
+        for (QueryResultItem item : execute(context)) {
+            if (item instanceof QueryResultItem.Update update) {
+                return update.counts();
+            }
+        }
+        throw new CayenneRuntimeException("Expected an update result from query '%s'", queryName);
     }
 }

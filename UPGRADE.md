@@ -187,12 +187,16 @@ Expression caseWhenExp = caseWhen(
   ```
 
    Stored procedure OUT parameters are no longer disguised as a one-row result set. They arrive as a dedicated
-   `QueryResultItem.OutParameters` item (a map keyed by parameter name), `QueryResponse` reports them via
-   `isOutParameters()` / `currentOutParameters()`.
+   `QueryResultItem.OutParameters` item (a map keyed by parameter name).
 
    The cgen templates now emit `List<QueryResultItem>` instead of `QueryResult<?>` for the `perform*` methods of
    mapped exec queries, so regenerate your classes via Modeler ("Tools" → "Generate Classes") or the AI plugin
-   if you have generated classes with multi-part queries.
+   if you have generated classes with multipart queries.
+
+*  Per [CAY-3024](https://issues.apache.org/jira/browse/CAY-3024) `org.apache.cayenne.QueryResponse` was removed. Everything that
+   used to return a `QueryResponse` - `ObjectContext.performGenericQuery(..)`, etc. - now return
+   `List<QueryResultItem>`. See CAY-3023 above for the example of how to process the result. Custom 
+   `DataChannelQueryFilter` implementations now require a new signature.
 
 *  The `org.apache.cayenne.query.ParameterizedQuery` interface was removed, together with the `createQuery(Map)`
   methods of `SQLTemplate`, `ProcedureQuery` and `ObjectSelect` that implemented it. Applying parameters to a mapped
@@ -218,8 +222,8 @@ Expression caseWhenExp = caseWhen(
   query filters need to add the parameter and pass it down the chain:
 
   ```java
-  public QueryResponse onQuery(ObjectContext context, Query query, boolean iteratedResult,
-                               DataChannelQueryFilterChain chain) {
+  public List<QueryResultItem> onQuery(ObjectContext context, Query query, boolean iteratedResult,
+                                       DataChannelQueryFilterChain chain) {
       return chain.onQuery(context, query, iteratedResult);
   }
   ```

@@ -24,7 +24,7 @@ import java.math.BigInteger;
 import java.util.List;
 
 import org.apache.cayenne.Cayenne;
-import org.apache.cayenne.QueryResponse;
+import org.apache.cayenne.QueryResultItem;
 import org.apache.cayenne.query.EJBQLQuery;
 import org.apache.cayenne.test.jdbc.TableHelper;
 import org.apache.cayenne.testdo.numeric_types.BigDecimalEntity;
@@ -130,9 +130,9 @@ public class DataContextEJBQLNumericalFunctionalIT {
         String ejbql = "UPDATE BooleanTestEntity AS p SET p.booleanColumn = true";
         EJBQLQuery query = new EJBQLQuery(ejbql);
 
-        QueryResponse result = env.context().performGenericQuery(query);
+        List<QueryResultItem> result = env.context().performGenericQuery(query);
 
-        int[] count = result.firstUpdateCount();
+        int[] count = ((QueryResultItem.Update) result.getFirst()).counts();
         assertNotNull(count);
         assertEquals(1, count.length);
         assertEquals(3, count[0]);

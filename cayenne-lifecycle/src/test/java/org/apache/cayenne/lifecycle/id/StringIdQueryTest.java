@@ -19,7 +19,7 @@
 package org.apache.cayenne.lifecycle.id;
 
 import org.apache.cayenne.DataRow;
-import org.apache.cayenne.QueryResponse;
+import org.apache.cayenne.QueryResultItem;
 import org.apache.cayenne.configuration.DataNodeDescriptor;
 import org.apache.cayenne.datasource.CayenneDataSource;
 import org.apache.cayenne.runtime.CayenneRuntime;
@@ -96,16 +96,17 @@ public class StringIdQueryTest {
         e1Helper.insert(3).insert(4);
 
         StringIdQuery query = new StringIdQuery("E1:3", "E1:4", "E1:5");
-        QueryResponse response = runtime.newContext().performGenericQuery(query);
+        List<QueryResultItem> response = runtime.newContext().performGenericQuery(query);
         assertEquals(1, response.size());
-        assertEquals(2, response.firstList().size());
+        List<?> rows = ((QueryResultItem.Select<?>) response.getFirst()).objects();
+        assertEquals(2, rows.size());
 
         Set<Number> ids = new HashSet<>();
 
-        DataRow r1 = (DataRow) response.firstList().get(0);
+        DataRow r1 = (DataRow) rows.get(0);
         ids.add((Number) r1.get("ID"));
 
-        DataRow r2 = (DataRow) response.firstList().get(1);
+        DataRow r2 = (DataRow) rows.get(1);
         ids.add((Number) r2.get("ID"));
 
         assertTrue(ids.contains(3L));
@@ -121,14 +122,14 @@ public class StringIdQueryTest {
         e2Helper.insert(5).insert(6).insert(7);
 
         StringIdQuery query = new StringIdQuery("E1:3", "E1:4", "E2:6", "E1:5");
-        QueryResponse response = runtime.newContext().performGenericQuery(query);
+        List<QueryResultItem> response = runtime.newContext().performGenericQuery(query);
         assertEquals(2, response.size());
 
         Set<String> ids = new HashSet<>();
 
-        while (response.next()) {
+        for (QueryResultItem item : response) {
             @SuppressWarnings("unchecked")
-            List<DataRow> list = (List<DataRow>) response.currentList();
+            List<DataRow> list = ((QueryResultItem.Select<DataRow>) item).objects();
             for (DataRow row : list) {
                 ids.add(row.getEntityName() + ":" + row.get("ID"));
             }

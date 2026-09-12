@@ -22,11 +22,13 @@ import org.apache.cayenne.DataChannelQueryFilter;
 import org.apache.cayenne.DataChannelQueryFilterChain;
 import org.apache.cayenne.ObjectContext;
 import org.apache.cayenne.Persistent;
-import org.apache.cayenne.QueryResponse;
+import org.apache.cayenne.QueryResultItem;
 import org.apache.cayenne.annotation.PostLoad;
 import org.apache.cayenne.annotation.PostPersist;
 import org.apache.cayenne.annotation.PostUpdate;
 import org.apache.cayenne.query.Query;
+
+import java.util.List;
 
 /**
  * A {@link DataChannelQueryFilter} that implements ObjectId relationships read functionality.
@@ -45,8 +47,8 @@ public class ObjectIdRelationshipFilter implements DataChannelQueryFilter {
         return new ObjectIdRelationshipBatchFaultingStrategy();
     }
 
-    public QueryResponse onQuery(ObjectContext context, Query query, boolean iteratedResult,
-                                 DataChannelQueryFilterChain chain) {
+    public List<QueryResultItem> onQuery(ObjectContext context, Query query, boolean iteratedResult,
+                                         DataChannelQueryFilterChain chain) {
         try {
             return chain.onQuery(context, query, iteratedResult);
         } finally {

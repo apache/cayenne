@@ -24,7 +24,7 @@ import org.apache.cayenne.DataChannel;
 import org.apache.cayenne.ObjectContext;
 import org.apache.cayenne.ObjectId;
 import org.apache.cayenne.Persistent;
-import org.apache.cayenne.QueryResponse;
+import org.apache.cayenne.QueryResultItem;
 import org.apache.cayenne.event.EventManager;
 import org.apache.cayenne.graph.ChildDiffLoader;
 import org.apache.cayenne.graph.CompoundDiff;
@@ -33,7 +33,6 @@ import org.apache.cayenne.map.EntityResolver;
 import org.apache.cayenne.query.EntityResultSegment;
 import org.apache.cayenne.query.Query;
 import org.apache.cayenne.query.QueryMetadata;
-import org.apache.cayenne.util.GenericResponse;
 import org.apache.cayenne.util.ShallowMergeOperation;
 
 import java.util.ArrayList;
@@ -70,10 +69,10 @@ public record DataContextChannel(DataContext context) implements DataChannel {
     }
 
     @Override
-    public QueryResponse onQuery(ObjectContext childContext, Query query, boolean iteratedResult) {
+    public List<QueryResultItem> onQuery(ObjectContext childContext, Query query, boolean iteratedResult) {
         checkChildContext(childContext);
 
-        QueryResponse response = context.onQuery(query, iteratedResult, true);
+        List<QueryResultItem> response = context.onQuery(query, iteratedResult, true);
         QueryMetadata metadata = query.getMetaData(getEntityResolver());
 
         return metadata.isFetchingDataRows()
@@ -152,21 +151,21 @@ public record DataContextChannel(DataContext context) implements DataChannel {
         }
     }
 
-    private QueryResponse transferObjectsToChildContext(
+    private List<QueryResultItem> transferObjectsToChildContext(
             ObjectContext childContext,
-            QueryResponse response,
+            List<QueryResultItem> response,
             QueryMetadata metadata) {
 
         // rewrite response to contain objects from the query context
 
-        GenericResponse childResponse = new GenericResponse();
+        List<QueryResultItem> childResponse = new ArrayList<>(response.size());
         ShallowMergeOperation merger = null;
 
-        for (response.reset(); response.next(); ) {
-            if (response.isList()) {
-                List<?> objects = response.currentList();
+        for (QueryResultItem item : response) {
+            if (item instanceof QueryResultItem.Select<?> select) {
+                List<?> objects = select.objects();
                 if (objects.isEmpty()) {
-                    childResponse.addResultList(objects);
+                    childResponse.add(item);
                 } else {
 
                     // minor optimization, skip Object[] if there are no persistent objects
@@ -206,10 +205,10 @@ public record DataContextChannel(DataContext context) implements DataChannel {
                         }
                     }
 
-                    childResponse.addResultList(childObjects);
+                    childResponse.add(new QueryResultItem.Select<>(childObjects));
                 }
             } else {
-                childResponse.addBatchUpdateCount(response.currentUpdateCount());
+                childResponse.add(item);
             }
         }
 

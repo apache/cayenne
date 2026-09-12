@@ -84,7 +84,15 @@ While not commonly used, it is nevertheless important in some situations. E.g.:
 
 [source, java]
 ----
-QueryResponse response = context.performGenericQuery(query);
+List<QueryResultItem> result = context.performGenericQuery(query);
+for (QueryResultItem item : result) {
+    switch (item) {
+        case QueryResultItem.Select<?> select -> process(select.objects());
+        case QueryResultItem.Update update -> process(update.counts());
+        case QueryResultItem.Iterator<?> iterator -> process(iterator.iterator());
+        case QueryResultItem.OutParameters out -> process(out.values());
+    }
+}
 ----
 
 When multiple such queries need to run together, execute them inside an explicit transaction:

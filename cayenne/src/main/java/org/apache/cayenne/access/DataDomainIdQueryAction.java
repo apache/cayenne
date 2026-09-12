@@ -95,7 +95,7 @@ class DataDomainIdQueryAction {
                 .query(Persistent.class, id.getEntityName())
                 .where(ExpressionFactory.matchAllDbExp(id.getIdSnapshot(), Expression.EQUAL_TO));
 
-        List<?> objects = domain.onQuery(context, query, false).firstList();
+        List<?> objects = QueryResultItems.firstList(domain.onQuery(context, query, false));
         return switch (objects.size()) {
             case 0 -> null;
             case 1 -> (Persistent) objects.getFirst();

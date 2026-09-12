@@ -349,10 +349,10 @@ public interface ObjectContext {
     <T> ResultBatchIterator<T> batchIterator(Select<T> query, int size);
 
     /**
-     * Executes any kind of query providing the result in a form of
-     * QueryResponse.
+     * Executes any kind of query, returning all of its result sets, update counts, iterators and OUT parameters as a
+     * list of {@link QueryResultItem}s in the order they were produced.
      */
-    QueryResponse performGenericQuery(Query query);
+    List<QueryResultItem> performGenericQuery(Query query);
 
     /**
      * Returns GraphManager that manages object graph associated with this

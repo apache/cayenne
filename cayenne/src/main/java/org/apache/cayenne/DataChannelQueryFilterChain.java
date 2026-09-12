@@ -21,6 +21,8 @@ package org.apache.cayenne;
 
 import org.apache.cayenne.query.Query;
 
+import java.util.List;
+
 /**
  * Interface for chain of query filters
  *
@@ -28,6 +30,6 @@ import org.apache.cayenne.query.Query;
  */
 public interface DataChannelQueryFilterChain {
 
-    QueryResponse onQuery(ObjectContext originatingContext, Query query, boolean iteratedResult);
+    List<QueryResultItem> onQuery(ObjectContext originatingContext, Query query, boolean iteratedResult);
 
 }

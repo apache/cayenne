@@ -113,13 +113,14 @@ public interface DataChannel {
      *
      * @param context        an ObjectContext that originated the query, used to register result objects.
      * @param query          a query to execute.
-     * @param iteratedResult if true, the result is returned as a {@link ResultIterator} accessible via
-     *                       {@link QueryResponse#firstIterator()}, and the caller is responsible for closing
-     *                       it. If false, the result is fully read into a list.
-     * @return a generic response object that encapsulates result of the execution.
+     * @param iteratedResult if true, the result is returned as a {@link ResultIterator} wrapped in a
+     *                       {@link QueryResultItem.Iterator}, and the caller is responsible for closing it. If false,
+     *                       the result is fully read into a list.
+     * @return all result sets, update counts, iterators and OUT parameters of the execution, in the order they were
+     * produced.
      * @since 5.0
      */
-    QueryResponse onQuery(ObjectContext context, Query query, boolean iteratedResult);
+    List<QueryResultItem> onQuery(ObjectContext context, Query query, boolean iteratedResult);
 
     /**
      * Invalidates objects with the given ids in this channel and all its parents, so that they are refetched on the

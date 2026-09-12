@@ -23,14 +23,10 @@ import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
 
-import org.apache.cayenne.DataChannel;
-import org.apache.cayenne.ObjectContext;
-import org.apache.cayenne.QueryResponse;
 import org.apache.cayenne.event.EventManager;
 import org.apache.cayenne.graph.GraphDiff;
 import org.apache.cayenne.map.EntityResolver;
 import org.apache.cayenne.query.Query;
-import org.apache.cayenne.util.GenericResponse;
 
 /**
  * Stores all messages passed via this handler.
@@ -41,7 +37,7 @@ public class MockDataChannel implements DataChannel {
     protected EntityResolver resolver;
     protected List requestObjects = new ArrayList();
     protected GraphDiff commitResponse;
-    protected QueryResponse response;
+    protected List<QueryResultItem> response;
 
     public MockDataChannel() {
 
@@ -52,7 +48,7 @@ public class MockDataChannel implements DataChannel {
     }
 
     public MockDataChannel(List selectResponse) {
-        this.response = new GenericResponse(selectResponse);
+        this.response = List.of(new QueryResultItem.Select<>(selectResponse));
     }
 
     public MockDataChannel(EntityResolver entityResolver, List selectResponse) {
@@ -60,13 +56,9 @@ public class MockDataChannel implements DataChannel {
         this.resolver = entityResolver;
     }
 
-    public MockDataChannel(EntityResolver entityResolver, QueryResponse response) {
-        this.resolver = entityResolver;
-        this.response = response;
-    }
-
     public MockDataChannel(EntityResolver resolver) {
-        this(resolver, new GenericResponse());
+        this.resolver = resolver;
+        this.response = new ArrayList<>();
     }
 
     public EventManager getEventManager() {
@@ -90,7 +82,7 @@ public class MockDataChannel implements DataChannel {
         return commitResponse;
     }
 
-    public QueryResponse onQuery(ObjectContext context, Query query, boolean iteratedResult) {
+    public List<QueryResultItem> onQuery(ObjectContext context, Query query, boolean iteratedResult) {
         requestObjects.add(query);
         return response;
     }
@@ -101,14 +93,23 @@ public class MockDataChannel implements DataChannel {
 
     public Persistent onIdQuery(ObjectContext context, ObjectId id) {
         requestObjects.add(id);
-        List<?> objects = response != null ? response.firstList() : null;
+        List<?> objects = response != null ? firstList() : null;
         return objects == null || objects.isEmpty() ? null : (Persistent) objects.getFirst();
     }
 
     public List<Persistent> onRelationshipQuery(ObjectContext context, ObjectId sourceId,
                                                 String relationshipName) {
         requestObjects.add(sourceId);
-        return (List<Persistent>) response.firstList();
+        return (List<Persistent>) firstList();
+    }
+
+    private List<?> firstList() {
+        for (QueryResultItem item : response) {
+            if (item instanceof QueryResultItem.Select<?> select) {
+                return select.objects();
+            }
+        }
+        return null;
     }
 
     public EntityResolver getEntityResolver() {
