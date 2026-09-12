@@ -126,8 +126,8 @@ public class DataContextDecoratedStackIT {
         }
 
         @Override
-        public List<? extends Persistent> onResolveRelationship(ObjectContext context, ObjectId sourceId, String relationshipName) {
-            return channel.onResolveRelationship(context, sourceId, relationshipName);
+        public List<? extends Persistent> onRelationshipQuery(ObjectContext context, ObjectId sourceId, String relationshipName) {
+            return channel.onRelationshipQuery(context, sourceId, relationshipName);
         }
 
         @Override

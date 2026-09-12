@@ -97,7 +97,7 @@ public record DataContextChannel(DataContext context) implements DataChannel {
     }
 
     @Override
-    public List<Persistent> onResolveRelationship(ObjectContext childContext, ObjectId sourceId, String relationshipName) {
+    public List<Persistent> onRelationshipQuery(ObjectContext childContext, ObjectId sourceId, String relationshipName) {
         checkChildContext(childContext);
 
         List<? extends Persistent> related = context.resolveRelationship(sourceId, relationshipName, true);

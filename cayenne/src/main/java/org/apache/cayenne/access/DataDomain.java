@@ -400,7 +400,7 @@ public class DataDomain implements DataChannel {
      * @since 5.0
      */
     @Override
-    public List<Persistent> onResolveRelationship(ObjectContext context, ObjectId sourceId, String relationshipName) {
+    public List<Persistent> onRelationshipQuery(ObjectContext context, ObjectId sourceId, String relationshipName) {
         checkStopped();
         return new DataDomainRelationshipAction(this, context, sourceId, relationshipName).execute();
     }

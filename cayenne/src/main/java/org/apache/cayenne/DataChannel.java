@@ -143,7 +143,7 @@ public interface DataChannel {
      * null, or a to-many relationship has no matching objects.
      * @since 5.0
      */
-    List<? extends Persistent> onResolveRelationship(ObjectContext context, ObjectId sourceId, String relationshipName);
+    List<? extends Persistent> onRelationshipQuery(ObjectContext context, ObjectId sourceId, String relationshipName);
 
     /**
      * Processes synchronization request from a child ObjectContext, returning a GraphDiff

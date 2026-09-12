@@ -781,7 +781,7 @@ public class DataContext implements ObjectContext {
         List<Persistent> related = resolveRelationshipInSelf(sourceId, relationshipName, resolveToMany);
         return related != null
                 ? related
-                : getChannel().onResolveRelationship(this, sourceId, relationshipName);
+                : getChannel().onRelationshipQuery(this, sourceId, relationshipName);
     }
 
     @SuppressWarnings("unchecked")

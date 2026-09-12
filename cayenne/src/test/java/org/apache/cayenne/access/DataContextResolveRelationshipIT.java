@@ -120,7 +120,7 @@ public class DataContextResolveRelationshipIT {
         Artist childA = child.localObject(a);
 
         env.runWithQueriesBlocked(() -> {
-            List<? extends Persistent> related = child.getChannel().onResolveRelationship(child, childA.getObjectId(), Artist.PAINTING_ARRAY.getName());
+            List<? extends Persistent> related = child.getChannel().onRelationshipQuery(child, childA.getObjectId(), Artist.PAINTING_ARRAY.getName());
             assertEquals(2, related.size());
             for (Persistent p : related) {
                 assertSame(child, p.getObjectContext());
@@ -141,7 +141,7 @@ public class DataContextResolveRelationshipIT {
         Painting childP = child.localObject(p);
 
         env.runWithQueriesBlocked(() -> {
-            List<? extends Persistent> related = child.getChannel().onResolveRelationship(child, childP.getObjectId(),
+            List<? extends Persistent> related = child.getChannel().onRelationshipQuery(child, childP.getObjectId(),
                     Painting.TO_ARTIST.getName());
             assertEquals(1, related.size());
             assertSame(child, related.getFirst().getObjectContext());
@@ -162,7 +162,7 @@ public class DataContextResolveRelationshipIT {
 
         // a NEW object is unknown to the database, so its relationships must be resolved from the parent context
         env.runWithQueriesBlocked(() -> {
-            List<? extends Persistent> related = child.getChannel().onResolveRelationship(child, childA.getObjectId(),
+            List<? extends Persistent> related = child.getChannel().onRelationshipQuery(child, childA.getObjectId(),
                     Artist.PAINTING_ARRAY.getName());
             assertEquals(1, related.size());
             assertSame(child, related.getFirst().getObjectContext());

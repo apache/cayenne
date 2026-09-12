@@ -105,8 +105,8 @@ public class MockDataChannel implements DataChannel {
         return objects == null || objects.isEmpty() ? null : (Persistent) objects.getFirst();
     }
 
-    public List<Persistent> onResolveRelationship(ObjectContext context, ObjectId sourceId,
-                                                  String relationshipName) {
+    public List<Persistent> onRelationshipQuery(ObjectContext context, ObjectId sourceId,
+                                                String relationshipName) {
         requestObjects.add(sourceId);
         return (List<Persistent>) response.firstList();
     }
