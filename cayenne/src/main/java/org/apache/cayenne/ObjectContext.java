@@ -53,24 +53,24 @@ public interface ObjectContext {
      * Returns a collection of objects that are registered with this
      * ObjectContext and have a state PersistenceState.NEW
      */
-    Collection<?> newObjects();
+    Collection<Persistent> newObjects();
 
     /**
      * Returns a collection of objects that are registered with this
      * ObjectContext and have a state PersistenceState.DELETED
      */
-    Collection<?> deletedObjects();
+    Collection<Persistent> deletedObjects();
 
     /**
      * Returns a collection of objects that are registered with this
      * ObjectContext and have a state PersistenceState.MODIFIED
      */
-    Collection<?> modifiedObjects();
+    Collection<Persistent> modifiedObjects();
 
     /**
      * Returns a collection of MODIFIED, DELETED or NEW objects.
      */
-    Collection<?> uncommittedObjects();
+    Collection<Persistent> uncommittedObjects();
 
     /**
      * Returns a local copy of 'objectFromAnotherContext' object. "Local" means
@@ -185,7 +185,7 @@ public interface ObjectContext {
      * Creates a new persistent object of a given class scheduled to be inserted
      * to the database on next commit.
      */
-    <T> T newObject(Class<T> persistentClass);
+    <T extends Persistent> T newObject(Class<T> persistentClass);
 
     /**
      * Registers a transient object with the context. The difference with
@@ -197,7 +197,7 @@ public interface ObjectContext {
      *            new object that needs to be made persistent.
      * @since 3.0
      */
-    void registerNewObject(Object object);
+    void registerNewObject(Persistent object);
 
     /**
      * Schedules deletion of a persistent object.
@@ -206,7 +206,7 @@ public interface ObjectContext {
      *             if a {@link org.apache.cayenne.map.DeleteRule#DENY} delete
      *             rule is applicable for object deletion.
      */
-    default void deleteObject(Object object) throws DeleteDenyException {
+    default void deleteObject(Persistent object) throws DeleteDenyException {
         deleteObjects(object);
     }
 
@@ -217,10 +217,10 @@ public interface ObjectContext {
      *             if a {@link org.apache.cayenne.map.DeleteRule#DENY} delete
      *             rule is applicable for object deletion.
      */
-    default void deleteObjects(Collection<?> objects) throws DeleteDenyException {
+    default void deleteObjects(Collection<? extends Persistent> objects) throws DeleteDenyException {
         // toArray() copies, which also guards against ConcurrentModificationException when delete rules modify the
         // source collection (e.g. a to-many list) mid-iteration
-        deleteObjects(objects.toArray());
+        deleteObjects(objects.toArray(new Persistent[0]));
     }
 
     /**
@@ -231,7 +231,7 @@ public interface ObjectContext {
      *             rule is applicable for object deletion.
      * @since 3.1
      */
-    <T> void deleteObjects(T... objects) throws DeleteDenyException;
+    <T extends Persistent> void deleteObjects(T... objects) throws DeleteDenyException;
 
     /**
      * A callback method that child Persistent objects are expected to call
@@ -365,7 +365,7 @@ public interface ObjectContext {
      * Returns GraphManager that manages object graph associated with this
      * context.
      */
-    GraphManager getGraphManager();
+    GraphManager<Persistent> getGraphManager();
 
     /**
      * Returns <code>true</code> if there are any modified, deleted or new
@@ -382,7 +382,7 @@ public interface ObjectContext {
      * and change object's state to HOLLOW. On the next access to this object,
      * the object will be refetched.
      */
-    void invalidateObjects(Collection<?> objects);
+    void invalidateObjects(Collection<? extends Persistent> objects);
 
     /**
      * Invalidates one or more persistent objects. Same as
@@ -392,7 +392,7 @@ public interface ObjectContext {
      * 
      * @since 3.1
      */
-    <T> void invalidateObjects(T... objects);
+    <T extends Persistent> void invalidateObjects(T... objects);
 
     /**
      * Returns a user-defined property previously set via 'setUserProperty'.

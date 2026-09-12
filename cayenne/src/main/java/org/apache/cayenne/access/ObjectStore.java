@@ -68,7 +68,7 @@ import java.util.concurrent.ConcurrentHashMap;
  *
  * @since 1.0
  */
-public class ObjectStore implements SnapshotEventListener, GraphManager {
+public class ObjectStore implements SnapshotEventListener, GraphManager<Persistent> {
 
     protected final DataContext context;
     protected final DataRowStore dataRowCache;
@@ -250,16 +250,14 @@ public class ObjectStore implements SnapshotEventListener, GraphManager {
      */
     // this method is exactly the same as "objectsInvalidated", only additionally it
     // throws out registered objects
-    public synchronized void objectsUnregistered(Collection objects) {
+    public synchronized void objectsUnregistered(Collection<? extends Persistent> objects) {
         if (objects.isEmpty()) {
             return;
         }
 
         Collection<ObjectId> ids = new ArrayList<>(objects.size());
 
-        for (Object object1 : objects) {
-            Persistent object = (Persistent) object1;
-
+        for (Persistent object : objects) {
             ObjectId id = object.getObjectId();
 
             // remove object but not snapshot
@@ -467,10 +465,11 @@ public class ObjectStore implements SnapshotEventListener, GraphManager {
             return null;
         }
 
-        GraphManager parentGraph = parent.getGraphManager();
+        GraphManager<Persistent> parentGraph = parent.getGraphManager();
         EntityInheritanceTree inheritanceTree = parent.getEntityResolver().getInheritanceTree(oid.getEntityName());
         for (ObjectId candidateId : inheritanceTree.polymorphicIds(oid)) {
-            if (parentGraph.getNode(candidateId) instanceof Persistent parentObject) {
+            Persistent parentObject = parentGraph.getNode(candidateId);
+            if (parentObject != null) {
                 return parent.currentSnapshot(parentObject);
             }
         }
@@ -784,7 +783,7 @@ public class ObjectStore implements SnapshotEventListener, GraphManager {
      * @since 1.2
      */
     @Override
-    public synchronized Object getNode(Object nodeId) {
+    public synchronized Persistent getNode(Object nodeId) {
         return objectMap.get(nodeId);
     }
 
@@ -795,7 +794,7 @@ public class ObjectStore implements SnapshotEventListener, GraphManager {
      * @since 1.2
      */
     @Override
-    public synchronized Collection<Object> registeredNodes() {
+    public synchronized Collection<Persistent> registeredNodes() {
         return new ArrayList<>(objectMap.values());
     }
 
@@ -803,16 +802,16 @@ public class ObjectStore implements SnapshotEventListener, GraphManager {
      * @since 1.2
      */
     @Override
-    public synchronized void registerNode(Object nodeId, Object nodeObject) {
-        objectMap.put(nodeId, (Persistent) nodeObject);
+    public synchronized void registerNode(Object nodeId, Persistent nodeObject) {
+        objectMap.put(nodeId, nodeObject);
     }
 
     /**
      * @since 1.2
      */
     @Override
-    public synchronized Object unregisterNode(Object nodeId) {
-        Object object = getNode(nodeId);
+    public synchronized Persistent unregisterNode(Object nodeId) {
+        Persistent object = objectMap.get(nodeId);
         if (object != null) {
             objectsUnregistered(Collections.singleton(object));
         }

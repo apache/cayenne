@@ -253,7 +253,7 @@ public class DataContext implements ObjectContext {
      * have a state PersistenceState.NEW
      */
     @Override
-    public Collection<?> newObjects() {
+    public Collection<Persistent> newObjects() {
         return getObjectStore().objectsInState(PersistenceState.NEW);
     }
 
@@ -262,7 +262,7 @@ public class DataContext implements ObjectContext {
      * have a state {@link PersistenceState#DELETED}
      */
     @Override
-    public Collection<?> deletedObjects() {
+    public Collection<Persistent> deletedObjects() {
         return getObjectStore().objectsInState(PersistenceState.DELETED);
     }
 
@@ -270,15 +270,15 @@ public class DataContext implements ObjectContext {
      * @since 3.1
      */
     @Override
-    public <T> void deleteObjects(T... objects) throws DeleteDenyException {
+    public <T extends Persistent> void deleteObjects(T... objects) throws DeleteDenyException {
         if (objects == null || objects.length == 0) {
             return;
         }
 
         DataContextDeleteAction action = new DataContextDeleteAction(this);
 
-        for (Object object : objects) {
-            action.performDelete((Persistent) object);
+        for (Persistent object : objects) {
+            action.performDelete(object);
         }
     }
 
@@ -287,7 +287,7 @@ public class DataContext implements ObjectContext {
      * have a state {@link PersistenceState#MODIFIED}
      */
     @Override
-    public Collection<?> modifiedObjects() {
+    public Collection<Persistent> modifiedObjects() {
         return getObjectStore().objectsInState(PersistenceState.MODIFIED);
     }
 
@@ -297,18 +297,18 @@ public class DataContext implements ObjectContext {
      * @since 1.2
      */
     @Override
-    public Collection<?> uncommittedObjects() {
+    public Collection<Persistent> uncommittedObjects() {
 
         int len = getObjectStore().registeredObjectsCount();
         if (len == 0) {
-            return Collections.EMPTY_LIST;
+            return Collections.emptyList();
         }
 
         // guess target collection size
-        Collection<Object> objects = new ArrayList<>(len > 100 ? len / 2 : len);
-        Iterator<?> it = getObjectStore().getObjectIterator();
+        Collection<Persistent> objects = new ArrayList<>(len > 100 ? len / 2 : len);
+        Iterator<Persistent> it = getObjectStore().getObjectIterator();
         while (it.hasNext()) {
-            Persistent object = (Persistent) it.next();
+            Persistent object = it.next();
             int state = object.getPersistenceState();
             if (state == PersistenceState.MODIFIED || state == PersistenceState.NEW
                     || state == PersistenceState.DELETED) {
@@ -366,8 +366,8 @@ public class DataContext implements ObjectContext {
         }
 
         for (ObjectId candidateId : inheritanceTree.polymorphicIds(id)) {
-            if (getGraphManager().getNode(candidateId) instanceof Persistent object
-                    && object.getPersistenceState() != PersistenceState.HOLLOW) {
+            Persistent object = getGraphManager().getNode(candidateId);
+            if (object != null && object.getPersistenceState() != PersistenceState.HOLLOW) {
                 return object;
             }
         }
@@ -531,7 +531,7 @@ public class DataContext implements ObjectContext {
      * @since 1.2
      */
     @Override
-    public <T> T newObject(Class<T> persistentClass) {
+    public <T extends Persistent> T newObject(Class<T> persistentClass) {
         if (persistentClass == null) {
             throw new NullPointerException("Null 'persistentClass'");
         }
@@ -540,7 +540,6 @@ public class DataContext implements ObjectContext {
         if (entity == null) {
             throw new IllegalArgumentException("Class is not mapped with Cayenne: " + persistentClass.getName());
         }
-
 
         return (T) newObject(entity.getName());
     }
@@ -584,36 +583,32 @@ public class DataContext implements ObjectContext {
      * Registers a transient object with the context, recursively registering
      * all transient persistent objects attached to this object via
      * relationships.
-     * <p>
-     * <i>Note that since 3.0 this method takes Object as an argument instead of a {@link Persistent}.</i>
      *
      * @param object new object that needs to be made persistent.
      */
     @Override
-    public void registerNewObject(Object object) {
+    public void registerNewObject(Persistent object) {
         if (object == null) {
             throw new NullPointerException("Can't register null object.");
         }
 
-        ObjEntity entity = getEntityResolver().getObjEntity((Persistent) object);
+        ObjEntity entity = getEntityResolver().getObjEntity(object);
         if (entity == null) {
             throw new IllegalArgumentException("Can't find ObjEntity for Persistent class: "
                     + object.getClass().getName() + ", class is likely not mapped.");
         }
 
-        Persistent persistent = (Persistent) object;
-
         // sanity check - maybe already registered
-        if (persistent.getObjectId() != null) {
-            if (persistent.getObjectContext() == this) {
+        if (object.getObjectId() != null) {
+            if (object.getObjectContext() == this) {
                 // already registered, just ignore
                 return;
-            } else if (persistent.getObjectContext() != null) {
+            } else if (object.getObjectContext() != null) {
                 throw new IllegalStateException("Persistent is already registered with another DataContext. "
                         + "Try using 'localObjects()' instead.");
             }
         } else {
-            persistent.setObjectId(ObjectId.of(entity.getName()));
+            object.setObjectId(ObjectId.of(entity.getName()));
         }
 
         ClassDescriptor descriptor = getEntityResolver().getClassDescriptor(entity.getName());
@@ -629,27 +624,27 @@ public class DataContext implements ObjectContext {
         descriptor.visitProperties(new PropertyVisitor() {
 
             public boolean visitToMany(ToManyProperty property) {
-                property.injectValueHolder(persistent);
+                property.injectValueHolder(object);
 
-                Object value = property.readProperty(persistent);
+                Object value = property.readProperty(object);
                 Collection<?> collection = value instanceof Map<?, ?> map ? map.values() : (Collection<?>) value;
 
                 for (Object target : collection) {
                     if (target instanceof Persistent targetDO) {
                         registerNewObject(targetDO);
-                        getObjectStore().arcCreated(persistent.getObjectId(), targetDO.getObjectId(), new ArcId(property));
+                        getObjectStore().arcCreated(object.getObjectId(), targetDO.getObjectId(), new ArcId(property));
                     }
                 }
                 return true;
             }
 
             public boolean visitToOne(ToOneProperty property) {
-                Object target = property.readPropertyDirectly(persistent);
+                Object target = property.readPropertyDirectly(object);
 
                 if (target instanceof Persistent targetDO) {
                     // make sure it is registered
                     registerNewObject(targetDO);
-                    getObjectStore().arcCreated(persistent.getObjectId(), targetDO.getObjectId(), new ArcId(property));
+                    getObjectStore().arcCreated(object.getObjectId(), targetDO.getObjectId(), new ArcId(property));
                 }
                 return true;
             }
@@ -664,16 +659,14 @@ public class DataContext implements ObjectContext {
      * If ObjEntity qualifier is set, asks it to inject initial value to an object.
      * Also performs all Persistent initialization operations
      */
-    private void injectInitialValue(Object obj) {
+    private void injectInitialValue(Persistent object) {
         // must follow this exact order of property initialization per CAY-653,
         // i.e. have the id and the context in place BEFORE setPersistence is called
-
-        Persistent object = (Persistent) obj;
 
         object.setObjectContext(this);
         object.setPersistenceState(PersistenceState.NEW);
 
-        GraphManager graphManager = getGraphManager();
+        GraphManager<Persistent> graphManager = getGraphManager();
         synchronized (graphManager) {
             graphManager.registerNode(object.getObjectId(), object);
             graphManager.nodeCreated(object.getObjectId());
@@ -703,7 +696,7 @@ public class DataContext implements ObjectContext {
      *
      * @see #invalidateObjects(Collection)
      */
-    public void unregisterObjects(Collection<?> objects) {
+    public void unregisterObjects(Collection<? extends Persistent> objects) {
         getObjectStore().objectsUnregistered(objects);
     }
 
@@ -712,14 +705,14 @@ public class DataContext implements ObjectContext {
      */
     @SafeVarargs
     @Override
-    public final <T> void invalidateObjects(T... objects) {
+    public final <T extends Persistent> void invalidateObjects(T... objects) {
         if (objects != null && objects.length > 0) {
             invalidateObjects(Arrays.asList(objects));
         }
     }
 
     @Override
-    public void invalidateObjects(Collection<?> objects) {
+    public void invalidateObjects(Collection<? extends Persistent> objects) {
 
         // don't allow null collections as a matter of coding discipline
         if (objects == null) {
@@ -727,7 +720,6 @@ public class DataContext implements ObjectContext {
         }
 
         List<ObjectId> ids = objects.stream()
-                .map(Persistent.class::cast)
                 // NEW objects have nothing to refetch, and their temporary ids are unknown to the parent channel
                 .filter(p -> p.getPersistenceState() != PersistenceState.NEW)
                 .map(Persistent::getObjectId)
@@ -757,7 +749,7 @@ public class DataContext implements ObjectContext {
     @SuppressWarnings("unchecked")
     private List<Persistent> resolveRelationshipInSelf(ObjectId sourceId, String relationshipName, boolean resolveToMany) {
 
-        Persistent source = (Persistent) getGraphManager().getNode(sourceId);
+        Persistent source = getGraphManager().getNode(sourceId);
         if (source == null) {
             return null;
         }
@@ -1137,7 +1129,7 @@ public class DataContext implements ObjectContext {
      * @since 1.2
      */
     @Override
-    public GraphManager getGraphManager() {
+    public GraphManager<Persistent> getGraphManager() {
         return objectStore;
     }
 
@@ -1158,7 +1150,7 @@ public class DataContext implements ObjectContext {
         // messing up Persistent objects per CAY-845. Originally only parts of "else" were synchronized,
         // but we had to expand the lock scope to ensure consistent behavior.
         synchronized (getGraphManager()) {
-            Persistent cachedObject = (Persistent) getGraphManager().getNode(id);
+            Persistent cachedObject = getGraphManager().getNode(id);
 
             // return an existing object
             if (cachedObject != null) {

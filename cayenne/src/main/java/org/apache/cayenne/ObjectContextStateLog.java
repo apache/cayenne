@@ -38,9 +38,9 @@ import java.util.Set;
 class ObjectContextStateLog implements GraphChangeHandler {
 
     Set<Object> dirtyIds;
-    GraphManager graphManager;
+    GraphManager<Persistent> graphManager;
 
-    ObjectContextStateLog(GraphManager graphManager) {
+    ObjectContextStateLog(GraphManager<Persistent> graphManager) {
         this.dirtyIds = new HashSet<>();
         this.graphManager = graphManager;
     }
@@ -59,14 +59,14 @@ class ObjectContextStateLog implements GraphChangeHandler {
         List<Object> deletedIds = new ArrayList<>();
         
         for (Object id : dirtyIds) {
-            Object node = graphManager.getNode(id);
-            if (node instanceof Persistent persistentNode) {
-                switch (persistentNode.getPersistenceState()) {
+            Persistent node = graphManager.getNode(id);
+            if (node != null) {
+                switch (node.getPersistenceState()) {
                     case PersistenceState.MODIFIED, PersistenceState.NEW ->
-                            persistentNode.setPersistenceState(PersistenceState.COMMITTED);
+                            node.setPersistenceState(PersistenceState.COMMITTED);
                     case PersistenceState.DELETED -> {
                         deletedIds.add(id);
-                        persistentNode.setPersistenceState(PersistenceState.TRANSIENT);
+                        node.setPersistenceState(PersistenceState.TRANSIENT);
                     }
                 }
             }
@@ -84,13 +84,13 @@ class ObjectContextStateLog implements GraphChangeHandler {
 
     void graphReverted() {
         for (Object id : dirtyIds) {
-            Object node = graphManager.getNode(id);
-            if (node instanceof Persistent persistentNode) {
-                switch (persistentNode.getPersistenceState()) {
+            Persistent node = graphManager.getNode(id);
+            if (node != null) {
+                switch (node.getPersistenceState()) {
                     case PersistenceState.MODIFIED, PersistenceState.DELETED ->
-                            persistentNode.setPersistenceState(PersistenceState.COMMITTED);
+                            node.setPersistenceState(PersistenceState.COMMITTED);
                     case PersistenceState.NEW ->
-                            persistentNode.setPersistenceState(PersistenceState.TRANSIENT);
+                            node.setPersistenceState(PersistenceState.TRANSIENT);
                 }
             }
         }
@@ -127,7 +127,7 @@ class ObjectContextStateLog implements GraphChangeHandler {
         int size = dirtyIds.size();
         Collection<Object> objects = new ArrayList<>(size > 50 ? size / 2 : size);
         for (Object id : dirtyIds) {
-            Persistent o = (Persistent) graphManager.getNode(id);
+            Persistent o = graphManager.getNode(id);
 
             if (o.getPersistenceState() == state) {
                 objects.add(o);

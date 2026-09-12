@@ -25,29 +25,30 @@ import java.util.Collection;
  * Represents a generic "managed" graph with nodes mapped by their ids. Inherited
  * GraphChangeHandler methods are intended as callbacks for graph node objects to notify
  * graph of their changes.
- * 
+ *
+ * @param <T> the type of graph nodes
  * @since 1.2
  */
-public interface GraphManager extends GraphChangeHandler {
+public interface GraphManager<T> extends GraphChangeHandler {
 
     /**
      * Returns a graph node given an id.
      */
-    Object getNode(Object nodeId);
+    T getNode(Object nodeId);
 
     /**
      * "Registers" a graph node, usually storing the node in some internal map using its
      * id as a key.
      */
-    void registerNode(Object nodeId, Object nodeObject);
+    void registerNode(Object nodeId, T nodeObject);
 
     /**
      * "Unregisters" a graph node, forgetting any information associated with nodeId.
      */
-    Object unregisterNode(Object nodeId);
+    T unregisterNode(Object nodeId);
 
     /**
      * Returns all graph nodes registered with GraphManager.
      */
-    Collection<Object> registeredNodes();
+    Collection<T> registeredNodes();
 }

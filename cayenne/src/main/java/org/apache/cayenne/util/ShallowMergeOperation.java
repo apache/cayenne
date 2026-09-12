@@ -54,7 +54,7 @@ public class ShallowMergeOperation {
         ClassDescriptor descriptor = context.getEntityResolver().getClassDescriptor(
                 id.getEntityName());
 
-        GraphManager graphManager = context.getGraphManager();
+        GraphManager<Persistent> graphManager = context.getGraphManager();
 
         // have to synchronize almost the entire method to prevent multiple threads from
         // messing up Persistent objects per CAY-845.

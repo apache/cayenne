@@ -42,7 +42,7 @@ public abstract class DataChannelSyncCallbackAction implements GraphChangeHandle
 
     public static DataChannelSyncCallbackAction getCallbackAction(
             LifecycleCallbackRegistry callbackRegistry,
-            GraphManager graphManager,
+            GraphManager<Persistent> graphManager,
             GraphDiff changes,
             int syncType) {
 
@@ -62,10 +62,10 @@ public abstract class DataChannelSyncCallbackAction implements GraphChangeHandle
     Collection<Object> persisted;
     Collection<Object> removed;
     private Map<Object, Op> seenIds;
-    private GraphManager graphManager;
+    private GraphManager<Persistent> graphManager;
 
     DataChannelSyncCallbackAction(LifecycleCallbackRegistry callbackRegistry,
-            GraphManager graphManager, GraphDiff changes) {
+            GraphManager<Persistent> graphManager, GraphDiff changes) {
 
         this.callbackRegistry = callbackRegistry;
         this.graphManager = graphManager;
@@ -172,7 +172,7 @@ public abstract class DataChannelSyncCallbackAction implements GraphChangeHandle
     static class FlushCallbackAction extends DataChannelSyncCallbackAction {
 
         FlushCallbackAction(LifecycleCallbackRegistry callbackRegistry,
-                GraphManager graphManager, GraphDiff changes) {
+                GraphManager<Persistent> graphManager, GraphDiff changes) {
             super(callbackRegistry, graphManager, changes);
         }
 
@@ -202,7 +202,7 @@ public abstract class DataChannelSyncCallbackAction implements GraphChangeHandle
     static class RollbackCallbackAction extends DataChannelSyncCallbackAction {
 
         RollbackCallbackAction(LifecycleCallbackRegistry callbackRegistry,
-                GraphManager graphManager, GraphDiff changes) {
+                GraphManager<Persistent> graphManager, GraphDiff changes) {
             super(callbackRegistry, graphManager, changes);
         }
 

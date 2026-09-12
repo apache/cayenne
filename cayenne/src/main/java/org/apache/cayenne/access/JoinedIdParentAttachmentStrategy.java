@@ -38,9 +38,9 @@ class JoinedIdParentAttachmentStrategy implements ParentAttachmentStrategy {
     private final CayennePath relatedIdPrefix;
     private final Collection<ObjEntity> sourceEntities;
     private final PrefetchProcessorNode node;
-    private final GraphManager graphManager;
+    private final GraphManager<Persistent> graphManager;
 
-    JoinedIdParentAttachmentStrategy(GraphManager graphManager, PrefetchProcessorNode node) {
+    JoinedIdParentAttachmentStrategy(GraphManager<Persistent> graphManager, PrefetchProcessorNode node) {
         ClassDescriptor parentDescriptor = ((PrefetchProcessorNode) node.getParent())
                 .getResolver()
                 .getDescriptor();
@@ -70,7 +70,7 @@ class JoinedIdParentAttachmentStrategy implements ParentAttachmentStrategy {
                         , row, entity.getName(), relatedIdPrefix);
             }
 
-            parentObject = (Persistent) graphManager.getNode(id);
+            parentObject = graphManager.getNode(id);
             if (parentObject != null) {
                 break;
             }

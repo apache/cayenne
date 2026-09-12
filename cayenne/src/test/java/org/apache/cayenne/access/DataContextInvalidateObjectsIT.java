@@ -18,11 +18,13 @@
  ****************************************************************/
 package org.apache.cayenne.access;
 
+import java.util.ArrayList;
 import java.util.List;
 
 import org.apache.cayenne.Cayenne;
 import org.apache.cayenne.ObjectContext;
 import org.apache.cayenne.PersistenceState;
+import org.apache.cayenne.Persistent;
 import org.apache.cayenne.query.ObjectSelect;
 import org.apache.cayenne.query.QueryCacheStrategy;
 import org.apache.cayenne.query.SortOrder;
@@ -398,7 +400,9 @@ public class DataContextInvalidateObjectsIT {
                 .getSharedSnapshotCache()
                 .getCachedSnapshot(p2.getObjectId()));
 
-        context.invalidateObjects(context.getObjectStore().registeredNodes());
+        List<Persistent> registered = new ArrayList<>();
+        context.getObjectStore().getObjectIterator().forEachRemaining(registered::add);
+        context.invalidateObjects(registered);
 
         assertNull(context
                 .getChannel().getDataDomain()

@@ -74,7 +74,7 @@ class DbRowOpFactory {
         ObjectId id = (ObjectId) diff.getNodeId();
         this.diff = diff;
         this.descriptor = resolver.getClassDescriptor(id.getEntityName());
-        this.object = (Persistent) store.getNode(id);
+        this.object = store.getNode(id);
         this.dbRows.clear();
     }
 

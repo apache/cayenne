@@ -157,7 +157,7 @@ class DataContextMergeHandler implements GraphChangeHandler, DataChannelListener
             Object oldValue,
             Object newValue) {
 
-        Persistent object = (Persistent) context.getGraphManager().getNode(nodeId);
+        Persistent object = context.getGraphManager().getNode(nodeId);
         if (object != null && object.getPersistenceState() != PersistenceState.HOLLOW) {
 
             // do not override local changes....
@@ -181,7 +181,7 @@ class DataContextMergeHandler implements GraphChangeHandler, DataChannelListener
     // works the same for add and remove as long as we don't get too smart per TODO below.
     private void arcChanged(Object nodeId, Object arcId) {
 
-        final Persistent source = (Persistent) context.getGraphManager().getNode(nodeId);
+        final Persistent source = context.getGraphManager().getNode(nodeId);
         if (source != null && source.getPersistenceState() != PersistenceState.HOLLOW) {
 
             final int state = source.getPersistenceState();

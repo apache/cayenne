@@ -32,9 +32,10 @@ import org.junit.jupiter.api.Test;
 public class ContextStateRecorderTest {
 
 	private ObjectContextStateLog recorder;
-	private GraphManager mockGraphManager;
+	private GraphManager<Persistent> mockGraphManager;
 
 	@BeforeEach
+	@SuppressWarnings("unchecked")
 	public void before() {
 		this.mockGraphManager = mock(GraphManager.class);
 		this.recorder = new ObjectContextStateLog(mockGraphManager);

@@ -20,6 +20,7 @@
 package org.apache.cayenne.dba;
 
 import org.apache.cayenne.ObjectContext;
+import org.apache.cayenne.Persistent;
 import org.apache.cayenne.map.DataMap;
 import org.apache.cayenne.map.EntityResolver;
 import org.apache.cayenne.map.ObjEntity;
@@ -99,7 +100,10 @@ public class ConcurrentPkGeneratorIT {
                 ObjectContext context1 = runtime.newContext();
 				EntityResolver entityResolver = context1.getEntityResolver();
 				for (ObjEntity entity : dataMap.getObjEntities()) {
-                    context1.newObject(entityResolver.getObjectFactory().getJavaClass(entity.getJavaClassName()));
+                    Class<? extends Persistent> type = entityResolver.getObjectFactory()
+                            .getJavaClass(entity.getJavaClassName())
+                            .asSubclass(Persistent.class);
+                    context1.newObject(type);
                 }
                 context1.commitChanges();
             } catch (Exception e) {

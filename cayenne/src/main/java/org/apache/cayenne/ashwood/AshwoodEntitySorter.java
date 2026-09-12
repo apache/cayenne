@@ -292,7 +292,7 @@ public class AshwoodEntitySorter implements EntitySorter {
 
 		// not using 'localObject', looking up in context instead, as within the sorter
 		// we only care about objects participating in transaction, so no need to create hollow objects
-		return (id != null) ? (Persistent) context.getGraphManager().getNode(id) : null;
+		return (id != null) ? context.getGraphManager().getNode(id) : null;
 	}
 
 	@Override
