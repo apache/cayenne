@@ -26,8 +26,6 @@ import org.apache.cayenne.exp.Expression;
  */
 public class ASTGreater extends ConditionNode {
 
-	private static final long serialVersionUID = 2796092142001150018L;
-
 	/**
 	 * Constructor used by expression parser. Do not invoke directly.
 	 */

@@ -21,14 +21,12 @@ package org.apache.cayenne;
 
 import org.apache.cayenne.exp.path.CayennePath;
 
-import java.io.Serializable;
-
 /**
  * Defines minimal API of an object that can be persisted via Cayenne.
  *
  * @since 1.2
  */
-public interface Persistent extends Serializable {
+public interface Persistent {
 
     long DEFAULT_VERSION = Long.MIN_VALUE;
 

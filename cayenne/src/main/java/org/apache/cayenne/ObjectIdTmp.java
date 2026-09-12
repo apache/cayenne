@@ -32,19 +32,10 @@ import org.apache.cayenne.util.IDUtil;
  */
 class ObjectIdTmp implements ObjectId {
 
-    private static final long serialVersionUID = 6566399722364067372L;
-
     private final String entityName;
     private final byte[] id;
 
     private Map<String, Object> replacementId;
-
-    // exists for deserialization with Hessian and similar
-    @SuppressWarnings("unused")
-    private ObjectIdTmp() {
-        entityName = null;
-        id = null;
-    }
 
     ObjectIdTmp(String entityName, byte[] id) {
         this.id = id;

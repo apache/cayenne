@@ -37,8 +37,6 @@ import org.apache.cayenne.exp.Expression;
  */
 public class ASTFalse extends ConditionNode {
 
-	private static final long serialVersionUID = -8441997825701749863L;
-
 	/**
 	 * Constructor used by expression parser. Do not invoke directly.
 	 */

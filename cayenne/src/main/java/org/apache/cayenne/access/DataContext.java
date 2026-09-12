@@ -65,9 +65,6 @@ import org.apache.cayenne.util.GenericResponse;
 import org.apache.cayenne.util.ShallowMergeOperation;
 import org.apache.cayenne.util.Util;
 
-import java.io.IOException;
-import java.io.ObjectInputStream;
-import java.io.ObjectOutputStream;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
@@ -144,12 +141,12 @@ public class DataContext implements ObjectContext {
      */
     protected volatile Map<String, Object> userProperties;
 
-    // transient variables that should be reinitialized on deserialization from the registry
-    protected transient DataChannel channel;
-    protected transient QueryCache queryCache;
-    protected transient EntityResolver entityResolver;
+    // runtime dependencies; a context created without a channel resolves them lazily via attachToRuntimeIfNeeded()
+    protected DataChannel channel;
+    protected QueryCache queryCache;
+    protected EntityResolver entityResolver;
 
-    protected transient DataContextMergeHandler mergeHandler;
+    protected DataContextMergeHandler mergeHandler;
 
     protected boolean validatingObjectsOnCommit = true;
 
@@ -194,8 +191,8 @@ public class DataContext implements ObjectContext {
      * CayenneRuntimeException.
      * <p>
      * This method is called internally by the context before access to
-     * transient variables to allow the context to attach to the stack lazily
-     * following deserialization.
+     * runtime dependencies to allow a context created without a channel to
+     * attach to the stack lazily.
      *
      * @return true if the context successfully attached to the thread runtime,
      * false - if it was already attached.
@@ -1290,50 +1287,6 @@ public class DataContext implements ObjectContext {
      */
     public void setUsingSharedSnapshotCache(boolean flag) {
         this.usingSharedSnapshotCache = flag;
-    }
-
-    // ---------------------------------------------
-    // Serialization Support
-    // ---------------------------------------------
-
-    private void writeObject(ObjectOutputStream out) throws IOException {
-        // See CAY-2382
-        synchronized (getObjectStore()) {
-            out.defaultWriteObject();
-        }
-        // Serialize local snapshots cache
-        if (!isUsingSharedSnapshotCache()) {
-            out.writeObject(objectStore.getDataRowCache());
-        }
-    }
-
-    // serialization support
-    private void readObject(ObjectInputStream in) throws IOException, ClassNotFoundException {
-        // read non-transient properties
-        in.defaultReadObject();
-
-        // deserialize local snapshots cache
-        if (!isUsingSharedSnapshotCache()) {
-            DataRowStore cache = (DataRowStore) in.readObject();
-            objectStore.setDataRowCache(cache);
-        }
-
-        // PersistentObjects have a transient DataContext because at deserialize time
-        // the DataContext may need to be different from the one at serialize time (for programmer defined reasons).
-        // So, when a Persistent is resurrected because it's DataContext was serialized,
-        // it will then set the objects DataContext to the correct one.
-        // If deserialized "otherwise", it will not have a DataContext.
-
-        synchronized (getObjectStore()) {
-            Iterator<?> it = objectStore.getObjectIterator();
-            while (it.hasNext()) {
-                Persistent object = (Persistent) it.next();
-                object.setObjectContext(this);
-            }
-        }
-
-        // ... deferring initialization of transient properties of this context till first access,
-        // so that it can attach to Cayenne runtime using appropriate thread injector.
     }
 
     /**

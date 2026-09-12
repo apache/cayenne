@@ -19,8 +19,6 @@
 
 package org.apache.cayenne.validation;
 
-import java.io.Serializable;
-
 /**
  * Defines a single failure during the validation process. Implementing classes may
  * store any extra information to help callers to identify the source and reasons 
@@ -29,7 +27,7 @@ import java.io.Serializable;
  * @see BeanValidationFailure
  * @since 1.1
  */
-public interface ValidationFailure extends Serializable {
+public interface ValidationFailure {
 
     /**
      * Returns the object that has generated the failure. For example, if a <code>Person</code>

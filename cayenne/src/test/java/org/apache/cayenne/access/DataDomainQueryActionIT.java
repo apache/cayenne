@@ -30,11 +30,7 @@ import org.apache.cayenne.unit.CayenneTestsEnv;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.RegisterExtension;
 
-import java.io.Serializable;
 import java.util.List;
-
-import static org.junit.jupiter.api.Assertions.assertInstanceOf;
-import static org.junit.jupiter.api.Assertions.assertTrue;
 
 public class DataDomainQueryActionIT {
 
@@ -42,16 +38,14 @@ public class DataDomainQueryActionIT {
 
         @Override
         public List<?> get(QueryMetadata metadata, QueryCacheEntryFactory factory) {
-            Object results = factory.createObject();
-            assertInstanceOf(Serializable.class, results, "Query cache is not serializable.");
-
+            factory.createObject();
             return null;
         }
 
         @SuppressWarnings("all")
         @Override
         public void put(QueryMetadata metadata, List results) {
-            assertTrue(results instanceof Serializable, "Query cache is not serializable.");
+            // no-op
         }
     };
 

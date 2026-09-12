@@ -33,22 +33,12 @@ import java.util.Objects;
  */
 class ObjectIdSingle implements ObjectId {
 
-    private static final long serialVersionUID = 3968183354758914938L;
-
     private final String entityName;
     private final String keyName;
     private final Object value;
-    private transient int hashCode;
+    private int hashCode;
 
     private SingleEntryMap<String, Object> replacementId;
-
-    // exists for deserialization with Hessian and similar
-    @SuppressWarnings("unused")
-    private ObjectIdSingle() {
-        this.entityName = "";
-        this.keyName = "";
-        this.value = null;
-    }
 
     ObjectIdSingle(String entityName, String keyName, Object value) {
         this.entityName = entityName;

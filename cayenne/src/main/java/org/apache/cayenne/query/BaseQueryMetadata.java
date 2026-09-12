@@ -19,7 +19,6 @@
 
 package org.apache.cayenne.query;
 
-import java.io.Serializable;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.List;
@@ -39,9 +38,7 @@ import org.apache.cayenne.reflect.ClassDescriptor;
  *
  * @since 1.1
  */
-class BaseQueryMetadata implements QueryMetadata, Serializable {
-
-	private static final long serialVersionUID = 5129792493303459115L;
+class BaseQueryMetadata implements QueryMetadata {
 
 	int fetchLimit = QueryMetadata.FETCH_LIMIT_DEFAULT;
 	int fetchOffset = QueryMetadata.FETCH_OFFSET_DEFAULT;
@@ -61,12 +58,12 @@ class BaseQueryMetadata implements QueryMetadata, Serializable {
 	 */
 	String cacheGroup;
 
-	transient List<Object> resultSetMapping;
-	transient DbEntity dbEntity;
-	transient DataMap dataMap;
-	transient Object lastRoot;
-	transient ClassDescriptor classDescriptor;
-	transient EntityResolver lastEntityResolver;
+	List<Object> resultSetMapping;
+	DbEntity dbEntity;
+	DataMap dataMap;
+	Object lastRoot;
+	ClassDescriptor classDescriptor;
+	EntityResolver lastEntityResolver;
 
 	/**
 	 * Copies values of another QueryMetadata object to this object.

@@ -25,7 +25,6 @@ import org.apache.cayenne.query.Query;
 import org.apache.cayenne.util.XMLEncoder;
 import org.apache.cayenne.util.XMLSerializable;
 
-import java.io.Serializable;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -34,7 +33,7 @@ import java.util.Map;
  *
  * @since 4.0
  */
-public class QueryDescriptor implements Serializable, ConfigurationNode, XMLSerializable {
+public class QueryDescriptor implements ConfigurationNode, XMLSerializable {
 
     public static final String SELECT_QUERY = "SelectQuery";
     public static final String SQL_TEMPLATE = "SQLTemplate";

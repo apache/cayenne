@@ -22,6 +22,4 @@ import org.apache.cayenne.testdo.numeric_types.auto._BigIntegerEntity;
 
 public class BigIntegerEntity extends _BigIntegerEntity {
 
-    private static final long serialVersionUID = 1L; 
-
 }

@@ -22,6 +22,4 @@ import org.apache.cayenne.commitlog.db.auto._AuditableChild1;
 
 public class AuditableChild1 extends _AuditableChild1 {
 
-	private static final long serialVersionUID = 7967782239405764614L;
-
 }

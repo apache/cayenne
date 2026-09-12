@@ -1,8 +1,5 @@
 package org.apache.cayenne.testdo.relationships_many_to_many_join.auto;
 
-import java.io.IOException;
-import java.io.ObjectInputStream;
-import java.io.ObjectOutputStream;
 import java.util.Set;
 
 import org.apache.cayenne.PersistentObject;
@@ -21,8 +18,6 @@ import org.apache.cayenne.testdo.relationships_many_to_many_join.Song;
  * If you need to make any customizations, please use subclass.
  */
 public abstract class _Song extends PersistentObject {
-
-    private static final long serialVersionUID = 1L;
 
     public static final SelfProperty<Song> SELF = PropertyFactory.createSelf(Song.class);
 
@@ -91,28 +86,6 @@ public abstract class _Song extends PersistentObject {
             default:
                 super.writePropertyDirectly(propName, val);
         }
-    }
-
-    private void writeObject(ObjectOutputStream out) throws IOException {
-        writeSerialized(out);
-    }
-
-    private void readObject(ObjectInputStream in) throws IOException, ClassNotFoundException {
-        readSerialized(in);
-    }
-
-    @Override
-    protected void writeState(ObjectOutputStream out) throws IOException {
-        super.writeState(out);
-        out.writeObject(this.name);
-        out.writeObject(this.authors);
-    }
-
-    @Override
-    protected void readState(ObjectInputStream in) throws IOException, ClassNotFoundException {
-        super.readState(in);
-        this.name = (String)in.readObject();
-        this.authors = in.readObject();
     }
 
 }

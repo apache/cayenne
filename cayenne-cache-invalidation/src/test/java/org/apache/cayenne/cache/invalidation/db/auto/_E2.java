@@ -10,8 +10,6 @@ import org.apache.cayenne.GenericPersistentObject;
  */
 public abstract class _E2 extends GenericPersistentObject {
 
-    private static final long serialVersionUID = 1L; 
-
     public static final String ID_PK_COLUMN = "ID";
 
 

@@ -23,7 +23,6 @@ import org.apache.cayenne.resource.Resource;
 import org.apache.cayenne.util.XMLEncoder;
 import org.apache.cayenne.util.XMLSerializable;
 
-import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
@@ -36,9 +35,7 @@ import java.util.Map;
  * 
  * @since 3.1
  */
-public class DataChannelDescriptor implements ConfigurationNode, Serializable, XMLSerializable {
-
-	private static final long serialVersionUID = 6567527544207035602L;
+public class DataChannelDescriptor implements ConfigurationNode, XMLSerializable {
 
 	/**
 	 * The namespace in which the data map XML file will be created.
@@ -49,7 +46,7 @@ public class DataChannelDescriptor implements ConfigurationNode, Serializable, X
 	protected String name;
 	protected Map<String, String> properties;
 	protected Collection<DataMap> dataMaps;
-	protected transient Resource configurationSource;
+	protected Resource configurationSource;
 
 	public DataChannelDescriptor() {
 		properties = new HashMap<>();

@@ -21,7 +21,6 @@ package org.apache.cayenne.access;
 
 import org.apache.cayenne.exp.path.CayennePath;
 
-import java.io.Serializable;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.Iterator;
@@ -40,7 +39,7 @@ import java.util.Map;
 //
 // Future alternatives may include caching the entire QueryResponse... or maybe leaving
 // everything the way it is.
-class ListWithPrefetches implements List<Object>, Serializable {
+class ListWithPrefetches implements List<Object> {
 
     private final List<Object> list;
     private final Map<CayennePath, List<?>> prefetchResultsByPath;

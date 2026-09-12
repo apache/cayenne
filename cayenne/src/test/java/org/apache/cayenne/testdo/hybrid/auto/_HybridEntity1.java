@@ -1,8 +1,5 @@
 package org.apache.cayenne.testdo.hybrid.auto;
 
-import java.io.IOException;
-import java.io.ObjectInputStream;
-import java.io.ObjectOutputStream;
 import java.util.List;
 
 import org.apache.cayenne.HybridPersistentObject;
@@ -22,8 +19,6 @@ import org.apache.cayenne.testdo.hybrid.HybridEntity2;
  * If you need to make any customizations, please use subclass.
  */
 public abstract class _HybridEntity1 extends HybridPersistentObject {
-
-    private static final long serialVersionUID = 1L;
 
     public static final SelfProperty<HybridEntity1> SELF = PropertyFactory.createSelf(HybridEntity1.class);
 
@@ -109,30 +104,6 @@ public abstract class _HybridEntity1 extends HybridPersistentObject {
             default:
                 super.writePropertyDirectly(propName, val);
         }
-    }
-
-    private void writeObject(ObjectOutputStream out) throws IOException {
-        writeSerialized(out);
-    }
-
-    private void readObject(ObjectInputStream in) throws IOException, ClassNotFoundException {
-        readSerialized(in);
-    }
-
-    @Override
-    protected void writeState(ObjectOutputStream out) throws IOException {
-        super.writeState(out);
-        out.writeInt(this.intField);
-        out.writeObject(this.strField);
-        out.writeObject(this.hybridEntities2);
-    }
-
-    @Override
-    protected void readState(ObjectInputStream in) throws IOException, ClassNotFoundException {
-        super.readState(in);
-        this.intField = in.readInt();
-        this.strField = (String)in.readObject();
-        this.hybridEntities2 = in.readObject();
     }
 
 }

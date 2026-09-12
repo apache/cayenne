@@ -18,8 +18,6 @@
  ****************************************************************/
 package org.apache.cayenne.map;
 
-import java.io.Serializable;
-
 import org.apache.cayenne.configuration.ConfigurationNode;
 import org.apache.cayenne.configuration.ConfigurationNodeVisitor;
 import org.apache.cayenne.util.XMLEncoder;
@@ -30,8 +28,7 @@ import org.apache.cayenne.util.XMLSerializable;
  * 
  * @since 3.0
  */
-public class EmbeddableAttribute implements ConfigurationNode, XMLSerializable,
-        Serializable {
+public class EmbeddableAttribute implements ConfigurationNode, XMLSerializable {
 
     protected String name;
     protected String type;

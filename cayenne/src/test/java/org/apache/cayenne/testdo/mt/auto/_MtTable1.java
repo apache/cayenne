@@ -1,8 +1,5 @@
 package org.apache.cayenne.testdo.mt.auto;
 
-import java.io.IOException;
-import java.io.ObjectInputStream;
-import java.io.ObjectOutputStream;
 import java.util.List;
 
 import org.apache.cayenne.PersistentObject;
@@ -21,8 +18,6 @@ import org.apache.cayenne.testdo.mt.MtTable2;
  * If you need to make any customizations, please use subclass.
  */
 public abstract class _MtTable1 extends PersistentObject {
-
-    private static final long serialVersionUID = 1L;
 
     public static final SelfProperty<MtTable1> SELF = PropertyFactory.createSelf(MtTable1.class);
 
@@ -108,30 +103,6 @@ public abstract class _MtTable1 extends PersistentObject {
             default:
                 super.writePropertyDirectly(propName, val);
         }
-    }
-
-    private void writeObject(ObjectOutputStream out) throws IOException {
-        writeSerialized(out);
-    }
-
-    private void readObject(ObjectInputStream in) throws IOException, ClassNotFoundException {
-        readSerialized(in);
-    }
-
-    @Override
-    protected void writeState(ObjectOutputStream out) throws IOException {
-        super.writeState(out);
-        out.writeObject(this.globalAttribute1);
-        out.writeObject(this.serverAttribute1);
-        out.writeObject(this.table2Array);
-    }
-
-    @Override
-    protected void readState(ObjectInputStream in) throws IOException, ClassNotFoundException {
-        super.readState(in);
-        this.globalAttribute1 = (String)in.readObject();
-        this.serverAttribute1 = (String)in.readObject();
-        this.table2Array = in.readObject();
     }
 
 }

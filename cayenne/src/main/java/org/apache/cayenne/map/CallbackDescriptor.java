@@ -18,7 +18,6 @@
  ****************************************************************/
 package org.apache.cayenne.map;
 
-import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
@@ -31,7 +30,7 @@ import java.util.Set;
  * 
  * @since 3.0
  */
-public class CallbackDescriptor implements Serializable {
+public class CallbackDescriptor {
 
     protected LifecycleEvent callbackType;
     protected Set<String> callbackMethods;

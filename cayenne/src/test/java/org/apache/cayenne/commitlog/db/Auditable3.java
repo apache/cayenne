@@ -24,6 +24,4 @@ import org.apache.cayenne.commitlog.db.auto._Auditable3;
 @CommitLog(ignoreAttributes = true, ignoreToManyRelationships = true)
 public class Auditable3 extends _Auditable3 {
 
-	private static final long serialVersionUID = 1L;
-
 }

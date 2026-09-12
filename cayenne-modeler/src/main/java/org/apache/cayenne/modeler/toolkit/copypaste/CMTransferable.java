@@ -26,7 +26,6 @@ import org.apache.cayenne.util.XMLSerializable;
 import java.awt.datatransfer.DataFlavor;
 import java.awt.datatransfer.Transferable;
 import java.io.PrintWriter;
-import java.io.Serializable;
 import java.io.StringWriter;
 import java.util.List;
 
@@ -35,7 +34,8 @@ import java.util.List;
  */
 public class CMTransferable implements Transferable {
 
-    public static final DataFlavor CAYENNE_FLAVOR = new DataFlavor(Serializable.class, "Cayenne Object");
+    public static final DataFlavor CAYENNE_FLAVOR = new DataFlavor(
+            DataFlavor.javaJVMLocalObjectMimeType + ";class=java.lang.Object", "Cayenne Object");
     private static final DataFlavor[] FLAVORS = new DataFlavor[]{CAYENNE_FLAVOR, DataFlavor.stringFlavor};
 
     private final Object data;

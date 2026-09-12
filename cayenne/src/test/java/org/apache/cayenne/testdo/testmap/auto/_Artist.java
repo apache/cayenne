@@ -1,8 +1,5 @@
 package org.apache.cayenne.testdo.testmap.auto;
 
-import java.io.IOException;
-import java.io.ObjectInputStream;
-import java.io.ObjectOutputStream;
 import java.util.Date;
 import java.util.List;
 
@@ -29,8 +26,6 @@ import org.apache.cayenne.testdo.testmap.Painting;
  *
  */
 public abstract class _Artist extends PersistentObject {
-
-    private static final long serialVersionUID = 1L;
 
     public static final SelfProperty<Artist> SELF = PropertyFactory.createSelf(Artist.class);
 
@@ -176,36 +171,6 @@ public abstract class _Artist extends PersistentObject {
             default:
                 super.writePropertyDirectly(propName, val);
         }
-    }
-
-    private void writeObject(ObjectOutputStream out) throws IOException {
-        writeSerialized(out);
-    }
-
-    private void readObject(ObjectInputStream in) throws IOException, ClassNotFoundException {
-        readSerialized(in);
-    }
-
-    @Override
-    protected void writeState(ObjectOutputStream out) throws IOException {
-        super.writeState(out);
-        out.writeObject(this.artistName);
-        out.writeObject(this.dateOfBirth);
-        out.writeObject(this.artistExhibitArray);
-        out.writeObject(this.awardArray);
-        out.writeObject(this.groupArray);
-        out.writeObject(this.paintingArray);
-    }
-
-    @Override
-    protected void readState(ObjectInputStream in) throws IOException, ClassNotFoundException {
-        super.readState(in);
-        this.artistName = (String)in.readObject();
-        this.dateOfBirth = (Date)in.readObject();
-        this.artistExhibitArray = in.readObject();
-        this.awardArray = in.readObject();
-        this.groupArray = in.readObject();
-        this.paintingArray = in.readObject();
     }
 
 }

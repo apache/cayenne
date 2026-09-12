@@ -1,7 +1,5 @@
 package org.apache.cayenne.testdo.embeddable.auto;
 
-import java.io.Serializable;
-
 import org.apache.cayenne.EmbeddableObject;
 import org.apache.cayenne.Persistent;
 import org.apache.cayenne.exp.property.PropertyFactory;
@@ -13,7 +11,7 @@ import org.apache.cayenne.exp.property.StringProperty;
  * since it may be overwritten next time code is regenerated. 
  * If you need to make any customizations, please use subclass. 
  */
-public abstract class _Embeddable1 implements EmbeddableObject, Serializable {
+public abstract class _Embeddable1 implements EmbeddableObject {
 
     public static final StringProperty<String> EMBEDDED20 = PropertyFactory.createString("embedded20", String.class);
     public static final StringProperty<String> EMBEDDED10 = PropertyFactory.createString("embedded10", String.class);

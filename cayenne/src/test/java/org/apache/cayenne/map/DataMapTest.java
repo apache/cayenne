@@ -22,7 +22,6 @@ package org.apache.cayenne.map;
 import org.apache.cayenne.configuration.EmptyConfigurationNodeVisitor;
 import org.apache.cayenne.configuration.xml.XMLDataMapLoader;
 import org.apache.cayenne.resource.URLResource;
-import org.apache.cayenne.util.Util;
 import org.apache.cayenne.util.XMLEncoder;
 import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.Test;
@@ -33,7 +32,6 @@ import java.io.PrintWriter;
 import java.io.StringWriter;
 import java.net.URL;
 import java.util.Collection;
-import java.util.HashMap;
 import java.util.Map;
 
 import static org.junit.jupiter.api.Assertions.*;
@@ -43,19 +41,6 @@ import static org.mockito.Mockito.*;
  * DataMap unit tests.
  */
 public class DataMapTest {
-
-    @Test
-    public void serializability() throws Exception {
-        DataMap m1 = new DataMap("abc");
-        DataMap d1 = (DataMap) Util.cloneViaSerialization(m1);
-        assertEquals(m1.getName(), d1.getName());
-
-        ObjEntity oe1 = new ObjEntity("oe1");
-        m1.addObjEntity(oe1);
-
-        DataMap d2 = (DataMap) Util.cloneViaSerialization(m1);
-        assertNotNull(d2.getObjEntity(oe1.getName()));
-    }
 
     @Test
     public void defaultSchema() {

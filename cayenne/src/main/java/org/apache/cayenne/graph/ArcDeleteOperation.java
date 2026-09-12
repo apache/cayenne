@@ -24,8 +24,6 @@ package org.apache.cayenne.graph;
  */
 public class ArcDeleteOperation extends NodeDiff {
 
-	private static final long serialVersionUID = 3614253207710845385L;
-	
 	protected Object targetNodeId;
 	protected ArcId arcId;
 

@@ -26,8 +26,6 @@ import java.util.Objects;
  */
 public class NodePropertyChangeOperation extends NodeDiff {
 
-	private static final long serialVersionUID = 3282063727025159961L;
-
 	protected String property;
 	protected Object oldValue;
 	protected Object newValue;

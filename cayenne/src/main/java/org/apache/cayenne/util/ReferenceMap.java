@@ -19,10 +19,6 @@
 
 package org.apache.cayenne.util;
 
-import java.io.IOException;
-import java.io.ObjectInputStream;
-import java.io.ObjectOutputStream;
-import java.io.Serializable;
 import java.lang.ref.Reference;
 import java.lang.ref.ReferenceQueue;
 import java.util.AbstractMap;
@@ -58,7 +54,7 @@ import java.util.function.Consumer;
  *
  * @since 4.1
  */
-abstract class ReferenceMap<K, V, R extends Reference<V>> extends AbstractMap<K, V> implements Serializable {
+abstract class ReferenceMap<K, V, R extends Reference<V>> extends AbstractMap<K, V> {
 
     /*
      * Implementation notes:
@@ -69,24 +65,22 @@ abstract class ReferenceMap<K, V, R extends Reference<V>> extends AbstractMap<K,
      *  - all accessors/modifiers should call checkReferenceQueue() to clear all stale data
      */
 
-    private static final long serialVersionUID = -3365744592038165092L;
-
     /**
      * This is a main data storage used for most operations
      */
-    protected transient HashMap<K, R> map;
+    protected HashMap<K, R> map;
 
-    protected transient ReferenceQueue<V> referenceQueue;
+    protected ReferenceQueue<V> referenceQueue;
 
     /**
      * This is a lazily created set of entries that is essentially a view to actual data
      */
-    protected transient Set<Entry<K, V>> entrySet;
+    protected Set<Entry<K, V>> entrySet;
 
     /**
      * @since 4.2.2
      */
-    protected transient Consumer<K> keyCleanupCallback;
+    protected Consumer<K> keyCleanupCallback;
 
     public ReferenceMap() {
         map = new HashMap<>();
@@ -285,28 +279,6 @@ abstract class ReferenceMap<K, V, R extends Reference<V>> extends AbstractMap<K,
      */
     abstract R newReference(V value);
 
-    private void writeObject(ObjectOutputStream out) throws IOException {
-        checkReferenceQueue();
-        Map<K, V> replacementMap = new HashMap<>(map.size());
-        for(Entry<K, R> entry : map.entrySet()) {
-            if(entry.getValue() != null) {
-                V value = entry.getValue().get();
-                if(value != null) {
-                    replacementMap.put(entry.getKey(), value);
-                }
-            }
-        }
-        out.writeObject(replacementMap);
-    }
-
-    private void readObject(ObjectInputStream in) throws IOException, ClassNotFoundException {
-        @SuppressWarnings("unchecked")
-        Map<K, V> replacement = (Map<K, V>) in.readObject();
-        map = new HashMap<>(replacement.size());
-        referenceQueue = new ReferenceQueue<>();
-        putAll(replacement);
-    }
-
     /**
      * View over {@link #map} entry set
      */
@@ -378,8 +350,6 @@ abstract class ReferenceMap<K, V, R extends Reference<V>> extends AbstractMap<K,
      * View over {@link Map.Entry} that transparently resolves Reference
      */
     class ReferenceEntry extends SimpleEntry<K, V> {
-
-        private static final long serialVersionUID = -1795136249842496011L;
 
         Entry<K, R> refEntry;
 

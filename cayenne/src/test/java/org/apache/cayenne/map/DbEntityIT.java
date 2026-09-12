@@ -25,7 +25,6 @@ import org.apache.cayenne.exp.Expression;
 import org.apache.cayenne.exp.ExpressionFactory;
 import org.apache.cayenne.unit.CayenneProjects;
 import org.apache.cayenne.unit.CayenneTestsEnv;
-import org.apache.cayenne.util.Util;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.RegisterExtension;
 
@@ -35,35 +34,6 @@ public class DbEntityIT {
 
     @RegisterExtension
     static final CayenneTestsEnv env = CayenneTestsEnv.forProject(CayenneProjects.TESTMAP_PROJECT);
-
-    @Test
-    public void serializability() throws Exception {
-        DbEntity entity = new DbEntity("entity");
-
-        DbAttribute pk = new DbAttribute("pk");
-        pk.setPrimaryKey(true);
-        entity.addAttribute(pk);
-
-        DbAttribute generated = new DbAttribute("generated");
-        generated.setGenerated(true);
-        entity.addAttribute(generated);
-
-        DbEntity d2 = Util.cloneViaSerialization(entity);
-
-        assertNotNull(d2.getPrimaryKeys());
-        assertEquals(entity.getPrimaryKeys().size(), d2.getPrimaryKeys().size());
-
-        DbAttribute pk2 = d2.getAttribute(pk.getName());
-        assertNotNull(pk2);
-        assertTrue(d2.getPrimaryKeys().contains(pk2));
-
-        assertNotNull(d2.getGeneratedAttributes());
-        assertEquals(entity.getGeneratedAttributes().size(), d2.getGeneratedAttributes().size());
-
-        DbAttribute generated2 = d2.getAttribute(generated.getName());
-        assertNotNull(generated2);
-        assertTrue(d2.getGeneratedAttributes().contains(generated2));
-    }
 
     @Test
     public void constructor1() {

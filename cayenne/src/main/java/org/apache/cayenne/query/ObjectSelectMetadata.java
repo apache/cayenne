@@ -35,8 +35,6 @@ import java.util.Map;
  */
 class ObjectSelectMetadata extends BaseQueryMetadata {
 
-	private static final long serialVersionUID = -4936484509363047672L;
-
 	protected Map<String, String> pathSplitAliases;
 
 	/**

@@ -23,6 +23,4 @@ import org.apache.cayenne.testdo.inheritance_vertical.auto._IvImplWithLock;
 
 public class IvImplWithLock extends _IvImplWithLock {
 
-    private static final long serialVersionUID = 1L; 
-
 }

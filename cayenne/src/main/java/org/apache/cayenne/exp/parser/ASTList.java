@@ -36,8 +36,6 @@ import java.util.List;
  */
 public class ASTList extends SimpleNode {
 
-	private static final long serialVersionUID = 6045178972189002055L;
-
 	protected Object[] values;
 
 	ASTList(int id) {

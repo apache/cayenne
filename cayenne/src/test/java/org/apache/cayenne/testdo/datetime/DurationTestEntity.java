@@ -23,6 +23,4 @@ import org.apache.cayenne.testdo.datetime.auto._DurationTestEntity;
 
 public class DurationTestEntity extends _DurationTestEntity {
 
-    private static final long serialVersionUID = 1L; 
-
 }

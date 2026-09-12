@@ -55,7 +55,7 @@ public class ObjectDiff extends NodeDiff {
 
     private final String entityName;
 
-    private transient ClassDescriptor classDescriptor;
+    private final ClassDescriptor classDescriptor;
 
     private Collection<NodeDiff> otherDiffs;
 
@@ -134,13 +134,6 @@ public class ObjectDiff extends NodeDiff {
     }
 
     ClassDescriptor getClassDescriptor() {
-        // class descriptor is initiated in constructor, but is nullified on
-        // serialization
-        if (classDescriptor == null) {
-            EntityResolver entityResolver = object.getObjectContext().getEntityResolver();
-            this.classDescriptor = entityResolver.getClassDescriptor(entityName);
-        }
-
         return classDescriptor;
     }
 

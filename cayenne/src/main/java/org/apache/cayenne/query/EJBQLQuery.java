@@ -39,7 +39,7 @@ public class EJBQLQuery extends CacheableQuery {
     protected Map<String, Object> namedParameters;
     protected Map<Integer, Object> positionalParameters;
 
-    protected transient EJBQLCompiledExpression expression;
+    protected EJBQLCompiledExpression expression;
     EJBQLQueryMetadata metadata = new EJBQLQueryMetadata();
 
     public EJBQLQuery(String ejbqlStatement) {

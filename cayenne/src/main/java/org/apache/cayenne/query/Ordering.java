@@ -20,7 +20,6 @@
 package org.apache.cayenne.query;
 
 import java.io.PrintWriter;
-import java.io.Serializable;
 import java.io.StringWriter;
 import java.util.ArrayList;
 import java.util.Collection;
@@ -46,12 +45,10 @@ import org.apache.cayenne.util.XMLSerializable;
  * SelectQuery query. Note that in case of in-memory sorting, Ordering can be
  * used with any JavaBeans, not just Persistent objects.
  */
-public class Ordering implements Comparator<Object>, Serializable, XMLSerializable {
-
-	private static final long serialVersionUID = -9167074787055881422L;
+public class Ordering implements Comparator<Object>, XMLSerializable {
 
 	protected String sortSpecString;
-	protected transient Expression sortSpec;
+	protected Expression sortSpec;
 	protected SortOrder sortOrder;
 	protected boolean pathExceptionSuppressed = false;
 	protected boolean nullSortedFirst = true;

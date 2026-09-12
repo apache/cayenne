@@ -19,7 +19,6 @@
 
 package org.apache.cayenne;
 
-import org.apache.cayenne.util.Util;
 import org.junit.jupiter.api.Test;
 
 import java.math.BigDecimal;
@@ -43,34 +42,6 @@ public class ObjectIdTest {
         assertEquals("e1", temp2.getEntityName());
         assertTrue(temp2.isTemporary());
         assertSame(key, temp2.getKey());
-    }
-
-    @Test
-    public void serializabilityTemp() throws Exception {
-        ObjectId temp1 = ObjectId.of("e");
-        ObjectId temp2 = Util.cloneViaSerialization(temp1);
-
-        assertTrue(temp1.isTemporary());
-        assertNotSame(temp1, temp2);
-        assertEquals(temp1, temp2);
-    }
-
-    @Test
-    public void serializabilityPerm() throws Exception {
-        ObjectId perm1 = ObjectId.of("e", "a", "b");
-
-        // make sure hashcode is resolved
-        int h = perm1.hashCode();
-        assertEquals(h, perm1.hashCode());
-        assertTrue(perm1.hashCode() != 0);
-
-        ObjectId perm2 = Util.cloneViaSerialization(perm1);
-
-        assertEquals(h, perm1.hashCode());
-
-        assertFalse(perm2.isTemporary());
-        assertNotSame(perm1, perm2);
-        assertEquals(perm1, perm2);
     }
 
     @Test

@@ -19,7 +19,6 @@
 
 package org.apache.cayenne.exp.path;
 
-import java.io.Serializable;
 import java.util.Iterator;
 import java.util.List;
 import java.util.NoSuchElementException;
@@ -29,13 +28,13 @@ import java.util.NoSuchElementException;
  *
  * @since 5.0
  */
-class MultiSegmentCayennePath implements CayennePath, Serializable {
+class MultiSegmentCayennePath implements CayennePath {
 
     private final List<CayennePathSegment> segments;
 
     private final int marker;
 
-    private transient String fullPath;
+    private String fullPath;
 
     MultiSegmentCayennePath(List<CayennePathSegment> segments, int marker) {
         this.segments = segments;

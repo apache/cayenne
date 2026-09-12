@@ -20,7 +20,6 @@ package org.apache.cayenne.query;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertFalse;
-import static org.junit.jupiter.api.Assertions.assertNotSame;
 import static org.junit.jupiter.api.Assertions.assertNull;
 import static org.junit.jupiter.api.Assertions.assertSame;
 import static org.junit.jupiter.api.Assertions.assertThrows;
@@ -35,7 +34,6 @@ import java.util.Map;
 import org.apache.cayenne.map.EntityResolver;
 import org.apache.cayenne.map.ObjEntity;
 import org.apache.cayenne.testdo.testmap.Artist;
-import org.apache.cayenne.util.Util;
 import org.junit.jupiter.api.Test;
 
 public class SQLTemplateTest {
@@ -169,19 +167,6 @@ public class SQLTemplateTest {
 		assertSame(CapsStrategy.DEFAULT, q1.getColumnNamesCapitalization());
 		q1.setColumnNamesCapitalization(CapsStrategy.UPPER);
 		assertEquals(CapsStrategy.UPPER, q1.getColumnNamesCapitalization());
-	}
-
-	@Test
-	public void serializability() throws Exception {
-		SQLTemplate o = new SQLTemplate("Test", "DO SQL");
-		Object clone = Util.cloneViaSerialization(o);
-
-		assertTrue(clone instanceof SQLTemplate);
-		SQLTemplate c1 = (SQLTemplate) clone;
-
-		assertNotSame(o, c1);
-		assertEquals(o.getRoot(), c1.getRoot());
-		assertEquals(o.getDefaultTemplate(), c1.getDefaultTemplate());
 	}
 
 	@Test

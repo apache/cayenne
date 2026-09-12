@@ -27,8 +27,6 @@ import java.util.function.Consumer;
 @Tag1
 public class Artist extends _Artist {
     
-    private static final long serialVersionUID = 1L; 
-
     protected transient Consumer<Artist> validationCallback;
     protected boolean validateForSaveCalled;
     protected boolean postAdded;

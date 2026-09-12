@@ -30,8 +30,6 @@ import org.apache.cayenne.exp.Expression;
  * @since 3.1
  */
 public class ASTBitwiseXor extends EvaluatedBitwiseNode {
-	private static final long serialVersionUID = 1L;
-
 	ASTBitwiseXor(int id) {
 		super(id);
 	}

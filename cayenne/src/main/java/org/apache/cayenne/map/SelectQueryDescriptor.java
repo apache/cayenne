@@ -36,8 +36,6 @@ import java.util.Map;
  */
 public class SelectQueryDescriptor extends QueryDescriptor {
 
-	private static final long serialVersionUID = -8798258795351950215L;
-
     public static final String DISTINCT_PROPERTY = "cayenne.SelectQuery.distinct";
     public static final boolean DISTINCT_DEFAULT = false;
 

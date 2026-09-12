@@ -23,6 +23,4 @@ import org.apache.cayenne.testdo.compound.auto._CompoundIntPk;
 
 public class CompoundIntPk extends _CompoundIntPk {
 
-    private static final long serialVersionUID = 1L; 
-
 }

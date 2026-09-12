@@ -20,8 +20,6 @@
 
 package org.apache.cayenne.map;
 
-import java.io.Serializable;
-
 import org.apache.cayenne.configuration.ConfigurationNodeVisitor;
 import org.apache.cayenne.util.CayenneMapEntry;
 import org.apache.cayenne.util.XMLEncoder;
@@ -34,7 +32,7 @@ import org.apache.cayenne.util.XMLSerializable;
  * 
  */
 
-public class DbKeyGenerator implements CayenneMapEntry, XMLSerializable, Serializable {
+public class DbKeyGenerator implements CayenneMapEntry, XMLSerializable {
 
     public static final String ORACLE_TYPE = "ORACLE";
     public static final String NAMED_SEQUENCE_TABLE_TYPE = "NAMED_SEQUENCE_TABLE";

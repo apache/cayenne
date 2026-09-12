@@ -22,7 +22,6 @@ import org.apache.cayenne.CayenneRuntimeException;
 import org.apache.cayenne.query.QueryMetadata;
 import org.apache.cayenne.util.concurrentlinkedhashmap.ConcurrentLinkedHashMap;
 
-import java.io.Serializable;
 import java.util.List;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
@@ -33,7 +32,7 @@ import java.util.concurrent.ConcurrentHashMap;
  * 
  * @since 3.0
  */
-public class MapQueryCache implements QueryCache, Serializable {
+public class MapQueryCache implements QueryCache {
 
     public static final int DEFAULT_CACHE_SIZE = 1000;
 

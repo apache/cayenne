@@ -24,6 +24,4 @@ import org.apache.cayenne.commitlog.db.auto._Auditable1;
 @CommitLog
 public class Auditable1 extends _Auditable1 {
 
-	private static final long serialVersionUID = 8458581370578140962L;
-
 }

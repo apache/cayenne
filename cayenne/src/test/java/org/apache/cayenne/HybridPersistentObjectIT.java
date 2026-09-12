@@ -26,7 +26,6 @@ import org.apache.cayenne.testdo.hybrid.HybridEntity1;
 import org.apache.cayenne.testdo.hybrid.HybridEntity2;
 import org.apache.cayenne.unit.CayenneProjects;
 import org.apache.cayenne.unit.CayenneTestsEnv;
-import org.apache.cayenne.util.Util;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.RegisterExtension;
 
@@ -145,21 +144,6 @@ public class HybridPersistentObjectIT {
         HybridEntity1 selectCleanEntity1 = ObjectSelect.query(HybridEntity1.class).selectOne(cleanContext);
         // this will be read from db only
         assertEquals(null, selectCleanEntity1.readProperty("CUSTOM_NON_DB_ATTRIBUTE"));
-    }
-
-    @Test
-    public void testSerialization() throws Exception {
-
-        HybridEntity1 entity1 = new HybridEntity1();
-        entity1.setIntField(123);
-        entity1.setStrField("abc");
-        entity1.writeProperty("CUSTOM_PROPERTY", 3.14);
-
-        HybridEntity1 clonedEntity1 = Util.cloneViaSerialization(entity1);
-
-        assertEquals(123, clonedEntity1.getIntField());
-        assertEquals("abc", clonedEntity1.getStrField());
-        assertEquals(3.14, clonedEntity1.readProperty("CUSTOM_PROPERTY"));
     }
 
     @Test

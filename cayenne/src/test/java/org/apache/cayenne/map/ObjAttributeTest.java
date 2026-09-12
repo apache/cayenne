@@ -19,13 +19,11 @@
 
 package org.apache.cayenne.map;
 
-import org.apache.cayenne.util.Util;
 import org.junit.jupiter.api.Test;
 
 import java.sql.Types;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertNotNull;
 
 public class ObjAttributeTest {
 
@@ -57,14 +55,6 @@ public class ObjAttributeTest {
         String type = "org.aa.zz";
         attribute.setType(type);
         assertEquals(type, attribute.getType());
-    }
-
-    @Test
-    public void serializability() throws Exception {
-        ObjAttribute a1 = new ObjAttribute("a1");
-
-        ObjAttribute a2 = Util.cloneViaSerialization(a1);
-        assertEquals(a1.getName(), a2.getName());
     }
 
     @Test

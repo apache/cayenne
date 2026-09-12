@@ -1,9 +1,5 @@
 package org.apache.cayenne.testdo.inheritance_vertical.auto;
 
-import java.io.IOException;
-import java.io.ObjectInputStream;
-import java.io.ObjectOutputStream;
-
 import org.apache.cayenne.exp.property.NumericIdProperty;
 import org.apache.cayenne.exp.property.PropertyFactory;
 import org.apache.cayenne.exp.property.SelfProperty;
@@ -18,8 +14,6 @@ import org.apache.cayenne.testdo.inheritance_vertical.IvSub1Sub1;
  * If you need to make any customizations, please use subclass.
  */
 public abstract class _IvSub1Sub1 extends IvSub1 {
-
-    private static final long serialVersionUID = 1L;
 
     public static final SelfProperty<IvSub1Sub1> SELF = PropertyFactory.createSelf(IvSub1Sub1.class);
 
@@ -68,26 +62,6 @@ public abstract class _IvSub1Sub1 extends IvSub1 {
             default:
                 super.writePropertyDirectly(propName, val);
         }
-    }
-
-    private void writeObject(ObjectOutputStream out) throws IOException {
-        writeSerialized(out);
-    }
-
-    private void readObject(ObjectInputStream in) throws IOException, ClassNotFoundException {
-        readSerialized(in);
-    }
-
-    @Override
-    protected void writeState(ObjectOutputStream out) throws IOException {
-        super.writeState(out);
-        out.writeObject(this.sub1Sub1Name);
-    }
-
-    @Override
-    protected void readState(ObjectInputStream in) throws IOException, ClassNotFoundException {
-        super.readState(in);
-        this.sub1Sub1Name = (String)in.readObject();
     }
 
 }

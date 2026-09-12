@@ -24,8 +24,6 @@ package org.apache.cayenne.graph;
  */
 public class NodeCreateOperation extends NodeDiff {
 
-	private static final long serialVersionUID = -7383872939009489304L;
-
 	public NodeCreateOperation(Object nodeId) {
 		super(nodeId);
 	}

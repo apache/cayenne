@@ -19,8 +19,6 @@
 
 package org.apache.cayenne;
 
-import java.io.Serializable;
-
 /**
  * Represents a placeholder for an unresolved relationship from a source object. Fault is
  * resolved via {@link #resolveFault(Persistent, String)}. Depending on the type of fault
@@ -29,7 +27,7 @@ import java.io.Serializable;
  * 
  * @since 1.1
  */
-public abstract class Fault implements Serializable {
+public abstract class Fault {
 
     protected Fault() {
     }

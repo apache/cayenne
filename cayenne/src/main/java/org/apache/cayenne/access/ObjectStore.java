@@ -47,7 +47,6 @@ import org.apache.cayenne.reflect.ToOneProperty;
 import org.apache.cayenne.util.SoftValueMap;
 import org.apache.cayenne.util.WeakValueMap;
 
-import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
@@ -65,7 +64,7 @@ import java.util.concurrent.ConcurrentHashMap;
  * 
  * @since 1.0
  */
-public class ObjectStore implements Serializable, SnapshotEventListener, GraphManager {
+public class ObjectStore implements SnapshotEventListener, GraphManager {
 
     protected Map<Object, Persistent> objectMap;
     protected Map<Object, ObjectDiff> changes;
@@ -83,16 +82,8 @@ public class ObjectStore implements Serializable, SnapshotEventListener, GraphMa
 
     /**
      * Stores a reference to the DataRowStore.
-     * <p>
-     * <i>Serialization note: </i> It is up to the owner of this ObjectStore to initialize
-     * DataRowStore after deserialization of this object. ObjectStore will not know how to
-     * restore the DataRowStore by itself.
-     * </p>
      */
-    protected transient DataRowStore dataRowCache;
-
-    // used to avoid incorrect on-demand DataRowStore initialization after deserialization
-    protected boolean dataRowCacheSet;
+    protected DataRowStore dataRowCache;
 
     private Collection<GraphDiff> lifecycleEventInducedChanges;
 
@@ -233,23 +224,6 @@ public class ObjectStore implements Serializable, SnapshotEventListener, GraphMa
      * Returns a DataRowStore associated with this ObjectStore.
      */
     public DataRowStore getDataRowCache() {
-
-        // perform deferred initialization...
-
-        // Andrus, 11/7/2005 - potential problem with on-demand deferred initialization is
-        // that deserialized context won't receive any events... which maybe ok, since it
-        // didn't while it was stored in serialized form.
-        if (dataRowCache == null && context != null && dataRowCacheSet) {
-            synchronized (this) {
-                if (dataRowCache == null) {
-                    DataDomain domain = context.getParentDataDomain();
-                    if (domain != null) {
-                        setDataRowCache(domain.getSharedSnapshotCache());
-                    }
-                }
-            }
-        }
-
         return dataRowCache;
     }
 
@@ -284,8 +258,6 @@ public class ObjectStore implements Serializable, SnapshotEventListener, GraphMa
                     dataRowCache.getSnapshotEventSubject(),
                     dataRowCache);
         }
-
-        dataRowCacheSet = dataRowCache != null;
     }
 
     /**

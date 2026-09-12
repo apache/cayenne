@@ -1,8 +1,5 @@
 package org.apache.cayenne.testdo.db1.auto;
 
-import java.io.IOException;
-import java.io.ObjectInputStream;
-import java.io.ObjectOutputStream;
 import java.util.List;
 
 import org.apache.cayenne.PersistentObject;
@@ -22,8 +19,6 @@ import org.apache.cayenne.testdo.db2.CrossdbM2E2;
  * If you need to make any customizations, please use subclass.
  */
 public abstract class _CrossdbM1E1 extends PersistentObject {
-
-    private static final long serialVersionUID = 1L;
 
     public static final SelfProperty<CrossdbM1E1> SELF = PropertyFactory.createSelf(CrossdbM1E1.class);
 
@@ -112,30 +107,6 @@ public abstract class _CrossdbM1E1 extends PersistentObject {
             default:
                 super.writePropertyDirectly(propName, val);
         }
-    }
-
-    private void writeObject(ObjectOutputStream out) throws IOException {
-        writeSerialized(out);
-    }
-
-    private void readObject(ObjectInputStream in) throws IOException, ClassNotFoundException {
-        readSerialized(in);
-    }
-
-    @Override
-    protected void writeState(ObjectOutputStream out) throws IOException {
-        super.writeState(out);
-        out.writeObject(this.name);
-        out.writeObject(this.flattened);
-        out.writeObject(this.listOfM2E2);
-    }
-
-    @Override
-    protected void readState(ObjectInputStream in) throws IOException, ClassNotFoundException {
-        super.readState(in);
-        this.name = (String)in.readObject();
-        this.flattened = in.readObject();
-        this.listOfM2E2 = in.readObject();
     }
 
 }

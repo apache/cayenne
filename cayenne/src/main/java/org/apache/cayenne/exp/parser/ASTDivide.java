@@ -34,8 +34,6 @@ import org.apache.cayenne.exp.Expression;
  */
 public class ASTDivide extends EvaluatedMathNode {
 
-	private static final long serialVersionUID = -5086569683844539310L;
-
 	ASTDivide(int id) {
 		super(id);
 	}

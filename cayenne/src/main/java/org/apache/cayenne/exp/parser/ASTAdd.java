@@ -31,8 +31,6 @@ import org.apache.cayenne.exp.Expression;
  */
 public class ASTAdd extends EvaluatedMathNode {
 
-	private static final long serialVersionUID = -8622963819149351988L;
-
 	ASTAdd(int id) {
 		super(id);
 	}

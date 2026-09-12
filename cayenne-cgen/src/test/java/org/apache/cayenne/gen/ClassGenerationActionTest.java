@@ -110,8 +110,6 @@ public class ClassGenerationActionTest extends CgenCase {
 
 		ObjRelationship relationship = new ObjRelationship("xMap") {
 
-			private static final long serialVersionUID = 8042147877503405974L;
-
 			@Override
 			public boolean isToMany() {
 				return true;

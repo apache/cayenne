@@ -23,6 +23,4 @@ import org.apache.cayenne.testdo.json.auto._JsonVarchar;
 
 public class JsonVarchar extends _JsonVarchar {
 
-    private static final long serialVersionUID = 1L;
-
 }

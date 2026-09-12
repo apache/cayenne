@@ -22,8 +22,6 @@ import org.apache.cayenne.testdo.embeddable.auto._EmbedEntity1;
 
 public class EmbedEntity1 extends _EmbedEntity1 {
 
-    private static final long serialVersionUID = 1L; 
-
 }
 
 

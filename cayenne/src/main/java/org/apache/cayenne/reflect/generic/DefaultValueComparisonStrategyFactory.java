@@ -24,7 +24,6 @@ import org.apache.cayenne.access.types.ValueObjectTypeRegistry;
 import org.apache.cayenne.di.Inject;
 import org.apache.cayenne.map.ObjAttribute;
 
-import java.io.Serializable;
 import java.util.Objects;
 
 /**
@@ -50,10 +49,8 @@ public class DefaultValueComparisonStrategyFactory implements ValueComparisonStr
         }
     }
 
-    // Using classes instead of lambdas to allow serialization
-
     @SuppressWarnings({"rawtypes"})
-    static class ValueObjectTypeComparisonStrategy implements ValueComparisonStrategy<Object>, Serializable {
+    static class ValueObjectTypeComparisonStrategy implements ValueComparisonStrategy<Object> {
         private final ValueObjectType valueObjectType;
 
         public ValueObjectTypeComparisonStrategy(ValueObjectType<?, ?> valueObjectType) {
@@ -67,7 +64,7 @@ public class DefaultValueComparisonStrategyFactory implements ValueComparisonStr
         }
     }
 
-    static class DefaultValueComparisonStrategy implements ValueComparisonStrategy<Object>, Serializable {
+    static class DefaultValueComparisonStrategy implements ValueComparisonStrategy<Object> {
         @Override
         public boolean equals(Object a, Object b) {
             return Objects.equals(a, b);

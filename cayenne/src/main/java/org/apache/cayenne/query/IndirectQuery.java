@@ -31,8 +31,6 @@ import org.apache.cayenne.map.EntityResolver;
  */
 public abstract class IndirectQuery implements Query {
 
-	private static final long serialVersionUID = 974666786498898209L;
-
 	protected String name;
 
 	/**
@@ -40,8 +38,8 @@ public abstract class IndirectQuery implements Query {
 	 */
 	protected DataMap dataMap;
 
-	protected transient Query replacementQuery;
-	protected transient EntityResolver lastResolver;
+	protected Query replacementQuery;
+	protected EntityResolver lastResolver;
 
 	/**
 	 * Returns the metadata obtained from the replacement query.

@@ -34,6 +34,4 @@ import org.apache.cayenne.cache.invalidation.db.auto._E2;
 @CacheGroup("g6")
 public class E2 extends _E2 {
 
-    private static final long serialVersionUID = 1L; 
-
 }

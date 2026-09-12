@@ -33,8 +33,6 @@ import org.apache.cayenne.exp.ExpressionParameter;
  */
 public class ASTNamedParameter extends ASTScalar {
 
-	private static final long serialVersionUID = -3965588358977704022L;
-
 	ASTNamedParameter(int id) {
 		super(id);
 	}

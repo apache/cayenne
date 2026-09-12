@@ -22,6 +22,4 @@ import org.apache.cayenne.commitlog.db.auto._AuditLog;
 
 public class AuditLog extends _AuditLog {
 
-    private static final long serialVersionUID = 1L; 
-
 }

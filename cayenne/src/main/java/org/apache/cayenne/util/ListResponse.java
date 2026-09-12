@@ -19,7 +19,6 @@
 
 package org.apache.cayenne.util;
 
-import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
@@ -31,11 +30,11 @@ import org.apache.cayenne.QueryResponse;
  * 
  * @since 1.2
  */
-public class ListResponse implements QueryResponse, Serializable {
+public class ListResponse implements QueryResponse {
 
     protected List<?> objectList;
 
-    protected transient int currentIndex;
+    protected int currentIndex;
 
     /**
      * Creates an empty response.
@@ -81,7 +80,6 @@ public class ListResponse implements QueryResponse, Serializable {
     }
 
     public void reset() {
-        // use a zero-based index, not -1, as this will simplify serialization handling
         currentIndex = 0;
     }
 

@@ -28,7 +28,6 @@ import org.apache.cayenne.util.CayenneMapEntry;
 import org.apache.cayenne.util.ToStringBuilder;
 import org.apache.cayenne.util.XMLSerializable;
 
-import java.io.Serializable;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.Iterator;
@@ -42,7 +41,7 @@ import java.util.StringTokenizer;
  * 
  */
 public abstract class Entity<E extends Entity<E, A, R>, A extends Attribute<E, A, R>, R extends Relationship<E, A, R>>
-        implements CayenneMapEntry, XMLSerializable, Serializable {
+        implements CayenneMapEntry, XMLSerializable {
 
     public static final String PATH_SEPARATOR = ".";
 
@@ -236,8 +235,6 @@ public abstract class Entity<E extends Entity<E, A, R>, A extends Attribute<E, A
      * Returns an unmodifiable map of relationships sorted by name.
      */
     public Map<String, R> getRelationshipMap() {
-        // create a new instance ... earlier attempts to cache it in the entity caused
-        // serialization issues (esp. with Hessian).
         return Collections.unmodifiableMap(relationships);
     }
 
@@ -265,8 +262,6 @@ public abstract class Entity<E extends Entity<E, A, R>, A extends Attribute<E, A
      * Returns an unmodifiable collection of Relationships that exist in this entity.
      */
     public Collection<R> getRelationships() {
-        // create a new instance ... earlier attempts to cache it in the entity caused
-        // serialization issues (esp. with Hessian).
         return Collections.unmodifiableCollection(relationships.values());
     }
 
@@ -274,8 +269,6 @@ public abstract class Entity<E extends Entity<E, A, R>, A extends Attribute<E, A
      * Returns an unmodifiable sorted map of entity attributes.
      */
     public Map<String, A> getAttributeMap() {
-        // create a new instance ... earlier attempts to cache it in the entity caused
-        // serialization issues (esp. with Hessian).
         return Collections.unmodifiableMap(attributes);
     }
 
@@ -283,8 +276,6 @@ public abstract class Entity<E extends Entity<E, A, R>, A extends Attribute<E, A
      * Returns an unmodifiable collection of entity attributes.
      */
     public Collection<A> getAttributes() {
-        // create a new instance ... earlier attempts to cache it in the entity caused
-        // serialization issues (esp. with Hessian).
         return Collections.unmodifiableCollection(attributes.values());
     }
 

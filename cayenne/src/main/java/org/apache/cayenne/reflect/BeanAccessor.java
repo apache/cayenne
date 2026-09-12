@@ -29,8 +29,6 @@ import java.lang.reflect.Method;
  */
 public class BeanAccessor implements Accessor {
 
-	private static final long serialVersionUID = 606253801447018099L;
-
 	protected String propertyName;
 	protected Method readMethod;
 	protected Method writeMethod;

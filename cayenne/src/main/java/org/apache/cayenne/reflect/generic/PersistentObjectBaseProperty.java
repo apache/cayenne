@@ -18,8 +18,6 @@
  ****************************************************************/
 package org.apache.cayenne.reflect.generic;
 
-import java.io.Serializable;
-
 import org.apache.cayenne.Persistent;
 import org.apache.cayenne.reflect.PropertyDescriptor;
 import org.apache.cayenne.reflect.PropertyException;
@@ -30,7 +28,7 @@ import org.apache.cayenne.reflect.PropertyVisitor;
  * 
  * @since 3.0
  */
-abstract class PersistentObjectBaseProperty implements PropertyDescriptor, Serializable {
+abstract class PersistentObjectBaseProperty implements PropertyDescriptor {
 
     public abstract String getName();
 

@@ -20,14 +20,12 @@ package org.apache.cayenne.map;
 
 import org.apache.cayenne.util.XMLEncoder;
 
-import java.io.Serializable;
-
 /**
  * A generic descriptor of a set of standard lifecycle callbacks.
  * 
  * @since 3.0
  */
-public class CallbackMap implements Serializable {
+public class CallbackMap {
 
     private final CallbackDescriptor[] callbacks;
 

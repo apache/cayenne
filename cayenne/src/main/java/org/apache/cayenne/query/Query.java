@@ -24,12 +24,10 @@ import org.apache.cayenne.access.DataNode;
 import org.apache.cayenne.map.DataMap;
 import org.apache.cayenne.map.EntityResolver;
 
-import java.io.Serializable;
-
 /**
  * Defines minimal API of a query descriptor that is executable via Cayenne.
  */
-public interface Query extends Serializable {
+public interface Query {
 
     /**
      * Returns query runtime parameters. The method is called at various stages of the

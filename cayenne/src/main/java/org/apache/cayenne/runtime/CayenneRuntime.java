@@ -60,9 +60,9 @@ import java.util.Objects;
 public class CayenneRuntime {
 
     /**
-     * A holder of an Injector bound to the current thread. Used mainly to allow
-     * serializable contexts to attach to correct Cayenne stack on
-     * deserialization.
+     * A holder of an Injector bound to the current thread. Used to allow
+     * contexts created outside of the Cayenne stack to attach to the correct
+     * runtime lazily.
      *
      * @since 3.1
      */
@@ -70,7 +70,8 @@ public class CayenneRuntime {
 
     /**
      * Binds a DI {@link Injector} bound to the current thread. It is primarily
-     * intended for deserialization of ObjectContexts.
+     * intended for ObjectContexts created outside of the Cayenne stack that
+     * need to attach to a runtime lazily.
      *
      * @since 3.1
      */

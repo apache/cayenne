@@ -19,7 +19,6 @@
 
 package org.apache.cayenne.dbsync.reverse.dbimport;
 
-import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
@@ -33,7 +32,7 @@ import org.apache.cayenne.util.XMLSerializable;
 /**
  * @since 4.0
  */
-public class ReverseEngineering extends SchemaContainer implements Serializable, XMLSerializable {
+public class ReverseEngineering extends SchemaContainer implements XMLSerializable {
 
     private boolean skipRelationshipsLoading;
 

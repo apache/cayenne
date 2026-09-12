@@ -19,7 +19,6 @@
 
 package org.apache.cayenne.graph;
 
-import java.io.Serializable;
 import java.util.Objects;
 
 import org.apache.cayenne.exp.parser.ASTDbPath;
@@ -31,9 +30,7 @@ import org.apache.cayenne.reflect.ArcProperty;
  *
  * @since 4.2
  */
-public class ArcId implements Serializable {
-
-    private static final long serialVersionUID = -3712846298213425259L;
+public class ArcId {
 
     private final String forwardArc;
     private final String reverseArc;

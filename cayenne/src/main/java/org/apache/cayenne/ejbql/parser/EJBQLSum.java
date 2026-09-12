@@ -31,7 +31,6 @@ public class EJBQLSum extends EJBQLAggregateColumn {
 	// per JPA spec, 4.8.4, SUM type mapping rules are a bit convoluted. Mapping
 	// them here...
 
-	private static final long serialVersionUID = 2256495371122671530L;
 	static final Map<String, String> typeMap;
 
 	static {

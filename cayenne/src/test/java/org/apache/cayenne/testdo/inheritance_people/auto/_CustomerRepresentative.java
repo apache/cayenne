@@ -1,9 +1,5 @@
 package org.apache.cayenne.testdo.inheritance_people.auto;
 
-import java.io.IOException;
-import java.io.ObjectInputStream;
-import java.io.ObjectOutputStream;
-
 import org.apache.cayenne.exp.property.EntityProperty;
 import org.apache.cayenne.exp.property.NumericIdProperty;
 import org.apache.cayenne.exp.property.PropertyFactory;
@@ -20,8 +16,6 @@ import org.apache.cayenne.testdo.inheritance_people.CustomerRepresentative;
  * If you need to make any customizations, please use subclass.
  */
 public abstract class _CustomerRepresentative extends AbstractPerson {
-
-    private static final long serialVersionUID = 1L;
 
     public static final SelfProperty<CustomerRepresentative> SELF = PropertyFactory.createSelf(CustomerRepresentative.class);
 
@@ -85,28 +79,6 @@ public abstract class _CustomerRepresentative extends AbstractPerson {
             default:
                 super.writePropertyDirectly(propName, val);
         }
-    }
-
-    private void writeObject(ObjectOutputStream out) throws IOException {
-        writeSerialized(out);
-    }
-
-    private void readObject(ObjectInputStream in) throws IOException, ClassNotFoundException {
-        readSerialized(in);
-    }
-
-    @Override
-    protected void writeState(ObjectOutputStream out) throws IOException {
-        super.writeState(out);
-        out.writeObject(this.clientContactType);
-        out.writeObject(this.toClientCompany);
-    }
-
-    @Override
-    protected void readState(ObjectInputStream in) throws IOException, ClassNotFoundException {
-        super.readState(in);
-        this.clientContactType = (String)in.readObject();
-        this.toClientCompany = in.readObject();
     }
 
 }

@@ -19,7 +19,6 @@
 
 package org.apache.cayenne.map;
 
-import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
@@ -33,8 +32,7 @@ import org.apache.cayenne.util.XMLSerializable;
 /**
  * A mapping descriptor for a database stored procedure.
  */
-public class Procedure implements ConfigurationNode, CayenneMapEntry, XMLSerializable,
-        Serializable {
+public class Procedure implements ConfigurationNode, CayenneMapEntry, XMLSerializable {
 
     protected String name;
     protected DataMap dataMap;

@@ -21,9 +21,6 @@ package org.apache.cayenne;
 
 import org.apache.cayenne.reflect.PropertyUtils;
 
-import java.io.IOException;
-import java.io.ObjectInputStream;
-import java.io.ObjectOutputStream;
 import java.util.Collection;
 import java.util.HashMap;
 import java.util.Iterator;
@@ -46,8 +43,6 @@ import java.util.Map;
  * @since 5.0, renamed from CayenneDataObject
  */
 public class GenericPersistentObject extends PersistentObject {
-
-	private static final long serialVersionUID = -313743913882350400L;
 
 	protected Map<String, Object> values = new HashMap<>();
 
@@ -111,35 +106,5 @@ public class GenericPersistentObject extends PersistentObject {
 		}
 
 		buffer.append("]");
-	}
-
-	/**
-	 * Serialization support.
-	 */
-	private void writeObject(ObjectOutputStream out) throws IOException {
-		writeSerialized(out);
-	}
-
-	/**
-	 * Serialization support.
-	 */
-	private void readObject(ObjectInputStream in) throws IOException, ClassNotFoundException {
-		readSerialized(in);
-		if(values == null) {
-			values = new HashMap<>();
-		}
-	}
-
-	@SuppressWarnings("unchecked")
-	@Override
-	protected void readState(ObjectInputStream in) throws IOException, ClassNotFoundException {
-		super.readState(in);
-		values = (Map<String, Object>) in.readObject();
-	}
-
-	@Override
-	protected void writeState(ObjectOutputStream out) throws IOException {
-		super.writeState(out);
-		out.writeObject(values);
 	}
 }

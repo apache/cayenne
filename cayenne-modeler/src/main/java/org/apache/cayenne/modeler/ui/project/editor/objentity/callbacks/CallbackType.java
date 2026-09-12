@@ -21,9 +21,7 @@ package org.apache.cayenne.modeler.ui.project.editor.objentity.callbacks;
 import org.apache.cayenne.map.LifecycleEvent;
 import org.apache.cayenne.util.Util;
 
-import java.io.Serializable;
-
-public class CallbackType implements Serializable {
+public class CallbackType {
 
     private final LifecycleEvent type;
     private final String name;

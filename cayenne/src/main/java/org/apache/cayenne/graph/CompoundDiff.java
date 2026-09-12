@@ -32,8 +32,6 @@ import java.util.ListIterator;
  */
 public class CompoundDiff implements GraphDiff {
 
-	private static final long serialVersionUID = 5930690302335603082L;
-
 	protected List<GraphDiff> diffs;
 
 	/**

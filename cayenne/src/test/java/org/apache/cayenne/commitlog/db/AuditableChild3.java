@@ -21,5 +21,4 @@ package org.apache.cayenne.commitlog.db;
 import org.apache.cayenne.commitlog.db.auto._AuditableChild3;
 
 public class AuditableChild3 extends _AuditableChild3 {
-	private static final long serialVersionUID = 1L;
 }

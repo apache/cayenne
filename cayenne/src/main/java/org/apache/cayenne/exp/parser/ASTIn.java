@@ -29,8 +29,6 @@ import org.apache.cayenne.exp.Expression;
  */
 public class ASTIn extends ConditionNode {
 
-	private static final long serialVersionUID = -211084571117172965L;
-
 	/**
 	 * Constructor used by expression parser. Do not invoke directly.
 	 */

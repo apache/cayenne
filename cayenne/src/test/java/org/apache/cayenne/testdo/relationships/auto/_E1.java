@@ -1,8 +1,5 @@
 package org.apache.cayenne.testdo.relationships.auto;
 
-import java.io.IOException;
-import java.io.ObjectInputStream;
-import java.io.ObjectOutputStream;
 import java.util.List;
 
 import org.apache.cayenne.PersistentObject;
@@ -22,8 +19,6 @@ import org.apache.cayenne.testdo.relationships.E2;
  * If you need to make any customizations, please use subclass.
  */
 public abstract class _E1 extends PersistentObject {
-
-    private static final long serialVersionUID = 1L;
 
     public static final SelfProperty<E1> SELF = PropertyFactory.createSelf(E1.class);
 
@@ -107,30 +102,6 @@ public abstract class _E1 extends PersistentObject {
             default:
                 super.writePropertyDirectly(propName, val);
         }
-    }
-
-    private void writeObject(ObjectOutputStream out) throws IOException {
-        writeSerialized(out);
-    }
-
-    private void readObject(ObjectInputStream in) throws IOException, ClassNotFoundException {
-        readSerialized(in);
-    }
-
-    @Override
-    protected void writeState(ObjectOutputStream out) throws IOException {
-        super.writeState(out);
-        out.writeObject(this.text);
-        out.writeObject(this.e2);
-        out.writeObject(this.e2s);
-    }
-
-    @Override
-    protected void readState(ObjectInputStream in) throws IOException, ClassNotFoundException {
-        super.readState(in);
-        this.text = (String)in.readObject();
-        this.e2 = in.readObject();
-        this.e2s = in.readObject();
     }
 
 }

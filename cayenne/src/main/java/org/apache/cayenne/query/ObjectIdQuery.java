@@ -51,14 +51,8 @@ public class ObjectIdQuery extends IndirectQuery {
     protected int cachePolicy;
     protected boolean fetchingDataRows;
 
-    protected transient EntityResolver metadataResolver;
-    protected transient QueryMetadata metadata;
-
-    // needed for hessian serialization
-    @SuppressWarnings("unused")
-    private ObjectIdQuery() {
-        this.cachePolicy = CACHE_REFRESH;
-    }
+    protected EntityResolver metadataResolver;
+    protected QueryMetadata metadata;
 
     /**
      * Creates a refreshing ObjectIdQuery.

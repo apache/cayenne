@@ -1,8 +1,5 @@
 package org.apache.cayenne.testdo.locking.auto;
 
-import java.io.IOException;
-import java.io.ObjectInputStream;
-import java.io.ObjectOutputStream;
 import java.util.List;
 
 import org.apache.cayenne.PersistentObject;
@@ -23,8 +20,6 @@ import org.apache.cayenne.testdo.locking.SimpleLockingTestEntity;
  * If you need to make any customizations, please use subclass.
  */
 public abstract class _RelLockingTestEntity extends PersistentObject {
-
-    private static final long serialVersionUID = 1L;
 
     public static final SelfProperty<RelLockingTestEntity> SELF = PropertyFactory.createSelf(RelLockingTestEntity.class);
 
@@ -108,30 +103,6 @@ public abstract class _RelLockingTestEntity extends PersistentObject {
             default:
                 super.writePropertyDirectly(propName, val);
         }
-    }
-
-    private void writeObject(ObjectOutputStream out) throws IOException {
-        writeSerialized(out);
-    }
-
-    private void readObject(ObjectInputStream in) throws IOException, ClassNotFoundException {
-        readSerialized(in);
-    }
-
-    @Override
-    protected void writeState(ObjectOutputStream out) throws IOException {
-        super.writeState(out);
-        out.writeObject(this.name);
-        out.writeObject(this.lockingHelpers);
-        out.writeObject(this.toSimpleLockingTest);
-    }
-
-    @Override
-    protected void readState(ObjectInputStream in) throws IOException, ClassNotFoundException {
-        super.readState(in);
-        this.name = (String)in.readObject();
-        this.lockingHelpers = in.readObject();
-        this.toSimpleLockingTest = in.readObject();
     }
 
 }

@@ -36,9 +36,6 @@ import org.apache.cayenne.validation.BeanValidationFailure;
 import org.apache.cayenne.validation.ValidationFailure;
 import org.apache.cayenne.validation.ValidationResult;
 
-import java.io.IOException;
-import java.io.ObjectInputStream;
-import java.io.ObjectOutputStream;
 import java.lang.reflect.Array;
 import java.util.ArrayList;
 import java.util.Collection;
@@ -60,9 +57,7 @@ import java.util.Map;
  * This class can be used directly as superclass for field-based data objects.
  * <p>
  * To create own implementation of {@link Persistent} with custom field storage logic it is enough
- * to implement {@link #readPropertyDirectly(String)} and {@link #writePropertyDirectly(String, Object)} methods
- * and serialization support if needed (helper methods {@link #writeState(ObjectOutputStream)}
- * and {@link #readState(ObjectInputStream)} are provided).
+ * to implement {@link #readPropertyDirectly(String)} and {@link #writePropertyDirectly(String, Object)} methods.
  * <h1>POJO Note</h1>
  * <p>
  * If having PersistentObject as a superclass presents a problem in an application, source
@@ -76,7 +71,7 @@ public abstract class PersistentObject implements Persistent, Validating {
 
     protected ObjectId objectId;
     protected int persistenceState;
-    protected transient ObjectContext objectContext;
+    protected ObjectContext objectContext;
     protected long snapshotVersion = DEFAULT_VERSION;
 
     /**
@@ -696,55 +691,6 @@ public abstract class PersistentObject implements Persistent, Validating {
     @Override
     public void validateForDelete(ValidationResult validationResult) {
         // does nothing
-    }
-
-    /**
-     * Serialization support.
-     * Will write down persistenceState and objectId, delegating data serialization down to sub-classes.
-     */
-    private void writeObject(ObjectOutputStream out) throws IOException {
-        writeSerialized(out);
-    }
-
-    /**
-     * Serialization support.
-     * Will read persistenceState and objectId, delegating data serialization down to sub-classes.
-     */
-    private void readObject(ObjectInputStream in) throws IOException, ClassNotFoundException {
-        readSerialized(in);
-    }
-
-    protected void writeSerialized(ObjectOutputStream out) throws IOException {
-        out.writeInt(persistenceState);
-        out.writeObject(objectId);
-
-        if (persistenceState == PersistenceState.COMMITTED
-                || persistenceState == PersistenceState.HOLLOW) {
-            return;
-        }
-
-        writeState(out);
-    }
-
-    protected void readSerialized(ObjectInputStream in) throws IOException, ClassNotFoundException {
-        this.persistenceState = in.readInt();
-        this.objectId = (ObjectId) in.readObject();
-
-        if (persistenceState == PersistenceState.COMMITTED
-                || persistenceState == PersistenceState.HOLLOW) {
-            persistenceState = PersistenceState.HOLLOW;
-            return;
-        }
-
-        readState(in);
-    }
-
-    protected void writeState(ObjectOutputStream out) throws IOException {
-        // no additional info for base class
-    }
-
-    protected void readState(ObjectInputStream in) throws IOException, ClassNotFoundException {
-        // no additional info for base class
     }
 
     /**

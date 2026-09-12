@@ -20,7 +20,6 @@
 package org.apache.cayenne.query;
 
 import org.apache.cayenne.ObjectId;
-import org.apache.cayenne.util.Util;
 import org.junit.jupiter.api.Test;
 
 import static org.junit.jupiter.api.Assertions.*;
@@ -34,17 +33,6 @@ public class ObjectIdQueryTest {
         ObjectIdQuery query = new ObjectIdQuery(oid);
 
         assertSame(oid, query.getObjectId());
-    }
-
-    @Test
-    public void serializability() throws Exception {
-        ObjectId oid = ObjectId.of("test", "a", "b");
-        ObjectIdQuery query = new ObjectIdQuery(oid);
-
-        Object o = Util.cloneViaSerialization(query);
-        assertNotNull(o);
-        assertTrue(o instanceof ObjectIdQuery);
-        assertEquals(oid, ((ObjectIdQuery) o).getObjectId());
     }
 
     /**

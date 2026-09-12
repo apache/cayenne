@@ -33,8 +33,6 @@ import org.apache.cayenne.util.ConversionUtil;
  */
 public class ASTNegate extends SimpleNode {
 
-	private static final long serialVersionUID = -9161722951926428414L;
-
 	ASTNegate(int id) {
 		super(id);
 	}

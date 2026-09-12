@@ -24,8 +24,6 @@ import org.apache.cayenne.testdo.testmap.auto._ArtistCallback;
  * Class for testing callbacks
  */
 public class ArtistCallback extends _ArtistCallback {
-    private static final long serialVersionUID = 1L; 
-    
     public void prePersistEntityObjEntity() {}
     public void postPersistEntityObjEntity() {}
     public void preUpdateEntityObjEntity() {}

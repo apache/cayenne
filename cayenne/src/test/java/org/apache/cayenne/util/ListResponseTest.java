@@ -25,7 +25,6 @@ import java.util.List;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertFalse;
-import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.junit.jupiter.api.Assertions.assertSame;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
@@ -63,18 +62,6 @@ public class ListResponseTest {
         assertTrue(r.isList());
         assertEquals(result, r.currentList());
         assertFalse(r.next());
-    }
-
-    @Test
-    public void serialization() throws Exception {
-
-        ListResponse r = new ListResponse(67);
-
-        ListResponse sr = Util.cloneViaSerialization(r);
-        assertNotNull(sr);
-        assertEquals(1, sr.size());
-
-        assertTrue(sr.firstList().contains(67));
     }
 
 }

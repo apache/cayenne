@@ -1,8 +1,5 @@
 package org.apache.cayenne.testdo.relationships_activity.auto;
 
-import java.io.IOException;
-import java.io.ObjectInputStream;
-import java.io.ObjectOutputStream;
 import java.sql.Date;
 
 import org.apache.cayenne.PersistentObject;
@@ -20,8 +17,6 @@ import org.apache.cayenne.testdo.relationships_activity.ActivityResult;
  * If you need to make any customizations, please use subclass.
  */
 public abstract class _ActivityResult extends PersistentObject {
-
-    private static final long serialVersionUID = 1L;
 
     public static final SelfProperty<ActivityResult> SELF = PropertyFactory.createSelf(ActivityResult.class);
 
@@ -105,30 +100,6 @@ public abstract class _ActivityResult extends PersistentObject {
             default:
                 super.writePropertyDirectly(propName, val);
         }
-    }
-
-    private void writeObject(ObjectOutputStream out) throws IOException {
-        writeSerialized(out);
-    }
-
-    private void readObject(ObjectInputStream in) throws IOException, ClassNotFoundException {
-        readSerialized(in);
-    }
-
-    @Override
-    protected void writeState(ObjectOutputStream out) throws IOException {
-        super.writeState(out);
-        out.writeObject(this.appointDate);
-        out.writeInt(this.appointNo);
-        out.writeObject(this.field);
-    }
-
-    @Override
-    protected void readState(ObjectInputStream in) throws IOException, ClassNotFoundException {
-        super.readState(in);
-        this.appointDate = (Date)in.readObject();
-        this.appointNo = in.readInt();
-        this.field = (String)in.readObject();
     }
 
 }

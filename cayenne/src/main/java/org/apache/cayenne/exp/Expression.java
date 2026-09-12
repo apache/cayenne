@@ -20,7 +20,6 @@
 package org.apache.cayenne.exp;
 
 import java.io.IOException;
-import java.io.Serializable;
 import java.util.Collection;
 import java.util.HashMap;
 import java.util.LinkedList;
@@ -40,9 +39,7 @@ import org.apache.cayenne.util.XMLSerializable;
 /**
  * Superclass of Cayenne expressions that defines basic API for expressions use.
  */
-public abstract class Expression implements Serializable, XMLSerializable {
-
-	private static final long serialVersionUID = 5268695167038124596L;
+public abstract class Expression implements XMLSerializable {
 
 	/**
 	 * A value that a Transformer might return to indicate that a node has to be

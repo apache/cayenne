@@ -19,7 +19,6 @@
 
 package org.apache.cayenne.event;
 
-import java.io.Serializable;
 import java.util.Map;
 
 import java.util.Objects;
@@ -37,7 +36,7 @@ import org.apache.cayenne.util.WeakValueMap;
  * </ul>
  * 
  */
-public class EventSubject implements Serializable {
+public class EventSubject {
 
     // a Map that will allow the values to be GC'ed
     private static final Map<String, EventSubject> _registeredSubjects = new WeakValueMap<>();

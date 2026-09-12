@@ -1,8 +1,5 @@
 package org.apache.cayenne.testdo.cay_2641.auto;
 
-import java.io.IOException;
-import java.io.ObjectInputStream;
-import java.io.ObjectOutputStream;
 import java.util.List;
 
 import org.apache.cayenne.Fault;
@@ -22,8 +19,6 @@ import org.apache.cayenne.testdo.cay_2641.PaintingLazy;
  * If you need to make any customizations, please use subclass.
  */
 public abstract class _ArtistLazy extends PersistentObject {
-
-    private static final long serialVersionUID = 1L;
 
     public static final SelfProperty<ArtistLazy> SELF = PropertyFactory.createSelf(ArtistLazy.class);
 
@@ -112,30 +107,6 @@ public abstract class _ArtistLazy extends PersistentObject {
             default:
                 super.writePropertyDirectly(propName, val);
         }
-    }
-
-    private void writeObject(ObjectOutputStream out) throws IOException {
-        writeSerialized(out);
-    }
-
-    private void readObject(ObjectInputStream in) throws IOException, ClassNotFoundException {
-        readSerialized(in);
-    }
-
-    @Override
-    protected void writeState(ObjectOutputStream out) throws IOException {
-        super.writeState(out);
-        out.writeObject(this.name);
-        out.writeObject(this.surname);
-        out.writeObject(this.paintings);
-    }
-
-    @Override
-    protected void readState(ObjectInputStream in) throws IOException, ClassNotFoundException {
-        super.readState(in);
-        this.name = in.readObject();
-        this.surname = (String)in.readObject();
-        this.paintings = in.readObject();
     }
 
 }

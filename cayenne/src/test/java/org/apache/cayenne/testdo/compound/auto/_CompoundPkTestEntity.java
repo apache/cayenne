@@ -1,8 +1,5 @@
 package org.apache.cayenne.testdo.compound.auto;
 
-import java.io.IOException;
-import java.io.ObjectInputStream;
-import java.io.ObjectOutputStream;
 import java.util.List;
 
 import org.apache.cayenne.PersistentObject;
@@ -20,8 +17,6 @@ import org.apache.cayenne.testdo.compound.CompoundPkTestEntity;
  * If you need to make any customizations, please use subclass.
  */
 public abstract class _CompoundPkTestEntity extends PersistentObject {
-
-    private static final long serialVersionUID = 1L;
 
     public static final SelfProperty<CompoundPkTestEntity> SELF = PropertyFactory.createSelf(CompoundPkTestEntity.class);
 
@@ -124,32 +119,6 @@ public abstract class _CompoundPkTestEntity extends PersistentObject {
             default:
                 super.writePropertyDirectly(propName, val);
         }
-    }
-
-    private void writeObject(ObjectOutputStream out) throws IOException {
-        writeSerialized(out);
-    }
-
-    private void readObject(ObjectInputStream in) throws IOException, ClassNotFoundException {
-        readSerialized(in);
-    }
-
-    @Override
-    protected void writeState(ObjectOutputStream out) throws IOException {
-        super.writeState(out);
-        out.writeObject(this.key1);
-        out.writeObject(this.key2);
-        out.writeObject(this.name);
-        out.writeObject(this.compoundFkArray);
-    }
-
-    @Override
-    protected void readState(ObjectInputStream in) throws IOException, ClassNotFoundException {
-        super.readState(in);
-        this.key1 = (String)in.readObject();
-        this.key2 = (String)in.readObject();
-        this.name = (String)in.readObject();
-        this.compoundFkArray = in.readObject();
     }
 
 }

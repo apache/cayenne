@@ -32,8 +32,6 @@ import org.apache.cayenne.util.ConversionUtil;
  */
 public class ASTOr extends AggregateConditionNode {
 
-	private static final long serialVersionUID = 780157841581581297L;
-
 	ASTOr(int id) {
 		super(id);
 	}

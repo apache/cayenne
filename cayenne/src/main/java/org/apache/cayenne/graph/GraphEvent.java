@@ -34,8 +34,6 @@ import org.apache.cayenne.event.CayenneEvent;
  */
 public class GraphEvent extends CayenneEvent {
 
-	private static final long serialVersionUID = -8954343713674462675L;
-	
 	protected GraphDiff diff;
 
 	public GraphEvent(Object source, GraphDiff diff) {

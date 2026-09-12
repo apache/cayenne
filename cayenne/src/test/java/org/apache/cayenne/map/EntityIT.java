@@ -24,7 +24,6 @@ import org.apache.cayenne.exp.ExpressionFactory;
 import org.apache.cayenne.unit.CayenneProjects;
 import org.apache.cayenne.unit.CayenneTestsEnv;
 import org.apache.cayenne.util.CayenneMapEntry;
-import org.apache.cayenne.util.Util;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.RegisterExtension;
 
@@ -43,36 +42,6 @@ public class EntityIT {
 
     @RegisterExtension
     static final CayenneTestsEnv env = CayenneTestsEnv.forProject(CayenneProjects.TESTMAP_PROJECT);
-
-    @Test
-    public void serializability() throws Exception {
-        MockEntity entity = new MockEntity("entity");
-
-        MockEntity d1 = Util.cloneViaSerialization(entity);
-        assertEquals(entity.getName(), d1.getName());
-
-        entity.addAttribute(new MockAttribute("abc"));
-        entity.addRelationship(new MockRelationship("xyz"));
-        MockEntity d2 = Util.cloneViaSerialization(entity);
-        assertNotNull(d2.getAttribute("abc"));
-
-        // test that ref collection wrappers are still working
-        assertNotNull(d2.getAttributes());
-        assertEquals(entity.getAttributes().size(), d2.getAttributes().size());
-        assertTrue(d2.getAttributes().contains(d2.getAttribute("abc")));
-
-        assertNotNull(d2.getRelationships());
-        assertEquals(entity.getRelationships().size(), d2.getRelationships().size());
-        assertTrue(d2.getRelationships().contains(d2.getRelationship("xyz")));
-
-        assertNotNull(d2.getAttributeMap());
-        assertEquals(entity.getAttributes().size(), d2.getAttributeMap().size());
-        assertSame(d2.getAttribute("abc"), d2.getAttributeMap().get("abc"));
-
-        assertNotNull(d2.getRelationshipMap());
-        assertEquals(entity.getRelationships().size(), d2.getRelationshipMap().size());
-        assertSame(d2.getRelationship("xyz"), d2.getRelationshipMap().get("xyz"));
-    }
 
     @Test
     public void name() {

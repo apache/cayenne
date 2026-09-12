@@ -24,8 +24,6 @@ import org.apache.cayenne.validation.ValidationException;
 
 public class IvSub3 extends _IvSub3 {
 
-    private static final long serialVersionUID = 1L;
-
     public void setIvRoot(IvRoot ivRoot) {
         setToOneTarget("ivRoot", ivRoot, true);
     }

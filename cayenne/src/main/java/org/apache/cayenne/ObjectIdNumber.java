@@ -30,8 +30,6 @@ import org.apache.cayenne.util.SingleEntryMap;
  */
 class ObjectIdNumber implements ObjectId {
 
-    private static final long serialVersionUID = 3968183354758914938L;
-
     // this two fields can be kept somewhere else as ID index shared by all IDs
     private final String entityName;
     private final String keyName;
@@ -39,14 +37,6 @@ class ObjectIdNumber implements ObjectId {
     private final Number value;
 
     private SingleEntryMap<String, Object> replacementId;
-
-    // exists for deserialization with Hessian and similar
-    @SuppressWarnings("unused")
-    private ObjectIdNumber() {
-        this.entityName = "";
-        this.keyName = "";
-        this.value = 0L;
-    }
 
     ObjectIdNumber(String entityName, String keyName, Number value) {
         this.entityName = entityName;

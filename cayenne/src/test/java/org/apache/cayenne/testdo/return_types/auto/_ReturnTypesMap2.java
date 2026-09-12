@@ -1,9 +1,5 @@
 package org.apache.cayenne.testdo.return_types.auto;
 
-import java.io.IOException;
-import java.io.ObjectInputStream;
-import java.io.ObjectOutputStream;
-
 import org.apache.cayenne.GenericPersistentObject;
 import org.apache.cayenne.exp.property.BaseProperty;
 import org.apache.cayenne.exp.property.NumericIdProperty;
@@ -18,8 +14,6 @@ import org.apache.cayenne.testdo.return_types.ReturnTypesMap2;
  * If you need to make any customizations, please use subclass.
  */
 public abstract class _ReturnTypesMap2 extends GenericPersistentObject {
-
-    private static final long serialVersionUID = 1L;
 
     public static final SelfProperty<ReturnTypesMap2> SELF = PropertyFactory.createSelf(ReturnTypesMap2.class);
 
@@ -119,32 +113,6 @@ public abstract class _ReturnTypesMap2 extends GenericPersistentObject {
             default:
                 super.writePropertyDirectly(propName, val);
         }
-    }
-
-    private void writeObject(ObjectOutputStream out) throws IOException {
-        writeSerialized(out);
-    }
-
-    private void readObject(ObjectInputStream in) throws IOException, ClassNotFoundException {
-        readSerialized(in);
-    }
-
-    @Override
-    protected void writeState(ObjectOutputStream out) throws IOException {
-        super.writeState(out);
-        out.writeObject(this.binaryColumn);
-        out.writeObject(this.blobColumn);
-        out.writeObject(this.longvarbinaryColumn);
-        out.writeObject(this.varbinaryColumn);
-    }
-
-    @Override
-    protected void readState(ObjectInputStream in) throws IOException, ClassNotFoundException {
-        super.readState(in);
-        this.binaryColumn = (byte[])in.readObject();
-        this.blobColumn = (byte[])in.readObject();
-        this.longvarbinaryColumn = (byte[])in.readObject();
-        this.varbinaryColumn = (byte[])in.readObject();
     }
 
 }

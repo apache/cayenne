@@ -21,5 +21,4 @@ package org.apache.cayenne.lifecycle.db;
 import org.apache.cayenne.lifecycle.db.auto._SortRoot;
 
 public class SortRoot extends _SortRoot {
-	private static final long serialVersionUID = 1L;
 }

@@ -23,6 +23,4 @@ import org.apache.cayenne.testdo.datetime.auto._PeriodTestEntity;
 
 public class PeriodTestEntity extends _PeriodTestEntity {
 
-    private static final long serialVersionUID = 1L; 
-
 }

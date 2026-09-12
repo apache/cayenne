@@ -22,6 +22,4 @@ import org.apache.cayenne.testdo.meaningful_pk.auto._MeaningfulPkBigintGenerated
 
 public class MeaningfulPkBigintGenerated extends _MeaningfulPkBigintGenerated {
 
-    private static final long serialVersionUID = 1L;
-
 }

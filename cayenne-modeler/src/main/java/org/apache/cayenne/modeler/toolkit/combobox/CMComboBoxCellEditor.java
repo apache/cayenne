@@ -23,7 +23,6 @@ import javax.swing.*;
 import javax.swing.table.TableCellEditor;
 import java.awt.*;
 import java.awt.event.MouseEvent;
-import java.io.Serializable;
 import java.util.EventObject;
 
 /**
@@ -31,7 +30,7 @@ import java.util.EventObject;
  * ctrl/shift-clicks so the user can extend a multi-row selection without
  * opening the editor.
  */
-public class CMComboBoxCellEditor extends AbstractCellEditor implements TableCellEditor, Serializable {
+public class CMComboBoxCellEditor extends AbstractCellEditor implements TableCellEditor {
 
     protected final JComboBox<?> comboBox;
 

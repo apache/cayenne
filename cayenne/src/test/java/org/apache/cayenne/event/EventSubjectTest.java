@@ -19,12 +19,10 @@
 
 package org.apache.cayenne.event;
 
-import org.apache.cayenne.util.Util;
 import org.junit.jupiter.api.Test;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertFalse;
-import static org.junit.jupiter.api.Assertions.assertNotSame;
 import static org.junit.jupiter.api.Assertions.assertSame;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 
@@ -35,16 +33,6 @@ public class EventSubjectTest {
         assertThrows(IllegalArgumentException.class, () -> EventSubject.getSubject(null, "Subject"));
         assertThrows(IllegalArgumentException.class, () -> EventSubject.getSubject(Object.class, null));
         assertThrows(IllegalArgumentException.class, () -> EventSubject.getSubject(Object.class, ""));
-    }
-
-    @Test
-    public void equalityOfClonedSubjects() throws Exception {
-        EventSubject s1 = EventSubject.getSubject(EventSubjectTest.class, "MySubject");
-        EventSubject s2 = (EventSubject) Util.cloneViaSerialization(s1);
-
-        assertNotSame(s1, s2);
-        assertEquals(s1, s2);
-        assertEquals(s1.hashCode(), s2.hashCode());
     }
 
     @Test

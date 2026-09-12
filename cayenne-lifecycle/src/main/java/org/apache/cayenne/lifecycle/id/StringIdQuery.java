@@ -69,7 +69,7 @@ public class StringIdQuery implements Query {
 
     protected Collection<String> stringIds;
 
-    protected transient Map<String, ObjectSelect> idQueriesByEntity;
+    protected Map<String, ObjectSelect> idQueriesByEntity;
 
     public StringIdQuery(String... stringIds) {
         this(toCollection(stringIds));

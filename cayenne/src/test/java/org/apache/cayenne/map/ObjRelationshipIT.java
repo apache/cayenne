@@ -35,7 +35,6 @@ import org.apache.cayenne.runtime.CayenneRuntime;
 import org.apache.cayenne.testdo.inheritance_vertical.Iv2Sub1;
 import org.apache.cayenne.unit.CayenneProjects;
 import org.apache.cayenne.unit.CayenneTestsEnv;
-import org.apache.cayenne.util.Util;
 import org.apache.cayenne.util.XMLEncoder;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -101,18 +100,6 @@ public class ObjRelationshipIT {
         assertNull(r.getCollectionType());
         r.setCollectionType("java.util.Map");
         assertEquals("java.util.Map", r.getCollectionType());
-    }
-
-    @Test
-    public void serializability() throws Exception {
-        ObjEntity artistObjEnt = runtime.getDataDomain().getEntityResolver().getObjEntity("Artist");
-
-        // start with "to many"
-        ObjRelationship r1 = artistObjEnt.getRelationship("paintingArray");
-
-        ObjRelationship r2 = Util.cloneViaSerialization(r1);
-        assertEquals(r1.getName(), r2.getName());
-        assertEquals(r1.getDbRelationshipPath(), r2.getDbRelationshipPath());
     }
 
     @Test

@@ -32,8 +32,6 @@ import org.apache.cayenne.util.ConversionUtil;
  */
 public class ASTNot extends AggregateConditionNode {
 
-	private static final long serialVersionUID = 7418894098531106347L;
-
 	ASTNot(int id) {
 		super(id);
 	}

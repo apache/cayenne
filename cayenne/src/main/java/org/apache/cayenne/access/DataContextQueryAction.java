@@ -47,7 +47,7 @@ class DataContextQueryAction {
     private final QueryMetadata metadata;
     private final boolean iteratedResult;
     private final boolean ignoreLocalCache;
-    private transient QueryResponse response;
+    private QueryResponse response;
 
     public DataContextQueryAction(DataContext context, Query query, boolean iteratedResult, boolean ignoreLocalCache) {
         this.context = context;

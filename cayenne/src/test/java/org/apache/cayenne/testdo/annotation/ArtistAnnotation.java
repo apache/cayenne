@@ -23,8 +23,6 @@ import org.apache.cayenne.testdo.annotation.auto._ArtistAnnotation;
 
 public class ArtistAnnotation extends _ArtistAnnotation {
 
-    private static final long serialVersionUID = 1L;
-
     @PostAdd
     protected void testPostAdd() {
         postCallback = "testPostAdd";

@@ -1,9 +1,5 @@
 package org.apache.cayenne.testdo.meaningful_pk.auto;
 
-import java.io.IOException;
-import java.io.ObjectInputStream;
-import java.io.ObjectOutputStream;
-
 import org.apache.cayenne.PersistentObject;
 import org.apache.cayenne.exp.property.EntityProperty;
 import org.apache.cayenne.exp.property.PropertyFactory;
@@ -19,8 +15,6 @@ import org.apache.cayenne.testdo.meaningful_pk.MeaningfulPkDep2;
  * If you need to make any customizations, please use subclass.
  */
 public abstract class _MeaningfulPkDep2 extends PersistentObject {
-
-    private static final long serialVersionUID = 1L;
 
     public static final SelfProperty<MeaningfulPkDep2> SELF = PropertyFactory.createSelf(MeaningfulPkDep2.class);
 
@@ -100,30 +94,6 @@ public abstract class _MeaningfulPkDep2 extends PersistentObject {
             default:
                 super.writePropertyDirectly(propName, val);
         }
-    }
-
-    private void writeObject(ObjectOutputStream out) throws IOException {
-        writeSerialized(out);
-    }
-
-    private void readObject(ObjectInputStream in) throws IOException, ClassNotFoundException {
-        readSerialized(in);
-    }
-
-    @Override
-    protected void writeState(ObjectOutputStream out) throws IOException {
-        super.writeState(out);
-        out.writeObject(this.descr);
-        out.writeObject(this.pk);
-        out.writeObject(this.meaningfulPk);
-    }
-
-    @Override
-    protected void readState(ObjectInputStream in) throws IOException, ClassNotFoundException {
-        super.readState(in);
-        this.descr = (String)in.readObject();
-        this.pk = (String)in.readObject();
-        this.meaningfulPk = in.readObject();
     }
 
 }

@@ -26,6 +26,7 @@ CAY-3015 Get rid of RefreshQuery
 CAY-3016 Get rid of RelationshipQuery
 CAY-3017 ObjectContext should not be a DataChannel
 CAY-3019 Skip noop conditions in generated SQL
+CAY-3020 Remove serialization contracts
 
 Bug Fixes:
 

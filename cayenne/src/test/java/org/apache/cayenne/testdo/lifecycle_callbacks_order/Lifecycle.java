@@ -24,7 +24,6 @@ import org.apache.cayenne.validation.ValidationResult;
 
 public class Lifecycle extends _Lifecycle {
 
-    private static final long serialVersionUID = 1L;
     private StringBuilder callbackBuffer = new StringBuilder();
 
     @Override

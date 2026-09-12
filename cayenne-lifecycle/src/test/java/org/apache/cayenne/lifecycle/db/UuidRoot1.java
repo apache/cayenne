@@ -23,5 +23,4 @@ import org.apache.cayenne.lifecycle.relationship.ObjectIdRelationship;
 
 @ObjectIdRelationship("uuid")
 public class UuidRoot1 extends _UuidRoot1 {
-	 private static final long serialVersionUID = 1L;
 }

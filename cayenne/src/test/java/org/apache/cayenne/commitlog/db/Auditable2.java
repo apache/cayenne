@@ -24,6 +24,4 @@ import org.apache.cayenne.commitlog.db.auto._Auditable2;
 @CommitLog(ignoredProperties = "charProperty1", confidential = "charProperty2")
 public class Auditable2 extends _Auditable2 {
 
-	private static final long serialVersionUID = 5203324250911707978L;
-
 }

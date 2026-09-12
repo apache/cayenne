@@ -19,8 +19,6 @@
 
 package org.apache.cayenne.map;
 
-import java.io.Serializable;
-
 import org.apache.cayenne.configuration.ConfigurationNodeVisitor;
 import org.apache.cayenne.util.CayenneMapEntry;
 import org.apache.cayenne.util.ToStringBuilder;
@@ -33,7 +31,7 @@ import org.apache.cayenne.util.XMLSerializable;
  * 
  */
 public abstract class Attribute<E extends Entity<E, A, R>, A extends Attribute<E, A, R>, R extends Relationship<E, A, R>>
-        implements CayenneMapEntry, XMLSerializable, Serializable {
+        implements CayenneMapEntry, XMLSerializable {
 
     protected String name;
     protected Entity<E, A, R> entity;

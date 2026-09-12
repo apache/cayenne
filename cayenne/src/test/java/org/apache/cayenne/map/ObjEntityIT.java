@@ -27,7 +27,6 @@ import org.apache.cayenne.exp.parser.ASTObjPath;
 import org.apache.cayenne.testdo.testmap.Artist;
 import org.apache.cayenne.unit.CayenneProjects;
 import org.apache.cayenne.unit.CayenneTestsEnv;
-import org.apache.cayenne.util.Util;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.RegisterExtension;
 
@@ -195,14 +194,6 @@ public class ObjEntityIT {
         assertEquals(2, entity.getPrimaryKeyNames().size());
         assertTrue(entity.getPrimaryKeyNames().contains(pk.getName()));
         assertTrue(entity.getPrimaryKeyNames().contains(pk2.getName()));
-    }
-
-    @Test
-    public void serializability() throws Exception {
-        ObjEntity entity = new ObjEntity("entity");
-
-        ObjEntity d1 = Util.cloneViaSerialization(entity);
-        assertEquals(entity.getName(), d1.getName());
     }
 
     @Test

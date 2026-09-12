@@ -35,7 +35,6 @@
 ##
 ##
 ${importUtils.setPackage($superPackageName)}##
-${importUtils.addType("java.io.Serializable")}##
 ${importUtils.addReservedType("${superPackageName}.${superClassName}")}##
 ${importUtils.addType("org.apache.cayenne.EmbeddableObject")}##
 ${importUtils.addType("org.apache.cayenne.Persistent")}##
@@ -51,7 +50,7 @@ ${importUtils.generate()}
  * If you need to make any customizations, please use subclass. 
  */
 ## extends ${baseClassName} - always Object, so skip it
-public abstract class ${superClassName} implements EmbeddableObject, Serializable {
+public abstract class ${superClassName} implements EmbeddableObject {
 ## Create property names
 #if( $createPropertyNames )
 

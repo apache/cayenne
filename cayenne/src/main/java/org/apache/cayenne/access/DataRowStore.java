@@ -32,9 +32,6 @@ import org.apache.cayenne.util.concurrentlinkedhashmap.ConcurrentLinkedHashMap;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import java.io.IOException;
-import java.io.ObjectInputStream;
-import java.io.Serializable;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.HashMap;
@@ -47,7 +44,7 @@ import java.util.concurrent.ConcurrentMap;
  *
  * @since 1.1
  */
-public class DataRowStore implements Serializable {
+public class DataRowStore {
 
     private static final Logger LOGGER = LoggerFactory.getLogger(DataRowStore.class);
 
@@ -67,12 +64,12 @@ public class DataRowStore implements Serializable {
     private final int maxSize;
     protected final ConcurrentMap<ObjectId, DataRow> snapshots;
 
-    protected transient EventManager eventManager;
-    protected transient EventBridge remoteNotificationsHandler;
+    protected EventManager eventManager;
+    protected EventBridge remoteNotificationsHandler;
 
     // IMPORTANT: EventSubject must be an ivar to avoid its deallocation
     // too early, and thus disabling events.
-    protected transient EventSubject eventSubject;
+    protected EventSubject eventSubject;
 
     /**
      * @param name         DataRowStore name. Used to identify this DataRowStore in events, etc. Can't be null.
@@ -456,16 +453,6 @@ public class DataRowStore implements Serializable {
             // register as "non-blocking" if needed.
             eventManager.postEvent(event, getSnapshotEventSubject());
         }
-    }
-
-    // deserialization support
-    private void readObject(ObjectInputStream in) throws IOException,
-            ClassNotFoundException {
-
-        in.defaultReadObject();
-
-        // restore subjects
-        this.eventSubject = createSubject();
     }
 
     void stopListeners() {

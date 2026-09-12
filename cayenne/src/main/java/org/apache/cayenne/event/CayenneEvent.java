@@ -74,7 +74,7 @@ public class CayenneEvent extends EventObject {
     }
 
     /**
-     * Used when deserializing remote events.
+     * Used when reposting remote events.
      */
     void setSource(Object source) {
         super.source = source;

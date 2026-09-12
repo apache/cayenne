@@ -20,14 +20,10 @@
 package org.apache.cayenne.query;
 
 import org.apache.cayenne.exp.path.CayennePath;
-import org.apache.cayenne.util.Util;
 import org.junit.jupiter.api.Test;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
-import static org.junit.jupiter.api.Assertions.assertNotSame;
-import static org.junit.jupiter.api.Assertions.assertNull;
-import static org.junit.jupiter.api.Assertions.assertSame;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
 public class PrefetchTreeNodeTest {
@@ -82,39 +78,6 @@ public class PrefetchTreeNodeTest {
 
         PrefetchTreeNode n4 = tree.getNode("xyz");
         assertEquals(CayennePath.of("xyz"), n4.getPath());
-    }
-
-    @Test
-    public void treeSerialization() throws Exception {
-        PrefetchTreeNode n1 = new PrefetchTreeNode();
-        PrefetchTreeNode n2 = n1.addPath("abc");
-
-        PrefetchTreeNode nc1 = (PrefetchTreeNode) Util.cloneViaSerialization(n1);
-        assertNotNull(nc1);
-
-        PrefetchTreeNode nc2 = nc1.getNode("abc");
-        assertNotNull(nc2);
-        assertNotSame(nc2, n2);
-        assertSame(nc1, nc2.getParent());
-        assertEquals("abc", nc2.getName());
-    }
-
-    @Test
-    public void subtreeSerialization() throws Exception {
-        PrefetchTreeNode n1 = new PrefetchTreeNode();
-        PrefetchTreeNode n2 = n1.addPath("abc");
-        PrefetchTreeNode n3 = n2.addPath("xyz");
-
-        // test that substree was serialized as independent tree, instead of sucking
-        PrefetchTreeNode nc2 = (PrefetchTreeNode) Util.cloneViaSerialization(n2);
-        assertNotNull(nc2);
-        assertNull(nc2.getParent());
-
-        PrefetchTreeNode nc3 = nc2.getNode("xyz");
-        assertNotNull(nc3);
-        assertNotSame(nc3, n3);
-        assertSame(nc2, nc3.getParent());
-        assertEquals("xyz", nc3.getName());
     }
 
     @Test

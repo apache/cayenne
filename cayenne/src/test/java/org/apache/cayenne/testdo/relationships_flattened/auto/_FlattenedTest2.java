@@ -1,8 +1,5 @@
 package org.apache.cayenne.testdo.relationships_flattened.auto;
 
-import java.io.IOException;
-import java.io.ObjectInputStream;
-import java.io.ObjectOutputStream;
 import java.util.List;
 
 import org.apache.cayenne.PersistentObject;
@@ -23,8 +20,6 @@ import org.apache.cayenne.testdo.relationships_flattened.FlattenedTest3;
  * If you need to make any customizations, please use subclass.
  */
 public abstract class _FlattenedTest2 extends PersistentObject {
-
-    private static final long serialVersionUID = 1L;
 
     public static final SelfProperty<FlattenedTest2> SELF = PropertyFactory.createSelf(FlattenedTest2.class);
 
@@ -108,30 +103,6 @@ public abstract class _FlattenedTest2 extends PersistentObject {
             default:
                 super.writePropertyDirectly(propName, val);
         }
-    }
-
-    private void writeObject(ObjectOutputStream out) throws IOException {
-        writeSerialized(out);
-    }
-
-    private void readObject(ObjectInputStream in) throws IOException, ClassNotFoundException {
-        readSerialized(in);
-    }
-
-    @Override
-    protected void writeState(ObjectOutputStream out) throws IOException {
-        super.writeState(out);
-        out.writeObject(this.name);
-        out.writeObject(this.ft3Array);
-        out.writeObject(this.toFT1);
-    }
-
-    @Override
-    protected void readState(ObjectInputStream in) throws IOException, ClassNotFoundException {
-        super.readState(in);
-        this.name = (String)in.readObject();
-        this.ft3Array = in.readObject();
-        this.toFT1 = in.readObject();
     }
 
 }

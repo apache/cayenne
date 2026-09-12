@@ -1,8 +1,5 @@
 package org.apache.cayenne.testdo.testmap.auto;
 
-import java.io.IOException;
-import java.io.ObjectInputStream;
-import java.io.ObjectOutputStream;
 import java.math.BigDecimal;
 
 import org.apache.cayenne.exp.property.EntityProperty;
@@ -24,8 +21,6 @@ import org.apache.cayenne.testdo.testmap.PaintingInfo;
  * If you need to make any customizations, please use subclass.
  */
 public abstract class _Painting extends ArtPersistentObject {
-
-    private static final long serialVersionUID = 1L;
 
     public static final SelfProperty<Painting> SELF = PropertyFactory.createSelf(Painting.class);
 
@@ -153,36 +148,6 @@ public abstract class _Painting extends ArtPersistentObject {
             default:
                 super.writePropertyDirectly(propName, val);
         }
-    }
-
-    private void writeObject(ObjectOutputStream out) throws IOException {
-        writeSerialized(out);
-    }
-
-    private void readObject(ObjectInputStream in) throws IOException, ClassNotFoundException {
-        readSerialized(in);
-    }
-
-    @Override
-    protected void writeState(ObjectOutputStream out) throws IOException {
-        super.writeState(out);
-        out.writeObject(this.estimatedPrice);
-        out.writeObject(this.paintingDescription);
-        out.writeObject(this.paintingTitle);
-        out.writeObject(this.toArtist);
-        out.writeObject(this.toGallery);
-        out.writeObject(this.toPaintingInfo);
-    }
-
-    @Override
-    protected void readState(ObjectInputStream in) throws IOException, ClassNotFoundException {
-        super.readState(in);
-        this.estimatedPrice = (BigDecimal)in.readObject();
-        this.paintingDescription = (String)in.readObject();
-        this.paintingTitle = (String)in.readObject();
-        this.toArtist = in.readObject();
-        this.toGallery = in.readObject();
-        this.toPaintingInfo = in.readObject();
     }
 
 }

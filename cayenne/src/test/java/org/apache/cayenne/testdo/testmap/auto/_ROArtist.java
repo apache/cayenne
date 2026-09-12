@@ -1,8 +1,5 @@
 package org.apache.cayenne.testdo.testmap.auto;
 
-import java.io.IOException;
-import java.io.ObjectInputStream;
-import java.io.ObjectOutputStream;
 import java.sql.Date;
 import java.util.List;
 
@@ -23,8 +20,6 @@ import org.apache.cayenne.testdo.testmap.ROArtist;
  * If you need to make any customizations, please use subclass.
  */
 public abstract class _ROArtist extends PersistentObject {
-
-    private static final long serialVersionUID = 1L;
 
     public static final SelfProperty<ROArtist> SELF = PropertyFactory.createSelf(ROArtist.class);
 
@@ -92,30 +87,6 @@ public abstract class _ROArtist extends PersistentObject {
             default:
                 super.writePropertyDirectly(propName, val);
         }
-    }
-
-    private void writeObject(ObjectOutputStream out) throws IOException {
-        writeSerialized(out);
-    }
-
-    private void readObject(ObjectInputStream in) throws IOException, ClassNotFoundException {
-        readSerialized(in);
-    }
-
-    @Override
-    protected void writeState(ObjectOutputStream out) throws IOException {
-        super.writeState(out);
-        out.writeObject(this.artistName);
-        out.writeObject(this.dateOfBirth);
-        out.writeObject(this.paintingArray);
-    }
-
-    @Override
-    protected void readState(ObjectInputStream in) throws IOException, ClassNotFoundException {
-        super.readState(in);
-        this.artistName = (String)in.readObject();
-        this.dateOfBirth = (Date)in.readObject();
-        this.paintingArray = in.readObject();
     }
 
 }

@@ -1,8 +1,5 @@
 package org.apache.cayenne.testdo.reflexive.auto;
 
-import java.io.IOException;
-import java.io.ObjectInputStream;
-import java.io.ObjectOutputStream;
 import java.util.List;
 
 import org.apache.cayenne.PersistentObject;
@@ -22,8 +19,6 @@ import org.apache.cayenne.testdo.reflexive.Reflexive;
  * If you need to make any customizations, please use subclass.
  */
 public abstract class _Reflexive extends PersistentObject {
-
-    private static final long serialVersionUID = 1L;
 
     public static final SelfProperty<Reflexive> SELF = PropertyFactory.createSelf(Reflexive.class);
 
@@ -122,32 +117,6 @@ public abstract class _Reflexive extends PersistentObject {
             default:
                 super.writePropertyDirectly(propName, val);
         }
-    }
-
-    private void writeObject(ObjectOutputStream out) throws IOException {
-        writeSerialized(out);
-    }
-
-    private void readObject(ObjectInputStream in) throws IOException, ClassNotFoundException {
-        readSerialized(in);
-    }
-
-    @Override
-    protected void writeState(ObjectOutputStream out) throws IOException {
-        super.writeState(out);
-        out.writeObject(this.name);
-        out.writeObject(this.children);
-        out.writeObject(this.toOther);
-        out.writeObject(this.toParent);
-    }
-
-    @Override
-    protected void readState(ObjectInputStream in) throws IOException, ClassNotFoundException {
-        super.readState(in);
-        this.name = (String)in.readObject();
-        this.children = in.readObject();
-        this.toOther = in.readObject();
-        this.toParent = in.readObject();
     }
 
 }

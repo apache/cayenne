@@ -24,6 +24,4 @@ import org.apache.cayenne.testdo.weighted_sort.auto._SortRoot;
 @SortWeight(2)
 public class SortRoot extends _SortRoot {
 
-    private static final long serialVersionUID = 1L; 
-
 }

@@ -31,8 +31,6 @@ import org.apache.cayenne.exp.Expression;
  */
 public class ASTBitwiseAnd extends EvaluatedBitwiseNode {
 
-	private static final long serialVersionUID = -1482206814209874743L;
-
 	ASTBitwiseAnd(int id) {
 		super(id);
 	}

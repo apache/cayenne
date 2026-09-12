@@ -28,8 +28,6 @@ import org.apache.cayenne.exp.Expression;
  */
 public class ASTLessOrEqual extends ConditionNode {
 
-	private static final long serialVersionUID = -710886570064202360L;
-
 	/**
 	 * Constructor used by expression parser. Do not invoke directly.
 	 */

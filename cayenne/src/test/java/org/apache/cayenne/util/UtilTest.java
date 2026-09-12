@@ -116,15 +116,6 @@ public class UtilTest {
     }
 
     @Test
-    public void cloneViaSerialization() throws Exception {
-        // need a special subclass of Object to make "clone" method public
-        MockSerializable o1 = new MockSerializable();
-        Object o2 = Util.cloneViaSerialization(o1);
-        assertEquals(o1, o2);
-        assertTrue(o1 != o2);
-    }
-
-    @Test
     public void packagePath1() throws Exception {
         String expectedPath = "org/apache/cayenne/util";
         assertEquals(expectedPath, Util.getPackagePath(UtilTest.class.getName()));

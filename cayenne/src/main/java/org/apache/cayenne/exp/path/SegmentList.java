@@ -19,7 +19,6 @@
 
 package org.apache.cayenne.exp.path;
 
-import java.io.Serializable;
 import java.util.AbstractList;
 import java.util.List;
 import java.util.Objects;
@@ -30,7 +29,7 @@ import java.util.RandomAccess;
  *
  * @since 5.0
  */
-class SegmentList extends AbstractList<CayennePathSegment> implements RandomAccess, Serializable {
+class SegmentList extends AbstractList<CayennePathSegment> implements RandomAccess {
 
     /**
      * This array is shared with several lists, so it's a caller responsibility to protect its content

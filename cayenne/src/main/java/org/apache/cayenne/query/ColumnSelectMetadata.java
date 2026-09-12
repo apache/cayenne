@@ -36,8 +36,6 @@ import org.apache.cayenne.map.ObjRelationship;
  */
 class ColumnSelectMetadata extends ObjectSelectMetadata {
 
-	private static final long serialVersionUID = -3622675304651257963L;
-
 	private static final ScalarResultSegment SCALAR_RESULT_SEGMENT
 			= new DefaultScalarResultSegment(null, -1);
 	private static final EntityResultSegment ENTITY_RESULT_SEGMENT

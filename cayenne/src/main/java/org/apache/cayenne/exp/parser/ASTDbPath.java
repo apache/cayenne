@@ -48,8 +48,6 @@ import org.apache.cayenne.util.CayenneMapEntry;
  */
 public class ASTDbPath extends ASTPath {
 
-	private static final long serialVersionUID = 6623715674339310782L;
-
 	public static final String DB_PREFIX = "db:";
 
 	ASTDbPath(int id) {

@@ -22,6 +22,4 @@ import org.apache.cayenne.testdo.datetime.auto._LocalDateTestEntity;
 
 public class LocalDateTestEntity extends _LocalDateTestEntity {
 
-    private static final long serialVersionUID = 1L; 
-
 }

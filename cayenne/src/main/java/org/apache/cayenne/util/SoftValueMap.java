@@ -19,7 +19,6 @@
 
 package org.apache.cayenne.util;
 
-import java.io.Serializable;
 import java.lang.ref.SoftReference;
 import java.util.Map;
 
@@ -30,9 +29,7 @@ import java.util.Map;
  *
  * @since 4.1
  */
-public class SoftValueMap<K, V> extends ReferenceMap<K, V, SoftReference<V>> implements Serializable {
-
-    private static final long serialVersionUID = 8146103761927411986L;
+public class SoftValueMap<K, V> extends ReferenceMap<K, V, SoftReference<V>> {
 
     public SoftValueMap() {
         super();

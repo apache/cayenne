@@ -27,7 +27,6 @@ import java.util.List;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertFalse;
-import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
 public class GenericResponseTest {
@@ -68,34 +67,6 @@ public class GenericResponseTest {
         assertTrue(r.isList());
         assertEquals(result, r.currentList());
         assertFalse(r.next());
-    }
-
-    @Test
-    public void serialization() throws Exception {
-        List<Object> list = new ArrayList<>();
-        list.add(new HashMap<>());
-
-        GenericResponse r = new GenericResponse();
-        r.addBatchUpdateCount(new int[] { 1, 2, 3 });
-        r.addResultList(list);
-
-        GenericResponse sr = Util.cloneViaSerialization(r);
-        assertNotNull(sr);
-        assertEquals(2, sr.size());
-
-        assertTrue(sr.next());
-        assertFalse(sr.isList());
-
-        int[] srInt = sr.currentUpdateCount();
-        assertEquals(3, srInt.length);
-        assertEquals(2, srInt[1]);
-
-        assertTrue(sr.next());
-        assertTrue(sr.isList());
-
-        assertEquals(list, sr.currentList());
-
-        assertFalse(sr.next());
     }
 
 }

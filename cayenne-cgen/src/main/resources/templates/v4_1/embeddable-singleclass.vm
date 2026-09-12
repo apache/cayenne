@@ -35,7 +35,6 @@
 ##
 ##
 ${importUtils.setPackage($subPackageName)}##
-${importUtils.addType("java.io.Serializable")}##
 ${importUtils.addReservedType("${subPackageName}.${subClassName}")}##
 ${importUtils.addType("org.apache.cayenne.EmbeddableObject")}##
 ${importUtils.addType("org.apache.cayenne.Persistent")}##
@@ -45,7 +44,7 @@ $propertyUtils.addImport($attr)##
 ${importUtils.generate()}
 
 ## extends ${baseClassName} - always Object, so skip it
-public class ${subClassName} implements EmbeddableObject, Serializable {
+public class ${subClassName} implements EmbeddableObject {
 ## Create property names
 #if( $createPropertyNames )
 

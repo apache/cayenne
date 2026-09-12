@@ -39,8 +39,6 @@ import org.apache.cayenne.map.EntityResolver;
  */
 public class SQLSelect<T> extends IndirectQuery implements Select<T> {
 
-	private static final long serialVersionUID = -7074293371883740872L;
-
 	private List<Class<?>> resultColumnsTypes;
 	private boolean useScalar;
 	private boolean isFetchingDataRows;

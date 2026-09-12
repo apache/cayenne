@@ -19,7 +19,6 @@
 
 package org.apache.cayenne.exp.path;
 
-import java.io.Serializable;
 import java.util.Objects;
 
 /**
@@ -32,7 +31,7 @@ import java.util.Objects;
  *
  * @since 5.0
  */
-public class CayennePathSegment implements CharSequence, Serializable {
+public class CayennePathSegment implements CharSequence {
 
     private final String segment;
 

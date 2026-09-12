@@ -13,8 +13,6 @@ import org.apache.cayenne.lifecycle.db.SortRoot;
  */
 public abstract class _SortDep extends GenericPersistentObject {
 
-    private static final long serialVersionUID = 1L; 
-
     public static final String ID_PK_COLUMN = "ID";
 
     public static final EntityProperty<SortRoot> ROOT = PropertyFactory.createEntity("root", SortRoot.class);

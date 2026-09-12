@@ -28,8 +28,6 @@ import org.apache.cayenne.util.ConversionUtil;
  */
 public class ASTNotLikeIgnoreCase extends IgnoreCaseNode {
 
-	private static final long serialVersionUID = -1837593236671099985L;
-
 	ASTNotLikeIgnoreCase(int id) {
 		super(id, true);
 	}

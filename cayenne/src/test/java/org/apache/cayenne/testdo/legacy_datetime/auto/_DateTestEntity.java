@@ -1,8 +1,5 @@
 package org.apache.cayenne.testdo.legacy_datetime.auto;
 
-import java.io.IOException;
-import java.io.ObjectInputStream;
-import java.io.ObjectOutputStream;
 import java.util.Date;
 
 import org.apache.cayenne.PersistentObject;
@@ -19,8 +16,6 @@ import org.apache.cayenne.testdo.legacy_datetime.DateTestEntity;
  * If you need to make any customizations, please use subclass.
  */
 public abstract class _DateTestEntity extends PersistentObject {
-
-    private static final long serialVersionUID = 1L;
 
     public static final SelfProperty<DateTestEntity> SELF = PropertyFactory.createSelf(DateTestEntity.class);
 
@@ -103,30 +98,6 @@ public abstract class _DateTestEntity extends PersistentObject {
             default:
                 super.writePropertyDirectly(propName, val);
         }
-    }
-
-    private void writeObject(ObjectOutputStream out) throws IOException {
-        writeSerialized(out);
-    }
-
-    private void readObject(ObjectInputStream in) throws IOException, ClassNotFoundException {
-        readSerialized(in);
-    }
-
-    @Override
-    protected void writeState(ObjectOutputStream out) throws IOException {
-        super.writeState(out);
-        out.writeObject(this.dateColumn);
-        out.writeObject(this.timeColumn);
-        out.writeObject(this.timestampColumn);
-    }
-
-    @Override
-    protected void readState(ObjectInputStream in) throws IOException, ClassNotFoundException {
-        super.readState(in);
-        this.dateColumn = (Date)in.readObject();
-        this.timeColumn = (Date)in.readObject();
-        this.timestampColumn = (Date)in.readObject();
     }
 
 }

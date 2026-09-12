@@ -40,9 +40,6 @@ import org.apache.cayenne.reflect.generic.ValueComparisonStrategyFactory;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import java.io.IOException;
-import java.io.ObjectInputStream;
-import java.io.Serializable;
 import java.lang.annotation.Annotation;
 import java.lang.reflect.Method;
 import java.util.ArrayList;
@@ -62,7 +59,7 @@ import java.util.concurrent.atomic.AtomicLong;
  *
  * @since 1.1
  */
-public class EntityResolver implements MappingNamespace, Serializable {
+public class EntityResolver implements MappingNamespace {
 
     private static final Logger LOGGER = LoggerFactory.getLogger(EntityResolver.class);
     protected static AtomicLong incrementer = new AtomicLong();
@@ -82,22 +79,19 @@ public class EntityResolver implements MappingNamespace, Serializable {
     }
 
     protected Collection<DataMap> maps;
-    protected transient MappingNamespace mappingCache;
+    protected MappingNamespace mappingCache;
 
-    // must be transient, as resolver may get deserialized in another VM, and
-    // descriptor recompilation will be desired.
-    protected transient volatile ClassDescriptorMap classDescriptorMap;
+    protected volatile ClassDescriptorMap classDescriptorMap;
 
-    // callbacks are not serializable
-    protected transient LifecycleCallbackRegistry callbackRegistry;
+    protected LifecycleCallbackRegistry callbackRegistry;
 
-    protected transient ValueObjectTypeRegistry valueObjectTypeRegistry;
-    protected transient ValueComparisonStrategyFactory valueComparisonStrategyFactory;
+    protected ValueObjectTypeRegistry valueObjectTypeRegistry;
+    protected ValueComparisonStrategyFactory valueComparisonStrategyFactory;
 
     /**
      * @since 5.0
      */
-    protected transient AdhocObjectFactory objectFactory;
+    protected AdhocObjectFactory objectFactory;
 
 
     /**
@@ -509,15 +503,6 @@ public class EntityResolver implements MappingNamespace, Serializable {
         }
 
         return classDescriptorMap;
-    }
-
-    /**
-     * Java default deserialization seems not to invoke constructor by default -
-     * invoking it manually
-     */
-    private void readObject(ObjectInputStream in) throws IOException, ClassNotFoundException {
-        in.defaultReadObject();
-        refreshMappingCache();
     }
 
     public ValueObjectTypeRegistry getValueObjectTypeRegistry() {

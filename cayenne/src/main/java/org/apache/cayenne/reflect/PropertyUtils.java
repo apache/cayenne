@@ -231,8 +231,6 @@ public class PropertyUtils {
 
 	static final class PathAccessor implements Accessor {
 
-		private static final long serialVersionUID = 2056090443413498626L;
-
 		private final CayennePathSegment segment;
 		private final Accessor nextAccessor;
 

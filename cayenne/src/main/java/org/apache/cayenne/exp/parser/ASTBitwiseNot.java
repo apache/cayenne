@@ -27,8 +27,6 @@ import org.apache.cayenne.util.ConversionUtil;
  * @since 3.1
  */
 public class ASTBitwiseNot extends EvaluatedNode {
-	private static final long serialVersionUID = 1L;
-
 	ASTBitwiseNot(int id) {
 		super(id);
 	}

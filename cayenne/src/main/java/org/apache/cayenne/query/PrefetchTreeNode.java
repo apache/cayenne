@@ -26,8 +26,6 @@ import org.apache.cayenne.util.Util;
 import org.apache.cayenne.util.XMLEncoder;
 import org.apache.cayenne.util.XMLSerializable;
 
-import java.io.ObjectStreamException;
-import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
@@ -37,9 +35,7 @@ import java.util.Collections;
  *
  * @since 1.2
  */
-public class PrefetchTreeNode implements Serializable, XMLSerializable {
-
-	private static final long serialVersionUID = 1112629504025820837L;
+public class PrefetchTreeNode implements XMLSerializable {
 
 	public static final int UNDEFINED_SEMANTICS = 0;
 	public static final int JOINT_PREFETCH_SEMANTICS = 1;
@@ -52,8 +48,7 @@ public class PrefetchTreeNode implements Serializable, XMLSerializable {
 	protected String ejbqlPathEntityId;
 	protected String entityName;
 
-	// transient parent allows cloning parts of the tree via serialization
-	protected transient PrefetchTreeNode parent;
+	protected PrefetchTreeNode parent;
 
 	// Using Collection instead of Map for children storage (even though there cases of
 	// lookup by segment) is a reasonable tradeoff considering that
@@ -509,22 +504,6 @@ public class PrefetchTreeNode implements Serializable, XMLSerializable {
 
 	public void setEntityName(String entityName) {
 		this.entityName = entityName;
-	}
-
-	// **** custom serialization that supports serializing subtrees...
-
-	// implementing 'readResolve' instead of 'readObject' so that this would
-	// work with
-	// hessian
-	protected Object readResolve() throws ObjectStreamException {
-
-		if (hasChildren()) {
-			for (PrefetchTreeNode child : children) {
-				child.parent = this;
-			}
-		}
-
-		return this;
 	}
 
 	// **** common tree operations

@@ -15,8 +15,6 @@ import org.apache.cayenne.lifecycle.db.E3;
  */
 public abstract class _E4 extends GenericPersistentObject {
 
-    private static final long serialVersionUID = 1L; 
-
     public static final String ID_PK_COLUMN = "ID";
 
     public static final ListProperty<E3> E3S = PropertyFactory.createList("e3s", E3.class);

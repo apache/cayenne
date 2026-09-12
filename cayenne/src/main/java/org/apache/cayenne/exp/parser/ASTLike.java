@@ -27,8 +27,6 @@ import org.apache.cayenne.util.ConversionUtil;
  */
 public class ASTLike extends PatternMatchNode {
 
-	private static final long serialVersionUID = -238967837469085757L;
-
 	ASTLike(int id) {
 		super(id, false);
 	}

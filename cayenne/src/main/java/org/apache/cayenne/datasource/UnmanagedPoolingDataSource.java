@@ -72,8 +72,6 @@ public class UnmanagedPoolingDataSource implements DataSource, AutoCloseable {
      * timed out and was unable to obtain a connection.
      */
     public static class ConnectionUnavailableException extends SQLException {
-        private static final long serialVersionUID = 1063973806941023165L;
-
         public ConnectionUnavailableException(String message) {
             super(message);
         }

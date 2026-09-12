@@ -47,8 +47,6 @@ public class JceksKeySource implements KeySource {
 	private static final String JCEKS_KEYSTORE_TYPE = "jceks";
 	private static final Key NULL_KEY = new Key() {
 
-		private static final long serialVersionUID = 4755682444381893880L;
-
 		@Override
 		public String getFormat() {
 			throw new UnsupportedOperationException();

@@ -34,8 +34,6 @@ import org.apache.cayenne.util.ConversionUtil;
  */
 public class ASTMultiply extends EvaluatedMathNode {
 
-	private static final long serialVersionUID = -8146316633842448974L;
-
 	ASTMultiply(int id) {
 		super(id);
 	}

@@ -1,8 +1,5 @@
 package org.apache.cayenne.testdo.inheritance_vertical.auto;
 
-import java.io.IOException;
-import java.io.ObjectInputStream;
-import java.io.ObjectOutputStream;
 import java.util.Date;
 import java.util.List;
 
@@ -24,8 +21,6 @@ import org.apache.cayenne.testdo.inheritance_vertical.IvOther;
  * If you need to make any customizations, please use subclass.
  */
 public abstract class _IvImpl extends IvBase {
-
-    private static final long serialVersionUID = 1L;
 
     public static final SelfProperty<IvImpl> SELF = PropertyFactory.createSelf(IvImpl.class);
 
@@ -173,38 +168,6 @@ public abstract class _IvImpl extends IvBase {
             default:
                 super.writePropertyDirectly(propName, val);
         }
-    }
-
-    private void writeObject(ObjectOutputStream out) throws IOException {
-        writeSerialized(out);
-    }
-
-    private void readObject(ObjectInputStream in) throws IOException, ClassNotFoundException {
-        readSerialized(in);
-    }
-
-    @Override
-    protected void writeState(ObjectOutputStream out) throws IOException {
-        super.writeState(out);
-        out.writeObject(this.attr0);
-        out.writeObject(this.attr1);
-        out.writeObject(this.attr2);
-        out.writeObject(this.implOthers);
-        out.writeObject(this.other1);
-        out.writeObject(this.other2);
-        out.writeObject(this.other3);
-    }
-
-    @Override
-    protected void readState(ObjectInputStream in) throws IOException, ClassNotFoundException {
-        super.readState(in);
-        this.attr0 = (Date)in.readObject();
-        this.attr1 = (String)in.readObject();
-        this.attr2 = (String)in.readObject();
-        this.implOthers = in.readObject();
-        this.other1 = in.readObject();
-        this.other2 = in.readObject();
-        this.other3 = in.readObject();
     }
 
 }

@@ -22,7 +22,6 @@ package org.apache.cayenne;
 import org.apache.cayenne.graph.CompoundDiff;
 import org.apache.cayenne.graph.GraphDiff;
 import org.apache.cayenne.graph.NodeCreateOperation;
-import org.apache.cayenne.util.Util;
 import org.junit.jupiter.api.Test;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
@@ -70,20 +69,6 @@ public class ObjectContextChangeLogTest {
 
         CompoundDiff diff2 = (CompoundDiff) recorder.getDiffs();
         assertEquals(2, diff2.getDiffs().size());
-    }
-
-    @Test
-    public void testGetDiffsSerializable() throws Exception {
-        ObjectContextChangeLog recorder = new ObjectContextChangeLog();
-        recorder.addOperation(new NodeCreateOperation(ObjectId.of("test")));
-        CompoundDiff diff = (CompoundDiff) recorder.getDiffs();
-
-        Object clone = Util.cloneViaSerialization(diff);
-        assertNotNull(clone);
-        assertTrue(clone instanceof CompoundDiff);
-
-        CompoundDiff d1 = (CompoundDiff) clone;
-        assertEquals(1, d1.getDiffs().size());
     }
 
 }

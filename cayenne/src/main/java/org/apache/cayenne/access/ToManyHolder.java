@@ -22,7 +22,6 @@ package org.apache.cayenne.access;
 import org.apache.cayenne.PersistenceState;
 import org.apache.cayenne.Persistent;
 
-import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.LinkedHashSet;
@@ -35,7 +34,7 @@ import java.util.Set;
  *
  * @since 5.0
  */
-public abstract class ToManyHolder<E> implements Serializable {
+public abstract class ToManyHolder<E> {
 
     protected Persistent relationshipOwner;
     protected String relationshipName;

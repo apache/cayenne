@@ -38,7 +38,6 @@ public class NoSyncObjectStore extends ObjectStore {
     public void setDataRowCache(DataRowStore dataRowCache) {
 
         this.dataRowCache = dataRowCache;
-        dataRowCacheSet = dataRowCache != null;
     }
 
 }

@@ -33,8 +33,6 @@ import org.slf4j.LoggerFactory;
  */
 public class ASTEqual extends ConditionNode implements ValueInjector {
 
-	private static final long serialVersionUID = 1211234198602067833L;
-	
 	private static final Logger LOGGER = LoggerFactory.getLogger(ASTEqual.class);
 
 	/**

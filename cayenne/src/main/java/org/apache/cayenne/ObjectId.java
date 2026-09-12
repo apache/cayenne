@@ -19,7 +19,6 @@
 
 package org.apache.cayenne;
 
-import java.io.Serializable;
 import java.util.Map;
 
 /**
@@ -30,7 +29,7 @@ import java.util.Map;
  * A temporary ObjectId stores object entity name and a pseudo-unique binary key; permanent id stores a map of values
  * from an external persistent store (aka "primary key").
  */
-public interface ObjectId extends Serializable {
+public interface ObjectId {
 
     /**
      * Creates a temporary ObjectId for a given entity.

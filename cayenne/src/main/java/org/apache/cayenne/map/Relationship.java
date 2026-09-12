@@ -19,8 +19,6 @@
 
 package org.apache.cayenne.map;
 
-import java.io.Serializable;
-
 import org.apache.cayenne.CayenneRuntimeException;
 import org.apache.cayenne.util.CayenneMapEntry;
 import org.apache.cayenne.util.ToStringBuilder;
@@ -32,7 +30,7 @@ import org.apache.cayenne.util.XMLSerializable;
  * notion of source and target entity. This makes DataMap a "digraph".
  */
 public abstract class Relationship<E extends Entity<E, A, R>, A extends Attribute<E, A, R>, R extends Relationship<E, A, R>>
-        implements CayenneMapEntry, XMLSerializable, Serializable {
+        implements CayenneMapEntry, XMLSerializable {
 
     protected String name;
     protected E sourceEntity;

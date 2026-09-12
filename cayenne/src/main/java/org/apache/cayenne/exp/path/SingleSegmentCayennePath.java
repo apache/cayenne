@@ -19,7 +19,6 @@
 
 package org.apache.cayenne.exp.path;
 
-import java.io.Serializable;
 import java.util.Iterator;
 import java.util.List;
 import java.util.NoSuchElementException;
@@ -31,7 +30,7 @@ import java.util.function.Consumer;
  *
  * @since 5.0
  */
-class SingleSegmentCayennePath implements CayennePath, Serializable {
+class SingleSegmentCayennePath implements CayennePath {
 
     private final CayennePathSegment segment;
 

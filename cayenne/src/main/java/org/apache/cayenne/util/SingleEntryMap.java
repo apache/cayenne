@@ -19,7 +19,6 @@
 
 package org.apache.cayenne.util;
 
-import java.io.Serializable;
 import java.util.Collection;
 import java.util.Map;
 import java.util.Objects;
@@ -44,9 +43,7 @@ import static java.util.Collections.*;
  *
  * @since 4.2
  */
-public class SingleEntryMap<K, V> implements Map<K, V>, Map.Entry<K, V>, Serializable {
-
-    private static final long serialVersionUID = -3848347748971431847L;
+public class SingleEntryMap<K, V> implements Map<K, V>, Map.Entry<K, V> {
 
     private final K key;
     private V value;

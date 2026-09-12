@@ -28,7 +28,7 @@ The call above creates a new instance of ObjectContext that can access the datab
 
 These properties directly affect the strategies for scoping and sharing (or not sharing) ObjectContexts. Contexts that are only used to fetch objects from the database and whose objects are never modified by the application can be shared between multiple users (and multiple threads). Contexts that store modified objects should be accessed only by a single user (e.g. a web application user might reuse a context instance between multiple web requests in the same HttpSession, thus carrying uncommitted changes to objects from request to request, until they decide to commit them or roll them back). Even for a single user it might make sense to use multiple ObjectContexts (e.g. request-scoped contexts to allow concurrent requests from the browser that change and commit objects independently).
 
-ObjectContext is serializable and does not permanently hold any of the application resources. So it does not have to be closed. If the context is not used anymore, it should simply be allowed to go out of scope and get garbage collected, just like any other Java object.
+ObjectContext does not permanently hold any of the application resources. So it does not have to be closed. If the context is not used anymore, it should simply be allowed to go out of scope and get garbage collected, just like any other Java object.
 
 
 ==== Persistent Object and its Lifecycle

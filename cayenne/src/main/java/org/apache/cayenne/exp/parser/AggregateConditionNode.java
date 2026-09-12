@@ -34,8 +34,6 @@ import org.apache.cayenne.exp.ExpressionFactory;
  */
 public abstract class AggregateConditionNode extends SimpleNode {
 
-	private static final long serialVersionUID = -636699350691988809L;
-
 	AggregateConditionNode(int i) {
 		super(i);
 	}

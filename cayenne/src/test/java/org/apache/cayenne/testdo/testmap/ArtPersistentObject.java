@@ -26,6 +26,4 @@ import org.apache.cayenne.PersistentObject;
  */
 public class ArtPersistentObject extends PersistentObject {
 
-    private static final long serialVersionUID = -1350981440925237535L;
-
 }

@@ -141,6 +141,13 @@ Expression caseWhenExp = caseWhen(
   methods are no longer accessible on the context itself. Application code wasn't ever not supposed to use them, as 
   everything you need to do, you can do via the ObjectContext API.
 
+*  Per [CAY-3020](https://issues.apache.org/jira/browse/CAY-3020) Cayenne no longer supports Java serialization of
+   contexts, queries and mapping objects. `Persistent`, `ObjectContext`, `ObjectId`, `Query`, `Expression`, `Ordering`,
+   `EntityResolver`, `DataMap`, etc. do not implement `java.io.Serializable` anymore, and the custom
+   `readObject` / `writeObject` logic that re-attached deserialized contexts and objects to the runtime is gone. The 
+   class generation templates no longer emit `serialVersionUID`, `writeObject` / `readObject` and
+   `writeState` / `readState`.
+
 *  The `org.apache.cayenne.query.ParameterizedQuery` interface was removed, together with the `createQuery(Map)`
   methods of `SQLTemplate`, `ProcedureQuery` and `ObjectSelect` that implemented it. Applying parameters to a mapped
   query is now the job of the query descriptor - override `QueryDescriptor.buildQuery(Map)` if you have a custom
@@ -174,7 +181,6 @@ Expression caseWhenExp = caseWhen(
 *  `DataContext.performIteratedQuery(Query)` (deprecated earlier in 5.0) was removed. Use `ObjectContext.iterator(Select)`
   instead; to iterate over `DataRow`s, pass a `DataRow` query, e.g. `ObjectSelect.dataRowQuery(Artist.class)` or
   `SQLSelect.dataRowQuery(sql)`.
-
 
 ## Upgrading to 5.0-M3
 

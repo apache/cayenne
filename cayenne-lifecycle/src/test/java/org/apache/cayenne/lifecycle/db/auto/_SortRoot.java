@@ -15,8 +15,6 @@ import org.apache.cayenne.lifecycle.db.SortDep;
  */
 public abstract class _SortRoot extends GenericPersistentObject {
 
-    private static final long serialVersionUID = 1L; 
-
     public static final String ID_PK_COLUMN = "ID";
 
     public static final ListProperty<SortDep> DEPS = PropertyFactory.createList("deps", SortDep.class);

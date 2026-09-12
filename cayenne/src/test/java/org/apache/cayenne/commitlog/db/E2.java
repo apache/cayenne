@@ -21,5 +21,4 @@ package org.apache.cayenne.commitlog.db;
 import org.apache.cayenne.commitlog.db.auto._E2;
 
 public class E2 extends _E2 {
-	private static final long serialVersionUID = 1L;
 }

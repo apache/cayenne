@@ -19,9 +19,6 @@
 
 package org.apache.cayenne;
 
-import java.io.IOException;
-import java.io.ObjectInputStream;
-import java.io.ObjectOutputStream;
 import java.util.Collection;
 import java.util.HashMap;
 import java.util.Iterator;
@@ -47,8 +44,6 @@ import org.apache.cayenne.reflect.PropertyUtils;
  * @since 5.0, renamed from HybridDataObject
  */
 public class HybridPersistentObject extends PersistentObject {
-
-    private static final long serialVersionUID = 1945209973678806566L;
 
     protected Map<String, Object> values;
 
@@ -114,18 +109,6 @@ public class HybridPersistentObject extends PersistentObject {
         }
 
         buffer.append(']');
-    }
-
-    @Override
-    protected void readState(ObjectInputStream in) throws IOException, ClassNotFoundException {
-        super.readState(in);
-        values = (Map<String, Object>) in.readObject();
-    }
-
-    @Override
-    protected void writeState(ObjectOutputStream out) throws IOException {
-        super.writeState(out);
-        out.writeObject(values);
     }
 
 }

@@ -1,8 +1,5 @@
 package org.apache.cayenne.testdo.compound.auto;
 
-import java.io.IOException;
-import java.io.ObjectInputStream;
-import java.io.ObjectOutputStream;
 import java.util.List;
 
 import org.apache.cayenne.GenericPersistentObject;
@@ -21,8 +18,6 @@ import org.apache.cayenne.testdo.compound.CompoundOrderLine;
  * If you need to make any customizations, please use subclass.
  */
 public abstract class _CompoundOrder extends GenericPersistentObject {
-
-    private static final long serialVersionUID = 1L;
 
     public static final SelfProperty<CompoundOrder> SELF = PropertyFactory.createSelf(CompoundOrder.class);
 
@@ -91,28 +86,6 @@ public abstract class _CompoundOrder extends GenericPersistentObject {
             default:
                 super.writePropertyDirectly(propName, val);
         }
-    }
-
-    private void writeObject(ObjectOutputStream out) throws IOException {
-        writeSerialized(out);
-    }
-
-    private void readObject(ObjectInputStream in) throws IOException, ClassNotFoundException {
-        readSerialized(in);
-    }
-
-    @Override
-    protected void writeState(ObjectOutputStream out) throws IOException {
-        super.writeState(out);
-        out.writeObject(this.info);
-        out.writeObject(this.lines);
-    }
-
-    @Override
-    protected void readState(ObjectInputStream in) throws IOException, ClassNotFoundException {
-        super.readState(in);
-        this.info = (String)in.readObject();
-        this.lines = in.readObject();
     }
 
 }

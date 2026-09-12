@@ -30,8 +30,6 @@ import org.apache.cayenne.exp.Expression;
  * @since 4.0
  */
 public class ASTBitwiseRightShift extends EvaluatedBitwiseNode {
-	private static final long serialVersionUID = 1L;
-
 	ASTBitwiseRightShift(int id) {
 		super(id);
 	}

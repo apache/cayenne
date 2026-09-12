@@ -26,7 +26,6 @@ import org.apache.cayenne.exp.Expression;
 import org.apache.cayenne.map.EntityResolver;
 import org.apache.cayenne.map.ObjEntity;
 
-import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
@@ -69,8 +68,6 @@ import static org.apache.cayenne.exp.ExpressionFactory.*;
  */
 @Deprecated(since = "5.0", forRemoval = true)
 public class SelectById<T> extends IndirectQuery implements Select<T> {
-
-    private static final long serialVersionUID = -6589464349051607583L;
 
     final QueryRoot root;
     final IdSpec idSpec;
@@ -676,11 +673,11 @@ public class SelectById<T> extends IndirectQuery implements Select<T> {
         return result;
     }
 
-    protected interface QueryRoot extends Serializable {
+    protected interface QueryRoot {
         ObjEntity resolve(EntityResolver resolver);
     }
 
-    protected interface IdSpec extends Serializable {
+    protected interface IdSpec {
         Expression getQualifier(ObjEntity entity);
     }
 

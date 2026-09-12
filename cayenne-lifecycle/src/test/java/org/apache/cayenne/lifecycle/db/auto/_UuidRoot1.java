@@ -12,8 +12,6 @@ import org.apache.cayenne.exp.property.StringProperty;
  */
 public abstract class _UuidRoot1 extends GenericPersistentObject {
 
-    private static final long serialVersionUID = 1L; 
-
     public static final String ID_PK_COLUMN = "ID";
 
     public static final StringProperty<String> UUID = PropertyFactory.createString("uuid", String.class);

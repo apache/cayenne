@@ -1,9 +1,5 @@
 package org.apache.cayenne.testdo.meaningful_pk.auto;
 
-import java.io.IOException;
-import java.io.ObjectInputStream;
-import java.io.ObjectOutputStream;
-
 import org.apache.cayenne.PersistentObject;
 import org.apache.cayenne.exp.property.NumericProperty;
 import org.apache.cayenne.exp.property.PropertyFactory;
@@ -17,8 +13,6 @@ import org.apache.cayenne.testdo.meaningful_pk.MeaningfulPkTest2;
  * If you need to make any customizations, please use subclass.
  */
 public abstract class _MeaningfulPkTest2 extends PersistentObject {
-
-    private static final long serialVersionUID = 1L;
 
     public static final SelfProperty<MeaningfulPkTest2> SELF = PropertyFactory.createSelf(MeaningfulPkTest2.class);
 
@@ -100,30 +94,6 @@ public abstract class _MeaningfulPkTest2 extends PersistentObject {
             default:
                 super.writePropertyDirectly(propName, val);
         }
-    }
-
-    private void writeObject(ObjectOutputStream out) throws IOException {
-        writeSerialized(out);
-    }
-
-    private void readObject(ObjectInputStream in) throws IOException, ClassNotFoundException {
-        readSerialized(in);
-    }
-
-    @Override
-    protected void writeState(ObjectOutputStream out) throws IOException {
-        super.writeState(out);
-        out.writeObject(this.integerAttribute);
-        out.writeObject(this.integerNullableAttribute);
-        out.writeObject(this.pkAttribute);
-    }
-
-    @Override
-    protected void readState(ObjectInputStream in) throws IOException, ClassNotFoundException {
-        super.readState(in);
-        this.integerAttribute = (Integer)in.readObject();
-        this.integerNullableAttribute = (Integer)in.readObject();
-        this.pkAttribute = (Integer)in.readObject();
     }
 
 }

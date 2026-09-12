@@ -33,15 +33,10 @@ import javax.xml.parsers.ParserConfigurationException;
 import javax.xml.parsers.SAXParser;
 import javax.xml.parsers.SAXParserFactory;
 import java.io.BufferedReader;
-import java.io.ByteArrayInputStream;
-import java.io.ByteArrayOutputStream;
 import java.io.File;
 import java.io.FileReader;
 import java.io.IOException;
 import java.io.InputStream;
-import java.io.ObjectInputStream;
-import java.io.ObjectOutputStream;
-import java.io.Serializable;
 import java.lang.reflect.Member;
 import java.lang.reflect.Modifier;
 import java.net.URI;
@@ -335,28 +330,6 @@ public class Util {
 
         char c = Character.toLowerCase(aString.charAt(0));
         return (aString.length() == 1) ? Character.toString(c) : c + aString.substring(1);
-    }
-
-    /**
-     * Creates Serializable object copy using serialization/deserialization.
-     */
-    @SuppressWarnings("unchecked")
-    public static <T extends Serializable> T cloneViaSerialization(T object) throws Exception {
-        ByteArrayOutputStream bytes = new ByteArrayOutputStream() {
-
-            @Override
-            public byte[] toByteArray() {
-                return buf;
-            }
-        };
-
-        try (ObjectOutputStream out = new ObjectOutputStream(bytes)) {
-            out.writeObject(object);
-        }
-
-        try (ObjectInputStream in = new ObjectInputStream(new ByteArrayInputStream(bytes.toByteArray()))) {
-            return (T) in.readObject();
-        }
     }
 
     /**

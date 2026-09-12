@@ -23,6 +23,4 @@ import org.apache.cayenne.testdo.cay_2666.auto._CAY2666;
 
 public class CAY2666 extends _CAY2666 {
 
-    private static final long serialVersionUID = 1L; 
-
 }

@@ -28,8 +28,6 @@ import org.apache.cayenne.exp.Expression;
  */
 public class ASTBetween extends ConditionNode {
 
-	private static final long serialVersionUID = -8739783546459651759L;
-
 	ASTBetween(int id) {
 		super(id);
 	}

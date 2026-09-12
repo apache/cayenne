@@ -69,8 +69,6 @@ import java.util.stream.Stream;
  */
 public class SQLTemplate extends CacheableQuery {
 
-	private static final long serialVersionUID = -3073521388289663641L;
-
 	public static final String COLUMN_NAME_CAPITALIZATION_PROPERTY = "cayenne.SQLTemplate.columnNameCapitalization";
 
 	private static final Function<Map<String, ?>, Map<String, ?>> nullMapTransformer = input ->
@@ -490,8 +488,7 @@ public class SQLTemplate extends CacheableQuery {
 		if (parameters == null) {
 			this.parameters = null;
 		} else {
-			// clone parameters to ensure that we don't have immutable maps that
-			// are not serializable with Hessian...
+			// copy parameters so that later changes to the caller's maps do not affect the query
 			this.parameters = new Map[parameters.length];
 			for (int i = 0; i < parameters.length; i++) {
 				this.parameters[i] = parameters[i] != null ? new HashMap<>(parameters[i]) : new HashMap<>();

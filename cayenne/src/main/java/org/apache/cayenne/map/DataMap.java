@@ -30,7 +30,6 @@ import org.apache.cayenne.util.Util;
 import org.apache.cayenne.util.XMLEncoder;
 import org.apache.cayenne.util.XMLSerializable;
 
-import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
@@ -48,9 +47,7 @@ import static java.util.Collections.emptyList;
  * tables, ObjEntities - mapping persistent Java classes, Procedures - mapping
  * database stored procedures.
  */
-public class DataMap implements Serializable, ConfigurationNode, XMLSerializable, MappingNamespace, Comparable<DataMap> {
-
-	private static final long serialVersionUID = 4851901426473991657L;
+public class DataMap implements ConfigurationNode, XMLSerializable, MappingNamespace, Comparable<DataMap> {
 
 	/**
 	 * Defines the name of the property for default DB catalog.
@@ -119,7 +116,7 @@ public class DataMap implements Serializable, ConfigurationNode, XMLSerializable
 	/**
 	 * @since 3.1
 	 */
-	protected transient Resource configurationSource;
+	protected Resource configurationSource;
 
 	/**
 	 * @since 3.1

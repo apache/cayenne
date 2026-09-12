@@ -24,7 +24,6 @@ import org.apache.cayenne.map.EntityResolver;
 import org.apache.cayenne.query.Query;
 import org.apache.cayenne.query.Select;
 
-import java.io.Serializable;
 import java.util.Collection;
 import java.util.List;
 
@@ -34,7 +33,7 @@ import java.util.List;
  *
  * @since 1.2
  */
-public interface ObjectContext extends Serializable {
+public interface ObjectContext {
 
     /**
      * Returns a DataChannel that this context uses to access the persistent store.

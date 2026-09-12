@@ -1,9 +1,5 @@
 package org.apache.cayenne.testdo.locking.auto;
 
-import java.io.IOException;
-import java.io.ObjectInputStream;
-import java.io.ObjectOutputStream;
-
 import org.apache.cayenne.PersistentObject;
 import org.apache.cayenne.exp.property.NumericIdProperty;
 import org.apache.cayenne.exp.property.NumericProperty;
@@ -19,8 +15,6 @@ import org.apache.cayenne.testdo.locking.SimpleLockingTestEntity;
  * If you need to make any customizations, please use subclass.
  */
 public abstract class _SimpleLockingTestEntity extends PersistentObject {
-
-    private static final long serialVersionUID = 1L;
 
     public static final SelfProperty<SimpleLockingTestEntity> SELF = PropertyFactory.createSelf(SimpleLockingTestEntity.class);
 
@@ -123,32 +117,6 @@ public abstract class _SimpleLockingTestEntity extends PersistentObject {
             default:
                 super.writePropertyDirectly(propName, val);
         }
-    }
-
-    private void writeObject(ObjectOutputStream out) throws IOException {
-        writeSerialized(out);
-    }
-
-    private void readObject(ObjectInputStream in) throws IOException, ClassNotFoundException {
-        readSerialized(in);
-    }
-
-    @Override
-    protected void writeState(ObjectOutputStream out) throws IOException {
-        super.writeState(out);
-        out.writeObject(this.description);
-        out.writeInt(this.intColumnNotnull);
-        out.writeObject(this.intColumnNull);
-        out.writeObject(this.name);
-    }
-
-    @Override
-    protected void readState(ObjectInputStream in) throws IOException, ClassNotFoundException {
-        super.readState(in);
-        this.description = (String)in.readObject();
-        this.intColumnNotnull = in.readInt();
-        this.intColumnNull = (Integer)in.readObject();
-        this.name = (String)in.readObject();
     }
 
 }

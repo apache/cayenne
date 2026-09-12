@@ -1,8 +1,5 @@
 package org.apache.cayenne.testdo.inheritance_with_enum.auto;
 
-import java.io.IOException;
-import java.io.ObjectInputStream;
-import java.io.ObjectOutputStream;
 import java.util.List;
 
 import org.apache.cayenne.PersistentObject;
@@ -22,8 +19,6 @@ import org.apache.cayenne.testdo.inheritance_with_enum.Root;
  * If you need to make any customizations, please use subclass.
  */
 public abstract class _Root extends PersistentObject {
-
-    private static final long serialVersionUID = 1L;
 
     public static final SelfProperty<Root> SELF = PropertyFactory.createSelf(Root.class);
 
@@ -109,30 +104,6 @@ public abstract class _Root extends PersistentObject {
             default:
                 super.writePropertyDirectly(propName, val);
         }
-    }
-
-    private void writeObject(ObjectOutputStream out) throws IOException {
-        writeSerialized(out);
-    }
-
-    private void readObject(ObjectInputStream in) throws IOException, ClassNotFoundException {
-        readSerialized(in);
-    }
-
-    @Override
-    protected void writeState(ObjectOutputStream out) throws IOException {
-        super.writeState(out);
-        out.writeObject(this.name);
-        out.writeShort(this.type);
-        out.writeObject(this.dependents);
-    }
-
-    @Override
-    protected void readState(ObjectInputStream in) throws IOException, ClassNotFoundException {
-        super.readState(in);
-        this.name = (String)in.readObject();
-        this.type = in.readShort();
-        this.dependents = in.readObject();
     }
 
 }

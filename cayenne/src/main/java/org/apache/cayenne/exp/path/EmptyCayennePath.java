@@ -19,7 +19,6 @@
 
 package org.apache.cayenne.exp.path;
 
-import java.io.Serializable;
 import java.util.Collections;
 import java.util.Iterator;
 import java.util.List;
@@ -29,7 +28,7 @@ import java.util.List;
  *
  * @since 5.0
  */
-class EmptyCayennePath implements CayennePath, Serializable {
+class EmptyCayennePath implements CayennePath {
 
     final int marker;
 

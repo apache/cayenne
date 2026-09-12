@@ -19,7 +19,6 @@
 
 package org.apache.cayenne.exp.path;
 
-import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -45,7 +44,7 @@ import java.util.List;
  *
  * @since 5.0
  */
-public interface CayennePath extends Iterable<CayennePathSegment>, Serializable {
+public interface CayennePath extends Iterable<CayennePathSegment> {
 
     /**
      * No special markers

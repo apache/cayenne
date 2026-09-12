@@ -36,8 +36,6 @@ import org.apache.cayenne.util.CayenneMapEntry;
  */
 public abstract class ASTPath extends SimpleNode {
 
-	private static final long serialVersionUID = -8099822503585617295L;
-	
 	protected CayennePath path;
 	protected Map<String, String> pathAliases;
 

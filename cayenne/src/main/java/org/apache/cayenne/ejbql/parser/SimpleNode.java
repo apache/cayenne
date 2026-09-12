@@ -19,7 +19,6 @@
 package org.apache.cayenne.ejbql.parser;
 
 import java.io.PrintWriter;
-import java.io.Serializable;
 import java.io.StringWriter;
 
 import org.apache.cayenne.ejbql.EJBQLExpression;
@@ -30,7 +29,7 @@ import org.apache.cayenne.ejbql.EJBQLExpressionVisitor;
  * 
  * @since 3.0
  */
-public abstract class SimpleNode implements Node, Serializable, EJBQLExpression {
+public abstract class SimpleNode implements Node, EJBQLExpression {
 
     final int id;
     SimpleNode parent;

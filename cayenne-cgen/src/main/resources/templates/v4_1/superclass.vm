@@ -38,9 +38,6 @@
 ${importUtils.setPackage($superPackageName)}##
 ${importUtils.addReservedType("${superPackageName}.${superClassName}")}##
 ${importUtils.addType("${basePackageName}.${baseClassName}")}##
-${importUtils.addType("java.io.IOException")}##
-${importUtils.addType("java.io.ObjectInputStream")}##
-${importUtils.addType("java.io.ObjectOutputStream")}##
 #if( $createPKProperties )
 $propertyUtils.addImportForPK($entityUtils)##
 #end
@@ -66,8 +63,6 @@ ${importUtils.generate()}
 #end
  */
 public abstract class ${superClassName} extends ${baseClassName} {
-
-    private static final long serialVersionUID = 1L;
 
 ###########################
 ## Create self property  ##
@@ -275,56 +270,6 @@ public abstract class ${superClassName} extends ${baseClassName} {
             default:
                 super.writePropertyDirectly(propName, val);
         }
-    }
-
-##################################
-## Create serialization support ##
-##################################
-    private void writeObject(ObjectOutputStream out) throws IOException {
-        writeSerialized(out);
-    }
-
-    private void readObject(ObjectInputStream in) throws IOException, ClassNotFoundException {
-        readSerialized(in);
-    }
-
-    @Override
-    protected void writeState(ObjectOutputStream out) throws IOException {
-        super.writeState(out);
-#foreach( $attr in ${object.DeclaredAttributes} )
-#set ( $name = "$stringUtils.formatVariableName(${attr.Name})")
-#set ( $flag = $importUtils.canUsePrimitive($attr) )
-#set ( $type = "$importUtils.formatJavaType(${attr.Type}, $flag)")
-#if($importUtils.isPrimitive($type))
-        out.write${stringUtils.capitalized($type)}(this.$name);
-#else
-        out.writeObject(this.${name});
-#end
-#end
-#foreach( $rel in ${object.DeclaredRelationships} )
-        out.writeObject(this.${stringUtils.formatVariableName($rel.Name)});
-#end
-    }
-
-    @Override
-    protected void readState(ObjectInputStream in) throws IOException, ClassNotFoundException {
-        super.readState(in);
-#foreach( $attr in ${object.DeclaredAttributes} )
-#set ( $name = "$stringUtils.formatVariableName(${attr.Name})")
-#set ( $flag = $importUtils.canUsePrimitive($attr) )
-#set ( $type = "$importUtils.formatJavaType(${attr.Type}, $flag)")
-#if($attr.Lazy)
-        this.$name = in.readObject();
-#elseif($importUtils.isPrimitive($type))
-        this.$name = in.read${stringUtils.capitalized($type)}();
-#else
-        this.$name = ($type)in.readObject();
-#end
-#end
-#foreach( $rel in ${object.DeclaredRelationships} )
-#set ( $name = "${stringUtils.formatVariableName($rel.Name)}")
-        this.$name = in.readObject();
-#end
     }
 
 }

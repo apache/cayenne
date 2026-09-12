@@ -19,16 +19,13 @@
 
 package org.apache.cayenne.exp;
 
-import java.io.Serializable;
 import java.util.Objects;
 
 /**
  * Named parameter for parameterized expressions.
  */
-public class ExpressionParameter implements Serializable {
+public class ExpressionParameter {
 
-	private static final long serialVersionUID = -8324061115570177022L;
-	
 	protected String name;
 
 	/**

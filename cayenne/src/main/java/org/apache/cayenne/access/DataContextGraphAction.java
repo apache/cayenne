@@ -26,10 +26,9 @@ import org.apache.cayenne.reflect.ArcProperty;
 import org.apache.cayenne.reflect.ClassDescriptor;
 import org.apache.cayenne.reflect.PropertyDescriptor;
 
-import java.io.Serializable;
 
 
-class DataContextGraphAction implements Serializable {
+class DataContextGraphAction {
 
     private final ObjectContext context;
 

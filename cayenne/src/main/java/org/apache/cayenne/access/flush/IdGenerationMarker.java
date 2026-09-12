@@ -19,8 +19,6 @@
 
 package org.apache.cayenne.access.flush;
 
-import java.io.Serializable;
-
 import org.apache.cayenne.access.types.InternalUnsupportedTypeFactory;
 
 /**
@@ -28,9 +26,7 @@ import org.apache.cayenne.access.types.InternalUnsupportedTypeFactory;
  *
  * @since 4.2
  */
-class IdGenerationMarker implements Serializable, InternalUnsupportedTypeFactory.Marker {
-    private static final long serialVersionUID = -5339942931435878094L;
-
+class IdGenerationMarker implements InternalUnsupportedTypeFactory.Marker {
     static IdGenerationMarker marker() {
         return new IdGenerationMarker();
     }

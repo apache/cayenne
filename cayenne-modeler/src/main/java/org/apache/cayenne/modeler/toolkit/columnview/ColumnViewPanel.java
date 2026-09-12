@@ -31,7 +31,6 @@ import javax.swing.event.TreeSelectionListener;
 import javax.swing.tree.TreeModel;
 import javax.swing.tree.TreePath;
 import java.awt.*;
-import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -486,7 +485,7 @@ public class ColumnViewPanel extends JPanel {
     // DefaultListCellRenerer since it extends JLabel that
     // does not allow the layout that we need.
     // ====================================================
-    final class MultiColumnBrowserRenderer implements ListCellRenderer, Serializable {
+    final class MultiColumnBrowserRenderer implements ListCellRenderer {
 
         ListCellRenderer leafRenderer;
         JPanel nonLeafPanel;

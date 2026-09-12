@@ -29,7 +29,7 @@ import java.util.Map;
 
 class ProcedureQueryMetadata extends BaseQueryMetadata {
 
-    transient Procedure procedure;
+    Procedure procedure;
 
     @Override
     public Procedure getProcedure() {

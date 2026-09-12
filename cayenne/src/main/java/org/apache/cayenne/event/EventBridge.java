@@ -19,8 +19,6 @@
 
 package org.apache.cayenne.event;
 
-import org.apache.cayenne.util.Util;
-
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
@@ -324,15 +322,9 @@ public abstract class EventBridge implements EventListener {
             if (event.getSource() != getExternalEventSource()
                     && event.getPostedBy() != EventBridge.this) {
 
-                // make sure external event has the right subject, if not make a clone
-                // with the right one...
+                // make sure external event has the right subject
                 if (!subject.equals(event.getSubject())) {
-                    CayenneEvent clone = Util.cloneViaSerialization(event);
-                    clone.setSubject(subject);
-                    clone.setPostedBy(event.getPostedBy());
-                    clone.setSource(event.getSource());
-
-                    event = clone;
+                    event.setSubject(subject);
                 }
 
                 sendExternalEvent(event);

@@ -25,8 +25,6 @@ import org.apache.cayenne.graph.CompoundDiff;
 import org.apache.cayenne.graph.GraphDiff;
 import org.apache.cayenne.graph.NodeDiff;
 
-import java.io.ObjectStreamException;
-import java.io.Serializable;
 import java.util.AbstractList;
 import java.util.ArrayList;
 import java.util.Collections;
@@ -155,7 +153,7 @@ class ObjectContextChangeLog {
 
     // moded Sublist from JDK that doesn't check for co-modification, as the underlying
     // list is guaranteed to only grow and never shrink or be replaced.
-    static class SubList extends AbstractList<GraphDiff> implements Serializable {
+    static class SubList extends AbstractList<GraphDiff> {
 
         private List<GraphDiff> list;
         private int offset;
@@ -195,11 +193,6 @@ class ObjectContextChangeLog {
             if (index < 0 || index >= size) {
                 throw new IndexOutOfBoundsException("Index: " + index + ",Size: " + size);
             }
-        }
-
-        // serialization method...
-        private Object writeReplace() throws ObjectStreamException {
-            return new ArrayList<>(list.subList(offset, offset + size));
         }
     }
 }

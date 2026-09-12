@@ -1,8 +1,5 @@
 package org.apache.cayenne.testdo.return_types.auto;
 
-import java.io.IOException;
-import java.io.ObjectInputStream;
-import java.io.ObjectOutputStream;
 import java.math.BigDecimal;
 import java.util.Date;
 
@@ -23,8 +20,6 @@ import org.apache.cayenne.testdo.return_types.ReturnTypesMap1;
  * If you need to make any customizations, please use subclass.
  */
 public abstract class _ReturnTypesMap1 extends GenericPersistentObject {
-
-    private static final long serialVersionUID = 1L;
 
     public static final SelfProperty<ReturnTypesMap1> SELF = PropertyFactory.createSelf(ReturnTypesMap1.class);
 
@@ -396,64 +391,6 @@ public abstract class _ReturnTypesMap1 extends GenericPersistentObject {
             default:
                 super.writePropertyDirectly(propName, val);
         }
-    }
-
-    private void writeObject(ObjectOutputStream out) throws IOException {
-        writeSerialized(out);
-    }
-
-    private void readObject(ObjectInputStream in) throws IOException, ClassNotFoundException {
-        readSerialized(in);
-    }
-
-    @Override
-    protected void writeState(ObjectOutputStream out) throws IOException {
-        super.writeState(out);
-        out.writeObject(this.bigintColumn);
-        out.writeObject(this.bitColumn);
-        out.writeObject(this.booleanColumn);
-        out.writeObject(this.charColumn);
-        out.writeObject(this.dateColumn);
-        out.writeObject(this.decimalColumn);
-        out.writeObject(this.doubleColumn);
-        out.writeObject(this.floatColumn);
-        out.writeObject(this.integerColumn);
-        out.writeObject(this.longnvarcharColumn);
-        out.writeObject(this.longvarcharColumn);
-        out.writeObject(this.ncharColumn);
-        out.writeObject(this.numericColumn);
-        out.writeObject(this.nvarcharColumn);
-        out.writeObject(this.realColumn);
-        out.writeObject(this.smallintColumn);
-        out.writeObject(this.timeColumn);
-        out.writeObject(this.timestampColumn);
-        out.writeObject(this.tinyintColumn);
-        out.writeObject(this.varcharColumn);
-    }
-
-    @Override
-    protected void readState(ObjectInputStream in) throws IOException, ClassNotFoundException {
-        super.readState(in);
-        this.bigintColumn = (Long)in.readObject();
-        this.bitColumn = (Boolean)in.readObject();
-        this.booleanColumn = (Boolean)in.readObject();
-        this.charColumn = (String)in.readObject();
-        this.dateColumn = (Date)in.readObject();
-        this.decimalColumn = (BigDecimal)in.readObject();
-        this.doubleColumn = (Double)in.readObject();
-        this.floatColumn = (Float)in.readObject();
-        this.integerColumn = (Integer)in.readObject();
-        this.longnvarcharColumn = (String)in.readObject();
-        this.longvarcharColumn = (String)in.readObject();
-        this.ncharColumn = (String)in.readObject();
-        this.numericColumn = (BigDecimal)in.readObject();
-        this.nvarcharColumn = (String)in.readObject();
-        this.realColumn = (Float)in.readObject();
-        this.smallintColumn = (Short)in.readObject();
-        this.timeColumn = (Date)in.readObject();
-        this.timestampColumn = (Date)in.readObject();
-        this.tinyintColumn = (Byte)in.readObject();
-        this.varcharColumn = (String)in.readObject();
     }
 
 }

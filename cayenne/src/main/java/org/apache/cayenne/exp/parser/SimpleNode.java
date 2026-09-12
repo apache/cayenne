@@ -39,8 +39,6 @@ import org.apache.cayenne.util.Util;
  */
 public abstract class SimpleNode extends Expression implements Node {
 
-	private static final long serialVersionUID = 4471832357335707557L;
-	
 	protected Node parent;
 	protected Node[] children;
 	protected int id;

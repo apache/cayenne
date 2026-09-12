@@ -22,7 +22,6 @@ package org.apache.cayenne.configuration;
 import org.apache.cayenne.util.XMLEncoder;
 import org.apache.cayenne.util.XMLSerializable;
 
-import java.io.Serializable;
 import java.util.Objects;
 
 /**
@@ -30,7 +29,7 @@ import java.util.Objects;
  *
  * @since 5.0
  */
-public class DataSourceDescriptor implements Serializable, XMLSerializable {
+public class DataSourceDescriptor implements XMLSerializable {
 
     protected String jdbcDriver;
     protected String dataSourceUrl;

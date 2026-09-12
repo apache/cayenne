@@ -33,8 +33,6 @@ import org.apache.cayenne.util.ConversionUtil;
  */
 public class ASTAnd extends AggregateConditionNode implements ValueInjector {
 
-	private static final long serialVersionUID = -5936206826390819160L;
-
 	/**
 	 * Constructor used by expression parser. Do not invoke directly.
 	 */

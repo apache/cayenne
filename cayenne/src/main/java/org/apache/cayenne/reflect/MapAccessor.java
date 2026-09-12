@@ -25,8 +25,6 @@ import java.util.Map;
  */
 public class MapAccessor implements Accessor {
 
-	private static final long serialVersionUID = 6032801387641617011L;
-	
 	private String propertyName;
 
 	public MapAccessor(String propertyName) {

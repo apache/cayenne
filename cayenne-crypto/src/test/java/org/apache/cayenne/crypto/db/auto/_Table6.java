@@ -1,9 +1,5 @@
 package org.apache.cayenne.crypto.db.auto;
 
-import java.io.IOException;
-import java.io.ObjectInputStream;
-import java.io.ObjectOutputStream;
-
 import org.apache.cayenne.PersistentObject;
 import org.apache.cayenne.crypto.db.Table6;
 import org.apache.cayenne.exp.property.NumericIdProperty;
@@ -18,8 +14,6 @@ import org.apache.cayenne.exp.property.SelfProperty;
  * If you need to make any customizations, please use subclass.
  */
 public abstract class _Table6 extends PersistentObject {
-
-    private static final long serialVersionUID = 1L;
 
     public static final SelfProperty<Table6> SELF = PropertyFactory.createSelf(Table6.class);
 
@@ -91,28 +85,6 @@ public abstract class _Table6 extends PersistentObject {
             default:
                 super.writePropertyDirectly(propName, val);
         }
-    }
-
-    private void writeObject(ObjectOutputStream out) throws IOException {
-        writeSerialized(out);
-    }
-
-    private void readObject(ObjectInputStream in) throws IOException, ClassNotFoundException {
-        readSerialized(in);
-    }
-
-    @Override
-    protected void writeState(ObjectOutputStream out) throws IOException {
-        super.writeState(out);
-        out.writeObject(this.cryptoInt1);
-        out.writeObject(this.cryptoInt4);
-    }
-
-    @Override
-    protected void readState(ObjectInputStream in) throws IOException, ClassNotFoundException {
-        super.readState(in);
-        this.cryptoInt1 = (Long)in.readObject();
-        this.cryptoInt4 = (Integer)in.readObject();
     }
 
 }

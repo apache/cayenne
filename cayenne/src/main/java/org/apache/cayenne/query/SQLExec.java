@@ -41,8 +41,6 @@ import org.apache.cayenne.util.QueryResultBuilder;
  */
 public class SQLExec extends IndirectQuery {
 
-    private static final long serialVersionUID = -6533566707148045615L;
-
     /**
      * Creates a query executing provided SQL run against default database.
      */

@@ -23,6 +23,4 @@ import org.apache.cayenne.testdo.json.auto._JsonOther;
 
 public class JsonOther extends _JsonOther {
 
-    private static final long serialVersionUID = 1L;
-
 }

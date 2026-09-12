@@ -29,7 +29,6 @@ import org.apache.cayenne.query.Query;
 import org.apache.cayenne.query.QueryMetadata;
 import java.util.Objects;
 
-import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
@@ -55,7 +54,7 @@ import java.util.NoSuchElementException;
  * full list fetch.
  * </p>
  */
-public class IncrementalFaultList<E> implements List<E>, Serializable {
+public class IncrementalFaultList<E> implements List<E> {
 
 	protected final int pageSize;
 	protected final List elements;
@@ -667,7 +666,7 @@ public class IncrementalFaultList<E> implements List<E>, Serializable {
 		return unfetchedObjects;
 	}
 
-	abstract class IncrementalListHelper implements Serializable {
+	abstract class IncrementalListHelper {
 
 		int indexOfObject(Object object) {
 			if (unresolvedSuspect(object)) {

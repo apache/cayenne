@@ -33,22 +33,13 @@ import java.util.Map;
  */
 class ObjectIdCompound implements ObjectId {
 
-    private static final long serialVersionUID = -2265029098344119323L;
-
     protected final String entityName;
     protected final Map<String, Object> objectIdKeys;
 
     protected Map<String, Object> replacementIdMap;
 
     // hash code is transient to make sure id is portable across VM
-    private transient int hashCode;
-
-    // exists for deserialization with Hessian and similar
-    @SuppressWarnings("unused")
-    private ObjectIdCompound() {
-        entityName = null;
-        objectIdKeys = Collections.emptyMap();
-    }
+    private int hashCode;
 
     /**
      * Creates a portable permanent ObjectId as a compound primary key.
@@ -73,7 +64,7 @@ class ObjectIdCompound implements ObjectId {
         if (m.getClass() == HashMap.class) {
             return (Map<String, Object>) m;
         } else {
-            // we have to create a copy of the map, otherwise we may run into serialization problems with hessian
+            // defensive copy: the caller's map may be unmodifiable or of an unknown implementation
             return new HashMap<>(m);
         }
     }

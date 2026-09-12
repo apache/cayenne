@@ -18,7 +18,6 @@
  ****************************************************************/
 package org.apache.cayenne.map;
 
-import java.io.Serializable;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.HashMap;
@@ -38,10 +37,8 @@ import org.apache.cayenne.util.XMLSerializable;
  * 
  * @since 3.0
  */
-public class Embeddable implements ConfigurationNode, XMLSerializable, Serializable {
+public class Embeddable implements ConfigurationNode, XMLSerializable {
 
-	private static final long serialVersionUID = -7163768090567642099L;
-	
 	protected String className;
 	protected Map<String, EmbeddableAttribute> attributes;
 	protected DataMap dataMap;
@@ -89,8 +86,6 @@ public class Embeddable implements ConfigurationNode, XMLSerializable, Serializa
 	 * Returns an unmodifiable sorted map of embeddable attributes.
 	 */
 	public Map<String, EmbeddableAttribute> getAttributeMap() {
-		// create a new instance ... Caching unmodifiable map causes
-		// serialization issues (esp. with Hessian).
 		return Collections.unmodifiableMap(attributes);
 	}
 
@@ -98,8 +93,6 @@ public class Embeddable implements ConfigurationNode, XMLSerializable, Serializa
 	 * Returns an unmodifiable collection of embeddable attributes.
 	 */
 	public Collection<EmbeddableAttribute> getAttributes() {
-		// create a new instance. Caching unmodifiable collection causes
-		// serialization issues (esp. with Hessian).
 		return Collections.unmodifiableCollection(attributes.values());
 	}
 

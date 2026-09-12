@@ -29,7 +29,6 @@ import org.apache.cayenne.util.XMLEncoder;
 import org.apache.cayenne.util.XMLSerializable;
 import org.apache.cayenne.validation.ValidationException;
 
-import java.io.Serializable;
 import java.nio.file.Path;
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -46,7 +45,7 @@ import java.util.stream.Collectors;
  *
  * @since 4.1
  */
-public class CgenConfiguration implements Serializable, XMLSerializable {
+public class CgenConfiguration implements XMLSerializable {
 
     /**
      * Absolute directory this configuration is anchored to, normally the one holding the Cayenne

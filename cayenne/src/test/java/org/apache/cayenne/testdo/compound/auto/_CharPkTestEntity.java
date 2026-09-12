@@ -1,8 +1,5 @@
 package org.apache.cayenne.testdo.compound.auto;
 
-import java.io.IOException;
-import java.io.ObjectInputStream;
-import java.io.ObjectOutputStream;
 import java.util.List;
 
 import org.apache.cayenne.PersistentObject;
@@ -20,8 +17,6 @@ import org.apache.cayenne.testdo.compound.CharPkTestEntity;
  * If you need to make any customizations, please use subclass.
  */
 public abstract class _CharPkTestEntity extends PersistentObject {
-
-    private static final long serialVersionUID = 1L;
 
     public static final SelfProperty<CharPkTestEntity> SELF = PropertyFactory.createSelf(CharPkTestEntity.class);
 
@@ -106,30 +101,6 @@ public abstract class _CharPkTestEntity extends PersistentObject {
             default:
                 super.writePropertyDirectly(propName, val);
         }
-    }
-
-    private void writeObject(ObjectOutputStream out) throws IOException {
-        writeSerialized(out);
-    }
-
-    private void readObject(ObjectInputStream in) throws IOException, ClassNotFoundException {
-        readSerialized(in);
-    }
-
-    @Override
-    protected void writeState(ObjectOutputStream out) throws IOException {
-        super.writeState(out);
-        out.writeObject(this.otherCol);
-        out.writeObject(this.pkCol);
-        out.writeObject(this.charFKs);
-    }
-
-    @Override
-    protected void readState(ObjectInputStream in) throws IOException, ClassNotFoundException {
-        super.readState(in);
-        this.otherCol = (String)in.readObject();
-        this.pkCol = (String)in.readObject();
-        this.charFKs = in.readObject();
     }
 
 }

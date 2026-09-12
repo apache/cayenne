@@ -19,8 +19,6 @@
 
 package org.apache.cayenne.map;
 
-import java.io.Serializable;
-
 import org.apache.cayenne.CayenneRuntimeException;
 import org.apache.cayenne.configuration.ConfigurationNodeVisitor;
 import org.apache.cayenne.util.ToStringBuilder;
@@ -32,7 +30,7 @@ import org.apache.cayenne.util.XMLSerializable;
  * 
  * @since 1.1
  */
-public class DbJoin implements XMLSerializable, Serializable {
+public class DbJoin implements XMLSerializable {
 
     protected DbRelationship relationship;
     protected String sourceName;

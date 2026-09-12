@@ -33,8 +33,8 @@ import java.util.regex.Pattern;
  */
 public abstract class PatternMatchNode extends ConditionNode {
 
-    protected transient Pattern pattern;
-    protected transient boolean patternCompiled;
+    protected Pattern pattern;
+    protected boolean patternCompiled;
     protected boolean ignoringCase;
     protected char escapeChar;
 

@@ -19,7 +19,6 @@
 
 package org.apache.cayenne.validation;
 
-import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.Objects;
 import java.util.Collections;
@@ -32,7 +31,7 @@ import java.util.List;
  * 
  * @since 1.1
  */
-public class ValidationResult implements Serializable {
+public class ValidationResult {
 
     private final List<ValidationFailure> failures;
 

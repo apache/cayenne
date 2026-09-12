@@ -51,8 +51,6 @@ import java.util.List;
  */
 public class ObjectSelect<T> extends FluentSelect<T, ObjectSelect<T>> {
 
-    private static final long serialVersionUID = -156124021150949227L;
-
     /**
      * Creates a ObjectSelect that selects objects of a given persistent class.
      */

@@ -27,8 +27,6 @@ package org.apache.cayenne.graph;
  */
 public abstract class NodeDiff implements GraphDiff, Comparable<NodeDiff> {
 
-	private static final long serialVersionUID = -6108147375331011556L;
-	
 	protected int diffId;
 	protected Object nodeId;
 

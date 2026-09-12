@@ -19,7 +19,6 @@
 
 package org.apache.cayenne.util;
 
-import java.io.Serializable;
 import java.util.ConcurrentModificationException;
 import java.util.HashMap;
 import java.util.Iterator;
@@ -139,29 +138,6 @@ public class WeakValueMapTest {
     }
 
     @Test
-    public void serializationSupport() throws Exception {
-        WeakValueMap<String, Object> map = new WeakValueMap<>();
-
-        // hold references so gc won't clean them
-        Integer val1 = Integer.valueOf(543);
-        TestSerializable val2 = new TestSerializable();
-
-        map.put("key_1", 123);
-        map.put("key_2", 42);
-        map.put("key_3", val1);
-        map.put("key_4", val2);
-        assertEquals(4, map.size());
-
-        WeakValueMap<String, Object> clone = Util.cloneViaSerialization(map);
-
-        assertEquals(4, clone.size());
-        assertEquals(42, clone.get("key_2"));
-        assertTrue(clone.containsKey("key_3"));
-        assertTrue(clone.containsValue(123));
-        assertTrue(clone.containsKey("key_4"));
-    }
-
-    @Test
     public void equalsAndHashCode() throws Exception {
         Map<String, Integer> map1 = new WeakValueMap<>();
         map1.put("key_1", 123);
@@ -253,7 +229,4 @@ public class WeakValueMapTest {
         assertThrows(NullPointerException.class, () -> map.putAll(values));
     }
 
-    static class TestSerializable implements Serializable {
-        private static final long serialVersionUID = -8726479278547192134L;
-    }
 }

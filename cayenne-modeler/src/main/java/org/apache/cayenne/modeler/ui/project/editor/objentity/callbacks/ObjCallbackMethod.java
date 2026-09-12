@@ -22,10 +22,7 @@ import org.apache.cayenne.configuration.ConfigurationNodeVisitor;
 import org.apache.cayenne.util.XMLEncoder;
 import org.apache.cayenne.util.XMLSerializable;
 
-import java.io.Serializable;
-
-public class ObjCallbackMethod implements XMLSerializable,
-	Serializable {
+public class ObjCallbackMethod implements XMLSerializable {
 	
 	private String name;
 	private final CallbackType callbackType;

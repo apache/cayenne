@@ -19,15 +19,13 @@
 
 package org.apache.cayenne.graph;
 
-import java.io.Serializable;
-
 /**
  * Represents a change in an object graph. This can be a simple change (like a node
  * property update) or a composite change that consists of a number of smaller changes.
  * 
  * @since 1.2
  */
-public interface GraphDiff extends Serializable {
+public interface GraphDiff {
 
     /**
      * Returns true if this diff is simply a placeholder and does not perform any actual

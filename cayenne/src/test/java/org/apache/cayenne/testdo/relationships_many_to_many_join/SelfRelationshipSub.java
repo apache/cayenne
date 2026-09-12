@@ -23,6 +23,4 @@ import org.apache.cayenne.testdo.relationships_many_to_many_join.auto._SelfRelat
 
 public class SelfRelationshipSub extends _SelfRelationshipSub {
 
-    private static final long serialVersionUID = 1L;
-
 }
