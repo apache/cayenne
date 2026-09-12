@@ -64,7 +64,7 @@ import java.util.concurrent.ConcurrentHashMap;
  * {@link ObjectStore} of a {@link DataContext}. Stores objects using their ObjectId as a key and keeps their
  * committed snapshots in sync with the shared {@link DataRowStore}.
  *
- * @since 5.0 renamed from ObjectStore
+ * @since 5.0
  */
 public class DataContextObjectStore implements ObjectStore, SnapshotEventListener {
 
@@ -468,7 +468,7 @@ public class DataContextObjectStore implements ObjectStore, SnapshotEventListene
         DataContextObjectStore parentStore = parent.getObjectStore();
         EntityInheritanceTree inheritanceTree = parent.getEntityResolver().getInheritanceTree(oid.getEntityName());
         for (ObjectId candidateId : inheritanceTree.polymorphicIds(oid)) {
-            Persistent parentObject = parentStore.getNode(candidateId);
+            Persistent parentObject = parentStore.getObject(candidateId);
             if (parentObject != null) {
                 return parent.currentSnapshot(parentObject);
             }
@@ -618,7 +618,7 @@ public class DataContextObjectStore implements ObjectStore, SnapshotEventListene
                     if (delegate.shouldProcessDelete(object)) {
                         object.setPersistenceState(PersistenceState.NEW);
                         changes.remove(nodeId);
-                        registerNode(nodeId, object);
+                        registerObject(nodeId, object);
                         nodeCreated(nodeId);
                         delegate.finishedProcessDelete(object);
                     }
@@ -633,7 +633,7 @@ public class DataContextObjectStore implements ObjectStore, SnapshotEventListene
     void processInvalidatedIDs(Collection<ObjectId> invalidatedIDs) {
         if (invalidatedIDs != null && !invalidatedIDs.isEmpty()) {
             for (ObjectId oid : invalidatedIDs) {
-                Persistent object = (Persistent) getNode(oid);
+                Persistent object = (Persistent) getObject(oid);
 
                 if (object == null) {
                     continue;
@@ -785,7 +785,7 @@ public class DataContextObjectStore implements ObjectStore, SnapshotEventListene
      * @since 1.2
      */
     @Override
-    public synchronized Persistent getNode(Object nodeId) {
+    public synchronized Persistent getObject(Object nodeId) {
         return objectMap.get(nodeId);
     }
 
@@ -796,7 +796,7 @@ public class DataContextObjectStore implements ObjectStore, SnapshotEventListene
      * @since 1.2
      */
     @Override
-    public synchronized Collection<Persistent> registeredNodes() {
+    public synchronized Collection<Persistent> registeredObjects() {
         return new ArrayList<>(objectMap.values());
     }
 
@@ -804,7 +804,7 @@ public class DataContextObjectStore implements ObjectStore, SnapshotEventListene
      * @since 1.2
      */
     @Override
-    public synchronized void registerNode(Object nodeId, Persistent nodeObject) {
+    public synchronized void registerObject(Object nodeId, Persistent nodeObject) {
         objectMap.put(nodeId, nodeObject);
     }
 
@@ -812,7 +812,7 @@ public class DataContextObjectStore implements ObjectStore, SnapshotEventListene
      * @since 1.2
      */
     @Override
-    public synchronized Persistent unregisterNode(Object nodeId) {
+    public synchronized Persistent unregisterObject(Object nodeId) {
         Persistent object = objectMap.get(nodeId);
         if (object != null) {
             objectsUnregistered(Collections.singleton(object));

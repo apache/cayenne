@@ -52,19 +52,19 @@ public class DataContextObjectStoreIT {
 
         Persistent o1 = new MockPersistentObject();
         o1.setObjectId(ObjectId.of("T", "key1", "v1"));
-        env.context().getObjectStore().registerNode(o1.getObjectId(), o1);
+        env.context().getObjectStore().registerObject(o1.getObjectId(), o1);
         assertEquals(1, env.context().getObjectStore().registeredObjectsCount());
 
         // test object with same id
         Persistent o2 = new MockPersistentObject();
         o2.setObjectId(ObjectId.of("T", "key1", "v1"));
-        env.context().getObjectStore().registerNode(o2.getObjectId(), o2);
+        env.context().getObjectStore().registerObject(o2.getObjectId(), o2);
         assertEquals(1, env.context().getObjectStore().registeredObjectsCount());
 
         // test new object
         Persistent o3 = new MockPersistentObject();
         o3.setObjectId(ObjectId.of("T", "key3", "v3"));
-        env.context().getObjectStore().registerNode(o3.getObjectId(), o3);
+        env.context().getObjectStore().registerObject(o3.getObjectId(), o3);
         assertEquals(2, env.context().getObjectStore().registeredObjectsCount());
     }
 
@@ -79,14 +79,14 @@ public class DataContextObjectStoreIT {
         ObjectId oid = object.getObjectId();
 
         // insert object into the ObjectStore
-        env.context().getObjectStore().registerNode(oid, object);
-        assertSame(object, env.context().getObjectStore().getNode(oid));
+        env.context().getObjectStore().registerObject(oid, object);
+        assertSame(object, env.context().getObjectStore().getObject(oid));
         assertNotNull(env.context().getObjectStore().getCachedSnapshot(oid));
 
         env.context().getObjectStore().objectsUnregistered(Collections.singletonList(object));
 
         assertEquals(oid, object.getObjectId());
-        assertNull(env.context().getObjectStore().getNode(oid));
+        assertNull(env.context().getObjectStore().getObject(oid));
 
         // in the future this may not be the case
         assertNull(env.context().getObjectStore().getCachedSnapshot(oid));

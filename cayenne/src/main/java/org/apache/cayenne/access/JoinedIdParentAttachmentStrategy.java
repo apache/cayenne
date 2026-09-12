@@ -70,7 +70,7 @@ class JoinedIdParentAttachmentStrategy implements ParentAttachmentStrategy {
                         , row, entity.getName(), relatedIdPrefix);
             }
 
-            parentObject = objectStore.getNode(id);
+            parentObject = objectStore.getObject(id);
             if (parentObject != null) {
                 break;
             }

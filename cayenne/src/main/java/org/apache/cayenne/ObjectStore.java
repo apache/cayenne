@@ -38,23 +38,23 @@ public interface ObjectStore extends GraphChangeHandler {
     /**
      * Returns a registered object for the id, or null if no such object is registered.
      */
-    Persistent getNode(Object nodeId);
+    Persistent getObject(Object nodeId);
 
     /**
      * Registers an object under the id.
      */
-    void registerNode(Object nodeId, Persistent nodeObject);
+    void registerObject(Object nodeId, Persistent nodeObject);
 
     /**
      * Unregisters an object with the id, forgetting any information associated with it. Returns the unregistered
      * object, or null if none was registered.
      */
-    Persistent unregisterNode(Object nodeId);
+    Persistent unregisterObject(Object nodeId);
 
     /**
      * Returns a copy of the collection of all registered objects.
      */
-    Collection<Persistent> registeredNodes();
+    Collection<Persistent> registeredObjects();
 
     /**
      * Returns registered objects in a given {@link PersistenceState}.

@@ -575,16 +575,16 @@ public class DataContextIT {
 		ObjectId oid = object.getObjectId();
 
 		// insert object into the ObjectStore
-		context.getObjectStore().registerNode(oid, object);
+		context.getObjectStore().registerObject(oid, object);
 
-		assertSame(object, context.getObjectStore().getNode(oid));
+		assertSame(object, context.getObjectStore().getObject(oid));
 		assertNotNull(context.getObjectStore().getCachedSnapshot(oid));
 
 		context.invalidateObjects(object);
 
 		assertSame(oid, object.getObjectId());
 		assertNull(context.getObjectStore().getCachedSnapshot(oid));
-		assertSame(object, context.getObjectStore().getNode(oid));
+		assertSame(object, context.getObjectStore().getObject(oid));
 	}
 
 	@Test
@@ -598,16 +598,16 @@ public class DataContextIT {
 		ObjectId oid = object.getObjectId();
 
 		// insert object into the ObjectStore
-		context.getObjectStore().registerNode(oid, object);
+		context.getObjectStore().registerObject(oid, object);
 
-		assertSame(object, context.getObjectStore().getNode(oid));
+		assertSame(object, context.getObjectStore().getObject(oid));
 		assertNotNull(context.getObjectStore().getCachedSnapshot(oid));
 
 		context.invalidateObjects(Collections.singleton(object));
 
 		assertSame(oid, object.getObjectId());
 		assertNull(context.getObjectStore().getCachedSnapshot(oid));
-		assertSame(object, context.getObjectStore().getNode(oid));
+		assertSame(object, context.getObjectStore().getObject(oid));
 	}
 
 	@Test
@@ -620,7 +620,7 @@ public class DataContextIT {
 
 		// testing this...
 		context.deleteObjects(hollow);
-		assertSame(hollow, context.getObjectStore().getNode(ObjectId.of("Artist", "ARTIST_ID", 33001)));
+		assertSame(hollow, context.getObjectStore().getObject(ObjectId.of("Artist", "ARTIST_ID", 33001)));
 		assertEquals("artist1", hollow.getArtistName());
 
 		assertEquals(PersistenceState.DELETED, hollow.getPersistenceState());

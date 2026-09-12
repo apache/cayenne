@@ -243,7 +243,7 @@ public class ChildDiffLoader implements GraphChangeHandler {
 		// return it;
 		// if not - fetch.
 
-		Persistent object = context.getObjectStore().getNode(nodeId);
+		Persistent object = context.getObjectStore().getObject(nodeId);
 		if (object != null) {
 			return object;
 		}

@@ -343,7 +343,7 @@ public class JointPrefetchIT {
         final DataContext context = this.context;
 
         // sanity check...
-        Persistent g1 = (Persistent) context.getObjectStore().getNode(
+        Persistent g1 = (Persistent) context.getObjectStore().getObject(
                 ObjectId.of("Gallery", Gallery.GALLERY_ID_PK_COLUMN, 33001));
         assertNull(g1);
 
@@ -365,11 +365,11 @@ public class JointPrefetchIT {
             }
 
             // however both galleries must be in memory...
-            Persistent g11 = (Persistent) context.getObjectStore().getNode(
+            Persistent g11 = (Persistent) context.getObjectStore().getObject(
                     ObjectId.of("Gallery", Gallery.GALLERY_ID_PK_COLUMN, 33001));
             assertNotNull(g11);
             assertEquals(PersistenceState.COMMITTED, g11.getPersistenceState());
-            Persistent g2 = (Persistent) context.getObjectStore().getNode(
+            Persistent g2 = (Persistent) context.getObjectStore().getObject(
                     ObjectId.of("Gallery", Gallery.GALLERY_ID_PK_COLUMN, 33002));
             assertNotNull(g2);
             assertEquals(PersistenceState.COMMITTED, g2.getPersistenceState());
@@ -418,7 +418,7 @@ public class JointPrefetchIT {
                 .addPrefetch(Artist.PAINTING_ARRAY.dot(Painting.TO_GALLERY).joint())
                 .select(context);
         env.runWithQueriesBlocked(() -> {
-            Persistent g1 = (Persistent) context.getObjectStore().getNode(
+            Persistent g1 = (Persistent) context.getObjectStore().getObject(
                     ObjectId.of("Gallery", Gallery.GALLERY_ID_PK_COLUMN, 33001)
             );
             assertNotNull(g1);

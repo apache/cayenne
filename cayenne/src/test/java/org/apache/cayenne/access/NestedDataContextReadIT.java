@@ -348,7 +348,7 @@ public class NestedDataContextReadIT {
         assertEquals(PersistenceState.COMMITTED, artist.getPersistenceState());
         assertSame(childContext, artist.getObjectContext());
 
-        Object parentArtist = context.getObjectStore().getNode(artist.getObjectId());
+        Object parentArtist = context.getObjectStore().getObject(artist.getObjectId());
         assertNotNull(parentArtist);
         assertNotSame(artist, parentArtist);
     }

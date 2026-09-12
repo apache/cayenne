@@ -183,7 +183,7 @@ public class ObjectStoreGraphDiff implements GraphDiff {
 
                 ObjectId id = (ObjectId) entry.getKey();
 
-                Persistent object = objectStore.getNode(id);
+                Persistent object = objectStore.getObject(id);
 
                 // address manual id override.
                 ObjectId objectId = object.getObjectId();

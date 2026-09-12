@@ -334,7 +334,7 @@ public class NumericTypesIT {
                 "DecimalPKTestEntity",
                 "DECIMAL_PK",
                 new BigDecimal("1.25"));
-        assertSame(object, context.getObjectStore().getNode(syntheticId));
+        assertSame(object, context.getObjectStore().getObject(syntheticId));
 
         context.deleteObjects(object);
         context.commitChanges();
@@ -351,7 +351,7 @@ public class NumericTypesIT {
         context.commitChanges();
 
         ObjectId syntheticId = ObjectId.of("DecimalPKTest1", "DECIMAL_PK", 1.25);
-        assertSame(object, context.getObjectStore().getNode(syntheticId));
+        assertSame(object, context.getObjectStore().getObject(syntheticId));
     }
 
     @Test

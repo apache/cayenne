@@ -95,7 +95,7 @@ class DataContextDeleteAction {
         processDeleteRules(object, PersistenceState.NEW);
 
         // if an object was NEW, we must throw it out
-        context.getObjectStore().unregisterNode(object.getObjectId());
+        context.getObjectStore().unregisterObject(object.getObjectId());
     }
 
     private void deletePersistent(Persistent object) throws DeleteDenyException {

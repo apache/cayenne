@@ -121,8 +121,8 @@ public class DataContextPrefetchMultistepIT  {
         id2.put("EXHIBIT_ID", 2);
         ObjectId oid2 = ObjectId.of("ArtistExhibit", id2);
 
-        assertNull(context.getObjectStore().getNode(oid1));
-        assertNull(context.getObjectStore().getNode(oid2));
+        assertNull(context.getObjectStore().getObject(oid1));
+        assertNull(context.getObjectStore().getObject(oid2));
 
         List<Gallery> galleries = ObjectSelect.query(Gallery.class)
                 .where(Gallery.GALLERY_NAME.eq("gallery2"))
@@ -137,8 +137,8 @@ public class DataContextPrefetchMultistepIT  {
         assertTrue(list instanceof Fault);
 
         // however the target objects must be resolved
-        ArtistExhibit ae1 = (ArtistExhibit) context.getObjectStore().getNode(oid1);
-        ArtistExhibit ae2 = (ArtistExhibit) context.getObjectStore().getNode(oid2);
+        ArtistExhibit ae1 = (ArtistExhibit) context.getObjectStore().getObject(oid1);
+        ArtistExhibit ae2 = (ArtistExhibit) context.getObjectStore().getObject(oid2);
 
         assertNotNull(ae1);
         assertNotNull(ae2);

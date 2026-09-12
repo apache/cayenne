@@ -106,7 +106,7 @@ public class DataContextExtrasIT {
         context.commitChanges();
 
         assertEquals(PersistenceState.COMMITTED, object.getPersistenceState());
-        assertSame(object, context.getObjectStore().getNode(manualId));
+        assertSame(object, context.getObjectStore().getObject(manualId));
         assertEquals(manualId, object.getObjectId());
     }
 
@@ -188,7 +188,7 @@ public class DataContextExtrasIT {
     public void newObject() {
 
         Artist a1 = (Artist) context.newObject("Artist");
-        assertTrue(context.getObjectStore().registeredNodes().contains(a1));
+        assertTrue(context.getObjectStore().registeredObjects().contains(a1));
         assertTrue(context.newObjects().contains(a1));
     }
 
@@ -196,7 +196,7 @@ public class DataContextExtrasIT {
     public void newObjectWithClass() {
 
         Artist a1 = context.newObject(Artist.class);
-        assertTrue(context.getObjectStore().registeredNodes().contains(a1));
+        assertTrue(context.getObjectStore().registeredObjects().contains(a1));
         assertTrue(context.newObjects().contains(a1));
     }
 
@@ -207,7 +207,7 @@ public class DataContextExtrasIT {
         row.put("ARTIST_ID", 100000);
         Persistent obj = context.objectFromDataRow(Artist.class, row);
         assertNotNull(obj);
-        assertTrue(context.getObjectStore().registeredNodes().contains(obj));
+        assertTrue(context.getObjectStore().registeredObjects().contains(obj));
         assertEquals(PersistenceState.HOLLOW, obj.getPersistenceState());
 
         assertNull(context.getObjectStore().getCachedSnapshot(obj.getObjectId()));
@@ -221,7 +221,7 @@ public class DataContextExtrasIT {
         row.put("ARTIST_NAME", "ArtistXYZ");
         Persistent obj = context.objectFromDataRow(Artist.class, row);
         assertNotNull(obj);
-        assertTrue(context.getObjectStore().registeredNodes().contains(obj));
+        assertTrue(context.getObjectStore().registeredObjects().contains(obj));
         assertEquals(PersistenceState.HOLLOW, obj.getPersistenceState());
         assertNull(context.getObjectStore().getCachedSnapshot(obj.getObjectId()));
     }
@@ -235,7 +235,7 @@ public class DataContextExtrasIT {
         row.put("DATE_OF_BIRTH", new Date());
         Artist obj = context.objectFromDataRow(Artist.class, row);
 
-        assertTrue(context.getObjectStore().registeredNodes().contains(obj));
+        assertTrue(context.getObjectStore().registeredObjects().contains(obj));
         assertEquals(PersistenceState.COMMITTED, obj.getPersistenceState());
         assertNotNull(context.getObjectStore().getCachedSnapshot(obj.getObjectId()));
         assertEquals("ArtistXYZ", obj.getArtistName());

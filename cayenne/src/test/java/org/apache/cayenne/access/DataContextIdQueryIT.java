@@ -173,7 +173,7 @@ public class DataContextIdQueryIT {
         assertEquals("a1", a.getArtistName());
 
         // the object was resolved via the parent, so the parent has it too
-        assertNotNull(context.getObjectStore().getNode(artistId(1)));
+        assertNotNull(context.getObjectStore().getObject(artistId(1)));
     }
 
     @Test

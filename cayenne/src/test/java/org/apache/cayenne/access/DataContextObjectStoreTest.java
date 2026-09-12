@@ -48,23 +48,23 @@ public class DataContextObjectStoreTest {
     }
 
     @Test
-    public void registerNode() {
+    public void registerObject() {
 
         ObjectId id = ObjectId.of("E1", "ID", 500);
         Persistent object = mock(Persistent.class);
 
-        objectStore.registerNode(id, object);
-        assertSame(object, objectStore.getNode(id));
+        objectStore.registerObject(id, object);
+        assertSame(object, objectStore.getObject(id));
     }
 
     @Test
-    public void unregisterNode() {
+    public void unregisterObject() {
 
         ObjectId id = ObjectId.of("E1", "ID", 500);
         Persistent object = mock(Persistent.class);
 
-        objectStore.registerNode(id, object);
-        Object unregistered = objectStore.unregisterNode(id);
+        objectStore.registerObject(id, object);
+        Object unregistered = objectStore.unregisterObject(id);
         assertSame(object, unregistered);
 
         verify(object, times(0)).setObjectId(null);

@@ -238,32 +238,6 @@ public class DataContext implements ObjectContext {
     }
 
     /**
-     * Returns <code>true</code> if there are any modified, deleted or new
-     * objects registered with this DataContext, <code>false</code> otherwise.
-     */
-    public boolean hasChanges() {
-        return objectStore.hasChanges();
-    }
-
-    /**
-     * Returns a list of objects that are registered with this DataContext and
-     * have a state PersistenceState.NEW
-     */
-    @Override
-    public Collection<Persistent> newObjects() {
-        return objectStore.objectsInState(PersistenceState.NEW);
-    }
-
-    /**
-     * Returns a list of objects that are registered with this DataContext and
-     * have a state {@link PersistenceState#DELETED}
-     */
-    @Override
-    public Collection<Persistent> deletedObjects() {
-        return objectStore.objectsInState(PersistenceState.DELETED);
-    }
-
-    /**
      * @since 3.1
      */
     @Override
@@ -277,15 +251,6 @@ public class DataContext implements ObjectContext {
         for (Persistent object : objects) {
             action.performDelete(object);
         }
-    }
-
-    /**
-     * Returns a list of objects that are registered with this DataContext and
-     * have a state {@link PersistenceState#MODIFIED}
-     */
-    @Override
-    public Collection<Persistent> modifiedObjects() {
-        return objectStore.objectsInState(PersistenceState.MODIFIED);
     }
 
     /**
@@ -363,7 +328,7 @@ public class DataContext implements ObjectContext {
         }
 
         for (ObjectId candidateId : inheritanceTree.polymorphicIds(id)) {
-            Persistent object = objectStore.getNode(candidateId);
+            Persistent object = objectStore.getObject(candidateId);
             if (object != null && object.getPersistenceState() != PersistenceState.HOLLOW) {
                 return object;
             }
@@ -387,7 +352,7 @@ public class DataContext implements ObjectContext {
         // first look for the ID in the local ObjectStore
         synchronized (objectStore) {
             @SuppressWarnings("unchecked")
-            T localObject = (T) objectStore.getNode(id);
+            T localObject = (T) objectStore.getObject(id);
             if (localObject != null) {
                 return localObject;
             }
@@ -404,7 +369,7 @@ public class DataContext implements ObjectContext {
             persistent.setObjectId(id);
             persistent.setPersistenceState(PersistenceState.HOLLOW);
 
-            objectStore.registerNode(id, persistent);
+            objectStore.registerObject(id, persistent);
 
             return persistent;
         }
@@ -664,7 +629,7 @@ public class DataContext implements ObjectContext {
         object.setPersistenceState(PersistenceState.NEW);
 
         synchronized (objectStore) {
-            objectStore.registerNode(object.getObjectId(), object);
+            objectStore.registerObject(object.getObjectId(), object);
             objectStore.nodeCreated(object.getObjectId());
         }
 
@@ -745,7 +710,7 @@ public class DataContext implements ObjectContext {
     @SuppressWarnings("unchecked")
     private List<Persistent> resolveRelationshipInSelf(ObjectId sourceId, String relationshipName, boolean resolveToMany) {
 
-        Persistent source = objectStore.getNode(sourceId);
+        Persistent source = objectStore.getObject(sourceId);
         if (source == null) {
             return null;
         }
@@ -1136,7 +1101,7 @@ public class DataContext implements ObjectContext {
         // messing up Persistent objects per CAY-845. Originally only parts of "else" were synchronized,
         // but we had to expand the lock scope to ensure consistent behavior.
         synchronized (objectStore) {
-            Persistent cachedObject = objectStore.getNode(id);
+            Persistent cachedObject = objectStore.getObject(id);
 
             // return an existing object
             if (cachedObject != null) {
@@ -1159,7 +1124,7 @@ public class DataContext implements ObjectContext {
             localObject.setObjectContext(this);
             localObject.setObjectId(id);
 
-            objectStore.registerNode(id, localObject);
+            objectStore.registerObject(id, localObject);
             localObject.setPersistenceState(PersistenceState.HOLLOW);
 
             return localObject;

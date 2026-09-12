@@ -91,7 +91,7 @@ abstract class DataChannelSyncCallbackAction implements GraphChangeHandler {
         Op op = seenIds.put(nodeId, Op.INSERT);
         if (op == null) {
 
-            Object node = objectStore.getNode(nodeId);
+            Object node = objectStore.getObject(nodeId);
             if (node != null) {
 
                 if (persisted == null) {
@@ -110,7 +110,7 @@ abstract class DataChannelSyncCallbackAction implements GraphChangeHandler {
         // the node may have been updated prior to delete
         if (op != Op.DELETE) {
 
-            Object node = objectStore.getNode(nodeId);
+            Object node = objectStore.getObject(nodeId);
             if (node != null) {
 
                 if (removed == null) {
@@ -155,7 +155,7 @@ abstract class DataChannelSyncCallbackAction implements GraphChangeHandler {
 
         if (op == null) {
 
-            Object node = objectStore.getNode(nodeId);
+            Object node = objectStore.getObject(nodeId);
             if (node != null) {
 
                 if (updated == null) {

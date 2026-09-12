@@ -52,19 +52,25 @@ public interface ObjectContext {
      * Returns a collection of objects that are registered with this
      * ObjectContext and have a state PersistenceState.NEW
      */
-    Collection<Persistent> newObjects();
+    default Collection<Persistent> newObjects() {
+        return getObjectStore().objectsInState(PersistenceState.NEW);
+    }
 
     /**
      * Returns a collection of objects that are registered with this
      * ObjectContext and have a state PersistenceState.DELETED
      */
-    Collection<Persistent> deletedObjects();
+    default Collection<Persistent> deletedObjects() {
+        return getObjectStore().objectsInState(PersistenceState.DELETED);
+    }
 
     /**
      * Returns a collection of objects that are registered with this
      * ObjectContext and have a state PersistenceState.MODIFIED
      */
-    Collection<Persistent> modifiedObjects();
+    default Collection<Persistent> modifiedObjects() {
+        return getObjectStore().objectsInState(PersistenceState.MODIFIED);
+    }
 
     /**
      * Returns a collection of MODIFIED, DELETED or NEW objects.
@@ -373,7 +379,9 @@ public interface ObjectContext {
      * 
      * @since 3.0
      */
-    boolean hasChanges();
+    default boolean hasChanges() {
+        return getObjectStore().hasChanges();
+    }
 
     /**
      * Invalidates a Collection of persistent objects. This operation only

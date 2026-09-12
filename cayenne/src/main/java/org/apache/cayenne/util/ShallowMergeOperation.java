@@ -59,7 +59,7 @@ public class ShallowMergeOperation {
         // have to synchronize almost the entire method to prevent multiple threads from
         // messing up Persistent objects per CAY-845.
         synchronized (objectStore) {
-            T object = (T) objectStore.getNode(id);
+            T object = (T) objectStore.getObject(id);
 
             // merge into an existing object
             if (object == null) {
@@ -74,7 +74,7 @@ public class ShallowMergeOperation {
                     object.setPersistenceState(PersistenceState.COMMITTED);
                 }
 
-                objectStore.registerNode(id, object);
+                objectStore.registerObject(id, object);
             }
 
             // TODO: Andrus, 1/24/2006 implement smart merge for modified objects...
