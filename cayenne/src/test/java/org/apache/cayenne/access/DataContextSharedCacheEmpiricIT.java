@@ -67,10 +67,16 @@ public class DataContextSharedCacheEmpiricIT {
                 DefaultDataRowStoreFactory.SNAPSHOT_CACHE_SIZE_DEFAULT,
                 eventManager);
 
-        c1 = new DataContext(runtime.getDataDomain(),
-                new ObjectStore(cache, new HashMap<>()));
-        c2 = new DataContext(runtime.getDataDomain(),
-                new ObjectStore(cache, new HashMap<>()));
+        c1 = DataContext.builder(runtime.getDataDomain())
+                .snapshotCache(cache)
+                .objectMap(new HashMap<>())
+                .syncWithSnapshotCache(true)
+                .build();
+        c2 = DataContext.builder(runtime.getDataDomain())
+                .snapshotCache(cache)
+                .objectMap(new HashMap<>())
+                .syncWithSnapshotCache(true)
+                .build();
 
         // prepare a single artist record
         TableHelper tArtist = env.table("ARTIST", "ARTIST_ID", "ARTIST_NAME");

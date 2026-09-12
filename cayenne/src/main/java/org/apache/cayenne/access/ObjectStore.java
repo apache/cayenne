@@ -57,6 +57,7 @@ import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
+import java.util.Objects;
 import java.util.concurrent.ConcurrentHashMap;
 
 /**
@@ -64,62 +65,55 @@ import java.util.concurrent.ConcurrentHashMap;
  * object cache for a DataContext. Users rarely need to access ObjectStore directly, as
  * DataContext serves as a facade, providing cover methods for most ObjectStore
  * operations.
- * 
+ *
  * @since 1.0
  */
 public class ObjectStore implements SnapshotEventListener, GraphManager {
 
-    protected Map<Object, Persistent> objectMap;
+    protected final DataContext context;
+    protected final DataRowStore dataRowCache;
+    protected final Map<Object, Persistent> objectMap;
+
     protected Map<Object, ObjectDiff> changes;
 
     /**
-     * Map that tracks flattened paths for given object Id that is present in db.
      * Presence of path in this map is used to separate insert from update case of flattened records.
-     * @since 4.1
      */
     protected Map<Object, Map<CayennePath, ObjectId>> trackedFlattenedPaths;
+    private Collection<GraphDiff> lifecycleEventInducedChanges;
 
     // a sequential id used to tag GraphDiffs so that they can later be sorted in the
     // original creation order
     int currentDiffId;
 
-    /**
-     * Stores a reference to the DataRowStore.
-     */
-    protected DataRowStore dataRowCache;
+    public ObjectStore(
+            DataContext context,
+            DataRowStore dataRowCache,
+            Map<Object, Persistent> objectMap,
+            boolean syncWithSnapshotCache) {
 
-    private Collection<GraphDiff> lifecycleEventInducedChanges;
+        this.context = Objects.requireNonNull(context);
+        this.dataRowCache = dataRowCache;
 
-    /**
-     * The DataContext that owns this ObjectStore.
-     */
-    protected DataContext context;
-
-    /**
-     * Creates an ObjectStore with {@link DataRowStore} and a map to use for storing
-     * registered objects. Passed map doesn't require any special synchronization
-     * behavior, as ObjectStore is synchronized itself.
-     * 
-     * @since 3.0
-     */
-    public ObjectStore(DataRowStore dataRowCache, Map<Object, Persistent> objectMap) {
-        setDataRowCache(dataRowCache);
-        setObjectMap(objectMap);
-        this.changes = new HashMap<>();
-    }
-
-    /**
-     * @since 4.2.2
-     */
-    void setObjectMap(Map<Object, Persistent> objectMap) {
-        if(objectMap == null) {
-            throw new CayenneRuntimeException("Object map is null.");
-        }
-        this.objectMap = objectMap;
-        if(objectMap instanceof SoftValueMap<Object, Persistent> softValueMap) {
+        this.objectMap = Objects.requireNonNull(objectMap, "Object map is null.");
+        if (objectMap instanceof SoftValueMap<Object, Persistent> softValueMap) {
             softValueMap.setKeyCleanupCallback(this::onObjectKeyCleanup);
-        } else if(objectMap instanceof WeakValueMap<Object, Persistent> weakValueMap) {
+        } else if (objectMap instanceof WeakValueMap<Object, Persistent> weakValueMap) {
             weakValueMap.setKeyCleanupCallback(this::onObjectKeyCleanup);
+        }
+
+        this.changes = new HashMap<>();
+
+        if (syncWithSnapshotCache && dataRowCache != null && dataRowCache.getEventManager() != null) {
+            // setting itself as non-blocking listener,
+            // since event sending thread will likely be locking sender's
+            // ObjectStore and snapshot cache itself.
+            dataRowCache.getEventManager().addNonBlockingListener(
+                    this,
+                    "snapshotsChanged",
+                    SnapshotEvent.class,
+                    dataRowCache.getSnapshotEventSubject(),
+                    dataRowCache);
         }
     }
 
@@ -150,15 +144,14 @@ public class ObjectStore implements SnapshotEventListener, GraphManager {
         if (ChildDiffLoader.isProcessingChildDiff()) {
             // reset so that subsequent event-induced changes could get registered...
             ChildDiffLoader.setExternalChange(Boolean.FALSE);
-        }
-        else {
+        } else {
             lifecycleEventInducedChanges.add(diff);
         }
     }
 
     /**
      * Registers object change.
-     * 
+     *
      * @since 1.2
      */
     synchronized ObjectDiff registerDiff(Object nodeId, NodeDiff diff) {
@@ -216,7 +209,7 @@ public class ObjectStore implements SnapshotEventListener, GraphManager {
 
     /**
      * Returns a number of objects currently registered with this ObjectStore.
-     * 
+     *
      * @since 1.2
      */
     public int registeredObjectsCount() {
@@ -231,39 +224,6 @@ public class ObjectStore implements SnapshotEventListener, GraphManager {
     }
 
     /**
-     * Sets parent DataRowStore. Registers to receive SnapshotEvents if the cache is
-     * configured to allow ObjectStores to receive such events.
-     */
-    // note that as of 1.2, ObjectStore does not access DataRowStore directly when
-    // retrieving snapshots. Instead it sends a query via the DataContext's channel so
-    // that every element in the channel chain could intercept snapshot requests
-    public void setDataRowCache(DataRowStore dataRowCache) {
-        if (dataRowCache == this.dataRowCache) {
-            return;
-        }
-
-        if (this.dataRowCache != null && this.dataRowCache.getEventManager() != null) {
-            this.dataRowCache.getEventManager().removeListener(
-                    this,
-                    this.dataRowCache.getSnapshotEventSubject());
-        }
-
-        this.dataRowCache = dataRowCache;
-
-        if (dataRowCache != null && dataRowCache.getEventManager() != null) {
-            // setting itself as non-blocking listener,
-            // since event sending thread will likely be locking sender's
-            // ObjectStore and snapshot cache itself.
-            dataRowCache.getEventManager().addNonBlockingListener(
-                    this,
-                    "snapshotsChanged",
-                    SnapshotEvent.class,
-                    dataRowCache.getSnapshotEventSubject(),
-                    dataRowCache);
-        }
-    }
-
-    /**
      * Turns registered objects with the given ids HOLLOW, discarding their uncommitted changes. Ids of unregistered
      * or NEW objects are ignored. Does not touch the snapshot cache.
      *
@@ -271,7 +231,7 @@ public class ObjectStore implements SnapshotEventListener, GraphManager {
      */
     synchronized void objectsInvalidated(Collection<ObjectId> ids) {
         for (ObjectId id : ids) {
-            Persistent object = (Persistent) objectMap.get(id);
+            Persistent object = objectMap.get(id);
 
             // NEW objects have nothing to refetch. HOLLOW objects are still processed, as they may have pending changes
             if (object == null || object.getPersistenceState() == PersistenceState.NEW) {
@@ -305,7 +265,7 @@ public class ObjectStore implements SnapshotEventListener, GraphManager {
             // remove object but not snapshot
             objectMap.remove(id);
             changes.remove(id);
-            if(id != null && trackedFlattenedPaths != null) {
+            if (id != null && trackedFlattenedPaths != null) {
                 trackedFlattenedPaths.remove(id);
             }
             ids.add(id);
@@ -321,16 +281,16 @@ public class ObjectStore implements SnapshotEventListener, GraphManager {
             // send an event for removed snapshots
             getDataRowCache().processSnapshotChanges(
                     this,
-                    Collections.<ObjectId, DataRow>emptyMap(),
-                    Collections.<ObjectId>emptyList(),
+                    Collections.emptyMap(),
+                    Collections.emptyList(),
                     ids,
-                    Collections.<ObjectId>emptyList());
+                    Collections.emptyList());
         }
     }
 
     /**
      * Reverts changes to all stored uncomitted objects.
-     * 
+     *
      * @since 1.1
      */
     public synchronized void objectsRolledBack() {
@@ -361,7 +321,7 @@ public class ObjectStore implements SnapshotEventListener, GraphManager {
 
     /**
      * Builds and returns GraphDiff reflecting all uncommitted object changes.
-     * 
+     *
      * @since 1.2
      */
     ObjectStoreGraphDiff getChanges() {
@@ -370,7 +330,7 @@ public class ObjectStore implements SnapshotEventListener, GraphManager {
 
     /**
      * Returns internal changes map.
-     * 
+     *
      * @since 1.2
      */
     Map<Object, ObjectDiff> getChangesByObjectId() {
@@ -397,7 +357,7 @@ public class ObjectStore implements SnapshotEventListener, GraphManager {
 
     /**
      * Internal unsynchronized method to process objects state after commit.
-     * 
+     *
      * @since 1.2
      */
     public void postprocessAfterCommit(GraphDiff parentChanges) {
@@ -440,14 +400,10 @@ public class ObjectStore implements SnapshotEventListener, GraphManager {
      * Snapshots are keyed by the concrete entity of an object, so an id of a superentity is matched against the ids of
      * its subentities as well. A nested context has no snapshot cache of its own, so it takes the current state of the
      * object in the parent context as the snapshot.
-     * 
+     *
      * @since 1.1
      */
     public DataRow getCachedSnapshot(ObjectId oid) {
-
-        if (context == null) {
-            return null;
-        }
 
         if (dataRowCache == null) {
             return parentContextSnapshot(oid, false);
@@ -467,14 +423,10 @@ public class ObjectStore implements SnapshotEventListener, GraphManager {
     /**
      * Returns a snapshot for ObjectId from the underlying snapshot cache. If the cache contains no snapshot, it is
      * fetched from the database. Returns null if no matching row exists.
-     * 
+     *
      * @since 1.2
      */
     public synchronized DataRow getSnapshot(ObjectId oid) {
-
-        if (context == null) {
-            return null;
-        }
 
         if (dataRowCache == null) {
             return parentContextSnapshot(oid, true);
@@ -568,7 +520,7 @@ public class ObjectStore implements SnapshotEventListener, GraphManager {
      * DataRowStore, since it is normally invoked *AFTER* the DataRowStore was modified as
      * a result of some external interaction.
      * </p>
-     * 
+     *
      * @since 1.1
      */
     @Override
@@ -625,9 +577,9 @@ public class ObjectStore implements SnapshotEventListener, GraphManager {
             }
         }
 
-        if(trackedFlattenedPaths != null) {
+        if (trackedFlattenedPaths != null) {
             Map<CayennePath, ObjectId> paths = trackedFlattenedPaths.remove(nodeId);
-            if(paths != null) {
+            if (paths != null) {
                 trackedFlattenedPaths.put(newId, paths);
             }
         }
@@ -635,7 +587,7 @@ public class ObjectStore implements SnapshotEventListener, GraphManager {
 
     /**
      * Requires external synchronization.
-     * 
+     *
      * @since 1.2
      */
     void processDeletedID(ObjectId nodeId) {
@@ -687,8 +639,7 @@ public class ObjectStore implements SnapshotEventListener, GraphManager {
                 }
 
                 switch (object.getPersistenceState()) {
-                    case PersistenceState.COMMITTED ->
-                            object.setPersistenceState(PersistenceState.HOLLOW);
+                    case PersistenceState.COMMITTED -> object.setPersistenceState(PersistenceState.HOLLOW);
                     case PersistenceState.MODIFIED -> {
                         DataContext context = (DataContext) object.getObjectContext();
                         DataRow diff = getSnapshot(oid);
@@ -709,7 +660,7 @@ public class ObjectStore implements SnapshotEventListener, GraphManager {
 
     /**
      * Requires external synchronization.
-     * 
+     *
      * @since 1.1
      */
     void processIndirectlyModifiedIDs(Collection<ObjectId> indirectlyModifiedIDs) {
@@ -763,7 +714,7 @@ public class ObjectStore implements SnapshotEventListener, GraphManager {
 
     /**
      * Requires external synchronization.
-     * 
+     *
      * @since 1.1
      */
     void processUpdatedSnapshot(ObjectId nodeId, DataRow diff) {
@@ -824,26 +775,12 @@ public class ObjectStore implements SnapshotEventListener, GraphManager {
         }
     }
 
-    /**
-     * @since 1.2
-     */
-    public DataContext getContext() {
-        return context;
-    }
-
-    /**
-     * @since 1.2
-     */
-    public void setContext(DataContext context) {
-        this.context = context;
-    }
-
     // *********** GraphManager Methods ********
     // =========================================
 
     /**
      * Returns a registered Persistent objects or null of no object exists for the ObjectId.
-     * 
+     *
      * @since 1.2
      */
     @Override
@@ -851,20 +788,15 @@ public class ObjectStore implements SnapshotEventListener, GraphManager {
         return objectMap.get(nodeId);
     }
 
-    // non-synchronized version of getNode for private use
-    final Object getNodeNoSync(Object nodeId) {
-        return objectMap.get(nodeId);
-    }
-
     /**
      * Returns all registered Persistent objects. List is returned by copy and can be modified by
      * the caller.
-     * 
+     *
      * @since 1.2
      */
     @Override
     public synchronized Collection<Object> registeredNodes() {
-        return new ArrayList<Object>(objectMap.values());
+        return new ArrayList<>(objectMap.values());
     }
 
     /**
@@ -890,7 +822,7 @@ public class ObjectStore implements SnapshotEventListener, GraphManager {
 
     /**
      * Does nothing.
-     * 
+     *
      * @since 1.2
      */
     @Override
@@ -929,7 +861,7 @@ public class ObjectStore implements SnapshotEventListener, GraphManager {
 
     /**
      * Records dirty object snapshot.
-     * 
+     *
      * @since 1.2
      */
     @Override
@@ -979,22 +911,10 @@ public class ObjectStore implements SnapshotEventListener, GraphManager {
     }
 
     /**
-     * Check that flattened path for given object ID has data row in DB.
-     * @since 4.1
-     */
-    boolean hasFlattenedPath(ObjectId objectId, CayennePath path) {
-        if(trackedFlattenedPaths == null) {
-            return false;
-        }
-        return trackedFlattenedPaths
-                .getOrDefault(objectId, Collections.emptyMap()).containsKey(path);
-    }
-
-    /**
      * @since 4.2
      */
     public ObjectId getFlattenedId(ObjectId objectId, CayennePath path) {
-        if(trackedFlattenedPaths == null) {
+        if (trackedFlattenedPaths == null) {
             return null;
         }
 
@@ -1006,7 +926,7 @@ public class ObjectStore implements SnapshotEventListener, GraphManager {
      * @since 4.2
      */
     public Collection<ObjectId> getFlattenedIds(ObjectId objectId) {
-        if(trackedFlattenedPaths == null) {
+        if (trackedFlattenedPaths == null) {
             return Collections.emptyList();
         }
 
@@ -1017,8 +937,8 @@ public class ObjectStore implements SnapshotEventListener, GraphManager {
     /**
      * @since 5.0
      */
-    public Map<CayennePath,ObjectId> getFlattenedPathIdMap(ObjectId objectId) {
-        if(trackedFlattenedPaths == null) {
+    public Map<CayennePath, ObjectId> getFlattenedPathIdMap(ObjectId objectId) {
+        if (trackedFlattenedPaths == null) {
             return Collections.emptyMap();
         }
 
@@ -1028,10 +948,11 @@ public class ObjectStore implements SnapshotEventListener, GraphManager {
 
     /**
      * Mark that flattened path for object has data row in DB.
+     *
      * @since 4.1
      */
     public void markFlattenedPath(ObjectId objectId, CayennePath path, ObjectId id) {
-        if(trackedFlattenedPaths == null) {
+        if (trackedFlattenedPaths == null) {
             trackedFlattenedPaths = new ConcurrentHashMap<>();
         }
         trackedFlattenedPaths
@@ -1044,7 +965,7 @@ public class ObjectStore implements SnapshotEventListener, GraphManager {
      * @since 4.2.2
      */
     void onObjectKeyCleanup(Object key) {
-        if(trackedFlattenedPaths != null) {
+        if (trackedFlattenedPaths != null) {
             trackedFlattenedPaths.remove(key);
         }
     }

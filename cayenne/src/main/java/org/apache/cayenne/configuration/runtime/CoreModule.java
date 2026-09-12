@@ -61,10 +61,8 @@ import org.apache.cayenne.configuration.DataChannelDescriptorMerger;
 import org.apache.cayenne.configuration.DataMapLoader;
 import org.apache.cayenne.configuration.DefaultConfigurationNameMapper;
 import org.apache.cayenne.configuration.DefaultDataChannelDescriptorMerger;
-import org.apache.cayenne.configuration.DefaultObjectStoreFactory;
 import org.apache.cayenne.configuration.DefaultRuntimeProperties;
 import org.apache.cayenne.configuration.ObjectContextFactory;
-import org.apache.cayenne.configuration.ObjectStoreFactory;
 import org.apache.cayenne.configuration.RuntimeProperties;
 import org.apache.cayenne.configuration.xml.DataChannelMetaData;
 import org.apache.cayenne.configuration.xml.DefaultHandlerFactory;
@@ -413,9 +411,6 @@ public class CoreModule implements Module {
         // a default ObjectMapRetainStrategy used to create objects map for
         // ObjectStore
         binder.bind(ObjectMapRetainStrategy.class).to(DefaultObjectMapRetainStrategy.class);
-
-        // a default ObjectStoreFactory used to create ObjectStores for contexts
-        binder.bind(ObjectStoreFactory.class).to(DefaultObjectStoreFactory.class);
 
         binder.bind(TransactionManager.class).to(DefaultTransactionManager.class);
         binder.bind(RowReaderFactory.class).to(DefaultRowReaderFactory.class);

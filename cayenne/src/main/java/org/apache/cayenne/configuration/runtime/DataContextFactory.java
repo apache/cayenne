@@ -25,11 +25,12 @@ import org.apache.cayenne.access.DataContextChannel;
 import org.apache.cayenne.access.DataDomain;
 import org.apache.cayenne.access.DataRowStore;
 import org.apache.cayenne.access.DataRowStoreFactory;
-import org.apache.cayenne.access.ObjectStore;
+import org.apache.cayenne.access.ObjectMapRetainStrategy;
 import org.apache.cayenne.cache.NestedQueryCache;
 import org.apache.cayenne.cache.QueryCache;
 import org.apache.cayenne.configuration.ObjectContextFactory;
-import org.apache.cayenne.configuration.ObjectStoreFactory;
+import org.apache.cayenne.configuration.Constants;
+import org.apache.cayenne.configuration.RuntimeProperties;
 import org.apache.cayenne.di.Inject;
 
 /**
@@ -41,7 +42,10 @@ public class DataContextFactory implements ObjectContextFactory {
     protected DataRowStoreFactory dataRowStoreFactory;
 
     @Inject
-    protected ObjectStoreFactory objectStoreFactory;
+    protected ObjectMapRetainStrategy retainStrategy;
+
+    @Inject
+    protected RuntimeProperties runtimeProperties;
 
     @Inject
     protected QueryCache queryCache;
@@ -59,10 +63,11 @@ public class DataContextFactory implements ObjectContextFactory {
                 ? domain.getSharedSnapshotCache()
                 : dataRowStoreFactory.createDataRowStore(domain.getName());
 
-        DataContext context = newInstance(parent, objectStoreFactory.createObjectStore(snapshotCache));
-        context.setValidatingObjectsOnCommit(domain.isValidatingObjectsOnCommit());
-        context.setQueryCache(new NestedQueryCache(queryCache));
-        return context;
+        return newBuilder(parent)
+                .snapshotCache(snapshotCache)
+                .usingSharedSnapshotCache(domain.isSharedCacheEnabled())
+                .validatingObjectsOnCommit(domain.isValidatingObjectsOnCommit())
+                .build();
     }
 
     @Override
@@ -72,20 +77,18 @@ public class DataContextFactory implements ObjectContextFactory {
                     + "Unsupported context type: " + parent);
         }
 
-        // child ObjectStore should not have direct access to snapshot cache, so do not
-        // pass it in constructor.
-        ObjectStore objectStore = objectStoreFactory.createObjectStore(null);
-
-        DataContext context = newInstance(new DataContextChannel(dataContext), objectStore);
-
-        context.setValidatingObjectsOnCommit(dataContext.isValidatingObjectsOnCommit());
-        context.setUsingSharedSnapshotCache(dataContext.isUsingSharedSnapshotCache());
-        context.setQueryCache(new NestedQueryCache(queryCache));
-
-        return context;
+        // child ObjectStore should not have direct access to snapshot cache, so do not pass it to the builder
+        return newBuilder(new DataContextChannel(dataContext))
+                .usingSharedSnapshotCache(dataContext.isUsingSharedSnapshotCache())
+                .validatingObjectsOnCommit(dataContext.isValidatingObjectsOnCommit())
+                .build();
     }
 
-    protected DataContext newInstance(DataChannel parent, ObjectStore objectStore) {
-        return new DataContext(parent, objectStore);
+    protected DataContext.Builder newBuilder(DataChannel parent) {
+        boolean sync = runtimeProperties.getBoolean(Constants.CONTEXTS_SYNC_PROPERTY, false);
+        return DataContext.builder(parent)
+                .objectMap(retainStrategy.createObjectMap())
+                .syncWithSnapshotCache(sync)
+                .queryCache(new NestedQueryCache(queryCache));
     }
 }

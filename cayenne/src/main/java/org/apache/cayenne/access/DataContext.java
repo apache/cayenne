@@ -58,6 +58,7 @@ import org.apache.cayenne.reflect.ToOneProperty;
 import org.apache.cayenne.util.EventUtil;
 import org.apache.cayenne.util.ShallowMergeOperation;
 import org.apache.cayenne.util.Util;
+import org.apache.cayenne.util.WeakValueMap;
 
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -122,7 +123,7 @@ public class DataContext implements ObjectContext {
     protected QueryCache queryCache;
     protected final EntityResolver entityResolver;
     protected boolean validatingObjectsOnCommit;
-    protected boolean usingSharedSnapshotCache;
+    protected final boolean usingSharedSnapshotCache;
 
     private DataContextDelegate delegate;
     final DataContextGraphAction graphAction;
@@ -136,19 +137,40 @@ public class DataContext implements ObjectContext {
     protected volatile Map<String, Object> userProperties;
 
     /**
-     * Creates a new DataContext with parent DataChannel and ObjectStore.
+     * Starts building a DataContext attached to the given channel. All builder settings are optional.
      *
-     * @since 1.2
+     * @since 5.0
      */
-    public DataContext(DataChannel channel, ObjectStore objectStore) {
+    public static Builder builder(DataChannel channel) {
+        return new Builder(channel);
+    }
 
-        this.graphAction = new DataContextGraphAction(this);
-        this.validatingObjectsOnCommit = true;
+    /**
+     * Creates a DataContext and its ObjectStore as a single unit. Both objects reference each other, so the store is
+     * created here rather than passed in, keeping the reference immutable on both sides. Use
+     * {@link #builder(DataChannel)} to create instances.
+     *
+     * @since 5.0
+     */
+    protected DataContext(
+            DataChannel channel,
+            DataRowStore snapshotCache,
+            Map<Object, Persistent> objectMap,
+            boolean syncWithSnapshotCache,
+            boolean usingSharedSnapshotCache,
+            boolean validatingObjectsOnCommit,
+            QueryCache queryCache) {
 
         this.channel = Objects.requireNonNull(channel);
         this.entityResolver = channel.getEntityResolver();
-        this.objectStore = Objects.requireNonNull(objectStore);
-        objectStore.setContext(this);
+        this.usingSharedSnapshotCache = usingSharedSnapshotCache;
+        this.validatingObjectsOnCommit = validatingObjectsOnCommit;
+        this.queryCache = queryCache;
+        this.graphAction = new DataContextGraphAction(this);
+
+        // "this" escapes to the ObjectStore before the constructor completes. This is safe as long as the store
+        // constructor doesn't call back into the context, and the fields the store reads later are already set above
+        this.objectStore = new ObjectStore(this, snapshotCache, objectMap, syncWithSnapshotCache);
 
         // Listen to our channel events. A parent context posts its events on its own
         // behalf, not on behalf of the channel adapter wrapping it, so listen to the context in that case
@@ -158,17 +180,6 @@ public class DataContext implements ObjectContext {
         } else {
             mergeHandler = new DataContextMergeHandler(this, channel);
             EventUtil.listenForChannelEvents(channel, mergeHandler);
-        }
-
-        DataDomain domain = channel.getDataDomain();
-        this.usingSharedSnapshotCache = domain != null && objectStore.getDataRowCache() == domain.getSharedSnapshotCache();
-
-        if (!usingSharedSnapshotCache) {
-            DataRowStore cache = objectStore.getDataRowCache();
-
-            if (cache != null) {
-                cache.setEventManager(channel.getEventManager());
-            }
         }
     }
 
@@ -1125,13 +1136,6 @@ public class DataContext implements ObjectContext {
     }
 
     /**
-     * @since 3.1
-     */
-    public void setUsingSharedSnapshotCache(boolean flag) {
-        this.usingSharedSnapshotCache = flag;
-    }
-
-    /**
      * Returns this context's ObjectStore.
      *
      * @since 1.2
@@ -1289,4 +1293,91 @@ public class DataContext implements ObjectContext {
         getUserProperties().clear();
     }
 
+    /**
+     * A builder of {@link DataContext} instances. Created via {@link DataContext#builder(DataChannel)}.
+     *
+     * @since 5.0
+     */
+    public static class Builder {
+
+        private final DataChannel channel;
+        private DataRowStore snapshotCache;
+        private Map<Object, Persistent> objectMap;
+        private boolean syncWithSnapshotCache;
+        private Boolean usingSharedSnapshotCache;
+        private boolean validatingObjectsOnCommit = true;
+        private QueryCache queryCache;
+
+        protected Builder(DataChannel channel) {
+            this.channel = Objects.requireNonNull(channel);
+        }
+
+        /**
+         * Sets a snapshot cache for the context's ObjectStore. Nested contexts have no cache of their own and take
+         * snapshots from the parent context instead. Default is no cache.
+         */
+        public Builder snapshotCache(DataRowStore snapshotCache) {
+            this.snapshotCache = snapshotCache;
+            return this;
+        }
+
+        /**
+         * Sets a map to store registered objects in. The map determines how strongly the context retains objects.
+         * Default is a map with weak references to the values.
+         */
+        public Builder objectMap(Map<Object, Persistent> objectMap) {
+            this.objectMap = objectMap;
+            return this;
+        }
+
+        /**
+         * Sets whether the context's ObjectStore should listen to snapshot cache events, updating its objects with
+         * changes made in other contexts. Default is false.
+         */
+        public Builder syncWithSnapshotCache(boolean sync) {
+            this.syncWithSnapshotCache = sync;
+            return this;
+        }
+
+        /**
+         * Sets whether the snapshot cache is the shared cache of the parent DataDomain. Unless set explicitly, this
+         * is determined by comparing the snapshot cache with the shared cache of the channel's DataDomain.
+         */
+        public Builder usingSharedSnapshotCache(boolean usingSharedSnapshotCache) {
+            this.usingSharedSnapshotCache = usingSharedSnapshotCache;
+            return this;
+        }
+
+        /**
+         * Sets whether the context validates objects before commit. Default is true.
+         */
+        public Builder validatingObjectsOnCommit(boolean validating) {
+            this.validatingObjectsOnCommit = validating;
+            return this;
+        }
+
+        /**
+         * Sets a cache for query results. Default is no cache.
+         */
+        public Builder queryCache(QueryCache queryCache) {
+            this.queryCache = queryCache;
+            return this;
+        }
+
+        public DataContext build() {
+            return new DataContext(
+                    channel,
+                    snapshotCache,
+                    objectMap != null ? objectMap : new WeakValueMap<>(),
+                    syncWithSnapshotCache,
+                    usingSharedSnapshotCache != null ? usingSharedSnapshotCache : isDomainSharedCache(),
+                    validatingObjectsOnCommit,
+                    queryCache);
+        }
+
+        private boolean isDomainSharedCache() {
+            DataDomain domain = channel.getDataDomain();
+            return domain != null && snapshotCache != null && snapshotCache == domain.getSharedSnapshotCache();
+        }
+    }
 }

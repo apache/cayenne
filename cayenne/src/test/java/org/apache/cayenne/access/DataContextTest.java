@@ -30,7 +30,7 @@ import static org.mockito.Mockito.mock;
 public class DataContextTest {
     @Test
     public void userPropertiesLazyInit() {
-        DataContext context = new DataContext(mock(DataChannel.class), mock(ObjectStore.class));
+        DataContext context = DataContext.builder(mock(DataChannel.class)).build();
         assertNull(context.userProperties);
 
         Map<String, Object> properties = context.getUserProperties();

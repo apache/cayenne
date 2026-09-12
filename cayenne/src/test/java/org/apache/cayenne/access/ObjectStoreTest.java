@@ -21,6 +21,7 @@ package org.apache.cayenne.access;
 
 import java.util.HashMap;
 
+import org.apache.cayenne.DataChannel;
 import org.apache.cayenne.ObjectId;
 import org.apache.cayenne.PersistenceState;
 import org.apache.cayenne.Persistent;
@@ -39,7 +40,11 @@ public class ObjectStoreTest {
     @BeforeEach
     public void before() {
         DataRowStore sharedCache = mock(DataRowStore.class);
-        this.objectStore = new ObjectStore(sharedCache, new HashMap<Object, Persistent>());
+        this.objectStore = DataContext.builder(mock(DataChannel.class))
+                .snapshotCache(sharedCache)
+                .objectMap(new HashMap<>())
+                .build()
+                .getObjectStore();
     }
 
     @Test

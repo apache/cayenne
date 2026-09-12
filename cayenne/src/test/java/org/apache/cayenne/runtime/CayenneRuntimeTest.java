@@ -22,7 +22,6 @@ import org.apache.cayenne.DataChannel;
 import org.apache.cayenne.ObjectContext;
 import org.apache.cayenne.access.DataContext;
 import org.apache.cayenne.access.DataDomain;
-import org.apache.cayenne.access.ObjectStore;
 import org.apache.cayenne.configuration.ObjectContextFactory;
 import org.apache.cayenne.di.Module;
 import org.apache.cayenne.tx.BaseTransaction;
@@ -85,7 +84,7 @@ public class CayenneRuntimeTest {
 
     @Test
     public void getObjectContext_CustomModule() {
-        ObjectContext context = new DataContext(mock(DataChannel.class), mock(ObjectStore.class));
+        ObjectContext context = DataContext.builder(mock(DataChannel.class)).build();
         ObjectContextFactory factory = new ObjectContextFactory() {
 
             @Override
