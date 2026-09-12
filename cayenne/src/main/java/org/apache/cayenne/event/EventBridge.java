@@ -319,8 +319,7 @@ public abstract class EventBridge implements EventListener {
         void onLocalEvent(CayenneEvent event) throws Exception {
 
             // ignore events posted by this Bridge...
-            if (event.getSource() != getExternalEventSource()
-                    && event.getPostedBy() != EventBridge.this) {
+            if (event.getSource() != getExternalEventSource() && event.getPostedBy() != EventBridge.this) {
 
                 // make sure external event has the right subject
                 if (!subject.equals(event.getSubject())) {

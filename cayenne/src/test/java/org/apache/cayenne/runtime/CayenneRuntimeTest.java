@@ -22,8 +22,8 @@ import org.apache.cayenne.DataChannel;
 import org.apache.cayenne.ObjectContext;
 import org.apache.cayenne.access.DataContext;
 import org.apache.cayenne.access.DataDomain;
+import org.apache.cayenne.access.ObjectStore;
 import org.apache.cayenne.configuration.ObjectContextFactory;
-import org.apache.cayenne.di.Injector;
 import org.apache.cayenne.di.Module;
 import org.apache.cayenne.tx.BaseTransaction;
 import org.apache.cayenne.tx.TransactionDescriptor;
@@ -85,7 +85,7 @@ public class CayenneRuntimeTest {
 
     @Test
     public void getObjectContext_CustomModule() {
-        ObjectContext context = new DataContext();
+        ObjectContext context = new DataContext(mock(DataChannel.class), mock(ObjectStore.class));
         ObjectContextFactory factory = new ObjectContextFactory() {
 
             @Override
@@ -108,22 +108,5 @@ public class CayenneRuntimeTest {
         CayenneRuntime runtime = new CayenneRuntime(Collections.singleton(module));
         assertSame(context, runtime.newContext());
         assertSame(context, runtime.newContext());
-    }
-
-    @Test
-    public void bindThreadInjector() {
-
-        Injector injector = mock(Injector.class);
-
-        assertNull(CayenneRuntime.getThreadInjector());
-
-        try {
-            CayenneRuntime.bindThreadInjector(injector);
-            assertSame(injector, CayenneRuntime.getThreadInjector());
-        } finally {
-            CayenneRuntime.bindThreadInjector(null);
-        }
-
-        assertNull(CayenneRuntime.getThreadInjector());
     }
 }

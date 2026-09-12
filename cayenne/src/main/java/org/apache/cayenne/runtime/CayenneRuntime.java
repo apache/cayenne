@@ -37,12 +37,10 @@ import java.util.Collection;
 import java.util.Objects;
 
 /**
- * Object representing Cayenne stack. Serves as an entry point to Cayenne for user applications and a factory of ObjectContexts.
- * It provides a default Cayenne configuration as well as a way to customize this configuration via a built-in
- * dependency injection (DI) container.
- * In fact implementation-wise, Runtime object is just a convenience thin wrapper around a DI {@link Injector}.
- * <p>
- * To create CayenneRuntime use builder available with one of the {@link #of()} methods:
+ * Object representing Cayenne stack. Serves as an entry point to Cayenne for user applications and a factory of
+ * ObjectContexts. It provides a default Cayenne configuration as well as a way to customize this configuration via a
+ * built-in dependency injection (DI) container. To create CayenneRuntime use builder available with one of the
+ * {@link #of()} methods:
  * <pre>
  * {@code
  * CayenneRuntime cayenneRuntime = CayenneRuntime.of()
@@ -51,43 +49,9 @@ import java.util.Objects;
  * }
  * </pre>
  *
- * @see #of()
- * @see #of(String)
- * @see CayenneRuntimeBuilder
- * @since 3.1 is introduced
- * @since 5.0 is repurposed as a single implementation of Cayenne runtime and moved to {@link org.apache.cayenne.runtime} package.
+ * @since 5.0
  */
 public class CayenneRuntime {
-
-    /**
-     * A holder of an Injector bound to the current thread. Used to allow
-     * contexts created outside of the Cayenne stack to attach to the correct
-     * runtime lazily.
-     *
-     * @since 3.1
-     */
-    protected static final ThreadLocal<Injector> threadInjector = new ThreadLocal<>();
-
-    /**
-     * Binds a DI {@link Injector} bound to the current thread. It is primarily
-     * intended for ObjectContexts created outside of the Cayenne stack that
-     * need to attach to a runtime lazily.
-     *
-     * @since 3.1
-     */
-    public static void bindThreadInjector(Injector injector) {
-        threadInjector.set(injector);
-    }
-
-    /**
-     * Returns the {@link Injector} bound to the current thread. Will return
-     * null if none is bound.
-     *
-     * @since 3.1
-     */
-    public static Injector getThreadInjector() {
-        return threadInjector.get();
-    }
 
     protected final Injector injector;
     protected final Collection<Module> modules;

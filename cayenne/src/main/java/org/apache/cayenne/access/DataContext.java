@@ -32,9 +32,7 @@ import org.apache.cayenne.QueryResponse;
 import org.apache.cayenne.ResultBatchIterator;
 import org.apache.cayenne.ResultIterator;
 import org.apache.cayenne.ResultIteratorCallback;
-import org.apache.cayenne.cache.NestedQueryCache;
 import org.apache.cayenne.cache.QueryCache;
-import org.apache.cayenne.di.Injector;
 import org.apache.cayenne.event.EventManager;
 import org.apache.cayenne.exp.ValueInjector;
 import org.apache.cayenne.graph.ArcId;
@@ -59,7 +57,6 @@ import org.apache.cayenne.reflect.PropertyDescriptor;
 import org.apache.cayenne.reflect.PropertyVisitor;
 import org.apache.cayenne.reflect.ToManyProperty;
 import org.apache.cayenne.reflect.ToOneProperty;
-import org.apache.cayenne.runtime.CayenneRuntime;
 import org.apache.cayenne.util.EventUtil;
 import org.apache.cayenne.util.GenericResponse;
 import org.apache.cayenne.util.ShallowMergeOperation;
@@ -72,6 +69,7 @@ import java.util.Collections;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
+import java.util.Objects;
 import java.util.concurrent.ConcurrentHashMap;
 
 /**
@@ -122,17 +120,16 @@ public class DataContext implements ObjectContext {
         threadObjectContext.set(context);
     }
 
+    protected final DataChannel channel;
+    protected final ObjectStore objectStore;
+    protected QueryCache queryCache;
+    protected final EntityResolver entityResolver;
+    protected boolean validatingObjectsOnCommit;
+    protected boolean usingSharedSnapshotCache;
 
     private DataContextDelegate delegate;
-    protected boolean usingSharedSnapshotCache;
-    protected ObjectStore objectStore;
-
-    /**
-     * Graph action that handles property changes
-     *
-     * @since 3.1
-     */
-    protected DataContextGraphAction graphAction;
+    final DataContextGraphAction graphAction;
+    final DataContextMergeHandler mergeHandler;
 
     /**
      * Stores user defined properties associated with this DataContext.
@@ -141,22 +138,6 @@ public class DataContext implements ObjectContext {
      */
     protected volatile Map<String, Object> userProperties;
 
-    // runtime dependencies; a context created without a channel resolves them lazily via attachToRuntimeIfNeeded()
-    protected DataChannel channel;
-    protected QueryCache queryCache;
-    protected EntityResolver entityResolver;
-
-    protected DataContextMergeHandler mergeHandler;
-
-    protected boolean validatingObjectsOnCommit = true;
-
-    /**
-     * Creates a new DataContext that is not attached to the Cayenne stack.
-     */
-    public DataContext() {
-        this(null, null);
-    }
-
     /**
      * Creates a new DataContext with parent DataChannel and ObjectStore.
      *
@@ -164,103 +145,31 @@ public class DataContext implements ObjectContext {
      */
     public DataContext(DataChannel channel, ObjectStore objectStore) {
 
-        graphAction = new DataContextGraphAction(this);
+        this.graphAction = new DataContextGraphAction(this);
+        this.validatingObjectsOnCommit = true;
 
-        // inject self as parent context
-        if (objectStore != null) {
-            this.objectStore = objectStore;
-            objectStore.setContext(this);
-        }
-
-        if (channel != null) {
-            attachToChannel(channel);
-        }
-
-        if (objectStore != null) {
-            DataDomain domain = getParentDataDomain();
-            this.usingSharedSnapshotCache = domain != null
-                    && objectStore.getDataRowCache() == domain.getSharedSnapshotCache();
-        }
-    }
-
-    /**
-     * Checks whether this context is attached to Cayenne runtime stack and if
-     * not, attempts to attach itself to the runtime using Injector returned
-     * from the call to {@link CayenneRuntime#getThreadInjector()}. If thread
-     * Injector is not available and the context is not attached, throws
-     * CayenneRuntimeException.
-     * <p>
-     * This method is called internally by the context before access to
-     * runtime dependencies to allow a context created without a channel to
-     * attach to the stack lazily.
-     *
-     * @return true if the context successfully attached to the thread runtime,
-     * false - if it was already attached.
-     * @since 3.1
-     */
-    protected boolean attachToRuntimeIfNeeded() {
-        if (channel != null) {
-            return false;
-        }
-
-        Injector injector = CayenneRuntime.getThreadInjector();
-        if (injector == null) {
-            throw new CayenneRuntimeException("Can't attach to Cayenne runtime. "
-                    + "Null injector returned from CayenneRuntime.getThreadInjector()");
-        }
-
-        attachToRuntime(injector);
-        return true;
-    }
-
-    /**
-     * Attaches this context to the CayenneRuntime whose Injector is passed as
-     * an argument to this method.
-     *
-     * @since 3.1
-     */
-    protected void attachToRuntime(Injector injector) {
-        attachToChannel(injector.getInstance(DataDomain.class));
-        setQueryCache(new NestedQueryCache(injector.getInstance(QueryCache.class)));
-    }
-
-    /**
-     * Attaches to a provided DataChannel.
-     *
-     * @since 3.1
-     */
-    protected void attachToChannel(DataChannel channel) {
-
-        if (channel == null) {
-            throw new NullPointerException("Null channel");
-        }
-
-        setChannel(channel);
-        setEntityResolver(channel.getEntityResolver());
-
-        if (mergeHandler != null) {
-            mergeHandler.stop();
-            mergeHandler = null;
-        }
+        this.channel = Objects.requireNonNull(channel);
+        this.entityResolver = channel.getEntityResolver();
+        this.objectStore = Objects.requireNonNull(objectStore);
+        objectStore.setContext(this);
 
         EventManager eventManager = channel.getEventManager();
 
-        if (eventManager != null) {
-
-            // listen to our channel events... note that we must reset listener on channel switch, as there is no
-            // guarantee that a new channel uses the same EventManager. A parent context posts its events on its own
-            // behalf, not on behalf of the channel adapter wrapping it, so listen to the context in that case
-            if (channel instanceof DataContextChannel channelAdapter) {
-                mergeHandler = new DataContextMergeHandler(this, channelAdapter.context());
-                EventUtil.listenForChannelEvents(channelAdapter.context(), mergeHandler);
-            } else {
-                mergeHandler = new DataContextMergeHandler(this, channel);
-                EventUtil.listenForChannelEvents(channel, mergeHandler);
-            }
+        // Listen to our channel events. A parent context posts its events on its own
+        // behalf, not on behalf of the channel adapter wrapping it, so listen to the context in that case
+        if (channel instanceof DataContextChannel(DataContext context)) {
+            mergeHandler = new DataContextMergeHandler(this, context);
+            EventUtil.listenForChannelEvents(context, mergeHandler);
+        } else {
+            mergeHandler = new DataContextMergeHandler(this, channel);
+            EventUtil.listenForChannelEvents(channel, mergeHandler);
         }
 
-        if (!usingSharedSnapshotCache && getObjectStore() != null) {
-            DataRowStore cache = getObjectStore().getDataRowCache();
+        DataDomain domain = getParentDataDomain();
+        this.usingSharedSnapshotCache = domain != null && objectStore.getDataRowCache() == domain.getSharedSnapshotCache();
+
+        if (!usingSharedSnapshotCache) {
+            DataRowStore cache = objectStore.getDataRowCache();
 
             if (cache != null) {
                 cache.setEventManager(eventManager);
@@ -270,32 +179,13 @@ public class DataContext implements ObjectContext {
 
     @Override
     public DataChannel getChannel() {
-        attachToRuntimeIfNeeded();
         return channel;
-    }
-
-    /**
-     * Sets a new DataChannel for this context.
-     *
-     * @since 3.1
-     */
-    public void setChannel(DataChannel channel) {
-        this.channel = channel;
     }
 
     @Override
     public EntityResolver getEntityResolver() {
-        attachToRuntimeIfNeeded();
         return entityResolver;
     }
-
-    /**
-     * @since 3.1
-     */
-    public void setEntityResolver(EntityResolver entityResolver) {
-        this.entityResolver = entityResolver;
-    }
-
 
     /**
      * Returns a DataDomain used by this DataContext. DataDomain is looked up in the DataChannel hierarchy. If the final
@@ -305,7 +195,6 @@ public class DataContext implements ObjectContext {
      * @since 1.1
      */
     public DataDomain getParentDataDomain() {
-        attachToRuntimeIfNeeded();
 
         DataChannel c = channel;
         while (c != null) {
@@ -345,7 +234,7 @@ public class DataContext implements ObjectContext {
      * @since 1.1
      */
     DataContextDelegate nonNullDelegate() {
-        return (delegate != null) ? delegate : NoopDelegate.noopDelegate;
+        return delegate != null ? delegate : NoopDelegate.noopDelegate;
     }
 
     /**
@@ -455,7 +344,6 @@ public class DataContext implements ObjectContext {
     }
 
     public QueryCache getQueryCache() {
-        attachToRuntimeIfNeeded();
         return queryCache;
     }
 
@@ -598,12 +486,12 @@ public class DataContext implements ObjectContext {
         // a child context has no snapshot cache, so it can't resolve rows on its own. Resolve them in the parent
         // context and transfer the resulting objects here
         if (getObjectStore().getDataRowCache() == null) {
-            if (!(getChannel() instanceof DataContextChannel channelAdapter)) {
+            if (!(getChannel() instanceof DataContextChannel(DataContext context))) {
                 throw new CayenneRuntimeException(
                         "DataContext has no snapshot cache and no parent DataContext to resolve DataRows");
             }
 
-            List<?> parentObjects = channelAdapter.context().objectsFromDataRows(descriptor, dataRows);
+            List<?> parentObjects = context.objectsFromDataRows(descriptor, dataRows);
             ShallowMergeOperation merger = new ShallowMergeOperation(this);
             List<Persistent> objects = new ArrayList<>(parentObjects.size());
             for (Object parentObject : parentObjects) {
@@ -833,8 +721,9 @@ public class DataContext implements ObjectContext {
     /**
      * @since 3.1
      */
+    @SafeVarargs
     @Override
-    public <T> void invalidateObjects(T... objects) {
+    public final <T> void invalidateObjects(T... objects) {
         if (objects != null && objects.length > 0) {
             invalidateObjects(Arrays.asList(objects));
         }
@@ -1361,7 +1250,7 @@ public class DataContext implements ObjectContext {
 
     @Override
     public <T> ResultBatchIterator<T> batchIterator(Select<T> query, int size) {
-        return new ResultBatchIterator<T>(iterator(query), size);
+        return new ResultBatchIterator<>(iterator(query), size);
     }
 
     /**

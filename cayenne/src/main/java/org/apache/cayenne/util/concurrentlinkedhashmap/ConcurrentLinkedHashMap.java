@@ -33,9 +33,6 @@
  */
 package org.apache.cayenne.util.concurrentlinkedhashmap;
 
-import java.io.InvalidObjectException;
-import java.io.ObjectInputStream;
-import java.io.Serializable;
 import java.lang.ref.WeakReference;
 import java.util.AbstractCollection;
 import java.util.AbstractMap;
@@ -46,7 +43,6 @@ import java.util.Collections;
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.LinkedHashMap;
-import java.util.LinkedHashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Queue;
@@ -104,13 +100,12 @@ import java.util.concurrent.locks.ReentrantLock;
  * {@link java.util.LinkedHashMap}, this class does <em>not</em> provide predictable
  * iteration order. A snapshot of the keys and entries may be obtained in ascending and
  * descending order of retention.
- * 
+ *
  * @param <K> the type of keys maintained by this map
  * @param <V> the type of mapped values
  */
 // based on http://concurrentlinkedhashmap.googlecode.com/svn/trunk r754
-public class ConcurrentLinkedHashMap<K, V> extends AbstractMap<K, V> implements
-        ConcurrentMap<K, V>, Serializable {
+public class ConcurrentLinkedHashMap<K, V> extends AbstractMap<K, V> implements ConcurrentMap<K, V> {
 
     /*
      * This class performs a best-effort bounding of a ConcurrentHashMap using a
@@ -138,28 +133,39 @@ public class ConcurrentLinkedHashMap<K, V> extends AbstractMap<K, V> implements
      * O(1) time complexity.
      */
 
-    /** The maximum weighted capacity of the map. */
+    /**
+     * The maximum weighted capacity of the map.
+     */
     static final int MAXIMUM_CAPACITY = 1 << 30;
 
-    /** The maximum weight of a value. */
-    static final int MAXIMUM_WEIGHT = 1 << 29;
-
-    /** The maximum number of pending operations per buffer. */
+    /**
+     * The maximum number of pending operations per buffer.
+     */
     static final int MAXIMUM_BUFFER_SIZE = 1 << 20;
 
-    /** The number of pending operations per buffer before attempting to drain. */
+    /**
+     * The number of pending operations per buffer before attempting to drain.
+     */
     static final int BUFFER_THRESHOLD = 16;
 
-    /** The number of buffers to use. */
+    /**
+     * The number of buffers to use.
+     */
     static final int NUMBER_OF_BUFFERS;
 
-    /** Mask value for indexing into the buffers. */
+    /**
+     * Mask value for indexing into the buffers.
+     */
     static final int BUFFER_MASK;
 
-    /** The maximum number of operations to perform per amortized drain. */
+    /**
+     * The maximum number of operations to perform per amortized drain.
+     */
     static final int AMORTIZED_DRAIN_THRESHOLD;
 
-    /** A queue that discards all entries. */
+    /**
+     * A queue that discards all entries.
+     */
     static final Queue<?> DISCARDING_QUEUE = new DiscardingQueue();
 
     static {
@@ -174,16 +180,24 @@ public class ConcurrentLinkedHashMap<K, V> extends AbstractMap<K, V> implements
         return 1 << (Integer.SIZE - Integer.numberOfLeadingZeros(x - 1));
     }
 
-    /** The draining status of the buffers. */
+    /**
+     * The draining status of the buffers.
+     */
     enum DrainStatus {
 
-        /** A drain is not taking place. */
+        /**
+         * A drain is not taking place.
+         */
         IDLE,
 
-        /** A drain is required due to a pending write modification. */
+        /**
+         * A drain is required due to a pending write modification.
+         */
         REQUIRED,
 
-        /** A drain is in progress. */
+        /**
+         * A drain is in progress.
+         */
         PROCESSING
     }
 
@@ -214,9 +228,9 @@ public class ConcurrentLinkedHashMap<K, V> extends AbstractMap<K, V> implements
     final Queue<Node> pendingNotifications;
     final EvictionListener<K, V> listener;
 
-    transient Set<K> keySet;
-    transient Collection<V> values;
-    transient Set<Entry<K, V>> entrySet;
+    Set<K> keySet;
+    Collection<V> values;
+    Set<Entry<K, V>> entrySet;
 
     /**
      * Creates an instance based on the builder's configuration.
@@ -252,10 +266,12 @@ public class ConcurrentLinkedHashMap<K, V> extends AbstractMap<K, V> implements
         listener = builder.listener;
         pendingNotifications = (listener == DiscardingListener.INSTANCE)
                 ? (Queue<Node>) DISCARDING_QUEUE
-                : new ConcurrentLinkedQueue<Node>();
+                : new ConcurrentLinkedQueue<>();
     }
 
-    /** Asserts that the object is not null. */
+    /**
+     * Asserts that the object is not null.
+     */
     static void checkNotNull(Object o) {
         if (o == null) {
             throw new NullPointerException();
@@ -266,7 +282,7 @@ public class ConcurrentLinkedHashMap<K, V> extends AbstractMap<K, V> implements
 
     /**
      * Retrieves the maximum weighted capacity of the map.
-     * 
+     *
      * @return the maximum weighted capacity
      */
     public int capacity() {
@@ -274,30 +290,8 @@ public class ConcurrentLinkedHashMap<K, V> extends AbstractMap<K, V> implements
     }
 
     /**
-     * Sets the maximum weighted capacity of the map and eagerly evicts entries until it
-     * shrinks to the appropriate size.
-     * 
-     * @param capacity the maximum weighted capacity of the map
-     * @throws IllegalArgumentException if the capacity is negative
+     * Determines whether the map has exceeded its capacity.
      */
-    public void setCapacity(int capacity) {
-        if (capacity < 0) {
-            throw new IllegalArgumentException();
-        }
-
-        evictionLock.lock();
-        try {
-            this.capacity = Math.min(capacity, MAXIMUM_CAPACITY);
-            drainBuffers(AMORTIZED_DRAIN_THRESHOLD);
-            evict();
-        }
-        finally {
-            evictionLock.unlock();
-        }
-        notifyListener();
-    }
-
-    /** Determines whether the map has exceeded its capacity. */
     boolean hasOverflowed() {
         return weightedSize > capacity;
     }
@@ -333,7 +327,7 @@ public class ConcurrentLinkedHashMap<K, V> extends AbstractMap<K, V> implements
 
     /**
      * Performs the post-processing work required after the map operation.
-     * 
+     *
      * @param task the pending operation to be applied
      */
     void afterCompletion(Task task) {
@@ -346,7 +340,7 @@ public class ConcurrentLinkedHashMap<K, V> extends AbstractMap<K, V> implements
 
     /**
      * Schedules the task to be applied to the page replacement policy.
-     * 
+     *
      * @param task the pending operation
      * @return if the draining of the buffers can be delayed
      */
@@ -364,14 +358,15 @@ public class ConcurrentLinkedHashMap<K, V> extends AbstractMap<K, V> implements
         if (buffered <= MAXIMUM_BUFFER_SIZE) {
             buffers[index].add(task);
             return (buffered <= BUFFER_THRESHOLD);
-        }
-        else { // not optimized for fail-safe scenario
+        } else { // not optimized for fail-safe scenario
             bufferLengths.decrementAndGet(index);
             return false;
         }
     }
 
-    /** Returns the index to the buffer that the task should be scheduled on. */
+    /**
+     * Returns the index to the buffer that the task should be scheduled on.
+     */
     static int bufferIndex() {
         // A buffer is chosen by the thread's id so that tasks are distributed in a
         // pseudo evenly manner. This helps avoid hot entries causing contention due
@@ -379,7 +374,9 @@ public class ConcurrentLinkedHashMap<K, V> extends AbstractMap<K, V> implements
         return (int) Thread.currentThread().getId() & BUFFER_MASK;
     }
 
-    /** Returns the ordering value to assign to a task. */
+    /**
+     * Returns the ordering value to assign to a task.
+     */
     int nextOrdering() {
         // The next ordering is acquired in a racy fashion as the increment is not
         // atomic with the insertion into a buffer. This means that concurrent tasks
@@ -389,7 +386,7 @@ public class ConcurrentLinkedHashMap<K, V> extends AbstractMap<K, V> implements
 
     /**
      * Determines whether the buffers should be drained.
-     * 
+     *
      * @param delayable if a drain should be delayed until required
      * @return if a drain should be attempted
      */
@@ -405,7 +402,7 @@ public class ConcurrentLinkedHashMap<K, V> extends AbstractMap<K, V> implements
     /**
      * Attempts to acquire the eviction lock and apply the pending operations to the page
      * replacement policy.
-     * 
+     *
      * @param maxToDrain the maximum number of operations to drain
      */
     void tryToDrainBuffers(int maxToDrain) {
@@ -413,8 +410,7 @@ public class ConcurrentLinkedHashMap<K, V> extends AbstractMap<K, V> implements
             try {
                 drainStatus.set(DrainStatus.PROCESSING);
                 drainBuffers(maxToDrain);
-            }
-            finally {
+            } finally {
                 drainStatus.compareAndSet(DrainStatus.PROCESSING, DrainStatus.IDLE);
                 evictionLock.unlock();
             }
@@ -423,7 +419,7 @@ public class ConcurrentLinkedHashMap<K, V> extends AbstractMap<K, V> implements
 
     /**
      * Drains the buffers and applies the pending operations.
-     * 
+     *
      * @param maxToDrain the maximum number of operations to drain
      */
     void drainBuffers(int maxToDrain) {
@@ -445,7 +441,7 @@ public class ConcurrentLinkedHashMap<K, V> extends AbstractMap<K, V> implements
 
     /**
      * Moves the tasks from the buffers into the output array.
-     * 
+     *
      * @param tasks the ordered array of the pending operations
      * @return the highest index location of a task that was added to the array
      */
@@ -460,8 +456,8 @@ public class ConcurrentLinkedHashMap<K, V> extends AbstractMap<K, V> implements
 
     /**
      * Moves the tasks from the specified buffer into the output array.
-     * 
-     * @param tasks the ordered array of the pending operations
+     *
+     * @param tasks       the ordered array of the pending operations
      * @param bufferIndex the buffer to drain into the tasks array
      * @return the highest index location of a task that was added to the array
      */
@@ -483,16 +479,14 @@ public class ConcurrentLinkedHashMap<K, V> extends AbstractMap<K, V> implements
             if (index < 0) {
                 // The task was missed by the last drain and can be run immediately
                 task.run();
-            }
-            else if (index >= tasks.length) {
+            } else if (index >= tasks.length) {
                 // Due to concurrent additions, the order exceeds the capacity of the
                 // output array. It is added to the end as overflow and the remaining
                 // tasks in the buffer will be handled by the next drain.
                 maxIndex = tasks.length - 1;
                 addTaskToChain(tasks, task, maxIndex);
                 break;
-            }
-            else {
+            } else {
                 maxIndex = Math.max(index, maxIndex);
                 addTaskToChain(tasks, task, index);
             }
@@ -503,9 +497,9 @@ public class ConcurrentLinkedHashMap<K, V> extends AbstractMap<K, V> implements
 
     /**
      * Adds the task as the head of the chain at the index location.
-     * 
+     *
      * @param tasks the ordered array of the pending operations
-     * @param task the pending operation to add
+     * @param task  the pending operation to add
      * @param index the array location
      */
     void addTaskToChain(Task[] tasks, Task task, int index) {
@@ -515,8 +509,8 @@ public class ConcurrentLinkedHashMap<K, V> extends AbstractMap<K, V> implements
 
     /**
      * Runs the pending page replacement policy operations.
-     * 
-     * @param tasks the ordered array of the pending operations
+     *
+     * @param tasks        the ordered array of the pending operations
      * @param maxTaskIndex the maximum index of the array
      */
     void runTasks(Task[] tasks, int maxTaskIndex) {
@@ -527,7 +521,7 @@ public class ConcurrentLinkedHashMap<K, V> extends AbstractMap<K, V> implements
 
     /**
      * Runs the pending operations on the linked chain.
-     * 
+     *
      * @param task the first task in the chain of operations
      */
     void runTasksInChain(Task task) {
@@ -541,8 +535,8 @@ public class ConcurrentLinkedHashMap<K, V> extends AbstractMap<K, V> implements
 
     /**
      * Updates the order to start the next drain from.
-     * 
-     * @param tasks the ordered array of operations
+     *
+     * @param tasks        the ordered array of operations
      * @param maxTaskIndex the maximum index of the array
      */
     void updateDrainedOrder(Task[] tasks, int maxTaskIndex) {
@@ -552,7 +546,9 @@ public class ConcurrentLinkedHashMap<K, V> extends AbstractMap<K, V> implements
         }
     }
 
-    /** Notifies the listener of entries that were evicted. */
+    /**
+     * Notifies the listener of entries that were evicted.
+     */
     void notifyListener() {
         Node node;
         while ((node = pendingNotifications.poll()) != null) {
@@ -560,7 +556,9 @@ public class ConcurrentLinkedHashMap<K, V> extends AbstractMap<K, V> implements
         }
     }
 
-    /** Updates the node's location in the page replacement policy. */
+    /**
+     * Updates the node's location in the page replacement policy.
+     */
     class ReadTask extends AbstractTask {
 
         final Node node;
@@ -584,7 +582,9 @@ public class ConcurrentLinkedHashMap<K, V> extends AbstractMap<K, V> implements
         }
     }
 
-    /** Adds the node to the page replacement policy. */
+    /**
+     * Adds the node to the page replacement policy.
+     */
     final class AddTask extends AbstractTask {
 
         final Node node;
@@ -610,7 +610,9 @@ public class ConcurrentLinkedHashMap<K, V> extends AbstractMap<K, V> implements
         }
     }
 
-    /** Removes a node from the page replacement policy. */
+    /**
+     * Removes a node from the page replacement policy.
+     */
     final class RemovalTask extends AbstractTask {
 
         final Node node;
@@ -630,7 +632,9 @@ public class ConcurrentLinkedHashMap<K, V> extends AbstractMap<K, V> implements
         }
     }
 
-    /** Updates the weighted size and evicts an entry on overflow. */
+    /**
+     * Updates the weighted size and evicts an entry on overflow.
+     */
     final class UpdateTask extends ReadTask {
 
         final int weightDifference;
@@ -667,7 +671,7 @@ public class ConcurrentLinkedHashMap<K, V> extends AbstractMap<K, V> implements
 
     /**
      * Returns the weighted size of this map.
-     * 
+     *
      * @return the combined weight of the values in this map
      */
     public int weightedSize() {
@@ -699,8 +703,7 @@ public class ConcurrentLinkedHashMap<K, V> extends AbstractMap<K, V> implements
                 }
                 bufferLengths.addAndGet(i, -removed);
             }
-        }
-        finally {
+        } finally {
             evictionLock.unlock();
         }
     }
@@ -744,11 +747,11 @@ public class ConcurrentLinkedHashMap<K, V> extends AbstractMap<K, V> implements
     /**
      * Adds a node to the list and the data store. If an existing node is found, then its
      * value is updated if allowed.
-     * 
-     * @param key key with which the specified value is to be associated
-     * @param value value to be associated with the specified key
+     *
+     * @param key          key with which the specified value is to be associated
+     * @param value        value to be associated with the specified key
      * @param onlyIfAbsent a write is performed only if the key is not already associated
-     *            with a value
+     *                     with a value
      * @return the prior value in the data store or null if no mapping was found
      */
     V put(K key, V value, boolean onlyIfAbsent) {
@@ -758,17 +761,16 @@ public class ConcurrentLinkedHashMap<K, V> extends AbstractMap<K, V> implements
         final WeightedValue<V> weightedValue = new WeightedValue<>(value, weight);
         final Node node = new Node(key, weightedValue);
 
-        for (;;) {
+        for (; ; ) {
             final Node prior = data.putIfAbsent(node.key, node);
             if (prior == null) {
                 afterCompletion(new AddTask(node, weight));
                 return null;
-            }
-            else if (onlyIfAbsent) {
+            } else if (onlyIfAbsent) {
                 afterCompletion(new ReadTask(prior));
                 return prior.getValue();
             }
-            for (;;) {
+            for (; ; ) {
                 final WeightedValue<V> oldWeightedValue = prior.get();
                 if (!oldWeightedValue.isAlive()) {
                     break;
@@ -788,7 +790,8 @@ public class ConcurrentLinkedHashMap<K, V> extends AbstractMap<K, V> implements
 
     @Override
     public V remove(Object key) {
-    	if (key == null) return null; // this class does allow null to be used as a key or value (returning here prevents an NPE).
+        if (key == null)
+            return null; // this class does allow null to be used as a key or value (returning here prevents an NPE).
         final Node node = data.remove(key);
         if (node == null) {
             return null;
@@ -806,15 +809,14 @@ public class ConcurrentLinkedHashMap<K, V> extends AbstractMap<K, V> implements
         }
 
         WeightedValue<V> weightedValue = node.get();
-        for (;;) {
+        for (; ; ) {
             if (weightedValue.hasValue(value)) {
                 if (node.tryToRetire(weightedValue)) {
                     if (data.remove(key, node)) {
                         afterCompletion(new RemovalTask(node));
                         return true;
                     }
-                }
-                else {
+                } else {
                     weightedValue = node.get();
                     if (weightedValue.isAlive()) {
                         // retry as an intermediate update may have replaced the value
@@ -838,7 +840,7 @@ public class ConcurrentLinkedHashMap<K, V> extends AbstractMap<K, V> implements
         if (node == null) {
             return null;
         }
-        for (;;) {
+        for (; ; ) {
             WeightedValue<V> oldWeightedValue = node.get();
             if (!oldWeightedValue.isAlive()) {
                 return null;
@@ -865,7 +867,7 @@ public class ConcurrentLinkedHashMap<K, V> extends AbstractMap<K, V> implements
         if (node == null) {
             return false;
         }
-        for (;;) {
+        for (; ; ) {
             final WeightedValue<V> weightedValue = node.get();
             if (!weightedValue.isAlive() || !weightedValue.hasValue(oldValue)) {
                 return false;
@@ -885,99 +887,6 @@ public class ConcurrentLinkedHashMap<K, V> extends AbstractMap<K, V> implements
     public Set<K> keySet() {
         Set<K> ks = keySet;
         return (ks == null) ? (keySet = new KeySet()) : ks;
-    }
-
-    /**
-     * Returns a unmodifiable snapshot {@link Set} view of the keys contained in this map.
-     * The set's iterator returns the keys whose order of iteration is the ascending order
-     * in which its entries are considered eligible for retention, from the least-likely
-     * to be retained to the most-likely.
-     * <p>
-     * Beware that, unlike in {@link #keySet()}, obtaining the set is <em>NOT</em> a
-     * constant-time operation. Because of the asynchronous nature of the page replacement
-     * policy, determining the retention ordering requires a traversal of the keys.
-     * 
-     * @return an ascending snapshot view of the keys in this map
-     */
-    public Set<K> ascendingKeySet() {
-        return orderedKeySet(true, Integer.MAX_VALUE);
-    }
-
-    /**
-     * Returns an unmodifiable snapshot {@link Set} view of the keys contained in this
-     * map. The set's iterator returns the keys whose order of iteration is the ascending
-     * order in which its entries are considered eligible for retention, from the
-     * least-likely to be retained to the most-likely.
-     * <p>
-     * Beware that, unlike in {@link #keySet()}, obtaining the set is <em>NOT</em> a
-     * constant-time operation. Because of the asynchronous nature of the page replacement
-     * policy, determining the retention ordering requires a traversal of the keys.
-     * 
-     * @param limit the maximum size of the returned set
-     * @return a ascending snapshot view of the keys in this map
-     * @throws IllegalArgumentException if the limit is negative
-     */
-    public Set<K> ascendingKeySetWithLimit(int limit) {
-        return orderedKeySet(true, limit);
-    }
-
-    /**
-     * Returns an unmodifiable snapshot {@link Set} view of the keys contained in this
-     * map. The set's iterator returns the keys whose order of iteration is the descending
-     * order in which its entries are considered eligible for retention, from the
-     * most-likely to be retained to the least-likely.
-     * <p>
-     * Beware that, unlike in {@link #keySet()}, obtaining the set is <em>NOT</em> a
-     * constant-time operation. Because of the asynchronous nature of the page replacement
-     * policy, determining the retention ordering requires a traversal of the keys.
-     * 
-     * @return a descending snapshot view of the keys in this map
-     */
-    public Set<K> descendingKeySet() {
-        return orderedKeySet(false, Integer.MAX_VALUE);
-    }
-
-    /**
-     * Returns an unmodifiable snapshot {@link Set} view of the keys contained in this
-     * map. The set's iterator returns the keys whose order of iteration is the descending
-     * order in which its entries are considered eligible for retention, from the
-     * most-likely to be retained to the least-likely.
-     * <p>
-     * Beware that, unlike in {@link #keySet()}, obtaining the set is <em>NOT</em> a
-     * constant-time operation. Because of the asynchronous nature of the page replacement
-     * policy, determining the retention ordering requires a traversal of the keys.
-     * 
-     * @param limit the maximum size of the returned set
-     * @return a descending snapshot view of the keys in this map
-     * @throws IllegalArgumentException if the limit is negative
-     */
-    public Set<K> descendingKeySetWithLimit(int limit) {
-        return orderedKeySet(false, limit);
-    }
-
-    Set<K> orderedKeySet(boolean ascending, int limit) {
-        if (limit < 0) {
-            throw new IllegalArgumentException();
-        }
-        evictionLock.lock();
-        try {
-            drainBuffers(AMORTIZED_DRAIN_THRESHOLD);
-
-            int initialCapacity = (weigher == Weighers.singleton()) ? Math.min(
-                    limit,
-                    weightedSize()) : 16;
-            Set<K> keys = new LinkedHashSet<>(initialCapacity);
-            Iterator<Node> iterator = ascending
-                    ? evictionDeque.iterator()
-                    : evictionDeque.descendingIterator();
-            while (iterator.hasNext() && (limit > keys.size())) {
-                keys.add(iterator.next().key);
-            }
-            return Collections.unmodifiableSet(keys);
-        }
-        finally {
-            evictionLock.unlock();
-        }
     }
 
     @Override
@@ -1001,7 +910,7 @@ public class ConcurrentLinkedHashMap<K, V> extends AbstractMap<K, V> implements
      * Beware that obtaining the mappings is <em>NOT</em> a constant-time operation.
      * Because of the asynchronous nature of the page replacement policy, determining the
      * retention ordering requires a traversal of the entries.
-     * 
+     *
      * @return a ascending snapshot view of this map
      */
     public Map<K, V> ascendingMap() {
@@ -1017,7 +926,7 @@ public class ConcurrentLinkedHashMap<K, V> extends AbstractMap<K, V> implements
      * Beware that obtaining the mappings is <em>NOT</em> a constant-time operation.
      * Because of the asynchronous nature of the page replacement policy, determining the
      * retention ordering requires a traversal of the entries.
-     * 
+     *
      * @param limit the maximum size of the returned map
      * @return a ascending snapshot view of this map
      * @throws IllegalArgumentException if the limit is negative
@@ -1035,7 +944,7 @@ public class ConcurrentLinkedHashMap<K, V> extends AbstractMap<K, V> implements
      * Beware that obtaining the mappings is <em>NOT</em> a constant-time operation.
      * Because of the asynchronous nature of the page replacement policy, determining the
      * retention ordering requires a traversal of the entries.
-     * 
+     *
      * @return a descending snapshot view of this map
      */
     public Map<K, V> descendingMap() {
@@ -1051,7 +960,7 @@ public class ConcurrentLinkedHashMap<K, V> extends AbstractMap<K, V> implements
      * Beware that obtaining the mappings is <em>NOT</em> a constant-time operation.
      * Because of the asynchronous nature of the page replacement policy, determining the
      * retention ordering requires a traversal of the entries.
-     * 
+     *
      * @param limit the maximum size of the returned map
      * @return a descending snapshot view of this map
      * @throws IllegalArgumentException if the limit is negative
@@ -1080,22 +989,15 @@ public class ConcurrentLinkedHashMap<K, V> extends AbstractMap<K, V> implements
                 map.put(node.key, node.getValue());
             }
             return Collections.unmodifiableMap(map);
-        }
-        finally {
+        } finally {
             evictionLock.unlock();
         }
     }
 
-    /** A value, its weight, and the entry's status. */
-    static final class WeightedValue<V> {
-
-        final int weight;
-        final V value;
-
-        WeightedValue(V value, int weight) {
-            this.weight = weight;
-            this.value = value;
-        }
+    /**
+     * A value, its weight, and the entry's status.
+     */
+    record WeightedValue<V>(V value, int weight) {
 
         boolean hasValue(Object o) {
             return (o == value) || value.equals(o);
@@ -1107,28 +1009,12 @@ public class ConcurrentLinkedHashMap<K, V> extends AbstractMap<K, V> implements
         boolean isAlive() {
             return weight > 0;
         }
-
-        /**
-         * If the entry was removed from the hash-table and is awaiting removal from the
-         * page replacement policy.
-         */
-        boolean isRetired() {
-            return weight < 0;
-        }
-
-        /**
-         * If the entry was removed from the hash-table and the page replacement policy.
-         */
-        boolean isDead() {
-            return weight == 0;
-        }
     }
 
     /**
      * A node contains the key, the weighted value, and the linkage pointers on the
      * page-replacement algorithm's data structures.
      */
-    @SuppressWarnings("serial")
     final class Node extends AtomicReference<WeightedValue<V>> implements Linked<Node> {
 
         final K key;
@@ -1136,7 +1022,9 @@ public class ConcurrentLinkedHashMap<K, V> extends AbstractMap<K, V> implements
         Node prev;
         Node next;
 
-        /** Creates a new, unlinked node. */
+        /**
+         * Creates a new, unlinked node.
+         */
         Node(K key, WeightedValue<V> weightedValue) {
             super(weightedValue);
             this.key = key;
@@ -1158,7 +1046,9 @@ public class ConcurrentLinkedHashMap<K, V> extends AbstractMap<K, V> implements
             this.next = next;
         }
 
-        /** Retrieves the value held by the current <tt>WeightedValue</tt>. */
+        /**
+         * Retrieves the value held by the current <tt>WeightedValue</tt>.
+         */
         V getValue() {
             return get().value;
         }
@@ -1166,7 +1056,7 @@ public class ConcurrentLinkedHashMap<K, V> extends AbstractMap<K, V> implements
         /**
          * Attempts to transition the node from the <tt>alive</tt> state to the
          * <tt>retired</tt> state.
-         * 
+         *
          * @param expect the expected weighted value
          * @return if successful
          */
@@ -1185,7 +1075,7 @@ public class ConcurrentLinkedHashMap<K, V> extends AbstractMap<K, V> implements
          * <tt>retired</tt> state, if a valid transition.
          */
         void makeRetired() {
-            for (;;) {
+            for (; ; ) {
                 WeightedValue<V> current = get();
                 if (!current.isAlive()) {
                     return;
@@ -1204,7 +1094,7 @@ public class ConcurrentLinkedHashMap<K, V> extends AbstractMap<K, V> implements
          * <tt>weightedSize</tt>.
          */
         void makeDead() {
-            for (;;) {
+            for (; ; ) {
                 WeightedValue<V> current = get();
                 WeightedValue<V> dead = new WeightedValue<>(current.value, 0);
                 if (compareAndSet(current, dead)) {
@@ -1215,7 +1105,9 @@ public class ConcurrentLinkedHashMap<K, V> extends AbstractMap<K, V> implements
         }
     }
 
-    /** An adapter to safely externalize the keys. */
+    /**
+     * An adapter to safely externalize the keys.
+     */
     final class KeySet extends AbstractSet<K> {
 
         final ConcurrentLinkedHashMap<K, V> map = ConcurrentLinkedHashMap.this;
@@ -1256,7 +1148,9 @@ public class ConcurrentLinkedHashMap<K, V> extends AbstractMap<K, V> implements
         }
     }
 
-    /** An adapter to safely externalize the key iterator. */
+    /**
+     * An adapter to safely externalize the key iterator.
+     */
     final class KeyIterator implements Iterator<K> {
 
         final Iterator<K> iterator = data.keySet().iterator();
@@ -1280,7 +1174,9 @@ public class ConcurrentLinkedHashMap<K, V> extends AbstractMap<K, V> implements
         }
     }
 
-    /** An adapter to safely externalize the values. */
+    /**
+     * An adapter to safely externalize the values.
+     */
     final class Values extends AbstractCollection<V> {
 
         @Override
@@ -1304,7 +1200,9 @@ public class ConcurrentLinkedHashMap<K, V> extends AbstractMap<K, V> implements
         }
     }
 
-    /** An adapter to safely externalize the value iterator. */
+    /**
+     * An adapter to safely externalize the value iterator.
+     */
     final class ValueIterator implements Iterator<V> {
 
         final Iterator<Node> iterator = data.values().iterator();
@@ -1328,7 +1226,9 @@ public class ConcurrentLinkedHashMap<K, V> extends AbstractMap<K, V> implements
         }
     }
 
-    /** An adapter to safely externalize the entries. */
+    /**
+     * An adapter to safely externalize the entries.
+     */
     final class EntrySet extends AbstractSet<Entry<K, V>> {
 
         final ConcurrentLinkedHashMap<K, V> map = ConcurrentLinkedHashMap.this;
@@ -1365,15 +1265,16 @@ public class ConcurrentLinkedHashMap<K, V> extends AbstractMap<K, V> implements
 
         @Override
         public boolean remove(Object obj) {
-            if (!(obj instanceof Entry<?, ?>)) {
+            if (!(obj instanceof Entry<?, ?> entry)) {
                 return false;
             }
-            Entry<?, ?> entry = (Entry<?, ?>) obj;
             return map.remove(entry.getKey(), entry.getValue());
         }
     }
 
-    /** An adapter to safely externalize the entry iterator. */
+    /**
+     * An adapter to safely externalize the entry iterator.
+     */
     final class EntryIterator implements Iterator<Entry<K, V>> {
 
         final Iterator<Node> iterator = data.values().iterator();
@@ -1397,10 +1298,10 @@ public class ConcurrentLinkedHashMap<K, V> extends AbstractMap<K, V> implements
         }
     }
 
-    /** An entry that allows updates to write through to the map. */
+    /**
+     * An entry that allows updates to write through to the map.
+     */
     final class WriteThroughEntry extends AbstractMap.SimpleEntry<K, V> {
-
-        static final long serialVersionUID = 1;
 
         WriteThroughEntry(Node node) {
             super(node.key, node.getValue());
@@ -1411,43 +1312,15 @@ public class ConcurrentLinkedHashMap<K, V> extends AbstractMap<K, V> implements
             put(getKey(), value);
             return super.setValue(value);
         }
-
-        Object writeReplace() {
-            return new AbstractMap.SimpleEntry<>(this);
-        }
     }
 
-    /** A weigher that enforces that the weight falls within a valid range. */
-    static final class BoundedWeigher<V> implements Weigher<V>, Serializable {
+    /**
+     * A task that catches up the page replacement policy.
+     */
+    record CatchUpTask(WeakReference<ConcurrentLinkedHashMap<?, ?>> mapRef) implements Runnable {
 
-        static final long serialVersionUID = 1;
-        final Weigher<? super V> weigher;
-
-        BoundedWeigher(Weigher<? super V> weigher) {
-            checkNotNull(weigher);
-            this.weigher = weigher;
-        }
-
-        public int weightOf(V value) {
-            int weight = weigher.weightOf(value);
-            if ((weight < 1) || (weight > MAXIMUM_WEIGHT)) {
-                throw new IllegalArgumentException("invalid weight");
-            }
-            return weight;
-        }
-
-        Object writeReplace() {
-            return weigher;
-        }
-    }
-
-    /** A task that catches up the page replacement policy. */
-    static final class CatchUpTask implements Runnable {
-
-        final WeakReference<ConcurrentLinkedHashMap<?, ?>> mapRef;
-
-        CatchUpTask(ConcurrentLinkedHashMap<?, ?> map) {
-            this.mapRef = new WeakReference<ConcurrentLinkedHashMap<?, ?>>(map);
+        CatchUpTask(ConcurrentLinkedHashMap<?, ?> mapRef) {
+            this(new WeakReference<>(mapRef));
         }
 
         public void run() {
@@ -1465,7 +1338,9 @@ public class ConcurrentLinkedHashMap<K, V> extends AbstractMap<K, V> implements
         }
     }
 
-    /** An executor that is always terminated. */
+    /**
+     * An executor that is always terminated.
+     */
     static final class DisabledExecutorService extends AbstractExecutorService {
 
         public boolean isShutdown() {
@@ -1492,7 +1367,9 @@ public class ConcurrentLinkedHashMap<K, V> extends AbstractMap<K, V> implements
         }
     }
 
-    /** A queue that discards all additions and is always empty. */
+    /**
+     * A queue that discards all additions and is always empty.
+     */
     static final class DiscardingQueue extends AbstractQueue<Object> {
 
         @Override
@@ -1519,11 +1396,13 @@ public class ConcurrentLinkedHashMap<K, V> extends AbstractMap<K, V> implements
 
         @Override
         public Iterator<Object> iterator() {
-            return Collections.emptyList().iterator();
+            return Collections.emptyIterator();
         }
     }
 
-    /** A listener that ignores all notifications. */
+    /**
+     * A listener that ignores all notifications.
+     */
     enum DiscardingListener implements EvictionListener<Object, Object> {
         INSTANCE;
 
@@ -1531,23 +1410,35 @@ public class ConcurrentLinkedHashMap<K, V> extends AbstractMap<K, V> implements
         }
     }
 
-    /** An operation that can be lazily applied to the page replacement policy. */
+    /**
+     * An operation that can be lazily applied to the page replacement policy.
+     */
     interface Task extends Runnable {
 
-        /** The priority order. */
+        /**
+         * The priority order.
+         */
         int getOrder();
 
-        /** If the task represents an add, modify, or remove operation. */
+        /**
+         * If the task represents an add, modify, or remove operation.
+         */
         boolean isWrite();
 
-        /** Returns the next task on the link chain. */
+        /**
+         * Returns the next task on the link chain.
+         */
         Task getNext();
 
-        /** Sets the next task on the link chain. */
+        /**
+         * Sets the next task on the link chain.
+         */
         void setNext(Task task);
     }
 
-    /** A skeletal implementation of the <tt>Task</tt> interface. */
+    /**
+     * A skeletal implementation of the <tt>Task</tt> interface.
+     */
     abstract class AbstractTask implements Task {
 
         final int order;
@@ -1570,99 +1461,51 @@ public class ConcurrentLinkedHashMap<K, V> extends AbstractMap<K, V> implements
         }
     }
 
-    /* ---------------- Serialization Support -------------- */
-
-    static final long serialVersionUID = 1;
-
-    Object writeReplace() {
-        return new SerializationProxy<>(this);
-    }
-
-    private void readObject(ObjectInputStream stream) throws InvalidObjectException {
-        throw new InvalidObjectException("Proxy required");
-    }
-
-    /**
-     * A proxy that is serialized instead of the map. The page-replacement algorithm's
-     * data structures are not serialized so the deserialized instance contains only the
-     * entries. This is acceptable as caches hold transient data that is recomputable and
-     * serialization would tend to be used as a fast warm-up process.
-     */
-    static final class SerializationProxy<K, V> implements Serializable {
-
-        final EvictionListener<K, V> listener;
-        final Weigher<? super V> weigher;
-        final int concurrencyLevel;
-        final Map<K, V> data;
-        final int capacity;
-
-        SerializationProxy(ConcurrentLinkedHashMap<K, V> map) {
-            concurrencyLevel = map.concurrencyLevel;
-            data = new HashMap<>(map);
-            capacity = map.capacity;
-            listener = map.listener;
-            weigher = map.weigher;
-        }
-
-        Object readResolve() {
-            ConcurrentLinkedHashMap<K, V> map = new Builder<K, V>()
-                    .concurrencyLevel(concurrencyLevel)
-                    .maximumWeightedCapacity(capacity)
-                    .listener(listener)
-                    .weigher(weigher)
-                    .build();
-            map.putAll(data);
-            return map;
-        }
-
-        static final long serialVersionUID = 1;
-    }
-
     /* ---------------- Builder -------------- */
 
     /**
      * A builder that creates {@link ConcurrentLinkedHashMap} instances. It provides a
      * flexible approach for constructing customized instances with a named parameter
      * syntax. It can be used in the following manner:
-     * 
+     *
      * <pre>
-     * 
-     * 
-     * 
-     * 
-     * 
-     * 
-     * 
-     * 
-     * 
-     * 
-     * 
-     * 
-     * 
-     * 
-     * 
-     * 
-     * 
-     * 
-     * 
-     * 
-     * 
-     * 
-     * 
-     * 
-     * 
-     * 
-     * 
-     * 
-     * 
-     * 
-     * 
-     * 
-     * 
-     * 
-     * 
-     * 
-     * 
+     *
+     *
+     *
+     *
+     *
+     *
+     *
+     *
+     *
+     *
+     *
+     *
+     *
+     *
+     *
+     *
+     *
+     *
+     *
+     *
+     *
+     *
+     *
+     *
+     *
+     *
+     *
+     *
+     *
+     *
+     *
+     *
+     *
+     *
+     *
+     *
+     *
      * {
      *     &#064;code
      *     ConcurrentMap&lt;Vertex, Set&lt;Edge&gt;&gt; graph = new Builder&lt;Vertex, Set&lt;Edge&gt;&gt;()
@@ -1703,9 +1546,9 @@ public class ConcurrentLinkedHashMap<K, V> extends AbstractMap<K, V> implements
          * Specifies the initial capacity of the hash table (default <tt>16</tt>). This is
          * the number of key-value pairs that the hash table can hold before a resize
          * operation is required.
-         * 
+         *
          * @param initialCapacity the initial capacity used to size the hash table to
-         *            accommodate this many entries.
+         *                        accommodate this many entries.
          * @throws IllegalArgumentException if the initialCapacity is negative
          */
         public Builder<K, V> initialCapacity(int initialCapacity) {
@@ -1719,7 +1562,7 @@ public class ConcurrentLinkedHashMap<K, V> extends AbstractMap<K, V> implements
         /**
          * Specifies the maximum weighted capacity to coerce the map to and may exceed it
          * temporarily.
-         * 
+         *
          * @param capacity the weighted threshold to bound the map by
          * @throws IllegalArgumentException if the maximumWeightedCapacity is negative
          */
@@ -1735,10 +1578,10 @@ public class ConcurrentLinkedHashMap<K, V> extends AbstractMap<K, V> implements
          * Specifies the estimated number of concurrently updating threads. The
          * implementation performs internal sizing to try to accommodate this many threads
          * (default <tt>16</tt>).
-         * 
+         *
          * @param concurrencyLevel the estimated number of concurrently updating threads
          * @throws IllegalArgumentException if the concurrencyLevel is less than or equal
-         *             to zero
+         *                                  to zero
          */
         public Builder<K, V> concurrencyLevel(int concurrencyLevel) {
             if (concurrencyLevel <= 0) {
@@ -1751,28 +1594,13 @@ public class ConcurrentLinkedHashMap<K, V> extends AbstractMap<K, V> implements
         /**
          * Specifies an optional listener that is registered for notification when an
          * entry is evicted.
-         * 
+         *
          * @param listener the object to forward evicted entries to
          * @throws NullPointerException if the listener is null
          */
         public Builder<K, V> listener(EvictionListener<K, V> listener) {
             checkNotNull(listener);
             this.listener = listener;
-            return this;
-        }
-
-        /**
-         * Specifies an algorithm to determine how many the units of capacity a value
-         * consumes. The default algorithm bounds the map by the number of key-value pairs
-         * by giving each entry a weight of <tt>1</tt>.
-         * 
-         * @param weigher the algorithm to determine a value's weight
-         * @throws NullPointerException if the weigher is null
-         */
-        public Builder<K, V> weigher(Weigher<? super V> weigher) {
-            this.weigher = (weigher == Weighers.singleton())
-                    ? Weighers.<V> singleton()
-                    : new BoundedWeigher<>(weigher);
             return this;
         }
 
@@ -1788,11 +1616,11 @@ public class ConcurrentLinkedHashMap<K, V> extends AbstractMap<K, V> implements
          * <p>
          * A single-threaded {@link ScheduledExecutorService} should be sufficient for
          * catching up the page replacement policy in many maps.
-         * 
+         *
          * @param executor the executor to schedule on
-         * @param delay the delay between executions
-         * @param unit the time unit of the delay parameter
-         * @throws NullPointerException if the executor or time unit is null
+         * @param delay    the delay between executions
+         * @param unit     the time unit of the delay parameter
+         * @throws NullPointerException     if the executor or time unit is null
          * @throws IllegalArgumentException if the delay is less than or equal to zero
          */
         public Builder<K, V> catchup(
@@ -1812,10 +1640,10 @@ public class ConcurrentLinkedHashMap<K, V> extends AbstractMap<K, V> implements
 
         /**
          * Creates a new {@link ConcurrentLinkedHashMap} instance.
-         * 
-         * @throws IllegalStateException if the maximum weighted capacity was not set
+         *
+         * @throws IllegalStateException      if the maximum weighted capacity was not set
          * @throws RejectedExecutionException if an executor was specified and the
-         *             catch-up task cannot be scheduled for execution
+         *                                    catch-up task cannot be scheduled for execution
          */
         public ConcurrentLinkedHashMap<K, V> build() {
             if (capacity < 0) {

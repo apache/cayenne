@@ -42,7 +42,7 @@ public class NestedQueryCache implements QueryCache {
     protected QueryCache delegate;
     protected String namespace;
 
-    private static final int nextInt() {
+    private static int nextInt() {
         if (currentId == Integer.MAX_VALUE) {
             currentId = 0;
         }
