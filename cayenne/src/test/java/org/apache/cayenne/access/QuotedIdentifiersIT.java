@@ -19,10 +19,10 @@
 package org.apache.cayenne.access;
 
 import org.apache.cayenne.ObjectId;
+import org.apache.cayenne.Cayenne;
 import org.apache.cayenne.map.DbAttribute;
 import org.apache.cayenne.map.DbEntity;
 import org.apache.cayenne.query.EJBQLQuery;
-import org.apache.cayenne.query.ObjectIdQuery;
 import org.apache.cayenne.query.ObjectSelect;
 import org.apache.cayenne.query.UpdateBatchQuery;
 import org.apache.cayenne.testdo.quotemap.QuoteAdress;
@@ -38,6 +38,7 @@ import java.util.Date;
 import java.util.List;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
 
 public class QuotedIdentifiersIT {
 
@@ -139,14 +140,9 @@ public class QuotedIdentifiersIT {
                 .where(QuoteAdress.GROUP.eq("324")).select(env.context());
         assertEquals(1, objects7.size());
 
-        ObjectIdQuery queryObjectId = new ObjectIdQuery(ObjectId.of("QuoteAdress", QuoteAdress.GROUP.getName(), "324"));
-
-        List objects8 = env.context().performQuery(queryObjectId);
-        assertEquals(1, objects8.size());
-
-        ObjectIdQuery queryObjectId2 = new ObjectIdQuery(ObjectId.of("Quote_Person", "GROUP", "1111"));
-        List objects9 = env.context().performQuery(queryObjectId2);
-        assertEquals(1, objects9.size());
+        ObjectId addressId = ObjectId.of("QuoteAdress", QuoteAdress.GROUP.getName(), "324");
+        assertNotNull(Cayenne.objectForPK(env.context(), addressId));
+        assertNotNull(Cayenne.objectForPK(env.context(), ObjectId.of("Quote_Person", "GROUP", "1111")));
 
         Quote_Person quote_Person2 = ObjectSelect.query(Quote_Person.class)
                 .where(Quote_Person.NAME.eq("Name")).selectOne(env.context());

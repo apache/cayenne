@@ -18,10 +18,10 @@
  ****************************************************************/
 package org.apache.cayenne.commitlog;
 
-import org.apache.cayenne.DataChannel;
 import org.apache.cayenne.DataRow;
+import org.apache.cayenne.ObjectContext;
 import org.apache.cayenne.ObjectId;
-import org.apache.cayenne.QueryResponse;
+import org.apache.cayenne.access.ObjectStore;
 import org.apache.cayenne.commitlog.meta.CommitLogEntity;
 import org.apache.cayenne.commitlog.meta.CommitLogEntityFactory;
 import org.apache.cayenne.commitlog.model.MutableChangeMap;
@@ -29,12 +29,10 @@ import org.apache.cayenne.commitlog.model.MutableObjectChange;
 import org.apache.cayenne.commitlog.model.ObjectChangeType;
 import org.apache.cayenne.graph.GraphChangeHandler;
 import org.apache.cayenne.map.DbRelationship;
-import org.apache.cayenne.query.ObjectIdQuery;
 import org.apache.cayenne.reflect.*;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import java.util.List;
 
 class DeletedDiffProcessor implements GraphChangeHandler {
 
@@ -42,11 +40,11 @@ class DeletedDiffProcessor implements GraphChangeHandler {
 
 	private CommitLogEntityFactory entityFactory;
 	private MutableChangeMap changeSet;
-	private DataChannel channel;
+	private ObjectContext context;
 
-	DeletedDiffProcessor(MutableChangeMap changeSet, DataChannel channel, CommitLogEntityFactory entityFactory) {
+	DeletedDiffProcessor(MutableChangeMap changeSet, ObjectContext context, CommitLogEntityFactory entityFactory) {
 		this.changeSet = changeSet;
-		this.channel = channel;
+		this.context = context;
 		this.entityFactory = entityFactory;
 	}
 
@@ -56,20 +54,14 @@ class DeletedDiffProcessor implements GraphChangeHandler {
 
 		final MutableObjectChange objectChangeSet = changeSet.getOrCreate(id, ObjectChangeType.DELETE);
 
-		ObjectIdQuery query = new ObjectIdQuery(id, true, ObjectIdQuery.CACHE);
-		QueryResponse result = channel.onQuery(null, query, false);
-
-		@SuppressWarnings("unchecked")
-		List<DataRow> rows = (List<DataRow>)result.firstList();
-
-		if (rows.isEmpty()) {
+		// the committed state is in the snapshot cache (or the DB), never in the deleted object itself
+		DataRow row = context.getGraphManager() instanceof ObjectStore store ? store.getSnapshot(id) : null;
+		if (row == null) {
 			LOGGER.warn("No DB snapshot for object to be deleted, no changes will be recorded. ID: {}", id);
 			return;
 		}
 
-		final DataRow row = rows.get(0);
-
-		ClassDescriptor descriptor = channel.getEntityResolver().getClassDescriptor(id.getEntityName());
+		ClassDescriptor descriptor = context.getEntityResolver().getClassDescriptor(id.getEntityName());
 		final CommitLogEntity entity = entityFactory.getEntity(id);
 
 		descriptor.visitProperties(new PropertyVisitor() {

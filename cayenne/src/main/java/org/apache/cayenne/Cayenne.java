@@ -19,9 +19,10 @@
 package org.apache.cayenne;
 
 import org.apache.cayenne.exp.path.CayennePath;
+import org.apache.cayenne.graph.GraphManager;
 import org.apache.cayenne.map.DbEntity;
+import org.apache.cayenne.map.EntityInheritanceTree;
 import org.apache.cayenne.map.ObjEntity;
-import org.apache.cayenne.query.ObjectIdQuery;
 import org.apache.cayenne.query.Query;
 import org.apache.cayenne.reflect.ClassDescriptor;
 import org.apache.cayenne.reflect.PropertyDescriptor;
@@ -447,7 +448,20 @@ public class Cayenne {
      *             if more than one object matched ObjectId.
      */
     public static Object objectForPK(ObjectContext context, ObjectId id) {
-        return objectForQuery(context, new ObjectIdQuery(id, false, ObjectIdQuery.CACHE));
+
+        // a resolved object registered in the context needs no lookup down the channel stack. A HOLLOW object does,
+        // as its row may no longer exist. Objects are registered under the ids of their concrete entities, so check
+        // the ids of the subentities too
+        GraphManager graphManager = context.getGraphManager();
+        EntityInheritanceTree inheritanceTree = context.getEntityResolver().getInheritanceTree(id.getEntityName());
+        for (ObjectId candidateId : inheritanceTree.polymorphicIds(id)) {
+            if (graphManager.getNode(candidateId) instanceof Persistent object
+                    && object.getPersistenceState() != PersistenceState.HOLLOW) {
+                return object;
+            }
+        }
+
+        return context.getChannel().onIdQuery(context, id);
     }
 
     /**

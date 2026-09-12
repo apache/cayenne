@@ -20,7 +20,7 @@
 package org.apache.cayenne;
 
 import org.apache.cayenne.access.DataContext;
-import org.apache.cayenne.query.ObjectIdQuery;
+import org.apache.cayenne.query.ObjectSelect;
 import org.apache.cayenne.testdo.relationships_to_one_fk.ToOneFK1;
 import org.apache.cayenne.testdo.relationships_to_one_fk.ToOneFK2;
 import org.apache.cayenne.unit.CayenneProjects;
@@ -53,6 +53,13 @@ public class CDOOneToOneFKIT {
         context1 = (DataContext) env.runtime().newContext();
     }
 
+    /**
+     * Fetches the object from the database, refreshing any state cached in the given context.
+     */
+    private static ToOneFK2 refetch(ObjectContext context, ToOneFK2 object) {
+        return ObjectSelect.query(ToOneFK2.class).where(ToOneFK2.SELF.eqId(object.getObjectId())).selectOne(context);
+    }
+
     @Test
     public void readRelationship() {
         ToOneFK2 src = context.newObject(ToOneFK2.class);
@@ -82,11 +89,7 @@ public class CDOOneToOneFKIT {
         context.commitChanges();
 
         // test database data
-        ObjectIdQuery refetch = new ObjectIdQuery(
-                src.getObjectId(),
-                false,
-                ObjectIdQuery.CACHE_REFRESH);
-        ToOneFK2 src2 = (ToOneFK2) Cayenne.objectForQuery(context1, refetch);
+        ToOneFK2 src2 = refetch(context1, src);
 
         // *** TESTING THIS ***
         assertNull(src2.getToOneToFK());
@@ -98,11 +101,7 @@ public class CDOOneToOneFKIT {
         context.commitChanges();
 
         // test database data
-        ObjectIdQuery refetch = new ObjectIdQuery(
-                src.getObjectId(),
-                false,
-                ObjectIdQuery.CACHE_REFRESH);
-        ToOneFK2 src2 = (ToOneFK2) Cayenne.objectForQuery(context1, refetch);
+        ToOneFK2 src2 = refetch(context1, src);
         assertNull(src2.getToOneToFK());
         assertEquals(src.getObjectId(), src2.getObjectId());
 
@@ -112,11 +111,7 @@ public class CDOOneToOneFKIT {
 
         context.commitChanges();
 
-        refetch = new ObjectIdQuery(
-                src.getObjectId(),
-                false,
-                ObjectIdQuery.CACHE_REFRESH);
-        src2 = (ToOneFK2) Cayenne.objectForQuery(context1, refetch);
+        src2 = refetch(context1, src);
         assertNull(src2.getToOneToFK());
         assertEquals(src.getObjectId(), src2.getObjectId());
     }
@@ -138,11 +133,7 @@ public class CDOOneToOneFKIT {
         context.commitChanges();
 
         // test database data
-        ObjectIdQuery refetch = new ObjectIdQuery(
-                src.getObjectId(),
-                false,
-                ObjectIdQuery.CACHE_REFRESH);
-        ToOneFK2 src2 = (ToOneFK2) Cayenne.objectForQuery(context1, refetch);
+        ToOneFK2 src2 = refetch(context1, src);
         ToOneFK1 target2 = src2.getToOneToFK();
         assertNotNull(target2);
         assertEquals(src.getObjectId(), src2.getObjectId());
@@ -164,11 +155,7 @@ public class CDOOneToOneFKIT {
         context.commitChanges();
 
         // test database data
-        ObjectIdQuery refetch = new ObjectIdQuery(
-                src.getObjectId(),
-                false,
-                ObjectIdQuery.CACHE_REFRESH);
-        ToOneFK2 src2 = (ToOneFK2) Cayenne.objectForQuery(context1, refetch);
+        ToOneFK2 src2 = refetch(context1, src);
         ToOneFK1 target2 = src2.getToOneToFK();
         assertNotNull(target2);
         assertEquals(src.getObjectId(), src2.getObjectId());
@@ -182,11 +169,7 @@ public class CDOOneToOneFKIT {
         src.setToOneToFK(target);
         context.commitChanges();
 
-        ObjectIdQuery refetch = new ObjectIdQuery(
-                src.getObjectId(),
-                false,
-                ObjectIdQuery.CACHE_REFRESH);
-        ToOneFK2 src2 = (ToOneFK2) Cayenne.objectForQuery(context1, refetch);
+        ToOneFK2 src2 = refetch(context1, src);
 
         assertTrue(src2.readPropertyDirectly("toOneToFK") instanceof Fault);
 
@@ -208,11 +191,7 @@ public class CDOOneToOneFKIT {
 
         // test database data
 
-        ObjectIdQuery refetch = new ObjectIdQuery(
-                src.getObjectId(),
-                false,
-                ObjectIdQuery.CACHE_REFRESH);
-        ToOneFK2 src2 = (ToOneFK2) Cayenne.objectForQuery(context1, refetch);
+        ToOneFK2 src2 = refetch(context1, src);
         assertNull(src.getToOneToFK());
         assertEquals(src.getObjectId(), src2.getObjectId());
     }

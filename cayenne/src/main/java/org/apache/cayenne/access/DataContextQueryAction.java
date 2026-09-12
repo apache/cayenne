@@ -19,16 +19,11 @@
 
 package org.apache.cayenne.access;
 
-import org.apache.cayenne.ObjectId;
-import org.apache.cayenne.PersistenceState;
-import org.apache.cayenne.Persistent;
 import org.apache.cayenne.QueryResponse;
 import org.apache.cayenne.cache.QueryCache;
 import org.apache.cayenne.cache.QueryCacheEntryFactory;
 import org.apache.cayenne.map.DbEntity;
-import org.apache.cayenne.map.EntityInheritanceTree;
 import org.apache.cayenne.query.EntityResultSegment;
-import org.apache.cayenne.query.ObjectIdQuery;
 import org.apache.cayenne.query.Query;
 import org.apache.cayenne.query.QueryCacheStrategy;
 import org.apache.cayenne.query.QueryMetadata;
@@ -62,10 +57,8 @@ class DataContextQueryAction {
      */
     public QueryResponse execute() {
         if (interceptIteratedQuery() != DONE) {
-            if (interceptOIDQuery() != DONE) {
-                if (interceptLocalCache() != DONE) {
-                    executePostCache();
-                }
+            if (interceptLocalCache() != DONE) {
+                executePostCache();
             }
         }
 
@@ -86,71 +79,6 @@ class DataContextQueryAction {
         }
     }
 
-
-    /**
-     * Handles {@link ObjectIdQuery}, properly handling data row fetches.
-     */
-    protected boolean interceptOIDQuery() {
-        if (query instanceof ObjectIdQuery oidQuery) {
-
-            if (!oidQuery.isFetchMandatory()) {
-                Object object = polymorphicObjectFromCache(oidQuery.getObjectId());
-                if (object != null) {
-
-                    // TODO: andrus, 10/14/2006 - obtaining a row from an object is the
-                    // only piece that makes this method different from a plain cache
-                    // lookup. This is used in NEW objects sorting on insert. It would be
-                    // nice to implement an alternative algorithm that wouldn't require
-                    // this hack.
-                    if (oidQuery.isFetchingDataRows()) {
-                        object = context.currentSnapshot((Persistent) object);
-                    }
-                    // do not return hollow objects
-                    else if (((Persistent) object).getPersistenceState() == PersistenceState.HOLLOW) {
-                        return !DONE;
-                    }
-
-                    this.response = new ListResponse(object);
-                    return DONE;
-                }
-            }
-        }
-
-        return !DONE;
-    }
-
-    // TODO: bunch of copy/paset from DataDomainQueryAction
-    protected Object polymorphicObjectFromCache(ObjectId superOid) {
-        Object object = context.getGraphManager().getNode(superOid);
-        if (object != null) {
-            return object;
-        }
-
-        EntityInheritanceTree inheritanceTree = context.getEntityResolver().getInheritanceTree(superOid.getEntityName());
-        if (!inheritanceTree.getChildren().isEmpty()) {
-            object = polymorphicObjectFromCache(inheritanceTree, superOid);
-        }
-
-        return object;
-    }
-
-    private Object polymorphicObjectFromCache(EntityInheritanceTree superNode, ObjectId superOid) {
-
-        for (EntityInheritanceTree child : superNode.getChildren()) {
-            ObjectId id = ObjectId.of(child.getEntity().getName(), superOid);
-            Object object = context.getGraphManager().getNode(id);
-            if (object != null) {
-                return object;
-            }
-
-            object = polymorphicObjectFromCache(child, superOid);
-            if (object != null) {
-                return object;
-            }
-        }
-
-        return null;
-    }
 
     protected boolean interceptPaginatedQuery() {
         if (metadata.getPageSize() > 0) {

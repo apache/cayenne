@@ -24,7 +24,6 @@ import org.apache.cayenne.ObjectId;
 import org.apache.cayenne.PersistenceState;
 import org.apache.cayenne.Persistent;
 import org.apache.cayenne.access.DataContext;
-import org.apache.cayenne.query.ObjectIdQuery;
 import org.apache.cayenne.runtime.CayenneRuntime;
 import org.apache.cayenne.test.jdbc.TableHelper;
 import org.apache.cayenne.testdo.testmap.Artist;
@@ -89,18 +88,9 @@ public class ShallowMergeOperationIT {
         final ShallowMergeOperation op = new ShallowMergeOperation(childContext);
 
         int modifiedId = 33003;
-        final Artist modified = (Artist) Cayenne.objectForQuery(
-                context,
-                new ObjectIdQuery(ObjectId.of(
-                        "Artist",
-                        Artist.ARTIST_ID_PK_COLUMN,
-                        modifiedId)));
-        final Artist peerModified = (Artist) Cayenne.objectForQuery(
-                childContext,
-                new ObjectIdQuery(ObjectId.of(
-                        "Artist",
-                        Artist.ARTIST_ID_PK_COLUMN,
-                        modifiedId)));
+        ObjectId modifiedOid = ObjectId.of("Artist", Artist.ARTIST_ID_PK_COLUMN, modifiedId);
+        final Artist modified = (Artist) Cayenne.objectForPK(context, modifiedOid);
+        final Artist peerModified = (Artist) Cayenne.objectForPK(childContext, modifiedOid);
 
         modified.setArtistName("M1");
         peerModified.setArtistName("M2");

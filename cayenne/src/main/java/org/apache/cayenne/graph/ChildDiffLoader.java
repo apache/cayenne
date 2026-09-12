@@ -20,16 +20,12 @@
 package org.apache.cayenne.graph;
 
 import java.util.Collection;
-import java.util.List;
 import java.util.Map;
 
 import org.apache.cayenne.CayenneRuntimeException;
 import org.apache.cayenne.ObjectContext;
 import org.apache.cayenne.ObjectId;
 import org.apache.cayenne.Persistent;
-import org.apache.cayenne.QueryResponse;
-import org.apache.cayenne.query.ObjectIdQuery;
-import org.apache.cayenne.query.Query;
 import org.apache.cayenne.reflect.ArcProperty;
 import org.apache.cayenne.reflect.AttributeProperty;
 import org.apache.cayenne.reflect.ClassDescriptor;
@@ -262,17 +258,12 @@ public class ChildDiffLoader implements GraphChangeHandler {
 		}
 
 		// skip context cache lookup, go directly to its channel
-		Query query = new ObjectIdQuery((ObjectId) nodeId);
-		QueryResponse response = context.getChannel().onQuery(context, query, false);
-		List<?> objects = response.firstList();
-
-		if (objects.size() == 0) {
+		object = context.getChannel().onIdQuery(context, id);
+		if (object == null) {
 			throw new CayenneRuntimeException("No object for ID exists: %s", nodeId);
-		} else if (objects.size() > 1) {
-			throw new CayenneRuntimeException("Expected zero or one object, instead query matched: %d", objects.size());
 		}
 
-		return (Persistent) objects.get(0);
+		return object;
 	}
 
 	protected Persistent findObjectInCollection(Object nodeId, Object toManyHolder) {

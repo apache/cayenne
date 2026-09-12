@@ -45,7 +45,6 @@ import org.apache.cayenne.map.LifecycleEvent;
 import org.apache.cayenne.map.ObjEntity;
 import org.apache.cayenne.query.MappedExec;
 import org.apache.cayenne.query.MappedSelect;
-import org.apache.cayenne.query.ObjectIdQuery;
 import org.apache.cayenne.query.Query;
 import org.apache.cayenne.query.QueryMetadata;
 import org.apache.cayenne.query.Select;
@@ -441,13 +440,9 @@ public class DataContext implements ObjectContext {
     public void prepareForAccess(Persistent object, String property, boolean lazyFaulting) {
         if (object.getPersistenceState() == PersistenceState.HOLLOW) {
             ObjectId oid = object.getObjectId();
-            List<?> objects = performQuery(new ObjectIdQuery(oid, false, ObjectIdQuery.CACHE));
-            if (objects.isEmpty()) {
+            if (getChannel().onIdQuery(this, oid) == null) {
                 throw new FaultFailureException(
                         "Error resolving fault, no matching row exists in the database for ObjectId: " + oid);
-            } else if (objects.size() > 1) {
-                throw new FaultFailureException(
-                        "Error resolving fault, more than one row exists in the database for ObjectId: " + oid);
             }
             // here once was a sanity check for the COMMITTED state, that was faulty due to the race condition
         }

@@ -65,30 +65,26 @@ public class CommitLogFilter implements DataChannelSyncFilter {
 
 		MutableChangeMap changes = new MutableChangeMap();
 
-		// passing DataDomain, not ObjectContext to speed things up
-		// and avoid capturing changed state when fetching snapshots
-		DataChannel channel = originatingContext.getChannel();
-
-		beforeCommit(changes, channel, beforeDiff);
+		beforeCommit(changes, originatingContext, beforeDiff);
 		GraphDiff afterDiff = filterChain.onSync(originatingContext, beforeDiff, syncType);
-		afterCommit(changes, channel, beforeDiff, afterDiff);
+		afterCommit(changes, originatingContext, beforeDiff, afterDiff);
 		notifyListeners(originatingContext, changes);
 
 		return afterDiff;
 	}
 
-	private void beforeCommit(MutableChangeMap changes, DataChannel channel, GraphDiff contextDiff) {
+	private void beforeCommit(MutableChangeMap changes, ObjectContext context, GraphDiff contextDiff) {
 
 		// capture snapshots of deleted objects before they are purged from cache
 		GraphChangeHandler handler = new DiffFilter(entityFactory,
-				new DeletedDiffProcessor(changes, channel, entityFactory));
+				new DeletedDiffProcessor(changes, context, entityFactory));
 		contextDiff.apply(handler);
 	}
 
-	private void afterCommit(MutableChangeMap changes, DataChannel channel, GraphDiff contextDiff, GraphDiff dbDiff) {
+	private void afterCommit(MutableChangeMap changes, ObjectContext context, GraphDiff contextDiff, GraphDiff dbDiff) {
 
 		GraphChangeHandler handler = new DiffFilter(entityFactory,
-				new DiffProcessor(changes, channel.getEntityResolver()));
+				new DiffProcessor(changes, context.getEntityResolver()));
 		contextDiff.apply(handler);
 		dbDiff.apply(handler);
 	}

@@ -23,7 +23,6 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-import org.apache.cayenne.Cayenne;
 import org.apache.cayenne.ObjectContext;
 import org.apache.cayenne.ObjectId;
 import org.apache.cayenne.Persistent;
@@ -32,7 +31,6 @@ import org.apache.cayenne.exp.ExpressionFactory;
 import org.apache.cayenne.lifecycle.id.EntityIdCoder;
 import org.apache.cayenne.map.EntityResolver;
 import org.apache.cayenne.map.ObjEntity;
-import org.apache.cayenne.query.ObjectIdQuery;
 import org.apache.cayenne.query.ObjectSelect;
 
 /**
@@ -85,7 +83,9 @@ class ObjectIdBatchFault {
 			ObjEntity entity = resolver.getObjEntity(entityName);
 			ObjectId id = new EntityIdCoder(entity).toObjectId(uuid);
 
-			Object object = Cayenne.objectForQuery(context, new ObjectIdQuery(id));
+			Persistent object = ObjectSelect.query(Persistent.class, entityName)
+					.where(ExpressionFactory.matchAllDbExp(id.getIdSnapshot(), Expression.EQUAL_TO))
+					.selectOne(context);
 			if (object == null) {
 				return Collections.emptyMap();
 			} else {

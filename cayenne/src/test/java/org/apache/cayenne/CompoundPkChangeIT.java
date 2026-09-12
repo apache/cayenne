@@ -18,7 +18,7 @@
  ****************************************************************/
 package org.apache.cayenne;
 
-import org.apache.cayenne.query.ObjectIdQuery;
+import org.apache.cayenne.query.ObjectSelect;
 import org.apache.cayenne.testdo.compound.CompoundPkTestEntity;
 import org.apache.cayenne.unit.CayenneProjects;
 import org.apache.cayenne.unit.CayenneTestsEnv;
@@ -38,6 +38,15 @@ public class CompoundPkChangeIT {
     private static final String key1v3 = "-key1-v3-";
     private static final String key2v3 = "-key2-v3-";
 
+    /**
+     * Fetches the object from the database, refreshing its cached state.
+     */
+    private static CompoundPkTestEntity refetch(CompoundPkTestEntity object) {
+        return ObjectSelect.query(CompoundPkTestEntity.class)
+                .where(CompoundPkTestEntity.SELF.eqId(object.getObjectId()))
+                .selectOne(env.context());
+    }
+
     @Test
     public void compoundPkChangeSingleElement() throws Exception {
 
@@ -54,11 +63,7 @@ public class CompoundPkChangeIT {
         assertEquals(key2v1, object.getObjectId().getIdSnapshot().get(
                 CompoundPkTestEntity.KEY2_PK_COLUMN));
 
-        ObjectIdQuery refetch = new ObjectIdQuery(
-                object.getObjectId(),
-                false,
-                ObjectIdQuery.CACHE_REFRESH);
-        refreshedObject = (CompoundPkTestEntity) Cayenne.objectForQuery(env.context(), refetch);
+        refreshedObject = refetch(object);
         assertEquals(object.getObjectId(), refreshedObject.getObjectId());
 
         object.setKey2(key2v2);
@@ -69,12 +74,7 @@ public class CompoundPkChangeIT {
         assertEquals(key2v2, object.getObjectId().getIdSnapshot().get(
                 CompoundPkTestEntity.KEY2_PK_COLUMN));
 
-        ObjectIdQuery refetch1 = new ObjectIdQuery(
-                object.getObjectId(),
-                false,
-                ObjectIdQuery.CACHE_REFRESH);
-        refreshedObject = (CompoundPkTestEntity) Cayenne
-                .objectForQuery(env.context(), refetch1);
+        refreshedObject = refetch(object);
         assertEquals(object.getObjectId(), refreshedObject.getObjectId());
 
         object.setKey2(key2v3);
@@ -85,12 +85,7 @@ public class CompoundPkChangeIT {
         assertEquals(key2v3, object.getObjectId().getIdSnapshot().get(
                 CompoundPkTestEntity.KEY2_PK_COLUMN));
 
-        ObjectIdQuery refetch2 = new ObjectIdQuery(
-                object.getObjectId(),
-                false,
-                ObjectIdQuery.CACHE_REFRESH);
-        refreshedObject = (CompoundPkTestEntity) Cayenne
-                .objectForQuery(env.context(), refetch2);
+        refreshedObject = refetch(object);
         assertEquals(object.getObjectId(), refreshedObject.getObjectId());
     }
 
@@ -110,11 +105,7 @@ public class CompoundPkChangeIT {
         assertEquals(key2v1, object.getObjectId().getIdSnapshot().get(
                 CompoundPkTestEntity.KEY2_PK_COLUMN));
 
-        ObjectIdQuery refetch = new ObjectIdQuery(
-                object.getObjectId(),
-                false,
-                ObjectIdQuery.CACHE_REFRESH);
-        refreshedObject = (CompoundPkTestEntity) Cayenne.objectForQuery(env.context(), refetch);
+        refreshedObject = refetch(object);
         assertEquals(object.getObjectId(), refreshedObject.getObjectId());
 
         object.setKey1(key1v2);
@@ -126,12 +117,7 @@ public class CompoundPkChangeIT {
         assertEquals(key2v2, object.getObjectId().getIdSnapshot().get(
                 CompoundPkTestEntity.KEY2_PK_COLUMN));
 
-        ObjectIdQuery refetch1 = new ObjectIdQuery(
-                object.getObjectId(),
-                false,
-                ObjectIdQuery.CACHE_REFRESH);
-        refreshedObject = (CompoundPkTestEntity) Cayenne
-                .objectForQuery(env.context(), refetch1);
+        refreshedObject = refetch(object);
         assertEquals(object.getObjectId(), refreshedObject.getObjectId());
 
         object.setKey1(key1v3);
@@ -143,12 +129,7 @@ public class CompoundPkChangeIT {
         assertEquals(key2v3, object.getObjectId().getIdSnapshot().get(
                 CompoundPkTestEntity.KEY2_PK_COLUMN));
 
-        ObjectIdQuery refetch2 = new ObjectIdQuery(
-                object.getObjectId(),
-                false,
-                ObjectIdQuery.CACHE_REFRESH);
-        refreshedObject = (CompoundPkTestEntity) Cayenne
-                .objectForQuery(env.context(), refetch2);
+        refreshedObject = refetch(object);
         assertEquals(object.getObjectId(), refreshedObject.getObjectId());
     }
 }

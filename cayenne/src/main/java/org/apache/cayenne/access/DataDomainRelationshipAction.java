@@ -28,7 +28,6 @@ import org.apache.cayenne.exp.Expression;
 import org.apache.cayenne.exp.ExpressionFactory;
 import org.apache.cayenne.map.DbEntity;
 import org.apache.cayenne.map.DbRelationship;
-import org.apache.cayenne.map.EntityResolver;
 import org.apache.cayenne.map.LifecycleEvent;
 import org.apache.cayenne.map.ObjRelationship;
 import org.apache.cayenne.query.ObjectSelect;
@@ -51,7 +50,6 @@ class DataDomainRelationshipAction {
     private final DataContext context;
     private final ObjectId sourceId;
     private final String relationshipName;
-    private final DataRowStore cache;
 
     DataDomainRelationshipAction(DataDomain domain, ObjectContext context, ObjectId sourceId,
                                  String relationshipName) {
@@ -65,11 +63,6 @@ class DataDomainRelationshipAction {
         this.context = dataContext;
         this.sourceId = sourceId;
         this.relationshipName = relationshipName;
-
-        // cache may be shared or unique for the ObjectContext
-        this.cache = dataContext.getObjectStore().getDataRowCache() != null
-                ? dataContext.getObjectStore().getDataRowCache()
-                : domain.getSharedSnapshotCache();
     }
 
     List<Persistent> execute() {
@@ -114,11 +107,8 @@ class DataDomainRelationshipAction {
             return null;
         }
 
-        if (cache == null) {
-            return null;
-        }
-
-        DataRow sourceRow = cache.getCachedSnapshot(sourceId);
+        ObjectStore objectStore = context.getObjectStore();
+        DataRow sourceRow = objectStore.getCachedSnapshot(sourceId);
         if (sourceRow == null) {
             return null;
         }
@@ -130,16 +120,14 @@ class DataDomainRelationshipAction {
             return new ArrayList<>(1);
         }
 
-        // target id resolution (unlike source) should be polymorphic
-        EntityResolver resolver = domain.getEntityResolver();
-        DataRow targetRow = DataDomainQueryAction.polymorphicRowFromCache(cache, resolver, targetId);
+        DataRow targetRow = objectStore.getCachedSnapshot(targetId);
         if (targetRow != null) {
             return objectsFromCachedRows(arc, List.of(targetRow));
         }
 
         // check whether a non-null FK is enough to assume non-null target, and if so, create a hollow object without
         // going to the database. Never pass a partial snapshot to ObjectResolver (CAY-724).
-        if (relationship.isSourceDefiningTargetPrecenseAndType(resolver)) {
+        if (relationship.isSourceDefiningTargetPrecenseAndType(domain.getEntityResolver())) {
             List<Persistent> result = new ArrayList<>(1);
             result.add(context.findOrCreateObject(targetId));
             return result;

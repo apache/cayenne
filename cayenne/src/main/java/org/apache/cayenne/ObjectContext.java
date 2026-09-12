@@ -178,7 +178,7 @@ public interface ObjectContext {
      * Executes a selecting query, returning a list of persistent objects or data rows.
      */
     // TODO: this will need to be deprecated at some point. The reason we can't do that yet is that
-    //  EJBQLQuery, SQLTemplate, ObjectIdQuery do not implement "Select".
+    //  EJBQLQuery, SQLTemplate do not implement "Select".
     //  Those queries should eventually go away
     List performQuery(Query query);
 

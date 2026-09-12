@@ -26,7 +26,6 @@ import org.apache.cayenne.map.DataMap;
 import org.apache.cayenne.map.SQLResult;
 import org.apache.cayenne.query.CapsStrategy;
 import org.apache.cayenne.query.EJBQLQuery;
-import org.apache.cayenne.query.ObjectIdQuery;
 import org.apache.cayenne.query.ObjectSelect;
 import org.apache.cayenne.query.SQLTemplate;
 import org.apache.cayenne.test.jdbc.TableHelper;
@@ -142,7 +141,8 @@ public class CayenneIT {
 
         assertNull(env.context().getGraphManager().getNode(id));
 
-        Object object = Cayenne.objectForQuery(env.context(), new ObjectIdQuery(id));
+        ObjectSelect<Artist> query = ObjectSelect.query(Artist.class).where(Artist.SELF.eqId(id));
+        Object object = Cayenne.objectForQuery(env.context(), query);
 
         assertNotNull(object);
         assertInstanceOf(Artist.class, object);
@@ -167,8 +167,8 @@ public class CayenneIT {
 
         ObjectId id = ObjectId.of("Artist", Artist.ARTIST_ID_PK_COLUMN, 44001);
 
-        Object object = Cayenne.objectForQuery(env.context(), new ObjectIdQuery(id));
-        assertNull(object);
+        ObjectSelect<Artist> query = ObjectSelect.query(Artist.class).where(Artist.SELF.eqId(id));
+        assertNull(Cayenne.objectForQuery(env.context(), query));
     }
 
     @Test

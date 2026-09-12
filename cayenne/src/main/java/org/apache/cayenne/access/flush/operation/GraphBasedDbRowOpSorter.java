@@ -27,7 +27,6 @@ import java.util.Map;
 
 import org.apache.cayenne.DataRow;
 import org.apache.cayenne.Persistent;
-import org.apache.cayenne.QueryResponse;
 import org.apache.cayenne.access.DataDomain;
 import org.apache.cayenne.access.ObjectStore;
 import org.apache.cayenne.access.flush.EffectiveOpId;
@@ -40,7 +39,6 @@ import org.apache.cayenne.map.DbEntity;
 import org.apache.cayenne.map.DbJoin;
 import org.apache.cayenne.map.DbRelationship;
 import org.apache.cayenne.map.EntityResolver;
-import org.apache.cayenne.query.ObjectIdQuery;
 import org.apache.cayenne.util.SingleEntryMap;
 
 /**
@@ -271,16 +269,15 @@ public class GraphBasedDbRowOpSorter implements DbRowOpSorter {
         }
 
         private Map<String, Object> getCachedSnapshot(Persistent object) {
-            ObjectIdQuery query = new ObjectIdQuery(object.getObjectId(), true, ObjectIdQuery.CACHE);
-            QueryResponse response = object.getObjectContext().getChannel().onQuery(null, query, false);
-            @SuppressWarnings("unchecked")
-            List<DataRow> result = (List<DataRow>) response.firstList();
-            if (result == null || result.isEmpty()) {
+            // the committed state is in the snapshot cache (or the DB), never in the object itself
+            DataRow dataRow = object.getObjectContext().getGraphManager() instanceof ObjectStore store
+                    ? store.getSnapshot(object.getObjectId())
+                    : null;
+            if (dataRow == null) {
                 return Collections.emptyMap();
             }
 
             // copy snapshot as we can modify it later
-            DataRow dataRow = result.get(0);
             int joinSize = relationship.getJoins().size();
             Map<String, Object> snapshot = joinSize == 1
                     ? new SingleEntryMap<>(relationship.getJoins().get(0).getSourceName())

@@ -24,6 +24,7 @@ import org.apache.cayenne.DataRow;
 import org.apache.cayenne.MockPersistentObject;
 import org.apache.cayenne.ObjectId;
 import org.apache.cayenne.Persistent;
+import org.apache.cayenne.test.jdbc.TableHelper;
 import org.apache.cayenne.testdo.testmap.Artist;
 import org.apache.cayenne.testdo.testmap.Gallery;
 import org.apache.cayenne.testdo.testmap.Painting;
@@ -89,6 +90,60 @@ public class ObjectStoreIT {
 
         // in the future this may not be the case
         assertNull(env.context().getObjectStore().getCachedSnapshot(oid));
+    }
+
+    @Test
+    public void getSnapshot_CacheMiss() throws Exception {
+        TableHelper tArtist = env.table("ARTIST", "ARTIST_ID", "ARTIST_NAME");
+        tArtist.insert(1, "a1");
+
+        ObjectStore store = env.context().getObjectStore();
+        ObjectId oid = ObjectId.of("Artist", Artist.ARTIST_ID_PK_COLUMN, 1);
+
+        assertNull(store.getCachedSnapshot(oid));
+
+        DataRow row = store.getSnapshot(oid);
+        assertNotNull(row);
+        assertEquals("a1", row.get("ARTIST_NAME"));
+    }
+
+    @Test
+    public void getSnapshot_NoMatchingRow() {
+        ObjectStore store = env.context().getObjectStore();
+        assertNull(store.getSnapshot(ObjectId.of("Artist", Artist.ARTIST_ID_PK_COLUMN, 1)));
+        assertNull(store.getSnapshot(ObjectId.of("Artist")));
+    }
+
+    @Test
+    public void getSnapshot_NestedContext_ParentObjectState() throws Exception {
+        TableHelper tArtist = env.table("ARTIST", "ARTIST_ID", "ARTIST_NAME");
+        tArtist.insert(1, "a1");
+
+        Artist a = Cayenne.objectForPK(env.context(), Artist.class, 1);
+        a.setArtistName("a2");
+
+        DataContext child = (DataContext) env.runtime().newContext(env.context());
+        env.runWithQueriesBlocked(() -> {
+            // uncommitted parent state is the committed state from the child perspective
+            DataRow row = child.getObjectStore().getCachedSnapshot(a.getObjectId());
+            assertNotNull(row);
+            assertEquals("a2", row.get("ARTIST_NAME"));
+        });
+    }
+
+    @Test
+    public void getSnapshot_NestedContext_ParentCache() throws Exception {
+        TableHelper tArtist = env.table("ARTIST", "ARTIST_ID", "ARTIST_NAME");
+        tArtist.insert(1, "a1");
+
+        DataContext child = (DataContext) env.runtime().newContext(env.context());
+        ObjectId oid = ObjectId.of("Artist", Artist.ARTIST_ID_PK_COLUMN, 1);
+
+        assertNull(child.getObjectStore().getCachedSnapshot(oid));
+
+        DataRow row = child.getObjectStore().getSnapshot(oid);
+        assertNotNull(row);
+        assertEquals("a1", row.get("ARTIST_NAME"));
     }
 
     @Test

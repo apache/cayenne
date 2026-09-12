@@ -19,6 +19,7 @@
 
 package org.apache.cayenne.access;
 
+import org.apache.cayenne.Cayenne;
 import org.apache.cayenne.CayenneRuntimeException;
 import org.apache.cayenne.DataChannel;
 import org.apache.cayenne.ObjectContext;
@@ -86,6 +87,14 @@ public record DataContextChannel(DataContext context) implements DataChannel {
         checkChildContext(childContext);
 
         context.invalidateIds(objectIds);
+    }
+
+    @Override
+    public Persistent onIdQuery(ObjectContext childContext, ObjectId id) {
+        checkChildContext(childContext);
+
+        Persistent object = (Persistent) Cayenne.objectForPK(context, id);
+        return object != null ? new ShallowMergeOperation(childContext).merge(object) : null;
     }
 
     @Override

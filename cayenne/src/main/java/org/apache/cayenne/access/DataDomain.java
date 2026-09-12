@@ -384,6 +384,17 @@ public class DataDomain implements DataChannel {
     }
 
     /**
+     * Resolves an object from the snapshot cache, or from the database if the cache lookup fails.
+     *
+     * @since 5.0
+     */
+    @Override
+    public Persistent onIdQuery(ObjectContext context, ObjectId id) {
+        checkStopped();
+        return new DataDomainIdQueryAction(this, context, id).execute();
+    }
+
+    /**
      * Resolves a relationship from the snapshot cache, or from the database if the cache lookup fails.
      *
      * @since 5.0

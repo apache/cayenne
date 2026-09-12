@@ -24,7 +24,7 @@ import org.apache.cayenne.DataRow;
 import org.apache.cayenne.ObjectContext;
 import org.apache.cayenne.ObjectId;
 import org.apache.cayenne.Persistent;
-import org.apache.cayenne.QueryResponse;
+import org.apache.cayenne.access.ObjectStore;
 import org.apache.cayenne.access.flush.operation.DbRowOp;
 import org.apache.cayenne.ashwood.graph.Digraph;
 import org.apache.cayenne.ashwood.graph.IndegreeTopologicalSort;
@@ -38,7 +38,6 @@ import org.apache.cayenne.map.EntityResolver;
 import org.apache.cayenne.map.EntitySorter;
 import org.apache.cayenne.map.ObjEntity;
 import org.apache.cayenne.map.ObjRelationship;
-import org.apache.cayenne.query.ObjectIdQuery;
 import org.apache.cayenne.reflect.ClassDescriptor;
 
 import java.util.ArrayList;
@@ -282,14 +281,12 @@ public class AshwoodEntitySorter implements EntitySorter {
 			return null;
 		}
 
-		ObjectIdQuery query = new ObjectIdQuery(object.getObjectId(), true, ObjectIdQuery.CACHE);
-		QueryResponse response = context.getChannel().onQuery(null, query, false);
-		List<?> result = response.firstList();
-		if (result == null || result.isEmpty()) {
+		DataRow snapshot = context.getGraphManager() instanceof ObjectStore store
+				? store.getSnapshot(object.getObjectId())
+				: null;
+		if (snapshot == null) {
 			return null;
 		}
-
-		DataRow snapshot = (DataRow) result.getFirst();
 
 		ObjectId id = snapshot.createTargetObjectId(targetEntityName, finalRel);
 

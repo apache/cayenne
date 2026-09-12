@@ -121,6 +121,11 @@ public class DataContextDecoratedStackIT {
         }
 
         @Override
+        public Persistent onIdQuery(ObjectContext context, ObjectId id) {
+            return channel.onIdQuery(context, id);
+        }
+
+        @Override
         public List<? extends Persistent> onResolveRelationship(ObjectContext context, ObjectId sourceId, String relationshipName) {
             return channel.onResolveRelationship(context, sourceId, relationshipName);
         }

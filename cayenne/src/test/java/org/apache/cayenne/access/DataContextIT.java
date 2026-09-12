@@ -28,7 +28,6 @@ import org.apache.cayenne.Persistent;
 import org.apache.cayenne.exp.ExpressionFactory;
 import org.apache.cayenne.map.EntityResolver;
 import org.apache.cayenne.query.EJBQLQuery;
-import org.apache.cayenne.query.ObjectIdQuery;
 import org.apache.cayenne.query.ObjectSelect;
 import org.apache.cayenne.query.Query;
 import org.apache.cayenne.query.QueryMetadata;
@@ -196,7 +195,7 @@ public class DataContextIT {
 		// CAY-96 bug report)
 
         ObjectId eId = ObjectId.of("Exhibit", Exhibit.EXHIBIT_ID_PK_COLUMN, 2);
-		Exhibit e = (Exhibit) context.performQuery(new ObjectIdQuery(eId)).get(0);
+		Exhibit e = (Exhibit) Cayenne.objectForPK(context, eId);
 
 		assertTrue(e.readPropertyDirectly(Exhibit.TO_GALLERY.getName()) instanceof Fault);
 

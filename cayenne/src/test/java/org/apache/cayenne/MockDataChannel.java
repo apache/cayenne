@@ -99,6 +99,12 @@ public class MockDataChannel implements DataChannel {
         requestObjects.add(objectIds);
     }
 
+    public Persistent onIdQuery(ObjectContext context, ObjectId id) {
+        requestObjects.add(id);
+        List<?> objects = response != null ? response.firstList() : null;
+        return objects == null || objects.isEmpty() ? null : (Persistent) objects.getFirst();
+    }
+
     public List<Persistent> onResolveRelationship(ObjectContext context, ObjectId sourceId,
                                                   String relationshipName) {
         requestObjects.add(sourceId);

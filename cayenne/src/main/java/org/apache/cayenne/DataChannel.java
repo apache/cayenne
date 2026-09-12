@@ -118,6 +118,21 @@ public interface DataChannel {
     void onInvalidate(ObjectContext context, Collection<ObjectId> objectIds);
 
     /**
+     * Resolves an object by id, returning it registered with the originating context. The object is looked up in the
+     * caches down the channel stack before being fetched from the database, so the returned object may reflect a
+     * cached state.
+     * <p>
+     * This is a callback invoked by a child context to resolve a HOLLOW object, or to look up an object it has no
+     * registered copy of. Application code should call {@link Cayenne#objectForPK(ObjectContext, ObjectId)} instead.
+     *
+     * @param context an ObjectContext that originated the request and that the returned object belongs to.
+     * @param id      id of the object to resolve.
+     * @return the object registered with the originating context, or null if no matching row exists.
+     * @since 5.0
+     */
+    Persistent onIdQuery(ObjectContext context, ObjectId id);
+
+    /**
      * Resolves objects related to a given object via a mapped relationship, returning them registered with the
      * originating context.
      *

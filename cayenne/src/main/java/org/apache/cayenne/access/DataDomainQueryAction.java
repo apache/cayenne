@@ -35,12 +35,9 @@ import org.apache.cayenne.di.AdhocObjectFactory;
 import org.apache.cayenne.exp.path.CayennePath;
 import org.apache.cayenne.map.DataMap;
 import org.apache.cayenne.map.Embeddable;
-import org.apache.cayenne.map.EntityInheritanceTree;
-import org.apache.cayenne.map.EntityResolver;
 import org.apache.cayenne.map.LifecycleEvent;
 import org.apache.cayenne.query.EmbeddableResultSegment;
 import org.apache.cayenne.query.EntityResultSegment;
-import org.apache.cayenne.query.ObjectIdQuery;
 import org.apache.cayenne.query.PrefetchSelectQuery;
 import org.apache.cayenne.query.PrefetchTreeNode;
 import org.apache.cayenne.query.Query;
@@ -90,7 +87,6 @@ class DataDomainQueryAction implements QueryRouter, OperationObserver {
     private final Query query;
     private final QueryMetadata metadata;
     private final AdhocObjectFactory objectFactory;
-    private final DataRowStore cache;
 
     private QueryResponse response;
     private GenericResponse fullResponse;
@@ -98,7 +94,6 @@ class DataDomainQueryAction implements QueryRouter, OperationObserver {
     private boolean iteratorExclusiveConnection;
     private Map<CayennePath, List<?>> prefetchResultsByPath;
     private Map<DataNode, Collection<Query>> queriesByNode;
-    private boolean noObjectConversion;
 
     // the latest statement reported via nextStatement, used to correlate a failure with a specific SQL statement
     private TranslatedStatement statement;
@@ -124,21 +119,14 @@ class DataDomainQueryAction implements QueryRouter, OperationObserver {
         this.metadata = query.getMetaData(domain.getEntityResolver());
         this.context = (DataContext) context;
         this.objectFactory = domain.getObjectFactory();
-
-        // cache may be shared or unique for the ObjectContext
-        this.cache = this.context != null && this.context.getObjectStore().getDataRowCache() != null
-                ? this.context.getObjectStore().getDataRowCache()
-                : domain.getSharedSnapshotCache();
     }
 
     QueryResponse execute() {
 
         // run chain...
         if (interceptIteratedQuery() != DONE) {
-            if (interceptOIDQuery() != DONE) {
-                if (interceptSharedCache() != DONE) {
-                    runQueryInTransaction();
-                }
+            if (interceptSharedCache() != DONE) {
+                runQueryInTransaction();
             }
         }
 
@@ -209,78 +197,6 @@ class DataDomainQueryAction implements QueryRouter, OperationObserver {
         }
 
         fullResponse.reset();
-    }
-
-    private boolean interceptOIDQuery() {
-        if (query instanceof ObjectIdQuery oidQuery) {
-
-            ObjectId oid = oidQuery.getObjectId();
-
-            // special handling of temp ids...
-            // Return an empty list immediately so that upstream code could throw FaultFailureException, etc.
-            // Don't attempt to translate and run the query. See for instance CAY-1651
-            if (oid.isTemporary() && !oid.isReplacementIdAttached()) {
-                response = new ListResponse();
-                return DONE;
-            }
-
-            DataRow row = null;
-
-            if (cache != null && !oidQuery.isFetchMandatory()) {
-                row = polymorphicRowFromCache(cache, domain.getEntityResolver(), oid);
-            }
-
-            // refresh is forced or not found in cache
-            if (row == null) {
-                if (oidQuery.isFetchAllowed()) {
-                    runQueryInTransaction();
-                } else {
-                    response = new ListResponse();
-                }
-            } else {
-                response = new ListResponse(row);
-            }
-
-            return DONE;
-        }
-
-        return !DONE;
-    }
-
-    /**
-     * Looks up a cached snapshot for the given id, checking the ids of the entity subclasses if the entity has any.
-     */
-    static DataRow polymorphicRowFromCache(DataRowStore cache, EntityResolver resolver, ObjectId superOid) {
-        DataRow row = cache.getCachedSnapshot(superOid);
-        if (row != null) {
-            return row;
-        }
-
-        EntityInheritanceTree inheritanceTree = resolver.getInheritanceTree(superOid.getEntityName());
-        if (!inheritanceTree.getChildren().isEmpty()) {
-            row = polymorphicRowFromCache(cache, inheritanceTree, superOid);
-        }
-
-        return row;
-    }
-
-    private static DataRow polymorphicRowFromCache(DataRowStore cache, EntityInheritanceTree superNode,
-                                                   ObjectId superOid) {
-
-        for (EntityInheritanceTree child : superNode.getChildren()) {
-            ObjectId id = ObjectId.of(child.getEntity().getName(), superOid);
-            DataRow row = cache.getCachedSnapshot(id);
-            if (row != null) {
-                return row;
-            }
-
-            row = polymorphicRowFromCache(cache, child, superOid);
-            if (row != null) {
-                return row;
-            }
-        }
-
-        return null;
     }
 
     /*
@@ -418,9 +334,7 @@ class DataDomainQueryAction implements QueryRouter, OperationObserver {
     }
 
     private boolean noObjectConversion() {
-        return context == null
-                || noObjectConversion
-                || metadata.getPageSize() > 0;
+        return context == null || metadata.getPageSize() > 0;
     }
 
     private ObjectConversionStrategy<?, ?> getConverter() {

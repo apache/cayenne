@@ -28,6 +28,8 @@ import org.apache.cayenne.Persistent;
 import org.apache.cayenne.access.ObjectDiff.ArcOperation;
 import org.apache.cayenne.access.event.SnapshotEvent;
 import org.apache.cayenne.access.event.SnapshotEventListener;
+import org.apache.cayenne.exp.Expression;
+import org.apache.cayenne.exp.ExpressionFactory;
 import org.apache.cayenne.exp.path.CayennePath;
 import org.apache.cayenne.graph.ArcId;
 import org.apache.cayenne.graph.ChildDiffLoader;
@@ -38,7 +40,8 @@ import org.apache.cayenne.graph.NodeCreateOperation;
 import org.apache.cayenne.graph.NodeDeleteOperation;
 import org.apache.cayenne.graph.NodeDiff;
 import org.apache.cayenne.graph.NodePropertyChangeOperation;
-import org.apache.cayenne.query.ObjectIdQuery;
+import org.apache.cayenne.map.EntityInheritanceTree;
+import org.apache.cayenne.query.ObjectSelect;
 import org.apache.cayenne.reflect.AttributeProperty;
 import org.apache.cayenne.reflect.ClassDescriptor;
 import org.apache.cayenne.reflect.PropertyVisitor;
@@ -433,41 +436,94 @@ public class ObjectStore implements SnapshotEventListener, GraphManager {
     }
 
     /**
-     * Returns a snapshot for ObjectId from the underlying snapshot cache. If cache
-     * contains no snapshot, a null is returned.
+     * Returns a snapshot for ObjectId from the underlying snapshot cache, or null if the cache contains no snapshot.
+     * Snapshots are keyed by the concrete entity of an object, so an id of a superentity is matched against the ids of
+     * its subentities as well. A nested context has no snapshot cache of its own, so it takes the current state of the
+     * object in the parent context as the snapshot.
      * 
      * @since 1.1
      */
     public DataRow getCachedSnapshot(ObjectId oid) {
 
-        if (context != null && context.getChannel() != null) {
-            ObjectIdQuery query = new ObjectIdQuery(oid, true, ObjectIdQuery.CACHE_NOREFRESH);
-            List<?> results = context.getChannel().onQuery(context, query, false).firstList();
-            return results.isEmpty() ? null : (DataRow) results.get(0);
-        }
-        else {
+        if (context == null) {
             return null;
         }
+
+        if (dataRowCache == null) {
+            return parentContextSnapshot(oid, false);
+        }
+
+        EntityInheritanceTree inheritanceTree = context.getEntityResolver().getInheritanceTree(oid.getEntityName());
+        for (ObjectId candidateId : inheritanceTree.polymorphicIds(oid)) {
+            DataRow row = dataRowCache.getCachedSnapshot(candidateId);
+            if (row != null) {
+                return row;
+            }
+        }
+
+        return null;
     }
 
     /**
-     * Returns a snapshot for ObjectId from the underlying snapshot cache. If cache
-     * contains no snapshot, it will attempt fetching it using provided DataNode. If
-     * fetch attempt fails or inconsistent data is returned, underlying cache will throw a
-     * CayenneRuntimeException.
+     * Returns a snapshot for ObjectId from the underlying snapshot cache. If the cache contains no snapshot, it is
+     * fetched from the database. Returns null if no matching row exists.
      * 
      * @since 1.2
      */
     public synchronized DataRow getSnapshot(ObjectId oid) {
 
-        if (context != null && context.getChannel() != null) {
-            ObjectIdQuery query = new ObjectIdQuery(oid, true, ObjectIdQuery.CACHE);
-            List<?> results = context.getChannel().onQuery(context, query, false).firstList();
-            return results.isEmpty() ? null : (DataRow) results.get(0);
-        }
-        else {
+        if (context == null) {
             return null;
         }
+
+        if (dataRowCache == null) {
+            return parentContextSnapshot(oid, true);
+        }
+
+        DataRow row = getCachedSnapshot(oid);
+        if (row != null) {
+            return row;
+        }
+
+        // a temporary id without a replacement can't match anything in the database
+        if (context.getChannel() == null || oid.isTemporary() && !oid.isReplacementIdAttached()) {
+            return null;
+        }
+
+        ObjectSelect<DataRow> query = ObjectSelect
+                .query(Persistent.class, oid.getEntityName())
+                .where(ExpressionFactory.matchAllDbExp(oid.getIdSnapshot(), Expression.EQUAL_TO))
+                .fetchDataRows();
+
+        List<?> rows = context.getChannel().onQuery(context, query, false).firstList();
+        return switch (rows.size()) {
+            case 0 -> null;
+            case 1 -> (DataRow) rows.getFirst();
+            default -> throw new CayenneRuntimeException(
+                    "Expected zero or one row for id %s, instead query matched: %d", oid, rows.size());
+        };
+    }
+
+    /**
+     * Resolves a snapshot for a context without a snapshot cache of its own, i.e. a nested context. From the nested
+     * context perspective, the parent context state is the committed state, so a snapshot is taken from the parent
+     * object if there's one, and is looked up in the parent context store otherwise.
+     */
+    private DataRow parentContextSnapshot(ObjectId oid, boolean fetch) {
+
+        if (!(context.getChannel() instanceof DataContextChannel(DataContext parent))) {
+            return null;
+        }
+
+        GraphManager parentGraph = parent.getGraphManager();
+        EntityInheritanceTree inheritanceTree = parent.getEntityResolver().getInheritanceTree(oid.getEntityName());
+        for (ObjectId candidateId : inheritanceTree.polymorphicIds(oid)) {
+            if (parentGraph.getNode(candidateId) instanceof Persistent parentObject) {
+                return parent.currentSnapshot(parentObject);
+            }
+        }
+
+        return fetch ? parent.getObjectStore().getSnapshot(oid) : parent.getObjectStore().getCachedSnapshot(oid);
     }
 
     /**

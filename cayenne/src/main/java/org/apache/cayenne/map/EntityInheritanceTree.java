@@ -20,11 +20,13 @@
 package org.apache.cayenne.map;
 
 import org.apache.cayenne.DataRow;
+import org.apache.cayenne.ObjectId;
 import org.apache.cayenne.exp.Expression;
 
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
+import java.util.List;
 
 /**
  * A tree structure representing inheritance hierarchy of an ObjEntity and its
@@ -162,6 +164,38 @@ public class EntityInheritanceTree {
 
         for (EntityInheritanceTree subentity : subentities) {
             subentity.appendSubentities(c);
+        }
+    }
+
+    /**
+     * Returns the ids that may identify an object with a given id in an object graph or a snapshot cache: the id
+     * itself, followed by the same id keyed by each subentity of this tree, depth-first. Objects and snapshots are
+     * keyed by the concrete entity of an object, so a lookup by an id of a superentity must check all of them.
+     *
+     * @param id an id keyed by the root entity of this tree.
+     * @since 5.0
+     */
+    public List<ObjectId> polymorphicIds(ObjectId id) {
+        if (subentities == null) {
+            return List.of(id);
+        }
+
+        List<ObjectId> ids = new ArrayList<>();
+        ids.add(id);
+        for (EntityInheritanceTree subentity : subentities) {
+            subentity.appendPolymorphicIds(ids, id);
+        }
+        return ids;
+    }
+
+    private void appendPolymorphicIds(List<ObjectId> ids, ObjectId id) {
+        ids.add(ObjectId.of(entity.getName(), id));
+        if (subentities == null) {
+            return;
+        }
+
+        for (EntityInheritanceTree subentity : subentities) {
+            subentity.appendPolymorphicIds(ids, id);
         }
     }
 

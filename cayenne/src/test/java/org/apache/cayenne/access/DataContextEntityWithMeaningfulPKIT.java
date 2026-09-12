@@ -24,7 +24,6 @@ import org.apache.cayenne.CayenneRuntimeException;
 import org.apache.cayenne.DataRow;
 import org.apache.cayenne.ObjectContext;
 import org.apache.cayenne.ObjectId;
-import org.apache.cayenne.query.ObjectIdQuery;
 import org.apache.cayenne.query.ObjectSelect;
 import org.apache.cayenne.runtime.CayenneRuntime;
 import org.apache.cayenne.testdo.meaningful_pk.MeaningfulPKDep;
@@ -67,11 +66,9 @@ public class DataContextEntityWithMeaningfulPKIT {
         obj.setDescr("aaa-aaa");
         context.commitChanges();
         ObjectId objId = ObjectId.of("MeaningfulPKTest1", MeaningfulPKTest1.PK_ATTRIBUTE_PK_COLUMN, 1000);
-        ObjectIdQuery q = new ObjectIdQuery(objId, true, ObjectIdQuery.CACHE_REFRESH);
-        @SuppressWarnings("unchecked")
-        List<DataRow> result = (List<DataRow>)context.performQuery(q);
-        assertEquals(1, result.size());
-        assertEquals(1000, result.get(0).get(MeaningfulPKTest1.PK_ATTRIBUTE_PK_COLUMN));
+        DataRow row = ObjectSelect.dataRowQuery(MeaningfulPKTest1.class, MeaningfulPKTest1.SELF.eqId(objId))
+                .selectOne(context);
+        assertEquals(1000, row.get(MeaningfulPKTest1.PK_ATTRIBUTE_PK_COLUMN));
     }
 
     @Test

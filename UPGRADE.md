@@ -148,6 +148,26 @@ Expression caseWhenExp = caseWhen(
    class generation templates no longer emit `serialVersionUID`, `writeObject` / `readObject` and
    `writeState` / `readState`.
 
+*  Per [CAY-3021](https://issues.apache.org/jira/browse/CAY-3021) `org.apache.cayenne.query.ObjectIdQuery` was removed.
+   It was an internal mechanism for resolving objects by id via the caches. Its use cases have direct replacements:
+
+  ```java
+  // object lookup via the caches (ObjectIdQuery.CACHE)
+  Artist a = (Artist) Cayenne.objectForPK(context, id);
+
+  // forced refresh from the database (ObjectIdQuery.CACHE_REFRESH)
+  Artist a = ObjectSelect.query(Artist.class).where(Artist.SELF.eqId(id)).selectOne(context);
+
+  // committed snapshot lookup (fetchingDataRows == true), from the snapshot cache or the database
+  DataRow row = context.getObjectStore().getSnapshot(id);
+
+  // committed snapshot lookup in the snapshot cache only (ObjectIdQuery.CACHE_NOREFRESH)
+  DataRow row = context.getObjectStore().getCachedSnapshot(id);
+  ```
+
+  Internally the object lookup is now a `DataChannel.onIdQuery(ObjectContext, ObjectId)` method. Custom `DataChannel`
+  implementations and decorators need to implement it.
+
 *  The `org.apache.cayenne.query.ParameterizedQuery` interface was removed, together with the `createQuery(Map)`
   methods of `SQLTemplate`, `ProcedureQuery` and `ObjectSelect` that implemented it. Applying parameters to a mapped
   query is now the job of the query descriptor - override `QueryDescriptor.buildQuery(Map)` if you have a custom
