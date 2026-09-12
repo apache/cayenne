@@ -21,7 +21,6 @@ package org.apache.cayenne.tx;
 
 import org.apache.cayenne.CayenneRuntimeException;
 import org.apache.cayenne.DataChannel;
-import org.apache.cayenne.DataChannelSyncCallbackAction;
 import org.apache.cayenne.DataChannelSyncFilter;
 import org.apache.cayenne.DataChannelSyncFilterChain;
 import org.apache.cayenne.ObjectContext;
@@ -42,28 +41,21 @@ public class TransactionFilter implements DataChannelSyncFilter {
     public GraphDiff onSync(ObjectContext originatingContext, GraphDiff changes, int syncType, DataChannelSyncFilterChain filterChain) {
         DataChannelSyncCallbackAction callbackAction = DataChannelSyncCallbackAction.getCallbackAction(
                 originatingContext.getEntityResolver().getCallbackRegistry(),
-                originatingContext.getGraphManager(),
+                originatingContext.getObjectStore(),
                 changes,
                 syncType
         );
 
         callbackAction.applyPreCommit();
 
-        GraphDiff result;
-        switch (syncType) {
-            case DataChannel.ROLLBACK_CASCADE_SYNC:
-                result = filterChain.onSync(originatingContext, changes, syncType);
-                break;
+        GraphDiff result = switch (syncType) {
+            case DataChannel.ROLLBACK_CASCADE_SYNC -> filterChain.onSync(originatingContext, changes, syncType);
 
             // including transaction handling logic
-            case DataChannel.FLUSH_NOCASCADE_SYNC:
-            case DataChannel.FLUSH_CASCADE_SYNC:
-                result = transactionManager.performInTransaction(() -> filterChain.onSync(originatingContext, changes, syncType));
-                break;
-
-            default:
-                throw new CayenneRuntimeException("Invalid synchronization type: %d", syncType);
-        }
+            case DataChannel.FLUSH_NOCASCADE_SYNC, DataChannel.FLUSH_CASCADE_SYNC ->
+                    transactionManager.performInTransaction(() -> filterChain.onSync(originatingContext, changes, syncType));
+            default -> throw new CayenneRuntimeException("Invalid synchronization type: %d", syncType);
+        };
 
         callbackAction.applyPostCommit();
         return result;

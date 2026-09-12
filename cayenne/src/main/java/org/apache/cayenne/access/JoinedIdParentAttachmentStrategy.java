@@ -25,7 +25,7 @@ import org.apache.cayenne.DataRow;
 import org.apache.cayenne.ObjectId;
 import org.apache.cayenne.Persistent;
 import org.apache.cayenne.exp.path.CayennePath;
-import org.apache.cayenne.graph.GraphManager;
+import org.apache.cayenne.ObjectStore;
 import org.apache.cayenne.map.ObjEntity;
 import org.apache.cayenne.reflect.ClassDescriptor;
 
@@ -38,9 +38,9 @@ class JoinedIdParentAttachmentStrategy implements ParentAttachmentStrategy {
     private final CayennePath relatedIdPrefix;
     private final Collection<ObjEntity> sourceEntities;
     private final PrefetchProcessorNode node;
-    private final GraphManager<Persistent> graphManager;
+    private final ObjectStore objectStore;
 
-    JoinedIdParentAttachmentStrategy(GraphManager<Persistent> graphManager, PrefetchProcessorNode node) {
+    JoinedIdParentAttachmentStrategy(ObjectStore objectStore, PrefetchProcessorNode node) {
         ClassDescriptor parentDescriptor = ((PrefetchProcessorNode) node.getParent())
                 .getResolver()
                 .getDescriptor();
@@ -53,7 +53,7 @@ class JoinedIdParentAttachmentStrategy implements ParentAttachmentStrategy {
         sourceEntities = parentDescriptor.getEntityInheritanceTree().allSubEntities();
 
         this.node = node;
-        this.graphManager = graphManager;
+        this.objectStore = objectStore;
     }
 
     public void linkToParent(DataRow row, Persistent object) {
@@ -70,7 +70,7 @@ class JoinedIdParentAttachmentStrategy implements ParentAttachmentStrategy {
                         , row, entity.getName(), relatedIdPrefix);
             }
 
-            parentObject = graphManager.getNode(id);
+            parentObject = objectStore.getNode(id);
             if (parentObject != null) {
                 break;
             }

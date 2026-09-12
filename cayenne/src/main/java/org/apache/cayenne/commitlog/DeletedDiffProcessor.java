@@ -21,7 +21,6 @@ package org.apache.cayenne.commitlog;
 import org.apache.cayenne.DataRow;
 import org.apache.cayenne.ObjectContext;
 import org.apache.cayenne.ObjectId;
-import org.apache.cayenne.access.ObjectStore;
 import org.apache.cayenne.commitlog.meta.CommitLogEntity;
 import org.apache.cayenne.commitlog.meta.CommitLogEntityFactory;
 import org.apache.cayenne.commitlog.model.MutableChangeMap;
@@ -55,7 +54,7 @@ class DeletedDiffProcessor implements GraphChangeHandler {
 		final MutableObjectChange objectChangeSet = changeSet.getOrCreate(id, ObjectChangeType.DELETE);
 
 		// the committed state is in the snapshot cache (or the DB), never in the deleted object itself
-		DataRow row = context.getGraphManager() instanceof ObjectStore store ? store.getSnapshot(id) : null;
+		DataRow row = context.getObjectStore().getSnapshot(id);
 		if (row == null) {
 			LOGGER.warn("No DB snapshot for object to be deleted, no changes will be recorded. ID: {}", id);
 			return;

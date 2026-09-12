@@ -40,7 +40,7 @@ import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.junit.jupiter.api.Assertions.assertNull;
 import static org.junit.jupiter.api.Assertions.assertSame;
 
-public class ObjectStoreIT {
+public class DataContextObjectStoreIT {
 
     @RegisterExtension
     static final CayenneTestsEnv env = CayenneTestsEnv.forProject(CayenneProjects.TESTMAP_PROJECT);
@@ -97,7 +97,7 @@ public class ObjectStoreIT {
         TableHelper tArtist = env.table("ARTIST", "ARTIST_ID", "ARTIST_NAME");
         tArtist.insert(1, "a1");
 
-        ObjectStore store = env.context().getObjectStore();
+        DataContextObjectStore store = env.context().getObjectStore();
         ObjectId oid = ObjectId.of("Artist", Artist.ARTIST_ID_PK_COLUMN, 1);
 
         assertNull(store.getCachedSnapshot(oid));
@@ -109,7 +109,7 @@ public class ObjectStoreIT {
 
     @Test
     public void getSnapshot_NoMatchingRow() {
-        ObjectStore store = env.context().getObjectStore();
+        DataContextObjectStore store = env.context().getObjectStore();
         assertNull(store.getSnapshot(ObjectId.of("Artist", Artist.ARTIST_ID_PK_COLUMN, 1)));
         assertNull(store.getSnapshot(ObjectId.of("Artist")));
     }

@@ -46,11 +46,11 @@ import java.util.Map.Entry;
  */
 public class ObjectStoreGraphDiff implements GraphDiff {
 
-    private ObjectStore objectStore;
+    private DataContextObjectStore objectStore;
     private GraphDiff resolvedDiff;
     private int lastSeenDiffId;
 
-    ObjectStoreGraphDiff(ObjectStore objectStore) {
+    ObjectStoreGraphDiff(DataContextObjectStore objectStore) {
         this.objectStore = objectStore;
         preprocess(objectStore);
     }
@@ -174,7 +174,7 @@ public class ObjectStoreGraphDiff implements GraphDiff {
 		}
 	}
 
-    private void preprocess(ObjectStore objectStore) {
+    private void preprocess(DataContextObjectStore objectStore) {
 
         Map<Object, ObjectDiff> changes = getChangesByObjectId();
         if (!changes.isEmpty()) {

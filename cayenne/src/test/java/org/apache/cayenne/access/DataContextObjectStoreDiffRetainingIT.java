@@ -34,7 +34,7 @@ import java.sql.Types;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.junit.jupiter.api.Assertions.assertNull;
 
-public class ObjectStoreDiffRetainingIT {
+public class DataContextObjectStoreDiffRetainingIT {
 
     @RegisterExtension
     static final CayenneTestsEnv env = CayenneTestsEnv.forProject(CayenneProjects.TESTMAP_PROJECT);
@@ -73,7 +73,7 @@ public class ObjectStoreDiffRetainingIT {
         createMixedDataSet();
 
         Artist a = Cayenne.objectForPK(context, Artist.class, 2000);
-        ObjectStore objectStore = context.getObjectStore();
+        DataContextObjectStore objectStore = context.getObjectStore();
 
         assertNull(objectStore.getChangesByObjectId().get(a.getObjectId()));
 
@@ -86,7 +86,7 @@ public class ObjectStoreDiffRetainingIT {
         createMixedDataSet();
 
         Artist a = Cayenne.objectForPK(context, Artist.class, 2000);
-        ObjectStore objectStore = context.getObjectStore();
+        DataContextObjectStore objectStore = context.getObjectStore();
 
         assertNull(objectStore.getChangesByObjectId().get(a.getObjectId()));
 

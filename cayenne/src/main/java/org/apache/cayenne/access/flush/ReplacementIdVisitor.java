@@ -24,7 +24,7 @@ import java.util.Map;
 import org.apache.cayenne.CayenneRuntimeException;
 import org.apache.cayenne.ObjectId;
 import org.apache.cayenne.Persistent;
-import org.apache.cayenne.access.ObjectStore;
+import org.apache.cayenne.access.DataContextObjectStore;
 import org.apache.cayenne.access.DeferredValue;
 import org.apache.cayenne.access.flush.operation.DbRowOp;
 import org.apache.cayenne.access.flush.operation.DbRowOpVisitor;
@@ -41,11 +41,11 @@ import org.apache.cayenne.reflect.AttributeProperty;
  */
 class ReplacementIdVisitor implements DbRowOpVisitor<Void> {
 
-    private final ObjectStore store;
+    private final DataContextObjectStore store;
     private final EntityResolver resolver;
     private final CompoundDiff result;
 
-    ReplacementIdVisitor(ObjectStore store, EntityResolver resolver, CompoundDiff result) {
+    ReplacementIdVisitor(DataContextObjectStore store, EntityResolver resolver, CompoundDiff result) {
         this.store = store;
         this.resolver = resolver;
         this.result = result;

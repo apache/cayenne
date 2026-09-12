@@ -35,7 +35,7 @@ import org.apache.cayenne.graph.ArcId;
 import org.apache.cayenne.graph.ChildDiffLoader;
 import org.apache.cayenne.graph.GraphChangeHandler;
 import org.apache.cayenne.graph.GraphDiff;
-import org.apache.cayenne.graph.GraphManager;
+import org.apache.cayenne.ObjectStore;
 import org.apache.cayenne.graph.NodeCreateOperation;
 import org.apache.cayenne.graph.NodeDeleteOperation;
 import org.apache.cayenne.graph.NodeDiff;
@@ -61,14 +61,12 @@ import java.util.Objects;
 import java.util.concurrent.ConcurrentHashMap;
 
 /**
- * ObjectStore stores objects using their ObjectId as a key. It works as a dedicated
- * object cache for a DataContext. Users rarely need to access ObjectStore directly, as
- * DataContext serves as a facade, providing cover methods for most ObjectStore
- * operations.
+ * {@link ObjectStore} of a {@link DataContext}. Stores objects using their ObjectId as a key and keeps their
+ * committed snapshots in sync with the shared {@link DataRowStore}.
  *
- * @since 1.0
+ * @since 5.0 renamed from ObjectStore
  */
-public class ObjectStore implements SnapshotEventListener, GraphManager<Persistent> {
+public class DataContextObjectStore implements ObjectStore, SnapshotEventListener {
 
     protected final DataContext context;
     protected final DataRowStore dataRowCache;
@@ -86,7 +84,7 @@ public class ObjectStore implements SnapshotEventListener, GraphManager<Persiste
     // original creation order
     int currentDiffId;
 
-    public ObjectStore(
+    public DataContextObjectStore(
             DataContext context,
             DataRowStore dataRowCache,
             Map<Object, Persistent> objectMap,
@@ -401,6 +399,7 @@ public class ObjectStore implements SnapshotEventListener, GraphManager<Persiste
      *
      * @since 1.1
      */
+    @Override
     public DataRow getCachedSnapshot(ObjectId oid) {
 
         if (dataRowCache == null) {
@@ -424,6 +423,7 @@ public class ObjectStore implements SnapshotEventListener, GraphManager<Persiste
      *
      * @since 1.2
      */
+    @Override
     public synchronized DataRow getSnapshot(ObjectId oid) {
 
         if (dataRowCache == null) {
@@ -465,10 +465,10 @@ public class ObjectStore implements SnapshotEventListener, GraphManager<Persiste
             return null;
         }
 
-        GraphManager<Persistent> parentGraph = parent.getGraphManager();
+        DataContextObjectStore parentStore = parent.getObjectStore();
         EntityInheritanceTree inheritanceTree = parent.getEntityResolver().getInheritanceTree(oid.getEntityName());
         for (ObjectId candidateId : inheritanceTree.polymorphicIds(oid)) {
-            Persistent parentObject = parentGraph.getNode(candidateId);
+            Persistent parentObject = parentStore.getNode(candidateId);
             if (parentObject != null) {
                 return parent.currentSnapshot(parentObject);
             }
@@ -491,6 +491,7 @@ public class ObjectStore implements SnapshotEventListener, GraphManager<Persiste
      * property to an equivalent value, this method will still think such object is
      * modified. Phantom modifications are only detected and discarded during commit.
      */
+    @Override
     public synchronized boolean hasChanges() {
         return !changes.isEmpty();
     }
@@ -499,6 +500,7 @@ public class ObjectStore implements SnapshotEventListener, GraphManager<Persiste
      * Return a subset of registered objects that are in a certain persistence state.
      * Collection is returned by copy.
      */
+    @Override
     public synchronized List<Persistent> objectsInState(int state) {
         List<Persistent> filteredObjects = new ArrayList<>();
 
@@ -774,7 +776,7 @@ public class ObjectStore implements SnapshotEventListener, GraphManager<Persiste
         }
     }
 
-    // *********** GraphManager Methods ********
+    // *********** ObjectStore Methods *********
     // =========================================
 
     /**

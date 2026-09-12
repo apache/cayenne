@@ -43,11 +43,11 @@ import java.util.Map;
 class DataContextSnapshotBuilder implements PropertyVisitor {
 
     private final EntityResolver resolver;
-    private final ObjectStore objectStore;
+    private final DataContextObjectStore objectStore;
     private final Persistent object;
     private DataRow snapshot;
 
-    DataContextSnapshotBuilder(EntityResolver resolver, ObjectStore objectStore, Persistent object) {
+    DataContextSnapshotBuilder(EntityResolver resolver, DataContextObjectStore objectStore, Persistent object) {
         this.resolver = resolver;
         this.objectStore = objectStore;
         this.object = object;

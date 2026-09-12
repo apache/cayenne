@@ -66,7 +66,7 @@ public class CayennePersistentObjectInContextIT {
         // double registration in the same context should be quietly ignored
         context.registerNewObject(object);
         assertSame(tempID, object.getObjectId());
-        assertSame(object, context.getGraphManager().getNode(tempID));
+        assertSame(object, context.getObjectStore().getNode(tempID));
 
         // registering in another context should throw an exception
         ObjectContext anotherContext = runtime.newContext();
@@ -176,7 +176,7 @@ public class CayennePersistentObjectInContextIT {
 
         context.commitChanges();
         assertEquals(PersistenceState.TRANSIENT, o1.getPersistenceState());
-        assertFalse(context.getGraphManager().registeredNodes().contains(o1));
+        assertFalse(context.getObjectStore().registeredNodes().contains(o1));
         assertNull(o1.getObjectContext());
     }
 
@@ -214,7 +214,7 @@ public class CayennePersistentObjectInContextIT {
 
         assertNotNull(a1);
         assertNotNull(a2);
-        assertEquals(1, context.getGraphManager().registeredNodes().size());
+        assertEquals(1, context.getObjectStore().registeredNodes().size());
         assertSame(a1, a2);
     }
 

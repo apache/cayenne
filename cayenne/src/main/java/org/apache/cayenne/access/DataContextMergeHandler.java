@@ -23,7 +23,7 @@ import org.apache.cayenne.DataChannelListener;
 import org.apache.cayenne.ObjectId;
 import org.apache.cayenne.PersistenceState;
 import org.apache.cayenne.Persistent;
-import org.apache.cayenne.access.ObjectStore.SnapshotEventDecorator;
+import org.apache.cayenne.access.DataContextObjectStore.SnapshotEventDecorator;
 import org.apache.cayenne.access.event.SnapshotEvent;
 import org.apache.cayenne.graph.ArcId;
 import org.apache.cayenne.graph.GraphChangeHandler;
@@ -144,7 +144,7 @@ class DataContextMergeHandler implements GraphChangeHandler, DataChannelListener
 
     @Override
     public void nodeRemoved(Object nodeId) {
-        ObjectStore os = context.getObjectStore();
+        DataContextObjectStore os = context.getObjectStore();
         synchronized (os) {
             os.processDeletedID((ObjectId) nodeId);
         }
@@ -157,7 +157,7 @@ class DataContextMergeHandler implements GraphChangeHandler, DataChannelListener
             Object oldValue,
             Object newValue) {
 
-        Persistent object = context.getGraphManager().getNode(nodeId);
+        Persistent object = context.getObjectStore().getNode(nodeId);
         if (object != null && object.getPersistenceState() != PersistenceState.HOLLOW) {
 
             // do not override local changes....
@@ -181,7 +181,7 @@ class DataContextMergeHandler implements GraphChangeHandler, DataChannelListener
     // works the same for add and remove as long as we don't get too smart per TODO below.
     private void arcChanged(Object nodeId, Object arcId) {
 
-        final Persistent source = context.getGraphManager().getNode(nodeId);
+        final Persistent source = context.getObjectStore().getNode(nodeId);
         if (source != null && source.getPersistenceState() != PersistenceState.HOLLOW) {
 
             final int state = source.getPersistenceState();

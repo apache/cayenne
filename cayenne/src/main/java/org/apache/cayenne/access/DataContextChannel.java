@@ -128,7 +128,7 @@ public record DataContextChannel(DataContext context) implements DataChannel {
      * channel chain.
      */
     private GraphDiff flushChildChanges(ObjectContext childContext, GraphDiff changes, boolean cascade) {
-        ObjectStore objectStore = context.getObjectStore();
+        DataContextObjectStore objectStore = context.getObjectStore();
 
         objectStore.childContextSyncStarted();
         try {

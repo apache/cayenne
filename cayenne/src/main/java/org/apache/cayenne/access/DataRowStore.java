@@ -162,7 +162,7 @@ public class DataRowStore {
 
                 if (modified == null) {
                     modified = new HashMap<>();
-                    eventPostedBy = object.getObjectContext().getGraphManager();
+                    eventPostedBy = object.getObjectContext().getObjectStore();
                 }
 
                 modified.put(oid, newSnapshot);

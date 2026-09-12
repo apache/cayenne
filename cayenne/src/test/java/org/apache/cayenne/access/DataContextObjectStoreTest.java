@@ -33,9 +33,9 @@ import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 
-public class ObjectStoreTest {
+public class DataContextObjectStoreTest {
 
-    private ObjectStore objectStore;
+    private DataContextObjectStore objectStore;
 
     @BeforeEach
     public void before() {

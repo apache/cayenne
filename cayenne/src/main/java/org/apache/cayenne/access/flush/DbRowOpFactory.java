@@ -23,7 +23,7 @@ import org.apache.cayenne.CayenneRuntimeException;
 import org.apache.cayenne.ObjectId;
 import org.apache.cayenne.Persistent;
 import org.apache.cayenne.access.ObjectDiff;
-import org.apache.cayenne.access.ObjectStore;
+import org.apache.cayenne.access.DataContextObjectStore;
 import org.apache.cayenne.access.flush.operation.DbRowOp;
 import org.apache.cayenne.access.flush.operation.DbRowOpType;
 import org.apache.cayenne.access.flush.operation.DeleteDbRowOpFactory;
@@ -47,7 +47,7 @@ import java.util.Set;
 class DbRowOpFactory {
 
     private final EntityResolver resolver;
-    private final ObjectStore store;
+    private final DataContextObjectStore store;
     private final Set<ArcTarget> processedArcs;
     private final Map<ObjectId, DbRowOp> dbRows;
     private final RootRowOpProcessor rootRowOpProcessor;
@@ -58,7 +58,7 @@ class DbRowOpFactory {
     private ObjectDiff diff;
 
     DbRowOpFactory(EntityResolver resolver,
-                   ObjectStore store,
+                   DataContextObjectStore store,
                    Set<ArcTarget> processedArcs,
                    DeleteDbRowOpFactory deleteDbRowOpFactory) {
 
@@ -121,7 +121,7 @@ class DbRowOpFactory {
         return object;
     }
 
-    ObjectStore getStore() {
+    DataContextObjectStore getStore() {
         return store;
     }
 

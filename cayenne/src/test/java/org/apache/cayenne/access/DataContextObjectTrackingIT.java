@@ -97,14 +97,14 @@ public class DataContextObjectTrackingIT {
 
         assertEquals(PersistenceState.COMMITTED, obj.getPersistenceState());
         assertSame(context, obj.getObjectContext());
-        assertSame(obj, context.getGraphManager().getNode(oid));
+        assertSame(obj, context.getObjectStore().getNode(oid));
 
         context.unregisterObjects(Collections.singletonList(obj));
 
         assertEquals(PersistenceState.TRANSIENT, obj.getPersistenceState());
         assertNull(obj.getObjectContext());
         assertEquals(oid, obj.getObjectId());
-        assertNull(context.getGraphManager().getNode(oid));
+        assertNull(context.getObjectStore().getNode(oid));
         assertNull(context.getObjectStore().getCachedSnapshot(oid));
     }
 
@@ -120,7 +120,7 @@ public class DataContextObjectTrackingIT {
 
         assertEquals(PersistenceState.COMMITTED, obj.getPersistenceState());
         assertSame(context, obj.getObjectContext());
-        assertSame(obj, context.getGraphManager().getNode(oid));
+        assertSame(obj, context.getObjectStore().getNode(oid));
 
         context.invalidateObjects(obj);
 
@@ -128,6 +128,6 @@ public class DataContextObjectTrackingIT {
         assertSame(context, obj.getObjectContext());
         assertSame(oid, obj.getObjectId());
         assertNull(context.getObjectStore().getCachedSnapshot(oid));
-        assertNotNull(context.getGraphManager().getNode(oid));
+        assertNotNull(context.getObjectStore().getNode(oid));
     }
 }

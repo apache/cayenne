@@ -24,7 +24,6 @@ import org.apache.cayenne.DataRow;
 import org.apache.cayenne.ObjectContext;
 import org.apache.cayenne.ObjectId;
 import org.apache.cayenne.Persistent;
-import org.apache.cayenne.access.ObjectStore;
 import org.apache.cayenne.access.flush.operation.DbRowOp;
 import org.apache.cayenne.ashwood.graph.Digraph;
 import org.apache.cayenne.ashwood.graph.IndegreeTopologicalSort;
@@ -281,9 +280,7 @@ public class AshwoodEntitySorter implements EntitySorter {
 			return null;
 		}
 
-		DataRow snapshot = context.getGraphManager() instanceof ObjectStore store
-				? store.getSnapshot(object.getObjectId())
-				: null;
+		DataRow snapshot = context.getObjectStore().getSnapshot(object.getObjectId());
 		if (snapshot == null) {
 			return null;
 		}
@@ -292,7 +289,7 @@ public class AshwoodEntitySorter implements EntitySorter {
 
 		// not using 'localObject', looking up in context instead, as within the sorter
 		// we only care about objects participating in transaction, so no need to create hollow objects
-		return (id != null) ? context.getGraphManager().getNode(id) : null;
+		return (id != null) ? context.getObjectStore().getNode(id) : null;
 	}
 
 	@Override

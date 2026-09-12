@@ -39,7 +39,6 @@ import org.apache.cayenne.graph.ArcId;
 import org.apache.cayenne.graph.CompoundDiff;
 import org.apache.cayenne.graph.GraphDiff;
 import org.apache.cayenne.graph.GraphEvent;
-import org.apache.cayenne.graph.GraphManager;
 import org.apache.cayenne.map.EntityInheritanceTree;
 import org.apache.cayenne.map.EntityResolver;
 import org.apache.cayenne.map.LifecycleEvent;
@@ -119,7 +118,7 @@ public class DataContext implements ObjectContext {
     }
 
     protected final DataChannel channel;
-    protected final ObjectStore objectStore;
+    protected final DataContextObjectStore objectStore;
     protected final QueryCache queryCache;
     protected final EntityResolver entityResolver;
     protected final boolean validatingObjectsOnCommit;
@@ -170,7 +169,7 @@ public class DataContext implements ObjectContext {
 
         // "this" escapes to the ObjectStore before the constructor completes. This is safe as long as the store
         // constructor doesn't call back into the context, and the fields the store reads later are already set above
-        this.objectStore = new ObjectStore(this, snapshotCache, objectMap, syncWithSnapshotCache);
+        this.objectStore = new DataContextObjectStore(this, snapshotCache, objectMap, syncWithSnapshotCache);
 
         // Listen to our channel events. A parent context posts its events on its own
         // behalf, not on behalf of the channel adapter wrapping it, so listen to the context in that case
@@ -233,10 +232,8 @@ public class DataContext implements ObjectContext {
         return delegate != null ? delegate : NoopDelegate.noopDelegate;
     }
 
-    /**
-     * Returns ObjectStore associated with this DataContext.
-     */
-    public ObjectStore getObjectStore() {
+    @Override
+    public DataContextObjectStore getObjectStore() {
         return objectStore;
     }
 
@@ -245,7 +242,7 @@ public class DataContext implements ObjectContext {
      * objects registered with this DataContext, <code>false</code> otherwise.
      */
     public boolean hasChanges() {
-        return getObjectStore().hasChanges();
+        return objectStore.hasChanges();
     }
 
     /**
@@ -254,7 +251,7 @@ public class DataContext implements ObjectContext {
      */
     @Override
     public Collection<Persistent> newObjects() {
-        return getObjectStore().objectsInState(PersistenceState.NEW);
+        return objectStore.objectsInState(PersistenceState.NEW);
     }
 
     /**
@@ -263,7 +260,7 @@ public class DataContext implements ObjectContext {
      */
     @Override
     public Collection<Persistent> deletedObjects() {
-        return getObjectStore().objectsInState(PersistenceState.DELETED);
+        return objectStore.objectsInState(PersistenceState.DELETED);
     }
 
     /**
@@ -288,7 +285,7 @@ public class DataContext implements ObjectContext {
      */
     @Override
     public Collection<Persistent> modifiedObjects() {
-        return getObjectStore().objectsInState(PersistenceState.MODIFIED);
+        return objectStore.objectsInState(PersistenceState.MODIFIED);
     }
 
     /**
@@ -299,14 +296,14 @@ public class DataContext implements ObjectContext {
     @Override
     public Collection<Persistent> uncommittedObjects() {
 
-        int len = getObjectStore().registeredObjectsCount();
+        int len = objectStore.registeredObjectsCount();
         if (len == 0) {
             return Collections.emptyList();
         }
 
         // guess target collection size
         Collection<Persistent> objects = new ArrayList<>(len > 100 ? len / 2 : len);
-        Iterator<Persistent> it = getObjectStore().getObjectIterator();
+        Iterator<Persistent> it = objectStore.getObjectIterator();
         while (it.hasNext()) {
             Persistent object = it.next();
             int state = object.getPersistenceState();
@@ -366,7 +363,7 @@ public class DataContext implements ObjectContext {
         }
 
         for (ObjectId candidateId : inheritanceTree.polymorphicIds(id)) {
-            Persistent object = getGraphManager().getNode(candidateId);
+            Persistent object = objectStore.getNode(candidateId);
             if (object != null && object.getPersistenceState() != PersistenceState.HOLLOW) {
                 return object;
             }
@@ -387,10 +384,10 @@ public class DataContext implements ObjectContext {
 
         ObjectId id = objectFromAnotherContext.getObjectId();
 
-        // first look for the ID in the local GraphManager
-        synchronized (getGraphManager()) {
+        // first look for the ID in the local ObjectStore
+        synchronized (objectStore) {
             @SuppressWarnings("unchecked")
-            T localObject = (T) getGraphManager().getNode(id);
+            T localObject = (T) objectStore.getNode(id);
             if (localObject != null) {
                 return localObject;
             }
@@ -407,7 +404,7 @@ public class DataContext implements ObjectContext {
             persistent.setObjectId(id);
             persistent.setPersistenceState(PersistenceState.HOLLOW);
 
-            getGraphManager().registerNode(id, persistent);
+            objectStore.registerNode(id, persistent);
 
             return persistent;
         }
@@ -427,7 +424,7 @@ public class DataContext implements ObjectContext {
      * @since 1.1
      */
     public DataRow currentSnapshot(final Persistent object) {
-        return new DataContextSnapshotBuilder(getEntityResolver(), getObjectStore(), object)
+        return new DataContextSnapshotBuilder(getEntityResolver(), objectStore, object)
                 .build();
     }
 
@@ -474,7 +471,7 @@ public class DataContext implements ObjectContext {
 
         // a child context has no snapshot cache, so it can't resolve rows on its own. Resolve them in the parent
         // context and transfer the resulting objects here
-        if (getObjectStore().getDataRowCache() == null) {
+        if (objectStore.getDataRowCache() == null) {
             if (!(getChannel() instanceof DataContextChannel(DataContext context))) {
                 throw new CayenneRuntimeException(
                         "DataContext has no snapshot cache and no parent DataContext to resolve DataRows");
@@ -632,7 +629,7 @@ public class DataContext implements ObjectContext {
                 for (Object target : collection) {
                     if (target instanceof Persistent targetDO) {
                         registerNewObject(targetDO);
-                        getObjectStore().arcCreated(object.getObjectId(), targetDO.getObjectId(), new ArcId(property));
+                        objectStore.arcCreated(object.getObjectId(), targetDO.getObjectId(), new ArcId(property));
                     }
                 }
                 return true;
@@ -644,7 +641,7 @@ public class DataContext implements ObjectContext {
                 if (target instanceof Persistent targetDO) {
                     // make sure it is registered
                     registerNewObject(targetDO);
-                    getObjectStore().arcCreated(object.getObjectId(), targetDO.getObjectId(), new ArcId(property));
+                    objectStore.arcCreated(object.getObjectId(), targetDO.getObjectId(), new ArcId(property));
                 }
                 return true;
             }
@@ -666,10 +663,9 @@ public class DataContext implements ObjectContext {
         object.setObjectContext(this);
         object.setPersistenceState(PersistenceState.NEW);
 
-        GraphManager<Persistent> graphManager = getGraphManager();
-        synchronized (graphManager) {
-            graphManager.registerNode(object.getObjectId(), object);
-            graphManager.nodeCreated(object.getObjectId());
+        synchronized (objectStore) {
+            objectStore.registerNode(object.getObjectId(), object);
+            objectStore.nodeCreated(object.getObjectId());
         }
 
         ObjEntity entity;
@@ -697,7 +693,7 @@ public class DataContext implements ObjectContext {
      * @see #invalidateObjects(Collection)
      */
     public void unregisterObjects(Collection<? extends Persistent> objects) {
-        getObjectStore().objectsUnregistered(objects);
+        objectStore.objectsUnregistered(objects);
     }
 
     /**
@@ -726,14 +722,14 @@ public class DataContext implements ObjectContext {
                 .toList();
 
         if (!ids.isEmpty()) {
-            getObjectStore().objectsInvalidated(ids);
+            objectStore.objectsInvalidated(ids);
             getChannel().onInvalidate(this, ids);
         }
     }
 
     void invalidateIds(Collection<ObjectId> ids) {
         if (!ids.isEmpty()) {
-            getObjectStore().objectsInvalidated(ids);
+            objectStore.objectsInvalidated(ids);
             getChannel().onInvalidate(this, ids);
         }
     }
@@ -749,7 +745,7 @@ public class DataContext implements ObjectContext {
     @SuppressWarnings("unchecked")
     private List<Persistent> resolveRelationshipInSelf(ObjectId sourceId, String relationshipName, boolean resolveToMany) {
 
-        Persistent source = getGraphManager().getNode(sourceId);
+        Persistent source = objectStore.getNode(sourceId);
         if (source == null) {
             return null;
         }
@@ -804,9 +800,9 @@ public class DataContext implements ObjectContext {
     @Override
     public void rollbackChangesLocally() {
         if (objectStore.hasChanges()) {
-            GraphDiff diff = getObjectStore().getChanges();
+            GraphDiff diff = objectStore.getChanges();
 
-            getObjectStore().objectsRolledBack();
+            objectStore.objectsRolledBack();
             fireDataChannelRolledback(this, diff);
         }
     }
@@ -819,14 +815,14 @@ public class DataContext implements ObjectContext {
     public void rollbackChanges() {
 
         if (objectStore.hasChanges()) {
-            GraphDiff diff = getObjectStore().getChanges();
+            GraphDiff diff = objectStore.getChanges();
 
             // call channel with changes BEFORE reverting them, so that any interceptors could record them
             if (channel != null) {
                 channel.onSync(this, diff, DataChannel.ROLLBACK_CASCADE_SYNC);
             }
 
-            getObjectStore().objectsRolledBack();
+            objectStore.objectsRolledBack();
             fireDataChannelRolledback(this, diff);
         } else {
             if (channel != null) {
@@ -873,7 +869,6 @@ public class DataContext implements ObjectContext {
 
         int syncType = cascade ? DataChannel.FLUSH_CASCADE_SYNC : DataChannel.FLUSH_NOCASCADE_SYNC;
 
-        ObjectStore objectStore = getObjectStore();
         GraphDiff parentChanges = null;
 
         // prevent multiple commits occurring simultaneously
@@ -1123,15 +1118,6 @@ public class DataContext implements ObjectContext {
         return usingSharedSnapshotCache;
     }
 
-    /**
-     * Returns this context's ObjectStore.
-     *
-     * @since 1.2
-     */
-    @Override
-    public GraphManager<Persistent> getGraphManager() {
-        return objectStore;
-    }
 
     /**
      * An internal version of {@link #localObject(Persistent)} that operates on
@@ -1149,8 +1135,8 @@ public class DataContext implements ObjectContext {
         // have to synchronize almost the entire method to prevent multiple threads from
         // messing up Persistent objects per CAY-845. Originally only parts of "else" were synchronized,
         // but we had to expand the lock scope to ensure consistent behavior.
-        synchronized (getGraphManager()) {
-            Persistent cachedObject = getGraphManager().getNode(id);
+        synchronized (objectStore) {
+            Persistent cachedObject = objectStore.getNode(id);
 
             // return an existing object
             if (cachedObject != null) {
@@ -1173,7 +1159,7 @@ public class DataContext implements ObjectContext {
             localObject.setObjectContext(this);
             localObject.setObjectId(id);
 
-            getGraphManager().registerNode(id, localObject);
+            objectStore.registerNode(id, localObject);
             localObject.setPersistenceState(PersistenceState.HOLLOW);
 
             return localObject;

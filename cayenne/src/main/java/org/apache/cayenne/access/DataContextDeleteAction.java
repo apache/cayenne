@@ -95,7 +95,7 @@ class DataContextDeleteAction {
         processDeleteRules(object, PersistenceState.NEW);
 
         // if an object was NEW, we must throw it out
-        context.getGraphManager().unregisterNode(object.getObjectId());
+        context.getObjectStore().unregisterNode(object.getObjectId());
     }
 
     private void deletePersistent(Persistent object) throws DeleteDenyException {
@@ -106,7 +106,7 @@ class DataContextDeleteAction {
         int oldState = object.getPersistenceState();
         object.setPersistenceState(PersistenceState.DELETED);
         processDeleteRules(object, oldState);
-        context.getGraphManager().nodeRemoved(object.getObjectId());
+        context.getObjectStore().nodeRemoved(object.getObjectId());
     }
 
     @SuppressWarnings("unchecked")
@@ -163,7 +163,7 @@ class DataContextDeleteAction {
             if (processFlattened) {
                 ArcId arcId = new ArcId(property);
                 for (Persistent relatedObject : relatedObjects) {
-                    context.getGraphManager()
+                    context.getObjectStore()
                             .arcDeleted(object.getObjectId(), relatedObject.getObjectId(), arcId);
                 }
             }

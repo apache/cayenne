@@ -25,7 +25,7 @@ import java.util.Map;
 import org.apache.cayenne.ObjectId;
 import org.apache.cayenne.Persistent;
 import org.apache.cayenne.access.ObjectDiff;
-import org.apache.cayenne.access.ObjectStore;
+import org.apache.cayenne.access.DataContextObjectStore;
 import org.apache.cayenne.access.flush.operation.DbRowOpType;
 import org.apache.cayenne.access.flush.operation.DbRowOpVisitor;
 import org.apache.cayenne.access.flush.operation.InsertDbRowOp;
@@ -63,7 +63,7 @@ public class ArcValuesCreationHandlerTest {
         ObjEntity entity = mock(ObjEntity.class);
         ObjRelationship relationship = mock(ObjRelationship.class);
         DbRelationship dbRelationship = mock(DbRelationship.class);
-        ObjectStore store = mock(ObjectStore.class);
+        DataContextObjectStore store = mock(DataContextObjectStore.class);
         Persistent object = mock(Persistent.class);
 
         when(relationship.getDbRelationships()).thenReturn(Collections.singletonList(dbRelationship));

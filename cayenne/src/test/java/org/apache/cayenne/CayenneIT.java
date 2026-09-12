@@ -140,7 +140,7 @@ public class CayenneIT {
 
         ObjectId id = ObjectId.of("Artist", Artist.ARTIST_ID_PK_COLUMN, 33002);
 
-        assertNull(env.context().getGraphManager().getNode(id));
+        assertNull(env.context().getObjectStore().getNode(id));
 
         ObjectSelect<Artist> query = ObjectSelect.query(Artist.class).where(Artist.SELF.eqId(id));
         Object object = Cayenne.objectForQuery(env.context(), query);

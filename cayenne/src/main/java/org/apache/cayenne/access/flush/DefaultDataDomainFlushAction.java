@@ -24,7 +24,7 @@ import org.apache.cayenne.ObjectId;
 import org.apache.cayenne.access.DataContext;
 import org.apache.cayenne.access.DataDomain;
 import org.apache.cayenne.access.ObjectDiff;
-import org.apache.cayenne.access.ObjectStore;
+import org.apache.cayenne.access.DataContextObjectStore;
 import org.apache.cayenne.access.ObjectStoreGraphDiff;
 import org.apache.cayenne.access.OperationObserver;
 import org.apache.cayenne.access.flush.operation.DbRowOp;
@@ -81,7 +81,7 @@ public class DefaultDataDomainFlushAction implements DataDomainFlushAction {
             throw new CayenneRuntimeException("Instance of ObjectStoreGraphDiff expected, got %s", changes.getClass());
         }
 
-        ObjectStore objectStore = context.getObjectStore();
+        DataContextObjectStore objectStore = context.getObjectStore();
 
         List<DbRowOp> dbRowOps = createDbRowOps(objectStore, objectStoreGraphDiff);
         updateObjectIds(dbRowOps);
@@ -104,7 +104,7 @@ public class DefaultDataDomainFlushAction implements DataDomainFlushAction {
      * @param changes object graph diff
      * @return collection of {@link DbRowOp}
      */
-    protected List<DbRowOp> createDbRowOps(ObjectStore objectStore, ObjectStoreGraphDiff changes) {
+    protected List<DbRowOp> createDbRowOps(DataContextObjectStore objectStore, ObjectStoreGraphDiff changes) {
         EntityResolver resolver = dataDomain.getEntityResolver();
 
         Map<Object, ObjectDiff> changesByObjectId = changes.getChangesByObjectId();
@@ -206,13 +206,13 @@ public class DefaultDataDomainFlushAction implements DataDomainFlushAction {
      * @param afterCommitDiff result graph diff
      * @param dbRowOps collection of {@link DbRowOp}
      */
-    protected void createReplacementIds(ObjectStore store, CompoundDiff afterCommitDiff, List<DbRowOp> dbRowOps) {
+    protected void createReplacementIds(DataContextObjectStore store, CompoundDiff afterCommitDiff, List<DbRowOp> dbRowOps) {
         ReplacementIdVisitor visitor = new ReplacementIdVisitor(store, dataDomain.getEntityResolver(), afterCommitDiff);
         dbRowOps.forEach(row -> row.accept(visitor));
     }
 
     /**
-     * Notify {@link ObjectStore} and it's data row cache about actual changes we performed.
+     * Notify {@link DataContextObjectStore} and it's data row cache about actual changes we performed.
      *
      * @param context originating context
      * @param changes incoming diff
@@ -220,7 +220,7 @@ public class DefaultDataDomainFlushAction implements DataDomainFlushAction {
      * @param dbRowOps collection of {@link DbRowOp}
      */
     protected void postprocess(DataContext context, ObjectStoreGraphDiff changes, CompoundDiff afterCommitDiff, List<DbRowOp> dbRowOps) {
-        ObjectStore objectStore = context.getObjectStore();
+        DataContextObjectStore objectStore = context.getObjectStore();
 
         PostprocessVisitor postprocessor = new PostprocessVisitor(context);
         dbRowOps.forEach(row -> row.accept(postprocessor));

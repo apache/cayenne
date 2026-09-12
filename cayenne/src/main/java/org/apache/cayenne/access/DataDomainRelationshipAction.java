@@ -107,7 +107,7 @@ class DataDomainRelationshipAction {
             return null;
         }
 
-        ObjectStore objectStore = context.getObjectStore();
+        DataContextObjectStore objectStore = context.getObjectStore();
         DataRow sourceRow = objectStore.getCachedSnapshot(sourceId);
         if (sourceRow == null) {
             return null;

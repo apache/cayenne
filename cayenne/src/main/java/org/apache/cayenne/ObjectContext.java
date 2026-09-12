@@ -19,7 +19,6 @@
 
 package org.apache.cayenne;
 
-import org.apache.cayenne.graph.GraphManager;
 import org.apache.cayenne.map.EntityResolver;
 import org.apache.cayenne.map.ObjEntity;
 import org.apache.cayenne.query.Query;
@@ -362,10 +361,11 @@ public interface ObjectContext {
     List<QueryResultItem> execute(Query query);
 
     /**
-     * Returns GraphManager that manages object graph associated with this
-     * context.
+     * Returns the store of persistent objects registered with this context.
+     *
+     * @since 5.0
      */
-    GraphManager<Persistent> getGraphManager();
+    ObjectStore getObjectStore();
 
     /**
      * Returns <code>true</code> if there are any modified, deleted or new

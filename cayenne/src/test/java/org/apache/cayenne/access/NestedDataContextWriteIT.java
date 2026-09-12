@@ -141,7 +141,7 @@ public class NestedDataContextWriteIT {
             childContext.commitChangesToParent();
             assertEquals(PersistenceState.COMMITTED, childP1.getPersistenceState());
 
-            Painting parentP1 = (Painting) context.getGraphManager().getNode(
+            Painting parentP1 = (Painting) context.getObjectStore().getNode(
                     childP1.getObjectId());
 
             assertNotNull(parentP1);
@@ -188,13 +188,13 @@ public class NestedDataContextWriteIT {
                     .getPersistenceState());
             assertEquals(PersistenceState.HOLLOW, childHollow.getPersistenceState());
 
-            Artist parentNew = (Artist) context.getGraphManager().getNode(
+            Artist parentNew = (Artist) context.getObjectStore().getNode(
                     childNew.getObjectId());
-            Artist parentModified = (Artist) context.getGraphManager().getNode(
+            Artist parentModified = (Artist) context.getObjectStore().getNode(
                     childModified.getObjectId());
-            Artist parentCommitted = (Artist) context.getGraphManager().getNode(
+            Artist parentCommitted = (Artist) context.getObjectStore().getNode(
                     childCommitted.getObjectId());
-            Artist parentHollow = (Artist) context.getGraphManager().getNode(
+            Artist parentHollow = (Artist) context.getObjectStore().getNode(
                     childHollow.getObjectId());
 
             assertNotNull(parentNew);
@@ -249,7 +249,7 @@ public class NestedDataContextWriteIT {
 
         assertEquals(PersistenceState.TRANSIENT, childDeleted.getPersistenceState());
 
-        Artist parentDeleted = (Artist) context.getGraphManager().getNode(
+        Artist parentDeleted = (Artist) context.getObjectStore().getNode(
                 childDeleted.getObjectId());
 
         assertNotNull(parentDeleted);
@@ -294,15 +294,15 @@ public class NestedDataContextWriteIT {
         assertEquals(PersistenceState.TRANSIENT, childDeleted.getPersistenceState());
         assertEquals(PersistenceState.HOLLOW, childHollow.getPersistenceState());
 
-        Artist parentNew = (Artist) context.getGraphManager().getNode(
+        Artist parentNew = (Artist) context.getObjectStore().getNode(
                 childNew.getObjectId());
-        Artist parentModified = (Artist) context.getGraphManager().getNode(
+        Artist parentModified = (Artist) context.getObjectStore().getNode(
                 childModified.getObjectId());
-        Artist parentCommitted = (Artist) context.getGraphManager().getNode(
+        Artist parentCommitted = (Artist) context.getObjectStore().getNode(
                 childCommitted.getObjectId());
-        Artist parentDeleted = (Artist) context.getGraphManager().getNode(
+        Artist parentDeleted = (Artist) context.getObjectStore().getNode(
                 childDeleted.getObjectId());
-        Artist parentHollow = (Artist) context.getGraphManager().getNode(
+        Artist parentHollow = (Artist) context.getObjectStore().getNode(
                 childHollow.getObjectId());
 
         assertNotNull(parentNew);
@@ -361,14 +361,14 @@ public class NestedDataContextWriteIT {
             assertEquals(PersistenceState.COMMITTED, childModifiedToMany
                     .getPersistenceState());
 
-            parentModifiedSimple = (Painting) context.getGraphManager().getNode(
+            parentModifiedSimple = (Painting) context.getObjectStore().getNode(
                     childModifiedSimple.getObjectId());
 
             Painting parentModifiedToOne = (Painting) context
-                    .getGraphManager()
+                    .getObjectStore()
                     .getNode(childModifiedToOne.getObjectId());
 
-            parentModifiedToMany = (Artist) context.getGraphManager().getNode(
+            parentModifiedToMany = (Artist) context.getObjectStore().getNode(
                     childModifiedToMany.getObjectId());
 
             assertNotNull(parentModifiedSimple);
@@ -419,14 +419,14 @@ public class NestedDataContextWriteIT {
             assertEquals(PersistenceState.COMMITTED, childDetail1
                     .getPersistenceState());
 
-            Painting parentMaster = (Painting) context.getGraphManager().getNode(
+            Painting parentMaster = (Painting) context.getObjectStore().getNode(
                     childMaster.getObjectId());
 
             assertNotNull(parentMaster);
             assertEquals(PersistenceState.NEW, parentMaster.getPersistenceState());
 
             PaintingInfo parentDetail1 = (PaintingInfo) context
-                    .getGraphManager()
+                    .getObjectStore()
                     .getNode(childDetail1.getObjectId());
 
             assertNotNull(parentDetail1);
@@ -462,13 +462,13 @@ public class NestedDataContextWriteIT {
             assertEquals(PersistenceState.COMMITTED, childO1.getPersistenceState());
             assertEquals(PersistenceState.COMMITTED, childO2.getPersistenceState());
 
-            Artist parentO1 = (Artist) context.getGraphManager().getNode(
+            Artist parentO1 = (Artist) context.getObjectStore().getNode(
                     childO1.getObjectId());
 
             assertNotNull(parentO1);
             assertEquals(PersistenceState.NEW, parentO1.getPersistenceState());
 
-            ArtGroup parentO2 = (ArtGroup) context.getGraphManager().getNode(
+            ArtGroup parentO2 = (ArtGroup) context.getObjectStore().getNode(
                     childO2.getObjectId());
 
             assertNotNull(parentO2);
@@ -509,19 +509,19 @@ public class NestedDataContextWriteIT {
             assertEquals(PersistenceState.COMMITTED, childO2.getPersistenceState());
             assertEquals(PersistenceState.COMMITTED, childO3.getPersistenceState());
 
-            Artist parentO1 = (Artist) context.getGraphManager().getNode(
+            Artist parentO1 = (Artist) context.getObjectStore().getNode(
                     childO1.getObjectId());
 
             assertNotNull(parentO1);
             assertEquals(PersistenceState.NEW, parentO1.getPersistenceState());
 
-            ArtGroup parentO2 = (ArtGroup) context.getGraphManager().getNode(
+            ArtGroup parentO2 = (ArtGroup) context.getObjectStore().getNode(
                     childO2.getObjectId());
 
             assertNotNull(parentO2);
             assertEquals(PersistenceState.NEW, parentO2.getPersistenceState());
 
-            ArtGroup parentO3 = (ArtGroup) context.getGraphManager().getNode(
+            ArtGroup parentO3 = (ArtGroup) context.getObjectStore().getNode(
                     childO3.getObjectId());
 
             assertNotNull(parentO3);
@@ -545,19 +545,19 @@ public class NestedDataContextWriteIT {
             assertEquals(PersistenceState.COMMITTED, childO2.getPersistenceState());
             assertEquals(PersistenceState.COMMITTED, childO3.getPersistenceState());
 
-            Artist parentO1 = (Artist) context.getGraphManager().getNode(
+            Artist parentO1 = (Artist) context.getObjectStore().getNode(
                     childO1.getObjectId());
 
             assertNotNull(parentO1);
             assertEquals(PersistenceState.NEW, parentO1.getPersistenceState());
 
-            ArtGroup parentO2 = (ArtGroup) context.getGraphManager().getNode(
+            ArtGroup parentO2 = (ArtGroup) context.getObjectStore().getNode(
                     childO2.getObjectId());
 
             assertNotNull(parentO2);
             assertEquals(PersistenceState.NEW, parentO2.getPersistenceState());
 
-            ArtGroup parentO3 = (ArtGroup) context.getGraphManager().getNode(
+            ArtGroup parentO3 = (ArtGroup) context.getObjectStore().getNode(
                     childO3.getObjectId());
 
             assertNotNull(parentO3);

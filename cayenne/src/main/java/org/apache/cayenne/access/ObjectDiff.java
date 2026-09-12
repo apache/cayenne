@@ -195,7 +195,7 @@ public class ObjectDiff extends NodeDiff {
         });
     }
 
-    void addDiff(NodeDiff diff, ObjectStore parent) {
+    void addDiff(NodeDiff diff, DataContextObjectStore parent) {
 
         boolean addDiff = true;
 

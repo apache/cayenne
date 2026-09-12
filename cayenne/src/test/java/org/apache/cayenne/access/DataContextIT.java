@@ -620,7 +620,7 @@ public class DataContextIT {
 
 		// testing this...
 		context.deleteObjects(hollow);
-		assertSame(hollow, context.getGraphManager().getNode(ObjectId.of("Artist", "ARTIST_ID", 33001)));
+		assertSame(hollow, context.getObjectStore().getNode(ObjectId.of("Artist", "ARTIST_ID", 33001)));
 		assertEquals("artist1", hollow.getArtistName());
 
 		assertEquals(PersistenceState.DELETED, hollow.getPersistenceState());

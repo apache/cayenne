@@ -46,7 +46,7 @@ public class NestedDataContextParentEventsIT {
         ac.setArtistName("X");
         child1.commitChangesToParent();
 
-        final Artist ap = (Artist) env.context().getGraphManager().getNode(ac.getObjectId());
+        final Artist ap = (Artist) env.context().getObjectStore().getNode(ac.getObjectId());
         assertNotNull(ap);
 
         assertTrue(ap.getObjectId().isTemporary());

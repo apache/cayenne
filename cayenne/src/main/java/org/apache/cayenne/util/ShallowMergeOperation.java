@@ -22,7 +22,7 @@ import org.apache.cayenne.ObjectContext;
 import org.apache.cayenne.ObjectId;
 import org.apache.cayenne.PersistenceState;
 import org.apache.cayenne.Persistent;
-import org.apache.cayenne.graph.GraphManager;
+import org.apache.cayenne.ObjectStore;
 import org.apache.cayenne.reflect.ClassDescriptor;
 
 /**
@@ -54,12 +54,12 @@ public class ShallowMergeOperation {
         ClassDescriptor descriptor = context.getEntityResolver().getClassDescriptor(
                 id.getEntityName());
 
-        GraphManager<Persistent> graphManager = context.getGraphManager();
+        ObjectStore objectStore = context.getObjectStore();
 
         // have to synchronize almost the entire method to prevent multiple threads from
         // messing up Persistent objects per CAY-845.
-        synchronized (graphManager) {
-            T object = (T) graphManager.getNode(id);
+        synchronized (objectStore) {
+            T object = (T) objectStore.getNode(id);
 
             // merge into an existing object
             if (object == null) {
@@ -74,7 +74,7 @@ public class ShallowMergeOperation {
                     object.setPersistenceState(PersistenceState.COMMITTED);
                 }
 
-                graphManager.registerNode(id, object);
+                objectStore.registerNode(id, object);
             }
 
             // TODO: Andrus, 1/24/2006 implement smart merge for modified objects...

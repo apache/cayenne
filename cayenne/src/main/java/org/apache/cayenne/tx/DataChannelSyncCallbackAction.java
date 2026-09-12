@@ -16,12 +16,13 @@
  *  specific language governing permissions and limitations
  *  under the License.
  ****************************************************************/
-package org.apache.cayenne;
+package org.apache.cayenne.tx;
 
+import org.apache.cayenne.DataChannel;
+import org.apache.cayenne.ObjectStore;
 import org.apache.cayenne.graph.ArcId;
 import org.apache.cayenne.graph.GraphChangeHandler;
 import org.apache.cayenne.graph.GraphDiff;
-import org.apache.cayenne.graph.GraphManager;
 import org.apache.cayenne.map.LifecycleEvent;
 import org.apache.cayenne.reflect.LifecycleCallbackRegistry;
 
@@ -30,45 +31,42 @@ import java.util.Collection;
 import java.util.HashMap;
 import java.util.Map;
 
-/**
- * @since 3.1
- */
-// note: made public in 3.1 to be used in all tiers
-public abstract class DataChannelSyncCallbackAction implements GraphChangeHandler {
+abstract class DataChannelSyncCallbackAction implements GraphChangeHandler {
 
-    static enum Op {
+    enum Op {
         INSERT, UPDATE, DELETE
     }
 
     public static DataChannelSyncCallbackAction getCallbackAction(
             LifecycleCallbackRegistry callbackRegistry,
-            GraphManager<Persistent> graphManager,
+            ObjectStore objectStore,
             GraphDiff changes,
             int syncType) {
 
-        switch (syncType) {
-            case DataChannel.FLUSH_CASCADE_SYNC:
-            case DataChannel.FLUSH_NOCASCADE_SYNC:
-                return new FlushCallbackAction(callbackRegistry, graphManager, changes);
-            case DataChannel.ROLLBACK_CASCADE_SYNC:
-                return new RollbackCallbackAction(callbackRegistry, graphManager, changes);
-            default:
-                throw new IllegalArgumentException("Unsupported sync type: " + syncType);
-        }
+        return switch (syncType) {
+            case DataChannel.FLUSH_CASCADE_SYNC, DataChannel.FLUSH_NOCASCADE_SYNC ->
+                    new FlushCallbackAction(callbackRegistry, objectStore, changes);
+            case DataChannel.ROLLBACK_CASCADE_SYNC ->
+                    new RollbackCallbackAction(callbackRegistry, objectStore, changes);
+            default -> throw new IllegalArgumentException("Unsupported sync type: " + syncType);
+        };
     }
 
     LifecycleCallbackRegistry callbackRegistry;
     Collection<Object> updated;
     Collection<Object> persisted;
     Collection<Object> removed;
-    private Map<Object, Op> seenIds;
-    private GraphManager<Persistent> graphManager;
 
-    DataChannelSyncCallbackAction(LifecycleCallbackRegistry callbackRegistry,
-            GraphManager<Persistent> graphManager, GraphDiff changes) {
+    private Map<Object, Op> seenIds;
+    private final ObjectStore objectStore;
+
+    DataChannelSyncCallbackAction(
+            LifecycleCallbackRegistry callbackRegistry,
+            ObjectStore objectStore,
+            GraphDiff changes) {
 
         this.callbackRegistry = callbackRegistry;
-        this.graphManager = graphManager;
+        this.objectStore = objectStore;
 
         if (hasListeners()) {
             this.seenIds = new HashMap<>();
@@ -93,7 +91,7 @@ public abstract class DataChannelSyncCallbackAction implements GraphChangeHandle
         Op op = seenIds.put(nodeId, Op.INSERT);
         if (op == null) {
 
-            Object node = graphManager.getNode(nodeId);
+            Object node = objectStore.getNode(nodeId);
             if (node != null) {
 
                 if (persisted == null) {
@@ -108,11 +106,11 @@ public abstract class DataChannelSyncCallbackAction implements GraphChangeHandle
     @Override
     public void nodeRemoved(Object nodeId) {
         Op op = seenIds.put(nodeId, Op.DELETE);
-        
+
         // the node may have been updated prior to delete
         if (op != Op.DELETE) {
 
-            Object node = graphManager.getNode(nodeId);
+            Object node = objectStore.getNode(nodeId);
             if (node != null) {
 
                 if (removed == null) {
@@ -154,10 +152,10 @@ public abstract class DataChannelSyncCallbackAction implements GraphChangeHandle
 
     private void nodeUpdated(Object nodeId) {
         Op op = seenIds.put(nodeId, Op.UPDATE);
-        
+
         if (op == null) {
 
-            Object node = graphManager.getNode(nodeId);
+            Object node = objectStore.getNode(nodeId);
             if (node != null) {
 
                 if (updated == null) {
@@ -172,8 +170,8 @@ public abstract class DataChannelSyncCallbackAction implements GraphChangeHandle
     static class FlushCallbackAction extends DataChannelSyncCallbackAction {
 
         FlushCallbackAction(LifecycleCallbackRegistry callbackRegistry,
-                GraphManager<Persistent> graphManager, GraphDiff changes) {
-            super(callbackRegistry, graphManager, changes);
+                            ObjectStore objectStore, GraphDiff changes) {
+            super(callbackRegistry, objectStore, changes);
         }
 
         @Override
@@ -202,8 +200,8 @@ public abstract class DataChannelSyncCallbackAction implements GraphChangeHandle
     static class RollbackCallbackAction extends DataChannelSyncCallbackAction {
 
         RollbackCallbackAction(LifecycleCallbackRegistry callbackRegistry,
-                GraphManager<Persistent> graphManager, GraphDiff changes) {
-            super(callbackRegistry, graphManager, changes);
+                               ObjectStore objectStore, GraphDiff changes) {
+            super(callbackRegistry, objectStore, changes);
         }
 
         @Override

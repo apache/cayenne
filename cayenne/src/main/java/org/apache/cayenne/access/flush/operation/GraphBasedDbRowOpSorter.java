@@ -27,13 +27,13 @@ import java.util.Map;
 
 import org.apache.cayenne.DataRow;
 import org.apache.cayenne.Persistent;
+import org.apache.cayenne.access.DataContext;
+import org.apache.cayenne.access.DataContextObjectStore;
 import org.apache.cayenne.access.DataDomain;
-import org.apache.cayenne.access.ObjectStore;
 import org.apache.cayenne.access.flush.EffectiveOpId;
 import org.apache.cayenne.di.Inject;
 import org.apache.cayenne.di.Provider;
 import org.apache.cayenne.exp.parser.ASTDbPath;
-import org.apache.cayenne.graph.GraphManager;
 import org.apache.cayenne.map.DbAttribute;
 import org.apache.cayenne.map.DbEntity;
 import org.apache.cayenne.map.DbJoin;
@@ -269,10 +269,11 @@ public class GraphBasedDbRowOpSorter implements DbRowOpSorter {
         }
 
         private Map<String, Object> getCachedSnapshot(Persistent object) {
+            // flush only ever handles DataContext objects
+            DataContextObjectStore store = ((DataContext) object.getObjectContext()).getObjectStore();
+
             // the committed state is in the snapshot cache (or the DB), never in the object itself
-            DataRow dataRow = object.getObjectContext().getGraphManager() instanceof ObjectStore store
-                    ? store.getSnapshot(object.getObjectId())
-                    : null;
+            DataRow dataRow = store.getSnapshot(object.getObjectId());
             if (dataRow == null) {
                 return Collections.emptyMap();
             }
@@ -290,19 +291,16 @@ public class GraphBasedDbRowOpSorter implements DbRowOpSorter {
             });
 
             // check and merge flattened IDs snapshots
-            GraphManager<Persistent> graphManager = object.getObjectContext().getGraphManager();
-            if(graphManager instanceof ObjectStore store) {
-                store.getFlattenedIds(object.getObjectId()).forEach(flattenedId -> {
-                    // map values of flattened ids from target to source
-                    Map<String, Object> idSnapshot = flattenedId.getIdSnapshot();
-                    relationship.getJoins().forEach(join -> {
-                        Object value = idSnapshot.get(join.getTargetName());
-                        if(value != null) {
-                            snapshot.put(join.getSourceName(), value);
-                        }
-                    });
+            store.getFlattenedIds(object.getObjectId()).forEach(flattenedId -> {
+                // map values of flattened ids from target to source
+                Map<String, Object> idSnapshot = flattenedId.getIdSnapshot();
+                relationship.getJoins().forEach(join -> {
+                    Object value = idSnapshot.get(join.getTargetName());
+                    if(value != null) {
+                        snapshot.put(join.getSourceName(), value);
+                    }
                 });
-            }
+            });
 
             return snapshot;
         }

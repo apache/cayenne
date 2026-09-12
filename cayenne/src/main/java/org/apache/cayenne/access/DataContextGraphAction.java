@@ -47,7 +47,7 @@ class DataContextGraphAction {
             Object oldValue,
             Object newValue) {
 
-        // translate ObjectContext generic property change callback to GraphManager terms
+        // translate ObjectContext generic property change callback to ObjectStore terms
         // (simple properties vs. relationships)
 
         ClassDescriptor descriptor = context.getEntityResolver().getClassDescriptor(
@@ -70,14 +70,14 @@ class DataContextGraphAction {
             markAsDirty(object);
 
             if (oldValue instanceof Persistent) {
-                context.getGraphManager().arcDeleted(
+                context.getObjectStore().arcDeleted(
                         object.getObjectId(),
                         ((Persistent) oldValue).getObjectId(),
                         new ArcId(property));
             }
 
             if (newValue instanceof Persistent) {
-                context.getGraphManager().arcCreated(
+                context.getObjectStore().arcCreated(
                         object.getObjectId(),
                         ((Persistent) newValue).getObjectId(),
                         new ArcId(property));
@@ -91,7 +91,7 @@ class DataContextGraphAction {
             Object oldValue,
             Object newValue) {
 
-        context.getGraphManager().nodePropertyChanged(
+        context.getObjectStore().nodePropertyChanged(
                 object.getObjectId(),
                 propertyName,
                 oldValue,

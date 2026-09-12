@@ -23,7 +23,7 @@ import java.util.Map;
 import org.apache.cayenne.Persistent;
 
 /**
- * A strategy for retaining objects in {@link ObjectStore}. The strategy can be weak, soft
+ * A strategy for retaining objects in {@link DataContextObjectStore}. The strategy can be weak, soft
  * or hard references.
  * 
  * @since 3.1
