@@ -177,11 +177,12 @@ There is a useful helper class called `Cayenne` (fully-qualified name `org.apach
 long pk = Cayenne.longPKForObject(artist);
 ----
 
-It also provides the reverse operation - finding an object given a known PK:
+The reverse operation - finding an object given a known PK - is a part of the ObjectContext API. It returns an
+object already registered in the context without a query, and consults the caches before going to the database:
 
 [source, java]
 ----
-Artist artist = Cayenne.objectForPK(context, Artist.class, 34579);
+Artist artist = context.objectForPK(Artist.class, 34579);
 ----
 
 For more flexibility, you could <<selectbyid,select by ID>> with `ObjectSelect` instead.

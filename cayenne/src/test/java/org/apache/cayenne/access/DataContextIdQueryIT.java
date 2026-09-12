@@ -19,7 +19,7 @@
 
 package org.apache.cayenne.access;
 
-import org.apache.cayenne.Cayenne;
+import org.apache.cayenne.CayenneRuntimeException;
 import org.apache.cayenne.FaultFailureException;
 import org.apache.cayenne.ObjectContext;
 import org.apache.cayenne.ObjectId;
@@ -32,6 +32,8 @@ import org.apache.cayenne.unit.CayenneTestsEnv;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.RegisterExtension;
+
+import java.util.Map;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
@@ -61,10 +63,10 @@ public class DataContextIdQueryIT {
     public void registeredObject_NoQuery() throws Exception {
         tArtist.insert(1, "a1");
 
-        Artist a = Cayenne.objectForPK(context, Artist.class, 1);
+        Artist a = context.objectForPK(Artist.class, 1);
         assertEquals(1, tArtist.update().set("ARTIST_NAME", "a2").where("ARTIST_ID", 1).execute());
 
-        env.runWithQueriesBlocked(() -> assertSame(a, Cayenne.objectForPK(context, artistId(1))));
+        env.runWithQueriesBlocked(() -> assertSame(a, context.objectForPK(artistId(1))));
 
         // a resolved object is returned as is, without a refresh
         assertEquals("a1", a.getArtistName());
@@ -75,24 +77,31 @@ public class DataContextIdQueryIT {
         Artist a = context.newObject(Artist.class);
         a.setArtistName("a1");
 
-        env.runWithQueriesBlocked(() -> assertSame(a, Cayenne.objectForPK(context, a.getObjectId())));
+        env.runWithQueriesBlocked(() -> assertSame(a, context.objectForPK(a.getObjectId())));
     }
 
     @Test
     public void temporaryId() {
-        env.runWithQueriesBlocked(() -> assertNull(Cayenne.objectForPK(context, ObjectId.of("Artist"))));
+        env.runWithQueriesBlocked(() -> assertNull(context.objectForPK(ObjectId.of("Artist"))));
+    }
+
+    @Test
+    public void unknownEntity() {
+        assertThrows(CayenneRuntimeException.class, () -> context.objectForPK(ObjectId.of("Bogus", "ID", 1)));
+        assertThrows(CayenneRuntimeException.class, () -> context.objectForPK("Bogus", Map.of("ID", 1)));
+        assertThrows(CayenneRuntimeException.class, () -> context.objectForPK("Bogus", 1));
     }
 
     @Test
     public void noMatchingRow() {
-        assertNull(Cayenne.objectForPK(context, artistId(1)));
+        assertNull(context.objectForPK(artistId(1)));
     }
 
     @Test
     public void fromDB() throws Exception {
         tArtist.insert(1, "a1");
 
-        Artist a = (Artist) Cayenne.objectForPK(context, artistId(1));
+        Artist a = (Artist) context.objectForPK(artistId(1));
         assertNotNull(a);
         assertSame(context, a.getObjectContext());
         assertEquals(PersistenceState.COMMITTED, a.getPersistenceState());
@@ -104,11 +113,11 @@ public class DataContextIdQueryIT {
         tArtist.insert(1, "a1");
 
         // resolve in one context, so that the snapshot ends up in the shared cache
-        Cayenne.objectForPK(context, Artist.class, 1);
+        context.objectForPK(Artist.class, 1);
 
         ObjectContext context2 = env.runtime().newContext();
         env.runWithQueriesBlocked(() -> {
-            Artist a = (Artist) Cayenne.objectForPK(context2, artistId(1));
+            Artist a = (Artist) context2.objectForPK(artistId(1));
             assertNotNull(a);
             assertSame(context2, a.getObjectContext());
             assertEquals("a1", a.getArtistName());
@@ -122,7 +131,7 @@ public class DataContextIdQueryIT {
         Artist a = (Artist) context.findOrCreateObject(artistId(1));
         assertEquals(PersistenceState.HOLLOW, a.getPersistenceState());
 
-        assertSame(a, Cayenne.objectForPK(context, artistId(1)));
+        assertSame(a, context.objectForPK(artistId(1)));
         assertEquals(PersistenceState.COMMITTED, a.getPersistenceState());
         assertEquals("a1", a.getArtistName());
     }
@@ -130,7 +139,7 @@ public class DataContextIdQueryIT {
     @Test
     public void hollowObject_FromSharedCache() throws Exception {
         tArtist.insert(1, "a1");
-        Cayenne.objectForPK(context, Artist.class, 1);
+        context.objectForPK(Artist.class, 1);
 
         DataContext context2 = (DataContext) env.runtime().newContext();
         Artist a = (Artist) context2.findOrCreateObject(artistId(1));
@@ -148,7 +157,7 @@ public class DataContextIdQueryIT {
         Artist a = (Artist) context.findOrCreateObject(artistId(1));
         assertEquals(PersistenceState.HOLLOW, a.getPersistenceState());
 
-        assertNull(Cayenne.objectForPK(context, artistId(1)));
+        assertNull(context.objectForPK(artistId(1)));
         assertThrows(FaultFailureException.class, a::getArtistName);
     }
 
@@ -157,7 +166,7 @@ public class DataContextIdQueryIT {
         tArtist.insert(1, "a1");
 
         ObjectContext child = env.runtime().newContext(context);
-        Artist a = (Artist) Cayenne.objectForPK(child, artistId(1));
+        Artist a = (Artist) child.objectForPK(artistId(1));
         assertNotNull(a);
         assertSame(child, a.getObjectContext());
         assertEquals(PersistenceState.COMMITTED, a.getPersistenceState());
@@ -171,12 +180,12 @@ public class DataContextIdQueryIT {
     public void nestedContext_ParentState() throws Exception {
         tArtist.insert(1, "a1");
 
-        Artist parentA = Cayenne.objectForPK(context, Artist.class, 1);
+        Artist parentA = context.objectForPK(Artist.class, 1);
         parentA.setArtistName("a2");
 
         ObjectContext child = env.runtime().newContext(context);
         env.runWithQueriesBlocked(() -> {
-            Artist a = (Artist) Cayenne.objectForPK(child, artistId(1));
+            Artist a = (Artist) child.objectForPK(artistId(1));
             assertNotNull(a);
             assertSame(child, a.getObjectContext());
 
@@ -189,14 +198,14 @@ public class DataContextIdQueryIT {
     @Test
     public void nestedContext_NoMatchingRow() {
         ObjectContext child = env.runtime().newContext(context);
-        assertNull(Cayenne.objectForPK(child, artistId(1)));
+        assertNull(child.objectForPK(artistId(1)));
     }
 
     @Test
     public void refreshFromDB() throws Exception {
         tArtist.insert(1, "a1");
 
-        Artist a = Cayenne.objectForPK(context, Artist.class, 1);
+        Artist a = context.objectForPK(Artist.class, 1);
         assertEquals(1, tArtist.update().set("ARTIST_NAME", "a2").where("ARTIST_ID", 1).execute());
 
         // an id lookup never refreshes a registered object, an explicit select does

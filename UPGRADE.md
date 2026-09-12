@@ -153,7 +153,7 @@ Expression caseWhenExp = caseWhen(
 
   ```java
   // object lookup via the caches (ObjectIdQuery.CACHE)
-  Artist a = (Artist) Cayenne.objectForPK(context, id);
+  Artist a = (Artist) context.objectForPK(id);
 
   // forced refresh from the database (ObjectIdQuery.CACHE_REFRESH)
   Artist a = ObjectSelect.query(Artist.class).where(Artist.SELF.eqId(id)).selectOne(context);
@@ -164,9 +164,6 @@ Expression caseWhenExp = caseWhen(
   // committed snapshot lookup in the snapshot cache only (ObjectIdQuery.CACHE_NOREFRESH)
   DataRow row = context.getObjectStore().getCachedSnapshot(id);
   ```
-
-  Internally the object lookup is now a `DataChannel.onIdQuery(ObjectContext, ObjectId)` method. Custom `DataChannel`
-  implementations and decorators need to implement it.
 
 *  The `org.apache.cayenne.query.ParameterizedQuery` interface was removed, together with the `createQuery(Map)`
   methods of `SQLTemplate`, `ProcedureQuery` and `ObjectSelect` that implemented it. Applying parameters to a mapped

@@ -40,6 +40,7 @@ import org.apache.cayenne.graph.CompoundDiff;
 import org.apache.cayenne.graph.GraphDiff;
 import org.apache.cayenne.graph.GraphEvent;
 import org.apache.cayenne.graph.GraphManager;
+import org.apache.cayenne.map.EntityInheritanceTree;
 import org.apache.cayenne.map.EntityResolver;
 import org.apache.cayenne.map.LifecycleEvent;
 import org.apache.cayenne.map.ObjEntity;
@@ -378,6 +379,30 @@ public class DataContext implements ObjectContext {
             GraphEvent e = new GraphEvent(this, postedBy, changes);
             manager.postEvent(e, DataChannel.GRAPH_ROLLEDBACK_SUBJECT);
         }
+    }
+
+    /**
+     * @since 5.0
+     */
+    @Override
+    public Persistent objectForPK(ObjectId id) {
+
+        // a resolved object registered in the context needs no lookup down the channel stack. A HOLLOW object does,
+        // as its row may no longer exist. Objects are registered under the ids of their concrete entities, so check
+        // the ids of the subentities too
+        EntityInheritanceTree inheritanceTree = getEntityResolver().getInheritanceTree(id.getEntityName());
+        if (inheritanceTree == null) {
+            throw new CayenneRuntimeException("Non-existent ObjEntity: %s", id.getEntityName());
+        }
+
+        for (ObjectId candidateId : inheritanceTree.polymorphicIds(id)) {
+            if (getGraphManager().getNode(candidateId) instanceof Persistent object
+                    && object.getPersistenceState() != PersistenceState.HOLLOW) {
+                return object;
+            }
+        }
+
+        return getChannel().onIdQuery(this, id);
     }
 
     /**

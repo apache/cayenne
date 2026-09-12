@@ -119,7 +119,7 @@ public class ObjectStoreIT {
         TableHelper tArtist = env.table("ARTIST", "ARTIST_ID", "ARTIST_NAME");
         tArtist.insert(1, "a1");
 
-        Artist a = Cayenne.objectForPK(env.context(), Artist.class, 1);
+        Artist a = env.context().objectForPK(Artist.class, 1);
         a.setArtistName("a2");
 
         DataContext child = (DataContext) env.runtime().newContext(env.context());

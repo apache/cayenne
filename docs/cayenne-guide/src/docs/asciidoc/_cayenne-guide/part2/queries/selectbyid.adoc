@@ -71,5 +71,5 @@ List<Painting> paintings = ObjectSelect.query(Painting.class)
     .select(context);
 ----
 
-To fetch a single object by a known PK, `Cayenne.objectForPK(..)` is often shorter still - see
+To fetch a single object by a known PK, `ObjectContext.objectForPK(..)` is often shorter still - see
 <<persistent-objects-objectcontext,the ObjectContext chapter>>.

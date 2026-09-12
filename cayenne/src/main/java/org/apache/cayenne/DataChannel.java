@@ -123,7 +123,7 @@ public interface DataChannel {
      * cached state.
      * <p>
      * This is a callback invoked by a child context to resolve a HOLLOW object, or to look up an object it has no
-     * registered copy of. Application code should call {@link Cayenne#objectForPK(ObjectContext, ObjectId)} instead.
+     * registered copy of. Application code should call {@link ObjectContext#objectForPK(ObjectId)} instead.
      *
      * @param context an ObjectContext that originated the request and that the returned object belongs to.
      * @param id      id of the object to resolve.

@@ -57,12 +57,12 @@ public class DataContextIdQuery_PolymorphicIT extends PeopleTestBase {
     public void polymorphicSharedCache() throws SQLException {
         tPerson.insert(1, "P1", "EM");
 
-        AbstractPerson ap1 = (AbstractPerson) Cayenne.objectForPK(context1, superId(1));
+        AbstractPerson ap1 = (AbstractPerson) context1.objectForPK(superId(1));
         assertInstanceOf(Manager.class, ap1);
 
         env.runWithQueriesBlocked(() -> {
             // use different context to ensure we hit shared cache
-            AbstractPerson ap2 = (AbstractPerson) Cayenne.objectForPK(context2, superId(1));
+            AbstractPerson ap2 = (AbstractPerson) context2.objectForPK(superId(1));
             assertInstanceOf(Manager.class, ap2);
         });
     }
@@ -79,7 +79,7 @@ public class DataContextIdQuery_PolymorphicIT extends PeopleTestBase {
 
         env.runWithQueriesBlocked(() -> {
             // use different context to ensure we hit shared cache
-            AbstractPerson ap1 = (AbstractPerson) Cayenne.objectForPK(context2, superId(Cayenne.intPKForObject(e)));
+            AbstractPerson ap1 = (AbstractPerson) context2.objectForPK(superId(Cayenne.intPKForObject(e)));
             assertInstanceOf(Employee.class, ap1);
         });
     }
@@ -88,25 +88,25 @@ public class DataContextIdQuery_PolymorphicIT extends PeopleTestBase {
     public void polymorphicRegisteredObject() throws SQLException {
         tPerson.insert(1, "P1", "EM");
 
-        AbstractPerson ap1 = (AbstractPerson) Cayenne.objectForPK(context1, superId(1));
+        AbstractPerson ap1 = (AbstractPerson) context1.objectForPK(superId(1));
         assertInstanceOf(Manager.class, ap1);
 
         // evict the snapshot, so that only the object graph can serve the lookup
         env.runtime().getDataDomain().getSharedSnapshotCache().clear();
 
-        env.runWithQueriesBlocked(() -> assertSame(ap1, Cayenne.objectForPK(context1, superId(1))));
+        env.runWithQueriesBlocked(() -> assertSame(ap1, context1.objectForPK(superId(1))));
     }
 
     @Test
     public void polymorphicNestedContext() throws SQLException {
         tPerson.insert(1, "P1", "EM");
 
-        AbstractPerson ap1 = (AbstractPerson) Cayenne.objectForPK(context1, superId(1));
+        AbstractPerson ap1 = (AbstractPerson) context1.objectForPK(superId(1));
         assertInstanceOf(Manager.class, ap1);
 
         DataContext child = (DataContext) env.runtime().newContext(context1);
         env.runWithQueriesBlocked(() -> {
-            AbstractPerson ap2 = (AbstractPerson) Cayenne.objectForPK(child, superId(1));
+            AbstractPerson ap2 = (AbstractPerson) child.objectForPK(superId(1));
             assertInstanceOf(Manager.class, ap2);
             assertSame(child, ap2.getObjectContext());
         });

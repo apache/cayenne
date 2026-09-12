@@ -19,9 +19,7 @@
 package org.apache.cayenne;
 
 import org.apache.cayenne.exp.path.CayennePath;
-import org.apache.cayenne.graph.GraphManager;
 import org.apache.cayenne.map.DbEntity;
-import org.apache.cayenne.map.EntityInheritanceTree;
 import org.apache.cayenne.map.ObjEntity;
 import org.apache.cayenne.query.Query;
 import org.apache.cayenne.reflect.ClassDescriptor;
@@ -335,133 +333,61 @@ public class Cayenne {
     }
 
     /**
-     * Returns an object matching an int primary key. If the object is mapped to
-     * use non-integer PK or a compound PK, CayenneRuntimeException is thrown.
-     * <p>
-     * If this object is already cached in the ObjectStore, it is returned
-     * without a query. Otherwise a query is built and executed against the
-     * database.
-     * </p>
-     * 
-     * @see #objectForPK(ObjectContext, ObjectId)
+     * @deprecated use {@link ObjectContext#objectForPK(Class, Object)}
      */
-    @SuppressWarnings("unchecked")
-	public static <T> T objectForPK(ObjectContext context, Class<T> persistentObjectClass, int pk) {
-        return (T) objectForPK(context, buildId(context, persistentObjectClass, pk));
+    @Deprecated(since = "5.0", forRemoval = true)
+    public static <T extends Persistent> T objectForPK(ObjectContext context, Class<T> persistentObjectClass, int pk) {
+        return context.objectForPK(persistentObjectClass, pk);
     }
 
     /**
-     * Returns an object matching an Object primary key. If the object is mapped
-     * to use a compound PK, CayenneRuntimeException is thrown.
-     * <p>
-     * If this object is already cached in the ObjectStore, it is returned
-     * without a query. Otherwise a query is built and executed against the
-     * database.
-     * </p>
-     * 
-     * @see #objectForPK(ObjectContext, ObjectId)
+     * @deprecated use {@link ObjectContext#objectForPK(Class, Object)}
      */
-    @SuppressWarnings("unchecked")
-	public static <T> T objectForPK(ObjectContext context, Class<T> persistentObjectClass, Object pk) {
-        return (T) objectForPK(context, buildId(context, persistentObjectClass, pk));
+    @Deprecated(since = "5.0", forRemoval = true)
+    public static <T extends Persistent> T objectForPK(ObjectContext context, Class<T> persistentObjectClass,
+                                                          Object pk) {
+        return context.objectForPK(persistentObjectClass, pk);
     }
 
     /**
-     * Returns an object matching a primary key. PK map parameter should use
-     * database PK column names as keys.
-     * <p>
-     * If this object is already cached in the ObjectStore, it is returned
-     * without a query. Otherwise a query is built and executed against the
-     * database.
-     * </p>
-     * 
-     * @see #objectForPK(ObjectContext, ObjectId)
+     * @deprecated use {@link ObjectContext#objectForPK(Class, Map)}
      */
-    @SuppressWarnings("unchecked")
-	public static <T> T objectForPK(ObjectContext context, Class<T> persistantObjectClass, Map<String, ?> pk) {
-
-        ObjEntity entity = context.getEntityResolver().getObjEntity(persistantObjectClass);
-        if (entity == null) {
-            throw new CayenneRuntimeException("Non-existent ObjEntity for class: %s", persistantObjectClass);
-        }
-
-        return (T) objectForPK(context, ObjectId.of(entity.getName(), pk));
+    @Deprecated(since = "5.0", forRemoval = true)
+    public static <T extends Persistent> T objectForPK(ObjectContext context, Class<T> persistentObjectClass,
+                                                          Map<String, ?> pk) {
+        return context.objectForPK(persistentObjectClass, pk);
     }
 
     /**
-     * Returns an object matching an int primary key. If the object is mapped to
-     * use non-integer PK or a compound PK, CayenneRuntimeException is thrown.
-     * <p>
-     * If this object is already cached in the ObjectStore, it is returned
-     * without a query. Otherwise a query is built and executed against the
-     * database.
-     * </p>
-     * 
-     * @see #objectForPK(ObjectContext, ObjectId)
+     * @deprecated use {@link ObjectContext#objectForPK(String, Object)}
      */
+    @Deprecated(since = "5.0", forRemoval = true)
     public static Object objectForPK(ObjectContext context, String objEntityName, int pk) {
-        return objectForPK(context, buildId(context, objEntityName, pk));
+        return context.objectForPK(objEntityName, pk);
     }
 
     /**
-     * Returns an object matching an Object primary key. If the object is mapped
-     * to use a compound PK, CayenneRuntimeException is thrown.
-     * <p>
-     * If this object is already cached in the ObjectStore, it is returned
-     * without a query. Otherwise a query is built and executed against the
-     * database.
-     * </p>
-     * 
-     * @see #objectForPK(ObjectContext, ObjectId)
+     * @deprecated use {@link ObjectContext#objectForPK(String, Object)}
      */
+    @Deprecated(since = "5.0", forRemoval = true)
     public static Object objectForPK(ObjectContext context, String objEntityName, Object pk) {
-        return objectForPK(context, buildId(context, objEntityName, pk));
+        return context.objectForPK(objEntityName, pk);
     }
 
     /**
-     * Returns an object matching a primary key. PK map parameter should use
-     * database PK column names as keys.
-     * <p>
-     * If this object is already cached in the ObjectStore, it is returned
-     * without a query. Otherwise a query is built and executed against the
-     * database.
-     * </p>
-     * 
-     * @see #objectForPK(ObjectContext, ObjectId)
+     * @deprecated use {@link ObjectContext#objectForPK(String, Map)}
      */
+    @Deprecated(since = "5.0", forRemoval = true)
     public static Object objectForPK(ObjectContext context, String objEntityName, Map<String, ?> pk) {
-        if (objEntityName == null) {
-            throw new IllegalArgumentException("Null ObjEntity name.");
-        }
-
-        return objectForPK(context, ObjectId.of(objEntityName, pk));
+        return context.objectForPK(objEntityName, pk);
     }
 
     /**
-     * Returns an object matching ObjectId. If this object is already cached in
-     * the ObjectStore, it is returned without a query. Otherwise a query is
-     * built and executed against the database.
-     * 
-     * @return A persistent object that matched the id, null if no matching
-     *         objects were found
-     * @throws CayenneRuntimeException
-     *             if more than one object matched ObjectId.
+     * @deprecated use {@link ObjectContext#objectForPK(ObjectId)}
      */
+    @Deprecated(since = "5.0", forRemoval = true)
     public static Object objectForPK(ObjectContext context, ObjectId id) {
-
-        // a resolved object registered in the context needs no lookup down the channel stack. A HOLLOW object does,
-        // as its row may no longer exist. Objects are registered under the ids of their concrete entities, so check
-        // the ids of the subentities too
-        GraphManager graphManager = context.getGraphManager();
-        EntityInheritanceTree inheritanceTree = context.getEntityResolver().getInheritanceTree(id.getEntityName());
-        for (ObjectId candidateId : inheritanceTree.polymorphicIds(id)) {
-            if (graphManager.getNode(candidateId) instanceof Persistent object
-                    && object.getPersistenceState() != PersistenceState.HOLLOW) {
-                return object;
-            }
-        }
-
-        return context.getChannel().onIdQuery(context, id);
+        return context.objectForPK(id);
     }
 
     /**
@@ -479,52 +405,6 @@ public class Cayenne {
         }
 
         return objects.get(0);
-    }
-
-    static ObjectId buildId(ObjectContext context, String objEntityName, Object pk) {
-        if (pk == null) {
-            throw new IllegalArgumentException("Null PK");
-        }
-
-        if (objEntityName == null) {
-            throw new IllegalArgumentException("Null ObjEntity name.");
-        }
-
-        ObjEntity entity = context.getEntityResolver().getObjEntity(objEntityName);
-        if (entity == null) {
-            throw new CayenneRuntimeException("Non-existent ObjEntity: %s", objEntityName);
-        }
-
-        Collection<String> pkAttributes = entity.getPrimaryKeyNames();
-        if (pkAttributes.size() != 1) {
-            throw new CayenneRuntimeException("PK contains %d columns, expected 1.", pkAttributes.size());
-        }
-
-        String attr = pkAttributes.iterator().next();
-        return ObjectId.of(objEntityName, attr, pk);
-    }
-
-    static ObjectId buildId(ObjectContext context, Class<?> persistentClass, Object pk) {
-        if (pk == null) {
-            throw new IllegalArgumentException("Null PK");
-        }
-
-        if (persistentClass == null) {
-            throw new IllegalArgumentException("Null Persistent class.");
-        }
-
-        ObjEntity entity = context.getEntityResolver().getObjEntity(persistentClass);
-        if (entity == null) {
-            throw new CayenneRuntimeException("Unmapped Persistent Class: %s", persistentClass.getName());
-        }
-
-        Collection<String> pkAttributes = entity.getPrimaryKeyNames();
-        if (pkAttributes.size() != 1) {
-            throw new CayenneRuntimeException("PK contains %d columns, expected 1.", pkAttributes.size());
-        }
-
-        String attr = pkAttributes.iterator().next();
-        return ObjectId.of(entity.getName(), attr, pk);
     }
 
     protected Cayenne() {

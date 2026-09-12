@@ -21,11 +21,14 @@ package org.apache.cayenne;
 
 import org.apache.cayenne.graph.GraphManager;
 import org.apache.cayenne.map.EntityResolver;
+import org.apache.cayenne.map.ObjEntity;
 import org.apache.cayenne.query.Query;
 import org.apache.cayenne.query.Select;
 
 import java.util.Collection;
 import java.util.List;
+import java.util.Map;
+import java.util.Objects;
 
 /**
  * A Cayenne object facade to a persistent store. Instances of ObjectContext are
@@ -82,6 +85,101 @@ public interface ObjectContext {
      * @since 3.1
      */
     <T extends Persistent> T localObject(T objectFromAnotherContext);
+
+    /**
+     * Returns an object matching a single-column primary key, or null if there's no such object. If the entity is
+     * mapped with a compound PK, CayenneRuntimeException is thrown.
+     * <p>
+     * A resolved object registered in this context is returned without a query. Otherwise the object is looked up in
+     * the caches down the DataChannel stack, and then in the database.
+     *
+     * @since 5.0
+     */
+    @SuppressWarnings("unchecked")
+    default <T extends Persistent> T objectForPK(Class<T> type, Object pk) {
+        return (T) objectForPK(singleColumnId(entityForClass(type), pk));
+    }
+
+    /**
+     * Returns an object matching a primary key, or null if there's no such object. The PK map parameter should use
+     * database PK column names as keys.
+     * <p>
+     * A resolved object registered in this context is returned without a query. Otherwise the object is looked up in
+     * the caches down the DataChannel stack, and then in the database.
+     *
+     * @since 5.0
+     */
+    @SuppressWarnings("unchecked")
+    default <T extends Persistent> T objectForPK(Class<T> type, Map<String, ?> pk) {
+        return (T) objectForPK(ObjectId.of(entityForClass(type).getName(), pk));
+    }
+
+    /**
+     * Returns an object matching a single-column primary key, or null if there's no such object. If the entity is
+     * mapped with a compound PK, CayenneRuntimeException is thrown.
+     * <p>
+     * A resolved object registered in this context is returned without a query. Otherwise the object is looked up in
+     * the caches down the DataChannel stack, and then in the database.
+     *
+     * @since 5.0
+     */
+    default Persistent objectForPK(String entityName, Object pk) {
+        Objects.requireNonNull(entityName, "Null entity name");
+
+        ObjEntity entity = getEntityResolver().getObjEntity(entityName);
+        if (entity == null) {
+            throw new CayenneRuntimeException("Non-existent ObjEntity: %s", entityName);
+        }
+
+        return objectForPK(singleColumnId(entity, pk));
+    }
+
+    /**
+     * Returns an object matching a primary key, or null if there's no such object. The PK map parameter should use
+     * database PK column names as keys.
+     * <p>
+     * A resolved object registered in this context is returned without a query. Otherwise the object is looked up in
+     * the caches down the DataChannel stack, and then in the database.
+     *
+     * @since 5.0
+     */
+    default Persistent objectForPK(String entityName, Map<String, ?> pk) {
+        return objectForPK(ObjectId.of(entityName, pk));
+    }
+
+    /**
+     * Returns an object matching an ObjectId, or null if there's no such object. The id may be that of a superentity
+     * of the actual object entity.
+     * <p>
+     * A resolved object registered in this context is returned without a query. Otherwise the object is looked up in
+     * the caches down the DataChannel stack, and then in the database.
+     *
+     * @throws FaultFailureException if more than one row matches the id.
+     * @since 5.0
+     */
+    Persistent objectForPK(ObjectId id);
+
+    private ObjEntity entityForClass(Class<?> persistentClass) {
+        Objects.requireNonNull(persistentClass, "Null persistent class");
+
+        ObjEntity entity = getEntityResolver().getObjEntity(persistentClass);
+        if (entity == null) {
+            throw new CayenneRuntimeException("Unmapped persistent class: %s", persistentClass.getName());
+        }
+        return entity;
+    }
+
+    private static ObjectId singleColumnId(ObjEntity entity, Object pk) {
+        Objects.requireNonNull(pk, "Null PK");
+
+        Collection<String> pkAttributes = entity.getPrimaryKeyNames();
+        if (pkAttributes.size() != 1) {
+            throw new CayenneRuntimeException("PK of %s contains %d columns, expected 1.",
+                    entity.getName(), pkAttributes.size());
+        }
+
+        return ObjectId.of(entity.getName(), pkAttributes.iterator().next(), pk);
+    }
 
     /**
      * Creates a new persistent object of a given class scheduled to be inserted
