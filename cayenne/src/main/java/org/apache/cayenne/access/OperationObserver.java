@@ -27,6 +27,7 @@ import org.apache.cayenne.access.translator.TranslatedStatement;
 import org.apache.cayenne.query.Query;
 
 import java.util.List;
+import java.util.Map;
 
 /**
  * Defines a set of callback methods that allow {@link DataNode} to pass back query
@@ -84,6 +85,15 @@ public interface OperationObserver extends OperationHints {
      * @since 3.0
      */
     default void nextRows(Query q, ResultIterator<?> it) {
+    }
+
+    /**
+     * Callback method invoked with the values of the OUT and INOUT parameters of a stored procedure call, keyed by
+     * parameter name. Invoked at most once per call, and only if the procedure has such parameters.
+     *
+     * @since 5.0
+     */
+    default void nextOutParameters(Query query, Map<String, ?> outParameters) {
     }
 
     /**

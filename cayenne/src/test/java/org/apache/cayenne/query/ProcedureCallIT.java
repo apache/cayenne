@@ -19,7 +19,7 @@
 package org.apache.cayenne.query;
 
 import org.apache.cayenne.DataRow;
-import org.apache.cayenne.ProcedureResult;
+import org.apache.cayenne.QueryResultItem;
 import org.apache.cayenne.dba.TypesMapping;
 import org.apache.cayenne.log.NoopSQLLogger;
 import org.apache.cayenne.testdo.testmap.Artist;
@@ -35,6 +35,7 @@ import java.math.BigDecimal;
 import java.sql.Types;
 import java.util.List;
 import java.util.Map;
+import java.util.function.Supplier;
 
 import static org.junit.jupiter.api.Assertions.*;
 
@@ -57,7 +58,7 @@ public class ProcedureCallIT {
         // create an artist with painting in the database
         createArtist(1000.0);
 
-        runProcedureSelect(ProcedureCall.query(UPDATE_STORED_PROCEDURE).param("paintingPrice", 3000));
+        runProcedureCall(ProcedureCall.query(UPDATE_STORED_PROCEDURE).param("paintingPrice", 3000));
 
         // check that price have doubled
         List<Artist> artists = ObjectSelect.query(Artist.class).prefetch(Artist.PAINTING_ARRAY.disjoint()).select(env.context());
@@ -77,7 +78,7 @@ public class ProcedureCallIT {
         // create an artist with painting in the database
         createArtist(1000.0);
 
-        runProcedureSelect(ProcedureCall.query(UPDATE_STORED_PROCEDURE_NOPARAM));
+        runProcedureCall(ProcedureCall.query(UPDATE_STORED_PROCEDURE_NOPARAM));
 
         // check that price have doubled
         List<Artist> artists = ObjectSelect.query(Artist.class).prefetch(Artist.PAINTING_ARRAY.disjoint()).select(env.context());
@@ -101,7 +102,7 @@ public class ProcedureCallIT {
                 ProcedureCall.query(SELECT_STORED_PROCEDURE)
                 .param("aName", "An Artist")
                 .param("paintingPrice", 3000)
-        ).firstList();
+        );
 
         // check the results
         assertNotNull(artists, "Null result from StoredProcedure.");
@@ -131,7 +132,7 @@ public class ProcedureCallIT {
                 .param("aName", "An Artist")
                 .param("paintingPrice", 3000)
                 .limit(2)
-        ).firstList();
+        );
 
         assertEquals(2, artists.size());
     }
@@ -152,7 +153,7 @@ public class ProcedureCallIT {
                 .param("aName", "An Artist")
                 .param("paintingPrice", 3000)
                 .offset(2)
-        ).firstList();
+        );
 
         assertEquals(1, artists.size());
     }
@@ -170,12 +171,12 @@ public class ProcedureCallIT {
                 ProcedureCall.query(SELECT_STORED_PROCEDURE)
                 .param("aName", "An Artist")
                 .capsStrategy(CapsStrategy.LOWER)
-        ).firstList();
+        );
 
         List<DataRow> artists1 = runProcedureSelect(ProcedureCall.query(SELECT_STORED_PROCEDURE)
                 .param("aName", "An Artist")
                 .capsStrategy(CapsStrategy.UPPER)
-        ).firstList();
+        );
 
         assertTrue(artists.get(0).containsKey("date_of_birth"));
         assertFalse(artists.get(0).containsKey("DATE_OF_BIRTH"));
@@ -191,12 +192,18 @@ public class ProcedureCallIT {
             return;
         }
 
-        ProcedureResult result = runProcedureSelect(
+        List<QueryResultItem> result = runProcedureCall(
                 ProcedureCall.query(OUT_STORED_PROCEDURE)
                 .param("in_param", 20)
         );
 
-        Number price = (Number) result.getOutParam("out_param");
+        Map<String, ?> outParams = result.stream()
+                .filter(QueryResultItem.OutParameters.class::isInstance)
+                .map(QueryResultItem.OutParameters.class::cast)
+                .findFirst()
+                .orElseThrow()
+                .values();
+        Number price = (Number) outParams.get("out_param");
         assertEquals(40, price.intValue());
     }
 
@@ -215,12 +222,12 @@ public class ProcedureCallIT {
 
         List<Artist> artists = runProcedureSelect(ProcedureCall.query(SELECT_STORED_PROCEDURE, Artist.class)
                 .param("aName", "An Artist")
-        ).firstList();
+        );
 
         // check the results
         assertNotNull(artists, "Null result from StoredProcedure.");
         assertEquals(1, artists.size());
-        Artist a = (Artist) artists.get(0);
+        Artist a = artists.get(0);
         Painting p = a.getPaintingArray().get(0);
 
         // invalidate painting, it may have been updated in the proc
@@ -250,7 +257,7 @@ public class ProcedureCallIT {
                 .param("aName", "An Artist")
                 .param("paintingPrice", 3000)
                 .resultDescriptor(columns)
-        ).firstList();
+        );
 
         // check the results
         assertNotNull(rows, "Null result from StoredProcedure.");
@@ -266,7 +273,15 @@ public class ProcedureCallIT {
         assertTrue(id instanceof Long, "Expected Long, got: " + id.getClass().getName());
     }
 
-    private <T> ProcedureResult<T> runProcedureSelect(ProcedureCall<T> q) {
+    private <T> List<T> runProcedureSelect(ProcedureCall<T> q) {
+        return runProcedure(() -> q.select(env.context()));
+    }
+
+    private List<QueryResultItem> runProcedureCall(ProcedureCall<?> q) {
+        return runProcedure(() -> q.call(env.context()));
+    }
+
+    private <R> R runProcedure(Supplier<R> call) {
         // Sybase blows whenever a transaction wraps a SP, so turn off
         // transactions
 
@@ -280,7 +295,7 @@ public class ProcedureCallIT {
         BaseTransaction.bindThreadTransaction(t);
 
         try {
-            return q.call(env.context());
+            return call.get();
         } finally {
             BaseTransaction.bindThreadTransaction(null);
             t.commit();

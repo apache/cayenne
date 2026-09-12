@@ -20,6 +20,7 @@
 package org.apache.cayenne;
 
 import java.util.List;
+import java.util.Map;
 
 /**
  * Represents a result of query execution. It potentially contain a mix of update counts
@@ -103,6 +104,25 @@ public interface QueryResponse {
      * method.
      */
     default int[] currentUpdateCount() {
+        return null;
+    }
+
+    /**
+     * Returns whether the current iteration result is a map of stored procedure OUT parameters.
+     *
+     * @since 5.0
+     */
+    default boolean isOutParameters() {
+        return false;
+    }
+
+    /**
+     * Returns the current iteration result as a map of stored procedure OUT parameters keyed by name. Returns null
+     * unless {@link #isOutParameters()} is true.
+     *
+     * @since 5.0
+     */
+    default Map<String, ?> currentOutParameters() {
         return null;
     }
 

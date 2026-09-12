@@ -50,7 +50,8 @@ ${importUtils.addType(${dataMapUtils.getParameterType(${selectQuery}, ${paramete
 #end##
 #if($object.hasExecQueries())##
 ${importUtils.addType('java.util.Map')}##
-${importUtils.addType('org.apache.cayenne.QueryResult')}##
+${importUtils.addType('java.util.List')}##
+${importUtils.addType('org.apache.cayenne.QueryResultItem')}##
 ${importUtils.addType('org.apache.cayenne.query.MappedExec')}##
 #end##
 ${importUtils.generate()}
@@ -93,7 +94,7 @@ public class ${subClassName} {
 #end
 #end
 #foreach( $execQuery in ${object.ExecQueries})
-    public QueryResult<?> perform${dataMapUtils.getQueryMethodName(${execQuery})}(ObjectContext context, Map<String, ?> parameters) {
+    public List<QueryResultItem> perform${dataMapUtils.getQueryMethodName(${execQuery})}(ObjectContext context, Map<String, ?> parameters) {
         MappedExec query = MappedExec.query(${stringUtils.capitalizedAsConstant(${execQuery.Name})}_QUERYNAME).params(parameters);
         return query.execute(context);
     }

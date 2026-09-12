@@ -165,6 +165,35 @@ Expression caseWhenExp = caseWhen(
   DataRow row = context.getObjectStore().getCachedSnapshot(id);
   ```
 
+*  Per [CAY-3023](https://issues.apache.org/jira/browse/CAY-3023) the `QueryResult` was removed. `SQLExec.execute(..)`, `MappedExec.execute(..)` and 
+   `ProcedureCall.call(..)` now return a `List<QueryResultItem>` holding the items in the order the query produced them,
+   so callers that know the shape of their query should access them by index. `QueryResultItem` is a sealed interface with
+   `Select`, `Update`, `Iterator` and `OutParameters` record variants, replacing the `isSelectResult()` /
+   `getSelectResult()` / `getUpdateCount()` accessors, so a multipart result can also be scanned with a
+   pattern-matching switch:
+
+  ```java
+  List<QueryResultItem> result = SQLExec.query(sql).execute(context);
+  int updated = ((QueryResultItem.Update) result.getFirst()).count();
+
+  for (QueryResultItem item : result) {
+      switch (item) {
+          case QueryResultItem.Select<?> select -> process(select.objects());
+          case QueryResultItem.Update update -> process(update.counts());
+          case QueryResultItem.Iterator<?> iterator -> process(iterator.iterator());
+          case QueryResultItem.OutParameters out -> process(out.values());
+      }
+  }
+  ```
+
+   Stored procedure OUT parameters are no longer disguised as a one-row result set. They arrive as a dedicated
+   `QueryResultItem.OutParameters` item (a map keyed by parameter name), `QueryResponse` reports them via
+   `isOutParameters()` / `currentOutParameters()`.
+
+   The cgen templates now emit `List<QueryResultItem>` instead of `QueryResult<?>` for the `perform*` methods of
+   mapped exec queries, so regenerate your classes via Modeler ("Tools" → "Generate Classes") or the AI plugin
+   if you have generated classes with multi-part queries.
+
 *  The `org.apache.cayenne.query.ParameterizedQuery` interface was removed, together with the `createQuery(Map)`
   methods of `SQLTemplate`, `ProcedureQuery` and `ObjectSelect` that implemented it. Applying parameters to a mapped
   query is now the job of the query descriptor - override `QueryDescriptor.buildQuery(Map)` if you have a custom

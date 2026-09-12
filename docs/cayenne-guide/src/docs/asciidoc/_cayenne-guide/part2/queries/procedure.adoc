@@ -26,31 +26,35 @@ So use root class to get a single result set, and use only procedure name for an
 List<Artist> result = ProcedureCall.query("my_procedure", Artist.class)
     .param("p1", "abc")
     .param("p2", 3000)
-    .call(context)
-    .firstList();
+    .select(context);
 ----
 
 [source, java]
 ----
 // here we do not bother with root class.
 // Procedure name gives us needed routing information
-ProcedureResult result = ProcedureCall.query("my_procedure")
+List<QueryResultItem> result = ProcedureCall.query("my_procedure")
     .param("p1", "abc")
     .param("p2", 3000)
-    .call();
+    .call(context);
 ----
 
-A stored procedure can return data back to the application as result sets or via OUT parameters.
-To simplify the processing of the query output, QueryResponse treats OUT parameters as if it was a separate result set.
-For stored procedures declaref any OUT or INOUT parameters, `ProcedureResult` have convenient utility method to get them:
+`QueryResultItem` is a sealed interface with `Select`, `Update`, `Iterator` and `OutParameters` variants, listed in
+the order the procedure produced them, so the items can be accessed by index or scanned with a pattern-matching
+switch. A stored procedure can return data back to the application as result sets or via OUT parameters.
+The values of OUT and INOUT parameters are reported as a separate `QueryResultItem.OutParameters` item of the
+result, a map keyed by parameter name:
 
 [source, java]
 ----
-ProcedureResult result = ProcedureCall.query("my_procedure")
-    .call(context);
-
-// read OUT parameters
-Object out = result.getOutParam("out_param");
+for (QueryResultItem item : ProcedureCall.query("my_procedure").call(context)) {
+    switch (item) {
+        case QueryResultItem.Select<?> select -> process(select.objects());
+        case QueryResultItem.Update update -> process(update.counts());
+        case QueryResultItem.OutParameters out -> process(out.values().get("out_param"));
+        default -> {}
+    }
+}
 ----
 
 There maybe a situation when a stored procedure handles its own transactions,

@@ -19,12 +19,11 @@
 package org.apache.cayenne.query;
 
 
+import org.apache.cayenne.CayenneRuntimeException;
 import org.apache.cayenne.DataRow;
 import org.apache.cayenne.ObjectContext;
-import org.apache.cayenne.ProcedureResult;
-import org.apache.cayenne.QueryResponse;
+import org.apache.cayenne.QueryResultItem;
 import org.apache.cayenne.map.EntityResolver;
-import org.apache.cayenne.util.ProcedureResultBuilder;
 
 import java.util.HashMap;
 import java.util.List;
@@ -130,33 +129,56 @@ public class ProcedureCall<T> extends IndirectQuery {
         return this;
     }
 
-    public ProcedureResult<T> call(ObjectContext context) {
-        QueryResponse response = context.performGenericQuery(this);
+    /**
+     * Executes the procedure, returning all of its result sets, update counts and OUT parameters in the order they
+     * were produced.
+     */
+    public List<QueryResultItem> call(ObjectContext context) {
+        return QueryResultItems.fromResponse(context.performGenericQuery(this));
+    }
 
-        ProcedureResultBuilder<T> builder = ProcedureResultBuilder.builder(response.size(), resultClass);
-
-        for (response.reset(); response.next(); ) {
-
-            if (response.isList()) {
-                builder.addSelectResult(response.currentList());
-            } else {
-                builder.addBatchUpdateResult(response.currentUpdateCount());
+    /**
+     * Executes the procedure, returning its first result set.
+     *
+     * @throws CayenneRuntimeException if the procedure produced no result sets.
+     */
+    @SuppressWarnings("unchecked")
+    public List<T> select(ObjectContext context) {
+        for (QueryResultItem item : call(context)) {
+            if (item instanceof QueryResultItem.Select<?> select) {
+                return (List<T>) select.objects();
             }
         }
 
-        return builder.build();
+        throw new CayenneRuntimeException("Procedure '%s' produced no result sets", procedureName);
     }
 
-    public List<T> select(ObjectContext context) {
-        return call(context).firstList();
-    }
-
+    /**
+     * Executes the procedure, returning the counts of its first update.
+     *
+     * @throws CayenneRuntimeException if the procedure produced no updates.
+     */
     public int[] batchUpdate(ObjectContext context) {
-        return call(context).firstBatchUpdateCount();
+        return firstUpdate(context).counts();
     }
 
+    /**
+     * Executes the procedure, returning the count of its first update.
+     *
+     * @throws CayenneRuntimeException if the procedure produced no updates, or the first one is a batch update.
+     */
     public int update(ObjectContext context) {
-        return call(context).firstUpdateCount();
+        return firstUpdate(context).count();
+    }
+
+    private QueryResultItem.Update firstUpdate(ObjectContext context) {
+        for (QueryResultItem item : call(context)) {
+            if (item instanceof QueryResultItem.Update update) {
+                return update;
+            }
+        }
+
+        throw new CayenneRuntimeException("Procedure '%s' produced no updates", procedureName);
     }
 
     @Override

@@ -40,8 +40,8 @@ import java.util.Map;
  * <h3>Execution with DataContext</h3>
  * <h4>Reading OUT parameters</h4>
  * <p>
- * If a ProcedureQuery has OUT parameters, they are wrapped in a separate List in the
- * query result. Such list will contain a single Map with OUT parameter values.
+ * If a ProcedureQuery has OUT parameters, their values are reported as a separate item of the query response, a Map
+ * keyed by parameter name (see {@link org.apache.cayenne.QueryResponse#currentOutParameters()}).
  * </p>
  * <h4>Using ProcedureQuery as a GenericSelectQuery</h4>
  * <p>

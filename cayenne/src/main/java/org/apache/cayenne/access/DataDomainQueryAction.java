@@ -453,6 +453,11 @@ class DataDomainQueryAction implements QueryRouter, OperationObserver {
     }
 
     @Override
+    public void nextOutParameters(Query query, Map<String, ?> outParameters) {
+        fullResponse.addOutParameters(outParameters);
+    }
+
+    @Override
     public void nextGeneratedRows(Query query, List<DataRow> keys, List<ObjectId> idsToUpdate) {
         if (keys != null) {
             nextRows(query, keys);

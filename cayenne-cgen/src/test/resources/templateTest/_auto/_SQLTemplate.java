@@ -1,9 +1,10 @@
 package test.auto;
 
+import java.util.List;
 import java.util.Map;
 
 import org.apache.cayenne.ObjectContext;
-import org.apache.cayenne.QueryResult;
+import org.apache.cayenne.QueryResultItem;
 import org.apache.cayenne.query.MappedExec;
 
 /**
@@ -15,7 +16,7 @@ import org.apache.cayenne.query.MappedExec;
 public class _SQLTemplate {
 
     public static final String SELECT_QUERYNAME = "select";
-    public QueryResult<?> performSelect(ObjectContext context, Map<String, ?> parameters) {
+    public List<QueryResultItem> performSelect(ObjectContext context, Map<String, ?> parameters) {
         MappedExec query = MappedExec.query(SELECT_QUERYNAME).params(parameters);
         return query.execute(context);
     }

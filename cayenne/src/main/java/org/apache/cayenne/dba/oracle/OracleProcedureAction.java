@@ -22,10 +22,10 @@ package org.apache.cayenne.dba.oracle;
 import java.sql.CallableStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
-import java.util.Collections;
+import java.util.LinkedHashMap;
 import java.util.List;
+import java.util.Map;
 
-import org.apache.cayenne.DataRow;
 import org.apache.cayenne.access.DataNode;
 import org.apache.cayenne.access.OperationObserver;
 import org.apache.cayenne.access.jdbc.RSColumn;
@@ -53,8 +53,7 @@ class OracleProcedureAction extends ProcedureAction {
 	protected void readProcedureOutParameters(CallableStatement statement, OperationObserver delegate)
 			throws SQLException, Exception {
 
-		// build result row...
-		DataRow result = null;
+		Map<String, Object> result = null;
 		List<ProcedureParameter> parameters = getProcedure().getCallParameters();
 		for (int i = 0; i < parameters.size(); i++) {
 			ProcedureParameter parameter = parameters.get(i);
@@ -74,7 +73,7 @@ class OracleProcedureAction extends ProcedureAction {
 			// ==== end Oracle-specific part
 			else {
 				if (result == null) {
-					result = new DataRow(2);
+					result = new LinkedHashMap<>();
 				}
 
 				ExtendedType type = dataNode.getAdapter().getExtendedTypes()
@@ -85,9 +84,8 @@ class OracleProcedureAction extends ProcedureAction {
 			}
 		}
 
-		if (result != null && !result.isEmpty()) {
-			// treat out parameters as a separate data row set
-			delegate.nextRows(query, Collections.singletonList(result));
+		if (result != null) {
+			delegate.nextOutParameters(query, result);
 		}
 	}
 }

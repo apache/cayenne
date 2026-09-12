@@ -19,9 +19,7 @@
 package org.apache.cayenne.query;
 
 import org.apache.cayenne.ObjectContext;
-import org.apache.cayenne.QueryResponse;
-import org.apache.cayenne.QueryResult;
-import org.apache.cayenne.util.QueryResultBuilder;
+import org.apache.cayenne.QueryResultItem;
 
 import java.util.List;
 import java.util.Map;
@@ -53,22 +51,12 @@ public class MappedExec extends AbstractMappedQuery {
     }
 
 
-    public QueryResult execute(ObjectContext context) {
-        // TODO: switch ObjectContext to QueryResult instead of QueryResponse
-        // and create its own 'exec' method
-        QueryResponse response = context.performGenericQuery(this);
-
-        QueryResultBuilder builder = QueryResultBuilder.builder(response.size());
-        for (response.reset(); response.next(); ) {
-
-            if (response.isList()) {
-                builder.addSelectResult(response.currentList());
-            } else {
-                builder.addBatchUpdateResult(response.currentUpdateCount());
-            }
-        }
-
-        return builder.build();
+    /**
+     * Executes the query, returning all of its result sets, update counts and OUT parameters in the order they
+     * were produced.
+     */
+    public List<QueryResultItem> execute(ObjectContext context) {
+        return QueryResultItems.fromResponse(context.performGenericQuery(this));
     }
 
     public int[] update(ObjectContext context) {

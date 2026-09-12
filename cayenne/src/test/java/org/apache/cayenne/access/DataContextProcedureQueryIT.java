@@ -20,6 +20,7 @@
 package org.apache.cayenne.access;
 
 import org.apache.cayenne.DataRow;
+import org.apache.cayenne.QueryResponse;
 import org.apache.cayenne.dba.TypesMapping;
 import org.apache.cayenne.log.NoopSQLLogger;
 import org.apache.cayenne.map.Procedure;
@@ -287,15 +288,18 @@ public class DataContextProcedureQueryIT  {
         ProcedureQuery q = new ProcedureQuery(OUT_STORED_PROCEDURE);
         q.addParameter("in_param", 20);
 
-        List<?> rows = runProcedureSelect(q);
+        QueryResponse response = runProcedureGeneric(q);
 
-        assertEquals(1, rows.size());
-        Object row = rows.get(0);
-        assertNotNull(row);
-        assertTrue(row instanceof Map<?, ?>, "Unexpected row class: " + row.getClass().getName());
-        Map<?, ?> outParams = (Map<?, ?>) row;
+        Map<String, ?> outParams = null;
+        for (response.reset(); response.next(); ) {
+            if (response.isOutParameters()) {
+                outParams = response.currentOutParameters();
+            }
+        }
+
+        assertNotNull(outParams, "No OUT parameters in the response");
         Number price = (Number) outParams.get("out_param");
-        assertNotNull(price, "Null result... row content: " + row);
+        assertNotNull(price, "Null result... OUT parameters: " + outParams);
         assertEquals(40, price.intValue());
     }
 
@@ -369,6 +373,18 @@ public class DataContextProcedureQueryIT  {
         Object id = artistRow.get("ARTIST_ID");
         assertNotNull(id);
         assertTrue(id instanceof Long, "Expected Long, got: " + id.getClass().getName());
+    }
+
+    protected QueryResponse runProcedureGeneric(ProcedureQuery q) throws Exception {
+        BaseTransaction t = new ExternalTransaction(NoopSQLLogger.getInstance());
+        BaseTransaction.bindThreadTransaction(t);
+
+        try {
+            return env.context().performGenericQuery(q);
+        } finally {
+            BaseTransaction.bindThreadTransaction(null);
+            t.commit();
+        }
     }
 
     protected List<DataRow> runProcedureSelect(ProcedureQuery q) throws Exception {

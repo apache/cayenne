@@ -21,6 +21,7 @@ package org.apache.cayenne.util;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
 
 import org.apache.cayenne.QueryResponse;
 import org.apache.cayenne.ResultIterator;
@@ -64,6 +65,8 @@ public class GenericResponse implements QueryResponse {
                 addResultList(response.currentList());
             } else if (response.isIterator()) {
                 addResultIterator(response.currentIterator());
+            } else if (response.isOutParameters()) {
+                addOutParameters(response.currentOutParameters());
             } else {
                 addBatchUpdateCount(response.currentUpdateCount());
             }
@@ -95,8 +98,8 @@ public class GenericResponse implements QueryResponse {
     @Override
     public int[] firstUpdateCount() {
         for (reset(); next(); ) {
-            if (!isList()) {
-                return currentUpdateCount();
+            if (results.get(currentIndex - 1) instanceof int[] counts) {
+                return counts;
             }
         }
 
@@ -118,9 +121,20 @@ public class GenericResponse implements QueryResponse {
         return (int[]) results.get(currentIndex - 1);
     }
 
+    @SuppressWarnings("unchecked")
+    @Override
+    public Map<String, ?> currentOutParameters() {
+        return (Map<String, ?>) results.get(currentIndex - 1);
+    }
+
     @Override
     public boolean isList() {
         return results.get(currentIndex - 1) instanceof List;
+    }
+
+    @Override
+    public boolean isOutParameters() {
+        return results.get(currentIndex - 1) instanceof Map;
     }
 
     @Override
@@ -170,6 +184,13 @@ public class GenericResponse implements QueryResponse {
      */
     public void addResultIterator(ResultIterator<?> iterator) {
         results.add(iterator);
+    }
+
+    /**
+     * @since 5.0
+     */
+    public void addOutParameters(Map<String, ?> outParameters) {
+        results.add(outParameters);
     }
 
     /**

@@ -26,11 +26,9 @@ import java.util.Map;
 
 import org.apache.cayenne.CayenneRuntimeException;
 import org.apache.cayenne.ObjectContext;
-import org.apache.cayenne.QueryResponse;
-import org.apache.cayenne.QueryResult;
+import org.apache.cayenne.QueryResultItem;
 import org.apache.cayenne.map.DataMap;
 import org.apache.cayenne.map.EntityResolver;
-import org.apache.cayenne.util.QueryResultBuilder;
 
 /**
  * A generic query based on raw SQL and featuring fluent API. While
@@ -155,46 +153,32 @@ public class SQLExec extends IndirectQuery {
         return positionalParams != null ? positionalParams : Collections.emptyList();
     }
 
-    public QueryResult execute(ObjectContext context) {
-
-        // TODO: switch ObjectContext to QueryResult instead of QueryResponse
-        // and create its own 'exec' method
-        QueryResponse response = context.performGenericQuery(this);
-
-        QueryResultBuilder builder = QueryResultBuilder.builder(response.size());
-        for (response.reset(); response.next(); ) {
-
-            if (response.isList()) {
-                builder.addSelectResult(response.currentList());
-            } else {
-                builder.addBatchUpdateResult(response.currentUpdateCount());
-            }
-        }
-
-        return builder.build();
+    /**
+     * Executes the query, returning all of its result sets and update counts in the order they were produced.
+     */
+    public List<QueryResultItem> execute(ObjectContext context) {
+        return QueryResultItems.fromResponse(context.performGenericQuery(this));
     }
 
     public int update(ObjectContext context) {
-
-        // TODO: create a corresponding method in ObjectContext
-        QueryResult results = execute(context);
-
-        if (results.size() != 1) {
-            throw new CayenneRuntimeException("Expected a single update result. Got a total of %d", results.size());
-        }
-
-        return results.firstUpdateCount();
+        return singleUpdate(context).count();
     }
 
     public int[] updateBatch(ObjectContext context) {
-        // TODO: create a corresponding method in ObjectContext
-        QueryResult results = execute(context);
+        return singleUpdate(context).counts();
+    }
 
+    private QueryResultItem.Update singleUpdate(ObjectContext context) {
+        List<QueryResultItem> results = execute(context);
         if (results.size() != 1) {
             throw new CayenneRuntimeException("Expected a single update result. Got a total of %d", results.size());
         }
 
-        return results.firstBatchUpdateCount();
+        if (results.getFirst() instanceof QueryResultItem.Update update) {
+            return update;
+        }
+
+        throw new CayenneRuntimeException("Expected an update result. Got %s", results.getFirst());
     }
 
     /**

@@ -20,7 +20,6 @@
 package org.apache.cayenne.access.jdbc;
 
 import org.apache.cayenne.CayenneRuntimeException;
-import org.apache.cayenne.DataRow;
 import org.apache.cayenne.access.DataNode;
 import org.apache.cayenne.access.OperationObserver;
 import org.apache.cayenne.access.translator.TranslatedProcedure;
@@ -38,8 +37,9 @@ import java.sql.CallableStatement;
 import java.sql.Connection;
 import java.sql.ResultSet;
 import java.sql.SQLException;
-import java.util.Collections;
+import java.util.LinkedHashMap;
 import java.util.List;
+import java.util.Map;
 
 /**
  * A SQLAction that runs a stored procedure. Note that ProcedureAction has
@@ -211,8 +211,7 @@ public class ProcedureAction extends BaseSQLAction {
 	 */
 	protected void readProcedureOutParameters(CallableStatement statement, OperationObserver delegate) throws Exception {
 
-		// build result row...
-		DataRow result = null;
+		Map<String, Object> result = null;
 		List<ProcedureParameter> parameters = getProcedure().getCallParameters();
 		for (int i = 0; i < parameters.size(); i++) {
 			ProcedureParameter parameter = parameters.get(i);
@@ -222,7 +221,7 @@ public class ProcedureAction extends BaseSQLAction {
 			}
 
 			if (result == null) {
-				result = new DataRow(2);
+				result = new LinkedHashMap<>();
 			}
 
 			ExtendedType<?> type = dataNode.getAdapter()
@@ -233,9 +232,8 @@ public class ProcedureAction extends BaseSQLAction {
 			result.put(parameter.getName(), val);
 		}
 
-		if (result != null && !result.isEmpty()) {
-			// treat out parameters as a separate data row set
-			delegate.nextRows(query, Collections.singletonList(result));
+		if (result != null) {
+			delegate.nextOutParameters(query, result);
 		}
 	}
 

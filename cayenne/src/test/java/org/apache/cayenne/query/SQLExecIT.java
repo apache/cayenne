@@ -19,10 +19,11 @@
 package org.apache.cayenne.query;
 
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
 import org.apache.cayenne.DataRow;
-import org.apache.cayenne.QueryResult;
+import org.apache.cayenne.QueryResultItem;
 import org.apache.cayenne.unit.CayenneProjects;
 import org.apache.cayenne.unit.CayenneTestsEnv;
 import org.junit.jupiter.api.Test;
@@ -52,12 +53,12 @@ public class SQLExecIT {
     @Test
     public void returnGeneratedKeys() {
         if(env.testDbAdapter().supportsGeneratedKeys()) {
-            QueryResult response = SQLExec.query("testmap", "INSERT INTO GENERATED_COLUMN (NAME) VALUES ('Surikov')")
+            List<QueryResultItem> response = SQLExec.query("testmap", "INSERT INTO GENERATED_COLUMN (NAME) VALUES ('Surikov')")
                     .returnGeneratedKeys(true)
                     .execute(env.context());
             assertEquals(2, response.size());
 
-            QueryResult response1 = SQLExec.query("testmap", "INSERT INTO GENERATED_COLUMN (NAME) VALUES ('Sidorov')")
+            List<QueryResultItem> response1 = SQLExec.query("testmap", "INSERT INTO GENERATED_COLUMN (NAME) VALUES ('Sidorov')")
                     .returnGeneratedKeys(false)
                     .execute(env.context());
             assertEquals(1, response1.size());
@@ -79,12 +80,12 @@ public class SQLExecIT {
         int inserted = SQLExec.query("INSERT INTO ARTIST (ARTIST_ID, ARTIST_NAME) VALUES (1, 'a')").update(env.context());
         assertEquals(1, inserted);
 
-        QueryResult result = SQLExec.query("SELECT * FROM ARTIST").execute(env.context());
+        List<QueryResultItem> result = SQLExec.query("SELECT * FROM ARTIST").execute(env.context());
         assertEquals(2, result.size());
-        assertTrue(result.isList());
-        assertEquals(1, result.firstList().size());
+        List<?> rows = ((QueryResultItem.Select<?>) result.getFirst()).objects();
+        assertEquals(1, rows.size());
 
-        DataRow row = (DataRow)result.firstList().get(0);
+        DataRow row = (DataRow) rows.getFirst();
         if(env.testDbAdapter().isLowerCaseNames()) {
             assertTrue(row.containsKey("artist_id"));
             assertEquals(1L, ((Number)row.get("artist_id")).longValue());
@@ -111,8 +112,8 @@ public class SQLExecIT {
     public void execute_MultipleArrayBind() throws Exception {
         SQLExec inserter = SQLExec.query("INSERT INTO ARTIST (ARTIST_ID, ARTIST_NAME) VALUES (#bind($id), #bind($name))");
         for(int i = 0; i < 2; i++) {
-            QueryResult<?> result = inserter.paramsArray(i, "artist " + i).execute(env.context());
-            assertEquals(1, result.firstUpdateCount());
+            List<QueryResultItem> result = inserter.paramsArray(i, "artist " + i).execute(env.context());
+            assertEquals(1, ((QueryResultItem.Update) result.getFirst()).count());
         }
         assertEquals(2, env.table("ARTIST").getRowCount());
     }
@@ -124,8 +125,8 @@ public class SQLExecIT {
             Map<String, Object> params = new HashMap<>();
             params.put("id", i);
             params.put("name", "artist " + i);
-            QueryResult<?> result = inserter.params(params).execute(env.context());
-            assertEquals(1, result.firstUpdateCount());
+            List<QueryResultItem> result = inserter.params(params).execute(env.context());
+            assertEquals(1, ((QueryResultItem.Update) result.getFirst()).count());
         }
         assertEquals(2, env.table("ARTIST").getRowCount());
     }

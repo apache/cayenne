@@ -167,6 +167,14 @@ class LoggingObserver implements OperationObserver {
     }
 
     @Override
+    public void nextOutParameters(Query query, Map<String, ?> outParameters) {
+        if (current != null) {
+            reportSelect(1);
+        }
+        delegate.nextOutParameters(query, outParameters);
+    }
+
+    @Override
     public void nextGeneratedRows(Query query, List<DataRow> keys, List<ObjectId> idsToUpdate) {
         // buffer the keys and emit them as a trailing "generated:[...]" block on the statement's own update line,
         // rather than as separate lines that would print before the INSERT that produced them
