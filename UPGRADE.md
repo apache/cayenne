@@ -172,6 +172,9 @@ Expression caseWhenExp = caseWhen(
      of `ObjectContext.select(Select)` and `ObjectContext.selectOne(Select)`. `EJBQLQuery`, `SQLTemplate` and
      `ProcedureQuery` now implement `Select<T>`, so every selecting query can be passed to
      `select(..)`.
+   - The `DataContext` convenience methods `performNonSelectingQuery(..)` and `performQuery(String, ..)` (all
+     flavors) are deprecated. Use `execute(Query)`, `SQLExec` / `MappedExec` `update(..)`, and
+     `MappedSelect.query(name).select(context)` instead.
 
   ```java
   // before

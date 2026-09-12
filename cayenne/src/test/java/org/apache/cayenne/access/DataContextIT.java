@@ -25,6 +25,7 @@ import org.apache.cayenne.Fault;
 import org.apache.cayenne.ObjectId;
 import org.apache.cayenne.PersistenceState;
 import org.apache.cayenne.Persistent;
+import org.apache.cayenne.QueryResultItem;
 import org.apache.cayenne.exp.ExpressionFactory;
 import org.apache.cayenne.map.EntityResolver;
 import org.apache.cayenne.query.EJBQLQuery;
@@ -365,7 +366,7 @@ public class DataContextIT {
 		SQLTemplate insert = new SQLTemplate(Painting.class,
 				"INSERT INTO PAINTING (PAINTING_ID, PAINTING_TITLE, ARTIST_ID, ESTIMATED_PRICE) "
 						+ "VALUES (1, 'PX', 33001, 1)");
-		context.performNonSelectingQuery(insert);
+		context.execute(insert);
 
 		assertEquals(1, query.select(context).size());
 	}
@@ -387,7 +388,7 @@ public class DataContextIT {
 		// single batch of parameters
 		query.setParameters(map);
 
-		int[] counts = context.performNonSelectingQuery(query);
+		int[] counts = ((QueryResultItem.Update) context.execute(query).getFirst()).counts();
 		assertNotNull(counts);
 		assertEquals(1, counts.length);
 		assertEquals(1, counts[0]);
@@ -414,7 +415,7 @@ public class DataContextIT {
 		// single batch of parameters
 		query.setParameters(maps);
 
-		int[] counts = context.performNonSelectingQuery(query);
+		int[] counts = ((QueryResultItem.Update) context.execute(query).getFirst()).counts();
 		assertNotNull(counts);
 		assertEquals(maps.length, counts.length);
 		for (int i = 0; i < maps.length; i++) {
@@ -422,7 +423,7 @@ public class DataContextIT {
 		}
 
 		SQLTemplate delete = new SQLTemplate(Painting.class, "delete from PAINTING");
-		counts = context.performNonSelectingQuery(delete);
+		counts = ((QueryResultItem.Update) context.execute(delete).getFirst()).counts();
 		assertNotNull(counts);
 		assertEquals(1, counts.length);
 		assertEquals(3, counts[0]);

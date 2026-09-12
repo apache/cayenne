@@ -250,8 +250,8 @@ public class JointPrefetchIT {
                 "INSERT INTO PAINTING (PAINTING_ID, PAINTING_TITLE, ARTIST_ID, ESTIMATED_PRICE) "
                         + "VALUES (33001, 'p1', 33001, 1000)");
 
-        context.performNonSelectingQuery(artistSQL);
-        context.performNonSelectingQuery(paintingSQL);
+        context.execute(artistSQL);
+        context.execute(paintingSQL);
 
         // test
         ObjEntity artistE = context.getEntityResolver().getObjEntity("Artist");

@@ -1055,7 +1055,10 @@ public class DataContext implements ObjectContext {
      * array of update counts.
      *
      * @since 1.1
+     * @deprecated use {@link #execute(Query)}, or {@code SQLExec.update(ObjectContext)} /
+     * {@code MappedExec.update(ObjectContext)} for a query that produces a single update count
      */
+    @Deprecated(since = "5.0", forRemoval = true)
     public int[] performNonSelectingQuery(Query query) {
         int[] count = QueryResultItems.firstUpdateCount(execute(query));
         return count != null ? count : new int[0];
@@ -1066,7 +1069,9 @@ public class DataContext implements ObjectContext {
      * of update counts.
      *
      * @since 1.1
+     * @deprecated use {@code MappedExec.query(queryName).update(context)}
      */
+    @Deprecated(since = "5.0", forRemoval = true)
     public int[] performNonSelectingQuery(String queryName) {
         return performNonSelectingQuery(MappedExec.query(queryName));
     }
@@ -1076,7 +1081,9 @@ public class DataContext implements ObjectContext {
      * Returns an array of update counts.
      *
      * @since 1.1
+     * @deprecated use {@code MappedExec.query(queryName).params(parameters).update(context)}
      */
+    @Deprecated(since = "5.0", forRemoval = true)
     public int[] performNonSelectingQuery(String queryName, Map<String, ?> parameters) {
         return performNonSelectingQuery(MappedExec.query(queryName).params(parameters));
     }
@@ -1093,7 +1100,10 @@ public class DataContext implements ObjectContext {
      * @param expireCachedLists A flag that determines whether refresh of <b>cached lists</b>
      *                          is required in case a query uses caching.
      * @since 1.1
+     * @deprecated use {@code MappedSelect.query(queryName).select(context)}, calling {@code forceNoCache()} on the
+     * query to expire cached lists
      */
+    @Deprecated(since = "5.0", forRemoval = true)
     public List<?> performQuery(String queryName, boolean expireCachedLists) {
         return performQuery(queryName, Collections.emptyMap(), expireCachedLists);
     }
@@ -1111,7 +1121,10 @@ public class DataContext implements ObjectContext {
      * @param expireCachedLists A flag that determines whether refresh of <b>cached lists</b>
      *                          is required in case a query uses caching.
      * @since 1.1
+     * @deprecated use {@code MappedSelect.query(queryName).params(parameters).select(context)}, calling
+     * {@code forceNoCache()} on the query to expire cached lists
      */
+    @Deprecated(since = "5.0", forRemoval = true)
     public List<?> performQuery(String queryName, Map<String, ?> parameters, boolean expireCachedLists) {
         MappedSelect<?> query = MappedSelect.query(queryName).params(parameters);
         if (expireCachedLists) {

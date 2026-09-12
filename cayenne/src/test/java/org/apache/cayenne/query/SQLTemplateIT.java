@@ -371,7 +371,7 @@ public class SQLTemplateIT {
 
 		SQLTemplate q1 = new SQLTemplate(Painting.class, sql);
 		q1.setParamsArray(76, "The Fiddler", 10005);
-		context.performNonSelectingQuery(q1);
+		context.execute(q1);
 
 		assertEquals("The Fiddler", tPainting.getString("PAINTING_TITLE"));
 		assertEquals(76, tPainting.getInt("PAINTING_ID"));
@@ -386,7 +386,7 @@ public class SQLTemplateIT {
 
 		SQLTemplate q1 = new SQLTemplate(Painting.class, sql);
 		q1.setParamsArray(11, "The Fiddler");
-		context.performNonSelectingQuery(q1);
+		context.execute(q1);
 
 		assertEquals("The Fiddler", tPainting.getString("PAINTING_TITLE"));
 		assertEquals(11, tPainting.getInt("PAINTING_ID"));
@@ -402,7 +402,7 @@ public class SQLTemplateIT {
 		SQLTemplate q1 = new SQLTemplate(Painting.class, sql);
 		q1.setParamsArray(11, "The Fiddler");
 
-		assertThrows(CayenneRuntimeException.class, () -> context.performNonSelectingQuery(q1));
+		assertThrows(CayenneRuntimeException.class, () -> context.execute(q1));
 	}
 
 	@Test
@@ -414,7 +414,7 @@ public class SQLTemplateIT {
 		SQLTemplate q1 = new SQLTemplate(Painting.class, sql);
 		q1.setParamsArray(11, "The Fiddler", 2345, 333);
 
-		assertThrows(CayenneRuntimeException.class, () -> context.performNonSelectingQuery(q1),
+		assertThrows(CayenneRuntimeException.class, () -> context.execute(q1),
 				"Exception not thrown on parameter length mismatch");
 	}
 

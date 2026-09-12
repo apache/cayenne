@@ -87,7 +87,7 @@ public class DataContextSharedCacheIT {
         map.put("newName", newName);
         map.put("oldName", originalName);
         query.setParams(map);
-        context.performNonSelectingQuery(query);
+        context.execute(query);
 
         // fetch updated artist into the new context, and see if the original
         // one gets updated
@@ -523,7 +523,7 @@ public class DataContextSharedCacheIT {
         map.put("newName", newName);
         map.put("oldName", originalName);
         update.setParams(map);
-        context.performNonSelectingQuery(update);
+        context.execute(update);
 
         // fetch updated artist without refreshing
         List artists = ObjectSelect.query(Artist.class)
@@ -684,7 +684,7 @@ public class DataContextSharedCacheIT {
         map.put("newName", backendName);
         map.put("oldName", originalName);
         update.setParams(map);
-        context.performNonSelectingQuery(update);
+        context.execute(update);
 
         context.commitChanges();
 

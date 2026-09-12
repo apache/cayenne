@@ -98,6 +98,7 @@ public class DataContextPerformQueryAPIIT {
                 () -> context.performQuery(SQLExec.query("DELETE FROM ARTIST")));
     }
 
+    @SuppressWarnings("removal")
     @Test
     public void objectQueryStringBoolean() throws Exception {
         createTwoArtistsAndTwoPaintingsDataSet();
@@ -107,6 +108,7 @@ public class DataContextPerformQueryAPIIT {
         assertEquals(2, paintings.size());
     }
 
+    @SuppressWarnings("removal")
     @Test
     public void objectQueryStringMapBoolean() throws Exception {
         createTwoArtistsAndTwoPaintingsDataSet();
@@ -119,6 +121,7 @@ public class DataContextPerformQueryAPIIT {
         assertEquals(1, paintings.size());
     }
 
+    @SuppressWarnings("removal")
     @Test
     public void procedureQueryStringMapBoolean() throws Exception {
 
@@ -154,6 +157,7 @@ public class DataContextPerformQueryAPIIT {
         assertEquals(11, ((Number) artist.getObjectId().getIdSnapshot().get(Artist.ARTIST_ID_PK_COLUMN)).intValue());
     }
 
+    @SuppressWarnings("removal")
     @Test
     public void nonSelectingQueryString() throws Exception {
 
@@ -167,6 +171,7 @@ public class DataContextPerformQueryAPIIT {
         assertEquals("No Painting Like This", p.getPaintingTitle());
     }
 
+    @SuppressWarnings("removal")
     @Test
     public void nonSelectingQueryStringMap() throws Exception {
 
@@ -202,6 +207,7 @@ public class DataContextPerformQueryAPIIT {
         assertEquals(0, result.size());
     }
 
+    @SuppressWarnings("removal")
     @Test
     public void objectQueryWithLocalCache() throws Exception {
         createTwoArtists();
@@ -215,6 +221,7 @@ public class DataContextPerformQueryAPIIT {
         });
     }
 
+    @SuppressWarnings("removal")
     @Test
     public void objectQueryWithSharedCache() throws Exception {
         createTwoArtists();
