@@ -37,7 +37,7 @@ public class NestedDataContextValidationIT {
 
     @Test
     public void validateOnCommitToParent() {
-        env.context().setValidatingObjectsOnCommit(true);
+        assertTrue(env.context().isValidatingObjectsOnCommit());
 
         ObjectContext childContext = env.runtime().newContext(env.context());
         assertTrue(

@@ -120,9 +120,9 @@ public class DataContext implements ObjectContext {
 
     protected final DataChannel channel;
     protected final ObjectStore objectStore;
-    protected QueryCache queryCache;
+    protected final QueryCache queryCache;
     protected final EntityResolver entityResolver;
-    protected boolean validatingObjectsOnCommit;
+    protected final boolean validatingObjectsOnCommit;
     protected final boolean usingSharedSnapshotCache;
 
     private DataContextDelegate delegate;
@@ -320,15 +320,11 @@ public class DataContext implements ObjectContext {
         return objects;
     }
 
+    /**
+     * Returns a cache for query results, set via {@link Builder#queryCache(QueryCache)}.
+     */
     public QueryCache getQueryCache() {
         return queryCache;
-    }
-
-    /**
-     * Sets a QueryCache to be used for storing cached query results.
-     */
-    public void setQueryCache(QueryCache queryCache) {
-        this.queryCache = queryCache;
     }
 
     /**
@@ -1210,23 +1206,13 @@ public class DataContext implements ObjectContext {
     }
 
     /**
-     * Returns whether this ObjectContext performs object validation before
-     * commit is executed.
+     * Returns whether this ObjectContext performs object validation before commit is executed. The flag is set via
+     * {@link Builder#validatingObjectsOnCommit(boolean)}.
      *
      * @since 1.1
      */
     public boolean isValidatingObjectsOnCommit() {
         return validatingObjectsOnCommit;
-    }
-
-    /**
-     * Sets the property defining whether this ObjectContext should perform
-     * object validation before commit is executed.
-     *
-     * @since 1.1
-     */
-    public void setValidatingObjectsOnCommit(boolean flag) {
-        this.validatingObjectsOnCommit = flag;
     }
 
     /**

@@ -36,29 +36,34 @@ public class DataContextValidationIT {
     @RegisterExtension
     static final CayenneTestsEnv env = CayenneTestsEnv.forProject(CayenneProjects.TESTMAP_PROJECT);
 
+    private DataContext newContext(boolean validatingObjectsOnCommit) {
+        DataDomain domain = env.runtime().getDataDomain();
+        return DataContext.builder(domain)
+                .snapshotCache(domain.getSharedSnapshotCache())
+                .validatingObjectsOnCommit(validatingObjectsOnCommit)
+                .build();
+    }
+
     @Test
     public void validatingObjectsOnCommitProperty() {
-        env.context().setValidatingObjectsOnCommit(true);
-        assertTrue(env.context().isValidatingObjectsOnCommit());
-
-        env.context().setValidatingObjectsOnCommit(false);
-        assertFalse(env.context().isValidatingObjectsOnCommit());
+        assertTrue(newContext(true).isValidatingObjectsOnCommit());
+        assertFalse(newContext(false).isValidatingObjectsOnCommit());
     }
 
     @Test
     public void validatingObjectsOnCommit() {
         // test that validation is called properly
 
-        env.context().setValidatingObjectsOnCommit(true);
-        Artist a1 = env.context().newObject(Artist.class);
+        DataContext validating = newContext(true);
+        Artist a1 = validating.newObject(Artist.class);
         a1.setArtistName("a1");
-        env.context().commitChanges();
+        validating.commitChanges();
         assertTrue(a1.isValidateForSaveCalled());
 
-        env.context().setValidatingObjectsOnCommit(false);
-        Artist a2 = env.context().newObject(Artist.class);
+        DataContext nonValidating = newContext(false);
+        Artist a2 = nonValidating.newObject(Artist.class);
         a2.setArtistName("a2");
-        env.context().commitChanges();
+        nonValidating.commitChanges();
         assertFalse(a2.isValidateForSaveCalled());
     }
 
@@ -71,7 +76,7 @@ public class DataContextValidationIT {
             p.setToArtist(a);
         };
 
-        env.context().setValidatingObjectsOnCommit(true);
+        assertTrue(env.context().isValidatingObjectsOnCommit());
         Artist a1 = env.context().newObject(Artist.class);
         a1.setValidationCallback(callback);
         a1.setArtistName("a1");
