@@ -29,19 +29,19 @@ import java.util.Objects;
  * produced, so callers that know the shape of their query can access them by index. The hierarchy is sealed, so
  * callers can exhaustively switch over the item type:
  * <pre>{@code
- * for (QueryResultItem item : SQLExec.query(sql).execute(context)) {
+ * for (QueryResult item : SQLExec.query(sql).execute(context)) {
  *     switch (item) {
- *         case QueryResultItem.Select<?> select -> process(select.objects());
- *         case QueryResultItem.Update update -> process(update.counts());
- *         case QueryResultItem.Iterator<?> iterator -> process(iterator.iterator());
- *         case QueryResultItem.OutParameters out -> process(out.values());
+ *         case QueryResult.Select<?> select -> process(select.objects());
+ *         case QueryResult.Update update -> process(update.counts());
+ *         case QueryResult.Iterator<?> iterator -> process(iterator.iterator());
+ *         case QueryResult.OutParameters out -> process(out.values());
  *     }
  * }
  * }</pre>
  *
  * @since 4.0
  */
-public sealed interface QueryResultItem {
+public sealed interface QueryResult {
 
     /**
      * A list of objects or data rows produced by a selecting query.
@@ -49,7 +49,7 @@ public sealed interface QueryResultItem {
      * @param <T> the type of the list elements.
      * @since 5.0
      */
-    record Select<T>(List<T> objects) implements QueryResultItem {
+    record Select<T>(List<T> objects) implements QueryResult {
 
         public Select {
             Objects.requireNonNull(objects, "Null objects");
@@ -62,7 +62,7 @@ public sealed interface QueryResultItem {
      *
      * @since 5.0
      */
-    record Update(int[] counts) implements QueryResultItem {
+    record Update(int[] counts) implements QueryResult {
 
         public Update {
             Objects.requireNonNull(counts, "Null counts");
@@ -88,7 +88,7 @@ public sealed interface QueryResultItem {
      * @param <T> the type of the iterated elements.
      * @since 5.0
      */
-    record Iterator<T>(ResultIterator<T> iterator) implements QueryResultItem {
+    record Iterator<T>(ResultIterator<T> iterator) implements QueryResult {
 
         public Iterator {
             Objects.requireNonNull(iterator, "Null iterator");
@@ -101,7 +101,7 @@ public sealed interface QueryResultItem {
      *
      * @since 5.0
      */
-    record OutParameters(Map<String, ?> values) implements QueryResultItem {
+    record OutParameters(Map<String, ?> values) implements QueryResult {
 
         public OutParameters {
             Objects.requireNonNull(values, "Null values");

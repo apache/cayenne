@@ -19,7 +19,7 @@
 
 package org.apache.cayenne.access;
 
-import org.apache.cayenne.QueryResultItem;
+import org.apache.cayenne.QueryResult;
 import org.apache.cayenne.cache.QueryCache;
 import org.apache.cayenne.cache.QueryCacheEntryFactory;
 import org.apache.cayenne.map.DbEntity;
@@ -41,7 +41,7 @@ class DataContextQueryAction {
     private final QueryMetadata metadata;
     private final boolean iteratedResult;
     private final boolean ignoreLocalCache;
-    private List<QueryResultItem> response;
+    private List<QueryResult> response;
 
     public DataContextQueryAction(DataContext context, Query query, boolean iteratedResult, boolean ignoreLocalCache) {
         this.context = context;
@@ -54,7 +54,7 @@ class DataContextQueryAction {
     /**
      * Worker method that performs internal query.
      */
-    public List<QueryResultItem> execute() {
+    public List<QueryResult> execute() {
         if (interceptIteratedQuery() != DONE) {
             if (interceptLocalCache() != DONE) {
                 executePostCache();
@@ -84,12 +84,12 @@ class DataContextQueryAction {
             // this will select raw ids
             runQuery();
 
-            List<?> rawIds = QueryResultItems.firstList(response);
+            List<?> rawIds = QueryResults.firstList(response);
             int maxIdQualifierSize = context.getChannel().getDataDomain().getMaxIdQualifierSize();
             IncrementalFaultList<?> paginatedList = createIncrementalFaultList(rawIds, maxIdQualifierSize);
 
             // replace result with a paginated list that will deal with id-to-object resolution
-            response = List.of(new QueryResultItem.Select<>(paginatedList));
+            response = List.of(new QueryResult.Select<>(paginatedList));
             return DONE;
         }
 
@@ -158,7 +158,7 @@ class DataContextQueryAction {
             // there was a preexisting cache entry
             // the cache may hold no list at all if the query produced no select result
             if (response == null || wasResponseNull) {
-                response = cachedResults != null ? List.of(new QueryResultItem.Select<>(cachedResults)) : List.of();
+                response = cachedResults != null ? List.of(new QueryResult.Select<>(cachedResults)) : List.of();
             }
         } else {
             // on cache-refresh request, fetch without blocking and fill the cache
@@ -175,7 +175,7 @@ class DataContextQueryAction {
     protected QueryCacheEntryFactory getCacheObjectFactory() {
         return () -> {
             executePostCache();
-            List<?> result = QueryResultItems.firstList(response);
+            List<?> result = QueryResults.firstList(response);
             // make an immutable list to make sure callers don't mess it up
             return result != null ? Collections.unmodifiableList(result) : null;
         };

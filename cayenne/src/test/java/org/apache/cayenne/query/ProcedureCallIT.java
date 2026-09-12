@@ -19,7 +19,7 @@
 package org.apache.cayenne.query;
 
 import org.apache.cayenne.DataRow;
-import org.apache.cayenne.QueryResultItem;
+import org.apache.cayenne.QueryResult;
 import org.apache.cayenne.dba.TypesMapping;
 import org.apache.cayenne.log.NoopSQLLogger;
 import org.apache.cayenne.testdo.testmap.Artist;
@@ -192,14 +192,14 @@ public class ProcedureCallIT {
             return;
         }
 
-        List<QueryResultItem> result = runProcedureCall(
+        List<QueryResult> result = runProcedureCall(
                 ProcedureCall.query(OUT_STORED_PROCEDURE)
                 .param("in_param", 20)
         );
 
         Map<String, ?> outParams = result.stream()
-                .filter(QueryResultItem.OutParameters.class::isInstance)
-                .map(QueryResultItem.OutParameters.class::cast)
+                .filter(QueryResult.OutParameters.class::isInstance)
+                .map(QueryResult.OutParameters.class::cast)
                 .findFirst()
                 .orElseThrow()
                 .values();
@@ -277,7 +277,7 @@ public class ProcedureCallIT {
         return runProcedure(() -> q.select(env.context()));
     }
 
-    private List<QueryResultItem> runProcedureCall(ProcedureCall<?> q) {
+    private List<QueryResult> runProcedureCall(ProcedureCall<?> q) {
         return runProcedure(() -> q.call(env.context()));
     }
 

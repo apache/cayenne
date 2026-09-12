@@ -26,7 +26,7 @@ import org.apache.cayenne.EmbeddableObject;
 import org.apache.cayenne.ObjectContext;
 import org.apache.cayenne.ObjectId;
 import org.apache.cayenne.Persistent;
-import org.apache.cayenne.QueryResultItem;
+import org.apache.cayenne.QueryResult;
 import org.apache.cayenne.ResultIterator;
 import org.apache.cayenne.access.translator.TranslatedStatement;
 import org.apache.cayenne.cache.QueryCache;
@@ -85,8 +85,8 @@ class DataDomainQueryAction implements QueryRouter, OperationObserver {
     private final QueryMetadata metadata;
     private final AdhocObjectFactory objectFactory;
 
-    private List<QueryResultItem> response;
-    private List<QueryResultItem> fullResponse;
+    private List<QueryResult> response;
+    private List<QueryResult> fullResponse;
     private final boolean iteratedResult;
     private boolean iteratorExclusiveConnection;
     private Map<CayennePath, List<?>> prefetchResultsByPath;
@@ -118,7 +118,7 @@ class DataDomainQueryAction implements QueryRouter, OperationObserver {
         this.objectFactory = domain.getObjectFactory();
     }
 
-    List<QueryResultItem> execute() {
+    List<QueryResult> execute() {
 
         // run chain...
         if (interceptIteratedQuery() != DONE) {
@@ -175,8 +175,8 @@ class DataDomainQueryAction implements QueryRouter, OperationObserver {
                 iteratorExclusiveConnection = true;
                 runQuery();
                 int index = firstIteratorIndex();
-                ResultIterator<?> it = ((QueryResultItem.Iterator<?>) fullResponse.get(index)).iterator();
-                fullResponse.set(index, new QueryResultItem.Iterator<>(new TransactionResultIteratorDecorator<>(it, tx)));
+                ResultIterator<?> it = ((QueryResult.Iterator<?>) fullResponse.get(index)).iterator();
+                fullResponse.set(index, new QueryResult.Iterator<>(new TransactionResultIteratorDecorator<>(it, tx)));
             } catch (Throwable th) {
                 // No iterator will be returned to the caller, so nothing will ever commit this transaction. Mark it
                 // for rollback below, so that its connections are not leaked. Note that a DataNode marks the
@@ -197,7 +197,7 @@ class DataDomainQueryAction implements QueryRouter, OperationObserver {
 
     private int firstIteratorIndex() {
         for (int i = 0; i < fullResponse.size(); i++) {
-            if (fullResponse.get(i) instanceof QueryResultItem.Iterator) {
+            if (fullResponse.get(i) instanceof QueryResult.Iterator) {
                 return i;
             }
         }
@@ -235,7 +235,7 @@ class DataDomainQueryAction implements QueryRouter, OperationObserver {
             if (response == null || wasResponseNull) {
                 response = new ArrayList<>(1);
                 if (cachedResults != null) {
-                    response.add(new QueryResultItem.Select<>(cachedResults));
+                    response.add(new QueryResult.Select<>(cachedResults));
                 }
             }
 
@@ -259,7 +259,7 @@ class DataDomainQueryAction implements QueryRouter, OperationObserver {
         return () -> {
             runQueryInTransaction();
 
-            List<?> list = QueryResultItems.firstList(response);
+            List<?> list = QueryResults.firstList(response);
             if (list != null) {
 
                 // make an immutable list to make sure callers don't mess it up
@@ -324,16 +324,16 @@ class DataDomainQueryAction implements QueryRouter, OperationObserver {
         ObjectConversionStrategy<?, ?> converter = getConverter();
         for (int i = 0; i < response.size(); i++) {
             switch (response.get(i)) {
-                case QueryResultItem.Select<?> select -> {
+                case QueryResult.Select<?> select -> {
                     List<?> mainRows = select.objects(); // List<DataRow> or List<Object[]>
                     if (!mainRows.isEmpty()) {
                         List<?> result = converter.convert((List) mainRows);
                         if (result != mainRows) {
-                            response.set(i, new QueryResultItem.Select<>(result));
+                            response.set(i, new QueryResult.Select<>(result));
                         }
                     }
                 }
-                case QueryResultItem.Iterator<?> iterator -> response.set(i, new QueryResultItem.Iterator<>(
+                case QueryResult.Iterator<?> iterator -> response.set(i, new QueryResult.Iterator<>(
                         new ResultIteratorConverterDecorator(iterator.iterator(), converter)));
                 default -> {
                 }
@@ -432,13 +432,13 @@ class DataDomainQueryAction implements QueryRouter, OperationObserver {
 
     @Override
     public void nextCount(Query query, int resultCount) {
-        fullResponse.add(new QueryResultItem.Update(new int[]{resultCount}));
+        fullResponse.add(new QueryResult.Update(new int[]{resultCount}));
     }
 
     @Override
     public void nextBatchCount(Query query, int[] resultCount) {
         if (resultCount != null) {
-            fullResponse.add(new QueryResultItem.Update(resultCount));
+            fullResponse.add(new QueryResult.Update(resultCount));
         }
     }
 
@@ -448,7 +448,7 @@ class DataDomainQueryAction implements QueryRouter, OperationObserver {
         if (prefetchResultsByPath != null && query instanceof PrefetchSelectQuery<?> prefetchQuery) {
             prefetchResultsByPath.put(prefetchQuery.getPrefetchPath(), dataRows);
         } else {
-            fullResponse.add(new QueryResultItem.Select<>(dataRows));
+            fullResponse.add(new QueryResult.Select<>(dataRows));
         }
     }
 
@@ -458,13 +458,13 @@ class DataDomainQueryAction implements QueryRouter, OperationObserver {
         if (prefetchResultsByPath != null && query instanceof PrefetchSelectQuery<?> prefetchQuery) {
             prefetchResultsByPath.put(prefetchQuery.getPrefetchPath(), (List<?>) it);
         } else {
-            fullResponse.add(new QueryResultItem.Iterator<>(it));
+            fullResponse.add(new QueryResult.Iterator<>(it));
         }
     }
 
     @Override
     public void nextOutParameters(Query query, Map<String, ?> outParameters) {
-        fullResponse.add(new QueryResultItem.OutParameters(outParameters));
+        fullResponse.add(new QueryResult.OutParameters(outParameters));
     }
 
     @Override

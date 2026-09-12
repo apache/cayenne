@@ -22,7 +22,7 @@ import org.apache.cayenne.DataChannel;
 import org.apache.cayenne.ObjectContext;
 import org.apache.cayenne.ObjectId;
 import org.apache.cayenne.Persistent;
-import org.apache.cayenne.QueryResultItem;
+import org.apache.cayenne.QueryResult;
 import org.apache.cayenne.dba.frontbase.FrontBaseAdapter;
 import org.apache.cayenne.dba.mysql.MySQLAdapter;
 import org.apache.cayenne.event.EventManager;
@@ -113,7 +113,7 @@ public class DataContextDecoratedStackIT {
         }
 
         @Override
-        public List<QueryResultItem> onQuery(ObjectContext context, Query query, boolean iteratedResult) {
+        public List<QueryResult> onQuery(ObjectContext context, Query query, boolean iteratedResult) {
             return channel.onQuery(context, query, iteratedResult);
         }
 

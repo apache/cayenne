@@ -374,9 +374,9 @@ public interface ObjectContext {
 
     /**
      * Executes any kind of query, returning all of its result sets, update counts, iterators and OUT parameters as a
-     * list of {@link QueryResultItem}s in the order they were produced.
+     * list of {@link QueryResult}s in the order they were produced.
      */
-    List<QueryResultItem> execute(Query query);
+    List<QueryResult> execute(Query query);
 
     /**
      * Returns the store of persistent objects registered with this context.

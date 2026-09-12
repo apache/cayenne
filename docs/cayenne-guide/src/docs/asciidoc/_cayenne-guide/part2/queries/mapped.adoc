@@ -34,9 +34,9 @@ And here is example of `MappedExec`:
 
 [source, java]
 ----
-List<QueryResultItem> result = MappedExec.query("updateQuery")
+List<QueryResult> result = MappedExec.query("updateQuery")
     .param("var", "value")
     .execute(context);
-QueryResultItem.Update update = (QueryResultItem.Update) result.getFirst();
+QueryResult.Update update = (QueryResult.Update) result.getFirst();
 System.out.println("Rows updated: " + update.count());
 ----

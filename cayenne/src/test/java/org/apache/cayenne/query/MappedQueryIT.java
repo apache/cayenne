@@ -19,7 +19,7 @@
 package org.apache.cayenne.query;
 
 import org.apache.cayenne.DataRow;
-import org.apache.cayenne.QueryResultItem;
+import org.apache.cayenne.QueryResult;
 import org.apache.cayenne.ResultBatchIterator;
 import org.apache.cayenne.log.NoopSQLLogger;
 import org.apache.cayenne.test.jdbc.TableHelper;
@@ -127,10 +127,10 @@ public class MappedQueryIT {
 
         env.context().commitChanges();
 
-        List<QueryResultItem> result = runProcedureSelect(MappedSelect.query("ProcedureQuery", Artist.class)
+        List<QueryResult> result = runProcedureSelect(MappedSelect.query("ProcedureQuery", Artist.class)
                 .param("aName", "An Artist")
                 .param("paintingPrice", 3000).forceNoCache());
-        List<?> artists = ((QueryResultItem.Select<?>) result.getFirst()).objects();
+        List<?> artists = ((QueryResult.Select<?>) result.getFirst()).objects();
 
         // check the results
         assertNotNull(artists, "Null result from StoredProcedure.");
@@ -166,7 +166,7 @@ public class MappedQueryIT {
                 query3.getMetaData(env.context().getEntityResolver()).getCacheKey());
     }
 
-    protected List<QueryResultItem> runProcedureSelect(AbstractMappedQuery q) throws Exception {
+    protected List<QueryResult> runProcedureSelect(AbstractMappedQuery q) throws Exception {
         // Sybase blows whenever a transaction wraps a SP, so turn off
         // transactions
 

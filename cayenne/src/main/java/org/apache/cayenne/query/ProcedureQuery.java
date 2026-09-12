@@ -20,7 +20,7 @@
 package org.apache.cayenne.query;
 
 import org.apache.cayenne.ObjectContext;
-import org.apache.cayenne.QueryResultItem;
+import org.apache.cayenne.QueryResult;
 import org.apache.cayenne.map.DataMap;
 import org.apache.cayenne.map.DbEntity;
 import org.apache.cayenne.map.EntityResolver;
@@ -43,7 +43,7 @@ import java.util.Map;
  * <h4>Reading OUT parameters</h4>
  * <p>
  * If a ProcedureQuery has OUT parameters, their values are reported as a separate item of the query response, a Map
- * keyed by parameter name (see {@link QueryResultItem.OutParameters}).
+ * keyed by parameter name (see {@link QueryResult.OutParameters}).
  * </p>
  * <h4>Using ProcedureQuery as a Select</h4>
  * <p>

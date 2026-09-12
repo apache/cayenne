@@ -18,7 +18,7 @@
  ****************************************************************/
 
 package org.apache.cayenne.access;
-import org.apache.cayenne.QueryResultItem;
+import org.apache.cayenne.QueryResult;
 import org.apache.cayenne.query.EJBQLQuery;
 import org.apache.cayenne.test.jdbc.TableHelper;
 import org.apache.cayenne.unit.CayenneProjects;
@@ -64,9 +64,9 @@ public class DataContextEJBQLDeletePKIT {
 
         EJBQLQuery query = new EJBQLQuery(ejbql);
         query.setParameter("id", id);
-        List<QueryResultItem> result = env.context().execute(query);
+        List<QueryResult> result = env.context().execute(query);
 
-        int[] count = ((QueryResultItem.Update) result.getFirst()).counts();
+        int[] count = ((QueryResult.Update) result.getFirst()).counts();
         assertNotNull(count);
         assertEquals(1, count.length);
         assertEquals(33, count[0]);

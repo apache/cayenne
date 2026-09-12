@@ -20,7 +20,7 @@
 package org.apache.cayenne.access;
 
 import org.apache.cayenne.Cayenne;
-import org.apache.cayenne.QueryResultItem;
+import org.apache.cayenne.QueryResult;
 import org.apache.cayenne.query.EJBQLQuery;
 import org.apache.cayenne.test.jdbc.TableHelper;
 import org.apache.cayenne.testdo.compound.CompoundPkTestEntity;
@@ -83,9 +83,9 @@ public class DataContextEJBQLUpdateCompoundIT {
         EJBQLQuery query = new EJBQLQuery(ejbql);
         query.setParameter("param", object);
 
-        List<QueryResultItem> result = env.context().execute(query);
+        List<QueryResult> result = env.context().execute(query);
 
-        int[] count = ((QueryResultItem.Update) result.getFirst()).counts();
+        int[] count = ((QueryResult.Update) result.getFirst()).counts();
         assertNotNull(count);
         assertEquals(1, count.length);
         assertEquals(2, count[0]);

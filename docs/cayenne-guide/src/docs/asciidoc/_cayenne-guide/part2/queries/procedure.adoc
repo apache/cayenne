@@ -33,25 +33,25 @@ List<Artist> result = ProcedureCall.query("my_procedure", Artist.class)
 ----
 // here we do not bother with root class.
 // Procedure name gives us needed routing information
-List<QueryResultItem> result = ProcedureCall.query("my_procedure")
+List<QueryResult> result = ProcedureCall.query("my_procedure")
     .param("p1", "abc")
     .param("p2", 3000)
     .call(context);
 ----
 
-`QueryResultItem` is a sealed interface with `Select`, `Update`, `Iterator` and `OutParameters` variants, listed in
+`QueryResult` is a sealed interface with `Select`, `Update`, `Iterator` and `OutParameters` variants, listed in
 the order the procedure produced them, so the items can be accessed by index or scanned with a pattern-matching
 switch. A stored procedure can return data back to the application as result sets or via OUT parameters.
-The values of OUT and INOUT parameters are reported as a separate `QueryResultItem.OutParameters` item of the
+The values of OUT and INOUT parameters are reported as a separate `QueryResult.OutParameters` item of the
 result, a map keyed by parameter name:
 
 [source, java]
 ----
-for (QueryResultItem item : ProcedureCall.query("my_procedure").call(context)) {
+for (QueryResult item : ProcedureCall.query("my_procedure").call(context)) {
     switch (item) {
-        case QueryResultItem.Select<?> select -> process(select.objects());
-        case QueryResultItem.Update update -> process(update.counts());
-        case QueryResultItem.OutParameters out -> process(out.values().get("out_param"));
+        case QueryResult.Select<?> select -> process(select.objects());
+        case QueryResult.Update update -> process(update.counts());
+        case QueryResult.OutParameters out -> process(out.values().get("out_param"));
         default -> {}
     }
 }

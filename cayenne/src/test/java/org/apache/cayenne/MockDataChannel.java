@@ -37,7 +37,7 @@ public class MockDataChannel implements DataChannel {
     protected EntityResolver resolver;
     protected List requestObjects = new ArrayList();
     protected GraphDiff commitResponse;
-    protected List<QueryResultItem> response;
+    protected List<QueryResult> response;
 
     public MockDataChannel() {
 
@@ -48,7 +48,7 @@ public class MockDataChannel implements DataChannel {
     }
 
     public MockDataChannel(List selectResponse) {
-        this.response = List.of(new QueryResultItem.Select<>(selectResponse));
+        this.response = List.of(new QueryResult.Select<>(selectResponse));
     }
 
     public MockDataChannel(EntityResolver entityResolver, List selectResponse) {
@@ -82,7 +82,7 @@ public class MockDataChannel implements DataChannel {
         return commitResponse;
     }
 
-    public List<QueryResultItem> onQuery(ObjectContext context, Query query, boolean iteratedResult) {
+    public List<QueryResult> onQuery(ObjectContext context, Query query, boolean iteratedResult) {
         requestObjects.add(query);
         return response;
     }
@@ -104,8 +104,8 @@ public class MockDataChannel implements DataChannel {
     }
 
     private List<?> firstList() {
-        for (QueryResultItem item : response) {
-            if (item instanceof QueryResultItem.Select<?> select) {
+        for (QueryResult item : response) {
+            if (item instanceof QueryResult.Select<?> select) {
                 return select.objects();
             }
         }

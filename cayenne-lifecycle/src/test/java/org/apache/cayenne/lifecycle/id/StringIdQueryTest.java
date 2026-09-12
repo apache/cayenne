@@ -19,7 +19,7 @@
 package org.apache.cayenne.lifecycle.id;
 
 import org.apache.cayenne.DataRow;
-import org.apache.cayenne.QueryResultItem;
+import org.apache.cayenne.QueryResult;
 import org.apache.cayenne.configuration.DataNodeDescriptor;
 import org.apache.cayenne.datasource.CayenneDataSource;
 import org.apache.cayenne.runtime.CayenneRuntime;
@@ -96,9 +96,9 @@ public class StringIdQueryTest {
         e1Helper.insert(3).insert(4);
 
         StringIdQuery query = new StringIdQuery("E1:3", "E1:4", "E1:5");
-        List<QueryResultItem> response = runtime.newContext().execute(query);
+        List<QueryResult> response = runtime.newContext().execute(query);
         assertEquals(1, response.size());
-        List<?> rows = ((QueryResultItem.Select<?>) response.getFirst()).objects();
+        List<?> rows = ((QueryResult.Select<?>) response.getFirst()).objects();
         assertEquals(2, rows.size());
 
         Set<Number> ids = new HashSet<>();
@@ -122,14 +122,14 @@ public class StringIdQueryTest {
         e2Helper.insert(5).insert(6).insert(7);
 
         StringIdQuery query = new StringIdQuery("E1:3", "E1:4", "E2:6", "E1:5");
-        List<QueryResultItem> response = runtime.newContext().execute(query);
+        List<QueryResult> response = runtime.newContext().execute(query);
         assertEquals(2, response.size());
 
         Set<String> ids = new HashSet<>();
 
-        for (QueryResultItem item : response) {
+        for (QueryResult item : response) {
             @SuppressWarnings("unchecked")
-            List<DataRow> list = ((QueryResultItem.Select<DataRow>) item).objects();
+            List<DataRow> list = ((QueryResult.Select<DataRow>) item).objects();
             for (DataRow row : list) {
                 ids.add(row.getEntityName() + ":" + row.get("ID"));
             }

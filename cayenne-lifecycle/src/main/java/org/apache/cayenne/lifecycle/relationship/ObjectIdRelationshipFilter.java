@@ -22,7 +22,7 @@ import org.apache.cayenne.DataChannelQueryFilter;
 import org.apache.cayenne.DataChannelQueryFilterChain;
 import org.apache.cayenne.ObjectContext;
 import org.apache.cayenne.Persistent;
-import org.apache.cayenne.QueryResultItem;
+import org.apache.cayenne.QueryResult;
 import org.apache.cayenne.annotation.PostLoad;
 import org.apache.cayenne.annotation.PostPersist;
 import org.apache.cayenne.annotation.PostUpdate;
@@ -47,8 +47,8 @@ public class ObjectIdRelationshipFilter implements DataChannelQueryFilter {
         return new ObjectIdRelationshipBatchFaultingStrategy();
     }
 
-    public List<QueryResultItem> onQuery(ObjectContext context, Query query, boolean iteratedResult,
-                                         DataChannelQueryFilterChain chain) {
+    public List<QueryResult> onQuery(ObjectContext context, Query query, boolean iteratedResult,
+                                     DataChannelQueryFilterChain chain) {
         try {
             return chain.onQuery(context, query, iteratedResult);
         } finally {

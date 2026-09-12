@@ -18,7 +18,7 @@
  ****************************************************************/
 package org.apache.cayenne.access;
 
-import org.apache.cayenne.QueryResultItem;
+import org.apache.cayenne.QueryResult;
 import org.apache.cayenne.ResultIterator;
 
 import java.util.List;
@@ -28,17 +28,17 @@ import java.util.List;
  *
  * @since 5.0
  */
-final class QueryResultItems {
+final class QueryResults {
 
-    private QueryResultItems() {
+    private QueryResults() {
     }
 
     /**
-     * Returns the list of the first {@link QueryResultItem.Select} item, or null if there is none.
+     * Returns the list of the first {@link QueryResult.Select} item, or null if there is none.
      */
-    static List<?> firstList(List<QueryResultItem> items) {
-        for (QueryResultItem item : items) {
-            if (item instanceof QueryResultItem.Select<?>(List<?> objects)) {
+    static List<?> firstList(List<QueryResult> items) {
+        for (QueryResult item : items) {
+            if (item instanceof QueryResult.Select<?>(List<?> objects)) {
                 return objects;
             }
         }
@@ -46,11 +46,11 @@ final class QueryResultItems {
     }
 
     /**
-     * Returns the iterator of the first {@link QueryResultItem.Iterator} item, or null if there is none.
+     * Returns the iterator of the first {@link QueryResult.Iterator} item, or null if there is none.
      */
-    static ResultIterator<?> firstIterator(List<QueryResultItem> items) {
-        for (QueryResultItem item : items) {
-            if (item instanceof QueryResultItem.Iterator<?>(ResultIterator<?> iterator1)) {
+    static ResultIterator<?> firstIterator(List<QueryResult> items) {
+        for (QueryResult item : items) {
+            if (item instanceof QueryResult.Iterator<?>(ResultIterator<?> iterator1)) {
                 return iterator1;
             }
         }
@@ -58,11 +58,11 @@ final class QueryResultItems {
     }
 
     /**
-     * Returns the counts of the first {@link QueryResultItem.Update} item, or null if there is none.
+     * Returns the counts of the first {@link QueryResult.Update} item, or null if there is none.
      */
-    static int[] firstUpdateCount(List<QueryResultItem> items) {
-        for (QueryResultItem item : items) {
-            if (item instanceof QueryResultItem.Update(int[] counts)) {
+    static int[] firstUpdateCount(List<QueryResult> items) {
+        for (QueryResult item : items) {
+            if (item instanceof QueryResult.Update(int[] counts)) {
                 return counts;
             }
         }

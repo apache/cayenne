@@ -24,7 +24,7 @@ import org.apache.cayenne.DataChannel;
 import org.apache.cayenne.ObjectContext;
 import org.apache.cayenne.ObjectId;
 import org.apache.cayenne.Persistent;
-import org.apache.cayenne.QueryResultItem;
+import org.apache.cayenne.QueryResult;
 import org.apache.cayenne.event.EventManager;
 import org.apache.cayenne.graph.ChildDiffLoader;
 import org.apache.cayenne.graph.CompoundDiff;
@@ -69,10 +69,10 @@ public record DataContextChannel(DataContext context) implements DataChannel {
     }
 
     @Override
-    public List<QueryResultItem> onQuery(ObjectContext childContext, Query query, boolean iteratedResult) {
+    public List<QueryResult> onQuery(ObjectContext childContext, Query query, boolean iteratedResult) {
         checkChildContext(childContext);
 
-        List<QueryResultItem> response = context.onQuery(query, iteratedResult, true);
+        List<QueryResult> response = context.onQuery(query, iteratedResult, true);
         QueryMetadata metadata = query.getMetaData(getEntityResolver());
 
         return metadata.isFetchingDataRows()
@@ -151,18 +151,18 @@ public record DataContextChannel(DataContext context) implements DataChannel {
         }
     }
 
-    private List<QueryResultItem> transferObjectsToChildContext(
+    private List<QueryResult> transferObjectsToChildContext(
             ObjectContext childContext,
-            List<QueryResultItem> response,
+            List<QueryResult> response,
             QueryMetadata metadata) {
 
         // rewrite response to contain objects from the query context
 
-        List<QueryResultItem> childResponse = new ArrayList<>(response.size());
+        List<QueryResult> childResponse = new ArrayList<>(response.size());
         ShallowMergeOperation merger = null;
 
-        for (QueryResultItem item : response) {
-            if (item instanceof QueryResultItem.Select<?> select) {
+        for (QueryResult item : response) {
+            if (item instanceof QueryResult.Select<?> select) {
                 List<?> objects = select.objects();
                 if (objects.isEmpty()) {
                     childResponse.add(item);
@@ -205,7 +205,7 @@ public record DataContextChannel(DataContext context) implements DataChannel {
                         }
                     }
 
-                    childResponse.add(new QueryResultItem.Select<>(childObjects));
+                    childResponse.add(new QueryResult.Select<>(childObjects));
                 }
             } else {
                 childResponse.add(item);

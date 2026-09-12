@@ -29,11 +29,11 @@ import java.util.List;
  * <p>
  * Example: <pre>{@code
  * public class MyQueryFilter implements DataChannelQueryFilter {
- *     public List<QueryResultItem> onQuery(ObjectContext originatingContext, Query query, boolean iteratedResult,
- *                                          DataChannelQueryFilterChain filterChain) {
+ *     public List<QueryResult> onQuery(ObjectContext originatingContext, Query query, boolean iteratedResult,
+ *                                      DataChannelQueryFilterChain filterChain) {
  *         System.out.println("Do something before query");
  *         // process query or return some custom response
- *         List<QueryResultItem> response = filterChain.onQuery(originatingContext, query, iteratedResult);
+ *         List<QueryResult> response = filterChain.onQuery(originatingContext, query, iteratedResult);
  *         System.out.println("Do something after query");
  *         return response;
  *     }
@@ -54,7 +54,7 @@ public interface DataChannelQueryFilter {
      * @param filterChain chain of query filters to invoke after this filter
      * @return query result items
      */
-    List<QueryResultItem> onQuery(ObjectContext originatingContext, Query query, boolean iteratedResult,
-                                  DataChannelQueryFilterChain filterChain);
+    List<QueryResult> onQuery(ObjectContext originatingContext, Query query, boolean iteratedResult,
+                              DataChannelQueryFilterChain filterChain);
 
 }

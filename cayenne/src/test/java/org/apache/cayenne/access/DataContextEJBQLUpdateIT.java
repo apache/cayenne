@@ -19,7 +19,7 @@
 package org.apache.cayenne.access;
 
 import org.apache.cayenne.Cayenne;
-import org.apache.cayenne.QueryResultItem;
+import org.apache.cayenne.QueryResult;
 import org.apache.cayenne.query.EJBQLQuery;
 import org.apache.cayenne.test.jdbc.TableHelper;
 import org.apache.cayenne.testdo.testmap.Artist;
@@ -81,9 +81,9 @@ public class DataContextEJBQLUpdateIT {
         String ejbql = "UPDATE Painting AS p SET p.paintingTitle = 'XX' WHERE p.paintingTitle = 'P1'";
         EJBQLQuery query = new EJBQLQuery(ejbql);
 
-        List<QueryResultItem> result = env.context().execute(query);
+        List<QueryResult> result = env.context().execute(query);
 
-        int[] count = ((QueryResultItem.Update) result.getFirst()).counts();
+        int[] count = ((QueryResult.Update) result.getFirst()).counts();
         assertNotNull(count);
         assertEquals(1, count.length);
         assertEquals(1, count[0]);
@@ -105,9 +105,9 @@ public class DataContextEJBQLUpdateIT {
         String ejbql = "UPDATE Painting AS p SET p.paintingTitle = 'XX'";
         EJBQLQuery query = new EJBQLQuery(ejbql);
 
-        List<QueryResultItem> result = env.context().execute(query);
+        List<QueryResult> result = env.context().execute(query);
 
-        int[] count = ((QueryResultItem.Update) result.getFirst()).counts();
+        int[] count = ((QueryResult.Update) result.getFirst()).counts();
         assertNotNull(count);
         assertEquals(1, count.length);
         assertEquals(2, count[0]);
@@ -129,9 +129,9 @@ public class DataContextEJBQLUpdateIT {
         String ejbql = "UPDATE Painting AS p SET p.estimatedPrice = NULL";
         EJBQLQuery query = new EJBQLQuery(ejbql);
 
-        List<QueryResultItem> result = env.context().execute(query);
+        List<QueryResult> result = env.context().execute(query);
 
-        int[] count = ((QueryResultItem.Update) result.getFirst()).counts();
+        int[] count = ((QueryResult.Update) result.getFirst()).counts();
         assertNotNull(count);
         assertEquals(1, count.length);
         assertEquals(2, count[0]);
@@ -155,9 +155,9 @@ public class DataContextEJBQLUpdateIT {
     // String ejbql = "UPDATE Painting AS p SET p.estimatedPrice = p.estimatedPrice * 2";
     // EJBQLQuery query = new EJBQLQuery(ejbql);
     //
-    // List<QueryResultItem> result = context.execute(query);
+    // List<QueryResult> result = context.execute(query);
     //
-    // int[] count = ((QueryResultItem.Update) result.getFirst()).counts();
+    // int[] count = ((QueryResult.Update) result.getFirst()).counts();
     // assertNotNull(count);
     // assertEquals(1, count.length);
     // assertEquals(2, count[0]);
@@ -179,9 +179,9 @@ public class DataContextEJBQLUpdateIT {
         String ejbql = "UPDATE Painting AS p SET p.paintingTitle = 'XX', p.estimatedPrice = 1";
         EJBQLQuery query = new EJBQLQuery(ejbql);
 
-        List<QueryResultItem> result = env.context().execute(query);
+        List<QueryResult> result = env.context().execute(query);
 
-        int[] count = ((QueryResultItem.Update) result.getFirst()).counts();
+        int[] count = ((QueryResult.Update) result.getFirst()).counts();
         assertNotNull(count);
         assertEquals(1, count.length);
         assertEquals(2, count[0]);
@@ -203,9 +203,9 @@ public class DataContextEJBQLUpdateIT {
         String ejbql = "UPDATE Painting AS p SET p.estimatedPrice = 1.1";
         EJBQLQuery query = new EJBQLQuery(ejbql);
 
-        List<QueryResultItem> result = env.context().execute(query);
+        List<QueryResult> result = env.context().execute(query);
 
-        int[] count = ((QueryResultItem.Update) result.getFirst()).counts();
+        int[] count = ((QueryResult.Update) result.getFirst()).counts();
         assertNotNull(count);
         assertEquals(1, count.length);
         assertEquals(2, count[0]);
@@ -231,9 +231,9 @@ public class DataContextEJBQLUpdateIT {
         EJBQLQuery query = new EJBQLQuery(ejbql);
         query.setParameter("artist", object);
 
-        List<QueryResultItem> result = env.context().execute(query);
+        List<QueryResult> result = env.context().execute(query);
 
-        int[] count = ((QueryResultItem.Update) result.getFirst()).counts();
+        int[] count = ((QueryResult.Update) result.getFirst()).counts();
         assertNotNull(count);
         assertEquals(1, count.length);
         assertEquals(2, count[0]);

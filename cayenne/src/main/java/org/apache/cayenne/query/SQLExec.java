@@ -26,7 +26,7 @@ import java.util.Map;
 
 import org.apache.cayenne.CayenneRuntimeException;
 import org.apache.cayenne.ObjectContext;
-import org.apache.cayenne.QueryResultItem;
+import org.apache.cayenne.QueryResult;
 import org.apache.cayenne.map.DataMap;
 import org.apache.cayenne.map.EntityResolver;
 
@@ -156,7 +156,7 @@ public class SQLExec extends IndirectQuery {
     /**
      * Executes the query, returning all of its result sets and update counts in the order they were produced.
      */
-    public List<QueryResultItem> execute(ObjectContext context) {
+    public List<QueryResult> execute(ObjectContext context) {
         return context.execute(this);
     }
 
@@ -168,13 +168,13 @@ public class SQLExec extends IndirectQuery {
         return singleUpdate(context).counts();
     }
 
-    private QueryResultItem.Update singleUpdate(ObjectContext context) {
-        List<QueryResultItem> results = execute(context);
+    private QueryResult.Update singleUpdate(ObjectContext context) {
+        List<QueryResult> results = execute(context);
         if (results.size() != 1) {
             throw new CayenneRuntimeException("Expected a single update result. Got a total of %d", results.size());
         }
 
-        if (results.getFirst() instanceof QueryResultItem.Update update) {
+        if (results.getFirst() instanceof QueryResult.Update update) {
             return update;
         }
 
@@ -192,7 +192,7 @@ public class SQLExec extends IndirectQuery {
 
     /**
      * Flag indicating that generated keys should be returned by this query execution.
-     * Generated keys are returned as a {@link QueryResultItem.Select} item of {@link #execute(ObjectContext)}
+     * Generated keys are returned as a {@link QueryResult.Select} item of {@link #execute(ObjectContext)}
      * result.
      *
      * @param returnGeneratedKeys flag value

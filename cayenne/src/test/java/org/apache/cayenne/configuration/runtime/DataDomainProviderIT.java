@@ -23,7 +23,7 @@ import org.apache.cayenne.DataChannelQueryFilterChain;
 import org.apache.cayenne.DataChannelSyncFilter;
 import org.apache.cayenne.DataChannelSyncFilterChain;
 import org.apache.cayenne.ObjectContext;
-import org.apache.cayenne.QueryResultItem;
+import org.apache.cayenne.QueryResult;
 import org.apache.cayenne.access.DataDomain;
 import org.apache.cayenne.access.DataNode;
 import org.apache.cayenne.access.dbsync.SkipSchemaUpdateStrategy;
@@ -250,8 +250,8 @@ public class DataDomainProviderIT {
     static class NoopQueryFilter implements DataChannelQueryFilter {
 
         @Override
-        public List<QueryResultItem> onQuery(ObjectContext originatingContext, Query query, boolean iteratedResult,
-                                             DataChannelQueryFilterChain filterChain) {
+        public List<QueryResult> onQuery(ObjectContext originatingContext, Query query, boolean iteratedResult,
+                                         DataChannelQueryFilterChain filterChain) {
             return filterChain.onQuery(originatingContext, query, iteratedResult);
         }
     }

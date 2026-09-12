@@ -30,6 +30,6 @@ import java.util.List;
  */
 public interface DataChannelQueryFilterChain {
 
-    List<QueryResultItem> onQuery(ObjectContext originatingContext, Query query, boolean iteratedResult);
+    List<QueryResult> onQuery(ObjectContext originatingContext, Query query, boolean iteratedResult);
 
 }

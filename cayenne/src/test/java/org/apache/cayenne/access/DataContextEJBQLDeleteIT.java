@@ -20,7 +20,7 @@ package org.apache.cayenne.access;
 
 import org.apache.cayenne.Cayenne;
 import org.apache.cayenne.ObjectContext;
-import org.apache.cayenne.QueryResultItem;
+import org.apache.cayenne.QueryResult;
 import org.apache.cayenne.query.EJBQLQuery;
 import org.apache.cayenne.runtime.CayenneRuntime;
 import org.apache.cayenne.test.jdbc.TableHelper;
@@ -73,9 +73,9 @@ public class DataContextEJBQLDeleteIT {
         String ejbql = "delete from Painting";
         EJBQLQuery query = new EJBQLQuery(ejbql);
 
-        List<QueryResultItem> result = env.context().execute(query);
+        List<QueryResult> result = env.context().execute(query);
 
-        int[] count = ((QueryResultItem.Update) result.getFirst()).counts();
+        int[] count = ((QueryResult.Update) result.getFirst()).counts();
         assertNotNull(count);
         assertEquals(1, count.length);
         assertEquals(2, count[0]);
@@ -88,9 +88,9 @@ public class DataContextEJBQLDeleteIT {
         String ejbql = "delete from Painting AS p";
         EJBQLQuery query = new EJBQLQuery(ejbql);
 
-        List<QueryResultItem> result = env.context().execute(query);
+        List<QueryResult> result = env.context().execute(query);
 
-        int[] count = ((QueryResultItem.Update) result.getFirst()).counts();
+        int[] count = ((QueryResult.Update) result.getFirst()).counts();
         assertNotNull(count);
         assertEquals(1, count.length);
         assertEquals(2, count[0]);
@@ -103,9 +103,9 @@ public class DataContextEJBQLDeleteIT {
         String ejbql = "delete from Painting AS p WHERE p.paintingTitle = 'P2'";
         EJBQLQuery query = new EJBQLQuery(ejbql);
 
-        List<QueryResultItem> result = env.context().execute(query);
+        List<QueryResult> result = env.context().execute(query);
 
-        int[] count = ((QueryResultItem.Update) result.getFirst()).counts();
+        int[] count = ((QueryResult.Update) result.getFirst()).counts();
         assertNotNull(count);
         assertEquals(1, count.length);
         assertEquals(1, count[0]);

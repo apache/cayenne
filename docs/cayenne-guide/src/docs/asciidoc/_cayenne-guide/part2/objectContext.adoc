@@ -84,13 +84,13 @@ While not commonly used, it is nevertheless important in some situations. E.g.:
 
 [source, java]
 ----
-List<QueryResultItem> result = context.execute(query);
-for (QueryResultItem item : result) {
+List<QueryResult> result = context.execute(query);
+for (QueryResult item : result) {
     switch (item) {
-        case QueryResultItem.Select<?> select -> process(select.objects());
-        case QueryResultItem.Update update -> process(update.counts());
-        case QueryResultItem.Iterator<?> iterator -> process(iterator.iterator());
-        case QueryResultItem.OutParameters out -> process(out.values());
+        case QueryResult.Select<?> select -> process(select.objects());
+        case QueryResult.Update update -> process(update.counts());
+        case QueryResult.Iterator<?> iterator -> process(iterator.iterator());
+        case QueryResult.OutParameters out -> process(out.values());
     }
 }
 ----

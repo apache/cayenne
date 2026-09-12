@@ -179,44 +179,45 @@ Expression caseWhenExp = caseWhen(
   ```java
   // before
   List<Artist> artists = context.performQuery(new EJBQLQuery("select a from Artist a"));
-  List<QueryResultItem> result = context.performGenericQuery(SQLExec.query("DELETE FROM ARTIST"));
+  List<QueryResult> result = context.performGenericQuery(SQLExec.query("DELETE FROM ARTIST"));
 
   // after
   List<Artist> artists = context.select(new EJBQLQuery<>("select a from Artist a"));
-  List<QueryResultItem> result = context.execute(SQLExec.query("DELETE FROM ARTIST"));
+  List<QueryResult> result = context.execute(SQLExec.query("DELETE FROM ARTIST"));
   ```
 
-*  Per [CAY-3023](https://issues.apache.org/jira/browse/CAY-3023) the `QueryResult` was removed. `SQLExec.execute(..)`, `MappedExec.execute(..)` and 
-   `ProcedureCall.call(..)` now return a `List<QueryResultItem>` holding the items in the order the query produced them,
-   so callers that know the shape of their query should access them by index. `QueryResultItem` is a sealed interface with
-   `Select`, `Update`, `Iterator` and `OutParameters` record variants, replacing the `isSelectResult()` /
-   `getSelectResult()` / `getUpdateCount()` accessors, so a multipart result can also be scanned with a
-   pattern-matching switch:
+*  Per [CAY-3023](https://issues.apache.org/jira/browse/CAY-3023) `QueryResult` was redesigned from a class holding
+   the entire multipart result to a sealed interface describing a single item of it. `SQLExec.execute(..)`,
+   `MappedExec.execute(..)` and `ProcedureCall.call(..)` now return a `List<QueryResult>` holding the items in the
+   order the query produced them, so callers that know the shape of their query should access them by index.
+   `QueryResult` has `Select`, `Update`, `Iterator` and `OutParameters` record variants, replacing the
+   `isSelectResult()` / `getSelectResult()` / `getUpdateCount()` accessors, so a multipart result can also be
+   scanned with a pattern-matching switch:
 
   ```java
-  List<QueryResultItem> result = SQLExec.query(sql).execute(context);
-  int updated = ((QueryResultItem.Update) result.getFirst()).count();
+  List<QueryResult> result = SQLExec.query(sql).execute(context);
+  int updated = ((QueryResult.Update) result.getFirst()).count();
 
-  for (QueryResultItem item : result) {
+  for (QueryResult item : result) {
       switch (item) {
-          case QueryResultItem.Select<?> select -> process(select.objects());
-          case QueryResultItem.Update update -> process(update.counts());
-          case QueryResultItem.Iterator<?> iterator -> process(iterator.iterator());
-          case QueryResultItem.OutParameters out -> process(out.values());
+          case QueryResult.Select<?> select -> process(select.objects());
+          case QueryResult.Update update -> process(update.counts());
+          case QueryResult.Iterator<?> iterator -> process(iterator.iterator());
+          case QueryResult.OutParameters out -> process(out.values());
       }
   }
   ```
 
    Stored procedure OUT parameters are no longer disguised as a one-row result set. They arrive as a dedicated
-   `QueryResultItem.OutParameters` item (a map keyed by parameter name).
+   `QueryResult.OutParameters` item (a map keyed by parameter name).
 
-   The cgen templates now emit `List<QueryResultItem>` instead of `QueryResult<?>` for the `perform*` methods of
-   mapped exec queries, so regenerate your classes via Modeler ("Tools" → "Generate Classes") or the AI plugin
+   The cgen templates now emit `List<QueryResult>` instead of the old `QueryResult<?>` for the `perform*` methods
+   of mapped exec queries, so regenerate your classes via Modeler ("Tools" → "Generate Classes") or the AI plugin
    if you have generated classes with multipart queries.
 
 *  Per [CAY-3024](https://issues.apache.org/jira/browse/CAY-3024) `org.apache.cayenne.QueryResponse` was removed. Everything that
    used to return a `QueryResponse` - `ObjectContext.performGenericQuery(..)`, etc. - now return
-   `List<QueryResultItem>`. See CAY-3023 above for the example of how to process the result. Custom 
+   `List<QueryResult>`. See CAY-3023 above for the example of how to process the result. Custom 
    `DataChannelQueryFilter` implementations now require a new signature.
 
 *  The `org.apache.cayenne.query.ParameterizedQuery` interface was removed, together with the `createQuery(Map)`
@@ -243,8 +244,8 @@ Expression caseWhenExp = caseWhen(
   query filters need to add the parameter and pass it down the chain:
 
   ```java
-  public List<QueryResultItem> onQuery(ObjectContext context, Query query, boolean iteratedResult,
-                                       DataChannelQueryFilterChain chain) {
+  public List<QueryResult> onQuery(ObjectContext context, Query query, boolean iteratedResult,
+                                   DataChannelQueryFilterChain chain) {
       return chain.onQuery(context, query, iteratedResult);
   }
   ```

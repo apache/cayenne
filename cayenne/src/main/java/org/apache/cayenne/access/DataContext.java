@@ -28,7 +28,7 @@ import org.apache.cayenne.ObjectContext;
 import org.apache.cayenne.ObjectId;
 import org.apache.cayenne.PersistenceState;
 import org.apache.cayenne.Persistent;
-import org.apache.cayenne.QueryResultItem;
+import org.apache.cayenne.QueryResult;
 import org.apache.cayenne.ResultBatchIterator;
 import org.apache.cayenne.ResultIterator;
 import org.apache.cayenne.ResultIteratorCallback;
@@ -876,7 +876,7 @@ public class DataContext implements ObjectContext {
             return new ArrayList<>(1);
         }
 
-        List<T> result = (List<T>) QueryResultItems.firstList(onQuery(resolved, false, false));
+        List<T> result = (List<T>) QueryResults.firstList(onQuery(resolved, false, false));
         return result != null ? result : new ArrayList<>(1);
     }
 
@@ -933,7 +933,7 @@ public class DataContext implements ObjectContext {
     @SuppressWarnings("unchecked")
     public <T> ResultIterator<T> iterator(Select<T> query) {
         Query queryToRun = nonNullDelegate().willPerformQuery(this, query);
-        return (ResultIterator<T>) QueryResultItems.firstIterator(onQuery(queryToRun, true, false));
+        return (ResultIterator<T>) QueryResults.firstIterator(onQuery(queryToRun, true, false));
     }
 
     /**
@@ -943,7 +943,7 @@ public class DataContext implements ObjectContext {
      * @since 1.2
      */
     @Override
-    public List<QueryResultItem> execute(Query query) {
+    public List<QueryResult> execute(Query query) {
 
         query = nonNullDelegate().willPerformGenericQuery(this, query);
         if (query == null) {
@@ -957,7 +957,7 @@ public class DataContext implements ObjectContext {
         return Collections.unmodifiableList(onQuery(query, false, false));
     }
 
-    List<QueryResultItem> onQuery(Query query, boolean iteratedResult, boolean ignoreLocalCache) {
+    List<QueryResult> onQuery(Query query, boolean iteratedResult, boolean ignoreLocalCache) {
         return new DataContextQueryAction(this, query, iteratedResult, ignoreLocalCache).execute();
     }
 
@@ -971,7 +971,7 @@ public class DataContext implements ObjectContext {
      */
     @Deprecated(since = "5.0", forRemoval = true)
     public int[] performNonSelectingQuery(Query query) {
-        int[] count = QueryResultItems.firstUpdateCount(execute(query));
+        int[] count = QueryResults.firstUpdateCount(execute(query));
         return count != null ? count : new int[0];
     }
 

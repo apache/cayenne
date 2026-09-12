@@ -419,7 +419,7 @@ public class DataContextObjectStore implements ObjectStore, SnapshotEventListene
                 .where(ExpressionFactory.matchAllDbExp(oid.getIdSnapshot(), Expression.EQUAL_TO))
                 .fetchDataRows();
 
-        List<?> rows = QueryResultItems.firstList(context.getChannel().onQuery(context, query, false));
+        List<?> rows = QueryResults.firstList(context.getChannel().onQuery(context, query, false));
         return switch (rows.size()) {
             case 0 -> null;
             case 1 -> (DataRow) rows.getFirst();

@@ -23,7 +23,7 @@ import java.util.List;
 import java.util.Map;
 
 import org.apache.cayenne.DataRow;
-import org.apache.cayenne.QueryResultItem;
+import org.apache.cayenne.QueryResult;
 import org.apache.cayenne.unit.CayenneProjects;
 import org.apache.cayenne.unit.CayenneTestsEnv;
 import org.junit.jupiter.api.Test;
@@ -53,12 +53,12 @@ public class SQLExecIT {
     @Test
     public void returnGeneratedKeys() {
         if(env.testDbAdapter().supportsGeneratedKeys()) {
-            List<QueryResultItem> response = SQLExec.query("testmap", "INSERT INTO GENERATED_COLUMN (NAME) VALUES ('Surikov')")
+            List<QueryResult> response = SQLExec.query("testmap", "INSERT INTO GENERATED_COLUMN (NAME) VALUES ('Surikov')")
                     .returnGeneratedKeys(true)
                     .execute(env.context());
             assertEquals(2, response.size());
 
-            List<QueryResultItem> response1 = SQLExec.query("testmap", "INSERT INTO GENERATED_COLUMN (NAME) VALUES ('Sidorov')")
+            List<QueryResult> response1 = SQLExec.query("testmap", "INSERT INTO GENERATED_COLUMN (NAME) VALUES ('Sidorov')")
                     .returnGeneratedKeys(false)
                     .execute(env.context());
             assertEquals(1, response1.size());
@@ -80,9 +80,9 @@ public class SQLExecIT {
         int inserted = SQLExec.query("INSERT INTO ARTIST (ARTIST_ID, ARTIST_NAME) VALUES (1, 'a')").update(env.context());
         assertEquals(1, inserted);
 
-        List<QueryResultItem> result = SQLExec.query("SELECT * FROM ARTIST").execute(env.context());
+        List<QueryResult> result = SQLExec.query("SELECT * FROM ARTIST").execute(env.context());
         assertEquals(2, result.size());
-        List<?> rows = ((QueryResultItem.Select<?>) result.getFirst()).objects();
+        List<?> rows = ((QueryResult.Select<?>) result.getFirst()).objects();
         assertEquals(1, rows.size());
 
         DataRow row = (DataRow) rows.getFirst();
@@ -112,8 +112,8 @@ public class SQLExecIT {
     public void execute_MultipleArrayBind() throws Exception {
         SQLExec inserter = SQLExec.query("INSERT INTO ARTIST (ARTIST_ID, ARTIST_NAME) VALUES (#bind($id), #bind($name))");
         for(int i = 0; i < 2; i++) {
-            List<QueryResultItem> result = inserter.paramsArray(i, "artist " + i).execute(env.context());
-            assertEquals(1, ((QueryResultItem.Update) result.getFirst()).count());
+            List<QueryResult> result = inserter.paramsArray(i, "artist " + i).execute(env.context());
+            assertEquals(1, ((QueryResult.Update) result.getFirst()).count());
         }
         assertEquals(2, env.table("ARTIST").getRowCount());
     }
@@ -125,8 +125,8 @@ public class SQLExecIT {
             Map<String, Object> params = new HashMap<>();
             params.put("id", i);
             params.put("name", "artist " + i);
-            List<QueryResultItem> result = inserter.params(params).execute(env.context());
-            assertEquals(1, ((QueryResultItem.Update) result.getFirst()).count());
+            List<QueryResult> result = inserter.params(params).execute(env.context());
+            assertEquals(1, ((QueryResult.Update) result.getFirst()).count());
         }
         assertEquals(2, env.table("ARTIST").getRowCount());
     }

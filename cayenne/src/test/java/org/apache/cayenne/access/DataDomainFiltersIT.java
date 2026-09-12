@@ -26,7 +26,7 @@ import org.apache.cayenne.DataChannelQueryFilterChain;
 import org.apache.cayenne.DataChannelSyncFilter;
 import org.apache.cayenne.DataChannelSyncFilterChain;
 import org.apache.cayenne.ObjectContext;
-import org.apache.cayenne.QueryResultItem;
+import org.apache.cayenne.QueryResult;
 import org.apache.cayenne.annotation.PostPersist;
 import org.apache.cayenne.graph.GraphDiff;
 import org.apache.cayenne.query.ObjectSelect;
@@ -61,14 +61,14 @@ public class DataDomainFiltersIT {
 
         DataChannelQueryFilter f1 = (originatingContext, query, iteratedResult, filterChain) -> {
             results.add("f1start");
-            List<QueryResultItem> response = filterChain.onQuery(originatingContext, query, iteratedResult);
+            List<QueryResult> response = filterChain.onQuery(originatingContext, query, iteratedResult);
             results.add("f1end");
             return response;
         };
 
         DataChannelQueryFilter f2 = (originatingContext, query, iteratedResult, filterChain) -> {
             results.add("f2start");
-            List<QueryResultItem> response = filterChain.onQuery(originatingContext, query, iteratedResult);
+            List<QueryResult> response = filterChain.onQuery(originatingContext, query, iteratedResult);
             results.add("f2end");
             return response;
         };
@@ -77,7 +77,7 @@ public class DataDomainFiltersIT {
         domain.queryFilters.add(f2);
 
         ObjectSelect<Artist> query = ObjectSelect.query(Artist.class);
-        List<QueryResultItem> response = domain.onQuery(env.context(), query, false);
+        List<QueryResult> response = domain.onQuery(env.context(), query, false);
         assertNotNull(response);
         assertEquals(4, results.size());
         assertEquals("f2start", results.get(0));
@@ -127,8 +127,8 @@ public class DataDomainFiltersIT {
 
         DataDomain domain = env.runtime().getDataDomain();
 
-        List<QueryResultItem> r1 = new ArrayList<>();
-        List<QueryResultItem> r2 = new ArrayList<>();
+        List<QueryResult> r1 = new ArrayList<>();
+        List<QueryResult> r2 = new ArrayList<>();
 
         DataChannelQueryFilter f1 = (originatingContext, query, iteratedResult, filterChain) -> r1;
         DataChannelQueryFilter f2 = (originatingContext, query, iteratedResult, filterChain) -> r2;
@@ -137,7 +137,7 @@ public class DataDomainFiltersIT {
         domain.queryFilters.add(f2);
 
         ObjectSelect<Artist> query = ObjectSelect.query(Artist.class);
-        List<QueryResultItem> response = domain.onQuery(env.context(), query, false);
+        List<QueryResult> response = domain.onQuery(env.context(), query, false);
 
         assertSame(r2, response);
     }
@@ -166,8 +166,8 @@ public class DataDomainFiltersIT {
         private List<String> results = new ArrayList<>();
 
         @Override
-        public List<QueryResultItem> onQuery(ObjectContext originatingContext, Query query, boolean iteratedResult,
-                                             DataChannelQueryFilterChain filterChain) {
+        public List<QueryResult> onQuery(ObjectContext originatingContext, Query query, boolean iteratedResult,
+                                         DataChannelQueryFilterChain filterChain) {
             results.add("onQuery");
             return filterChain.onQuery(originatingContext, query, iteratedResult);
         }

@@ -22,7 +22,7 @@ package org.apache.cayenne.query;
 import org.apache.cayenne.CayenneRuntimeException;
 import org.apache.cayenne.DataRow;
 import org.apache.cayenne.ObjectContext;
-import org.apache.cayenne.QueryResultItem;
+import org.apache.cayenne.QueryResult;
 import org.apache.cayenne.map.EntityResolver;
 
 import java.util.HashMap;
@@ -133,7 +133,7 @@ public class ProcedureCall<T> extends IndirectQuery {
      * Executes the procedure, returning all of its result sets, update counts and OUT parameters in the order they
      * were produced.
      */
-    public List<QueryResultItem> call(ObjectContext context) {
+    public List<QueryResult> call(ObjectContext context) {
         return context.execute(this);
     }
 
@@ -144,8 +144,8 @@ public class ProcedureCall<T> extends IndirectQuery {
      */
     @SuppressWarnings("unchecked")
     public List<T> select(ObjectContext context) {
-        for (QueryResultItem item : call(context)) {
-            if (item instanceof QueryResultItem.Select<?> select) {
+        for (QueryResult item : call(context)) {
+            if (item instanceof QueryResult.Select<?> select) {
                 return (List<T>) select.objects();
             }
         }
@@ -171,9 +171,9 @@ public class ProcedureCall<T> extends IndirectQuery {
         return firstUpdate(context).count();
     }
 
-    private QueryResultItem.Update firstUpdate(ObjectContext context) {
-        for (QueryResultItem item : call(context)) {
-            if (item instanceof QueryResultItem.Update update) {
+    private QueryResult.Update firstUpdate(ObjectContext context) {
+        for (QueryResult item : call(context)) {
+            if (item instanceof QueryResult.Update update) {
                 return update;
             }
         }
