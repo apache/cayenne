@@ -506,17 +506,7 @@ public class DataContext implements ObjectContext {
         return (T) newObject(entity.getName());
     }
 
-    /**
-     * Instantiates a new object and registers it with this context. Object
-     * class is determined from the mapped entity. Object class must have a
-     * default constructor.
-     * <p>
-     * <i>Note: in most cases {@link #newObject(Class)} method should be used,
-     * however this method is helpful when generic persistent classes are
-     * used.</i>
-     *
-     * @since 3.0
-     */
+    @Override
     public Persistent newObject(String entityName) {
         ClassDescriptor descriptor = getEntityResolver().getClassDescriptor(entityName);
         if (descriptor == null) {

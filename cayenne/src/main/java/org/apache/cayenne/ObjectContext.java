@@ -193,6 +193,15 @@ public interface ObjectContext {
     <T extends Persistent> T newObject(Class<T> persistentClass);
 
     /**
+     * Creates a new persistent object of a given entity scheduled to be inserted to the database on next commit.
+     * The object class is determined from the mapped entity. In most cases {@link #newObject(Class)} should be
+     * used instead, but this method is helpful when generic persistent classes are used.
+     *
+     * @since 5.0
+     */
+    Persistent newObject(String entityName);
+
+    /**
      * Registers a transient object with the context. The difference with
      * {@link #newObject(Class)} is that a user creates an object herself,
      * before attaching it to the context, instead of relying on Cayenne to do

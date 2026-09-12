@@ -27,6 +27,7 @@ import org.apache.cayenne.unit.CayenneProjects;
 import org.apache.cayenne.unit.CayenneTestsEnv;
 import org.junit.jupiter.api.extension.RegisterExtension;
 import org.junit.jupiter.api.Test;
+
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
@@ -46,7 +47,7 @@ public class NestedDataContextParentEventsIT {
         ac.setArtistName("X");
         child1.commitChangesToParent();
 
-        final Artist ap = (Artist) env.context().getObjectStore().getObject(ac.getObjectId());
+        Artist ap = (Artist) env.context().getObjectStore().getObject(ac.getObjectId());
         assertNotNull(ap);
 
         assertTrue(ap.getObjectId().isTemporary());
@@ -55,7 +56,7 @@ public class NestedDataContextParentEventsIT {
         new ParallelTestContainer() {
 
             @Override
-            protected void assertResult() throws Exception {
+            protected void assertResult() {
                 assertFalse(ap.getObjectId().isTemporary());
                 assertEquals(ap.getObjectId(), ac.getObjectId());
             }
