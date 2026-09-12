@@ -19,41 +19,42 @@
 
 package org.apache.cayenne.graph;
 
+import org.apache.cayenne.ObjectId;
 /**
  * @since 1.2
  */
 public class ArcCreateOperation extends NodeDiff {
 
-	protected Object targetNodeId;
+	protected ObjectId targetId;
 	protected ArcId arcId;
 
-	public ArcCreateOperation(Object nodeId, Object targetNodeId, ArcId arcId) {
-		super(nodeId);
-		this.targetNodeId = targetNodeId;
+	public ArcCreateOperation(ObjectId id, ObjectId targetId, ArcId arcId) {
+		super(id);
+		this.targetId = targetId;
 		this.arcId = arcId;
 	}
 
-	public ArcCreateOperation(Object nodeId, Object targetNodeId, ArcId arcId, int diffId) {
-		super(nodeId, diffId);
-		this.targetNodeId = targetNodeId;
+	public ArcCreateOperation(ObjectId id, ObjectId targetId, ArcId arcId, int diffId) {
+		super(id, diffId);
+		this.targetId = targetId;
 		this.arcId = arcId;
 	}
 
 	@Override
 	public void apply(GraphChangeHandler tracker) {
-		tracker.arcCreated(nodeId, targetNodeId, arcId);
+		tracker.arcCreated(id, targetId, arcId);
 	}
 
 	@Override
 	public void undo(GraphChangeHandler tracker) {
-		tracker.arcDeleted(nodeId, targetNodeId, arcId);
+		tracker.arcDeleted(id, targetId, arcId);
 	}
 
 	public Object getArcId() {
 		return arcId;
 	}
 
-	public Object getTargetNodeId() {
-		return targetNodeId;
+	public ObjectId getTargetNodeId() {
+		return targetId;
 	}
 }

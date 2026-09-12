@@ -18,6 +18,7 @@
  ****************************************************************/
 package org.apache.cayenne.access;
 
+import org.apache.cayenne.ObjectId;
 import java.util.Map;
 
 import org.apache.cayenne.Persistent;
@@ -30,5 +31,5 @@ import org.apache.cayenne.Persistent;
  */
 public interface ObjectMapRetainStrategy {
 
-    Map<Object, Persistent> createObjectMap();
+    Map<ObjectId, Persistent> createObjectMap();
 }

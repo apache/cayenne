@@ -19,37 +19,34 @@
 
 package org.apache.cayenne;
 
-import org.apache.cayenne.graph.GraphChangeHandler;
-
 import java.util.Collection;
 import java.util.List;
 
 /**
  * A registry of persistent objects managed by an {@link ObjectContext}, keyed by {@link ObjectId}. Also tracks the
- * committed state of those objects as {@link DataRow} snapshots. Inherited {@link GraphChangeHandler} methods are
- * callbacks for registered objects to notify the store of their changes.
+ * committed state of those objects as {@link DataRow} snapshots.
  * <p>
  * Users rarely need to access the store directly, as ObjectContext serves as a facade for most of its operations.
  *
  * @since 5.0
  */
-public interface ObjectStore extends GraphChangeHandler {
+public interface ObjectStore {
 
     /**
      * Returns a registered object for the id, or null if no such object is registered.
      */
-    Persistent getObject(Object nodeId);
+    Persistent getObject(ObjectId id);
 
     /**
      * Registers an object under the id.
      */
-    void registerObject(Object nodeId, Persistent nodeObject);
+    void registerObject(ObjectId id, Persistent nodeObject);
 
     /**
      * Unregisters an object with the id, forgetting any information associated with it. Returns the unregistered
      * object, or null if none was registered.
      */
-    Persistent unregisterObject(Object nodeId);
+    Persistent unregisterObject(ObjectId id);
 
     /**
      * Returns a copy of the collection of all registered objects.

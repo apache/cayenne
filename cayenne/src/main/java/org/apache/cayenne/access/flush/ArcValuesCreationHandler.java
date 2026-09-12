@@ -57,21 +57,21 @@ class ArcValuesCreationHandler implements GraphChangeHandler {
         this.defaultType = defaultType;
     }
 
-    public void arcCreated(Object nodeId, Object targetNodeId, ArcId arcId) {
-        processArcChange(nodeId, targetNodeId, arcId, true);
+    public void arcCreated(ObjectId id, ObjectId targetId, ArcId arcId) {
+        processArcChange(id, targetId, arcId, true);
     }
 
-    public void arcDeleted(Object nodeId, Object targetNodeId, ArcId arcId) {
-        processArcChange(nodeId, targetNodeId, arcId, false);
+    public void arcDeleted(ObjectId id, ObjectId targetId, ArcId arcId) {
+        processArcChange(id, targetId, arcId, false);
     }
 
-    private void processArcChange(Object nodeId, Object targetNodeId, ArcId arcId, boolean created) {
-        ObjectId actualTargetId = (ObjectId)targetNodeId;
+    private void processArcChange(ObjectId id, ObjectId targetId, ArcId arcId, boolean created) {
+        ObjectId actualTargetId = (ObjectId)targetId;
         ObjectId snapshotId = factory.getDiff().getCurrentArcSnapshotValue(arcId.getForwardArc());
         if(snapshotId != null) {
             actualTargetId = snapshotId;
         }
-        ArcTarget arcTarget = new ArcTarget((ObjectId) nodeId, actualTargetId, arcId, !created);
+        ArcTarget arcTarget = new ArcTarget(id, actualTargetId, arcId, !created);
         if(factory.getProcessedArcs().contains(arcTarget.getReversed())) {
             return;
         }

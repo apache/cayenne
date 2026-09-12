@@ -19,6 +19,7 @@
 
 package org.apache.cayenne.graph;
 
+import org.apache.cayenne.ObjectId;
 /**
  * An abstract superclass of operations on individual nodes and arcs in a
  * digraph.
@@ -28,14 +29,14 @@ package org.apache.cayenne.graph;
 public abstract class NodeDiff implements GraphDiff, Comparable<NodeDiff> {
 
 	protected int diffId;
-	protected Object nodeId;
+	protected ObjectId id;
 
-	public NodeDiff(Object nodeId) {
-		this.nodeId = nodeId;
+	public NodeDiff(ObjectId id) {
+		this.id = id;
 	}
 
-	public NodeDiff(Object nodeId, int diffId) {
-		this.nodeId = nodeId;
+	public NodeDiff(ObjectId id, int diffId) {
+		this.id = id;
 		this.diffId = diffId;
 	}
 
@@ -50,8 +51,8 @@ public abstract class NodeDiff implements GraphDiff, Comparable<NodeDiff> {
 	@Override
 	public abstract void undo(GraphChangeHandler tracker);
 
-	public Object getNodeId() {
-		return nodeId;
+	public ObjectId getNodeId() {
+		return id;
 	}
 
 	/**

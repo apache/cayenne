@@ -19,6 +19,7 @@
 
 package org.apache.cayenne.graph;
 
+import org.apache.cayenne.ObjectId;
 import static org.junit.jupiter.api.Assertions.assertSame;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
@@ -28,17 +29,17 @@ public class NodeDiffTest {
 
 	@Test
 	public void getNodeId() {
-		Object id = new Object();
+		ObjectId id = ObjectId.of("E");
 		NodeDiff diff = new ConcreteNodeDiff(id);
 		assertSame(id, diff.getNodeId());
 	}
 
 	@Test
 	public void compareTo() {
-		NodeDiff d1 = new ConcreteNodeDiff("x", 1);
-		NodeDiff d2 = new ConcreteNodeDiff("y", 2);
-		NodeDiff d3 = new ConcreteNodeDiff("z", 3);
-		NodeDiff d4 = new ConcreteNodeDiff("a", 2);
+		NodeDiff d1 = new ConcreteNodeDiff(ObjectId.of("x"), 1);
+		NodeDiff d2 = new ConcreteNodeDiff(ObjectId.of("y"), 2);
+		NodeDiff d3 = new ConcreteNodeDiff(ObjectId.of("z"), 3);
+		NodeDiff d4 = new ConcreteNodeDiff(ObjectId.of("a"), 2);
 
 		assertTrue(d1.compareTo(d2) < 0);
 		assertTrue(d2.compareTo(d1) > 0);
@@ -50,12 +51,12 @@ public class NodeDiffTest {
 	@SuppressWarnings("serial")
 	class ConcreteNodeDiff extends NodeDiff {
 
-		public ConcreteNodeDiff(Object nodeId) {
-			super(nodeId);
+		public ConcreteNodeDiff(ObjectId id) {
+			super(id);
 		}
 
-		public ConcreteNodeDiff(Object nodeId, int diffId) {
-			super(nodeId, diffId);
+		public ConcreteNodeDiff(ObjectId id, int diffId) {
+			super(id, diffId);
 		}
 
 		@Override

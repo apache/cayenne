@@ -18,6 +18,7 @@
  ****************************************************************/
 package org.apache.cayenne.tx;
 
+import org.apache.cayenne.ObjectId;
 import org.apache.cayenne.DataChannel;
 import org.apache.cayenne.ObjectStore;
 import org.apache.cayenne.graph.ArcId;
@@ -57,7 +58,7 @@ abstract class DataChannelSyncCallbackAction implements GraphChangeHandler {
     Collection<Object> persisted;
     Collection<Object> removed;
 
-    private Map<Object, Op> seenIds;
+    private Map<ObjectId, Op> seenIds;
     private final ObjectStore objectStore;
 
     DataChannelSyncCallbackAction(
@@ -87,11 +88,11 @@ abstract class DataChannelSyncCallbackAction implements GraphChangeHandler {
     }
 
     @Override
-    public void nodeCreated(Object nodeId) {
-        Op op = seenIds.put(nodeId, Op.INSERT);
+    public void nodeCreated(ObjectId id) {
+        Op op = seenIds.put(id, Op.INSERT);
         if (op == null) {
 
-            Object node = objectStore.getObject(nodeId);
+            Object node = objectStore.getObject(id);
             if (node != null) {
 
                 if (persisted == null) {
@@ -104,13 +105,13 @@ abstract class DataChannelSyncCallbackAction implements GraphChangeHandler {
     }
 
     @Override
-    public void nodeRemoved(Object nodeId) {
-        Op op = seenIds.put(nodeId, Op.DELETE);
+    public void nodeRemoved(ObjectId id) {
+        Op op = seenIds.put(id, Op.DELETE);
 
         // the node may have been updated prior to delete
         if (op != Op.DELETE) {
 
-            Object node = objectStore.getObject(nodeId);
+            Object node = objectStore.getObject(id);
             if (node != null) {
 
                 if (removed == null) {
@@ -130,32 +131,32 @@ abstract class DataChannelSyncCallbackAction implements GraphChangeHandler {
     }
 
     @Override
-    public void arcCreated(Object nodeId, Object targetNodeId, ArcId arcId) {
+    public void arcCreated(ObjectId id, ObjectId targetId, ArcId arcId) {
         // TODO: andrus, 9/21/2006 - should we register to-many relationship updates?
-        nodeUpdated(nodeId);
+        nodeUpdated(id);
     }
 
     @Override
-    public void arcDeleted(Object nodeId, Object targetNodeId, ArcId arcId) {
+    public void arcDeleted(ObjectId id, ObjectId targetId, ArcId arcId) {
         // TODO: andrus, 9/21/2006 - should we register to-many relationship updates?
-        nodeUpdated(nodeId);
+        nodeUpdated(id);
     }
 
     @Override
     public void nodePropertyChanged(
-            Object nodeId,
+            ObjectId id,
             String property,
             Object oldValue,
             Object newValue) {
-        nodeUpdated(nodeId);
+        nodeUpdated(id);
     }
 
-    private void nodeUpdated(Object nodeId) {
-        Op op = seenIds.put(nodeId, Op.UPDATE);
+    private void nodeUpdated(ObjectId id) {
+        Op op = seenIds.put(id, Op.UPDATE);
 
         if (op == null) {
 
-            Object node = objectStore.getObject(nodeId);
+            Object node = objectStore.getObject(id);
             if (node != null) {
 
                 if (updated == null) {

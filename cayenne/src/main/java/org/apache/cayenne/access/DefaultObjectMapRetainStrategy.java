@@ -18,6 +18,7 @@
  ****************************************************************/
 package org.apache.cayenne.access;
 
+import org.apache.cayenne.ObjectId;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -46,7 +47,7 @@ public class DefaultObjectMapRetainStrategy implements ObjectMapRetainStrategy {
         this.runtimeProperties = runtimeProperties;
     }
 
-    public Map<Object, Persistent> createObjectMap() {
+    public Map<ObjectId, Persistent> createObjectMap() {
         String strategy = runtimeProperties.get(Constants.OBJECT_RETAIN_STRATEGY_PROPERTY);
 
         if (strategy == null || WEAK_RETAIN_STRATEGY.equals(strategy)) {

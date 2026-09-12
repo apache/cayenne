@@ -76,9 +76,9 @@ class DataContextMergeHandler implements GraphChangeHandler, DataChannelListener
         // extra safegurad
     }
 
-    private PropertyDescriptor propertyForId(Object nodeId, String propertyName) {
+    private PropertyDescriptor propertyForId(ObjectId id, String propertyName) {
         ClassDescriptor descriptor = context.getEntityResolver().getClassDescriptor(
-                ((ObjectId) nodeId).getEntityName());
+                id.getEntityName());
         return descriptor.getProperty(propertyName);
     }
 
@@ -138,30 +138,30 @@ class DataContextMergeHandler implements GraphChangeHandler, DataChannelListener
     // *** GraphChangeHandler methods
 
     @Override
-    public void nodeIdChanged(Object nodeId, Object newId) {
-        context.getObjectStore().processIdChange(nodeId, newId);
+    public void nodeIdChanged(ObjectId id, ObjectId newId) {
+        context.getObjectStore().processIdChange(id, newId);
     }
 
     @Override
-    public void nodeRemoved(Object nodeId) {
+    public void nodeRemoved(ObjectId id) {
         DataContextObjectStore os = context.getObjectStore();
         synchronized (os) {
-            os.processDeletedID((ObjectId) nodeId);
+            os.processDeletedID(id);
         }
     }
 
     @Override
     public void nodePropertyChanged(
-            Object nodeId,
+            ObjectId id,
             String property,
             Object oldValue,
             Object newValue) {
 
-        Persistent object = context.getObjectStore().getObject(nodeId);
+        Persistent object = context.getObjectStore().getObject(id);
         if (object != null && object.getPersistenceState() != PersistenceState.HOLLOW) {
 
             // do not override local changes....
-            PropertyDescriptor p = propertyForId(nodeId, property);
+            PropertyDescriptor p = propertyForId(id, property);
             if (p.equals(p.readPropertyDirectly(object), oldValue)) {
                 p.writePropertyDirectly(object, oldValue, newValue);
             }
@@ -169,24 +169,24 @@ class DataContextMergeHandler implements GraphChangeHandler, DataChannelListener
     }
 
     @Override
-    public void arcCreated(Object nodeId, Object targetNodeId, ArcId arcId) {
-        arcChanged(nodeId, arcId);
+    public void arcCreated(ObjectId id, ObjectId targetId, ArcId arcId) {
+        arcChanged(id, arcId);
     }
 
     @Override
-    public void arcDeleted(Object nodeId, Object targetNodeId, ArcId arcId) {
-        arcChanged(nodeId, arcId);
+    public void arcDeleted(ObjectId id, ObjectId targetId, ArcId arcId) {
+        arcChanged(id, arcId);
     }
 
     // works the same for add and remove as long as we don't get too smart per TODO below.
-    private void arcChanged(Object nodeId, Object arcId) {
+    private void arcChanged(ObjectId id, Object arcId) {
 
-        final Persistent source = context.getObjectStore().getObject(nodeId);
+        final Persistent source = context.getObjectStore().getObject(id);
         if (source != null && source.getPersistenceState() != PersistenceState.HOLLOW) {
 
             final int state = source.getPersistenceState();
 
-            PropertyDescriptor p = propertyForId(nodeId, arcId.toString());
+            PropertyDescriptor p = propertyForId(id, arcId.toString());
             p.visit(new PropertyVisitor() {
 
                 public boolean visitAttribute(AttributeProperty property) {

@@ -55,7 +55,7 @@ public class ObjectStoreGraphDiff implements GraphDiff {
         preprocess(objectStore);
     }
 
-    public Map<Object, ObjectDiff> getChangesByObjectId() {
+    public Map<ObjectId, ObjectDiff> getChangesByObjectId() {
         return objectStore.getChangesByObjectId();
     }
 
@@ -155,7 +155,7 @@ public class ObjectStoreGraphDiff implements GraphDiff {
 		if (resolvedDiff == null || lastSeenDiffId < objectStore.currentDiffId) {
 
 			CompoundDiff diff = new CompoundDiff();
-			Map<Object, ObjectDiff> changes = getChangesByObjectId();
+			Map<ObjectId, ObjectDiff> changes = getChangesByObjectId();
 
 			if (!changes.isEmpty()) {
 				List<NodeDiff> allChanges = new ArrayList<>(changes.size() * 2);
@@ -176,12 +176,12 @@ public class ObjectStoreGraphDiff implements GraphDiff {
 
     private void preprocess(DataContextObjectStore objectStore) {
 
-        Map<Object, ObjectDiff> changes = getChangesByObjectId();
+        Map<ObjectId, ObjectDiff> changes = getChangesByObjectId();
         if (!changes.isEmpty()) {
 
-            for (Entry<Object, ObjectDiff> entry : changes.entrySet()) {
+            for (Entry<ObjectId, ObjectDiff> entry : changes.entrySet()) {
 
-                ObjectId id = (ObjectId) entry.getKey();
+                ObjectId id = entry.getKey();
 
                 Persistent object = objectStore.getObject(id);
 

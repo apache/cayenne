@@ -19,26 +19,27 @@
 
 package org.apache.cayenne.graph;
 
+import org.apache.cayenne.ObjectId;
 /**
  * @since 1.2
  */
 public class NodeCreateOperation extends NodeDiff {
 
-	public NodeCreateOperation(Object nodeId) {
-		super(nodeId);
+	public NodeCreateOperation(ObjectId id) {
+		super(id);
 	}
 
-	public NodeCreateOperation(Object nodeId, int diffId) {
-		super(nodeId, diffId);
+	public NodeCreateOperation(ObjectId id, int diffId) {
+		super(id, diffId);
 	}
 
 	@Override
 	public void apply(GraphChangeHandler tracker) {
-		tracker.nodeCreated(nodeId);
+		tracker.nodeCreated(id);
 	}
 
 	@Override
 	public void undo(GraphChangeHandler tracker) {
-		tracker.nodeRemoved(nodeId);
+		tracker.nodeRemoved(id);
 	}
 }

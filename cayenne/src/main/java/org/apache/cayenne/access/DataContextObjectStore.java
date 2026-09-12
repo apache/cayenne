@@ -70,15 +70,16 @@ public class DataContextObjectStore implements ObjectStore, SnapshotEventListene
 
     protected final DataContext context;
     protected final DataRowStore dataRowCache;
-    protected final Map<Object, Persistent> objectMap;
+    protected final Map<ObjectId, Persistent> objectMap;
 
-    protected Map<Object, ObjectDiff> changes;
+    protected Map<ObjectId, ObjectDiff> changes;
 
     /**
      * Presence of path in this map is used to separate insert from update case of flattened records.
      */
-    protected Map<Object, Map<CayennePath, ObjectId>> trackedFlattenedPaths;
+    protected Map<ObjectId, Map<CayennePath, ObjectId>> trackedFlattenedPaths;
     private Collection<GraphDiff> lifecycleEventInducedChanges;
+    private final ChangeRecorder changeRecorder;
 
     // a sequential id used to tag GraphDiffs so that they can later be sorted in the
     // original creation order
@@ -87,16 +88,17 @@ public class DataContextObjectStore implements ObjectStore, SnapshotEventListene
     public DataContextObjectStore(
             DataContext context,
             DataRowStore dataRowCache,
-            Map<Object, Persistent> objectMap,
+            Map<ObjectId, Persistent> objectMap,
             boolean syncWithSnapshotCache) {
 
         this.context = Objects.requireNonNull(context);
         this.dataRowCache = dataRowCache;
+        this.changeRecorder = new ChangeRecorder();
 
         this.objectMap = Objects.requireNonNull(objectMap, "Object map is null.");
-        if (objectMap instanceof SoftValueMap<Object, Persistent> softValueMap) {
+        if (objectMap instanceof SoftValueMap<ObjectId, Persistent> softValueMap) {
             softValueMap.setKeyCleanupCallback(this::onObjectKeyCleanup);
-        } else if (objectMap instanceof WeakValueMap<Object, Persistent> weakValueMap) {
+        } else if (objectMap instanceof WeakValueMap<ObjectId, Persistent> weakValueMap) {
             weakValueMap.setKeyCleanupCallback(this::onObjectKeyCleanup);
         }
 
@@ -115,23 +117,14 @@ public class DataContextObjectStore implements ObjectStore, SnapshotEventListene
         }
     }
 
-    /**
-     * @since 3.0
-     */
     void childContextSyncStarted() {
         lifecycleEventInducedChanges = new ArrayList<>();
     }
 
-    /**
-     * @since 3.0
-     */
     void childContextSyncStopped() {
         lifecycleEventInducedChanges = null;
     }
 
-    /**
-     * @since 3.0
-     */
     Collection<GraphDiff> getLifecycleEventInducedChanges() {
         return lifecycleEventInducedChanges != null
                 ? lifecycleEventInducedChanges
@@ -149,22 +142,20 @@ public class DataContextObjectStore implements ObjectStore, SnapshotEventListene
 
     /**
      * Registers object change.
-     *
-     * @since 1.2
      */
-    synchronized ObjectDiff registerDiff(Object nodeId, NodeDiff diff) {
+    synchronized ObjectDiff registerDiff(ObjectId id, NodeDiff diff) {
 
         if (diff != null) {
             diff.setDiffId(++currentDiffId);
         }
 
-        ObjectDiff objectDiff = changes.get(nodeId);
+        ObjectDiff objectDiff = changes.get(id);
 
         if (objectDiff == null) {
 
-            Persistent object = objectMap.get(nodeId);
+            Persistent object = objectMap.get(id);
             if (object == null) {
-                throw new CayenneRuntimeException("No object is registered in context with Id %s", nodeId);
+                throw new CayenneRuntimeException("No object is registered in context with Id %s", id);
             }
 
             if (object.getPersistenceState() == PersistenceState.COMMITTED) {
@@ -172,7 +163,7 @@ public class DataContextObjectStore implements ObjectStore, SnapshotEventListene
 
                 // TODO: andrus 3/23/2006 snapshot versions are obsolete, but there is no
                 // replacement yet, so we still need to handle them...
-                DataRow snapshot = getCachedSnapshot((ObjectId) nodeId);
+                DataRow snapshot = getCachedSnapshot(id);
 
                 if (snapshot != null
                         && snapshot.getVersion() != object.getSnapshotVersion()) {
@@ -181,7 +172,7 @@ public class DataContextObjectStore implements ObjectStore, SnapshotEventListene
                         ClassDescriptor descriptor = context
                                 .getEntityResolver()
                                 .getClassDescriptor(
-                                        ((ObjectId) nodeId).getEntityName());
+                                        id.getEntityName());
                         DataRowUtils.forceMergeWithSnapshot(
                                 context,
                                 descriptor,
@@ -195,7 +186,7 @@ public class DataContextObjectStore implements ObjectStore, SnapshotEventListene
 
             objectDiff = new ObjectDiff(object);
             objectDiff.setDiffId(++currentDiffId);
-            changes.put(nodeId, objectDiff);
+            changes.put(id, objectDiff);
         }
 
         if (diff != null) {
@@ -207,8 +198,6 @@ public class DataContextObjectStore implements ObjectStore, SnapshotEventListene
 
     /**
      * Returns a number of objects currently registered with this ObjectStore.
-     *
-     * @since 1.2
      */
     public int registeredObjectsCount() {
         return objectMap.size();
@@ -224,8 +213,6 @@ public class DataContextObjectStore implements ObjectStore, SnapshotEventListene
     /**
      * Turns registered objects with the given ids HOLLOW, discarding their uncommitted changes. Ids of unregistered
      * or NEW objects are ignored. Does not touch the snapshot cache.
-     *
-     * @since 5.0
      */
     synchronized void objectsInvalidated(Collection<ObjectId> ids) {
         for (ObjectId id : ids) {
@@ -286,8 +273,6 @@ public class DataContextObjectStore implements ObjectStore, SnapshotEventListene
 
     /**
      * Reverts changes to all stored uncomitted objects.
-     *
-     * @since 1.1
      */
     public synchronized void objectsRolledBack() {
         Iterator<Persistent> it = getObjectIterator();
@@ -317,8 +302,6 @@ public class DataContextObjectStore implements ObjectStore, SnapshotEventListene
 
     /**
      * Builds and returns GraphDiff reflecting all uncommitted object changes.
-     *
-     * @since 1.2
      */
     ObjectStoreGraphDiff getChanges() {
         return new ObjectStoreGraphDiff(this);
@@ -326,19 +309,14 @@ public class DataContextObjectStore implements ObjectStore, SnapshotEventListene
 
     /**
      * Returns internal changes map.
-     *
-     * @since 1.2
      */
-    Map<Object, ObjectDiff> getChangesByObjectId() {
+    Map<ObjectId, ObjectDiff> getChangesByObjectId() {
         return changes;
     }
 
-    /**
-     * @since 1.2
-     */
     void postprocessAfterPhantomCommit() {
 
-        for (Object id : changes.keySet()) {
+        for (ObjectId id : changes.keySet()) {
 
             Persistent object = objectMap.get(id);
 
@@ -353,13 +331,11 @@ public class DataContextObjectStore implements ObjectStore, SnapshotEventListene
 
     /**
      * Internal unsynchronized method to process objects state after commit.
-     *
-     * @since 1.2
      */
     public void postprocessAfterCommit(GraphDiff parentChanges) {
 
         // scan through changed objects, set persistence state to committed
-        for (Object id : changes.keySet()) {
+        for (ObjectId id : changes.keySet()) {
             Persistent object = objectMap.get(id);
 
             switch (object.getPersistenceState()) {
@@ -380,8 +356,8 @@ public class DataContextObjectStore implements ObjectStore, SnapshotEventListene
         if (!parentChanges.isNoop()) {
             parentChanges.apply(new GraphChangeHandler() {
                 @Override
-                public void nodeIdChanged(Object nodeId, Object newId) {
-                    processIdChange(nodeId, newId);
+                public void nodeIdChanged(ObjectId id, ObjectId newId) {
+                    processIdChange(id, newId);
                 }
             });
         }
@@ -396,8 +372,6 @@ public class DataContextObjectStore implements ObjectStore, SnapshotEventListene
      * Snapshots are keyed by the concrete entity of an object, so an id of a superentity is matched against the ids of
      * its subentities as well. A nested context has no snapshot cache of its own, so it takes the current state of the
      * object in the parent context as the snapshot.
-     *
-     * @since 1.1
      */
     @Override
     public DataRow getCachedSnapshot(ObjectId oid) {
@@ -521,8 +495,6 @@ public class DataContextObjectStore implements ObjectStore, SnapshotEventListene
      * DataRowStore, since it is normally invoked *AFTER* the DataRowStore was modified as
      * a result of some external interaction.
      * </p>
-     *
-     * @since 1.1
      */
     @Override
     public void snapshotsChanged(SnapshotEvent event) {
@@ -532,9 +504,6 @@ public class DataContextObjectStore implements ObjectStore, SnapshotEventListene
         }
     }
 
-    /**
-     * @since 1.2
-     */
     synchronized void processSnapshotEvent(SnapshotEvent event) {
 
         Map<ObjectId, DataRow> modifiedDiffs = event.getModifiedDiffs();
@@ -565,21 +534,21 @@ public class DataContextObjectStore implements ObjectStore, SnapshotEventListene
         context.fireDataChannelChanged(originatingContext, diff);
     }
 
-    void processIdChange(Object nodeId, Object newId) {
-        Persistent object = objectMap.remove(nodeId);
+    void processIdChange(ObjectId id, ObjectId newId) {
+        Persistent object = objectMap.remove(id);
 
         if (object != null) {
-            object.setObjectId((ObjectId) newId);
+            object.setObjectId(newId);
             objectMap.put(newId, object);
 
-            ObjectDiff change = changes.remove(nodeId);
+            ObjectDiff change = changes.remove(id);
             if (change != null) {
                 changes.put(newId, change);
             }
         }
 
         if (trackedFlattenedPaths != null) {
-            Map<CayennePath, ObjectId> paths = trackedFlattenedPaths.remove(nodeId);
+            Map<CayennePath, ObjectId> paths = trackedFlattenedPaths.remove(id);
             if (paths != null) {
                 trackedFlattenedPaths.put(newId, paths);
             }
@@ -588,13 +557,11 @@ public class DataContextObjectStore implements ObjectStore, SnapshotEventListene
 
     /**
      * Requires external synchronization.
-     *
-     * @since 1.2
      */
-    void processDeletedID(ObjectId nodeId) {
+    void processDeletedID(ObjectId id) {
 
         // access object map directly - the method should be called in a synchronized context...
-        Persistent object = objectMap.get(nodeId);
+        Persistent object = objectMap.get(id);
 
         if (object != null) {
             DataContextDelegate delegate;
@@ -603,10 +570,10 @@ public class DataContextObjectStore implements ObjectStore, SnapshotEventListene
                 case PersistenceState.COMMITTED, PersistenceState.HOLLOW, PersistenceState.DELETED -> {
                     delegate = context.nonNullDelegate();
                     if (delegate.shouldProcessDelete(object)) {
-                        objectMap.remove(nodeId);
-                        changes.remove(nodeId);
+                        objectMap.remove(id);
+                        changes.remove(id);
                         if (trackedFlattenedPaths != null) {
-                            trackedFlattenedPaths.remove(nodeId);
+                            trackedFlattenedPaths.remove(id);
                         }
                         // setting DataContext to null will also set state to transient
                         object.setObjectContext(null);
@@ -617,9 +584,9 @@ public class DataContextObjectStore implements ObjectStore, SnapshotEventListene
                     delegate = context.nonNullDelegate();
                     if (delegate.shouldProcessDelete(object)) {
                         object.setPersistenceState(PersistenceState.NEW);
-                        changes.remove(nodeId);
-                        registerObject(nodeId, object);
-                        nodeCreated(nodeId);
+                        changes.remove(id);
+                        registerObject(id, object);
+                        changeRecorder.nodeCreated(id);
                         delegate.finishedProcessDelete(object);
                     }
                 }
@@ -627,13 +594,10 @@ public class DataContextObjectStore implements ObjectStore, SnapshotEventListene
         }
     }
 
-    /**
-     * @since 1.1
-     */
     void processInvalidatedIDs(Collection<ObjectId> invalidatedIDs) {
         if (invalidatedIDs != null && !invalidatedIDs.isEmpty()) {
             for (ObjectId oid : invalidatedIDs) {
-                Persistent object = (Persistent) getObject(oid);
+                Persistent object = getObject(oid);
 
                 if (object == null) {
                     continue;
@@ -718,10 +682,10 @@ public class DataContextObjectStore implements ObjectStore, SnapshotEventListene
      *
      * @since 1.1
      */
-    void processUpdatedSnapshot(ObjectId nodeId, DataRow diff) {
+    void processUpdatedSnapshot(ObjectId id, DataRow diff) {
 
         // access object map directly - the method should be called in a synchronized context...
-        Persistent object = objectMap.get(nodeId);
+        Persistent object = objectMap.get(id);
 
         // no object, or HOLLOW object require no processing
         if (object != null) {
@@ -736,7 +700,7 @@ public class DataContextObjectStore implements ObjectStore, SnapshotEventListene
                     if (delegate.shouldMergeChanges(object, diff)) {
                         ClassDescriptor descriptor = context
                                 .getEntityResolver()
-                                .getClassDescriptor(nodeId.getEntityName());
+                                .getClassDescriptor(id.getEntityName());
 
                         // TODO: andrus, 5/26/2006 - call to 'getSnapshot' is expensive,
                         // however my attempts to merge the 'diff' instead of snapshot
@@ -763,7 +727,7 @@ public class DataContextObjectStore implements ObjectStore, SnapshotEventListene
                     if (delegate.shouldMergeChanges(object, diff)) {
                         ClassDescriptor descriptor = context
                                 .getEntityResolver()
-                                .getClassDescriptor(nodeId.getEntityName());
+                                .getClassDescriptor(id.getEntityName());
                         DataRowUtils.forceMergeWithSnapshot(
                                 context,
                                 descriptor,
@@ -776,44 +740,24 @@ public class DataContextObjectStore implements ObjectStore, SnapshotEventListene
         }
     }
 
-    // *********** ObjectStore Methods *********
-    // =========================================
-
-    /**
-     * Returns a registered Persistent objects or null of no object exists for the ObjectId.
-     *
-     * @since 1.2
-     */
     @Override
-    public synchronized Persistent getObject(Object nodeId) {
-        return objectMap.get(nodeId);
+    public synchronized Persistent getObject(ObjectId id) {
+        return objectMap.get(id);
     }
 
-    /**
-     * Returns all registered Persistent objects. List is returned by copy and can be modified by
-     * the caller.
-     *
-     * @since 1.2
-     */
     @Override
     public synchronized Collection<Persistent> registeredObjects() {
         return new ArrayList<>(objectMap.values());
     }
 
-    /**
-     * @since 1.2
-     */
     @Override
-    public synchronized void registerObject(Object nodeId, Persistent nodeObject) {
-        objectMap.put(nodeId, nodeObject);
+    public synchronized void registerObject(ObjectId id, Persistent nodeObject) {
+        objectMap.put(id, nodeObject);
     }
 
-    /**
-     * @since 1.2
-     */
     @Override
-    public synchronized Persistent unregisterObject(Object nodeId) {
-        Persistent object = objectMap.get(nodeId);
+    public synchronized Persistent unregisterObject(ObjectId id) {
+        Persistent object = objectMap.get(id);
         if (object != null) {
             objectsUnregistered(Collections.singleton(object));
         }
@@ -821,99 +765,10 @@ public class DataContextObjectStore implements ObjectStore, SnapshotEventListene
         return object;
     }
 
-    /**
-     * Does nothing.
-     *
-     * @since 1.2
-     */
-    @Override
-    public void nodeIdChanged(Object nodeId, Object newId) {
-        throw new UnsupportedOperationException("nodeIdChanged");
+    GraphChangeHandler changeRecorder() {
+        return changeRecorder;
     }
 
-    /**
-     * @since 1.2
-     */
-    @Override
-    public void nodeCreated(Object nodeId) {
-        NodeDiff diff = new NodeCreateOperation(nodeId);
-
-        if (lifecycleEventInducedChanges != null) {
-            registerLifecycleEventInducedChange(diff);
-        }
-
-        registerDiff(nodeId, diff);
-    }
-
-    /**
-     * @since 1.2
-     */
-    @Override
-    public void nodeRemoved(Object nodeId) {
-
-        NodeDiff diff = new NodeDeleteOperation(nodeId);
-
-        if (lifecycleEventInducedChanges != null) {
-            registerLifecycleEventInducedChange(diff);
-        }
-
-        registerDiff(nodeId, diff);
-    }
-
-    /**
-     * Records dirty object snapshot.
-     *
-     * @since 1.2
-     */
-    @Override
-    public void nodePropertyChanged(
-            Object nodeId,
-            String property,
-            Object oldValue,
-            Object newValue) {
-
-        if (lifecycleEventInducedChanges != null) {
-            registerLifecycleEventInducedChange(new NodePropertyChangeOperation(
-                    nodeId,
-                    property,
-                    oldValue,
-                    newValue));
-        }
-
-        registerDiff(nodeId, null);
-    }
-
-    /**
-     * @since 1.2
-     */
-    @Override
-    public void arcCreated(Object nodeId, Object targetNodeId, ArcId arcId) {
-        NodeDiff diff = new ArcOperation(nodeId, targetNodeId, arcId, false);
-
-        if (lifecycleEventInducedChanges != null) {
-            registerLifecycleEventInducedChange(diff);
-        }
-
-        registerDiff(nodeId, diff);
-    }
-
-    /**
-     * @since 1.2
-     */
-    @Override
-    public void arcDeleted(Object nodeId, Object targetNodeId, ArcId arcId) {
-        NodeDiff diff = new ArcOperation(nodeId, targetNodeId, arcId, true);
-
-        if (lifecycleEventInducedChanges != null) {
-            registerLifecycleEventInducedChange(diff);
-        }
-
-        registerDiff(nodeId, diff);
-    }
-
-    /**
-     * @since 4.2
-     */
     public ObjectId getFlattenedId(ObjectId objectId, CayennePath path) {
         if (trackedFlattenedPaths == null) {
             return null;
@@ -923,9 +778,6 @@ public class DataContextObjectStore implements ObjectStore, SnapshotEventListene
                 .getOrDefault(objectId, Collections.emptyMap()).get(path);
     }
 
-    /**
-     * @since 4.2
-     */
     public Collection<ObjectId> getFlattenedIds(ObjectId objectId) {
         if (trackedFlattenedPaths == null) {
             return Collections.emptyList();
@@ -935,9 +787,6 @@ public class DataContextObjectStore implements ObjectStore, SnapshotEventListene
                 .getOrDefault(objectId, Collections.emptyMap()).values();
     }
 
-    /**
-     * @since 5.0
-     */
     public Map<CayennePath, ObjectId> getFlattenedPathIdMap(ObjectId objectId) {
         if (trackedFlattenedPaths == null) {
             return Collections.emptyMap();
@@ -996,6 +845,69 @@ public class DataContextObjectStore implements ObjectStore, SnapshotEventListene
         @Override
         public void undo(GraphChangeHandler handler) {
             throw new UnsupportedOperationException();
+        }
+    }
+
+    /**
+     * Records object graph changes as uncommitted diffs.
+     */
+    private class ChangeRecorder implements GraphChangeHandler {
+
+        @Override
+        public void nodeCreated(ObjectId id) {
+            NodeDiff diff = new NodeCreateOperation(id);
+
+            if (lifecycleEventInducedChanges != null) {
+                registerLifecycleEventInducedChange(diff);
+            }
+
+            registerDiff(id, diff);
+        }
+
+        @Override
+        public void nodeRemoved(ObjectId id) {
+            NodeDiff diff = new NodeDeleteOperation(id);
+
+            if (lifecycleEventInducedChanges != null) {
+                registerLifecycleEventInducedChange(diff);
+            }
+
+            registerDiff(id, diff);
+        }
+
+        /**
+         * Records dirty object snapshot.
+         */
+        @Override
+        public void nodePropertyChanged(ObjectId id, String property, Object oldValue, Object newValue) {
+            if (lifecycleEventInducedChanges != null) {
+                registerLifecycleEventInducedChange(
+                        new NodePropertyChangeOperation(id, property, oldValue, newValue));
+            }
+
+            registerDiff(id, null);
+        }
+
+        @Override
+        public void arcCreated(ObjectId id, ObjectId targetId, ArcId arcId) {
+            NodeDiff diff = new ArcOperation(id, targetId, arcId, false);
+
+            if (lifecycleEventInducedChanges != null) {
+                registerLifecycleEventInducedChange(diff);
+            }
+
+            registerDiff(id, diff);
+        }
+
+        @Override
+        public void arcDeleted(ObjectId id, ObjectId targetId, ArcId arcId) {
+            NodeDiff diff = new ArcOperation(id, targetId, arcId, true);
+
+            if (lifecycleEventInducedChanges != null) {
+                registerLifecycleEventInducedChange(diff);
+            }
+
+            registerDiff(id, diff);
         }
     }
 }

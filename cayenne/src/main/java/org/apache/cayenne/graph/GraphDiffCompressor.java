@@ -18,6 +18,7 @@
  ****************************************************************/
 package org.apache.cayenne.graph;
 
+import org.apache.cayenne.ObjectId;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.HashSet;
@@ -48,16 +49,16 @@ public class GraphDiffCompressor {
     final class CompressAction implements GraphChangeHandler {
 
         private List<GraphDiff> compressed = new ArrayList<>();
-        private Map<Object, List<NodeDiff>> diffsByNode = new HashMap<>();
-        private Set<Object> deletedNodes;
-        private Set<Object> createdNodes;
+        private Map<ObjectId, List<NodeDiff>> diffsByNode = new HashMap<>();
+        private Set<ObjectId> deletedNodes;
+        private Set<ObjectId> createdNodes;
 
         GraphDiff getCompressedDiff() {
 
             // remove deleted nodes...
             if (deletedNodes != null) {
 
-                for (Object nodeId : deletedNodes) {
+                for (ObjectId id : deletedNodes) {
 
                     Iterator<GraphDiff> it = compressed.iterator();
 
@@ -68,10 +69,10 @@ public class GraphDiffCompressor {
                     // TODO: andrus 2008/02/04 - this doesn't take into account a
                     // possibility that a deleted node was re-inserted... Although I don't
                     // see how this could possibly happen with the present Cayenne API.
-                    if (createdNodes != null && createdNodes.contains(nodeId)) {
+                    if (createdNodes != null && createdNodes.contains(id)) {
                         while (it.hasNext()) {
                             NodeDiff diff = (NodeDiff) it.next();
-                            if (nodeId.equals(diff.getNodeId())) {
+                            if (id.equals(diff.getNodeId())) {
                                 it.remove();
                             }
                         }
@@ -79,7 +80,7 @@ public class GraphDiffCompressor {
                     else {
                         while (it.hasNext()) {
                             NodeDiff diff = (NodeDiff) it.next();
-                            if (nodeId.equals(diff.getNodeId())) {
+                            if (id.equals(diff.getNodeId())) {
                                 if (diff instanceof NodePropertyChangeOperation) {
                                     it.remove();
                                 }
@@ -94,17 +95,17 @@ public class GraphDiffCompressor {
         }
 
         @Override
-        public void arcCreated(Object nodeId, Object targetNodeId, ArcId arcId) {
+        public void arcCreated(ObjectId id, ObjectId targetId, ArcId arcId) {
 
-            if (targetNodeId != null) {
-                List<NodeDiff> diffs = diffsByNode.get(nodeId);
+            if (targetId != null) {
+                List<NodeDiff> diffs = diffsByNode.get(id);
                 if (diffs != null) {
                     for (int i = diffs.size() - 1; i >= 0; i--) {
                         NodeDiff diff = diffs.get(i);
                         if (diff instanceof ArcDeleteOperation) {
                             ArcDeleteOperation arcDiff = (ArcDeleteOperation) diff;
                             if (arcId.equals(arcDiff.getArcId())
-                                    && targetNodeId.equals(arcDiff.targetNodeId)) {
+                                    && targetId.equals(arcDiff.targetId)) {
                                 diffs.remove(i);
                                 compressed.remove(arcDiff);
                                 return;
@@ -114,21 +115,21 @@ public class GraphDiffCompressor {
                 }
             }
 
-            registerDiff(new ArcCreateOperation(nodeId, targetNodeId, arcId));
+            registerDiff(new ArcCreateOperation(id, targetId, arcId));
         }
 
         @Override
-        public void arcDeleted(Object nodeId, Object targetNodeId, ArcId arcId) {
+        public void arcDeleted(ObjectId id, ObjectId targetId, ArcId arcId) {
 
-            if (targetNodeId != null) {
-                List<NodeDiff> diffs = diffsByNode.get(nodeId);
+            if (targetId != null) {
+                List<NodeDiff> diffs = diffsByNode.get(id);
                 if (diffs != null) {
                     for (int i = diffs.size() - 1; i >= 0; i--) {
                         NodeDiff diff = diffs.get(i);
                         if (diff instanceof ArcCreateOperation) {
                             ArcCreateOperation arcDiff = (ArcCreateOperation) diff;
                             if (arcId.equals(arcDiff.getArcId())
-                                    && targetNodeId.equals(arcDiff.targetNodeId)) {
+                                    && targetId.equals(arcDiff.targetId)) {
                                 diffs.remove(i);
                                 compressed.remove(arcDiff);
                                 return;
@@ -138,45 +139,45 @@ public class GraphDiffCompressor {
                 }
             }
 
-            registerDiff(new ArcDeleteOperation(nodeId, targetNodeId, arcId));
+            registerDiff(new ArcDeleteOperation(id, targetId, arcId));
         }
 
         @Override
-        public void nodeCreated(Object nodeId) {
-            registerDiff(new NodeCreateOperation(nodeId));
+        public void nodeCreated(ObjectId id) {
+            registerDiff(new NodeCreateOperation(id));
 
             if (createdNodes == null) {
                 createdNodes = new HashSet<>();
             }
 
-            createdNodes.add(nodeId);
+            createdNodes.add(id);
         }
 
         @Override
-        public void nodeIdChanged(Object nodeId, Object newId) {
-            registerDiff(new NodeIdChangeOperation(nodeId, newId));
+        public void nodeIdChanged(ObjectId id, ObjectId newId) {
+            registerDiff(new NodeIdChangeOperation(id, newId));
         }
 
         @Override
-        public void nodeRemoved(Object nodeId) {
+        public void nodeRemoved(ObjectId id) {
 
-            registerDiff(new NodeDeleteOperation(nodeId));
+            registerDiff(new NodeDeleteOperation(id));
 
             if (deletedNodes == null) {
                 deletedNodes = new HashSet<>();
             }
 
-            deletedNodes.add(nodeId);
+            deletedNodes.add(id);
         }
 
         @Override
         public void nodePropertyChanged(
-                Object nodeId,
+                ObjectId id,
                 String property,
                 Object oldValue,
                 Object newValue) {
 
-            List<NodeDiff> diffs = diffsByNode.get(nodeId);
+            List<NodeDiff> diffs = diffsByNode.get(id);
             if (diffs != null) {
 
                 for (int i = diffs.size() - 1; i >= 0; i--) {
@@ -192,7 +193,7 @@ public class GraphDiffCompressor {
             }
 
             registerDiff(new NodePropertyChangeOperation(
-                    nodeId,
+                    id,
                     property,
                     oldValue,
                     newValue));

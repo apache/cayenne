@@ -19,6 +19,7 @@
 
 package org.apache.cayenne.graph;
 
+import org.apache.cayenne.ObjectId;
 import java.util.Objects;
 
 /**
@@ -30,16 +31,16 @@ public class NodePropertyChangeOperation extends NodeDiff {
 	protected Object oldValue;
 	protected Object newValue;
 
-	public NodePropertyChangeOperation(Object nodeId, String property, Object oldValue, Object newValue) {
+	public NodePropertyChangeOperation(ObjectId id, String property, Object oldValue, Object newValue) {
 
-		super(nodeId);
+		super(id);
 		this.property = property;
 		this.oldValue = oldValue;
 		this.newValue = newValue;
 	}
 
-	public NodePropertyChangeOperation(Object nodeId, String property, Object oldValue, Object newValue, int diffId) {
-		super(nodeId, diffId);
+	public NodePropertyChangeOperation(ObjectId id, String property, Object oldValue, Object newValue, int diffId) {
+		super(id, diffId);
 
 		this.property = property;
 		this.oldValue = oldValue;
@@ -72,11 +73,11 @@ public class NodePropertyChangeOperation extends NodeDiff {
 
 	@Override
 	public void apply(GraphChangeHandler tracker) {
-		tracker.nodePropertyChanged(nodeId, property, oldValue, newValue);
+		tracker.nodePropertyChanged(id, property, oldValue, newValue);
 	}
 
 	@Override
 	public void undo(GraphChangeHandler tracker) {
-		tracker.nodePropertyChanged(nodeId, property, newValue, oldValue);
+		tracker.nodePropertyChanged(id, property, newValue, oldValue);
 	}
 }

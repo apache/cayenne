@@ -70,17 +70,16 @@ public class ChildDiffLoader implements GraphChangeHandler {
 	}
 
 	@Override
-	public void nodeIdChanged(Object nodeId, Object newId) {
+	public void nodeIdChanged(ObjectId id, ObjectId newId) {
 		throw new CayenneRuntimeException("Not supported");
 	}
 
 	@Override
-	public void nodeCreated(Object nodeId) {
+	public void nodeCreated(ObjectId id) {
 
 		setExternalChange(Boolean.TRUE);
 
 		try {
-			ObjectId id = (ObjectId) nodeId;
 			if (id.getEntityName() == null) {
 				throw new NullPointerException("Null entity name in id " + id);
 			}
@@ -95,9 +94,9 @@ public class ChildDiffLoader implements GraphChangeHandler {
 	}
 
 	@Override
-	public void nodeRemoved(Object nodeId) {
+	public void nodeRemoved(ObjectId id) {
 		setExternalChange(Boolean.TRUE);
-		Persistent object = findObject(nodeId);
+		Persistent object = findObject(id);
 		if (object != null) {
 			try {
 				context.deleteObjects(object);
@@ -110,14 +109,14 @@ public class ChildDiffLoader implements GraphChangeHandler {
 	}
 
 	@Override
-	public void nodePropertyChanged(Object nodeId, String property, Object oldValue, Object newValue) {
+	public void nodePropertyChanged(ObjectId id, String property, Object oldValue, Object newValue) {
 
 		// this change is for simple property, so no need to convert targets to
 		// server
 		// objects...
-		Persistent object = findObject(nodeId);
+		Persistent object = findObject(id);
 		ClassDescriptor descriptor = context.getEntityResolver()
-				.getClassDescriptor(((ObjectId) nodeId).getEntityName());
+				.getClassDescriptor(id.getEntityName());
 
 		setExternalChange(Boolean.TRUE);
 		try {
@@ -130,10 +129,10 @@ public class ChildDiffLoader implements GraphChangeHandler {
 	}
 
 	@Override
-	public void arcCreated(Object nodeId, Object targetNodeId, ArcId arcId) {
+	public void arcCreated(ObjectId id, ObjectId targetId, ArcId arcId) {
 
-		final Persistent source = findObject(nodeId);
-		final Persistent target = findObject(targetNodeId);
+		final Persistent source = findObject(id);
+		final Persistent target = findObject(targetId);
 
 		// if a target was later deleted, the diff for arcCreated is still
 		// preserved and
@@ -143,7 +142,7 @@ public class ChildDiffLoader implements GraphChangeHandler {
 		}
 
 		ClassDescriptor descriptor = context.getEntityResolver()
-				.getClassDescriptor(((ObjectId) nodeId).getEntityName());
+				.getClassDescriptor(id.getEntityName());
 		ArcProperty property = (ArcProperty) descriptor.getProperty(arcId.toString());
 
 		setExternalChange(Boolean.TRUE);
@@ -175,8 +174,8 @@ public class ChildDiffLoader implements GraphChangeHandler {
 	}
 
 	@Override
-	public void arcDeleted(Object nodeId, final Object targetNodeId, ArcId arcId) {
-		final Persistent source = findObject(nodeId);
+	public void arcDeleted(ObjectId id, final ObjectId targetId, ArcId arcId) {
+		final Persistent source = findObject(id);
 
 		// needed as sometime temporary objects are evoked from the context
 		// before
@@ -186,7 +185,7 @@ public class ChildDiffLoader implements GraphChangeHandler {
 		}
 
 		ClassDescriptor descriptor = context.getEntityResolver()
-				.getClassDescriptor(((ObjectId) nodeId).getEntityName());
+				.getClassDescriptor(id.getEntityName());
 		PropertyDescriptor property = descriptor.getProperty(arcId.toString());
 
 		setExternalChange(Boolean.TRUE);
@@ -203,7 +202,7 @@ public class ChildDiffLoader implements GraphChangeHandler {
 					ArcProperty reverseArc = property.getComplimentaryReverseArc();
 					boolean autoConnectReverse = reverseArc != null && reverseArc.getRelationship().isRuntime();
 
-					Persistent target = findObject(targetNodeId);
+					Persistent target = findObject(targetId);
 
 					if (target == null) {
 
@@ -216,7 +215,7 @@ public class ChildDiffLoader implements GraphChangeHandler {
 						// collection ...
 						// the performance of this is rather dubious of
 						// course...
-						target = findObjectInCollection(targetNodeId, property.readProperty(source));
+						target = findObjectInCollection(targetId, property.readProperty(source));
 					}
 
 					if (target == null) {
@@ -238,17 +237,16 @@ public class ChildDiffLoader implements GraphChangeHandler {
 		}
 	}
 
-	protected Persistent findObject(Object nodeId) {
+	protected Persistent findObject(ObjectId id) {
 		// first do a lookup in ObjectStore; if even a hollow object is found,
 		// return it;
 		// if not - fetch.
 
-		Persistent object = context.getObjectStore().getObject(nodeId);
+		Persistent object = context.getObjectStore().getObject(id);
 		if (object != null) {
 			return object;
 		}
 
-		ObjectId id = (ObjectId) nodeId;
 
 		// this can happen if a NEW object is deleted and after that its
 		// relationships are
@@ -260,18 +258,18 @@ public class ChildDiffLoader implements GraphChangeHandler {
 		// skip context cache lookup, go directly to its channel
 		object = context.getChannel().onIdQuery(context, id);
 		if (object == null) {
-			throw new CayenneRuntimeException("No object for ID exists: %s", nodeId);
+			throw new CayenneRuntimeException("No object for ID exists: %s", id);
 		}
 
 		return object;
 	}
 
-	protected Persistent findObjectInCollection(Object nodeId, Object toManyHolder) {
+	protected Persistent findObjectInCollection(ObjectId id, Object toManyHolder) {
 		
 		Collection<?> c = (toManyHolder instanceof Map) ? ((Map<?, ?>) toManyHolder).values() : (Collection<?>) toManyHolder;
 		for(Object o : c) {
 			Persistent p = (Persistent) o;
-			if (nodeId.equals(p.getObjectId())) {
+			if (id.equals(p.getObjectId())) {
 				return p;
 			}
 		}

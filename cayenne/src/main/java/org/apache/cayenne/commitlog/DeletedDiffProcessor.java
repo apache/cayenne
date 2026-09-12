@@ -48,8 +48,7 @@ class DeletedDiffProcessor implements GraphChangeHandler {
 	}
 
 	@Override
-	public void nodeRemoved(Object nodeId) {
-		ObjectId id = (ObjectId) nodeId;
+	public void nodeRemoved(ObjectId id) {
 
 		final MutableObjectChange objectChangeSet = changeSet.getOrCreate(id, ObjectChangeType.DELETE);
 

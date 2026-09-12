@@ -57,26 +57,26 @@ final class DataDomainIndirectDiffBuilder implements GraphChangeHandler {
     }
 
     @Override
-    public void arcCreated(Object nodeId, Object targetNodeId, ArcId arcId) {
-        processArcChange((ObjectId) nodeId, arcId);
+    public void arcCreated(ObjectId id, ObjectId targetId, ArcId arcId) {
+        processArcChange(id, arcId);
     }
 
     @Override
-    public void arcDeleted(Object nodeId, Object targetNodeId, ArcId arcId) {
-        processArcChange((ObjectId) nodeId, arcId);
+    public void arcDeleted(ObjectId id, ObjectId targetId, ArcId arcId) {
+        processArcChange(id, arcId);
     }
 
-    private void processArcChange(ObjectId nodeId, ArcId arcId) {
-        ObjEntity entity = resolver.getObjEntity(nodeId.getEntityName());
+    private void processArcChange(ObjectId id, ArcId arcId) {
+        ObjEntity entity = resolver.getObjEntity(id.getEntityName());
         ObjRelationship relationship = entity.getRelationship(arcId.getForwardArc());
 
         if (relationship != null && relationship.isSourceIndependentFromTargetChange()) {
             // do not record temporary id mods...
-            if (!nodeId.isTemporary()) {
+            if (!id.isTemporary()) {
                 if(indirectModifications == null) {
                     indirectModifications = new HashSet<>();
                 }
-                indirectModifications.add(nodeId);
+                indirectModifications.add(id);
             }
 
             if (relationship.isFlattened() && relationship.isReadOnly()) {

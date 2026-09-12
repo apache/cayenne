@@ -47,9 +47,9 @@ import java.util.Map;
  */
 class DataContextDeleteAction {
 
-    private final ObjectContext context;
+    private final DataContext context;
 
-    DataContextDeleteAction(ObjectContext context) {
+    DataContextDeleteAction(DataContext context) {
         this.context = context;
     }
 
@@ -106,7 +106,7 @@ class DataContextDeleteAction {
         int oldState = object.getPersistenceState();
         object.setPersistenceState(PersistenceState.DELETED);
         processDeleteRules(object, oldState);
-        context.getObjectStore().nodeRemoved(object.getObjectId());
+        context.getObjectStore().changeRecorder().nodeRemoved(object.getObjectId());
     }
 
     @SuppressWarnings("unchecked")
@@ -163,7 +163,7 @@ class DataContextDeleteAction {
             if (processFlattened) {
                 ArcId arcId = new ArcId(property);
                 for (Persistent relatedObject : relatedObjects) {
-                    context.getObjectStore()
+                    context.getObjectStore().changeRecorder()
                             .arcDeleted(object.getObjectId(), relatedObject.getObjectId(), arcId);
                 }
             }

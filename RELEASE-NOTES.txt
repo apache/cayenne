@@ -31,6 +31,7 @@ CAY-3021 Get rid of ObjectIdQuery
 CAY-3022 Cleanup ObjectContext / DataContext query API
 CAY-3023 Replace QueryResult with a List of redesigned QueryResultItems
 CAY-3024 Replace QueryResponse with List<QueryResultItem>
+CAY-3025 ObjectContext to require/return Persistent for all object ops
 
 Bug Fixes:
 

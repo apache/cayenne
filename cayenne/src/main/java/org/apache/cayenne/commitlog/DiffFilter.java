@@ -39,29 +39,29 @@ class DiffFilter implements GraphChangeHandler {
 	}
 
 	@Override
-	public void nodeIdChanged(Object nodeId, Object newId) {
-		if (entityFactory.getEntity((ObjectId) nodeId).isIncluded()) {
-			delegate.nodeIdChanged(nodeId, newId);
+	public void nodeIdChanged(ObjectId id, ObjectId newId) {
+		if (entityFactory.getEntity(id).isIncluded()) {
+			delegate.nodeIdChanged(id, newId);
 		}
 	}
 
 	@Override
-	public void nodeCreated(Object nodeId) {
-		if (entityFactory.getEntity((ObjectId) nodeId).isIncluded()) {
-			delegate.nodeCreated(nodeId);
+	public void nodeCreated(ObjectId id) {
+		if (entityFactory.getEntity(id).isIncluded()) {
+			delegate.nodeCreated(id);
 		}
 	}
 
 	@Override
-	public void nodeRemoved(Object nodeId) {
-		if (entityFactory.getEntity((ObjectId) nodeId).isIncluded()) {
-			delegate.nodeRemoved(nodeId);
+	public void nodeRemoved(ObjectId id) {
+		if (entityFactory.getEntity(id).isIncluded()) {
+			delegate.nodeRemoved(id);
 		}
 	}
 
 	@Override
-	public void nodePropertyChanged(Object nodeId, String property, Object oldValue, Object newValue) {
-		CommitLogEntity entity = entityFactory.getEntity((ObjectId) nodeId);
+	public void nodePropertyChanged(ObjectId id, String property, Object oldValue, Object newValue) {
+		CommitLogEntity entity = entityFactory.getEntity(id);
 		if (entity.isIncluded(property)) {
 
 			if (entity.isConfidential(property)) {
@@ -69,21 +69,21 @@ class DiffFilter implements GraphChangeHandler {
 				newValue = Confidential.getInstance();
 			}
 
-			delegate.nodePropertyChanged(nodeId, property, oldValue, newValue);
+			delegate.nodePropertyChanged(id, property, oldValue, newValue);
 		}
 	}
 
 	@Override
-	public void arcCreated(Object nodeId, Object targetNodeId, ArcId arcId) {
-		if (entityFactory.getEntity((ObjectId) nodeId).isIncluded(arcId.toString())) {
-			delegate.arcCreated(nodeId, targetNodeId, arcId);
+	public void arcCreated(ObjectId id, ObjectId targetId, ArcId arcId) {
+		if (entityFactory.getEntity(id).isIncluded(arcId.toString())) {
+			delegate.arcCreated(id, targetId, arcId);
 		}
 	}
 
 	@Override
-	public void arcDeleted(Object nodeId, Object targetNodeId, ArcId arcId) {
-		if (entityFactory.getEntity((ObjectId) nodeId).isIncluded(arcId.toString())) {
-			delegate.arcDeleted(nodeId, targetNodeId, arcId);
+	public void arcDeleted(ObjectId id, ObjectId targetId, ArcId arcId) {
+		if (entityFactory.getEntity(id).isIncluded(arcId.toString())) {
+			delegate.arcDeleted(id, targetId, arcId);
 		}
 	}
 }

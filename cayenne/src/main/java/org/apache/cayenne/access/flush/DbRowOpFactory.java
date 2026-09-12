@@ -19,11 +19,10 @@
 
 package org.apache.cayenne.access.flush;
 
-import org.apache.cayenne.CayenneRuntimeException;
 import org.apache.cayenne.ObjectId;
 import org.apache.cayenne.Persistent;
-import org.apache.cayenne.access.ObjectDiff;
 import org.apache.cayenne.access.DataContextObjectStore;
+import org.apache.cayenne.access.ObjectDiff;
 import org.apache.cayenne.access.flush.operation.DbRowOp;
 import org.apache.cayenne.access.flush.operation.DbRowOpType;
 import org.apache.cayenne.access.flush.operation.DeleteDbRowOpFactory;
@@ -71,7 +70,7 @@ class DbRowOpFactory {
     }
 
     private void updateDiff(ObjectDiff diff) {
-        ObjectId id = (ObjectId) diff.getNodeId();
+        ObjectId id = diff.getNodeId();
         this.diff = diff;
         this.descriptor = resolver.getClassDescriptor(id.getEntityName());
         this.object = store.getObject(id);
@@ -102,15 +101,11 @@ class DbRowOpFactory {
         if (store.getObject(id) == null && !id.getEntityName().startsWith("db:")) {
             return null;
         }
-        switch (type) {
-            case INSERT:
-                return new InsertDbRowOp(object, entity, id);
-            case UPDATE:
-                return new UpdateDbRowOp(object, entity, id);
-            case DELETE:
-                return deleteDbRowOpFactory.createOp(object, entity, id);
-        }
-        throw new CayenneRuntimeException("Unknown DbRowType '%s'", type);
+        return switch (type) {
+            case INSERT -> new InsertDbRowOp(object, entity, id);
+            case UPDATE -> new UpdateDbRowOp(object, entity, id);
+            case DELETE -> deleteDbRowOpFactory.createOp(object, entity, id);
+        };
     }
 
     ClassDescriptor getDescriptor() {

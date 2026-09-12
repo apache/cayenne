@@ -19,6 +19,7 @@
 
 package org.apache.cayenne.graph;
 
+import org.apache.cayenne.ObjectId;
 /**
  * A GraphDiff representing a change in node ID.
  * 
@@ -26,26 +27,26 @@ package org.apache.cayenne.graph;
  */
 public class NodeIdChangeOperation extends NodeDiff {
 
-	protected Object newNodeId;
+	protected ObjectId newId;
 
-	public NodeIdChangeOperation(Object nodeId, Object newNodeId) {
-		super(nodeId);
+	public NodeIdChangeOperation(ObjectId id, ObjectId newId) {
+		super(id);
 
-		this.newNodeId = newNodeId;
+		this.newId = newId;
 	}
 
-	public NodeIdChangeOperation(Object nodeId, Object newNodeId, int diffId) {
-		super(nodeId, diffId);
-		this.newNodeId = newNodeId;
+	public NodeIdChangeOperation(ObjectId id, ObjectId newId, int diffId) {
+		super(id, diffId);
+		this.newId = newId;
 	}
 
 	@Override
 	public void apply(GraphChangeHandler tracker) {
-		tracker.nodeIdChanged(nodeId, newNodeId);
+		tracker.nodeIdChanged(id, newId);
 	}
 
 	@Override
 	public void undo(GraphChangeHandler tracker) {
-		tracker.nodeIdChanged(newNodeId, nodeId);
+		tracker.nodeIdChanged(newId, id);
 	}
 }

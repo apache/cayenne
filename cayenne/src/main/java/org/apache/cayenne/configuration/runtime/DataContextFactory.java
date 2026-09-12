@@ -18,6 +18,7 @@
  ****************************************************************/
 package org.apache.cayenne.configuration.runtime;
 
+import org.apache.cayenne.ObjectId;
 import org.apache.cayenne.DataChannel;
 import org.apache.cayenne.ObjectContext;
 import org.apache.cayenne.access.DataContext;

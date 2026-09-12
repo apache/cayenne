@@ -40,8 +40,7 @@ class ValuesCreationHandler extends ArcValuesCreationHandler {
     }
 
     @Override
-    public void nodePropertyChanged(Object nodeId, String property, Object oldValue, Object newValue) {
-        ObjectId id = (ObjectId)nodeId;
+    public void nodePropertyChanged(ObjectId id, String property, Object oldValue, Object newValue) {
         ObjEntity entity = factory.getDescriptor().getEntity();
         if(entity.isReadOnly()) {
             throw new CayenneRuntimeException("Attempt to modify object(s) mapped to a read-only entity: '%s'. " +
@@ -62,7 +61,7 @@ class ValuesCreationHandler extends ArcValuesCreationHandler {
         if(id == null) {
             // some extra safety, shouldn't happen
             throw new CayenneRuntimeException("Unable to resolve DB row PK for object's %s update of property '%s'"
-                    , nodeId, property);
+                    , id, property);
         }
 
         DbAttribute dbAttribute = attribute.getDbAttribute();

@@ -44,29 +44,28 @@ class DiffProcessor implements GraphChangeHandler {
 	}
 
 	@Override
-	public void nodeRemoved(Object nodeId) {
+	public void nodeRemoved(ObjectId id) {
 		// do nothing... deletes are processed pre-commit
 	}
 
 	@Override
-	public void nodePropertyChanged(Object nodeId, String property, Object oldValue, Object newValue) {
-		changeSet.getOrCreate((ObjectId) nodeId, ObjectChangeType.UPDATE).attributeChanged(property, oldValue,
+	public void nodePropertyChanged(ObjectId id, String property, Object oldValue, Object newValue) {
+		changeSet.getOrCreate(id, ObjectChangeType.UPDATE).attributeChanged(property, oldValue,
 				newValue);
 	}
 
 	@Override
-	public void nodeIdChanged(Object nodeId, Object newId) {
-		changeSet.aliasId((ObjectId) nodeId, (ObjectId) newId);
+	public void nodeIdChanged(ObjectId id, ObjectId newId) {
+		changeSet.aliasId(id, newId);
 	}
 
 	@Override
-	public void nodeCreated(Object nodeId) {
-		changeSet.getOrCreate((ObjectId) nodeId, ObjectChangeType.INSERT);
+	public void nodeCreated(ObjectId id) {
+		changeSet.getOrCreate(id, ObjectChangeType.INSERT);
 	}
 
 	@Override
-	public void arcDeleted(Object nodeId, Object targetNodeId, ArcId arcId) {
-		ObjectId id = (ObjectId) nodeId;
+	public void arcDeleted(ObjectId id, ObjectId targetId, ArcId arcId) {
 		String relationshipName = arcId.toString();
 
 		ObjEntity entity = entityResolver.getObjEntity(id.getEntityName());
@@ -74,19 +73,16 @@ class DiffProcessor implements GraphChangeHandler {
 
 		MutableObjectChange c = changeSet.getOrCreate(id, ObjectChangeType.UPDATE);
 
-		ObjectId tid = (ObjectId) targetNodeId;
-
 		if (relationship.isToMany()) {
-			c.toManyRelationshipDisconnected(relationshipName, tid);
+			c.toManyRelationshipDisconnected(relationshipName, targetId);
 		} else {
-			c.toOneRelationshipDisconnected(relationshipName, tid);
+			c.toOneRelationshipDisconnected(relationshipName, targetId);
 		}
 	}
 
 	@Override
-	public void arcCreated(Object nodeId, Object targetNodeId, ArcId arcId) {
+	public void arcCreated(ObjectId id, ObjectId targetId, ArcId arcId) {
 
-		ObjectId id = (ObjectId) nodeId;
 		String relationshipName = arcId.toString();
 
 		ObjEntity entity = entityResolver.getObjEntity(id.getEntityName());
@@ -94,12 +90,10 @@ class DiffProcessor implements GraphChangeHandler {
 
 		MutableObjectChange c = changeSet.getOrCreate(id, ObjectChangeType.UPDATE);
 
-		ObjectId tid = (ObjectId) targetNodeId;
-
 		if (relationship.isToMany()) {
-			c.toManyRelationshipConnected(relationshipName, tid);
+			c.toManyRelationshipConnected(relationshipName, targetId);
 		} else {
-			c.toOneRelationshipConnected(relationshipName, tid);
+			c.toOneRelationshipConnected(relationshipName, targetId);
 		}
 	}
 }

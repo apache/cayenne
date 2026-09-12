@@ -19,6 +19,7 @@
 
 package org.apache.cayenne.graph;
 
+import org.apache.cayenne.ObjectId;
 /**
  * Defines callback API that can be used by object graph nodes to notify of their state
  * changes. Graph nodes can be any objects as long as each node supports a notion of a
@@ -32,26 +33,26 @@ public interface GraphChangeHandler {
     /**
      * Notifies implementing object that a node was assigned a new id.
      */
-    default void nodeIdChanged(Object nodeId, Object newId) {
+    default void nodeIdChanged(ObjectId id, ObjectId newId) {
     }
 
     /**
      * Notifies implementing object that a new node was created in the graph.
      */
-    default void nodeCreated(Object nodeId) {
+    default void nodeCreated(ObjectId id) {
     }
 
     /**
      * Notifies implementing object that a node was removed from the graph.
      */
-    default void nodeRemoved(Object nodeId) {
+    default void nodeRemoved(ObjectId id) {
     }
 
     /**
      * Notifies implementing object that a node's property was modified.
      */
     default void nodePropertyChanged(
-            Object nodeId,
+            ObjectId id,
             String property,
             Object oldValue,
             Object newValue) {
@@ -60,12 +61,12 @@ public interface GraphChangeHandler {
     /**
      * Notifies implementing object that a new arc was created between two nodes.
      */
-    default void arcCreated(Object nodeId, Object targetNodeId, ArcId arcId) {
+    default void arcCreated(ObjectId id, ObjectId targetId, ArcId arcId) {
     }
 
     /**
      * Notifies implementing object that an arc between two nodes was deleted.
      */
-    default void arcDeleted(Object nodeId, Object targetNodeId, ArcId arcId) {
+    default void arcDeleted(ObjectId id, ObjectId targetId, ArcId arcId) {
     }
 }

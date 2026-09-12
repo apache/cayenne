@@ -181,7 +181,7 @@ public class ObjectDiff extends NodeDiff {
             collection.addAll(otherDiffs);
         }
 
-        collection.add(new NodeDiff(nodeId, diffId) {
+        collection.add(new NodeDiff(id, diffId) {
 
             @Override
             public void apply(GraphChangeHandler tracker) {
@@ -200,7 +200,7 @@ public class ObjectDiff extends NodeDiff {
         boolean addDiff = true;
 
         if (diff instanceof ArcOperation arcDiff) {
-            Object targetId = arcDiff.getTargetNodeId();
+            ObjectId targetId = arcDiff.getTargetNodeId();
             ArcId arcId = arcDiff.getArcId();
 
             ArcProperty property = (ArcProperty) getClassDescriptor().getProperty(arcId.getForwardArc());
@@ -408,7 +408,7 @@ public class ObjectDiff extends NodeDiff {
                 if (snapshot == null) {
 
                     if (newValue != null) {
-                        handler.nodePropertyChanged(nodeId, property.getName(), null, newValue);
+                        handler.nodePropertyChanged(id, property.getName(), null, newValue);
                     }
                 }
                 // have baseline to compare
@@ -416,7 +416,7 @@ public class ObjectDiff extends NodeDiff {
                     Object oldValue = snapshot.get(property.getName());
 
                     if (!property.equals(oldValue, newValue)) {
-                        handler.nodePropertyChanged(nodeId, property.getName(), oldValue, newValue);
+                        handler.nodePropertyChanged(id, property.getName(), oldValue, newValue);
                     }
                 }
 
@@ -448,14 +448,14 @@ public class ObjectDiff extends NodeDiff {
 
     static final class ArcOperation extends NodeDiff {
 
-        private final Object targetNodeId;
+        private final ObjectId targetId;
         private final ArcId arcId;
         private final boolean delete;
 
-        ArcOperation(Object nodeId, Object targetNodeId, ArcId arcId, boolean delete) {
+        ArcOperation(ObjectId id, ObjectId targetId, ArcId arcId, boolean delete) {
 
-            super(nodeId);
-            this.targetNodeId = targetNodeId;
+            super(id);
+            this.targetId = targetId;
             this.arcId = arcId;
             this.delete = delete;
         }
@@ -467,7 +467,7 @@ public class ObjectDiff extends NodeDiff {
         @Override
         public int hashCode() {
             // assuming String and ObjectId provide a good hashCode
-            return 31 * arcId.hashCode() + targetNodeId.hashCode();
+            return 31 * arcId.hashCode() + targetId.hashCode();
         }
 
         @Override
@@ -484,16 +484,16 @@ public class ObjectDiff extends NodeDiff {
             if (!(object instanceof ArcOperation other)) {
                 return false;
             }
-            return arcId.equals(other.arcId) && Objects.equals(targetNodeId, other.targetNodeId);
+            return arcId.equals(other.arcId) && Objects.equals(targetId, other.targetId);
         }
 
         @Override
         public void apply(GraphChangeHandler tracker) {
 
             if (delete) {
-                tracker.arcDeleted(nodeId, targetNodeId, arcId);
+                tracker.arcDeleted(id, targetId, arcId);
             } else {
-                tracker.arcCreated(nodeId, targetNodeId, arcId);
+                tracker.arcCreated(id, targetId, arcId);
             }
         }
 
@@ -506,8 +506,8 @@ public class ObjectDiff extends NodeDiff {
             return arcId;
         }
 
-        public Object getTargetNodeId() {
-            return targetNodeId;
+        public ObjectId getTargetNodeId() {
+            return targetId;
         }
     }
 }

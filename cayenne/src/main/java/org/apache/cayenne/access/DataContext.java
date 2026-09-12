@@ -154,7 +154,7 @@ public class DataContext implements ObjectContext {
     protected DataContext(
             DataChannel channel,
             DataRowStore snapshotCache,
-            Map<Object, Persistent> objectMap,
+            Map<ObjectId, Persistent> objectMap,
             boolean syncWithSnapshotCache,
             boolean usingSharedSnapshotCache,
             boolean validatingObjectsOnCommit,
@@ -594,7 +594,7 @@ public class DataContext implements ObjectContext {
                 for (Object target : collection) {
                     if (target instanceof Persistent targetDO) {
                         registerNewObject(targetDO);
-                        objectStore.arcCreated(object.getObjectId(), targetDO.getObjectId(), new ArcId(property));
+                        objectStore.changeRecorder().arcCreated(object.getObjectId(), targetDO.getObjectId(), new ArcId(property));
                     }
                 }
                 return true;
@@ -606,7 +606,7 @@ public class DataContext implements ObjectContext {
                 if (target instanceof Persistent targetDO) {
                     // make sure it is registered
                     registerNewObject(targetDO);
-                    objectStore.arcCreated(object.getObjectId(), targetDO.getObjectId(), new ArcId(property));
+                    objectStore.changeRecorder().arcCreated(object.getObjectId(), targetDO.getObjectId(), new ArcId(property));
                 }
                 return true;
             }
@@ -630,7 +630,7 @@ public class DataContext implements ObjectContext {
 
         synchronized (objectStore) {
             objectStore.registerObject(object.getObjectId(), object);
-            objectStore.nodeCreated(object.getObjectId());
+            objectStore.changeRecorder().nodeCreated(object.getObjectId());
         }
 
         ObjEntity entity;
@@ -1231,7 +1231,7 @@ public class DataContext implements ObjectContext {
 
         private final DataChannel channel;
         private DataRowStore snapshotCache;
-        private Map<Object, Persistent> objectMap;
+        private Map<ObjectId, Persistent> objectMap;
         private boolean syncWithSnapshotCache;
         private Boolean usingSharedSnapshotCache;
         private boolean validatingObjectsOnCommit = true;
@@ -1254,7 +1254,7 @@ public class DataContext implements ObjectContext {
          * Sets a map to store registered objects in. The map determines how strongly the context retains objects.
          * Default is a map with weak references to the values.
          */
-        public Builder objectMap(Map<Object, Persistent> objectMap) {
+        public Builder objectMap(Map<ObjectId, Persistent> objectMap) {
             this.objectMap = objectMap;
             return this;
         }

@@ -30,9 +30,9 @@ import org.apache.cayenne.reflect.PropertyDescriptor;
 
 class DataContextGraphAction {
 
-    private final ObjectContext context;
+    private final DataContext context;
 
-    public DataContextGraphAction(ObjectContext context) {
+    public DataContextGraphAction(DataContext context) {
         this.context = context;
     }
 
@@ -70,14 +70,14 @@ class DataContextGraphAction {
             markAsDirty(object);
 
             if (oldValue instanceof Persistent) {
-                context.getObjectStore().arcDeleted(
+                context.getObjectStore().changeRecorder().arcDeleted(
                         object.getObjectId(),
                         ((Persistent) oldValue).getObjectId(),
                         new ArcId(property));
             }
 
             if (newValue instanceof Persistent) {
-                context.getObjectStore().arcCreated(
+                context.getObjectStore().changeRecorder().arcCreated(
                         object.getObjectId(),
                         ((Persistent) newValue).getObjectId(),
                         new ArcId(property));
@@ -91,7 +91,7 @@ class DataContextGraphAction {
             Object oldValue,
             Object newValue) {
 
-        context.getObjectStore().nodePropertyChanged(
+        context.getObjectStore().changeRecorder().nodePropertyChanged(
                 object.getObjectId(),
                 propertyName,
                 oldValue,

@@ -19,6 +19,7 @@
 
 package org.apache.cayenne.access;
 
+import org.apache.cayenne.ObjectId;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -258,14 +259,14 @@ class PrefetchProcessorNode extends PrefetchTreeNode {
         }
 
         @Override
-        public void arcCreated(Object nodeId, Object targetNodeId, ArcId arcId) {
+        public void arcCreated(ObjectId id, ObjectId targetId, ArcId arcId) {
             if(arcId.getForwardArc().equals(property.getName())) {
                 hasArcDiff = true;
             }
         }
 
         @Override
-        public void arcDeleted(Object nodeId, Object targetNodeId, ArcId arcId) {
+        public void arcDeleted(ObjectId id, ObjectId targetId, ArcId arcId) {
             if(arcId.getForwardArc().equals(property.getName())) {
                 hasArcDiff = true;
             }

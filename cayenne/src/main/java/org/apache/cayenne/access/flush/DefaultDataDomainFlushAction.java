@@ -107,7 +107,7 @@ public class DefaultDataDomainFlushAction implements DataDomainFlushAction {
     protected List<DbRowOp> createDbRowOps(DataContextObjectStore objectStore, ObjectStoreGraphDiff changes) {
         EntityResolver resolver = dataDomain.getEntityResolver();
 
-        Map<Object, ObjectDiff> changesByObjectId = changes.getChangesByObjectId();
+        Map<ObjectId, ObjectDiff> changesByObjectId = changes.getChangesByObjectId();
         List<DbRowOp> ops = new ArrayList<>(changesByObjectId.size());
         Set<ArcTarget> processedArcs = new HashSet<>();
 
