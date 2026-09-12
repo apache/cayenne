@@ -38,8 +38,8 @@ final class QueryResultItems {
      */
     static List<?> firstList(List<QueryResultItem> items) {
         for (QueryResultItem item : items) {
-            if (item instanceof QueryResultItem.Select<?> select) {
-                return select.objects();
+            if (item instanceof QueryResultItem.Select<?>(List<?> objects)) {
+                return objects;
             }
         }
         return null;
@@ -50,8 +50,8 @@ final class QueryResultItems {
      */
     static ResultIterator<?> firstIterator(List<QueryResultItem> items) {
         for (QueryResultItem item : items) {
-            if (item instanceof QueryResultItem.Iterator<?> iterator) {
-                return iterator.iterator();
+            if (item instanceof QueryResultItem.Iterator<?>(ResultIterator<?> iterator1)) {
+                return iterator1;
             }
         }
         return null;
@@ -62,8 +62,8 @@ final class QueryResultItems {
      */
     static int[] firstUpdateCount(List<QueryResultItem> items) {
         for (QueryResultItem item : items) {
-            if (item instanceof QueryResultItem.Update update) {
-                return update.counts();
+            if (item instanceof QueryResultItem.Update(int[] counts)) {
+                return counts;
             }
         }
         return null;
