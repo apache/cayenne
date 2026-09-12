@@ -72,7 +72,7 @@ public class PregeneratedPKIT {
 
     void updateId(DataContext context, ObjectId id) throws Exception {
         DbEntity entity = context.getEntityResolver().getDbEntity("ARTIST");
-        DataNode node = context.getParentDataDomain().lookupDataNode(entity.getDataMap());
+        DataNode node = context.getChannel().getDataDomain().lookupDataNode(entity.getDataMap());
 
         Object pk = node.getPkGenerator().generatePk(
                 node,

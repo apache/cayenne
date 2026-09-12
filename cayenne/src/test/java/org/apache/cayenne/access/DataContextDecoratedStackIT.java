@@ -76,6 +76,17 @@ public class DataContextDecoratedStackIT {
     }
 
     @Test
+    public void getDataDomain() {
+        DataDomain dd = env.runtime().getDataDomain();
+        DataChannel decorator = new DataChannelDecorator(dd);
+        DataContext context = (DataContext) env.runtime().newContext(decorator);
+
+        assertSame(dd, decorator.getDataDomain());
+        assertSame(dd, context.getChannel().getDataDomain());
+    }
+
+    @Test
+    @SuppressWarnings("removal")
     public void getParentDataDomain() {
         DataDomain dd = env.runtime().getDataDomain();
         DataChannel decorator = new DataChannelDecorator(dd);

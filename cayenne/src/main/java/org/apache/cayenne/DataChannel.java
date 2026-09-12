@@ -19,6 +19,7 @@
 
 package org.apache.cayenne;
 
+import org.apache.cayenne.access.DataDomain;
 import org.apache.cayenne.event.EventManager;
 import org.apache.cayenne.event.EventSubject;
 import org.apache.cayenne.graph.GraphDiff;
@@ -87,6 +88,24 @@ public interface DataChannel {
      * @since 5.0
      */
     DataChannel getParent();
+
+    /**
+     * Returns a DataDomain at the root of this channel's stack, looked up by walking the chain of parent channels
+     * starting with this channel. Returns null if the root channel is not a DataDomain.
+     *
+     * @since 5.0
+     */
+    default DataDomain getDataDomain() {
+        DataChannel c = this;
+        while (c != null) {
+            if (c instanceof DataDomain dataDomain) {
+                return dataDomain;
+            }
+            c = c.getParent();
+        }
+
+        return null;
+    }
 
     /**
      * Executes a query, using provided <em>context</em> to register persistent objects if

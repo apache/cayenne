@@ -62,7 +62,7 @@ public class DataContextQueryCachingIT {
                 "ARTIST_ID",
                 "ESTIMATED_PRICE");
 
-        domain = context.getParentDataDomain();
+        domain = context.getChannel().getDataDomain();
     }
 
     protected void createInsertDataSet() throws Exception {
@@ -95,7 +95,7 @@ public class DataContextQueryCachingIT {
             assertEquals(rows1, resultRows);
 
             QueryMetadata cacheKey = select.getMetaData(context.getEntityResolver());
-            assertNull(context.getParentDataDomain().getQueryCache().get(cacheKey));
+            assertNull(context.getChannel().getDataDomain().getQueryCache().get(cacheKey));
 
             assertEquals(rows1, context.getQueryCache().get(cacheKey));
 
@@ -107,7 +107,7 @@ public class DataContextQueryCachingIT {
             List<?> freshResultRows = context.performQuery(select);
             assertEquals(1, engine.getRunCount());
             assertEquals(rows2, freshResultRows);
-            assertNull(context.getParentDataDomain().getQueryCache().get(cacheKey));
+            assertNull(context.getChannel().getDataDomain().getQueryCache().get(cacheKey));
             assertEquals(rows2, context.getQueryCache().get(cacheKey));
         } finally {
             engine.stopInterceptNode();
@@ -132,7 +132,7 @@ public class DataContextQueryCachingIT {
 
             QueryMetadata cacheKey = select.getMetaData(context.getEntityResolver());
 
-            assertEquals(rows1, context.getParentDataDomain().getQueryCache().get(
+            assertEquals(rows1, context.getChannel().getDataDomain().getQueryCache().get(
                     cacheKey));
 
             assertNull(context.getQueryCache().get(cacheKey));
@@ -145,7 +145,7 @@ public class DataContextQueryCachingIT {
             List<?> freshResultRows = context.performQuery(select);
             assertEquals(1, engine.getRunCount());
             assertEquals(rows2, freshResultRows);
-            assertEquals(rows2, context.getParentDataDomain().getQueryCache().get(
+            assertEquals(rows2, context.getChannel().getDataDomain().getQueryCache().get(
                     cacheKey));
             assertNull(context.getQueryCache().get(cacheKey));
         } finally {
@@ -170,7 +170,7 @@ public class DataContextQueryCachingIT {
             assertEquals(2, resultRows.size());
             assertTrue(resultRows.get(0) instanceof Persistent);
             QueryMetadata cacheKey = select.getMetaData(context.getEntityResolver());
-            assertNull(context.getParentDataDomain().getQueryCache().get(cacheKey));
+            assertNull(context.getChannel().getDataDomain().getQueryCache().get(cacheKey));
 
             assertEquals(resultRows, context.getQueryCache().get(cacheKey));
 
@@ -184,7 +184,7 @@ public class DataContextQueryCachingIT {
             assertEquals(1, engine.getRunCount());
             assertEquals(4, freshResultRows.size());
             assertTrue(resultRows.get(0) instanceof Persistent);
-            assertNull(context.getParentDataDomain().getQueryCache().get(cacheKey));
+            assertNull(context.getChannel().getDataDomain().getQueryCache().get(cacheKey));
             assertEquals(freshResultRows, context.getQueryCache().get(cacheKey));
         } finally {
             engine.stopInterceptNode();

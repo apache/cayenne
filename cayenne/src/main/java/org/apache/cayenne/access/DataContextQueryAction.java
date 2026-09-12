@@ -86,7 +86,7 @@ class DataContextQueryAction {
             runQuery();
 
             List<?> rawIds = response.firstList();
-            int maxIdQualifierSize = context.getParentDataDomain().getMaxIdQualifierSize();
+            int maxIdQualifierSize = context.getChannel().getDataDomain().getMaxIdQualifierSize();
             IncrementalFaultList<?> paginatedList = createIncrementalFaultList(rawIds, maxIdQualifierSize);
 
             // replace result with a paginated list that will deal with id-to-object resolution

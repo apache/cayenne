@@ -152,8 +152,6 @@ public class DataContext implements ObjectContext {
         this.objectStore = Objects.requireNonNull(objectStore);
         objectStore.setContext(this);
 
-        EventManager eventManager = channel.getEventManager();
-
         // Listen to our channel events. A parent context posts its events on its own
         // behalf, not on behalf of the channel adapter wrapping it, so listen to the context in that case
         if (channel instanceof DataContextChannel(DataContext context)) {
@@ -164,14 +162,14 @@ public class DataContext implements ObjectContext {
             EventUtil.listenForChannelEvents(channel, mergeHandler);
         }
 
-        DataDomain domain = getParentDataDomain();
+        DataDomain domain = channel.getDataDomain();
         this.usingSharedSnapshotCache = domain != null && objectStore.getDataRowCache() == domain.getSharedSnapshotCache();
 
         if (!usingSharedSnapshotCache) {
             DataRowStore cache = objectStore.getDataRowCache();
 
             if (cache != null) {
-                cache.setEventManager(eventManager);
+                cache.setEventManager(channel.getEventManager());
             }
         }
     }
@@ -187,23 +185,13 @@ public class DataContext implements ObjectContext {
     }
 
     /**
-     * Returns a DataDomain used by this DataContext. DataDomain is looked up in the DataChannel hierarchy. If the final
-     * channel is not a DataDomain, null is returned.
-     *
      * @return DataDomain that is a direct or indirect parent of this DataContext in the DataChannel hierarchy.
      * @since 1.1
+     * @deprecated use {@link DataChannel#getDataDomain()} on the channel returned by {@link #getChannel()}
      */
+    @Deprecated(since = "5.0", forRemoval = true)
     public DataDomain getParentDataDomain() {
-
-        DataChannel c = channel;
-        while (c != null) {
-            if (c instanceof DataDomain dataDomain) {
-                return dataDomain;
-            }
-            c = c.getParent();
-        }
-
-        return null;
+        return channel.getDataDomain();
     }
 
     /**
@@ -353,15 +341,11 @@ public class DataContext implements ObjectContext {
         this.queryCache = queryCache;
     }
 
-    private EventManager eventManager() {
-        return channel != null ? channel.getEventManager() : null;
-    }
-
     /**
      * @since 1.2
      */
     protected void fireDataChannelCommitted(Object postedBy, GraphDiff changes) {
-        EventManager manager = eventManager();
+        EventManager manager = channel.getEventManager();
 
         if (manager != null) {
             GraphEvent e = new GraphEvent(this, postedBy, changes);
@@ -373,7 +357,7 @@ public class DataContext implements ObjectContext {
      * @since 1.2
      */
     protected void fireDataChannelRolledback(Object postedBy, GraphDiff changes) {
-        EventManager manager = eventManager();
+        EventManager manager = channel.getEventManager();
 
         if (manager != null) {
             GraphEvent e = new GraphEvent(this, postedBy, changes);
@@ -1233,14 +1217,13 @@ public class DataContext implements ObjectContext {
 
             return localObject;
         }
-
     }
 
     /**
      * @since 1.2
      */
     protected void fireDataChannelChanged(Object postedBy, GraphDiff changes) {
-        EventManager manager = eventManager();
+        EventManager manager = channel.getEventManager();
 
         if (manager != null) {
             GraphEvent e = new GraphEvent(this, postedBy, changes);

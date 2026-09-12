@@ -205,7 +205,7 @@ public class DataContextFlattenedAttributesIT {
         ColumnSelect<Object[]> originalQuery = ObjectSelect.query(CompoundPaintingLongNames.class)
                 .columns(CompoundPaintingLongNames.SELF);
 
-        DataNode dataNode = context.getParentDataDomain().getDataNodes().iterator().next();
+        DataNode dataNode = context.getChannel().getDataDomain().getDataNodes().iterator().next();
         TranslatedSelect translator =
                 new DbAdapterDelegatedSelectTranslator().translate(originalQuery, dataNode.getAdapter(), context.getEntityResolver());
 

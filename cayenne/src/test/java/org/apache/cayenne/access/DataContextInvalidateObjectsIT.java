@@ -96,22 +96,22 @@ public class DataContextInvalidateObjectsIT {
         assertEquals(0, a2.getPaintingArray().size());
 
         assertNotNull(context
-                .getParentDataDomain()
+                .getChannel().getDataDomain()
                 .getSharedSnapshotCache()
                 .getCachedSnapshot(a1.getObjectId()));
         assertNotNull(context
-                .getParentDataDomain()
+                .getChannel().getDataDomain()
                 .getSharedSnapshotCache()
                 .getCachedSnapshot(a2.getObjectId()));
 
         context.invalidateObjects(artists);
 
         assertNull(context
-                .getParentDataDomain()
+                .getChannel().getDataDomain()
                 .getSharedSnapshotCache()
                 .getCachedSnapshot(a1.getObjectId()));
         assertNull(context
-                .getParentDataDomain()
+                .getChannel().getDataDomain()
                 .getSharedSnapshotCache()
                 .getCachedSnapshot(a2.getObjectId()));
 
@@ -139,11 +139,11 @@ public class DataContextInvalidateObjectsIT {
         assertSame(a1, p2.getToArtist());
 
         assertNotNull(context
-                .getParentDataDomain()
+                .getChannel().getDataDomain()
                 .getSharedSnapshotCache()
                 .getCachedSnapshot(p1.getObjectId()));
         assertNotNull(context
-                .getParentDataDomain()
+                .getChannel().getDataDomain()
                 .getSharedSnapshotCache()
                 .getCachedSnapshot(p2.getObjectId()));
 
@@ -152,11 +152,11 @@ public class DataContextInvalidateObjectsIT {
         context.invalidateObjects(paints);
 
         assertNull(context
-                .getParentDataDomain()
+                .getChannel().getDataDomain()
                 .getSharedSnapshotCache()
                 .getCachedSnapshot(p1.getObjectId()));
         assertNull(context
-                .getParentDataDomain()
+                .getChannel().getDataDomain()
                 .getSharedSnapshotCache()
                 .getCachedSnapshot(p2.getObjectId()));
 
@@ -181,14 +181,14 @@ public class DataContextInvalidateObjectsIT {
         assertEquals(2, a1.getPaintingArray().size());
 
         assertNotNull(context
-                .getParentDataDomain()
+                .getChannel().getDataDomain()
                 .getSharedSnapshotCache()
                 .getCachedSnapshot(a1.getObjectId()));
 
         context.invalidateObjects(a1);
 
         assertNull(context
-                .getParentDataDomain()
+                .getChannel().getDataDomain()
                 .getSharedSnapshotCache()
                 .getCachedSnapshot(a1.getObjectId()));
 
@@ -232,12 +232,12 @@ public class DataContextInvalidateObjectsIT {
         assertSame(a1, p1.getToArtist());
 
         assertNotNull(context
-                .getParentDataDomain()
+                .getChannel().getDataDomain()
                 .getSharedSnapshotCache()
                 .getCachedSnapshot(p1.getObjectId()));
 
         assertNotNull(context
-                .getParentDataDomain()
+                .getChannel().getDataDomain()
                 .getSharedSnapshotCache()
                 .getCachedSnapshot(p2.getObjectId()));
 
@@ -246,13 +246,13 @@ public class DataContextInvalidateObjectsIT {
         q.cacheStrategy(QueryCacheStrategy.LOCAL_CACHE_REFRESH).select(context);
 
         assertNotNull(context
-                .getParentDataDomain()
+                .getChannel().getDataDomain()
                 .getSharedSnapshotCache()
                 .getCachedSnapshot(p1.getObjectId()));
 
         // probably refreshed eagerly
         assertNotNull(context
-                .getParentDataDomain()
+                .getChannel().getDataDomain()
                 .getSharedSnapshotCache()
                 .getCachedSnapshot(p2.getObjectId()));
 
@@ -284,12 +284,12 @@ public class DataContextInvalidateObjectsIT {
         assertSame(a1, p1.getToArtist());
 
         assertNotNull(context
-                .getParentDataDomain()
+                .getChannel().getDataDomain()
                 .getSharedSnapshotCache()
                 .getCachedSnapshot(p1.getObjectId()));
 
         assertNotNull(context
-                .getParentDataDomain()
+                .getChannel().getDataDomain()
                 .getSharedSnapshotCache()
                 .getCachedSnapshot(p2.getObjectId()));
 
@@ -298,13 +298,13 @@ public class DataContextInvalidateObjectsIT {
         q.cacheStrategy(QueryCacheStrategy.SHARED_CACHE_REFRESH).select(context);
 
         assertNotNull(context
-                .getParentDataDomain()
+                .getChannel().getDataDomain()
                 .getSharedSnapshotCache()
                 .getCachedSnapshot(p1.getObjectId()));
 
         // probably refreshed eagerly
         assertNotNull(context
-                .getParentDataDomain()
+                .getChannel().getDataDomain()
                 .getSharedSnapshotCache()
                 .getCachedSnapshot(p2.getObjectId()));
 
@@ -336,12 +336,12 @@ public class DataContextInvalidateObjectsIT {
         assertSame(a1, p1.getToArtist());
 
         assertNotNull(context
-                .getParentDataDomain()
+                .getChannel().getDataDomain()
                 .getSharedSnapshotCache()
                 .getCachedSnapshot(p1.getObjectId()));
 
         assertNotNull(context
-                .getParentDataDomain()
+                .getChannel().getDataDomain()
                 .getSharedSnapshotCache()
                 .getCachedSnapshot(p2.getObjectId()));
 
@@ -355,7 +355,7 @@ public class DataContextInvalidateObjectsIT {
         assertEquals("c", p2.getToArtist().getArtistName());
 
         // this should invalidate results for the next query run
-        context.getParentDataDomain().getQueryCache().removeGroup("X");
+        context.getChannel().getDataDomain().getQueryCache().removeGroup("X");
 
         // this should force a refresh
         context.performQuery(q);
@@ -382,38 +382,38 @@ public class DataContextInvalidateObjectsIT {
         Painting p2 = a1.getPaintingArray().get(0);
 
         assertNotNull(context
-                .getParentDataDomain()
+                .getChannel().getDataDomain()
                 .getSharedSnapshotCache()
                 .getCachedSnapshot(a1.getObjectId()));
         assertNotNull(context
-                .getParentDataDomain()
+                .getChannel().getDataDomain()
                 .getSharedSnapshotCache()
                 .getCachedSnapshot(a2.getObjectId()));
         assertNotNull(context
-                .getParentDataDomain()
+                .getChannel().getDataDomain()
                 .getSharedSnapshotCache()
                 .getCachedSnapshot(p1.getObjectId()));
         assertNotNull(context
-                .getParentDataDomain()
+                .getChannel().getDataDomain()
                 .getSharedSnapshotCache()
                 .getCachedSnapshot(p2.getObjectId()));
 
         context.invalidateObjects(context.getObjectStore().registeredNodes());
 
         assertNull(context
-                .getParentDataDomain()
+                .getChannel().getDataDomain()
                 .getSharedSnapshotCache()
                 .getCachedSnapshot(a1.getObjectId()));
         assertNull(context
-                .getParentDataDomain()
+                .getChannel().getDataDomain()
                 .getSharedSnapshotCache()
                 .getCachedSnapshot(a2.getObjectId()));
         assertNull(context
-                .getParentDataDomain()
+                .getChannel().getDataDomain()
                 .getSharedSnapshotCache()
                 .getCachedSnapshot(p1.getObjectId()));
         assertNull(context
-                .getParentDataDomain()
+                .getChannel().getDataDomain()
                 .getSharedSnapshotCache()
                 .getCachedSnapshot(p2.getObjectId()));
 
@@ -441,7 +441,7 @@ public class DataContextInvalidateObjectsIT {
         assertEquals(PersistenceState.HOLLOW, parentArtist.getPersistenceState());
         assertFalse(context.hasChanges());
         assertNull(context
-                .getParentDataDomain()
+                .getChannel().getDataDomain()
                 .getSharedSnapshotCache()
                 .getCachedSnapshot(parentArtist.getObjectId()));
 

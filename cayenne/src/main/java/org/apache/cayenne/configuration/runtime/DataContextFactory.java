@@ -49,16 +49,10 @@ public class DataContextFactory implements ObjectContextFactory {
     @Override
     public ObjectContext createContext(DataChannel parent) {
 
-        DataChannel c = parent;
-        while (c != null && !(c instanceof DataDomain)) {
-            c = c.getParent();
-        }
-
-        if (c == null) {
+        DataDomain domain = parent.getDataDomain();
+        if (domain == null) {
             throw new IllegalArgumentException("Parent DataChannel is not attached to a DataDomain: " + parent);
         }
-
-        DataDomain domain = (DataDomain) c;
 
         // for new dataRowStores use the same name for all stores it makes it easier to track the event subject
         DataRowStore snapshotCache = domain.isSharedCacheEnabled()

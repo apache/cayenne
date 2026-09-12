@@ -244,7 +244,7 @@ public class DataContextExtrasIT {
     @Test
     public void commitChangesError() {
 
-        DataDomain domain = context.getParentDataDomain();
+        DataDomain domain = context.getChannel().getDataDomain();
 
         // setup mockup PK generator that will blow on PK request
         // to emulate an exception

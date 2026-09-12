@@ -157,7 +157,7 @@ class HierarchicalObjectResolver {
                 return true;
             }
 
-            int maxIdQualifierSize = context.getParentDataDomain().getMaxIdQualifierSize();
+            int maxIdQualifierSize = context.getChannel().getDataDomain().getMaxIdQualifierSize();
             List<DbJoin> joins = getDbJoins(relationship);
             Map<DbJoin, String> joinToDataRowKey = getDataRowKeys(joins, pathPrefix);
 
