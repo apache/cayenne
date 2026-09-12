@@ -40,7 +40,6 @@ import org.junit.jupiter.api.extension.RegisterExtension;
 
 import java.sql.Types;
 import java.util.Collection;
-import java.util.HashMap;
 import java.util.List;
 
 import static org.junit.jupiter.api.Assertions.*;
@@ -48,7 +47,8 @@ import static org.junit.jupiter.api.Assertions.*;
 public class NestedDataContextWriteIT {
 
     @RegisterExtension
-    static final CayenneTestsEnv env = CayenneTestsEnv.forProject(CayenneProjects.TESTMAP_PROJECT);
+    // the tests check on objects they hold no reference to, so the ObjectStore must retain them
+    static final CayenneTestsEnv env = CayenneTestsEnv.forProject(CayenneProjects.TESTMAP_PROJECT).withHardReferences();
 
     private CayenneRuntime runtime;
     private DataContext context;
@@ -102,21 +102,10 @@ public class NestedDataContextWriteIT {
         tArtist.insert(33001, "artist1");
     }
 
-    /**
-     * Ensures that created DataContext's ObjectStore retains unreferenced registered
-     * objects.
-     */
-    // TODO : pluggable retain strategy
-    private DataContext createDataContext() {
-        context.getObjectStore().objectMap = new HashMap<>();
-        return context;
-    }
-
     @Test
     public void deleteNew() throws Exception {
         createSingleArtistDataSet();
 
-        DataContext context = createDataContext();
         ObjectContext childContext = runtime.newContext(context);
 
         Artist a = Cayenne.objectForPK(childContext, Artist.class, 33001);
@@ -139,7 +128,6 @@ public class NestedDataContextWriteIT {
     public void nullifyToOne() throws Exception {
         createNullifyToOneDataSet();
 
-        final DataContext context = createDataContext();
         final ObjectContext childContext = runtime.newContext(context);
         ObjectContext childContextPeer = runtime.newContext(context);
 
@@ -166,7 +154,6 @@ public class NestedDataContextWriteIT {
     public void commitChangesToParent() throws Exception {
         createArtistsDataSet();
 
-        final DataContext context = createDataContext();
         final ObjectContext childContext = runtime.newContext(context);
 
         // make sure we fetch in predictable order
@@ -238,7 +225,6 @@ public class NestedDataContextWriteIT {
     public void commitChangesToParentDeleted() throws Exception {
         createArtistsDataSet();
 
-        DataContext context = createDataContext();
         ObjectContext childContext = runtime.newContext(context);
 
         // make sure we fetch in predictable order
@@ -275,7 +261,6 @@ public class NestedDataContextWriteIT {
     public void commitChanges() throws Exception {
         createArtistsDataSet();
 
-        DataContext context = createDataContext();
         ObjectContext childContext = runtime.newContext(context);
 
         // make sure we fetch in predictable order
@@ -342,7 +327,6 @@ public class NestedDataContextWriteIT {
     public void commitChangesToParentMergeProperties() throws Exception {
         createMixedDataSet();
 
-        final DataContext context = createDataContext();
         final ObjectContext childContext = runtime.newContext(context);
 
         // make sure we fetch in predictable order
@@ -418,7 +402,6 @@ public class NestedDataContextWriteIT {
 
     @Test
     public void commitChangesToParentPropagatedKey() {
-        final DataContext context = createDataContext();
         final ObjectContext childContext = runtime.newContext(context);
 
         final Painting childMaster = childContext.newObject(Painting.class);
@@ -457,7 +440,6 @@ public class NestedDataContextWriteIT {
     @Test
     public void commitChangesToParentFlattened() {
 
-        final DataContext context = createDataContext();
         final ObjectContext childContext = runtime.newContext(context);
 
         final Artist childO1 = childContext.newObject(Artist.class);
@@ -501,7 +483,6 @@ public class NestedDataContextWriteIT {
 
     @Test
     public void commitChangesToParentFlattenedMultipleFlush() {
-        final DataContext context = createDataContext();
         final ObjectContext childContext = runtime.newContext(context);
 
         final Artist childO1 = childContext.newObject(Artist.class);
@@ -594,7 +575,6 @@ public class NestedDataContextWriteIT {
     @Test
     public void addRemove() {
 
-        DataContext context = createDataContext();
         ObjectContext child = runtime.newContext(context);
 
         Artist a = child.newObject(Artist.class);
@@ -620,7 +600,6 @@ public class NestedDataContextWriteIT {
 
     @Test
     public void cay1194() {
-        DataContext context = createDataContext();
 
         Artist artist = context.newObject(Artist.class);
         artist.setArtistName("111");
@@ -648,7 +627,7 @@ public class NestedDataContextWriteIT {
     @Test
     @Disabled("Waiting for a fix")
     public void twoStageCommit() {
-        DataContext parent = createDataContext();
+        DataContext parent = context;
         ObjectContext child = runtime.newContext(parent);
 
         Painting painting = child.newObject(Painting.class);

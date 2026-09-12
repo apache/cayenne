@@ -23,7 +23,6 @@ import org.apache.cayenne.Fault;
 import org.apache.cayenne.ObjectContext;
 import org.apache.cayenne.ObjectId;
 import org.apache.cayenne.PersistenceState;
-import org.apache.cayenne.Persistent;
 import org.apache.cayenne.query.ObjectSelect;
 import org.apache.cayenne.runtime.CayenneRuntime;
 import org.apache.cayenne.test.jdbc.TableHelper;
@@ -48,7 +47,8 @@ import static org.junit.jupiter.api.Assertions.*;
 public class DataContextPrefetchMultistepIT  {
 
     @RegisterExtension
-    static final CayenneTestsEnv env = CayenneTestsEnv.forProject(CayenneProjects.TESTMAP_PROJECT);
+    // phantom prefetch results are not referenced by the test, so hold them hard to detect them in the ObjectStore
+    static final CayenneTestsEnv env = CayenneTestsEnv.forProject(CayenneProjects.TESTMAP_PROJECT).withHardReferences();
 
         protected DataContext context;
 
@@ -108,12 +108,6 @@ public class DataContextPrefetchMultistepIT  {
     @Test
     public void toManyToManyFirstStepUnresolved() throws Exception {
         createTwoArtistsWithExhibitsDataSet();
-
-        // since objects for the phantom prefetches are not retained explicitly, they may
-        // get garbage collected, and we won't be able to detect them
-        // so ensure ObjectStore uses a regular map just for this test
-
-        context.getObjectStore().objectMap = new HashMap<Object, Persistent>();
 
         // Check the target ArtistExhibit objects do not exist yet
 

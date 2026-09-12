@@ -108,6 +108,14 @@ public class CayenneTestsEnv implements BeforeEachCallback, AfterEachCallback {
         return new CayenneTestsEnv(project, extraModules, autoClean, "weak");
     }
 
+    /**
+     * Makes ObjectStores retain registered objects with hard references, for tests that check on objects they hold no
+     * reference to, e.g. phantom prefetch results.
+     */
+    public CayenneTestsEnv withHardReferences() {
+        return new CayenneTestsEnv(project, extraModules, autoClean, "hard");
+    }
+
     @Override
     public void beforeEach(ExtensionContext ctx) {
         CayenneRuntime runtime = buildRuntime();

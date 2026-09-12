@@ -21,6 +21,7 @@ package org.apache.cayenne.access;
 
 import org.apache.cayenne.Cayenne;
 import org.apache.cayenne.log.NoopSQLLogger;
+import org.apache.cayenne.query.CapsStrategy;
 import org.apache.cayenne.query.SQLExec;
 import org.apache.cayenne.query.SQLTemplate;
 import org.apache.cayenne.test.jdbc.TableHelper;
@@ -87,7 +88,11 @@ public class DataContextPerformQueryAPIIT {
     public void performQuerySelect() throws Exception {
         createTwoArtists();
 
-        List<?> artists = context.performQuery(new SQLTemplate<>(Artist.class, "SELECT * FROM ARTIST"));
+        // PostgreSQL returns lowercase column labels, so the PK column would not be found without the caps strategy
+        SQLTemplate<Artist> query = new SQLTemplate<>(Artist.class, "SELECT * FROM ARTIST");
+        query.setColumnNamesCapitalization(CapsStrategy.UPPER);
+
+        List<?> artists = context.performQuery(query);
         assertEquals(2, artists.size());
     }
 

@@ -42,7 +42,6 @@ import org.junit.jupiter.api.Test;
 
 import java.sql.Date;
 import java.util.Collections;
-import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
@@ -55,7 +54,8 @@ import static org.junit.jupiter.api.Assertions.*;
 public class JointPrefetchIT {
 
     @RegisterExtension
-    static final CayenneTestsEnv env = CayenneTestsEnv.forProject(CayenneProjects.TESTMAP_PROJECT);
+    // phantom prefetch results are not referenced by the test, so hold them hard to detect them in the ObjectStore
+    static final CayenneTestsEnv env = CayenneTestsEnv.forProject(CayenneProjects.TESTMAP_PROJECT).withHardReferences();
 
     protected DataContext context;
     protected CayenneRuntime runtime;
@@ -341,9 +341,6 @@ public class JointPrefetchIT {
         createJointPrefetchDataSet();
 
         final DataContext context = this.context;
-
-        // make sure phantomly prefetched objects are not deallocated
-        context.getObjectStore().objectMap = new HashMap<>();
 
         // sanity check...
         Persistent g1 = (Persistent) context.getGraphManager().getNode(
