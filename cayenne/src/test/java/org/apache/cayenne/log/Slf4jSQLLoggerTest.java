@@ -83,7 +83,7 @@ public class Slf4jSQLLoggerTest {
         TranslatedSelect select = new TranslatedSelect(
                 "SELECT t0.id FROM my_table t0 WHERE t0.user_id = ?",
                 new PSParameter<?>[]{new PSParameter<>(15, 1, Types.INTEGER, 0, null, new DbAttribute("user_id"))},
-                new RSColumn[0], false, false);
+                new RSColumn[0], null, false, false);
 
         assertEquals(
                 "SELECT t0.id FROM my_table t0 WHERE t0.user_id = ? | bind:[user_id:15] selected:1",
@@ -95,7 +95,7 @@ public class Slf4jSQLLoggerTest {
         TranslatedSelect select = new TranslatedSelect(
                 "SELECT t0.id FROM my_table t0 WHERE t0.user_id = ?",
                 new PSParameter<?>[]{new PSParameter<>(15, 1, Types.INTEGER, 0, null, new DbAttribute("user_id"))},
-                new RSColumn[0], false, false);
+                new RSColumn[0], null, false, false);
 
         assertEquals(
                 "SELECT t0.id FROM my_table t0 WHERE t0.user_id = ? | bind:[user_id:15] time_ms:1000 error: bad column",
@@ -105,7 +105,7 @@ public class Slf4jSQLLoggerTest {
     @Test
     public void selectLineWithoutBindings() {
         TranslatedSelect select = new TranslatedSelect(
-                "SELECT t0.id FROM my_table t0", new PSParameter<?>[0], new RSColumn[0], false, false);
+                "SELECT t0.id FROM my_table t0", new PSParameter<?>[0], new RSColumn[0], null, false, false);
 
         assertEquals(
                 "SELECT t0.id FROM my_table t0 | selected:0",

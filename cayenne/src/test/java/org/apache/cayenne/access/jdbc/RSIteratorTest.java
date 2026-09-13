@@ -49,7 +49,7 @@ public class RSIteratorTest {
 		rs.addColumn("a", new Object[] { "1", "2", "3" });
 
 		RSColumn[] columns = RSColumn.rowBuilder().resultSet(rs).build(new ExtendedTypeMap());
-		RowReader<?> rowReader = new DefaultRowReaderFactory().rowReader(columns, new MockQueryMetadata(),
+		RowReader<?> rowReader = new DefaultRowReaderFactory().rowReader(columns, null, new MockQueryMetadata(),
 				mock(DbAdapter.class));
 
 		RSIterator it = new RSIterator(s, rs, rowReader);

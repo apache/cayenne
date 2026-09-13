@@ -43,7 +43,7 @@ import static org.mockito.Mockito.mock;
 public class LoggingObserverTest {
 
     private static TranslatedSelect select() {
-        return new TranslatedSelect("SELECT 1", new PSParameter<?>[0], new RSColumn[0], false, false);
+        return new TranslatedSelect("SELECT 1", new PSParameter<?>[0], new RSColumn[0], null, false, false);
     }
 
     private static TranslatedBatch batch() {

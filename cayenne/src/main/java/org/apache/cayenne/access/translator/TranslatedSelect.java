@@ -19,8 +19,11 @@
 
 package org.apache.cayenne.access.translator;
 
-import org.apache.cayenne.access.jdbc.RSColumn;
 import org.apache.cayenne.access.jdbc.PSParameter;
+import org.apache.cayenne.access.jdbc.RSColumn;
+import org.apache.cayenne.query.ResultSegment;
+
+import java.util.List;
 
 /**
  * An immutable result of translating a {@link org.apache.cayenne.query.Select} query to SQL,
@@ -32,6 +35,7 @@ public record TranslatedSelect(
         String sql,
         PSParameter<?>[] bindings,
         RSColumn[] resultColumns,
+        List<ResultSegment> resultSetMapping,
         boolean suppressingDistinct,
         boolean hasJoins) implements TranslatedStatement {
 }

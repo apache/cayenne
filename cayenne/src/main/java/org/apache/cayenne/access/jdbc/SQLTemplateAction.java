@@ -32,10 +32,11 @@ import org.apache.cayenne.dba.TypesMapping;
 import org.apache.cayenne.exp.path.CayennePath;
 import org.apache.cayenne.map.DbAttribute;
 import org.apache.cayenne.map.DbEntity;
-import org.apache.cayenne.query.ScalarResultSegment;
 import org.apache.cayenne.map.ObjAttribute;
 import org.apache.cayenne.map.ObjEntity;
 import org.apache.cayenne.query.QueryMetadata;
+import org.apache.cayenne.query.ResultSegment;
+import org.apache.cayenne.query.ScalarResultSegment;
 import org.apache.cayenne.query.SQLAction;
 import org.apache.cayenne.query.SQLTemplate;
 import org.apache.cayenne.util.Util;
@@ -233,11 +234,11 @@ public class SQLTemplateAction implements SQLAction {
             OperationObserver callback,
             long startTime) throws Exception {
 
-        recreateQueryMetadata(resultSet);
         boolean iteratedResult = callback.isIteratedResult();
         RSColumn[] columns = rowBuilder(compiled, resultSet).build(dataNode.getAdapter().getExtendedTypes());
 
-        RowReader<?> rowReader = dataNode.getRowReaderFactory().rowReader(columns, queryMetadata, dataNode.getAdapter());
+        RowReader<?> rowReader = dataNode.getRowReaderFactory()
+                .rowReader(columns, resultSegments(resultSet), queryMetadata, dataNode.getAdapter());
         ResultIterator<?> it = new RSIterator<>(statement, resultSet, rowReader);
 
         if (iteratedResult) {
@@ -263,12 +264,23 @@ public class SQLTemplateAction implements SQLAction {
         }
     }
 
-    private void recreateQueryMetadata(ResultSet resultSet) throws SQLException {
-        if (query.isUseScalar() && queryMetadata.getResultSetMapping() != null && queryMetadata.getResultSetMapping().isEmpty()) {
-            for (int i = 0; i < resultSet.getMetaData().getColumnCount(); i++) {
-                queryMetadata.getResultSetMapping().add(new ScalarResultSegment(String.valueOf(i), i));
-            }
+    /**
+     * Returns result segments for the ResultSet. A scalar query with no explicit result descriptor has an empty
+     * query-declared mapping, and its columns are only known once the ResultSet is available, so a scalar segment
+     * per column is built here without touching the query metadata.
+     */
+    private List<ResultSegment> resultSegments(ResultSet resultSet) throws SQLException {
+        List<ResultSegment> declared = queryMetadata.getResultSetMapping();
+        if (!query.isUseScalar() || declared == null || !declared.isEmpty()) {
+            return declared;
         }
+
+        int width = resultSet.getMetaData().getColumnCount();
+        List<ResultSegment> segments = new ArrayList<>(width);
+        for (int i = 0; i < width; i++) {
+            segments.add(new ScalarResultSegment(String.valueOf(i), i));
+        }
+        return segments;
     }
 
     /**

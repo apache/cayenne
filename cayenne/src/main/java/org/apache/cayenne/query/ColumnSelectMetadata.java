@@ -21,23 +21,23 @@ package org.apache.cayenne.query;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
+import java.util.List;
 import java.util.Map;
 import java.util.function.Function;
 
+import org.apache.cayenne.CayenneRuntimeException;
+import org.apache.cayenne.EmbeddableObject;
+import org.apache.cayenne.Persistent;
 import org.apache.cayenne.exp.Expression;
 import org.apache.cayenne.exp.property.Property;
+import org.apache.cayenne.map.EmbeddedAttribute;
 import org.apache.cayenne.map.EntityResolver;
-import org.apache.cayenne.map.ObjRelationship;
+import org.apache.cayenne.map.ObjEntity;
 
 /**
  * @since 4.2
  */
 class ColumnSelectMetadata extends ObjectSelectMetadata {
-
-	private static final ScalarResultSegment SCALAR_RESULT_SEGMENT
-			= new ScalarResultSegment(null, -1);
-	private static final EntityResultSegment ENTITY_RESULT_SEGMENT
-			= new EntityResultSegment(null, null, -1);
 
 	private boolean isSingleResultSetMapping;
 	private boolean suppressingDistinct;
@@ -52,7 +52,7 @@ class ColumnSelectMetadata extends ObjectSelectMetadata {
 			}
 
 			resolveAutoAliases(query);
-			buildResultSetMappingForColumns(query);
+			this.resultSetMapping = buildResultSetMapping(query, resolver);
 			isSingleResultSetMapping = query.isSingleColumn();
 			return true;
 		}
@@ -84,38 +84,50 @@ class ColumnSelectMetadata extends ObjectSelectMetadata {
 	}
 
 	/**
-	 * NOTE: this is a dirty logic, we calculate hollow resultSetMapping here and later in translator
-	 * (see ColumnExtractorStage and extractors) discard this and calculate it with full info.
-	 *
-	 * This result set mapping required by paginated queries that need only result type (entity/scalar) not
-	 * full info. So we can optimize this a bit and pair calculation with translation that do same thing to provide
-	 * result column descriptors.
+	 * Builds the shape of a result row declared by the query columns: one segment per column, classified the same
+	 * way the select translator classifies columns into entity, embeddable and scalar results. Column offsets and
+	 * field labels depend on the generated SQL and are not known here, so the segments carry none; the translator
+	 * produces the column-resolved counterpart of this list for the row reader.
 	 */
-	private void buildResultSetMappingForColumns(ColumnSelect<?> query) {
-		if(query.getColumns() == null || query.getColumns().isEmpty()) {
-			return;
+	private List<ResultSegment> buildResultSetMapping(ColumnSelect<?> query, EntityResolver resolver) {
+		Collection<Property<?>> columns = query.getColumns();
+		if (columns == null || columns.isEmpty()) {
+			return null;
 		}
 
-		resultSetMapping = new ArrayList<>(query.getColumns().size());
-		for(Property<?> column : query.getColumns()) {
-			// for each column we need only to know if it's entity or scalar
-			Expression exp = column.getExpression();
-			boolean fullObject = false;
-			if(exp.getType() == Expression.OBJ_PATH) {
-				// check if this is toOne relation
-				Object rel = exp.evaluate(getObjEntity());
-				// it this path is toOne relation, than select full object for it
-				fullObject = rel instanceof ObjRelationship && !((ObjRelationship) rel).isToMany();
-			} else if(exp.getType() == Expression.FULL_OBJECT) {
-				fullObject = true;
-			}
-
-			if(fullObject) {
-				resultSetMapping.add(ENTITY_RESULT_SEGMENT);
-			} else {
-				resultSetMapping.add(SCALAR_RESULT_SEGMENT);
-			}
+		List<ResultSegment> segments = new ArrayList<>(columns.size());
+		for (Property<?> column : columns) {
+			segments.add(resultSegment(column, resolver));
 		}
+		return Collections.unmodifiableList(segments);
+	}
+
+	private ResultSegment resultSegment(Property<?> column, EntityResolver resolver) {
+		Expression exp = column.getExpression();
+		Class<?> type = column.getType();
+		int expType = exp.getType();
+
+		boolean fullObject = expType == Expression.FULL_OBJECT
+				|| (type != null && expType == Expression.OBJ_PATH && Persistent.class.isAssignableFrom(type));
+
+		if (fullObject) {
+			ObjEntity entity = resolver.getObjEntity(type);
+			if (entity == null) {
+				throw new CayenneRuntimeException("No entity mapped for column '%s' of type %s", exp, type);
+			}
+			return new EntityResultSegment(resolver.getClassDescriptor(entity.getName()), Collections.emptyMap(), -1);
+		}
+
+		if (type != null && EmbeddableObject.class.isAssignableFrom(type)) {
+			Object o = exp.evaluate(getObjEntity());
+			if (!(o instanceof EmbeddedAttribute attribute)) {
+				throw new CayenneRuntimeException("EmbeddedAttribute expected, %s found", o);
+			}
+			return new EmbeddableResultSegment(attribute.getEmbeddable(), Collections.emptyMap(), -1);
+		}
+
+		String name = column.getName() == null ? exp.expName() : column.getName();
+		return new ScalarResultSegment(name, -1);
 	}
 
 	@Override

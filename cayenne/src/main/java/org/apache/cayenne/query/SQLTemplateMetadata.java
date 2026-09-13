@@ -59,9 +59,10 @@ public class SQLTemplateMetadata extends BaseQueryMetadata {
 			}
 
 			buildResultSetMappingForColumns(query);
+			// an empty mapping of a scalar query means "one scalar per ResultSet column", to be resolved at execution
 			resultSetMapping = query.getResult() != null ?
 					query.getResult().getResolvedComponents(resolver) :
-					query.isUseScalar() ? new ArrayList<>() : null;
+					query.isUseScalar() ? Collections.emptyList() : null;
 			isSingleResultSetMapping = resultSetMapping != null && resultSetMapping.size() == 1;
 
 			// generate unique cache key...

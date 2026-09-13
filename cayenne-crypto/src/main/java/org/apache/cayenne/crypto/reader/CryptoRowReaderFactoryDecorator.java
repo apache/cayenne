@@ -36,9 +36,11 @@ import org.apache.cayenne.di.Inject;
 import org.apache.cayenne.map.DbAttribute;
 import org.apache.cayenne.query.EntityResultSegment;
 import org.apache.cayenne.query.QueryMetadata;
+import org.apache.cayenne.query.ResultSegment;
 import org.apache.cayenne.query.ScalarResultSegment;
 
 import java.sql.ResultSet;
+import java.util.List;
 import java.util.Map;
 
 public class CryptoRowReaderFactoryDecorator extends DefaultRowReaderFactory {
@@ -59,8 +61,9 @@ public class CryptoRowReaderFactoryDecorator extends DefaultRowReaderFactory {
     }
 
     @Override
-    public RowReader<?> rowReader(RSColumn[] columns, QueryMetadata metadata, DbAdapter adapter) {
-        return super.rowReader(encryptedColumns(columns, adapter.getExtendedTypes()), metadata, adapter);
+    public RowReader<?> rowReader(RSColumn[] columns, List<ResultSegment> segments, QueryMetadata metadata,
+                                  DbAdapter adapter) {
+        return super.rowReader(encryptedColumns(columns, adapter.getExtendedTypes()), segments, metadata, adapter);
     }
 
     @Override

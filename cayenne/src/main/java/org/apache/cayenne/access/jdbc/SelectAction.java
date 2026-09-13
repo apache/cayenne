@@ -95,7 +95,8 @@ public class SelectAction extends BaseSQLAction {
         }
 
         RSColumn[] columns = resultColumns(translated, rs);
-        RowReader<?> rowReader = dataNode.getRowReaderFactory().rowReader(columns, queryMetadata, dataNode.getAdapter());
+        RowReader<?> rowReader = dataNode.getRowReaderFactory()
+                .rowReader(columns, translated.resultSetMapping(), queryMetadata, dataNode.getAdapter());
 
         ResultIterator<?> it = new RSIterator<>(statement, rs, rowReader);
         it = forIteratedResult(it, observer, connection);

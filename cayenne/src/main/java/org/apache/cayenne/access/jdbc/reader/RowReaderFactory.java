@@ -18,9 +18,12 @@
  ****************************************************************/
 package org.apache.cayenne.access.jdbc.reader;
 
+import java.util.List;
+
 import org.apache.cayenne.access.jdbc.RSColumn;
 import org.apache.cayenne.dba.DbAdapter;
 import org.apache.cayenne.query.QueryMetadata;
+import org.apache.cayenne.query.ResultSegment;
 
 /**
  * Creates RowReader instances for executed queries.
@@ -29,5 +32,9 @@ import org.apache.cayenne.query.QueryMetadata;
  */
 public interface RowReaderFactory {
 
-    RowReader<?> rowReader(RSColumn[] columns, QueryMetadata queryMetadata, DbAdapter adapter);
+    /**
+     * @since 5.0
+     */
+    RowReader<?> rowReader(RSColumn[] columns, List<ResultSegment> segments, QueryMetadata metadata,
+                           DbAdapter adapter);
 }

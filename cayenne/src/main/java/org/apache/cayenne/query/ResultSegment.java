@@ -20,8 +20,7 @@ package org.apache.cayenne.query;
 
 /**
  * A single segment of a query result set mapping. A segment describes how one or more adjacent columns of a
- * result set row map to a result object, and can be one of: an entity ({@link EntityResultSegment}), an
- * embeddable ({@link EmbeddableResultSegment}) or a single scalar value ({@link ScalarResultSegment}).
+ * result set row map to a result object
  *
  * @see QueryMetadata#getResultSetMapping()
  * @since 5.0
@@ -29,7 +28,8 @@ package org.apache.cayenne.query;
 public sealed interface ResultSegment permits EntityResultSegment, EmbeddableResultSegment, ScalarResultSegment {
 
     /**
-     * Returns a zero-based column index of the first column of this segment in the ResultSet.
+     * Returns a zero-based column index of the first column of this segment in the ResultSet, or -1 if the segment
+     * comes from a query-declared mapping whose column layout is only known after SQL translation.
      */
     int columnOffset();
 }

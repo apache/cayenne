@@ -54,7 +54,8 @@ public abstract class BaseSQLAction implements SQLAction {
 
         QueryMetadata metadata = query.getMetaData(dataNode.getEntityResolver());
 
-        RowReader<?> rowReader = dataNode.getRowReaderFactory().rowReader(columns, metadata, dataNode.getAdapter());
+        RowReader<?> rowReader = dataNode.getRowReaderFactory()
+                .rowReader(columns, metadata.getResultSetMapping(), metadata, dataNode.getAdapter());
 
         RSIterator resultReader = new RSIterator(null, resultSet, rowReader);
 

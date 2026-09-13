@@ -59,6 +59,7 @@ public class PostgresSelectActionTest {
             "SELECT 1",
             new PSParameter[0],
             new RSColumn[0],
+            null,
             false,
             false);
 
@@ -76,7 +77,7 @@ public class PostgresSelectActionTest {
         when(query.getMetaData(any(EntityResolver.class))).thenReturn(metadata);
 
         RowReaderFactory rowReaderFactory = mock(RowReaderFactory.class);
-        when(rowReaderFactory.rowReader(any(), any(), any())).thenReturn(mock(RowReader.class));
+        when(rowReaderFactory.rowReader(any(), any(), any(), any())).thenReturn(mock(RowReader.class));
 
         DataNode dataNode = mock(DataNode.class);
         when(dataNode.getEntityResolver()).thenReturn(mock(EntityResolver.class));

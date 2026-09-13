@@ -24,6 +24,10 @@ import java.util.List;
 import org.apache.cayenne.query.ResultSegment;
 
 /**
+ * Resolves the {@link org.apache.cayenne.map.SQLResult} collected by the column extractors into a list of
+ * {@link ResultSegment}s with column offsets matching the translated SELECT column list. The result is a part of
+ * the translation output and is never written back into the query.
+ *
  * @since 4.2
  */
 public class SQLResultStage implements TranslationStage {
@@ -34,8 +38,7 @@ public class SQLResultStage implements TranslationStage {
             return;
         }
 
-        // optimization, resolve metadata result components here too, as it have same logic as this extractor...
         List<ResultSegment> resultSetMapping = context.getSqlResult().getResolvedComponents(context.getResolver());
-        context.getMetadata().setResultSetMapping(resultSetMapping);
+        context.setResultSetMapping(resultSetMapping);
     }
 }

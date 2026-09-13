@@ -37,6 +37,7 @@ import org.apache.cayenne.map.SQLResult;
 import org.apache.cayenne.query.FluentSelect;
 import org.apache.cayenne.query.Ordering;
 import org.apache.cayenne.query.QueryMetadata;
+import org.apache.cayenne.query.ResultSegment;
 
 import java.util.ArrayList;
 import java.util.Collection;
@@ -133,6 +134,8 @@ class SelectTranslatorContext implements SQLGenerationContext {
 
     private SQLResult sqlResult;
     private EntityResult rootEntityResult;
+    // result set mapping resolved against the translated columns, null unless the query selects a custom column set
+    private List<ResultSegment> resultSetMapping;
 
     SelectTranslatorContext(FluentSelect<?, ?> query, DbAdapter adapter, EntityResolver resolver, SelectTranslatorContext parentContext) {
         this.query = query;
@@ -163,7 +166,9 @@ class SelectTranslatorContext implements SQLGenerationContext {
     public TranslatedSelect getTranslation() {
         return new TranslatedSelect(
                 getFinalSQL(),
-                getBindings().toArray(new PSParameter[0]), getColumnDescriptors().toArray(new RSColumn[0]),
+                getBindings().toArray(new PSParameter[0]),
+                getColumnDescriptors().toArray(new RSColumn[0]),
+                resultSetMapping,
                 isDistinctSuppression(),
                 getTableCount() > 1);
     }
@@ -328,6 +333,10 @@ class SelectTranslatorContext implements SQLGenerationContext {
 
     SQLResult getSqlResult() {
         return sqlResult;
+    }
+
+    void setResultSetMapping(List<ResultSegment> resultSetMapping) {
+        this.resultSetMapping = resultSetMapping;
     }
 
     void setRootEntityResult(EntityResult rootEntityResult) {

@@ -40,9 +40,9 @@ import java.util.Set;
 public class DefaultRowReaderFactory implements RowReaderFactory {
 
     @Override
-    public RowReader<?> rowReader(RSColumn[] columns, QueryMetadata metadata, DbAdapter adapter) {
+    public RowReader<?> rowReader(RSColumn[] columns, List<ResultSegment> segments, QueryMetadata metadata,
+                                  DbAdapter adapter) {
 
-        List<ResultSegment> segments = metadata.getResultSetMapping();
         if (segments == null || segments.isEmpty()) {
             return noSegmentReader(columns, metadata);
         }

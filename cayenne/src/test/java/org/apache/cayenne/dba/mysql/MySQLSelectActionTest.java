@@ -53,6 +53,7 @@ public class MySQLSelectActionTest {
             "SELECT 1",
             new PSParameter[0],
             new RSColumn[0],
+            null,
             false,
             false);
 
@@ -70,7 +71,7 @@ public class MySQLSelectActionTest {
         when(query.getMetaData(any(EntityResolver.class))).thenReturn(metadata);
 
         RowReaderFactory rowReaderFactory = mock(RowReaderFactory.class);
-        when(rowReaderFactory.rowReader(any(), any(), any())).thenReturn(mock(RowReader.class));
+        when(rowReaderFactory.rowReader(any(), any(), any(), any())).thenReturn(mock(RowReader.class));
 
         SelectTranslator translator = mock(SelectTranslator.class);
         when(translator.translate(any(), any(), any())).thenReturn(SELECT);

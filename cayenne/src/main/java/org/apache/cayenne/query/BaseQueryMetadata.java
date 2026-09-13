@@ -197,15 +197,6 @@ class BaseQueryMetadata implements QueryMetadata {
 	}
 
 	/**
-	 * used by select translator
-	 * @since 4.2
-	 */
-	@Override
-	public void setResultSetMapping(List<ResultSegment> resultSetMapping) {
-		this.resultSetMapping = resultSetMapping;
-	}
-
-	/**
 	 * @since 4.0
 	 */
 	@Override

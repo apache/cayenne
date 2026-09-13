@@ -180,17 +180,12 @@ public interface QueryMetadata {
     Map<String, String> getPathSplitAliases();
 
     /**
-     * Returns an optional list of result set mapping hints.
-     * 
+     * Returns the result set mapping declared by the query, or null if the query returns whole objects of its root
+     * entity.
+     *
      * @since 3.0
      */
     List<ResultSegment> getResultSetMapping();
-
-    /**
-     * @since 4.2
-     */
-    default void setResultSetMapping(List<ResultSegment> resultSetMapping) {
-    }
 
     /**
      * @return should the result be mapped to single object (scalar or entity)

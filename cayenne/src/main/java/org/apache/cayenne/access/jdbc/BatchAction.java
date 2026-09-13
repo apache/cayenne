@@ -38,6 +38,7 @@ import org.apache.cayenne.query.BatchQuery;
 import org.apache.cayenne.query.BatchQueryRow;
 import org.apache.cayenne.query.DeleteBatchQuery;
 import org.apache.cayenne.query.InsertBatchQuery;
+import org.apache.cayenne.query.QueryMetadata;
 import org.apache.cayenne.query.UpdateBatchQuery;
 
 import java.sql.Connection;
@@ -296,8 +297,9 @@ public class BatchAction extends BaseSQLAction {
             this.keyColumns = rowBuilder.build(dataNode.getAdapter().getExtendedTypes());
         }
 
+        QueryMetadata metadata = query.getMetaData(dataNode.getEntityResolver());
         RowReader<?> rowReader = dataNode.getRowReaderFactory()
-                .rowReader(keyColumns, query.getMetaData(dataNode.getEntityResolver()), dataNode.getAdapter());
+                .rowReader(keyColumns, metadata.getResultSetMapping(), metadata, dataNode.getAdapter());
 
         // generated keys are small (one row per inserted row), so materialize them here rather than passing a live,
         // single-use iterator to the observer
