@@ -151,7 +151,7 @@ public class ObjectSelect_ByIdIT {
                 .where(Artist.SELF.idMapsIn(id2, id3))
                 .orderBy(Artist.ARTIST_NAME.asc()).select(env.context());
         assertEquals(2, artists.size());
-        assertEquals("artist2", artists.get(0).getArtistName());
+        assertEquals("artist2", artists.getFirst().getArtistName());
     }
 
     @Test
@@ -197,7 +197,7 @@ public class ObjectSelect_ByIdIT {
                 .where(Artist.SELF.objectIdsIn(id2, id3))
                 .orderBy(Artist.ARTIST_NAME.asc()).select(env.context());
         assertEquals(2, artists.size());
-        assertEquals("artist2", artists.get(0).getArtistName());
+        assertEquals("artist2", artists.getFirst().getArtistName());
     }
 
     @Test
@@ -457,7 +457,7 @@ public class ObjectSelect_ByIdIT {
                 .byIds(singletonMap(Artist.ARTIST_ID_PK_COLUMN, 2), singletonMap(Artist.ARTIST_ID_PK_COLUMN, 3))
                 .orderBy(Artist.ARTIST_NAME.asc()).select(env.context());
         assertEquals(2, artists.size());
-        assertEquals("artist2", artists.get(0).getArtistName());
+        assertEquals("artist2", artists.getFirst().getArtistName());
     }
 
     @Test

@@ -89,7 +89,7 @@ public class EntityPropertyIdIT {
         List<CompoundPkTestEntity> list = ObjectSelect.query(CompoundPkTestEntity.class)
                 .where(CompoundPkTestEntity.SELF.neqIdMap(PK_1)).select(env.context());
         assertEquals(1, list.size());
-        assertEquals("CCC", list.get(0).getName());
+        assertEquals("CCC", list.getFirst().getName());
     }
 
     @Test
@@ -131,7 +131,7 @@ public class EntityPropertyIdIT {
                 .where(CompoundFkTestEntity.TO_COMPOUND_PK.idMapsIn(PK_1, PK_2))
                 .orderBy(CompoundFkTestEntity.NAME.asc()).select(env.context());
         assertEquals(2, list.size());
-        assertEquals("FK1", list.get(0).getName());
+        assertEquals("FK1", list.getFirst().getName());
     }
 
     @Test
@@ -140,7 +140,7 @@ public class EntityPropertyIdIT {
         List<CompoundFkTestEntity> list = ObjectSelect.query(CompoundFkTestEntity.class)
                 .where(CompoundFkTestEntity.TO_COMPOUND_PK.objectIdsIn(id1)).select(env.context());
         assertEquals(1, list.size());
-        assertEquals("FK1", list.get(0).getName());
+        assertEquals("FK1", list.getFirst().getName());
     }
 
     // --- edge cases ---
