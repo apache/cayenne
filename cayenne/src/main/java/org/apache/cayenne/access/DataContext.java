@@ -69,10 +69,7 @@ import java.util.Objects;
 import java.util.concurrent.ConcurrentHashMap;
 
 /**
- * The most common implementation of {@link ObjectContext}. DataContext is an
- * isolated container of an object graph, in a sense that any uncommitted
- * changes to persistent objects that are registered with the context, are not
- * visible to the users of other contexts.
+ * The default implementation of {@link ObjectContext}.
  */
 public class DataContext implements ObjectContext {
 
@@ -867,11 +864,7 @@ public class DataContext implements ObjectContext {
     @Override
     public <T> List<T> select(Select<T> query) {
         Query resolved = nonNullDelegate().willPerformQuery(this, query);
-        if (resolved == null) {
-            return new ArrayList<>(1);
-        }
-
-        List<T> result = (List<T>) QueryResults.firstList(onQuery(resolved, false, false));
+        List<T> result = (List<T>) QueryResults.firstList(doExecute(resolved, false));
         return result != null ? result : new ArrayList<>(1);
     }
 
@@ -927,29 +920,32 @@ public class DataContext implements ObjectContext {
     @Override
     @SuppressWarnings("unchecked")
     public <T> ResultIterator<T> iterator(Select<T> query) {
-        Query queryToRun = nonNullDelegate().willPerformQuery(this, query);
-        return (ResultIterator<T>) QueryResults.firstIterator(onQuery(queryToRun, true, false));
+        Query resolved = nonNullDelegate().willPerformQuery(this, query);
+        return (ResultIterator<T>) QueryResults.firstIterator(doExecute(resolved, true));
     }
 
     /**
      * Executes a query returning all of its result sets, update counts, iterators and OUT parameters in the order
      * they were produced.
      *
-     * @since 1.2
+     * @since 5.0
      */
     @Override
     public List<QueryResult> execute(Query query) {
+        Query resolved = nonNullDelegate().willPerformGenericQuery(this, query);
+        return Collections.unmodifiableList(doExecute(resolved, false));
+    }
 
-        query = nonNullDelegate().willPerformGenericQuery(this, query);
-        if (query == null) {
+    private List<QueryResult> doExecute(Query resolved, boolean iteratedResult) {
+        if (resolved == null) {
             return Collections.emptyList();
         }
 
-        if (this.getChannel() == null) {
+        if (getChannel() == null) {
             throw new CayenneRuntimeException("Can't run query - parent DataChannel is not set.");
         }
 
-        return Collections.unmodifiableList(onQuery(query, false, false));
+        return onQuery(resolved, iteratedResult, false);
     }
 
     List<QueryResult> onQuery(Query query, boolean iteratedResult, boolean ignoreLocalCache) {

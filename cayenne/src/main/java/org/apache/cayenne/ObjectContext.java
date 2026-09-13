@@ -30,8 +30,8 @@ import java.util.Map;
 import java.util.Objects;
 
 /**
- * A Cayenne object facade to a persistent store. Instances of ObjectContext are
- * used in the application code to access Cayenne persistence features.
+ * The main user-facing persistence API to work with a database. Holds own copy of an object graph. Any uncommitted
+ * changes to persistent objects that are registered with the context, are not visible to the users of other contexts.
  *
  * @since 1.2
  */
@@ -319,7 +319,15 @@ public interface ObjectContext {
      * 
      * @since 4.0
      */
-    <T> T selectOne(Select<T> query);
+    default <T> T selectOne(Select<T> query) {
+        List<T> objects = select(query);
+        if (objects.isEmpty()) {
+            return null;
+        } else if (objects.size() > 1) {
+            throw new CayenneRuntimeException("Expected zero or one object, instead query matched: %d", objects.size());
+        }
+        return objects.getFirst();
+    }
 
     /**
      * Selects a single object using provided query. The query itself can
@@ -338,7 +346,10 @@ public interface ObjectContext {
      *
      * @since 4.0
      */
-    <T> T selectFirst(Select<T> query);
+    default <T> T selectFirst(Select<T> query) {
+        List<T> objects = select(query);
+        return objects.isEmpty() ? null : objects.getFirst();
+    }
 
     /**
      * Creates a ResultIterator based on the provided query and passes it to a
@@ -347,7 +358,13 @@ public interface ObjectContext {
      * 
      * @since 4.0
      */
-    <T> void iterate(Select<T> query, ResultIteratorCallback<T> callback);
+    default <T> void iterate(Select<T> query, ResultIteratorCallback<T> callback) {
+        try (ResultIterator<T> it = iterator(query)) {
+            for (T t : it) {
+                callback.next(t);
+            }
+        }
+    }
 
     /**
      * Creates a ResultIterator based on the provided query. It is usually
@@ -370,7 +387,9 @@ public interface ObjectContext {
      *
      * @since 4.0
      */
-    <T> ResultBatchIterator<T> batchIterator(Select<T> query, int size);
+    default <T> ResultBatchIterator<T> batchIterator(Select<T> query, int size) {
+        return new ResultBatchIterator<>(iterator(query), size);
+    }
 
     /**
      * Executes any kind of query, returning all of its result sets, update counts, iterators and OUT parameters as a
