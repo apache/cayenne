@@ -21,7 +21,6 @@ package org.apache.cayenne.project.validation;
 import org.apache.cayenne.configuration.DataChannelDescriptor;
 import org.apache.cayenne.map.DataMap;
 import org.apache.cayenne.map.QueryDescriptor;
-import org.apache.cayenne.query.QueryMetadata;
 import org.apache.cayenne.util.Util;
 import org.apache.cayenne.validation.ValidationResult;
 
@@ -94,7 +93,7 @@ abstract class BaseQueryValidator<T extends QueryDescriptor> extends Configurati
     }
 
     void checkForMultiCacheGroup(T query, ValidationResult validationResult) {
-        String cacheGroup = query.getProperty(QueryMetadata.CACHE_GROUPS_PROPERTY);
+        String cacheGroup = query.getProperty(QueryDescriptor.CACHE_GROUPS_PROPERTY);
         if (cacheGroup != null && cacheGroup.contains(",")) {
             addFailure(validationResult, query, "Invalid cache group '%s', multiple groups are deprecated",
                     cacheGroup);

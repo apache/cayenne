@@ -19,6 +19,7 @@
 package org.apache.cayenne.map;
 
 import org.apache.cayenne.configuration.ConfigurationNodeVisitor;
+import org.apache.cayenne.query.CapsStrategy;
 import org.apache.cayenne.query.PrefetchTreeNode;
 import org.apache.cayenne.query.SQLTemplate;
 import org.apache.cayenne.util.XMLEncoder;
@@ -31,6 +32,14 @@ import java.util.TreeSet;
  * @since 4.0
  */
 public class SQLTemplateDescriptor extends QueryDescriptor {
+
+    /**
+     * Name of the descriptor property holding the {@link #getColumnNamesCapitalization() column name
+     * capitalization} of the query.
+     *
+     * @since 5.0
+     */
+    public static final String COLUMN_NAME_CAPITALIZATION_PROPERTY = "cayenne.SQLTemplate.columnNameCapitalization";
 
     protected String sql;
     protected Map<String, Integer> prefetchesMap = new HashMap<>();
@@ -67,6 +76,24 @@ public class SQLTemplateDescriptor extends QueryDescriptor {
      */
     public void setAdapterSql(Map<String, String> adapterSql) {
         this.adapterSql = adapterSql;
+    }
+
+    /**
+     * Returns the capitalization strategy applied to the column names of the query result, or null if none is set.
+     *
+     * @since 5.0
+     */
+    public CapsStrategy getColumnNamesCapitalization() {
+        String value = getProperty(COLUMN_NAME_CAPITALIZATION_PROPERTY);
+        return value != null ? CapsStrategy.valueOf(value.toUpperCase()) : null;
+    }
+
+    /**
+     * @since 5.0
+     */
+    public void setColumnNamesCapitalization(CapsStrategy columnNamesCapitalization) {
+        setProperty(COLUMN_NAME_CAPITALIZATION_PROPERTY,
+                columnNamesCapitalization != null ? columnNamesCapitalization.name() : null);
     }
 
     /**
@@ -113,7 +140,14 @@ public class SQLTemplateDescriptor extends QueryDescriptor {
             }
         }
 
-        template.initWithProperties(this.getProperties());
+        template.setFetchLimit(getFetchLimit());
+        template.setFetchOffset(getFetchOffset());
+        template.setPageSize(getPageSize());
+        template.setStatementFetchSize(getStatementFetchSize());
+        template.setFetchingDataRows(isFetchingDataRows());
+        template.setCacheStrategy(getCacheStrategy());
+        template.setCacheGroup(getCacheGroup());
+        template.setColumnNamesCapitalization(getColumnNamesCapitalization());
 
         // init SQL
         template.setDefaultTemplate(this.getSql());

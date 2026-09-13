@@ -59,8 +59,6 @@ import java.util.Map;
  */
 public class ProcedureQuery<T> extends CacheableQuery implements Select<T> {
 
-    public static final String COLUMN_NAME_CAPITALIZATION_PROPERTY = "cayenne.ProcedureQuery.columnNameCapitalization";
-
     protected String resultEntityName;
     protected Class<?> resultClass;
     protected CapsStrategy columnNamesCapitalization;
@@ -243,27 +241,6 @@ public class ProcedureQuery<T> extends CacheableQuery implements Select<T> {
     public T selectFirst(ObjectContext context) {
         setFetchLimit(1);
         return context.selectFirst(this);
-    }
-
-    /**
-     * Initializes query parameters using a set of properties.
-     * 
-     * @since 1.1
-     */
-    public void initWithProperties(Map<String, ?> properties) {
-
-        // must init defaults even if properties are empty
-        if (properties == null) {
-            properties = Collections.emptyMap();
-        }
-        Object columnNamesCapitalization = properties
-                .get(COLUMN_NAME_CAPITALIZATION_PROPERTY);
-        this.columnNamesCapitalization = (columnNamesCapitalization != null)
-                ? CapsStrategy
-                        .valueOf(columnNamesCapitalization.toString().toUpperCase())
-                : null;
-
-        metaData.initWithProperties(properties);
     }
 
     @Override

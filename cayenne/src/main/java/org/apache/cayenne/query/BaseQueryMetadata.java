@@ -23,7 +23,6 @@ import java.util.Collection;
 import java.util.Collections;
 import java.util.List;
 import java.util.Map;
-import java.util.StringTokenizer;
 
 import org.apache.cayenne.Persistent;
 import org.apache.cayenne.map.DataMap;
@@ -139,55 +138,6 @@ class BaseQueryMetadata implements QueryMetadata {
 		}
 
 		return false;
-	}
-
-	void initWithProperties(Map<String, ?> properties) {
-		// must init defaults even if properties are empty
-		if (properties == null) {
-			properties = Collections.emptyMap();
-		}
-
-		Object fetchOffset = properties.get(QueryMetadata.FETCH_OFFSET_PROPERTY);
-		Object fetchLimit = properties.get(QueryMetadata.FETCH_LIMIT_PROPERTY);
-		Object pageSize = properties.get(QueryMetadata.PAGE_SIZE_PROPERTY);
-		Object statementFetchSize = properties.get(QueryMetadata.STATEMENT_FETCH_SIZE_PROPERTY);
-		Object fetchingDataRows = properties.get(QueryMetadata.FETCHING_DATA_ROWS_PROPERTY);
-
-		Object cacheStrategy = properties.get(QueryMetadata.CACHE_STRATEGY_PROPERTY);
-
-		Object cacheGroups = properties.get(QueryMetadata.CACHE_GROUPS_PROPERTY);
-
-		// init ivars from properties
-		this.fetchOffset = (fetchOffset != null) ? Integer.parseInt(fetchOffset.toString())
-				: QueryMetadata.FETCH_OFFSET_DEFAULT;
-
-		this.fetchLimit = (fetchLimit != null) ? Integer.parseInt(fetchLimit.toString())
-				: QueryMetadata.FETCH_LIMIT_DEFAULT;
-
-		this.pageSize = (pageSize != null) ? Integer.parseInt(pageSize.toString()) : QueryMetadata.PAGE_SIZE_DEFAULT;
-
-		this.statementFetchSize = (statementFetchSize != null) ? Integer.parseInt(statementFetchSize.toString())
-				: QueryMetadata.STATEMENT_FETCH_SIZE_DEFAULT;
-
-		this.fetchingDataRows = (fetchingDataRows != null) ? "true".equalsIgnoreCase(fetchingDataRows.toString())
-				: QueryMetadata.FETCHING_DATA_ROWS_DEFAULT;
-
-		this.cacheStrategy = (cacheStrategy != null) ? QueryCacheStrategy.safeValueOf(cacheStrategy.toString())
-				: QueryCacheStrategy.getDefaultStrategy();
-
-		this.cacheGroup = null;
-		if(cacheGroups instanceof String) {
-			if(((String) cacheGroups).contains(",")) {
-				StringTokenizer toks = new StringTokenizer(cacheGroups.toString(), ",");
-				if(toks.countTokens() > 0) {
-					this.cacheGroup = toks.nextToken();
-				}
-			} else {
-				this.cacheGroup = (String) cacheGroups;
-			}
-		} else if (cacheGroups instanceof String[]) {
-			this.cacheGroup = ((String[]) cacheGroups)[0];
-		}
 	}
 
 	/**

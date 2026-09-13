@@ -53,15 +53,6 @@ public class EJBQLQuery<T> extends CacheableQuery implements Select<T> {
     public EJBQLQuery() {
     }
 
-    public void initWithProperties(Map<String, ?> properties) {
-
-        // must init defaults even if properties are empty
-        if (properties == null) {
-            properties = Collections.emptyMap();
-        }
-        metadata.initWithProperties(properties);
-    }
-
     public QueryMetadata getMetaData(EntityResolver resolver) {
         metadata.resolve(resolver, this);
         return metadata;

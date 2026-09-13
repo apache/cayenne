@@ -40,7 +40,6 @@ import com.jgoodies.forms.layout.CellConstraints;
 import com.jgoodies.forms.layout.FormLayout;
 import org.apache.cayenne.map.QueryDescriptor;
 import org.apache.cayenne.modeler.ui.project.editor.EditorForm;
-import org.apache.cayenne.query.QueryMetadata;
 
 /**
  * A panel that supports editing the properties a query not based on ObjEntity, but still
@@ -112,7 +111,7 @@ public abstract class RawQueryPropertiesPanel extends SelectPropertiesPanel {
     public void initFromModel(QueryDescriptor query) {
         super.initFromModel(query);
 
-        boolean fetchingDO = !Boolean.valueOf(query.getProperties().get(QueryMetadata.FETCHING_DATA_ROWS_PROPERTY));
+        boolean fetchingDO = !query.isFetchingDataRows();
         persistentObjects.setSelected(fetchingDO);
 
         // TODO: now we only allow ObjEntities from the current map,
@@ -143,7 +142,7 @@ public abstract class RawQueryPropertiesPanel extends SelectPropertiesPanel {
             entities.getModel().setSelectedItem(null);
         }
 
-        setQueryProperty(QueryMetadata.FETCHING_DATA_ROWS_PROPERTY,
+        setQueryProperty(QueryDescriptor.FETCHING_DATA_ROWS_PROPERTY,
                 fetchingPersistentObjects ? Boolean.FALSE.toString() : Boolean.TRUE.toString());
     }
 }

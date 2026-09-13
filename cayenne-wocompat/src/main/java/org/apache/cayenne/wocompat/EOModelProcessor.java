@@ -33,7 +33,6 @@ import org.apache.cayenne.map.SQLTemplateDescriptor;
 import org.apache.cayenne.map.SelectQueryDescriptor;
 import org.apache.cayenne.query.Ordering;
 import org.apache.cayenne.query.PrefetchTreeNode;
-import org.apache.cayenne.query.QueryMetadata;
 import org.apache.cayenne.query.SortOrder;
 import org.apache.cayenne.wocompat.parser.Parser;
 import org.slf4j.Logger;
@@ -238,10 +237,9 @@ public class EOModelProcessor {
 		if (fetchLimit != null) {
 			try {
 				if (fetchLimit instanceof Number n) {
-					descriptor.setProperty(QueryMetadata.FETCH_LIMIT_PROPERTY,
-							String.valueOf(n.intValue()));
+					descriptor.setFetchLimit(n.intValue());
 				} else if (isNumeric(fetchLimit.toString())) {
-					descriptor.setProperty(QueryMetadata.FETCH_LIMIT_PROPERTY, fetchLimit.toString());
+					descriptor.setFetchLimit(Integer.parseInt(fetchLimit.toString()));
 				}
 			} catch (NumberFormatException nfex) {
 				// ignoring...
@@ -279,7 +277,7 @@ public class EOModelProcessor {
 		// in the
 		// modeler...
 		if (plistMap.containsKey("rawRowKeyPaths")) {
-			descriptor.setProperty(QueryMetadata.FETCHING_DATA_ROWS_PROPERTY, String.valueOf(true));
+			descriptor.setFetchingDataRows(true);
 		}
 
 		return descriptor;
@@ -293,10 +291,9 @@ public class EOModelProcessor {
 		if (fetchLimit != null) {
 			try {
 				if (fetchLimit instanceof Number n) {
-					descriptor.setProperty(QueryMetadata.FETCH_LIMIT_PROPERTY,
-							String.valueOf(n.intValue()));
+					descriptor.setFetchLimit(n.intValue());
 				} else if (isNumeric(fetchLimit.toString())) {
-					descriptor.setProperty(QueryMetadata.FETCH_LIMIT_PROPERTY, fetchLimit.toString());
+					descriptor.setFetchLimit(Integer.parseInt(fetchLimit.toString()));
 				}
 			} catch (NumberFormatException nfex) {
 				// ignoring...

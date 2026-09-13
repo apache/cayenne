@@ -72,8 +72,6 @@ import java.util.stream.Stream;
  */
 public class SQLTemplate<T> extends CacheableQuery implements Select<T> {
 
-	public static final String COLUMN_NAME_CAPITALIZATION_PROPERTY = "cayenne.SQLTemplate.columnNameCapitalization";
-
 	private static final Function<Map<String, ?>, Map<String, ?>> nullMapTransformer = input ->
 			(input != null) ? input : Collections.emptyMap();
 
@@ -243,24 +241,6 @@ public class SQLTemplate<T> extends CacheableQuery implements Select<T> {
 	public T selectFirst(ObjectContext context) {
 		setFetchLimit(1);
 		return context.selectFirst(this);
-	}
-
-	/**
-	 * Initializes query parameters using a set of properties.
-	 * 
-	 * @since 1.1
-	 */
-	public void initWithProperties(Map<String, ?> properties) {
-		// must init defaults even if properties are empty
-		metaData.initWithProperties(properties);
-
-		if (properties == null) {
-			properties = Collections.emptyMap();
-		}
-
-		Object columnNamesCapitalization = properties.get(COLUMN_NAME_CAPITALIZATION_PROPERTY);
-		this.columnNamesCapitalization = (columnNamesCapitalization != null) ? CapsStrategy
-				.valueOf(columnNamesCapitalization.toString().toUpperCase()) : null;
 	}
 
 	/**

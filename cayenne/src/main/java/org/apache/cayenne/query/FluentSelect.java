@@ -711,13 +711,6 @@ public abstract class FluentSelect<T, S extends FluentSelect<T, S>> implements S
     }
 
     /**
-     * @since 4.2
-     */
-    public void initWithProperties(Map<String, String> properties) {
-        getBaseMetaData().initWithProperties(properties);
-    }
-
-    /**
      * Utility method to perform (re)cast this type, doesn't perform any checks, so use with caution.
      *
      * @return <code>this</code> casted to the type E

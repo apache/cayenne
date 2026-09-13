@@ -124,8 +124,8 @@ public class SelectQueryMainTab extends BaseQueryMainTab {
     private void initController() {
         distinct.addItemListener(e -> {
             QueryDescriptor query = getQuery();
-            if (query != null) {
-                query.setProperty(SelectQueryDescriptor.DISTINCT_PROPERTY, Boolean.toString(distinct.isSelected()));
+            if (query instanceof SelectQueryDescriptor selectQuery) {
+                selectQuery.setDistinct(distinct.isSelected());
                 session.fireQueryEvent(QueryEvent.ofChange(this, query));
             }
         });
@@ -146,7 +146,7 @@ public class SelectQueryMainTab extends BaseQueryMainTab {
         SelectQueryDescriptor query = (SelectQueryDescriptor) descriptor;
 
         name.setText(query.getName());
-        distinct.setSelected(Boolean.parseBoolean(query.getProperties().get(SelectQueryDescriptor.DISTINCT_PROPERTY)));
+        distinct.setSelected(query.isDistinct());
         qualifier.setText(query.getQualifier() != null ? query
                 .getQualifier()
                 .toString() : null);

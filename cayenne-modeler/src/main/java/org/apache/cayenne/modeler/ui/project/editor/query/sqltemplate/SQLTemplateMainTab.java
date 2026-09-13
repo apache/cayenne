@@ -32,13 +32,13 @@ import org.apache.cayenne.modeler.event.model.QueryEvent;
 import org.apache.cayenne.map.DataMap;
 import org.apache.cayenne.map.ObjEntity;
 import org.apache.cayenne.map.QueryDescriptor;
+import org.apache.cayenne.map.SQLTemplateDescriptor;
 import org.apache.cayenne.modeler.toolkit.combobox.CMUndoableComboBox;
 import org.apache.cayenne.modeler.toolkit.text.CMUndoableTextField;
 import org.apache.cayenne.modeler.project.ProjectSession;
 import org.apache.cayenne.modeler.project.ProjectComparators;
 import org.apache.cayenne.project.extension.info.ObjectInfo;
 import org.apache.cayenne.query.CapsStrategy;
-import org.apache.cayenne.query.SQLTemplate;
 
 import javax.swing.DefaultComboBoxModel;
 import javax.swing.DefaultListCellRenderer;
@@ -223,7 +223,7 @@ public class SQLTemplateMainTab extends BaseQueryMainTab {
 
             labelCase.addActionListener(event -> {
                 CapsStrategy value = (CapsStrategy) labelCase.getModel().getSelectedItem();
-                setQueryProperty(SQLTemplate.COLUMN_NAME_CAPITALIZATION_PROPERTY, value.name());
+                setQueryProperty(SQLTemplateDescriptor.COLUMN_NAME_CAPITALIZATION_PROPERTY, value.name());
             });
 
             PanelBuilder builder = super.createPanelBuilder();
@@ -246,10 +246,9 @@ public class SQLTemplateMainTab extends BaseQueryMainTab {
 
             if (query != null && QueryDescriptor.SQL_TEMPLATE.equals(query.getType())) {
                 DefaultComboBoxModel<CapsStrategy> labelCaseModel = new DefaultComboBoxModel<>(LABEL_CAPITALIZATION);
-                String columnNameCapitalization = query.getProperty(SQLTemplate.COLUMN_NAME_CAPITALIZATION_PROPERTY);
-
+                CapsStrategy columnNameCapitalization = ((SQLTemplateDescriptor) query).getColumnNamesCapitalization();
                 labelCaseModel.setSelectedItem(columnNameCapitalization != null
-                        ? CapsStrategy.valueOf(columnNameCapitalization)
+                        ? columnNameCapitalization
                         : CapsStrategy.DEFAULT);
                 labelCase.setModel(labelCaseModel);
             }

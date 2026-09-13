@@ -19,6 +19,7 @@
 package org.apache.cayenne.map;
 
 import org.apache.cayenne.configuration.ConfigurationNodeVisitor;
+import org.apache.cayenne.query.CapsStrategy;
 import org.apache.cayenne.query.ProcedureQuery;
 import org.apache.cayenne.util.XMLEncoder;
 
@@ -28,6 +29,14 @@ import java.util.Map;
  * @since 4.0
  */
 public class ProcedureQueryDescriptor extends QueryDescriptor {
+
+    /**
+     * Name of the descriptor property holding the {@link #getColumnNamesCapitalization() column name
+     * capitalization} of the query.
+     *
+     * @since 5.0
+     */
+    public static final String COLUMN_NAME_CAPITALIZATION_PROPERTY = "cayenne.ProcedureQuery.columnNameCapitalization";
 
     protected String resultEntityName;
 
@@ -49,6 +58,24 @@ public class ProcedureQueryDescriptor extends QueryDescriptor {
         this.resultEntityName = resultEntityName;
     }
 
+    /**
+     * Returns the capitalization strategy applied to the column names of the query result, or null if none is set.
+     *
+     * @since 5.0
+     */
+    public CapsStrategy getColumnNamesCapitalization() {
+        String value = getProperty(COLUMN_NAME_CAPITALIZATION_PROPERTY);
+        return value != null ? CapsStrategy.valueOf(value.toUpperCase()) : null;
+    }
+
+    /**
+     * @since 5.0
+     */
+    public void setColumnNamesCapitalization(CapsStrategy columnNamesCapitalization) {
+        setProperty(COLUMN_NAME_CAPITALIZATION_PROPERTY,
+                columnNamesCapitalization != null ? columnNamesCapitalization.name() : null);
+    }
+
     @Override
     public ProcedureQuery<?> buildQuery() {
         ProcedureQuery<?> procedureQuery = new ProcedureQuery<>();
@@ -58,7 +85,14 @@ public class ProcedureQueryDescriptor extends QueryDescriptor {
         }
 
         procedureQuery.setResultEntityName(this.getResultEntityName());
-        procedureQuery.initWithProperties(this.getProperties());
+        procedureQuery.setFetchLimit(getFetchLimit());
+        procedureQuery.setFetchOffset(getFetchOffset());
+        procedureQuery.setPageSize(getPageSize());
+        procedureQuery.setStatementFetchSize(getStatementFetchSize());
+        procedureQuery.setFetchingDataRows(isFetchingDataRows());
+        procedureQuery.setCacheStrategy(getCacheStrategy());
+        procedureQuery.setCacheGroup(getCacheGroup());
+        procedureQuery.setColumnNamesCapitalization(getColumnNamesCapitalization());
 
         return procedureQuery;
     }

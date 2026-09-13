@@ -171,10 +171,20 @@ public class SelectQueryDescriptor extends QueryDescriptor {
             prefetchesMap.forEach(query::prefetch);
         }
 
-        query.initWithProperties(this.getProperties());
-        if(this.isDistinct()) {
+        query.limit(getFetchLimit())
+                .offset(getFetchOffset())
+                .pageSize(getPageSize())
+                .statementFetchSize(getStatementFetchSize())
+                .cacheStrategy(getCacheStrategy(), getCacheGroup());
+
+        if (isFetchingDataRows()) {
+            query.fetchDataRows();
+        }
+
+        if (isDistinct()) {
             query.distinct();
         }
+
         return query;
     }
 

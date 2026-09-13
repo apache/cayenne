@@ -37,7 +37,6 @@ import org.apache.cayenne.modeler.toolkit.text.CMUndoableTextField;
 import org.apache.cayenne.modeler.project.ProjectSession;
 import org.apache.cayenne.query.QueryCacheStrategy;
 import org.apache.cayenne.map.QueryDescriptor;
-import org.apache.cayenne.query.QueryMetadata;
 import java.util.Objects;
 import org.apache.cayenne.validation.ValidationException;
 
@@ -104,7 +103,7 @@ public abstract class SelectPropertiesPanel extends ProjectPanel {
     protected void initController() {
         cacheStrategy.addActionListener(event -> {
             QueryCacheStrategy strategy = (QueryCacheStrategy) cacheStrategy.getModel().getSelectedItem();
-            setQueryProperty(QueryMetadata.CACHE_STRATEGY_PROPERTY, strategy.name());
+            setQueryProperty(QueryDescriptor.CACHE_STRATEGY_PROPERTY, strategy.name());
             setCacheGroupsEnabled(strategy != QueryCacheStrategy.NO_CACHE);
         });
     }
@@ -116,35 +115,27 @@ public abstract class SelectPropertiesPanel extends ProjectPanel {
     public void initFromModel(QueryDescriptor query) {
         DefaultComboBoxModel<QueryCacheStrategy> cacheModel = new DefaultComboBoxModel<>(CACHE_POLICIES);
 
-        String selectedStrategyString = query.getProperty(QueryMetadata.CACHE_STRATEGY_PROPERTY);
-
-        QueryCacheStrategy selectedStrategy = selectedStrategyString != null ?
-                QueryCacheStrategy.valueOf(selectedStrategyString) : null;
-
-        cacheModel.setSelectedItem(selectedStrategy != null ?
-                selectedStrategy : QueryCacheStrategy.getDefaultStrategy());
-
+        QueryCacheStrategy selectedStrategy = query.getCacheStrategy();
+        cacheModel.setSelectedItem(selectedStrategy);
         cacheStrategy.setModel(cacheModel);
 
-        cacheGroups.setText(query.getProperty(QueryMetadata.CACHE_GROUPS_PROPERTY));
-        setCacheGroupsEnabled(selectedStrategy != null && selectedStrategy != QueryCacheStrategy.NO_CACHE);
+        // showing the raw property rather than QueryDescriptor.getCacheGroup(), so that a legacy comma-separated
+        // list of groups stays visible (and fixable) to the user
+        cacheGroups.setText(query.getProperty(QueryDescriptor.CACHE_GROUPS_PROPERTY));
+        setCacheGroupsEnabled(selectedStrategy != QueryCacheStrategy.NO_CACHE);
 
-        String fetchOffsetStr = query.getProperty(QueryMetadata.FETCH_OFFSET_PROPERTY);
-        String fetchLimitStr = query.getProperty(QueryMetadata.FETCH_LIMIT_PROPERTY);
-        String pageSizeStr = query.getProperty(QueryMetadata.PAGE_SIZE_PROPERTY);
-
-        fetchOffset.setText(fetchOffsetStr != null ? fetchOffsetStr : ZERO.toString());
-        fetchLimit.setText(fetchLimitStr != null ? fetchLimitStr : ZERO.toString());
-        pageSize.setText(pageSizeStr != null ? pageSizeStr : ZERO.toString());
+        fetchOffset.setText(String.valueOf(query.getFetchOffset()));
+        fetchLimit.setText(String.valueOf(query.getFetchLimit()));
+        pageSize.setText(String.valueOf(query.getPageSize()));
     }
 
     void setFetchOffset(String string) {
         string = string == null ? "" : string.trim();
         if (string.length() == 0) {
-            setQueryProperty(QueryMetadata.FETCH_OFFSET_PROPERTY, ZERO.toString());
+            setQueryProperty(QueryDescriptor.FETCH_OFFSET_PROPERTY, ZERO.toString());
         } else {
             if (isNumeric(string)) {
-                setQueryProperty(QueryMetadata.FETCH_OFFSET_PROPERTY, string);
+                setQueryProperty(QueryDescriptor.FETCH_OFFSET_PROPERTY, string);
             } else {
                 throw new ValidationException("Fetch offset must be an integer: %s", string);
             }
@@ -154,10 +145,10 @@ public abstract class SelectPropertiesPanel extends ProjectPanel {
     void setFetchLimit(String string) {
         string = (string == null) ? "" : string.trim();
         if (string.length() == 0) {
-            setQueryProperty(QueryMetadata.FETCH_LIMIT_PROPERTY, ZERO.toString());
+            setQueryProperty(QueryDescriptor.FETCH_LIMIT_PROPERTY, ZERO.toString());
         } else {
             if (isNumeric(string)) {
-                setQueryProperty(QueryMetadata.FETCH_LIMIT_PROPERTY, string);
+                setQueryProperty(QueryDescriptor.FETCH_LIMIT_PROPERTY, string);
             } else {
                 throw new ValidationException("Fetch limit must be an integer: %s", string);
             }
@@ -167,10 +158,10 @@ public abstract class SelectPropertiesPanel extends ProjectPanel {
     void setPageSize(String string) {
         string = (string == null) ? "" : string.trim();
         if (string.length() == 0) {
-            setQueryProperty(QueryMetadata.PAGE_SIZE_PROPERTY, ZERO.toString());
+            setQueryProperty(QueryDescriptor.PAGE_SIZE_PROPERTY, ZERO.toString());
         } else {
             if (isNumeric(string)) {
-                setQueryProperty(QueryMetadata.PAGE_SIZE_PROPERTY, string);
+                setQueryProperty(QueryDescriptor.PAGE_SIZE_PROPERTY, string);
             } else {
                 throw new ValidationException("Page size must be an integer: %s", string);
             }
@@ -179,7 +170,7 @@ public abstract class SelectPropertiesPanel extends ProjectPanel {
 
     void setCacheGroups(String string) {
         string = (string == null) ? "" : string.trim();
-        setQueryProperty(QueryMetadata.CACHE_GROUPS_PROPERTY, string);
+        setQueryProperty(QueryDescriptor.CACHE_GROUPS_PROPERTY, string);
     }
 
     QueryDescriptor getQuery() {

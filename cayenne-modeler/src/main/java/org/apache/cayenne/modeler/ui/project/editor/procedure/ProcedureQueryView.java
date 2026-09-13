@@ -42,7 +42,6 @@ import org.apache.cayenne.modeler.toolkit.text.CMUndoableTextField;
 import org.apache.cayenne.modeler.project.ProjectComparators;
 import org.apache.cayenne.project.extension.info.ObjectInfo;
 import org.apache.cayenne.query.CapsStrategy;
-import org.apache.cayenne.query.ProcedureQuery;
 import java.util.Objects;
 import org.apache.cayenne.validation.ValidationException;
 
@@ -291,7 +290,7 @@ public class ProcedureQueryView extends ProjectPanel {
             labelCase.setRenderer(new LabelCapsRenderer());
             labelCase.addActionListener(event -> {
                 String value = labelCase.getModel().getSelectedItem().toString();
-                setQueryProperty(ProcedureQuery.COLUMN_NAME_CAPITALIZATION_PROPERTY, value);
+                setQueryProperty(ProcedureQueryDescriptor.COLUMN_NAME_CAPITALIZATION_PROPERTY, value);
             });
 
             PanelBuilder builder = super.createPanelBuilder();
@@ -313,9 +312,10 @@ public class ProcedureQueryView extends ProjectPanel {
 
             if (query != null && QueryDescriptor.PROCEDURE_QUERY.equals(query.getType())) {
                 DefaultComboBoxModel<CapsStrategy> labelCaseModel = new DefaultComboBoxModel<>(LABEL_CAPITALIZATION);
-                String columnNameCapitalization = query.getProperty(ProcedureQuery.COLUMN_NAME_CAPITALIZATION_PROPERTY);
+                ProcedureQueryDescriptor procedureQuery = (ProcedureQueryDescriptor) query;
+                CapsStrategy columnNameCapitalization = procedureQuery.getColumnNamesCapitalization();
                 labelCaseModel.setSelectedItem(columnNameCapitalization != null ?
-                        CapsStrategy.valueOf(columnNameCapitalization) : CapsStrategy.DEFAULT);
+                        columnNameCapitalization : CapsStrategy.DEFAULT);
                 labelCase.setModel(labelCaseModel);
             }
         }

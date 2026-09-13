@@ -23,7 +23,7 @@ import java.util.Map;
 
 import org.apache.cayenne.exp.ExpressionFactory;
 import org.apache.cayenne.query.ObjectSelect;
-import org.apache.cayenne.query.QueryMetadata;
+import org.apache.cayenne.query.QueryCacheStrategy;
 import org.junit.jupiter.api.Test;
 
 import static org.junit.jupiter.api.Assertions.*;
@@ -85,14 +85,55 @@ public class SelectQueryDescriptorTest {
     public void getQueryProperties() {
         SelectQueryDescriptor builder = QueryDescriptor.selectQueryDescriptor();
         builder.setRoot("FakeRoot");
-        builder.setProperty(QueryMetadata.FETCH_LIMIT_PROPERTY, "5");
-        builder.setProperty(QueryMetadata.STATEMENT_FETCH_SIZE_PROPERTY, "6");
+        builder.setProperty(QueryDescriptor.FETCH_LIMIT_PROPERTY, "5");
+        builder.setProperty(QueryDescriptor.FETCH_OFFSET_PROPERTY, "2");
+        builder.setProperty(QueryDescriptor.PAGE_SIZE_PROPERTY, "10");
+        builder.setProperty(QueryDescriptor.STATEMENT_FETCH_SIZE_PROPERTY, "6");
+        builder.setProperty(QueryDescriptor.FETCHING_DATA_ROWS_PROPERTY, "true");
+        builder.setProperty(QueryDescriptor.CACHE_STRATEGY_PROPERTY, "SHARED_CACHE");
+        builder.setProperty(QueryDescriptor.CACHE_GROUPS_PROPERTY, "g1");
+        builder.setProperty(SelectQueryDescriptor.DISTINCT_PROPERTY, "true");
 
         ObjectSelect<?> query = builder.buildQuery();
-        assertTrue(query instanceof ObjectSelect);
         assertEquals(5, query.getLimit());
+        assertEquals(2, query.getOffset());
+        assertEquals(10, query.getPageSize());
         assertEquals(6, query.getStatementFetchSize());
+        assertTrue(query.isFetchingDataRows());
+        assertEquals(QueryCacheStrategy.SHARED_CACHE, query.getCacheStrategy());
+        assertEquals("g1", query.getCacheGroup());
+        assertTrue(query.isDistinct());
+    }
 
-        // TODO: test other properties...
+    @Test
+    public void getQueryPropertiesDefaults() {
+        SelectQueryDescriptor builder = QueryDescriptor.selectQueryDescriptor();
+        builder.setRoot("FakeRoot");
+
+        ObjectSelect<?> query = builder.buildQuery();
+        assertEquals(0, query.getLimit());
+        assertEquals(0, query.getOffset());
+        assertEquals(0, query.getPageSize());
+        assertEquals(0, query.getStatementFetchSize());
+        assertFalse(query.isFetchingDataRows());
+        assertEquals(QueryCacheStrategy.NO_CACHE, query.getCacheStrategy());
+        assertNull(query.getCacheGroup());
+        assertFalse(query.isDistinct());
+    }
+
+    @Test
+    public void typedSetters() {
+        SelectQueryDescriptor builder = QueryDescriptor.selectQueryDescriptor();
+        builder.setRoot("FakeRoot");
+        builder.setFetchLimit(5);
+        builder.setCacheStrategy(QueryCacheStrategy.LOCAL_CACHE);
+        builder.setCacheGroup("g1");
+        builder.setFetchingDataRows(true);
+
+        ObjectSelect<?> query = builder.buildQuery();
+        assertEquals(5, query.getLimit());
+        assertEquals(QueryCacheStrategy.LOCAL_CACHE, query.getCacheStrategy());
+        assertEquals("g1", query.getCacheGroup());
+        assertTrue(query.isFetchingDataRows());
     }
 }

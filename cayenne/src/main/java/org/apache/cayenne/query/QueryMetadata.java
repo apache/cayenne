@@ -37,24 +37,10 @@ import org.apache.cayenne.reflect.ClassDescriptor;
 public interface QueryMetadata {
 
     /**
-     * Defines the name of the property for the query {@link #getFetchLimit() fetch limit}
-     * .
-     */
-    String FETCH_LIMIT_PROPERTY = "cayenne.GenericSelectQuery.fetchLimit";
-
-    /**
      * Defines default query fetch limit, which is zero, meaning that all matching rows
      * should be fetched.
      */
     int FETCH_LIMIT_DEFAULT = 0;
-
-    /**
-     * Defines the name of the property for the query {@link #getFetchOffset() fetch
-     * offset}.
-     * 
-     * @since 3.0
-     */
-    String FETCH_OFFSET_PROPERTY = "cayenne.GenericSelectQuery.fetchOffset";
 
     /**
      * Defines default query fetch start index, which is 0, meaning that matching rows
@@ -67,40 +53,14 @@ public interface QueryMetadata {
     int QUERY_TIMEOUT_DEFAULT = -1;
 
     /**
-     * Defines the name of the property for the query {@link #getPageSize() page size}.
-     */
-    String PAGE_SIZE_PROPERTY = "cayenne.GenericSelectQuery.pageSize";
-
-    /**
      * Defines default query page size, which is zero for no pagination.
      */
     int PAGE_SIZE_DEFAULT = 0;
 
-    String FETCHING_DATA_ROWS_PROPERTY = "cayenne.GenericSelectQuery.fetchingDataRows";
-
     boolean FETCHING_DATA_ROWS_DEFAULT = false;
 
     /**
-     * @since 3.0
-     */
-    String CACHE_STRATEGY_PROPERTY = "cayenne.GenericSelectQuery.cacheStrategy";
-
-    /**
-     * @since 3.0
-     */
-    String CACHE_GROUPS_PROPERTY = "cayenne.GenericSelectQuery.cacheGroups";
-
-    /**
-     * Defines the name of the property for the query {@link #getStatementFetchSize() fetch
-     * size}.
-     * 
-     * @since 3.0
-     */
-    String STATEMENT_FETCH_SIZE_PROPERTY = "cayenne.GenericSelectQuery.statementFetchSize";
-
-    /**
-     * Defines default query fetch start index, which is 0, meaning that matching rows
-     * selected starting from the first.
+     * Defines default statement fetch size, which is 0, meaning that the JDBC driver default is used.
      * 
      * @since 3.0
      */

@@ -25,6 +25,7 @@ import org.apache.cayenne.query.*;
 import org.junit.jupiter.api.Test;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertNull;
 import static org.junit.jupiter.api.Assertions.assertSame;
 import static org.junit.jupiter.api.Assertions.assertTrue;
@@ -54,16 +55,37 @@ public class SQLTemplateDescriptorTest {
     @Test
     public void getQueryProperties() throws Exception {
         SQLTemplateDescriptor builder = QueryDescriptor.sqlTemplateDescriptor();
-        builder.setProperty(QueryMetadata.FETCH_LIMIT_PROPERTY, "5");
-        builder.setProperty(QueryMetadata.STATEMENT_FETCH_SIZE_PROPERTY, "6");
+        builder.setProperty(QueryDescriptor.FETCH_LIMIT_PROPERTY, "5");
+        builder.setProperty(QueryDescriptor.FETCH_OFFSET_PROPERTY, "2");
+        builder.setProperty(QueryDescriptor.PAGE_SIZE_PROPERTY, "10");
+        builder.setProperty(QueryDescriptor.STATEMENT_FETCH_SIZE_PROPERTY, "6");
+        builder.setProperty(QueryDescriptor.FETCHING_DATA_ROWS_PROPERTY, "true");
+        builder.setProperty(QueryDescriptor.CACHE_STRATEGY_PROPERTY, "LOCAL_CACHE");
+        builder.setProperty(QueryDescriptor.CACHE_GROUPS_PROPERTY, "g1");
+        builder.setProperty(SQLTemplateDescriptor.COLUMN_NAME_CAPITALIZATION_PROPERTY, "lower");
 
-        Query query = builder.buildQuery();
-        assertTrue(query instanceof SQLTemplate);
-        assertEquals(5, ((SQLTemplate) query).getFetchLimit());
-        
-        assertEquals(6, ((SQLTemplate) query).getStatementFetchSize());
+        SQLTemplate<?> query = builder.buildQuery();
+        assertEquals(5, query.getFetchLimit());
+        assertEquals(2, query.getFetchOffset());
+        assertEquals(10, query.getPageSize());
+        assertEquals(6, query.getStatementFetchSize());
+        assertTrue(query.isFetchingDataRows());
+        assertEquals(QueryCacheStrategy.LOCAL_CACHE, query.getCacheStrategy());
+        assertEquals("g1", query.getCacheGroup());
+        assertEquals(CapsStrategy.LOWER, query.getColumnNamesCapitalization());
+    }
 
-        // TODO: test other properties...
+    @Test
+    public void getQueryPropertiesDefaults() throws Exception {
+        SQLTemplate<?> query = QueryDescriptor.sqlTemplateDescriptor().buildQuery();
+        assertEquals(0, query.getFetchLimit());
+        assertEquals(0, query.getFetchOffset());
+        assertEquals(0, query.getPageSize());
+        assertEquals(0, query.getStatementFetchSize());
+        assertFalse(query.isFetchingDataRows());
+        assertEquals(QueryCacheStrategy.NO_CACHE, query.getCacheStrategy());
+        assertNull(query.getCacheGroup());
+        assertEquals(CapsStrategy.DEFAULT, query.getColumnNamesCapitalization());
     }
 
     @Test

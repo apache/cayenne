@@ -27,7 +27,6 @@ import org.apache.cayenne.modeler.toolkit.checkbox.CMCheckBox;
 import org.apache.cayenne.modeler.project.ProjectSession;
 import org.apache.cayenne.map.QueryDescriptor;
 import org.apache.cayenne.modeler.ui.project.editor.EditorForm;
-import org.apache.cayenne.query.QueryMetadata;
 
 import com.jgoodies.forms.builder.PanelBuilder;
 import com.jgoodies.forms.layout.CellConstraints;
@@ -80,7 +79,7 @@ public class ObjectQueryPropertiesPanel extends SelectPropertiesPanel {
 
         dataRows.addItemListener(e -> {
             Boolean b = dataRows.isSelected() ? Boolean.TRUE : Boolean.FALSE;
-            setQueryProperty(QueryMetadata.FETCHING_DATA_ROWS_PROPERTY, String.valueOf(b));
+            setQueryProperty(QueryDescriptor.FETCHING_DATA_ROWS_PROPERTY, String.valueOf(b));
         });
     }
 
@@ -91,6 +90,6 @@ public class ObjectQueryPropertiesPanel extends SelectPropertiesPanel {
     public void initFromModel(QueryDescriptor query) {
         super.initFromModel(query);
 
-        dataRows.setSelected(Boolean.valueOf(query.getProperty(QueryMetadata.FETCHING_DATA_ROWS_PROPERTY)));
+        dataRows.setSelected(query.isFetchingDataRows());
     }
 }

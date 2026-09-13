@@ -52,7 +52,13 @@ public class EJBQLQueryDescriptor extends QueryDescriptor {
     @Override
     public EJBQLQuery<?> buildQuery() {
         EJBQLQuery<?> ejbqlQuery = new EJBQLQuery<>(this.getEjbql());
-        ejbqlQuery.initWithProperties(this.getProperties());
+        ejbqlQuery.setFetchLimit(getFetchLimit());
+        ejbqlQuery.setFetchOffset(getFetchOffset());
+        ejbqlQuery.setPageSize(getPageSize());
+        ejbqlQuery.setStatementFetchSize(getStatementFetchSize());
+        ejbqlQuery.setFetchingDataRows(isFetchingDataRows());
+        ejbqlQuery.setCacheStrategy(getCacheStrategy());
+        ejbqlQuery.setCacheGroup(getCacheGroup());
 
         return ejbqlQuery;
     }
