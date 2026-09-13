@@ -1,6 +1,6 @@
 ---
 name: cayenne-query
-description: "Use this skill whenever the user wants to write or modify a Cayenne query — fetching entities by criteria, joining, prefetching to avoid N+1, ordering, paginating, aggregating, or running raw SQL through Cayenne. Trigger on phrases like 'query for X', 'fetch all artists where ...', 'write an ObjectSelect', 'use SQLSelect', 'use SelectById', 'add a prefetch', 'get distinct values', 'count rows', 'find by ID', 'load by primary key', 'build a Cayenne expression', 'why am I getting N+1', 'how do I paginate', 'select a single column', 'select columns into a DTO', 'named query in the DataMap'. Do NOT trigger for modeling changes (use cayenne-modeling) or runtime bootstrap (use cayenne-runtime)."
+description: "Use this skill whenever the user wants to write or modify a Cayenne query — fetching entities by criteria, joining, prefetching to avoid N+1, ordering, paginating, aggregating, or running raw SQL through Cayenne. Trigger on phrases like 'query for X', 'fetch all artists where ...', 'write an ObjectSelect', 'use SQLSelect', 'add a prefetch', 'get distinct values', 'count rows', 'find by ID', 'load by primary key', 'build a Cayenne expression', 'why am I getting N+1', 'how do I paginate', 'select a single column', 'select columns into a DTO', 'named query in the DataMap'. Do NOT trigger for modeling changes (use cayenne-modeling) or runtime bootstrap (use cayenne-runtime)."
 ---
 
 <!--
@@ -23,33 +23,38 @@ description: "Use this skill whenever the user wants to write or modify a Cayenn
 -->
 # cayenne-query
 
-Write idiomatic Cayenne 5.0 queries — `ObjectSelect`, `SelectById`, `SQLSelect`, expressions, prefetch, pagination, aggregates.
+Write idiomatic Cayenne 5.0 queries — `ObjectSelect`, `SQLSelect`, expressions, prefetch, pagination, aggregates.
 
 ## Required reading
 
-- `${CLAUDE_PLUGIN_ROOT}/references/query-api.md` — every query mechanism with examples (ObjectSelect, SQLSelect/SQLExec, Expression, ColumnSelect, SelectById).
+- `${CLAUDE_PLUGIN_ROOT}/references/query-api.md` — every query mechanism with examples (ObjectSelect, SQLSelect/SQLExec, Expression, ColumnSelect, selecting by id).
 
 ## Step 1 — Identify the query shape
 
 | Intent | Use |
 |---|---|
 | Fetch one or more entities matching criteria | `ObjectSelect.query(Cls.class).where(...).select(ctx)` |
-| Fetch by primary key | `SelectById.query(Cls.class, pk).selectOne(ctx)` |
+| Fetch by primary key | `ObjectSelect.query(Cls.class).byId(pk).selectOne(ctx)` |
 | Aggregate (count, sum) | `ObjectSelect.query(Cls.class).selectCount(ctx)` or `ColumnSelect` with aggregate functions |
 | One or a few columns only (DTO-style) | `ObjectSelect.columnQuery(Cls.class, Cls.NAME, Cls.AGE).select(ctx)` |
 | Raw SQL with parameter binding | `SQLSelect.query(Cls.class, "SELECT ...").params(...).select(ctx)` |
 | Insert/update/delete bulk | `SQLExec.query("UPDATE ...").update(ctx)` |
 | Reused named query stored in DataMap | XML `<query>` (see `${CLAUDE_PLUGIN_ROOT}/references/datamap-schema.md`) loaded via `NamedQuery` |
 
-### Primary-key lookups: prefer `SelectById`
+### Primary-key lookups: use `byId(..)` / `byIds(..)`
 
-When the user is fetching a single entity by its PK, use `SelectById` rather than `ObjectSelect.where(PK.eq(...))`:
+When the user is fetching entities by PK, use the `ObjectSelect` id shorthands rather than
+`ObjectSelect.where(PK.eq(...))`:
 
 ```java
-Artist a = SelectById.query(Artist.class, 42).selectOne(ctx);
+Artist a = ObjectSelect.query(Artist.class).byId(42).selectOne(ctx);
+List<Artist> list = ObjectSelect.query(Artist.class).byIds(1, 2, 3).select(ctx);
 ```
 
-`SelectById` can hit the `ObjectContext`'s session cache without firing a SQL query when the row is already loaded. `ObjectSelect.where(...)` always goes to the database. For composite PKs, pass a `Map<String, Object>` of PK column → value.
+Both accept a scalar, a `Map<String, Object>` of PK column → value (the form for composite PKs), or an
+`ObjectId`, and `byIds(..)` may mix them. `SelectById` is deprecated — never generate it. If the object is likely
+already in the context and no query customization is needed, `ctx.objectForPK(Artist.class, 42)` resolves it
+from the session cache without a SQL query.
 
 ## Step 2 — Filter with `Property` constants
 

@@ -112,7 +112,7 @@ a.setArtistName("Picasso");
 ctx.commitChanges();
 
 // Read by ID
-Artist a = SelectById.query(Artist.class, 42).selectOne(ctx);
+Artist a = ObjectSelect.query(Artist.class).byId(42).selectOne(ctx);
 
 // Update
 a.setArtistName("Pablo Picasso");

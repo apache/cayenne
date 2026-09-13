@@ -68,6 +68,25 @@ Expression caseWhenExp = caseWhen(
   `UUIDValueType` is deprecated and no longer registered, replaced by
   `org.apache.cayenne.access.types.UUIDType`.
 
+*  Per [CAY-3007](https://issues.apache.org/jira/browse/CAY-3007) `SelectById` is deprecated. Instead, use `ObjectSelect`
+   directly with the new `byId(..)` and `byIds(..)` methods:
+
+   ```java
+   // before
+   Artist a = SelectById.query(Artist.class, 42).selectOne(ctx);
+   List<Artist> list = SelectById.query(Artist.class, 1, 2, 3).select(ctx);
+   DataRow row = SelectById.dataRowQuery(Artist.class, 42).selectOne(ctx);
+
+   // after
+   Artist a = ObjectSelect.query(Artist.class).byId(42).selectOne(ctx);
+   List<Artist> list = ObjectSelect.query(Artist.class).byIds(1, 2, 3).select(ctx);
+   DataRow row = ObjectSelect.query(Artist.class).byId(42).fetchDataRows().selectOne(ctx);
+   ```
+
+   The same matches are available as expressions via the entity `SELF` property (`Artist.SELF.eqId(42)`,
+   `Artist.SELF.idsIn(1, 2, 3)`, `Artist.SELF.eqIdMap(map)`, etc.) and on to-one relationship properties.
+
+
 *  Per [CAY-3010](https://issues.apache.org/jira/browse/CAY-3010) `LocalDate`, `LocalTime` and `LocalDateTime` are
   passed to and from the JDBC driver directly, instead of being converted through `java.sql.Date` / `Time` /
   `Timestamp` in the JVM default time zone. Reads are faster, and application behavior changes in these cases:
@@ -219,6 +238,7 @@ Expression caseWhenExp = caseWhen(
    used to return a `QueryResponse` - `ObjectContext.performGenericQuery(..)`, etc. - now return
    `List<QueryResult>`. See CAY-3023 above for the example of how to process the result. Custom 
    `DataChannelQueryFilter` implementations now require a new signature.
+
 
 *  The `org.apache.cayenne.query.ParameterizedQuery` interface was removed, together with the `createQuery(Map)`
   methods of `SQLTemplate`, `ProcedureQuery` and `ObjectSelect` that implemented it. Applying parameters to a mapped

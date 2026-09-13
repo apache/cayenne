@@ -20,6 +20,7 @@
 package org.apache.cayenne.query;
 
 import org.apache.cayenne.Cayenne;
+import org.apache.cayenne.CayenneRuntimeException;
 import org.apache.cayenne.DataRow;
 import org.apache.cayenne.ObjectId;
 import org.apache.cayenne.ResultBatchIterator;
@@ -34,7 +35,9 @@ import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.RegisterExtension;
 
 import java.sql.Types;
+import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Collection;
 import java.util.Collections;
 import java.util.List;
 import java.util.Map;
@@ -43,6 +46,7 @@ import static java.util.Collections.singletonMap;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.junit.jupiter.api.Assertions.assertSame;
+import static org.junit.jupiter.api.Assertions.assertThrows;
 
 public class ObjectSelect_ByIdIT {
 
@@ -345,6 +349,174 @@ public class ObjectSelect_ByIdIT {
             }
             assertEquals(6, count);
         }
+    }
+
+    // --- byId / byIds shorthands ---
+
+    @Test
+    public void byId_Scalar() throws Exception {
+        createTwoArtists();
+
+        Artist a3 = ObjectSelect.query(Artist.class).byId(3).selectOne(env.context());
+        assertNotNull(a3);
+        assertEquals("artist3", a3.getArtistName());
+    }
+
+    @Test
+    public void byId_Null() {
+        List<Artist> artists = ObjectSelect.query(Artist.class).byId(null).select(env.context());
+        assertEquals(0, artists.size());
+    }
+
+    @Test
+    public void byId_Map() throws Exception {
+        createTwoArtists();
+
+        Artist a3 = ObjectSelect.query(Artist.class)
+                .byId(singletonMap(Artist.ARTIST_ID_PK_COLUMN, 3)).selectOne(env.context());
+        assertNotNull(a3);
+        assertEquals("artist3", a3.getArtistName());
+    }
+
+    @Test
+    public void byId_EmptyMap() {
+        assertThrows(CayenneRuntimeException.class,
+                () -> ObjectSelect.query(Artist.class).byId(Collections.emptyMap()));
+    }
+
+    @Test
+    public void byId_ObjectId() throws Exception {
+        createTwoArtists();
+
+        ObjectId id = ObjectId.of("Artist", Artist.ARTIST_ID_PK_COLUMN, 3);
+        Artist a3 = ObjectSelect.query(Artist.class).byId(id).selectOne(env.context());
+        assertNotNull(a3);
+        assertEquals("artist3", a3.getArtistName());
+    }
+
+    @Test
+    public void byId_TemporaryObjectId() {
+        Artist a = env.context().newObject(Artist.class);
+        assertThrows(CayenneRuntimeException.class,
+                () -> ObjectSelect.query(Artist.class).byId(a.getObjectId()));
+    }
+
+    @Test
+    public void byId_AndFurtherQualifier() throws Exception {
+        createTwoArtists();
+
+        List<Artist> match = ObjectSelect.query(Artist.class)
+                .byId(3).and(Artist.ARTIST_NAME.eq("artist3")).select(env.context());
+        assertEquals(1, match.size());
+
+        List<Artist> noMatch = ObjectSelect.query(Artist.class)
+                .byId(3).and(Artist.ARTIST_NAME.eq("artist2")).select(env.context());
+        assertEquals(0, noMatch.size());
+    }
+
+    @Test
+    public void byIds_Scalars() throws Exception {
+        createTwoArtists();
+
+        List<Artist> artists = ObjectSelect.query(Artist.class)
+                .byIds(2, 3).orderBy(Artist.ARTIST_NAME.asc()).select(env.context());
+        assertEquals(2, artists.size());
+        assertEquals("artist2", artists.get(0).getArtistName());
+        assertEquals("artist3", artists.get(1).getArtistName());
+    }
+
+    @Test
+    public void byIds_ScalarsCollection() throws Exception {
+        createTwoArtists();
+
+        List<Artist> artists = ObjectSelect.query(Artist.class)
+                .byIds(Arrays.asList(2, 3)).select(env.context());
+        assertEquals(2, artists.size());
+    }
+
+    @Test
+    public void byIds_Empty() throws Exception {
+        createTwoArtists();
+
+        assertEquals(0, ObjectSelect.query(Artist.class).byIds().select(env.context()).size());
+        assertEquals(0, ObjectSelect.query(Artist.class).byIds(Collections.emptyList()).select(env.context()).size());
+    }
+
+    @Test
+    public void byIds_Null() {
+        assertThrows(CayenneRuntimeException.class, () -> ObjectSelect.query(Artist.class).byIds((Object[]) null));
+        assertThrows(CayenneRuntimeException.class,
+                () -> ObjectSelect.query(Artist.class).byIds((Collection<?>) null));
+    }
+
+    @Test
+    public void byIds_Maps() throws Exception {
+        createTwoArtists();
+
+        List<Artist> artists = ObjectSelect.query(Artist.class)
+                .byIds(singletonMap(Artist.ARTIST_ID_PK_COLUMN, 2), singletonMap(Artist.ARTIST_ID_PK_COLUMN, 3))
+                .orderBy(Artist.ARTIST_NAME.asc()).select(env.context());
+        assertEquals(2, artists.size());
+        assertEquals("artist2", artists.get(0).getArtistName());
+    }
+
+    @Test
+    public void byIds_ObjectIds() throws Exception {
+        createTwoArtists();
+
+        ObjectId id2 = ObjectId.of("Artist", Artist.ARTIST_ID_PK_COLUMN, 2);
+        ObjectId id3 = ObjectId.of("Artist", Artist.ARTIST_ID_PK_COLUMN, 3);
+
+        List<Artist> artists = ObjectSelect.query(Artist.class)
+                .byIds(id2, id3).orderBy(Artist.ARTIST_NAME.asc()).select(env.context());
+        assertEquals(2, artists.size());
+        assertEquals("artist3", artists.get(1).getArtistName());
+    }
+
+    @Test
+    public void byIds_Mixed() throws Exception {
+        tArtist.insert(1, "artist1");
+        createTwoArtists();
+
+        List<Object> ids = new ArrayList<>();
+        ids.add(1);
+        ids.add(singletonMap(Artist.ARTIST_ID_PK_COLUMN, 2));
+        ids.add(ObjectId.of("Artist", Artist.ARTIST_ID_PK_COLUMN, 3));
+
+        List<Artist> artists = ObjectSelect.query(Artist.class)
+                .byIds(ids).orderBy(Artist.ARTIST_NAME.asc()).select(env.context());
+        assertEquals(3, artists.size());
+        assertEquals("artist1", artists.get(0).getArtistName());
+        assertEquals("artist2", artists.get(1).getArtistName());
+        assertEquals("artist3", artists.get(2).getArtistName());
+    }
+
+    @Test
+    public void byId_DataRow() throws Exception {
+        createTwoArtists();
+
+        DataRow row = ObjectSelect.query(Artist.class).byId(3).fetchDataRows().selectOne(env.context());
+        assertNotNull(row);
+        assertEquals("artist3", row.get("ARTIST_NAME"));
+    }
+
+    @Test
+    public void byId_ColumnSelect() throws Exception {
+        createTwoArtists();
+
+        String name = ObjectSelect.columnQuery(Artist.class, Artist.ARTIST_NAME).byId(3).selectOne(env.context());
+        assertEquals("artist3", name);
+    }
+
+    @Test
+    public void byId_LocalCache() throws Exception {
+        createTwoArtists();
+
+        Artist[] a3 = new Artist[1];
+        assertEquals(1, env.runWithQueryCounter(() ->
+                a3[0] = ObjectSelect.query(Artist.class).byId(3).localCache("g1").selectOne(env.context())));
+        assertEquals(0, env.runWithQueryCounter(() ->
+                assertSame(a3[0], ObjectSelect.query(Artist.class).byId(3).localCache("g1").selectOne(env.context()))));
     }
 
     private void createSixPaintings() throws Exception {

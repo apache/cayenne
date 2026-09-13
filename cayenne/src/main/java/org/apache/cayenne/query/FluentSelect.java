@@ -19,6 +19,18 @@
 
 package org.apache.cayenne.query;
 
+import org.apache.cayenne.CayenneRuntimeException;
+import org.apache.cayenne.ObjectId;
+import org.apache.cayenne.Persistent;
+import org.apache.cayenne.exp.Expression;
+import org.apache.cayenne.exp.ExpressionFactory;
+import org.apache.cayenne.exp.property.Property;
+import org.apache.cayenne.exp.property.PropertyFactory;
+import org.apache.cayenne.exp.property.SelfProperty;
+import org.apache.cayenne.map.DbEntity;
+import org.apache.cayenne.map.EntityResolver;
+import org.apache.cayenne.map.ObjEntity;
+
 import java.sql.Statement;
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -28,20 +40,16 @@ import java.util.List;
 import java.util.Map;
 import java.util.function.Function;
 
-import org.apache.cayenne.CayenneRuntimeException;
-import org.apache.cayenne.exp.Expression;
-import org.apache.cayenne.exp.ExpressionFactory;
-import org.apache.cayenne.exp.property.Property;
-import org.apache.cayenne.map.DbEntity;
-import org.apache.cayenne.map.EntityResolver;
-import org.apache.cayenne.map.ObjEntity;
-
 /**
  * Base class for {@link ObjectSelect} and {@link ColumnSelect}
  *
  * @since 4.0
  */
 public abstract class FluentSelect<T, S extends FluentSelect<T, S>> implements Select<T> {
+
+    // an untyped "self" of the query root, used to build "by id" qualifiers; paths in the resulting expressions
+    // are relative to the root and get resolved against the actual entity at translation time
+    private static final SelfProperty<Persistent> ROOT = PropertyFactory.createSelf(Persistent.class);
 
     // root
     protected Class<?> entityType;
@@ -149,6 +157,109 @@ public abstract class FluentSelect<T, S extends FluentSelect<T, S>> implements S
      */
     public S where(String expressionString, Object... parameters) {
         return and(ExpressionFactory.exp(expressionString, parameters));
+    }
+
+    /**
+     * Appends a qualifier matching a single object of the root entity by its id. The id can be one of:
+     * <ul>
+     *     <li>a scalar, for entities with a single-column PK, e.g. {@code byId(1)};</li>
+     *     <li>a {@link Map} of PK column names to values, e.g. {@code byId(Map.of("KEY1", "x", "KEY2", "y"))},
+     *     which is the form to use for a compound PK;</li>
+     *     <li>an {@link ObjectId} of the root entity, matched by its id snapshot.</li>
+     * </ul>
+     * This is a shorthand for {@link #where(Expression)} with one of the "id" expressions of the root entity
+     * "self" property, so it combines with any other query settings. Like {@code where(..)}, it is AND'ed to
+     * any qualifier set previously.
+     *
+     * @param id a scalar, a {@code Map} or an {@code ObjectId}
+     * @since 5.0
+     */
+    public S byId(Object id) {
+        return and(idQualifier(id));
+    }
+
+    /**
+     * Appends a qualifier matching any of the objects of the root entity with the given ids. Each id can be a
+     * scalar, a {@link Map} of PK column names to values or an {@link ObjectId}, and the forms can be mixed.
+     * Scalars are combined into a single {@code IN}, the rest into an {@code OR} of per-id matches. An empty
+     * array matches nothing.
+     *
+     * @param ids scalars, {@code Map}s or {@code ObjectId}s
+     * @return this object
+     * @since 5.0
+     */
+    public S byIds(Object... ids) {
+        if (ids == null) {
+            throw new CayenneRuntimeException("Null ids");
+        }
+        return byIds(Arrays.asList(ids));
+    }
+
+    /**
+     * Appends a qualifier matching any of the objects of the root entity with the given ids. Each id can be a
+     * scalar, a {@link Map} of PK column names to values or an {@link ObjectId}, and the forms can be mixed.
+     * Scalars are combined into a single {@code IN}, the rest into an {@code OR} of per-id matches. An empty
+     * collection matches nothing.
+     *
+     * @param ids scalars, {@code Map}s or {@code ObjectId}s
+     * @return this object
+     * @since 5.0
+     */
+    public S byIds(Collection<?> ids) {
+        if (ids == null) {
+            throw new CayenneRuntimeException("Null ids");
+        }
+
+        List<Object> scalars = new ArrayList<>();
+        List<Map<String, ?>> maps = new ArrayList<>();
+        for (Object id : ids) {
+            if (id instanceof ObjectId oid) {
+                maps.add(idSnapshot(oid));
+            } else if (id instanceof Map<?, ?> map) {
+                maps.add(idMap(map));
+            } else {
+                scalars.add(id);
+            }
+        }
+
+        if (scalars.isEmpty() && maps.isEmpty()) {
+            return and(ExpressionFactory.expFalse());
+        }
+
+        Expression qualifier = null;
+        if (!scalars.isEmpty()) {
+            qualifier = ROOT.idsInCollection(scalars);
+        }
+        if (!maps.isEmpty()) {
+            Expression mapsQualifier = ROOT.idMapsInCollection(maps);
+            qualifier = qualifier == null ? mapsQualifier : qualifier.orExp(mapsQualifier);
+        }
+        return and(qualifier);
+    }
+
+    private static Expression idQualifier(Object id) {
+        if (id instanceof ObjectId oid) {
+            return ROOT.eqIdMap(idSnapshot(oid));
+        } else if (id instanceof Map<?, ?> map) {
+            return ROOT.eqIdMap(idMap(map));
+        } else {
+            return ROOT.eqId(id);
+        }
+    }
+
+    private static Map<String, ?> idSnapshot(ObjectId id) {
+        if (id.isTemporary() && !id.isReplacementIdAttached()) {
+            throw new CayenneRuntimeException("Can't build a query for a temporary id: %s", id);
+        }
+        return id.getIdSnapshot();
+    }
+
+    @SuppressWarnings("unchecked")
+    private static Map<String, ?> idMap(Map<?, ?> id) {
+        if (id.isEmpty()) {
+            throw new CayenneRuntimeException("Empty id map");
+        }
+        return (Map<String, ?>) id;
     }
 
     /**

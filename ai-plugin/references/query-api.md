@@ -157,10 +157,21 @@ long count = ObjectSelect.query(Artist.class).selectCount(ctx);
 ### Selecting by primary key
 
 ```java
-import org.apache.cayenne.query.SelectById;
+// single id; the argument can be a scalar, a Map of PK column names to values, or an ObjectId
+Artist a = ObjectSelect.query(Artist.class).byId(42).selectOne(ctx);
 
-Artist a = SelectById.query(Artist.class, 42).selectOne(ctx);
+// several ids, of any of the above forms
+List<Artist> list = ObjectSelect.query(Artist.class).byIds(1, 2, 3).select(ctx);
+
+// compound PK
+CompoundPk o = ObjectSelect.query(CompoundPk.class).byId(Map.of("KEY1", "x", "KEY2", "y")).selectOne(ctx);
+
+// the same matches as expressions, e.g. to combine with other conditions or to match a to-one target by id
+ObjectSelect.query(Artist.class).where(Artist.SELF.idsIn(1, 2, 3).orExp(Artist.ARTIST_NAME.eq("Dali")));
+ObjectSelect.query(Painting.class).where(Painting.TO_ARTIST.eqId(42));
 ```
+
+`SelectById` is deprecated in 5.0 — do not use it in new code.
 
 ## SQLSelect / SQLExec — raw SQL
 
