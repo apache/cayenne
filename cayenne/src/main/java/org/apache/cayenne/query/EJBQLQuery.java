@@ -36,7 +36,7 @@ import org.apache.cayenne.map.EntityResolver;
  *            the query is fetching data rows.
  * @since 3.0
  */
-public class EJBQLQuery<T> extends CacheableQuery implements Select<T> {
+public class EJBQLQuery<T> implements Select<T> {
 
     protected String ejbqlStatement;
     
@@ -66,9 +66,72 @@ public class EJBQLQuery<T> extends CacheableQuery implements Select<T> {
         metadata.setFetchingDataRows(flag);
     }
 
-    @Override
-    protected BaseQueryMetadata getBaseMetaData() {
-        return metadata;
+    /**
+     * @since 3.0
+     */
+    public QueryCacheStrategy getCacheStrategy() {
+        return metadata.getCacheStrategy();
+    }
+
+    /**
+     * @since 3.0
+     */
+    public void setCacheStrategy(QueryCacheStrategy strategy) {
+        metadata.setCacheStrategy(strategy);
+    }
+
+    /**
+     * @since 4.0
+     */
+    public String getCacheGroup() {
+        return metadata.getCacheGroup();
+    }
+
+    /**
+     * @since 4.0
+     */
+    public void setCacheGroup(String cacheGroup) {
+        metadata.setCacheGroup(cacheGroup);
+    }
+
+    /**
+     * @since 4.0
+     * @deprecated use {@link #setCacheStrategy(QueryCacheStrategy)} with {@link QueryCacheStrategy#LOCAL_CACHE}
+     */
+    @Deprecated(since = "5.0", forRemoval = true)
+    public void useLocalCache() {
+        setCacheStrategy(QueryCacheStrategy.LOCAL_CACHE);
+    }
+
+    /**
+     * @since 4.0
+     * @deprecated use {@link #setCacheStrategy(QueryCacheStrategy)} with {@link QueryCacheStrategy#LOCAL_CACHE} and
+     * {@link #setCacheGroup(String)}
+     */
+    @Deprecated(since = "5.0", forRemoval = true)
+    public void useLocalCache(String cacheGroup) {
+        setCacheStrategy(QueryCacheStrategy.LOCAL_CACHE);
+        setCacheGroup(cacheGroup);
+    }
+
+    /**
+     * @since 4.0
+     * @deprecated use {@link #setCacheStrategy(QueryCacheStrategy)} with {@link QueryCacheStrategy#SHARED_CACHE}
+     */
+    @Deprecated(since = "5.0", forRemoval = true)
+    public void useSharedCache() {
+        setCacheStrategy(QueryCacheStrategy.SHARED_CACHE);
+    }
+
+    /**
+     * @since 4.0
+     * @deprecated use {@link #setCacheStrategy(QueryCacheStrategy)} with {@link QueryCacheStrategy#SHARED_CACHE} and
+     * {@link #setCacheGroup(String)}
+     */
+    @Deprecated(since = "5.0", forRemoval = true)
+    public void useSharedCache(String cacheGroup) {
+        setCacheStrategy(QueryCacheStrategy.SHARED_CACHE);
+        setCacheGroup(cacheGroup);
     }
 
     public SQLAction createSQLAction(SQLActionVisitor visitor) {
