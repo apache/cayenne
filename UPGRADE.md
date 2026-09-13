@@ -240,6 +240,25 @@ Expression caseWhenExp = caseWhen(
    `DataChannelQueryFilter` implementations now require a new signature.
 
 
+*  Per [CAY-3027](https://issues.apache.org/jira/browse/CAY-3027) `org.apache.cayenne.lifecycle.id.StringIdQuery`
+   was removed from `cayenne-lifecycle`. It was a pseudo-query that could only return `DataRow`s and needed
+   `ObjectContext.execute(..)` to run. Its replacement is `org.apache.cayenne.lifecycle.id.StringIdFetcher`, a
+   set of static methods that fetch persistent objects for one or more String IDs, possibly spanning multiple
+   entities:
+
+  ```java
+  // before
+  StringIdQuery query = new StringIdQuery("E1:3", "E1:4", "E2:6");
+  List<QueryResult> response = context.execute(query);
+  // ... convert DataRows to objects per entity
+
+  // after
+  Map<String, Persistent> objects = StringIdFetcher.fetch(context, "E1:3", "E1:4", "E2:6");
+  Persistent e1 = StringIdFetcher.fetchOne(context, "E1:3");
+  ```
+
+  The map is keyed by the String IDs passed in, and IDs with no matching object are absent from it.
+
 *  The `org.apache.cayenne.query.ParameterizedQuery` interface was removed, together with the `createQuery(Map)`
   methods of `SQLTemplate`, `ProcedureQuery` and `ObjectSelect` that implemented it. Applying parameters to a mapped
   query is now the job of the query descriptor - override `QueryDescriptor.buildQuery(Map)` if you have a custom

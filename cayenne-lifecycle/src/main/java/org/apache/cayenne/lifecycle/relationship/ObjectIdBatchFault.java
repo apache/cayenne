@@ -18,20 +18,12 @@
  ****************************************************************/
 package org.apache.cayenne.lifecycle.relationship;
 
-import java.util.Collections;
-import java.util.HashMap;
+import org.apache.cayenne.ObjectContext;
+import org.apache.cayenne.Persistent;
+import org.apache.cayenne.lifecycle.id.StringIdFetcher;
+
 import java.util.List;
 import java.util.Map;
-
-import org.apache.cayenne.ObjectContext;
-import org.apache.cayenne.ObjectId;
-import org.apache.cayenne.Persistent;
-import org.apache.cayenne.exp.Expression;
-import org.apache.cayenne.exp.ExpressionFactory;
-import org.apache.cayenne.lifecycle.id.EntityIdCoder;
-import org.apache.cayenne.map.EntityResolver;
-import org.apache.cayenne.map.ObjEntity;
-import org.apache.cayenne.query.ObjectSelect;
 
 /**
  * Provides lazy faulting functionality for a map of objects identified by
@@ -41,16 +33,16 @@ import org.apache.cayenne.query.ObjectSelect;
  */
 class ObjectIdBatchFault {
 
-	private ObjectContext context;
-	private List<ObjectIdBatchSourceItem> sources;
-	private volatile Map<String, Object> resolved;
+	private final ObjectContext context;
+	private final List<ObjectIdBatchSourceItem> sources;
+	private volatile Map<String, Persistent> resolved;
 
 	ObjectIdBatchFault(ObjectContext context, List<ObjectIdBatchSourceItem> sources) {
 		this.context = context;
 		this.sources = sources;
 	}
 
-	Map<String, Object> getObjects() {
+	Map<String, Persistent> getObjects() {
 
 		if (resolved == null) {
 
@@ -65,71 +57,13 @@ class ObjectIdBatchFault {
 		return resolved;
 	}
 
-	private Map<String, Object> fetchObjects() {
+	private Map<String, Persistent> fetchObjects() {
 
 		if (sources == null) {
-			return Collections.emptyMap();
+			return Map.of();
 		}
 
-		EntityResolver resolver = context.getEntityResolver();
-
-		// simple case of one query, handle it separately for performance
-		// reasons
-		if (sources.size() == 1) {
-
-			String uuid = sources.get(0).getId();
-			String entityName = EntityIdCoder.getEntityName(uuid);
-
-			ObjEntity entity = resolver.getObjEntity(entityName);
-			ObjectId id = new EntityIdCoder(entity).toObjectId(uuid);
-
-			Persistent object = ObjectSelect.query(Persistent.class, entityName)
-					.where(ExpressionFactory.matchAllDbExp(id.getIdSnapshot(), Expression.EQUAL_TO))
-					.selectOne(context);
-			if (object == null) {
-				return Collections.emptyMap();
-			} else {
-				return Collections.singletonMap(uuid, object);
-			}
-		}
-
-		Map<String, ObjectSelect<Persistent>> queriesByEntity = new HashMap<>();
-		Map<String, EntityIdCoder> codersByEntity = new HashMap<>();
-
-		for (ObjectIdBatchSourceItem source : sources) {
-
-			String uuid = source.getId();
-			String entityName = EntityIdCoder.getEntityName(uuid);
-			EntityIdCoder coder = codersByEntity.get(entityName);
-			ObjectSelect<Persistent> query;
-
-			if (coder == null) {
-				coder = new EntityIdCoder(resolver.getObjEntity(entityName));
-				codersByEntity.put(entityName, coder);
-
-				query = ObjectSelect.query(Persistent.class, entityName);
-				queriesByEntity.put(entityName, query);
-			} else {
-				query = queriesByEntity.get(entityName);
-			}
-
-			ObjectId id = coder.toObjectId(uuid);
-			Expression idExp = ExpressionFactory.matchAllDbExp(id.getIdSnapshot(), Expression.EQUAL_TO);
-			query.or(idExp);
-		}
-
-		int capacity = (int) Math.ceil(sources.size() / 0.75d);
-		Map<String, Object> results = new HashMap<>(capacity);
-
-		for (ObjectSelect<Persistent> query : queriesByEntity.values()) {
-			EntityIdCoder coder = codersByEntity.get(query.getEntityName());
-			List<Persistent> objects = query.select(context);
-			for (Persistent object : objects) {
-				String uuid = coder.toStringId(object.getObjectId());
-				results.put(uuid, object);
-			}
-		}
-
-		return results;
+		List<String> ids = sources.stream().map(ObjectIdBatchSourceItem::getId).toList();
+		return StringIdFetcher.fetch(context, ids);
 	}
 }
