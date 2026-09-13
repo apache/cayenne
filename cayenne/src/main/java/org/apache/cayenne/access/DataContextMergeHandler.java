@@ -19,12 +19,15 @@
 
 package org.apache.cayenne.access;
 
-import org.apache.cayenne.DataChannelListener;
+import org.apache.cayenne.DataChannel;
 import org.apache.cayenne.ObjectId;
 import org.apache.cayenne.PersistenceState;
 import org.apache.cayenne.Persistent;
 import org.apache.cayenne.access.DataContextObjectStore.SnapshotEventDecorator;
 import org.apache.cayenne.access.event.SnapshotEvent;
+import org.apache.cayenne.event.EventHandler;
+import org.apache.cayenne.event.EventManager;
+import org.apache.cayenne.event.EventSubject;
 import org.apache.cayenne.graph.ArcId;
 import org.apache.cayenne.graph.GraphChangeHandler;
 import org.apache.cayenne.graph.GraphDiff;
@@ -41,7 +44,7 @@ import org.apache.cayenne.reflect.ToOneProperty;
  *
  * @since 1.2
  */
-class DataContextMergeHandler implements GraphChangeHandler, DataChannelListener {
+class DataContextMergeHandler implements GraphChangeHandler {
 
     private final DataContext context;
     private final Object eventSource;
@@ -50,6 +53,33 @@ class DataContextMergeHandler implements GraphChangeHandler, DataChannelListener
     DataContextMergeHandler(DataContext context, Object eventSource) {
         this.context = context;
         this.eventSource = eventSource;
+    }
+
+    /**
+     * Registers this handler with the event manager for the graph events posted by the event source. A null event
+     * manager means the channel does not support events, so nothing is registered.
+     */
+    void listen(EventManager manager) {
+        if (manager == null) {
+            return;
+        }
+
+        listen(manager, DataChannel.GRAPH_CHANGED_SUBJECT, DataContextMergeHandler::graphChanged);
+        listen(manager, DataChannel.GRAPH_FLUSHED_SUBJECT, DataContextMergeHandler::graphFlushed);
+        listen(manager, DataChannel.GRAPH_ROLLEDBACK_SUBJECT, DataContextMergeHandler::graphRolledback);
+    }
+
+    private void listen(
+            EventManager manager,
+            EventSubject subject,
+            EventHandler<DataContextMergeHandler, GraphEvent> handler) {
+
+        // use non-blocking listeners for multi-threaded EM; blocking for single threaded...
+        if (manager.isSingleThreaded()) {
+            manager.addListener(this, GraphEvent.class, handler, subject, eventSource);
+        } else {
+            manager.addNonBlockingListener(this, GraphEvent.class, handler, subject, eventSource);
+        }
     }
 
     void stop() {
@@ -82,10 +112,9 @@ class DataContextMergeHandler implements GraphChangeHandler, DataChannelListener
         return descriptor.getProperty(propertyName);
     }
 
-    // *** GraphEventListener methods
+    // *** DataChannel graph event handlers, registered in listen(..)
 
-    @Override
-    public void graphChanged(GraphEvent event) {
+    void graphChanged(GraphEvent event) {
         // parent received external change
         if (shouldProcessEvent(event)) {
 
@@ -105,8 +134,7 @@ class DataContextMergeHandler implements GraphChangeHandler, DataChannelListener
         }
     }
 
-    @Override
-    public void graphFlushed(GraphEvent event) {
+    void graphFlushed(GraphEvent event) {
 
         // peer is committed
         if (shouldProcessEvent(event)) {
@@ -129,8 +157,7 @@ class DataContextMergeHandler implements GraphChangeHandler, DataChannelListener
         }
     }
 
-    @Override
-    public void graphRolledback(GraphEvent event) {
+    void graphRolledback(GraphEvent event) {
         // TODO: andrus, 3/26/2006 - enable this once all ObjectStore diffs implement
         // working undo operation
     }

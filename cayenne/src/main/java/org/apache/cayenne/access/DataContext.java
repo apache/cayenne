@@ -54,7 +54,6 @@ import org.apache.cayenne.reflect.PropertyDescriptor;
 import org.apache.cayenne.reflect.PropertyVisitor;
 import org.apache.cayenne.reflect.ToManyProperty;
 import org.apache.cayenne.reflect.ToOneProperty;
-import org.apache.cayenne.util.EventUtil;
 import org.apache.cayenne.util.ShallowMergeOperation;
 import org.apache.cayenne.util.Util;
 import org.apache.cayenne.util.WeakValueMap;
@@ -173,13 +172,9 @@ public class DataContext implements ObjectContext {
 
         // Listen to our channel events. A parent context posts its events on its own
         // behalf, not on behalf of the channel adapter wrapping it, so listen to the context in that case
-        if (channel instanceof DataContextChannel(DataContext context)) {
-            mergeHandler = new DataContextMergeHandler(this, context);
-            EventUtil.listenForChannelEvents(context, mergeHandler);
-        } else {
-            mergeHandler = new DataContextMergeHandler(this, channel);
-            EventUtil.listenForChannelEvents(channel, mergeHandler);
-        }
+        Object eventSource = channel instanceof DataContextChannel(DataContext parent) ? parent : channel;
+        this.mergeHandler = new DataContextMergeHandler(this, eventSource);
+        this.mergeHandler.listen(channel.getEventManager());
     }
 
     @Override

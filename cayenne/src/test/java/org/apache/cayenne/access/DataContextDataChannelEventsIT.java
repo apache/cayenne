@@ -19,15 +19,15 @@
 
 package org.apache.cayenne.access;
 
-import org.apache.cayenne.DataChannelListener;
+import org.apache.cayenne.DataChannel;
 import org.apache.cayenne.ObjectContext;
 import org.apache.cayenne.configuration.runtime.CoreModule;
+import org.apache.cayenne.event.EventManager;
 import org.apache.cayenne.graph.GraphEvent;
 import org.apache.cayenne.test.parallel.ParallelTestContainer;
 import org.apache.cayenne.testdo.testmap.Artist;
 import org.apache.cayenne.unit.CayenneProjects;
 import org.apache.cayenne.unit.CayenneTestsEnv;
-import org.apache.cayenne.util.EventUtil;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.RegisterExtension;
@@ -60,7 +60,7 @@ public class DataContextDataChannelEventsIT {
         context.commitChanges();
 
         final MockChannelListener listener = new MockChannelListener();
-        EventUtil.listenForChannelEvents(context, listener);
+        listener.listenTo(context);
 
         a.setArtistName("Y");
         context.commitChanges();
@@ -84,7 +84,7 @@ public class DataContextDataChannelEventsIT {
         context.commitChanges();
 
         final MockChannelListener listener = new MockChannelListener();
-        EventUtil.listenForChannelEvents(context, listener);
+        listener.listenTo(context);
 
         a.setArtistName("Y");
         context.rollbackChanges();
@@ -107,7 +107,7 @@ public class DataContextDataChannelEventsIT {
         context.commitChanges();
 
         final MockChannelListener listener = new MockChannelListener();
-        EventUtil.listenForChannelEvents(context, listener);
+        listener.listenTo(context);
 
         ObjectContext childContext = env.runtime().newContext(context);
 
@@ -134,7 +134,7 @@ public class DataContextDataChannelEventsIT {
         context.commitChanges();
 
         final MockChannelListener listener = new MockChannelListener();
-        EventUtil.listenForChannelEvents(context, listener);
+        listener.listenTo(context);
 
         Artist a1 = peer.localObject(a);
 
@@ -161,7 +161,7 @@ public class DataContextDataChannelEventsIT {
         childPeer1.commitChanges();
 
         final MockChannelListener listener = new MockChannelListener();
-        EventUtil.listenForChannelEvents(childPeer1, listener);
+        listener.listenTo(childPeer1);
 
         ObjectContext childPeer2 = env.runtime().newContext(context);
 
@@ -181,21 +181,31 @@ public class DataContextDataChannelEventsIT {
         }.runTest(10000);
     }
 
-    class MockChannelListener implements DataChannelListener {
+    class MockChannelListener {
 
         boolean graphChanged;
         boolean graphCommitted;
         boolean graphRolledBack;
 
-        public void graphChanged(GraphEvent event) {
+        void listenTo(ObjectContext context) {
+            EventManager manager = context.getChannel().getEventManager();
+            manager.addListener(this, GraphEvent.class, MockChannelListener::graphChanged,
+                    DataChannel.GRAPH_CHANGED_SUBJECT, context);
+            manager.addListener(this, GraphEvent.class, MockChannelListener::graphFlushed,
+                    DataChannel.GRAPH_FLUSHED_SUBJECT, context);
+            manager.addListener(this, GraphEvent.class, MockChannelListener::graphRolledback,
+                    DataChannel.GRAPH_ROLLEDBACK_SUBJECT, context);
+        }
+
+        void graphChanged(GraphEvent event) {
             graphChanged = true;
         }
 
-        public void graphFlushed(GraphEvent event) {
+        void graphFlushed(GraphEvent event) {
             graphCommitted = true;
         }
 
-        public void graphRolledback(GraphEvent event) {
+        void graphRolledback(GraphEvent event) {
             graphRolledBack = true;
         }
     }

@@ -22,23 +22,13 @@ package org.apache.cayenne.graph;
 import org.apache.cayenne.event.CayenneEvent;
 
 /**
- * An event indicating a change in the object graph. A change is expressed as a
- * GraphDiff, so the easiest way to process the event is the following:
- * 
- * <pre>
- *    GraphChangeHandler handler = ..;
- *    event.getDiff().apply(handler);
- * </pre>
+ * An event indicating a change in the object graph.
  * 
  * @since 1.2
  */
 public class GraphEvent extends CayenneEvent {
 
 	protected GraphDiff diff;
-
-	public GraphEvent(Object source, GraphDiff diff) {
-		this(source, source, diff);
-	}
 
 	public GraphEvent(Object source, Object postedBy, GraphDiff diff) {
 		super(source, postedBy, null);
