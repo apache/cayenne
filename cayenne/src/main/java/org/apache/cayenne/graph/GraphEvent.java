@@ -31,7 +31,7 @@ public class GraphEvent extends CayenneEvent {
 	protected GraphDiff diff;
 
 	public GraphEvent(Object source, Object postedBy, GraphDiff diff) {
-		super(source, postedBy, null);
+		super(source, postedBy);
 		this.diff = diff;
 	}
 

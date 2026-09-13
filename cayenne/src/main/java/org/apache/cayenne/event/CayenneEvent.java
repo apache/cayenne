@@ -20,43 +20,30 @@
 
 package org.apache.cayenne.event;
 
-import java.util.Collections;
 import java.util.EventObject;
-import java.util.Map;
 
 /**
- * Common superclass for events passed from the EventManager to Listeners; encapsulates
- * optional event information.
- * 
+ * Common superclass for events passed from the EventManager to Listeners. In addition to the event source it
+ * tracks the object that posted the event, which may differ from the source when an event is resent by a listener.
  */
 public class CayenneEvent extends EventObject {
 
-    protected Map info;
     protected transient Object postedBy;
     protected EventSubject subject;
 
     public CayenneEvent(Object source) {
-        this(source, null);
-    }
-
-    public CayenneEvent(Object source, Map info) {
-        this(source, source, info);
+        this(source, source);
     }
 
     /**
      * Creates CayenneEvent with possibly different event source and poster. This may be
      * the case when an event is resent by listener.
      * 
-     * @since 1.1
+     * @since 5.0
      */
-    public CayenneEvent(Object source, Object postedBy, Map info) {
+    public CayenneEvent(Object source, Object postedBy) {
         super(source);
         this.postedBy = postedBy;
-        this.info = info;
-    }
-
-    public Map getInfo() {
-        return info != null ? info : Collections.EMPTY_MAP;
     }
 
     /**

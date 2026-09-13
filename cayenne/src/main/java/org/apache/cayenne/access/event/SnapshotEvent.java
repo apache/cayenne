@@ -44,7 +44,7 @@ public class SnapshotEvent extends CayenneEvent {
             Collection<ObjectId> deletedIds, Collection<ObjectId> invalidatedIds,
             Collection<ObjectId> indirectlyModifiedIds) {
 
-        super(source, postedBy, null);
+        super(source, postedBy);
 
         this.timestamp = System.currentTimeMillis();
         this.modifiedDiffs = modifiedDiffs;

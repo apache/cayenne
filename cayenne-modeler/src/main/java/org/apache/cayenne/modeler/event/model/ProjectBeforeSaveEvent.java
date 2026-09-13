@@ -18,9 +18,9 @@
  ****************************************************************/
 package org.apache.cayenne.modeler.event.model;
 
-import org.apache.cayenne.event.CayenneEvent;
+import java.util.EventObject;
 
-public class ProjectBeforeSaveEvent extends CayenneEvent {
+public class ProjectBeforeSaveEvent extends EventObject {
 
     public ProjectBeforeSaveEvent(Object source) {
         super(source);
