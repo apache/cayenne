@@ -36,10 +36,6 @@ public class MockMappingNamespace implements MappingNamespace {
 		return null;
 	}
 
-	public SQLResult getResult(String name) {
-		return null;
-	}
-
 	public void addDbEntity(DbEntity entity) {
 		dbEntities.put(entity.getName(), entity);
 	}
@@ -99,11 +95,6 @@ public class MockMappingNamespace implements MappingNamespace {
 	}
 
 	public ObjEntity getObjEntity(Class<?> entityClass) {
-		// TODO Auto-generated method stub
-		return null;
-	}
-
-	public Collection<SQLResult> getResults() {
 		// TODO Auto-generated method stub
 		return null;
 	}

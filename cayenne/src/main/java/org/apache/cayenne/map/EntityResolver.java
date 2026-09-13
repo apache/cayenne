@@ -234,14 +234,6 @@ public class EntityResolver implements MappingNamespace {
         return mappingCache.getEmbeddables();
     }
 
-    /**
-     * @since 4.0
-     */
-    public Collection<SQLResult> getResults() {
-        checkMappingCache();
-        return mappingCache.getResults();
-    }
-
     public Collection<Procedure> getProcedures() {
         checkMappingCache();
         return mappingCache.getProcedures();
@@ -322,23 +314,6 @@ public class EntityResolver implements MappingNamespace {
             // have changed and now contain the required information
             refreshMappingCache();
             result = mappingCache.getEmbeddable(className);
-        }
-
-        return result;
-    }
-
-    /**
-     * @since 3.0
-     */
-    public SQLResult getResult(String name) {
-        checkMappingCache();
-
-        SQLResult result = mappingCache.getResult(name);
-        if (result == null) {
-            // reconstruct cache just in case some of the datamaps
-            // have changed and now contain the required information
-            refreshMappingCache();
-            result = mappingCache.getResult(name);
         }
 
         return result;

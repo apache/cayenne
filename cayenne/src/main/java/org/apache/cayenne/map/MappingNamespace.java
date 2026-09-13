@@ -44,17 +44,6 @@ public interface MappingNamespace {
      */
     Collection<Embeddable> getEmbeddables();
 
-    /**
-     * Returns a named result set mapping.
-     * 
-     * @since 3.0
-     */
-    SQLResult getResult(String name);
-    
-    /**
-     * @since 4.0
-     */
-    Collection<SQLResult> getResults();
 
     /**
      * Returns DbEntity for a given name, or null if no such DbEntity is found

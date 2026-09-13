@@ -43,7 +43,6 @@ class MappingCache implements MappingNamespace {
     protected Collection<DataMap> maps;
     protected Map<String, QueryDescriptor> queryDesriptors;
     protected Map<String, Embeddable> embeddables;
-    protected Map<String, SQLResult> results;
     protected Map<String, DbEntity> dbEntities;
     protected Map<String, ObjEntity> objEntities;
     protected Map<String, ObjEntity> objEntitiesByClassName;
@@ -61,7 +60,6 @@ class MappingCache implements MappingNamespace {
         this.objEntitiesByClassName = new HashMap<>();
         this.procedures = new HashMap<>();
         this.entityInheritanceCache = new HashMap<>();
-        this.results = new HashMap<>();
 
         index();
     }
@@ -169,10 +167,6 @@ class MappingCache implements MappingNamespace {
 
     public Embeddable getEmbeddable(String className) {
         return embeddables.get(className);
-    }
-
-    public SQLResult getResult(String name) {
-        return results.get(name);
     }
 
     public EntityInheritanceTree getInheritanceTree(String entityName) {
@@ -321,29 +315,6 @@ class MappingCache implements MappingNamespace {
         CompositeCollection<Embeddable> c = new CompositeCollection<>();
         for (DataMap map : maps) {
             c.addComposited(map.getEmbeddables());
-        }
-
-        return c;
-    }
-
-    public Collection<SQLResult> getResults() {
-        // TODO: LEGACY SUPPORT:
-        // some downstream code (like Modeler and merge framework) expect
-        // always fresh list here, so instead of doing the right thing of
-        // refreshing the cache and returning cache.entries(), we are scanning
-        // the list of DataMaps.
-        
-        if (maps.size() == 0) {
-            return Collections.emptyList();
-        }
-        
-        if (maps.size() == 1) {
-            return maps.iterator().next().getResults();
-        }
-        
-        CompositeCollection<SQLResult> c = new CompositeCollection<>();
-        for (DataMap map : maps) {
-            c.addComposited(map.getResults());
         }
 
         return c;

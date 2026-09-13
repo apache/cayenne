@@ -38,15 +38,7 @@ import java.util.Map;
  */
 public class SQLResult {
 
-    protected String name;
     protected List<Object> resultDescriptors;
-
-    /**
-     * Creates an unnamed SQLResultSet.
-     */
-    public SQLResult() {
-
-    }
 
     public List<ResultSegment> getResolvedComponents(EntityResolver resolver) {
 
@@ -84,21 +76,6 @@ public class SQLResult {
         }
 
         return resolvedComponents;
-    }
-
-    /**
-     * Creates a named SQLResultSet.
-     */
-    public SQLResult(String name) {
-        this.name = name;
-    }
-
-    public String getName() {
-        return name;
-    }
-
-    public void setName(String name) {
-        this.name = name;
     }
 
     /**

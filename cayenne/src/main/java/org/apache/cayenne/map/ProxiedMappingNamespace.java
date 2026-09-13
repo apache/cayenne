@@ -49,10 +49,6 @@ abstract class ProxiedMappingNamespace implements MappingNamespace {
         return getDelegate().getEmbeddable(className);
     }
 
-    public SQLResult getResult(String name) {
-        return getDelegate().getResult(name);
-    }
-
     public EntityInheritanceTree getInheritanceTree(String entityName) {
         return getDelegate().getInheritanceTree(entityName);
     }
@@ -101,8 +97,4 @@ abstract class ProxiedMappingNamespace implements MappingNamespace {
         return getDelegate().getEmbeddables();
     }
     
-    public Collection<SQLResult> getResults() {
-        return getDelegate().getResults();
-    }
-
 }

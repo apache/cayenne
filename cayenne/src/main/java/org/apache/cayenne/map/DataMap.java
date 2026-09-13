@@ -111,7 +111,6 @@ public class DataMap implements ConfigurationNode, XMLSerializable, MappingNames
     private Map<String, DbEntity> dbEntityMap;
     private Map<String, Procedure> procedureMap;
     private Map<String, QueryDescriptor> queryDescriptorMap;
-    private Map<String, SQLResult> results;
 
 	/**
 	 * @since 3.1
@@ -143,7 +142,6 @@ public class DataMap implements ConfigurationNode, XMLSerializable, MappingNames
 		dbEntityMap = new HashMap<>();
 		procedureMap = new HashMap<>();
 		queryDescriptorMap = new HashMap<>();
-		results = new HashMap<>();
 		setName(mapName);
 		initWithProperties(properties);
 	}
@@ -421,13 +419,6 @@ public class DataMap implements ConfigurationNode, XMLSerializable, MappingNames
 	}
 
 	/**
-	 * @since 3.0
-	 */
-	public void clearResultSets() {
-		results.clear();
-	}
-
-	/**
 	 * @since 1.1
 	 */
 	public void clearQueries() {
@@ -499,32 +490,6 @@ public class DataMap implements ConfigurationNode, XMLSerializable, MappingNames
 
 		embeddablesMap.put(embeddable.getClassName(), embeddable);
 		embeddable.setDataMap(this);
-	}
-
-	/**
-	 * Adds a named SQLResultSet to the DataMap.
-	 * 
-	 * @since 3.0
-	 */
-	public void addResult(SQLResult result) {
-		if (result == null) {
-			throw new NullPointerException("Null result");
-		}
-
-		if (result.getName() == null) {
-			throw new NullPointerException("Attempt to add resultSetMapping with no name.");
-		}
-
-		Object existing = results.get(result.getName());
-		if (existing != null) {
-			if (existing == result) {
-				return;
-			} else {
-				throw new IllegalArgumentException("An attempt to override resultSetMapping '" + result.getName());
-			}
-		}
-
-		results.put(result.getName(), result);
 	}
 
 	/**
@@ -661,20 +626,6 @@ public class DataMap implements ConfigurationNode, XMLSerializable, MappingNames
 	/**
 	 * @since 3.0
 	 */
-	public Map<String, SQLResult> getResultsMap() {
-		return Collections.unmodifiableMap(results);
-	}
-
-	/**
-	 * @since 3.0
-	 */
-	public Collection<SQLResult> getResults() {
-		return Collections.unmodifiableCollection(results.values());
-	}
-
-	/**
-	 * @since 3.0
-	 */
 	public Embeddable getEmbeddable(String className) {
 		Embeddable e = embeddablesMap.get(className);
 		if (e != null) {
@@ -682,18 +633,6 @@ public class DataMap implements ConfigurationNode, XMLSerializable, MappingNames
 		}
 
 		return namespace != null ? namespace.getEmbeddable(className) : null;
-	}
-
-	/**
-	 * @since 3.0
-	 */
-	public SQLResult getResult(String name) {
-		SQLResult rsMapping = results.get(name);
-		if (rsMapping != null) {
-			return rsMapping;
-		}
-
-		return namespace != null ? namespace.getResult(name) : null;
 	}
 
 	/**
@@ -782,13 +721,6 @@ public class DataMap implements ConfigurationNode, XMLSerializable, MappingNames
 		// TODO: andrus, 1/25/2007 - clean up references like removeDbEntity
 		// does.
 		embeddablesMap.remove(className);
-	}
-
-	/**
-	 * @since 3.0
-	 */
-	public void removeResult(String name) {
-		results.remove(name);
 	}
 
 	/**
@@ -1084,7 +1016,6 @@ public class DataMap implements ConfigurationNode, XMLSerializable, MappingNames
 		clearObjEntities();
 		clearProcedures();
 		clearQueries();
-		clearResultSets();
 	}
 
     /**
