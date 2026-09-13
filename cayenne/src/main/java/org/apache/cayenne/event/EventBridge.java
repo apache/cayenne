@@ -233,8 +233,8 @@ public abstract class EventBridge implements EventListener {
                 listeners.add(listener);
                 eventManager.addNonBlockingListener(
                         listener,
-                        "onLocalEvent",
                         CayenneEvent.class,
+                        SubjectListener::onLocalEvent,
                         subject,
                         localEventSource);
             }

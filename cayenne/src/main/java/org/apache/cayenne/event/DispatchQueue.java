@@ -16,7 +16,6 @@
  *  specific language governing permissions and limitations
  *  under the License.
  ****************************************************************/
-
 package org.apache.cayenne.event;
 
 import java.util.Collection;
@@ -27,10 +26,9 @@ import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.ConcurrentMap;
 
 import org.apache.cayenne.event.DefaultEventManager.Dispatch;
-import org.apache.cayenne.util.Invocation;
 
 /**
- * Stores a set of Invocation objects, organizing them by sender. Listeners have an option
+ * Stores a set of ListenerRegistration objects, organizing them by sender. Listeners have an option
  * to receive events for a particular sender or to receive all events. EventManager
  * creates one DispatchQueue per EventSubject. DispatchQueue is thread-safe - all methods
  * that read/modify internal collections are synchronized.
@@ -39,14 +37,14 @@ import org.apache.cayenne.util.Invocation;
  */
 class DispatchQueue {
 
-    private final ConcurrentMap<Invocation, Object> subjectInvocations;
-    private final Map<Object, ConcurrentMap<Invocation, Object>> invocationsBySender;
+    private final ConcurrentMap<ListenerRegistration<?, ?>, Object> subjectRegistrations;
+    private final Map<Object, ConcurrentMap<ListenerRegistration<?, ?>, Object>> registrationsBySender;
 
     DispatchQueue() {
-        subjectInvocations = new ConcurrentHashMap<>();
+        subjectRegistrations = new ConcurrentHashMap<>();
 
-        // TODO: need something like com.google.common.collect.MapMaker to avoid synchronization on invocationsBySender
-        invocationsBySender = new WeakHashMap<>();
+        // TODO: need something like com.google.common.collect.MapMaker to avoid synchronization on registrationsBySender
+        registrationsBySender = new WeakHashMap<>();
     }
 
     /**
@@ -55,80 +53,80 @@ class DispatchQueue {
      */
     void dispatchEvent(Dispatch dispatch) {
         // dispatch to "any sender" listeners
-        dispatchEvent(subjectInvocations.keySet(), dispatch);
+        dispatchEvent(subjectRegistrations.keySet(), dispatch);
 
         // dispatch to the given sender listeners
         Object sender = dispatch.getSender();
-        Map<Invocation, Object> senderInvocations = invocationsForSender(sender, false);
-        if (senderInvocations != null) {
-            dispatchEvent(senderInvocations.keySet(), dispatch);
+        Map<ListenerRegistration<?, ?>, Object> senderRegistrations = registrationsForSender(sender, false);
+        if (senderRegistrations != null) {
+            dispatchEvent(senderRegistrations.keySet(), dispatch);
         }
     }
 
-    void addInvocation(Invocation invocation, Object sender) {
-        ConcurrentMap<Invocation, Object> invocations;
+    void addRegistration(ListenerRegistration<?, ?> registration, Object sender) {
+        ConcurrentMap<ListenerRegistration<?, ?>, Object> registrations;
 
         if (sender == null) {
-            invocations = subjectInvocations;
+            registrations = subjectRegistrations;
         } else {
-            invocations = invocationsForSender(sender, true);
+            registrations = registrationsForSender(sender, true);
         }
 
-        // perform maintenance of the given invocations set, as failure to do that can
+        // perform maintenance of the given registrations set, as failure to do that can
         // result in a memory leak per CAY-770. This seemed to happen when lots of
-        // invocations got registered, but no events were dispatched (hence the stale
-        // invocation removal during dispatch did not happen)
-        invocations.keySet().removeIf(i -> i.getTarget() == null);
-        invocations.putIfAbsent(invocation, Boolean.TRUE);
+        // listeners got registered, but no events were dispatched (hence the stale
+        // registration removal during dispatch did not happen)
+        registrations.keySet().removeIf(r -> r.getListener() == null);
+        registrations.putIfAbsent(registration, Boolean.TRUE);
     }
 
-    boolean removeInvocations(Object listener, Object sender) {
+    boolean removeRegistrations(Object listener, Object sender) {
 
         // remove only for specific sender
         if (sender != null) {
-            return removeInvocations(invocationsForSender(sender, false), listener);
+            return removeRegistrations(registrationsForSender(sender, false), listener);
         }
 
         // remove listener from all collections
-        boolean didRemove = removeInvocations(subjectInvocations, listener);
+        boolean didRemove = removeRegistrations(subjectRegistrations, listener);
 
-        synchronized (invocationsBySender) {
-            for (ConcurrentMap<Invocation, Object> senderInvocations : invocationsBySender.values()) {
-                didRemove = removeInvocations(senderInvocations, listener) || didRemove;
+        synchronized (registrationsBySender) {
+            for (ConcurrentMap<ListenerRegistration<?, ?>, Object> senderRegistrations : registrationsBySender.values()) {
+                didRemove = removeRegistrations(senderRegistrations, listener) || didRemove;
             }
         }
 
         return didRemove;
     }
 
-    private ConcurrentMap<Invocation, Object> invocationsForSender(Object sender, boolean create) {
+    private ConcurrentMap<ListenerRegistration<?, ?>, Object> registrationsForSender(Object sender, boolean create) {
 
-        synchronized (invocationsBySender) {
-            ConcurrentMap<Invocation, Object> senderInvocations = invocationsBySender.get(sender);
-            if (create && senderInvocations == null) {
-                senderInvocations = new ConcurrentHashMap<>();
-                invocationsBySender.put(sender, senderInvocations);
+        synchronized (registrationsBySender) {
+            ConcurrentMap<ListenerRegistration<?, ?>, Object> senderRegistrations = registrationsBySender.get(sender);
+            if (create && senderRegistrations == null) {
+                senderRegistrations = new ConcurrentHashMap<>();
+                registrationsBySender.put(sender, senderRegistrations);
             }
 
-            return senderInvocations;
+            return senderRegistrations;
         }
     }
 
-    // removes all invocations for a given listener
-    private boolean removeInvocations(
-            ConcurrentMap<Invocation, Object> invocations,
+    // removes all registrations for a given listener
+    private boolean removeRegistrations(
+            ConcurrentMap<ListenerRegistration<?, ?>, Object> registrations,
             Object listener) {
-        if (invocations == null || invocations.isEmpty()) {
+        if (registrations == null || registrations.isEmpty()) {
             return false;
         }
 
         boolean didRemove = false;
 
-        Iterator<Invocation> invocationsIt = invocations.keySet().iterator();
-        while (invocationsIt.hasNext()) {
-            Invocation invocation = invocationsIt.next();
-            if (invocation.getTarget() == listener) {
-                invocationsIt.remove();
+        Iterator<ListenerRegistration<?, ?>> registrationsIt = registrations.keySet().iterator();
+        while (registrationsIt.hasNext()) {
+            ListenerRegistration<?, ?> registration = registrationsIt.next();
+            if (registration.getListener() == listener) {
+                registrationsIt.remove();
                 didRemove = true;
             }
         }
@@ -137,8 +135,8 @@ class DispatchQueue {
     }
 
     // dispatches event to a list of listeners
-    private void dispatchEvent(Collection<Invocation> invocations, Dispatch dispatch) {
-        // fire invocation, clean up GC'd invocations...
-        invocations.removeIf(invocation -> !dispatch.fire(invocation));
+    private void dispatchEvent(Collection<ListenerRegistration<?, ?>> registrations, Dispatch dispatch) {
+        // fire registration, clean up GC'd registrations...
+        registrations.removeIf(registration -> !dispatch.fire(registration));
     }
 }

@@ -274,6 +274,25 @@ Expression caseWhenExp = caseWhen(
   instead; to iterate over `DataRow`s, pass a `DataRow` query, e.g. `ObjectSelect.dataRowQuery(Artist.class)` or
   `SQLSelect.dataRowQuery(sql)`.
 
+*  `EventManager` listener registration no longer takes a listener method name to be looked up via reflection.
+  `addListener(..)` and `addNonBlockingListener(..)` now take the event class and an `EventHandler` callback,
+  which is normally an unbound method reference to the listener method:
+
+  ```java
+  // before
+  eventManager.addListener(this, "snapshotsChanged", SnapshotEvent.class, subject, sender);
+
+  // after
+  eventManager.addListener(this, SnapshotEvent.class, MyListener::snapshotsChanged, subject, sender);
+  ```
+
+  The listener object is still passed and is still held via a weak reference, so an unregistered listener is
+  released once it becomes unreachable. This only holds when the handler does not capture the listener: a bound
+  reference such as `this::snapshotsChanged` or a capturing lambda keeps the listener alive for as long as the
+  `EventManager` is. The listener method no longer needs to be public. The reflection-based
+  `org.apache.cayenne.util.Invocation` class and the `SnapshotEventListener` interface (which was only ever a
+  naming convention for the reflective lookup) were removed.
+
 ## Upgrading to 5.0-M3
 
 

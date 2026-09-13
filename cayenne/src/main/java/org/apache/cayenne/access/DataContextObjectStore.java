@@ -27,7 +27,6 @@ import org.apache.cayenne.PersistenceState;
 import org.apache.cayenne.Persistent;
 import org.apache.cayenne.access.ObjectDiff.ArcOperation;
 import org.apache.cayenne.access.event.SnapshotEvent;
-import org.apache.cayenne.access.event.SnapshotEventListener;
 import org.apache.cayenne.exp.Expression;
 import org.apache.cayenne.exp.ExpressionFactory;
 import org.apache.cayenne.exp.path.CayennePath;
@@ -66,7 +65,7 @@ import java.util.concurrent.ConcurrentHashMap;
  *
  * @since 5.0
  */
-public class DataContextObjectStore implements ObjectStore, SnapshotEventListener {
+public class DataContextObjectStore implements ObjectStore {
 
     protected final DataContext context;
     protected final DataRowStore dataRowCache;
@@ -110,8 +109,8 @@ public class DataContextObjectStore implements ObjectStore, SnapshotEventListene
             // ObjectStore and snapshot cache itself.
             dataRowCache.getEventManager().addNonBlockingListener(
                     this,
-                    "snapshotsChanged",
                     SnapshotEvent.class,
+                    DataContextObjectStore::snapshotsChanged,
                     dataRowCache.getSnapshotEventSubject(),
                     dataRowCache);
         }
@@ -488,16 +487,14 @@ public class DataContextObjectStore implements ObjectStore, SnapshotEventListene
     }
 
     /**
-     * SnapshotEventListener implementation that processes snapshot change event, updating
-     * Persistent objects that have the changes.
+     * Processes a DataRowStore snapshot change event, updating Persistent objects that have the changes.
      * <p>
      * <i>Implementation note: </i> This method should not attempt to alter the underlying
      * DataRowStore, since it is normally invoked *AFTER* the DataRowStore was modified as
      * a result of some external interaction.
      * </p>
      */
-    @Override
-    public void snapshotsChanged(SnapshotEvent event) {
+    private void snapshotsChanged(SnapshotEvent event) {
         // filter events that we should not process
         if (event.getPostedBy() != this && event.getSource() == this.getDataRowCache()) {
             processSnapshotEvent(event);

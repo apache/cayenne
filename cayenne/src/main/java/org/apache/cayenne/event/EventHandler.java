@@ -16,11 +16,24 @@
  *  specific language governing permissions and limitations
  *  under the License.
  ****************************************************************/
+package org.apache.cayenne.event;
 
-package org.apache.cayenne.access.event;
+import java.util.EventObject;
 
-import java.util.EventListener;
+/**
+ * A callback invoked by {@link EventManager} when an event is dispatched to a registered listener. The listener
+ * itself is passed as the first argument, so the handler is normally an unbound method reference such as
+ * {@code MyListener::onEvent}. An unbound reference captures no state and lets the EventManager hold the
+ * listener via a weak reference, releasing the registration once the listener is garbage collected. A lambda
+ * or bound reference that captures the listener (e.g. {@code this::onEvent}) defeats this and keeps the
+ * listener alive for as long as the EventManager is.
+ *
+ * @param <L> the listener type
+ * @param <E> the event type
+ * @since 5.0
+ */
+@FunctionalInterface
+public interface EventHandler<L, E extends EventObject> {
 
-public interface SnapshotEventListener extends EventListener {
-    public void snapshotsChanged(SnapshotEvent event);
+    void handle(L listener, E event) throws Exception;
 }

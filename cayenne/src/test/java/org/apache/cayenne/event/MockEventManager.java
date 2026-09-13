@@ -26,32 +26,32 @@ import org.apache.cayenne.event.DefaultEventManager.Dispatch;
 
 public class MockEventManager implements EventManager {
 
-    public void addListener(
-            Object listener,
-            String methodName,
-            Class<?> eventParameterClass,
+    public <L, E extends EventObject> void addListener(
+            L listener,
+            Class<E> eventClass,
+            EventHandler<? super L, ? super E> handler,
             EventSubject subject) {
     }
 
-    public void addListener(
-            Object listener,
-            String methodName,
-            Class<?> eventParameterClass,
+    public <L, E extends EventObject> void addListener(
+            L listener,
+            Class<E> eventClass,
+            EventHandler<? super L, ? super E> handler,
             EventSubject subject,
             Object sender) {
     }
 
-    public void addNonBlockingListener(
-            Object listener,
-            String methodName,
-            Class<?> eventParameterClass,
+    public <L, E extends EventObject> void addNonBlockingListener(
+            L listener,
+            Class<E> eventClass,
+            EventHandler<? super L, ? super E> handler,
             EventSubject subject) {
     }
 
-    public void addNonBlockingListener(
-            Object listener,
-            String methodName,
-            Class<?> eventParameterClass,
+    public <L, E extends EventObject> void addNonBlockingListener(
+            L listener,
+            Class<E> eventClass,
+            EventHandler<? super L, ? super E> handler,
             EventSubject subject,
             Object sender) {
     }

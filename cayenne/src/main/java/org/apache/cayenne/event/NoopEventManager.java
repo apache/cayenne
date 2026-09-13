@@ -30,23 +30,37 @@ public class NoopEventManager implements EventManager {
     }
 
     @Override
-    public void addListener(Object listener, String methodName, Class<?> eventParameterClass, EventSubject subject) {
-
+    public <L, E extends EventObject> void addListener(
+            L listener,
+            Class<E> eventClass,
+            EventHandler<? super L, ? super E> handler,
+            EventSubject subject) {
     }
 
     @Override
-    public void addNonBlockingListener(Object listener, String methodName, Class<?> eventParameterClass, EventSubject subject) {
-
+    public <L, E extends EventObject> void addNonBlockingListener(
+            L listener,
+            Class<E> eventClass,
+            EventHandler<? super L, ? super E> handler,
+            EventSubject subject) {
     }
 
     @Override
-    public void addListener(Object listener, String methodName, Class<?> eventParameterClass, EventSubject subject, Object sender) {
-
+    public <L, E extends EventObject> void addListener(
+            L listener,
+            Class<E> eventClass,
+            EventHandler<? super L, ? super E> handler,
+            EventSubject subject,
+            Object sender) {
     }
 
     @Override
-    public void addNonBlockingListener(Object listener, String methodName, Class<?> eventParameterClass, EventSubject subject, Object sender) {
-
+    public <L, E extends EventObject> void addNonBlockingListener(
+            L listener,
+            Class<E> eventClass,
+            EventHandler<? super L, ? super E> handler,
+            EventSubject subject,
+            Object sender) {
     }
 
     @Override

@@ -485,8 +485,8 @@ public class DataRowStore {
 
                     eventManager.addNonBlockingListener(
                             this,
-                            "processRemoteEvent",
                             SnapshotEvent.class,
+                            DataRowStore::processRemoteEvent,
                             getSnapshotEventSubject(),
                             remoteNotificationsHandler);
 

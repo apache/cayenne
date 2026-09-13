@@ -22,6 +22,7 @@ package org.apache.cayenne.util;
 import org.apache.cayenne.DataChannel;
 import org.apache.cayenne.DataChannelListener;
 import org.apache.cayenne.ObjectContext;
+import org.apache.cayenne.event.EventHandler;
 import org.apache.cayenne.event.EventManager;
 import org.apache.cayenne.event.EventSubject;
 import org.apache.cayenne.graph.GraphEvent;
@@ -32,11 +33,6 @@ import org.apache.cayenne.graph.GraphEvent;
  * @since 1.2
  */
 public class EventUtil {
-
-    static final EventSubject[] CHANNEL_SUBJECTS = new EventSubject[] {
-            DataChannel.GRAPH_CHANGED_SUBJECT, DataChannel.GRAPH_FLUSHED_SUBJECT,
-            DataChannel.GRAPH_ROLLEDBACK_SUBJECT
-    };
 
     /**
      * Utility method that sets up a GraphChangeListener to be notified when DataChannel
@@ -55,7 +51,7 @@ public class EventUtil {
             return false;
         }
 
-        listenForSubjects(manager, listener, channel, CHANNEL_SUBJECTS);
+        listenForSubjects(manager, listener, channel);
         return true;
     }
 
@@ -76,53 +72,31 @@ public class EventUtil {
             return false;
         }
 
-        listenForSubjects(manager, listener, context, CHANNEL_SUBJECTS);
-        return true;
-    }
-
-    /**
-     * Listen for events from all channels that use a given EventManager.
-     */
-    public static boolean listenForChannelEvents(
-            EventManager manager,
-            DataChannelListener listener) {
-
-        if (manager == null) {
-            return false;
-        }
-
-        listenForSubjects(manager, listener, null, CHANNEL_SUBJECTS);
+        listenForSubjects(manager, listener, context);
         return true;
     }
 
     /**
      * Registers GraphEventListener for multiple subjects at once.
      */
-    static void listenForSubjects(
+    static void listenForSubjects(EventManager manager, DataChannelListener listener, Object sender) {
+        listen(manager, listener, sender, DataChannel.GRAPH_CHANGED_SUBJECT, DataChannelListener::graphChanged);
+        listen(manager, listener, sender, DataChannel.GRAPH_FLUSHED_SUBJECT, DataChannelListener::graphFlushed);
+        listen(manager, listener, sender, DataChannel.GRAPH_ROLLEDBACK_SUBJECT, DataChannelListener::graphRolledback);
+    }
+
+    private static void listen(
             EventManager manager,
             DataChannelListener listener,
             Object sender,
-            EventSubject[] subjects) {
+            EventSubject subject,
+            EventHandler<DataChannelListener, GraphEvent> handler) {
 
-        for (EventSubject subject : subjects) {
-            // assume that subject name and listener method name match
-            String fqSubject = subject.getSubjectName();
-            String method = fqSubject.substring(fqSubject.lastIndexOf('/') + 1);
-
-            // use non-blocking listeners for multi-threaded EM; blocking for single
-            // threaded...
-
-            if (manager.isSingleThreaded()) {
-                manager.addListener(listener, method, GraphEvent.class, subject, sender);
-            }
-            else {
-                manager.addNonBlockingListener(
-                        listener,
-                        method,
-                        GraphEvent.class,
-                        subject,
-                        sender);
-            }
+        // use non-blocking listeners for multi-threaded EM; blocking for single threaded...
+        if (manager.isSingleThreaded()) {
+            manager.addListener(listener, GraphEvent.class, handler, subject, sender);
+        } else {
+            manager.addNonBlockingListener(listener, GraphEvent.class, handler, subject, sender);
         }
     }
 

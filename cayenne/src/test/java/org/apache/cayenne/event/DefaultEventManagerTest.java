@@ -58,8 +58,8 @@ public class DefaultEventManagerTest implements EventListener {
         MockListener listener = new MockListener(eventManager);
         eventManager.addListener(
                 listener,
-                "processEvent",
                 EventObject.class,
+                MockListener::processEvent,
                 MockListener.mockSubject);
 
         // test concurrent modification of the queue ... on event listener would attempt
@@ -70,8 +70,8 @@ public class DefaultEventManagerTest implements EventListener {
 
         eventManager.addListener(
                 new MockListener(eventManager),
-                "processEvent",
                 EventObject.class,
+                MockListener::processEvent,
                 MockListener.mockSubject);
 
         eventManager.postEvent(new EventObject(this), MockListener.mockSubject);
@@ -83,8 +83,8 @@ public class DefaultEventManagerTest implements EventListener {
         MockListener listener = new MockListener(eventManager, this);
         eventManager.addListener(
                 listener,
-                "processEvent",
                 EventObject.class,
+                MockListener::processEvent,
                 MockListener.mockSubject,
                 this);
 
@@ -96,8 +96,8 @@ public class DefaultEventManagerTest implements EventListener {
 
         eventManager.addListener(
                 new MockListener(eventManager, this),
-                "processEvent",
                 EventObject.class,
+                MockListener::processEvent,
                 MockListener.mockSubject,
                 this);
 
@@ -107,40 +107,33 @@ public class DefaultEventManagerTest implements EventListener {
     @Test
     public void nullListener() {
         EventSubject subject = EventSubject.getSubject(this.getClass(), "hansi");
-        assertThrows(IllegalArgumentException.class, () -> eventManager.addListener(null, null, null, subject));
+        assertThrows(IllegalArgumentException.class,
+                () -> eventManager.addListener(null, CayenneEvent.class, DefaultEventManagerTest::seeNotification, subject));
     }
 
     @Test
     public void nullNotification() {
-        // null notification
+        // null subject
         assertThrows(IllegalArgumentException.class,
-                () -> eventManager.addListener(this, "testNullObserver", CayenneEvent.class, null));
+                () -> eventManager.addListener(this, CayenneEvent.class, DefaultEventManagerTest::seeNotification, null));
 
-        // invalid event class
+        // null event class
         assertThrows(IllegalArgumentException.class, () -> {
-            EventSubject subject = EventSubject.getSubject(this.getClass(), "");
-            eventManager.addListener(this, "testNullObserver", null, subject);
+            EventSubject subject = EventSubject.getSubject(this.getClass(), "hansi");
+            eventManager.addListener(this, null, DefaultEventManagerTest::seeNotification, subject);
         });
 
-        // empty string notification
+        // null handler
+        assertThrows(IllegalArgumentException.class, () -> {
+            EventSubject subject = EventSubject.getSubject(this.getClass(), "hansi");
+            eventManager.addListener(this, CayenneEvent.class, null, subject);
+        });
+
+        // empty subject name
         assertThrows(IllegalArgumentException.class, () -> {
             EventSubject subject = EventSubject.getSubject(this.getClass(), "");
-            eventManager.addListener(this, "testNullObserver", CayenneEvent.class, subject);
+            eventManager.addListener(this, CayenneEvent.class, DefaultEventManagerTest::seeNotification, subject);
         });
-    }
-
-    @Test
-    public void nonexistingMethod() {
-        EventSubject subject = EventSubject.getSubject(this.getClass(), "hansi");
-        assertThrows(RuntimeException.class,
-                () -> eventManager.addListener(this, "thisMethodDoesNotExist", CayenneEvent.class, subject));
-    }
-
-    @Test
-    public void invalidArgumentTypes() {
-        EventSubject subject = EventSubject.getSubject(this.getClass(), "hansi");
-        assertThrows(RuntimeException.class,
-                () -> eventManager.addListener(this, "seeTheWrongMethod", CayenneEvent.class, subject));
     }
 
     @Test
@@ -148,8 +141,8 @@ public class DefaultEventManagerTest implements EventListener {
         EventSubject subject = EventSubject.getSubject(this.getClass(), "XXX");
         eventManager.addListener(
                 new DefaultEventManagerTest(),
-                "seeNotification",
                 CayenneEvent.class,
+                DefaultEventManagerTest::seeNotification,
                 subject);
 
         // (hopefully) make the listener go away
@@ -163,7 +156,7 @@ public class DefaultEventManagerTest implements EventListener {
     @Test
     public void validSubclassOfRegisteredEventClass() throws Exception {
         EventSubject subject = EventSubject.getSubject(this.getClass(), "XXX");
-        eventManager.addListener(this, "seeNotification", CayenneEvent.class, subject);
+        eventManager.addListener(this, CayenneEvent.class, DefaultEventManagerTest::seeNotification, subject);
         eventManager.postEvent(new MyCayenneEvent(this), subject);
 
         assertReceivedEvents(1, this);
@@ -174,7 +167,7 @@ public class DefaultEventManagerTest implements EventListener {
         EventSubject subject = EventSubject.getSubject(this.getClass(), "XXX");
 
         // we register a method that takes a CayenneEvent or subclass thereof..
-        eventManager.addListener(this, "seeNotification", CayenneEvent.class, subject);
+        eventManager.addListener(this, CayenneEvent.class, DefaultEventManagerTest::seeNotification, subject);
 
         // ..but post a subclass of EventObject that is not compatible with CayenneEvent
         eventManager.postEvent(new EventObject(this), subject);
@@ -190,13 +183,13 @@ public class DefaultEventManagerTest implements EventListener {
         EventSubject subject = EventSubject.getSubject(this.getClass(), "XXX");
         eventManager.addListener(
                 listener1,
-                "seeNotification",
                 CayenneEvent.class,
+                DefaultEventManagerTest::seeNotification,
                 subject);
         eventManager.addListener(
                 listener2,
-                "seeNotification",
                 CayenneEvent.class,
+                DefaultEventManagerTest::seeNotification,
                 subject);
 
         eventManager.postEvent(new CayenneEvent(this), subject);
@@ -211,8 +204,8 @@ public class DefaultEventManagerTest implements EventListener {
         EventSubject subject = EventSubject.getSubject(this.getClass(), "XXX");
         eventManager.addListener(
                 this,
-                "seeNotification",
                 CayenneEvent.class,
+                DefaultEventManagerTest::seeNotification,
                 subject,
                 this);
         eventManager.postEvent(new CayenneEvent(this), subject);
@@ -224,11 +217,11 @@ public class DefaultEventManagerTest implements EventListener {
     @Test
     public void successfulNotificationIndividualSenderTwice() throws Exception {
         EventSubject subject = EventSubject.getSubject(this.getClass(), "XXX");
-        eventManager.addListener(this, "seeNotification", CayenneEvent.class, subject);
+        eventManager.addListener(this, CayenneEvent.class, DefaultEventManagerTest::seeNotification, subject);
         eventManager.addListener(
                 this,
-                "seeNotification",
                 CayenneEvent.class,
+                DefaultEventManagerTest::seeNotification,
                 subject,
                 this);
         eventManager.postEvent(new CayenneEvent(this), subject);
@@ -246,14 +239,14 @@ public class DefaultEventManagerTest implements EventListener {
         EventSubject subject = EventSubject.getSubject(this.getClass(), "XXX");
         eventManager.addListener(
                 listener1,
-                "seeNotification",
                 CayenneEvent.class,
+                DefaultEventManagerTest::seeNotification,
                 subject,
                 listener1);
         eventManager.addListener(
                 listener2,
-                "seeNotification",
                 CayenneEvent.class,
+                DefaultEventManagerTest::seeNotification,
                 subject);
 
         eventManager.postEvent(new CayenneEvent(this), subject);
@@ -277,7 +270,7 @@ public class DefaultEventManagerTest implements EventListener {
     @Test
     public void removeFromDefaultQueue() {
         EventSubject subject = EventSubject.getSubject(this.getClass(), "XXX");
-        eventManager.addListener(this, "seeNotification", CayenneEvent.class, subject);
+        eventManager.addListener(this, CayenneEvent.class, DefaultEventManagerTest::seeNotification, subject);
         assertTrue(eventManager.removeListener(this, subject));
         assertFalse(eventManager.removeListener(this));
     }
@@ -287,8 +280,8 @@ public class DefaultEventManagerTest implements EventListener {
         EventSubject subject = EventSubject.getSubject(this.getClass(), "XXX");
         eventManager.addListener(
                 this,
-                "seeNotification",
                 CayenneEvent.class,
+                DefaultEventManagerTest::seeNotification,
                 subject,
                 this);
         assertTrue(eventManager.removeListener(this, subject));
@@ -300,8 +293,8 @@ public class DefaultEventManagerTest implements EventListener {
         EventSubject subject = EventSubject.getSubject(this.getClass(), "XXX");
         eventManager.addListener(
                 this,
-                "seeNotification",
                 CayenneEvent.class,
+                DefaultEventManagerTest::seeNotification,
                 subject,
                 this);
         assertTrue(eventManager.removeListener(this, subject, this));
@@ -313,8 +306,8 @@ public class DefaultEventManagerTest implements EventListener {
         EventSubject subject = EventSubject.getSubject(this.getClass(), "XXX");
         eventManager.addListener(
                 this,
-                "seeNotification",
                 CayenneEvent.class,
+                DefaultEventManagerTest::seeNotification,
                 subject,
                 this);
         assertTrue(eventManager.removeListener(this, subject, null));
@@ -326,8 +319,8 @@ public class DefaultEventManagerTest implements EventListener {
         EventSubject subject = EventSubject.getSubject(this.getClass(), "XXX");
         eventManager.addListener(
                 this,
-                "seeNotification",
                 CayenneEvent.class,
+                DefaultEventManagerTest::seeNotification,
                 subject,
                 this);
         assertFalse(eventManager.removeListener(this, subject, "foo"));
@@ -339,12 +332,12 @@ public class DefaultEventManagerTest implements EventListener {
         EventSubject subject1 = EventSubject.getSubject(this.getClass(), "XXX1");
         EventSubject subject2 = EventSubject.getSubject(this.getClass(), "XXX2");
         EventSubject subject3 = EventSubject.getSubject(this.getClass(), "XXX3");
-        eventManager.addListener(this, "seeNotification", CayenneEvent.class, subject1);
-        eventManager.addListener(this, "seeNotification", CayenneEvent.class, subject2);
+        eventManager.addListener(this, CayenneEvent.class, DefaultEventManagerTest::seeNotification, subject1);
+        eventManager.addListener(this, CayenneEvent.class, DefaultEventManagerTest::seeNotification, subject2);
         eventManager.addListener(
                 this,
-                "seeNotification",
                 CayenneEvent.class,
+                DefaultEventManagerTest::seeNotification,
                 subject3,
                 this);
 
@@ -358,7 +351,7 @@ public class DefaultEventManagerTest implements EventListener {
     @Test
     public void subjectGarbageCollection() {
         EventSubject subject = EventSubject.getSubject(this.getClass(), "XXX");
-        eventManager.addListener(this, "seeNotification", CayenneEvent.class, subject);
+        eventManager.addListener(this, CayenneEvent.class, DefaultEventManagerTest::seeNotification, subject);
 
         // let go of the subject & (hopefully) release queue
         subject = null;

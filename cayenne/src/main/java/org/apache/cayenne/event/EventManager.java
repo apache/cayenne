@@ -16,16 +16,19 @@
  *  specific language governing permissions and limitations
  *  under the License.
  ****************************************************************/
-
 package org.apache.cayenne.event;
 
 import java.util.EventObject;
 
 /**
- * This class acts as bridge between an Object that wants to inform others about its
+ * Acts as bridge between an Object that wants to inform others about its
  * current state or a change thereof (Publisher) and a list of objects interested in the
  * Subject (Listeners).
- * 
+ * <p>
+ * Listeners are held via weak references, so a listener that is no longer reachable from anywhere else is
+ * released together with its registration. This only works when the {@link EventHandler} is an unbound method
+ * reference (e.g. {@code MyListener::onEvent}) that does not capture the listener itself.
+ *
  * @since 3.1 before 3.1 this was a concrete class.
  */
 public interface EventManager {
@@ -40,45 +43,60 @@ public interface EventManager {
     boolean isSingleThreaded();
 
     /**
-     * Register an <code>EventListener</code> for events sent by any sender.
-     * 
-     * @throws RuntimeException if <code>methodName</code> is not found.
+     * Registers a listener for events sent by any sender.
+     *
+     * @param listener the object to be notified about events
+     * @param eventClass the class of events the listener is interested in; events of other types are ignored
+     * @param handler the callback invoked with the listener and the event, normally an unbound method reference
+     * @param subject the event subject that the listener is interested in
+     * @since 5.0
      */
-    void addListener(
-            Object listener,
-            String methodName,
-            Class<?> eventParameterClass,
-            EventSubject subject);
-
-    void addNonBlockingListener(
-            Object listener,
-            String methodName,
-            Class<?> eventParameterClass,
+    <L, E extends EventObject> void addListener(
+            L listener,
+            Class<E> eventClass,
+            EventHandler<? super L, ? super E> handler,
             EventSubject subject);
 
     /**
-     * Register an <code>EventListener</code> for events sent by a specific sender.
-     * 
-     * @param listener the object to be notified about events
-     * @param methodName the name of the listener method to be invoked
-     * @param eventParameterClass the class of the single event argument passed to
-     *            <code>methodName</code>
-     * @param subject the event subject that the listener is interested in
-     * @param sender the object whose events the listener is interested in;
-     *            <code>null</code> means 'any sender'.
-     * @throws RuntimeException if <code>methodName</code> is not found
+     * Registers a listener for events sent by any sender, to be notified on a dispatch thread instead of the thread
+     * that posted the event.
+     *
+     * @since 5.0
+     * @see #addListener(Object, Class, EventHandler, EventSubject)
      */
-    void addListener(
-            Object listener,
-            String methodName,
-            Class<?> eventParameterClass,
+    <L, E extends EventObject> void addNonBlockingListener(
+            L listener,
+            Class<E> eventClass,
+            EventHandler<? super L, ? super E> handler,
+            EventSubject subject);
+
+    /**
+     * Registers a listener for events sent by a specific sender.
+     *
+     * @param listener the object to be notified about events
+     * @param eventClass the class of events the listener is interested in; events of other types are ignored
+     * @param handler the callback invoked with the listener and the event, normally an unbound method reference
+     * @param subject the event subject that the listener is interested in
+     * @param sender the object whose events the listener is interested in; null means 'any sender'
+     * @since 5.0
+     */
+    <L, E extends EventObject> void addListener(
+            L listener,
+            Class<E> eventClass,
+            EventHandler<? super L, ? super E> handler,
             EventSubject subject,
             Object sender);
 
-    void addNonBlockingListener(
-            Object listener,
-            String methodName,
-            Class<?> eventParameterClass,
+    /**
+     * Registers a listener for events sent by a specific sender, to be notified on a dispatch thread instead of the
+     * thread that posted the event.
+     *
+     * @since 5.0
+     */
+    <L, E extends EventObject> void addNonBlockingListener(
+            L listener,
+            Class<E> eventClass,
+            EventHandler<? super L, ? super E> handler,
             EventSubject subject,
             Object sender);
 
@@ -125,8 +143,6 @@ public interface EventManager {
      * synchronously, so the sender thread is blocked until all the listeners finish
      * processing the event.
      * 
-     * @param event the event to be posted to the observers
-     * @param subject the subject about which observers will be notified
      * @throws IllegalArgumentException if event or subject are null
      */
     void postEvent(EventObject event, EventSubject subject);
@@ -136,8 +152,6 @@ public interface EventManager {
      * queued by EventManager, releasing the sender thread, and is later dispatched in a
      * separate thread.
      * 
-     * @param event the event to be posted to the observers
-     * @param subject the subject about which observers will be notified
      * @throws IllegalArgumentException if event or subject are null
      * @since 1.1
      */

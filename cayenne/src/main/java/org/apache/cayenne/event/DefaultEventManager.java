@@ -18,9 +18,7 @@
  ****************************************************************/
 package org.apache.cayenne.event;
 
-import org.apache.cayenne.CayenneRuntimeException;
 import org.apache.cayenne.di.BeforeScopeEnd;
-import org.apache.cayenne.util.Invocation;
 
 import java.util.ArrayList;
 import java.util.Collections;
@@ -121,58 +119,44 @@ public class DefaultEventManager implements EventManager {
         }
     }
 
-    /**
-     * Register an <code>EventListener</code> for events sent by any sender.
-     * 
-     * @throws RuntimeException if <code>methodName</code> is not found
-     * @see #addListener(Object, String, Class, EventSubject, Object)
-     */
-    public void addListener(
-            Object listener,
-            String methodName,
-            Class<?> eventParameterClass,
+    @Override
+    public <L, E extends EventObject> void addListener(
+            L listener,
+            Class<E> eventClass,
+            EventHandler<? super L, ? super E> handler,
             EventSubject subject) {
-        this.addListener(listener, methodName, eventParameterClass, subject, null, true);
+        addListener(listener, eventClass, handler, subject, null, true);
     }
 
-    public void addNonBlockingListener(
-            Object listener,
-            String methodName,
-            Class<?> eventParameterClass,
+    @Override
+    public <L, E extends EventObject> void addNonBlockingListener(
+            L listener,
+            Class<E> eventClass,
+            EventHandler<? super L, ? super E> handler,
             EventSubject subject) {
 
         if (singleThread) {
             throw new IllegalStateException("DefaultEventManager is configured to be single-threaded.");
         }
 
-        this.addListener(listener, methodName, eventParameterClass, subject, null, false);
+        addListener(listener, eventClass, handler, subject, null, false);
     }
 
-    /**
-     * Register an <code>EventListener</code> for events sent by a specific sender.
-     * 
-     * @param listener the object to be notified about events
-     * @param methodName the name of the listener method to be invoked
-     * @param eventParameterClass the class of the single event argument passed to
-     *            <code>methodName</code>
-     * @param subject the event subject that the listener is interested in
-     * @param sender the object whose events the listener is interested in;
-     *            <code>null</code> means 'any sender'.
-     * @throws RuntimeException if <code>methodName</code> is not found
-     */
-    public void addListener(
-            Object listener,
-            String methodName,
-            Class<?> eventParameterClass,
+    @Override
+    public <L, E extends EventObject> void addListener(
+            L listener,
+            Class<E> eventClass,
+            EventHandler<? super L, ? super E> handler,
             EventSubject subject,
             Object sender) {
-        addListener(listener, methodName, eventParameterClass, subject, sender, true);
+        addListener(listener, eventClass, handler, subject, sender, true);
     }
 
-    public void addNonBlockingListener(
-            Object listener,
-            String methodName,
-            Class<?> eventParameterClass,
+    @Override
+    public <L, E extends EventObject> void addNonBlockingListener(
+            L listener,
+            Class<E> eventClass,
+            EventHandler<? super L, ? super E> handler,
             EventSubject subject,
             Object sender) {
 
@@ -180,13 +164,13 @@ public class DefaultEventManager implements EventManager {
             throw new IllegalStateException("DefaultEventManager is configured to be single-threaded.");
         }
 
-        addListener(listener, methodName, eventParameterClass, subject, sender, false);
+        addListener(listener, eventClass, handler, subject, sender, false);
     }
 
-    protected void addListener(
-            Object listener,
-            String methodName,
-            Class<?> eventParameterClass,
+    protected <L, E extends EventObject> void addListener(
+            L listener,
+            Class<E> eventClass,
+            EventHandler<? super L, ? super E> handler,
             EventSubject subject,
             Object sender,
             boolean blocking) {
@@ -195,22 +179,20 @@ public class DefaultEventManager implements EventManager {
             throw new IllegalArgumentException("Listener must not be null.");
         }
 
-        if (eventParameterClass == null) {
+        if (eventClass == null) {
             throw new IllegalArgumentException("Event class must not be null.");
+        }
+
+        if (handler == null) {
+            throw new IllegalArgumentException("Handler must not be null.");
         }
 
         if (subject == null) {
             throw new IllegalArgumentException("Subject must not be null.");
         }
 
-        try {
-            Invocation invocation = blocking
-                    ? new Invocation(listener, methodName, eventParameterClass)
-                    : new NonBlockingInvocation(listener, methodName, eventParameterClass);
-            dispatchQueueForSubject(subject, true).addInvocation(invocation, sender);
-        } catch (NoSuchMethodException nsm) {
-            throw new CayenneRuntimeException("Error adding listener, method name: %s", nsm, methodName);
-        }
+        ListenerRegistration<L, E> registration = new ListenerRegistration<>(listener, eventClass, handler, blocking);
+        dispatchQueueForSubject(subject, true).addRegistration(registration, sender);
     }
 
     /**
@@ -285,7 +267,7 @@ public class DefaultEventManager implements EventManager {
             return false;
         }
 
-        return subjectQueue.removeInvocations(listener, sender);
+        return subjectQueue.removeRegistrations(listener, sender);
     }
 
     /**
@@ -345,70 +327,58 @@ public class DefaultEventManager implements EventManager {
     // represents a posted event
     class Dispatch {
 
-        EventObject[] eventArgument;
+        EventObject event;
         EventSubject subject;
 
         Dispatch(EventObject event, EventSubject subject) {
-            this(new EventObject[] {event}, subject);
-        }
-
-        Dispatch(EventObject[] eventArgument, EventSubject subject) {
-            this.eventArgument = eventArgument;
+            this.event = event;
             this.subject = subject;
         }
 
         Object getSender() {
-            return eventArgument[0].getSource();
+            return event.getSource();
         }
 
         void fire() {
             DefaultEventManager.this.dispatchEvent(Dispatch.this);
         }
 
-        boolean fire(Invocation invocation) {
-            if (invocation instanceof NonBlockingInvocation) {
-
-                // do minimal checks first...
-                if (invocation.getTarget() == null) {
-                    return false;
-                }
-
-                // inject single invocation dispatch into the queue
-                synchronized (eventQueue) {
-                    eventQueue.add(new InvocationDispatch(eventArgument, subject, invocation));
-                    eventQueue.notifyAll();
-                }
-
-                return true;
-            } else {
-                return invocation.fire(eventArgument);
+        // returns false if the registration is stale and should be discarded
+        boolean fire(ListenerRegistration<?, ?> registration) {
+            if (registration.isBlocking()) {
+                return registration.fire(event);
             }
+
+            // do minimal checks first...
+            if (registration.getListener() == null) {
+                return false;
+            }
+
+            // inject single listener dispatch into the queue
+            synchronized (eventQueue) {
+                eventQueue.add(new ListenerDispatch(event, subject, registration));
+                eventQueue.notifyAll();
+            }
+
+            return true;
         }
     }
 
     // represents a posted event that should be sent to a single known listener
-    class InvocationDispatch extends Dispatch {
+    class ListenerDispatch extends Dispatch {
 
-        Invocation target;
+        ListenerRegistration<?, ?> target;
 
-        InvocationDispatch(EventObject[] eventArgument, EventSubject subject, Invocation target) {
-            super(eventArgument, subject);
+        ListenerDispatch(EventObject event, EventSubject subject, ListenerRegistration<?, ?> target) {
+            super(event, subject);
             this.target = target;
         }
 
         @Override
         void fire() {
-            // there is no way to kill the invocation if it is bad...
+            // there is no way to kill the registration if it is stale...
             // so don't check for status
-            target.fire(eventArgument);
-        }
-    }
-
-    // subclass exists only to tag invocations that should be
-    // dispatched in a separate thread
-    final class NonBlockingInvocation extends Invocation {
-        NonBlockingInvocation(Object target, String methodName, Class<?> parameterType) throws NoSuchMethodException {
-            super(target, methodName, parameterType);
+            target.fire(event);
         }
     }
 

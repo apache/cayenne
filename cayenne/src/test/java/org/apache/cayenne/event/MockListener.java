@@ -46,8 +46,9 @@ public class MockListener {
     public void processEvent(EventObject object) {
         manager.addListener(
                 new MockListener(manager),
-                "processEvent",
                 EventObject.class,
-                mockSubject, sender);
+                MockListener::processEvent,
+                mockSubject,
+                sender);
     }
 }
