@@ -31,7 +31,7 @@ import javax.sql.DataSource;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 
-public class IdCoderTest {
+public class IdCoderIT {
 
     private CayenneRuntime runtime;
 
