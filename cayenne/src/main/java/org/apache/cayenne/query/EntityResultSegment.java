@@ -25,28 +25,26 @@ import org.apache.cayenne.reflect.ClassDescriptor;
 
 /**
  * A "compiled" version of a {@link EntityResult} descriptor.
- * 
+ *
+ * @param classDescriptor a descriptor of the entity mapped by this segment
+ * @param fields          a map of ResultSet labels keyed by column paths. Note that ordering of fields in the map is
+ *                        generally undefined and should not be relied upon when processing query result sets.
+ * @param columnOffset    a zero-based column index of the first column of this segment in the ResultSet
  * @since 3.0
  */
-public interface EntityResultSegment {
-
-    ClassDescriptor getClassDescriptor();
-
-    /**
-     * Returns a map of ResultSet labels keyed by column paths. Note that ordering of
-     * fields in the returned map is generally undefined and should not be relied upon
-     * when processing query result sets.
-     */
-    Map<String, String> getFields();
+public record EntityResultSegment(ClassDescriptor classDescriptor, Map<String, String> fields, int columnOffset)
+        implements ResultSegment {
 
     /**
      * Performs a reverse lookup of the column path for a given ResultSet label.
      */
-    String getColumnPath(String resultSetLabel);
+    public String columnPath(String resultSetLabel) {
+        for (Map.Entry<String, String> entry : fields.entrySet()) {
+            if (resultSetLabel.equals(entry.getValue())) {
+                return entry.getKey();
+            }
+        }
 
-    /**
-     * Returns a zero-based column index of the first column of this segment in the
-     * ResultSet.
-     */
-    int getColumnOffset();
+        return null;
+    }
 }

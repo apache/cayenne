@@ -21,6 +21,8 @@ package org.apache.cayenne.access.translator.select;
 
 import java.util.List;
 
+import org.apache.cayenne.query.ResultSegment;
+
 /**
  * @since 4.2
  */
@@ -33,7 +35,7 @@ public class SQLResultStage implements TranslationStage {
         }
 
         // optimization, resolve metadata result components here too, as it have same logic as this extractor...
-        List<Object> resultSetMapping = context.getSqlResult().getResolvedComponents(context.getResolver());
+        List<ResultSegment> resultSetMapping = context.getSqlResult().getResolvedComponents(context.getResolver());
         context.getMetadata().setResultSetMapping(resultSetMapping);
     }
 }

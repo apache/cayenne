@@ -32,6 +32,7 @@ import org.apache.cayenne.query.Query;
 import org.apache.cayenne.query.QueryCacheStrategy;
 import org.apache.cayenne.query.QueryMetadata;
 import org.apache.cayenne.query.QueryRouter;
+import org.apache.cayenne.query.ResultSegment;
 import org.apache.cayenne.query.SQLAction;
 import org.apache.cayenne.query.SQLActionVisitor;
 import org.apache.cayenne.reflect.ClassDescriptor;
@@ -147,7 +148,7 @@ public class StringIdQuery implements Query {
                 return null;
             }
 
-            public List<Object> getResultSetMapping() {
+            public List<ResultSegment> getResultSetMapping() {
                 return null;
             }
 

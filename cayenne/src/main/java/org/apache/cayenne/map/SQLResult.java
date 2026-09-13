@@ -18,7 +18,10 @@
  ****************************************************************/
 package org.apache.cayenne.map;
 
-import org.apache.cayenne.query.DefaultEmbeddableResultSegment;
+import org.apache.cayenne.query.EmbeddableResultSegment;
+import org.apache.cayenne.query.EntityResultSegment;
+import org.apache.cayenne.query.ResultSegment;
+import org.apache.cayenne.query.ScalarResultSegment;
 import org.apache.cayenne.reflect.ClassDescriptor;
 
 import java.util.ArrayList;
@@ -45,18 +48,18 @@ public class SQLResult {
 
     }
 
-    public List<Object> getResolvedComponents(EntityResolver resolver) {
+    public List<ResultSegment> getResolvedComponents(EntityResolver resolver) {
 
         if (resultDescriptors == null) {
             return Collections.emptyList();
         }
 
-        List<Object> resolvedComponents = new ArrayList<>(resultDescriptors.size());
+        List<ResultSegment> resolvedComponents = new ArrayList<>(resultDescriptors.size());
 
         int offset = 0;
         for (Object component : getComponents()) {
             if (component instanceof String) {
-                resolvedComponents.add(new DefaultScalarResultSegment((String) component, offset));
+                resolvedComponents.add(new ScalarResultSegment((String) component, offset));
                 offset = offset + 1;
             } else if (component instanceof EntityResult) {
                 EntityResult entityResult = (EntityResult) component;
@@ -68,12 +71,12 @@ public class SQLResult {
                 }
 
                 ClassDescriptor classDescriptor = resolver.getClassDescriptor(entityName);
-                resolvedComponents.add(new DefaultEntityResultSegment(classDescriptor, fields, offset));
+                resolvedComponents.add(new EntityResultSegment(classDescriptor, fields, offset));
                 offset = offset + fields.size();
             } else if (component instanceof EmbeddedResult) {
                 EmbeddedResult embeddedResult = (EmbeddedResult)component;
                 Map<String, String> fields = embeddedResult.getFields();
-                resolvedComponents.add(new DefaultEmbeddableResultSegment(embeddedResult.getEmbeddable(), fields, offset));
+                resolvedComponents.add(new EmbeddableResultSegment(embeddedResult.getEmbeddable(), fields, offset));
                 offset = offset + fields.size();
             } else {
                 throw new IllegalArgumentException("Unsupported result descriptor component: " + component);

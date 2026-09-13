@@ -57,7 +57,7 @@ class BaseQueryMetadata implements QueryMetadata {
 	 */
 	String cacheGroup;
 
-	List<Object> resultSetMapping;
+	List<ResultSegment> resultSetMapping;
 	DbEntity dbEntity;
 	DataMap dataMap;
 	Object lastRoot;
@@ -192,7 +192,7 @@ class BaseQueryMetadata implements QueryMetadata {
 	/**
 	 * @since 3.0
 	 */
-	public List<Object> getResultSetMapping() {
+	public List<ResultSegment> getResultSetMapping() {
 		return resultSetMapping;
 	}
 
@@ -201,7 +201,7 @@ class BaseQueryMetadata implements QueryMetadata {
 	 * @since 4.2
 	 */
 	@Override
-	public void setResultSetMapping(List<Object> resultSetMapping) {
+	public void setResultSetMapping(List<ResultSegment> resultSetMapping) {
 		this.resultSetMapping = resultSetMapping;
 	}
 

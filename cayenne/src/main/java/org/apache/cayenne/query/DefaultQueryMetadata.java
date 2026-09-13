@@ -61,7 +61,7 @@ class DefaultQueryMetadata implements QueryMetadata {
     /**
      * @since 3.0
      */
-    public List<Object> getResultSetMapping() {
+    public List<ResultSegment> getResultSetMapping() {
         return null;
     }
 

@@ -30,6 +30,7 @@ import org.apache.cayenne.query.EJBQLQuery;
 import org.apache.cayenne.query.EntityResultSegment;
 import org.apache.cayenne.query.QueryMetadata;
 import org.apache.cayenne.query.SQLTemplate;
+import org.apache.cayenne.query.ResultSegment;
 import org.apache.cayenne.query.ScalarResultSegment;
 import org.apache.cayenne.reflect.ClassDescriptor;
 
@@ -55,7 +56,7 @@ public class EJBQLTranslationContext {
     private DbAdapter adapter;
     private QuotingStrategy quotingStrategy;
     private EntityResolver entityResolver;
-    private List<Object> resultSetMetadata;
+    private List<ResultSegment> resultSetMetadata;
 
     private Map<String, String> tableAliases;
     private Map<String, Object> boundParameters;
@@ -473,7 +474,7 @@ public class EJBQLTranslationContext {
         }
 
         return ((ScalarResultSegment) resultSetMetadata.get(resultDescriptorPosition++))
-                .getColumn();
+                .column();
     }
 
     public boolean isAppendingResultColumns() {

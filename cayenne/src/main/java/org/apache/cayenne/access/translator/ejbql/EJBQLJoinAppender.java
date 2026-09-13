@@ -35,6 +35,7 @@ import org.apache.cayenne.map.DbJoin;
 import org.apache.cayenne.map.DbRelationship;
 import org.apache.cayenne.map.ObjAttribute;
 import org.apache.cayenne.query.EntityResultSegment;
+import org.apache.cayenne.query.ResultSegment;
 import org.apache.cayenne.util.CayenneMapEntry;
 
 /**
@@ -287,11 +288,11 @@ public class EJBQLJoinAppender {
         boolean isProcessingOmitted = id.getDbPath() != null;
         String sourceExpression = context.getCompiledExpression().getSource();
 
-        List<Object> resultSetMapping = context.getMetadata().getResultSetMapping();
-        for (Object mapping : resultSetMapping) {
+        List<ResultSegment> resultSetMapping = context.getMetadata().getResultSetMapping();
+        for (ResultSegment mapping : resultSetMapping) {
             if (mapping instanceof EntityResultSegment entityResultSegment) {
                 if (entityName.equals(entityResultSegment
-                        .getClassDescriptor()
+                        .classDescriptor()
                         .getEntity()
                         .getName())) {
                     // if entity is included into SELECT clause, all its attributes are processed earlier

@@ -108,7 +108,7 @@ public class QueryMetadataProxy implements QueryMetadata {
     }
 
     @Override
-    public List<Object> getResultSetMapping() {
+    public List<ResultSegment> getResultSetMapping() {
         return mdDelegate.getResultSetMapping();
     }
 

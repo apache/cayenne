@@ -27,6 +27,7 @@ import org.apache.cayenne.map.ObjEntity;
 import org.apache.cayenne.query.EmbeddableResultSegment;
 import org.apache.cayenne.query.EntityResultSegment;
 import org.apache.cayenne.query.QueryMetadata;
+import org.apache.cayenne.query.ResultSegment;
 import org.apache.cayenne.query.ScalarResultSegment;
 
 import java.util.HashSet;
@@ -41,7 +42,7 @@ public class DefaultRowReaderFactory implements RowReaderFactory {
     @Override
     public RowReader<?> rowReader(RSColumn[] columns, QueryMetadata metadata, DbAdapter adapter) {
 
-        List<Object> segments = metadata.getResultSetMapping();
+        List<ResultSegment> segments = metadata.getResultSetMapping();
         if (segments == null || segments.isEmpty()) {
             return noSegmentReader(columns, metadata);
         }
@@ -59,18 +60,17 @@ public class DefaultRowReaderFactory implements RowReaderFactory {
         return new CompoundRowReader(readers);
     }
 
-    private RowReader<?> segmentReader(Object segment, RSColumn[] columns, QueryMetadata metadata) {
+    private RowReader<?> segmentReader(ResultSegment segment, RSColumn[] columns, QueryMetadata metadata) {
         return switch (segment) {
             case EntityResultSegment ers -> entitySegmentReader(columns, metadata, ers);
             case EmbeddableResultSegment ers -> embeddableSegmentReader(columns, ers);
             case ScalarResultSegment srs -> scalarSegmentReader(columns, metadata, srs);
-            case null, default -> throw new IllegalStateException("Unknown segment type: " + segment);
         };
     }
 
     private RowReader<?> embeddableSegmentReader(RSColumn[] columns, EmbeddableResultSegment segment) {
-        int startIndex = segment.getColumnOffset();
-        int segmentWidth = segment.getFields().size();
+        int startIndex = segment.columnOffset();
+        int segmentWidth = segment.fields().size();
 
         // recast the segment's columns into a compact array so their dataRowName carries the embeddable field
         // label (keyed by the result-set column name); OffsetRowReader reads them from startIndex onward
@@ -81,7 +81,7 @@ public class DefaultRowReaderFactory implements RowReaderFactory {
             relabeled[i] = new RSColumn(
                     column.rsName(),
                     column.rsType(),
-                    segment.getFields().get(column.rsName()),
+                    segment.fields().get(column.rsName()),
                     column.reader(),
                     column.attribute());
         }
@@ -91,7 +91,7 @@ public class DefaultRowReaderFactory implements RowReaderFactory {
     }
 
     protected RowReader<?> scalarSegmentReader(RSColumn[] columns, QueryMetadata metadata, ScalarResultSegment segment) {
-        int scalarIndex = segment.getColumnOffset();
+        int scalarIndex = segment.columnOffset();
         return new ScalarRowReader<>(
                 columns[scalarIndex].reader(),
                 // jdbc column indexes start from 1
@@ -104,16 +104,16 @@ public class DefaultRowReaderFactory implements RowReaderFactory {
         // For a paginated query only the root PK is read into the IncrementalFaultList - locate the PK columns within
         // this segment by their DbAttribute (see idReader).
         if (metadata.getPageSize() > 0) {
-            ObjEntity objEntity = segment.getClassDescriptor().getEntity();
+            ObjEntity objEntity = segment.classDescriptor().getEntity();
             return idReader(columns,
-                    segment.getColumnOffset(),
-                    segment.getColumnOffset() + columns.length,
+                    segment.columnOffset(),
+                    segment.columnOffset() + columns.length,
                     objEntity.getDbEntity(),
                     objEntity.getName());
         }
 
-        int startIndex = segment.getColumnOffset();
-        int segmentWidth = segment.getFields().size();
+        int startIndex = segment.columnOffset();
+        int segmentWidth = segment.fields().size();
 
         // recast the segment's columns into a compact array so their dataRowName carries the resolved DataRow
         // label (which is how the reader keys the DataRow); OffsetRowReader reads them from startIndex onward
@@ -126,7 +126,7 @@ public class DefaultRowReaderFactory implements RowReaderFactory {
             // DataRow label by reverse lookup of the column name; a dotted dataRowName is a prefetched
             // column, used directly instead of by alias
             String name = column.dataRowName();
-            String label = name.contains(".") ? name : segment.getColumnPath(name);
+            String label = name.contains(".") ? name : segment.columnPath(name);
 
             relabeled[i] = new RSColumn(
                     column.rsName(),
@@ -136,7 +136,7 @@ public class DefaultRowReaderFactory implements RowReaderFactory {
                     column.attribute());
         }
 
-        return OffsetRowReader.of(relabeled, startIndex, segment.getClassDescriptor());
+        return OffsetRowReader.of(relabeled, startIndex, segment.classDescriptor());
     }
 
     protected RowReader<?> noSegmentReader(RSColumn[] columns, QueryMetadata metadata) {

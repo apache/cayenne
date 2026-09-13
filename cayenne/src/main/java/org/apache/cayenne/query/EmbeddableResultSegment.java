@@ -7,7 +7,7 @@
  *  "License"); you may not use this file except in compliance
  *  with the License.  You may obtain a copy of the License at
  *
- *    http://www.apache.org/licenses/LICENSE-2.0
+ *    https://www.apache.org/licenses/LICENSE-2.0
  *
  *  Unless required by applicable law or agreed to in writing,
  *  software distributed under the License is distributed on an
@@ -16,7 +16,6 @@
  *  specific language governing permissions and limitations
  *  under the License.
  ****************************************************************/
-
 package org.apache.cayenne.query;
 
 import java.util.Map;
@@ -24,17 +23,13 @@ import java.util.Map;
 import org.apache.cayenne.map.Embeddable;
 
 /**
+ * A result set segment mapped to an {@link Embeddable}.
+ *
+ * @param embeddable   the embeddable mapped by this segment
+ * @param fields       a map of ResultSet labels keyed by embeddable attribute names
+ * @param columnOffset a zero-based column index of the first column of this segment in the ResultSet
  * @since 4.2
  */
-public interface EmbeddableResultSegment {
-
-    Embeddable getEmbeddable();
-
-    Map<String, String> getFields();
-
-    /**
-     * Returns a zero-based column index of the first column of this segment in the
-     * ResultSet.
-     */
-    int getColumnOffset();
+public record EmbeddableResultSegment(Embeddable embeddable, Map<String, String> fields, int columnOffset)
+        implements ResultSegment {
 }

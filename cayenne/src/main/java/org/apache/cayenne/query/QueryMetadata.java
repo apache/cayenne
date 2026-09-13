@@ -19,15 +19,15 @@
 
 package org.apache.cayenne.query;
 
-import java.util.List;
-import java.util.Map;
-import java.util.function.Function;
-
 import org.apache.cayenne.map.DataMap;
 import org.apache.cayenne.map.DbEntity;
 import org.apache.cayenne.map.ObjEntity;
 import org.apache.cayenne.map.Procedure;
 import org.apache.cayenne.reflect.ClassDescriptor;
+
+import java.util.List;
+import java.util.Map;
+import java.util.function.Function;
 
 /**
  * Provides a common interface for accessing query metadata.
@@ -180,18 +180,16 @@ public interface QueryMetadata {
     Map<String, String> getPathSplitAliases();
 
     /**
-     * Returns an optional list of result set mapping hints. Elements in the list can be
-     * either {@link EntityResultSegment} or {@link ScalarResultSegment}. The returned
-     * list can be null.
+     * Returns an optional list of result set mapping hints.
      * 
      * @since 3.0
      */
-    List<Object> getResultSetMapping();
+    List<ResultSegment> getResultSetMapping();
 
     /**
      * @since 4.2
      */
-    default void setResultSetMapping(List<Object> resultSetMapping) {
+    default void setResultSetMapping(List<ResultSegment> resultSetMapping) {
     }
 
     /**

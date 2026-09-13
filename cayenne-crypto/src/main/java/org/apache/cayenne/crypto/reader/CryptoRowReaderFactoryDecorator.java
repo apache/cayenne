@@ -66,7 +66,7 @@ public class CryptoRowReaderFactoryDecorator extends DefaultRowReaderFactory {
     @Override
     protected RowReader<?> scalarSegmentReader(RSColumn[] columns, QueryMetadata metadata, ScalarResultSegment segment) {
         RowReader<?> reader = super.scalarSegmentReader(columns, metadata, segment);
-        return new DecoratedScalarRowReader(columns[segment.getColumnOffset()], reader);
+        return new DecoratedScalarRowReader(columns[segment.columnOffset()], reader);
     }
 
     @Override
@@ -183,8 +183,8 @@ public class CryptoRowReaderFactoryDecorator extends DefaultRowReaderFactory {
 
         void ensureDecryptorCompiled(Object row) {
             if (!decryptorCompiled) {
-                int offset = resultMetadata.getColumnOffset();
-                int fieldsSize = resultMetadata.getFields().size();
+                int offset = resultMetadata.columnOffset();
+                int fieldsSize = resultMetadata.fields().size();
                 RSColumn[] columns =
                         new RSColumn[fieldsSize];
                 for(int i = offset, j = 0; i < offset + fieldsSize; i++) {

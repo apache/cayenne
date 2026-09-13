@@ -30,7 +30,7 @@ import org.apache.cayenne.reflect.ClassDescriptor;
 
 public class MockQueryMetadata implements QueryMetadata {
 
-    public List<Object> getResultSetMapping() {
+    public List<ResultSegment> getResultSetMapping() {
         return null;
     }
 

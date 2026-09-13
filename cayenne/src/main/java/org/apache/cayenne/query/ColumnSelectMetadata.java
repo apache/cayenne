@@ -26,8 +26,6 @@ import java.util.function.Function;
 
 import org.apache.cayenne.exp.Expression;
 import org.apache.cayenne.exp.property.Property;
-import org.apache.cayenne.map.DefaultEntityResultSegment;
-import org.apache.cayenne.map.DefaultScalarResultSegment;
 import org.apache.cayenne.map.EntityResolver;
 import org.apache.cayenne.map.ObjRelationship;
 
@@ -37,9 +35,9 @@ import org.apache.cayenne.map.ObjRelationship;
 class ColumnSelectMetadata extends ObjectSelectMetadata {
 
 	private static final ScalarResultSegment SCALAR_RESULT_SEGMENT
-			= new DefaultScalarResultSegment(null, -1);
+			= new ScalarResultSegment(null, -1);
 	private static final EntityResultSegment ENTITY_RESULT_SEGMENT
-			= new DefaultEntityResultSegment(null, null, -1);
+			= new EntityResultSegment(null, null, -1);
 
 	private boolean isSingleResultSetMapping;
 	private boolean suppressingDistinct;

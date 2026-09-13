@@ -24,7 +24,7 @@ import org.apache.cayenne.ObjectContext;
 import org.apache.cayenne.PersistenceState;
 import org.apache.cayenne.access.translator.select.DbAdapterDelegatedSelectTranslator;
 import org.apache.cayenne.access.translator.TranslatedSelect;
-import org.apache.cayenne.map.DefaultEntityResultSegment;
+import org.apache.cayenne.query.EntityResultSegment;
 import org.apache.cayenne.query.ColumnSelect;
 import org.apache.cayenne.query.EJBQLQuery;
 import org.apache.cayenne.query.ObjectSelect;
@@ -211,14 +211,14 @@ public class DataContextFlattenedAttributesIT {
 
         translator.sql();
 
-        DefaultEntityResultSegment segment = (DefaultEntityResultSegment) originalQuery
+        EntityResultSegment segment = (EntityResultSegment) originalQuery
                 .getMetaData(context.getEntityResolver())
                 .getResultSetMapping()
                 .get(0);
 
-        assertEquals(12, segment.getFields().size());
+        assertEquals(12, segment.fields().size());
         assertEquals(12, translator.resultColumns().length);
-        assertEquals(segment.getFields().size(), translator.resultColumns().length);
+        assertEquals(segment.fields().size(), translator.resultColumns().length);
     }
 
     @Test

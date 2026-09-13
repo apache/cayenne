@@ -43,7 +43,7 @@ class EJBQLIdColumnsTranslator extends EJBQLIdentifierColumnsTranslator {
 
         Map<String, String> fields = null;
         if (context.isAppendingResultColumns()) {
-            fields = context.nextEntityResult().getFields();
+            fields = context.nextEntityResult().fields();
         }
 
         String idVar = expression.getText();

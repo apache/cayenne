@@ -16,7 +16,7 @@
  *  specific language governing permissions and limitations
  *  under the License.
  ****************************************************************/
-package org.apache.cayenne.map;
+package org.apache.cayenne.query;
 
 import org.apache.cayenne.reflect.PersistentDescriptor;
 import org.junit.jupiter.api.Test;
@@ -29,20 +29,20 @@ import java.util.stream.IntStream;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 
-public class DefaultEntityResultSegmentTest {
+public class EntityResultSegmentTest {
     private final List<String> expectedColumnPath = List.of("key1", "key2");
 
     private final Map<String, String> fields =
             new ConcurrentHashMap<>(Map.of("key1", "value1", "key2", "value2"));
 
-    private final DefaultEntityResultSegment resultSegment =
-            new DefaultEntityResultSegment(new PersistentDescriptor(), fields, fields.size());
+    private final EntityResultSegment resultSegment =
+            new EntityResultSegment(new PersistentDescriptor(), fields, fields.size());
 
     @Test
-    public void getColumnPath() {
+    public void columnPath() {
         List<String> actualColumnPath = fields.values()
                 .stream()
-                .map(resultSegment::getColumnPath)
+                .map(resultSegment::columnPath)
                 .collect(Collectors.toList());
 
         assertEquals(expectedColumnPath.size(), actualColumnPath.size());

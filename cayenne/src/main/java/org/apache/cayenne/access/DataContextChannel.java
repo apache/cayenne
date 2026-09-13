@@ -33,6 +33,7 @@ import org.apache.cayenne.map.EntityResolver;
 import org.apache.cayenne.query.EntityResultSegment;
 import org.apache.cayenne.query.Query;
 import org.apache.cayenne.query.QueryMetadata;
+import org.apache.cayenne.query.ResultSegment;
 import org.apache.cayenne.util.ShallowMergeOperation;
 
 import java.util.ArrayList;
@@ -171,7 +172,7 @@ public record DataContextChannel(DataContext context) implements DataChannel {
                     // minor optimization, skip Object[] if there are no persistent objects
                     boolean haveObjects = metadata.getResultSetMapping() == null;
                     if (!haveObjects) {
-                        for (Object next : metadata.getResultSetMapping()) {
+                        for (ResultSegment next : metadata.getResultSetMapping()) {
                             if (next instanceof EntityResultSegment) {
                                 haveObjects = true;
                                 break;

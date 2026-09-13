@@ -36,6 +36,7 @@ import org.apache.cayenne.query.EntityResultSegment;
 import org.apache.cayenne.query.ObjectSelect;
 import org.apache.cayenne.query.Query;
 import org.apache.cayenne.query.QueryMetadata;
+import org.apache.cayenne.query.ResultSegment;
 import java.util.Objects;
 
 /**
@@ -79,11 +80,11 @@ class MixedResultIncrementalFaultList<E> extends IncrementalFaultList<E> {
         // first compile some meta data about results
         indexToEntity = new HashMap<>();
         scalarResult = true;
-        for(Object next : metadata.getResultSetMapping()) {
+        for(ResultSegment next : metadata.getResultSetMapping()) {
             if(next instanceof EntityResultSegment resultSegment) {
-                ObjEntity entity = resultSegment.getClassDescriptor().getEntity();
+                ObjEntity entity = resultSegment.classDescriptor().getEntity();
                 // store entity's PK position in result
-                indexToEntity.put(resultSegment.getColumnOffset(), entity);
+                indexToEntity.put(resultSegment.columnOffset(), entity);
                 scalarResult = false;
             }
         }

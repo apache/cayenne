@@ -32,7 +32,7 @@ import org.apache.cayenne.dba.TypesMapping;
 import org.apache.cayenne.exp.path.CayennePath;
 import org.apache.cayenne.map.DbAttribute;
 import org.apache.cayenne.map.DbEntity;
-import org.apache.cayenne.map.DefaultScalarResultSegment;
+import org.apache.cayenne.query.ScalarResultSegment;
 import org.apache.cayenne.map.ObjAttribute;
 import org.apache.cayenne.map.ObjEntity;
 import org.apache.cayenne.query.QueryMetadata;
@@ -266,7 +266,7 @@ public class SQLTemplateAction implements SQLAction {
     private void recreateQueryMetadata(ResultSet resultSet) throws SQLException {
         if (query.isUseScalar() && queryMetadata.getResultSetMapping() != null && queryMetadata.getResultSetMapping().isEmpty()) {
             for (int i = 0; i < resultSet.getMetaData().getColumnCount(); i++) {
-                queryMetadata.getResultSetMapping().add(new DefaultScalarResultSegment(String.valueOf(i), i));
+                queryMetadata.getResultSetMapping().add(new ScalarResultSegment(String.valueOf(i), i));
             }
         }
     }

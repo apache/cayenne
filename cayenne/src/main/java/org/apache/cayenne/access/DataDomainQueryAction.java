@@ -43,6 +43,7 @@ import org.apache.cayenne.query.PrefetchTreeNode;
 import org.apache.cayenne.query.Query;
 import org.apache.cayenne.query.QueryCacheStrategy;
 import org.apache.cayenne.query.QueryMetadata;
+import org.apache.cayenne.query.ResultSegment;
 import org.apache.cayenne.query.QueryMetadataProxy;
 import org.apache.cayenne.query.QueryRouter;
 import org.apache.cayenne.reflect.ClassDescriptor;
@@ -351,7 +352,7 @@ class DataDomainQueryAction implements QueryRouter, OperationObserver {
         if (metadata.isFetchingDataRows()) {
             converter = new IdentityConversionStrategy();
         } else {
-            List<Object> rsMapping = metadata.getResultSetMapping();
+            List<ResultSegment> rsMapping = metadata.getResultSetMapping();
             if (rsMapping == null) {
                 converter = new SingleObjectConversionStrategy();
             } else {
@@ -588,7 +589,7 @@ class DataDomainQueryAction implements QueryRouter, OperationObserver {
         private PrefetchProcessorNode getPrefetchProcessorNode(List<DataRow> mainRows) {
             PrefetchTreeNode prefetchTree = metadata.getPrefetchTree();
 
-            List<Object> rsMapping = metadata.getResultSetMapping();
+            List<ResultSegment> rsMapping = metadata.getResultSetMapping();
             EntityResultSegment resultSegment = null;
             if (rsMapping != null && !rsMapping.isEmpty()) {
                 resultSegment = (EntityResultSegment) rsMapping.getFirst();
@@ -596,7 +597,7 @@ class DataDomainQueryAction implements QueryRouter, OperationObserver {
 
             ClassDescriptor descriptor = resultSegment == null
                     ? metadata.getClassDescriptor()
-                    : resultSegment.getClassDescriptor();
+                    : resultSegment.classDescriptor();
 
             return toResultsTree(descriptor, prefetchTree, mainRows);
         }
@@ -622,7 +623,7 @@ class DataDomainQueryAction implements QueryRouter, OperationObserver {
         @Override
         List<EmbeddableObject> convert(List<DataRow> mainRows) {
             EmbeddableResultSegment resultSegment = (EmbeddableResultSegment) metadata.getResultSetMapping().getFirst();
-            Embeddable embeddable = resultSegment.getEmbeddable();
+            Embeddable embeddable = resultSegment.embeddable();
             Class<? extends EmbeddableObject> embeddableClass = objectFactory.getJavaClass(embeddable.getClassName());
             DefaultConstructor<? extends EmbeddableObject> constructor = new DefaultConstructor<>(embeddableClass);
             List<EmbeddableObject> result = new ArrayList<>(mainRows.size());
@@ -738,14 +739,14 @@ class DataDomainQueryAction implements QueryRouter, OperationObserver {
         }
 
         private List<PrefetchProcessorNode> doInPlaceConversion(List<Object[]> result) {
-            List<Object> resultSetMapping = metadata.getResultSetMapping();
+            List<ResultSegment> resultSetMapping = metadata.getResultSetMapping();
             int width = resultSetMapping.size();
             int height = result.size();
             List<PrefetchProcessorNode> segmentNodes = new ArrayList<>(width);
             for (int i = 0; i < width; i++) {
-                Object mapping = resultSetMapping.get(i);
+                ResultSegment mapping = resultSetMapping.get(i);
                 if (mapping instanceof EntityResultSegment entitySegment) {
-                    PrefetchProcessorNode nextResult = toResultsTree(entitySegment.getClassDescriptor(),
+                    PrefetchProcessorNode nextResult = toResultsTree(entitySegment.classDescriptor(),
                             metadata.getPrefetchTree(), result, i);
 
                     segmentNodes.add(nextResult);
@@ -756,7 +757,7 @@ class DataDomainQueryAction implements QueryRouter, OperationObserver {
                         row[i] = objects.get(j);
                     }
                 } else if (mapping instanceof EmbeddableResultSegment resultSegment) {
-                    Embeddable embeddable = resultSegment.getEmbeddable();
+                    Embeddable embeddable = resultSegment.embeddable();
                     Class<? extends EmbeddableObject> embeddableClass = objectFactory
                             .getJavaClass(embeddable.getClassName());
                     DefaultConstructor<? extends EmbeddableObject> constructor = new DefaultConstructor<>(embeddableClass);
@@ -772,7 +773,7 @@ class DataDomainQueryAction implements QueryRouter, OperationObserver {
         }
 
         private boolean needConversion() {
-            for (Object mapping : metadata.getResultSetMapping()) {
+            for (ResultSegment mapping : metadata.getResultSetMapping()) {
                 if (mapping instanceof EntityResultSegment
                         || mapping instanceof EmbeddableResultSegment) {
                     return true;

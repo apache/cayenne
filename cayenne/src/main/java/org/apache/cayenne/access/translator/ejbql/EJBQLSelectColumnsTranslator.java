@@ -76,7 +76,7 @@ public class EJBQLSelectColumnsTranslator extends EJBQLBaseVisitor {
             protected void processTerminatingRelationship(DbRelationship relationship) {
                 Map<String, String> xfields = null;
                 if (context.isAppendingResultColumns()) {
-                    xfields = context.nextEntityResult().getFields();
+                    xfields = context.nextEntityResult().fields();
                 }
 
                 final Map<String, String> fields = xfields;
@@ -136,7 +136,7 @@ public class EJBQLSelectColumnsTranslator extends EJBQLBaseVisitor {
 
                 Map<String, String> xfields = null;
                 if (context.isAppendingResultColumns()) {
-                    xfields = context.nextEntityResult().getFields();
+                    xfields = context.nextEntityResult().fields();
                 }
 
                 final Map<String, String> fields = xfields;

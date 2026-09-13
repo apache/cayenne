@@ -27,6 +27,7 @@ import org.apache.cayenne.query.EntityResultSegment;
 import org.apache.cayenne.query.Query;
 import org.apache.cayenne.query.QueryCacheStrategy;
 import org.apache.cayenne.query.QueryMetadata;
+import org.apache.cayenne.query.ResultSegment;
 
 import java.util.Collections;
 import java.util.List;
@@ -113,7 +114,7 @@ class DataContextQueryAction {
 
     private boolean isMixedResultsForPaginatedQuery() {
         boolean mixedResults = false;
-        List<Object> rsMapping = metadata.getResultSetMapping();
+        List<ResultSegment> rsMapping = metadata.getResultSetMapping();
         if (rsMapping != null) {
             if (rsMapping.size() > 1) {
                 mixedResults = true;

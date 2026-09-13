@@ -19,15 +19,11 @@
 package org.apache.cayenne.query;
 
 /**
+ * A result set segment mapped to a single scalar value.
+ *
+ * @param column       the ResultSet column label
+ * @param columnOffset a zero-based column index of this segment's column in the ResultSet
  * @since 3.0
  */
-public interface ScalarResultSegment {
-
-    String getColumn();
-
-    /**
-     * Returns a zero-based column index of the first column of this segment in the
-     * ResultSet.
-     */
-    int getColumnOffset();
+public record ScalarResultSegment(String column, int columnOffset) implements ResultSegment {
 }
