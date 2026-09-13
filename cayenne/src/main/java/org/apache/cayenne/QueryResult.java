@@ -18,16 +18,16 @@
  ****************************************************************/
 package org.apache.cayenne;
 
+import org.apache.cayenne.query.Query;
+
 import java.util.List;
 import java.util.Map;
 import java.util.Objects;
 
 /**
- * A single item of a multipart query result, as returned by {@code SQLExec.execute(..)},
- * {@code MappedExec.execute(..)} and {@code ProcedureCall.call(..)}: a list of selected objects, update counts, an
- * open result iterator, or the OUT parameters of a stored procedure. Items are listed in the order they were
- * produced, so callers that know the shape of their query can access them by index. The hierarchy is sealed, so
- * callers can exhaustively switch over the item type:
+ * A single item of a multipart query result. QueryResults are returned as a list from {@link ObjectContext#execute(Query)}.
+ * The goal is to expose a specific combination of ResultSets, update counts and procedure OUT parameters produced by a
+ * JDBC statement. The user can process each QueryResult like this:
  * <pre>{@code
  * for (QueryResult item : SQLExec.query(sql).execute(context)) {
  *     switch (item) {
