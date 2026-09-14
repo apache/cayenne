@@ -19,6 +19,12 @@
 
 package org.apache.cayenne.exp.parser;
 
+import java.math.BigDecimal;
+import java.math.BigInteger;
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.List;
+
 import org.apache.cayenne.exp.Expression;
 
 /**
@@ -37,5 +43,49 @@ public class ASTSum extends ASTAggregateFunctionCall {
     @Override
     public Expression shallowCopy() {
         return new ASTSum(id);
+    }
+
+    /**
+     * Sums numeric values following SQL semantics: nulls are skipped and an empty input produces null. The result is
+     * a BigDecimal if any value is a BigDecimal, a Long if all values are integral, and a Double otherwise.
+     */
+    @Override
+    protected Object evaluateCollection(Collection<?> values) {
+        List<Number> numbers = new ArrayList<>(values.size());
+        boolean decimal = false;
+        boolean integral = true;
+        for (Object value : values) {
+            if (value == null) {
+                continue;
+            }
+            if (!(value instanceof Number number)) {
+                throw new UnsupportedOperationException("Can't calculate sum for non-numeric type.");
+            }
+            numbers.add(number);
+            decimal |= number instanceof BigDecimal;
+            integral &= number instanceof Byte || number instanceof Short
+                    || number instanceof Integer || number instanceof Long;
+        }
+
+        if (numbers.isEmpty()) {
+            return null;
+        }
+        if (decimal) {
+            return numbers.stream().map(ASTSum::toBigDecimal).reduce(BigDecimal.ZERO, BigDecimal::add);
+        }
+        if (integral) {
+            return numbers.stream().mapToLong(Number::longValue).reduce(0L, Math::addExact);
+        }
+        return numbers.stream().mapToDouble(Number::doubleValue).sum();
+    }
+
+    private static BigDecimal toBigDecimal(Number number) {
+        return switch (number) {
+            case BigDecimal bd -> bd;
+            case BigInteger bi -> new BigDecimal(bi);
+            case Double d -> BigDecimal.valueOf(d);
+            case Float f -> new BigDecimal(f.toString());
+            default -> BigDecimal.valueOf(number.longValue());
+        };
     }
 }

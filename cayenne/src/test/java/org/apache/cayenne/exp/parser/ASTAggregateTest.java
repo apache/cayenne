@@ -19,12 +19,18 @@
 
 package org.apache.cayenne.exp.parser;
 
+import java.math.BigDecimal;
+import java.util.Arrays;
+import java.util.List;
+import java.util.Map;
+
 import org.apache.cayenne.exp.Expression;
 import org.apache.cayenne.exp.ExpressionException;
 import org.apache.cayenne.exp.ExpressionFactory;
 import org.junit.jupiter.api.Test;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertNull;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
@@ -149,6 +155,49 @@ public class ASTAggregateTest {
         assertTrue(exp.getOperand(0) instanceof ASTObjPath);
 
         assertEquals(expressionString, exp.toString());
+    }
+
+    @Test
+    public void sumEvaluateIntegral() {
+        assertEquals(6L, new ASTSum(new ASTAsterisk()).evaluate(List.of(1, 2L, (short) 3)));
+    }
+
+    @Test
+    public void sumEvaluateDecimal() {
+        Object sum = new ASTSum(new ASTAsterisk()).evaluate(List.of(new BigDecimal("1.10"), 2, 0.25));
+        assertEquals(new BigDecimal("3.35"), sum);
+    }
+
+    @Test
+    public void sumEvaluateFloating() {
+        assertEquals(3.5d, new ASTSum(new ASTAsterisk()).evaluate(List.of(1, 2.5)));
+    }
+
+    @Test
+    public void sumEvaluateSkipsNulls() {
+        assertEquals(5L, new ASTSum(new ASTAsterisk()).evaluate(Arrays.asList(null, 2, null, 3)));
+    }
+
+    @Test
+    public void sumEvaluateEmpty() {
+        assertNull(new ASTSum(new ASTAsterisk()).evaluate(List.of()));
+        assertNull(new ASTSum(new ASTAsterisk()).evaluate(Arrays.asList(null, null)));
+    }
+
+    @Test
+    public void sumEvaluateMap() {
+        assertEquals(30L, new ASTSum(new ASTAsterisk()).evaluate(Map.of("a", 10, "b", 20)));
+    }
+
+    @Test
+    public void sumEvaluateNonNumeric() {
+        assertThrows(ExpressionException.class, () -> new ASTSum(new ASTAsterisk()).evaluate(List.of(1, "abc")));
+    }
+
+    @Test
+    public void sumEvaluateParsedPath() {
+        Expression exp = ExpressionFactory.exp("sum(prices)");
+        assertEquals(7L, exp.evaluate(Map.of("prices", List.of(3, 4))));
     }
 
     @Test
