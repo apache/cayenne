@@ -18,13 +18,6 @@
  ****************************************************************/
 package org.apache.cayenne.query;
 
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.Collections;
-import java.util.List;
-import java.util.Map;
-import java.util.function.Function;
-
 import org.apache.cayenne.CayenneRuntimeException;
 import org.apache.cayenne.EmbeddableObject;
 import org.apache.cayenne.Persistent;
@@ -33,6 +26,12 @@ import org.apache.cayenne.exp.property.Property;
 import org.apache.cayenne.map.EmbeddedAttribute;
 import org.apache.cayenne.map.EntityResolver;
 import org.apache.cayenne.map.ObjEntity;
+
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.Collections;
+import java.util.List;
+import java.util.function.Function;
 
 /**
  * @since 4.2
@@ -77,11 +76,6 @@ class ColumnSelectMetadata extends ObjectSelectMetadata {
             }
         }
     }
-
-	@Override
-	public Map<String, String> getPathSplitAliases() {
-		return pathSplitAliases != null ? pathSplitAliases : Collections.emptyMap();
-	}
 
 	/**
 	 * Builds the shape of a result row declared by the query columns: one segment per column, classified the same
