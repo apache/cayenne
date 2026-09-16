@@ -20,12 +20,14 @@
 package org.apache.cayenne.access.translator.select;
 
 import java.util.Collections;
+import java.util.List;
 import java.util.Map;
 
 import org.apache.cayenne.map.DbEntity;
 import org.apache.cayenne.map.ObjEntity;
 import org.apache.cayenne.query.MockQueryMetadata;
 import org.apache.cayenne.query.QueryMetadata;
+import org.apache.cayenne.query.ResultSegment;
 
 class MockQueryMetadataBuilder {
 
@@ -38,6 +40,8 @@ class MockQueryMetadataBuilder {
     private int offset;
 
     private boolean suppressDistinct;
+
+    private List<ResultSegment> resultSetMapping;
 
     MockQueryMetadataBuilder withDbEntity(DbEntity entity) {
         this.dbEntity = entity;
@@ -57,6 +61,11 @@ class MockQueryMetadataBuilder {
 
     MockQueryMetadataBuilder withSuppressDistinct() {
         this.suppressDistinct = true;
+        return this;
+    }
+
+    MockQueryMetadataBuilder withResultSetMapping(List<ResultSegment> resultSetMapping) {
+        this.resultSetMapping = resultSetMapping;
         return this;
     }
 
@@ -91,6 +100,11 @@ class MockQueryMetadataBuilder {
             @Override
             public boolean isSuppressingDistinct() {
                 return suppressDistinct;
+            }
+
+            @Override
+            public List<ResultSegment> getResultSetMapping() {
+                return resultSetMapping;
             }
         };
     }

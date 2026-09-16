@@ -51,7 +51,8 @@ public class SQLResult {
         int offset = 0;
         for (Object component : getComponents()) {
             if (component instanceof String) {
-                resolvedComponents.add(new ScalarResultSegment((String) component, offset));
+                // column results are declared by name only; the column type comes from the query itself
+                resolvedComponents.add(new ScalarResultSegment((String) component, null, offset));
                 offset = offset + 1;
             } else if (component instanceof EntityResult) {
                 EntityResult entityResult = (EntityResult) component;

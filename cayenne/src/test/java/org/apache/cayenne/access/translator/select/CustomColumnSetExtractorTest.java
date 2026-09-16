@@ -22,6 +22,7 @@ package org.apache.cayenne.access.translator.select;
 import java.sql.Types;
 import java.util.Collection;
 import java.util.Collections;
+import java.util.List;
 
 import org.apache.cayenne.access.sqlbuilder.sqltree.ColumnNode;
 import org.apache.cayenne.exp.ExpressionFactory;
@@ -34,6 +35,7 @@ import org.apache.cayenne.map.EntityResolver;
 import org.apache.cayenne.map.ObjAttribute;
 import org.apache.cayenne.map.ObjEntity;
 import org.apache.cayenne.query.FluentSelect;
+import org.apache.cayenne.query.ScalarResultSegment;
 import org.junit.jupiter.api.Test;
 
 import static org.junit.jupiter.api.Assertions.*;
@@ -46,11 +48,12 @@ public class CustomColumnSetExtractorTest extends BaseColumnExtractorTest {
         BaseProperty<?> property0 = PropertyFactory.createBase(ExpressionFactory.dbPathExp("name"), String.class);
         Collection<Property<?>> properties = Collections.singleton(property0);
 
-        // a query with an explicit column set is what triggers the result set mapping
+        // a query with an explicit column set carries one result segment per column in its metadata
         FluentSelect<?, ?> query = new MockFluentSelectBuilder()
                 .withColumns(properties)
                 .withMetaData(new MockQueryMetadataBuilder()
                         .withDbEntity(mockDbEntity)
+                        .withResultSetMapping(List.of(new ScalarResultSegment("name", String.class, -1)))
                         .build())
                 .build();
         SelectTranslatorContext context = new MockSelectTranslatorContext(query);

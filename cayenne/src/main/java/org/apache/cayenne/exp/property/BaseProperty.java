@@ -19,12 +19,6 @@
 
 package org.apache.cayenne.exp.property;
 
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.List;
-import java.util.Objects;
-import java.util.function.Supplier;
-
 import org.apache.cayenne.exp.Expression;
 import org.apache.cayenne.exp.ExpressionFactory;
 import org.apache.cayenne.exp.FunctionExpressionFactory;
@@ -35,6 +29,12 @@ import org.apache.cayenne.query.Ordering;
 import org.apache.cayenne.query.Orderings;
 import org.apache.cayenne.query.SortOrder;
 import org.apache.cayenne.reflect.PropertyUtils;
+
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.List;
+import java.util.Objects;
+import java.util.function.Supplier;
 
 /**
  * Property that represents generic attribute.
@@ -312,7 +312,7 @@ public class BaseProperty<E> implements Property<E> {
     }
 
     /**
-     * @return type of entity attribute described by this property
+     * @return type of entity attribute described by this property, or null when the type is not known
      */
     public Class<E> getType() {
         return type;

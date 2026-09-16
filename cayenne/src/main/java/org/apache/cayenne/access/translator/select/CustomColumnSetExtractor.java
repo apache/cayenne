@@ -20,11 +20,10 @@
 package org.apache.cayenne.access.translator.select;
 
 import java.util.Collection;
-import java.util.Map;
+import java.util.Iterator;
+import java.util.List;
 
 import org.apache.cayenne.CayenneRuntimeException;
-import org.apache.cayenne.EmbeddableObject;
-import org.apache.cayenne.Persistent;
 import org.apache.cayenne.access.sqlbuilder.sqltree.Node;
 import org.apache.cayenne.exp.Expression;
 import org.apache.cayenne.exp.ExpressionFactory;
@@ -35,9 +34,17 @@ import org.apache.cayenne.map.EmbeddedAttribute;
 import org.apache.cayenne.map.EmbeddedResult;
 import org.apache.cayenne.map.JoinType;
 import org.apache.cayenne.map.ObjEntity;
+import org.apache.cayenne.query.EmbeddableResultSegment;
+import org.apache.cayenne.query.EntityResultSegment;
+import org.apache.cayenne.query.ResultSegment;
+import org.apache.cayenne.query.ScalarResultSegment;
 import org.apache.cayenne.reflect.ClassDescriptor;
 
 /**
+ * Extracts SQL columns for a query with an explicit column list. Each column is classified by the result segment
+ * the query metadata built for it (see {@code ColumnSelectMetadata}), so entity, embeddable and scalar columns and
+ * scalar Java types are decided once, against the model, rather than from the column's declared Java type.
+ *
  * @since 4.2
  */
 class CustomColumnSetExtractor implements ColumnExtractor {
@@ -52,73 +59,58 @@ class CustomColumnSetExtractor implements ColumnExtractor {
 
     @Override
     public void extract(CayennePath prefix) {
+        List<ResultSegment> segments = context.getMetadata().getResultSetMapping();
+        if (segments == null || segments.size() != columns.size()) {
+            throw new CayenneRuntimeException("Query metadata describes %d result segments for %d columns",
+                    segments == null ? 0 : segments.size(), columns.size());
+        }
+
+        Iterator<ResultSegment> segmentIterator = segments.iterator();
         for (Property<?> property : columns) {
-            if (isFullObjectProp(property)) {
-                extractFullObject(prefix, property);
-            } else if(isEmbeddedProp(property)) {
-                extractEmbeddedObject(property);
-            } else {
-                extractSimpleProperty(property);
+            switch (segmentIterator.next()) {
+                case EntityResultSegment segment -> extractFullObject(prefix, property, segment.classDescriptor());
+                case EmbeddableResultSegment ignored -> extractEmbeddedObject(property);
+                case ScalarResultSegment segment -> extractSimpleProperty(property, segment);
             }
         }
     }
 
-    private void extractSimpleProperty(Property<?> property) {
+    private void extractSimpleProperty(Property<?> property, ScalarResultSegment segment) {
         Node sqlNode = context.getQualifierTranslator().translate(property);
         String alias = property.getAlias();
-        context.addResultNode(sqlNode, true, property, alias == null ? null : CayennePath.of(alias));
-        String name = property.getName() == null ? property.getExpression().expName() : property.getName();
-        context.getSqlResult().addColumnResult(name);
-    }
-
-    private boolean isFullObjectProp(Property<?> property) {
-        int expressionType = property.getExpression().getType();
-
-        // forbid direct selection of toMany relationships columns
-        if(property.getType() != null && (expressionType == Expression.OBJ_PATH || expressionType == Expression.DB_PATH)
-                && (Collection.class.isAssignableFrom(property.getType())
-                || Map.class.isAssignableFrom(property.getType()))) {
-            throw new CayenneRuntimeException("Can't directly select toMany relationship columns. " +
-                    "Either select it with aggregate functions like count() or with flat() function to select full related objects.");
+        ResultNodeDescriptor resultNode = context.addResultNode(
+                sqlNode, true, property, alias == null ? null : CayennePath.of(alias));
+        if (segment.type() != null) {
+            resultNode.setJavaType(segment.type().getCanonicalName());
         }
-
-        // evaluate ObjPath with Persistent type as toOne relations and use it as full object
-        return expressionType == Expression.FULL_OBJECT
-                || (property.getType() != null
-                    && expressionType == Expression.OBJ_PATH
-                    && Persistent.class.isAssignableFrom(property.getType()));
-    }
-
-    private boolean isEmbeddedProp(Property<?> property) {
-        return EmbeddableObject.class.isAssignableFrom(property.getType());
+        context.getSqlResult().addColumnResult(segment.column());
     }
 
     private void extractEmbeddedObject(Property<?> property) {
         Object o = property.getExpression().evaluate(context.getMetadata().getObjEntity());
-        if(!(o instanceof EmbeddedAttribute)) {
+        if(!(o instanceof EmbeddedAttribute attribute)) {
             throw new CayenneRuntimeException("EmbeddedAttribute expected, %s found", o);
         }
-        EmbeddedAttribute attribute = (EmbeddedAttribute) o;
         EmbeddedResult result = new EmbeddedResult(attribute.getEmbeddable(), attribute.getAttributes().size());
         attribute.getAttributes().forEach(attr -> {
-            Node sqlNode = context.getQualifierTranslator().translate(ExpressionFactory.dbPathExp(attr.getDbAttributePath()));
+            Node sqlNode = context.getQualifierTranslator()
+                    .translate(ExpressionFactory.dbPathExp(attr.getDbAttributePath()));
             context.addResultNode(sqlNode, true, null, null);
             result.addAttribute(attr);
         });
         context.getSqlResult().addEmbeddedResult(result);
     }
 
-    private void extractFullObject(CayennePath prefix, Property<?> property) {
+    private void extractFullObject(CayennePath prefix, Property<?> property, ClassDescriptor descriptor) {
         prefix = calculatePrefix(prefix, property);
         ensureJoin(prefix);
 
-        ObjEntity entity = context.getResolver().getObjEntity(property.getType());
+        ObjEntity entity = descriptor.getEntity();
 
         ColumnExtractor extractor;
         if(context.getMetadata().getPageSize() > 0) {
             extractor = new IdColumnExtractor(context, entity);
         } else {
-            ClassDescriptor descriptor = context.getResolver().getClassDescriptor(entity.getName());
             extractor = new DescriptorColumnExtractor(context, descriptor);
         }
 
@@ -166,7 +158,8 @@ class CustomColumnSetExtractor implements ColumnExtractor {
     private void ensureJoin(CayennePath prefix) {
         // ensure all joins for given property
         if(!prefix.isEmpty()) {
-            PathTranslationResult result = context.getPathTranslator().translatePath(context.getMetadata().getDbEntity(), prefix);
+            PathTranslationResult result = context.getPathTranslator()
+                    .translatePath(context.getMetadata().getDbEntity(), prefix);
             result.getDbRelationship().ifPresent(relationship
                     -> context.getTableTree().addJoinTable(result.getFinalPath(), relationship, JoinType.LEFT_OUTER));
         }

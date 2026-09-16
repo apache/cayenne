@@ -22,15 +22,29 @@ import org.apache.cayenne.CayenneRuntimeException;
 import org.apache.cayenne.EmbeddableObject;
 import org.apache.cayenne.Persistent;
 import org.apache.cayenne.exp.Expression;
+import org.apache.cayenne.exp.parser.ASTAggregateFunctionCall;
+import org.apache.cayenne.exp.parser.ASTConcat;
+import org.apache.cayenne.exp.parser.ASTCount;
+import org.apache.cayenne.exp.parser.ASTDistinct;
+import org.apache.cayenne.exp.parser.ASTExtract;
+import org.apache.cayenne.exp.parser.ASTLength;
+import org.apache.cayenne.exp.parser.ASTLocate;
+import org.apache.cayenne.exp.parser.ASTLower;
+import org.apache.cayenne.exp.parser.ASTSubstring;
+import org.apache.cayenne.exp.parser.ASTTrim;
+import org.apache.cayenne.exp.parser.ASTUpper;
 import org.apache.cayenne.exp.property.Property;
 import org.apache.cayenne.map.EmbeddedAttribute;
 import org.apache.cayenne.map.EntityResolver;
+import org.apache.cayenne.map.ObjAttribute;
 import org.apache.cayenne.map.ObjEntity;
+import org.apache.cayenne.map.ObjRelationship;
 
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.List;
+import java.util.Map;
 import java.util.function.Function;
 
 /**
@@ -78,10 +92,8 @@ class ColumnSelectMetadata extends ObjectSelectMetadata {
     }
 
 	/**
-	 * Builds the shape of a result row declared by the query columns: one segment per column, classified the same
-	 * way the select translator classifies columns into entity, embeddable and scalar results. Column offsets and
-	 * field labels depend on the generated SQL and are not known here, so the segments carry none; the translator
-	 * produces the column-resolved counterpart of this list for the row reader.
+	 * Builds the shape of a result row declared by the query columns: one segment per column, classified into
+	 * entity, embeddable and scalar results.
 	 */
 	private List<ResultSegment> buildResultSetMapping(ColumnSelect<?> query, EntityResolver resolver) {
 		Collection<Property<?>> columns = query.getColumns();
@@ -101,27 +113,134 @@ class ColumnSelectMetadata extends ObjectSelectMetadata {
 		Class<?> type = column.getType();
 		int expType = exp.getType();
 
-		boolean fullObject = expType == Expression.FULL_OBJECT
-				|| (type != null && expType == Expression.OBJ_PATH && Persistent.class.isAssignableFrom(type));
+		if (expType == Expression.FULL_OBJECT) {
+			ObjEntity entity = type != null ? resolver.getObjEntity(type) : fullObjectEntity(exp);
+			if (entity == null) {
+				throw new CayenneRuntimeException("No entity mapped for column '%s' of type %s", exp, type);
+			}
+			return entitySegment(entity, resolver);
+		}
 
-		if (fullObject) {
+		if (type != null) {
+			return typedSegment(column, resolver);
+		}
+
+		if (expType == Expression.OBJ_PATH && getObjEntity() != null) {
+			return switch (exp.evaluate(getObjEntity())) {
+				case EmbeddedAttribute ignored -> embeddableSegment(exp);
+				case ObjRelationship relationship -> {
+					if (relationship.isToMany()) {
+						throw toManyColumnException();
+					}
+					yield entitySegment(relationship.getTargetEntity(), resolver);
+				}
+				case ObjAttribute attribute ->
+						new ScalarResultSegment(columnName(column), attribute.getJavaClass(), -1);
+				default -> new ScalarResultSegment(columnName(column), null, -1);
+			};
+		}
+
+		return new ScalarResultSegment(columnName(column), inferType(exp), -1);
+	}
+
+	private ResultSegment typedSegment(Property<?> column, EntityResolver resolver) {
+		Expression exp = column.getExpression();
+		Class<?> type = column.getType();
+		int expType = exp.getType();
+
+		if ((expType == Expression.OBJ_PATH || expType == Expression.DB_PATH)
+				&& (Collection.class.isAssignableFrom(type) || Map.class.isAssignableFrom(type))) {
+			throw toManyColumnException();
+		}
+
+		if (expType == Expression.OBJ_PATH && Persistent.class.isAssignableFrom(type)) {
 			ObjEntity entity = resolver.getObjEntity(type);
 			if (entity == null) {
 				throw new CayenneRuntimeException("No entity mapped for column '%s' of type %s", exp, type);
 			}
-			return new EntityResultSegment(resolver.getClassDescriptor(entity.getName()), Collections.emptyMap(), -1);
+			return entitySegment(entity, resolver);
 		}
 
-		if (type != null && EmbeddableObject.class.isAssignableFrom(type)) {
-			Object o = exp.evaluate(getObjEntity());
-			if (!(o instanceof EmbeddedAttribute attribute)) {
-				throw new CayenneRuntimeException("EmbeddedAttribute expected, %s found", o);
-			}
-			return new EmbeddableResultSegment(attribute.getEmbeddable(), Collections.emptyMap(), -1);
+		if (EmbeddableObject.class.isAssignableFrom(type)) {
+			return embeddableSegment(exp);
 		}
 
-		String name = column.getName() == null ? exp.expName() : column.getName();
-		return new ScalarResultSegment(name, -1);
+		return new ScalarResultSegment(columnName(column), type, -1);
+	}
+
+	private ResultSegment entitySegment(ObjEntity entity, EntityResolver resolver) {
+		return new EntityResultSegment(resolver.getClassDescriptor(entity.getName()), Collections.emptyMap(), -1);
+	}
+
+	private ResultSegment embeddableSegment(Expression exp) {
+		Object o = exp.evaluate(getObjEntity());
+		if (!(o instanceof EmbeddedAttribute attribute)) {
+			throw new CayenneRuntimeException("EmbeddedAttribute expected, %s found", o);
+		}
+		return new EmbeddableResultSegment(attribute.getEmbeddable(), Collections.emptyMap(), -1);
+	}
+
+	/**
+	 * Resolves the entity of a "full object" expression with no declared type: the root entity when the expression
+	 * has no operand, otherwise the target of the relationship path it wraps (a "flat" to-many column).
+	 */
+	private ObjEntity fullObjectEntity(Expression exp) {
+		if (exp.getOperandCount() == 0) {
+			return getObjEntity();
+		}
+		if (getObjEntity() != null
+				&& exp.getOperand(0) instanceof Expression path
+				&& path.getType() == Expression.OBJ_PATH
+				&& path.evaluate(getObjEntity()) instanceof ObjRelationship relationship) {
+			return relationship.getTargetEntity();
+		}
+		return null;
+	}
+
+	/**
+	 * Infers the Java type of an untyped non-path column from its expression, following the types the fluent
+	 * Property API assigns to the same functions. Returns null when there is nothing to infer, in which case the
+	 * value is read with the type the driver reports.
+	 */
+	private Class<?> inferType(Expression exp) {
+		return switch (exp) {
+			case ASTCount ignored -> Long.class;
+			case ASTAggregateFunctionCall aggregate -> operandType(aggregate);
+			case ASTUpper ignored -> String.class;
+			case ASTLower ignored -> String.class;
+			case ASTConcat ignored -> String.class;
+			case ASTSubstring ignored -> String.class;
+			case ASTTrim ignored -> String.class;
+			case ASTLength ignored -> Integer.class;
+			case ASTLocate ignored -> Integer.class;
+			case ASTExtract ignored -> Integer.class;
+			default -> null;
+		};
+	}
+
+	private Class<?> operandType(Expression function) {
+		if (function.getOperandCount() == 0 || !(function.getOperand(0) instanceof Expression operand)) {
+			return null;
+		}
+		if (operand instanceof ASTDistinct) {
+			return operandType(operand);
+		}
+		if (operand.getType() == Expression.OBJ_PATH
+				&& getObjEntity() != null
+				&& operand.evaluate(getObjEntity()) instanceof ObjAttribute attribute) {
+			return attribute.getJavaClass();
+		}
+		return null;
+	}
+
+	private static String columnName(Property<?> column) {
+		return column.getName() == null ? column.getExpression().expName() : column.getName();
+	}
+
+	private static CayenneRuntimeException toManyColumnException() {
+		return new CayenneRuntimeException("Can't directly select toMany relationship columns. "
+				+ "Either select it with aggregate functions like count() "
+				+ "or with flat() function to select full related objects.");
 	}
 
 	@Override

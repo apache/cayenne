@@ -102,7 +102,7 @@ class ResultNodeDescriptor {
         if (javaType != null) {
             return javaType;
         }
-        if (property != null) {
+        if (property != null && property.getType() != null) {
             return property.getType().getCanonicalName();
         }
         if (getDbAttribute() != null) {

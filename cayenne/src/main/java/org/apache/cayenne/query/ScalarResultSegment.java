@@ -22,8 +22,11 @@ package org.apache.cayenne.query;
  * A result set segment mapped to a single scalar value.
  *
  * @param column       the ResultSet column label
+ * @param type         the Java type the column value is converted to, or null when the segment declares none and
+ *                     the value is read with the type determined for the column by the query (a SQLTemplate
+ *                     "#result" directive, or the type the driver reports)
  * @param columnOffset a zero-based column index of this segment's column in the ResultSet
  * @since 3.0
  */
-public record ScalarResultSegment(String column, int columnOffset) implements ResultSegment {
+public record ScalarResultSegment(String column, Class<?> type, int columnOffset) implements ResultSegment {
 }

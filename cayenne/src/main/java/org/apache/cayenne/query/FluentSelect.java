@@ -452,6 +452,7 @@ public abstract class FluentSelect<T, S extends FluentSelect<T, S>> implements S
 
     /**
      * Sets query timeout of PreparedStatement generated for this query.
+     *
      * @see Statement#setQueryTimeout(int)
      */
     public S queryTimeout(int timeout) {
@@ -653,7 +654,7 @@ public abstract class FluentSelect<T, S extends FluentSelect<T, S>> implements S
     }
 
     protected void setActiveExpression(Expression exp) {
-        if(havingExpressionIsActive) {
+        if (havingExpressionIsActive) {
             having = exp;
         } else {
             where = exp;
@@ -661,17 +662,12 @@ public abstract class FluentSelect<T, S extends FluentSelect<T, S>> implements S
     }
 
     protected Expression getActiveExpression() {
-        if(havingExpressionIsActive) {
+        if (havingExpressionIsActive) {
             return having;
         } else {
             return where;
         }
     }
-
-
-
-
-
 
     @Override
     public SQLAction createSQLAction(SQLActionVisitor visitor) {
@@ -713,12 +709,12 @@ public abstract class FluentSelect<T, S extends FluentSelect<T, S>> implements S
     /**
      * Utility method to perform (re)cast this type, doesn't perform any checks, so use with caution.
      *
-     * @return <code>this</code> casted to the type E
      * @param <E> type to cast to
+     * @return <code>this</code> casted to the type E
      * @since 5.0
      */
     @SuppressWarnings("unchecked")
     protected <E> E castSelf() {
-        return (E)this;
+        return (E) this;
     }
 }

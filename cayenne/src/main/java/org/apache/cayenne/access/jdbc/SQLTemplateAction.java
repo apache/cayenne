@@ -278,7 +278,7 @@ public class SQLTemplateAction implements SQLAction {
         int width = resultSet.getMetaData().getColumnCount();
         List<ResultSegment> segments = new ArrayList<>(width);
         for (int i = 0; i < width; i++) {
-            segments.add(new ScalarResultSegment(String.valueOf(i), i));
+            segments.add(new ScalarResultSegment(String.valueOf(i), null, i));
         }
         return segments;
     }
