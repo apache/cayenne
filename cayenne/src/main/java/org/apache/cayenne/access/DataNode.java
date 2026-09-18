@@ -66,7 +66,8 @@ public class DataNode {
     protected SchemaUpdateStrategy schemaUpdateStrategy;
     protected Map<String, DataMap> dataMaps;
 
-    private PkGenerator pkGenerator;
+    // when not installed by the user, created lazily from the adapter, as this may require DB access (see AutoAdapter)
+    private volatile PkGenerator pkGenerator;
 
     // tells whether "pkGenerator" was installed by the user, and hence must not be replaced when the adapter changes
     private boolean customPkGenerator;
@@ -199,10 +200,10 @@ public class DataNode {
     public void setAdapter(DbAdapter adapter) {
         this.adapter = adapter;
 
-        // a generator built for the old adapter is meaningless for the new one. A generator explicitly installed
-        // by the user is left alone.
+        // a generator built for the old adapter is meaningless for the new one, so reset it to be lazily recreated
+        // on demand. A generator explicitly installed by the user is left alone.
         if (!customPkGenerator) {
-            this.pkGenerator = adapter != null ? adapter.createPkGenerator() : null;
+            this.pkGenerator = null;
         }
     }
 
@@ -213,6 +214,17 @@ public class DataNode {
      * @since 5.0
      */
     public PkGenerator getPkGenerator() {
+
+        // not creating the default generator until it is needed, as AutoAdapter would open a DB connection to do it,
+        // and we must allow the stack to start when the DB is not available
+        if (pkGenerator == null && adapter != null) {
+            synchronized (this) {
+                if (pkGenerator == null) {
+                    pkGenerator = adapter.createPkGenerator();
+                }
+            }
+        }
+
         return pkGenerator;
     }
 
@@ -228,7 +240,7 @@ public class DataNode {
             this.customPkGenerator = true;
         } else {
             this.customPkGenerator = false;
-            this.pkGenerator = adapter != null ? adapter.createPkGenerator() : null;
+            this.pkGenerator = null;
         }
     }
 

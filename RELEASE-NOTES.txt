@@ -51,6 +51,7 @@ CAY-3008 Disjoint prefetch returns wrong results when the query matches on a "se
 CAY-3009 Column select with CLOB attribute and distinct() fails
 CAY-3011 PostgreSQL: use transactions on select with fetch size
 CAY-3018 EJBQL: broken joins when selecting a vertically inherited entity
+CAY-3030 Cayenne stack must be able to start without touching the DataSource
 
 ----------------------------------
 Release: 5.0-M3
