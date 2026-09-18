@@ -68,23 +68,4 @@ public abstract class SimpleNode implements Node {
     public String toString() {
         return SQLTemplateParserTreeConstants.jjtNodeName[id];
     }
-
-    public String toString(String prefix) {
-        return prefix + toString();
-    }
-
-    /**
-     * Override this method if you want to customize how the node dumps out its children.
-     */
-    public void dump(String prefix) {
-        System.out.println(toString(prefix));
-        if (children != null) {
-            for (Node aChildren : children) {
-                SimpleNode n = (SimpleNode) aChildren;
-                if (n != null) {
-                    n.dump(prefix + " ");
-                }
-            }
-        }
-    }
 }
