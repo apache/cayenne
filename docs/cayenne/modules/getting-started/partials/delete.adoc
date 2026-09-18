@@ -11,12 +11,12 @@
 // CONDITIONS OF ANY KIND, either express or implied. See the License for
 // the specific language governing permissions and limitations under the
 // License.
-=== Deleting Objects
+== Deleting Objects
 This chapter explains how to model relationship delete rules and how to delete individual
 objects as well as sets of objects. Also demonstrated the use of Cayenne class to run a
 query.
 
-==== Setting Up Delete Rules
+=== Setting Up Delete Rules
 Before we discuss the API for object deletion, lets go back to CayenneModeler and set
 up some delete rules. Doing this is optional but will simplify correct handling of the
 objects related to deleted objects.
@@ -32,7 +32,7 @@ Repeat this step for other relationships:
 
 Now save the mapping.
 
-==== Deleting Objects
+=== Deleting Objects
 While deleting objects is possible via SQL, qualifying a delete on one or more IDs, a
 more common way in Cayenne (or ORM in general) is to get a hold of the object first, and
 then delete it via the context. Let's use utility class Cayenne to find an
@@ -59,14 +59,14 @@ see this output:
         
     INFO: SELECT t0.DATE_OF_BIRTH, t0.NAME, t0.ID FROM ARTIST t0
       WHERE t0.NAME = ? [bind: 1->NAME:'Pablo Picasso'] - prepared in 6 ms.
-    INFO: === returned 1 row. - took 18 ms.
+    INFO: == returned 1 row. - took 18 ms.
     INFO: +++ transaction committed.
     INFO: --- transaction started.
     INFO: DELETE FROM PAINTING WHERE ID = ?
     INFO: [batch bind: 1->ID:200]
     INFO: [batch bind: 1->ID:201]
-    INFO: === updated 2 rows.
+    INFO: == updated 2 rows.
     INFO: DELETE FROM ARTIST WHERE ID = ?
     INFO: [batch bind: 1->ID:200]
-    INFO: === updated 1 row.
+    INFO: == updated 1 row.
     INFO: +++ transaction committed.

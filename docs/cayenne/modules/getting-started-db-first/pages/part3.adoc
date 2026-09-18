@@ -13,6 +13,6 @@
 // License.
 == Advanced usage of cdbimport
 
-include::part3-updating-model.adoc[]
+include::partial$part3-updating-model.adoc[]
 
-include::part3-filtering.adoc[]
+include::partial$part3-filtering.adoc[]

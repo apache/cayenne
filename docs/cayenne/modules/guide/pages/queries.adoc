@@ -38,19 +38,19 @@ objects (though usually with considerable effort). Native queries are less (if a
 than object queries.
 
 
-include::queries/objectselect.adoc[]
+include::partial$part2/queries/objectselect.adoc[]
 
-include::queries/selectbyid.adoc[]
+include::partial$part2/queries/selectbyid.adoc[]
 
-include::queries/sql.adoc[]
+include::partial$part2/queries/sql.adoc[]
 
-include::queries/sqlscripting.adoc[]
+include::partial$part2/queries/sqlscripting.adoc[]
 
-include::queries/mapped.adoc[]
+include::partial$part2/queries/mapped.adoc[]
 
-include::queries/procedure.adoc[]
+include::partial$part2/queries/procedure.adoc[]
 
-include::queries/ejbql.adoc[]
+include::partial$part2/queries/ejbql.adoc[]
 
-include::queries/custom.adoc[]
+include::partial$part2/queries/custom.adoc[]
 

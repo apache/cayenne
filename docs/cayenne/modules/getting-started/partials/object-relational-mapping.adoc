@@ -11,7 +11,7 @@
 // CONDITIONS OF ANY KIND, either express or implied. See the License for
 // the specific language governing permissions and limitations under the
 // License.
-=== Getting started with Object Relational Mapping (ORM)
+== Getting started with Object Relational Mapping (ORM)
 The goal of this section is to learn how to create a simple Object-Relational model with
 CayenneModeler. We will create a complete ORM model for the following database
 schema:
@@ -24,7 +24,7 @@ NOTE: Very often you'd have an existing database already, and
     understanding how to create the mapping by hand is important, so we are showing
     the "manual" approach below.
 
-==== Mapping Database Tables and Columns
+=== Mapping Database Tables and Columns
 Lets go back to CayenneModeler where we have the newly created project open and start
 by adding the ARTIST table. Database tables are called *DbEntities*
 in Cayenne mapping (those can be actual tables or database views).
@@ -41,7 +41,7 @@ image::modeler-artistid.png[align="center"]
 Similarly add NAME `VARCHAR(200)` and DATE_OF_BIRTH `DATE` attributes. After that repeat
 this procedure for PAINTING and GALLERY entities to match DB schema shown above.
 
-==== Mapping Database Relationships
+=== Mapping Database Relationships
 
 Now we need to specify relationships between ARTIST, PAINTING and GALLERY tables.
 Start by creating a one-to-many ARTIST/PAINTING relationship:
@@ -77,7 +77,7 @@ and back.
 - Repeat the steps above to create a many-to-one relationship from PAINTING to GALLERY, calling the relationships pair
 "gallery" and "paintings".
 
-==== Mapping Java Classes
+=== Mapping Java Classes
 
 Now that the database schema mapping is complete, CayenneModeler can create mappings
 of Java classes (aka "ObjEntities") by deriving everything from DbEntities. At present

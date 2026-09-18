@@ -13,6 +13,6 @@
 // License.
 == Java code
 
-include::part4-java-classes.adoc[]
+include::partial$part4-java-classes.adoc[]
 
-include::part4-java-code.adoc[]
+include::partial$part4-java-code.adoc[]

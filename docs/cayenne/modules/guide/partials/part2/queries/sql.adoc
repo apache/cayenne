@@ -22,7 +22,7 @@ used (as the name suggests) to select custom data in form of entities, separate 
 `Object[]`. `SQLExec` is designed to execute any SQL (e.g. updates, deletes, DDLs, etc.).
 
 Both queries support advanced SQL templating, with variable substitution and special directives as described
-<<sqlscripting,in the next chapter>>. Here we'll just provide a few simple examples:
+xref:queries.adoc#sqlscripting[in the next chapter]. Here we'll just provide a few simple examples:
 
 [source, java]
 ----

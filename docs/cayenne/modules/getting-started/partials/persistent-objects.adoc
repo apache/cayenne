@@ -11,11 +11,11 @@
 // CONDITIONS OF ANY KIND, either express or implied. See the License for
 // the specific language governing permissions and limitations under the
 // License.
-=== Getting started with persistent objects
+== Getting started with persistent objects
 In this chapter we'll learn about persistent objects, how to customize them and how to
 create and save them in DB.
 
-==== Inspecting and Customizing Persistent Objects
+=== Inspecting and Customizing Persistent Objects
 Persistent classes in Cayenne implement a `Persistent` interface. If you inspect any of
 the classes generated earlier in this tutorial (e.g.
 `org.example.cayenne.persistent.Artist`), you'll see that it extends a class with the name
@@ -34,7 +34,7 @@ changes later:
 include::example$/persistent/Artist.java[tag=content]
 ----
 
-==== Create New Objects
+=== Create New Objects
 Now we'll create a bunch of objects and save them to the database. An object is
 created and registered with `ObjectContext` using "`newObject`" method. Objects *must* be registered
 with `DataContext` to be persisted and to allow setting relationships with other objects.
@@ -94,14 +94,14 @@ output will show a few actual DB operations:
     INFO: SELECT NEXT_ID FROM AUTO_PK_SUPPORT WHERE TABLE_NAME = ? FOR UPDATE [bind: 1:'PAINTING']
     INFO: INSERT INTO GALLERY (ID, NAME) VALUES (?, ?)
     INFO: [batch bind: 1->ID:200, 2->NAME:'Metropolitan Museum of Art']
-    INFO: === updated 1 row.
+    INFO: == updated 1 row.
     INFO: INSERT INTO ARTIST (DATE_OF_BIRTH, ID, NAME) VALUES (?, ?, ?)
     INFO: [batch bind: 1->DATE_OF_BIRTH:'1881-10-25 00:00:00.0', 2->ID:200, 3->NAME:'Pablo Picasso']
-    INFO: === updated 1 row.
+    INFO: == updated 1 row.
     INFO: INSERT INTO PAINTING (ARTIST_ID, GALLERY_ID, ID, NAME) VALUES (?, ?, ?, ?)
     INFO: [batch bind: 1->ARTIST_ID:200, 2->GALLERY_ID:200, 3->ID:200, 4->NAME:'Gertrude Stein']
     INFO: [batch bind: 1->ARTIST_ID:200, 2->GALLERY_ID:200, 3->ID:201, 4->NAME:'Girl Reading at a Table']
-    INFO: === updated 2 rows.
+    INFO: == updated 2 rows.
     INFO: +++ transaction committed.
 
 So first Cayenne creates the needed tables (remember, we used

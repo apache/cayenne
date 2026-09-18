@@ -54,7 +54,7 @@ strategy by injecting you own implementation of `o.a.c.crypto.map.ColumnMapper` 
 
 [source, java]
 ----
-CayenneRuntime runtime = CayenneRuntime.builder()
+CayenneRuntime runtime = CayenneRuntime.of()
         .addModule(binder -> CryptoModule.extend(binder)
                 .columnMapper(MyColumnMapper.class));
 ----
@@ -70,7 +70,7 @@ KeyStore.
 
 [source, java]
 ----
-CayenneRuntime runtime = CayenneRuntime.builder()
+CayenneRuntime runtime = CayenneRuntime.of()
         .addModule(binder -> CryptoModule.extend(binder)
                 .keyStore(this.getClass().getResource("keystore.jcek"), "my-password".toCharArray(), "my-key-alias"));
 ----
@@ -82,7 +82,7 @@ compression and `HMAC` usage (later will ensure integrity of data).
 
 [source, java]
 ----
-CayenneRuntime runtime = CayenneRuntime.builder()
+CayenneRuntime runtime = CayenneRuntime.of()
         .addModule(binder -> CryptoModule.extend(binder)
                 .compress()
                 .useHMAC());
@@ -93,7 +93,7 @@ implement `o.a.c.crypto.transformer.value.BytesConverter` interface that will co
 
 [source, java]
 ----
-CayenneRuntime runtime = CayenneRuntime.builder()
+CayenneRuntime runtime = CayenneRuntime.of()
         .addModule(binder -> CryptoModule.extend(binder)
                 .objectToBytesConverter(MyClass.class, new MyClassBytesConverter()));
 ----

@@ -11,14 +11,14 @@
 //    CONDITIONS OF ANY KIND, either express or implied. See the License for
 //    the specific language governing permissions and limitations under the
 //    License.
-=== Creating Java Classes
+== Creating Java Classes
 Here we'll generate the Java classes from the model that was created in the previous
 section. CayenneModeler can be used to also generate the database schema, but since we
 specified "`CreateIfNoSchemaStrategy`" earlier when we created a DataNode, we'll skip the
 database schema step. Still be aware that you can do it if you need to via "Tools >
 Create Database Schema".
 
-==== Creating Java Classes
+=== Creating Java Classes
 - Select your datamap in a project tree and open "Class Generation" tab.
 - For "Type" select "Standard Persistent Objects", if it is not already selected.
 - For the "Output Directory" select "`src/main/java`" folder under your IDEA

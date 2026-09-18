@@ -13,4 +13,4 @@
 // License.
 == Importing database
 
-include::part2-rr-setup.adoc[]
+include::partial$part2-rr-setup.adoc[]

@@ -1,27 +1,67 @@
 // Licensed to the Apache Software Foundation (ASF) under one or more
 // contributor license agreements. See the NOTICE file distributed with
 // this work for additional information regarding copyright ownership.
-// The ASF licenses this file to you under the Apache License, Version
-// 2.0 (the "License"); you may not use this file except in compliance
-// with the License. You may obtain a copy of the License at
+// The ASF licenses this file to you under the Apache License, Version 2.0
+// (the "License"); you may not use this file except in compliance with
+// the License. You may obtain a copy of the License at
 //
-// https://www.apache.org/licenses/LICENSE-2.0 Unless required by
-// applicable law or agreed to in writing, software distributed under the
-// License is distributed on an "AS IS" BASIS, WITHOUT WARRANTIES OR
-// CONDITIONS OF ANY KIND, either express or implied. See the License for
-// the specific language governing permissions and limitations under the
-// License.
+// https://www.apache.org/licenses/LICENSE-2.0
+//
+// Unless required by applicable law or agreed to in writing, software
+// distributed under the License is distributed on an "AS IS" BASIS,
+// WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+// See the License for the specific language governing permissions and
+// limitations under the License.
 
-[#build_tools]
-== Build Tools
+[[selectbyid]]
+=== Selecting by ID
 
-While we encourage the use of <<cayenne-modeler,CayenneModeler>> for tasks such as DB reverse-engineering and
-code generation, Cayenne also provides an option to execute them from your preferred build tool.
-It may be occasionally useful to keep them as a part of the build. This chapter shows how to use them in
-<<maven_plugin,Maven>>, <<gradle_plugin,Gradle>> or <<ant_tasks,Ant>>.
+`ObjectSelect` can match objects of the root entity by their primary key with `byId(..)` and `byIds(..)`:
 
-include::part6/maven-plugin.adoc[]
+[source, java]
+----
+Artist artistWithId1 = ObjectSelect.query(Artist.class)
+    .byId(1)
+    .selectOne(context);
 
-include::part6/gradle-plugin.adoc[]
+List<Artist> artists = ObjectSelect.query(Artist.class)
+    .byIds(1, 2, 3)
+    .select(context);
+----
 
-include::part6/ant-tasks.adoc[]
+Both methods accept an id in any of three forms, and `byIds(..)` may mix them:
+
+* a scalar value, for entities with a single-column primary key;
+* a `Map` of DB attribute names to values, which is the form to use for a compound primary key;
+* an `ObjectId`.
+
+[source, java]
+----
+CompoundPk object = ObjectSelect.query(CompoundPk.class)
+    .byId(Map.of("KEY1", "x", "KEY2", "y"))
+    .selectOne(context);
+
+Artist artist = ObjectSelect.query(Artist.class)
+    .byId(objectId)
+    .selectOne(context);
+----
+
+Being an ordinary qualifier, an id match combines with everything else `ObjectSelect` offers - prefetching,
+caching, ordering, pagination and further conditions. Under the hood these are shorthands for the "id" expressions of
+the entity `SELF` property. So here is a somewhat more verbose equivalent that is also more flexible (e.g. allowing to
+chain id qualifier with "or") :
+
+[source, java]
+----
+List<Artist> artists = ObjectSelect.query(Artist.class)
+    .where(Artist.ARTIST_NAME.eq("Dali"))
+    .or(Artist.SELF.idsIn(1, 2, 3))
+    .select(context);
+
+List<Painting> paintings = ObjectSelect.query(Painting.class)
+    .where(Painting.TO_ARTIST.eqId(1))
+    .select(context);
+----
+
+Yet another way to find a single object by PK per xref:objectContext.adoc#persistent-objects-objectcontext[the ObjectContext chapter] is
+`ObjectContext.objectForPK(..)`. It will look in the object cache before running a query.

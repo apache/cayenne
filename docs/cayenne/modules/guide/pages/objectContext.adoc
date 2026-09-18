@@ -74,7 +74,7 @@ List<Artist> artists = ObjectSelect.query(Artist.class)
     .select(context);
 ----
 
-We'll discuss queries in some detail in the <<queries,Queries>> chapter. The example above is self-explanatory -
+We'll discuss queries in some detail in the xref:queries.adoc[Queries] chapter. The example above is self-explanatory -
 we create a `ObjectSelect` that matches all `Artist` objects present in the database, and then use `select`
 to get the result.
 
@@ -193,7 +193,7 @@ object already registered in the context without a query, and consults the cache
 Artist artist = context.objectForPK(Artist.class, 34579);
 ----
 
-For more flexibility, you could <<selectbyid,select by ID>> with `ObjectSelect` instead.
+For more flexibility, you could xref:queries.adoc#selectbyid[select by ID] with `ObjectSelect` instead.
 
 Feel free to explore the `Cayenne` class API for other useful methods.
 

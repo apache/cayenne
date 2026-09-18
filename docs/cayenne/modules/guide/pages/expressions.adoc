@@ -264,7 +264,7 @@ NOTE: Current limitation of in-memory expressions is that no collections are per
 
 ==== Translating Expressions to EJBQL
 
-<<ejbql,EJBQL>> is a textual query language that can be used with Cayenne. In some situations,
+xref:queries.adoc#ejbql[EJBQL] is a textual query language that can be used with Cayenne. In some situations,
 it is convenient to be able to convert Expression instances into EJBQL. Expressions support this conversion. An example is shown below.
 
 [source, java]

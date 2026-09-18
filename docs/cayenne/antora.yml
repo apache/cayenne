@@ -27,7 +27,7 @@ nav:
 ext:
   collector:
     - scan:
-        dir: ./../../tutorials/tutorial/src/main/java/org/apache/cayenne/tutorial
+        dir: ./../../docs/getting-started-guide/src/main/java/org/apache/cayenne/tutorial
         into: modules/getting-started/examples
 
 asciidoc:

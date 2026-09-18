@@ -13,6 +13,6 @@
 // License.
 == Setup
 
-include::part1-setup.adoc[]
+include::partial$part1-setup.adoc[]
 
-include::part1-maven-project.adoc[]
+include::partial$part1-maven-project.adoc[]
