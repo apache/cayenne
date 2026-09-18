@@ -21,7 +21,6 @@ package org.apache.cayenne.access;
 
 import org.apache.cayenne.CayenneRuntimeException;
 import org.apache.cayenne.DeleteDenyException;
-import org.apache.cayenne.ObjectContext;
 import org.apache.cayenne.PersistenceState;
 import org.apache.cayenne.Persistent;
 import org.apache.cayenne.graph.ArcId;
@@ -38,7 +37,10 @@ import org.apache.cayenne.reflect.ToOneProperty;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
+import java.util.LinkedHashMap;
+import java.util.List;
 import java.util.Map;
+import java.util.stream.Collectors;
 
 /**
  * A CayenneContext helper that processes object deletion.
@@ -171,33 +173,7 @@ class DataContextDeleteAction {
             // process remaining rules
             switch (relationship.getDeleteRule()) {
                 case DeleteRule.NO_ACTION -> { /* nothing to do */ }
-                case DeleteRule.NULLIFY -> {
-                    ArcProperty reverseArc = property.getComplimentaryReverseArc();
-                    if (reverseArc != null) {
-                        reverseArc.visit(new PropertyVisitor() {
-
-                            public boolean visitAttribute(AttributeProperty property) {
-                                return false;
-                            }
-
-                            public boolean visitToMany(ToManyProperty property) {
-                                for (Persistent relatedObject : relatedObjects) {
-                                    property.removeTarget(relatedObject, object, true);
-                                }
-                                return false;
-                            }
-
-                            public boolean visitToOne(ToOneProperty property) {
-                                // Inverse is to-one - find all related objects and
-                                // nullify the reverse relationship
-                                for (Persistent relatedObject : relatedObjects) {
-                                    property.setTarget(relatedObject, null, true);
-                                }
-                                return false;
-                            }
-                        });
-                    }
-                }
+                case DeleteRule.NULLIFY -> nullifyRelationship(object, property, relatedObjects);
                 case DeleteRule.CASCADE -> {
                     for (Persistent relatedObject : relatedObjects) {
                         performDelete(relatedObject);
@@ -209,5 +185,58 @@ class DataContextDeleteAction {
                 }
             }
         }
+    }
+
+    private void nullifyRelationship(Persistent object, ArcProperty property, Collection<Persistent> relatedObjects) {
+
+        ArcProperty reverseArc = property.getComplimentaryReverseArc();
+        if (reverseArc != null) {
+            unsetReverseArc(reverseArc, object, relatedObjects);
+            return;
+        }
+
+        // no reverse on the declared target, and no sub-entity that could declare one - nothing to unset
+        if (!property.getTargetDescriptor().hasSubclasses()) {
+            return;
+        }
+
+        // See CAY-2779: check also target subentities
+        Map<String, List<Persistent>> byEntity = relatedObjects.stream()
+                .collect(Collectors.groupingBy(
+                        o -> o.getObjectId().getEntityName(),
+                        LinkedHashMap::new,
+                        Collectors.toList()));
+
+        byEntity.forEach((entityName, sameEntityObjects) -> {
+            ClassDescriptor descriptor = context.getEntityResolver().getClassDescriptor(entityName);
+            ObjRelationship reverse = property.getRelationship().getReverseRelationship(descriptor.getEntity());
+            if (reverse != null && !reverse.isReadOnly()) {
+                unsetReverseArc((ArcProperty) descriptor.getProperty(reverse.getName()), object, sameEntityObjects);
+            }
+        });
+    }
+
+    private void unsetReverseArc(ArcProperty reverseArc, Persistent object, Collection<Persistent> relatedObjects) {
+        reverseArc.visit(new PropertyVisitor() {
+
+            public boolean visitAttribute(AttributeProperty property) {
+                return false;
+            }
+
+            public boolean visitToMany(ToManyProperty property) {
+                for (Persistent relatedObject : relatedObjects) {
+                    property.removeTarget(relatedObject, object, true);
+                }
+                return false;
+            }
+
+            public boolean visitToOne(ToOneProperty property) {
+                // Inverse is to-one - find all related objects and nullify the reverse relationship
+                for (Persistent relatedObject : relatedObjects) {
+                    property.setTarget(relatedObject, null, true);
+                }
+                return false;
+            }
+        });
     }
 }

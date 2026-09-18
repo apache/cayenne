@@ -176,6 +176,20 @@ public class ObjRelationship extends Relationship<ObjEntity, ObjAttribute, ObjRe
      */
     @Override
     public ObjRelationship getReverseRelationship() {
+        return getReverseRelationship(getTargetEntity());
+    }
+
+    /**
+     * Returns a relationship of the given entity that is complementary to this one, or null if it's not found.
+     *
+     * @see #getReverseRelationship()
+     * @since 5.0
+     */
+    public ObjRelationship getReverseRelationship(ObjEntity entity) {
+
+        if (entity == null) {
+            return null;
+        }
 
         // reverse the list
         List<DbRelationship> relationships = getDbRelationships();
@@ -187,17 +201,12 @@ public class ObjRelationship extends Relationship<ObjEntity, ObjAttribute, ObjRe
                 return null;
             }
 
-            reversed.add(0, reverse);
-        }
-
-        ObjEntity target = this.getTargetEntity();
-        if (target == null) {
-            return null;
+            reversed.addFirst(reverse);
         }
 
         ObjEntity source = getSourceEntity();
 
-        for (ObjRelationship relationship : target.getRelationships()) {
+        for (ObjRelationship relationship : entity.getRelationships()) {
             ObjEntity maybeSameSource = relationship.getTargetEntity();
             if (maybeSameSource != source && !source.isSubentityOf(maybeSameSource)) {
                 continue;

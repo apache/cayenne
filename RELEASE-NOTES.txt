@@ -37,6 +37,7 @@ CAY-3028 Im-memory evaluation of ASTSum
 
 Bug Fixes:
 
+CAY-2779 "Nullify" delete rules is not processed with n:m and inheritance hierarchy
 CAY-2832 SelectActionIT is failing on GitHub Actions
 CAY-2911 Vertical Inheritance: Column Select Sometimes Null With Vertically Inherited Entity
 CAY-2996 Javadocs are missing from the central artifacts
