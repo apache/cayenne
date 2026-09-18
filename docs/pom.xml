@@ -1,0 +1,200 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!--
+    Licensed to the Apache Software Foundation (ASF) under one
+    or more contributor license agreements. See the NOTICE file
+    distributed with this work for additional information
+    regarding copyright ownership. The ASF licenses this file
+    to you under the Apache License, Version 2.0 (the
+    "License"); you may not use this file except in compliance
+    with the License. You may obtain a copy of the License at
+
+    https://www.apache.org/licenses/LICENSE-2.0
+
+    Unless required by applicable law or agreed to in writing,
+    software distributed under the License is distributed on an
+    "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY
+    KIND, either express or implied. See the License for the
+    specific language governing permissions and limitations
+    under the License.
+-->
+<project xmlns="http://maven.apache.org/POM/4.0.0"
+         xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+         xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 https://maven.apache.org/xsd/maven-4.0.0.xsd">
+
+    <modelVersion>4.0.0</modelVersion>
+
+    <parent>
+        <groupId>org.apache.cayenne</groupId>
+        <artifactId>cayenne-parent</artifactId>
+        <version>5.0-SNAPSHOT</version>
+    </parent>
+
+    <groupId>org.apache.cayenne.docs</groupId>
+    <artifactId>cayenne-doc</artifactId>
+    <packaging>pom</packaging>
+    <name>cayenne-doc: Antora Documentation</name>
+
+    <properties>
+        <node.version>v24.18.0</node.version>
+        <docs.node.executable>node</docs.node.executable>
+        <asciidoctorj-cli.version>3.0.1</asciidoctorj-cli.version>
+        <asciidoctorj-pdf.version>2.3.7</asciidoctorj-pdf.version>
+    </properties>
+
+    <dependencies>
+        <dependency>
+            <groupId>org.apache.cayenne</groupId>
+            <artifactId>cayenne</artifactId>
+            <version>${project.version}</version>
+        </dependency>
+        <dependency>
+            <groupId>org.apache.cayenne</groupId>
+            <artifactId>cayenne-di</artifactId>
+            <version>${project.version}</version>
+        </dependency>
+        <dependency>
+            <groupId>org.asciidoctor</groupId>
+            <artifactId>asciidoctorj-cli</artifactId>
+            <version>${asciidoctorj-cli.version}</version>
+        </dependency>
+        <dependency>
+            <groupId>org.asciidoctor</groupId>
+            <artifactId>asciidoctorj-pdf</artifactId>
+            <version>${asciidoctorj-pdf.version}</version>
+        </dependency>
+    </dependencies>
+
+    <build>
+        <plugins>
+            <plugin>
+                <artifactId>maven-dependency-plugin</artifactId>
+                <executions>
+                    <execution>
+                        <id>prepare-asciidoctorj-pdf</id>
+                        <phase>generate-sources</phase>
+                        <goals>
+                            <goal>copy-dependencies</goal>
+                        </goals>
+                        <configuration>
+                            <outputDirectory>${project.build.directory}/asciidoctorj</outputDirectory>
+                            <includeScope>runtime</includeScope>
+                        </configuration>
+                    </execution>
+                    <execution>
+                        <id>unpack-javadoc-sources</id>
+                        <phase>generate-sources</phase>
+                        <goals>
+                            <goal>unpack</goal>
+                        </goals>
+                        <configuration>
+                            <outputDirectory>${project.build.directory}/sources</outputDirectory>
+                            <artifactItems>
+                                <artifactItem>
+                                    <groupId>org.apache.cayenne</groupId>
+                                    <artifactId>cayenne</artifactId>
+                                    <version>${project.version}</version>
+                                    <classifier>sources</classifier>
+                                </artifactItem>
+                                <artifactItem>
+                                    <groupId>org.apache.cayenne</groupId>
+                                    <artifactId>cayenne-di</artifactId>
+                                    <version>${project.version}</version>
+                                    <classifier>sources</classifier>
+                                </artifactItem>
+                            </artifactItems>
+                        </configuration>
+                    </execution>
+                </executions>
+            </plugin>
+            <plugin>
+                <artifactId>maven-javadoc-plugin</artifactId>
+                <configuration>
+                    <sourcepath>${project.build.directory}/sources</sourcepath>
+                    <outputDirectory>${project.build.directory}/site</outputDirectory>
+                    <header><![CDATA[<a href="http://cayenne.apache.org" target="top">Apache Cayenne</a>]]></header>
+                </configuration>
+                <executions>
+                    <execution>
+                        <id>generate-javadoc</id>
+                        <phase>generate-resources</phase>
+                        <goals>
+                            <goal>javadoc</goal>
+                        </goals>
+                    </execution>
+                </executions>
+            </plugin>
+            <plugin>
+                <groupId>org.antora</groupId>
+                <artifactId>antora-maven-plugin</artifactId>
+                <executions>
+                    <execution>
+                        <id>generate-antora-docs</id>
+                        <phase>generate-resources</phase>
+                        <goals>
+                            <goal>antora</goal>
+                        </goals>
+                        <configuration>
+                            <nodeVersion>${node.version}</nodeVersion>
+                            <packages>
+                                <package>antora@3.2.0-rc.3</package>
+                                <package>@antora/collector-extension@1.0.3</package>
+                                <package>@antora/html-single-extension@1.0.0-rc.7</package>
+                                <package>@antora/pdf-extension@1.0.0-rc.7</package>
+                            </packages>
+                            <options>
+                                <option>log-failure-level error</option>
+                                <option>log-level info</option>
+                                <option>log-format pretty</option>
+                            </options>
+                        </configuration>
+                    </execution>
+                </executions>
+            </plugin>
+            <plugin>
+                <groupId>org.codehaus.mojo</groupId>
+                <artifactId>exec-maven-plugin</artifactId>
+                <executions>
+                    <execution>
+                        <id>embed-images</id>
+                        <phase>generate-resources</phase>
+                        <goals>
+                            <goal>exec</goal>
+                        </goals>
+                        <configuration>
+                            <executable>${docs.node.executable}</executable>
+                            <arguments>
+                                <argument>${project.basedir}/embed-images.mjs</argument>
+                                <argument>${project.build.directory}/site/cayenne/5.0/_exports/cayenne-5.0.html</argument>
+                            </arguments>
+                        </configuration>
+                    </execution>
+                </executions>
+            </plugin>
+        </plugins>
+    </build>
+
+    <profiles>
+        <profile>
+            <id>windows</id>
+            <activation>
+                <os>
+                    <family>Windows</family>
+                </os>
+            </activation>
+            <properties>
+                <docs.node.executable>${project.build.directory}/node/node.exe</docs.node.executable>
+            </properties>
+        </profile>
+        <profile>
+            <id>unix</id>
+            <activation>
+                <os>
+                    <family>unix</family>
+                </os>
+            </activation>
+            <properties>
+                <docs.node.executable>${project.build.directory}/node/node</docs.node.executable>
+            </properties>
+        </profile>
+    </profiles>
+</project>

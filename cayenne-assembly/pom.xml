@@ -118,6 +118,13 @@
 			<version>${project.version}</version>
 		</dependency>
 
+		<dependency>
+			<groupId>org.apache.cayenne.docs</groupId>
+			<artifactId>cayenne-doc</artifactId>
+			<version>${project.version}</version>
+			<type>pom</type>
+		</dependency>
+
 	</dependencies>
 
 	<build>
@@ -200,11 +207,15 @@
 								<configuration>
 									<target>
 										<copy todir="${project.build.directory}/doc-staging">
-											<fileset dir="${basedir}/../docs">
-												<include name="**/target/generated-docs/*.pdf" />
-												<include name="**/target/generated-docs/*.html" />
+											<fileset dir="${basedir}/../docs/target/site/cayenne/5.0/_exports">
+												<include name="**/*" />
 											</fileset>
-											<flattenmapper />
+										</copy>
+										<copy todir="${project.build.directory}/doc-staging/api">
+											<fileset dir="${basedir}/../docs/target/site/apidocs">
+												<include name="**/*" />
+												<exclude name="apidocs/**" />
+											</fileset>
 										</copy>
 									</target>
 								</configuration>
