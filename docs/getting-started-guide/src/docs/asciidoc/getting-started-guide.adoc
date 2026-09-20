@@ -31,12 +31,6 @@ a copy of the License at https://www.apache.org/licenses/LICENSE-2.0_#
 is distributed on an "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 See the License for the specific language governing permissions and limitations under the License._#
 
-
-In this tutorial we'll create a database schema, create a Cayenne model from it, generate Java classes from the
-model, and write a small application that creates, selects and deletes persistent objects. The model is created
-with CayenneModeler, a GUI tool that comes with Cayenne. If you are using the Claude Code AI agent, each modeling step
-also shows how to get the same result by asking Claude.
-
 include::_getting-started-guide/setup.adoc[]
 
 include::_getting-started-guide/import.adoc[]
