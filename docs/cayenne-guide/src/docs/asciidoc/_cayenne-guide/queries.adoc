@@ -14,22 +14,19 @@
 
 == Queries
 
-Queries are Java objects used by the application to communicate with the database.
-Cayenne knows how to translate queries into SQL statements appropriate for a particular database engine.
-Most often queries are used to find objects matching certain criteria, but there are other types of queries too.
-E.g. those allowing to run native SQL, call DB stored procedures, etc. When committing objects,
+Query objects are used to communicate with the database. Most often, to select some objects matching a criteria.
+Cayenne knows how to translate queries to SQL statements appropriate for a particular database engine.
+Other types of queries allow to run native SQL, call stored procedures, etc. When committing objects,
 Cayenne itself creates special queries to insert/update/delete rows in the database.
 
 There is a number of built-in queries in Cayenne, described later in this chapter.
-Most of the newer queries use fluent API and can be created and executed as easy-to-read one-liners.
 Users can define their own query types to abstract certain DB interactions
 that for whatever reason can not be adequately described by the built-in set.
 
 Queries can be roughly categorized as "object" and "native".
-Object queries (most notably `ObjectSelect`)
-are built with abstractions originating in the object model (the "object" side in the "object-relational" divide).
-E.g. `ObjectSelect` consists of a Java class of objects to fetch, a qualifier expression, orderings, etc. - all of this
-expressed in terms of the object model.
+Object queries (most notably `ObjectSelect`) are built with abstractions originating in the object model (the "object"
+side in the "object-relational" divide). E.g. `ObjectSelect` consists of a Java class of objects to fetch, a qualifier
+expression, orderings, etc. - all of this expressed in terms of the object model.
 
 Native queries describe a desired DB operation using SQL (`SQLSelect`, `SQLExec` query), a reference to a stored
 procedure (`ProcedureQuery`), etc. The results of native queries are lists of scalars, lists of `Object[]` or lists of

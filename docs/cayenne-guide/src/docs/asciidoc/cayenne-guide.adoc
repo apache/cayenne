@@ -69,8 +69,6 @@ include::_cayenne-guide/customize.adoc[]
 
 include::_cayenne-guide/agentic-coding.adoc[]
 
-include::_cayenne-guide/db-first.adoc[]
-
 include::_cayenne-guide/additional-modules.adoc[]
 
 include::_cayenne-guide/build-tools.adoc[]

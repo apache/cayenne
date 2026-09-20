@@ -25,3 +25,7 @@ include::build-tools/maven-plugin.adoc[]
 include::build-tools/gradle-plugin.adoc[]
 
 include::build-tools/ant-tasks.adoc[]
+
+include::build-tools/db-import-filtering.adoc[]
+
+include::build-tools/db-import-settings.adoc[]

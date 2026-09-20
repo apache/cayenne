@@ -15,7 +15,7 @@
 [[re-modeler]]
 === Reverse Engineering in Cayenne Modeler
 
-Alternative approach to using <<re-introduction,build tools>> is doing reverse engineering from CayenneModeler.
+Alternative approach to using <<build_tools,build tools>> is doing reverse engineering from CayenneModeler.
 
 You can find the reverse engineering tool on the *DB Import* tab of a DataMap.
 

@@ -146,7 +146,7 @@ Example - a typical class generation scenario, where pairs of classes are genera
 [#mavenCdbimort]
 ==== cdbimport
 
-`cdbimport` is a `cayenne-maven-plugin` goal that generates a DataMap based on an existing database schema. By default, it is bound to the generate-sources phase. This allows you to generate your DataMap prior to building your project, possibly followed by "cgen" execution to generate the classes. CDBImport plugin described in details in chapter <<DB-First Flow>>
+`cdbimport` is a `cayenne-maven-plugin` goal that generates a DataMap based on an existing database schema. By default, it is bound to the generate-sources phase. This allows you to generate your DataMap prior to building your project, possibly followed by "cgen" execution to generate the classes.
 [#cdbimportTable.table.table-bordered]
 .cdbimport parameters
 [cols="2,1,2,5"]
@@ -176,7 +176,7 @@ Example - a typical class generation scenario, where pairs of classes are genera
 .^|dbimport
 .^|XML
 .^|No
-.^|An object that contains detailed reverse engineering rules about what DB objects should be processed. For full information about this parameter see <<DB-First Flow>> chapter.
+.^|An object that contains detailed reverse engineering rules about what DB objects should be processed. For full information about this parameter see <<re-filtering,DB Import Filtering>> and <<re-relationships-loading-control,Other DB Import Settings>>.
 |===
 
 [#cdbimportDataSource.table.table-bordered]
@@ -278,7 +278,7 @@ Typical types are:
 
 .^|filters configuration
 .^|XML
-a|Detailed reverse engineering rules about what DB objects should be processed. For full information about this parameter see <<DB-First Flow>> chapter. Here is some simple example:
+a|Detailed reverse engineering rules about what DB objects should be processed. For full information about this parameter see <<re-filtering,DB Import Filtering>>. Here is some simple example:
 [source,XML]
 ----
 <dbimport>
