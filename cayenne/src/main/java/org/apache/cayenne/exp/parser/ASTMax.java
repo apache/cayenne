@@ -34,7 +34,7 @@ public class ASTMax extends ASTAggregateFunctionCall {
     }
 
     public ASTMax(Expression expression) {
-        super(ExpressionParserTreeConstants.JJTMAX, "MAX", expression);
+        super(QLParserTreeConstants.JJTMAX, "MAX", expression);
     }
 
     @Override

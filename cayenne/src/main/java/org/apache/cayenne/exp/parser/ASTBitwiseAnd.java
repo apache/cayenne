@@ -36,7 +36,7 @@ public class ASTBitwiseAnd extends EvaluatedBitwiseNode {
 	}
 
 	public ASTBitwiseAnd() {
-		super(ExpressionParserTreeConstants.JJTBITWISEAND);
+		super(QLParserTreeConstants.JJTBITWISEAND);
 	}
 
 	public ASTBitwiseAnd(Object[] nodes) {
@@ -44,7 +44,7 @@ public class ASTBitwiseAnd extends EvaluatedBitwiseNode {
 	}
 
 	public ASTBitwiseAnd(Collection<Object> nodes) {
-		super(ExpressionParserTreeConstants.JJTBITWISEAND);
+		super(QLParserTreeConstants.JJTBITWISEAND);
 		int len = nodes.size();
 		Iterator<Object> it = nodes.iterator();
 		for (int i = 0; i < len; i++) {

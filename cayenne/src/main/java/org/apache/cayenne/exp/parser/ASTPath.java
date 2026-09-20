@@ -121,7 +121,7 @@ public abstract class ASTPath extends SimpleNode {
 
 	@Override
 	protected String getExpressionOperator(int index) {
-		throw new UnsupportedOperationException("No operator for '" + ExpressionParserTreeConstants.jjtNodeName[id]
+		throw new UnsupportedOperationException("No operator for '" + QLParserTreeConstants.jjtNodeName[id]
 				+ "'");
 	}
 

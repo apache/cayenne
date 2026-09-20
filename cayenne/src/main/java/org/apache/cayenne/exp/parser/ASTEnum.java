@@ -41,11 +41,11 @@ public class ASTEnum extends ASTScalar {
     }
 
     public ASTEnum() {
-        super(ExpressionParserTreeConstants.JJTENUM);
+        super(QLParserTreeConstants.JJTENUM);
     }
 
     public ASTEnum(Object value) {
-        super(ExpressionParserTreeConstants.JJTENUM);
+        super(QLParserTreeConstants.JJTENUM);
         setValue(value);
     }
 

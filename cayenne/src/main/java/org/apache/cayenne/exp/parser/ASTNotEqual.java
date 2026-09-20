@@ -32,14 +32,14 @@ public class ASTNotEqual extends ConditionNode {
     }
 
     public ASTNotEqual() {
-        super(ExpressionParserTreeConstants.JJTNOTEQUAL);
+        super(QLParserTreeConstants.JJTNOTEQUAL);
     }
 
     /**
      * Creates "Not Equal To" expression.
      */
     public ASTNotEqual(SimpleNode path, Object value) {
-        super(ExpressionParserTreeConstants.JJTNOTEQUAL);
+        super(QLParserTreeConstants.JJTNOTEQUAL);
         jjtAddChild(path, 0);
         jjtAddChild(new ASTScalar(value), 1);
         connectChildren();

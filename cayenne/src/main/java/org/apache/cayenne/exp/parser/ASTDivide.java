@@ -39,7 +39,7 @@ public class ASTDivide extends EvaluatedMathNode {
 	}
 
 	public ASTDivide() {
-		super(ExpressionParserTreeConstants.JJTDIVIDE);
+		super(QLParserTreeConstants.JJTDIVIDE);
 	}
 
 	public ASTDivide(Object... nodes) {
@@ -47,7 +47,7 @@ public class ASTDivide extends EvaluatedMathNode {
 	}
 
 	public ASTDivide(Collection<?> nodes) {
-		super(ExpressionParserTreeConstants.JJTDIVIDE);
+		super(QLParserTreeConstants.JJTDIVIDE);
 		int len = nodes.size();
 		Iterator<?> it = nodes.iterator();
 		for (int i = 0; i < len; i++) {

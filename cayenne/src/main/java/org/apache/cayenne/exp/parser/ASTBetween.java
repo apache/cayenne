@@ -33,11 +33,11 @@ public class ASTBetween extends ConditionNode {
 	}
 
 	public ASTBetween() {
-		super(ExpressionParserTreeConstants.JJTBETWEEN);
+		super(QLParserTreeConstants.JJTBETWEEN);
 	}
 
 	public ASTBetween(SimpleNode path, Object value1, Object value2) {
-		super(ExpressionParserTreeConstants.JJTBETWEEN);
+		super(QLParserTreeConstants.JJTBETWEEN);
 		jjtAddChild(path, 0);
 		jjtAddChild(new ASTScalar(value1), 1);
 		jjtAddChild(new ASTScalar(value2), 2);

@@ -37,11 +37,11 @@ public class ASTIn extends ConditionNode {
 	}
 
 	public ASTIn() {
-		super(ExpressionParserTreeConstants.JJTIN);
+		super(QLParserTreeConstants.JJTIN);
 	}
 
 	public ASTIn(SimpleNode path, SimpleNode node) {
-		super(ExpressionParserTreeConstants.JJTIN);
+		super(QLParserTreeConstants.JJTIN);
 		jjtAddChild(path, 0);
 		jjtAddChild(node, 1);
 		connectChildren();

@@ -32,7 +32,7 @@ public class ASTConcat extends ASTFunctionCall {
     }
 
     public ASTConcat(Expression... expressions) {
-        super(ExpressionParserTreeConstants.JJTCONCAT, "CONCAT", (Object[])expressions);
+        super(QLParserTreeConstants.JJTCONCAT, "CONCAT", (Object[])expressions);
     }
 
     @Override

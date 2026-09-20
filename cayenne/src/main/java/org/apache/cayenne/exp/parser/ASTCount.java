@@ -33,7 +33,7 @@ public class ASTCount extends ASTAggregateFunctionCall {
     }
 
     public ASTCount(Expression expression) {
-        super(ExpressionParserTreeConstants.JJTCOUNT, "COUNT", expression);
+        super(QLParserTreeConstants.JJTCOUNT, "COUNT", expression);
     }
 
     public ASTCount() {

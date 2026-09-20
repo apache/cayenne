@@ -32,7 +32,7 @@ public class ASTSqrt extends ASTFunctionCall {
     }
 
     public ASTSqrt(Expression expression) {
-        super(ExpressionParserTreeConstants.JJTSQRT, "SQRT", expression);
+        super(QLParserTreeConstants.JJTSQRT, "SQRT", expression);
     }
 
     @Override

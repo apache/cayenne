@@ -55,8 +55,9 @@ public class ASTEnclosingObject extends SimpleNode {
 
     @Override
     public void appendAsString(Appendable out) throws IOException {
-        out.append("SUPER:");
-        super.appendAsString(out);
+        out.append("enclosing(");
+        ((SimpleNode) jjtGetChild(0)).appendAsString(out);
+        out.append(')');
     }
 
     @Override

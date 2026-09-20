@@ -45,7 +45,7 @@ public class ASTFalse extends ConditionNode {
 	}
 
 	public ASTFalse() {
-		super(ExpressionParserTreeConstants.JJTFALSE);
+		super(QLParserTreeConstants.JJTFALSE);
 	}
 
 	@Override
@@ -60,7 +60,7 @@ public class ASTFalse extends ConditionNode {
 
 	@Override
 	protected String getExpressionOperator(int index) {
-		throw new UnsupportedOperationException("No operator for '" + ExpressionParserTreeConstants.jjtNodeName[id] + "'");
+		throw new UnsupportedOperationException("No operator for '" + QLParserTreeConstants.jjtNodeName[id] + "'");
 	}
 
 	@Override

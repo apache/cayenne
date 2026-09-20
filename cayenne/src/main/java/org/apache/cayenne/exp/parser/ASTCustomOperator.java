@@ -34,12 +34,12 @@ public class ASTCustomOperator extends SimpleNode {
     }
 
     public ASTCustomOperator(String operator) {
-        super(ExpressionParser.JJTCUSTOMOPERATOR);
+        super(QLParser.JJTCUSTOMOPERATOR);
         this.operator = operator;
     }
 
     public ASTCustomOperator(String operator, Object[] nodes) {
-        super(ExpressionParser.JJTCUSTOMOPERATOR);
+        super(QLParser.JJTCUSTOMOPERATOR);
         this.operator = operator;
         int len = nodes.length;
         for (int i = 0; i < len; i++) {

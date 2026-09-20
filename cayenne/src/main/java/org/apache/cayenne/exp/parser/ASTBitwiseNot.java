@@ -32,11 +32,11 @@ public class ASTBitwiseNot extends EvaluatedNode {
 	}
 
 	public ASTBitwiseNot() {
-		super(ExpressionParserTreeConstants.JJTBITWISENOT);
+		super(QLParserTreeConstants.JJTBITWISENOT);
 	}
 
 	public ASTBitwiseNot(Object node) {
-        super(ExpressionParserTreeConstants.JJTBITWISENOT);
+        super(QLParserTreeConstants.JJTBITWISENOT);
         jjtAddChild(wrapChild(node), 0);
         connectChildren();
 	}

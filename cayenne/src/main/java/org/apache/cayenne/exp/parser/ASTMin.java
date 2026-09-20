@@ -34,7 +34,7 @@ public class ASTMin extends ASTAggregateFunctionCall {
     }
 
     public ASTMin(Expression expression) {
-        super(ExpressionParserTreeConstants.JJTMIN, "MIN", expression);
+        super(QLParserTreeConstants.JJTMIN, "MIN", expression);
     }
 
     @Override

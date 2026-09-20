@@ -41,11 +41,11 @@ public class ASTAnd extends AggregateConditionNode implements ValueInjector {
 	}
 
 	public ASTAnd() {
-		super(ExpressionParserTreeConstants.JJTAND);
+		super(QLParserTreeConstants.JJTAND);
 	}
 
 	public ASTAnd(Object[] nodes) {
-		super(ExpressionParserTreeConstants.JJTAND);
+		super(QLParserTreeConstants.JJTAND);
 		int len = nodes.length;
 		for (int i = 0; i < len; i++) {
 			jjtAddChild((Node) nodes[i], i);
@@ -55,7 +55,7 @@ public class ASTAnd extends AggregateConditionNode implements ValueInjector {
 	}
 
 	public ASTAnd(Collection<? extends Node> nodes) {
-		super(ExpressionParserTreeConstants.JJTAND);
+		super(QLParserTreeConstants.JJTAND);
 		int len = nodes.size();
 		Iterator<? extends Node> it = nodes.iterator();
 		for (int i = 0; i < len; i++) {

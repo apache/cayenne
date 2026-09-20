@@ -39,7 +39,7 @@ public class ASTMultiply extends EvaluatedMathNode {
 	}
 
 	public ASTMultiply() {
-		super(ExpressionParserTreeConstants.JJTMULTIPLY);
+		super(QLParserTreeConstants.JJTMULTIPLY);
 	}
 
 	public ASTMultiply(Object... nodes) {
@@ -47,7 +47,7 @@ public class ASTMultiply extends EvaluatedMathNode {
 	}
 
 	public ASTMultiply(Collection<?> nodes) {
-		super(ExpressionParserTreeConstants.JJTMULTIPLY);
+		super(QLParserTreeConstants.JJTMULTIPLY);
 		int len = nodes.size();
 		Iterator<?> it = nodes.iterator();
 		for (int i = 0; i < len; i++) {

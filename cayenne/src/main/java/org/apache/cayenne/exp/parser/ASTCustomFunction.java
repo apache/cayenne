@@ -35,7 +35,7 @@ public class ASTCustomFunction extends ASTFunctionCall {
     }
 
     public ASTCustomFunction(String name, Object... arguments) {
-        super(ExpressionParserTreeConstants.JJTCUSTOMFUNCTION, name, arguments);
+        super(QLParserTreeConstants.JJTCUSTOMFUNCTION, name, arguments);
     }
 
     @Override

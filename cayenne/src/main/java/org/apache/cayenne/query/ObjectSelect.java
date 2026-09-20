@@ -21,7 +21,11 @@ package org.apache.cayenne.query;
 import org.apache.cayenne.DataRow;
 import org.apache.cayenne.ObjectContext;
 import org.apache.cayenne.exp.Expression;
+import org.apache.cayenne.exp.ExpressionException;
 import org.apache.cayenne.exp.ExpressionFactory;
+import org.apache.cayenne.exp.parser.JavaCharStream;
+import org.apache.cayenne.exp.parser.QLParser;
+import org.apache.cayenne.exp.parser.QLParserTokenManager;
 import org.apache.cayenne.exp.property.BaseProperty;
 import org.apache.cayenne.exp.property.ComparableProperty;
 import org.apache.cayenne.exp.property.NumericProperty;
@@ -31,6 +35,7 @@ import org.apache.cayenne.map.DbEntity;
 import org.apache.cayenne.map.EntityResolver;
 import org.apache.cayenne.map.ObjEntity;
 
+import java.io.StringReader;
 import java.util.Collection;
 import java.util.List;
 
@@ -149,6 +154,92 @@ public class ObjectSelect<T> extends FluentSelect<T, ObjectSelect<T>> {
      */
     public static ColumnSelect<Object[]> columnQuery(Class<?> entityType, Property<?>... columns) {
         return new ColumnSelect<Object[]>().entityType(entityType).columns(columns);
+    }
+
+    /**
+     * Parses a query String, creating either an ObjectSelect or a ColumnSelect, depending on the "select" clause
+     * of the String. The general form of the query is
+     * <pre>
+     * [select [distinct] columns] from Entity [where exp] [having exp] [order by orderings]
+     * [limit n [offset m]] [prefetch paths]</pre>
+     * where all the expressions follow the syntax of {@link ExpressionFactory#exp(String, Object...)}. A query with
+     * no "select" clause, or with "select self" results in an ObjectSelect. E.g.:
+     * <pre>
+     * {@code
+     * ObjectSelect.parse("from Artist where artistName like $name order by dateOfBirth desc limit 10", "A%");
+     * ObjectSelect.parse("select artistName, count(paintingArray) from Artist");
+     * }
+     * </pre>
+     *
+     * @param query  a query String
+     * @param params values of the "$name" parameters in the String, bound in the order of their first occurrence
+     * @since 5.0
+     */
+    public static FluentSelect<?, ?> parse(String query, Object... params) {
+
+        if (query == null) {
+            throw new NullPointerException("Null query string.");
+        }
+
+        JavaCharStream stream = new JavaCharStream(new StringReader(query), 1, 1, query.length() + 1);
+        QLParser parser = new QLParser(new QLParserTokenManager(stream));
+
+        // unlike expressions, a parsed query has no API to bind parameters later
+        parser.setParameters(params != null ? params : new Object[0]);
+
+        try {
+            FluentSelect<?, ?> select = parser.query();
+            parser.checkParametersBound();
+            return select;
+        } catch (Throwable th) {
+            String message = th.getMessage();
+            throw new ExpressionException("%s", th, message != null ? message : "");
+        }
+    }
+
+    /**
+     * Parses a String of a query that fetches root objects, i.e. a query with no "select" clause, or with
+     * "select self". If the type is DataRow, the query will fetch DataRows.
+     *
+     * @param type result type of the query
+     * @see #parse(String, Object...)
+     * @since 5.0
+     */
+    @SuppressWarnings("unchecked")
+    public static <T> ObjectSelect<T> parse(Class<T> type, String query, Object... params) {
+        if (!(parse(query, params) instanceof ObjectSelect<?> select)) {
+            throw new ExpressionException("Expected a query that selects root objects, got a column query: %s", query);
+        }
+        return type == DataRow.class ? (ObjectSelect<T>) select.fetchDataRows() : (ObjectSelect<T>) select;
+    }
+
+    /**
+     * Parses a String of a query that fetches a single column.
+     *
+     * @param type result type of the query
+     * @see #parse(String, Object...)
+     * @since 5.0
+     */
+    @SuppressWarnings("unchecked")
+    public static <T> ColumnSelect<T> parseColumn(Class<T> type, String query, Object... params) {
+        if (!(parse(query, params) instanceof ColumnSelect<?> select) || !select.isSingleColumn()) {
+            throw new ExpressionException("Expected a query that selects a single column: %s", query);
+        }
+        return (ColumnSelect<T>) select;
+    }
+
+    /**
+     * Parses a String of a query that fetches multiple columns.
+     *
+     * @see #parse(String, Object...)
+     * @since 5.0
+     */
+    @SuppressWarnings("unchecked")
+    public static ColumnSelect<Object[]> parseColumns(String query, Object... params) {
+        if (!(parse(query, params) instanceof ColumnSelect<?> select) || select.isSingleColumn()) {
+            throw new ExpressionException("Expected a query that selects multiple columns: %s", query);
+        }
+        return (ColumnSelect<Object[]>) select;
     }
 
     protected ObjectSelect() {

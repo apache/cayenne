@@ -36,18 +36,18 @@ public class ASTLike extends PatternMatchNode {
 	}
 
 	public ASTLike() {
-		super(ExpressionParserTreeConstants.JJTLIKE, false);
+		super(QLParserTreeConstants.JJTLIKE, false);
 	}
 
 	public ASTLike(SimpleNode path, Object pattern) {
-		super(ExpressionParserTreeConstants.JJTLIKE, false);
+		super(QLParserTreeConstants.JJTLIKE, false);
 		jjtAddChild(path, 0);
 		jjtAddChild(wrap(pattern), 1);
 		connectChildren();
 	}
 
 	public ASTLike(SimpleNode path, Object pattern, char escapeChar) {
-		super(ExpressionParserTreeConstants.JJTLIKE, false, escapeChar);
+		super(QLParserTreeConstants.JJTLIKE, false, escapeChar);
 		jjtAddChild(path, 0);
 		jjtAddChild(wrap(pattern), 1);
 		connectChildren();

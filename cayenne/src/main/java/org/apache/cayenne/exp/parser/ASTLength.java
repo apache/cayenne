@@ -32,7 +32,7 @@ public class ASTLength extends ASTFunctionCall {
     }
 
     public ASTLength(Expression expression) {
-        super(ExpressionParserTreeConstants.JJTLENGTH, "LENGTH", expression);
+        super(QLParserTreeConstants.JJTLENGTH, "LENGTH", expression);
     }
 
     @Override

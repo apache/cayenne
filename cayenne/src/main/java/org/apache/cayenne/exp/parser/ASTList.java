@@ -43,14 +43,14 @@ public class ASTList extends SimpleNode {
 	}
 
 	public ASTList() {
-		super(ExpressionParserTreeConstants.JJTLIST);
+		super(QLParserTreeConstants.JJTLIST);
 	}
 
 	/**
 	 * Initializes a list expression with an Object[].
 	 */
 	public ASTList(Object[] objects) {
-		super(ExpressionParserTreeConstants.JJTLIST);
+		super(QLParserTreeConstants.JJTLIST);
 		setValues(objects);
 	}
 
@@ -58,7 +58,7 @@ public class ASTList extends SimpleNode {
 	 * Initializes a list expression with a Java Collection
 	 */
 	public ASTList(Collection<?> objects) {
-		super(ExpressionParserTreeConstants.JJTLIST);
+		super(QLParserTreeConstants.JJTLIST);
 		setValues(objects);
 	}
 
@@ -66,7 +66,7 @@ public class ASTList extends SimpleNode {
 	 * Initializes a list expression with a Java Iterator.
 	 */
 	public ASTList(Iterator<?> objects) {
-		super(ExpressionParserTreeConstants.JJTLIST);
+		super(QLParserTreeConstants.JJTLIST);
 		setValues(objects);
 	}
 

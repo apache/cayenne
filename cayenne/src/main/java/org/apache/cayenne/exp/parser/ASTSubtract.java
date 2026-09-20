@@ -38,7 +38,7 @@ public class ASTSubtract extends EvaluatedMathNode {
     }
 
     public ASTSubtract() {
-        super(ExpressionParserTreeConstants.JJTSUBTRACT);
+        super(QLParserTreeConstants.JJTSUBTRACT);
     }
 
     public ASTSubtract(Object... nodes) {
@@ -46,7 +46,7 @@ public class ASTSubtract extends EvaluatedMathNode {
     }
 
     public ASTSubtract(Collection<?> nodes) {
-        super(ExpressionParserTreeConstants.JJTSUBTRACT);
+        super(QLParserTreeConstants.JJTSUBTRACT);
         int len = nodes.size();
         Iterator<?> it = nodes.iterator();
         for (int i = 0; i < len; i++) {

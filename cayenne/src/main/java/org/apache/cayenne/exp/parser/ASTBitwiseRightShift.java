@@ -35,7 +35,7 @@ public class ASTBitwiseRightShift extends EvaluatedBitwiseNode {
 	}
 
 	public ASTBitwiseRightShift() {
-		super(ExpressionParserTreeConstants.JJTBITWISERIGHTSHIFT);
+		super(QLParserTreeConstants.JJTBITWISERIGHTSHIFT);
 	}
 
 	public ASTBitwiseRightShift(Object[] nodes) {
@@ -43,7 +43,7 @@ public class ASTBitwiseRightShift extends EvaluatedBitwiseNode {
 	}
 
 	public ASTBitwiseRightShift(Collection<Object> nodes) {
-		super(ExpressionParserTreeConstants.JJTBITWISERIGHTSHIFT);
+		super(QLParserTreeConstants.JJTBITWISERIGHTSHIFT);
 		int len = nodes.size();
 		Iterator<Object> it = nodes.iterator();
 		for (int i = 0; i < len; i++) {

@@ -11,7 +11,7 @@ options {
 	UNICODE_INPUT = true;
 }
 
-PARSER_BEGIN(ExpressionParser)
+PARSER_BEGIN(QLParser)
 /*****************************************************************
  *   Licensed to the Apache Software Foundation (ASF) under one
  *  or more contributor license agreements.  See the NOTICE file
@@ -36,25 +36,285 @@ package org.apache.cayenne.exp.parser;
 
 import java.math.BigDecimal;
 import java.math.BigInteger;
+import java.util.HashMap;
+import java.util.Map;
 import org.apache.cayenne.exp.Expression;
+import org.apache.cayenne.exp.ExpressionException;
+import org.apache.cayenne.query.FluentSelect;
+import org.apache.cayenne.query.PrefetchTreeNode;
 
 /**
-  * Parser of Cayenne Expressions. 
+  * Parser of Cayenne expressions and queries. Has two entry points: {@link #expression()} that parses a standalone
+  * expression, and {@link #query()} that parses a full select query, whose clauses embed the same expressions.
   *
-  * @since 1.1
-  */ 
-public class ExpressionParser {
+  * @since 5.0 renamed from ExpressionParser and extended to parse queries.
+  */
+public class QLParser {
+
+    private Object[] parameters;
+    private int parameterIndex;
+    private Map<String, Object> seenParameters;
+
+    /**
+     * Sets positional parameters to bind in place of "$name" tokens as they are encountered in the parsed String.
+     * A name that occurs more than once consumes a single value. If not called, named parameters are preserved
+     * in the parsed expression.
+     */
+    public void setParameters(Object... parameters) {
+        this.parameters = parameters;
+    }
+
+    /**
+     * Should be called when the parsing is finished to ensure all positional parameters were consumed.
+     */
+    public void checkParametersBound() {
+        if (parameters != null && parameterIndex < parameters.length) {
+            throw new ExpressionException("Too many parameters to bind expression. Expected: " + parameterIndex
+                    + ", actual: " + parameters.length);
+        }
+    }
+
+    private Node boundParameter(String name) {
+        if (seenParameters == null) {
+            seenParameters = new HashMap<String, Object>();
+        }
+
+        Object value;
+        if (seenParameters.containsKey(name)) {
+            value = seenParameters.get(name);
+        } else {
+            if (parameterIndex >= parameters.length) {
+                throw new ExpressionException("Too few parameters to bind expression: " + parameters.length);
+            }
+            value = parameters[parameterIndex++];
+            seenParameters.put(name, value);
+        }
+
+        return ExpressionUtils.parameterNode(value);
+    }
+
+    // Query keywords are contextual: they are regular path tokens that are only treated as keywords
+    // in the positions where a query clause is expected, so they stay valid as property names in expressions
+
+    private boolean isKeyword(int offset, String keyword) {
+        Token t = getToken(offset);
+        return t.kind == PROPERTY_PATH && keyword.equals(t.image);
+    }
+
+    private boolean isKeywordWithParen(int offset, String keyword) {
+        return isKeyword(offset, keyword) && "(".equals(getToken(offset + 1).image);
+    }
+
+    private boolean isSubquery(int offset) {
+        return "(".equals(getToken(offset).image)
+            && (isKeyword(offset + 1, "select") || isKeyword(offset + 1, "from"));
+    }
+
+    private ParseException unexpectedToken(Token t, String expected) {
+        return new ParseException("Encountered \"" + t.image + "\" at line " + t.beginLine + ", column "
+            + t.beginColumn + ". Was expecting: " + expected);
+    }
+
+    private Expression popExpression() {
+        return (Expression) jjtree.popNode();
+    }
 }
 
-PARSER_END(ExpressionParser)
+PARSER_END(QLParser)
 
 
 Expression expression() : {}
 {
-	orCondition() <EOF> 
-    { 
-        return (Expression) jjtree.rootNode(); 
+	orCondition() <EOF>
+    {
+        return (Expression) jjtree.rootNode();
     }
+}
+
+FluentSelect<?, ?> query() : {
+    FluentSelect<?, ?> query;
+}
+{
+    query = select(true) <EOF>
+    {
+        return query;
+    }
+}
+
+FluentSelect<?, ?> select(boolean root) : {
+    QLSelectBuilder builder = new QLSelectBuilder();
+}
+{
+    [ LOOKAHEAD({ isKeyword(1, "select") }) selectClause(builder) ]
+    fromClause(builder)
+    [ LOOKAHEAD({ isKeyword(1, "where") }) keyword("where") orCondition() { builder.where(popExpression()); } ]
+    [ LOOKAHEAD({ isKeyword(1, "having") }) keyword("having") orCondition() { builder.having(popExpression()); } ]
+    [ LOOKAHEAD({ isKeyword(1, "order") }) orderClause(builder) ]
+    [ LOOKAHEAD({ isKeyword(1, "limit") }) limitClause(builder) ]
+    [ LOOKAHEAD({ root && isKeyword(1, "prefetch") }) prefetchClause(builder) ]
+    {
+        return builder.build();
+    }
+}
+
+void keyword(String keyword) : {
+    Token t;
+}
+{
+    t = <PROPERTY_PATH>
+    {
+        if (!keyword.equals(t.image)) {
+            throw unexpectedToken(t, "\"" + keyword + "\"");
+        }
+    }
+}
+
+// a simple name with no path separators, join or alias markers
+String name() : {
+    Token t;
+}
+{
+    t = pathToken()
+    {
+        if (t.image.indexOf('.') >= 0 || t.image.indexOf('+') >= 0 || t.image.indexOf('#') >= 0) {
+            throw unexpectedToken(t, "a simple name");
+        }
+        return t.image;
+    }
+}
+
+void selectClause(QLSelectBuilder builder) : {}
+{
+    keyword("select") [ <DISTINCT> { builder.distinct(); } ] column(builder) ( "," column(builder) )*
+}
+
+void column(QLSelectBuilder builder) : {
+    String alias = null;
+}
+{
+    orCondition() [ LOOKAHEAD({ isKeyword(1, "as") }) keyword("as") alias = name() ]
+    {
+        builder.column(popExpression(), alias);
+    }
+}
+
+void fromClause(QLSelectBuilder builder) : {
+    String name;
+}
+{
+    keyword("from")
+    (
+        "db:" name = name() { builder.fromDbEntity(name); }
+    |
+        name = name() { builder.fromObjEntity(name); }
+    )
+}
+
+void orderClause(QLSelectBuilder builder) : {}
+{
+    keyword("order") keyword("by") ordering(builder) ( "," ordering(builder) )*
+}
+
+void ordering(QLSelectBuilder builder) : {
+    boolean ascending = true;
+    boolean insensitive = false;
+}
+{
+    orCondition()
+    [
+        LOOKAHEAD({ isKeyword(1, "asc") }) keyword("asc")
+    |
+        LOOKAHEAD({ isKeyword(1, "desc") }) keyword("desc") { ascending = false; }
+    ]
+    [ LOOKAHEAD({ isKeyword(1, "insensitive") }) keyword("insensitive") { insensitive = true; } ]
+    {
+        builder.ordering(popExpression(), ascending, insensitive);
+    }
+}
+
+void limitClause(QLSelectBuilder builder) : {}
+{
+    keyword("limit") <INT_LITERAL> { builder.limit(((Number) token_source.literalValue).intValue()); }
+    [
+        LOOKAHEAD({ isKeyword(1, "offset") }) keyword("offset")
+        <INT_LITERAL> { builder.offset(((Number) token_source.literalValue).intValue()); }
+    ]
+}
+
+void prefetchClause(QLSelectBuilder builder) : {}
+{
+    keyword("prefetch") prefetch(builder) ( "," prefetch(builder) )*
+}
+
+void prefetch(QLSelectBuilder builder) : {
+    Token path;
+    Token t;
+    int semantics = PrefetchTreeNode.UNDEFINED_SEMANTICS;
+}
+{
+    path = <PROPERTY_PATH>
+    [
+        t = <PROPERTY_PATH>
+        {
+            switch (t.image) {
+                case "joint":
+                    semantics = PrefetchTreeNode.JOINT_PREFETCH_SEMANTICS;
+                    break;
+                case "disjoint":
+                    semantics = PrefetchTreeNode.DISJOINT_PREFETCH_SEMANTICS;
+                    break;
+                case "disjointById":
+                    semantics = PrefetchTreeNode.DISJOINT_BY_ID_PREFETCH_SEMANTICS;
+                    break;
+                default:
+                    throw unexpectedToken(t, "\"joint\", \"disjoint\" or \"disjointById\"");
+            }
+        }
+    ]
+    {
+        builder.prefetch(path.image, semantics);
+    }
+}
+
+// a nested select in parentheses; pushes a single subquery node on the stack
+void subquery() : {
+    FluentSelect<?, ?> query;
+}
+{
+    "(" query = select(false) ")"
+    {
+        jjtree.pushNode(new ASTSubquery(query));
+    }
+}
+
+void allSubquery() #All(1) : {}
+{
+    keyword("all") subquery()
+}
+
+void anySubquery() #Any(1) : {}
+{
+    keyword("any") subquery()
+}
+
+// right-hand side of a comparison: a scalar, or a quantified subquery
+void comparisonOperand() : {}
+{
+        LOOKAHEAD({ isKeywordWithParen(1, "all") }) allSubquery()
+    |
+        LOOKAHEAD({ isKeywordWithParen(1, "any") }) anySubquery()
+    |
+        scalarExpression()
+}
+
+// right-hand side of "in": a parameter, a subquery or a list of constants
+void inOperand() : {}
+{
+        namedParameter()
+    |
+        LOOKAHEAD({ isSubquery(1) }) subquery()
+    |
+        "(" scalarCommaList() ")"
 }
 
 void orCondition() : {}
@@ -70,7 +330,12 @@ void andCondition() : {}
 void notCondition() : {}
 {
     // note: `not exists` rule must be before `not` to avoid lookahead
+    // subquery forms must be before the path forms, they are distinguished by "(select" or "(from" that follows
+        LOOKAHEAD({ getToken(1).kind == NOT_EXISTS && isSubquery(2) }) <NOT_EXISTS> subquery() #NotExists(1)
+    |
         <NOT_EXISTS> simpleCondition() #NotExists(1)
+    |
+        LOOKAHEAD({ getToken(1).kind == EXISTS && isSubquery(2) }) <EXISTS> subquery() #Exists(1)
     |
 	    <EXISTS> simpleCondition() #Exists(1)
     |
@@ -87,23 +352,23 @@ void simpleCondition() : {}
 	|
 	  conditionExpression()
 	(
-          ("="  | "==") scalarExpression() #Equal(2)
+          ("="  | "==") comparisonOperand() #Equal(2)
         |
-          ("!=" | "<>")  scalarExpression() #NotEqual(2)
+          ("!=" | "<>")  comparisonOperand() #NotEqual(2)
         |
-          "<=" scalarExpression() #LessOrEqual(2)
+          "<=" comparisonOperand() #LessOrEqual(2)
         |
-          "<" scalarExpression() #Less(2)
+          "<" comparisonOperand() #Less(2)
         |
-          ">"  scalarExpression() #Greater(2)
+          ">"  comparisonOperand() #Greater(2)
         |
-          ">=" scalarExpression() #GreaterOrEqual(2)
+          ">=" comparisonOperand() #GreaterOrEqual(2)
         |
           "like" scalarExpression() #Like(2)
         |
           "likeIgnoreCase"  scalarExpression() #LikeIgnoreCase(2)
         |
-          "in" ( namedParameter() | "(" scalarCommaList() ")" ) #In(2)
+          "in" inOperand() #In(2)
         |
           "between"  scalarExpression() "and" scalarExpression() #Between(3)
         |
@@ -119,7 +384,7 @@ void simpleNotCondition() : {}
 	|
 	    "likeIgnoreCase"  scalarExpression() #NotLikeIgnoreCase(2)
 	|
-		"in" (  namedParameter() |  "(" scalarCommaList() ")" ) #NotIn(2)
+		"in" inOperand() #NotIn(2)
 	|
 		"between"  scalarExpression() "and" scalarExpression() #NotBetween(3)
 	)
@@ -287,6 +552,10 @@ void numericPrimary() : {}
 		
 		"(" orCondition() ")"
 	|
+	    <SELF> #FullObject(0)
+	|
+	    LOOKAHEAD({ isKeywordWithParen(1, "enclosing") }) enclosing()
+	|
 	   <INT_LITERAL> { jjtThis.setValue(token_source.literalValue); } #Scalar(0)
 	| 
 	   <FLOAT_LITERAL>{ jjtThis.setValue(token_source.literalValue); }  #Scalar(0)
@@ -302,6 +571,11 @@ void numericPrimary() : {}
         customOperator()
     |
         customAggregate()
+}
+
+void enclosing() #EnclosingObject(1) : {}
+{
+    keyword("enclosing") "(" orCondition() ")"
 }
 
 void functionsReturningStrings() : { }
@@ -566,6 +840,11 @@ TOKEN : /* exists */
     | <NOT_EXISTS: "not exists">
 }
 
+TOKEN : /* root object of a query */
+{
+    <SELF: "self">
+}
+
 TOKEN : /* functions returning strings */
 {
 	<CONCAT: "concat" >
@@ -625,8 +904,12 @@ void namedParameter() :{
 	Token t;
 }
 {
-	// "pathToken" allows parameter names that match the names of functions, like "$min" or "$count"
-	"$" t = pathToken() { jjtThis.setValue(t.image); } #NamedParameter(0)
+	    // "pathToken" allows parameter names that match the names of functions, like "$min" or "$count"
+
+	    // binding positional parameters as we go
+	    LOOKAHEAD({ parameters != null }) "$" t = pathToken() { jjtree.pushNode(boundParameter(t.image)); }
+	|
+	    "$" t = pathToken() { jjtThis.setValue(t.image); } #NamedParameter(0)
 }
 
 void pathExpression() : {
@@ -662,6 +945,7 @@ Token pathToken() : {
     | t = <SUM>
     | t = <COUNT>
     | t = <DISTINCT>
+    | t = <SELF>
 
     | t = <CONCAT>
     | t = <SUBSTRING>

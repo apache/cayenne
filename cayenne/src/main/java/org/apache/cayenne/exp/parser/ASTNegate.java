@@ -38,11 +38,11 @@ public class ASTNegate extends SimpleNode {
 	}
 
 	public ASTNegate() {
-		super(ExpressionParserTreeConstants.JJTNEGATE);
+		super(QLParserTreeConstants.JJTNEGATE);
 	}
 
 	public ASTNegate(Object node) {
-		super(ExpressionParserTreeConstants.JJTNEGATE);
+		super(QLParserTreeConstants.JJTNEGATE);
 		jjtAddChild(wrapChild(node), 0);
 		connectChildren();
 	}
@@ -118,7 +118,7 @@ public class ASTNegate extends SimpleNode {
 
 	@Override
 	protected String getExpressionOperator(int index) {
-		throw new UnsupportedOperationException("No operator for '" + ExpressionParserTreeConstants.jjtNodeName[id]
+		throw new UnsupportedOperationException("No operator for '" + QLParserTreeConstants.jjtNodeName[id]
 				+ "'");
 	}
 

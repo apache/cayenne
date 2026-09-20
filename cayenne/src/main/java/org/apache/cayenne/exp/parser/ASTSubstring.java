@@ -32,7 +32,7 @@ public class ASTSubstring extends ASTFunctionCall {
     }
 
     public ASTSubstring(Expression path, Expression length, Expression offset) {
-        super(ExpressionParserTreeConstants.JJTSUBSTRING, "SUBSTRING", path, length, offset);
+        super(QLParserTreeConstants.JJTSUBSTRING, "SUBSTRING", path, length, offset);
     }
 
     @Override

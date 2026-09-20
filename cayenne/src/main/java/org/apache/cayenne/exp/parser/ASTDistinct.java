@@ -31,7 +31,7 @@ public class ASTDistinct extends ASTAggregateFunctionCall {
     }
 
     public ASTDistinct(Expression expression) {
-        super(ExpressionParserTreeConstants.JJTDISTINCT, "DISTINCT", expression);
+        super(QLParserTreeConstants.JJTDISTINCT, "DISTINCT", expression);
     }
 
     @Override

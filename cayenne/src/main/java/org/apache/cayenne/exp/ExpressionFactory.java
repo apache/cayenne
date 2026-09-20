@@ -67,8 +67,8 @@ import org.apache.cayenne.exp.parser.ASTSubtract;
 import org.apache.cayenne.exp.parser.ASTThen;
 import org.apache.cayenne.exp.parser.ASTTrue;
 import org.apache.cayenne.exp.parser.ASTWhen;
-import org.apache.cayenne.exp.parser.ExpressionParser;
-import org.apache.cayenne.exp.parser.ExpressionParserTokenManager;
+import org.apache.cayenne.exp.parser.QLParser;
+import org.apache.cayenne.exp.parser.QLParserTokenManager;
 import org.apache.cayenne.exp.parser.JavaCharStream;
 import org.apache.cayenne.exp.parser.SimpleNode;
 import org.apache.cayenne.exp.path.CayennePath;
@@ -1385,15 +1385,9 @@ public class ExpressionFactory {
 	 * @since 4.0
 	 */
 	public static Expression exp(String expressionString, Object... parameters) {
-		Expression e = fromString(expressionString);
-
-		if (parameters != null && parameters.length > 0) {
-			// apply parameters in-place... it is wasteful to clone the
-			// expression that hasn't been exposed to the callers
-			e.inPlaceParamsArray(parameters);
-		}
-
-		return e;
+		// parameters are bound by the parser as it goes, so they also reach the nested selects
+		boolean bind = parameters != null && parameters.length > 0;
+		return fromString(expressionString, bind ? parameters : null);
 	}
 
 	/**
@@ -1410,7 +1404,7 @@ public class ExpressionFactory {
 	 * 
 	 * @since 4.0
 	 */
-	private static Expression fromString(String expressionString) {
+	private static Expression fromString(String expressionString, Object[] parameters) {
 
 		if (expressionString == null) {
 			throw new NullPointerException("Null expression string.");
@@ -1423,11 +1417,15 @@ public class ExpressionFactory {
 				PARSE_BUFFER_MAX_SIZE : expressionString.length() + 1;
 		Reader reader = new StringReader(expressionString);
 		JavaCharStream stream = new JavaCharStream(reader, 1, 1, bufferSize);
-		ExpressionParserTokenManager tm = new ExpressionParserTokenManager(stream);
-		ExpressionParser parser = new ExpressionParser(tm);
+		QLParserTokenManager tm = new QLParserTokenManager(stream);
+		QLParser parser = new QLParser(tm);
+
+		parser.setParameters(parameters);
 
 		try {
-			return parser.expression();
+			Expression expression = parser.expression();
+			parser.checkParametersBound();
+			return expression;
 		} catch (Throwable th) {
 			String message = th.getMessage();
 			throw new ExpressionException("%s", th, message != null ? message : "");

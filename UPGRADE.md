@@ -52,6 +52,35 @@ Expression caseWhenExp = caseWhen(
         wrapScalarValue("error"));
 ```
 
+### Queries Parsed from Strings - a Replacement for EJBQLQuery
+
+`ObjectSelect` and `ColumnSelect` can now be created from a String, which is intended as a replacement for
+`EJBQLQuery`. The new query language (QL) is 100% aligned with the structure of those two queries and the parser produces 
+a regular `ObjectSelect` or `ColumnSelect`, the same as the one built with the fluent API:
+
+```java
+// EJBQL
+EJBQLQuery<Artist> query = new EJBQLQuery<>(
+        "select a from Artist a where a.artistName like :name order by a.dateOfBirth desc");
+query.setParameter("name", "A%");
+List<Artist> artists = context.select(query);
+
+// the same query as a parsed ObjectSelect
+List<Artist> artists = ObjectSelect
+        .parse(Artist.class, "from Artist where artistName like $name order by dateOfBirth desc", "A%")
+        .select(context);
+
+// More examples:
+List<Object[]> counts = ObjectSelect
+        .parseColumns("select self, count(paintingArray) from Artist having count(paintingArray) > 2")
+        .select(context);
+
+List<Artist> withExpensivePaintings = ObjectSelect
+        .parse(Artist.class, """
+                from Artist where exists (
+                    from Painting where toArtist = enclosing(self) and estimatedPrice > $price)""", 1000)
+        .select(context);
+```
 
 ## Upgrading to 5.0-M4
 

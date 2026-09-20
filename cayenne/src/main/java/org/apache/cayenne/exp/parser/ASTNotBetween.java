@@ -31,11 +31,11 @@ public class ASTNotBetween extends ConditionNode {
     }
 
     public ASTNotBetween() {
-        super(ExpressionParserTreeConstants.JJTNOTBETWEEN);
+        super(QLParserTreeConstants.JJTNOTBETWEEN);
     }
 
     public ASTNotBetween(SimpleNode path, Object value1, Object value2) {
-        super(ExpressionParserTreeConstants.JJTNOTBETWEEN);
+        super(QLParserTreeConstants.JJTNOTBETWEEN);
         jjtAddChild(path, 0);
         jjtAddChild(new ASTScalar(value1), 1);
         jjtAddChild(new ASTScalar(value2), 2);

@@ -33,7 +33,7 @@ public class ASTAvg extends ASTAggregateFunctionCall {
     }
 
     public ASTAvg(Expression expression) {
-        super(ExpressionParserTreeConstants.JJTAVG, "AVG", expression);
+        super(QLParserTreeConstants.JJTAVG, "AVG", expression);
     }
 
     @Override

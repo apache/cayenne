@@ -34,11 +34,11 @@ public class ASTNotIn extends ConditionNode {
     }
 
     public ASTNotIn() {
-        super(ExpressionParserTreeConstants.JJTNOTIN);
+        super(QLParserTreeConstants.JJTNOTIN);
     }
 
     public ASTNotIn(SimpleNode path, SimpleNode node) {
-        super(ExpressionParserTreeConstants.JJTNOTIN);
+        super(QLParserTreeConstants.JJTNOTIN);
         jjtAddChild(path, 0);
         jjtAddChild(node, 1);
         connectChildren();

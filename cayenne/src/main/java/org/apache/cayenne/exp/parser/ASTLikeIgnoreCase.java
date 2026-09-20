@@ -37,18 +37,18 @@ public class ASTLikeIgnoreCase extends IgnoreCaseNode {
 	}
 
 	public ASTLikeIgnoreCase() {
-		super(ExpressionParserTreeConstants.JJTLIKEIGNORECASE, true);
+		super(QLParserTreeConstants.JJTLIKEIGNORECASE, true);
 	}
 
 	public ASTLikeIgnoreCase(SimpleNode path, Object pattern) {
-		super(ExpressionParserTreeConstants.JJTLIKEIGNORECASE, true);
+		super(QLParserTreeConstants.JJTLIKEIGNORECASE, true);
 		jjtAddChild(path, 0);
 		jjtAddChild(wrap(pattern), 1);
 		connectChildren();
 	}
 
 	public ASTLikeIgnoreCase(SimpleNode path, Object pattern, char escapeChar) {
-		super(ExpressionParserTreeConstants.JJTLIKEIGNORECASE, true, escapeChar);
+		super(QLParserTreeConstants.JJTLIKEIGNORECASE, true, escapeChar);
 		jjtAddChild(path, 0);
 		jjtAddChild(wrap(pattern), 1);
 		connectChildren();

@@ -223,7 +223,7 @@ public abstract class SimpleNode extends Expression implements Node {
 	 */
 	@Override
 	public String expName() {
-		return ExpressionParserTreeConstants.jjtNodeName[id];
+		return QLParserTreeConstants.jjtNodeName[id];
 	}
 
 	/**

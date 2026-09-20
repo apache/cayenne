@@ -32,7 +32,7 @@ public class ASTTrim extends ASTFunctionCall {
     }
 
     public ASTTrim(Expression path) {
-        super(ExpressionParserTreeConstants.JJTTRIM, "TRIM", path);
+        super(QLParserTreeConstants.JJTTRIM, "TRIM", path);
     }
 
     @Override

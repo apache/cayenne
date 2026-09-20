@@ -37,11 +37,11 @@ public class ASTOr extends AggregateConditionNode {
 	}
 
 	public ASTOr() {
-		super(ExpressionParserTreeConstants.JJTOR);
+		super(QLParserTreeConstants.JJTOR);
 	}
 
 	public ASTOr(Object[] nodes) {
-		super(ExpressionParserTreeConstants.JJTOR);
+		super(QLParserTreeConstants.JJTOR);
 		int len = nodes.length;
 		for (int i = 0; i < len; i++) {
 			jjtAddChild((Node) nodes[i], i);
@@ -50,7 +50,7 @@ public class ASTOr extends AggregateConditionNode {
 	}
 
 	public ASTOr(Collection<? extends Node> nodes) {
-		super(ExpressionParserTreeConstants.JJTOR);
+		super(QLParserTreeConstants.JJTOR);
 		int len = nodes.size();
 		Iterator<? extends Node> it = nodes.iterator();
 		for (int i = 0; i < len; i++) {

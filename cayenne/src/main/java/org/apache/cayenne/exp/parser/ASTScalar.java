@@ -43,11 +43,11 @@ public class ASTScalar extends SimpleNode {
     }
 
     public ASTScalar() {
-        super(ExpressionParserTreeConstants.JJTSCALAR);
+        super(QLParserTreeConstants.JJTSCALAR);
     }
 
     public ASTScalar(Object value) {
-        super(ExpressionParserTreeConstants.JJTSCALAR);
+        super(QLParserTreeConstants.JJTSCALAR);
         setValue(value);
     }
 
@@ -111,7 +111,7 @@ public class ASTScalar extends SimpleNode {
 
     @Override
     protected String getExpressionOperator(int index) {
-        throw new UnsupportedOperationException("No operator for '" + ExpressionParserTreeConstants.jjtNodeName[id] + "'");
+        throw new UnsupportedOperationException("No operator for '" + QLParserTreeConstants.jjtNodeName[id] + "'");
     }
 
     @Override

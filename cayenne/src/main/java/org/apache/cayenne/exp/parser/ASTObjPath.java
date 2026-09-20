@@ -50,16 +50,16 @@ public class ASTObjPath extends ASTPath {
 	}
 
 	public ASTObjPath() {
-		super(ExpressionParserTreeConstants.JJTOBJPATH);
+		super(QLParserTreeConstants.JJTOBJPATH);
 	}
 
 	public ASTObjPath(String value) {
-		super(ExpressionParserTreeConstants.JJTOBJPATH);
+		super(QLParserTreeConstants.JJTOBJPATH);
 		setPath(value);
 	}
 
 	public ASTObjPath(CayennePath path) {
-		super(ExpressionParserTreeConstants.JJTOBJPATH);
+		super(QLParserTreeConstants.JJTOBJPATH);
 		setPath(path);
 	}
 

@@ -36,11 +36,11 @@ public class ASTGreaterOrEqual extends ConditionNode {
 	}
 
 	public ASTGreaterOrEqual() {
-		super(ExpressionParserTreeConstants.JJTGREATEROREQUAL);
+		super(QLParserTreeConstants.JJTGREATEROREQUAL);
 	}
 
 	public ASTGreaterOrEqual(SimpleNode path, Object value) {
-		super(ExpressionParserTreeConstants.JJTGREATEROREQUAL);
+		super(QLParserTreeConstants.JJTGREATEROREQUAL);
 		jjtAddChild(path, 0);
 		jjtAddChild(new ASTScalar(value), 1);
 		connectChildren();

@@ -55,16 +55,16 @@ public class ASTDbPath extends ASTPath {
 	}
 
 	public ASTDbPath() {
-		super(ExpressionParserTreeConstants.JJTDBPATH);
+		super(QLParserTreeConstants.JJTDBPATH);
 	}
 
 	public ASTDbPath(String value) {
-		super(ExpressionParserTreeConstants.JJTDBPATH);
+		super(QLParserTreeConstants.JJTDBPATH);
 		setPath(value);
 	}
 
 	public ASTDbPath(CayennePath value) {
-		super(ExpressionParserTreeConstants.JJTDBPATH);
+		super(QLParserTreeConstants.JJTDBPATH);
 		setPath(value);
 	}
 

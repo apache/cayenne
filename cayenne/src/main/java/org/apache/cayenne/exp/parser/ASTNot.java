@@ -37,11 +37,11 @@ public class ASTNot extends AggregateConditionNode {
 	}
 
 	public ASTNot() {
-		super(ExpressionParserTreeConstants.JJTNOT);
+		super(QLParserTreeConstants.JJTNOT);
 	}
 
 	public ASTNot(Node expression) {
-		super(ExpressionParserTreeConstants.JJTNOT);
+		super(QLParserTreeConstants.JJTNOT);
 		jjtAddChild(expression, 0);
 		connectChildren();
 	}
@@ -94,6 +94,6 @@ public class ASTNot extends AggregateConditionNode {
 
 	@Override
 	protected String getExpressionOperator(int index) {
-		throw new UnsupportedOperationException("No operator for '" + ExpressionParserTreeConstants.jjtNodeName[id] + "'");
+		throw new UnsupportedOperationException("No operator for '" + QLParserTreeConstants.jjtNodeName[id] + "'");
 	}
 }

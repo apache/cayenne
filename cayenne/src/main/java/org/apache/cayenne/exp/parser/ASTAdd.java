@@ -36,7 +36,7 @@ public class ASTAdd extends EvaluatedMathNode {
 	}
 
 	public ASTAdd() {
-		super(ExpressionParserTreeConstants.JJTADD);
+		super(QLParserTreeConstants.JJTADD);
 	}
 
 	public ASTAdd(Object... nodes) {
@@ -44,7 +44,7 @@ public class ASTAdd extends EvaluatedMathNode {
 	}
 
 	public ASTAdd(Collection<?> nodes) {
-		super(ExpressionParserTreeConstants.JJTADD);
+		super(QLParserTreeConstants.JJTADD);
 		int len = nodes.size();
 		Iterator<?> it = nodes.iterator();
 		for (int i = 0; i < len; i++) {

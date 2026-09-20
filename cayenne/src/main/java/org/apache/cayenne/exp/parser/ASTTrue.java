@@ -43,7 +43,7 @@ public class ASTTrue extends ConditionNode {
     }
 
     public ASTTrue() {
-        super(ExpressionParserTreeConstants.JJTTRUE);
+        super(QLParserTreeConstants.JJTTRUE);
     }
 
     @Override
@@ -58,7 +58,7 @@ public class ASTTrue extends ConditionNode {
 
     @Override
     protected String getExpressionOperator(int index) {
-        throw new UnsupportedOperationException("No operator for '" + ExpressionParserTreeConstants.jjtNodeName[id] + "'");
+        throw new UnsupportedOperationException("No operator for '" + QLParserTreeConstants.jjtNodeName[id] + "'");
     }
 
     @Override

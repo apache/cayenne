@@ -41,7 +41,7 @@ public class ASTCustomAggregate extends ASTAggregateFunctionCall {
      * @param functionName name of the aggregate function
      */
     protected ASTCustomAggregate(String functionName) {
-        super(ExpressionParserTreeConstants.JJTCUSTOMAGGREGATE, functionName);
+        super(QLParserTreeConstants.JJTCUSTOMAGGREGATE, functionName);
     }
 
     /**
@@ -51,7 +51,7 @@ public class ASTCustomAggregate extends ASTAggregateFunctionCall {
      * @param expressions the expressions this aggregate function is applied to
      */
     public ASTCustomAggregate(String functionName, Expression... expressions) {
-        super(ExpressionParserTreeConstants.JJTCUSTOMAGGREGATE, functionName, (Object[]) expressions);
+        super(QLParserTreeConstants.JJTCUSTOMAGGREGATE, functionName, (Object[]) expressions);
     }
 
     @Override

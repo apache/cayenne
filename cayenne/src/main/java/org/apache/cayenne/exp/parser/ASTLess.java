@@ -36,11 +36,11 @@ public class ASTLess extends ConditionNode {
 	}
 
 	public ASTLess() {
-		super(ExpressionParserTreeConstants.JJTLESS);
+		super(QLParserTreeConstants.JJTLESS);
 	}
 
 	public ASTLess(SimpleNode path, Object value) {
-		super(ExpressionParserTreeConstants.JJTLESS);
+		super(QLParserTreeConstants.JJTLESS);
 		jjtAddChild(path, 0);
 		jjtAddChild(new ASTScalar(value), 1);
 		connectChildren();

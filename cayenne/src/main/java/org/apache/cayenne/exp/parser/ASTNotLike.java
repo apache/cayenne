@@ -34,18 +34,18 @@ public class ASTNotLike extends PatternMatchNode {
     }
 
     public ASTNotLike() {
-        super(ExpressionParserTreeConstants.JJTNOTLIKE, false);
+        super(QLParserTreeConstants.JJTNOTLIKE, false);
     }
 
     public ASTNotLike(SimpleNode path, Object value) {
-        super(ExpressionParserTreeConstants.JJTNOTLIKE, false);
+        super(QLParserTreeConstants.JJTNOTLIKE, false);
         jjtAddChild(path, 0);
         jjtAddChild(wrap(value), 1);
         connectChildren();
     }
 
     public ASTNotLike(SimpleNode path, Object value, char escapeChar) {
-        super(ExpressionParserTreeConstants.JJTNOTLIKE, false, escapeChar);
+        super(QLParserTreeConstants.JJTNOTLIKE, false, escapeChar);
         jjtAddChild(path, 0);
         jjtAddChild(wrap(value), 1);
         connectChildren();

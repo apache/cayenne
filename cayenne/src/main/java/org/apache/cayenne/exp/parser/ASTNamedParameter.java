@@ -38,11 +38,11 @@ public class ASTNamedParameter extends ASTScalar {
 	}
 
 	public ASTNamedParameter() {
-		super(ExpressionParserTreeConstants.JJTNAMEDPARAMETER);
+		super(QLParserTreeConstants.JJTNAMEDPARAMETER);
 	}
 
 	public ASTNamedParameter(Object value) {
-		super(ExpressionParserTreeConstants.JJTNAMEDPARAMETER);
+		super(QLParserTreeConstants.JJTNAMEDPARAMETER);
 		setValue(value);
 	}
 

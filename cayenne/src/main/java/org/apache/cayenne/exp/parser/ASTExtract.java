@@ -30,7 +30,7 @@ public class ASTExtract extends ASTFunctionCall {
 
     /**
      * Available components of date/time.
-     * Names must be in sync with tokens used in dateTimeExtractingFunction() rule in ExpressionParser.jjt
+     * Names must be in sync with tokens used in dateTimeExtractingFunction() rule in QLParser.jjt
      */
     public enum DateTimePart {
         YEAR, MONTH, WEEK,
@@ -51,7 +51,7 @@ public class ASTExtract extends ASTFunctionCall {
     }
 
     /**
-     * camelCase name, found in ExpressionParser.jjt tokens
+     * camelCase name, found in QLParser.jjt tokens
      */
     private String partName;
 
@@ -62,7 +62,7 @@ public class ASTExtract extends ASTFunctionCall {
     }
 
     public ASTExtract(Expression expression) {
-        super(ExpressionParserTreeConstants.JJTEXTRACT, "EXTRACT", expression);
+        super(QLParserTreeConstants.JJTEXTRACT, "EXTRACT", expression);
     }
 
     @Override
@@ -76,8 +76,8 @@ public class ASTExtract extends ASTFunctionCall {
     }
 
     /**
-     * This method is used by {@link ExpressionParser}
-     * @param partToken {@link Token#image} from {@link ExpressionParser}
+     * This method is used by {@link QLParser}
+     * @param partToken {@link Token#image} from {@link QLParser}
      */
     void setPartToken(String partToken) {
         part = NAME_TO_PART.get(partToken);

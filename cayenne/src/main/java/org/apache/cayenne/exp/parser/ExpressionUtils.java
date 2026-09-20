@@ -19,6 +19,7 @@
 
 package org.apache.cayenne.exp.parser;
 
+import java.util.Collection;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -50,6 +51,19 @@ class ExpressionUtils {
         }
         pathExp.setPath(String.join(".", pathSegments));
         pathExp.setPathAliases(aliasMap);
+    }
+
+    /**
+     * Wraps a parameter value in a node that can take the place of a named parameter in the expression tree.
+     */
+    static Node parameterNode(Object value) {
+        return switch (value) {
+            case null -> new ASTScalar(null);
+            case Node node -> node;
+            case Collection<?> collection -> new ASTList(collection);
+            case Object[] array -> new ASTList(array);
+            default -> new ASTScalar(value);
+        };
     }
 
 }

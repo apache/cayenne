@@ -33,7 +33,7 @@ public class ASTLower extends ASTFunctionCall {
     }
 
     public ASTLower(Expression expression) {
-        super(ExpressionParserTreeConstants.JJTLOWER, "LOWER", expression);
+        super(QLParserTreeConstants.JJTLOWER, "LOWER", expression);
     }
 
     @Override

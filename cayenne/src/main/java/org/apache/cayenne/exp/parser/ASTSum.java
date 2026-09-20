@@ -37,7 +37,7 @@ public class ASTSum extends ASTAggregateFunctionCall {
     }
 
     public ASTSum(Expression expression) {
-        super(ExpressionParserTreeConstants.JJTSUM, "SUM", expression);
+        super(QLParserTreeConstants.JJTSUM, "SUM", expression);
     }
 
     @Override

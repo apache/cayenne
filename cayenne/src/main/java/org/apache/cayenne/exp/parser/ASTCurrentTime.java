@@ -30,7 +30,7 @@ import org.apache.cayenne.exp.Expression;
 public class ASTCurrentTime extends ASTFunctionCall {
 
     public ASTCurrentTime() {
-        this(ExpressionParserTreeConstants.JJTCURRENTTIME);
+        this(QLParserTreeConstants.JJTCURRENTTIME);
     }
 
     ASTCurrentTime(int id) {
