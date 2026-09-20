@@ -13,9 +13,6 @@
 // License.
 = Cayenne Guide
 :revnumber: {project-major-version} ({project-version})
-// enable section numbering, limiting depth to 2
-:sectnums:
-:sectnumlevels: 2
 
 // header + multipage
 :hugo-header: _cayenne-guide/header.html
