@@ -85,17 +85,22 @@ committed to the version control system along with the rest of your code.
 
 === With Claude
 
-Start Claude Code in the tutorial project directory and ask it to do the import:
+With the `apache-cayenne` plugin installed (see <<Claude Code (optional)>>), Claude already knows how to do most of the
+steps in this tutorial, so you only need to describe what you want. There is one exception though.
+Claude does not know how to connect to your database, and it should not. The connection settings (including the
+password) are kept in the CayenneModeler preferences on your machine, and the Cayenne MCP server uses them to run
+the import on Claude's behalf. So start in the Modeler, following these steps from the previous section:
 
-[quote]
-____
-Create a Cayenne project in `src/main/resources` and import the `cayenne_demo` MySQL database into it.
-Use `org.example.cayenne.persistent` as the Java package.
-____
+- <<Install the JDBC Driver>>
+- <<Create a Project and a DataMap>>
+- <<Connect to the Database>>
+- <<Save the Project>> (you haven't imported anything yet, but Claude needs the project files to work with)
 
-Claude does not know how to connect to your database, and it should not. So the first time it opens the project in
-CayenneModeler, and asks you to enter the connection settings on the "DB Import" tab, exactly as described in
-"Connect to the Database" above (this includes installing the JDBC driver). Once you save the connection, tell Claude
-to continue. It runs the import using the connection stored in the Modeler preferences, and reports the entities
-that were added to the model. The project files are the same as the ones created with the Modeler, so from here
-on you can mix the two approaches.
+Now start Claude Code in the tutorial project directory and ask it to do the import:
+
+----
+Import the "cayenne_demo" MySQL database into the Cayenne project in src/main/resources
+----
+
+Claude runs the import using the connection saved by the Modeler, and reports the entities that were added to the
+model. The result is the same as with "Run Import" in the Modeler, so from here on you can mix the two approaches.

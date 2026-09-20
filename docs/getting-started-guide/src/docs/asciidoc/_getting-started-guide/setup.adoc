@@ -39,9 +39,16 @@ image::modeler-started.png[align="center",width=800]
 
 ==== Claude Code (optional)
 
-To follow the "With Claude" alternatives, install Claude Code, the `apache-cayenne` plugin and the Cayenne MCP server,
-as described in the link:/docs/{project-major-version}/cayenne-guide/agentic-coding/[Agentic Coding] chapter of the
-Cayenne Guide. The MCP server comes with CayenneModeler, so you still need to download the Modeler.
+To follow the "With Claude" alternatives, install Claude Code and make it Cayenne-aware with the two pieces described in the
+link:/docs/{project-major-version}/cayenne-guide/agentic-coding/[Agentic Coding] chapter of the Cayenne Guide:
+
+- The link:/docs/{project-major-version}/cayenne-guide/apache-cayenne-claude-code-plugin/[`apache-cayenne` Claude Code plugin].
+It gives Claude the skills for most of the steps in this tutorial - importing the database and keeping the model in sync
+with it, cleaning up the names in the model, editing the model, generating Java classes, as well as writing queries and
+setting up Cayenne runtime in the application code.
+- The link:/docs/{project-major-version}/cayenne-guide/cayenne-mcp-server/[Cayenne MCP server], that the plugin skills
+use to run the DB import and the class generation, and to open CayenneModeler. It comes with CayenneModeler, so you still
+need to download the Modeler.
 
 ==== MySQL
 

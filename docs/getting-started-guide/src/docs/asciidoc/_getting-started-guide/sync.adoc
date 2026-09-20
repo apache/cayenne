@@ -41,10 +41,9 @@ A new DbEntity and a new ObjEntity are in place, as well as a new `foundedDate` 
 
 ==== With Claude
 
-[quote]
-____
+----
 My database schema has changed. Sync the Cayenne model with the database.
-____
+----
 
 === Customizing the Model
 
@@ -65,11 +64,10 @@ Save the project. If you run the import again now, it finds nothing to do, and y
 
 With Claude simply describe the change:
 
-[quote]
-____
-In the Cayenne model rename the `id` relationship of `Painting` to `info`, and change the delete rule of `Artist.paintings`
-to "Cascade".
-____
+----
+In the Cayenne model rename the "id" relationship of "Painting" to "info",
+and change the delete rule of "Artist.paintings" to "Cascade".
+----
 
 === Filtering
 
@@ -105,8 +103,7 @@ Save the project to keep the new rules.
 
 ==== With Claude
 
-[quote]
-____
-Exclude the `legacy_painting_info` table and all the `__service_column` columns from the Cayenne DB import,
-then sync the model with the database.
-____
+----
+Exclude the "legacy_painting_info" table and all the "__service_column" columns
+from the Cayenne DB import, then sync the model with the database.
+----

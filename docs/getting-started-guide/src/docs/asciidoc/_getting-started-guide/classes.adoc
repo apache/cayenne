@@ -39,10 +39,9 @@ Save the project, as the class generation settings are also a part of it.
 
 === With Claude
 
-[quote]
-____
+----
 Generate Java classes from the Cayenne model.
-____
+----
 
 === Inspecting and Customizing the Classes
 
