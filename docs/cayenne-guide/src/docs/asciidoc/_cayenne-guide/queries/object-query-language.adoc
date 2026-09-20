@@ -12,7 +12,7 @@
 // the specific language governing permissions and limitations under the
 // License.
 [[ql]]
-=== ObjectSelect Parsed from a String
+=== Object Query Language
 
 Since 5.0 an `ObjectSelect` or a `ColumnSelect` can be created from a String. This is an alernative to the fluent API.
 E.g.:

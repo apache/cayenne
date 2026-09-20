@@ -26,7 +26,7 @@ Users can define their own query types to abstract certain DB interactions
 that for whatever reason can not be adequately described by the built-in set.
 
 Queries can be roughly categorized as "object" and "native".
-Object queries (most notably `ObjectSelect` and `EJBQLQuery`)
+Object queries (most notably `ObjectSelect`)
 are built with abstractions originating in the object model (the "object" side in the "object-relational" divide).
 E.g. `ObjectSelect` consists of a Java class of objects to fetch, a qualifier expression, orderings, etc. - all of this
 expressed in terms of the object model.
@@ -40,7 +40,7 @@ than object queries.
 
 include::queries/objectselect.adoc[]
 
-include::queries/objectselect-parsed.adoc[]
+include::queries/object-query-language.adoc[]
 
 include::queries/sql.adoc[]
 
@@ -49,8 +49,6 @@ include::queries/sqlscripting.adoc[]
 include::queries/mapped.adoc[]
 
 include::queries/procedure.adoc[]
-
-include::queries/ejbql.adoc[]
 
 include::queries/custom.adoc[]
 

@@ -23,11 +23,9 @@ import org.apache.cayenne.docs.persistent.Painting;
 import org.apache.cayenne.exp.Expression;
 import org.apache.cayenne.exp.ExpressionException;
 import org.apache.cayenne.exp.ExpressionFactory;
-import org.apache.cayenne.query.EJBQLQuery;
 import org.apache.cayenne.query.ObjectSelect;
 import org.junit.jupiter.api.Test;
 
-import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 
@@ -236,36 +234,5 @@ public class ExpressionsTest extends BaseTest {
 
         assertEquals(3, unfiltered.size());
         assertEquals(1, filtered.size());
-    }
-
-    @Test
-    public void toEJBQL() {
-        createArtistsDataSet();
-
-        // tag::toEJBQL[]
-        String title = "Guernica";
-        Expression e = Painting.PAINTING_TITLE.eq(title);
-        List<Object> params = new ArrayList<>();
-        EJBQLQuery<Painting> query = new EJBQLQuery<>("SELECT p FROM Painting p WHERE " + e.toEJBQL(params, "p"));
-
-        for (int i = 0; i < params.size(); i++) {
-            query.setParameter(i + 1, params.get(i));
-        }
-        // end::toEJBQL[]
-
-        assertEquals(1, context.select(query).size());
-    }
-
-    @Test
-    public void ejbql() {
-        createArtistsDataSet();
-        String title = "Guernica";
-
-        // tag::ejbql[]
-        EJBQLQuery<Painting> query = new EJBQLQuery<>("SELECT p FROM Painting p WHERE p.paintingTitle = ?1");
-        query.setParameter(1, title);
-        // end::ejbql[]
-
-        assertEquals(1, context.select(query).size());
     }
 }

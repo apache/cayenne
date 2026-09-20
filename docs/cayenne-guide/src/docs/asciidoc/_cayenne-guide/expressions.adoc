@@ -212,20 +212,3 @@ include::{java-examples}/ExpressionsTest.java[tags=filterObjects]
 
 NOTE: Current limitation of in-memory expressions is that no collections are permitted in the property path.
 
-=== Translating Expressions to EJBQL
-
-<<ejbql,EJBQL>> is a textual query language that can be used with Cayenne. In some situations,
-it is convenient to be able to convert Expression instances into EJBQL. Expressions support this conversion. An example is shown below.
-
-[source,java,indent=0]
-----
-include::{java-examples}/ExpressionsTest.java[tags=toEJBQL]
-----
-
-This would be equivalent to the following purely EJBQL querying logic;
-
-[source,java,indent=0]
-----
-include::{java-examples}/ExpressionsTest.java[tags=ejbql]
-----
-

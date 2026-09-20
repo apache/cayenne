@@ -109,13 +109,6 @@ E.g.:
 include::{java-examples}/TuningTest.java[tags=sqlSelectPrefetch]
 ----
 
-`<<ejbql,EJBQLQuery>>` uses the "FETCH" keyword to enable prefetching:
-
-[source, SQL]
-----
-SELECT a FROM Artist a LEFT JOIN FETCH a.paintingArray
-----
-
 === Data Rows
 
 Converting result set data to Persistent objects and registering these objects in the ObjectContext can be an expensive
@@ -143,25 +136,6 @@ Individual DataRows may be converted to Persistent objects as needed. So e.g. yo
 ----
 include::{java-examples}/TuningTest.java[tags=objectFromDataRow]
 ----
-
-=== Specific Attributes and Relationships with EJBQL
-
-It is possible to fetch specific attributes and relationships from a model using <<EJBQLQuery>>.
-The following example would return a java.util.List of String objects;
-
-[source, SQL]
-----
-SELECT a.name FROM Artist a
-----
-
-The following will yield a java.util.List containing Object[] instances, each of which would contain the name followed by the dateOfBirth value.
-
-[source, SQL]
-----
-SELECT a.name, a.dateOfBirth FROM Artist a
-----
-
-Refer to third-party query language documentation for further detail on this mechanism.
 
 === Iterated Queries
 
