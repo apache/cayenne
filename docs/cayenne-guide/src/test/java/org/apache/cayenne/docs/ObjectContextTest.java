@@ -72,7 +72,7 @@ public class ObjectContextTest extends BaseTest {
 
         // tag::modify[]
         Artist selectedArtist = artists.get(0);
-        selectedArtist.setArtistName("Dali");
+        selectedArtist.setName("Dali");
         // end::modify[]
 
         // tag::commit[]
@@ -96,7 +96,7 @@ public class ObjectContextTest extends BaseTest {
     @Test
     public void execute() {
         createArtistsDataSet();
-        Query query = SQLExec.query("UPDATE ARTIST SET ARTIST_NAME = 'Unknown'");
+        Query query = SQLExec.query("UPDATE ARTIST SET NAME = 'Unknown'");
 
         // tag::execute[]
         List<QueryResult> result = context.execute(query);
@@ -138,7 +138,7 @@ public class ObjectContextTest extends BaseTest {
     public void newObject() {
         // tag::newObject[]
         Artist newArtist = context.newObject(Artist.class);
-        newArtist.setArtistName("Picasso");
+        newArtist.setName("Picasso");
         // end::newObject[]
 
         assertEquals(PersistenceState.NEW, newArtist.getPersistenceState());
@@ -186,7 +186,7 @@ public class ObjectContextTest extends BaseTest {
 
     @Test
     public void pk() {
-        SQLExec.query("INSERT INTO ARTIST (ARTIST_ID, ARTIST_NAME) VALUES (34579, 'Dali')").update(context);
+        SQLExec.query("INSERT INTO ARTIST (ID, NAME) VALUES (34579, 'Dali')").update(context);
 
         // tag::objectForPK[]
         Artist artist = context.objectForPK(Artist.class, 34579);
@@ -207,7 +207,7 @@ public class ObjectContextTest extends BaseTest {
         // end::nesting[]
 
         Artist artist = nested.newObject(Artist.class);
-        artist.setArtistName("a1");
+        artist.setName("a1");
 
         // tag::nestedCommit[]
         // merges nested context changes into the parent context
@@ -215,7 +215,7 @@ public class ObjectContextTest extends BaseTest {
 
         // end::nestedCommit[]
         assertEquals(0, count());
-        artist.setArtistName("a1.1");
+        artist.setName("a1.1");
         // tag::nestedCommit[]
         // regular 'commitChanges' cascades commit through the chain
         // of parent contexts all the way to the database
@@ -223,22 +223,22 @@ public class ObjectContextTest extends BaseTest {
         // end::nestedCommit[]
 
         assertEquals(1, count());
-        artist.setArtistName("a2");
+        artist.setName("a2");
 
         // tag::nestedRollback[]
         // unrolls all local changes, getting context in a state identical to parent
         nested.rollbackChangesLocally();
 
         // end::nestedRollback[]
-        assertEquals("a1.1", artist.getArtistName());
-        artist.setArtistName("a3");
+        assertEquals("a1.1", artist.getName());
+        artist.setName("a3");
         // tag::nestedRollback[]
         // regular 'rollbackChanges' cascades rollback through the chain of contexts
         // all the way to the topmost parent
         nested.rollbackChanges();
         // end::nestedRollback[]
 
-        assertEquals("a1.1", artist.getArtistName());
+        assertEquals("a1.1", artist.getName());
     }
 
     @Test
@@ -281,8 +281,8 @@ public class ObjectContextTest extends BaseTest {
     public void performInTransaction() {
         ObjectContext context1 = runtime.newContext();
         ObjectContext context2 = runtime.newContext();
-        context1.newObject(Artist.class).setArtistName("a1");
-        context2.newObject(Artist.class).setArtistName("a2");
+        context1.newObject(Artist.class).setName("a1");
+        context2.newObject(Artist.class).setName("a2");
 
         // tag::performInTransaction[]
         Integer result = runtime.performInTransaction(() -> {
@@ -291,7 +291,7 @@ public class ObjectContextTest extends BaseTest {
             context2.commitChanges();
 
             // after changing some objects in context1, commit again
-            context1.newObject(Artist.class).setArtistName("a3");
+            context1.newObject(Artist.class).setName("a3");
             context1.commitChanges();
 
             // return an arbitrary result or null if we don't care about the result

@@ -15,60 +15,60 @@ License.
 The query Strings that are included in the docs, and are parsed and run by ObjectSelectParsedTest
 
 tag::filterOrderLimit[]
-from Artist where artistName like 'A%' order by dateOfBirth desc, artistName asc insensitive limit 10 offset 20
+from Artist where name like 'A%' order by dateOfBirth desc, name asc insensitive limit 10 offset 20
 end::filterOrderLimit[]
 
 tag::outerJoin[]
-from Artist where paintingArray+ = null
+from Artist where paintings+ = null
 end::outerJoin[]
 
 tag::splitJoins[]
-from Artist where paintingArray#p1.paintingTitle = 'P1' and paintingArray#p2.paintingTitle = 'P2'
+from Artist where paintings#p1.title = 'P1' and paintings#p2.title = 'P2'
 end::splitJoins[]
 
 tag::columns[]
-select artistName, dateOfBirth from Artist order by artistName
+select name, dateOfBirth from Artist order by name
 end::columns[]
 
 tag::column[]
-select distinct toGallery.galleryName from Painting
+select distinct gallery.name from Painting
 end::column[]
 
 tag::columnExpressions[]
-select upper(artistName) as name, length(trim(artistName)) as size from Artist
+select upper(name) as upperName, length(trim(name)) as nameLength from Artist
 end::columnExpressions[]
 
 tag::aggregates[]
-select toArtist.artistName, sum(estimatedPrice), count(*)
+select artist.name, sum(estimatedPrice), count(*)
 from Painting
 having sum(estimatedPrice) > $min
-order by toArtist.artistName
+order by artist.name
 end::aggregates[]
 
 tag::self[]
-select self, count(paintingArray+) from Artist order by count(paintingArray+) desc
+select self, count(paintings+) from Artist order by count(paintings+) desc
 end::self[]
 
 tag::toOne[]
-select paintingTitle, toArtist, toGallery from Painting
+select title, artist, gallery from Painting
 end::toOne[]
 
 tag::toMany[]
-select artistName, paintingArray from Artist
+select name, paintings from Artist
 end::toMany[]
 
 tag::exists[]
 from Artist where exists (
-    from Painting where toArtist = enclosing(self) and estimatedPrice > $price)
+    from Painting where artist = enclosing(self) and estimatedPrice > $price)
 end::exists[]
 
 tag::nestedSelects[]
 tag::in[]
-from Painting where toArtist.artistName in (select artistName from Artist where dateOfBirth < $date)
+from Painting where artist.name in (select name from Artist where dateOfBirth < $date)
 end::in[]
 
 tag::all[]
-from Painting where estimatedPrice > all (select estimatedPrice from Painting where paintingTitle = 'P2')
+from Painting where estimatedPrice > all (select estimatedPrice from Painting where title = 'P2')
 end::all[]
 
 tag::any[]
@@ -77,9 +77,9 @@ end::any[]
 end::nestedSelects[]
 
 tag::dbRoot[]
-from db:ARTIST where ARTIST_NAME like 'A%' order by ARTIST_ID desc
+from db:ARTIST where NAME like 'A%' order by ID desc
 end::dbRoot[]
 
 tag::prefetch[]
-from Artist where artistName = $name prefetch paintingArray joint, paintingArray.toGallery
+from Artist where name = $name prefetch paintings joint, paintings.gallery
 end::prefetch[]

@@ -39,7 +39,7 @@ public class SQLSelectTest extends BaseTest {
         // tag::select[]
         // Selecting objects
         List<Painting> paintings = SQLSelect
-                .query(Painting.class, "SELECT * FROM PAINTING WHERE PAINTING_TITLE LIKE 'G%'")
+                .query(Painting.class, "SELECT * FROM PAINTING WHERE TITLE LIKE 'G%'")
                 .upperColumnNames()
                 .localCache()
                 .limit(100)
@@ -47,7 +47,7 @@ public class SQLSelectTest extends BaseTest {
 
         // Selecting scalar values
         List<String> paintingNames = SQLSelect
-                .scalarQuery("SELECT PAINTING_TITLE FROM PAINTING WHERE ESTIMATED_PRICE > 100000", String.class)
+                .scalarQuery("SELECT TITLE FROM PAINTING WHERE ESTIMATED_PRICE > 100000", String.class)
                 .select(context);
 
         // Selecting DataRow with predefined types
@@ -72,7 +72,7 @@ public class SQLSelectTest extends BaseTest {
     public void exec() {
         // tag::exec[]
         int inserted = SQLExec
-                .query("INSERT INTO ARTIST (ARTIST_ID, ARTIST_NAME) VALUES (55, 'Picasso')")
+                .query("INSERT INTO ARTIST (ID, NAME) VALUES (55, 'Picasso')")
                 .update(context);
         // end::exec[]
 

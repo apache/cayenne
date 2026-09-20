@@ -77,7 +77,7 @@ public class ObjectSelectParsedTest extends BaseTest {
 
         // tag::parse[]
         List<Artist> artists = ObjectSelect
-                .parse(Artist.class, "from Artist where artistName like $name order by dateOfBirth desc limit 10", "A%")
+                .parse(Artist.class, "from Artist where name like $name order by dateOfBirth desc limit 10", "A%")
                 .select(context);
         // end::parse[]
 
@@ -90,7 +90,7 @@ public class ObjectSelectParsedTest extends BaseTest {
 
         // tag::parseAndCustomize[]
         List<Artist> artists = ObjectSelect
-                .parse(Artist.class, "from Artist where artistName like $name", "A%")
+                .parse(Artist.class, "from Artist where name like $name", "A%")
                 .localCache("artists")
                 .pageSize(50)
                 .select(context);
@@ -102,12 +102,12 @@ public class ObjectSelectParsedTest extends BaseTest {
     @Test
     public void params() {
         createArtistsDataSet();
-        Artist artist = ObjectSelect.query(Artist.class).where(Artist.ARTIST_NAME.eq("Dali")).selectOne(context);
+        Artist artist = ObjectSelect.query(Artist.class).where(Artist.NAME.eq("Dali")).selectOne(context);
 
         // tag::params[]
         List<Painting> paintings = ObjectSelect
                 .parse(Painting.class,
-                        "from Painting where toArtist = $artist and estimatedPrice between $low and $high",
+                        "from Painting where artist = $artist and estimatedPrice between $low and $high",
                         artist, 10, 500)
                 .select(context);
         // end::params[]
@@ -128,10 +128,10 @@ public class ObjectSelectParsedTest extends BaseTest {
         ObjectSelect<DataRow> q3 = ObjectSelect.parse(DataRow.class, "from Artist");
 
         // a query with a single column
-        ColumnSelect<String> q4 = ObjectSelect.parseColumn(String.class, "select artistName from Artist");
+        ColumnSelect<String> q4 = ObjectSelect.parseColumn(String.class, "select name from Artist");
 
         // a query with multiple columns
-        ColumnSelect<Object[]> q5 = ObjectSelect.parseColumns("select artistName, dateOfBirth from Artist");
+        ColumnSelect<Object[]> q5 = ObjectSelect.parseColumns("select name, dateOfBirth from Artist");
         // end::api[]
 
         assertInstanceOf(ObjectSelect.class, q1);
@@ -148,8 +148,8 @@ public class ObjectSelectParsedTest extends BaseTest {
 
         // tag::filterOrderLimit[]
         ObjectSelect<Artist> query = ObjectSelect.query(Artist.class)
-                .where(Artist.ARTIST_NAME.like("A%"))
-                .orderBy(Artist.DATE_OF_BIRTH.desc(), Artist.ARTIST_NAME.ascInsensitive())
+                .where(Artist.NAME.like("A%"))
+                .orderBy(Artist.DATE_OF_BIRTH.desc(), Artist.NAME.ascInsensitive())
                 .limit(10)
                 .offset(20);
         // end::filterOrderLimit[]
@@ -163,7 +163,7 @@ public class ObjectSelectParsedTest extends BaseTest {
         createArtistsDataSet();
 
         // tag::outerJoin[]
-        ObjectSelect<Artist> query = ObjectSelect.query(Artist.class).where(Artist.PAINTING_ARRAY.outer().isNull());
+        ObjectSelect<Artist> query = ObjectSelect.query(Artist.class).where(Artist.PAINTINGS.outer().isNull());
         // end::outerJoin[]
 
         assertSameResult(ObjectSelect.parse(ql("outerJoin")), query);
@@ -175,8 +175,8 @@ public class ObjectSelectParsedTest extends BaseTest {
 
         // tag::splitJoins[]
         ObjectSelect<Artist> query = ObjectSelect.query(Artist.class)
-                .where(Artist.PAINTING_ARRAY.alias("p1").dot(Painting.PAINTING_TITLE).eq("P1"))
-                .and(Artist.PAINTING_ARRAY.alias("p2").dot(Painting.PAINTING_TITLE).eq("P2"));
+                .where(Artist.PAINTINGS.alias("p1").dot(Painting.TITLE).eq("P1"))
+                .and(Artist.PAINTINGS.alias("p2").dot(Painting.TITLE).eq("P2"));
         // end::splitJoins[]
 
         assertSameResult(ObjectSelect.parse(ql("splitJoins")), query);
@@ -188,8 +188,8 @@ public class ObjectSelectParsedTest extends BaseTest {
 
         // tag::columns[]
         ColumnSelect<Object[]> query = ObjectSelect
-                .columnQuery(Artist.class, Artist.ARTIST_NAME, Artist.DATE_OF_BIRTH)
-                .orderBy(Artist.ARTIST_NAME.asc());
+                .columnQuery(Artist.class, Artist.NAME, Artist.DATE_OF_BIRTH)
+                .orderBy(Artist.NAME.asc());
         // end::columns[]
 
         assertSameResult(ObjectSelect.parse(ql("columns")), query);
@@ -201,7 +201,7 @@ public class ObjectSelectParsedTest extends BaseTest {
 
         // tag::column[]
         ColumnSelect<String> query = ObjectSelect
-                .columnQuery(Painting.class, Painting.TO_GALLERY.dot(Gallery.GALLERY_NAME))
+                .columnQuery(Painting.class, Painting.GALLERY.dot(Gallery.NAME))
                 .distinct();
         // end::column[]
 
@@ -227,11 +227,11 @@ public class ObjectSelectParsedTest extends BaseTest {
         // tag::aggregates[]
         ColumnSelect<Object[]> query = ObjectSelect
                 .columnQuery(Painting.class,
-                        Painting.TO_ARTIST.dot(Artist.ARTIST_NAME),
+                        Painting.ARTIST.dot(Artist.NAME),
                         Painting.ESTIMATED_PRICE.sum(),
                         PropertyFactory.COUNT)
                 .having(Painting.ESTIMATED_PRICE.sum().gt(min))
-                .orderBy(Painting.TO_ARTIST.dot(Artist.ARTIST_NAME).asc());
+                .orderBy(Painting.ARTIST.dot(Artist.NAME).asc());
         // end::aggregates[]
 
         assertSameResult(ObjectSelect.parse(ql("aggregates"), min), query);
@@ -242,14 +242,14 @@ public class ObjectSelectParsedTest extends BaseTest {
         createArtistsDataSet();
 
         // no two artists should have the same number of paintings for the order to be predictable
-        Artist dali = ObjectSelect.query(Artist.class).where(Artist.ARTIST_NAME.eq("Dali")).selectOne(context);
+        Artist dali = ObjectSelect.query(Artist.class).where(Artist.NAME.eq("Dali")).selectOne(context);
         createPainting("P3", 50, dali, null);
         context.commitChanges();
 
         // tag::self[]
         ColumnSelect<Object[]> query = ObjectSelect
-                .columnQuery(Artist.class, Artist.SELF, Artist.PAINTING_ARRAY.outer().count())
-                .orderBy(Artist.PAINTING_ARRAY.outer().count().desc());
+                .columnQuery(Artist.class, Artist.SELF, Artist.PAINTINGS.outer().count())
+                .orderBy(Artist.PAINTINGS.outer().count().desc());
         // end::self[]
 
         assertSameResult(ObjectSelect.parse(ql("self")), query);
@@ -261,7 +261,7 @@ public class ObjectSelectParsedTest extends BaseTest {
 
         // tag::toOne[]
         ColumnSelect<Object[]> query = ObjectSelect
-                .columnQuery(Painting.class, Painting.PAINTING_TITLE, Painting.TO_ARTIST, Painting.TO_GALLERY);
+                .columnQuery(Painting.class, Painting.TITLE, Painting.ARTIST, Painting.GALLERY);
         // end::toOne[]
 
         assertEquals(4, query.select(context).size());
@@ -274,7 +274,7 @@ public class ObjectSelectParsedTest extends BaseTest {
 
         // tag::toMany[]
         ColumnSelect<Object[]> query = ObjectSelect
-                .columnQuery(Artist.class, Artist.ARTIST_NAME, Artist.PAINTING_ARRAY.flat());
+                .columnQuery(Artist.class, Artist.NAME, Artist.PAINTINGS.flat());
         // end::toMany[]
 
         assertEquals(5, query.select(context).size());
@@ -289,7 +289,7 @@ public class ObjectSelectParsedTest extends BaseTest {
         // tag::exists[]
         ObjectSelect<Artist> query = ObjectSelect.query(Artist.class)
                 .where(ExpressionFactory.exists(ObjectSelect.query(Painting.class)
-                        .where(Painting.TO_ARTIST.eq(Artist.SELF.enclosing()))
+                        .where(Painting.ARTIST.eq(Artist.SELF.enclosing()))
                         .and(Painting.ESTIMATED_PRICE.gt(price))));
         // end::exists[]
 
@@ -303,8 +303,8 @@ public class ObjectSelectParsedTest extends BaseTest {
 
         // tag::in[]
         ObjectSelect<Painting> query = ObjectSelect.query(Painting.class)
-                .where(Painting.TO_ARTIST.dot(Artist.ARTIST_NAME).in(
-                        ObjectSelect.columnQuery(Artist.class, Artist.ARTIST_NAME)
+                .where(Painting.ARTIST.dot(Artist.NAME).in(
+                        ObjectSelect.columnQuery(Artist.class, Artist.NAME)
                                 .where(Artist.DATE_OF_BIRTH.lt(date))));
         // end::in[]
 
@@ -325,8 +325,8 @@ public class ObjectSelectParsedTest extends BaseTest {
 
         // tag::dbRoot[]
         ObjectSelect<DataRow> query = ObjectSelect.dbQuery("ARTIST")
-                .where(ExpressionFactory.likeDbExp("ARTIST_NAME", "A%"))
-                .orderBy(new Ordering(ExpressionFactory.dbPathExp("ARTIST_ID"), SortOrder.DESCENDING));
+                .where(ExpressionFactory.likeDbExp("NAME", "A%"))
+                .orderBy(new Ordering(ExpressionFactory.dbPathExp("ID"), SortOrder.DESCENDING));
         // end::dbRoot[]
 
         assertSameResult(ObjectSelect.parse(ql("dbRoot")), query);
@@ -339,9 +339,9 @@ public class ObjectSelectParsedTest extends BaseTest {
 
         // tag::prefetch[]
         ObjectSelect<Artist> query = ObjectSelect.query(Artist.class)
-                .where(Artist.ARTIST_NAME.eq(name))
-                .prefetch(Artist.PAINTING_ARRAY.joint())
-                .prefetch("paintingArray.toGallery", PrefetchTreeNode.UNDEFINED_SEMANTICS);
+                .where(Artist.NAME.eq(name))
+                .prefetch(Artist.PAINTINGS.joint())
+                .prefetch("paintings.gallery", PrefetchTreeNode.UNDEFINED_SEMANTICS);
         // end::prefetch[]
 
         assertSameResult(ObjectSelect.parse(ql("prefetch"), name), query);

@@ -42,7 +42,7 @@ public class TuningTest extends BaseTest {
         // tag::prefetch[]
         List<Artist> artists = ObjectSelect
                 .query(Artist.class)
-                .prefetch(Artist.PAINTING_ARRAY.disjoint()) // <1>
+                .prefetch(Artist.PAINTINGS.disjoint()) // <1>
                 .select(context); // <2>
         // end::prefetch[]
 
@@ -55,7 +55,7 @@ public class TuningTest extends BaseTest {
         ObjectSelect<Artist> query = ObjectSelect.query(Artist.class);
 
         // tag::prefetchPath[]
-        query.prefetch(Artist.PAINTING_ARRAY.dot(Painting.TO_GALLERY).disjoint());
+        query.prefetch(Artist.PAINTINGS.dot(Painting.GALLERY).disjoint());
         // end::prefetchPath[]
 
         assertEquals(3, query.select(context).size());
@@ -67,8 +67,8 @@ public class TuningTest extends BaseTest {
         ObjectSelect<Artist> query = ObjectSelect.query(Artist.class);
 
         // tag::prefetchMultiple[]
-        query.prefetch(Artist.PAINTING_ARRAY.disjoint())
-                .prefetch(Artist.PAINTING_ARRAY.dot(Painting.TO_GALLERY).disjoint());
+        query.prefetch(Artist.PAINTINGS.disjoint())
+                .prefetch(Artist.PAINTINGS.dot(Painting.GALLERY).disjoint());
         // end::prefetchMultiple[]
 
         assertEquals(3, query.select(context).size());
@@ -80,22 +80,22 @@ public class TuningTest extends BaseTest {
 
         // tag::sqlSelectPrefetch[]
         List<Artist> objects = SQLSelect.query(Artist.class, "SELECT "
-                        + "#result('ESTIMATED_PRICE' 'BigDecimal' '' 'paintingArray.ESTIMATED_PRICE'), "
-                        + "#result('PAINTING_TITLE' 'String' '' 'paintingArray.PAINTING_TITLE'), "
-                        + "#result('GALLERY_ID' 'int' '' 'paintingArray.GALLERY_ID'), "
-                        + "#result('PAINTING_ID' 'int' '' 'paintingArray.PAINTING_ID'), "
-                        + "#result('t1.ARTIST_ID' 'int' '' 'paintingArray.ARTIST_ID'), "
-                        + "#result('ARTIST_NAME' 'String'), "
+                        + "#result('ESTIMATED_PRICE' 'BigDecimal' '' 'paintings.ESTIMATED_PRICE'), "
+                        + "#result('TITLE' 'String' '' 'paintings.TITLE'), "
+                        + "#result('GALLERY_ID' 'int' '' 'paintings.GALLERY_ID'), "
+                        + "#result('t1.ID' 'int' '' 'paintings.ID'), "
+                        + "#result('t1.ARTIST_ID' 'int' '' 'paintings.ARTIST_ID'), "
+                        + "#result('NAME' 'String'), "
                         + "#result('DATE_OF_BIRTH' 'java.time.LocalDate'), "
-                        + "#result('t0.ARTIST_ID' 'int' '' 'ARTIST_ID') "
+                        + "#result('t0.ID' 'int' '' 'ID') "
                         + "FROM ARTIST t0, PAINTING t1 "
-                        + "WHERE t0.ARTIST_ID = t1.ARTIST_ID")
-                .addPrefetch(Artist.PAINTING_ARRAY.joint())
+                        + "WHERE t0.ID = t1.ARTIST_ID")
+                .addPrefetch(Artist.PAINTINGS.joint())
                 .select(context);
         // end::sqlSelectPrefetch[]
 
         assertEquals(2, objects.size());
-        assertEquals(2, objects.get(0).getPaintingArray().size());
+        assertEquals(2, objects.get(0).getPaintings().size());
     }
 
     @Test

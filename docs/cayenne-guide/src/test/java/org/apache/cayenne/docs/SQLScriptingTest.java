@@ -45,10 +45,10 @@ public class SQLScriptingTest extends BaseTest {
     @Test
     public void bindObjectEqual() {
         createArtistsDataSet();
-        Artist dali = ObjectSelect.query(Artist.class).where(Artist.ARTIST_NAME.eq("Dali")).selectOne(context);
+        Artist dali = ObjectSelect.query(Artist.class).where(Artist.NAME.eq("Dali")).selectOne(context);
 
         // tag::bindObjectEqual[]
-        String sql = "SELECT * FROM PAINTING t0 WHERE #bindObjectEqual($a 't0.ARTIST_ID' 'ARTIST_ID' )";
+        String sql = "SELECT * FROM PAINTING t0 WHERE #bindObjectEqual($a 't0.ARTIST_ID' 'ID' )";
         Artist artistParam = dali;
 
         SQLSelect<Painting> select = SQLSelect.query(Painting.class, sql)
@@ -61,10 +61,10 @@ public class SQLScriptingTest extends BaseTest {
     @Test
     public void bindObjectNotEqual() {
         createArtistsDataSet();
-        Artist dali = ObjectSelect.query(Artist.class).where(Artist.ARTIST_NAME.eq("Dali")).selectOne(context);
+        Artist dali = ObjectSelect.query(Artist.class).where(Artist.NAME.eq("Dali")).selectOne(context);
 
         // tag::bindObjectNotEqual[]
-        String sql = "SELECT * FROM PAINTING t0 WHERE #bindObjectNotEqual($a 't0.ARTIST_ID' 'ARTIST_ID' )";
+        String sql = "SELECT * FROM PAINTING t0 WHERE #bindObjectNotEqual($a 't0.ARTIST_ID' 'ID' )";
         Artist artistParam = dali;
 
         SQLSelect<Painting> select = SQLSelect.query(Painting.class, sql)

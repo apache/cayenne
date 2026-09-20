@@ -40,26 +40,16 @@ public abstract class _Artist extends PersistentObject {
 
     public static final SelfProperty<Artist> SELF = PropertyFactory.createSelf(Artist.class);
 
-    public static final String ARTIST_ID_PK_COLUMN = "ARTIST_ID";
+    public static final String ID_PK_COLUMN = "ID";
 
-    public static final StringProperty<String> ARTIST_NAME = PropertyFactory.createString("artistName", String.class);
     public static final DateProperty<LocalDate> DATE_OF_BIRTH = PropertyFactory.createDate("dateOfBirth", LocalDate.class);
-    public static final ListProperty<Painting> PAINTING_ARRAY = PropertyFactory.createList("paintingArray", Painting.class);
+    public static final StringProperty<String> NAME = PropertyFactory.createString("name", String.class);
+    public static final ListProperty<Painting> PAINTINGS = PropertyFactory.createList("paintings", Painting.class);
 
-    protected String artistName;
     protected LocalDate dateOfBirth;
+    protected String name;
 
-    protected Object paintingArray;
-
-    public void setArtistName(String artistName) {
-        beforePropertyWrite("artistName", this.artistName, artistName);
-        this.artistName = artistName;
-    }
-
-    public String getArtistName() {
-        beforePropertyRead("artistName");
-        return this.artistName;
-    }
+    protected Object paintings;
 
     public void setDateOfBirth(LocalDate dateOfBirth) {
         beforePropertyWrite("dateOfBirth", this.dateOfBirth, dateOfBirth);
@@ -71,17 +61,27 @@ public abstract class _Artist extends PersistentObject {
         return this.dateOfBirth;
     }
 
-    public void addToPaintingArray(Painting obj) {
-        addToManyTarget("paintingArray", obj, true);
+    public void setName(String name) {
+        beforePropertyWrite("name", this.name, name);
+        this.name = name;
     }
 
-    public void removeFromPaintingArray(Painting obj) {
-        removeToManyTarget("paintingArray", obj, true);
+    public String getName() {
+        beforePropertyRead("name");
+        return this.name;
+    }
+
+    public void addToPaintings(Painting obj) {
+        addToManyTarget("paintings", obj, true);
+    }
+
+    public void removeFromPaintings(Painting obj) {
+        removeToManyTarget("paintings", obj, true);
     }
 
     @SuppressWarnings("unchecked")
-    public List<Painting> getPaintingArray() {
-        return (List<Painting>)readProperty("paintingArray");
+    public List<Painting> getPaintings() {
+        return (List<Painting>)readProperty("paintings");
     }
 
     @Override
@@ -91,12 +91,12 @@ public abstract class _Artist extends PersistentObject {
         }
 
         switch(propName) {
-            case "artistName":
-                return this.artistName;
             case "dateOfBirth":
                 return this.dateOfBirth;
-            case "paintingArray":
-                return this.paintingArray;
+            case "name":
+                return this.name;
+            case "paintings":
+                return this.paintings;
             default:
                 return super.readPropertyDirectly(propName);
         }
@@ -109,14 +109,14 @@ public abstract class _Artist extends PersistentObject {
         }
 
         switch (propName) {
-            case "artistName":
-                this.artistName = (String)val;
-                break;
             case "dateOfBirth":
                 this.dateOfBirth = (LocalDate)val;
                 break;
-            case "paintingArray":
-                this.paintingArray = val;
+            case "name":
+                this.name = (String)val;
+                break;
+            case "paintings":
+                this.paintings = val;
                 break;
             default:
                 super.writePropertyDirectly(propName, val);

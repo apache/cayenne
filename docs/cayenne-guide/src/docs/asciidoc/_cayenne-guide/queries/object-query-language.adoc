@@ -48,9 +48,9 @@ The clauses must follow in this order, and all of them, except for `from`, are o
 rules of the language:
 
 * There is a single root entity, named in the `from` clause. All other entities are reached via the relationship paths
-starting at the root (`paintingArray.toGallery.galleryName`), so there are no entity aliases and no explicit joins.
-Just like in expressions, a join is made outer by appending `+` to a path component (`paintingArray+`), and a join
-is split from the other joins over the same path with an alias (`paintingArray#p1`).
+starting at the root (`paintings.gallery.name`), so there are no entity aliases and no explicit joins.
+Just like in expressions, a join is made outer by appending `+` to a path component (`paintings+`), and a join
+is split from the other joins over the same path with an alias (`paintings#p1`).
 * Every `expression` above, as well as every column and ordering, follows the syntax of Cayenne
 <<Expressions,expressions>>, the same one that `ExpressionFactory.exp(..)` takes. Anything that is valid in
 an expression is valid in a query: comparisons, `like`, `in`, `between`, arithmetics, functions, `db:` paths, etc.
@@ -181,7 +181,7 @@ include::{resource-examples}/objectselect-parsed.txt[tags=aggregates]
 include::{java-examples}/ObjectSelectParsedTest.java[tags=aggregates]
 ----
 
-`toArtist.artistName` becomes a grouping column here, as the other columns are aggregates.
+`artist.name` becomes a grouping column here, as the other columns are aggregates.
 
 ===== Objects as columns
 
@@ -223,7 +223,7 @@ include::{java-examples}/ObjectSelectParsedTest.java[tags=toMany]
 ----
 
 In both cases a row with no related object is still present in the result, with a `null` in place of the object. To
-exclude such rows, add a condition to the `where` clause, e.g. `where exists paintingArray`.
+exclude such rows, add a condition to the `where` clause, e.g. `where exists paintings`.
 
 ===== Subqueries
 
@@ -241,7 +241,7 @@ include::{resource-examples}/objectselect-parsed.txt[tags=exists]
 include::{java-examples}/ObjectSelectParsedTest.java[tags=exists]
 ----
 
-`enclosing(self)` is the root object of the enclosing query, `enclosing(artistName)` is its property, and
+`enclosing(self)` is the root object of the enclosing query, `enclosing(name)` is its property, and
 `enclosing(enclosing(self))` goes two levels up.
 
 `in`, `all` and `any` take a nested select with a single column:
@@ -257,7 +257,7 @@ include::{java-examples}/ObjectSelectParsedTest.java[tags=in]
 ----
 
 NOTE: When there is no need for a nested select with its own conditions,`exists` over a path is shorter:
-`from Artist where not exists paintingArray`.
+`from Artist where not exists paintings`.
 
 ===== DbEntity as a root
 

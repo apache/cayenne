@@ -40,18 +40,18 @@ public abstract class _Painting extends PersistentObject {
 
     public static final SelfProperty<Painting> SELF = PropertyFactory.createSelf(Painting.class);
 
-    public static final String PAINTING_ID_PK_COLUMN = "PAINTING_ID";
+    public static final String ID_PK_COLUMN = "ID";
 
     public static final NumericProperty<BigDecimal> ESTIMATED_PRICE = PropertyFactory.createNumeric("estimatedPrice", BigDecimal.class);
-    public static final StringProperty<String> PAINTING_TITLE = PropertyFactory.createString("paintingTitle", String.class);
-    public static final EntityProperty<Artist> TO_ARTIST = PropertyFactory.createEntity("toArtist", Artist.class);
-    public static final EntityProperty<Gallery> TO_GALLERY = PropertyFactory.createEntity("toGallery", Gallery.class);
+    public static final StringProperty<String> TITLE = PropertyFactory.createString("title", String.class);
+    public static final EntityProperty<Artist> ARTIST = PropertyFactory.createEntity("artist", Artist.class);
+    public static final EntityProperty<Gallery> GALLERY = PropertyFactory.createEntity("gallery", Gallery.class);
 
     protected BigDecimal estimatedPrice;
-    protected String paintingTitle;
+    protected String title;
 
-    protected Object toArtist;
-    protected Object toGallery;
+    protected Object artist;
+    protected Object gallery;
 
     public void setEstimatedPrice(BigDecimal estimatedPrice) {
         beforePropertyWrite("estimatedPrice", this.estimatedPrice, estimatedPrice);
@@ -63,30 +63,30 @@ public abstract class _Painting extends PersistentObject {
         return this.estimatedPrice;
     }
 
-    public void setPaintingTitle(String paintingTitle) {
-        beforePropertyWrite("paintingTitle", this.paintingTitle, paintingTitle);
-        this.paintingTitle = paintingTitle;
+    public void setTitle(String title) {
+        beforePropertyWrite("title", this.title, title);
+        this.title = title;
     }
 
-    public String getPaintingTitle() {
-        beforePropertyRead("paintingTitle");
-        return this.paintingTitle;
+    public String getTitle() {
+        beforePropertyRead("title");
+        return this.title;
     }
 
-    public void setToArtist(Artist toArtist) {
-        setToOneTarget("toArtist", toArtist, true);
+    public void setArtist(Artist artist) {
+        setToOneTarget("artist", artist, true);
     }
 
-    public Artist getToArtist() {
-        return (Artist)readProperty("toArtist");
+    public Artist getArtist() {
+        return (Artist)readProperty("artist");
     }
 
-    public void setToGallery(Gallery toGallery) {
-        setToOneTarget("toGallery", toGallery, true);
+    public void setGallery(Gallery gallery) {
+        setToOneTarget("gallery", gallery, true);
     }
 
-    public Gallery getToGallery() {
-        return (Gallery)readProperty("toGallery");
+    public Gallery getGallery() {
+        return (Gallery)readProperty("gallery");
     }
 
     @Override
@@ -98,12 +98,12 @@ public abstract class _Painting extends PersistentObject {
         switch(propName) {
             case "estimatedPrice":
                 return this.estimatedPrice;
-            case "paintingTitle":
-                return this.paintingTitle;
-            case "toArtist":
-                return this.toArtist;
-            case "toGallery":
-                return this.toGallery;
+            case "title":
+                return this.title;
+            case "artist":
+                return this.artist;
+            case "gallery":
+                return this.gallery;
             default:
                 return super.readPropertyDirectly(propName);
         }
@@ -119,14 +119,14 @@ public abstract class _Painting extends PersistentObject {
             case "estimatedPrice":
                 this.estimatedPrice = (BigDecimal)val;
                 break;
-            case "paintingTitle":
-                this.paintingTitle = (String)val;
+            case "title":
+                this.title = (String)val;
                 break;
-            case "toArtist":
-                this.toArtist = val;
+            case "artist":
+                this.artist = val;
                 break;
-            case "toGallery":
-                this.toGallery = val;
+            case "gallery":
+                this.gallery = val;
                 break;
             default:
                 super.writePropertyDirectly(propName, val);

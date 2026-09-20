@@ -66,6 +66,6 @@ Full example:
 ----
 #chain('OR' 'WHERE')
     #chunk($name) NAME LIKE #bind($name) #end
-    #chunk($id) ARTIST_ID > #bind($id) #end
+    #chunk($id) ID > #bind($id) #end
 #end"
 ----

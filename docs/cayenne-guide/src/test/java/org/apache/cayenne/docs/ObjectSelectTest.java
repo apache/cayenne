@@ -46,7 +46,7 @@ public class ObjectSelectTest extends BaseTest {
 
         // tag::where[]
         List<Artist> objects = ObjectSelect.query(Artist.class)
-                .where(Artist.ARTIST_NAME.like("Pablo%"))
+                .where(Artist.NAME.like("Pablo%"))
                 .select(context);
         // end::where[]
 
@@ -60,7 +60,7 @@ public class ObjectSelectTest extends BaseTest {
 
         // tag::and[]
         List<Artist> objects = ObjectSelect.query(Artist.class)
-                .where(Artist.ARTIST_NAME.like("A%"))
+                .where(Artist.NAME.like("A%"))
                 .and(Artist.DATE_OF_BIRTH.gt(someDate))
                 .select(context);
         // end::and[]
@@ -75,11 +75,11 @@ public class ObjectSelectTest extends BaseTest {
         // tag::orderBy[]
         List<Artist> objects = ObjectSelect.query(Artist.class)
                 .orderBy(Artist.DATE_OF_BIRTH.desc())
-                .orderBy(Artist.ARTIST_NAME.asc())
+                .orderBy(Artist.NAME.asc())
                 .select(context);
         // end::orderBy[]
 
-        assertEquals("Dali", objects.get(0).getArtistName());
+        assertEquals("Dali", objects.get(0).getName());
     }
 
     @Test
@@ -87,7 +87,7 @@ public class ObjectSelectTest extends BaseTest {
         createArtistsDataSet();
 
         // tag::column[]
-        List<String> names = ObjectSelect.columnQuery(Artist.class, Artist.ARTIST_NAME)
+        List<String> names = ObjectSelect.columnQuery(Artist.class, Artist.NAME)
                 .select(context);
         // end::column[]
 
@@ -100,7 +100,7 @@ public class ObjectSelectTest extends BaseTest {
 
         // tag::columns[]
         List<Object[]> nameAndDate = ObjectSelect
-                .columnQuery(Artist.class, Artist.ARTIST_NAME, Artist.DATE_OF_BIRTH)
+                .columnQuery(Artist.class, Artist.NAME, Artist.DATE_OF_BIRTH)
                 .select(context);
         // end::columns[]
 
@@ -127,16 +127,16 @@ public class ObjectSelectTest extends BaseTest {
         // Artist.SELF - is a special property that denotes a full object in this case
         List<Object[]> artistAndPaintingCount = ObjectSelect.columnQuery(Artist.class,
                         Artist.SELF,
-                        Artist.PAINTING_ARRAY.count())
-                .where(Artist.ARTIST_NAME.like("P%"))
-                .having(Artist.PAINTING_ARRAY.count().lt(5L))
-                .orderBy(Artist.PAINTING_ARRAY.count().desc(), Artist.ARTIST_NAME.asc())
+                        Artist.PAINTINGS.count())
+                .where(Artist.NAME.like("P%"))
+                .having(Artist.PAINTINGS.count().lt(5L))
+                .orderBy(Artist.PAINTINGS.count().desc(), Artist.NAME.asc())
                 .select(context);
 
         for (Object[] next : artistAndPaintingCount) {
             Artist artist = (Artist) next[0];
             long paintings = (Long) next[1];
-            System.out.println(artist.getArtistName() + " has " + paintings + " paintings");
+            System.out.println(artist.getName() + " has " + paintings + " paintings");
         }
         // end::aggregates[]
 
@@ -150,7 +150,7 @@ public class ObjectSelectTest extends BaseTest {
 
         // tag::notExists[]
         long count = ObjectSelect.query(Artist.class)
-                .where(Artist.PAINTING_ARRAY.notExists())
+                .where(Artist.PAINTINGS.notExists())
                 .selectCount(context);
         // end::notExists[]
 

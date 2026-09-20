@@ -86,23 +86,23 @@ public abstract class BaseTest {
 
     protected Artist createArtist(String name, LocalDate dateOfBirth) {
         Artist artist = context.newObject(Artist.class);
-        artist.setArtistName(name);
+        artist.setName(name);
         artist.setDateOfBirth(dateOfBirth);
         return artist;
     }
 
     protected Gallery createGallery(String name) {
         Gallery gallery = context.newObject(Gallery.class);
-        gallery.setGalleryName(name);
+        gallery.setName(name);
         return gallery;
     }
 
     protected Painting createPainting(String title, int price, Artist artist, Gallery gallery) {
         Painting painting = context.newObject(Painting.class);
-        painting.setPaintingTitle(title);
+        painting.setTitle(title);
         painting.setEstimatedPrice(BigDecimal.valueOf(price));
-        painting.setToArtist(artist);
-        painting.setToGallery(gallery);
+        painting.setArtist(artist);
+        painting.setGallery(gallery);
         return painting;
     }
 

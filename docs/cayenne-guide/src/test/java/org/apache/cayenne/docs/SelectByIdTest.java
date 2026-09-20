@@ -36,13 +36,13 @@ public class SelectByIdTest extends BaseTest {
 
     private void createArtistsWithIds() {
         for (int i = 1; i <= 4; i++) {
-            SQLExec.query("INSERT INTO ARTIST (ARTIST_ID, ARTIST_NAME) VALUES (#bind($id), #bind($name))")
+            SQLExec.query("INSERT INTO ARTIST (ID, NAME) VALUES (#bind($id), #bind($name))")
                     .params("id", i)
                     .params("name", "artist" + i)
                     .update(context);
         }
 
-        SQLExec.query("INSERT INTO PAINTING (PAINTING_ID, PAINTING_TITLE, ARTIST_ID) VALUES (1, 'P1', 1)")
+        SQLExec.query("INSERT INTO PAINTING (ID, TITLE, ARTIST_ID) VALUES (1, 'P1', 1)")
                 .update(context);
     }
 
@@ -60,7 +60,7 @@ public class SelectByIdTest extends BaseTest {
                 .select(context);
         // end::byId[]
 
-        assertEquals("artist1", artistWithId1.getArtistName());
+        assertEquals("artist1", artistWithId1.getName());
         assertEquals(3, artists.size());
     }
 
@@ -68,7 +68,7 @@ public class SelectByIdTest extends BaseTest {
     public void byIdForms() {
         createArtistsWithIds();
         SQLExec.query("INSERT INTO COMPOUND_PK (KEY1, KEY2, NAME) VALUES ('x', 'y', 'xy')").update(context);
-        ObjectId objectId = ObjectId.of("Artist", Artist.ARTIST_ID_PK_COLUMN, 2);
+        ObjectId objectId = ObjectId.of("Artist", Artist.ID_PK_COLUMN, 2);
 
         // tag::byIdForms[]
         CompoundPk object = ObjectSelect.query(CompoundPk.class)
@@ -82,7 +82,7 @@ public class SelectByIdTest extends BaseTest {
 
         assertEquals("xy", object.getName());
         assertNotNull(artist);
-        assertEquals("artist2", artist.getArtistName());
+        assertEquals("artist2", artist.getName());
     }
 
     @Test
@@ -91,12 +91,12 @@ public class SelectByIdTest extends BaseTest {
 
         // tag::idExpressions[]
         List<Artist> artists = ObjectSelect.query(Artist.class)
-                .where(Artist.ARTIST_NAME.eq("artist4"))
+                .where(Artist.NAME.eq("artist4"))
                 .or(Artist.SELF.idsIn(1, 2, 3))
                 .select(context);
 
         List<Painting> paintings = ObjectSelect.query(Painting.class)
-                .where(Painting.TO_ARTIST.eqId(1))
+                .where(Painting.ARTIST.eqId(1))
                 .select(context);
         // end::idExpressions[]
 

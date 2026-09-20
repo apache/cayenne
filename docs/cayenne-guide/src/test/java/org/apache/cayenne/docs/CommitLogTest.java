@@ -63,8 +63,8 @@ public class CommitLogTest {
 
         try {
             ObjectContext context = runtime.newContext();
-            context.newObject(Artist.class).setArtistName("a1");
-            context.newObject(Painting.class).setPaintingTitle("p1");
+            context.newObject(Artist.class).setName("a1");
+            context.newObject(Painting.class).setTitle("p1");
             context.commitChanges();
         } finally {
             runtime.shutdown();

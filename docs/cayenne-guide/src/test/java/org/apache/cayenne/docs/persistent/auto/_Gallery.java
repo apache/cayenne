@@ -38,36 +38,36 @@ public abstract class _Gallery extends PersistentObject {
 
     public static final SelfProperty<Gallery> SELF = PropertyFactory.createSelf(Gallery.class);
 
-    public static final String GALLERY_ID_PK_COLUMN = "GALLERY_ID";
+    public static final String ID_PK_COLUMN = "ID";
 
-    public static final StringProperty<String> GALLERY_NAME = PropertyFactory.createString("galleryName", String.class);
-    public static final ListProperty<Painting> PAINTING_ARRAY = PropertyFactory.createList("paintingArray", Painting.class);
+    public static final StringProperty<String> NAME = PropertyFactory.createString("name", String.class);
+    public static final ListProperty<Painting> PAINTINGS = PropertyFactory.createList("paintings", Painting.class);
 
-    protected String galleryName;
+    protected String name;
 
-    protected Object paintingArray;
+    protected Object paintings;
 
-    public void setGalleryName(String galleryName) {
-        beforePropertyWrite("galleryName", this.galleryName, galleryName);
-        this.galleryName = galleryName;
+    public void setName(String name) {
+        beforePropertyWrite("name", this.name, name);
+        this.name = name;
     }
 
-    public String getGalleryName() {
-        beforePropertyRead("galleryName");
-        return this.galleryName;
+    public String getName() {
+        beforePropertyRead("name");
+        return this.name;
     }
 
-    public void addToPaintingArray(Painting obj) {
-        addToManyTarget("paintingArray", obj, true);
+    public void addToPaintings(Painting obj) {
+        addToManyTarget("paintings", obj, true);
     }
 
-    public void removeFromPaintingArray(Painting obj) {
-        removeToManyTarget("paintingArray", obj, true);
+    public void removeFromPaintings(Painting obj) {
+        removeToManyTarget("paintings", obj, true);
     }
 
     @SuppressWarnings("unchecked")
-    public List<Painting> getPaintingArray() {
-        return (List<Painting>)readProperty("paintingArray");
+    public List<Painting> getPaintings() {
+        return (List<Painting>)readProperty("paintings");
     }
 
     @Override
@@ -77,10 +77,10 @@ public abstract class _Gallery extends PersistentObject {
         }
 
         switch(propName) {
-            case "galleryName":
-                return this.galleryName;
-            case "paintingArray":
-                return this.paintingArray;
+            case "name":
+                return this.name;
+            case "paintings":
+                return this.paintings;
             default:
                 return super.readPropertyDirectly(propName);
         }
@@ -93,11 +93,11 @@ public abstract class _Gallery extends PersistentObject {
         }
 
         switch (propName) {
-            case "galleryName":
-                this.galleryName = (String)val;
+            case "name":
+                this.name = (String)val;
                 break;
-            case "paintingArray":
-                this.paintingArray = val;
+            case "paintings":
+                this.paintings = val;
                 break;
             default:
                 super.writePropertyDirectly(propName, val);
