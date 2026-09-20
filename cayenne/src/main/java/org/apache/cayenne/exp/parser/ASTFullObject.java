@@ -48,8 +48,7 @@ public class ASTFullObject extends SimpleNode {
 
     @Override
     public void appendAsString(Appendable out) throws IOException {
-        out.append(":FULL_OBJECT:");
-        super.appendAsString(out);
+        out.append("self");
     }
 
     @Override
