@@ -118,6 +118,10 @@
 						<imagesdir>images</imagesdir>
 						<icons>font</icons>
 
+						<!-- Number the top-level chapters only. "@" makes it a default that a document can override,
+							e.g. to turn the numbering off for the appendices -->
+						<sectnums>@</sectnums>
+						<sectnumlevels>1</sectnumlevels>
 						<sectanchors>true</sectanchors>
 						<idprefix /> <!-- set the idprefix to blank -->
 						<idseparator>-</idseparator>

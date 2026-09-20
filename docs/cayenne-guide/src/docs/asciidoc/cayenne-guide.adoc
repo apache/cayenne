@@ -71,6 +71,9 @@ include::_cayenne-guide/additional-modules.adoc[]
 
 include::_cayenne-guide/build-tools.adoc[]
 
+// the appendices have their own "numbering" in the titles
+:sectnums!:
+
 include::_cayenne-guide/configuration-properties.adoc[]
 
 include::_cayenne-guide/service-collections.adoc[]
