@@ -20,14 +20,16 @@ Cayenne provides a simple, yet powerful, object-based expression language. The m
 
 Before discussing how to build expressions, it is important to understand one group of expressions widely used in Cayenne - path expressions. There are two types of path expressions - object and database, used for navigating graphs of connected objects or joined DB tables, respectively. Object paths are much more commonly used, as, after all, Cayenne is supposed to provide a degree of isolation of the object model from the database. However, database paths are helpful in certain situations. The general structure of path expressions is the following:
 
-[source, java]
+[source]
 ----
- [db:]segment[+][.segment[+]...]
+[db:]segment[+][#alias][.segment[+][#alias]...]
 ----
 
 - `db:` is an optional prefix indicating that the following path is a DB path. Otherwise it is an object path.
 
 - `segment` is a name of a property (relationship or attribute in Cayenne terms) in the path. The path must have at least one segment; segments are separated by dot (".").
+
+- `#alias` is an optional alias of a relationship segment, discussed below.
 
 - `+` An "OUTER JOIN" path component. Currently "+" only has effect when translated to SQL as OUTER JOIN. When evaluating expressions in memory, it is ignored.
 
@@ -50,14 +52,13 @@ A database path therefore might look like this - `db:dbrelationshipX.dbrelations
 
 - `db:artist.artistExhibits.exhibit.CLOSING_DATE` - can be used to match a closing date of any of the exhibits of a related artist record.
 
-Cayenne supports "aliases" in path expressions. E.g. the same expression can be written using the explicit path or an alias:
+Cayenne supports "aliases" in path expressions. An alias is appended to a relationship segment after the `#` character:
 
-- `artist.exhibits.closingDate` - full path
+- `artist.exhibits.closingDate` - a path with no aliases
 
-- `e.closingDate` - alias "e" is used for `artist.exhibits`.
+- `artist.exhibits#e.closingDate` - alias "e" is used for `artist.exhibits`.
 
-SelectQuery using the second form of the path expression must be made aware of the alias via `SelectQuery.aliasPathSplits(..)`;
-otherwise, an `Exception` will be thrown. The main use of aliases is to allow users to control how SQL joins are generated if the same path is encountered more than once in any given `Expression`. Each alias for any given path would result in a separate join. Without aliases, a single join will be used for a group of matching paths.
+The main use of aliases is to allow users to control how SQL joins are generated if the same path is encountered more than once in any given `Expression`. Each alias for any given path would result in a separate join. Without aliases, a single join will be used for a group of matching paths.
 
 ==== Creating Expressions from Strings
 
@@ -73,12 +74,9 @@ This particular expression may be used to match Paintings whose names start with
 
 Character constants that are not paths or numeric values should be enclosed in single or double quotes. Two of the expressions below are equivalent:
 
-[source, java]
+[source,java,indent=0]
 ----
-name = 'ABC'
-
-// double quotes are escaped inside Java Strings of course
-name = \"ABC\"
+include::{java-examples}/ExpressionsTest.java[tags=quotes]
 ----
 
 Case sensitivity. Expression operators are case sensitive and are usually lowercase. Complex words follow the Java camel-case style:
@@ -163,12 +161,11 @@ include::{java-examples}/ExpressionsTest.java[tags=expressionFactory]
 
 NOTE: The last line in the example above shows how to create a new expression by "chaining" two other expressions. A common error when chaining expressions is to assume that "andExp" and "orExp" append another expression to the current expression. In fact, a new expression is created. Expression API treats existing expressions as immutable.
 
-As discussed earlier, Cayenne supports aliases in path Expressions, so you can control how SQL joins are generated if the same path is encountered more than once in the same Expression. Two ExpressionFactory methods let you implicitly generate aliases to "split" match paths into individual joins if needed:
+As discussed earlier, Cayenne supports aliases in path Expressions, so you can control how SQL joins are generated if the same path is encountered more than once in the same Expression. Two `ExpressionFactory.matchAllExp(..)` methods (one taking a `Collection` of values, another - a vararg) let you implicitly generate aliases to "split" match paths into individual joins if needed:
 
-[source, java]
+[source,java,indent=0]
 ----
-Expression matchAllExp(String path, Collection values)
-Expression matchAllExp(String path, Object... values)
+include::{java-examples}/ExpressionsTest.java[tags=matchAllExp]
 ----
 
 The "Path" argument to both of these methods can use a split character (a pipe symbol '|') instead of a dot to indicate that the relationship following a path should be split into a separate set of joins, one per collection value. There can only be one split at most in any given path. The split must always precede a relationship. E.g. `"|exhibits.paintings"`, `"exhibits|paintings"`, etc. Internally, Cayenne generates distinct aliases for each of the split expressions, forcing separate joins.

@@ -208,6 +208,29 @@ public class ProcedureCallIT {
     }
 
     @Test
+    public void callResultIsTyped() throws Exception {
+        if (!env.testDbAdapter().supportsStoredProcedures()) {
+            return;
+        }
+
+        // iterating over "call(..)" with no intermediate variable only compiles if "query(String)" is not a raw type
+        int outParams = runProcedure(() -> {
+            int count = 0;
+            for (QueryResult item : ProcedureCall.query(OUT_STORED_PROCEDURE)
+                    .param("in_param", 20)
+                    .call(env.context())) {
+                if (item instanceof QueryResult.OutParameters out) {
+                    assertEquals(40, ((Number) out.values().get("out_param")).intValue());
+                    count++;
+                }
+            }
+            return count;
+        });
+
+        assertEquals(1, outParams);
+    }
+
+    @Test
     public void selectPersistentObject() throws Exception {
         if (!env.testDbAdapter().supportsStoredProcedures()) {
             return;

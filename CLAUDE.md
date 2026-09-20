@@ -113,6 +113,8 @@ with the Cayenne API:
   expression Strings) are tagged in `src/test/resources/org/apache/cayenne/docs/*.txt` and read by the tests via
   `BaseTest.example(..)`.
 - `docs/getting-started-guide` — examples are in the tutorial app under `src/main/java`, that is run by `MainTest`.
+- `docs/getting-started-db-first` — examples are in the tutorial app under `src/main/java`. It is only compiled, as it
+  needs a MySQL DB to run.
 
 ```java
 // tag::where[]

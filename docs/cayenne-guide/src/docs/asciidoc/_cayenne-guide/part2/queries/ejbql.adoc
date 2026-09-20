@@ -99,9 +99,9 @@ Expression#appendAsEJBQL methods for this purpose.
 While Cayenne Expressions discussed previously can be thought of as identical to JPQL WHERE clause, and indeed they are
 very close, there are a few notable differences:
 
-- Null handling: SelectQuery would translate the expressions matching NULL values to the corresponding "X IS NULL" or
+- Null handling: ObjectSelect would translate the expressions matching NULL values to the corresponding "X IS NULL" or
 "X IS NOT NULL" SQL syntax. EJBQLQuery on the other hand requires explicit "IS NULL" (or "IS NOT NULL") syntax to be
 used, otherwise the generated SQL will look like "X = NULL" (or "X <> NULL"), which will evaluate differently.
 
-- Expression Parameters: SelectQuery uses "$" to denote named parameters (e.g. "$myParam"), while EJBQL uses ":"
+- Expression Parameters: ObjectSelect uses "$" to denote named parameters (e.g. "$myParam"), while EJBQL uses ":"
 (e.g. ":myParam"). Also EJBQL supports positional parameters denoted by the question mark: "?3".

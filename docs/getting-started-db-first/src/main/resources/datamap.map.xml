@@ -3,42 +3,42 @@
 	 xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
 	 xsi:schemaLocation="http://cayenne.apache.org/schema/13/modelMap http://cayenne.apache.org/schema/13/modelMap.xsd"
 	 project-version="13">
-	<property name="defaultPackage" value="org.example.cayenne.persistent"/>
-	<db-entity name="ARTIST">
+	<property name="defaultPackage" value="org.apache.cayenne.tutorial.persistent"/>
+	<db-entity name="artist" catalog="cayenne_demo">
 		<db-attribute name="DATE_OF_BIRTH" type="DATE"/>
-		<db-attribute name="ID" type="INTEGER" isPrimaryKey="true" isMandatory="true"/>
+		<db-attribute name="ID" type="INTEGER" isPrimaryKey="true" isGenerated="true" isMandatory="true"/>
 		<db-attribute name="NAME" type="VARCHAR" length="200"/>
 	</db-entity>
-	<db-entity name="GALLERY">
-		<db-attribute name="ID" type="INTEGER" isPrimaryKey="true" isMandatory="true"/>
+	<db-entity name="gallery" catalog="cayenne_demo">
+		<db-attribute name="ID" type="INTEGER" isPrimaryKey="true" isGenerated="true" isMandatory="true"/>
 		<db-attribute name="NAME" type="VARCHAR" length="200"/>
 	</db-entity>
-	<db-entity name="PAINTING">
+	<db-entity name="painting" catalog="cayenne_demo">
 		<db-attribute name="ARTIST_ID" type="INTEGER"/>
 		<db-attribute name="GALLERY_ID" type="INTEGER"/>
-		<db-attribute name="ID" type="INTEGER" isPrimaryKey="true" isMandatory="true"/>
+		<db-attribute name="ID" type="INTEGER" isPrimaryKey="true" isGenerated="true" isMandatory="true"/>
 		<db-attribute name="NAME" type="VARCHAR" length="200"/>
 	</db-entity>
-	<obj-entity name="Artist" className="org.example.cayenne.persistent.Artist" dbEntityName="ARTIST">
+	<obj-entity name="Artist" className="org.apache.cayenne.tutorial.persistent.Artist" dbEntityName="artist">
 		<obj-attribute name="dateOfBirth" type="java.time.LocalDate" db-attribute-path="DATE_OF_BIRTH"/>
 		<obj-attribute name="name" type="java.lang.String" db-attribute-path="NAME"/>
 	</obj-entity>
-	<obj-entity name="Gallery" className="org.example.cayenne.persistent.Gallery" dbEntityName="GALLERY">
+	<obj-entity name="Gallery" className="org.apache.cayenne.tutorial.persistent.Gallery" dbEntityName="gallery">
 		<obj-attribute name="name" type="java.lang.String" db-attribute-path="NAME"/>
 	</obj-entity>
-	<obj-entity name="Painting" className="org.example.cayenne.persistent.Painting" dbEntityName="PAINTING">
+	<obj-entity name="Painting" className="org.apache.cayenne.tutorial.persistent.Painting" dbEntityName="painting">
 		<obj-attribute name="name" type="java.lang.String" db-attribute-path="NAME"/>
 	</obj-entity>
-	<db-relationship name="paintings" source="ARTIST" target="PAINTING" toMany="true">
+	<db-relationship name="paintings" source="artist" target="painting" toMany="true">
 		<db-attribute-pair source="ID" target="ARTIST_ID"/>
 	</db-relationship>
-	<db-relationship name="paintings" source="GALLERY" target="PAINTING" toMany="true">
+	<db-relationship name="paintings" source="gallery" target="painting" toMany="true">
 		<db-attribute-pair source="ID" target="GALLERY_ID"/>
 	</db-relationship>
-	<db-relationship name="artist" source="PAINTING" target="ARTIST">
+	<db-relationship name="artist" source="painting" target="artist">
 		<db-attribute-pair source="ARTIST_ID" target="ID"/>
 	</db-relationship>
-	<db-relationship name="gallery" source="PAINTING" target="GALLERY">
+	<db-relationship name="gallery" source="painting" target="gallery">
 		<db-attribute-pair source="GALLERY_ID" target="ID"/>
 	</db-relationship>
 	<obj-relationship name="paintings" source="Artist" target="Painting" deleteRule="Cascade" db-relationship-path="paintings"/>

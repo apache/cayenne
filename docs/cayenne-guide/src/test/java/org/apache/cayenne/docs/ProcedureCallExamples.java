@@ -54,8 +54,7 @@ public class ProcedureCallExamples {
 
     public void outParameters() {
         // tag::outParameters[]
-        List<QueryResult> result = ProcedureCall.query("my_procedure").call(context);
-        for (QueryResult item : result) {
+        for (QueryResult item : ProcedureCall.query("my_procedure").call(context)) {
             switch (item) {
                 case QueryResult.Select<?> select -> process(select.objects());
                 case QueryResult.Update update -> process(update.counts());

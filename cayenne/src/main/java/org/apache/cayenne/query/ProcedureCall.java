@@ -37,10 +37,13 @@ import java.util.Map;
 public class ProcedureCall<T> extends IndirectQuery {
 
     /**
-     * Creates procedure call using name of stored procedure defined in the mapping file.
+     * Creates procedure call using name of stored procedure defined in the mapping file. With no result class
+     * specified, the result sets are returned as data rows.
      */
-    public static ProcedureCall query(String procedure) {
-        return new ProcedureCall(procedure);
+    public static ProcedureCall<DataRow> query(String procedure) {
+        ProcedureCall<DataRow> procedureCall = new ProcedureCall<>(procedure);
+        procedureCall.fetchingDataRows = true;
+        return procedureCall;
     }
 
     /**

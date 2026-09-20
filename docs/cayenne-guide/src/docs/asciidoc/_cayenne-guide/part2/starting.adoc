@@ -41,6 +41,33 @@ include::{java-examples}/StartingTest.java[tags=stop]
 
 When a runtime object has the same scope as the application, this may not be always necessary, however in some cases it is essential, and is generally considered a good practice. E.g. in a web container hot redeploy of a webapp will cause resource leaks and eventual OutOfMemoryError if the application fails to shutdown CayenneRuntime.
 
+==== Connecting to a Database
+
+The mapping project does not contain any database connection information. The database is defined in the code, when
+the runtime is created, as a DataNode. In the simplest case a DataNode is created from a `DataSource`. It can be any
+`DataSource`, e.g., the one provided by your application container, or the one built with `CayenneDataSource`:
+
+[source,java,indent=0]
+----
+include::{java-examples}/StartingTest.java[tags=dataSource]
+----
+
+When a DataNode needs to be customized, e.g., to let Cayenne create the DB schema on the first connection, to set
+a specific DbAdapter, or to give the node a name, use a `DataNodeDescriptor`:
+
+[source,java,indent=0]
+----
+include::{java-examples}/StartingTest.java[tags=dataNodeDescriptor]
+----
+
+There can be more than one DataNode. Each one is linked to its DataMaps by name. The "default" DataNode is optional,
+and is used for all the DataMaps that are not linked to a node explicitly:
+
+[source,java,indent=0]
+----
+include::{java-examples}/StartingTest.java[tags=multipleDataNodes]
+----
+
 ==== Merging Multiple Projects
 
 CayenneRuntime requires at least one mapping project to run. But it can also take multiple projects and merge them together in a single configuration. This way different parts of a database can be mapped independently from each other (even by different software providers), and combined in runtime when assembling an application. Doing it is as easy as passing multiple project locations to CayenneRuntime builder:
@@ -60,9 +87,7 @@ When the projects are merged, the following rules are applied:
 
 - If there are two or more DataMaps with the same name, only one DataMap is used in the merged project, the rest are discarded. Same precedence rules apply - DataMap from the project with the highest index in the project list overrides all other DataMaps with the same name.
 
-- If there are two or more DataNodes with the same name, only one DataNode is used in the merged project, the rest are discarded. DataNode coming from project with the highest index in the project list is chosen per precedence rule above.
-
-- There is a notion of "default" DataNode. After the merge if any DataMaps are not explicitly linked to DataNodes, their queries will be executed via a default DataNode. This makes it possible to build mapping "libraries" that are only associated with a specific database in runtime. If there's only one DataNode in the merged project, it will be automatically chosen as default. A possible way to explicitly designate a specific node as default is to override `DataDomainProvider.createAndInitDataDomain()`.
+- DataNodes are not a part of the projects. After the merge the DataMaps are linked to the DataNodes as described above. If any DataMaps are not explicitly linked to DataNodes, their queries will be executed via the default DataNode. This makes it possible to build mapping "libraries" that are only associated with a specific database in runtime.
 
 ==== Web Applications
 

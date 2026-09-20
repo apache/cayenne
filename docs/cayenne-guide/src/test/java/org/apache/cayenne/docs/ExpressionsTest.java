@@ -57,7 +57,8 @@ public class ExpressionsTest extends BaseTest {
      */
     @Test
     public void expStrings() {
-        List<String> valid = List.of("caseValid", "grouping", "objPath", "objPrefixPath", "multiSegmentPath", "dbPath", "like");
+        List<String> valid = List.of(
+                "caseValid", "grouping", "objPath", "objPrefixPath", "multiSegmentPath", "dbPath", "like");
         for (String tag : valid) {
             assertNotNull(ExpressionFactory.exp(example("expressions.txt", tag)), tag);
         }
@@ -66,6 +67,40 @@ public class ExpressionsTest extends BaseTest {
                 ExpressionFactory.exp(example("expressions.txt", "objPrefixPath")));
 
         assertThrows(ExpressionException.class, () -> ExpressionFactory.exp(example("expressions.txt", "caseInvalid")));
+    }
+
+    @Test
+    public void quotes() {
+        // tag::quotes[]
+        Expression e1 = ExpressionFactory.exp("name = 'ABC'");
+
+        // double quotes are escaped inside Java Strings of course
+        Expression e2 = ExpressionFactory.exp("name = \"ABC\"");
+        // end::quotes[]
+
+        assertEquals(e1, e2);
+    }
+
+    @Test
+    public void aliases() {
+        createArtistsDataSet();
+
+        // each alias results in a separate join, so this matches the artists that have both paintings
+        Expression e = ExpressionFactory.exp(
+                "paintingArray#p1.paintingTitle = 'P1' and paintingArray#p2.paintingTitle = 'P2'");
+        assertEquals(1, ObjectSelect.query(Artist.class).where(e).select(context).size());
+    }
+
+    @Test
+    public void matchAllExp() {
+        createArtistsDataSet();
+
+        // tag::matchAllExp[]
+        // matches the artists that have both "P1" and "P2" paintings
+        Expression e = ExpressionFactory.matchAllExp("|paintingArray.paintingTitle", "P1", "P2");
+        // end::matchAllExp[]
+
+        assertEquals(1, ObjectSelect.query(Artist.class).where(e).select(context).size());
     }
 
     @Test

@@ -16,9 +16,9 @@
  *  specific language governing permissions and limitations
  *  under the License.
  ****************************************************************/
-package org.apache.cayenne.tutorial.persistent;
+package org.example.cayenne.persistent;
 
-import org.apache.cayenne.tutorial.persistent.auto._Datamap;
+import org.example.cayenne.persistent.auto._Datamap;
 
 public class Datamap extends _Datamap {
 

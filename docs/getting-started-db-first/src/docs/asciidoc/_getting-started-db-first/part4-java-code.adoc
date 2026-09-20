@@ -22,39 +22,14 @@ In this section we'll write a simple main class to run our application, and get 
 +
 [source,java]
 ----
-package org.apache.cayenne.tutorial;
-
-public class Main {
-
-    public static void main(String[] args) {
-
-    }
-}
+include::{java-include-dir}/Main.java[tags=main-empty]
 ----
 * The first thing you need to be able to access the database is to create a `CayenneRuntime` object
 (which is essentially a wrapper around Cayenne stack) and use it to obtain an instance of an `ObjectContext`.
 +
 [source,java]
 ----
-package org.apache.cayenne.tutorial;
-
-import org.apache.cayenne.ObjectContext;
-import org.apache.cayenne.datasource.CayenneDataSource;
-import org.apache.cayenne.runtime.CayenneRuntime;
-
-public class Main {
-
-    public static void main(String[] args) {
-        CayenneRuntime cayenneRuntime = CayenneRuntime.of()
-            .defaultDataNode(CayenneDataSource
-                    .of("jdbc:mysql://127.0.0.1:3306/cayenne_demo")
-                    .userName("root") // TODO: change to your actual username and password
-                    .password("your-password").build())
-            .addConfig("cayenne-project.xml")
-            .build();
-        ObjectContext context = cayenneRuntime.newContext();
-    }
-}
+include::{java-include-dir}/Main.java[tags=main-runtime]
 ----
 + 
 `ObjectContext` is an isolated "session" in Cayenne that provides all needed API to work with data.
@@ -64,11 +39,9 @@ When the first ObjectContext is created in the application,
 Cayenne loads XML mapping files and creates a shared access stack that is later reused by other ObjectContexts.
 * Let's now add some code that will create persistent object: 
 +
-[source,java]
+[source,java,indent=0]
 ----
-Artist artist = context.newObject(Artist.class);
-artist.setName("Picasso");
-context.commitChanges();
+include::{java-include-dir}/Main.java[tags=new-artist]
 ----
 
 ==== Running Application

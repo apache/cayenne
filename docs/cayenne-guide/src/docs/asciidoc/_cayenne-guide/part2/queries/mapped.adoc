@@ -19,8 +19,6 @@ The actual stored query can be SelectQuery, SQLTemplate, EJBQLQuery, etc.
 Difference between `MappedSelect` and `MappedExec` is (as reflected in their names) whether underlying query
 intended to select data or just to perform some generic SQL code.
 
-NOTE: These queries are "fluent" versions of deprecated `NamedQuery` class.
-
 Here is example of how to use `MappedSelect`:
 
 [source,java,indent=0]

@@ -42,7 +42,7 @@ DataMap is a container of persistent entities and other object-relational metada
 
 ==== DataNode
 
-DataNode is model of a database. It is actually pretty simple. It has an arbitrary user-provided name and information needed to create or locate a JDBC DataSource. Most projects only have one DataNode, though there may be any number of nodes if needed.
+DataNode is a model of a database. It is actually pretty simple. It has a name and a JDBC DataSource. Unlike the rest of the objects discussed here, DataNodes are not a part of the XML mapping project. They are defined in the code, when Cayenne runtime is created (see <<Starting Cayenne>>). Most applications only have one DataNode, though there may be any number of nodes if needed.
 
 ==== DbEntity
 

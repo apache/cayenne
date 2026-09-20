@@ -18,13 +18,13 @@
  ****************************************************************/
 // This code used in docs too, so it should be formatted
 // to 80 char line to fit in PDF.
-package org.apache.cayenne.tutorial.persistent;
+package org.example.cayenne.persistent;
 
 import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
 import java.time.format.DateTimeParseException;
 
-import org.apache.cayenne.tutorial.persistent.auto._Artist;
+import org.example.cayenne.persistent.auto._Artist;
 
 // tag::content[]
 public class Artist extends _Artist {

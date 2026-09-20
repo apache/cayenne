@@ -16,17 +16,10 @@
  *  specific language governing permissions and limitations
  *  under the License.
  ****************************************************************/
-package org.apache.cayenne.tutorial;
+package org.apache.cayenne.tutorial.persistent;
 
-import org.junit.jupiter.api.Test;
+import org.apache.cayenne.tutorial.persistent.auto._Artist;
 
-/**
- * Runs the tutorial application, parts of which are included in the docs as code examples.
- */
-public class MainTest {
+public class Artist extends _Artist {
 
-    @Test
-    public void main() {
-        Main.main(new String[0]);
-    }
 }

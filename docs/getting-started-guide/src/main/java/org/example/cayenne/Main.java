@@ -16,30 +16,41 @@
  *  specific language governing permissions and limitations
  *  under the License.
  ****************************************************************/
-package org.apache.cayenne.tutorial;
+// The parts of this class are included in the tutorial docs. "main-empty" and "main-runtime" tags assemble the versions
+// of this class at the different tutorial steps
+// tag::main-runtime[]
+// tag::main-empty[]
+package org.example.cayenne;
 
+// end::main-empty[]
 import org.apache.cayenne.ObjectContext;
 import org.apache.cayenne.configuration.DataNodeDescriptor;
 import org.apache.cayenne.datasource.CayenneDataSource;
-import org.apache.cayenne.query.ObjectSelect;
 import org.apache.cayenne.runtime.CayenneRuntime;
-import org.apache.cayenne.tutorial.persistent.Artist;
-import org.apache.cayenne.tutorial.persistent.Gallery;
-import org.apache.cayenne.tutorial.persistent.Painting;
 
 import javax.sql.DataSource;
+// end::main-runtime[]
+import org.apache.cayenne.query.ObjectSelect;
+import org.example.cayenne.persistent.Artist;
+import org.example.cayenne.persistent.Gallery;
+import org.example.cayenne.persistent.Painting;
+
 import java.time.LocalDate;
 import java.util.List;
+// tag::main-runtime[]
 
+// tag::main-empty[]
 public class Main {
 
     public static void main(String[] args) {
+        // end::main-empty[]
 
-        // starting Cayenne
+        // an in-memory Derby database
         DataSource dataSource = CayenneDataSource.of("jdbc:derby:memory:testdb;create=true")
                 .pool(1, 1)
                 .build();
 
+        // let Cayenne create the DB schema from the mapping, if it is not there yet
         DataNodeDescriptor dataNode = DataNodeDescriptor.of("tutorial")
                 .dataSource(dataSource)
                 .createSchemaIfNeeded()
@@ -50,13 +61,17 @@ public class Main {
                 .defaultDataNode(dataNode)
                 .build();
 
-        // getting a hold of ObjectContext
         ObjectContext context = cayenneRuntime.newContext();
+        // end::main-runtime[]
 
         newObjectsTutorial(context);
         selectTutorial(context);
         deleteTutorial(context);
+        // tag::main-runtime[]
+        // tag::main-empty[]
     }
+    // end::main-empty[]
+    // end::main-runtime[]
 
     static void newObjectsTutorial(ObjectContext context) {
 
@@ -123,4 +138,8 @@ public class Main {
         }
         // end::delete[]
     }
+// tag::main-runtime[]
+// tag::main-empty[]
 }
+// end::main-empty[]
+// end::main-runtime[]

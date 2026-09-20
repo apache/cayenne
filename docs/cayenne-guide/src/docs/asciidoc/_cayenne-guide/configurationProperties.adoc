@@ -19,34 +19,34 @@ Note that the property names below are defined as constants in `org.apache.cayen
 [#configProperties]
 * `cayenne.jdbc.driver[.domain_name.node_name]`
    defines a JDBC driver class to use when creating a DataSource. If domain name and optionally - node name are specified,
-   the setting overrides DataSource info just for this domain/node. Otherwise the override is applied to all domains/nodes in the system.
-    ** Default value: none, project DataNode configuration is used
+   the setting applies just to this domain/node. Otherwise it applies to all domains/nodes in the system.
+    ** Default value: none. Only used for the DataNodes that were not given an explicit DataSource
 
 * `cayenne.jdbc.url[.domain_name.node_name]`
     defines a DB URL to use when creating a DataSource. If domain name and optionally - node name are specified,
-    the setting overrides DataSource info just for this domain/node. Otherwise the override is applied to all domains/nodes in the system.
-    ** Default value: none, project DataNode configuration is used
+    the setting applies just to this domain/node. Otherwise it applies to all domains/nodes in the system.
+    ** Default value: none. Only used for the DataNodes that were not given an explicit DataSource
 
 * `cayenne.jdbc.username[.domain_name.node_name]`
    defines a DB user name to use when creating a DataSource. If domain name and optionally - node name are specified,
-   the setting overrides DataSource info just for this domain/node. Otherwise the override is applied to all domains/nodes in the system.
+   the setting applies just to this domain/node. Otherwise it applies to all domains/nodes in the system.
     ** Possible values: any
-    ** Default value: none, project DataNode configuration is used
+    ** Default value: none. Only used for the DataNodes that were not given an explicit DataSource
 
 * `cayenne.jdbc.password[.domain_name.node_name]`
    defines a DB password to use when creating a DataSource. If domain name and optionally - node name are specified,
-   the setting overrides DataSource info just for this domain/node. Otherwise the override is applied to all domains/nodes in the system
-    ** Default value: none, project DataNode configuration is used
+   the setting applies just to this domain/node. Otherwise it applies to all domains/nodes in the system
+    ** Default value: none. Only used for the DataNodes that were not given an explicit DataSource
 
 * `cayenne.jdbc.min_connections[.domain_name.node_name]`
    defines the DB connection pool minimal size. If domain name and optionally - node name are specified, the setting
-   overrides DataSource info just for this domain/node. Otherwise the override is applied to all domains/nodes in the system
-    ** Default value: none, project DataNode configuration is used
+   applies just to this domain/node. Otherwise it applies to all domains/nodes in the system
+    ** Default value: none. Only used for the DataNodes that were not given an explicit DataSource
 
 * `cayenne.jdbc.max_connections[.domain_name.node_name]`
    defines the DB connection pool maximum size. If domain name and optionally - node name are specified, the setting
-   overrides DataSource info just for this domain/node. Otherwise the override is applied to all domains/nodes in the system
-    ** Default value: none, project DataNode configuration is used
+   applies just to this domain/node. Otherwise it applies to all domains/nodes in the system
+    ** Default value: none. Only used for the DataNodes that were not given an explicit DataSource
 
 * `cayenne.jdbc.max_wait`
    defines a maximum time in milliseconds that a connection request could
