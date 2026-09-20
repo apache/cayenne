@@ -2969,18 +2969,18 @@ if (jjtc000) {
 
   final public void namedParameter() throws ParseException {Token t;
     jj_consume_token(70);
-    t = jj_consume_token(PROPERTY_PATH);
+    t = pathToken();
 ASTNamedParameter jjtn001 = new ASTNamedParameter(JJTNAMEDPARAMETER);
-                                  boolean jjtc001 = true;
-                                  jjtree.openNodeScope(jjtn001);
+                              boolean jjtc001 = true;
+                              jjtree.openNodeScope(jjtn001);
     try {
 jjtree.closeNodeScope(jjtn001,  0);
-                                  jjtc001 = false;
+                              jjtc001 = false;
 jjtn001.setValue(t.image);
     } finally {
 if (jjtc001) {
-                                    jjtree.closeNodeScope(jjtn001,  0);
-                                  }
+                                jjtree.closeNodeScope(jjtn001,  0);
+                              }
     }
 }
 

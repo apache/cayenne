@@ -625,7 +625,8 @@ void namedParameter() :{
 	Token t;
 }
 {
-	"$" t = <PROPERTY_PATH> { jjtThis.setValue(t.image); } #NamedParameter(0)
+	// "pathToken" allows parameter names that match the names of functions, like "$min" or "$count"
+	"$" t = pathToken() { jjtThis.setValue(t.image); } #NamedParameter(0)
 }
 
 void pathExpression() : {

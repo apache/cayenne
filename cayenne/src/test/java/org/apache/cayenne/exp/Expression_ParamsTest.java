@@ -64,6 +64,16 @@ public class Expression_ParamsTest {
 	}
 
 	@Test
+	public void params_NamedAsFunctions() {
+		Expression e = ExpressionFactory.exp(
+				"a > $min and a < $max and b in ($count, $year) and c = $length", 1, 9, 2, 3, 4);
+		assertEquals("(a > 1) and (a < 9) and (b in (2, 3)) and (c = 4)", e.toString());
+
+		Expression named = ExpressionFactory.exp("a > $min").params(Map.of("min", 5));
+		assertEquals("a > 5", named.toString());
+	}
+
+	@Test
 
 	public void params_Positional_MoreParams() {
 		assertThrows(ExpressionException.class, () -> {
