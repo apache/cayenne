@@ -40,6 +40,8 @@ than object queries.
 
 include::queries/objectselect.adoc[]
 
+include::queries/objectselect-parsed.adoc[]
+
 include::queries/selectbyid.adoc[]
 
 include::queries/sql.adoc[]

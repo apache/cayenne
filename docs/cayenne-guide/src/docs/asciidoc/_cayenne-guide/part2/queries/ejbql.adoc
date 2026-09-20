@@ -14,8 +14,9 @@
 [[ejbql]]
 ==== EJBQLQuery
 
-NOTE: As soon as all of the `EJBQLQuery` capabilities become available in `ObjectSelect`, we are planning to
-deprecate `EJBQLQuery`.
+NOTE: Since 5.0 selecting queries can be written as Strings with <<ql,ObjectSelect.parse(..)>>, that is the recommended
+replacement for selecting `EJBQLQuery`. As soon as all of the `EJBQLQuery` capabilities become available
+in `ObjectSelect`, we are planning to deprecate `EJBQLQuery`.
 
 EJBQLQuery was created as a part of an experiment in adopting some of Java Persistence API (JPA) approaches in Cayenne.
 It is a parameterized object query that is created from query String. A String used to build EJBQLQuery follows JPQL

@@ -1,0 +1,343 @@
+// Licensed to the Apache Software Foundation (ASF) under one or more
+// contributor license agreements. See the NOTICE file distributed with
+// this work for additional information regarding copyright ownership.
+// The ASF licenses this file to you under the Apache License, Version
+// 2.0 (the "License"); you may not use this file except in compliance
+// with the License. You may obtain a copy of the License at
+//
+// https://www.apache.org/licenses/LICENSE-2.0 Unless required by
+// applicable law or agreed to in writing, software distributed under the
+// License is distributed on an "AS IS" BASIS, WITHOUT WARRANTIES OR
+// CONDITIONS OF ANY KIND, either express or implied. See the License for
+// the specific language governing permissions and limitations under the
+// License.
+[[ql]]
+==== ObjectSelect Parsed from a String
+
+Since 5.0 an `ObjectSelect` or a `ColumnSelect` can be created from a String. This is an alernative to the fluent API.
+E.g.:
+
+[source, java]
+----
+List<Artist> artists = ObjectSelect
+    .parse(Artist.class, "from Artist where artistName like $name order by dateOfBirth desc limit 10", "A%")
+    .select(context);
+----
+
+The parser produces the same query object that the fluent API would, so everything said about
+<<select,ObjectSelect>> above applies. The parsed query can be customized further with the fluent API before it is
+executed:
+
+[source, java]
+----
+List<Artist> artists = ObjectSelect
+    .parse(Artist.class, "from Artist where artistName like $name", "A%")
+    .localCache("artists")
+    .pageSize(50)
+    .select(context);
+----
+
+===== Query Structure
+
+[source]
+----
+[ select [ distinct ] columns ]
+from Entity
+[ where     expression ]
+[ having    expression ]
+[ order by  orderings ]
+[ limit n [ offset m ] ]
+[ prefetch  paths ]
+----
+
+The clauses must follow in this order, and all of them, except for `from`, are optional (even `select`!). Here are the
+rules of the language:
+
+* There is a single root entity, named in the `from` clause. All other entities are reached via the relationship paths
+starting at the root (`paintingArray.toGallery.galleryName`), so there are no entity aliases and no explicit joins.
+Just like in expressions, a join is made outer by appending `+` to a path component (`paintingArray+`), and a join
+is split from the other joins over the same path with an alias (`paintingArray#p1`).
+* Every `expression` above, as well as every column and ordering, follows the syntax of Cayenne
+<<Expressions,expressions>>, the same one that `ExpressionFactory.exp(..)` takes. Anything that is valid in
+an expression is valid in a query: comparisons, `like`, `in`, `between`, arithmetics, functions, `db:` paths, etc.
+* The keywords are case-sensitive, and must be spelled exactly as shown here, which is also true for the expressions.
+The words that start the clauses are not reserved, and can be used as property names. The only reserved word is
+`self`, that denotes the root object. A property called "self" has to be written as `obj:self`.
+* A query with no `select` clause, or the one with `select self`, fetches the root objects and is an `ObjectSelect`.
+Any other `select` clause results in a `ColumnSelect`.
+* There is no `group by` clause. Just like with the fluent `ColumnSelect`, when any of the columns is an aggregate
+function, all the other columns become the grouping columns.
+* Only selecting queries are supported. There is no `update` or `delete`.
+
+===== Parameters
+
+A parameter is a name prefixed with `$`, the same as in expressions. The values are passed to the `parse(..)` method
+and are bound in the order in which the parameters first appear in the String. If the same name is used more than once,
+it takes a single value that is bound in all those places. A value can be anything that is a valid expression operand:
+a scalar, a collection for `in`, a persistent object to match a relationship, etc.:
+
+[source, java]
+----
+List<Painting> paintings = ObjectSelect
+    .parse(Painting.class,
+        "from Painting where toArtist = $artist and estimatedPrice between $low and $high",
+        artist, 10, 500)
+    .select(context);
+----
+
+The parameters can be used anywhere in the expressions, including the nested selects. `limit` and `offset` only take
+integer literals.
+
+===== Java API
+
+There are four methods to parse a query, that differ in the type of the result:
+
+[source, java]
+----
+// any query. Returns either an ObjectSelect or a ColumnSelect
+FluentSelect<?, ?> q1 = ObjectSelect.parse("from Artist");
+
+// a query of the root objects. "DataRow.class" is used to fetch the data rows instead of objects
+ObjectSelect<Artist> q2 = ObjectSelect.parse(Artist.class, "from Artist");
+ObjectSelect<DataRow> q3 = ObjectSelect.parse(DataRow.class, "from Artist");
+
+// a query with a single column
+ColumnSelect<String> q4 = ObjectSelect.parseColumn(String.class, "select artistName from Artist");
+
+// a query with multiple columns
+ColumnSelect<Object[]> q5 = ObjectSelect.parseColumns("select artistName, dateOfBirth from Artist");
+----
+
+The last three are there to avoid the type casts. They throw an exception if the query is of a different kind,
+e.g. if a `select` clause is passed to `parse(Artist.class, ..)`.
+
+The parser needs no mapping information, so the names of entities and properties, as well as the types of the columns,
+are only checked when the query is executed.
+
+===== Examples
+
+Each example shows a query String and the same query built with the fluent API.
+
+====== Objects with a filter, ordering and a limit
+
+[source]
+----
+from Artist where artistName like 'A%' order by dateOfBirth desc, artistName asc insensitive limit 10 offset 20
+----
+
+[source, java]
+----
+ObjectSelect.query(Artist.class)
+    .where(Artist.ARTIST_NAME.like("A%"))
+    .orderBy(Artist.DATE_OF_BIRTH.desc(), Artist.ARTIST_NAME.ascInsensitive())
+    .limit(10)
+    .offset(20)
+----
+
+An ordering is an expression, optionally followed by `asc` (the default) or `desc`, and then optionally
+by `insensitive`.
+
+====== Joins
+
+The joins are implied by the paths. Here is an outer join, matching the artists with no paintings:
+
+[source]
+----
+from Artist where paintingArray+ = null
+----
+
+[source, java]
+----
+ObjectSelect.query(Artist.class).where(Artist.PAINTING_ARRAY.outer().isNull())
+----
+
+And here are two separate joins over the same relationship, matching the artists that have both paintings:
+
+[source]
+----
+from Artist where paintingArray#p1.paintingTitle = 'P1' and paintingArray#p2.paintingTitle = 'P2'
+----
+
+[source, java]
+----
+ObjectSelect.query(Artist.class)
+    .where(Artist.PAINTING_ARRAY.alias("p1").dot(Painting.PAINTING_TITLE).eq("P1"))
+    .and(Artist.PAINTING_ARRAY.alias("p2").dot(Painting.PAINTING_TITLE).eq("P2"))
+----
+
+====== Columns
+
+[source]
+----
+select artistName, dateOfBirth from Artist order by artistName
+----
+
+[source, java]
+----
+ObjectSelect.columnQuery(Artist.class, Artist.ARTIST_NAME, Artist.DATE_OF_BIRTH)
+    .orderBy(Artist.ARTIST_NAME.asc())
+----
+
+The result is a `List<Object[]>`. With a single column it is a list of values:
+
+[source]
+----
+select distinct toGallery.galleryName from Painting
+----
+
+[source, java]
+----
+ObjectSelect.columnQuery(Painting.class, Painting.TO_GALLERY.dot(Gallery.GALLERY_NAME)).distinct()
+----
+
+A column can be any expression, and it can have an alias (the same as `BaseProperty.alias(..)`):
+
+[source]
+----
+select upper(artistName) as name, length(trim(artistName)) as size from Artist
+----
+
+====== Aggregates
+
+[source]
+----
+select toArtist.artistName, sum(estimatedPrice), count(*)
+from Painting
+having sum(estimatedPrice) > $min
+order by toArtist.artistName
+----
+
+[source, java]
+----
+ObjectSelect.columnQuery(Painting.class,
+        Painting.TO_ARTIST.dot(Artist.ARTIST_NAME),
+        Painting.ESTIMATED_PRICE.sum(),
+        PropertyFactory.COUNT)
+    .having(Painting.ESTIMATED_PRICE.sum().gt(min))
+    .orderBy(Painting.TO_ARTIST.dot(Artist.ARTIST_NAME).asc())
+----
+
+`toArtist.artistName` becomes a grouping column here, as the other columns are aggregates.
+
+====== Objects as columns
+
+`self` is the root object, and a relationship path is a related object. Here each row is an `Object[]` with an `Artist`
+and a `Long`:
+
+[source]
+----
+select self, count(paintingArray+) from Artist order by count(paintingArray+) desc
+----
+
+[source, java]
+----
+ObjectSelect.columnQuery(Artist.class, Artist.SELF, Artist.PAINTING_ARRAY.outer().count())
+    .orderBy(Artist.PAINTING_ARRAY.outer().count().desc())
+----
+
+A to-one relationship gives a related object in each row:
+
+[source]
+----
+select paintingTitle, toArtist, toGallery from Painting
+----
+
+[source, java]
+----
+ObjectSelect.columnQuery(Painting.class, Painting.PAINTING_TITLE, Painting.TO_ARTIST, Painting.TO_GALLERY)
+----
+
+With a to-many relationship a row is repeated for each related object. This is the same as `flat()` in the fluent API:
+
+[source]
+----
+select artistName, paintingArray from Artist
+----
+
+[source, java]
+----
+ObjectSelect.columnQuery(Artist.class, Artist.ARTIST_NAME, Artist.PAINTING_ARRAY.flat())
+----
+
+In both cases a row with no related object is still present in the result, with a `null` in place of the object. To
+exclude such rows, add a condition to the `where` clause, e.g. `where exists paintingArray`.
+
+====== Subqueries
+
+A nested select in parentheses can be used with `exists`, `not exists`, `in`, `not in`, `all` and `any`. It has
+the same structure as the main query, except for `prefetch`. Its paths are relative to its own root, and
+`enclosing(..)` is used to refer to the main query:
+
+[source]
+----
+from Artist where exists (
+    from Painting where toArtist = enclosing(self) and estimatedPrice > $price)
+----
+
+[source, java]
+----
+ObjectSelect.query(Artist.class)
+    .where(ExpressionFactory.exists(ObjectSelect.query(Painting.class)
+        .where(Painting.TO_ARTIST.eq(Artist.SELF.enclosing()))
+        .and(Painting.ESTIMATED_PRICE.gt(price))))
+----
+
+`enclosing(self)` is the root object of the enclosing query, `enclosing(artistName)` is its property, and
+`enclosing(enclosing(self))` goes two levels up.
+
+`in`, `all` and `any` take a nested select with a single column:
+
+[source]
+----
+from Painting where toArtist.artistName in (select artistName from Artist where dateOfBirth < $date)
+
+from Painting where estimatedPrice > all (select estimatedPrice from Painting where paintingTitle = 'P2')
+
+from Painting where estimatedPrice = any (select max(estimatedPrice) from Painting)
+----
+
+[source, java]
+----
+ObjectSelect.query(Painting.class)
+    .where(Painting.TO_ARTIST.dot(Artist.ARTIST_NAME).in(
+        ObjectSelect.columnQuery(Artist.class, Artist.ARTIST_NAME).where(Artist.DATE_OF_BIRTH.lt(date))))
+----
+
+NOTE: When there is no need for a nested select with its own conditions,`exists` over a path is shorter:
+`from Artist where not exists paintingArray`.
+
+====== DbEntity as a root
+
+A root prefixed with `db:` is a name of a DbEntity. Such a query fetches the data rows, and all its paths are the DB
+paths, with no need for a `db:` prefix:
+
+[source]
+----
+from db:ARTIST where ARTIST_NAME like 'A%' order by ARTIST_ID desc
+----
+
+[source, java]
+----
+ObjectSelect.dbQuery("ARTIST")
+    .where(ExpressionFactory.likeDbExp("ARTIST_NAME", "A%"))
+    .orderBy(new Ordering(ExpressionFactory.dbPathExp("ARTIST_ID"), SortOrder.DESCENDING))
+----
+
+====== Prefetching
+
+`prefetch` is a comma-separated list of relationship paths, each optionally followed by the prefetch semantics -
+`joint`, `disjoint` or `disjointById`. If omitted, Cayenne picks the default semantics, the same as with
+`prefetch(String, int)`:
+
+[source]
+----
+from Artist where artistName = $name prefetch paintingArray joint, paintingArray.toGallery
+----
+
+[source, java]
+----
+ObjectSelect.query(Artist.class)
+    .where(Artist.ARTIST_NAME.eq(name))
+    .prefetch(Artist.PAINTING_ARRAY.joint())
+    .prefetch("paintingArray.toGallery", PrefetchTreeNode.UNDEFINED_SEMANTICS)
+----
