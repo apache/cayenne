@@ -71,6 +71,40 @@ and how to optimize database interaction (prefetching, caching, fetch offset and
 Some of them are discussed in separate chapters on caching and performance optimization.
 Others are fairly self-explanatory. Please check the API docs for the full extent of the `ObjectSelect` features.
 
+[[selectbyid]]
+==== Selecting by ID
+
+`ObjectSelect` can match objects of the root entity by their primary key with `byId(..)` and `byIds(..)`:
+
+[source,java,indent=0]
+----
+include::{java-examples}/SelectByIdTest.java[tags=byId]
+----
+
+Both methods accept an id in any of three forms, and `byIds(..)` may mix them:
+
+* a scalar value, for entities with a single-column primary key;
+* a `Map` of DB attribute names to values, which is the form to use for a compound primary key;
+* an `ObjectId`.
+
+[source,java,indent=0]
+----
+include::{java-examples}/SelectByIdTest.java[tags=byIdForms]
+----
+
+Being an ordinary qualifier, an id match combines with everything else `ObjectSelect` offers - prefetching,
+caching, ordering, pagination and further conditions. Under the hood these are shorthands for the "id" expressions of
+the entity `SELF` property. So here is a somewhat more verbose equivalent that is also more flexible (e.g. allowing to
+chain id qualifier with "or") :
+
+[source,java,indent=0]
+----
+include::{java-examples}/SelectByIdTest.java[tags=idExpressions]
+----
+
+Yet another way to find a single object by PK per <<persistent-objects-objectcontext,the ObjectContext chapter>> is
+`ObjectContext.objectForPK(..)`. It will look in the object cache before running a query.
+
 ==== Selecting individual columns
 
 `ObjectSelect` query can be used to fetch individual properties of objects via type-safe API:
