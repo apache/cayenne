@@ -167,8 +167,9 @@ class ColumnSelectMetadata extends ObjectSelectMetadata {
                 case EmbeddedAttribute ignored -> embeddableSegment(exp);
 
                 // An entity segment means that a row holds a single object of the relationship target entity:
-                //  * to-one: the one related object, or null if there is none (an outer join)
+                //  * to-one: the one related object
                 //  * to-many: a row is repeated for each related object, same as "flat()" does for a typed property
+                // In both cases it is an outer join, so a row with no related objects is preserved and holds a null.
                 // Unlike a typed to-many property, there is no declared List or Map type here that a single object
                 // would contradict, so both kinds of relationships are resolved the same way.
                 case ObjRelationship relationship -> entitySegment(relationship.getTargetEntity(), resolver);

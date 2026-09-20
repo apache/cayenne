@@ -150,10 +150,18 @@ class CustomColumnSetExtractor implements ColumnExtractor {
     private void ensureJoin(CayennePath prefix) {
         // ensure all joins for given property
         if(!prefix.isEmpty()) {
+            // An entity column should not filter out the root rows that have no related objects. So the joins
+            // that are only needed for this column must be outer, unlike those that already exist in the tree
+            // (coming from the qualifier), that are left unchanged.
+            TableTree tableTree = context.getTableTree();
+            int nodeCount = tableTree.getNodeCount();
+
             PathTranslationResult result = context.getPathTranslator()
                     .translatePath(context.getMetadata().getDbEntity(), prefix);
             result.getDbRelationship().ifPresent(relationship
-                    -> context.getTableTree().addJoinTable(result.getFinalPath(), relationship, JoinType.LEFT_OUTER));
+                    -> tableTree.addJoinTable(result.getFinalPath(), relationship, JoinType.LEFT_OUTER));
+
+            tableTree.useOuterJoinsSince(nodeCount);
         }
     }
 }

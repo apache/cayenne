@@ -134,6 +134,15 @@ class TableTree {
     }
 
     /**
+     * Turns the joins added to the tree after it reached a given node count into outer joins.
+     */
+    void useOuterJoinsSince(int nodeCount) {
+        tableNodes.entrySet().stream()
+                .skip(nodeCount - 1)
+                .forEach(e -> e.setValue(e.getValue().outer()));
+    }
+
+    /**
      * Returns the number of distinct table aliases used across the whole statement, including nested
      * (subquery) trees, as tracked during translation. A value of 1 means the statement uses a single
      * table and aliases can be omitted from the generated SQL.

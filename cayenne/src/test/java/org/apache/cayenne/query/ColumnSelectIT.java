@@ -672,7 +672,8 @@ public class ColumnSelectIT {
                 .select(context);
 
         assertNotNull(a);
-        assertEquals(21, a.size());
+        // 21 paintings of 5 artists, plus 15 artists with no paintings
+        assertEquals(36, a.size());
         int idx = 0;
         for(Object[] next : a) {
             assertNotNull(next);
@@ -873,7 +874,8 @@ public class ColumnSelectIT {
         List<Object[]> result = ObjectSelect.query(Artist.class)
                 .columns(Artist.SELF, Artist.PAINTING_ARRAY.flat(), Artist.PAINTING_ARRAY.dot(Painting.TO_GALLERY))
                 .select(context);
-        assertEquals(21, result.size());
+        // 21 paintings of 5 artists, plus 15 artists with no paintings
+        assertEquals(36, result.size());
 
         for(Object[] next : result) {
             assertTrue(next[0] instanceof Artist);

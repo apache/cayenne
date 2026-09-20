@@ -259,6 +259,25 @@ Expression caseWhenExp = caseWhen(
 
   The map is keyed by the String IDs passed in, and IDs with no matching object are absent from it.
 
+*  Per [CAY-3032](https://issues.apache.org/jira/browse/CAY-3032) a `ColumnSelect` with an entity column over a
+   to-many relationship no longer filters out the root rows that have no related objects. It now uses an outer join,
+   same as the to-one entity columns always did, so such rows are returned with a `null` in place of the related
+   object:
+
+  ```java
+  List<Object[]> rows = ObjectSelect
+      .columnQuery(Artist.class, Artist.ARTIST_NAME, Artist.PAINTING_ARRAY.flat())
+      .select(context);
+
+  // before: artists with no paintings were missing from the result
+  // after: they are present as ["artist name", null]
+  ```
+
+  If you relied on the old behavior, check the related object for `null`, or exclude such rows explicitly by
+  adding a condition on the relationship path to `where(..)` (e.g. `Artist.PAINTING_ARRAY.exists()`). Entity columns
+  whose path is also used in the `where(..)` clause are not affected, as they share the join with the qualifier.
+  Scalar columns (`Artist.PAINTING_ARRAY.dot(Painting.PAINTING_TITLE)`) and aggregates are not affected either.
+
 *  The `org.apache.cayenne.query.ParameterizedQuery` interface was removed, together with the `createQuery(Map)`
   methods of `SQLTemplate`, `ProcedureQuery` and `ObjectSelect` that implemented it. Applying parameters to a mapped
   query is now the job of the query descriptor - override `QueryDescriptor.buildQuery(Map)` if you have a custom

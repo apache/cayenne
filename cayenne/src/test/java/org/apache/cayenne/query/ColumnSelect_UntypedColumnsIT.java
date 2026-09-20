@@ -130,26 +130,20 @@ public class ColumnSelect_UntypedColumnsIT {
     public void toManyPathWithNoRelatedObjects() throws Exception {
         env.table("ARTIST", "ARTIST_ID", "ARTIST_NAME").insert(5, "artist5");
 
-        // inner join: the root row is dropped
-        List<Object[]> inner = ObjectSelect.columnQuery(Artist.class, untyped("artistName"), untyped("paintingArray"))
+        // an outer join: the root row is preserved with a null related object
+        List<Object[]> rows = ObjectSelect.columnQuery(Artist.class, untyped("artistName"), untyped("paintingArray"))
                 .where(Artist.ARTIST_NAME.eq("artist5"))
                 .select(context);
-        assertEquals(0, inner.size());
-
-        // outer join: the root row is preserved with a null related object
-        List<Object[]> outer = ObjectSelect.columnQuery(Artist.class, untyped("artistName"), untyped("paintingArray+"))
-                .where(Artist.ARTIST_NAME.eq("artist5"))
-                .select(context);
-        assertEquals(1, outer.size());
-        assertEquals("artist5", outer.get(0)[0]);
-        assertNull(outer.get(0)[1]);
+        assertEquals(1, rows.size());
+        assertEquals("artist5", rows.get(0)[0]);
+        assertNull(rows.get(0)[1]);
     }
 
     @Test
     public void toOnePathWithNoRelatedObject() throws Exception {
         env.table("PAINTING", "PAINTING_ID", "PAINTING_TITLE").insert(9, "painting9");
 
-        // unlike to-many, a to-one column is an outer join even with no "+": the root row is preserved
+        // an outer join: the root row is preserved with a null related object
         List<Object[]> rows = ObjectSelect.columnQuery(Painting.class, untyped("paintingTitle"), untyped("toArtist"))
                 .where(Painting.PAINTING_TITLE.eq("painting9"))
                 .select(context);
