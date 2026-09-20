@@ -72,10 +72,15 @@ image::idea-file-run-menu.png[align="center"]
 
 In the console you'll see output similar to this, indicating that Cayenne stack has been started: 
 ----
-[main] INFO: Loading XML configuration resource from file:/.../cayenne-project.xml
-[main] INFO: Loading XML DataMap resource from file:/.../datamap.map.xml
-...
 [main] INFO org.apache.cayenne.datasource.DriverDataSource - +++ Connecting: SUCCESS.
-[main] INFO cayenne-sql - generated PK ID:2
-[main] INFO cayenne-sql - INSERT INTO cayenne_demo.artist (DATE_OF_BIRTH, NAME) VALUES (?, ?) [bind:[DATE_OF_BIRTH:NULL,name:'Picasso']] [updated:1]
+[main] INFO org.apache.cayenne.configuration.xml.XMLDataChannelDescriptorLoader - Loading
+    XML configuration resource from file:/.../cayenne-project.xml
+[main] INFO org.apache.cayenne.configuration.xml.XMLDataChannelDescriptorLoader - Loading
+    XML DataMap resource from file:/.../datamap.map.xml
+...
+[main] INFO cayenne-sql - tx started
+[main] INFO cayenne-sql - INSERT INTO cayenne_demo.artist(DATE_OF_BIRTH, NAME) VALUES(?, ?)
+    | bind:[DATE_OF_BIRTH:NULL,NAME:'Picasso'] updated:1 generated:[GENERATED_KEY:1]
+    time_ms:3
+[main] INFO cayenne-sql - tx committed
 ----

@@ -252,22 +252,24 @@ As shown in the example above, ExtendedTypes are stored by DbAdapter. In fact Db
 
 ==== Noteworthy Built-in Services
 
-===== SqlLogger
+===== SQLLogger
 
-`org.apache.cayenne.log.SqlLogger` is the service that defines the SQL logging API for Cayenne internals. It logs each executed statement as a single compact line combining the SQL, its bindings and the result count, e.g.:
+`org.apache.cayenne.log.SQLLogger` is the service that defines the SQL logging API for Cayenne internals. It logs each executed statement as a single compact line combining the SQL, its bindings, the result count and the execution time, e.g. (long lines are wrapped here for readability):
 
 ----
-SELECT t0.id FROM my_table t0 WHERE t0.user_id = ? [bind:[user_id:15]] [selected:1]
-INSERT INTO table1(id, name) VALUES(?, ?) [bind:[id:3,name:'n3']..3..[id:2,name:'n2']] [updated:5]
+SELECT id FROM my_table WHERE user_id = ? | bind:[user_id:15] selected:1 time_ms:2
+INSERT INTO table1(id, name) VALUES(?, ?)
+    | bind:[id:1,name:'n1'][id:2,name:'n2'] updated:2 time_ms:4
 ----
 
-A statement that produces more than one result (such as a stored procedure) reports the extra results on `also ...` continuation lines. The default implementation is `org.apache.cayenne.log.Slf4jSqlLogger`, which logs via the slf4j-api library under the fixed logger name `cayenne-sql`. Statement lines are logged at `INFO`; transaction boundaries (`tx started`, `tx committed`, `tx rolled back`) at `DEBUG`. To silence SQL logging entirely, set the `cayenne-sql` logger level above `INFO`.
+A statement that produces more than one result (such as a stored procedure) reports the extra results on `also ...` continuation lines. The default implementation is `org.apache.cayenne.log.Slf4jSQLLogger`, which logs via the slf4j-api library under the fixed logger name `cayenne-sql`. Both the statement lines and the transaction boundaries (`tx started`, `tx committed`, `tx rolled back`) are logged at `INFO`. To silence SQL logging entirely, set the `cayenne-sql` logger level above `INFO`.
 
-Batch bindings are truncated to the first row, an elided-row count, and the last row once the batch exceeds `cayenne.jdbc.log.batch.threshold` rows (default 3).
+Each row of a batch is logged in its own square brackets. Once the batch exceeds `cayenne.jdbc.log.batch.threshold` rows (default 20), the bindings are truncated to that number of rows, split between the head and the tail of the batch, with the count of the elided rows in the middle. E.g., this is a batch of 5 rows logged with the threshold of 3:
 
-===== DataSourceFactory
-
-Factory that returns `javax.sql.DataSource` object based on the configuration provided in the "nodeDescriptor".
+----
+INSERT INTO table1(id, name) VALUES(?, ?)
+    | bind:[id:1,name:'n1'][id:2,name:'n2']..2..[id:5,name:'n5'] updated:5 time_ms:4
+----
 
 ===== DataChannelSyncFilter and DataChannelQueryFilter
 

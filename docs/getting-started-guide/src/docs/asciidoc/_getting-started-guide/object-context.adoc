@@ -69,6 +69,8 @@ image::idea-file-run-menu.png[align="center"]
         
 In the console you'll see output similar to this, indicating that Cayenne stack has been started:
 
+    INFO: Connecting to 'jdbc:derby:memory:testdb;create=true' as 'null'
+    INFO: +++ Connecting: SUCCESS.
     INFO: Loading XML configuration resource from file:/.../cayenne-project.xml
     INFO: Loading XML DataMap resource from file:/.../datamap.map.xml
     INFO: setting DataNode 'tutorial' as default, used by all unlinked DataMaps

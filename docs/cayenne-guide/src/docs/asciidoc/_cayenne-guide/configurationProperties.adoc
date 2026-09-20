@@ -100,8 +100,8 @@ Note that the property names below are defined as constants in `org.apache.cayen
 
 * `cayenne.jdbc.log.batch.threshold`
    defines the maximum number of batch rows whose bindings are logged in full before the compact SQL logger truncates
-   them to "first row .. elided count .. last row".
-   ** Default value: 3
+   them to "first rows .. elided count .. last rows".
+   ** Default value: 20
 
 * `cayenne.domain.name`
    defines an optional name of the runtime DataDomain.
