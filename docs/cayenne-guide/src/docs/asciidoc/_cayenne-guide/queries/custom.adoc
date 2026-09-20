@@ -11,7 +11,7 @@
 // CONDITIONS OF ANY KIND, either express or implied. See the License for
 // the specific language governing permissions and limitations under the
 // License.
-==== Custom Queries
+=== Custom Queries
 
 If a user needs some extra functionality not addressed by the existing set of Cayenne queries, he can write his own.
 The only requirement is to implement `org.apache.cayenne.query.Query` interface.

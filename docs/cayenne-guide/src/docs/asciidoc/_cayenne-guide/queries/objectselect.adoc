@@ -12,11 +12,11 @@
 // the specific language governing permissions and limitations under the
 // License.
 [[select]]
-==== ObjectSelect
+=== ObjectSelect
 
 NOTE: `ObjectSelect` supersedes older `SelectQuery`. `SelectQuery` is deprecated since 4.2 and removed in 5.0.
 
-===== Selecting objects
+==== Selecting objects
 
 `ObjectSelect` is the most commonly used query in Cayenne applications. This may be the only query you will ever need.
 It returns a list of persistent objects (or data rows) of a certain type specified in the query:
@@ -71,7 +71,7 @@ and how to optimize database interaction (prefetching, caching, fetch offset and
 Some of them are discussed in separate chapters on caching and performance optimization.
 Others are fairly self-explanatory. Please check the API docs for the full extent of the `ObjectSelect` features.
 
-===== Selecting individual columns
+==== Selecting individual columns
 
 `ObjectSelect` query can be used to fetch individual properties of objects via type-safe API:
 
@@ -87,7 +87,7 @@ And here is an example of selecting several properties. The result is a list of 
 include::{java-examples}/ObjectSelectTest.java[tags=columns]
 ----
 
-===== Selecting using aggregate functions
+==== Selecting using aggregate functions
 
 ObjectSelect query supports usage of aggregate functions.
 Most common variant of aggregation is selecting count of records, this can be done really easy:
@@ -116,7 +116,7 @@ HAVING (COUNT(p.PAINTING_ID) < ?)
 ORDER BY COUNT(p.PAINTING_ID) DESC, a.ARTIST_NAME
 ----
 
-===== Subqueries
+==== Subqueries
 
 Since Cayenne 4.2 `ObjectSelect` supports subqueries, and since 5.0 subqueries API is greatly improved.
 Here is an example of a basic `NOT EXISTS` subquery:

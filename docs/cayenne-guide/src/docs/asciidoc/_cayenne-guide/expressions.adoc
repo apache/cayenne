@@ -12,11 +12,11 @@
 // the specific language governing permissions and limitations under the
 // License.
 
-=== Expressions
+== Expressions
 
 Cayenne provides a simple, yet powerful, object-based expression language. The most common uses of expressions are to build qualifiers and orderings of queries that are later converted to SQL by Cayenne and to evaluate in-memory against specific objects (to access certain values in the object graph or to perform in-memory object filtering and sorting). Cayenne provides an API to build expressions in the code and a parser to create expressions from strings.
 
-==== Path Expressions
+=== Path Expressions
 
 Before discussing how to build expressions, it is important to understand one group of expressions widely used in Cayenne - path expressions. There are two types of path expressions - object and database, used for navigating graphs of connected objects or joined DB tables, respectively. Object paths are much more commonly used, as, after all, Cayenne is supposed to provide a degree of isolation of the object model from the database. However, database paths are helpful in certain situations. The general structure of path expressions is the following:
 
@@ -60,7 +60,7 @@ Cayenne supports "aliases" in path expressions. An alias is appended to a relati
 
 The main use of aliases is to allow users to control how SQL joins are generated if the same path is encountered more than once in any given `Expression`. Each alias for any given path would result in a separate join. Without aliases, a single join will be used for a group of matching paths.
 
-==== Creating Expressions from Strings
+=== Creating Expressions from Strings
 
 While in most cases users are likely to rely on the API from the following section for expression creation, we'll start by showing String expressions, as this will help you understand the semantics. A Cayenne expression can be represented as a String, which can be converted to an expression object using the `ExpressionFactory.exp` static method. Here is an example:
 
@@ -150,7 +150,7 @@ Null handling. Handling of Java nulls as operands is no different handling from 
 
 //NOTE: A formal definition of the expression grammar is provided in xref:appendixC[Appendix C]
 
-==== Creating Expressions via API
+=== Creating Expressions via API
 
 Creating expressions from Strings is a powerful and dynamic approach, however a safer alternative is to use the Java API. It provides compile-time checking of the expression's validity. The API in question is provided by the `ExpressionFactory` class (that we've seen already), the Property class and the Expression class itself. `ExpressionFactory` contains a number of self-explanatory static methods that can be used to build expressions. E.g.:
 
@@ -182,7 +182,7 @@ Property objects provide the API mostly analogous to ExpressionFactory, though i
 It provides compile-time checks of both property names and types of arguments in conditions. We will use Property-based API in further examples.
 
 [[evaluate]]
-==== Evaluating Expressions in Memory
+=== Evaluating Expressions in Memory
 
 When used in a query, an expression is converted to a SQL WHERE or ORDER BY clause by Cayenne during query execution. Thus the actual evaluation against the data is done by the database engine. However, the same expressions can also be used for accessing object properties, calculating values, and in-memory filtering.
 
@@ -212,7 +212,7 @@ include::{java-examples}/ExpressionsTest.java[tags=filterObjects]
 
 NOTE: Current limitation of in-memory expressions is that no collections are permitted in the property path.
 
-==== Translating Expressions to EJBQL
+=== Translating Expressions to EJBQL
 
 <<ejbql,EJBQL>> is a textual query language that can be used with Cayenne. In some situations,
 it is convenient to be able to convert Expression instances into EJBQL. Expressions support this conversion. An example is shown below.

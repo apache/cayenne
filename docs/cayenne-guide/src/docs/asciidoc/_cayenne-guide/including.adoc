@@ -12,12 +12,12 @@
 // the specific language governing permissions and limitations under the
 // License.
 
-include::../var.adoc[]
+include::var.adoc[]
 
 [#including-cayenne-in-project]
-=== Including Cayenne in a Project
+== Including Cayenne in a Project
 
-==== Maven
+=== Maven
 
 To add Cayenne to your Maven project, include `cayenne` in your POM:
 
@@ -30,7 +30,7 @@ To add Cayenne to your Maven project, include `cayenne` in your POM:
 </dependency>
 ----
 
-==== Gradle
+=== Gradle
 
 To add Cayenne to your Gradle project, include `cayenne` module:
 
@@ -39,7 +39,7 @@ To add Cayenne to your Gradle project, include `cayenne` module:
 compile 'org.apache.cayenne:cayenne:{version}'
 ----
 
-==== Ant, etc.
+=== Ant, etc.
 
 If your environment requires manual dependency management (like Ant), check `lib` and `lib/third-party` folders of
 Cayenne distribution. It contains all Cayenne jars as well as the minimal set of third-party libraries to get you

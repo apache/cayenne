@@ -13,7 +13,7 @@
 // License.
 
 [[sqlselect]]
-==== SQLSelect and SQLExec
+=== SQLSelect and SQLExec
 
 SQL is very powerful and allows to manipulate data in ways that can not always be described as a graph of related entities.
 Cayenne acknowledges this fact and provides a facility to execute SQL, sometimes allowing to map results back to

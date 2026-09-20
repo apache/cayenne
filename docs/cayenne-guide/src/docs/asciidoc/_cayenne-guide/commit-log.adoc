@@ -12,20 +12,20 @@
 // the specific language governing permissions and limitations under the
 // License.
 
-include::../var.adoc[]
+include::var.adoc[]
 
 [[commit-log]]
-=== Commit Log
+== Commit Log
 
 Cayenne includes built-in support for capturing commit changes and delivering them to application-defined listeners. This lets you build audit trails, propagate changes to external systems, or enforce post-commit business rules without coupling that logic to individual entity classes.
 
 NOTE: Prior to Cayenne 5.0 this feature shipped as a separate `cayenne-commitlog` artifact. Starting with 5.0 it is part of the core `cayenne` dependency. Migrate by replacing `CommitLogModule.extend(binder)` with `CoreModule.extend(binder)`.
 
-==== Basic Usage
+=== Basic Usage
 
 To receive commit notifications, follow three steps.
 
-===== 1. Annotate entities
+==== 1. Annotate entities
 
 Mark every entity whose changes you want to capture with `@CommitLog`:
 
@@ -45,7 +45,7 @@ include::{java-examples}/commitlog/attributes/Order.java[tags=content]
 
 For properties containing sensitive data, annotate the getter with `@Confidential` instead of `ignoredProperties`. The value will appear in the `ChangeMap` as `*******` rather than the real value.
 
-===== 2. Implement CommitLogListener
+==== 2. Implement CommitLogListener
 
 [source,java,indent=0]
 ----
@@ -61,14 +61,14 @@ include::{java-examples}/commitlog/AuditListener.java[tags=content]
 
 Multiple listeners may be registered; all receive identical change data for the same commit.
 
-===== 3. Register the listener
+==== 3. Register the listener
 
 [source,java,indent=0]
 ----
 include::{java-examples}/CommitLogTest.java[tags=register]
 ----
 
-==== Restricting to Annotated Entities
+=== Restricting to Annotated Entities
 
 To audit only entities marked with `@CommitLog`:
 
@@ -77,7 +77,7 @@ To audit only entities marked with `@CommitLog`:
 include::{java-examples}/CommitLogTest.java[tags=annotationEntitiesOnly]
 ----
 
-==== Dispatching Events Outside the Transaction
+=== Dispatching Events Outside the Transaction
 
 By default, listeners are called within the database transaction, so a listener can write additional rows as part of the same commit. If your listener performs its own transaction (for example writing to a different database), call `excludeCommitLogFromTransaction()` to move the notification outside the main transaction:
 
@@ -88,7 +88,7 @@ include::{java-examples}/CommitLogTest.java[tags=excludeFromTransaction]
 
 IMPORTANT: `excludeCommitLogFromTransaction()` must be called *before* `addCommitLogListener()`.
 
-==== Custom Entity Factory
+=== Custom Entity Factory
 
 For full control over which entities are included and how their metadata is computed, provide a custom `CommitLogEntityFactory`:
 

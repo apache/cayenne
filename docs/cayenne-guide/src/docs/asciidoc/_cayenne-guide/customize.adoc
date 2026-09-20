@@ -12,9 +12,9 @@
 // the specific language governing permissions and limitations under the
 // License.
 
-=== Customizing Cayenne Runtime
+== Customizing Cayenne Runtime
 
-==== Dependency Injection Container
+=== Dependency Injection Container
 
 Cayenne runtime is built around a small powerful dependency injection (DI) container. Just like other popular DI technologies, such as Spring or Guice, Cayenne DI container manages sets of interdependent objects and allows users to configure them. These objects are regular Java objects. We are calling them "services" in this document to distinguish from all other objects that are not configured in the container and are not managed. DI container is responsible for service instantiation, injecting correct dependencies, maintaining service instances scope, and dispatching scope events to services.
 
@@ -24,7 +24,7 @@ The discussion later in this chapter demonstrates a standalone DI container. But
 
 Cayenne DI probably has ~80% of the features expected in a DI container and has no dependency on the rest of Cayenne, so in theory can be used as an application-wide DI engine. But its primary purpose is still to serve Cayenne. Hence there are no plans to expand it beyond Cayenne needs. It is an ideal "embedded" DI that does not interfere with Spring, Guice or any other such framework present elsewhere in the application.
 
-===== DI Bindings API
+==== DI Bindings API
 
 To have a working DI container, we need three things: service interfaces and classes, a module that describes service bindings, a container that loads the module, and resolves the dependencies. Let's start with service interfaces and classes:
 
@@ -99,7 +99,7 @@ include::{java-examples}/CustomizeTest.java[tags=bindings]
 
 Another types of configuration that can be bound in the container are lists and maps. They will be discussed in the following chapters.
 
-===== Service Lifecycle
+==== Service Lifecycle
 
 An important feature of the Cayenne DI container is instance scope. The default scope (implicitly used in all examples above)
 is "singleton", meaning that a binding would result in creation of only one service instance, that will be repeatedly returned from `Injector.getInstance(..)`,
@@ -121,7 +121,7 @@ Users can also create their own scopes, e.g. a web application request scope or 
 can be created as instances of `org.apache.cayenne.di.spi.DefaultScope` with startup and shutdown managed by the application
 (e.g. singleton scope is a DefaultScope managed by the Injector) .
 
-===== Overriding Services
+==== Overriding Services
 
 Cayenne DI allows to override services already defined in the current module, or more commonly - some other module
 in the the same container. Actually there's no special API to override a service, you'd just bind the service key again
@@ -129,7 +129,7 @@ with a new implementation or provider. The last binding for a key takes preceden
 The built-in Cayenne injector ensures that Cayenne standard modules are loaded first, followed by optional user extension modules.
 This way the application can override the standard services in Cayenne.
 
-==== Customization Strategies
+=== Customization Strategies
 
 The previous section discussed how Cayenne DI works in general terms. Since Cayenne users will mostly be dealing with
 an existing Injector provided by CayenneRuntime, it is important to understand how to build custom extensions to a preconfigured container.
@@ -148,7 +148,7 @@ include::{java-examples}/customize/MyExtensionsModule.java[tags=content]
 include::{java-examples}/CustomizeTest.java[tags=extensionsModule]
 ----
 
-===== Changing Properties of Existing Services
+==== Changing Properties of Existing Services
 
 Many built-in Cayenne services change their behavior based on a value of some environment property.
 A user may change Cayenne behavior without even knowing which services are responsible for it, but setting a specific value of a known property.
@@ -170,7 +170,7 @@ the container performs injection of instance variables. So even the dynamically 
 If the same property is specified both in the command line and in the properties map, the command-line value takes precedence.
 The map value will be ignored. This way Cayenne runtime can be reconfigured during deployment.
 
-===== Contributing to Service Collections
+==== Contributing to Service Collections
 
 Cayenne can be extended by adding custom objects to named maps or lists bound in DI. We are calling these lists/maps "service collections".
 A service collection allows things like appending a custom strategy to a list of built-in strategies.
@@ -189,7 +189,7 @@ include::{java-examples}/CustomizeTest.java[tags=adapterDetector]
 
 The names of built-in collections are listed in "Appendix B".
 
-===== Alternative Service Implementations
+==== Alternative Service Implementations
 
 As mentioned above, custom modules are loaded by CayenneRuntime after the built-in modules.
 So it is easy to redefine a built-in service in Cayenne by rebinding desired implementations or providers.
@@ -198,9 +198,9 @@ While we describe some of them in the following sections, the best way to get a 
 is to check the source code of the Cayenne version you are using and
 namely look in `org.apache.cayenne.configuration.runtime.CoreModule` - the main built-in module in Cayenne.
 
-==== Using custom data types
+=== Using custom data types
 
-===== Value object type
+==== Value object type
 
 `ValueObjectType` is a new and lightweight alternative to the Extended Types API described in the following section. In most cases is should be preferred as is it easier to understand and use. Currently only one case is known when `ExtendedType` should be used: when your value object can be mapped on different JDBC types.
 
@@ -228,11 +228,11 @@ include::{java-examples}/CustomizeTest.java[tags=valueObjectType]
 More examples of implementation you can find in
 https://github.com/apache/cayenne/blob/master/cayenne/src/main/java/org/apache/cayenne/access/types/PeriodValueType.java[cayenne core].
 
-===== Extended Types
+==== Extended Types
 
 JDBC specification defines a set of "standard" database column types (defined in java.sql.Types class) and a very specific mapping of these types to Java Object Types, such as java.lang.String, java.math.BigDecimal, etc. Sometimes there is a need to use a custom Java type not known to JDBC driver and Cayenne allows to configure it. For this Cayenne needs to know how to instantiate this type from a database "primitive" value, and conversely, how to transform an object of the custom type to a JDBC-compatible object.
 
-====== Supporting Non-Standard Types
+===== Supporting Non-Standard Types
 
 For supporting non-standard type you should define it via an interface `org.apache.cayenne.access.types.ExtendedType`. An implementation must provide `ExtendedType.getClassName()` method that returns a fully qualified Java class name for the supported custom type, and a number of methods that convert data between JDBC and custom type. The following example demonstrates how to add a custom DoubleArrayType to store `java.lang.Double[]` as a custom string in a database:
 
@@ -246,13 +246,13 @@ include::{java-examples}/customize/DoubleArrayType.java[tags=content]
 include::{java-examples}/CustomizeTest.java[tags=extendedType]
 ----
 
-====== DbAdapters and Extended Types
+===== DbAdapters and Extended Types
 
 As shown in the example above, ExtendedTypes are stored by DbAdapter. In fact DbAdapters often install their own extended types to address incompatibilities, incompleteness and differences between JDBC drivers in handling "standard" JDBC types. For instance some drivers support reading large character columns (CLOB) as java.sql.Clob, but some other - as "character stream", etc. Adapters provided with Cayenne override `configureExtendedTypes()` method to install their own types, possibly substituting Cayenne defaults. Custom DbAdapters can use the same technique.
 
-==== Noteworthy Built-in Services
+=== Noteworthy Built-in Services
 
-===== SQLLogger
+==== SQLLogger
 
 `org.apache.cayenne.log.SQLLogger` is the service that defines the SQL logging API for Cayenne internals. It logs each executed statement as a single compact line combining the SQL, its bindings, the result count and the execution time, e.g. (long lines are wrapped here for readability):
 
@@ -271,14 +271,14 @@ INSERT INTO table1(id, name) VALUES(?, ?)
     | bind:[id:1,name:'n1'][id:2,name:'n2']..2..[id:5,name:'n5'] updated:5 time_ms:4
 ----
 
-===== DataChannelSyncFilter and DataChannelQueryFilter
+==== DataChannelSyncFilter and DataChannelQueryFilter
 
 Interfaces of filters that allow to intercept DataChannel operations.
 Filters allow to implement chains of custom processors around a DataChannel,
 that can be used for security, monitoring, business logic,
 providing context to lifecycle event listeners, etc.
 
-===== QueryCache
+==== QueryCache
 
 Defines API of a cache that stores query results.
 

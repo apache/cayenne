@@ -12,23 +12,23 @@
 // the specific language governing permissions and limitations under the
 // License.
 
-=== Orderings
+=== MappedSelect and MappedExec
 
-An Ordering object defines how a list of objects should be ordered. Orderings are essentially path expressions combined with a sorting strategy. Creating an Ordering:
+`MappedSelect` and `MappedExec` is a queries that are just a reference to another queries stored in the DataMap.
+The actual stored query can be SelectQuery, SQLTemplate, EJBQLQuery, etc.
+Difference between `MappedSelect` and `MappedExec` is (as reflected in their names) whether underlying query
+intended to select data or just to perform some generic SQL code.
 
-[source,java,indent=0]
-----
-include::{java-examples}/OrderingsTest.java[tags=create]
-----
-
-Like expressions, orderings are translated into SQL as parts of queries (and the sorting occurs in the database). Also like expressions, orderings can be used in memory, naturally - to sort objects:
+Here is example of how to use `MappedSelect`:
 
 [source,java,indent=0]
 ----
-include::{java-examples}/OrderingsTest.java[tags=orderList]
+include::{java-examples}/MappedQueryTest.java[tags=mappedSelect]
 ----
 
-Note that unlike filtering with Expressions, ordering is performed in-place. This list object is reordered and no new list is created.
+And here is example of `MappedExec`:
 
-
-
+[source,java,indent=0]
+----
+include::{java-examples}/MappedQueryTest.java[tags=mappedExec]
+----

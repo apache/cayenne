@@ -14,8 +14,8 @@
 
 == Object Relational Mapping with Cayenne
 
-include::part1/setup.adoc[]
+include::orm/setup.adoc[]
 
-include::part1/mapping.adoc[]
+include::orm/mapping.adoc[]
 
-include::part1/modeler.adoc[]
+include::orm/modeler.adoc[]

@@ -14,12 +14,12 @@
 
 == DB-First Flow
 
-include::part4/introduction.adoc[]
+include::db-first/introduction.adoc[]
 
-include::part4/filtering.adoc[]
+include::db-first/filtering.adoc[]
 
-include::part4/otherSettings.adoc[]
+include::db-first/other-settings.adoc[]
 
-include::part4/revEngineering.adoc[]
+include::db-first/rev-engineering.adoc[]
 
 

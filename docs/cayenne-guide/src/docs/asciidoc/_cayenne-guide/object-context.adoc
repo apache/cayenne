@@ -13,9 +13,9 @@
 // License.
 
 [[persistent-objects-objectcontext]]
-=== Persistent Objects and ObjectContext
+== Persistent Objects and ObjectContext
 
-==== ObjectContext
+=== ObjectContext
 
 ObjectContext is an interface that users normally work with to access the database. It provides the API to execute database operations and to manage persistent objects. A context is obtained from the CayenneRuntime:
 
@@ -31,7 +31,7 @@ These properties directly affect the strategies for scoping and sharing (or not 
 ObjectContext does not permanently hold any of the application resources. So it does not have to be closed. If the context is not used anymore, it should simply be allowed to go out of scope and get garbage collected, just like any other Java object.
 
 
-==== Persistent Object and its Lifecycle
+=== Persistent Object and its Lifecycle
 
 Cayenne can persist Java objects that implement the `org.apache.cayenne.Persistent` interface. Generally, persistent classes are generated from the model as described above, so users do not have to worry about superclass and property implementation details.
 
@@ -64,7 +64,7 @@ Each persistent object belongs to a single ObjectContext, and can be in one of t
 |The object is registered in an ObjectContext and has been marked for deletion in-memory. The corresponding row in the database will get deleted upon ObjectContext commit, and the object state will be turned into TRANSIENT.
 |===
 
-==== ObjectContext Persistence API
+=== ObjectContext Persistence API
 
 One of the first things users usually want to do with an `ObjectContext` is to select some objects from a database:
 
@@ -158,7 +158,7 @@ include::{java-examples}/ObjectContextTest.java[tags=entityResolver]
 
 Here we discussed the most commonly-used subset of the ObjectContext API. There are other useful methods, e.g. those allowing you to inspect registered objects' state in bulk, etc. Check the latest JavaDocs for details.
 
-==== Cayenne Helper Class
+=== Cayenne Helper Class
 
 There is a useful helper class called `Cayenne` (fully-qualified name `org.apache.cayenne.Cayenne`) that builds on the ObjectContext API to provide a number of very common operations. E.g. get a primary key (most entities do not model PK as an object property) :
 
@@ -179,7 +179,7 @@ For more flexibility, you could <<selectbyid,select by ID>> with `ObjectSelect` 
 
 Feel free to explore the `Cayenne` class API for other useful methods.
 
-==== ObjectContext Nesting
+=== ObjectContext Nesting
 In all the examples shown so far, an ObjectContext would directly connect to a database to select data or synchronize its state (either via commit or rollback). However, another context can be used in all these scenarios instead of a database. This concept is called ObjectContext "nesting". Nesting is a parent/child relationship between two contexts, where a child is a nested context and selects or commits its objects via a parent.
 
 Nesting is useful to create isolated object editing areas (child contexts) that all need to be committed to an intermediate in-memory store (parent context), or rolled back without affecting changes already recorded in the parent. Think cascading GUI dialogs, or parallel AJAX requests coming to the same session.
@@ -205,7 +205,7 @@ include::{java-examples}/ObjectContextTest.java[tags=nestedCommit]
 include::{java-examples}/ObjectContextTest.java[tags=nestedRollback]
 ----
 
-==== Generic Persistent Objects
+=== Generic Persistent Objects
 
 As described in the CayenneModeler chapter, Cayenne supports mapping of completely generic classes to specific entities. Although for convenience most applications should stick with entity-specific class mappings, the generic feature offers some interesting possibilities, such as creating mappings completely on the fly in a running application.
 
@@ -245,7 +245,7 @@ include::{java-examples}/ObjectContextTest.java[tags=genericEntityName]
 ----
 
 
-==== Transactions
+=== Transactions
 
 Considering how much attention is given to managing transactions in most other ORMs, transactions have been conspicuously absent from the ObjectContext discussion till now. The reason is that transactions are seamless in Cayenne in all but a few special cases. ObjectContext is an in-memory container of objects that is disconnected from the database, except when it needs to run an operation. So it does not care about any surrounding transaction scope. Sure enough, all database operations are transactional, so when an application does a commit, all SQL execution is wrapped in a database transaction. But this is done behind the scenes and is rarely a concern to the application code.
 

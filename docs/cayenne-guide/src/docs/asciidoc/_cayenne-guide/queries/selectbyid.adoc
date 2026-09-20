@@ -13,7 +13,7 @@
 // License.
 
 [[selectbyid]]
-==== Selecting by ID
+=== Selecting by ID
 
 `ObjectSelect` can match objects of the root entity by their primary key with `byId(..)` and `byIds(..)`:
 

@@ -12,9 +12,9 @@
 // the specific language governing permissions and limitations under the
 // License.
 
-=== Performance Tuning
+== Performance Tuning
 
-==== Prefetching
+=== Prefetching
 
 Prefetching is a technique that allows to bring back in one query not only the queried objects, but also objects related to them.
 In other words it is a controlled eager relationship resolving mechanism. Prefetching is discussed in the "Performance Tuning" chapter,
@@ -116,7 +116,7 @@ include::{java-examples}/TuningTest.java[tags=sqlSelectPrefetch]
 SELECT a FROM Artist a LEFT JOIN FETCH a.paintingArray
 ----
 
-==== Data Rows
+=== Data Rows
 
 Converting result set data to Persistent objects and registering these objects in the ObjectContext can be an expensive
  operation comparable to the time spent running the query (and frequently exceeding it). Internally Cayenne builds the result as a list of DataRows,
@@ -144,7 +144,7 @@ Individual DataRows may be converted to Persistent objects as needed. So e.g. yo
 include::{java-examples}/TuningTest.java[tags=objectFromDataRow]
 ----
 
-==== Specific Attributes and Relationships with EJBQL
+=== Specific Attributes and Relationships with EJBQL
 
 It is possible to fetch specific attributes and relationships from a model using <<EJBQLQuery>>.
 The following example would return a java.util.List of String objects;
@@ -163,7 +163,7 @@ SELECT a.name, a.dateOfBirth FROM Artist a
 
 Refer to third-party query language documentation for further detail on this mechanism.
 
-==== Iterated Queries
+=== Iterated Queries
 
 While contemporary hardware may easily allow applications to fetch hundreds of thousands or even millions of objects into memory,
 it doesn't mean this is always a good idea to do so. You can optimize processing of very large result sets with two techniques discussed in this and the following chapter - iterated and paginated queries.
@@ -201,7 +201,7 @@ and then repeat. This allows to further optimize processing (e.g. by avoiding fr
 include::{java-examples}/TuningTest.java[tags=batchIterator]
 ----
 
-==== Paginated Queries
+=== Paginated Queries
 
 Enabling query pagination allows to load very large result sets in a Java app with very little memory overhead
 (much smaller than even the DataRows option discussed above). Moreover it is completely transparent to the application -
@@ -231,11 +231,11 @@ only a few top objects are normally accessed. At the same time pagination allows
 fetching all the objects. And again - it is completely transparent and looks like a normal query.
 
 [[caching]]
-==== Caching and Fresh Data
+=== Caching and Fresh Data
 
-===== Object Caching
+==== Object Caching
 
-===== Query Result Caching
+==== Query Result Caching
 
 Cayenne supports mostly transparent caching of the query results. There are two levels of the cache: local
 (i.e. results cached by the ObjectContext) and shared (i.e. the results cached at the stack level and shared between all contexts).
@@ -273,7 +273,7 @@ Finally you may cluster cache group events. They are very small and can be effic
 An example of Cayenne setup with event clustering is https://github.com/andrus/wowodc13/tree/master/services/src/main/java/demo/services/cayenne[available on GitHub].
 
 
-==== Turning off Synchronization of ObjectContexts
+=== Turning off Synchronization of ObjectContexts
 
 By default when a single ObjectContext commits its changes, all other contexts in the same runtime receive an event that contains all the committed changes.
 This allows them to update their cached object state to match the latest committed data. There are however many problems with this ostensibly helpful feature.

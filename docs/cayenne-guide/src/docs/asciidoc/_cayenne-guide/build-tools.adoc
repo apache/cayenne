@@ -20,8 +20,8 @@ code generation, Cayenne also provides an option to execute them from your prefe
 It may be occasionally useful to keep them as a part of the build. This chapter shows how to use them in
 <<maven_plugin,Maven>>, <<gradle_plugin,Gradle>> or <<ant_tasks,Ant>>.
 
-include::part6/maven-plugin.adoc[]
+include::build-tools/maven-plugin.adoc[]
 
-include::part6/gradle-plugin.adoc[]
+include::build-tools/gradle-plugin.adoc[]
 
-include::part6/ant-tasks.adoc[]
+include::build-tools/ant-tasks.adoc[]

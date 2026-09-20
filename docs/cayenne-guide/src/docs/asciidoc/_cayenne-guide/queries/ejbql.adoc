@@ -12,7 +12,7 @@
 // the specific language governing permissions and limitations under the
 // License.
 [[ejbql]]
-==== EJBQLQuery
+=== EJBQLQuery
 
 NOTE: Since 5.0 selecting queries can be written as Strings with <<ql,ObjectSelect.parse(..)>>, that is the recommended
 replacement for selecting `EJBQLQuery`. As soon as all of the `EJBQLQuery` capabilities become available

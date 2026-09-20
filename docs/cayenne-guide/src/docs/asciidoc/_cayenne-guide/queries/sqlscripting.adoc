@@ -12,14 +12,14 @@
 // the specific language governing permissions and limitations under the
 // License.
 [#sqlscripting]
-==== Scripting SQL Queries
+=== Scripting SQL Queries
 
 A powerful feature of `SQLSelect` and `SQLExec` is that SQL string is treated by Cayenne as a dynamic template. Before
 creating a PreparedStatement, the String is evaluated, resolving its dynamic parts. The two main scripting
 elements are "variables" (that look like `$var`) and "directives" (that look like `#directive(p1 p2 p3)`). In the discussion
 below we'll use both selecting and updating examples, as scripting works the same way for both `SQLSelect` and `SQLExec`.
 
-===== Variable Substitution
+==== Variable Substitution
 
 All variables in the template string are replaced from query parameters:
 
@@ -34,12 +34,12 @@ converted to a String not understood by the target DB SQL parser. In such cases 
 `#bind` directive as described below.
 
 [#directives]
-===== Directives
+==== Directives
 
 "Directives" look like `#directive(p1 p2 p3)` (notice the absence of comma between the arguments). The following
 directives are supported in SQL templates:
 
-====== #bind
+===== #bind
 
 Creates a `PreparedStatement` positional parameter in place of the directive, binding the value to it before statement
 execution. `#bind` is allowed in places where a "?" would be allowed in a PreparedStatement.
@@ -83,7 +83,7 @@ update ARTIST set NAME = #bind($name) where ID = #bind($id)
 ----
 
 
-====== #bindEqual
+===== #bindEqual
 
 Same as `#bind`, but also includes the "=" sign in front of the value binding.
 Look at the example below - we took the #bind example and replaced `"ID = #bind(..)"` with `"ID #bindEqual(..)"`.
@@ -118,7 +118,7 @@ Full example:
 update ARTIST set NAME = #bind($name) where ID #bindEqual($id)
 ----
 
-====== #bindNotEqual
+===== #bindNotEqual
 
 This directive deals with the same issue as `#bindEqual` above, only it generates "!=" in front of the value (or `IS NOT NULL`).
 
@@ -150,7 +150,7 @@ Full example:
 update ARTIST set NAME = #bind($name) where ID #bindNotEqual($id)
 ----
 
-====== #bindObjectEqual
+===== #bindObjectEqual
 
 It can be tricky to use a Persistent object or an ObjectId in a binding, especially for tables with compound primary
 keys. This directive helps to handle such binding. It maps columns in the query to the names of Persistent object ID
@@ -188,7 +188,7 @@ Full example:
 include::{java-examples}/SQLScriptingTest.java[tags=bindObjectEqual]
 ----
 
-====== #bindObjectNotEqual
+===== #bindObjectNotEqual
 
 Same as `#bindObjectEqual` above, only generates `!=` operator for value comparison (or `IS NOT NULL`).
 
@@ -216,7 +216,7 @@ Full example:
 include::{java-examples}/SQLScriptingTest.java[tags=bindObjectNotEqual]
 ----
 
-====== #result
+===== #result
 
 Used around a column in `SELECT` clause to define the type conversion of the column value (e.g. it may force a conversion
 from Integer to Long) and/or define column name in the result (useful when fetching objects or DataRows).

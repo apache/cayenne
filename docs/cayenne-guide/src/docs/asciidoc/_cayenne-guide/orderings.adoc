@@ -12,24 +12,23 @@
 // the specific language governing permissions and limitations under the
 // License.
 
-== Cayenne Framework
+== Orderings
 
-include::part2/including.adoc[]
+An Ordering object defines how a list of objects should be ordered. Orderings are essentially path expressions combined with a sorting strategy. Creating an Ordering:
 
-include::part2/starting.adoc[]
+[source,java,indent=0]
+----
+include::{java-examples}/OrderingsTest.java[tags=create]
+----
 
-include::part2/objectContext.adoc[]
+Like expressions, orderings are translated into SQL as parts of queries (and the sorting occurs in the database). Also like expressions, orderings can be used in memory, naturally - to sort objects:
 
-include::part2/expressions.adoc[]
+[source,java,indent=0]
+----
+include::{java-examples}/OrderingsTest.java[tags=orderList]
+----
 
-include::part2/orderings.adoc[]
+Note that unlike filtering with Expressions, ordering is performed in-place. This list object is reordered and no new list is created.
 
-include::part2/queries.adoc[]
 
-include::part2/lifecycle.adoc[]
 
-include::part2/commitLog.adoc[]
-
-include::part2/tuning.adoc[]
-
-include::part2/customize.adoc[]

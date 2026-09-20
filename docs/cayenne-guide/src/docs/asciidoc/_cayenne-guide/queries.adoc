@@ -12,7 +12,7 @@
 // the specific language governing permissions and limitations under the
 // License.
 
-=== Queries
+== Queries
 
 Queries are Java objects used by the application to communicate with the database.
 Cayenne knows how to translate queries into SQL statements appropriate for a particular database engine.

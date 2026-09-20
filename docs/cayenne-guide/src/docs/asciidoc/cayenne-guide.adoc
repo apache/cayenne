@@ -41,21 +41,39 @@ a copy of the License at https://www.apache.org/licenses/LICENSE-2.0_#
 is distributed on an "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 See the License for the specific language governing permissions and limitations under the License._#
 
-include::_cayenne-guide/part1.adoc[]
+include::_cayenne-guide/orm.adoc[]
 
-include::_cayenne-guide/part2.adoc[]
+include::_cayenne-guide/including.adoc[]
 
-include::_cayenne-guide/part3.adoc[]
+include::_cayenne-guide/starting.adoc[]
 
-include::_cayenne-guide/part4.adoc[]
+include::_cayenne-guide/object-context.adoc[]
 
-include::_cayenne-guide/part5.adoc[]
+include::_cayenne-guide/expressions.adoc[]
 
-include::_cayenne-guide/part6.adoc[]
+include::_cayenne-guide/orderings.adoc[]
 
-include::_cayenne-guide/configurationProperties.adoc[]
+include::_cayenne-guide/queries.adoc[]
 
-include::_cayenne-guide/serviceCollections.adoc[]
+include::_cayenne-guide/lifecycle.adoc[]
 
-//include::_cayenne-guide/expressionsBNF.adoc[]
+include::_cayenne-guide/commit-log.adoc[]
+
+include::_cayenne-guide/tuning.adoc[]
+
+include::_cayenne-guide/customize.adoc[]
+
+include::_cayenne-guide/agentic-coding.adoc[]
+
+include::_cayenne-guide/db-first.adoc[]
+
+include::_cayenne-guide/additional-modules.adoc[]
+
+include::_cayenne-guide/build-tools.adoc[]
+
+include::_cayenne-guide/configuration-properties.adoc[]
+
+include::_cayenne-guide/service-collections.adoc[]
+
+//include::_cayenne-guide/expressions-bnf.adoc[]
 

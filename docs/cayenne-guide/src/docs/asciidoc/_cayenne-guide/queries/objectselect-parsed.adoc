@@ -12,7 +12,7 @@
 // the specific language governing permissions and limitations under the
 // License.
 [[ql]]
-==== ObjectSelect Parsed from a String
+=== ObjectSelect Parsed from a String
 
 Since 5.0 an `ObjectSelect` or a `ColumnSelect` can be created from a String. This is an alernative to the fluent API.
 E.g.:
@@ -31,7 +31,7 @@ executed:
 include::{java-examples}/ObjectSelectParsedTest.java[tags=parseAndCustomize]
 ----
 
-===== Query Structure
+==== Query Structure
 
 [source]
 ----
@@ -63,7 +63,7 @@ Any other `select` clause results in a `ColumnSelect`.
 function, all the other columns become the grouping columns.
 * Only selecting queries are supported. There is no `update` or `delete`.
 
-===== Parameters
+==== Parameters
 
 A parameter is a name prefixed with `$`, the same as in expressions. The values are passed to the `parse(..)` method
 and are bound in the order in which the parameters first appear in the String. If the same name is used more than once,
@@ -78,7 +78,7 @@ include::{java-examples}/ObjectSelectParsedTest.java[tags=params]
 The parameters can be used anywhere in the expressions, including the nested selects. `limit` and `offset` only take
 integer literals.
 
-===== Java API
+==== Java API
 
 There are four methods to parse a query, that differ in the type of the result:
 
@@ -93,11 +93,11 @@ e.g. if a `select` clause is passed to `parse(Artist.class, ..)`.
 The parser needs no mapping information, so the names of entities and properties, as well as the types of the columns,
 are only checked when the query is executed.
 
-===== Examples
+==== Examples
 
 Each example shows a query String and the same query built with the fluent API.
 
-====== Objects with a filter, ordering and a limit
+===== Objects with a filter, ordering and a limit
 
 [source]
 ----
@@ -112,7 +112,7 @@ include::{java-examples}/ObjectSelectParsedTest.java[tags=filterOrderLimit]
 An ordering is an expression, optionally followed by `asc` (the default) or `desc`, and then optionally
 by `insensitive`.
 
-====== Joins
+===== Joins
 
 The joins are implied by the paths. Here is an outer join, matching the artists with no paintings:
 
@@ -138,7 +138,7 @@ include::{resource-examples}/objectselect-parsed.txt[tags=splitJoins]
 include::{java-examples}/ObjectSelectParsedTest.java[tags=splitJoins]
 ----
 
-====== Columns
+===== Columns
 
 [source]
 ----
@@ -169,7 +169,7 @@ A column can be any expression, and it can have an alias (the same as `BasePrope
 include::{resource-examples}/objectselect-parsed.txt[tags=columnExpressions]
 ----
 
-====== Aggregates
+===== Aggregates
 
 [source]
 ----
@@ -183,7 +183,7 @@ include::{java-examples}/ObjectSelectParsedTest.java[tags=aggregates]
 
 `toArtist.artistName` becomes a grouping column here, as the other columns are aggregates.
 
-====== Objects as columns
+===== Objects as columns
 
 `self` is the root object, and a relationship path is a related object. Here each row is an `Object[]` with an `Artist`
 and a `Long`:
@@ -225,7 +225,7 @@ include::{java-examples}/ObjectSelectParsedTest.java[tags=toMany]
 In both cases a row with no related object is still present in the result, with a `null` in place of the object. To
 exclude such rows, add a condition to the `where` clause, e.g. `where exists paintingArray`.
 
-====== Subqueries
+===== Subqueries
 
 A nested select in parentheses can be used with `exists`, `not exists`, `in`, `not in`, `all` and `any`. It has
 the same structure as the main query, except for `prefetch`. Its paths are relative to its own root, and
@@ -259,7 +259,7 @@ include::{java-examples}/ObjectSelectParsedTest.java[tags=in]
 NOTE: When there is no need for a nested select with its own conditions,`exists` over a path is shorter:
 `from Artist where not exists paintingArray`.
 
-====== DbEntity as a root
+===== DbEntity as a root
 
 A root prefixed with `db:` is a name of a DbEntity. Such a query fetches the data rows, and all its paths are the DB
 paths, with no need for a `db:` prefix:
@@ -274,7 +274,7 @@ include::{resource-examples}/objectselect-parsed.txt[tags=dbRoot]
 include::{java-examples}/ObjectSelectParsedTest.java[tags=dbRoot]
 ----
 
-====== Prefetching
+===== Prefetching
 
 `prefetch` is a comma-separated list of relationship paths, each optionally followed by the prefetch semantics -
 `joint`, `disjoint` or `disjointById`. If omitted, Cayenne picks the default semantics, the same as with
