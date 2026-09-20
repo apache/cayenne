@@ -19,26 +19,28 @@
 
 package org.apache.cayenne.query;
 
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.Collections;
-import java.util.function.Function;
-
+import org.apache.cayenne.CayenneRuntimeException;
 import org.apache.cayenne.ObjectContext;
-import org.apache.cayenne.exp.property.BaseProperty;
 import org.apache.cayenne.exp.Expression;
 import org.apache.cayenne.exp.ExpressionFactory;
+import org.apache.cayenne.exp.property.BaseProperty;
 import org.apache.cayenne.exp.property.ComparableProperty;
 import org.apache.cayenne.exp.property.NumericProperty;
 import org.apache.cayenne.exp.property.Property;
 import org.apache.cayenne.exp.property.PropertyFactory;
 import org.apache.cayenne.map.EntityResolver;
 
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.Collections;
+import java.util.Map;
+import java.util.function.Function;
+
 /**
  * <p>A helper builder for queries selecting individual properties based on the root object.</p>
  * <p>
- *     It can be used to select properties of the object itself, properties of related entities
- *     or some function calls (including aggregate functions).
+ * It can be used to select properties of the object itself, properties of related entities
+ * or some function calls (including aggregate functions).
  * </p>
  * <p>
  * Usage examples: <pre>
@@ -56,9 +58,7 @@ import org.apache.cayenne.map.EntityResolver;
  * }
  * </pre>
  * </p>
- * <p><b>Note: this class can't be instantiated directly. Use {@link ObjectSelect}.</b></p>
- * @see ObjectSelect#columnQuery(Class, Property)
- *
+ * <p><b>Note: this class can't be instantiated directly. Use {@link ObjectSelect} factory methods to create it.</b></p>
  * @since 4.0
  */
 public class ColumnSelect<T> extends FluentSelect<T, ColumnSelect<T>> {
@@ -121,11 +121,12 @@ public class ColumnSelect<T> extends FluentSelect<T, ColumnSelect<T>> {
      * <p>Can be any properties that can be resolved against root entity type
      * (root entity properties, function call expressions, properties of relationships, etc).</p>
      * <p>
+     *
      * @param properties collection of properties, <b>must</b> contain at least one element
      * @see ColumnSelect#columns(Property[])
      */
     public ColumnSelect<Object[]> columns(Collection<Property<?>> properties) {
-        if (properties == null){
+        if (properties == null) {
             throw new NullPointerException("properties is null");
         }
         if (properties.isEmpty()) {
@@ -142,6 +143,8 @@ public class ColumnSelect<T> extends FluentSelect<T, ColumnSelect<T>> {
     }
 
     protected <E> ColumnSelect<E> column(Property<E> property) {
+        checkSingleColumnType(property);
+
         if (this.columns == null) {
             this.columns = new ArrayList<>(1);
         } else {
@@ -149,6 +152,26 @@ public class ColumnSelect<T> extends FluentSelect<T, ColumnSelect<T>> {
         }
         this.columns.add(property);
         return castSelf();
+    }
+
+    /**
+     * A to-many relationship column always results in a single related object per row. With multiple columns that
+     * is not a problem, as the row is an Object[]. But a single column defines the type of the query result, and
+     * here a to-many property declared as a List or a Map would promise a result that the query can't deliver.
+     */
+    private static void checkSingleColumnType(Property<?> property) {
+        Class<?> type = property.getType();
+        Expression exp = property.getExpression();
+
+        if (type != null
+                && exp != null
+                && (exp.getType() == Expression.OBJ_PATH || exp.getType() == Expression.DB_PATH)
+                && (Collection.class.isAssignableFrom(type) || Map.class.isAssignableFrom(type))) {
+            throw new CayenneRuntimeException("""
+                    Can't select a to-many relationship '%s' as a single column, as its type wouldn't match \
+                    the result type. Either select related objects with flat(), or use an aggregate function \
+                    like count().""", exp);
+        }
     }
 
     /**
@@ -161,6 +184,7 @@ public class ColumnSelect<T> extends FluentSelect<T, ColumnSelect<T>> {
     /**
      * <p>Select COUNT(property)</p>
      * <p>Can return different result than COUNT(*) as it will count only non null values</p>
+     *
      * @see ColumnSelect#count()
      */
     public ColumnSelect<Object[]> count(BaseProperty<?> property) {
@@ -169,6 +193,7 @@ public class ColumnSelect<T> extends FluentSelect<T, ColumnSelect<T>> {
 
     /**
      * <p>Select minimum value of property</p>
+     *
      * @see ColumnSelect#columns(Property[])
      */
     public ColumnSelect<Object[]> min(ComparableProperty<?> property) {
@@ -177,6 +202,7 @@ public class ColumnSelect<T> extends FluentSelect<T, ColumnSelect<T>> {
 
     /**
      * <p>Select maximum value of property</p>
+     *
      * @see ColumnSelect#columns(Property[])
      */
     public ColumnSelect<Object[]> max(ComparableProperty<?> property) {
@@ -185,6 +211,7 @@ public class ColumnSelect<T> extends FluentSelect<T, ColumnSelect<T>> {
 
     /**
      * <p>Select average value of property</p>
+     *
      * @see ColumnSelect#columns(Property[])
      */
     public ColumnSelect<Object[]> avg(NumericProperty<?> property) {
@@ -193,6 +220,7 @@ public class ColumnSelect<T> extends FluentSelect<T, ColumnSelect<T>> {
 
     /**
      * <p>Select sum of values</p>
+     *
      * @see ColumnSelect#columns(Property[])
      */
     public <E extends Number> ColumnSelect<Object[]> sum(NumericProperty<E> property) {
@@ -201,8 +229,8 @@ public class ColumnSelect<T> extends FluentSelect<T, ColumnSelect<T>> {
 
     /**
      * <p>Select result of some function, that aggregates values.</p>
-     * @see ColumnSelect#columns(Property[])
      *
+     * @see ColumnSelect#columns(Property[])
      * @since 5.0
      */
     public <E> ColumnSelect<Object[]> aggregate(BaseProperty<E> property, String function, Class<E> type) {
@@ -282,10 +310,10 @@ public class ColumnSelect<T> extends FluentSelect<T, ColumnSelect<T>> {
      * Could be used to map plain Object[] to some domain-specific object.
      * <br/>
      * <b>Note:</b> this method could be called multiple time, result will be mapped by all functions in the call order.
-     * @param mapper function that maps result to the required type.
-     * @return this query with changed result type
-     * @param <E> new result type
      *
+     * @param mapper function that maps result to the required type.
+     * @param <E>    new result type
+     * @return this query with changed result type
      * @since 4.2
      */
     public <E> ColumnSelect<E> map(Function<T, E> mapper) {

@@ -197,7 +197,7 @@ public class PropertyFactoryTest {
                 .createSelf(exp("path"), Artist.class);
 
         assertNull(property.getName());
-        assertEquals(fullObjectExp(exp("path")), property.getExpression());
+        assertEquals(exp("path"), property.getExpression());
         assertEquals(Artist.class, property.getType());
     }
 

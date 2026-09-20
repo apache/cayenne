@@ -28,13 +28,6 @@ import org.apache.cayenne.exp.Expression;
  */
 public class ASTFullObject extends SimpleNode {
 
-    public ASTFullObject(Expression expression) {
-        this();
-        Node node = wrapChild(expression);
-        jjtAddChild(node, 0);
-        node.jjtSetParent(this);
-    }
-
     public ASTFullObject() {
         this(0);
     }

@@ -363,18 +363,13 @@ class QualifierTranslator implements TraversalHandler {
                 return context.getParentContext().getQualifierTranslator().translate(expression);
 
             case FULL_OBJECT:
-                ASTFullObject fullObject = (ASTFullObject) node;
-                if (fullObject.getOperandCount() == 0) {
-                    Collection<DbAttribute> dbAttributes = context.getMetadata().getDbEntity().getPrimaryKeys();
-                    String alias = context.getTableTree().aliasForPath(CayennePath.EMPTY_PATH);
-                    if (dbAttributes.size() > 1) {
-                        return createMultiPkMatch(node, parentNode, dbAttributes, alias);
-                    }
-                    DbAttribute attribute = dbAttributes.iterator().next();
-                    return table(alias).column(attribute).build();
-                } else {
-                    return null;
+                Collection<DbAttribute> dbAttributes = context.getMetadata().getDbEntity().getPrimaryKeys();
+                String alias = context.getTableTree().aliasForPath(CayennePath.EMPTY_PATH);
+                if (dbAttributes.size() > 1) {
+                    return createMultiPkMatch(node, parentNode, dbAttributes, alias);
                 }
+                DbAttribute attribute = dbAttributes.iterator().next();
+                return table(alias).column(attribute).build();
             case SCALAR:
                 if (parentNode != null) {
                     throw new CayenneRuntimeException("Incorrect state, a node %s can't have parent here", node.getClass().getName());

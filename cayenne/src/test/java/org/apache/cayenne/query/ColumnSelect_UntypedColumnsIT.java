@@ -113,16 +113,8 @@ public class ColumnSelect_UntypedColumnsIT {
     }
 
     @Test
-    public void toManyPathIsRejected() {
-        ColumnSelect<Object> query = ObjectSelect.columnQuery(Artist.class, untyped("paintingArray"));
-        assertThrows(CayenneRuntimeException.class, () -> query.select(context));
-    }
-
-    @Test
-    public void flatToManyIsAnEntityColumn() {
-        BaseProperty<Object> flat = PropertyFactory.createBase(
-                ExpressionFactory.fullObjectExp(ExpressionFactory.pathExp("paintingArray")), null);
-        List<Object[]> rows = ObjectSelect.columnQuery(Artist.class, untyped("artistName"), flat)
+    public void toManyPathIsAFlatEntityColumn() {
+        List<Object[]> rows = ObjectSelect.columnQuery(Artist.class, untyped("artistName"), untyped("paintingArray"))
                 .where(Artist.ARTIST_NAME.eq("artist1"))
                 .select(context);
 
@@ -132,6 +124,64 @@ public class ColumnSelect_UntypedColumnsIT {
             Painting painting = assertInstanceOf(Painting.class, row[1]);
             assertEquals("artist1", painting.getToArtist().getArtistName());
         }
+    }
+
+    @Test
+    public void toManyPathWithNoRelatedObjects() throws Exception {
+        env.table("ARTIST", "ARTIST_ID", "ARTIST_NAME").insert(5, "artist5");
+
+        // inner join: the root row is dropped
+        List<Object[]> inner = ObjectSelect.columnQuery(Artist.class, untyped("artistName"), untyped("paintingArray"))
+                .where(Artist.ARTIST_NAME.eq("artist5"))
+                .select(context);
+        assertEquals(0, inner.size());
+
+        // outer join: the root row is preserved with a null related object
+        List<Object[]> outer = ObjectSelect.columnQuery(Artist.class, untyped("artistName"), untyped("paintingArray+"))
+                .where(Artist.ARTIST_NAME.eq("artist5"))
+                .select(context);
+        assertEquals(1, outer.size());
+        assertEquals("artist5", outer.get(0)[0]);
+        assertNull(outer.get(0)[1]);
+    }
+
+    @Test
+    public void toOnePathWithNoRelatedObject() throws Exception {
+        env.table("PAINTING", "PAINTING_ID", "PAINTING_TITLE").insert(9, "painting9");
+
+        // unlike to-many, a to-one column is an outer join even with no "+": the root row is preserved
+        List<Object[]> rows = ObjectSelect.columnQuery(Painting.class, untyped("paintingTitle"), untyped("toArtist"))
+                .where(Painting.PAINTING_TITLE.eq("painting9"))
+                .select(context);
+        assertEquals(1, rows.size());
+        assertEquals("painting9", rows.get(0)[0]);
+        assertNull(rows.get(0)[1]);
+    }
+
+    @Test
+    public void typedToManyPathIsAFlatEntityColumn() {
+        List<Object[]> rows = ObjectSelect.columnQuery(Artist.class, Artist.ARTIST_NAME, Artist.PAINTING_ARRAY)
+                .where(Artist.ARTIST_NAME.eq("artist1"))
+                .select(context);
+
+        assertEquals(2, rows.size());
+        for (Object[] row : rows) {
+            assertEquals("artist1", row[0]);
+            Painting painting = assertInstanceOf(Painting.class, row[1]);
+            assertEquals("artist1", painting.getToArtist().getArtistName());
+        }
+    }
+
+    @Test
+    public void typedToManyPathIsRejectedAsASingleColumn() {
+        // the declared result type would be a List<Painting> per row, that the query can't deliver
+        assertThrows(CayenneRuntimeException.class, () -> ObjectSelect.columnQuery(Artist.class, Artist.PAINTING_ARRAY));
+        assertThrows(CayenneRuntimeException.class, () -> ObjectSelect.query(Artist.class).column(Artist.PAINTING_ARRAY));
+
+        List<Painting> paintings = ObjectSelect.columnQuery(Artist.class, Artist.PAINTING_ARRAY.flat())
+                .where(Artist.ARTIST_NAME.eq("artist1"))
+                .select(context);
+        assertEquals(2, paintings.size());
     }
 
     @Test

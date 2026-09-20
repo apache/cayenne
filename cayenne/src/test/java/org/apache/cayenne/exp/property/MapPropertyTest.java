@@ -43,8 +43,12 @@ public class MapPropertyTest {
 
     @Test
     public void flat() {
-        Expression exp = property.flat().getExpression();
-        assertEquals(ExpressionFactory.fullObjectExp(ExpressionFactory.pathExp("path")), exp);
+        EntityProperty<Artist> flat = property.flat();
+
+        // same path, but the type is that of a single related object
+        assertEquals(ExpressionFactory.pathExp("path"), flat.getExpression());
+        assertEquals("path", flat.getName());
+        assertEquals(Artist.class, flat.getType());
     }
 
     @Test

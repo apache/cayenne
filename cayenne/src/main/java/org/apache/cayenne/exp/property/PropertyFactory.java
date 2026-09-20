@@ -421,9 +421,11 @@ public class PropertyFactory {
      * @param type of represented entity
      * @param <T> type of represented entity
      * @return new 'self' property
+     * @deprecated use {@link #createEntity(Expression, Class)}
      */
+    @Deprecated(since = "5.0", forRemoval = true)
     public static <T extends Persistent> EntityProperty<T> createSelf(Expression expression, Class<T> type) {
-        return createEntity(ExpressionFactory.fullObjectExp(expression), type);
+        return createEntity(expression, type);
     }
 
     // ToMany relationship properties

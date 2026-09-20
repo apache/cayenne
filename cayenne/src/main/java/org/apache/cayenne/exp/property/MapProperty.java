@@ -68,7 +68,7 @@ public class MapProperty<K, V extends Persistent> extends BaseProperty<Map<K, V>
      * </p>
      */
     public EntityProperty<V> flat() {
-        return PropertyFactory.createEntity(ExpressionFactory.fullObjectExp(getExpression()), getEntityType());
+        return PropertyFactory.createEntity(getPath(), getExpression(), getEntityType());
     }
 
     // TODO: move all *contains* methods to RelationshipProperty once Property class is removed

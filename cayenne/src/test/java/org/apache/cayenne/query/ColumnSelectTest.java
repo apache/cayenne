@@ -226,9 +226,10 @@ public class ColumnSelectTest {
 
         q.column(Artist.ARTIST_NAME);
         q.column(Artist.DATE_OF_BIRTH);
-        q.column(Artist.PAINTING_ARRAY);
+        Property<Painting> paintings = Artist.PAINTING_ARRAY.flat();
+        q.column(paintings);
 
-        Collection<Property<?>> properties = Collections.singletonList(Artist.PAINTING_ARRAY);
+        Collection<Property<?>> properties = Collections.singletonList(paintings);
         assertEquals(properties, q.getColumns());
     }
 

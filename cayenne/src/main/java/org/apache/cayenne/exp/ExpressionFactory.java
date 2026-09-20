@@ -1331,8 +1331,12 @@ public class ExpressionFactory {
 		return new ASTFullObject();
 	}
 
+	/**
+	 * @deprecated a relationship path expression is all that is needed to select related objects as a column
+	 */
+	@Deprecated(since = "5.0", forRemoval = true)
 	public static Expression fullObjectExp(Expression exp) {
-		return new ASTFullObject(exp);
+		return exp;
 	}
 
 	/**

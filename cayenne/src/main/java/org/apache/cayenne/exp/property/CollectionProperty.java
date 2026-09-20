@@ -60,7 +60,7 @@ public abstract class CollectionProperty<V extends Persistent, E extends Collect
      * </p>
      */
     public EntityProperty<V> flat() {
-        return PropertyFactory.createEntity(ExpressionFactory.fullObjectExp(getExpression()), getEntityType());
+        return PropertyFactory.createEntity(getPath(), getExpression(), getEntityType());
     }
 
     /**

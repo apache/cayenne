@@ -131,15 +131,7 @@ class CustomColumnSetExtractor implements ColumnExtractor {
      * This will be just a db path for this property, if any exists.
      */
     private CayennePath calculatePrefix(CayennePath prefix, Property<?> property) {
-        Expression exp = property.getExpression();
-        int expressionType = exp.getType();
-        if(expressionType == Expression.FULL_OBJECT && exp.getOperandCount() > 0) {
-            Object op = exp.getOperand(0);
-            if(op instanceof Expression) {
-                exp = (Expression)op;
-            }
-        }
-        return dbPathOrDefault(exp, prefix);
+        return dbPathOrDefault(property.getExpression(), prefix);
     }
 
     private CayennePath dbPathOrDefault(Expression pathExp, CayennePath defaultPrefix) {
