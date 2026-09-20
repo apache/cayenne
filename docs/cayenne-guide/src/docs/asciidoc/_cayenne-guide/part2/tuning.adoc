@@ -23,12 +23,9 @@ object relationships, so more generally it can be viewed as a technique for mana
 
 Prefetching example:
 
-[source, Java]
+[source,java,indent=0]
 ----
-List<Artist> artists = ObjectSelect
-    .query(Artist.class)
-    .prefetch(Artist.PAINTINGS.disjoint()) // <1>
-    .select(context); // <2>
+include::{java-examples}/TuningTest.java[tags=prefetch]
 ----
 
 <1> Instructs Cayenne to prefetch one of Artist's relationships.
@@ -36,17 +33,16 @@ List<Artist> artists = ObjectSelect
 
 All types of relationships can be prefetched - to-one, to-many, flattened. A prefetch can span multiple relationships:
 
-[source, Java]
+[source,java,indent=0]
 ----
-query.prefetch(Artist.PAINTINGS.dot(Painting.GALLERY).disjoint());
+include::{java-examples}/TuningTest.java[tags=prefetchPath]
 ----
 
 A query can have multiple prefetches:
 
-[source, Java]
+[source,java,indent=0]
 ----
-query.prefetch(Artist.PAINTINGS.disjoint())
-   .prefetch(Artist.PAINTINGS.dot(Painting.GALLERY).disjoint());
+include::{java-examples}/TuningTest.java[tags=prefetchMultiple]
 ----
 
 If a query is fetching DataRows, all "disjoint" prefetches are ignored, only "joint" prefetches are executed
@@ -108,28 +104,16 @@ to be convertible into object properties. The main rules to follow are:
 
 E.g.:
 
-[source, Java]
+[source,java,indent=0]
 ----
-List<Artist> objects = SQLSelect.query(Artist.class, "SELECT "
-    + "#result('ESTIMATED_PRICE' 'BigDecimal' '' 'paintingArray.ESTIMATED_PRICE'), "
-    + "#result('PAINTING_TITLE' 'String' '' 'paintingArray.PAINTING_TITLE'), "
-    + "#result('GALLERY_ID' 'int' '' 'paintingArray.GALLERY_ID'), "
-    + "#result('PAINTING_ID' 'int' '' 'paintingArray.PAINTING_ID'), "
-    + "#result('t1.ARTIST_ID' 'int' '' 'paintingArray.ARTIST_ID'), "
-    + "#result('ARTIST_NAME' 'String'), "
-    + "#result('DATE_OF_BIRTH' 'java.util.Date'), "
-    + "#result('t0.ARTIST_ID' 'int' '' 'ARTIST_ID') "
-    + "FROM ARTIST t0, PAINTING t1 "
-    + "WHERE t0.ARTIST_ID = t1.ARTIST_ID")
-    .addPrefetch(Artist.PAINTING_ARRAY.joint())
-    .select(context);
+include::{java-examples}/TuningTest.java[tags=sqlSelectPrefetch]
 ----
 
 `<<ejbql,EJBQLQuery>>` uses the "FETCH" keyword to enable prefetching:
 
 [source, SQL]
 ----
-SELECT a FROM Artist a LEFT JOIN FETCH a.paintings
+SELECT a FROM Artist a LEFT JOIN FETCH a.paintingArray
 ----
 
 ==== Data Rows
@@ -142,34 +126,22 @@ DataRow is a simply a map of values keyed by their DB column name. It is a ubiqu
 And it can be quite usable as is in the application in many cases. So performance sensitive selects should consider
 DataRows - it saves memory and CPU cycles. All selecting queries support DataRows option, e.g.:
 
-[source, Java]
+[source,java,indent=0]
 ----
-ObjectSelect<DataRow> query = ObjectSelect.dataRowQuery(Artist.class);
-
-List<DataRow> rows = query.select(context);
+include::{java-examples}/TuningTest.java[tags=dataRows]
 ----
 
-[source, Java]
+[source,java,indent=0]
 ----
-SQLSelect<DataRow> query = SQLSelect.dataRowQuery("SELECT * FROM ARTIST");
-List<DataRow> rows = query.select(context);
+include::{java-examples}/TuningTest.java[tags=sqlDataRows]
 ----
 
 Individual DataRows may be converted to Persistent objects as needed. So e.g. you may implement some in-memory filtering, only converting a subset of fetched objects:
 
 
-[source, Java]
+[source,java,indent=0]
 ----
-// you need to cast ObjectContext to DataContext to get access to 'objectFromDataRow'
-DataContext dataContext = (DataContext) context;
-
-for(DataRow row : rows) {
-    if(row.get("DATE_OF_BIRTH") != null) {
-        Artist artist = dataContext.objectFromDataRow(Artist.class, row);
-        // do something with Artist...
-        ...
-    }
-}
+include::{java-examples}/TuningTest.java[tags=objectFromDataRow]
 ----
 
 ==== Specific Attributes and Relationships with EJBQL
@@ -208,40 +180,25 @@ Cayenne handle resource management. In both cases iteration can be performed usi
 Direct access. Here common sense tells us that ResultIterators instances should be processed and closed as soon as possible to release the DB connection.
 E.g. storing open iterators between HTTP requests for unpredictable length of time would quickly exhaust the connection pool.
 
-[source, Java]
+[source,java,indent=0]
 ----
-try(ResultIterator<Artist> it = ObjectSelect.query(Artist.class).iterator(context)) {
-    for(Artist a : it) {
-       // do something with the object...
-       ...
-    }
-}
+include::{java-examples}/TuningTest.java[tags=iterator]
 ----
 
 Same thing with a callback:
 
-[source, Java]
+[source,java,indent=0]
 ----
-ObjectSelect.query(Artist.class).iterate(context, (Artist a) -> {
-    // do something with the object...
-    ...
-});
+include::{java-examples}/TuningTest.java[tags=iterate]
 ----
 
 Another example is a batch iterator that allows to process more than one object in each iteration.
 This is a common scenario in various data processing jobs - read a batch of objects, process them, commit the results,
 and then repeat. This allows to further optimize processing (e.g. by avoiding frequent commits).
 
-[source, Java]
+[source,java,indent=0]
 ----
-try(ResultBatchIterator<Artist> it = ObjectSelect.query(Artist.class).batchIterator(context, 100)) {
-    for(List<Artist> list : it) {
-       // do something with each list
-       ...
-       // possibly commit your changes
-       context.commitChanges();
-    }
-}
+include::{java-examples}/TuningTest.java[tags=batchIterator]
 ----
 
 ==== Paginated Queries
@@ -250,20 +207,17 @@ Enabling query pagination allows to load very large result sets in a Java app wi
 (much smaller than even the DataRows option discussed above). Moreover it is completely transparent to the application -
 a user gets what appears to be a list of Persistent objects - there's no iterator to close or DataRows to convert to objects:
 
-[source, Java]
+[source,java,indent=0]
 ----
-// the fact that result is paginated is transparent
-List<Artist> artists =
-    ObjectSelect.query(Artist.class).pageSize(50).select(context);
+include::{java-examples}/TuningTest.java[tags=pagination]
 ----
 
 Having said that, DataRows option can be combined with pagination, providing the best of both worlds:
 
 
-[source, Java]
+[source,java,indent=0]
 ----
-List<DataRow> rows =
-    ObjectSelect.dataRowQuery(Artist.class).pageSize(50).select(context);
+include::{java-examples}/TuningTest.java[tags=dataRowsPagination]
 ----
 
 The way pagination works internally, it first fetches a list of IDs for the root entity of the query. This is very
@@ -290,9 +244,9 @@ Local cache is much faster then the shared one, but is limited to a single conte
 To take advantage of query result caching, the first step is to mark your queries appropriately.
 Here is an example for ObjectSelect query. Other types of queries have similar API:
 
-[source, Java]
+[source,java,indent=0]
 ----
-ObjectSelect.query(Artist.class).localCache("artists");
+include::{java-examples}/TuningTest.java[tags=localCache]
 ----
 
 This tells Cayenne that the query created here would like to use local cache of the context it is executed against.
@@ -306,10 +260,9 @@ Use can use <<ext-jcache,JCache integration module>> to enable any of JCache API
 Often "passive" cache expiration policies used by caching providers are not sufficient, and the users want real-time cache invalidation when the data changes.
 So in addition to those policies, the app can invalidate individual cache groups explicitly via `QueryCache`:
 
-[source, Java]
+[source,java,indent=0]
 ----
-QueryCache cache = runtime.getDataDomain().getQueryCache();
-cache.removeGroup("artist");
+include::{java-examples}/TuningTest.java[tags=removeGroup]
 ----
 
 The above can be used e.g. to build UI for manual cache invalidation.
@@ -350,16 +303,9 @@ $ java -Dcayenne.contexts_sync_strategy=false
 
 Or by changing the standard properties Map in a custom extensions module:
 
-[source, Java]
+[source,java,indent=0]
 ----
-public class MyModule implements Module {
-
-    @Override
-    public void configure(Binder binder) {
-        CoreModule.contributeProperties(binder)
-            .put(Constants.CONTEXTS_SYNC_PROPERTY, "false");
-    }
-}
+include::{java-examples}/tuning/MyModule.java[tags=content]
 ----
 
 

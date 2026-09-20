@@ -38,20 +38,16 @@ more common way in Cayenne (or ORM in general) is to get a hold of the object fi
 then delete it via the context. Let's use utility class Cayenne to find an
 artist:
 
-[source, java]
+[source,java,indent=0]
 ----
-Artist picasso = ObjectSelect.query(Artist.class)
-            .where(Artist.NAME.eq("Pablo Picasso")).selectOne(context);
+include::{java-include-dir}/Main.java[tags=delete-select]
 ----
 
 Now let's delete the artist:
 
-[source, java]
+[source,java,indent=0]
 ----
-if (picasso != null) {
-    context.deleteObject(picasso);
-    context.commitChanges();
-}
+include::{java-include-dir}/Main.java[tags=delete]
 ----
 Since we set up "Cascade" delete rule for the Artist.paintings relationships, Cayenne
 will automatically delete all paintings of this artist. So when your run the app you'll

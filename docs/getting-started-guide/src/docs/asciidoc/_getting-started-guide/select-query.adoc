@@ -23,9 +23,9 @@ in the database yet, but we can still demonstrate the main principles below.
 
 - Select all paintings (the code, and the log output it generates):
 
-[source,java]
+[source,java,indent=0]
 ----
-List<Painting> paintings1 = ObjectSelect.query(Painting.class).select(context);
+include::{java-include-dir}/Main.java[tags=select-all]
 ----
 
    INFO: SELECT t0.GALLERY_ID, t0.ARTIST_ID, t0.NAME, t0.ID FROM PAINTING t0
@@ -33,10 +33,9 @@ List<Painting> paintings1 = ObjectSelect.query(Painting.class).select(context);
 
 - Select paintings that start with "`gi`", ignoring case:
 
-[source,java]
+[source,java,indent=0]
 ----
-List<Painting> paintings2 = ObjectSelect.query(Painting.class)
-        .where(Painting.NAME.likeIgnoreCase("gi%")).select(context);
+include::{java-include-dir}/Main.java[tags=select-like]
 ----
     INFO: SELECT t0.GALLERY_ID, t0.NAME, t0.ARTIST_ID, t0.ID FROM PAINTING t0 WHERE UPPER(t0.NAME) LIKE UPPER(?)
       [bind: 1->NAME:'gi%'] - prepared in 6 ms.
@@ -44,11 +43,9 @@ List<Painting> paintings2 = ObjectSelect.query(Painting.class)
 
 - Select all paintings done by artists who were born more than a 100 years ago:
 
-[source,java]
+[source,java,indent=0]
 ----
-List<Painting> paintings3 = ObjectSelect.query(Painting.class)
-        .where(Painting.ARTIST.dot(Artist.DATE_OF_BIRTH).lt(LocalDate.of(1900,1,1)))
-        .select(context);
+include::{java-include-dir}/Main.java[tags=select-path]
 ----
 
     INFO: SELECT t0.GALLERY_ID, t0.NAME, t0.ARTIST_ID, t0.ID FROM PAINTING t0 JOIN ARTIST t1 ON (t0.ARTIST_ID = t1.ID)

@@ -23,20 +23,14 @@ NOTE: These queries are "fluent" versions of deprecated `NamedQuery` class.
 
 Here is example of how to use `MappedSelect`:
 
-[source, java]
+[source,java,indent=0]
 ----
-List<Artist> results = MappedSelect.query("artistsByName", Artist.class) 
-    .param("name", "Picasso") 
-    .select(context);
+include::{java-examples}/MappedQueryTest.java[tags=mappedSelect]
 ----
 
 And here is example of `MappedExec`:
 
-[source, java]
+[source,java,indent=0]
 ----
-List<QueryResult> result = MappedExec.query("updateQuery")
-    .param("var", "value")
-    .execute(context);
-QueryResult.Update update = (QueryResult.Update) result.getFirst();
-System.out.println("Rows updated: " + update.count());
+include::{java-examples}/MappedQueryTest.java[tags=mappedExec]
 ----

@@ -64,10 +64,9 @@ otherwise, an `Exception` will be thrown. The main use of aliases is to allow us
 While in most cases users are likely to rely on the API from the following section for expression creation, we'll start by showing String expressions, as this will help you understand the semantics. A Cayenne expression can be represented as a String, which can be converted to an expression object using the `ExpressionFactory.exp` static method. Here is an example:
 
 
-[source, java]
+[source,java,indent=0]
 ----
-String expString = "name like 'A%' and price < 1000";
-Expression exp = ExpressionFactory.exp(expString);
+include::{java-examples}/ExpressionsTest.java[tags=exp]
 ----
 
 This particular expression may be used to match Paintings whose names start with "A" and whose price is less than $1000. While this example is pretty self-explanatory, there are a few points worth mentioning. "name" and "price" here are object paths discussed earlier. As always, paths themselves are not attached to a specific root entity and can be applied to any entity that has similarly named attributes or relationships. So, when we say that this expression "may be used to match Paintings", we are implying that there may be other entities for which this expression is valid. Now the expression details...
@@ -84,101 +83,69 @@ name = \"ABC\"
 
 Case sensitivity. Expression operators are case sensitive and are usually lowercase. Complex words follow the Java camel-case style:
 
-[source, java]
+[source]
 ----
-// valid
-name likeIgnoreCase 'A%'
-
-// invalid - will throw a parse exception
-name LIKEIGNORECASE 'A%'
+include::{resource-examples}/expressions.txt[tags=case]
 ----
 
 Grouping with parenthesis:
 
 
-[source, java]
+[source]
 ----
-value = (price + 250.00) * 3
+include::{resource-examples}/expressions.txt[tags=grouping]
 ----
 
 Path prefixes. Object expressions are unquoted strings, optionally prefixed by `obj:` (usually they are not prefixed at all).
 Database expressions are always prefixed with `db:`. A special kind of prefix, not discussed yet, is `enum:` that prefixes an enumeration constant:
 
-[source, java]
+[source]
 ----
-// object path
-name = 'Salvador Dali'
-
-// same object path - a rarely used form
-obj:name = 'Salvador Dali'
-
-// multi-segment object path
-artist.name = 'Salvador Dali'
-
-// db path
-db:NAME = 'Salvador Dali'
-
-// enumeration constant
-name = enum:org.foo.EnumClass.VALUE1
+include::{resource-examples}/expressions.txt[tags=paths]
 ----
 
 Binary conditions are expressions that contain a path on the left, a value on the right, and some operation between them, such as equals like, etc. They can be used as qualifiers in SelectQueries:
 
-[source, java]
+[source]
 ----
-name like 'A%'
+include::{resource-examples}/expressions.txt[tags=like]
 ----
 
 
 Parameters. Expressions can contain named parameters (names that start with "$") that can be substituted with values either by name or by position. Parameterized expressions let you create reusable expression templates. Also, if an expression contains a complex object that doesn’t have a simple String representation (e.g. a `Date`, a `Persistent`, an `ObjectId`), parameterizing the expression is the only way to represent it as String. Here are examples of both positional and named parameter bindings:
 
-[source, java]
+[source,java,indent=0]
 ----
-Expression template = ExpressionFactory.exp("name = $name");
-...
-// name binding
-Map p1 = Collections.singletonMap("name", "Salvador Dali");
-Expression qualifier1 = template.params(p1);
-...
-// positional binding
-Expression qualifier2 = template.paramsArray("Monet");
+include::{java-examples}/ExpressionsTest.java[tags=params]
 ----
 
 Positional binding is usually shorter. You can pass positional bindings to the `exp(..)` factory method (its second argument is a params vararg):
 
-[source, java]
+[source,java,indent=0]
 ----
-Expression qualifier = ExpressionFactory.exp("name = $name", "Monet");
+include::{java-examples}/ExpressionsTest.java[tags=expWithParams]
 ----
 
 In parameterized expressions with a LIKE clause, SQL wildcards must be part of the values in the Map and not the expression string itself:
 
-[source, java]
+[source,java,indent=0]
 ----
-Expression qualifier = ExpressionFactory.exp("name like $name", "Salvador%");
+include::{java-examples}/ExpressionsTest.java[tags=likeParam]
 ----
 
 When matching on a relationship, the value parameter must be either a Persistent object, an `org.apache.cayenne.ObjectId`, or a numeric ID value (for single column IDs). E.g.:
 
-[source, java]
+[source,java,indent=0]
 ----
-Artist dali = ... // assume we fetched this one already
-Expression qualifier = ExpressionFactory.exp("artist = $artist", dali);
+include::{java-examples}/ExpressionsTest.java[tags=objectParam]
 ----
 
 When you use positional binding, Cayenne expects values for all parameters to be present. Binding by name offers extra flexibility: sub-expressions with uninitialized parameters are automatically pruned from the expression. So, e.g., if certain parts of the expression criteria are not provided to the application, you can still build a valid expression
 
 
-[source, java]
+[source,java,indent=0]
 ----
-Expression template = ExpressionFactory.exp("name like $name and dateOfBirth > $date");
-...
-Map p1 = Collections.singletonMap("name", "Salvador%");
-Expression qualifier1 = template.params(p1);
-
-// "qualifier1" is now "name like 'Salvador%'".
-// 'dateOfBirth > $date' condition was pruned, as no value was specified for
-// the $date parameter
+include::{java-examples}/ExpressionsTest.java[tags=pruning]
 ----
 
 Null handling. Handling of Java nulls as operands is no different handling from normal values. Instead of using special conditional operators, like SQL does (`IS NULL`, `IS NOT NULL`), "=" and "!=" expressions are used directly with null values. It is up to Cayenne to translate expressions with nulls to the valid SQL.
@@ -189,12 +156,9 @@ Null handling. Handling of Java nulls as operands is no different handling from 
 
 Creating expressions from Strings is a powerful and dynamic approach, however a safer alternative is to use the Java API. It provides compile-time checking of the expression's validity. The API in question is provided by the `ExpressionFactory` class (that we've seen already), the Property class and the Expression class itself. `ExpressionFactory` contains a number of self-explanatory static methods that can be used to build expressions. E.g.:
 
-[source, java]
+[source,java,indent=0]
 ----
-// String expression: name like 'A%' and price < 1000
-Expression e1 = ExpressionFactory.likeExp("name", "A%");
-Expression e2 = ExpressionFactory.lessExp("price", 1000);
-Expression finalExp = e1.andExp(e2);
+include::{java-examples}/ExpressionsTest.java[tags=expressionFactory]
 ----
 
 NOTE: The last line in the example above shows how to create a new expression by "chaining" two other expressions. A common error when chaining expressions is to assume that "andExp" and "orExp" append another expression to the current expression. In fact, a new expression is created. Expression API treats existing expressions as immutable.
@@ -212,14 +176,9 @@ The "Path" argument to both of these methods can use a split character (a pipe s
 While ExpressionFactory is pretty powerful, there's an even easier way to create an expression using static Property objects generated by Cayenne for each persistent class.
 Some examples:
 
-[source, java]
+[source,java,indent=0]
 ----
-// Artist.NAME is generated by Cayenne and has a type of Property<String>
-Expression e1 = Artist.NAME.eq("Pablo");
-
-// Chaining multiple properties into a path.
-// Painting.ARTIST is generated by Cayenne and has a type of Property<Artist>
-Expression e2 = Painting.ARTIST.dot(Artist.NAME).eq("Pablo");
+include::{java-examples}/ExpressionsTest.java[tags=properties]
 ----
 
 Property objects provide the API mostly analogous to ExpressionFactory, though it is significantly shorter and is aware of the value types.
@@ -233,30 +192,24 @@ When used in a query, an expression is converted to a SQL WHERE or ORDER BY clau
 
 Checking whether an object satisfies an expression:
 
-[source, java]
+[source,java,indent=0]
 ----
-Expression e = Artist.NAME.in("John", "Bob");
-Artist artist = ...
-if(e.match(artist)) {
-   ...
-}
+include::{java-examples}/ExpressionsTest.java[tags=match]
 ----
 
 Reading property value:
 
 
-[source, java]
+[source,java,indent=0]
 ----
-String name = Artist.NAME.path().evaluate(artist);
+include::{java-examples}/ExpressionsTest.java[tags=evaluate]
 ----
 
 Filtering a list of objects:
 
-[source, java]
+[source,java,indent=0]
 ----
-Expression e = Artist.NAME.in("John", "Bob");
-List<Artist> unfiltered = ...
-List<Artist> filtered = e.filterObjects(unfiltered);
+include::{java-examples}/ExpressionsTest.java[tags=filterObjects]
 ----
 
 
@@ -267,23 +220,15 @@ NOTE: Current limitation of in-memory expressions is that no collections are per
 <<ejbql,EJBQL>> is a textual query language that can be used with Cayenne. In some situations,
 it is convenient to be able to convert Expression instances into EJBQL. Expressions support this conversion. An example is shown below.
 
-[source, java]
+[source,java,indent=0]
 ----
-String serial = ...
-Expression e = Pkg.SERIAL.eq(serial);
-List<Object> params = new ArrayList<Object>();
-EJBQLQuery query = new EJBQLQuery("SELECT p FROM Pkg p WHERE " + e.toEJBQL(params,"p");
-
-for(int i=0;i<params.size();i++) {
-  query.setParameter(i+1, params.get(i));
-}
+include::{java-examples}/ExpressionsTest.java[tags=toEJBQL]
 ----
 
 This would be equivalent to the following purely EJBQL querying logic;
 
-[source, java]
+[source,java,indent=0]
 ----
-EJBQLQuery query = new EJBQLQuery("SELECT p FROM Pkg p WHERE p.serial = ?1");
-query.setParameter(1,serial);
+include::{java-examples}/ExpressionsTest.java[tags=ejbql]
 ----
 

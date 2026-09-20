@@ -54,11 +54,9 @@ NOTE: Not all data types may be supported by your database.
 Default naming strategy that doesn't require additional setup suggests using "CRYPTO_" prefix. You can change this default
 strategy by injecting you own implementation of `o.a.c.crypto.map.ColumnMapper` interface.
 
-[source, java]
+[source,java,indent=0]
 ----
-CayenneRuntime runtime = CayenneRuntime.of()
-        .addModule(binder -> CryptoModule.extend(binder)
-                .columnMapper(MyColumnMapper.class));
+include::{java-examples}/CryptoExamples.java[tags=columnMapper]
 ----
 
 Here is an example of how `ObjEntity` with two encrypted and two unencrypted properties can look like:
@@ -70,11 +68,9 @@ image::../../images/ext-crypto-obj-entity.png[align="left"]
 To perform encryption you must provide `KEYSTORE_URL` and `KEY_PASSWORD`. Currently crypto module supports only Java "jceks"
 KeyStore.
 
-[source, java]
+[source,java,indent=0]
 ----
-CayenneRuntime runtime = CayenneRuntime.of()
-        .addModule(binder -> CryptoModule.extend(binder)
-                .keyStore(this.getClass().getResource("keystore.jcek"), "my-password".toCharArray(), "my-key-alias"));
+include::{java-examples}/CryptoExamples.java[tags=keyStore]
 ----
 
 ===== Additional settings
@@ -82,22 +78,17 @@ CayenneRuntime runtime = CayenneRuntime.of()
 In addition to `ColumnMapper` mentioned above you can customize other parts of `crypto module`. You can enable `gzip`
 compression and `HMAC` usage (later will ensure integrity of data).
 
-[source, java]
+[source,java,indent=0]
 ----
-CayenneRuntime runtime = CayenneRuntime.of()
-        .addModule(binder -> CryptoModule.extend(binder)
-                .compress()
-                .useHMAC());
+include::{java-examples}/CryptoExamples.java[tags=compressAndHMAC]
 ----
 
 Another useful extension point is support for custom Java value types. To add support for your data type you need to
 implement `o.a.c.crypto.transformer.value.BytesConverter` interface that will convert required type to and from `byte[]`.
 
-[source, java]
+[source,java,indent=0]
 ----
-CayenneRuntime runtime = CayenneRuntime.of()
-        .addModule(binder -> CryptoModule.extend(binder)
-                .objectToBytesConverter(MyClass.class, new MyClassBytesConverter()));
+include::{java-examples}/CryptoExamples.java[tags=bytesConverter]
 ----
 
 NOTE: In addition to Java primitive types (and their object counterparts), `crypto module` supports encryption only

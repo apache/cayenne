@@ -27,6 +27,9 @@
 //:linkcss:
 // base path to java code include
 :cayenne-root: {basedir}/../../..
+// Java examples are included from the tests, so that they are compiled and run against the current Cayenne code
+:java-examples: {basedir}/src/test/java/org/apache/cayenne/docs
+:resource-examples: {basedir}/src/test/resources/org/apache/cayenne/docs
 
 [small]#Copyright © 2011-{docyear} Apache Software Foundation and individual authors#
 

@@ -17,24 +17,18 @@
 Since 5.0 an `ObjectSelect` or a `ColumnSelect` can be created from a String. This is an alernative to the fluent API.
 E.g.:
 
-[source, java]
+[source,java,indent=0]
 ----
-List<Artist> artists = ObjectSelect
-    .parse(Artist.class, "from Artist where artistName like $name order by dateOfBirth desc limit 10", "A%")
-    .select(context);
+include::{java-examples}/ObjectSelectParsedTest.java[tags=parse]
 ----
 
 The parser produces the same query object that the fluent API would, so everything said about
 <<select,ObjectSelect>> above applies. The parsed query can be customized further with the fluent API before it is
 executed:
 
-[source, java]
+[source,java,indent=0]
 ----
-List<Artist> artists = ObjectSelect
-    .parse(Artist.class, "from Artist where artistName like $name", "A%")
-    .localCache("artists")
-    .pageSize(50)
-    .select(context);
+include::{java-examples}/ObjectSelectParsedTest.java[tags=parseAndCustomize]
 ----
 
 ===== Query Structure
@@ -76,13 +70,9 @@ and are bound in the order in which the parameters first appear in the String. I
 it takes a single value that is bound in all those places. A value can be anything that is a valid expression operand:
 a scalar, a collection for `in`, a persistent object to match a relationship, etc.:
 
-[source, java]
+[source,java,indent=0]
 ----
-List<Painting> paintings = ObjectSelect
-    .parse(Painting.class,
-        "from Painting where toArtist = $artist and estimatedPrice between $low and $high",
-        artist, 10, 500)
-    .select(context);
+include::{java-examples}/ObjectSelectParsedTest.java[tags=params]
 ----
 
 The parameters can be used anywhere in the expressions, including the nested selects. `limit` and `offset` only take
@@ -92,20 +82,9 @@ integer literals.
 
 There are four methods to parse a query, that differ in the type of the result:
 
-[source, java]
+[source,java,indent=0]
 ----
-// any query. Returns either an ObjectSelect or a ColumnSelect
-FluentSelect<?, ?> q1 = ObjectSelect.parse("from Artist");
-
-// a query of the root objects. "DataRow.class" is used to fetch the data rows instead of objects
-ObjectSelect<Artist> q2 = ObjectSelect.parse(Artist.class, "from Artist");
-ObjectSelect<DataRow> q3 = ObjectSelect.parse(DataRow.class, "from Artist");
-
-// a query with a single column
-ColumnSelect<String> q4 = ObjectSelect.parseColumn(String.class, "select artistName from Artist");
-
-// a query with multiple columns
-ColumnSelect<Object[]> q5 = ObjectSelect.parseColumns("select artistName, dateOfBirth from Artist");
+include::{java-examples}/ObjectSelectParsedTest.java[tags=api]
 ----
 
 The last three are there to avoid the type casts. They throw an exception if the query is of a different kind,
@@ -122,16 +101,12 @@ Each example shows a query String and the same query built with the fluent API.
 
 [source]
 ----
-from Artist where artistName like 'A%' order by dateOfBirth desc, artistName asc insensitive limit 10 offset 20
+include::{resource-examples}/objectselect-parsed.txt[tags=filterOrderLimit]
 ----
 
-[source, java]
+[source,java,indent=0]
 ----
-ObjectSelect.query(Artist.class)
-    .where(Artist.ARTIST_NAME.like("A%"))
-    .orderBy(Artist.DATE_OF_BIRTH.desc(), Artist.ARTIST_NAME.ascInsensitive())
-    .limit(10)
-    .offset(20)
+include::{java-examples}/ObjectSelectParsedTest.java[tags=filterOrderLimit]
 ----
 
 An ordering is an expression, optionally followed by `asc` (the default) or `desc`, and then optionally
@@ -143,78 +118,67 @@ The joins are implied by the paths. Here is an outer join, matching the artists 
 
 [source]
 ----
-from Artist where paintingArray+ = null
+include::{resource-examples}/objectselect-parsed.txt[tags=outerJoin]
 ----
 
-[source, java]
+[source,java,indent=0]
 ----
-ObjectSelect.query(Artist.class).where(Artist.PAINTING_ARRAY.outer().isNull())
+include::{java-examples}/ObjectSelectParsedTest.java[tags=outerJoin]
 ----
 
 And here are two separate joins over the same relationship, matching the artists that have both paintings:
 
 [source]
 ----
-from Artist where paintingArray#p1.paintingTitle = 'P1' and paintingArray#p2.paintingTitle = 'P2'
+include::{resource-examples}/objectselect-parsed.txt[tags=splitJoins]
 ----
 
-[source, java]
+[source,java,indent=0]
 ----
-ObjectSelect.query(Artist.class)
-    .where(Artist.PAINTING_ARRAY.alias("p1").dot(Painting.PAINTING_TITLE).eq("P1"))
-    .and(Artist.PAINTING_ARRAY.alias("p2").dot(Painting.PAINTING_TITLE).eq("P2"))
+include::{java-examples}/ObjectSelectParsedTest.java[tags=splitJoins]
 ----
 
 ====== Columns
 
 [source]
 ----
-select artistName, dateOfBirth from Artist order by artistName
+include::{resource-examples}/objectselect-parsed.txt[tags=columns]
 ----
 
-[source, java]
+[source,java,indent=0]
 ----
-ObjectSelect.columnQuery(Artist.class, Artist.ARTIST_NAME, Artist.DATE_OF_BIRTH)
-    .orderBy(Artist.ARTIST_NAME.asc())
+include::{java-examples}/ObjectSelectParsedTest.java[tags=columns]
 ----
 
 The result is a `List<Object[]>`. With a single column it is a list of values:
 
 [source]
 ----
-select distinct toGallery.galleryName from Painting
+include::{resource-examples}/objectselect-parsed.txt[tags=column]
 ----
 
-[source, java]
+[source,java,indent=0]
 ----
-ObjectSelect.columnQuery(Painting.class, Painting.TO_GALLERY.dot(Gallery.GALLERY_NAME)).distinct()
+include::{java-examples}/ObjectSelectParsedTest.java[tags=column]
 ----
 
 A column can be any expression, and it can have an alias (the same as `BaseProperty.alias(..)`):
 
 [source]
 ----
-select upper(artistName) as name, length(trim(artistName)) as size from Artist
+include::{resource-examples}/objectselect-parsed.txt[tags=columnExpressions]
 ----
 
 ====== Aggregates
 
 [source]
 ----
-select toArtist.artistName, sum(estimatedPrice), count(*)
-from Painting
-having sum(estimatedPrice) > $min
-order by toArtist.artistName
+include::{resource-examples}/objectselect-parsed.txt[tags=aggregates]
 ----
 
-[source, java]
+[source,java,indent=0]
 ----
-ObjectSelect.columnQuery(Painting.class,
-        Painting.TO_ARTIST.dot(Artist.ARTIST_NAME),
-        Painting.ESTIMATED_PRICE.sum(),
-        PropertyFactory.COUNT)
-    .having(Painting.ESTIMATED_PRICE.sum().gt(min))
-    .orderBy(Painting.TO_ARTIST.dot(Artist.ARTIST_NAME).asc())
+include::{java-examples}/ObjectSelectParsedTest.java[tags=aggregates]
 ----
 
 `toArtist.artistName` becomes a grouping column here, as the other columns are aggregates.
@@ -226,37 +190,36 @@ and a `Long`:
 
 [source]
 ----
-select self, count(paintingArray+) from Artist order by count(paintingArray+) desc
+include::{resource-examples}/objectselect-parsed.txt[tags=self]
 ----
 
-[source, java]
+[source,java,indent=0]
 ----
-ObjectSelect.columnQuery(Artist.class, Artist.SELF, Artist.PAINTING_ARRAY.outer().count())
-    .orderBy(Artist.PAINTING_ARRAY.outer().count().desc())
+include::{java-examples}/ObjectSelectParsedTest.java[tags=self]
 ----
 
 A to-one relationship gives a related object in each row:
 
 [source]
 ----
-select paintingTitle, toArtist, toGallery from Painting
+include::{resource-examples}/objectselect-parsed.txt[tags=toOne]
 ----
 
-[source, java]
+[source,java,indent=0]
 ----
-ObjectSelect.columnQuery(Painting.class, Painting.PAINTING_TITLE, Painting.TO_ARTIST, Painting.TO_GALLERY)
+include::{java-examples}/ObjectSelectParsedTest.java[tags=toOne]
 ----
 
 With a to-many relationship a row is repeated for each related object. This is the same as `flat()` in the fluent API:
 
 [source]
 ----
-select artistName, paintingArray from Artist
+include::{resource-examples}/objectselect-parsed.txt[tags=toMany]
 ----
 
-[source, java]
+[source,java,indent=0]
 ----
-ObjectSelect.columnQuery(Artist.class, Artist.ARTIST_NAME, Artist.PAINTING_ARRAY.flat())
+include::{java-examples}/ObjectSelectParsedTest.java[tags=toMany]
 ----
 
 In both cases a row with no related object is still present in the result, with a `null` in place of the object. To
@@ -270,16 +233,12 @@ the same structure as the main query, except for `prefetch`. Its paths are relat
 
 [source]
 ----
-from Artist where exists (
-    from Painting where toArtist = enclosing(self) and estimatedPrice > $price)
+include::{resource-examples}/objectselect-parsed.txt[tags=exists]
 ----
 
-[source, java]
+[source,java,indent=0]
 ----
-ObjectSelect.query(Artist.class)
-    .where(ExpressionFactory.exists(ObjectSelect.query(Painting.class)
-        .where(Painting.TO_ARTIST.eq(Artist.SELF.enclosing()))
-        .and(Painting.ESTIMATED_PRICE.gt(price))))
+include::{java-examples}/ObjectSelectParsedTest.java[tags=exists]
 ----
 
 `enclosing(self)` is the root object of the enclosing query, `enclosing(artistName)` is its property, and
@@ -289,18 +248,12 @@ ObjectSelect.query(Artist.class)
 
 [source]
 ----
-from Painting where toArtist.artistName in (select artistName from Artist where dateOfBirth < $date)
-
-from Painting where estimatedPrice > all (select estimatedPrice from Painting where paintingTitle = 'P2')
-
-from Painting where estimatedPrice = any (select max(estimatedPrice) from Painting)
+include::{resource-examples}/objectselect-parsed.txt[tags=nestedSelects]
 ----
 
-[source, java]
+[source,java,indent=0]
 ----
-ObjectSelect.query(Painting.class)
-    .where(Painting.TO_ARTIST.dot(Artist.ARTIST_NAME).in(
-        ObjectSelect.columnQuery(Artist.class, Artist.ARTIST_NAME).where(Artist.DATE_OF_BIRTH.lt(date))))
+include::{java-examples}/ObjectSelectParsedTest.java[tags=in]
 ----
 
 NOTE: When there is no need for a nested select with its own conditions,`exists` over a path is shorter:
@@ -313,14 +266,12 @@ paths, with no need for a `db:` prefix:
 
 [source]
 ----
-from db:ARTIST where ARTIST_NAME like 'A%' order by ARTIST_ID desc
+include::{resource-examples}/objectselect-parsed.txt[tags=dbRoot]
 ----
 
-[source, java]
+[source,java,indent=0]
 ----
-ObjectSelect.dbQuery("ARTIST")
-    .where(ExpressionFactory.likeDbExp("ARTIST_NAME", "A%"))
-    .orderBy(new Ordering(ExpressionFactory.dbPathExp("ARTIST_ID"), SortOrder.DESCENDING))
+include::{java-examples}/ObjectSelectParsedTest.java[tags=dbRoot]
 ----
 
 ====== Prefetching
@@ -331,13 +282,10 @@ ObjectSelect.dbQuery("ARTIST")
 
 [source]
 ----
-from Artist where artistName = $name prefetch paintingArray joint, paintingArray.toGallery
+include::{resource-examples}/objectselect-parsed.txt[tags=prefetch]
 ----
 
-[source, java]
+[source,java,indent=0]
 ----
-ObjectSelect.query(Artist.class)
-    .where(Artist.ARTIST_NAME.eq(name))
-    .prefetch(Artist.PAINTING_ARRAY.joint())
-    .prefetch("paintingArray.toGallery", PrefetchTreeNode.UNDEFINED_SEMANTICS)
+include::{java-examples}/ObjectSelectParsedTest.java[tags=prefetch]
 ----

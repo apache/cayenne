@@ -92,25 +92,35 @@ public class Main {
     }
 
     static void selectTutorial(ObjectContext context) {
-        // SelectQuery examples
+        // ObjectSelect examples
+        // tag::select-all[]
         List<Painting> paintings1 = ObjectSelect.query(Painting.class).select(context);
+        // end::select-all[]
 
+        // tag::select-like[]
         List<Painting> paintings2 = ObjectSelect.query(Painting.class)
                 .where(Painting.NAME.likeIgnoreCase("gi%")).select(context);
+        // end::select-like[]
 
+        // tag::select-path[]
         List<Painting> paintings3 = ObjectSelect.query(Painting.class)
-                .where(Painting.ARTIST.dot(Artist.DATE_OF_BIRTH)
-                        .lt(LocalDate.of(1900,1,1))).select(context);
+                .where(Painting.ARTIST.dot(Artist.DATE_OF_BIRTH).lt(LocalDate.of(1900, 1, 1)))
+                .select(context);
+        // end::select-path[]
     }
 
     static void deleteTutorial(ObjectContext context) {
         // Delete object examples
+        // tag::delete-select[]
         Artist picasso = ObjectSelect.query(Artist.class)
                 .where(Artist.NAME.eq("Pablo Picasso")).selectOne(context);
+        // end::delete-select[]
 
+        // tag::delete[]
         if (picasso != null) {
-            context.deleteObjects(picasso);
+            context.deleteObject(picasso);
             context.commitChanges();
         }
+        // end::delete[]
     }
 }

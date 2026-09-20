@@ -24,37 +24,14 @@ used (as the name suggests) to select custom data in form of entities, separate 
 Both queries support advanced SQL templating, with variable substitution and special directives as described
 <<sqlscripting,in the next chapter>>. Here we'll just provide a few simple examples:
 
-[source, java]
+[source,java,indent=0]
 ----
-// Selecting objects
-List<Painting> paintings = SQLSelect
-    .query(Painting.class, "SELECT * FROM PAINTING WHERE PAINTING_TITLE LIKE 'A%'")
-    .upperColumnNames()
-    .localCache()
-    .limit(100)
-    .select(context);
-
-// Selecting scalar values
-List<String> paintingNames = SQLSelect
-    .scalarQuery(String.class, "SELECT PAINTING_TITLE FROM PAINTING WHERE ESTIMATED_PRICE > 100000")
-    .select(context);
-
-// Selecting DataRow with predefined types
-List<DataRow> result = SQLSelect
-    .dataRowQuery("SELECT * FROM ARTIST", Integer.class, String.class, LocalDate.class)
-    .select(context);
-
-// Selecting Object[] with predefined types
-List<Object[]> result = SQLSelect
-    .scalarQuery("SELECT * FROM ARTIST", Integer.class, String.class, LocalDate.class)
-    .select(context);
+include::{java-examples}/SQLSelectTest.java[tags=select]
 ----
 
 And here is an example of how to use `SQLExec`:
 
-[source, java]
+[source,java,indent=0]
 ----
-int inserted = SQLExec
-    .query("INSERT INTO ARTIST (ARTIST_ID, ARTIST_NAME) VALUES (55, 'Picasso')")
-    .update(context);
+include::{java-examples}/SQLSelectTest.java[tags=exec]
 ----

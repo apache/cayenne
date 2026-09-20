@@ -107,6 +107,12 @@
 				<configuration>
 					<sourceDirectory>src/docs/asciidoc</sourceDirectory>
 					<doctype>book</doctype>
+					<!-- Fail on warnings, most importantly on the code examples not found in the included Java sources -->
+					<logHandler>
+						<failIf>
+							<severity>WARN</severity>
+						</failIf>
+					</logHandler>
 					<!-- Attributes common to all output formats -->
 					<attributes>
 						<endpoint-url>http://cayenne.apache.org</endpoint-url>

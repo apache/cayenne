@@ -69,34 +69,20 @@ NOTE: Validation and callbacks: There is a clear overlap in functionality betwee
 
 You can define callback methods directly in your Persistent object class using annotations. These methods are invoked automatically by Cayenne during the lifecycle of the object.
 
-[source,java]
+[source,java,indent=0]
 ----
-public class Order extends _Order {
-
-    @PostAdd
-    public void onNewOrder() {
-        // Custom logic before inserting
-    }
-}
+include::{java-examples}/lifecycle/Order.java[tags=content]
 ----
 
 ===== Cayenne Modeler Callbacks Configuration
 
 Alternatively, you can configure callbacks using the Cayenne Modeler for each ObjEntity. Empty callback methods are automatically created as a part of class generation (either with Maven, Ant or the Modeler) and are later filled with appropriate logic by the programmer. E.g. assuming we mapped a 'post-add' callback called 'onNewOrder' in ObjEntity 'Order', the following code will be generated:
 
-[source, Java]
+[source,java,indent=0]
 ----
-public abstract class _Order extends PersistentObject {
-    protected abstract void onNewOrder();
-}
+include::{java-examples}/lifecycle/modeler/_Order.java[tags=content]
 
-public class Order extends _Order {
-
-    @Override
-    protected void onNewOrder() {
-        //TODO: implement onNewOrder
-    }
-}
+include::{java-examples}/lifecycle/modeler/Order.java[tags=content]
 ----
 
 As `onNewOrder()` is already declared in the mapping, it does not need to be registered explicitly. Implementing the method in subclass to do something meaningful is all that is required at this point.
@@ -105,58 +91,27 @@ As `onNewOrder()` is already declared in the mapping, it does not need to be reg
 
 A listener is simply some application class that has one or more annotated callback methods. A callback method signature should be `void someMethod(SomePersistentType object)`. It can be public, private, protected or use default access:
 
-[source, Java]
+[source,java,indent=0]
 ----
- public class OrderListener {
-
-   @PostAdd(Order.class)
-   public void setDefaultsForNewOrder(Order o) {
-      o.setCreatedOn(new Date());
-   }
-}
+include::{java-examples}/lifecycle/OrderListener.java[tags=content]
 ----
 
 Notice that the example above contains an annotation on the callback method that defines the type of the event this method should be called for. Before we go into annotation details, we'll show how to create and register a listener with Cayenne. It is always a user responsibility to register desired application listeners, usually right after CayenneRuntime is started. Here is an example:
 
 First let's define 2 simple listeners.
 
-[source, Java]
+[source,java,indent=0]
 ----
-public class Listener1 {
+include::{java-examples}/lifecycle/Listener1.java[tags=content]
 
-    @PostAdd(MyEntity.class)
-    void postAdd(Persistent object) {
-        // do something
-    }
-}
-
-public class Listener2 {
-
-    @PostRemove({ MyEntity1.class, MyEntity2.class })
-    void postRemove(Persistent object) {
-        // do something
-    }
-
-    @PostUpdate({ MyEntity1.class, MyEntity2.class })
-    void postUpdate(Persistent object) {
-        // do something
-    }
-}
+include::{java-examples}/lifecycle/Listener2.java[tags=content]
 ----
 
 Ignore the annotations for a minute. The important point here is that the listeners are arbitrary classes unmapped and unknown to Cayenne, that contain some callback methods. Now let's register them with runtime:
 
-[source,Java]
+[source,java,indent=0]
 ----
-CayenneRuntime runtime = CayenneRuntime.of()
-       // ..
-       .addModule(binder ->
-            CoreModule.extend(bidner)
-                .addListener(Listener1.class)
-                .addListener(new Listener2())
-       )
-       // ..
-       .build();
+include::{java-examples}/LifecycleTest.java[tags=listeners]
 ----
 
 
@@ -164,65 +119,37 @@ Listeners in this example are very simple. However they don't have to be. Unlike
 
 Now let's discuss the annotations. There are eight annotations exactly matching the names of eight lifecycle events. A callback method in a listener should be annotated with at least one, but possibly with more than one of them. Annotation itself defines what event the callback should react to. Annotation parameters are essentially an entity filter, defining a subset of ObjEntities whose events we are interested in:
 
-[source, Java]
+[source,java,indent=0]
 ----
-// this callback will be invoked on PostRemove event of any object
-// belonging to MyEntity1, MyEntity2 or their subclasses
-@PostRemove({ MyEntity1.class, MyEntity2.class })
-void postRemove(Persistent object) {
-    // ...
-}
+include::{java-examples}/lifecycle/AnnotationExamples.java[tags=multipleEntities]
 ----
 
-[source, Java]
+[source,java,indent=0]
 ----
-// similar example with multiple annotations on a single method
-// each matching just one entity
-@PostPersist(MyEntity1.class)
-@PostRemove(MyEntity1.class)
-@PostUpdate(MyEntity1.class)
-void postCommit(MyEntity1 object) {
-    // ...
-}
+include::{java-examples}/lifecycle/AnnotationExamples.java[tags=multipleAnnotations]
 ----
 
 As shown above, "value" (the implicit annotation parameter) can contain one or more entity classes. Only these entities' events will result in callback invocation. There's also another way to match entities - via custom annotations. This allows to match any number of entities without even knowing what they are. Here is an example. We'll first define a custom annotation:
 
-[source, Java]
+[source,java,indent=0]
 ----
-@Target(ElementType.TYPE)
-@Retention(RetentionPolicy.RUNTIME)
-public @interface Tag {
-
-}
+include::{java-examples}/lifecycle/Tag.java[tags=content]
 ----
 
 Now we can define a listener that will react to events from ObjEntities annotated with this annotation:
 
-[source, Java]
+[source,java,indent=0]
 ----
-public class Listener3 {
-
-    @PostAdd(entityAnnotations = Tag.class)
-    void postAdd(Persistent object) {
-        // do something
-    }
-}
+include::{java-examples}/lifecycle/Listener3.java[tags=content]
 ----
 
 As you see we don't have any entities yet, still we can define a listener that does something useful. Now let's annotate some entities:
 
-[source, Java]
+[source,java,indent=0]
 ----
-@Tag
-public class MyEntity1 extends _MyEntity1 {
+include::{java-examples}/lifecycle/MyEntity1.java[tags=content]
 
-}
-
-@Tag
-public class MyEntity2 extends _MyEntity2 {
-
-}
+include::{java-examples}/lifecycle/MyEntity2.java[tags=content]
 ----
 
 
@@ -235,51 +162,16 @@ They will store their state in a `ThreadLocal` variable of the filter.
 Here is an example filter that does something pretty meaningless - counts how many total objects were committed.
 However it demonstrates the important pattern of aggregating multiple events and presenting a combined result:
 
-[source, Java]
+[source,java,indent=0]
 ----
-public class CommittedObjectCounter implements DataChannelSyncFilter {
-
-    private ThreadLocal<int[]> counter = new ThreadLocal<int[]>();
-
-    @Override
-    public GraphDiff onSync(ObjectContext originatingContext, GraphDiff changes, int syncType,
-            DataChannelSyncFilterChain filterChain) {
-
-        // init the counter for the current commit
-        counter.set(new int[1]);
-
-        try {
-            return filterChain.onSync(originatingContext, changes, syncType);
-        } finally {
-
-            // process aggregated result and release the counter
-            System.out.println("Committed " + counter.get()[0] + " object(s)");
-            counter.set(null);
-        }
-    }
-
-    @PostPersist(entityAnnotations = Tag.class)
-    @PostUpdate(entityAnnotations = Tag.class)
-    @PostRemove(entityAnnotations = Tag.class)
-    void afterCommit(Persistent object) {
-        counter.get()[0]++;
-    }
-}
+include::{java-examples}/lifecycle/CommittedObjectCounter.java[tags=content]
 ----
 
 Now since this is both a filter and a listener, it needs to be registered as such:
 
-[source, Java]
+[source,java,indent=0]
 ----
-// this will also add filter as a listener
-CayenneRuntime runtime = CayenneRuntime.of()
-        // ..
-        .addModule(b ->
-                CoreModule.extend(b)
-                        .addSyncFilter(CommittedObjectCounter.class)
-        )
-        // ..
-        .build();
+include::{java-examples}/LifecycleTest.java[tags=syncFilter]
 ----
 
 

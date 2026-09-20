@@ -21,16 +21,16 @@ NOTE: `ObjectSelect` supersedes older `SelectQuery`. `SelectQuery` is deprecated
 `ObjectSelect` is the most commonly used query in Cayenne applications. This may be the only query you will ever need.
 It returns a list of persistent objects (or data rows) of a certain type specified in the query:
 
-[source, java]
+[source,java,indent=0]
 ----
-List<Artist> objects = ObjectSelect.query(Artist.class).select(context);
+include::{java-examples}/ObjectSelectTest.java[tags=selectAll]
 ----
 
 This returned all rows in the _ARTIST_ table. If the logs were turned on, you might see the following SQL printed:
 
 [source]
 ----
-INFO: SELECT t0.DATE_OF_BIRTH, t0.NAME, t0.ID FROM ARTIST t0
+INFO: SELECT t0.ARTIST_NAME, t0.DATE_OF_BIRTH, t0.ARTIST_ID FROM ARTIST t0
 INFO: === returned 5 row. - took 5 ms.
 ----
 
@@ -40,40 +40,32 @@ Qualifier is simply an Expression (Expressions where discussed in the <<Expressi
 appended to the query using "where" method. If you only want artists whose name begins with 'Pablo',
 you might use the following qualifier expression:
 
-[source, java]
+[source,java,indent=0]
 ----
-List<Artist> objects = ObjectSelect.query(Artist.class)
-    .where(Artist.NAME.like("Pablo%"))
-    .select(context);
+include::{java-examples}/ObjectSelectTest.java[tags=where]
 ----
 
 The SQL will look different this time:
 
 [source]
 ----
-INFO: SELECT t0.DATE_OF_BIRTH, t0.NAME, t0.ID FROM ARTIST t0 WHERE t0.NAME LIKE ?
-[bind: 1->NAME:'Pablo%']
+INFO: SELECT t0.ARTIST_NAME, t0.DATE_OF_BIRTH, t0.ARTIST_ID FROM ARTIST t0 WHERE t0.ARTIST_NAME LIKE ?
+[bind: 1->ARTIST_NAME:'Pablo%']
 INFO: === returned 1 row. - took 6 ms.
 ----
 
 `ObjectSelect` allows to assemble qualifier from parts, using "and" and "or" method to chain them together:
 
-[source, java]
+[source,java,indent=0]
 ----
-List<Artist> objects = ObjectSelect.query(Artist.class)
-    .where(Artist.NAME.like("A%"))
-    .and(Artist.DATE_OF_BIRTH.gt(someDate)
-    .select(context);
+include::{java-examples}/ObjectSelectTest.java[tags=and]
 ----
 
 To order the results of `ObjectSelect`, one or more orderings can be applied:
 
-[source, java]
+[source,java,indent=0]
 ----
-List<Artist> objects = ObjectSelect.query(Artist.class)
-    .orderBy(Artist.DATE_OF_BIRTH.desc())
-    .orderBy(Artist.NAME.asc())
-    .select(context);
+include::{java-examples}/ObjectSelectTest.java[tags=orderBy]
 ----
 
 There's a number of other useful methods in `ObjectSelect` that define what to select
@@ -85,19 +77,16 @@ Others are fairly self-explanatory. Please check the API docs for the full exten
 
 `ObjectSelect` query can be used to fetch individual properties of objects via type-safe API:
 
-[source, java]
+[source,java,indent=0]
 ----
-List<String> names = ObjectSelect.columnQuery(Artist.class, Artist.ARTIST_NAME)
-    .select(context);
+include::{java-examples}/ObjectSelectTest.java[tags=column]
 ----
 
 And here is an example of selecting several properties. The result is a list of `Object[]`:
 
-[source, java]
+[source,java,indent=0]
 ----
-List<Object[]> nameAndDate = ObjectSelect
-    .columnQuery(Artist.class, Artist.ARTIST_NAME, Artist.DATE_OF_BIRTH)
-    .select(context);
+include::{java-examples}/ObjectSelectTest.java[tags=columns]
 ----
 
 ===== Selecting using aggregate functions
@@ -105,29 +94,16 @@ List<Object[]> nameAndDate = ObjectSelect
 ObjectSelect query supports usage of aggregate functions.
 Most common variant of aggregation is selecting count of records, this can be done really easy:
 
-[source, java]
+[source,java,indent=0]
 ----
-long count = ObjectSelect.query(Artist.class).selectCount(context);
+include::{java-examples}/ObjectSelectTest.java[tags=count]
 ----
 
 But you can use aggregates in more cases, even combine selecting individual properties and aggregates:
 
-[source, java]
+[source,java,indent=0]
 ----
-// Artist.SELF - is a special property that denotes a full object in this case
-List<Object[]> artistAndPaintingCount = ObjectSelect.columnQuery(Artist.class,
-        Artist.SELF,
-        Artist.PAINTING_ARRAY.count())
-    .where(Artist.ARTIST_NAME.like("a%"))
-    .having(Artist.PAINTING_ARRAY.count().lt(5L))
-    .orderBy(Artist.PAINTING_ARRAY.count().desc(), Artist.ARTIST_NAME.asc())
-    .select(context);
-
-for(Object[] next : artistAndPaintingCount) {
-    Artist artist = (Artist)next[0];
-    long paintings = (Long)next[1];
-    System.out.println(artist.getArtistName() + " have " + paintings + " paintings");
-}
+include::{java-examples}/ObjectSelectTest.java[tags=aggregates]
 ----
 
 Here is generated `SQL` for this query:
@@ -147,11 +123,9 @@ ORDER BY COUNT(t1.PAINTING_ID) DESC, t0.ARTIST_NAME
 Since Cayenne 4.2 `ObjectSelect` supports subqueries, and since 5.0 subqueries API is greatly improved.
 Here is an example of a basic `NOT EXISTS` subquery:
 
-[source, java]
+[source,java,indent=0]
 ----
-long count = ObjectSelect.query(Artist.class)
-        .where(Artist.PAINTING_ARRAY.notExists())
-        .selectCount(context);
+include::{java-examples}/ObjectSelectTest.java[tags=notExists]
 ----
 
 And here's a generated `SQL`:

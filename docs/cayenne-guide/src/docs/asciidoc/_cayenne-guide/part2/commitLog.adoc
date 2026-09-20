@@ -29,48 +29,27 @@ To receive commit notifications, follow three steps.
 
 Mark every entity whose changes you want to capture with `@CommitLog`:
 
-[source,java]
+[source,java,indent=0]
 ----
-@CommitLog
-public class Order extends _Order {
-    // ...
-}
+include::{java-examples}/commitlog/Order.java[tags=content]
 ----
 
 By default every committed entity is included. To limit auditing to annotated entities only, call `commitLogAnnotationEntitiesOnly()` during configuration (see below).
 
 The annotation accepts optional attributes:
 
-[source,java]
+[source,java,indent=0]
 ----
-@CommitLog(
-    ignoredProperties = {"internalState"},         // exclude from change records
-    ignoreAttributes = false,                       // set true to skip all attributes
-    ignoreToOneRelationships = false,               // set true to skip all to-one relationships
-    ignoreToManyRelationships = false               // set true to skip all to-many relationships
-)
-public class Order extends _Order { ... }
+include::{java-examples}/commitlog/attributes/Order.java[tags=content]
 ----
 
 For properties containing sensitive data, annotate the getter with `@Confidential` instead of `ignoredProperties`. The value will appear in the `ChangeMap` as `*******` rather than the real value.
 
 ===== 2. Implement CommitLogListener
 
-[source,java]
+[source,java,indent=0]
 ----
-public class AuditListener implements CommitLogListener {
-
-    @Override
-    public void onPostCommit(ObjectContext originatingContext, ChangeMap changes) {
-        for (ObjectChange change : changes.getUniqueChanges()) {
-            switch (change.getType()) {
-                case INSERT -> System.out.println("Inserted: " + change.getPostCommitId());
-                case UPDATE -> System.out.println("Updated:  " + change.getPostCommitId());
-                case DELETE -> System.out.println("Deleted:  " + change.getPreCommitId());
-            }
-        }
-    }
-}
+include::{java-examples}/commitlog/AuditListener.java[tags=content]
 ----
 
 `ChangeMap` gives access to the full set of changes in one commit. Each `ObjectChange` carries:
@@ -84,35 +63,27 @@ Multiple listeners may be registered; all receive identical change data for the 
 
 ===== 3. Register the listener
 
-[source,java]
+[source,java,indent=0]
 ----
-CayenneRuntime runtime = CayenneRuntime.of()
-        .addConfig("cayenne-project.xml")
-        .addModule(binder -> CoreModule.extend(binder)
-                .addCommitLogListener(AuditListener.class))
-        .build();
+include::{java-examples}/CommitLogTest.java[tags=register]
 ----
 
 ==== Restricting to Annotated Entities
 
 To audit only entities marked with `@CommitLog`:
 
-[source,java]
+[source,java,indent=0]
 ----
-CoreModule.extend(binder)
-        .commitLogAnnotationEntitiesOnly()
-        .addCommitLogListener(AuditListener.class)
+include::{java-examples}/CommitLogTest.java[tags=annotationEntitiesOnly]
 ----
 
 ==== Dispatching Events Outside the Transaction
 
 By default, listeners are called within the database transaction, so a listener can write additional rows as part of the same commit. If your listener performs its own transaction (for example writing to a different database), call `excludeCommitLogFromTransaction()` to move the notification outside the main transaction:
 
-[source,java]
+[source,java,indent=0]
 ----
-CoreModule.extend(binder)
-        .excludeCommitLogFromTransaction()
-        .addCommitLogListener(AuditListener.class)
+include::{java-examples}/CommitLogTest.java[tags=excludeFromTransaction]
 ----
 
 IMPORTANT: `excludeCommitLogFromTransaction()` must be called *before* `addCommitLogListener()`.
@@ -121,20 +92,12 @@ IMPORTANT: `excludeCommitLogFromTransaction()` must be called *before* `addCommi
 
 For full control over which entities are included and how their metadata is computed, provide a custom `CommitLogEntityFactory`:
 
-[source,java]
+[source,java,indent=0]
 ----
-public class MyEntityFactory implements CommitLogEntityFactory {
-    @Override
-    public CommitLogEntity getEntity(ObjEntity entity) {
-        // return null to exclude the entity, or a CommitLogEntity instance to include it
-        ...
-    }
-}
+include::{java-examples}/commitlog/MyEntityFactory.java[tags=content]
 ----
 
-[source,java]
+[source,java,indent=0]
 ----
-CoreModule.extend(binder)
-        .commitLogEntityFactory(MyEntityFactory.class)
-        .addCommitLogListener(AuditListener.class)
+include::{java-examples}/CommitLogTest.java[tags=entityFactory]
 ----

@@ -15,46 +15,19 @@
 
 If a user needs some extra functionality not addressed by the existing set of Cayenne queries, he can write his own.
 The only requirement is to implement `org.apache.cayenne.query.Query` interface.
-The easiest way to go about it is to subclass some of the base queries in Cayenne.
+E.g. to do something directly in the JDBC layer, you might implement `Query` like this:
 
-E.g. to do something directly in the JDBC layer, you might subclass `AbstractQuery`:
-
-[source, java]
+[source,java,indent=0]
 ----
-public class MyQuery extends AbstractQuery {
-
-    @Override
-    public SQLAction createSQLAction(SQLActionVisitor visitor) {
-        return new SQLAction() {
-
-            @Override
-            public void performAction(Connection connection, OperationObserver observer) throws SQLException, Exception {
-                // 1. do some JDBC work using provided connection...
-                // 2. push results back to Cayenne via OperationObserver
-            }
-        };
-    }
-}
+include::{java-examples}/customquery/MyQuery.java[tags=content]
 ----
 
 To delegate the actual query execution to a standard Cayenne query, you may subclass `IndirectQuery`:
 
 
-[source, java]
+[source,java,indent=0]
 ----
-public class MyDelegatingQuery extends IndirectQuery {
-
-    @Override
-    protected Query createReplacementQuery(EntityResolver resolver) {
-        SQLTemplate delegate = new SQLTemplate(SomeClass.class, generateRawSQL());
-        delegate.setFetchingDataRows(true);
-        return delegate;
-    }
-
-    protected String generateRawSQL() {
-        // build some SQL string
-    }
-}
+include::{java-examples}/customquery/MyDelegatingQuery.java[tags=content]
 ----
 
 In fact many internal Cayenne queries are `IndirectQueries`, delegating to `ObjectSelect` or `SQLTemplate`

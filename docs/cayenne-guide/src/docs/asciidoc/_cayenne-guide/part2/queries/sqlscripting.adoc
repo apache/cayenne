@@ -23,11 +23,9 @@ below we'll use both selecting and updating examples, as scripting works the sam
 
 All variables in the template string are replaced from query parameters:
 
-[source, java]
+[source,java,indent=0]
 ----
-// this will generate SQL like this: "delete from mydb.PAINTING"
-SQLExec query = SQLExec.query("delete from $tableName")
-    .params("mydb.PAINTING");
+include::{java-examples}/SQLScriptingTest.java[tags=variable]
 ----
 
 Variable substitution within the text uses `object.toString()` method to replace the variable value.
@@ -185,13 +183,9 @@ Usage:
 
 Full example:
 
-[source, java]
+[source,java,indent=0]
 ----
-String sql = "SELECT * FROM PAINTING t0 WHERE #bindObjectEqual($a 't0.ARTIST_ID' 'ARTIST_ID' )";
-Artist artistParam = ...;
-
-SQLSelect select = SQLSelect.query(Painting.class, sql)
-    .params("a", artistParam);
+include::{java-examples}/SQLScriptingTest.java[tags=bindObjectEqual]
 ----
 
 ====== #bindObjectNotEqual
@@ -217,13 +211,9 @@ Usage:
 
 Full example:
 
-[source, java]
+[source,java,indent=0]
 ----
-String sql = "SELECT * FROM PAINTING t0 WHERE #bindObjectNotEqual($a 't0.ARTIST_ID' 'ARTIST_ID' )";
-Artist artistParam = ...;
-
-SQLSelect select = SQLSelect.query(Painting.class, sql)
-    .params("a", artistParam);
+include::{java-examples}/SQLScriptingTest.java[tags=bindObjectNotEqual]
 ----
 
 ====== #result

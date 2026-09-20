@@ -17,15 +17,9 @@
 
 `ObjectSelect` can match objects of the root entity by their primary key with `byId(..)` and `byIds(..)`:
 
-[source, java]
+[source,java,indent=0]
 ----
-Artist artistWithId1 = ObjectSelect.query(Artist.class)
-    .byId(1)
-    .selectOne(context);
-
-List<Artist> artists = ObjectSelect.query(Artist.class)
-    .byIds(1, 2, 3)
-    .select(context);
+include::{java-examples}/SelectByIdTest.java[tags=byId]
 ----
 
 Both methods accept an id in any of three forms, and `byIds(..)` may mix them:
@@ -34,15 +28,9 @@ Both methods accept an id in any of three forms, and `byIds(..)` may mix them:
 * a `Map` of DB attribute names to values, which is the form to use for a compound primary key;
 * an `ObjectId`.
 
-[source, java]
+[source,java,indent=0]
 ----
-CompoundPk object = ObjectSelect.query(CompoundPk.class)
-    .byId(Map.of("KEY1", "x", "KEY2", "y"))
-    .selectOne(context);
-
-Artist artist = ObjectSelect.query(Artist.class)
-    .byId(objectId)
-    .selectOne(context);
+include::{java-examples}/SelectByIdTest.java[tags=byIdForms]
 ----
 
 Being an ordinary qualifier, an id match combines with everything else `ObjectSelect` offers - prefetching,
@@ -50,16 +38,9 @@ caching, ordering, pagination and further conditions. Under the hood these are s
 the entity `SELF` property. So here is a somewhat more verbose equivalent that is also more flexible (e.g. allowing to
 chain id qualifier with "or") :
 
-[source, java]
+[source,java,indent=0]
 ----
-List<Artist> artists = ObjectSelect.query(Artist.class)
-    .where(Artist.ARTIST_NAME.eq("Dali"))
-    .or(Artist.SELF.idsIn(1, 2, 3))
-    .select(context);
-
-List<Painting> paintings = ObjectSelect.query(Painting.class)
-    .where(Painting.TO_ARTIST.eqId(1))
-    .select(context);
+include::{java-examples}/SelectByIdTest.java[tags=idExpressions]
 ----
 
 Yet another way to find a single object by PK per <<persistent-objects-objectcontext,the ObjectContext chapter>> is

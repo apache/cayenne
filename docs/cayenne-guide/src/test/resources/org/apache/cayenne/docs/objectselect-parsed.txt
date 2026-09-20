@@ -1,0 +1,85 @@
+Licensed to the Apache Software Foundation (ASF) under one or more
+contributor license agreements. See the NOTICE file distributed with
+this work for additional information regarding copyright ownership.
+The ASF licenses this file to you under the Apache License, Version
+2.0 (the "License"); you may not use this file except in compliance
+with the License. You may obtain a copy of the License at
+
+https://www.apache.org/licenses/LICENSE-2.0 Unless required by
+applicable law or agreed to in writing, software distributed under the
+License is distributed on an "AS IS" BASIS, WITHOUT WARRANTIES OR
+CONDITIONS OF ANY KIND, either express or implied. See the License for
+the specific language governing permissions and limitations under the
+License.
+
+The query Strings that are included in the docs, and are parsed and run by ObjectSelectParsedTest
+
+tag::filterOrderLimit[]
+from Artist where artistName like 'A%' order by dateOfBirth desc, artistName asc insensitive limit 10 offset 20
+end::filterOrderLimit[]
+
+tag::outerJoin[]
+from Artist where paintingArray+ = null
+end::outerJoin[]
+
+tag::splitJoins[]
+from Artist where paintingArray#p1.paintingTitle = 'P1' and paintingArray#p2.paintingTitle = 'P2'
+end::splitJoins[]
+
+tag::columns[]
+select artistName, dateOfBirth from Artist order by artistName
+end::columns[]
+
+tag::column[]
+select distinct toGallery.galleryName from Painting
+end::column[]
+
+tag::columnExpressions[]
+select upper(artistName) as name, length(trim(artistName)) as size from Artist
+end::columnExpressions[]
+
+tag::aggregates[]
+select toArtist.artistName, sum(estimatedPrice), count(*)
+from Painting
+having sum(estimatedPrice) > $min
+order by toArtist.artistName
+end::aggregates[]
+
+tag::self[]
+select self, count(paintingArray+) from Artist order by count(paintingArray+) desc
+end::self[]
+
+tag::toOne[]
+select paintingTitle, toArtist, toGallery from Painting
+end::toOne[]
+
+tag::toMany[]
+select artistName, paintingArray from Artist
+end::toMany[]
+
+tag::exists[]
+from Artist where exists (
+    from Painting where toArtist = enclosing(self) and estimatedPrice > $price)
+end::exists[]
+
+tag::nestedSelects[]
+tag::in[]
+from Painting where toArtist.artistName in (select artistName from Artist where dateOfBirth < $date)
+end::in[]
+
+tag::all[]
+from Painting where estimatedPrice > all (select estimatedPrice from Painting where paintingTitle = 'P2')
+end::all[]
+
+tag::any[]
+from Painting where estimatedPrice = any (select max(estimatedPrice) from Painting)
+end::any[]
+end::nestedSelects[]
+
+tag::dbRoot[]
+from db:ARTIST where ARTIST_NAME like 'A%' order by ARTIST_ID desc
+end::dbRoot[]
+
+tag::prefetch[]
+from Artist where artistName = $name prefetch paintingArray joint, paintingArray.toGallery
+end::prefetch[]

@@ -42,12 +42,9 @@ compile 'org.apache.cayenne:cayenne-cache-invalidation:{version}'
 Module supports autoloading mechanism, so no other actions required to enable it. Just mark your entities with @CacheGroups
 annotation and you are ready to use it:
 
-[source, java]
+[source,java,indent=0]
 ----
-@CacheGroups("some-group")
-public class MyEntity extends _MyEntity {
-    // ...
-}
+include::{java-examples}/cacheinvalidation/MyEntity.java[tags=content]
 ----
 
 After any modification of `MyEntity` objects cache group `"some-group"` will be dropped from cache automatically.
@@ -60,25 +57,16 @@ To do so you need to implement `o.a.c.cache.invalidation.InvalidationHandler` in
 Invalidation module to use it. Let's use implementation class called `CustomInvalidationHandler` that will simply match
 all entities' types with `"custom-group"` cache group regardless of any annotations:
 
-[source, java]
+[source,java,indent=0]
 ----
-public class CustomInvalidationHandler implements InvalidationHandler {
-    @Override
-    public InvalidationFunction canHandle(Class<? extends Persistent> type) {
-        return p -> Collections.singleton(new CacheGroupDescriptor("custom-group"));
-    }
-}
+include::{java-examples}/cacheinvalidation/CustomInvalidationHandler.java[tags=content]
 ----
 
 Now we'll set up it's usage by `CayenneRuntime`:
 
-[source, java]
+[source,java,indent=0]
 ----
-CayenneRuntime.of()
-        .addModule(binder -> CacheInvalidationModule.extend(binder)
-                // optionally you can disable @CacheGroups annotation processing
-                .noCacheGroupsHandler()
-                .addHandler(CustomInvalidationHandler.class))
+include::{java-examples}/CacheInvalidationTest.java[tags=customHandler]
 ----
 
 NOTE: You can combine as many invalidation handlers as you need.

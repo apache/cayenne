@@ -101,6 +101,39 @@ Test naming: `*Test.java` = unit tests (Surefire), `*IT.java` = integration test
 All new tests must use JUnit 5. Test classes and methods must be `public`. Method names must not use the `test` prefix (e.g. `someFeature()` not `testSomeFeature()`).
 Do not add `@since` tags to test classes — version tags are only meaningful on public API.
 
+## Documentation Code Examples
+
+The docs live in `docs/*` as Asciidoc. Java examples must not be typed inline in the `.adoc` files. They are tagged
+regions of compiled (and, where possible, run) code, included in the docs by tag, so that they can not get out of sync
+with the Cayenne API:
+
+- `docs/cayenne-guide` — examples are in the JUnit tests under `src/test/java/org/apache/cayenne/docs` (`BaseTest`
+  provides a runtime over an in-memory DB and the Artist / Painting / Gallery model). Whole-class examples are separate
+  files in the subpackages (`lifecycle`, `customize`, etc.). Non-Java examples that can be checked (QL queries,
+  expression Strings) are tagged in `src/test/resources/org/apache/cayenne/docs/*.txt` and read by the tests via
+  `BaseTest.example(..)`.
+- `docs/getting-started-guide` — examples are in the tutorial app under `src/main/java`, that is run by `MainTest`.
+
+```java
+// tag::where[]
+List<Artist> objects = ObjectSelect.query(Artist.class).where(Artist.ARTIST_NAME.like("Pablo%")).select(context);
+// end::where[]
+```
+
+```asciidoc
+[source,java,indent=0]
+----
+include::{java-examples}/ObjectSelectTest.java[tags=where]
+----
+```
+
+The docs build fails if an included tag is missing, and the guide examples fail to compile if they use deprecated API.
+
+```bash
+# Build the guide and run its example tests only
+mvn verify -pl docs/cayenne-guide -am -Dtest='org/apache/cayenne/docs/**' -Dsurefire.failIfNoSpecifiedTests=false -DskipITs
+```
+
 ## `pom.xml` Style
 
 All POM plugins from submodules must be delcared in the parent module `<pluginManagement>`. All plugin versions should be 

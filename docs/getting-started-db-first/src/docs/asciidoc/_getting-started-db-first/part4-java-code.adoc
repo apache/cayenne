@@ -39,6 +39,7 @@ public class Main {
 package org.apache.cayenne.tutorial;
 
 import org.apache.cayenne.ObjectContext;
+import org.apache.cayenne.datasource.CayenneDataSource;
 import org.apache.cayenne.runtime.CayenneRuntime;
 
 public class Main {

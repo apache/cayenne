@@ -21,22 +21,14 @@ some data modification (returned as an update count), or a combination of these.
 So use root class to get a single result set, and use only procedure name for anything else:
 
 
-[source, java]
+[source,java,indent=0]
 ----
-List<Artist> result = ProcedureCall.query("my_procedure", Artist.class)
-    .param("p1", "abc")
-    .param("p2", 3000)
-    .select(context);
+include::{java-examples}/ProcedureCallExamples.java[tags=select]
 ----
 
-[source, java]
+[source,java,indent=0]
 ----
-// here we do not bother with root class.
-// Procedure name gives us needed routing information
-List<QueryResult> result = ProcedureCall.query("my_procedure")
-    .param("p1", "abc")
-    .param("p2", 3000)
-    .call(context);
+include::{java-examples}/ProcedureCallExamples.java[tags=call]
 ----
 
 `QueryResult` is a sealed interface with `Select`, `Update`, `Iterator` and `OutParameters` variants, listed in
@@ -45,16 +37,9 @@ switch. A stored procedure can return data back to the application as result set
 The values of OUT and INOUT parameters are reported as a separate `QueryResult.OutParameters` item of the
 result, a map keyed by parameter name:
 
-[source, java]
+[source,java,indent=0]
 ----
-for (QueryResult item : ProcedureCall.query("my_procedure").call(context)) {
-    switch (item) {
-        case QueryResult.Select<?> select -> process(select.objects());
-        case QueryResult.Update update -> process(update.counts());
-        case QueryResult.OutParameters out -> process(out.values().get("out_param"));
-        default -> {}
-    }
-}
+include::{java-examples}/ProcedureCallExamples.java[tags=outParameters]
 ----
 
 There maybe a situation when a stored procedure handles its own transactions,
