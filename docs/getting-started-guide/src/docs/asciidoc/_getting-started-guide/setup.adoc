@@ -18,26 +18,20 @@ model, and write a small application that creates, selects and deletes persisten
 with CayenneModeler, a GUI tool that comes with Cayenne. If you are using the Claude Code AI agent, each modeling step
 also shows how to get the same result by asking Claude.
 
-=== Prerequisites
+=== Basics
 
-==== Java
+* Cayenne 5.0 requires JDK 21 or newer.
+* Maven is used to build and run the tutorial application. All the commands in this tutorial are run in a terminal.
 
-Cayenne 5.0 requires JDK 21 or newer.
-
-==== Maven
-
-Apache Maven is used to build and run the tutorial application. All the commands in this tutorial are run in a terminal.
-
-==== CayenneModeler
+=== CayenneModeler
 
 CayenneModeler is the GUI tool used in this tutorial to import the database schema, to edit the model and to generate
-Java classes. Download the appropriate Cayenne distribution from https://cayenne.apache.org/download/ and launch the
-Modeler from it (e.g. `java -jar CayenneModeler.jar`, or open `CayenneModeler.app` on macOS). The welcome screen of the
-Modeler looks like this:
+Java classes. See the link:/docs/{project-major-version}/cayenne-guide/runModeler/[Running CayenneModeler] chapter of
+the Cayenne Guide on how to download and start it. The welcome screen of the Modeler looks like this:
 
 image::modeler-started.png[align="center",width=800]
 
-==== Claude Code (optional)
+=== Claude Code (optional)
 
 To follow the "With Claude" alternatives, install Claude Code and make it Cayenne-aware with the two pieces described in the
 link:/docs/{project-major-version}/cayenne-guide/agentic-coding/[Agentic Coding] chapter of the Cayenne Guide:
@@ -50,13 +44,22 @@ setting up Cayenne runtime in the application code.
 use to run the DB import and the class generation, and to open CayenneModeler. It comes with CayenneModeler, so you still
 need to download the Modeler.
 
-==== MySQL
+=== MySQL
 
 MySQL database server is used as a database in this tutorial. Any other database that has a JDBC driver would work
 just as well, with the appropriate changes to the driver name and the connection URL.
 
-You can create the test database with any tools you are comfortable with. Here is the DB schema that will be used
-in this tutorial:
+If you don't have MySQL installed, an easy way to get it is to run it in Docker. Start a MySQL container, publishing
+its port on the local machine (replace `your-password` with a root password of your choice), and give the server
+a few seconds to start:
+
+----
+$ docker run -d --name cayenne-mysql -e MYSQL_ROOT_PASSWORD=your-password -p 3306:3306 mysql:8.4
+----
+
+The database is now available at `127.0.0.1:3306`, with
+`root` as the user name. When you are done with the tutorial, the container can be removed with
+`docker rm -f cayenne-mysql`. Here is the DB schema that will be used in this tutorial:
 
 [source,sql]
 ----
@@ -68,10 +71,14 @@ ALTER TABLE painting ADD FOREIGN KEY (ARTIST_ID) REFERENCES artist (ID) ON DELET
 ALTER TABLE painting ADD FOREIGN KEY (GALLERY_ID) REFERENCES gallery (ID) ON DELETE CASCADE;
 ----
 
-You can save it to the `cayenne_demo.sql` file and import to your database with the following command:
+Save it to a file and import to your database. You can do it with any tools you are comfortable  with, e.g.:
 
 ----
+# CLI client
 $ mysql < cayenne_demo.sql
+
+# Docker
+$ docker exec -i cayenne-mysql mysql -uroot -pyour-password < cayenne_demo.sql
 ----
 
 === Maven Project
