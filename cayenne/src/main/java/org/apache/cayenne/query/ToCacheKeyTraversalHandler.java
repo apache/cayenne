@@ -27,6 +27,9 @@ import org.apache.cayenne.exp.Expression;
 import org.apache.cayenne.exp.TraversalHandler;
 import org.apache.cayenne.exp.parser.ASTFunctionCall;
 import org.apache.cayenne.exp.parser.ASTScalar;
+import org.apache.cayenne.exp.parser.ASTSubquery;
+
+import java.util.function.Function;
 
 /**
  * Expression traverse handler to create cache key string out of Expression.
@@ -40,8 +43,20 @@ class ToCacheKeyTraversalHandler implements TraversalHandler {
 
     private ValueObjectTypeRegistry registry;
     private StringBuilder out;
+    private Function<FluentSelect<?, ?>, String> subqueryKeyBuilder;
 
     ToCacheKeyTraversalHandler(ValueObjectTypeRegistry registry, StringBuilder out) {
+        this(registry, out, null);
+    }
+
+    /**
+     * @param subqueryKeyBuilder a function that builds the cache keys of the subqueries found in the expression
+     */
+    ToCacheKeyTraversalHandler(
+            ValueObjectTypeRegistry registry,
+            StringBuilder out,
+            Function<FluentSelect<?, ?>, String> subqueryKeyBuilder) {
+        this.subqueryKeyBuilder = subqueryKeyBuilder;
         this.registry = registry;
         this.out = out;
     }
@@ -57,6 +72,11 @@ class ToCacheKeyTraversalHandler implements TraversalHandler {
             out.append(((ASTFunctionCall)node).getFunctionName()).append('(');
         } else {
             out.append(node.getType()).append('(');
+        }
+
+        // a subquery keeps its query outside the expression tree, so it needs to be added to the key explicitly
+        if (node instanceof ASTSubquery subquery && subqueryKeyBuilder != null) {
+            out.append(subqueryKeyBuilder.apply(subquery.getQuery()));
         }
     }
 

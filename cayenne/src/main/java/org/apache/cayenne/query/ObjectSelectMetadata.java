@@ -71,8 +71,9 @@ class ObjectSelectMetadata extends BaseQueryMetadata {
 		// create a unique key based on entity or columns, qualifier, ordering, fetch offset and limit
 
 		StringBuilder key = new StringBuilder();
-		// handler to create string out of expressions, created lazily
-		TraversalHandler traversalHandler = null;
+		// handler to create string out of expressions
+		TraversalHandler traversalHandler = new ToCacheKeyTraversalHandler(
+				resolver.getValueObjectTypeRegistry(), key, subquery -> subqueryCacheKey(subquery, resolver));
 
 		ObjEntity entity = getObjEntity();
 		if (entity != null) {
@@ -82,7 +83,6 @@ class ObjectSelectMetadata extends BaseQueryMetadata {
 		}
 
 		if (query.getColumns() != null && !query.getColumns().isEmpty()) {
-			traversalHandler = new ToCacheKeyTraversalHandler(resolver.getValueObjectTypeRegistry(), key);
 			for (Property<?> property : query.getColumns()) {
 				key.append("/c:");
 				property.getExpression().traverse(traversalHandler);
@@ -91,7 +91,6 @@ class ObjectSelectMetadata extends BaseQueryMetadata {
 
 		if (query.getWhere() != null) {
 			key.append('/');
-            traversalHandler = new ToCacheKeyTraversalHandler(resolver.getValueObjectTypeRegistry(), key);
 			query.getWhere().traverse(traversalHandler);
 		}
 
@@ -110,9 +109,6 @@ class ObjectSelectMetadata extends BaseQueryMetadata {
 
 		if (query.getHaving() != null) {
 			key.append('/');
-			if(traversalHandler == null) {
-				traversalHandler = new ToCacheKeyTraversalHandler(resolver.getValueObjectTypeRegistry(), key);
-			}
 			query.getHaving().traverse(traversalHandler);
 		}
 
@@ -132,6 +128,15 @@ class ObjectSelectMetadata extends BaseQueryMetadata {
 		}
 
 		return key.toString();
+	}
+
+	/**
+	 * Builds a cache key of a subquery, that becomes a part of the key of the enclosing query. It has the same
+	 * structure as the key of a root query.
+	 */
+	private static String subqueryCacheKey(FluentSelect<?, ?> subquery, EntityResolver resolver) {
+		ObjectSelectMetadata metadata = (ObjectSelectMetadata) subquery.getMetaData(resolver);
+		return metadata.makeCacheKey(subquery, resolver);
 	}
 
 	protected void resolveAutoAliases(FluentSelect<?, ?> query) {

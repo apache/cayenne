@@ -54,6 +54,7 @@ CAY-3018 EJBQL: broken joins when selecting a vertically inherited entity
 CAY-3030 Cayenne stack must be able to start without touching the DataSource
 CAY-3031 Expression parameter names may conflict with function names
 CAY-3032 ColumnSelect: an entity column over a to-many relationship filters out root rows with no related objects
+CAY-3033 Selects with subqueries produce conflicting cache keys
 
 ----------------------------------
 Release: 5.0-M3
