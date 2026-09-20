@@ -12,10 +12,12 @@
 // the specific language governing permissions and limitations under the
 // License.
 
-== DB-First Flow
+=== Generating Java Classes
 
-include::db-first/introduction.adoc[]
+Before using Cayenne in you code you need to generate java source code for persistent objects. This can be done with Modeler GUI or via <<cgen>> maven/ant plugin.
 
-include::db-first/filtering.adoc[]
+To generate classes in the Modeler select a DataMap, go to the *Class Generation* tab and click *Generate*.
 
-include::db-first/other-settings.adoc[]
+The default settings are suitable for almost all cases. Change them only if you know what exactly you need to customize.
+The "Advanced options" and "Templates options" on the same tab let you control almost all aspects of code generation,
+including custom templates for Java code. See default Cayenne templates on GitHub as an example.

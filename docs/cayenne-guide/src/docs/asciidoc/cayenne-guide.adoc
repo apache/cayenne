@@ -43,8 +43,6 @@ See the License for the specific language governing permissions and limitations 
 
 include::_cayenne-guide/system-requirements.adoc[]
 
-include::_cayenne-guide/running-modeler.adoc[]
-
 include::_cayenne-guide/mapping.adoc[]
 
 include::_cayenne-guide/modeler.adoc[]

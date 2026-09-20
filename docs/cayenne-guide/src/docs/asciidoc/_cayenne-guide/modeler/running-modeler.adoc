@@ -12,10 +12,10 @@
 // the specific language governing permissions and limitations under the
 // License.
 
-include::var.adoc[]
+include::../var.adoc[]
 
 [[runModeler]]
-== Running CayenneModeler
+=== Running CayenneModeler
 
 CayenneModeler GUI tool is intended to work with object relational mapping projects. While you can edit your XML by
 hand, it is rarely needed, as the Modeler is a pretty advanced tool included in Cayenne distribution. To obtain
@@ -47,7 +47,7 @@ On macOS the same applies to the `.app` bundle:
 $ open CayenneModeler.app --args path/to/cayenne-project.xml
 ----
 
-=== Running from Maven
+==== Running from Maven
 
 The Modeler can also be started from Maven. While it may look like an exotic way to start a GUI application, it has
 its benefits - no need to download Cayenne distribution, and the version of the Modeler always matches the version of
