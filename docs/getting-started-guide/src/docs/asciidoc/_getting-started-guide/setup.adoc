@@ -13,11 +13,6 @@
 // License.
 == Setup
 
-In this tutorial we'll take an existing database, create a Cayenne model from it, generate Java classes from the
-model, and write a small application that creates, selects and deletes persistent objects. The model is created
-with CayenneModeler, a GUI tool that comes with Cayenne. If you are using the Claude Code AI agent, each modeling step
-also shows how to get the same result by asking Claude.
-
 === Basics
 
 * Cayenne 5.0 requires JDK 21 or newer.
