@@ -152,7 +152,7 @@ ORDER BY COUNT(p.PAINTING_ID) DESC, a.ARTIST_NAME
 
 ==== Subqueries
 
-Since Cayenne 4.2 `ObjectSelect` supports subqueries, and since 5.0 subqueries API is greatly improved.
+`ObjectSelect` supports subqueries.
 Here is an example of a basic `NOT EXISTS` subquery:
 
 [source,java,indent=0]

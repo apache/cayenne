@@ -19,8 +19,6 @@ include::var.adoc[]
 
 Cayenne includes built-in support for capturing commit changes and delivering them to application-defined listeners. This lets you build audit trails, propagate changes to external systems, or enforce post-commit business rules without coupling that logic to individual entity classes.
 
-NOTE: Prior to Cayenne 5.0 this feature shipped as a separate `cayenne-commitlog` artifact. Starting with 5.0 it is part of the core `cayenne` dependency. Migrate by replacing `CommitLogModule.extend(binder)` with `CoreModule.extend(binder)`.
-
 === Basic Usage
 
 To receive commit notifications, follow three steps.

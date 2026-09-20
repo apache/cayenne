@@ -95,7 +95,7 @@ Note that the property names below are defined as constants in `org.apache.cayen
     ** Default value: false
 
 * `cayenne.query_execution_time_logging_threshold`
-   _(deprecated, ignored since 5.0)_ used to define the minimum number of milliseconds a query must run before it is
+   _(deprecated and ignored)_ used to define the minimum number of milliseconds a query must run before it is
    logged. The slow-query threshold warning was removed with the compact SQL logger redesign (CAY-2912).
 
 * `cayenne.jdbc.log.batch.threshold`
