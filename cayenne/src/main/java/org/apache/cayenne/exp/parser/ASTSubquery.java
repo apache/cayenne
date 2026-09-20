@@ -91,7 +91,8 @@ public class ASTSubquery extends SimpleNode {
 
     @Override
     public void appendAsString(Appendable out) throws IOException {
-        out.append("EXISTS");
+        // there is no String form for a query, so this is just a placeholder
+        out.append("(select ...)");
     }
 
     public FluentSelect<?, ?> getQuery() {

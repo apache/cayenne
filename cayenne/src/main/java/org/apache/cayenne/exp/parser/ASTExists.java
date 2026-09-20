@@ -23,6 +23,7 @@ import org.apache.cayenne.Persistent;
 import org.apache.cayenne.exp.Expression;
 import org.apache.cayenne.exp.ExpressionFactory;
 
+import java.io.IOException;
 import java.util.Collection;
 import java.util.Map;
 
@@ -76,6 +77,24 @@ public class ASTExists extends ConditionNode {
             return Boolean.TRUE;
         }
         return Boolean.FALSE;
+    }
+
+    /**
+     * @since 5.0
+     */
+    @Override
+    public void appendAsString(Appendable out) throws IOException {
+        // the operator goes before the single operand, so it is never printed by the superclass
+        if (parent != null) {
+            out.append('(');
+        }
+
+        out.append("exists ");
+        ((SimpleNode) jjtGetChild(0)).appendAsString(out);
+
+        if (parent != null) {
+            out.append(')');
+        }
     }
 
     @Override

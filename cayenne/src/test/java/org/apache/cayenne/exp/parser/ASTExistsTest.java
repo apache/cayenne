@@ -68,4 +68,19 @@ public class ASTExistsTest {
         assertEquals("(length(a) <= 5)", node.jjtGetChild(0).toString());
     }
 
+    @Test
+    public void toStringRoundTrip() {
+        for (String expString : new String[]{
+                "exists a",
+                "exists a.b.c",
+                "exists db:a.b.c",
+                "exists (a > 5)",
+                "(x = 1) and (exists a)",
+                "(x = 1) or (exists (a > 5))"}) {
+
+            Expression exp = ExpressionFactory.exp(expString);
+            assertEquals(expString, exp.toString());
+            assertEquals(exp, ExpressionFactory.exp(exp.toString()));
+        }
+    }
 }

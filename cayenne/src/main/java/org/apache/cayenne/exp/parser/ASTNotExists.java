@@ -19,6 +19,8 @@
 
 package org.apache.cayenne.exp.parser;
 
+import java.io.IOException;
+
 import org.apache.cayenne.exp.Expression;
 import org.apache.cayenne.exp.ExpressionFactory;
 
@@ -53,6 +55,24 @@ public class ASTNotExists extends ConditionNode {
     @Override
     protected Boolean evaluateSubNode(Object o, Object[] evaluatedChildren) throws Exception {
         return !ASTExists.notEmpty(o);
+    }
+
+    /**
+     * @since 5.0
+     */
+    @Override
+    public void appendAsString(Appendable out) throws IOException {
+        // the operator goes before the single operand, so it is never printed by the superclass
+        if (parent != null) {
+            out.append('(');
+        }
+
+        out.append("not exists ");
+        ((SimpleNode) jjtGetChild(0)).appendAsString(out);
+
+        if (parent != null) {
+            out.append(')');
+        }
     }
 
     @Override

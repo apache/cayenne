@@ -19,6 +19,8 @@
 
 package org.apache.cayenne.exp.parser;
 
+import java.io.IOException;
+
 import org.apache.cayenne.exp.Expression;
 
 public class ASTAny extends ConditionNode {
@@ -49,6 +51,16 @@ public class ASTAny extends ConditionNode {
     @Override
     protected boolean isValidParent(Node n) {
         return true;
+    }
+
+    /**
+     * @since 5.0
+     */
+    @Override
+    public void appendAsString(Appendable out) throws IOException {
+        // the operator goes before the single operand, so it is never printed by the superclass
+        out.append("any ");
+        ((SimpleNode) jjtGetChild(0)).appendAsString(out);
     }
 
     @Override
