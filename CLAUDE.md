@@ -112,9 +112,9 @@ with the Cayenne API:
   files in the subpackages (`lifecycle`, `customize`, etc.). Non-Java examples that can be checked (QL queries,
   expression Strings) are tagged in `src/test/resources/org/apache/cayenne/docs/*.txt` and read by the tests via
   `BaseTest.example(..)`.
-- `docs/getting-started-guide` — examples are in the tutorial app under `src/main/java`, that is run by `MainTest`.
-- `docs/getting-started-db-first` — examples are in the tutorial app under `src/main/java`. It is only compiled, as it
-  needs a MySQL DB to run.
+- `docs/getting-started-guide` — examples are in the tutorial app under `src/main/java`. It is only compiled, as it
+  needs a MySQL DB to run. The model and the generated classes there are the real output of the tutorial steps
+  (DB import and class generation in CayenneModeler).
 
 ```java
 // tag::where[]

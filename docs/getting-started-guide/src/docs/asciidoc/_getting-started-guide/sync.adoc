@@ -1,0 +1,112 @@
+// Licensed to the Apache Software Foundation (ASF) under one or more
+// contributor license agreements. See the NOTICE file distributed with
+// this work for additional information regarding copyright ownership.
+// The ASF licenses this file to you under the Apache License, Version
+// 2.0 (the "License"); you may not use this file except in compliance
+// with the License. You may obtain a copy of the License at
+//
+// https://www.apache.org/licenses/LICENSE-2.0 Unless required by
+// applicable law or agreed to in writing, software distributed under the
+// License is distributed on an "AS IS" BASIS, WITHOUT WARRANTIES OR
+// CONDITIONS OF ANY KIND, either express or implied. See the License for
+// the specific language governing permissions and limitations under the
+// License.
+== Keeping the Model in Sync
+
+A database schema is rarely final. In this chapter we'll see how to bring the schema changes into the model, how to
+customize the model, and how to keep some parts of the database out of it.
+
+=== Updating the Model
+
+Let's imagine that over some time our database schema has evolved, and we need to synchronize it with our model.
+We'll use the following SQL script to alter the demo database:
+
+[source,sql]
+----
+CREATE TABLE cayenne_demo.painting_info (INFO VARCHAR(255) NULL, PAINTING_ID INT NOT NULL, PRIMARY KEY (PAINTING_ID)) ENGINE=InnoDB;
+ALTER TABLE cayenne_demo.gallery ADD COLUMN FOUNDED_DATE DATE;
+ALTER TABLE cayenne_demo.painting_info ADD FOREIGN KEY (PAINTING_ID) REFERENCES cayenne_demo.painting (ID);
+----
+
+==== With CayenneModeler
+
+Open the project in the Modeler (if you closed it, use `File > Open Project` and select `cayenne-project.xml`), select
+the DataMap, go to the "DB Import" tab, and click "Run Import" again. The import rules are stored in the project, and
+the connection is remembered by the Modeler, so there is nothing else to configure. Only the differences between
+the database and the model are imported:
+
+image::dbimport-result-update.png[align="center",width=400]
+
+A new DbEntity and a new ObjEntity are in place, as well as a new `foundedDate` attribute of `Gallery`. Save the project.
+
+==== With Claude
+
+[quote]
+____
+My database schema has changed. Sync the Cayenne model with the database.
+____
+
+=== Customizing the Model
+
+The import creates the Java side of the model (ObjEntities, their attributes and relationships) using a set of naming
+conventions and defaults. Often there is a need to customize it to better fit your application. Such changes are not
+lost when you run the import again. It only overrides the changes made to the DB side of the model (DbEntities).
+
+We'll make two changes. First, the relationship from `Painting` to the new `PaintingInfo` got a rather meaningless name
+`id`. In the Modeler select the `Painting` ObjEntity, go to the "Properties" tab, double-click on the relationship
+name and change it to `info`.
+
+Second, we'd like all the paintings of an artist to be deleted together with the artist. Select the `Artist` ObjEntity,
+go to the "Properties" tab, and change the "Delete Rule" of the `paintings` relationship from "Deny" to "Cascade":
+
+image::model-delete-rule.png[align="center",width=800]
+
+Save the project. If you run the import again now, it finds nothing to do, and your changes stay intact.
+
+With Claude simply describe the change:
+
+[quote]
+____
+In the Cayenne model rename the `id` relationship of `Painting` to `info`, and change the delete rule of `Artist.paintings`
+to "Cascade".
+____
+
+=== Filtering
+
+Not everything in the database belongs in the model. Let's add some things to our database that the application
+should not know about:
+
+[source,sql]
+----
+CREATE TABLE cayenne_demo.legacy_painting_info (ID INT NOT NULL AUTO_INCREMENT, INFO VARCHAR(255) NULL, PAINTING_ID INT NOT NULL, PRIMARY KEY (ID)) ENGINE=InnoDB;
+ALTER TABLE cayenne_demo.artist ADD COLUMN __service_column INT;
+ALTER TABLE cayenne_demo.gallery ADD COLUMN __service_column INT;
+ALTER TABLE cayenne_demo.painting ADD COLUMN __service_column INT;
+----
+
+==== With CayenneModeler
+
+On the "DB Import" tab click "Refresh DB Schema" and expand `cayenne_demo` on the right to see the new table and
+columns. Select the `legacy_painting_info` table and click "Exclude". This adds an "exclude table" rule to the
+`cayenne_demo` catalog on the left.
+
+To exclude a column from all the tables of the catalog, select `cayenne_demo` on the left, click on the "Exclude Column"
+button in the toolbar above it, and type `__service_column` as the name of the new rule. The rule names are regular
+expressions, so a single rule can match multiple tables or columns. Note how the excluded column is grayed out on
+the right:
+
+image::dbimport-filters.png[align="center",width=800]
+
+Click "Run Import". We don't get any changes in the model, exactly as expected:
+
+image::dbimport-result-nochanges.png[align="center",width=400]
+
+Save the project to keep the new rules.
+
+==== With Claude
+
+[quote]
+____
+Exclude the `legacy_painting_info` table and all the `__service_column` columns from the Cayenne DB import,
+then sync the model with the database.
+____

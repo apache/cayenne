@@ -1,0 +1,205 @@
+// Licensed to the Apache Software Foundation (ASF) under one or more
+// contributor license agreements. See the NOTICE file distributed with
+// this work for additional information regarding copyright ownership.
+// The ASF licenses this file to you under the Apache License, Version
+// 2.0 (the "License"); you may not use this file except in compliance
+// with the License. You may obtain a copy of the License at
+//
+// https://www.apache.org/licenses/LICENSE-2.0 Unless required by
+// applicable law or agreed to in writing, software distributed under the
+// License is distributed on an "AS IS" BASIS, WITHOUT WARRANTIES OR
+// CONDITIONS OF ANY KIND, either express or implied. See the License for
+// the specific language governing permissions and limitations under the
+// License.
+== Writing the Application
+
+=== Getting Started with ObjectContext
+
+In this section we'll write a simple main class to run our application, and get a brief introduction to Cayenne
+`ObjectContext`.
+
+==== Creating the Main Class
+
+Create a file called `Main.java` in the `src/main/java/org/example/cayenne` directory with a standard `main()` method:
+
+[source,java]
+----
+include::{java-include-dir}/Main.java[tags=main-empty]
+----
+
+The first thing you need to be able to access the database is to create a `CayenneRuntime` object (which is essentially
+a wrapper around Cayenne stack), and use it to obtain an instance of an `ObjectContext`. The runtime needs to know which
+database to connect to. The database connection is not a part of the mapping project. It is defined in the code as
+a `DataSource`:
+
+[source,java]
+----
+include::{java-include-dir}/Main.java[tags=main-runtime]
+----
+
+`ObjectContext` is an isolated "session" in Cayenne that provides all needed API to work with data.
+`ObjectContext` has methods to execute queries and manage persistent objects. We'll discuss them in the following
+sections. When the first `ObjectContext` is created in the application, Cayenne loads XML mapping files and creates
+a shared access stack that is later reused by other ObjectContexts.
+
+==== Running the Application
+
+Let's check what happens when you run the application:
+
+----
+$ mvn compile exec:java -Dexec.mainClass=org.example.cayenne.Main
+----
+
+In the console you'll see output similar to this, indicating that Cayenne stack has been started
+(long lines are wrapped here for readability):
+
+----
+[main] INFO org.apache.cayenne.datasource.DriverDataSource - +++ Connecting: SUCCESS.
+[main] INFO org.apache.cayenne.configuration.xml.XMLDataChannelDescriptorLoader - Loading
+    XML configuration resource from file:/.../cayenne-project.xml
+[main] INFO org.apache.cayenne.configuration.xml.XMLDataChannelDescriptorLoader - Loading
+    XML DataMap resource from file:/.../datamap.map.xml
+[main] INFO org.apache.cayenne.configuration.runtime.DataDomainProvider - setting DataNode
+    'cayenne-0' as default, used by all unlinked DataMaps
+----
+
+=== Creating Objects
+
+Now we'll create a bunch of objects and save them to the database. An object is created and registered with
+`ObjectContext` using the `newObject` method. Objects *must* be registered with an `ObjectContext` to be persisted and
+to allow setting relationships with other objects. Add this code to the `main` method of the `Main` class:
+
+[source,java,indent=0]
+----
+include::{java-include-dir}/Main.java[tags=new-artist]
+----
+
+Note that at this point the `picasso` object is only stored in memory and is not saved in the database. Let's continue
+by adding a Metropolitan Museum `Gallery` object and a few Picasso paintings:
+
+[source,java,indent=0]
+----
+include::{java-include-dir}/Main.java[tags=new-painting]
+----
+
+Now we can link the objects together, establishing relationships. Note that in each case below relationships are
+automatically established in both directions (e.g. `picasso.addToPaintings(girl)` has exactly the same effect as
+`girl.setArtist(picasso)`).
+
+[source,java,indent=0]
+----
+include::{java-include-dir}/Main.java[tags=link-objects]
+----
+
+Now let's save all five new objects, in a single method call:
+
+[source,java,indent=0]
+----
+include::{java-include-dir}/Main.java[tags=commit]
+----
+
+Run the application again. The new output will show a few actual DB operations:
+
+----
+...
+[main] INFO org.apache.cayenne.dba.AutoAdapter - Detected and installed adapter:
+    org.apache.cayenne.dba.mysql.MySQLAdapter
+[main] INFO cayenne-sql - tx started
+[main] INFO cayenne-sql - INSERT INTO cayenne_demo.artist(DATE_OF_BIRTH, NAME) VALUES(?, ?)
+    | bind:[DATE_OF_BIRTH:'1881-10-25',NAME:'Pablo Picasso'] updated:1
+    generated:[GENERATED_KEY:1] time_ms:5
+[main] INFO cayenne-sql - INSERT INTO cayenne_demo.gallery(FOUNDED_DATE, NAME) VALUES(?, ?)
+    | bind:[FOUNDED_DATE:NULL,NAME:'Metropolitan Museum of Art'] updated:1
+    generated:[GENERATED_KEY:1] time_ms:1
+[main] INFO cayenne-sql - INSERT INTO cayenne_demo.painting(ARTIST_ID, GALLERY_ID, NAME)
+    VALUES(?, ?, ?)
+    | bind:[ARTIST_ID:1,GALLERY_ID:1,NAME:'Gertrude Stein']
+    [ARTIST_ID:1,GALLERY_ID:1,NAME:'Girl Reading at a Table'] updated:2
+    generated:[GENERATED_KEY:1][GENERATED_KEY:2] time_ms:2
+[main] INFO cayenne-sql - tx committed
+----
+
+Cayenne has figured out the right order of the inserts, grouped the two paintings in a single batch, and used the
+primary keys generated by the database to initialize the foreign keys. Not bad for just a few lines of code.
+
+=== Selecting Objects
+
+It was shown before how to persist new objects. Cayenne queries are used to access already saved objects. The primary
+query type used for selecting objects is `ObjectSelect`. We don't have too much data in the database yet, but we can
+still demonstrate the main principles below.
+
+- Select all paintings (the code, and the log output it generates):
+
+[source,java,indent=0]
+----
+include::{java-include-dir}/Main.java[tags=select-all]
+----
+
+----
+[main] INFO cayenne-sql - SELECT NAME, ARTIST_ID, GALLERY_ID, ID FROM cayenne_demo.painting
+    | selected:2 time_ms:1
+----
+
+- Select paintings that start with "`gi`", ignoring case:
+
+[source,java,indent=0]
+----
+include::{java-include-dir}/Main.java[tags=select-like]
+----
+
+----
+[main] INFO cayenne-sql - SELECT NAME, ARTIST_ID, GALLERY_ID, ID FROM cayenne_demo.painting
+    WHERE UPPER( NAME) LIKE UPPER( ?)
+    | bind:[NAME:'gi%'] selected:1 time_ms:0
+----
+
+- Select all paintings done by artists who were born before 1900:
+
+[source,java,indent=0]
+----
+include::{java-include-dir}/Main.java[tags=select-path]
+----
+
+----
+[main] INFO cayenne-sql - SELECT p.NAME, p.ARTIST_ID, p.GALLERY_ID, p.ID
+    FROM cayenne_demo.painting p JOIN cayenne_demo.artist a ON p.ARTIST_ID = a.ID
+    WHERE a.DATE_OF_BIRTH < ?
+    | bind:[DATE_OF_BIRTH:'1900-01-01'] selected:2 time_ms:1
+----
+
+Note how `Painting.NAME`, `Painting.ARTIST` and `Artist.DATE_OF_BIRTH` are used to build the query conditions. These
+are the property objects that Cayenne generated in the `_Painting` and `_Artist` superclasses. They make the queries
+type-safe, e.g. the compiler would not allow comparing a date of birth with a String.
+
+=== Deleting Objects
+
+While deleting objects is possible via SQL, qualifying a delete on one or more IDs, a more common way in Cayenne
+(or ORM in general) is to get a hold of the object first, and then delete it via the context. Let's find an artist:
+
+[source,java,indent=0]
+----
+include::{java-include-dir}/Main.java[tags=delete-select]
+----
+
+Now let's delete the artist:
+
+[source,java,indent=0]
+----
+include::{java-include-dir}/Main.java[tags=delete]
+----
+
+Since we set up the "Cascade" delete rule for the `Artist.paintings` relationship, Cayenne will automatically delete
+all paintings of this artist. So when you run the app you'll see this output:
+
+----
+[main] INFO cayenne-sql - SELECT DATE_OF_BIRTH, NAME, ID FROM cayenne_demo.artist
+    WHERE NAME = ?
+    | bind:[NAME:'Pablo Picasso'] selected:1 time_ms:1
+...
+[main] INFO cayenne-sql - tx started
+[main] INFO cayenne-sql - DELETE FROM cayenne_demo.painting WHERE ID = ?
+    | bind:[ID:1][ID:2] updated:2 time_ms:1
+[main] INFO cayenne-sql - DELETE FROM cayenne_demo.artist WHERE ID = ?
+    | bind:[ID:1] updated:1 time_ms:0
+[main] INFO cayenne-sql - tx committed
+----

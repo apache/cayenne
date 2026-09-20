@@ -17,14 +17,14 @@
  *  under the License.
  ****************************************************************/
 // The parts of this class are included in the tutorial docs. "main-empty" and "main-runtime" tags assemble the versions
-// of this class at the different tutorial steps
+// of this class at the different tutorial steps. The class is only compiled, but not run during the build, as it needs
+// a MySQL database.
 // tag::main-runtime[]
 // tag::main-empty[]
 package org.example.cayenne;
 
 // end::main-empty[]
 import org.apache.cayenne.ObjectContext;
-import org.apache.cayenne.configuration.DataNodeDescriptor;
 import org.apache.cayenne.datasource.CayenneDataSource;
 import org.apache.cayenne.runtime.CayenneRuntime;
 
@@ -45,20 +45,16 @@ public class Main {
     public static void main(String[] args) {
         // end::main-empty[]
 
-        // an in-memory Derby database
-        DataSource dataSource = CayenneDataSource.of("jdbc:derby:memory:testdb;create=true")
+        // TODO: change to your actual username and password
+        DataSource dataSource = CayenneDataSource.of("jdbc:mysql://127.0.0.1:3306/cayenne_demo")
+                .userName("root")
+                .password("your-password")
                 .pool(1, 1)
-                .build();
-
-        // let Cayenne create the DB schema from the mapping, if it is not there yet
-        DataNodeDescriptor dataNode = DataNodeDescriptor.of("tutorial")
-                .dataSource(dataSource)
-                .createSchemaIfNeeded()
                 .build();
 
         CayenneRuntime cayenneRuntime = CayenneRuntime.of()
                 .addConfig("cayenne-project.xml")
-                .defaultDataNode(dataNode)
+                .defaultDataNode(dataSource)
                 .build();
 
         ObjectContext context = cayenneRuntime.newContext();
@@ -67,6 +63,8 @@ public class Main {
         newObjectsTutorial(context);
         selectTutorial(context);
         deleteTutorial(context);
+
+        cayenneRuntime.shutdown();
         // tag::main-runtime[]
         // tag::main-empty[]
     }
@@ -107,7 +105,6 @@ public class Main {
     }
 
     static void selectTutorial(ObjectContext context) {
-        // ObjectSelect examples
         // tag::select-all[]
         List<Painting> paintings1 = ObjectSelect.query(Painting.class).select(context);
         // end::select-all[]
@@ -125,7 +122,6 @@ public class Main {
     }
 
     static void deleteTutorial(ObjectContext context) {
-        // Delete object examples
         // tag::delete-select[]
         Artist picasso = ObjectSelect.query(Artist.class)
                 .where(Artist.NAME.eq("Pablo Picasso")).selectOne(context);

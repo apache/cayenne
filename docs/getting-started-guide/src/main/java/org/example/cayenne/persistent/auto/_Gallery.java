@@ -1,9 +1,12 @@
 package org.example.cayenne.persistent.auto;
 
+import java.time.LocalDate;
 import java.util.List;
 
 import org.apache.cayenne.PersistentObject;
+import org.apache.cayenne.exp.property.DateProperty;
 import org.apache.cayenne.exp.property.ListProperty;
+import org.apache.cayenne.exp.property.NumericIdProperty;
 import org.apache.cayenne.exp.property.PropertyFactory;
 import org.apache.cayenne.exp.property.SelfProperty;
 import org.apache.cayenne.exp.property.StringProperty;
@@ -20,14 +23,27 @@ public abstract class _Gallery extends PersistentObject {
 
     public static final SelfProperty<Gallery> SELF = PropertyFactory.createSelf(Gallery.class);
 
+    public static final NumericIdProperty<Integer> ID_PK_PROPERTY = PropertyFactory.createNumericId("ID", "Gallery", Integer.class);
     public static final String ID_PK_COLUMN = "ID";
 
+    public static final DateProperty<LocalDate> FOUNDED_DATE = PropertyFactory.createDate("foundedDate", LocalDate.class);
     public static final StringProperty<String> NAME = PropertyFactory.createString("name", String.class);
     public static final ListProperty<Painting> PAINTINGS = PropertyFactory.createList("paintings", Painting.class);
 
+    protected LocalDate foundedDate;
     protected String name;
 
     protected Object paintings;
+
+    public void setFoundedDate(LocalDate foundedDate) {
+        beforePropertyWrite("foundedDate", this.foundedDate, foundedDate);
+        this.foundedDate = foundedDate;
+    }
+
+    public LocalDate getFoundedDate() {
+        beforePropertyRead("foundedDate");
+        return this.foundedDate;
+    }
 
     public void setName(String name) {
         beforePropertyWrite("name", this.name, name);
@@ -59,6 +75,8 @@ public abstract class _Gallery extends PersistentObject {
         }
 
         switch(propName) {
+            case "foundedDate":
+                return this.foundedDate;
             case "name":
                 return this.name;
             case "paintings":
@@ -75,6 +93,9 @@ public abstract class _Gallery extends PersistentObject {
         }
 
         switch (propName) {
+            case "foundedDate":
+                this.foundedDate = (LocalDate)val;
+                break;
             case "name":
                 this.name = (String)val;
                 break;

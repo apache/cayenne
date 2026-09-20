@@ -31,7 +31,6 @@ Cayenne supports numerous other features, including caching, an object query syn
 
 ## Quick Links
 
-* [Getting Started DB-First](https://cayenne.apache.org/docs/5.0/getting-started-db-first/)
 * [Getting Started](https://cayenne.apache.org/docs/5.0/getting-started-guide/)
 * [Documentation](https://cayenne.apache.org/docs/5.0/cayenne-guide/)
 * [Upgrading from Older Cayenne](https://github.com/apache/cayenne/blob/master/UPGRADE.md)

@@ -37,7 +37,6 @@
 		<module>cayenne-asciidoc-extension</module>
 		<module>cayenne-guide</module>
 		<module>getting-started-guide</module>
-		<module>getting-started-db-first</module>
 	</modules>
 
 	<properties>

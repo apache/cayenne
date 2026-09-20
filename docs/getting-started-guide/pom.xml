@@ -31,21 +31,6 @@
     <packaging>jar</packaging>
     <name>getting-started-guide: AsciiDoc - Getting Started with Cayenne</name>
 
-    <dependencies>
-
-        <!-- Test dependencies. The test runs the tutorial code that is included in the docs -->
-        <dependency>
-            <groupId>org.junit.jupiter</groupId>
-            <artifactId>junit-jupiter</artifactId>
-            <scope>test</scope>
-        </dependency>
-        <dependency>
-            <groupId>org.slf4j</groupId>
-            <artifactId>slf4j-simple</artifactId>
-            <scope>test</scope>
-        </dependency>
-    </dependencies>
-
     <build>
         <plugins>
             <plugin>

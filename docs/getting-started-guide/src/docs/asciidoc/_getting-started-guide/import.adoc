@@ -1,0 +1,101 @@
+// Licensed to the Apache Software Foundation (ASF) under one or more
+// contributor license agreements. See the NOTICE file distributed with
+// this work for additional information regarding copyright ownership.
+// The ASF licenses this file to you under the Apache License, Version
+// 2.0 (the "License"); you may not use this file except in compliance
+// with the License. You may obtain a copy of the License at
+//
+// https://www.apache.org/licenses/LICENSE-2.0 Unless required by
+// applicable law or agreed to in writing, software distributed under the
+// License is distributed on an "AS IS" BASIS, WITHOUT WARRANTIES OR
+// CONDITIONS OF ANY KIND, either express or implied. See the License for
+// the specific language governing permissions and limitations under the
+// License.
+== Importing the Database
+
+Now we have everything ready, and can proceed to creating a Cayenne model from our MySQL database. This process is
+called "reverse engineering" or "DB import".
+
+=== With CayenneModeler
+
+==== Install the JDBC Driver
+
+The Modeler needs a JDBC driver to connect to the database. Select `Tools > Preferences` from the menu and go to the
+"Classpath" section:
+
+image::prefs-classpath.png[align="center",width=600]
+
+If you already have the MySQL driver jar somewhere on your machine, click "Add Jar" and select it. Otherwise click
+"Get From Maven Central", enter the driver coordinates and click "Download":
+
+image::prefs-maven-download.png[align="center",width=342]
+
+Click "Save" to close the preferences dialog. This only needs to be done once, as the Modeler remembers its classpath.
+
+==== Create a Project and a DataMap
+
+Click on the "New Project" button on the welcome screen (or select `File > New Project` from the menu). A new mapping
+project will appear. Now select `Project > Create DataMap`. A DataMap is an object that holds all the mapping
+information. You can leave all the DataMap defaults unchanged except for one - "Default Java Package". Enter
+`org.example.cayenne.persistent`. This name will later be used for all persistent classes:
+
+image::datamap.png[align="center",width=800]
+
+==== Connect to the Database
+
+With the DataMap selected, switch to the "DB Import" tab. The left-hand side of the tab shows the import rules stored
+in the project, and the right-hand side shows the database contents:
+
+image::dbimport-empty.png[align="center",width=800]
+
+Click on the "Configure Connection" button (the first one in the toolbar on the right) and enter the connection settings:
+
+- JDBC Driver: `com.mysql.cj.jdbc.Driver`
+- DB URL: `jdbc:mysql://127.0.0.1:3306/cayenne_demo`
+- User Name and Password of your MySQL user.
+
+image::dbimport-connection.png[align="center",width=547]
+
+Click "Continue". The Modeler checks the connection and saves it in its local preferences. The connection information
+(including the password) is not stored in the project files. Now click on the "Refresh DB Schema" button next to
+"Configure Connection" to load the database contents.
+
+==== Run the Import
+
+Select the `cayenne_demo` catalog on the right and click "Include". This creates a rule in the project to import
+everything from this catalog:
+
+image::dbimport-rules.png[align="center",width=800]
+
+Now click "Run Import". The Modeler shows the changes that it has made to the model:
+
+image::dbimport-result.png[align="center",width=400]
+
+Click "OK". The DataMap now has a DbEntity for each table (`artist`, `gallery`, `painting`), describing its columns
+and relationships, and a matching ObjEntity for each DbEntity (`Artist`, `Gallery`, `Painting`), describing a Java
+class, with its attributes and relationships:
+
+image::model-imported.png[align="center",width=800]
+
+==== Save the Project
+
+Select `File > Save` and choose the `src/main/resources` directory of the tutorial project. The Modeler creates two
+files there: `cayenne-project.xml` (the project descriptor) and `datamap.map.xml` (the DataMap). Both should be
+committed to the version control system along with the rest of your code.
+
+=== With Claude
+
+Start Claude Code in the tutorial project directory and ask it to do the import:
+
+[quote]
+____
+Create a Cayenne project in `src/main/resources` and import the `cayenne_demo` MySQL database into it.
+Use `org.example.cayenne.persistent` as the Java package.
+____
+
+Claude does not know how to connect to your database, and it should not. So the first time it opens the project in
+CayenneModeler, and asks you to enter the connection settings on the "DB Import" tab, exactly as described in
+"Connect to the Database" above (this includes installing the JDBC driver). Once you save the connection, tell Claude
+to continue. It runs the import using the connection stored in the Modeler preferences, and reports the entities
+that were added to the model. The project files are the same as the ones created with the Modeler, so from here
+on you can mix the two approaches.

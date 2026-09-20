@@ -6,6 +6,7 @@ import java.util.List;
 import org.apache.cayenne.PersistentObject;
 import org.apache.cayenne.exp.property.DateProperty;
 import org.apache.cayenne.exp.property.ListProperty;
+import org.apache.cayenne.exp.property.NumericIdProperty;
 import org.apache.cayenne.exp.property.PropertyFactory;
 import org.apache.cayenne.exp.property.SelfProperty;
 import org.apache.cayenne.exp.property.StringProperty;
@@ -22,6 +23,7 @@ public abstract class _Artist extends PersistentObject {
 
     public static final SelfProperty<Artist> SELF = PropertyFactory.createSelf(Artist.class);
 
+    public static final NumericIdProperty<Integer> ID_PK_PROPERTY = PropertyFactory.createNumericId("ID", "Artist", Integer.class);
     public static final String ID_PK_COLUMN = "ID";
 
     public static final DateProperty<LocalDate> DATE_OF_BIRTH = PropertyFactory.createDate("dateOfBirth", LocalDate.class);

@@ -34,8 +34,15 @@ a copy of the License at https://www.apache.org/licenses/LICENSE-2.0_#
 is distributed on an "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 See the License for the specific language governing permissions and limitations under the License._#
 
+
 include::_getting-started-guide/setup.adoc[]
 
-include::_getting-started-guide/part2.adoc[]
+include::_getting-started-guide/import.adoc[]
 
-include::_getting-started-guide/part3.adoc[]
+include::_getting-started-guide/sync.adoc[]
+
+include::_getting-started-guide/classes.adoc[]
+
+include::_getting-started-guide/app.adoc[]
+
+include::_getting-started-guide/next.adoc[]

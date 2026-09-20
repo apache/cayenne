@@ -11,16 +11,105 @@
 // CONDITIONS OF ANY KIND, either express or implied. See the License for
 // the specific language governing permissions and limitations under the
 // License.
-== Setting up the environment
+== Setup
 
-The goal of this chapter of the tutorial is to install (or check that you already have
-installed) a minimally needed set of software to build a Cayenne application.
+In this tutorial we'll take an existing database, create a Cayenne model from it, generate Java classes from the
+model, and write a small application that creates, selects and deletes persistent objects. The model is created
+with CayenneModeler, a GUI tool that comes with Cayenne. If you are using the Claude Code AI agent, each modeling step
+also shows how to get the same result by asking Claude.
 
-=== Install Java
+=== Prerequisites
 
-Obviously, JDK has to be installed. Cayenne 5.0 requires JDK 21 or newer.
+==== Java
 
-=== Install IntelliJ IDEA
+Cayenne 5.0 requires JDK 21 or newer.
 
-Download and install IntelliJ IDEA Community Edition.
-This tutorial is based on version 2016.3, still it should work with any recent IntelliJ IDEA version.
+==== Maven
+
+Apache Maven is used to build and run the tutorial application. All the commands in this tutorial are run in a terminal.
+
+==== CayenneModeler
+
+CayenneModeler is the GUI tool used in this tutorial to import the database schema, to edit the model and to generate
+Java classes. Download the appropriate Cayenne distribution from https://cayenne.apache.org/download/ and launch the
+Modeler from it (e.g. `java -jar CayenneModeler.jar`, or open `CayenneModeler.app` on macOS). The welcome screen of the
+Modeler looks like this:
+
+image::modeler-started.png[align="center",width=800]
+
+==== Claude Code (optional)
+
+To follow the "With Claude" alternatives, install Claude Code, the `apache-cayenne` plugin and the Cayenne MCP server,
+as described in the link:/docs/{project-major-version}/cayenne-guide/agentic-coding/[Agentic Coding] chapter of the
+Cayenne Guide. The MCP server comes with CayenneModeler, so you still need to download the Modeler.
+
+==== MySQL
+
+MySQL database server is used as a database in this tutorial. Any other database that has a JDBC driver would work
+just as well, with the appropriate changes to the driver name and the connection URL.
+
+You can create the test database with any tools you are comfortable with. Here is the DB schema that will be used
+in this tutorial:
+
+[source,sql]
+----
+CREATE SCHEMA IF NOT EXISTS cayenne_demo; USE cayenne_demo;
+CREATE TABLE artist (DATE_OF_BIRTH DATE NULL, ID INT NOT NULL AUTO_INCREMENT, NAME VARCHAR(200) NULL, PRIMARY KEY (ID)) ENGINE=InnoDB;
+CREATE TABLE gallery (ID INT NOT NULL AUTO_INCREMENT, NAME VARCHAR(200) NULL, PRIMARY KEY (ID)) ENGINE=InnoDB;
+CREATE TABLE painting (ARTIST_ID INT NULL, GALLERY_ID INT NULL, ID INT NOT NULL AUTO_INCREMENT, NAME VARCHAR(200) NULL, PRIMARY KEY (ID)) ENGINE=InnoDB;
+ALTER TABLE painting ADD FOREIGN KEY (ARTIST_ID) REFERENCES artist (ID) ON DELETE CASCADE;
+ALTER TABLE painting ADD FOREIGN KEY (GALLERY_ID) REFERENCES gallery (ID) ON DELETE CASCADE;
+----
+
+You can save it to the `cayenne_demo.sql` file and import to your database with the following command:
+
+----
+$ mysql < cayenne_demo.sql
+----
+
+=== Maven Project
+
+Create a directory for the tutorial project with the standard Maven layout:
+
+----
+$ mkdir -p cayenne-tutorial/src/main/java
+$ mkdir -p cayenne-tutorial/src/main/resources
+$ cd cayenne-tutorial
+----
+
+In the project directory create a `pom.xml` file that declares the dependencies on Cayenne, the MySQL JDBC driver
+and a simple logger (Cayenne uses SLF4J logging API, and here we'll use a backend that prints everything to the console):
+
+[source,xml,subs="verbatim,attributes"]
+----
+<project xmlns="http://maven.apache.org/POM/4.0.0">
+    <modelVersion>4.0.0</modelVersion>
+
+    <groupId>org.example.cayenne</groupId>
+    <artifactId>cayenne-tutorial</artifactId>
+    <version>1.0-SNAPSHOT</version>
+
+    <properties>
+        <maven.compiler.release>21</maven.compiler.release>
+        <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
+    </properties>
+
+    <dependencies>
+        <dependency>
+            <groupId>org.apache.cayenne</groupId>
+            <artifactId>cayenne</artifactId>
+            <version>{project-version}</version>
+        </dependency>
+        <dependency>
+            <groupId>com.mysql</groupId>
+            <artifactId>mysql-connector-j</artifactId>
+            <version>9.7.0</version>
+        </dependency>
+        <dependency>
+            <groupId>org.slf4j</groupId>
+            <artifactId>slf4j-simple</artifactId>
+            <version>2.0.17</version>
+        </dependency>
+    </dependencies>
+</project>
+----
