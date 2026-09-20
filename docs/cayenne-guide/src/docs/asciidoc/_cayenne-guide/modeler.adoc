@@ -13,19 +13,19 @@
 // License.
 
 [#cayenne-modeler]
-=== CayenneModeler Application
+== CayenneModeler Application
 
-==== Reverse Engineering Database
+=== Reverse Engineering Database
 
 See chapter <<Reverse Engineering in Cayenne Modeler>>
 
-==== Generating Database Schema
+=== Generating Database Schema
 
 With Cayenne Modeler you can create simple database schemas without any additional database tools. This is a good option for initial database setup if you completely created you model with the Modeler. You can start SQL schema generation by selecting menu *Tools > Generate Database Schema*
 
 You can select what database parts should be generated and what tables you want
 
-==== Generating Java Classes
+=== Generating Java Classes
 
 Before using Cayenne in you code you need to generate java source code for persistent objects. This can be done with Modeler GUI or via <<cgen>> maven/ant plugin.
 
@@ -41,7 +41,7 @@ Default type of generation suitable for almost all cases. Use this type unless y
 
 In advanced mode you can control almost all aspects of code generation including custom templates for java code. See default Cayenne templates on GitHub as an example.
 
-==== Modeling Generic Persistent Classes
+=== Modeling Generic Persistent Classes
 
 Normally each ObjEntity is mapped to a specific Java class (such as Artist or Painting) that explicitly declare all entity properties as pairs of getters and setters. However, Cayenne allows to map a completely generic class to any number of entities. The only expectation is that a generic class implements `org.apache.cayenne.Persistent`. So an ideal candidate for a generic class is `GenericPersistentObject`, or some custom subclass of `GenericPersistentObject`.
 
@@ -49,7 +49,7 @@ If you don't enter anything for Java Class of an ObjEntity, Cayenne assumes gene
 
 Class generation procedures (either done in the Modeler or with Ant or Maven) would skip entities that are mapped to `GenericPersistentObject` explicitly or have no class mapping.
 
-==== Modeling Primary Key Generation Strategy
+=== Modeling Primary Key Generation Strategy
 
 Cayenne supports three PK generation strategies:
 

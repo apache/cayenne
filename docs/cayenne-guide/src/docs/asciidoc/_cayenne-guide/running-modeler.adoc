@@ -12,56 +12,10 @@
 // the specific language governing permissions and limitations under the
 // License.
 
-include::../var.adoc[]
-
-=== Setup
-
-==== System Requirements
-
-- Java: Cayenne runtime framework and CayenneModeler GUI tool are written in 100% Java, and run on any Java-compatible platform. Minimal required JDK version depends on the version of Cayenne you are using, as shown in the following table:
-
-[#versionHistory.table.table-bordered]
-.Cayenne Version History
-[cols="2,3,2"]
-|===
-|Cayenne Version |Java Version |Status
-
-|5.0
-|Java 21 or newer
-|Development
-
-|4.2
-|Java 1.8 or newer
-|Stable
-
-|4.1
-|Java 1.8 -- Java 17
-|Stable
-
-|4.0
-|Java 1.7 -- Java 11
-|Aging
-
-|3.0 / 3.1
-|Java 1.5 -- Java 1.8
-|Legacy
-
-|1.2 / 2.0
-|Java 1.4
-|Legacy
-
-|1.1
-|Java 1.3
-|Legacy
-|===
-
-
-- JDBC Driver: An appropriate DB-specific JDBC driver is needed to access the database. It can be included in the application or used in web container DataSource configuration.
-
-- Third-party Libraries: Cayenne runtime framework has a minimal set of required and a few more optional dependencies on third-party open source packages. See <<Including Cayenne in a Project>> chapter for details.
+include::var.adoc[]
 
 [[runModeler]]
-==== Running CayenneModeler
+== Running CayenneModeler
 
 CayenneModeler GUI tool is intended to work with object relational mapping projects. While you can edit your XML by
 hand, it is rarely needed, as the Modeler is a pretty advanced tool included in Cayenne distribution. To obtain
@@ -93,7 +47,7 @@ On macOS the same applies to the `.app` bundle:
 $ open CayenneModeler.app --args path/to/cayenne-project.xml
 ----
 
-===== Running from Maven
+=== Running from Maven
 
 The Modeler can also be started from Maven. While it may look like an exotic way to start a GUI application, it has
 its benefits - no need to download Cayenne distribution, and the version of the Modeler always matches the version of

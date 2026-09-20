@@ -12,9 +12,9 @@
 // the specific language governing permissions and limitations under the
 // License.
 
-=== Cayenne Mapping Structure
+== Cayenne Mapping Structure
 
-==== Cayenne Project
+=== Cayenne Project
 
 A Cayenne project is an XML representation of a model connecting database schema with Java classes. A project is normally created and manipulated via CayenneModeler GUI and then used to initialize Cayenne runtime. A project is made of one or more files. There's always a root project descriptor file in any valid project. It is normally called cayenne-xyz.xml, where "xyz" is the name of the project.
 
@@ -36,19 +36,19 @@ DataMap are referenced by name in the root descriptor:
 
 Map files are resolved by Cayenne by appending ".map.xml" extension to the map name, and resolving the resulting string relative to the root descriptor URI. The following sections discuss various ORM model objects, without regards to their XML representation. XML format details are really unimportant to the Cayenne users.
 
-==== DataMap
+=== DataMap
 
 DataMap is a container of persistent entities and other object-relational metadata. DataMap provides developers with a scope to organize their entities, but it does not provide a namespace for entities. In fact all DataMaps present in runtime are combined in a single namespace. Each DataMap must be associated with a DataNode. This is how Cayenne knows which database to use when running a query.
 
-==== DataNode
+=== DataNode
 
 DataNode is a model of a database. It is actually pretty simple. It has a name and a JDBC DataSource. Unlike the rest of the objects discussed here, DataNodes are not a part of the XML mapping project. They are defined in the code, when Cayenne runtime is created (see <<Starting Cayenne>>). Most applications only have one DataNode, though there may be any number of nodes if needed.
 
-==== DbEntity
+=== DbEntity
 
 DbEntity is a model of a single DB table or view. DbEntity is made of DbAttributes that correspond to columns, and DbRelationships that map PK/FK pairs. DbRelationships are not strictly tied to FK constraints in DB, and should be mapped for all logical "relationships" between the tables.
 
-==== ObjEntity
+=== ObjEntity
 
 ObjEntity is a model of a single persistent Java class. ObjEntity is made of ObjAttributes and ObjRelationships. Both correspond to entity class properties. However ObjAttributes represent "simple" properties (normally things like String, numbers, dates, etc.), while ObjRelationships correspond to properties that have a type of another entity.
 
@@ -56,15 +56,15 @@ ObjEntity maps to one or more DbEntities. There's always one "root" DbEntity for
 
 ObjEntities may also contain mapping of their lifecycle callback methods.
 
-==== Embeddable
+=== Embeddable
 
 Embeddable is a model of a Java class that acts as a single attribute of an ObjEntity, but maps to multiple columns in the database.
 
-==== Procedure
+=== Procedure
 
 A model of a stored procedure in the database.
 
-==== Query
+=== Query
 
 A model of a query. Cayenne allows queries to be mapped in Cayenne project, or created in the code. Depending on the circumstances the users may take one or the other approach.
 
