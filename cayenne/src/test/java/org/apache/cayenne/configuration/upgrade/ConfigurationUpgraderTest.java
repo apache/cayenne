@@ -107,7 +107,7 @@ public class ConfigurationUpgraderTest {
 
         // the version 6 fixture has a DataNode, which version 13 removes without a replacement
         assertEquals(0, root.getElementsByTagName("node").getLength());
-        assertEquals(1, context.getDestructiveChanges().size());
+        assertEquals(1, context.getChangesAffectingRuntime().size());
     }
 
     @Test

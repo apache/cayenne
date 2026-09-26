@@ -34,15 +34,15 @@ public class UpgradeContext {
 
     private final Resource resource;
     private final Document document;
-    private final List<String> postUpgradeMessages;
-    private final List<String> destructiveChanges;
+    private final List<String> changeNotifications;
+    private final List<String> changesAffectingRuntime;
     private final List<String> obsoleteFiles;
 
     public UpgradeContext(Resource resource, Document document) {
         this.resource = resource;
         this.document = document;
-        this.postUpgradeMessages = new ArrayList<>();
-        this.destructiveChanges = new ArrayList<>();
+        this.changeNotifications = new ArrayList<>();
+        this.changesAffectingRuntime = new ArrayList<>();
         this.obsoleteFiles = new ArrayList<>();
     }
 
@@ -59,25 +59,25 @@ public class UpgradeContext {
      *
      * @since 5.0
      */
-    public void recordChange(String message, boolean destructive) {
-        postUpgradeMessages.add(message);
-        if (destructive) {
-            destructiveChanges.add(message);
+    public void recordChange(String message, boolean mayAffectRuntime) {
+        changeNotifications.add(message);
+        if (mayAffectRuntime) {
+            changesAffectingRuntime.add(message);
         }
     }
 
     /**
      * @since 5.0
      */
-    public List<String> getPostUpgradeMessages() {
-        return postUpgradeMessages;
+    public List<String> getChangeNotifications() {
+        return changeNotifications;
     }
 
     /**
      * @since 5.0
      */
-    public List<String> getDestructiveChanges() {
-        return destructiveChanges;
+    public List<String> getChangesAffectingRuntime() {
+        return changesAffectingRuntime;
     }
 
     /**

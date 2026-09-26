@@ -80,10 +80,10 @@ public class UpgradeHandler_V13Test extends BaseUpgradeHandlerTest {
         assertEquals(List.of("DATA_CHANNEL_NO_NAME"), excludeNames,
                 "DATA_NODE_* and DATA_MAP_NODE_LINKAGE excludes must be removed, others preserved");
 
-        assertEquals(2, unit.getPostUpgradeMessages().size(), "one post-upgrade message per removed node");
-        assertTrue(unit.getPostUpgradeMessages().get(0).contains("'node1'"));
-        assertTrue(unit.getPostUpgradeMessages().get(1).contains("'node2'"));
-        assertEquals(unit.getPostUpgradeMessages(), unit.getDestructiveChanges(),
+        assertEquals(2, unit.getChangeNotifications().size(), "one post-upgrade message per removed node");
+        assertTrue(unit.getChangeNotifications().get(0).contains("'node1'"));
+        assertTrue(unit.getChangeNotifications().get(1).contains("'node2'"));
+        assertEquals(unit.getChangeNotifications(), unit.getChangesAffectingRuntime(),
                 "DataNode removal has no automatic replacement, so it is destructive");
     }
 

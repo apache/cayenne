@@ -126,11 +126,11 @@ public class XMLDataMapLoader implements DataMapLoader {
         }
 
         UpgradeContext context = upgrader.upgradeDataMapDom(configurationResource, version);
-        if (!context.getDestructiveChanges().isEmpty()) {
+        if (!context.getChangesAffectingRuntime().isEmpty()) {
             throw new CayenneRuntimeException("""
                     Unable to upgrade DataMap from %s (project version %s) in memory, as the upgrade requires \
                     manual changes. Open the project in CayenneModeler to upgrade it. %s""",
-                    configurationURL, version, String.join(" ", context.getDestructiveChanges()));
+                    configurationURL, version, String.join(" ", context.getChangesAffectingRuntime()));
         }
 
         LOGGER.warn("""

@@ -67,10 +67,10 @@ public class UpgradeHandler_V12Test extends BaseUpgradeHandlerTest {
 
         // the graph file is reported as obsolete, not deleted, by the handler
         assertEquals(List.of("project1.graph.xml"), unit.getObsoleteFiles());
-        assertEquals(1, unit.getPostUpgradeMessages().size());
+        assertEquals(1, unit.getChangeNotifications().size());
         assertEquals("The 'graph' diagram layout is no longer supported and was removed from the project",
-                unit.getPostUpgradeMessages().getFirst());
-        assertTrue(unit.getDestructiveChanges().isEmpty(), "dropping the graph layout is not destructive");
+                unit.getChangeNotifications().getFirst());
+        assertTrue(unit.getChangesAffectingRuntime().isEmpty(), "dropping the graph layout is not destructive");
     }
 
     @Test

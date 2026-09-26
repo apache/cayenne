@@ -112,7 +112,7 @@ public class DefaultProjectUpgrader implements ProjectUpgrader {
     protected static List<String> collectPostUpgradeMessages(List<UpgradeContext> contexts) {
         Set<String> messages = new LinkedHashSet<>();
         for (UpgradeContext context : contexts) {
-            messages.addAll(context.getPostUpgradeMessages());
+            messages.addAll(context.getChangeNotifications());
         }
         return new ArrayList<>(messages);
     }

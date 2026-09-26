@@ -32,9 +32,9 @@ public class UpgradeContextTest {
         context.recordChange("info", false);
         context.recordChange("destructive", true);
 
-        assertEquals(2, context.getPostUpgradeMessages().size());
-        assertEquals(1, context.getDestructiveChanges().size());
-        assertEquals("destructive", context.getDestructiveChanges().getFirst());
+        assertEquals(2, context.getChangeNotifications().size());
+        assertEquals(1, context.getChangesAffectingRuntime().size());
+        assertEquals("destructive", context.getChangesAffectingRuntime().getFirst());
         assertTrue(context.getObsoleteFiles().isEmpty());
     }
 }
