@@ -19,14 +19,6 @@
 
 package org.apache.cayenne.project.compatibility.configuration;
 
-import java.io.ByteArrayInputStream;
-import java.io.ByteArrayOutputStream;
-import java.net.URL;
-
-import javax.xml.transform.TransformerFactory;
-import javax.xml.transform.dom.DOMSource;
-import javax.xml.transform.stream.StreamResult;
-
 import org.apache.cayenne.ConfigurationException;
 import org.apache.cayenne.configuration.ConfigurationTree;
 import org.apache.cayenne.configuration.DataChannelDescriptor;
@@ -48,13 +40,20 @@ import org.w3c.dom.Document;
 import org.xml.sax.InputSource;
 import org.xml.sax.XMLReader;
 
+import javax.xml.transform.TransformerFactory;
+import javax.xml.transform.dom.DOMSource;
+import javax.xml.transform.stream.StreamResult;
+import java.io.ByteArrayInputStream;
+import java.io.ByteArrayOutputStream;
+import java.net.URL;
+
 
 /**
  * @since 4.1
  */
 public class CompatibilityDataChannelDescriptorLoader extends XMLDataChannelDescriptorLoader {
 
-    private static final Logger LOGGER = LoggerFactory.getLogger(XMLDataChannelDescriptorLoader.class);
+    private static final Logger LOGGER = LoggerFactory.getLogger(CompatibilityDataChannelDescriptorLoader.class);
 
     @Inject
     Provider<ProjectUpgrader> upgradeServiceProvider;
@@ -68,11 +67,9 @@ public class CompatibilityDataChannelDescriptorLoader extends XMLDataChannelDesc
             throw new NullPointerException("Null configurationResource");
         }
 
-        if(!(upgradeServiceProvider.get() instanceof CompatibilityProjectUpgrader)) {
+        if(!(upgradeServiceProvider.get() instanceof CompatibilityProjectUpgrader upgradeService)) {
             throw new ConfigurationException("CompatibilityUpgradeService expected");
         }
-
-        CompatibilityProjectUpgrader upgradeService = (CompatibilityProjectUpgrader)upgradeServiceProvider.get();
 
         PreUpgradeState metaData = upgradeService.checkUpgradeNeeded(configurationResource);
         if(metaData.requiredUpgrade() == UpgradeType.UPGRADE_NOT_NEEDED) {

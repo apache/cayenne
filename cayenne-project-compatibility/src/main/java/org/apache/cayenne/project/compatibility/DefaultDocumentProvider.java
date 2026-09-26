@@ -19,18 +19,18 @@
 
 package org.apache.cayenne.project.compatibility;
 
+import org.w3c.dom.Document;
+
 import java.net.URL;
 import java.util.HashMap;
 import java.util.Map;
-
-import org.w3c.dom.Document;
 
 /**
  * @since 4.1
  */
 public class DefaultDocumentProvider implements DocumentProvider {
 
-    private Map<String, Document> documentMap = new HashMap<>();
+    private final Map<String, Document> documentMap = new HashMap<>();
 
     @Override
     public Document getDocument(URL url) {
