@@ -36,6 +36,7 @@ import org.apache.cayenne.configuration.DataChannelDescriptorLoader;
 import org.apache.cayenne.configuration.DataMapLoader;
 import org.apache.cayenne.configuration.DefaultRuntimeProperties;
 import org.apache.cayenne.configuration.RuntimeProperties;
+import org.apache.cayenne.configuration.upgrade.ConfigurationUpgrader;
 import org.apache.cayenne.configuration.xml.DataChannelMetaData;
 import org.apache.cayenne.configuration.xml.DefaultDataChannelMetaData;
 import org.apache.cayenne.configuration.xml.HandlerFactory;
@@ -129,6 +130,7 @@ public class ToolsModule implements Module {
         binder.bind(DbAdapterFactory.class).to(DefaultDbAdapterFactory.class);
 
         binder.bind(DataMapLoader.class).to(XMLDataMapLoader.class);
+        binder.bind(ConfigurationUpgrader.class).to(ConfigurationUpgrader.class);
         binder.bind(DataChannelDescriptorLoader.class).to(XMLDataChannelDescriptorLoader.class);
         binder.bind(HandlerFactory.class).to(ExtensionAwareHandlerFactory.class);
         binder.bind(DataChannelMetaData.class).to(DefaultDataChannelMetaData.class);

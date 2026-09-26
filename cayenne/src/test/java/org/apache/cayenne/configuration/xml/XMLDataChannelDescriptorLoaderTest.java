@@ -25,6 +25,7 @@ import org.apache.cayenne.configuration.ConfigurationTree;
 import org.apache.cayenne.configuration.DataChannelDescriptor;
 import org.apache.cayenne.configuration.DataMapLoader;
 import org.apache.cayenne.configuration.DefaultConfigurationNameMapper;
+import org.apache.cayenne.configuration.upgrade.ConfigurationUpgrader;
 import org.apache.cayenne.di.AdhocObjectFactory;
 import org.apache.cayenne.di.ClassLoaderManager;
 import org.apache.cayenne.di.DIBootstrap;
@@ -33,12 +34,18 @@ import org.apache.cayenne.di.Module;
 import org.apache.cayenne.di.spi.DefaultAdhocObjectFactory;
 import org.apache.cayenne.di.spi.DefaultClassLoaderManager;
 import org.apache.cayenne.map.DataMap;
+import org.apache.cayenne.map.QueryDescriptor;
 import org.apache.cayenne.resource.URLResource;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.io.TempDir;
 import org.xml.sax.XMLReader;
 
+import java.io.File;
+import java.io.IOException;
+import java.io.InputStream;
 import java.net.URL;
+import java.nio.file.Files;
 import java.util.Collection;
 import java.util.Iterator;
 
@@ -48,12 +55,16 @@ public class XMLDataChannelDescriptorLoaderTest {
 
     private Injector injector;
 
+    @TempDir
+    public File tempDir;
+
     @BeforeEach
     public void setUp() {
         Module testModule = binder -> {
             binder.bind(ClassLoaderManager.class).to(DefaultClassLoaderManager.class);
             binder.bind(AdhocObjectFactory.class).to(DefaultAdhocObjectFactory.class);
             binder.bind(DataMapLoader.class).to(XMLDataMapLoader.class);
+            binder.bind(ConfigurationUpgrader.class).to(ConfigurationUpgrader.class);
             binder.bind(ConfigurationNameMapper.class).to(DefaultConfigurationNameMapper.class);
             binder.bind(HandlerFactory.class).to(DefaultHandlerFactory.class);
             binder.bind(DataChannelMetaData.class).to(NoopDataChannelMetaData.class);
@@ -92,12 +103,97 @@ public class XMLDataChannelDescriptorLoaderTest {
     }
 
     @Test
-    public void loadInvalidVersion() throws Exception {
+    public void loadOldVersion() {
         XMLDataChannelDescriptorLoader loader = new XMLDataChannelDescriptorLoader();
         injector.injectMembers(loader);
 
+        // version 9, upgraded in memory
         URL url = getClass().getResource("cayenne-testConfig4.xml");
-        assertThrows(CayenneRuntimeException.class, () -> loader.load(new URLResource(url)));
+        ConfigurationTree<DataChannelDescriptor> tree = loader.load(new URLResource(url));
+        assertEquals("testConfig4", tree.getRootNode().getName());
+        assertTrue(tree.getRootNode().getDataMaps().isEmpty());
+    }
+
+    @Test
+    public void loadOldVersionWithDataMap() {
+        XMLDataChannelDescriptorLoader loader = new XMLDataChannelDescriptorLoader();
+        injector.injectMembers(loader);
+
+        // version 6 project and DataMap, both upgraded in memory
+        URL url = getClass().getResource("cayenne-testConfig9.xml");
+        ConfigurationTree<DataChannelDescriptor> tree = loader.load(new URLResource(url));
+        assertEquals("testConfig9", tree.getRootNode().getName());
+        assertEquals(1, tree.getRootNode().getDataMaps().size());
+
+        DataMap map = tree.getRootNode().getDataMaps().iterator().next();
+        assertEquals("testConfigMap9", map.getName());
+        assertEquals(2, map.getDbEntity("ARTIST").getAttributes().size());
+        assertEquals("org.apache.cayenne.GenericPersistentObject", map.getObjEntity("Artist").getClassName());
+        assertEquals(1, map.getObjEntity("Artist").getDeclaredAttributes().size());
+        assertEquals(QueryDescriptor.SELECT_QUERY, map.getQueryDescriptor("ArtistQuery").getType());
+    }
+
+    @Test
+    public void loadOldVersionKeepsFiles() throws Exception {
+        File projectFile = copyToTemp("cayenne-testConfig10.xml");
+        File mapFile = copyToTemp("testConfigMap10.map.xml");
+        File graphFile = copyToTemp("testConfig10.graph.xml");
+        byte[] projectBytes = Files.readAllBytes(projectFile.toPath());
+        byte[] mapBytes = Files.readAllBytes(mapFile.toPath());
+
+        XMLDataChannelDescriptorLoader loader = new XMLDataChannelDescriptorLoader();
+        injector.injectMembers(loader);
+
+        // version 11 with a graph layout, dropped by the upgrade to version 12
+        ConfigurationTree<DataChannelDescriptor> tree = loader.load(new URLResource(projectFile.toURI().toURL()));
+        assertEquals(1, tree.getRootNode().getDataMaps().size());
+        DataMap map = tree.getRootNode().getDataMaps().iterator().next();
+        assertNotNull(map.getDbEntity("db_entity"));
+        assertNotNull(map.getObjEntity("Entity"));
+
+        assertTrue(graphFile.exists(), "in-memory upgrade must not delete files");
+        assertArrayEquals(projectBytes, Files.readAllBytes(projectFile.toPath()), "project file must not change");
+        assertArrayEquals(mapBytes, Files.readAllBytes(mapFile.toPath()), "DataMap file must not change");
+    }
+
+    @Test
+    public void loadDestructiveUpgrade() {
+        XMLDataChannelDescriptorLoader loader = new XMLDataChannelDescriptorLoader();
+        injector.injectMembers(loader);
+
+        // version 12 with a DataNode that version 13 removes without a replacement
+        URL url = getClass().getResource("cayenne-testConfig8.xml");
+        ConfigurationException e = assertThrows(ConfigurationException.class, () -> loader.load(new URLResource(url)));
+        assertTrue(e.getMessage().contains("DataNode 'node1'"), e.getMessage());
+        assertTrue(e.getMessage().contains("CayenneModeler"), e.getMessage());
+    }
+
+    @Test
+    public void loadNewerVersion() {
+        XMLDataChannelDescriptorLoader loader = new XMLDataChannelDescriptorLoader();
+        injector.injectMembers(loader);
+
+        URL url = getClass().getResource("cayenne-testConfig6.xml");
+        ConfigurationException e = assertThrows(ConfigurationException.class, () -> loader.load(new URLResource(url)));
+        assertTrue(e.getMessage().contains("version 14 is newer"), e.getMessage());
+    }
+
+    @Test
+    public void loadTooOldVersion() {
+        XMLDataChannelDescriptorLoader loader = new XMLDataChannelDescriptorLoader();
+        injector.injectMembers(loader);
+
+        URL url = getClass().getResource("cayenne-testConfig7.xml");
+        ConfigurationException e = assertThrows(ConfigurationException.class, () -> loader.load(new URLResource(url)));
+        assertTrue(e.getMessage().contains("version 5 is too old"), e.getMessage());
+    }
+
+    private File copyToTemp(String resource) throws IOException {
+        File target = new File(tempDir, resource);
+        try (InputStream in = getClass().getResourceAsStream(resource)) {
+            Files.copy(in, target.toPath());
+        }
+        return target;
     }
 
     @Test

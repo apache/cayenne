@@ -119,7 +119,6 @@
         <module>cayenne-modeler</module>
         <module>cayenne-modeler-prefs</module>
         <module>cayenne-project</module>
-        <module>cayenne-project-compatibility</module>
         <module>cayenne-velocity</module>
         <module>cayenne-maven-plugin</module>
         <module>cayenne-wocompat</module>

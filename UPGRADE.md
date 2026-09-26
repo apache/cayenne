@@ -354,6 +354,11 @@ List<Artist> withExpensivePaintings = ObjectSelect
    "virtual" relationships stored as such String IDs. There's no appetite to keep supporting this in Cayenne. The users
    who still need it are welcome to grab the source code of `IdCoder` and friends from the Cayenne git history and
    incorporate it in their projects.
+*  Per [CAY-3036](https://issues.apache.org/jira/browse/CAY-3036) the `cayenne-project-compatibility` module was removed.
+  The runtime now upgrades project XML created by older Cayenne versions on its own, in memory and without extra
+  dependencies, logging a warning that recommends a permanent upgrade in CayenneModeler. An upgrade that would
+  drop a part of the project without a replacement (e.g. DataNodes, removed in project version 13) still fails to
+  load; open such a project in CayenneModeler to upgrade it.
 
 ## Upgrading to 5.0-M3
 

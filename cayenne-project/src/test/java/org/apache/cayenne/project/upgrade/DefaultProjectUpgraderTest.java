@@ -19,150 +19,132 @@
 
 package org.apache.cayenne.project.upgrade;
 
-import org.apache.cayenne.project.upgrade.handlers.UpgradeHandler;
+import org.apache.cayenne.configuration.ConfigurationTree;
+import org.apache.cayenne.configuration.DataChannelDescriptor;
+import org.apache.cayenne.configuration.DataChannelDescriptorLoader;
+import org.apache.cayenne.configuration.DataMapLoader;
+import org.apache.cayenne.configuration.upgrade.UpgradeType;
+import org.apache.cayenne.configuration.upgrade.ConfigurationUpgrader;
+import org.apache.cayenne.configuration.xml.DataChannelMetaData;
+import org.apache.cayenne.configuration.xml.DefaultHandlerFactory;
+import org.apache.cayenne.configuration.xml.HandlerFactory;
+import org.apache.cayenne.configuration.xml.NoopDataChannelMetaData;
+import org.apache.cayenne.configuration.xml.XMLDataChannelDescriptorLoader;
+import org.apache.cayenne.configuration.xml.XMLDataMapLoader;
+import org.apache.cayenne.configuration.xml.XMLReaderProvider;
+import org.apache.cayenne.di.AdhocObjectFactory;
+import org.apache.cayenne.di.ClassLoaderManager;
+import org.apache.cayenne.di.DIBootstrap;
+import org.apache.cayenne.di.Injector;
+import org.apache.cayenne.di.Module;
+import org.apache.cayenne.di.spi.DefaultAdhocObjectFactory;
+import org.apache.cayenne.di.spi.DefaultClassLoaderManager;
+import org.apache.cayenne.map.DataMap;
+import org.apache.cayenne.project.ProjectModule;
 import org.apache.cayenne.resource.Resource;
 import org.apache.cayenne.resource.URLResource;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
-import org.junit.jupiter.params.ParameterizedTest;
-import org.junit.jupiter.params.provider.CsvSource;
-import org.mockito.ArgumentMatchers;
-import org.w3c.dom.Document;
-import org.xml.sax.InputSource;
+import org.junit.jupiter.api.io.TempDir;
+import org.xml.sax.XMLReader;
 
-import javax.xml.parsers.DocumentBuilder;
-import javax.xml.parsers.DocumentBuilderFactory;
-import java.io.InputStreamReader;
-import java.net.URL;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Objects;
+import java.io.File;
+import java.io.IOException;
+import java.io.InputStream;
+import java.nio.file.Files;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertTrue;
-import static org.mockito.ArgumentMatchers.any;
-import static org.mockito.Mockito.*;
 
 public class DefaultProjectUpgraderTest {
 
-    DefaultProjectUpgrader upgradeService;
+    @TempDir
+    public File tempDir;
 
-    List<UpgradeHandler> handlers;
+    private Injector injector;
 
     @BeforeEach
-    public void createService() {
-        createHandlers();
-        upgradeService = new DefaultProjectUpgrader(handlers);
-    }
-
-    @ParameterizedTest
-    @CsvSource({
-        "5,  INTERMEDIATE_UPGRADE_NEEDED",
-        "6,  UPGRADE_NEEDED",
-        "10, UPGRADE_NEEDED",
-        "11, UPGRADE_NEEDED",
-        "12, UPGRADE_NEEDED",
-        "13, UPGRADE_NOT_NEEDED",
-        "14, DOWNGRADE_NEEDED"
-    })
-    public void checkUpgradeNeeded(String version, UpgradeType expectedType) {
-        PreUpgradeState metaData = upgradeService.checkUpgradeNeeded(getResourceForVersion(version));
-        assertEquals(expectedType, metaData.requiredUpgrade());
+    public void createInjector() {
+        Module testModule = binder -> {
+            binder.bind(ClassLoaderManager.class).to(DefaultClassLoaderManager.class);
+            binder.bind(AdhocObjectFactory.class).to(DefaultAdhocObjectFactory.class);
+            binder.bind(DataMapLoader.class).to(XMLDataMapLoader.class);
+            binder.bind(ConfigurationUpgrader.class).to(ConfigurationUpgrader.class);
+            binder.bind(DataChannelDescriptorLoader.class).to(XMLDataChannelDescriptorLoader.class);
+            binder.bind(HandlerFactory.class).to(DefaultHandlerFactory.class);
+            binder.bind(DataChannelMetaData.class).to(NoopDataChannelMetaData.class);
+            binder.bind(XMLReader.class).toProviderInstance(new XMLReaderProvider(false)).withoutScope();
+        };
+        injector = DIBootstrap.createInjector(new ProjectModule(), testModule);
     }
 
     @Test
-    public void getHandlersForVersion() {
+    public void checkUpgradeNeeded() throws Exception {
+        ProjectUpgrader upgrader = injector.getInstance(ProjectUpgrader.class);
 
-        List<UpgradeHandler> handlers = upgradeService.getHandlersForVersion("6");
-        assertEquals(7, handlers.size());
+        PreUpgradeState state = upgrader.checkUpgradeNeeded(projectWithVersion("5"));
+        assertEquals(UpgradeType.INTERMEDIATE_UPGRADE_NEEDED, state.requiredUpgrade());
+        assertEquals("5", state.projectVersion());
+        assertEquals("13", state.supportedVersion());
+        assertEquals("6", state.intermediateUpgradeVersion());
 
-        handlers = upgradeService.getHandlersForVersion("9");
-        assertEquals(4, handlers.size());
-        assertEquals("10", handlers.get(0).getVersion());
-        assertEquals("11", handlers.get(1).getVersion());
-        assertEquals("12", handlers.get(2).getVersion());
-        assertEquals("13", handlers.get(3).getVersion());
+        state = upgrader.checkUpgradeNeeded(projectWithVersion("11"));
+        assertEquals(UpgradeType.UPGRADE_NEEDED, state.requiredUpgrade());
+        assertEquals("11", state.projectVersion());
+
+        assertEquals(UpgradeType.UPGRADE_NOT_NEEDED, upgrader.checkUpgradeNeeded(projectWithVersion("13")).requiredUpgrade());
+        assertEquals(UpgradeType.DOWNGRADE_NEEDED, upgrader.checkUpgradeNeeded(projectWithVersion("14")).requiredUpgrade());
     }
 
     @Test
-    public void getAdditionalDatamapResources() throws Exception {
-        URL url = Objects.requireNonNull(getClass().getResource("../cayenne-PROJECT1.xml"));
-        Resource resource = new URLResource(url);
-        Document document = readDocument(url);
-        UpgradeContext unit = new UpgradeContext(resource, document);
-        List<Resource> resources = upgradeService.getAdditionalDatamapResources(unit);
+    public void upgrade() throws Exception {
+        File projectFile = copyToTemp("v12/cayenne-project1.xml");
+        File mapFile = copyToTemp("v12/map1.map.xml");
+        File graphFile = copyToTemp("v12/project1.graph.xml");
+        Resource resource = new URLResource(projectFile.toURI().toURL());
 
-        assertEquals(2, resources.size());
-        assertTrue(resources.getFirst().getURL().sameFile(getClass().getResource("../testProjectMap1_1.map.xml")));
+        ProjectUpgrader upgrader = injector.getInstance(ProjectUpgrader.class);
+        assertEquals(UpgradeType.UPGRADE_NEEDED, upgrader.checkUpgradeNeeded(resource).requiredUpgrade());
+
+        PostUpgradeState state = upgrader.upgrade(resource);
+
+        assertEquals(2, state.messages().size(), state.messages().toString());
+        assertTrue(state.messages().get(0).contains("'graph' diagram layout"), state.messages().toString());
+        assertTrue(state.messages().get(1).contains("DataNode 'node1'"), state.messages().toString());
+
+        // files are rewritten in the current version, the obsolete graph file is deleted
+        String project = Files.readString(projectFile.toPath());
+        assertTrue(project.contains("project-version=\"13\""), project);
+        assertTrue(project.contains("http://cayenne.apache.org/schema/13/domain"), project);
+        assertFalse(project.contains("<node"), project);
+        assertFalse(project.contains("include"), project);
+
+        String map = Files.readString(mapFile.toPath());
+        assertTrue(map.contains("project-version=\"13\""), map);
+        assertTrue(map.contains("http://cayenne.apache.org/schema/13/modelMap"), map);
+
+        assertFalse(graphFile.exists(), "graph file must be deleted");
+
+        // the upgraded project loads without an upgrade
+        assertEquals(UpgradeType.UPGRADE_NOT_NEEDED, upgrader.checkUpgradeNeeded(resource).requiredUpgrade());
+        ConfigurationTree<DataChannelDescriptor> tree = injector.getInstance(DataChannelDescriptorLoader.class).load(resource);
+        assertEquals(1, tree.getRootNode().getDataMaps().size());
+        DataMap dataMap = tree.getRootNode().getDataMaps().iterator().next();
+        assertEquals(2, dataMap.getDbEntities().size());
     }
 
-    @Test
-    public void loadProjectVersion() {
-        assertEquals("3.2.1.0", upgradeService.loadProjectVersion(getResourceForVersion("3.2.1.0")));
-        assertEquals("10", upgradeService.loadProjectVersion(getResourceForVersion("10")));
+    private Resource projectWithVersion(String version) throws IOException {
+        File file = new File(tempDir, "cayenne-v" + version + ".xml");
+        Files.writeString(file.toPath(), "<domain project-version=\"" + version + "\"/>");
+        return new URLResource(file.toURI().toURL());
     }
 
-    @ParameterizedTest
-    @CsvSource({
-        "1.2.3.4,   1.234",
-        "1.0.0.0.4, 1.0004",
-        "10,        10.0"
-    })
-    public void decodeVersion(String version, double expected) {
-        assertEquals(expected, DefaultProjectUpgrader.decodeVersion(version), 0.000001);
-    }
-
-    @Test
-    public void upgradeDOM() {
-        Resource resource = new URLResource(getClass().getResource("../cayenne-PROJECT1.xml"));
-
-        // Mock service so it will use actual reading but skip actual saving part
-        upgradeService = mock(DefaultProjectUpgrader.class);
-        when(upgradeService.upgradeDOM(any(Resource.class), ArgumentMatchers.anyList()))
-                .thenCallRealMethod();
-        when(upgradeService.getAdditionalDatamapResources(any(UpgradeContext.class)))
-                .thenCallRealMethod();
-
-        upgradeService.upgradeDOM(resource, handlers);
-
-        // one for project and two for data maps
-//        verify(upgradeService, times(3)).saveDocument(any(UpgradeUnit.class));
-        for(UpgradeHandler handler : handlers) {
-            verify(handler).getVersion();
-            verify(handler).processProjectDom(any(UpgradeContext.class));
-            // two data maps
-            verify(handler, times(2)).processDataMapDom(any(UpgradeContext.class));
-            verifyNoMoreInteractions(handler);
+    private File copyToTemp(String resource) throws IOException {
+        File target = new File(tempDir, resource.substring(resource.lastIndexOf('/') + 1));
+        try (InputStream in = getClass().getResourceAsStream(resource)) {
+            Files.copy(in, target.toPath());
         }
+        return target;
     }
-
-    @Test
-    public void readDocument() {
-        Document document = DefaultProjectUpgrader.readDocument(getClass().getResource("../cayenne-PROJECT1.xml"));
-        assertEquals("13", document.getDocumentElement().getAttribute("project-version"));
-    }
-
-    private Document readDocument(URL url) throws Exception {
-        DocumentBuilder db = DocumentBuilderFactory.newInstance().newDocumentBuilder();
-        return db.parse(new InputSource(new InputStreamReader(url.openStream())));
-    }
-
-    private void createHandlers() {
-        handlers = new ArrayList<>();
-        String[] versions = {"7", "8", "9", "10", "11", "12", "13"};
-        for(String version : versions) {
-            handlers.add(createHandler(version));
-        }
-    }
-
-    private UpgradeHandler createHandler(String version) {
-        UpgradeHandler handler = mock(UpgradeHandler.class);
-        when(handler.getVersion()).thenReturn(version);
-        return handler;
-    }
-
-    private Resource getResourceForVersion(String version) {
-        return new URLResource(getClass().getResource("handlers/cayenne-project-v"+version+".xml"));
-    }
-
 }

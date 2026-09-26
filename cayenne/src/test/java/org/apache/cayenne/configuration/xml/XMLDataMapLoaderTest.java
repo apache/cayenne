@@ -22,6 +22,7 @@ import org.apache.cayenne.CayenneRuntimeException;
 import org.apache.cayenne.configuration.ConfigurationNameMapper;
 import org.apache.cayenne.configuration.DataMapLoader;
 import org.apache.cayenne.configuration.DefaultConfigurationNameMapper;
+import org.apache.cayenne.configuration.upgrade.ConfigurationUpgrader;
 import org.apache.cayenne.di.AdhocObjectFactory;
 import org.apache.cayenne.di.ClassLoaderManager;
 import org.apache.cayenne.di.DIBootstrap;
@@ -30,6 +31,7 @@ import org.apache.cayenne.di.Module;
 import org.apache.cayenne.di.spi.DefaultAdhocObjectFactory;
 import org.apache.cayenne.di.spi.DefaultClassLoaderManager;
 import org.apache.cayenne.map.DataMap;
+import org.apache.cayenne.map.QueryDescriptor;
 import org.apache.cayenne.map.DbAttribute;
 import org.apache.cayenne.map.SQLTemplateDescriptor;
 import org.apache.cayenne.resource.URLResource;
@@ -53,6 +55,7 @@ public class XMLDataMapLoaderTest {
             binder.bind(ClassLoaderManager.class).to(DefaultClassLoaderManager.class);
             binder.bind(AdhocObjectFactory.class).to(DefaultAdhocObjectFactory.class);
             binder.bind(DataMapLoader.class).to(XMLDataMapLoader.class);
+            binder.bind(ConfigurationUpgrader.class).to(ConfigurationUpgrader.class);
             binder.bind(ConfigurationNameMapper.class).to(DefaultConfigurationNameMapper.class);
             binder.bind(HandlerFactory.class).to(DefaultHandlerFactory.class);
             binder.bind(DataChannelMetaData.class).to(NoopDataChannelMetaData.class);
@@ -70,9 +73,30 @@ public class XMLDataMapLoaderTest {
     }
 
     @Test
-    public void loadWrongVersionConfig() throws Exception {
+    public void loadOldVersionConfig() {
+        // version 9, upgraded in memory
         URL url = getClass().getResource("testConfigMap5.map.xml");
-        assertThrows(CayenneRuntimeException.class, () -> loader.load(new URLResource(url)));
+        DataMap map = loader.load(new URLResource(url));
+        assertEquals("testConfigMap5", map.getName());
+        assertTrue(map.getDbEntities().isEmpty());
+    }
+
+    @Test
+    public void loadOldVersionWithContent() {
+        // version 6, upgraded in memory
+        URL url = getClass().getResource("testConfigMap9.map.xml");
+        DataMap map = loader.load(new URLResource(url));
+        assertEquals("testConfigMap9", map.getName());
+        assertEquals(2, map.getDbEntity("ARTIST").getAttributes().size());
+        assertEquals("org.apache.cayenne.GenericPersistentObject", map.getObjEntity("Artist").getClassName());
+        assertEquals(QueryDescriptor.SELECT_QUERY, map.getQueryDescriptor("ArtistQuery").getType());
+    }
+
+    @Test
+    public void loadNewerVersionConfig() {
+        URL url = getClass().getResource("testConfigMap6.map.xml");
+        CayenneRuntimeException e = assertThrows(CayenneRuntimeException.class, () -> loader.load(new URLResource(url)));
+        assertTrue(e.getMessage().contains("version 14 is newer"), e.getMessage());
     }
 
     @Test

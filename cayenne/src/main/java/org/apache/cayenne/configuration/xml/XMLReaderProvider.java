@@ -20,10 +20,10 @@
 package org.apache.cayenne.configuration.xml;
 
 import javax.xml.parsers.ParserConfigurationException;
+import javax.xml.parsers.SAXParserFactory;
 
 import org.apache.cayenne.di.DIRuntimeException;
 import org.apache.cayenne.di.Provider;
-import org.apache.cayenne.util.Util;
 import org.xml.sax.SAXException;
 import org.xml.sax.XMLReader;
 
@@ -41,8 +41,14 @@ public class XMLReaderProvider implements Provider<XMLReader> {
     @Override
     public XMLReader get() throws DIRuntimeException {
         try {
-            XMLReader reader = Util.createXmlReader();
-            if(supportInclude) {
+            SAXParserFactory factory = SAXParserFactory.newInstance();
+            factory.setFeature("http://apache.org/xml/features/disallow-doctype-decl", true);
+            factory.setFeature("http://xml.org/sax/features/external-general-entities", false);
+            factory.setFeature("http://xml.org/sax/features/external-parameter-entities", false);
+            factory.setFeature("http://xml.org/sax/features/namespaces", true);
+
+            XMLReader reader = factory.newSAXParser().getXMLReader();
+            if (supportInclude) {
                 reader.setFeature("http://apache.org/xml/features/xinclude", true);
             }
             return reader;

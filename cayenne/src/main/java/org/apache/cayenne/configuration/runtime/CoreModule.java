@@ -64,6 +64,7 @@ import org.apache.cayenne.configuration.DefaultDataChannelDescriptorMerger;
 import org.apache.cayenne.configuration.DefaultRuntimeProperties;
 import org.apache.cayenne.configuration.ObjectContextFactory;
 import org.apache.cayenne.configuration.RuntimeProperties;
+import org.apache.cayenne.configuration.upgrade.ConfigurationUpgrader;
 import org.apache.cayenne.configuration.xml.DataChannelMetaData;
 import org.apache.cayenne.configuration.xml.DefaultHandlerFactory;
 import org.apache.cayenne.configuration.xml.HandlerFactory;
@@ -391,6 +392,7 @@ public class CoreModule implements Module {
 
         // a service to load DataMap XML descriptors
         binder.bind(DataMapLoader.class).to(XMLDataMapLoader.class);
+        binder.bind(ConfigurationUpgrader.class).to(ConfigurationUpgrader.class);
 
         // a locator of resources, such as XML descriptors
         binder.bind(ResourceLocator.class).to(ClassLoaderResourceLocator.class);

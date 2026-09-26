@@ -19,18 +19,16 @@
 
 package org.apache.cayenne.configuration.xml;
 
-import org.apache.cayenne.CayenneRuntimeException;
+import org.apache.cayenne.configuration.upgrade.UpgradeHandler;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.xml.sax.Attributes;
 import org.xml.sax.helpers.AttributesImpl;
 
+import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 
 public class VersionAwareHandlerTest {
-
-    private static String[] VERSION_SET_1 = {"10", "11", "9"}; // sorted as strings
-    private static String[] VERSION_SET_2 = {"10"};
 
     VersionAwareHandler handler;
 
@@ -42,25 +40,35 @@ public class VersionAwareHandlerTest {
 
     private Attributes createAttributesWithVersion(String version) {
         AttributesImpl attributes = new AttributesImpl();
-        attributes.addAttribute("", "project-version", "project-version", "", version);
+        if (version != null) {
+            attributes.addAttribute("", "project-version", "project-version", "", version);
+        }
         return attributes;
     }
 
     @Test
-    public void validateCorrectVersion() {
-        handler.validateVersion(createAttributesWithVersion("9"), VERSION_SET_1);
-        handler.validateVersion(createAttributesWithVersion("10"), VERSION_SET_1);
-        handler.validateVersion(createAttributesWithVersion("11"), VERSION_SET_1);
-        handler.validateVersion(createAttributesWithVersion("10"), VERSION_SET_2);
+    public void validateCurrentVersion() {
+        handler.validateVersion(createAttributesWithVersion(UpgradeHandler.CURRENT_VERSION));
     }
 
     @Test
-    public void validateIncorrectVersion1() {
-        assertThrows(CayenneRuntimeException.class, () -> handler.validateVersion(createAttributesWithVersion("8"), VERSION_SET_1));
+    public void validateOlderVersion() {
+        UnsupportedVersionException e = assertThrows(UnsupportedVersionException.class,
+                () -> handler.validateVersion(createAttributesWithVersion("8")));
+        assertEquals("8", e.getVersion());
     }
 
     @Test
-    public void validateIncorrectVersion2() {
-        assertThrows(CayenneRuntimeException.class, () -> handler.validateVersion(createAttributesWithVersion("11"), VERSION_SET_2));
+    public void validateNewerVersion() {
+        UnsupportedVersionException e = assertThrows(UnsupportedVersionException.class,
+                () -> handler.validateVersion(createAttributesWithVersion("14")));
+        assertEquals("14", e.getVersion());
+    }
+
+    @Test
+    public void validateMissingVersion() {
+        UnsupportedVersionException e = assertThrows(UnsupportedVersionException.class,
+                () -> handler.validateVersion(createAttributesWithVersion(null)));
+        assertEquals(UpgradeHandler.UNKNOWN_VERSION, e.getVersion());
     }
 }

@@ -21,7 +21,6 @@ package org.apache.cayenne.configuration.xml;
 
 import java.io.InputStream;
 
-import org.apache.cayenne.util.Util;
 import org.xml.sax.Attributes;
 import org.xml.sax.ContentHandler;
 import org.xml.sax.InputSource;
@@ -33,7 +32,7 @@ public abstract class BaseHandlerTest {
 
     protected void parse(String tag, HandlerFactory factory) throws Exception {
         try(InputStream in = BaseHandlerTest.class.getResource(getClass().getSimpleName() + ".xml").openStream()) {
-            XMLReader parser = Util.createXmlReader();
+            XMLReader parser = new XMLReaderProvider(false).get();
             DefaultHandler handler = new TestRootHandler(parser, tag, factory);
             parser.setContentHandler(handler);
             parser.parse(new InputSource(in));

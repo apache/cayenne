@@ -333,10 +333,11 @@ public class Util {
     }
 
     /**
-     * Creates an XMLReader with default feature set. Note that all Cayenne
-     * internal XML parsers should probably use XMLReader obtained via this
-     * method for consistency sake, and can customize feature sets as needed.
+     * Creates an XMLReader with default feature set.
+     *
+     * @deprecated in favor of {@code XMLReaderProvider}, the DI-bound provider of XMLReaders
      */
+    @Deprecated(since = "5.0", forRemoval = true)
     public static XMLReader createXmlReader() throws SAXException, ParserConfigurationException {
         SAXParserFactory spf = SAXParserFactory.newInstance();
         spf.setFeature("http://apache.org/xml/features/disallow-doctype-decl", true);

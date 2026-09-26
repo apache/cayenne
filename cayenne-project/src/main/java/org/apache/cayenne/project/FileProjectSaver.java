@@ -22,6 +22,7 @@ import org.apache.cayenne.CayenneRuntimeException;
 import org.apache.cayenne.configuration.ConfigurationNameMapper;
 import org.apache.cayenne.configuration.ConfigurationNode;
 import org.apache.cayenne.configuration.ConfigurationNodeVisitor;
+import org.apache.cayenne.configuration.upgrade.UpgradeHandler;
 import org.apache.cayenne.di.Inject;
 import org.apache.cayenne.map.DataMap;
 import org.apache.cayenne.project.extension.ProjectExtension;
@@ -81,7 +82,7 @@ public class FileProjectSaver implements ProjectSaver {
 
     @Override
     public String getSupportedVersion() {
-        return String.valueOf(Project.VERSION);
+        return UpgradeHandler.CURRENT_VERSION;
     }
 
     @Override

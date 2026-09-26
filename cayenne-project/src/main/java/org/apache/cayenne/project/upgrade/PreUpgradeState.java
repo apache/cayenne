@@ -18,6 +18,8 @@
  ****************************************************************/
 package org.apache.cayenne.project.upgrade;
 
+import org.apache.cayenne.configuration.upgrade.UpgradeType;
+
 /**
  * An object providing upgrade information about a specific project in the context of enclosing Cayenne runtime.
  *

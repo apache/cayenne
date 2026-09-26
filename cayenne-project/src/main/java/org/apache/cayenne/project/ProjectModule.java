@@ -26,14 +26,6 @@ import org.apache.cayenne.di.Module;
 import org.apache.cayenne.project.extension.ProjectExtension;
 import org.apache.cayenne.project.upgrade.DefaultProjectUpgrader;
 import org.apache.cayenne.project.upgrade.ProjectUpgrader;
-import org.apache.cayenne.project.upgrade.handlers.UpgradeHandler;
-import org.apache.cayenne.project.upgrade.handlers.UpgradeHandler_V10;
-import org.apache.cayenne.project.upgrade.handlers.UpgradeHandler_V11;
-import org.apache.cayenne.project.upgrade.handlers.UpgradeHandler_V12;
-import org.apache.cayenne.project.upgrade.handlers.UpgradeHandler_V13;
-import org.apache.cayenne.project.upgrade.handlers.UpgradeHandler_V7;
-import org.apache.cayenne.project.upgrade.handlers.UpgradeHandler_V8;
-import org.apache.cayenne.project.upgrade.handlers.UpgradeHandler_V9;
 import org.apache.cayenne.project.validation.DefaultProjectValidator;
 import org.apache.cayenne.project.validation.ProjectValidator;
 
@@ -61,15 +53,6 @@ public class ProjectModule implements Module {
         return binder.bindList(ProjectExtension.class);
     }
 
-    /**
-     * @since 4.1
-     * @deprecated in favor of {@link #extend(Binder)}
-     */
-    @Deprecated(since = "5.0", forRemoval = true)
-    public static ListBuilder<UpgradeHandler> contributeUpgradeHandler(Binder binder) {
-        return binder.bindList(UpgradeHandler.class);
-    }
-
     public void configure(Binder binder) {
         binder.bind(ProjectLoader.class).to(DataChannelProjectLoader.class);
         binder.bind(ProjectSaver.class).to(FileProjectSaver.class);
@@ -79,16 +62,6 @@ public class ProjectModule implements Module {
 
         binder.bind(ProjectUpgrader.class).to(DefaultProjectUpgrader.class);
 
-        extend(binder)
-                .initAllExtensions()
-
-                // Note: order is important
-                .addUpgradeHandler(UpgradeHandler_V7.class)
-                .addUpgradeHandler(UpgradeHandler_V8.class)
-                .addUpgradeHandler(UpgradeHandler_V9.class)
-                .addUpgradeHandler(UpgradeHandler_V10.class)
-                .addUpgradeHandler(UpgradeHandler_V11.class)
-                .addUpgradeHandler(UpgradeHandler_V12.class)
-                .addUpgradeHandler(UpgradeHandler_V13.class);
+        extend(binder).initAllExtensions();
     }
 }

@@ -18,75 +18,66 @@
  ****************************************************************/
 package org.apache.cayenne.project;
 
-import java.net.URL;
-import java.util.Collection;
-import java.util.HashSet;
-
 import org.apache.cayenne.configuration.ConfigurationNode;
 import org.apache.cayenne.configuration.ConfigurationNodeVisitor;
 import org.apache.cayenne.configuration.ConfigurationTree;
 import org.apache.cayenne.resource.Resource;
 
+import java.net.URL;
+import java.util.Collection;
+import java.util.HashSet;
+
 /**
  * A model of a Cayenne mapping project. A project consists of descriptors for
  * DataChannel, DataNodes and DataMaps and associated filesystem files they are
  * loaded from and saved to.
- * 
+ *
  * @since 3.1
  */
 public class Project {
 
-	/**
-	 * Current version of Cayenne project.
-	 * Used by different parsers and savers of project's XML files.
-	 *
-	 * @since 4.1
-	 */
-	static public final int VERSION = 13;
+    private final ConfigurationNodeVisitor<Resource> configurationSourceGetter;
+    private final Collection<URL> unusedResources;
+    protected boolean modified;
+    protected ConfigurationTree<?> configurationTree;
 
-	protected boolean modified;
+    public Project(ConfigurationTree<?> configurationTree) {
+        this.configurationTree = configurationTree;
+        this.configurationSourceGetter = new ConfigurationSourceGetter();
+        this.unusedResources = new HashSet<>();
+    }
 
-	protected ConfigurationTree<?> configurationTree;
-	private ConfigurationNodeVisitor<Resource> configurationSourceGetter;
-	private Collection<URL> unusedResources;
+    public ConfigurationTree<?> getConfigurationTree() {
+        return configurationTree;
+    }
 
-	public Project(ConfigurationTree<?> configurationTree) {
-		this.configurationTree = configurationTree;
-		this.configurationSourceGetter = new ConfigurationSourceGetter();
-		this.unusedResources = new HashSet<>();
-	}
+    public ConfigurationNode getRootNode() {
+        return configurationTree.getRootNode();
+    }
 
-	public ConfigurationTree<?> getConfigurationTree() {
-		return configurationTree;
-	}
+    /**
+     * Returns <code>true</code> if the project is modified.
+     */
+    public boolean isModified() {
+        return modified;
+    }
 
-	public ConfigurationNode getRootNode() {
-		return configurationTree.getRootNode();
-	}
+    /**
+     * Updates "modified" state of the project.
+     */
+    public void setModified(boolean modified) {
+        this.modified = modified;
+    }
 
-	/**
-	 * Returns <code>true</code> if the project is modified.
-	 */
-	public boolean isModified() {
-		return modified;
-	}
+    public Resource getConfigurationResource(ConfigurationNode configNode) {
+        return configNode.acceptVisitor(configurationSourceGetter);
+    }
 
-	/**
-	 * Updates "modified" state of the project.
-	 */
-	public void setModified(boolean modified) {
-		this.modified = modified;
-	}
+    public Resource getConfigurationResource() {
+        return configurationTree.getRootNode().acceptVisitor(configurationSourceGetter);
+    }
 
-	public Resource getConfigurationResource(ConfigurationNode configNode) {
-		return configNode.acceptVisitor(configurationSourceGetter);
-	}
-
-	public Resource getConfigurationResource() {
-		return configurationTree.getRootNode().acceptVisitor(configurationSourceGetter);
-	}
-
-	public Collection<URL> getUnusedResources() {
-		return unusedResources;
-	}
+    public Collection<URL> getUnusedResources() {
+        return unusedResources;
+    }
 }
