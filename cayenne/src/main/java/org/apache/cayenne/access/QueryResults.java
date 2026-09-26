@@ -20,6 +20,8 @@ package org.apache.cayenne.access;
 
 import org.apache.cayenne.QueryResult;
 import org.apache.cayenne.ResultIterator;
+import org.apache.cayenne.SelectResult;
+import org.apache.cayenne.UpdateResult;
 
 import java.util.List;
 
@@ -34,11 +36,11 @@ final class QueryResults {
     }
 
     /**
-     * Returns the list of the first {@link QueryResult.Select} item, or null if there is none.
+     * Returns the list of the first {@link SelectResult} item, or null if there is none.
      */
     static List<?> firstList(List<QueryResult> items) {
         for (QueryResult item : items) {
-            if (item instanceof QueryResult.Select<?>(List<?> objects)) {
+            if (item instanceof SelectResult<?>(List<?> objects)) {
                 return objects;
             }
         }
@@ -46,23 +48,23 @@ final class QueryResults {
     }
 
     /**
-     * Returns the iterator of the first {@link QueryResult.Iterator} item, or null if there is none.
+     * Returns the first {@link ResultIterator} item, or null if there is none.
      */
     static ResultIterator<?> firstIterator(List<QueryResult> items) {
         for (QueryResult item : items) {
-            if (item instanceof QueryResult.Iterator<?>(ResultIterator<?> iterator1)) {
-                return iterator1;
+            if (item instanceof ResultIterator<?> iterator) {
+                return iterator;
             }
         }
         return null;
     }
 
     /**
-     * Returns the counts of the first {@link QueryResult.Update} item, or null if there is none.
+     * Returns the counts of the first {@link UpdateResult} item, or null if there is none.
      */
     static int[] firstUpdateCount(List<QueryResult> items) {
         for (QueryResult item : items) {
-            if (item instanceof QueryResult.Update(int[] counts)) {
+            if (item instanceof UpdateResult(int[] counts)) {
                 return counts;
             }
         }

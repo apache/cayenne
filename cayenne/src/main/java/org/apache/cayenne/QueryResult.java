@@ -20,10 +20,6 @@ package org.apache.cayenne;
 
 import org.apache.cayenne.query.Query;
 
-import java.util.List;
-import java.util.Map;
-import java.util.Objects;
-
 /**
  * A single item of a multipart query result. QueryResults are returned as a list from {@link ObjectContext#execute(Query)}.
  * The goal is to expose a specific combination of ResultSets, update counts and procedure OUT parameters produced by a
@@ -31,80 +27,13 @@ import java.util.Objects;
  * <pre>{@code
  * for (QueryResult item : SQLExec.query(sql).execute(context)) {
  *     switch (item) {
- *         case QueryResult.Select<?> select -> process(select.objects());
- *         case QueryResult.Update update -> process(update.counts());
- *         case QueryResult.Iterator<?> iterator -> process(iterator.iterator());
- *         case QueryResult.OutParameters out -> process(out.values());
+ *         case SelectResult<?> select -> process(select.objects());
+ *         case UpdateResult update -> process(update.counts());
+ *         case ResultIterator<?> iterator -> process(iterator);
+ *         case OutParametersResult out -> process(out.values());
  *     }
  * }
  * }</pre>
- *
- * @since 4.0
  */
-public sealed interface QueryResult {
-
-    /**
-     * A list of objects or data rows produced by a selecting query.
-     *
-     * @param <T> the type of the list elements.
-     * @since 5.0
-     */
-    record Select<T>(List<T> objects) implements QueryResult {
-
-        public Select {
-            Objects.requireNonNull(objects, "Null objects");
-        }
-    }
-
-    /**
-     * Update counts produced by a non-selecting query. A regular update produces a single count, while a batch
-     * produces one count per batch element.
-     *
-     * @since 5.0
-     */
-    record Update(int[] counts) implements QueryResult {
-
-        public Update {
-            Objects.requireNonNull(counts, "Null counts");
-        }
-
-        /**
-         * Returns the update count of a non-batch update.
-         *
-         * @throws CayenneRuntimeException if this item does not contain exactly one count.
-         */
-        public int count() {
-            if (counts.length != 1) {
-                throw new CayenneRuntimeException("Expected a single update count, got %d", counts.length);
-            }
-            return counts[0];
-        }
-    }
-
-    /**
-     * An open iterator over the rows of a selecting query executed in the iterated mode. The caller owns the
-     * iterator and must close it.
-     *
-     * @param <T> the type of the iterated elements.
-     * @since 5.0
-     */
-    record Iterator<T>(ResultIterator<T> iterator) implements QueryResult {
-
-        public Iterator {
-            Objects.requireNonNull(iterator, "Null iterator");
-        }
-    }
-
-    /**
-     * The values of the OUT and INOUT parameters of a stored procedure call, keyed by parameter name. A call
-     * produces at most one such item, and only if the procedure declares such parameters.
-     *
-     * @since 5.0
-     */
-    record OutParameters(Map<String, ?> values) implements QueryResult {
-
-        public OutParameters {
-            Objects.requireNonNull(values, "Null values");
-        }
-    }
+public sealed interface QueryResult permits SelectResult, UpdateResult, ResultIterator, OutParametersResult {
 }

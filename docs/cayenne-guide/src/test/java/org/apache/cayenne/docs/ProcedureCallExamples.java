@@ -19,7 +19,10 @@
 package org.apache.cayenne.docs;
 
 import org.apache.cayenne.ObjectContext;
+import org.apache.cayenne.OutParametersResult;
 import org.apache.cayenne.QueryResult;
+import org.apache.cayenne.SelectResult;
+import org.apache.cayenne.UpdateResult;
 import org.apache.cayenne.docs.persistent.Artist;
 import org.apache.cayenne.query.ProcedureCall;
 
@@ -56,9 +59,9 @@ public class ProcedureCallExamples {
         // tag::outParameters[]
         for (QueryResult item : ProcedureCall.query("my_procedure").call(context)) {
             switch (item) {
-                case QueryResult.Select<?> select -> process(select.objects());
-                case QueryResult.Update update -> process(update.counts());
-                case QueryResult.OutParameters out -> process(out.values().get("out_param"));
+                case SelectResult<?> select -> process(select.objects());
+                case UpdateResult update -> process(update.counts());
+                case OutParametersResult out -> process(out.values().get("out_param"));
                 default -> {
                 }
             }

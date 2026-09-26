@@ -16,32 +16,20 @@
  *  specific language governing permissions and limitations
  *  under the License.
  ****************************************************************/
-package org.apache.cayenne.docs;
+package org.apache.cayenne;
 
-import org.apache.cayenne.QueryResult;
-import org.apache.cayenne.SelectResult;
-import org.apache.cayenne.docs.customquery.MyDelegatingQuery;
-import org.apache.cayenne.docs.customquery.MyQuery;
-import org.junit.jupiter.api.Test;
+import java.util.Map;
+import java.util.Objects;
 
-import java.util.List;
+/**
+ * A {@link QueryResult} item holding the values of the OUT and INOUT parameters of a stored procedure call, keyed by
+ * parameter name. A call produces at most one such item, and only if the procedure declares such parameters.
+ *
+ * @since 5.0
+ */
+public record OutParametersResult(Map<String, ?> values) implements QueryResult {
 
-import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertInstanceOf;
-
-public class CustomQueryTest extends BaseTest {
-
-    @Test
-    public void myQuery() {
-        assertEquals(0, context.execute(new MyQuery()).size());
-    }
-
-    @Test
-    public void myDelegatingQuery() {
-        createArtistsDataSet();
-
-        List<QueryResult> result = context.execute(new MyDelegatingQuery());
-        SelectResult<?> select = assertInstanceOf(SelectResult.class, result.getFirst());
-        assertEquals(3, select.objects().size());
+    public OutParametersResult {
+        Objects.requireNonNull(values, "Null values");
     }
 }

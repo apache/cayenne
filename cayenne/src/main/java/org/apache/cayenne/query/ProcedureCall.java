@@ -23,6 +23,8 @@ import org.apache.cayenne.CayenneRuntimeException;
 import org.apache.cayenne.DataRow;
 import org.apache.cayenne.ObjectContext;
 import org.apache.cayenne.QueryResult;
+import org.apache.cayenne.SelectResult;
+import org.apache.cayenne.UpdateResult;
 import org.apache.cayenne.map.EntityResolver;
 
 import java.util.HashMap;
@@ -148,7 +150,7 @@ public class ProcedureCall<T> extends IndirectQuery {
     @SuppressWarnings("unchecked")
     public List<T> select(ObjectContext context) {
         for (QueryResult item : call(context)) {
-            if (item instanceof QueryResult.Select<?> select) {
+            if (item instanceof SelectResult<?> select) {
                 return (List<T>) select.objects();
             }
         }
@@ -174,9 +176,9 @@ public class ProcedureCall<T> extends IndirectQuery {
         return firstUpdate(context).count();
     }
 
-    private QueryResult.Update firstUpdate(ObjectContext context) {
+    private UpdateResult firstUpdate(ObjectContext context) {
         for (QueryResult item : call(context)) {
-            if (item instanceof QueryResult.Update update) {
+            if (item instanceof UpdateResult update) {
                 return update;
             }
         }

@@ -22,9 +22,13 @@ import org.apache.cayenne.Cayenne;
 import org.apache.cayenne.GenericPersistentObject;
 import org.apache.cayenne.ObjectContext;
 import org.apache.cayenne.ObjectId;
+import org.apache.cayenne.OutParametersResult;
 import org.apache.cayenne.PersistenceState;
 import org.apache.cayenne.Persistent;
 import org.apache.cayenne.QueryResult;
+import org.apache.cayenne.ResultIterator;
+import org.apache.cayenne.SelectResult;
+import org.apache.cayenne.UpdateResult;
 import org.apache.cayenne.docs.persistent.Artist;
 import org.apache.cayenne.map.EntityResolver;
 import org.apache.cayenne.query.ObjectSelect;
@@ -102,10 +106,10 @@ public class ObjectContextTest extends BaseTest {
         List<QueryResult> result = context.execute(query);
         for (QueryResult item : result) {
             switch (item) {
-                case QueryResult.Select<?> select -> process(select.objects());
-                case QueryResult.Update update -> process(update.counts());
-                case QueryResult.Iterator<?> iterator -> process(iterator.iterator());
-                case QueryResult.OutParameters out -> process(out.values());
+                case SelectResult<?> select -> process(select.objects());
+                case UpdateResult update -> process(update.counts());
+                case ResultIterator<?> iterator -> process(iterator);
+                case OutParametersResult out -> process(out.values());
             }
         }
         // end::execute[]

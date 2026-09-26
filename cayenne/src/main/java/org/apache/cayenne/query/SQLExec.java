@@ -27,6 +27,8 @@ import java.util.Map;
 import org.apache.cayenne.CayenneRuntimeException;
 import org.apache.cayenne.ObjectContext;
 import org.apache.cayenne.QueryResult;
+import org.apache.cayenne.SelectResult;
+import org.apache.cayenne.UpdateResult;
 import org.apache.cayenne.map.DataMap;
 import org.apache.cayenne.map.EntityResolver;
 
@@ -168,13 +170,13 @@ public class SQLExec extends IndirectQuery {
         return singleUpdate(context).counts();
     }
 
-    private QueryResult.Update singleUpdate(ObjectContext context) {
+    private UpdateResult singleUpdate(ObjectContext context) {
         List<QueryResult> results = execute(context);
         if (results.size() != 1) {
             throw new CayenneRuntimeException("Expected a single update result. Got a total of %d", results.size());
         }
 
-        if (results.getFirst() instanceof QueryResult.Update update) {
+        if (results.getFirst() instanceof UpdateResult update) {
             return update;
         }
 
@@ -192,7 +194,7 @@ public class SQLExec extends IndirectQuery {
 
     /**
      * Flag indicating that generated keys should be returned by this query execution.
-     * Generated keys are returned as a {@link QueryResult.Select} item of {@link #execute(ObjectContext)}
+     * Generated keys are returned as a {@link SelectResult} item of {@link #execute(ObjectContext)}
      * result.
      *
      * @param returnGeneratedKeys flag value

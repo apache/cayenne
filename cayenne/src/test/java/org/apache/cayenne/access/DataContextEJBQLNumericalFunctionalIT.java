@@ -24,6 +24,7 @@ import java.math.BigInteger;
 import java.util.List;
 
 import org.apache.cayenne.QueryResult;
+import org.apache.cayenne.UpdateResult;
 import org.apache.cayenne.query.EJBQLQuery;
 import org.apache.cayenne.test.jdbc.TableHelper;
 import org.apache.cayenne.testdo.numeric_types.BigDecimalEntity;
@@ -131,7 +132,7 @@ public class DataContextEJBQLNumericalFunctionalIT {
 
         List<QueryResult> result = env.context().execute(query);
 
-        int[] count = ((QueryResult.Update) result.getFirst()).counts();
+        int[] count = ((UpdateResult) result.getFirst()).counts();
         assertNotNull(count);
         assertEquals(1, count.length);
         assertEquals(3, count[0]);

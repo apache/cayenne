@@ -21,6 +21,7 @@ package org.apache.cayenne.query;
 import org.apache.cayenne.CayenneRuntimeException;
 import org.apache.cayenne.ObjectContext;
 import org.apache.cayenne.QueryResult;
+import org.apache.cayenne.UpdateResult;
 
 import java.util.List;
 import java.util.Map;
@@ -67,7 +68,7 @@ public class MappedExec extends AbstractMappedQuery {
      */
     public int[] update(ObjectContext context) {
         for (QueryResult item : execute(context)) {
-            if (item instanceof QueryResult.Update update) {
+            if (item instanceof UpdateResult update) {
                 return update.counts();
             }
         }

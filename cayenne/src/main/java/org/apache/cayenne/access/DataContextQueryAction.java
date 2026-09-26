@@ -20,6 +20,7 @@
 package org.apache.cayenne.access;
 
 import org.apache.cayenne.QueryResult;
+import org.apache.cayenne.SelectResult;
 import org.apache.cayenne.cache.QueryCache;
 import org.apache.cayenne.cache.QueryCacheEntryFactory;
 import org.apache.cayenne.map.DbEntity;
@@ -90,7 +91,7 @@ class DataContextQueryAction {
             IncrementalFaultList<?> paginatedList = createIncrementalFaultList(rawIds, maxIdQualifierSize);
 
             // replace result with a paginated list that will deal with id-to-object resolution
-            response = List.of(new QueryResult.Select<>(paginatedList));
+            response = List.of(new SelectResult<>(paginatedList));
             return DONE;
         }
 
@@ -159,7 +160,7 @@ class DataContextQueryAction {
             // there was a preexisting cache entry
             // the cache may hold no list at all if the query produced no select result
             if (response == null || wasResponseNull) {
-                response = cachedResults != null ? List.of(new QueryResult.Select<>(cachedResults)) : List.of();
+                response = cachedResults != null ? List.of(new SelectResult<>(cachedResults)) : List.of();
             }
         } else {
             // on cache-refresh request, fetch without blocking and fill the cache

@@ -24,11 +24,13 @@ import java.util.List;
 /**
  * Defines API of an iterator over the records returned as a result of selecting queries execution. A ResultIterator is
  * backed by an open java.sql.ResultSet, therefore ResultIterators must be explicitly closed when the user is done
- * working with them.
+ * working with them. A query executed in the iterated mode reports its iterator as an item of the multipart
+ * {@link QueryResult}, and the caller owns and must close it.
  *
+ * @param <T> the type of the iterated elements.
  * @since 3.0
  */
-public interface ResultIterator<T> extends Iterable<T>, AutoCloseable {
+public non-sealed interface ResultIterator<T> extends Iterable<T>, AutoCloseable, QueryResult {
 
     /**
      * Returns all yet unread rows from ResultSet without closing it.

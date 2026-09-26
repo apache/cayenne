@@ -19,6 +19,7 @@
 package org.apache.cayenne.query;
 
 import org.apache.cayenne.DataRow;
+import org.apache.cayenne.OutParametersResult;
 import org.apache.cayenne.QueryResult;
 import org.apache.cayenne.dba.TypesMapping;
 import org.apache.cayenne.log.NoopSQLLogger;
@@ -198,8 +199,8 @@ public class ProcedureCallIT {
         );
 
         Map<String, ?> outParams = result.stream()
-                .filter(QueryResult.OutParameters.class::isInstance)
-                .map(QueryResult.OutParameters.class::cast)
+                .filter(OutParametersResult.class::isInstance)
+                .map(OutParametersResult.class::cast)
                 .findFirst()
                 .orElseThrow()
                 .values();
@@ -219,7 +220,7 @@ public class ProcedureCallIT {
             for (QueryResult item : ProcedureCall.query(OUT_STORED_PROCEDURE)
                     .param("in_param", 20)
                     .call(env.context())) {
-                if (item instanceof QueryResult.OutParameters out) {
+                if (item instanceof OutParametersResult out) {
                     assertEquals(40, ((Number) out.values().get("out_param")).intValue());
                     count++;
                 }

@@ -19,6 +19,7 @@
 package org.apache.cayenne.docs;
 
 import org.apache.cayenne.QueryResult;
+import org.apache.cayenne.UpdateResult;
 import org.apache.cayenne.docs.persistent.Artist;
 import org.apache.cayenne.query.MappedExec;
 import org.apache.cayenne.query.MappedSelect;
@@ -51,7 +52,7 @@ public class MappedQueryTest extends BaseTest {
         List<QueryResult> result = MappedExec.query("updatePaintingTitle")
                 .param("title", "Untitled")
                 .execute(context);
-        QueryResult.Update update = (QueryResult.Update) result.getFirst();
+        UpdateResult update = (UpdateResult) result.getFirst();
         System.out.println("Rows updated: " + update.count());
         // end::mappedExec[]
 

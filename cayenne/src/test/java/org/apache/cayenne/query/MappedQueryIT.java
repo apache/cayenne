@@ -21,6 +21,7 @@ package org.apache.cayenne.query;
 import org.apache.cayenne.DataRow;
 import org.apache.cayenne.QueryResult;
 import org.apache.cayenne.ResultBatchIterator;
+import org.apache.cayenne.SelectResult;
 import org.apache.cayenne.log.NoopSQLLogger;
 import org.apache.cayenne.test.jdbc.TableHelper;
 import org.apache.cayenne.testdo.testmap.Artist;
@@ -130,7 +131,7 @@ public class MappedQueryIT {
         List<QueryResult> result = runProcedureSelect(MappedSelect.query("ProcedureQuery", Artist.class)
                 .param("aName", "An Artist")
                 .param("paintingPrice", 3000).forceNoCache());
-        List<?> artists = ((QueryResult.Select<?>) result.getFirst()).objects();
+        List<?> artists = ((SelectResult<?>) result.getFirst()).objects();
 
         // check the results
         assertNotNull(artists, "Null result from StoredProcedure.");

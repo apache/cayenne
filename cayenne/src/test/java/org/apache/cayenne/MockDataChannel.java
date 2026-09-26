@@ -48,7 +48,7 @@ public class MockDataChannel implements DataChannel {
     }
 
     public MockDataChannel(List selectResponse) {
-        this.response = List.of(new QueryResult.Select<>(selectResponse));
+        this.response = List.of(new SelectResult<>(selectResponse));
     }
 
     public MockDataChannel(EntityResolver entityResolver, List selectResponse) {
@@ -105,7 +105,7 @@ public class MockDataChannel implements DataChannel {
 
     private List<?> firstList() {
         for (QueryResult item : response) {
-            if (item instanceof QueryResult.Select<?> select) {
+            if (item instanceof SelectResult<?> select) {
                 return select.objects();
             }
         }

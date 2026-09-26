@@ -25,6 +25,7 @@ import org.apache.cayenne.ObjectContext;
 import org.apache.cayenne.ObjectId;
 import org.apache.cayenne.Persistent;
 import org.apache.cayenne.QueryResult;
+import org.apache.cayenne.SelectResult;
 import org.apache.cayenne.event.EventManager;
 import org.apache.cayenne.graph.ChildDiffLoader;
 import org.apache.cayenne.graph.CompoundDiff;
@@ -163,7 +164,7 @@ public record DataContextChannel(DataContext context) implements DataChannel {
         ShallowMergeOperation merger = null;
 
         for (QueryResult item : response) {
-            if (item instanceof QueryResult.Select<?> select) {
+            if (item instanceof SelectResult<?> select) {
                 List<?> objects = select.objects();
                 if (objects.isEmpty()) {
                     childResponse.add(item);
@@ -206,7 +207,7 @@ public record DataContextChannel(DataContext context) implements DataChannel {
                         }
                     }
 
-                    childResponse.add(new QueryResult.Select<>(childObjects));
+                    childResponse.add(new SelectResult<>(childObjects));
                 }
             } else {
                 childResponse.add(item);

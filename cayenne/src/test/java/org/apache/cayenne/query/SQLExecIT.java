@@ -24,6 +24,8 @@ import java.util.Map;
 
 import org.apache.cayenne.DataRow;
 import org.apache.cayenne.QueryResult;
+import org.apache.cayenne.SelectResult;
+import org.apache.cayenne.UpdateResult;
 import org.apache.cayenne.unit.CayenneProjects;
 import org.apache.cayenne.unit.CayenneTestsEnv;
 import org.junit.jupiter.api.Test;
@@ -82,7 +84,7 @@ public class SQLExecIT {
 
         List<QueryResult> result = SQLExec.query("SELECT * FROM ARTIST").execute(env.context());
         assertEquals(2, result.size());
-        List<?> rows = ((QueryResult.Select<?>) result.getFirst()).objects();
+        List<?> rows = ((SelectResult<?>) result.getFirst()).objects();
         assertEquals(1, rows.size());
 
         DataRow row = (DataRow) rows.getFirst();
@@ -113,7 +115,7 @@ public class SQLExecIT {
         SQLExec inserter = SQLExec.query("INSERT INTO ARTIST (ARTIST_ID, ARTIST_NAME) VALUES (#bind($id), #bind($name))");
         for(int i = 0; i < 2; i++) {
             List<QueryResult> result = inserter.paramsArray(i, "artist " + i).execute(env.context());
-            assertEquals(1, ((QueryResult.Update) result.getFirst()).count());
+            assertEquals(1, ((UpdateResult) result.getFirst()).count());
         }
         assertEquals(2, env.table("ARTIST").getRowCount());
     }
@@ -126,7 +128,7 @@ public class SQLExecIT {
             params.put("id", i);
             params.put("name", "artist " + i);
             List<QueryResult> result = inserter.params(params).execute(env.context());
-            assertEquals(1, ((QueryResult.Update) result.getFirst()).count());
+            assertEquals(1, ((UpdateResult) result.getFirst()).count());
         }
         assertEquals(2, env.table("ARTIST").getRowCount());
     }

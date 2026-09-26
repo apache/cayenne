@@ -113,9 +113,8 @@ public interface DataChannel {
      *
      * @param context        an ObjectContext that originated the query, used to register result objects.
      * @param query          a query to execute.
-     * @param iteratedResult if true, the result is returned as a {@link ResultIterator} wrapped in a
-     *                       {@link QueryResult.Iterator}, and the caller is responsible for closing it. If false,
-     *                       the result is fully read into a list.
+     * @param iteratedResult if true, the result is returned as a {@link ResultIterator} item, and the caller is
+     *                       responsible for closing it. If false, the result is fully read into a list.
      * @return all result sets, update counts, iterators and OUT parameters of the execution, in the order they were
      * produced.
      * @since 5.0

@@ -20,6 +20,7 @@
 package org.apache.cayenne.access;
 
 import org.apache.cayenne.DataRow;
+import org.apache.cayenne.OutParametersResult;
 import org.apache.cayenne.QueryResult;
 import org.apache.cayenne.dba.TypesMapping;
 import org.apache.cayenne.log.NoopSQLLogger;
@@ -292,7 +293,7 @@ public class DataContextProcedureQueryIT  {
 
         Map<String, ?> outParams = null;
         for (QueryResult item : response) {
-            if (item instanceof QueryResult.OutParameters out) {
+            if (item instanceof OutParametersResult out) {
                 outParams = out.values();
             }
         }

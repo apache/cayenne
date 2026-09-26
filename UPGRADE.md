@@ -238,26 +238,27 @@ List<Artist> withExpensivePaintings = ObjectSelect
    the entire multipart result to a sealed interface describing a single item of it. `SQLExec.execute(..)`,
    `MappedExec.execute(..)` and `ProcedureCall.call(..)` now return a `List<QueryResult>` holding the items in the
    order the query produced them, so callers that know the shape of their query should access them by index.
-   `QueryResult` has `Select`, `Update`, `Iterator` and `OutParameters` record variants, replacing the
-   `isSelectResult()` / `getSelectResult()` / `getUpdateCount()` accessors, so a multipart result can also be
-   scanned with a pattern-matching switch:
+   `QueryResult` has four permitted subtypes: the `SelectResult`, `UpdateResult` and `OutParametersResult` records,
+   and `ResultIterator`, reported directly as an item of an iterated query. They replace the `isSelectResult()` /
+   `getSelectResult()` / `getUpdateCount()` accessors, so a multipart result can also be scanned with a
+   pattern-matching switch:
 
   ```java
   List<QueryResult> result = SQLExec.query(sql).execute(context);
-  int updated = ((QueryResult.Update) result.getFirst()).count();
+  int updated = ((UpdateResult) result.getFirst()).count();
 
   for (QueryResult item : result) {
       switch (item) {
-          case QueryResult.Select<?> select -> process(select.objects());
-          case QueryResult.Update update -> process(update.counts());
-          case QueryResult.Iterator<?> iterator -> process(iterator.iterator());
-          case QueryResult.OutParameters out -> process(out.values());
+          case SelectResult<?> select -> process(select.objects());
+          case UpdateResult update -> process(update.counts());
+          case ResultIterator<?> iterator -> process(iterator);
+          case OutParametersResult out -> process(out.values());
       }
   }
   ```
 
    Stored procedure OUT parameters are no longer disguised as a one-row result set. They arrive as a dedicated
-   `QueryResult.OutParameters` item (a map keyed by parameter name).
+   `OutParametersResult` item (a map keyed by parameter name).
 
    The cgen templates now emit `List<QueryResult>` instead of the old `QueryResult<?>` for the `perform*` methods
    of mapped exec queries, so regenerate your classes via Modeler ("Tools" → "Generate Classes") or the AI plugin

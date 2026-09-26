@@ -31,10 +31,10 @@ include::{java-examples}/ProcedureCallExamples.java[tags=select]
 include::{java-examples}/ProcedureCallExamples.java[tags=call]
 ----
 
-`QueryResult` is a sealed interface with `Select`, `Update`, `Iterator` and `OutParameters` variants, listed in
-the order the procedure produced them, so the items can be accessed by index or scanned with a pattern-matching
-switch. A stored procedure can return data back to the application as result sets or via OUT parameters.
-The values of OUT and INOUT parameters are reported as a separate `QueryResult.OutParameters` item of the
+`QueryResult` is a sealed interface with `SelectResult`, `UpdateResult`, `ResultIterator` and `OutParametersResult`
+variants, listed in the order the procedure produced them, so the items can be accessed by index or scanned with a
+pattern-matching switch. A stored procedure can return data back to the application as result sets or via OUT parameters.
+The values of OUT and INOUT parameters are reported as a separate `OutParametersResult` item of the
 result, a map keyed by parameter name:
 
 [source,java,indent=0]

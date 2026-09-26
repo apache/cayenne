@@ -16,32 +16,20 @@
  *  specific language governing permissions and limitations
  *  under the License.
  ****************************************************************/
-package org.apache.cayenne.docs;
-
-import org.apache.cayenne.QueryResult;
-import org.apache.cayenne.SelectResult;
-import org.apache.cayenne.docs.customquery.MyDelegatingQuery;
-import org.apache.cayenne.docs.customquery.MyQuery;
-import org.junit.jupiter.api.Test;
+package org.apache.cayenne;
 
 import java.util.List;
+import java.util.Objects;
 
-import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertInstanceOf;
+/**
+ * A {@link QueryResult} item holding a list of objects or data rows produced by a selecting query.
+ *
+ * @param <T> the type of the list elements.
+ * @since 5.0
+ */
+public record SelectResult<T>(List<T> objects) implements QueryResult {
 
-public class CustomQueryTest extends BaseTest {
-
-    @Test
-    public void myQuery() {
-        assertEquals(0, context.execute(new MyQuery()).size());
-    }
-
-    @Test
-    public void myDelegatingQuery() {
-        createArtistsDataSet();
-
-        List<QueryResult> result = context.execute(new MyDelegatingQuery());
-        SelectResult<?> select = assertInstanceOf(SelectResult.class, result.getFirst());
-        assertEquals(3, select.objects().size());
+    public SelectResult {
+        Objects.requireNonNull(objects, "Null objects");
     }
 }
