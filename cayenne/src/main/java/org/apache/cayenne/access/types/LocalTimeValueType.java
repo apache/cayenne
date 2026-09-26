@@ -33,7 +33,7 @@ import java.time.ZonedDateTime;
  * the value directly via JDBC without a {@code java.sql} intermediary and the JVM time zone conversion that comes
  * with it.
  */
-@Deprecated(since = "5.0")
+@Deprecated(since = "5.0", forRemoval = true)
 public class LocalTimeValueType implements ValueObjectType<LocalTime, Time> {
 
     @Override
