@@ -1,6 +1,0 @@
-<?xml version="1.0" encoding="utf-8"?>
-<driver project-version="3.0.0.1" class="org.hsqldb.jdbcDriver">
-	<url value="jdbc:hsqldb:mem:xdb"/>
-	<connectionPool min="1" max="5"/>
-	<login userName="user" password="password"/>
-</driver>
