@@ -1,0 +1,45 @@
+<?xml version="1.0" encoding="utf-8"?>
+<data-map xmlns="http://cayenne.apache.org/schema/13/modelMap"
+	 xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	 xsi:schemaLocation="http://cayenne.apache.org/schema/13/modelMap https://cayenne.apache.org/schema/13/modelMap.xsd"
+	 project-version="13">
+	<property name="defaultPackage" value="org.apache.cayenne.x"/>
+	<db-entity name="ARTIST">
+		<db-attribute name="ARTIST_ID" type="INTEGER" isPrimaryKey="true" isMandatory="true"/>
+		<db-attribute name="ARTIST_NAME" type="VARCHAR" length="254"/>
+		<info:property xmlns:info="http://cayenne.apache.org/schema/13/info" name="comment" value="artists"/>
+	</db-entity>
+	<obj-entity name="Artist" className="org.apache.cayenne.x.Artist" dbEntityName="ARTIST">
+		<obj-attribute name="artistName" type="java.lang.String" db-attribute-path="ARTIST_NAME"/>
+	</obj-entity>
+	<query name="AllClauses" type="SelectQuery" root="obj-entity" root-name="Artist">
+		<property name="cayenne.GenericSelectQuery.cacheStrategy" value="SHARED_CACHE"/>
+		<property name="cayenne.GenericSelectQuery.cacheGroups" value="g1"/>
+		<property name="cayenne.GenericSelectQuery.fetchLimit" value="10"/>
+		<property name="cayenne.GenericSelectQuery.fetchOffset" value="20"/>
+		<property name="cayenne.GenericSelectQuery.pageSize" value="5"/>
+		<property name="cayenne.SelectQuery.distinct" value="true"/>
+		<qualifier><![CDATA[artistName like $name]]></qualifier>
+		<ordering descending="true" ignore-case="true"><![CDATA[artistName]]></ordering>
+		<ordering><![CDATA[dateOfBirth]]></ordering>
+		<prefetch type="joint"><![CDATA[paintings]]></prefetch>
+		<prefetch type="disjoint"><![CDATA[paintings.gallery]]></prefetch>
+		<prefetch type="disjointById"><![CDATA[paintings.exhibits]]></prefetch>
+		<prefetch><![CDATA[groups]]></prefetch>
+	</query>
+	<query name="ClassRoot" type="SelectQuery" root="java-class" root-name="org.apache.cayenne.x.Artist">
+		<qualifier><![CDATA[artistName = "a"]]></qualifier>
+	</query>
+	<query name="NoRoot" type="SelectQuery">
+		<qualifier><![CDATA[artistName = "a"]]></qualifier>
+	</query>
+	<query name="RootOnly" type="SelectQuery" root="obj-entity" root-name="Artist"/>
+	<query name="Template" type="SQLTemplate" root="data-map" root-name="map1">
+		<property name="cayenne.GenericSelectQuery.fetchLimit" value="10"/>
+		<sql><![CDATA[select * from ARTIST]]></sql>
+		<prefetch type="joint"><![CDATA[paintings]]></prefetch>
+	</query>
+	<cgen xmlns="http://cayenne.apache.org/schema/13/cgen">
+		<destDir>../java</destDir>
+	</cgen>
+</data-map>

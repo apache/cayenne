@@ -61,8 +61,8 @@ public class VersionAwareHandlerTest {
     @Test
     public void validateNewerVersion() {
         UnsupportedVersionException e = assertThrows(UnsupportedVersionException.class,
-                () -> handler.validateVersion(createAttributesWithVersion("14")));
-        assertEquals("14", e.getVersion());
+                () -> handler.validateVersion(createAttributesWithVersion("15")));
+        assertEquals("15", e.getVersion());
     }
 
     @Test

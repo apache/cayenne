@@ -17,9 +17,7 @@
   ~  under the License.
   ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~-->
 
-<query name="query" type="SelectQuery" root="obj-entity" root-name="Artist">
+<query name="query" type="SelectQuery">
     <property name="cayenne.GenericSelectQuery.fetchingDataRows" value="false"/>
-    <prefetch type="joint"><![CDATA[paintings]]></prefetch>
-    <prefetch type="disjoint"><![CDATA[paintings.artist]]></prefetch>
-    <prefetch type="disjointById"><![CDATA[paintings.gallery]]></prefetch>
+    <select><![CDATA[from Artist prefetch paintings joint, paintings.artist disjoint, paintings.gallery disjointById]]></select>
 </query>

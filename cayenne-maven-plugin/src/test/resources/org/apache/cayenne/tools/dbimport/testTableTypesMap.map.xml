@@ -17,11 +17,11 @@
     specific language governing permissions and limitations
     under the License.
 -->
-<data-map xmlns="http://cayenne.apache.org/schema/13/modelMap"
+<data-map xmlns="http://cayenne.apache.org/schema/14/modelMap"
           xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-          xsi:schemaLocation="http://cayenne.apache.org/schema/13/modelMap http://cayenne.apache.org/schema/13/modelMap.xsd"
-          project-version="13">
-    <dbImport xmlns="http://cayenne.apache.org/schema/13/dbimport">
+          xsi:schemaLocation="http://cayenne.apache.org/schema/14/modelMap http://cayenne.apache.org/schema/14/modelMap.xsd"
+          project-version="14">
+    <dbImport xmlns="http://cayenne.apache.org/schema/14/dbimport">
         <tableTypes>
             <tableType>TABLE</tableType>
         </tableTypes>

@@ -55,8 +55,9 @@ public class ConfigurationUpgraderTest {
         "10,      UPGRADE_NEEDED",
         "11,      UPGRADE_NEEDED",
         "12,      UPGRADE_NEEDED",
-        "13,      UPGRADE_NOT_NEEDED",
-        "14,      DOWNGRADE_NEEDED"
+        "13,      UPGRADE_NEEDED",
+        "14,      UPGRADE_NOT_NEEDED",
+        "15,      DOWNGRADE_NEEDED"
     })
     public void checkUpgradeNeeded(String version, UpgradeType expectedType) {
         assertEquals(expectedType, upgrader.checkUpgradeNeeded(version));
@@ -65,18 +66,18 @@ public class ConfigurationUpgraderTest {
     @Test
     public void all() {
         List<String> versions = UpgradeHandler.all().stream().map(UpgradeHandler::getVersion).toList();
-        assertEquals(List.of("7", "8", "9", "10", "11", "12", "13"), versions,
+        assertEquals(List.of("7", "8", "9", "10", "11", "12", "13", "14"), versions,
                 "handlers must cover every version after the oldest supported one, in order");
         assertEquals(UpgradeHandler.CURRENT_VERSION, versions.getLast());
     }
 
     @Test
     public void handlersForVersion() {
-        assertEquals(7, upgrader.handlersForVersion(UpgradeHandler.MIN_SUPPORTED_VERSION).size());
+        assertEquals(8, upgrader.handlersForVersion(UpgradeHandler.MIN_SUPPORTED_VERSION).size());
         assertTrue(upgrader.handlersForVersion(UpgradeHandler.CURRENT_VERSION).isEmpty());
 
         List<String> versions = upgrader.handlersForVersion("9").stream().map(UpgradeHandler::getVersion).toList();
-        assertEquals(List.of("10", "11", "12", "13"), versions);
+        assertEquals(List.of("10", "11", "12", "13", "14"), versions);
     }
 
     @Test
@@ -101,8 +102,8 @@ public class ConfigurationUpgraderTest {
         UpgradeContext context = upgrader.upgradeProjectDom(getResourceForVersion("6"), "6");
 
         Element root = context.getDocument().getDocumentElement();
-        assertEquals("13", root.getAttribute("project-version"));
-        assertEquals("http://cayenne.apache.org/schema/13/domain", root.getAttribute("xmlns"));
+        assertEquals("14", root.getAttribute("project-version"));
+        assertEquals("http://cayenne.apache.org/schema/14/domain", root.getAttribute("xmlns"));
         assertEquals(2, root.getElementsByTagName("map").getLength());
 
         // the version 6 fixture has a DataNode, which version 13 removes without a replacement
@@ -117,14 +118,14 @@ public class ConfigurationUpgraderTest {
         // starting at version 9 skips the version 9 handler, which drops the reverse engineering config
         UpgradeContext from9 = upgrader.upgradeDataMapDom(resource, "9");
         Element root = from9.getDocument().getDocumentElement();
-        assertEquals("13", root.getAttribute("project-version"));
-        assertEquals("http://cayenne.apache.org/schema/13/modelMap", root.getAttribute("xmlns"));
+        assertEquals("14", root.getAttribute("project-version"));
+        assertEquals("http://cayenne.apache.org/schema/14/modelMap", root.getAttribute("xmlns"));
         assertEquals(1, root.getElementsByTagName("reverse-engineering-config").getLength());
         assertTrue(from9.getObsoleteFiles().isEmpty());
 
         UpgradeContext from8 = upgrader.upgradeDataMapDom(resource, "8");
         root = from8.getDocument().getDocumentElement();
-        assertEquals("13", root.getAttribute("project-version"));
+        assertEquals("14", root.getAttribute("project-version"));
         assertEquals(0, root.getElementsByTagName("reverse-engineering-config").getLength());
         assertEquals(List.of("reverseEngineering.xml"), from8.getObsoleteFiles());
     }

@@ -175,7 +175,7 @@ public class XMLDataChannelDescriptorLoaderTest {
 
         URL url = getClass().getResource("cayenne-testConfig6.xml");
         ConfigurationException e = assertThrows(ConfigurationException.class, () -> loader.load(new URLResource(url)));
-        assertTrue(e.getMessage().contains("version 14 is newer"), e.getMessage());
+        assertTrue(e.getMessage().contains("version 15 is newer"), e.getMessage());
     }
 
     @Test

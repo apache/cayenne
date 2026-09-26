@@ -374,10 +374,10 @@ public class DefaultDbImportActionTest {
         assertFalse(projectFile.exists());
 
         Files.write(projectFile.toPath(), ("<?xml version=\"1.0\" encoding=\"utf-8\"?>\n" +
-                "<domain xmlns=\"http://cayenne.apache.org/schema/13/domain\"\n" +
+                "<domain xmlns=\"http://cayenne.apache.org/schema/14/domain\"\n" +
                 "\t xmlns:xsi=\"http://www.w3.org/2001/XMLSchema-instance\"\n" +
-                "\t xsi:schemaLocation=\"http://cayenne.apache.org/schema/13/domain https://cayenne.apache.org/schema/13/domain.xsd\"\n" +
-                "\t project-version=\"13\">\n" +
+                "\t xsi:schemaLocation=\"http://cayenne.apache.org/schema/14/domain https://cayenne.apache.org/schema/14/domain.xsd\"\n" +
+                "\t project-version=\"14\">\n" +
                 "</domain>").getBytes(StandardCharsets.UTF_8));
         assertTrue(projectFile.isFile());
 
@@ -419,10 +419,10 @@ public class DefaultDbImportActionTest {
         assertFalse(projectFile.exists());
 
         Files.write(projectFile.toPath(), ("<?xml version=\"1.0\" encoding=\"utf-8\"?>\n" +
-                "<domain xmlns=\"http://cayenne.apache.org/schema/13/domain\"\n" +
+                "<domain xmlns=\"http://cayenne.apache.org/schema/14/domain\"\n" +
                 "\t xmlns:xsi=\"http://www.w3.org/2001/XMLSchema-instance\"\n" +
-                "\t xsi:schemaLocation=\"http://cayenne.apache.org/schema/13/domain https://cayenne.apache.org/schema/13/domain.xsd\"\n" +
-                "\t project-version=\"13\">\n" +
+                "\t xsi:schemaLocation=\"http://cayenne.apache.org/schema/14/domain https://cayenne.apache.org/schema/14/domain.xsd\"\n" +
+                "\t project-version=\"14\">\n" +
                 "\t<map name=\"testSaveLoaded4\"/>\n" +
                 "</domain>").getBytes(StandardCharsets.UTF_8));
         assertTrue(projectFile.isFile());
@@ -438,10 +438,10 @@ public class DefaultDbImportActionTest {
         assertFalse(dataMapFile.exists());
 
         Files.write(dataMapFile.toPath(), ("<?xml version=\"1.0\" encoding=\"utf-8\"?>\n" +
-                "<data-map xmlns=\"http://cayenne.apache.org/schema/13/modelMap\"\n" +
+                "<data-map xmlns=\"http://cayenne.apache.org/schema/14/modelMap\"\n" +
                 "\t xmlns:xsi=\"http://www.w3.org/2001/XMLSchema-instance\"\n" +
-                "\t xsi:schemaLocation=\"http://cayenne.apache.org/schema/13/modelMap https://cayenne.apache.org/schema/13/modelMap.xsd\"\n" +
-                "\t project-version=\"13\">\n" +
+                "\t xsi:schemaLocation=\"http://cayenne.apache.org/schema/14/modelMap https://cayenne.apache.org/schema/14/modelMap.xsd\"\n" +
+                "\t project-version=\"14\">\n" +
                 "\t<db-entity name=\"test\">\n" +
                 "\t\t<db-attribute name=\"test\" type=\"INT\"/>\n" +
                 "\t</db-entity>\n" +

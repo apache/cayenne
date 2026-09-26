@@ -21,9 +21,9 @@ package org.apache.cayenne.map;
 import org.apache.cayenne.CayenneRuntimeException;
 import org.apache.cayenne.configuration.ConfigurationNodeVisitor;
 import org.apache.cayenne.exp.Expression;
+import org.apache.cayenne.exp.parser.QLSelectPrinter;
 import org.apache.cayenne.query.ObjectSelect;
 import org.apache.cayenne.query.Ordering;
-import org.apache.cayenne.query.PrefetchTreeNode;
 import org.apache.cayenne.util.XMLEncoder;
 
 import java.util.ArrayList;
@@ -188,56 +188,42 @@ public class SelectQueryDescriptor extends QueryDescriptor {
         return query;
     }
 
+    /**
+     * Returns this query as a String in the syntax of {@link ObjectSelect#parse(String, Object...)}, or null if
+     * the query has no root entity, and hence can't be printed.
+     *
+     * @since 5.0
+     */
+    public String toQueryString() {
+        return rootEntityName() != null ? QLSelectPrinter.print(buildQuery(getQualifier())) : null;
+    }
+
+    private String rootEntityName() {
+        return switch (root) {
+            case ObjEntity entity -> entity.getName();
+            case String name -> name;
+            case null, default -> null;
+        };
+    }
+
     @Override
     public void encodeAsXML(XMLEncoder encoder, ConfigurationNodeVisitor delegate) {
         encoder.start("query")
                 .attribute("name", getName())
                 .attribute("type", type);
 
-        String rootString = null;
-        String rootType = null;
+        // the root, qualifier, orderings, prefetches, limit, offset and distinct are all clauses of the query String,
+        // the rest of the properties are stored separately
+        encoder.property(CACHE_STRATEGY_PROPERTY, getProperty(CACHE_STRATEGY_PROPERTY))
+                .property(CACHE_GROUPS_PROPERTY, getProperty(CACHE_GROUPS_PROPERTY))
+                .property(FETCHING_DATA_ROWS_PROPERTY, getProperty(FETCHING_DATA_ROWS_PROPERTY))
+                .property(PAGE_SIZE_PROPERTY, getProperty(PAGE_SIZE_PROPERTY))
+                .property(STATEMENT_FETCH_SIZE_PROPERTY, getProperty(STATEMENT_FETCH_SIZE_PROPERTY));
 
-        if (root instanceof String) {
-            rootType = QueryDescriptor.OBJ_ENTITY_ROOT;
-            rootString = root.toString();
-        } else if (root instanceof ObjEntity) {
-            rootType = QueryDescriptor.OBJ_ENTITY_ROOT;
-            rootString = ((ObjEntity) root).getName();
-        } else if (root instanceof DbEntity) {
-            rootType = QueryDescriptor.DB_ENTITY_ROOT;
-            rootString = ((DbEntity) root).getName();
-        } else if (root instanceof Procedure) {
-            rootType = QueryDescriptor.PROCEDURE_ROOT;
-            rootString = ((Procedure) root).getName();
-        } else if (root instanceof Class<?>) {
-            rootType = QueryDescriptor.JAVA_CLASS_ROOT;
-            rootString = ((Class<?>) root).getName();
+        String select = toQueryString();
+        if (select != null) {
+            encoder.start("select").cdata(select, true).end();
         }
-
-        if (rootType != null) {
-            encoder.attribute("root", rootType).attribute("root-name", rootString);
-        }
-
-        // print properties
-        encodeProperties(encoder);
-
-        // encode qualifier
-        if (qualifier != null) {
-            encoder.start("qualifier").nested(qualifier, delegate).end();
-        }
-
-        // encode orderings
-        encoder.nested(orderings, delegate);
-
-        PrefetchTreeNode prefetchTree = new PrefetchTreeNode();
-
-        for (String prefetchPath : prefetchesMap.keySet()) {
-            PrefetchTreeNode node = prefetchTree.addPath(prefetchPath);
-            node.setSemantics(prefetchesMap.get(prefetchPath));
-            node.setPhantom(false);
-        }
-
-        encoder.nested(prefetchTree, delegate);
 
         delegate.visitQuery(this);
         encoder.end();

@@ -1,4 +1,4 @@
 <?xml version="1.0" encoding="utf-8"?>
-<domain project-version="13" xmlns="http://cayenne.apache.org/schema/13/domain">
+<domain project-version="14" xmlns="http://cayenne.apache.org/schema/14/domain">
 	<map name="testConfigMap2"/>
 </domain>

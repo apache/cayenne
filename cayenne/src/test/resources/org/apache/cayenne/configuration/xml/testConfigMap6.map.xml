@@ -17,4 +17,4 @@
   ~  specific language governing permissions and limitations
   ~  under the License.
   -->
-<data-map xmlns="http://cayenne.apache.org/schema/14/modelMap" project-version="14"/>
+<data-map xmlns="http://cayenne.apache.org/schema/15/modelMap" project-version="15"/>

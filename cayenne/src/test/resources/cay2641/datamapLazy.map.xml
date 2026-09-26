@@ -1,8 +1,8 @@
 <?xml version="1.0" encoding="utf-8"?>
-<data-map xmlns="http://cayenne.apache.org/schema/13/modelMap"
+<data-map xmlns="http://cayenne.apache.org/schema/14/modelMap"
 	 xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-	 xsi:schemaLocation="http://cayenne.apache.org/schema/13/modelMap https://cayenne.apache.org/schema/13/modelMap.xsd"
-	 project-version="13">
+	 xsi:schemaLocation="http://cayenne.apache.org/schema/14/modelMap https://cayenne.apache.org/schema/14/modelMap.xsd"
+	 project-version="14">
 	<property name="defaultPackage" value="org.apache.cayenne.testdo.cay_2641"/>
 	<db-entity name="ArtistLazy">
 		<db-attribute name="ID" type="INTEGER" isPrimaryKey="true" isMandatory="true" length="5"/>
@@ -29,8 +29,10 @@
 	</db-relationship>
 	<obj-relationship name="paintings" source="ArtistLazy" target="PaintingLazy" deleteRule="Deny" db-relationship-path="paintings"/>
 	<obj-relationship name="artist" source="PaintingLazy" target="ArtistLazy" deleteRule="Nullify" db-relationship-path="artist"/>
-	<query name="prefetchSelect" type="SelectQuery" root="obj-entity" root-name="PaintingLazy">
-		<prefetch type="disjoint"><![CDATA[artist]]></prefetch>
+	<query name="prefetchSelect" type="SelectQuery">
+		<select><![CDATA[from PaintingLazy prefetch artist disjoint]]></select>
 	</query>
-	<query name="simpleSelect" type="SelectQuery" root="obj-entity" root-name="ArtistLazy"/>
+	<query name="simpleSelect" type="SelectQuery">
+		<select><![CDATA[from ArtistLazy]]></select>
+	</query>
 </data-map>

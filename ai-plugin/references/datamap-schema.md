@@ -20,8 +20,8 @@
 
 Reference for editing Cayenne DataMap files directly.
 
-- **Namespace**: `http://cayenne.apache.org/schema/12/modelMap`
-- **XSD**: `http://cayenne.apache.org/schema/12/modelMap.xsd`
+- **Namespace**: `http://cayenne.apache.org/schema/14/modelMap`
+- **XSD**: `http://cayenne.apache.org/schema/14/modelMap.xsd`
 - **Project version**: `12` (Cayenne 5.0)
 - **Working example**: `cayenne-ant/src/test/resources/testmap.map.xml`
 
@@ -29,9 +29,9 @@ Reference for editing Cayenne DataMap files directly.
 
 ```xml
 <?xml version="1.0" encoding="utf-8"?>
-<data-map xmlns="http://cayenne.apache.org/schema/12/modelMap"
+<data-map xmlns="http://cayenne.apache.org/schema/14/modelMap"
           xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-          xsi:schemaLocation="http://cayenne.apache.org/schema/12/modelMap http://cayenne.apache.org/schema/12/modelMap.xsd"
+          xsi:schemaLocation="http://cayenne.apache.org/schema/14/modelMap http://cayenne.apache.org/schema/14/modelMap.xsd"
           project-version="12">
     ...
 </data-map>
@@ -200,13 +200,18 @@ Three flavors, all named with `<query name="...">` and selected by `type=`:
 ### SelectQuery
 
 ```xml
-<query name="ArtistsByName" type="SelectQuery" root="obj-entity" root-name="Artist">
+<query name="ArtistsByName" type="SelectQuery">
     <property name="cayenne.GenericSelectQuery.cacheStrategy" value="LOCAL_CACHE"/>
-    <qualifier><![CDATA[artistName like $name]]></qualifier>
-    <ordering descending="true"><![CDATA[dateOfBirth]]></ordering>
-    <prefetch>paintings</prefetch>
+    <select><![CDATA[from Artist where artistName like $name order by dateOfBirth desc prefetch paintings]]></select>
 </query>
 ```
+
+The `select` String follows the syntax of `ObjectSelect.parse(..)`:
+`from Entity [where exp] [order by exp [desc] [insensitive], ...] [limit n] [offset m] [prefetch path [joint|disjoint|disjointById], ...]`.
+`$name` placeholders are the query parameters. The root entity, qualifier, orderings, prefetches, limit, offset and
+`distinct` (`select distinct self from ...`) all live in the String; other settings (cache strategy, page size, data
+rows) are `property` elements. A `select` clause with columns, a `having` clause or a `db:` root are not supported in a
+mapped query.
 
 ### SQLTemplate
 

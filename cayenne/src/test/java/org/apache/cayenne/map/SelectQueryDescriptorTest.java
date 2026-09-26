@@ -19,11 +19,18 @@
 
 package org.apache.cayenne.map;
 
+import java.io.PrintWriter;
+import java.io.StringWriter;
 import java.util.Map;
 
+import org.apache.cayenne.configuration.EmptyConfigurationNodeVisitor;
 import org.apache.cayenne.exp.ExpressionFactory;
 import org.apache.cayenne.query.ObjectSelect;
+import org.apache.cayenne.query.Ordering;
+import org.apache.cayenne.query.PrefetchTreeNode;
 import org.apache.cayenne.query.QueryCacheStrategy;
+import org.apache.cayenne.query.SortOrder;
+import org.apache.cayenne.util.XMLEncoder;
 import org.junit.jupiter.api.Test;
 
 import static org.junit.jupiter.api.Assertions.*;
@@ -135,5 +142,70 @@ public class SelectQueryDescriptorTest {
         assertEquals(QueryCacheStrategy.LOCAL_CACHE, query.getCacheStrategy());
         assertEquals("g1", query.getCacheGroup());
         assertTrue(query.isFetchingDataRows());
+    }
+
+    @Test
+    public void toQueryString() {
+        SelectQueryDescriptor descriptor = QueryDescriptor.selectQueryDescriptor();
+        descriptor.setRoot(new ObjEntity("Artist"));
+        descriptor.setQualifier(ExpressionFactory.exp("artistName like $name"));
+        descriptor.addOrdering(new Ordering("artistName", SortOrder.DESCENDING_INSENSITIVE));
+        descriptor.addOrdering(new Ordering("dateOfBirth", SortOrder.ASCENDING));
+        descriptor.addPrefetch("paintings", PrefetchTreeNode.JOINT_PREFETCH_SEMANTICS);
+        descriptor.addPrefetch("paintings.gallery", PrefetchTreeNode.DISJOINT_PREFETCH_SEMANTICS);
+        descriptor.setFetchLimit(10);
+        descriptor.setFetchOffset(20);
+        descriptor.setDistinct(true);
+
+        // properties outside the query String don't affect it
+        descriptor.setCacheStrategy(QueryCacheStrategy.SHARED_CACHE);
+        descriptor.setPageSize(5);
+
+        assertEquals("select distinct self from Artist where artistName like $name "
+                + "order by artistName desc insensitive, dateOfBirth limit 10 offset 20 "
+                + "prefetch paintings joint, paintings.gallery disjoint", descriptor.toQueryString());
+    }
+
+    @Test
+    public void toQueryStringNoRoot() {
+        SelectQueryDescriptor descriptor = QueryDescriptor.selectQueryDescriptor();
+        descriptor.setQualifier(ExpressionFactory.exp("artistName like $name"));
+        assertNull(descriptor.toQueryString());
+    }
+
+    @Test
+    public void encodeAsXML() {
+        SelectQueryDescriptor descriptor = QueryDescriptor.selectQueryDescriptor();
+        descriptor.setName("q");
+        descriptor.setRoot("Artist");
+        descriptor.setQualifier(ExpressionFactory.exp("artistName = $name"));
+        descriptor.addOrdering(new Ordering("artistName", SortOrder.DESCENDING));
+        descriptor.setFetchOffset(20);
+        descriptor.setCacheStrategy(QueryCacheStrategy.LOCAL_CACHE);
+
+        // the root, limit, offset and distinct are a part of the query String, and are not stored separately
+        assertEquals("""
+                <query name="q" type="SelectQuery">
+                <property name="cayenne.GenericSelectQuery.cacheStrategy" value="LOCAL_CACHE"/>
+                <select><![CDATA[from Artist where artistName = $name order by artistName desc offset 20]]></select>
+                </query>
+                """, encode(descriptor));
+    }
+
+    @Test
+    public void encodeAsXMLNoRoot() {
+        SelectQueryDescriptor descriptor = QueryDescriptor.selectQueryDescriptor();
+        descriptor.setName("q");
+        descriptor.setQualifier(ExpressionFactory.exp("artistName = $name"));
+
+        assertEquals("""
+                <query name="q" type="SelectQuery"/>
+                """, encode(descriptor));
+    }
+
+    private static String encode(SelectQueryDescriptor descriptor) {
+        StringWriter out = new StringWriter();
+        descriptor.encodeAsXML(new XMLEncoder(new PrintWriter(out)), new EmptyConfigurationNodeVisitor());
+        return out.toString();
     }
 }

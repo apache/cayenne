@@ -86,15 +86,15 @@ public class DefaultProjectUpgraderTest {
         PreUpgradeState state = upgrader.checkUpgradeNeeded(projectWithVersion("5"));
         assertEquals(UpgradeType.INTERMEDIATE_UPGRADE_NEEDED, state.requiredUpgrade());
         assertEquals("5", state.projectVersion());
-        assertEquals("13", state.supportedVersion());
+        assertEquals("14", state.supportedVersion());
         assertEquals("6", state.intermediateUpgradeVersion());
 
         state = upgrader.checkUpgradeNeeded(projectWithVersion("11"));
         assertEquals(UpgradeType.UPGRADE_NEEDED, state.requiredUpgrade());
         assertEquals("11", state.projectVersion());
 
-        assertEquals(UpgradeType.UPGRADE_NOT_NEEDED, upgrader.checkUpgradeNeeded(projectWithVersion("13")).requiredUpgrade());
-        assertEquals(UpgradeType.DOWNGRADE_NEEDED, upgrader.checkUpgradeNeeded(projectWithVersion("14")).requiredUpgrade());
+        assertEquals(UpgradeType.UPGRADE_NOT_NEEDED, upgrader.checkUpgradeNeeded(projectWithVersion("14")).requiredUpgrade());
+        assertEquals(UpgradeType.DOWNGRADE_NEEDED, upgrader.checkUpgradeNeeded(projectWithVersion("15")).requiredUpgrade());
     }
 
     @Test
@@ -115,14 +115,14 @@ public class DefaultProjectUpgraderTest {
 
         // files are rewritten in the current version, the obsolete graph file is deleted
         String project = Files.readString(projectFile.toPath());
-        assertTrue(project.contains("project-version=\"13\""), project);
-        assertTrue(project.contains("http://cayenne.apache.org/schema/13/domain"), project);
+        assertTrue(project.contains("project-version=\"14\""), project);
+        assertTrue(project.contains("http://cayenne.apache.org/schema/14/domain"), project);
         assertFalse(project.contains("<node"), project);
         assertFalse(project.contains("include"), project);
 
         String map = Files.readString(mapFile.toPath());
-        assertTrue(map.contains("project-version=\"13\""), map);
-        assertTrue(map.contains("http://cayenne.apache.org/schema/13/modelMap"), map);
+        assertTrue(map.contains("project-version=\"14\""), map);
+        assertTrue(map.contains("http://cayenne.apache.org/schema/14/modelMap"), map);
 
         assertFalse(graphFile.exists(), "graph file must be deleted");
 

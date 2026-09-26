@@ -96,7 +96,7 @@ public class XMLDataMapLoaderTest {
     public void loadNewerVersionConfig() {
         URL url = getClass().getResource("testConfigMap6.map.xml");
         CayenneRuntimeException e = assertThrows(CayenneRuntimeException.class, () -> loader.load(new URLResource(url)));
-        assertTrue(e.getMessage().contains("version 14 is newer"), e.getMessage());
+        assertTrue(e.getMessage().contains("version 15 is newer"), e.getMessage());
     }
 
     @Test

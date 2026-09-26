@@ -26,7 +26,6 @@ import org.apache.cayenne.util.Util;
 import org.xml.sax.Attributes;
 import org.xml.sax.SAXException;
 
-import static org.apache.cayenne.util.Util.isBlank;
 
 /**
  * @since 4.1
@@ -36,8 +35,7 @@ public class QueryDescriptorHandler extends NamespaceAwareNestedTagHandler {
     private static final String QUERY_DESCRIPTOR_TAG = "query";
     private static final String QUERY_SQL_TAG = "sql";
     private static final String QUERY_EJBQL_TAG = "ejbql";
-    private static final String QUERY_QUALIFIER_TAG = "qualifier";
-    private static final String QUERY_ORDERING_TAG = "ordering";
+    private static final String QUERY_SELECT_TAG = "select";
     private static final String QUERY_PREFETCH_TAG = "prefetch";
 
     public static final String PROPERTY_TAG = "property";
@@ -49,9 +47,6 @@ public class QueryDescriptorHandler extends NamespaceAwareNestedTagHandler {
     private boolean changed;
 
     private String sqlKey;
-    private String descending;
-    private String ignoreCase;
-
     private int semantics;
 
     public QueryDescriptorHandler(NamespaceAwareNestedTagHandler parentHandler, DataMap map) {
@@ -75,12 +70,8 @@ public class QueryDescriptorHandler extends NamespaceAwareNestedTagHandler {
                 this.sqlKey = attributes.getValue("adapter-class");
                 return true;
 
-            case QUERY_ORDERING_TAG:
-                createQueryOrdering(attributes);
-                return true;
-
             case QUERY_EJBQL_TAG:
-            case QUERY_QUALIFIER_TAG:
+            case QUERY_SELECT_TAG:
             case QUERY_PREFETCH_TAG:
                 createPrefetchSemantics(attributes);
                 return true;
@@ -100,12 +91,9 @@ public class QueryDescriptorHandler extends NamespaceAwareNestedTagHandler {
                 queryBuilder.setEjbql(data);
                 break;
 
-            case QUERY_QUALIFIER_TAG:
-                createQualifier(data);
-                break;
-
-            case QUERY_ORDERING_TAG:
-                addQueryOrdering(data);
+            case QUERY_SELECT_TAG:
+                queryBuilder.setSelect(data);
+                changed = true;
                 break;
 
             case QUERY_PREFETCH_TAG:
@@ -162,25 +150,6 @@ public class QueryDescriptorHandler extends NamespaceAwareNestedTagHandler {
         }
 
         queryBuilder.addProperty(name, value);
-        changed = true;
-    }
-
-    private void createQualifier(String qualifier) {
-        if (isBlank(qualifier)) {
-            return;
-        }
-
-        queryBuilder.setQualifier(qualifier);
-        changed = true;
-    }
-
-    private void createQueryOrdering(Attributes attributes) {
-        descending = attributes.getValue("descending");
-        ignoreCase = attributes.getValue("ignore-case");
-    }
-
-    private void addQueryOrdering(String path) {
-        queryBuilder.addOrdering(path, descending, ignoreCase);
         changed = true;
     }
 

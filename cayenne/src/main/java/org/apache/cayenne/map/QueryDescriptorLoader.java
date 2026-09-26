@@ -21,10 +21,15 @@ package org.apache.cayenne.map;
 import org.apache.cayenne.CayenneRuntimeException;
 import org.apache.cayenne.ConfigurationException;
 import org.apache.cayenne.exp.Expression;
-import org.apache.cayenne.exp.ExpressionFactory;
+import org.apache.cayenne.exp.parser.JavaCharStream;
+import org.apache.cayenne.exp.parser.QLParser;
+import org.apache.cayenne.exp.parser.QLParserTokenManager;
+import org.apache.cayenne.query.FluentSelect;
+import org.apache.cayenne.query.ObjectSelect;
 import org.apache.cayenne.query.Ordering;
-import org.apache.cayenne.query.SortOrder;
+import org.apache.cayenne.query.PrefetchTreeNode;
 
+import java.io.StringReader;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -191,11 +196,71 @@ public class QueryDescriptorLoader {
         }
     }
 
-    public void setQualifier(String qualifier) {
-        if (qualifier == null || isBlank(qualifier)) {
-            this.qualifier = null;
-        } else {
-            this.qualifier = ExpressionFactory.exp(qualifier.trim());
+    /**
+     * Sets the select query from its String form, in the syntax of {@link ObjectSelect#parse(String, Object...)}.
+     * The String defines the root entity, qualifier, orderings, prefetches, limit, offset and "distinct" of the query.
+     * "$name" parameters in the String are preserved as named parameters, to be bound when the query is executed.
+     *
+     * @since 5.0
+     */
+    public void setSelect(String select) {
+        if (select == null || isBlank(select)) {
+            return;
+        }
+
+        // TODO: the parsed query can be a ColumnSelect, have a "having" clause or be rooted in a DbEntity, none of
+        //  which is representable in SelectQueryDescriptor, or editable in the Modeler. Both need to be reworked
+        //  to hold a full query instead of its parts, and MappedSelect should stop assuming an ObjectSelect
+        FluentSelect<?, ?> parsed = parseSelect(select);
+        if (!(parsed instanceof ObjectSelect<?> query)) {
+            throw new ConfigurationException("Query '%s' selects columns, which is not supported in a mapped query: %s",
+                    name, select);
+        }
+        if (query.getHaving() != null) {
+            throw new ConfigurationException("Query '%s' has a 'having' clause, which is not supported in a mapped " +
+                    "query: %s", name, select);
+        }
+        if (query.getEntityName() == null) {
+            throw new ConfigurationException("Query '%s' must be rooted in an ObjEntity: %s", name, select);
+        }
+
+        this.rootType = QueryDescriptor.OBJ_ENTITY_ROOT;
+        this.rootName = query.getEntityName();
+        this.qualifier = query.getWhere();
+        this.orderings = query.getOrderings() != null ? new ArrayList<>(query.getOrderings()) : new ArrayList<>();
+
+        PrefetchTreeNode prefetches = query.getPrefetches();
+        if (prefetches != null) {
+            for (PrefetchTreeNode node : prefetches.nonPhantomNodes()) {
+                // the root of the tree is not a prefetch
+                if (node.getParent() != null) {
+                    addPrefetch(node.getPath().value(), node.getSemantics());
+                }
+            }
+        }
+
+        if (query.getLimit() > 0) {
+            addProperty(QueryDescriptor.FETCH_LIMIT_PROPERTY, String.valueOf(query.getLimit()));
+        }
+        if (query.getOffset() > 0) {
+            addProperty(QueryDescriptor.FETCH_OFFSET_PROPERTY, String.valueOf(query.getOffset()));
+        }
+        if (query.isDistinct()) {
+            addProperty(SelectQueryDescriptor.DISTINCT_PROPERTY, "true");
+        }
+    }
+
+    /**
+     * Parses a query String without binding its "$name" parameters, unlike
+     * {@link ObjectSelect#parse(String, Object...)} that requires the values of all the parameters upfront.
+     */
+    private FluentSelect<?, ?> parseSelect(String select) {
+        JavaCharStream stream = new JavaCharStream(new StringReader(select), 1, 1, select.length() + 1);
+        QLParser parser = new QLParser(new QLParserTokenManager(stream));
+        try {
+            return parser.query();
+        } catch (Throwable th) {
+            throw new ConfigurationException("Query '%s' can't be parsed: %s", th, name, th.getMessage());
         }
     }
 
@@ -205,33 +270,6 @@ public class QueryDescriptorLoader {
         }
 
         properties.put(name, value);
-    }
-
-    public void addOrdering(String path, String descending, String ignoreCase) {
-        if (orderings == null) {
-            orderings = new ArrayList<>();
-        }
-
-        if (path != null && isBlank(path)) {
-            path = null;
-        }
-        boolean isDescending = "true".equalsIgnoreCase(descending);
-        boolean isIgnoringCase = "true".equalsIgnoreCase(ignoreCase);
-
-        SortOrder order;
-
-        if (isDescending) {
-            order = isIgnoringCase
-                    ? SortOrder.DESCENDING_INSENSITIVE
-                    : SortOrder.DESCENDING;
-        }
-        else {
-            order = isIgnoringCase
-                    ? SortOrder.ASCENDING_INSENSITIVE
-                    : SortOrder.ASCENDING;
-        }
-
-        orderings.add(new Ordering(path, order));
     }
 
     public void addPrefetch(String path, int semantics) {

@@ -26,17 +26,35 @@ import org.apache.cayenne.exp.Expression;
 import org.apache.cayenne.exp.property.Property;
 import org.apache.cayenne.query.FluentSelect;
 import org.apache.cayenne.query.Ordering;
+import org.apache.cayenne.query.PrefetchTreeNode;
 
 /**
  * Prints a select query as a String that {@link QLParser} can parse back, the opposite of {@link QLSelectBuilder}.
- * Used to print the nested selects of an expression.
+ * Used to print the nested selects of an expression and to store the queries mapped in a DataMap.
  * <p>
  * Just like the expressions that it consists of, a printed query may not be parseable if it contains values that have
  * no String representation in the grammar (dates, persistent objects, etc.) Also there is no access to the mapping
  * here, so a root defined as a Java class is printed as a simple name of that class, that is the name of the entity
  * by convention, but doesn't have to be.
+ *
+ * @since 5.0
  */
-class QLSelectPrinter {
+public class QLSelectPrinter {
+
+    /**
+     * Returns a query String that {@link org.apache.cayenne.query.ObjectSelect#parse(String, Object...)} can parse
+     * back into an equivalent query.
+     */
+    public static String print(FluentSelect<?, ?> query) {
+        StringBuilder out = new StringBuilder();
+        try {
+            append(query, out);
+        } catch (IOException e) {
+            // StringBuilder doesn't throw
+            throw new IllegalStateException(e);
+        }
+        return out.toString();
+    }
 
     static void append(FluentSelect<?, ?> query, Appendable out) throws IOException {
         appendSelect(query, out);
@@ -61,6 +79,8 @@ class QLSelectPrinter {
         if (query.getOffset() > 0) {
             out.append(" offset ").append(String.valueOf(query.getOffset()));
         }
+
+        appendPrefetches(query, out);
     }
 
     private static void appendSelect(FluentSelect<?, ?> query, Appendable out) throws IOException {
@@ -129,6 +149,35 @@ class QLSelectPrinter {
             }
             if (ordering.isCaseInsensitive()) {
                 out.append(" insensitive");
+            }
+        }
+    }
+
+    private static void appendPrefetches(FluentSelect<?, ?> query, Appendable out) throws IOException {
+        PrefetchTreeNode prefetches = query.getPrefetches();
+        if (prefetches == null) {
+            return;
+        }
+
+        boolean first = true;
+        for (PrefetchTreeNode node : prefetches.nonPhantomNodes()) {
+
+            // the root of the tree is not a prefetch
+            if (node.getParent() == null) {
+                continue;
+            }
+
+            out.append(first ? " prefetch " : ", ");
+            first = false;
+
+            out.append(node.getPath().value());
+            switch (node.getSemantics()) {
+                case PrefetchTreeNode.JOINT_PREFETCH_SEMANTICS -> out.append(" joint");
+                case PrefetchTreeNode.DISJOINT_PREFETCH_SEMANTICS -> out.append(" disjoint");
+                case PrefetchTreeNode.DISJOINT_BY_ID_PREFETCH_SEMANTICS -> out.append(" disjointById");
+                default -> {
+                    // undefined semantics is the default of the grammar
+                }
             }
         }
     }

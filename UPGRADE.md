@@ -359,6 +359,10 @@ List<Artist> withExpensivePaintings = ObjectSelect
   dependencies, logging a warning that recommends a permanent upgrade in CayenneModeler. An upgrade that would
   drop a part of the project without a replacement (e.g. DataNodes, removed in project version 13) still fails to
   load; open such a project in CayenneModeler to upgrade it.
+*  Per [CAY-3037](https://issues.apache.org/jira/browse/CAY-3037) the project XML version is bumped to 14, and a
+  `SelectQuery` in a DataMap is now stored as a single query String in the syntax of `ObjectSelect.parse(..)`, instead
+  of the root attributes and the separate `qualifier`, `ordering` and `prefetch` elements. Projects are upgraded 
+  automatically, either in memory by the runtime, or permanently by CayenneModeler.
 
 ## Upgrading to 5.0-M3
 

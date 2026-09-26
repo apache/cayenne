@@ -149,18 +149,13 @@ public class QueryDescriptor implements ConfigurationNode, XMLSerializable {
      * Creates query descriptor of a given type.
      */
     public static QueryDescriptor descriptor(String type) {
-        switch (type) {
-            case SELECT_QUERY:
-                return selectQueryDescriptor();
-            case SQL_TEMPLATE:
-                return sqlTemplateDescriptor();
-            case EJBQL_QUERY:
-                return ejbqlQueryDescriptor();
-            case PROCEDURE_QUERY:
-                return procedureQueryDescriptor();
-            default:
-                return new QueryDescriptor(type);
-        }
+        return switch (type) {
+            case SELECT_QUERY -> selectQueryDescriptor();
+            case SQL_TEMPLATE -> sqlTemplateDescriptor();
+            case EJBQL_QUERY -> ejbqlQueryDescriptor();
+            case PROCEDURE_QUERY -> procedureQueryDescriptor();
+            default -> new QueryDescriptor(type);
+        };
     }
 
     protected String name;
