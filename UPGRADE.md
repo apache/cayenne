@@ -269,25 +269,6 @@ List<Artist> withExpensivePaintings = ObjectSelect
    `DataChannelQueryFilter` implementations now require a new signature.
 
 
-*  Per [CAY-3027](https://issues.apache.org/jira/browse/CAY-3027) `org.apache.cayenne.lifecycle.id.StringIdQuery`
-   was removed from `cayenne-lifecycle`. It was a pseudo-query that could only return `DataRow`s and needed
-   `ObjectContext.execute(..)` to run. Its replacement is `org.apache.cayenne.lifecycle.id.StringIdFetcher`, a
-   set of static methods that fetch persistent objects for one or more String IDs, possibly spanning multiple
-   entities:
-
-  ```java
-  // before
-  StringIdQuery query = new StringIdQuery("E1:3", "E1:4", "E2:6");
-  List<QueryResult> response = context.execute(query);
-  // ... convert DataRows to objects per entity
-
-  // after
-  Map<String, Persistent> objects = StringIdFetcher.fetch(context, "E1:3", "E1:4", "E2:6");
-  Persistent e1 = StringIdFetcher.fetchOne(context, "E1:3");
-  ```
-
-  The map is keyed by the String IDs passed in, and IDs with no matching object are absent from it.
-
 *  Per [CAY-3032](https://issues.apache.org/jira/browse/CAY-3032) a `ColumnSelect` with an entity column over a
    to-many relationship no longer filters out the root rows that have no related objects. It now uses an outer join,
    same as the to-one entity columns always did, so such rows are returned with a `null` in place of the related
@@ -365,6 +346,13 @@ List<Artist> withExpensivePaintings = ObjectSelect
    an OSGi container are welcome to copy the module's code into their own project: it consisted of a few small classes
    that provide an OSGi-aware `ClassLoaderManager` and a `Provider<DataDomain>` that swaps the thread context
    ClassLoader while the `DataDomain` is created, bound via a `CayenneRuntime` module.
+
+*  Per [CAY-3035](https://issues.apache.org/jira/browse/CAY-3035) the `cayenne-lifecycle` module was removed. It was
+   an opinionated way of encoding `ObjectId`s as Strings (`IdCoder`, `EntityIdCoder`, `StringIdFetcher`), with an
+   even more opinionated `@ObjectIdRelationship` annotation and `ObjectIdRelationshipFilter` on top of it to resolve
+   "virtual" relationships stored as such String IDs. There's no appetite to keep supporting this in Cayenne. The users
+   who still need it are welcome to grab the source code of `IdCoder` and friends from the Cayenne git history and
+   incorporate it in their projects.
 
 ## Upgrading to 5.0-M3
 

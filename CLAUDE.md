@@ -91,7 +91,7 @@ Why the `failIfNoSpecifiedTests=false` flags are needed when using `-am`: Surefi
 - **cayenne-cgen** — Code generation from database schemas
 - **cayenne-dbsync** — Database schema synchronization
 - **cayenne-gradle-plugin**, **cayenne-maven-plugin**, **cayenne-ant** — Build tool integrations
-- **cayenne-crypto**, **cayenne-commitlog**, **cayenne-lifecycle**, **cayenne-jcache**, **cayenne-cache-invalidation** — Optional extension modules
+- **cayenne-crypto**, **cayenne-commitlog**, **cayenne-jcache**, **cayenne-cache-invalidation** — Optional extension modules
 - **cayenne-modeler** — CayenneModeler GUI application (Swing)
 
 

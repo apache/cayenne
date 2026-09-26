@@ -115,7 +115,6 @@
         <module>cayenne-di</module>
         <module>cayenne-gradle-plugin</module>
         <module>cayenne-jcache</module>
-        <module>cayenne-lifecycle</module>
         <module>cayenne-mcp-server</module>
         <module>cayenne-modeler</module>
         <module>cayenne-modeler-prefs</module>

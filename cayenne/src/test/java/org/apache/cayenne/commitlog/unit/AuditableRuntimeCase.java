@@ -30,7 +30,7 @@ import org.junit.jupiter.api.BeforeEach;
 import javax.sql.DataSource;
 
 /**
- * A superclass of integration tests for cayenne-lifecycle.
+ * A superclass of integration tests for cayenne-commitlog.
  */
 public abstract class AuditableRuntimeCase {
 

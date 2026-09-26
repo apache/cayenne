@@ -1,5 +1,0 @@
-<?xml version="1.0" encoding="utf-8"?>
-<domain xmlns="http://cayenne.apache.org/schema/13/domain"
-	 project-version="13">
-	<map name="lifecycle-map"/>
-</domain>
