@@ -122,7 +122,6 @@
         <module>cayenne-project</module>
         <module>cayenne-project-compatibility</module>
         <module>cayenne-velocity</module>
-        <module>cayenne-osgi</module>
         <module>cayenne-maven-plugin</module>
         <module>cayenne-wocompat</module>
         <module>docs</module>

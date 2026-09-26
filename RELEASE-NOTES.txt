@@ -35,6 +35,7 @@ CAY-3025 ObjectContext to require/return Persistent for all object ops
 CAY-3026 Parseable ObjectSelect / ColumnSelect
 CAY-3027 Replace StringIdQuery with StringIdFetcher
 CAY-3028 Im-memory evaluation of ASTSum
+CAY-3034 Remove "cayenne-osgi" module
 
 Bug Fixes:
 

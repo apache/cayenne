@@ -23,5 +23,3 @@ include::additional-modules/jcache.adoc[]
 include::additional-modules/project-compatibility.adoc[]
 
 include::additional-modules/apache-velocity.adoc[]
-
-include::additional-modules/cayenne-osgi.adoc[]

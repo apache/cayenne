@@ -360,6 +360,12 @@ List<Artist> withExpensivePaintings = ObjectSelect
   `org.apache.cayenne.util.Invocation` class and the `SnapshotEventListener` interface (which was only ever a
   naming convention for the reflective lookup) were removed.
 
+*  Per [CAY-3034](https://issues.apache.org/jira/browse/CAY-3034) the `cayenne-osgi` module was removed, following
+   the general direction of focusing on the Cayenne core and dropping external integrations. Users running Cayenne in
+   an OSGi container are welcome to copy the module's code into their own project: it consisted of a few small classes
+   that provide an OSGi-aware `ClassLoaderManager` and a `Provider<DataDomain>` that swaps the thread context
+   ClassLoader while the `DataDomain` is created, bound via a `CayenneRuntime` module.
+
 ## Upgrading to 5.0-M3
 
 
