@@ -23,9 +23,11 @@ import java.util.ArrayList;
 import java.util.List;
 
 import org.apache.cayenne.exp.Expression;
+import org.apache.cayenne.exp.ScalarExp;
 
 /**
- * The node stack that {@link QLParser} builds expression trees on. Adapted from the JJTree-generated tree state and
+ * The stack that {@link QLParser} builds expression trees on. An entry is a node or a plain literal value; the
+ * values become operands of the node that closes over them. Adapted from the JJTree-generated tree state and
  * maintained by hand, together with the node classes it operates on. The class name is what the generated parser
  * expects.
  *
@@ -33,7 +35,7 @@ import org.apache.cayenne.exp.Expression;
  */
 public class JJTQLParserState {
 
-    private final List<Expression> nodes = new ArrayList<>();
+    private final List<Object> nodes = new ArrayList<>();
     private final List<Integer> marks = new ArrayList<>();
 
     // number of nodes on the stack
@@ -61,29 +63,44 @@ public class JJTQLParserState {
     }
 
     /**
-     * Returns the root node of the tree. Only makes sense after a successful parse.
+     * Returns the root of the tree, wrapping a lone literal in a scalar node. Only makes sense after a successful
+     * parse.
      */
     public Expression rootNode() {
-        return nodes.get(0);
+        return asExpression(nodes.get(0));
     }
 
-    public void pushNode(Expression n) {
+    /**
+     * Pushes a node or a literal value.
+     */
+    public void pushNode(Object n) {
         nodes.add(n);
         ++sp;
     }
 
     /**
-     * Returns the node on the top of the stack, removing it from the stack.
+     * Returns the entry on the top of the stack, removing it from the stack.
      */
-    public Expression popNode() {
+    public Object popNode() {
         if (--sp < mk) {
             mk = marks.remove(marks.size() - 1);
         }
         return nodes.remove(nodes.size() - 1);
     }
 
-    public Expression peekNode() {
+    /**
+     * Same as {@link #popNode()}, wrapping a literal value in a scalar node.
+     */
+    public Expression popExpression() {
+        return asExpression(popNode());
+    }
+
+    public Object peekNode() {
         return nodes.get(nodes.size() - 1);
+    }
+
+    private static Expression asExpression(Object entry) {
+        return entry instanceof Expression expression ? expression : new ScalarExp(entry);
     }
 
     /**

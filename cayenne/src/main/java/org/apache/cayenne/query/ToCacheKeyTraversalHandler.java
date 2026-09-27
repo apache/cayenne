@@ -26,6 +26,7 @@ import org.apache.cayenne.access.types.ValueObjectTypeRegistry;
 import org.apache.cayenne.exp.Expression;
 import org.apache.cayenne.exp.TraversalHandler;
 import org.apache.cayenne.exp.FunctionCallExp;
+import org.apache.cayenne.exp.ScalarExp;
 import org.apache.cayenne.exp.SubqueryExp;
 
 import java.util.function.Function;
@@ -67,15 +68,24 @@ class ToCacheKeyTraversalHandler implements TraversalHandler {
 
     @Override
     public void startNode(Expression node, Expression parentNode) {
-        if(node instanceof FunctionCallExp function) {
-            out.append(function.getFunctionName()).append('(');
-        } else {
-            out.append(node.expName()).append('(');
-        }
+        switch (node) {
+            case FunctionCallExp function -> out.append(function.getFunctionName()).append('(');
 
-        // a subquery keeps its query outside the expression tree, so it needs to be added to the key explicitly
-        if (node instanceof SubqueryExp subquery && subqueryKeyBuilder != null) {
-            out.append(subqueryKeyBuilder.apply(subquery.getQuery()));
+            // a scalar node holds its value outside the operands
+            case ScalarExp scalar -> {
+                out.append(scalar.expName()).append('(');
+                objectNode(scalar.getValue(), scalar);
+            }
+
+            // a subquery keeps its query outside the expression tree, so it needs to be added to the key explicitly
+            case SubqueryExp subquery -> {
+                out.append(subquery.expName()).append('(');
+                if (subqueryKeyBuilder != null) {
+                    out.append(subqueryKeyBuilder.apply(subquery.getQuery()));
+                }
+            }
+
+            default -> out.append(node.expName()).append('(');
         }
     }
 

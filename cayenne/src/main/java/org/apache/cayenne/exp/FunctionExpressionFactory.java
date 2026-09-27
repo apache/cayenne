@@ -36,7 +36,7 @@ public class FunctionExpressionFactory {
      * @return SUBSTRING() call expression
      */
     public static Expression substringExp(Expression exp, int offset, int length) {
-        return substringExp(exp, ExpressionFactory.wrapScalarValue(offset), ExpressionFactory.wrapScalarValue(length));
+        return new SubstringExp(exp, offset, length);
     }
 
     /**
@@ -48,7 +48,7 @@ public class FunctionExpressionFactory {
      * @return SUBSTRING() call expression
      */
     public static Expression substringExp(String path, int offset, int length) {
-        return substringExp(ExpressionFactory.pathExp(path), ExpressionFactory.wrapScalarValue(offset), ExpressionFactory.wrapScalarValue(length));
+        return new SubstringExp(ExpressionFactory.pathExp(path), offset, length);
     }
 
     /**
@@ -136,7 +136,7 @@ public class FunctionExpressionFactory {
      * @return LOCATE() call expression
      */
     public static Expression locateExp(String substring, Expression exp) {
-        return locateExp(ExpressionFactory.wrapScalarValue(substring), exp);
+        return new LocateExp(substring, exp);
     }
 
     /**
@@ -148,7 +148,7 @@ public class FunctionExpressionFactory {
      * @return LOCATE() call expression
      */
     public static Expression locateExp(String substring, String path) {
-        return locateExp(ExpressionFactory.wrapScalarValue(substring), ExpressionFactory.pathExp(path));
+        return new LocateExp(substring, ExpressionFactory.pathExp(path));
     }
 
     /**
@@ -201,7 +201,7 @@ public class FunctionExpressionFactory {
      * @return MOD() call expression
      */
     public static Expression modExp(Expression exp, Number number) {
-        return modExp(exp, ExpressionFactory.wrapScalarValue(number));
+        return new ModExp(exp, number);
     }
 
     /**
@@ -210,7 +210,7 @@ public class FunctionExpressionFactory {
      * @return MOD() call expression
      */
     public static Expression modExp(String path, Number number) {
-        return modExp(ExpressionFactory.pathExp(path), ExpressionFactory.wrapScalarValue(number));
+        return new ModExp(ExpressionFactory.pathExp(path), number);
     }
 
     /**

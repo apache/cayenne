@@ -1199,7 +1199,9 @@ public class ExpressionFactory {
 	}
 
 	/**
-	 * Wrap value into ScalarExp
+	 * Wraps a value into an expression, for the places that take an expression rather than a value: e.g. a constant
+	 * select column, or a whole where clause.
+	 *
 	 * @since 4.0
 	 */
 	public static Expression wrapScalarValue(Object value) {

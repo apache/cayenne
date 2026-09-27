@@ -170,16 +170,14 @@ public final class ListExp extends Expression {
 			return;
 		}
 		for (int i = 0; i < values.length; i++) {
-			values[i] = switch (values[i]) {
-				case ScalarExp scalar -> scalar.getValue();
-				case Persistent persistent -> persistent.getObjectId();
-				case null, default -> values[i];
-			};
+			if (values[i] instanceof Persistent persistent) {
+				values[i] = persistent.getObjectId();
+			}
 		}
 	}
 
 	/**
-	 * Sets the elements of this list. This is how the parser passes the parsed elements, each a scalar node.
+	 * Sets the elements of this list. This is how the parser passes the parsed elements.
 	 */
 	@Override
 	public void setOperands(Object... elements) {

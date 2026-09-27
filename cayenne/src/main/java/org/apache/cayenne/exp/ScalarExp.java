@@ -25,11 +25,12 @@ import java.util.List;
 import org.apache.cayenne.Persistent;
 
 /**
- * A scalar value wrapper expression.
+ * A plain value in the place of an expression, e.g. a constant select column or a whole where clause. A value that is
+ * an operand of another expression is not wrapped in a scalar node; it is stored as is.
  * 
  * @since 5.0
  */
-public sealed class ScalarExp extends Expression permits EnumExp, NamedParameterExp {
+public final class ScalarExp extends Expression {
     protected Object value;
 
     /**
@@ -46,7 +47,7 @@ public sealed class ScalarExp extends Expression permits EnumExp, NamedParameter
 
     @Override
     protected Object evaluateNode(Object o) throws Exception {
-        return value;
+        return getValue();
     }
 
     /**
@@ -77,8 +78,11 @@ public sealed class ScalarExp extends Expression permits EnumExp, NamedParameter
     	}
     }
 
+    /**
+     * Returns the value, resolving an {@link EnumRef} to its enum constant.
+     */
     public Object getValue() {
-        return value;
+        return value instanceof EnumRef enumRef ? enumRef.resolve() : value;
     }
 
     @Override

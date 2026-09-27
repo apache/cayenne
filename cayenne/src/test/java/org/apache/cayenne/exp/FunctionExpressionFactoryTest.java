@@ -41,7 +41,11 @@ public class FunctionExpressionFactoryTest {
         assertEquals(15, exp1.getOperand(2));
 
         assertEquals(exp1, exp2);
-        assertEquals(exp2, exp3);
+
+        // a wrapped value is kept as a scalar node, so the tree differs, but prints the same
+        assertEquals(new ScalarExp(10), exp3.getOperand(1));
+        assertEquals(new ScalarExp(15), exp3.getOperand(2));
+        assertEquals(exp2.toString(), exp3.toString());
     }
 
     @Test
@@ -109,7 +113,10 @@ public class FunctionExpressionFactoryTest {
         assertEquals(Artist.ARTIST_NAME.getExpression(), exp1.getOperand(1));
 
         assertEquals(exp1, exp2);
-        assertEquals(exp2, exp3);
+
+        // a wrapped value is kept as a scalar node, so the tree differs, but prints the same
+        assertEquals(new ScalarExp("abc"), exp3.getOperand(0));
+        assertEquals(exp2.toString(), exp3.toString());
     }
 
     @Test
@@ -151,7 +158,10 @@ public class FunctionExpressionFactoryTest {
         assertEquals(10, exp1.getOperand(1));
 
         assertEquals(exp1, exp2);
-        assertEquals(exp2, exp3);
+
+        // a wrapped value is kept as a scalar node, so the tree differs, but prints the same
+        assertEquals(new ScalarExp(10), exp3.getOperand(1));
+        assertEquals(exp2.toString(), exp3.toString());
     }
 
     @Test
@@ -161,7 +171,8 @@ public class FunctionExpressionFactoryTest {
         assertEquals(3, exp1.getOperandCount());
 
         assertEquals(Artist.ARTIST_NAME.getExpression(), exp1.getOperand(0));
-        assertEquals("abc", exp1.getOperand(1));
+        // a wrapped value is kept as a scalar node
+        assertEquals(new ScalarExp("abc"), exp1.getOperand(1));
         assertEquals(Artist.DATE_OF_BIRTH.getExpression(), exp1.getOperand(2));
 
         Expression exp2 = FunctionExpressionFactory.concatExp(Artist.ARTIST_NAME.getName(), Artist.DATE_OF_BIRTH.getName(), Artist.PAINTING_ARRAY.getName());

@@ -75,7 +75,7 @@ public class QLParser {
         }
     }
 
-    private Expression boundParameter(String name) {
+    private Object boundParameter(String name) {
         if (seenParameters == null) {
             seenParameters = new HashMap<String, Object>();
         }
@@ -91,7 +91,7 @@ public class QLParser {
             seenParameters.put(name, value);
         }
 
-        return QLParserHelper.parameterNode(value);
+        return QLParserHelper.parameterValue(value);
     }
 
     // Query keywords are contextual: they are regular path tokens that are only treated as keywords
@@ -147,7 +147,6 @@ public class QLParser {
             case JJTNOTINEXP: return new NotInExp();
             case JJTNOTBETWEENEXP: return new NotBetweenExp();
             case JJTLISTEXP: return new ListExp();
-            case JJTSCALAREXP: return new ScalarExp();
             case JJTBITWISEOREXP: return new BitwiseOrExp();
             case JJTBITWISEXOREXP: return new BitwiseXorExp();
             case JJTBITWISEANDEXP: return new BitwiseAndExp();
@@ -185,17 +184,15 @@ public class QLParser {
             case JJTCURRENTTIMESTAMPEXP: return new CurrentTimestampExp();
             case JJTEXTRACTEXP: return new ExtractExp();
             case JJTDISTINCTEXP: return new DistinctExp();
-            case JJTNAMEDPARAMETEREXP: return new NamedParameterExp();
             case JJTOBJPATHEXP: return new ObjPathExp();
             case JJTDBPATHEXP: return new DbPathExp();
-            case JJTENUMEXP: return new EnumExp();
             case JJTDBIDPATHEXP: return new DbIdPathExp();
             default: throw new ExpressionException("Unknown node id: " + id);
         }
     }
 
     private Expression popExpression() {
-        return (Expression) jjtree.popNode();
+        return jjtree.popExpression();
     }
 }
 
@@ -206,7 +203,7 @@ Expression expression() : {}
 {
 	orCondition() <EOF>
     {
-        return (Expression) jjtree.rootNode();
+        return jjtree.rootNode();
     }
 }
 
@@ -478,11 +475,6 @@ void scalarCommaList() : {}
 
 void conditionExpression() : {}
 {
-   // TODO: once we switch expression package to use AST* from parser package,
-   // we might need implement special subclasses for numeric and character constant
-   // nodes for the purpose of expression evaluation, instead . For now keep them as 
-   // generic ScalarExp and purge from the parent node to keep compatible with QualifierTranslator.
-
         // Path without any operator will go to numeric expression.
         // This done intentionally to remove lookahead that leads
         // to dramatically perfomance degradation (parser can become 3 times slower)
@@ -490,7 +482,7 @@ void conditionExpression() : {}
     |
         stringExpression()
 	|
-		<NULL> #ScalarExp(0)
+		<NULL> { jjtree.pushNode(null); }
 	|
     	aggregateExpression()
     |
@@ -512,9 +504,9 @@ void stringParameter() : {}
 
 void stringLiteral() :  {}
 {
-    <SINGLE_QUOTED_STRING> { jjtThis.setValue(token_source.literalValue); } #ScalarExp(0)
+    <SINGLE_QUOTED_STRING> { jjtree.pushNode(token_source.literalValue); }
     |
-    <DOUBLE_QUOTED_STRING> { jjtThis.setValue(token_source.literalValue); } #ScalarExp(0)
+    <DOUBLE_QUOTED_STRING> { jjtree.pushNode(token_source.literalValue); }
 }
 
 void stringExpression() : {}
@@ -528,26 +520,26 @@ void scalarExpression() : {}
 {
   	   conditionExpression()
 	|
-	  <TRUE> { jjtThis.setValue(true); }  #ScalarExp(0)
+	  <TRUE> { jjtree.pushNode(true); }
 	| 
-	  <FALSE> { jjtThis.setValue(false); }  #ScalarExp(0)
+	  <FALSE> { jjtree.pushNode(false); }
 }
 
 void scalarConstExpression() : {}
 {
-	  <SINGLE_QUOTED_STRING> { jjtThis.setValue(token_source.literalValue); } #ScalarExp(0)
+	  <SINGLE_QUOTED_STRING> { jjtree.pushNode(token_source.literalValue); }
 	|
-	  <DOUBLE_QUOTED_STRING> { jjtThis.setValue(token_source.literalValue); } #ScalarExp(0)
+	  <DOUBLE_QUOTED_STRING> { jjtree.pushNode(token_source.literalValue); }
 	| 
 	  namedParameter()
 	| 
-	  <INT_LITERAL>   { jjtThis.setValue(token_source.literalValue); } #ScalarExp(0)
+	  <INT_LITERAL>   { jjtree.pushNode(token_source.literalValue); }
 	| 
-	  <FLOAT_LITERAL> { jjtThis.setValue(token_source.literalValue); } #ScalarExp(0)
+	  <FLOAT_LITERAL> { jjtree.pushNode(token_source.literalValue); }
 	|
-	  <TRUE>  { jjtThis.setValue(true);  } #ScalarExp(0)
+	  <TRUE>  { jjtree.pushNode(true); }
 	| 
-	  <FALSE> { jjtThis.setValue(false); } #ScalarExp(0)
+	  <FALSE> { jjtree.pushNode(false); }
 }
 
 void numericExpression() : {}
@@ -637,9 +629,9 @@ void numericPrimary() : {}
 	|
 	    LOOKAHEAD({ isKeywordWithParen(1, "enclosing") }) enclosing()
 	|
-	   <INT_LITERAL> { jjtThis.setValue(token_source.literalValue); } #ScalarExp(0)
+	   <INT_LITERAL> { jjtree.pushNode(token_source.literalValue); }
 	| 
-	   <FLOAT_LITERAL>{ jjtThis.setValue(token_source.literalValue); }  #ScalarExp(0)
+	   <FLOAT_LITERAL>{ jjtree.pushNode(token_source.literalValue); }
 	|
         namedParameter()
     |
@@ -996,7 +988,7 @@ void namedParameter() :{
 	    // binding positional parameters as we go
 	    LOOKAHEAD({ parameters != null }) "$" t = pathToken() { jjtree.pushNode(boundParameter(t.image)); }
 	|
-	    "$" t = pathToken() { jjtThis.setValue(t.image); } #NamedParameterExp(0)
+	    "$" t = pathToken() { jjtree.pushNode(new ExpressionParameter(t.image)); }
 }
 
 void pathExpression() : {
@@ -1009,7 +1001,7 @@ void pathExpression() : {
    |
      "db:"   t = pathToken() { QLParserHelper.parsePath(jjtThis, t.image); } #DbPathExp(0)
    |
-     "enum:" t = pathToken() { jjtThis.setEnumValue(t.image); } #EnumExp(0)
+     "enum:" t = pathToken() { jjtree.pushNode(QLParserHelper.enumRef(t.image)); }
    |
      "dbid:" t = pathToken() { QLParserHelper.parsePath(jjtThis, t.image); } #DbIdPathExp(0)
 }

@@ -19,10 +19,9 @@
 
 package org.apache.cayenne.ql;
 
-import org.apache.cayenne.exp.Expression;
+import org.apache.cayenne.exp.EnumRef;
 import org.apache.cayenne.exp.ListExp;
 import org.apache.cayenne.exp.PathExp;
-import org.apache.cayenne.exp.ScalarExp;
 
 import java.util.Collection;
 import java.util.HashMap;
@@ -65,16 +64,26 @@ class QLParserHelper {
     }
 
     /**
-     * Wraps a parameter value in a node that can take the place of a named parameter in the expression tree.
+     * Returns the operand that takes the place of a named parameter in the expression tree: a collection as a list
+     * node, anything else as is.
      */
-    static Expression parameterNode(Object value) {
+    static Object parameterValue(Object value) {
         return switch (value) {
-            case null -> new ScalarExp();
-            case Expression node -> node;
             case Collection<?> collection -> new ListExp(collection);
             case Object[] array -> new ListExp(array);
-            default -> new ScalarExp(value);
+            case null, default -> value;
         };
+    }
+
+    /**
+     * Parses the "class.CONSTANT" path of an "enum:" literal.
+     */
+    static EnumRef enumRef(String enumPath) throws ParseException {
+        int dot = enumPath.lastIndexOf('.');
+        if (dot <= 0 || dot == enumPath.length() - 1) {
+            throw new ParseException("Invalid enum path: " + enumPath);
+        }
+        return new EnumRef(enumPath.substring(0, dot), enumPath.substring(dot + 1));
     }
 
 }

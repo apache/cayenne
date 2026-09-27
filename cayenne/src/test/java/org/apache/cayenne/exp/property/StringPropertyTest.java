@@ -145,7 +145,11 @@ public class StringPropertyTest {
     @Test
     public void concat() {
         assertEquals(exp("concat(path, 'abc', ' ', 'def', other)"),
-                property.concat("abc", ' ', exp("'def'"), other).getExpression());
+                property.concat("abc", ' ', "def", other).getExpression());
+
+        // an expression argument is kept as a node, even if it is a wrapped value
+        assertEquals("concat(path , \"abc\" , \" \" , \"def\" , other)",
+                property.concat("abc", ' ', exp("'def'"), other).getExpression().toString());
     }
 
     @Test

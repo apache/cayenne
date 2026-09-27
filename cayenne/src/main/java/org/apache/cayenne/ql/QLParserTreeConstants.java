@@ -28,49 +28,46 @@ public interface QLParserTreeConstants
   public int JJTNOTINEXP = 22;
   public int JJTNOTBETWEENEXP = 23;
   public int JJTLISTEXP = 24;
-  public int JJTSCALAREXP = 25;
-  public int JJTBITWISEOREXP = 26;
-  public int JJTBITWISEXOREXP = 27;
-  public int JJTBITWISEANDEXP = 28;
-  public int JJTBITWISELEFTSHIFTEXP = 29;
-  public int JJTBITWISERIGHTSHIFTEXP = 30;
-  public int JJTADDEXP = 31;
-  public int JJTSUBTRACTEXP = 32;
-  public int JJTMULTIPLYEXP = 33;
-  public int JJTDIVIDEEXP = 34;
-  public int JJTBITWISENOTEXP = 35;
-  public int JJTNEGATEEXP = 36;
-  public int JJTFULLOBJECTEXP = 37;
-  public int JJTENCLOSINGOBJECTEXP = 38;
-  public int JJTCUSTOMFUNCTIONEXP = 39;
-  public int JJTCUSTOMOPERATOREXP = 40;
-  public int JJTCUSTOMAGGREGATEEXP = 41;
-  public int JJTCONCATEXP = 42;
-  public int JJTSUBSTRINGEXP = 43;
-  public int JJTTRIMEXP = 44;
-  public int JJTLOWEREXP = 45;
-  public int JJTUPPEREXP = 46;
-  public int JJTLENGTHEXP = 47;
-  public int JJTLOCATEEXP = 48;
-  public int JJTABSEXP = 49;
-  public int JJTSQRTEXP = 50;
-  public int JJTMODEXP = 51;
-  public int JJTASTERISKEXP = 52;
-  public int JJTCOUNTEXP = 53;
-  public int JJTAVGEXP = 54;
-  public int JJTMAXEXP = 55;
-  public int JJTMINEXP = 56;
-  public int JJTSUMEXP = 57;
-  public int JJTCURRENTDATEEXP = 58;
-  public int JJTCURRENTTIMEEXP = 59;
-  public int JJTCURRENTTIMESTAMPEXP = 60;
-  public int JJTEXTRACTEXP = 61;
-  public int JJTDISTINCTEXP = 62;
-  public int JJTNAMEDPARAMETEREXP = 63;
-  public int JJTOBJPATHEXP = 64;
-  public int JJTDBPATHEXP = 65;
-  public int JJTENUMEXP = 66;
-  public int JJTDBIDPATHEXP = 67;
+  public int JJTBITWISEOREXP = 25;
+  public int JJTBITWISEXOREXP = 26;
+  public int JJTBITWISEANDEXP = 27;
+  public int JJTBITWISELEFTSHIFTEXP = 28;
+  public int JJTBITWISERIGHTSHIFTEXP = 29;
+  public int JJTADDEXP = 30;
+  public int JJTSUBTRACTEXP = 31;
+  public int JJTMULTIPLYEXP = 32;
+  public int JJTDIVIDEEXP = 33;
+  public int JJTBITWISENOTEXP = 34;
+  public int JJTNEGATEEXP = 35;
+  public int JJTFULLOBJECTEXP = 36;
+  public int JJTENCLOSINGOBJECTEXP = 37;
+  public int JJTCUSTOMFUNCTIONEXP = 38;
+  public int JJTCUSTOMOPERATOREXP = 39;
+  public int JJTCUSTOMAGGREGATEEXP = 40;
+  public int JJTCONCATEXP = 41;
+  public int JJTSUBSTRINGEXP = 42;
+  public int JJTTRIMEXP = 43;
+  public int JJTLOWEREXP = 44;
+  public int JJTUPPEREXP = 45;
+  public int JJTLENGTHEXP = 46;
+  public int JJTLOCATEEXP = 47;
+  public int JJTABSEXP = 48;
+  public int JJTSQRTEXP = 49;
+  public int JJTMODEXP = 50;
+  public int JJTASTERISKEXP = 51;
+  public int JJTCOUNTEXP = 52;
+  public int JJTAVGEXP = 53;
+  public int JJTMAXEXP = 54;
+  public int JJTMINEXP = 55;
+  public int JJTSUMEXP = 56;
+  public int JJTCURRENTDATEEXP = 57;
+  public int JJTCURRENTTIMEEXP = 58;
+  public int JJTCURRENTTIMESTAMPEXP = 59;
+  public int JJTEXTRACTEXP = 60;
+  public int JJTDISTINCTEXP = 61;
+  public int JJTOBJPATHEXP = 62;
+  public int JJTDBPATHEXP = 63;
+  public int JJTDBIDPATHEXP = 64;
 
 
   public String[] jjtNodeName = {
@@ -99,7 +96,6 @@ public interface QLParserTreeConstants
     "NotInExp",
     "NotBetweenExp",
     "ListExp",
-    "ScalarExp",
     "BitwiseOrExp",
     "BitwiseXorExp",
     "BitwiseAndExp",
@@ -137,11 +133,9 @@ public interface QLParserTreeConstants
     "CurrentTimestampExp",
     "ExtractExp",
     "DistinctExp",
-    "NamedParameterExp",
     "ObjPathExp",
     "DbPathExp",
-    "EnumExp",
     "DbIdPathExp",
   };
 }
-/* JavaCC - OriginalChecksum=b937e89666a4aa76bf25d2f2db885174 (do not edit this line) */
+/* JavaCC - OriginalChecksum=6a64529fa4a5478a95b332def0adf6cd (do not edit this line) */

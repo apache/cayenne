@@ -19,6 +19,7 @@
 
 package org.apache.cayenne.exp.property;
 
+import org.apache.cayenne.exp.ConcatExp;
 import org.apache.cayenne.exp.Expression;
 import org.apache.cayenne.exp.ExpressionFactory;
 import org.apache.cayenne.exp.FunctionExpressionFactory;
@@ -207,7 +208,7 @@ public class StringProperty<E extends CharSequence> extends BaseProperty<E> impl
      */
     public NumericProperty<Integer> locate(String string) {
         return PropertyFactory.createNumeric(
-                FunctionExpressionFactory.locateExp(ExpressionFactory.wrapScalarValue(string), getExpression()),
+                FunctionExpressionFactory.locateExp(string, getExpression()),
                 Integer.class
         );
     }
@@ -260,19 +261,19 @@ public class StringProperty<E extends CharSequence> extends BaseProperty<E> impl
      * @see FunctionExpressionFactory#concatExp(Expression...)
      */
     public StringProperty<String> concat(Object... args) {
-        Expression[] exp = new Expression[args.length + 1];
+        Object[] operands = new Object[args.length + 1];
         int i = 0;
-        exp[i++] = getExpression();
+        operands[i++] = getExpression();
         for(Object arg : args) {
             if(arg instanceof BaseProperty) {
-                exp[i++] = ((BaseProperty<?>) arg).getExpression();
+                operands[i++] = ((BaseProperty<?>) arg).getExpression();
             } else if(arg instanceof Expression) {
-                exp[i++] = (Expression) arg;
+                operands[i++] = arg;
             } else if(arg != null) {
-                exp[i++] = ExpressionFactory.wrapScalarValue(arg.toString());
+                operands[i++] = arg.toString();
             }
         }
-        return PropertyFactory.createString(FunctionExpressionFactory.concatExp(exp), String.class);
+        return PropertyFactory.createString(new ConcatExp(operands), String.class);
     }
 
     /**

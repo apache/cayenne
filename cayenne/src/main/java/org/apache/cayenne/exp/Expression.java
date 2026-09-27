@@ -40,8 +40,7 @@ import org.apache.cayenne.util.XMLSerializable;
 
 /**
  * Superclass of Cayenne expressions: a tree node holding its operands. An operand is either a nested expression or a
- * plain value; a {@link ScalarExp} passed as an operand is unwrapped to its value, so a scalar node only ever appears
- * as a root expression of its own. A node does not know its parent, so it can be shared between trees.
+ * plain value. A node does not know its parent, so it can be shared between trees.
  */
 public abstract sealed class Expression implements XMLSerializable permits AggregateConditionExp, AsteriskExp,
 		CaseWhenExp, ConditionExp, CustomOperatorExp, ElseExp, EnclosingObjectExp, FullObjectExp, ListExp, NegateExp,
@@ -279,21 +278,16 @@ public abstract sealed class Expression implements XMLSerializable permits Aggre
 
 		// an enum parsed from a String is resolved on access, so that an expression can be parsed and printed
 		// without the enum class being available, e.g. in the Modeler
-		return operand instanceof EnumExp.EnumValue enumValue ? enumValue.resolve() : operand;
+		return operand instanceof EnumRef enumRef ? enumRef.resolve() : operand;
 	}
 
 	/**
 	 * Sets a value of operand at <code>index</code>, growing the operands array if needed. Operand indexing starts
-	 * at 0. A {@link ScalarExp} is unwrapped to its value and a {@link Persistent} is replaced with its ObjectId. A
-	 * nested expression is asked first whether this node is a valid parent for it, see
-	 * {@link #isValidParent(Expression)}.
+	 * at 0. A {@link Persistent} is replaced with its ObjectId. A nested expression is asked first whether this node
+	 * is a valid parent for it, see {@link #isValidParent(Expression)}.
 	 */
 	public void setOperand(int index, Object value) {
-		Object operand = switch (value) {
-			case ScalarExp scalar -> scalar.value;
-			case Persistent persistent -> persistent.getObjectId();
-			case null, default -> value;
-		};
+		Object operand = value instanceof Persistent persistent ? persistent.getObjectId() : value;
 
 		if (operand instanceof Expression node && !node.isValidParent(this)) {
 			throw new ExpressionException(node.expName() + ": invalid parent - " + expName());
@@ -842,13 +836,8 @@ public abstract sealed class Expression implements XMLSerializable permits Aggre
 					throw new ExpressionException("Missing required parameter: $" + name);
 				}
 			} else {
-				Object value = parameters.get(name);
-
-				// wrap lists (for now); also support null parameters
-				// TODO: andrus 8/14/2007 - shouldn't we also wrap non-null
-				// object
-				// values in ScalarExps?
-				return (value != null) ? ExpressionFactory.wrapPathOperand(value) : ExpressionFactory.wrapScalarValue(null);
+				// a value takes the place of the parameter as is, a collection as a list node
+				return ExpressionFactory.wrapPathOperand(parameters.get(name));
 			}
 		}
 
@@ -908,10 +897,8 @@ public abstract sealed class Expression implements XMLSerializable permits Aggre
 				seen.put(name, p);
 			}
 
-			// wrap lists (for now); also support null parameters
-			// TODO: andrus 8/14/2007 - shouldn't we also wrap non-null
-			// object values in ScalarExps?
-			return (p != null) ? ExpressionFactory.wrapPathOperand(p) : ExpressionFactory.wrapScalarValue(null);
+			// a value takes the place of the parameter as is, a collection as a list node
+			return ExpressionFactory.wrapPathOperand(p);
 		}
 
 	}

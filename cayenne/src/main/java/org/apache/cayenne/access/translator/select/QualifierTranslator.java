@@ -306,17 +306,13 @@ class QualifierTranslator implements TraversalHandler {
             case DbPathExp path -> processPathTranslationResult(node, parentNode,
                     pathTranslator.translatePath(context.getMetadata().getDbEntity(), path.getPath()));
             case ScalarExp scalar -> {
-                if (parentNode != null) {
-                    throw new CayenneRuntimeException("Incorrect state, a node %s can't have parent here",
-                            node.getClass().getName());
-                }
-                Object scalarVal = scalar.getValue();
-                if (scalarVal instanceof Collection || scalarVal.getClass().isArray()) {
+                // a value in the place of an expression: a whole clause, or an operand wrapped by the caller
+                Object value = scalar.getValue();
+                boolean multiValue = value instanceof Collection || (value != null && value.getClass().isArray());
+                if (parentNode == null && multiValue) {
                     throw new CayenneRuntimeException("%s %s", ERR_MSG_ARRAYS_NOT_SUPPORTED, node.getClass().getName());
-                } else {
-                    objectNode(scalarVal, null);
                 }
-                yield null;
+                yield value(value).needBinding(parentNode != null).attribute(findDbAttribute(parentNode)).build();
             }
             case EqualExp e -> new EqualNode();
             case NotEqualExp e -> new NotEqualNode();
