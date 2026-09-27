@@ -44,7 +44,7 @@ public final class ElseExp extends BaseExp {
 
     @Override
     protected Object evaluateNode(Object o) throws Exception {
-        return evaluateChild(0, o);
+        return evaluateOperand(0, o);
     }
 
     @Override

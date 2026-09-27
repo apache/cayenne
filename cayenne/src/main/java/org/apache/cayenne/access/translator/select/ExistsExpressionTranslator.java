@@ -128,9 +128,9 @@ class ExistsExpressionTranslator {
                 finalExpression = replacement;
             } else {
                 finalExpression = expressionToTranslate;
-                for (int i = 0; i < parent.getChildCount(); i++) {
-                    if (parent.getChild(i) == pair.node()) {
-                        parent.addChild(replacement, i);
+                for (int i = 0; i < parent.getOperandCount(); i++) {
+                    if (parent.getOperand(i) == pair.node()) {
+                        parent.setOperand(i, replacement);
                     }
                 }
             }
@@ -190,7 +190,7 @@ class ExistsExpressionTranslator {
 
         parents.forEach((parent, relToPath) ->
                 relToPath.forEach((rel, paths) -> {
-                    if (paths.size() != parent.getChildCount()) {
+                    if (paths.size() != parent.getOperandCount()) {
                         paths.forEach(p -> relationshipToNodes
                                 .add(new RelationshipToNode(rel, ancestry.conditions.get(p))));
                     } else {

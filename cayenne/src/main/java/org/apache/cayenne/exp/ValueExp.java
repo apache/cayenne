@@ -36,7 +36,7 @@ public abstract sealed class ValueExp extends BaseExp permits ArithmeticExp, Bit
 
     @Override
     protected Object evaluateNode(Object o) throws Exception {
-        int len = getChildCount();
+        int len = getOperandCount();
         int requiredLen = getRequiredChildrenCount();
         if (len < requiredLen) {
             return null;
@@ -48,7 +48,7 @@ public abstract sealed class ValueExp extends BaseExp permits ArithmeticExp, Bit
 
         final Object[] evaluatedChildren = new Object[len];
         for(int i=0; i<len; i++) {
-            evaluatedChildren[i] = evaluateChild(i, o);
+            evaluatedChildren[i] = evaluateOperand(i, o);
         }
 
         Object firstChild = evaluatedChildren[0];

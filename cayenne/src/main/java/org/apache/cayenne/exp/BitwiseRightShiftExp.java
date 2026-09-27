@@ -51,8 +51,8 @@ public final class BitwiseRightShiftExp extends BitwiseExp {	public BitwiseRight
 	}
 
 	@Override
-	public void childrenAdded() {
-		super.childrenAdded();
+	public void setOperands(Object... operands) {
+		super.setOperands(operands);
 		flattenTree();
 	}
 }

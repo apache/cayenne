@@ -22,7 +22,6 @@ package org.apache.cayenne.exp;
 import java.io.IOException;
 import java.util.List;
 
-import org.apache.cayenne.ObjectId;
 import org.apache.cayenne.Persistent;
 
 /**
@@ -67,22 +66,7 @@ public sealed class ScalarExp extends BaseExp permits EnumExp, NamedParameterExp
 
     @Override
     public void appendAsEJBQL(List<Object> parameterAccumulator, Appendable out, String rootId) throws IOException {
-        // TODO: see CAY-1111
-        // Persistent processing is a hack for a rather special case of a single
-        // column PK
-        // object.. full implementation pending...
-        //
-        // cay1796 : change check for Persistent object by check for ObjectId
-        Object scalar = value;
-
-        if(scalar instanceof ObjectId) {
-            ObjectId temp = (ObjectId)value;
-            if (!temp.isTemporary() && temp.getIdSnapshot().size() == 1) {
-                scalar = temp.getIdSnapshot().values().iterator().next();
-            }
-        }
-
-        ExpHelper.encodeScalarAsEJBQL(parameterAccumulator, out, scalar);
+        ExpHelper.encodeOperandAsEJBQL(parameterAccumulator, out, getValue());
     }
 
     public void setValue(Object value) {

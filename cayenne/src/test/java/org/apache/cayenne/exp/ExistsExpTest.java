@@ -31,7 +31,7 @@ public class ExistsExpTest {
         Expression exp = ExpressionFactory.exp("exists a");
         assertTrue(exp instanceof ExistsExp);
         BaseExp node = (BaseExp) exp;
-        assertEquals("a", node.getChild(0).toString());
+        assertEquals("a", node.getOperand(0).toString());
     }
 
     @Test
@@ -39,7 +39,7 @@ public class ExistsExpTest {
         Expression exp = ExpressionFactory.exp("exists a.b.c");
         assertTrue(exp instanceof ExistsExp);
         BaseExp node = (BaseExp) exp;
-        assertEquals("a.b.c", node.getChild(0).toString());
+        assertEquals("a.b.c", node.getOperand(0).toString());
     }
 
     @Test
@@ -47,7 +47,7 @@ public class ExistsExpTest {
         Expression exp = ExpressionFactory.exp("exists db:a.b.c");
         assertTrue(exp instanceof ExistsExp);
         BaseExp node = (BaseExp) exp;
-        assertEquals("db:a.b.c", node.getChild(0).toString());
+        assertEquals("db:a.b.c", node.getOperand(0).toString());
     }
 
     @Test
@@ -55,7 +55,7 @@ public class ExistsExpTest {
         Expression exp = ExpressionFactory.exp("exists a > 5");
         assertTrue(exp instanceof ExistsExp);
         BaseExp node = (BaseExp) exp;
-        assertEquals("a > 5", node.getChild(0).toString());
+        assertEquals("a > 5", node.getOperand(0).toString());
     }
 
     @Test
@@ -63,7 +63,7 @@ public class ExistsExpTest {
         Expression exp = ExpressionFactory.exp("exists length(a) <= 5");
         assertTrue(exp instanceof ExistsExp);
         BaseExp node = (BaseExp) exp;
-        assertEquals("length(a) <= 5", node.getChild(0).toString());
+        assertEquals("length(a) <= 5", node.getOperand(0).toString());
     }
 
     @Test

@@ -45,30 +45,30 @@ public final class NegateExp extends BaseExp {
 
 	@Override
 	protected Object evaluateNode(Object o) throws Exception {
-		int len = getChildCount();
+		int len = getOperandCount();
 		if (len == 0) {
 			return null;
 		}
 
-		BigDecimal result = ConversionUtil.toBigDecimal(evaluateChild(0, o));
+		BigDecimal result = ConversionUtil.toBigDecimal(evaluateOperand(0, o));
 		return result != null ? result.negate() : null;
 	}
 
 	@Override
 	public void appendAsString(Appendable out) throws IOException {
 
-		if ((children != null) && (children.length > 0)) {
+		if (getOperandCount() > 0) {
 			out.append("-");
-			appendChildAsString(0, out);
+			appendOperandAsString(0, out);
 		}
 	}
 
 	@Override
 	public void appendAsEJBQL(List<Object> parameterAccumulator, Appendable out, String rootId) throws IOException {
 
-		if ((children != null) && (children.length > 0)) {
+		if (getOperandCount() > 0) {
 			out.append("-");
-			appendChildAsEJBQL(0, parameterAccumulator, out, rootId);
+			appendOperandAsEJBQL(0, parameterAccumulator, out, rootId);
 		}
 	}
 

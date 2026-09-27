@@ -36,7 +36,7 @@ public final class OrExp extends AggregateConditionExp {
 
 	@Override
 	protected Object evaluateNode(Object o) throws Exception {
-		int len = getChildCount();
+		int len = getOperandCount();
 		if (len == 0) {
 			return Boolean.FALSE;
 		}
@@ -45,7 +45,7 @@ public final class OrExp extends AggregateConditionExp {
 		boolean unknown = false;
 		boolean result = false;
 		for (int i = 0; i < len; i++) {
-			Object value = evaluateChild(i, o);
+			Object value = evaluateOperand(i, o);
 			if (value == null) {
 				unknown = true;
 			} else if (ConversionUtil.toBoolean(value)) {
@@ -71,8 +71,8 @@ public final class OrExp extends AggregateConditionExp {
 	}
 
 	@Override
-	public void childrenAdded() {
-		super.childrenAdded();
+	public void setOperands(Object... operands) {
+		super.setOperands(operands);
 		flattenTree();
 	}
 }

@@ -72,15 +72,15 @@ public abstract sealed class AggregateConditionExp extends BaseExp permits AndEx
 	}
 
 	@Override
-	public void addChild(BaseExp child, int i) {
+	public void setOperand(int index, Object value) {
 		// this is a check that we can't handle properly in the grammar... do it here...
 		// only allow conditional nodes... no scalars
-		if (!(child instanceof ConditionExp) && !(child instanceof AggregateConditionExp)) {
-			String label = (child != null) ? child.expName() : "null";
-			throw new ExpressionException(expName() + ": invalid child - " + label);
+		if (!(value instanceof ConditionExp) && !(value instanceof AggregateConditionExp)) {
+			String label = (value instanceof BaseExp node) ? node.expName() : String.valueOf(value);
+			throw new ExpressionException(expName() + ": invalid operand - " + label);
 		}
 
-		super.addChild(child, i);
+		super.setOperand(index, value);
 	}
 
 	@Override

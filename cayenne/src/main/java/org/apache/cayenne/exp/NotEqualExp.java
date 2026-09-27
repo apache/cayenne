@@ -56,7 +56,7 @@ public final class NotEqualExp extends ConditionExp {    public NotEqualExp(Obje
     
     @Override
     protected String getEJBQLExpressionOperator(int index) {
-        if (getChild(1) instanceof ScalarExp && ((ScalarExp) getChild(1)).getValue() == null) {
+        if (getOperandCount() > 1 && getOperand(1) == null) {
             //for ejbql, we need "is not null" instead of "!= null"
             return "is not";
         }

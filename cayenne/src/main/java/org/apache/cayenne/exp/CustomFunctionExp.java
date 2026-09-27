@@ -60,11 +60,9 @@ public non-sealed class CustomFunctionExp extends FunctionCallExp {
     @Override
     public void appendAsString(Appendable out) throws IOException {
         out.append("fn").append('(').append('"').append(functionName).append('"');
-        if (children != null) {
-            for (int i = 0; i < children.length; i++) {
-                out.append(", ");
-                appendChildAsString(i, out);
-            }
+        for (int i = 0; i < getOperandCount(); i++) {
+            out.append(", ");
+            appendOperandAsString(i, out);
         }
         out.append(')');
     }

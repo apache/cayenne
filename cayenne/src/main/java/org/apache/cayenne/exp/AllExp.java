@@ -47,7 +47,7 @@ public final class AllExp extends ConditionExp {    public AllExp(Object... oper
     public void appendAsString(Appendable out) throws IOException {
         // the operator goes before the single operand, so it is never printed by the superclass
         out.append("all ");
-        appendChildAsString(0, out);
+        appendOperandAsString(0, out);
     }
 
     @Override

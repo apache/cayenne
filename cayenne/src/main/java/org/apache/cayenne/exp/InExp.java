@@ -74,18 +74,11 @@ public final class InExp extends ConditionExp {
 		Object transformed = super.transformExpression(transformer);
 
 		// transform empty InExp to FalseExp
-		if (transformed instanceof InExp) {
-			InExp exp = (InExp) transformed;
-			if (exp.getChildCount() == 2) {
-				BaseExp child = exp.getChild(1);
-				if(child instanceof ListExp) {
-					ListExp list = (ListExp) child;
-					Object[] objects = (Object[]) list.evaluate(null);
-					if (objects.length == 0) {
-						transformed = new FalseExp();
-					}
-				}
-			}
+		if (transformed instanceof InExp exp
+				&& exp.getOperandCount() == 2
+				&& exp.getOperand(1) instanceof ListExp list
+				&& ((Object[]) list.evaluate(null)).length == 0) {
+			transformed = new FalseExp();
 		}
 
 		return transformed;

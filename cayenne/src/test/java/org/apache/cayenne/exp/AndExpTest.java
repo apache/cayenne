@@ -36,10 +36,10 @@ public class AndExpTest {
 		Expression e3 = new EqualExp(ExpressionFactory.pathExp("artistName"), "123");
 
 		AndExp e = new AndExp(e1, e2, e3);
-		assertEquals(3, e.getChildCount());
-		assertSame(e1, e.getChild(0));
-		assertSame(e2, e.getChild(1));
-		assertSame(e3, e.getChild(2));
+		assertEquals(3, e.getOperandCount());
+		assertSame(e1, e.getOperand(0));
+		assertSame(e2, e.getOperand(1));
+		assertSame(e3, e.getOperand(2));
 	}
 
 	@Test
@@ -56,7 +56,7 @@ public class AndExpTest {
 
 	@Test
 	public void constructor_InvalidChild() {
-		// child validation in addChild() must still run for constructor operands
+		// operand validation in setOperand() must still run for constructor operands
 		assertThrows(ExpressionException.class, () -> new AndExp(ExpressionFactory.pathExp("a"), "b"));
 	}
 

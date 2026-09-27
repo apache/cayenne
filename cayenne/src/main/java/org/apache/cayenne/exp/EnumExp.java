@@ -19,8 +19,6 @@
 
 package org.apache.cayenne.exp;
 
-import java.io.IOException;
-import java.util.List;
 import java.util.Objects;
 
 import org.apache.cayenne.CayenneRuntimeException;
@@ -49,12 +47,6 @@ public final class EnumExp extends ScalarExp {
         ScalarExp copy = new EnumExp();
         copy.value = value;
         return copy;
-    }
-
-    @Override
-    public void appendAsEJBQL(List<Object> parameterAccumulator, Appendable out, String rootId) throws IOException {
-        Object scalar = getValueAsEnum().resolve();
-        ExpHelper.encodeScalarAsEJBQL(parameterAccumulator, out, scalar);
     }
 
     @Override

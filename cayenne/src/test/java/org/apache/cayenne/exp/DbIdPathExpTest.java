@@ -62,7 +62,7 @@ public class DbIdPathExpTest {
         assertInstanceOf(EqualExp.class, exp);
         EqualExp equal = (EqualExp)exp;
 
-        BaseExp child0 = equal.getChild(0);
+        Object child0 = equal.getOperand(0);
         assertInstanceOf(DbIdPathExp.class, child0);
         DbIdPathExp path = (DbIdPathExp)child0;
         assertEquals("test", path.getPath().value());

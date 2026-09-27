@@ -30,6 +30,21 @@ final class ExpHelper {
 	private ExpHelper() {
 	}
 
+	/**
+	 * Encodes a plain operand of a node to EJBQL: a parameter as a named EJBQL parameter, a single-column ObjectId as
+	 * its value, anything else as a scalar.
+	 */
+	public static void encodeOperandAsEJBQL(List<Object> parameterAccumulator, Appendable out, Object operand)
+			throws IOException {
+		switch (operand) {
+			case ExpressionParameter parameter -> out.append(':').append(parameter.getName());
+			// TODO: see CAY-1111 - a single-column PK id is encoded as its PK value, full implementation pending
+			case ObjectId id when !id.isTemporary() && id.getIdSnapshot().size() == 1 ->
+					encodeScalarAsEJBQL(parameterAccumulator, out, id.getIdSnapshot().values().iterator().next());
+			case null, default -> encodeScalarAsEJBQL(parameterAccumulator, out, operand);
+		}
+	}
+
 	public static void encodeScalarAsEJBQL(List<Object> parameterAccumulator, Appendable out, Object scalar)
 			throws IOException {
 

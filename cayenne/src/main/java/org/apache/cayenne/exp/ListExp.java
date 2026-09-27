@@ -170,33 +170,20 @@ public final class ListExp extends BaseExp {
 			return;
 		}
 		for (int i = 0; i < values.length; i++) {
-			if (values[i] instanceof Persistent) {
-				values[i] = ((Persistent) values[i]).getObjectId();
-			}
+			values[i] = switch (values[i]) {
+				case ScalarExp scalar -> scalar.getValue();
+				case Persistent persistent -> persistent.getObjectId();
+				case null, default -> values[i];
+			};
 		}
 	}
 
+	/**
+	 * Sets the elements of this list. This is how the parser passes the parsed elements, each a scalar node.
+	 */
 	@Override
-	public void childrenAdded() {
-		super.childrenAdded();
-		if (children == null) {
-			// the values were set directly, not as child nodes
-			return;
-		}
-
-		// For backwards compatibility set a List value wrapping the nodes.
-		// or maybe we should rewrite the parser spec to insert children
-		// directly into internal collection?
-		int size = getChildCount();
-		Object[] listValue = new Object[size];
-		for (int i = 0; i < size; i++) {
-			listValue[i] = unwrapChild(getChild(i));
-		}
-
-		setValues(listValue);
-
-		// clean children - we are not supposed to use them anymore
-		children = null;
+	public void setOperands(Object... elements) {
+		setValues(elements);
 	}
 
 	@Override

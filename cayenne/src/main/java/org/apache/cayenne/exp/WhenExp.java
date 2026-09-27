@@ -51,10 +51,10 @@ public final class WhenExp extends AggregateConditionExp {
 
     @Override
     protected Object evaluateNode(Object o) throws Exception {
-        if (getChildCount() == 0) {
+        if (getOperandCount() == 0) {
             return Boolean.FALSE;
         }
-        Object value = evaluateChild(0, o);
+        Object value = evaluateOperand(0, o);
         if (ConversionUtil.toBoolean(value)) {
             return Boolean.TRUE;
         }

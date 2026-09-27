@@ -45,7 +45,7 @@ public abstract sealed class ConditionExp extends BaseExp permits AllExp, AnyExp
 
     @Override
     protected Object evaluateNode(Object o) throws Exception {
-        int len = getChildCount();
+        int len = getOperandCount();
         int requiredLen = getRequiredChildrenCount();
         if (len != requiredLen) {
             return Boolean.FALSE;
@@ -57,7 +57,7 @@ public abstract sealed class ConditionExp extends BaseExp permits AllExp, AnyExp
 
         Object[] evaluatedChildren = new Object[requiredLen];
         for (int i = 0; i < requiredLen; i++) {
-            evaluatedChildren[i] = evaluateChild(i, o);
+            evaluatedChildren[i] = evaluateOperand(i, o);
         }
 
         Object firstChild = evaluatedChildren[0];

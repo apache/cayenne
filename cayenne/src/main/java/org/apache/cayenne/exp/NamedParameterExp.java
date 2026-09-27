@@ -19,9 +19,6 @@
 
 package org.apache.cayenne.exp;
 
-import java.io.IOException;
-import java.util.List;
-
 /**
  * A named expression parameter.
  * 
@@ -61,18 +58,4 @@ public final class NamedParameterExp extends ScalarExp {
 		super.setValue(new ExpressionParameter(name));
 	}
 
-	@Override
-	public void appendAsEJBQL(List<Object> parameterAccumulator, Appendable out, String rootId) throws IOException {
-
-		if (value != null) {
-			String valueString = value.toString();
-			if (valueString.length() > 1 && valueString.charAt(0) == '$') {
-				out.append(':');
-				out.append(valueString.substring(1));
-				return;
-			}
-		}
-
-		super.appendAsEJBQL(parameterAccumulator, out, rootId);
-	}
 }

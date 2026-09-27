@@ -51,8 +51,8 @@ public final class AddExp extends ArithmeticExp {
 	}
 
 	@Override
-	public void childrenAdded() {
-		super.childrenAdded();
+	public void setOperands(Object... operands) {
+		super.setOperands(operands);
 		flattenTree();
 	}
 }

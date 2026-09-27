@@ -38,11 +38,9 @@ public non-sealed class CustomOperatorExp extends BaseExp {
     @Override
     public void appendAsString(Appendable out) throws IOException {
         out.append("op(\"").append(operator).append("\"");
-        if ((children != null) && (children.length > 0)) {
-            for (int i = 0; i < children.length; i++) {
-                out.append(", ");
-                appendChildAsString(i, out);
-            }
+        for (int i = 0; i < getOperandCount(); i++) {
+            out.append(", ");
+            appendOperandAsString(i, out);
         }
         out.append(")");
     }

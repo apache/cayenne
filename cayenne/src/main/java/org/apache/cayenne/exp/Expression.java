@@ -372,8 +372,7 @@ public abstract sealed class Expression implements XMLSerializable permits BaseE
 		for (int i = 0; i < count; i++) {
 			Object child = getOperand(i);
 
-			if (child instanceof Expression && !(child instanceof ScalarExp)) {
-				Expression childExp = (Expression) child;
+			if (child instanceof Expression childExp) {
 				childExp.traverse(this, visitor);
 			} else {
 				visitor.objectNode(child, this);

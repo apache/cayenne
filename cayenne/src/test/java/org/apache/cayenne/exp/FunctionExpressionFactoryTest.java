@@ -242,7 +242,7 @@ public class FunctionExpressionFactoryTest {
         assertTrue(exp instanceof CustomOperatorExp);
         CustomOperatorExp operator = (CustomOperatorExp) exp;
         assertEquals("==>", operator.getOperator());
-        assertEquals(2, operator.getChildCount());
+        assertEquals(2, operator.getOperandCount());
 
         assertEquals(123, operator.getOperand(0));
         assertEquals(Artist.ARTIST_NAME.getExpression(), operator.getOperand(1));

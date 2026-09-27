@@ -69,20 +69,13 @@ public final class NotInExp extends ConditionExp {    public NotInExp(Object... 
     @Override
     protected Object transformExpression(Function<Object, Object> transformer) {
         Object transformed = super.transformExpression(transformer);
-        
+
         // transform empty NotInExp to TrueExp
-        if (transformed instanceof NotInExp) {
-            NotInExp exp = (NotInExp) transformed;
-            if (exp.getChildCount() == 2) {
-                BaseExp child = exp.getChild(1);
-                if(child instanceof ListExp) {
-                    ListExp list = (ListExp) child;
-                    Object[] objects = (Object[]) list.evaluate(null);
-                    if (objects.length == 0) {
-                        transformed = new TrueExp();
-                    }
-                }
-            }
+        if (transformed instanceof NotInExp exp
+                && exp.getOperandCount() == 2
+                && exp.getOperand(1) instanceof ListExp list
+                && ((Object[]) list.evaluate(null)).length == 0) {
+            transformed = new TrueExp();
         }
 
         return transformed;

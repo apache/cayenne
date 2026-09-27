@@ -40,12 +40,12 @@ public abstract sealed class AggregateFunctionCallExp extends FunctionCallExp pe
 
     @Override
     protected Object evaluateNode(Object o) throws Exception {
-        int len = getChildCount();
+        int len = getOperandCount();
         if(len == 0) {
             throw new UnsupportedOperationException("Aggregate functions can be calculated only for Collection or Map.");
         }
 
-        Object firstChild = evaluateChild(0, o);
+        Object firstChild = evaluateOperand(0, o);
         Collection<?> values;
         if(firstChild instanceof Map) {
             values = ((Map<?, ?>) firstChild).values();

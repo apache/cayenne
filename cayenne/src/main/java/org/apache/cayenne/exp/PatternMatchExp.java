@@ -81,29 +81,11 @@ public abstract sealed class PatternMatchExp extends ConditionExp permits Ignore
                 if (!patternCompiled) {
                     pattern = null;
 
-                    if (getChildCount() < 2) {
-                        patternCompiled = true;
-                        return null;
-                    }
-
-                    // precompile pattern
-                    BaseExp node = getChild(1);
-                    if (node instanceof ScalarExp) {
-                        ScalarExp patternNode = (ScalarExp) node;
-                        if (patternNode == null) {
-                            patternCompiled = true;
-                            return null;
-                        }
-
-                        String srcPattern = (String) patternNode.getValue();
-                        if (srcPattern == null) {
-                            patternCompiled = true;
-                            return null;
-                        }
-
+                    // precompile pattern, if it is a plain String (and not e.g. a path or an unbound parameter)
+                    if (getOperandCount() > 1 && getOperand(1) instanceof String srcPattern) {
                         pattern = sqlPatternToPattern(srcPattern, isIgnoringCase());
-                        patternCompiled = true;
                     }
+                    patternCompiled = true;
                 }
             }
         }
@@ -112,18 +94,19 @@ public abstract sealed class PatternMatchExp extends ConditionExp permits Ignore
     }
 
     @Override
-    public void addChild(BaseExp child, int i) {
+    public void setOperand(int index, Object value) {
         // reset pattern if the node is modified
-        if (i == 1) {
+        if (index == 1) {
             patternCompiled = false;
         }
 
-        super.addChild(child, i);
+        super.setOperand(index, value);
     }
 
     @Override
-    protected void appendChildrenAsEJBQL(List<Object> parameterAccumulator, Appendable out, String rootId) throws IOException {
-        super.appendChildrenAsEJBQL(parameterAccumulator, out, rootId);
+    protected void appendOperandsAsEJBQL(List<Object> parameterAccumulator, Appendable out, String rootId)
+            throws IOException {
+        super.appendOperandsAsEJBQL(parameterAccumulator, out, rootId);
 
         if (0 != getEscapeChar()) {
 

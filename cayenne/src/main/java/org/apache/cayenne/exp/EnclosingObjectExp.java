@@ -42,7 +42,7 @@ public final class EnclosingObjectExp extends BaseExp {
     @Override
     public void appendAsString(Appendable out) throws IOException {
         out.append("enclosing(");
-        ((BaseExp) getChild(0)).appendAsString(out);
+        appendOperandAsString(0, out);
         out.append(')');
     }
 

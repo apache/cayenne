@@ -37,16 +37,17 @@ abstract sealed class IgnoreCaseExp extends PatternMatchExp permits LikeIgnoreCa
         return true;
     }
     @Override
-    protected void appendChildrenAsEJBQL(List<Object> parameterAccumulator, Appendable out, String rootId) throws IOException {
+    protected void appendOperandsAsEJBQL(List<Object> parameterAccumulator, Appendable out, String rootId)
+            throws IOException {
         // with like, first expression is always path, second is a literal,
         // which must be uppercased
         out.append("upper(");
-        appendChildAsEJBQL(0, parameterAccumulator, out, rootId);
+        appendOperandAsEJBQL(0, parameterAccumulator, out, rootId);
         out.append(") ");
         out.append(getEJBQLExpressionOperator(0));
         out.append(" ");
 
-        Object literal = ((ScalarExp) children[1]).getValue();
+        Object literal = getOperand(1);
         if (!(literal instanceof String)) {
             throw new ExpressionException("Literal value should be a string");
         }

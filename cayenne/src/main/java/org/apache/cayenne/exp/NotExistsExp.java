@@ -36,10 +36,10 @@ public final class NotExistsExp extends ConditionExp {
 
     @Override
     protected Object evaluateNode(Object o) throws Exception {
-        if (getChildCount() != 1) {
+        if (getOperandCount() != 1) {
             return Boolean.FALSE;
         }
-        Object firstChild = evaluateChild(0, o);
+        Object firstChild = evaluateOperand(0, o);
         return evaluateSubNode(firstChild, null);
     }
 
@@ -52,7 +52,7 @@ public final class NotExistsExp extends ConditionExp {
     public void appendAsString(Appendable out) throws IOException {
         // the operator goes before the single operand, so it is never printed by the superclass
         out.append("not exists ");
-        appendChildAsString(0, out);
+        appendOperandAsString(0, out);
     }
 
     @Override

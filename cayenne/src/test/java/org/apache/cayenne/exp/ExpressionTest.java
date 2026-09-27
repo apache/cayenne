@@ -160,7 +160,7 @@ public class ExpressionTest {
 
 		Expression exp = e1.andExp(e2);
 		assertInstanceOf(AndExp.class, exp);
-		assertEquals(2, ((BaseExp) exp).getChildCount());
+		assertEquals(2, exp.getOperandCount());
 	}
 
 	@Test
@@ -170,7 +170,7 @@ public class ExpressionTest {
 
 		Expression exp = e1.orExp(e2);
 		assertInstanceOf(OrExp.class, exp);
-		assertEquals(2, ((BaseExp) exp).getChildCount());
+		assertEquals(2, exp.getOperandCount());
 	}
 
 	@Test
@@ -182,7 +182,7 @@ public class ExpressionTest {
 
 		Expression exp = e1.andExp(e2, e3, e4);
 		assertInstanceOf(AndExp.class, exp);
-		assertEquals(4, ((BaseExp) exp).getChildCount());
+		assertEquals(4, exp.getOperandCount());
 	}
 
 	@Test
@@ -194,7 +194,7 @@ public class ExpressionTest {
 
 		Expression exp = e1.orExp(e2, e3, e4);
 		assertInstanceOf(OrExp.class, exp);
-		assertEquals(4, ((BaseExp) exp).getChildCount());
+		assertEquals(4, exp.getOperandCount());
 	}
 
 	@Test
@@ -202,7 +202,7 @@ public class ExpressionTest {
 		Expression exp = ExpressionFactory.exp("~7");
 
 		assertInstanceOf(BitwiseNotExp.class, exp);
-		assertEquals(1, ((BaseExp) exp).getChildCount());
+		assertEquals(1, exp.getOperandCount());
 		assertEquals(-8L, exp.evaluate(new Object())); // ~7 = -8 in
 																// digital world
 	}
@@ -212,7 +212,7 @@ public class ExpressionTest {
 		Expression exp = ExpressionFactory.exp("1 & 0");
 
 		assertInstanceOf(BitwiseAndExp.class, exp);
-		assertEquals(2, ((BaseExp) exp).getChildCount());
+		assertEquals(2, exp.getOperandCount());
 		assertEquals(0L, exp.evaluate(new Object()));
 	}
 
@@ -221,7 +221,7 @@ public class ExpressionTest {
 		Expression exp = ExpressionFactory.exp("1 | 0");
 
 		assertInstanceOf(BitwiseOrExp.class, exp);
-		assertEquals(2, ((BaseExp) exp).getChildCount());
+		assertEquals(2, exp.getOperandCount());
 		assertEquals(1L, exp.evaluate(new Object()));
 	}
 
@@ -230,7 +230,7 @@ public class ExpressionTest {
 		Expression exp = ExpressionFactory.exp("1 ^ 0");
 
 		assertInstanceOf(BitwiseXorExp.class, exp);
-		assertEquals(2, ((BaseExp) exp).getChildCount());
+		assertEquals(2, exp.getOperandCount());
 		assertEquals(1L, exp.evaluate(new Object()));
 	}
 
@@ -239,7 +239,7 @@ public class ExpressionTest {
 		Expression exp = ExpressionFactory.exp("7 << 2");
 
 		assertInstanceOf(BitwiseLeftShiftExp.class, exp);
-		assertEquals(2, ((BaseExp) exp).getChildCount());
+		assertEquals(2, exp.getOperandCount());
 		assertEquals(28L, exp.evaluate(new Object()));
 	}
 
@@ -248,7 +248,7 @@ public class ExpressionTest {
 		Expression exp = ExpressionFactory.exp("7 >> 2");
 
 		assertInstanceOf(BitwiseRightShiftExp.class, exp);
-		assertEquals(2, ((BaseExp) exp).getChildCount());
+		assertEquals(2, exp.getOperandCount());
 
 		assertEquals(1L, exp.evaluate(new Object()));
 	}

@@ -51,11 +51,9 @@ public non-sealed class CustomAggregateExp extends AggregateFunctionCallExp {
     @Override
     public void appendAsString(Appendable out) throws IOException {
         out.append("agg").append('(').append('"').append(functionName).append('"');
-        if (children != null) {
-            for (int i = 0; i < children.length; i++) {
-                out.append(", ");
-                appendChildAsString(i, out);
-            }
+        for (int i = 0; i < getOperandCount(); i++) {
+            out.append(", ");
+            appendOperandAsString(i, out);
         }
         out.append(')');
     }

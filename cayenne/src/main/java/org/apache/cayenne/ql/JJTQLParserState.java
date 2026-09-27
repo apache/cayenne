@@ -111,10 +111,11 @@ public class JJTQLParserState {
      */
     public void closeNodeScope(BaseExp n, int num) {
         mk = marks.remove(marks.size() - 1);
+        Object[] operands = new Object[num];
         while (num-- > 0) {
-            n.addChild(popNode(), num);
+            operands[num] = popNode();
         }
-        n.childrenAdded();
+        n.setOperands(operands);
         pushNode(n);
         nodeCreated = true;
     }
@@ -128,10 +129,11 @@ public class JJTQLParserState {
         if (condition) {
             int a = nodeArity();
             mk = marks.remove(marks.size() - 1);
+            Object[] operands = new Object[a];
             while (a-- > 0) {
-                n.addChild(popNode(), a);
+                operands[a] = popNode();
             }
-            n.childrenAdded();
+            n.setOperands(operands);
             pushNode(n);
             nodeCreated = true;
         } else {

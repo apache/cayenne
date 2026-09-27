@@ -35,14 +35,12 @@ public class ObjPathExpTest {
 	public void constructor_NoOperands() {
 		ObjPathExp node = new ObjPathExp();
 		assertNull(node.getPath());
-		assertEquals(0, node.getChildCount());
 	}
 
 	@Test
 	public void constructor_NullOperand() {
 		ObjPathExp node = new ObjPathExp((Object) null);
 		assertEquals(CayennePath.EMPTY_PATH, node.getPath());
-		assertEquals(0, node.getChildCount());
 	}
 
 	@Test

@@ -26,7 +26,6 @@ import org.apache.cayenne.access.types.ValueObjectTypeRegistry;
 import org.apache.cayenne.exp.Expression;
 import org.apache.cayenne.exp.TraversalHandler;
 import org.apache.cayenne.exp.FunctionCallExp;
-import org.apache.cayenne.exp.ScalarExp;
 import org.apache.cayenne.exp.SubqueryExp;
 
 import java.util.function.Function;
@@ -92,9 +91,7 @@ class ToCacheKeyTraversalHandler implements TraversalHandler {
             return;
         }
 
-        if(leaf instanceof ScalarExp) {
-            leaf = ((ScalarExp) leaf).getValue();
-        } else if(leaf instanceof Object[]) {
+        if(leaf instanceof Object[]) {
             for(Object value : (Object[])leaf) {
                 objectNode(value, parentNode);
                 out.append(',');

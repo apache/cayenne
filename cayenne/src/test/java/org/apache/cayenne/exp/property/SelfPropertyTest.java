@@ -24,7 +24,6 @@ import org.apache.cayenne.exp.ExpressionFactory;
 import org.apache.cayenne.exp.ExistsExp;
 import org.apache.cayenne.exp.NotExistsExp;
 import org.apache.cayenne.exp.SubqueryExp;
-import org.apache.cayenne.exp.BaseExp;
 import org.apache.cayenne.exp.path.CayennePath;
 import org.apache.cayenne.query.ColumnSelect;
 import org.apache.cayenne.query.ObjectSelect;
@@ -95,7 +94,7 @@ public class SelfPropertyTest {
         assertTrue(exp instanceof ExistsExp);
 
         ExistsExp exists = (ExistsExp) exp;
-        BaseExp node = exists.getChild(0);
+        Object node = exists.getOperand(0);
         assertTrue(node instanceof SubqueryExp);
 
         SubqueryExp subquery = (SubqueryExp) node;
@@ -114,7 +113,7 @@ public class SelfPropertyTest {
         assertTrue(exp instanceof NotExistsExp);
 
         NotExistsExp exists = (NotExistsExp) exp;
-        BaseExp node = exists.getChild(0);
+        Object node = exists.getOperand(0);
         assertTrue(node instanceof SubqueryExp);
 
         SubqueryExp subquery = (SubqueryExp) node;

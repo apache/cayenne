@@ -79,7 +79,7 @@ public abstract sealed class FunctionCallExp extends ValueExp permits AbsExp, Ag
     public void appendAsEJBQL(List<Object> parameterAccumulator, Appendable out, String rootId) throws IOException {
         out.append(getFunctionName());
         out.append("(");
-        super.appendChildrenAsEJBQL(parameterAccumulator, out, rootId);
+        super.appendOperandsAsEJBQL(parameterAccumulator, out, rootId);
         out.append(")");
     }
 

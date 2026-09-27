@@ -19,6 +19,7 @@
 
 package org.apache.cayenne.exp;
 
+import org.apache.cayenne.Persistent;
 import org.apache.cayenne.util.Util;
 
 import java.io.IOException;
@@ -27,27 +28,20 @@ import java.util.List;
 import java.util.Map;
 
 /**
- * Superclass of the expression node classes: a tree node holding its children. A node does not know its parent, so
- * it can be shared between trees.
+ * Superclass of the expression node classes: a tree node holding its operands. An operand is either a nested node
+ * or a plain value; a {@link ScalarExp} passed as an operand is unwrapped to its value, so a scalar node only ever
+ * appears as a root expression of its own. A node does not know its parent, so it can be shared between trees.
  *
  * @since 5.0
  */
 public abstract sealed class BaseExp extends Expression permits AggregateConditionExp, AsteriskExp, CaseWhenExp,
         ConditionExp, CustomOperatorExp, ElseExp, EnclosingObjectExp, FullObjectExp, ListExp, NegateExp, PathExp,
         ScalarExp, SubqueryExp, ThenExp, ValueExp {
-    protected BaseExp[] children;
+    protected Object[] operands;
 
     protected BaseExp(Object... operands) {
         if (operands != null && operands.length > 0) {
-
-            // presize the array and bypass the overridable setOperand(): subclasses are not initialized yet
-            children = new BaseExp[operands.length];
-            for (int i = 0; i < operands.length; i++) {
-                // a null operand is a null scalar value, not a missing child
-                BaseExp child = operands[i] != null ? wrapChild(operands[i]) : new ScalarExp();
-                addChild(child, i);
-            }
-            childrenAdded();
+            setOperands(operands);
         }
         // else - a bare node
     }
@@ -75,7 +69,7 @@ public abstract sealed class BaseExp extends Expression permits AggregateConditi
     }
 
     /**
-     * Returns the node name: the class name without the "AST" prefix.
+     * Returns the node name: the class name without the "Exp" suffix.
      */
     @Override
     public String expName() {
@@ -84,34 +78,39 @@ public abstract sealed class BaseExp extends Expression permits AggregateConditi
     }
 
     /**
-     * Flattens the tree under this node by eliminating any children that are of
-     * the same class as this node and copying their children to this node.
+     * Flattens the tree under this node by eliminating any operands that are nodes of the same class as this node
+     * and copying their operands to this node.
      */
     @Override
     protected void flattenTree() {
+        if (operands == null) {
+            return;
+        }
+
         boolean shouldFlatten = false;
         int newSize = 0;
 
-        for (BaseExp child : children) {
-            if (child.getClass() == getClass()) {
+        for (Object operand : operands) {
+            if (operand != null && operand.getClass() == getClass()) {
                 shouldFlatten = true;
-                newSize += child.getChildCount();
+                newSize += ((BaseExp) operand).getOperandCount();
             } else {
                 newSize++;
             }
         }
 
         if (shouldFlatten) {
-            BaseExp[] newChildren = new BaseExp[newSize];
+            Object[] newOperands = new Object[newSize];
             int j = 0;
 
-            for (BaseExp c : children) {
-                if (c.getClass() == getClass()) {
-                    for (int k = 0; k < c.getChildCount(); ++k) {
-                        newChildren[j++] = c.getChild(k);
+            for (Object operand : operands) {
+                if (operand != null && operand.getClass() == getClass()) {
+                    BaseExp nested = (BaseExp) operand;
+                    for (int k = 0; k < nested.getOperandCount(); ++k) {
+                        newOperands[j++] = nested.operands[k];
                     }
                 } else {
-                    newChildren[j++] = c;
+                    newOperands[j++] = operand;
                 }
             }
 
@@ -119,22 +118,21 @@ public abstract sealed class BaseExp extends Expression permits AggregateConditi
                 throw new ExpressionException("Assertion error: " + j + " != " + newSize);
             }
 
-            this.children = newChildren;
+            this.operands = newOperands;
         }
     }
 
     @Override
     public void appendAsString(Appendable out) throws IOException {
-        if ((children != null) && (children.length > 0)) {
-            for (int i = 0; i < children.length; ++i) {
-                if (i > 0) {
-                    out.append(' ');
-                    out.append(getExpressionOperator(i));
-                    out.append(' ');
-                }
-
-                appendChildAsString(i, out);
+        int count = getOperandCount();
+        for (int i = 0; i < count; ++i) {
+            if (i > 0) {
+                out.append(' ');
+                out.append(getExpressionOperator(i));
+                out.append(' ');
             }
+
+            appendOperandAsString(i, out);
         }
     }
 
@@ -155,21 +153,22 @@ public abstract sealed class BaseExp extends Expression permits AggregateConditi
     }
 
     /**
-     * Appends the child at the given index to the output, wrapped in parentheses if the child asks for it via
-     * {@link #parenthesizeAsOperand()}.
+     * Appends the operand at the given index to the output: a nested node as itself, wrapped in parentheses if it
+     * asks for it via {@link #parenthesizeAsOperand()}, a plain value as a literal.
      */
-    protected void appendChildAsString(int index, Appendable out) throws IOException {
-        BaseExp child = children[index];
-        if (child == null) {
-            out.append("null");
+    protected void appendOperandAsString(int index, Appendable out) throws IOException {
+        // print the operand as stored, not via getOperand(..): an unresolved enum prints without loading its class
+        Object operand = operands[index];
+        if (!(operand instanceof BaseExp node)) {
+            ExpHelper.appendScalarAsString(out, operand, '\"');
             return;
         }
 
-        boolean parenthesize = child.parenthesizeAsOperand();
+        boolean parenthesize = node.parenthesizeAsOperand();
         if (parenthesize) {
             out.append('(');
         }
-        child.appendAsString(out);
+        node.appendAsString(out);
         if (parenthesize) {
             out.append(')');
         }
@@ -177,61 +176,64 @@ public abstract sealed class BaseExp extends Expression permits AggregateConditi
 
     @Override
     public Object getOperand(int index) {
-        BaseExp child = getChild(index);
+        if (operands == null) {
+            throw new ArrayIndexOutOfBoundsException(index);
+        }
 
-        // unwrap ScalarExp nodes - this is likely a temporary thing to keep it compatible
-        // with QualifierTranslator. In the future we might want to keep scalar nodes
-        // for the purpose of expression evaluation.
-        return unwrapChild(child);
-    }
+        Object operand = operands[index];
 
-    protected BaseExp wrapChild(Object child) {
-        // when child is null, there's no way of telling whether this is a scalar or not... fuzzy...
-        // maybe we should stop using this method - it is too generic
-        return (child instanceof BaseExp || child == null) ? (BaseExp) child : new ScalarExp(child);
-    }
-
-    protected Object unwrapChild(BaseExp child) {
-        return (child instanceof ScalarExp) ? ((ScalarExp) child).getValue() : child;
+        // an enum parsed from a String is resolved on access, so that an expression can be parsed and printed
+        // without the enum class being available, e.g. in the Modeler
+        return operand instanceof EnumExp.EnumValue enumValue ? enumValue.resolve() : operand;
     }
 
     @Override
     public int getOperandCount() {
-        return getChildCount();
-    }
-
-    @Override
-    public void setOperand(int index, Object value) {
-        addChild(wrapChild(value), index);
+        return operands == null ? 0 : operands.length;
     }
 
     /**
-     * A hook called by the parser once all the children of this node are added.
-     */
-    public void childrenAdded() {
-    }
-
-    /**
-     * Sets a child at the given position, growing the children array if needed. The child is asked first whether this
+     * Sets the operand at the given position, growing the operands array if needed. A {@link ScalarExp} is unwrapped
+     * to its value and a {@link Persistent} is replaced with its ObjectId. A nested node is asked first whether this
      * node is a valid parent for it, see {@link #isValidParent(BaseExp)}.
      */
-    public void addChild(BaseExp child, int i) {
-        if (child != null && !child.isValidParent(this)) {
-            throw new ExpressionException(child.expName() + ": invalid parent - " + expName());
+    @Override
+    public void setOperand(int index, Object value) {
+        Object operand = switch (value) {
+            case ScalarExp scalar -> scalar.value;
+            case Persistent persistent -> persistent.getObjectId();
+            case null, default -> value;
+        };
+
+        if (operand instanceof BaseExp node && !node.isValidParent(this)) {
+            throw new ExpressionException(node.expName() + ": invalid parent - " + expName());
         }
 
-        if (children == null) {
-            children = new BaseExp[i + 1];
-        } else if (i >= children.length) {
-            BaseExp[] c = new BaseExp[i + 1];
-            System.arraycopy(children, 0, c, 0, children.length);
-            children = c;
+        if (operands == null) {
+            operands = new Object[index + 1];
+        } else if (index >= operands.length) {
+            Object[] grown = new Object[index + 1];
+            System.arraycopy(operands, 0, grown, 0, operands.length);
+            operands = grown;
         }
-        children[i] = child;
+        operands[index] = operand;
     }
 
     /**
-     * Whether this node can be an operand of the given node. Called by the parent when the child is added, to check
+     * Replaces all the operands of this node with the given ones. Called by the constructor and by the parser once
+     * all the operands of a node are known, so a node that post-processes its operands overrides this method.
+     */
+    public void setOperands(Object... operands) {
+        this.operands = null;
+        if (operands != null) {
+            for (int i = 0; i < operands.length; i++) {
+                setOperand(i, operands[i]);
+            }
+        }
+    }
+
+    /**
+     * Whether this node can be an operand of the given node. Called by the parent when the operand is set, to check
      * what the grammar can't: e.g. a condition can only be an operand of a condition aggregate. By default any parent
      * is valid.
      */
@@ -240,24 +242,22 @@ public abstract sealed class BaseExp extends Expression permits AggregateConditi
     }
 
     /**
-     * Returns a child node as is, without unwrapping scalars the way {@link #getOperand(int)} does.
-     */
-    public BaseExp getChild(int i) {
-        return children[i];
-    }
-
-    public final int getChildCount() {
-        return (children == null) ? 0 : children.length;
-    }
-
-    /**
      * Evaluates itself with object, pushing result on the stack.
      */
     protected abstract Object evaluateNode(Object o) throws Exception;
 
-    protected Object evaluateChild(int index, Object o) throws Exception {
-        BaseExp node = getChild(index);
-        return node != null ? node.evaluate(o) : null;
+    /**
+     * Evaluates the operand at the given index: a nested node is evaluated against the object, a plain value is
+     * returned as is.
+     */
+    protected Object evaluateOperand(int index, Object o) throws Exception {
+        Object operand = getOperand(index);
+        return switch (operand) {
+            case BaseExp node -> node.evaluate(o);
+            case ExpressionParameter parameter -> throw new ExpressionException(
+                    "Uninitialized parameter: " + parameter + ", call 'params' first.");
+            case null, default -> operand;
+        };
     }
 
     @Override
@@ -293,44 +293,45 @@ public abstract sealed class BaseExp extends Expression permits AggregateConditi
 
     @Override
     public void appendAsEJBQL(List<Object> parameterAccumulator, Appendable out, String rootId) throws IOException {
-        if ((children != null) && (children.length > 0)) {
-            appendChildrenAsEJBQL(parameterAccumulator, out, rootId);
+        if (getOperandCount() > 0) {
+            appendOperandsAsEJBQL(parameterAccumulator, out, rootId);
         }
     }
 
     /**
-     * Encodes child of this node with specified index to EJBQL
+     * Encodes the operands of this node to EJBQL, separated by the operator.
      */
-    protected void appendChildrenAsEJBQL(List<Object> parameterAccumulator, Appendable out, String rootId)
+    protected void appendOperandsAsEJBQL(List<Object> parameterAccumulator, Appendable out, String rootId)
             throws IOException {
-        for (int i = 0; i < children.length; ++i) {
+        int count = getOperandCount();
+        for (int i = 0; i < count; ++i) {
             if (i > 0) {
                 out.append(' ');
                 out.append(getEJBQLExpressionOperator(i));
                 out.append(' ');
             }
 
-            appendChildAsEJBQL(i, parameterAccumulator, out, rootId);
+            appendOperandAsEJBQL(i, parameterAccumulator, out, rootId);
         }
     }
 
     /**
-     * Encodes the child at the given index to EJBQL, wrapped in parentheses if the child asks for it via
-     * {@link #parenthesizeAsEJBQLOperand()}.
+     * Encodes the operand at the given index to EJBQL: a nested node as itself, wrapped in parentheses if it asks for
+     * it via {@link #parenthesizeAsEJBQLOperand()}, a plain value as a literal or a positional parameter.
      */
-    protected void appendChildAsEJBQL(int index, List<Object> parameterAccumulator, Appendable out, String rootId)
+    protected void appendOperandAsEJBQL(int index, List<Object> parameterAccumulator, Appendable out, String rootId)
             throws IOException {
-        BaseExp child = children[index];
-        if (child == null) {
-            out.append("null");
+        Object operand = getOperand(index);
+        if (!(operand instanceof BaseExp node)) {
+            ExpHelper.encodeOperandAsEJBQL(parameterAccumulator, out, operand);
             return;
         }
 
-        boolean parenthesize = child.parenthesizeAsEJBQLOperand();
+        boolean parenthesize = node.parenthesizeAsEJBQLOperand();
         if (parenthesize) {
             out.append('(');
         }
-        child.appendAsEJBQL(parameterAccumulator, out, rootId);
+        node.appendAsEJBQL(parameterAccumulator, out, rootId);
         if (parenthesize) {
             out.append(')');
         }

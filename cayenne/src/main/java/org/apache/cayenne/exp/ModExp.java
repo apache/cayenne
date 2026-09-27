@@ -36,8 +36,8 @@ public final class ModExp extends FunctionCallExp {
 
     @Override
     protected Object evaluateNode(Object o) throws Exception {
-        double x = ConversionUtil.toDouble(evaluateChild(0, o), 0.0);
-        double y = ConversionUtil.toDouble(evaluateChild(1, o), 0.0);
+        double x = ConversionUtil.toDouble(evaluateOperand(0, o), 0.0);
+        double y = ConversionUtil.toDouble(evaluateOperand(1, o), 0.0);
         if(y == 0.0) {
             return 0.0;
         }

@@ -50,8 +50,8 @@ public final class BitwiseAndExp extends BitwiseExp {
 	}
 
 	@Override
-	public void childrenAdded() {
-		super.childrenAdded();
+	public void setOperands(Object... operands) {
+		super.setOperands(operands);
 		flattenTree();
 	}
 

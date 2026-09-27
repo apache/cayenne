@@ -50,18 +50,18 @@ public final class CaseWhenExp extends BaseExp {
 
     @Override
     protected Object evaluateNode(Object o) throws Exception {
-        int numChildren = getChildCount();
+        int numChildren = getOperandCount();
         if (numChildren == 0) {
             return null;
         }
         for (int i = 0; i < numChildren - 1; i = i + 2) {
-            Object evaluatedWhen = evaluateChild(i, o);
+            Object evaluatedWhen = evaluateOperand(i, o);
             if (ConversionUtil.toBoolean(evaluatedWhen)) {
-                return evaluateChild(i + 1, o);
+                return evaluateOperand(i + 1, o);
             }
         }
         if (numChildren % 2 == 1) {
-            return evaluateChild(numChildren - 1, o);
+            return evaluateOperand(numChildren - 1, o);
         }
         return null;
     }

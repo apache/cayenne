@@ -50,8 +50,8 @@ public final class SubtractExp extends ArithmeticExp {    public SubtractExp(Obj
     }
 
     @Override
-    public void childrenAdded() {
-        super.childrenAdded();
+    public void setOperands(Object... operands) {
+        super.setOperands(operands);
         flattenTree();
     }
 }

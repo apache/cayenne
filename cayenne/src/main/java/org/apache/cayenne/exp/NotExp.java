@@ -36,12 +36,12 @@ public final class NotExp extends AggregateConditionExp {
 
 	@Override
 	protected Object evaluateNode(Object o) throws Exception {
-		int len = getChildCount();
+		int len = getOperandCount();
 		if (len == 0) {
 			return Boolean.FALSE;
 		}
 
-		Object o1 = evaluateChild(0, o);
+		Object o1 = evaluateOperand(0, o);
 		if (o1 == null) {
 			return null;
 		}
