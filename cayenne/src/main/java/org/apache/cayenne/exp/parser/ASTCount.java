@@ -28,7 +28,7 @@ import org.apache.cayenne.exp.Expression;
  */
 public class ASTCount extends ASTAggregateFunctionCall {
 
-    ASTCount(int id) {
+    public ASTCount(int id) {
         super(id, "COUNT");
     }
 

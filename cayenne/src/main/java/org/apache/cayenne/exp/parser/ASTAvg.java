@@ -28,7 +28,7 @@ import org.apache.cayenne.exp.Expression;
  */
 public class ASTAvg extends ASTAggregateFunctionCall {
 
-    ASTAvg(int id) {
+    public ASTAvg(int id) {
         super(id, "AVG");
     }
 

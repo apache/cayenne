@@ -29,7 +29,7 @@ import org.apache.cayenne.exp.Expression;
  * 
  */
 public class ASTNotIn extends ConditionNode {
-    ASTNotIn(int id) {
+    public ASTNotIn(int id) {
         super(id);
     }
 

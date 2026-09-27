@@ -44,7 +44,7 @@ public class ASTDbIdPath extends ASTDbPath {
 
     public static final String DBID_PREFIX = "dbid:";
 
-    ASTDbIdPath(int id) {
+    public ASTDbIdPath(int id) {
         super(id);
     }
 

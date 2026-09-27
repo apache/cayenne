@@ -32,7 +32,7 @@ import org.apache.cayenne.util.ConversionUtil;
  */
 public class ASTOr extends AggregateConditionNode {
 
-	ASTOr(int id) {
+	public ASTOr(int id) {
 		super(id);
 	}
 

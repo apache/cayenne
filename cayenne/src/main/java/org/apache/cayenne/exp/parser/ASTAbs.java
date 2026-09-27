@@ -27,7 +27,7 @@ import org.apache.cayenne.util.ConversionUtil;
  */
 public class ASTAbs extends ASTFunctionCall {
 
-    ASTAbs(int id) {
+    public ASTAbs(int id) {
         super(id, "ABS");
     }
 

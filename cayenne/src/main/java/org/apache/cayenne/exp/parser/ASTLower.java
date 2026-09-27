@@ -28,7 +28,7 @@ import org.apache.cayenne.util.ConversionUtil;
 public class ASTLower extends ASTFunctionCall {
 
 
-    ASTLower(int id) {
+    public ASTLower(int id) {
         super(id, "LOWER");
     }
 

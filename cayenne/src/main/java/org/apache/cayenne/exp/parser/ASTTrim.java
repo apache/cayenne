@@ -27,7 +27,7 @@ import org.apache.cayenne.util.ConversionUtil;
  */
 public class ASTTrim extends ASTFunctionCall {
 
-    ASTTrim(int id) {
+    public ASTTrim(int id) {
         super(id, "TRIM");
     }
 

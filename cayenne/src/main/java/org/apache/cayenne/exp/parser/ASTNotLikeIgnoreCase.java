@@ -28,7 +28,7 @@ import org.apache.cayenne.util.ConversionUtil;
  */
 public class ASTNotLikeIgnoreCase extends IgnoreCaseNode {
 
-	ASTNotLikeIgnoreCase(int id) {
+	public ASTNotLikeIgnoreCase(int id) {
 		super(id, true);
 	}
 

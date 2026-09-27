@@ -25,6 +25,7 @@ import java.util.Objects;
 
 import org.apache.cayenne.CayenneRuntimeException;
 import org.apache.cayenne.exp.Expression;
+import org.apache.cayenne.ql.ParseException;
 import org.apache.cayenne.util.Util;
 
 /**
@@ -36,7 +37,7 @@ import org.apache.cayenne.util.Util;
  */
 public class ASTEnum extends ASTScalar {
 
-    ASTEnum(int id) {
+    public ASTEnum(int id) {
         super(id);
     }
 

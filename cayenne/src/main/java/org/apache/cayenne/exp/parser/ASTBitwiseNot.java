@@ -27,7 +27,7 @@ import org.apache.cayenne.util.ConversionUtil;
  * @since 3.1
  */
 public class ASTBitwiseNot extends EvaluatedNode {
-	ASTBitwiseNot(int id) {
+	public ASTBitwiseNot(int id) {
 		super(id);
 	}
 

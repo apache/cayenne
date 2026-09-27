@@ -38,7 +38,7 @@ public class ASTScalar extends SimpleNode {
     /**
      * Constructor used by expression parser. Do not invoke directly.
      */
-    ASTScalar(int id) {
+    public ASTScalar(int id) {
         super(id);
     }
 

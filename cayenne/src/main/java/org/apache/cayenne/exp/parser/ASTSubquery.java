@@ -27,6 +27,7 @@ import org.apache.cayenne.exp.Expression;
 import org.apache.cayenne.exp.TraversalHandler;
 import org.apache.cayenne.query.FluentSelect;
 import org.apache.cayenne.query.Ordering;
+import org.apache.cayenne.ql.QLSelectPrinter;
 
 /**
  * @since 4.2

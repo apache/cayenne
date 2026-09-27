@@ -27,7 +27,7 @@ import org.apache.cayenne.util.ConversionUtil;
  */
 public class ASTLength extends ASTFunctionCall {
 
-    ASTLength(int id) {
+    public ASTLength(int id) {
         super(id, "LENGTH");
     }
 

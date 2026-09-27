@@ -27,7 +27,7 @@ import org.apache.cayenne.util.ConversionUtil;
  */
 public class ASTLocate extends ASTFunctionCall {
 
-    ASTLocate(int id) {
+    public ASTLocate(int id) {
         super(id, "LOCATE");
     }
 

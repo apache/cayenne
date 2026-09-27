@@ -17,12 +17,14 @@
  *  under the License.
  ****************************************************************/
 
-package org.apache.cayenne.exp.parser;
+package org.apache.cayenne.ql;
 
 import java.util.ArrayList;
 import java.util.List;
 
 import org.apache.cayenne.exp.Expression;
+import org.apache.cayenne.exp.parser.ASTDbPath;
+import org.apache.cayenne.exp.parser.ASTObjPath;
 import org.apache.cayenne.exp.property.BaseProperty;
 import org.apache.cayenne.exp.property.Property;
 import org.apache.cayenne.exp.property.PropertyFactory;

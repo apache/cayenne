@@ -33,7 +33,7 @@ import org.apache.cayenne.util.ConversionUtil;
  */
 public class ASTNegate extends SimpleNode {
 
-	ASTNegate(int id) {
+	public ASTNegate(int id) {
 		super(id);
 	}
 

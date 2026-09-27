@@ -32,7 +32,7 @@ public class ASTIn extends ConditionNode {
 	/**
 	 * Constructor used by expression parser. Do not invoke directly.
 	 */
-	ASTIn(int id) {
+	public ASTIn(int id) {
 		super(id);
 	}
 

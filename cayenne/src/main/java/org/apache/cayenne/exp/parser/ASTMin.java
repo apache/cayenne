@@ -29,7 +29,7 @@ import org.apache.cayenne.exp.Expression;
  */
 public class ASTMin extends ASTAggregateFunctionCall {
 
-    ASTMin(int id) {
+    public ASTMin(int id) {
         super(id, "MIN");
     }
 

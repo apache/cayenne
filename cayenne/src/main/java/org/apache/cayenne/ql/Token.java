@@ -20,7 +20,7 @@
  ****************************************************************/
 
 
-package org.apache.cayenne.exp.parser;
+package org.apache.cayenne.ql;
 
 /**
  * Describes the input token stream.

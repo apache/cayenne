@@ -30,7 +30,7 @@ import org.apache.cayenne.exp.Expression;
  * @since 3.1
  */
 public class ASTBitwiseXor extends EvaluatedBitwiseNode {
-	ASTBitwiseXor(int id) {
+	public ASTBitwiseXor(int id) {
 		super(id);
 	}
 	

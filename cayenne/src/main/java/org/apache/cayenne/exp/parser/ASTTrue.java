@@ -38,7 +38,7 @@ public class ASTTrue extends ConditionNode {
     /**
      * Constructor used by expression parser. Do not invoke directly.
      */
-    ASTTrue(int id) {
+    public ASTTrue(int id) {
         super(id);
     }
 

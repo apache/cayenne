@@ -31,7 +31,7 @@ import org.apache.cayenne.exp.Expression;
  * @since 3.1
  */
 public class ASTBitwiseOr extends EvaluatedBitwiseNode {
-	ASTBitwiseOr(int id) {
+	public ASTBitwiseOr(int id) {
 		super(id);
 	}
 	

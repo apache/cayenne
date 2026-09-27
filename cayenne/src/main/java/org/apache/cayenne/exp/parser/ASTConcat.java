@@ -27,7 +27,7 @@ import org.apache.cayenne.util.ConversionUtil;
  */
 public class ASTConcat extends ASTFunctionCall {
 
-    ASTConcat(int id) {
+    public ASTConcat(int id) {
         super(id, "CONCAT");
     }
 

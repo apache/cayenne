@@ -27,11 +27,11 @@ import org.apache.cayenne.util.ConversionUtil;
  */
 public class ASTLike extends PatternMatchNode {
 
-	ASTLike(int id) {
+	public ASTLike(int id) {
 		super(id, false);
 	}
 
-	ASTLike(int id, char escapeChar) {
+	public ASTLike(int id, char escapeChar) {
 		super(id, false, escapeChar);
 	}
 

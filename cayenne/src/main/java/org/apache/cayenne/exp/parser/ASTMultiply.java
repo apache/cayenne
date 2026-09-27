@@ -34,7 +34,7 @@ import org.apache.cayenne.util.ConversionUtil;
  */
 public class ASTMultiply extends EvaluatedMathNode {
 
-	ASTMultiply(int id) {
+	public ASTMultiply(int id) {
 		super(id);
 	}
 

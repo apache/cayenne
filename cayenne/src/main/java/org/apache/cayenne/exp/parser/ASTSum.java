@@ -32,7 +32,7 @@ import org.apache.cayenne.exp.Expression;
  */
 public class ASTSum extends ASTAggregateFunctionCall {
 
-    ASTSum(int id) {
+    public ASTSum(int id) {
         super(id, "SUM");
     }
 

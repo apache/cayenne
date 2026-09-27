@@ -20,7 +20,7 @@
  ****************************************************************/
 
 
-package org.apache.cayenne.exp.parser;
+package org.apache.cayenne.ql;
 
 /**
  * This exception is thrown when parse errors are encountered.

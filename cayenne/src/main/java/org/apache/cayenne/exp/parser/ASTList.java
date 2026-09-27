@@ -38,7 +38,7 @@ public class ASTList extends SimpleNode {
 
 	protected Object[] values;
 
-	ASTList(int id) {
+	public ASTList(int id) {
 		super(id);
 	}
 

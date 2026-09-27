@@ -36,7 +36,7 @@ public class ASTAnd extends AggregateConditionNode implements ValueInjector {
 	/**
 	 * Constructor used by expression parser. Do not invoke directly.
 	 */
-	ASTAnd(int id) {
+	public ASTAnd(int id) {
 		super(id);
 	}
 

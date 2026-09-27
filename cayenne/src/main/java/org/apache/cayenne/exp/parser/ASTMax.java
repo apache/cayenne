@@ -29,7 +29,7 @@ import org.apache.cayenne.exp.Expression;
  */
 public class ASTMax extends ASTAggregateFunctionCall {
 
-    ASTMax(int id) {
+    public ASTMax(int id) {
         super(id, "MAX");
     }
 

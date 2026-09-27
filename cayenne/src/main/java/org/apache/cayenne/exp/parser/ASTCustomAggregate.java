@@ -31,7 +31,7 @@ public class ASTCustomAggregate extends ASTAggregateFunctionCall {
 
     private boolean isNameSet;
 
-    ASTCustomAggregate(int id) {
+    public ASTCustomAggregate(int id) {
         super(id, "");
     }
 

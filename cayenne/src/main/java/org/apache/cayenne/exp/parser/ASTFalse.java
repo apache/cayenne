@@ -40,7 +40,7 @@ public class ASTFalse extends ConditionNode {
 	/**
 	 * Constructor used by expression parser. Do not invoke directly.
 	 */
-	ASTFalse(int id) {
+	public ASTFalse(int id) {
 		super(id);
 	}
 

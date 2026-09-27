@@ -32,7 +32,7 @@ import org.apache.cayenne.util.ConversionUtil;
  */
 public class ASTNot extends AggregateConditionNode {
 
-	ASTNot(int id) {
+	public ASTNot(int id) {
 		super(id);
 	}
 

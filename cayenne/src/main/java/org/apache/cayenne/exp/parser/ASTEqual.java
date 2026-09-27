@@ -38,7 +38,7 @@ public class ASTEqual extends ConditionNode implements ValueInjector {
 	/**
 	 * Constructor used by expression parser. Do not invoke directly.
 	 */
-	ASTEqual(int id) {
+	public ASTEqual(int id) {
 		super(id);
 	}
 

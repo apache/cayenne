@@ -29,7 +29,7 @@ public class ASTGreater extends ConditionNode {
 	/**
 	 * Constructor used by expression parser. Do not invoke directly.
 	 */
-	ASTGreater(int id) {
+	public ASTGreater(int id) {
 		super(id);
 	}
 

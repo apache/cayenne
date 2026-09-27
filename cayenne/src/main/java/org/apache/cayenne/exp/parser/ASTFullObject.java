@@ -32,7 +32,7 @@ public class ASTFullObject extends SimpleNode {
         this(0);
     }
 
-    protected ASTFullObject(int i) {
+    public ASTFullObject(int i) {
         super(i);
     }
 

@@ -106,7 +106,7 @@
                         </goals>
                     </execution>
                     <!--
-                        src/main/jjtree/org/apache/cayenne/exp/parser for now is generated
+                        src/main/jjtree/org/apache/cayenne/ql for now is generated
                         outside of Maven with JavaCC 7.0.13 command line tools.
                         Copy QLParser.jjt to an empty directory, and run there:
                             $ JAVACC=~/.m2/repository/net/java/dev/javacc/javacc/7.0.13/javacc-7.0.13.jar
@@ -115,8 +115,10 @@
                         # Parser java code:
                             $ java -cp $JAVACC javacc QLParser.jj
 
-                        # Copy these generated classes to src/main/java/org/apache/cayenne/exp/parser:
-                        # QLParser, QLParserTokenManager, QLParserConstants, QLParserTreeConstants, JJTQLParserState
+                        # Copy these generated classes to src/main/java/org/apache/cayenne/ql:
+                        # QLParser, QLParserTokenManager, QLParserConstants
+                        # and these to src/main/java/org/apache/cayenne/exp/parser (the NODE_PACKAGE):
+                        # QLParserTreeConstants, JJTQLParserState
                         # (i.e. everything except AST*, Node, SimpleNode, JavaCharStream, Token, ParseException,
                         # TokenMgrError)
 

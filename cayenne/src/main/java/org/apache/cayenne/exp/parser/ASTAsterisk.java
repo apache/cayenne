@@ -33,7 +33,7 @@ public class ASTAsterisk extends SimpleNode {
     /**
      * Constructor used by expression parser. Do not invoke directly.
      */
-    ASTAsterisk(int id) {
+    public ASTAsterisk(int id) {
         super(id);
     }
 

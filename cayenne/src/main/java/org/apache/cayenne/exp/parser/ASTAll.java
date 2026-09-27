@@ -29,7 +29,7 @@ public class ASTAll extends ConditionNode {
         jjtAddChild(subquery, 0);
     }
 
-    ASTAll(int id) {
+    public ASTAll(int id) {
         super(id);
     }
 

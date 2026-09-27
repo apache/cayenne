@@ -27,7 +27,7 @@ import org.apache.cayenne.util.ConversionUtil;
  */
 public class ASTSqrt extends ASTFunctionCall {
 
-    ASTSqrt(int id) {
+    public ASTSqrt(int id) {
         super(id, "SQRT");
     }
 

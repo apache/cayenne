@@ -45,7 +45,7 @@ public class ASTObjPath extends ASTPath {
 	/**
 	 * Constructor used by expression parser. Do not invoke directly.
 	 */
-	ASTObjPath(int id) {
+	public ASTObjPath(int id) {
 		super(id);
 	}
 

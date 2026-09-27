@@ -31,7 +31,7 @@ public class ASTLess extends ConditionNode {
 	/**
 	 * Constructor used by expression parser. Do not invoke directly.
 	 */
-	ASTLess(int id) {
+	public ASTLess(int id) {
 		super(id);
 	}
 

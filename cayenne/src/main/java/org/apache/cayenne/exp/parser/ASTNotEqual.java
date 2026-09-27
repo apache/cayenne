@@ -27,7 +27,7 @@ import org.apache.cayenne.exp.Expression;
  * 
  */
 public class ASTNotEqual extends ConditionNode {
-    ASTNotEqual(int id) {
+    public ASTNotEqual(int id) {
         super(id);
     }
 

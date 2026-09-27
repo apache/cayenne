@@ -34,7 +34,7 @@ import org.apache.cayenne.exp.Expression;
  */
 public class ASTDivide extends EvaluatedMathNode {
 
-	ASTDivide(int id) {
+	public ASTDivide(int id) {
 		super(id);
 	}
 

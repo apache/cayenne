@@ -26,7 +26,7 @@ import org.apache.cayenne.exp.Expression;
  * 
  */
 public class ASTNotBetween extends ConditionNode {
-    ASTNotBetween(int id) {
+    public ASTNotBetween(int id) {
         super(id);
     }
 

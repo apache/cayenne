@@ -27,7 +27,7 @@ import org.apache.cayenne.util.ConversionUtil;
  */
 public class ASTUpper extends ASTFunctionCall {
 
-    ASTUpper(int id) {
+    public ASTUpper(int id) {
         super(id, "UPPER");
     }
 

@@ -2,6 +2,7 @@ options {
 	
 	MULTI = true;
 	NODE_DEFAULT_VOID = true;
+	NODE_PACKAGE = "org.apache.cayenne.exp.parser";
 	
 	STATIC = false;
 	DEBUG_PARSER = false;
@@ -32,7 +33,7 @@ PARSER_BEGIN(QLParser)
  ****************************************************************/
 
 
-package org.apache.cayenne.exp.parser;
+package org.apache.cayenne.ql;
 
 import java.math.BigDecimal;
 import java.math.BigInteger;

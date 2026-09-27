@@ -23,11 +23,19 @@ import java.util.Collection;
 import java.util.HashMap;
 import java.util.Map;
 
+import org.apache.cayenne.ql.ParseException;
+
 /**
+ * Node-building helpers for {@link org.apache.cayenne.ql.QLParser}. Not intended for direct use.
+ *
  * @since 4.2
  */
-class ExpressionUtils {
-    static void parsePath(ASTPath pathExp, String path) throws ParseException {
+public class ExpressionUtils {
+
+    /**
+     * Sets the path of a node from its String form, extracting the "#alias" markers into the node's path aliases.
+     */
+    public static void parsePath(ASTPath pathExp, String path) throws ParseException {
         if(path == null || !path.contains("#")) {
             pathExp.setPath(path);
             return;
@@ -56,7 +64,7 @@ class ExpressionUtils {
     /**
      * Wraps a parameter value in a node that can take the place of a named parameter in the expression tree.
      */
-    static Node parameterNode(Object value) {
+    public static Node parameterNode(Object value) {
         return switch (value) {
             case null -> new ASTScalar(null);
             case Node node -> node;

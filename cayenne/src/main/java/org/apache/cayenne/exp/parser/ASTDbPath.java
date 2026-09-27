@@ -50,7 +50,7 @@ public class ASTDbPath extends ASTPath {
 
 	public static final String DB_PREFIX = "db:";
 
-	ASTDbPath(int id) {
+	public ASTDbPath(int id) {
 		super(id);
 	}
 

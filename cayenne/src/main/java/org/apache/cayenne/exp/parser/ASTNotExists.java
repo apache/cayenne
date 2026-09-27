@@ -34,7 +34,7 @@ public class ASTNotExists extends ConditionNode {
         jjtAddChild((SimpleNode)expression, 0);
     }
 
-    ASTNotExists(int id) {
+    public ASTNotExists(int id) {
         super(id);
     }
 

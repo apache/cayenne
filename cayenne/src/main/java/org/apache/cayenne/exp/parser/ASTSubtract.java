@@ -33,7 +33,7 @@ import org.apache.cayenne.exp.Expression;
  * @since 1.1
  */
 public class ASTSubtract extends EvaluatedMathNode {
-    ASTSubtract(int id) {
+    public ASTSubtract(int id) {
         super(id);
     }
 

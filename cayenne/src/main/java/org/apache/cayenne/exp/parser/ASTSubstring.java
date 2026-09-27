@@ -27,7 +27,7 @@ import org.apache.cayenne.util.ConversionUtil;
  */
 public class ASTSubstring extends ASTFunctionCall {
 
-    ASTSubstring(int id) {
+    public ASTSubstring(int id) {
         super(id, "SUBSTRING");
     }
 

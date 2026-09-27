@@ -17,12 +17,13 @@
  *  under the License.
  ****************************************************************/
 
-package org.apache.cayenne.exp.parser;
+package org.apache.cayenne.ql;
 
 import java.io.IOException;
 import java.util.Collection;
 
 import org.apache.cayenne.exp.Expression;
+import org.apache.cayenne.exp.parser.ASTDbPath;
 import org.apache.cayenne.exp.property.Property;
 import org.apache.cayenne.query.FluentSelect;
 import org.apache.cayenne.query.Ordering;
@@ -56,7 +57,7 @@ public class QLSelectPrinter {
         return out.toString();
     }
 
-    static void append(FluentSelect<?, ?> query, Appendable out) throws IOException {
+    public static void append(FluentSelect<?, ?> query, Appendable out) throws IOException {
         appendSelect(query, out);
         appendFrom(query, out);
 

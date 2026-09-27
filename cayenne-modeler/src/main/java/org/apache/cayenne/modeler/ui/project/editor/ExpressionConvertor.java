@@ -22,7 +22,7 @@ package org.apache.cayenne.modeler.ui.project.editor;
 import org.apache.cayenne.exp.Expression;
 import org.apache.cayenne.exp.ExpressionException;
 import org.apache.cayenne.exp.ExpressionFactory;
-import org.apache.cayenne.exp.parser.ParseException;
+import org.apache.cayenne.ql.ParseException;
 import org.apache.cayenne.util.Util;
 
 public class ExpressionConvertor {

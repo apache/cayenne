@@ -30,7 +30,7 @@ public class ASTCustomFunction extends ASTFunctionCall {
 
     private boolean isNameSet;
 
-    ASTCustomFunction(int id) {
+    public ASTCustomFunction(int id) {
         super(id, "");
     }
 

@@ -20,7 +20,7 @@
  ****************************************************************/
 
 
-package org.apache.cayenne.exp.parser;
+package org.apache.cayenne.ql;
 
 /**
  * An implementation of interface CharStream, where the stream is assumed to

@@ -33,7 +33,7 @@ import org.apache.cayenne.exp.ExpressionParameter;
  */
 public class ASTNamedParameter extends ASTScalar {
 
-	ASTNamedParameter(int id) {
+	public ASTNamedParameter(int id) {
 		super(id);
 	}
 

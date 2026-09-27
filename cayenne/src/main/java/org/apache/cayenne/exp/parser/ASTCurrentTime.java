@@ -33,7 +33,7 @@ public class ASTCurrentTime extends ASTFunctionCall {
         this(QLParserTreeConstants.JJTCURRENTTIME);
     }
 
-    ASTCurrentTime(int id) {
+    public ASTCurrentTime(int id) {
         super(id, "CURRENT_TIME");
     }
 

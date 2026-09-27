@@ -57,7 +57,7 @@ public class ASTExtract extends ASTFunctionCall {
 
     private DateTimePart part;
 
-    ASTExtract(int id) {
+    public ASTExtract(int id) {
         super(id, "EXTRACT");
     }
 
@@ -79,7 +79,7 @@ public class ASTExtract extends ASTFunctionCall {
      * This method is used by {@link QLParser}
      * @param partToken {@link Token#image} from {@link QLParser}
      */
-    void setPartToken(String partToken) {
+    public void setPartToken(String partToken) {
         part = NAME_TO_PART.get(partToken);
         if(part == null) {
             throw new CayenneRuntimeException("Unknown timestamp part: %s", partToken);

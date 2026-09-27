@@ -19,6 +19,7 @@
 
 package org.apache.cayenne.exp.parser;
 
+import org.apache.cayenne.ql.ParseException;
 import org.junit.jupiter.api.Test;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;

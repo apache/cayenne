@@ -37,7 +37,7 @@ public class ASTExists extends ConditionNode {
         jjtAddChild((SimpleNode)expression, 0);
     }
 
-    ASTExists(int id) {
+    public ASTExists(int id) {
         super(id);
     }
 

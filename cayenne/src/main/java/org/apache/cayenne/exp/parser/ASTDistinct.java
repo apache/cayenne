@@ -26,7 +26,7 @@ import org.apache.cayenne.exp.Expression;
  */
 public class ASTDistinct extends ASTAggregateFunctionCall {
 
-	ASTDistinct(int id) {
+	public ASTDistinct(int id) {
         super(id, "DISTINCT");
     }
 

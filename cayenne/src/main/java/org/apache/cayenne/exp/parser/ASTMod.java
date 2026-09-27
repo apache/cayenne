@@ -27,7 +27,7 @@ import org.apache.cayenne.util.ConversionUtil;
  */
 public class ASTMod extends ASTFunctionCall {
 
-    ASTMod(int id) {
+    public ASTMod(int id) {
         super(id, "MOD");
     }
 

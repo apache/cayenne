@@ -21,7 +21,7 @@ package org.apache.cayenne.configuration.upgrade;
 import org.apache.cayenne.ConfigurationException;
 import org.apache.cayenne.exp.Expression;
 import org.apache.cayenne.exp.ExpressionFactory;
-import org.apache.cayenne.exp.parser.QLSelectPrinter;
+import org.apache.cayenne.ql.QLSelectPrinter;
 import org.apache.cayenne.query.ObjectSelect;
 import org.apache.cayenne.query.Ordering;
 import org.apache.cayenne.query.PrefetchTreeNode;

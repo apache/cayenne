@@ -29,7 +29,7 @@ import org.apache.cayenne.util.ConversionUtil;
  */
 public class ASTNotLike extends PatternMatchNode {
 
-    ASTNotLike(int id) {
+    public ASTNotLike(int id) {
         super(id, false);
     }
 

@@ -39,7 +39,7 @@ public class ASTEnclosingObject extends SimpleNode {
         this(0);
     }
 
-    protected ASTEnclosingObject(int i) {
+    public ASTEnclosingObject(int i) {
         super(i);
     }
 

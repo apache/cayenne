@@ -20,7 +20,8 @@
  ****************************************************************/
 
 
-package org.apache.cayenne.exp.parser;
+package org.apache.cayenne.ql;
+import org.apache.cayenne.exp.parser.*;
 import java.math.BigDecimal;
 import java.math.BigInteger;
 import java.util.HashMap;
