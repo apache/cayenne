@@ -82,6 +82,13 @@ public class ObjectSelect_ParseTest {
     }
 
     @Test
+    public void offsetWithoutLimit() {
+        FluentSelect<?, ?> q = ObjectSelect.parse("from Artist offset 20");
+        assertEquals(0, q.getLimit());
+        assertEquals(20, q.getOffset());
+    }
+
+    @Test
     public void whereOrderLimitOffset() {
         FluentSelect<?, ?> q = ObjectSelect.parse(
                 "from Artist where artistName like 'A%' order by dateOfBirth desc, artistName asc insensitive "

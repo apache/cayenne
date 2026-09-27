@@ -64,6 +64,12 @@ public class ASTSubqueryTest {
     }
 
     @Test
+    public void offsetWithoutLimitToString() {
+        ObjectSelect<Artist> subquery = ObjectSelect.query(Artist.class).offset(10);
+        assertEquals("exists (from Artist offset 10)", ExpressionFactory.exists(subquery).toString());
+    }
+
+    @Test
     public void allClausesToString() {
         ColumnSelect<Object[]> subquery = ObjectSelect.query(Artist.class)
                 .columns(Artist.ARTIST_NAME.alias("n"), Artist.PAINTING_ARRAY.count())

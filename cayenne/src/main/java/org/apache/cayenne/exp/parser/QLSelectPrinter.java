@@ -56,11 +56,10 @@ class QLSelectPrinter {
 
         if (query.getLimit() > 0) {
             out.append(" limit ").append(String.valueOf(query.getLimit()));
+        }
 
-            // there's no "offset" without a "limit" in the grammar
-            if (query.getOffset() > 0) {
-                out.append(" offset ").append(String.valueOf(query.getOffset()));
-            }
+        if (query.getOffset() > 0) {
+            out.append(" offset ").append(String.valueOf(query.getOffset()));
         }
     }
 

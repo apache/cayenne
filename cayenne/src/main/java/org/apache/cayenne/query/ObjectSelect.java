@@ -161,7 +161,7 @@ public class ObjectSelect<T> extends FluentSelect<T, ObjectSelect<T>> {
      * of the String. The general form of the query is
      * <pre>
      * [select [distinct] columns] from Entity [where exp] [having exp] [order by orderings]
-     * [limit n [offset m]] [prefetch paths]</pre>
+     * [limit n] [offset m] [prefetch paths]</pre>
      * where all the expressions follow the syntax of {@link ExpressionFactory#exp(String, Object...)}. A query with
      * no "select" clause, or with "select self" results in an ObjectSelect. E.g.:
      * <pre>

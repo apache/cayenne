@@ -151,6 +151,7 @@ FluentSelect<?, ?> select(boolean root) : {
     [ LOOKAHEAD({ isKeyword(1, "having") }) keyword("having") orCondition() { builder.having(popExpression()); } ]
     [ LOOKAHEAD({ isKeyword(1, "order") }) orderClause(builder) ]
     [ LOOKAHEAD({ isKeyword(1, "limit") }) limitClause(builder) ]
+    [ LOOKAHEAD({ isKeyword(1, "offset") }) offsetClause(builder) ]
     [ LOOKAHEAD({ root && isKeyword(1, "prefetch") }) prefetchClause(builder) ]
     {
         return builder.build();
@@ -235,10 +236,11 @@ void ordering(QLSelectBuilder builder) : {
 void limitClause(QLSelectBuilder builder) : {}
 {
     keyword("limit") <INT_LITERAL> { builder.limit(((Number) token_source.literalValue).intValue()); }
-    [
-        LOOKAHEAD({ isKeyword(1, "offset") }) keyword("offset")
-        <INT_LITERAL> { builder.offset(((Number) token_source.literalValue).intValue()); }
-    ]
+}
+
+void offsetClause(QLSelectBuilder builder) : {}
+{
+    keyword("offset") <INT_LITERAL> { builder.offset(((Number) token_source.literalValue).intValue()); }
 }
 
 void prefetchClause(QLSelectBuilder builder) : {}

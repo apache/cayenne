@@ -40,7 +40,8 @@ from Entity
 [ where     expression ]
 [ having    expression ]
 [ order by  orderings ]
-[ limit n [ offset m ] ]
+[ limit n ]
+[ offset m ]
 [ prefetch  paths ]
 ----
 
