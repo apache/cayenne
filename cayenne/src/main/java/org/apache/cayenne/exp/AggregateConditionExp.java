@@ -28,7 +28,7 @@ import java.util.function.Function;
  * 
  * @since 5.0
  */
-public abstract sealed class AggregateConditionExp extends BaseExp permits AndExp, NotExp, OrExp, WhenExp {
+public abstract sealed class AggregateConditionExp extends Expression permits AndExp, NotExp, OrExp, WhenExp {
 	protected AggregateConditionExp(Object... operands) {
 		super(operands);
 	}
@@ -65,7 +65,7 @@ public abstract sealed class AggregateConditionExp extends BaseExp permits AndEx
 	}
 
 	@Override
-	protected boolean isValidParent(BaseExp parent) {
+	protected boolean isValidParent(Expression parent) {
 		return parent instanceof AggregateConditionExp
 				|| parent instanceof ExistsExp
 				|| parent instanceof NotExistsExp;
@@ -76,7 +76,7 @@ public abstract sealed class AggregateConditionExp extends BaseExp permits AndEx
 		// this is a check that we can't handle properly in the grammar... do it here...
 		// only allow conditional nodes... no scalars
 		if (!(value instanceof ConditionExp) && !(value instanceof AggregateConditionExp)) {
-			String label = (value instanceof BaseExp node) ? node.expName() : String.valueOf(value);
+			String label = (value instanceof Expression node) ? node.expName() : String.valueOf(value);
 			throw new ExpressionException(expName() + ": invalid operand - " + label);
 		}
 

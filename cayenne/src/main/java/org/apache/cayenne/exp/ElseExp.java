@@ -27,7 +27,7 @@ import java.util.List;
  *
  * @since 5.0
  */
-public final class ElseExp extends BaseExp {
+public final class ElseExp extends Expression {
     public ElseExp(Object... operands) {
         super(operands);
     }

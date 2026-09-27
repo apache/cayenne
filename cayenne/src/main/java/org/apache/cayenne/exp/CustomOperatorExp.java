@@ -23,7 +23,7 @@ import java.io.IOException;
 /**
  * @since 5.0
  */
-public non-sealed class CustomOperatorExp extends BaseExp {
+public non-sealed class CustomOperatorExp extends Expression {
     private String operator;
 
     public CustomOperatorExp(Object... operands) {

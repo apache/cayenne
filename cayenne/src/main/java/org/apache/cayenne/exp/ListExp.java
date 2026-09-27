@@ -33,7 +33,7 @@ import java.util.List;
  * 
  * @since 5.0
  */
-public final class ListExp extends BaseExp {
+public final class ListExp extends Expression {
 	protected Object[] values;
 
 	/**

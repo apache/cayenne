@@ -56,7 +56,7 @@ public final class AllExp extends ConditionExp {    public AllExp(Object... oper
     }
 
     @Override
-    protected boolean isValidParent(BaseExp parent) {
+    protected boolean isValidParent(Expression parent) {
         // an operand of a comparison, not a standalone condition
         return true;
     }

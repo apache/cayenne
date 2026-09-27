@@ -237,9 +237,6 @@ public class ExpressionFactory {
 	 * @see ExpressionFactory#matchExp(String, Object)
 	 */
 	public static Expression matchExp(Expression exp, Object value) {
-		if(!(exp instanceof BaseExp)) {
-			throw new IllegalArgumentException("exp should be instance of BaseExp");
-		}
 		return new EqualExp(exp, value);
 	}
 
@@ -255,9 +252,6 @@ public class ExpressionFactory {
 	 * @see ExpressionFactory#noMatchExp(String, Object)
 	 */
 	public static Expression noMatchExp(Expression exp, Object value) {
-		if(!(exp instanceof BaseExp)) {
-			throw new IllegalArgumentException("exp should be instance of BaseExp");
-		}
 		return new NotEqualExp(exp, value);
 	}
 
@@ -289,9 +283,6 @@ public class ExpressionFactory {
 	 * @see ExpressionFactory#lessExp(String, Object)
 	 */
 	public static Expression lessExp(Expression exp, Object value) {
-		if(!(exp instanceof BaseExp)) {
-			throw new IllegalArgumentException("exp should be instance of BaseExp");
-		}
 		return new LessExp(exp, value);
 	}
 
@@ -317,9 +308,6 @@ public class ExpressionFactory {
 	 * @see ExpressionFactory#lessOrEqualExp(String, Object)
 	 */
 	public static Expression lessOrEqualExp(Expression exp, Object value) {
-		if(!(exp instanceof BaseExp)) {
-			throw new IllegalArgumentException("exp should be instance of BaseExp");
-		}
 		return new LessOrEqualExp(exp, value);
 	}
 
@@ -345,9 +333,6 @@ public class ExpressionFactory {
 	 * @see ExpressionFactory#greaterExp(String, Object)
 	 */
 	public static Expression greaterExp(Expression exp, Object value) {
-		if(!(exp instanceof BaseExp)) {
-			throw new IllegalArgumentException("exp should be instance of BaseExp");
-		}
 		return new GreaterExp(exp, value);
 	}
 
@@ -373,9 +358,6 @@ public class ExpressionFactory {
 	 * @see ExpressionFactory#greaterOrEqualExp(String, Object)
 	 */
 	public static Expression greaterOrEqualExp(Expression exp, Object value) {
-		if(!(exp instanceof BaseExp)) {
-			throw new IllegalArgumentException("exp should be instance of BaseExp");
-		}
 		return new GreaterOrEqualExp(exp, value);
 	}
 
@@ -404,9 +386,6 @@ public class ExpressionFactory {
 	public static Expression inExp(Expression exp, Object... values) {
 		if (values.length == 0) {
 			return new FalseExp();
-		}
-		if(!(exp instanceof BaseExp)) {
-			throw new IllegalArgumentException("exp should be instance of BaseExp");
 		}
 		return new InExp(exp, new ListExp(values));
 	}
@@ -450,9 +429,6 @@ public class ExpressionFactory {
 		if (values.isEmpty()) {
 			return new FalseExp();
 		}
-		if(!(exp instanceof BaseExp)) {
-			throw new IllegalArgumentException("exp should be instance of BaseExp");
-		}
 		return new InExp(exp, new ListExp(values));
 	}
 
@@ -494,9 +470,6 @@ public class ExpressionFactory {
 	public static Expression notInExp(Expression exp, Collection<?> values) {
 		if (values.isEmpty()) {
 			return new TrueExp();
-		}
-		if(!(exp instanceof BaseExp)) {
-			throw new IllegalArgumentException("exp should be instance of BaseExp");
 		}
 		return new NotInExp(exp, new ListExp(values));
 	}
@@ -545,9 +518,6 @@ public class ExpressionFactory {
 		if (values.length == 0) {
 			return new TrueExp();
 		}
-		if(!(exp instanceof BaseExp)) {
-			throw new IllegalArgumentException("exp should be instance of BaseExp");
-		}
 		return new NotInExp(exp, new ListExp(values));
 	}
 
@@ -589,9 +559,6 @@ public class ExpressionFactory {
 	 * @see ExpressionFactory#betweenExp(String, Object, Object)
 	 */
 	public static Expression betweenExp(Expression exp, Object value1, Object value2) {
-		if(!(exp instanceof BaseExp)) {
-			throw new IllegalArgumentException("exp should be instance of BaseExp");
-		}
 		return new BetweenExp(exp, value1, value2);
 	}
 
@@ -616,9 +583,6 @@ public class ExpressionFactory {
 	 * @see ExpressionFactory#notBetweenExp(String, Object, Object)
 	 */
 	public static Expression notBetweenExp(Expression exp, Object value1, Object value2) {
-		if(!(exp instanceof BaseExp)) {
-			throw new IllegalArgumentException("exp should be instance of BaseExp");
-		}
 		return new NotBetweenExp(exp, value1, value2);
 	}
 
@@ -675,9 +639,6 @@ public class ExpressionFactory {
 	}
 
 	static LikeExp likeExpInternal(Expression expression, Object value, char escapeChar) {
-		if(!(expression instanceof BaseExp)) {
-			throw new IllegalArgumentException("exp should be instance of BaseExp");
-		}
 		return withEscapeChar(new LikeExp(expression, value), escapeChar);
 	}
 
@@ -718,9 +679,6 @@ public class ExpressionFactory {
 	 * @see ExpressionFactory#notLikeExp(String, Object)
 	 */
 	public static Expression notLikeExp(Expression exp, Object value) {
-		if(!(exp instanceof BaseExp)) {
-			throw new IllegalArgumentException("exp should be instance of BaseExp");
-		}
 		return new NotLikeExp(exp, value);
 	}
 
@@ -745,9 +703,6 @@ public class ExpressionFactory {
 	 * @see ExpressionFactory#notLikeExp(String, Object)
 	 */
 	public static Expression notLikeExp(Expression exp, Object value, char escapeChar) {
-		if(!(exp instanceof BaseExp)) {
-			throw new IllegalArgumentException("exp should be instance of BaseExp");
-		}
 		return withEscapeChar(new NotLikeExp(exp, value), escapeChar);
 	}
 
@@ -812,9 +767,6 @@ public class ExpressionFactory {
 	}
 
 	static LikeIgnoreCaseExp likeIgnoreCaseExp(Expression exp, Object value, char escapeChar) {
-		if(!(exp instanceof BaseExp)) {
-			throw new IllegalArgumentException("exp should be instance of BaseExp");
-		}
 		return withEscapeChar(new LikeIgnoreCaseExp(exp, value), escapeChar);
 	}
 
@@ -855,9 +807,6 @@ public class ExpressionFactory {
 	 * @see ExpressionFactory#notLikeIgnoreCaseExp(String, Object)
 	 */
 	public static Expression notLikeIgnoreCaseExp(Expression exp, Object value) {
-		if(!(exp instanceof BaseExp)) {
-			throw new IllegalArgumentException("exp should be instance of BaseExp");
-		}
 		return new NotLikeIgnoreCaseExp(exp, value);
 	}
 
@@ -882,9 +831,6 @@ public class ExpressionFactory {
 	 * @see ExpressionFactory#notLikeIgnoreCaseExp(String, Object, char)
 	 */
 	public static Expression notLikeIgnoreCaseExp(Expression exp, Object value, char escapeChar) {
-		if(!(exp instanceof BaseExp)) {
-			throw new IllegalArgumentException("exp should be instance of BaseExp");
-		}
 		return withEscapeChar(new NotLikeIgnoreCaseExp(exp, value), escapeChar);
 	}
 
@@ -1334,9 +1280,6 @@ public class ExpressionFactory {
 	 * @since 4.2
 	 */
 	public static Expression inExp(Expression exp, ColumnSelect<?> subQuery) {
-		if(!(exp instanceof BaseExp)) {
-			throw new IllegalArgumentException("exp should be instance of BaseExp");
-		}
 		return new InExp(exp, new SubqueryExp(subQuery));
 	}
 
@@ -1344,9 +1287,6 @@ public class ExpressionFactory {
 	 * @since 4.2
 	 */
 	public static Expression notInExp(Expression exp, ColumnSelect<?> subQuery) {
-		if(!(exp instanceof BaseExp)) {
-			throw new IllegalArgumentException("exp should be instance of BaseExp");
-		}
 		return new NotInExp(exp, new SubqueryExp(subQuery));
 	}
 

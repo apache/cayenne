@@ -22,7 +22,7 @@ package org.apache.cayenne.ql;
 import java.util.ArrayList;
 import java.util.List;
 
-import org.apache.cayenne.exp.BaseExp;
+import org.apache.cayenne.exp.Expression;
 
 /**
  * The node stack that {@link QLParser} builds expression trees on. Adapted from the JJTree-generated tree state and
@@ -33,7 +33,7 @@ import org.apache.cayenne.exp.BaseExp;
  */
 public class JJTQLParserState {
 
-    private final List<BaseExp> nodes = new ArrayList<>();
+    private final List<Expression> nodes = new ArrayList<>();
     private final List<Integer> marks = new ArrayList<>();
 
     // number of nodes on the stack
@@ -63,11 +63,11 @@ public class JJTQLParserState {
     /**
      * Returns the root node of the tree. Only makes sense after a successful parse.
      */
-    public BaseExp rootNode() {
+    public Expression rootNode() {
         return nodes.get(0);
     }
 
-    public void pushNode(BaseExp n) {
+    public void pushNode(Expression n) {
         nodes.add(n);
         ++sp;
     }
@@ -75,14 +75,14 @@ public class JJTQLParserState {
     /**
      * Returns the node on the top of the stack, removing it from the stack.
      */
-    public BaseExp popNode() {
+    public Expression popNode() {
         if (--sp < mk) {
             mk = marks.remove(marks.size() - 1);
         }
         return nodes.remove(nodes.size() - 1);
     }
 
-    public BaseExp peekNode() {
+    public Expression peekNode() {
         return nodes.get(nodes.size() - 1);
     }
 
@@ -93,14 +93,14 @@ public class JJTQLParserState {
         return sp - mk;
     }
 
-    public void clearNodeScope(BaseExp n) {
+    public void clearNodeScope(Expression n) {
         while (sp > mk) {
             popNode();
         }
         mk = marks.remove(marks.size() - 1);
     }
 
-    public void openNodeScope(BaseExp n) {
+    public void openNodeScope(Expression n) {
         marks.add(mk);
         mk = sp;
     }
@@ -109,7 +109,7 @@ public class JJTQLParserState {
      * A definite node is constructed from a specified number of children. That many nodes are popped from the stack
      * and made the children of the definite node, which is then pushed on to the stack.
      */
-    public void closeNodeScope(BaseExp n, int num) {
+    public void closeNodeScope(Expression n, int num) {
         mk = marks.remove(marks.size() - 1);
         Object[] operands = new Object[num];
         while (num-- > 0) {
@@ -125,7 +125,7 @@ public class JJTQLParserState {
      * was opened are made children of the conditional node, which is then pushed on to the stack. If the condition is
      * false the node is not constructed and they are left on the stack.
      */
-    public void closeNodeScope(BaseExp n, boolean condition) {
+    public void closeNodeScope(Expression n, boolean condition) {
         if (condition) {
             int a = nodeArity();
             mk = marks.remove(marks.size() - 1);

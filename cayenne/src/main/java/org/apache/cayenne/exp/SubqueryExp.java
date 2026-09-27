@@ -30,7 +30,7 @@ import org.apache.cayenne.ql.QLSelectPrinter;
 /**
  * @since 5.0
  */
-public final class SubqueryExp extends BaseExp {
+public final class SubqueryExp extends Expression {
     private static final TraversalHandler IN_MEMORY_VALIDATOR = new TraversalHandler() {
         @Override
         public void startNode(Expression node, Expression parentNode) {

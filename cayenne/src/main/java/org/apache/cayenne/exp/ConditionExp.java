@@ -28,7 +28,7 @@ import java.util.Map;
  *
  * @since 5.0
  */
-public abstract sealed class ConditionExp extends BaseExp permits AllExp, AnyExp, BetweenExp, EqualExp, ExistsExp,
+public abstract sealed class ConditionExp extends Expression permits AllExp, AnyExp, BetweenExp, EqualExp, ExistsExp,
         FalseExp, GreaterExp, GreaterOrEqualExp, InExp, LessExp, LessOrEqualExp, NotBetweenExp, NotEqualExp,
         NotExistsExp, NotInExp, PatternMatchExp, TrueExp {
     protected ConditionExp(Object... operands) {
@@ -36,7 +36,7 @@ public abstract sealed class ConditionExp extends BaseExp permits AllExp, AnyExp
     }
 
     @Override
-    protected boolean isValidParent(BaseExp parent) {
+    protected boolean isValidParent(Expression parent) {
         // a condition can't be an operand of a value expression
         return parent instanceof AggregateConditionExp
                 || parent instanceof ExistsExp

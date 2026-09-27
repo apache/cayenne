@@ -29,7 +29,7 @@ import org.apache.cayenne.Persistent;
  * 
  * @since 5.0
  */
-public sealed class ScalarExp extends BaseExp permits EnumExp, NamedParameterExp {
+public sealed class ScalarExp extends Expression permits EnumExp, NamedParameterExp {
     protected Object value;
 
     /**

@@ -24,7 +24,7 @@ import java.io.IOException;
 /**
  * @since 5.0
  */
-public final class EnclosingObjectExp extends BaseExp {
+public final class EnclosingObjectExp extends Expression {
     public EnclosingObjectExp(Object... operands) {
         super(operands);
     }

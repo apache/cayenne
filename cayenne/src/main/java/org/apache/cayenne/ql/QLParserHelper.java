@@ -19,7 +19,7 @@
 
 package org.apache.cayenne.ql;
 
-import org.apache.cayenne.exp.BaseExp;
+import org.apache.cayenne.exp.Expression;
 import org.apache.cayenne.exp.ListExp;
 import org.apache.cayenne.exp.PathExp;
 import org.apache.cayenne.exp.ScalarExp;
@@ -67,10 +67,10 @@ class QLParserHelper {
     /**
      * Wraps a parameter value in a node that can take the place of a named parameter in the expression tree.
      */
-    static BaseExp parameterNode(Object value) {
+    static Expression parameterNode(Object value) {
         return switch (value) {
             case null -> new ScalarExp();
-            case BaseExp node -> node;
+            case Expression node -> node;
             case Collection<?> collection -> new ListExp(collection);
             case Object[] array -> new ListExp(array);
             default -> new ScalarExp(value);

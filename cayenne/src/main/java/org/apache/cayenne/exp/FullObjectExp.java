@@ -24,7 +24,7 @@ import java.io.IOException;
 /**
  * @since 5.0
  */
-public final class FullObjectExp extends BaseExp {
+public final class FullObjectExp extends Expression {
     public FullObjectExp(Object... operands) {
         super(operands);
     }

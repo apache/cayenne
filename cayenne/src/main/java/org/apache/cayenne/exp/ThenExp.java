@@ -27,7 +27,7 @@ import java.util.List;
  *
  * @since 5.0
  */
-public final class ThenExp extends BaseExp {
+public final class ThenExp extends Expression {
     public ThenExp(Object... operands) {
         super(operands);
     }

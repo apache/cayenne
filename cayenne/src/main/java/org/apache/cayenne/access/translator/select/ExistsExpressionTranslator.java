@@ -27,7 +27,6 @@ import org.apache.cayenne.exp.NotExistsExp;
 import org.apache.cayenne.exp.SubqueryExp;
 import org.apache.cayenne.exp.AggregateConditionExp;
 import org.apache.cayenne.exp.ConditionExp;
-import org.apache.cayenne.exp.BaseExp;
 import org.apache.cayenne.exp.path.CayennePath;
 import org.apache.cayenne.map.DbEntity;
 import org.apache.cayenne.map.DbJoin;
@@ -52,7 +51,7 @@ class ExistsExpressionTranslator {
     private final Expression expressionToTranslate;
     private final boolean not;
 
-    ExistsExpressionTranslator(SelectTranslatorContext context, BaseExp exists) {
+    ExistsExpressionTranslator(SelectTranslatorContext context, Expression exists) {
         this.context = context;
         this.expressionToTranslate = exists;
         this.not = exists instanceof NotExistsExp;
@@ -118,9 +117,9 @@ class ExistsExpressionTranslator {
         Expression finalExpression = null;
         for (RelationshipToNode pair : relationshipToNodes) {
             Expression exp = pair.node() == null ? null : pair.node().deepCopy();
-            BaseExp replacement = subqueryExpression(pair.relationship(), exp);
+            Expression replacement = subqueryExpression(pair.relationship(), exp);
 
-            BaseExp parent = pair.node() == null ? null : ancestry.parents.get(pair.node());
+            Expression parent = pair.node() == null ? null : ancestry.parents.get(pair.node());
             if (parent == null) {
                 if (finalExpression != null) {
                     throw new IllegalStateException("Expected single root expression");
@@ -138,7 +137,7 @@ class ExistsExpressionTranslator {
         return finalExpression;
     }
 
-    private BaseExp subqueryExpression(DbRelationship relationship, Expression exp) {
+    private Expression subqueryExpression(DbRelationship relationship, Expression exp) {
         for (DbJoin join : relationship.getJoins()) {
             Expression joinMatchExp = ExpressionFactory.matchDbExp(join.getTargetName(),
                     ExpressionFactory.enclosingObjectExp(ExpressionFactory.dbPathExp(join.getSourceName())));
@@ -151,7 +150,7 @@ class ExistsExpressionTranslator {
         ObjectSelect<Persistent> select = ObjectSelect.query(Persistent.class)
                 .dbEntityName(relationship.getTargetEntityName())
                 .where(exp);
-        return (BaseExp) (not
+        return (not
                 ? ExpressionFactory.notExists(select)
                 : ExpressionFactory.exists(select));
     }
@@ -174,10 +173,10 @@ class ExistsExpressionTranslator {
      */
     private List<RelationshipToNode> subqueryNodes(Ancestry ancestry, Map<DbPathExp, DbRelationship> relationships) {
         List<RelationshipToNode> relationshipToNodes = new ArrayList<>(relationships.size());
-        Map<BaseExp, Map<DbRelationship, List<DbPathExp>>> parents = new HashMap<>(4);
+        Map<Expression, Map<DbRelationship, List<DbPathExp>>> parents = new HashMap<>(4);
         for (DbPathExp path : ancestry.paths) {
             DbRelationship relationship = relationships.get(path);
-            BaseExp aggregateCondition = ancestry.aggregateConditions.get(path);
+            Expression aggregateCondition = ancestry.aggregateConditions.get(path);
             if (aggregateCondition == null) {
                 // nothing above the path to take as a whole
                 relationshipToNodes.add(new RelationshipToNode(relationship, ancestry.conditions.get(path)));
@@ -220,7 +219,7 @@ class ExistsExpressionTranslator {
     /**
      * A relationship and the node whose copy qualifies the relationship subquery, null when there is none.
      */
-    private record RelationshipToNode(DbRelationship relationship, BaseExp node) {
+    private record RelationshipToNode(DbRelationship relationship, Expression node) {
     }
 
     /**
@@ -230,27 +229,26 @@ class ExistsExpressionTranslator {
      */
     private static class Ancestry {
 
-        final Map<BaseExp, BaseExp> parents = new IdentityHashMap<>();
+        final Map<Expression, Expression> parents = new IdentityHashMap<>();
         final List<DbPathExp> paths = new ArrayList<>();
-        final Map<DbPathExp, BaseExp> conditions = new IdentityHashMap<>();
-        final Map<DbPathExp, BaseExp> aggregateConditions = new IdentityHashMap<>();
+        final Map<DbPathExp, Expression> conditions = new IdentityHashMap<>();
+        final Map<DbPathExp, Expression> aggregateConditions = new IdentityHashMap<>();
 
         static Ancestry of(Expression expression, Map<DbPathExp, DbRelationship> relationships) {
             Ancestry ancestry = new Ancestry();
-            Deque<BaseExp> stack = new ArrayDeque<>();
+            Deque<Expression> stack = new ArrayDeque<>();
             expression.traverse(new TraversalHandler() {
                 @Override
                 public void startNode(Expression node, Expression parentNode) {
-                    BaseExp exp = (BaseExp) node;
                     if (parentNode != null) {
-                        ancestry.parents.put(exp, (BaseExp) parentNode);
+                        ancestry.parents.put(node, parentNode);
                     }
-                    if (exp instanceof DbPathExp path && relationships.containsKey(path)) {
+                    if (node instanceof DbPathExp path && relationships.containsKey(path)) {
                         ancestry.paths.add(path);
                         ancestry.conditions.put(path, nearest(stack, ConditionExp.class));
                         ancestry.aggregateConditions.put(path, nearest(stack, AggregateConditionExp.class));
                     }
-                    stack.push(exp);
+                    stack.push(node);
                 }
 
                 @Override
@@ -264,8 +262,8 @@ class ExistsExpressionTranslator {
         /**
          * Returns the innermost node of the given type among the ancestors on the stack, or null if there is none.
          */
-        private static BaseExp nearest(Deque<BaseExp> ancestors, Class<? extends BaseExp> type) {
-            for (BaseExp ancestor : ancestors) {
+        private static Expression nearest(Deque<Expression> ancestors, Class<? extends Expression> type) {
+            for (Expression ancestor : ancestors) {
                 if (type.isInstance(ancestor)) {
                     return ancestor;
                 }

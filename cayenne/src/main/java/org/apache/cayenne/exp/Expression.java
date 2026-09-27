@@ -21,6 +21,7 @@ package org.apache.cayenne.exp;
 
 import java.io.IOException;
 import java.util.Collection;
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.LinkedList;
 import java.util.List;
@@ -28,17 +29,23 @@ import java.util.Map;
 import java.util.function.Function;
 
 import org.apache.cayenne.CayenneRuntimeException;
+import org.apache.cayenne.Persistent;
 import org.apache.cayenne.configuration.ConfigurationNodeVisitor;
 import org.apache.cayenne.util.ConversionUtil;
+import org.apache.cayenne.util.Util;
 import org.apache.cayenne.util.XMLEncoder;
 
 import java.util.Objects;
 import org.apache.cayenne.util.XMLSerializable;
 
 /**
- * Superclass of Cayenne expressions that defines basic API for expressions use.
+ * Superclass of Cayenne expressions: a tree node holding its operands. An operand is either a nested expression or a
+ * plain value; a {@link ScalarExp} passed as an operand is unwrapped to its value, so a scalar node only ever appears
+ * as a root expression of its own. A node does not know its parent, so it can be shared between trees.
  */
-public abstract sealed class Expression implements XMLSerializable permits BaseExp {
+public abstract sealed class Expression implements XMLSerializable permits AggregateConditionExp, AsteriskExp,
+		CaseWhenExp, ConditionExp, CustomOperatorExp, ElseExp, EnclosingObjectExp, FullObjectExp, ListExp, NegateExp,
+		PathExp, ScalarExp, SubqueryExp, ThenExp, ValueExp {
 
 	/**
 	 * A value that a Transformer might return to indicate that a node has to be
@@ -48,6 +55,15 @@ public abstract sealed class Expression implements XMLSerializable permits BaseE
 	 */
 	public final static Object PRUNED_NODE = new Object();
 
+	protected Object[] operands;
+
+	protected Expression(Object... operands) {
+		if (operands != null && operands.length > 0) {
+			setOperands(operands);
+		}
+		// else - a bare node
+	}
+
 	/**
 	 * Returns a map of path aliases for this expression. It returns a non-empty
 	 * map only if this is a path expression and the aliases are known at the
@@ -55,12 +71,17 @@ public abstract sealed class Expression implements XMLSerializable permits BaseE
 	 * 
 	 * @since 3.0
 	 */
-	public abstract Map<String, String> getPathAliases();
+	public Map<String, String> getPathAliases() {
+		return Collections.emptyMap();
+	}
 
 	/**
-	 * Returns String label for this expression. Used for debugging.
+	 * Returns String label for this expression: the class name without the "Exp" suffix. Used for debugging.
 	 */
-	public abstract String expName();
+	public String expName() {
+		String name = getClass().getSimpleName();
+		return name.endsWith("Exp") ? name.substring(0, name.length() - 3) : name;
+	}
 
 	@Override
 	public boolean equals(Object object) {
@@ -206,7 +227,9 @@ public abstract sealed class Expression implements XMLSerializable permits BaseE
 	 * 
 	 * @since 1.0.6
 	 */
-	public abstract Expression notExp();
+	public Expression notExp() {
+		return new NotExp(this);
+	}
 
 	/**
 	 * Returns expression that will be dynamically resolved to proper subqueries based on a relationships used
@@ -217,7 +240,9 @@ public abstract sealed class Expression implements XMLSerializable permits BaseE
 	 * @see ExpressionFactory#exists(Expression)
 	 * @since 5.0
 	 */
-	public abstract Expression exists();
+	public Expression exists() {
+		throw new UnsupportedOperationException("Can't use exists() operator with this expression");
+	}
 
 	/**
 	 * Returns expression that will be dynamically resolved to proper subqueries based on a relationships used
@@ -228,26 +253,87 @@ public abstract sealed class Expression implements XMLSerializable permits BaseE
 	 * @see ExpressionFactory#notExists(Expression)
 	 * @since 5.0
 	 */
-	public abstract Expression notExists();
+	public Expression notExists() {
+		throw new UnsupportedOperationException("Can't use not exists() operator with this expression");
+	}
 
 	/**
 	 * Returns a count of operands of this expression. In real life there are
 	 * unary (count == 1), binary (count == 2) and ternary (count == 3)
 	 * expressions.
 	 */
-	public abstract int getOperandCount();
+	public int getOperandCount() {
+		return operands == null ? 0 : operands.length;
+	}
 
 	/**
-	 * Returns a value of operand at <code>index</code>. Operand indexing starts
-	 * at 0.
+	 * Returns a value of operand at <code>index</code>: a nested expression or a plain value. Operand indexing
+	 * starts at 0.
 	 */
-	public abstract Object getOperand(int index);
+	public Object getOperand(int index) {
+		if (operands == null) {
+			throw new ArrayIndexOutOfBoundsException(index);
+		}
+
+		Object operand = operands[index];
+
+		// an enum parsed from a String is resolved on access, so that an expression can be parsed and printed
+		// without the enum class being available, e.g. in the Modeler
+		return operand instanceof EnumExp.EnumValue enumValue ? enumValue.resolve() : operand;
+	}
 
 	/**
-	 * Sets a value of operand at <code>index</code>. Operand indexing starts at
-	 * 0.
+	 * Sets a value of operand at <code>index</code>, growing the operands array if needed. Operand indexing starts
+	 * at 0. A {@link ScalarExp} is unwrapped to its value and a {@link Persistent} is replaced with its ObjectId. A
+	 * nested expression is asked first whether this node is a valid parent for it, see
+	 * {@link #isValidParent(Expression)}.
 	 */
-	public abstract void setOperand(int index, Object value);
+	public void setOperand(int index, Object value) {
+		Object operand = switch (value) {
+			case ScalarExp scalar -> scalar.value;
+			case Persistent persistent -> persistent.getObjectId();
+			case null, default -> value;
+		};
+
+		if (operand instanceof Expression node && !node.isValidParent(this)) {
+			throw new ExpressionException(node.expName() + ": invalid parent - " + expName());
+		}
+
+		if (operands == null) {
+			operands = new Object[index + 1];
+		} else if (index >= operands.length) {
+			Object[] grown = new Object[index + 1];
+			System.arraycopy(operands, 0, grown, 0, operands.length);
+			operands = grown;
+		}
+		operands[index] = operand;
+	}
+
+	/**
+	 * Replaces all the operands of this node with the given ones. Called by the constructor and by the parser once
+	 * all the operands of a node are known, so a node that post-processes its operands overrides this method.
+	 *
+	 * @since 5.0
+	 */
+	public void setOperands(Object... operands) {
+		this.operands = null;
+		if (operands != null) {
+			for (int i = 0; i < operands.length; i++) {
+				setOperand(i, operands[i]);
+			}
+		}
+	}
+
+	/**
+	 * Whether this node can be an operand of the given node. Called by the parent when the operand is set, to check
+	 * what the grammar can't: e.g. a condition can only be an operand of a condition aggregate. By default any parent
+	 * is valid.
+	 *
+	 * @since 5.0
+	 */
+	protected boolean isValidParent(Expression parent) {
+		return true;
+	}
 
 	/**
 	 * Calculates expression value with object as a context for path
@@ -255,7 +341,35 @@ public abstract sealed class Expression implements XMLSerializable permits BaseE
 	 * 
 	 * @since 1.1
 	 */
-	public abstract Object evaluate(Object o);
+	public Object evaluate(Object o) {
+		// wrap in try/catch to provide unified exception processing
+		try {
+			return evaluateNode(o);
+		} catch (Throwable th) {
+			String string = this.toString();
+			throw new ExpressionException("Error evaluating expression '%s'",
+					string, Util.unwindException(th), string);
+		}
+	}
+
+	/**
+	 * Evaluates itself with object, pushing result on the stack.
+	 */
+	protected abstract Object evaluateNode(Object o) throws Exception;
+
+	/**
+	 * Evaluates the operand at the given index: a nested node is evaluated against the object, a plain value is
+	 * returned as is.
+	 */
+	protected Object evaluateOperand(int index, Object o) throws Exception {
+		Object operand = getOperand(index);
+		return switch (operand) {
+			case Expression node -> node.evaluate(o);
+			case ExpressionParameter parameter -> throw new ExpressionException(
+					"Uninitialized parameter: " + parameter + ", call 'params' first.");
+			case null, default -> operand;
+		};
+	}
 
 	/**
 	 * Calculates expression boolean value with object as a context for path
@@ -332,15 +446,55 @@ public abstract sealed class Expression implements XMLSerializable permits BaseE
 	 * 
 	 * @since 1.1
 	 */
-	protected abstract boolean pruneNodeForPrunedChild(Object prunedChild);
+	protected boolean pruneNodeForPrunedChild(Object prunedChild) {
+		return true;
+	}
 
 	/**
-	 * Restructures expression to make sure that there are no children of the
-	 * same type as this expression.
+	 * Flattens the tree under this node by eliminating any operands that are nodes of the same class as this node
+	 * and copying their operands to this node.
 	 * 
 	 * @since 1.1
 	 */
-	protected abstract void flattenTree();
+	protected void flattenTree() {
+		if (operands == null) {
+			return;
+		}
+
+		boolean shouldFlatten = false;
+		int newSize = 0;
+
+		for (Object operand : operands) {
+			if (operand != null && operand.getClass() == getClass()) {
+				shouldFlatten = true;
+				newSize += ((Expression) operand).getOperandCount();
+			} else {
+				newSize++;
+			}
+		}
+
+		if (shouldFlatten) {
+			Object[] newOperands = new Object[newSize];
+			int j = 0;
+
+			for (Object operand : operands) {
+				if (operand != null && operand.getClass() == getClass()) {
+					Expression nested = (Expression) operand;
+					for (int k = 0; k < nested.getOperandCount(); ++k) {
+						newOperands[j++] = nested.operands[k];
+					}
+				} else {
+					newOperands[j++] = operand;
+				}
+			}
+
+			if (j != newSize) {
+				throw new ExpressionException("Assertion error: " + j + " != " + newSize);
+			}
+
+			this.operands = newOperands;
+		}
+	}
 
 	/**
 	 * Traverses itself and child expressions, notifying visitor via callback
@@ -466,12 +620,73 @@ public abstract sealed class Expression implements XMLSerializable permits BaseE
 	}
 
 	/**
-	 * Appends own content as a String to the provided Appendable.
+	 * Appends own content as a String to the provided Appendable: the operands separated by the operator.
 	 * 
 	 * @since 4.0
 	 * @throws IOException
 	 */
-	public abstract void appendAsString(Appendable out) throws IOException;
+	public void appendAsString(Appendable out) throws IOException {
+		int count = getOperandCount();
+		for (int i = 0; i < count; ++i) {
+			if (i > 0) {
+				out.append(' ');
+				out.append(getExpressionOperator(i));
+				out.append(' ');
+			}
+
+			appendOperandAsString(i, out);
+		}
+	}
+
+	/**
+	 * Returns the operator printed between the operands, before the operand at the given index.
+	 */
+	protected abstract String getExpressionOperator(int index);
+
+	/**
+	 * Returns operator for EJBQL statements, which can differ for Cayenne expression operator
+	 */
+	protected String getEJBQLExpressionOperator(int index) {
+		return getExpressionOperator(index);
+	}
+
+	/**
+	 * Whether this node is wrapped in parentheses when printed as an operand of another node. Compound nodes are,
+	 * leaves and nodes with their own delimiters (function calls, lists) are not.
+	 */
+	protected boolean parenthesizeAsOperand() {
+		return true;
+	}
+
+	/**
+	 * Same as {@link #parenthesizeAsOperand()}, for the EJBQL form of the node. The two forms differ for a node that
+	 * is a function call in one and an infix operator in the other.
+	 */
+	protected boolean parenthesizeAsEJBQLOperand() {
+		return parenthesizeAsOperand();
+	}
+
+	/**
+	 * Appends the operand at the given index to the output: a nested node as itself, wrapped in parentheses if it
+	 * asks for it via {@link #parenthesizeAsOperand()}, a plain value as a literal.
+	 */
+	protected void appendOperandAsString(int index, Appendable out) throws IOException {
+		// print the operand as stored, not via getOperand(..): an unresolved enum prints without loading its class
+		Object operand = operands[index];
+		if (!(operand instanceof Expression node)) {
+			ExpHelper.appendScalarAsString(out, operand, '\"');
+			return;
+		}
+
+		boolean parenthesize = node.parenthesizeAsOperand();
+		if (parenthesize) {
+			out.append('(');
+		}
+		node.appendAsString(out);
+		if (parenthesize) {
+			out.append(')');
+		}
+	}
 
 	/**
 	 * Stores a String representation of Expression as EJBQL using a provided
@@ -500,8 +715,50 @@ public abstract sealed class Expression implements XMLSerializable permits BaseE
 	 * @since 4.0
 	 * @throws IOException
 	 */
-	public abstract void appendAsEJBQL(List<Object> parameterAccumulator, Appendable out, String rootId)
-			throws IOException;
+	public void appendAsEJBQL(List<Object> parameterAccumulator, Appendable out, String rootId) throws IOException {
+		if (getOperandCount() > 0) {
+			appendOperandsAsEJBQL(parameterAccumulator, out, rootId);
+		}
+	}
+
+	/**
+	 * Encodes the operands of this node to EJBQL, separated by the operator.
+	 */
+	protected void appendOperandsAsEJBQL(List<Object> parameterAccumulator, Appendable out, String rootId)
+			throws IOException {
+		int count = getOperandCount();
+		for (int i = 0; i < count; ++i) {
+			if (i > 0) {
+				out.append(' ');
+				out.append(getEJBQLExpressionOperator(i));
+				out.append(' ');
+			}
+
+			appendOperandAsEJBQL(i, parameterAccumulator, out, rootId);
+		}
+	}
+
+	/**
+	 * Encodes the operand at the given index to EJBQL: a nested node as itself, wrapped in parentheses if it asks for
+	 * it via {@link #parenthesizeAsEJBQLOperand()}, a plain value as a literal or a positional parameter.
+	 */
+	protected void appendOperandAsEJBQL(int index, List<Object> parameterAccumulator, Appendable out, String rootId)
+			throws IOException {
+		Object operand = getOperand(index);
+		if (!(operand instanceof Expression node)) {
+			ExpHelper.encodeOperandAsEJBQL(parameterAccumulator, out, operand);
+			return;
+		}
+
+		boolean parenthesize = node.parenthesizeAsEJBQLOperand();
+		if (parenthesize) {
+			out.append('(');
+		}
+		node.appendAsEJBQL(parameterAccumulator, out, rootId);
+		if (parenthesize) {
+			out.append(')');
+		}
+	}
 
 	@Override
 	public String toString() {

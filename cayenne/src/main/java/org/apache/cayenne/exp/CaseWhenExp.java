@@ -30,7 +30,7 @@ import java.util.List;
  * @see org.apache.cayenne.exp.ExpressionFactory#caseWhen(List, List, Expression)
  * @since 5.0
  */
-public final class CaseWhenExp extends BaseExp {
+public final class CaseWhenExp extends Expression {
     public CaseWhenExp(Object... operands) {
         super(operands);
     }

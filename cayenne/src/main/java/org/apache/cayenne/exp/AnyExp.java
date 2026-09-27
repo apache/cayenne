@@ -44,7 +44,7 @@ public final class AnyExp extends ConditionExp {    public AnyExp(Object... oper
     }
 
     @Override
-    protected boolean isValidParent(BaseExp parent) {
+    protected boolean isValidParent(Expression parent) {
         // an operand of a comparison, not a standalone condition
         return true;
     }

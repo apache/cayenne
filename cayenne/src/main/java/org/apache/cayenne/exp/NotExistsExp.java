@@ -61,7 +61,7 @@ public final class NotExistsExp extends ConditionExp {
     }
 
     @Override
-    protected boolean isValidParent(BaseExp parent) {
+    protected boolean isValidParent(Expression parent) {
         // unlike other conditions, may be an operand of anything
         return true;
     }

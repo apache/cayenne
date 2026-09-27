@@ -30,7 +30,7 @@ public class ExistsExpTest {
     public void parseSinglePath() {
         Expression exp = ExpressionFactory.exp("exists a");
         assertTrue(exp instanceof ExistsExp);
-        BaseExp node = (BaseExp) exp;
+        Expression node = exp;
         assertEquals("a", node.getOperand(0).toString());
     }
 
@@ -38,7 +38,7 @@ public class ExistsExpTest {
     public void parseLongPath() {
         Expression exp = ExpressionFactory.exp("exists a.b.c");
         assertTrue(exp instanceof ExistsExp);
-        BaseExp node = (BaseExp) exp;
+        Expression node = exp;
         assertEquals("a.b.c", node.getOperand(0).toString());
     }
 
@@ -46,7 +46,7 @@ public class ExistsExpTest {
     public void parseLongDbPath() {
         Expression exp = ExpressionFactory.exp("exists db:a.b.c");
         assertTrue(exp instanceof ExistsExp);
-        BaseExp node = (BaseExp) exp;
+        Expression node = exp;
         assertEquals("db:a.b.c", node.getOperand(0).toString());
     }
 
@@ -54,7 +54,7 @@ public class ExistsExpTest {
     public void parseCondition() {
         Expression exp = ExpressionFactory.exp("exists a > 5");
         assertTrue(exp instanceof ExistsExp);
-        BaseExp node = (BaseExp) exp;
+        Expression node = exp;
         assertEquals("a > 5", node.getOperand(0).toString());
     }
 
@@ -62,7 +62,7 @@ public class ExistsExpTest {
     public void parseFunction() {
         Expression exp = ExpressionFactory.exp("exists length(a) <= 5");
         assertTrue(exp instanceof ExistsExp);
-        BaseExp node = (BaseExp) exp;
+        Expression node = exp;
         assertEquals("length(a) <= 5", node.getOperand(0).toString());
     }
 

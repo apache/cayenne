@@ -28,7 +28,7 @@ import java.util.Map;
 /**
  * @since 5.0
  */
-public abstract sealed class ValueExp extends BaseExp permits ArithmeticExp, BitwiseExp, BitwiseNotExp, FunctionCallExp
+public abstract sealed class ValueExp extends Expression permits ArithmeticExp, BitwiseExp, BitwiseNotExp, FunctionCallExp
         {
     protected ValueExp(Object... operands) {
         super(operands);

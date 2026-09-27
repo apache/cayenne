@@ -61,7 +61,7 @@ public class QLParser/*@bgen(jjtree)*/implements QLParserTreeConstants, QLParser
         }
     }
 
-    private BaseExp boundParameter(String name) {
+    private Expression boundParameter(String name) {
         if (seenParameters == null) {
             seenParameters = new HashMap<String, Object>();
         }
@@ -106,7 +106,7 @@ public class QLParser/*@bgen(jjtree)*/implements QLParserTreeConstants, QLParser
      * Creates an empty node for each node id declared in this grammar. JJTree calls this instead of the node
      * constructors (see the NODE_FACTORY option), so a new "#SomethingExp" declaration below needs a case here.
      */
-    private static BaseExp jjtCreate(int id) {
+    private static Expression jjtCreate(int id) {
         // a switch statement, not a switch expression: JJTree can't parse the latter
         switch (id) {
             case JJTALLEXP: return new AllExp();

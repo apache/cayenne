@@ -45,7 +45,7 @@ public final class WhenExp extends AggregateConditionExp {
     }
 
     @Override
-    protected boolean isValidParent(BaseExp parent) {
+    protected boolean isValidParent(Expression parent) {
         return parent instanceof CaseWhenExp;
     }
 

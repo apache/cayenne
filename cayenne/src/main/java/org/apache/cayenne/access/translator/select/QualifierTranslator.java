@@ -62,7 +62,6 @@ import org.apache.cayenne.exp.SubqueryExp;
 import org.apache.cayenne.exp.TrueExp;
 import org.apache.cayenne.exp.AggregateConditionExp;
 import org.apache.cayenne.exp.PatternMatchExp;
-import org.apache.cayenne.exp.BaseExp;
 import org.apache.cayenne.exp.path.CayennePath;
 import org.apache.cayenne.exp.property.Property;
 import org.apache.cayenne.exp.AddExp;
@@ -219,7 +218,7 @@ class QualifierTranslator implements TraversalHandler {
         // the transform is bottom-up, so by the time an AND / OR / NOT is visited, its children are already folded
         return qualifier.transform(o -> {
             if (o instanceof ExistsExp || o instanceof NotExistsExp) {
-                return new ExistsExpressionTranslator(context, (BaseExp) o).translate();
+                return new ExistsExpressionTranslator(context, (Expression) o).translate();
             }
             if (o instanceof AndExp || o instanceof OrExp) {
                 return foldAndOr((AggregateConditionExp) o);
