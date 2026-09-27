@@ -25,7 +25,7 @@ import java.util.Map;
 import org.apache.cayenne.Persistent;
 import org.apache.cayenne.exp.Expression;
 import org.apache.cayenne.exp.ExpressionFactory;
-import org.apache.cayenne.exp.parser.ASTPath;
+import org.apache.cayenne.exp.PathExp;
 import org.apache.cayenne.exp.path.CayennePath;
 import org.apache.cayenne.exp.path.CayennePathSegment;
 
@@ -290,7 +290,7 @@ public class MapProperty<K, V extends Persistent> extends BaseProperty<Map<K, V>
      */
     @Override
     public MapProperty<K, V> alias(String alias) {
-        ASTPath exp = PropertyUtils.createPathExp(this.getPath(), alias, getExpression().getPathAliases());
+        PathExp exp = PropertyUtils.createPathExp(this.getPath(), alias, getExpression().getPathAliases());
         return PropertyFactory.createMap(exp.getPath(), exp, this.getKeyType(), this.getEntityType());
     }
 

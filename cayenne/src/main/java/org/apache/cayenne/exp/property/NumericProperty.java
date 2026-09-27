@@ -22,11 +22,11 @@ package org.apache.cayenne.exp.property;
 import org.apache.cayenne.exp.Expression;
 import org.apache.cayenne.exp.ExpressionFactory;
 import org.apache.cayenne.exp.FunctionExpressionFactory;
-import org.apache.cayenne.exp.parser.ASTAdd;
-import org.apache.cayenne.exp.parser.ASTDivide;
-import org.apache.cayenne.exp.parser.ASTMultiply;
-import org.apache.cayenne.exp.parser.ASTNegate;
-import org.apache.cayenne.exp.parser.ASTSubtract;
+import org.apache.cayenne.exp.AddExp;
+import org.apache.cayenne.exp.DivideExp;
+import org.apache.cayenne.exp.MultiplyExp;
+import org.apache.cayenne.exp.NegateExp;
+import org.apache.cayenne.exp.SubtractExp;
 import org.apache.cayenne.exp.path.CayennePath;
 
 /**
@@ -118,63 +118,63 @@ public class NumericProperty<E extends Number> extends BaseProperty<E> implement
      * @return new property that represents '+' operator with current property as argument
      */
     public NumericProperty<E> add(E value) {
-        return PropertyFactory.createNumeric(new ASTAdd(getExpression(), value), getType());
+        return PropertyFactory.createNumeric(new AddExp(getExpression(), value), getType());
     }
 
     /**
      * @return new property that represents '+' operator with current property as argument
      */
     public NumericProperty<E> add(NumericProperty<?> value) {
-        return PropertyFactory.createNumeric(new ASTAdd(getExpression(), value.getExpression()), getType());
+        return PropertyFactory.createNumeric(new AddExp(getExpression(), value.getExpression()), getType());
     }
 
     /**
      * @return new property that represents '-' operator with current property as argument
      */
     public NumericProperty<E> sub(E value) {
-        return PropertyFactory.createNumeric(new ASTSubtract(getExpression(), value), getType());
+        return PropertyFactory.createNumeric(new SubtractExp(getExpression(), value), getType());
     }
 
     /**
      * @return new property that represents '-' operator with current property as argument
      */
     public NumericProperty<E> sub(NumericProperty<?> value) {
-        return PropertyFactory.createNumeric(new ASTSubtract(getExpression(), value.getExpression()), getType());
+        return PropertyFactory.createNumeric(new SubtractExp(getExpression(), value.getExpression()), getType());
     }
 
     /**
      * @return new property that represents '/' operator with current property as argument
      */
     public NumericProperty<E> div(E value) {
-        return PropertyFactory.createNumeric(new ASTDivide(getExpression(), value), getType());
+        return PropertyFactory.createNumeric(new DivideExp(getExpression(), value), getType());
     }
 
     /**
      * @return new property that represents '/' operator with current property as argument
      */
     public NumericProperty<E> div(NumericProperty<?> value) {
-        return PropertyFactory.createNumeric(new ASTDivide(getExpression(), value.getExpression()), getType());
+        return PropertyFactory.createNumeric(new DivideExp(getExpression(), value.getExpression()), getType());
     }
 
     /**
      * @return new property that represents '*' operator with current property as argument
      */
     public NumericProperty<E> mul(E value) {
-        return PropertyFactory.createNumeric(new ASTMultiply(getExpression(), value), getType());
+        return PropertyFactory.createNumeric(new MultiplyExp(getExpression(), value), getType());
     }
 
     /**
      * @return new property that represents '*' operator with current property as argument
      */
     public NumericProperty<E> mul(NumericProperty<?> value) {
-        return PropertyFactory.createNumeric(new ASTMultiply(getExpression(), value.getExpression()), getType());
+        return PropertyFactory.createNumeric(new MultiplyExp(getExpression(), value.getExpression()), getType());
     }
 
     /**
      * @return new property that represents negative value of current property
      */
     public NumericProperty<E> neg() {
-        return PropertyFactory.createNumeric(new ASTNegate(getExpression()), getType());
+        return PropertyFactory.createNumeric(new NegateExp(getExpression()), getType());
     }
 
     /**

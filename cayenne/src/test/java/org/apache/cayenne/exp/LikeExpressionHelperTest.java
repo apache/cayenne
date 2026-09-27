@@ -20,9 +20,6 @@ package org.apache.cayenne.exp;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 
-import org.apache.cayenne.exp.parser.ASTLike;
-import org.apache.cayenne.exp.parser.ASTObjPath;
-import org.apache.cayenne.exp.parser.PatternMatchNode;
 import org.junit.jupiter.api.Test;
 
 public class LikeExpressionHelperTest {
@@ -30,7 +27,7 @@ public class LikeExpressionHelperTest {
 	@Test
 	public void escape_NoEscapeChars() {
 
-		PatternMatchNode node = new ASTLike(new ASTObjPath("x"), "abc");
+		PatternMatchExp node = new LikeExp(ExpressionFactory.pathExp("x"), "abc");
 		LikeExpressionHelper.escape(node);
 		assertEquals("abc", node.getOperand(1));
 		assertEquals(0, node.getEscapeChar());
@@ -39,7 +36,7 @@ public class LikeExpressionHelperTest {
 	@Test
 	public void escape_OneChar() {
 
-		PatternMatchNode node = new ASTLike(new ASTObjPath("x"), "ab_c");
+		PatternMatchExp node = new LikeExp(ExpressionFactory.pathExp("x"), "ab_c");
 		LikeExpressionHelper.escape(node);
 		assertEquals("ab!_c", node.getOperand(1));
 		assertEquals('!', node.getEscapeChar());
@@ -48,7 +45,7 @@ public class LikeExpressionHelperTest {
 	@Test
 	public void escape_TwoChars() {
 
-		PatternMatchNode node = new ASTLike(new ASTObjPath("x"), "ab_c_");
+		PatternMatchExp node = new LikeExp(ExpressionFactory.pathExp("x"), "ab_c_");
 		LikeExpressionHelper.escape(node);
 		assertEquals("ab!_c!_", node.getOperand(1));
 		assertEquals('!', node.getEscapeChar());
@@ -57,7 +54,7 @@ public class LikeExpressionHelperTest {
 	@Test
 	public void escape_TwoChars_Mix() {
 
-		PatternMatchNode node = new ASTLike(new ASTObjPath("x"), "ab%c_");
+		PatternMatchExp node = new LikeExp(ExpressionFactory.pathExp("x"), "ab%c_");
 		LikeExpressionHelper.escape(node);
 		assertEquals("ab!%c!_", node.getOperand(1));
 		assertEquals('!', node.getEscapeChar());
@@ -66,7 +63,7 @@ public class LikeExpressionHelperTest {
 	@Test
 	public void escape_AltEscapeChar1() {
 
-		PatternMatchNode node = new ASTLike(new ASTObjPath("x"), "a!%c");
+		PatternMatchExp node = new LikeExp(ExpressionFactory.pathExp("x"), "a!%c");
 		LikeExpressionHelper.escape(node);
 		assertEquals("a!#%c", node.getOperand(1));
 		assertEquals('#', node.getEscapeChar());
@@ -75,7 +72,7 @@ public class LikeExpressionHelperTest {
 	@Test
 	public void escape_AltEscapeChar2() {
 
-		PatternMatchNode node = new ASTLike(new ASTObjPath("x"), "a!%c#_");
+		PatternMatchExp node = new LikeExp(ExpressionFactory.pathExp("x"), "a!%c#_");
 		LikeExpressionHelper.escape(node);
 		assertEquals("a!$%c#$_", node.getOperand(1));
 		assertEquals('$', node.getEscapeChar());

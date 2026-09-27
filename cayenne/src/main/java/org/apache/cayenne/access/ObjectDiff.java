@@ -24,7 +24,7 @@ import org.apache.cayenne.Fault;
 import org.apache.cayenne.ObjectId;
 import org.apache.cayenne.PersistenceState;
 import org.apache.cayenne.Persistent;
-import org.apache.cayenne.exp.parser.ASTDbPath;
+import org.apache.cayenne.exp.DbPathExp;
 import org.apache.cayenne.graph.ArcId;
 import org.apache.cayenne.graph.GraphChangeHandler;
 import org.apache.cayenne.graph.GraphDiff;
@@ -210,7 +210,7 @@ public class ObjectDiff extends NodeDiff {
             // so we cant't do 'instanceof SingleObjectArcProperty'
             // TODO: andrus, 3.22.2006 - should we consider this a bug?
 
-            if (property == null && arcId.getForwardArc().startsWith(ASTDbPath.DB_PREFIX)) {
+            if (property == null && arcId.getForwardArc().startsWith(DbPathExp.DB_PREFIX)) {
                 addPhantomFkDiff(arcDiff);
                 addDiff = false;
             } else if (property instanceof ToManyProperty) {
@@ -239,7 +239,7 @@ public class ObjectDiff extends NodeDiff {
 
                     // register complementary arc diff
                     ArcId arc = arcId.getReverseId();
-                    //new ArcId(ASTDbPath.DB_PREFIX + property.getComplimentaryReverseDbRelationshipPath(), property.getName());
+                    //new ArcId(DbPathExp.DB_PREFIX + property.getComplimentaryReverseDbRelationshipPath(), property.getName());
                     ArcOperation complementaryOp = new ArcOperation(targetId, arcDiff.getNodeId(), arc, arcDiff.isDelete());
                     parent.registerDiff(targetId, complementaryOp);
                 }
@@ -271,7 +271,7 @@ public class ObjectDiff extends NodeDiff {
         String arcId = arcDiff.getArcId().toString();
 
         DbEntity dbEntity = classDescriptor.getEntity().getDbEntity();
-        DbRelationship dbRelationship = dbEntity.getRelationship(arcId.substring(ASTDbPath.DB_PREFIX.length()));
+        DbRelationship dbRelationship = dbEntity.getRelationship(arcId.substring(DbPathExp.DB_PREFIX.length()));
 
         if (dbRelationship.isToMany()) {
             return;

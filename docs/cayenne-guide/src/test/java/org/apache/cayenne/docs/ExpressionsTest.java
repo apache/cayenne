@@ -161,7 +161,7 @@ public class ExpressionsTest extends BaseTest {
         // the $date parameter
         // end::pruning[]
 
-        assertEquals("(name like \"Salvador%\")", qualifier1.toString());
+        assertEquals("name like \"Salvador%\"", qualifier1.toString());
     }
 
     @Test

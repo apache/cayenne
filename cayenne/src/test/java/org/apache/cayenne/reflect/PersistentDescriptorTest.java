@@ -23,6 +23,8 @@ import org.apache.cayenne.map.ObjAttribute;
 import org.apache.cayenne.unit.util.TestObject;
 import org.junit.jupiter.api.Test;
 
+import java.util.Map;
+
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNull;
 import static org.junit.jupiter.api.Assertions.assertSame;
@@ -62,4 +64,32 @@ public class PersistentDescriptorTest {
         assertEquals("123", to.getString());
     }
 
+    @Test
+    public void injectDiscriminatorValues() {
+        ObjAttribute attribute = mock(ObjAttribute.class);
+
+        PersistentDescriptor superDescriptor = new PersistentDescriptor();
+        AttributeProperty superString = new SimpleAttributeProperty(superDescriptor,
+                new FieldAccessor(TestObject.class, "string", String.class), attribute);
+        AttributeProperty superInt = new SimpleAttributeProperty(superDescriptor,
+                new FieldAccessor(TestObject.class, "property2", Integer.TYPE), attribute);
+        superDescriptor.setDiscriminatorValues(Map.of(superString, "super", superInt, 5));
+
+        TestObject object = new TestObject();
+        superDescriptor.injectDiscriminatorValues(object);
+        assertEquals("super", object.getString());
+        assertEquals(5, object.getProperty2());
+
+        // a subclass descriptor applies its own qualifier only, like query translation does
+        PersistentDescriptor subDescriptor = new PersistentDescriptor();
+        subDescriptor.setSuperclassDescriptor(superDescriptor);
+        AttributeProperty subString = new SimpleAttributeProperty(subDescriptor,
+                new FieldAccessor(TestObject.class, "string", String.class), attribute);
+        subDescriptor.setDiscriminatorValues(Map.of(subString, "sub"));
+
+        TestObject subObject = new TestObject();
+        subDescriptor.injectDiscriminatorValues(subObject);
+        assertEquals("sub", subObject.getString());
+        assertEquals(0, subObject.getProperty2());
+    }
 }

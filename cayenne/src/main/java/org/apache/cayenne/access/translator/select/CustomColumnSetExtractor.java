@@ -27,7 +27,7 @@ import org.apache.cayenne.CayenneRuntimeException;
 import org.apache.cayenne.access.sqlbuilder.sqltree.Node;
 import org.apache.cayenne.exp.Expression;
 import org.apache.cayenne.exp.ExpressionFactory;
-import org.apache.cayenne.exp.parser.ASTDbPath;
+import org.apache.cayenne.exp.DbPathExp;
 import org.apache.cayenne.exp.path.CayennePath;
 import org.apache.cayenne.exp.property.Property;
 import org.apache.cayenne.map.EmbeddedAttribute;
@@ -144,7 +144,7 @@ class CustomColumnSetExtractor implements ColumnExtractor {
             return defaultPrefix;
         }
 
-        return ((ASTDbPath)pathExp).getPath();
+        return ((DbPathExp)pathExp).getPath();
     }
 
     private void ensureJoin(CayennePath prefix) {

@@ -27,9 +27,9 @@ import org.apache.cayenne.CayenneRuntimeException;
 import org.apache.cayenne.access.DataContext;
 import org.apache.cayenne.exp.Expression;
 import org.apache.cayenne.exp.ExpressionFactory;
-import org.apache.cayenne.exp.parser.ASTEqual;
-import org.apache.cayenne.exp.parser.ASTObjPath;
-import org.apache.cayenne.exp.parser.ASTPath;
+import org.apache.cayenne.exp.EqualExp;
+import org.apache.cayenne.exp.ObjPathExp;
+import org.apache.cayenne.exp.PathExp;
 import org.apache.cayenne.query.ObjectSelect;
 import org.apache.cayenne.test.jdbc.TableHelper;
 import org.apache.cayenne.testdo.testmap.Artist;
@@ -137,9 +137,9 @@ public class PathAliasesIT {
 
     @Test
     public void aliasForPath() {
-        ASTPath astPath = new ASTObjPath("paintingArray.a.galleryName");
+        PathExp astPath = new ObjPathExp("paintingArray.a.galleryName");
         astPath.setPathAliases(Collections.singletonMap("a", "toGallery"));
-        ASTEqual astEqual = new ASTEqual(astPath, "tate modern");
+        EqualExp astEqual = new EqualExp(astPath, "tate modern");
         List<Object[]> artists = ObjectSelect.columnQuery(Artist.class, Artist.ARTIST_NAME, PropertyFactory.createBase(astPath, String.class))
                 .where(astEqual)
                 .orderBy(Artist.ARTIST_NAME.asc())
@@ -243,9 +243,9 @@ public class PathAliasesIT {
 
     @Test
     public void aliasForPathExp() {
-        ASTPath astPath = new ASTObjPath("paintingArray.p1.galleryName");
+        PathExp astPath = new ObjPathExp("paintingArray.p1.galleryName");
         astPath.setPathAliases(Collections.singletonMap("a", "toGallery"));
-        ASTEqual astEqual = new ASTEqual(astPath, "test gallery");
+        EqualExp astEqual = new EqualExp(astPath, "test gallery");
         Expression e1 = ExpressionFactory.exp("paintingArray.toGallery#p1.galleryName");
         List<Object[]> artists = ObjectSelect.columnQuery(Artist.class, Artist.ARTIST_NAME, PropertyFactory.createBase(e1, String.class))
                 .where(astEqual)

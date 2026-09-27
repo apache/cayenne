@@ -23,7 +23,7 @@ import org.apache.cayenne.GenericPersistentObject;
 import org.apache.cayenne.CayenneRuntimeException;
 import org.apache.cayenne.exp.Expression;
 import org.apache.cayenne.exp.ExpressionFactory;
-import org.apache.cayenne.exp.parser.ASTObjPath;
+import org.apache.cayenne.exp.ObjPathExp;
 import org.apache.cayenne.testdo.testmap.Artist;
 import org.apache.cayenne.unit.CayenneProjects;
 import org.apache.cayenne.unit.CayenneTestsEnv;
@@ -129,12 +129,12 @@ public class ObjEntityIT {
         assertEquals("toGallery", lastRelationship.getRelationship().getName());
 
         PathComponent<ObjAttribute, ObjRelationship> lastLeftJoinRelationship = artistE.lastPathComponent(
-                new ASTObjPath("paintingArray+.toGallery+"), aliases);
+                ExpressionFactory.pathExp("paintingArray+.toGallery+"), aliases);
         assertTrue(lastLeftJoinRelationship.getRelationship() != null);
         assertEquals("toGallery", lastLeftJoinRelationship.getRelationship().getName());
 
         PathComponent<ObjAttribute, ObjRelationship> lastAliasedRelationship = artistE.lastPathComponent(
-                new ASTObjPath("a"), aliases);
+                ExpressionFactory.pathExp("a"), aliases);
         assertTrue(lastAliasedRelationship.getRelationship() != null);
         assertEquals("toGallery", lastAliasedRelationship.getRelationship().getName());
     }

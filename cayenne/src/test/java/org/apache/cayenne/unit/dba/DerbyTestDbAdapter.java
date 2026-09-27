@@ -20,7 +20,7 @@
 package org.apache.cayenne.unit.dba;
 
 import org.apache.cayenne.dba.DbAdapter;
-import org.apache.cayenne.exp.parser.ASTExtract;
+import org.apache.cayenne.exp.ExtractExp;
 
 public class DerbyTestDbAdapter extends TestDbAdapter {
 
@@ -49,7 +49,7 @@ public class DerbyTestDbAdapter extends TestDbAdapter {
     }
 
     @Override
-    public boolean supportsExtractPart(ASTExtract.DateTimePart part) {
+    public boolean supportsExtractPart(ExtractExp.DateTimePart part) {
         switch (part) {
             case DAY_OF_YEAR:
             case DAY_OF_WEEK:

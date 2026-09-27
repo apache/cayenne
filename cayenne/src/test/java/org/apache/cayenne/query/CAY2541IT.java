@@ -23,9 +23,9 @@ import java.util.List;
 
 import org.apache.cayenne.ObjectId;
 import org.apache.cayenne.access.DataContext;
-import org.apache.cayenne.exp.parser.ASTDbPath;
-import org.apache.cayenne.exp.parser.ASTEqual;
-import org.apache.cayenne.exp.parser.ASTScalar;
+import org.apache.cayenne.exp.DbPathExp;
+import org.apache.cayenne.exp.EqualExp;
+import org.apache.cayenne.exp.ScalarExp;
 import org.apache.cayenne.test.jdbc.TableHelper;
 import org.apache.cayenne.testdo.testmap.Artist;
 import org.apache.cayenne.unit.CayenneProjects;
@@ -65,10 +65,9 @@ public class CAY2541IT {
     @Test
     public void cay2541() {
         ObjectId id = ObjectId.of("ARTIST", "ARTIST_ID", 1);
-        ASTDbPath astDbPath = new ASTDbPath("ARTIST_ID");
-        ASTScalar astScalar = new ASTScalar(id);
-        ASTEqual astEqual = new ASTEqual();
-        astEqual.setOperand(0, astDbPath);
+        DbPathExp astDbPath = new DbPathExp("ARTIST_ID");
+        ScalarExp astScalar = new ScalarExp(id);
+        EqualExp astEqual = new EqualExp(astDbPath);
         astEqual.setOperand(1, astScalar);
         List<Artist> artistList = ObjectSelect.query(Artist.class)
                 .where(astEqual)

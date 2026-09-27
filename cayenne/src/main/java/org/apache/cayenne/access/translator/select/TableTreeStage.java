@@ -25,9 +25,10 @@ import org.apache.cayenne.access.sqlbuilder.ExpressionNodeBuilder;
 import org.apache.cayenne.access.sqlbuilder.JoinNodeBuilder;
 import org.apache.cayenne.access.sqlbuilder.NodeBuilder;
 import org.apache.cayenne.access.sqlbuilder.sqltree.Node;
+import org.apache.cayenne.exp.ExpressionFactory;
 import org.apache.cayenne.exp.Expression;
-import org.apache.cayenne.exp.parser.ASTDbPath;
-import org.apache.cayenne.exp.parser.ASTPath;
+import org.apache.cayenne.exp.DbPathExp;
+import org.apache.cayenne.exp.PathExp;
 import org.apache.cayenne.exp.path.CayennePath;
 import org.apache.cayenne.map.DbAttribute;
 import org.apache.cayenne.map.DbJoin;
@@ -105,15 +106,15 @@ class TableTreeStage implements TranslationStage {
         CayennePath pathToRoot = node.getAttributePath();
         dbQualifier = dbQualifier.transform(input -> {
             // here we are not only marking path, but changing ObjPath to DB
-            if (input instanceof ASTPath) {
+            if (input instanceof PathExp) {
                 // we do not really care about the parent path, as we do not need to join any new table here.
                 // so we must tell the path processor that we are processing exactly this table
                 // TODO: should check qualifiers via related tables if that is even the thing
-                CayennePath path = ((ASTPath) input).getPath();
+                CayennePath path = ((PathExp) input).getPath();
                 if(!pathToRoot.isEmpty()) {
                     path = TableTree.CURRENT_ALIAS_PATH.dot(path);
                 }
-                return new ASTDbPath(path);
+                return ExpressionFactory.dbPathExp(path);
             }
             return input;
         });

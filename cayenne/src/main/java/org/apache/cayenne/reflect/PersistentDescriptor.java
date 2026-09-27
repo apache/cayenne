@@ -71,6 +71,9 @@ public class PersistentDescriptor implements ClassDescriptor {
 	protected Collection<ObjAttribute> allDiscriminatorColumns;
 	protected Expression entityQualifier;
 
+	// the values that this entity's own qualifier pins its attributes to, compiled at creation
+	protected Map<AttributeProperty, Object> discriminatorValues;
+
 	/**
 	 * Creates a PersistentDescriptor.
 	 */
@@ -88,6 +91,17 @@ public class PersistentDescriptor implements ClassDescriptor {
 			allDiscriminatorColumns = null;
 		} else {
 			allDiscriminatorColumns = new ArrayList<>(columns);
+		}
+	}
+
+	/**
+	 * @since 5.0
+	 */
+	public void setDiscriminatorValues(Map<AttributeProperty, Object> values) {
+		if (values == null || values.isEmpty()) {
+			discriminatorValues = null;
+		} else {
+			discriminatorValues = new LinkedHashMap<>(values);
 		}
 	}
 
@@ -334,6 +348,15 @@ public class PersistentDescriptor implements ClassDescriptor {
 
 		for (PropertyDescriptor property : declaredProperties.values()) {
 			property.injectValueHolder(object);
+		}
+	}
+
+	public void injectDiscriminatorValues(Object object) throws PropertyException {
+		// Don't check super values. Discriminators are not inherited.
+		if (discriminatorValues != null) {
+			for (Entry<AttributeProperty, Object> e : discriminatorValues.entrySet()) {
+				e.getKey().writePropertyDirectly(object, null, e.getValue());
+			}
 		}
 	}
 

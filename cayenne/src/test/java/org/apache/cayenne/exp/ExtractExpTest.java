@@ -1,0 +1,156 @@
+/*****************************************************************
+ *   Licensed to the Apache Software Foundation (ASF) under one
+ *  or more contributor license agreements.  See the NOTICE file
+ *  distributed with this work for additional information
+ *  regarding copyright ownership.  The ASF licenses this file
+ *  to you under the Apache License, Version 2.0 (the
+ *  "License"); you may not use this file except in compliance
+ *  with the License.  You may obtain a copy of the License at
+ *
+ *    https://www.apache.org/licenses/LICENSE-2.0
+ *
+ *  Unless required by applicable law or agreed to in writing,
+ *  software distributed under the License is distributed on an
+ *  "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY
+ *  KIND, either express or implied.  See the License for the
+ *  specific language governing permissions and limitations
+ *  under the License.
+ ****************************************************************/
+
+package org.apache.cayenne.exp;
+
+import org.junit.jupiter.api.Test;
+
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertTrue;
+
+public class ExtractExpTest {
+
+    @Test
+    public void year() {
+        String expStr = "year(dateColumn)";
+        Expression expParsed = ExpressionFactory.exp(expStr);
+        Expression expFromFactory = FunctionExpressionFactory.yearExp("dateColumn");
+
+        assertTrue(expParsed instanceof ExtractExp);
+        assertTrue(expFromFactory instanceof ExtractExp);
+
+        assertEquals(expStr, expParsed.toString());
+        assertEquals(expStr, expFromFactory.toString());
+    }
+
+    @Test
+    public void month() {
+        String expStr = "month(dateColumn)";
+        Expression expParsed = ExpressionFactory.exp(expStr);
+        Expression expFromFactory = FunctionExpressionFactory.monthExp("dateColumn");
+
+        assertTrue(expParsed instanceof ExtractExp);
+        assertTrue(expFromFactory instanceof ExtractExp);
+
+        assertEquals(expStr, expParsed.toString());
+        assertEquals(expStr, expFromFactory.toString());
+    }
+
+    @Test
+    public void week() {
+        String expStr = "week(dateColumn)";
+        Expression expParsed = ExpressionFactory.exp(expStr);
+        Expression expFromFactory = FunctionExpressionFactory.weekExp("dateColumn");
+
+        assertTrue(expParsed instanceof ExtractExp);
+        assertTrue(expFromFactory instanceof ExtractExp);
+
+        assertEquals(expStr, expParsed.toString());
+        assertEquals(expStr, expFromFactory.toString());
+    }
+
+    @Test
+    public void dayOfYear() {
+        String expStr = "dayOfYear(dateColumn)";
+        Expression expParsed = ExpressionFactory.exp(expStr);
+        Expression expFromFactory = FunctionExpressionFactory.dayOfYearExp("dateColumn");
+
+        assertTrue(expParsed instanceof ExtractExp);
+        assertTrue(expFromFactory instanceof ExtractExp);
+
+        assertEquals(expStr, expParsed.toString());
+        assertEquals(expStr, expFromFactory.toString());
+    }
+
+    @Test
+    public void day() {
+        String expStr = "day(dateColumn)";
+        Expression expParsed = ExpressionFactory.exp(expStr);
+
+        assertTrue(expParsed instanceof ExtractExp);
+
+        assertEquals(expStr, expParsed.toString());
+    }
+
+    @Test
+    public void dayOfMonth() {
+        String expStr = "dayOfMonth(dateColumn)";
+        Expression expParsed = ExpressionFactory.exp(expStr);
+        Expression expFromFactory = FunctionExpressionFactory.dayOfMonthExp("dateColumn");
+
+        assertTrue(expParsed instanceof ExtractExp);
+        assertTrue(expFromFactory instanceof ExtractExp);
+
+        assertEquals(expStr, expParsed.toString());
+        assertEquals(expStr, expFromFactory.toString());
+    }
+
+    @Test
+    public void dayOfWeek() {
+        String expStr = "dayOfWeek(dateColumn)";
+        Expression expParsed = ExpressionFactory.exp(expStr);
+        Expression expFromFactory = FunctionExpressionFactory.dayOfWeekExp("dateColumn");
+
+        assertTrue(expParsed instanceof ExtractExp);
+        assertTrue(expFromFactory instanceof ExtractExp);
+
+        assertEquals(expStr, expParsed.toString());
+        assertEquals(expStr, expFromFactory.toString());
+    }
+
+    @Test
+    public void hour() {
+        String expStr = "hour(dateColumn)";
+        Expression expParsed = ExpressionFactory.exp(expStr);
+        Expression expFromFactory = FunctionExpressionFactory.hourExp("dateColumn");
+
+        assertTrue(expParsed instanceof ExtractExp);
+        assertTrue(expFromFactory instanceof ExtractExp);
+
+        assertEquals(expStr, expParsed.toString());
+        assertEquals(expStr, expFromFactory.toString());
+    }
+
+    @Test
+    public void minute() {
+        String expStr = "minute(dateColumn)";
+        Expression expParsed = ExpressionFactory.exp(expStr);
+        Expression expFromFactory = FunctionExpressionFactory.minuteExp("dateColumn");
+
+        assertTrue(expParsed instanceof ExtractExp);
+        assertTrue(expFromFactory instanceof ExtractExp);
+
+        assertEquals(expStr, expParsed.toString());
+        assertEquals(expStr, expFromFactory.toString());
+    }
+
+    @Test
+    public void second() {
+        String expStr = "second(dateColumn)";
+        Expression expParsed = ExpressionFactory.exp(expStr);
+        Expression expFromFactory = FunctionExpressionFactory.secondExp("dateColumn");
+
+        assertTrue(expParsed instanceof ExtractExp);
+        assertTrue(expFromFactory instanceof ExtractExp);
+
+        assertEquals(expStr, expParsed.toString());
+        assertEquals(expStr, expFromFactory.toString());
+    }
+
+}

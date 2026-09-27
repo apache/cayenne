@@ -24,7 +24,7 @@ import java.util.Set;
 import org.apache.cayenne.Persistent;
 import org.apache.cayenne.exp.Expression;
 import org.apache.cayenne.exp.ExpressionFactory;
-import org.apache.cayenne.exp.parser.ASTPath;
+import org.apache.cayenne.exp.PathExp;
 import org.apache.cayenne.exp.path.CayennePath;
 import org.apache.cayenne.exp.path.CayennePathSegment;
 
@@ -52,7 +52,7 @@ public class SetProperty<V extends Persistent> extends CollectionProperty<V, Set
      */
     @Override
     public SetProperty<V> alias(String alias) {
-        ASTPath exp = PropertyUtils.createPathExp(this.getPath(), alias, getExpression().getPathAliases());
+        PathExp exp = PropertyUtils.createPathExp(this.getPath(), alias, getExpression().getPathAliases());
         return PropertyFactory.createSet(exp.getPath(), exp, this.getEntityType());
     }
 

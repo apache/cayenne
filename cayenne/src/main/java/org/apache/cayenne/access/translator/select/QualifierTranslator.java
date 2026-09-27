@@ -45,24 +45,24 @@ import org.apache.cayenne.access.sqlbuilder.sqltree.ValueNode;
 import org.apache.cayenne.access.sqlbuilder.sqltree.WhenNode;
 import org.apache.cayenne.exp.Expression;
 import org.apache.cayenne.exp.TraversalHandler;
-import org.apache.cayenne.exp.parser.ASTAnd;
-import org.apache.cayenne.exp.parser.ASTCustomOperator;
-import org.apache.cayenne.exp.parser.ASTDbIdPath;
-import org.apache.cayenne.exp.parser.ASTDbPath;
-import org.apache.cayenne.exp.parser.ASTExists;
-import org.apache.cayenne.exp.parser.ASTFalse;
-import org.apache.cayenne.exp.parser.ASTFullObject;
-import org.apache.cayenne.exp.parser.ASTFunctionCall;
-import org.apache.cayenne.exp.parser.ASTNot;
-import org.apache.cayenne.exp.parser.ASTNotExists;
-import org.apache.cayenne.exp.parser.ASTObjPath;
-import org.apache.cayenne.exp.parser.ASTOr;
-import org.apache.cayenne.exp.parser.ASTScalar;
-import org.apache.cayenne.exp.parser.ASTSubquery;
-import org.apache.cayenne.exp.parser.ASTTrue;
-import org.apache.cayenne.exp.parser.AggregateConditionNode;
-import org.apache.cayenne.exp.parser.PatternMatchNode;
-import org.apache.cayenne.exp.parser.SimpleNode;
+import org.apache.cayenne.exp.AndExp;
+import org.apache.cayenne.exp.CustomOperatorExp;
+import org.apache.cayenne.exp.DbIdPathExp;
+import org.apache.cayenne.exp.DbPathExp;
+import org.apache.cayenne.exp.ExistsExp;
+import org.apache.cayenne.exp.FalseExp;
+import org.apache.cayenne.exp.FullObjectExp;
+import org.apache.cayenne.exp.FunctionCallExp;
+import org.apache.cayenne.exp.NotExp;
+import org.apache.cayenne.exp.NotExistsExp;
+import org.apache.cayenne.exp.ObjPathExp;
+import org.apache.cayenne.exp.OrExp;
+import org.apache.cayenne.exp.ScalarExp;
+import org.apache.cayenne.exp.SubqueryExp;
+import org.apache.cayenne.exp.TrueExp;
+import org.apache.cayenne.exp.AggregateConditionExp;
+import org.apache.cayenne.exp.PatternMatchExp;
+import org.apache.cayenne.exp.BaseExp;
 import org.apache.cayenne.exp.path.CayennePath;
 import org.apache.cayenne.exp.property.Property;
 import org.apache.cayenne.map.DbAttribute;
@@ -75,6 +75,7 @@ import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.Deque;
+import java.util.Iterator;
 import java.util.HashMap;
 import java.util.IdentityHashMap;
 import java.util.List;
@@ -93,6 +94,11 @@ class QualifierTranslator implements TraversalHandler {
     private final PathTranslator pathTranslator;
     private final Set<Object> expressionsToSkip;
     private final Deque<Node> nodeStack;
+    /**
+     * The expression nodes being traversed, innermost on top. Expression nodes don't know their parents, and the
+     * translation of a list value needs the node that holds the list.
+     */
+    private final Deque<Expression> expressionStack;
 
     private Node currentNode;
 
@@ -105,6 +111,7 @@ class QualifierTranslator implements TraversalHandler {
         // and mess everything up, see for example CAY-2871
         this.expressionsToSkip = Collections.newSetFromMap(new IdentityHashMap<>());
         this.nodeStack = new ArrayDeque<>();
+        this.expressionStack = new ArrayDeque<>();
     }
 
     Node translate(Property<?> property) {
@@ -138,7 +145,7 @@ class QualifierTranslator implements TraversalHandler {
         }
 
         Expression expanded = expandExpression(predicate);
-        return expanded instanceof ASTTrue ? null : translateExpanded(expanded);
+        return expanded instanceof TrueExp ? null : translateExpanded(expanded);
     }
 
     private Node translateExpanded(Expression qualifier) {
@@ -180,13 +187,13 @@ class QualifierTranslator implements TraversalHandler {
     Expression expandExpression(Expression qualifier) {
         // the transform is bottom-up, so by the time an AND / OR / NOT is visited, its children are already folded
         return qualifier.transform(o -> {
-            if (o instanceof ASTExists || o instanceof ASTNotExists) {
-                return new ExistsExpressionTranslator(context, (SimpleNode) o).translate();
+            if (o instanceof ExistsExp || o instanceof NotExistsExp) {
+                return new ExistsExpressionTranslator(context, (BaseExp) o).translate();
             }
-            if (o instanceof ASTAnd || o instanceof ASTOr) {
-                return foldAndOr((AggregateConditionNode) o);
+            if (o instanceof AndExp || o instanceof OrExp) {
+                return foldAndOr((AggregateConditionExp) o);
             }
-            if (o instanceof ASTNot not) {
+            if (o instanceof NotExp not) {
                 return foldNot(not);
             }
             return o;
@@ -198,7 +205,7 @@ class QualifierTranslator implements TraversalHandler {
      * "x", "x OR true" is "true". Sound under SQL three-valued logic, as the identities hold for a NULL "x" too.
      * Returns the node itself when there is nothing to fold.
      */
-    private static Object foldAndOr(AggregateConditionNode node) {
+    private static Object foldAndOr(AggregateConditionExp node) {
         boolean and = node.getType() == AND;
         int count = node.getOperandCount();
         List<Object> kept = new ArrayList<>(count);
@@ -206,12 +213,12 @@ class QualifierTranslator implements TraversalHandler {
             Object operand = node.getOperand(i);
 
             // a constant that decides the whole expression: "false" for AND, "true" for OR
-            if (and ? operand instanceof ASTFalse : operand instanceof ASTTrue) {
+            if (and ? operand instanceof FalseExp : operand instanceof TrueExp) {
                 return operand;
             }
 
             // a neutral constant: "true" for AND, "false" for OR
-            if (and ? operand instanceof ASTTrue : operand instanceof ASTFalse) {
+            if (and ? operand instanceof TrueExp : operand instanceof FalseExp) {
                 continue;
             }
 
@@ -223,29 +230,30 @@ class QualifierTranslator implements TraversalHandler {
         }
 
         return switch (kept.size()) {
-            case 0 -> and ? new ASTTrue() : new ASTFalse();
+            case 0 -> and ? new TrueExp() : new FalseExp();
             case 1 -> kept.get(0);
-            default -> and ? new ASTAnd(kept.toArray()) : new ASTOr(kept.toArray());
+            default -> and ? new AndExp(kept.toArray()) : new OrExp(kept.toArray());
         };
     }
 
-    private static Object foldNot(ASTNot node) {
+    private static Object foldNot(NotExp node) {
         if (node.getOperandCount() != 1) {
             return node;
         }
 
         Object operand = node.getOperand(0);
-        if (operand instanceof ASTTrue) {
-            return new ASTFalse();
+        if (operand instanceof TrueExp) {
+            return new FalseExp();
         }
-        if (operand instanceof ASTFalse) {
-            return new ASTTrue();
+        if (operand instanceof FalseExp) {
+            return new TrueExp();
         }
         return node;
     }
 
     @Override
     public void startNode(Expression node, Expression parentNode) {
+        expressionStack.push(node);
         if (expressionsToSkip.contains(node) || expressionsToSkip.contains(parentNode)) {
             return;
         }
@@ -280,7 +288,7 @@ class QualifierTranslator implements TraversalHandler {
             case NOT_LIKE:
             case LIKE_IGNORE_CASE:
             case NOT_LIKE_IGNORE_CASE:
-                PatternMatchNode patternMatchNode = (PatternMatchNode) node;
+                PatternMatchExp patternMatchNode = (PatternMatchExp) node;
                 boolean not = node.getType() == NOT_LIKE || node.getType() == NOT_LIKE_IGNORE_CASE;
                 return new LikeNode(patternMatchNode.isIgnoringCase(), not, patternMatchNode.getEscapeChar());
 
@@ -300,7 +308,7 @@ class QualifierTranslator implements TraversalHandler {
                 return processPathTranslationResult(node, parentNode, dbIdResult);
 
             case FUNCTION_CALL:
-                ASTFunctionCall functionCall = (ASTFunctionCall) node;
+                FunctionCallExp functionCall = (FunctionCallExp) node;
                 return function(functionCall.getFunctionName()).build();
 
             case ADD:
@@ -333,7 +341,7 @@ class QualifierTranslator implements TraversalHandler {
                 return new TextNode(' ' + expToStr(node.getType()));
 
             case CUSTOM_OP:
-                return new OpExpressionNode(((ASTCustomOperator) node).getOperator());
+                return new OpExpressionNode(((CustomOperatorExp) node).getOperator());
 
             case EXISTS:
                 return new FunctionNode("EXISTS", null, false);
@@ -345,7 +353,7 @@ class QualifierTranslator implements TraversalHandler {
                 return new FunctionNode("ANY", null, false);
 
             case SUBQUERY:
-                ASTSubquery subquery = (ASTSubquery) node;
+                SubqueryExp subquery = (SubqueryExp) node;
                 SelectTranslatorContext subContext = new SelectTranslatorContext(
                         subquery.getQuery(), context.getAdapter(), context.getResolver(), context);
                 // skip SQL translation stage for nested translators, it should be performed by root context only
@@ -374,7 +382,7 @@ class QualifierTranslator implements TraversalHandler {
                 if (parentNode != null) {
                     throw new CayenneRuntimeException("Incorrect state, a node %s can't have parent here", node.getClass().getName());
                 }
-                Object scalarVal = ((ASTScalar) node).getValue();
+                Object scalarVal = ((ScalarExp) node).getValue();
                 if (scalarVal instanceof Collection || scalarVal.getClass().isArray()) {
                     throw new CayenneRuntimeException("%s %s", ERR_MSG_ARRAYS_NOT_SUPPORTED, node.getClass().getName());
                 } else {
@@ -483,7 +491,7 @@ class QualifierTranslator implements TraversalHandler {
     }
 
     /**
-     * Matches the root entity referenced as a whole (i.e. a bare {@link ASTFullObject}) against an
+     * Matches the root entity referenced as a whole (i.e. a bare {@link FullObjectExp}) against an
      * {@link ObjectId} or a {@link Persistent}, expanding the comparison over all the PK columns. This is the
      * root-entity counterpart of {@link #createMultiAttributeMatch(Expression, Expression, PathTranslationResult)}.
      */
@@ -524,7 +532,7 @@ class QualifierTranslator implements TraversalHandler {
                 return ((Persistent) operand).getObjectId().getIdSnapshot();
             } else if (operand instanceof ObjectId) {
                 return ((ObjectId) operand).getIdSnapshot();
-            } else if (operand instanceof ASTObjPath) {
+            } else if (operand instanceof ObjPathExp) {
                 // TODO: support comparison of multi attribute ObjPath with other multi attribute ObjPath
                 throw new UnsupportedOperationException("Comparison of multiple attributes not supported for ObjPath");
             }
@@ -573,6 +581,7 @@ class QualifierTranslator implements TraversalHandler {
 
     @Override
     public void endNode(Expression node, Expression parentNode) {
+        expressionStack.pop();
         if (expressionsToSkip.contains(node) || expressionsToSkip.contains(parentNode)) {
             return;
         }
@@ -608,6 +617,20 @@ class QualifierTranslator implements TraversalHandler {
         nextNode.setParent(currentNode);
     }
 
+    /**
+     * Returns the parent of the given node in the expression being traversed, or null for the root or a node that is
+     * not being traversed.
+     */
+    private Expression enclosingExpression(Expression node) {
+        Iterator<Expression> ancestors = expressionStack.iterator();
+        while (ancestors.hasNext()) {
+            if (ancestors.next() == node) {
+                return ancestors.hasNext() ? ancestors.next() : null;
+            }
+        }
+        return null;
+    }
+
     private boolean needBinding(Expression parentNode) {
         return (parentNode != null);
     }
@@ -617,13 +640,12 @@ class QualifierTranslator implements TraversalHandler {
             return null;
         }
         if (node.getType() == Expression.LIST) {
-            if (node instanceof SimpleNode) {
-                Expression parent = (Expression) ((SimpleNode) node).jjtGetParent();
-                if (parent != null) {
-                    node = parent;
-                } else {
-                    return null;
-                }
+            // the attribute is an operand of the node holding the list, e.g. the path in "path in (list)"
+            Expression parent = enclosingExpression(node);
+            if (parent != null) {
+                node = parent;
+            } else {
+                return null;
             }
         } else if (node.getType() == FUNCTION_CALL) {
             return null;
@@ -632,14 +654,14 @@ class QualifierTranslator implements TraversalHandler {
         PathTranslationResult result = null;
         for (int i = 0; i < node.getOperandCount(); i++) {
             Object op = node.getOperand(i);
-            if (op instanceof ASTObjPath) {
-                result = pathTranslator.translatePath(context.getMetadata().getObjEntity(), ((ASTObjPath) op).getPath());
+            if (op instanceof ObjPathExp) {
+                result = pathTranslator.translatePath(context.getMetadata().getObjEntity(), ((ObjPathExp) op).getPath());
                 break;
-            } else if (op instanceof ASTDbIdPath) {
-                result = pathTranslator.translateIdPath(context.getMetadata().getObjEntity(), ((ASTDbIdPath) op).getPath());
+            } else if (op instanceof DbIdPathExp) {
+                result = pathTranslator.translateIdPath(context.getMetadata().getObjEntity(), ((DbIdPathExp) op).getPath());
                 break;
-            } else if (op instanceof ASTDbPath) {
-                result = pathTranslator.translatePath(context.getMetadata().getDbEntity(), ((ASTDbPath) op).getPath());
+            } else if (op instanceof DbPathExp) {
+                result = pathTranslator.translatePath(context.getMetadata().getDbEntity(), ((DbPathExp) op).getPath());
                 break;
             }
         }

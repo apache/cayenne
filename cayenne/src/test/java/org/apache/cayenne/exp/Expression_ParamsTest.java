@@ -35,7 +35,6 @@ import java.util.Map;
 
 import org.apache.cayenne.GenericPersistentObject;
 import org.apache.cayenne.Persistent;
-import org.apache.cayenne.exp.parser.ASTList;
 import org.junit.jupiter.api.Test;
 
 public class Expression_ParamsTest {
@@ -141,7 +140,7 @@ public class Expression_ParamsTest {
 			}
 		});
 		assertNotSame(e, ep);
-		assertEquals("(a = \"A\")", ep.toString());
+		assertEquals("a = \"A\"", ep.toString());
 	}
 
 	@SuppressWarnings("serial")
@@ -348,7 +347,7 @@ public class Expression_ParamsTest {
 
 		// some expression nodes must be pruned
 		assertNotNull(e2);
-		assertTrue(!(e2 instanceof ASTList), "List expression: " + e2);
+		assertTrue(!(e2 instanceof ListExp), "List expression: " + e2);
 
 		assertEquals(2, e2.getOperandCount());
 		assertEquals("123", e2.getOperand(1));

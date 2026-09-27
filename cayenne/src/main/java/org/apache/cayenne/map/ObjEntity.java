@@ -291,6 +291,7 @@ public class ObjEntity extends Entity<ObjEntity, ObjAttribute, ObjRelationship>
         this.qualifier = qualifier;
     }
 
+
     /**
      * Sets an entity name for a parent entity in the inheritance hierarchy.
      * 

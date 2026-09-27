@@ -364,6 +364,14 @@ List<Artist> withExpensivePaintings = ObjectSelect
   of the root attributes and the separate `qualifier`, `ordering` and `prefetch` elements. Projects are upgraded 
   automatically, either in memory by the runtime, or permanently by CayenneModeler.
 
+*  Per [CAY-3039](https://issues.apache.org/jira/browse/CAY-3039) the expression node classes are no longer tied to
+  the parser. They moved from `org.apache.cayenne.exp.parser` to `org.apache.cayenne.exp` and lost the `AST` prefix:
+  `ASTObjPath` is now `ObjPathExp`, `ASTEqual` is `EqualExp`, `ASTAnd` is `AndExp`, etc. 
+
+  Expression nodes no longer know their parent, so `jjtGetParent()` / `jjtSetParent(n)` have no replacement. As a
+  result an expression can be shared between trees: `a.andExp(b)` no longer changes how `a` itself prints, and a node
+  taken out of a tree prints without the parentheses it used to keep.
+
 ## Upgrading to 5.0-M3
 
 

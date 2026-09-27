@@ -35,7 +35,7 @@ import org.apache.cayenne.dba.postgres.PostgresAdapter;
 import org.apache.cayenne.dba.sqlite.SQLiteAdapter;
 import org.apache.cayenne.dba.sqlserver.SQLServerAdapter;
 import org.apache.cayenne.dba.sybase.SybaseAdapter;
-import org.apache.cayenne.exp.parser.ASTExtract;
+import org.apache.cayenne.exp.ExtractExp;
 import org.apache.cayenne.map.DataMap;
 import org.apache.cayenne.map.DbEntity;
 import org.apache.cayenne.map.Procedure;
@@ -400,7 +400,7 @@ public abstract class TestDbAdapter {
         return true;
     }
 
-    public boolean supportsExtractPart(ASTExtract.DateTimePart part) {
+    public boolean supportsExtractPart(ExtractExp.DateTimePart part) {
         return true;
     }
 

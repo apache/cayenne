@@ -34,7 +34,6 @@ import org.apache.cayenne.ResultIterator;
 import org.apache.cayenne.ResultIteratorCallback;
 import org.apache.cayenne.cache.QueryCache;
 import org.apache.cayenne.event.EventManager;
-import org.apache.cayenne.exp.ValueInjector;
 import org.apache.cayenne.graph.ArcId;
 import org.apache.cayenne.graph.CompoundDiff;
 import org.apache.cayenne.graph.GraphDiff;
@@ -495,11 +494,9 @@ public class DataContext implements ObjectContext {
 
         // this will initialize to-many lists
         descriptor.injectValueHolders(object);
-
-        // NOTE: the order of initialization of persistence artifacts below is important - do not change it lightly
         object.setObjectId(ObjectId.of(entityName));
 
-        injectInitialValue(object);
+        doRegisterObject(object);
 
         return object;
     }
@@ -541,7 +538,7 @@ public class DataContext implements ObjectContext {
             throw new IllegalArgumentException("Invalid entity name: " + entity.getName());
         }
 
-        injectInitialValue(object);
+        doRegisterObject(object);
 
         // now we need to find all arc changes, inject missing value holders and
         // pull in all transient connected objects
@@ -580,11 +577,7 @@ public class DataContext implements ObjectContext {
         });
     }
 
-    /**
-     * If ObjEntity qualifier is set, asks it to inject initial value to an object.
-     * Also performs all Persistent initialization operations
-     */
-    private void injectInitialValue(Persistent object) {
+    private void doRegisterObject(Persistent object) {
         // must follow this exact order of property initialization per CAY-653,
         // i.e. have the id and the context in place BEFORE setPersistence is called
 
@@ -596,22 +589,8 @@ public class DataContext implements ObjectContext {
             objectStore.changeRecorder().nodeCreated(object.getObjectId());
         }
 
-        ObjEntity entity;
-        try {
-            entity = getEntityResolver().getObjEntity(object.getObjectId().getEntityName());
-        } catch (CayenneRuntimeException ex) {
-            // ObjEntity cannot be fetched, ignored
-            entity = null;
-        }
-
-        if (entity != null) {
-            if (entity.getDeclaredQualifier() instanceof ValueInjector valueInjector) {
-                valueInjector.injectValue(object);
-            }
-        }
-
-        // invoke callbacks
-        getEntityResolver().getCallbackRegistry().performCallbacks(LifecycleEvent.POST_ADD, object);
+        entityResolver.getClassDescriptor(object.getObjectId().getEntityName()).injectDiscriminatorValues(object);
+        entityResolver.getCallbackRegistry().performCallbacks(LifecycleEvent.POST_ADD, object);
     }
 
     /**

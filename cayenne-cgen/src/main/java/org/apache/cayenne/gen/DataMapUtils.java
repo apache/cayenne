@@ -22,8 +22,8 @@ package org.apache.cayenne.gen;
 import org.apache.cayenne.exp.Expression;
 import org.apache.cayenne.exp.ExpressionException;
 import org.apache.cayenne.exp.ExpressionParameter;
-import org.apache.cayenne.exp.parser.ASTList;
-import org.apache.cayenne.exp.parser.ASTObjPath;
+import org.apache.cayenne.exp.ListExp;
+import org.apache.cayenne.exp.ObjPathExp;
 import org.apache.cayenne.map.ObjAttribute;
 import org.apache.cayenne.map.ObjEntity;
 import org.apache.cayenne.map.ObjRelationship;
@@ -176,9 +176,9 @@ public class DataMapUtils {
 					types.putAll(getParameterNames((Expression) operand, root));
 				}
 
-				if (operand instanceof ASTObjPath) {
+				if (operand instanceof ObjPathExp) {
 					PathComponent<ObjAttribute, ObjRelationship> component = ((ObjEntity) root)
-							.lastPathComponent((ASTObjPath) operand, Collections.emptyMap());
+							.lastPathComponent((ObjPathExp) operand, Collections.emptyMap());
 					ObjAttribute attribute = component.getAttribute();
 					if (attribute != null) {
 						typeName = attribute.getType();
@@ -192,8 +192,8 @@ public class DataMapUtils {
 					}
 				}
 
-				if (operand instanceof ASTList) {
-					Object[] values = (Object[]) ((ASTList) operand).getOperand(0);
+				if (operand instanceof ListExp) {
+					Object[] values = (Object[]) ((ListExp) operand).getOperand(0);
 					for (Object value : values) {
 						if (value instanceof ExpressionParameter) {
 							names.add(((ExpressionParameter) value).getName());

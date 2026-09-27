@@ -19,28 +19,6 @@
 
 package org.apache.cayenne.exp;
 
-import org.apache.cayenne.exp.parser.ASTAbs;
-import org.apache.cayenne.exp.parser.ASTAsterisk;
-import org.apache.cayenne.exp.parser.ASTAvg;
-import org.apache.cayenne.exp.parser.ASTConcat;
-import org.apache.cayenne.exp.parser.ASTCount;
-import org.apache.cayenne.exp.parser.ASTCurrentDate;
-import org.apache.cayenne.exp.parser.ASTCurrentTime;
-import org.apache.cayenne.exp.parser.ASTCurrentTimestamp;
-import org.apache.cayenne.exp.parser.ASTCustomOperator;
-import org.apache.cayenne.exp.parser.ASTLength;
-import org.apache.cayenne.exp.parser.ASTLocate;
-import org.apache.cayenne.exp.parser.ASTLower;
-import org.apache.cayenne.exp.parser.ASTMax;
-import org.apache.cayenne.exp.parser.ASTMin;
-import org.apache.cayenne.exp.parser.ASTMod;
-import org.apache.cayenne.exp.parser.ASTObjPath;
-import org.apache.cayenne.exp.parser.ASTScalar;
-import org.apache.cayenne.exp.parser.ASTSqrt;
-import org.apache.cayenne.exp.parser.ASTSubstring;
-import org.apache.cayenne.exp.parser.ASTSum;
-import org.apache.cayenne.exp.parser.ASTTrim;
-import org.apache.cayenne.exp.parser.ASTUpper;
 import org.apache.cayenne.testdo.testmap.Artist;
 import org.junit.jupiter.api.Test;
 
@@ -53,9 +31,9 @@ public class FunctionExpressionFactoryTest {
     public void substringExp() throws Exception {
         Expression exp1 = FunctionExpressionFactory.substringExp(Artist.ARTIST_NAME.getExpression(), 10, 15);
         Expression exp2 = FunctionExpressionFactory.substringExp(Artist.ARTIST_NAME.getName(), 10, 15);
-        Expression exp3 = FunctionExpressionFactory.substringExp(Artist.ARTIST_NAME.getExpression(), new ASTScalar(10), new ASTScalar(15));
+        Expression exp3 = FunctionExpressionFactory.substringExp(Artist.ARTIST_NAME.getExpression(), ExpressionFactory.wrapScalarValue(10), ExpressionFactory.wrapScalarValue(15));
 
-        assertTrue(exp1 instanceof ASTSubstring);
+        assertTrue(exp1 instanceof SubstringExp);
 
         assertEquals(3, exp1.getOperandCount());
         assertEquals(Artist.ARTIST_NAME.getExpression(), exp1.getOperand(0));
@@ -71,7 +49,7 @@ public class FunctionExpressionFactoryTest {
         Expression exp1 = FunctionExpressionFactory.trimExp(Artist.ARTIST_NAME.getExpression());
         Expression exp2 = FunctionExpressionFactory.trimExp(Artist.ARTIST_NAME.getName());
 
-        assertTrue(exp1 instanceof ASTTrim);
+        assertTrue(exp1 instanceof TrimExp);
 
         assertEquals(1, exp1.getOperandCount());
         assertEquals(Artist.ARTIST_NAME.getExpression(), exp1.getOperand(0));
@@ -84,7 +62,7 @@ public class FunctionExpressionFactoryTest {
         Expression exp1 = FunctionExpressionFactory.lowerExp(Artist.ARTIST_NAME.getExpression());
         Expression exp2 = FunctionExpressionFactory.lowerExp(Artist.ARTIST_NAME.getName());
 
-        assertTrue(exp1 instanceof ASTLower);
+        assertTrue(exp1 instanceof LowerExp);
 
         assertEquals(1, exp1.getOperandCount());
         assertEquals(Artist.ARTIST_NAME.getExpression(), exp1.getOperand(0));
@@ -97,7 +75,7 @@ public class FunctionExpressionFactoryTest {
         Expression exp1 = FunctionExpressionFactory.upperExp(Artist.ARTIST_NAME.getExpression());
         Expression exp2 = FunctionExpressionFactory.upperExp(Artist.ARTIST_NAME.getName());
 
-        assertTrue(exp1 instanceof ASTUpper);
+        assertTrue(exp1 instanceof UpperExp);
 
         assertEquals(1, exp1.getOperandCount());
         assertEquals(Artist.ARTIST_NAME.getExpression(), exp1.getOperand(0));
@@ -110,7 +88,7 @@ public class FunctionExpressionFactoryTest {
         Expression exp1 = FunctionExpressionFactory.lengthExp(Artist.ARTIST_NAME.getExpression());
         Expression exp2 = FunctionExpressionFactory.lengthExp(Artist.ARTIST_NAME.getName());
 
-        assertTrue(exp1 instanceof ASTLength);
+        assertTrue(exp1 instanceof LengthExp);
 
         assertEquals(1, exp1.getOperandCount());
         assertEquals(Artist.ARTIST_NAME.getExpression(), exp1.getOperand(0));
@@ -122,9 +100,9 @@ public class FunctionExpressionFactoryTest {
     public void locateExp() throws Exception {
         Expression exp1 = FunctionExpressionFactory.locateExp("abc", Artist.ARTIST_NAME.getExpression());
         Expression exp2 = FunctionExpressionFactory.locateExp("abc", Artist.ARTIST_NAME.getName());
-        Expression exp3 = FunctionExpressionFactory.locateExp(new ASTScalar("abc"), Artist.ARTIST_NAME.getExpression());
+        Expression exp3 = FunctionExpressionFactory.locateExp(ExpressionFactory.wrapScalarValue("abc"), Artist.ARTIST_NAME.getExpression());
 
-        assertTrue(exp1 instanceof ASTLocate);
+        assertTrue(exp1 instanceof LocateExp);
 
         assertEquals(2, exp1.getOperandCount());
         assertEquals("abc", exp1.getOperand(0));
@@ -139,7 +117,7 @@ public class FunctionExpressionFactoryTest {
         Expression exp1 = FunctionExpressionFactory.absExp(Artist.ARTIST_NAME.getExpression());
         Expression exp2 = FunctionExpressionFactory.absExp(Artist.ARTIST_NAME.getName());
 
-        assertTrue(exp1 instanceof ASTAbs);
+        assertTrue(exp1 instanceof AbsExp);
 
         assertEquals(1, exp1.getOperandCount());
         assertEquals(Artist.ARTIST_NAME.getExpression(), exp1.getOperand(0));
@@ -152,7 +130,7 @@ public class FunctionExpressionFactoryTest {
         Expression exp1 = FunctionExpressionFactory.sqrtExp(Artist.ARTIST_NAME.getExpression());
         Expression exp2 = FunctionExpressionFactory.sqrtExp(Artist.ARTIST_NAME.getName());
 
-        assertTrue(exp1 instanceof ASTSqrt);
+        assertTrue(exp1 instanceof SqrtExp);
 
         assertEquals(1, exp1.getOperandCount());
         assertEquals(Artist.ARTIST_NAME.getExpression(), exp1.getOperand(0));
@@ -164,9 +142,9 @@ public class FunctionExpressionFactoryTest {
     public void modExp() throws Exception {
         Expression exp1 = FunctionExpressionFactory.modExp(Artist.ARTIST_NAME.getExpression(), 10);
         Expression exp2 = FunctionExpressionFactory.modExp(Artist.ARTIST_NAME.getName(), 10);
-        Expression exp3 = FunctionExpressionFactory.modExp(Artist.ARTIST_NAME.getExpression(), new ASTScalar(10));
+        Expression exp3 = FunctionExpressionFactory.modExp(Artist.ARTIST_NAME.getExpression(), ExpressionFactory.wrapScalarValue(10));
 
-        assertTrue(exp1 instanceof ASTMod);
+        assertTrue(exp1 instanceof ModExp);
 
         assertEquals(2, exp1.getOperandCount());
         assertEquals(Artist.ARTIST_NAME.getExpression(), exp1.getOperand(0));
@@ -178,8 +156,8 @@ public class FunctionExpressionFactoryTest {
 
     @Test
     public void concatExp() throws Exception {
-        Expression exp1 = FunctionExpressionFactory.concatExp(Artist.ARTIST_NAME.getExpression(), new ASTScalar("abc"), Artist.DATE_OF_BIRTH.getExpression());
-        assertTrue(exp1 instanceof ASTConcat);
+        Expression exp1 = FunctionExpressionFactory.concatExp(Artist.ARTIST_NAME.getExpression(), ExpressionFactory.wrapScalarValue("abc"), Artist.DATE_OF_BIRTH.getExpression());
+        assertTrue(exp1 instanceof ConcatExp);
         assertEquals(3, exp1.getOperandCount());
 
         assertEquals(Artist.ARTIST_NAME.getExpression(), exp1.getOperand(0));
@@ -187,7 +165,7 @@ public class FunctionExpressionFactoryTest {
         assertEquals(Artist.DATE_OF_BIRTH.getExpression(), exp1.getOperand(2));
 
         Expression exp2 = FunctionExpressionFactory.concatExp(Artist.ARTIST_NAME.getName(), Artist.DATE_OF_BIRTH.getName(), Artist.PAINTING_ARRAY.getName());
-        assertTrue(exp2 instanceof ASTConcat);
+        assertTrue(exp2 instanceof ConcatExp);
         assertEquals(3, exp2.getOperandCount());
 
         assertEquals(Artist.ARTIST_NAME.getExpression(), exp2.getOperand(0));
@@ -198,12 +176,12 @@ public class FunctionExpressionFactoryTest {
     @Test
     public void countTest() throws Exception {
         Expression exp1 = FunctionExpressionFactory.countExp();
-        assertTrue(exp1 instanceof ASTCount);
+        assertTrue(exp1 instanceof CountExp);
         assertEquals(1, exp1.getOperandCount());
-        assertEquals(new ASTAsterisk(), exp1.getOperand(0));
+        assertEquals(new AsteriskExp(), exp1.getOperand(0));
 
         Expression exp2 = FunctionExpressionFactory.countExp(Artist.ARTIST_NAME.getExpression());
-        assertTrue(exp2 instanceof ASTCount);
+        assertTrue(exp2 instanceof CountExp);
         assertEquals(1, exp2.getOperandCount());
         assertEquals(Artist.ARTIST_NAME.getExpression(), exp2.getOperand(0));
     }
@@ -211,7 +189,7 @@ public class FunctionExpressionFactoryTest {
     @Test
     public void minTest() throws Exception {
         Expression exp1 = FunctionExpressionFactory.minExp(Artist.ARTIST_NAME.getExpression());
-        assertTrue(exp1 instanceof ASTMin);
+        assertTrue(exp1 instanceof MinExp);
         assertEquals(1, exp1.getOperandCount());
         assertEquals(Artist.ARTIST_NAME.getExpression(), exp1.getOperand(0));
     }
@@ -219,7 +197,7 @@ public class FunctionExpressionFactoryTest {
     @Test
     public void maxTest() throws Exception {
         Expression exp1 = FunctionExpressionFactory.maxExp(Artist.ARTIST_NAME.getExpression());
-        assertTrue(exp1 instanceof ASTMax);
+        assertTrue(exp1 instanceof MaxExp);
         assertEquals(1, exp1.getOperandCount());
         assertEquals(Artist.ARTIST_NAME.getExpression(), exp1.getOperand(0));
     }
@@ -227,7 +205,7 @@ public class FunctionExpressionFactoryTest {
     @Test
     public void avgTest() throws Exception {
         Expression exp1 = FunctionExpressionFactory.avgExp(Artist.ARTIST_NAME.getExpression());
-        assertTrue(exp1 instanceof ASTAvg);
+        assertTrue(exp1 instanceof AvgExp);
         assertEquals(1, exp1.getOperandCount());
         assertEquals(Artist.ARTIST_NAME.getExpression(), exp1.getOperand(0));
     }
@@ -235,7 +213,7 @@ public class FunctionExpressionFactoryTest {
     @Test
     public void sumTest() throws Exception {
         Expression exp1 = FunctionExpressionFactory.sumExp(Artist.ARTIST_NAME.getExpression());
-        assertTrue(exp1 instanceof ASTSum);
+        assertTrue(exp1 instanceof SumExp);
         assertEquals(1, exp1.getOperandCount());
         assertEquals(Artist.ARTIST_NAME.getExpression(), exp1.getOperand(0));
     }
@@ -243,28 +221,28 @@ public class FunctionExpressionFactoryTest {
     @Test
     public void currentDateTest() throws Exception {
         Expression exp = FunctionExpressionFactory.currentDate();
-        assertTrue(exp instanceof ASTCurrentDate);
+        assertTrue(exp instanceof CurrentDateExp);
     }
 
     @Test
     public void currentTimeTest() throws Exception {
         Expression exp = FunctionExpressionFactory.currentTime();
-        assertTrue(exp instanceof ASTCurrentTime);
+        assertTrue(exp instanceof CurrentTimeExp);
     }
 
     @Test
     public void currentTimestampTest() throws Exception {
         Expression exp = FunctionExpressionFactory.currentTimestamp();
-        assertTrue(exp instanceof ASTCurrentTimestamp);
+        assertTrue(exp instanceof CurrentTimestampExp);
     }
 
     @Test
     public void customOpTest() {
         Expression exp = FunctionExpressionFactory.operator("==>", 123, Artist.ARTIST_NAME.getExpression());
-        assertTrue(exp instanceof ASTCustomOperator);
-        ASTCustomOperator operator = (ASTCustomOperator) exp;
+        assertTrue(exp instanceof CustomOperatorExp);
+        CustomOperatorExp operator = (CustomOperatorExp) exp;
         assertEquals("==>", operator.getOperator());
-        assertEquals(2, operator.jjtGetNumChildren());
+        assertEquals(2, operator.getChildCount());
 
         assertEquals(123, operator.getOperand(0));
         assertEquals(Artist.ARTIST_NAME.getExpression(), operator.getOperand(1));

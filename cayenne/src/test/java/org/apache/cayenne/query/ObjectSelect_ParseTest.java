@@ -25,7 +25,7 @@ import org.apache.cayenne.DataRow;
 import org.apache.cayenne.exp.Expression;
 import org.apache.cayenne.exp.ExpressionException;
 import org.apache.cayenne.exp.ExpressionFactory;
-import org.apache.cayenne.exp.parser.ASTSubquery;
+import org.apache.cayenne.exp.SubqueryExp;
 import org.apache.cayenne.exp.property.Property;
 import org.apache.cayenne.testdo.testmap.Artist;
 import org.apache.cayenne.testdo.testmap.Painting;
@@ -49,7 +49,7 @@ public class ObjectSelect_ParseTest {
     }
 
     private static FluentSelect<?, ?> subquery(Expression parent, int operand) {
-        return assertInstanceOf(ASTSubquery.class, parent.getOperand(operand)).getQuery();
+        return assertInstanceOf(SubqueryExp.class, parent.getOperand(operand)).getQuery();
     }
 
     @Test

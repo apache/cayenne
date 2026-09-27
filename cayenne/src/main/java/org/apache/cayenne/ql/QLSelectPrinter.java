@@ -23,7 +23,7 @@ import java.io.IOException;
 import java.util.Collection;
 
 import org.apache.cayenne.exp.Expression;
-import org.apache.cayenne.exp.parser.ASTDbPath;
+import org.apache.cayenne.exp.DbPathExp;
 import org.apache.cayenne.exp.property.Property;
 import org.apache.cayenne.query.FluentSelect;
 import org.apache.cayenne.query.Ordering;
@@ -123,7 +123,7 @@ public class QLSelectPrinter {
         if (query.getEntityName() != null) {
             out.append(query.getEntityName());
         } else if (query.getDbEntityName() != null) {
-            out.append(ASTDbPath.DB_PREFIX).append(query.getDbEntityName());
+            out.append(DbPathExp.DB_PREFIX).append(query.getDbEntityName());
         } else if (query.getEntityType() != null) {
             out.append(query.getEntityType().getSimpleName());
         }

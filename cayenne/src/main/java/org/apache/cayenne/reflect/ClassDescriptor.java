@@ -120,6 +120,15 @@ public interface ClassDescriptor {
     void injectValueHolders(Object object) throws PropertyException;
 
     /**
+     * Sets the attribute values that the entity qualifier implies for a new object of the described class, such as
+     * the discriminator of a single-table inheritance subentity. Only the qualifier declared on the entity itself is
+     * used, as in query translation, where entity qualifiers are not combined with those of the super entities.
+     *
+     * @since 5.0
+     */
+    void injectDiscriminatorValues(Object object) throws PropertyException;
+
+    /**
      * Merges object properties from one object to another, avoiding traversal of the
      * ArcProperties.
      */

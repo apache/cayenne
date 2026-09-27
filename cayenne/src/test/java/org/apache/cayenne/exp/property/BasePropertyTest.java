@@ -24,8 +24,8 @@ import java.util.List;
 
 import org.apache.cayenne.exp.Expression;
 import org.apache.cayenne.exp.ExpressionFactory;
-import org.apache.cayenne.exp.parser.ASTLike;
-import org.apache.cayenne.exp.parser.ASTObjPath;
+import org.apache.cayenne.exp.LikeExp;
+import org.apache.cayenne.exp.ObjPathExp;
 import org.apache.cayenne.exp.path.CayennePath;
 import org.apache.cayenne.reflect.TstJavaBean;
 import org.junit.jupiter.api.BeforeEach;
@@ -44,13 +44,13 @@ public class BasePropertyTest {
 
     @Test
     public void pathExpConstructor() {
-        assertEquals(new ASTObjPath("path"), property.getExpression());
+        assertEquals(ExpressionFactory.pathExp("path"), property.getExpression());
     }
 
     @Test
     public void customExpConstructor() {
-        property = new BaseProperty<>(CayennePath.of("path"), new ASTLike(), Integer.class);
-        assertEquals(new ASTLike(), property.getExpression());
+        property = new BaseProperty<>(CayennePath.of("path"), new LikeExp(), Integer.class);
+        assertEquals(new LikeExp(), property.getExpression());
     }
 
     @Test
@@ -123,7 +123,7 @@ public class BasePropertyTest {
 
         assertEquals("test", property.getName());
         assertEquals("test", property.getAlias());
-        assertEquals(new ASTObjPath("path"), property.getExpression());
+        assertEquals(ExpressionFactory.pathExp("path"), property.getExpression());
     }
 
     @Test

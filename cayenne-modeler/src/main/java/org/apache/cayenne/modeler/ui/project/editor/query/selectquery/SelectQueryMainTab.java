@@ -24,7 +24,7 @@ import com.jgoodies.forms.layout.CellConstraints;
 import com.jgoodies.forms.layout.FormLayout;
 import org.apache.cayenne.exp.Expression;
 import org.apache.cayenne.exp.ExpressionException;
-import org.apache.cayenne.exp.parser.ASTPath;
+import org.apache.cayenne.exp.PathExp;
 import org.apache.cayenne.map.DataMap;
 import org.apache.cayenne.map.Entity;
 import org.apache.cayenne.map.ObjEntity;
@@ -243,7 +243,7 @@ public class SelectQueryMainTab extends BaseQueryMainTab {
      */
     static void checkExpression(Entity<?,?,?> root, Expression ex) throws ValidationException {
         try {
-            if (ex instanceof ASTPath) {
+            if (ex instanceof PathExp) {
                 /*
                  * Try to iterate through path, if some attributes are not present,
                  * exception will be raised

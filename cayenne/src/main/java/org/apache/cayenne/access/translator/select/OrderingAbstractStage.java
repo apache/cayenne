@@ -22,7 +22,7 @@ package org.apache.cayenne.access.translator.select;
 import org.apache.cayenne.access.sqlbuilder.NodeBuilder;
 import org.apache.cayenne.access.sqlbuilder.sqltree.Node;
 import org.apache.cayenne.exp.Expression;
-import org.apache.cayenne.exp.parser.ASTAggregateFunctionCall;
+import org.apache.cayenne.exp.AggregateFunctionCallExp;
 import org.apache.cayenne.query.Ordering;
 
 import static org.apache.cayenne.access.sqlbuilder.SQLBuilder.*;
@@ -42,7 +42,7 @@ abstract class OrderingAbstractStage implements TranslationStage {
         if (orderColumnAbsent(context, orderingNode)) {
             // deepCopy as some DB expect exactly the same expression in select and in ordering
             ResultNodeDescriptor descriptor = context.addResultNode(orderingNode.deepCopy());
-            if (orderExp instanceof ASTAggregateFunctionCall) {
+            if (orderExp instanceof AggregateFunctionCallExp) {
                 descriptor.setAggregate(true);
             }
         }

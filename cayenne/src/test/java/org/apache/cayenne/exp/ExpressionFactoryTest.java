@@ -20,10 +20,6 @@
 package org.apache.cayenne.exp;
 
 import org.apache.cayenne.CayenneRuntimeException;
-import org.apache.cayenne.exp.parser.ASTLike;
-import org.apache.cayenne.exp.parser.ASTLikeIgnoreCase;
-import org.apache.cayenne.exp.parser.ASTObjPath;
-import org.apache.cayenne.exp.parser.ASTTrim;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
@@ -256,7 +252,7 @@ public class ExpressionFactoryTest {
 		Expression exp = ExpressionFactory.likeExp("=abc", v, '=');
 		assertEquals(Expression.LIKE, exp.getType());
 
-		assertEquals('=', ((ASTLike) exp).getEscapeChar());
+		assertEquals('=', ((LikeExp) exp).getEscapeChar());
 
 		Expression path = (Expression) exp.getOperand(0);
 		assertEquals(Expression.OBJ_PATH, path.getType());
@@ -267,7 +263,7 @@ public class ExpressionFactoryTest {
 		String v = "abc";
 		Expression exp = ExpressionFactory.likeIgnoreCaseExp("abc", v);
 		assertEquals(Expression.LIKE_IGNORE_CASE, exp.getType());
-		assertEquals(0, ((ASTLikeIgnoreCase) exp).getEscapeChar());
+		assertEquals(0, ((LikeIgnoreCaseExp) exp).getEscapeChar());
 
 		Expression path = (Expression) exp.getOperand(0);
 		assertEquals(Expression.OBJ_PATH, path.getType());
@@ -278,7 +274,7 @@ public class ExpressionFactoryTest {
 		String v = "abc";
 		Expression exp = ExpressionFactory.likeIgnoreCaseExp("=abc", v, '=');
 		assertEquals(Expression.LIKE_IGNORE_CASE, exp.getType());
-		assertEquals('=', ((ASTLikeIgnoreCase) exp).getEscapeChar());
+		assertEquals('=', ((LikeIgnoreCaseExp) exp).getEscapeChar());
 
 		Expression path = (Expression) exp.getOperand(0);
 		assertEquals(Expression.OBJ_PATH, path.getType());
@@ -540,22 +536,22 @@ public class ExpressionFactoryTest {
 	@Test
 	public void funcExp() {
 		Expression e = ExpressionFactory.exp("trim(abc.xyz)");
-		assertEquals(ASTTrim.class, e.getClass());
+		assertEquals(TrimExp.class, e.getClass());
 	}
 
 	@Test
 	public void expWithAlias() {
 		Expression expression = ExpressionFactory.exp("paintings#p1.galleries#p2.name = 'Test'");
 		assertEquals("p1.p2.name", expression.getOperand(0).toString());
-		assertEquals("paintings", ((ASTObjPath)expression.getOperand(0)).getPathAliases().get("p1"));
-		assertEquals("galleries", ((ASTObjPath)expression.getOperand(0)).getPathAliases().get("p2"));
+		assertEquals("paintings", ((ObjPathExp)expression.getOperand(0)).getPathAliases().get("p1"));
+		assertEquals("galleries", ((ObjPathExp)expression.getOperand(0)).getPathAliases().get("p2"));
 	}
 
 	@Test
 	public void expWithAliasAndOuterJoin() {
 		Expression expression = ExpressionFactory.exp("paintings#p1+.name = 'Test'");
 		assertEquals("p1.name", expression.getOperand(0).toString());
-		assertEquals("paintings+", ((ASTObjPath)expression.getOperand(0)).getPathAliases().get("p1"));
+		assertEquals("paintings+", ((ObjPathExp)expression.getOperand(0)).getPathAliases().get("p1"));
 	}
 
 	@Test

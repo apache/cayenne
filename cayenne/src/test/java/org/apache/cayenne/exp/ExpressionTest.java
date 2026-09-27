@@ -26,15 +26,13 @@ import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
 import java.io.IOException;
+import java.math.BigDecimal;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
+import java.util.Map;
 
 import org.apache.cayenne.ObjectId;
-import org.apache.cayenne.exp.parser.ASTDbPath;
-import org.apache.cayenne.exp.parser.ASTFalse;
-import org.apache.cayenne.exp.parser.ASTObjPath;
-import org.apache.cayenne.exp.parser.SimpleNode;
 import org.apache.cayenne.testdo.testmap.Artist;
 import org.junit.jupiter.api.Test;
 
@@ -161,7 +159,7 @@ public class ExpressionTest {
 
 		Expression exp = e1.andExp(e2);
 		assertEquals(exp.getType(), Expression.AND);
-		assertEquals(2, ((SimpleNode) exp).jjtGetNumChildren());
+		assertEquals(2, ((BaseExp) exp).getChildCount());
 	}
 
 	@Test
@@ -171,7 +169,7 @@ public class ExpressionTest {
 
 		Expression exp = e1.orExp(e2);
 		assertEquals(exp.getType(), Expression.OR);
-		assertEquals(2, ((SimpleNode) exp).jjtGetNumChildren());
+		assertEquals(2, ((BaseExp) exp).getChildCount());
 	}
 
 	@Test
@@ -183,7 +181,7 @@ public class ExpressionTest {
 
 		Expression exp = e1.andExp(e2, e3, e4);
 		assertEquals(exp.getType(), Expression.AND);
-		assertEquals(4, ((SimpleNode) exp).jjtGetNumChildren());
+		assertEquals(4, ((BaseExp) exp).getChildCount());
 	}
 
 	@Test
@@ -195,7 +193,7 @@ public class ExpressionTest {
 
 		Expression exp = e1.orExp(e2, e3, e4);
 		assertEquals(exp.getType(), Expression.OR);
-		assertEquals(4, ((SimpleNode) exp).jjtGetNumChildren());
+		assertEquals(4, ((BaseExp) exp).getChildCount());
 	}
 
 	@Test
@@ -203,7 +201,7 @@ public class ExpressionTest {
 		Expression exp = ExpressionFactory.exp("~7");
 
 		assertEquals(Expression.BITWISE_NOT, exp.getType());
-		assertEquals(1, ((SimpleNode) exp).jjtGetNumChildren());
+		assertEquals(1, ((BaseExp) exp).getChildCount());
 		assertEquals(-8L, exp.evaluate(new Object())); // ~7 = -8 in
 																// digital world
 	}
@@ -213,7 +211,7 @@ public class ExpressionTest {
 		Expression exp = ExpressionFactory.exp("1 & 0");
 
 		assertEquals(Expression.BITWISE_AND, exp.getType());
-		assertEquals(2, ((SimpleNode) exp).jjtGetNumChildren());
+		assertEquals(2, ((BaseExp) exp).getChildCount());
 		assertEquals(0L, exp.evaluate(new Object()));
 	}
 
@@ -222,7 +220,7 @@ public class ExpressionTest {
 		Expression exp = ExpressionFactory.exp("1 | 0");
 
 		assertEquals(Expression.BITWISE_OR, exp.getType());
-		assertEquals(2, ((SimpleNode) exp).jjtGetNumChildren());
+		assertEquals(2, ((BaseExp) exp).getChildCount());
 		assertEquals(1L, exp.evaluate(new Object()));
 	}
 
@@ -231,7 +229,7 @@ public class ExpressionTest {
 		Expression exp = ExpressionFactory.exp("1 ^ 0");
 
 		assertEquals(Expression.BITWISE_XOR, exp.getType());
-		assertEquals(2, ((SimpleNode) exp).jjtGetNumChildren());
+		assertEquals(2, ((BaseExp) exp).getChildCount());
 		assertEquals(1L, exp.evaluate(new Object()));
 	}
 
@@ -240,7 +238,7 @@ public class ExpressionTest {
 		Expression exp = ExpressionFactory.exp("7 << 2");
 
 		assertEquals(Expression.BITWISE_LEFT_SHIFT, exp.getType());
-		assertEquals(2, ((SimpleNode) exp).jjtGetNumChildren());
+		assertEquals(2, ((BaseExp) exp).getChildCount());
 		assertEquals(28L, exp.evaluate(new Object()));
 	}
 
@@ -249,9 +247,62 @@ public class ExpressionTest {
 		Expression exp = ExpressionFactory.exp("7 >> 2");
 
 		assertEquals(Expression.BITWISE_RIGHT_SHIFT, exp.getType());
-		assertEquals(2, ((SimpleNode) exp).jjtGetNumChildren());
+		assertEquals(2, ((BaseExp) exp).getChildCount());
 
 		assertEquals(1L, exp.evaluate(new Object()));
+	}
+
+	@Test
+	public void appendAsString_NestedNot() {
+		assertEquals("(not (a = 1)) and (b = 2)", ExpressionFactory.exp("not (a = 1) and b = 2").toString());
+		assertEquals("(not (t.a = 1)) and (t.b = 2)", ExpressionFactory.exp("not (a = 1) and b = 2").toEJBQL("t"));
+		assertEquals("not (not (a = 1))", ExpressionFactory.exp("a = 1").notExp().notExp().toString());
+	}
+
+	@Test
+	public void appendAsString_NestedNegate() {
+		assertEquals("x * -(a + b)", ExpressionFactory.exp("x * -(a + b)").toString());
+		assertEquals("t.x * -(t.a + t.b)", ExpressionFactory.exp("x * -(a + b)").toEJBQL("t"));
+		assertEquals("x * -5", ExpressionFactory.exp("x * -5").toString());
+	}
+
+	@Test
+	public void appendAsEJBQL_CustomOperatorOperand() {
+		// a function call in the String form, an infix operator in EJBQL
+		Expression exp = ExpressionFactory.exp("op(\"+++\", a, b) = 1");
+		assertEquals("op(\"+++\", a, b) = 1", exp.toString());
+		assertEquals("(t.a +++ t.b) = 1", exp.toEJBQL("t"));
+	}
+
+	@Test
+	public void invalidChild_ConditionUnderValue() {
+		assertThrows(ExpressionException.class, () -> new AddExp(ExpressionFactory.exp("a = 1"), 1));
+		assertThrows(ExpressionException.class, () -> new AbsExp(ExpressionFactory.exp("a = 1")));
+	}
+
+	@Test
+	public void invalidChild_WhenOutsideCaseWhen() {
+		Expression when = new WhenExp(ExpressionFactory.exp("a = 1"));
+		assertThrows(ExpressionException.class, () -> new AndExp(when, ExpressionFactory.exp("b = 2")));
+		assertThrows(ExpressionException.class, () -> new ExistsExp(when));
+	}
+
+	@Test
+	public void invalidChild_ConditionUnderCaseWhen() {
+		assertThrows(ExpressionException.class, () -> new CaseWhenExp(ExpressionFactory.exp("a = 1"), new ThenExp(1)));
+	}
+
+	@Test
+	public void bitwiseOr_PathOperands() {
+		// both operands are paths, each must be evaluated against the root object
+		Expression exp = ExpressionFactory.exp("a | b");
+		assertEquals(6L, exp.evaluate(Map.of("a", 4, "b", 2)));
+	}
+
+	@Test
+	public void add_PathOperands() {
+		Expression exp = ExpressionFactory.exp("a + b");
+		assertEquals(new BigDecimal(6), exp.evaluate(Map.of("a", 4, "b", 2)));
 	}
 
 	/**
@@ -441,7 +492,7 @@ public class ExpressionTest {
 	public void customPruneTransform() {
 		Expression exp = ExpressionFactory.exp("(false and true) and true");
 		Expression transformed = exp.transform(node -> {
-			if(node instanceof ASTFalse) {
+			if(node instanceof FalseExp) {
 				return Expression.PRUNED_NODE;
 			}
 			return node;
@@ -452,7 +503,7 @@ public class ExpressionTest {
 	@Test
 	public void objPathFunctionName() throws IOException {
 		Expression exp = ExpressionFactory.exp("obj:year.month.day.avg");
-		assertTrue(exp instanceof ASTObjPath);
+		assertTrue(exp instanceof ObjPathExp);
 
 		StringBuilder buffer = new StringBuilder();
 		exp.appendAsString(buffer);
@@ -462,7 +513,7 @@ public class ExpressionTest {
 	@Test
 	public void dbPathFunctionName() throws IOException {
 		Expression exp = ExpressionFactory.exp("db:year.month.day.avg");
-		assertTrue(exp instanceof ASTDbPath);
+		assertTrue(exp instanceof DbPathExp);
 
 		StringBuilder buffer = new StringBuilder();
 		exp.appendAsString(buffer);

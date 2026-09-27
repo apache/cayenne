@@ -23,8 +23,8 @@ import java.util.ArrayList;
 import java.util.List;
 
 import org.apache.cayenne.exp.Expression;
-import org.apache.cayenne.exp.parser.ASTDbPath;
-import org.apache.cayenne.exp.parser.ASTObjPath;
+import org.apache.cayenne.exp.DbPathExp;
+import org.apache.cayenne.exp.ObjPathExp;
 import org.apache.cayenne.exp.property.BaseProperty;
 import org.apache.cayenne.exp.property.Property;
 import org.apache.cayenne.exp.property.PropertyFactory;
@@ -188,11 +188,11 @@ class QLSelectBuilder {
         if (!dbRoot) {
             return expression;
         }
-        return expression.transform(o -> o instanceof ASTObjPath objPath ? dbPath(objPath) : o);
+        return expression.transform(o -> o instanceof ObjPathExp objPath ? dbPath(objPath) : o);
     }
 
-    private static ASTDbPath dbPath(ASTObjPath objPath) {
-        ASTDbPath dbPath = new ASTDbPath(objPath.getPath());
+    private static DbPathExp dbPath(ObjPathExp objPath) {
+        DbPathExp dbPath = new DbPathExp(objPath.getPath());
         dbPath.setPathAliases(objPath.getPathAliases());
         return dbPath;
     }

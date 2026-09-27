@@ -25,7 +25,7 @@ import org.apache.cayenne.Persistent;
 import org.apache.cayenne.access.jdbc.RSColumn;
 import org.apache.cayenne.exp.Expression;
 import org.apache.cayenne.exp.ExpressionFactory;
-import org.apache.cayenne.exp.parser.ASTPath;
+import org.apache.cayenne.exp.PathExp;
 import org.apache.cayenne.exp.path.CayennePath;
 import org.apache.cayenne.map.DbAttribute;
 import org.apache.cayenne.map.DbJoin;
@@ -163,7 +163,7 @@ class PrefetchProcessorJointNode extends PrefetchProcessorNode {
         final String prefix;
         if (jointRoot != this) {
             Expression objectPath = ExpressionFactory.pathExp(getPath(jointRoot));
-            ASTPath translated = (ASTPath) ((PrefetchProcessorNode) jointRoot)
+            PathExp translated = (PathExp) ((PrefetchProcessorNode) jointRoot)
                     .getResolver()
                     .getEntity()
                     .translateToDbPath(objectPath);

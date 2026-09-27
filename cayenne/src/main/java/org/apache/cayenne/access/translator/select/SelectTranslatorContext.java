@@ -27,7 +27,7 @@ import org.apache.cayenne.access.sqlbuilder.sqltree.Node;
 import org.apache.cayenne.access.jdbc.PSParameter;
 import org.apache.cayenne.access.translator.TranslatedSelect;
 import org.apache.cayenne.dba.DbAdapter;
-import org.apache.cayenne.exp.parser.ASTAggregateFunctionCall;
+import org.apache.cayenne.exp.AggregateFunctionCallExp;
 import org.apache.cayenne.exp.path.CayennePath;
 import org.apache.cayenne.exp.property.Property;
 import org.apache.cayenne.map.DbEntity;
@@ -272,7 +272,7 @@ class SelectTranslatorContext implements SQLGenerationContext {
 
         if (getQuery().getOrderings() != null) {
             for (Ordering ordering : getQuery().getOrderings()) {
-                if (ordering.getSortSpec() instanceof ASTAggregateFunctionCall) {
+                if (ordering.getSortSpec() instanceof AggregateFunctionCallExp) {
                     return (hasAggregate = true);
                 }
             }

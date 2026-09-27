@@ -29,7 +29,6 @@ import java.util.function.Function;
 
 import org.apache.cayenne.CayenneRuntimeException;
 import org.apache.cayenne.configuration.ConfigurationNodeVisitor;
-import org.apache.cayenne.exp.parser.ASTScalar;
 import org.apache.cayenne.util.ConversionUtil;
 import org.apache.cayenne.util.XMLEncoder;
 
@@ -604,7 +603,7 @@ public abstract class Expression implements XMLSerializable {
 		for (int i = 0; i < count; i++) {
 			Object child = getOperand(i);
 
-			if (child instanceof Expression && !(child instanceof ASTScalar)) {
+			if (child instanceof Expression && !(child instanceof ScalarExp)) {
 				Expression childExp = (Expression) child;
 				childExp.traverse(this, visitor);
 			} else {
@@ -793,7 +792,7 @@ public abstract class Expression implements XMLSerializable {
 		public Object apply(Object object) {
 			if (!(object instanceof ExpressionParameter)) {
 
-				// normally Object[] is an ASTList child
+				// normally Object[] is a ListExp child
 				if (object instanceof Object[]) {
 
 					Object[] source = (Object[]) object;
@@ -823,8 +822,8 @@ public abstract class Expression implements XMLSerializable {
 				// wrap lists (for now); also support null parameters
 				// TODO: andrus 8/14/2007 - shouldn't we also wrap non-null
 				// object
-				// values in ASTScalars?
-				return (value != null) ? ExpressionFactory.wrapPathOperand(value) : new ASTScalar(null);
+				// values in ScalarExps?
+				return (value != null) ? ExpressionFactory.wrapPathOperand(value) : ExpressionFactory.wrapScalarValue(null);
 			}
 		}
 
@@ -854,7 +853,7 @@ public abstract class Expression implements XMLSerializable {
 			if (child instanceof ExpressionParameter) {
 				node.setOperand(childIndex, nextValue(((ExpressionParameter) child).getName()));
 			}
-			// normally Object[] is an ASTList child
+			// normally Object[] is a ListExp child
 			else if (child instanceof Object[]) {
 				Object[] array = (Object[]) child;
 
@@ -886,8 +885,8 @@ public abstract class Expression implements XMLSerializable {
 
 			// wrap lists (for now); also support null parameters
 			// TODO: andrus 8/14/2007 - shouldn't we also wrap non-null
-			// object values in ASTScalars?
-			return (p != null) ? ExpressionFactory.wrapPathOperand(p) : new ASTScalar(null);
+			// object values in ScalarExps?
+			return (p != null) ? ExpressionFactory.wrapPathOperand(p) : ExpressionFactory.wrapScalarValue(null);
 		}
 
 	}

@@ -29,10 +29,11 @@ import java.util.List;
 
 import org.apache.cayenne.configuration.ConfigurationNodeVisitor;
 import org.apache.cayenne.configuration.EmptyConfigurationNodeVisitor;
+import org.apache.cayenne.exp.ExpressionFactory;
 import org.apache.cayenne.exp.Expression;
 import org.apache.cayenne.exp.ExpressionException;
-import org.apache.cayenne.exp.parser.ASTDbPath;
-import org.apache.cayenne.exp.parser.ASTObjPath;
+import org.apache.cayenne.exp.DbPathExp;
+import org.apache.cayenne.exp.ObjPathExp;
 import org.apache.cayenne.util.ConversionUtil;
 import org.apache.cayenne.util.XMLEncoder;
 
@@ -342,12 +343,12 @@ public class Ordering implements Comparator<Object>, XMLSerializable {
 		// Expression.fromString, and parse them manually
 		if (sortSpec == null) {
 
-			if (sortSpecString.startsWith(ASTDbPath.DB_PREFIX)) {
-				sortSpec = new ASTDbPath(sortSpecString.substring(ASTDbPath.DB_PREFIX.length()));
-			} else if (sortSpecString.startsWith(ASTObjPath.OBJ_PREFIX)) {
-				sortSpec = new ASTObjPath(sortSpecString.substring(ASTObjPath.OBJ_PREFIX.length()));
+			if (sortSpecString.startsWith(DbPathExp.DB_PREFIX)) {
+				sortSpec = ExpressionFactory.dbPathExp(sortSpecString.substring(DbPathExp.DB_PREFIX.length()));
+			} else if (sortSpecString.startsWith(ObjPathExp.OBJ_PREFIX)) {
+				sortSpec = ExpressionFactory.pathExp(sortSpecString.substring(ObjPathExp.OBJ_PREFIX.length()));
 			} else {
-				sortSpec = new ASTObjPath(sortSpecString);
+				sortSpec = ExpressionFactory.pathExp(sortSpecString);
 			}
 		}
 

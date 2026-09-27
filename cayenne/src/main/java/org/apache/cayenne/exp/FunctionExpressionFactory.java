@@ -19,31 +19,6 @@
 
 package org.apache.cayenne.exp;
 
-import org.apache.cayenne.exp.parser.ASTAbs;
-import org.apache.cayenne.exp.parser.ASTAvg;
-import org.apache.cayenne.exp.parser.ASTConcat;
-import org.apache.cayenne.exp.parser.ASTCount;
-import org.apache.cayenne.exp.parser.ASTCurrentDate;
-import org.apache.cayenne.exp.parser.ASTCurrentTime;
-import org.apache.cayenne.exp.parser.ASTCurrentTimestamp;
-import org.apache.cayenne.exp.parser.ASTCustomAggregate;
-import org.apache.cayenne.exp.parser.ASTCustomFunction;
-import org.apache.cayenne.exp.parser.ASTCustomOperator;
-import org.apache.cayenne.exp.parser.ASTDistinct;
-import org.apache.cayenne.exp.parser.ASTExtract;
-import org.apache.cayenne.exp.parser.ASTLength;
-import org.apache.cayenne.exp.parser.ASTLocate;
-import org.apache.cayenne.exp.parser.ASTLower;
-import org.apache.cayenne.exp.parser.ASTMax;
-import org.apache.cayenne.exp.parser.ASTMin;
-import org.apache.cayenne.exp.parser.ASTMod;
-import org.apache.cayenne.exp.parser.ASTObjPath;
-import org.apache.cayenne.exp.parser.ASTScalar;
-import org.apache.cayenne.exp.parser.ASTSqrt;
-import org.apache.cayenne.exp.parser.ASTSubstring;
-import org.apache.cayenne.exp.parser.ASTSum;
-import org.apache.cayenne.exp.parser.ASTTrim;
-import org.apache.cayenne.exp.parser.ASTUpper;
 
 /**
  * Collection of factory methods to create function call expressions.
@@ -55,37 +30,37 @@ public class FunctionExpressionFactory {
     /**
      * Call SUBSTRING(string, offset, length) function
      *
-     * @param exp expression that must evaluate to string
+     * @param exp    expression that must evaluate to string
      * @param offset start offset of substring
      * @param length length of substring
      * @return SUBSTRING() call expression
      */
     public static Expression substringExp(Expression exp, int offset, int length) {
-        return substringExp(exp, new ASTScalar((Integer)offset), new ASTScalar((Integer)length));
+        return substringExp(exp, ExpressionFactory.wrapScalarValue(offset), ExpressionFactory.wrapScalarValue(length));
     }
 
     /**
      * Call SUBSTRING(string, offset, length) function
      *
-     * @param path Object path value
+     * @param path   Object path value
      * @param offset start offset of substring
      * @param length length of substring
      * @return SUBSTRING() call expression
      */
     public static Expression substringExp(String path, int offset, int length) {
-        return substringExp(new ASTObjPath(path), new ASTScalar((Integer)offset), new ASTScalar((Integer)length));
+        return substringExp(ExpressionFactory.pathExp(path), ExpressionFactory.wrapScalarValue(offset), ExpressionFactory.wrapScalarValue(length));
     }
 
     /**
      * Call SUBSTRING(string, offset, length) function
      *
-     * @param exp expression that must evaluate to string
+     * @param exp    expression that must evaluate to string
      * @param offset start offset of substring must evaluate to int
      * @param length length of substring must evaluate to int
      * @return SUBSTRING() call expression
      */
     public static Expression substringExp(Expression exp, Expression offset, Expression length) {
-        return new ASTSubstring(exp, offset, length);
+        return new SubstringExp(exp, offset, length);
     }
 
     /**
@@ -93,7 +68,7 @@ public class FunctionExpressionFactory {
      * @return TRIM() call expression
      */
     public static Expression trimExp(Expression exp) {
-        return new ASTTrim(exp);
+        return new TrimExp(exp);
     }
 
     /**
@@ -101,7 +76,7 @@ public class FunctionExpressionFactory {
      * @return TRIM() call expression
      */
     public static Expression trimExp(String path) {
-        return new ASTTrim(new ASTObjPath(path));
+        return new TrimExp(ExpressionFactory.pathExp(path));
     }
 
     /**
@@ -109,7 +84,7 @@ public class FunctionExpressionFactory {
      * @return LOWER() call expression
      */
     public static Expression lowerExp(Expression exp) {
-        return new ASTLower(exp);
+        return new LowerExp(exp);
     }
 
     /**
@@ -117,7 +92,7 @@ public class FunctionExpressionFactory {
      * @return LOWER() call expression
      */
     public static Expression lowerExp(String path) {
-        return new ASTLower(new ASTObjPath(path));
+        return new LowerExp(ExpressionFactory.pathExp(path));
     }
 
     /**
@@ -125,7 +100,7 @@ public class FunctionExpressionFactory {
      * @return UPPER() call expression
      */
     public static Expression upperExp(Expression exp) {
-        return new ASTUpper(exp);
+        return new UpperExp(exp);
     }
 
     /**
@@ -133,7 +108,7 @@ public class FunctionExpressionFactory {
      * @return UPPER() call expression
      */
     public static Expression upperExp(String path) {
-        return new ASTUpper(new ASTObjPath(path));
+        return new UpperExp(ExpressionFactory.pathExp(path));
     }
 
     /**
@@ -141,7 +116,7 @@ public class FunctionExpressionFactory {
      * @return LENGTH() call expression
      */
     public static Expression lengthExp(Expression exp) {
-        return new ASTLength(exp);
+        return new LengthExp(exp);
     }
 
     /**
@@ -149,7 +124,7 @@ public class FunctionExpressionFactory {
      * @return LENGTH() call expression
      */
     public static Expression lengthExp(String path) {
-        return new ASTLength(new ASTObjPath(path));
+        return new LengthExp(ExpressionFactory.pathExp(path));
     }
 
     /**
@@ -157,11 +132,11 @@ public class FunctionExpressionFactory {
      * of substring in string or 0 if it is not found.
      *
      * @param substring object path value
-     * @param exp string expression
+     * @param exp       string expression
      * @return LOCATE() call expression
      */
     public static Expression locateExp(String substring, Expression exp) {
-        return locateExp(new ASTScalar(substring), exp);
+        return locateExp(ExpressionFactory.wrapScalarValue(substring), exp);
     }
 
     /**
@@ -169,11 +144,11 @@ public class FunctionExpressionFactory {
      * of substring in string or 0 if it is not found.
      *
      * @param substring object path value
-     * @param path object path
+     * @param path      object path
      * @return LOCATE() call expression
      */
     public static Expression locateExp(String substring, String path) {
-        return locateExp(new ASTScalar(substring), new ASTObjPath(path));
+        return locateExp(ExpressionFactory.wrapScalarValue(substring), ExpressionFactory.pathExp(path));
     }
 
     /**
@@ -181,11 +156,11 @@ public class FunctionExpressionFactory {
      * of substring in string or 0 if it is not found.
      *
      * @param substring string expression
-     * @param exp string expression
+     * @param exp       string expression
      * @return LOCATE() call expression
      */
     public static Expression locateExp(Expression substring, Expression exp) {
-        return new ASTLocate(substring, exp);
+        return new LocateExp(substring, exp);
     }
 
     /**
@@ -193,7 +168,7 @@ public class FunctionExpressionFactory {
      * @return ABS() call expression
      */
     public static Expression absExp(Expression exp) {
-        return new ASTAbs(exp);
+        return new AbsExp(exp);
     }
 
     /**
@@ -201,7 +176,7 @@ public class FunctionExpressionFactory {
      * @return ABS() call expression
      */
     public static Expression absExp(String path) {
-        return new ASTAbs(new ASTObjPath(path));
+        return new AbsExp(ExpressionFactory.pathExp(path));
     }
 
     /**
@@ -209,7 +184,7 @@ public class FunctionExpressionFactory {
      * @return SQRT() call expression
      */
     public static Expression sqrtExp(Expression exp) {
-        return new ASTSqrt(exp);
+        return new SqrtExp(exp);
     }
 
     /**
@@ -217,34 +192,34 @@ public class FunctionExpressionFactory {
      * @return SQRT() call expression
      */
     public static Expression sqrtExp(String path) {
-        return new ASTSqrt(new ASTObjPath(path));
+        return new SqrtExp(ExpressionFactory.pathExp(path));
     }
 
     /**
-     * @param exp numeric expression
+     * @param exp    numeric expression
      * @param number divisor
      * @return MOD() call expression
      */
     public static Expression modExp(Expression exp, Number number) {
-        return modExp(exp, new ASTScalar(number));
+        return modExp(exp, ExpressionFactory.wrapScalarValue(number));
     }
 
     /**
-     * @param path object path value
+     * @param path   object path value
      * @param number divisor
      * @return MOD() call expression
      */
     public static Expression modExp(String path, Number number) {
-        return modExp(new ASTObjPath(path), new ASTScalar(number));
+        return modExp(ExpressionFactory.pathExp(path), ExpressionFactory.wrapScalarValue(number));
     }
 
     /**
-     * @param exp object path value
+     * @param exp    object path value
      * @param number numeric expression
      * @return MOD() call expression
      */
     public static Expression modExp(Expression exp, Expression number) {
-        return new ASTMod(exp, number);
+        return new ModExp(exp, number);
     }
 
     /**
@@ -271,11 +246,11 @@ public class FunctionExpressionFactory {
      * @return CONCAT() call expression
      */
     public static Expression concatExp(Expression... expressions) {
-        if(expressions == null || expressions.length == 0) {
-            return new ASTConcat();
+        if (expressions == null || expressions.length == 0) {
+            return new ConcatExp();
         }
 
-        return new ASTConcat(expressions);
+        return new ConcatExp((Object[]) expressions);
     }
 
     /**
@@ -302,65 +277,65 @@ public class FunctionExpressionFactory {
      * @return CONCAT() call expression
      */
     public static Expression concatExp(String... paths) {
-        if(paths == null || paths.length == 0) {
-            return new ASTConcat();
+        if (paths == null || paths.length == 0) {
+            return new ConcatExp();
         }
 
         Expression[] expressions = new Expression[paths.length];
-        for(int i=0; i<paths.length; i++) {
-            expressions[i] = new ASTObjPath(paths[i]);
+        for (int i = 0; i < paths.length; i++) {
+            expressions[i] = ExpressionFactory.pathExp(paths[i]);
         }
-        return new ASTConcat(expressions);
+        return new ConcatExp((Object[]) expressions);
     }
 
     /**
      * @return Expression COUNT(&ast;)
      */
     public static Expression countExp() {
-        return new ASTCount();
+        return new CountExp(new AsteriskExp());
     }
 
     /**
      * @return Expression COUNT(exp)
      */
     public static Expression countExp(Expression exp) {
-        return new ASTCount(exp);
+        return new CountExp(exp);
     }
-    
+
     /**
      * @return Expression COUNT(DISTINCT(exp))
      * @since 4.1
      */
     public static Expression countDistinctExp(Expression exp) {
-        return new ASTCount(new ASTDistinct(exp));
+        return new CountExp(new DistinctExp(exp));
     }
 
     /**
      * @return Expression MIN(exp)
      */
     public static Expression minExp(Expression exp) {
-        return new ASTMin(exp);
+        return new MinExp(exp);
     }
 
     /**
      * @return Expression MAX(exp)
      */
     public static Expression maxExp(Expression exp) {
-        return new ASTMax(exp);
+        return new MaxExp(exp);
     }
 
     /**
      * @return Expression AVG(exp)
      */
     public static Expression avgExp(Expression exp) {
-        return new ASTAvg(exp);
+        return new AvgExp(exp);
     }
 
     /**
      * @return SUM(exp) expression
      */
     public static Expression sumExp(Expression exp) {
-        return new ASTSum(exp);
+        return new SumExp(exp);
     }
 
     /**
@@ -368,28 +343,30 @@ public class FunctionExpressionFactory {
      * @since 5.0
      */
     public static Expression customAggregateExp(String function, Expression exp) {
-        return new ASTCustomAggregate(function, exp);
+        CustomAggregateExp aggregate = new CustomAggregateExp(exp);
+        aggregate.setFunctionName(function);
+        return aggregate;
     }
 
     /**
      * @return CURRENT_DATE expression
      */
     public static Expression currentDate() {
-        return new ASTCurrentDate();
+        return new CurrentDateExp();
     }
 
     /**
      * @return CURRENT_TIME expression
      */
     public static Expression currentTime() {
-        return new ASTCurrentTime();
+        return new CurrentTimeExp();
     }
 
     /**
      * @return CURRENT_TIMESTAMP expression
      */
     public static Expression currentTimestamp() {
-        return new ASTCurrentTimestamp();
+        return new CurrentTimestampExp();
     }
 
     /**
@@ -397,7 +374,7 @@ public class FunctionExpressionFactory {
      * @return year(exp) function expression
      */
     public static Expression yearExp(Expression exp) {
-        return extractExp(exp, ASTExtract.DateTimePart.YEAR);
+        return extractExp(exp, ExtractExp.DateTimePart.YEAR);
     }
 
     /**
@@ -405,7 +382,7 @@ public class FunctionExpressionFactory {
      * @return year(path) function expression
      */
     public static Expression yearExp(String path) {
-        return extractExp(path, ASTExtract.DateTimePart.YEAR);
+        return extractExp(path, ExtractExp.DateTimePart.YEAR);
     }
 
     /**
@@ -413,7 +390,7 @@ public class FunctionExpressionFactory {
      * @return month(exp) function expression
      */
     public static Expression monthExp(Expression exp) {
-        return extractExp(exp, ASTExtract.DateTimePart.MONTH);
+        return extractExp(exp, ExtractExp.DateTimePart.MONTH);
     }
 
     /**
@@ -421,7 +398,7 @@ public class FunctionExpressionFactory {
      * @return month(path) function expression
      */
     public static Expression monthExp(String path) {
-        return extractExp(path, ASTExtract.DateTimePart.MONTH);
+        return extractExp(path, ExtractExp.DateTimePart.MONTH);
     }
 
     /**
@@ -429,7 +406,7 @@ public class FunctionExpressionFactory {
      * @return week(exp) function expression
      */
     public static Expression weekExp(Expression exp) {
-        return extractExp(exp, ASTExtract.DateTimePart.WEEK);
+        return extractExp(exp, ExtractExp.DateTimePart.WEEK);
     }
 
     /**
@@ -437,7 +414,7 @@ public class FunctionExpressionFactory {
      * @return week(path) function expression
      */
     public static Expression weekExp(String path) {
-        return extractExp(path, ASTExtract.DateTimePart.WEEK);
+        return extractExp(path, ExtractExp.DateTimePart.WEEK);
     }
 
     /**
@@ -445,7 +422,7 @@ public class FunctionExpressionFactory {
      * @return dayOfYear(exp) function expression
      */
     public static Expression dayOfYearExp(Expression exp) {
-        return extractExp(exp, ASTExtract.DateTimePart.DAY_OF_YEAR);
+        return extractExp(exp, ExtractExp.DateTimePart.DAY_OF_YEAR);
     }
 
     /**
@@ -453,7 +430,7 @@ public class FunctionExpressionFactory {
      * @return dayOfYear(path) function expression
      */
     public static Expression dayOfYearExp(String path) {
-        return extractExp(path, ASTExtract.DateTimePart.DAY_OF_YEAR);
+        return extractExp(path, ExtractExp.DateTimePart.DAY_OF_YEAR);
     }
 
     /**
@@ -461,7 +438,7 @@ public class FunctionExpressionFactory {
      * @return dayOfMonth(exp) function expression, synonym for day()
      */
     public static Expression dayOfMonthExp(Expression exp) {
-        return extractExp(exp, ASTExtract.DateTimePart.DAY_OF_MONTH);
+        return extractExp(exp, ExtractExp.DateTimePart.DAY_OF_MONTH);
     }
 
     /**
@@ -469,7 +446,7 @@ public class FunctionExpressionFactory {
      * @return dayOfMonth(path) function expression, synonym for day()
      */
     public static Expression dayOfMonthExp(String path) {
-        return extractExp(path, ASTExtract.DateTimePart.DAY_OF_MONTH);
+        return extractExp(path, ExtractExp.DateTimePart.DAY_OF_MONTH);
     }
 
     /**
@@ -477,7 +454,7 @@ public class FunctionExpressionFactory {
      * @return dayOfWeek(exp) function expression
      */
     public static Expression dayOfWeekExp(Expression exp) {
-        return extractExp(exp, ASTExtract.DateTimePart.DAY_OF_WEEK);
+        return extractExp(exp, ExtractExp.DateTimePart.DAY_OF_WEEK);
     }
 
     /**
@@ -485,7 +462,7 @@ public class FunctionExpressionFactory {
      * @return dayOfWeek(path) function expression
      */
     public static Expression dayOfWeekExp(String path) {
-        return extractExp(path, ASTExtract.DateTimePart.DAY_OF_WEEK);
+        return extractExp(path, ExtractExp.DateTimePart.DAY_OF_WEEK);
     }
 
     /**
@@ -493,7 +470,7 @@ public class FunctionExpressionFactory {
      * @return hour(exp) function expression
      */
     public static Expression hourExp(Expression exp) {
-        return extractExp(exp, ASTExtract.DateTimePart.HOUR);
+        return extractExp(exp, ExtractExp.DateTimePart.HOUR);
     }
 
     /**
@@ -501,7 +478,7 @@ public class FunctionExpressionFactory {
      * @return hour(path) function expression
      */
     public static Expression hourExp(String path) {
-        return extractExp(path, ASTExtract.DateTimePart.HOUR);
+        return extractExp(path, ExtractExp.DateTimePart.HOUR);
     }
 
     /**
@@ -509,7 +486,7 @@ public class FunctionExpressionFactory {
      * @return minute(exp) function expression
      */
     public static Expression minuteExp(Expression exp) {
-        return extractExp(exp, ASTExtract.DateTimePart.MINUTE);
+        return extractExp(exp, ExtractExp.DateTimePart.MINUTE);
     }
 
     /**
@@ -517,7 +494,7 @@ public class FunctionExpressionFactory {
      * @return minute(path) function expression
      */
     public static Expression minuteExp(String path) {
-        return extractExp(path, ASTExtract.DateTimePart.MINUTE);
+        return extractExp(path, ExtractExp.DateTimePart.MINUTE);
     }
 
     /**
@@ -525,7 +502,7 @@ public class FunctionExpressionFactory {
      * @return second(exp) function expression
      */
     public static Expression secondExp(Expression exp) {
-        return extractExp(exp, ASTExtract.DateTimePart.SECOND);
+        return extractExp(exp, ExtractExp.DateTimePart.SECOND);
     }
 
     /**
@@ -533,37 +510,39 @@ public class FunctionExpressionFactory {
      * @return second(path) function expression
      */
     public static Expression secondExp(String path) {
-        return extractExp(path, ASTExtract.DateTimePart.SECOND);
+        return extractExp(path, ExtractExp.DateTimePart.SECOND);
     }
 
     /**
      * @param function name to call
-     * @param args function arguments
+     * @param args     function arguments
      * @return expression to call "function" with provided arguments
-     *
      * @since 4.2
      */
     public static Expression functionCall(String function, Object... args) {
-        return new ASTCustomFunction(function, args);
+        CustomFunctionExp call = new CustomFunctionExp(args);
+        call.setFunctionName(function);
+        return call;
     }
 
     /**
      * @param operator to call
-     * @param args arguments
+     * @param args     arguments
      * @return expression to use custom "operator" with provided arguments
-     *
      * @since 4.2
      */
     public static Expression operator(String operator, Object... args) {
-        return new ASTCustomOperator(operator, args);
+        CustomOperatorExp call = new CustomOperatorExp(args);
+        call.setOperator(operator);
+        return call;
     }
 
-    static Expression extractExp(String path, ASTExtract.DateTimePart part) {
+    static Expression extractExp(String path, ExtractExp.DateTimePart part) {
         return extractExp(ExpressionFactory.pathExp(path), part);
     }
 
-    static Expression extractExp(Expression exp, ASTExtract.DateTimePart part) {
-        ASTExtract extract = new ASTExtract(exp);
+    static Expression extractExp(Expression exp, ExtractExp.DateTimePart part) {
+        ExtractExp extract = new ExtractExp(exp);
         extract.setPart(part);
         return extract;
     }

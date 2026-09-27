@@ -25,9 +25,9 @@ import org.apache.cayenne.access.types.ValueObjectType;
 import org.apache.cayenne.access.types.ValueObjectTypeRegistry;
 import org.apache.cayenne.exp.Expression;
 import org.apache.cayenne.exp.TraversalHandler;
-import org.apache.cayenne.exp.parser.ASTFunctionCall;
-import org.apache.cayenne.exp.parser.ASTScalar;
-import org.apache.cayenne.exp.parser.ASTSubquery;
+import org.apache.cayenne.exp.FunctionCallExp;
+import org.apache.cayenne.exp.ScalarExp;
+import org.apache.cayenne.exp.SubqueryExp;
 
 import java.util.function.Function;
 
@@ -69,13 +69,13 @@ class ToCacheKeyTraversalHandler implements TraversalHandler {
     @Override
     public void startNode(Expression node, Expression parentNode) {
         if(node.getType() == Expression.FUNCTION_CALL) {
-            out.append(((ASTFunctionCall)node).getFunctionName()).append('(');
+            out.append(((FunctionCallExp)node).getFunctionName()).append('(');
         } else {
             out.append(node.getType()).append('(');
         }
 
         // a subquery keeps its query outside the expression tree, so it needs to be added to the key explicitly
-        if (node instanceof ASTSubquery subquery && subqueryKeyBuilder != null) {
+        if (node instanceof SubqueryExp subquery && subqueryKeyBuilder != null) {
             out.append(subqueryKeyBuilder.apply(subquery.getQuery()));
         }
     }
@@ -92,8 +92,8 @@ class ToCacheKeyTraversalHandler implements TraversalHandler {
             return;
         }
 
-        if(leaf instanceof ASTScalar) {
-            leaf = ((ASTScalar) leaf).getValue();
+        if(leaf instanceof ScalarExp) {
+            leaf = ((ScalarExp) leaf).getValue();
         } else if(leaf instanceof Object[]) {
             for(Object value : (Object[])leaf) {
                 objectNode(value, parentNode);

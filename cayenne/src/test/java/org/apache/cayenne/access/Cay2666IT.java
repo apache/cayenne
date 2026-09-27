@@ -20,9 +20,9 @@ package org.apache.cayenne.access;
 
 import org.apache.cayenne.exp.Expression;
 import org.apache.cayenne.exp.ExpressionFactory;
-import org.apache.cayenne.exp.parser.ASTDbPath;
-import org.apache.cayenne.exp.parser.ASTEqual;
-import org.apache.cayenne.exp.parser.ASTObjPath;
+import org.apache.cayenne.exp.DbPathExp;
+import org.apache.cayenne.exp.EqualExp;
+import org.apache.cayenne.exp.ObjPathExp;
 import org.apache.cayenne.query.ObjectSelect;
 import org.apache.cayenne.test.jdbc.TableHelper;
 import org.apache.cayenne.testdo.cay_2666.CAY2666;
@@ -65,35 +65,35 @@ public class Cay2666IT {
     public void expWithAlias() {
         Expression expression = ExpressionFactory.exp("paintings#p1.galleries$#p2.name = 'Test'");
         assertEquals("p1.p2.name", expression.getOperand(0).toString());
-        assertEquals("galleries$", ((ASTObjPath)expression.getOperand(0)).getPathAliases().get("p2"));
+        assertEquals("galleries$", ((ObjPathExp)expression.getOperand(0)).getPathAliases().get("p2"));
     }
 
     @Test
     public void expWithAliasAndOuterJoin() {
         Expression expression = ExpressionFactory.exp("paintings$#p1+.name = 'Test'");
         assertEquals("p1.name", expression.getOperand(0).toString());
-        assertEquals("paintings$+", ((ASTObjPath)expression.getOperand(0)).getPathAliases().get("p1"));
+        assertEquals("paintings$+", ((ObjPathExp)expression.getOperand(0)).getPathAliases().get("p1"));
     }
 
     @Test
     public void dbPathWithDollarSign() throws IOException {
         StringBuilder buffer = new StringBuilder();
-        new ASTDbPath("x$").appendAsString(buffer);
+        ExpressionFactory.dbPathExp("x$").appendAsString(buffer);
         assertEquals("db:x$", buffer.toString());
     }
 
     @Test
     public void expDbPathWithDollarSign() throws IOException {
         Expression exp = ExpressionFactory.exp("db:x$ = 'A'");
-        Expression expression = new ASTEqual(new ASTDbPath("x$"), "A");
+        Expression expression = new EqualExp(ExpressionFactory.dbPathExp("x$"), "A");
         assertEquals(exp, expression);
 
         exp = ExpressionFactory.exp("x$ = 'A'");
-        expression = new ASTEqual(new ASTDbPath("x$"), "A");
+        expression = new EqualExp(ExpressionFactory.dbPathExp("x$"), "A");
         assertNotEquals(exp, expression);
 
         exp = ExpressionFactory.exp("db:x$ = $name", "A");
-        expression = new ASTEqual(new ASTDbPath("x$"), "A");
+        expression = new EqualExp(ExpressionFactory.dbPathExp("x$"), "A");
         assertEquals(exp, expression);
     }
 
@@ -101,24 +101,24 @@ public class Cay2666IT {
     public void objPathWithDollarSign() throws IOException {
         StringBuilder buffer = new StringBuilder();
 
-        new ASTObjPath("obj:x$").appendAsString(buffer);
+        ExpressionFactory.pathExp("obj:x$").appendAsString(buffer);
         assertEquals("obj:x$", buffer.toString());
 
-        assertEquals("y$", new ASTObjPath("y$").toString());
+        assertEquals("y$", ExpressionFactory.pathExp("y$").toString());
     }
 
     @Test
     public void expObjPathWithDollarSign() throws IOException {
         Expression exp = ExpressionFactory.exp("obj:x$ = 'A'");
-        Expression expression = new ASTEqual(new ASTObjPath("x$"), "A");
+        Expression expression = new EqualExp(ExpressionFactory.pathExp("x$"), "A");
         assertEquals(exp, expression);
 
         exp = ExpressionFactory.exp("x$ = 'A'");
-        expression = new ASTEqual(new ASTObjPath("x$"), "A");
+        expression = new EqualExp(ExpressionFactory.pathExp("x$"), "A");
         assertEquals(exp, expression);
 
         exp = ExpressionFactory.exp("obj:x$ = $name", "A");
-        expression = new ASTEqual(new ASTObjPath("x$"), "A");
+        expression = new EqualExp(ExpressionFactory.pathExp("x$"), "A");
         assertEquals(exp, expression);
     }
 

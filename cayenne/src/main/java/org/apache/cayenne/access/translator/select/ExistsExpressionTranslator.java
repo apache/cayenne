@@ -16,20 +16,18 @@
  *  specific language governing permissions and limitations
  *  under the License.
  ****************************************************************/
-
 package org.apache.cayenne.access.translator.select;
 
 import org.apache.cayenne.Persistent;
 import org.apache.cayenne.exp.Expression;
 import org.apache.cayenne.exp.ExpressionFactory;
 import org.apache.cayenne.exp.TraversalHandler;
-import org.apache.cayenne.exp.parser.ASTDbPath;
-import org.apache.cayenne.exp.parser.ASTNotExists;
-import org.apache.cayenne.exp.parser.ASTSubquery;
-import org.apache.cayenne.exp.parser.AggregateConditionNode;
-import org.apache.cayenne.exp.parser.ConditionNode;
-import org.apache.cayenne.exp.parser.Node;
-import org.apache.cayenne.exp.parser.SimpleNode;
+import org.apache.cayenne.exp.DbPathExp;
+import org.apache.cayenne.exp.NotExistsExp;
+import org.apache.cayenne.exp.SubqueryExp;
+import org.apache.cayenne.exp.AggregateConditionExp;
+import org.apache.cayenne.exp.ConditionExp;
+import org.apache.cayenne.exp.BaseExp;
 import org.apache.cayenne.exp.path.CayennePath;
 import org.apache.cayenne.map.DbEntity;
 import org.apache.cayenne.map.DbJoin;
@@ -37,8 +35,11 @@ import org.apache.cayenne.map.DbRelationship;
 import org.apache.cayenne.map.ObjEntity;
 import org.apache.cayenne.query.ObjectSelect;
 
+import java.util.ArrayDeque;
 import java.util.ArrayList;
+import java.util.Deque;
 import java.util.HashMap;
+import java.util.IdentityHashMap;
 import java.util.List;
 import java.util.Map;
 
@@ -51,15 +52,15 @@ class ExistsExpressionTranslator {
     private final Expression expressionToTranslate;
     private final boolean not;
 
-    ExistsExpressionTranslator(SelectTranslatorContext context, SimpleNode exists) {
+    ExistsExpressionTranslator(SelectTranslatorContext context, BaseExp exists) {
         this.context = context;
         this.expressionToTranslate = exists;
-        this.not = exists instanceof ASTNotExists;
+        this.not = exists instanceof NotExistsExp;
     }
 
     Expression translate() {
         Object child = expressionToTranslate.getOperand(0);
-        if(child instanceof ASTSubquery) {
+        if(child instanceof SubqueryExp) {
             return expressionToTranslate;
         }
 
@@ -77,44 +78,49 @@ class ExistsExpressionTranslator {
             translatedExpression = objEntity.translateToDbPath(translatedExpression);
         }
 
+        // the relationship each path starts with, keyed by the node holding the rest of that path. A path that
+        // doesn't start with a relationship of the root entity is not in the map.
+        Map<DbPathExp, DbRelationship> relationships = new IdentityHashMap<>();
+
         // 0. quick path for a simple case - exists query for a single path expression
         // maybe we should support path as a condition in a general translator too, not only here
-        if (translatedExpression instanceof ASTDbPath astDbPathExpression) {
-            DbPathMarker marker = createPathMarker(entity, astDbPathExpression);
-            Expression pathExistExp = markerToExpression(marker);
-            if(marker.relationship == null) {
+        if (translatedExpression instanceof DbPathExp dbPath) {
+            DbPathExp tail = splitPath(entity, dbPath, relationships);
+            Expression pathExistExp = pathCondition(tail);
+            DbRelationship relationship = relationships.get(tail);
+            if(relationship == null) {
                 return pathExistExp;
             }
-            return subqueryExpression(marker.relationship, pathExistExp);
+            return subqueryExpression(relationship, pathExistExp);
         }
 
         // 1. transform all paths
         translatedExpression = translatedExpression.transform(
-                o -> o instanceof ASTDbPath astDbPath ? createPathMarker(entity, astDbPath) : o
+                o -> o instanceof DbPathExp dbPath ? splitPath(entity, dbPath, relationships) : o
         );
-
-        // 2. group paths with db relationship by their parent conditions and relationships
-        Map<SimpleNode, Map<DbRelationship, List<DbPathMarker>>> parents
-                = groupPathsByParentAndRelationship(translatedExpression);
-        if (parents.isEmpty()) {
+        if (relationships.isEmpty()) {
             // no relationships in the original expression, so use it as is
             return translatedExpression;
         }
 
-        // 3. make pairs relationship <-> node that should spawn a subquery
-        List<RelationshipToNode> relationshipToNodes = uniqueNodes(parents);
+        // 2. find the enclosing conditions of the paths, and pair each relationship with the node to spawn
+        //    a subquery from
+        Ancestry ancestry = Ancestry.of(translatedExpression, relationships);
+        List<RelationshipToNode> relationshipToNodes = subqueryNodes(ancestry, relationships);
 
-        // 4. generate subqueries and paste them to the original expression
-        return generateSubqueriesAndReplace(translatedExpression, relationshipToNodes);
+        // 3. generate subqueries and paste them to the original expression
+        return generateSubqueriesAndReplace(translatedExpression, relationshipToNodes, ancestry);
     }
 
-    private Expression generateSubqueriesAndReplace(Expression expressionToTranslate, List<RelationshipToNode> relationshipToNodes) {
+    private Expression generateSubqueriesAndReplace(Expression expressionToTranslate,
+                                                    List<RelationshipToNode> relationshipToNodes,
+                                                    Ancestry ancestry) {
         Expression finalExpression = null;
         for (RelationshipToNode pair : relationshipToNodes) {
-            Expression exp = nodeToExpression(pair.node);
-            SimpleNode replacement = subqueryExpression(pair.relationship, exp);
+            Expression exp = pair.node() == null ? null : pair.node().deepCopy();
+            BaseExp replacement = subqueryExpression(pair.relationship(), exp);
 
-            Node parent = pair.node.jjtGetParent();
+            BaseExp parent = pair.node() == null ? null : ancestry.parents.get(pair.node());
             if (parent == null) {
                 if (finalExpression != null) {
                     throw new IllegalStateException("Expected single root expression");
@@ -122,10 +128,9 @@ class ExistsExpressionTranslator {
                 finalExpression = replacement;
             } else {
                 finalExpression = expressionToTranslate;
-                for (int i = 0; i < parent.jjtGetNumChildren(); i++) {
-                    if (parent.jjtGetChild(i) == pair.node) {
-                        parent.jjtAddChild(replacement, i);
-                        replacement.jjtSetParent(parent);
+                for (int i = 0; i < parent.getChildCount(); i++) {
+                    if (parent.getChild(i) == pair.node()) {
+                        parent.addChild(replacement, i);
                     }
                 }
             }
@@ -133,7 +138,7 @@ class ExistsExpressionTranslator {
         return finalExpression;
     }
 
-    private SimpleNode subqueryExpression(DbRelationship relationship, Expression exp) {
+    private BaseExp subqueryExpression(DbRelationship relationship, Expression exp) {
         for (DbJoin join : relationship.getJoins()) {
             Expression joinMatchExp = ExpressionFactory.matchDbExp(join.getTargetName(),
                     ExpressionFactory.enclosingObjectExp(ExpressionFactory.dbPathExp(join.getSourceName())));
@@ -146,39 +151,48 @@ class ExistsExpressionTranslator {
         ObjectSelect<Persistent> select = ObjectSelect.query(Persistent.class)
                 .dbEntityName(relationship.getTargetEntityName())
                 .where(exp);
-        return (SimpleNode) (not
+        return (BaseExp) (not
                 ? ExpressionFactory.notExists(select)
                 : ExpressionFactory.exists(select));
     }
 
-    private Expression nodeToExpression(SimpleNode node) {
-        if (node instanceof ParentMarker) {
+    /**
+     * Returns a condition for a bare path, or null for an empty path, when a plain exists subquery is enough.
+     */
+    private Expression pathCondition(DbPathExp path) {
+        if (path.getPath().isEmpty()) {
             return null;
         }
-        if (node instanceof DbPathMarker dbPathMarker) {
-            return markerToExpression(dbPathMarker);
-        }
-        return node.deepCopy();
+        return ExpressionFactory.noMatchExp(path, null);
     }
 
-    private Expression markerToExpression(DbPathMarker marker) {
-        // special case for an empty path
-        // we don't need additional qualifier, just plain exists subquery
-        if (marker.getPath().isEmpty()) {
-            return null;
+    /**
+     * Pairs each relationship with the node whose copy becomes the qualifier of the relationship subquery. When
+     * all the children of an aggregate condition are paths of the same relationship, the whole condition is
+     * taken; otherwise each path is taken with its own nearest condition. A null node means a subquery with
+     * no qualifier beyond the join.
+     */
+    private List<RelationshipToNode> subqueryNodes(Ancestry ancestry, Map<DbPathExp, DbRelationship> relationships) {
+        List<RelationshipToNode> relationshipToNodes = new ArrayList<>(relationships.size());
+        Map<BaseExp, Map<DbRelationship, List<DbPathExp>>> parents = new HashMap<>(4);
+        for (DbPathExp path : ancestry.paths) {
+            DbRelationship relationship = relationships.get(path);
+            BaseExp aggregateCondition = ancestry.aggregateConditions.get(path);
+            if (aggregateCondition == null) {
+                // nothing above the path to take as a whole
+                relationshipToNodes.add(new RelationshipToNode(relationship, ancestry.conditions.get(path)));
+            } else {
+                parents.computeIfAbsent(aggregateCondition, p -> new HashMap<>(4))
+                        .computeIfAbsent(relationship, r -> new ArrayList<>(4))
+                        .add(path);
+            }
         }
-        return ExpressionFactory.noMatchExp(marker, null);
-    }
 
-    private List<RelationshipToNode> uniqueNodes(Map<SimpleNode, Map<DbRelationship, List<DbPathMarker>>> parents) {
-        List<RelationshipToNode> relationshipToNodes = new ArrayList<>(parents.size());
         parents.forEach((parent, relToPath) ->
                 relToPath.forEach((rel, paths) -> {
-                    if (paths.size() != parent.jjtGetNumChildren()) {
-                        paths.forEach(p -> {
-                            SimpleNode nearestCondition = getParentCondition(p);
-                            relationshipToNodes.add(new RelationshipToNode(rel, nearestCondition));
-                        });
+                    if (paths.size() != parent.getChildCount()) {
+                        paths.forEach(p -> relationshipToNodes
+                                .add(new RelationshipToNode(rel, ancestry.conditions.get(p))));
                     } else {
                         relationshipToNodes.add(new RelationshipToNode(rel, parent));
                     }
@@ -187,137 +201,76 @@ class ExistsExpressionTranslator {
         return relationshipToNodes;
     }
 
-    private Map<SimpleNode, Map<DbRelationship, List<DbPathMarker>>> groupPathsByParentAndRelationship(
-            Expression expressionToTranslate) {
-        Map<SimpleNode, Map<DbRelationship, List<DbPathMarker>>> parents = new HashMap<>(4);
-        expressionToTranslate.traverse((SimpleTraversalHandler) (node, parentNode) -> {
-            if (node instanceof DbPathMarker marker) {
-                if (marker.root()) {
-                    return;
-                }
-                SimpleNode parent = getParentAggregateCondition(parentNode);
-                parents.computeIfAbsent(parent, p -> new HashMap<>(4))
-                        .computeIfAbsent(marker.relationship, r -> new ArrayList<>(4))
-                        .add(marker);
-            }
-        });
-        return parents;
-    }
-
-    private SimpleNode getParentAggregateCondition(Expression parentNode) {
-        Node parent = (Node) parentNode;
-        while (parent != null && !(parent instanceof AggregateConditionNode)) {
-            parent = parent.jjtGetParent();
-        }
-        if (parent == null) {
-            parent = new ParentMarker();
-        }
-        return (SimpleNode) parent;
-    }
-
-    private SimpleNode getParentCondition(Expression parentNode) {
-        Node parent = (Node) parentNode;
-        while (parent != null && !(parent instanceof ConditionNode)) {
-            parent = parent.jjtGetParent();
-        }
-        if (parent == null) {
-            parent = new ParentMarker();
-        }
-        return (SimpleNode) parent;
-    }
-
-    private DbPathMarker createPathMarker(DbEntity entity, ASTDbPath o) {
-        CayennePath path = o.getPath();
-        CayennePath newPath = CayennePath.EMPTY_PATH;
-        if(path.length() > 1) {
-            newPath = path.tail(1);
-        }
-        // mark relationship that this path relates to and transform path
+    /**
+     * Splits a path into the relationship of the root entity it starts with and the rest of the path. Returns a
+     * node holding the rest, and records the relationship for it in the map. A path that doesn't start with a
+     * relationship is returned whole and is not recorded.
+     */
+    private DbPathExp splitPath(DbEntity entity, DbPathExp dbPath, Map<DbPathExp, DbRelationship> relationships) {
+        CayennePath path = dbPath.getPath();
         DbRelationship relationship = entity.getRelationship(path.first().value());
         if (relationship == null) {
-            newPath = path;
+            return new DbPathExp(path);
         }
-        return new DbPathMarker(newPath, relationship);
+        DbPathExp tail = new DbPathExp(path.length() > 1 ? path.tail(1) : CayennePath.EMPTY_PATH);
+        relationships.put(tail, relationship);
+        return tail;
     }
 
-    static class RelationshipToNode {
-        final DbRelationship relationship;
-        final SimpleNode node;
-
-        RelationshipToNode(DbRelationship relationship, SimpleNode node) {
-            this.relationship = relationship;
-            this.node = node;
-        }
+    /**
+     * A relationship and the node whose copy qualifies the relationship subquery, null when there is none.
+     */
+    private record RelationshipToNode(DbRelationship relationship, BaseExp node) {
     }
 
-    static class DbPathMarker extends ASTDbPath {
+    /**
+     * The tree structure that the translation needs but the nodes themselves don't keep: the parent of each node,
+     * and for each relationship path its nearest enclosing condition and aggregate condition, null when there is
+     * none. Collected in a single traversal.
+     */
+    private static class Ancestry {
 
-        final DbRelationship relationship;
+        final Map<BaseExp, BaseExp> parents = new IdentityHashMap<>();
+        final List<DbPathExp> paths = new ArrayList<>();
+        final Map<DbPathExp, BaseExp> conditions = new IdentityHashMap<>();
+        final Map<DbPathExp, BaseExp> aggregateConditions = new IdentityHashMap<>();
 
-        DbPathMarker(CayennePath path, DbRelationship relationship) {
-            super(path);
-            this.relationship = relationship;
+        static Ancestry of(Expression expression, Map<DbPathExp, DbRelationship> relationships) {
+            Ancestry ancestry = new Ancestry();
+            Deque<BaseExp> stack = new ArrayDeque<>();
+            expression.traverse(new TraversalHandler() {
+                @Override
+                public void startNode(Expression node, Expression parentNode) {
+                    BaseExp exp = (BaseExp) node;
+                    if (parentNode != null) {
+                        ancestry.parents.put(exp, (BaseExp) parentNode);
+                    }
+                    if (exp instanceof DbPathExp path && relationships.containsKey(path)) {
+                        ancestry.paths.add(path);
+                        ancestry.conditions.put(path, nearest(stack, ConditionExp.class));
+                        ancestry.aggregateConditions.put(path, nearest(stack, AggregateConditionExp.class));
+                    }
+                    stack.push(exp);
+                }
+
+                @Override
+                public void endNode(Expression node, Expression parentNode) {
+                    stack.pop();
+                }
+            });
+            return ancestry;
         }
 
-        @Override
-        public Expression shallowCopy() {
-            return new DbPathMarker(getPath(), relationship);
-        }
-
-        @Override
-        public boolean equals(Object object) {
-            return this == object;
-        }
-
-        @Override
-        public int hashCode() {
-            return System.identityHashCode(this);
-        }
-
-        boolean root() {
-            return relationship == null;
-        }
-    }
-
-    static class ParentMarker extends ConditionNode {
-
-        public ParentMarker() {
-            super(0);
-        }
-
-        @Override
-        public Expression shallowCopy() {
-            return this;
-        }
-
-        @Override
-        protected int getRequiredChildrenCount() {
-            return 0;
-        }
-
-        @Override
-        protected Boolean evaluateSubNode(Object o, Object[] evaluatedChildren) throws Exception {
+        /**
+         * Returns the innermost node of the given type among the ancestors on the stack, or null if there is none.
+         */
+        private static BaseExp nearest(Deque<BaseExp> ancestors, Class<? extends BaseExp> type) {
+            for (BaseExp ancestor : ancestors) {
+                if (type.isInstance(ancestor)) {
+                    return ancestor;
+                }
+            }
             return null;
         }
-
-        @Override
-        protected String getExpressionOperator(int index) {
-            return null;
-        }
-
-        @Override
-        public boolean equals(Object object) {
-            return this == object;
-        }
-
-        @Override
-        public int hashCode() {
-            return System.identityHashCode(this);
-        }
-    }
-
-    interface SimpleTraversalHandler extends TraversalHandler {
-        @Override
-        void endNode(Expression node, Expression parentNode);
     }
 }

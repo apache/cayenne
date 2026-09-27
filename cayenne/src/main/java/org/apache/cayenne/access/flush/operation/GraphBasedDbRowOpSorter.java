@@ -33,7 +33,7 @@ import org.apache.cayenne.access.DataDomain;
 import org.apache.cayenne.access.flush.EffectiveOpId;
 import org.apache.cayenne.di.Inject;
 import org.apache.cayenne.di.Provider;
-import org.apache.cayenne.exp.parser.ASTDbPath;
+import org.apache.cayenne.exp.DbPathExp;
 import org.apache.cayenne.map.DbAttribute;
 import org.apache.cayenne.map.DbEntity;
 import org.apache.cayenne.map.DbJoin;
@@ -245,7 +245,7 @@ public class GraphBasedDbRowOpSorter implements DbRowOpSorter {
         public List<Map<String, Object>> visitUpdate(UpdateDbRowOp dbRow) {
             List<Map<String, Object>> result;
             Map<String, Object> updatedSnapshot = dbRow.getValues().getSnapshot();
-            if(dbRow.getChangeId().getEntityName().startsWith(ASTDbPath.DB_PREFIX)) {
+            if(dbRow.getChangeId().getEntityName().startsWith(DbPathExp.DB_PREFIX)) {
                 return Collections.singletonList(updatedSnapshot);
             }
             result = new ArrayList<>(2);

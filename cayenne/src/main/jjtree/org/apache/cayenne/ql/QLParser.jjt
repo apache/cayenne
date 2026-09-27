@@ -2,7 +2,8 @@ options {
 	
 	MULTI = true;
 	NODE_DEFAULT_VOID = true;
-	NODE_PACKAGE = "org.apache.cayenne.exp.parser";
+	NODE_PREFIX = "";
+	NODE_FACTORY = "org.apache.cayenne.ql.QLParser";
 	
 	STATIC = false;
 	DEBUG_PARSER = false;
@@ -39,8 +40,7 @@ import java.math.BigDecimal;
 import java.math.BigInteger;
 import java.util.HashMap;
 import java.util.Map;
-import org.apache.cayenne.exp.Expression;
-import org.apache.cayenne.exp.ExpressionException;
+import org.apache.cayenne.exp.*;
 import org.apache.cayenne.query.FluentSelect;
 import org.apache.cayenne.query.PrefetchTreeNode;
 
@@ -75,7 +75,7 @@ public class QLParser {
         }
     }
 
-    private Node boundParameter(String name) {
+    private BaseExp boundParameter(String name) {
         if (seenParameters == null) {
             seenParameters = new HashMap<String, Object>();
         }
@@ -91,7 +91,7 @@ public class QLParser {
             seenParameters.put(name, value);
         }
 
-        return ExpressionUtils.parameterNode(value);
+        return QLParserHelper.parameterNode(value);
     }
 
     // Query keywords are contextual: they are regular path tokens that are only treated as keywords
@@ -114,6 +114,84 @@ public class QLParser {
     private ParseException unexpectedToken(Token t, String expected) {
         return new ParseException("Encountered \"" + t.image + "\" at line " + t.beginLine + ", column "
             + t.beginColumn + ". Was expecting: " + expected);
+    }
+
+    /**
+     * Creates an empty node for each node id declared in this grammar. JJTree calls this instead of the node
+     * constructors (see the NODE_FACTORY option), so a new "#SomethingExp" declaration below needs a case here.
+     */
+    private static BaseExp jjtCreate(int id) {
+        // a switch statement, not a switch expression: JJTree can't parse the latter
+        switch (id) {
+            case JJTALLEXP: return new AllExp();
+            case JJTANYEXP: return new AnyExp();
+            case JJTOREXP: return new OrExp();
+            case JJTANDEXP: return new AndExp();
+            case JJTNOTEXISTSEXP: return new NotExistsExp();
+            case JJTEXISTSEXP: return new ExistsExp();
+            case JJTNOTEXP: return new NotExp();
+            case JJTTRUEEXP: return new TrueExp();
+            case JJTFALSEEXP: return new FalseExp();
+            case JJTEQUALEXP: return new EqualExp();
+            case JJTNOTEQUALEXP: return new NotEqualExp();
+            case JJTLESSOREQUALEXP: return new LessOrEqualExp();
+            case JJTLESSEXP: return new LessExp();
+            case JJTGREATEREXP: return new GreaterExp();
+            case JJTGREATEROREQUALEXP: return new GreaterOrEqualExp();
+            case JJTLIKEEXP: return new LikeExp();
+            case JJTLIKEIGNORECASEEXP: return new LikeIgnoreCaseExp();
+            case JJTINEXP: return new InExp();
+            case JJTBETWEENEXP: return new BetweenExp();
+            case JJTNOTLIKEEXP: return new NotLikeExp();
+            case JJTNOTLIKEIGNORECASEEXP: return new NotLikeIgnoreCaseExp();
+            case JJTNOTINEXP: return new NotInExp();
+            case JJTNOTBETWEENEXP: return new NotBetweenExp();
+            case JJTLISTEXP: return new ListExp();
+            case JJTSCALAREXP: return new ScalarExp();
+            case JJTBITWISEOREXP: return new BitwiseOrExp();
+            case JJTBITWISEXOREXP: return new BitwiseXorExp();
+            case JJTBITWISEANDEXP: return new BitwiseAndExp();
+            case JJTBITWISELEFTSHIFTEXP: return new BitwiseLeftShiftExp();
+            case JJTBITWISERIGHTSHIFTEXP: return new BitwiseRightShiftExp();
+            case JJTADDEXP: return new AddExp();
+            case JJTSUBTRACTEXP: return new SubtractExp();
+            case JJTMULTIPLYEXP: return new MultiplyExp();
+            case JJTDIVIDEEXP: return new DivideExp();
+            case JJTBITWISENOTEXP: return new BitwiseNotExp();
+            case JJTNEGATEEXP: return new NegateExp();
+            case JJTFULLOBJECTEXP: return new FullObjectExp();
+            case JJTENCLOSINGOBJECTEXP: return new EnclosingObjectExp();
+            case JJTCUSTOMFUNCTIONEXP: return new CustomFunctionExp();
+            case JJTCUSTOMOPERATOREXP: return new CustomOperatorExp();
+            case JJTCUSTOMAGGREGATEEXP: return new CustomAggregateExp();
+            case JJTCONCATEXP: return new ConcatExp();
+            case JJTSUBSTRINGEXP: return new SubstringExp();
+            case JJTTRIMEXP: return new TrimExp();
+            case JJTLOWEREXP: return new LowerExp();
+            case JJTUPPEREXP: return new UpperExp();
+            case JJTLENGTHEXP: return new LengthExp();
+            case JJTLOCATEEXP: return new LocateExp();
+            case JJTABSEXP: return new AbsExp();
+            case JJTSQRTEXP: return new SqrtExp();
+            case JJTMODEXP: return new ModExp();
+            case JJTASTERISKEXP: return new AsteriskExp();
+            case JJTCOUNTEXP: return new CountExp();
+            case JJTAVGEXP: return new AvgExp();
+            case JJTMAXEXP: return new MaxExp();
+            case JJTMINEXP: return new MinExp();
+            case JJTSUMEXP: return new SumExp();
+            case JJTCURRENTDATEEXP: return new CurrentDateExp();
+            case JJTCURRENTTIMEEXP: return new CurrentTimeExp();
+            case JJTCURRENTTIMESTAMPEXP: return new CurrentTimestampExp();
+            case JJTEXTRACTEXP: return new ExtractExp();
+            case JJTDISTINCTEXP: return new DistinctExp();
+            case JJTNAMEDPARAMETEREXP: return new NamedParameterExp();
+            case JJTOBJPATHEXP: return new ObjPathExp();
+            case JJTDBPATHEXP: return new DbPathExp();
+            case JJTENUMEXP: return new EnumExp();
+            case JJTDBIDPATHEXP: return new DbIdPathExp();
+            default: throw new ExpressionException("Unknown node id: " + id);
+        }
     }
 
     private Expression popExpression() {
@@ -286,16 +364,16 @@ void subquery() : {
 {
     "(" query = select(false) ")"
     {
-        jjtree.pushNode(new ASTSubquery(query));
+        jjtree.pushNode(new SubqueryExp(query));
     }
 }
 
-void allSubquery() #All(1) : {}
+void allSubquery() #AllExp(1) : {}
 {
     keyword("all") subquery()
 }
 
-void anySubquery() #Any(1) : {}
+void anySubquery() #AnyExp(1) : {}
 {
     keyword("any") subquery()
 }
@@ -322,58 +400,58 @@ void inOperand() : {}
 
 void orCondition() : {}
 {
-	andCondition() ( "or" andCondition() #Or(2) )*
+	andCondition() ( "or" andCondition() #OrExp(2) )*
 }
 
 void andCondition() : {}
 {
-	notCondition() ( "and" notCondition() #And(2) )*
+	notCondition() ( "and" notCondition() #AndExp(2) )*
 }
 
 void notCondition() : {}
 {
     // note: `not exists` rule must be before `not` to avoid lookahead
     // subquery forms must be before the path forms, they are distinguished by "(select" or "(from" that follows
-        LOOKAHEAD({ getToken(1).kind == NOT_EXISTS && isSubquery(2) }) <NOT_EXISTS> subquery() #NotExists(1)
+        LOOKAHEAD({ getToken(1).kind == NOT_EXISTS && isSubquery(2) }) <NOT_EXISTS> subquery() #NotExistsExp(1)
     |
-        <NOT_EXISTS> simpleCondition() #NotExists(1)
+        <NOT_EXISTS> simpleCondition() #NotExistsExp(1)
     |
-        LOOKAHEAD({ getToken(1).kind == EXISTS && isSubquery(2) }) <EXISTS> subquery() #Exists(1)
+        LOOKAHEAD({ getToken(1).kind == EXISTS && isSubquery(2) }) <EXISTS> subquery() #ExistsExp(1)
     |
-	    <EXISTS> simpleCondition() #Exists(1)
+	    <EXISTS> simpleCondition() #ExistsExp(1)
     |
-		( "not" | "!" ) simpleCondition() #Not(1)
+		( "not" | "!" ) simpleCondition() #NotExp(1)
 	|
 		simpleCondition()
 }
 
 void simpleCondition() : {} 
 {
-	  <TRUE> #True
+	  <TRUE> #TrueExp
 	|
-	  <FALSE> #False
+	  <FALSE> #FalseExp
 	|
 	  conditionExpression()
 	(
-          ("="  | "==") comparisonOperand() #Equal(2)
+          ("="  | "==") comparisonOperand() #EqualExp(2)
         |
-          ("!=" | "<>")  comparisonOperand() #NotEqual(2)
+          ("!=" | "<>")  comparisonOperand() #NotEqualExp(2)
         |
-          "<=" comparisonOperand() #LessOrEqual(2)
+          "<=" comparisonOperand() #LessOrEqualExp(2)
         |
-          "<" comparisonOperand() #Less(2)
+          "<" comparisonOperand() #LessExp(2)
         |
-          ">"  comparisonOperand() #Greater(2)
+          ">"  comparisonOperand() #GreaterExp(2)
         |
-          ">=" comparisonOperand() #GreaterOrEqual(2)
+          ">=" comparisonOperand() #GreaterOrEqualExp(2)
         |
-          "like" scalarExpression() #Like(2)
+          "like" scalarExpression() #LikeExp(2)
         |
-          "likeIgnoreCase"  scalarExpression() #LikeIgnoreCase(2)
+          "likeIgnoreCase"  scalarExpression() #LikeIgnoreCaseExp(2)
         |
-          "in" inOperand() #In(2)
+          "in" inOperand() #InExp(2)
         |
-          "between"  scalarExpression() "and" scalarExpression() #Between(3)
+          "between"  scalarExpression() "and" scalarExpression() #BetweenExp(3)
         |
           simpleNotCondition()
 	)?
@@ -383,19 +461,19 @@ void simpleNotCondition() : {}
 {
 	("not" | "!" )
 	(
-		"like" scalarExpression() #NotLike(2)
+		"like" scalarExpression() #NotLikeExp(2)
 	|
-	    "likeIgnoreCase"  scalarExpression() #NotLikeIgnoreCase(2)
+	    "likeIgnoreCase"  scalarExpression() #NotLikeIgnoreCaseExp(2)
 	|
-		"in" inOperand() #NotIn(2)
+		"in" inOperand() #NotInExp(2)
 	|
-		"between"  scalarExpression() "and" scalarExpression() #NotBetween(3)
+		"between"  scalarExpression() "and" scalarExpression() #NotBetweenExp(3)
 	)
 }
 
 void scalarCommaList() : {}
 {
-	( scalarConstExpression() ( ","  scalarConstExpression() )* ) #List
+	( scalarConstExpression() ( ","  scalarConstExpression() )* ) #ListExp
 }
 
 void conditionExpression() : {}
@@ -403,7 +481,7 @@ void conditionExpression() : {}
    // TODO: once we switch expression package to use AST* from parser package,
    // we might need implement special subclasses for numeric and character constant
    // nodes for the purpose of expression evaluation, instead . For now keep them as 
-   // generic ASTScalar and purge from the parent node to keep compatible with QualifierTranslator.
+   // generic ScalarExp and purge from the parent node to keep compatible with QualifierTranslator.
 
         // Path without any operator will go to numeric expression.
         // This done intentionally to remove lookahead that leads
@@ -412,7 +490,7 @@ void conditionExpression() : {}
     |
         stringExpression()
 	|
-		<NULL> #Scalar(0)
+		<NULL> #ScalarExp(0)
 	|
     	aggregateExpression()
     |
@@ -434,9 +512,9 @@ void stringParameter() : {}
 
 void stringLiteral() :  {}
 {
-    <SINGLE_QUOTED_STRING> { jjtThis.setValue(token_source.literalValue); } #Scalar(0)
+    <SINGLE_QUOTED_STRING> { jjtThis.setValue(token_source.literalValue); } #ScalarExp(0)
     |
-    <DOUBLE_QUOTED_STRING> { jjtThis.setValue(token_source.literalValue); } #Scalar(0)
+    <DOUBLE_QUOTED_STRING> { jjtThis.setValue(token_source.literalValue); } #ScalarExp(0)
 }
 
 void stringExpression() : {}
@@ -450,26 +528,26 @@ void scalarExpression() : {}
 {
   	   conditionExpression()
 	|
-	  <TRUE> { jjtThis.setValue(true); }  #Scalar(0)
+	  <TRUE> { jjtThis.setValue(true); }  #ScalarExp(0)
 	| 
-	  <FALSE> { jjtThis.setValue(false); }  #Scalar(0)
+	  <FALSE> { jjtThis.setValue(false); }  #ScalarExp(0)
 }
 
 void scalarConstExpression() : {}
 {
-	  <SINGLE_QUOTED_STRING> { jjtThis.setValue(token_source.literalValue); } #Scalar(0)
+	  <SINGLE_QUOTED_STRING> { jjtThis.setValue(token_source.literalValue); } #ScalarExp(0)
 	|
-	  <DOUBLE_QUOTED_STRING> { jjtThis.setValue(token_source.literalValue); } #Scalar(0)
+	  <DOUBLE_QUOTED_STRING> { jjtThis.setValue(token_source.literalValue); } #ScalarExp(0)
 	| 
 	  namedParameter()
 	| 
-	  <INT_LITERAL>   { jjtThis.setValue(token_source.literalValue); } #Scalar(0)
+	  <INT_LITERAL>   { jjtThis.setValue(token_source.literalValue); } #ScalarExp(0)
 	| 
-	  <FLOAT_LITERAL> { jjtThis.setValue(token_source.literalValue); } #Scalar(0)
+	  <FLOAT_LITERAL> { jjtThis.setValue(token_source.literalValue); } #ScalarExp(0)
 	|
-	  <TRUE>  { jjtThis.setValue(true);  } #Scalar(0)
+	  <TRUE>  { jjtThis.setValue(true);  } #ScalarExp(0)
 	| 
-	  <FALSE> { jjtThis.setValue(false); } #Scalar(0)
+	  <FALSE> { jjtThis.setValue(false); } #ScalarExp(0)
 }
 
 void numericExpression() : {}
@@ -481,7 +559,7 @@ void bitwiseOr() : {}
 {
     bitwiseXor()
     (
-        "|" bitwiseXor() #BitwiseOr(2)
+        "|" bitwiseXor() #BitwiseOrExp(2)
     )*
 }
 
@@ -489,7 +567,7 @@ void bitwiseXor() : {}
 {
     bitwiseAnd()
     (
-        "^" bitwiseAnd() #BitwiseXor(2)
+        "^" bitwiseAnd() #BitwiseXorExp(2)
     )*
 }
 
@@ -497,7 +575,7 @@ void bitwiseAnd() : {}
 {
     bitwiseShift()
     (
-        "&" bitwiseShift() #BitwiseAnd(2)
+        "&" bitwiseShift() #BitwiseAndExp(2)
     )*
 }
 
@@ -505,9 +583,9 @@ void bitwiseShift(): {}
 {
     arithmeticExp()
     (
-        "<<" arithmeticExp() #BitwiseLeftShift(2)
+        "<<" arithmeticExp() #BitwiseLeftShiftExp(2)
       | 
-        ">>" arithmeticExp() #BitwiseRightShift(2)
+        ">>" arithmeticExp() #BitwiseRightShiftExp(2)
     )*
 }
 
@@ -516,9 +594,9 @@ void arithmeticExp() : {}
 {
     multiplySubtractExp() 
     ( 
-        "+" multiplySubtractExp() #Add(2)
+        "+" multiplySubtractExp() #AddExp(2)
     |
-        "-" multiplySubtractExp() #Subtract(2)
+        "-" multiplySubtractExp() #SubtractExp(2)
     )*
 }
 
@@ -526,9 +604,9 @@ void multiplySubtractExp() : {}
 {
     numericTermExt() 
     ( 
-        <ASTERISK> numericTermExt() #Multiply(2)
+        <ASTERISK> numericTermExt() #MultiplyExp(2)
     |
-        "/" numericTermExt() #Divide(2)
+        "/" numericTermExt() #DivideExp(2)
     )*
 }
 
@@ -536,7 +614,7 @@ void numericTermExt() : {}
 {
         numericTerm()
     |
-        "~" numericTerm()  #BitwiseNot(1)
+        "~" numericTerm()  #BitwiseNotExp(1)
 }
 
   
@@ -544,7 +622,7 @@ void numericTerm() : {}
 {
         ( "+" )?  numericPrimary ()
     | 
-        "-"  numericTerm() #Negate(1)
+        "-"  numericTerm() #NegateExp(1)
 }
 
 
@@ -555,13 +633,13 @@ void numericPrimary() : {}
 		
 		"(" orCondition() ")"
 	|
-	    <SELF> #FullObject(0)
+	    <SELF> #FullObjectExp(0)
 	|
 	    LOOKAHEAD({ isKeywordWithParen(1, "enclosing") }) enclosing()
 	|
-	   <INT_LITERAL> { jjtThis.setValue(token_source.literalValue); } #Scalar(0)
+	   <INT_LITERAL> { jjtThis.setValue(token_source.literalValue); } #ScalarExp(0)
 	| 
-	   <FLOAT_LITERAL>{ jjtThis.setValue(token_source.literalValue); }  #Scalar(0)
+	   <FLOAT_LITERAL>{ jjtThis.setValue(token_source.literalValue); }  #ScalarExp(0)
 	|
         namedParameter()
     |
@@ -576,7 +654,7 @@ void numericPrimary() : {}
         customAggregate()
 }
 
-void enclosing() #EnclosingObject(1) : {}
+void enclosing() #EnclosingObjectExp(1) : {}
 {
     keyword("enclosing") "(" orCondition() ")"
 }
@@ -586,42 +664,48 @@ void functionsReturningStrings() : { }
 	concat() | substring() | trim() | lower() | upper()
 }
 
-void customFunction() #CustomFunction : { }
+void customFunction() #CustomFunctionExp : { }
 {
-    <FUNCTION> "(" stringLiteral() ( "," ( stringExpression() | numericExpression() ) )* ")"
+    // the quoted name is an attribute of the node, not an operand: read it off the token instead of parsing a literal
+    <FUNCTION> "(" ( <SINGLE_QUOTED_STRING> | <DOUBLE_QUOTED_STRING> ) { jjtThis.setFunctionName((String) token_source.literalValue); }
+        ( "," ( stringExpression() | numericExpression() ) )* ")"
 }
 
-void customOperator() #CustomOperator : { }
+void customOperator() #CustomOperatorExp : { }
 {
-    <OPERATOR> "(" stringLiteral() ( "," ( stringExpression() | numericExpression() ) )* ")"
+    // the quoted name is an attribute of the node, not an operand: read it off the token instead of parsing a literal
+    <OPERATOR> "(" ( <SINGLE_QUOTED_STRING> | <DOUBLE_QUOTED_STRING> ) { jjtThis.setOperator((String) token_source.literalValue); }
+        ( "," ( stringExpression() | numericExpression() ) )* ")"
 }
 
-void customAggregate() #CustomAggregate : { }
+void customAggregate() #CustomAggregateExp : { }
 {
-    <AGGREGATE> "(" stringLiteral() ( "," ( stringExpression() | numericExpression() ) )* ")"
+    // the quoted name is an attribute of the node, not an operand: read it off the token instead of parsing a literal
+    <AGGREGATE> "(" ( <SINGLE_QUOTED_STRING> | <DOUBLE_QUOTED_STRING> ) { jjtThis.setFunctionName((String) token_source.literalValue); }
+        ( "," ( stringExpression() | numericExpression() ) )* ")"
 }
 
-void concat() #Concat : { }
+void concat() #ConcatExp : { }
 {
 	<CONCAT> "(" stringParameter() ( "," stringParameter() )* ")"
 }
 
-void substring() #Substring : { }
+void substring() #SubstringExp : { }
 {
 	<SUBSTRING> "(" stringParameter() "," numericExpression() ["," numericExpression()] ")"
 }
 
-void trim() #Trim : { }
+void trim() #TrimExp : { }
 {
 	<TRIM> "(" stringParameter() ")"
 }
 
-void lower() #Lower : { }
+void lower() #LowerExp : { }
 {
 	<LOWER> "(" stringParameter() ")"
 }
 
-void upper() #Upper : { }
+void upper() #UpperExp : { }
 {
 	<UPPER> "(" stringParameter() ")"
 }
@@ -631,27 +715,27 @@ void functionsReturningNumerics() : { }
 	length() | locate() | abs() | sqrt() | mod() | dateTimeExtractingFunction()
 }
 
-void length() #Length : { }
+void length() #LengthExp : { }
 {
 	<LENGTH> "(" stringParameter() ")"
 }
 
-void locate() #Locate : { }
+void locate() #LocateExp : { }
 {
 	<LOCATE> "(" stringParameter() "," stringParameter() ["," numericExpression()] ")"
 }
 
-void abs() #Abs : { }
+void abs() #AbsExp : { }
 {
 	<ABS> "(" numericExpression() ")"
 }
 
-void sqrt() #Sqrt : { }
+void sqrt() #SqrtExp : { }
 {
 	<SQRT> "(" numericExpression() ")"
 }
 
-void mod() #Mod : { }
+void mod() #ModExp : { }
 {
 	<MOD> "(" numericExpression() "," numericExpression() ")"
 }
@@ -661,32 +745,32 @@ void aggregateExpression() : { }
 	avg() | max() | min() | sum() | count()
 }
 
-void asterisk() #Asterisk : {}
+void asterisk() #AsteriskExp : {}
 {
     <ASTERISK>
 }
 
-void count() #Count : { }
+void count() #CountExp : { }
 {
 	<COUNT> "(" ( asterisk() | pathExpression() | distinct() ) ")"
 }
 
-void avg() #Avg : { }
+void avg() #AvgExp : { }
 {
 	<AVG> "(" numericExpression() ")"
 }
 
-void max() #Max : { }
+void max() #MaxExp : { }
 {
 	<MAX> "(" numericExpression() ")"
 }
 
-void min() #Min : { }
+void min() #MinExp : { }
 {
 	<MIN> "(" numericExpression() ")"
 }
 
-void sum() #Sum : { }
+void sum() #SumExp : { }
 {
 	<SUM> "(" numericExpression() ")"
 }
@@ -696,23 +780,23 @@ void dateTimeFunction() : { }
     currentDate() | currentTime() | currentTimestamp()
 }
 
-void currentDate() #CurrentDate : {}
+void currentDate() #CurrentDateExp : {}
 {
     <CURRENT_DATE> "(" ")"
 }
 
-void currentTime() #CurrentTime : {}
+void currentTime() #CurrentTimeExp : {}
 {
     <CURRENT_TIME> "(" ")"
 }
 
-void currentTimestamp() #CurrentTimestamp : {}
+void currentTimestamp() #CurrentTimestampExp : {}
 {
     <CURRENT_TIMESTAMP> "(" ")"
 }
 
 /* Date/time parts extracting function */
-void dateTimeExtractingFunction() #Extract(1) : {
+void dateTimeExtractingFunction() #ExtractExp(1) : {
     Token t;
 }
 {
@@ -733,7 +817,7 @@ void dateTimeExtractingFunction() #Extract(1) : {
     "(" pathExpression() ")"
 }
 
-void distinct() #Distinct : { }
+void distinct() #DistinctExp : { }
 {
 	<DISTINCT> "(" pathExpression() ")"
 }
@@ -875,7 +959,7 @@ TOKEN : /* functions returning datetime */
 
 /*
     Data/time parts extracting functions' names.
-    MUST be in sync with enum ASTExtract.DateTimePart.
+    MUST be in sync with enum ExtractExp.DateTimePart.
 */
 TOKEN :
 {
@@ -912,22 +996,22 @@ void namedParameter() :{
 	    // binding positional parameters as we go
 	    LOOKAHEAD({ parameters != null }) "$" t = pathToken() { jjtree.pushNode(boundParameter(t.image)); }
 	|
-	    "$" t = pathToken() { jjtThis.setValue(t.image); } #NamedParameter(0)
+	    "$" t = pathToken() { jjtThis.setValue(t.image); } #NamedParameterExp(0)
 }
 
 void pathExpression() : {
    Token t;
 }
 {
-             t = <PROPERTY_PATH> { ExpressionUtils.parsePath(jjtThis, t.image); } #ObjPath(0)
+             t = <PROPERTY_PATH> { QLParserHelper.parsePath(jjtThis, t.image); } #ObjPathExp(0)
    |
-     "obj:"  t = pathToken() { ExpressionUtils.parsePath(jjtThis, t.image); } #ObjPath(0)
+     "obj:"  t = pathToken() { QLParserHelper.parsePath(jjtThis, t.image); } #ObjPathExp(0)
    |
-     "db:"   t = pathToken() { ExpressionUtils.parsePath(jjtThis, t.image); } #DbPath(0)
+     "db:"   t = pathToken() { QLParserHelper.parsePath(jjtThis, t.image); } #DbPathExp(0)
    |
-     "enum:" t = pathToken() { jjtThis.setEnumValue(t.image); } #Enum(0)
+     "enum:" t = pathToken() { jjtThis.setEnumValue(t.image); } #EnumExp(0)
    |
-     "dbid:" t = pathToken() { ExpressionUtils.parsePath(jjtThis, t.image); } #DbIdPath(0)
+     "dbid:" t = pathToken() { QLParserHelper.parsePath(jjtThis, t.image); } #DbIdPathExp(0)
 }
 
 TOKEN : {

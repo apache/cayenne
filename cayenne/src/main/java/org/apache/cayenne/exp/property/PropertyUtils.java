@@ -22,8 +22,8 @@ package org.apache.cayenne.exp.property;
 import java.util.HashMap;
 import java.util.Map;
 
-import org.apache.cayenne.exp.parser.ASTObjPath;
-import org.apache.cayenne.exp.parser.ASTPath;
+import org.apache.cayenne.exp.ObjPathExp;
+import org.apache.cayenne.exp.PathExp;
 import org.apache.cayenne.exp.path.CayennePath;
 import org.apache.cayenne.exp.path.CayennePathSegment;
 
@@ -32,7 +32,7 @@ import org.apache.cayenne.exp.path.CayennePathSegment;
  */
 class PropertyUtils {
 
-    static ASTPath createPathExp(CayennePath path, String alias, Map<String, String> aliasMap) {
+    static PathExp createPathExp(CayennePath path, String alias, Map<String, String> aliasMap) {
         CayennePath aliased = path.parent().dot(alias);
         CayennePathSegment segment = path.last();
 
@@ -41,14 +41,14 @@ class PropertyUtils {
         return buildExp(aliased, pathAliases);
     }
 
-    static ASTPath buildExp(String path, Map<String, String> pathAliases) {
-        ASTPath pathExp = new ASTObjPath(path);
+    static PathExp buildExp(String path, Map<String, String> pathAliases) {
+        PathExp pathExp = new ObjPathExp(path);
         pathExp.setPathAliases(pathAliases);
         return pathExp;
     }
 
-    static ASTPath buildExp(CayennePath path, Map<String, String> pathAliases) {
-        ASTPath pathExp = new ASTObjPath(path);
+    static PathExp buildExp(CayennePath path, Map<String, String> pathAliases) {
+        PathExp pathExp = new ObjPathExp(path);
         pathExp.setPathAliases(pathAliases);
         return pathExp;
     }

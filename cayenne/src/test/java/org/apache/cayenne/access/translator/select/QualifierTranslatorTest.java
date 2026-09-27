@@ -25,8 +25,8 @@ import org.apache.cayenne.access.sqlbuilder.DefaultSQLAppendable;
 import org.apache.cayenne.access.sqlbuilder.sqltree.*;
 import org.apache.cayenne.exp.Expression;
 import org.apache.cayenne.exp.ExpressionFactory;
-import org.apache.cayenne.exp.parser.ASTAsterisk;
-import org.apache.cayenne.exp.parser.ASTScalar;
+import org.apache.cayenne.exp.AsteriskExp;
+import org.apache.cayenne.exp.ScalarExp;
 import org.apache.cayenne.exp.property.BaseProperty;
 import org.apache.cayenne.map.*;
 import org.apache.cayenne.query.FluentSelect;
@@ -443,7 +443,7 @@ public class QualifierTranslatorTest {
         }
 
         {
-            Node op = translator.translate(new ASTAsterisk());
+            Node op = translator.translate(new AsteriskExp());
             assertInstanceOf(TextNode.class, op);
             assertEquals(" *", ((TextNode)op).getText());
             assertEquals(0, op.getChildrenCount());
@@ -684,7 +684,7 @@ public class QualifierTranslatorTest {
         Node translate = translator.translate(scalarValue);
         SQLGenerationVisitor visitor = new SQLGenerationVisitor(new DefaultSQLAppendable(null), null);
         translate.visit(visitor);
-        assertInstanceOf(ASTScalar.class, scalarValue);
+        assertInstanceOf(ScalarExp.class, scalarValue);
         assertEquals(" 'abc'",visitor.getSQLString());
     }
 
@@ -694,7 +694,7 @@ public class QualifierTranslatorTest {
         Node translate = translator.translate(scalarValue);
         SQLGenerationVisitor visitor = new SQLGenerationVisitor(new DefaultSQLAppendable(null), null);
         translate.visit(visitor);
-        assertInstanceOf(ASTScalar.class, scalarValue);
+        assertInstanceOf(ScalarExp.class, scalarValue);
         assertEquals(" 123",visitor.getSQLString());
     }
 

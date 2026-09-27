@@ -21,10 +21,10 @@ package org.apache.cayenne.exp.property;
 
 import org.apache.cayenne.exp.Expression;
 import org.apache.cayenne.exp.ExpressionFactory;
-import org.apache.cayenne.exp.parser.ASTExists;
-import org.apache.cayenne.exp.parser.ASTNotExists;
-import org.apache.cayenne.exp.parser.ASTSubquery;
-import org.apache.cayenne.exp.parser.Node;
+import org.apache.cayenne.exp.ExistsExp;
+import org.apache.cayenne.exp.NotExistsExp;
+import org.apache.cayenne.exp.SubqueryExp;
+import org.apache.cayenne.exp.BaseExp;
 import org.apache.cayenne.exp.path.CayennePath;
 import org.apache.cayenne.query.ColumnSelect;
 import org.apache.cayenne.query.ObjectSelect;
@@ -92,13 +92,13 @@ public class SelfPropertyTest {
         Expression exp = property.exists(Artist.ARTIST_NAME.eq("test"));
 
         assertNotNull(exp);
-        assertTrue(exp instanceof ASTExists);
+        assertTrue(exp instanceof ExistsExp);
 
-        ASTExists exists = (ASTExists) exp;
-        Node node = exists.jjtGetChild(0);
-        assertTrue(node instanceof ASTSubquery);
+        ExistsExp exists = (ExistsExp) exp;
+        BaseExp node = exists.getChild(0);
+        assertTrue(node instanceof SubqueryExp);
 
-        ASTSubquery subquery = (ASTSubquery) node;
+        SubqueryExp subquery = (SubqueryExp) node;
         assertTrue(subquery.getQuery() instanceof ObjectSelect);
 
         ObjectSelect<?> subSelect = (ObjectSelect<?>) subquery.getQuery();
@@ -111,13 +111,13 @@ public class SelfPropertyTest {
         Expression exp = property.notExists(Artist.ARTIST_NAME.eq("test"));
 
         assertNotNull(exp);
-        assertTrue(exp instanceof ASTNotExists);
+        assertTrue(exp instanceof NotExistsExp);
 
-        ASTNotExists exists = (ASTNotExists) exp;
-        Node node = exists.jjtGetChild(0);
-        assertTrue(node instanceof ASTSubquery);
+        NotExistsExp exists = (NotExistsExp) exp;
+        BaseExp node = exists.getChild(0);
+        assertTrue(node instanceof SubqueryExp);
 
-        ASTSubquery subquery = (ASTSubquery) node;
+        SubqueryExp subquery = (SubqueryExp) node;
         assertTrue(subquery.getQuery() instanceof ObjectSelect);
 
         ObjectSelect<?> subSelect = (ObjectSelect<?>) subquery.getQuery();

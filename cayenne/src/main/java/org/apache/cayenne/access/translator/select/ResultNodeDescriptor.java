@@ -24,7 +24,7 @@ import org.apache.cayenne.access.sqlbuilder.sqltree.Node;
 import org.apache.cayenne.access.sqlbuilder.sqltree.NodeType;
 import org.apache.cayenne.access.sqlbuilder.sqltree.SimpleNodeTreeVisitor;
 import org.apache.cayenne.dba.TypesMapping;
-import org.apache.cayenne.exp.parser.ASTAggregateFunctionCall;
+import org.apache.cayenne.exp.AggregateFunctionCallExp;
 import org.apache.cayenne.exp.path.CayennePath;
 import org.apache.cayenne.exp.property.Property;
 import org.apache.cayenne.map.DbAttribute;
@@ -48,7 +48,7 @@ class ResultNodeDescriptor {
         this.property = property;
         this.dataRowKey = dataRowKey;
         this.isAggregate = property != null
-                && property.getExpression() instanceof ASTAggregateFunctionCall;
+                && property.getExpression() instanceof AggregateFunctionCallExp;
     }
 
     public void setAggregate(boolean aggregate) {

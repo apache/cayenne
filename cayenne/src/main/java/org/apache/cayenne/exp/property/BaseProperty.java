@@ -22,7 +22,7 @@ package org.apache.cayenne.exp.property;
 import org.apache.cayenne.exp.Expression;
 import org.apache.cayenne.exp.ExpressionFactory;
 import org.apache.cayenne.exp.FunctionExpressionFactory;
-import org.apache.cayenne.exp.parser.ASTPath;
+import org.apache.cayenne.exp.PathExp;
 import org.apache.cayenne.exp.path.CayennePath;
 import org.apache.cayenne.query.ColumnSelect;
 import org.apache.cayenne.query.Ordering;
@@ -122,8 +122,8 @@ public class BaseProperty<E> implements Property<E> {
 
         // check if default name for Path expression is overridden
         Expression exp = getExpression();
-        if(exp instanceof ASTPath) {
-            if(((ASTPath) exp).getPath().equals(getPath())) {
+        if(exp instanceof PathExp) {
+            if(((PathExp) exp).getPath().equals(getPath())) {
                 return null;
             }
         }

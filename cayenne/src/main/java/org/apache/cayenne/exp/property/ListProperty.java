@@ -24,7 +24,7 @@ import java.util.List;
 import org.apache.cayenne.Persistent;
 import org.apache.cayenne.exp.Expression;
 import org.apache.cayenne.exp.ExpressionFactory;
-import org.apache.cayenne.exp.parser.ASTPath;
+import org.apache.cayenne.exp.PathExp;
 import org.apache.cayenne.exp.path.CayennePath;
 import org.apache.cayenne.exp.path.CayennePathSegment;
 
@@ -56,7 +56,7 @@ public class ListProperty<V extends Persistent> extends CollectionProperty<V, Li
      */
     @Override
     public ListProperty<V> alias(String alias) {
-        ASTPath exp = PropertyUtils.createPathExp(this.getPath(), alias, getExpression().getPathAliases());
+        PathExp exp = PropertyUtils.createPathExp(this.getPath(), alias, getExpression().getPathAliases());
         return PropertyFactory.createList(exp.getPath(), exp, this.getEntityType());
     }
 

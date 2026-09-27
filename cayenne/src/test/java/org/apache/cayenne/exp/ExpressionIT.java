@@ -21,10 +21,6 @@ package org.apache.cayenne.exp;
 
 import org.apache.cayenne.CayenneRuntimeException;
 import org.apache.cayenne.access.DataContext;
-import org.apache.cayenne.exp.parser.ASTIn;
-import org.apache.cayenne.exp.parser.ASTList;
-import org.apache.cayenne.exp.parser.ASTNotIn;
-import org.apache.cayenne.exp.parser.SimpleNode;
 import org.apache.cayenne.query.ObjectSelect;
 import org.apache.cayenne.testdo.testmap.Artist;
 import org.apache.cayenne.testdo.testmap.Painting;
@@ -169,7 +165,7 @@ public class ExpressionIT {
 		a1.setArtistName("Picasso");
 		env.context().commitChanges();
 
-		ASTIn in = new ASTIn((SimpleNode) Artist.ARTIST_NAME.getExpression(), new ASTList(List.of()));
+		InExp in = new InExp(Artist.ARTIST_NAME.getExpression(), new ListExp(List.of()));
 		List<Artist> artists = ObjectSelect.query(Artist.class).where(in).select(env.context());
 		assertTrue(artists.isEmpty());
 	}
@@ -180,7 +176,7 @@ public class ExpressionIT {
 		a1.setArtistName("Picasso");
 		env.context().commitChanges();
 
-		ASTNotIn notIn = new ASTNotIn((SimpleNode) Artist.ARTIST_NAME.getExpression(), new ASTList(List.of()));
+		NotInExp notIn = new NotInExp(Artist.ARTIST_NAME.getExpression(), new ListExp(List.of()));
 		List<Artist> artists = ObjectSelect.query(Artist.class).where(notIn).select(env.context());
 		assertEquals(1, artists.size());
 		assertEquals("Picasso", artists.get(0).getArtistName());

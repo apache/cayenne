@@ -163,6 +163,11 @@ public class LazyClassDescriptorDecorator implements ClassDescriptor {
         descriptor.injectValueHolders(object);
     }
 
+    public void injectDiscriminatorValues(Object object) throws PropertyException {
+        checkDescriptorInitialized();
+        descriptor.injectDiscriminatorValues(object);
+    }
+
     public boolean isFault(Object object) {
         checkDescriptorInitialized();
         return descriptor.isFault(object);

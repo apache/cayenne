@@ -25,7 +25,7 @@ import java.util.HashSet;
 
 import org.apache.cayenne.exp.Expression;
 import org.apache.cayenne.exp.ExpressionFactory;
-import org.apache.cayenne.exp.parser.ASTPath;
+import org.apache.cayenne.exp.PathExp;
 import org.apache.cayenne.exp.path.CayennePath;
 import org.apache.cayenne.map.EntityResolver;
 import org.apache.cayenne.map.ObjRelationship;
@@ -49,7 +49,7 @@ public class PrefetchSelectQuery<T> extends ObjectSelect<T> {
      */
     protected ObjRelationship lastPrefetchHint;
 
-    protected Collection<ASTPath> resultPaths;
+    protected Collection<PathExp> resultPaths;
 
     /**
      * Creates a new disjoint prefetch select query.
@@ -142,11 +142,11 @@ public class PrefetchSelectQuery<T> extends ObjectSelect<T> {
      * @since 5.0
      */
     public void addResultPath(Expression path) {
-        if (!(path instanceof ASTPath)) {
+        if (!(path instanceof PathExp)) {
             throw new IllegalArgumentException("Invalid path: " + path);
         }
 
-        nonNullResultPaths().add((ASTPath) path);
+        nonNullResultPaths().add((PathExp) path);
     }
 
     /**
@@ -180,7 +180,7 @@ public class PrefetchSelectQuery<T> extends ObjectSelect<T> {
      * @since 1.2
      * @since 5.0 returns collection of {@link CayennePath}
      */
-    public Collection<ASTPath> getResultPaths() {
+    public Collection<PathExp> getResultPaths() {
         return resultPaths != null
                 ? Collections.unmodifiableCollection(resultPaths)
                 : Collections.emptySet();
@@ -192,7 +192,7 @@ public class PrefetchSelectQuery<T> extends ObjectSelect<T> {
      * @since 1.2
      * @since 5.0 returns collection of {@link CayennePath}
      */
-    Collection<ASTPath> nonNullResultPaths() {
+    Collection<PathExp> nonNullResultPaths() {
         if (resultPaths == null) {
             resultPaths = new HashSet<>();
         }

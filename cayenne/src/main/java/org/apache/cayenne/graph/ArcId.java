@@ -21,7 +21,7 @@ package org.apache.cayenne.graph;
 
 import java.util.Objects;
 
-import org.apache.cayenne.exp.parser.ASTDbPath;
+import org.apache.cayenne.exp.DbPathExp;
 import org.apache.cayenne.reflect.ArcProperty;
 
 /**
@@ -38,7 +38,7 @@ public class ArcId {
     public ArcId(ArcProperty property) {
         this.forwardArc = property.getName();
         this.reverseArc = property.getComplimentaryReverseArc() == null
-                ? ASTDbPath.DB_PREFIX + property.getComplimentaryReverseDbRelationshipPath()
+                ? DbPathExp.DB_PREFIX + property.getComplimentaryReverseDbRelationshipPath()
                 : property.getComplimentaryReverseArc().getName();
     }
 

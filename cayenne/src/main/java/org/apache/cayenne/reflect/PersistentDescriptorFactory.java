@@ -20,6 +20,7 @@ package org.apache.cayenne.reflect;
 
 import java.util.HashMap;
 import java.util.Iterator;
+import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 
@@ -119,6 +120,7 @@ public abstract class PersistentDescriptorFactory implements ClassDescriptorFact
         indexRootDbEntities(descriptor, inheritanceTree);
 
         indexSuperclassProperties(descriptor);
+        indexDiscriminatorValues(descriptor);
         indexAdditionalDbEntities(descriptor);
 
         descriptor.sortProperties();
@@ -221,43 +223,14 @@ public abstract class PersistentDescriptorFactory implements ClassDescriptorFact
             // ObjEntity.getAttribute may return a decorator for attribute on
             // each call, resulting in dupes
             final Map<String, ObjAttribute> attributes = new HashMap<>();
-            final DbEntity dbEntity = descriptor.getEntity().getDbEntity();
 
             qualifier.traverse(new TraversalHandler() {
 
                 @Override
                 public void startNode(Expression node, Expression parentNode) {
-                    if (node.getType() == Expression.DB_PATH) {
-                        String path = node.getOperand(0).toString();
-                        final DbAttribute attribute = dbEntity.getAttribute(path);
-                        if (attribute != null) {
-
-                            ObjAttribute objectAttribute = descriptor.getEntity().getAttributeForDbAttribute(attribute);
-
-                            if (objectAttribute == null) {
-                                objectAttribute = new ObjAttribute(attribute.getName()) {
-
-                                    @Override
-                                    public DbAttribute getDbAttribute() {
-                                        return attribute;
-                                    }
-                                };
-
-                                // we semi-officially DO NOT support inheritance
-                                // descriptors based on related entities, so
-                                // here we
-                                // assume that DbAttribute is rooted in the root
-                                // DbEntity, and no relationship is involved.
-                                objectAttribute.setDbAttributePath(attribute.getName());
-                                objectAttribute.setType(TypesMapping.getJavaBySqlType(attribute));
-                            }
-
-                            attributes.put(objectAttribute.getName(), objectAttribute);
-                        }
-                    } else if (node.getType() == Expression.OBJ_PATH) {
-                        String path = node.getOperand(0).toString();
-                        ObjAttribute attribute = descriptor.getEntity().getAttribute(path);
-                        attributes.put(path, attribute);
+                    ObjAttribute attribute = discriminatorAttribute(descriptor, node);
+                    if (attribute != null) {
+                        attributes.put(attribute.getName(), attribute);
                     }
                 }
             });
@@ -265,6 +238,104 @@ public abstract class PersistentDescriptorFactory implements ClassDescriptorFact
             descriptor.setDiscriminatorColumns(attributes.values());
             descriptor.setEntityQualifier(qualifier);
         }
+    }
+
+    /**
+     * Resolves an "obj:" or "db:" path node of an inheritance qualifier to an ObjAttribute of the descriptor's
+     * entity, synthesizing one for a DB column that has no ObjAttribute. Returns null for any other node.
+     */
+    protected ObjAttribute discriminatorAttribute(PersistentDescriptor descriptor, Expression node) {
+        if (node.getType() == Expression.DB_PATH) {
+            String path = node.getOperand(0).toString();
+            final DbAttribute attribute = descriptor.getEntity().getDbEntity().getAttribute(path);
+            if (attribute == null) {
+                return null;
+            }
+
+            ObjAttribute objectAttribute = descriptor.getEntity().getAttributeForDbAttribute(attribute);
+            if (objectAttribute == null) {
+                objectAttribute = new ObjAttribute(attribute.getName()) {
+
+                    @Override
+                    public DbAttribute getDbAttribute() {
+                        return attribute;
+                    }
+                };
+
+                // we semi-officially DO NOT support inheritance descriptors based on related entities, so here we
+                // assume that DbAttribute is rooted in the root DbEntity, and no relationship is involved.
+                objectAttribute.setDbAttributePath(attribute.getName());
+                objectAttribute.setType(TypesMapping.getJavaBySqlType(attribute));
+            }
+            return objectAttribute;
+        }
+
+        if (node.getType() == Expression.OBJ_PATH) {
+            return descriptor.getEntity().getAttribute(node.getOperand(0).toString());
+        }
+
+        return null;
+    }
+
+    /**
+     * Compiles the values that the entity's own qualifier pins its attributes to, i.e. the "attribute = value"
+     * comparisons in it, possibly joined by "and", for {@link ClassDescriptor#injectDiscriminatorValues(Object)}.
+     * Values are converted to the attribute Java type here, once.
+     */
+    protected void indexDiscriminatorValues(PersistentDescriptor descriptor) {
+        Expression qualifier = descriptor.getEntity().getDeclaredQualifier();
+        if (qualifier == null) {
+            return;
+        }
+
+        Map<AttributeProperty, Object> values = new LinkedHashMap<>();
+        collectDiscriminatorValues(descriptor, qualifier, values);
+        descriptor.setDiscriminatorValues(values);
+    }
+
+    private void collectDiscriminatorValues(PersistentDescriptor descriptor, Expression exp,
+            Map<AttributeProperty, Object> values) {
+
+        switch (exp.getType()) {
+            case Expression.AND -> {
+                for (int i = 0; i < exp.getOperandCount(); i++) {
+                    collectDiscriminatorValues(descriptor, (Expression) exp.getOperand(i), values);
+                }
+            }
+            case Expression.EQUAL_TO -> {
+                Object left = exp.getOperand(0);
+                Object right = exp.getOperand(1);
+                if (left instanceof Expression path && !(right instanceof Expression)) {
+                    putDiscriminatorValue(descriptor, path, right, values);
+                } else if (right instanceof Expression path && !(left instanceof Expression)) {
+                    putDiscriminatorValue(descriptor, path, left, values);
+                }
+            }
+            default -> {
+                // other conditions don't pin an attribute to a single value
+            }
+        }
+    }
+
+    private void putDiscriminatorValue(PersistentDescriptor descriptor, Expression path, Object value,
+            Map<AttributeProperty, Object> values) {
+
+        ObjAttribute attribute = discriminatorAttribute(descriptor, path);
+        if (attribute == null) {
+            return;
+        }
+
+        // a synthetic attribute of a bare DB column has no property to write to
+        if (!(descriptor.getProperty(attribute.getName()) instanceof AttributeProperty property)) {
+            return;
+        }
+
+        values.put(property, convertDiscriminatorValue(value, attribute.getJavaClass()));
+    }
+
+    private static <T> Object convertDiscriminatorValue(Object value, Class<T> javaClass) {
+        Converter<T> converter = javaClass != null ? ConverterFactory.factory.getConverter(javaClass) : null;
+        return converter != null ? converter.convert(value, javaClass) : value;
     }
 
     /**

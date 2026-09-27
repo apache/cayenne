@@ -19,15 +19,16 @@
 
 package org.apache.cayenne.query;
 
+import org.apache.cayenne.exp.ExpressionFactory;
 import org.apache.cayenne.exp.Expression;
-import org.apache.cayenne.exp.parser.ASTBitwiseAnd;
-import org.apache.cayenne.exp.parser.ASTBitwiseNot;
-import org.apache.cayenne.exp.parser.ASTBitwiseOr;
-import org.apache.cayenne.exp.parser.ASTBitwiseXor;
-import org.apache.cayenne.exp.parser.ASTEqual;
-import org.apache.cayenne.exp.parser.ASTGreater;
-import org.apache.cayenne.exp.parser.ASTObjPath;
-import org.apache.cayenne.exp.parser.ASTScalar;
+import org.apache.cayenne.exp.BitwiseAndExp;
+import org.apache.cayenne.exp.BitwiseNotExp;
+import org.apache.cayenne.exp.BitwiseOrExp;
+import org.apache.cayenne.exp.BitwiseXorExp;
+import org.apache.cayenne.exp.EqualExp;
+import org.apache.cayenne.exp.GreaterExp;
+import org.apache.cayenne.exp.ObjPathExp;
+import org.apache.cayenne.exp.ScalarExp;
 import org.apache.cayenne.test.jdbc.TableHelper;
 import org.apache.cayenne.testdo.return_types.ReturnTypesMap1;
 import org.apache.cayenne.unit.CayenneProjects;
@@ -64,10 +65,9 @@ public class SelectQueryReturnTypesIT {
         createNumericsDataSet();
 
         // to simplify result checking, do double NOT
-        Expression left = new ASTBitwiseNot(new ASTBitwiseNot(new ASTObjPath(ReturnTypesMap1.INTEGER_COLUMN.getName())));
-        Expression right = new ASTScalar(2);
-        Expression greater = new ASTGreater();
-        greater.setOperand(0, left);
+        Expression left = new BitwiseNotExp(new BitwiseNotExp(ExpressionFactory.pathExp(ReturnTypesMap1.INTEGER_COLUMN.getName())));
+        Expression right = ExpressionFactory.wrapScalarValue(2);
+        Expression greater = new GreaterExp(left);
         greater.setOperand(1, right);
 
         List<ReturnTypesMap1> objects = ObjectSelect.query(ReturnTypesMap1.class).where(greater).select(env.context());
@@ -84,11 +84,10 @@ public class SelectQueryReturnTypesIT {
         createNumericsDataSet();
 
         // to simplify result checking, do double NOT
-        Expression left = new ASTBitwiseOr(new Object[] { new ASTObjPath(ReturnTypesMap1.INTEGER_COLUMN.getName()),
-                new ASTScalar(1) });
-        Expression right = new ASTScalar(1);
-        Expression equal = new ASTEqual();
-        equal.setOperand(0, left);
+        Expression left = new BitwiseOrExp(new Object[] { ExpressionFactory.pathExp(ReturnTypesMap1.INTEGER_COLUMN.getName()),
+                ExpressionFactory.wrapScalarValue(1) });
+        Expression right = ExpressionFactory.wrapScalarValue(1);
+        Expression equal = new EqualExp(left);
         equal.setOperand(1, right);
 
         List<ReturnTypesMap1> objects = ObjectSelect.query(ReturnTypesMap1.class).where(equal).select(env.context());
@@ -105,11 +104,10 @@ public class SelectQueryReturnTypesIT {
         createNumericsDataSet();
 
         // to simplify result checking, do double NOT
-        Expression left = new ASTBitwiseAnd(new Object[] { new ASTObjPath(ReturnTypesMap1.INTEGER_COLUMN.getName()),
-                new ASTScalar(1) });
-        Expression right = new ASTScalar(0);
-        Expression equal = new ASTEqual();
-        equal.setOperand(0, left);
+        Expression left = new BitwiseAndExp(new Object[] { ExpressionFactory.pathExp(ReturnTypesMap1.INTEGER_COLUMN.getName()),
+                ExpressionFactory.wrapScalarValue(1) });
+        Expression right = ExpressionFactory.wrapScalarValue(0);
+        Expression equal = new EqualExp(left);
         equal.setOperand(1, right);
 
         List<ReturnTypesMap1> objects = ObjectSelect.query(ReturnTypesMap1.class).where(equal).select(env.context());
@@ -126,11 +124,10 @@ public class SelectQueryReturnTypesIT {
         createNumericsDataSet();
 
         // to simplify result checking, do double NOT
-        Expression left = new ASTBitwiseXor(new Object[] { new ASTObjPath(ReturnTypesMap1.INTEGER_COLUMN.getName()),
-                new ASTScalar(1) });
-        Expression right = new ASTScalar(5);
-        Expression equal = new ASTEqual();
-        equal.setOperand(0, left);
+        Expression left = new BitwiseXorExp(new Object[] { ExpressionFactory.pathExp(ReturnTypesMap1.INTEGER_COLUMN.getName()),
+                ExpressionFactory.wrapScalarValue(1) });
+        Expression right = ExpressionFactory.wrapScalarValue(5);
+        Expression equal = new EqualExp(left);
         equal.setOperand(1, right);
 
         List<ReturnTypesMap1> objects = ObjectSelect.query(ReturnTypesMap1.class).where(equal).select(env.context());

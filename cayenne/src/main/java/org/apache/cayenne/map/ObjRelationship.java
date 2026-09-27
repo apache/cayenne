@@ -28,8 +28,9 @@ import java.util.ListIterator;
 import org.apache.cayenne.CayenneRuntimeException;
 import org.apache.cayenne.configuration.ConfigurationNode;
 import org.apache.cayenne.configuration.ConfigurationNodeVisitor;
+import org.apache.cayenne.exp.ExpressionFactory;
 import org.apache.cayenne.exp.ExpressionException;
-import org.apache.cayenne.exp.parser.ASTDbPath;
+import org.apache.cayenne.exp.DbPathExp;
 import org.apache.cayenne.exp.path.CayennePath;
 import org.apache.cayenne.util.CayenneMapEntry;
 import org.apache.cayenne.util.ToStringBuilder;
@@ -610,7 +611,7 @@ public class ObjRelationship extends Relationship<ObjEntity, ObjAttribute, ObjRe
         CayennePath validPath = CayennePath.EMPTY_PATH;
         try {
             for (PathComponent<DbAttribute, DbRelationship> pathComponent
-                    : dbEntity.resolvePath(new ASTDbPath(path), Collections.emptyMap())) {
+                    : dbEntity.resolvePath(ExpressionFactory.dbPathExp(path), Collections.emptyMap())) {
                 validPath = validPath.dot(pathComponent.getName());
             }
         } catch (ExpressionException ignored) {
@@ -635,7 +636,7 @@ public class ObjRelationship extends Relationship<ObjEntity, ObjAttribute, ObjRe
 
             try {
                 // add new relationships from path
-                Iterator<CayenneMapEntry> it = entity.resolvePathComponents(new ASTDbPath(dbRelationshipPath));
+                Iterator<CayenneMapEntry> it = entity.resolvePathComponents(ExpressionFactory.dbPathExp(dbRelationshipPath));
 
                 while (it.hasNext()) {
                     DbRelationship relationship = (DbRelationship) it.next();

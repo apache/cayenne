@@ -21,13 +21,11 @@
 
 
 package org.apache.cayenne.ql;
-import org.apache.cayenne.exp.parser.*;
 import java.math.BigDecimal;
 import java.math.BigInteger;
 import java.util.HashMap;
 import java.util.Map;
-import org.apache.cayenne.exp.Expression;
-import org.apache.cayenne.exp.ExpressionException;
+import org.apache.cayenne.exp.*;
 import org.apache.cayenne.query.FluentSelect;
 import org.apache.cayenne.query.PrefetchTreeNode;
 

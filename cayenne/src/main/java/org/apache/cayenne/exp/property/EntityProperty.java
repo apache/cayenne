@@ -30,7 +30,7 @@ import org.apache.cayenne.ObjectId;
 import org.apache.cayenne.Persistent;
 import org.apache.cayenne.exp.Expression;
 import org.apache.cayenne.exp.ExpressionFactory;
-import org.apache.cayenne.exp.parser.ASTPath;
+import org.apache.cayenne.exp.PathExp;
 import org.apache.cayenne.exp.path.CayennePath;
 
 /**
@@ -246,7 +246,7 @@ public class EntityProperty<E extends Persistent> extends BaseProperty<E> implem
      */
     @Override
     public EntityProperty<E> alias(String alias) {
-        ASTPath exp = PropertyUtils.createPathExp(this.getPath(), alias, getExpression().getPathAliases());
+        PathExp exp = PropertyUtils.createPathExp(this.getPath(), alias, getExpression().getPathAliases());
         return PropertyFactory.createEntity(exp.getPath(), exp, this.getType());
     }
 

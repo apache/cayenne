@@ -19,7 +19,6 @@
 package org.apache.cayenne.exp;
 
 import org.apache.cayenne.CayenneRuntimeException;
-import org.apache.cayenne.exp.parser.PatternMatchNode;
 
 /**
  * @since 4.0
@@ -43,22 +42,22 @@ class LikeExpressionHelper {
 		}
 	}
 
-	static void toContains(PatternMatchNode exp) {
+	static void toContains(PatternMatchExp exp) {
 		escape(exp);
 		wrap(exp, true, true);
 	}
 
-	static void toStartsWith(PatternMatchNode exp) {
+	static void toStartsWith(PatternMatchExp exp) {
 		escape(exp);
 		wrap(exp, false, true);
 	}
 
-	static void toEndsWith(PatternMatchNode exp) {
+	static void toEndsWith(PatternMatchExp exp) {
 		escape(exp);
 		wrap(exp, true, false);
 	}
 
-	static void escape(PatternMatchNode exp) {
+	static void escape(PatternMatchExp exp) {
 		Object pattern = exp.getOperand(1);
 		if (pattern instanceof String) {
 			// find _ or % and then attempt to escape...
@@ -77,7 +76,7 @@ class LikeExpressionHelper {
 		}
 	}
 
-	private static String escapeFrom(PatternMatchNode exp, String pattern, int firstWildcard, int len) {
+	private static String escapeFrom(PatternMatchExp exp, String pattern, int firstWildcard, int len) {
 
 		boolean[] mutableEscapeAlphabet = new boolean[Byte.MAX_VALUE];
 		System.arraycopy(ESCAPE_ALPHABET, ESCAPE_ALPHABET_START, mutableEscapeAlphabet, ESCAPE_ALPHABET_START,
@@ -127,7 +126,7 @@ class LikeExpressionHelper {
 		return buffer.toString();
 	}
 
-	private static void wrap(PatternMatchNode exp, boolean start, boolean end) {
+	private static void wrap(PatternMatchExp exp, boolean start, boolean end) {
 
 		Object pattern = exp.getOperand(1);
 		if (pattern instanceof String) {

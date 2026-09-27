@@ -27,7 +27,7 @@ import org.apache.cayenne.access.flush.operation.DbRowOpVisitor;
 import org.apache.cayenne.access.flush.operation.DeleteDbRowOp;
 import org.apache.cayenne.access.flush.operation.InsertDbRowOp;
 import org.apache.cayenne.dba.PkGenerator;
-import org.apache.cayenne.exp.parser.ASTDbPath;
+import org.apache.cayenne.exp.DbPathExp;
 import org.apache.cayenne.map.DbAttribute;
 import org.apache.cayenne.map.DbEntity;
 import org.apache.cayenne.map.EntityResolver;
@@ -67,8 +67,8 @@ class PermanentObjectIdVisitor implements DbRowOpVisitor<Void> {
 
         if ((lastObjEntity == null && lastDbEntity == null) || !id.getEntityName().equals(lastEntityName)) {
             lastEntityName = id.getEntityName();
-            if (lastEntityName.startsWith(ASTDbPath.DB_PREFIX)) {
-                lastDbEntity = resolver.getDbEntity(lastEntityName.substring(ASTDbPath.DB_PREFIX.length()));
+            if (lastEntityName.startsWith(DbPathExp.DB_PREFIX)) {
+                lastDbEntity = resolver.getDbEntity(lastEntityName.substring(DbPathExp.DB_PREFIX.length()));
                 lastObjEntity = null;
                 lastDescriptor = null;
                 lastNode = dataDomain.lookupDataNode(lastDbEntity.getDataMap());

@@ -116,11 +116,9 @@
                             $ java -cp $JAVACC javacc QLParser.jj
 
                         # Copy these generated classes to src/main/java/org/apache/cayenne/ql:
-                        # QLParser, QLParserTokenManager, QLParserConstants
-                        # and these to src/main/java/org/apache/cayenne/exp/parser (the NODE_PACKAGE):
-                        # QLParserTreeConstants, JJTQLParserState
-                        # (i.e. everything except AST*, Node, SimpleNode, JavaCharStream, Token, ParseException,
-                        # TokenMgrError)
+                        # QLParser, QLParserTokenManager, QLParserConstants, QLParserTreeConstants
+                        # Everything else (the node classes, JJTQLParserState, JavaCharStream, Token,
+                        # ParseException, TokenMgrError) is maintained by hand and must not be overwritten.
 
                         # docs
                             $ java -cp $JAVACC jjdoc -TEXT=true QLParser.jj

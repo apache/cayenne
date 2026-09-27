@@ -22,11 +22,11 @@ package org.apache.cayenne.access.translator.select;
 import org.apache.cayenne.CayenneRuntimeException;
 import org.apache.cayenne.access.sqlbuilder.sqltree.Node;
 import org.apache.cayenne.access.translator.SelectTranslator;
-import org.apache.cayenne.exp.parser.ASTPath;
+import org.apache.cayenne.exp.PathExp;
 import org.apache.cayenne.exp.path.CayennePath;
 import org.apache.cayenne.exp.Expression;
 import org.apache.cayenne.exp.ExpressionFactory;
-import org.apache.cayenne.exp.parser.ASTDbPath;
+import org.apache.cayenne.exp.DbPathExp;
 import org.apache.cayenne.exp.path.CayennePathSegment;
 import org.apache.cayenne.map.DbAttribute;
 import org.apache.cayenne.map.DbEntity;
@@ -82,7 +82,7 @@ class PrefetchNodeStage implements TranslationStage {
         for(PrefetchTreeNode node : prefetch.adjacentJointNodes()) {
             Expression prefetchExp = ExpressionFactory.pathExp(node.getPath());
             ObjRelationship targetRel = (ObjRelationship) prefetchExp.evaluate(objEntity);
-            ASTDbPath dbPrefetch = (ASTDbPath) objEntity.translateToDbPath(prefetchExp);
+            DbPathExp dbPrefetch = (DbPathExp) objEntity.translateToDbPath(prefetchExp);
             CayennePath dbPath = dbPrefetch.getPath();
             DbEntity dbEntity = objEntity.getDbEntity();
             Expression targetQualifier = context.getResolver().getClassDescriptor(targetRel.getTargetEntityName()).getEntityInheritanceTree().qualifierForEntityAndSubclasses();
@@ -124,8 +124,8 @@ class PrefetchNodeStage implements TranslationStage {
 
     Expression translateToPrefetchQualifier(ObjEntity entity, Expression targetQualifier) {
         Expression expression = entity.translateToDbPath(targetQualifier);
-        return expression.transform(o -> o instanceof ASTDbPath
-                ? ExpressionFactory.dbPathExp(((ASTDbPath) o).getPath().withMarker(CayennePath.PREFETCH_MARKER))
+        return expression.transform(o -> o instanceof DbPathExp
+                ? ExpressionFactory.dbPathExp(((DbPathExp) o).getPath().withMarker(CayennePath.PREFETCH_MARKER))
                 : o);
     }
 
@@ -135,8 +135,8 @@ class PrefetchNodeStage implements TranslationStage {
         }
 
         PathTranslator pathTranslator = context.getPathTranslator();
-        for(ASTPath prefetchPath: prefetchSelectQuery.getResultPaths()) {
-            ASTDbPath pathExp = (ASTDbPath) context.getMetadata()
+        for(PathExp prefetchPath: prefetchSelectQuery.getResultPaths()) {
+            DbPathExp pathExp = (DbPathExp) context.getMetadata()
                     .getClassDescriptor().getEntity().translateToDbPath(prefetchPath);
             CayennePath path = pathExp.getPath();
 

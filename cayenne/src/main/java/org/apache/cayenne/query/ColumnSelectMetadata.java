@@ -22,17 +22,17 @@ import org.apache.cayenne.CayenneRuntimeException;
 import org.apache.cayenne.EmbeddableObject;
 import org.apache.cayenne.Persistent;
 import org.apache.cayenne.exp.Expression;
-import org.apache.cayenne.exp.parser.ASTAggregateFunctionCall;
-import org.apache.cayenne.exp.parser.ASTConcat;
-import org.apache.cayenne.exp.parser.ASTCount;
-import org.apache.cayenne.exp.parser.ASTDistinct;
-import org.apache.cayenne.exp.parser.ASTExtract;
-import org.apache.cayenne.exp.parser.ASTLength;
-import org.apache.cayenne.exp.parser.ASTLocate;
-import org.apache.cayenne.exp.parser.ASTLower;
-import org.apache.cayenne.exp.parser.ASTSubstring;
-import org.apache.cayenne.exp.parser.ASTTrim;
-import org.apache.cayenne.exp.parser.ASTUpper;
+import org.apache.cayenne.exp.AggregateFunctionCallExp;
+import org.apache.cayenne.exp.ConcatExp;
+import org.apache.cayenne.exp.CountExp;
+import org.apache.cayenne.exp.DistinctExp;
+import org.apache.cayenne.exp.ExtractExp;
+import org.apache.cayenne.exp.LengthExp;
+import org.apache.cayenne.exp.LocateExp;
+import org.apache.cayenne.exp.LowerExp;
+import org.apache.cayenne.exp.SubstringExp;
+import org.apache.cayenne.exp.TrimExp;
+import org.apache.cayenne.exp.UpperExp;
 import org.apache.cayenne.exp.property.Property;
 import org.apache.cayenne.map.EmbeddedAttribute;
 import org.apache.cayenne.map.EntityResolver;
@@ -202,16 +202,16 @@ class ColumnSelectMetadata extends ObjectSelectMetadata {
      */
     private Class<?> inferType(Expression exp) {
         return switch (exp) {
-            case ASTCount ignored -> Long.class;
-            case ASTAggregateFunctionCall aggregate -> operandType(aggregate);
-            case ASTUpper ignored -> String.class;
-            case ASTLower ignored -> String.class;
-            case ASTConcat ignored -> String.class;
-            case ASTSubstring ignored -> String.class;
-            case ASTTrim ignored -> String.class;
-            case ASTLength ignored -> Integer.class;
-            case ASTLocate ignored -> Integer.class;
-            case ASTExtract ignored -> Integer.class;
+            case CountExp ignored -> Long.class;
+            case AggregateFunctionCallExp aggregate -> operandType(aggregate);
+            case UpperExp ignored -> String.class;
+            case LowerExp ignored -> String.class;
+            case ConcatExp ignored -> String.class;
+            case SubstringExp ignored -> String.class;
+            case TrimExp ignored -> String.class;
+            case LengthExp ignored -> Integer.class;
+            case LocateExp ignored -> Integer.class;
+            case ExtractExp ignored -> Integer.class;
             default -> null;
         };
     }
@@ -220,7 +220,7 @@ class ColumnSelectMetadata extends ObjectSelectMetadata {
         if (function.getOperandCount() == 0 || !(function.getOperand(0) instanceof Expression operand)) {
             return null;
         }
-        if (operand instanceof ASTDistinct) {
+        if (operand instanceof DistinctExp) {
             return operandType(operand);
         }
         if (operand.getType() == Expression.OBJ_PATH
