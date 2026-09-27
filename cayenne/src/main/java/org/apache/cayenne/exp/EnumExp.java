@@ -34,7 +34,7 @@ import org.apache.cayenne.util.Util;
  *
  * @since 5.0
  */
-public class EnumExp extends ScalarExp {
+public final class EnumExp extends ScalarExp {
     public EnumExp(Object... operands) {
         super(operands);
     }

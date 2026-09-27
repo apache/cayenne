@@ -29,7 +29,7 @@ import org.apache.cayenne.util.ConversionUtil;
  * 
  * @since 5.0
  */
-public class OrExp extends AggregateConditionExp {
+public final class OrExp extends AggregateConditionExp {
 	public OrExp(Object... operands) {
 		super(operands);
 	}
@@ -68,11 +68,6 @@ public class OrExp extends AggregateConditionExp {
 	@Override
 	protected String getExpressionOperator(int index) {
 		return "or";
-	}
-
-	@Override
-	public int getType() {
-		return Expression.OR;
 	}
 
 	@Override

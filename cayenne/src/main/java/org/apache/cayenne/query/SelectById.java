@@ -699,7 +699,7 @@ public class SelectById<T> extends IndirectQuery implements Select<T> {
 
         @Override
         public Expression getQualifier(ObjEntity entity) {
-            Expression expression = matchAllDbExp(id, Expression.EQUAL_TO);
+            Expression expression = matchAllDbExp(id);
             return expression == null ? expFalse() : expression;
         }
     }
@@ -742,7 +742,7 @@ public class SelectById<T> extends IndirectQuery implements Select<T> {
         public Expression getQualifier(ObjEntity entity) {
             List<Expression> expressions = new ArrayList<>();
             for (Map<String, ?> id : ids) {
-                Expression expression = matchAllDbExp(id, Expression.EQUAL_TO);
+                Expression expression = matchAllDbExp(id);
                 if (expression != null) {
                     expressions.add(expression);
                 }

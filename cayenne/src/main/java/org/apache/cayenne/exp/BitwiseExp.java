@@ -24,7 +24,8 @@ import org.apache.cayenne.util.ConversionUtil;
 /**
  * @since 5.0
  */
-public abstract class BitwiseExp extends ValueExp {
+public abstract sealed class BitwiseExp extends ValueExp permits BitwiseAndExp, BitwiseLeftShiftExp, BitwiseOrExp,
+        BitwiseRightShiftExp, BitwiseXorExp {
     protected BitwiseExp(Object... operands) {
         super(operands);
     }

@@ -36,6 +36,7 @@ import java.util.List;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNotEquals;
+import static org.junit.jupiter.api.Assertions.assertInstanceOf;
 
 public class Cay2666IT {
 
@@ -45,10 +46,10 @@ public class Cay2666IT {
     @Test
     public void exp_Path() {
         Expression exp1 = ExpressionFactory.exp("object$.path");
-        assertEquals(Expression.OBJ_PATH, exp1.getType());
+        assertInstanceOf(ObjPathExp.class, exp1);
 
         Expression exp2 = ExpressionFactory.exp("db:object.path$");
-        assertEquals(Expression.DB_PATH, exp2.getType());
+        assertInstanceOf(DbPathExp.class, exp2);
     }
 
     @Test

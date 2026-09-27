@@ -24,7 +24,7 @@ import java.io.IOException;
 /**
  * @since 5.0
  */
-public class NotExistsExp extends ConditionExp {
+public final class NotExistsExp extends ConditionExp {
     public NotExistsExp(Object... operands) {
         super(operands);
     }
@@ -69,11 +69,6 @@ public class NotExistsExp extends ConditionExp {
     @Override
     public Expression shallowCopy() {
         return new NotExistsExp();
-    }
-
-    @Override
-    public int getType() {
-        return Expression.NOT_EXISTS;
     }
 
     @Override

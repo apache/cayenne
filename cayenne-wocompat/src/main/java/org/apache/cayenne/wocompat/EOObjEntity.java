@@ -23,6 +23,7 @@ import org.apache.cayenne.CayenneRuntimeException;
 import org.apache.cayenne.exp.Expression;
 import org.apache.cayenne.exp.ExpressionException;
 import org.apache.cayenne.exp.ExpressionFactory;
+import org.apache.cayenne.exp.ObjPathExp;
 import org.apache.cayenne.map.Entity;
 import org.apache.cayenne.map.ObjEntity;
 import org.apache.cayenne.map.ObjRelationship;
@@ -165,7 +166,7 @@ public class EOObjEntity extends ObjEntity {
 
             Expression expression = (Expression) input;
 
-            if (expression.getType() != Expression.OBJ_PATH) {
+            if (!(expression instanceof ObjPathExp)) {
                 return input;
             }
 
@@ -212,9 +213,7 @@ public class EOObjEntity extends ObjEntity {
                 }
             }
 
-            Expression exp = ExpressionFactory.expressionOfType(Expression.DB_PATH);
-            exp.setOperand(0, buffer.toString());
-            return exp;
+            return ExpressionFactory.dbPathExp(buffer.toString());
         }
     }
 }

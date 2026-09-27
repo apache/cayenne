@@ -24,7 +24,7 @@ import java.util.Collection;
 /**
  * @since 5.0
  */
-public class AvgExp extends AggregateFunctionCallExp {
+public final class AvgExp extends AggregateFunctionCallExp {
     public AvgExp(Object... operands) {
         super(operands);
     }

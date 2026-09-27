@@ -24,7 +24,7 @@ import org.apache.cayenne.util.ConversionUtil;
 /**
  * @since 5.0
  */
-public class TrimExp extends FunctionCallExp {
+public final class TrimExp extends FunctionCallExp {
     public TrimExp(Object... operands) {
         super(operands);
     }
@@ -51,11 +51,6 @@ public class TrimExp extends FunctionCallExp {
             return null;
         }
         return s1.trim();
-    }
-
-    @Override
-    public int getType() {
-        return Expression.FUNCTION_CALL;
     }
 
     @Override

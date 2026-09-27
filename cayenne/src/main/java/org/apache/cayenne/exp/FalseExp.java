@@ -33,7 +33,7 @@ import java.util.List;
  * @see TrueExp
  * @since 5.0
  */
-public class FalseExp extends ConditionExp {
+public final class FalseExp extends ConditionExp {
 	public FalseExp(Object... operands) {
 		super(operands);
 	}
@@ -56,11 +56,6 @@ public class FalseExp extends ConditionExp {
 	@Override
 	public Expression shallowCopy() {
 		return new FalseExp();
-	}
-
-	@Override
-	public int getType() {
-		return Expression.FALSE;
 	}
 
 	@Override

@@ -37,6 +37,8 @@ import static org.junit.jupiter.api.Assertions.assertNull;
 import static org.junit.jupiter.api.Assertions.assertSame;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.junit.jupiter.api.Assertions.assertTrue;
+import org.apache.cayenne.exp.InExp;
+import org.apache.cayenne.exp.ObjPathExp;
 
 public class EntityIT {
 
@@ -112,7 +114,7 @@ public class EntityIT {
     @Test
     public void resolveBadObjPath1() {
         // test invalid expression path
-        Expression pathExpr = ExpressionFactory.expressionOfType(Expression.OBJ_PATH);
+        Expression pathExpr = new ObjPathExp();
         pathExpr.setOperand(0, "invalid.invalid");
 
         // itertator should be returned, but when trying to read 1st component,
@@ -127,7 +129,7 @@ public class EntityIT {
     @Test
     public void resolveBadObjPath2() {
         // test invalid expression type
-        Expression badPathExpr = ExpressionFactory.expressionOfType(Expression.IN);
+        Expression badPathExpr = new InExp();
         badPathExpr.setOperand(0, "a.b.c");
         ObjEntity galleryEnt = env.runtime().getDataDomain().getEntityResolver().getObjEntity("Gallery");
 
@@ -136,7 +138,7 @@ public class EntityIT {
 
     @Test
     public void resolveObjPath1() {
-        Expression pathExpr = ExpressionFactory.expressionOfType(Expression.OBJ_PATH);
+        Expression pathExpr = new ObjPathExp();
         pathExpr.setOperand(0, "galleryName");
 
         ObjEntity galleryEnt = env.runtime().getDataDomain().getEntityResolver().getObjEntity("Gallery");

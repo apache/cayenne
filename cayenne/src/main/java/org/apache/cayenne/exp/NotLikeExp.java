@@ -27,7 +27,7 @@ import org.apache.cayenne.util.ConversionUtil;
  *
  * @since 5.0
  */
-public class NotLikeExp extends PatternMatchExp {
+public final class NotLikeExp extends PatternMatchExp {
     public NotLikeExp(Object... operands) {
         super(operands);
     }
@@ -67,8 +67,4 @@ public class NotLikeExp extends PatternMatchExp {
         return "not like";
     }
 
-    @Override
-    public int getType() {
-        return Expression.NOT_LIKE;
-    }
 }

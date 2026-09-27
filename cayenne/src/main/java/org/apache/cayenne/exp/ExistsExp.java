@@ -28,7 +28,7 @@ import java.util.Map;
 /**
  * @since 5.0
  */
-public class ExistsExp extends ConditionExp {
+public final class ExistsExp extends ConditionExp {
     public ExistsExp(Object... operands) {
         super(operands);
     }
@@ -92,11 +92,6 @@ public class ExistsExp extends ConditionExp {
     @Override
     public Expression shallowCopy() {
         return new ExistsExp();
-    }
-
-    @Override
-    public int getType() {
-        return Expression.EXISTS;
     }
 
     @Override

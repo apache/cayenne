@@ -29,7 +29,7 @@ import org.apache.cayenne.util.ConversionUtil;
  * 
  * @since 5.0
  */
-public class AndExp extends AggregateConditionExp {
+public final class AndExp extends AggregateConditionExp {
 	public AndExp(Object... operands) {
 		super(operands);
 	}
@@ -63,11 +63,6 @@ public class AndExp extends AggregateConditionExp {
 	@Override
 	public Expression shallowCopy() {
 		return new AndExp();
-	}
-
-	@Override
-	public int getType() {
-		return Expression.AND;
 	}
 
 	@Override

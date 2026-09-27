@@ -24,7 +24,7 @@ import org.apache.cayenne.util.ConversionUtil;
 /**
  * @since 5.0
  */
-public class SqrtExp extends FunctionCallExp {
+public final class SqrtExp extends FunctionCallExp {
     public SqrtExp(Object... operands) {
         super(operands);
     }

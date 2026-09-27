@@ -24,7 +24,7 @@ import java.io.IOException;
 /**
  * @since 5.0
  */
-public class EnclosingObjectExp extends BaseExp {
+public final class EnclosingObjectExp extends BaseExp {
     public EnclosingObjectExp(Object... operands) {
         super(operands);
     }
@@ -49,11 +49,6 @@ public class EnclosingObjectExp extends BaseExp {
     @Override
     public Expression shallowCopy() {
         return new EnclosingObjectExp();
-    }
-
-    @Override
-    public int getType() {
-        return Expression.ENCLOSING_OBJECT;
     }
 
     @Override

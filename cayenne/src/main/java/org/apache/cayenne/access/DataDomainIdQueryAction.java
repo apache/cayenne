@@ -24,7 +24,6 @@ import org.apache.cayenne.FaultFailureException;
 import org.apache.cayenne.ObjectContext;
 import org.apache.cayenne.ObjectId;
 import org.apache.cayenne.Persistent;
-import org.apache.cayenne.exp.Expression;
 import org.apache.cayenne.exp.ExpressionFactory;
 import org.apache.cayenne.map.LifecycleEvent;
 import org.apache.cayenne.query.ObjectSelect;
@@ -93,7 +92,7 @@ class DataDomainIdQueryAction {
 
         ObjectSelect<Persistent> query = ObjectSelect
                 .query(Persistent.class, id.getEntityName())
-                .where(ExpressionFactory.matchAllDbExp(id.getIdSnapshot(), Expression.EQUAL_TO));
+                .where(ExpressionFactory.matchAllDbExp(id.getIdSnapshot()));
 
         List<?> objects = QueryResults.firstList(domain.onQuery(context, query, false));
         return switch (objects.size()) {

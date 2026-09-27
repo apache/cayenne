@@ -35,6 +35,7 @@ import java.util.Map;
 import org.apache.cayenne.ObjectId;
 import org.apache.cayenne.testdo.testmap.Artist;
 import org.junit.jupiter.api.Test;
+import static org.junit.jupiter.api.Assertions.assertInstanceOf;
 
 public class ExpressionTest {
 
@@ -158,7 +159,7 @@ public class ExpressionTest {
 		Expression e2 = ExpressionFactory.matchExp("age", 30);
 
 		Expression exp = e1.andExp(e2);
-		assertEquals(exp.getType(), Expression.AND);
+		assertInstanceOf(AndExp.class, exp);
 		assertEquals(2, ((BaseExp) exp).getChildCount());
 	}
 
@@ -168,7 +169,7 @@ public class ExpressionTest {
 		Expression e2 = ExpressionFactory.matchExp("age", 30);
 
 		Expression exp = e1.orExp(e2);
-		assertEquals(exp.getType(), Expression.OR);
+		assertInstanceOf(OrExp.class, exp);
 		assertEquals(2, ((BaseExp) exp).getChildCount());
 	}
 
@@ -180,7 +181,7 @@ public class ExpressionTest {
 		Expression e4 = ExpressionFactory.matchExp("numEars", 1);
 
 		Expression exp = e1.andExp(e2, e3, e4);
-		assertEquals(exp.getType(), Expression.AND);
+		assertInstanceOf(AndExp.class, exp);
 		assertEquals(4, ((BaseExp) exp).getChildCount());
 	}
 
@@ -192,7 +193,7 @@ public class ExpressionTest {
 		Expression e4 = ExpressionFactory.matchExp("numEars", 1);
 
 		Expression exp = e1.orExp(e2, e3, e4);
-		assertEquals(exp.getType(), Expression.OR);
+		assertInstanceOf(OrExp.class, exp);
 		assertEquals(4, ((BaseExp) exp).getChildCount());
 	}
 
@@ -200,7 +201,7 @@ public class ExpressionTest {
 	public void bitwiseNegate() {
 		Expression exp = ExpressionFactory.exp("~7");
 
-		assertEquals(Expression.BITWISE_NOT, exp.getType());
+		assertInstanceOf(BitwiseNotExp.class, exp);
 		assertEquals(1, ((BaseExp) exp).getChildCount());
 		assertEquals(-8L, exp.evaluate(new Object())); // ~7 = -8 in
 																// digital world
@@ -210,7 +211,7 @@ public class ExpressionTest {
 	public void bitwiseAnd() {
 		Expression exp = ExpressionFactory.exp("1 & 0");
 
-		assertEquals(Expression.BITWISE_AND, exp.getType());
+		assertInstanceOf(BitwiseAndExp.class, exp);
 		assertEquals(2, ((BaseExp) exp).getChildCount());
 		assertEquals(0L, exp.evaluate(new Object()));
 	}
@@ -219,7 +220,7 @@ public class ExpressionTest {
 	public void bitwiseOr() {
 		Expression exp = ExpressionFactory.exp("1 | 0");
 
-		assertEquals(Expression.BITWISE_OR, exp.getType());
+		assertInstanceOf(BitwiseOrExp.class, exp);
 		assertEquals(2, ((BaseExp) exp).getChildCount());
 		assertEquals(1L, exp.evaluate(new Object()));
 	}
@@ -228,7 +229,7 @@ public class ExpressionTest {
 	public void bitwiseXor() {
 		Expression exp = ExpressionFactory.exp("1 ^ 0");
 
-		assertEquals(Expression.BITWISE_XOR, exp.getType());
+		assertInstanceOf(BitwiseXorExp.class, exp);
 		assertEquals(2, ((BaseExp) exp).getChildCount());
 		assertEquals(1L, exp.evaluate(new Object()));
 	}
@@ -237,7 +238,7 @@ public class ExpressionTest {
 	public void bitwiseLeftShift() {
 		Expression exp = ExpressionFactory.exp("7 << 2");
 
-		assertEquals(Expression.BITWISE_LEFT_SHIFT, exp.getType());
+		assertInstanceOf(BitwiseLeftShiftExp.class, exp);
 		assertEquals(2, ((BaseExp) exp).getChildCount());
 		assertEquals(28L, exp.evaluate(new Object()));
 	}
@@ -246,7 +247,7 @@ public class ExpressionTest {
 	public void bitwiseRightShift() {
 		Expression exp = ExpressionFactory.exp("7 >> 2");
 
-		assertEquals(Expression.BITWISE_RIGHT_SHIFT, exp.getType());
+		assertInstanceOf(BitwiseRightShiftExp.class, exp);
 		assertEquals(2, ((BaseExp) exp).getChildCount());
 
 		assertEquals(1L, exp.evaluate(new Object()));

@@ -27,7 +27,7 @@ import java.util.Collection;
  * 
  * @since 5.0
  */
-public class EqualExp extends ConditionExp {
+public final class EqualExp extends ConditionExp {
 	public EqualExp(Object... operands) {
 		super(operands);
 	}
@@ -90,11 +90,6 @@ public class EqualExp extends ConditionExp {
 			return "is";
 		}
 		return getExpressionOperator(index);
-	}
-
-	@Override
-	public int getType() {
-		return Expression.EQUAL_TO;
 	}
 
 }

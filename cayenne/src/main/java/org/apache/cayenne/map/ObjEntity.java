@@ -28,6 +28,9 @@ import org.apache.cayenne.exp.Expression;
 import org.apache.cayenne.exp.ExpressionException;
 import org.apache.cayenne.exp.ExpressionFactory;
 import org.apache.cayenne.exp.path.CayennePath;
+import org.apache.cayenne.exp.DbPathExp;
+import org.apache.cayenne.exp.FullObjectExp;
+import org.apache.cayenne.exp.ObjPathExp;
 import org.apache.cayenne.util.CayenneMapEntry;
 import org.apache.cayenne.util.Util;
 import org.apache.cayenne.util.XMLEncoder;
@@ -773,7 +776,7 @@ public class ObjEntity extends Entity<ObjEntity, ObjAttribute, ObjRelationship>
      */
     @Override
     public Iterable<PathComponent<ObjAttribute, ObjRelationship>> resolvePath(Expression pathExp, Map<String, String> aliasMap) {
-        if (pathExp.getType() == Expression.OBJ_PATH) {
+        if (pathExp instanceof ObjPathExp) {
             return () -> new PathComponentIterator<>(ObjEntity.this, (CayennePath) pathExp.getOperand(0), aliasMap);
         }
         throw new ExpressionException("Invalid expression type: '" + pathExp.expName() + "',  OBJ_PATH is expected.");
@@ -783,7 +786,7 @@ public class ObjEntity extends Entity<ObjEntity, ObjAttribute, ObjRelationship>
     public Iterator<CayenneMapEntry> resolvePathComponents(Expression pathExp) throws ExpressionException {
 
         // resolve DB_PATH if we can
-        if (pathExp.getType() == Expression.DB_PATH) {
+        if (pathExp instanceof DbPathExp) {
             if (getDbEntity() == null) {
                 throw new ExpressionException("Can't resolve DB_PATH '" + pathExp + "', DbEntity is not set.");
             }
@@ -791,7 +794,7 @@ public class ObjEntity extends Entity<ObjEntity, ObjAttribute, ObjRelationship>
             return getDbEntity().resolvePathComponents(pathExp);
         }
 
-        if (pathExp.getType() == Expression.OBJ_PATH) {
+        if (pathExp instanceof ObjPathExp) {
             return new PathIterator((CayennePath) pathExp.getOperand(0));
         }
 
@@ -929,7 +932,7 @@ public class ObjEntity extends Entity<ObjEntity, ObjAttribute, ObjRelationship>
 
             Expression expression = (Expression) input;
 
-            if (expression.getType() == Expression.FULL_OBJECT && expression.getOperandCount() == 0) {
+            if (expression instanceof FullObjectExp && expression.getOperandCount() == 0) {
                 // A bare "self" reference carries no path, so there is nothing to rebase on the related
                 // entity. Resolve it to this entity's PK, which is what it means in the first place.
                 Collection<DbAttribute> pks = getDbEntity().getPrimaryKeys();
@@ -940,7 +943,7 @@ public class ObjEntity extends Entity<ObjEntity, ObjAttribute, ObjRelationship>
                 return ExpressionFactory.dbPathExp(pks.iterator().next().getName());
             }
 
-            if (expression.getType() != Expression.OBJ_PATH) {
+            if (!(expression instanceof ObjPathExp)) {
                 return input;
             }
 

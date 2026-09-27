@@ -56,54 +56,6 @@ public class ExpressionFactory {
 	private static final int PARSE_BUFFER_MAX_SIZE = 4096;
 
 	/**
-	 * Creates a new expression for the type requested. If type is unknown, xpressionException is thrown.
-	 */
-	public static Expression expressionOfType(int type) {
-		return switch (type) {
-			case Expression.AND -> new AndExp();
-			case Expression.OR -> new OrExp();
-			case Expression.BETWEEN -> new BetweenExp();
-			case Expression.NOT_BETWEEN -> new NotBetweenExp();
-
-			// binary types
-			case Expression.EQUAL_TO -> new EqualExp();
-			case Expression.NOT_EQUAL_TO -> new NotEqualExp();
-			case Expression.LESS_THAN -> new LessExp();
-			case Expression.GREATER_THAN -> new GreaterExp();
-			case Expression.LESS_THAN_EQUAL_TO -> new LessOrEqualExp();
-			case Expression.GREATER_THAN_EQUAL_TO -> new GreaterOrEqualExp();
-			case Expression.IN -> new InExp();
-			case Expression.NOT_IN -> new NotInExp();
-			case Expression.LIKE -> new LikeExp();
-			case Expression.LIKE_IGNORE_CASE -> new LikeIgnoreCaseExp();
-			case Expression.NOT_LIKE -> new NotLikeExp();
-			case Expression.NOT_LIKE_IGNORE_CASE -> new NotLikeIgnoreCaseExp();
-			case Expression.ADD -> new AddExp();
-			case Expression.SUBTRACT -> new SubtractExp();
-			case Expression.MULTIPLY -> new MultiplyExp();
-			case Expression.DIVIDE -> new DivideExp();
-
-			case Expression.NOT -> new NotExp();
-			case Expression.NEGATIVE -> new NegateExp();
-			case Expression.OBJ_PATH -> new ObjPathExp();
-			case Expression.DB_PATH -> new DbPathExp();
-			case Expression.LIST -> new ListExp();
-
-			case Expression.TRUE -> new TrueExp();
-			case Expression.FALSE -> new FalseExp();
-
-			case Expression.BITWISE_NOT -> new BitwiseNotExp();
-			case Expression.BITWISE_OR -> new BitwiseOrExp();
-			case Expression.BITWISE_AND -> new BitwiseAndExp();
-			case Expression.BITWISE_XOR -> new BitwiseXorExp();
-			case Expression.BITWISE_LEFT_SHIFT -> new BitwiseLeftShiftExp();
-			case Expression.BITWISE_RIGHT_SHIFT -> new BitwiseRightShiftExp();
-
-			default -> throw new ExpressionException("Bad expression type: " + type);
-		};
-	}
-
-	/**
 	 * Applies a few default rules for adding operands to expressions. In
 	 * particular wraps all lists into LIST expressions. Applied only in path
 	 * expressions.
@@ -119,82 +71,58 @@ public class ExpressionFactory {
 	}
 
 	/**
-	 * Creates an expression that matches any of the key-values pairs in
-	 * <code>map</code>.
-	 * <p>
-	 * For each pair <code>pairType</code> operator is used to build a binary
-	 * expression. Key is considered to be a DB_PATH expression. OR is used to
-	 * join pair binary expressions.
+	 * Creates an expression that matches any of the key-values pairs in <code>map</code>: an OR of "key = value"
+	 * comparisons, each key taken as a DB_PATH.
+	 *
+	 * @since 5.0
 	 */
-	public static Expression matchAnyDbExp(Map<String, ?> map, int pairType) {
-		List<Expression> pairs = makeDbPathPairs(map, pairType);
-		return joinExp(Expression.OR, pairs);
+	public static Expression matchAnyDbExp(Map<String, ?> map) {
+		return or(makeDbPathPairs(map));
 	}
 
 	/**
-	 * Creates an expression that matches all key-values pairs in
-	 * <code>map</code>.
-	 * <p>
-	 * For each pair <code>pairType</code> operator is used to build a binary
-	 * expression. Key is considered to be a DB_PATH expression. AND is used to
-	 * join pair binary expressions.
+	 * Creates an expression that matches all key-values pairs in <code>map</code>: an AND of "key = value"
+	 * comparisons, each key taken as a DB_PATH.
+	 *
+	 * @since 5.0
 	 */
-	public static Expression matchAllDbExp(Map<String, ?> map, int pairType) {
-		List<Expression> pairs = makeDbPathPairs(map, pairType);
-		return joinExp(Expression.AND, pairs);
+	public static Expression matchAllDbExp(Map<String, ?> map) {
+		return and(makeDbPathPairs(map));
 	}
 
-	private static List<Expression> makeDbPathPairs(Map<String, ?> map, int pairType) {
+	private static List<Expression> makeDbPathPairs(Map<String, ?> map) {
 		List<Expression> pairs = new ArrayList<>(map.size());
-
 		for (Map.Entry<String, ?> entry : map.entrySet()) {
-
-			Expression exp = expressionOfType(pairType);
-			exp.setOperand(0, new DbPathExp(entry.getKey()));
-			exp.setOperand(1, wrapPathOperand(entry.getValue()));
-			pairs.add(exp);
+			pairs.add(new EqualExp(new DbPathExp(entry.getKey()), wrapPathOperand(entry.getValue())));
 		}
-
 		return pairs;
 	}
 
 	/**
-	 * Creates an expression that matches any of the key-values pairs in the
-	 * <code>map</code>.
-	 * <p>
-	 * For each pair <code>pairType</code> operator is used to build a binary
-	 * expression. Key is considered to be a OBJ_PATH expression. OR is used to
-	 * join pair binary expressions.
+	 * Creates an expression that matches any of the key-values pairs in the <code>map</code>: an OR of
+	 * "key = value" comparisons, each key taken as an OBJ_PATH.
+	 *
+	 * @since 5.0
 	 */
-	public static Expression matchAnyExp(Map<String, ?> map, int pairType) {
-		List<Expression> pairs = makeObjPathPairs(map, pairType);
-		return joinExp(Expression.OR, pairs);
+	public static Expression matchAnyExp(Map<String, ?> map) {
+		return or(makeObjPathPairs(map));
 	}
 
 	/**
-	 * Creates an expression that matches all key-values pairs in
-	 * <code>map</code>.
-	 * <p>
-	 * For each pair <code>pairType</code> operator is used to build a binary
-	 * expression. Key is considered to be a OBJ_PATH expression. AND is used to
-	 * join pair binary expressions.
+	 * Creates an expression that matches all key-values pairs in <code>map</code>: an AND of "key = value"
+	 * comparisons, each key taken as an OBJ_PATH.
+	 *
+	 * @since 5.0
 	 */
-	public static Expression matchAllExp(Map<String, ?> map, int pairType) {
-		List<Expression> pairs = makeObjPathPairs(map, pairType);
-		return joinExp(Expression.AND, pairs);
+	public static Expression matchAllExp(Map<String, ?> map) {
+		return and(makeObjPathPairs(map));
 	}
 
-	private static List<Expression> makeObjPathPairs(Map<String, ?> map, int pairType) {
+	private static List<Expression> makeObjPathPairs(Map<String, ?> map) {
 		List<Expression> pairs = new ArrayList<>(map.size());
-
 		for (Map.Entry<String, ?> entry : map.entrySet()) {
-
-			Expression exp = expressionOfType(pairType);
-			exp.setOperand(0, new ObjPathExp(entry.getKey()));
-			exp.setOperand(1, wrapPathOperand(entry.getValue()));
-			pairs.add(exp);
+			pairs.add(new EqualExp(new ObjPathExp(entry.getKey()), wrapPathOperand(entry.getValue())));
 		}
-
 		return pairs;
 	}
 
@@ -280,7 +208,7 @@ public class ExpressionFactory {
 			}
 		}
 
-		return joinExp(Expression.AND, matches);
+		return and(matches);
 	}
 
 	/**
@@ -1192,36 +1120,19 @@ public class ExpressionFactory {
 	}
 
 	/**
-	 * Joins all expressions, making a single expression. <code>type</code> is
-	 * used as an expression type for expressions joining each one of the items
-	 * on the list. <code>type</code> must be binary expression type.
-	 * <p>
-	 * For example, if type is Expression.AND, resulting expression would match
-	 * all expressions in the list. If type is Expression.OR, resulting
-	 * expression would match any of the expressions.
-	 * </p>
+	 * Joins the expressions as the operands of the given (empty) AND or OR node. A single expression is returned as
+	 * is, and an empty collection gives null.
 	 */
-	public static Expression joinExp(int type, Collection<Expression> expressions) {
+	private static Expression join(AggregateConditionExp join, Collection<Expression> expressions) {
 		int len = expressions.size();
 		if (len == 0) {
 			return null;
 		}
 
-		return joinExp(type, expressions.toArray(new Expression[len]));
+		return join(join, expressions.toArray(new Expression[len]));
 	}
 
-	/**
-	 * Joins all expressions, making a single expression. <code>type</code> is
-	 * used as an expression type for expressions joining each one of the items
-	 * in the array. <code>type</code> must be binary expression type.
-	 * <p>
-	 * For example, if type is Expression.AND, resulting expression would match
-	 * all expressions in the list. If type is Expression.OR, resulting
-	 * expression would match any of the expressions.
-	 * </p>
-	 * @since 4.1
-	 */
-	public static Expression joinExp(int type, Expression... expressions) {
+	private static Expression join(AggregateConditionExp join, Expression... expressions) {
 
 		int len = expressions != null ? expressions.length : 0;
 		if (len == 0) {
@@ -1233,11 +1144,10 @@ public class ExpressionFactory {
 			return currentExp;
 		}
 
-		Expression exp = expressionOfType(type);
 		for (int i = 0; i < len; i++) {
-			exp.setOperand(i, expressions[i]);
+			join.setOperand(i, expressions[i]);
 		}
-		return exp;
+		return join;
 	}
 
 	/**
@@ -1246,7 +1156,7 @@ public class ExpressionFactory {
 	 * <code>object</code>.
 	 */
 	public static Expression matchExp(Persistent object) {
-		return matchAllDbExp(object.getObjectId().getIdSnapshot(), Expression.EQUAL_TO);
+		return matchAllDbExp(object.getObjectId().getIdSnapshot());
 	}
 
 	/**
@@ -1276,7 +1186,7 @@ public class ExpressionFactory {
 			pairs.add(matchExp(object));
 		}
 
-		return joinExp(Expression.OR, pairs);
+		return or(pairs);
 	}
 
 	public static Expression fullObjectExp() {
@@ -1302,28 +1212,28 @@ public class ExpressionFactory {
 	 * @since 4.0
 	 */
 	public static Expression and(Collection<Expression> expressions) {
-		return joinExp(Expression.AND, expressions);
+		return join(new AndExp(), expressions);
 	}
 
 	/**
 	 * @since 4.0
 	 */
 	public static Expression and(Expression... expressions) {
-		return joinExp(Expression.AND, expressions);
+		return join(new AndExp(), expressions);
 	}
 
 	/**
 	 * @since 4.0
 	 */
 	public static Expression or(Collection<Expression> expressions) {
-		return joinExp(Expression.OR, expressions);
+		return join(new OrExp(), expressions);
 	}
 
 	/**
 	 * @since 4.0
 	 */
 	public static Expression or(Expression... expressions) {
-		return joinExp(Expression.OR, expressions);
+		return join(new OrExp(), expressions);
 	}
 
 	/**

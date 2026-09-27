@@ -44,7 +44,7 @@ import org.apache.cayenne.util.CayenneMapEntry;
  * 
  * @since 5.0
  */
-public class DbPathExp extends PathExp {
+public final class DbPathExp extends PathExp {
 	public static final String DB_PREFIX = "db:";
 
 	public DbPathExp(Object... operands) {
@@ -170,11 +170,6 @@ public class DbPathExp extends PathExp {
 	@Override
 	public void appendAsString(Appendable out) throws IOException {
 		out.append(DB_PREFIX).append(path.value());
-	}
-
-	@Override
-	public int getType() {
-		return Expression.DB_PATH;
 	}
 
 	/**

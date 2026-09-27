@@ -28,7 +28,7 @@ import java.util.List;
 /**
  * @since 5.0
  */
-public class SumExp extends AggregateFunctionCallExp {
+public final class SumExp extends AggregateFunctionCallExp {
     public SumExp(Object... operands) {
         super(operands);
     }

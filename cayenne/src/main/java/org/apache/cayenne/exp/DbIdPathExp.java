@@ -39,7 +39,7 @@ import org.apache.cayenne.util.CayenneMapEntry;
 /**
  * @since 5.0
  */
-public class DbIdPathExp extends DbPathExp {
+public final class DbIdPathExp extends PathExp {
     public static final String DBID_PREFIX = "dbid:";
 
     public DbIdPathExp(Object... operands) {
@@ -118,8 +118,7 @@ public class DbIdPathExp extends DbPathExp {
         return pk;
     }
 
-    @Override
-    protected Map<?, ?> toMap(Object o) {
+    private Map<?, ?> toMap(Object o) {
         if (o instanceof Map) {
             return (Map<?, ?>) o;
         } else if (o instanceof ObjectId) {
@@ -129,11 +128,6 @@ public class DbIdPathExp extends DbPathExp {
         } else {
             return null;
         }
-    }
-
-    @Override
-    public int getType() {
-        return Expression.DBID_PATH;
     }
 
     @Override

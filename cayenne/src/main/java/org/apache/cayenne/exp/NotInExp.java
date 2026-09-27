@@ -27,7 +27,7 @@ import java.util.function.Function;
  *
  * @since 5.0
  */
-public class NotInExp extends ConditionExp {    public NotInExp(Object... operands) {
+public final class NotInExp extends ConditionExp {    public NotInExp(Object... operands) {
         super(operands);
     }
 
@@ -65,10 +65,6 @@ public class NotInExp extends ConditionExp {    public NotInExp(Object... operan
         return "not in";
     }
 
-    @Override
-    public int getType() {
-        return Expression.NOT_IN;
-    }
     
     @Override
     protected Object transformExpression(Function<Object, Object> transformer) {

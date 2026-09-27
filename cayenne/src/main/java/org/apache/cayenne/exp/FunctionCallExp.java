@@ -25,14 +25,11 @@ import java.util.List;
 /**
  * @since 5.0
  */
-public abstract class FunctionCallExp extends ValueExp {
+public abstract sealed class FunctionCallExp extends ValueExp permits AbsExp, AggregateFunctionCallExp, ConcatExp,
+        CurrentDateExp, CurrentTimeExp, CurrentTimestampExp, CustomFunctionExp, ExtractExp, LengthExp, LocateExp,
+        LowerExp, ModExp, SqrtExp, SubstringExp, TrimExp, UpperExp {
     protected FunctionCallExp(Object... operands) {
         super(operands);
-    }
-
-    @Override
-    public int getType() {
-        return Expression.FUNCTION_CALL;
     }
 
     public boolean needParenthesis() {

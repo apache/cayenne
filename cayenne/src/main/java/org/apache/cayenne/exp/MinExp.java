@@ -25,7 +25,7 @@ import java.util.Collections;
 /**
  * @since 5.0
  */
-public class MinExp extends AggregateFunctionCallExp {
+public final class MinExp extends AggregateFunctionCallExp {
     public MinExp(Object... operands) {
         super(operands);
     }

@@ -30,11 +30,11 @@ import org.apache.cayenne.ql.QLSelectPrinter;
 /**
  * @since 5.0
  */
-public class SubqueryExp extends BaseExp {
+public final class SubqueryExp extends BaseExp {
     private static final TraversalHandler IN_MEMORY_VALIDATOR = new TraversalHandler() {
         @Override
         public void startNode(Expression node, Expression parentNode) {
-            if (node.getType() == Expression.ENCLOSING_OBJECT) {
+            if (node instanceof EnclosingObjectExp) {
                 throw new UnsupportedOperationException(
                         "Can't evaluate subquery expression with enclosing object expression."
                 );
@@ -89,11 +89,6 @@ public class SubqueryExp extends BaseExp {
     @Override
     public Expression shallowCopy() {
         return new SubqueryExp(query);
-    }
-
-    @Override
-    public int getType() {
-        return Expression.SUBQUERY;
     }
 
     @Override

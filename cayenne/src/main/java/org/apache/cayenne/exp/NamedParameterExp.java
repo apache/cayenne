@@ -27,7 +27,7 @@ import java.util.List;
  * 
  * @since 5.0
  */
-public class NamedParameterExp extends ScalarExp {
+public final class NamedParameterExp extends ScalarExp {
 	public NamedParameterExp(Object... operands) {
 		super(operands);
 	}

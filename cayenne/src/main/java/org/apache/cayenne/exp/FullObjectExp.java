@@ -24,7 +24,7 @@ import java.io.IOException;
 /**
  * @since 5.0
  */
-public class FullObjectExp extends BaseExp {
+public final class FullObjectExp extends BaseExp {
     public FullObjectExp(Object... operands) {
         super(operands);
     }
@@ -47,11 +47,6 @@ public class FullObjectExp extends BaseExp {
     @Override
     public Expression shallowCopy() {
         return new FullObjectExp();
-    }
-
-    @Override
-    public int getType() {
-        return Expression.FULL_OBJECT;
     }
 
     @Override

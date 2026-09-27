@@ -27,7 +27,7 @@ import java.math.BigDecimal;
  * 
  * @since 5.0
  */
-public class MultiplyExp extends ArithmeticExp {
+public final class MultiplyExp extends ArithmeticExp {
 	public MultiplyExp(Object... operands) {
 		super(operands);
 	}
@@ -48,11 +48,6 @@ public class MultiplyExp extends ArithmeticExp {
 	@Override
 	protected String getExpressionOperator(int index) {
 		return "*";
-	}
-
-	@Override
-	public int getType() {
-		return Expression.MULTIPLY;
 	}
 
 	@Override

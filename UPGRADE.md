@@ -372,6 +372,15 @@ List<Artist> withExpensivePaintings = ObjectSelect
   result an expression can be shared between trees: `a.andExp(b)` no longer changes how `a` itself prints, and a node
   taken out of a tree prints without the parentheses it used to keep.
 
+  The node classes are now a sealed hierarchy, and the kind of node is its class. `Expression.getType()`,
+  `Expression.setType(..)` and the `Expression.OBJ_PATH`, `Expression.EQUAL_TO`, etc. int constants are removed
+  without replacement: use `instanceof` or a pattern-matching `switch` over `ObjPathExp`, `EqualExp`, etc. instead.
+  This also removed the int-typed factory methods: `ExpressionFactory.expressionOfType(int)` and
+  `ExpressionFactory.joinExp(int, ..)` are gone (use `ExpressionFactory.and(..)` / `or(..)`), and so are
+  `Expression.joinExp(int, ..)` (use `andExp(..)` / `orExp(..)`). `ExpressionFactory.matchAllExp(Map, int)`,
+  `matchAnyExp(Map, int)`, `matchAllDbExp(Map, int)` and `matchAnyDbExp(Map, int)` lost the pair type parameter and
+  always match by equality.
+
 ## Upgrading to 5.0-M3
 
 

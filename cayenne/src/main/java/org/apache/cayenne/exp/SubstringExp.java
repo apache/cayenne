@@ -24,7 +24,7 @@ import org.apache.cayenne.util.ConversionUtil;
 /**
  * @since 5.0
  */
-public class SubstringExp extends FunctionCallExp {
+public final class SubstringExp extends FunctionCallExp {
     public SubstringExp(Object... operands) {
         super(operands);
     }

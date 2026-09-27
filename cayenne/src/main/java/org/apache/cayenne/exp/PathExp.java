@@ -32,7 +32,7 @@ import org.apache.cayenne.util.CayenneMapEntry;
  * 
  * @since 5.0
  */
-public abstract class PathExp extends BaseExp {
+public abstract sealed class PathExp extends BaseExp permits DbIdPathExp, DbPathExp, ObjPathExp {
 	protected CayennePath path;
 	protected Map<String, String> pathAliases;
 

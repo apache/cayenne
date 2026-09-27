@@ -33,7 +33,7 @@ import java.util.List;
  * 
  * @since 5.0
  */
-public class ListExp extends BaseExp {
+public final class ListExp extends BaseExp {
 	protected Object[] values;
 
 	/**
@@ -60,11 +60,6 @@ public class ListExp extends BaseExp {
 	@Override
 	protected Object evaluateNode(Object o) throws Exception {
 		return values;
-	}
-
-	@Override
-	public int getType() {
-		return Expression.LIST;
 	}
 
 	@Override

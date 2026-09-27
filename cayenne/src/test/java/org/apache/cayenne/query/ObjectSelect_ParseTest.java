@@ -37,6 +37,11 @@ import static org.junit.jupiter.api.Assertions.assertInstanceOf;
 import static org.junit.jupiter.api.Assertions.assertNull;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.junit.jupiter.api.Assertions.assertTrue;
+import org.apache.cayenne.exp.AllExp;
+import org.apache.cayenne.exp.AnyExp;
+import org.apache.cayenne.exp.ExistsExp;
+import org.apache.cayenne.exp.NotExistsExp;
+import org.apache.cayenne.exp.NotInExp;
 
 public class ObjectSelect_ParseTest {
 
@@ -237,7 +242,7 @@ public class ObjectSelect_ParseTest {
                 "from Artist where exists (select self from Painting where toArtist = enclosing(self) "
                         + "and estimatedPrice > 1000)");
 
-        assertEquals(Expression.EXISTS, q.getWhere().getType());
+        assertInstanceOf(ExistsExp.class, q.getWhere());
         FluentSelect<?, ?> subquery = subquery(q.getWhere(), 0);
         assertInstanceOf(ObjectSelect.class, subquery);
         assertEquals("Painting", subquery.getEntityName());
@@ -263,7 +268,7 @@ public class ObjectSelect_ParseTest {
                 "from Artist where artistName = 'a' and not exists (from Painting where toArtist = enclosing(self))");
 
         Expression notExists = (Expression) q.getWhere().getOperand(1);
-        assertEquals(Expression.NOT_EXISTS, notExists.getType());
+        assertInstanceOf(NotExistsExp.class, notExists);
         assertEquals("Painting", subquery(notExists, 0).getEntityName());
     }
 
@@ -279,7 +284,7 @@ public class ObjectSelect_ParseTest {
                 "from Painting where toArtist.artistName not in "
                         + "(select artistName from Artist where dateOfBirth < $d)", 5);
 
-        assertEquals(Expression.NOT_IN, q.getWhere().getType());
+        assertInstanceOf(NotInExp.class, q.getWhere());
         ColumnSelect<?> subquery = assertInstanceOf(ColumnSelect.class, subquery(q.getWhere(), 1));
         assertTrue(subquery.isSingleColumn());
         assertEquals(ExpressionFactory.exp("dateOfBirth < 5"), subquery.getWhere());
@@ -292,11 +297,11 @@ public class ObjectSelect_ParseTest {
                         + "or estimatedPrice = any (select max(estimatedPrice) from Painting)");
 
         Expression all = (Expression) ((Expression) q.getWhere().getOperand(0)).getOperand(1);
-        assertEquals(Expression.ALL, all.getType());
+        assertInstanceOf(AllExp.class, all);
         assertEquals(ExpressionFactory.exp("x = 'P2'"), subquery(all, 0).getWhere());
 
         Expression any = (Expression) ((Expression) q.getWhere().getOperand(1)).getOperand(1);
-        assertEquals(Expression.ANY, any.getType());
+        assertInstanceOf(AnyExp.class, any);
         assertEquals("Painting", subquery(any, 0).getEntityName());
     }
 

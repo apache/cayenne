@@ -28,7 +28,7 @@ import java.util.function.Function;
  * 
  * @since 5.0
  */
-public abstract class AggregateConditionExp extends BaseExp {
+public abstract sealed class AggregateConditionExp extends BaseExp permits AndExp, NotExp, OrExp, WhenExp {
 	protected AggregateConditionExp(Object... operands) {
 		super(operands);
 	}

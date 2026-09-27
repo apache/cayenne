@@ -28,6 +28,7 @@ import org.apache.cayenne.exp.ObjPathExp;
 import org.apache.cayenne.exp.property.BaseProperty;
 import org.apache.cayenne.exp.property.Property;
 import org.apache.cayenne.exp.property.PropertyFactory;
+import org.apache.cayenne.exp.FullObjectExp;
 import org.apache.cayenne.query.ColumnSelect;
 import org.apache.cayenne.query.FluentSelect;
 import org.apache.cayenne.query.ObjectSelect;
@@ -170,7 +171,7 @@ class QLSelectBuilder {
     }
 
     private static boolean isSelf(Expression expression) {
-        return expression.getType() == Expression.FULL_OBJECT && expression.getOperandCount() == 0;
+        return expression instanceof FullObjectExp && expression.getOperandCount() == 0;
     }
 
     private Property<?> rootPaths(Property<?> column) {

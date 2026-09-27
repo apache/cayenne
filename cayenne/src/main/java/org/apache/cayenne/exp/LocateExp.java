@@ -24,7 +24,7 @@ import org.apache.cayenne.util.ConversionUtil;
 /**
  * @since 5.0
  */
-public class LocateExp extends FunctionCallExp {
+public final class LocateExp extends FunctionCallExp {
     public LocateExp(Object... operands) {
         super(operands);
     }

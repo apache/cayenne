@@ -24,7 +24,7 @@ import org.apache.cayenne.util.ConversionUtil;
 /**
  * @since 5.0
  */
-public class ModExp extends FunctionCallExp {
+public final class ModExp extends FunctionCallExp {
     public ModExp(Object... operands) {
         super(operands);
     }

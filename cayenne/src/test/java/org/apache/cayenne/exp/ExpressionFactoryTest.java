@@ -43,27 +43,14 @@ public class ExpressionFactoryTest {
 	}
 
 	@Test
-
-	public void expressionOfBadType() {
-		assertThrows(ExpressionException.class, () -> {
-
-			// non existing type
-			int badType = -50;
-			ExpressionFactory.expressionOfType(badType);
-	
-		});
-	}
-
-
-	@Test
 	public void betweenExp() {
 		Object v1 = new Object();
 		Object v2 = new Object();
 		Expression exp = ExpressionFactory.betweenExp("abc", v1, v2);
-		assertEquals(Expression.BETWEEN, exp.getType());
+		assertInstanceOf(BetweenExp.class, exp);
 
 		Expression path = (Expression) exp.getOperand(0);
-		assertEquals(Expression.OBJ_PATH, path.getType());
+		assertInstanceOf(ObjPathExp.class, path);
 	}
 
 	@Test
@@ -71,10 +58,10 @@ public class ExpressionFactoryTest {
 		Object v1 = new Object();
 		Object v2 = new Object();
 		Expression exp = ExpressionFactory.betweenDbExp("abc", v1, v2);
-		assertEquals(Expression.BETWEEN, exp.getType());
+		assertInstanceOf(BetweenExp.class, exp);
 
 		Expression path = (Expression) exp.getOperand(0);
-		assertEquals(Expression.DB_PATH, path.getType());
+		assertInstanceOf(DbPathExp.class, path);
 	}
 
 	@Test
@@ -82,10 +69,10 @@ public class ExpressionFactoryTest {
 		Object v1 = new Object();
 		Object v2 = new Object();
 		Expression exp = ExpressionFactory.notBetweenExp("abc", v1, v2);
-		assertEquals(Expression.NOT_BETWEEN, exp.getType());
+		assertInstanceOf(NotBetweenExp.class, exp);
 
 		Expression path = (Expression) exp.getOperand(0);
-		assertEquals(Expression.OBJ_PATH, path.getType());
+		assertInstanceOf(ObjPathExp.class, path);
 	}
 
 	@Test
@@ -93,87 +80,87 @@ public class ExpressionFactoryTest {
 		Object v1 = new Object();
 		Object v2 = new Object();
 		Expression exp = ExpressionFactory.notBetweenDbExp("abc", v1, v2);
-		assertEquals(Expression.NOT_BETWEEN, exp.getType());
+		assertInstanceOf(NotBetweenExp.class, exp);
 
 		Expression path = (Expression) exp.getOperand(0);
-		assertEquals(Expression.DB_PATH, path.getType());
+		assertInstanceOf(DbPathExp.class, path);
 	}
 
 	@Test
 	public void greaterExp() {
 		Object v = new Object();
 		Expression exp = ExpressionFactory.greaterExp("abc", v);
-		assertEquals(Expression.GREATER_THAN, exp.getType());
+		assertInstanceOf(GreaterExp.class, exp);
 	}
 
 	@Test
 	public void greaterDbExp() {
 		Object v = new Object();
 		Expression exp = ExpressionFactory.greaterDbExp("abc", v);
-		assertEquals(Expression.GREATER_THAN, exp.getType());
+		assertInstanceOf(GreaterExp.class, exp);
 
 		Expression path = (Expression) exp.getOperand(0);
-		assertEquals(Expression.DB_PATH, path.getType());
+		assertInstanceOf(DbPathExp.class, path);
 	}
 
 	@Test
 	public void greaterOrEqualExp() {
 		Object v = new Object();
 		Expression exp = ExpressionFactory.greaterOrEqualExp("abc", v);
-		assertEquals(Expression.GREATER_THAN_EQUAL_TO, exp.getType());
+		assertInstanceOf(GreaterOrEqualExp.class, exp);
 	}
 
 	@Test
 	public void greaterOrEqualDbExp() {
 		Object v = new Object();
 		Expression exp = ExpressionFactory.greaterOrEqualDbExp("abc", v);
-		assertEquals(Expression.GREATER_THAN_EQUAL_TO, exp.getType());
+		assertInstanceOf(GreaterOrEqualExp.class, exp);
 
 		Expression path = (Expression) exp.getOperand(0);
-		assertEquals(Expression.DB_PATH, path.getType());
+		assertInstanceOf(DbPathExp.class, path);
 	}
 
 	@Test
 	public void lessExp() {
 		Object v = new Object();
 		Expression exp = ExpressionFactory.lessExp("abc", v);
-		assertEquals(Expression.LESS_THAN, exp.getType());
+		assertInstanceOf(LessExp.class, exp);
 	}
 
 	@Test
 	public void lessDbExp() {
 		Object v = new Object();
 		Expression exp = ExpressionFactory.lessDbExp("abc", v);
-		assertEquals(Expression.LESS_THAN, exp.getType());
+		assertInstanceOf(LessExp.class, exp);
 
 		Expression path = (Expression) exp.getOperand(0);
-		assertEquals(Expression.DB_PATH, path.getType());
+		assertInstanceOf(DbPathExp.class, path);
 	}
 
 	@Test
 	public void lessOrEqualExp() {
 		Object v = new Object();
 		Expression exp = ExpressionFactory.lessOrEqualExp("abc", v);
-		assertEquals(Expression.LESS_THAN_EQUAL_TO, exp.getType());
+		assertInstanceOf(LessOrEqualExp.class, exp);
 
 		Expression path = (Expression) exp.getOperand(0);
-		assertEquals(Expression.OBJ_PATH, path.getType());
+		assertInstanceOf(ObjPathExp.class, path);
 	}
 
 	@Test
 	public void lessOrEqualDbExp() {
 		Object v = new Object();
 		Expression exp = ExpressionFactory.lessOrEqualDbExp("abc", v);
-		assertEquals(Expression.LESS_THAN_EQUAL_TO, exp.getType());
+		assertInstanceOf(LessOrEqualExp.class, exp);
 
 		Expression path = (Expression) exp.getOperand(0);
-		assertEquals(Expression.DB_PATH, path.getType());
+		assertInstanceOf(DbPathExp.class, path);
 	}
 
 	@Test
 	public void inExp1() {
 		Expression exp = ExpressionFactory.inExp("abc", "a", "b");
-		assertEquals(Expression.IN, exp.getType());
+		assertInstanceOf(InExp.class, exp);
 	}
 
 	@Test
@@ -182,14 +169,14 @@ public class ExpressionFactoryTest {
 		v.add("a");
 		v.add("b");
 		Expression exp = ExpressionFactory.inExp("abc", v);
-		assertEquals(Expression.IN, exp.getType());
+		assertInstanceOf(InExp.class, exp);
 	}
 
 	@Test
 	public void inExp3() {
 		List<Object> v = new ArrayList<>();
 		Expression exp = ExpressionFactory.inExp("abc", v);
-		assertEquals(Expression.FALSE, exp.getType());
+		assertInstanceOf(FalseExp.class, exp);
 	}
 
 	@Test
@@ -201,7 +188,7 @@ public class ExpressionFactoryTest {
 	@Test
 	public void notInExp1() {
 		Expression exp = ExpressionFactory.notInExp("abc", "a", "b");
-		assertEquals(Expression.NOT_IN, exp.getType());
+		assertInstanceOf(NotInExp.class, exp);
 	}
 
 	@Test
@@ -210,14 +197,14 @@ public class ExpressionFactoryTest {
 		v.add("a");
 		v.add("b");
 		Expression exp = ExpressionFactory.notInExp("abc", v);
-		assertEquals(Expression.NOT_IN, exp.getType());
+		assertInstanceOf(NotInExp.class, exp);
 	}
 
 	@Test
 	public void notInExp3() {
 		List<Object> v = new ArrayList<>();
 		Expression exp = ExpressionFactory.notInExp("abc", v);
-		assertEquals(Expression.TRUE, exp.getType());
+		assertInstanceOf(TrueExp.class, exp);
 	}
 
 	@Test
@@ -230,81 +217,81 @@ public class ExpressionFactoryTest {
 	public void likeExp() {
 		String v = "abc";
 		Expression exp = ExpressionFactory.likeExp("abc", v);
-		assertEquals(Expression.LIKE, exp.getType());
+		assertInstanceOf(LikeExp.class, exp);
 
 		Expression path = (Expression) exp.getOperand(0);
-		assertEquals(Expression.OBJ_PATH, path.getType());
+		assertInstanceOf(ObjPathExp.class, path);
 	}
 
 	@Test
 	public void likeDbExp() {
 		String v = "abc";
 		Expression exp = ExpressionFactory.likeDbExp("abc", v);
-		assertEquals(Expression.LIKE, exp.getType());
+		assertInstanceOf(LikeExp.class, exp);
 
 		Expression path = (Expression) exp.getOperand(0);
-		assertEquals(Expression.DB_PATH, path.getType());
+		assertInstanceOf(DbPathExp.class, path);
 	}
 
 	@Test
 	public void likeExpEscape() {
 		String v = "abc";
 		Expression exp = ExpressionFactory.likeExp("=abc", v, '=');
-		assertEquals(Expression.LIKE, exp.getType());
+		assertInstanceOf(LikeExp.class, exp);
 
 		assertEquals('=', ((LikeExp) exp).getEscapeChar());
 
 		Expression path = (Expression) exp.getOperand(0);
-		assertEquals(Expression.OBJ_PATH, path.getType());
+		assertInstanceOf(ObjPathExp.class, path);
 	}
 
 	@Test
 	public void likeIgnoreCaseExp() {
 		String v = "abc";
 		Expression exp = ExpressionFactory.likeIgnoreCaseExp("abc", v);
-		assertEquals(Expression.LIKE_IGNORE_CASE, exp.getType());
+		assertInstanceOf(LikeIgnoreCaseExp.class, exp);
 		assertEquals(0, ((LikeIgnoreCaseExp) exp).getEscapeChar());
 
 		Expression path = (Expression) exp.getOperand(0);
-		assertEquals(Expression.OBJ_PATH, path.getType());
+		assertInstanceOf(ObjPathExp.class, path);
 	}
 
 	@Test
 	public void likeIgnoreCaseExpEscape() {
 		String v = "abc";
 		Expression exp = ExpressionFactory.likeIgnoreCaseExp("=abc", v, '=');
-		assertEquals(Expression.LIKE_IGNORE_CASE, exp.getType());
+		assertInstanceOf(LikeIgnoreCaseExp.class, exp);
 		assertEquals('=', ((LikeIgnoreCaseExp) exp).getEscapeChar());
 
 		Expression path = (Expression) exp.getOperand(0);
-		assertEquals(Expression.OBJ_PATH, path.getType());
+		assertInstanceOf(ObjPathExp.class, path);
 	}
 
 	@Test
 	public void likeIgnoreCaseDbExp() {
 		String v = "abc";
 		Expression exp = ExpressionFactory.likeIgnoreCaseDbExp("abc", v);
-		assertEquals(Expression.LIKE_IGNORE_CASE, exp.getType());
+		assertInstanceOf(LikeIgnoreCaseExp.class, exp);
 
 		Expression path = (Expression) exp.getOperand(0);
-		assertEquals(Expression.DB_PATH, path.getType());
+		assertInstanceOf(DbPathExp.class, path);
 	}
 
 	@Test
 	public void notLikeIgnoreCaseExp() {
 		String v = "abc";
 		Expression exp = ExpressionFactory.notLikeIgnoreCaseExp("abc", v);
-		assertEquals(Expression.NOT_LIKE_IGNORE_CASE, exp.getType());
+		assertInstanceOf(NotLikeIgnoreCaseExp.class, exp);
 	}
 
 	// testing CAY-941 bug
 	@Test
 	public void likeExpNull() {
 		Expression exp = ExpressionFactory.likeExp("abc", null);
-		assertEquals(Expression.LIKE, exp.getType());
+		assertInstanceOf(LikeExp.class, exp);
 
 		Expression path = (Expression) exp.getOperand(0);
-		assertEquals(Expression.OBJ_PATH, path.getType());
+		assertInstanceOf(ObjPathExp.class, path);
 		assertNull(exp.getOperand(1));
 	}
 
@@ -325,7 +312,7 @@ public class ExpressionFactoryTest {
 				map.put("k" + i, "v" + i);
 			}
 
-			Expression exp = ExpressionFactory.matchAllExp(map, Expression.LESS_THAN);
+			Expression exp = ExpressionFactory.matchAllExp(map);
 			assertNotNull(exp);
 			handler.traverseExpression(exp);
 
@@ -337,7 +324,7 @@ public class ExpressionFactoryTest {
 	}
 
 	@Test
-	public void joinExp() {
+	public void and_NodeCounts() {
 		// create expressions and check the counts,
 		// leaf count should be (2N) : 2 leafs for each expression
 		// node count should be N > 1 ? 2 * N + 1 : 2 * N
@@ -352,7 +339,7 @@ public class ExpressionFactoryTest {
 				list.add(ExpressionFactory.matchExp(("k" + i), "v" + i));
 			}
 
-			Expression exp = ExpressionFactory.joinExp(Expression.AND, list);
+			Expression exp = ExpressionFactory.and(list);
 			assertNotNull(exp);
 			handler.traverseExpression(exp);
 
@@ -453,16 +440,16 @@ public class ExpressionFactoryTest {
 	@Test
 	public void exp_Path() {
 		Expression e1 = ExpressionFactory.exp("object.path");
-		assertEquals(Expression.OBJ_PATH, e1.getType());
+		assertInstanceOf(ObjPathExp.class, e1);
 
 		Expression e2 = ExpressionFactory.exp("db:object.path");
-		assertEquals(Expression.DB_PATH, e2.getType());
+		assertInstanceOf(DbPathExp.class, e2);
 
 		Expression e3 = ExpressionFactory.exp("object+.path");
-		assertEquals(Expression.OBJ_PATH, e3.getType());
+		assertInstanceOf(ObjPathExp.class, e3);
 
 		Expression e4 = ExpressionFactory.exp("db:object.path+");
-		assertEquals(Expression.DB_PATH, e4.getType());
+		assertInstanceOf(DbPathExp.class, e4);
 	}
 
 	@Test
@@ -581,40 +568,40 @@ public class ExpressionFactoryTest {
 	public void matchDbIdExp() {
 		String v = "abc";
 		Expression exp = ExpressionFactory.matchDbIdExp("abc", v);
-		assertEquals(Expression.EQUAL_TO, exp.getType());
+		assertInstanceOf(EqualExp.class, exp);
 
 		Expression path = (Expression) exp.getOperand(0);
-		assertEquals(Expression.DBID_PATH, path.getType());
+		assertInstanceOf(DbIdPathExp.class, path);
 	}
 
 	@Test
 	public void noMatchDbIdExp() {
 		String v = "abc";
 		Expression exp = ExpressionFactory.noMatchDbIdExp("abc", v);
-		assertEquals(Expression.NOT_EQUAL_TO, exp.getType());
+		assertInstanceOf(NotEqualExp.class, exp);
 
 		Expression path = (Expression) exp.getOperand(0);
-		assertEquals(Expression.DBID_PATH, path.getType());
+		assertInstanceOf(DbIdPathExp.class, path);
 	}
 
 	@Test
 	public void inDbIdExp() {
 		String v = "abc";
 		Expression exp = ExpressionFactory.inDbIdExp("abc", v);
-		assertEquals(Expression.IN, exp.getType());
+		assertInstanceOf(InExp.class, exp);
 
 		Expression path = (Expression) exp.getOperand(0);
-		assertEquals(Expression.DBID_PATH, path.getType());
+		assertInstanceOf(DbIdPathExp.class, path);
 	}
 
 	@Test
 	public void notInDbIdExp() {
 		String v = "abc";
 		Expression exp = ExpressionFactory.notInDbIdExp("abc", v);
-		assertEquals(Expression.NOT_IN, exp.getType());
+		assertInstanceOf(NotInExp.class, exp);
 
 		Expression path = (Expression) exp.getOperand(0);
-		assertEquals(Expression.DBID_PATH, path.getType());
+		assertInstanceOf(DbIdPathExp.class, path);
 	}
 
 	@Test

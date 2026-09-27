@@ -196,7 +196,7 @@ public class EntityProperty<E extends Persistent> extends BaseProperty<E> implem
         for (Map<String, ?> id : ids) {
             expressions.add(idExp(id));
         }
-        return expressions.isEmpty() ? ExpressionFactory.expFalse() : ExpressionFactory.joinExp(Expression.OR, expressions);
+        return expressions.isEmpty() ? ExpressionFactory.expFalse() : ExpressionFactory.or(expressions);
     }
 
     /**

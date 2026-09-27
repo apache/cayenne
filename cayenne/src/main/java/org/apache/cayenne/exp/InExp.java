@@ -27,7 +27,7 @@ import java.util.function.Function;
  *
  * @since 5.0
  */
-public class InExp extends ConditionExp {
+public final class InExp extends ConditionExp {
 	public InExp(Object... operands) {
 		super(operands);
 	}
@@ -67,11 +67,6 @@ public class InExp extends ConditionExp {
 	@Override
 	protected String getExpressionOperator(int index) {
 		return "in";
-	}
-
-	@Override
-	public int getType() {
-		return Expression.IN;
 	}
 
 	@Override

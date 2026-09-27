@@ -26,7 +26,7 @@ package org.apache.cayenne.exp;
  *
  * @since 5.0
  */
-public class NotEqualExp extends ConditionExp {    public NotEqualExp(Object... operands) {
+public final class NotEqualExp extends ConditionExp {    public NotEqualExp(Object... operands) {
         super(operands);
     }
 
@@ -63,8 +63,4 @@ public class NotEqualExp extends ConditionExp {    public NotEqualExp(Object... 
         return "<>";
     }
 
-    @Override
-    public int getType() {
-        return Expression.NOT_EQUAL_TO;
-    }
 }

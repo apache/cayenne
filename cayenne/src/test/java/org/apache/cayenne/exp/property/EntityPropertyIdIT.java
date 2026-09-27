@@ -79,7 +79,7 @@ public class EntityPropertyIdIT {
 
         // the same match, spelled out as raw db paths
         CompoundPkTestEntity viaExpression = ObjectSelect.query(CompoundPkTestEntity.class)
-                .where(ExpressionFactory.matchAllDbExp(PK_2, Expression.EQUAL_TO)).selectOne(env.context());
+                .where(ExpressionFactory.matchAllDbExp(PK_2)).selectOne(env.context());
 
         assertSame(viaExpression, viaProperty);
     }

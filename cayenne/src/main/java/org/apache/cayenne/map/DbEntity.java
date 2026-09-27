@@ -38,6 +38,7 @@ import org.apache.cayenne.exp.Expression;
 import org.apache.cayenne.exp.ExpressionException;
 import org.apache.cayenne.exp.ExpressionFactory;
 import org.apache.cayenne.exp.path.CayennePath;
+import org.apache.cayenne.exp.DbPathExp;
 import org.apache.cayenne.util.CayenneMapEntry;
 import org.apache.cayenne.util.XMLEncoder;
 
@@ -454,7 +455,7 @@ public class DbEntity extends Entity<DbEntity, DbAttribute, DbRelationship>
     @Override
     public Iterable<PathComponent<DbAttribute, DbRelationship>> resolvePath(Expression pathExp, Map<String, String> aliasMap) {
 
-        if (pathExp.getType() == Expression.DB_PATH) {
+        if (pathExp instanceof DbPathExp) {
             return () -> new PathComponentIterator<>(DbEntity.this, (CayennePath) pathExp.getOperand(0), aliasMap);
         }
 
@@ -463,7 +464,7 @@ public class DbEntity extends Entity<DbEntity, DbAttribute, DbRelationship>
 
     @Override
     public Iterator<CayenneMapEntry> resolvePathComponents(Expression pathExp) throws ExpressionException {
-        if (pathExp.getType() != Expression.DB_PATH) {
+        if (!(pathExp instanceof DbPathExp)) {
             throw new ExpressionException("Invalid expression type: '" + pathExp.expName() + "',  DB_PATH is expected.");
         }
 
@@ -588,7 +589,7 @@ public class DbEntity extends Entity<DbEntity, DbAttribute, DbRelationship>
             }
 
             Expression expression = (Expression) input;
-            if (expression.getType() != Expression.DB_PATH) {
+            if (!(expression instanceof DbPathExp)) {
                 return input;
             }
 

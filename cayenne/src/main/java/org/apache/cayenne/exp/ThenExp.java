@@ -27,7 +27,7 @@ import java.util.List;
  *
  * @since 5.0
  */
-public class ThenExp extends BaseExp {
+public final class ThenExp extends BaseExp {
     public ThenExp(Object... operands) {
         super(operands);
     }
@@ -48,11 +48,6 @@ public class ThenExp extends BaseExp {
     @Override
     protected Object evaluateNode(Object o) throws Exception {
         return evaluateChild(0, o);
-    }
-
-    @Override
-    public int getType() {
-        return Expression.THEN;
     }
 
     @Override

@@ -26,7 +26,7 @@ import java.math.BigDecimal;
 /**
  * @since 5.0
  */
-public abstract class ArithmeticExp extends ValueExp {
+public abstract sealed class ArithmeticExp extends ValueExp permits AddExp, DivideExp, MultiplyExp, SubtractExp {
     protected ArithmeticExp(Object... operands) {
         super(operands);
     }

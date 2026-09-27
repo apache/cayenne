@@ -24,7 +24,7 @@ import org.apache.cayenne.util.ConversionUtil;
 /**
  * @since 5.0
  */
-public class UpperExp extends FunctionCallExp {
+public final class UpperExp extends FunctionCallExp {
     public UpperExp(Object... operands) {
         super(operands);
     }

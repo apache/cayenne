@@ -25,7 +25,7 @@ import java.io.IOException;
  * Class for custom aggregation functions expressions.
  * @since 5.0
  */
-public class CustomAggregateExp extends AggregateFunctionCallExp {
+public non-sealed class CustomAggregateExp extends AggregateFunctionCallExp {
     private String functionName;
 
     public CustomAggregateExp(Object... operands) {

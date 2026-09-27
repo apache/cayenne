@@ -27,7 +27,7 @@ import java.util.List;
  *
  * @since 5.0
  */
-public class ElseExp extends BaseExp {
+public final class ElseExp extends BaseExp {
     public ElseExp(Object... operands) {
         super(operands);
     }
@@ -45,11 +45,6 @@ public class ElseExp extends BaseExp {
     @Override
     protected Object evaluateNode(Object o) throws Exception {
         return evaluateChild(0, o);
-    }
-
-    @Override
-    public int getType() {
-        return Expression.ELSE;
     }
 
     @Override

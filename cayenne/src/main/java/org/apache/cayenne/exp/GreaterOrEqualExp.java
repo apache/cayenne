@@ -25,7 +25,7 @@ package org.apache.cayenne.exp;
  * 
  * @since 5.0
  */
-public class GreaterOrEqualExp extends ConditionExp {
+public final class GreaterOrEqualExp extends ConditionExp {
 	public GreaterOrEqualExp(Object... operands) {
 		super(operands);
 	}
@@ -58,8 +58,4 @@ public class GreaterOrEqualExp extends ConditionExp {
 		return ">=";
 	}
 
-	@Override
-	public int getType() {
-		return Expression.GREATER_THAN_EQUAL_TO;
-	}
 }

@@ -24,7 +24,7 @@ import org.apache.cayenne.util.ConversionUtil;
 /**
  * @since 5.0
  */
-public class ConcatExp extends FunctionCallExp {
+public final class ConcatExp extends FunctionCallExp {
     public ConcatExp(Object... operands) {
         super(operands);
     }

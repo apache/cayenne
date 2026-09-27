@@ -24,7 +24,7 @@ import org.apache.cayenne.util.ConversionUtil;
 /**
  * @since 5.0
  */
-public class LengthExp extends FunctionCallExp {
+public final class LengthExp extends FunctionCallExp {
     public LengthExp(Object... operands) {
         super(operands);
     }

@@ -27,7 +27,8 @@ import java.util.Map;
  * It's more like marker interface for now.
  * @since 5.0
  */
-public abstract class AggregateFunctionCallExp extends FunctionCallExp {
+public abstract sealed class AggregateFunctionCallExp extends FunctionCallExp permits AvgExp, CountExp,
+        CustomAggregateExp, DistinctExp, MaxExp, MinExp, SumExp {
     protected AggregateFunctionCallExp(Object... operands) {
         super(operands);
     }

@@ -283,7 +283,7 @@ class HierarchicalObjectResolver {
                     qualifiers[i++] = allJoinsQualifier;
                 }
 
-                currentQuery.or(ExpressionFactory.joinExp(Expression.OR, qualifiers));
+                currentQuery.or(ExpressionFactory.or(qualifiers));
             }
         }
 

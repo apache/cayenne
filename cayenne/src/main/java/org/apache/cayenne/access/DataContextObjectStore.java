@@ -27,7 +27,6 @@ import org.apache.cayenne.PersistenceState;
 import org.apache.cayenne.Persistent;
 import org.apache.cayenne.access.ObjectDiff.ArcOperation;
 import org.apache.cayenne.access.event.SnapshotEvent;
-import org.apache.cayenne.exp.Expression;
 import org.apache.cayenne.exp.ExpressionFactory;
 import org.apache.cayenne.exp.path.CayennePath;
 import org.apache.cayenne.graph.ArcId;
@@ -415,7 +414,7 @@ public class DataContextObjectStore implements ObjectStore {
 
         ObjectSelect<DataRow> query = ObjectSelect
                 .query(Persistent.class, oid.getEntityName())
-                .where(ExpressionFactory.matchAllDbExp(oid.getIdSnapshot(), Expression.EQUAL_TO))
+                .where(ExpressionFactory.matchAllDbExp(oid.getIdSnapshot()))
                 .fetchDataRows();
 
         List<?> rows = QueryResults.firstList(context.getChannel().onQuery(context, query, false));

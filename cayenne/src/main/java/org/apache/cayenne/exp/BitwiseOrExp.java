@@ -24,7 +24,7 @@ package org.apache.cayenne.exp;
  * 
  * @since 5.0
  */
-public class BitwiseOrExp extends BitwiseExp {	
+public final class BitwiseOrExp extends BitwiseExp {	
 	
 	
 	public BitwiseOrExp(Object... operands) {
@@ -41,10 +41,6 @@ public class BitwiseOrExp extends BitwiseExp {
 		return "|";
 	}
 	
-	@Override
-	public int getType() {
-		return Expression.BITWISE_OR;
-	}
 	
 	@Override
 	protected String getEJBQLExpressionOperator(int index) {

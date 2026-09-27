@@ -30,6 +30,7 @@ import org.apache.cayenne.exp.ExpressionFactory;
 import org.apache.cayenne.exp.DbPathExp;
 import org.apache.cayenne.exp.path.CayennePath;
 import org.apache.cayenne.exp.property.Property;
+import org.apache.cayenne.exp.ObjPathExp;
 import org.apache.cayenne.map.EmbeddedAttribute;
 import org.apache.cayenne.map.EmbeddedResult;
 import org.apache.cayenne.map.JoinType;
@@ -136,15 +137,15 @@ class CustomColumnSetExtractor implements ColumnExtractor {
 
     private CayennePath dbPathOrDefault(Expression pathExp, CayennePath defaultPrefix) {
         // normalize to db path first
-        if(pathExp.getType() == Expression.OBJ_PATH) {
+        if(pathExp instanceof ObjPathExp) {
             pathExp = context.getMetadata().getObjEntity().translateToDbPath(pathExp);
         }
 
-        if(pathExp.getType() != Expression.DB_PATH) {
+        if(!(pathExp instanceof DbPathExp dbPath)) {
             return defaultPrefix;
         }
 
-        return ((DbPathExp)pathExp).getPath();
+        return dbPath.getPath();
     }
 
     private void ensureJoin(CayennePath prefix) {

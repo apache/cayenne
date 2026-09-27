@@ -30,7 +30,7 @@ import org.apache.cayenne.util.ConversionUtil;
  * 
  * @since 5.0
  */
-public class NegateExp extends BaseExp {
+public final class NegateExp extends BaseExp {
 	public NegateExp(Object... operands) {
 		super(operands);
 	}
@@ -76,11 +76,6 @@ public class NegateExp extends BaseExp {
 	protected String getExpressionOperator(int index) {
 		throw new UnsupportedOperationException("No operator for '" + expName()
 				+ "'");
-	}
-
-	@Override
-	public int getType() {
-		return Expression.NEGATIVE;
 	}
 
 	@Override

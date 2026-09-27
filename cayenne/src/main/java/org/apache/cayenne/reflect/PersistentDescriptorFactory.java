@@ -29,6 +29,10 @@ import org.apache.cayenne.dba.TypesMapping;
 import org.apache.cayenne.exp.Expression;
 import org.apache.cayenne.exp.TraversalHandler;
 import org.apache.cayenne.exp.path.CayennePath;
+import org.apache.cayenne.exp.AndExp;
+import org.apache.cayenne.exp.DbPathExp;
+import org.apache.cayenne.exp.EqualExp;
+import org.apache.cayenne.exp.ObjPathExp;
 import org.apache.cayenne.map.DbAttribute;
 import org.apache.cayenne.map.DbEntity;
 import org.apache.cayenne.map.DbRelationship;
@@ -245,7 +249,7 @@ public abstract class PersistentDescriptorFactory implements ClassDescriptorFact
      * entity, synthesizing one for a DB column that has no ObjAttribute. Returns null for any other node.
      */
     protected ObjAttribute discriminatorAttribute(PersistentDescriptor descriptor, Expression node) {
-        if (node.getType() == Expression.DB_PATH) {
+        if (node instanceof DbPathExp) {
             String path = node.getOperand(0).toString();
             final DbAttribute attribute = descriptor.getEntity().getDbEntity().getAttribute(path);
             if (attribute == null) {
@@ -270,7 +274,7 @@ public abstract class PersistentDescriptorFactory implements ClassDescriptorFact
             return objectAttribute;
         }
 
-        if (node.getType() == Expression.OBJ_PATH) {
+        if (node instanceof ObjPathExp) {
             return descriptor.getEntity().getAttribute(node.getOperand(0).toString());
         }
 
@@ -296,13 +300,13 @@ public abstract class PersistentDescriptorFactory implements ClassDescriptorFact
     private void collectDiscriminatorValues(PersistentDescriptor descriptor, Expression exp,
             Map<AttributeProperty, Object> values) {
 
-        switch (exp.getType()) {
-            case Expression.AND -> {
+        switch (exp) {
+            case AndExp and -> {
                 for (int i = 0; i < exp.getOperandCount(); i++) {
                     collectDiscriminatorValues(descriptor, (Expression) exp.getOperand(i), values);
                 }
             }
-            case Expression.EQUAL_TO -> {
+            case EqualExp equal -> {
                 Object left = exp.getOperand(0);
                 Object right = exp.getOperand(1);
                 if (left instanceof Expression path && !(right instanceof Expression)) {

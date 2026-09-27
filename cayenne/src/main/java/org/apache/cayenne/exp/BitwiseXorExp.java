@@ -24,7 +24,7 @@ package org.apache.cayenne.exp;
  * 
  * @since 5.0
  */
-public class BitwiseXorExp extends BitwiseExp {	
+public final class BitwiseXorExp extends BitwiseExp {	
 	
 	
 	public BitwiseXorExp(Object... operands) {
@@ -41,10 +41,6 @@ public class BitwiseXorExp extends BitwiseExp {
 		return "^";
 	}
 	
-	@Override
-	public int getType() {
-		return Expression.BITWISE_XOR;
-	}
 	
 	@Override
 	protected String getEJBQLExpressionOperator(int index) {

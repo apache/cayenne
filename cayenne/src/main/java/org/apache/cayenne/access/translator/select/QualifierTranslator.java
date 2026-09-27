@@ -65,6 +65,38 @@ import org.apache.cayenne.exp.PatternMatchExp;
 import org.apache.cayenne.exp.BaseExp;
 import org.apache.cayenne.exp.path.CayennePath;
 import org.apache.cayenne.exp.property.Property;
+import org.apache.cayenne.exp.AddExp;
+import org.apache.cayenne.exp.AllExp;
+import org.apache.cayenne.exp.AnyExp;
+import org.apache.cayenne.exp.AsteriskExp;
+import org.apache.cayenne.exp.BetweenExp;
+import org.apache.cayenne.exp.BitwiseAndExp;
+import org.apache.cayenne.exp.BitwiseLeftShiftExp;
+import org.apache.cayenne.exp.BitwiseNotExp;
+import org.apache.cayenne.exp.BitwiseOrExp;
+import org.apache.cayenne.exp.BitwiseRightShiftExp;
+import org.apache.cayenne.exp.BitwiseXorExp;
+import org.apache.cayenne.exp.CaseWhenExp;
+import org.apache.cayenne.exp.DivideExp;
+import org.apache.cayenne.exp.ElseExp;
+import org.apache.cayenne.exp.EnclosingObjectExp;
+import org.apache.cayenne.exp.EqualExp;
+import org.apache.cayenne.exp.GreaterExp;
+import org.apache.cayenne.exp.GreaterOrEqualExp;
+import org.apache.cayenne.exp.InExp;
+import org.apache.cayenne.exp.LessExp;
+import org.apache.cayenne.exp.LessOrEqualExp;
+import org.apache.cayenne.exp.ListExp;
+import org.apache.cayenne.exp.MultiplyExp;
+import org.apache.cayenne.exp.NegateExp;
+import org.apache.cayenne.exp.NotBetweenExp;
+import org.apache.cayenne.exp.NotEqualExp;
+import org.apache.cayenne.exp.NotInExp;
+import org.apache.cayenne.exp.NotLikeExp;
+import org.apache.cayenne.exp.NotLikeIgnoreCaseExp;
+import org.apache.cayenne.exp.SubtractExp;
+import org.apache.cayenne.exp.ThenExp;
+import org.apache.cayenne.exp.WhenExp;
 import org.apache.cayenne.map.DbAttribute;
 import org.apache.cayenne.map.DbEntity;
 import org.apache.cayenne.map.DbRelationship;
@@ -83,7 +115,6 @@ import java.util.Map;
 import java.util.Set;
 
 import static org.apache.cayenne.access.sqlbuilder.SQLBuilder.*;
-import static org.apache.cayenne.exp.Expression.*;
 
 /**
  * @since 4.2
@@ -206,7 +237,7 @@ class QualifierTranslator implements TraversalHandler {
      * Returns the node itself when there is nothing to fold.
      */
     private static Object foldAndOr(AggregateConditionExp node) {
-        boolean and = node.getType() == AND;
+        boolean and = node instanceof AndExp;
         int count = node.getOperandCount();
         List<Object> kept = new ArrayList<>(count);
         for (int i = 0; i < count; i++) {
@@ -267,139 +298,107 @@ class QualifierTranslator implements TraversalHandler {
     }
 
     private Node expressionNodeToSqlNode(Expression node, Expression parentNode) {
-        switch (node.getType()) {
-            case NOT_IN:
-                return new InNode(true);
-            case IN:
-                return new InNode(false);
-            case NOT_BETWEEN:
-            case BETWEEN:
-                return new BetweenNode(node.getType() == NOT_BETWEEN);
-            case NOT:
-                return new NotNode();
-            case BITWISE_NOT:
-                return new BitwiseNotNode();
-            case EQUAL_TO:
-                return new EqualNode();
-            case NOT_EQUAL_TO:
-                return new NotEqualNode();
-
-            case LIKE:
-            case NOT_LIKE:
-            case LIKE_IGNORE_CASE:
-            case NOT_LIKE_IGNORE_CASE:
-                PatternMatchExp patternMatchNode = (PatternMatchExp) node;
-                boolean not = node.getType() == NOT_LIKE || node.getType() == NOT_LIKE_IGNORE_CASE;
-                return new LikeNode(patternMatchNode.isIgnoringCase(), not, patternMatchNode.getEscapeChar());
-
-            case OBJ_PATH:
-                CayennePath path = (CayennePath) node.getOperand(0);
-                PathTranslationResult result = pathTranslator.translatePath(context.getMetadata().getObjEntity(), path);
-                return processPathTranslationResult(node, parentNode, result);
-
-            case DB_PATH:
-                CayennePath dbPath = (CayennePath) node.getOperand(0);
-                PathTranslationResult dbResult = pathTranslator.translatePath(context.getMetadata().getDbEntity(), dbPath);
-                return processPathTranslationResult(node, parentNode, dbResult);
-
-            case DBID_PATH:
-                CayennePath dbIdPath = (CayennePath) node.getOperand(0);
-                PathTranslationResult dbIdResult = pathTranslator.translateIdPath(context.getMetadata().getObjEntity(), dbIdPath);
-                return processPathTranslationResult(node, parentNode, dbIdResult);
-
-            case FUNCTION_CALL:
-                FunctionCallExp functionCall = (FunctionCallExp) node;
-                return function(functionCall.getFunctionName()).build();
-
-            case ADD:
-            case SUBTRACT:
-            case MULTIPLY:
-            case DIVIDE:
-            case BITWISE_AND:
-            case BITWISE_LEFT_SHIFT:
-            case BITWISE_OR:
-            case BITWISE_RIGHT_SHIFT:
-            case BITWISE_XOR:
-            case OR:
-            case AND:
-            case LESS_THAN:
-            case LESS_THAN_EQUAL_TO:
-            case GREATER_THAN:
-            case GREATER_THAN_EQUAL_TO:
-                return new OpExpressionNode(expToStr(node.getType()));
-            case NEGATIVE:
-                // If operand is a scalar null, produce NULL directly (no unary minus)
-                if (node.getOperandCount() > 0 && node.getOperand(0) == null) {
-                    expressionsToSkip.add(node);
-                    return new ValueNode(null, false, null, false);
-                }
-                // the minus sign is a prefix that hugs its operand (-1, not - 1)
-                return new NegateNode();
-            case TRUE:
-            case FALSE:
-            case ASTERISK:
-                return new TextNode(' ' + expToStr(node.getType()));
-
-            case CUSTOM_OP:
-                return new OpExpressionNode(((CustomOperatorExp) node).getOperator());
-
-            case EXISTS:
-                return new FunctionNode("EXISTS", null, false);
-            case NOT_EXISTS:
-                return new FunctionNode("NOT EXISTS", null, false);
-            case ALL:
-                return new FunctionNode("ALL", null, false);
-            case ANY:
-                return new FunctionNode("ANY", null, false);
-
-            case SUBQUERY:
-                SubqueryExp subquery = (SubqueryExp) node;
-                SelectTranslatorContext subContext = new SelectTranslatorContext(
-                        subquery.getQuery(), context.getAdapter(), context.getResolver(), context);
-                // skip SQL translation stage for nested translators, it should be performed by root context only
-                subContext.setSkipSQLGeneration(true);
-                subContext.translate();
-                return subContext.getSelectBuilder().build();
-
-            case ENCLOSING_OBJECT:
-                // Translate via parent context's translator
-                Expression expression = (Expression) node.getOperand(0);
-                if (context.getParentContext() == null) {
-                    throw new CayenneRuntimeException("Unable to translate qualifier, no parent context to use for expression " + node);
-                }
-                expressionsToSkip.add(expression);
-                return context.getParentContext().getQualifierTranslator().translate(expression);
-
-            case FULL_OBJECT:
-                Collection<DbAttribute> dbAttributes = context.getMetadata().getDbEntity().getPrimaryKeys();
-                String alias = context.getTableTree().aliasForPath(CayennePath.EMPTY_PATH);
-                if (dbAttributes.size() > 1) {
-                    return createMultiPkMatch(node, parentNode, dbAttributes, alias);
-                }
-                DbAttribute attribute = dbAttributes.iterator().next();
-                return table(alias).column(attribute).build();
-            case SCALAR:
+        // the common node kinds go first: a pattern switch tests its cases in order
+        return switch (node) {
+            case ObjPathExp path -> processPathTranslationResult(node, parentNode,
+                    pathTranslator.translatePath(context.getMetadata().getObjEntity(), path.getPath()));
+            case DbIdPathExp path -> processPathTranslationResult(node, parentNode,
+                    pathTranslator.translateIdPath(context.getMetadata().getObjEntity(), path.getPath()));
+            case DbPathExp path -> processPathTranslationResult(node, parentNode,
+                    pathTranslator.translatePath(context.getMetadata().getDbEntity(), path.getPath()));
+            case ScalarExp scalar -> {
                 if (parentNode != null) {
-                    throw new CayenneRuntimeException("Incorrect state, a node %s can't have parent here", node.getClass().getName());
+                    throw new CayenneRuntimeException("Incorrect state, a node %s can't have parent here",
+                            node.getClass().getName());
                 }
-                Object scalarVal = ((ScalarExp) node).getValue();
+                Object scalarVal = scalar.getValue();
                 if (scalarVal instanceof Collection || scalarVal.getClass().isArray()) {
                     throw new CayenneRuntimeException("%s %s", ERR_MSG_ARRAYS_NOT_SUPPORTED, node.getClass().getName());
                 } else {
                     objectNode(scalarVal, null);
                 }
-                return null;
+                yield null;
+            }
+            case EqualExp e -> new EqualNode();
+            case NotEqualExp e -> new NotEqualNode();
+            case AndExp e -> new OpExpressionNode("AND");
+            case OrExp e -> new OpExpressionNode("OR");
+            case InExp e -> new InNode(false);
+            case NotInExp e -> new InNode(true);
+            case PatternMatchExp match -> new LikeNode(match.isIgnoringCase(),
+                    match instanceof NotLikeExp || match instanceof NotLikeIgnoreCaseExp, match.getEscapeChar());
+            case FunctionCallExp functionCall -> function(functionCall.getFunctionName()).build();
+            case ListExp e -> null;
 
-            case CASE_WHEN:
-                return new CaseNode();
-            case WHEN:
-                return new WhenNode();
-            case THEN:
-                return new ThenNode();
-            case ELSE:
-                return new ElseNode();
-        }
-        return null;
+            case LessExp e -> new OpExpressionNode("<");
+            case LessOrEqualExp e -> new OpExpressionNode("<=");
+            case GreaterExp e -> new OpExpressionNode(">");
+            case GreaterOrEqualExp e -> new OpExpressionNode(">=");
+            case BetweenExp e -> new BetweenNode(false);
+            case NotBetweenExp e -> new BetweenNode(true);
+            case NotExp e -> new NotNode();
+            case TrueExp e -> new TextNode(" 1=1");
+            case FalseExp e -> new TextNode(" 1=0");
+
+            case AddExp e -> new OpExpressionNode("+");
+            case SubtractExp e -> new OpExpressionNode("-");
+            case MultiplyExp e -> new OpExpressionNode("*");
+            case DivideExp e -> new OpExpressionNode("/");
+            case NegateExp e -> {
+                // If operand is a scalar null, produce NULL directly (no unary minus)
+                if (node.getOperandCount() > 0 && node.getOperand(0) == null) {
+                    expressionsToSkip.add(node);
+                    yield new ValueNode(null, false, null, false);
+                }
+                // the minus sign is a prefix that hugs its operand (-1, not - 1)
+                yield new NegateNode();
+            }
+            case BitwiseAndExp e -> new OpExpressionNode("&");
+            case BitwiseOrExp e -> new OpExpressionNode("|");
+            case BitwiseXorExp e -> new OpExpressionNode("^");
+            case BitwiseLeftShiftExp e -> new OpExpressionNode("<<");
+            case BitwiseRightShiftExp e -> new OpExpressionNode(">>");
+            case BitwiseNotExp e -> new BitwiseNotNode();
+            case AsteriskExp e -> new TextNode(" *");
+            case CustomOperatorExp op -> new OpExpressionNode(op.getOperator());
+
+            case ExistsExp e -> new FunctionNode("EXISTS", null, false);
+            case NotExistsExp e -> new FunctionNode("NOT EXISTS", null, false);
+            case AllExp e -> new FunctionNode("ALL", null, false);
+            case AnyExp e -> new FunctionNode("ANY", null, false);
+            case SubqueryExp subquery -> {
+                SelectTranslatorContext subContext = new SelectTranslatorContext(
+                        subquery.getQuery(), context.getAdapter(), context.getResolver(), context);
+                // skip SQL translation stage for nested translators, it should be performed by root context only
+                subContext.setSkipSQLGeneration(true);
+                subContext.translate();
+                yield subContext.getSelectBuilder().build();
+            }
+            case EnclosingObjectExp enclosing -> {
+                // Translate via parent context's translator
+                Expression expression = (Expression) enclosing.getOperand(0);
+                if (context.getParentContext() == null) {
+                    throw new CayenneRuntimeException(
+                            "Unable to translate qualifier, no parent context to use for expression " + node);
+                }
+                expressionsToSkip.add(expression);
+                yield context.getParentContext().getQualifierTranslator().translate(expression);
+            }
+            case FullObjectExp e -> {
+                Collection<DbAttribute> dbAttributes = context.getMetadata().getDbEntity().getPrimaryKeys();
+                String alias = context.getTableTree().aliasForPath(CayennePath.EMPTY_PATH);
+                if (dbAttributes.size() > 1) {
+                    yield createMultiPkMatch(node, parentNode, dbAttributes, alias);
+                }
+                DbAttribute attribute = dbAttributes.iterator().next();
+                yield table(alias).column(attribute).build();
+            }
+
+            case CaseWhenExp e -> new CaseNode();
+            case WhenExp e -> new WhenNode();
+            case ThenExp e -> new ThenNode();
+            case ElseExp e -> new ElseNode();
+        };
     }
 
     private Node processPathTranslationResult(Expression node, Expression parentNode, PathTranslationResult result) {
@@ -567,16 +566,8 @@ class QualifierTranslator implements TraversalHandler {
     }
 
     private boolean nodeProcessed(Expression node) {
-        // must be in sync with expressionNodeToSqlNode() method
-        return switch (node.getType()) {
-            case NOT_IN, IN, NOT_BETWEEN, BETWEEN, NOT, BITWISE_NOT, EQUAL_TO, NOT_EQUAL_TO, LIKE, NOT_LIKE,
-                 LIKE_IGNORE_CASE, NOT_LIKE_IGNORE_CASE, OBJ_PATH, DBID_PATH, DB_PATH, FUNCTION_CALL, ADD, SUBTRACT,
-                 MULTIPLY, DIVIDE, NEGATIVE, CUSTOM_OP, BITWISE_AND, BITWISE_LEFT_SHIFT, BITWISE_OR,
-                 BITWISE_RIGHT_SHIFT, BITWISE_XOR, OR, AND, LESS_THAN, LESS_THAN_EQUAL_TO, GREATER_THAN,
-                 GREATER_THAN_EQUAL_TO, TRUE, FALSE, ASTERISK, EXISTS, NOT_EXISTS, SUBQUERY, ENCLOSING_OBJECT,
-                 FULL_OBJECT, SCALAR, CASE_WHEN, WHEN, THEN, ELSE -> true;
-            default -> false;
-        };
+        // must be in sync with expressionNodeToSqlNode(): every node kind but a list opens a SQL node
+        return !(node instanceof ListExp);
     }
 
     @Override
@@ -599,16 +590,16 @@ class QualifierTranslator implements TraversalHandler {
             return;
         }
         if (parentNode != null &&
-                (parentNode.getType() == OBJ_PATH
-                        || parentNode.getType() == DB_PATH
-                        || parentNode.getType() == DBID_PATH)) {
+                (parentNode instanceof ObjPathExp
+                        || parentNode instanceof DbPathExp
+                        || parentNode instanceof DbIdPathExp)) {
             return;
         }
 
         ValueNodeBuilder valueNodeBuilder = value(leaf)
                 .needBinding(needBinding(parentNode))
                 .attribute(findDbAttribute(parentNode));
-        if (parentNode != null && parentNode.getType() == Expression.LIST) {
+        if (parentNode != null && parentNode instanceof ListExp) {
             valueNodeBuilder.array(true);
         }
         Node nextNode = valueNodeBuilder.build();
@@ -639,7 +630,7 @@ class QualifierTranslator implements TraversalHandler {
         if (node == null) {
             return null;
         }
-        if (node.getType() == Expression.LIST) {
+        if (node instanceof ListExp) {
             // the attribute is an operand of the node holding the list, e.g. the path in "path in (list)"
             Expression parent = enclosingExpression(node);
             if (parent != null) {
@@ -647,7 +638,7 @@ class QualifierTranslator implements TraversalHandler {
             } else {
                 return null;
             }
-        } else if (node.getType() == FUNCTION_CALL) {
+        } else if (node instanceof FunctionCallExp) {
             return null;
         }
 
@@ -671,29 +662,5 @@ class QualifierTranslator implements TraversalHandler {
         }
 
         return result.getLastAttribute();
-    }
-
-    private String expToStr(int type) {
-        return switch (type) {
-            case AND -> "AND";
-            case OR -> "OR";
-            case LESS_THAN -> "<";
-            case LESS_THAN_EQUAL_TO -> "<=";
-            case GREATER_THAN -> ">";
-            case GREATER_THAN_EQUAL_TO -> ">=";
-            case ADD -> "+";
-            case NEGATIVE, SUBTRACT -> "-";
-            case MULTIPLY, ASTERISK -> "*";
-            case DIVIDE -> "/";
-            case BITWISE_AND -> "&";
-            case BITWISE_OR -> "|";
-            case BITWISE_XOR -> "^";
-            case BITWISE_NOT -> "!";
-            case BITWISE_LEFT_SHIFT -> "<<";
-            case BITWISE_RIGHT_SHIFT -> ">>";
-            case TRUE -> "1=1";
-            case FALSE -> "1=0";
-            default -> "{other}";
-        };
     }
 }

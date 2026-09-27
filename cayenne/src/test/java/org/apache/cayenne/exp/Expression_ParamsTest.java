@@ -36,6 +36,7 @@ import java.util.Map;
 import org.apache.cayenne.GenericPersistentObject;
 import org.apache.cayenne.Persistent;
 import org.junit.jupiter.api.Test;
+import static org.junit.jupiter.api.Assertions.assertInstanceOf;
 
 public class Expression_ParamsTest {
 
@@ -189,7 +190,7 @@ public class Expression_ParamsTest {
 		exprs.add(andExp);
 		exprs.add(ExpressionFactory.matchExp("k1", "v1"));
 
-		Expression e1 = ExpressionFactory.joinExp(Expression.OR, exprs);
+		Expression e1 = ExpressionFactory.or(exprs);
 		Expression e2 = e1.params(new HashMap());
 
 		TstTraversalHandler.compareExps(e1, e2);
@@ -269,7 +270,7 @@ public class Expression_ParamsTest {
 		Expression e2 = e1.params(map, false);
 		assertNotNull(e2);
 		assertEquals(2, e2.getOperandCount());
-		assertEquals(Expression.EQUAL_TO, e2.getType());
+		assertInstanceOf(EqualExp.class, e2);
 		assertEquals("xyz", e2.getOperand(1));
 	}
 
@@ -283,7 +284,7 @@ public class Expression_ParamsTest {
 		Expression e2 = e1.params(map, false);
 		assertNotNull(e2);
 		assertEquals(2, e2.getOperandCount());
-		assertEquals(Expression.LIKE, e2.getType());
+		assertInstanceOf(LikeExp.class, e2);
 		assertEquals("xyz", e2.getOperand(1));
 	}
 
@@ -339,7 +340,7 @@ public class Expression_ParamsTest {
 				"test3")));
 		list.add(ExpressionFactory.matchExp("k4", new ExpressionParameter(
 				"test4")));
-		Expression e1 = ExpressionFactory.joinExp(Expression.OR, list);
+		Expression e1 = ExpressionFactory.or(list);
 
 		Map params = new HashMap();
 		params.put("test4", "123");
@@ -458,7 +459,7 @@ public class Expression_ParamsTest {
 		Expression e2 = e1.params(map, false);
 		assertNotNull(e2);
 		assertEquals(2, e2.getOperandCount());
-		assertEquals(Expression.EQUAL_TO, e2.getType());
+		assertInstanceOf(EqualExp.class, e2);
 		assertEquals("xyz", e2.getOperand(1));
 	}
 
@@ -471,7 +472,7 @@ public class Expression_ParamsTest {
 		Expression e2 = e1.params(map, false);
 		assertNotNull(e2);
 		assertEquals(2, e2.getOperandCount());
-		assertEquals(Expression.LIKE, e2.getType());
+		assertInstanceOf(LikeExp.class, e2);
 		assertEquals("xyz", e2.getOperand(1));
 	}
 

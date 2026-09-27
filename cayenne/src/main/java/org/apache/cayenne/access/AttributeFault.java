@@ -21,7 +21,6 @@ package org.apache.cayenne.access;
 
 import org.apache.cayenne.Fault;
 import org.apache.cayenne.Persistent;
-import org.apache.cayenne.exp.Expression;
 import org.apache.cayenne.exp.ExpressionFactory;
 import org.apache.cayenne.exp.property.PropertyFactory;
 import org.apache.cayenne.query.ObjectSelect;
@@ -42,7 +41,7 @@ public class AttributeFault extends Fault {
     public Object resolveFault(Persistent sourceObject, String attributeName) {
         return ObjectSelect
                 .columnQuery(sourceObject.getClass(), PropertyFactory.createBase(attributeName, property.getAttribute().getJavaClass()))
-                .where(ExpressionFactory.matchAllDbExp(sourceObject.getObjectId().getIdSnapshot(), Expression.EQUAL_TO))
+                .where(ExpressionFactory.matchAllDbExp(sourceObject.getObjectId().getIdSnapshot()))
                 .selectOne(sourceObject.getObjectContext());
     }
 

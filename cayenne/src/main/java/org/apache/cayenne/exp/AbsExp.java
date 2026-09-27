@@ -24,7 +24,7 @@ import org.apache.cayenne.util.ConversionUtil;
 /**
  * @since 5.0
  */
-public class AbsExp extends FunctionCallExp {
+public final class AbsExp extends FunctionCallExp {
     public AbsExp(Object... operands) {
         super(operands);
     }

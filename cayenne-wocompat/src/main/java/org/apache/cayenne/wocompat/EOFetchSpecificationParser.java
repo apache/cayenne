@@ -23,6 +23,14 @@ import org.apache.cayenne.exp.Expression;
 import org.apache.cayenne.exp.ExpressionException;
 import org.apache.cayenne.exp.ExpressionFactory;
 import org.apache.cayenne.exp.ExpressionParameter;
+import org.apache.cayenne.exp.EqualExp;
+import org.apache.cayenne.exp.NotEqualExp;
+import org.apache.cayenne.exp.LikeExp;
+import org.apache.cayenne.exp.LikeIgnoreCaseExp;
+import org.apache.cayenne.exp.LessExp;
+import org.apache.cayenne.exp.LessOrEqualExp;
+import org.apache.cayenne.exp.GreaterExp;
+import org.apache.cayenne.exp.GreaterOrEqualExp;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -31,6 +39,7 @@ import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.function.Supplier;
 
 /**
  * EOFetchSpecificationParser parses EOFetchSpecifications from a
@@ -57,46 +66,42 @@ class EOFetchSpecificationParser {
 
 	private static final String OBJ_C = ":"; // Objective-C syntax addition.
 
-	private static Map<String, Integer> selectorToExpressionBridge;
+	private static Map<String, Supplier<Expression>> selectorToExpressionBridge;
 	private static final Logger LOGGER = LoggerFactory.getLogger(EOFetchSpecificationParser.class);
 
 	/**
-	 * selectorToExpressionBridge is just a mapping of EOModeler's selector
-	 * types to Cayenne Expression types.
-	 * 
-	 * @return HashMap of Expression types, keyed by the corresponding
-	 *         selector name
+	 * selectorToExpressionBridge is just a mapping of EOModeler's selector types to factories of the equivalent
+	 * Cayenne expressions.
 	 */
-	static synchronized Map<String, Integer> selectorToExpressionBridge() {
+	static synchronized Map<String, Supplier<Expression>> selectorToExpressionBridge() {
 		// Initialize selectorToExpressionBridge if needed.
 		if (null == selectorToExpressionBridge) {
 			selectorToExpressionBridge = new HashMap<>();
 
-			selectorToExpressionBridge.put(IS_EQUAL_TO, Expression.EQUAL_TO);
-			selectorToExpressionBridge.put(IS_EQUAL_TO + OBJ_C, Expression.EQUAL_TO);
+			selectorToExpressionBridge.put(IS_EQUAL_TO, EqualExp::new);
+			selectorToExpressionBridge.put(IS_EQUAL_TO + OBJ_C, EqualExp::new);
 
-			selectorToExpressionBridge.put(IS_NOT_EQUAL_TO, Expression.NOT_EQUAL_TO);
-			selectorToExpressionBridge.put(IS_NOT_EQUAL_TO + OBJ_C, Expression.NOT_EQUAL_TO);
+			selectorToExpressionBridge.put(IS_NOT_EQUAL_TO, NotEqualExp::new);
+			selectorToExpressionBridge.put(IS_NOT_EQUAL_TO + OBJ_C, NotEqualExp::new);
 
-			selectorToExpressionBridge.put(IS_LIKE, Expression.LIKE);
-			selectorToExpressionBridge.put(IS_LIKE + OBJ_C, Expression.LIKE);
+			selectorToExpressionBridge.put(IS_LIKE, LikeExp::new);
+			selectorToExpressionBridge.put(IS_LIKE + OBJ_C, LikeExp::new);
 
-			selectorToExpressionBridge.put(CASE_INSENSITIVE_LIKE, Expression.LIKE_IGNORE_CASE);
-			selectorToExpressionBridge.put(CASE_INSENSITIVE_LIKE + OBJ_C, Expression.LIKE_IGNORE_CASE);
+			selectorToExpressionBridge.put(CASE_INSENSITIVE_LIKE, LikeIgnoreCaseExp::new);
+			selectorToExpressionBridge.put(CASE_INSENSITIVE_LIKE + OBJ_C, LikeIgnoreCaseExp::new);
 
-			selectorToExpressionBridge.put(IS_LESS_THAN, Expression.LESS_THAN);
-			selectorToExpressionBridge.put(IS_LESS_THAN + OBJ_C, Expression.LESS_THAN);
+			selectorToExpressionBridge.put(IS_LESS_THAN, LessExp::new);
+			selectorToExpressionBridge.put(IS_LESS_THAN + OBJ_C, LessExp::new);
 
-			selectorToExpressionBridge.put(IS_LESS_THAN_OR_EQUAL_TO, Expression.LESS_THAN_EQUAL_TO);
-			selectorToExpressionBridge.put(IS_LESS_THAN_OR_EQUAL_TO + OBJ_C, Expression.LESS_THAN_EQUAL_TO);
+			selectorToExpressionBridge.put(IS_LESS_THAN_OR_EQUAL_TO, LessOrEqualExp::new);
+			selectorToExpressionBridge.put(IS_LESS_THAN_OR_EQUAL_TO + OBJ_C, LessOrEqualExp::new);
 
-			selectorToExpressionBridge.put(IS_GREATER_THAN, Expression.GREATER_THAN);
-			selectorToExpressionBridge.put(IS_GREATER_THAN + OBJ_C, Expression.GREATER_THAN);
+			selectorToExpressionBridge.put(IS_GREATER_THAN, GreaterExp::new);
+			selectorToExpressionBridge.put(IS_GREATER_THAN + OBJ_C, GreaterExp::new);
 
-			selectorToExpressionBridge.put(IS_GREATER_THAN_OR_EQUAL_TO, Expression.GREATER_THAN_EQUAL_TO);
-			selectorToExpressionBridge.put(IS_GREATER_THAN_OR_EQUAL_TO + OBJ_C, Expression.GREATER_THAN_EQUAL_TO);
+			selectorToExpressionBridge.put(IS_GREATER_THAN_OR_EQUAL_TO, GreaterOrEqualExp::new);
+			selectorToExpressionBridge.put(IS_GREATER_THAN_OR_EQUAL_TO + OBJ_C, GreaterOrEqualExp::new);
 		}
-
 		return selectorToExpressionBridge;
 	}
 
@@ -125,56 +130,11 @@ class EOFetchSpecificationParser {
 	}
 
 	/**
-	 * expressionTypeForQualifier looks at a qualifier containing the
-	 * EOModeler FetchSpecification and returns the equivalent Cayenne
-	 * Expression type for its selector.
-	 * 
-	 * @param qualifierMap
-	 *            - a Map containing the qualifier settings to examine.
-	 * @return int Expression type
+	 * Returns a factory of the Cayenne expression equivalent to the selector of an EOModeler FetchSpecification
+	 * qualifier, or null for an unknown selector.
 	 */
-	static int expressionTypeForQualifier(Map<String, ?> qualifierMap) {
-		// get selector
-		String selector = (String) qualifierMap.get("selectorName");
-		return expressionTypeForSelector(selector);
-	}
-
-	/**
-	 * expressionTypeForSelector looks at a selector from an EOModeler
-	 * FetchSpecification and returns the equivalent Cayenne Expression
-	 * type.
-	 * 
-	 * @param selector
-	 *            - a String containing the selector name.
-	 * @return int Expression type
-	 */
-	static int expressionTypeForSelector(String selector) {
-		Integer expType = selectorToExpressionBridge().get(selector);
-		return (expType != null ? expType : -1);
-	}
-
-	/**
-	 * aggregateExpressionClassForQualifier looks at a qualifer and returns
-	 * the aggregate type: one of Expression.AND, Expression.OR, or
-	 * Expression.NOT
-	 * 
-	 * @param qualifierMap
-	 *            - containing the qualifier to examine
-	 * @return int aggregate Expression type
-	 */
-	static int aggregateExpressionClassForQualifier(Map<String, ?> qualifierMap) {
-		String qualifierClass = (String) qualifierMap.get("class");
-		if (qualifierClass != null) {
-			if (qualifierClass.equalsIgnoreCase("EOAndQualifier")) {
-				return Expression.AND;
-			} else if (qualifierClass.equalsIgnoreCase("EOOrQualifier")) {
-				return Expression.OR;
-			} else if (qualifierClass.equalsIgnoreCase("EONotQualifier")) {
-				return Expression.NOT;
-			}
-		}
-
-		return -1; // error
+	static Supplier<Expression> expressionForQualifier(Map<String, ?> qualifierMap) {
+		return selectorToExpressionBridge().get((String) qualifierMap.get("selectorName"));
 	}
 
 	/**
@@ -189,11 +149,9 @@ class EOFetchSpecificationParser {
 	static Expression makeQualifier(EOObjEntity entity, Map<String, ?> qualifierMap) {
 		if (isAggregate(qualifierMap)) {
 			// the fetch specification has more than one qualifier
-			int aggregateClass = aggregateExpressionClassForQualifier(qualifierMap); // AND,
-			// OR,
-			// NOT
+			String aggregateClass = (String) qualifierMap.get("class"); // AND, OR, NOT
 
-			if (aggregateClass == Expression.NOT) {
+			if (aggregateClass.equalsIgnoreCase("EONotQualifier")) {
 				// NOT qualifiers only have one child, keyed with
 				// "qualifier"
 				Map<String, ?> child = (Map<String, ?>) qualifierMap.get("qualifier");
@@ -216,7 +174,13 @@ class EOFetchSpecificationParser {
 						childExpressions.add(childExp);
 					}
 					// join the child expressions and return the result
-					return ExpressionFactory.joinExp(aggregateClass, childExpressions);
+					if (aggregateClass.equalsIgnoreCase("EOAndQualifier")) {
+						return ExpressionFactory.and(childExpressions);
+					}
+					if (aggregateClass.equalsIgnoreCase("EOOrQualifier")) {
+						return ExpressionFactory.or(childExpressions);
+					}
+					throw new ExpressionException("Unknown aggregate qualifier class: " + aggregateClass);
 				}
 			}
 
@@ -288,15 +252,15 @@ class EOFetchSpecificationParser {
 			}
 		}
 
-		try {
-			Expression exp = ExpressionFactory.expressionOfType(expressionTypeForQualifier(qualifierMap));
-
-			exp.setOperand(0, keyExp);
-			exp.setOperand(1, comparisonValue);
-			return exp;
-		} catch (ExpressionException e) {
-			LOGGER.warn(e.getUnlabeledMessage());
+		Supplier<Expression> expressionFactory = expressionForQualifier(qualifierMap);
+		if (expressionFactory == null) {
+			LOGGER.warn("Unsupported qualifier selector: {}", qualifierMap.get("selectorName"));
 			return null;
 		}
+
+		Expression exp = expressionFactory.get();
+		exp.setOperand(0, keyExp);
+		exp.setOperand(1, comparisonValue);
+		return exp;
 	}
 }

@@ -28,7 +28,7 @@ import org.apache.cayenne.CayenneRuntimeException;
 /**
  * @since 5.0
  */
-public class ExtractExp extends FunctionCallExp {
+public final class ExtractExp extends FunctionCallExp {
     /**
      * Available components of date/time.
      * Names must be in sync with tokens used in dateTimeExtractingFunction() rule in QLParser.jjt

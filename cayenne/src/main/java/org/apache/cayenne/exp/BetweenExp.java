@@ -25,7 +25,7 @@ package org.apache.cayenne.exp;
  * 
  * @since 5.0
  */
-public class BetweenExp extends ConditionExp {
+public final class BetweenExp extends ConditionExp {
 	public BetweenExp(Object... operands) {
 		super(operands);
 	}
@@ -67,8 +67,4 @@ public class BetweenExp extends ConditionExp {
 		return (index == 2) ? "and" : "between";
 	}
 
-	@Override
-	public int getType() {
-		return Expression.BETWEEN;
-	}
 }

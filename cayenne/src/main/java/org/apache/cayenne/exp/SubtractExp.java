@@ -27,7 +27,7 @@ import java.math.BigDecimal;
  * 
  * @since 5.0
  */
-public class SubtractExp extends ArithmeticExp {    public SubtractExp(Object... operands) {
+public final class SubtractExp extends ArithmeticExp {    public SubtractExp(Object... operands) {
         super(operands);
     }
 
@@ -47,11 +47,6 @@ public class SubtractExp extends ArithmeticExp {    public SubtractExp(Object...
     @Override
     protected String getExpressionOperator(int index) {
         return "-";
-    }
-
-    @Override
-    public int getType() {
-        return Expression.SUBTRACT;
     }
 
     @Override

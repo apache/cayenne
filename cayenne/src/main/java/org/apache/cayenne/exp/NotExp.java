@@ -29,7 +29,7 @@ import org.apache.cayenne.util.ConversionUtil;
  * 
  * @since 5.0
  */
-public class NotExp extends AggregateConditionExp {
+public final class NotExp extends AggregateConditionExp {
 	public NotExp(Object... operands) {
 		super(operands);
 	}
@@ -55,11 +55,6 @@ public class NotExp extends AggregateConditionExp {
 	@Override
 	public Expression shallowCopy() {
 		return new NotExp();
-	}
-
-    @Override
-	public int getType() {
-		return Expression.NOT;
 	}
 
 	@Override

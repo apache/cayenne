@@ -26,7 +26,7 @@ package org.apache.cayenne.exp;
  *
  * @since 5.0
  */
-public class NotBetweenExp extends ConditionExp {    public NotBetweenExp(Object... operands) {
+public final class NotBetweenExp extends ConditionExp {    public NotBetweenExp(Object... operands) {
         super(operands);
     }
 
@@ -65,11 +65,6 @@ public class NotBetweenExp extends ConditionExp {    public NotBetweenExp(Object
     @Override
     protected String getExpressionOperator(int index) {
         return (index == 2) ? "and" : "not between";
-    }
-
-    @Override
-    public int getType() {
-        return Expression.NOT_BETWEEN;
     }
 
 }

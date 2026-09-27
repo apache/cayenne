@@ -32,7 +32,7 @@ public class DbIdPathExpTest {
         DbIdPathExp path = new DbIdPathExp("test");
 
         Expression exp = path.shallowCopy();
-        assertEquals(exp.getType(), Expression.DBID_PATH);
+        assertInstanceOf(DbIdPathExp.class, exp);
         assertInstanceOf(DbIdPathExp.class, exp);
 
         DbIdPathExp clone = (DbIdPathExp)exp;

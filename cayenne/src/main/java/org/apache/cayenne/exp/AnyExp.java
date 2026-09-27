@@ -24,7 +24,7 @@ import java.io.IOException;
 /**
  * @since 5.0
  */
-public class AnyExp extends ConditionExp {    public AnyExp(Object... operands) {
+public final class AnyExp extends ConditionExp {    public AnyExp(Object... operands) {
         super(operands);
     }
 
@@ -64,11 +64,6 @@ public class AnyExp extends ConditionExp {    public AnyExp(Object... operands) 
     @Override
     protected String getExpressionOperator(int index) {
         return "ANY";
-    }
-
-    @Override
-    public int getType() {
-        return Expression.ANY;
     }
 
     @Override

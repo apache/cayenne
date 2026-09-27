@@ -26,7 +26,7 @@ import java.util.List;
  * Asterisk operator for COUNT(*) expression.
  * @since 5.0
  */
-public class AsteriskExp extends BaseExp {
+public final class AsteriskExp extends BaseExp {
     public AsteriskExp(Object... operands) {
         super(operands);
     }
@@ -44,11 +44,6 @@ public class AsteriskExp extends BaseExp {
     @Override
     public Expression shallowCopy() {
         return new AsteriskExp();
-    }
-
-    @Override
-    public int getType() {
-        return Expression.ASTERISK;
     }
 
     @Override

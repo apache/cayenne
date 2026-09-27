@@ -24,7 +24,7 @@ import java.io.IOException;
 /**
  * @since 5.0
  */
-public class AllExp extends ConditionExp {    public AllExp(Object... operands) {
+public final class AllExp extends ConditionExp {    public AllExp(Object... operands) {
         super(operands);
     }
 
@@ -64,11 +64,6 @@ public class AllExp extends ConditionExp {    public AllExp(Object... operands) 
     @Override
     protected boolean parenthesizeAsOperand() {
         return false;
-    }
-
-    @Override
-    public int getType() {
-        return Expression.ALL;
     }
 
     @Override

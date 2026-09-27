@@ -260,7 +260,7 @@ public class IncrementalFaultList<E> implements List<E> {
 	ObjectSelect<Persistent> createSelectQuery(List<Expression> expressions) {
 		ObjectSelect<Persistent> query = ObjectSelect.query(Persistent.class)
 				.entityName(rootEntity.getName())
-				.where(ExpressionFactory.joinExp(Expression.OR, expressions));
+				.where(ExpressionFactory.or(expressions));
 
 		if(metadata.isFetchingDataRows()) {
 			query.fetchDataRows();
@@ -283,7 +283,7 @@ public class IncrementalFaultList<E> implements List<E> {
 			throw new CayenneRuntimeException("Empty id map");
 		}
 
-		return ExpressionFactory.matchAllDbExp(map, Expression.EQUAL_TO);
+		return ExpressionFactory.matchAllDbExp(map);
 	}
 
 	/**

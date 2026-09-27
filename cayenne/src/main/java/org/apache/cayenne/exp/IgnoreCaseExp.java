@@ -26,7 +26,7 @@ import java.util.List;
  *
  * @since 5.0
  */
-abstract class IgnoreCaseExp extends PatternMatchExp {
+abstract sealed class IgnoreCaseExp extends PatternMatchExp permits LikeIgnoreCaseExp, NotLikeIgnoreCaseExp {
 
     protected IgnoreCaseExp(Object... operands) {
         super(operands);

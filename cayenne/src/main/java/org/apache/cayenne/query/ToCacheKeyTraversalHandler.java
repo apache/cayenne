@@ -68,10 +68,10 @@ class ToCacheKeyTraversalHandler implements TraversalHandler {
 
     @Override
     public void startNode(Expression node, Expression parentNode) {
-        if(node.getType() == Expression.FUNCTION_CALL) {
-            out.append(((FunctionCallExp)node).getFunctionName()).append('(');
+        if(node instanceof FunctionCallExp function) {
+            out.append(function.getFunctionName()).append('(');
         } else {
-            out.append(node.getType()).append('(');
+            out.append(node.expName()).append('(');
         }
 
         // a subquery keeps its query outside the expression tree, so it needs to be added to the key explicitly

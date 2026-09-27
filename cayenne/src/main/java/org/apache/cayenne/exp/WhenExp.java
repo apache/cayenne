@@ -29,7 +29,7 @@ import java.util.List;
  *
  * @since 5.0
  */
-public class WhenExp extends AggregateConditionExp {
+public final class WhenExp extends AggregateConditionExp {
     public WhenExp(Object... operands) {
         super(operands);
     }
@@ -59,11 +59,6 @@ public class WhenExp extends AggregateConditionExp {
             return Boolean.TRUE;
         }
         return Boolean.FALSE;
-    }
-
-    @Override
-    public int getType() {
-        return Expression.WHEN;
     }
 
     @Override

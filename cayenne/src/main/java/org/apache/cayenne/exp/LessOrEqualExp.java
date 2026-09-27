@@ -25,7 +25,7 @@ package org.apache.cayenne.exp;
  * 
  * @since 5.0
  */
-public class LessOrEqualExp extends ConditionExp {
+public final class LessOrEqualExp extends ConditionExp {
 	public LessOrEqualExp(Object... operands) {
 		super(operands);
 	}
@@ -58,8 +58,4 @@ public class LessOrEqualExp extends ConditionExp {
 		return "<=";
 	}
 
-	@Override
-	public int getType() {
-		return Expression.LESS_THAN_EQUAL_TO;
-	}
 }

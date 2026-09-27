@@ -27,7 +27,7 @@ import org.apache.cayenne.util.ConversionUtil;
  *
  * @since 5.0
  */
-public class LikeIgnoreCaseExp extends IgnoreCaseExp {
+public final class LikeIgnoreCaseExp extends IgnoreCaseExp {
 	public LikeIgnoreCaseExp(Object... operands) {
 		super(operands);
 	}
@@ -60,11 +60,6 @@ public class LikeIgnoreCaseExp extends IgnoreCaseExp {
 	@Override
 	protected String getExpressionOperator(int index) {
 		return "likeIgnoreCase";
-	}
-
-	@Override
-	public int getType() {
-		return Expression.LIKE_IGNORE_CASE;
 	}
 
 	@Override

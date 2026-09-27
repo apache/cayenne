@@ -28,7 +28,7 @@ import java.math.RoundingMode;
  * 
  * @since 5.0
  */
-public class DivideExp extends ArithmeticExp {
+public final class DivideExp extends ArithmeticExp {
 	public DivideExp(Object... operands) {
 		super(operands);
 	}
@@ -49,11 +49,6 @@ public class DivideExp extends ArithmeticExp {
 	@Override
 	protected String getExpressionOperator(int index) {
 		return "/";
-	}
-
-	@Override
-	public int getType() {
-		return Expression.DIVIDE;
 	}
 
 	@Override

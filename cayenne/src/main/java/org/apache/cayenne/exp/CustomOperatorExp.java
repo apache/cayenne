@@ -23,7 +23,7 @@ import java.io.IOException;
 /**
  * @since 5.0
  */
-public class CustomOperatorExp extends BaseExp {
+public non-sealed class CustomOperatorExp extends BaseExp {
     private String operator;
 
     public CustomOperatorExp(Object... operands) {
@@ -45,11 +45,6 @@ public class CustomOperatorExp extends BaseExp {
             }
         }
         out.append(")");
-    }
-
-    @Override
-    public int getType() {
-        return Expression.CUSTOM_OP;
     }
 
     public String getOperator() {

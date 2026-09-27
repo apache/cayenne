@@ -28,6 +28,8 @@ import org.apache.cayenne.exp.property.ComparableProperty;
 import org.apache.cayenne.exp.property.NumericProperty;
 import org.apache.cayenne.exp.property.Property;
 import org.apache.cayenne.exp.property.PropertyFactory;
+import org.apache.cayenne.exp.DbPathExp;
+import org.apache.cayenne.exp.ObjPathExp;
 import org.apache.cayenne.map.EntityResolver;
 
 import java.util.ArrayList;
@@ -165,7 +167,7 @@ public class ColumnSelect<T> extends FluentSelect<T, ColumnSelect<T>> {
 
         if (type != null
                 && exp != null
-                && (exp.getType() == Expression.OBJ_PATH || exp.getType() == Expression.DB_PATH)
+                && (exp instanceof ObjPathExp || exp instanceof DbPathExp)
                 && (Collection.class.isAssignableFrom(type) || Map.class.isAssignableFrom(type))) {
             throw new CayenneRuntimeException("""
                     Can't select a to-many relationship '%s' as a single column, as its type wouldn't match \

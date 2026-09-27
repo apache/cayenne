@@ -24,7 +24,7 @@ package org.apache.cayenne.exp;
  * 
  * @since 5.0
  */
-public class BitwiseAndExp extends BitwiseExp {
+public final class BitwiseAndExp extends BitwiseExp {
 	public BitwiseAndExp(Object... operands) {
 		super(operands);
 	}
@@ -37,11 +37,6 @@ public class BitwiseAndExp extends BitwiseExp {
 	@Override
 	protected String getExpressionOperator(int index) {
 		return "&";
-	}
-
-	@Override
-	public int getType() {
-		return Expression.BITWISE_AND;
 	}
 
 	@Override

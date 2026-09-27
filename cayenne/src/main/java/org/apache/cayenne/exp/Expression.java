@@ -38,7 +38,7 @@ import org.apache.cayenne.util.XMLSerializable;
 /**
  * Superclass of Cayenne expressions that defines basic API for expressions use.
  */
-public abstract class Expression implements XMLSerializable {
+public abstract sealed class Expression implements XMLSerializable permits BaseExp {
 
 	/**
 	 * A value that a Transformer might return to indicate that a node has to be
@@ -47,185 +47,6 @@ public abstract class Expression implements XMLSerializable {
 	 * @since 1.2
 	 */
 	public final static Object PRUNED_NODE = new Object();
-
-	public static final int AND = 0;
-	public static final int OR = 1;
-	public static final int NOT = 2;
-	public static final int EQUAL_TO = 3;
-	public static final int NOT_EQUAL_TO = 4;
-	public static final int LESS_THAN = 5;
-	public static final int GREATER_THAN = 6;
-	public static final int LESS_THAN_EQUAL_TO = 7;
-	public static final int GREATER_THAN_EQUAL_TO = 8;
-	public static final int BETWEEN = 9;
-	public static final int IN = 10;
-	public static final int LIKE = 11;
-	public static final int LIKE_IGNORE_CASE = 12;
-	public static final int ADD = 16;
-	public static final int SUBTRACT = 17;
-	public static final int MULTIPLY = 18;
-	public static final int DIVIDE = 19;
-	public static final int NEGATIVE = 20;
-	public static final int TRUE = 21;
-	public static final int FALSE = 22;
-
-	/**
-	 * Expression describes a path relative to an ObjEntity. OBJ_PATH expression
-	 * is resolved relative to some root ObjEntity. Path expression components
-	 * are separated by "." (dot). Path can point to either one of these:
-	 * <ul>
-	 * <li><i>An attribute of root ObjEntity.</i> For entity Gallery OBJ_PATH
-	 * expression "galleryName" will point to ObjAttribute "galleryName"
-	 * <li><i>Another ObjEntity related to root ObjEntity via a chain of
-	 * relationships.</i> For entity Gallery OBJ_PATH expression
-	 * "paintingArray.toArtist" will point to ObjEntity "Artist"
-	 * <li><i>ObjAttribute of another ObjEntity related to root ObjEntity via a
-	 * chain of relationships.</i> For entity Gallery OBJ_PATH expression
-	 * "paintingArray.toArtist.artistName" will point to ObjAttribute
-	 * "artistName"
-	 * </ul>
-	 */
-	public static final int OBJ_PATH = 26;
-
-	/**
-	 * Expression describes a path relative to a DbEntity. DB_PATH expression is
-	 * resolved relative to some root DbEntity. Path expression components are
-	 * separated by "." (dot). Path can point to either one of these:
-	 * <ul>
-	 * <li><i>An attribute of root DbEntity.</i> For entity GALLERY, DB_PATH
-	 * expression "GALLERY_NAME" will point to a DbAttribute "GALLERY_NAME".</li>
-	 * <li><i>Another DbEntity related to root DbEntity via a chain of
-	 * relationships.</i> For entity GALLERY DB_PATH expression
-	 * "paintingArray.toArtist" will point to DbEntity "ARTIST".</li>
-	 * <li><i>DbAttribute of another ObjEntity related to root DbEntity via a
-	 * chain of relationships.</i> For entity GALLERY DB_PATH expression
-	 * "paintingArray.toArtist.ARTIST_NAME" will point to DbAttribute
-	 * "ARTIST_NAME".</li>
-	 * </ul>
-	 */
-	public static final int DB_PATH = 27;
-
-	/**
-	 * Interpreted as a comma-separated list of literals.
-	 */
-	public static final int LIST = 28;
-
-	public static final int NOT_BETWEEN = 35;
-	public static final int NOT_IN = 36;
-	public static final int NOT_LIKE = 37;
-	public static final int NOT_LIKE_IGNORE_CASE = 38;
-
-	/**
-	 * @since 3.1
-	 */
-	public static final int BITWISE_NOT = 39;
-
-	/**
-	 * @since 3.1
-	 */
-	public static final int BITWISE_AND = 40;
-
-	/**
-	 * @since 3.1
-	 */
-	public static final int BITWISE_OR = 41;
-
-	/**
-	 * @since 3.1
-	 */
-	public static final int BITWISE_XOR = 42;
-
-	/**
-	 * @since 4.0
-	 */
-	public static final int BITWISE_LEFT_SHIFT = 43;
-
-	/**
-	 * @since 4.0
-	 */
-	public static final int BITWISE_RIGHT_SHIFT = 44;
-
-	/**
-	 * @since 4.0
-	 */
-	public static final int FUNCTION_CALL = 45;
-
-	/**
-	 * @since 4.0
-	 */
-	public static final int ASTERISK = 46;
-
-	/**
-	 * @since 4.0
-	 */
-	public static final int FULL_OBJECT = 47;
-
-	/**
-	 * @since 4.2
-	 */
-	public static final int ENCLOSING_OBJECT = 48;
-
-	/**
-	 * @since 4.2
-	 */
-	public static final int EXISTS = 49;
-
-	/**
-	 * @since 4.2
-	 */
-	public static final int NOT_EXISTS = 50;
-
-	/**
-	 * @since 4.2
-	 */
-	public static final int SUBQUERY = 51;
-
-	/**
-	 * @since 4.2
-	 */
-	public static final int DBID_PATH = 52;
-
-	/**
-	 * @since 4.2
-	 */
-	public static final int CUSTOM_OP = 53;
-
-	/**
-	 * @since 5.0
-	 */
-	public static final int ALL = 54;
-
-	/**
-	 * @since 5.0
-	 */
-	public static final int ANY = 55;
-
-	/**
-	 * @since 5.0
-	 */
-	public static final int SCALAR = 56;
-
-	/**
-	 * @since 5.0
-	 */
-	public static final int CASE_WHEN = 57;
-
-	/**
-	 * @since 5.0
-	 */
-	public static final int WHEN = 58;
-
-	/**
-	 * @since 5.0
-	 */
-	public static final int THEN = 59;
-
-	/**
-	 * @since 5.0
-	 */
-	public static final int ELSE = 60;
-
-	protected int type = -1;
 
 	/**
 	 * Returns a map of path aliases for this expression. It returns a non-empty
@@ -239,32 +60,7 @@ public abstract class Expression implements XMLSerializable {
 	/**
 	 * Returns String label for this expression. Used for debugging.
 	 */
-	public String expName() {
-		return switch (type) {
-			case AND -> "AND";
-			case OR -> "OR";
-			case NOT -> "NOT";
-			case EQUAL_TO -> "=";
-			case NOT_EQUAL_TO -> "<>";
-			case LESS_THAN -> "<";
-			case LESS_THAN_EQUAL_TO -> "<=";
-			case GREATER_THAN -> ">";
-			case GREATER_THAN_EQUAL_TO -> ">=";
-			case BETWEEN -> "BETWEEN";
-			case IN -> "IN";
-			case LIKE -> "LIKE";
-			case LIKE_IGNORE_CASE -> "LIKE_IGNORE_CASE";
-			case OBJ_PATH -> "OBJ_PATH";
-			case DB_PATH -> "DB_PATH";
-			case LIST -> "LIST";
-			case NOT_BETWEEN -> "NOT BETWEEN";
-			case NOT_IN -> "NOT IN";
-			case NOT_LIKE -> "NOT LIKE";
-			case NOT_LIKE_IGNORE_CASE -> "NOT LIKE IGNORE CASE";
-			case FUNCTION_CALL -> "FUNCTION_CALL";
-			default -> "other";
-		};
-	}
+	public abstract String expName();
 
 	@Override
 	public boolean equals(Object object) {
@@ -274,7 +70,7 @@ public abstract class Expression implements XMLSerializable {
 
 		Expression e = (Expression) object;
 
-		if (e.getType() != getType() || e.getOperandCount() != getOperandCount()) {
+		if (e.getClass() != getClass() || e.getOperandCount() != getOperandCount()) {
 			return false;
 		}
 
@@ -291,24 +87,12 @@ public abstract class Expression implements XMLSerializable {
 
 	@Override
 	public int hashCode() {
-		int result = getType();
+		int result = getClass().getName().hashCode();
 		int opCount = getOperandCount();
 		for (int i = 0; i < opCount; i++) {
 			result = 31 * result + Objects.hashCode(getOperand(i));
 		}
 		return result;
-	}
-
-	/**
-	 * Returns a type of expression. Most common types are defined as public
-	 * static fields of this interface.
-	 */
-	public int getType() {
-		return type;
-	}
-
-	public void setType(int type) {
-		this.type = type;
 	}
 
 	/**
@@ -373,28 +157,13 @@ public abstract class Expression implements XMLSerializable {
 	}
 
 	/**
-	 * Creates a new expression that joins this object with another expression,
-	 * using specified join type. It is very useful for incrementally building
-	 * chained expressions, like long AND or OR statements.
+	 * Joins this expression with the others as the operands of the given (empty) AND or OR node.
 	 */
-	public Expression joinExp(int type, Expression exp) {
-		return joinExp(type, exp, new Expression[0]);
-	}
-
-	/**
-	 * Creates a new expression that joins this object with other expressions,
-	 * using specified join type. It is very useful for incrementally building
-	 * chained expressions, like long AND or OR statements.
-	 * 
-	 * @since 4.0
-	 */
-	public Expression joinExp(int type, Expression exp, Expression... expressions) {
-		Expression join = ExpressionFactory.expressionOfType(type);
+	private Expression join(AggregateConditionExp join, Expression exp, Expression... expressions) {
 		join.setOperand(0, this);
 		join.setOperand(1, exp);
 		for (int i = 0; i < expressions.length; i++) {
-			Expression expressionInArray = expressions[i];
-			join.setOperand(2 + i, expressionInArray);
+			join.setOperand(2 + i, expressions[i]);
 		}
 		join.flattenTree();
 		return join;
@@ -404,7 +173,7 @@ public abstract class Expression implements XMLSerializable {
 	 * Chains this expression with another expression using "and".
 	 */
 	public Expression andExp(Expression exp) {
-		return joinExp(Expression.AND, exp);
+		return join(new AndExp(), exp);
 	}
 
 	/**
@@ -413,14 +182,14 @@ public abstract class Expression implements XMLSerializable {
 	 * @since 4.0
 	 */
 	public Expression andExp(Expression exp, Expression... expressions) {
-		return joinExp(Expression.AND, exp, expressions);
+		return join(new AndExp(), exp, expressions);
 	}
 
 	/**
 	 * Chains this expression with another expression using "or".
 	 */
 	public Expression orExp(Expression exp) {
-		return joinExp(Expression.OR, exp);
+		return join(new OrExp(), exp);
 	}
 
 	/**
@@ -429,7 +198,7 @@ public abstract class Expression implements XMLSerializable {
 	 * @since 4.0
 	 */
 	public Expression orExp(Expression exp, Expression... expressions) {
-		return joinExp(Expression.OR, exp, expressions);
+		return join(new OrExp(), exp, expressions);
 	}
 
 	/**

@@ -28,7 +28,9 @@ import java.util.Map;
  *
  * @since 5.0
  */
-public abstract class ConditionExp extends BaseExp {
+public abstract sealed class ConditionExp extends BaseExp permits AllExp, AnyExp, BetweenExp, EqualExp, ExistsExp,
+        FalseExp, GreaterExp, GreaterOrEqualExp, InExp, LessExp, LessOrEqualExp, NotBetweenExp, NotEqualExp,
+        NotExistsExp, NotInExp, PatternMatchExp, TrueExp {
     protected ConditionExp(Object... operands) {
         super(operands);
     }

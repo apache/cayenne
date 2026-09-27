@@ -26,7 +26,7 @@ import org.apache.cayenne.util.ConversionUtil;
  *
  * @since 5.0
  */
-public class LikeExp extends PatternMatchExp {
+public final class LikeExp extends PatternMatchExp {
 	public LikeExp(Object... operands) {
 		super(operands);
 	}
@@ -66,8 +66,4 @@ public class LikeExp extends PatternMatchExp {
 		return "like";
 	}
 
-	@Override
-	public int getType() {
-		return Expression.LIKE;
-	}
 }

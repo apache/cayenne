@@ -25,7 +25,7 @@ import java.util.Date;
 /**
  * @since 5.0
  */
-public class CurrentTimestampExp extends FunctionCallExp {
+public final class CurrentTimestampExp extends FunctionCallExp {
     public CurrentTimestampExp(Object... operands) {
         super(operands);
     }

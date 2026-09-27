@@ -32,7 +32,9 @@ import java.util.Map;
  *
  * @since 5.0
  */
-public abstract class BaseExp extends Expression {
+public abstract sealed class BaseExp extends Expression permits AggregateConditionExp, AsteriskExp, CaseWhenExp,
+        ConditionExp, CustomOperatorExp, ElseExp, EnclosingObjectExp, FullObjectExp, ListExp, NegateExp, PathExp,
+        ScalarExp, SubqueryExp, ThenExp, ValueExp {
     protected BaseExp[] children;
 
     protected BaseExp(Object... operands) {
@@ -78,7 +80,7 @@ public abstract class BaseExp extends Expression {
     @Override
     public String expName() {
         String name = getClass().getSimpleName();
-        return name.startsWith("AST") ? name.substring(3) : name;
+        return name.endsWith("Exp") ? name.substring(0, name.length() - 3) : name;
     }
 
     /**

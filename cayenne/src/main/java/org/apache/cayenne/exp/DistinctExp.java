@@ -23,7 +23,7 @@ package org.apache.cayenne.exp;
 /**
  * @since 5.0
  */
-public class DistinctExp extends AggregateFunctionCallExp {
+public final class DistinctExp extends AggregateFunctionCallExp {
     public DistinctExp(Object... operands) {
         super(operands);
     }

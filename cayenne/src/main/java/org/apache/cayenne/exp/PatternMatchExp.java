@@ -31,7 +31,7 @@ import java.util.regex.Pattern;
  *
  * @since 5.0
  */
-public abstract class PatternMatchExp extends ConditionExp {
+public abstract sealed class PatternMatchExp extends ConditionExp permits IgnoreCaseExp, LikeExp, NotLikeExp {
     protected Pattern pattern;
     protected boolean patternCompiled;
     protected char escapeChar;

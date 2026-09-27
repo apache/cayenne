@@ -25,7 +25,7 @@ import org.apache.cayenne.util.ConversionUtil;
  * 
  * @since 5.0
  */
-public class BitwiseNotExp extends ValueExp {	public BitwiseNotExp(Object... operands) {
+public final class BitwiseNotExp extends ValueExp {	public BitwiseNotExp(Object... operands) {
 		super(operands);
 	}
 
@@ -48,11 +48,6 @@ public class BitwiseNotExp extends ValueExp {	public BitwiseNotExp(Object... ope
 		return "~";
 	}
 	
-	@Override
-	public int getType() {
-		return Expression.BITWISE_NOT;
-	}
-
 	@Override
 	protected String getEJBQLExpressionOperator(int index) {
 		throw new UnsupportedOperationException(

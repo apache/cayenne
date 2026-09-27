@@ -27,7 +27,7 @@ import java.math.BigDecimal;
  *
  * @since 5.0
  */
-public class AddExp extends ArithmeticExp {
+public final class AddExp extends ArithmeticExp {
 	public AddExp(Object... operands) {
 		super(operands);
 	}
@@ -48,11 +48,6 @@ public class AddExp extends ArithmeticExp {
 	@Override
 	protected String getExpressionOperator(int index) {
 		return "+";
-	}
-
-	@Override
-	public int getType() {
-		return Expression.ADD;
 	}
 
 	@Override

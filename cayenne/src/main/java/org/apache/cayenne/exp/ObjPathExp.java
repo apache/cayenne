@@ -31,7 +31,7 @@ import org.slf4j.LoggerFactory;
 /**
  * @since 5.0
  */
-public class ObjPathExp extends PathExp {
+public final class ObjPathExp extends PathExp {
 	private static final Logger LOGGER = LoggerFactory.getLogger(ObjPathExp.class);
 
 	public static final String OBJ_PREFIX = "obj:";
@@ -70,11 +70,6 @@ public class ObjPathExp extends PathExp {
 	@Override
 	public void appendAsString(Appendable out) throws IOException {
 		out.append(path.value());
-	}
-
-	@Override
-	public int getType() {
-		return Expression.OBJ_PATH;
 	}
 
 }

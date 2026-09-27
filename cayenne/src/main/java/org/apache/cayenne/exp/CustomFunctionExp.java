@@ -24,7 +24,7 @@ import java.io.IOException;
 /**
  * @since 5.0
  */
-public class CustomFunctionExp extends FunctionCallExp {
+public non-sealed class CustomFunctionExp extends FunctionCallExp {
     private String functionName;
 
     public CustomFunctionExp(Object... operands) {

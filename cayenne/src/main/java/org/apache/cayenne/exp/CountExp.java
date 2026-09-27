@@ -24,7 +24,7 @@ import java.util.Collection;
 /**
  * @since 5.0
  */
-public class CountExp extends AggregateFunctionCallExp {
+public final class CountExp extends AggregateFunctionCallExp {
     public CountExp(Object... operands) {
         super(operands);
     }

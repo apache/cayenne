@@ -25,7 +25,7 @@ import java.util.Collections;
 /**
  * @since 5.0
  */
-public class MaxExp extends AggregateFunctionCallExp {
+public final class MaxExp extends AggregateFunctionCallExp {
     public MaxExp(Object... operands) {
         super(operands);
     }

@@ -24,7 +24,7 @@ package org.apache.cayenne.exp;
  * 
  * @since 5.0
  */
-public class BitwiseRightShiftExp extends BitwiseExp {	public BitwiseRightShiftExp(Object... operands) {
+public final class BitwiseRightShiftExp extends BitwiseExp {	public BitwiseRightShiftExp(Object... operands) {
 		super(operands);
 	}
 
@@ -38,10 +38,6 @@ public class BitwiseRightShiftExp extends BitwiseExp {	public BitwiseRightShiftE
 		return ">>";
 	}
 	
-	@Override
-	public int getType() {
-		return Expression.BITWISE_RIGHT_SHIFT;
-	}
 	
 	@Override
 	protected String getEJBQLExpressionOperator(int index) {

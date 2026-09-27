@@ -34,6 +34,8 @@ import org.apache.cayenne.exp.SubstringExp;
 import org.apache.cayenne.exp.TrimExp;
 import org.apache.cayenne.exp.UpperExp;
 import org.apache.cayenne.exp.property.Property;
+import org.apache.cayenne.exp.FullObjectExp;
+import org.apache.cayenne.exp.ObjPathExp;
 import org.apache.cayenne.map.EmbeddedAttribute;
 import org.apache.cayenne.map.EntityResolver;
 import org.apache.cayenne.map.ObjAttribute;
@@ -118,11 +120,10 @@ class ColumnSelectMetadata extends ObjectSelectMetadata {
     private ResultSegment typedSegment(Property<?> column, EntityResolver resolver) {
         Expression exp = column.getExpression();
         Class<?> type = column.getType();
-        int expType = exp.getType();
 
         // a to-many property is declared as a List or a Map, but a row holds a single related object, same as with
         // "flat()". The entity can't be resolved from the declared type, so taking it from the model.
-        if (expType == Expression.OBJ_PATH
+        if (exp instanceof ObjPathExp
                 && (Collection.class.isAssignableFrom(type) || Map.class.isAssignableFrom(type))
                 && getObjEntity() != null
                 && exp.evaluate(getObjEntity()) instanceof ObjRelationship relationship) {
@@ -130,8 +131,8 @@ class ColumnSelectMetadata extends ObjectSelectMetadata {
         }
 
         // "self", "flat()" or a to-one path
-        if (expType == Expression.FULL_OBJECT
-                || (expType == Expression.OBJ_PATH && Persistent.class.isAssignableFrom(type))) {
+        if (exp instanceof FullObjectExp
+                || (exp instanceof ObjPathExp && Persistent.class.isAssignableFrom(type))) {
             ObjEntity entity = resolver.getObjEntity(type);
             if (entity == null) {
                 throw new CayenneRuntimeException("No entity mapped for column '%s' of type %s", exp, type);
@@ -152,17 +153,16 @@ class ColumnSelectMetadata extends ObjectSelectMetadata {
      */
     private ResultSegment untypedSegment(Property<?> column, EntityResolver resolver) {
         Expression exp = column.getExpression();
-        int expType = exp.getType();
 
         // "self"
-        if (expType == Expression.FULL_OBJECT) {
+        if (exp instanceof FullObjectExp) {
             if (getObjEntity() == null) {
                 throw new CayenneRuntimeException("Can't resolve an entity for column '%s'", exp);
             }
             return entitySegment(getObjEntity(), resolver);
         }
 
-        if (expType == Expression.OBJ_PATH && getObjEntity() != null) {
+        if (exp instanceof ObjPathExp && getObjEntity() != null) {
             return switch (exp.evaluate(getObjEntity())) {
                 case EmbeddedAttribute ignored -> embeddableSegment(exp);
 
@@ -223,7 +223,7 @@ class ColumnSelectMetadata extends ObjectSelectMetadata {
         if (operand instanceof DistinctExp) {
             return operandType(operand);
         }
-        if (operand.getType() == Expression.OBJ_PATH
+        if (operand instanceof ObjPathExp
                 && getObjEntity() != null
                 && operand.evaluate(getObjEntity()) instanceof ObjAttribute attribute) {
             return attribute.getJavaClass();

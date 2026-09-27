@@ -30,7 +30,7 @@ import java.util.List;
  * @see org.apache.cayenne.exp.ExpressionFactory#caseWhen(List, List, Expression)
  * @since 5.0
  */
-public class CaseWhenExp extends BaseExp {
+public final class CaseWhenExp extends BaseExp {
     public CaseWhenExp(Object... operands) {
         super(operands);
     }
@@ -64,11 +64,6 @@ public class CaseWhenExp extends BaseExp {
             return evaluateChild(numChildren - 1, o);
         }
         return null;
-    }
-
-    @Override
-    public int getType() {
-        return Expression.CASE_WHEN;
     }
 
     @Override

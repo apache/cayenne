@@ -30,7 +30,7 @@ import org.apache.cayenne.Persistent;
  * 
  * @since 5.0
  */
-public class ScalarExp extends BaseExp {
+public sealed class ScalarExp extends BaseExp permits EnumExp, NamedParameterExp {
     protected Object value;
 
     /**
@@ -100,11 +100,6 @@ public class ScalarExp extends BaseExp {
     @Override
     protected String getExpressionOperator(int index) {
         throw new UnsupportedOperationException("No operator for '" + expName() + "'");
-    }
-
-    @Override
-    public int getType() {
-        return Expression.SCALAR;
     }
 
     @Override

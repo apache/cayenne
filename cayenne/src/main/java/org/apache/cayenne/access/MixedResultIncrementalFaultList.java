@@ -166,7 +166,7 @@ class MixedResultIncrementalFaultList<E> extends IncrementalFaultList<E> {
     ObjectSelect<Persistent> createSelectQuery(ObjEntity entity, List<Expression> expressions) {
         ObjectSelect<Persistent> query = ObjectSelect.query(Persistent.class)
                 .entityName(entity.getName())
-                .where(ExpressionFactory.joinExp(Expression.OR, expressions));
+                .where(ExpressionFactory.or(expressions));
         if (entity.equals(rootEntity) && metadata.getPrefetchTree() != null) {
             query.prefetch(metadata.getPrefetchTree());
         }
@@ -186,7 +186,7 @@ class MixedResultIncrementalFaultList<E> extends IncrementalFaultList<E> {
                 map.put(attribute.getDbAttributeName(), data[index + i++]);
             }
         }
-        return ExpressionFactory.matchAllDbExp(map, Expression.EQUAL_TO);
+        return ExpressionFactory.matchAllDbExp(map);
     }
 
     /**
