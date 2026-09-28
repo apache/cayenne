@@ -39,7 +39,7 @@ import java.awt.BorderLayout;
 import java.awt.Window;
 
 /**
- * Modal dialog for picking the type of new query (Select, SQLTemplate, Procedure, EJBQL)
+ * Modal dialog for picking the type of new query (Select, SQLTemplate, Procedure)
  * before adding it to the current DataMap.
  */
 public class QueryTypeDialog extends ProjectDialog {
@@ -50,7 +50,6 @@ public class QueryTypeDialog extends ProjectDialog {
     private final JRadioButton objectSelect;
     private final JRadioButton sqlSelect;
     private final JRadioButton procedureSelect;
-    private final JRadioButton ejbqlSelect;
     private final JButton createButton;
     private final JButton cancelButton;
 
@@ -62,14 +61,12 @@ public class QueryTypeDialog extends ProjectDialog {
         this.objectSelect = new JRadioButton("ObjectSelect");
         this.sqlSelect = new JRadioButton("SQLTemplate");
         this.procedureSelect = new JRadioButton("ProcedureQuery");
-        this.ejbqlSelect = new JRadioButton("EJBQLQuery");
         objectSelect.setSelected(true);
 
         ButtonGroup buttonGroup = new ButtonGroup();
         buttonGroup.add(objectSelect);
         buttonGroup.add(sqlSelect);
         buttonGroup.add(procedureSelect);
-        buttonGroup.add(ejbqlSelect);
 
         this.createButton = new JButton("Create");
         this.cancelButton = new JButton("Cancel");
@@ -95,13 +92,12 @@ public class QueryTypeDialog extends ProjectDialog {
         CellConstraints cc = new CellConstraints();
         FormLayout layout = new FormLayout(
                 "left:max(180dlu;pref)",
-                "p, 4dlu, p, 4dlu, p, 4dlu, p, 4dlu");
+                "p, 4dlu, p, 4dlu, p, 4dlu");
         PanelBuilder builder = new PanelBuilder(layout);
         builder.setDefaultDialogBorder();
         builder.add(objectSelect, cc.xy(1, 1));
         builder.add(sqlSelect, cc.xy(1, 3));
         builder.add(procedureSelect, cc.xy(1, 5));
-        builder.add(ejbqlSelect, cc.xy(1, 7));
 
         setLayout(new BorderLayout());
         add(builder.getPanel(), BorderLayout.CENTER);
@@ -129,7 +125,6 @@ public class QueryTypeDialog extends ProjectDialog {
     private String selectedQueryType() {
         if (sqlSelect.isSelected()) return QueryDescriptor.SQL_TEMPLATE;
         if (procedureSelect.isSelected()) return QueryDescriptor.PROCEDURE_QUERY;
-        if (ejbqlSelect.isSelected()) return QueryDescriptor.EJBQL_QUERY;
         return QueryDescriptor.SELECT_QUERY;
     }
 }

@@ -27,131 +27,13 @@ import static org.junit.jupiter.api.Assertions.assertTrue;
 
 import java.io.IOException;
 import java.math.BigDecimal;
-import java.util.ArrayList;
-import java.util.Date;
 import java.util.List;
 import java.util.Map;
 
-import org.apache.cayenne.ObjectId;
-import org.apache.cayenne.testdo.testmap.Artist;
 import org.junit.jupiter.api.Test;
 import static org.junit.jupiter.api.Assertions.assertInstanceOf;
 
 public class ExpressionTest {
-
-	@Test
-	public void toEJBQL_numericType_integer() {
-		Expression e = ExpressionFactory.matchExp("consignment.parts", 123);
-		assertEquals("x.consignment.parts = 123", e.toEJBQL("x"));
-	}
-
-	@Test
-	public void toEJBQL_numericType_long() {
-		Expression e = ExpressionFactory.matchExp("consignment.parts", 1418342400L);
-		assertEquals("x.consignment.parts = 1418342400L", e.toEJBQL("x"));
-	}
-
-	@Test
-	public void toEJBQL_numericType_float() {
-		Expression e = ExpressionFactory.greaterOrEqualExp("consignment.parts", Float.valueOf("3.145"));
-		assertEquals("x.consignment.parts >= 3.145f", e.toEJBQL("x"));
-	}
-
-	@Test
-	public void toEJBQL_numericType_double()  {
-		Expression e = ExpressionFactory.greaterOrEqualExp("consignment.parts", 3.14);
-		assertEquals("x.consignment.parts >= 3.14", e.toEJBQL("x"));
-	}
-
-	@Test
-	public void appendAsEJBQL_Timestamp_ParameterCapture() throws IOException {
-		Date now = new Date();
-
-		Expression e = ExpressionFactory.greaterOrEqualExp("dateOfBirth", now);
-
-		StringBuilder buffer = new StringBuilder();
-		List<Object> parametersAccumulator = new ArrayList<>();
-
-		e.appendAsEJBQL(parametersAccumulator, buffer, "x");
-
-		String ejbql = buffer.toString();
-
-		assertEquals("x.dateOfBirth >= ?1", ejbql);
-		assertEquals(parametersAccumulator.size(), 1);
-		assertEquals(parametersAccumulator.get(0), now);
-
-	}
-
-	@Test
-	public void appendAsEJBQL_in_EncodeListOfParameters_ParameterCapture() throws IOException {
-
-		Expression e = ExpressionFactory.inExp("artistName", "a", "b", "c");
-
-		StringBuilder buffer = new StringBuilder();
-		List<Object> parametersAccumulator = new ArrayList<>();
-
-		e.appendAsEJBQL(parametersAccumulator, buffer, "x");
-
-		String ejbql = buffer.toString();
-
-		assertEquals("x.artistName in (?1, ?2, ?3)", ejbql);
-		assertEquals(parametersAccumulator.size(), 3);
-		assertEquals(parametersAccumulator.get(0), "a");
-		assertEquals(parametersAccumulator.get(1), "b");
-		assertEquals(parametersAccumulator.get(2), "c");
-
-	}
-
-	@Test
-	public void appendAsEJBQL_in_EncodeListOfParameters() throws IOException {
-
-		Expression e = ExpressionFactory.inExp("artistName", "a", "b", "c");
-
-		StringBuilder buffer = new StringBuilder();
-
-		e.appendAsEJBQL(buffer, "x");
-
-		String ejbql = buffer.toString();
-
-		assertEquals("x.artistName in ('a', 'b', 'c')", ejbql);
-	}
-
-	@Test
-	public void appendAsEJBQL_PersistentParamater() throws IOException {
-
-		Artist a = new Artist();
-        ObjectId aId = ObjectId.of("Artist", Artist.ARTIST_ID_PK_COLUMN, 1);
-		a.setObjectId(aId);
-
-		Expression e = ExpressionFactory.matchExp("artist", a);
-
-		StringBuilder buffer = new StringBuilder();
-
-		e.appendAsEJBQL(buffer, "x");
-
-		String ejbql = buffer.toString();
-
-		assertEquals("x.artist = 1", ejbql);
-	}
-
-	@Test
-	public void appendAsEJBQLNotEquals() throws IOException {
-
-		Expression e = ExpressionFactory.exp("artistName != 'bla'");
-
-		StringBuilder buffer = new StringBuilder();
-		e.appendAsEJBQL(buffer, "x");
-		String ejbql = buffer.toString();
-
-		assertEquals("x.artistName <> 'bla'", ejbql);
-	}
-
-	@Test
-	public void isNotNullEx() {
-		Expression e = Artist.ARTIST_NAME.isNotNull();
-		String ejbql = e.toEJBQL("x");
-		assertEquals("x.artistName is not null", ejbql);
-	}
 
 	@Test
 	public void andExp() {
@@ -256,23 +138,13 @@ public class ExpressionTest {
 	@Test
 	public void appendAsString_NestedNot() {
 		assertEquals("(not (a = 1)) and (b = 2)", ExpressionFactory.exp("not (a = 1) and b = 2").toString());
-		assertEquals("(not (t.a = 1)) and (t.b = 2)", ExpressionFactory.exp("not (a = 1) and b = 2").toEJBQL("t"));
 		assertEquals("not (not (a = 1))", ExpressionFactory.exp("a = 1").notExp().notExp().toString());
 	}
 
 	@Test
 	public void appendAsString_NestedNegate() {
 		assertEquals("x * -(a + b)", ExpressionFactory.exp("x * -(a + b)").toString());
-		assertEquals("t.x * -(t.a + t.b)", ExpressionFactory.exp("x * -(a + b)").toEJBQL("t"));
 		assertEquals("x * -5", ExpressionFactory.exp("x * -5").toString());
-	}
-
-	@Test
-	public void appendAsEJBQL_CustomOperatorOperand() {
-		// a function call in the String form, an infix operator in EJBQL
-		Expression exp = ExpressionFactory.exp("op(\"+++\", a, b) = 1");
-		assertEquals("op(\"+++\", a, b) = 1", exp.toString());
-		assertEquals("(t.a +++ t.b) = 1", exp.toEJBQL("t"));
 	}
 
 	@Test
@@ -442,33 +314,6 @@ public class ExpressionTest {
 	}
 
 	@Test
-	public void appendAsEJBQL_NotEquals_ParameterCapture() throws IOException {
-		Expression e = ExpressionFactory.exp("artistName != 'bla'");
-
-		StringBuilder buffer = new StringBuilder();
-		List<Object> parametersAccumulator = new ArrayList<>();
-		e.appendAsEJBQL(parametersAccumulator, buffer, "x");
-		String ejbql = buffer.toString();
-
-		assertEquals("x.artistName <> ?1", ejbql);
-		assertEquals(parametersAccumulator.size(), 1);
-		assertEquals(parametersAccumulator.get(0), "bla");
-	}
-
-	@Test
-	public void appendAsEJBQL_Enum() throws IOException {
-
-		Expression e = ExpressionFactory.exp("a = enum:org.apache.cayenne.exp.ExpEnum1.THREE");
-
-		StringBuilder buffer = new StringBuilder();
-		e.appendAsEJBQL(buffer, "x");
-
-		String ejbql = buffer.toString();
-
-		assertEquals("x.a = enum:org.apache.cayenne.exp.ExpEnum1.THREE", ejbql);
-	}
-
-	@Test
 	public void appendAsString_StringLiteral() throws IOException {
 		Expression e1 = ExpressionFactory.exp("a = 'abc'");
 
@@ -527,14 +372,6 @@ public class ExpressionTest {
 				List.of((betweenExp("estimatedPrice", 0, 9)),
 						(betweenExp("estimatedPrice", 10, 20))),
 				List.of((pathExp("paintingDescription")))));
-	}
-
-	@Test
-	public void appendAsEJBQLCaseWhen() throws IOException {
-		Expression caseWhen = ExpressionFactory.caseWhen(
-				List.of(ExpressionFactory.betweenExp("x",1,2)),
-				List.of(ExpressionFactory.pathExp("x")));
-		assertThrows(UnsupportedOperationException.class, () -> caseWhen.appendAsEJBQL(null, null, "x"));
 	}
 
 	@Test

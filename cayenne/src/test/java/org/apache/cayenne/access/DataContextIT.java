@@ -28,7 +28,6 @@ import org.apache.cayenne.Persistent;
 import org.apache.cayenne.UpdateResult;
 import org.apache.cayenne.exp.ExpressionFactory;
 import org.apache.cayenne.map.EntityResolver;
-import org.apache.cayenne.query.EJBQLQuery;
 import org.apache.cayenne.query.ObjectSelect;
 import org.apache.cayenne.query.Query;
 import org.apache.cayenne.query.QueryMetadata;
@@ -438,21 +437,6 @@ public class DataContextIT {
 		assertTrue(objects instanceof IncrementalFaultList<?>);
 		assertTrue(((IncrementalFaultList<Artist>) objects).elements.get(0) instanceof Long);
 		assertTrue(((IncrementalFaultList<Artist>) objects).elements.get(6) instanceof Long);
-
-		assertTrue(objects.get(0) instanceof Artist);
-	}
-
-	@Test
-	public void performPaginatedQuery_EJBQL() throws Exception {
-		createArtistsDataSet();
-
-		EJBQLQuery query = new EJBQLQuery("select a FROM Artist a");
-		query.setPageSize(5);
-		List<?> objects = context.select(query);
-		assertNotNull(objects);
-		assertTrue(objects instanceof IncrementalFaultList<?>);
-		assertTrue(((IncrementalFaultList<?>) objects).elements.get(0) instanceof Long);
-		assertTrue(((IncrementalFaultList<?>) objects).elements.get(6) instanceof Long);
 
 		assertTrue(objects.get(0) instanceof Artist);
 	}

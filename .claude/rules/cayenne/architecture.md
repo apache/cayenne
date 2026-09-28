@@ -18,7 +18,6 @@ description: cayenne core module architecture, conventions, and test infrastruct
 
 - **`ObjectSelect`** — Modern fluent API for fetching persistent objects (preferred)
 - **`SQLSelect`** / **`SQLExec`** — Raw SQL with Cayenne parameter binding
-- **`EJBQLQuery`** — Legacy EJBQL support
 - **`Expression`** / **`ExpressionFactory`** — In-memory and SQL predicate building
 
 ### ORM Mapping

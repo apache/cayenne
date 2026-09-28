@@ -26,7 +26,6 @@ import org.apache.cayenne.access.translator.select.DbAdapterDelegatedSelectTrans
 import org.apache.cayenne.access.translator.TranslatedSelect;
 import org.apache.cayenne.query.EntityResultSegment;
 import org.apache.cayenne.query.ColumnSelect;
-import org.apache.cayenne.query.EJBQLQuery;
 import org.apache.cayenne.query.ObjectSelect;
 import org.apache.cayenne.reflect.PersistentDescriptor;
 import org.apache.cayenne.runtime.CayenneRuntime;
@@ -35,6 +34,7 @@ import org.apache.cayenne.testdo.testmap.Artist;
 import org.apache.cayenne.testdo.testmap.CompoundPainting;
 import org.apache.cayenne.testdo.testmap.CompoundPaintingLongNames;
 import org.apache.cayenne.testdo.testmap.Gallery;
+import org.apache.cayenne.testdo.testmap.Painting;
 import org.apache.cayenne.testdo.testmap.PaintingInfo;
 import org.apache.cayenne.unit.CayenneProjects;
 import org.apache.cayenne.unit.CayenneTestsEnv;
@@ -44,13 +44,11 @@ import org.junit.jupiter.api.Test;
 
 import java.math.BigDecimal;
 import java.sql.Types;
-import java.util.Iterator;
 import java.util.List;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.junit.jupiter.api.Assertions.assertNull;
-import static org.junit.jupiter.api.Assertions.assertTrue;
 
 public class DataContextFlattenedAttributesIT {
 
@@ -157,7 +155,7 @@ public class DataContextFlattenedAttributesIT {
     }
 
     // TODO: andrus 1/5/2007 - CAY-952: SelectQuery uses INNER JOIN for flattened
-    // attributes, while EJBQLQuery does an OUTER JOIN... which seems like a better idea...
+    // attributes...
     // 14/01/2010 now it uses LEFT JOIN
     @Test
     public void selectCompound2() throws Exception {
@@ -304,118 +302,6 @@ public class DataContextFlattenedAttributesIT {
     }
 
     @Test
-    public void selectEJQBQL() throws Exception {
-        createTestDataSet();
-        EJBQLQuery query = new EJBQLQuery(
-                "SELECT a FROM CompoundPainting a WHERE a.artistName = 'artist2'");
-        List<?> objects = context.select(query);
-
-        assertNotNull(objects);
-        assertEquals(2, objects.size());
-        assertTrue(
-                objects.get(0) instanceof CompoundPainting,
-                "CompoundPainting expected, got " + objects.get(0).getClass());
-        for (Object object : objects) {
-            CompoundPainting painting = (CompoundPainting) object;
-            assertEquals(PersistenceState.COMMITTED, painting.getPersistenceState());
-        }
-    }
-
-    @Test
-    public void selectEJQBQLCollectionTheta() throws Exception {
-        createTestDataSet();
-        EJBQLQuery query = new EJBQLQuery(
-                "SELECT DISTINCT a FROM CompoundPainting cp, Artist a "
-                        + "WHERE a.artistName=cp.artistName ORDER BY a.artistName");
-
-        List<?> objects = context.select(query);
-
-        assertNotNull(objects);
-        assertEquals(4, objects.size());
-        Iterator<?> i = objects.iterator();
-        int index = 1;
-        while (i.hasNext()) {
-            Artist artist = (Artist) i.next();
-            assertEquals("artist" + index, artist.getArtistName());
-            index++;
-        }
-    }
-
-    @Test
-    public void selectEJQBQLLike() throws Exception {
-        createTestDataSet();
-        EJBQLQuery query = new EJBQLQuery(
-                "SELECT a FROM CompoundPainting a WHERE a.artistName LIKE 'artist%' "
-                        + "ORDER BY a.paintingTitle");
-
-        List<?> objects = context.select(query);
-
-        assertNotNull(objects);
-        assertEquals(8, objects.size());
-        Iterator<?> i = objects.iterator();
-        int index = 1;
-        while (i.hasNext()) {
-            CompoundPainting painting = (CompoundPainting) i.next();
-            assertEquals("painting" + index, painting.getPaintingTitle());
-            index++;
-        }
-    }
-
-    @Test
-    public void selectEJQBQLBetween() throws Exception {
-        createTestDataSet();
-        EJBQLQuery query = new EJBQLQuery("SELECT a FROM CompoundPainting a "
-                + "WHERE a.artistName BETWEEN 'artist1' AND 'artist4' "
-                + "ORDER BY a.paintingTitle");
-
-        List<?> objects = context.select(query);
-
-        assertNotNull(objects);
-        assertEquals(8, objects.size());
-        Iterator<?> i = objects.iterator();
-        int index = 1;
-        while (i.hasNext()) {
-            CompoundPainting painting = (CompoundPainting) i.next();
-            assertEquals("painting" + index, painting.getPaintingTitle());
-            index++;
-        }
-    }
-
-    @Test
-    public void selectEJQBQLSubquery() throws Exception {
-        createTestDataSet();
-        EJBQLQuery query = new EJBQLQuery(
-                "SELECT g FROM Gallery g WHERE "
-                        + "(SELECT COUNT(cp) FROM CompoundPainting cp WHERE g.galleryName=cp.galleryName) = 4");
-
-        List<?> objects = context.select(query);
-
-        assertNotNull(objects);
-        assertEquals(1, objects.size());
-        Gallery gallery = (Gallery) objects.get(0);
-        assertEquals("gallery2", gallery.getGalleryName());
-
-    }
-
-    @Test
-    public void selectEJQBQLHaving() throws Exception {
-        createTestDataSet();
-        EJBQLQuery query = new EJBQLQuery(
-                "SELECT cp.galleryName, COUNT(a) from  Artist a, CompoundPainting cp "
-                        + "WHERE cp.artistName = a.artistName "
-                        + "GROUP BY cp.galleryName "
-                        + "HAVING cp.galleryName LIKE 'gallery1'");
-
-        List<Object[]> objects = context.select(query);
-
-        assertNotNull(objects);
-        assertEquals(1, objects.size());
-        Object[] galleryItem = objects.get(0);
-        assertEquals("gallery1", galleryItem[0]);
-        assertEquals(3L, galleryItem[1]);
-    }
-
-    @Test
     public void insert() {
         CompoundPainting o1 = context.newObject(CompoundPainting.class);
         o1.setArtistName("A1");
@@ -426,16 +312,10 @@ public class DataContextFlattenedAttributesIT {
 
         context.commitChanges();
 
-        Number artistCount = (Number) context.selectOne(new EJBQLQuery(
-                "select count(a) from Artist a"));
-        assertEquals(1, artistCount.intValue());
-        Number paintingCount = (Number) context.selectOne(new EJBQLQuery(
-                "select count(a) from Painting a"));
-        assertEquals(1, paintingCount.intValue());
+                assertEquals(1, ObjectSelect.query(Artist.class).selectCount(context));
+                assertEquals(1, ObjectSelect.query(Painting.class).selectCount(context));
 
-        Number galleryCount = (Number) context.selectOne(new EJBQLQuery(
-                "select count(a) from Gallery a"));
-        assertEquals(1, galleryCount.intValue());
+                assertEquals(1, ObjectSelect.query(Gallery.class).selectCount(context));
     }
 
     @Test
@@ -458,16 +338,10 @@ public class DataContextFlattenedAttributesIT {
         context.deleteObjects(o1);
         context.commitChanges();
 
-        Number artistCount = (Number) context.selectOne(new EJBQLQuery(
-                "select count(a) from Artist a"));
-        assertEquals(2, artistCount.intValue());
-        Number paintingCount = (Number) context.selectOne(new EJBQLQuery(
-                "select count(a) from Painting a"));
-        assertEquals(0, paintingCount.intValue());
+                assertEquals(2, ObjectSelect.query(Artist.class).selectCount(context));
+                assertEquals(0, ObjectSelect.query(Painting.class).selectCount(context));
 
-        Number galleryCount = (Number) context.selectOne(new EJBQLQuery(
-                "select count(a) from Gallery a"));
-        assertEquals(1, galleryCount.intValue());
+                assertEquals(1, ObjectSelect.query(Gallery.class).selectCount(context));
     }
 
     @Test

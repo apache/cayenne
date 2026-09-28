@@ -52,9 +52,4 @@ public interface SQLActionVisitor {
      * Creates an action to execute a ProcedureQuery.
      */
     SQLAction procedureAction(ProcedureQuery<?> query);
-
-    /**
-     * Creates an action to execute EJBQL query.
-     */
-    SQLAction ejbqlAction(EJBQLQuery<?> query);
 }

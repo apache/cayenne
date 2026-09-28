@@ -70,15 +70,4 @@ public class StatementFetchSizeIT {
                 .getStatementFetchSize());
         env.context().select(template);
     }
-
-    @Test
-    public void ejbqlQuery() {
-        EJBQLQuery ejbql = new EJBQLQuery("select a from Artist a");
-        ejbql.setStatementFetchSize(10);
-
-        assertEquals(10, ejbql
-                .getMetaData(env.context().getEntityResolver())
-                .getStatementFetchSize());
-        env.context().select(ejbql);
-    }
 }

@@ -6,5 +6,7 @@
 	<map name="map1"/>
 	<validation xmlns="http://cayenne.apache.org/schema/13/validation">
 		<exclude>DATA_CHANNEL_NO_NAME</exclude>
+		<exclude>EJBQL_QUERY_INVALID_SYNTAX</exclude>
+		<exclude>SQL_TEMPLATE_NO_ROOT</exclude>
 	</validation>
 </domain>

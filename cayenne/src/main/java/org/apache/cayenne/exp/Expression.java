@@ -638,26 +638,11 @@ public abstract sealed class Expression implements XMLSerializable permits Aggre
 	protected abstract String getExpressionOperator(int index);
 
 	/**
-	 * Returns operator for EJBQL statements, which can differ for Cayenne expression operator
-	 */
-	protected String getEJBQLExpressionOperator(int index) {
-		return getExpressionOperator(index);
-	}
-
-	/**
 	 * Whether this node is wrapped in parentheses when printed as an operand of another node. Compound nodes are,
 	 * leaves and nodes with their own delimiters (function calls, lists) are not.
 	 */
 	protected boolean parenthesizeAsOperand() {
 		return true;
-	}
-
-	/**
-	 * Same as {@link #parenthesizeAsOperand()}, for the EJBQL form of the node. The two forms differ for a node that
-	 * is a function call in one and an infix operator in the other.
-	 */
-	protected boolean parenthesizeAsEJBQLOperand() {
-		return parenthesizeAsOperand();
 	}
 
 	/**
@@ -682,78 +667,6 @@ public abstract sealed class Expression implements XMLSerializable permits Aggre
 		}
 	}
 
-	/**
-	 * Stores a String representation of Expression as EJBQL using a provided
-	 * Appendable. DB path expressions produce non-standard EJBQL path
-	 * expressions.
-	 * 
-	 * @since 4.0
-	 * @throws IOException
-	 */
-	public void appendAsEJBQL(Appendable out, String rootId) throws IOException {
-		appendAsEJBQL(null, out, rootId);
-	}
-
-	/**
-	 * Stores a String representation of Expression as EJBQL using a provided
-	 * PrintWriter. DB path expressions produce non-standard EJBQL path
-	 * expressions. If the parameterAccumulator is supplied then as the EJBQL is
-	 * output, it may load parameters into this list. In this case, the EJBQL
-	 * output will contain reference to positional parameters. If no
-	 * parameterAccumulator is supplied and a scalar type is encountered for
-	 * which there is no EJBQL literal representation (such as dates) then this
-	 * method will throw a runtime exception to indicate that it was not
-	 * possible to generate a string-only representation of the Expression in
-	 * EJBQL.
-	 * 
-	 * @since 4.0
-	 * @throws IOException
-	 */
-	public void appendAsEJBQL(List<Object> parameterAccumulator, Appendable out, String rootId) throws IOException {
-		if (getOperandCount() > 0) {
-			appendOperandsAsEJBQL(parameterAccumulator, out, rootId);
-		}
-	}
-
-	/**
-	 * Encodes the operands of this node to EJBQL, separated by the operator.
-	 */
-	protected void appendOperandsAsEJBQL(List<Object> parameterAccumulator, Appendable out, String rootId)
-			throws IOException {
-		int count = getOperandCount();
-		for (int i = 0; i < count; ++i) {
-			if (i > 0) {
-				out.append(' ');
-				out.append(getEJBQLExpressionOperator(i));
-				out.append(' ');
-			}
-
-			appendOperandAsEJBQL(i, parameterAccumulator, out, rootId);
-		}
-	}
-
-	/**
-	 * Encodes the operand at the given index to EJBQL: a nested node as itself, wrapped in parentheses if it asks for
-	 * it via {@link #parenthesizeAsEJBQLOperand()}, a plain value as a literal or a positional parameter.
-	 */
-	protected void appendOperandAsEJBQL(int index, List<Object> parameterAccumulator, Appendable out, String rootId)
-			throws IOException {
-		Object operand = getOperand(index);
-		if (!(operand instanceof Expression node)) {
-			ExpHelper.encodeOperandAsEJBQL(parameterAccumulator, out, operand);
-			return;
-		}
-
-		boolean parenthesize = node.parenthesizeAsEJBQLOperand();
-		if (parenthesize) {
-			out.append('(');
-		}
-		node.appendAsEJBQL(parameterAccumulator, out, rootId);
-		if (parenthesize) {
-			out.append(')');
-		}
-	}
-
 	@Override
 	public String toString() {
 		StringBuilder out = new StringBuilder();
@@ -763,38 +676,6 @@ public abstract sealed class Expression implements XMLSerializable permits Aggre
 			throw new CayenneRuntimeException("Unexpected IO exception appending to StringBuilder", e);
 		}
 		return out.toString();
-	}
-
-	/**
-	 * Produces an EJBQL string that represents this expression. If the
-	 * parameterAccumulator is supplied then, where appropriate, parameters to
-	 * the EJBQL may be written into the parameterAccumulator. If this method
-	 * encounters a scalar type which is not able to be represented as an EJBQL
-	 * literal then this method will throw a runtime exception to indicate that
-	 * it was not possible to generate a string-only representation of the
-	 * Expression as EJBQL.
-	 * 
-	 * @since 3.1
-	 */
-	public String toEJBQL(List<Object> parameterAccumulator, String rootId) {
-		StringBuilder out = new StringBuilder();
-		try {
-			appendAsEJBQL(parameterAccumulator, out, rootId);
-		} catch (IOException e) {
-			throw new CayenneRuntimeException("Unexpected IO exception appending to StringBuilder", e);
-		}
-		return out.toString();
-	}
-
-	/**
-	 * Produces an EJBQL string that represents this expression. If this method
-	 * encounters a scalar type which is not able to be represented as an EJBQL
-	 * literal then this method will throw a runtime exception.
-	 * 
-	 * @since 3.0
-	 */
-	public String toEJBQL(String rootId) {
-		return toEJBQL(null, rootId);
 	}
 
 	final class NamedParamTransformer implements Function<Object, Object> {

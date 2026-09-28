@@ -21,8 +21,6 @@ package org.apache.cayenne.exp;
 
 import org.apache.cayenne.CayenneRuntimeException;
 
-import java.io.IOException;
-import java.util.List;
 import java.util.regex.Pattern;
 
 /**
@@ -101,23 +99,6 @@ public abstract sealed class PatternMatchExp extends ConditionExp permits Ignore
         }
 
         super.setOperand(index, value);
-    }
-
-    @Override
-    protected void appendOperandsAsEJBQL(List<Object> parameterAccumulator, Appendable out, String rootId)
-            throws IOException {
-        super.appendOperandsAsEJBQL(parameterAccumulator, out, rootId);
-
-        if (0 != getEscapeChar()) {
-
-            if ('\'' == getEscapeChar()) {
-                throw new CayenneRuntimeException("unable to escape an EJBQL like clause with a single quote character");
-            }
-
-            out.append(" escape '");
-            out.append(getEscapeChar());
-            out.append("'");
-        }
     }
 
     private static Pattern sqlPatternToPattern(String pattern, boolean ignoreCase) {

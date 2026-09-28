@@ -173,8 +173,8 @@ public class DefaultRowReaderFactory implements RowReaderFactory {
         }
 
         if (found != pkLen) {
-            // TODO: HACK: the result columns don't carry resolvable PK DbAttributes (these are most likely aliased
-            //  EJBQL columns). Fall back to the legacy assumption that the PK is the first pkLen columns starting at
+            // TODO: HACK: the result columns don't carry resolvable PK DbAttributes (e.g. aliased
+            //  columns). Fall back to the legacy assumption that the PK is the first pkLen columns starting at
             //  'from'.
             if (from + pkLen > columns.length) {
                 throw new CayenneRuntimeException(

@@ -23,7 +23,6 @@ import org.apache.cayenne.PersistenceState;
 import org.apache.cayenne.Persistent;
 import org.apache.cayenne.map.EntityResolver;
 import org.apache.cayenne.map.LifecycleEvent;
-import org.apache.cayenne.query.EJBQLQuery;
 import org.apache.cayenne.query.ObjectSelect;
 import org.apache.cayenne.reflect.LifecycleCallbackRegistry;
 import org.apache.cayenne.testdo.testmap.Artist;
@@ -122,8 +121,7 @@ public class DataDomainCallbacksIT {
         assertEquals(0, a1.getPostLoaded());
         assertNull(listener.getPublicCalledbackEntity());
 
-        EJBQLQuery q = new EJBQLQuery("select a, a.artistName from Artist a");
-        env.context().select(q);
+        ObjectSelect.query(Artist.class).columns(Artist.SELF, Artist.ARTIST_NAME).select(env.context());
         assertEquals(1, a1.getPostLoaded());
         assertSame(a1, listener.getPublicCalledbackEntity());
     }

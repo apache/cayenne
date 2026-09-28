@@ -49,12 +49,6 @@ public final class BitwiseNotExp extends ValueExp {	public BitwiseNotExp(Object.
 	}
 	
 	@Override
-	protected String getEJBQLExpressionOperator(int index) {
-		throw new UnsupportedOperationException(
-				"EJBQL 'bitwise not' is not supported");
-	}
-
-	@Override
 	public Expression shallowCopy() {
 		return new BitwiseNotExp();
 	}

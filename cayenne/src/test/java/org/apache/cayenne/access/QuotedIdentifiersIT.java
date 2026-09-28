@@ -22,7 +22,6 @@ import org.apache.cayenne.ObjectId;
 import org.apache.cayenne.Cayenne;
 import org.apache.cayenne.map.DbAttribute;
 import org.apache.cayenne.map.DbEntity;
-import org.apache.cayenne.query.EJBQLQuery;
 import org.apache.cayenne.query.ObjectSelect;
 import org.apache.cayenne.query.UpdateBatchQuery;
 import org.apache.cayenne.testdo.quotemap.QuoteAdress;
@@ -148,43 +147,6 @@ public class QuotedIdentifiersIT {
 
         List<?> objects10 = env.context().resolveRelationship(quote_Person2.getObjectId(), "address_Rel", false);
         assertEquals(1, objects10.size());
-    }
-
-    @Test
-    public void quotedEJBQLQuery() {
-        String ejbql = "select a from QuoteAdress a where a.group = '324'";
-        EJBQLQuery queryEJBQL = new EJBQLQuery(ejbql);
-        List objects11 = env.context().select(queryEJBQL);
-        assertEquals(1, objects11.size());
-    }
-
-    @Test
-    public void quotedEJBQLQueryWithJoin() {
-        String ejbql = "select p from Quote_Person p join p.address_Rel a where p.name = 'Arcadi'";
-        EJBQLQuery queryEJBQL = new EJBQLQuery(ejbql);
-        List resultList = env.context().select(queryEJBQL);
-        assertEquals(1, resultList.size());
-    }
-
-    @Test
-    public void quotedEJBQLQueryWithOrderBy() {
-        EJBQLQuery query = new EJBQLQuery("select p from Quote_Person p order by p.name");
-
-        @SuppressWarnings("unchecked")
-        List<Quote_Person> resultList = (List<Quote_Person>) env.context().select(query);
-
-        assertEquals(2, resultList.size());
-        assertEquals("Arcadi", resultList.get(0).getName());
-        assertEquals("Name", resultList.get(1).getName());
-    }
-
-    @Test
-    public void quotedEJBQLCountQuery() {
-        EJBQLQuery query = new EJBQLQuery("select count(p) from Quote_Person p");
-        assertEquals(Collections.singletonList(2L), env.context().select(query));
-
-        query = new EJBQLQuery("select count(p.fULL_name) from Quote_Person p");
-        assertEquals(Collections.singletonList(0L), env.context().select(query));
     }
 
 }

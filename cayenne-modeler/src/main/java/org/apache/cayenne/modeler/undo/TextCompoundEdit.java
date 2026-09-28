@@ -26,7 +26,6 @@ import org.apache.cayenne.map.ObjEntity;
 import org.apache.cayenne.modeler.ui.project.ProjectView;
 import org.apache.cayenne.modeler.ui.project.editor.EditorPanelView;
 import org.apache.cayenne.modeler.ui.project.editor.query.sqltemplate.SQLTemplateTabbedView;
-import org.apache.cayenne.query.EJBQLQuery;
 import org.apache.cayenne.query.SQLTemplate;
 
 import javax.swing.*;
@@ -91,10 +90,6 @@ public class TextCompoundEdit extends CompoundEdit implements DocumentListener {
             if (tabbedPane != null) {
                 selectedItem = ((SQLTemplateTabbedView) tabbedPane).getScriptsTab().getSelectedIndex();
             }
-        }
-
-        if (targetObject instanceof EJBQLQuery) {
-            tabbedPane = editorPanel.getEjbqlQueryView();
         }
 
         if (targetObject instanceof DataMap) {

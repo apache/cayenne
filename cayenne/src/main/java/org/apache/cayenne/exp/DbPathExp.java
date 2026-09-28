@@ -22,7 +22,6 @@ package org.apache.cayenne.exp;
 import java.io.IOException;
 import java.util.Iterator;
 import java.util.LinkedList;
-import java.util.List;
 import java.util.Map;
 
 import org.apache.cayenne.Cayenne;
@@ -31,7 +30,6 @@ import org.apache.cayenne.ObjectId;
 import org.apache.cayenne.Persistent;
 import org.apache.cayenne.access.DataContext;
 import org.apache.cayenne.DataRow;
-import org.apache.cayenne.exp.path.CayennePath;
 import org.apache.cayenne.map.DbEntity;
 import org.apache.cayenne.map.DbRelationship;
 import org.apache.cayenne.map.Entity;
@@ -156,15 +154,6 @@ public final class DbPathExp extends PathExp {
 		copy.path = path;
 		copy.setPathAliases(pathAliases);
 		return copy;
-	}
-
-	@Override
-	public void appendAsEJBQL(List<Object> parameterAccumulator, Appendable out, String rootId) throws IOException {
-		// warning: non-standard EJBQL...
-		out.append(DB_PREFIX);
-		out.append(rootId);
-		out.append('.');
-		out.append(path.value());
 	}
 
 	@Override

@@ -21,9 +21,6 @@ package org.apache.cayenne.exp;
 
 import org.apache.cayenne.util.ConversionUtil;
 
-import java.io.IOException;
-import java.util.List;
-
 /**
  * "WHEN" part of the case-when expression.
  *
@@ -59,10 +56,5 @@ public final class WhenExp extends AggregateConditionExp {
             return Boolean.TRUE;
         }
         return Boolean.FALSE;
-    }
-
-    @Override
-    public void appendAsEJBQL(List<Object> parameterAccumulator, Appendable out, String rootId) throws IOException {
-        throw new UnsupportedOperationException("EJBQL 'when' is not supported");
     }
 }

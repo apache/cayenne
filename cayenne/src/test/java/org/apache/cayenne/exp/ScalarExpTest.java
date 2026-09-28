@@ -26,12 +26,6 @@ import static org.junit.jupiter.api.Assertions.*;
 public class ScalarExpTest {
 
     @Test
-    public void appendAsEJBQL_Parameter() {
-        assertEquals(":name", ExpressionFactory.exp("$name").toEJBQL("x"));
-        assertEquals(":name", new ScalarExp(new ExpressionParameter("name")).toEJBQL("x"));
-    }
-
-    @Test
     public void equals() throws Exception {
         ScalarExp strScalar1 = new ScalarExp("test");
         ScalarExp strScalar2 = new ScalarExp("test");

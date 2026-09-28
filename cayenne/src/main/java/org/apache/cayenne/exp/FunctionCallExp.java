@@ -20,7 +20,6 @@
 package org.apache.cayenne.exp;
 
 import java.io.IOException;
-import java.util.List;
 
 /**
  * @since 5.0
@@ -73,14 +72,6 @@ public abstract sealed class FunctionCallExp extends ValueExp permits AbsExp, Ag
     protected boolean parenthesizeAsOperand() {
         // the arguments are already delimited
         return false;
-    }
-
-    @Override
-    public void appendAsEJBQL(List<Object> parameterAccumulator, Appendable out, String rootId) throws IOException {
-        out.append(getFunctionName());
-        out.append("(");
-        super.appendOperandsAsEJBQL(parameterAccumulator, out, rootId);
-        out.append(")");
     }
 
     /**

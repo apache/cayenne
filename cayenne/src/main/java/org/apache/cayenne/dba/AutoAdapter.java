@@ -24,7 +24,6 @@ import org.apache.cayenne.access.DataNode;
 import org.apache.cayenne.access.jdbc.CSParameter;
 import org.apache.cayenne.access.jdbc.PSParameter;
 import org.apache.cayenne.access.sqlbuilder.sqltree.SQLTreeProcessor;
-import org.apache.cayenne.access.translator.EJBQLTranslator;
 import org.apache.cayenne.access.translator.ProcedureTranslator;
 import org.apache.cayenne.access.translator.SelectTranslator;
 import org.apache.cayenne.access.types.ExtendedTypeMap;
@@ -288,14 +287,6 @@ public class AutoAdapter implements DbAdapter {
     @Override
     public DbAdapter unwrap() {
         return getAdapter();
-    }
-
-    /**
-     * @since 5.0
-     */
-    @Override
-    public EJBQLTranslator getEjbqlTranslator() {
-        return getAdapter().getEjbqlTranslator();
     }
 
     @Override

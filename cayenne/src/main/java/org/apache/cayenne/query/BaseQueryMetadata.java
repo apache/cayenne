@@ -218,7 +218,6 @@ class BaseQueryMetadata implements QueryMetadata {
 	private PrefetchTreeNode deepClone(PrefetchTreeNode source, PrefetchTreeNode targetParent) {
 
 		PrefetchTreeNode target = new PrefetchTreeNode(targetParent, source.getName());
-		target.setEjbqlPathEntityId(source.getEjbqlPathEntityId());
 		target.setEntityName(source.getEntityName());
 		target.setPhantom(source.isPhantom());
 		target.setSemantics(source.getSemantics());

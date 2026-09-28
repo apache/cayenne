@@ -130,7 +130,7 @@ class LifecycleCallbackEventHandler {
     void performCallbacks(Persistent object) {
         if(object == null) {
             // this can happen if object resolved to null from some query with outer join
-            // (e.g. in EJBQL or SQLTemplate)
+            // (e.g. in SQLTemplate)
             return;
         }
 

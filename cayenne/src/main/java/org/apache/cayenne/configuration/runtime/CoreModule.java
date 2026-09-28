@@ -34,14 +34,12 @@ import org.apache.cayenne.access.flush.operation.HardDeleteDbRowOpFactory;
 import org.apache.cayenne.access.jdbc.reader.DefaultRowReaderFactory;
 import org.apache.cayenne.access.jdbc.reader.RowReaderFactory;
 import org.apache.cayenne.access.translator.BatchTranslator;
-import org.apache.cayenne.access.translator.EJBQLTranslator;
 import org.apache.cayenne.access.translator.ProcedureTranslator;
 import org.apache.cayenne.access.translator.SQLTemplateTranslator;
 import org.apache.cayenne.access.translator.SelectTranslator;
 import org.apache.cayenne.access.translator.batch.DeleteBatchTranslator;
 import org.apache.cayenne.access.translator.batch.InsertBatchTranslator;
 import org.apache.cayenne.access.translator.batch.UpdateBatchTranslator;
-import org.apache.cayenne.access.translator.ejbql.DbAdapterDelegatedEJBQLTranslator;
 import org.apache.cayenne.access.translator.procedure.DbAdapterDelegatedProcedureTranslator;
 import org.apache.cayenne.access.translator.select.DbAdapterDelegatedSelectTranslator;
 import org.apache.cayenne.access.translator.sqltemplate.DefaultSQLTemplateTranslator;
@@ -408,7 +406,6 @@ public class CoreModule implements Module {
         binder.bind(Key.get(BatchTranslator.class, BatchTranslator.DELETE)).to(DeleteBatchTranslator.class);
         binder.bind(SelectTranslator.class).to(DbAdapterDelegatedSelectTranslator.class);
         binder.bind(ProcedureTranslator.class).to(DbAdapterDelegatedProcedureTranslator.class);
-        binder.bind(EJBQLTranslator.class).to(DbAdapterDelegatedEJBQLTranslator.class);
 
         // a default ObjectMapRetainStrategy used to create objects map for
         // ObjectStore

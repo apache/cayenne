@@ -25,7 +25,6 @@ import org.apache.cayenne.exp.ExpressionFactory;
 import org.apache.cayenne.map.DataMap;
 import org.apache.cayenne.map.SQLResult;
 import org.apache.cayenne.query.CapsStrategy;
-import org.apache.cayenne.query.EJBQLQuery;
 import org.apache.cayenne.query.ObjectSelect;
 import org.apache.cayenne.query.SQLTemplate;
 import org.apache.cayenne.test.jdbc.TableHelper;
@@ -111,18 +110,6 @@ public class CayenneIT {
         Object object = env.context().selectOne(query);
         assertNotNull(object);
         assertInstanceOf(Number.class, object);
-        assertEquals(2, ((Number) object).intValue());
-    }
-
-    @Test
-    public void scalarObjectForQuery2() throws Exception {
-        createTwoArtists();
-
-        String ejbql = "SELECT count(a) from Artist a";
-        EJBQLQuery query = new EJBQLQuery(ejbql);
-        Object object = env.context().selectOne(query);
-        assertNotNull(object);
-        assertInstanceOf(Number.class, object, "Object class: " + object.getClass().getName());
         assertEquals(2, ((Number) object).intValue());
     }
 
@@ -260,17 +247,6 @@ public class CayenneIT {
         List<Artist> objects = ObjectSelect.query(Artist.class).select(env.context());
         assertEquals(1, objects.size());
         Persistent object = objects.getFirst();
-
-        assertEquals(33002L, Cayenne.pkForObject(object));
-    }
-
-    @Test
-    public void ejbql() throws Exception {
-        createOneArtist();
-
-        List<?> objects = env.context().select(new EJBQLQuery("select a from Artist a"));
-        assertEquals(1, objects.size());
-        Artist object = (Artist) objects.getFirst();
 
         assertEquals(33002L, Cayenne.pkForObject(object));
     }

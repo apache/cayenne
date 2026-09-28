@@ -83,13 +83,4 @@ public final class EqualExp extends ConditionExp {
 		return "=";
 	}
 
-	@Override
-	protected String getEJBQLExpressionOperator(int index) {
-		if (getOperandCount() > 1 && getOperand(1) == null) {
-			// for ejbql, we need "is null" instead of "= null"
-			return "is";
-		}
-		return getExpressionOperator(index);
-	}
-
 }

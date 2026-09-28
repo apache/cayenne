@@ -27,6 +27,10 @@
 		<prefetch type="disjointById"><![CDATA[paintings.exhibits]]></prefetch>
 		<prefetch><![CDATA[groups]]></prefetch>
 	</query>
+	<query name="Ejbql1" type="EJBQLQuery">
+		<property name="cayenne.GenericSelectQuery.cacheStrategy" value="SHARED_CACHE"/>
+		<ejbql><![CDATA[select a from Artist a]]></ejbql>
+	</query>
 	<query name="ClassRoot" type="SelectQuery" root="java-class" root-name="org.apache.cayenne.x.Artist">
 		<qualifier><![CDATA[artistName = "a"]]></qualifier>
 	</query>
@@ -34,6 +38,9 @@
 		<qualifier><![CDATA[artistName = "a"]]></qualifier>
 	</query>
 	<query name="RootOnly" type="SelectQuery" root="obj-entity" root-name="Artist"/>
+	<query name="Ejbql2" type="EJBQLQuery">
+		<ejbql><![CDATA[select count(a) from Artist a]]></ejbql>
+	</query>
 	<query name="Template" type="SQLTemplate" root="data-map" root-name="map1">
 		<property name="cayenne.GenericSelectQuery.fetchLimit" value="10"/>
 		<sql><![CDATA[select * from ARTIST]]></sql>

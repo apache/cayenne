@@ -49,7 +49,6 @@ public class QueryDescriptorLoader {
     protected String name;
     protected String queryType;
     protected String sql;
-    protected String ejbql;
     protected Expression qualifier;
     protected DataMap dataMap;
     protected String rootType;
@@ -83,9 +82,6 @@ public class QueryDescriptorLoader {
                 ((SQLTemplateDescriptor) descriptor).setPrefetchesMap(prefetchesMap);
                 ((SQLTemplateDescriptor) descriptor).setAdapterSql(adapterSql);
                 break;
-            case QueryDescriptor.EJBQL_QUERY:
-                ((EJBQLQueryDescriptor) descriptor).setEjbql(ejbql);
-                break;
             case QueryDescriptor.PROCEDURE_QUERY:
                 ((ProcedureQueryDescriptor) descriptor).setResultEntityName(resultEntity);
                 break;
@@ -113,9 +109,6 @@ public class QueryDescriptorLoader {
                 break;
             case "org.apache.cayenne.map.SQLTemplateBuilder":
                 queryType = QueryDescriptor.SQL_TEMPLATE;
-                break;
-            case "org.apache.cayenne.map.EjbqlBuilder":
-                queryType = QueryDescriptor.EJBQL_QUERY;
                 break;
             case "org.apache.cayenne.map.ProcedureQueryBuilder":
                 queryType = QueryDescriptor.PROCEDURE_QUERY;
@@ -173,10 +166,6 @@ public class QueryDescriptorLoader {
         this.dataMap = dataMap;
         this.rootType = rootType;
         this.rootName = rootName;
-    }
-
-    public void setEjbql(String ejbql) {
-        this.ejbql = ejbql;
     }
 
     /**

@@ -21,7 +21,6 @@ package org.apache.cayenne;
 
 import org.apache.cayenne.exp.property.PropertyFactory;
 import org.apache.cayenne.query.CapsStrategy;
-import org.apache.cayenne.query.EJBQLQuery;
 import org.apache.cayenne.query.ObjectSelect;
 import org.apache.cayenne.query.SQLSelect;
 import org.apache.cayenne.query.SQLTemplate;
@@ -34,7 +33,6 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.RegisterExtension;
 
-import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -223,16 +221,5 @@ public class CayenneCompoundIT {
         for (int i = 0; i < result.size(); i++) {
             assertEquals(String.format("BBB%02d", i), result.get(i).getName());
         }
-    }
-
-    @Test
-    public void ejbqlCountSelect() throws Exception {
-        tCompoundIntPKTest.insert(1, 2, "test");
-        tCompoundIntPKTest.insert(2, 3, "test");
-        tCompoundIntPKTest.insert(1, 4, "test");
-        tCompoundIntPKTest.insert(2, 5, "test");
-
-        EJBQLQuery query = new EJBQLQuery("SELECT COUNT(a) FROM CompoundIntPk a");
-        assertEquals(Collections.singletonList(4L), env.context().select(query));
     }
 }

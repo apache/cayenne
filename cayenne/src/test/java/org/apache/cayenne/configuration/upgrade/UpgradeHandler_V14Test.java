@@ -56,6 +56,11 @@ public class UpgradeHandler_V14Test extends BaseUpgradeHandlerTest {
         List<Element> validation = elements(document, "/domain/*[local-name()='validation']");
         assertEquals(1, validation.size());
         assertEquals("http://cayenne.apache.org/schema/14/validation", validation.get(0).getAttribute("xmlns"));
+
+        // the EJBQL inspection no longer exists, the other exclusions are kept
+        List<Element> excludes = elements(validation.get(0), "*[local-name()='exclude']");
+        assertEquals(List.of("DATA_CHANNEL_NO_NAME", "SQL_TEMPLATE_NO_ROOT"),
+                excludes.stream().map(Element::getTextContent).toList());
     }
 
     @Test
@@ -80,13 +85,16 @@ public class UpgradeHandler_V14Test extends BaseUpgradeHandlerTest {
         assertEquals(1, infoProperties.size());
         assertEquals("http://cayenne.apache.org/schema/14/info", infoProperties.get(0).getAttribute("xmlns:info"));
 
-        // the rootless query is removed with a notification, the rest are converted
+        // the rootless query and the EJBQL queries are removed with a notification each, the rest are converted
         List<Element> queries = elements(document, "/data-map/*[local-name()='query']");
         assertEquals(List.of("AllClauses", "ClassRoot", "RootOnly", "Template"),
                 queries.stream().map(q -> q.getAttribute("name")).toList());
-        assertEquals(1, unit.getChangeNotifications().size(), unit.getChangeNotifications().toString());
-        assertTrue(unit.getChangeNotifications().get(0).contains("'NoRoot'"), unit.getChangeNotifications().toString());
-        assertEquals(unit.getChangeNotifications(), unit.getChangesAffectingRuntime());
+        List<String> notifications = unit.getChangeNotifications();
+        assertEquals(3, notifications.size(), notifications.toString());
+        assertTrue(notifications.get(0).contains("'NoRoot'"), notifications.toString());
+        assertTrue(notifications.get(1).contains("'Ejbql1'"), notifications.toString());
+        assertTrue(notifications.get(2).contains("'Ejbql2'"), notifications.toString());
+        assertEquals(notifications, unit.getChangesAffectingRuntime());
 
         Element allClauses = queries.get(0);
         assertFalse(allClauses.hasAttribute("root"));

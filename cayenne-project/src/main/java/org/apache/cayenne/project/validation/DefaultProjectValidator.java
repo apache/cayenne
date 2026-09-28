@@ -25,7 +25,6 @@ import org.apache.cayenne.map.DataMap;
 import org.apache.cayenne.map.DbAttribute;
 import org.apache.cayenne.map.DbEntity;
 import org.apache.cayenne.map.DbRelationship;
-import org.apache.cayenne.map.EJBQLQueryDescriptor;
 import org.apache.cayenne.map.Embeddable;
 import org.apache.cayenne.map.EmbeddableAttribute;
 import org.apache.cayenne.map.ObjAttribute;
@@ -81,7 +80,6 @@ public class DefaultProjectValidator implements ProjectValidator {
         validators.put(ProcedureParameter.class, new ProcedureParameterValidator(configSupplier));
         validators.put(SelectQueryDescriptor.class, new SelectQueryValidator(configSupplier));
         validators.put(ProcedureQueryDescriptor.class, new ProcedureQueryValidator(configSupplier));
-        validators.put(EJBQLQueryDescriptor.class, new EJBQLQueryValidator(configSupplier));
         validators.put(SQLTemplateDescriptor.class, new SQLTemplateValidator(configSupplier));
         return validators;
     }
@@ -226,9 +224,6 @@ public class DefaultProjectValidator implements ProjectValidator {
                     break;
                 case QueryDescriptor.PROCEDURE_QUERY:
                     getValidator(ProcedureQueryDescriptor.class).validate((ProcedureQueryDescriptor) query, validationResult);
-                    break;
-                case QueryDescriptor.EJBQL_QUERY:
-                    getValidator(EJBQLQueryDescriptor.class).validate((EJBQLQueryDescriptor) query, validationResult);
                     break;
             }
 

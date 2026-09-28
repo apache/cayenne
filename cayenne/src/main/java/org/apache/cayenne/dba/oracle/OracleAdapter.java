@@ -23,7 +23,6 @@ import org.apache.cayenne.dba.NativeColumnType;
 import org.apache.cayenne.CayenneRuntimeException;
 import org.apache.cayenne.access.DataNode;
 import org.apache.cayenne.access.sqlbuilder.sqltree.SQLTreeProcessor;
-import org.apache.cayenne.access.translator.EJBQLTranslator;
 import org.apache.cayenne.access.types.ByteType;
 import org.apache.cayenne.access.types.ExtendedType;
 import org.apache.cayenne.access.types.ExtendedTypeFactory;
@@ -216,14 +215,6 @@ public class OracleAdapter extends JdbcAdapter {
     @Override
     public SQLTreeProcessor getSqlTreeProcessor() {
         return new OracleSQLTreeProcessor();
-    }
-
-    /**
-     * @since 3.0
-     */
-    @Override
-    protected EJBQLTranslator createEJBQLTranslator() {
-        return new OracleEJBQLTranslator();
     }
 
     /**

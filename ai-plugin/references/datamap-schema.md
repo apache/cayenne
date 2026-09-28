@@ -225,14 +225,6 @@ mapped query.
 
 Use a second `<sql>` with `adapter-class=` to vary by DB adapter. SQLTemplate placeholders use Velocity syntax — `#bind($paramName)` for parameters.
 
-### EJBQLQuery
-
-```xml
-<query name="ArtistByName" type="EJBQLQuery">
-    <ejbql><![CDATA[select a from Artist a where a.artistName = ?1]]></ejbql>
-</query>
-```
-
 ### ProcedureQuery
 
 ```xml

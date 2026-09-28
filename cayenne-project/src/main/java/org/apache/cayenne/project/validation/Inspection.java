@@ -105,8 +105,6 @@ public enum Inspection {
     PROCEDURE_QUERY_NO_ROOT(Group.PROCEDURE_QUERY, "Empty procedure query root"),
     PROCEDURE_QUERY_INVALID_ROOT(Group.PROCEDURE_QUERY, "Invalid procedure query root"),
 
-    EJBQL_QUERY_INVALID_SYNTAX(Group.EJBQL_QUERY, "Invalid syntax of an EJBQL query"),
-
     SQL_TEMPLATE_NO_ROOT(Group.SQL_TEMPLATE, "Empty SQL template query root"),
     SQL_TEMPLATE_NO_DEFAULT_SQL(Group.SQL_TEMPLATE, "SQL template query has no default SQL template");
 
@@ -181,7 +179,6 @@ public enum Inspection {
         QUERY("Query"),
         SELECT_QUERY("Select query"),
         PROCEDURE_QUERY("Procedure query"),
-        EJBQL_QUERY("EJBQL query"),
         SQL_TEMPLATE("SQL template");
 
         private final String readableName;

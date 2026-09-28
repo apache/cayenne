@@ -23,7 +23,6 @@ import org.apache.cayenne.access.DataNode;
 import org.apache.cayenne.access.sqlbuilder.sqltree.SQLTreeProcessor;
 import org.apache.cayenne.access.jdbc.CSParameter;
 import org.apache.cayenne.access.jdbc.PSParameter;
-import org.apache.cayenne.access.translator.EJBQLTranslator;
 import org.apache.cayenne.access.translator.ProcedureTranslator;
 import org.apache.cayenne.access.translator.SelectTranslator;
 import org.apache.cayenne.access.types.ExtendedTypeMap;
@@ -317,21 +316,6 @@ public interface DbAdapter {
      * @since 4.0
      */
     DbAdapter unwrap();
-
-    /**
-     * Returns the {@link EJBQLTranslator} for EJBQL to SQL translation.
-     *
-     * @since 5.0
-     */
-    EJBQLTranslator getEjbqlTranslator();
-
-    /**
-     * @deprecated in favor of {@link #getEjbqlTranslator()}.
-     */
-    @Deprecated(since = "5.0", forRemoval = true)
-    default EJBQLTranslator getEjbqlTranslatorFactory() {
-        return getEjbqlTranslator();
-    }
 
     /**
      * @return list of system catalogs

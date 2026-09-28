@@ -23,81 +23,10 @@ import org.apache.cayenne.ObjectId;
 import org.apache.cayenne.Persistent;
 
 import java.io.IOException;
-import java.util.List;
 
 final class ExpHelper {
 
 	private ExpHelper() {
-	}
-
-	/**
-	 * Encodes a plain operand of a node to EJBQL: a parameter as a named EJBQL parameter, a single-column ObjectId as
-	 * its value, anything else as a scalar.
-	 */
-	public static void encodeOperandAsEJBQL(List<Object> parameterAccumulator, Appendable out, Object operand)
-			throws IOException {
-		switch (operand) {
-			case ExpressionParameter parameter -> out.append(':').append(parameter.getName());
-			// TODO: see CAY-1111 - a single-column PK id is encoded as its PK value, full implementation pending
-			case ObjectId id when !id.isTemporary() && id.getIdSnapshot().size() == 1 ->
-					encodeScalarAsEJBQL(parameterAccumulator, out, id.getIdSnapshot().values().iterator().next());
-			case null, default -> encodeScalarAsEJBQL(parameterAccumulator, out, operand);
-		}
-	}
-
-	public static void encodeScalarAsEJBQL(List<Object> parameterAccumulator, Appendable out, Object scalar)
-			throws IOException {
-
-		if (null == scalar) {
-			out.append("null");
-			return;
-		}
-
-		if (scalar instanceof Boolean) {
-			if ((Boolean) scalar) {
-				out.append("true");
-			} else {
-				out.append("false");
-			}
-			return;
-		}
-
-		if (null != parameterAccumulator) {
-			parameterAccumulator.add(scalar);
-			out.append('?');
-			out.append(Integer.toString(parameterAccumulator.size())); // parameters start at 1
-			return;
-		}
-
-		if (scalar instanceof Integer || scalar instanceof Long || scalar instanceof Float || scalar instanceof Double) {
-			out.append(numericToString((Number)scalar));
-			return;
-		}
-
-        switch (scalar) {
-            case Persistent persistent -> {
-                ObjectId id = persistent.getObjectId();
-                Object encode = (id != null) ? id : scalar;
-                appendAsEscapedString(out, String.valueOf(encode));
-                return;
-            }
-            case Enum<?> e -> {
-                out.append("enum:");
-                out.append(e.getClass().getName()).append(".").append(e.name());
-                return;
-            }
-            case String ignored -> {
-                out.append('\'');
-                appendAsEscapedString(out, scalar.toString());
-                out.append('\'');
-                return;
-            }
-            default -> {
-            }
-        }
-
-        throw new IllegalStateException("the scalar type '" + scalar.getClass().getSimpleName()
-				+ "' is not supported as a scalar type in EJBQL");
 	}
 
 	/**

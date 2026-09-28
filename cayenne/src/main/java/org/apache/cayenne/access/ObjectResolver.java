@@ -115,8 +115,7 @@ class ObjectResolver {
 
 		List<Persistent> results = new ArrayList<>(rows.size());
 		for (DataRow row : rows) {
-			// nulls are possible here since 3.0 for some varieties of EJBQL,
-			// simple example of this: "select p.toGallery+ from Painting p" where toGallery is null.
+			// nulls are possible here, e.g. for an outer join in a SQLTemplate that resolves to no object
 			results.add(objectFromDataRow(row));
 		}
 

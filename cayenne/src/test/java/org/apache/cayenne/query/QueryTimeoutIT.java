@@ -65,16 +65,6 @@ public class QueryTimeoutIT {
     }
 
     @Test
-    public void ejbql() {
-        EJBQLQuery ejbqlQuery = new EJBQLQuery("select a from Artist a");
-        ejbqlQuery.setQueryTimeout(10);
-        assertEquals(10, ejbqlQuery
-                .getMetaData(env.context().getEntityResolver())
-                .getQueryTimeout());
-        env.context().select(ejbqlQuery);
-    }
-
-    @Test
     public void sqlSelect() {
         SQLSelect<Artist> sqlSelect = SQLSelect
                 .query(Artist.class, "SELECT * FROM ARTIST")

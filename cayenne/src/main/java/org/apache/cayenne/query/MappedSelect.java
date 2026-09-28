@@ -210,27 +210,6 @@ public class MappedSelect<T> extends AbstractMappedQuery implements Select<T> {
                     sqlTemplate.setCacheStrategy(cacheStrategyOverride);
                 }
             }
-            case QueryDescriptor.EJBQL_QUERY -> {
-                EJBQLQuery<?> ejbqlQuery = (EJBQLQuery<?>) query;
-                if (fetchLimit != null) {
-                    ejbqlQuery.setFetchLimit(fetchLimit);
-                }
-                if (fetchOffset != null) {
-                    ejbqlQuery.setFetchOffset(fetchOffset);
-                }
-                if (statementFetchSize != null) {
-                    ejbqlQuery.setStatementFetchSize(statementFetchSize);
-                }
-                if (queryTimeout != null) {
-                    ejbqlQuery.setQueryTimeout(queryTimeout);
-                }
-                if (pageSize != null) {
-                    ejbqlQuery.setPageSize(pageSize);
-                }
-                if (cacheStrategyOverride != null) {
-                    ejbqlQuery.setCacheStrategy(cacheStrategyOverride);
-                }
-            }
             case QueryDescriptor.PROCEDURE_QUERY -> {
                 ProcedureQuery<?> procedureQuery = (ProcedureQuery<?>) query;
                 if (fetchLimit != null) {

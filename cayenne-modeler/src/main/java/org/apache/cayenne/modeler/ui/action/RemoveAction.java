@@ -385,12 +385,9 @@ ObjRelationshipEvent e = ObjRelationshipEvent.ofRemove(app.getFrame(), rel, enti
 
         // clone to be able to remove within iterator...
         for (QueryDescriptor query : new ArrayList<>(map.getQueryDescriptors())) {
-            if (!QueryDescriptor.EJBQL_QUERY.equals(query.getType())) {
-                Object root = query.getRoot();
-
-                if (root == entity || (root instanceof String && root.toString().equals(entity.getName()))) {
-                    removeQuery(map, query);
-                }
+            Object root = query.getRoot();
+            if (root == entity || (root instanceof String && root.toString().equals(entity.getName()))) {
+                removeQuery(map, query);
             }
         }
     }

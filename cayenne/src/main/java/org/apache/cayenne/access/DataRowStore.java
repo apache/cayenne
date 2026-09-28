@@ -130,7 +130,7 @@ public class DataRowStore {
         for (int i = 0; i < size; i++) {
             Persistent object = objects.get(i);
 
-            // skip null objects... possible since 3.0 in some EJBQL results
+            // skip null objects... possible in some query results, e.g. with an outer join in a SQLTemplate
             if (object == null) {
                 continue;
             }

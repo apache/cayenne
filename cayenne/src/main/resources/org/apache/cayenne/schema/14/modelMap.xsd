@@ -180,7 +180,6 @@
 			<xs:sequence>
 				<xs:element minOccurs="0" maxOccurs="unbounded" ref="cay:property"/>
 				<xs:element minOccurs="0" maxOccurs="unbounded" ref="cay:sql"/>
-				<xs:element minOccurs="0" maxOccurs="unbounded" ref="cay:ejbql"/>
 				<xs:element minOccurs="0" maxOccurs="1" ref="cay:select"/>
 				<xs:element minOccurs="0" maxOccurs="unbounded" ref="cay:prefetch"/>
 				<xs:any minOccurs="0" maxOccurs="unbounded" namespace="##other" processContents="lax"/>
@@ -224,8 +223,6 @@
 			</xs:simpleContent>
 		</xs:complexType>
 	</xs:element>
-
-	<xs:element name="ejbql" type="xs:string"/>
 
 	<xs:element name="property">
 		<xs:annotation>

@@ -18,11 +18,9 @@
  ****************************************************************/
 package org.apache.cayenne.exp;
 
-import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
-import java.io.IOException;
 import java.math.BigDecimal;
 
 import org.apache.cayenne.testdo.testmap.Artist;
@@ -30,25 +28,6 @@ import org.apache.cayenne.testdo.testmap.Painting;
 import org.junit.jupiter.api.Test;
 
 public class EqualExpTest {
-
-	@Test
-	public void toEJBQL() {
-		EqualExp e = new EqualExp(ExpressionFactory.pathExp("artistName"), "bla");
-
-		// note single quotes - EJBQL does not support doublequotes...
-		assertEquals("x.artistName = 'bla'", e.toEJBQL("x"));
-	}
-
-	@Test
-	public void appendAsEJBQL() throws IOException {
-
-		EqualExp e = new EqualExp(ExpressionFactory.pathExp("artistName"), "bla");
-
-		StringBuilder buffer = new StringBuilder();
-		e.appendAsEJBQL(buffer, "x");
-		String ejbql = buffer.toString();
-		assertEquals("x.artistName = 'bla'", ejbql);
-	}
 
 	@Test
 	public void evaluate() {

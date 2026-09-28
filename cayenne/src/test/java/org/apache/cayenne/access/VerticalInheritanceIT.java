@@ -24,7 +24,6 @@ import org.apache.cayenne.Persistent;
 import org.apache.cayenne.access.flush.operation.DbRowOpSorter;
 import org.apache.cayenne.access.flush.operation.GraphBasedDbRowOpSorter;
 import org.apache.cayenne.query.ColumnSelect;
-import org.apache.cayenne.query.EJBQLQuery;
 import org.apache.cayenne.query.ObjectSelect;
 import org.apache.cayenne.query.PrefetchTreeNode;
 import org.apache.cayenne.runtime.CayenneRuntime;
@@ -39,7 +38,6 @@ import org.junit.jupiter.api.Test;
 
 import java.sql.SQLException;
 import java.sql.Types;
-import java.util.Collections;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
@@ -1008,34 +1006,6 @@ public class VerticalInheritanceIT {
 	}
 
 	@Test
-	public void countEjbqlQuery() throws Exception {
-		TableHelper ivSub1Table = env.table("IV_SUB1", "ID", "SUB1_NAME");
-
-		TableHelper ivSub2Table = env.table("IV_SUB2", "ID", "SUB2_ATTR", "SUB2_NAME");
-
-		// Root, IvSub1, IvSub2
-
-		ivRootTable.insert(1, "root1", "");
-
-		ivRootTable.insert(2, "sub11", "IvSub1");
-		ivSub1Table.insert(2, "sub_name1_1");
-
-		ivRootTable.insert(3, "sub21", "IvSub2");
-		ivRootTable.insert(4, "sub22", "IvSub2");
-		ivSub2Table.insert(3, "attr1", "sub_name2_1");
-		ivSub2Table.insert(4, "attr2", "sub_name2_2");
-
-		EJBQLQuery query1 = new EJBQLQuery("SELECT COUNT(a) FROM IvRoot a");
-		assertEquals(Collections.singletonList(4L), env.context().select(query1));
-
-		EJBQLQuery query2 = new EJBQLQuery("SELECT COUNT(a) FROM IvSub1 a");
-		assertEquals(Collections.singletonList(1L), env.context().select(query2));
-
-		EJBQLQuery query3 = new EJBQLQuery("SELECT COUNT(a) FROM IvSub2 a");
-		assertEquals(Collections.singletonList(2L), env.context().select(query3));
-	}
-
-	@Test
 	public void propagatedGeneratedPK() {
 		IvGenKeySub sub = env.context().newObject(IvGenKeySub.class);
 		sub.setName("test");
@@ -1303,58 +1273,5 @@ public class VerticalInheritanceIT {
 
 		assertInstanceOf(IvSub3.class, row[0]);
 		assertEquals("sub3name", row[1], () -> "scalar slot held " + row[1] + ", segment offset is wrong");
-	}
-
-	/**
-	 * See CAY-3018.
-	 */
-	@Test
-	public void ejbqlSelectOverInheritanceRoot() throws SQLException {
-		TableHelper ivSub1Table = env.table("IV_SUB1", "ID", "SUB1_NAME", "SUB1_PRICE");
-		TableHelper ivSub2Table = env.table("IV_SUB2", "ID", "SUB2_ATTR", "SUB2_NAME");
-
-		ivRootTable.insert(1, "root", null);
-		ivRootTable.insert(2, "s1", "IvSub1");
-		ivSub1Table.insert(2, "sub1name", 42.0);
-		ivRootTable.insert(3, "s2", "IvSub2");
-		ivSub2Table.insert(3, "sub2attr", "sub2name");
-
-		ObjectContext freshContext = runtime.newContext();
-		List<IvRoot> results = freshContext.select(new EJBQLQuery("select a from IvRoot a order by a.name"));
-
-		assertEquals(3, results.size());
-		assertFalse(results.contains(null));
-
-		assertEquals(IvRoot.class, results.get(0).getClass());
-		assertEquals("root", results.get(0).getName());
-		assertInstanceOf(IvSub1.class, results.get(1));
-		assertInstanceOf(IvSub2.class, results.get(2));
-	}
-
-	/**
-	 * See CAY-3018.
-	 */
-	@Test
-	public void ejbqlSelectOverThreeLevelInheritance() throws SQLException {
-		TableHelper ivSub1Table = env.table("IV_SUB1", "ID", "SUB1_NAME", "SUB1_PRICE");
-		TableHelper ivSub1Sub1Table = env.table("IV_SUB1_SUB1", "ID", "SUB1_SUB1_NAME", "SUB1_SUB1_PRICE");
-
-		ivRootTable.insert(1, "s1", "IvSub1");
-		ivSub1Table.insert(1, "sub1name", 42.0);
-
-		ivRootTable.insert(2, "s1s1", "IvSub1Sub1");
-		ivSub1Table.insert(2, "sub1name2", 24.0);
-		ivSub1Sub1Table.insert(2, "sub1sub1name", 7);
-
-		ObjectContext freshContext = runtime.newContext();
-		List<IvSub1> results = freshContext.select(new EJBQLQuery("select a from IvSub1 a order by a.name"));
-
-		assertEquals(2, results.size());
-
-		assertEquals(IvSub1.class, results.get(0).getClass());
-		assertEquals("sub1name", results.get(0).getSub1Name());
-
-		IvSub1Sub1 sub1Sub1 = assertInstanceOf(IvSub1Sub1.class, results.get(1));
-		assertEquals("sub1sub1name", sub1Sub1.getSub1Sub1Name());
 	}
 }

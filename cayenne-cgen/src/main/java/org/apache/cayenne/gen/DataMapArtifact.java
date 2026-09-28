@@ -100,7 +100,6 @@ public class DataMapArtifact implements Artifact {
             // Some additional flag could be introduced to control this explicitly.
             case QueryDescriptor.PROCEDURE_QUERY:
             case QueryDescriptor.SQL_TEMPLATE:
-            case QueryDescriptor.EJBQL_QUERY:
                 execQueries.add(query);
                 break;
         }

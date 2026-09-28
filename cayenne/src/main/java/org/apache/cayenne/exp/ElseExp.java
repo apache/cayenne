@@ -19,9 +19,6 @@
 
 package org.apache.cayenne.exp;
 
-import java.io.IOException;
-import java.util.List;
-
 /**
  * "ELSE" part of the case-when expression.
  *
@@ -45,11 +42,6 @@ public final class ElseExp extends Expression {
     @Override
     protected Object evaluateNode(Object o) throws Exception {
         return evaluateOperand(0, o);
-    }
-
-    @Override
-    public void appendAsEJBQL(List<Object> parameterAccumulator, Appendable out, String rootId) throws IOException {
-        throw new UnsupportedOperationException("EJBQL 'else' is not supported");
     }
 
 }

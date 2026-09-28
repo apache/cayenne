@@ -131,15 +131,6 @@ public final class DbIdPathExp extends PathExp {
     }
 
     @Override
-    public void appendAsEJBQL(List<Object> parameterAccumulator, Appendable out, String rootId) throws IOException {
-        // NOTE: append as db path
-        out.append(DbPathExp.DB_PREFIX);
-        out.append(rootId);
-        out.append('.');
-        out.append(path.value());
-    }
-
-    @Override
     public void appendAsString(Appendable out) throws IOException {
         out.append(DBID_PREFIX).append(path.value());
     }

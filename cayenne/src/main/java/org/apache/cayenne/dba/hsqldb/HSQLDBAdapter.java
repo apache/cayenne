@@ -23,8 +23,6 @@ import org.apache.cayenne.dba.NativeColumnType;
 import org.apache.cayenne.CayenneRuntimeException;
 import org.apache.cayenne.access.DataNode;
 import org.apache.cayenne.access.sqlbuilder.sqltree.SQLTreeProcessor;
-import org.apache.cayenne.access.translator.EJBQLTranslator;
-import org.apache.cayenne.access.translator.ejbql.JdbcEJBQLTranslator;
 import org.apache.cayenne.access.translator.ProcedureTranslator;
 import org.apache.cayenne.access.types.CharType;
 import org.apache.cayenne.access.types.ExtendedType;
@@ -134,16 +132,6 @@ public class HSQLDBAdapter extends JdbcAdapter {
     @Override
     public ProcedureTranslator getProcedureTranslator(ProcedureQuery<?> query, EntityResolver entityResolver) {
         return new HSQLDBProcedureTranslator();
-    }
-
-    /**
-     * @since 4.0
-     */
-    @Override
-    protected EJBQLTranslator createEJBQLTranslator() {
-        JdbcEJBQLTranslator translatorFactory = new HSQLEJBQLTranslator();
-        translatorFactory.setCaseInsensitive(caseInsensitiveCollations);
-        return translatorFactory;
     }
 
     /**

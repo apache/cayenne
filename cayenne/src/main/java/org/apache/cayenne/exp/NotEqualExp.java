@@ -54,13 +54,4 @@ public final class NotEqualExp extends ConditionExp {    public NotEqualExp(Obje
         return "!=";
     }
     
-    @Override
-    protected String getEJBQLExpressionOperator(int index) {
-        if (getOperandCount() > 1 && getOperand(1) == null) {
-            //for ejbql, we need "is not null" instead of "!= null"
-            return "is not";
-        }
-        return "<>";
-    }
-
 }

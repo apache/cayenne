@@ -30,7 +30,6 @@ import org.apache.cayenne.modeler.ui.project.editor.embeddable.EmbeddableView;
 import org.apache.cayenne.modeler.ui.project.editor.objentity.ObjEntityView;
 import org.apache.cayenne.modeler.ui.project.editor.procedure.ProcedureQueryTabbedView;
 import org.apache.cayenne.modeler.ui.project.editor.procedure.ProcedureTabbedView;
-import org.apache.cayenne.modeler.ui.project.editor.query.ejbql.EjbqlTabbedView;
 import org.apache.cayenne.modeler.ui.project.editor.query.selectquery.SelectQueryTabbedView;
 import org.apache.cayenne.modeler.ui.project.editor.query.sqltemplate.SQLTemplateTabbedView;
 
@@ -52,7 +51,6 @@ public class EditorPanelView extends ProjectPanel {
     private static final String SELECT_QUERY_VIEW = "SelectQueryView";
     private static final String SQL_TEMPLATE_VIEW = "SQLTemplateView";
     private static final String PROCEDURE_QUERY_VIEW = "ProcedureQueryView";
-    private static final String EJBQL_QUERY_VIEW = "EjbqlQueryView";
 
     private final CardLayout detailLayout;
 
@@ -63,7 +61,6 @@ public class EditorPanelView extends ProjectPanel {
     private final DataMapView dataMapView;
     private final ProcedureTabbedView procedureView;
     private final SQLTemplateTabbedView sqlTemplateView;
-    private final EjbqlTabbedView ejbqlQueryView;
 
     public EditorPanelView(ProjectSession session) {
         super(session);
@@ -73,7 +70,6 @@ public class EditorPanelView extends ProjectPanel {
         this.dataMapView = new DataMapView(session);
         this.procedureView = new ProcedureTabbedView(session);
         this.sqlTemplateView = new SQLTemplateTabbedView(session);
-        this.ejbqlQueryView = new EjbqlTabbedView(session);
         this.embeddableView = new EmbeddableView(session);
         this.objDetailView = new ObjEntityView(session);
         this.dbDetailView = new DbEntityView(session);
@@ -95,7 +91,6 @@ public class EditorPanelView extends ProjectPanel {
         add(new SelectQueryTabbedView(session), SELECT_QUERY_VIEW);
         add(sqlTemplateView, SQL_TEMPLATE_VIEW);
         add(new ProcedureQueryTabbedView(session), PROCEDURE_QUERY_VIEW);
-        add(ejbqlQueryView, EJBQL_QUERY_VIEW);
         add(embeddableView, EMBEDDABLE_VIEW);
         add(objDetailView, OBJ_VIEW);
         add(dbDetailView, DB_VIEW);
@@ -114,10 +109,6 @@ public class EditorPanelView extends ProjectPanel {
 
     public SQLTemplateTabbedView getSqlTemplateView() {
         return sqlTemplateView;
-    }
-
-    public EjbqlTabbedView getEjbqlQueryView() {
-        return ejbqlQueryView;
     }
 
     public ProcedureTabbedView getProcedureView() {
@@ -156,9 +147,6 @@ public class EditorPanelView extends ProjectPanel {
                 break;
             case QueryDescriptor.PROCEDURE_QUERY:
                 detailLayout.show(this, PROCEDURE_QUERY_VIEW);
-                break;
-            case QueryDescriptor.EJBQL_QUERY:
-                detailLayout.show(this, EJBQL_QUERY_VIEW);
                 break;
             default:
                 detailLayout.show(this, EMPTY_VIEW);

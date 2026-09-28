@@ -61,9 +61,4 @@ public final class LikeIgnoreCaseExp extends IgnoreCaseExp {
 	protected String getExpressionOperator(int index) {
 		return "likeIgnoreCase";
 	}
-
-	@Override
-	protected String getEJBQLExpressionOperator(int index) {
-		return "like";
-	}
 }

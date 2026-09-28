@@ -255,11 +255,6 @@
 	<obj-relationship name="painting" source="PaintingInfo" target="Painting" deleteRule="Nullify" db-relationship-path="painting"/>
 	<obj-relationship name="paintingArray" source="ROArtist" target="Painting" deleteRule="Deny" db-relationship-path="paintingArray"/>
 	<obj-relationship name="toArtist" source="ROPainting" target="Artist" deleteRule="Nullify" db-relationship-path="toArtist"/>
-	<query name="EjbqlQueryTest" type="EJBQLQuery">
-		<property name="cayenne.GenericSelectQuery.cacheStrategy" value="SHARED_CACHE"/>
-		<property name="cayenne.GenericSelectQuery.fetchingDataRows" value="true"/>
-		<ejbql><![CDATA[select a from Artist a]]></ejbql>
-	</query>
 	<query name="NonSelectingQuery" type="SQLTemplate" root="data-map" root-name="testmap">
 		<property name="cayenne.SQLTemplate.columnNameCapitalization" value="UPPER"/>
 		<sql><![CDATA[INSERT INTO PAINTING (PAINTING_ID, PAINTING_TITLE, ESTIMATED_PRICE)

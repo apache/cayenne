@@ -62,9 +62,4 @@ public final class NotLikeIgnoreCaseExp extends IgnoreCaseExp {
 		return "not likeIgnoreCase";
 	}
 
-	@Override
-	protected String getEJBQLExpressionOperator(int index) {
-		return "not like";
-	}
-
 }

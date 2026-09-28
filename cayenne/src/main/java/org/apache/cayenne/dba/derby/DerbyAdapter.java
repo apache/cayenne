@@ -21,8 +21,6 @@ package org.apache.cayenne.dba.derby;
 
 import org.apache.cayenne.access.DataNode;
 import org.apache.cayenne.access.sqlbuilder.sqltree.SQLTreeProcessor;
-import org.apache.cayenne.access.translator.EJBQLTranslator;
-import org.apache.cayenne.access.translator.ejbql.JdbcEJBQLTranslator;
 import org.apache.cayenne.access.types.ByteType;
 import org.apache.cayenne.access.types.CharType;
 import org.apache.cayenne.access.types.ExtendedType;
@@ -214,16 +212,6 @@ public class DerbyAdapter extends JdbcAdapter {
     @Override
     public SQLTreeProcessor getSqlTreeProcessor() {
         return new DerbySQLTreeProcessor();
-    }
-
-    /**
-     * @since 3.1
-     */
-    @Override
-    protected EJBQLTranslator createEJBQLTranslator() {
-        JdbcEJBQLTranslator translatorFactory = new DerbyEJBQLTranslator();
-        translatorFactory.setCaseInsensitive(caseInsensitiveCollations);
-        return translatorFactory;
     }
 
     @Override

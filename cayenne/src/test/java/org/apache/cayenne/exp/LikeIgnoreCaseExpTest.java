@@ -20,7 +20,6 @@ package org.apache.cayenne.exp;
 
 import java.util.Arrays;
 
-import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
@@ -29,12 +28,6 @@ import org.apache.cayenne.testdo.testmap.Painting;
 import org.junit.jupiter.api.Test;
 
 public class LikeIgnoreCaseExpTest {
-
-	@Test
-	public void toEJBQL() {
-		Expression like = new LikeIgnoreCaseExp(ExpressionFactory.pathExp("a"), "%b%");
-		assertEquals(like.toEJBQL("p"), "upper(p.a) like '%B%'");
-	}
 
 	@Test
 	public void evaluate() {

@@ -22,8 +22,6 @@ package org.apache.cayenne.dba.h2;
 import org.apache.cayenne.dba.NativeColumnType;
 import org.apache.cayenne.access.DataNode;
 import org.apache.cayenne.access.sqlbuilder.sqltree.SQLTreeProcessor;
-import org.apache.cayenne.access.translator.EJBQLTranslator;
-import org.apache.cayenne.access.translator.ejbql.JdbcEJBQLTranslator;
 import org.apache.cayenne.access.types.ExtendedType;
 import org.apache.cayenne.access.types.ExtendedTypeFactory;
 import org.apache.cayenne.access.types.ExtendedTypeMap;
@@ -118,17 +116,6 @@ public class H2Adapter extends JdbcAdapter {
     @Override
     public SQLTreeProcessor getSqlTreeProcessor() {
         return new H2SQLTreeProcessor();
-    }
-
-    /**
-     * @return translator factory for EJBQL queries
-     * @since 5.0
-     */
-    @Override
-    protected EJBQLTranslator createEJBQLTranslator() {
-        JdbcEJBQLTranslator translatorFactory = new H2EJBQLTranslator();
-        translatorFactory.setCaseInsensitive(caseInsensitiveCollations);
-        return translatorFactory;
     }
 
     @Override

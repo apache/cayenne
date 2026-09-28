@@ -39,7 +39,6 @@ public class QueryDescriptor implements ConfigurationNode, XMLSerializable {
 
     public static final String SELECT_QUERY = "SelectQuery";
     public static final String SQL_TEMPLATE = "SQLTemplate";
-    public static final String EJBQL_QUERY = "EJBQLQuery";
     public static final String PROCEDURE_QUERY = "ProcedureQuery";
 
     /**
@@ -139,20 +138,12 @@ public class QueryDescriptor implements ConfigurationNode, XMLSerializable {
     }
 
     /**
-     * Creates new EJBQLQuery query descriptor.
-     */
-    public static EJBQLQueryDescriptor ejbqlQueryDescriptor() {
-        return new EJBQLQueryDescriptor();
-    }
-
-    /**
      * Creates query descriptor of a given type.
      */
     public static QueryDescriptor descriptor(String type) {
         return switch (type) {
             case SELECT_QUERY -> selectQueryDescriptor();
             case SQL_TEMPLATE -> sqlTemplateDescriptor();
-            case EJBQL_QUERY -> ejbqlQueryDescriptor();
             case PROCEDURE_QUERY -> procedureQueryDescriptor();
             default -> new QueryDescriptor(type);
         };

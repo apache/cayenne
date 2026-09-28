@@ -20,7 +20,6 @@
 package org.apache.cayenne.exp;
 
 import java.io.IOException;
-import java.util.List;
 
 import org.apache.cayenne.Persistent;
 
@@ -63,11 +62,6 @@ public final class ScalarExp extends Expression {
     @Override
     public void appendAsString(Appendable out) throws IOException {
         ExpHelper.appendScalarAsString(out, value, '\"');
-    }
-
-    @Override
-    public void appendAsEJBQL(List<Object> parameterAccumulator, Appendable out, String rootId) throws IOException {
-        ExpHelper.encodeOperandAsEJBQL(parameterAccumulator, out, getValue());
     }
 
     public void setValue(Object value) {

@@ -128,10 +128,10 @@ If there are many domain abbreviations to expand, ask the user for a glossary ra
 Edit the `*.map.xml`. For **every** rename, walk the matching checklist in
 `model-naming-rename-safety.md` and update all references in the same edit:
 
-- ObjEntity → `className`, every `obj-relationship` `source`/`target`, query `root-name`, EJBQL,
+- ObjEntity → `className`, every `obj-relationship` `source`/`target`, query `root-name`,
   `result-entity`.
-- ObjRelationship → prefetch/expression/EJBQL paths (its `db-relationship-path` is unaffected).
-- ObjAttribute → qualifier/ordering/EJBQL paths (its `db-attribute-path` is unaffected).
+- ObjRelationship → prefetch/expression paths (its `db-relationship-path` is unaffected).
+- ObjAttribute → qualifier/ordering paths (its `db-attribute-path` is unaffected).
 - DbRelationship → every `db-relationship-path` segment that names it, including inside dotted
   flattened chains. This holds whether or not the DbRelationship backs an ObjRelationship — a
   standalone DbRelationship can still be named as a segment in another entity's flattened path.

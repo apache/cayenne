@@ -21,7 +21,6 @@ package org.apache.cayenne.dba.sybase;
 
 import org.apache.cayenne.dba.NativeColumnType;
 import org.apache.cayenne.access.sqlbuilder.sqltree.SQLTreeProcessor;
-import org.apache.cayenne.access.translator.EJBQLTranslator;
 import org.apache.cayenne.access.types.ByteArrayType;
 import org.apache.cayenne.access.types.ByteType;
 import org.apache.cayenne.access.types.CharType;
@@ -94,14 +93,6 @@ public class SybaseAdapter extends JdbcAdapter {
     @Override
     protected QuotingStrategy createQuotingStrategy() {
         return new DefaultQuotingStrategy('[', ']');
-    }
-
-    /**
-     * @since 3.0
-     */
-    @Override
-    protected EJBQLTranslator createEJBQLTranslator() {
-        return new SybaseEJBQLTranslator();
     }
 
     /**

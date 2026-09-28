@@ -33,7 +33,6 @@ import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.RegisterExtension;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertTrue;
 
 /**
  * Test join on compound primary key
@@ -67,16 +66,6 @@ public class QueryWithCompoundJoinIT {
 
         tCompoundFk.insert("a", "b", "test", 1);
         tCompoundFk.insert("c", "d", "nottest", 2);
-    }
-
-    @Test
-    public void ejbqlCompoundJoin() throws Exception {
-        EJBQLQuery query = new EJBQLQuery(
-                "select f from CompoundFkTestEntity f inner join f.toCompoundPk p where p.name like 'a%'");
-        List res = context.select(query);
-        assertEquals(1, res.size());
-        assertTrue(res.get(0) instanceof CompoundFkTestEntity);
-        assertEquals("test", ((CompoundFkTestEntity)res.get(0)).getName());
     }
 
     @Test

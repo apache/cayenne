@@ -66,7 +66,7 @@ public final class UpgradeHandler_V8 implements UpgradeHandler {
             String queryType = switch (factory) {
                 case "org.apache.cayenne.map.SelectQueryBuilder" -> QueryDescriptor.SELECT_QUERY;
                 case "org.apache.cayenne.map.SQLTemplateBuilder" -> QueryDescriptor.SQL_TEMPLATE;
-                case "org.apache.cayenne.map.EjbqlBuilder" -> QueryDescriptor.EJBQL_QUERY;
+                case "org.apache.cayenne.map.EjbqlBuilder" -> "EJBQLQuery";
                 case "org.apache.cayenne.map.ProcedureQueryBuilder" -> QueryDescriptor.PROCEDURE_QUERY;
                 default -> throw new ConfigurationException("Unknown query factory: " + factory);
             };

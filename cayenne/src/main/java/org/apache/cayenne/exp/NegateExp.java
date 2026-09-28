@@ -21,7 +21,6 @@ package org.apache.cayenne.exp;
 
 import java.io.IOException;
 import java.math.BigDecimal;
-import java.util.List;
 
 import org.apache.cayenne.util.ConversionUtil;
 
@@ -60,15 +59,6 @@ public final class NegateExp extends Expression {
 		if (getOperandCount() > 0) {
 			out.append("-");
 			appendOperandAsString(0, out);
-		}
-	}
-
-	@Override
-	public void appendAsEJBQL(List<Object> parameterAccumulator, Appendable out, String rootId) throws IOException {
-
-		if (getOperandCount() > 0) {
-			out.append("-");
-			appendOperandAsEJBQL(0, parameterAccumulator, out, rootId);
 		}
 	}
 

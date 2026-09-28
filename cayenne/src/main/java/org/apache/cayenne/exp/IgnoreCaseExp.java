@@ -18,9 +18,6 @@
  ****************************************************************/
 package org.apache.cayenne.exp;
 
-import java.io.IOException;
-import java.util.List;
-
 /**
  * Common node for likeIgnoreCase and notLikeIgnoreCase
  *
@@ -35,22 +32,5 @@ abstract sealed class IgnoreCaseExp extends PatternMatchExp permits LikeIgnoreCa
     @Override
     public boolean isIgnoringCase() {
         return true;
-    }
-    @Override
-    protected void appendOperandsAsEJBQL(List<Object> parameterAccumulator, Appendable out, String rootId)
-            throws IOException {
-        // with like, first expression is always path, second is a literal,
-        // which must be uppercased
-        out.append("upper(");
-        appendOperandAsEJBQL(0, parameterAccumulator, out, rootId);
-        out.append(") ");
-        out.append(getEJBQLExpressionOperator(0));
-        out.append(" ");
-
-        Object literal = getOperand(1);
-        if (!(literal instanceof String)) {
-            throw new ExpressionException("Literal value should be a string");
-        }
-        ExpHelper.encodeScalarAsEJBQL(parameterAccumulator, out, ((String) literal).toUpperCase());
     }
 }

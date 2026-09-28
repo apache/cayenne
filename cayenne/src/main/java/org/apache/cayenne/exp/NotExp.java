@@ -20,7 +20,6 @@
 package org.apache.cayenne.exp;
 
 import java.io.IOException;
-import java.util.List;
 
 import org.apache.cayenne.util.ConversionUtil;
 
@@ -62,12 +61,6 @@ public final class NotExp extends AggregateConditionExp {
 		out.append("not ");
 		super.appendAsString(out);
 	}
-
-    @Override
-    public void appendAsEJBQL(List<Object> parameterAccumulator, Appendable out, String rootId) throws IOException {
-        out.append("not ");
-        super.appendAsEJBQL(parameterAccumulator, out, rootId);
-    }
 
 	@Override
 	protected String getExpressionOperator(int index) {

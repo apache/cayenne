@@ -36,7 +36,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 /**
- * Upgrades projects to version 14.
+ * Upgrades projects to version 14
  *
  * @since 5.0
  */
@@ -51,6 +51,7 @@ public final class UpgradeHandler_V14 implements UpgradeHandler {
     public void processProjectDom(UpgradeContext upgradeUnit) {
         updateDomainSchemaAndVersion(upgradeUnit);
         updateDomainExtensionSchema(upgradeUnit, VALIDATION);
+        removeEjbqlInspection(upgradeUnit);
     }
 
     @Override
@@ -60,6 +61,26 @@ public final class UpgradeHandler_V14 implements UpgradeHandler {
         updateExtensionSchema(upgradeUnit, DB_IMPORT);
         updateInfoSchema(upgradeUnit);
         convertSelectQueries(upgradeUnit);
+        removeEjbqlQueries(upgradeUnit);
+    }
+
+    private void removeEjbqlInspection(UpgradeContext upgradeUnit) {
+        String path = "/domain/*[local-name()='validation']/*[local-name()='exclude']"
+                + "[normalize-space(text())='EJBQL_QUERY_INVALID_SYNTAX']";
+        for (Element exclude : elements(upgradeUnit, path)) {
+            exclude.getParentNode().removeChild(exclude);
+        }
+    }
+
+    private void removeEjbqlQueries(UpgradeContext upgradeUnit) {
+        String path = "/data-map/*[local-name()='query'][@type='EJBQLQuery']";
+        for (Element query : elements(upgradeUnit, path)) {
+            query.getParentNode().removeChild(query);
+            upgradeUnit.recordChange("""
+                    Query '%s' was removed from the DataMap, as EJBQL queries are no longer supported. \
+                    Replace it with an ObjectSelect or ColumnSelect parsed from a String"""
+                    .formatted(query.getAttribute("name")), true);
+        }
     }
 
     private void convertSelectQueries(UpgradeContext upgradeUnit) {

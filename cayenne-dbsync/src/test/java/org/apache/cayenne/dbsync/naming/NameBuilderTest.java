@@ -108,7 +108,7 @@ public class NameBuilderTest {
         assertEquals("query", q0.getName());
         map.addQueryDescriptor(q0);
 
-        QueryDescriptor q1 = QueryDescriptor.ejbqlQueryDescriptor();
+        QueryDescriptor q1 = QueryDescriptor.sqlTemplateDescriptor();
         q1.setName(NameBuilder.of(q1, map).build());
         assertEquals("query1", q1.getName());
         map.addQueryDescriptor(q1);

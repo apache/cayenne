@@ -24,8 +24,6 @@ import org.apache.cayenne.access.DataNode;
 import org.apache.cayenne.access.sqlbuilder.sqltree.SQLTreeProcessor;
 import org.apache.cayenne.access.jdbc.CSParameter;
 import org.apache.cayenne.access.jdbc.PSParameter;
-import org.apache.cayenne.access.translator.EJBQLTranslator;
-import org.apache.cayenne.access.translator.ejbql.JdbcEJBQLTranslator;
 import org.apache.cayenne.access.translator.procedure.DefaultProcedureTranslator;
 import org.apache.cayenne.access.translator.ProcedureTranslator;
 import org.apache.cayenne.access.translator.select.DefaultSelectTranslator;
@@ -77,7 +75,6 @@ public class JdbcAdapter implements DbAdapter {
     protected boolean supportsBatchUpdates;
     protected boolean supportsUniqueConstraints;
     protected boolean supportsGeneratedKeys;
-    protected EJBQLTranslator ejbqlTranslator;
 
     protected boolean caseInsensitiveCollations;
 
@@ -102,7 +99,6 @@ public class JdbcAdapter implements DbAdapter {
 
         this.quotingStrategy = createQuotingStrategy();
 
-        this.ejbqlTranslator = createEJBQLTranslator();
         this.nativeColumnTypes = indexBySqlType(createNativeTypes());
         this.extendedTypes = new ExtendedTypeMap();
         initExtendedTypes(defaultExtendedTypes, userExtendedTypes, extendedTypeFactories, valueObjectTypeRegistry);
@@ -212,19 +208,6 @@ public class JdbcAdapter implements DbAdapter {
             extendedTypes.addFactory(typeFactory);
         }
         extendedTypes.addFactory(new ValueObjectTypeFactory(extendedTypes, valueObjectTypeRegistry));
-    }
-
-    /**
-     * Creates and returns an {@link EJBQLTranslator} used to generate
-     * visitors for EJBQL to SQL translations. This method should be overriden
-     * by subclasses that need to customize EJBQL generation.
-     *
-     * @since 3.0
-     */
-    protected EJBQLTranslator createEJBQLTranslator() {
-        JdbcEJBQLTranslator translatorFactory = new JdbcEJBQLTranslator();
-        translatorFactory.setCaseInsensitive(caseInsensitiveCollations);
-        return translatorFactory;
     }
 
     /**
@@ -668,18 +651,6 @@ public class JdbcAdapter implements DbAdapter {
         this.supportsGeneratedKeys = flag;
     }
 
-    /**
-     * Returns the {@link EJBQLTranslator} for EJBQL to SQL translation. It is normally initialized in the
-     * constructor by calling {@link #createEJBQLTranslator()}, and can be changed later by calling
-     * {@link #setEjbqlTranslator(EJBQLTranslator)}.
-     *
-     * @since 5.0
-     */
-    @Override
-    public EJBQLTranslator getEjbqlTranslator() {
-        return ejbqlTranslator;
-    }
-
     @Override
     public List<String> getSystemCatalogs() {
         return Collections.emptyList();
@@ -688,25 +659,6 @@ public class JdbcAdapter implements DbAdapter {
     @Override
     public List<String> getSystemSchemas() {
         return Collections.emptyList();
-    }
-
-    /**
-     * Sets the {@link EJBQLTranslator} for EJBQL to SQL translation. This property is normally initialized in the
-     * constructor by calling {@link #createEJBQLTranslator()}, so users would only override it if they need to
-     * customize EJBQL translation.
-     *
-     * @since 5.0
-     */
-    public void setEjbqlTranslator(EJBQLTranslator ejbqlTranslator) {
-        this.ejbqlTranslator = ejbqlTranslator;
-    }
-
-    /**
-     * @deprecated in favor of {@link #setEjbqlTranslator(EJBQLTranslator)}.
-     */
-    @Deprecated(since = "5.0", forRemoval = true)
-    public void setEjbqlTranslatorFactory(EJBQLTranslator ejbqlTranslator) {
-        setEjbqlTranslator(ejbqlTranslator);
     }
 
     protected QuotingStrategy createQuotingStrategy() {

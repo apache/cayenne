@@ -19,7 +19,6 @@
 package org.apache.cayenne.exp;
 
 import java.io.IOException;
-import java.util.List;
 
 /**
  * Boolean true expression element Notice that there is one TrueExp and one
@@ -58,11 +57,6 @@ public final class TrueExp extends ConditionExp {
 
     @Override
     public void appendAsString(Appendable out) throws IOException {
-        out.append("true");
-    }
-
-    @Override
-    public void appendAsEJBQL(List<Object> parameterAccumulator, Appendable out, String rootId) throws IOException {
         out.append("true");
     }
 

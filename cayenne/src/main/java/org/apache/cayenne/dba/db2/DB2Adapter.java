@@ -22,8 +22,6 @@ package org.apache.cayenne.dba.db2;
 import org.apache.cayenne.dba.NativeColumnType;
 import org.apache.cayenne.access.DataNode;
 import org.apache.cayenne.access.sqlbuilder.sqltree.SQLTreeProcessor;
-import org.apache.cayenne.access.translator.EJBQLTranslator;
-import org.apache.cayenne.access.translator.ejbql.JdbcEJBQLTranslator;
 import org.apache.cayenne.access.types.BooleanType;
 import org.apache.cayenne.access.types.ByteArrayType;
 import org.apache.cayenne.access.types.CharType;
@@ -185,16 +183,6 @@ public class DB2Adapter extends JdbcAdapter {
     @Override
     public SQLTreeProcessor getSqlTreeProcessor() {
         return new DB2SQLTreeProcessor();
-    }
-
-    /**
-     * @since 5.0
-     */
-    @Override
-    public EJBQLTranslator getEjbqlTranslator() {
-        JdbcEJBQLTranslator translator = new DB2EJBQLTranslator();
-        translator.setCaseInsensitive(caseInsensitiveCollations);
-        return translator;
     }
 
     @Override

@@ -128,7 +128,7 @@ public class XMLDataMapLoaderTest {
         assertEquals(12, map.getDbEntities().size());
         assertEquals(17, map.getObjEntities().size());
         assertEquals(4, map.getProcedures().size());
-        assertEquals(14, map.getQueryDescriptors().size());
+        assertEquals(13, map.getQueryDescriptors().size());
         assertEquals(1, map.getEmbeddables().size());
         assertEquals("TEST_CATALOG", map.getDefaultCatalog());
         assertNull(map.getDefaultSchema());
@@ -167,10 +167,6 @@ public class XMLDataMapLoaderTest {
                 map.getProcedure("cayenne_tst_out_proc").getCallOutParameters().size());
         assertEquals(2,
                 map.getProcedure("cayenne_tst_out_proc").getCallParameters().size());
-
-        assertEquals("true",
-                map.getQueryDescriptor("EjbqlQueryTest")
-                        .getProperty("cayenne.GenericSelectQuery.fetchingDataRows"));
 
         SQLTemplateDescriptor descriptor = (SQLTemplateDescriptor)map.getQueryDescriptor("NonSelectingQuery");
         assertEquals("INSERT INTO PAINTING (PAINTING_ID, PAINTING_TITLE, ESTIMATED_PRICE) " +

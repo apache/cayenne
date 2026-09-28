@@ -21,7 +21,6 @@ package org.apache.cayenne.exp;
 
 import org.apache.cayenne.util.ConversionUtil;
 
-import java.io.IOException;
 import java.util.List;
 
 /**
@@ -64,10 +63,5 @@ public final class CaseWhenExp extends Expression {
             return evaluateOperand(numChildren - 1, o);
         }
         return null;
-    }
-
-    @Override
-    public void appendAsEJBQL(List<Object> parameterAccumulator, Appendable out, String rootId) throws IOException {
-        throw new UnsupportedOperationException("EJBQL 'case when' is not supported");
     }
 }

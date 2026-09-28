@@ -26,7 +26,6 @@ import org.apache.cayenne.map.DataMap;
 import org.apache.cayenne.map.DbAttribute;
 import org.apache.cayenne.map.DbEntity;
 import org.apache.cayenne.map.DbRelationship;
-import org.apache.cayenne.map.EJBQLQueryDescriptor;
 import org.apache.cayenne.map.Embeddable;
 import org.apache.cayenne.map.EmbeddableAttribute;
 import org.apache.cayenne.map.Entity;
@@ -90,7 +89,6 @@ public class FindAction extends AppAction {
         PRIORITY_BY_TYPE.put(DbRelationshipDetected.class, 8); // this one comes from db reverse engineering
         PRIORITY_BY_TYPE.put(QueryDescriptor.class, 9);
         PRIORITY_BY_TYPE.put(SelectQueryDescriptor.class, 10);
-        PRIORITY_BY_TYPE.put(EJBQLQueryDescriptor.class, 11);
         PRIORITY_BY_TYPE.put(SQLTemplateDescriptor.class, 12);
         PRIORITY_BY_TYPE.put(ProcedureQueryDescriptor.class, 13);
         PRIORITY_BY_TYPE.put(Embeddable.class, 14);

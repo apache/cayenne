@@ -135,10 +135,8 @@ public class ResultDirective extends Directive {
 				.get(VelocitySQLTemplateTranslator.ADAPTER_KEY);
 		ExtendedType extendedType = adapter.getExtendedTypes().getRegisteredType(javaClass);
 
-		// TODO: andrus 6/27/2007 - this is an unofficial jdbcType parameter
-		// that is added
-		// temporarily pending CAY-813 implementation for the sake of EJBQL
-		// query...
+		// TODO: andrus 6/27/2007 - this is an unofficial jdbcType parameter, added temporarily pending CAY-813
+		// implementation (originally for the sake of the now removed EJBQL queries)
 		Object jdbcTypeChild = getChild(context, node, 4);
 		int jdbcType = (jdbcTypeChild instanceof Number) ? ((Number) jdbcTypeChild).intValue() : 0;
 

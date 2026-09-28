@@ -91,29 +91,6 @@ public final class ListExp extends Expression {
 	}
 
 	@Override
-	public void appendAsEJBQL(List<Object> parameterAccumulator, Appendable out, String rootId) throws IOException {
-
-		out.append('(');
-
-		if ((values != null) && (values.length > 0)) {
-			for (int i = 0; i < values.length; ++i) {
-				if (i > 0) {
-					out.append(getEJBQLExpressionOperator(i));
-					out.append(' ');
-				}
-
-				if (values[i] == null) {
-					out.append("null");
-				} else {
-					ExpHelper.encodeScalarAsEJBQL(parameterAccumulator, out, values[i]);
-				}
-			}
-		}
-
-		out.append(')');
-	}
-
-	@Override
 	public int getOperandCount() {
 		return 1;
 	}

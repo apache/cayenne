@@ -363,6 +363,21 @@ List<Artist> withExpensivePaintings = ObjectSelect
   `SelectQuery` in a DataMap is now stored as a single query String in the syntax of `ObjectSelect.parse(..)`, instead
   of the root attributes and the separate `qualifier`, `ordering` and `prefetch` elements. Projects are upgraded 
   automatically, either in memory by the runtime, or permanently by CayenneModeler.
+*  Per [CAY-3038](https://issues.apache.org/jira/browse/CAY-3038) `EJBQLQuery` was removed. The replacement is `ObjectSelect` / `ColumnSelect` parsed from a String
+  (see "Queries Parsed from Strings" above). As there is no automatic conversion of EJBQL to the new query language,
+  an `EJBQLQuery` stored in a DataMap is dropped by the upgrade to project version 14 with a warning, and must be
+  recreated as an `ObjectSelect`:
+
+   ```java
+   // before
+   EJBQLQuery query = new EJBQLQuery("select a from Artist a where a.artistName like :name");
+   query.setParameter("name", "P%");
+   List<Artist> artists = context.performQuery(query);
+
+   // after
+   List<Artist> artists = ObjectSelect.parse(Artist.class, "from Artist where artistName like $name", "P%")
+           .select(context);
+   ```
 
 *  Per [CAY-3039](https://issues.apache.org/jira/browse/CAY-3039) the expression node classes are no longer tied to
   the parser. They moved from `org.apache.cayenne.exp.parser` to `org.apache.cayenne.exp` and lost the `AST` prefix:

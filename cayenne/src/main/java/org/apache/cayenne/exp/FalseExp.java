@@ -19,7 +19,6 @@
 package org.apache.cayenne.exp;
 
 import java.io.IOException;
-import java.util.List;
 
 /**
  * Boolean false expression element
@@ -60,11 +59,6 @@ public final class FalseExp extends ConditionExp {
 
 	@Override
 	public void appendAsString(Appendable out) throws IOException {
-		out.append("false");
-	}
-
-	@Override
-	public void appendAsEJBQL(List<Object> parameterAccumulator, Appendable out, String rootId) throws IOException {
 		out.append("false");
 	}
 

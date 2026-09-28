@@ -45,7 +45,6 @@ public class PrefetchTreeNode implements XMLSerializable {
 	protected String name;
 	protected boolean phantom;
 	protected int semantics;
-	protected String ejbqlPathEntityId;
 	protected String entityName;
 
 	protected PrefetchTreeNode parent;
@@ -488,14 +487,6 @@ public class PrefetchTreeNode implements XMLSerializable {
 
 	public boolean isDisjointByIdPrefetch() {
 		return semantics == DISJOINT_BY_ID_PREFETCH_SEMANTICS;
-	}
-
-	public String getEjbqlPathEntityId() {
-		return ejbqlPathEntityId;
-	}
-
-	public void setEjbqlPathEntityId(String ejbqlPathEntityId) {
-		this.ejbqlPathEntityId = ejbqlPathEntityId;
 	}
 
 	public String getEntityName() {

@@ -84,64 +84,23 @@
                     </execution>
                 </executions>
             </plugin>
-            <plugin>
-                <groupId>org.codehaus.mojo</groupId>
-                <artifactId>javacc-maven-plugin</artifactId>
-                <executions>
-                    <execution>
-                        <id>jjtree-ejbql</id>
-                        <phase>generate-sources</phase>
-                        <configuration>
-                            <sourceDirectory>
-                                ${basedir}/src/main/jjtree/org/apache/cayenne/ejbql
-                            </sourceDirectory>
-                            <outputDirectory>
-                                ${project.build.directory}/generated-sources/javacc/org/apache/cayenne/ejbql
-                            </outputDirectory>
-                            <buildNodeFiles>false</buildNodeFiles>
-                            <grammarEncoding>UTF-8</grammarEncoding>
-                        </configuration>
-                        <goals>
-                            <goal>jjtree-javacc</goal>
-                        </goals>
-                    </execution>
-                    <!--
-                        src/main/jjtree/org/apache/cayenne/ql for now is generated
-                        outside of Maven with JavaCC 7.0.13 command line tools.
-                        Copy QLParser.jjt to an empty directory, and run there:
-                            $ JAVACC=~/.m2/repository/net/java/dev/javacc/javacc/7.0.13/javacc-7.0.13.jar
-                        # Parser grammar out of tree grammar:
-                            $ java -cp $JAVACC jjtree QLParser.jjt
-                        # Parser java code:
-                            $ java -cp $JAVACC javacc QLParser.jj
+            <!--
+                src/main/jjtree/org/apache/cayenne/ql is generated outside of Maven with JavaCC 7.0.13 command
+                line tools. Copy QLParser.jjt to an empty directory, and run there:
+                    $ JAVACC=~/.m2/repository/net/java/dev/javacc/javacc/7.0.13/javacc-7.0.13.jar
+                # Parser grammar out of tree grammar:
+                    $ java -cp $JAVACC jjtree QLParser.jjt
+                # Parser java code:
+                    $ java -cp $JAVACC javacc QLParser.jj
 
-                        # Copy these generated classes to src/main/java/org/apache/cayenne/ql:
-                        # QLParser, QLParserTokenManager, QLParserConstants, QLParserTreeConstants
-                        # Everything else (the node classes, JJTQLParserState, JavaCharStream, Token,
-                        # ParseException, TokenMgrError) is maintained by hand and must not be overwritten.
+                # Copy these generated classes to src/main/java/org/apache/cayenne/ql:
+                # QLParser, QLParserTokenManager, QLParserConstants, QLParserTreeConstants
+                # Everything else (the node classes, JJTQLParserState, JavaCharStream, Token,
+                # ParseException, TokenMgrError) is maintained by hand and must not be overwritten.
 
-                        # docs
-                            $ java -cp $JAVACC jjdoc -TEXT=true QLParser.jj
-                    -->
-                </executions>
-            </plugin>
-            <plugin>
-                <artifactId>maven-antrun-plugin</artifactId>
-                <executions>
-                    <execution>
-                        <phase>process-sources</phase>
-                        <configuration>
-                            <target>
-                                <!-- This will remove duplicate Node file -->
-                                <delete file="${project.build.directory}/generated-sources/jjtree/org/apache/cayenne/ejbql/parser/Node.java" />
-                            </target>
-                        </configuration>
-                        <goals>
-                            <goal>run</goal>
-                        </goals>
-                    </execution>
-                </executions>
-            </plugin>
+                # docs
+                    $ java -cp $JAVACC jjdoc -TEXT=true QLParser.jj
+            -->
             <plugin>
                 <artifactId>maven-jar-plugin</artifactId>
                 <!-- include OSGi stuff -->

@@ -18,23 +18,15 @@
  ****************************************************************/
 package org.apache.cayenne.exp;
 
-import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
-import java.io.IOException;
 import java.math.BigDecimal;
 
 import org.apache.cayenne.testdo.testmap.Painting;
 import org.junit.jupiter.api.Test;
 
 public class InExpTest {
-
-	@Test
-	public void toEJBQL_in() throws IOException {
-		InExp e = new InExp(ExpressionFactory.pathExp("consignment.parts"), new ListExp(new Object[] { 91, 23 }));
-		assertEquals("x.consignment.parts in (91, 23)", e.toEJBQL("x"));
-	}
 
 	@Test
 	public void evaluate() {

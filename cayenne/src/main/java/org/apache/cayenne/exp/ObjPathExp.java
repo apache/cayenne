@@ -20,7 +20,6 @@
 package org.apache.cayenne.exp;
 
 import java.io.IOException;
-import java.util.List;
 
 import org.apache.cayenne.Persistent;
 import org.apache.cayenne.map.Entity;
@@ -58,13 +57,6 @@ public final class ObjPathExp extends PathExp {
 		copy.path = path;
 		copy.setPathAliases(pathAliases);
 		return copy;
-	}
-
-	@Override
-	public void appendAsEJBQL(List<Object> parameterAccumulator, Appendable out, String rootId) throws IOException {
-		out.append(rootId);
-		out.append('.');
-		out.append(path.value());
 	}
 
 	@Override

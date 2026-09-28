@@ -20,7 +20,6 @@
 package org.apache.cayenne.exp;
 
 import java.io.IOException;
-import java.util.List;
 
 /**
  * Asterisk operator for COUNT(*) expression.
@@ -48,11 +47,6 @@ public final class AsteriskExp extends Expression {
 
     @Override
     public void appendAsString(Appendable out) throws IOException {
-        out.append("*");
-    }
-
-    @Override
-    public void appendAsEJBQL(List<Object> parameterAccumulator, Appendable out, String rootId) throws IOException {
         out.append("*");
     }
 

@@ -18,23 +18,13 @@
  ****************************************************************/
 package org.apache.cayenne.exp;
 
-import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertTrue;
-
-import java.io.IOException;
 
 import org.apache.cayenne.testdo.testmap.Artist;
 import org.junit.jupiter.api.Test;
 
 public class LikeExpTest {
-
-	@Test
-	public void toEJBQL_likeEscape() throws IOException {
-		LikeExp like = new LikeExp(ExpressionFactory.pathExp("mainName"), "|%|%?|_title|%");
-		like.setEscapeChar('|');
-		assertEquals("x.mainName like '|%|%?|_title|%' escape '|'", like.toEJBQL("x"));
-	}
 
 	@Test
 	public void evaluate_MultiCharMatch() {

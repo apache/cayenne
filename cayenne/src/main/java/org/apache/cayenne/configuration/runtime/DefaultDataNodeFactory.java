@@ -23,7 +23,6 @@ import org.apache.cayenne.access.dbsync.SchemaUpdateStrategy;
 import org.apache.cayenne.access.dbsync.SkipSchemaUpdateStrategy;
 import org.apache.cayenne.access.jdbc.reader.RowReaderFactory;
 import org.apache.cayenne.access.translator.BatchTranslator;
-import org.apache.cayenne.access.translator.EJBQLTranslator;
 import org.apache.cayenne.access.translator.ProcedureTranslator;
 import org.apache.cayenne.access.translator.SQLTemplateTranslator;
 import org.apache.cayenne.access.translator.SelectTranslator;
@@ -70,9 +69,6 @@ public class DefaultDataNodeFactory implements DataNodeFactory {
     protected ProcedureTranslator procedureTranslator;
 
     @Inject
-    protected EJBQLTranslator ejbqlTranslator;
-
-    @Inject
     protected AdhocObjectFactory objectFactory;
 
     @Inject
@@ -98,7 +94,6 @@ public class DefaultDataNodeFactory implements DataNodeFactory {
         dataNode.setDeleteBatchTranslator(deleteBatchTranslator);
         dataNode.setSelectTranslator(selectTranslator);
         dataNode.setProcedureTranslator(procedureTranslator);
-        dataNode.setEjbqlTranslator(ejbqlTranslator);
         dataNode.setSqlTemplateTranslator(sqlTemplateTranslator);
 
         dataNode.setDataSource(dataSource);

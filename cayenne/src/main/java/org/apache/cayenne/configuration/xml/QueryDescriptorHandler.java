@@ -34,7 +34,6 @@ public class QueryDescriptorHandler extends NamespaceAwareNestedTagHandler {
 
     private static final String QUERY_DESCRIPTOR_TAG = "query";
     private static final String QUERY_SQL_TAG = "sql";
-    private static final String QUERY_EJBQL_TAG = "ejbql";
     private static final String QUERY_SELECT_TAG = "select";
     private static final String QUERY_PREFETCH_TAG = "prefetch";
 
@@ -70,7 +69,6 @@ public class QueryDescriptorHandler extends NamespaceAwareNestedTagHandler {
                 this.sqlKey = attributes.getValue("adapter-class");
                 return true;
 
-            case QUERY_EJBQL_TAG:
             case QUERY_SELECT_TAG:
             case QUERY_PREFETCH_TAG:
                 createPrefetchSemantics(attributes);
@@ -85,10 +83,6 @@ public class QueryDescriptorHandler extends NamespaceAwareNestedTagHandler {
         switch (localName) {
             case QUERY_SQL_TAG:
                 queryBuilder.addSql(data, sqlKey);
-                break;
-
-            case QUERY_EJBQL_TAG:
-                queryBuilder.setEjbql(data);
                 break;
 
             case QUERY_SELECT_TAG:

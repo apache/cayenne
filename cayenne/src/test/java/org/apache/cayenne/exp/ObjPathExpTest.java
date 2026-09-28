@@ -54,16 +54,6 @@ public class ObjPathExpTest {
 	}
 
 	@Test
-	public void toEJBQL() {
-		assertEquals("r.x.y", ExpressionFactory.pathExp("x.y").toEJBQL("r"));
-	}
-	
-	@Test
-	public void toEJBQL_OuterJoin() {
-		assertEquals("r.x+.y", ExpressionFactory.pathExp("x+.y").toEJBQL("r"));
-	}
-
-	@Test
 	public void appendAsString() throws IOException {
 		StringBuilder buffer = new StringBuilder();
 		ExpressionFactory.pathExp("x.y").appendAsString(buffer);

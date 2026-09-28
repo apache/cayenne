@@ -70,10 +70,4 @@ public non-sealed class CustomOperatorExp extends Expression {
         // printed as a function call
         return false;
     }
-
-    @Override
-    protected boolean parenthesizeAsEJBQLOperand() {
-        // printed as an infix operator
-        return true;
-    }
 }

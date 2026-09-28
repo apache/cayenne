@@ -141,15 +141,6 @@ public class MappedQueryIT {
     }
 
     @Test
-    public void ejbqlQuery() throws Exception {
-        createArtistsDataSet();
-
-        List result = MappedSelect.query("EjbqlQueryTest").select(env.context());
-        assertEquals(20, result.size());
-        assertInstanceOf(DataRow.class, result.get(0));
-    }
-
-    @Test
     public void cacheKey() {
         // ensure queries initialized with different parameters receive different cache keys
         MappedSelect<Artist> query1 = MappedSelect

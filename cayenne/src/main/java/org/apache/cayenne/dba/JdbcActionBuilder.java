@@ -21,12 +21,10 @@ package org.apache.cayenne.dba;
 
 import org.apache.cayenne.access.DataNode;
 import org.apache.cayenne.access.jdbc.BatchAction;
-import org.apache.cayenne.access.jdbc.EJBQLAction;
 import org.apache.cayenne.access.jdbc.ProcedureAction;
 import org.apache.cayenne.access.jdbc.SQLTemplateAction;
 import org.apache.cayenne.access.jdbc.SelectAction;
 import org.apache.cayenne.query.BatchQuery;
-import org.apache.cayenne.query.EJBQLQuery;
 import org.apache.cayenne.query.FluentSelect;
 import org.apache.cayenne.query.ProcedureQuery;
 import org.apache.cayenne.query.SQLAction;
@@ -77,13 +75,5 @@ public class JdbcActionBuilder implements SQLActionVisitor {
     @Override
     public SQLAction sqlAction(SQLTemplate<?> query) {
         return new SQLTemplateAction(query, dataNode);
-    }
-
-    /**
-     * @since 3.0
-     */
-    @Override
-    public SQLAction ejbqlAction(EJBQLQuery<?> query) {
-        return new EJBQLAction(query, this, dataNode);
     }
 }
