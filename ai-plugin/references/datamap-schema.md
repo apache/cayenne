@@ -60,7 +60,7 @@ The schema enforces this order inside `<data-map>`:
 5. `<obj-entity>` *
 6. `<db-relationship>` *
 7. `<obj-relationship>` *
-8. `<query>` *
+8. `<object-query>`, `<sql-query>`, `<procedure-query>` * (in any mix)
 9. `<cgen>` ? (different namespace, embedded)
 10. `<dbImport>` ? (different namespace, embedded)
 
@@ -193,42 +193,45 @@ To embed it inside an ObjEntity, use `<embedded-attribute>`:
 
 `direction` is `in`, `out`, or `in_out`.
 
-## `<query>` — named query
+## Named queries
 
-Three flavors, all named with `<query name="...">` and selected by `type=`:
+Three flavors, each with its own element, all named with a `name=` attribute:
 
-### SelectQuery
+### `<object-query>`
 
 ```xml
-<query name="ArtistsByName" type="SelectQuery">
-    <property name="cayenne.GenericSelectQuery.cacheStrategy" value="LOCAL_CACHE"/>
-    <select><![CDATA[from Artist where artistName like $name order by dateOfBirth desc prefetch paintings]]></select>
-</query>
+<object-query name="ArtistsByName" cache-strategy="LOCAL_CACHE">
+    <ql><![CDATA[from Artist where artistName like $name order by dateOfBirth desc prefetch paintings]]></ql>
+</object-query>
 ```
 
-The `select` String follows the syntax of `ObjectSelect.parse(..)`:
+The `<ql>` String follows the syntax of `ObjectSelect.parse(..)`:
 `from Entity [where exp] [order by exp [desc] [insensitive], ...] [limit n] [offset m] [prefetch path [joint|disjoint|disjointById], ...]`.
 `$name` placeholders are the query parameters. The root entity, qualifier, orderings, prefetches, limit, offset and
-`distinct` (`select distinct self from ...`) all live in the String; other settings (cache strategy, page size, data
-rows) are `property` elements. A `select` clause with columns, a `having` clause or a `db:` root are not supported in a
-mapped query.
+`distinct` (`select distinct self from ...`) all live in the String; other settings are optional attributes
+of `<object-query>`: `cache-strategy`, `data-rows`, `page-size`, `statement-fetch-size`. An optional
+`<cache-group><![CDATA[name]]></cache-group>` element follows `<ql>`. A `select` clause with columns, a `having` clause or a `db:` root are not supported in a mapped query.
 
-### SQLTemplate
+### `<sql-query>`
 
 ```xml
-<query name="LowercasedArtists" type="SQLTemplate" root="data-map" root-name="testmap">
-    <property name="cayenne.SQLTemplate.columnNameCapitalization" value="LOWER"/>
+<sql-query name="LowercasedArtists" root="data-map" root-name="testmap" column-name-capitalization="LOWER">
     <sql><![CDATA[select * from ARTIST]]></sql>
     <sql adapter-class="org.apache.cayenne.dba.postgres.PostgresAdapter"><![CDATA[select * from artist]]></sql>
-</query>
+</sql-query>
 ```
+
+The optional settings are attributes of `<sql-query>`: `cache-strategy`, `data-rows`, `page-size`,
+`statement-fetch-size`, `column-name-capitalization` (`DEFAULT`, `UPPER`, `LOWER`). There are no limit and offset
+settings, those must be a part of the SQL. An optional `<cache-group><![CDATA[name]]></cache-group>` element follows the `<sql>`
+elements. A `<procedure-query>` takes the same attributes and `<cache-group>`, plus `fetch-limit` and `fetch-offset`.
 
 Use a second `<sql>` with `adapter-class=` to vary by DB adapter. SQLTemplate placeholders use Velocity syntax — `#bind($paramName)` for parameters.
 
-### ProcedureQuery
+### `<procedure-query>`
 
 ```xml
-<query name="SearchArtists" type="ProcedureQuery" root="procedure" root-name="search_artists" result-entity="Artist"/>
+<procedure-query name="SearchArtists" root="procedure" root-name="search_artists" result-entity="Artist"/>
 ```
 
 ## `<cgen>` — embedded code-gen config

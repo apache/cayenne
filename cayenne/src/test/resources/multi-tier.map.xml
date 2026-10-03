@@ -84,15 +84,13 @@
 	<obj-relationship name="table2Array" source="MtTable3" target="MtTable2" deleteRule="Deny" db-relationship-path="table2Array"/>
 	<obj-relationship name="table5s" source="MtTable4" target="MtTable5" db-relationship-path="joins.toTable5"/>
 	<obj-relationship name="table4s" source="MtTable5" target="MtTable4" db-relationship-path="joins.toTable4"/>
-	<query name="AllMtTable1" type="SelectQuery">
-		<select><![CDATA[from MtTable1]]></select>
-	</query>
-	<query name="MtQueryWithLocalCache" type="SelectQuery">
-		<property name="cayenne.GenericSelectQuery.cacheStrategy" value="LOCAL_CACHE"/>
-		<select><![CDATA[from MtTable1]]></select>
-	</query>
-	<query name="ParameterizedMtQueryWithLocalCache" type="SelectQuery">
-		<property name="cayenne.GenericSelectQuery.cacheStrategy" value="LOCAL_CACHE"/>
-		<select><![CDATA[from MtTable1 where globalAttribute1 = $g]]></select>
-	</query>
+	<object-query name="AllMtTable1">
+		<ql><![CDATA[from MtTable1]]></ql>
+	</object-query>
+	<object-query name="MtQueryWithLocalCache" cache-strategy="LOCAL_CACHE">
+		<ql><![CDATA[from MtTable1]]></ql>
+	</object-query>
+	<object-query name="ParameterizedMtQueryWithLocalCache" cache-strategy="LOCAL_CACHE">
+		<ql><![CDATA[from MtTable1 where globalAttribute1 = $g]]></ql>
+	</object-query>
 </data-map>

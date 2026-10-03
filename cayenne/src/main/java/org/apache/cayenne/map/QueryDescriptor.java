@@ -401,46 +401,18 @@ public class QueryDescriptor implements ConfigurationNode, XMLSerializable {
         return visitor.visitQuery(this);
     }
 
+    /**
+     * Does nothing, as there is no XML format for a query of an unknown type. Subclasses for the supported query
+     * types override this method.
+     */
     @Override
     public void encodeAsXML(XMLEncoder encoder, ConfigurationNodeVisitor delegate) {
-        encoder.start("query").attribute("name", getName()).attribute("type", type);
-
-        String rootString = null;
-        String rootType = null;
-
-        if (root instanceof String) {
-            rootType = OBJ_ENTITY_ROOT;
-            rootString = root.toString();
-        } else if (root instanceof ObjEntity) {
-            rootType = OBJ_ENTITY_ROOT;
-            rootString = ((ObjEntity) root).getName();
-        } else if (root instanceof DbEntity) {
-            rootType = DB_ENTITY_ROOT;
-            rootString = ((DbEntity) root).getName();
-        } else if (root instanceof Procedure) {
-            rootType = PROCEDURE_ROOT;
-            rootString = ((Procedure) root).getName();
-        } else if (root instanceof Class<?>) {
-            rootType = JAVA_CLASS_ROOT;
-            rootString = ((Class<?>) root).getName();
-        }
-
-        if (rootType != null) {
-            encoder.attribute("root", rootType).attribute("root-name", rootString);
-        }
-        encodeProperties(encoder);
-
-        delegate.visitQuery(this);
-        encoder.end();
     }
 
-    void encodeProperties(XMLEncoder encoder) {
-        for (Map.Entry<String, String> property : properties.entrySet()) {
-            String value = property.getValue();
-            if(value == null || value.isEmpty()) {
-                continue;
-            }
-            encoder.property(property.getKey(), value);
+    void encodeCacheGroup(XMLEncoder encoder) {
+        String cacheGroup = getProperty(CACHE_GROUPS_PROPERTY);
+        if (cacheGroup != null && !cacheGroup.isEmpty()) {
+            encoder.start("cache-group").cdata(cacheGroup, true).end();
         }
     }
 }

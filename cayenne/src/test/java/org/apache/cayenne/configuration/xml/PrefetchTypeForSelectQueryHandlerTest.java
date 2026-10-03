@@ -31,7 +31,7 @@ public class PrefetchTypeForSelectQueryHandlerTest extends BaseHandlerTest{
     public void load() throws Exception {
         final DataMap map = new DataMap();
 
-        parse("query", new HandlerFactory() {
+        parse("object-query", new HandlerFactory() {
             @Override
             public NamespaceAwareNestedTagHandler createHandler(NamespaceAwareNestedTagHandler parent) {
                 return new QueryDescriptorHandler(parent, map);

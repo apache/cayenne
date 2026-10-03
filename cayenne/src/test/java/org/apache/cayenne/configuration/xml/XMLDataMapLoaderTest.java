@@ -34,6 +34,8 @@ import org.apache.cayenne.map.DataMap;
 import org.apache.cayenne.map.QueryDescriptor;
 import org.apache.cayenne.map.DbAttribute;
 import org.apache.cayenne.map.SQLTemplateDescriptor;
+import org.apache.cayenne.map.SelectQueryDescriptor;
+import org.apache.cayenne.query.CapsStrategy;
 import org.apache.cayenne.resource.URLResource;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -89,7 +91,17 @@ public class XMLDataMapLoaderTest {
         assertEquals("testConfigMap9", map.getName());
         assertEquals(2, map.getDbEntity("ARTIST").getAttributes().size());
         assertEquals("org.apache.cayenne.GenericPersistentObject", map.getObjEntity("Artist").getClassName());
-        assertEquals(QueryDescriptor.SELECT_QUERY, map.getQueryDescriptor("ArtistQuery").getType());
+
+        SelectQueryDescriptor select = (SelectQueryDescriptor) map.getQueryDescriptor("ArtistQuery");
+        assertEquals(QueryDescriptor.SELECT_QUERY, select.getType());
+        assertEquals("from Artist where artistName = \"a\" limit 5", select.toQueryString());
+        assertEquals(10, select.getPageSize());
+        assertEquals("g1 & g2", select.getCacheGroup());
+
+        SQLTemplateDescriptor sql = (SQLTemplateDescriptor) map.getQueryDescriptor("ArtistSql");
+        assertEquals("select * from ARTIST", sql.getSql());
+        assertEquals(7, sql.getPageSize());
+        assertEquals(CapsStrategy.UPPER, sql.getColumnNamesCapitalization());
     }
 
     @Test

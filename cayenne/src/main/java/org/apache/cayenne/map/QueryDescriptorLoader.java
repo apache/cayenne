@@ -54,6 +54,7 @@ public class QueryDescriptorLoader {
     protected String rootType;
     protected String rootName;
     protected String resultEntity;
+    protected String columnNameCapitalization;
 
     protected List<Ordering> orderings = new ArrayList<>();
     protected HashMap<String, Integer> prefetchesMap = new HashMap<>();
@@ -81,9 +82,13 @@ public class QueryDescriptorLoader {
                 ((SQLTemplateDescriptor) descriptor).setSql(sql);
                 ((SQLTemplateDescriptor) descriptor).setPrefetchesMap(prefetchesMap);
                 ((SQLTemplateDescriptor) descriptor).setAdapterSql(adapterSql);
+                descriptor.setProperty(SQLTemplateDescriptor.COLUMN_NAME_CAPITALIZATION_PROPERTY,
+                        columnNameCapitalization);
                 break;
             case QueryDescriptor.PROCEDURE_QUERY:
                 ((ProcedureQueryDescriptor) descriptor).setResultEntityName(resultEntity);
+                descriptor.setProperty(ProcedureQueryDescriptor.COLUMN_NAME_CAPITALIZATION_PROPERTY,
+                        columnNameCapitalization);
                 break;
             default:
                 // no additional properties
@@ -94,28 +99,6 @@ public class QueryDescriptorLoader {
 
     public void setName(String name) {
         this.name = name;
-    }
-
-    /**
-     * It's better be handled by project upgrade handler and actually it is.
-     * But upgrade logic is faulty when project is several versions away
-     * and can't be changed without complete upgrade system rewrite
-     * @param factory old style query factory class
-     */
-    public void setLegacyFactory(String factory) {
-        switch (factory) {
-            case "org.apache.cayenne.map.SelectQueryBuilder":
-                queryType = QueryDescriptor.SELECT_QUERY;
-                break;
-            case "org.apache.cayenne.map.SQLTemplateBuilder":
-                queryType = QueryDescriptor.SQL_TEMPLATE;
-                break;
-            case "org.apache.cayenne.map.ProcedureQueryBuilder":
-                queryType = QueryDescriptor.PROCEDURE_QUERY;
-                break;
-            default:
-                throw new ConfigurationException("Unknown query factory: " + factory);
-        }
     }
 
     public void setQueryType(String queryType) {
@@ -157,6 +140,15 @@ public class QueryDescriptorLoader {
 
     public void setResultEntity(String resultEntity) {
         this.resultEntity = resultEntity;
+    }
+
+    /**
+     * Sets the capitalization of the result column names of a SQLTemplate or a ProcedureQuery.
+     *
+     * @since 5.0
+     */
+    public void setColumnNameCapitalization(String columnNameCapitalization) {
+        this.columnNameCapitalization = columnNameCapitalization;
     }
 
     /**

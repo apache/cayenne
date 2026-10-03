@@ -109,9 +109,8 @@ public class ProcedureQueryDescriptor extends QueryDescriptor {
 
     @Override
     public void encodeAsXML(XMLEncoder encoder, ConfigurationNodeVisitor delegate) {
-        encoder.start("query")
+        encoder.start("procedure-query")
                 .attribute("name", getName())
-                .attribute("type", getType())
                 .attribute("root", QueryDescriptor.PROCEDURE_ROOT);
 
         String rootString = null;
@@ -122,10 +121,16 @@ public class ProcedureQueryDescriptor extends QueryDescriptor {
         }
 
         encoder.attribute("root-name", rootString)
-                .attribute("result-entity", resultEntityName);
+                .attribute("result-entity", resultEntityName)
+                .attribute("cache-strategy", getProperty(CACHE_STRATEGY_PROPERTY))
+                .attribute("data-rows", getProperty(FETCHING_DATA_ROWS_PROPERTY))
+                .attribute("fetch-limit", getProperty(FETCH_LIMIT_PROPERTY))
+                .attribute("fetch-offset", getProperty(FETCH_OFFSET_PROPERTY))
+                .attribute("page-size", getProperty(PAGE_SIZE_PROPERTY))
+                .attribute("statement-fetch-size", getProperty(STATEMENT_FETCH_SIZE_PROPERTY))
+                .attribute("column-name-capitalization", getProperty(COLUMN_NAME_CAPITALIZATION_PROPERTY));
 
-        // print properties
-        encodeProperties(encoder);
+        encodeCacheGroup(encoder);
 
         delegate.visitQuery(this);
         encoder.end();

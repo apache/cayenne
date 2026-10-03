@@ -255,56 +255,47 @@
 	<obj-relationship name="painting" source="PaintingInfo" target="Painting" deleteRule="Nullify" db-relationship-path="painting"/>
 	<obj-relationship name="paintingArray" source="ROArtist" target="Painting" deleteRule="Deny" db-relationship-path="paintingArray"/>
 	<obj-relationship name="toArtist" source="ROPainting" target="Artist" deleteRule="Nullify" db-relationship-path="toArtist"/>
-	<query name="NonSelectingQuery" type="SQLTemplate" root="data-map" root-name="testmap">
-		<property name="cayenne.SQLTemplate.columnNameCapitalization" value="UPPER"/>
+	<sql-query name="NonSelectingQuery" root="data-map" root-name="testmap" column-name-capitalization="UPPER">
 		<sql><![CDATA[INSERT INTO PAINTING (PAINTING_ID, PAINTING_TITLE, ESTIMATED_PRICE)
 VALUES (512, 'No Painting Like This', 12.5)]]></sql>
 		<sql adapter-class="org.apache.cayenne.dba.db2.DB2Adapter"><![CDATA[INSERT INTO PAINTING (PAINTING_ID, PAINTING_TITLE, ESTIMATED_PRICE) VALUES (512, 'No Painting Like This', 12.5)]]></sql>
-	</query>
-	<query name="ObjectQuery" type="SelectQuery">
-		<select><![CDATA[from Painting where toArtist = $artist order by paintingTitle]]></select>
-	</query>
-	<query name="ParameterizedNonSelectingQuery" type="SQLTemplate" root="data-map" root-name="testmap">
+	</sql-query>
+	<object-query name="ObjectQuery">
+		<ql><![CDATA[from Painting where toArtist = $artist order by paintingTitle]]></ql>
+	</object-query>
+	<sql-query name="ParameterizedNonSelectingQuery" root="data-map" root-name="testmap">
 		<sql><![CDATA[INSERT INTO PAINTING (PAINTING_ID, PAINTING_TITLE, ESTIMATED_PRICE)
 VALUES (#bind($id), #bind($title), #bind($price))]]></sql>
 		<sql adapter-class="org.apache.cayenne.dba.db2.DB2Adapter"><![CDATA[INSERT INTO PAINTING (PAINTING_ID, PAINTING_TITLE, ESTIMATED_PRICE) values (#bind($id), #bind($title), #bind($price))]]></sql>
-	</query>
-	<query name="ParameterizedQueryWithLocalCache" type="SelectQuery">
-		<property name="cayenne.GenericSelectQuery.cacheStrategy" value="LOCAL_CACHE"/>
-		<select><![CDATA[from Artist where artistName like $name]]></select>
-	</query>
-	<query name="ParameterizedQueryWithSharedCache" type="SelectQuery">
-		<property name="cayenne.GenericSelectQuery.cacheStrategy" value="SHARED_CACHE"/>
-		<select><![CDATA[from Artist where artistName like $name]]></select>
-	</query>
-	<query name="ProcedureQuery" type="ProcedureQuery" root="procedure" root-name="cayenne_tst_select_proc" result-entity="Artist"/>
-	<query name="QueryWithLocalCache" type="SelectQuery">
-		<property name="cayenne.GenericSelectQuery.cacheStrategy" value="LOCAL_CACHE"/>
-		<select><![CDATA[from Artist]]></select>
-	</query>
-	<query name="QueryWithOrdering" type="SelectQuery">
-		<select><![CDATA[from Artist order by artistName desc insensitive, dateOfBirth]]></select>
-	</query>
-	<query name="QueryWithPrefetch" type="SelectQuery">
-		<select><![CDATA[from Gallery prefetch paintingArray]]></select>
-	</query>
-	<query name="QueryWithQualifier" type="SelectQuery">
-		<select><![CDATA[from Artist where artistName = $param1]]></select>
-	</query>
-	<query name="QueryWithSharedCache" type="SelectQuery">
-		<property name="cayenne.GenericSelectQuery.cacheStrategy" value="SHARED_CACHE"/>
-		<select><![CDATA[from Artist]]></select>
-	</query>
-	<query name="SelectTestLower" type="SQLTemplate" root="data-map" root-name="testmap">
-		<property name="cayenne.SQLTemplate.columnNameCapitalization" value="LOWER"/>
-		<property name="cayenne.GenericSelectQuery.fetchingDataRows" value="true"/>
+	</sql-query>
+	<object-query name="ParameterizedQueryWithLocalCache" cache-strategy="LOCAL_CACHE">
+		<ql><![CDATA[from Artist where artistName like $name]]></ql>
+	</object-query>
+	<object-query name="ParameterizedQueryWithSharedCache" cache-strategy="SHARED_CACHE">
+		<ql><![CDATA[from Artist where artistName like $name]]></ql>
+	</object-query>
+	<procedure-query name="ProcedureQuery" root="procedure" root-name="cayenne_tst_select_proc" result-entity="Artist"/>
+	<object-query name="QueryWithLocalCache" cache-strategy="LOCAL_CACHE">
+		<ql><![CDATA[from Artist]]></ql>
+	</object-query>
+	<object-query name="QueryWithOrdering">
+		<ql><![CDATA[from Artist order by artistName desc insensitive, dateOfBirth]]></ql>
+	</object-query>
+	<object-query name="QueryWithPrefetch">
+		<ql><![CDATA[from Gallery prefetch paintingArray]]></ql>
+	</object-query>
+	<object-query name="QueryWithQualifier">
+		<ql><![CDATA[from Artist where artistName = $param1]]></ql>
+	</object-query>
+	<object-query name="QueryWithSharedCache" cache-strategy="SHARED_CACHE">
+		<ql><![CDATA[from Artist]]></ql>
+	</object-query>
+	<sql-query name="SelectTestLower" root="data-map" root-name="testmap" data-rows="true" column-name-capitalization="LOWER">
 		<sql><![CDATA[select * from ARTIST]]></sql>
-	</query>
-	<query name="SelectTestUpper" type="SQLTemplate" root="data-map" root-name="testmap">
-		<property name="cayenne.SQLTemplate.columnNameCapitalization" value="UPPER"/>
-		<property name="cayenne.GenericSelectQuery.fetchingDataRows" value="true"/>
+	</sql-query>
+	<sql-query name="SelectTestUpper" root="data-map" root-name="testmap" data-rows="true" column-name-capitalization="UPPER">
 		<sql><![CDATA[select * from ARTIST]]></sql>
-	</query>
+	</sql-query>
 	<cgen xmlns="http://cayenne.apache.org/schema/14/cgen">
 		<destDir>../java</destDir>
 		<mode>entity</mode>

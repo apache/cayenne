@@ -41,7 +41,9 @@ public class DataMapHandler extends NamespaceAwareNestedTagHandler {
     private static final String OBJ_RELATIONSHIP_TAG = "obj-relationship";
     private static final String EMBEDDABLE_TAG       = "embeddable";
     private static final String PROCEDURE_TAG        = "procedure";
-    private static final String QUERY_TAG            = "query";
+    private static final String OBJECT_QUERY_TAG     = "object-query";
+    private static final String SQL_QUERY_TAG        = "sql-query";
+    private static final String PROCEDURE_QUERY_TAG  = "procedure-query";
 
     public static final String TRUE = "true";
 
@@ -85,7 +87,7 @@ public class DataMapHandler extends NamespaceAwareNestedTagHandler {
                 case DB_RELATIONSHIP_TAG -> new DbRelationshipHandler(this, dataMap);
                 case OBJ_RELATIONSHIP_TAG -> new ObjRelationshipHandler(this, dataMap);
                 case PROCEDURE_TAG -> new ProcedureHandler(this, dataMap);
-                case QUERY_TAG -> new QueryDescriptorHandler(this, dataMap);
+                case OBJECT_QUERY_TAG, SQL_QUERY_TAG, PROCEDURE_QUERY_TAG -> new QueryDescriptorHandler(this, dataMap);
                 case EMBEDDABLE_TAG -> new EmbeddableHandler(this, dataMap);
                 default -> super.createChildTagHandler(namespaceURI, localName, qName, attributes);
             };

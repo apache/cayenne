@@ -208,22 +208,21 @@ public class SelectQueryDescriptor extends QueryDescriptor {
 
     @Override
     public void encodeAsXML(XMLEncoder encoder, ConfigurationNodeVisitor delegate) {
-        encoder.start("query")
-                .attribute("name", getName())
-                .attribute("type", type);
-
         // the root, qualifier, orderings, prefetches, limit, offset and distinct are all clauses of the query String,
         // the rest of the properties are stored separately
-        encoder.property(CACHE_STRATEGY_PROPERTY, getProperty(CACHE_STRATEGY_PROPERTY))
-                .property(CACHE_GROUPS_PROPERTY, getProperty(CACHE_GROUPS_PROPERTY))
-                .property(FETCHING_DATA_ROWS_PROPERTY, getProperty(FETCHING_DATA_ROWS_PROPERTY))
-                .property(PAGE_SIZE_PROPERTY, getProperty(PAGE_SIZE_PROPERTY))
-                .property(STATEMENT_FETCH_SIZE_PROPERTY, getProperty(STATEMENT_FETCH_SIZE_PROPERTY));
+        encoder.start("object-query")
+                .attribute("name", getName())
+                .attribute("cache-strategy", getProperty(CACHE_STRATEGY_PROPERTY))
+                .attribute("data-rows", getProperty(FETCHING_DATA_ROWS_PROPERTY))
+                .attribute("page-size", getProperty(PAGE_SIZE_PROPERTY))
+                .attribute("statement-fetch-size", getProperty(STATEMENT_FETCH_SIZE_PROPERTY));
 
         String select = toQueryString();
         if (select != null) {
-            encoder.start("select").cdata(select, true).end();
+            encoder.start("ql").cdata(select, true).end();
         }
+
+        encodeCacheGroup(encoder);
 
         delegate.visitQuery(this);
         encoder.end();

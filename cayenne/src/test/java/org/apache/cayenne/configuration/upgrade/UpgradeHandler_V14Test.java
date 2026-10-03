@@ -23,6 +23,7 @@ import org.apache.cayenne.resource.URLResource;
 import org.junit.jupiter.api.Test;
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;
+import org.w3c.dom.NamedNodeMap;
 import org.w3c.dom.Node;
 import org.w3c.dom.NodeList;
 
@@ -30,7 +31,9 @@ import javax.xml.xpath.XPath;
 import javax.xml.xpath.XPathConstants;
 import javax.xml.xpath.XPathFactory;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertFalse;
@@ -86,22 +89,34 @@ public class UpgradeHandler_V14Test extends BaseUpgradeHandlerTest {
         assertEquals("http://cayenne.apache.org/schema/14/info", infoProperties.get(0).getAttribute("xmlns:info"));
 
         // the rootless query and the EJBQL queries are removed with a notification each, the rest are converted
-        List<Element> queries = elements(document, "/data-map/*[local-name()='query']");
-        assertEquals(List.of("AllClauses", "ClassRoot", "RootOnly", "Template"),
+        // to the elements specific to the query type
+        assertTrue(elements(document, "/data-map/*[local-name()='query']").isEmpty());
+        List<Element> queries = elements(document, "/data-map/*[@name][contains(local-name(), '-query')]");
+        assertEquals(List.of("AllClauses", "ClassRoot", "RootOnly", "Template", "Procedure"),
                 queries.stream().map(q -> q.getAttribute("name")).toList());
+        assertEquals(List.of("object-query", "object-query", "object-query", "sql-query", "procedure-query"),
+                queries.stream().map(Element::getNodeName).toList());
+        queries.forEach(q -> assertFalse(q.hasAttribute("type"), q.getAttribute("name")));
+        queries.forEach(q -> assertEquals(root.getNamespaceURI(), q.getNamespaceURI(), q.getAttribute("name")));
         List<String> notifications = unit.getChangeNotifications();
-        assertEquals(3, notifications.size(), notifications.toString());
+        assertEquals(5, notifications.size(), notifications.toString());
         assertTrue(notifications.get(0).contains("'NoRoot'"), notifications.toString());
         assertTrue(notifications.get(1).contains("'Ejbql1'"), notifications.toString());
         assertTrue(notifications.get(2).contains("'Ejbql2'"), notifications.toString());
+        assertTrue(notifications.get(3).contains("fetch limit of 10") && notifications.get(3).contains("'Template'"),
+                notifications.toString());
+        assertTrue(notifications.get(4).contains("'UnknownType'"), notifications.toString());
         assertEquals(notifications, unit.getChangesAffectingRuntime());
 
         Element allClauses = queries.get(0);
         assertFalse(allClauses.hasAttribute("root"));
         assertFalse(allClauses.hasAttribute("root-name"));
-        assertEquals(List.of("property", "property", "property", "select"), childNames(allClauses));
-        assertEquals(List.of("cayenne.GenericSelectQuery.cacheStrategy", "cayenne.GenericSelectQuery.cacheGroups",
-                "cayenne.GenericSelectQuery.pageSize"), propertyNames(allClauses));
+        // the properties become attributes and a cache group element, limit, offset and distinct go to the query
+        // String
+        assertEquals(List.of("ql", "cache-group"), childNames(allClauses));
+        assertEquals(Map.of("name", "AllClauses", "cache-strategy", "SHARED_CACHE", "page-size", "5"),
+                attributes(allClauses));
+        assertEquals("g1", cacheGroup(allClauses));
         assertEquals("select distinct self from Artist where artistName like $name "
                         + "order by artistName desc insensitive, dateOfBirth limit 10 offset 20 "
                         + "prefetch paintings joint, paintings.gallery disjoint, paintings.exhibits disjointById, "
@@ -110,17 +125,28 @@ public class UpgradeHandler_V14Test extends BaseUpgradeHandlerTest {
 
         Element classRoot = queries.get(1);
         assertFalse(classRoot.hasAttribute("root"));
-        assertEquals(List.of("select"), childNames(classRoot));
+        assertEquals(List.of("ql"), childNames(classRoot));
         assertEquals("from Artist where artistName = \"a\"", select(classRoot));
 
         Element rootOnly = queries.get(2);
-        assertEquals(List.of("select"), childNames(rootOnly));
+        assertEquals(List.of("ql"), childNames(rootOnly));
         assertEquals("from Artist", select(rootOnly));
 
-        // other query types are untouched
+        // an unknown property and the one of another query type are dropped. So is the limit, with a notification
         Element template = queries.get(3);
         assertEquals("data-map", template.getAttribute("root"));
-        assertEquals(List.of("property", "sql", "prefetch"), childNames(template));
+        assertEquals(List.of("sql", "sql", "cache-group", "prefetch"), childNames(template));
+        assertEquals("g2 & <g3>", cacheGroup(template));
+        assertEquals(Map.of("name", "Template", "root", "data-map", "root-name", "map1", "data-rows", "true",
+                "column-name-capitalization", "LOWER"), attributes(template));
+
+        Element procedure = queries.get(4);
+        assertTrue(childNames(procedure).isEmpty());
+        assertEquals(Map.of("name", "Procedure", "root", "procedure", "root-name", "p1", "result-entity", "Artist",
+                "cache-strategy", "LOCAL_CACHE", "fetch-limit", "3", "fetch-offset", "4",
+                "column-name-capitalization", "UPPER"), attributes(procedure));
+
+        assertTrue(queries.stream().allMatch(q -> elements(q, "*[local-name()='property']").isEmpty()));
     }
 
     @Test
@@ -131,7 +157,7 @@ public class UpgradeHandler_V14Test extends BaseUpgradeHandlerTest {
     }
 
     private String select(Element query) {
-        List<Element> select = elements(query, "*[local-name()='select']");
+        List<Element> select = elements(query, "*[local-name()='ql']");
         assertEquals(1, select.size());
         assertEquals(query.getNamespaceURI(), select.get(0).getNamespaceURI());
 
@@ -152,8 +178,24 @@ public class UpgradeHandler_V14Test extends BaseUpgradeHandlerTest {
         return names;
     }
 
-    private List<String> propertyNames(Element query) {
-        return elements(query, "*[local-name()='property']").stream().map(p -> p.getAttribute("name")).toList();
+    private String cacheGroup(Element query) {
+        List<Element> cacheGroup = elements(query, "*[local-name()='cache-group']");
+        assertEquals(1, cacheGroup.size());
+        assertEquals(query.getNamespaceURI(), cacheGroup.get(0).getNamespaceURI());
+
+        // the cache group must be written as CDATA
+        Node cdata = cacheGroup.get(0).getFirstChild();
+        assertEquals(Node.CDATA_SECTION_NODE, cdata.getNodeType());
+        return cdata.getNodeValue();
+    }
+
+    private Map<String, String> attributes(Element element) {
+        Map<String, String> attributes = new HashMap<>();
+        NamedNodeMap nodes = element.getAttributes();
+        for (int i = 0; i < nodes.getLength(); i++) {
+            attributes.put(nodes.item(i).getNodeName(), nodes.item(i).getNodeValue());
+        }
+        return attributes;
     }
 
     private List<Element> elements(Node context, String path) throws RuntimeException {

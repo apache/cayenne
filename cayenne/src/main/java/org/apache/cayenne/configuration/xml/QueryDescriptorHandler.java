@@ -32,12 +32,13 @@ import org.xml.sax.SAXException;
  */
 public class QueryDescriptorHandler extends NamespaceAwareNestedTagHandler {
 
-    private static final String QUERY_DESCRIPTOR_TAG = "query";
+    private static final String OBJECT_QUERY_TAG = "object-query";
+    private static final String SQL_QUERY_TAG = "sql-query";
+    private static final String PROCEDURE_QUERY_TAG = "procedure-query";
     private static final String QUERY_SQL_TAG = "sql";
-    private static final String QUERY_SELECT_TAG = "select";
+    private static final String QUERY_QL_TAG = "ql";
     private static final String QUERY_PREFETCH_TAG = "prefetch";
-
-    public static final String PROPERTY_TAG = "property";
+    private static final String QUERY_CACHE_GROUP_TAG = "cache-group";
 
     private DataMap map;
 
@@ -57,19 +58,26 @@ public class QueryDescriptorHandler extends NamespaceAwareNestedTagHandler {
     protected boolean processElement(String namespaceURI, String localName, Attributes attributes) throws SAXException {
 
         switch (localName) {
-            case QUERY_DESCRIPTOR_TAG:
-                addQueryDescriptor(attributes);
+            case OBJECT_QUERY_TAG:
+                addQueryDescriptor(QueryDescriptor.SELECT_QUERY, attributes);
                 return true;
 
-            case PROPERTY_TAG:
-                addQueryDescriptorProperty(attributes);
+            case SQL_QUERY_TAG:
+                addQueryDescriptor(QueryDescriptor.SQL_TEMPLATE, attributes);
+                return true;
+
+            case PROCEDURE_QUERY_TAG:
+                addQueryDescriptor(QueryDescriptor.PROCEDURE_QUERY, attributes);
+                return true;
+
+            case QUERY_CACHE_GROUP_TAG:
                 return true;
 
             case QUERY_SQL_TAG:
                 this.sqlKey = attributes.getValue("adapter-class");
                 return true;
 
-            case QUERY_SELECT_TAG:
+            case QUERY_QL_TAG:
             case QUERY_PREFETCH_TAG:
                 createPrefetchSemantics(attributes);
                 return true;
@@ -85,13 +93,18 @@ public class QueryDescriptorHandler extends NamespaceAwareNestedTagHandler {
                 queryBuilder.addSql(data, sqlKey);
                 break;
 
-            case QUERY_SELECT_TAG:
+            case QUERY_QL_TAG:
                 queryBuilder.setSelect(data);
                 changed = true;
                 break;
 
             case QUERY_PREFETCH_TAG:
                 addPrefetchWithSemantics(data);
+                break;
+
+            case QUERY_CACHE_GROUP_TAG:
+                addQueryDescriptorProperty(QueryDescriptor.CACHE_GROUPS_PROPERTY, data);
+                changed = true;
                 break;
         }
         return true;
@@ -102,7 +115,7 @@ public class QueryDescriptorHandler extends NamespaceAwareNestedTagHandler {
         map.addQueryDescriptor(getQueryDescriptor());
     }
 
-    private void addQueryDescriptor(Attributes attributes) throws SAXException {
+    private void addQueryDescriptor(String type, Attributes attributes) throws SAXException {
         String name = attributes.getValue("name");
         if (null == name) {
             throw new SAXException("QueryDescriptorHandler::addQueryDescriptor() - no query name.");
@@ -111,13 +124,7 @@ public class QueryDescriptorHandler extends NamespaceAwareNestedTagHandler {
         queryBuilder = new QueryDescriptorLoader();
         queryBuilder.setName(name);
 
-        String type = attributes.getValue("type");
-        // Legacy format support (v7 and older)
-        if(type == null) {
-            queryBuilder.setLegacyFactory(attributes.getValue("factory"));
-        } else {
-            queryBuilder.setQueryType(type);
-        }
+        queryBuilder.setQueryType(type);
 
         String rootName = attributes.getValue("root-name");
         queryBuilder.setRoot(map, attributes.getValue("root"), rootName);
@@ -129,22 +136,22 @@ public class QueryDescriptorHandler extends NamespaceAwareNestedTagHandler {
             queryBuilder.setResultEntity(resultEntity);
         }
 
+        addQueryDescriptorProperty(QueryDescriptor.CACHE_STRATEGY_PROPERTY, attributes.getValue("cache-strategy"));
+        addQueryDescriptorProperty(QueryDescriptor.FETCHING_DATA_ROWS_PROPERTY, attributes.getValue("data-rows"));
+        addQueryDescriptorProperty(QueryDescriptor.FETCH_LIMIT_PROPERTY, attributes.getValue("fetch-limit"));
+        addQueryDescriptorProperty(QueryDescriptor.FETCH_OFFSET_PROPERTY, attributes.getValue("fetch-offset"));
+        addQueryDescriptorProperty(QueryDescriptor.PAGE_SIZE_PROPERTY, attributes.getValue("page-size"));
+        addQueryDescriptorProperty(QueryDescriptor.STATEMENT_FETCH_SIZE_PROPERTY,
+                attributes.getValue("statement-fetch-size"));
+        queryBuilder.setColumnNameCapitalization(attributes.getValue("column-name-capitalization"));
+
         changed = true;
     }
 
-    private void addQueryDescriptorProperty(Attributes attributes) throws SAXException {
-        String name = attributes.getValue("name");
-        if (null == name) {
-            throw new SAXException("QueryDescriptorHandler::addQueryDescriptorProperty() - no property name.");
+    private void addQueryDescriptorProperty(String name, String value) {
+        if (value != null) {
+            queryBuilder.addProperty(name, value);
         }
-
-        String value = attributes.getValue("value");
-        if (null == value) {
-            throw new SAXException("QueryDescriptorHandler::addQueryDescriptorProperty() - no property value.");
-        }
-
-        queryBuilder.addProperty(name, value);
-        changed = true;
     }
 
     private void createPrefetchSemantics(Attributes attributes) {

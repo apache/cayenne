@@ -42,10 +42,23 @@
 		<ejbql><![CDATA[select count(a) from Artist a]]></ejbql>
 	</query>
 	<query name="Template" type="SQLTemplate" root="data-map" root-name="map1">
+		<property name="cayenne.SQLTemplate.columnNameCapitalization" value="lower"/>
 		<property name="cayenne.GenericSelectQuery.fetchLimit" value="10"/>
+		<property name="custom.property" value="x"/>
+		<property name="cayenne.GenericSelectQuery.cacheGroups" value="g2 &amp; &lt;g3&gt;"/>
+		<property name="cayenne.ProcedureQuery.columnNameCapitalization" value="UPPER"/>
+		<property name="cayenne.GenericSelectQuery.fetchingDataRows" value="true"/>
 		<sql><![CDATA[select * from ARTIST]]></sql>
+		<sql adapter-class="org.apache.cayenne.dba.postgres.PostgresAdapter"><![CDATA[select * from artist]]></sql>
 		<prefetch type="joint"><![CDATA[paintings]]></prefetch>
 	</query>
+	<query name="Procedure" type="ProcedureQuery" root="procedure" root-name="p1" result-entity="Artist">
+		<property name="cayenne.ProcedureQuery.columnNameCapitalization" value="UPPER"/>
+		<property name="cayenne.GenericSelectQuery.cacheStrategy" value="LOCAL_CACHE"/>
+		<property name="cayenne.GenericSelectQuery.fetchLimit" value="3"/>
+		<property name="cayenne.GenericSelectQuery.fetchOffset" value="4"/>
+	</query>
+	<query name="UnknownType" type="NoSuchQuery"/>
 	<cgen xmlns="http://cayenne.apache.org/schema/13/cgen">
 		<destDir>../java</destDir>
 	</cgen>

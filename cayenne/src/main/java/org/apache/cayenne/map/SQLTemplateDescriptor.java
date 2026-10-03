@@ -140,8 +140,6 @@ public class SQLTemplateDescriptor extends QueryDescriptor {
             }
         }
 
-        template.setFetchLimit(getFetchLimit());
-        template.setFetchOffset(getFetchOffset());
         template.setPageSize(getPageSize());
         template.setStatementFetchSize(getStatementFetchSize());
         template.setFetchingDataRows(isFetchingDataRows());
@@ -179,9 +177,7 @@ public class SQLTemplateDescriptor extends QueryDescriptor {
 
     @Override
     public void encodeAsXML(XMLEncoder encoder, ConfigurationNodeVisitor delegate) {
-        encoder.start("query")
-                .attribute("name", getName())
-                .attribute("type", type);
+        encoder.start("sql-query").attribute("name", getName());
 
         String rootString = null;
         String rootType = null;
@@ -210,8 +206,12 @@ public class SQLTemplateDescriptor extends QueryDescriptor {
             encoder.attribute("root", rootType).attribute("root-name", rootString);
         }
 
-        // print properties
-        encodeProperties(encoder);
+        encoder.attribute("cache-strategy", getProperty(CACHE_STRATEGY_PROPERTY))
+                .attribute("data-rows", getProperty(FETCHING_DATA_ROWS_PROPERTY))
+                .attribute("page-size", getProperty(PAGE_SIZE_PROPERTY))
+                .attribute("statement-fetch-size", getProperty(STATEMENT_FETCH_SIZE_PROPERTY))
+                .attribute("column-name-capitalization", getProperty(COLUMN_NAME_CAPITALIZATION_PROPERTY));
+
         // encode default SQL
         if (sql != null) {
             encoder.start("sql").cdata(sql, true).end();
@@ -234,6 +234,8 @@ public class SQLTemplateDescriptor extends QueryDescriptor {
                 }
             }
         }
+
+        encodeCacheGroup(encoder);
 
         PrefetchTreeNode prefetchTree = new PrefetchTreeNode();
 

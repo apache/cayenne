@@ -62,6 +62,7 @@ public final class UpgradeHandler_V14 implements UpgradeHandler {
         updateInfoSchema(upgradeUnit);
         convertSelectQueries(upgradeUnit);
         removeEjbqlQueries(upgradeUnit);
+        convertQueryTags(upgradeUnit);
     }
 
     private void removeEjbqlInspection(UpgradeContext upgradeUnit) {
@@ -108,10 +109,115 @@ public final class UpgradeHandler_V14 implements UpgradeHandler {
                 }
             }
 
-            Element selectElement = upgradeUnit.getDocument().createElementNS(query.getNamespaceURI(), "select");
+            Element selectElement = upgradeUnit.getDocument().createElementNS(query.getNamespaceURI(), "ql");
             selectElement.appendChild(upgradeUnit.getDocument().createCDATASection(select));
             query.appendChild(selectElement);
         }
+    }
+
+    /**
+     * Replaces each generic "query" element with an element specific to the query type, and its generic "property"
+     * elements with the attributes specific to each property, and a "cache-group" element. The properties that do not
+     * apply to the query type are dropped.
+     */
+    private void convertQueryTags(UpgradeContext upgradeUnit) {
+        for (Element query : elements(upgradeUnit, "/data-map/*[local-name()='query']")) {
+            String name = query.getAttribute("name");
+            String queryTag = switch (query.getAttribute("type")) {
+                case "SelectQuery" -> "object-query";
+                case "SQLTemplate" -> "sql-query";
+                case "ProcedureQuery" -> "procedure-query";
+                default -> null;
+            };
+
+            if (queryTag == null) {
+                query.getParentNode().removeChild(query);
+                upgradeUnit.recordChange("Query '%s' was removed from the DataMap, as its type is not supported"
+                        .formatted(name), true);
+                continue;
+            }
+
+            query.removeAttribute("type");
+            Element typedQuery = (Element) upgradeUnit.getDocument()
+                    .renameNode(query, query.getNamespaceURI(), queryTag);
+
+            String cacheGroup = "";
+            for (Element child : childElements(typedQuery)) {
+                if (localName(child).equals("property")) {
+                    String attribute = queryPropertyAttribute(queryTag, child.getAttribute("name"));
+                    String value = child.getAttribute("value").trim();
+                    recordSqlQueryLimitRemoval(upgradeUnit, name, queryTag, child.getAttribute("name"), value);
+                    if (attribute != null && !value.isEmpty()) {
+                        typedQuery.setAttribute(attribute,
+                                attribute.equals("column-name-capitalization") ? value.toUpperCase() : value);
+                    }
+                    if (child.getAttribute("name").equals("cayenne.GenericSelectQuery.cacheGroups")) {
+                        cacheGroup = value;
+                    }
+                    typedQuery.removeChild(child);
+                }
+            }
+
+            // the cache group is an element that follows "ql" or "sql"
+            if (!cacheGroup.isEmpty()) {
+                Element next = null;
+                for (Element child : childElements(typedQuery)) {
+                    if (!localName(child).equals("ql") && !localName(child).equals("sql")) {
+                        next = child;
+                        break;
+                    }
+                }
+
+                Element element = upgradeUnit.getDocument()
+                        .createElementNS(typedQuery.getNamespaceURI(), "cache-group");
+                element.appendChild(upgradeUnit.getDocument().createCDATASection(cacheGroup));
+                typedQuery.insertBefore(element, next);
+            }
+        }
+    }
+
+    private void recordSqlQueryLimitRemoval(
+            UpgradeContext upgradeUnit, String queryName, String queryTag, String property, String value) {
+
+        if (!queryTag.equals("sql-query") || value.isEmpty() || value.equals("0")) {
+            return;
+        }
+
+        String label = switch (property) {
+            case "cayenne.GenericSelectQuery.fetchLimit" -> "fetch limit";
+            case "cayenne.GenericSelectQuery.fetchOffset" -> "fetch offset";
+            default -> null;
+        };
+
+        if (label != null) {
+            upgradeUnit.recordChange("""
+                    The %s of %s was removed from the SQL query '%s', as it is no longer supported in the DataMap. \
+                    Make it a part of the query SQL""".formatted(label, value, queryName), true);
+        }
+    }
+
+    /**
+     * Returns the name of the attribute that replaces a property of a given type of query, or null if the property
+     * does not apply to such query.
+     */
+    private String queryPropertyAttribute(String queryTag, String property) {
+        return switch (property) {
+            case "cayenne.GenericSelectQuery.cacheStrategy" -> "cache-strategy";
+            case "cayenne.GenericSelectQuery.fetchingDataRows" -> "data-rows";
+            case "cayenne.GenericSelectQuery.pageSize" -> "page-size";
+            case "cayenne.GenericSelectQuery.statementFetchSize" -> "statement-fetch-size";
+
+            // the limit and offset of an object query are a part of the query String, and those of a SQL query must
+            // be a part of SQL
+            case "cayenne.GenericSelectQuery.fetchLimit" -> queryTag.equals("procedure-query") ? "fetch-limit" : null;
+            case "cayenne.GenericSelectQuery.fetchOffset" -> queryTag.equals("procedure-query") ? "fetch-offset" : null;
+
+            case "cayenne.SQLTemplate.columnNameCapitalization" ->
+                    queryTag.equals("sql-query") ? "column-name-capitalization" : null;
+            case "cayenne.ProcedureQuery.columnNameCapitalization" ->
+                    queryTag.equals("procedure-query") ? "column-name-capitalization" : null;
+            default -> null;
+        };
     }
 
     /**

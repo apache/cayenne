@@ -38,7 +38,11 @@
 				<xs:element minOccurs="0" maxOccurs="unbounded" ref="cay:obj-entity"/>
 				<xs:element minOccurs="0" maxOccurs="unbounded" ref="cay:db-relationship"/>
 				<xs:element minOccurs="0" maxOccurs="unbounded" ref="cay:obj-relationship"/>
-				<xs:element minOccurs="0" maxOccurs="unbounded" ref="cay:query"/>
+				<xs:choice minOccurs="0" maxOccurs="unbounded">
+					<xs:element ref="cay:object-query"/>
+					<xs:element ref="cay:sql-query"/>
+					<xs:element ref="cay:procedure-query"/>
+				</xs:choice>
 				<xs:any minOccurs="0" maxOccurs="unbounded" namespace="##other" processContents="lax"/>
 			</xs:sequence>
 			<xs:attribute name="project-version" use="required" type="xs:string"/>
@@ -175,32 +179,126 @@
 		</xs:complexType>
 	</xs:element>
 
-	<xs:element name="query">
+	<xs:element name="object-query">
+		<xs:annotation>
+			<xs:documentation>A named selecting query expressed in terms of object model using Cayenne QL.</xs:documentation>
+		</xs:annotation>
 		<xs:complexType>
 			<xs:sequence>
-				<xs:element minOccurs="0" maxOccurs="unbounded" ref="cay:property"/>
+				<xs:element minOccurs="0" ref="cay:ql"/>
+				<xs:element minOccurs="0" ref="cay:cache-group"/>
+				<xs:any minOccurs="0" maxOccurs="unbounded" namespace="##other" processContents="lax"/>
+			</xs:sequence>
+			<xs:attribute name="name" use="required" type="xs:string"/>
+			<xs:attributeGroup ref="cay:query-settings"/>
+		</xs:complexType>
+	</xs:element>
+
+	<xs:element name="sql-query">
+		<xs:annotation>
+			<xs:documentation>A named query expressed in SQL terms</xs:documentation>
+		</xs:annotation>
+		<xs:complexType>
+			<xs:sequence>
 				<xs:element minOccurs="0" maxOccurs="unbounded" ref="cay:sql"/>
-				<xs:element minOccurs="0" maxOccurs="1" ref="cay:select"/>
+				<xs:element minOccurs="0" ref="cay:cache-group"/>
 				<xs:element minOccurs="0" maxOccurs="unbounded" ref="cay:prefetch"/>
 				<xs:any minOccurs="0" maxOccurs="unbounded" namespace="##other" processContents="lax"/>
 			</xs:sequence>
-			<xs:attribute name="type" use="required" type="xs:string"/>
+			<xs:attribute name="name" use="required" type="xs:string"/>
+			<xs:attribute name="root" type="xs:string"/>
+			<xs:attribute name="root-name" type="xs:string"/>
+			<xs:attributeGroup ref="cay:query-settings"/>
+			<xs:attribute name="column-name-capitalization" type="cay:column-name-capitalization"/>
+		</xs:complexType>
+	</xs:element>
+
+	<xs:element name="procedure-query">
+		<xs:annotation>
+			<xs:documentation>A named query that calls a stored procedure.</xs:documentation>
+		</xs:annotation>
+		<xs:complexType>
+			<xs:sequence>
+				<xs:element minOccurs="0" ref="cay:cache-group"/>
+				<xs:any minOccurs="0" maxOccurs="unbounded" namespace="##other" processContents="lax"/>
+			</xs:sequence>
 			<xs:attribute name="name" use="required" type="xs:string"/>
 			<xs:attribute name="root" type="xs:string"/>
 			<xs:attribute name="root-name" type="xs:string"/>
 			<xs:attribute name="result-entity" type="xs:string"/>
+			<xs:attributeGroup ref="cay:query-settings"/>
+			<xs:attribute name="fetch-limit" type="xs:nonNegativeInteger">
+				<xs:annotation>
+					<xs:documentation>A max number of rows fetched by a query.</xs:documentation>
+				</xs:annotation>
+			</xs:attribute>
+			<xs:attribute name="fetch-offset" type="xs:nonNegativeInteger">
+				<xs:annotation>
+					<xs:documentation>A number of rows skipped at the start of a query result.</xs:documentation>
+				</xs:annotation>
+			</xs:attribute>
+			<xs:attribute name="column-name-capitalization" type="cay:column-name-capitalization"/>
 		</xs:complexType>
 	</xs:element>
 
-	<xs:element name="select" type="xs:string">
+	<xs:element name="cache-group" type="xs:string">
 		<xs:annotation>
-			<xs:documentation>Defines a "SelectQuery" as a String in the syntax of ObjectSelect.parse(..).</xs:documentation>
+			<xs:documentation>A name of the cache group of a query used for cache configuration and invalidation purposes.</xs:documentation>
+		</xs:annotation>
+	</xs:element>
+
+	<xs:attributeGroup name="query-settings">
+		<xs:attribute name="cache-strategy">
+			<xs:annotation>
+				<xs:documentation>An optional cache strategy of a query.</xs:documentation>
+			</xs:annotation>
+			<xs:simpleType>
+				<xs:restriction base="xs:string">
+					<xs:enumeration value="NO_CACHE"/>
+					<xs:enumeration value="LOCAL_CACHE"/>
+					<xs:enumeration value="LOCAL_CACHE_REFRESH"/>
+					<xs:enumeration value="SHARED_CACHE"/>
+					<xs:enumeration value="SHARED_CACHE_REFRESH"/>
+				</xs:restriction>
+			</xs:simpleType>
+		</xs:attribute>
+		<xs:attribute name="data-rows" type="xs:boolean">
+			<xs:annotation>
+				<xs:documentation>Defines whether a query fetches DataRows instead of persistent objects.</xs:documentation>
+			</xs:annotation>
+		</xs:attribute>
+		<xs:attribute name="page-size" type="xs:nonNegativeInteger">
+			<xs:annotation>
+				<xs:documentation>A page size of a query with a paginated result.</xs:documentation>
+			</xs:annotation>
+		</xs:attribute>
+		<xs:attribute name="statement-fetch-size" type="xs:nonNegativeInteger">
+			<xs:annotation>
+				<xs:documentation>A fetch size of the JDBC statement of a query.</xs:documentation>
+			</xs:annotation>
+		</xs:attribute>
+	</xs:attributeGroup>
+
+	<xs:simpleType name="column-name-capitalization">
+		<xs:annotation>
+			<xs:documentation>A capitalization of the column names in a query result.</xs:documentation>
+		</xs:annotation>
+		<xs:restriction base="xs:string">
+			<xs:enumeration value="DEFAULT"/>
+			<xs:enumeration value="UPPER"/>
+			<xs:enumeration value="LOWER"/>
+		</xs:restriction>
+	</xs:simpleType>
+
+	<xs:element name="ql" type="xs:string">
+		<xs:annotation>
+			<xs:documentation>The query String of an "object-query" in the syntax of ObjectSelect.parse(..).</xs:documentation>
 		</xs:annotation>
 	</xs:element>
 
 	<xs:element name="prefetch">
 		<xs:annotation>
-			<xs:documentation>A prefetch of a "SQLTemplate" query.</xs:documentation>
+			<xs:documentation>A prefetch of a "sql-query" query.</xs:documentation>
 		</xs:annotation>
 		<xs:complexType>
 			<xs:simpleContent>
@@ -213,7 +311,7 @@
 
 	<xs:element name="sql">
 		<xs:annotation>
-			<xs:documentation>Defines arbitrary SQL statement. Note that SQL statement can be customized for different SQL dialects per DbAdapter class. If no adapter-specific statement is found, the one with no adapter label is used by default.</xs:documentation>
+			<xs:documentation>Defines a SQL statement. Statements can be customized for different SQL dialects per DbAdapter class. If no adapter-specific statement is found, the one with no adapter label is used by default.</xs:documentation>
 		</xs:annotation>
 		<xs:complexType>
 			<xs:simpleContent>
@@ -226,7 +324,7 @@
 
 	<xs:element name="property">
 		<xs:annotation>
-			<xs:documentation>A generic property used by other elements.</xs:documentation>
+			<xs:documentation>A generic property of a DataMap.</xs:documentation>
 		</xs:annotation>
 		<xs:complexType>
 			<xs:attribute name="name" use="required" type="xs:string"/>

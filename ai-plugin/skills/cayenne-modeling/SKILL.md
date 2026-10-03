@@ -48,7 +48,7 @@ Apply the change following the schema in `datamap-schema.md` or `project-descrip
 
 ### Critical rules
 
-1. **Element order matters.** The DataMap schema requires this order inside `<data-map>`: `<property>`, `<procedure>`, `<embeddable>`, `<db-entity>`, `<obj-entity>`, `<db-relationship>`, `<obj-relationship>`, `<query>`, `<cgen>`, `<dbImport>`. Insert at the right place — don't append blindly.
+1. **Element order matters.** The DataMap schema requires this order inside `<data-map>`: `<property>`, `<procedure>`, `<embeddable>`, `<db-entity>`, `<obj-entity>`, `<db-relationship>`, `<obj-relationship>`, the queries (`<object-query>`, `<sql-query>`, `<procedure-query>`), `<cgen>`, `<dbImport>`. Insert at the right place — don't append blindly.
 
 2. **Cross-link consistently.**
    - An `<obj-entity>` references a `<db-entity>` by `dbEntityName="..."`. Make sure that DbEntity exists.

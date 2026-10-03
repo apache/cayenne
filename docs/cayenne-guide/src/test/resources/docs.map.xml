@@ -62,10 +62,10 @@
 	<obj-relationship name="paintings" source="Gallery" target="Painting" deleteRule="Nullify" db-relationship-path="paintings"/>
 	<obj-relationship name="artist" source="Painting" target="Artist" deleteRule="Nullify" db-relationship-path="artist"/>
 	<obj-relationship name="gallery" source="Painting" target="Gallery" deleteRule="Nullify" db-relationship-path="gallery"/>
-	<query name="artistsByName" type="SelectQuery">
-		<select><![CDATA[from Artist where name = $name]]></select>
-	</query>
-	<query name="updatePaintingTitle" type="SQLTemplate" root="data-map" root-name="docs">
+	<object-query name="artistsByName">
+		<ql><![CDATA[from Artist where name = $name]]></ql>
+	</object-query>
+	<sql-query name="updatePaintingTitle" root="data-map" root-name="docs">
 		<sql><![CDATA[UPDATE PAINTING SET TITLE = #bind($title)]]></sql>
-	</query>
+	</sql-query>
 </data-map>

@@ -234,8 +234,8 @@ public class SQLTemplateMainTab extends BaseQueryMainTab {
             }
 
             CellConstraints cc = new CellConstraints();
-            builder.addLabel("Row Label Case:", cc.xy(1, 13));
-            builder.add(labelCase, cc.xywh(3, 13, 5, 1));
+            builder.addLabel("Row Label Case:", cc.xy(1, 9));
+            builder.add(labelCase, cc.xywh(3, 9, 5, 1));
 
             return builder;
         }

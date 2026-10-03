@@ -29,10 +29,10 @@
 	</db-relationship>
 	<obj-relationship name="paintings" source="ArtistLazy" target="PaintingLazy" deleteRule="Deny" db-relationship-path="paintings"/>
 	<obj-relationship name="artist" source="PaintingLazy" target="ArtistLazy" deleteRule="Nullify" db-relationship-path="artist"/>
-	<query name="prefetchSelect" type="SelectQuery">
-		<select><![CDATA[from PaintingLazy prefetch artist disjoint]]></select>
-	</query>
-	<query name="simpleSelect" type="SelectQuery">
-		<select><![CDATA[from ArtistLazy]]></select>
-	</query>
+	<object-query name="prefetchSelect">
+		<ql><![CDATA[from PaintingLazy prefetch artist disjoint]]></ql>
+	</object-query>
+	<object-query name="simpleSelect">
+		<ql><![CDATA[from ArtistLazy]]></ql>
+	</object-query>
 </data-map>

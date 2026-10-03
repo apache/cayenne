@@ -43,8 +43,9 @@ For every rename, walk the checklist for that element type. Element shapes are i
 |---|---|
 | `className` simple name | Same `<obj-entity>`. Keep it equal to the new `name` → the generated class is `Y`. Old `X.java` / `_X.java` become orphaned; regenerate and delete the stale pair. |
 | `source="X"` / `target="X"` | Every `<obj-relationship>` in the DataMap — on **any** entity, not just this one. |
-| `root-name="X"` | Every `<query>` with `root="obj-entity"`. |
-| `result-entity="X"` | `<query type="ProcedureQuery">`. |
+| `root-name="X"` | Every `<sql-query>` with `root="obj-entity"`. |
+| `from X` | The `<ql>` String of every `<object-query>` rooted in the entity. |
+| `result-entity="X"` | `<procedure-query>`. |
 | Java | `ObjectSelect.query(X.class)` tracks `className`, so updating `className` + regenerating covers it. Also fix string-based entity lookups (`context.newObject("X")`, `objectSelect("X")`). |
 
 The `dbEntityName` does **not** change — the DbEntity keeps its DB-derived name.
@@ -53,7 +54,7 @@ The `dbEntityName` does **not** change — the DbEntity keeps its DB-derived nam
 
 | Update | Where |
 |---|---|
-| query qualifiers / orderings | `<qualifier>` and `<ordering>` bodies that reference the old property name. |
+| query qualifiers / orderings | The `<ql>` Strings of `<object-query>` elements that reference the old property name. |
 | Java | Generated getter/setter changes; fix `Expression`/`Property` paths and `ObjectSelect` column refs in user code. |
 
 `db-attribute-path` is **unaffected** — it names the DB column, which didn't change. Uniqueness is

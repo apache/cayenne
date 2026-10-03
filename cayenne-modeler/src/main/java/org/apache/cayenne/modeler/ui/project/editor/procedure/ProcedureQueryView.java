@@ -295,12 +295,16 @@ public class ProcedureQueryView extends ProjectPanel {
 
             PanelBuilder builder = super.createPanelBuilder();
 
-            RowSpec[] extraRows = RowSpec.decodeSpecs("$rgap, p");
+            RowSpec[] extraRows = RowSpec.decodeSpecs("$rgap, p, $rgap, p, $rgap, p");
             for (RowSpec extraRow : extraRows) {
                 builder.appendRow(extraRow);
             }
 
             CellConstraints cc = new CellConstraints();
+            builder.addLabel("Fetch Offset, Rows:", cc.xy(1, 9));
+            builder.add(fetchOffset, cc.xywh(3, 9, 3, 1));
+            builder.addLabel("Fetch Limit, Rows:", cc.xy(1, 11));
+            builder.add(fetchLimit, cc.xywh(3, 11, 3, 1));
             builder.addLabel("Row Label Case:", cc.xy(1, 13));
             builder.add(labelCase, cc.xywh(3, 13, 5, 1));
 

@@ -65,8 +65,10 @@ public class SQLTemplateDescriptorTest {
         builder.setProperty(SQLTemplateDescriptor.COLUMN_NAME_CAPITALIZATION_PROPERTY, "lower");
 
         SQLTemplate<?> query = builder.buildQuery();
-        assertEquals(5, query.getFetchLimit());
-        assertEquals(2, query.getFetchOffset());
+
+        // the limit and offset are a part of SQL, and are not taken from the descriptor
+        assertEquals(0, query.getFetchLimit());
+        assertEquals(0, query.getFetchOffset());
         assertEquals(10, query.getPageSize());
         assertEquals(6, query.getStatementFetchSize());
         assertTrue(query.isFetchingDataRows());

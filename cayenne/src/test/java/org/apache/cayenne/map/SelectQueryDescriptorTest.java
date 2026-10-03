@@ -182,13 +182,14 @@ public class SelectQueryDescriptorTest {
         descriptor.addOrdering(new Ordering("artistName", SortOrder.DESCENDING));
         descriptor.setFetchOffset(20);
         descriptor.setCacheStrategy(QueryCacheStrategy.LOCAL_CACHE);
+        descriptor.setCacheGroup("g1 & g2");
 
         // the root, limit, offset and distinct are a part of the query String, and are not stored separately
         assertEquals("""
-                <query name="q" type="SelectQuery">
-                <property name="cayenne.GenericSelectQuery.cacheStrategy" value="LOCAL_CACHE"/>
-                <select><![CDATA[from Artist where artistName = $name order by artistName desc offset 20]]></select>
-                </query>
+                <object-query name="q" cache-strategy="LOCAL_CACHE">
+                <ql><![CDATA[from Artist where artistName = $name order by artistName desc offset 20]]></ql>
+                <cache-group><![CDATA[g1 & g2]]></cache-group>
+                </object-query>
                 """, encode(descriptor));
     }
 
@@ -199,7 +200,7 @@ public class SelectQueryDescriptorTest {
         descriptor.setQualifier(ExpressionFactory.exp("artistName = $name"));
 
         assertEquals("""
-                <query name="q" type="SelectQuery"/>
+                <object-query name="q"/>
                 """, encode(descriptor));
     }
 

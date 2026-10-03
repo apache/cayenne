@@ -70,7 +70,7 @@ public abstract class RawQueryPropertiesPanel extends SelectPropertiesPanel {
         FormLayout layout = new FormLayout(
                 EditorForm.LABEL_COLUMN + ", $lcgap, left:max(10dlu;pref), "
                         + "$lcgap, left:max(37dlu;pref), $lcgap, fill:max(147dlu;pref)",
-                "p, $rgap, p, $rgap, p, $rgap, p, $rgap, p, $rgap, p");
+                "p, $rgap, p, $rgap, p, $rgap, p");
 
         PanelBuilder builder = new PanelBuilder(layout);
         builder.setBorder(EditorForm.sectionBorder());
@@ -81,12 +81,8 @@ public abstract class RawQueryPropertiesPanel extends SelectPropertiesPanel {
         builder.addLabel("Fetch Objects:", cc.xy(1, 5));
         builder.add(persistentObjects, cc.xy(3, 5));
         builder.add(entities, cc.xywh(5, 5, 3, 1));
-        builder.addLabel("Fetch Offset, Rows:", cc.xy(1, 7));
-        builder.add(fetchOffset, cc.xywh(3, 7, 3, 1));
-        builder.addLabel("Fetch Limit, Rows:", cc.xy(1, 9));
-        builder.add(fetchLimit, cc.xywh(3, 9, 3, 1));
-        builder.addLabel("Page Size:", cc.xy(1, 11));
-        builder.add(pageSize, cc.xywh(3, 11, 3, 1));
+        builder.addLabel("Page Size:", cc.xy(1, 7));
+        builder.add(pageSize, cc.xywh(3, 7, 3, 1));
         return builder;
     }
 

@@ -28,5 +28,15 @@
 	<obj-entity name="Artist" className="org.apache.cayenne.CayenneDataObject" dbEntityName="ARTIST">
 		<obj-attribute name="artistName" type="java.lang.String" db-attribute-path="ARTIST_NAME"/>
 	</obj-entity>
-	<query name="ArtistQuery" factory="org.apache.cayenne.map.SelectQueryBuilder" root="obj-entity" root-name="Artist"/>
+	<query name="ArtistQuery" factory="org.apache.cayenne.map.SelectQueryBuilder" root="obj-entity" root-name="Artist">
+		<property name="cayenne.GenericSelectQuery.fetchLimit" value="5"/>
+		<property name="cayenne.GenericSelectQuery.pageSize" value="10"/>
+		<property name="cayenne.GenericSelectQuery.cacheGroups" value="g1 &amp; g2"/>
+		<qualifier><![CDATA[artistName = "a"]]></qualifier>
+	</query>
+	<query name="ArtistSql" factory="org.apache.cayenne.map.SQLTemplateBuilder" root="obj-entity" root-name="Artist">
+		<property name="cayenne.SQLTemplate.columnNameCapitalization" value="upper"/>
+		<property name="cayenne.GenericSelectQuery.pageSize" value="7"/>
+		<sql><![CDATA[select * from ARTIST]]></sql>
+	</query>
 </data-map>
