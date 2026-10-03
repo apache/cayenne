@@ -25,6 +25,7 @@ import org.apache.cayenne.exp.Expression;
 import org.apache.cayenne.exp.ExpressionException;
 import org.apache.cayenne.map.DataMap;
 import org.apache.cayenne.map.Entity;
+import org.apache.cayenne.map.ObjEntity;
 import org.apache.cayenne.map.SelectQueryDescriptor;
 import org.apache.cayenne.query.Ordering;
 import org.apache.cayenne.util.CayenneMapEntry;
@@ -93,8 +94,9 @@ class SelectQueryValidator extends BaseQueryValidator<SelectQueryDescriptor> {
     }
 
     private void checkForRoot(SelectQueryDescriptor query, ValidationResult validationResult) {
-        DataMap map = query.getDataMap();
-        if (query.getRoot() == null && map != null) {
+        // a query can only be rooted in an ObjEntity, either resolved or referenced by name
+        Object root = query.getRoot();
+        if (!(root instanceof ObjEntity) && !(root instanceof String)) {
             addFailure(validationResult, query, "Query '%s' has no root", query.getName());
         }
     }

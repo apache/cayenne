@@ -114,7 +114,7 @@ public class SQLTemplatePrefetchTab extends ProjectPanel {
     protected void initFromModel() {
         QueryDescriptor query = session.getSelectedQuery();
 
-        if (query == null || !QueryDescriptor.SQL_TEMPLATE.equals(query.getType())) {
+        if (!(query instanceof SQLTemplateDescriptor)) {
             processInvalidModel("Unknown query.");
             return;
         }

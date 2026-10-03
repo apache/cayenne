@@ -139,7 +139,7 @@ public class SQLTemplateScriptsTab extends ProjectPanel {
     void initFromModel() {
         QueryDescriptor query = session.getSelectedQuery();
 
-        if (query == null || !QueryDescriptor.SQL_TEMPLATE.equals(query.getType())) {
+        if (!(query instanceof SQLTemplateDescriptor)) {
             setVisible(false);
             return;
         }
@@ -172,7 +172,7 @@ public class SQLTemplateScriptsTab extends ProjectPanel {
 
     SQLTemplateDescriptor getQuery() {
         QueryDescriptor query = session.getSelectedQuery();
-        return (query != null && QueryDescriptor.SQL_TEMPLATE.equals(query.getType())) ?
+        return query instanceof SQLTemplateDescriptor ?
                 (SQLTemplateDescriptor) query : null;
     }
 

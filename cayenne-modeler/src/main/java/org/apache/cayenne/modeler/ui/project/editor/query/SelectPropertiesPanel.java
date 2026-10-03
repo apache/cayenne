@@ -38,20 +38,15 @@ import org.apache.cayenne.modeler.project.ProjectSession;
 import org.apache.cayenne.query.QueryCacheStrategy;
 import org.apache.cayenne.map.QueryDescriptor;
 import java.util.Objects;
+import java.util.function.BiConsumer;
+import java.util.function.Function;
 import org.apache.cayenne.validation.ValidationException;
-
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 /**
  * A panel that supports editing the properties of a GenericSelectQuery.
  * 
  */
-public abstract class SelectPropertiesPanel extends ProjectPanel {
-
-    private static final Logger LOGGER = LoggerFactory.getLogger(SelectPropertiesPanel.class);
-
-    private static final Integer ZERO = 0;
+public abstract class SelectPropertiesPanel<Q extends QueryDescriptor> extends ProjectPanel {
 
     private static final String NO_CACHE_LABEL = "No Result Caching";
     private static final String LOCAL_CACHE_LABEL = "Local Cache (per ObjectContext)";
@@ -78,8 +73,11 @@ public abstract class SelectPropertiesPanel extends ProjectPanel {
     protected CMUndoableTextField cacheGroups;
     protected JComponent cacheGroupsLabel;
 
-    public SelectPropertiesPanel(ProjectSession session) {
+    private final Class<Q> queryType;
+
+    public SelectPropertiesPanel(ProjectSession session, Class<Q> queryType) {
         super(session);
+        this.queryType = queryType;
         initView();
         initController();
     }
@@ -103,7 +101,7 @@ public abstract class SelectPropertiesPanel extends ProjectPanel {
     protected void initController() {
         cacheStrategy.addActionListener(event -> {
             QueryCacheStrategy strategy = (QueryCacheStrategy) cacheStrategy.getModel().getSelectedItem();
-            setQueryProperty(QueryDescriptor.CACHE_STRATEGY_PROPERTY, strategy.name());
+            setQueryProperty(QueryDescriptor::getCacheStrategy, QueryDescriptor::setCacheStrategy, strategy);
             setCacheGroupsEnabled(strategy != QueryCacheStrategy.NO_CACHE);
         });
     }
@@ -112,69 +110,55 @@ public abstract class SelectPropertiesPanel extends ProjectPanel {
      * Updates the view from the current model state. Invoked when a currently displayed
      * query is changed.
      */
-    public void initFromModel(QueryDescriptor query) {
+    public void initFromModel(Q query) {
         DefaultComboBoxModel<QueryCacheStrategy> cacheModel = new DefaultComboBoxModel<>(CACHE_POLICIES);
 
         QueryCacheStrategy selectedStrategy = query.getCacheStrategy();
         cacheModel.setSelectedItem(selectedStrategy);
         cacheStrategy.setModel(cacheModel);
 
-        // showing the raw property rather than QueryDescriptor.getCacheGroup(), so that a legacy comma-separated
-        // list of groups stays visible (and fixable) to the user
-        cacheGroups.setText(query.getProperty(QueryDescriptor.CACHE_GROUPS_PROPERTY));
+        cacheGroups.setText(query.getCacheGroup());
         setCacheGroupsEnabled(selectedStrategy != QueryCacheStrategy.NO_CACHE);
 
-        fetchOffset.setText(String.valueOf(query.getFetchOffset()));
-        fetchLimit.setText(String.valueOf(query.getFetchLimit()));
         pageSize.setText(String.valueOf(query.getPageSize()));
     }
 
     void setFetchOffset(String string) {
-        string = string == null ? "" : string.trim();
-        if (string.length() == 0) {
-            setQueryProperty(QueryDescriptor.FETCH_OFFSET_PROPERTY, ZERO.toString());
-        } else {
-            if (isNumeric(string)) {
-                setQueryProperty(QueryDescriptor.FETCH_OFFSET_PROPERTY, string);
-            } else {
-                throw new ValidationException("Fetch offset must be an integer: %s", string);
-            }
-        }
+        setFetchOffset(intValue(string, "Fetch offset"));
     }
 
     void setFetchLimit(String string) {
-        string = (string == null) ? "" : string.trim();
-        if (string.length() == 0) {
-            setQueryProperty(QueryDescriptor.FETCH_LIMIT_PROPERTY, ZERO.toString());
-        } else {
-            if (isNumeric(string)) {
-                setQueryProperty(QueryDescriptor.FETCH_LIMIT_PROPERTY, string);
-            } else {
-                throw new ValidationException("Fetch limit must be an integer: %s", string);
-            }
-        }
+        setFetchLimit(intValue(string, "Fetch limit"));
     }
 
     void setPageSize(String string) {
-        string = (string == null) ? "" : string.trim();
-        if (string.length() == 0) {
-            setQueryProperty(QueryDescriptor.PAGE_SIZE_PROPERTY, ZERO.toString());
-        } else {
-            if (isNumeric(string)) {
-                setQueryProperty(QueryDescriptor.PAGE_SIZE_PROPERTY, string);
-            } else {
-                throw new ValidationException("Page size must be an integer: %s", string);
-            }
-        }
+        setQueryProperty(QueryDescriptor::getPageSize, QueryDescriptor::setPageSize, intValue(string, "Page size"));
     }
 
     void setCacheGroups(String string) {
         string = (string == null) ? "" : string.trim();
-        setQueryProperty(QueryDescriptor.CACHE_GROUPS_PROPERTY, string);
+        setQueryProperty(QueryDescriptor::getCacheGroup, QueryDescriptor::setCacheGroup,
+                string.isEmpty() ? null : string);
     }
 
-    QueryDescriptor getQuery() {
-        return session.getSelectedQuery();
+    /**
+     * Sets the fetch offset of the query. Does nothing by default, as not every type of query has an offset.
+     */
+    protected void setFetchOffset(int fetchOffset) {
+    }
+
+    /**
+     * Sets the fetch limit of the query. Does nothing by default, as not every type of query has a limit.
+     */
+    protected void setFetchLimit(int fetchLimit) {
+    }
+
+    /**
+     * Returns the selected query, or null if there's no selection, or the selected query is of a different type.
+     */
+    protected Q getQuery() {
+        QueryDescriptor query = session.getSelectedQuery();
+        return queryType.isInstance(query) ? queryType.cast(query) : null;
     }
 
     public void setEnabled(boolean flag) {
@@ -193,20 +177,34 @@ public abstract class SelectPropertiesPanel extends ProjectPanel {
         cacheGroupsLabel.setEnabled(enabled);
     }
 
-    protected void setQueryProperty(String property, String value) {
-        QueryDescriptor query = getQuery();
-        if (query != null) {
-            try {
-                Object old = query.getProperty(property);
-                if (Objects.equals(value, old)) {
-                    return;
-                }
-                query.setProperty(property, value);
-                session.fireQueryEvent(QueryEvent.ofChange(this, query));
-            }
-            catch (Exception ex) {
-                LOGGER.warn("Error setting property: {}", property, ex);
-            }
+    /**
+     * Changes a property of the query, and notifies the listeners, unless the property already has this value.
+     */
+    protected <T> void setQueryProperty(Function<? super Q, T> getter, BiConsumer<? super Q, T> setter, T value) {
+
+        Q query = getQuery();
+        if (query == null || Objects.equals(value, getter.apply(query))) {
+            return;
+        }
+
+        setter.accept(query, value);
+        session.fireQueryEvent(QueryEvent.ofChange(this, query));
+    }
+
+    private static int intValue(String string, String label) {
+        string = (string == null) ? "" : string.trim();
+        if (string.isEmpty()) {
+            return 0;
+        }
+
+        if (!isNumeric(string)) {
+            throw new ValidationException("%s must be an integer: %s", label, string);
+        }
+
+        try {
+            return Integer.parseInt(string);
+        } catch (NumberFormatException e) {
+            throw new ValidationException("%s is too large: %s", label, string);
         }
     }
 

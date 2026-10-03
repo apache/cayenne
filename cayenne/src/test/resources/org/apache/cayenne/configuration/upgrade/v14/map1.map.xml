@@ -14,7 +14,7 @@
 	</obj-entity>
 	<query name="AllClauses" type="SelectQuery" root="obj-entity" root-name="Artist">
 		<property name="cayenne.GenericSelectQuery.cacheStrategy" value="SHARED_CACHE"/>
-		<property name="cayenne.GenericSelectQuery.cacheGroups" value="g1"/>
+		<property name="cayenne.GenericSelectQuery.cacheGroups" value=",g1,g4"/>
 		<property name="cayenne.GenericSelectQuery.fetchLimit" value="10"/>
 		<property name="cayenne.GenericSelectQuery.fetchOffset" value="20"/>
 		<property name="cayenne.GenericSelectQuery.pageSize" value="5"/>

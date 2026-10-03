@@ -32,6 +32,8 @@ import org.apache.cayenne.map.Procedure;
 import org.apache.cayenne.map.ProcedureParameter;
 import org.apache.cayenne.map.QueryDescriptor;
 import org.junit.jupiter.api.Test;
+import org.apache.cayenne.map.SelectQueryDescriptor;
+import org.apache.cayenne.map.SQLTemplateDescriptor;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 
@@ -103,12 +105,12 @@ public class NameBuilderTest {
         assertEquals("db_enity", p2.getName(), "Should not conflict with similarly named DbEntity");
         map.addProcedure(p2);
 
-        QueryDescriptor q0 = QueryDescriptor.selectQueryDescriptor();
+        QueryDescriptor q0 = new SelectQueryDescriptor();
         q0.setName(NameBuilder.of(q0, map).build());
         assertEquals("query", q0.getName());
         map.addQueryDescriptor(q0);
 
-        QueryDescriptor q1 = QueryDescriptor.sqlTemplateDescriptor();
+        QueryDescriptor q1 = new SQLTemplateDescriptor();
         q1.setName(NameBuilder.of(q1, map).build());
         assertEquals("query1", q1.getName());
         map.addQueryDescriptor(q1);

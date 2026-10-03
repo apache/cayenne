@@ -215,16 +215,16 @@ public class DefaultProjectValidator implements ProjectValidator {
         }
 
         public ValidationResult visitQuery(QueryDescriptor query) {
-            switch (query.getType()) {
-                case QueryDescriptor.SELECT_QUERY:
-                    getValidator(SelectQueryDescriptor.class).validate((SelectQueryDescriptor) query, validationResult);
-                    break;
-                case QueryDescriptor.SQL_TEMPLATE:
-                    getValidator(SQLTemplateDescriptor.class).validate((SQLTemplateDescriptor) query, validationResult);
-                    break;
-                case QueryDescriptor.PROCEDURE_QUERY:
-                    getValidator(ProcedureQueryDescriptor.class).validate((ProcedureQueryDescriptor) query, validationResult);
-                    break;
+            switch (query) {
+                case SelectQueryDescriptor select ->
+                        getValidator(SelectQueryDescriptor.class).validate(select, validationResult);
+                case SQLTemplateDescriptor sqlTemplate ->
+                        getValidator(SQLTemplateDescriptor.class).validate(sqlTemplate, validationResult);
+                case ProcedureQueryDescriptor procedureQuery ->
+                        getValidator(ProcedureQueryDescriptor.class).validate(procedureQuery, validationResult);
+                default -> {
+                    // no other query types
+                }
             }
 
             return validationResult;

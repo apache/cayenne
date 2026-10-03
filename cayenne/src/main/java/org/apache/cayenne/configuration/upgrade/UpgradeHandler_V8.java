@@ -24,7 +24,6 @@ import javax.xml.xpath.XPathConstants;
 import javax.xml.xpath.XPathFactory;
 
 import org.apache.cayenne.ConfigurationException;
-import org.apache.cayenne.map.QueryDescriptor;
 import org.w3c.dom.Element;
 import org.w3c.dom.NodeList;
 
@@ -64,10 +63,10 @@ public final class UpgradeHandler_V8 implements UpgradeHandler {
             }
 
             String queryType = switch (factory) {
-                case "org.apache.cayenne.map.SelectQueryBuilder" -> QueryDescriptor.SELECT_QUERY;
-                case "org.apache.cayenne.map.SQLTemplateBuilder" -> QueryDescriptor.SQL_TEMPLATE;
+                case "org.apache.cayenne.map.SelectQueryBuilder" -> "SelectQuery";
+                case "org.apache.cayenne.map.SQLTemplateBuilder" -> "SQLTemplate";
                 case "org.apache.cayenne.map.EjbqlBuilder" -> "EJBQLQuery";
-                case "org.apache.cayenne.map.ProcedureQueryBuilder" -> QueryDescriptor.PROCEDURE_QUERY;
+                case "org.apache.cayenne.map.ProcedureQueryBuilder" -> "ProcedureQuery";
                 default -> throw new ConfigurationException("Unknown query factory: " + factory);
             };
 

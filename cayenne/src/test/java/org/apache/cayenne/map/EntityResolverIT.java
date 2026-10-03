@@ -146,7 +146,7 @@ public class EntityResolverIT {
     public void getQuery() {
         // create a resolver with a single map
         DataMap m1 = new DataMap();
-        QueryDescriptor q = QueryDescriptor.selectQueryDescriptor();
+        QueryDescriptor q = new SelectQueryDescriptor();
         q.setName("query1");
         m1.addQueryDescriptor(q);
 
@@ -156,7 +156,7 @@ public class EntityResolverIT {
         // check that the query added on-the-fly will be recognized
         assertNull(resolver.getQueryDescriptor("query2"));
 
-        QueryDescriptor q2 = QueryDescriptor.selectQueryDescriptor();
+        QueryDescriptor q2 = new SelectQueryDescriptor();
         q2.setName("query2");
         m1.addQueryDescriptor(q2);
         assertSame(q2, resolver.getQueryDescriptor("query2"));

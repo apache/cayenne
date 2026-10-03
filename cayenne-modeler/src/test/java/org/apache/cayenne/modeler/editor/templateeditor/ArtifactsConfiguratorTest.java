@@ -42,6 +42,7 @@ import org.slf4j.helpers.NOPLogger;
 import java.lang.reflect.Field;
 import java.util.Collection;
 import java.util.List;
+import org.apache.cayenne.map.SelectQueryDescriptor;
 
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
@@ -104,7 +105,7 @@ public class ArtifactsConfiguratorTest {
         Embeddable embeddable = new Embeddable("embeddable");
         dataMap.addEmbeddable(embeddable);
 
-        QueryDescriptor descriptor = QueryDescriptor.descriptor(QueryDescriptor.SELECT_QUERY);
+        QueryDescriptor descriptor = new SelectQueryDescriptor();
         descriptor.setName("queryDescriptor");
         dataMap.addQueryDescriptor(descriptor);
         return dataMap;

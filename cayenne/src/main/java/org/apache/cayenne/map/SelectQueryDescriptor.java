@@ -24,6 +24,8 @@ import org.apache.cayenne.exp.Expression;
 import org.apache.cayenne.ql.QLSelectPrinter;
 import org.apache.cayenne.query.ObjectSelect;
 import org.apache.cayenne.query.Ordering;
+import org.apache.cayenne.query.QueryCacheStrategy;
+import org.apache.cayenne.query.QueryMetadata;
 import org.apache.cayenne.util.XMLEncoder;
 
 import java.util.ArrayList;
@@ -36,25 +38,51 @@ import java.util.Map;
  */
 public class SelectQueryDescriptor extends QueryDescriptor {
 
-    public static final String DISTINCT_PROPERTY = "cayenne.SelectQuery.distinct";
-    public static final boolean DISTINCT_DEFAULT = false;
-
-	protected Expression qualifier;
-
+    protected Expression qualifier;
     protected List<Ordering> orderings = new ArrayList<>();
     protected Map<String, Integer> prefetchesMap = new HashMap<>();
-
-    public SelectQueryDescriptor() {
-        super(SELECT_QUERY);
-    }
-
-    public void setDistinct(boolean value) {
-        setProperty(DISTINCT_PROPERTY, String.valueOf(value));
-    }
+    protected int fetchLimit = QueryMetadata.FETCH_LIMIT_DEFAULT;
+    protected int fetchOffset = QueryMetadata.FETCH_OFFSET_DEFAULT;
+    protected boolean distinct;
 
     public boolean isDistinct() {
-        String distinct = getProperty(DISTINCT_PROPERTY);
-        return distinct != null ? Boolean.parseBoolean(distinct) : DISTINCT_DEFAULT;
+        return distinct;
+    }
+
+    public void setDistinct(boolean distinct) {
+        this.distinct = distinct;
+    }
+
+    /**
+     * Returns the fetch limit of the query. Zero means no limit.
+     *
+     * @since 5.0
+     */
+    public int getFetchLimit() {
+        return fetchLimit;
+    }
+
+    /**
+     * @since 5.0
+     */
+    public void setFetchLimit(int fetchLimit) {
+        this.fetchLimit = fetchLimit;
+    }
+
+    /**
+     * Returns the fetch offset of the query.
+     *
+     * @since 5.0
+     */
+    public int getFetchOffset() {
+        return fetchOffset;
+    }
+
+    /**
+     * @since 5.0
+     */
+    public void setFetchOffset(int fetchOffset) {
+        this.fetchOffset = fetchOffset;
     }
 
     /**
@@ -171,17 +199,17 @@ public class SelectQueryDescriptor extends QueryDescriptor {
             prefetchesMap.forEach(query::prefetch);
         }
 
-        query.limit(getFetchLimit())
-                .offset(getFetchOffset())
-                .pageSize(getPageSize())
-                .statementFetchSize(getStatementFetchSize())
-                .cacheStrategy(getCacheStrategy(), getCacheGroup());
+        query.limit(fetchLimit)
+                .offset(fetchOffset)
+                .pageSize(pageSize)
+                .statementFetchSize(statementFetchSize)
+                .cacheStrategy(cacheStrategy, cacheGroup);
 
-        if (isFetchingDataRows()) {
+        if (fetchingDataRows) {
             query.fetchDataRows();
         }
 
-        if (isDistinct()) {
+        if (distinct) {
             query.distinct();
         }
 
@@ -212,10 +240,10 @@ public class SelectQueryDescriptor extends QueryDescriptor {
         // the rest of the properties are stored separately
         encoder.start("object-query")
                 .attribute("name", getName())
-                .attribute("cache-strategy", getProperty(CACHE_STRATEGY_PROPERTY))
-                .attribute("data-rows", getProperty(FETCHING_DATA_ROWS_PROPERTY))
-                .attribute("page-size", getProperty(PAGE_SIZE_PROPERTY))
-                .attribute("statement-fetch-size", getProperty(STATEMENT_FETCH_SIZE_PROPERTY));
+                .attribute("cache-strategy", cacheStrategy != QueryCacheStrategy.NO_CACHE ? cacheStrategy.name() : null)
+                .attribute("data-rows", fetchingDataRows)
+                .attribute("page-size", pageSize)
+                .attribute("statement-fetch-size", statementFetchSize);
 
         String select = toQueryString();
         if (select != null) {

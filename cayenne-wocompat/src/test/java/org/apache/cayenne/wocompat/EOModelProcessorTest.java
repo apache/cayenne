@@ -41,6 +41,7 @@ import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.junit.jupiter.api.Assertions.assertNull;
 import static org.junit.jupiter.api.Assertions.assertSame;
 import static org.junit.jupiter.api.Assertions.assertTrue;
+import static org.junit.jupiter.api.Assertions.assertInstanceOf;
 
 public class EOModelProcessorTest {
 
@@ -129,7 +130,7 @@ public class EOModelProcessorTest {
         QueryDescriptor query = map.getQueryDescriptor("ExhibitType_TestQuery");
 
         assertNotNull(query);
-        assertEquals(QueryDescriptor.SELECT_QUERY, query.getType());
+        assertInstanceOf(SelectQueryDescriptor.class, query);
         assertTrue(query instanceof SelectQueryDescriptor);
 
         assertSame(map.getObjEntity("ExhibitType"), query.getRoot());

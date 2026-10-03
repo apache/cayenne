@@ -110,9 +110,9 @@ public class DataMapNamespaceTest {
         MockMappingNamespace namespace = new MockMappingNamespace();
         map.setNamespace(namespace);
 
-        QueryDescriptor q1 = QueryDescriptor.selectQueryDescriptor();
+        QueryDescriptor q1 = new SelectQueryDescriptor();
         q1.setName("query");
-        QueryDescriptor q2 = QueryDescriptor.selectQueryDescriptor();
+        QueryDescriptor q2 = new SelectQueryDescriptor();
         q2.setName("query");
         namespace.addQueryDescriptor(q1);
 

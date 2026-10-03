@@ -35,6 +35,7 @@ import org.apache.cayenne.di.spi.DefaultAdhocObjectFactory;
 import org.apache.cayenne.di.spi.DefaultClassLoaderManager;
 import org.apache.cayenne.map.DataMap;
 import org.apache.cayenne.map.QueryDescriptor;
+import org.apache.cayenne.map.SelectQueryDescriptor;
 import org.apache.cayenne.resource.URLResource;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -130,7 +131,7 @@ public class XMLDataChannelDescriptorLoaderTest {
         assertEquals(2, map.getDbEntity("ARTIST").getAttributes().size());
         assertEquals("org.apache.cayenne.GenericPersistentObject", map.getObjEntity("Artist").getClassName());
         assertEquals(1, map.getObjEntity("Artist").getDeclaredAttributes().size());
-        assertEquals(QueryDescriptor.SELECT_QUERY, map.getQueryDescriptor("ArtistQuery").getType());
+        assertInstanceOf(SelectQueryDescriptor.class, map.getQueryDescriptor("ArtistQuery"));
     }
 
     @Test

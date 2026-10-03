@@ -34,7 +34,7 @@ public class SQLTemplateDescriptorTest {
 
     @Test
     public void getQueryType() throws Exception {
-        SQLTemplateDescriptor builder = QueryDescriptor.sqlTemplateDescriptor();
+        SQLTemplateDescriptor builder = new SQLTemplateDescriptor();
         assertTrue(builder.buildQuery() instanceof SQLTemplate);
     }
 
@@ -44,7 +44,7 @@ public class SQLTemplateDescriptorTest {
         ObjEntity entity = new ObjEntity("A");
         map.addObjEntity(entity);
 
-        SQLTemplateDescriptor builder = QueryDescriptor.sqlTemplateDescriptor();
+        SQLTemplateDescriptor builder = new SQLTemplateDescriptor();
         builder.setRoot(entity);
 
         Query query = builder.buildQuery();
@@ -54,21 +54,15 @@ public class SQLTemplateDescriptorTest {
 
     @Test
     public void getQueryProperties() throws Exception {
-        SQLTemplateDescriptor builder = QueryDescriptor.sqlTemplateDescriptor();
-        builder.setProperty(QueryDescriptor.FETCH_LIMIT_PROPERTY, "5");
-        builder.setProperty(QueryDescriptor.FETCH_OFFSET_PROPERTY, "2");
-        builder.setProperty(QueryDescriptor.PAGE_SIZE_PROPERTY, "10");
-        builder.setProperty(QueryDescriptor.STATEMENT_FETCH_SIZE_PROPERTY, "6");
-        builder.setProperty(QueryDescriptor.FETCHING_DATA_ROWS_PROPERTY, "true");
-        builder.setProperty(QueryDescriptor.CACHE_STRATEGY_PROPERTY, "LOCAL_CACHE");
-        builder.setProperty(QueryDescriptor.CACHE_GROUPS_PROPERTY, "g1");
-        builder.setProperty(SQLTemplateDescriptor.COLUMN_NAME_CAPITALIZATION_PROPERTY, "lower");
+        SQLTemplateDescriptor builder = new SQLTemplateDescriptor();
+        builder.setPageSize(10);
+        builder.setStatementFetchSize(6);
+        builder.setFetchingDataRows(true);
+        builder.setCacheStrategy(QueryCacheStrategy.LOCAL_CACHE);
+        builder.setCacheGroup("g1");
+        builder.setColumnNamesCapitalization(CapsStrategy.LOWER);
 
         SQLTemplate<?> query = builder.buildQuery();
-
-        // the limit and offset are a part of SQL, and are not taken from the descriptor
-        assertEquals(0, query.getFetchLimit());
-        assertEquals(0, query.getFetchOffset());
         assertEquals(10, query.getPageSize());
         assertEquals(6, query.getStatementFetchSize());
         assertTrue(query.isFetchingDataRows());
@@ -79,7 +73,7 @@ public class SQLTemplateDescriptorTest {
 
     @Test
     public void getQueryPropertiesDefaults() throws Exception {
-        SQLTemplate<?> query = QueryDescriptor.sqlTemplateDescriptor().buildQuery();
+        SQLTemplate<?> query = new SQLTemplateDescriptor().buildQuery();
         assertEquals(0, query.getFetchLimit());
         assertEquals(0, query.getFetchOffset());
         assertEquals(0, query.getPageSize());
@@ -92,7 +86,7 @@ public class SQLTemplateDescriptorTest {
 
     @Test
     public void getQuerySql() throws Exception {
-        SQLTemplateDescriptor builder = QueryDescriptor.sqlTemplateDescriptor();
+        SQLTemplateDescriptor builder = new SQLTemplateDescriptor();
         builder.setSql("abc");
 
         SQLTemplate query = builder.buildQuery();
@@ -101,7 +95,7 @@ public class SQLTemplateDescriptorTest {
 
     @Test
     public void buildQueryWithParameters() {
-        SQLTemplateDescriptor builder = QueryDescriptor.sqlTemplateDescriptor();
+        SQLTemplateDescriptor builder = new SQLTemplateDescriptor();
         builder.setSql("SELECT * FROM ARTIST WHERE ARTIST_NAME = #bind($name)");
 
         Map<String, Object> params = Map.of("name", "artist1");
@@ -112,7 +106,7 @@ public class SQLTemplateDescriptorTest {
 
     @Test
     public void getQueryAdapterSql() throws Exception {
-        SQLTemplateDescriptor builder = QueryDescriptor.sqlTemplateDescriptor();
+        SQLTemplateDescriptor builder = new SQLTemplateDescriptor();
         builder.getAdapterSql().put("adapter", "abc");
 
         SQLTemplate query = builder.buildQuery();

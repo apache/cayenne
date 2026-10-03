@@ -22,9 +22,15 @@ package org.apache.cayenne.configuration.xml;
 import org.apache.cayenne.map.DataMap;
 import org.apache.cayenne.map.QueryDescriptor;
 import org.apache.cayenne.map.QueryDescriptorLoader;
+import org.apache.cayenne.query.CapsStrategy;
+import org.apache.cayenne.query.QueryCacheStrategy;
 import org.apache.cayenne.util.Util;
 import org.xml.sax.Attributes;
 import org.xml.sax.SAXException;
+import org.apache.cayenne.map.SelectQueryDescriptor;
+import org.apache.cayenne.map.SQLTemplateDescriptor;
+import org.apache.cayenne.map.ProcedureQueryDescriptor;
+import java.util.function.Supplier;
 
 
 /**
@@ -59,15 +65,15 @@ public class QueryDescriptorHandler extends NamespaceAwareNestedTagHandler {
 
         switch (localName) {
             case OBJECT_QUERY_TAG:
-                addQueryDescriptor(QueryDescriptor.SELECT_QUERY, attributes);
+                addQueryDescriptor(SelectQueryDescriptor::new, attributes);
                 return true;
 
             case SQL_QUERY_TAG:
-                addQueryDescriptor(QueryDescriptor.SQL_TEMPLATE, attributes);
+                addQueryDescriptor(SQLTemplateDescriptor::new, attributes);
                 return true;
 
             case PROCEDURE_QUERY_TAG:
-                addQueryDescriptor(QueryDescriptor.PROCEDURE_QUERY, attributes);
+                addQueryDescriptor(ProcedureQueryDescriptor::new, attributes);
                 return true;
 
             case QUERY_CACHE_GROUP_TAG:
@@ -103,7 +109,7 @@ public class QueryDescriptorHandler extends NamespaceAwareNestedTagHandler {
                 break;
 
             case QUERY_CACHE_GROUP_TAG:
-                addQueryDescriptorProperty(QueryDescriptor.CACHE_GROUPS_PROPERTY, data);
+                queryBuilder.setCacheGroup(data);
                 changed = true;
                 break;
         }
@@ -115,7 +121,7 @@ public class QueryDescriptorHandler extends NamespaceAwareNestedTagHandler {
         map.addQueryDescriptor(getQueryDescriptor());
     }
 
-    private void addQueryDescriptor(String type, Attributes attributes) throws SAXException {
+    private void addQueryDescriptor(Supplier<? extends QueryDescriptor> type, Attributes attributes) throws SAXException {
         String name = attributes.getValue("name");
         if (null == name) {
             throw new SAXException("QueryDescriptorHandler::addQueryDescriptor() - no query name.");
@@ -136,22 +142,28 @@ public class QueryDescriptorHandler extends NamespaceAwareNestedTagHandler {
             queryBuilder.setResultEntity(resultEntity);
         }
 
-        addQueryDescriptorProperty(QueryDescriptor.CACHE_STRATEGY_PROPERTY, attributes.getValue("cache-strategy"));
-        addQueryDescriptorProperty(QueryDescriptor.FETCHING_DATA_ROWS_PROPERTY, attributes.getValue("data-rows"));
-        addQueryDescriptorProperty(QueryDescriptor.FETCH_LIMIT_PROPERTY, attributes.getValue("fetch-limit"));
-        addQueryDescriptorProperty(QueryDescriptor.FETCH_OFFSET_PROPERTY, attributes.getValue("fetch-offset"));
-        addQueryDescriptorProperty(QueryDescriptor.PAGE_SIZE_PROPERTY, attributes.getValue("page-size"));
-        addQueryDescriptorProperty(QueryDescriptor.STATEMENT_FETCH_SIZE_PROPERTY,
-                attributes.getValue("statement-fetch-size"));
-        queryBuilder.setColumnNameCapitalization(attributes.getValue("column-name-capitalization"));
+        String cacheStrategy = attributes.getValue("cache-strategy");
+        if (cacheStrategy != null) {
+            queryBuilder.setCacheStrategy(QueryCacheStrategy.safeValueOf(cacheStrategy));
+        }
+
+        String columnNameCapitalization = attributes.getValue("column-name-capitalization");
+        if (columnNameCapitalization != null) {
+            queryBuilder.setColumnNameCapitalization(CapsStrategy.valueOf(columnNameCapitalization.toUpperCase()));
+        }
+
+        queryBuilder.setFetchingDataRows(Boolean.parseBoolean(attributes.getValue("data-rows")));
+        queryBuilder.setFetchLimit(intAttribute(attributes, "fetch-limit"));
+        queryBuilder.setFetchOffset(intAttribute(attributes, "fetch-offset"));
+        queryBuilder.setPageSize(intAttribute(attributes, "page-size"));
+        queryBuilder.setStatementFetchSize(intAttribute(attributes, "statement-fetch-size"));
 
         changed = true;
     }
 
-    private void addQueryDescriptorProperty(String name, String value) {
-        if (value != null) {
-            queryBuilder.addProperty(name, value);
-        }
+    private int intAttribute(Attributes attributes, String name) {
+        String value = attributes.getValue(name);
+        return value != null ? Integer.parseInt(value) : 0;
     }
 
     private void createPrefetchSemantics(Attributes attributes) {

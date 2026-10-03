@@ -228,7 +228,7 @@ public class EOModelProcessor {
 	}
 
 	protected QueryDescriptor makeEOQueryDescriptor(ObjEntity root, Map plistMap) {
-		SelectQueryDescriptor descriptor = QueryDescriptor.selectQueryDescriptor();
+		SelectQueryDescriptor descriptor = new SelectQueryDescriptor();
 		descriptor.setRoot(root);
 
 		descriptor.setDistinct("YES".equalsIgnoreCase((String) plistMap.get("usesDistinct")));
@@ -284,20 +284,14 @@ public class EOModelProcessor {
 	}
 
 	protected QueryDescriptor makeEOSQLQueryDescriptor(ObjEntity root, Map plistMap) {
-		SQLTemplateDescriptor descriptor = QueryDescriptor.sqlTemplateDescriptor();
+		SQLTemplateDescriptor descriptor = new SQLTemplateDescriptor();
 		descriptor.setRoot(root);
 
+		// the limit of a SQL query can only be a part of its SQL
 		Object fetchLimit = plistMap.get("fetchLimit");
-		if (fetchLimit != null) {
-			try {
-				if (fetchLimit instanceof Number n) {
-					descriptor.setFetchLimit(n.intValue());
-				} else if (isNumeric(fetchLimit.toString())) {
-					descriptor.setFetchLimit(Integer.parseInt(fetchLimit.toString()));
-				}
-			} catch (NumberFormatException nfex) {
-				// ignoring...
-			}
+		if (fetchLimit != null && !"0".equals(fetchLimit.toString())) {
+			LOGGER.warn("Ignoring the fetch limit of {} of a SQL query of '{}'. Make it a part of the query SQL",
+					fetchLimit, root.getName());
 		}
 
 		//query

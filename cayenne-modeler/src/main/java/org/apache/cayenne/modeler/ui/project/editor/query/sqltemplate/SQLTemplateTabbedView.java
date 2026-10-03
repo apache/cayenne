@@ -26,6 +26,7 @@ import org.apache.cayenne.modeler.project.ProjectSession;
 import javax.swing.JScrollPane;
 import javax.swing.JTabbedPane;
 import javax.swing.event.ChangeEvent;
+import org.apache.cayenne.map.SQLTemplateDescriptor;
 
 public class SQLTemplateTabbedView extends ProjectTabbedPane {
 
@@ -61,7 +62,7 @@ public class SQLTemplateTabbedView extends ProjectTabbedPane {
     }
 
     private void initFromModel() {
-        if (!QueryDescriptor.SQL_TEMPLATE.equals(session.getSelectedQuery().getType())) {
+        if (!(session.getSelectedQuery() instanceof SQLTemplateDescriptor)) {
             setVisible(false);
             return;
         }

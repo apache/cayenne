@@ -35,6 +35,9 @@ import org.apache.cayenne.modeler.ui.project.editor.query.sqltemplate.SQLTemplat
 
 import javax.swing.*;
 import java.awt.*;
+import org.apache.cayenne.map.SelectQueryDescriptor;
+import org.apache.cayenne.map.SQLTemplateDescriptor;
+import org.apache.cayenne.map.ProcedureQueryDescriptor;
 
 /**
  * Card-layout panel that shows the editor matching the currently selected project object.
@@ -138,18 +141,11 @@ public class EditorPanelView extends ProjectPanel {
     private void querySelected(QueryDisplayEvent e) {
         QueryDescriptor query = e.getQuery();
 
-        switch (query.getType()) {
-            case QueryDescriptor.SELECT_QUERY:
-                detailLayout.show(this, SELECT_QUERY_VIEW);
-                break;
-            case QueryDescriptor.SQL_TEMPLATE:
-                detailLayout.show(this, SQL_TEMPLATE_VIEW);
-                break;
-            case QueryDescriptor.PROCEDURE_QUERY:
-                detailLayout.show(this, PROCEDURE_QUERY_VIEW);
-                break;
-            default:
-                detailLayout.show(this, EMPTY_VIEW);
+        switch (query) {
+            case SelectQueryDescriptor ignored -> detailLayout.show(this, SELECT_QUERY_VIEW);
+            case SQLTemplateDescriptor ignored -> detailLayout.show(this, SQL_TEMPLATE_VIEW);
+            case ProcedureQueryDescriptor ignored -> detailLayout.show(this, PROCEDURE_QUERY_VIEW);
+            default -> detailLayout.show(this, EMPTY_VIEW);
         }
     }
 }

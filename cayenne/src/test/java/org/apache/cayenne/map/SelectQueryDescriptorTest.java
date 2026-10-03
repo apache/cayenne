@@ -39,7 +39,7 @@ public class SelectQueryDescriptorTest {
 
     @Test
     public void getQueryType() {
-        SelectQueryDescriptor builder = QueryDescriptor.selectQueryDescriptor();
+        SelectQueryDescriptor builder = new SelectQueryDescriptor();
         builder.setRoot("FakeRoot");
         assertTrue(builder.buildQuery() instanceof ObjectSelect);
     }
@@ -50,7 +50,7 @@ public class SelectQueryDescriptorTest {
         ObjEntity entity = new ObjEntity("A");
         map.addObjEntity(entity);
 
-        SelectQueryDescriptor builder = QueryDescriptor.selectQueryDescriptor();
+        SelectQueryDescriptor builder = new SelectQueryDescriptor();
         builder.setRoot(entity);
 
         assertTrue(builder.buildQuery() instanceof ObjectSelect);
@@ -59,7 +59,7 @@ public class SelectQueryDescriptorTest {
 
     @Test
     public void getQueryQualifier() {
-        SelectQueryDescriptor builder = QueryDescriptor.selectQueryDescriptor();
+        SelectQueryDescriptor builder = new SelectQueryDescriptor();
         builder.setRoot("FakeRoot");
         builder.setQualifier(ExpressionFactory.exp("abc = 5"));
 
@@ -70,7 +70,7 @@ public class SelectQueryDescriptorTest {
 
     @Test
     public void buildQueryWithParameters() {
-        SelectQueryDescriptor builder = QueryDescriptor.selectQueryDescriptor();
+        SelectQueryDescriptor builder = new SelectQueryDescriptor();
         builder.setRoot("FakeRoot");
         builder.setQualifier(ExpressionFactory.exp("abc = $a and def = $b"));
 
@@ -82,7 +82,7 @@ public class SelectQueryDescriptorTest {
 
     @Test
     public void buildQueryWithoutParameters() {
-        SelectQueryDescriptor builder = QueryDescriptor.selectQueryDescriptor();
+        SelectQueryDescriptor builder = new SelectQueryDescriptor();
         builder.setRoot("FakeRoot");
 
         assertNull(builder.buildQuery(Map.of("a", 5)).getWhere());
@@ -90,16 +90,16 @@ public class SelectQueryDescriptorTest {
 
     @Test
     public void getQueryProperties() {
-        SelectQueryDescriptor builder = QueryDescriptor.selectQueryDescriptor();
+        SelectQueryDescriptor builder = new SelectQueryDescriptor();
         builder.setRoot("FakeRoot");
-        builder.setProperty(QueryDescriptor.FETCH_LIMIT_PROPERTY, "5");
-        builder.setProperty(QueryDescriptor.FETCH_OFFSET_PROPERTY, "2");
-        builder.setProperty(QueryDescriptor.PAGE_SIZE_PROPERTY, "10");
-        builder.setProperty(QueryDescriptor.STATEMENT_FETCH_SIZE_PROPERTY, "6");
-        builder.setProperty(QueryDescriptor.FETCHING_DATA_ROWS_PROPERTY, "true");
-        builder.setProperty(QueryDescriptor.CACHE_STRATEGY_PROPERTY, "SHARED_CACHE");
-        builder.setProperty(QueryDescriptor.CACHE_GROUPS_PROPERTY, "g1");
-        builder.setProperty(SelectQueryDescriptor.DISTINCT_PROPERTY, "true");
+        builder.setFetchLimit(5);
+        builder.setFetchOffset(2);
+        builder.setPageSize(10);
+        builder.setStatementFetchSize(6);
+        builder.setFetchingDataRows(true);
+        builder.setCacheStrategy(QueryCacheStrategy.SHARED_CACHE);
+        builder.setCacheGroup("g1");
+        builder.setDistinct(true);
 
         ObjectSelect<?> query = builder.buildQuery();
         assertEquals(5, query.getLimit());
@@ -114,7 +114,7 @@ public class SelectQueryDescriptorTest {
 
     @Test
     public void getQueryPropertiesDefaults() {
-        SelectQueryDescriptor builder = QueryDescriptor.selectQueryDescriptor();
+        SelectQueryDescriptor builder = new SelectQueryDescriptor();
         builder.setRoot("FakeRoot");
 
         ObjectSelect<?> query = builder.buildQuery();
@@ -130,7 +130,7 @@ public class SelectQueryDescriptorTest {
 
     @Test
     public void typedSetters() {
-        SelectQueryDescriptor builder = QueryDescriptor.selectQueryDescriptor();
+        SelectQueryDescriptor builder = new SelectQueryDescriptor();
         builder.setRoot("FakeRoot");
         builder.setFetchLimit(5);
         builder.setCacheStrategy(QueryCacheStrategy.LOCAL_CACHE);
@@ -146,7 +146,7 @@ public class SelectQueryDescriptorTest {
 
     @Test
     public void toQueryString() {
-        SelectQueryDescriptor descriptor = QueryDescriptor.selectQueryDescriptor();
+        SelectQueryDescriptor descriptor = new SelectQueryDescriptor();
         descriptor.setRoot(new ObjEntity("Artist"));
         descriptor.setQualifier(ExpressionFactory.exp("artistName like $name"));
         descriptor.addOrdering(new Ordering("artistName", SortOrder.DESCENDING_INSENSITIVE));
@@ -168,14 +168,14 @@ public class SelectQueryDescriptorTest {
 
     @Test
     public void toQueryStringNoRoot() {
-        SelectQueryDescriptor descriptor = QueryDescriptor.selectQueryDescriptor();
+        SelectQueryDescriptor descriptor = new SelectQueryDescriptor();
         descriptor.setQualifier(ExpressionFactory.exp("artistName like $name"));
         assertNull(descriptor.toQueryString());
     }
 
     @Test
     public void encodeAsXML() {
-        SelectQueryDescriptor descriptor = QueryDescriptor.selectQueryDescriptor();
+        SelectQueryDescriptor descriptor = new SelectQueryDescriptor();
         descriptor.setName("q");
         descriptor.setRoot("Artist");
         descriptor.setQualifier(ExpressionFactory.exp("artistName = $name"));
@@ -195,7 +195,7 @@ public class SelectQueryDescriptorTest {
 
     @Test
     public void encodeAsXMLNoRoot() {
-        SelectQueryDescriptor descriptor = QueryDescriptor.selectQueryDescriptor();
+        SelectQueryDescriptor descriptor = new SelectQueryDescriptor();
         descriptor.setName("q");
         descriptor.setQualifier(ExpressionFactory.exp("artistName = $name"));
 

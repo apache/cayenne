@@ -25,6 +25,7 @@ import org.apache.cayenne.modeler.toolkit.ProjectTabbedPane;
 
 import javax.swing.*;
 import javax.swing.event.ChangeEvent;
+import org.apache.cayenne.map.SelectQueryDescriptor;
 
 public class SelectQueryTabbedView extends ProjectTabbedPane {
 
@@ -60,7 +61,7 @@ public class SelectQueryTabbedView extends ProjectTabbedPane {
     }
 
     private void initFromModel() {
-        if (!QueryDescriptor.SELECT_QUERY.equals(session.getSelectedQuery().getType())) {
+        if (!(session.getSelectedQuery() instanceof SelectQueryDescriptor)) {
             setVisible(false);
             return;
         }

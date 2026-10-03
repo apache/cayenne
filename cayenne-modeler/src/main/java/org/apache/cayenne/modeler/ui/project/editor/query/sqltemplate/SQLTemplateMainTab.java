@@ -74,7 +74,7 @@ public class SQLTemplateMainTab extends BaseQueryMainTab {
     }
 
     protected CMUndoableTextField comment;
-    protected SelectPropertiesPanel properties;
+    protected SelectPropertiesPanel<SQLTemplateDescriptor> properties;
 
     public SQLTemplateMainTab(ProjectSession session) {
         super(session);
@@ -132,9 +132,7 @@ public class SQLTemplateMainTab extends BaseQueryMainTab {
      * query is changed.
      */
     void initFromModel() {
-        QueryDescriptor query = session.getSelectedQuery();
-
-        if (query == null || !QueryDescriptor.SQL_TEMPLATE.equals(query.getType())) {
+        if (!(session.getSelectedQuery() instanceof SQLTemplateDescriptor query)) {
             setVisible(false);
             return;
         }
@@ -160,7 +158,7 @@ public class SQLTemplateMainTab extends BaseQueryMainTab {
     @Override
     protected QueryDescriptor getQuery() {
         QueryDescriptor query = session.getSelectedQuery();
-        return (query != null && QueryDescriptor.SQL_TEMPLATE.equals(query.getType())) ? query : null;
+        return query instanceof SQLTemplateDescriptor ? query : null;
     }
 
     /**
@@ -208,12 +206,12 @@ public class SQLTemplateMainTab extends BaseQueryMainTab {
         }
     }
 
-    final class SQLTemplateQueryPropertiesPanel extends RawQueryPropertiesPanel {
+    final class SQLTemplateQueryPropertiesPanel extends RawQueryPropertiesPanel<SQLTemplateDescriptor> {
 
         private JComboBox<CapsStrategy> labelCase;
 
         SQLTemplateQueryPropertiesPanel(ProjectSession session) {
-            super(session);
+            super(session, SQLTemplateDescriptor.class);
         }
 
         @Override
@@ -223,7 +221,8 @@ public class SQLTemplateMainTab extends BaseQueryMainTab {
 
             labelCase.addActionListener(event -> {
                 CapsStrategy value = (CapsStrategy) labelCase.getModel().getSelectedItem();
-                setQueryProperty(SQLTemplateDescriptor.COLUMN_NAME_CAPITALIZATION_PROPERTY, value.name());
+                setQueryProperty(SQLTemplateDescriptor::getColumnNamesCapitalization,
+                        SQLTemplateDescriptor::setColumnNamesCapitalization, value);
             });
 
             PanelBuilder builder = super.createPanelBuilder();
@@ -241,17 +240,15 @@ public class SQLTemplateMainTab extends BaseQueryMainTab {
         }
 
         @Override
-        public void initFromModel(QueryDescriptor query) {
+        public void initFromModel(SQLTemplateDescriptor query) {
             super.initFromModel(query);
 
-            if (query != null && QueryDescriptor.SQL_TEMPLATE.equals(query.getType())) {
-                DefaultComboBoxModel<CapsStrategy> labelCaseModel = new DefaultComboBoxModel<>(LABEL_CAPITALIZATION);
-                CapsStrategy columnNameCapitalization = ((SQLTemplateDescriptor) query).getColumnNamesCapitalization();
-                labelCaseModel.setSelectedItem(columnNameCapitalization != null
-                        ? columnNameCapitalization
-                        : CapsStrategy.DEFAULT);
-                labelCase.setModel(labelCaseModel);
-            }
+            DefaultComboBoxModel<CapsStrategy> labelCaseModel = new DefaultComboBoxModel<>(LABEL_CAPITALIZATION);
+            CapsStrategy columnNameCapitalization = query.getColumnNamesCapitalization();
+            labelCaseModel.setSelectedItem(columnNameCapitalization != null
+                    ? columnNameCapitalization
+                    : CapsStrategy.DEFAULT);
+            labelCase.setModel(labelCaseModel);
         }
 
         @Override
@@ -260,12 +257,8 @@ public class SQLTemplateMainTab extends BaseQueryMainTab {
         }
 
         @Override
-        public ObjEntity getEntity(QueryDescriptor query) {
-            if (query != null && QueryDescriptor.SQL_TEMPLATE.equals(query.getType())) {
-                return SQLTemplateMainTab.this.getEntity(query);
-            }
-
-            return null;
+        public ObjEntity getEntity(SQLTemplateDescriptor query) {
+            return SQLTemplateMainTab.this.getEntity(query);
         }
 
         @Override

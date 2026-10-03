@@ -82,7 +82,7 @@ public class QueryDescriptorLoaderTest {
         map.addObjEntity(entity);
 
         builder.setName("q");
-        builder.setQueryType(QueryDescriptor.SELECT_QUERY);
+        builder.setQueryType(SelectQueryDescriptor::new);
         builder.setRoot(map, null, null);
         builder.setSelect("select distinct self from Artist where artistName like $name "
                 + "order by artistName desc insensitive, dateOfBirth limit 10 offset 20 "
@@ -118,7 +118,7 @@ public class QueryDescriptorLoaderTest {
         map.addObjEntity(entity);
 
         builder.setName("q");
-        builder.setQueryType(QueryDescriptor.SELECT_QUERY);
+        builder.setQueryType(SelectQueryDescriptor::new);
         builder.setRoot(map, null, null);
         builder.setSelect("from Artist");
 
@@ -127,13 +127,42 @@ public class QueryDescriptorLoaderTest {
         assertNull(descriptor.getQualifier());
         assertTrue(descriptor.getOrderings().isEmpty());
         assertTrue(descriptor.getPrefetchesMap().isEmpty());
-        assertTrue(descriptor.getProperties().isEmpty());
+        assertEquals(0, descriptor.getFetchLimit());
+        assertEquals(0, descriptor.getFetchOffset());
+        assertFalse(descriptor.isDistinct());
+    }
+
+    @Test
+    public void selectWithoutRoot() {
+        DataMap map = new DataMap("map");
+
+        builder.setName("q");
+        builder.setQueryType(SelectQueryDescriptor::new);
+        builder.setRoot(map, null, null);
+
+        // unlike the other queries, a select query is never rooted in a DataMap
+        assertNull(builder.buildQueryDescriptor().getRoot());
+    }
+
+    @Test
+    public void selectWithUnknownRoot() {
+        DataMap map = new DataMap("map");
+
+        builder.setName("q");
+        builder.setQueryType(SelectQueryDescriptor::new);
+        builder.setRoot(map, null, null);
+        builder.setSelect("from Artist where artistName = 'a'");
+
+        // an entity that is not in the DataMap is kept by name, so that the query is not lost on save
+        SelectQueryDescriptor descriptor = (SelectQueryDescriptor) builder.buildQueryDescriptor();
+        assertEquals("Artist", descriptor.getRoot());
+        assertEquals("from Artist where artistName = \"a\"", descriptor.toQueryString());
     }
 
     @Test
     public void setSelectUnsupported() {
         builder.setName("q");
-        builder.setQueryType(QueryDescriptor.SELECT_QUERY);
+        builder.setQueryType(SelectQueryDescriptor::new);
         builder.setRoot(new DataMap("map"), null, null);
 
         // TODO: column queries, "having" and DbEntity roots are not supported by the descriptor yet

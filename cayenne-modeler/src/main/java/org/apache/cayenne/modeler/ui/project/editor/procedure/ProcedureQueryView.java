@@ -75,7 +75,7 @@ public class ProcedureQueryView extends ProjectPanel {
     protected CMUndoableTextField name;
     protected CMUndoableTextField comment;
     protected JComboBox<Procedure> queryRoot;
-    protected SelectPropertiesPanel properties;
+    protected SelectPropertiesPanel<ProcedureQueryDescriptor> properties;
 
     public ProcedureQueryView(ProjectSession session) {
         super(session);
@@ -150,9 +150,7 @@ public class ProcedureQueryView extends ProjectPanel {
      * query is changed.
      */
     void initFromModel() {
-        QueryDescriptor query = session.getSelectedQuery();
-
-        if (query == null || !QueryDescriptor.PROCEDURE_QUERY.equals(query.getType())) {
+        if (!(session.getSelectedQuery() instanceof ProcedureQueryDescriptor query)) {
             setVisible(false);
             return;
         }
@@ -245,7 +243,7 @@ public class ProcedureQueryView extends ProjectPanel {
 
     void setEntity(ObjEntity entity) {
         QueryDescriptor query = session.getSelectedQuery();
-        if (query != null && QueryDescriptor.PROCEDURE_QUERY.equals(query.getType())) {
+        if (query instanceof ProcedureQueryDescriptor) {
             ((ProcedureQueryDescriptor) query).setResultEntityName(entity != null ? entity.getName() : null);
             session.fireQueryEvent(QueryEvent.ofChange(this, query));
         }
@@ -277,20 +275,21 @@ public class ProcedureQueryView extends ProjectPanel {
         }
     }
 
-    final class ProcedureQueryPropertiesPanel extends RawQueryPropertiesPanel {
+    final class ProcedureQueryPropertiesPanel extends RawQueryPropertiesPanel<ProcedureQueryDescriptor> {
 
         private JComboBox<CapsStrategy> labelCase;
 
         ProcedureQueryPropertiesPanel(ProjectSession session) {
-            super(session);
+            super(session, ProcedureQueryDescriptor.class);
         }
 
         protected PanelBuilder createPanelBuilder() {
             labelCase = new CMUndoableComboBox<>(app.getUndoManager());
             labelCase.setRenderer(new LabelCapsRenderer());
             labelCase.addActionListener(event -> {
-                String value = labelCase.getModel().getSelectedItem().toString();
-                setQueryProperty(ProcedureQueryDescriptor.COLUMN_NAME_CAPITALIZATION_PROPERTY, value);
+                CapsStrategy value = (CapsStrategy) labelCase.getModel().getSelectedItem();
+                setQueryProperty(ProcedureQueryDescriptor::getColumnNamesCapitalization,
+                        ProcedureQueryDescriptor::setColumnNamesCapitalization, value);
             });
 
             PanelBuilder builder = super.createPanelBuilder();
@@ -311,29 +310,38 @@ public class ProcedureQueryView extends ProjectPanel {
             return builder;
         }
 
-        public void initFromModel(QueryDescriptor query) {
+        @Override
+        public void initFromModel(ProcedureQueryDescriptor query) {
             super.initFromModel(query);
 
-            if (query != null && QueryDescriptor.PROCEDURE_QUERY.equals(query.getType())) {
-                DefaultComboBoxModel<CapsStrategy> labelCaseModel = new DefaultComboBoxModel<>(LABEL_CAPITALIZATION);
-                ProcedureQueryDescriptor procedureQuery = (ProcedureQueryDescriptor) query;
-                CapsStrategy columnNameCapitalization = procedureQuery.getColumnNamesCapitalization();
-                labelCaseModel.setSelectedItem(columnNameCapitalization != null ?
-                        columnNameCapitalization : CapsStrategy.DEFAULT);
-                labelCase.setModel(labelCaseModel);
-            }
+            fetchOffset.setText(String.valueOf(query.getFetchOffset()));
+            fetchLimit.setText(String.valueOf(query.getFetchLimit()));
+
+            DefaultComboBoxModel<CapsStrategy> labelCaseModel = new DefaultComboBoxModel<>(LABEL_CAPITALIZATION);
+            CapsStrategy columnNameCapitalization = query.getColumnNamesCapitalization();
+            labelCaseModel.setSelectedItem(columnNameCapitalization != null ?
+                    columnNameCapitalization : CapsStrategy.DEFAULT);
+            labelCase.setModel(labelCaseModel);
+        }
+
+        @Override
+        protected void setFetchOffset(int fetchOffset) {
+            setQueryProperty(ProcedureQueryDescriptor::getFetchOffset, ProcedureQueryDescriptor::setFetchOffset,
+                    fetchOffset);
+        }
+
+        @Override
+        protected void setFetchLimit(int fetchLimit) {
+            setQueryProperty(ProcedureQueryDescriptor::getFetchLimit, ProcedureQueryDescriptor::setFetchLimit,
+                    fetchLimit);
         }
 
         protected void setEntity(ObjEntity entity) {
             ProcedureQueryView.this.setEntity(entity);
         }
 
-        public ObjEntity getEntity(QueryDescriptor query) {
-            if (query != null && QueryDescriptor.PROCEDURE_QUERY.equals(query.getType())) {
-                return ProcedureQueryView.this.getEntity((ProcedureQueryDescriptor) query);
-            }
-
-            return null;
+        public ObjEntity getEntity(ProcedureQueryDescriptor query) {
+            return ProcedureQueryView.this.getEntity(query);
         }
     }
 }

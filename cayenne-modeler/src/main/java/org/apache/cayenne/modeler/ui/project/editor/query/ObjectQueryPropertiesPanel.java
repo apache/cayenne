@@ -26,6 +26,7 @@ import javax.swing.JCheckBox;
 import org.apache.cayenne.modeler.toolkit.checkbox.CMCheckBox;
 import org.apache.cayenne.modeler.project.ProjectSession;
 import org.apache.cayenne.map.QueryDescriptor;
+import org.apache.cayenne.map.SelectQueryDescriptor;
 import org.apache.cayenne.modeler.ui.project.editor.EditorForm;
 
 import com.jgoodies.forms.builder.PanelBuilder;
@@ -36,12 +37,12 @@ import com.jgoodies.forms.layout.FormLayout;
  * A panel that supports editing the properties of a query based on ObjEntity.
  * 
  */
-public class ObjectQueryPropertiesPanel extends SelectPropertiesPanel {
+public class ObjectQueryPropertiesPanel extends SelectPropertiesPanel<SelectQueryDescriptor> {
 
     protected JCheckBox dataRows;
 
     public ObjectQueryPropertiesPanel(ProjectSession session) {
-        super(session);
+        super(session, SelectQueryDescriptor.class);
     }
 
     protected void initView() {
@@ -77,19 +78,30 @@ public class ObjectQueryPropertiesPanel extends SelectPropertiesPanel {
     protected void initController() {
         super.initController();
 
-        dataRows.addItemListener(e -> {
-            Boolean b = dataRows.isSelected() ? Boolean.TRUE : Boolean.FALSE;
-            setQueryProperty(QueryDescriptor.FETCHING_DATA_ROWS_PROPERTY, String.valueOf(b));
-        });
+        dataRows.addItemListener(e -> setQueryProperty(QueryDescriptor::isFetchingDataRows,
+                QueryDescriptor::setFetchingDataRows, dataRows.isSelected()));
+    }
+
+    @Override
+    protected void setFetchOffset(int fetchOffset) {
+        setQueryProperty(SelectQueryDescriptor::getFetchOffset, SelectQueryDescriptor::setFetchOffset, fetchOffset);
+    }
+
+    @Override
+    protected void setFetchLimit(int fetchLimit) {
+        setQueryProperty(SelectQueryDescriptor::getFetchLimit, SelectQueryDescriptor::setFetchLimit, fetchLimit);
     }
 
     /**
      * Updates the view from the current model state. Invoked when a currently displayed
      * query is changed.
      */
-    public void initFromModel(QueryDescriptor query) {
+    @Override
+    public void initFromModel(SelectQueryDescriptor query) {
         super.initFromModel(query);
 
         dataRows.setSelected(query.isFetchingDataRows());
+        fetchOffset.setText(String.valueOf(query.getFetchOffset()));
+        fetchLimit.setText(String.valueOf(query.getFetchLimit()));
     }
 }

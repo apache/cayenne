@@ -244,7 +244,7 @@ public class DataMapTest {
 
     @Test
     public void addQueryDescriptor() {
-        QueryDescriptor q = QueryDescriptor.selectQueryDescriptor();
+        QueryDescriptor q = new SelectQueryDescriptor();
         q.setName("a");
         DataMap map = new DataMap();
         map.addQueryDescriptor(q);
@@ -253,7 +253,7 @@ public class DataMapTest {
 
     @Test
     public void removeQueryDescriptor() {
-        QueryDescriptor q = QueryDescriptor.selectQueryDescriptor();
+        QueryDescriptor q = new SelectQueryDescriptor();
         q.setName("a");
 
         DataMap map = new DataMap();
@@ -265,7 +265,7 @@ public class DataMapTest {
 
     @Test
     public void getQueryMap() {
-        QueryDescriptor q = QueryDescriptor.selectQueryDescriptor();
+        QueryDescriptor q = new SelectQueryDescriptor();
         q.setName("a");
         DataMap map = new DataMap();
         map.addQueryDescriptor(q);

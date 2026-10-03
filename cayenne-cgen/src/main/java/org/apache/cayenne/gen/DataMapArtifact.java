@@ -26,6 +26,7 @@ import org.apache.velocity.context.Context;
 
 import java.util.Collection;
 import java.util.LinkedList;
+import org.apache.cayenne.map.SelectQueryDescriptor;
 
 /**
  * {@link Artifact} facade for a DataMap.
@@ -92,16 +93,12 @@ public class DataMapArtifact implements Artifact {
 
     private void addQuery(QueryDescriptor query) {
 
-        switch (query.getType()) {
-            case QueryDescriptor.SELECT_QUERY:
-                selectQueries.add(query);
-                break;
-            // For now put all other queries to MappedExec list.
-            // Some additional flag could be introduced to control this explicitly.
-            case QueryDescriptor.PROCEDURE_QUERY:
-            case QueryDescriptor.SQL_TEMPLATE:
-                execQueries.add(query);
-                break;
+        // For now put all non-select queries to MappedExec list.
+        // Some additional flag could be introduced to control this explicitly.
+        if (query instanceof SelectQueryDescriptor) {
+            selectQueries.add(query);
+        } else {
+            execQueries.add(query);
         }
 
         if (query.getName() != null && !"".equals(query.getName())) {

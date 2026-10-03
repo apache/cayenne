@@ -21,6 +21,7 @@ package org.apache.cayenne.map;
 import org.apache.cayenne.configuration.ConfigurationNodeVisitor;
 import org.apache.cayenne.query.CapsStrategy;
 import org.apache.cayenne.query.PrefetchTreeNode;
+import org.apache.cayenne.query.QueryCacheStrategy;
 import org.apache.cayenne.query.SQLTemplate;
 import org.apache.cayenne.util.XMLEncoder;
 
@@ -33,22 +34,11 @@ import java.util.TreeSet;
  */
 public class SQLTemplateDescriptor extends QueryDescriptor {
 
-    /**
-     * Name of the descriptor property holding the {@link #getColumnNamesCapitalization() column name
-     * capitalization} of the query.
-     *
-     * @since 5.0
-     */
-    public static final String COLUMN_NAME_CAPITALIZATION_PROPERTY = "cayenne.SQLTemplate.columnNameCapitalization";
-
     protected String sql;
     protected Map<String, Integer> prefetchesMap = new HashMap<>();
 
     protected Map<String, String> adapterSql = new HashMap<>();
-
-    public SQLTemplateDescriptor() {
-        super(SQL_TEMPLATE);
-    }
+    protected CapsStrategy columnNamesCapitalization;
 
     /**
      * Returns default SQL statement for this query.
@@ -84,16 +74,14 @@ public class SQLTemplateDescriptor extends QueryDescriptor {
      * @since 5.0
      */
     public CapsStrategy getColumnNamesCapitalization() {
-        String value = getProperty(COLUMN_NAME_CAPITALIZATION_PROPERTY);
-        return value != null ? CapsStrategy.valueOf(value.toUpperCase()) : null;
+        return columnNamesCapitalization;
     }
 
     /**
      * @since 5.0
      */
     public void setColumnNamesCapitalization(CapsStrategy columnNamesCapitalization) {
-        setProperty(COLUMN_NAME_CAPITALIZATION_PROPERTY,
-                columnNamesCapitalization != null ? columnNamesCapitalization.name() : null);
+        this.columnNamesCapitalization = columnNamesCapitalization;
     }
 
     /**
@@ -140,12 +128,12 @@ public class SQLTemplateDescriptor extends QueryDescriptor {
             }
         }
 
-        template.setPageSize(getPageSize());
-        template.setStatementFetchSize(getStatementFetchSize());
-        template.setFetchingDataRows(isFetchingDataRows());
-        template.setCacheStrategy(getCacheStrategy());
-        template.setCacheGroup(getCacheGroup());
-        template.setColumnNamesCapitalization(getColumnNamesCapitalization());
+        template.setPageSize(pageSize);
+        template.setStatementFetchSize(statementFetchSize);
+        template.setFetchingDataRows(fetchingDataRows);
+        template.setCacheStrategy(cacheStrategy);
+        template.setCacheGroup(cacheGroup);
+        template.setColumnNamesCapitalization(columnNamesCapitalization);
 
         // init SQL
         template.setDefaultTemplate(this.getSql());
@@ -206,11 +194,14 @@ public class SQLTemplateDescriptor extends QueryDescriptor {
             encoder.attribute("root", rootType).attribute("root-name", rootString);
         }
 
-        encoder.attribute("cache-strategy", getProperty(CACHE_STRATEGY_PROPERTY))
-                .attribute("data-rows", getProperty(FETCHING_DATA_ROWS_PROPERTY))
-                .attribute("page-size", getProperty(PAGE_SIZE_PROPERTY))
-                .attribute("statement-fetch-size", getProperty(STATEMENT_FETCH_SIZE_PROPERTY))
-                .attribute("column-name-capitalization", getProperty(COLUMN_NAME_CAPITALIZATION_PROPERTY));
+        encoder.attribute("cache-strategy", cacheStrategy != QueryCacheStrategy.NO_CACHE ? cacheStrategy.name() : null)
+                .attribute("data-rows", fetchingDataRows)
+                .attribute("page-size", pageSize)
+                .attribute("statement-fetch-size", statementFetchSize)
+                .attribute("column-name-capitalization",
+                        columnNamesCapitalization != null && columnNamesCapitalization != CapsStrategy.DEFAULT
+                                ? columnNamesCapitalization.name()
+                                : null);
 
         // encode default SQL
         if (sql != null) {

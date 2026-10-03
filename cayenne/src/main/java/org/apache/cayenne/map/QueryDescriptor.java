@@ -18,7 +18,6 @@
  ****************************************************************/
 package org.apache.cayenne.map;
 
-import org.apache.cayenne.CayenneRuntimeException;
 import org.apache.cayenne.configuration.ConfigurationNode;
 import org.apache.cayenne.configuration.ConfigurationNodeVisitor;
 import org.apache.cayenne.query.Query;
@@ -27,7 +26,6 @@ import org.apache.cayenne.query.QueryMetadata;
 import org.apache.cayenne.util.XMLEncoder;
 import org.apache.cayenne.util.XMLSerializable;
 
-import java.util.HashMap;
 import java.util.Map;
 
 /**
@@ -35,11 +33,7 @@ import java.util.Map;
  *
  * @since 4.0
  */
-public class QueryDescriptor implements ConfigurationNode, XMLSerializable {
-
-    public static final String SELECT_QUERY = "SelectQuery";
-    public static final String SQL_TEMPLATE = "SQLTemplate";
-    public static final String PROCEDURE_QUERY = "ProcedureQuery";
+public abstract class QueryDescriptor implements ConfigurationNode, XMLSerializable {
 
     /**
      * @since 4.1
@@ -66,99 +60,15 @@ public class QueryDescriptor implements ConfigurationNode, XMLSerializable {
      */
     public static final String JAVA_CLASS_ROOT = "java-class";
 
-    /**
-     * Name of the descriptor property holding the query {@link #getFetchLimit() fetch limit}.
-     *
-     * @since 5.0
-     */
-    public static final String FETCH_LIMIT_PROPERTY = "cayenne.GenericSelectQuery.fetchLimit";
-
-    /**
-     * Name of the descriptor property holding the query {@link #getFetchOffset() fetch offset}.
-     *
-     * @since 5.0
-     */
-    public static final String FETCH_OFFSET_PROPERTY = "cayenne.GenericSelectQuery.fetchOffset";
-
-    /**
-     * Name of the descriptor property holding the query {@link #getPageSize() page size}.
-     *
-     * @since 5.0
-     */
-    public static final String PAGE_SIZE_PROPERTY = "cayenne.GenericSelectQuery.pageSize";
-
-    /**
-     * Name of the descriptor property holding the query {@link #isFetchingDataRows() data rows} flag.
-     *
-     * @since 5.0
-     */
-    public static final String FETCHING_DATA_ROWS_PROPERTY = "cayenne.GenericSelectQuery.fetchingDataRows";
-
-    /**
-     * Name of the descriptor property holding the query {@link #getCacheStrategy() cache strategy}.
-     *
-     * @since 5.0
-     */
-    public static final String CACHE_STRATEGY_PROPERTY = "cayenne.GenericSelectQuery.cacheStrategy";
-
-    /**
-     * Name of the descriptor property holding the query {@link #getCacheGroup() cache group}. The plural name is
-     * historical: older projects could store a comma-separated list of groups under this property.
-     *
-     * @since 5.0
-     */
-    public static final String CACHE_GROUPS_PROPERTY = "cayenne.GenericSelectQuery.cacheGroups";
-
-    /**
-     * Name of the descriptor property holding the query {@link #getStatementFetchSize() statement fetch size}.
-     *
-     * @since 5.0
-     */
-    public static final String STATEMENT_FETCH_SIZE_PROPERTY = "cayenne.GenericSelectQuery.statementFetchSize";
-
-    /**
-     * Creates new SelectQuery query descriptor.
-     */
-    public static SelectQueryDescriptor selectQueryDescriptor() {
-        return new SelectQueryDescriptor();
-    }
-
-    /**
-     * Creates new SQLTemplate query descriptor.
-     */
-    public static SQLTemplateDescriptor sqlTemplateDescriptor() {
-        return new SQLTemplateDescriptor();
-    }
-
-    /**
-     * Creates new ProcedureQuery query descriptor.
-     */
-    public static ProcedureQueryDescriptor procedureQueryDescriptor() {
-        return new ProcedureQueryDescriptor();
-    }
-
-    /**
-     * Creates query descriptor of a given type.
-     */
-    public static QueryDescriptor descriptor(String type) {
-        return switch (type) {
-            case SELECT_QUERY -> selectQueryDescriptor();
-            case SQL_TEMPLATE -> sqlTemplateDescriptor();
-            case PROCEDURE_QUERY -> procedureQueryDescriptor();
-            default -> new QueryDescriptor(type);
-        };
-    }
-
     protected String name;
-    protected String type;
     protected DataMap dataMap;
     protected Object root;
 
-    protected Map<String, String> properties = new HashMap<>();
-
-    protected QueryDescriptor(String type) {
-        this.type = type;
-    }
+    protected QueryCacheStrategy cacheStrategy = QueryCacheStrategy.getDefaultStrategy();
+    protected String cacheGroup;
+    protected boolean fetchingDataRows = QueryMetadata.FETCHING_DATA_ROWS_DEFAULT;
+    protected int pageSize = QueryMetadata.PAGE_SIZE_DEFAULT;
+    protected int statementFetchSize = QueryMetadata.STATEMENT_FETCH_SIZE_DEFAULT;
 
     /**
      * Returns name of the query.
@@ -172,20 +82,6 @@ public class QueryDescriptor implements ConfigurationNode, XMLSerializable {
      */
     public void setName(String name) {
         this.name = name;
-    }
-
-    /**
-     * Returns type of the query.
-     */
-    public String getType() {
-        return type;
-    }
-
-    /**
-     * Sets type of the query.
-     */
-    public void setType(String type) {
-        this.type = type;
     }
 
     public DataMap getDataMap() {
@@ -211,206 +107,106 @@ public class QueryDescriptor implements ConfigurationNode, XMLSerializable {
     }
 
     /**
-     * Returns map of query properties set up for this query. Properties are the raw String values stored in the
-     * project XML. Typed accessors like {@link #getFetchLimit()} or {@link #getCacheStrategy()} interpret the
-     * well-known properties.
-     */
-    public Map<String, String> getProperties() {
-        return properties;
-    }
-
-    /**
-     * Returns query property by its name.
-     */
-    public String getProperty(String name) {
-        return properties.get(name);
-    }
-
-    /**
-     * Sets map of query properties for this query.
-     */
-    public void setProperties(Map<String, String> properties) {
-        this.properties = properties;
-    }
-
-    /**
-     * Sets single query property. A null value removes the property.
-     */
-    public void setProperty(String name, String value) {
-        if (value == null) {
-            this.properties.remove(name);
-        } else {
-            this.properties.put(name, value);
-        }
-    }
-
-    /**
-     * Returns the fetch limit of the query, or {@link QueryMetadata#FETCH_LIMIT_DEFAULT} if it is not set.
-     *
-     * @since 5.0
-     */
-    public int getFetchLimit() {
-        return intProperty(FETCH_LIMIT_PROPERTY, QueryMetadata.FETCH_LIMIT_DEFAULT);
-    }
-
-    /**
-     * @since 5.0
-     */
-    public void setFetchLimit(int fetchLimit) {
-        setProperty(FETCH_LIMIT_PROPERTY, String.valueOf(fetchLimit));
-    }
-
-    /**
-     * Returns the fetch offset of the query, or {@link QueryMetadata#FETCH_OFFSET_DEFAULT} if it is not set.
-     *
-     * @since 5.0
-     */
-    public int getFetchOffset() {
-        return intProperty(FETCH_OFFSET_PROPERTY, QueryMetadata.FETCH_OFFSET_DEFAULT);
-    }
-
-    /**
-     * @since 5.0
-     */
-    public void setFetchOffset(int fetchOffset) {
-        setProperty(FETCH_OFFSET_PROPERTY, String.valueOf(fetchOffset));
-    }
-
-    /**
-     * Returns the page size of the query, or {@link QueryMetadata#PAGE_SIZE_DEFAULT} if it is not set.
+     * Returns the page size of the query. Zero means no pagination.
      *
      * @since 5.0
      */
     public int getPageSize() {
-        return intProperty(PAGE_SIZE_PROPERTY, QueryMetadata.PAGE_SIZE_DEFAULT);
+        return pageSize;
     }
 
     /**
      * @since 5.0
      */
     public void setPageSize(int pageSize) {
-        setProperty(PAGE_SIZE_PROPERTY, String.valueOf(pageSize));
+        this.pageSize = pageSize;
     }
 
     /**
-     * Returns the JDBC statement fetch size of the query, or {@link QueryMetadata#STATEMENT_FETCH_SIZE_DEFAULT} if
-     * it is not set.
+     * Returns the JDBC statement fetch size of the query. Zero means the driver default.
      *
      * @since 5.0
      */
     public int getStatementFetchSize() {
-        return intProperty(STATEMENT_FETCH_SIZE_PROPERTY, QueryMetadata.STATEMENT_FETCH_SIZE_DEFAULT);
+        return statementFetchSize;
     }
 
     /**
      * @since 5.0
      */
     public void setStatementFetchSize(int statementFetchSize) {
-        setProperty(STATEMENT_FETCH_SIZE_PROPERTY, String.valueOf(statementFetchSize));
+        this.statementFetchSize = statementFetchSize;
     }
 
     /**
-     * Returns whether the query fetches DataRows instead of Persistent objects. Defaults to
-     * {@link QueryMetadata#FETCHING_DATA_ROWS_DEFAULT} if the property is not set.
+     * Returns whether the query fetches DataRows instead of Persistent objects.
      *
      * @since 5.0
      */
     public boolean isFetchingDataRows() {
-        String value = getProperty(FETCHING_DATA_ROWS_PROPERTY);
-        return value != null ? Boolean.parseBoolean(value) : QueryMetadata.FETCHING_DATA_ROWS_DEFAULT;
+        return fetchingDataRows;
     }
 
     /**
      * @since 5.0
      */
     public void setFetchingDataRows(boolean fetchingDataRows) {
-        setProperty(FETCHING_DATA_ROWS_PROPERTY, String.valueOf(fetchingDataRows));
+        this.fetchingDataRows = fetchingDataRows;
     }
 
     /**
-     * Returns the cache strategy of the query. Defaults to {@link QueryCacheStrategy#getDefaultStrategy()} if the
-     * property is not set or holds an unknown value.
+     * Returns the cache strategy of the query, that is never null.
      *
      * @since 5.0
      */
     public QueryCacheStrategy getCacheStrategy() {
-        String value = getProperty(CACHE_STRATEGY_PROPERTY);
-        return value != null ? QueryCacheStrategy.safeValueOf(value) : QueryCacheStrategy.getDefaultStrategy();
+        return cacheStrategy;
     }
 
     /**
+     * Sets the cache strategy of the query. A null value resets it to the default strategy.
+     *
      * @since 5.0
      */
     public void setCacheStrategy(QueryCacheStrategy cacheStrategy) {
-        setProperty(CACHE_STRATEGY_PROPERTY, cacheStrategy != null ? cacheStrategy.name() : null);
+        this.cacheStrategy = cacheStrategy != null ? cacheStrategy : QueryCacheStrategy.getDefaultStrategy();
     }
 
     /**
-     * Returns the cache group of the query, or null if none is set. If the underlying property holds a legacy
-     * comma-separated list of groups, only the first non-empty group is returned.
+     * Returns the cache group of the query, or null if none is set.
      *
      * @since 5.0
      */
     public String getCacheGroup() {
-        String value = getProperty(CACHE_GROUPS_PROPERTY);
-        if (value == null) {
-            return null;
-        }
-
-        for (String group : value.split(",")) {
-            if (!group.isEmpty()) {
-                return group;
-            }
-        }
-
-        return null;
+        return cacheGroup;
     }
 
     /**
      * @since 5.0
      */
     public void setCacheGroup(String cacheGroup) {
-        setProperty(CACHE_GROUPS_PROPERTY, cacheGroup);
-    }
-
-    private int intProperty(String name, int defaultValue) {
-        String value = getProperty(name);
-        return value != null ? Integer.parseInt(value) : defaultValue;
+        this.cacheGroup = cacheGroup;
     }
 
     /**
      * Assembles Cayenne query instance of appropriate type from this descriptor.
      */
-    public Query buildQuery() {
-        throw new CayenneRuntimeException("Unable to build query object of this type.");
-    }
+    public abstract Query buildQuery();
 
     /**
      * Assembles Cayenne query instance of appropriate type from this descriptor, applying a map of named
-     * parameters to it. Subclasses that support parameters must override this method. The default
-     * implementation ignores the parameters.
+     * parameters to it.
      *
      * @since 5.0
      */
-    public Query buildQuery(Map<String, ?> parameters) {
-        return buildQuery();
-    }
+    public abstract Query buildQuery(Map<String, ?> parameters);
 
     @Override
     public <T> T acceptVisitor(ConfigurationNodeVisitor<T> visitor) {
         return visitor.visitQuery(this);
     }
 
-    /**
-     * Does nothing, as there is no XML format for a query of an unknown type. Subclasses for the supported query
-     * types override this method.
-     */
-    @Override
-    public void encodeAsXML(XMLEncoder encoder, ConfigurationNodeVisitor delegate) {
-    }
-
     void encodeCacheGroup(XMLEncoder encoder) {
-        String cacheGroup = getProperty(CACHE_GROUPS_PROPERTY);
         if (cacheGroup != null && !cacheGroup.isEmpty()) {
             encoder.start("cache-group").cdata(cacheGroup, true).end();
         }

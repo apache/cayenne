@@ -31,9 +31,7 @@ public class QueryDescriptorTest {
 
     @Test
     public void defaults() {
-        QueryDescriptor descriptor = QueryDescriptor.descriptor("Unknown");
-        assertEquals(0, descriptor.getFetchLimit());
-        assertEquals(0, descriptor.getFetchOffset());
+        QueryDescriptor descriptor = new SQLTemplateDescriptor();
         assertEquals(0, descriptor.getPageSize());
         assertEquals(0, descriptor.getStatementFetchSize());
         assertFalse(descriptor.isFetchingDataRows());
@@ -42,26 +40,14 @@ public class QueryDescriptorTest {
     }
 
     @Test
-    public void typedSettersStoreProperties() {
-        QueryDescriptor descriptor = QueryDescriptor.descriptor("Unknown");
-        descriptor.setFetchLimit(5);
-        descriptor.setFetchOffset(2);
+    public void settings() {
+        QueryDescriptor descriptor = new SQLTemplateDescriptor();
         descriptor.setPageSize(10);
         descriptor.setStatementFetchSize(6);
         descriptor.setFetchingDataRows(true);
         descriptor.setCacheStrategy(QueryCacheStrategy.SHARED_CACHE);
         descriptor.setCacheGroup("g1");
 
-        assertEquals("5", descriptor.getProperty(QueryDescriptor.FETCH_LIMIT_PROPERTY));
-        assertEquals("2", descriptor.getProperty(QueryDescriptor.FETCH_OFFSET_PROPERTY));
-        assertEquals("10", descriptor.getProperty(QueryDescriptor.PAGE_SIZE_PROPERTY));
-        assertEquals("6", descriptor.getProperty(QueryDescriptor.STATEMENT_FETCH_SIZE_PROPERTY));
-        assertEquals("true", descriptor.getProperty(QueryDescriptor.FETCHING_DATA_ROWS_PROPERTY));
-        assertEquals("SHARED_CACHE", descriptor.getProperty(QueryDescriptor.CACHE_STRATEGY_PROPERTY));
-        assertEquals("g1", descriptor.getProperty(QueryDescriptor.CACHE_GROUPS_PROPERTY));
-
-        assertEquals(5, descriptor.getFetchLimit());
-        assertEquals(2, descriptor.getFetchOffset());
         assertEquals(10, descriptor.getPageSize());
         assertEquals(6, descriptor.getStatementFetchSize());
         assertTrue(descriptor.isFetchingDataRows());
@@ -70,38 +56,15 @@ public class QueryDescriptorTest {
     }
 
     @Test
-    public void nullRemovesProperty() {
-        QueryDescriptor descriptor = QueryDescriptor.descriptor("Unknown");
+    public void nullCacheStrategyIsDefault() {
+        QueryDescriptor descriptor = new SQLTemplateDescriptor();
         descriptor.setCacheStrategy(QueryCacheStrategy.LOCAL_CACHE);
         descriptor.setCacheGroup("g1");
 
         descriptor.setCacheStrategy(null);
         descriptor.setCacheGroup(null);
 
-        assertFalse(descriptor.getProperties().containsKey(QueryDescriptor.CACHE_STRATEGY_PROPERTY));
-        assertFalse(descriptor.getProperties().containsKey(QueryDescriptor.CACHE_GROUPS_PROPERTY));
         assertEquals(QueryCacheStrategy.NO_CACHE, descriptor.getCacheStrategy());
-        assertNull(descriptor.getCacheGroup());
-    }
-
-    @Test
-    public void unknownCacheStrategyFallsBackToDefault() {
-        QueryDescriptor descriptor = QueryDescriptor.descriptor("Unknown");
-        descriptor.setProperty(QueryDescriptor.CACHE_STRATEGY_PROPERTY, "NO_SUCH_STRATEGY");
-        assertEquals(QueryCacheStrategy.NO_CACHE, descriptor.getCacheStrategy());
-    }
-
-    @Test
-    public void legacyCacheGroupList() {
-        QueryDescriptor descriptor = QueryDescriptor.descriptor("Unknown");
-
-        descriptor.setProperty(QueryDescriptor.CACHE_GROUPS_PROPERTY, "g1,g2");
-        assertEquals("g1", descriptor.getCacheGroup());
-
-        descriptor.setProperty(QueryDescriptor.CACHE_GROUPS_PROPERTY, ",g2");
-        assertEquals("g2", descriptor.getCacheGroup());
-
-        descriptor.setProperty(QueryDescriptor.CACHE_GROUPS_PROPERTY, "");
         assertNull(descriptor.getCacheGroup());
     }
 }

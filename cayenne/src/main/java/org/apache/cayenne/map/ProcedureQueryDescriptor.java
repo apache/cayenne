@@ -21,6 +21,8 @@ package org.apache.cayenne.map;
 import org.apache.cayenne.configuration.ConfigurationNodeVisitor;
 import org.apache.cayenne.query.CapsStrategy;
 import org.apache.cayenne.query.ProcedureQuery;
+import org.apache.cayenne.query.QueryCacheStrategy;
+import org.apache.cayenne.query.QueryMetadata;
 import org.apache.cayenne.util.XMLEncoder;
 
 import java.util.Map;
@@ -30,19 +32,10 @@ import java.util.Map;
  */
 public class ProcedureQueryDescriptor extends QueryDescriptor {
 
-    /**
-     * Name of the descriptor property holding the {@link #getColumnNamesCapitalization() column name
-     * capitalization} of the query.
-     *
-     * @since 5.0
-     */
-    public static final String COLUMN_NAME_CAPITALIZATION_PROPERTY = "cayenne.ProcedureQuery.columnNameCapitalization";
-
     protected String resultEntityName;
-
-    public ProcedureQueryDescriptor() {
-        super(PROCEDURE_QUERY);
-    }
+    protected int fetchLimit = QueryMetadata.FETCH_LIMIT_DEFAULT;
+    protected int fetchOffset = QueryMetadata.FETCH_OFFSET_DEFAULT;
+    protected CapsStrategy columnNamesCapitalization;
 
     /**
      * Returns result entity name.
@@ -59,21 +52,51 @@ public class ProcedureQueryDescriptor extends QueryDescriptor {
     }
 
     /**
+     * Returns the fetch limit of the query. Zero means no limit.
+     *
+     * @since 5.0
+     */
+    public int getFetchLimit() {
+        return fetchLimit;
+    }
+
+    /**
+     * @since 5.0
+     */
+    public void setFetchLimit(int fetchLimit) {
+        this.fetchLimit = fetchLimit;
+    }
+
+    /**
+     * Returns the fetch offset of the query.
+     *
+     * @since 5.0
+     */
+    public int getFetchOffset() {
+        return fetchOffset;
+    }
+
+    /**
+     * @since 5.0
+     */
+    public void setFetchOffset(int fetchOffset) {
+        this.fetchOffset = fetchOffset;
+    }
+
+    /**
      * Returns the capitalization strategy applied to the column names of the query result, or null if none is set.
      *
      * @since 5.0
      */
     public CapsStrategy getColumnNamesCapitalization() {
-        String value = getProperty(COLUMN_NAME_CAPITALIZATION_PROPERTY);
-        return value != null ? CapsStrategy.valueOf(value.toUpperCase()) : null;
+        return columnNamesCapitalization;
     }
 
     /**
      * @since 5.0
      */
     public void setColumnNamesCapitalization(CapsStrategy columnNamesCapitalization) {
-        setProperty(COLUMN_NAME_CAPITALIZATION_PROPERTY,
-                columnNamesCapitalization != null ? columnNamesCapitalization.name() : null);
+        this.columnNamesCapitalization = columnNamesCapitalization;
     }
 
     @Override
@@ -85,14 +108,14 @@ public class ProcedureQueryDescriptor extends QueryDescriptor {
         }
 
         procedureQuery.setResultEntityName(this.getResultEntityName());
-        procedureQuery.setFetchLimit(getFetchLimit());
-        procedureQuery.setFetchOffset(getFetchOffset());
-        procedureQuery.setPageSize(getPageSize());
-        procedureQuery.setStatementFetchSize(getStatementFetchSize());
-        procedureQuery.setFetchingDataRows(isFetchingDataRows());
-        procedureQuery.setCacheStrategy(getCacheStrategy());
-        procedureQuery.setCacheGroup(getCacheGroup());
-        procedureQuery.setColumnNamesCapitalization(getColumnNamesCapitalization());
+        procedureQuery.setFetchLimit(fetchLimit);
+        procedureQuery.setFetchOffset(fetchOffset);
+        procedureQuery.setPageSize(pageSize);
+        procedureQuery.setStatementFetchSize(statementFetchSize);
+        procedureQuery.setFetchingDataRows(fetchingDataRows);
+        procedureQuery.setCacheStrategy(cacheStrategy);
+        procedureQuery.setCacheGroup(cacheGroup);
+        procedureQuery.setColumnNamesCapitalization(columnNamesCapitalization);
 
         return procedureQuery;
     }
@@ -122,13 +145,16 @@ public class ProcedureQueryDescriptor extends QueryDescriptor {
 
         encoder.attribute("root-name", rootString)
                 .attribute("result-entity", resultEntityName)
-                .attribute("cache-strategy", getProperty(CACHE_STRATEGY_PROPERTY))
-                .attribute("data-rows", getProperty(FETCHING_DATA_ROWS_PROPERTY))
-                .attribute("fetch-limit", getProperty(FETCH_LIMIT_PROPERTY))
-                .attribute("fetch-offset", getProperty(FETCH_OFFSET_PROPERTY))
-                .attribute("page-size", getProperty(PAGE_SIZE_PROPERTY))
-                .attribute("statement-fetch-size", getProperty(STATEMENT_FETCH_SIZE_PROPERTY))
-                .attribute("column-name-capitalization", getProperty(COLUMN_NAME_CAPITALIZATION_PROPERTY));
+                .attribute("cache-strategy", cacheStrategy != QueryCacheStrategy.NO_CACHE ? cacheStrategy.name() : null)
+                .attribute("data-rows", fetchingDataRows)
+                .attribute("fetch-limit", fetchLimit)
+                .attribute("fetch-offset", fetchOffset)
+                .attribute("page-size", pageSize)
+                .attribute("statement-fetch-size", statementFetchSize)
+                .attribute("column-name-capitalization",
+                        columnNamesCapitalization != null && columnNamesCapitalization != CapsStrategy.DEFAULT
+                                ? columnNamesCapitalization.name()
+                                : null);
 
         encodeCacheGroup(encoder);
 

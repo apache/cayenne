@@ -38,6 +38,7 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.io.TempDir;
 import org.slf4j.helpers.NOPLogger;
+import org.apache.cayenne.map.SelectQueryDescriptor;
 
 import static org.junit.jupiter.api.Assertions.*;
 
@@ -177,7 +178,7 @@ public class ClassGenerationActionTest extends CgenCase {
 	}
 
 	private void runDataMapTest() throws Exception {
-		QueryDescriptor descriptor = QueryDescriptor.selectQueryDescriptor();
+		QueryDescriptor descriptor = new SelectQueryDescriptor();
 		descriptor.setName("TestQuery");
 
 		DataMap map = new DataMap();

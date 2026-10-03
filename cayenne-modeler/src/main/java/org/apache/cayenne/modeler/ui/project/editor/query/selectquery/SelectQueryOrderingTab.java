@@ -104,7 +104,7 @@ public class SelectQueryOrderingTab extends ProjectPanel {
     protected void initFromModel() {
         QueryDescriptor query = session.getSelectedQuery();
 
-        if (query == null || !QueryDescriptor.SELECT_QUERY.equals(query.getType())) {
+        if (!(query instanceof SelectQueryDescriptor)) {
             processInvalidModel("Unknown query.");
             return;
         }

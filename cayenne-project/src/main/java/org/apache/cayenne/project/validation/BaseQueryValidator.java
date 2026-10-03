@@ -56,7 +56,7 @@ abstract class BaseQueryValidator<T extends QueryDescriptor> extends Configurati
         // Must have name
         String name = query.getName();
         if (Util.isEmptyString(name)) {
-            addFailure(validationResult, query, "Unnamed " + query.getType());
+            addFailure(validationResult, query, "Unnamed query");
         }
     }
 
@@ -85,15 +85,14 @@ abstract class BaseQueryValidator<T extends QueryDescriptor> extends Configurati
             }
 
             if (hasDuplicateQueryDescriptorInDataMap(query, nextMap)) {
-                addFailure(validationResult, query, "Duplicate %s name in another DataMap: %s",
-                        query.getType(), name);
+                addFailure(validationResult, query, "Duplicate query name in another DataMap: %s", name);
                 return;
             }
         }
     }
 
     void checkForMultiCacheGroup(T query, ValidationResult validationResult) {
-        String cacheGroup = query.getProperty(QueryDescriptor.CACHE_GROUPS_PROPERTY);
+        String cacheGroup = query.getCacheGroup();
         if (cacheGroup != null && cacheGroup.contains(",")) {
             addFailure(validationResult, query, "Invalid cache group '%s', multiple groups are deprecated",
                     cacheGroup);

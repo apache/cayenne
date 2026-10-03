@@ -25,6 +25,9 @@ import org.apache.cayenne.map.QueryDescriptor;
 
 import java.sql.Statement;
 import java.util.Map;
+import org.apache.cayenne.map.SelectQueryDescriptor;
+import org.apache.cayenne.map.SQLTemplateDescriptor;
+import org.apache.cayenne.map.ProcedureQueryDescriptor;
 
 /**
  * A query that represents a named parameterized selecting query stored in the mapping. The
@@ -170,8 +173,8 @@ public class MappedSelect<T> extends AbstractMappedQuery implements Select<T> {
             }
         }
 
-        switch (descriptor.getType()) {
-            case QueryDescriptor.SELECT_QUERY -> {
+        switch (descriptor) {
+            case SelectQueryDescriptor ignored -> {
                 ObjectSelect<?> selectQuery = (ObjectSelect<?>) query;
                 if (fetchLimit != null) {
                     selectQuery.limit(fetchLimit);
@@ -189,7 +192,7 @@ public class MappedSelect<T> extends AbstractMappedQuery implements Select<T> {
                     selectQuery.cacheStrategy(cacheStrategyOverride, selectQuery.getCacheGroup());
                 }
             }
-            case QueryDescriptor.SQL_TEMPLATE -> {
+            case SQLTemplateDescriptor ignored -> {
                 SQLTemplate<?> sqlTemplate = (SQLTemplate<?>) query;
                 if (fetchLimit != null) {
                     sqlTemplate.setFetchLimit(fetchLimit);
@@ -210,7 +213,7 @@ public class MappedSelect<T> extends AbstractMappedQuery implements Select<T> {
                     sqlTemplate.setCacheStrategy(cacheStrategyOverride);
                 }
             }
-            case QueryDescriptor.PROCEDURE_QUERY -> {
+            case ProcedureQueryDescriptor ignored -> {
                 ProcedureQuery<?> procedureQuery = (ProcedureQuery<?>) query;
                 if (fetchLimit != null) {
                     procedureQuery.setFetchLimit(fetchLimit);
@@ -231,7 +234,7 @@ public class MappedSelect<T> extends AbstractMappedQuery implements Select<T> {
                     procedureQuery.setCacheStrategy(cacheStrategyOverride);
                 }
             }
-            default -> throw new CayenneRuntimeException("Unknown query type: %s", descriptor.getType());
+            default -> throw new CayenneRuntimeException("Unknown query type: %s", descriptor.getClass().getName());
         }
 
         return query;

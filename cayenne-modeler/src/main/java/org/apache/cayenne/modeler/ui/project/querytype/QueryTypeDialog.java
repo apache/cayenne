@@ -37,6 +37,9 @@ import javax.swing.JButton;
 import javax.swing.JRadioButton;
 import java.awt.BorderLayout;
 import java.awt.Window;
+import org.apache.cayenne.map.SelectQueryDescriptor;
+import org.apache.cayenne.map.ProcedureQueryDescriptor;
+import org.apache.cayenne.map.SQLTemplateDescriptor;
 
 /**
  * Modal dialog for picking the type of new query (Select, SQLTemplate, Procedure)
@@ -110,7 +113,7 @@ public class QueryTypeDialog extends ProjectDialog {
     }
 
     private void createQuery() {
-        QueryDescriptor query = QueryDescriptor.descriptor(selectedQueryType());
+        QueryDescriptor query = newQuery();
         query.setName(NameBuilder.of(query, dataMap).build());
         query.setDataMap(dataMap);
 
@@ -122,9 +125,9 @@ public class QueryTypeDialog extends ProjectDialog {
         dispose();
     }
 
-    private String selectedQueryType() {
-        if (sqlSelect.isSelected()) return QueryDescriptor.SQL_TEMPLATE;
-        if (procedureSelect.isSelected()) return QueryDescriptor.PROCEDURE_QUERY;
-        return QueryDescriptor.SELECT_QUERY;
+    private QueryDescriptor newQuery() {
+        if (sqlSelect.isSelected()) return new SQLTemplateDescriptor();
+        if (procedureSelect.isSelected()) return new ProcedureQueryDescriptor();
+        return new SelectQueryDescriptor();
     }
 }

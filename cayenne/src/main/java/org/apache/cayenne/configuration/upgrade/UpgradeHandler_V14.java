@@ -152,7 +152,14 @@ public final class UpgradeHandler_V14 implements UpgradeHandler {
                                 attribute.equals("column-name-capitalization") ? value.toUpperCase() : value);
                     }
                     if (child.getAttribute("name").equals("cayenne.GenericSelectQuery.cacheGroups")) {
-                        cacheGroup = value;
+                        // the old property could hold a comma-separated list of groups, of which only the first
+                        // non-empty one was ever used
+                        for (String group : value.split(",")) {
+                            if (!group.isBlank()) {
+                                cacheGroup = group.trim();
+                                break;
+                            }
+                        }
                     }
                     typedQuery.removeChild(child);
                 }

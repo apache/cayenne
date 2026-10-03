@@ -39,6 +39,7 @@ import org.junit.jupiter.api.Test;
 import org.mockito.Mockito;
 
 import java.io.Writer;
+import org.apache.cayenne.map.SelectQueryDescriptor;
 
 import static org.mockito.Mockito.mock;
 
@@ -72,7 +73,7 @@ public class PreviewActionConfiguratorTest {
         Embeddable embeddable = new Embeddable("embeddable");
         dataMap.addEmbeddable(embeddable);
 
-        QueryDescriptor descriptor = QueryDescriptor.descriptor(QueryDescriptor.SELECT_QUERY);
+        QueryDescriptor descriptor = new SelectQueryDescriptor();
         descriptor.setName("queryDescriptor");
         dataMap.addQueryDescriptor(descriptor);
         return dataMap;

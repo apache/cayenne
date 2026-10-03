@@ -395,6 +395,9 @@ List<Artist> withExpensivePaintings = ObjectSelect
   `Expression.joinExp(int, ..)` (use `andExp(..)` / `orExp(..)`). `ExpressionFactory.matchAllExp(Map, int)`,
   `matchAnyExp(Map, int)`, `matchAllDbExp(Map, int)` and `matchAnyDbExp(Map, int)` lost the pair type parameter and
   always match by equality.
+*  Per [CAY-3040](https://issues.apache.org/jira/browse/CAY-3040) a fetch limit or offset of a `SQLTemplate` stored in
+  a DataMap is dropped by the upgrade to project version 14, and must be moved into the query SQL. A DataMap with such
+  a query can not be upgraded in memory by the runtime; open the project in CayenneModeler to upgrade it.
 
 ## Upgrading to 5.0-M3
 

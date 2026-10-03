@@ -24,16 +24,19 @@ import org.apache.cayenne.exp.Expression;
 import org.apache.cayenne.ql.JavaCharStream;
 import org.apache.cayenne.ql.QLParser;
 import org.apache.cayenne.ql.QLParserTokenManager;
+import org.apache.cayenne.query.CapsStrategy;
 import org.apache.cayenne.query.FluentSelect;
 import org.apache.cayenne.query.ObjectSelect;
 import org.apache.cayenne.query.Ordering;
 import org.apache.cayenne.query.PrefetchTreeNode;
+import org.apache.cayenne.query.QueryCacheStrategy;
 
 import java.io.StringReader;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.function.Supplier;
 
 import static org.apache.cayenne.util.Util.isBlank;
 
@@ -47,51 +50,71 @@ import static org.apache.cayenne.util.Util.isBlank;
 public class QueryDescriptorLoader {
 
     protected String name;
-    protected String queryType;
+    protected Supplier<? extends QueryDescriptor> queryType;
     protected String sql;
     protected Expression qualifier;
     protected DataMap dataMap;
     protected String rootType;
     protected String rootName;
     protected String resultEntity;
-    protected String columnNameCapitalization;
+    protected QueryCacheStrategy cacheStrategy;
+    protected String cacheGroup;
+    protected boolean fetchingDataRows;
+    protected int fetchLimit;
+    protected int fetchOffset;
+    protected int pageSize;
+    protected int statementFetchSize;
+    protected boolean distinct;
+    protected CapsStrategy columnNameCapitalization;
 
     protected List<Ordering> orderings = new ArrayList<>();
     protected HashMap<String, Integer> prefetchesMap = new HashMap<>();
     protected Map<String, String> adapterSql = new HashMap<>();
-    protected Map<String, String> properties = new HashMap<>();
 
     /**
      * Builds a Query object based on internal configuration information.
      */
     public QueryDescriptor buildQueryDescriptor() {
-        QueryDescriptor descriptor = QueryDescriptor.descriptor(queryType);
+        QueryDescriptor descriptor = queryType.get();
 
         descriptor.setName(name);
         descriptor.setDataMap(dataMap);
-        descriptor.setRoot(getRoot());
-        descriptor.setProperties(properties);
+        descriptor.setCacheStrategy(cacheStrategy);
+        descriptor.setCacheGroup(cacheGroup);
+        descriptor.setFetchingDataRows(fetchingDataRows);
+        descriptor.setPageSize(pageSize);
+        descriptor.setStatementFetchSize(statementFetchSize);
 
-        switch (queryType) {
-            case QueryDescriptor.SELECT_QUERY:
-                ((SelectQueryDescriptor) descriptor).setQualifier(qualifier);
-                ((SelectQueryDescriptor) descriptor).setOrderings(orderings);
-                ((SelectQueryDescriptor) descriptor).setPrefetchesMap(prefetchesMap);
-                break;
-            case QueryDescriptor.SQL_TEMPLATE:
-                ((SQLTemplateDescriptor) descriptor).setSql(sql);
-                ((SQLTemplateDescriptor) descriptor).setPrefetchesMap(prefetchesMap);
-                ((SQLTemplateDescriptor) descriptor).setAdapterSql(adapterSql);
-                descriptor.setProperty(SQLTemplateDescriptor.COLUMN_NAME_CAPITALIZATION_PROPERTY,
-                        columnNameCapitalization);
-                break;
-            case QueryDescriptor.PROCEDURE_QUERY:
-                ((ProcedureQueryDescriptor) descriptor).setResultEntityName(resultEntity);
-                descriptor.setProperty(ProcedureQueryDescriptor.COLUMN_NAME_CAPITALIZATION_PROPERTY,
-                        columnNameCapitalization);
-                break;
-            default:
-                // no additional properties
+        switch (descriptor) {
+            case SelectQueryDescriptor select -> {
+                // a select query is rooted in an ObjEntity, and never in a DataMap. If the entity is not in this
+                // DataMap, it is kept by name
+                ObjEntity rootEntity = dataMap.getObjEntity(rootName);
+                select.setRoot(rootEntity != null ? rootEntity : rootName);
+                select.setQualifier(qualifier);
+                select.setOrderings(orderings);
+                select.setPrefetchesMap(prefetchesMap);
+                select.setFetchLimit(fetchLimit);
+                select.setFetchOffset(fetchOffset);
+                select.setDistinct(distinct);
+            }
+            case SQLTemplateDescriptor sqlTemplate -> {
+                sqlTemplate.setRoot(getRoot());
+                sqlTemplate.setSql(sql);
+                sqlTemplate.setPrefetchesMap(prefetchesMap);
+                sqlTemplate.setAdapterSql(adapterSql);
+                sqlTemplate.setColumnNamesCapitalization(columnNameCapitalization);
+            }
+            case ProcedureQueryDescriptor procedureQuery -> {
+                procedureQuery.setRoot(getRoot());
+                procedureQuery.setResultEntityName(resultEntity);
+                procedureQuery.setFetchLimit(fetchLimit);
+                procedureQuery.setFetchOffset(fetchOffset);
+                procedureQuery.setColumnNamesCapitalization(columnNameCapitalization);
+            }
+            default -> {
+                // no other query types
+            }
         }
 
         return descriptor;
@@ -101,7 +124,10 @@ public class QueryDescriptorLoader {
         this.name = name;
     }
 
-    public void setQueryType(String queryType) {
+    /**
+     * Sets the type of the query as a factory of its descriptors, e.g. "SelectQueryDescriptor::new".
+     */
+    public void setQueryType(Supplier<? extends QueryDescriptor> queryType) {
         this.queryType = queryType;
     }
 
@@ -147,7 +173,7 @@ public class QueryDescriptorLoader {
      *
      * @since 5.0
      */
-    public void setColumnNameCapitalization(String columnNameCapitalization) {
+    public void setColumnNameCapitalization(CapsStrategy columnNameCapitalization) {
         this.columnNameCapitalization = columnNameCapitalization;
     }
 
@@ -220,15 +246,9 @@ public class QueryDescriptorLoader {
             }
         }
 
-        if (query.getLimit() > 0) {
-            addProperty(QueryDescriptor.FETCH_LIMIT_PROPERTY, String.valueOf(query.getLimit()));
-        }
-        if (query.getOffset() > 0) {
-            addProperty(QueryDescriptor.FETCH_OFFSET_PROPERTY, String.valueOf(query.getOffset()));
-        }
-        if (query.isDistinct()) {
-            addProperty(SelectQueryDescriptor.DISTINCT_PROPERTY, "true");
-        }
+        this.fetchLimit = query.getLimit();
+        this.fetchOffset = query.getOffset();
+        this.distinct = query.isDistinct();
     }
 
     /**
@@ -245,12 +265,57 @@ public class QueryDescriptorLoader {
         }
     }
 
-    public void addProperty(String name, String value) {
-        if (properties == null) {
-            properties = new HashMap<>();
-        }
+    /**
+     * @since 5.0
+     */
+    public void setCacheStrategy(QueryCacheStrategy cacheStrategy) {
+        this.cacheStrategy = cacheStrategy;
+    }
 
-        properties.put(name, value);
+    /**
+     * @since 5.0
+     */
+    public void setCacheGroup(String cacheGroup) {
+        this.cacheGroup = cacheGroup;
+    }
+
+    /**
+     * @since 5.0
+     */
+    public void setFetchingDataRows(boolean fetchingDataRows) {
+        this.fetchingDataRows = fetchingDataRows;
+    }
+
+    /**
+     * Sets the fetch limit of a ProcedureQuery. The limit of a select query is a part of its query String.
+     *
+     * @since 5.0
+     */
+    public void setFetchLimit(int fetchLimit) {
+        this.fetchLimit = fetchLimit;
+    }
+
+    /**
+     * Sets the fetch offset of a ProcedureQuery. The offset of a select query is a part of its query String.
+     *
+     * @since 5.0
+     */
+    public void setFetchOffset(int fetchOffset) {
+        this.fetchOffset = fetchOffset;
+    }
+
+    /**
+     * @since 5.0
+     */
+    public void setPageSize(int pageSize) {
+        this.pageSize = pageSize;
+    }
+
+    /**
+     * @since 5.0
+     */
+    public void setStatementFetchSize(int statementFetchSize) {
+        this.statementFetchSize = statementFetchSize;
     }
 
     public void addPrefetch(String path, int semantics) {

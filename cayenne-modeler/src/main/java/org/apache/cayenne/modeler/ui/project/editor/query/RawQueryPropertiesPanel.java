@@ -46,13 +46,13 @@ import org.apache.cayenne.modeler.ui.project.editor.EditorForm;
  * supporting Persistent objects retrieval.
  * 
  */
-public abstract class RawQueryPropertiesPanel extends SelectPropertiesPanel {
+public abstract class RawQueryPropertiesPanel<Q extends QueryDescriptor> extends SelectPropertiesPanel<Q> {
 
     protected JCheckBox persistentObjects;
     protected JComboBox<ObjEntity> entities;
 
-    public RawQueryPropertiesPanel(ProjectSession session) {
-        super(session);
+    public RawQueryPropertiesPanel(ProjectSession session, Class<Q> queryType) {
+        super(session, queryType);
     }
 
     protected void initController() {
@@ -104,7 +104,8 @@ public abstract class RawQueryPropertiesPanel extends SelectPropertiesPanel {
      * Updates the view from the current model state. Invoked when a currently displayed
      * query is changed.
      */
-    public void initFromModel(QueryDescriptor query) {
+    @Override
+    public void initFromModel(Q query) {
         super.initFromModel(query);
 
         boolean fetchingDO = !query.isFetchingDataRows();
@@ -129,7 +130,7 @@ public abstract class RawQueryPropertiesPanel extends SelectPropertiesPanel {
 
     protected abstract void setEntity(ObjEntity selectedEntity);
 
-    protected abstract ObjEntity getEntity(QueryDescriptor query);
+    protected abstract ObjEntity getEntity(Q query);
 
     protected void setFetchingPersistentObjects(boolean fetchingPersistentObjects) {
         entities.setEnabled(fetchingPersistentObjects && isEnabled());
@@ -138,7 +139,7 @@ public abstract class RawQueryPropertiesPanel extends SelectPropertiesPanel {
             entities.getModel().setSelectedItem(null);
         }
 
-        setQueryProperty(QueryDescriptor.FETCHING_DATA_ROWS_PROPERTY,
-                fetchingPersistentObjects ? Boolean.FALSE.toString() : Boolean.TRUE.toString());
+        setQueryProperty(QueryDescriptor::isFetchingDataRows, QueryDescriptor::setFetchingDataRows,
+                !fetchingPersistentObjects);
     }
 }

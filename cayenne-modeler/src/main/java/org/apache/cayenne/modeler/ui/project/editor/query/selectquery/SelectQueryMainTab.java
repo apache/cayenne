@@ -138,7 +138,7 @@ public class SelectQueryMainTab extends BaseQueryMainTab {
     void initFromModel() {
         QueryDescriptor descriptor = session.getSelectedQuery();
 
-        if (descriptor == null || !QueryDescriptor.SELECT_QUERY.equals(descriptor.getType())) {
+        if (!(descriptor instanceof SelectQueryDescriptor)) {
             setVisible(false);
             return;
         }
@@ -181,7 +181,7 @@ public class SelectQueryMainTab extends BaseQueryMainTab {
         if(session.getSelectedQuery() == null) {
             return null;
         }
-        return QueryDescriptor.SELECT_QUERY.equals(session.getSelectedQuery().getType())
+        return session.getSelectedQuery() instanceof SelectQueryDescriptor
                 ? (SelectQueryDescriptor) session.getSelectedQuery()
                 : null;
     }
