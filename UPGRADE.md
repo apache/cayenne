@@ -409,6 +409,13 @@ List<Artist> withExpensivePaintings = ObjectSelect
 *  Per [CAY-3041](https://issues.apache.org/jira/browse/CAY-3041) the oldest project that can be upgraded is now of
   version 9, i.e. the one created by Cayenne 4.0. The older projects (versions 6 to 8, created by Cayenne 3.1 or the
   early 4.0 milestones) must first be upgraded with CayenneModeler 4.2 or older.
+*  Per [CAY-3042](https://issues.apache.org/jira/browse/CAY-3042) "domain" is now called "project" in the project XML,
+  the API and CayenneModeler. The root tag of the project XML is `project` instead of `domain` (projects are upgraded
+  automatically). `DataChannelDescriptor` was renamed to `Project`, `ConfigurationNode` to `ProjectNode`, and the
+  related classes follow (`ProjectLoader`, `ProjectMerger`, `ProjectMetaData`, `ProjectNodeVisitor`, etc.). The old
+  `org.apache.cayenne.project.Project` wrapper, `ProjectLoader` of the `cayenne-project` module and `ConfigurationTree`
+  were removed: `ProjectLoader` returns a `Project`, and `ProjectSaver` takes a `ProjectNode`. The runtime `DataDomain`
+  is not affected.
 
 ## Upgrading to 5.0-M3
 
