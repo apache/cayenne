@@ -18,7 +18,6 @@
  */
 package org.apache.cayenne;
 
-import org.apache.cayenne.runtime.CayenneRuntimeModuleProvider;
 import org.apache.cayenne.unit.ModuleProviderChecker;
 import org.junit.jupiter.api.Test;
 

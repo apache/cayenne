@@ -25,7 +25,7 @@ import org.apache.cayenne.map.DataMap;
 import org.apache.cayenne.map.EntityResolver;
 import org.apache.cayenne.map.ObjEntity;
 import org.apache.cayenne.query.ObjectSelect;
-import org.apache.cayenne.runtime.CayenneRuntime;
+import org.apache.cayenne.CayenneRuntime;
 import org.apache.cayenne.testdo.qualified.Qualified1;
 import org.apache.cayenne.unit.dba.DerbyTestDbAdapter;
 import org.apache.cayenne.unit.dba.TestDbAdapter;

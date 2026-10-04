@@ -16,7 +16,7 @@
 
 === Starting and Stopping CayenneRuntime
 
-In runtime Cayenne is accessed via `org.apache.cayenne.runtime.CayenneRuntime`. CayenneRuntime is created by calling a convenient builder:
+In runtime Cayenne is accessed via `org.apache.cayenne.CayenneRuntime`. CayenneRuntime is created by calling a convenient builder:
 
 [source,java,indent=0]
 ----

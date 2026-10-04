@@ -29,7 +29,7 @@ import org.apache.cayenne.docs.commitlog.AuditListener;
 import org.apache.cayenne.docs.commitlog.MyEntityFactory;
 import org.apache.cayenne.docs.persistent.Artist;
 import org.apache.cayenne.docs.persistent.Painting;
-import org.apache.cayenne.runtime.CayenneRuntime;
+import org.apache.cayenne.CayenneRuntime;
 import org.junit.jupiter.api.Test;
 
 import java.util.ArrayList;

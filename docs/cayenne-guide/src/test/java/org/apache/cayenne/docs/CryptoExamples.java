@@ -22,7 +22,7 @@ import org.apache.cayenne.crypto.CryptoModule;
 import org.apache.cayenne.docs.crypto.MyClass;
 import org.apache.cayenne.docs.crypto.MyClassBytesConverter;
 import org.apache.cayenne.docs.crypto.MyColumnMapper;
-import org.apache.cayenne.runtime.CayenneRuntime;
+import org.apache.cayenne.CayenneRuntime;
 
 /**
  * Examples that are only compiled, but not run, as there is no keystore or encrypted columns in the docs test project.

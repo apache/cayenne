@@ -16,10 +16,9 @@
  *  specific language governing permissions and limitations
  *  under the License.
  ****************************************************************/
-package org.apache.cayenne.runtime;
+package org.apache.cayenne;
 
 import org.apache.cayenne.configuration.Constants;
-import org.apache.cayenne.CoreModule;
 import org.apache.cayenne.di.Key;
 import org.apache.cayenne.di.Module;
 import org.junit.jupiter.api.AfterEach;

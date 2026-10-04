@@ -22,7 +22,7 @@ package org.apache.cayenne.velocity;
 import java.util.Collection;
 import java.util.Collections;
 
-import org.apache.cayenne.runtime.CayenneRuntimeModuleProvider;
+import org.apache.cayenne.CayenneRuntimeModuleProvider;
 import org.apache.cayenne.CoreModule;
 import org.apache.cayenne.di.Module;
 

@@ -22,7 +22,7 @@ package org.apache.cayenne.dbsync.reverse.dbload;
 import org.apache.cayenne.dba.DbAdapter;
 import org.apache.cayenne.dbsync.model.DetectedDbEntity;
 import org.apache.cayenne.map.DbEntity;
-import org.apache.cayenne.runtime.CayenneRuntime;
+import org.apache.cayenne.CayenneRuntime;
 import org.apache.cayenne.unit.CayenneTestsEnv;
 import org.apache.cayenne.unit.dba.TestDbAdapter;
 import org.apache.cayenne.unit.CayenneProjects;

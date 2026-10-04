@@ -33,7 +33,7 @@ import org.apache.cayenne.docs.di.Service1;
 import org.apache.cayenne.docs.di.Service1Provider;
 import org.apache.cayenne.docs.di.Service2;
 import org.apache.cayenne.docs.di.Service2Impl;
-import org.apache.cayenne.runtime.CayenneRuntime;
+import org.apache.cayenne.CayenneRuntime;
 import org.junit.jupiter.api.Test;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;

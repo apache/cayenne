@@ -20,7 +20,7 @@ package org.apache.cayenne.crypto.unit;
 
 import org.apache.cayenne.crypto.key.KeySource;
 import org.apache.cayenne.crypto.transformer.bytes.Header;
-import org.apache.cayenne.runtime.CayenneRuntime;
+import org.apache.cayenne.CayenneRuntime;
 
 import javax.crypto.Cipher;
 import javax.crypto.spec.IvParameterSpec;

@@ -19,7 +19,7 @@
 
 package org.apache.cayenne.cache.invalidation;
 
-import org.apache.cayenne.runtime.CayenneRuntimeModuleProvider;
+import org.apache.cayenne.CayenneRuntimeModuleProvider;
 import org.apache.cayenne.unit.ModuleProviderChecker;
 import org.junit.jupiter.api.Test;
 

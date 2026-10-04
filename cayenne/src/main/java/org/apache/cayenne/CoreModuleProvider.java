@@ -19,7 +19,6 @@
 package org.apache.cayenne;
 
 import org.apache.cayenne.di.Module;
-import org.apache.cayenne.runtime.CayenneRuntimeModuleProvider;
 
 import java.util.Collection;
 import java.util.Collections;

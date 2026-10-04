@@ -22,7 +22,7 @@ import org.apache.cayenne.configuration.DataNodeDescriptor;
 import org.apache.cayenne.crypto.key.JceksKeySourceTest;
 import org.apache.cayenne.datasource.CayenneDataSource;
 import org.apache.cayenne.di.Module;
-import org.apache.cayenne.runtime.CayenneRuntime;
+import org.apache.cayenne.CayenneRuntime;
 import org.apache.cayenne.test.jdbc.DbHelper;
 import org.apache.cayenne.test.jdbc.TableHelper;
 

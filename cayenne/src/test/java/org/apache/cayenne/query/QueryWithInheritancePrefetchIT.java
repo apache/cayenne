@@ -19,7 +19,7 @@
 
 package org.apache.cayenne.query;
 
-import org.apache.cayenne.runtime.CayenneRuntime;
+import org.apache.cayenne.CayenneRuntime;
 import org.apache.cayenne.test.jdbc.TableHelper;
 import org.apache.cayenne.testdo.inheritance_with_enum.Dependent;
 import org.apache.cayenne.testdo.inheritance_with_enum.Root;

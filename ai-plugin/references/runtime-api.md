@@ -24,15 +24,15 @@ How to bootstrap Cayenne in a Java application and use `ObjectContext` for CRUD.
 
 ## CayenneRuntime — top-level container
 
-`org.apache.cayenne.runtime.CayenneRuntime` is the entry point. One per application lifetime (or per data domain in multi-DB setups).
+`org.apache.cayenne.CayenneRuntime` is the entry point. One per application lifetime (or per data domain in multi-DB setups).
 
 Two creation paths:
 
 ### 1. With a built-in connection pool
 
 ```java
-import org.apache.cayenne.runtime.CayenneRuntime;
-import org.apache.cayenne.runtime.CayenneRuntimeBuilder;
+import org.apache.cayenne.CayenneRuntime;
+import org.apache.cayenne.CayenneRuntimeBuilder;
 
 CayenneRuntime runtime = CayenneRuntime.of()
         .addConfig("cayenne-mydb.xml")
@@ -62,7 +62,7 @@ This path is preferred in production — your existing DI framework manages the 
 
 ### CayenneRuntimeBuilder methods
 
-From `cayenne/src/main/java/org/apache/cayenne/runtime/CayenneRuntimeBuilder.java`:
+From `cayenne/src/main/java/org/apache/cayenne/CayenneRuntimeBuilder.java`:
 
 | Method | Purpose |
 |---|---|

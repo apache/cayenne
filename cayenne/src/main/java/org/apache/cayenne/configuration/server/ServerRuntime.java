@@ -18,8 +18,8 @@
  ****************************************************************/
 package org.apache.cayenne.configuration.server;
 
-import org.apache.cayenne.runtime.CayenneRuntime;
-import org.apache.cayenne.runtime.CayenneRuntimeBuilder;
+import org.apache.cayenne.CayenneRuntime;
+import org.apache.cayenne.CayenneRuntimeBuilder;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 

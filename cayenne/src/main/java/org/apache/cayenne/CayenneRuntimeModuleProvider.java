@@ -17,12 +17,12 @@
  *  under the License.
  ****************************************************************/
 
-package org.apache.cayenne.runtime;
+package org.apache.cayenne;
 
 import org.apache.cayenne.di.spi.ModuleProvider;
 
 /**
- * This interface implementations will be used by {@link CayenneRuntimeBuilder} to auto-load runtime modules.
+ * Tag interface whose implementors are DI modules that want to be auto-loaded when Cayenne starts.
  *
  * @since 5.0
  */

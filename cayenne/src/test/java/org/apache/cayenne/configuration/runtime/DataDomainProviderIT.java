@@ -37,7 +37,7 @@ import org.apache.cayenne.graph.GraphDiff;
 import org.apache.cayenne.map.DataMap;
 import org.apache.cayenne.map.LifecycleEvent;
 import org.apache.cayenne.query.Query;
-import org.apache.cayenne.runtime.CayenneRuntime;
+import org.apache.cayenne.CayenneRuntime;
 import org.apache.cayenne.testdo.db1.CrossdbM1E1;
 import org.apache.cayenne.unit.CayenneProjects;
 import org.apache.cayenne.unit.CayenneTestsEnv;

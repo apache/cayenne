@@ -21,7 +21,7 @@ package org.apache.cayenne.configuration;
 import java.util.Map;
 
 /**
- * Represents a properties map for a given {@link org.apache.cayenne.runtime.CayenneRuntime}.
+ * Represents a properties map for a given {@link org.apache.cayenne.CayenneRuntime}.
  *
  * @since 3.1
  */

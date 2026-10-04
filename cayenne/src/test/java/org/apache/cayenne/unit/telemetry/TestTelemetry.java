@@ -19,7 +19,7 @@
 package org.apache.cayenne.unit.telemetry;
 
 import org.apache.cayenne.access.DataNode;
-import org.apache.cayenne.runtime.CayenneRuntime;
+import org.apache.cayenne.CayenneRuntime;
 
 import java.util.Collection;
 

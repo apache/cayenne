@@ -16,13 +16,11 @@
  *  specific language governing permissions and limitations
  *  under the License.
  ****************************************************************/
-package org.apache.cayenne.runtime;
+package org.apache.cayenne;
 
 import org.apache.cayenne.configuration.Constants;
 import org.apache.cayenne.configuration.DataNodeDescriptor;
 import org.apache.cayenne.configuration.DataNodeDescriptors;
-import org.apache.cayenne.CoreModule;
-import org.apache.cayenne.CoreModuleExtender;
 import org.apache.cayenne.datasource.CayenneDataSource;
 import org.apache.cayenne.di.Module;
 import org.apache.cayenne.di.spi.ModuleLoader;
@@ -42,7 +40,7 @@ import java.util.Set;
  * configure custom modules, multiple config locations, or quickly create a
  * global {@link DataSource}.
  *
- * @since 5.0 renamed from ServerRuntimeBuilder and moved to {@code org.apache.cayenne.runtime} package
+ * @since 5.0 renamed from ServerRuntimeBuilder and moved to {@code org.apache.cayenne} package
  */
 public class CayenneRuntimeBuilder {
 

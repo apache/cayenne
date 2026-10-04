@@ -25,7 +25,7 @@ import org.apache.cayenne.docs.persistent.Artist;
 import org.apache.cayenne.docs.persistent.Gallery;
 import org.apache.cayenne.docs.persistent.Painting;
 import org.apache.cayenne.query.SQLExec;
-import org.apache.cayenne.runtime.CayenneRuntime;
+import org.apache.cayenne.CayenneRuntime;
 import org.junit.jupiter.api.AfterAll;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.BeforeEach;

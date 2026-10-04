@@ -651,10 +651,10 @@ DataMaps, filters and listeners can still be added (and removed) after creation.
   </dependency>
   ```
 
-* Per [CAY-2823](https://issues.apache.org/jira/browse/CAY-2823) `ServerRuntime` is deprecated. Use `org.apache.cayenne.runtime.CayenneRuntime` instead.
+* Per [CAY-2823](https://issues.apache.org/jira/browse/CAY-2823) `ServerRuntime` is deprecated. Use `org.apache.cayenne.CayenneRuntime` instead.
 
 * Per [CAY-2824](https://issues.apache.org/jira/browse/CAY-2824) `CayenneServerModuleProvider` was renamed to `CayenneRuntimeModuleProvider` and moved to
-  the `org.apache.cayenne.runtime` package. If you are using the auto-loading mechanism for your custom
+  the `org.apache.cayenne` package. If you are using the auto-loading mechanism for your custom
   modules, update your `META-INF/services` reference accordingly.
 
 * Per [CAY-2825](https://issues.apache.org/jira/browse/CAY-2825) Package `org.apache.cayenne.configuration.server` was renamed to

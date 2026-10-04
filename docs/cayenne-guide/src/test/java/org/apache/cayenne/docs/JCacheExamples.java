@@ -19,7 +19,7 @@
 package org.apache.cayenne.docs;
 
 import org.apache.cayenne.jcache.JCacheModule;
-import org.apache.cayenne.runtime.CayenneRuntime;
+import org.apache.cayenne.CayenneRuntime;
 
 import javax.cache.CacheManager;
 

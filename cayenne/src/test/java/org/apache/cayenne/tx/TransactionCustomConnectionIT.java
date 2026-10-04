@@ -22,7 +22,7 @@ package org.apache.cayenne.tx;
 import org.apache.cayenne.access.DataContext;
 import org.apache.cayenne.log.NoopSQLLogger;
 import org.apache.cayenne.query.ObjectSelect;
-import org.apache.cayenne.runtime.CayenneRuntime;
+import org.apache.cayenne.CayenneRuntime;
 import org.apache.cayenne.testdo.testmap.Artist;
 import org.apache.cayenne.unit.CayenneProjects;
 import org.apache.cayenne.unit.CayenneTestsEnv;

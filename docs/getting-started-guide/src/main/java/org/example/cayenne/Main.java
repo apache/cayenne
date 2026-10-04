@@ -26,7 +26,7 @@ package org.example.cayenne;
 // end::main-empty[]
 import org.apache.cayenne.ObjectContext;
 import org.apache.cayenne.datasource.CayenneDataSource;
-import org.apache.cayenne.runtime.CayenneRuntime;
+import org.apache.cayenne.CayenneRuntime;
 
 import javax.sql.DataSource;
 // end::main-runtime[]
