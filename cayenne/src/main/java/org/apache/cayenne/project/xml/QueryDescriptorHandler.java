@@ -23,6 +23,7 @@ import org.apache.cayenne.map.DataMap;
 import org.apache.cayenne.map.QueryDescriptor;
 import org.apache.cayenne.map.QueryDescriptorLoader;
 import org.apache.cayenne.query.CapsStrategy;
+import org.apache.cayenne.query.PrefetchTreeNode;
 import org.apache.cayenne.query.QueryCacheStrategy;
 import org.apache.cayenne.util.Util;
 import org.xml.sax.Attributes;
@@ -38,9 +39,9 @@ import java.util.function.Supplier;
  */
 public class QueryDescriptorHandler extends NamespaceAwareNestedTagHandler {
 
-    private static final String OBJECT_QUERY_TAG = "objectQuery";
-    private static final String SQL_QUERY_TAG = "sqlQuery";
-    private static final String PROCEDURE_QUERY_TAG = "procedureQuery";
+    static final String OBJECT_QUERY_TAG = "objectQuery";
+    static final String SQL_QUERY_TAG = "sqlQuery";
+    static final String PROCEDURE_QUERY_TAG = "procedureQuery";
     private static final String QUERY_SQL_TAG = "sql";
     private static final String QUERY_QL_TAG = "ql";
     private static final String QUERY_PREFETCH_TAG = "prefetch";
@@ -62,53 +63,39 @@ public class QueryDescriptorHandler extends NamespaceAwareNestedTagHandler {
     @Override
     protected boolean processElement(String namespaceURI, String localName, Attributes attributes) throws SAXException {
 
-        switch (localName) {
-            case OBJECT_QUERY_TAG:
+        return switch (localName) {
+            case OBJECT_QUERY_TAG -> {
                 addQueryDescriptor(SelectQueryDescriptor::new, attributes);
-                return true;
-
-            case SQL_QUERY_TAG:
+                yield true;
+            }
+            case SQL_QUERY_TAG -> {
                 addQueryDescriptor(SQLTemplateDescriptor::new, attributes);
-                return true;
-
-            case PROCEDURE_QUERY_TAG:
+                yield true;
+            }
+            case PROCEDURE_QUERY_TAG -> {
                 addQueryDescriptor(ProcedureQueryDescriptor::new, attributes);
-                return true;
-
-            case QUERY_CACHE_GROUP_TAG:
-                return true;
-
-            case QUERY_SQL_TAG:
+                yield true;
+            }
+            case QUERY_SQL_TAG -> {
                 this.sqlKey = attributes.getValue("adapterClass");
-                return true;
-
-            case QUERY_QL_TAG:
-            case QUERY_PREFETCH_TAG:
+                yield true;
+            }
+            case QUERY_PREFETCH_TAG -> {
                 createPrefetchSemantics(attributes);
-                return true;
-        }
-
-        return false;
+                yield true;
+            }
+            case QUERY_QL_TAG, QUERY_CACHE_GROUP_TAG -> true;
+            default -> false;
+        };
     }
 
     @Override
     protected boolean processCharData(String localName, String data) {
         switch (localName) {
-            case QUERY_SQL_TAG:
-                queryBuilder.addSql(data, sqlKey);
-                break;
-
-            case QUERY_QL_TAG:
-                queryBuilder.setSelect(data);
-                break;
-
-            case QUERY_PREFETCH_TAG:
-                addPrefetchWithSemantics(data);
-                break;
-
-            case QUERY_CACHE_GROUP_TAG:
-                queryBuilder.setCacheGroup(data);
-                break;
+            case QUERY_SQL_TAG -> queryBuilder.addSql(data, sqlKey);
+            case QUERY_QL_TAG -> queryBuilder.setSelect(data);
+            case QUERY_PREFETCH_TAG -> addPrefetchWithSemantics(data);
+            case QUERY_CACHE_GROUP_TAG -> queryBuilder.setCacheGroup(data);
         }
         return true;
     }
@@ -149,7 +136,7 @@ public class QueryDescriptorHandler extends NamespaceAwareNestedTagHandler {
             queryBuilder.setColumnNameCapitalization(CapsStrategy.valueOf(columnNameCapitalization.toUpperCase()));
         }
 
-        queryBuilder.setFetchingDataRows(Boolean.parseBoolean(attributes.getValue("dataRows")));
+        queryBuilder.setFetchingDataRows("true".equals(attributes.getValue("dataRows")));
         queryBuilder.setFetchLimit(intAttribute(attributes, "fetchLimit"));
         queryBuilder.setFetchOffset(intAttribute(attributes, "fetchOffset"));
         queryBuilder.setPageSize(intAttribute(attributes, "pageSize"));
@@ -180,18 +167,11 @@ public class QueryDescriptorHandler extends NamespaceAwareNestedTagHandler {
     }
 
     private int convertPrefetchType(String type) {
-        if (type != null) {
-            switch (type) {
-                case "joint":
-                    return 1;
-                case "disjoint":
-                    return 2;
-                case "disjointById":
-                    return 3;
-                default:
-                    return 0;
-            }
-        }
-        return 0;
+        return switch (type) {
+            case "joint" -> PrefetchTreeNode.JOINT_PREFETCH_SEMANTICS;
+            case "disjoint" -> PrefetchTreeNode.DISJOINT_PREFETCH_SEMANTICS;
+            case "disjointById" -> PrefetchTreeNode.DISJOINT_BY_ID_PREFETCH_SEMANTICS;
+            case null, default -> PrefetchTreeNode.UNDEFINED_SEMANTICS;
+        };
     }
 }

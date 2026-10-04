@@ -31,7 +31,7 @@ import org.xml.sax.SAXException;
  */
 public class DbRelationshipHandler extends NamespaceAwareNestedTagHandler {
 
-    private static final String DB_RELATIONSHIP_TAG = "dbRelationship";
+    static final String DB_RELATIONSHIP_TAG = "dbRelationship";
     public static final String DB_ATTRIBUTE_PAIR_TAG = "dbAttributePair";
 
     private DataMap map;
@@ -46,17 +46,17 @@ public class DbRelationshipHandler extends NamespaceAwareNestedTagHandler {
     @Override
     protected boolean processElement(String namespaceURI, String localName, Attributes attributes) throws SAXException {
 
-        switch (localName) {
-            case DB_RELATIONSHIP_TAG:
+        return switch (localName) {
+            case DB_RELATIONSHIP_TAG -> {
                 createRelationship(attributes);
-                return true;
-
-            case DB_ATTRIBUTE_PAIR_TAG:
+                yield true;
+            }
+            case DB_ATTRIBUTE_PAIR_TAG -> {
                 createDbAttributePair(attributes);
-                return true;
-        }
-
-        return false;
+                yield true;
+            }
+            default -> false;
+        };
     }
 
     private void createRelationship(Attributes attributes) throws SAXException {
@@ -78,8 +78,8 @@ public class DbRelationshipHandler extends NamespaceAwareNestedTagHandler {
         dbRelationship = new DbRelationship(name);
         dbRelationship.setSourceEntity(source);
         dbRelationship.setTargetEntityName(attributes.getValue("target"));
-        dbRelationship.setToMany(DataMapHandler.TRUE.equalsIgnoreCase(attributes.getValue("toMany")));
-        dbRelationship.setToDependentPK(DataMapHandler.TRUE.equalsIgnoreCase(attributes.getValue("toDependentPK")));
+        dbRelationship.setToMany("true".equals(attributes.getValue("toMany")));
+        dbRelationship.setToDependentPK("true".equals(attributes.getValue("toDependentPK")));
 
         source.addRelationship(dbRelationship);
     }

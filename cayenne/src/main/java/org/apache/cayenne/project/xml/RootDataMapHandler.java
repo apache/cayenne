@@ -20,6 +20,7 @@
 package org.apache.cayenne.project.xml;
 
 import org.apache.cayenne.map.DataMap;
+import org.apache.cayenne.resource.Resource;
 import org.xml.sax.Attributes;
 import org.xml.sax.ContentHandler;
 import org.xml.sax.SAXException;
@@ -29,9 +30,13 @@ import org.xml.sax.SAXException;
  */
 public class RootDataMapHandler extends VersionAwareHandler {
 
-    public RootDataMapHandler(LoaderContext loaderContext) {
-        super(loaderContext, "dataMap");
+    private final Resource configurationSource;
+    private DataMapHandler dataMapHandler;
+
+    public RootDataMapHandler(LoaderContext loaderContext, Resource configurationSource) {
+        super(loaderContext, DataMapHandler.DATA_MAP_TAG);
         setTargetNamespace(DataMap.SCHEMA_XSD);
+        this.configurationSource = configurationSource;
     }
 
     @Override
@@ -44,12 +49,20 @@ public class RootDataMapHandler extends VersionAwareHandler {
     }
 
     @Override
-    protected ContentHandler createChildTagHandler(String namespaceURI, String localName, String qName, Attributes attributes) {
-        if(targetNamespace.equals(namespaceURI) && "dataMap".equals(localName)) {
-            return new DataMapHandler(this);
+    protected ContentHandler createChildTagHandler(String namespaceURI, String localName, String qName,
+                                                   Attributes attributes) {
+        if (targetNamespace.equals(namespaceURI) && DataMapHandler.DATA_MAP_TAG.equals(localName)) {
+            dataMapHandler = new DataMapHandler(this, configurationSource);
+            return dataMapHandler;
         }
 
         return super.createChildTagHandler(namespaceURI, localName, qName, attributes);
     }
 
+    /**
+     * Returns the DataMap loaded by this handler, or null if there was none in the document.
+     */
+    public DataMap getDataMap() {
+        return dataMapHandler != null ? dataMapHandler.getDataMap() : null;
+    }
 }

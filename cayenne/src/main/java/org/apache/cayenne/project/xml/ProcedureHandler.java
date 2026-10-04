@@ -31,7 +31,7 @@ import org.xml.sax.SAXException;
  */
 public class ProcedureHandler extends NamespaceAwareNestedTagHandler {
 
-    private static final String PROCEDURE_TAG = "procedure";
+    static final String PROCEDURE_TAG = "procedure";
     private static final String PROCEDURE_PARAMETER_TAG = "procedureParameter";
 
     private DataMap map;
@@ -45,28 +45,27 @@ public class ProcedureHandler extends NamespaceAwareNestedTagHandler {
 
     @Override
     protected boolean processElement(String namespaceURI, String localName, Attributes attributes) throws SAXException {
-        switch (localName) {
-            case PROCEDURE_TAG:
+        return switch (localName) {
+            case PROCEDURE_TAG -> {
                 addProcedure(attributes);
-                return true;
-
-            case PROCEDURE_PARAMETER_TAG:
+                yield true;
+            }
+            case PROCEDURE_PARAMETER_TAG -> {
                 addProcedureParameter(attributes);
-                return true;
-        }
-
-        return false;
+                yield true;
+            }
+            default -> false;
+        };
     }
 
     private void addProcedure(Attributes attributes) throws SAXException{
         String name = attributes.getValue("name");
-        String returningValue = attributes.getValue("returningValue");
         if (null == name) {
             throw new SAXException("ProcedureHandler::addProcedure() - no procedure name.");
         }
 
         procedure = new Procedure(name);
-        procedure.setReturningValue(returningValue != null && returningValue.equalsIgnoreCase(DataMapHandler.TRUE));
+        procedure.setReturningValue("true".equals(attributes.getValue("returningValue")));
         procedure.setSchema(attributes.getValue("schema"));
         procedure.setCatalog(attributes.getValue("catalog"));
         map.addProcedure(procedure);

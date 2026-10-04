@@ -19,7 +19,9 @@
 
 package org.apache.cayenne.project.xml;
 
+import org.apache.cayenne.ConfigurationException;
 import org.apache.cayenne.dba.TypesMapping;
+import org.apache.cayenne.exp.ExpressionException;
 import org.apache.cayenne.exp.ExpressionFactory;
 import org.apache.cayenne.map.DataMap;
 import org.apache.cayenne.map.DbAttribute;
@@ -35,9 +37,8 @@ import static org.apache.cayenne.util.Util.isBlank;
  */
 public class DbEntityHandler extends NamespaceAwareNestedTagHandler {
 
-    private static final String DB_ENTITY_TAG = "dbEntity";
+    static final String DB_ENTITY_TAG = "dbEntity";
     private static final String DB_ATTRIBUTE_TAG = "dbAttribute";
-    private static final String DB_KEY_GENERATOR_TAG = "dbKeyGenerator";
     private static final String QUALIFIER_TAG = "qualifier";
 
     private DataMap dataMap;
@@ -51,37 +52,32 @@ public class DbEntityHandler extends NamespaceAwareNestedTagHandler {
 
     @Override
     protected boolean processElement(String namespaceURI, String localName, Attributes attributes) throws SAXException {
-        switch (localName) {
-            case DB_ENTITY_TAG:
+        return switch (localName) {
+            case DB_ENTITY_TAG -> {
                 createDbEntity(attributes);
-                return true;
-
-            case DB_ATTRIBUTE_TAG:
+                yield true;
+            }
+            case DB_ATTRIBUTE_TAG -> {
                 createDbAttribute(attributes);
-                return true;
-
-            case QUALIFIER_TAG:
-                return true;
-        }
-
-        return false;
+                yield true;
+            }
+            case QUALIFIER_TAG -> true;
+            default -> false;
+        };
     }
 
     @Override
     protected boolean processCharData(String localName, String data) {
-        switch (localName) {
-            case QUALIFIER_TAG:
-                createQualifier(data);
-                break;
+        if (QUALIFIER_TAG.equals(localName)) {
+            createQualifier(data);
         }
         return true;
     }
 
     @Override
     protected ContentHandler createChildTagHandler(String namespaceURI, String localName, String qName, Attributes attributes) {
-        switch (localName) {
-            case DB_KEY_GENERATOR_TAG:
-                return new DbKeyGeneratorHandler(this, entity);
+        if (DbKeyGeneratorHandler.DB_KEY_GENERATOR_TAG.equals(localName)) {
+            return new DbKeyGeneratorHandler(this, entity);
         }
         return super.createChildTagHandler(namespaceURI, localName, qName, attributes);
     }
@@ -117,9 +113,9 @@ public class DbEntityHandler extends NamespaceAwareNestedTagHandler {
             lastAttribute.setScale(Integer.parseInt(scale));
         }
 
-        lastAttribute.setPrimaryKey(DataMapHandler.TRUE.equalsIgnoreCase(attributes.getValue("primaryKey")));
-        lastAttribute.setMandatory(DataMapHandler.TRUE.equalsIgnoreCase(attributes.getValue("mandatory")));
-        lastAttribute.setGenerated(DataMapHandler.TRUE.equalsIgnoreCase(attributes.getValue("generated")));
+        lastAttribute.setPrimaryKey("true".equals(attributes.getValue("primaryKey")));
+        lastAttribute.setMandatory("true".equals(attributes.getValue("mandatory")));
+        lastAttribute.setGenerated("true".equals(attributes.getValue("generated")));
     }
 
     private void createQualifier(String qualifier) {
@@ -127,9 +123,13 @@ public class DbEntityHandler extends NamespaceAwareNestedTagHandler {
             return;
         }
 
-        // qualifier can belong to ObjEntity, DbEntity or a query
         if (entity != null) {
-            entity.setQualifier(ExpressionFactory.exp(qualifier));
+            try {
+                entity.setQualifier(ExpressionFactory.exp(qualifier));
+            } catch (ExpressionException ex) {
+                throw new ConfigurationException("Invalid qualifier of DbEntity '%s': %s", ex, entity.getName(),
+                        qualifier);
+            }
         }
     }
 

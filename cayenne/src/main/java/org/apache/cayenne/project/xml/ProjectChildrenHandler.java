@@ -19,6 +19,8 @@
 
 package org.apache.cayenne.project.xml;
 
+import org.apache.cayenne.project.ConfigurationNameMapper;
+import org.apache.cayenne.project.DataMapLoader;
 import org.apache.cayenne.project.Project;
 import org.apache.cayenne.map.DataMap;
 import org.apache.cayenne.resource.Resource;
@@ -34,38 +36,36 @@ final class ProjectChildrenHandler extends NamespaceAwareNestedTagHandler {
 
     private static final Logger LOGGER = LoggerFactory.getLogger(XMLProjectLoader.class);
 
-    static final String OLD_MAP_TAG = "map";
-    static final String DATA_MAP_TAG = "dataMap";
-    static final String PROJECT_TAG = "project";
+    private static final String MAP_TAG = "map";
 
-
-    private XMLProjectLoader xmlProjectLoader;
+    private final ConfigurationNameMapper nameMapper;
+    private final DataMapLoader dataMapLoader;
     private Project project;
 
-    ProjectChildrenHandler(XMLProjectLoader xmlProjectLoader, ProjectHandler parentHandler) {
+    ProjectChildrenHandler(ProjectHandler parentHandler, ConfigurationNameMapper nameMapper,
+                           DataMapLoader dataMapLoader) {
         super(parentHandler);
-        this.xmlProjectLoader = xmlProjectLoader;
+        this.nameMapper = nameMapper;
+        this.dataMapLoader = dataMapLoader;
         this.project = parentHandler.project;
     }
 
     @Override
     protected boolean processElement(String namespaceURI, String localName, Attributes attributes) {
-        switch (localName) {
-            case OLD_MAP_TAG:
+        return switch (localName) {
+            case MAP_TAG -> {
                 addMap(attributes);
-                return true;
-
-            case PROJECT_TAG:
-                return true;
-        }
-
-        return false;
+                yield true;
+            }
+            case ProjectHandler.PROJECT_TAG -> true;
+            default -> false;
+        };
     }
 
     @Override
     protected ContentHandler createChildTagHandler(String namespaceURI, String localName,
                                                    String name, Attributes attributes) {
-        if (DATA_MAP_TAG.equals(localName)) {
+        if (DataMapHandler.DATA_MAP_TAG.equals(localName)) {
             return new DataMapHandler(loaderContext);
         }
 
@@ -76,13 +76,13 @@ final class ProjectChildrenHandler extends NamespaceAwareNestedTagHandler {
         String dataMapName = attributes.getValue("name");
         Resource baseResource = project.getConfigurationSource();
 
-        String dataMapLocation = xmlProjectLoader.nameMapper.configurationLocation(DataMap.class, dataMapName);
+        String dataMapLocation = nameMapper.configurationLocation(DataMap.class, dataMapName);
 
         Resource dataMapResource = baseResource.getRelativeResource(dataMapLocation);
 
         LOGGER.info("Loading XML DataMap resource from {}", dataMapResource.getURL());
 
-        DataMap dataMap = xmlProjectLoader.dataMapLoader.load(dataMapResource);
+        DataMap dataMap = dataMapLoader.load(dataMapResource);
         dataMap.setName(dataMapName);
         dataMap.setLocation(dataMapLocation);
         dataMap.setProject(project);

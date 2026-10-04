@@ -133,10 +133,13 @@ public class ProjectFileUpgrader {
     }
 
     /**
-     * Reads the project XML and upgrades its DOM from the given version. The referenced DataMaps are not touched,
-     * see {@link #upgradeDataMapDOM(Resource, String)}.
+     * Reads the project XML and upgrades its DOM from the given version. The project file is not modified. The
+     * referenced DataMaps are not touched, see {@link #upgradeDataMapDOM(Resource, String)}.
+     *
+     * @throws ConfigurationException if the version is newer than the current one, or is too old to be upgraded
      */
     public UpgradeContext upgradeProjectDOM(Resource resource, String fromVersion) {
+        checkUpgradable(resource, fromVersion);
         UpgradeContext context = new UpgradeContext(resource, readDocument(resource.getURL()));
         for (UpgradeHandler handler : handlersForVersion(fromVersion)) {
             handler.upgradeProjectDOM(context);
@@ -145,14 +148,35 @@ public class ProjectFileUpgrader {
     }
 
     /**
-     * Reads the DataMap XML and upgrades its DOM from the given version.
+     * Reads the DataMap XML and upgrades its DOM from the given version. The DataMap file is not modified.
+     *
+     * @throws ConfigurationException if the version is newer than the current one, or is too old to be upgraded
      */
     public UpgradeContext upgradeDataMapDOM(Resource resource, String fromVersion) {
+        checkUpgradable(resource, fromVersion);
         UpgradeContext context = new UpgradeContext(resource, readDocument(resource.getURL()));
         for (UpgradeHandler handler : handlersForVersion(fromVersion)) {
             handler.upgradeDataMapDOM(context);
         }
         return context;
+    }
+
+    private void checkUpgradable(Resource resource, String fromVersion) {
+        UpgradeType upgradeType = checkUpgradeNeeded(fromVersion);
+
+        if (upgradeType == UpgradeType.DOWNGRADE_NEEDED) {
+            throw new ConfigurationException("""
+                    Unable to load configuration from %s: project version %s is newer than the supported version %s. \
+                    It was created with a newer version of Cayenne""",
+                    resource.getURL(), fromVersion, UpgradeHandler.CURRENT_VERSION);
+        }
+
+        if (upgradeType == UpgradeType.INTERMEDIATE_UPGRADE_NEEDED) {
+            throw new ConfigurationException("""
+                    Unable to load configuration from %s: project version %s is too old to be upgraded. \
+                    Open the project in an older CayenneModeler to upgrade it to version %s first""",
+                    resource.getURL(), fromVersion, UpgradeHandler.MIN_SUPPORTED_VERSION);
+        }
     }
 
     private static Document readDocument(URL url) {

@@ -19,6 +19,8 @@
 
 package org.apache.cayenne.project.xml;
 
+import org.apache.cayenne.project.ConfigurationNameMapper;
+import org.apache.cayenne.project.DataMapLoader;
 import org.apache.cayenne.project.Project;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -35,12 +37,15 @@ public final class ProjectHandler extends VersionAwareHandler {
 
     static final String PROJECT_TAG = "project";
 
-    private XMLProjectLoader xmlProjectLoader;
+    private final ConfigurationNameMapper nameMapper;
+    private final DataMapLoader dataMapLoader;
     Project project;
 
-    public ProjectHandler(XMLProjectLoader xmlProjectLoader, Project project, LoaderContext loaderContext) {
+    public ProjectHandler(Project project, LoaderContext loaderContext, ConfigurationNameMapper nameMapper,
+                          DataMapLoader dataMapLoader) {
         super(loaderContext, PROJECT_TAG);
-        this.xmlProjectLoader = xmlProjectLoader;
+        this.nameMapper = nameMapper;
+        this.dataMapLoader = dataMapLoader;
         this.project = project;
         setTargetNamespace(Project.SCHEMA_XSD);
     }
@@ -66,7 +71,7 @@ public final class ProjectHandler extends VersionAwareHandler {
                                                    String name, Attributes attributes) {
 
         if (localName.equals(PROJECT_TAG)) {
-            return new ProjectChildrenHandler(xmlProjectLoader, this);
+            return new ProjectChildrenHandler(this, nameMapper, dataMapLoader);
         }
 
         LOGGER.info(unexpectedTagMessage(localName, PROJECT_TAG));

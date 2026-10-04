@@ -21,6 +21,7 @@ package org.apache.cayenne.project.xml;
 
 import org.apache.cayenne.map.DataMap;
 import org.apache.cayenne.map.ObjEntity;
+import org.apache.cayenne.resource.Resource;
 import org.xml.sax.Attributes;
 import org.xml.sax.ContentHandler;
 import org.xml.sax.SAXException;
@@ -30,29 +31,23 @@ import org.xml.sax.SAXException;
  */
 public class DataMapHandler extends NamespaceAwareNestedTagHandler {
 
-    /* This constants must be in sync with dataMap.xsd schema */
-    private static final String DATA_MAP_TAG         = "dataMap";
-    private static final String DB_ENTITY_TAG        = "dbEntity";
-    private static final String OBJ_ENTITY_TAG       = "objEntity";
-    private static final String DB_RELATIONSHIP_TAG  = "dbRelationship";
-    private static final String OBJ_RELATIONSHIP_TAG = "objRelationship";
-    private static final String EMBEDDABLE_TAG       = "embeddable";
-    private static final String PROCEDURE_TAG        = "procedure";
-    private static final String OBJECT_QUERY_TAG     = "objectQuery";
-    private static final String SQL_QUERY_TAG        = "sqlQuery";
-    private static final String PROCEDURE_QUERY_TAG  = "procedureQuery";
+    static final String DATA_MAP_TAG = "dataMap";
 
-    public static final String TRUE = "true";
-
+    private final Resource configurationSource;
     private DataMap dataMap;
 
-    public DataMapHandler(NamespaceAwareNestedTagHandler parentHandler) {
+    /**
+     * @param configurationSource the source of the DataMap being loaded, can be null
+     */
+    public DataMapHandler(NamespaceAwareNestedTagHandler parentHandler, Resource configurationSource) {
         super(parentHandler);
+        this.configurationSource = configurationSource;
     }
 
     public DataMapHandler(LoaderContext loaderContext) {
         super(loaderContext);
         setTargetNamespace(DataMap.SCHEMA_XSD);
+        this.configurationSource = null;
     }
 
     @Override
@@ -61,6 +56,7 @@ public class DataMapHandler extends NamespaceAwareNestedTagHandler {
         return switch (localName) {
             case DATA_MAP_TAG -> {
                 this.dataMap = new DataMap();
+                dataMap.setConfigurationSource(configurationSource);
                 dataMap.setDefaultLockType("optimistic".equals(attributes.getValue("defaultLockType"))
                         ? ObjEntity.LOCK_TYPE_OPTIMISTIC
                         : ObjEntity.LOCK_TYPE_NONE);
@@ -81,13 +77,15 @@ public class DataMapHandler extends NamespaceAwareNestedTagHandler {
 
         if (namespaceURI.equals(targetNamespace)) {
             return switch (localName) {
-                case DB_ENTITY_TAG -> new DbEntityHandler(this, dataMap);
-                case OBJ_ENTITY_TAG -> new ObjEntityHandler(this, dataMap);
-                case DB_RELATIONSHIP_TAG -> new DbRelationshipHandler(this, dataMap);
-                case OBJ_RELATIONSHIP_TAG -> new ObjRelationshipHandler(this, dataMap);
-                case PROCEDURE_TAG -> new ProcedureHandler(this, dataMap);
-                case OBJECT_QUERY_TAG, SQL_QUERY_TAG, PROCEDURE_QUERY_TAG -> new QueryDescriptorHandler(this, dataMap);
-                case EMBEDDABLE_TAG -> new EmbeddableHandler(this, dataMap);
+                case DbEntityHandler.DB_ENTITY_TAG -> new DbEntityHandler(this, dataMap);
+                case ObjEntityHandler.OBJ_ENTITY_TAG -> new ObjEntityHandler(this, dataMap);
+                case DbRelationshipHandler.DB_RELATIONSHIP_TAG -> new DbRelationshipHandler(this, dataMap);
+                case ObjRelationshipHandler.OBJ_RELATIONSHIP_TAG -> new ObjRelationshipHandler(this, dataMap);
+                case ProcedureHandler.PROCEDURE_TAG -> new ProcedureHandler(this, dataMap);
+                case QueryDescriptorHandler.OBJECT_QUERY_TAG,
+                     QueryDescriptorHandler.SQL_QUERY_TAG,
+                     QueryDescriptorHandler.PROCEDURE_QUERY_TAG -> new QueryDescriptorHandler(this, dataMap);
+                case EmbeddableHandler.EMBEDDABLE_TAG -> new EmbeddableHandler(this, dataMap);
                 default -> super.createChildTagHandler(namespaceURI, localName, qName, attributes);
             };
         }

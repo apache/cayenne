@@ -44,10 +44,9 @@ public class ObjRelationshipHandler extends NamespaceAwareNestedTagHandler {
 
     @Override
     protected boolean processElement(String namespaceURI, String localName, Attributes attributes) throws SAXException {
-        switch (localName) {
-            case OBJ_RELATIONSHIP_TAG:
-                addObjRelationship(attributes);
-                return true;
+        if (OBJ_RELATIONSHIP_TAG.equals(localName)) {
+            addObjRelationship(attributes);
+            return true;
         }
 
         return false;
@@ -76,7 +75,7 @@ public class ObjRelationshipHandler extends NamespaceAwareNestedTagHandler {
         if (deleteRule != null) {
             objRelationship.setDeleteRule(DeleteRule.valueOf(deleteRule.toUpperCase()));
         }
-        objRelationship.setUsedForLocking(DataMapHandler.TRUE.equalsIgnoreCase(attributes.getValue("lock")));
+        objRelationship.setUsedForLocking("true".equals(attributes.getValue("lock")));
         objRelationship.setDeferredDbRelationshipPath((attributes.getValue("dbRelationshipPath")));
         objRelationship.setCollectionType(attributes.getValue("collectionType"));
         objRelationship.setMapKey(attributes.getValue("mapKey"));

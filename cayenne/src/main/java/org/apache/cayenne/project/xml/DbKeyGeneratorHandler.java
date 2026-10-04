@@ -29,7 +29,7 @@ import org.xml.sax.SAXException;
  */
 public class DbKeyGeneratorHandler extends NamespaceAwareNestedTagHandler {
 
-    private static final String DB_KEY_GENERATOR_TAG = "dbKeyGenerator";
+    static final String DB_KEY_GENERATOR_TAG = "dbKeyGenerator";
     private static final String DB_GENERATOR_TYPE_TAG = "dbGeneratorType";
     private static final String DB_GENERATOR_NAME_TAG = "dbGeneratorName";
     private static final String DB_KEY_CACHE_SIZE_TAG = "dbKeyCacheSize";
@@ -43,34 +43,22 @@ public class DbKeyGeneratorHandler extends NamespaceAwareNestedTagHandler {
 
     @Override
     protected boolean processElement(String namespaceURI, String localName, Attributes attributes) throws SAXException {
-        switch (localName) {
-            case DB_KEY_GENERATOR_TAG:
+        return switch (localName) {
+            case DB_KEY_GENERATOR_TAG -> {
                 createDbKeyGenerator();
-                return true;
-
-            case DB_GENERATOR_NAME_TAG:
-            case DB_GENERATOR_TYPE_TAG:
-            case DB_KEY_CACHE_SIZE_TAG:
-                return true;
-        }
-
-        return false;
+                yield true;
+            }
+            case DB_GENERATOR_NAME_TAG, DB_GENERATOR_TYPE_TAG, DB_KEY_CACHE_SIZE_TAG -> true;
+            default -> false;
+        };
     }
 
     @Override
     protected boolean processCharData(String localName, String data) {
         switch (localName) {
-            case DB_GENERATOR_TYPE_TAG:
-                setDbGeneratorType(data);
-                break;
-
-            case DB_GENERATOR_NAME_TAG:
-                setDbGeneratorName(data);
-                break;
-
-            case DB_KEY_CACHE_SIZE_TAG:
-                setDbKeyCacheSize(data);
-                break;
+            case DB_GENERATOR_TYPE_TAG -> setDbGeneratorType(data);
+            case DB_GENERATOR_NAME_TAG -> setDbGeneratorName(data);
+            case DB_KEY_CACHE_SIZE_TAG -> setDbKeyCacheSize(data);
         }
         return true;
     }

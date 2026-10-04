@@ -103,6 +103,22 @@ public class XMLDataMapLoaderTest {
     }
 
     @Test
+    public void loadInvalidObjEntityQualifier() {
+        URL url = getClass().getResource("testConfigMap11.map.xml");
+        CayenneRuntimeException e = assertThrows(CayenneRuntimeException.class, () -> loader.load(new URLResource(url)));
+        assertTrue(e.getCause().getMessage().contains("Invalid qualifier of ObjEntity 'Artist': name = ((("),
+                e.getCause().getMessage());
+    }
+
+    @Test
+    public void loadInvalidDbEntityQualifier() {
+        URL url = getClass().getResource("testConfigMap12.map.xml");
+        CayenneRuntimeException e = assertThrows(CayenneRuntimeException.class, () -> loader.load(new URLResource(url)));
+        assertTrue(e.getCause().getMessage().contains("Invalid qualifier of DbEntity 'ARTIST': NAME = ((("),
+                e.getCause().getMessage());
+    }
+
+    @Test
     public void loadNewerVersionConfig() {
         URL url = getClass().getResource("testConfigMap6.map.xml");
         CayenneRuntimeException e = assertThrows(CayenneRuntimeException.class, () -> loader.load(new URLResource(url)));

@@ -24,16 +24,13 @@ import org.apache.cayenne.project.ConfigurationNameMapper;
 import org.apache.cayenne.project.Project;
 import org.apache.cayenne.project.ProjectLoader;
 import org.apache.cayenne.project.DataMapLoader;
-import org.apache.cayenne.project.upgrade.UpgradeContext;
 import org.apache.cayenne.project.upgrade.ProjectFileUpgrader;
-import org.apache.cayenne.project.upgrade.UpgradeHandler;
-import org.apache.cayenne.project.upgrade.UpgradeType;
-import org.apache.cayenne.di.AdhocObjectFactory;
 import org.apache.cayenne.di.Inject;
 import org.apache.cayenne.di.Provider;
 import org.apache.cayenne.resource.Resource;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.w3c.dom.Document;
 import org.xml.sax.InputSource;
 import org.xml.sax.XMLReader;
 
@@ -55,9 +52,6 @@ public class XMLProjectLoader implements ProjectLoader {
 
     @Inject
     protected ConfigurationNameMapper nameMapper;
-
-    @Inject
-    protected AdhocObjectFactory objectFactory;
 
     @Inject
     protected HandlerFactory handlerFactory;
@@ -98,7 +92,7 @@ public class XMLProjectLoader implements ProjectLoader {
         LoaderContext loaderContext = new LoaderContext(parser, handlerFactory);
         loaderContext.addDataMapListener(dataMap -> project.getDataMaps().add(dataMap));
 
-        ProjectHandler rootHandler = new ProjectHandler(this, project, loaderContext);
+        ProjectHandler rootHandler = new ProjectHandler(project, loaderContext, nameMapper, dataMapLoader);
         parser.setContentHandler(rootHandler);
         parser.setErrorHandler(rootHandler);
         parser.parse(input);
@@ -115,40 +109,10 @@ public class XMLProjectLoader implements ProjectLoader {
      * @since 5.0
      */
     protected Project upgradeAndLoad(Resource configurationResource, String version) {
-
+        Document upgraded = upgrader.upgradeProjectDOM(configurationResource, version).getRuntimeDocument();
         URL configurationURL = configurationResource.getURL();
-        UpgradeType upgradeType = upgrader.checkUpgradeNeeded(version);
-
-        if (upgradeType == UpgradeType.DOWNGRADE_NEEDED) {
-            throw new ConfigurationException("""
-                    Unable to load configuration from %s: project version %s is newer than the supported version %s. \
-                    The project was created with a newer version of Cayenne""",
-                    configurationURL, version, UpgradeHandler.CURRENT_VERSION);
-        }
-
-        if (upgradeType == UpgradeType.INTERMEDIATE_UPGRADE_NEEDED) {
-            throw new ConfigurationException("""
-                    Unable to load configuration from %s: project version %s is too old to be upgraded. \
-                    Open the project in an older CayenneModeler to upgrade it to version %s first""",
-                    configurationURL, version, UpgradeHandler.MIN_SUPPORTED_VERSION);
-        }
-
-        UpgradeContext context = upgrader.upgradeProjectDOM(configurationResource, version);
-        if (!context.getChangesAffectingRuntime().isEmpty()) {
-            throw new ConfigurationException("""
-                    Unable to upgrade configuration from %s (project version %s) in memory, as the upgrade requires \
-                    manual changes. Open the project in CayenneModeler to upgrade it. %s""",
-                    configurationURL, version, String.join(" ", context.getChangesAffectingRuntime()));
-        }
-
-        LOGGER.warn("""
-                Configuration {} has project version {} and was upgraded to version {} in memory. \
-                Open the project in CayenneModeler to upgrade its XML permanently""",
-                configurationURL, version, UpgradeHandler.CURRENT_VERSION);
-
         try {
-            return parse(configurationResource,
-                    DocumentInputSource.of(context.getDocument(), configurationURL.toString()));
+            return parse(configurationResource, DocumentInputSource.of(upgraded, configurationURL.toString()));
         } catch (Exception e) {
             throw new ConfigurationException("Error loading configuration from %s", e, configurationURL);
         }

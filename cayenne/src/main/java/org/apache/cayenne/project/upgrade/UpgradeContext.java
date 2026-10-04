@@ -19,7 +19,10 @@
 
 package org.apache.cayenne.project.upgrade;
 
+import org.apache.cayenne.ConfigurationException;
 import org.apache.cayenne.resource.Resource;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.w3c.dom.Document;
 
 import java.util.ArrayList;
@@ -31,6 +34,8 @@ import java.util.List;
  * @since 4.1
  */
 public class UpgradeContext {
+
+    private static final Logger LOGGER = LoggerFactory.getLogger(UpgradeContext.class);
 
     private final Resource resource;
     private final Document document;
@@ -47,6 +52,29 @@ public class UpgradeContext {
     }
 
     public Document getDocument() {
+        return document;
+    }
+
+    /**
+     * Returns the upgraded document to be loaded in runtime as is, without saving it or involving the user.
+     *
+     * @throws ConfigurationException if the upgrade made changes that may affect runtime, and so requires the
+     *                                project to be upgraded in CayenneModeler
+     * @since 5.0
+     */
+    public Document getRuntimeDocument() {
+        if (!changesAffectingRuntime.isEmpty()) {
+            throw new ConfigurationException("""
+                    Unable to upgrade configuration from %s in memory, as the upgrade requires manual changes. \
+                    Open the project in CayenneModeler to upgrade it. %s""",
+                    resource.getURL(), String.join(" ", changesAffectingRuntime));
+        }
+
+        LOGGER.warn("""
+                Configuration {} was created with an older version of Cayenne and was upgraded to project \
+                version {} in memory. Open the project in CayenneModeler to upgrade its XML permanently""",
+                resource.getURL(), UpgradeHandler.CURRENT_VERSION);
+
         return document;
     }
 

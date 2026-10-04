@@ -30,7 +30,7 @@ import org.xml.sax.SAXException;
  */
 public class EmbeddableHandler extends NamespaceAwareNestedTagHandler {
 
-    private static final String EMBEDDABLE_TAG = "embeddable";
+    static final String EMBEDDABLE_TAG = "embeddable";
     private static final String EMBEDDABLE_ATTRIBUTE_TAG = "embeddableAttribute";
 
     private DataMap map;
@@ -44,17 +44,17 @@ public class EmbeddableHandler extends NamespaceAwareNestedTagHandler {
 
     @Override
     protected boolean processElement(String namespaceURI, String localName, Attributes attributes) throws SAXException {
-        switch (localName) {
-            case EMBEDDABLE_TAG:
+        return switch (localName) {
+            case EMBEDDABLE_TAG -> {
                 createEmbeddable(attributes);
-                return true;
-
-            case EMBEDDABLE_ATTRIBUTE_TAG:
+                yield true;
+            }
+            case EMBEDDABLE_ATTRIBUTE_TAG -> {
                 createEmbeddableAttribute(attributes);
-                return true;
-        }
-
-        return false;
+                yield true;
+            }
+            default -> false;
+        };
     }
 
     private void createEmbeddable(Attributes attributes) {

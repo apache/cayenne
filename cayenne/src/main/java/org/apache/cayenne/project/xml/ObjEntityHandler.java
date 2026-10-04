@@ -19,14 +19,13 @@
 
 package org.apache.cayenne.project.xml;
 
+import org.apache.cayenne.ConfigurationException;
 import org.apache.cayenne.exp.ExpressionException;
 import org.apache.cayenne.exp.ExpressionFactory;
 import org.apache.cayenne.map.CallbackDescriptor;
 import org.apache.cayenne.map.DataMap;
 import org.apache.cayenne.map.ObjAttribute;
 import org.apache.cayenne.map.ObjEntity;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 import org.xml.sax.Attributes;
 import org.xml.sax.ContentHandler;
 import org.xml.sax.SAXException;
@@ -38,12 +37,9 @@ import static org.apache.cayenne.util.Util.isBlank;
  */
 public class ObjEntityHandler extends NamespaceAwareNestedTagHandler {
 
-    private static final Logger LOGGER = LoggerFactory.getLogger(ObjEntityHandler.class);
-
-    private static final String OBJ_ENTITY_TAG = "objEntity";
+    static final String OBJ_ENTITY_TAG = "objEntity";
     private static final String OBJ_ATTRIBUTE_TAG = "objAttribute";
     private static final String OBJ_ATTRIBUTE_OVERRIDE_TAG = "attributeOverride";
-    private static final String EMBEDDED_ATTRIBUTE_TAG = "embeddedAttribute";
     private static final String QUALIFIER_TAG = "qualifier";
 
     // lifecycle listeners and callbacks related
@@ -69,44 +65,34 @@ public class ObjEntityHandler extends NamespaceAwareNestedTagHandler {
 
     @Override
     protected boolean processElement(String namespaceURI, String localName, Attributes attributes) throws SAXException {
-        switch (localName) {
-            case OBJ_ENTITY_TAG:
+        return switch (localName) {
+            case OBJ_ENTITY_TAG -> {
                 createObjEntity(attributes);
-                return true;
-
-            case OBJ_ATTRIBUTE_TAG:
+                yield true;
+            }
+            case OBJ_ATTRIBUTE_TAG -> {
                 createObjAttribute(attributes);
-                return true;
-
-            case OBJ_ATTRIBUTE_OVERRIDE_TAG:
+                yield true;
+            }
+            case OBJ_ATTRIBUTE_OVERRIDE_TAG -> {
                 processStartAttributeOverride(attributes);
-                return true;
-
-            case QUALIFIER_TAG:
-                return true;
-
-            case POST_ADD_TAG:
-            case PRE_PERSIST_TAG:
-            case POST_PERSIST_TAG:
-            case PRE_UPDATE_TAG:
-            case POST_UPDATE_TAG:
-            case PRE_REMOVE_TAG:
-            case POST_REMOVE_TAG:
-            case POST_LOAD_TAG:
+                yield true;
+            }
+            case QUALIFIER_TAG -> true;
+            case POST_ADD_TAG, PRE_PERSIST_TAG, POST_PERSIST_TAG, PRE_UPDATE_TAG, POST_UPDATE_TAG, PRE_REMOVE_TAG,
+                 POST_REMOVE_TAG, POST_LOAD_TAG -> {
                 createCallback(localName, attributes);
-                return true;
-        }
-
-        return false;
+                yield true;
+            }
+            default -> false;
+        };
     }
 
     @Override
     protected ContentHandler createChildTagHandler(String namespaceURI, String localName, String qName, Attributes attributes) {
-        if(namespaceURI.equals(targetNamespace)) {
-            switch (localName) {
-                case EMBEDDED_ATTRIBUTE_TAG:
-                    return new EmbeddableAttributeHandler(this, entity);
-            }
+        if (namespaceURI.equals(targetNamespace)
+                && EmbeddableAttributeHandler.EMBEDDED_ATTRIBUTE_TAG.equals(localName)) {
+            return new EmbeddableAttributeHandler(this, entity);
         }
 
         return super.createChildTagHandler(namespaceURI, localName, qName, attributes);
@@ -114,10 +100,8 @@ public class ObjEntityHandler extends NamespaceAwareNestedTagHandler {
 
     @Override
     protected boolean processCharData(String localName, String data) {
-        switch (localName) {
-            case QUALIFIER_TAG:
-                createQualifier(data);
-                break;
+        if (QUALIFIER_TAG.equals(localName)) {
+            createQualifier(data);
         }
         return true;
     }
@@ -125,8 +109,8 @@ public class ObjEntityHandler extends NamespaceAwareNestedTagHandler {
     private void createObjEntity(Attributes attributes) {
         entity = new ObjEntity(attributes.getValue("name"));
         entity.setClassName(attributes.getValue("className"));
-        entity.setAbstract(DataMapHandler.TRUE.equalsIgnoreCase(attributes.getValue("abstract")));
-        entity.setReadOnly(DataMapHandler.TRUE.equalsIgnoreCase(attributes.getValue("readOnly")));
+        entity.setAbstract("true".equals(attributes.getValue("abstract")));
+        entity.setReadOnly("true".equals(attributes.getValue("readOnly")));
         if ("optimistic".equals(attributes.getValue("lockType"))) {
             entity.setDeclaredLockType(ObjEntity.LOCK_TYPE_OPTIMISTIC);
         }
@@ -145,8 +129,8 @@ public class ObjEntityHandler extends NamespaceAwareNestedTagHandler {
     private void createObjAttribute(Attributes attributes) {
         lastAttribute = new ObjAttribute(attributes.getValue("name"));
         lastAttribute.setType(attributes.getValue("type"));
-        lastAttribute.setUsedForLocking(DataMapHandler.TRUE.equalsIgnoreCase(attributes.getValue("lock")));
-        lastAttribute.setLazy(DataMapHandler.TRUE.equalsIgnoreCase(attributes.getValue("lazy")));
+        lastAttribute.setUsedForLocking("true".equals(attributes.getValue("lock")));
+        lastAttribute.setLazy("true".equals(attributes.getValue("lazy")));
         lastAttribute.setDbAttributePath(attributes.getValue("dbAttributePath"));
         entity.addAttribute(lastAttribute);
     }
@@ -161,26 +145,17 @@ public class ObjEntityHandler extends NamespaceAwareNestedTagHandler {
             return null;
         }
 
-        switch (type) {
-            case POST_ADD_TAG:
-                return entity.getCallbackMap().getPostAdd();
-            case PRE_PERSIST_TAG:
-                return entity.getCallbackMap().getPrePersist();
-            case POST_PERSIST_TAG:
-                return entity.getCallbackMap().getPostPersist();
-            case PRE_UPDATE_TAG:
-                return entity.getCallbackMap().getPreUpdate();
-            case POST_UPDATE_TAG:
-                return entity.getCallbackMap().getPostUpdate();
-            case PRE_REMOVE_TAG:
-                return entity.getCallbackMap().getPreRemove();
-            case POST_REMOVE_TAG:
-                return entity.getCallbackMap().getPostRemove();
-            case POST_LOAD_TAG:
-                return entity.getCallbackMap().getPostLoad();
-        }
-
-        return null;
+        return switch (type) {
+            case POST_ADD_TAG -> entity.getCallbackMap().getPostAdd();
+            case PRE_PERSIST_TAG -> entity.getCallbackMap().getPrePersist();
+            case POST_PERSIST_TAG -> entity.getCallbackMap().getPostPersist();
+            case PRE_UPDATE_TAG -> entity.getCallbackMap().getPreUpdate();
+            case POST_UPDATE_TAG -> entity.getCallbackMap().getPostUpdate();
+            case PRE_REMOVE_TAG -> entity.getCallbackMap().getPreRemove();
+            case POST_REMOVE_TAG -> entity.getCallbackMap().getPostRemove();
+            case POST_LOAD_TAG -> entity.getCallbackMap().getPostLoad();
+            default -> null;
+        };
     }
 
     private void createCallback(String type, Attributes attributes) {
@@ -200,7 +175,8 @@ public class ObjEntityHandler extends NamespaceAwareNestedTagHandler {
             try {
                 entity.setDeclaredQualifier(ExpressionFactory.exp(qualifier));
             } catch (ExpressionException ex) {
-                LOGGER.warn("Unable to parse entity {} qualifier", entity.getName(), ex);
+                throw new ConfigurationException("Invalid qualifier of ObjEntity '%s': %s", ex, entity.getName(),
+                        qualifier);
             }
         }
     }
