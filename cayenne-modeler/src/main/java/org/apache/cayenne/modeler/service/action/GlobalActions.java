@@ -240,7 +240,7 @@ public class GlobalActions {
 
     public void domainSelected() {
         processActionsState(domainActions);
-        updateActions("DataDomain");
+        updateActions("Project");
     }
 
     public void dataMapSelected() {

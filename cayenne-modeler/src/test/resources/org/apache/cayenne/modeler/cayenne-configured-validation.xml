@@ -3,7 +3,7 @@
         xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
         xsi:schemaLocation="http://cayenne.apache.org/schema/14/project https://cayenne.apache.org/schema/14/project.xsd">
     <validation xmlns="http://cayenne.apache.org/schema/14/validation">
-        <exclude>DATA_CHANNEL_NO_NAME</exclude>
+        <exclude>PROJECT_NO_NAME</exclude>
         <exclude>DATA_MAP_NO_NAME</exclude>
         <exclude>DATA_MAP_NAME_DUPLICATE</exclude>
     </validation>

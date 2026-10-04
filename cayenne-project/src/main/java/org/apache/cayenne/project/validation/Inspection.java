@@ -23,7 +23,7 @@ package org.apache.cayenne.project.validation;
  */
 // TODO: Some of these probably need a better description.
 public enum Inspection {
-    DATA_CHANNEL_NO_NAME(Group.DATA_CHANNEL, "Empty data domain name"),
+    PROJECT_NO_NAME(Group.PROJECT, "Empty project name"),
 
     DATA_MAP_NO_NAME(Group.DATA_MAP, "Empty data map name"),
     DATA_MAP_NAME_DUPLICATE(Group.DATA_MAP, "Duplicate of a data map name"),
@@ -164,7 +164,7 @@ public enum Inspection {
      * @since 5.0
      */
     public enum Group {
-        DATA_CHANNEL("Data domain"),
+        PROJECT("Project"),
         DATA_MAP("Data map"),
         OBJ_ENTITY("Obj entity"),
         OBJ_ATTRIBUTE("Obj attribute"),

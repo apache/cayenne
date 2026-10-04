@@ -62,9 +62,9 @@ public class UpgradeHandler_V14Test extends BaseUpgradeHandlerTest {
         assertEquals(1, validation.size());
         assertEquals("http://cayenne.apache.org/schema/14/validation", validation.get(0).getAttribute("xmlns"));
 
-        // the EJBQL inspection no longer exists, the other exclusions are kept
+        // the EJBQL inspection no longer exists, the data channel inspection is renamed, the rest is kept
         List<Element> excludes = elements(validation.get(0), "*[local-name()='exclude']");
-        assertEquals(List.of("DATA_CHANNEL_NO_NAME", "SQL_TEMPLATE_NO_ROOT"),
+        assertEquals(List.of("PROJECT_NO_NAME", "SQL_TEMPLATE_NO_ROOT"),
                 excludes.stream().map(Element::getTextContent).toList());
     }
 

@@ -56,6 +56,7 @@ public final class UpgradeHandler_V14 implements UpgradeHandler {
         updateProjectSchema(upgradeUnit);
         updateDomainExtensionSchema(upgradeUnit, VALIDATION);
         removeEjbqlInspection(upgradeUnit);
+        renameProjectInspection(upgradeUnit);
         removeVersionAttribute(upgradeUnit);
         convertNamesToCamelCase(upgradeUnit);
         renameProjectRoot(upgradeUnit);
@@ -206,6 +207,17 @@ public final class UpgradeHandler_V14 implements UpgradeHandler {
                 + "[normalize-space(text())='EJBQL_QUERY_INVALID_SYNTAX']";
         for (Element exclude : elements(upgradeUnit, path)) {
             exclude.getParentNode().removeChild(exclude);
+        }
+    }
+
+    /**
+     * Renames the "DATA_CHANNEL_NO_NAME" inspection to "PROJECT_NO_NAME".
+     */
+    private void renameProjectInspection(UpgradeContext upgradeUnit) {
+        String path = "/domain/*[local-name()='validation']/*[local-name()='exclude']"
+                + "[normalize-space(text())='DATA_CHANNEL_NO_NAME']";
+        for (Element exclude : elements(upgradeUnit, path)) {
+            exclude.setTextContent("PROJECT_NO_NAME");
         }
     }
 

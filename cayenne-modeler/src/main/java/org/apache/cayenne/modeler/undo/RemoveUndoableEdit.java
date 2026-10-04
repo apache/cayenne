@@ -145,7 +145,7 @@ public class RemoveUndoableEdit extends CayenneUndoableEdit {
             case MAP_FROM_DOMAIN:
                 return "Remove DataMap";
             case DOMAIN:
-                return "Remove DataDomain";
+                return "Remove Project";
             case EMBEDDABLE:
                 return "Remove Embeddable";
             default:

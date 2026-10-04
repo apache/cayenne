@@ -197,7 +197,7 @@ public class DataDomainMainView extends ProjectPanel implements DomainDisplayLis
         }
 
         if (newName == null || newName.trim().isEmpty()) {
-            throw new ValidationException("Enter name for DataDomain");
+            throw new ValidationException("Enter project name");
         }
 
         DomainEvent e = DomainEvent.ofChange(

@@ -37,13 +37,13 @@ class DataChannelValidator extends ConfigurationNodeValidator<DataChannelDescrip
     @Override
     public void validate(DataChannelDescriptor node, ValidationResult validationResult) {
         on(node, validationResult)
-                .performIfEnabled(Inspection.DATA_CHANNEL_NO_NAME, this::checkForName);
+                .performIfEnabled(Inspection.PROJECT_NO_NAME, this::checkForName);
     }
 
     private void checkForName(DataChannelDescriptor domain, ValidationResult validationResult) {
         String name = domain.getName();
         if (Util.isEmptyString(name)) {
-            addFailure(validationResult, domain, "Unnamed DataDomain");
+            addFailure(validationResult, domain, "Unnamed project");
         }
     }
 }
