@@ -19,7 +19,7 @@
 package org.apache.cayenne.docs;
 
 import org.apache.cayenne.ObjectContext;
-import org.apache.cayenne.configuration.DataNodeDescriptor;
+import org.apache.cayenne.project.DataNodeDescriptor;
 import org.apache.cayenne.datasource.CayenneDataSource;
 import org.apache.cayenne.docs.persistent.Artist;
 import org.apache.cayenne.docs.persistent.Gallery;

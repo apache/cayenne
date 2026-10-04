@@ -20,8 +20,8 @@ package org.apache.cayenne.gen.xml;
 
 import java.nio.file.Paths;
 
-import org.apache.cayenne.configuration.xml.ProjectMetaData;
-import org.apache.cayenne.configuration.xml.NamespaceAwareNestedTagHandler;
+import org.apache.cayenne.project.xml.ProjectMetaData;
+import org.apache.cayenne.project.xml.NamespaceAwareNestedTagHandler;
 import org.apache.cayenne.gen.CgenConfiguration;
 import org.apache.cayenne.gen.CgenConfigList;
 import org.apache.cayenne.gen.CgenTemplate;

@@ -20,7 +20,7 @@ package org.apache.cayenne.modeler.ui.project.editor.project;
 
 import com.jgoodies.forms.builder.DefaultFormBuilder;
 import com.jgoodies.forms.layout.FormLayout;
-import org.apache.cayenne.configuration.xml.ProjectMetaData;
+import org.apache.cayenne.project.xml.ProjectMetaData;
 import org.apache.cayenne.dbsync.reverse.dbimport.ReverseEngineering;
 import org.apache.cayenne.map.DataMap;
 import org.apache.cayenne.modeler.Application;

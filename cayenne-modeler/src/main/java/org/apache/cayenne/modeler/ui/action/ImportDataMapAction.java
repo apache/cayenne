@@ -19,10 +19,10 @@
 
 package org.apache.cayenne.modeler.ui.action;
 
-import org.apache.cayenne.configuration.ConfigurationNameMapper;
-import org.apache.cayenne.configuration.ProjectNode;
-import org.apache.cayenne.configuration.Project;
-import org.apache.cayenne.configuration.DataMapLoader;
+import org.apache.cayenne.project.ConfigurationNameMapper;
+import org.apache.cayenne.project.ProjectNode;
+import org.apache.cayenne.project.Project;
+import org.apache.cayenne.project.DataMapLoader;
 import org.apache.cayenne.dbsync.naming.NameBuilder;
 import org.apache.cayenne.map.DataMap;
 import org.apache.cayenne.modeler.Application;

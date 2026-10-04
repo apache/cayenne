@@ -19,9 +19,9 @@
 
 package org.apache.cayenne.dbsync.xml;
 
-import org.apache.cayenne.configuration.xml.ProjectMetaData;
-import org.apache.cayenne.configuration.xml.NamespaceAwareNestedTagHandler;
-import org.apache.cayenne.project.extension.LoaderDelegate;
+import org.apache.cayenne.project.xml.ProjectMetaData;
+import org.apache.cayenne.project.xml.NamespaceAwareNestedTagHandler;
+import org.apache.cayenne.projecttools.extension.LoaderDelegate;
 
 /**
  * @since 4.1

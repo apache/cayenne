@@ -19,7 +19,7 @@
 
 package org.apache.cayenne.modeler.pref.dbconnector;
 
-import org.apache.cayenne.configuration.DataSourceDescriptor;
+import org.apache.cayenne.project.DataSourceDescriptor;
 import org.junit.jupiter.api.Test;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;

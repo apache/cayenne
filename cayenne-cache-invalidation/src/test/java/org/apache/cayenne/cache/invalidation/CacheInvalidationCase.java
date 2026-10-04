@@ -18,7 +18,7 @@
  ****************************************************************/
 package org.apache.cayenne.cache.invalidation;
 
-import org.apache.cayenne.configuration.DataNodeDescriptor;
+import org.apache.cayenne.project.DataNodeDescriptor;
 import org.apache.cayenne.datasource.CayenneDataSource;
 import org.apache.cayenne.di.Module;
 import org.apache.cayenne.CayenneRuntime;

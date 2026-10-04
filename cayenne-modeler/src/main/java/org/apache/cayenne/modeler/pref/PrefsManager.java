@@ -18,7 +18,7 @@
  ****************************************************************/
 package org.apache.cayenne.modeler.pref;
 
-import org.apache.cayenne.configuration.Project;
+import org.apache.cayenne.project.Project;
 import org.apache.cayenne.map.DataMap;
 import org.apache.cayenne.modeler.pref.migration.toV5._1_DbConnectorsMigration;
 import org.apache.cayenne.modeler.pref.migration.toV5._2_ClasspathMigration;
@@ -28,7 +28,7 @@ import org.apache.cayenne.modeler.pref.migration.toV5._5_FrameGeometryMigration;
 import org.apache.cayenne.modeler.pref.migration.toV5._6_ProjectSplitPaneMigration;
 import org.apache.cayenne.modeler.pref.migration.toV5._7_EntityTablePrefsMigration;
 import org.apache.cayenne.modeler.pref.migration.toV5._8_RemoveRedundantPathIndexMigration;
-import org.apache.cayenne.configuration.ConfigurationNameMapper;
+import org.apache.cayenne.project.ConfigurationNameMapper;
 import org.apache.cayenne.resource.Resource;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;

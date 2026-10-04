@@ -24,7 +24,7 @@ import java.util.Arrays;
 import java.util.Collection;
 import java.util.List;
 
-import org.apache.cayenne.configuration.ProjectNodeVisitor;
+import org.apache.cayenne.project.ProjectNodeVisitor;
 import org.apache.cayenne.dbsync.xml.DbImportExtension;
 import org.apache.cayenne.util.XMLEncoder;
 import org.apache.cayenne.util.XMLSerializable;

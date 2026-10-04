@@ -18,7 +18,7 @@
  ****************************************************************/
 package org.apache.cayenne.commitlog.unit;
 
-import org.apache.cayenne.configuration.DataNodeDescriptor;
+import org.apache.cayenne.project.DataNodeDescriptor;
 import org.apache.cayenne.datasource.CayenneDataSource;
 import org.apache.cayenne.CayenneRuntime;
 import org.apache.cayenne.CayenneRuntimeBuilder;

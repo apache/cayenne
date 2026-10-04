@@ -26,8 +26,8 @@ import java.util.Collections;
 import java.util.List;
 
 import org.apache.cayenne.CayenneRuntimeException;
-import org.apache.cayenne.configuration.DataMapLoader;
-import org.apache.cayenne.configuration.EmptyProjectNodeVisitor;
+import org.apache.cayenne.project.DataMapLoader;
+import org.apache.cayenne.project.EmptyProjectNodeVisitor;
 import org.apache.cayenne.exp.ExpressionException;
 import org.apache.cayenne.exp.path.CayennePath;
 import org.apache.cayenne.resource.URLResource;

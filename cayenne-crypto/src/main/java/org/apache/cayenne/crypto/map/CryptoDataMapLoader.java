@@ -19,7 +19,7 @@
 package org.apache.cayenne.crypto.map;
 
 import org.apache.cayenne.CayenneRuntimeException;
-import org.apache.cayenne.configuration.DataMapLoader;
+import org.apache.cayenne.project.DataMapLoader;
 import org.apache.cayenne.di.Inject;
 import org.apache.cayenne.log.SQLLogger;
 import org.apache.cayenne.map.DataMap;

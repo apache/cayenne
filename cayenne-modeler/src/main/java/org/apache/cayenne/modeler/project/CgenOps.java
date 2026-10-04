@@ -25,7 +25,7 @@ import org.apache.cayenne.gen.CgenConfiguration;
 import org.apache.cayenne.gen.internal.Utils;
 import org.apache.cayenne.map.DataMap;
 import org.apache.cayenne.modeler.pref.adapters.GeneralPrefs;
-import org.apache.cayenne.configuration.Project;
+import org.apache.cayenne.project.Project;
 import org.apache.cayenne.resource.Resource;
 
 import java.net.URISyntaxException;

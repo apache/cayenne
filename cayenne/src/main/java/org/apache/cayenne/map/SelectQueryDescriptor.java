@@ -19,7 +19,7 @@
 package org.apache.cayenne.map;
 
 import org.apache.cayenne.CayenneRuntimeException;
-import org.apache.cayenne.configuration.ProjectNodeVisitor;
+import org.apache.cayenne.project.ProjectNodeVisitor;
 import org.apache.cayenne.exp.Expression;
 import org.apache.cayenne.ql.QLSelectPrinter;
 import org.apache.cayenne.query.ObjectSelect;

@@ -18,8 +18,8 @@
  ****************************************************************/
 package org.apache.cayenne.modeler.event.display;
 
-import org.apache.cayenne.configuration.Project;
-import org.apache.cayenne.project.validation.Inspection;
+import org.apache.cayenne.project.Project;
+import org.apache.cayenne.projecttools.validation.Inspection;
 
 public class ValidationConfigDisplayEvent extends DisplayEvent {
 

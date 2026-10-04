@@ -20,7 +20,7 @@ package org.apache.cayenne;
 
 import org.apache.cayenne.access.DataContext;
 import org.apache.cayenne.access.DataDomain;
-import org.apache.cayenne.configuration.ObjectContextFactory;
+import org.apache.cayenne.project.ObjectContextFactory;
 import org.apache.cayenne.di.Module;
 import org.apache.cayenne.tx.BaseTransaction;
 import org.apache.cayenne.tx.TransactionDescriptor;

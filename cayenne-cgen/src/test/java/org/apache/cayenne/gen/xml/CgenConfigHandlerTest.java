@@ -19,8 +19,8 @@
 
 package org.apache.cayenne.gen.xml;
 
-import org.apache.cayenne.configuration.DataMapLoader;
-import org.apache.cayenne.configuration.xml.ProjectMetaData;
+import org.apache.cayenne.project.DataMapLoader;
+import org.apache.cayenne.project.xml.ProjectMetaData;
 import org.apache.cayenne.dbsync.reverse.configuration.ToolsModule;
 import org.apache.cayenne.di.Injector;
 import org.apache.cayenne.gen.CgenConfigList;

@@ -21,7 +21,7 @@ package org.apache.cayenne.tools;
 
 import groovy.lang.Closure;
 import org.apache.cayenne.access.DbGenerator;
-import org.apache.cayenne.configuration.DataMapLoader;
+import org.apache.cayenne.project.DataMapLoader;
 import org.apache.cayenne.dbsync.reverse.configuration.DbAdapterFactory;
 import org.apache.cayenne.datasource.CayenneDataSource;
 import org.apache.cayenne.dba.DbAdapter;

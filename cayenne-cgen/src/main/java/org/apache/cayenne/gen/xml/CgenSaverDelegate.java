@@ -19,12 +19,12 @@
 package org.apache.cayenne.gen.xml;
 
 import org.apache.cayenne.CayenneRuntimeException;
-import org.apache.cayenne.configuration.xml.ProjectMetaData;
+import org.apache.cayenne.project.xml.ProjectMetaData;
 import org.apache.cayenne.gen.CgenConfiguration;
 import org.apache.cayenne.gen.CgenConfigList;
 import org.apache.cayenne.gen.internal.Utils;
 import org.apache.cayenne.map.DataMap;
-import org.apache.cayenne.project.extension.BaseSaverDelegate;
+import org.apache.cayenne.projecttools.extension.BaseSaverDelegate;
 
 import java.net.URISyntaxException;
 import java.net.URL;

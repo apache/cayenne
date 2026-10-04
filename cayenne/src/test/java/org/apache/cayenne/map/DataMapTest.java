@@ -19,8 +19,8 @@
 
 package org.apache.cayenne.map;
 
-import org.apache.cayenne.configuration.EmptyProjectNodeVisitor;
-import org.apache.cayenne.configuration.xml.XMLDataMapLoader;
+import org.apache.cayenne.project.EmptyProjectNodeVisitor;
+import org.apache.cayenne.project.xml.XMLDataMapLoader;
 import org.apache.cayenne.resource.URLResource;
 import org.apache.cayenne.util.XMLEncoder;
 import org.junit.jupiter.api.Disabled;

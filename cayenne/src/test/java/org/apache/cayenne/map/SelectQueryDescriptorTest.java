@@ -23,7 +23,7 @@ import java.io.PrintWriter;
 import java.io.StringWriter;
 import java.util.Map;
 
-import org.apache.cayenne.configuration.EmptyProjectNodeVisitor;
+import org.apache.cayenne.project.EmptyProjectNodeVisitor;
 import org.apache.cayenne.exp.ExpressionFactory;
 import org.apache.cayenne.query.ObjectSelect;
 import org.apache.cayenne.query.Ordering;

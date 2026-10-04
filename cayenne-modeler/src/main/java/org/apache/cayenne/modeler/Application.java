@@ -19,12 +19,12 @@
 
 package org.apache.cayenne.modeler;
 
-import org.apache.cayenne.configuration.ConfigurationNameMapper;
-import org.apache.cayenne.configuration.ProjectLoader;
-import org.apache.cayenne.configuration.DataMapLoader;
+import org.apache.cayenne.project.ConfigurationNameMapper;
+import org.apache.cayenne.project.ProjectLoader;
+import org.apache.cayenne.project.DataMapLoader;
 import org.apache.cayenne.dbsync.reverse.configuration.DbAdapterFactory;
 import org.apache.cayenne.dbsync.reverse.configuration.ToolsModule;
-import org.apache.cayenne.configuration.xml.ProjectMetaData;
+import org.apache.cayenne.project.xml.ProjectMetaData;
 import org.apache.cayenne.dbsync.DbSyncModule;
 import org.apache.cayenne.dbsync.merge.factory.MergerTokenFactoryProvider;
 import org.apache.cayenne.di.DIBootstrap;
@@ -47,11 +47,11 @@ import org.apache.cayenne.modeler.ui.MainFrame;
 import org.apache.cayenne.modeler.ui.action.OpenProjectAction;
 import org.apache.cayenne.modeler.ui.logconsole.LogConsole;
 import org.apache.cayenne.modeler.undo.CayenneUndoManager;
-import org.apache.cayenne.project.ProjectNodeParentGetter;
-import org.apache.cayenne.project.ProjectModule;
-import org.apache.cayenne.project.ProjectSaver;
-import org.apache.cayenne.project.upgrade.ProjectUpgrader;
-import org.apache.cayenne.project.validation.ProjectValidator;
+import org.apache.cayenne.projecttools.ProjectNodeParentGetter;
+import org.apache.cayenne.projecttools.ProjectToolsModule;
+import org.apache.cayenne.projecttools.ProjectSaver;
+import org.apache.cayenne.projecttools.upgrade.ProjectUpgrader;
+import org.apache.cayenne.projecttools.validation.ProjectValidator;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -78,7 +78,7 @@ public class Application {
         LOGGER.info("JRE v.{} at {}", System.getProperty("java.version"), System.getProperty("java.home"));
 
         Injector injector = DIBootstrap.createInjector(
-                new ProjectModule(),
+                new ProjectToolsModule(),
                 new DbSyncModule(),
                 new ToolsModule(LOGGER),
                 new ModelerModule());

@@ -19,7 +19,7 @@
 
 package org.apache.cayenne.dbsync.xml;
 
-import org.apache.cayenne.configuration.xml.NamespaceAwareNestedTagHandler;
+import org.apache.cayenne.project.xml.NamespaceAwareNestedTagHandler;
 import org.apache.cayenne.dbsync.reverse.dbimport.ExcludeColumn;
 import org.apache.cayenne.dbsync.reverse.dbimport.FilterContainer;
 import org.apache.cayenne.dbsync.reverse.dbimport.IncludeColumn;

@@ -19,8 +19,8 @@
 
 package org.apache.cayenne.modeler.project;
 
-import org.apache.cayenne.configuration.ProjectNode;
-import org.apache.cayenne.configuration.Project;
+import org.apache.cayenne.project.ProjectNode;
+import org.apache.cayenne.project.Project;
 import org.apache.cayenne.map.DataMap;
 import org.apache.cayenne.map.DbAttribute;
 import org.apache.cayenne.map.DbEntity;
@@ -41,7 +41,7 @@ import org.apache.cayenne.modeler.pref.adapters.ProjectPrefs;
 import org.apache.cayenne.modeler.service.action.GlobalActions;
 import org.apache.cayenne.modeler.ui.project.editor.objentity.callbacks.CallbackType;
 import org.apache.cayenne.modeler.ui.project.editor.objentity.callbacks.ObjCallbackMethod;
-import org.apache.cayenne.project.ProjectNodeParentGetter;
+import org.apache.cayenne.projecttools.ProjectNodeParentGetter;
 
 import javax.swing.event.EventListenerList;
 import java.net.URL;

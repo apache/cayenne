@@ -19,7 +19,7 @@
 package org.apache.cayenne.dbsync.reverse.dbimport;
 
 import org.apache.cayenne.CayenneRuntimeException;
-import org.apache.cayenne.configuration.DataSourceDescriptor;
+import org.apache.cayenne.project.DataSourceDescriptor;
 import org.apache.cayenne.datasource.CayenneDataSource;
 import org.apache.cayenne.dba.DbAdapter;
 import org.apache.cayenne.dbsync.filter.NameFilter;

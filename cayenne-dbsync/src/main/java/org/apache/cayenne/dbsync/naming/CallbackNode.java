@@ -18,8 +18,8 @@
  */
 package org.apache.cayenne.dbsync.naming;
 
-import org.apache.cayenne.configuration.ProjectNode;
-import org.apache.cayenne.configuration.ProjectNodeVisitor;
+import org.apache.cayenne.project.ProjectNode;
+import org.apache.cayenne.project.ProjectNodeVisitor;
 
 /**
  * A pseudo-node representing an {@link org.apache.cayenne.map.ObjEntity} callback method. Callback methods are not

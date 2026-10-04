@@ -18,7 +18,7 @@
  ****************************************************************/
 package org.apache.cayenne.modeler.ui.project.editor.objentity.properties;
 
-import org.apache.cayenne.configuration.Project;
+import org.apache.cayenne.project.Project;
 import org.apache.cayenne.map.DeleteRule;
 import org.apache.cayenne.map.ObjEntity;
 import org.apache.cayenne.map.ObjRelationship;

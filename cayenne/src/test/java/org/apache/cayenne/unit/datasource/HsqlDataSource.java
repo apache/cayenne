@@ -18,7 +18,7 @@
  ****************************************************************/
 package org.apache.cayenne.unit.datasource;
 
-import org.apache.cayenne.configuration.DataSourceDescriptor;
+import org.apache.cayenne.project.DataSourceDescriptor;
 
 public class HsqlDataSource {
 

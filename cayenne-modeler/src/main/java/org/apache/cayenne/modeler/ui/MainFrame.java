@@ -41,8 +41,8 @@ import org.apache.cayenne.modeler.ui.project.ProjectView;
 import org.apache.cayenne.modeler.ui.project.editor.datamap.dbimport.DbImportResultDialog;
 import org.apache.cayenne.modeler.ui.welcome.WelcomeScreen;
 import org.apache.cayenne.modeler.toolkit.filechooser.FileFilters;
-import org.apache.cayenne.configuration.Project;
-import org.apache.cayenne.project.validation.ProjectValidator;
+import org.apache.cayenne.project.Project;
+import org.apache.cayenne.projecttools.validation.ProjectValidator;
 import org.apache.cayenne.validation.ValidationResult;
 
 import javax.swing.BorderFactory;

@@ -21,9 +21,9 @@ package org.apache.cayenne.mcp.tools.cgen;
 import io.modelcontextprotocol.json.McpJsonMapper;
 import io.modelcontextprotocol.server.McpServerFeatures;
 import io.modelcontextprotocol.spec.McpSchema;
-import org.apache.cayenne.configuration.Project;
-import org.apache.cayenne.configuration.ProjectLoader;
-import org.apache.cayenne.configuration.xml.ProjectMetaData;
+import org.apache.cayenne.project.Project;
+import org.apache.cayenne.project.ProjectLoader;
+import org.apache.cayenne.project.xml.ProjectMetaData;
 import org.apache.cayenne.di.Injector;
 import org.apache.cayenne.gen.CgenConfigList;
 import org.apache.cayenne.gen.CgenConfiguration;
@@ -39,7 +39,7 @@ import org.apache.cayenne.mcp.tools.cgen.protocol.CgenResolvedConfig;
 import org.apache.cayenne.mcp.tools.cgen.protocol.CgenRunResult;
 import org.apache.cayenne.mcp.tools.cgen.protocol.CgenSummary;
 import org.apache.cayenne.mcp.tools.cgen.protocol.CgenValidation;
-import org.apache.cayenne.project.ProjectModule;
+import org.apache.cayenne.projecttools.ProjectToolsModule;
 import org.apache.cayenne.resource.URLResource;
 import org.apache.cayenne.tools.ToolsInjectorBuilder;
 import org.slf4j.helpers.NOPLogger;
@@ -67,7 +67,7 @@ public class CgenRunTool {
 
     public CgenRunTool() {
         this.injector = new ToolsInjectorBuilder()
-                .addModule(new ProjectModule())
+                .addModule(new ProjectToolsModule())
                 .addModule(new McpProjectLoaderModule())
                 .create();
     }

@@ -28,7 +28,7 @@ import org.apache.cayenne.commitlog.CommitLogFilter;
 import org.apache.cayenne.commitlog.CommitLogListener;
 import org.apache.cayenne.commitlog.meta.AnnotationCommitLogEntityFactory;
 import org.apache.cayenne.commitlog.meta.CommitLogEntityFactory;
-import org.apache.cayenne.configuration.Constants;
+import org.apache.cayenne.project.Constants;
 import org.apache.cayenne.dba.DbAdapterDetector;
 import org.apache.cayenne.di.Binder;
 import org.apache.cayenne.di.ListBuilder;

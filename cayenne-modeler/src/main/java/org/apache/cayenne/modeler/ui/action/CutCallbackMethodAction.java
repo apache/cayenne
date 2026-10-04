@@ -20,7 +20,7 @@ package org.apache.cayenne.modeler.ui.action;
 
 import java.awt.event.ActionEvent;
 
-import org.apache.cayenne.configuration.ProjectNode;
+import org.apache.cayenne.project.ProjectNode;
 import org.apache.cayenne.modeler.Application;
 
 public class CutCallbackMethodAction extends CutAction implements MultipleObjectsAction {

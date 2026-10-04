@@ -39,7 +39,7 @@ import org.apache.cayenne.modeler.ui.project.editor.ExpressionConvertor;
 import org.apache.cayenne.modeler.ui.project.editor.query.BaseQueryMainTab;
 import org.apache.cayenne.modeler.ui.project.editor.query.ObjectQueryPropertiesPanel;
 import org.apache.cayenne.modeler.project.ProjectComparators;
-import org.apache.cayenne.project.extension.info.ObjectInfo;
+import org.apache.cayenne.projecttools.extension.info.ObjectInfo;
 import org.apache.cayenne.util.CayenneMapEntry;
 import java.util.Objects;
 import org.apache.cayenne.validation.ValidationException;

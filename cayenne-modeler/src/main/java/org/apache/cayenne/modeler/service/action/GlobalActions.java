@@ -18,12 +18,12 @@
  ****************************************************************/
 package org.apache.cayenne.modeler.service.action;
 
-import org.apache.cayenne.configuration.ConfigurationNameMapper;
-import org.apache.cayenne.configuration.ProjectNode;
+import org.apache.cayenne.project.ConfigurationNameMapper;
+import org.apache.cayenne.project.ProjectNode;
 import org.apache.cayenne.modeler.Application;
 import org.apache.cayenne.modeler.toolkit.AppAction;
 import org.apache.cayenne.modeler.ui.action.*;
-import org.apache.cayenne.project.ProjectNodeParentGetter;
+import org.apache.cayenne.projecttools.ProjectNodeParentGetter;
 
 import javax.swing.*;
 import java.util.Arrays;

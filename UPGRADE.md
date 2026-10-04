@@ -87,6 +87,16 @@ List<Artist> withExpensivePaintings = ObjectSelect
 *  Per [CAY-2826](https://issues.apache.org/jira/browse/CAY-2826) `CoreModule` and `CoreModuleExtender` were moved from
   `org.apache.cayenne.configuration.runtime` to the `org.apache.cayenne` package — fix your imports accordingly.
 
+*  The `cayenne-project` module was renamed to `cayenne-project-tools`, and its `org.apache.cayenne.project` package to
+  `org.apache.cayenne.projecttools`. `ProjectModule`, `ProjectModuleExtender` and `ProjectModuleProvider` are now
+  `ProjectToolsModule`, `ProjectToolsModuleExtender` and `ProjectToolsModuleProvider`. Update the dependency and fix
+  your imports accordingly.
+
+*  The `org.apache.cayenne.configuration` package of the core module and its `xml` and `upgrade` subpackages were
+  renamed to `org.apache.cayenne.project` (`Constants`, `Project`, `ProjectLoader`, `DataNodeDescriptor`,
+  `RuntimeProperties`, etc.) — fix your imports accordingly. The deprecated `ServerRuntime` stays in
+  `org.apache.cayenne.configuration.server`.
+
 *  Per [CAY-2875](https://issues.apache.org/jira/browse/CAY-2875) a `java.util.UUID` attribute now honors the JDBC
   type of the column it is mapped to, instead of always being converted to a 36-char string:
 

@@ -21,7 +21,7 @@ package org.apache.cayenne.modeler.ui.action;
 
 import org.apache.cayenne.modeler.Application;
 import org.apache.cayenne.modeler.toolkit.AppAction;
-import org.apache.cayenne.configuration.Project;
+import org.apache.cayenne.project.Project;
 
 import java.awt.event.ActionEvent;
 import java.io.File;

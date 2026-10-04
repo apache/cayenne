@@ -18,10 +18,10 @@
  ****************************************************************/
 package org.apache.cayenne.modeler.ui.action;
 
-import org.apache.cayenne.configuration.Project;
+import org.apache.cayenne.project.Project;
 import org.apache.cayenne.modeler.Application;
-import org.apache.cayenne.project.validation.Inspection;
-import org.apache.cayenne.project.validation.ValidationConfig;
+import org.apache.cayenne.projecttools.validation.Inspection;
+import org.apache.cayenne.projecttools.validation.ValidationConfig;
 
 import java.awt.event.ActionEvent;
 import java.util.EnumSet;

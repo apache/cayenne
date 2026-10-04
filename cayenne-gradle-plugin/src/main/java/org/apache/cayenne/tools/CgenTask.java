@@ -20,7 +20,7 @@
 package org.apache.cayenne.tools;
 
 import groovy.lang.Reference;
-import org.apache.cayenne.configuration.xml.ProjectMetaData;
+import org.apache.cayenne.project.xml.ProjectMetaData;
 import org.apache.cayenne.dbsync.filter.NamePatternMatcher;
 import org.apache.cayenne.dbsync.reverse.configuration.ToolsModule;
 import org.apache.cayenne.di.Injector;

@@ -18,10 +18,10 @@
  ****************************************************************/
 package org.apache.cayenne.mcp.tools.dbimport;
 
-import org.apache.cayenne.configuration.ProjectLoader;
-import org.apache.cayenne.configuration.DataMapLoader;
+import org.apache.cayenne.project.ProjectLoader;
+import org.apache.cayenne.project.DataMapLoader;
 import org.apache.cayenne.dbsync.reverse.configuration.DbAdapterFactory;
-import org.apache.cayenne.configuration.xml.ProjectMetaData;
+import org.apache.cayenne.project.xml.ProjectMetaData;
 import org.apache.cayenne.dbsync.merge.token.MergerToken;
 import org.apache.cayenne.dbsync.merge.token.model.AddRelationshipToModel;
 import org.apache.cayenne.dbsync.merge.token.model.CreateTableToModel;
@@ -30,7 +30,7 @@ import org.apache.cayenne.dbsync.merge.factory.MergerTokenFactoryProvider;
 import org.apache.cayenne.dbsync.reverse.dbimport.DefaultDbImportAction;
 import org.apache.cayenne.di.Inject;
 import org.apache.cayenne.mcp.tools.dbimport.protocol.DbImportSummary;
-import org.apache.cayenne.project.ProjectSaver;
+import org.apache.cayenne.projecttools.ProjectSaver;
 import org.slf4j.Logger;
 
 import java.util.Collection;

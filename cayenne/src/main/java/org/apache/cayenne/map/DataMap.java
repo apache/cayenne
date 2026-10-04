@@ -21,9 +21,9 @@ package org.apache.cayenne.map;
 
 import org.apache.cayenne.ObjectId;
 import org.apache.cayenne.Persistent;
-import org.apache.cayenne.configuration.ProjectNode;
-import org.apache.cayenne.configuration.ProjectNodeVisitor;
-import org.apache.cayenne.configuration.Project;
+import org.apache.cayenne.project.ProjectNode;
+import org.apache.cayenne.project.ProjectNodeVisitor;
+import org.apache.cayenne.project.Project;
 import org.apache.cayenne.resource.Resource;
 import org.apache.cayenne.util.ToStringBuilder;
 import org.apache.cayenne.util.Util;

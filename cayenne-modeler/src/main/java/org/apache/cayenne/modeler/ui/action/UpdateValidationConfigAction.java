@@ -19,14 +19,14 @@
 
 package org.apache.cayenne.modeler.ui.action;
 
-import org.apache.cayenne.configuration.Project;
+import org.apache.cayenne.project.Project;
 import org.apache.cayenne.modeler.event.model.ProjectEvent;
-import org.apache.cayenne.configuration.xml.ProjectMetaData;
+import org.apache.cayenne.project.xml.ProjectMetaData;
 import org.apache.cayenne.modeler.Application;
 import org.apache.cayenne.modeler.toolkit.AppAction;
 import org.apache.cayenne.modeler.undo.CayenneUndoManager;
 import org.apache.cayenne.modeler.undo.UpdateValidationConfigUndoableEdit;
-import org.apache.cayenne.project.validation.ValidationConfig;
+import org.apache.cayenne.projecttools.validation.ValidationConfig;
 
 import java.awt.event.ActionEvent;
 

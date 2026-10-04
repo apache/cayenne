@@ -21,8 +21,8 @@ package org.apache.cayenne.modeler.ui.action;
 
 import org.apache.cayenne.modeler.Application;
 import org.apache.cayenne.modeler.event.model.ProjectAfterSaveEvent;
-import org.apache.cayenne.configuration.Project;
-import org.apache.cayenne.project.ProjectSaver;
+import org.apache.cayenne.project.Project;
+import org.apache.cayenne.projecttools.ProjectSaver;
 
 import javax.swing.*;
 import java.awt.*;

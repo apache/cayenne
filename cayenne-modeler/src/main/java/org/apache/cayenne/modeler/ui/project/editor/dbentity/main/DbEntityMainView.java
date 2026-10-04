@@ -39,7 +39,7 @@ import org.apache.cayenne.modeler.ui.action.DbEntitySyncAction;
 import org.apache.cayenne.modeler.ui.project.editor.EditorForm;
 import org.apache.cayenne.modeler.ui.project.editor.ExpressionConvertor;
 import org.apache.cayenne.modeler.ui.project.editor.query.ExistingSelectionProcessor;
-import org.apache.cayenne.project.extension.info.ObjectInfo;
+import org.apache.cayenne.projecttools.extension.info.ObjectInfo;
 import org.apache.cayenne.validation.ValidationException;
 
 import javax.swing.*;

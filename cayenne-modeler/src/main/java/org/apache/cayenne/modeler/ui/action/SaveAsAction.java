@@ -20,8 +20,8 @@
 package org.apache.cayenne.modeler.ui.action;
 
 import org.apache.cayenne.CayenneRuntimeException;
-import org.apache.cayenne.configuration.ProjectNode;
-import org.apache.cayenne.configuration.Project;
+import org.apache.cayenne.project.ProjectNode;
+import org.apache.cayenne.project.Project;
 import org.apache.cayenne.map.DataMap;
 import org.apache.cayenne.modeler.Application;
 import org.apache.cayenne.modeler.event.model.ProjectBeforeSaveEvent;
@@ -31,8 +31,8 @@ import org.apache.cayenne.modeler.pref.adapters.RecentProjectsPrefs;
 import org.apache.cayenne.modeler.project.ProjectSession;
 import org.apache.cayenne.modeler.toolkit.AppAction;
 import org.apache.cayenne.modeler.ui.project.overwrite.OverwriteDialog;
-import org.apache.cayenne.project.ProjectSaver;
-import org.apache.cayenne.project.validation.ProjectValidator;
+import org.apache.cayenne.projecttools.ProjectSaver;
+import org.apache.cayenne.projecttools.validation.ProjectValidator;
 import org.apache.cayenne.resource.URLResource;
 import org.apache.cayenne.validation.ValidationResult;
 import org.slf4j.Logger;

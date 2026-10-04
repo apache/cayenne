@@ -19,7 +19,7 @@
 
 package org.apache.cayenne.util;
 
-import org.apache.cayenne.configuration.ProjectNodeVisitor;
+import org.apache.cayenne.project.ProjectNodeVisitor;
 
 /**
  * Interface for Cayenne objects that can be saved to XML.

@@ -19,7 +19,7 @@
 
 package org.apache.cayenne.gen;
 
-import org.apache.cayenne.project.validation.NameValidator;
+import org.apache.cayenne.projecttools.validation.NameValidator;
 import org.apache.cayenne.util.Util;
 
 /**

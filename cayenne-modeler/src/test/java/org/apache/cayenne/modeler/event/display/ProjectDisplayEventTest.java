@@ -19,7 +19,7 @@
 
 package org.apache.cayenne.modeler.event.display;
 
-import org.apache.cayenne.configuration.Project;
+import org.apache.cayenne.project.Project;
 import org.junit.jupiter.api.Test;
 
 import static org.junit.jupiter.api.Assertions.assertSame;

@@ -18,7 +18,7 @@
  ****************************************************************/
 package org.apache.cayenne.modeler.ui.action;
 
-import org.apache.cayenne.configuration.Project;
+import org.apache.cayenne.project.Project;
 import org.apache.cayenne.dbsync.model.DetectedDbEntity;
 import org.apache.cayenne.dbsync.reverse.dbload.DbRelationshipDetected;
 import org.apache.cayenne.map.Attribute;

@@ -37,7 +37,7 @@ import org.apache.cayenne.modeler.toolkit.combobox.CMUndoableComboBox;
 import org.apache.cayenne.modeler.toolkit.text.CMUndoableTextField;
 import org.apache.cayenne.modeler.project.ProjectSession;
 import org.apache.cayenne.modeler.project.ProjectComparators;
-import org.apache.cayenne.project.extension.info.ObjectInfo;
+import org.apache.cayenne.projecttools.extension.info.ObjectInfo;
 import org.apache.cayenne.query.CapsStrategy;
 
 import javax.swing.DefaultComboBoxModel;

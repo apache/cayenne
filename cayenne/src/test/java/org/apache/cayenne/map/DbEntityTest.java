@@ -18,7 +18,7 @@
  ****************************************************************/
 package org.apache.cayenne.map;
 
-import org.apache.cayenne.configuration.BaseProjectNodeVisitor;
+import org.apache.cayenne.project.BaseProjectNodeVisitor;
 import org.apache.cayenne.util.XMLEncoder;
 import org.junit.jupiter.api.Test;
 

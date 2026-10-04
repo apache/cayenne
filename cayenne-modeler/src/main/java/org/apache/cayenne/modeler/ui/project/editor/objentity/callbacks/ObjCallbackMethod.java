@@ -18,7 +18,7 @@
  ****************************************************************/
 package org.apache.cayenne.modeler.ui.project.editor.objentity.callbacks;
 
-import org.apache.cayenne.configuration.ProjectNodeVisitor;
+import org.apache.cayenne.project.ProjectNodeVisitor;
 import org.apache.cayenne.util.XMLEncoder;
 import org.apache.cayenne.util.XMLSerializable;
 

@@ -22,7 +22,7 @@ package org.apache.cayenne.modeler.ui.project.editor.project.main;
 import com.jgoodies.forms.builder.PanelBuilder;
 import com.jgoodies.forms.layout.CellConstraints;
 import com.jgoodies.forms.layout.FormLayout;
-import org.apache.cayenne.configuration.Project;
+import org.apache.cayenne.project.Project;
 import org.apache.cayenne.modeler.event.display.ProjectDisplayEvent;
 import org.apache.cayenne.modeler.event.display.ProjectDisplayListener;
 import org.apache.cayenne.modeler.event.model.ProjectEvent;

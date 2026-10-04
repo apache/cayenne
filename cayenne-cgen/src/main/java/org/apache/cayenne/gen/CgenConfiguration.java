@@ -19,7 +19,7 @@
 
 package org.apache.cayenne.gen;
 
-import org.apache.cayenne.configuration.ProjectNodeVisitor;
+import org.apache.cayenne.project.ProjectNodeVisitor;
 import org.apache.cayenne.gen.internal.Utils;
 import org.apache.cayenne.gen.xml.CgenExtension;
 import org.apache.cayenne.map.DataMap;

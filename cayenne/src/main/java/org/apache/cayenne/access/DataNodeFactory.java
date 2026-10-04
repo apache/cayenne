@@ -18,7 +18,7 @@
  ****************************************************************/
 package org.apache.cayenne.access;
 
-import org.apache.cayenne.configuration.DataNodeDescriptor;
+import org.apache.cayenne.project.DataNodeDescriptor;
 
 /**
  * A factory for creating DataNodes from descriptors.

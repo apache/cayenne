@@ -18,8 +18,8 @@
  */
 package org.apache.cayenne.dbsync.naming;
 
-import org.apache.cayenne.configuration.ProjectNode;
-import org.apache.cayenne.configuration.Project;
+import org.apache.cayenne.project.ProjectNode;
+import org.apache.cayenne.project.Project;
 import org.apache.cayenne.map.DataMap;
 import org.apache.cayenne.map.DbAttribute;
 import org.apache.cayenne.map.DbEntity;

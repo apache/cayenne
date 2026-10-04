@@ -18,7 +18,7 @@
  ****************************************************************/
 package org.apache.cayenne.map;
 
-import org.apache.cayenne.configuration.ProjectNodeVisitor;
+import org.apache.cayenne.project.ProjectNodeVisitor;
 import org.apache.cayenne.query.CapsStrategy;
 import org.apache.cayenne.query.ProcedureQuery;
 import org.apache.cayenne.query.QueryCacheStrategy;

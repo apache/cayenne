@@ -31,8 +31,8 @@ import org.apache.cayenne.gen.property.NumericPropertyDescriptorCreator;
 import org.apache.cayenne.gen.property.PropertyDescriptorCreator;
 import org.apache.cayenne.gen.property.StringPropertyDescriptorCreator;
 import org.apache.cayenne.gen.xml.CgenExtension;
-import org.apache.cayenne.project.ProjectModule;
-import org.apache.cayenne.project.extension.info.InfoExtension;
+import org.apache.cayenne.projecttools.ProjectToolsModule;
+import org.apache.cayenne.projecttools.extension.info.InfoExtension;
 
 /**
  * @since 4.1
@@ -47,7 +47,7 @@ public class CgenModule implements Module {
         binder.bind(ToolsUtilsFactory.class).to(DefaultToolsUtilsFactory.class);
         binder.bind(MetadataUtils.class).to(MetadataUtils.class);
 
-        ProjectModule.extend(binder)
+        ProjectToolsModule.extend(binder)
                 .addExtension(CgenExtension.class)
                 .addExtension(InfoExtension.class); // info extension needed to get comments and other metadata
 

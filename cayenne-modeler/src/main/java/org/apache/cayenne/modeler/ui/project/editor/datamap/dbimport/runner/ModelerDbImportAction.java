@@ -20,10 +20,10 @@
 package org.apache.cayenne.modeler.ui.project.editor.datamap.dbimport.runner;
 
 import org.apache.cayenne.CayenneRuntimeException;
-import org.apache.cayenne.configuration.ProjectLoader;
-import org.apache.cayenne.configuration.DataMapLoader;
+import org.apache.cayenne.project.ProjectLoader;
+import org.apache.cayenne.project.DataMapLoader;
 import org.apache.cayenne.dbsync.reverse.configuration.DbAdapterFactory;
-import org.apache.cayenne.configuration.xml.ProjectMetaData;
+import org.apache.cayenne.project.xml.ProjectMetaData;
 import org.apache.cayenne.dbsync.merge.factory.MergerTokenFactoryProvider;
 import org.apache.cayenne.dbsync.merge.token.MergerToken;
 import org.apache.cayenne.dbsync.reverse.dbimport.DbImportConfiguration;
@@ -32,7 +32,7 @@ import org.apache.cayenne.di.Inject;
 import org.apache.cayenne.map.DataMap;
 import org.apache.cayenne.modeler.Application;
 import org.apache.cayenne.modeler.ui.project.editor.datamap.dbimport.DbImportResultDialog;
-import org.apache.cayenne.project.ProjectSaver;
+import org.apache.cayenne.projecttools.ProjectSaver;
 import org.slf4j.Logger;
 
 import java.awt.event.ComponentAdapter;

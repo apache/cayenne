@@ -21,7 +21,7 @@ package org.apache.cayenne.modeler.ui.project.editor.objentity.main;
 
 import com.jgoodies.forms.builder.DefaultFormBuilder;
 import com.jgoodies.forms.layout.FormLayout;
-import org.apache.cayenne.configuration.Project;
+import org.apache.cayenne.project.Project;
 import org.apache.cayenne.map.DataMap;
 import org.apache.cayenne.map.DbEntity;
 import org.apache.cayenne.map.EntityResolver;
@@ -49,7 +49,7 @@ import org.apache.cayenne.modeler.ui.project.editor.ExpressionConvertor;
 import org.apache.cayenne.modeler.ui.project.editor.objentity.classname.ClassNameUpdaterController;
 import org.apache.cayenne.modeler.ui.project.editor.objentity.duplicates.DuplicatedAttributesDialog;
 import org.apache.cayenne.modeler.ui.project.editor.query.ExistingSelectionProcessor;
-import org.apache.cayenne.project.extension.info.ObjectInfo;
+import org.apache.cayenne.projecttools.extension.info.ObjectInfo;
 import org.apache.cayenne.validation.ValidationException;
 
 import javax.swing.*;

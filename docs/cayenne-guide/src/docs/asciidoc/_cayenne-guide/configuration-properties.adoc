@@ -14,7 +14,7 @@
 
 == Appendix A. Configuration Properties
 
-Note that the property names below are defined as constants in `org.apache.cayenne.configuration.Constants` interface.
+Note that the property names below are defined as constants in `org.apache.cayenne.project.Constants` interface.
 
 [#configProperties]
 * `cayenne.jdbc.driver[.domain_name.node_name]`

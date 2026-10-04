@@ -87,7 +87,7 @@ Why the `failIfNoSpecifiedTests=false` flags are needed when using `-am`: Surefi
 
 - **cayenne** — Core ORM library (main module to work with)
 - **cayenne-di** — Lightweight DI container used internally
-- **cayenne-project** — Cayenne project/model file management
+- **cayenne-project-tools** — Tools for saving, upgrading and validating Cayenne project files
 - **cayenne-cgen** — Code generation from database schemas
 - **cayenne-dbsync** — Database schema synchronization
 - **cayenne-gradle-plugin**, **cayenne-maven-plugin**, **cayenne-ant** — Build tool integrations

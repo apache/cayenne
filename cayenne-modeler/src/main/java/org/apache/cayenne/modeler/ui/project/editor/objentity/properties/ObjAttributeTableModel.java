@@ -36,7 +36,7 @@ import org.apache.cayenne.modeler.event.model.ObjEntityEvent;
 import org.apache.cayenne.modeler.project.DbEntityOps;
 import org.apache.cayenne.modeler.toolkit.table.CMTableModel;
 import org.apache.cayenne.modeler.project.ProjectSession;
-import org.apache.cayenne.project.extension.info.ObjectInfo;
+import org.apache.cayenne.projecttools.extension.info.ObjectInfo;
 import java.util.Objects;
 
 import java.util.ArrayList;

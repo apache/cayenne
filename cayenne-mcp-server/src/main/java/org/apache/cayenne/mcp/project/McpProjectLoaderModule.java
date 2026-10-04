@@ -18,18 +18,18 @@
  ****************************************************************/
 package org.apache.cayenne.mcp.project;
 
-import org.apache.cayenne.configuration.ProjectLoader;
-import org.apache.cayenne.configuration.DataMapLoader;
-import org.apache.cayenne.configuration.upgrade.ProjectFileUpgrader;
-import org.apache.cayenne.configuration.xml.ProjectMetaData;
-import org.apache.cayenne.configuration.xml.DefaultProjectMetaData;
-import org.apache.cayenne.configuration.xml.HandlerFactory;
-import org.apache.cayenne.configuration.xml.XMLProjectLoader;
-import org.apache.cayenne.configuration.xml.XMLDataMapLoader;
-import org.apache.cayenne.configuration.xml.XMLReaderProvider;
+import org.apache.cayenne.project.ProjectLoader;
+import org.apache.cayenne.project.DataMapLoader;
+import org.apache.cayenne.project.upgrade.ProjectFileUpgrader;
+import org.apache.cayenne.project.xml.ProjectMetaData;
+import org.apache.cayenne.project.xml.DefaultProjectMetaData;
+import org.apache.cayenne.project.xml.HandlerFactory;
+import org.apache.cayenne.project.xml.XMLProjectLoader;
+import org.apache.cayenne.project.xml.XMLDataMapLoader;
+import org.apache.cayenne.project.xml.XMLReaderProvider;
 import org.apache.cayenne.di.Binder;
 import org.apache.cayenne.di.Module;
-import org.apache.cayenne.project.extension.ExtensionAwareHandlerFactory;
+import org.apache.cayenne.projecttools.extension.ExtensionAwareHandlerFactory;
 import org.apache.cayenne.resource.ClassLoaderResourceLocator;
 import org.apache.cayenne.resource.ResourceLocator;
 import org.xml.sax.XMLReader;
@@ -37,7 +37,7 @@ import org.xml.sax.XMLReader;
 /**
  * Wires the DI bindings needed to load a Cayenne project descriptor and read
  * its embedded extension metadata (e.g., cgen configuration).
- * Registered alongside {@link org.apache.cayenne.project.ProjectModule} and the
+ * Registered alongside {@link org.apache.cayenne.projecttools.ProjectToolsModule} and the
  * auto-loaded {@code CgenModule} when building the MCP tools injector.
  *
  * @since 5.0

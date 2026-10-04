@@ -22,9 +22,9 @@ import org.apache.cayenne.dbsync.xml.DbImportExtension;
 import org.apache.cayenne.di.Binder;
 import org.apache.cayenne.di.Module;
 import org.apache.cayenne.gen.xml.CgenExtension;
-import org.apache.cayenne.project.ProjectModule;
-import org.apache.cayenne.project.extension.info.InfoExtension;
-import org.apache.cayenne.project.extension.validation.ValidationExtension;
+import org.apache.cayenne.projecttools.ProjectToolsModule;
+import org.apache.cayenne.projecttools.extension.info.InfoExtension;
+import org.apache.cayenne.projecttools.extension.validation.ValidationExtension;
 
 /**
  * A DI module for bootstrapping CayenneModeler services.
@@ -32,7 +32,7 @@ import org.apache.cayenne.project.extension.validation.ValidationExtension;
 public class ModelerModule implements Module {
 
     public void configure(Binder binder) {
-        ProjectModule.extend(binder)
+        ProjectToolsModule.extend(binder)
                 .addExtension(InfoExtension.class)
                 .addExtension(DbImportExtension.class)
                 .addExtension(CgenExtension.class)

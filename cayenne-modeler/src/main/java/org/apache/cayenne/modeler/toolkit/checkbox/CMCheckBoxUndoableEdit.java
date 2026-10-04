@@ -19,7 +19,7 @@
 
 package org.apache.cayenne.modeler.toolkit.checkbox;
 
-import org.apache.cayenne.configuration.Project;
+import org.apache.cayenne.project.Project;
 import org.apache.cayenne.map.DataMap;
 import org.apache.cayenne.map.ObjEntity;
 import org.apache.cayenne.modeler.ui.project.ProjectView;

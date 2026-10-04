@@ -22,8 +22,8 @@ import org.apache.cayenne.di.Inject;
 import org.apache.cayenne.map.DataMap;
 import org.apache.cayenne.modeler.event.model.DataMapEvent;
 import org.apache.cayenne.modeler.project.ProjectSession;
-import org.apache.cayenne.configuration.ProjectNode;
-import org.apache.cayenne.project.ProjectSaver;
+import org.apache.cayenne.project.ProjectNode;
+import org.apache.cayenne.projecttools.ProjectSaver;
 import org.apache.cayenne.resource.Resource;
 
 import java.net.URL;

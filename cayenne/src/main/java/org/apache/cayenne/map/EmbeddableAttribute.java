@@ -18,8 +18,8 @@
  ****************************************************************/
 package org.apache.cayenne.map;
 
-import org.apache.cayenne.configuration.ProjectNode;
-import org.apache.cayenne.configuration.ProjectNodeVisitor;
+import org.apache.cayenne.project.ProjectNode;
+import org.apache.cayenne.project.ProjectNodeVisitor;
 import org.apache.cayenne.util.XMLEncoder;
 import org.apache.cayenne.util.XMLSerializable;
 

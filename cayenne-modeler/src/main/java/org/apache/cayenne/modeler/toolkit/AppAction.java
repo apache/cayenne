@@ -20,12 +20,12 @@
 
 package org.apache.cayenne.modeler.toolkit;
 
-import org.apache.cayenne.configuration.ProjectNode;
+import org.apache.cayenne.project.ProjectNode;
 import org.apache.cayenne.modeler.Application;
 import org.apache.cayenne.modeler.project.ProjectSession;
 import org.apache.cayenne.modeler.toolkit.icon.IconFactory;
 import org.apache.cayenne.modeler.ui.errors.ErrorDialog;
-import org.apache.cayenne.configuration.Project;
+import org.apache.cayenne.project.Project;
 import java.util.Objects;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;

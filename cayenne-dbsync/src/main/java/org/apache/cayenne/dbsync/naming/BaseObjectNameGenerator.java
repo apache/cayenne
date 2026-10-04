@@ -22,7 +22,7 @@ import org.apache.cayenne.map.DbAttribute;
 import org.apache.cayenne.map.DbEntity;
 import org.apache.cayenne.map.DbJoin;
 import org.apache.cayenne.map.DbRelationship;
-import org.apache.cayenne.project.validation.NameValidator;
+import org.apache.cayenne.projecttools.validation.NameValidator;
 import org.apache.cayenne.util.Util;
 
 import java.util.List;

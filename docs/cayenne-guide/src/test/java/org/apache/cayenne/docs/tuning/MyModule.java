@@ -18,7 +18,7 @@
  ****************************************************************/
 package org.apache.cayenne.docs.tuning;
 
-import org.apache.cayenne.configuration.Constants;
+import org.apache.cayenne.project.Constants;
 import org.apache.cayenne.CoreModule;
 import org.apache.cayenne.di.Binder;
 import org.apache.cayenne.di.Module;

@@ -22,9 +22,9 @@ import org.apache.cayenne.DataChannel;
 import org.apache.cayenne.ObjectContext;
 import org.apache.cayenne.cache.NestedQueryCache;
 import org.apache.cayenne.cache.QueryCache;
-import org.apache.cayenne.configuration.ObjectContextFactory;
-import org.apache.cayenne.configuration.Constants;
-import org.apache.cayenne.configuration.RuntimeProperties;
+import org.apache.cayenne.project.ObjectContextFactory;
+import org.apache.cayenne.project.Constants;
+import org.apache.cayenne.project.RuntimeProperties;
 import org.apache.cayenne.di.Inject;
 
 /**

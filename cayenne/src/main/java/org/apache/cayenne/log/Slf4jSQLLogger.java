@@ -20,8 +20,8 @@
 package org.apache.cayenne.log;
 
 import org.apache.cayenne.access.translator.TranslatedStatement;
-import org.apache.cayenne.configuration.Constants;
-import org.apache.cayenne.configuration.RuntimeProperties;
+import org.apache.cayenne.project.Constants;
+import org.apache.cayenne.project.RuntimeProperties;
 import org.apache.cayenne.di.Inject;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;

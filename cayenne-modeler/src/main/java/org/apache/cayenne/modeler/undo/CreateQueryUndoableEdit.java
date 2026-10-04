@@ -21,7 +21,7 @@ package org.apache.cayenne.modeler.undo;
 import javax.swing.undo.CannotRedoException;
 import javax.swing.undo.CannotUndoException;
 
-import org.apache.cayenne.configuration.Project;
+import org.apache.cayenne.project.Project;
 import org.apache.cayenne.map.DataMap;
 import org.apache.cayenne.modeler.ui.action.CreateQueryAction;
 import org.apache.cayenne.modeler.ui.action.RemoveAction;

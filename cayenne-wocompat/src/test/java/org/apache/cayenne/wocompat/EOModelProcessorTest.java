@@ -19,7 +19,7 @@
 
 package org.apache.cayenne.wocompat;
 
-import org.apache.cayenne.configuration.EmptyProjectNodeVisitor;
+import org.apache.cayenne.project.EmptyProjectNodeVisitor;
 import org.apache.cayenne.map.DataMap;
 import org.apache.cayenne.map.DbAttribute;
 import org.apache.cayenne.map.DbEntity;

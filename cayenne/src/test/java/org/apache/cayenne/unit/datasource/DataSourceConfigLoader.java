@@ -19,7 +19,7 @@
 package org.apache.cayenne.unit.datasource;
 
 import org.apache.cayenne.ConfigurationException;
-import org.apache.cayenne.configuration.DataSourceDescriptor;
+import org.apache.cayenne.project.DataSourceDescriptor;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 

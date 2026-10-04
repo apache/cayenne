@@ -19,23 +19,23 @@
 
 package org.apache.cayenne.dbsync.reverse.dbimport;
 
-import org.apache.cayenne.configuration.ConfigurationNameMapper;
-import org.apache.cayenne.configuration.DataMapLoader;
-import org.apache.cayenne.configuration.DefaultConfigurationNameMapper;
-import org.apache.cayenne.configuration.upgrade.ProjectFileUpgrader;
-import org.apache.cayenne.configuration.xml.ProjectMetaData;
-import org.apache.cayenne.configuration.xml.DefaultProjectMetaData;
-import org.apache.cayenne.configuration.xml.DefaultHandlerFactory;
-import org.apache.cayenne.configuration.xml.HandlerFactory;
-import org.apache.cayenne.configuration.xml.XMLDataMapLoader;
+import org.apache.cayenne.project.ConfigurationNameMapper;
+import org.apache.cayenne.project.DataMapLoader;
+import org.apache.cayenne.project.DefaultConfigurationNameMapper;
+import org.apache.cayenne.project.upgrade.ProjectFileUpgrader;
+import org.apache.cayenne.project.xml.ProjectMetaData;
+import org.apache.cayenne.project.xml.DefaultProjectMetaData;
+import org.apache.cayenne.project.xml.DefaultHandlerFactory;
+import org.apache.cayenne.project.xml.HandlerFactory;
+import org.apache.cayenne.project.xml.XMLDataMapLoader;
 import org.apache.cayenne.dbsync.xml.DbImportExtension;
 import org.apache.cayenne.di.Binder;
 import org.apache.cayenne.di.Module;
-import org.apache.cayenne.project.FileProjectSaver;
-import org.apache.cayenne.project.ProjectModule;
-import org.apache.cayenne.project.ProjectSaver;
-import org.apache.cayenne.project.extension.ExtensionAwareHandlerFactory;
-import org.apache.cayenne.project.extension.info.InfoExtension;
+import org.apache.cayenne.projecttools.FileProjectSaver;
+import org.apache.cayenne.projecttools.ProjectToolsModule;
+import org.apache.cayenne.projecttools.ProjectSaver;
+import org.apache.cayenne.projecttools.extension.ExtensionAwareHandlerFactory;
+import org.apache.cayenne.projecttools.extension.info.InfoExtension;
 
 /**
  * A DI module that bootstraps {@link DbImportAction}.
@@ -56,7 +56,7 @@ public class DbImportModule implements Module {
         binder.bind(ProjectMetaData.class).to(DefaultProjectMetaData.class);
         binder.bind(HandlerFactory.class).to(ExtensionAwareHandlerFactory.class);
 
-        ProjectModule.extend(binder)
+        ProjectToolsModule.extend(binder)
                 .addExtension(DbImportExtension.class)
                 .addExtension(InfoExtension.class);
     }

@@ -19,7 +19,7 @@
 
 package org.apache.cayenne.modeler.ui.project.editor.datamap.cgen;
 
-import org.apache.cayenne.configuration.ProjectNode;
+import org.apache.cayenne.project.ProjectNode;
 import org.apache.cayenne.map.DataMap;
 import org.apache.cayenne.map.Embeddable;
 import org.apache.cayenne.map.ObjEntity;

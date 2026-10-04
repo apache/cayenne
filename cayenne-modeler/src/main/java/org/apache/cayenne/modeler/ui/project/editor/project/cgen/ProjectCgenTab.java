@@ -20,7 +20,7 @@
 package org.apache.cayenne.modeler.ui.project.editor.project.cgen;
 
 import org.apache.cayenne.CayenneRuntimeException;
-import org.apache.cayenne.configuration.xml.ProjectMetaData;
+import org.apache.cayenne.project.xml.ProjectMetaData;
 import org.apache.cayenne.gen.CgenConfigList;
 import org.apache.cayenne.gen.CgenConfiguration;
 import org.apache.cayenne.gen.ClassGenerationAction;

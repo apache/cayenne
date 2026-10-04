@@ -18,7 +18,7 @@
  ****************************************************************/
 package org.apache.cayenne.modeler.event.display;
 
-import org.apache.cayenne.configuration.ProjectNode;
+import org.apache.cayenne.project.ProjectNode;
 
 /**
  * Display event for several selected objects

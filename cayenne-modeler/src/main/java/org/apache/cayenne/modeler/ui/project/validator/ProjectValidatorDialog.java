@@ -30,8 +30,8 @@ import org.apache.cayenne.modeler.toolkit.buttons.CMButtonPanel;
 import org.apache.cayenne.modeler.ui.action.DisableValidationInspectionAction;
 import org.apache.cayenne.modeler.ui.action.ShowValidationOptionAction;
 import org.apache.cayenne.modeler.ui.action.ValidateAction;
-import org.apache.cayenne.project.validation.Inspection;
-import org.apache.cayenne.project.validation.ProjectValidationFailure;
+import org.apache.cayenne.projecttools.validation.Inspection;
+import org.apache.cayenne.projecttools.validation.ProjectValidationFailure;
 import org.apache.cayenne.validation.ValidationFailure;
 
 import javax.swing.*;

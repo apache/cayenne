@@ -1,0 +1,191 @@
+/*****************************************************************
+ *   Licensed to the Apache Software Foundation (ASF) under one
+ *  or more contributor license agreements.  See the NOTICE file
+ *  distributed with this work for additional information
+ *  regarding copyright ownership.  The ASF licenses this file
+ *  to you under the Apache License, Version 2.0 (the
+ *  "License"); you may not use this file except in compliance
+ *  with the License.  You may obtain a copy of the License at
+ *
+ *    https://www.apache.org/licenses/LICENSE-2.0
+ *
+ *  Unless required by applicable law or agreed to in writing,
+ *  software distributed under the License is distributed on an
+ *  "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY
+ *  KIND, either express or implied.  See the License for the
+ *  specific language governing permissions and limitations
+ *  under the License.
+ ****************************************************************/
+package org.apache.cayenne.project.xml;
+
+import org.apache.cayenne.CayenneRuntimeException;
+import org.apache.cayenne.project.ConfigurationNameMapper;
+import org.apache.cayenne.project.DataMapLoader;
+import org.apache.cayenne.project.DefaultConfigurationNameMapper;
+import org.apache.cayenne.project.upgrade.ProjectFileUpgrader;
+import org.apache.cayenne.di.AdhocObjectFactory;
+import org.apache.cayenne.di.ClassLoaderManager;
+import org.apache.cayenne.di.DIBootstrap;
+import org.apache.cayenne.di.Injector;
+import org.apache.cayenne.di.Module;
+import org.apache.cayenne.di.spi.DefaultAdhocObjectFactory;
+import org.apache.cayenne.di.spi.DefaultClassLoaderManager;
+import org.apache.cayenne.map.DataMap;
+import org.apache.cayenne.map.DbAttribute;
+import org.apache.cayenne.map.SQLTemplateDescriptor;
+import org.apache.cayenne.map.SelectQueryDescriptor;
+import org.apache.cayenne.query.CapsStrategy;
+import org.apache.cayenne.resource.URLResource;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
+import org.xml.sax.XMLReader;
+
+import java.net.URL;
+
+import static org.junit.jupiter.api.Assertions.*;
+
+public class XMLDataMapLoaderTest {
+
+    private Injector injector;
+
+    private DataMapLoader loader;
+
+    @BeforeEach
+    public void setUp() throws Exception {
+        Module testModule = binder -> {
+            binder.bind(ClassLoaderManager.class).to(DefaultClassLoaderManager.class);
+            binder.bind(AdhocObjectFactory.class).to(DefaultAdhocObjectFactory.class);
+            binder.bind(DataMapLoader.class).to(XMLDataMapLoader.class);
+            binder.bind(ProjectFileUpgrader.class).to(ProjectFileUpgrader.class);
+            binder.bind(ConfigurationNameMapper.class).to(DefaultConfigurationNameMapper.class);
+            binder.bind(HandlerFactory.class).to(DefaultHandlerFactory.class);
+            binder.bind(ProjectMetaData.class).to(NoopProjectMetaData.class);
+            binder.bind(XMLReader.class).toProviderInstance(new XMLReaderProvider(false)).withoutScope();
+        };
+
+        injector = DIBootstrap.createInjector(testModule);
+        loader = injector.getInstance(DataMapLoader.class);
+    }
+
+    @Test
+    public void loadMissingConfig() throws Exception {
+        assertThrows(CayenneRuntimeException.class, () ->
+                loader.load(new URLResource(new URL("file:/no_such_file_for_map_xml"))));
+    }
+
+    @Test
+    public void loadOldVersionConfig() {
+        // version 9, upgraded in memory
+        URL url = getClass().getResource("testConfigMap5.map.xml");
+        DataMap map = loader.load(new URLResource(url));
+        assertEquals("testConfigMap5", map.getName());
+        assertTrue(map.getDbEntities().isEmpty());
+    }
+
+    @Test
+    public void loadOldVersionWithContent() {
+        // version 9, upgraded in memory
+        URL url = getClass().getResource("testConfigMap9.map.xml");
+        DataMap map = loader.load(new URLResource(url));
+        assertEquals("testConfigMap9", map.getName());
+        assertEquals(2, map.getDbEntity("ARTIST").getAttributes().size());
+        assertEquals("org.apache.cayenne.GenericPersistentObject", map.getObjEntity("Artist").getClassName());
+
+        SelectQueryDescriptor select = (SelectQueryDescriptor) map.getQueryDescriptor("ArtistQuery");
+        assertEquals("from Artist where artistName = \"a\" limit 5", select.toQueryString());
+        assertEquals(10, select.getPageSize());
+        assertEquals("g1 & g2", select.getCacheGroup());
+
+        SQLTemplateDescriptor sql = (SQLTemplateDescriptor) map.getQueryDescriptor("ArtistSql");
+        assertEquals("select * from ARTIST", sql.getSql());
+        assertEquals(7, sql.getPageSize());
+        assertEquals(CapsStrategy.UPPER, sql.getColumnNamesCapitalization());
+    }
+
+    @Test
+    public void loadNewerVersionConfig() {
+        URL url = getClass().getResource("testConfigMap6.map.xml");
+        CayenneRuntimeException e = assertThrows(CayenneRuntimeException.class, () -> loader.load(new URLResource(url)));
+        assertTrue(e.getMessage().contains("version 15 is newer"), e.getMessage());
+    }
+
+    @Test
+    public void loadEmptyConfig() throws Exception {
+        URL url = getClass().getResource("testConfigMap2.map.xml");
+        DataMap map = loader.load(new URLResource(url));
+
+        assertNotNull(map);
+        assertEquals("testConfigMap2", map.getName());
+        assertTrue(map.getDbEntities().isEmpty());
+        assertTrue(map.getObjEntities().isEmpty());
+        assertTrue(map.getProcedures().isEmpty());
+        assertTrue(map.getQueryDescriptors().isEmpty());
+        assertTrue(map.getEmbeddables().isEmpty());
+        assertNull(map.getDefaultCatalog());
+        assertNull(map.getDefaultSchema());
+        assertNull(map.getDefaultPackage());
+    }
+
+    @Test
+    public void loadFullDataMap() {
+        URL url = getClass().getResource("testConfigMap4.map.xml");
+        DataMap map = loader.load(new URLResource(url));
+
+        assertNotNull(map);
+        assertEquals("testConfigMap4", map.getName());
+
+        // check general state
+        assertEquals(12, map.getDbEntities().size());
+        assertEquals(17, map.getObjEntities().size());
+        assertEquals(4, map.getProcedures().size());
+        assertEquals(13, map.getQueryDescriptors().size());
+        assertEquals(1, map.getEmbeddables().size());
+        assertEquals("TEST_CATALOG", map.getDefaultCatalog());
+        assertNull(map.getDefaultSchema());
+        assertEquals("org.apache.cayenne.testdo.testmap", map.getDefaultPackage());
+
+        // check some loaded content
+        assertEquals("org.apache.cayenne.testdo.testmap.Artist",
+                map.getObjEntity("Artist").getClassName());
+        assertEquals(5,
+                map.getObjEntity("CompoundPainting").getAttributes().size());
+        assertEquals(3,
+                map.getObjEntity("Artist").getRelationships().size());
+        assertEquals(7,
+                map.getObjEntity("ArtistCallback").getCallbackMethods().size());
+
+        assertEquals("name = \"test\"",
+                map.getDbEntity("ARTGROUP").getQualifier().toString());
+        assertEquals(4,
+                map.getDbEntity("EXHIBIT").getAttributes().size());
+        assertEquals(3,
+                map.getDbEntity("PAINTING").getRelationships().size());
+        assertEquals("gallery_seq",
+                map.getDbEntity("GALLERY").getPrimaryKeyGenerator().getGeneratorName());
+
+        DbAttribute pk1 = map.getDbEntity("EXHIBIT").getAttribute("EXHIBIT_ID");
+        assertFalse(pk1.isGenerated());
+        assertTrue(pk1.isPrimaryKey());
+
+        DbAttribute pk2 = map.getDbEntity("GENERATED_COLUMN").getAttribute("GENERATED_COLUMN");
+        assertTrue(pk2.isGenerated());
+        assertTrue(pk2.isPrimaryKey());
+
+        assertEquals(true,
+                map.getProcedure("cayenne_tst_out_proc").isReturningValue());
+        assertEquals(1,
+                map.getProcedure("cayenne_tst_out_proc").getCallOutParameters().size());
+        assertEquals(2,
+                map.getProcedure("cayenne_tst_out_proc").getCallParameters().size());
+
+        SQLTemplateDescriptor descriptor = (SQLTemplateDescriptor)map.getQueryDescriptor("NonSelectingQuery");
+        assertEquals("INSERT INTO PAINTING (PAINTING_ID, PAINTING_TITLE, ESTIMATED_PRICE) " +
+                        "VALUES (512, 'No Painting Like This', 12.5)",
+                descriptor.getAdapterSql().get("org.apache.cayenne.dba.db2.DB2Adapter"));
+
+        assertEquals("TEST",
+                map.getEmbeddable("org.apache.cayenne.testdo.Embeddable")
+                        .getAttribute("test").getDbAttributeName());
+    }
+
+}

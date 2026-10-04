@@ -19,7 +19,7 @@
 
 package org.apache.cayenne.modeler.event.model;
 
-import org.apache.cayenne.configuration.Project;
+import org.apache.cayenne.project.Project;
 
 /**
  * Represents events resulted from DataDomain changes in CayenneModeler.

@@ -22,7 +22,7 @@ package org.apache.cayenne.modeler.ui.action;
 import org.apache.cayenne.modeler.Application;
 import org.apache.cayenne.modeler.toolkit.AppAction;
 import org.apache.cayenne.modeler.ui.project.validator.ProjectValidatorDialog;
-import org.apache.cayenne.project.validation.ProjectValidator;
+import org.apache.cayenne.projecttools.validation.ProjectValidator;
 import org.apache.cayenne.validation.ValidationFailure;
 import org.apache.cayenne.validation.ValidationResult;
 

@@ -20,7 +20,7 @@ package org.apache.cayenne.modeler.ui.project.editor.embeddable.main;
 
 import com.jgoodies.forms.builder.DefaultFormBuilder;
 import com.jgoodies.forms.layout.FormLayout;
-import org.apache.cayenne.configuration.Project;
+import org.apache.cayenne.project.Project;
 import org.apache.cayenne.map.DataMap;
 import org.apache.cayenne.map.Embeddable;
 import org.apache.cayenne.map.ObjAttribute;
@@ -36,7 +36,7 @@ import org.apache.cayenne.modeler.event.display.EmbeddableDisplayListener;
 import org.apache.cayenne.modeler.toolkit.text.CMUndoableTextField;
 import org.apache.cayenne.modeler.project.ProjectComparators;
 import org.apache.cayenne.modeler.ui.project.editor.EditorForm;
-import org.apache.cayenne.project.extension.info.ObjectInfo;
+import org.apache.cayenne.projecttools.extension.info.ObjectInfo;
 import java.util.Objects;
 import org.apache.cayenne.validation.ValidationException;
 

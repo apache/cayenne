@@ -19,7 +19,7 @@
 
 package org.apache.cayenne.query;
 
-import org.apache.cayenne.configuration.ProjectNodeVisitor;
+import org.apache.cayenne.project.ProjectNodeVisitor;
 import org.apache.cayenne.exp.path.CayennePath;
 import org.apache.cayenne.exp.path.CayennePathSegment;
 import org.apache.cayenne.util.Util;

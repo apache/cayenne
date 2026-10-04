@@ -18,8 +18,8 @@
  ****************************************************************/
 package org.apache.cayenne.modeler.ui.project.editor.project.validation;
 
-import org.apache.cayenne.configuration.Project;
-import org.apache.cayenne.configuration.xml.ProjectMetaData;
+import org.apache.cayenne.project.Project;
+import org.apache.cayenne.project.xml.ProjectMetaData;
 import org.apache.cayenne.modeler.event.display.ProjectDisplayEvent;
 import org.apache.cayenne.modeler.event.display.ProjectDisplayListener;
 import org.apache.cayenne.modeler.event.display.ValidationConfigDisplayEvent;
@@ -30,8 +30,8 @@ import org.apache.cayenne.modeler.project.ProjectSession;
 import org.apache.cayenne.modeler.toolkit.ProjectPanel;
 import org.apache.cayenne.modeler.toolkit.tree.CheckBoxNodeData;
 import org.apache.cayenne.modeler.ui.action.UpdateValidationConfigAction;
-import org.apache.cayenne.project.validation.Inspection;
-import org.apache.cayenne.project.validation.ValidationConfig;
+import org.apache.cayenne.projecttools.validation.Inspection;
+import org.apache.cayenne.projecttools.validation.ValidationConfig;
 
 import javax.swing.*;
 import javax.swing.event.TreeModelEvent;

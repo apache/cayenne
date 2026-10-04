@@ -18,7 +18,7 @@
  ****************************************************************/
 package org.apache.cayenne.modeler.ui.project.editor.project.validation;
 
-import org.apache.cayenne.project.validation.Inspection;
+import org.apache.cayenne.projecttools.validation.Inspection;
 import org.apache.cayenne.modeler.toolkit.tree.ChangeOptimizingTreeModel;
 import org.apache.cayenne.modeler.toolkit.tree.CheckBoxNodeData;
 import org.apache.cayenne.modeler.toolkit.tree.CheckBoxTree;

@@ -18,9 +18,9 @@
  ****************************************************************/
 package org.apache.cayenne;
 
-import org.apache.cayenne.configuration.Constants;
-import org.apache.cayenne.configuration.DataNodeDescriptor;
-import org.apache.cayenne.configuration.DataNodeDescriptors;
+import org.apache.cayenne.project.Constants;
+import org.apache.cayenne.project.DataNodeDescriptor;
+import org.apache.cayenne.project.DataNodeDescriptors;
 import org.apache.cayenne.datasource.CayenneDataSource;
 import org.apache.cayenne.di.Module;
 import org.apache.cayenne.di.spi.ModuleLoader;

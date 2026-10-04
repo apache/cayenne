@@ -21,7 +21,7 @@ package org.apache.cayenne.tools;
 import java.io.File;
 import java.net.MalformedURLException;
 
-import org.apache.cayenne.configuration.DataMapLoader;
+import org.apache.cayenne.project.DataMapLoader;
 import org.apache.cayenne.di.Injector;
 import org.apache.cayenne.map.DataMap;
 import org.apache.cayenne.map.EntityResolver;

@@ -18,9 +18,9 @@
  ****************************************************************/
 package org.apache.cayenne.modeler.ui.project.tree;
 
-import org.apache.cayenne.configuration.BaseProjectNodeVisitor;
-import org.apache.cayenne.configuration.ProjectNode;
-import org.apache.cayenne.configuration.Project;
+import org.apache.cayenne.project.BaseProjectNodeVisitor;
+import org.apache.cayenne.project.ProjectNode;
+import org.apache.cayenne.project.Project;
 import org.apache.cayenne.map.DataMap;
 import org.apache.cayenne.modeler.project.ProjectComparators;
 

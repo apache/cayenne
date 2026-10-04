@@ -19,14 +19,14 @@
 
 package org.apache.cayenne.dbsync.xml;
 
-import org.apache.cayenne.configuration.ProjectNodeVisitor;
-import org.apache.cayenne.configuration.xml.ProjectMetaData;
-import org.apache.cayenne.configuration.upgrade.UpgradeHandler;
+import org.apache.cayenne.project.ProjectNodeVisitor;
+import org.apache.cayenne.project.xml.ProjectMetaData;
+import org.apache.cayenne.project.upgrade.UpgradeHandler;
 import org.apache.cayenne.di.Inject;
-import org.apache.cayenne.project.extension.BaseNamingDelegate;
-import org.apache.cayenne.project.extension.LoaderDelegate;
-import org.apache.cayenne.project.extension.ProjectExtension;
-import org.apache.cayenne.project.extension.SaverDelegate;
+import org.apache.cayenne.projecttools.extension.BaseNamingDelegate;
+import org.apache.cayenne.projecttools.extension.LoaderDelegate;
+import org.apache.cayenne.projecttools.extension.ProjectExtension;
+import org.apache.cayenne.projecttools.extension.SaverDelegate;
 
 /**
  * @since 4.1

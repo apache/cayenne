@@ -18,7 +18,7 @@
  ****************************************************************/
 package org.apache.cayenne.modeler.ui.action;
 
-import org.apache.cayenne.configuration.ProjectNode;
+import org.apache.cayenne.project.ProjectNode;
 import org.apache.cayenne.modeler.Application;
 import org.apache.cayenne.modeler.ui.project.editor.dbentity.properties.DbAttributePanel;
 import org.apache.cayenne.modeler.ui.project.editor.objentity.properties.ObjAttributePanel;

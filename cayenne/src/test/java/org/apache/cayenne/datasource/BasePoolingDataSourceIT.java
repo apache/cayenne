@@ -18,7 +18,7 @@
  ****************************************************************/
 package org.apache.cayenne.datasource;
 
-import org.apache.cayenne.configuration.DataSourceDescriptor;
+import org.apache.cayenne.project.DataSourceDescriptor;
 import org.apache.cayenne.unit.CayenneProjects;
 import org.apache.cayenne.unit.CayenneTestsEnv;
 import org.junit.jupiter.api.AfterEach;

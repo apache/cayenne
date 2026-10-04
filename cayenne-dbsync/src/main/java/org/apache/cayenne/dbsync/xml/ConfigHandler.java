@@ -19,8 +19,8 @@
 
 package org.apache.cayenne.dbsync.xml;
 
-import org.apache.cayenne.configuration.xml.ProjectMetaData;
-import org.apache.cayenne.configuration.xml.NamespaceAwareNestedTagHandler;
+import org.apache.cayenne.project.xml.ProjectMetaData;
+import org.apache.cayenne.project.xml.NamespaceAwareNestedTagHandler;
 import org.apache.cayenne.dbsync.reverse.dbimport.ExcludeColumn;
 import org.apache.cayenne.dbsync.reverse.dbimport.ExcludeProcedure;
 import org.apache.cayenne.dbsync.reverse.dbimport.ExcludeTable;

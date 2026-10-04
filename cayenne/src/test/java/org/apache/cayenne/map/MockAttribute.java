@@ -19,7 +19,7 @@
 
 package org.apache.cayenne.map;
 
-import org.apache.cayenne.configuration.ProjectNodeVisitor;
+import org.apache.cayenne.project.ProjectNodeVisitor;
 import org.apache.cayenne.util.XMLEncoder;
 
 public class MockAttribute extends Attribute<MockEntity, MockAttribute, MockRelationship> {

@@ -19,8 +19,8 @@
 
 package org.apache.cayenne.modeler.ui.action;
 
-import org.apache.cayenne.configuration.ProjectNode;
-import org.apache.cayenne.configuration.Project;
+import org.apache.cayenne.project.ProjectNode;
+import org.apache.cayenne.project.Project;
 import org.apache.cayenne.map.Attribute;
 import org.apache.cayenne.map.CallbackMap;
 import org.apache.cayenne.map.DataMap;

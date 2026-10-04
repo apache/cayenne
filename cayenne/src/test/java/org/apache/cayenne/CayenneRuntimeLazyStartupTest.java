@@ -20,7 +20,7 @@ package org.apache.cayenne;
 
 import org.apache.cayenne.access.DataDomain;
 import org.apache.cayenne.access.DataNode;
-import org.apache.cayenne.configuration.DataNodeDescriptor;
+import org.apache.cayenne.project.DataNodeDescriptor;
 import org.apache.cayenne.datasource.CayenneDataSource;
 import org.apache.cayenne.dba.h2.H2Adapter;
 import org.apache.cayenne.query.ObjectSelect;

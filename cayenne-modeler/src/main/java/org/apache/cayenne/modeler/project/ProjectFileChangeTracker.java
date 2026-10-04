@@ -19,7 +19,7 @@
 package org.apache.cayenne.modeler.project;
 
 import org.apache.cayenne.CayenneRuntimeException;
-import org.apache.cayenne.configuration.Project;
+import org.apache.cayenne.project.Project;
 import org.apache.cayenne.map.DataMap;
 import org.apache.cayenne.modeler.ui.action.OpenProjectAction;
 import org.apache.cayenne.modeler.ui.action.SaveAction;

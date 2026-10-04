@@ -18,11 +18,11 @@
  ****************************************************************/
 package org.apache.cayenne.modeler.service.validator;
 
-import org.apache.cayenne.configuration.Project;
-import org.apache.cayenne.configuration.xml.ProjectMetaData;
+import org.apache.cayenne.project.Project;
+import org.apache.cayenne.project.xml.ProjectMetaData;
 import org.apache.cayenne.modeler.Application;
-import org.apache.cayenne.project.validation.DefaultProjectValidator;
-import org.apache.cayenne.project.validation.ValidationConfig;
+import org.apache.cayenne.projecttools.validation.DefaultProjectValidator;
+import org.apache.cayenne.projecttools.validation.ValidationConfig;
 
 public class ConfigurableProjectValidator extends DefaultProjectValidator {
 

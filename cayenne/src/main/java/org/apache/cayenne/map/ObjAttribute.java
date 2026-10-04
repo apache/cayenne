@@ -23,8 +23,8 @@ import java.util.Collections;
 import java.util.Iterator;
 
 import org.apache.cayenne.CayenneRuntimeException;
-import org.apache.cayenne.configuration.ProjectNode;
-import org.apache.cayenne.configuration.ProjectNodeVisitor;
+import org.apache.cayenne.project.ProjectNode;
+import org.apache.cayenne.project.ProjectNodeVisitor;
 import org.apache.cayenne.exp.path.CayennePath;
 import org.apache.cayenne.util.CayenneMapEntry;
 import org.apache.cayenne.util.Util;

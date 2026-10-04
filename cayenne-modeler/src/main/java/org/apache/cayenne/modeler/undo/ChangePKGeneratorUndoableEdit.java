@@ -23,7 +23,7 @@ import org.apache.cayenne.modeler.event.model.DbEntityEvent;
 import org.apache.cayenne.map.DbAttribute;
 import org.apache.cayenne.map.DbEntity;
 import org.apache.cayenne.map.DbKeyGenerator;
-import org.apache.cayenne.configuration.Project;
+import org.apache.cayenne.project.Project;
 import org.apache.cayenne.modeler.event.display.DbEntityDisplayEvent;
 import org.apache.cayenne.modeler.project.ProjectSession;
 

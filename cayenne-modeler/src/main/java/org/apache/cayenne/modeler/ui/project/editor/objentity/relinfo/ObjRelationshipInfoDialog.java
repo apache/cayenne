@@ -41,7 +41,7 @@ import org.apache.cayenne.modeler.toolkit.tree.EntityTreeRelationshipFilter;
 import org.apache.cayenne.modeler.ui.dbrelationship.DbRelationshipDialog;
 import org.apache.cayenne.modeler.undo.CreateObjRelationshipUndoableEdit;
 import org.apache.cayenne.modeler.undo.ObjRelationshipUndoableEdit;
-import org.apache.cayenne.project.extension.info.ObjectInfo;
+import org.apache.cayenne.projecttools.extension.info.ObjectInfo;
 import org.apache.cayenne.util.DeleteRuleUpdater;
 
 import javax.swing.*;

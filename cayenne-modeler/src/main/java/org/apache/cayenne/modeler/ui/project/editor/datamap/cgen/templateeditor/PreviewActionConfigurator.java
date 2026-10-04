@@ -19,7 +19,7 @@
 
 package org.apache.cayenne.modeler.ui.project.editor.datamap.cgen.templateeditor;
 
-import org.apache.cayenne.configuration.xml.ProjectMetaData;
+import org.apache.cayenne.project.xml.ProjectMetaData;
 import org.apache.cayenne.di.Injector;
 import org.apache.cayenne.di.Key;
 import org.apache.cayenne.gen.ArtifactsGenerationMode;

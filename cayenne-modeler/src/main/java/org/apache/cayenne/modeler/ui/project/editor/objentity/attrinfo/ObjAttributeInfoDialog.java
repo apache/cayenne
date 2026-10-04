@@ -22,7 +22,7 @@ import com.jgoodies.forms.builder.PanelBuilder;
 import com.jgoodies.forms.layout.CellConstraints;
 import com.jgoodies.forms.layout.FormLayout;
 import com.jgoodies.forms.layout.RowSpec;
-import org.apache.cayenne.configuration.Project;
+import org.apache.cayenne.project.Project;
 import org.apache.cayenne.map.DbAttribute;
 import org.apache.cayenne.map.DbEntity;
 import org.apache.cayenne.map.DbRelationship;
@@ -47,7 +47,7 @@ import org.apache.cayenne.modeler.project.ProjectSession;
 import org.apache.cayenne.modeler.ui.project.editor.objentity.properties.ObjAttributeTableModel;
 import org.apache.cayenne.modeler.toolkit.tree.EntityTreeAttributeRelationshipFilter;
 import org.apache.cayenne.modeler.toolkit.tree.EntityTreeModel;
-import org.apache.cayenne.project.extension.info.ObjectInfo;
+import org.apache.cayenne.projecttools.extension.info.ObjectInfo;
 import org.apache.cayenne.util.CayenneMapEntry;
 
 import javax.swing.DefaultComboBoxModel;

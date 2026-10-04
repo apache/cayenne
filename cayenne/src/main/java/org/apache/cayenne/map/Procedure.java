@@ -23,8 +23,8 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 
-import org.apache.cayenne.configuration.ProjectNode;
-import org.apache.cayenne.configuration.ProjectNodeVisitor;
+import org.apache.cayenne.project.ProjectNode;
+import org.apache.cayenne.project.ProjectNodeVisitor;
 import org.apache.cayenne.util.CayenneMapEntry;
 import org.apache.cayenne.util.XMLEncoder;
 import org.apache.cayenne.util.XMLSerializable;

@@ -26,8 +26,8 @@ import java.util.List;
 import java.util.ListIterator;
 
 import org.apache.cayenne.CayenneRuntimeException;
-import org.apache.cayenne.configuration.ProjectNode;
-import org.apache.cayenne.configuration.ProjectNodeVisitor;
+import org.apache.cayenne.project.ProjectNode;
+import org.apache.cayenne.project.ProjectNodeVisitor;
 import org.apache.cayenne.exp.ExpressionFactory;
 import org.apache.cayenne.exp.ExpressionException;
 import org.apache.cayenne.exp.DbPathExp;

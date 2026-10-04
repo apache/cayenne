@@ -20,8 +20,8 @@
 package org.apache.cayenne.access;
 
 import org.apache.cayenne.CayenneRuntimeException;
-import org.apache.cayenne.configuration.Constants;
-import org.apache.cayenne.configuration.RuntimeProperties;
+import org.apache.cayenne.project.Constants;
+import org.apache.cayenne.project.RuntimeProperties;
 import org.apache.cayenne.di.DIRuntimeException;
 import org.apache.cayenne.di.Inject;
 import org.apache.cayenne.di.Provider;

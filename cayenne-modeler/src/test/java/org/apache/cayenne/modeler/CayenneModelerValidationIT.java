@@ -18,16 +18,16 @@
  ****************************************************************/
 package org.apache.cayenne.modeler;
 
-import org.apache.cayenne.configuration.Project;
-import org.apache.cayenne.configuration.ProjectLoader;
+import org.apache.cayenne.project.Project;
+import org.apache.cayenne.project.ProjectLoader;
 import org.apache.cayenne.dbsync.reverse.configuration.ToolsModule;
 import org.apache.cayenne.di.DIBootstrap;
 import org.apache.cayenne.di.Injector;
 import org.apache.cayenne.modeler.platform.UIInitializer;
 import org.apache.cayenne.modeler.service.validator.ConfigurableProjectValidator;
-import org.apache.cayenne.project.ProjectModule;
-import org.apache.cayenne.project.validation.Inspection;
-import org.apache.cayenne.project.validation.ValidationConfig;
+import org.apache.cayenne.projecttools.ProjectToolsModule;
+import org.apache.cayenne.projecttools.validation.Inspection;
+import org.apache.cayenne.projecttools.validation.ValidationConfig;
 import org.apache.cayenne.resource.URLResource;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Test;
@@ -50,7 +50,7 @@ public class CayenneModelerValidationIT {
     public static void setUp() {
         injector = DIBootstrap.createInjector(List.of(
                 new ToolsModule(LOGGER),
-                new ProjectModule(),
+                new ProjectToolsModule(),
                 new ModelerModule()
         ));
     }

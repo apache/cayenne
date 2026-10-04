@@ -27,8 +27,8 @@ import java.util.Collections;
 import java.util.Comparator;
 import java.util.List;
 
-import org.apache.cayenne.configuration.ProjectNodeVisitor;
-import org.apache.cayenne.configuration.EmptyProjectNodeVisitor;
+import org.apache.cayenne.project.ProjectNodeVisitor;
+import org.apache.cayenne.project.EmptyProjectNodeVisitor;
 import org.apache.cayenne.exp.ExpressionFactory;
 import org.apache.cayenne.exp.Expression;
 import org.apache.cayenne.exp.ExpressionException;

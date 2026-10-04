@@ -19,18 +19,18 @@
 
 package org.apache.cayenne.dbsync.reverse.dbimport;
 
-import org.apache.cayenne.configuration.ConfigurationNameMapper;
-import org.apache.cayenne.configuration.Project;
-import org.apache.cayenne.configuration.DataMapLoader;
-import org.apache.cayenne.configuration.DefaultConfigurationNameMapper;
-import org.apache.cayenne.configuration.upgrade.ProjectFileUpgrader;
-import org.apache.cayenne.configuration.xml.ProjectMetaData;
-import org.apache.cayenne.configuration.xml.DefaultHandlerFactory;
-import org.apache.cayenne.configuration.xml.HandlerFactory;
-import org.apache.cayenne.configuration.xml.NoopProjectMetaData;
-import org.apache.cayenne.configuration.xml.XMLProjectLoader;
-import org.apache.cayenne.configuration.xml.XMLDataMapLoader;
-import org.apache.cayenne.configuration.xml.XMLReaderProvider;
+import org.apache.cayenne.project.ConfigurationNameMapper;
+import org.apache.cayenne.project.Project;
+import org.apache.cayenne.project.DataMapLoader;
+import org.apache.cayenne.project.DefaultConfigurationNameMapper;
+import org.apache.cayenne.project.upgrade.ProjectFileUpgrader;
+import org.apache.cayenne.project.xml.ProjectMetaData;
+import org.apache.cayenne.project.xml.DefaultHandlerFactory;
+import org.apache.cayenne.project.xml.HandlerFactory;
+import org.apache.cayenne.project.xml.NoopProjectMetaData;
+import org.apache.cayenne.project.xml.XMLProjectLoader;
+import org.apache.cayenne.project.xml.XMLDataMapLoader;
+import org.apache.cayenne.project.xml.XMLReaderProvider;
 import org.apache.cayenne.dbsync.naming.DefaultObjectNameGenerator;
 import org.apache.cayenne.di.AdhocObjectFactory;
 import org.apache.cayenne.di.ClassLoaderManager;

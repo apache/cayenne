@@ -19,7 +19,7 @@
 
 package org.apache.cayenne.dbsync.reverse.configuration;
 
-import org.apache.cayenne.configuration.Constants;
+import org.apache.cayenne.project.Constants;
 import org.apache.cayenne.dba.DbAdapterDetector;
 import org.apache.cayenne.dba.AutoAdapter;
 import org.apache.cayenne.dba.DbAdapter;

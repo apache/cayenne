@@ -32,7 +32,7 @@ import org.apache.cayenne.QueryResult;
 import org.apache.cayenne.access.flush.DataDomainFlushAction;
 import org.apache.cayenne.access.flush.DataDomainFlushActionFactory;
 import org.apache.cayenne.cache.QueryCache;
-import org.apache.cayenne.configuration.Constants;
+import org.apache.cayenne.project.Constants;
 import org.apache.cayenne.di.AdhocObjectFactory;
 import org.apache.cayenne.di.BeforeScopeEnd;
 import org.apache.cayenne.event.EventManager;

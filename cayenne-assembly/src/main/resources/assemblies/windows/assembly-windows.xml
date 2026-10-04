@@ -73,7 +73,7 @@
 				<include>org.apache.cayenne:cayenne-dbsync</include>
 				<include>org.apache.cayenne:cayenne-di</include>
 				<include>org.apache.cayenne:cayenne-jcache</include>
-				<include>org.apache.cayenne:cayenne-project</include>
+				<include>org.apache.cayenne:cayenne-project-tools</include>
 				<include>org.apache.cayenne:cayenne-velocity</include>
 			</includes>
 		</dependencySet>

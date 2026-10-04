@@ -21,7 +21,7 @@ package org.apache.cayenne.modeler.ui.project.editor.datamap.main;
 
 import com.jgoodies.forms.builder.DefaultFormBuilder;
 import com.jgoodies.forms.layout.FormLayout;
-import org.apache.cayenne.configuration.Project;
+import org.apache.cayenne.project.Project;
 import org.apache.cayenne.map.DataMap;
 import org.apache.cayenne.map.ObjEntity;
 import org.apache.cayenne.modeler.event.model.DataMapEvent;
@@ -36,7 +36,7 @@ import org.apache.cayenne.modeler.ui.project.editor.datamap.main.locking.Locking
 import org.apache.cayenne.modeler.ui.project.editor.datamap.main.pkg.PackageUpdateDialog;
 import org.apache.cayenne.modeler.ui.project.editor.datamap.main.schema.SchemaUpdateDialog;
 import org.apache.cayenne.modeler.ui.project.editor.datamap.main.superclass.SuperclassUpdateDialog;
-import org.apache.cayenne.project.extension.info.ObjectInfo;
+import org.apache.cayenne.projecttools.extension.info.ObjectInfo;
 import java.util.Objects;
 import org.apache.cayenne.validation.ValidationException;
 

@@ -19,7 +19,7 @@
 
 package org.apache.cayenne.dbsync.xml;
 
-import org.apache.cayenne.configuration.xml.NamespaceAwareNestedTagHandler;
+import org.apache.cayenne.project.xml.NamespaceAwareNestedTagHandler;
 import org.apache.cayenne.dbsync.reverse.dbimport.ReverseEngineering;
 import org.xml.sax.Attributes;
 import org.xml.sax.SAXException;

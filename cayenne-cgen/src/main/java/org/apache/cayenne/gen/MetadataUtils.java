@@ -19,10 +19,10 @@
 
 package org.apache.cayenne.gen;
 
-import org.apache.cayenne.configuration.ProjectNode;
-import org.apache.cayenne.configuration.xml.ProjectMetaData;
+import org.apache.cayenne.project.ProjectNode;
+import org.apache.cayenne.project.xml.ProjectMetaData;
 import org.apache.cayenne.di.Inject;
-import org.apache.cayenne.project.extension.info.ObjectInfo;
+import org.apache.cayenne.projecttools.extension.info.ObjectInfo;
 
 /**
  * @since 4.2

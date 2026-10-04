@@ -18,10 +18,10 @@
  ****************************************************************/
 package org.apache.cayenne.dbsync.reverse.dbimport;
 
-import org.apache.cayenne.configuration.ProjectLoader;
-import org.apache.cayenne.configuration.DataMapLoader;
+import org.apache.cayenne.project.ProjectLoader;
+import org.apache.cayenne.project.DataMapLoader;
 import org.apache.cayenne.dbsync.reverse.configuration.DbAdapterFactory;
-import org.apache.cayenne.configuration.xml.ProjectMetaData;
+import org.apache.cayenne.project.xml.ProjectMetaData;
 import org.apache.cayenne.dba.DbAdapter;
 import org.apache.cayenne.dbsync.DbSyncModule;
 import org.apache.cayenne.dbsync.filter.NamePatternMatcher;
@@ -44,8 +44,8 @@ import org.apache.cayenne.di.DIBootstrap;
 import org.apache.cayenne.di.Injector;
 import org.apache.cayenne.map.DataMap;
 import org.apache.cayenne.map.DbEntity;
-import org.apache.cayenne.project.FileProjectSaver;
-import org.apache.cayenne.configuration.ProjectNode;
+import org.apache.cayenne.projecttools.FileProjectSaver;
+import org.apache.cayenne.project.ProjectNode;
 import org.apache.cayenne.resource.Resource;
 import org.apache.cayenne.resource.URLResource;
 import org.apache.cayenne.util.Util;

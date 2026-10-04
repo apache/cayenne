@@ -30,8 +30,8 @@ import org.apache.cayenne.modeler.Application;
 import org.apache.cayenne.modeler.toolkit.table.CMTable;
 import org.apache.cayenne.modeler.toolkit.table.TableSizer;
 import org.apache.cayenne.modeler.toolkit.AppPanel;
-import org.apache.cayenne.configuration.Project;
-import org.apache.cayenne.project.validation.ProjectValidator;
+import org.apache.cayenne.project.Project;
+import org.apache.cayenne.projecttools.validation.ProjectValidator;
 import org.apache.cayenne.validation.ValidationFailure;
 import org.apache.cayenne.validation.ValidationResult;
 

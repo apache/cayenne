@@ -20,17 +20,17 @@
 package org.apache.cayenne.dbsync.reverse.configuration;
 
 import org.apache.cayenne.di.Binder;
-import org.apache.cayenne.project.ProjectModuleExtender;
+import org.apache.cayenne.projecttools.ProjectToolsModuleExtender;
 
-// this class exists so that ToolsModule can call "initAllExtensions()" that is protected in ProjectModuleExtender.
-class ToolsProjectModuleExtender extends ProjectModuleExtender {
+// this class exists so that ToolsModule can call "initAllExtensions()" that is protected in ProjectToolsModuleExtender.
+class ToolsProjectModuleExtender extends ProjectToolsModuleExtender {
 
     public ToolsProjectModuleExtender(Binder binder) {
         super(binder);
     }
 
     @Override
-    protected ProjectModuleExtender initAllExtensions() {
+    protected ProjectToolsModuleExtender initAllExtensions() {
         return super.initAllExtensions();
     }
 }

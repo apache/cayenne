@@ -18,7 +18,7 @@
  ****************************************************************/
 package org.apache.cayenne;
 
-import org.apache.cayenne.configuration.Constants;
+import org.apache.cayenne.project.Constants;
 import org.apache.cayenne.di.Key;
 import org.apache.cayenne.di.Module;
 import org.junit.jupiter.api.AfterEach;

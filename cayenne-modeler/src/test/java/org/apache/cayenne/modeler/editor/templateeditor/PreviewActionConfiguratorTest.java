@@ -19,7 +19,7 @@
 
 package org.apache.cayenne.modeler.editor.templateeditor;
 
-import org.apache.cayenne.configuration.xml.DefaultProjectMetaData;
+import org.apache.cayenne.project.xml.DefaultProjectMetaData;
 import org.apache.cayenne.gen.ClassGenerationAction;
 import org.apache.cayenne.gen.TemplateType;
 import org.apache.cayenne.map.DataMap;

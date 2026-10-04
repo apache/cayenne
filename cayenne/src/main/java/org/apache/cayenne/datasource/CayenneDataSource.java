@@ -19,7 +19,7 @@
 package org.apache.cayenne.datasource;
 
 import org.apache.cayenne.CayenneRuntimeException;
-import org.apache.cayenne.configuration.Constants;
+import org.apache.cayenne.project.Constants;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 

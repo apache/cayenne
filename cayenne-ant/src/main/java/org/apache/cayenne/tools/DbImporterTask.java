@@ -21,7 +21,7 @@ package org.apache.cayenne.tools;
 import javax.sql.DataSource;
 import java.io.File;
 
-import org.apache.cayenne.configuration.DataSourceDescriptor;
+import org.apache.cayenne.project.DataSourceDescriptor;
 import org.apache.cayenne.dbsync.reverse.configuration.DbAdapterFactory;
 import org.apache.cayenne.dba.DbAdapter;
 import org.apache.cayenne.dbsync.DbSyncModule;

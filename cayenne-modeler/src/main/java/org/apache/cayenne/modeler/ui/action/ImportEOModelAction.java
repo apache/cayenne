@@ -19,7 +19,7 @@
 
 package org.apache.cayenne.modeler.ui.action;
 
-import org.apache.cayenne.configuration.ProjectNode;
+import org.apache.cayenne.project.ProjectNode;
 import org.apache.cayenne.dba.db2.DB2Adapter;
 import org.apache.cayenne.dba.derby.DerbyAdapter;
 import org.apache.cayenne.dba.firebird.FirebirdAdapter;

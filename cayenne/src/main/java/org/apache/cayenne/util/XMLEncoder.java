@@ -25,7 +25,7 @@ import java.util.Deque;
 import java.util.LinkedList;
 import java.util.Map;
 
-import org.apache.cayenne.configuration.ProjectNodeVisitor;
+import org.apache.cayenne.project.ProjectNodeVisitor;
 
 /**
  * <p>

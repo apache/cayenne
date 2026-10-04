@@ -21,8 +21,8 @@ package org.apache.cayenne.mcp.tools.dbimport;
 import io.modelcontextprotocol.json.McpJsonMapper;
 import io.modelcontextprotocol.server.McpServerFeatures;
 import io.modelcontextprotocol.spec.McpSchema;
-import org.apache.cayenne.configuration.Project;
-import org.apache.cayenne.configuration.ProjectLoader;
+import org.apache.cayenne.project.Project;
+import org.apache.cayenne.project.ProjectLoader;
 import org.apache.cayenne.dbsync.DbSyncModule;
 import org.apache.cayenne.dbsync.reverse.configuration.ToolsModule;
 import org.apache.cayenne.dbsync.reverse.dbimport.DbImportConfiguration;
@@ -44,8 +44,8 @@ import org.apache.cayenne.mcp.tools.dbimport.protocol.DbImportResolved;
 import org.apache.cayenne.mcp.tools.dbimport.protocol.DbImportRunResult;
 import org.apache.cayenne.mcp.tools.dbimport.protocol.DbImportSummary;
 import org.apache.cayenne.mcp.tools.dbimport.protocol.DbImportValidation;
-import org.apache.cayenne.project.ProjectModule;
-import org.apache.cayenne.project.extension.validation.ValidationExtension;
+import org.apache.cayenne.projecttools.ProjectToolsModule;
+import org.apache.cayenne.projecttools.extension.validation.ValidationExtension;
 import org.apache.cayenne.resource.URLResource;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -91,9 +91,11 @@ public class DbImportRunTool {
                 new DbSyncModule(),
                 new ToolsModule(LOGGER),
                 new DbImportModule(),
-                new ProjectModule(),
+                new ProjectToolsModule(),
                 new McpProjectLoaderModule(),
-                b -> ProjectModule.extend(b).addExtension(CgenExtension.class).addExtension(ValidationExtension.class),
+                b -> ProjectToolsModule.extend(b)
+                        .addExtension(CgenExtension.class)
+                        .addExtension(ValidationExtension.class),
                 b -> b.bind(InstrumentedDbImportAction.class).to(InstrumentedDbImportAction.class)
         );
     }
