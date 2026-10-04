@@ -18,18 +18,23 @@
  ****************************************************************/
 package org.apache.cayenne.query;
 
+import java.util.List;
+
 /**
- * A single segment of a query result set mapping. A segment describes how one or more adjacent columns of a
- * result set row map to a result object
+ * A query result set mapping. Describes how a result set row is split into segments, and whether a result row is
+ * an Object[] with one element per segment, or a single object of the only segment.
  *
+ * @param segments result set segments in the order of their columns
+ * @param array    whether a result row is an Object[]. If false, there must be exactly one segment
  * @see QueryMetadata#getResultSegments()
  * @since 5.0
  */
-public sealed interface ResultSegment permits EntityResultSegment, EmbeddableResultSegment, ScalarResultSegment {
+public record ResultSegments(List<ResultSegment> segments, boolean array) {
 
-    /**
-     * Returns a zero-based column index of the first column of this segment in the ResultSet, or -1 if the segment
-     * comes from a query-declared mapping whose column layout is only known after SQL translation.
-     */
-    int columnOffset();
+    public ResultSegments {
+        if (!array && segments.size() != 1) {
+            throw new IllegalArgumentException(
+                    "A non-array result must have exactly one segment, got " + segments.size());
+        }
+    }
 }

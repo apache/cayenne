@@ -25,6 +25,7 @@ import org.apache.cayenne.map.ObjEntity;
 import org.apache.cayenne.map.Procedure;
 import org.apache.cayenne.reflect.ClassDescriptor;
 
+import java.util.Collections;
 import java.util.List;
 import java.util.Map;
 import java.util.function.Function;
@@ -180,19 +181,32 @@ public interface QueryMetadata {
     Map<String, String> getPathSplitAliases();
 
     /**
-     * Returns the result set mapping declared by the query, or null if the query returns whole objects of its root
-     * entity.
+     * Returns query result set mapping. May be null if the query returns whole objects or data rows.
      *
-     * @since 3.0
+     * @since 5.0
      */
-    List<ResultSegment> getResultSetMapping();
+    // TODO: "null" return seems dirty
+    ResultSegments getResultSegments();
 
     /**
-     * @return should the result be mapped to single object (scalar or entity)
-     * @see QueryMetadata#getResultSetMapping()
-     * @since 4.0
+     * @since 3.0
+     * @deprecated use {@link #getResultSegments()}
      */
-    boolean isSingleResultSetMapping();
+    @Deprecated(since = "5.0", forRemoval = true)
+    default List<Object> getResultSetMapping() {
+        ResultSegments segments = getResultSegments();
+        return segments != null ? Collections.unmodifiableList(segments.segments()) : null;
+    }
+
+    /**
+     * @since 4.0
+     * @deprecated use {@link #getResultSegments()} and check {@link ResultSegments#array()}
+     */
+    @Deprecated(since = "5.0", forRemoval = true)
+    default boolean isSingleResultSetMapping() {
+        ResultSegments segments = getResultSegments();
+        return segments != null && !segments.array();
+    }
     
     /**
      * @return statement's fetch size

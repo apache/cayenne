@@ -20,14 +20,13 @@
 package org.apache.cayenne.access.translator.select;
 
 import java.util.Collections;
-import java.util.List;
 import java.util.Map;
 
 import org.apache.cayenne.map.DbEntity;
 import org.apache.cayenne.map.ObjEntity;
 import org.apache.cayenne.query.MockQueryMetadata;
 import org.apache.cayenne.query.QueryMetadata;
-import org.apache.cayenne.query.ResultSegment;
+import org.apache.cayenne.query.ResultSegments;
 
 class MockQueryMetadataBuilder {
 
@@ -41,7 +40,7 @@ class MockQueryMetadataBuilder {
 
     private boolean suppressDistinct;
 
-    private List<ResultSegment> resultSetMapping;
+    private ResultSegments resultSetMapping;
 
     MockQueryMetadataBuilder withDbEntity(DbEntity entity) {
         this.dbEntity = entity;
@@ -64,7 +63,7 @@ class MockQueryMetadataBuilder {
         return this;
     }
 
-    MockQueryMetadataBuilder withResultSetMapping(List<ResultSegment> resultSetMapping) {
+    MockQueryMetadataBuilder withResultSetMapping(ResultSegments resultSetMapping) {
         this.resultSetMapping = resultSetMapping;
         return this;
     }
@@ -103,7 +102,7 @@ class MockQueryMetadataBuilder {
             }
 
             @Override
-            public List<ResultSegment> getResultSetMapping() {
+            public ResultSegments getResultSegments() {
                 return resultSetMapping;
             }
         };

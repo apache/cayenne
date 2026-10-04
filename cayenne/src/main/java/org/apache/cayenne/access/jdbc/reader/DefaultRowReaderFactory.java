@@ -28,10 +28,10 @@ import org.apache.cayenne.query.EmbeddableResultSegment;
 import org.apache.cayenne.query.EntityResultSegment;
 import org.apache.cayenne.query.QueryMetadata;
 import org.apache.cayenne.query.ResultSegment;
+import org.apache.cayenne.query.ResultSegments;
 import org.apache.cayenne.query.ScalarResultSegment;
 
 import java.util.HashSet;
-import java.util.List;
 import java.util.Set;
 
 /**
@@ -40,21 +40,21 @@ import java.util.Set;
 public class DefaultRowReaderFactory implements RowReaderFactory {
 
     @Override
-    public RowReader<?> rowReader(RSColumn[] columns, List<ResultSegment> segments, QueryMetadata metadata,
+    public RowReader<?> rowReader(RSColumn[] columns, ResultSegments segments, QueryMetadata metadata,
                                   DbAdapter adapter) {
 
-        if (segments == null || segments.isEmpty()) {
+        if (segments == null || segments.segments().isEmpty()) {
             return noSegmentReader(columns, metadata);
         }
 
-        if (metadata.isSingleResultSetMapping()) {
-            return segmentReader(segments.getFirst(), columns, metadata);
+        if (!segments.array()) {
+            return segmentReader(segments.segments().getFirst(), columns, metadata);
         }
 
-        int w = segments.size();
+        int w = segments.segments().size();
         RowReader<?>[] readers = new RowReader[w];
         for (int i = 0; i < w; i++) {
-            readers[i] = segmentReader(segments.get(i), columns, metadata);
+            readers[i] = segmentReader(segments.segments().get(i), columns, metadata);
         }
 
         return new CompoundRowReader(readers);

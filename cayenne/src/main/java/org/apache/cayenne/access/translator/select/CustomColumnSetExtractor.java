@@ -38,6 +38,7 @@ import org.apache.cayenne.map.ObjEntity;
 import org.apache.cayenne.query.EmbeddableResultSegment;
 import org.apache.cayenne.query.EntityResultSegment;
 import org.apache.cayenne.query.ResultSegment;
+import org.apache.cayenne.query.ResultSegments;
 import org.apache.cayenne.query.ScalarResultSegment;
 import org.apache.cayenne.reflect.ClassDescriptor;
 
@@ -60,10 +61,11 @@ class CustomColumnSetExtractor implements ColumnExtractor {
 
     @Override
     public void extract(CayennePath prefix) {
-        List<ResultSegment> segments = context.getMetadata().getResultSetMapping();
-        if (segments == null || segments.size() != columns.size()) {
+        ResultSegments mapping = context.getMetadata().getResultSegments();
+        List<ResultSegment> segments = mapping != null ? mapping.segments() : List.of();
+        if (segments.size() != columns.size()) {
             throw new CayenneRuntimeException("Query metadata describes %d result segments for %d columns",
-                    segments == null ? 0 : segments.size(), columns.size());
+                    segments.size(), columns.size());
         }
 
         Iterator<ResultSegment> segmentIterator = segments.iterator();

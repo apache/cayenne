@@ -54,7 +54,6 @@ import java.util.function.Function;
  */
 class ColumnSelectMetadata extends ObjectSelectMetadata {
 
-    private boolean isSingleResultSetMapping;
     private boolean suppressingDistinct;
     private Function<?, ?> resultMapper;
 
@@ -68,7 +67,6 @@ class ColumnSelectMetadata extends ObjectSelectMetadata {
 
             resolveAutoAliases(query);
             this.resultSetMapping = buildResultSetMapping(query, resolver);
-            isSingleResultSetMapping = query.isSingleColumn();
             return true;
         }
 
@@ -95,9 +93,10 @@ class ColumnSelectMetadata extends ObjectSelectMetadata {
 
     /**
      * Builds the shape of a result row declared by the query columns: one segment per column, classified into
-     * entity, embeddable and scalar results.
+     * entity, embeddable and scalar results. A row is an Object[], unless the query was built as a single column
+     * query.
      */
-    private List<ResultSegment> buildResultSetMapping(ColumnSelect<?> query, EntityResolver resolver) {
+    private ResultSegments buildResultSetMapping(ColumnSelect<?> query, EntityResolver resolver) {
         Collection<Property<?>> columns = query.getColumns();
         if (columns == null || columns.isEmpty()) {
             return null;
@@ -107,7 +106,7 @@ class ColumnSelectMetadata extends ObjectSelectMetadata {
         for (Property<?> column : columns) {
             segments.add(resultSegment(column, resolver));
         }
-        return Collections.unmodifiableList(segments);
+        return new ResultSegments(Collections.unmodifiableList(segments), !query.isSingleColumn());
     }
 
     private ResultSegment resultSegment(Property<?> column, EntityResolver resolver) {
@@ -233,11 +232,6 @@ class ColumnSelectMetadata extends ObjectSelectMetadata {
 
     private static String columnName(Property<?> column) {
         return column.getName() == null ? column.getExpression().expName() : column.getName();
-    }
-
-    @Override
-    public boolean isSingleResultSetMapping() {
-        return isSingleResultSetMapping;
     }
 
     @Override

@@ -34,13 +34,7 @@ import java.util.function.Function;
  */
 public class SQLTemplateMetadata extends BaseQueryMetadata {
 
-	private boolean isSingleResultSetMapping;
 	private Function<?, ?> resultMapper;
-
-	@Override
-	public boolean isSingleResultSetMapping() {
-		return isSingleResultSetMapping;
-	}
 
 	boolean resolve(Object root, EntityResolver resolver, SQLTemplate<?> query) {
 
@@ -60,10 +54,11 @@ public class SQLTemplateMetadata extends BaseQueryMetadata {
 
 			buildResultSetMappingForColumns(query);
 			// an empty mapping of a scalar query means "one scalar per ResultSet column", to be resolved at execution
-			resultSetMapping = query.getResult() != null ?
+			List<ResultSegment> segments = query.getResult() != null ?
 					query.getResult().getResolvedComponents(resolver) :
 					query.isUseScalar() ? Collections.emptyList() : null;
-			isSingleResultSetMapping = resultSetMapping != null && resultSetMapping.size() == 1;
+			// a single segment is returned as is, anything else - as an Object[]
+			resultSetMapping = segments != null ? new ResultSegments(segments, segments.size() != 1) : null;
 
 			// generate unique cache key...
 			if (QueryCacheStrategy.NO_CACHE == getCacheStrategy()) {

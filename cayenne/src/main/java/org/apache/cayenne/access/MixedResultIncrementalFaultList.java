@@ -26,7 +26,6 @@ import java.util.List;
 import java.util.Map;
 
 import org.apache.cayenne.Persistent;
-import org.apache.cayenne.ResultIterator;
 import org.apache.cayenne.exp.Expression;
 import org.apache.cayenne.exp.ExpressionFactory;
 import org.apache.cayenne.map.ObjAttribute;
@@ -80,7 +79,7 @@ class MixedResultIncrementalFaultList<E> extends IncrementalFaultList<E> {
         // first compile some meta data about results
         indexToEntity = new HashMap<>();
         scalarResult = true;
-        List<ResultSegment> segments = metadata.getResultSetMapping();
+        List<ResultSegment> segments = metadata.getResultSegments().segments();
         for (int i = 0; i < segments.size(); i++) {
             if (segments.get(i) instanceof EntityResultSegment resultSegment) {
                 ObjEntity entity = resultSegment.classDescriptor().getEntity();

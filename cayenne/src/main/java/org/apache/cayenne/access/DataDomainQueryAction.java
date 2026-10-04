@@ -49,6 +49,7 @@ import org.apache.cayenne.query.QueryMetadata;
 import org.apache.cayenne.query.QueryMetadataProxy;
 import org.apache.cayenne.query.QueryRouter;
 import org.apache.cayenne.query.ResultSegment;
+import org.apache.cayenne.query.ResultSegments;
 import org.apache.cayenne.reflect.ClassDescriptor;
 import org.apache.cayenne.reflect.DefaultConstructor;
 import org.apache.cayenne.reflect.LifecycleCallbackRegistry;
@@ -355,14 +356,14 @@ class DataDomainQueryAction implements QueryRouter, OperationObserver {
         if (metadata.isFetchingDataRows()) {
             converter = new IdentityConversionStrategy();
         } else {
-            List<ResultSegment> rsMapping = metadata.getResultSetMapping();
+            ResultSegments rsMapping = metadata.getResultSegments();
             if (rsMapping == null) {
                 converter = new SingleObjectConversionStrategy();
             } else {
-                if (metadata.isSingleResultSetMapping()) {
-                    if (rsMapping.getFirst() instanceof EntityResultSegment) {
+                if (!rsMapping.array()) {
+                    if (rsMapping.segments().getFirst() instanceof EntityResultSegment) {
                         converter = new SingleObjectConversionStrategy();
-                    } else if (rsMapping.getFirst() instanceof EmbeddableResultSegment) {
+                    } else if (rsMapping.segments().getFirst() instanceof EmbeddableResultSegment) {
                         converter = new SingleEmbeddableConversionStrategy();
                     } else {
                         converter = new SingleScalarConversionStrategy();
@@ -592,10 +593,10 @@ class DataDomainQueryAction implements QueryRouter, OperationObserver {
         private PrefetchProcessorNode getPrefetchProcessorNode(List<DataRow> mainRows) {
             PrefetchTreeNode prefetchTree = metadata.getPrefetchTree();
 
-            List<ResultSegment> rsMapping = metadata.getResultSetMapping();
+            ResultSegments rsMapping = metadata.getResultSegments();
             EntityResultSegment resultSegment = null;
-            if (rsMapping != null && !rsMapping.isEmpty()) {
-                resultSegment = (EntityResultSegment) rsMapping.getFirst();
+            if (rsMapping != null && !rsMapping.segments().isEmpty()) {
+                resultSegment = (EntityResultSegment) rsMapping.segments().getFirst();
             }
 
             ClassDescriptor descriptor = resultSegment == null
@@ -625,7 +626,7 @@ class DataDomainQueryAction implements QueryRouter, OperationObserver {
 
         @Override
         List<EmbeddableObject> convert(List<DataRow> mainRows) {
-            EmbeddableResultSegment resultSegment = (EmbeddableResultSegment) metadata.getResultSetMapping().getFirst();
+            EmbeddableResultSegment resultSegment = (EmbeddableResultSegment) metadata.getResultSegments().segments().getFirst();
             Embeddable embeddable = resultSegment.embeddable();
             Class<? extends EmbeddableObject> embeddableClass = objectFactory.getJavaClass(embeddable.getClassName());
             DefaultConstructor<? extends EmbeddableObject> constructor = new DefaultConstructor<>(embeddableClass);
@@ -703,7 +704,7 @@ class DataDomainQueryAction implements QueryRouter, OperationObserver {
             // slowest path, deep copy everything
             List<Object[]> result = new ArrayList<>(mainRows.size());
             for (Object[] row : mainRows) {
-                result.add(Arrays.copyOf(row, metadata.getResultSetMapping().size()));
+                result.add(Arrays.copyOf(row, metadata.getResultSegments().segments().size()));
             }
             return result;
         }
@@ -742,7 +743,7 @@ class DataDomainQueryAction implements QueryRouter, OperationObserver {
         }
 
         private List<PrefetchProcessorNode> doInPlaceConversion(List<Object[]> result) {
-            List<ResultSegment> resultSetMapping = metadata.getResultSetMapping();
+            List<ResultSegment> resultSetMapping = metadata.getResultSegments().segments();
             int width = resultSetMapping.size();
             int height = result.size();
             List<PrefetchProcessorNode> segmentNodes = new ArrayList<>(width);
@@ -776,7 +777,7 @@ class DataDomainQueryAction implements QueryRouter, OperationObserver {
         }
 
         private boolean needConversion() {
-            for (ResultSegment mapping : metadata.getResultSetMapping()) {
+            for (ResultSegment mapping : metadata.getResultSegments().segments()) {
                 if (mapping instanceof EntityResultSegment
                         || mapping instanceof EmbeddableResultSegment) {
                     return true;

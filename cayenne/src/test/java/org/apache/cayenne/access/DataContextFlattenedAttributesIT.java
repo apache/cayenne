@@ -207,7 +207,7 @@ public class DataContextFlattenedAttributesIT {
         TranslatedSelect translator =
                 new DbAdapterDelegatedSelectTranslator().translate(originalQuery, dataNode.getAdapter(), context.getEntityResolver());
 
-        EntityResultSegment segment = (EntityResultSegment) translator.resultSetMapping().get(0);
+        EntityResultSegment segment = (EntityResultSegment) translator.resultSetMapping().segments().get(0);
 
         assertEquals(12, segment.fields().size());
         assertEquals(12, translator.resultColumns().length);

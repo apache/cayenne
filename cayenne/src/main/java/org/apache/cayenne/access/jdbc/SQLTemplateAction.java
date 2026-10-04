@@ -36,6 +36,7 @@ import org.apache.cayenne.map.ObjAttribute;
 import org.apache.cayenne.map.ObjEntity;
 import org.apache.cayenne.query.QueryMetadata;
 import org.apache.cayenne.query.ResultSegment;
+import org.apache.cayenne.query.ResultSegments;
 import org.apache.cayenne.query.ScalarResultSegment;
 import org.apache.cayenne.query.SQLAction;
 import org.apache.cayenne.query.SQLTemplate;
@@ -269,9 +270,9 @@ public class SQLTemplateAction implements SQLAction {
      * query-declared mapping, and its columns are only known once the ResultSet is available, so a scalar segment
      * per column is built here without touching the query metadata.
      */
-    private List<ResultSegment> resultSegments(ResultSet resultSet) throws SQLException {
-        List<ResultSegment> declared = queryMetadata.getResultSetMapping();
-        if (!query.isUseScalar() || declared == null || !declared.isEmpty()) {
+    private ResultSegments resultSegments(ResultSet resultSet) throws SQLException {
+        ResultSegments declared = queryMetadata.getResultSegments();
+        if (!query.isUseScalar() || declared == null || !declared.segments().isEmpty()) {
             return declared;
         }
 
@@ -280,7 +281,7 @@ public class SQLTemplateAction implements SQLAction {
         for (int i = 0; i < width; i++) {
             segments.add(new ScalarResultSegment(String.valueOf(i), null, i));
         }
-        return segments;
+        return new ResultSegments(segments, true);
     }
 
     /**

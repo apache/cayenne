@@ -35,6 +35,7 @@ import org.apache.cayenne.map.EntityResolver;
 import org.apache.cayenne.map.ObjAttribute;
 import org.apache.cayenne.map.ObjEntity;
 import org.apache.cayenne.query.FluentSelect;
+import org.apache.cayenne.query.ResultSegments;
 import org.apache.cayenne.query.ScalarResultSegment;
 import org.junit.jupiter.api.Test;
 
@@ -53,7 +54,8 @@ public class CustomColumnSetExtractorTest extends BaseColumnExtractorTest {
                 .withColumns(properties)
                 .withMetaData(new MockQueryMetadataBuilder()
                         .withDbEntity(mockDbEntity)
-                        .withResultSetMapping(List.of(new ScalarResultSegment("name", String.class, -1)))
+                        .withResultSetMapping(new ResultSegments(
+                                List.of(new ScalarResultSegment("name", String.class, -1)), true))
                         .build())
                 .build();
         SelectTranslatorContext context = new MockSelectTranslatorContext(query);

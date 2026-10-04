@@ -228,7 +228,7 @@ public class ColumnSelect_UntypedColumnsIT {
                 PropertyFactory.createBase(FunctionExpressionFactory.countExp(), null),
                 PropertyFactory.createBase(FunctionExpressionFactory.currentTimestamp(), null));
 
-        List<ResultSegment> segments = query.getMetaData(context.getEntityResolver()).getResultSetMapping();
+        List<ResultSegment> segments = query.getMetaData(context.getEntityResolver()).getResultSegments().segments();
         assertEquals(5, segments.size());
 
         ScalarResultSegment title = assertInstanceOf(ScalarResultSegment.class, segments.get(0));

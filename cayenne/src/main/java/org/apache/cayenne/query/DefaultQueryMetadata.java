@@ -20,7 +20,6 @@
 package org.apache.cayenne.query;
 
 import java.util.Collections;
-import java.util.List;
 import java.util.Map;
 
 import org.apache.cayenne.map.DataMap;
@@ -61,16 +60,8 @@ class DefaultQueryMetadata implements QueryMetadata {
     /**
      * @since 3.0
      */
-    public List<ResultSegment> getResultSetMapping() {
+    public ResultSegments getResultSegments() {
         return null;
-    }
-
-    /**
-     * @since 4.0
-     */
-    @Override
-    public boolean isSingleResultSetMapping() {
-        return false;
     }
 
     /**

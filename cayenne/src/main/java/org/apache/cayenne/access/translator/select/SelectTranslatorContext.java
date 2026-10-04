@@ -37,7 +37,7 @@ import org.apache.cayenne.map.SQLResult;
 import org.apache.cayenne.query.FluentSelect;
 import org.apache.cayenne.query.Ordering;
 import org.apache.cayenne.query.QueryMetadata;
-import org.apache.cayenne.query.ResultSegment;
+import org.apache.cayenne.query.ResultSegments;
 
 import java.util.ArrayList;
 import java.util.Collection;
@@ -135,7 +135,7 @@ class SelectTranslatorContext implements SQLGenerationContext {
     private SQLResult sqlResult;
     private EntityResult rootEntityResult;
     // result set mapping resolved against the translated columns, null unless the query selects a custom column set
-    private List<ResultSegment> resultSetMapping;
+    private ResultSegments resultSetMapping;
 
     SelectTranslatorContext(FluentSelect<?, ?> query, DbAdapter adapter, EntityResolver resolver, SelectTranslatorContext parentContext) {
         this.query = query;
@@ -335,7 +335,7 @@ class SelectTranslatorContext implements SQLGenerationContext {
         return sqlResult;
     }
 
-    void setResultSetMapping(List<ResultSegment> resultSetMapping) {
+    void setResultSetMapping(ResultSegments resultSetMapping) {
         this.resultSetMapping = resultSetMapping;
     }
 

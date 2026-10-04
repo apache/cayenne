@@ -28,7 +28,7 @@ import org.apache.cayenne.query.EntityResultSegment;
 import org.apache.cayenne.query.Query;
 import org.apache.cayenne.query.QueryCacheStrategy;
 import org.apache.cayenne.query.QueryMetadata;
-import org.apache.cayenne.query.ResultSegment;
+import org.apache.cayenne.query.ResultSegments;
 
 import java.util.Collections;
 import java.util.List;
@@ -114,17 +114,10 @@ class DataContextQueryAction {
     }
 
     private boolean isMixedResultsForPaginatedQuery() {
-        boolean mixedResults = false;
-        List<ResultSegment> rsMapping = metadata.getResultSetMapping();
-        if (rsMapping != null) {
-            if (rsMapping.size() > 1) {
-                mixedResults = true;
-            } else if (rsMapping.size() == 1) {
-                mixedResults = !(rsMapping.getFirst() instanceof EntityResultSegment)
-                        || !metadata.isSingleResultSetMapping();
-            }
-        }
-        return mixedResults;
+        ResultSegments rsMapping = metadata.getResultSegments();
+        return rsMapping != null
+                && !rsMapping.segments().isEmpty()
+                && (rsMapping.array() || !(rsMapping.segments().getFirst() instanceof EntityResultSegment));
     }
 
     protected boolean interceptLocalCache() {

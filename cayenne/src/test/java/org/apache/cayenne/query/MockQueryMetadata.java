@@ -19,7 +19,6 @@
 
 package org.apache.cayenne.query;
 
-import java.util.List;
 import java.util.Map;
 
 import org.apache.cayenne.map.DataMap;
@@ -30,13 +29,8 @@ import org.apache.cayenne.reflect.ClassDescriptor;
 
 public class MockQueryMetadata implements QueryMetadata {
 
-    public List<ResultSegment> getResultSetMapping() {
+    public ResultSegments getResultSegments() {
         return null;
-    }
-
-    @Override
-    public boolean isSingleResultSetMapping() {
-        return false;
     }
 
     public ObjEntity getObjEntity() {

@@ -171,9 +171,9 @@ public record DataContextChannel(DataContext context) implements DataChannel {
                 } else {
 
                     // minor optimization, skip Object[] if there are no persistent objects
-                    boolean haveObjects = metadata.getResultSetMapping() == null;
+                    boolean haveObjects = metadata.getResultSegments() == null;
                     if (!haveObjects) {
-                        for (ResultSegment next : metadata.getResultSetMapping()) {
+                        for (ResultSegment next : metadata.getResultSegments().segments()) {
                             if (next instanceof EntityResultSegment) {
                                 haveObjects = true;
                                 break;

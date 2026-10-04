@@ -22,10 +22,11 @@ package org.apache.cayenne.access.translator.select;
 import java.util.List;
 
 import org.apache.cayenne.query.ResultSegment;
+import org.apache.cayenne.query.ResultSegments;
 
 /**
- * Resolves the {@link org.apache.cayenne.map.SQLResult} collected by the column extractors into a list of
- * {@link ResultSegment}s with column offsets matching the translated SELECT column list. The result is a part of
+ * Resolves the {@link org.apache.cayenne.map.SQLResult} collected by the column extractors into
+ * {@link ResultSegments} with column offsets matching the translated SELECT column list. The result is a part of
  * the translation output and is never written back into the query.
  *
  * @since 4.2
@@ -38,7 +39,8 @@ public class SQLResultStage implements TranslationStage {
             return;
         }
 
-        List<ResultSegment> resultSetMapping = context.getSqlResult().getResolvedComponents(context.getResolver());
-        context.setResultSetMapping(resultSetMapping);
+        List<ResultSegment> segments = context.getSqlResult().getResolvedComponents(context.getResolver());
+        boolean array = context.getMetadata().getResultSegments().array();
+        context.setResultSetMapping(new ResultSegments(segments, array));
     }
 }

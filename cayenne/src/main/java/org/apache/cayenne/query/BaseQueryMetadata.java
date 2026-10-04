@@ -21,7 +21,6 @@ package org.apache.cayenne.query;
 
 import java.util.Collection;
 import java.util.Collections;
-import java.util.List;
 import java.util.Map;
 
 import org.apache.cayenne.Persistent;
@@ -57,7 +56,7 @@ class BaseQueryMetadata implements QueryMetadata {
 	 */
 	String cacheGroup;
 
-	List<ResultSegment> resultSetMapping;
+	ResultSegments resultSetMapping;
 	DbEntity dbEntity;
 	DataMap dataMap;
 	Object lastRoot;
@@ -81,7 +80,7 @@ class BaseQueryMetadata implements QueryMetadata {
 		this.cacheStrategy = info.getCacheStrategy();
 		this.cacheKey = info.getCacheKey();
 		this.cacheGroup = info.getCacheGroup();
-		this.resultSetMapping = info.getResultSetMapping();
+		this.resultSetMapping = info.getResultSegments();
 
 		setPrefetchTree(info.getPrefetchTree());
 	}
@@ -192,16 +191,8 @@ class BaseQueryMetadata implements QueryMetadata {
 	/**
 	 * @since 3.0
 	 */
-	public List<ResultSegment> getResultSetMapping() {
+	public ResultSegments getResultSegments() {
 		return resultSetMapping;
-	}
-
-	/**
-	 * @since 4.0
-	 */
-	@Override
-	public boolean isSingleResultSetMapping() {
-		return resultSetMapping != null && resultSetMapping.size() == 1;
 	}
 
 	/**

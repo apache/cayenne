@@ -299,7 +299,7 @@ public class BatchAction extends BaseSQLAction {
 
         QueryMetadata metadata = query.getMetaData(dataNode.getEntityResolver());
         RowReader<?> rowReader = dataNode.getRowReaderFactory()
-                .rowReader(keyColumns, metadata.getResultSetMapping(), metadata, dataNode.getAdapter());
+                .rowReader(keyColumns, metadata.getResultSegments(), metadata, dataNode.getAdapter());
 
         // generated keys are small (one row per inserted row), so materialize them here rather than passing a live,
         // single-use iterator to the observer

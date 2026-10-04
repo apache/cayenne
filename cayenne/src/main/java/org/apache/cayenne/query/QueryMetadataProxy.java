@@ -19,7 +19,6 @@
 
 package org.apache.cayenne.query;
 
-import java.util.List;
 import java.util.Map;
 
 import org.apache.cayenne.map.DataMap;
@@ -108,13 +107,8 @@ public class QueryMetadataProxy implements QueryMetadata {
     }
 
     @Override
-    public List<ResultSegment> getResultSetMapping() {
-        return mdDelegate.getResultSetMapping();
-    }
-
-    @Override
-    public boolean isSingleResultSetMapping() {
-        return mdDelegate.isSingleResultSetMapping();
+    public ResultSegments getResultSegments() {
+        return mdDelegate.getResultSegments();
     }
 
     @Override

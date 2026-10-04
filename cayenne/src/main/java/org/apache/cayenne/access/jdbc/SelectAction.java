@@ -181,7 +181,7 @@ public class SelectAction extends BaseSQLAction {
         // a joint prefetch warrants full row compare, and so does a result that is not made of
         // DataRows - a column select yields scalars or Object[], neither of which has an ObjectId
         final boolean[] compareFullRows = new boolean[1];
-        compareFullRows[0] = translated.hasJoins() || queryMetadata.getResultSetMapping() != null;
+        compareFullRows[0] = translated.hasJoins() || queryMetadata.getResultSegments() != null;
 
         final PrefetchTreeNode rootPrefetch = queryMetadata.getPrefetchTree();
         if (!compareFullRows[0] && rootPrefetch != null) {
