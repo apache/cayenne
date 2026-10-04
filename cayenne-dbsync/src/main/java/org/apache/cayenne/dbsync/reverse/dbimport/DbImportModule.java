@@ -22,7 +22,7 @@ package org.apache.cayenne.dbsync.reverse.dbimport;
 import org.apache.cayenne.configuration.ConfigurationNameMapper;
 import org.apache.cayenne.configuration.DataMapLoader;
 import org.apache.cayenne.configuration.DefaultConfigurationNameMapper;
-import org.apache.cayenne.configuration.upgrade.ConfigurationUpgrader;
+import org.apache.cayenne.configuration.upgrade.ProjectFileUpgrader;
 import org.apache.cayenne.configuration.xml.ProjectMetaData;
 import org.apache.cayenne.configuration.xml.DefaultProjectMetaData;
 import org.apache.cayenne.configuration.xml.DefaultHandlerFactory;
@@ -51,7 +51,7 @@ public class DbImportModule implements Module {
         binder.bind(ProjectSaver.class).to(FileProjectSaver.class);
         binder.bind(ConfigurationNameMapper.class).to(DefaultConfigurationNameMapper.class);
         binder.bind(DataMapLoader.class).to(XMLDataMapLoader.class);
-        binder.bind(ConfigurationUpgrader.class).to(ConfigurationUpgrader.class);
+        binder.bind(ProjectFileUpgrader.class).to(ProjectFileUpgrader.class);
         binder.bind(HandlerFactory.class).to(DefaultHandlerFactory.class);
         binder.bind(ProjectMetaData.class).to(DefaultProjectMetaData.class);
         binder.bind(HandlerFactory.class).to(ExtensionAwareHandlerFactory.class);

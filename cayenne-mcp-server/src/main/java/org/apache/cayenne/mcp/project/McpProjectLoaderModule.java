@@ -20,7 +20,7 @@ package org.apache.cayenne.mcp.project;
 
 import org.apache.cayenne.configuration.ProjectLoader;
 import org.apache.cayenne.configuration.DataMapLoader;
-import org.apache.cayenne.configuration.upgrade.ConfigurationUpgrader;
+import org.apache.cayenne.configuration.upgrade.ProjectFileUpgrader;
 import org.apache.cayenne.configuration.xml.ProjectMetaData;
 import org.apache.cayenne.configuration.xml.DefaultProjectMetaData;
 import org.apache.cayenne.configuration.xml.HandlerFactory;
@@ -50,7 +50,7 @@ public class McpProjectLoaderModule implements Module {
         binder.bind(HandlerFactory.class).to(ExtensionAwareHandlerFactory.class);
         binder.bind(ProjectMetaData.class).to(DefaultProjectMetaData.class);
         binder.bind(DataMapLoader.class).to(XMLDataMapLoader.class);
-        binder.bind(ConfigurationUpgrader.class).to(ConfigurationUpgrader.class);
+        binder.bind(ProjectFileUpgrader.class).to(ProjectFileUpgrader.class);
         binder.bind(ResourceLocator.class).to(ClassLoaderResourceLocator.class);
         binder.bind(XMLReader.class).toProviderInstance(new XMLReaderProvider(false)).withoutScope();
     }

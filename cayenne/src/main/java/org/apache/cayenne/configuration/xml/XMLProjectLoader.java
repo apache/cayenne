@@ -25,7 +25,7 @@ import org.apache.cayenne.configuration.Project;
 import org.apache.cayenne.configuration.ProjectLoader;
 import org.apache.cayenne.configuration.DataMapLoader;
 import org.apache.cayenne.configuration.upgrade.UpgradeContext;
-import org.apache.cayenne.configuration.upgrade.ConfigurationUpgrader;
+import org.apache.cayenne.configuration.upgrade.ProjectFileUpgrader;
 import org.apache.cayenne.configuration.upgrade.UpgradeHandler;
 import org.apache.cayenne.configuration.upgrade.UpgradeType;
 import org.apache.cayenne.di.AdhocObjectFactory;
@@ -63,7 +63,7 @@ public class XMLProjectLoader implements ProjectLoader {
     protected HandlerFactory handlerFactory;
 
     @Inject
-    protected ConfigurationUpgrader upgrader;
+    protected ProjectFileUpgrader upgrader;
 
     @Override
     public Project load(Resource configurationResource) throws ConfigurationException {

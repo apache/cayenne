@@ -37,13 +37,13 @@ import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.verifyNoInteractions;
 
-public class ConfigurationUpgraderTest {
+public class ProjectFileUpgraderTest {
 
-    ConfigurationUpgrader upgrader;
+    ProjectFileUpgrader upgrader;
 
     @BeforeEach
     public void createUpgrader() {
-        upgrader = new ConfigurationUpgrader(new XMLReaderProvider(false));
+        upgrader = new ProjectFileUpgrader(new XMLReaderProvider(false));
     }
 
     @ParameterizedTest
@@ -100,7 +100,7 @@ public class ConfigurationUpgraderTest {
         "10,        10.0"
     })
     public void decodeVersion(String version, double expected) {
-        assertEquals(expected, ConfigurationUpgrader.decodeVersion(version), 0.000001);
+        assertEquals(expected, ProjectFileUpgrader.decodeVersion(version), 0.000001);
     }
 
     @Test

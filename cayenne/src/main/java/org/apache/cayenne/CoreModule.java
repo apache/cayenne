@@ -65,7 +65,7 @@ import org.apache.cayenne.access.DataDomainProvider;
 import org.apache.cayenne.access.DataNodeFactory;
 import org.apache.cayenne.dba.DbAdapterDetector;
 import org.apache.cayenne.access.DefaultDataNodeFactory;
-import org.apache.cayenne.configuration.upgrade.ConfigurationUpgrader;
+import org.apache.cayenne.configuration.upgrade.ProjectFileUpgrader;
 import org.apache.cayenne.configuration.xml.ProjectMetaData;
 import org.apache.cayenne.configuration.xml.DefaultHandlerFactory;
 import org.apache.cayenne.configuration.xml.HandlerFactory;
@@ -120,8 +120,7 @@ import java.util.GregorianCalendar;
 /**
  * A DI module containing all Cayenne runtime configuration.
  *
- * @since 3.1 introduced
- * @since 5.0 renamed from ServerModule
+ * @since 5.0
  */
 public class CoreModule implements Module {
 
@@ -393,7 +392,7 @@ public class CoreModule implements Module {
 
         // a service to load DataMap XML descriptors
         binder.bind(DataMapLoader.class).to(XMLDataMapLoader.class);
-        binder.bind(ConfigurationUpgrader.class).to(ConfigurationUpgrader.class);
+        binder.bind(ProjectFileUpgrader.class).to(ProjectFileUpgrader.class);
 
         // a locator of resources, such as XML descriptors
         binder.bind(ResourceLocator.class).to(ClassLoaderResourceLocator.class);

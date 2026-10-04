@@ -23,7 +23,7 @@ import org.apache.cayenne.configuration.ConfigurationNameMapper;
 import org.apache.cayenne.configuration.Project;
 import org.apache.cayenne.configuration.DataMapLoader;
 import org.apache.cayenne.configuration.DefaultConfigurationNameMapper;
-import org.apache.cayenne.configuration.upgrade.ConfigurationUpgrader;
+import org.apache.cayenne.configuration.upgrade.ProjectFileUpgrader;
 import org.apache.cayenne.configuration.xml.ProjectMetaData;
 import org.apache.cayenne.configuration.xml.DefaultHandlerFactory;
 import org.apache.cayenne.configuration.xml.HandlerFactory;
@@ -61,7 +61,7 @@ public class ManyToManyCandidateEntityTest {
             binder.bind(ClassLoaderManager.class).to(DefaultClassLoaderManager.class);
             binder.bind(AdhocObjectFactory.class).to(DefaultAdhocObjectFactory.class);
             binder.bind(DataMapLoader.class).to(XMLDataMapLoader.class);
-            binder.bind(ConfigurationUpgrader.class).to(ConfigurationUpgrader.class);
+            binder.bind(ProjectFileUpgrader.class).to(ProjectFileUpgrader.class);
             binder.bind(ConfigurationNameMapper.class).to(DefaultConfigurationNameMapper.class);
             binder.bind(HandlerFactory.class).to(DefaultHandlerFactory.class);
             binder.bind(ProjectMetaData.class).to(NoopProjectMetaData.class);

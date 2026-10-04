@@ -22,7 +22,7 @@ package org.apache.cayenne.configuration.xml;
 import java.util.Objects;
 
 import org.apache.cayenne.CayenneRuntimeException;
-import org.apache.cayenne.configuration.upgrade.ConfigurationUpgrader;
+import org.apache.cayenne.configuration.upgrade.ProjectFileUpgrader;
 import org.apache.cayenne.configuration.upgrade.UpgradeHandler;
 import org.xml.sax.Attributes;
 import org.xml.sax.SAXException;
@@ -58,7 +58,7 @@ public abstract class VersionAwareHandler extends NamespaceAwareNestedTagHandler
      * otherwise, so that the loader can upgrade the document in memory.
      */
     protected void validateVersion(String namespaceURI, Attributes attributes) {
-        String version = ConfigurationUpgrader.projectVersion(namespaceURI, attributes);
+        String version = ProjectFileUpgrader.projectVersion(namespaceURI, attributes);
         if (!UpgradeHandler.CURRENT_VERSION.equals(version)) {
             throw new UnsupportedVersionException(version != null ? version : UpgradeHandler.UNKNOWN_VERSION);
         }

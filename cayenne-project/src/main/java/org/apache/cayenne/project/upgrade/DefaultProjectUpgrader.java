@@ -22,7 +22,7 @@ package org.apache.cayenne.project.upgrade;
 import org.apache.cayenne.configuration.Project;
 import org.apache.cayenne.configuration.ProjectLoader;
 import org.apache.cayenne.configuration.upgrade.UpgradeContext;
-import org.apache.cayenne.configuration.upgrade.ConfigurationUpgrader;
+import org.apache.cayenne.configuration.upgrade.ProjectFileUpgrader;
 import org.apache.cayenne.configuration.upgrade.UpgradeHandler;
 import org.apache.cayenne.configuration.upgrade.UpgradeType;
 import org.apache.cayenne.di.Inject;
@@ -55,7 +55,7 @@ import java.util.Set;
 
 /**
  * Upgrades project files permanently, rewriting the XML on disk. The actual upgrade is done by the
- * {@link ConfigurationUpgrader} shared with the runtime.
+ * {@link ProjectFileUpgrader} shared with the runtime.
  *
  * @since 4.1
  */
@@ -70,7 +70,7 @@ public class DefaultProjectUpgrader implements ProjectUpgrader {
     private ProjectLoader loader;
 
     @Inject
-    private ConfigurationUpgrader upgrader;
+    private ProjectFileUpgrader upgrader;
 
     @Override
     public PreUpgradeState checkUpgradeNeeded(Resource resource) {

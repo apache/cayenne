@@ -48,7 +48,7 @@ import java.util.regex.Pattern;
  */
 // TODO: unlike ProjectUpgrader, this one can only upgrade individual files, not the entire project file hierarchy.
 //   If the hierarchy changes (e.g. we merge map.xml in the main file), this upgrader will need to be redesigned
-public class ConfigurationUpgrader {
+public class ProjectFileUpgrader {
 
     private static final Pattern VERSIONED_NAMESPACE =
             Pattern.compile("http://cayenne\\.apache\\.org/schema/(\\d+)/\\w+");
@@ -56,7 +56,7 @@ public class ConfigurationUpgrader {
     private final Provider<XMLReader> xmlReaderProvider;
     private final List<UpgradeHandler> handlers;
 
-    public ConfigurationUpgrader(@Inject Provider<XMLReader> xmlReaderProvider) {
+    public ProjectFileUpgrader(@Inject Provider<XMLReader> xmlReaderProvider) {
         this.xmlReaderProvider = xmlReaderProvider;
         this.handlers = UpgradeHandler.all();
     }

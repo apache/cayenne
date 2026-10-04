@@ -24,8 +24,7 @@ import org.apache.cayenne.di.spi.ModuleProvider;
 /**
  * This interface implementations will be used by {@link CayenneRuntimeBuilder} to auto-load runtime modules.
  *
- * @since 4.0 introduced
- * @since 5.0 renamed from CayenneServerModuleProvider to CayenneRuntimeModuleProvider
+ * @since 5.0
  */
 public interface CayenneRuntimeModuleProvider extends ModuleProvider {
 }

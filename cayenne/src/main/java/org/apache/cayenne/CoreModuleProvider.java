@@ -27,8 +27,7 @@ import java.util.Collections;
 /**
  * CoreModule auto-loading facility.
  *
- * @since 4.0 introduced
- * @since 5.0 renamed from MainCayenneServerModuleProvider
+ * @since 5.0
  */
 public class CoreModuleProvider implements CayenneRuntimeModuleProvider {
 

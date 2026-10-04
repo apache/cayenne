@@ -22,7 +22,7 @@ package org.apache.cayenne.configuration.xml;
 import org.apache.cayenne.CayenneRuntimeException;
 import org.apache.cayenne.configuration.DataMapLoader;
 import org.apache.cayenne.configuration.upgrade.UpgradeContext;
-import org.apache.cayenne.configuration.upgrade.ConfigurationUpgrader;
+import org.apache.cayenne.configuration.upgrade.ProjectFileUpgrader;
 import org.apache.cayenne.configuration.upgrade.UpgradeHandler;
 import org.apache.cayenne.configuration.upgrade.UpgradeType;
 import org.apache.cayenne.di.Inject;
@@ -54,7 +54,7 @@ public class XMLDataMapLoader implements DataMapLoader {
     protected Provider<XMLReader> xmlReaderProvider;
 
     @Inject
-    protected ConfigurationUpgrader upgrader;
+    protected ProjectFileUpgrader upgrader;
 
     public synchronized DataMap load(Resource configurationResource) throws CayenneRuntimeException {
 
