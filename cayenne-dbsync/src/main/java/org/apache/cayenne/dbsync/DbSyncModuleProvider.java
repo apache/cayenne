@@ -21,8 +21,6 @@ package org.apache.cayenne.dbsync;
 import org.apache.cayenne.CayenneRuntimeModuleProvider;
 import org.apache.cayenne.di.Module;
 
-import java.util.Collection;
-import java.util.Collections;
 
 /**
  * Auto-loading provider for {@link DbSyncModule}.
@@ -39,10 +37,5 @@ public class DbSyncModuleProvider implements CayenneRuntimeModuleProvider {
     @Override
     public Class<? extends Module> moduleType() {
         return DbSyncModule.class;
-    }
-
-    @Override
-    public Collection<Class<? extends Module>> overrides() {
-        return Collections.emptyList();
     }
 }

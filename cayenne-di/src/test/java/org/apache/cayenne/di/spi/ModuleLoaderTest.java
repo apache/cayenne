@@ -66,6 +66,13 @@ public class ModuleLoaderTest {
         assertThrows(DIRuntimeException.class, () -> new ModuleLoader().load(CircularModuleProvider.class));
     }
 
+    @Test
+    public void loadOverridesModuleWithNoProvider() {
+        List<Module> modules = new ModuleLoader().load(ExplicitOverrideModuleProvider.class);
+        assertEquals(1, modules.size());
+        assertTrue(modules.get(0) instanceof Module9, String.valueOf(modules.get(0)));
+    }
+
     public static class Module1 implements Module {
 
         @Override
@@ -126,6 +133,13 @@ public class ModuleLoaderTest {
         }
     }
 
+    public static class Module9 implements Module {
+        @Override
+        public void configure(Binder binder) {
+            binder.bind(Integer.class).toInstance(99);
+        }
+    }
+
     public static class ModuleProvider1 implements ModuleProvider {
 
         @Override
@@ -173,11 +187,6 @@ public class ModuleLoaderTest {
         public Class<? extends Module> moduleType() {
             return Module3.class;
         }
-
-        @Override
-        public Collection<Class<? extends Module>> overrides() {
-            return Collections.emptyList();
-        }
     }
 
     public static class ModuleProvider4 implements ModuleProvider {
@@ -208,11 +217,6 @@ public class ModuleLoaderTest {
         @Override
         public Class<? extends Module> moduleType() {
             return Module5.class;
-        }
-
-        @Override
-        public Collection<Class<? extends Module>> overrides() {
-            return Collections.emptyList();
         }
     }
 
@@ -267,6 +271,25 @@ public class ModuleLoaderTest {
         @Override
         public Collection<Class<? extends Module>> overrides() {
             return Collections.singletonList(Module7.class);
+        }
+    }
+
+    public static class ModuleProvider9 implements ExplicitOverrideModuleProvider {
+
+        @Override
+        public Module module() {
+            return new Module9();
+        }
+
+        @Override
+        public Class<? extends Module> moduleType() {
+            return Module9.class;
+        }
+
+        @Override
+        public Collection<Class<? extends Module>> overrides() {
+            // Module5 has no provider of this type
+            return Collections.singletonList(Module5.class);
         }
     }
 }

@@ -19,11 +19,8 @@
 
 package org.apache.cayenne.velocity;
 
-import java.util.Collection;
-import java.util.Collections;
 
 import org.apache.cayenne.CayenneRuntimeModuleProvider;
-import org.apache.cayenne.CoreModule;
 import org.apache.cayenne.di.Module;
 
 /**
@@ -39,10 +36,5 @@ public class VelocityModuleProvider implements CayenneRuntimeModuleProvider {
     @Override
     public Class<? extends Module> moduleType() {
         return VelocityModule.class;
-    }
-
-    @Override
-    public Collection<Class<? extends Module>> overrides() {
-        return Collections.singletonList(CoreModule.class);
     }
 }

@@ -19,8 +19,6 @@
 
 package org.apache.cayenne.gen;
 
-import java.util.Collection;
-import java.util.Collections;
 
 import org.apache.cayenne.di.Module;
 import org.apache.cayenne.tools.CayenneToolsModuleProvider;
@@ -37,10 +35,5 @@ public class CgenToolsModuleProvider implements CayenneToolsModuleProvider {
     @Override
     public Class<? extends Module> moduleType() {
         return CgenModule.class;
-    }
-
-    @Override
-    public Collection<Class<? extends Module>> overrides() {
-        return Collections.emptyList();
     }
 }

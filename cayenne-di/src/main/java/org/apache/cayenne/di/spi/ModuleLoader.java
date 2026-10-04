@@ -95,7 +95,12 @@ public class ModuleLoader {
         Collection<Class<? extends Module>> moduleTypes = overrideGraph.topSort();
         List<Module> modules = new ArrayList<>(moduleTypes.size());
         for (Class<? extends Module> type : moduleTypes) {
-            modules.add(providers.get(type).module());
+
+            // an overridden module may have no provider, if it is loaded explicitly and not via the ModuleLoader
+            ModuleProvider provider = providers.get(type);
+            if (provider != null) {
+                modules.add(provider.module());
+            }
         }
 
         return modules;

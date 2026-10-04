@@ -21,8 +21,6 @@ package org.apache.cayenne.project;
 import org.apache.cayenne.CayenneRuntimeModuleProvider;
 import org.apache.cayenne.di.Module;
 
-import java.util.Collection;
-import java.util.Collections;
 
 /**
  * @since 4.0
@@ -37,10 +35,5 @@ public class ProjectModuleProvider implements CayenneRuntimeModuleProvider {
     @Override
     public Class<? extends Module> moduleType() {
         return ProjectModule.class;
-    }
-
-    @Override
-    public Collection<Class<? extends Module>> overrides() {
-        return Collections.emptyList();
     }
 }

@@ -17,24 +17,7 @@
  *  under the License.
  ****************************************************************/
 
-package org.apache.cayenne.cache.invalidation;
+package org.apache.cayenne.di.spi;
 
-
-import org.apache.cayenne.CayenneRuntimeModuleProvider;
-import org.apache.cayenne.di.Module;
-
-/**
- * @since 4.0
- */
-public class CacheInvalidationModuleProvider implements CayenneRuntimeModuleProvider {
-
-    @Override
-    public Module module() {
-        return new CacheInvalidationModule();
-    }
-
-    @Override
-    public Class<? extends Module> moduleType() {
-        return CacheInvalidationModule.class;
-    }
+public interface ExplicitOverrideModuleProvider extends ModuleProvider {
 }

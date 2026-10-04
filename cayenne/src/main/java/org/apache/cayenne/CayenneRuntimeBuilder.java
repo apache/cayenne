@@ -28,7 +28,6 @@ import org.apache.cayenne.di.spi.ModuleLoader;
 import javax.sql.DataSource;
 import java.util.ArrayList;
 import java.util.Collection;
-import java.util.Collections;
 import java.util.HashMap;
 import java.util.LinkedHashSet;
 import java.util.List;
@@ -253,24 +252,21 @@ public class CayenneRuntimeBuilder {
 
         Collection<Module> allModules = new ArrayList<>();
 
-        // first load default or autoloaded modules...
-        allModules.addAll(autoLoadModules ? autoLoadedModules() : defaultModules());
+        // CoreModule always goes first...
+        allModules.add(new CoreModule());
 
-        // custom modules override default and autoloaded modules...
+        // autoloaded modules override CoreModule...
+        if (autoLoadModules) {
+            allModules.addAll(new ModuleLoader().load(CayenneRuntimeModuleProvider.class));
+        }
+
+        // custom modules override CoreModule and autoloaded modules...
         allModules.addAll(this.modules);
 
-        // builder modules override default, autoloaded and custom modules...
+        // builder modules override CoreModule, autoloaded and custom modules...
         allModules.addAll(builderModules());
 
         return new CayenneRuntime(allModules);
-    }
-
-    private Collection<? extends Module> autoLoadedModules() {
-        return new ModuleLoader().load(CayenneRuntimeModuleProvider.class);
-    }
-
-    private Collection<? extends Module> defaultModules() {
-        return Collections.singleton(new CoreModule());
     }
 
     private Collection<? extends Module> builderModules() {

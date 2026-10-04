@@ -21,14 +21,11 @@ package org.apache.cayenne.di.spi;
 import org.apache.cayenne.di.Module;
 
 import java.util.Collection;
+import java.util.List;
 
 /**
- * <p>
- * Provider of modules used by module auto-loading mechanism to identify and load modules.
- * </p>
- * <p>
- * Multiple providers can be created by inheriting from this interface and using it with {@link ModuleLoader}
- *</p>
+ * Provider of modules used by module autoloading mechanism to identify and load modules. Multiple providers can be
+ * created by inheriting from this interface and using it with {@link ModuleLoader}
  *
  * @since 4.0
  */
@@ -39,10 +36,12 @@ public interface ModuleProvider {
     Class<? extends Module> moduleType();
 
     /**
-     * Returns an array of module types this module overrides. Module auto-loading mechanism will ensure module
-     * load order that respects overriding preferences.
+     * Returns a collection of module types this module overrides. Module autoloading mechanism will ensure module
+     * load order that respects overriding preferences. The default implementation returns an empty collection.
      *
      * @return a collection of module types this module overrides.
      */
-    Collection<Class<? extends Module>> overrides();
+    default Collection<Class<? extends Module>> overrides() {
+        return List.of();
+    }
 }
