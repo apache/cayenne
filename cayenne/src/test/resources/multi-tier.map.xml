@@ -1,96 +1,95 @@
 <?xml version="1.0" encoding="utf-8"?>
-<data-map xmlns="http://cayenne.apache.org/schema/14/modelMap"
+<dataMap xmlns="http://cayenne.apache.org/schema/14/modelMap"
 	 xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-	 xsi:schemaLocation="http://cayenne.apache.org/schema/14/modelMap https://cayenne.apache.org/schema/14/modelMap.xsd"
-	 project-version="14">
+	 xsi:schemaLocation="http://cayenne.apache.org/schema/14/modelMap https://cayenne.apache.org/schema/14/modelMap.xsd">
 	<property name="defaultPackage" value="org.apache.cayenne.testdo.mt"/>
-	<db-entity name="MT_JOIN45">
-		<db-attribute name="TABLE4_ID" type="INTEGER" isPrimaryKey="true" isMandatory="true"/>
-		<db-attribute name="TABLE5_ID" type="INTEGER" isPrimaryKey="true" isMandatory="true"/>
-	</db-entity>
-	<db-entity name="MT_TABLE1">
-		<db-attribute name="GLOBAL_ATTRIBUTE1" type="VARCHAR" length="100"/>
-		<db-attribute name="SERVER_ATTRIBUTE1" type="VARCHAR" length="100"/>
-		<db-attribute name="SUBCLASS_ATTRIBUTE1" type="VARCHAR" length="100"/>
-		<db-attribute name="TABLE1_ID" type="INTEGER" isPrimaryKey="true" isMandatory="true"/>
-	</db-entity>
-	<db-entity name="MT_TABLE2">
-		<db-attribute name="GLOBAL_ATTRIBUTE" type="VARCHAR" length="100"/>
-		<db-attribute name="TABLE1_ID" type="INTEGER"/>
-		<db-attribute name="TABLE2_ID" type="INTEGER" isPrimaryKey="true" isMandatory="true"/>
-		<db-attribute name="TABLE3_ID" type="INTEGER"/>
-	</db-entity>
-	<db-entity name="MT_TABLE3">
-		<db-attribute name="BINARY_COLUMN" type="VARBINARY" length="100"/>
-		<db-attribute name="CHAR_COLUMN" type="VARCHAR" length="100"/>
-		<db-attribute name="INT_COLUMN" type="INTEGER"/>
-		<db-attribute name="TABLE3_ID" type="INTEGER" isPrimaryKey="true" isMandatory="true"/>
-	</db-entity>
-	<db-entity name="MT_TABLE4">
-		<db-attribute name="ID" type="INTEGER" isPrimaryKey="true" isMandatory="true"/>
-	</db-entity>
-	<db-entity name="MT_TABLE5">
-		<db-attribute name="ID" type="INTEGER" isPrimaryKey="true" isMandatory="true"/>
-	</db-entity>
-	<obj-entity name="MtTable1" className="org.apache.cayenne.testdo.mt.MtTable1" dbEntityName="MT_TABLE1">
-		<obj-attribute name="globalAttribute1" type="java.lang.String" db-attribute-path="GLOBAL_ATTRIBUTE1"/>
-		<obj-attribute name="serverAttribute1" type="java.lang.String" db-attribute-path="SERVER_ATTRIBUTE1"/>
-	</obj-entity>
-	<obj-entity name="MtTable1Subclass1" superEntityName="MtTable1" className="org.apache.cayenne.testdo.mt.MtTable1Subclass1">
+	<dbEntity name="MT_JOIN45">
+		<dbAttribute name="TABLE4_ID" type="INTEGER" primaryKey="true" mandatory="true"/>
+		<dbAttribute name="TABLE5_ID" type="INTEGER" primaryKey="true" mandatory="true"/>
+	</dbEntity>
+	<dbEntity name="MT_TABLE1">
+		<dbAttribute name="GLOBAL_ATTRIBUTE1" type="VARCHAR" length="100"/>
+		<dbAttribute name="SERVER_ATTRIBUTE1" type="VARCHAR" length="100"/>
+		<dbAttribute name="SUBCLASS_ATTRIBUTE1" type="VARCHAR" length="100"/>
+		<dbAttribute name="TABLE1_ID" type="INTEGER" primaryKey="true" mandatory="true"/>
+	</dbEntity>
+	<dbEntity name="MT_TABLE2">
+		<dbAttribute name="GLOBAL_ATTRIBUTE" type="VARCHAR" length="100"/>
+		<dbAttribute name="TABLE1_ID" type="INTEGER"/>
+		<dbAttribute name="TABLE2_ID" type="INTEGER" primaryKey="true" mandatory="true"/>
+		<dbAttribute name="TABLE3_ID" type="INTEGER"/>
+	</dbEntity>
+	<dbEntity name="MT_TABLE3">
+		<dbAttribute name="BINARY_COLUMN" type="VARBINARY" length="100"/>
+		<dbAttribute name="CHAR_COLUMN" type="VARCHAR" length="100"/>
+		<dbAttribute name="INT_COLUMN" type="INTEGER"/>
+		<dbAttribute name="TABLE3_ID" type="INTEGER" primaryKey="true" mandatory="true"/>
+	</dbEntity>
+	<dbEntity name="MT_TABLE4">
+		<dbAttribute name="ID" type="INTEGER" primaryKey="true" mandatory="true"/>
+	</dbEntity>
+	<dbEntity name="MT_TABLE5">
+		<dbAttribute name="ID" type="INTEGER" primaryKey="true" mandatory="true"/>
+	</dbEntity>
+	<objEntity name="MtTable1" className="org.apache.cayenne.testdo.mt.MtTable1" dbEntityName="MT_TABLE1">
+		<objAttribute name="globalAttribute1" type="java.lang.String" dbAttributePath="GLOBAL_ATTRIBUTE1"/>
+		<objAttribute name="serverAttribute1" type="java.lang.String" dbAttributePath="SERVER_ATTRIBUTE1"/>
+	</objEntity>
+	<objEntity name="MtTable1Subclass1" superEntityName="MtTable1" className="org.apache.cayenne.testdo.mt.MtTable1Subclass1">
 		<qualifier><![CDATA[globalAttribute1 = "sub1"]]></qualifier>
-		<obj-attribute name="subclass1Attribute1" type="java.lang.String" db-attribute-path="SUBCLASS_ATTRIBUTE1"/>
-	</obj-entity>
-	<obj-entity name="MtTable1Subclass2" superEntityName="MtTable1" className="org.apache.cayenne.testdo.mt.MtTable1Subclass2">
+		<objAttribute name="subclass1Attribute1" type="java.lang.String" dbAttributePath="SUBCLASS_ATTRIBUTE1"/>
+	</objEntity>
+	<objEntity name="MtTable1Subclass2" superEntityName="MtTable1" className="org.apache.cayenne.testdo.mt.MtTable1Subclass2">
 		<qualifier><![CDATA[globalAttribute1 = "sub2"]]></qualifier>
-		<obj-attribute name="subclass2Attribute1" type="java.lang.String" db-attribute-path="SUBCLASS_ATTRIBUTE1"/>
-	</obj-entity>
-	<obj-entity name="MtTable2" className="org.apache.cayenne.testdo.mt.MtTable2" dbEntityName="MT_TABLE2">
-		<obj-attribute name="globalAttribute" type="java.lang.String" db-attribute-path="GLOBAL_ATTRIBUTE"/>
-	</obj-entity>
-	<obj-entity name="MtTable3" className="org.apache.cayenne.testdo.mt.MtTable3" dbEntityName="MT_TABLE3">
-		<obj-attribute name="binaryColumn" type="byte[]" db-attribute-path="BINARY_COLUMN"/>
-		<obj-attribute name="charColumn" type="java.lang.String" db-attribute-path="CHAR_COLUMN"/>
-		<obj-attribute name="intColumn" type="java.lang.Integer" db-attribute-path="INT_COLUMN"/>
-	</obj-entity>
-	<obj-entity name="MtTable4" className="org.apache.cayenne.testdo.mt.MtTable4" dbEntityName="MT_TABLE4"/>
-	<obj-entity name="MtTable5" className="org.apache.cayenne.testdo.mt.MtTable5" dbEntityName="MT_TABLE5"/>
-	<db-relationship name="toTable4" source="MT_JOIN45" target="MT_TABLE4">
-		<db-attribute-pair source="TABLE4_ID" target="ID"/>
-	</db-relationship>
-	<db-relationship name="toTable5" source="MT_JOIN45" target="MT_TABLE5">
-		<db-attribute-pair source="TABLE5_ID" target="ID"/>
-	</db-relationship>
-	<db-relationship name="table2Array" source="MT_TABLE1" target="MT_TABLE2" toMany="true">
-		<db-attribute-pair source="TABLE1_ID" target="TABLE1_ID"/>
-	</db-relationship>
-	<db-relationship name="table1" source="MT_TABLE2" target="MT_TABLE1">
-		<db-attribute-pair source="TABLE1_ID" target="TABLE1_ID"/>
-	</db-relationship>
-	<db-relationship name="table3" source="MT_TABLE2" target="MT_TABLE3">
-		<db-attribute-pair source="TABLE3_ID" target="TABLE3_ID"/>
-	</db-relationship>
-	<db-relationship name="table2Array" source="MT_TABLE3" target="MT_TABLE2" toMany="true">
-		<db-attribute-pair source="TABLE3_ID" target="TABLE3_ID"/>
-	</db-relationship>
-	<db-relationship name="joins" source="MT_TABLE4" target="MT_JOIN45" toDependentPK="true" toMany="true">
-		<db-attribute-pair source="ID" target="TABLE4_ID"/>
-	</db-relationship>
-	<db-relationship name="joins" source="MT_TABLE5" target="MT_JOIN45" toMany="true">
-		<db-attribute-pair source="ID" target="TABLE5_ID"/>
-	</db-relationship>
-	<obj-relationship name="table2Array" source="MtTable1" target="MtTable2" db-relationship-path="table2Array"/>
-	<obj-relationship name="table1" source="MtTable2" target="MtTable1" db-relationship-path="table1"/>
-	<obj-relationship name="table3" source="MtTable2" target="MtTable3" deleteRule="Nullify" db-relationship-path="table3"/>
-	<obj-relationship name="table2Array" source="MtTable3" target="MtTable2" deleteRule="Deny" db-relationship-path="table2Array"/>
-	<obj-relationship name="table5s" source="MtTable4" target="MtTable5" db-relationship-path="joins.toTable5"/>
-	<obj-relationship name="table4s" source="MtTable5" target="MtTable4" db-relationship-path="joins.toTable4"/>
-	<object-query name="AllMtTable1">
+		<objAttribute name="subclass2Attribute1" type="java.lang.String" dbAttributePath="SUBCLASS_ATTRIBUTE1"/>
+	</objEntity>
+	<objEntity name="MtTable2" className="org.apache.cayenne.testdo.mt.MtTable2" dbEntityName="MT_TABLE2">
+		<objAttribute name="globalAttribute" type="java.lang.String" dbAttributePath="GLOBAL_ATTRIBUTE"/>
+	</objEntity>
+	<objEntity name="MtTable3" className="org.apache.cayenne.testdo.mt.MtTable3" dbEntityName="MT_TABLE3">
+		<objAttribute name="binaryColumn" type="byte[]" dbAttributePath="BINARY_COLUMN"/>
+		<objAttribute name="charColumn" type="java.lang.String" dbAttributePath="CHAR_COLUMN"/>
+		<objAttribute name="intColumn" type="java.lang.Integer" dbAttributePath="INT_COLUMN"/>
+	</objEntity>
+	<objEntity name="MtTable4" className="org.apache.cayenne.testdo.mt.MtTable4" dbEntityName="MT_TABLE4"/>
+	<objEntity name="MtTable5" className="org.apache.cayenne.testdo.mt.MtTable5" dbEntityName="MT_TABLE5"/>
+	<dbRelationship name="toTable4" source="MT_JOIN45" target="MT_TABLE4">
+		<dbAttributePair source="TABLE4_ID" target="ID"/>
+	</dbRelationship>
+	<dbRelationship name="toTable5" source="MT_JOIN45" target="MT_TABLE5">
+		<dbAttributePair source="TABLE5_ID" target="ID"/>
+	</dbRelationship>
+	<dbRelationship name="table2Array" source="MT_TABLE1" target="MT_TABLE2" toMany="true">
+		<dbAttributePair source="TABLE1_ID" target="TABLE1_ID"/>
+	</dbRelationship>
+	<dbRelationship name="table1" source="MT_TABLE2" target="MT_TABLE1">
+		<dbAttributePair source="TABLE1_ID" target="TABLE1_ID"/>
+	</dbRelationship>
+	<dbRelationship name="table3" source="MT_TABLE2" target="MT_TABLE3">
+		<dbAttributePair source="TABLE3_ID" target="TABLE3_ID"/>
+	</dbRelationship>
+	<dbRelationship name="table2Array" source="MT_TABLE3" target="MT_TABLE2" toMany="true">
+		<dbAttributePair source="TABLE3_ID" target="TABLE3_ID"/>
+	</dbRelationship>
+	<dbRelationship name="joins" source="MT_TABLE4" target="MT_JOIN45" toDependentPK="true" toMany="true">
+		<dbAttributePair source="ID" target="TABLE4_ID"/>
+	</dbRelationship>
+	<dbRelationship name="joins" source="MT_TABLE5" target="MT_JOIN45" toMany="true">
+		<dbAttributePair source="ID" target="TABLE5_ID"/>
+	</dbRelationship>
+	<objRelationship name="table2Array" source="MtTable1" target="MtTable2" dbRelationshipPath="table2Array"/>
+	<objRelationship name="table1" source="MtTable2" target="MtTable1" dbRelationshipPath="table1"/>
+	<objRelationship name="table3" source="MtTable2" target="MtTable3" deleteRule="nullify" dbRelationshipPath="table3"/>
+	<objRelationship name="table2Array" source="MtTable3" target="MtTable2" deleteRule="deny" dbRelationshipPath="table2Array"/>
+	<objRelationship name="table5s" source="MtTable4" target="MtTable5" dbRelationshipPath="joins.toTable5"/>
+	<objRelationship name="table4s" source="MtTable5" target="MtTable4" dbRelationshipPath="joins.toTable4"/>
+	<objectQuery name="AllMtTable1">
 		<ql><![CDATA[from MtTable1]]></ql>
-	</object-query>
-	<object-query name="MtQueryWithLocalCache" cache-strategy="LOCAL_CACHE">
+	</objectQuery>
+	<objectQuery name="MtQueryWithLocalCache" cacheStrategy="LOCAL_CACHE">
 		<ql><![CDATA[from MtTable1]]></ql>
-	</object-query>
-	<object-query name="ParameterizedMtQueryWithLocalCache" cache-strategy="LOCAL_CACHE">
+	</objectQuery>
+	<objectQuery name="ParameterizedMtQueryWithLocalCache" cacheStrategy="LOCAL_CACHE">
 		<ql><![CDATA[from MtTable1 where globalAttribute1 = $g]]></ql>
-	</object-query>
-</data-map>
+	</objectQuery>
+</dataMap>

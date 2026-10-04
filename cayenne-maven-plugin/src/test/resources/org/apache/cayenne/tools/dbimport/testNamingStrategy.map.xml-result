@@ -17,15 +17,14 @@
 	specific language governing permissions and limitations
 	under the License.
 -->
-<data-map xmlns="http://cayenne.apache.org/schema/14/modelMap"
+<dataMap xmlns="http://cayenne.apache.org/schema/14/modelMap"
 	 xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-	 xsi:schemaLocation="http://cayenne.apache.org/schema/14/modelMap https://cayenne.apache.org/schema/14/modelMap.xsd"
-	 project-version="14">
-	<db-entity name="TEST_TABLE" schema="APP">
-		<db-attribute name="COL1" type="INTEGER" isPrimaryKey="true" isMandatory="true" length="10"/>
-		<db-attribute name="COL2" type="CHAR" length="25"/>
-	</db-entity>
-	<obj-entity name="CustomTestTable" className="CustomTestTable" dbEntityName="TEST_TABLE">
-	    <obj-attribute name="custom_col2" type="java.lang.String" db-attribute-path="COL2"/>
-	</obj-entity>
-</data-map>
+	 xsi:schemaLocation="http://cayenne.apache.org/schema/14/modelMap https://cayenne.apache.org/schema/14/modelMap.xsd">
+	<dbEntity name="TEST_TABLE" schema="APP">
+		<dbAttribute name="COL1" type="INTEGER" primaryKey="true" mandatory="true" length="10"/>
+		<dbAttribute name="COL2" type="CHAR" length="25"/>
+	</dbEntity>
+	<objEntity name="CustomTestTable" className="CustomTestTable" dbEntityName="TEST_TABLE">
+	    <objAttribute name="custom_col2" type="java.lang.String" dbAttributePath="COL2"/>
+	</objEntity>
+</dataMap>

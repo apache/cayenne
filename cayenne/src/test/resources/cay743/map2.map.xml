@@ -1,10 +1,9 @@
 <?xml version="1.0" encoding="utf-8"?>
-<data-map xmlns="http://cayenne.apache.org/schema/14/modelMap"
+<dataMap xmlns="http://cayenne.apache.org/schema/14/modelMap"
 	 xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-	 xsi:schemaLocation="http://cayenne.apache.org/schema/14/modelMap http://cayenne.apache.org/schema/14/modelMap.xsd"
-	 project-version="14">
-	<obj-entity name="Entity21" superEntityName="Entity11">
-	</obj-entity>
-	<obj-entity name="Entity22">
-	</obj-entity>
-</data-map>
+	 xsi:schemaLocation="http://cayenne.apache.org/schema/14/modelMap http://cayenne.apache.org/schema/14/modelMap.xsd">
+	<objEntity name="Entity21" superEntityName="Entity11">
+	</objEntity>
+	<objEntity name="Entity22">
+	</objEntity>
+</dataMap>

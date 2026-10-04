@@ -32,7 +32,7 @@ import org.xml.sax.SAXException;
 public class ProcedureHandler extends NamespaceAwareNestedTagHandler {
 
     private static final String PROCEDURE_TAG = "procedure";
-    private static final String PROCEDURE_PARAMETER_TAG = "procedure-parameter";
+    private static final String PROCEDURE_PARAMETER_TAG = "procedureParameter";
 
     private DataMap map;
 

@@ -38,8 +38,8 @@ Concretely, the generator produces:
 
 | DB element | Rule | Result |
 |---|---|---|
-| `db-entity` name | stem, split on `_`, capitalize each token | `ARTIST_GROUP` → `ArtistGroup` |
-| `db-attribute` name | split on `_`, camelCase | `FIRST_NAME` → `firstName` |
+| `dbEntity` name | stem, split on `_`, capitalize each token | `ARTIST_GROUP` → `ArtistGroup` |
+| `dbAttribute` name | split on `_`, camelCase | `FIRST_NAME` → `firstName` |
 | to-one relationship | FK column, minus its trailing `_ID`/`ID` when present; target entity name for a compound (multi-column) FK or when there are no joins | `MANAGER_ID` → `manager`; `BIRTH_COUNTRY` → `birthCountry` |
 | to-many relationship | English plural of the target entity name (minus the leading `_`-tokens shared with the source table name), prefixed with the FK role qualifier when the FK column embeds the source entity name | `PAINTING` → `paintings`; `HOME_TEAM_ID` → `homeGames`; `AA_TEAM` referencing `AA_GAME` → `games` |
 | name collision within an entity | append a numeric suffix | `team`, `team1`, `team2` … |
@@ -187,11 +187,11 @@ names directly, deriving the fix from the DbRelationship's own DB metadata (its 
 its target DbEntity pluralized for to-many).
 
 **Sync the ObjRelationship when one exists.** An ObjRelationship built on a DbRelationship is linked
-by its `db-relationship-path` naming that DbRelationship. Keep the two names matched **per direction**:
+by its `dbRelationshipPath` naming that DbRelationship. Keep the two names matched **per direction**:
 rename both together (`homeTeam` ↔ `homeTeam`, `homeGames` ↔ `homeGames`); if one is already good,
 both are. A DbRelationship with **no** ObjRelationship — an ungenerated reverse direction, a FK where
 `Create ObjRelationships` was unchecked, or a hop inside a flattened many-to-many
-(`db-relationship-path="artistGroupArray.toArtist"`) — is cleaned exactly the same way; there's just
+(`dbRelationshipPath="artistGroupArray.toArtist"`) — is cleaned exactly the same way; there's just
 no ObjRelationship to sync.
 
 Its name stays unique within its source DbEntity. See `model-naming-rename-safety.md` for what to

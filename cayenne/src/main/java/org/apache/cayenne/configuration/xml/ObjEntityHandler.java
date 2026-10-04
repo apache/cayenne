@@ -40,21 +40,21 @@ public class ObjEntityHandler extends NamespaceAwareNestedTagHandler {
 
     private static final Logger LOGGER = LoggerFactory.getLogger(ObjEntityHandler.class);
 
-    private static final String OBJ_ENTITY_TAG = "obj-entity";
-    private static final String OBJ_ATTRIBUTE_TAG = "obj-attribute";
-    private static final String OBJ_ATTRIBUTE_OVERRIDE_TAG = "attribute-override";
-    private static final String EMBEDDED_ATTRIBUTE_TAG = "embedded-attribute";
+    private static final String OBJ_ENTITY_TAG = "objEntity";
+    private static final String OBJ_ATTRIBUTE_TAG = "objAttribute";
+    private static final String OBJ_ATTRIBUTE_OVERRIDE_TAG = "attributeOverride";
+    private static final String EMBEDDED_ATTRIBUTE_TAG = "embeddedAttribute";
     private static final String QUALIFIER_TAG = "qualifier";
 
     // lifecycle listeners and callbacks related
-    private static final String POST_ADD_TAG = "post-add";
-    private static final String PRE_PERSIST_TAG = "pre-persist";
-    private static final String POST_PERSIST_TAG = "post-persist";
-    private static final String PRE_UPDATE_TAG = "pre-update";
-    private static final String POST_UPDATE_TAG = "post-update";
-    private static final String PRE_REMOVE_TAG = "pre-remove";
-    private static final String POST_REMOVE_TAG = "post-remove";
-    private static final String POST_LOAD_TAG = "post-load";
+    private static final String POST_ADD_TAG = "postAdd";
+    private static final String PRE_PERSIST_TAG = "prePersist";
+    private static final String POST_PERSIST_TAG = "postPersist";
+    private static final String PRE_UPDATE_TAG = "preUpdate";
+    private static final String POST_UPDATE_TAG = "postUpdate";
+    private static final String PRE_REMOVE_TAG = "preRemove";
+    private static final String POST_REMOVE_TAG = "postRemove";
+    private static final String POST_LOAD_TAG = "postLoad";
 
     private DataMap map;
 
@@ -127,7 +127,7 @@ public class ObjEntityHandler extends NamespaceAwareNestedTagHandler {
         entity.setClassName(attributes.getValue("className"));
         entity.setAbstract(DataMapHandler.TRUE.equalsIgnoreCase(attributes.getValue("abstract")));
         entity.setReadOnly(DataMapHandler.TRUE.equalsIgnoreCase(attributes.getValue("readOnly")));
-        if ("optimistic".equals(attributes.getValue("", "lock-type"))) {
+        if ("optimistic".equals(attributes.getValue("", "lockType"))) {
             entity.setDeclaredLockType(ObjEntity.LOCK_TYPE_OPTIMISTIC);
         }
 
@@ -143,9 +143,9 @@ public class ObjEntityHandler extends NamespaceAwareNestedTagHandler {
     }
 
     private void createObjAttribute(Attributes attributes) {
-        String dbPath = attributes.getValue("db-attribute-path");
+        String dbPath = attributes.getValue("dbAttributePath");
         if (dbPath == null) {
-            dbPath = attributes.getValue("db-attribute-name");
+            dbPath = attributes.getValue("dbAttributeName");
         }
 
         lastAttribute = new ObjAttribute(attributes.getValue("name"));
@@ -158,7 +158,7 @@ public class ObjEntityHandler extends NamespaceAwareNestedTagHandler {
 
     private void processStartAttributeOverride(Attributes attributes) {
         entity.addAttributeOverride(attributes.getValue("name"),
-                attributes.getValue("db-attribute-path"));
+                attributes.getValue("dbAttributePath"));
     }
 
     private CallbackDescriptor getCallbackDescriptor(String type) {
@@ -189,7 +189,7 @@ public class ObjEntityHandler extends NamespaceAwareNestedTagHandler {
     }
 
     private void createCallback(String type, Attributes attributes) {
-        String methodName = attributes.getValue("method-name");
+        String methodName = attributes.getValue("methodName");
         CallbackDescriptor descriptor = getCallbackDescriptor(type);
         if(descriptor != null) {
             descriptor.addCallbackMethod(methodName);

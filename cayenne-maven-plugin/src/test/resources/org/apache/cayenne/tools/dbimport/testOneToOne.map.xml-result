@@ -17,40 +17,39 @@
 	specific language governing permissions and limitations
 	under the License.
 -->
-<data-map xmlns="http://cayenne.apache.org/schema/14/modelMap"
+<dataMap xmlns="http://cayenne.apache.org/schema/14/modelMap"
 	 xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-	 xsi:schemaLocation="http://cayenne.apache.org/schema/14/modelMap https://cayenne.apache.org/schema/14/modelMap.xsd"
-	 project-version="14">
-	<db-entity name="PICK_SCHEDULE" schema="APP">
-		<db-attribute name="ID" type="INTEGER" isPrimaryKey="true" isMandatory="true" length="10"/>
-		<db-attribute name="OWNER_ID" type="INTEGER" length="10"/>
-		<db-attribute name="SELECTED_PLAYER_ID" type="INTEGER" length="10"/>
-	</db-entity>
-	<db-entity name="PLAYER" schema="APP">
-		<db-attribute name="ID" type="INTEGER" isPrimaryKey="true" isMandatory="true" length="10"/>
-	</db-entity>
-	<db-entity name="PLAYER_INFO" schema="APP">
-		<db-attribute name="PLAYER_ID" type="INTEGER" isPrimaryKey="true" isMandatory="true" length="10"/>
-	</db-entity>
-	<obj-entity name="PickSchedule" className="PickSchedule" dbEntityName="PICK_SCHEDULE">
-		<obj-attribute name="ownerId" type="java.lang.Integer" db-attribute-path="OWNER_ID"/>
-	</obj-entity>
-	<obj-entity name="Player" className="Player" dbEntityName="PLAYER"/>
-	<obj-entity name="PlayerInfo" className="PlayerInfo" dbEntityName="PLAYER_INFO"/>
-	<db-relationship name="selectedPlayer" source="PICK_SCHEDULE" target="PLAYER">
-		<db-attribute-pair source="SELECTED_PLAYER_ID" target="ID"/>
-	</db-relationship>
-	<db-relationship name="id" source="PLAYER" target="PLAYER_INFO" toDependentPK="true">
-		<db-attribute-pair source="ID" target="PLAYER_ID"/>
-	</db-relationship>
-	<db-relationship name="selectedPickSchedules" source="PLAYER" target="PICK_SCHEDULE" toMany="true">
-		<db-attribute-pair source="ID" target="SELECTED_PLAYER_ID"/>
-	</db-relationship>
-	<db-relationship name="player" source="PLAYER_INFO" target="PLAYER">
-		<db-attribute-pair source="PLAYER_ID" target="ID"/>
-	</db-relationship>
-	<obj-relationship name="selectedPlayer" source="PickSchedule" target="Player" deleteRule="Nullify" db-relationship-path="selectedPlayer"/>
-	<obj-relationship name="id" source="Player" target="PlayerInfo" deleteRule="Nullify" db-relationship-path="id"/>
-	<obj-relationship name="selectedPickSchedules" source="Player" target="PickSchedule" deleteRule="Deny" db-relationship-path="selectedPickSchedules"/>
-	<obj-relationship name="player" source="PlayerInfo" target="Player" deleteRule="Nullify" db-relationship-path="player"/>
-</data-map>
+	 xsi:schemaLocation="http://cayenne.apache.org/schema/14/modelMap https://cayenne.apache.org/schema/14/modelMap.xsd">
+	<dbEntity name="PICK_SCHEDULE" schema="APP">
+		<dbAttribute name="ID" type="INTEGER" primaryKey="true" mandatory="true" length="10"/>
+		<dbAttribute name="OWNER_ID" type="INTEGER" length="10"/>
+		<dbAttribute name="SELECTED_PLAYER_ID" type="INTEGER" length="10"/>
+	</dbEntity>
+	<dbEntity name="PLAYER" schema="APP">
+		<dbAttribute name="ID" type="INTEGER" primaryKey="true" mandatory="true" length="10"/>
+	</dbEntity>
+	<dbEntity name="PLAYER_INFO" schema="APP">
+		<dbAttribute name="PLAYER_ID" type="INTEGER" primaryKey="true" mandatory="true" length="10"/>
+	</dbEntity>
+	<objEntity name="PickSchedule" className="PickSchedule" dbEntityName="PICK_SCHEDULE">
+		<objAttribute name="ownerId" type="java.lang.Integer" dbAttributePath="OWNER_ID"/>
+	</objEntity>
+	<objEntity name="Player" className="Player" dbEntityName="PLAYER"/>
+	<objEntity name="PlayerInfo" className="PlayerInfo" dbEntityName="PLAYER_INFO"/>
+	<dbRelationship name="selectedPlayer" source="PICK_SCHEDULE" target="PLAYER">
+		<dbAttributePair source="SELECTED_PLAYER_ID" target="ID"/>
+	</dbRelationship>
+	<dbRelationship name="id" source="PLAYER" target="PLAYER_INFO" toDependentPK="true">
+		<dbAttributePair source="ID" target="PLAYER_ID"/>
+	</dbRelationship>
+	<dbRelationship name="selectedPickSchedules" source="PLAYER" target="PICK_SCHEDULE" toMany="true">
+		<dbAttributePair source="ID" target="SELECTED_PLAYER_ID"/>
+	</dbRelationship>
+	<dbRelationship name="player" source="PLAYER_INFO" target="PLAYER">
+		<dbAttributePair source="PLAYER_ID" target="ID"/>
+	</dbRelationship>
+	<objRelationship name="selectedPlayer" source="PickSchedule" target="Player" deleteRule="nullify" dbRelationshipPath="selectedPlayer"/>
+	<objRelationship name="id" source="Player" target="PlayerInfo" deleteRule="nullify" dbRelationshipPath="id"/>
+	<objRelationship name="selectedPickSchedules" source="Player" target="PickSchedule" deleteRule="deny" dbRelationshipPath="selectedPickSchedules"/>
+	<objRelationship name="player" source="PlayerInfo" target="Player" deleteRule="nullify" dbRelationshipPath="player"/>
+</dataMap>

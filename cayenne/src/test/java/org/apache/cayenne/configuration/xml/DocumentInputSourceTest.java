@@ -34,13 +34,13 @@ public class DocumentInputSourceTest {
     public void of() throws Exception {
         URL url = getClass().getResource("cayenne-testConfig1.xml");
         Document document = DocumentBuilderFactory.newInstance().newDocumentBuilder().parse(url.toString());
-        document.getDocumentElement().setAttribute("project-version", "14");
+        document.getDocumentElement().setAttribute("marker", "changed");
 
         InputSource source = DocumentInputSource.of(document, "test-id");
         assertEquals("test-id", source.getSystemId());
 
         Document reparsed = DocumentBuilderFactory.newInstance().newDocumentBuilder().parse(source.getByteStream());
-        assertEquals("14", reparsed.getDocumentElement().getAttribute("project-version"),
+        assertEquals("changed", reparsed.getDocumentElement().getAttribute("marker"),
                 "the serialized document must reflect the in-memory changes");
     }
 }

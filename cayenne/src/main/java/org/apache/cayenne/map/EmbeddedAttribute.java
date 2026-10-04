@@ -71,14 +71,14 @@ public class EmbeddedAttribute extends ObjAttribute {
 
     @Override
     public void encodeAsXML(XMLEncoder encoder, ConfigurationNodeVisitor delegate) {
-        encoder.start("embedded-attribute")
+        encoder.start("embeddedAttribute")
                 .attribute("name", getName())
                 .attribute("type", getType());
 
         for (Map.Entry<String, String> e : attributeOverrides.entrySet()) {
-            encoder.start("embeddable-attribute-override")
+            encoder.start("embeddableAttributeOverride")
                     .attribute("name", e.getKey())
-                    .attribute("db-attribute-path", e.getValue())
+                    .attribute("dbAttributePath", e.getValue())
                     .end();
         }
 

@@ -1,64 +1,63 @@
 <?xml version="1.0" encoding="utf-8"?>
-<data-map xmlns="http://cayenne.apache.org/schema/14/modelMap"
+<dataMap xmlns="http://cayenne.apache.org/schema/14/modelMap"
 	 xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-	 xsi:schemaLocation="http://cayenne.apache.org/schema/14/modelMap https://cayenne.apache.org/schema/14/modelMap.xsd"
-	 project-version="14">
+	 xsi:schemaLocation="http://cayenne.apache.org/schema/14/modelMap https://cayenne.apache.org/schema/14/modelMap.xsd">
 	<property name="defaultPackage" value="org.apache.cayenne.testdo.qualified"/>
 	<property name="quoteSqlIdentifiers" value="true"/>
-	<db-entity name="TEST_QUALIFIED1">
-		<db-attribute name="DELETED" type="BOOLEAN"/>
-		<db-attribute name="ID" type="INTEGER" isPrimaryKey="true" isMandatory="true"/>
-		<db-attribute name="NAME" type="VARCHAR" length="200"/>
-	</db-entity>
-	<db-entity name="TEST_QUALIFIED2">
-		<db-attribute name="DELETED" type="BOOLEAN"/>
-		<db-attribute name="ID" type="INTEGER" isPrimaryKey="true" isMandatory="true"/>
-		<db-attribute name="NAME" type="VARCHAR" length="200"/>
-		<db-attribute name="QUALIFIED1_ID" type="INTEGER"/>
-	</db-entity>
-	<db-entity name="TEST_QUALIFIED3">
-		<db-attribute name="DELETED" type="BOOLEAN"/>
-		<db-attribute name="ID" type="INTEGER" isPrimaryKey="true" isMandatory="true"/>
-		<db-attribute name="NAME" type="VARCHAR" length="200"/>
+	<dbEntity name="TEST_QUALIFIED1">
+		<dbAttribute name="DELETED" type="BOOLEAN"/>
+		<dbAttribute name="ID" type="INTEGER" primaryKey="true" mandatory="true"/>
+		<dbAttribute name="NAME" type="VARCHAR" length="200"/>
+	</dbEntity>
+	<dbEntity name="TEST_QUALIFIED2">
+		<dbAttribute name="DELETED" type="BOOLEAN"/>
+		<dbAttribute name="ID" type="INTEGER" primaryKey="true" mandatory="true"/>
+		<dbAttribute name="NAME" type="VARCHAR" length="200"/>
+		<dbAttribute name="QUALIFIED1_ID" type="INTEGER"/>
+	</dbEntity>
+	<dbEntity name="TEST_QUALIFIED3">
+		<dbAttribute name="DELETED" type="BOOLEAN"/>
+		<dbAttribute name="ID" type="INTEGER" primaryKey="true" mandatory="true"/>
+		<dbAttribute name="NAME" type="VARCHAR" length="200"/>
 		<qualifier><![CDATA[DELETED = null]]></qualifier>
-	</db-entity>
-	<db-entity name="TEST_QUALIFIED4">
-		<db-attribute name="DELETED" type="BOOLEAN"/>
-		<db-attribute name="ID" type="INTEGER" isPrimaryKey="true" isMandatory="true"/>
-		<db-attribute name="NAME" type="VARCHAR" length="200"/>
-		<db-attribute name="QUALIFIED3_ID" type="INTEGER"/>
+	</dbEntity>
+	<dbEntity name="TEST_QUALIFIED4">
+		<dbAttribute name="DELETED" type="BOOLEAN"/>
+		<dbAttribute name="ID" type="INTEGER" primaryKey="true" mandatory="true"/>
+		<dbAttribute name="NAME" type="VARCHAR" length="200"/>
+		<dbAttribute name="QUALIFIED3_ID" type="INTEGER"/>
 		<qualifier><![CDATA[DELETED = null]]></qualifier>
-	</db-entity>
-	<obj-entity name="Qualified1" className="org.apache.cayenne.testdo.qualified.Qualified1" dbEntityName="TEST_QUALIFIED1">
+	</dbEntity>
+	<objEntity name="Qualified1" className="org.apache.cayenne.testdo.qualified.Qualified1" dbEntityName="TEST_QUALIFIED1">
 		<qualifier><![CDATA[deleted = null]]></qualifier>
-		<obj-attribute name="deleted" type="java.lang.Boolean" db-attribute-path="DELETED"/>
-		<obj-attribute name="name" type="java.lang.String" db-attribute-path="NAME"/>
-	</obj-entity>
-	<obj-entity name="Qualified2" className="org.apache.cayenne.testdo.qualified.Qualified2" dbEntityName="TEST_QUALIFIED2">
+		<objAttribute name="deleted" type="java.lang.Boolean" dbAttributePath="DELETED"/>
+		<objAttribute name="name" type="java.lang.String" dbAttributePath="NAME"/>
+	</objEntity>
+	<objEntity name="Qualified2" className="org.apache.cayenne.testdo.qualified.Qualified2" dbEntityName="TEST_QUALIFIED2">
 		<qualifier><![CDATA[deleted = null]]></qualifier>
-		<obj-attribute name="deleted" type="java.lang.Boolean" db-attribute-path="DELETED"/>
-		<obj-attribute name="name" type="java.lang.String" db-attribute-path="NAME"/>
-	</obj-entity>
-	<obj-entity name="Qualified3" className="org.apache.cayenne.testdo.qualified.Qualified3" dbEntityName="TEST_QUALIFIED3">
-		<obj-attribute name="name" type="java.lang.String" db-attribute-path="NAME"/>
-	</obj-entity>
-	<obj-entity name="Qualified4" className="org.apache.cayenne.testdo.qualified.Qualified4" dbEntityName="TEST_QUALIFIED4">
-		<obj-attribute name="name" type="java.lang.String" db-attribute-path="NAME"/>
-	</obj-entity>
-	<db-relationship name="qualified2s" source="TEST_QUALIFIED1" target="TEST_QUALIFIED2" toMany="true">
-		<db-attribute-pair source="ID" target="QUALIFIED1_ID"/>
-	</db-relationship>
-	<db-relationship name="qualified1" source="TEST_QUALIFIED2" target="TEST_QUALIFIED1">
-		<db-attribute-pair source="QUALIFIED1_ID" target="ID"/>
-	</db-relationship>
-	<db-relationship name="qualified4s" source="TEST_QUALIFIED3" target="TEST_QUALIFIED4" toMany="true">
-		<db-attribute-pair source="ID" target="QUALIFIED3_ID"/>
-	</db-relationship>
-	<db-relationship name="qualified3" source="TEST_QUALIFIED4" target="TEST_QUALIFIED3">
-		<db-attribute-pair source="QUALIFIED3_ID" target="ID"/>
-	</db-relationship>
-	<obj-relationship name="qualified2s" source="Qualified1" target="Qualified2" db-relationship-path="qualified2s"/>
-	<obj-relationship name="qualified1" source="Qualified2" target="Qualified1" db-relationship-path="qualified1"/>
-	<obj-relationship name="qualified4s" source="Qualified3" target="Qualified4" deleteRule="Deny" db-relationship-path="qualified4s"/>
-	<obj-relationship name="qualified3" source="Qualified4" target="Qualified3" deleteRule="Nullify" db-relationship-path="qualified3"/>
-</data-map>
+		<objAttribute name="deleted" type="java.lang.Boolean" dbAttributePath="DELETED"/>
+		<objAttribute name="name" type="java.lang.String" dbAttributePath="NAME"/>
+	</objEntity>
+	<objEntity name="Qualified3" className="org.apache.cayenne.testdo.qualified.Qualified3" dbEntityName="TEST_QUALIFIED3">
+		<objAttribute name="name" type="java.lang.String" dbAttributePath="NAME"/>
+	</objEntity>
+	<objEntity name="Qualified4" className="org.apache.cayenne.testdo.qualified.Qualified4" dbEntityName="TEST_QUALIFIED4">
+		<objAttribute name="name" type="java.lang.String" dbAttributePath="NAME"/>
+	</objEntity>
+	<dbRelationship name="qualified2s" source="TEST_QUALIFIED1" target="TEST_QUALIFIED2" toMany="true">
+		<dbAttributePair source="ID" target="QUALIFIED1_ID"/>
+	</dbRelationship>
+	<dbRelationship name="qualified1" source="TEST_QUALIFIED2" target="TEST_QUALIFIED1">
+		<dbAttributePair source="QUALIFIED1_ID" target="ID"/>
+	</dbRelationship>
+	<dbRelationship name="qualified4s" source="TEST_QUALIFIED3" target="TEST_QUALIFIED4" toMany="true">
+		<dbAttributePair source="ID" target="QUALIFIED3_ID"/>
+	</dbRelationship>
+	<dbRelationship name="qualified3" source="TEST_QUALIFIED4" target="TEST_QUALIFIED3">
+		<dbAttributePair source="QUALIFIED3_ID" target="ID"/>
+	</dbRelationship>
+	<objRelationship name="qualified2s" source="Qualified1" target="Qualified2" dbRelationshipPath="qualified2s"/>
+	<objRelationship name="qualified1" source="Qualified2" target="Qualified1" dbRelationshipPath="qualified1"/>
+	<objRelationship name="qualified4s" source="Qualified3" target="Qualified4" deleteRule="deny" dbRelationshipPath="qualified4s"/>
+	<objRelationship name="qualified3" source="Qualified4" target="Qualified3" deleteRule="nullify" dbRelationshipPath="qualified3"/>
+</dataMap>

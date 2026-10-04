@@ -1,35 +1,34 @@
 <?xml version="1.0" encoding="utf-8"?>
-<data-map xmlns="http://cayenne.apache.org/schema/14/modelMap"
+<dataMap xmlns="http://cayenne.apache.org/schema/14/modelMap"
 	 xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-	 xsi:schemaLocation="http://cayenne.apache.org/schema/14/modelMap https://cayenne.apache.org/schema/14/modelMap.xsd"
-	 project-version="14">
+	 xsi:schemaLocation="http://cayenne.apache.org/schema/14/modelMap https://cayenne.apache.org/schema/14/modelMap.xsd">
 	<property name="defaultPackage" value="org.apache.cayenne.testdo.oneway"/>
-	<db-entity name="oneway_table1">
-		<db-attribute name="ID" type="INTEGER" isPrimaryKey="true" isMandatory="true"/>
-	</db-entity>
-	<db-entity name="oneway_table2">
-		<db-attribute name="ID" type="INTEGER" isPrimaryKey="true" isMandatory="true"/>
-		<db-attribute name="TABLE1_ID" type="INTEGER"/>
-	</db-entity>
-	<db-entity name="oneway_table3">
-		<db-attribute name="ID" type="INTEGER" isPrimaryKey="true" isMandatory="true"/>
-	</db-entity>
-	<db-entity name="oneway_table4">
-		<db-attribute name="ID" type="INTEGER" isPrimaryKey="true" isMandatory="true"/>
-		<db-attribute name="TABLE3_ID" type="INTEGER"/>
-	</db-entity>
-	<obj-entity name="OnewayTable1" className="org.apache.cayenne.testdo.oneway.OnewayTable1" dbEntityName="oneway_table1"/>
-	<obj-entity name="OnewayTable2" className="org.apache.cayenne.testdo.oneway.OnewayTable2" dbEntityName="oneway_table2">
-		<obj-attribute name="id" type="java.lang.Integer" db-attribute-path="ID"/>
-	</obj-entity>
-	<obj-entity name="OnewayTable3" className="org.apache.cayenne.testdo.oneway.OnewayTable3" dbEntityName="oneway_table3"/>
-	<obj-entity name="OnewayTable4" className="org.apache.cayenne.testdo.oneway.OnewayTable4" dbEntityName="oneway_table4"/>
-	<db-relationship name="toOneOneWayDb" source="oneway_table2" target="oneway_table1">
-		<db-attribute-pair source="TABLE1_ID" target="ID"/>
-	</db-relationship>
-	<db-relationship name="toManyOneWayDb" source="oneway_table3" target="oneway_table4" toMany="true">
-		<db-attribute-pair source="ID" target="TABLE3_ID"/>
-	</db-relationship>
-	<obj-relationship name="toOneOneWayDb" source="OnewayTable2" target="OnewayTable1" deleteRule="Nullify" db-relationship-path="toOneOneWayDb"/>
-	<obj-relationship name="toManyOneWayDb" source="OnewayTable3" target="OnewayTable4" deleteRule="Nullify" db-relationship-path="toManyOneWayDb"/>
-</data-map>
+	<dbEntity name="oneway_table1">
+		<dbAttribute name="ID" type="INTEGER" primaryKey="true" mandatory="true"/>
+	</dbEntity>
+	<dbEntity name="oneway_table2">
+		<dbAttribute name="ID" type="INTEGER" primaryKey="true" mandatory="true"/>
+		<dbAttribute name="TABLE1_ID" type="INTEGER"/>
+	</dbEntity>
+	<dbEntity name="oneway_table3">
+		<dbAttribute name="ID" type="INTEGER" primaryKey="true" mandatory="true"/>
+	</dbEntity>
+	<dbEntity name="oneway_table4">
+		<dbAttribute name="ID" type="INTEGER" primaryKey="true" mandatory="true"/>
+		<dbAttribute name="TABLE3_ID" type="INTEGER"/>
+	</dbEntity>
+	<objEntity name="OnewayTable1" className="org.apache.cayenne.testdo.oneway.OnewayTable1" dbEntityName="oneway_table1"/>
+	<objEntity name="OnewayTable2" className="org.apache.cayenne.testdo.oneway.OnewayTable2" dbEntityName="oneway_table2">
+		<objAttribute name="id" type="java.lang.Integer" dbAttributePath="ID"/>
+	</objEntity>
+	<objEntity name="OnewayTable3" className="org.apache.cayenne.testdo.oneway.OnewayTable3" dbEntityName="oneway_table3"/>
+	<objEntity name="OnewayTable4" className="org.apache.cayenne.testdo.oneway.OnewayTable4" dbEntityName="oneway_table4"/>
+	<dbRelationship name="toOneOneWayDb" source="oneway_table2" target="oneway_table1">
+		<dbAttributePair source="TABLE1_ID" target="ID"/>
+	</dbRelationship>
+	<dbRelationship name="toManyOneWayDb" source="oneway_table3" target="oneway_table4" toMany="true">
+		<dbAttributePair source="ID" target="TABLE3_ID"/>
+	</dbRelationship>
+	<objRelationship name="toOneOneWayDb" source="OnewayTable2" target="OnewayTable1" deleteRule="nullify" dbRelationshipPath="toOneOneWayDb"/>
+	<objRelationship name="toManyOneWayDb" source="OnewayTable3" target="OnewayTable4" deleteRule="nullify" dbRelationshipPath="toManyOneWayDb"/>
+</dataMap>

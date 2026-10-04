@@ -1,15 +1,14 @@
 <?xml version="1.0" encoding="utf-8"?>
-<data-map xmlns="http://cayenne.apache.org/schema/14/modelMap"
+<dataMap xmlns="http://cayenne.apache.org/schema/14/modelMap"
 	 xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-	 xsi:schemaLocation="http://cayenne.apache.org/schema/14/modelMap https://cayenne.apache.org/schema/14/modelMap.xsd"
-	 project-version="14">
+	 xsi:schemaLocation="http://cayenne.apache.org/schema/14/modelMap https://cayenne.apache.org/schema/14/modelMap.xsd">
 	<property name="defaultPackage" value="org.apache.cayenne.testdo.array_type"/>
 	<property name="defaultSuperclass" value="org.apache.cayenne.GenericPersistentObject"/>
-	<db-entity name="ARRAY_TEST">
-		<db-attribute name="DOUBLE_ARRAY" type="VARBINARY" length="1024"/>
-		<db-attribute name="ID" type="INTEGER" isPrimaryKey="true" isMandatory="true"/>
-	</db-entity>
-	<obj-entity name="ArrayTestEntity" className="org.apache.cayenne.testdo.array_type.ArrayTestEntity" dbEntityName="ARRAY_TEST">
-		<obj-attribute name="doubleArray" type="java.lang.Double[]" db-attribute-path="DOUBLE_ARRAY"/>
-	</obj-entity>
-</data-map>
+	<dbEntity name="ARRAY_TEST">
+		<dbAttribute name="DOUBLE_ARRAY" type="VARBINARY" length="1024"/>
+		<dbAttribute name="ID" type="INTEGER" primaryKey="true" mandatory="true"/>
+	</dbEntity>
+	<objEntity name="ArrayTestEntity" className="org.apache.cayenne.testdo.array_type.ArrayTestEntity" dbEntityName="ARRAY_TEST">
+		<objAttribute name="doubleArray" type="java.lang.Double[]" dbAttributePath="DOUBLE_ARRAY"/>
+	</objEntity>
+</dataMap>

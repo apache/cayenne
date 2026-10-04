@@ -59,8 +59,7 @@ public class DataChannelDescriptor implements ConfigurationNode, XMLSerializable
 		encoder.start("domain")
 				.attribute("xmlns", SCHEMA_XSD)
 				.attribute("xmlns:xsi", "http://www.w3.org/2001/XMLSchema-instance", true)
-				.attribute("xsi:schemaLocation", SCHEMA_XSD + " " + SCHEMA_XSD_LOCATION, true)
-				.projectVersion();
+				.attribute("xsi:schemaLocation", SCHEMA_XSD + " " + SCHEMA_XSD_LOCATION, true);
 
 		if (!properties.isEmpty()) {
 			List<String> keys = new ArrayList<>(properties.keySet());

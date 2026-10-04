@@ -17,6 +17,6 @@
   ~  under the License.
   ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~-->
 
-<object-query name="query" data-rows="false">
+<objectQuery name="query" dataRows="false">
     <ql><![CDATA[from Artist prefetch paintings joint, paintings.artist disjoint, paintings.gallery disjointById]]></ql>
-</object-query>
+</objectQuery>

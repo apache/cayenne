@@ -1,7 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <domain xmlns="http://cayenne.apache.org/schema/14/domain"
 	 xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-	 xsi:schemaLocation="http://cayenne.apache.org/schema/14/domain https://cayenne.apache.org/schema/14/domain.xsd"
-	 project-version="14">
+	 xsi:schemaLocation="http://cayenne.apache.org/schema/14/domain https://cayenne.apache.org/schema/14/domain.xsd">
 	<map name="lifecycle-map"/>
 </domain>

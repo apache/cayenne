@@ -39,7 +39,7 @@ Write idiomatic Cayenne 5.0 queries — `ObjectSelect`, `SQLSelect`, expressions
 | One or a few columns only (DTO-style) | `ObjectSelect.columnQuery(Cls.class, Cls.NAME, Cls.AGE).select(ctx)` |
 | Raw SQL with parameter binding | `SQLSelect.query(Cls.class, "SELECT ...").params(...).select(ctx)` |
 | Insert/update/delete bulk | `SQLExec.query("UPDATE ...").update(ctx)` |
-| Reused named query stored in DataMap | XML `<object-query>` / `<sql-query>` / `<procedure-query>` (see `${CLAUDE_PLUGIN_ROOT}/references/datamap-schema.md`) loaded via `NamedQuery` |
+| Reused named query stored in DataMap | XML `<objectQuery>` / `<sqlQuery>` / `<procedureQuery>` (see `${CLAUDE_PLUGIN_ROOT}/references/datamap-schema.md`) loaded via `NamedQuery` |
 
 ### Primary-key lookups: use `byId(..)` / `byIds(..)`
 
@@ -116,7 +116,7 @@ List<Artist> hits = SQLSelect.query(Artist.class,
     .select(ctx);
 ```
 
-**Always** use `#bind($name)` placeholders. Never concatenate user input into SQL. Cayenne's SQLTemplate is Velocity-based — see `query-api.md` for `#bind`, `#bindEqual`, `#chain`, and adapter-specific SQL with `<sql adapter-class="...">`.
+**Always** use `#bind($name)` placeholders. Never concatenate user input into SQL. Cayenne's SQLTemplate is Velocity-based — see `query-api.md` for `#bind`, `#bindEqual`, `#chain`, and adapter-specific SQL with `<sql adapterClass="...">`.
 
 ## Anti-patterns
 

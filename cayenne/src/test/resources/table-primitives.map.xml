@@ -1,16 +1,15 @@
 <?xml version="1.0" encoding="utf-8"?>
-<data-map xmlns="http://cayenne.apache.org/schema/14/modelMap"
+<dataMap xmlns="http://cayenne.apache.org/schema/14/modelMap"
 	 xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-	 xsi:schemaLocation="http://cayenne.apache.org/schema/14/modelMap https://cayenne.apache.org/schema/14/modelMap.xsd"
-	 project-version="14">
+	 xsi:schemaLocation="http://cayenne.apache.org/schema/14/modelMap https://cayenne.apache.org/schema/14/modelMap.xsd">
 	<property name="defaultPackage" value="org.apache.cayenne.testdo.table_primitives"/>
-	<db-entity name="TABLE_PRIMITIVES">
-		<db-attribute name="BOOLEAN_COLUMN" type="BOOLEAN"/>
-		<db-attribute name="ID" type="INTEGER" isPrimaryKey="true" isMandatory="true"/>
-		<db-attribute name="INT_COLUMN" type="INTEGER"/>
-	</db-entity>
-	<obj-entity name="TablePrimitives" className="org.apache.cayenne.testdo.table_primitives.TablePrimitives" dbEntityName="TABLE_PRIMITIVES">
-		<obj-attribute name="booleanColumn" type="boolean" db-attribute-path="BOOLEAN_COLUMN"/>
-		<obj-attribute name="intColumn" type="int" db-attribute-path="INT_COLUMN"/>
-	</obj-entity>
-</data-map>
+	<dbEntity name="TABLE_PRIMITIVES">
+		<dbAttribute name="BOOLEAN_COLUMN" type="BOOLEAN"/>
+		<dbAttribute name="ID" type="INTEGER" primaryKey="true" mandatory="true"/>
+		<dbAttribute name="INT_COLUMN" type="INTEGER"/>
+	</dbEntity>
+	<objEntity name="TablePrimitives" className="org.apache.cayenne.testdo.table_primitives.TablePrimitives" dbEntityName="TABLE_PRIMITIVES">
+		<objAttribute name="booleanColumn" type="boolean" dbAttributePath="BOOLEAN_COLUMN"/>
+		<objAttribute name="intColumn" type="int" dbAttributePath="INT_COLUMN"/>
+	</objEntity>
+</dataMap>

@@ -17,7 +17,7 @@
   ~  specific language governing permissions and limitations
   ~  under the License.
   -->
-<domain project-version="6">
+<domain project-version="9">
 	<property name="cayenne.DataDomain.usingExternalTransactions" value="true"/>
 	<map name="testConfigMap9"/>
 </domain>

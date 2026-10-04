@@ -35,9 +35,9 @@ import static org.apache.cayenne.util.Util.isBlank;
  */
 public class DbEntityHandler extends NamespaceAwareNestedTagHandler {
 
-    private static final String DB_ENTITY_TAG = "db-entity";
-    private static final String DB_ATTRIBUTE_TAG = "db-attribute";
-    private static final String DB_KEY_GENERATOR_TAG = "db-key-generator";
+    private static final String DB_ENTITY_TAG = "dbEntity";
+    private static final String DB_ATTRIBUTE_TAG = "dbAttribute";
+    private static final String DB_KEY_GENERATOR_TAG = "dbKeyGenerator";
     private static final String QUALIFIER_TAG = "qualifier";
 
     private DataMap dataMap;
@@ -123,9 +123,9 @@ public class DbEntityHandler extends NamespaceAwareNestedTagHandler {
             lastAttribute.setScale(Integer.parseInt(scale));
         }
 
-        lastAttribute.setPrimaryKey(DataMapHandler.TRUE.equalsIgnoreCase(attributes.getValue("isPrimaryKey")));
-        lastAttribute.setMandatory(DataMapHandler.TRUE.equalsIgnoreCase(attributes.getValue("isMandatory")));
-        lastAttribute.setGenerated(DataMapHandler.TRUE.equalsIgnoreCase(attributes.getValue("isGenerated")));
+        lastAttribute.setPrimaryKey(DataMapHandler.TRUE.equalsIgnoreCase(attributes.getValue("primaryKey")));
+        lastAttribute.setMandatory(DataMapHandler.TRUE.equalsIgnoreCase(attributes.getValue("mandatory")));
+        lastAttribute.setGenerated(DataMapHandler.TRUE.equalsIgnoreCase(attributes.getValue("generated")));
     }
 
     private void createQualifier(String qualifier) {

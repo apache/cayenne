@@ -95,7 +95,7 @@ public class ProcedureParameter implements ConfigurationNode, CayenneMapEntry,
      */
     @Override
     public void encodeAsXML(XMLEncoder encoder, ConfigurationNodeVisitor delegate) {
-        encoder.start("procedure-parameter")
+        encoder.start("procedureParameter")
                 .attribute("name", getName())
                 .attribute("type", TypesMapping.getSqlNameByType(getType()))
                 .attribute("length", getMaxLength() > 0 ? getMaxLength() : 0)

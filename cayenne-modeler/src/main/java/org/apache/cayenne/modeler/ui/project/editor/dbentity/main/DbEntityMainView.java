@@ -134,8 +134,8 @@ public class DbEntityMainView extends ProjectPanel
 
     /**
      * Attaches or drops the entity's own PK sequence generator. This is independent of the
-     * "Auto-Increment" attribute flag, matching the map XML, where "db-key-generator" and
-     * "db-attribute/@isGenerated" are unrelated.
+     * "Auto-Increment" attribute flag, matching the map XML, where "dbKeyGenerator" and
+     * "dbAttribute/@generated" are unrelated.
      */
     private void setCustomPKSequence(boolean custom) {
 

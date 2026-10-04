@@ -53,10 +53,10 @@ public class EmbeddableAttribute implements ConfigurationNode, XMLSerializable {
 
     @Override
     public void encodeAsXML(XMLEncoder encoder, ConfigurationNodeVisitor delegate) {
-        encoder.start("embeddable-attribute")
+        encoder.start("embeddableAttribute")
                 .attribute("name", getName())
                 .attribute("type", getType())
-                .attribute("db-attribute-name", dbAttributeName);
+                .attribute("dbAttributeName", dbAttributeName);
         delegate.visitEmbeddableAttribute(this);
         encoder.end();
     }

@@ -17,18 +17,17 @@
 	specific language governing permissions and limitations
 	under the License.
 -->
-<data-map xmlns="http://cayenne.apache.org/schema/14/modelMap"
+<dataMap xmlns="http://cayenne.apache.org/schema/14/modelMap"
           xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-          xsi:schemaLocation="http://cayenne.apache.org/schema/14/modelMap https://cayenne.apache.org/schema/14/modelMap.xsd"
-          project-version="14">
-    <db-entity name="CHILD" schema="APP">
-        <db-attribute name="ID" type="INTEGER" isPrimaryKey="true" isMandatory="true" length="10"/>
-    </db-entity>
-    <db-entity name="PARENT" schema="APP">
-        <db-attribute name="ID" type="INTEGER" isPrimaryKey="true" isMandatory="true" length="10"/>
-    </db-entity>
-    <obj-entity name="Child" className="Child" dbEntityName="CHILD">
-    </obj-entity>
-    <obj-entity name="Parent" className="Parent" dbEntityName="PARENT">
-    </obj-entity>
-</data-map>
+          xsi:schemaLocation="http://cayenne.apache.org/schema/14/modelMap https://cayenne.apache.org/schema/14/modelMap.xsd">
+    <dbEntity name="CHILD" schema="APP">
+        <dbAttribute name="ID" type="INTEGER" primaryKey="true" mandatory="true" length="10"/>
+    </dbEntity>
+    <dbEntity name="PARENT" schema="APP">
+        <dbAttribute name="ID" type="INTEGER" primaryKey="true" mandatory="true" length="10"/>
+    </dbEntity>
+    <objEntity name="Child" className="Child" dbEntityName="CHILD">
+    </objEntity>
+    <objEntity name="Parent" className="Parent" dbEntityName="PARENT">
+    </objEntity>
+</dataMap>

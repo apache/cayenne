@@ -84,11 +84,11 @@ public class DbEntityTest {
 
         String ls = System.lineSeparator();
 
-        assertEquals("<db-entity name=\"X\" schema=\"s\" catalog=\"c\">" + ls +
-                "<db-attribute name=\"a1\" type=\"INTEGER\"/>" + ls +
-                "<db-attribute name=\"a2\" type=\"VARCHAR\"/>" + ls +
-                "<db-attribute name=\"a3\" type=\"BIGINT\"/>" + ls +
-                "</db-entity>" + ls, out.toString());
+        assertEquals("<dbEntity name=\"X\" schema=\"s\" catalog=\"c\">" + ls +
+                "<dbAttribute name=\"a1\" type=\"INTEGER\"/>" + ls +
+                "<dbAttribute name=\"a2\" type=\"VARCHAR\"/>" + ls +
+                "<dbAttribute name=\"a3\" type=\"BIGINT\"/>" + ls +
+                "</dbEntity>" + ls, out.toString());
     }
 
     private class EncoderDummyVisitor extends BaseConfigurationNodeVisitor<Object> {

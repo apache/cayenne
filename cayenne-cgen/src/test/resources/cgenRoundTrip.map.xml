@@ -1,10 +1,9 @@
 <?xml version="1.0" encoding="utf-8"?>
-<data-map xmlns="http://cayenne.apache.org/schema/14/modelMap"
+<dataMap xmlns="http://cayenne.apache.org/schema/14/modelMap"
           xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-          xsi:schemaLocation="http://cayenne.apache.org/schema/14/modelMap https://cayenne.apache.org/schema/14/modelMap.xsd"
-          project-version="14">
-    <obj-entity name="Artist" className="org.example.Artist">
-    </obj-entity>
+          xsi:schemaLocation="http://cayenne.apache.org/schema/14/modelMap https://cayenne.apache.org/schema/14/modelMap.xsd">
+    <objEntity name="Artist" className="org.example.Artist">
+    </objEntity>
     <cgen xmlns="http://cayenne.apache.org/schema/14/cgen">
         <name>Default</name>
         <destDir>../java</destDir>
@@ -18,4 +17,4 @@
         <createPKProperties>true</createPKProperties>
         <externalToolConfig>tools.properties</externalToolConfig>
     </cgen>
-</data-map>
+</dataMap>

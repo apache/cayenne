@@ -186,10 +186,10 @@ public class SelectQueryDescriptorTest {
 
         // the root, limit, offset and distinct are a part of the query String, and are not stored separately
         assertEquals("""
-                <object-query name="q" cache-strategy="LOCAL_CACHE">
+                <objectQuery name="q" cacheStrategy="LOCAL_CACHE">
                 <ql><![CDATA[from Artist where artistName = $name order by artistName desc offset 20]]></ql>
-                <cache-group><![CDATA[g1 & g2]]></cache-group>
-                </object-query>
+                <cacheGroup><![CDATA[g1 & g2]]></cacheGroup>
+                </objectQuery>
                 """, encode(descriptor));
     }
 
@@ -200,7 +200,7 @@ public class SelectQueryDescriptorTest {
         descriptor.setQualifier(ExpressionFactory.exp("artistName = $name"));
 
         assertEquals("""
-                <object-query name="q"/>
+                <objectQuery name="q"/>
                 """, encode(descriptor));
     }
 

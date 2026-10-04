@@ -106,7 +106,7 @@ public class DbEntity extends Entity<DbEntity, DbAttribute, DbRelationship>
      */
     @Override
     public void encodeAsXML(XMLEncoder encoder, ConfigurationNodeVisitor delegate) {
-        encoder.start("db-entity").attribute("name", getName());
+        encoder.start("dbEntity").attribute("name", getName());
 
         if (getSchema() != null && getSchema().trim().length() > 0) {
             encoder.attribute("schema", getSchema().trim());

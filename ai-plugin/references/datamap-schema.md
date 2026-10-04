@@ -29,51 +29,50 @@ Reference for editing Cayenne DataMap files directly.
 
 ```xml
 <?xml version="1.0" encoding="utf-8"?>
-<data-map xmlns="http://cayenne.apache.org/schema/14/modelMap"
+<dataMap xmlns="http://cayenne.apache.org/schema/14/modelMap"
           xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-          xsi:schemaLocation="http://cayenne.apache.org/schema/14/modelMap http://cayenne.apache.org/schema/14/modelMap.xsd"
-          project-version="12">
+          xsi:schemaLocation="http://cayenne.apache.org/schema/14/modelMap http://cayenne.apache.org/schema/14/modelMap.xsd">
     ...
-</data-map>
+</dataMap>
 ```
 
 ## DataMap properties
 
-Top-level `<property>` children of `<data-map>` configure DataMap-wide settings. The two used in practice:
+Top-level `<property>` children of `<dataMap>` configure DataMap-wide settings. The two used in practice:
 
 ```xml
 <property name="defaultPackage" value="com.example.model"/>
 <property name="defaultSuperclass" value="org.apache.cayenne.GenericPersistentObject"/>
 ```
 
-- `defaultPackage` — Java package for generated classes when an `obj-entity` `className` is a short name.
+- `defaultPackage` — Java package for generated classes when an `objEntity` `className` is a short name.
 - `defaultSuperclass` — superclass for generated `_<Name>` superclasses. Default is `BaseDataObject`.
 
 ## Element order
 
-The schema enforces this order inside `<data-map>`:
+The schema enforces this order inside `<dataMap>`:
 
 1. `<property>` *
 2. `<procedure>` *
 3. `<embeddable>` *
-4. `<db-entity>` *
-5. `<obj-entity>` *
-6. `<db-relationship>` *
-7. `<obj-relationship>` *
-8. `<object-query>`, `<sql-query>`, `<procedure-query>` * (in any mix)
+4. `<dbEntity>` *
+5. `<objEntity>` *
+6. `<dbRelationship>` *
+7. `<objRelationship>` *
+8. `<objectQuery>`, `<sqlQuery>`, `<procedureQuery>` * (in any mix)
 9. `<cgen>` ? (different namespace, embedded)
 10. `<dbImport>` ? (different namespace, embedded)
 
 When inserting elements by hand, respect this order or Cayenne's parser will reject the file.
 
-## `<db-entity>` — database table
+## `<dbEntity>` — database table
 
 ```xml
-<db-entity name="ARTIST" catalog="public" schema="public">
-    <db-attribute name="ARTIST_ID" type="BIGINT" isPrimaryKey="true" isMandatory="true"/>
-    <db-attribute name="ARTIST_NAME" type="VARCHAR" length="254" isMandatory="true"/>
-    <db-attribute name="DATE_OF_BIRTH" type="DATE"/>
-</db-entity>
+<dbEntity name="ARTIST" catalog="public" schema="public">
+    <dbAttribute name="ARTIST_ID" type="BIGINT" primaryKey="true" mandatory="true"/>
+    <dbAttribute name="ARTIST_NAME" type="VARCHAR" length="254" mandatory="true"/>
+    <dbAttribute name="DATE_OF_BIRTH" type="DATE"/>
+</dbEntity>
 ```
 
 Attribute fields:
@@ -84,17 +83,17 @@ Attribute fields:
 | `type` | JDBC type name: `INTEGER`, `BIGINT`, `VARCHAR`, `CHAR`, `DATE`, `TIMESTAMP`, `BOOLEAN`, `BIT`, `NUMERIC`, `DECIMAL`, `FLOAT`, `DOUBLE`, `BLOB`, `CLOB`, `VARBINARY`, etc. |
 | `length` | Column length (for VARCHAR, CHAR, VARBINARY, NUMERIC) |
 | `scale` | Decimal scale (NUMERIC, DECIMAL) |
-| `isPrimaryKey` | `true` for PK columns |
-| `isMandatory` | `true` for NOT NULL |
-| `isGenerated` | `true` for DB-generated columns (identity, sequence) |
+| `primaryKey` | `true` for PK columns |
+| `mandatory` | `true` for NOT NULL |
+| `generated` | `true` for DB-generated columns (identity, sequence) |
 
-## `<obj-entity>` — Java object mapped to a DbEntity
+## `<objEntity>` — Java object mapped to a DbEntity
 
 ```xml
-<obj-entity name="Artist" className="com.example.Artist" dbEntityName="ARTIST">
-    <obj-attribute name="artistName" type="java.lang.String" db-attribute-path="ARTIST_NAME"/>
-    <obj-attribute name="dateOfBirth" type="java.util.Date" db-attribute-path="DATE_OF_BIRTH"/>
-</obj-entity>
+<objEntity name="Artist" className="com.example.Artist" dbEntityName="ARTIST">
+    <objAttribute name="artistName" type="java.lang.String" dbAttributePath="ARTIST_NAME"/>
+    <objAttribute name="dateOfBirth" type="java.util.Date" dbAttributePath="DATE_OF_BIRTH"/>
+</objEntity>
 ```
 
 Element attributes:
@@ -104,49 +103,49 @@ Element attributes:
 | `name` | Object name (used in queries) |
 | `className` | Fully-qualified Java class. If using DataMap `defaultPackage`, a short name works. |
 | `superClassName` | Optional explicit superclass |
-| `dbEntityName` | Matching `<db-entity name="...">` |
+| `dbEntityName` | Matching `<dbEntity name="...">` |
 | `superEntityName` | For inheritance — name of parent ObjEntity |
 | `readOnly` | `true` to disallow writes |
 | `abstract` | `true` for abstract entities (single-table inheritance) |
 
-`obj-attribute`:
+`objAttribute`:
 
 | Attribute | Meaning |
 |---|---|
 | `name` | Java property name |
 | `type` | Java type, FQN — `java.lang.String`, `java.lang.Integer`, `java.util.Date`, `java.math.BigDecimal`, `byte[]`, `boolean`, etc. |
-| `db-attribute-path` | Column name. May be a dotted path through a `db-relationship` for derived attributes: `toArtist.ARTIST_NAME`. |
+| `dbAttributePath` | Column name. May be a dotted path through a `dbRelationship` for derived attributes: `toArtist.ARTIST_NAME`. |
 
-PK columns are not normally mapped as `obj-attribute` — they're handled implicitly. Map a PK column only if `meaningfulPK` (you want to expose the PK value to the Java side).
+PK columns are not normally mapped as `objAttribute` — they're handled implicitly. Map a PK column only if `meaningfulPK` (you want to expose the PK value to the Java side).
 
-## `<db-relationship>` — FK join in the DB layer
+## `<dbRelationship>` — FK join in the DB layer
 
 ```xml
-<db-relationship name="paintingArray" source="ARTIST" target="PAINTING" toMany="true">
-    <db-attribute-pair source="ARTIST_ID" target="ARTIST_ID"/>
-</db-relationship>
+<dbRelationship name="paintingArray" source="ARTIST" target="PAINTING" toMany="true">
+    <dbAttributePair source="ARTIST_ID" target="ARTIST_ID"/>
+</dbRelationship>
 ```
 
 | Attribute | Meaning |
 |---|---|
-| `name` | Identifier; referenced by `obj-relationship`'s `db-relationship-path` |
+| `name` | Identifier; referenced by `objRelationship`'s `dbRelationshipPath` |
 | `source` | Owning DbEntity name |
 | `target` | Target DbEntity name |
 | `toMany` | `true` for one-to-many or many-to-many side |
 | `toDependentPK` | `true` when the target row's PK depends on this FK (typical for one-to-one or master/detail) |
 
-Each `<db-attribute-pair>` is one column of the join. Compound joins use multiple `<db-attribute-pair>` elements.
+Each `<dbAttributePair>` is one column of the join. Compound joins use multiple `<dbAttributePair>` elements.
 
-**Symmetry.** Most FKs need *two* `<db-relationship>` entries, one from each side. They are not auto-derived.
+**Symmetry.** Most FKs need *two* `<dbRelationship>` entries, one from each side. They are not auto-derived.
 
-## `<obj-relationship>` — object-layer view of a db-relationship
+## `<objRelationship>` — object-layer view of a dbRelationship
 
 ```xml
-<obj-relationship name="paintings"
+<objRelationship name="paintings"
                   source="Artist"
                   target="Painting"
-                  deleteRule="Cascade"
-                  db-relationship-path="paintingArray"/>
+                  deleteRule="cascade"
+                  dbRelationshipPath="paintingArray"/>
 ```
 
 | Attribute | Meaning |
@@ -154,40 +153,40 @@ Each `<db-attribute-pair>` is one column of the join. Compound joins use multipl
 | `name` | Java property name (typically plural for to-many) |
 | `source` | Owning ObjEntity name |
 | `target` | Target ObjEntity name |
-| `deleteRule` | `Nullify`, `Cascade`, `Deny`, or `NoAction` |
-| `db-relationship-path` | One or more `<db-relationship>` names, dot-separated for flattened (many-to-many) relationships: `artistGroupArray.toGroup` |
+| `deleteRule` | `nullify`, `cascade` or `deny` (no attribute means no action) |
+| `dbRelationshipPath` | One or more `<dbRelationship>` names, dot-separated for flattened (many-to-many) relationships: `artistGroupArray.toGroup` |
 
-Every `obj-relationship` requires a matching `db-relationship` (or chain) — never add one without the backing DB-layer relationship.
+Every `objRelationship` requires a matching `dbRelationship` (or chain) — never add one without the backing DB-layer relationship.
 
 ## `<embeddable>` — value object without identity
 
 ```xml
 <embeddable className="com.example.Address">
-    <embeddable-attribute name="street" type="java.lang.String" db-attribute-name="STREET"/>
-    <embeddable-attribute name="city"   type="java.lang.String" db-attribute-name="CITY"/>
+    <embeddableAttribute name="street" type="java.lang.String" dbAttributeName="STREET"/>
+    <embeddableAttribute name="city"   type="java.lang.String" dbAttributeName="CITY"/>
 </embeddable>
 ```
 
-To embed it inside an ObjEntity, use `<embedded-attribute>`:
+To embed it inside an ObjEntity, use `<embeddedAttribute>`:
 
 ```xml
-<obj-entity name="User" className="com.example.User" dbEntityName="USER">
-    <embedded-attribute name="homeAddress" type="com.example.Address"/>
-    <embedded-attribute name="workAddress" type="com.example.Address">
-        <embeddable-attribute-override name="street" db-attribute-path="WORK_STREET"/>
-        <embeddable-attribute-override name="city"   db-attribute-path="WORK_CITY"/>
-    </embedded-attribute>
-</obj-entity>
+<objEntity name="User" className="com.example.User" dbEntityName="USER">
+    <embeddedAttribute name="homeAddress" type="com.example.Address"/>
+    <embeddedAttribute name="workAddress" type="com.example.Address">
+        <embeddableAttributeOverride name="street" dbAttributePath="WORK_STREET"/>
+        <embeddableAttributeOverride name="city"   dbAttributePath="WORK_CITY"/>
+    </embeddedAttribute>
+</objEntity>
 ```
 
-`<embeddable-attribute-override>` is only needed when the host columns differ from the embeddable's default `db-attribute-name`.
+`<embeddableAttributeOverride>` is only needed when the host columns differ from the embeddable's default `dbAttributeName`.
 
 ## `<procedure>` — stored procedure
 
 ```xml
 <procedure name="search_artists">
-    <procedure-parameter name="name_filter" type="VARCHAR" length="254" direction="in"/>
-    <procedure-parameter name="result_count" type="INTEGER" direction="out"/>
+    <procedureParameter name="name_filter" type="VARCHAR" length="254" direction="in"/>
+    <procedureParameter name="result_count" type="INTEGER" direction="out"/>
 </procedure>
 ```
 
@@ -197,41 +196,41 @@ To embed it inside an ObjEntity, use `<embedded-attribute>`:
 
 Three flavors, each with its own element, all named with a `name=` attribute:
 
-### `<object-query>`
+### `<objectQuery>`
 
 ```xml
-<object-query name="ArtistsByName" cache-strategy="LOCAL_CACHE">
+<objectQuery name="ArtistsByName" cacheStrategy="LOCAL_CACHE">
     <ql><![CDATA[from Artist where artistName like $name order by dateOfBirth desc prefetch paintings]]></ql>
-</object-query>
+</objectQuery>
 ```
 
 The `<ql>` String follows the syntax of `ObjectSelect.parse(..)`:
 `from Entity [where exp] [order by exp [desc] [insensitive], ...] [limit n] [offset m] [prefetch path [joint|disjoint|disjointById], ...]`.
 `$name` placeholders are the query parameters. The root entity, qualifier, orderings, prefetches, limit, offset and
 `distinct` (`select distinct self from ...`) all live in the String; other settings are optional attributes
-of `<object-query>`: `cache-strategy`, `data-rows`, `page-size`, `statement-fetch-size`. An optional
-`<cache-group><![CDATA[name]]></cache-group>` element follows `<ql>`. A `select` clause with columns, a `having` clause or a `db:` root are not supported in a mapped query.
+of `<objectQuery>`: `cacheStrategy`, `dataRows`, `pageSize`, `statementFetchSize`. An optional
+`<cacheGroup><![CDATA[name]]></cacheGroup>` element follows `<ql>`. A `select` clause with columns, a `having` clause or a `db:` root are not supported in a mapped query.
 
-### `<sql-query>`
+### `<sqlQuery>`
 
 ```xml
-<sql-query name="LowercasedArtists" root="data-map" root-name="testmap" column-name-capitalization="LOWER">
+<sqlQuery name="LowercasedArtists" root="dataMap" rootName="testmap" columnNameCapitalization="LOWER">
     <sql><![CDATA[select * from ARTIST]]></sql>
-    <sql adapter-class="org.apache.cayenne.dba.postgres.PostgresAdapter"><![CDATA[select * from artist]]></sql>
-</sql-query>
+    <sql adapterClass="org.apache.cayenne.dba.postgres.PostgresAdapter"><![CDATA[select * from artist]]></sql>
+</sqlQuery>
 ```
 
-The optional settings are attributes of `<sql-query>`: `cache-strategy`, `data-rows`, `page-size`,
-`statement-fetch-size`, `column-name-capitalization` (`DEFAULT`, `UPPER`, `LOWER`). There are no limit and offset
-settings, those must be a part of the SQL. An optional `<cache-group><![CDATA[name]]></cache-group>` element follows the `<sql>`
-elements. A `<procedure-query>` takes the same attributes and `<cache-group>`, plus `fetch-limit` and `fetch-offset`.
+The optional settings are attributes of `<sqlQuery>`: `cacheStrategy`, `dataRows`, `pageSize`,
+`statementFetchSize`, `columnNameCapitalization` (`DEFAULT`, `UPPER`, `LOWER`). There are no limit and offset
+settings, those must be a part of the SQL. An optional `<cacheGroup><![CDATA[name]]></cacheGroup>` element follows the `<sql>`
+elements. A `<procedureQuery>` takes the same attributes and `<cacheGroup>`, plus `fetchLimit` and `fetchOffset`.
 
-Use a second `<sql>` with `adapter-class=` to vary by DB adapter. SQLTemplate placeholders use Velocity syntax — `#bind($paramName)` for parameters.
+Use a second `<sql>` with `adapterClass=` to vary by DB adapter. SQLTemplate placeholders use Velocity syntax — `#bind($paramName)` for parameters.
 
-### `<procedure-query>`
+### `<procedureQuery>`
 
 ```xml
-<procedure-query name="SearchArtists" root="procedure" root-name="search_artists" result-entity="Artist"/>
+<procedureQuery name="SearchArtists" root="procedure" rootName="search_artists" resultEntity="Artist"/>
 ```
 
 ## `<cgen>` — embedded code-gen config
@@ -244,8 +243,8 @@ A separate namespace, used by the Modeler's reverse-engineering dialog to persis
 
 ## Anti-patterns to avoid
 
-- Adding an `obj-relationship` without a backing `db-relationship` — Cayenne will validate-fail at runtime load.
-- Setting `db-attribute` `type` without `length` for VARCHAR/CHAR
-- Using a Java primitive (`int`, `long`) for an `obj-attribute` `type` when the column is nullable — primitives can't represent NULL; use the wrapper (`java.lang.Integer`).
+- Adding an `objRelationship` without a backing `dbRelationship` — Cayenne will validate-fail at runtime load.
+- Setting `dbAttribute` `type` without `length` for VARCHAR/CHAR
+- Using a Java primitive (`int`, `long`) for an `objAttribute` `type` when the column is nullable — primitives can't represent NULL; use the wrapper (`java.lang.Integer`).
 - Reordering top-level elements — the schema requires the order listed above.
 - Hand-editing `_<Entity>` superclass `.java` files — they are regenerated by cgen and will be overwritten. Edit the user subclass instead.

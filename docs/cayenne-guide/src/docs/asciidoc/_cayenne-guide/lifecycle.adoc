@@ -76,7 +76,7 @@ include::{java-examples}/lifecycle/Order.java[tags=content]
 
 ==== Cayenne Modeler Callbacks Configuration
 
-Alternatively, you can configure callbacks using the Cayenne Modeler for each ObjEntity. Empty callback methods are automatically created as a part of class generation (either with Maven, Ant or the Modeler) and are later filled with appropriate logic by the programmer. E.g. assuming we mapped a 'post-add' callback called 'onNewOrder' in ObjEntity 'Order', the following code will be generated:
+Alternatively, you can configure callbacks using the Cayenne Modeler for each ObjEntity. Empty callback methods are automatically created as a part of class generation (either with Maven, Ant or the Modeler) and are later filled with appropriate logic by the programmer. E.g. assuming we mapped a 'postAdd' callback called 'onNewOrder' in ObjEntity 'Order', the following code will be generated:
 
 [source,java,indent=0]
 ----

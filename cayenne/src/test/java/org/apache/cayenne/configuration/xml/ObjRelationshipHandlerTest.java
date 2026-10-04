@@ -37,7 +37,7 @@ public class ObjRelationshipHandlerTest extends BaseHandlerTest {
         map.addObjEntity(entity);
         assertEquals(0, entity.getRelationships().size());
 
-        parse("obj-relationship", new HandlerFactory() {
+        parse("objRelationship", new HandlerFactory() {
             @Override
             public NamespaceAwareNestedTagHandler createHandler(NamespaceAwareNestedTagHandler parent) {
                 return new ObjRelationshipHandler(parent, map);

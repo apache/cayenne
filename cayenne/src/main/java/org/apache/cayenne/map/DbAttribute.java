@@ -97,22 +97,22 @@ public class DbAttribute extends Attribute<DbEntity, DbAttribute, DbRelationship
     @Override
     public void encodeAsXML(XMLEncoder encoder, ConfigurationNodeVisitor delegate) {
 
-        encoder.start("db-attribute").attribute("name", getName());
+        encoder.start("dbAttribute").attribute("name", getName());
 
         String type = TypesMapping.getSqlNameByType(getType());
         encoder.attribute("type", type);
 
         if (isPrimaryKey()) {
-            encoder.attribute("isPrimaryKey", true);
+            encoder.attribute("primaryKey", true);
 
             // only allow generated if an attribute is a PK.
             if (isGenerated()) {
-                encoder.attribute("isGenerated", true);
+                encoder.attribute("generated", true);
             }
         }
 
         if (isMandatory()) {
-            encoder.attribute("isMandatory", true);
+            encoder.attribute("mandatory", true);
         }
 
         if (getMaxLength() > 0) {

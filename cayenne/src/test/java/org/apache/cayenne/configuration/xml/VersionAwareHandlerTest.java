@@ -38,7 +38,7 @@ public class VersionAwareHandlerTest {
         };
     }
 
-    private Attributes createAttributesWithVersion(String version) {
+    private Attributes legacyVersion(String version) {
         AttributesImpl attributes = new AttributesImpl();
         if (version != null) {
             attributes.addAttribute("", "project-version", "project-version", "", version);
@@ -46,29 +46,47 @@ public class VersionAwareHandlerTest {
         return attributes;
     }
 
+    private String namespace(String version) {
+        return "http://cayenne.apache.org/schema/" + version + "/test";
+    }
+
     @Test
     public void validateCurrentVersion() {
-        handler.validateVersion(createAttributesWithVersion(UpgradeHandler.CURRENT_VERSION));
+        handler.validateVersion(namespace(UpgradeHandler.CURRENT_VERSION), legacyVersion(null));
     }
 
     @Test
     public void validateOlderVersion() {
         UnsupportedVersionException e = assertThrows(UnsupportedVersionException.class,
-                () -> handler.validateVersion(createAttributesWithVersion("8")));
+                () -> handler.validateVersion(namespace("10"), legacyVersion(null)));
+        assertEquals("10", e.getVersion());
+    }
+
+    @Test
+    public void validateOlderVersion_NoNamespace() {
+        UnsupportedVersionException e = assertThrows(UnsupportedVersionException.class,
+                () -> handler.validateVersion("", legacyVersion("8")));
         assertEquals("8", e.getVersion());
+    }
+
+    @Test
+    public void validateOlderVersion_UnversionedNamespace() {
+        UnsupportedVersionException e = assertThrows(UnsupportedVersionException.class,
+                () -> handler.validateVersion("http://cayenne.apache.org/schema/3.0/modelMap", legacyVersion("6")));
+        assertEquals("6", e.getVersion());
     }
 
     @Test
     public void validateNewerVersion() {
         UnsupportedVersionException e = assertThrows(UnsupportedVersionException.class,
-                () -> handler.validateVersion(createAttributesWithVersion("15")));
+                () -> handler.validateVersion(namespace("15"), legacyVersion(null)));
         assertEquals("15", e.getVersion());
     }
 
     @Test
     public void validateMissingVersion() {
         UnsupportedVersionException e = assertThrows(UnsupportedVersionException.class,
-                () -> handler.validateVersion(createAttributesWithVersion(null)));
+                () -> handler.validateVersion("", legacyVersion(null)));
         assertEquals(UpgradeHandler.UNKNOWN_VERSION, e.getVersion());
     }
 }

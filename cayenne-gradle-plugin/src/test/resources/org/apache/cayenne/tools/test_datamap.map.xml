@@ -17,27 +17,26 @@
 	specific language governing permissions and limitations
 	under the License.
 -->
-<data-map xmlns="http://cayenne.apache.org/schema/14/modelMap"
+<dataMap xmlns="http://cayenne.apache.org/schema/14/modelMap"
           xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-          xsi:schemaLocation="http://cayenne.apache.org/schema/14/modelMap http://cayenne.apache.org/schema/14/modelMap.xsd"
-          project-version="14">
+          xsi:schemaLocation="http://cayenne.apache.org/schema/14/modelMap http://cayenne.apache.org/schema/14/modelMap.xsd">
 
     <property name="defaultPackage" value="org.example.cayenne.persistent"/>
-    <db-entity name="City">
-        <db-attribute name="id" type="INTEGER" isPrimaryKey="true" isMandatory="true"/>
-        <db-attribute name="name" type="VARCHAR" length="255"/>
-    </db-entity>
-    <db-entity name="artist">
-        <db-attribute name="birth_date" type="DATE"/>
-        <db-attribute name="id" type="INTEGER" isPrimaryKey="true" isMandatory="true"/>
-        <db-attribute name="name" type="VARCHAR" length="255"/>
-    </db-entity>
-    <obj-entity name="City" className="org.example.cayenne.persistent.City" dbEntityName="City">
-        <obj-attribute name="name" type="java.lang.String" db-attribute-path="name"/>
-    </obj-entity>
-    <obj-entity name="Artist" className="org.example.cayenne.persistent.Artist" dbEntityName="artist">
-        <obj-attribute name="birthDate" type="java.util.Date" db-attribute-path="birth_date"/>
-        <obj-attribute name="name" type="java.lang.String" db-attribute-path="name"/>
-    </obj-entity>
+    <dbEntity name="City">
+        <dbAttribute name="id" type="INTEGER" primaryKey="true" mandatory="true"/>
+        <dbAttribute name="name" type="VARCHAR" length="255"/>
+    </dbEntity>
+    <dbEntity name="artist">
+        <dbAttribute name="birth_date" type="DATE"/>
+        <dbAttribute name="id" type="INTEGER" primaryKey="true" mandatory="true"/>
+        <dbAttribute name="name" type="VARCHAR" length="255"/>
+    </dbEntity>
+    <objEntity name="City" className="org.example.cayenne.persistent.City" dbEntityName="City">
+        <objAttribute name="name" type="java.lang.String" dbAttributePath="name"/>
+    </objEntity>
+    <objEntity name="Artist" className="org.example.cayenne.persistent.Artist" dbEntityName="artist">
+        <objAttribute name="birthDate" type="java.util.Date" dbAttributePath="birth_date"/>
+        <objAttribute name="name" type="java.lang.String" dbAttributePath="name"/>
+    </objEntity>
 
-</data-map>
+</dataMap>

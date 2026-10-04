@@ -31,7 +31,7 @@ import org.xml.sax.SAXException;
 public class EmbeddableHandler extends NamespaceAwareNestedTagHandler {
 
     private static final String EMBEDDABLE_TAG = "embeddable";
-    private static final String EMBEDDABLE_ATTRIBUTE_TAG = "embeddable-attribute";
+    private static final String EMBEDDABLE_ATTRIBUTE_TAG = "embeddableAttribute";
 
     private DataMap map;
 
@@ -65,7 +65,7 @@ public class EmbeddableHandler extends NamespaceAwareNestedTagHandler {
     private void createEmbeddableAttribute(Attributes attributes) {
         EmbeddableAttribute ea = new EmbeddableAttribute(attributes.getValue("name"));
         ea.setType(attributes.getValue("type"));
-        ea.setDbAttributeName(attributes.getValue("db-attribute-name"));
+        ea.setDbAttributeName(attributes.getValue("dbAttributeName"));
         embeddable.addAttribute(ea);
     }
 

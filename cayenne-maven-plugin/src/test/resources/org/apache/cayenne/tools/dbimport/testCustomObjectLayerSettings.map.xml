@@ -17,14 +17,13 @@
 	specific language governing permissions and limitations
 	under the License.
 -->
-<data-map xmlns="http://cayenne.apache.org/schema/14/modelMap"
+<dataMap xmlns="http://cayenne.apache.org/schema/14/modelMap"
           xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-          xsi:schemaLocation="http://cayenne.apache.org/schema/14/modelMap http://cayenne.apache.org/schema/14/modelMap.xsd"
-          project-version="14">
+          xsi:schemaLocation="http://cayenne.apache.org/schema/14/modelMap http://cayenne.apache.org/schema/14/modelMap.xsd">
     <property name="defaultSchema" value="SCHEMA_01"/>
-    <db-entity name="EXISTING_TABLE" schema="SCHEMA_01">
-        <db-attribute name="ID" type="INTEGER" isPrimaryKey="true" isMandatory="true" length="10"/>
-    </db-entity>
-    <obj-entity name="ExistingTable" className="ExistingTable" dbEntityName="EXISTING_TABLE">
-    </obj-entity>
-</data-map>
+    <dbEntity name="EXISTING_TABLE" schema="SCHEMA_01">
+        <dbAttribute name="ID" type="INTEGER" primaryKey="true" mandatory="true" length="10"/>
+    </dbEntity>
+    <objEntity name="ExistingTable" className="ExistingTable" dbEntityName="EXISTING_TABLE">
+    </objEntity>
+</dataMap>

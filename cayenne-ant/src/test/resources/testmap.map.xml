@@ -1,711 +1,710 @@
 <?xml version="1.0" encoding="utf-8"?>
-<data-map xmlns="http://cayenne.apache.org/schema/14/modelMap"
+<dataMap xmlns="http://cayenne.apache.org/schema/14/modelMap"
 	 xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-	 xsi:schemaLocation="http://cayenne.apache.org/schema/14/modelMap http://cayenne.apache.org/schema/14/modelMap.xsd"
-	 project-version="14">
+	 xsi:schemaLocation="http://cayenne.apache.org/schema/14/modelMap http://cayenne.apache.org/schema/14/modelMap.xsd">
 	<property name="defaultPackage" value="org.apache.cayenne.testdo.testmap"/>
 	<property name="defaultSuperclass" value="org.apache.cayenne.GenericPersistentObject"/>
 	<procedure name="cayenne_tst_out_proc">
-		<procedure-parameter name="in_param" type="INTEGER" direction="in"/>
-		<procedure-parameter name="out_param" type="INTEGER" direction="out"/>
+		<procedureParameter name="in_param" type="INTEGER" direction="in"/>
+		<procedureParameter name="out_param" type="INTEGER" direction="out"/>
 	</procedure>
 	<procedure name="cayenne_tst_select_proc">
-		<procedure-parameter name="aName" type="VARCHAR" length="254" direction="in"/>
-		<procedure-parameter name="paintingPrice" type="INTEGER" direction="in"/>
+		<procedureParameter name="aName" type="VARCHAR" length="254" direction="in"/>
+		<procedureParameter name="paintingPrice" type="INTEGER" direction="in"/>
 	</procedure>
 	<procedure name="cayenne_tst_upd_proc">
-		<procedure-parameter name="paintingPrice" type="INTEGER" direction="in"/>
+		<procedureParameter name="paintingPrice" type="INTEGER" direction="in"/>
 	</procedure>
 	<procedure name="cayenne_tst_upd_proc2">
 	</procedure>
-	<db-entity name="ARRAYS_ENTITY">
-		<db-attribute name="BYTE_ARRAY" type="VARBINARY" length="200"/>
-		<db-attribute name="BYTE_WRAPPER_ARRAY" type="VARBINARY" length="200"/>
-		<db-attribute name="CHAR_ARRAY" type="VARCHAR" length="200"/>
-		<db-attribute name="CHAR_WRAPPER_ARRAY" type="VARCHAR" length="200"/>
-		<db-attribute name="ID" type="INTEGER" isPrimaryKey="true" isMandatory="true"/>
-	</db-entity>
-	<db-entity name="ARTGROUP">
-		<db-attribute name="GROUP_ID" type="INTEGER" isPrimaryKey="true" isMandatory="true"/>
-		<db-attribute name="NAME" type="VARCHAR" isMandatory="true" length="100"/>
-		<db-attribute name="PARENT_GROUP_ID" type="INTEGER"/>
-	</db-entity>
-	<db-entity name="ARTIST">
-		<db-attribute name="ARTIST_ID" type="BIGINT" isPrimaryKey="true" isMandatory="true"/>
-		<db-attribute name="ARTIST_NAME" type="CHAR" isMandatory="true" length="254"/>
-		<db-attribute name="DATE_OF_BIRTH" type="DATE"/>
-	</db-entity>
-	<db-entity name="ARTIST_CT">
-		<db-attribute name="ARTIST_ID" type="INTEGER" isPrimaryKey="true" isMandatory="true"/>
-		<db-attribute name="ARTIST_NAME" type="CHAR" isMandatory="true" length="254"/>
-		<db-attribute name="DATE_OF_BIRTH" type="DATE"/>
-	</db-entity>
-	<db-entity name="ARTIST_EXHIBIT">
-		<db-attribute name="ARTIST_ID" type="BIGINT" isPrimaryKey="true" isMandatory="true"/>
-		<db-attribute name="EXHIBIT_ID" type="INTEGER" isPrimaryKey="true" isMandatory="true"/>
-	</db-entity>
-	<db-entity name="ARTIST_GROUP">
-		<db-attribute name="ARTIST_ID" type="BIGINT" isPrimaryKey="true" isMandatory="true"/>
-		<db-attribute name="GROUP_ID" type="INTEGER" isPrimaryKey="true" isMandatory="true"/>
-	</db-entity>
-	<db-entity name="BIGDECIMAL_ENTITY">
-		<db-attribute name="BIGDECIMAL_FIELD" type="NUMERIC" length="12" scale="2"/>
-		<db-attribute name="ID" type="INTEGER" isPrimaryKey="true" isMandatory="true"/>
-	</db-entity>
-	<db-entity name="BIGINTEGER_ENTITY">
-		<db-attribute name="BIG_INTEGER_FIELD" type="BIGINT"/>
-		<db-attribute name="ID" type="INTEGER" isPrimaryKey="true" isMandatory="true"/>
-	</db-entity>
-	<db-entity name="BINARY_PK_TEST1">
-		<db-attribute name="BIN_ID" type="VARBINARY" isPrimaryKey="true" isMandatory="true" length="32"/>
-		<db-attribute name="NAME" type="VARCHAR" length="10"/>
-	</db-entity>
-	<db-entity name="BINARY_PK_TEST2">
-		<db-attribute name="DETAIL_NAME" type="VARCHAR" length="10"/>
-		<db-attribute name="FK_ID" type="VARBINARY" length="32"/>
-		<db-attribute name="ID" type="INTEGER" isPrimaryKey="true" isMandatory="true"/>
-	</db-entity>
-	<db-entity name="BIT_TEST">
-		<db-attribute name="BIT_COLUMN" type="BIT" isMandatory="true"/>
-		<db-attribute name="ID" type="INTEGER" isPrimaryKey="true" isMandatory="true"/>
-	</db-entity>
-	<db-entity name="BLOB_TEST">
-		<db-attribute name="BLOB_COL" type="BLOB"/>
-		<db-attribute name="BLOB_TEST_ID" type="INTEGER" isPrimaryKey="true" isMandatory="true"/>
-	</db-entity>
-	<db-entity name="BOOLEAN_TEST">
-		<db-attribute name="BOOLEAN_COLUMN" type="BOOLEAN" isMandatory="true"/>
-		<db-attribute name="ID" type="INTEGER" isPrimaryKey="true" isMandatory="true"/>
-	</db-entity>
-	<db-entity name="CALENDAR_TEST">
-		<db-attribute name="CALENDAR_FIELD" type="TIMESTAMP"/>
-		<db-attribute name="ID" type="INTEGER" isPrimaryKey="true" isMandatory="true"/>
-	</db-entity>
-	<db-entity name="CHARACTER_ENTITY">
-		<db-attribute name="CHARACTER_FIELD" type="CHAR" length="1"/>
-		<db-attribute name="ID" type="INTEGER" isPrimaryKey="true" isMandatory="true"/>
-	</db-entity>
-	<db-entity name="CHAR_FK_TEST">
-		<db-attribute name="FK_COL" type="CHAR" length="10"/>
-		<db-attribute name="NAME" type="VARCHAR" length="100"/>
-		<db-attribute name="PK" type="INTEGER" isPrimaryKey="true" isMandatory="true"/>
-	</db-entity>
-	<db-entity name="CHAR_PK_TEST">
-		<db-attribute name="OTHER_COL" type="CHAR" length="10"/>
-		<db-attribute name="PK_COL" type="CHAR" isPrimaryKey="true" isMandatory="true" length="10"/>
-	</db-entity>
-	<db-entity name="CLOB_TEST">
-		<db-attribute name="CLOB_COL" type="CLOB"/>
-		<db-attribute name="CLOB_TEST_ID" type="INTEGER" isPrimaryKey="true" isMandatory="true"/>
-	</db-entity>
-	<db-entity name="CLOB_TEST_RELATION">
-		<db-attribute name="ID" type="INTEGER" isPrimaryKey="true" isMandatory="true"/>
-		<db-attribute name="ID_CLOB" type="INTEGER" isMandatory="true"/>
-		<db-attribute name="VALUE" type="INTEGER"/>
-	</db-entity>
-	<db-entity name="COMPOUND_FK_TEST">
-		<db-attribute name="F_KEY1" type="VARCHAR" length="20"/>
-		<db-attribute name="F_KEY2" type="VARCHAR" length="20"/>
-		<db-attribute name="NAME" type="VARCHAR" length="255"/>
-		<db-attribute name="PKEY" type="INTEGER" isPrimaryKey="true" isMandatory="true"/>
-	</db-entity>
-	<db-entity name="COMPOUND_PK_TEST">
-		<db-attribute name="KEY1" type="VARCHAR" isPrimaryKey="true" isMandatory="true" length="20"/>
-		<db-attribute name="KEY2" type="VARCHAR" isPrimaryKey="true" isMandatory="true" length="20"/>
-		<db-attribute name="NAME" type="VARCHAR" length="255"/>
-	</db-entity>
-	<db-entity name="DATE_TEST">
-		<db-attribute name="DATE_COLUMN" type="DATE"/>
-		<db-attribute name="DATE_TEST_ID" type="INTEGER" isPrimaryKey="true" isMandatory="true"/>
-		<db-attribute name="TIMESTAMP_COLUMN" type="TIMESTAMP"/>
-		<db-attribute name="TIME_COLUMN" type="TIME"/>
-	</db-entity>
-	<db-entity name="DECIMAL_PK_TST">
-		<db-attribute name="DECIMAL_PK" type="DECIMAL" isPrimaryKey="true" isMandatory="true"/>
-		<db-attribute name="NAME" type="VARCHAR" length="100"/>
-	</db-entity>
-	<db-entity name="ENUM_ENTITY">
-		<db-attribute name="ENUM_ATTRIBUTE" type="VARCHAR" length="250"/>
-		<db-attribute name="ID" type="INTEGER" isPrimaryKey="true" isMandatory="true"/>
-	</db-entity>
-	<db-entity name="EXHIBIT">
-		<db-attribute name="CLOSING_DATE" type="TIMESTAMP" isMandatory="true"/>
-		<db-attribute name="EXHIBIT_ID" type="INTEGER" isPrimaryKey="true" isMandatory="true"/>
-		<db-attribute name="GALLERY_ID" type="INTEGER" isMandatory="true"/>
-		<db-attribute name="OPENING_DATE" type="TIMESTAMP" isMandatory="true"/>
-	</db-entity>
-	<db-entity name="EXTENDED_TYPE_TEST">
-		<db-attribute name="ID" type="INTEGER" isPrimaryKey="true" isMandatory="true"/>
-		<db-attribute name="NAME" type="VARCHAR" length="200"/>
-	</db-entity>
-	<db-entity name="FLOAT_TEST">
-		<db-attribute name="FLOAT_COL" type="FLOAT"/>
-		<db-attribute name="ID" type="INTEGER" isPrimaryKey="true" isMandatory="true"/>
-	</db-entity>
-	<db-entity name="GALLERY">
-		<db-attribute name="GALLERY_ID" type="INTEGER" isPrimaryKey="true" isMandatory="true"/>
-		<db-attribute name="GALLERY_NAME" type="VARCHAR" isMandatory="true" length="100"/>
-	</db-entity>
-	<db-entity name="GENERATED_COLUMN_COMP_KEY">
-		<db-attribute name="AUTO_PK" type="INTEGER" isPrimaryKey="true" isMandatory="true"/>
-		<db-attribute name="GENERATED_COLUMN" type="INTEGER" isPrimaryKey="true" isGenerated="true" isMandatory="true"/>
-		<db-attribute name="NAME" type="VARCHAR" length="100"/>
-		<db-attribute name="PROPAGATED_PK" type="INTEGER" isPrimaryKey="true" isMandatory="true"/>
-	</db-entity>
-	<db-entity name="GENERATED_COLUMN_COMP_M">
-		<db-attribute name="ID" type="INTEGER" isPrimaryKey="true" isMandatory="true"/>
-		<db-attribute name="NAME" type="VARCHAR" length="100"/>
-	</db-entity>
-	<db-entity name="GENERATED_COLUMN_DEP">
-		<db-attribute name="GENERATED_COLUMN_FK" type="INTEGER" isPrimaryKey="true" isMandatory="true"/>
-		<db-attribute name="NAME" type="VARCHAR" length="100"/>
-	</db-entity>
-	<db-entity name="GENERATED_COLUMN_TEST">
-		<db-attribute name="GENERATED_COLUMN" type="INTEGER" isPrimaryKey="true" isGenerated="true" isMandatory="true"/>
-		<db-attribute name="NAME" type="VARCHAR" length="250"/>
-	</db-entity>
-	<db-entity name="GENERATED_COLUMN_TEST2">
-		<db-attribute name="GENERATED_COLUMN" type="INTEGER" isPrimaryKey="true" isGenerated="true" isMandatory="true"/>
-		<db-attribute name="NAME" type="VARCHAR" length="100"/>
-	</db-entity>
-	<db-entity name="GENERATED_F1">
-		<db-attribute name="ID" type="INTEGER" isPrimaryKey="true" isMandatory="true"/>
-	</db-entity>
-	<db-entity name="GENERATED_F2">
-		<db-attribute name="ID" type="INTEGER" isPrimaryKey="true" isMandatory="true"/>
-	</db-entity>
-	<db-entity name="GENERATED_JOIN">
-		<db-attribute name="ID" type="INTEGER" isPrimaryKey="true" isGenerated="true" isMandatory="true"/>
-		<db-attribute name="ID1" type="INTEGER"/>
-		<db-attribute name="ID2" type="INTEGER"/>
-	</db-entity>
-	<db-entity name="LONG_ENTITY">
-		<db-attribute name="ID" type="INTEGER" isPrimaryKey="true" isMandatory="true"/>
-		<db-attribute name="LONG_FIELD" type="BIGINT"/>
-	</db-entity>
-	<db-entity name="MEANINGFUL_PK_DEP">
-		<db-attribute name="DESCR" type="VARCHAR" length="50"/>
-		<db-attribute name="MASTER_PK" type="INTEGER"/>
-		<db-attribute name="PK_ATTRIBUTE" type="INTEGER" isPrimaryKey="true" isMandatory="true"/>
-	</db-entity>
-	<db-entity name="MEANINGFUL_PK_TEST1">
-		<db-attribute name="DESCR" type="VARCHAR" length="50"/>
-		<db-attribute name="PK_ATTRIBUTE" type="INTEGER" isPrimaryKey="true" isMandatory="true"/>
-	</db-entity>
-	<db-entity name="MIXED_PERSISTENCE_STRATEGY">
-		<db-attribute name="DESCRIPTION" type="VARCHAR" length="200"/>
-		<db-attribute name="ID" type="INTEGER" isPrimaryKey="true" isMandatory="true"/>
-		<db-attribute name="NAME" type="VARCHAR" length="200"/>
-	</db-entity>
-	<db-entity name="MIXED_PERSISTENCE_STRATEGY2">
-		<db-attribute name="ID" type="INTEGER" isPrimaryKey="true" isMandatory="true"/>
-		<db-attribute name="MASTER_ID" type="INTEGER"/>
-		<db-attribute name="NAME" type="VARCHAR" length="200"/>
-	</db-entity>
-	<db-entity name="NO_PK_TEST">
-		<db-attribute name="ATTRIBUTE1" type="INTEGER"/>
-	</db-entity>
-	<db-entity name="PAINTING">
-		<db-attribute name="ARTIST_ID" type="BIGINT"/>
-		<db-attribute name="ESTIMATED_PRICE" type="DECIMAL" length="10" scale="2"/>
-		<db-attribute name="GALLERY_ID" type="INTEGER"/>
-		<db-attribute name="PAINTING_DESCRIPTION" type="VARCHAR" length="255"/>
-		<db-attribute name="PAINTING_ID" type="INTEGER" isPrimaryKey="true" isMandatory="true"/>
-		<db-attribute name="PAINTING_TITLE" type="VARCHAR" isMandatory="true" length="255"/>
-	</db-entity>
-	<db-entity name="PAINTING1">
-		<db-attribute name="ARTIST_ID" type="BIGINT"/>
-		<db-attribute name="ESTIMATED_PRICE" type="DECIMAL" length="10" scale="2"/>
-		<db-attribute name="GALLERY_ID" type="INTEGER"/>
-		<db-attribute name="PAINTING_ID" type="INTEGER" isPrimaryKey="true" isMandatory="true"/>
-		<db-attribute name="PAINTING_TITLE" type="VARCHAR" isMandatory="true" length="255"/>
-	</db-entity>
-	<db-entity name="PAINTING_INFO">
-		<db-attribute name="IMAGE_BLOB" type="LONGVARBINARY"/>
-		<db-attribute name="PAINTING_ID" type="INTEGER" isPrimaryKey="true" isMandatory="true"/>
-		<db-attribute name="TEXT_REVIEW" type="LONGVARCHAR"/>
-	</db-entity>
-	<db-entity name="PRIMITIVES_TEST">
-		<db-attribute name="BOOLEAN_COLUMN" type="BOOLEAN"/>
-		<db-attribute name="ID" type="INTEGER" isPrimaryKey="true" isMandatory="true"/>
-		<db-attribute name="INT_COLUMN" type="INTEGER"/>
-	</db-entity>
-	<db-entity name="SERIALIZABLE_ENTITY">
-		<db-attribute name="ID" type="INTEGER" isPrimaryKey="true" isMandatory="true"/>
-		<db-attribute name="SERIALIZABLE_FIELD" type="BLOB"/>
-	</db-entity>
-	<db-entity name="SMALLINT_TEST">
-		<db-attribute name="ID" type="INTEGER" isPrimaryKey="true" isMandatory="true"/>
-		<db-attribute name="SMALLINT_COL" type="SMALLINT"/>
-	</db-entity>
-	<db-entity name="TINYINT_TEST">
-		<db-attribute name="ID" type="INTEGER" isPrimaryKey="true" isMandatory="true"/>
-		<db-attribute name="TINYINT_COL" type="TINYINT"/>
-	</db-entity>
-	<db-entity name="TYPES_MAPPING_TEST1">
-		<db-attribute name="AAAID" type="INTEGER" isPrimaryKey="true" isMandatory="true"/>
-		<db-attribute name="BIGINT_COLUMN" type="BIGINT"/>
-		<db-attribute name="BIT_COLUMN" type="BIT"/>
-		<db-attribute name="BOOLEAN_COLUMN" type="BOOLEAN"/>
-		<db-attribute name="CHAR_COLUMN" type="CHAR" length="254"/>
-		<db-attribute name="CLOB_COLUMN" type="CLOB"/>
-		<db-attribute name="DATE_COLUMN" type="DATE"/>
-		<db-attribute name="DECIMAL_COLUMN" type="DECIMAL" length="12" scale="5"/>
-		<db-attribute name="DOUBLE_COLUMN" type="DOUBLE" scale="7"/>
-		<db-attribute name="FLOAT_COLUMN" type="FLOAT" scale="3"/>
-		<db-attribute name="INTEGER_COLUMN" type="INTEGER"/>
-		<db-attribute name="LONGVARCHAR_COLUMN" type="LONGVARCHAR"/>
-		<db-attribute name="NUMERIC_COLUMN" type="NUMERIC" length="12" scale="5"/>
-		<db-attribute name="REAL_COLUMN" type="REAL" scale="5"/>
-		<db-attribute name="SMALLINT_COLUMN" type="SMALLINT"/>
-		<db-attribute name="TIMESTAMP_COLUMN" type="TIMESTAMP"/>
-		<db-attribute name="TIME_COLUMN" type="TIME"/>
-		<db-attribute name="TINYINT_COLUMN" type="TINYINT"/>
-		<db-attribute name="VARCHAR_COLUMN" type="VARCHAR" length="255"/>
-	</db-entity>
-	<db-entity name="TYPES_MAPPING_TEST2">
-		<db-attribute name="AAAID" type="INTEGER" isPrimaryKey="true" isMandatory="true"/>
-		<db-attribute name="BINARY_COLUMN" type="BINARY" length="14"/>
-		<db-attribute name="BLOB_COLUMN" type="BLOB"/>
-		<db-attribute name="LONGVARBINARY_COLUMN" type="LONGVARBINARY"/>
-		<db-attribute name="VARBINARY_COLUMN" type="VARBINARY" length="1000"/>
-	</db-entity>
-	<db-entity name="UUID_TEST">
-		<db-attribute name="ID" type="INTEGER" isPrimaryKey="true" isMandatory="true"/>
-		<db-attribute name="UUID" type="VARCHAR" length="100"/>
-	</db-entity>
-	<obj-entity name="ArraysEntity" className="org.apache.cayenne.testdo.misc_types.ArraysEntity" dbEntityName="ARRAYS_ENTITY">
-		<obj-attribute name="byteArray" type="byte[]" db-attribute-path="BYTE_ARRAY"/>
-		<obj-attribute name="byteWrapperArray" type="java.lang.Byte[]" db-attribute-path="BYTE_WRAPPER_ARRAY"/>
-		<obj-attribute name="charArray" type="char[]" db-attribute-path="CHAR_ARRAY"/>
-		<obj-attribute name="charWrapperArray" type="java.lang.Character[]" db-attribute-path="CHAR_WRAPPER_ARRAY"/>
-	</obj-entity>
-	<obj-entity name="ArtGroup" className="org.apache.cayenne.testdo.testmap.ArtGroup" dbEntityName="ARTGROUP">
-		<obj-attribute name="name" type="java.lang.String" db-attribute-path="NAME"/>
-	</obj-entity>
-	<obj-entity name="Artist" className="org.apache.cayenne.testdo.testmap.Artist" dbEntityName="ARTIST">
-		<obj-attribute name="artistName" type="java.lang.String" db-attribute-path="ARTIST_NAME"/>
-		<obj-attribute name="dateOfBirth" type="java.util.Date" db-attribute-path="DATE_OF_BIRTH"/>
-	</obj-entity>
-	<obj-entity name="ArtistCallbackTest" className="org.apache.cayenne.testdo.testmap.ArtistCallbackTest" dbEntityName="ARTIST_CT">
-		<obj-attribute name="artistName" type="java.lang.String"/>
-		<obj-attribute name="dateOfBirth" type="java.util.Date"/>
-		<post-add method-name="prePersistEntityObjEntity"/>
-		<post-persist method-name="postPersistEntityObjEntity"/>
-		<pre-update method-name="preUpdateEntityObjEntity"/>
-		<post-update method-name="postUpdateEntityObjEntity"/>
-		<pre-remove method-name="preRemoveEntityObjEntity"/>
-		<post-remove method-name="postRemoveEntityObjEntity"/>
-		<post-load method-name="postLoadEntityObjEntity"/>
-	</obj-entity>
-	<obj-entity name="ArtistExhibit" className="org.apache.cayenne.testdo.testmap.ArtistExhibit" dbEntityName="ARTIST_EXHIBIT">
-	</obj-entity>
-	<obj-entity name="BigDecimalEntity" className="org.apache.cayenne.testdo.numeric_types.BigDecimalEntity" dbEntityName="BIGDECIMAL_ENTITY">
-		<obj-attribute name="bigDecimalField" type="java.math.BigDecimal" db-attribute-path="BIGDECIMAL_FIELD"/>
-	</obj-entity>
-	<obj-entity name="BigIntegerEntity" className="org.apache.cayenne.testdo.numeric_types.BigIntegerEntity" dbEntityName="BIGINTEGER_ENTITY">
-		<obj-attribute name="bigIntegerField" type="java.math.BigInteger" db-attribute-path="BIG_INTEGER_FIELD"/>
-	</obj-entity>
-	<obj-entity name="BinaryPKTest1" className="org.apache.cayenne.testdo.binary_pk.BinaryPKTest1" dbEntityName="BINARY_PK_TEST1">
-		<obj-attribute name="name" type="java.lang.String" db-attribute-path="NAME"/>
-	</obj-entity>
-	<obj-entity name="BinaryPKTest2" className="org.apache.cayenne.testdo.binary_pk.BinaryPKTest2" dbEntityName="BINARY_PK_TEST2">
-		<obj-attribute name="detailName" type="java.lang.String" db-attribute-path="DETAIL_NAME"/>
-	</obj-entity>
-	<obj-entity name="BitNumberTestEntity" className="org.apache.cayenne.testdo.numeric_types.BitNumberTestEntity" dbEntityName="BIT_TEST">
-		<obj-attribute name="bitColumn" type="java.lang.Integer" db-attribute-path="BIT_COLUMN"/>
-	</obj-entity>
-	<obj-entity name="BitTestEntity" className="org.apache.cayenne.testdo.numeric_types.BitTestEntity" dbEntityName="BIT_TEST">
-		<obj-attribute name="bitColumn" type="java.lang.Boolean" db-attribute-path="BIT_COLUMN"/>
-	</obj-entity>
-	<obj-entity name="BlobTestEntity" className="org.apache.cayenne.testdo.lob.BlobTestEntity" dbEntityName="BLOB_TEST">
-		<obj-attribute name="blobCol" type="byte[]" db-attribute-path="BLOB_COL"/>
-	</obj-entity>
-	<obj-entity name="BooleanTestEntity" className="org.apache.cayenne.testdo.numeric_types.BooleanTestEntity" dbEntityName="BOOLEAN_TEST">
-		<obj-attribute name="booleanColumn" type="java.lang.Boolean" db-attribute-path="BOOLEAN_COLUMN"/>
-	</obj-entity>
-	<obj-entity name="CalendarEntity" className="org.apache.cayenne.testdo.legacy_datetime.CalendarEntity" dbEntityName="CALENDAR_TEST">
-		<obj-attribute name="calendarField" type="java.util.Calendar" db-attribute-path="CALENDAR_FIELD"/>
-	</obj-entity>
-	<obj-entity name="CharFkTestEntity" className="org.apache.cayenne.testdo.compound.CharFkTestEntity" dbEntityName="CHAR_FK_TEST">
-		<obj-attribute name="name" type="java.lang.String" db-attribute-path="NAME"/>
-	</obj-entity>
-	<obj-entity name="CharPkTestEntity" className="org.apache.cayenne.testdo.compound.CharPkTestEntity" dbEntityName="CHAR_PK_TEST">
-		<obj-attribute name="otherCol" type="java.lang.String" db-attribute-path="OTHER_COL"/>
-		<obj-attribute name="pkCol" type="java.lang.String" db-attribute-path="PK_COL"/>
-	</obj-entity>
-	<obj-entity name="CharacterEntity" className="org.apache.cayenne.testdo.misc_types.CharacterEntity" dbEntityName="CHARACTER_ENTITY">
-		<obj-attribute name="characterField" type="java.lang.Character" db-attribute-path="CHARACTER_FIELD"/>
-	</obj-entity>
-	<obj-entity name="ClobTestEntity" className="org.apache.cayenne.testdo.lob.ClobTestEntity" dbEntityName="CLOB_TEST">
-		<obj-attribute name="clobCol" type="java.lang.String" db-attribute-path="CLOB_COL"/>
-	</obj-entity>
-	<obj-entity name="ClobTestRelation" className="org.apache.cayenne.testdo.lob.ClobTestRelation" dbEntityName="CLOB_TEST_RELATION">
-		<obj-attribute name="id" type="java.lang.Integer" db-attribute-path="ID"/>
-		<obj-attribute name="value" type="java.lang.Integer" db-attribute-path="VALUE"/>
-	</obj-entity>
-	<obj-entity name="CompoundFkTestEntity" className="org.apache.cayenne.testdo.compound.CompoundFkTestEntity" dbEntityName="COMPOUND_FK_TEST">
-		<obj-attribute name="name" type="java.lang.String" db-attribute-path="NAME"/>
-	</obj-entity>
-	<obj-entity name="CompoundPainting" className="org.apache.cayenne.testdo.testmap.CompoundPainting" dbEntityName="PAINTING">
-		<obj-attribute name="artistName" type="java.lang.String" db-attribute-path="toArtist.ARTIST_NAME"/>
-		<obj-attribute name="estimatedPrice" type="java.math.BigDecimal" db-attribute-path="ESTIMATED_PRICE"/>
-		<obj-attribute name="galleryName" type="java.lang.String" db-attribute-path="toGallery.GALLERY_NAME"/>
-		<obj-attribute name="paintingTitle" type="java.lang.String" db-attribute-path="PAINTING_TITLE"/>
-		<obj-attribute name="textReview" type="java.lang.String" db-attribute-path="toPaintingInfo.TEXT_REVIEW"/>
-	</obj-entity>
-	<obj-entity name="CompoundPkTestEntity" className="org.apache.cayenne.testdo.compound.CompoundPkTestEntity" dbEntityName="COMPOUND_PK_TEST">
-		<obj-attribute name="key1" type="java.lang.String" db-attribute-path="KEY1"/>
-		<obj-attribute name="key2" type="java.lang.String" db-attribute-path="KEY2"/>
-		<obj-attribute name="name" type="java.lang.String" db-attribute-path="NAME"/>
-	</obj-entity>
-	<obj-entity name="DateTestEntity" className="org.apache.cayenne.testdo.legacy_datetime.DateTestEntity" dbEntityName="DATE_TEST">
-		<obj-attribute name="dateColumn" type="java.util.Date" db-attribute-path="DATE_COLUMN"/>
-		<obj-attribute name="timeColumn" type="java.util.Date" db-attribute-path="TIME_COLUMN"/>
-		<obj-attribute name="timestampColumn" type="java.util.Date" db-attribute-path="TIMESTAMP_COLUMN"/>
-	</obj-entity>
-	<obj-entity name="DecimalPKTest1" className="org.apache.cayenne.testdo.numeric_types.DecimalPKTest1" dbEntityName="DECIMAL_PK_TST">
-		<obj-attribute name="decimalPK" type="java.lang.Double" db-attribute-path="DECIMAL_PK"/>
-		<obj-attribute name="name" type="java.lang.String" db-attribute-path="NAME"/>
-	</obj-entity>
-	<obj-entity name="DecimalPKTestEntity" className="org.apache.cayenne.testdo.numeric_types.DecimalPKTestEntity" dbEntityName="DECIMAL_PK_TST">
-		<obj-attribute name="decimalPK" type="java.math.BigDecimal" db-attribute-path="DECIMAL_PK"/>
-		<obj-attribute name="name" type="java.lang.String" db-attribute-path="NAME"/>
-	</obj-entity>
-	<obj-entity name="EnumEntity" className="org.apache.cayenne.testdo.enum_test.EnumEntity" dbEntityName="ENUM_ENTITY">
-		<obj-attribute name="enumAttribute" type="org.apache.cayenne.testdo.enum_test.Enum1" db-attribute-path="ENUM_ATTRIBUTE"/>
-	</obj-entity>
-	<obj-entity name="Exhibit" className="org.apache.cayenne.testdo.testmap.Exhibit" dbEntityName="EXHIBIT">
-		<obj-attribute name="closingDate" type="java.util.Date" db-attribute-path="CLOSING_DATE"/>
-		<obj-attribute name="openingDate" type="java.util.Date" db-attribute-path="OPENING_DATE"/>
-	</obj-entity>
-	<obj-entity name="ExtendedTypeEntity" className="org.apache.cayenne.testdo.extended_type.ExtendedTypeEntity" dbEntityName="EXTENDED_TYPE_TEST">
-		<obj-attribute name="name" type="org.apache.cayenne.testdo.extended_type.StringET1" db-attribute-path="NAME"/>
-	</obj-entity>
-	<obj-entity name="Gallery" className="org.apache.cayenne.testdo.testmap.Gallery" dbEntityName="GALLERY">
-		<obj-attribute name="galleryName" type="java.lang.String" db-attribute-path="GALLERY_NAME"/>
-	</obj-entity>
-	<obj-entity name="GeneratedColumnCompKey" className="org.apache.cayenne.testdo.generated.GeneratedColumnCompKey" dbEntityName="GENERATED_COLUMN_COMP_KEY">
-		<obj-attribute name="name" type="java.lang.String" db-attribute-path="NAME"/>
-	</obj-entity>
-	<obj-entity name="GeneratedColumnCompMaster" className="org.apache.cayenne.testdo.generated.GeneratedColumnCompMaster" dbEntityName="GENERATED_COLUMN_COMP_M">
-		<obj-attribute name="name" type="java.lang.String" db-attribute-path="NAME"/>
-	</obj-entity>
-	<obj-entity name="GeneratedColumnDep" className="org.apache.cayenne.testdo.generated.GeneratedColumnDep" dbEntityName="GENERATED_COLUMN_DEP">
-		<obj-attribute name="name" type="java.lang.String" db-attribute-path="NAME"/>
-	</obj-entity>
-	<obj-entity name="GeneratedColumnTest2" className="org.apache.cayenne.testdo.generated.GeneratedColumnTest2" dbEntityName="GENERATED_COLUMN_TEST2">
-		<obj-attribute name="name" type="java.lang.String" db-attribute-path="NAME"/>
-	</obj-entity>
-	<obj-entity name="GeneratedColumnTestEntity" className="org.apache.cayenne.testdo.generated.GeneratedColumnTestEntity" dbEntityName="GENERATED_COLUMN_TEST">
-		<obj-attribute name="name" type="java.lang.String" db-attribute-path="NAME"/>
-	</obj-entity>
-	<obj-entity name="GeneratedF1" className="org.apache.cayenne.testdo.generated.GeneratedF1" dbEntityName="GENERATED_F1" superClassName="org.apache.cayenne.GenericPersistentObject">
-	</obj-entity>
-	<obj-entity name="GeneratedF2" className="org.apache.cayenne.testdo.generated.GeneratedF2" dbEntityName="GENERATED_F2" superClassName="org.apache.cayenne.GenericPersistentObject">
-	</obj-entity>
-	<obj-entity name="LongEntity" className="org.apache.cayenne.testdo.numeric_types.LongEntity" dbEntityName="LONG_ENTITY">
-		<obj-attribute name="longField" type="java.lang.Long" db-attribute-path="LONG_FIELD"/>
-	</obj-entity>
-	<obj-entity name="MeaningfulGeneratedColumnTestEntity" className="org.apache.cayenne.testdo.testmap.MeaningfulGeneratedColumnTestEntity" dbEntityName="GENERATED_COLUMN_TEST">
-		<obj-attribute name="generatedColumn" type="java.lang.Integer" db-attribute-path="GENERATED_COLUMN"/>
-		<obj-attribute name="name" type="java.lang.String" db-attribute-path="NAME"/>
-	</obj-entity>
-	<obj-entity name="MeaningfulPKDep" className="org.apache.cayenne.testdo.meaningful_pk.MeaningfulPKDep" dbEntityName="MEANINGFUL_PK_DEP">
-		<obj-attribute name="descr" type="java.lang.String" db-attribute-path="DESCR"/>
-	</obj-entity>
-	<obj-entity name="MeaningfulPKTest1" className="org.apache.cayenne.testdo.meaningful_pk.MeaningfulPKTest1" dbEntityName="MEANINGFUL_PK_TEST1">
-		<obj-attribute name="descr" type="java.lang.String" db-attribute-path="DESCR"/>
-		<obj-attribute name="pkAttribute" type="java.lang.Integer" db-attribute-path="PK_ATTRIBUTE"/>
-	</obj-entity>
-	<obj-entity name="MixedPersistenceStrategy" className="org.apache.cayenne.testdo.mixed_persistence_strategy.MixedPersistenceStrategy" dbEntityName="MIXED_PERSISTENCE_STRATEGY">
-		<obj-attribute name="description" type="java.lang.String" db-attribute-path="DESCRIPTION"/>
-		<obj-attribute name="name" type="java.lang.String" db-attribute-path="NAME"/>
-	</obj-entity>
-	<obj-entity name="MixedPersistenceStrategy2" className="org.apache.cayenne.testdo.mixed_persistence_strategy.MixedPersistenceStrategy2" dbEntityName="MIXED_PERSISTENCE_STRATEGY2">
-		<obj-attribute name="name" type="java.lang.String" db-attribute-path="NAME"/>
-	</obj-entity>
-	<obj-entity name="NoPkTestEntity" className="org.apache.cayenne.testdo.no_pk.NoPkTestEntity" dbEntityName="NO_PK_TEST">
-		<obj-attribute name="attribute1" type="java.lang.Integer" db-attribute-path="ATTRIBUTE1"/>
-	</obj-entity>
-	<obj-entity name="Painting" className="org.apache.cayenne.testdo.testmap.Painting" dbEntityName="PAINTING" superClassName="org.apache.cayenne.testdo.testmap.ArtPersistentObject">
-		<obj-attribute name="estimatedPrice" type="java.math.BigDecimal" db-attribute-path="ESTIMATED_PRICE"/>
-		<obj-attribute name="paintingDescription" type="java.lang.String" db-attribute-path="PAINTING_DESCRIPTION"/>
-		<obj-attribute name="paintingTitle" type="java.lang.String" db-attribute-path="PAINTING_TITLE"/>
-	</obj-entity>
-	<obj-entity name="Painting1" className="org.apache.cayenne.testdo.testmap.Painting1" dbEntityName="PAINTING1">
-		<obj-attribute name="estimatedPrice" type="java.math.BigDecimal" db-attribute-path="ESTIMATED_PRICE"/>
-		<obj-attribute name="paintingTitle" type="java.lang.String" db-attribute-path="PAINTING_TITLE"/>
-	</obj-entity>
-	<obj-entity name="PaintingInfo" className="org.apache.cayenne.testdo.testmap.PaintingInfo" dbEntityName="PAINTING_INFO">
-		<obj-attribute name="imageBlob" type="byte[]" db-attribute-path="IMAGE_BLOB"/>
-		<obj-attribute name="textReview" type="java.lang.String" db-attribute-path="TEXT_REVIEW"/>
-	</obj-entity>
-	<obj-entity name="PrimitivesTestEntity" className="org.apache.cayenne.testdo.primitive.PrimitivesTestEntity" dbEntityName="PRIMITIVES_TEST">
-		<obj-attribute name="booleanColumn" type="boolean" db-attribute-path="BOOLEAN_COLUMN"/>
-		<obj-attribute name="intColumn" type="int" db-attribute-path="INT_COLUMN"/>
-	</obj-entity>
-	<obj-entity name="ROArtist" className="org.apache.cayenne.testdo.testmap.ROArtist" readOnly="true" dbEntityName="ARTIST">
-		<obj-attribute name="artistName" type="java.lang.String" db-attribute-path="ARTIST_NAME"/>
-		<obj-attribute name="dateOfBirth" type="java.sql.Date" db-attribute-path="DATE_OF_BIRTH"/>
-	</obj-entity>
-	<obj-entity name="ROPainting" className="org.apache.cayenne.testdo.testmap.ROPainting" readOnly="true" dbEntityName="PAINTING">
-		<obj-attribute name="estimatedPrice" type="java.math.BigDecimal" db-attribute-path="ESTIMATED_PRICE"/>
-		<obj-attribute name="paintingTitle" type="java.lang.String" db-attribute-path="PAINTING_TITLE"/>
-	</obj-entity>
-	<obj-entity name="RWCompoundPainting" className="org.apache.cayenne.testdo.testmap.RWCompoundPainting" dbEntityName="PAINTING">
-		<obj-attribute name="estimatedPrice" type="java.math.BigDecimal" db-attribute-path="ESTIMATED_PRICE"/>
-		<obj-attribute name="paintingTitle" type="java.lang.String" db-attribute-path="PAINTING_TITLE"/>
-		<obj-attribute name="textReview" type="java.lang.String" db-attribute-path="toPaintingInfo.TEXT_REVIEW"/>
-	</obj-entity>
-	<obj-entity name="ReturnTypesMap1" className="org.apache.cayenne.testdo.return_types.ReturnTypesMap1" dbEntityName="TYPES_MAPPING_TEST1" superClassName="org.apache.cayenne.GenericPersistentObject">
-		<obj-attribute name="bigintColumn" type="java.lang.Long" db-attribute-path="BIGINT_COLUMN"/>
-		<obj-attribute name="bitColumn" type="java.lang.Boolean" db-attribute-path="BIT_COLUMN"/>
-		<obj-attribute name="booleanColumn" type="java.lang.Boolean" db-attribute-path="BOOLEAN_COLUMN"/>
-		<obj-attribute name="charColumn" type="java.lang.String" db-attribute-path="CHAR_COLUMN"/>
-		<obj-attribute name="clobColumn" type="java.lang.String" db-attribute-path="CLOB_COLUMN"/>
-		<obj-attribute name="dateColumn" type="java.util.Date" db-attribute-path="DATE_COLUMN"/>
-		<obj-attribute name="decimalColumn" type="java.math.BigDecimal" db-attribute-path="DECIMAL_COLUMN"/>
-		<obj-attribute name="doubleColumn" type="java.lang.Double" db-attribute-path="DOUBLE_COLUMN"/>
-		<obj-attribute name="floatColumn" type="java.lang.Float" db-attribute-path="FLOAT_COLUMN"/>
-		<obj-attribute name="integerColumn" type="java.lang.Integer" db-attribute-path="INTEGER_COLUMN"/>
-		<obj-attribute name="longvarcharColumn" type="java.lang.String" db-attribute-path="LONGVARCHAR_COLUMN"/>
-		<obj-attribute name="numericColumn" type="java.math.BigDecimal" db-attribute-path="NUMERIC_COLUMN"/>
-		<obj-attribute name="realColumn" type="java.lang.Float" db-attribute-path="REAL_COLUMN"/>
-		<obj-attribute name="smallintColumn" type="java.lang.Short" db-attribute-path="SMALLINT_COLUMN"/>
-		<obj-attribute name="timeColumn" type="java.util.Date" db-attribute-path="TIME_COLUMN"/>
-		<obj-attribute name="timestampColumn" type="java.util.Date" db-attribute-path="TIMESTAMP_COLUMN"/>
-		<obj-attribute name="tinyintColumn" type="java.lang.Byte" db-attribute-path="TINYINT_COLUMN"/>
-		<obj-attribute name="varcharColumn" type="java.lang.String" db-attribute-path="VARCHAR_COLUMN"/>
-	</obj-entity>
-	<obj-entity name="ReturnTypesMap2" className="org.apache.cayenne.testdo.return_types.ReturnTypesMap2" dbEntityName="TYPES_MAPPING_TEST2" superClassName="org.apache.cayenne.GenericPersistentObject">
-		<obj-attribute name="binaryColumn" type="byte[]" db-attribute-path="BINARY_COLUMN"/>
-		<obj-attribute name="blobColumn" type="byte[]" db-attribute-path="BLOB_COLUMN"/>
-		<obj-attribute name="longvarbinaryColumn" type="byte[]" db-attribute-path="LONGVARBINARY_COLUMN"/>
-		<obj-attribute name="varbinaryColumn" type="byte[]" db-attribute-path="VARBINARY_COLUMN"/>
-	</obj-entity>
-	<obj-entity name="SerializableEntity" className="org.apache.cayenne.testdo.misc_types.SerializableEntity" dbEntityName="SERIALIZABLE_ENTITY">
-		<obj-attribute name="serializableField" type="org.apache.cayenne.MockSerializable" db-attribute-path="SERIALIZABLE_FIELD"/>
-	</obj-entity>
-	<obj-entity name="SmallintTestEntity" className="org.apache.cayenne.testdo.numeric_types.SmallintTestEntity" dbEntityName="SMALLINT_TEST">
-		<obj-attribute name="smallintCol" type="java.lang.Short" db-attribute-path="SMALLINT_COL"/>
-	</obj-entity>
-	<obj-entity name="SubPainting" className="org.apache.cayenne.testdo.testmap.SubPainting" dbEntityName="PAINTING">
-		<obj-attribute name="paintingTitle" type="java.lang.String" db-attribute-path="PAINTING_TITLE"/>
-	</obj-entity>
-	<obj-entity name="TinyintTestEntity" className="org.apache.cayenne.testdo.numeric_types.TinyintTestEntity" dbEntityName="TINYINT_TEST">
-		<obj-attribute name="tinyintCol" type="java.lang.Byte" db-attribute-path="TINYINT_COL"/>
-	</obj-entity>
-	<obj-entity name="UuidTestEntity" className="org.apache.cayenne.testdo.uuid.UuidTestEntity" dbEntityName="UUID_TEST">
-		<obj-attribute name="uuid" type="java.util.UUID" db-attribute-path="UUID"/>
-	</obj-entity>
-	<db-relationship name="artistGroupArray" source="ARTGROUP" target="ARTIST_GROUP" toMany="true">
-		<db-attribute-pair source="GROUP_ID" target="GROUP_ID"/>
-	</db-relationship>
-	<db-relationship name="toChildGroups" source="ARTGROUP" target="ARTGROUP" toMany="true">
-		<db-attribute-pair source="GROUP_ID" target="PARENT_GROUP_ID"/>
-	</db-relationship>
-	<db-relationship name="toParentGroup" source="ARTGROUP" target="ARTGROUP" toMany="false">
-		<db-attribute-pair source="PARENT_GROUP_ID" target="GROUP_ID"/>
-	</db-relationship>
-	<db-relationship name="artistExhibitArray" source="ARTIST" target="ARTIST_EXHIBIT" toDependentPK="true" toMany="true">
-		<db-attribute-pair source="ARTIST_ID" target="ARTIST_ID"/>
-	</db-relationship>
-	<db-relationship name="artistGroupArray" source="ARTIST" target="ARTIST_GROUP" toMany="true">
-		<db-attribute-pair source="ARTIST_ID" target="ARTIST_ID"/>
-	</db-relationship>
-	<db-relationship name="paintingArray" source="ARTIST" target="PAINTING" toMany="true">
-		<db-attribute-pair source="ARTIST_ID" target="ARTIST_ID"/>
-	</db-relationship>
-	<db-relationship name="toArtist" source="ARTIST_EXHIBIT" target="ARTIST" toMany="false">
-		<db-attribute-pair source="ARTIST_ID" target="ARTIST_ID"/>
-	</db-relationship>
-	<db-relationship name="toExhibit" source="ARTIST_EXHIBIT" target="EXHIBIT" toMany="false">
-		<db-attribute-pair source="EXHIBIT_ID" target="EXHIBIT_ID"/>
-	</db-relationship>
-	<db-relationship name="toArtist" source="ARTIST_GROUP" target="ARTIST" toMany="false">
-		<db-attribute-pair source="ARTIST_ID" target="ARTIST_ID"/>
-	</db-relationship>
-	<db-relationship name="toGroup" source="ARTIST_GROUP" target="ARTGROUP" toMany="false">
-		<db-attribute-pair source="GROUP_ID" target="GROUP_ID"/>
-	</db-relationship>
-	<db-relationship name="binaryPKDetails" source="BINARY_PK_TEST1" target="BINARY_PK_TEST2" toMany="true">
-		<db-attribute-pair source="BIN_ID" target="FK_ID"/>
-	</db-relationship>
-	<db-relationship name="toBinaryPKMaster" source="BINARY_PK_TEST2" target="BINARY_PK_TEST1" toMany="false">
-		<db-attribute-pair source="FK_ID" target="BIN_ID"/>
-	</db-relationship>
-	<db-relationship name="toCharPK" source="CHAR_FK_TEST" target="CHAR_PK_TEST" toMany="false">
-		<db-attribute-pair source="FK_COL" target="PK_COL"/>
-	</db-relationship>
-	<db-relationship name="charFKs" source="CHAR_PK_TEST" target="CHAR_FK_TEST" toMany="true">
-		<db-attribute-pair source="PK_COL" target="FK_COL"/>
-	</db-relationship>
-	<db-relationship name="clob" source="CLOB_TEST" target="CLOB_TEST_RELATION" toMany="true">
-		<db-attribute-pair source="CLOB_TEST_ID" target="ID_CLOB"/>
-	</db-relationship>
-	<db-relationship name="CLOB_REL" source="CLOB_TEST_RELATION" target="CLOB_TEST" toMany="false">
-		<db-attribute-pair source="ID_CLOB" target="CLOB_TEST_ID"/>
-	</db-relationship>
-	<db-relationship name="toCompoundPk" source="COMPOUND_FK_TEST" target="COMPOUND_PK_TEST" toMany="false">
-		<db-attribute-pair source="F_KEY1" target="KEY1"/>
-		<db-attribute-pair source="F_KEY2" target="KEY2"/>
-	</db-relationship>
-	<db-relationship name="compoundFkArray" source="COMPOUND_PK_TEST" target="COMPOUND_FK_TEST" toMany="true">
-		<db-attribute-pair source="KEY1" target="F_KEY1"/>
-		<db-attribute-pair source="KEY2" target="F_KEY2"/>
-	</db-relationship>
-	<db-relationship name="artistExhibitArray" source="EXHIBIT" target="ARTIST_EXHIBIT" toDependentPK="true" toMany="true">
-		<db-attribute-pair source="EXHIBIT_ID" target="EXHIBIT_ID"/>
-	</db-relationship>
-	<db-relationship name="toGallery" source="EXHIBIT" target="GALLERY" toMany="false">
-		<db-attribute-pair source="GALLERY_ID" target="GALLERY_ID"/>
-	</db-relationship>
-	<db-relationship name="exhibitArray" source="GALLERY" target="EXHIBIT" toMany="true">
-		<db-attribute-pair source="GALLERY_ID" target="GALLERY_ID"/>
-	</db-relationship>
-	<db-relationship name="paintingArray" source="GALLERY" target="PAINTING" toMany="true">
-		<db-attribute-pair source="GALLERY_ID" target="GALLERY_ID"/>
-	</db-relationship>
-	<db-relationship name="toMaster" source="GENERATED_COLUMN_COMP_KEY" target="GENERATED_COLUMN_COMP_M" toMany="false">
-		<db-attribute-pair source="PROPAGATED_PK" target="ID"/>
-	</db-relationship>
-	<db-relationship name="toDetail" source="GENERATED_COLUMN_COMP_M" target="GENERATED_COLUMN_COMP_KEY" toDependentPK="true" toMany="true">
-		<db-attribute-pair source="ID" target="PROPAGATED_PK"/>
-	</db-relationship>
-	<db-relationship name="toMaster" source="GENERATED_COLUMN_DEP" target="GENERATED_COLUMN_TEST" toMany="false">
-		<db-attribute-pair source="GENERATED_COLUMN_FK" target="GENERATED_COLUMN"/>
-	</db-relationship>
-	<db-relationship name="toDep" source="GENERATED_COLUMN_TEST" target="GENERATED_COLUMN_DEP" toDependentPK="true" toMany="false">
-		<db-attribute-pair source="GENERATED_COLUMN" target="GENERATED_COLUMN_FK"/>
-	</db-relationship>
-	<db-relationship name="join" source="GENERATED_F1" target="GENERATED_JOIN" toMany="true">
-		<db-attribute-pair source="ID" target="ID1"/>
-	</db-relationship>
-	<db-relationship name="join" source="GENERATED_F2" target="GENERATED_JOIN" toMany="true">
-		<db-attribute-pair source="ID" target="ID2"/>
-	</db-relationship>
-	<db-relationship name="f1" source="GENERATED_JOIN" target="GENERATED_F1" toMany="false">
-		<db-attribute-pair source="ID1" target="ID"/>
-	</db-relationship>
-	<db-relationship name="f2" source="GENERATED_JOIN" target="GENERATED_F2" toMany="false">
-		<db-attribute-pair source="ID2" target="ID"/>
-	</db-relationship>
-	<db-relationship name="toMeaningfulPK" source="MEANINGFUL_PK_DEP" target="MEANINGFUL_PK_TEST1" toMany="false">
-		<db-attribute-pair source="MASTER_PK" target="PK_ATTRIBUTE"/>
-	</db-relationship>
-	<db-relationship name="meaningfulPKDepArray" source="MEANINGFUL_PK_TEST1" target="MEANINGFUL_PK_DEP" toMany="true">
-		<db-attribute-pair source="PK_ATTRIBUTE" target="MASTER_PK"/>
-	</db-relationship>
-	<db-relationship name="details" source="MIXED_PERSISTENCE_STRATEGY" target="MIXED_PERSISTENCE_STRATEGY2" toMany="true">
-		<db-attribute-pair source="ID" target="MASTER_ID"/>
-	</db-relationship>
-	<db-relationship name="master" source="MIXED_PERSISTENCE_STRATEGY2" target="MIXED_PERSISTENCE_STRATEGY" toMany="false">
-		<db-attribute-pair source="MASTER_ID" target="ID"/>
-	</db-relationship>
-	<db-relationship name="toArtist" source="PAINTING" target="ARTIST" toMany="false">
-		<db-attribute-pair source="ARTIST_ID" target="ARTIST_ID"/>
-	</db-relationship>
-	<db-relationship name="toGallery" source="PAINTING" target="GALLERY" toMany="false">
-		<db-attribute-pair source="GALLERY_ID" target="GALLERY_ID"/>
-	</db-relationship>
-	<db-relationship name="toPaintingInfo" source="PAINTING" target="PAINTING_INFO" toDependentPK="true" toMany="false">
-		<db-attribute-pair source="PAINTING_ID" target="PAINTING_ID"/>
-	</db-relationship>
-	<db-relationship name="toArtist" source="PAINTING1" target="ARTIST" toMany="false">
-		<db-attribute-pair source="ARTIST_ID" target="ARTIST_ID"/>
-	</db-relationship>
-	<db-relationship name="painting" source="PAINTING_INFO" target="PAINTING" toMany="false">
-		<db-attribute-pair source="PAINTING_ID" target="PAINTING_ID"/>
-	</db-relationship>
-	<obj-relationship name="artistArray" source="ArtGroup" target="Artist" deleteRule="Nullify" db-relationship-path="artistGroupArray.toArtist"/>
-	<obj-relationship name="childGroupsArray" source="ArtGroup" target="ArtGroup" deleteRule="Nullify" db-relationship-path="toChildGroups"/>
-	<obj-relationship name="toParentGroup" source="ArtGroup" target="ArtGroup" deleteRule="Nullify" db-relationship-path="toParentGroup"/>
-	<obj-relationship name="artistExhibitArray" source="Artist" target="ArtistExhibit" deleteRule="Cascade" db-relationship-path="artistExhibitArray"/>
-	<obj-relationship name="groupArray" source="Artist" target="ArtGroup" deleteRule="Cascade" db-relationship-path="artistGroupArray.toGroup"/>
-	<obj-relationship name="paintingArray" source="Artist" target="Painting" deleteRule="Cascade" db-relationship-path="paintingArray"/>
-	<obj-relationship name="toArtist" source="ArtistExhibit" target="Artist" deleteRule="Nullify" db-relationship-path="toArtist"/>
-	<obj-relationship name="toExhibit" source="ArtistExhibit" target="Exhibit" deleteRule="Nullify" db-relationship-path="toExhibit"/>
-	<obj-relationship name="binaryPKDetails" source="BinaryPKTest1" target="BinaryPKTest2" db-relationship-path="binaryPKDetails"/>
-	<obj-relationship name="toBinaryPKMaster" source="BinaryPKTest2" target="BinaryPKTest1" db-relationship-path="toBinaryPKMaster"/>
-	<obj-relationship name="toCharPK" source="CharFkTestEntity" target="CharPkTestEntity" db-relationship-path="toCharPK"/>
-	<obj-relationship name="charFKs" source="CharPkTestEntity" target="CharFkTestEntity" db-relationship-path="charFKs"/>
-	<obj-relationship name="clobValue" source="ClobTestEntity" target="ClobTestRelation" db-relationship-path="clob"/>
-	<obj-relationship name="clobId" source="ClobTestRelation" target="ClobTestEntity" db-relationship-path="CLOB_REL"/>
-	<obj-relationship name="toCompoundPk" source="CompoundFkTestEntity" target="CompoundPkTestEntity" db-relationship-path="toCompoundPk"/>
-	<obj-relationship name="toArtist" source="CompoundPainting" target="Artist" deleteRule="Nullify" db-relationship-path="toArtist"/>
-	<obj-relationship name="toGallery" source="CompoundPainting" target="Gallery" deleteRule="Nullify" db-relationship-path="toGallery"/>
-	<obj-relationship name="toPaintingInfo" source="CompoundPainting" target="PaintingInfo" deleteRule="Cascade" db-relationship-path="toPaintingInfo"/>
-	<obj-relationship name="compoundFkArray" source="CompoundPkTestEntity" target="CompoundFkTestEntity" db-relationship-path="compoundFkArray"/>
-	<obj-relationship name="artistExhibitArray" source="Exhibit" target="ArtistExhibit" deleteRule="Cascade" db-relationship-path="artistExhibitArray"/>
-	<obj-relationship name="toGallery" source="Exhibit" target="Gallery" deleteRule="Nullify" db-relationship-path="toGallery"/>
-	<obj-relationship name="exhibitArray" source="Gallery" target="Exhibit" deleteRule="Cascade" db-relationship-path="exhibitArray"/>
-	<obj-relationship name="paintingArray" source="Gallery" target="Painting" deleteRule="Deny" db-relationship-path="paintingArray"/>
-	<obj-relationship name="toMaster" source="GeneratedColumnCompKey" target="GeneratedColumnCompMaster" db-relationship-path="toMaster"/>
-	<obj-relationship name="toDetail" source="GeneratedColumnCompMaster" target="GeneratedColumnCompKey" db-relationship-path="toDetail"/>
-	<obj-relationship name="toMaster" source="GeneratedColumnDep" target="GeneratedColumnTestEntity" db-relationship-path="toMaster"/>
-	<obj-relationship name="toDep" source="GeneratedColumnTestEntity" target="GeneratedColumnDep" db-relationship-path="toDep"/>
-	<obj-relationship name="f2" source="GeneratedF1" target="GeneratedF2" deleteRule="Nullify" db-relationship-path="join.f2"/>
-	<obj-relationship name="f1" source="GeneratedF2" target="GeneratedF1" deleteRule="Nullify" db-relationship-path="join.f1"/>
-	<obj-relationship name="toMeaningfulPK" source="MeaningfulPKDep" target="MeaningfulPKTest1" db-relationship-path="toMeaningfulPK"/>
-	<obj-relationship name="meaningfulPKDepArray" source="MeaningfulPKTest1" target="MeaningfulPKDep" db-relationship-path="meaningfulPKDepArray"/>
-	<obj-relationship name="details" source="MixedPersistenceStrategy" target="MixedPersistenceStrategy2" db-relationship-path="details"/>
-	<obj-relationship name="master" source="MixedPersistenceStrategy2" target="MixedPersistenceStrategy" db-relationship-path="master"/>
-	<obj-relationship name="toArtist" source="Painting" target="Artist" deleteRule="Nullify" db-relationship-path="toArtist"/>
-	<obj-relationship name="toGallery" source="Painting" target="Gallery" deleteRule="Nullify" db-relationship-path="toGallery"/>
-	<obj-relationship name="toPaintingInfo" source="Painting" target="PaintingInfo" deleteRule="Cascade" db-relationship-path="toPaintingInfo"/>
-	<obj-relationship name="toArtist" source="Painting1" target="Artist" deleteRule="Nullify" db-relationship-path="toArtist"/>
-	<obj-relationship name="painting" source="PaintingInfo" target="Painting" deleteRule="Nullify" db-relationship-path="painting"/>
-	<obj-relationship name="paintingArray" source="ROArtist" target="Painting" deleteRule="Deny" db-relationship-path="paintingArray"/>
-	<obj-relationship name="toArtist" source="ROPainting" target="Artist" deleteRule="Nullify" db-relationship-path="toArtist"/>
-	<sql-query name="NonSelectingQuery" root="data-map" root-name="testmap" column-name-capitalization="UPPER">
+	<dbEntity name="ARRAYS_ENTITY">
+		<dbAttribute name="BYTE_ARRAY" type="VARBINARY" length="200"/>
+		<dbAttribute name="BYTE_WRAPPER_ARRAY" type="VARBINARY" length="200"/>
+		<dbAttribute name="CHAR_ARRAY" type="VARCHAR" length="200"/>
+		<dbAttribute name="CHAR_WRAPPER_ARRAY" type="VARCHAR" length="200"/>
+		<dbAttribute name="ID" type="INTEGER" primaryKey="true" mandatory="true"/>
+	</dbEntity>
+	<dbEntity name="ARTGROUP">
+		<dbAttribute name="GROUP_ID" type="INTEGER" primaryKey="true" mandatory="true"/>
+		<dbAttribute name="NAME" type="VARCHAR" mandatory="true" length="100"/>
+		<dbAttribute name="PARENT_GROUP_ID" type="INTEGER"/>
+	</dbEntity>
+	<dbEntity name="ARTIST">
+		<dbAttribute name="ARTIST_ID" type="BIGINT" primaryKey="true" mandatory="true"/>
+		<dbAttribute name="ARTIST_NAME" type="CHAR" mandatory="true" length="254"/>
+		<dbAttribute name="DATE_OF_BIRTH" type="DATE"/>
+	</dbEntity>
+	<dbEntity name="ARTIST_CT">
+		<dbAttribute name="ARTIST_ID" type="INTEGER" primaryKey="true" mandatory="true"/>
+		<dbAttribute name="ARTIST_NAME" type="CHAR" mandatory="true" length="254"/>
+		<dbAttribute name="DATE_OF_BIRTH" type="DATE"/>
+	</dbEntity>
+	<dbEntity name="ARTIST_EXHIBIT">
+		<dbAttribute name="ARTIST_ID" type="BIGINT" primaryKey="true" mandatory="true"/>
+		<dbAttribute name="EXHIBIT_ID" type="INTEGER" primaryKey="true" mandatory="true"/>
+	</dbEntity>
+	<dbEntity name="ARTIST_GROUP">
+		<dbAttribute name="ARTIST_ID" type="BIGINT" primaryKey="true" mandatory="true"/>
+		<dbAttribute name="GROUP_ID" type="INTEGER" primaryKey="true" mandatory="true"/>
+	</dbEntity>
+	<dbEntity name="BIGDECIMAL_ENTITY">
+		<dbAttribute name="BIGDECIMAL_FIELD" type="NUMERIC" length="12" scale="2"/>
+		<dbAttribute name="ID" type="INTEGER" primaryKey="true" mandatory="true"/>
+	</dbEntity>
+	<dbEntity name="BIGINTEGER_ENTITY">
+		<dbAttribute name="BIG_INTEGER_FIELD" type="BIGINT"/>
+		<dbAttribute name="ID" type="INTEGER" primaryKey="true" mandatory="true"/>
+	</dbEntity>
+	<dbEntity name="BINARY_PK_TEST1">
+		<dbAttribute name="BIN_ID" type="VARBINARY" primaryKey="true" mandatory="true" length="32"/>
+		<dbAttribute name="NAME" type="VARCHAR" length="10"/>
+	</dbEntity>
+	<dbEntity name="BINARY_PK_TEST2">
+		<dbAttribute name="DETAIL_NAME" type="VARCHAR" length="10"/>
+		<dbAttribute name="FK_ID" type="VARBINARY" length="32"/>
+		<dbAttribute name="ID" type="INTEGER" primaryKey="true" mandatory="true"/>
+	</dbEntity>
+	<dbEntity name="BIT_TEST">
+		<dbAttribute name="BIT_COLUMN" type="BIT" mandatory="true"/>
+		<dbAttribute name="ID" type="INTEGER" primaryKey="true" mandatory="true"/>
+	</dbEntity>
+	<dbEntity name="BLOB_TEST">
+		<dbAttribute name="BLOB_COL" type="BLOB"/>
+		<dbAttribute name="BLOB_TEST_ID" type="INTEGER" primaryKey="true" mandatory="true"/>
+	</dbEntity>
+	<dbEntity name="BOOLEAN_TEST">
+		<dbAttribute name="BOOLEAN_COLUMN" type="BOOLEAN" mandatory="true"/>
+		<dbAttribute name="ID" type="INTEGER" primaryKey="true" mandatory="true"/>
+	</dbEntity>
+	<dbEntity name="CALENDAR_TEST">
+		<dbAttribute name="CALENDAR_FIELD" type="TIMESTAMP"/>
+		<dbAttribute name="ID" type="INTEGER" primaryKey="true" mandatory="true"/>
+	</dbEntity>
+	<dbEntity name="CHARACTER_ENTITY">
+		<dbAttribute name="CHARACTER_FIELD" type="CHAR" length="1"/>
+		<dbAttribute name="ID" type="INTEGER" primaryKey="true" mandatory="true"/>
+	</dbEntity>
+	<dbEntity name="CHAR_FK_TEST">
+		<dbAttribute name="FK_COL" type="CHAR" length="10"/>
+		<dbAttribute name="NAME" type="VARCHAR" length="100"/>
+		<dbAttribute name="PK" type="INTEGER" primaryKey="true" mandatory="true"/>
+	</dbEntity>
+	<dbEntity name="CHAR_PK_TEST">
+		<dbAttribute name="OTHER_COL" type="CHAR" length="10"/>
+		<dbAttribute name="PK_COL" type="CHAR" primaryKey="true" mandatory="true" length="10"/>
+	</dbEntity>
+	<dbEntity name="CLOB_TEST">
+		<dbAttribute name="CLOB_COL" type="CLOB"/>
+		<dbAttribute name="CLOB_TEST_ID" type="INTEGER" primaryKey="true" mandatory="true"/>
+	</dbEntity>
+	<dbEntity name="CLOB_TEST_RELATION">
+		<dbAttribute name="ID" type="INTEGER" primaryKey="true" mandatory="true"/>
+		<dbAttribute name="ID_CLOB" type="INTEGER" mandatory="true"/>
+		<dbAttribute name="VALUE" type="INTEGER"/>
+	</dbEntity>
+	<dbEntity name="COMPOUND_FK_TEST">
+		<dbAttribute name="F_KEY1" type="VARCHAR" length="20"/>
+		<dbAttribute name="F_KEY2" type="VARCHAR" length="20"/>
+		<dbAttribute name="NAME" type="VARCHAR" length="255"/>
+		<dbAttribute name="PKEY" type="INTEGER" primaryKey="true" mandatory="true"/>
+	</dbEntity>
+	<dbEntity name="COMPOUND_PK_TEST">
+		<dbAttribute name="KEY1" type="VARCHAR" primaryKey="true" mandatory="true" length="20"/>
+		<dbAttribute name="KEY2" type="VARCHAR" primaryKey="true" mandatory="true" length="20"/>
+		<dbAttribute name="NAME" type="VARCHAR" length="255"/>
+	</dbEntity>
+	<dbEntity name="DATE_TEST">
+		<dbAttribute name="DATE_COLUMN" type="DATE"/>
+		<dbAttribute name="DATE_TEST_ID" type="INTEGER" primaryKey="true" mandatory="true"/>
+		<dbAttribute name="TIMESTAMP_COLUMN" type="TIMESTAMP"/>
+		<dbAttribute name="TIME_COLUMN" type="TIME"/>
+	</dbEntity>
+	<dbEntity name="DECIMAL_PK_TST">
+		<dbAttribute name="DECIMAL_PK" type="DECIMAL" primaryKey="true" mandatory="true"/>
+		<dbAttribute name="NAME" type="VARCHAR" length="100"/>
+	</dbEntity>
+	<dbEntity name="ENUM_ENTITY">
+		<dbAttribute name="ENUM_ATTRIBUTE" type="VARCHAR" length="250"/>
+		<dbAttribute name="ID" type="INTEGER" primaryKey="true" mandatory="true"/>
+	</dbEntity>
+	<dbEntity name="EXHIBIT">
+		<dbAttribute name="CLOSING_DATE" type="TIMESTAMP" mandatory="true"/>
+		<dbAttribute name="EXHIBIT_ID" type="INTEGER" primaryKey="true" mandatory="true"/>
+		<dbAttribute name="GALLERY_ID" type="INTEGER" mandatory="true"/>
+		<dbAttribute name="OPENING_DATE" type="TIMESTAMP" mandatory="true"/>
+	</dbEntity>
+	<dbEntity name="EXTENDED_TYPE_TEST">
+		<dbAttribute name="ID" type="INTEGER" primaryKey="true" mandatory="true"/>
+		<dbAttribute name="NAME" type="VARCHAR" length="200"/>
+	</dbEntity>
+	<dbEntity name="FLOAT_TEST">
+		<dbAttribute name="FLOAT_COL" type="FLOAT"/>
+		<dbAttribute name="ID" type="INTEGER" primaryKey="true" mandatory="true"/>
+	</dbEntity>
+	<dbEntity name="GALLERY">
+		<dbAttribute name="GALLERY_ID" type="INTEGER" primaryKey="true" mandatory="true"/>
+		<dbAttribute name="GALLERY_NAME" type="VARCHAR" mandatory="true" length="100"/>
+	</dbEntity>
+	<dbEntity name="GENERATED_COLUMN_COMP_KEY">
+		<dbAttribute name="AUTO_PK" type="INTEGER" primaryKey="true" mandatory="true"/>
+		<dbAttribute name="GENERATED_COLUMN" type="INTEGER" primaryKey="true" generated="true" mandatory="true"/>
+		<dbAttribute name="NAME" type="VARCHAR" length="100"/>
+		<dbAttribute name="PROPAGATED_PK" type="INTEGER" primaryKey="true" mandatory="true"/>
+	</dbEntity>
+	<dbEntity name="GENERATED_COLUMN_COMP_M">
+		<dbAttribute name="ID" type="INTEGER" primaryKey="true" mandatory="true"/>
+		<dbAttribute name="NAME" type="VARCHAR" length="100"/>
+	</dbEntity>
+	<dbEntity name="GENERATED_COLUMN_DEP">
+		<dbAttribute name="GENERATED_COLUMN_FK" type="INTEGER" primaryKey="true" mandatory="true"/>
+		<dbAttribute name="NAME" type="VARCHAR" length="100"/>
+	</dbEntity>
+	<dbEntity name="GENERATED_COLUMN_TEST">
+		<dbAttribute name="GENERATED_COLUMN" type="INTEGER" primaryKey="true" generated="true" mandatory="true"/>
+		<dbAttribute name="NAME" type="VARCHAR" length="250"/>
+	</dbEntity>
+	<dbEntity name="GENERATED_COLUMN_TEST2">
+		<dbAttribute name="GENERATED_COLUMN" type="INTEGER" primaryKey="true" generated="true" mandatory="true"/>
+		<dbAttribute name="NAME" type="VARCHAR" length="100"/>
+	</dbEntity>
+	<dbEntity name="GENERATED_F1">
+		<dbAttribute name="ID" type="INTEGER" primaryKey="true" mandatory="true"/>
+	</dbEntity>
+	<dbEntity name="GENERATED_F2">
+		<dbAttribute name="ID" type="INTEGER" primaryKey="true" mandatory="true"/>
+	</dbEntity>
+	<dbEntity name="GENERATED_JOIN">
+		<dbAttribute name="ID" type="INTEGER" primaryKey="true" generated="true" mandatory="true"/>
+		<dbAttribute name="ID1" type="INTEGER"/>
+		<dbAttribute name="ID2" type="INTEGER"/>
+	</dbEntity>
+	<dbEntity name="LONG_ENTITY">
+		<dbAttribute name="ID" type="INTEGER" primaryKey="true" mandatory="true"/>
+		<dbAttribute name="LONG_FIELD" type="BIGINT"/>
+	</dbEntity>
+	<dbEntity name="MEANINGFUL_PK_DEP">
+		<dbAttribute name="DESCR" type="VARCHAR" length="50"/>
+		<dbAttribute name="MASTER_PK" type="INTEGER"/>
+		<dbAttribute name="PK_ATTRIBUTE" type="INTEGER" primaryKey="true" mandatory="true"/>
+	</dbEntity>
+	<dbEntity name="MEANINGFUL_PK_TEST1">
+		<dbAttribute name="DESCR" type="VARCHAR" length="50"/>
+		<dbAttribute name="PK_ATTRIBUTE" type="INTEGER" primaryKey="true" mandatory="true"/>
+	</dbEntity>
+	<dbEntity name="MIXED_PERSISTENCE_STRATEGY">
+		<dbAttribute name="DESCRIPTION" type="VARCHAR" length="200"/>
+		<dbAttribute name="ID" type="INTEGER" primaryKey="true" mandatory="true"/>
+		<dbAttribute name="NAME" type="VARCHAR" length="200"/>
+	</dbEntity>
+	<dbEntity name="MIXED_PERSISTENCE_STRATEGY2">
+		<dbAttribute name="ID" type="INTEGER" primaryKey="true" mandatory="true"/>
+		<dbAttribute name="MASTER_ID" type="INTEGER"/>
+		<dbAttribute name="NAME" type="VARCHAR" length="200"/>
+	</dbEntity>
+	<dbEntity name="NO_PK_TEST">
+		<dbAttribute name="ATTRIBUTE1" type="INTEGER"/>
+	</dbEntity>
+	<dbEntity name="PAINTING">
+		<dbAttribute name="ARTIST_ID" type="BIGINT"/>
+		<dbAttribute name="ESTIMATED_PRICE" type="DECIMAL" length="10" scale="2"/>
+		<dbAttribute name="GALLERY_ID" type="INTEGER"/>
+		<dbAttribute name="PAINTING_DESCRIPTION" type="VARCHAR" length="255"/>
+		<dbAttribute name="PAINTING_ID" type="INTEGER" primaryKey="true" mandatory="true"/>
+		<dbAttribute name="PAINTING_TITLE" type="VARCHAR" mandatory="true" length="255"/>
+	</dbEntity>
+	<dbEntity name="PAINTING1">
+		<dbAttribute name="ARTIST_ID" type="BIGINT"/>
+		<dbAttribute name="ESTIMATED_PRICE" type="DECIMAL" length="10" scale="2"/>
+		<dbAttribute name="GALLERY_ID" type="INTEGER"/>
+		<dbAttribute name="PAINTING_ID" type="INTEGER" primaryKey="true" mandatory="true"/>
+		<dbAttribute name="PAINTING_TITLE" type="VARCHAR" mandatory="true" length="255"/>
+	</dbEntity>
+	<dbEntity name="PAINTING_INFO">
+		<dbAttribute name="IMAGE_BLOB" type="LONGVARBINARY"/>
+		<dbAttribute name="PAINTING_ID" type="INTEGER" primaryKey="true" mandatory="true"/>
+		<dbAttribute name="TEXT_REVIEW" type="LONGVARCHAR"/>
+	</dbEntity>
+	<dbEntity name="PRIMITIVES_TEST">
+		<dbAttribute name="BOOLEAN_COLUMN" type="BOOLEAN"/>
+		<dbAttribute name="ID" type="INTEGER" primaryKey="true" mandatory="true"/>
+		<dbAttribute name="INT_COLUMN" type="INTEGER"/>
+	</dbEntity>
+	<dbEntity name="SERIALIZABLE_ENTITY">
+		<dbAttribute name="ID" type="INTEGER" primaryKey="true" mandatory="true"/>
+		<dbAttribute name="SERIALIZABLE_FIELD" type="BLOB"/>
+	</dbEntity>
+	<dbEntity name="SMALLINT_TEST">
+		<dbAttribute name="ID" type="INTEGER" primaryKey="true" mandatory="true"/>
+		<dbAttribute name="SMALLINT_COL" type="SMALLINT"/>
+	</dbEntity>
+	<dbEntity name="TINYINT_TEST">
+		<dbAttribute name="ID" type="INTEGER" primaryKey="true" mandatory="true"/>
+		<dbAttribute name="TINYINT_COL" type="TINYINT"/>
+	</dbEntity>
+	<dbEntity name="TYPES_MAPPING_TEST1">
+		<dbAttribute name="AAAID" type="INTEGER" primaryKey="true" mandatory="true"/>
+		<dbAttribute name="BIGINT_COLUMN" type="BIGINT"/>
+		<dbAttribute name="BIT_COLUMN" type="BIT"/>
+		<dbAttribute name="BOOLEAN_COLUMN" type="BOOLEAN"/>
+		<dbAttribute name="CHAR_COLUMN" type="CHAR" length="254"/>
+		<dbAttribute name="CLOB_COLUMN" type="CLOB"/>
+		<dbAttribute name="DATE_COLUMN" type="DATE"/>
+		<dbAttribute name="DECIMAL_COLUMN" type="DECIMAL" length="12" scale="5"/>
+		<dbAttribute name="DOUBLE_COLUMN" type="DOUBLE" scale="7"/>
+		<dbAttribute name="FLOAT_COLUMN" type="FLOAT" scale="3"/>
+		<dbAttribute name="INTEGER_COLUMN" type="INTEGER"/>
+		<dbAttribute name="LONGVARCHAR_COLUMN" type="LONGVARCHAR"/>
+		<dbAttribute name="NUMERIC_COLUMN" type="NUMERIC" length="12" scale="5"/>
+		<dbAttribute name="REAL_COLUMN" type="REAL" scale="5"/>
+		<dbAttribute name="SMALLINT_COLUMN" type="SMALLINT"/>
+		<dbAttribute name="TIMESTAMP_COLUMN" type="TIMESTAMP"/>
+		<dbAttribute name="TIME_COLUMN" type="TIME"/>
+		<dbAttribute name="TINYINT_COLUMN" type="TINYINT"/>
+		<dbAttribute name="VARCHAR_COLUMN" type="VARCHAR" length="255"/>
+	</dbEntity>
+	<dbEntity name="TYPES_MAPPING_TEST2">
+		<dbAttribute name="AAAID" type="INTEGER" primaryKey="true" mandatory="true"/>
+		<dbAttribute name="BINARY_COLUMN" type="BINARY" length="14"/>
+		<dbAttribute name="BLOB_COLUMN" type="BLOB"/>
+		<dbAttribute name="LONGVARBINARY_COLUMN" type="LONGVARBINARY"/>
+		<dbAttribute name="VARBINARY_COLUMN" type="VARBINARY" length="1000"/>
+	</dbEntity>
+	<dbEntity name="UUID_TEST">
+		<dbAttribute name="ID" type="INTEGER" primaryKey="true" mandatory="true"/>
+		<dbAttribute name="UUID" type="VARCHAR" length="100"/>
+	</dbEntity>
+	<objEntity name="ArraysEntity" className="org.apache.cayenne.testdo.misc_types.ArraysEntity" dbEntityName="ARRAYS_ENTITY">
+		<objAttribute name="byteArray" type="byte[]" dbAttributePath="BYTE_ARRAY"/>
+		<objAttribute name="byteWrapperArray" type="java.lang.Byte[]" dbAttributePath="BYTE_WRAPPER_ARRAY"/>
+		<objAttribute name="charArray" type="char[]" dbAttributePath="CHAR_ARRAY"/>
+		<objAttribute name="charWrapperArray" type="java.lang.Character[]" dbAttributePath="CHAR_WRAPPER_ARRAY"/>
+	</objEntity>
+	<objEntity name="ArtGroup" className="org.apache.cayenne.testdo.testmap.ArtGroup" dbEntityName="ARTGROUP">
+		<objAttribute name="name" type="java.lang.String" dbAttributePath="NAME"/>
+	</objEntity>
+	<objEntity name="Artist" className="org.apache.cayenne.testdo.testmap.Artist" dbEntityName="ARTIST">
+		<objAttribute name="artistName" type="java.lang.String" dbAttributePath="ARTIST_NAME"/>
+		<objAttribute name="dateOfBirth" type="java.util.Date" dbAttributePath="DATE_OF_BIRTH"/>
+	</objEntity>
+	<objEntity name="ArtistCallbackTest" className="org.apache.cayenne.testdo.testmap.ArtistCallbackTest" dbEntityName="ARTIST_CT">
+		<objAttribute name="artistName" type="java.lang.String"/>
+		<objAttribute name="dateOfBirth" type="java.util.Date"/>
+		<postAdd methodName="prePersistEntityObjEntity"/>
+		<postPersist methodName="postPersistEntityObjEntity"/>
+		<preUpdate methodName="preUpdateEntityObjEntity"/>
+		<postUpdate methodName="postUpdateEntityObjEntity"/>
+		<preRemove methodName="preRemoveEntityObjEntity"/>
+		<postRemove methodName="postRemoveEntityObjEntity"/>
+		<postLoad methodName="postLoadEntityObjEntity"/>
+	</objEntity>
+	<objEntity name="ArtistExhibit" className="org.apache.cayenne.testdo.testmap.ArtistExhibit" dbEntityName="ARTIST_EXHIBIT">
+	</objEntity>
+	<objEntity name="BigDecimalEntity" className="org.apache.cayenne.testdo.numeric_types.BigDecimalEntity" dbEntityName="BIGDECIMAL_ENTITY">
+		<objAttribute name="bigDecimalField" type="java.math.BigDecimal" dbAttributePath="BIGDECIMAL_FIELD"/>
+	</objEntity>
+	<objEntity name="BigIntegerEntity" className="org.apache.cayenne.testdo.numeric_types.BigIntegerEntity" dbEntityName="BIGINTEGER_ENTITY">
+		<objAttribute name="bigIntegerField" type="java.math.BigInteger" dbAttributePath="BIG_INTEGER_FIELD"/>
+	</objEntity>
+	<objEntity name="BinaryPKTest1" className="org.apache.cayenne.testdo.binary_pk.BinaryPKTest1" dbEntityName="BINARY_PK_TEST1">
+		<objAttribute name="name" type="java.lang.String" dbAttributePath="NAME"/>
+	</objEntity>
+	<objEntity name="BinaryPKTest2" className="org.apache.cayenne.testdo.binary_pk.BinaryPKTest2" dbEntityName="BINARY_PK_TEST2">
+		<objAttribute name="detailName" type="java.lang.String" dbAttributePath="DETAIL_NAME"/>
+	</objEntity>
+	<objEntity name="BitNumberTestEntity" className="org.apache.cayenne.testdo.numeric_types.BitNumberTestEntity" dbEntityName="BIT_TEST">
+		<objAttribute name="bitColumn" type="java.lang.Integer" dbAttributePath="BIT_COLUMN"/>
+	</objEntity>
+	<objEntity name="BitTestEntity" className="org.apache.cayenne.testdo.numeric_types.BitTestEntity" dbEntityName="BIT_TEST">
+		<objAttribute name="bitColumn" type="java.lang.Boolean" dbAttributePath="BIT_COLUMN"/>
+	</objEntity>
+	<objEntity name="BlobTestEntity" className="org.apache.cayenne.testdo.lob.BlobTestEntity" dbEntityName="BLOB_TEST">
+		<objAttribute name="blobCol" type="byte[]" dbAttributePath="BLOB_COL"/>
+	</objEntity>
+	<objEntity name="BooleanTestEntity" className="org.apache.cayenne.testdo.numeric_types.BooleanTestEntity" dbEntityName="BOOLEAN_TEST">
+		<objAttribute name="booleanColumn" type="java.lang.Boolean" dbAttributePath="BOOLEAN_COLUMN"/>
+	</objEntity>
+	<objEntity name="CalendarEntity" className="org.apache.cayenne.testdo.legacy_datetime.CalendarEntity" dbEntityName="CALENDAR_TEST">
+		<objAttribute name="calendarField" type="java.util.Calendar" dbAttributePath="CALENDAR_FIELD"/>
+	</objEntity>
+	<objEntity name="CharFkTestEntity" className="org.apache.cayenne.testdo.compound.CharFkTestEntity" dbEntityName="CHAR_FK_TEST">
+		<objAttribute name="name" type="java.lang.String" dbAttributePath="NAME"/>
+	</objEntity>
+	<objEntity name="CharPkTestEntity" className="org.apache.cayenne.testdo.compound.CharPkTestEntity" dbEntityName="CHAR_PK_TEST">
+		<objAttribute name="otherCol" type="java.lang.String" dbAttributePath="OTHER_COL"/>
+		<objAttribute name="pkCol" type="java.lang.String" dbAttributePath="PK_COL"/>
+	</objEntity>
+	<objEntity name="CharacterEntity" className="org.apache.cayenne.testdo.misc_types.CharacterEntity" dbEntityName="CHARACTER_ENTITY">
+		<objAttribute name="characterField" type="java.lang.Character" dbAttributePath="CHARACTER_FIELD"/>
+	</objEntity>
+	<objEntity name="ClobTestEntity" className="org.apache.cayenne.testdo.lob.ClobTestEntity" dbEntityName="CLOB_TEST">
+		<objAttribute name="clobCol" type="java.lang.String" dbAttributePath="CLOB_COL"/>
+	</objEntity>
+	<objEntity name="ClobTestRelation" className="org.apache.cayenne.testdo.lob.ClobTestRelation" dbEntityName="CLOB_TEST_RELATION">
+		<objAttribute name="id" type="java.lang.Integer" dbAttributePath="ID"/>
+		<objAttribute name="value" type="java.lang.Integer" dbAttributePath="VALUE"/>
+	</objEntity>
+	<objEntity name="CompoundFkTestEntity" className="org.apache.cayenne.testdo.compound.CompoundFkTestEntity" dbEntityName="COMPOUND_FK_TEST">
+		<objAttribute name="name" type="java.lang.String" dbAttributePath="NAME"/>
+	</objEntity>
+	<objEntity name="CompoundPainting" className="org.apache.cayenne.testdo.testmap.CompoundPainting" dbEntityName="PAINTING">
+		<objAttribute name="artistName" type="java.lang.String" dbAttributePath="toArtist.ARTIST_NAME"/>
+		<objAttribute name="estimatedPrice" type="java.math.BigDecimal" dbAttributePath="ESTIMATED_PRICE"/>
+		<objAttribute name="galleryName" type="java.lang.String" dbAttributePath="toGallery.GALLERY_NAME"/>
+		<objAttribute name="paintingTitle" type="java.lang.String" dbAttributePath="PAINTING_TITLE"/>
+		<objAttribute name="textReview" type="java.lang.String" dbAttributePath="toPaintingInfo.TEXT_REVIEW"/>
+	</objEntity>
+	<objEntity name="CompoundPkTestEntity" className="org.apache.cayenne.testdo.compound.CompoundPkTestEntity" dbEntityName="COMPOUND_PK_TEST">
+		<objAttribute name="key1" type="java.lang.String" dbAttributePath="KEY1"/>
+		<objAttribute name="key2" type="java.lang.String" dbAttributePath="KEY2"/>
+		<objAttribute name="name" type="java.lang.String" dbAttributePath="NAME"/>
+	</objEntity>
+	<objEntity name="DateTestEntity" className="org.apache.cayenne.testdo.legacy_datetime.DateTestEntity" dbEntityName="DATE_TEST">
+		<objAttribute name="dateColumn" type="java.util.Date" dbAttributePath="DATE_COLUMN"/>
+		<objAttribute name="timeColumn" type="java.util.Date" dbAttributePath="TIME_COLUMN"/>
+		<objAttribute name="timestampColumn" type="java.util.Date" dbAttributePath="TIMESTAMP_COLUMN"/>
+	</objEntity>
+	<objEntity name="DecimalPKTest1" className="org.apache.cayenne.testdo.numeric_types.DecimalPKTest1" dbEntityName="DECIMAL_PK_TST">
+		<objAttribute name="decimalPK" type="java.lang.Double" dbAttributePath="DECIMAL_PK"/>
+		<objAttribute name="name" type="java.lang.String" dbAttributePath="NAME"/>
+	</objEntity>
+	<objEntity name="DecimalPKTestEntity" className="org.apache.cayenne.testdo.numeric_types.DecimalPKTestEntity" dbEntityName="DECIMAL_PK_TST">
+		<objAttribute name="decimalPK" type="java.math.BigDecimal" dbAttributePath="DECIMAL_PK"/>
+		<objAttribute name="name" type="java.lang.String" dbAttributePath="NAME"/>
+	</objEntity>
+	<objEntity name="EnumEntity" className="org.apache.cayenne.testdo.enum_test.EnumEntity" dbEntityName="ENUM_ENTITY">
+		<objAttribute name="enumAttribute" type="org.apache.cayenne.testdo.enum_test.Enum1" dbAttributePath="ENUM_ATTRIBUTE"/>
+	</objEntity>
+	<objEntity name="Exhibit" className="org.apache.cayenne.testdo.testmap.Exhibit" dbEntityName="EXHIBIT">
+		<objAttribute name="closingDate" type="java.util.Date" dbAttributePath="CLOSING_DATE"/>
+		<objAttribute name="openingDate" type="java.util.Date" dbAttributePath="OPENING_DATE"/>
+	</objEntity>
+	<objEntity name="ExtendedTypeEntity" className="org.apache.cayenne.testdo.extended_type.ExtendedTypeEntity" dbEntityName="EXTENDED_TYPE_TEST">
+		<objAttribute name="name" type="org.apache.cayenne.testdo.extended_type.StringET1" dbAttributePath="NAME"/>
+	</objEntity>
+	<objEntity name="Gallery" className="org.apache.cayenne.testdo.testmap.Gallery" dbEntityName="GALLERY">
+		<objAttribute name="galleryName" type="java.lang.String" dbAttributePath="GALLERY_NAME"/>
+	</objEntity>
+	<objEntity name="GeneratedColumnCompKey" className="org.apache.cayenne.testdo.generated.GeneratedColumnCompKey" dbEntityName="GENERATED_COLUMN_COMP_KEY">
+		<objAttribute name="name" type="java.lang.String" dbAttributePath="NAME"/>
+	</objEntity>
+	<objEntity name="GeneratedColumnCompMaster" className="org.apache.cayenne.testdo.generated.GeneratedColumnCompMaster" dbEntityName="GENERATED_COLUMN_COMP_M">
+		<objAttribute name="name" type="java.lang.String" dbAttributePath="NAME"/>
+	</objEntity>
+	<objEntity name="GeneratedColumnDep" className="org.apache.cayenne.testdo.generated.GeneratedColumnDep" dbEntityName="GENERATED_COLUMN_DEP">
+		<objAttribute name="name" type="java.lang.String" dbAttributePath="NAME"/>
+	</objEntity>
+	<objEntity name="GeneratedColumnTest2" className="org.apache.cayenne.testdo.generated.GeneratedColumnTest2" dbEntityName="GENERATED_COLUMN_TEST2">
+		<objAttribute name="name" type="java.lang.String" dbAttributePath="NAME"/>
+	</objEntity>
+	<objEntity name="GeneratedColumnTestEntity" className="org.apache.cayenne.testdo.generated.GeneratedColumnTestEntity" dbEntityName="GENERATED_COLUMN_TEST">
+		<objAttribute name="name" type="java.lang.String" dbAttributePath="NAME"/>
+	</objEntity>
+	<objEntity name="GeneratedF1" className="org.apache.cayenne.testdo.generated.GeneratedF1" dbEntityName="GENERATED_F1" superClassName="org.apache.cayenne.GenericPersistentObject">
+	</objEntity>
+	<objEntity name="GeneratedF2" className="org.apache.cayenne.testdo.generated.GeneratedF2" dbEntityName="GENERATED_F2" superClassName="org.apache.cayenne.GenericPersistentObject">
+	</objEntity>
+	<objEntity name="LongEntity" className="org.apache.cayenne.testdo.numeric_types.LongEntity" dbEntityName="LONG_ENTITY">
+		<objAttribute name="longField" type="java.lang.Long" dbAttributePath="LONG_FIELD"/>
+	</objEntity>
+	<objEntity name="MeaningfulGeneratedColumnTestEntity" className="org.apache.cayenne.testdo.testmap.MeaningfulGeneratedColumnTestEntity" dbEntityName="GENERATED_COLUMN_TEST">
+		<objAttribute name="generatedColumn" type="java.lang.Integer" dbAttributePath="GENERATED_COLUMN"/>
+		<objAttribute name="name" type="java.lang.String" dbAttributePath="NAME"/>
+	</objEntity>
+	<objEntity name="MeaningfulPKDep" className="org.apache.cayenne.testdo.meaningful_pk.MeaningfulPKDep" dbEntityName="MEANINGFUL_PK_DEP">
+		<objAttribute name="descr" type="java.lang.String" dbAttributePath="DESCR"/>
+	</objEntity>
+	<objEntity name="MeaningfulPKTest1" className="org.apache.cayenne.testdo.meaningful_pk.MeaningfulPKTest1" dbEntityName="MEANINGFUL_PK_TEST1">
+		<objAttribute name="descr" type="java.lang.String" dbAttributePath="DESCR"/>
+		<objAttribute name="pkAttribute" type="java.lang.Integer" dbAttributePath="PK_ATTRIBUTE"/>
+	</objEntity>
+	<objEntity name="MixedPersistenceStrategy" className="org.apache.cayenne.testdo.mixed_persistence_strategy.MixedPersistenceStrategy" dbEntityName="MIXED_PERSISTENCE_STRATEGY">
+		<objAttribute name="description" type="java.lang.String" dbAttributePath="DESCRIPTION"/>
+		<objAttribute name="name" type="java.lang.String" dbAttributePath="NAME"/>
+	</objEntity>
+	<objEntity name="MixedPersistenceStrategy2" className="org.apache.cayenne.testdo.mixed_persistence_strategy.MixedPersistenceStrategy2" dbEntityName="MIXED_PERSISTENCE_STRATEGY2">
+		<objAttribute name="name" type="java.lang.String" dbAttributePath="NAME"/>
+	</objEntity>
+	<objEntity name="NoPkTestEntity" className="org.apache.cayenne.testdo.no_pk.NoPkTestEntity" dbEntityName="NO_PK_TEST">
+		<objAttribute name="attribute1" type="java.lang.Integer" dbAttributePath="ATTRIBUTE1"/>
+	</objEntity>
+	<objEntity name="Painting" className="org.apache.cayenne.testdo.testmap.Painting" dbEntityName="PAINTING" superClassName="org.apache.cayenne.testdo.testmap.ArtPersistentObject">
+		<objAttribute name="estimatedPrice" type="java.math.BigDecimal" dbAttributePath="ESTIMATED_PRICE"/>
+		<objAttribute name="paintingDescription" type="java.lang.String" dbAttributePath="PAINTING_DESCRIPTION"/>
+		<objAttribute name="paintingTitle" type="java.lang.String" dbAttributePath="PAINTING_TITLE"/>
+	</objEntity>
+	<objEntity name="Painting1" className="org.apache.cayenne.testdo.testmap.Painting1" dbEntityName="PAINTING1">
+		<objAttribute name="estimatedPrice" type="java.math.BigDecimal" dbAttributePath="ESTIMATED_PRICE"/>
+		<objAttribute name="paintingTitle" type="java.lang.String" dbAttributePath="PAINTING_TITLE"/>
+	</objEntity>
+	<objEntity name="PaintingInfo" className="org.apache.cayenne.testdo.testmap.PaintingInfo" dbEntityName="PAINTING_INFO">
+		<objAttribute name="imageBlob" type="byte[]" dbAttributePath="IMAGE_BLOB"/>
+		<objAttribute name="textReview" type="java.lang.String" dbAttributePath="TEXT_REVIEW"/>
+	</objEntity>
+	<objEntity name="PrimitivesTestEntity" className="org.apache.cayenne.testdo.primitive.PrimitivesTestEntity" dbEntityName="PRIMITIVES_TEST">
+		<objAttribute name="booleanColumn" type="boolean" dbAttributePath="BOOLEAN_COLUMN"/>
+		<objAttribute name="intColumn" type="int" dbAttributePath="INT_COLUMN"/>
+	</objEntity>
+	<objEntity name="ROArtist" className="org.apache.cayenne.testdo.testmap.ROArtist" readOnly="true" dbEntityName="ARTIST">
+		<objAttribute name="artistName" type="java.lang.String" dbAttributePath="ARTIST_NAME"/>
+		<objAttribute name="dateOfBirth" type="java.sql.Date" dbAttributePath="DATE_OF_BIRTH"/>
+	</objEntity>
+	<objEntity name="ROPainting" className="org.apache.cayenne.testdo.testmap.ROPainting" readOnly="true" dbEntityName="PAINTING">
+		<objAttribute name="estimatedPrice" type="java.math.BigDecimal" dbAttributePath="ESTIMATED_PRICE"/>
+		<objAttribute name="paintingTitle" type="java.lang.String" dbAttributePath="PAINTING_TITLE"/>
+	</objEntity>
+	<objEntity name="RWCompoundPainting" className="org.apache.cayenne.testdo.testmap.RWCompoundPainting" dbEntityName="PAINTING">
+		<objAttribute name="estimatedPrice" type="java.math.BigDecimal" dbAttributePath="ESTIMATED_PRICE"/>
+		<objAttribute name="paintingTitle" type="java.lang.String" dbAttributePath="PAINTING_TITLE"/>
+		<objAttribute name="textReview" type="java.lang.String" dbAttributePath="toPaintingInfo.TEXT_REVIEW"/>
+	</objEntity>
+	<objEntity name="ReturnTypesMap1" className="org.apache.cayenne.testdo.return_types.ReturnTypesMap1" dbEntityName="TYPES_MAPPING_TEST1" superClassName="org.apache.cayenne.GenericPersistentObject">
+		<objAttribute name="bigintColumn" type="java.lang.Long" dbAttributePath="BIGINT_COLUMN"/>
+		<objAttribute name="bitColumn" type="java.lang.Boolean" dbAttributePath="BIT_COLUMN"/>
+		<objAttribute name="booleanColumn" type="java.lang.Boolean" dbAttributePath="BOOLEAN_COLUMN"/>
+		<objAttribute name="charColumn" type="java.lang.String" dbAttributePath="CHAR_COLUMN"/>
+		<objAttribute name="clobColumn" type="java.lang.String" dbAttributePath="CLOB_COLUMN"/>
+		<objAttribute name="dateColumn" type="java.util.Date" dbAttributePath="DATE_COLUMN"/>
+		<objAttribute name="decimalColumn" type="java.math.BigDecimal" dbAttributePath="DECIMAL_COLUMN"/>
+		<objAttribute name="doubleColumn" type="java.lang.Double" dbAttributePath="DOUBLE_COLUMN"/>
+		<objAttribute name="floatColumn" type="java.lang.Float" dbAttributePath="FLOAT_COLUMN"/>
+		<objAttribute name="integerColumn" type="java.lang.Integer" dbAttributePath="INTEGER_COLUMN"/>
+		<objAttribute name="longvarcharColumn" type="java.lang.String" dbAttributePath="LONGVARCHAR_COLUMN"/>
+		<objAttribute name="numericColumn" type="java.math.BigDecimal" dbAttributePath="NUMERIC_COLUMN"/>
+		<objAttribute name="realColumn" type="java.lang.Float" dbAttributePath="REAL_COLUMN"/>
+		<objAttribute name="smallintColumn" type="java.lang.Short" dbAttributePath="SMALLINT_COLUMN"/>
+		<objAttribute name="timeColumn" type="java.util.Date" dbAttributePath="TIME_COLUMN"/>
+		<objAttribute name="timestampColumn" type="java.util.Date" dbAttributePath="TIMESTAMP_COLUMN"/>
+		<objAttribute name="tinyintColumn" type="java.lang.Byte" dbAttributePath="TINYINT_COLUMN"/>
+		<objAttribute name="varcharColumn" type="java.lang.String" dbAttributePath="VARCHAR_COLUMN"/>
+	</objEntity>
+	<objEntity name="ReturnTypesMap2" className="org.apache.cayenne.testdo.return_types.ReturnTypesMap2" dbEntityName="TYPES_MAPPING_TEST2" superClassName="org.apache.cayenne.GenericPersistentObject">
+		<objAttribute name="binaryColumn" type="byte[]" dbAttributePath="BINARY_COLUMN"/>
+		<objAttribute name="blobColumn" type="byte[]" dbAttributePath="BLOB_COLUMN"/>
+		<objAttribute name="longvarbinaryColumn" type="byte[]" dbAttributePath="LONGVARBINARY_COLUMN"/>
+		<objAttribute name="varbinaryColumn" type="byte[]" dbAttributePath="VARBINARY_COLUMN"/>
+	</objEntity>
+	<objEntity name="SerializableEntity" className="org.apache.cayenne.testdo.misc_types.SerializableEntity" dbEntityName="SERIALIZABLE_ENTITY">
+		<objAttribute name="serializableField" type="org.apache.cayenne.MockSerializable" dbAttributePath="SERIALIZABLE_FIELD"/>
+	</objEntity>
+	<objEntity name="SmallintTestEntity" className="org.apache.cayenne.testdo.numeric_types.SmallintTestEntity" dbEntityName="SMALLINT_TEST">
+		<objAttribute name="smallintCol" type="java.lang.Short" dbAttributePath="SMALLINT_COL"/>
+	</objEntity>
+	<objEntity name="SubPainting" className="org.apache.cayenne.testdo.testmap.SubPainting" dbEntityName="PAINTING">
+		<objAttribute name="paintingTitle" type="java.lang.String" dbAttributePath="PAINTING_TITLE"/>
+	</objEntity>
+	<objEntity name="TinyintTestEntity" className="org.apache.cayenne.testdo.numeric_types.TinyintTestEntity" dbEntityName="TINYINT_TEST">
+		<objAttribute name="tinyintCol" type="java.lang.Byte" dbAttributePath="TINYINT_COL"/>
+	</objEntity>
+	<objEntity name="UuidTestEntity" className="org.apache.cayenne.testdo.uuid.UuidTestEntity" dbEntityName="UUID_TEST">
+		<objAttribute name="uuid" type="java.util.UUID" dbAttributePath="UUID"/>
+	</objEntity>
+	<dbRelationship name="artistGroupArray" source="ARTGROUP" target="ARTIST_GROUP" toMany="true">
+		<dbAttributePair source="GROUP_ID" target="GROUP_ID"/>
+	</dbRelationship>
+	<dbRelationship name="toChildGroups" source="ARTGROUP" target="ARTGROUP" toMany="true">
+		<dbAttributePair source="GROUP_ID" target="PARENT_GROUP_ID"/>
+	</dbRelationship>
+	<dbRelationship name="toParentGroup" source="ARTGROUP" target="ARTGROUP" toMany="false">
+		<dbAttributePair source="PARENT_GROUP_ID" target="GROUP_ID"/>
+	</dbRelationship>
+	<dbRelationship name="artistExhibitArray" source="ARTIST" target="ARTIST_EXHIBIT" toDependentPK="true" toMany="true">
+		<dbAttributePair source="ARTIST_ID" target="ARTIST_ID"/>
+	</dbRelationship>
+	<dbRelationship name="artistGroupArray" source="ARTIST" target="ARTIST_GROUP" toMany="true">
+		<dbAttributePair source="ARTIST_ID" target="ARTIST_ID"/>
+	</dbRelationship>
+	<dbRelationship name="paintingArray" source="ARTIST" target="PAINTING" toMany="true">
+		<dbAttributePair source="ARTIST_ID" target="ARTIST_ID"/>
+	</dbRelationship>
+	<dbRelationship name="toArtist" source="ARTIST_EXHIBIT" target="ARTIST" toMany="false">
+		<dbAttributePair source="ARTIST_ID" target="ARTIST_ID"/>
+	</dbRelationship>
+	<dbRelationship name="toExhibit" source="ARTIST_EXHIBIT" target="EXHIBIT" toMany="false">
+		<dbAttributePair source="EXHIBIT_ID" target="EXHIBIT_ID"/>
+	</dbRelationship>
+	<dbRelationship name="toArtist" source="ARTIST_GROUP" target="ARTIST" toMany="false">
+		<dbAttributePair source="ARTIST_ID" target="ARTIST_ID"/>
+	</dbRelationship>
+	<dbRelationship name="toGroup" source="ARTIST_GROUP" target="ARTGROUP" toMany="false">
+		<dbAttributePair source="GROUP_ID" target="GROUP_ID"/>
+	</dbRelationship>
+	<dbRelationship name="binaryPKDetails" source="BINARY_PK_TEST1" target="BINARY_PK_TEST2" toMany="true">
+		<dbAttributePair source="BIN_ID" target="FK_ID"/>
+	</dbRelationship>
+	<dbRelationship name="toBinaryPKMaster" source="BINARY_PK_TEST2" target="BINARY_PK_TEST1" toMany="false">
+		<dbAttributePair source="FK_ID" target="BIN_ID"/>
+	</dbRelationship>
+	<dbRelationship name="toCharPK" source="CHAR_FK_TEST" target="CHAR_PK_TEST" toMany="false">
+		<dbAttributePair source="FK_COL" target="PK_COL"/>
+	</dbRelationship>
+	<dbRelationship name="charFKs" source="CHAR_PK_TEST" target="CHAR_FK_TEST" toMany="true">
+		<dbAttributePair source="PK_COL" target="FK_COL"/>
+	</dbRelationship>
+	<dbRelationship name="clob" source="CLOB_TEST" target="CLOB_TEST_RELATION" toMany="true">
+		<dbAttributePair source="CLOB_TEST_ID" target="ID_CLOB"/>
+	</dbRelationship>
+	<dbRelationship name="CLOB_REL" source="CLOB_TEST_RELATION" target="CLOB_TEST" toMany="false">
+		<dbAttributePair source="ID_CLOB" target="CLOB_TEST_ID"/>
+	</dbRelationship>
+	<dbRelationship name="toCompoundPk" source="COMPOUND_FK_TEST" target="COMPOUND_PK_TEST" toMany="false">
+		<dbAttributePair source="F_KEY1" target="KEY1"/>
+		<dbAttributePair source="F_KEY2" target="KEY2"/>
+	</dbRelationship>
+	<dbRelationship name="compoundFkArray" source="COMPOUND_PK_TEST" target="COMPOUND_FK_TEST" toMany="true">
+		<dbAttributePair source="KEY1" target="F_KEY1"/>
+		<dbAttributePair source="KEY2" target="F_KEY2"/>
+	</dbRelationship>
+	<dbRelationship name="artistExhibitArray" source="EXHIBIT" target="ARTIST_EXHIBIT" toDependentPK="true" toMany="true">
+		<dbAttributePair source="EXHIBIT_ID" target="EXHIBIT_ID"/>
+	</dbRelationship>
+	<dbRelationship name="toGallery" source="EXHIBIT" target="GALLERY" toMany="false">
+		<dbAttributePair source="GALLERY_ID" target="GALLERY_ID"/>
+	</dbRelationship>
+	<dbRelationship name="exhibitArray" source="GALLERY" target="EXHIBIT" toMany="true">
+		<dbAttributePair source="GALLERY_ID" target="GALLERY_ID"/>
+	</dbRelationship>
+	<dbRelationship name="paintingArray" source="GALLERY" target="PAINTING" toMany="true">
+		<dbAttributePair source="GALLERY_ID" target="GALLERY_ID"/>
+	</dbRelationship>
+	<dbRelationship name="toMaster" source="GENERATED_COLUMN_COMP_KEY" target="GENERATED_COLUMN_COMP_M" toMany="false">
+		<dbAttributePair source="PROPAGATED_PK" target="ID"/>
+	</dbRelationship>
+	<dbRelationship name="toDetail" source="GENERATED_COLUMN_COMP_M" target="GENERATED_COLUMN_COMP_KEY" toDependentPK="true" toMany="true">
+		<dbAttributePair source="ID" target="PROPAGATED_PK"/>
+	</dbRelationship>
+	<dbRelationship name="toMaster" source="GENERATED_COLUMN_DEP" target="GENERATED_COLUMN_TEST" toMany="false">
+		<dbAttributePair source="GENERATED_COLUMN_FK" target="GENERATED_COLUMN"/>
+	</dbRelationship>
+	<dbRelationship name="toDep" source="GENERATED_COLUMN_TEST" target="GENERATED_COLUMN_DEP" toDependentPK="true" toMany="false">
+		<dbAttributePair source="GENERATED_COLUMN" target="GENERATED_COLUMN_FK"/>
+	</dbRelationship>
+	<dbRelationship name="join" source="GENERATED_F1" target="GENERATED_JOIN" toMany="true">
+		<dbAttributePair source="ID" target="ID1"/>
+	</dbRelationship>
+	<dbRelationship name="join" source="GENERATED_F2" target="GENERATED_JOIN" toMany="true">
+		<dbAttributePair source="ID" target="ID2"/>
+	</dbRelationship>
+	<dbRelationship name="f1" source="GENERATED_JOIN" target="GENERATED_F1" toMany="false">
+		<dbAttributePair source="ID1" target="ID"/>
+	</dbRelationship>
+	<dbRelationship name="f2" source="GENERATED_JOIN" target="GENERATED_F2" toMany="false">
+		<dbAttributePair source="ID2" target="ID"/>
+	</dbRelationship>
+	<dbRelationship name="toMeaningfulPK" source="MEANINGFUL_PK_DEP" target="MEANINGFUL_PK_TEST1" toMany="false">
+		<dbAttributePair source="MASTER_PK" target="PK_ATTRIBUTE"/>
+	</dbRelationship>
+	<dbRelationship name="meaningfulPKDepArray" source="MEANINGFUL_PK_TEST1" target="MEANINGFUL_PK_DEP" toMany="true">
+		<dbAttributePair source="PK_ATTRIBUTE" target="MASTER_PK"/>
+	</dbRelationship>
+	<dbRelationship name="details" source="MIXED_PERSISTENCE_STRATEGY" target="MIXED_PERSISTENCE_STRATEGY2" toMany="true">
+		<dbAttributePair source="ID" target="MASTER_ID"/>
+	</dbRelationship>
+	<dbRelationship name="master" source="MIXED_PERSISTENCE_STRATEGY2" target="MIXED_PERSISTENCE_STRATEGY" toMany="false">
+		<dbAttributePair source="MASTER_ID" target="ID"/>
+	</dbRelationship>
+	<dbRelationship name="toArtist" source="PAINTING" target="ARTIST" toMany="false">
+		<dbAttributePair source="ARTIST_ID" target="ARTIST_ID"/>
+	</dbRelationship>
+	<dbRelationship name="toGallery" source="PAINTING" target="GALLERY" toMany="false">
+		<dbAttributePair source="GALLERY_ID" target="GALLERY_ID"/>
+	</dbRelationship>
+	<dbRelationship name="toPaintingInfo" source="PAINTING" target="PAINTING_INFO" toDependentPK="true" toMany="false">
+		<dbAttributePair source="PAINTING_ID" target="PAINTING_ID"/>
+	</dbRelationship>
+	<dbRelationship name="toArtist" source="PAINTING1" target="ARTIST" toMany="false">
+		<dbAttributePair source="ARTIST_ID" target="ARTIST_ID"/>
+	</dbRelationship>
+	<dbRelationship name="painting" source="PAINTING_INFO" target="PAINTING" toMany="false">
+		<dbAttributePair source="PAINTING_ID" target="PAINTING_ID"/>
+	</dbRelationship>
+	<objRelationship name="artistArray" source="ArtGroup" target="Artist" deleteRule="nullify" dbRelationshipPath="artistGroupArray.toArtist"/>
+	<objRelationship name="childGroupsArray" source="ArtGroup" target="ArtGroup" deleteRule="nullify" dbRelationshipPath="toChildGroups"/>
+	<objRelationship name="toParentGroup" source="ArtGroup" target="ArtGroup" deleteRule="nullify" dbRelationshipPath="toParentGroup"/>
+	<objRelationship name="artistExhibitArray" source="Artist" target="ArtistExhibit" deleteRule="cascade" dbRelationshipPath="artistExhibitArray"/>
+	<objRelationship name="groupArray" source="Artist" target="ArtGroup" deleteRule="cascade" dbRelationshipPath="artistGroupArray.toGroup"/>
+	<objRelationship name="paintingArray" source="Artist" target="Painting" deleteRule="cascade" dbRelationshipPath="paintingArray"/>
+	<objRelationship name="toArtist" source="ArtistExhibit" target="Artist" deleteRule="nullify" dbRelationshipPath="toArtist"/>
+	<objRelationship name="toExhibit" source="ArtistExhibit" target="Exhibit" deleteRule="nullify" dbRelationshipPath="toExhibit"/>
+	<objRelationship name="binaryPKDetails" source="BinaryPKTest1" target="BinaryPKTest2" dbRelationshipPath="binaryPKDetails"/>
+	<objRelationship name="toBinaryPKMaster" source="BinaryPKTest2" target="BinaryPKTest1" dbRelationshipPath="toBinaryPKMaster"/>
+	<objRelationship name="toCharPK" source="CharFkTestEntity" target="CharPkTestEntity" dbRelationshipPath="toCharPK"/>
+	<objRelationship name="charFKs" source="CharPkTestEntity" target="CharFkTestEntity" dbRelationshipPath="charFKs"/>
+	<objRelationship name="clobValue" source="ClobTestEntity" target="ClobTestRelation" dbRelationshipPath="clob"/>
+	<objRelationship name="clobId" source="ClobTestRelation" target="ClobTestEntity" dbRelationshipPath="CLOB_REL"/>
+	<objRelationship name="toCompoundPk" source="CompoundFkTestEntity" target="CompoundPkTestEntity" dbRelationshipPath="toCompoundPk"/>
+	<objRelationship name="toArtist" source="CompoundPainting" target="Artist" deleteRule="nullify" dbRelationshipPath="toArtist"/>
+	<objRelationship name="toGallery" source="CompoundPainting" target="Gallery" deleteRule="nullify" dbRelationshipPath="toGallery"/>
+	<objRelationship name="toPaintingInfo" source="CompoundPainting" target="PaintingInfo" deleteRule="cascade" dbRelationshipPath="toPaintingInfo"/>
+	<objRelationship name="compoundFkArray" source="CompoundPkTestEntity" target="CompoundFkTestEntity" dbRelationshipPath="compoundFkArray"/>
+	<objRelationship name="artistExhibitArray" source="Exhibit" target="ArtistExhibit" deleteRule="cascade" dbRelationshipPath="artistExhibitArray"/>
+	<objRelationship name="toGallery" source="Exhibit" target="Gallery" deleteRule="nullify" dbRelationshipPath="toGallery"/>
+	<objRelationship name="exhibitArray" source="Gallery" target="Exhibit" deleteRule="cascade" dbRelationshipPath="exhibitArray"/>
+	<objRelationship name="paintingArray" source="Gallery" target="Painting" deleteRule="deny" dbRelationshipPath="paintingArray"/>
+	<objRelationship name="toMaster" source="GeneratedColumnCompKey" target="GeneratedColumnCompMaster" dbRelationshipPath="toMaster"/>
+	<objRelationship name="toDetail" source="GeneratedColumnCompMaster" target="GeneratedColumnCompKey" dbRelationshipPath="toDetail"/>
+	<objRelationship name="toMaster" source="GeneratedColumnDep" target="GeneratedColumnTestEntity" dbRelationshipPath="toMaster"/>
+	<objRelationship name="toDep" source="GeneratedColumnTestEntity" target="GeneratedColumnDep" dbRelationshipPath="toDep"/>
+	<objRelationship name="f2" source="GeneratedF1" target="GeneratedF2" deleteRule="nullify" dbRelationshipPath="join.f2"/>
+	<objRelationship name="f1" source="GeneratedF2" target="GeneratedF1" deleteRule="nullify" dbRelationshipPath="join.f1"/>
+	<objRelationship name="toMeaningfulPK" source="MeaningfulPKDep" target="MeaningfulPKTest1" dbRelationshipPath="toMeaningfulPK"/>
+	<objRelationship name="meaningfulPKDepArray" source="MeaningfulPKTest1" target="MeaningfulPKDep" dbRelationshipPath="meaningfulPKDepArray"/>
+	<objRelationship name="details" source="MixedPersistenceStrategy" target="MixedPersistenceStrategy2" dbRelationshipPath="details"/>
+	<objRelationship name="master" source="MixedPersistenceStrategy2" target="MixedPersistenceStrategy" dbRelationshipPath="master"/>
+	<objRelationship name="toArtist" source="Painting" target="Artist" deleteRule="nullify" dbRelationshipPath="toArtist"/>
+	<objRelationship name="toGallery" source="Painting" target="Gallery" deleteRule="nullify" dbRelationshipPath="toGallery"/>
+	<objRelationship name="toPaintingInfo" source="Painting" target="PaintingInfo" deleteRule="cascade" dbRelationshipPath="toPaintingInfo"/>
+	<objRelationship name="toArtist" source="Painting1" target="Artist" deleteRule="nullify" dbRelationshipPath="toArtist"/>
+	<objRelationship name="painting" source="PaintingInfo" target="Painting" deleteRule="nullify" dbRelationshipPath="painting"/>
+	<objRelationship name="paintingArray" source="ROArtist" target="Painting" deleteRule="deny" dbRelationshipPath="paintingArray"/>
+	<objRelationship name="toArtist" source="ROPainting" target="Artist" deleteRule="nullify" dbRelationshipPath="toArtist"/>
+	<sqlQuery name="NonSelectingQuery" root="dataMap" rootName="testmap" columnNameCapitalization="UPPER">
 		<sql><![CDATA[INSERT INTO PAINTING (PAINTING_ID, PAINTING_TITLE, ESTIMATED_PRICE)
 VALUES (512, 'No Painting Like This', 12.5)]]></sql>
-		<sql adapter-class="org.apache.cayenne.dba.db2.DB2Adapter"><![CDATA[INSERT INTO PAINTING (PAINTING_ID, PAINTING_TITLE, ESTIMATED_PRICE) VALUES (512, 'No Painting Like This', 12.5)]]></sql>
-	</sql-query>
-	<object-query name="ObjectQuery">
+		<sql adapterClass="org.apache.cayenne.dba.db2.DB2Adapter"><![CDATA[INSERT INTO PAINTING (PAINTING_ID, PAINTING_TITLE, ESTIMATED_PRICE) VALUES (512, 'No Painting Like This', 12.5)]]></sql>
+	</sqlQuery>
+	<objectQuery name="ObjectQuery">
 		<ql><![CDATA[from Painting where toArtist = $artist order by paintingTitle]]></ql>
-	</object-query>
-	<sql-query name="ParameterizedNonSelectingQuery" root="data-map" root-name="testmap">
+	</objectQuery>
+	<sqlQuery name="ParameterizedNonSelectingQuery" root="dataMap" rootName="testmap">
 		<sql><![CDATA[INSERT INTO PAINTING (PAINTING_ID, PAINTING_TITLE, ESTIMATED_PRICE)
 VALUES (#bind($id), #bind($title), #bind($price))]]></sql>
-		<sql adapter-class="org.apache.cayenne.dba.db2.DB2Adapter"><![CDATA[INSERT INTO PAINTING (PAINTING_ID, PAINTING_TITLE, ESTIMATED_PRICE) values (#bind($id), #bind($title), #bind($price))]]></sql>
-	</sql-query>
-	<object-query name="ParameterizedQueryWithLocalCache" cache-strategy="LOCAL_CACHE">
+		<sql adapterClass="org.apache.cayenne.dba.db2.DB2Adapter"><![CDATA[INSERT INTO PAINTING (PAINTING_ID, PAINTING_TITLE, ESTIMATED_PRICE) values (#bind($id), #bind($title), #bind($price))]]></sql>
+	</sqlQuery>
+	<objectQuery name="ParameterizedQueryWithLocalCache" cacheStrategy="LOCAL_CACHE">
 		<ql><![CDATA[from Artist where artistName like $name]]></ql>
-	</object-query>
-	<object-query name="ParameterizedQueryWithSharedCache" cache-strategy="SHARED_CACHE">
+	</objectQuery>
+	<objectQuery name="ParameterizedQueryWithSharedCache" cacheStrategy="SHARED_CACHE">
 		<ql><![CDATA[from Artist where artistName like $name]]></ql>
-	</object-query>
-	<procedure-query name="ProcedureQuery" root="procedure" root-name="cayenne_tst_select_proc" result-entity="Artist"/>
-	<object-query name="QueryWithLocalCache" cache-strategy="LOCAL_CACHE">
+	</objectQuery>
+	<procedureQuery name="ProcedureQuery" root="procedure" rootName="cayenne_tst_select_proc" resultEntity="Artist"/>
+	<objectQuery name="QueryWithLocalCache" cacheStrategy="LOCAL_CACHE">
 		<ql><![CDATA[from Artist]]></ql>
-	</object-query>
-	<object-query name="QueryWithOrdering">
+	</objectQuery>
+	<objectQuery name="QueryWithOrdering">
 		<ql><![CDATA[from Artist order by artistName desc insensitive, dateOfBirth]]></ql>
-	</object-query>
-	<object-query name="QueryWithPrefetch">
+	</objectQuery>
+	<objectQuery name="QueryWithPrefetch">
 		<ql><![CDATA[from Gallery prefetch paintingArray]]></ql>
-	</object-query>
-	<object-query name="QueryWithQualifier">
+	</objectQuery>
+	<objectQuery name="QueryWithQualifier">
 		<ql><![CDATA[from Artist where artistName = $param1]]></ql>
-	</object-query>
-	<object-query name="QueryWithSharedCache" cache-strategy="SHARED_CACHE">
+	</objectQuery>
+	<objectQuery name="QueryWithSharedCache" cacheStrategy="SHARED_CACHE">
 		<ql><![CDATA[from Artist]]></ql>
-	</object-query>
-	<sql-query name="SelectDateTest" root="data-map" root-name="testmap" data-rows="true" column-name-capitalization="UPPER">
+	</objectQuery>
+	<sqlQuery name="SelectDateTest" root="dataMap" rootName="testmap" dataRows="true" columnNameCapitalization="UPPER">
 		<sql><![CDATA[SELECT * FROM DATE_TEST]]></sql>
-	</sql-query>
-	<sql-query name="SelectReturnTypesMap1" root="data-map" root-name="testmap" data-rows="true" column-name-capitalization="UPPER">
+	</sqlQuery>
+	<sqlQuery name="SelectReturnTypesMap1" root="dataMap" rootName="testmap" dataRows="true" columnNameCapitalization="UPPER">
 		<sql><![CDATA[SELECT * FROM TYPES_MAPPING_TEST1]]></sql>
-	</sql-query>
-	<sql-query name="SelectReturnTypesMap2" root="data-map" root-name="testmap" data-rows="true" column-name-capitalization="UPPER">
+	</sqlQuery>
+	<sqlQuery name="SelectReturnTypesMap2" root="dataMap" rootName="testmap" dataRows="true" columnNameCapitalization="UPPER">
 		<sql><![CDATA[SELECT * FROM TYPES_MAPPING_TEST2]]></sql>
-	</sql-query>
-	<sql-query name="SelectTestLower" root="data-map" root-name="testmap" data-rows="true" column-name-capitalization="LOWER">
+	</sqlQuery>
+	<sqlQuery name="SelectTestLower" root="dataMap" rootName="testmap" dataRows="true" columnNameCapitalization="LOWER">
 		<sql><![CDATA[select * from ARTIST]]></sql>
-	</sql-query>
-	<sql-query name="SelectTestUpper" root="data-map" root-name="testmap" data-rows="true" column-name-capitalization="UPPER">
+	</sqlQuery>
+	<sqlQuery name="SelectTestUpper" root="dataMap" rootName="testmap" dataRows="true" columnNameCapitalization="UPPER">
 		<sql><![CDATA[select * from ARTIST]]></sql>
-	</sql-query>
-</data-map>
+	</sqlQuery>
+</dataMap>

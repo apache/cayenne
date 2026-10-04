@@ -17,39 +17,38 @@
   specific language governing permissions and limitations
   under the License.
   -->
-<data-map xmlns="http://cayenne.apache.org/schema/14/modelMap"
+<dataMap xmlns="http://cayenne.apache.org/schema/14/modelMap"
 	 xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-	 xsi:schemaLocation="http://cayenne.apache.org/schema/14/modelMap http://cayenne.apache.org/schema/14/modelMap.xsd"
-	 project-version="14">
+	 xsi:schemaLocation="http://cayenne.apache.org/schema/14/modelMap http://cayenne.apache.org/schema/14/modelMap.xsd">
     <property name="defaultPackage" value="com.my.home"/>
-    <db-entity name="A" schema="APP">
-        <db-attribute name="ID" type="INTEGER" isPrimaryKey="true" isMandatory="true" length="10"/>
-    </db-entity>
-    <db-entity name="A_B" schema="APP">
-        <db-attribute name="A_ID" type="INTEGER" isPrimaryKey="true" isMandatory="true" length="10"/>
-        <db-attribute name="B_ID" type="INTEGER" isPrimaryKey="true" isMandatory="true" length="10"/>
-    </db-entity>
-    <db-entity name="B" schema="APP">
-        <db-attribute name="ID" type="INTEGER" isPrimaryKey="true" isMandatory="true" length="10"/>
-    </db-entity>
-    <obj-entity name="A" className="A" dbEntityName="A">
-    </obj-entity>
-    <obj-entity name="AB" className="AB" dbEntityName="A_B">
-    </obj-entity>
-    <obj-entity name="B" className="B" dbEntityName="B">
-    </obj-entity>
-    <db-relationship name="aBs" source="A" target="A_B" toDependentPK="true" toMany="true">
-        <db-attribute-pair source="ID" target="A_ID"/>
-    </db-relationship>
-    <db-relationship name="toA" source="A_B" target="A">
-        <db-attribute-pair source="A_ID" target="ID"/>
-    </db-relationship>
-    <db-relationship name="toB" source="A_B" target="B">
-        <db-attribute-pair source="B_ID" target="ID"/>
-    </db-relationship>
-    <db-relationship name="aBs" source="B" target="A_B" toDependentPK="true" toMany="true">
-        <db-attribute-pair source="ID" target="B_ID"/>
-    </db-relationship>
-    <obj-relationship name="toA" source="AB" target="A" deleteRule="Nullify" db-relationship-path="toA"/>
-    <obj-relationship name="aBs" source="B" target="AB" deleteRule="Deny" db-relationship-path="aBs"/>
-</data-map>
+    <dbEntity name="A" schema="APP">
+        <dbAttribute name="ID" type="INTEGER" primaryKey="true" mandatory="true" length="10"/>
+    </dbEntity>
+    <dbEntity name="A_B" schema="APP">
+        <dbAttribute name="A_ID" type="INTEGER" primaryKey="true" mandatory="true" length="10"/>
+        <dbAttribute name="B_ID" type="INTEGER" primaryKey="true" mandatory="true" length="10"/>
+    </dbEntity>
+    <dbEntity name="B" schema="APP">
+        <dbAttribute name="ID" type="INTEGER" primaryKey="true" mandatory="true" length="10"/>
+    </dbEntity>
+    <objEntity name="A" className="A" dbEntityName="A">
+    </objEntity>
+    <objEntity name="AB" className="AB" dbEntityName="A_B">
+    </objEntity>
+    <objEntity name="B" className="B" dbEntityName="B">
+    </objEntity>
+    <dbRelationship name="aBs" source="A" target="A_B" toDependentPK="true" toMany="true">
+        <dbAttributePair source="ID" target="A_ID"/>
+    </dbRelationship>
+    <dbRelationship name="toA" source="A_B" target="A">
+        <dbAttributePair source="A_ID" target="ID"/>
+    </dbRelationship>
+    <dbRelationship name="toB" source="A_B" target="B">
+        <dbAttributePair source="B_ID" target="ID"/>
+    </dbRelationship>
+    <dbRelationship name="aBs" source="B" target="A_B" toDependentPK="true" toMany="true">
+        <dbAttributePair source="ID" target="B_ID"/>
+    </dbRelationship>
+    <objRelationship name="toA" source="AB" target="A" deleteRule="nullify" dbRelationshipPath="toA"/>
+    <objRelationship name="aBs" source="B" target="AB" deleteRule="deny" dbRelationshipPath="aBs"/>
+</dataMap>

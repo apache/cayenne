@@ -20,7 +20,7 @@
 <data-map xmlns="http://cayenne.apache.org/schema/3.0/modelMap"
 	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
 	xsi:schemaLocation="http://cayenne.apache.org/schema/3.0/modelMap http://cayenne.apache.org/schema/3.0/modelMap.xsd"
-	project-version="6">
+	project-version="9">
 	<db-entity name="ARTIST">
 		<db-attribute name="ARTIST_ID" type="INTEGER" isPrimaryKey="true" isMandatory="true"/>
 		<db-attribute name="ARTIST_NAME" type="VARCHAR" length="255"/>
@@ -28,13 +28,13 @@
 	<obj-entity name="Artist" className="org.apache.cayenne.CayenneDataObject" dbEntityName="ARTIST">
 		<obj-attribute name="artistName" type="java.lang.String" db-attribute-path="ARTIST_NAME"/>
 	</obj-entity>
-	<query name="ArtistQuery" factory="org.apache.cayenne.map.SelectQueryBuilder" root="obj-entity" root-name="Artist">
+	<query name="ArtistQuery" type="SelectQuery" root="obj-entity" root-name="Artist">
 		<property name="cayenne.GenericSelectQuery.fetchLimit" value="5"/>
 		<property name="cayenne.GenericSelectQuery.pageSize" value="10"/>
 		<property name="cayenne.GenericSelectQuery.cacheGroups" value="g1 &amp; g2"/>
 		<qualifier><![CDATA[artistName = "a"]]></qualifier>
 	</query>
-	<query name="ArtistSql" factory="org.apache.cayenne.map.SQLTemplateBuilder" root="obj-entity" root-name="Artist">
+	<query name="ArtistSql" type="SQLTemplate" root="obj-entity" root-name="Artist">
 		<property name="cayenne.SQLTemplate.columnNameCapitalization" value="upper"/>
 		<property name="cayenne.GenericSelectQuery.pageSize" value="7"/>
 		<sql><![CDATA[select * from ARTIST]]></sql>

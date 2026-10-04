@@ -17,37 +17,36 @@
   ~  specific language governing permissions and limitations
   ~  under the License.
   ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~-->
-<data-map xmlns="http://cayenne.apache.org/schema/14/modelMap"
+<dataMap xmlns="http://cayenne.apache.org/schema/14/modelMap"
           xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-          xsi:schemaLocation="http://cayenne.apache.org/schema/14/modelMap https://cayenne.apache.org/schema/14/modelMap.xsd"
-          project-version="14">
+          xsi:schemaLocation="http://cayenne.apache.org/schema/14/modelMap https://cayenne.apache.org/schema/14/modelMap.xsd">
     <property name="defaultSchema" value="SCHEMA_01"/>
 
-    <db-entity name="ADDRESS" schema="SCHEMA_01">
-        <db-attribute name="ADDRSTR" type="VARCHAR" length="250"/>
-        <db-attribute name="id" type="INTEGER" isPrimaryKey="true" isMandatory="true"/>
-    </db-entity>
-    <db-entity name="CHILD" schema="SCHEMA_01">
-        <db-attribute name="ADDRESS_ID" type="INTEGER" length="10"/>
-        <db-attribute name="date" type="DATE" length="10" />
-        <db-attribute name="id" type="INTEGER" length="10"/>
-        <db-attribute name="name" type="VARCHAR" isMandatory="true" length="30" />
-        <db-attribute name="parent_id" type="INTEGER" length="10"/>
-    </db-entity>
-    <obj-entity name="Address" className="Address" dbEntityName="ADDRESS">
-        <obj-attribute name="addrstr" type="java.lang.String" db-attribute-path="ADDRSTR"/>
-    </obj-entity>
-    <obj-entity name="Child" className="Child" dbEntityName="CHILD">
-        <obj-attribute name="id" type="java.lang.Integer" db-attribute-path="id"/>
-        <obj-attribute name="name" type="java.lang.String"/>
-    </obj-entity>
-    <db-relationship name="children" source="ADDRESS" target="CHILD" toMany="true">
-        <db-attribute-pair source="id" target="ADDRESS_ID"/>
-    </db-relationship>
-    <db-relationship name="address" source="CHILD" target="ADDRESS">
-        <db-attribute-pair source="ADDRESS_ID" target="id"/>
-    </db-relationship>
-    <obj-relationship name="children" source="Address" target="Child" deleteRule="Deny" db-relationship-path="children"/>
-    <obj-relationship name="address" source="Child" target="Address" deleteRule="Nullify" db-relationship-path="address"/>
+    <dbEntity name="ADDRESS" schema="SCHEMA_01">
+        <dbAttribute name="ADDRSTR" type="VARCHAR" length="250"/>
+        <dbAttribute name="id" type="INTEGER" primaryKey="true" mandatory="true"/>
+    </dbEntity>
+    <dbEntity name="CHILD" schema="SCHEMA_01">
+        <dbAttribute name="ADDRESS_ID" type="INTEGER" length="10"/>
+        <dbAttribute name="date" type="DATE" length="10" />
+        <dbAttribute name="id" type="INTEGER" length="10"/>
+        <dbAttribute name="name" type="VARCHAR" mandatory="true" length="30" />
+        <dbAttribute name="parent_id" type="INTEGER" length="10"/>
+    </dbEntity>
+    <objEntity name="Address" className="Address" dbEntityName="ADDRESS">
+        <objAttribute name="addrstr" type="java.lang.String" dbAttributePath="ADDRSTR"/>
+    </objEntity>
+    <objEntity name="Child" className="Child" dbEntityName="CHILD">
+        <objAttribute name="id" type="java.lang.Integer" dbAttributePath="id"/>
+        <objAttribute name="name" type="java.lang.String"/>
+    </objEntity>
+    <dbRelationship name="children" source="ADDRESS" target="CHILD" toMany="true">
+        <dbAttributePair source="id" target="ADDRESS_ID"/>
+    </dbRelationship>
+    <dbRelationship name="address" source="CHILD" target="ADDRESS">
+        <dbAttributePair source="ADDRESS_ID" target="id"/>
+    </dbRelationship>
+    <objRelationship name="children" source="Address" target="Child" deleteRule="deny" dbRelationshipPath="children"/>
+    <objRelationship name="address" source="Child" target="Address" deleteRule="nullify" dbRelationshipPath="address"/>
 
-</data-map>
+</dataMap>

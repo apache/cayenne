@@ -1,27 +1,26 @@
 <?xml version="1.0" encoding="utf-8"?>
-<data-map xmlns="http://cayenne.apache.org/schema/14/modelMap"
+<dataMap xmlns="http://cayenne.apache.org/schema/14/modelMap"
 	 xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-	 xsi:schemaLocation="http://cayenne.apache.org/schema/14/modelMap https://cayenne.apache.org/schema/14/modelMap.xsd"
-	 project-version="14">
+	 xsi:schemaLocation="http://cayenne.apache.org/schema/14/modelMap https://cayenne.apache.org/schema/14/modelMap.xsd">
 	<property name="defaultPackage" value="org.apache.cayenne.testdo.uuid"/>
-	<db-entity name="UUID_PK_ENTITY">
-		<db-attribute name="ID" type="VARCHAR" isPrimaryKey="true" isMandatory="true" length="100"/>
-	</db-entity>
-	<db-entity name="UUID_TEST">
-		<db-attribute name="ID" type="INTEGER" isPrimaryKey="true" isMandatory="true"/>
-		<db-attribute name="UUID" type="VARCHAR" length="100"/>
-	</db-entity>
-	<db-entity name="UUID_BIN_TEST">
-		<db-attribute name="ID" type="INTEGER" isPrimaryKey="true" isMandatory="true"/>
-		<db-attribute name="UUID" type="VARBINARY" length="16"/>
-	</db-entity>
-	<obj-entity name="UuidPkEntity" className="org.apache.cayenne.testdo.uuid.UuidPkEntity" dbEntityName="UUID_PK_ENTITY">
-		<obj-attribute name="id" type="java.util.UUID" db-attribute-path="ID"/>
-	</obj-entity>
-	<obj-entity name="UuidTestEntity" className="org.apache.cayenne.testdo.uuid.UuidTestEntity" dbEntityName="UUID_TEST">
-		<obj-attribute name="uuid" type="java.util.UUID" db-attribute-path="UUID"/>
-	</obj-entity>
-	<obj-entity name="UuidBinTestEntity" className="org.apache.cayenne.testdo.uuid.UuidBinTestEntity" dbEntityName="UUID_BIN_TEST">
-		<obj-attribute name="uuid" type="java.util.UUID" db-attribute-path="UUID"/>
-	</obj-entity>
-</data-map>
+	<dbEntity name="UUID_PK_ENTITY">
+		<dbAttribute name="ID" type="VARCHAR" primaryKey="true" mandatory="true" length="100"/>
+	</dbEntity>
+	<dbEntity name="UUID_TEST">
+		<dbAttribute name="ID" type="INTEGER" primaryKey="true" mandatory="true"/>
+		<dbAttribute name="UUID" type="VARCHAR" length="100"/>
+	</dbEntity>
+	<dbEntity name="UUID_BIN_TEST">
+		<dbAttribute name="ID" type="INTEGER" primaryKey="true" mandatory="true"/>
+		<dbAttribute name="UUID" type="VARBINARY" length="16"/>
+	</dbEntity>
+	<objEntity name="UuidPkEntity" className="org.apache.cayenne.testdo.uuid.UuidPkEntity" dbEntityName="UUID_PK_ENTITY">
+		<objAttribute name="id" type="java.util.UUID" dbAttributePath="ID"/>
+	</objEntity>
+	<objEntity name="UuidTestEntity" className="org.apache.cayenne.testdo.uuid.UuidTestEntity" dbEntityName="UUID_TEST">
+		<objAttribute name="uuid" type="java.util.UUID" dbAttributePath="UUID"/>
+	</objEntity>
+	<objEntity name="UuidBinTestEntity" className="org.apache.cayenne.testdo.uuid.UuidBinTestEntity" dbEntityName="UUID_BIN_TEST">
+		<objAttribute name="uuid" type="java.util.UUID" dbAttributePath="UUID"/>
+	</objEntity>
+</dataMap>

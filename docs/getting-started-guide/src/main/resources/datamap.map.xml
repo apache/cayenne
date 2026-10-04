@@ -1,67 +1,66 @@
 <?xml version="1.0" encoding="utf-8"?>
-<data-map xmlns="http://cayenne.apache.org/schema/14/modelMap"
+<dataMap xmlns="http://cayenne.apache.org/schema/14/modelMap"
 	 xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-	 xsi:schemaLocation="http://cayenne.apache.org/schema/14/modelMap https://cayenne.apache.org/schema/14/modelMap.xsd"
-	 project-version="14">
+	 xsi:schemaLocation="http://cayenne.apache.org/schema/14/modelMap https://cayenne.apache.org/schema/14/modelMap.xsd">
 	<property name="defaultPackage" value="org.example.cayenne.persistent"/>
-	<db-entity name="artist" catalog="cayenne_demo">
-		<db-attribute name="DATE_OF_BIRTH" type="DATE" length="10"/>
-		<db-attribute name="ID" type="INTEGER" isPrimaryKey="true" isGenerated="true" isMandatory="true" length="10"/>
-		<db-attribute name="NAME" type="VARCHAR" length="200"/>
-	</db-entity>
-	<db-entity name="gallery" catalog="cayenne_demo">
-		<db-attribute name="FOUNDED_DATE" type="DATE" length="10"/>
-		<db-attribute name="ID" type="INTEGER" isPrimaryKey="true" isGenerated="true" isMandatory="true" length="10"/>
-		<db-attribute name="NAME" type="VARCHAR" length="200"/>
-	</db-entity>
-	<db-entity name="painting" catalog="cayenne_demo">
-		<db-attribute name="ARTIST_ID" type="INTEGER" length="10"/>
-		<db-attribute name="GALLERY_ID" type="INTEGER" length="10"/>
-		<db-attribute name="ID" type="INTEGER" isPrimaryKey="true" isGenerated="true" isMandatory="true" length="10"/>
-		<db-attribute name="NAME" type="VARCHAR" length="200"/>
-	</db-entity>
-	<db-entity name="painting_info" catalog="cayenne_demo">
-		<db-attribute name="INFO" type="VARCHAR" length="255"/>
-		<db-attribute name="PAINTING_ID" type="INTEGER" isPrimaryKey="true" isMandatory="true" length="10"/>
-	</db-entity>
-	<obj-entity name="Artist" className="org.example.cayenne.persistent.Artist" dbEntityName="artist">
-		<obj-attribute name="dateOfBirth" type="java.time.LocalDate" db-attribute-path="DATE_OF_BIRTH"/>
-		<obj-attribute name="name" type="java.lang.String" db-attribute-path="NAME"/>
-	</obj-entity>
-	<obj-entity name="Gallery" className="org.example.cayenne.persistent.Gallery" dbEntityName="gallery">
-		<obj-attribute name="foundedDate" type="java.time.LocalDate" db-attribute-path="FOUNDED_DATE"/>
-		<obj-attribute name="name" type="java.lang.String" db-attribute-path="NAME"/>
-	</obj-entity>
-	<obj-entity name="Painting" className="org.example.cayenne.persistent.Painting" dbEntityName="painting">
-		<obj-attribute name="name" type="java.lang.String" db-attribute-path="NAME"/>
-	</obj-entity>
-	<obj-entity name="PaintingInfo" className="org.example.cayenne.persistent.PaintingInfo" dbEntityName="painting_info">
-		<obj-attribute name="info" type="java.lang.String" db-attribute-path="INFO"/>
-	</obj-entity>
-	<db-relationship name="paintings" source="artist" target="painting" toMany="true">
-		<db-attribute-pair source="ID" target="ARTIST_ID"/>
-	</db-relationship>
-	<db-relationship name="paintings" source="gallery" target="painting" toMany="true">
-		<db-attribute-pair source="ID" target="GALLERY_ID"/>
-	</db-relationship>
-	<db-relationship name="artist" source="painting" target="artist">
-		<db-attribute-pair source="ARTIST_ID" target="ID"/>
-	</db-relationship>
-	<db-relationship name="gallery" source="painting" target="gallery">
-		<db-attribute-pair source="GALLERY_ID" target="ID"/>
-	</db-relationship>
-	<db-relationship name="id" source="painting" target="painting_info" toDependentPK="true">
-		<db-attribute-pair source="ID" target="PAINTING_ID"/>
-	</db-relationship>
-	<db-relationship name="painting" source="painting_info" target="painting">
-		<db-attribute-pair source="PAINTING_ID" target="ID"/>
-	</db-relationship>
-	<obj-relationship name="paintings" source="Artist" target="Painting" deleteRule="Cascade" db-relationship-path="paintings"/>
-	<obj-relationship name="paintings" source="Gallery" target="Painting" deleteRule="Deny" db-relationship-path="paintings"/>
-	<obj-relationship name="artist" source="Painting" target="Artist" deleteRule="Nullify" db-relationship-path="artist"/>
-	<obj-relationship name="gallery" source="Painting" target="Gallery" deleteRule="Nullify" db-relationship-path="gallery"/>
-	<obj-relationship name="info" source="Painting" target="PaintingInfo" deleteRule="Nullify" db-relationship-path="id"/>
-	<obj-relationship name="painting" source="PaintingInfo" target="Painting" deleteRule="Nullify" db-relationship-path="painting"/>
+	<dbEntity name="artist" catalog="cayenne_demo">
+		<dbAttribute name="DATE_OF_BIRTH" type="DATE" length="10"/>
+		<dbAttribute name="ID" type="INTEGER" primaryKey="true" generated="true" mandatory="true" length="10"/>
+		<dbAttribute name="NAME" type="VARCHAR" length="200"/>
+	</dbEntity>
+	<dbEntity name="gallery" catalog="cayenne_demo">
+		<dbAttribute name="FOUNDED_DATE" type="DATE" length="10"/>
+		<dbAttribute name="ID" type="INTEGER" primaryKey="true" generated="true" mandatory="true" length="10"/>
+		<dbAttribute name="NAME" type="VARCHAR" length="200"/>
+	</dbEntity>
+	<dbEntity name="painting" catalog="cayenne_demo">
+		<dbAttribute name="ARTIST_ID" type="INTEGER" length="10"/>
+		<dbAttribute name="GALLERY_ID" type="INTEGER" length="10"/>
+		<dbAttribute name="ID" type="INTEGER" primaryKey="true" generated="true" mandatory="true" length="10"/>
+		<dbAttribute name="NAME" type="VARCHAR" length="200"/>
+	</dbEntity>
+	<dbEntity name="painting_info" catalog="cayenne_demo">
+		<dbAttribute name="INFO" type="VARCHAR" length="255"/>
+		<dbAttribute name="PAINTING_ID" type="INTEGER" primaryKey="true" mandatory="true" length="10"/>
+	</dbEntity>
+	<objEntity name="Artist" className="org.example.cayenne.persistent.Artist" dbEntityName="artist">
+		<objAttribute name="dateOfBirth" type="java.time.LocalDate" dbAttributePath="DATE_OF_BIRTH"/>
+		<objAttribute name="name" type="java.lang.String" dbAttributePath="NAME"/>
+	</objEntity>
+	<objEntity name="Gallery" className="org.example.cayenne.persistent.Gallery" dbEntityName="gallery">
+		<objAttribute name="foundedDate" type="java.time.LocalDate" dbAttributePath="FOUNDED_DATE"/>
+		<objAttribute name="name" type="java.lang.String" dbAttributePath="NAME"/>
+	</objEntity>
+	<objEntity name="Painting" className="org.example.cayenne.persistent.Painting" dbEntityName="painting">
+		<objAttribute name="name" type="java.lang.String" dbAttributePath="NAME"/>
+	</objEntity>
+	<objEntity name="PaintingInfo" className="org.example.cayenne.persistent.PaintingInfo" dbEntityName="painting_info">
+		<objAttribute name="info" type="java.lang.String" dbAttributePath="INFO"/>
+	</objEntity>
+	<dbRelationship name="paintings" source="artist" target="painting" toMany="true">
+		<dbAttributePair source="ID" target="ARTIST_ID"/>
+	</dbRelationship>
+	<dbRelationship name="paintings" source="gallery" target="painting" toMany="true">
+		<dbAttributePair source="ID" target="GALLERY_ID"/>
+	</dbRelationship>
+	<dbRelationship name="artist" source="painting" target="artist">
+		<dbAttributePair source="ARTIST_ID" target="ID"/>
+	</dbRelationship>
+	<dbRelationship name="gallery" source="painting" target="gallery">
+		<dbAttributePair source="GALLERY_ID" target="ID"/>
+	</dbRelationship>
+	<dbRelationship name="id" source="painting" target="painting_info" toDependentPK="true">
+		<dbAttributePair source="ID" target="PAINTING_ID"/>
+	</dbRelationship>
+	<dbRelationship name="painting" source="painting_info" target="painting">
+		<dbAttributePair source="PAINTING_ID" target="ID"/>
+	</dbRelationship>
+	<objRelationship name="paintings" source="Artist" target="Painting" deleteRule="cascade" dbRelationshipPath="paintings"/>
+	<objRelationship name="paintings" source="Gallery" target="Painting" deleteRule="deny" dbRelationshipPath="paintings"/>
+	<objRelationship name="artist" source="Painting" target="Artist" deleteRule="nullify" dbRelationshipPath="artist"/>
+	<objRelationship name="gallery" source="Painting" target="Gallery" deleteRule="nullify" dbRelationshipPath="gallery"/>
+	<objRelationship name="info" source="Painting" target="PaintingInfo" deleteRule="nullify" dbRelationshipPath="id"/>
+	<objRelationship name="painting" source="PaintingInfo" target="Painting" deleteRule="nullify" dbRelationshipPath="painting"/>
 	<dbImport xmlns="http://cayenne.apache.org/schema/14/dbimport">
 		<catalog>
 			<excludeTable>legacy_painting_info</excludeTable>
@@ -96,4 +95,4 @@
 		<createPropertyNames>false</createPropertyNames>
 		<createPKProperties>true</createPKProperties>
 	</cgen>
-</data-map>
+</dataMap>

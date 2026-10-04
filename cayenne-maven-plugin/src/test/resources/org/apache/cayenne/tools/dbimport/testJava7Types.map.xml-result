@@ -18,22 +18,21 @@
   ~  specific language governing permissions and limitations
   ~  under the License.
   ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~-->
-<data-map xmlns="http://cayenne.apache.org/schema/14/modelMap"
+<dataMap xmlns="http://cayenne.apache.org/schema/14/modelMap"
           xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-          xsi:schemaLocation="http://cayenne.apache.org/schema/14/modelMap https://cayenne.apache.org/schema/14/modelMap.xsd"
-          project-version="14">
+          xsi:schemaLocation="http://cayenne.apache.org/schema/14/modelMap https://cayenne.apache.org/schema/14/modelMap.xsd">
     <property name="defaultSchema" value="SCHEMA_01"/>
 
-    <db-entity name="CHILD" schema="SCHEMA_01">
-        <db-attribute name="ID" type="INTEGER" isPrimaryKey="true" isMandatory="true" length="10"/>
-        <db-attribute name="date" type="DATE" length="10" />
-        <db-attribute name="time" type="TIME" length="8" />
-        <db-attribute name="timestamp" type="TIMESTAMP" length="29" />
-    </db-entity>
+    <dbEntity name="CHILD" schema="SCHEMA_01">
+        <dbAttribute name="ID" type="INTEGER" primaryKey="true" mandatory="true" length="10"/>
+        <dbAttribute name="date" type="DATE" length="10" />
+        <dbAttribute name="time" type="TIME" length="8" />
+        <dbAttribute name="timestamp" type="TIMESTAMP" length="29" />
+    </dbEntity>
 
-    <obj-entity name="Child" className="Child" dbEntityName="CHILD">
-        <obj-attribute name="date" type="java.util.Date" db-attribute-path="date"/>
-        <obj-attribute name="time" type="java.util.Date" db-attribute-path="time"/>
-        <obj-attribute name="timestamp" type="java.util.Date" db-attribute-path="timestamp"/>
-    </obj-entity>
-</data-map>
+    <objEntity name="Child" className="Child" dbEntityName="CHILD">
+        <objAttribute name="date" type="java.util.Date" dbAttributePath="date"/>
+        <objAttribute name="time" type="java.util.Date" dbAttributePath="time"/>
+        <objAttribute name="timestamp" type="java.util.Date" dbAttributePath="timestamp"/>
+    </objEntity>
+</dataMap>

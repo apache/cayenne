@@ -87,7 +87,7 @@ public class DefaultProjectUpgraderTest {
         assertEquals(UpgradeType.INTERMEDIATE_UPGRADE_NEEDED, state.requiredUpgrade());
         assertEquals("5", state.projectVersion());
         assertEquals("14", state.supportedVersion());
-        assertEquals("6", state.intermediateUpgradeVersion());
+        assertEquals("9", state.intermediateUpgradeVersion());
 
         state = upgrader.checkUpgradeNeeded(projectWithVersion("11"));
         assertEquals(UpgradeType.UPGRADE_NEEDED, state.requiredUpgrade());
@@ -115,13 +115,13 @@ public class DefaultProjectUpgraderTest {
 
         // files are rewritten in the current version, the obsolete graph file is deleted
         String project = Files.readString(projectFile.toPath());
-        assertTrue(project.contains("project-version=\"14\""), project);
+        assertFalse(project.contains("project-version"), project);
         assertTrue(project.contains("http://cayenne.apache.org/schema/14/domain"), project);
         assertFalse(project.contains("<node"), project);
         assertFalse(project.contains("include"), project);
 
         String map = Files.readString(mapFile.toPath());
-        assertTrue(map.contains("project-version=\"14\""), map);
+        assertFalse(map.contains("project-version"), map);
         assertTrue(map.contains("http://cayenne.apache.org/schema/14/modelMap"), map);
 
         assertFalse(graphFile.exists(), "graph file must be deleted");
@@ -136,7 +136,11 @@ public class DefaultProjectUpgraderTest {
 
     private Resource projectWithVersion(String version) throws IOException {
         File file = new File(tempDir, "cayenne-v" + version + ".xml");
-        Files.writeString(file.toPath(), "<domain project-version=\"" + version + "\"/>");
+        // the version is a part of the namespace starting with version 14, and an attribute before that
+        String root = Integer.parseInt(version) < 14
+                ? "<domain project-version=\"" + version + "\"/>"
+                : "<domain xmlns=\"http://cayenne.apache.org/schema/" + version + "/domain\"/>";
+        Files.writeString(file.toPath(), root);
         return new URLResource(file.toURI().toURL());
     }
 

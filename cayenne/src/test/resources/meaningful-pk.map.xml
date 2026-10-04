@@ -1,82 +1,81 @@
 <?xml version="1.0" encoding="utf-8"?>
-<data-map xmlns="http://cayenne.apache.org/schema/14/modelMap"
+<dataMap xmlns="http://cayenne.apache.org/schema/14/modelMap"
 	 xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-	 xsi:schemaLocation="http://cayenne.apache.org/schema/14/modelMap https://cayenne.apache.org/schema/14/modelMap.xsd"
-	 project-version="14">
+	 xsi:schemaLocation="http://cayenne.apache.org/schema/14/modelMap https://cayenne.apache.org/schema/14/modelMap.xsd">
 	<property name="defaultPackage" value="org.apache.cayenne.testdo.meaningful_pk"/>
-	<db-entity name="MEANINGFUL_PK">
-		<db-attribute name="PK" type="VARCHAR" isPrimaryKey="true" isMandatory="true" length="100"/>
-	</db-entity>
-	<db-entity name="MEANINGFUL_PK_BIGINT">
-		<db-attribute name="PK" type="INTEGER" isPrimaryKey="true" isMandatory="true"/>
-	</db-entity>
-	<db-entity name="MEANINGFUL_PK_BIGINT_GENERATED">
-		<db-attribute name="PK" type="INTEGER" isPrimaryKey="true" isGenerated="true" isMandatory="true"/>
-		<db-attribute name="TEST_ATTR" type="VARCHAR" length="255"/>
-	</db-entity>
-	<db-entity name="MEANINGFUL_PK_DEP">
-		<db-attribute name="DESCR" type="VARCHAR" length="50"/>
-		<db-attribute name="MASTER_PK" type="INTEGER"/>
-		<db-attribute name="PK_ATTRIBUTE" type="INTEGER" isPrimaryKey="true" isMandatory="true"/>
-	</db-entity>
-	<db-entity name="MEANINGFUL_PK_DEP2">
-		<db-attribute name="DESCR" type="VARCHAR" length="50"/>
-		<db-attribute name="PK" type="VARCHAR" isPrimaryKey="true" isMandatory="true" length="100"/>
-	</db-entity>
-	<db-entity name="MEANINGFUL_PK_TEST1">
-		<db-attribute name="DESCR" type="VARCHAR" length="50"/>
-		<db-attribute name="INT_ATTRIBUTE" type="INTEGER" isMandatory="true"/>
-		<db-attribute name="INT_NULLABLE_ATTRIBUTE" type="INTEGER"/>
-		<db-attribute name="PK_ATTRIBUTE" type="INTEGER" isPrimaryKey="true" isMandatory="true"/>
-	</db-entity>
-	<db-entity name="MEANINGFUL_PK_TEST2">
-		<db-attribute name="INTEGER_ATTRIBUTE" type="INTEGER" isMandatory="true"/>
-		<db-attribute name="INTEGER_NULLABLE_ATTRIBUTE" type="INTEGER"/>
-		<db-attribute name="PK_ATTRIBUTE" type="INTEGER" isPrimaryKey="true" isMandatory="true"/>
-	</db-entity>
-	<obj-entity name="MeaningfulPKDep" className="org.apache.cayenne.testdo.meaningful_pk.MeaningfulPKDep" dbEntityName="MEANINGFUL_PK_DEP">
-		<obj-attribute name="descr" type="java.lang.String" db-attribute-path="DESCR"/>
-		<obj-attribute name="pk" type="int" db-attribute-path="PK_ATTRIBUTE"/>
-	</obj-entity>
-	<obj-entity name="MeaningfulPKTest1" className="org.apache.cayenne.testdo.meaningful_pk.MeaningfulPKTest1" dbEntityName="MEANINGFUL_PK_TEST1">
-		<obj-attribute name="descr" type="java.lang.String" db-attribute-path="DESCR"/>
-		<obj-attribute name="intAttribute" type="int" db-attribute-path="INT_ATTRIBUTE"/>
-		<obj-attribute name="intNullableAttribute" type="int" db-attribute-path="INT_NULLABLE_ATTRIBUTE"/>
-		<obj-attribute name="pkAttribute" type="int" db-attribute-path="PK_ATTRIBUTE"/>
-	</obj-entity>
-	<obj-entity name="MeaningfulPk" className="org.apache.cayenne.testdo.meaningful_pk.MeaningfulPk" dbEntityName="MEANINGFUL_PK">
-		<obj-attribute name="pk" type="java.lang.String" db-attribute-path="PK"/>
-	</obj-entity>
-	<obj-entity name="MeaningfulPkBigint" className="org.apache.cayenne.testdo.meaningful_pk.MeaningfulPkBigint" dbEntityName="MEANINGFUL_PK_BIGINT">
-		<obj-attribute name="pk" type="java.math.BigInteger" db-attribute-path="PK"/>
-	</obj-entity>
-	<obj-entity name="MeaningfulPkBigintGenerated" className="org.apache.cayenne.testdo.meaningful_pk.MeaningfulPkBigintGenerated" clientClassName="org.apache.cayenne.testdo.meaningful_pk.MeaningfulPkBigintGenerated" dbEntityName="MEANINGFUL_PK_BIGINT_GENERATED">
-		<obj-attribute name="pk" type="java.math.BigInteger" db-attribute-path="PK"/>
-		<obj-attribute name="testAttr" type="java.lang.String" db-attribute-path="TEST_ATTR"/>
-	</obj-entity>
-	<obj-entity name="MeaningfulPkDep2" className="org.apache.cayenne.testdo.meaningful_pk.MeaningfulPkDep2" dbEntityName="MEANINGFUL_PK_DEP2">
-		<obj-attribute name="descr" type="java.lang.String" db-attribute-path="DESCR"/>
-		<obj-attribute name="pk" type="java.lang.String" db-attribute-path="PK"/>
-	</obj-entity>
-	<obj-entity name="MeaningfulPkTest2" className="org.apache.cayenne.testdo.meaningful_pk.MeaningfulPkTest2" dbEntityName="MEANINGFUL_PK_TEST2">
-		<obj-attribute name="integerAttribute" type="java.lang.Integer" db-attribute-path="INTEGER_ATTRIBUTE"/>
-		<obj-attribute name="integerNullableAttribute" type="java.lang.Integer" db-attribute-path="INTEGER_NULLABLE_ATTRIBUTE"/>
-		<obj-attribute name="pkAttribute" type="java.lang.Integer" db-attribute-path="PK_ATTRIBUTE"/>
-	</obj-entity>
-	<db-relationship name="dep2" source="MEANINGFUL_PK" target="MEANINGFUL_PK_DEP2" toDependentPK="true">
-		<db-attribute-pair source="PK" target="PK"/>
-	</db-relationship>
-	<db-relationship name="toMeaningfulPK" source="MEANINGFUL_PK_DEP" target="MEANINGFUL_PK_TEST1">
-		<db-attribute-pair source="MASTER_PK" target="PK_ATTRIBUTE"/>
-	</db-relationship>
-	<db-relationship name="meaningfulPk" source="MEANINGFUL_PK_DEP2" target="MEANINGFUL_PK">
-		<db-attribute-pair source="PK" target="PK"/>
-	</db-relationship>
-	<db-relationship name="meaningfulPKDepArray" source="MEANINGFUL_PK_TEST1" target="MEANINGFUL_PK_DEP" toMany="true">
-		<db-attribute-pair source="PK_ATTRIBUTE" target="MASTER_PK"/>
-	</db-relationship>
-	<obj-relationship name="toMeaningfulPK" source="MeaningfulPKDep" target="MeaningfulPKTest1" db-relationship-path="toMeaningfulPK"/>
-	<obj-relationship name="meaningfulPKDepArray" source="MeaningfulPKTest1" target="MeaningfulPKDep" deleteRule="Cascade" db-relationship-path="meaningfulPKDepArray"/>
-	<obj-relationship name="meaningfulPkDep2s" source="MeaningfulPk" target="MeaningfulPkDep2" deleteRule="Deny" db-relationship-path="dep2"/>
-	<obj-relationship name="meaningfulPk" source="MeaningfulPkDep2" target="MeaningfulPk" deleteRule="Nullify" db-relationship-path="meaningfulPk"/>
-</data-map>
+	<dbEntity name="MEANINGFUL_PK">
+		<dbAttribute name="PK" type="VARCHAR" primaryKey="true" mandatory="true" length="100"/>
+	</dbEntity>
+	<dbEntity name="MEANINGFUL_PK_BIGINT">
+		<dbAttribute name="PK" type="INTEGER" primaryKey="true" mandatory="true"/>
+	</dbEntity>
+	<dbEntity name="MEANINGFUL_PK_BIGINT_GENERATED">
+		<dbAttribute name="PK" type="INTEGER" primaryKey="true" generated="true" mandatory="true"/>
+		<dbAttribute name="TEST_ATTR" type="VARCHAR" length="255"/>
+	</dbEntity>
+	<dbEntity name="MEANINGFUL_PK_DEP">
+		<dbAttribute name="DESCR" type="VARCHAR" length="50"/>
+		<dbAttribute name="MASTER_PK" type="INTEGER"/>
+		<dbAttribute name="PK_ATTRIBUTE" type="INTEGER" primaryKey="true" mandatory="true"/>
+	</dbEntity>
+	<dbEntity name="MEANINGFUL_PK_DEP2">
+		<dbAttribute name="DESCR" type="VARCHAR" length="50"/>
+		<dbAttribute name="PK" type="VARCHAR" primaryKey="true" mandatory="true" length="100"/>
+	</dbEntity>
+	<dbEntity name="MEANINGFUL_PK_TEST1">
+		<dbAttribute name="DESCR" type="VARCHAR" length="50"/>
+		<dbAttribute name="INT_ATTRIBUTE" type="INTEGER" mandatory="true"/>
+		<dbAttribute name="INT_NULLABLE_ATTRIBUTE" type="INTEGER"/>
+		<dbAttribute name="PK_ATTRIBUTE" type="INTEGER" primaryKey="true" mandatory="true"/>
+	</dbEntity>
+	<dbEntity name="MEANINGFUL_PK_TEST2">
+		<dbAttribute name="INTEGER_ATTRIBUTE" type="INTEGER" mandatory="true"/>
+		<dbAttribute name="INTEGER_NULLABLE_ATTRIBUTE" type="INTEGER"/>
+		<dbAttribute name="PK_ATTRIBUTE" type="INTEGER" primaryKey="true" mandatory="true"/>
+	</dbEntity>
+	<objEntity name="MeaningfulPKDep" className="org.apache.cayenne.testdo.meaningful_pk.MeaningfulPKDep" dbEntityName="MEANINGFUL_PK_DEP">
+		<objAttribute name="descr" type="java.lang.String" dbAttributePath="DESCR"/>
+		<objAttribute name="pk" type="int" dbAttributePath="PK_ATTRIBUTE"/>
+	</objEntity>
+	<objEntity name="MeaningfulPKTest1" className="org.apache.cayenne.testdo.meaningful_pk.MeaningfulPKTest1" dbEntityName="MEANINGFUL_PK_TEST1">
+		<objAttribute name="descr" type="java.lang.String" dbAttributePath="DESCR"/>
+		<objAttribute name="intAttribute" type="int" dbAttributePath="INT_ATTRIBUTE"/>
+		<objAttribute name="intNullableAttribute" type="int" dbAttributePath="INT_NULLABLE_ATTRIBUTE"/>
+		<objAttribute name="pkAttribute" type="int" dbAttributePath="PK_ATTRIBUTE"/>
+	</objEntity>
+	<objEntity name="MeaningfulPk" className="org.apache.cayenne.testdo.meaningful_pk.MeaningfulPk" dbEntityName="MEANINGFUL_PK">
+		<objAttribute name="pk" type="java.lang.String" dbAttributePath="PK"/>
+	</objEntity>
+	<objEntity name="MeaningfulPkBigint" className="org.apache.cayenne.testdo.meaningful_pk.MeaningfulPkBigint" dbEntityName="MEANINGFUL_PK_BIGINT">
+		<objAttribute name="pk" type="java.math.BigInteger" dbAttributePath="PK"/>
+	</objEntity>
+	<objEntity name="MeaningfulPkBigintGenerated" className="org.apache.cayenne.testdo.meaningful_pk.MeaningfulPkBigintGenerated" clientClassName="org.apache.cayenne.testdo.meaningful_pk.MeaningfulPkBigintGenerated" dbEntityName="MEANINGFUL_PK_BIGINT_GENERATED">
+		<objAttribute name="pk" type="java.math.BigInteger" dbAttributePath="PK"/>
+		<objAttribute name="testAttr" type="java.lang.String" dbAttributePath="TEST_ATTR"/>
+	</objEntity>
+	<objEntity name="MeaningfulPkDep2" className="org.apache.cayenne.testdo.meaningful_pk.MeaningfulPkDep2" dbEntityName="MEANINGFUL_PK_DEP2">
+		<objAttribute name="descr" type="java.lang.String" dbAttributePath="DESCR"/>
+		<objAttribute name="pk" type="java.lang.String" dbAttributePath="PK"/>
+	</objEntity>
+	<objEntity name="MeaningfulPkTest2" className="org.apache.cayenne.testdo.meaningful_pk.MeaningfulPkTest2" dbEntityName="MEANINGFUL_PK_TEST2">
+		<objAttribute name="integerAttribute" type="java.lang.Integer" dbAttributePath="INTEGER_ATTRIBUTE"/>
+		<objAttribute name="integerNullableAttribute" type="java.lang.Integer" dbAttributePath="INTEGER_NULLABLE_ATTRIBUTE"/>
+		<objAttribute name="pkAttribute" type="java.lang.Integer" dbAttributePath="PK_ATTRIBUTE"/>
+	</objEntity>
+	<dbRelationship name="dep2" source="MEANINGFUL_PK" target="MEANINGFUL_PK_DEP2" toDependentPK="true">
+		<dbAttributePair source="PK" target="PK"/>
+	</dbRelationship>
+	<dbRelationship name="toMeaningfulPK" source="MEANINGFUL_PK_DEP" target="MEANINGFUL_PK_TEST1">
+		<dbAttributePair source="MASTER_PK" target="PK_ATTRIBUTE"/>
+	</dbRelationship>
+	<dbRelationship name="meaningfulPk" source="MEANINGFUL_PK_DEP2" target="MEANINGFUL_PK">
+		<dbAttributePair source="PK" target="PK"/>
+	</dbRelationship>
+	<dbRelationship name="meaningfulPKDepArray" source="MEANINGFUL_PK_TEST1" target="MEANINGFUL_PK_DEP" toMany="true">
+		<dbAttributePair source="PK_ATTRIBUTE" target="MASTER_PK"/>
+	</dbRelationship>
+	<objRelationship name="toMeaningfulPK" source="MeaningfulPKDep" target="MeaningfulPKTest1" dbRelationshipPath="toMeaningfulPK"/>
+	<objRelationship name="meaningfulPKDepArray" source="MeaningfulPKTest1" target="MeaningfulPKDep" deleteRule="cascade" dbRelationshipPath="meaningfulPKDepArray"/>
+	<objRelationship name="meaningfulPkDep2s" source="MeaningfulPk" target="MeaningfulPkDep2" deleteRule="deny" dbRelationshipPath="dep2"/>
+	<objRelationship name="meaningfulPk" source="MeaningfulPkDep2" target="MeaningfulPk" deleteRule="nullify" dbRelationshipPath="meaningfulPk"/>
+</dataMap>

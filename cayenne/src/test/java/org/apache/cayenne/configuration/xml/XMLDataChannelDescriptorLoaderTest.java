@@ -120,7 +120,7 @@ public class XMLDataChannelDescriptorLoaderTest {
         XMLDataChannelDescriptorLoader loader = new XMLDataChannelDescriptorLoader();
         injector.injectMembers(loader);
 
-        // version 6 project and DataMap, both upgraded in memory
+        // version 9 project and DataMap, both upgraded in memory
         URL url = getClass().getResource("cayenne-testConfig9.xml");
         ConfigurationTree<DataChannelDescriptor> tree = loader.load(new URLResource(url));
         assertEquals("testConfig9", tree.getRootNode().getName());

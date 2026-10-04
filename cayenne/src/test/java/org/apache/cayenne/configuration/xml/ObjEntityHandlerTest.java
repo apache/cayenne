@@ -35,7 +35,7 @@ public class ObjEntityHandlerTest extends BaseHandlerTest {
         final DataMap map = new DataMap();
         assertEquals(0, map.getObjEntities().size());
 
-        parse("obj-entity", parent -> new ObjEntityHandler(parent, map));
+        parse("objEntity", parent -> new ObjEntityHandler(parent, map));
 
         assertEquals(1, map.getObjEntities().size());
         ObjEntity entity = map.getObjEntity("ArtistCallback");

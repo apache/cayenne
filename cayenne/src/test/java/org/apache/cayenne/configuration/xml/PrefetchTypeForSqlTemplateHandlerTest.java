@@ -31,7 +31,7 @@ public class PrefetchTypeForSqlTemplateHandlerTest extends BaseHandlerTest {
     public void load() throws Exception {
         final DataMap map = new DataMap();
 
-        parse("sql-query", new HandlerFactory() {
+        parse("sqlQuery", new HandlerFactory() {
             @Override
             public NamespaceAwareNestedTagHandler createHandler(NamespaceAwareNestedTagHandler parent) {
                 return new QueryDescriptorHandler(parent, map);

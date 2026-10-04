@@ -17,6 +17,6 @@
   ~  under the License.
   ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~-->
 
-<db-relationship name="artistPaintings" source="ARTIST" target="PAINTING" toDependentPK="true" toMany="true">
-    <db-attribute-pair source="ID" target="ARTIST_ID"/>
-</db-relationship>
+<dbRelationship name="artistPaintings" source="ARTIST" target="PAINTING" toDependentPK="true" toMany="true">
+    <dbAttributePair source="ID" target="ARTIST_ID"/>
+</dbRelationship>

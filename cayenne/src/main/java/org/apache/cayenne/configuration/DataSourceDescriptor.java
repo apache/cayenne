@@ -19,8 +19,6 @@
 
 package org.apache.cayenne.configuration;
 
-import org.apache.cayenne.util.XMLEncoder;
-import org.apache.cayenne.util.XMLSerializable;
 
 import java.util.Objects;
 
@@ -29,7 +27,7 @@ import java.util.Objects;
  *
  * @since 5.0
  */
-public class DataSourceDescriptor implements XMLSerializable {
+public class DataSourceDescriptor {
 
     protected String jdbcDriver;
     protected String dataSourceUrl;
@@ -102,21 +100,6 @@ public class DataSourceDescriptor implements XMLSerializable {
     @Override
     public int hashCode() {
         return Objects.hash(jdbcDriver, dataSourceUrl, userName, password, minConnections, maxConnections);
-    }
-
-    @SuppressWarnings("rawtypes")
-    @Override
-    public void encodeAsXML(XMLEncoder encoder, ConfigurationNodeVisitor delegate) {
-        encoder.start("data-source")
-                .start("driver").attribute("value", jdbcDriver).end()
-                .start("url").attribute("value", dataSourceUrl).end()
-                .start("connectionPool")
-                .attribute("min", minConnections)
-                .attribute("max", maxConnections).end()
-                .start("login")
-                .attribute("userName", userName)
-                .attribute("password", password).end()
-                .end();
     }
 
     @Override

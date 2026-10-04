@@ -1,159 +1,158 @@
 <?xml version="1.0" encoding="utf-8"?>
-<data-map xmlns="http://cayenne.apache.org/schema/14/modelMap"
+<dataMap xmlns="http://cayenne.apache.org/schema/14/modelMap"
 	 xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-	 xsi:schemaLocation="http://cayenne.apache.org/schema/14/modelMap https://cayenne.apache.org/schema/14/modelMap.xsd"
-	 project-version="14">
+	 xsi:schemaLocation="http://cayenne.apache.org/schema/14/modelMap https://cayenne.apache.org/schema/14/modelMap.xsd">
 	<property name="defaultPackage" value="org.apache.cayenne.testdo.relationships_flattened"/>
-	<db-entity name="COMPLEX_JOIN">
-		<db-attribute name="EXTRA_COLUMN" type="VARCHAR" length="50"/>
-		<db-attribute name="FT1_FK" type="INTEGER"/>
-		<db-attribute name="FT3_FK" type="INTEGER"/>
-		<db-attribute name="PK" type="INTEGER" isPrimaryKey="true" isMandatory="true"/>
-	</db-entity>
-	<db-entity name="COMPLEX_JOIN2">
-		<db-attribute name="FT1_FK" type="INTEGER" isMandatory="true"/>
-		<db-attribute name="FT5_FK" type="INTEGER" isMandatory="true"/>
-		<db-attribute name="PK" type="INTEGER" isPrimaryKey="true" isMandatory="true"/>
-	</db-entity>
-	<db-entity name="ENTITY1">
-		<db-attribute name="ID" type="INTEGER" isPrimaryKey="true" isMandatory="true"/>
-	</db-entity>
-	<db-entity name="ENTITY2">
-		<db-attribute name="ENTITY1_ID" type="INTEGER" isMandatory="true"/>
-		<db-attribute name="ID" type="INTEGER" isPrimaryKey="true" isMandatory="true"/>
-	</db-entity>
-	<db-entity name="ENTITY3">
-		<db-attribute name="ENTITY2_ID" type="INTEGER" isMandatory="true"/>
-		<db-attribute name="ID" type="INTEGER" isPrimaryKey="true" isMandatory="true"/>
-	</db-entity>
-	<db-entity name="FLATTENED_CIRCULAR">
-		<db-attribute name="ID" type="INTEGER" isPrimaryKey="true" isMandatory="true"/>
-	</db-entity>
-	<db-entity name="FLATTENED_CIRCULAR_JOIN">
-		<db-attribute name="SIDE1_ID" type="INTEGER" isPrimaryKey="true" isMandatory="true"/>
-		<db-attribute name="SIDE2_ID" type="INTEGER" isPrimaryKey="true" isMandatory="true"/>
-	</db-entity>
-	<db-entity name="FLATTENED_TEST_1">
-		<db-attribute name="FT1_ID" type="INTEGER" isPrimaryKey="true" isMandatory="true"/>
-		<db-attribute name="NAME" type="VARCHAR" isMandatory="true" length="100"/>
-	</db-entity>
-	<db-entity name="FLATTENED_TEST_2">
-		<db-attribute name="FT1_ID" type="INTEGER"/>
-		<db-attribute name="FT2_ID" type="INTEGER" isPrimaryKey="true" isMandatory="true"/>
-		<db-attribute name="NAME" type="VARCHAR" length="100"/>
-	</db-entity>
-	<db-entity name="FLATTENED_TEST_3">
-		<db-attribute name="FT2_ID" type="INTEGER"/>
-		<db-attribute name="FT3_ID" type="INTEGER" isPrimaryKey="true" isMandatory="true"/>
-		<db-attribute name="NAME" type="VARCHAR" length="100"/>
-	</db-entity>
-	<db-entity name="FLATTENED_TEST_4">
-		<db-attribute name="FT3_ID" type="INTEGER"/>
-		<db-attribute name="FT4_ID" type="INTEGER" isPrimaryKey="true" isMandatory="true"/>
-		<db-attribute name="NAME" type="VARCHAR" isMandatory="true" length="100"/>
-	</db-entity>
-	<db-entity name="FLATTENED_TEST_5">
-		<db-attribute name="FT5_ID" type="INTEGER" isPrimaryKey="true" isMandatory="true"/>
-		<db-attribute name="NAME" type="VARCHAR" isMandatory="true" length="100"/>
-	</db-entity>
-	<obj-entity name="Entity1" className="org.apache.cayenne.testdo.relationships_flattened.Entity1" dbEntityName="ENTITY1"/>
-	<obj-entity name="Entity2" className="org.apache.cayenne.testdo.relationships_flattened.Entity2" dbEntityName="ENTITY2"/>
-	<obj-entity name="Entity3" className="org.apache.cayenne.testdo.relationships_flattened.Entity3" dbEntityName="ENTITY3"/>
-	<obj-entity name="FlattenedCircular" className="org.apache.cayenne.testdo.relationships_flattened.FlattenedCircular" dbEntityName="FLATTENED_CIRCULAR"/>
-	<obj-entity name="FlattenedTest1" className="org.apache.cayenne.testdo.relationships_flattened.FlattenedTest1" dbEntityName="FLATTENED_TEST_1">
-		<obj-attribute name="name" type="java.lang.String" db-attribute-path="NAME"/>
-	</obj-entity>
-	<obj-entity name="FlattenedTest2" className="org.apache.cayenne.testdo.relationships_flattened.FlattenedTest2" dbEntityName="FLATTENED_TEST_2">
-		<obj-attribute name="name" type="java.lang.String" db-attribute-path="NAME"/>
-	</obj-entity>
-	<obj-entity name="FlattenedTest3" className="org.apache.cayenne.testdo.relationships_flattened.FlattenedTest3" dbEntityName="FLATTENED_TEST_3">
-		<obj-attribute name="name" type="java.lang.String" db-attribute-path="NAME"/>
-	</obj-entity>
-	<obj-entity name="FlattenedTest4" className="org.apache.cayenne.testdo.relationships_flattened.FlattenedTest4" dbEntityName="FLATTENED_TEST_4">
-		<obj-attribute name="name" type="java.lang.String" db-attribute-path="NAME"/>
-	</obj-entity>
-	<obj-entity name="FlattenedTest5" className="org.apache.cayenne.testdo.relationships_flattened.FlattenedTest5" dbEntityName="FLATTENED_TEST_5">
-		<obj-attribute name="name" type="java.lang.String" db-attribute-path="NAME"/>
-	</obj-entity>
-	<db-relationship name="toFT1" source="COMPLEX_JOIN" target="FLATTENED_TEST_1">
-		<db-attribute-pair source="FT1_FK" target="FT1_ID"/>
-	</db-relationship>
-	<db-relationship name="toFT3" source="COMPLEX_JOIN" target="FLATTENED_TEST_3">
-		<db-attribute-pair source="FT3_FK" target="FT3_ID"/>
-	</db-relationship>
-	<db-relationship name="toFT1" source="COMPLEX_JOIN2" target="FLATTENED_TEST_1">
-		<db-attribute-pair source="FT1_FK" target="FT1_ID"/>
-	</db-relationship>
-	<db-relationship name="toFT5" source="COMPLEX_JOIN2" target="FLATTENED_TEST_5">
-		<db-attribute-pair source="FT5_FK" target="FT5_ID"/>
-	</db-relationship>
-	<db-relationship name="toEntity2" source="ENTITY1" target="ENTITY2">
-		<db-attribute-pair source="ID" target="ENTITY1_ID"/>
-	</db-relationship>
-	<db-relationship name="toEntity1" source="ENTITY2" target="ENTITY1">
-		<db-attribute-pair source="ENTITY1_ID" target="ID"/>
-	</db-relationship>
-	<db-relationship name="toEntity3" source="ENTITY2" target="ENTITY3">
-		<db-attribute-pair source="ID" target="ENTITY2_ID"/>
-	</db-relationship>
-	<db-relationship name="toEntity2" source="ENTITY3" target="ENTITY2">
-		<db-attribute-pair source="ENTITY2_ID" target="ID"/>
-	</db-relationship>
-	<db-relationship name="side1s" source="FLATTENED_CIRCULAR" target="FLATTENED_CIRCULAR_JOIN" toDependentPK="true" toMany="true">
-		<db-attribute-pair source="ID" target="SIDE2_ID"/>
-	</db-relationship>
-	<db-relationship name="side2s" source="FLATTENED_CIRCULAR" target="FLATTENED_CIRCULAR_JOIN" toDependentPK="true" toMany="true">
-		<db-attribute-pair source="ID" target="SIDE1_ID"/>
-	</db-relationship>
-	<db-relationship name="side1" source="FLATTENED_CIRCULAR_JOIN" target="FLATTENED_CIRCULAR">
-		<db-attribute-pair source="SIDE1_ID" target="ID"/>
-	</db-relationship>
-	<db-relationship name="side2" source="FLATTENED_CIRCULAR_JOIN" target="FLATTENED_CIRCULAR">
-		<db-attribute-pair source="SIDE2_ID" target="ID"/>
-	</db-relationship>
-	<db-relationship name="complexJoins" source="FLATTENED_TEST_1" target="COMPLEX_JOIN" toMany="true">
-		<db-attribute-pair source="FT1_ID" target="FT1_FK"/>
-	</db-relationship>
-	<db-relationship name="complexJoins2" source="FLATTENED_TEST_1" target="COMPLEX_JOIN2" toMany="true">
-		<db-attribute-pair source="FT1_ID" target="FT1_FK"/>
-	</db-relationship>
-	<db-relationship name="ft2Array" source="FLATTENED_TEST_1" target="FLATTENED_TEST_2" toMany="true">
-		<db-attribute-pair source="FT1_ID" target="FT1_ID"/>
-	</db-relationship>
-	<db-relationship name="ft3Array" source="FLATTENED_TEST_2" target="FLATTENED_TEST_3" toMany="true">
-		<db-attribute-pair source="FT2_ID" target="FT2_ID"/>
-	</db-relationship>
-	<db-relationship name="toFT1" source="FLATTENED_TEST_2" target="FLATTENED_TEST_1">
-		<db-attribute-pair source="FT1_ID" target="FT1_ID"/>
-	</db-relationship>
-	<db-relationship name="complexJoins" source="FLATTENED_TEST_3" target="COMPLEX_JOIN" toMany="true">
-		<db-attribute-pair source="FT3_ID" target="FT3_FK"/>
-	</db-relationship>
-	<db-relationship name="ft4Array" source="FLATTENED_TEST_3" target="FLATTENED_TEST_4" toMany="true">
-		<db-attribute-pair source="FT3_ID" target="FT3_ID"/>
-	</db-relationship>
-	<db-relationship name="toFT2" source="FLATTENED_TEST_3" target="FLATTENED_TEST_2">
-		<db-attribute-pair source="FT2_ID" target="FT2_ID"/>
-	</db-relationship>
-	<db-relationship name="toFT3" source="FLATTENED_TEST_4" target="FLATTENED_TEST_3">
-		<db-attribute-pair source="FT3_ID" target="FT3_ID"/>
-	</db-relationship>
-	<db-relationship name="complexJoin2" source="FLATTENED_TEST_5" target="COMPLEX_JOIN2">
-		<db-attribute-pair source="FT5_ID" target="FT5_FK"/>
-	</db-relationship>
-	<obj-relationship name="toEntity3" source="Entity1" target="Entity3" deleteRule="Nullify" db-relationship-path="toEntity2.toEntity3"/>
-	<obj-relationship name="side1s" source="FlattenedCircular" target="FlattenedCircular" db-relationship-path="side1s.side1"/>
-	<obj-relationship name="side2s" source="FlattenedCircular" target="FlattenedCircular" db-relationship-path="side2s.side2"/>
-	<obj-relationship name="ft2Array" source="FlattenedTest1" target="FlattenedTest2" db-relationship-path="ft2Array"/>
-	<obj-relationship name="ft3Array" source="FlattenedTest1" target="FlattenedTest3" db-relationship-path="ft2Array.ft3Array"/>
-	<obj-relationship name="ft3OverComplex" source="FlattenedTest1" target="FlattenedTest3" db-relationship-path="complexJoins.toFT3"/>
-	<obj-relationship name="ft4ArrayFor1" source="FlattenedTest1" target="FlattenedTest4" db-relationship-path="ft2Array.ft3Array.ft4Array"/>
-	<obj-relationship name="ft5Array" source="FlattenedTest1" target="FlattenedTest5" deleteRule="Deny" db-relationship-path="complexJoins2.toFT5"/>
-	<obj-relationship name="ft3Array" source="FlattenedTest2" target="FlattenedTest3" db-relationship-path="ft3Array"/>
-	<obj-relationship name="toFT1" source="FlattenedTest2" target="FlattenedTest1" db-relationship-path="toFT1"/>
-	<obj-relationship name="ft4Array" source="FlattenedTest3" target="FlattenedTest4" db-relationship-path="ft4Array"/>
-	<obj-relationship name="toFT1" source="FlattenedTest3" target="FlattenedTest1" db-relationship-path="toFT2.toFT1"/>
-	<obj-relationship name="toFT2" source="FlattenedTest3" target="FlattenedTest2" db-relationship-path="toFT2"/>
-	<obj-relationship name="toFT3" source="FlattenedTest4" target="FlattenedTest3" db-relationship-path="toFT3"/>
-	<obj-relationship name="toFT1" source="FlattenedTest5" target="FlattenedTest1" deleteRule="Nullify" db-relationship-path="complexJoin2.toFT1"/>
-</data-map>
+	<dbEntity name="COMPLEX_JOIN">
+		<dbAttribute name="EXTRA_COLUMN" type="VARCHAR" length="50"/>
+		<dbAttribute name="FT1_FK" type="INTEGER"/>
+		<dbAttribute name="FT3_FK" type="INTEGER"/>
+		<dbAttribute name="PK" type="INTEGER" primaryKey="true" mandatory="true"/>
+	</dbEntity>
+	<dbEntity name="COMPLEX_JOIN2">
+		<dbAttribute name="FT1_FK" type="INTEGER" mandatory="true"/>
+		<dbAttribute name="FT5_FK" type="INTEGER" mandatory="true"/>
+		<dbAttribute name="PK" type="INTEGER" primaryKey="true" mandatory="true"/>
+	</dbEntity>
+	<dbEntity name="ENTITY1">
+		<dbAttribute name="ID" type="INTEGER" primaryKey="true" mandatory="true"/>
+	</dbEntity>
+	<dbEntity name="ENTITY2">
+		<dbAttribute name="ENTITY1_ID" type="INTEGER" mandatory="true"/>
+		<dbAttribute name="ID" type="INTEGER" primaryKey="true" mandatory="true"/>
+	</dbEntity>
+	<dbEntity name="ENTITY3">
+		<dbAttribute name="ENTITY2_ID" type="INTEGER" mandatory="true"/>
+		<dbAttribute name="ID" type="INTEGER" primaryKey="true" mandatory="true"/>
+	</dbEntity>
+	<dbEntity name="FLATTENED_CIRCULAR">
+		<dbAttribute name="ID" type="INTEGER" primaryKey="true" mandatory="true"/>
+	</dbEntity>
+	<dbEntity name="FLATTENED_CIRCULAR_JOIN">
+		<dbAttribute name="SIDE1_ID" type="INTEGER" primaryKey="true" mandatory="true"/>
+		<dbAttribute name="SIDE2_ID" type="INTEGER" primaryKey="true" mandatory="true"/>
+	</dbEntity>
+	<dbEntity name="FLATTENED_TEST_1">
+		<dbAttribute name="FT1_ID" type="INTEGER" primaryKey="true" mandatory="true"/>
+		<dbAttribute name="NAME" type="VARCHAR" mandatory="true" length="100"/>
+	</dbEntity>
+	<dbEntity name="FLATTENED_TEST_2">
+		<dbAttribute name="FT1_ID" type="INTEGER"/>
+		<dbAttribute name="FT2_ID" type="INTEGER" primaryKey="true" mandatory="true"/>
+		<dbAttribute name="NAME" type="VARCHAR" length="100"/>
+	</dbEntity>
+	<dbEntity name="FLATTENED_TEST_3">
+		<dbAttribute name="FT2_ID" type="INTEGER"/>
+		<dbAttribute name="FT3_ID" type="INTEGER" primaryKey="true" mandatory="true"/>
+		<dbAttribute name="NAME" type="VARCHAR" length="100"/>
+	</dbEntity>
+	<dbEntity name="FLATTENED_TEST_4">
+		<dbAttribute name="FT3_ID" type="INTEGER"/>
+		<dbAttribute name="FT4_ID" type="INTEGER" primaryKey="true" mandatory="true"/>
+		<dbAttribute name="NAME" type="VARCHAR" mandatory="true" length="100"/>
+	</dbEntity>
+	<dbEntity name="FLATTENED_TEST_5">
+		<dbAttribute name="FT5_ID" type="INTEGER" primaryKey="true" mandatory="true"/>
+		<dbAttribute name="NAME" type="VARCHAR" mandatory="true" length="100"/>
+	</dbEntity>
+	<objEntity name="Entity1" className="org.apache.cayenne.testdo.relationships_flattened.Entity1" dbEntityName="ENTITY1"/>
+	<objEntity name="Entity2" className="org.apache.cayenne.testdo.relationships_flattened.Entity2" dbEntityName="ENTITY2"/>
+	<objEntity name="Entity3" className="org.apache.cayenne.testdo.relationships_flattened.Entity3" dbEntityName="ENTITY3"/>
+	<objEntity name="FlattenedCircular" className="org.apache.cayenne.testdo.relationships_flattened.FlattenedCircular" dbEntityName="FLATTENED_CIRCULAR"/>
+	<objEntity name="FlattenedTest1" className="org.apache.cayenne.testdo.relationships_flattened.FlattenedTest1" dbEntityName="FLATTENED_TEST_1">
+		<objAttribute name="name" type="java.lang.String" dbAttributePath="NAME"/>
+	</objEntity>
+	<objEntity name="FlattenedTest2" className="org.apache.cayenne.testdo.relationships_flattened.FlattenedTest2" dbEntityName="FLATTENED_TEST_2">
+		<objAttribute name="name" type="java.lang.String" dbAttributePath="NAME"/>
+	</objEntity>
+	<objEntity name="FlattenedTest3" className="org.apache.cayenne.testdo.relationships_flattened.FlattenedTest3" dbEntityName="FLATTENED_TEST_3">
+		<objAttribute name="name" type="java.lang.String" dbAttributePath="NAME"/>
+	</objEntity>
+	<objEntity name="FlattenedTest4" className="org.apache.cayenne.testdo.relationships_flattened.FlattenedTest4" dbEntityName="FLATTENED_TEST_4">
+		<objAttribute name="name" type="java.lang.String" dbAttributePath="NAME"/>
+	</objEntity>
+	<objEntity name="FlattenedTest5" className="org.apache.cayenne.testdo.relationships_flattened.FlattenedTest5" dbEntityName="FLATTENED_TEST_5">
+		<objAttribute name="name" type="java.lang.String" dbAttributePath="NAME"/>
+	</objEntity>
+	<dbRelationship name="toFT1" source="COMPLEX_JOIN" target="FLATTENED_TEST_1">
+		<dbAttributePair source="FT1_FK" target="FT1_ID"/>
+	</dbRelationship>
+	<dbRelationship name="toFT3" source="COMPLEX_JOIN" target="FLATTENED_TEST_3">
+		<dbAttributePair source="FT3_FK" target="FT3_ID"/>
+	</dbRelationship>
+	<dbRelationship name="toFT1" source="COMPLEX_JOIN2" target="FLATTENED_TEST_1">
+		<dbAttributePair source="FT1_FK" target="FT1_ID"/>
+	</dbRelationship>
+	<dbRelationship name="toFT5" source="COMPLEX_JOIN2" target="FLATTENED_TEST_5">
+		<dbAttributePair source="FT5_FK" target="FT5_ID"/>
+	</dbRelationship>
+	<dbRelationship name="toEntity2" source="ENTITY1" target="ENTITY2">
+		<dbAttributePair source="ID" target="ENTITY1_ID"/>
+	</dbRelationship>
+	<dbRelationship name="toEntity1" source="ENTITY2" target="ENTITY1">
+		<dbAttributePair source="ENTITY1_ID" target="ID"/>
+	</dbRelationship>
+	<dbRelationship name="toEntity3" source="ENTITY2" target="ENTITY3">
+		<dbAttributePair source="ID" target="ENTITY2_ID"/>
+	</dbRelationship>
+	<dbRelationship name="toEntity2" source="ENTITY3" target="ENTITY2">
+		<dbAttributePair source="ENTITY2_ID" target="ID"/>
+	</dbRelationship>
+	<dbRelationship name="side1s" source="FLATTENED_CIRCULAR" target="FLATTENED_CIRCULAR_JOIN" toDependentPK="true" toMany="true">
+		<dbAttributePair source="ID" target="SIDE2_ID"/>
+	</dbRelationship>
+	<dbRelationship name="side2s" source="FLATTENED_CIRCULAR" target="FLATTENED_CIRCULAR_JOIN" toDependentPK="true" toMany="true">
+		<dbAttributePair source="ID" target="SIDE1_ID"/>
+	</dbRelationship>
+	<dbRelationship name="side1" source="FLATTENED_CIRCULAR_JOIN" target="FLATTENED_CIRCULAR">
+		<dbAttributePair source="SIDE1_ID" target="ID"/>
+	</dbRelationship>
+	<dbRelationship name="side2" source="FLATTENED_CIRCULAR_JOIN" target="FLATTENED_CIRCULAR">
+		<dbAttributePair source="SIDE2_ID" target="ID"/>
+	</dbRelationship>
+	<dbRelationship name="complexJoins" source="FLATTENED_TEST_1" target="COMPLEX_JOIN" toMany="true">
+		<dbAttributePair source="FT1_ID" target="FT1_FK"/>
+	</dbRelationship>
+	<dbRelationship name="complexJoins2" source="FLATTENED_TEST_1" target="COMPLEX_JOIN2" toMany="true">
+		<dbAttributePair source="FT1_ID" target="FT1_FK"/>
+	</dbRelationship>
+	<dbRelationship name="ft2Array" source="FLATTENED_TEST_1" target="FLATTENED_TEST_2" toMany="true">
+		<dbAttributePair source="FT1_ID" target="FT1_ID"/>
+	</dbRelationship>
+	<dbRelationship name="ft3Array" source="FLATTENED_TEST_2" target="FLATTENED_TEST_3" toMany="true">
+		<dbAttributePair source="FT2_ID" target="FT2_ID"/>
+	</dbRelationship>
+	<dbRelationship name="toFT1" source="FLATTENED_TEST_2" target="FLATTENED_TEST_1">
+		<dbAttributePair source="FT1_ID" target="FT1_ID"/>
+	</dbRelationship>
+	<dbRelationship name="complexJoins" source="FLATTENED_TEST_3" target="COMPLEX_JOIN" toMany="true">
+		<dbAttributePair source="FT3_ID" target="FT3_FK"/>
+	</dbRelationship>
+	<dbRelationship name="ft4Array" source="FLATTENED_TEST_3" target="FLATTENED_TEST_4" toMany="true">
+		<dbAttributePair source="FT3_ID" target="FT3_ID"/>
+	</dbRelationship>
+	<dbRelationship name="toFT2" source="FLATTENED_TEST_3" target="FLATTENED_TEST_2">
+		<dbAttributePair source="FT2_ID" target="FT2_ID"/>
+	</dbRelationship>
+	<dbRelationship name="toFT3" source="FLATTENED_TEST_4" target="FLATTENED_TEST_3">
+		<dbAttributePair source="FT3_ID" target="FT3_ID"/>
+	</dbRelationship>
+	<dbRelationship name="complexJoin2" source="FLATTENED_TEST_5" target="COMPLEX_JOIN2">
+		<dbAttributePair source="FT5_ID" target="FT5_FK"/>
+	</dbRelationship>
+	<objRelationship name="toEntity3" source="Entity1" target="Entity3" deleteRule="nullify" dbRelationshipPath="toEntity2.toEntity3"/>
+	<objRelationship name="side1s" source="FlattenedCircular" target="FlattenedCircular" dbRelationshipPath="side1s.side1"/>
+	<objRelationship name="side2s" source="FlattenedCircular" target="FlattenedCircular" dbRelationshipPath="side2s.side2"/>
+	<objRelationship name="ft2Array" source="FlattenedTest1" target="FlattenedTest2" dbRelationshipPath="ft2Array"/>
+	<objRelationship name="ft3Array" source="FlattenedTest1" target="FlattenedTest3" dbRelationshipPath="ft2Array.ft3Array"/>
+	<objRelationship name="ft3OverComplex" source="FlattenedTest1" target="FlattenedTest3" dbRelationshipPath="complexJoins.toFT3"/>
+	<objRelationship name="ft4ArrayFor1" source="FlattenedTest1" target="FlattenedTest4" dbRelationshipPath="ft2Array.ft3Array.ft4Array"/>
+	<objRelationship name="ft5Array" source="FlattenedTest1" target="FlattenedTest5" deleteRule="deny" dbRelationshipPath="complexJoins2.toFT5"/>
+	<objRelationship name="ft3Array" source="FlattenedTest2" target="FlattenedTest3" dbRelationshipPath="ft3Array"/>
+	<objRelationship name="toFT1" source="FlattenedTest2" target="FlattenedTest1" dbRelationshipPath="toFT1"/>
+	<objRelationship name="ft4Array" source="FlattenedTest3" target="FlattenedTest4" dbRelationshipPath="ft4Array"/>
+	<objRelationship name="toFT1" source="FlattenedTest3" target="FlattenedTest1" dbRelationshipPath="toFT2.toFT1"/>
+	<objRelationship name="toFT2" source="FlattenedTest3" target="FlattenedTest2" dbRelationshipPath="toFT2"/>
+	<objRelationship name="toFT3" source="FlattenedTest4" target="FlattenedTest3" dbRelationshipPath="toFT3"/>
+	<objRelationship name="toFT1" source="FlattenedTest5" target="FlattenedTest1" deleteRule="nullify" dbRelationshipPath="complexJoin2.toFT1"/>
+</dataMap>

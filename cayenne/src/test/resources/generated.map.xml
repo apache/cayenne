@@ -1,100 +1,99 @@
 <?xml version="1.0" encoding="utf-8"?>
-<data-map xmlns="http://cayenne.apache.org/schema/14/modelMap"
+<dataMap xmlns="http://cayenne.apache.org/schema/14/modelMap"
 	 xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-	 xsi:schemaLocation="http://cayenne.apache.org/schema/14/modelMap https://cayenne.apache.org/schema/14/modelMap.xsd"
-	 project-version="14">
+	 xsi:schemaLocation="http://cayenne.apache.org/schema/14/modelMap https://cayenne.apache.org/schema/14/modelMap.xsd">
 	<property name="defaultPackage" value="org.apache.cayenne.testdo.generated"/>
 	<property name="defaultSuperclass" value="org.apache.cayenne.GenericPersistentObject"/>
-	<db-entity name="GENERATED_COLUMN_COMP_KEY">
-		<db-attribute name="AUTO_PK" type="INTEGER" isPrimaryKey="true" isMandatory="true"/>
-		<db-attribute name="GENERATED_COLUMN" type="INTEGER" isPrimaryKey="true" isGenerated="true" isMandatory="true"/>
-		<db-attribute name="NAME" type="VARCHAR" length="100"/>
-		<db-attribute name="PROPAGATED_PK" type="INTEGER" isPrimaryKey="true" isMandatory="true"/>
-	</db-entity>
-	<db-entity name="GENERATED_COLUMN_COMP_M">
-		<db-attribute name="ID" type="INTEGER" isPrimaryKey="true" isMandatory="true"/>
-		<db-attribute name="NAME" type="VARCHAR" length="100"/>
-	</db-entity>
-	<db-entity name="GENERATED_COLUMN_DEP">
-		<db-attribute name="GENERATED_COLUMN_FK" type="INTEGER" isPrimaryKey="true" isMandatory="true"/>
-		<db-attribute name="NAME" type="VARCHAR" length="100"/>
-	</db-entity>
-	<db-entity name="GENERATED_COLUMN_TEST">
-		<db-attribute name="GENERATED_COLUMN" type="INTEGER" isPrimaryKey="true" isGenerated="true" isMandatory="true"/>
-		<db-attribute name="NAME" type="VARCHAR" length="250"/>
-	</db-entity>
-	<db-entity name="GENERATED_COLUMN_TEST2">
-		<db-attribute name="GENERATED_COLUMN" type="INTEGER" isPrimaryKey="true" isGenerated="true" isMandatory="true"/>
-		<db-attribute name="NAME" type="VARCHAR" length="100"/>
-	</db-entity>
-	<db-entity name="GENERATED_F1">
-		<db-attribute name="ID" type="INTEGER" isPrimaryKey="true" isMandatory="true"/>
-	</db-entity>
-	<db-entity name="GENERATED_F2">
-		<db-attribute name="ID" type="INTEGER" isPrimaryKey="true" isMandatory="true"/>
-	</db-entity>
-	<db-entity name="GENERATED_JOIN">
-		<db-attribute name="ID" type="INTEGER" isPrimaryKey="true" isGenerated="true" isMandatory="true"/>
-		<db-attribute name="ID1" type="INTEGER"/>
-		<db-attribute name="ID2" type="INTEGER"/>
-	</db-entity>
-	<db-entity name="GENERATED_REFLEXIVE">
-		<db-attribute name="ID" type="INTEGER" isPrimaryKey="true" isGenerated="true" isMandatory="true"/>
-		<db-attribute name="NAME" type="VARCHAR" length="255"/>
-		<db-attribute name="REF_ID" type="INTEGER"/>
-	</db-entity>
-	<obj-entity name="GeneratedColumnCompKey" className="org.apache.cayenne.testdo.generated.GeneratedColumnCompKey" dbEntityName="GENERATED_COLUMN_COMP_KEY">
-		<obj-attribute name="name" type="java.lang.String" db-attribute-path="NAME"/>
-	</obj-entity>
-	<obj-entity name="GeneratedColumnCompMaster" className="org.apache.cayenne.testdo.generated.GeneratedColumnCompMaster" dbEntityName="GENERATED_COLUMN_COMP_M">
-		<obj-attribute name="name" type="java.lang.String" db-attribute-path="NAME"/>
-	</obj-entity>
-	<obj-entity name="GeneratedColumnDep" className="org.apache.cayenne.testdo.generated.GeneratedColumnDep" dbEntityName="GENERATED_COLUMN_DEP">
-		<obj-attribute name="name" type="java.lang.String" db-attribute-path="NAME"/>
-	</obj-entity>
-	<obj-entity name="GeneratedColumnTest2" className="org.apache.cayenne.testdo.generated.GeneratedColumnTest2" dbEntityName="GENERATED_COLUMN_TEST2">
-		<obj-attribute name="name" type="java.lang.String" db-attribute-path="NAME"/>
-	</obj-entity>
-	<obj-entity name="GeneratedColumnTestEntity" className="org.apache.cayenne.testdo.generated.GeneratedColumnTestEntity" dbEntityName="GENERATED_COLUMN_TEST">
-		<obj-attribute name="name" type="java.lang.String" db-attribute-path="NAME"/>
-	</obj-entity>
-	<obj-entity name="GeneratedF1" className="org.apache.cayenne.testdo.generated.GeneratedF1" dbEntityName="GENERATED_F1" superClassName="org.apache.cayenne.GenericPersistentObject"/>
-	<obj-entity name="GeneratedF2" className="org.apache.cayenne.testdo.generated.GeneratedF2" dbEntityName="GENERATED_F2" superClassName="org.apache.cayenne.GenericPersistentObject"/>
-	<obj-entity name="GeneratedReflexive" className="org.apache.cayenne.testdo.generated.GeneratedReflexive" dbEntityName="GENERATED_REFLEXIVE" superClassName="org.apache.cayenne.GenericPersistentObject">
-		<obj-attribute name="name" type="java.lang.String" db-attribute-path="NAME"/>
-	</obj-entity>
-	<db-relationship name="toMaster" source="GENERATED_COLUMN_COMP_KEY" target="GENERATED_COLUMN_COMP_M">
-		<db-attribute-pair source="PROPAGATED_PK" target="ID"/>
-	</db-relationship>
-	<db-relationship name="toDetail" source="GENERATED_COLUMN_COMP_M" target="GENERATED_COLUMN_COMP_KEY" toDependentPK="true" toMany="true">
-		<db-attribute-pair source="ID" target="PROPAGATED_PK"/>
-	</db-relationship>
-	<db-relationship name="toMaster" source="GENERATED_COLUMN_DEP" target="GENERATED_COLUMN_TEST">
-		<db-attribute-pair source="GENERATED_COLUMN_FK" target="GENERATED_COLUMN"/>
-	</db-relationship>
-	<db-relationship name="toDep" source="GENERATED_COLUMN_TEST" target="GENERATED_COLUMN_DEP" toDependentPK="true">
-		<db-attribute-pair source="GENERATED_COLUMN" target="GENERATED_COLUMN_FK"/>
-	</db-relationship>
-	<db-relationship name="join" source="GENERATED_F1" target="GENERATED_JOIN" toMany="true">
-		<db-attribute-pair source="ID" target="ID1"/>
-	</db-relationship>
-	<db-relationship name="join" source="GENERATED_F2" target="GENERATED_JOIN" toMany="true">
-		<db-attribute-pair source="ID" target="ID2"/>
-	</db-relationship>
-	<db-relationship name="f1" source="GENERATED_JOIN" target="GENERATED_F1">
-		<db-attribute-pair source="ID1" target="ID"/>
-	</db-relationship>
-	<db-relationship name="f2" source="GENERATED_JOIN" target="GENERATED_F2">
-		<db-attribute-pair source="ID2" target="ID"/>
-	</db-relationship>
-	<db-relationship name="next" source="GENERATED_REFLEXIVE" target="GENERATED_REFLEXIVE">
-		<db-attribute-pair source="REF_ID" target="ID"/>
-	</db-relationship>
-	<obj-relationship name="toMaster" source="GeneratedColumnCompKey" target="GeneratedColumnCompMaster" db-relationship-path="toMaster"/>
-	<obj-relationship name="toDetail" source="GeneratedColumnCompMaster" target="GeneratedColumnCompKey" db-relationship-path="toDetail"/>
-	<obj-relationship name="toMaster" source="GeneratedColumnDep" target="GeneratedColumnTestEntity" db-relationship-path="toMaster"/>
-	<obj-relationship name="toDep" source="GeneratedColumnTestEntity" target="GeneratedColumnDep" db-relationship-path="toDep"/>
-	<obj-relationship name="f2" source="GeneratedF1" target="GeneratedF2" deleteRule="Nullify" db-relationship-path="join.f2"/>
-	<obj-relationship name="f1" source="GeneratedF2" target="GeneratedF1" deleteRule="Nullify" db-relationship-path="join.f1"/>
-	<obj-relationship name="next" source="GeneratedReflexive" target="GeneratedReflexive" deleteRule="Nullify" db-relationship-path="next"/>
-</data-map>
+	<dbEntity name="GENERATED_COLUMN_COMP_KEY">
+		<dbAttribute name="AUTO_PK" type="INTEGER" primaryKey="true" mandatory="true"/>
+		<dbAttribute name="GENERATED_COLUMN" type="INTEGER" primaryKey="true" generated="true" mandatory="true"/>
+		<dbAttribute name="NAME" type="VARCHAR" length="100"/>
+		<dbAttribute name="PROPAGATED_PK" type="INTEGER" primaryKey="true" mandatory="true"/>
+	</dbEntity>
+	<dbEntity name="GENERATED_COLUMN_COMP_M">
+		<dbAttribute name="ID" type="INTEGER" primaryKey="true" mandatory="true"/>
+		<dbAttribute name="NAME" type="VARCHAR" length="100"/>
+	</dbEntity>
+	<dbEntity name="GENERATED_COLUMN_DEP">
+		<dbAttribute name="GENERATED_COLUMN_FK" type="INTEGER" primaryKey="true" mandatory="true"/>
+		<dbAttribute name="NAME" type="VARCHAR" length="100"/>
+	</dbEntity>
+	<dbEntity name="GENERATED_COLUMN_TEST">
+		<dbAttribute name="GENERATED_COLUMN" type="INTEGER" primaryKey="true" generated="true" mandatory="true"/>
+		<dbAttribute name="NAME" type="VARCHAR" length="250"/>
+	</dbEntity>
+	<dbEntity name="GENERATED_COLUMN_TEST2">
+		<dbAttribute name="GENERATED_COLUMN" type="INTEGER" primaryKey="true" generated="true" mandatory="true"/>
+		<dbAttribute name="NAME" type="VARCHAR" length="100"/>
+	</dbEntity>
+	<dbEntity name="GENERATED_F1">
+		<dbAttribute name="ID" type="INTEGER" primaryKey="true" mandatory="true"/>
+	</dbEntity>
+	<dbEntity name="GENERATED_F2">
+		<dbAttribute name="ID" type="INTEGER" primaryKey="true" mandatory="true"/>
+	</dbEntity>
+	<dbEntity name="GENERATED_JOIN">
+		<dbAttribute name="ID" type="INTEGER" primaryKey="true" generated="true" mandatory="true"/>
+		<dbAttribute name="ID1" type="INTEGER"/>
+		<dbAttribute name="ID2" type="INTEGER"/>
+	</dbEntity>
+	<dbEntity name="GENERATED_REFLEXIVE">
+		<dbAttribute name="ID" type="INTEGER" primaryKey="true" generated="true" mandatory="true"/>
+		<dbAttribute name="NAME" type="VARCHAR" length="255"/>
+		<dbAttribute name="REF_ID" type="INTEGER"/>
+	</dbEntity>
+	<objEntity name="GeneratedColumnCompKey" className="org.apache.cayenne.testdo.generated.GeneratedColumnCompKey" dbEntityName="GENERATED_COLUMN_COMP_KEY">
+		<objAttribute name="name" type="java.lang.String" dbAttributePath="NAME"/>
+	</objEntity>
+	<objEntity name="GeneratedColumnCompMaster" className="org.apache.cayenne.testdo.generated.GeneratedColumnCompMaster" dbEntityName="GENERATED_COLUMN_COMP_M">
+		<objAttribute name="name" type="java.lang.String" dbAttributePath="NAME"/>
+	</objEntity>
+	<objEntity name="GeneratedColumnDep" className="org.apache.cayenne.testdo.generated.GeneratedColumnDep" dbEntityName="GENERATED_COLUMN_DEP">
+		<objAttribute name="name" type="java.lang.String" dbAttributePath="NAME"/>
+	</objEntity>
+	<objEntity name="GeneratedColumnTest2" className="org.apache.cayenne.testdo.generated.GeneratedColumnTest2" dbEntityName="GENERATED_COLUMN_TEST2">
+		<objAttribute name="name" type="java.lang.String" dbAttributePath="NAME"/>
+	</objEntity>
+	<objEntity name="GeneratedColumnTestEntity" className="org.apache.cayenne.testdo.generated.GeneratedColumnTestEntity" dbEntityName="GENERATED_COLUMN_TEST">
+		<objAttribute name="name" type="java.lang.String" dbAttributePath="NAME"/>
+	</objEntity>
+	<objEntity name="GeneratedF1" className="org.apache.cayenne.testdo.generated.GeneratedF1" dbEntityName="GENERATED_F1" superClassName="org.apache.cayenne.GenericPersistentObject"/>
+	<objEntity name="GeneratedF2" className="org.apache.cayenne.testdo.generated.GeneratedF2" dbEntityName="GENERATED_F2" superClassName="org.apache.cayenne.GenericPersistentObject"/>
+	<objEntity name="GeneratedReflexive" className="org.apache.cayenne.testdo.generated.GeneratedReflexive" dbEntityName="GENERATED_REFLEXIVE" superClassName="org.apache.cayenne.GenericPersistentObject">
+		<objAttribute name="name" type="java.lang.String" dbAttributePath="NAME"/>
+	</objEntity>
+	<dbRelationship name="toMaster" source="GENERATED_COLUMN_COMP_KEY" target="GENERATED_COLUMN_COMP_M">
+		<dbAttributePair source="PROPAGATED_PK" target="ID"/>
+	</dbRelationship>
+	<dbRelationship name="toDetail" source="GENERATED_COLUMN_COMP_M" target="GENERATED_COLUMN_COMP_KEY" toDependentPK="true" toMany="true">
+		<dbAttributePair source="ID" target="PROPAGATED_PK"/>
+	</dbRelationship>
+	<dbRelationship name="toMaster" source="GENERATED_COLUMN_DEP" target="GENERATED_COLUMN_TEST">
+		<dbAttributePair source="GENERATED_COLUMN_FK" target="GENERATED_COLUMN"/>
+	</dbRelationship>
+	<dbRelationship name="toDep" source="GENERATED_COLUMN_TEST" target="GENERATED_COLUMN_DEP" toDependentPK="true">
+		<dbAttributePair source="GENERATED_COLUMN" target="GENERATED_COLUMN_FK"/>
+	</dbRelationship>
+	<dbRelationship name="join" source="GENERATED_F1" target="GENERATED_JOIN" toMany="true">
+		<dbAttributePair source="ID" target="ID1"/>
+	</dbRelationship>
+	<dbRelationship name="join" source="GENERATED_F2" target="GENERATED_JOIN" toMany="true">
+		<dbAttributePair source="ID" target="ID2"/>
+	</dbRelationship>
+	<dbRelationship name="f1" source="GENERATED_JOIN" target="GENERATED_F1">
+		<dbAttributePair source="ID1" target="ID"/>
+	</dbRelationship>
+	<dbRelationship name="f2" source="GENERATED_JOIN" target="GENERATED_F2">
+		<dbAttributePair source="ID2" target="ID"/>
+	</dbRelationship>
+	<dbRelationship name="next" source="GENERATED_REFLEXIVE" target="GENERATED_REFLEXIVE">
+		<dbAttributePair source="REF_ID" target="ID"/>
+	</dbRelationship>
+	<objRelationship name="toMaster" source="GeneratedColumnCompKey" target="GeneratedColumnCompMaster" dbRelationshipPath="toMaster"/>
+	<objRelationship name="toDetail" source="GeneratedColumnCompMaster" target="GeneratedColumnCompKey" dbRelationshipPath="toDetail"/>
+	<objRelationship name="toMaster" source="GeneratedColumnDep" target="GeneratedColumnTestEntity" dbRelationshipPath="toMaster"/>
+	<objRelationship name="toDep" source="GeneratedColumnTestEntity" target="GeneratedColumnDep" dbRelationshipPath="toDep"/>
+	<objRelationship name="f2" source="GeneratedF1" target="GeneratedF2" deleteRule="nullify" dbRelationshipPath="join.f2"/>
+	<objRelationship name="f1" source="GeneratedF2" target="GeneratedF1" deleteRule="nullify" dbRelationshipPath="join.f1"/>
+	<objRelationship name="next" source="GeneratedReflexive" target="GeneratedReflexive" deleteRule="nullify" dbRelationshipPath="next"/>
+</dataMap>

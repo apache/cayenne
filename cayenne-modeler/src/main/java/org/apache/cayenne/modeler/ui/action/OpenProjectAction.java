@@ -55,7 +55,8 @@ public class OpenProjectAction extends AppAction {
     static {
         // Correspondence between project version and latest Modeler version that can upgrade it.
         // Modeler v4.1 can handle versions from 3.1 and 4.0 (including intermediate versions) modeler.
-        PROJECT_TO_MODELER_VERSION = Map.of("1.0", "v3.0", "1.1", "v3.0", "1.2", "v3.0", "2.0", "v3.0", "3.0.0.1", "v3.1");
+        PROJECT_TO_MODELER_VERSION = Map.of("1.0", "v3.0", "1.1", "v3.0", "1.2", "v3.0", "2.0", "v3.0", "3.0.0.1", "v3.1",
+                "6", "v4.2", "7", "v4.2", "8", "v4.2");
     }
 
     public OpenProjectAction(Application application) {

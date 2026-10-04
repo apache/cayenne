@@ -44,7 +44,6 @@ import org.apache.cayenne.configuration.ConfigurationNodeVisitor;
  */
 public class XMLEncoder {
 
-    protected String projectVersion;
     protected String indent;
     protected PrintWriter out;
 
@@ -58,20 +57,12 @@ public class XMLEncoder {
     protected Deque<String> openTags = new LinkedList<>();
 
     public XMLEncoder(PrintWriter out) {
-        this(out, null, null);
+        this(out, null);
     }
 
     public XMLEncoder(PrintWriter out, String indent) {
-        this(out, indent, null);
-    }
-
-    /**
-     * @since 3.1
-     */
-    public XMLEncoder(PrintWriter out, String indent, String projectVersion) {
         this.indent = indent;
         this.out = out;
-        this.projectVersion = projectVersion;
     }
 
     public XMLEncoder indent(int i) {
@@ -334,15 +325,5 @@ public class XMLEncoder {
             start(tag).cdata(value).end();
         }
         return this;
-    }
-
-    /**
-     * Inserts an optional project version attribute in the output. If the project version
-     * is not initialized for encoder, will do nothing.
-     *
-     * @since 4.1
-     */
-    public XMLEncoder projectVersion() {
-        return attribute("project-version", projectVersion, true);
     }
 }

@@ -115,12 +115,12 @@ public class ObjAttribute extends Attribute<ObjEntity, ObjAttribute, ObjRelation
      */
     @Override
     public void encodeAsXML(XMLEncoder encoder, ConfigurationNodeVisitor<?> delegate) {
-        encoder.start("obj-attribute")
+        encoder.start("objAttribute")
                 .attribute("name", getName())
                 .attribute("type", getType())
                 .attribute("lock", isUsedForLocking())
                 .attribute("lazy", isLazy())
-                .attribute("db-attribute-path", getDbAttributePath() == null
+                .attribute("dbAttributePath", getDbAttributePath() == null
                                 ? null
                                 : getDbAttributePath().value());
 

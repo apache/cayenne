@@ -48,11 +48,11 @@ public class ObjEntityTest {
 
         String ls = System.lineSeparator();
 
-        assertEquals("<obj-entity name=\"X\" className=\"org.example.Xc\">" + ls +
-                "<obj-attribute name=\"a1\" type=\"int\"/>" + ls +
-                "<obj-attribute name=\"a2\" type=\"java.lang.String\"/>" + ls +
-                "<obj-attribute name=\"a3\" type=\"long\"/>" + ls +
-                "</obj-entity>" + ls, out.toString());
+        assertEquals("<objEntity name=\"X\" className=\"org.example.Xc\">" + ls +
+                "<objAttribute name=\"a1\" type=\"int\"/>" + ls +
+                "<objAttribute name=\"a2\" type=\"java.lang.String\"/>" + ls +
+                "<objAttribute name=\"a3\" type=\"long\"/>" + ls +
+                "</objEntity>" + ls, out.toString());
     }
 
     @Test
@@ -74,11 +74,11 @@ public class ObjEntityTest {
 
         String ls = System.lineSeparator();
 
-        assertEquals("<obj-entity name=\"X\" className=\"org.example.Xc\">" + ls +
-                "<embedded-attribute name=\"a3\" type=\"long\"/>" + ls +
-                "<obj-attribute name=\"a1\" type=\"int\"/>" + ls +
-                "<obj-attribute name=\"a2\" type=\"java.lang.String\"/>" + ls +
-                "</obj-entity>" + ls, out.toString());
+        assertEquals("<objEntity name=\"X\" className=\"org.example.Xc\">" + ls +
+                "<embeddedAttribute name=\"a3\" type=\"long\"/>" + ls +
+                "<objAttribute name=\"a1\" type=\"int\"/>" + ls +
+                "<objAttribute name=\"a2\" type=\"java.lang.String\"/>" + ls +
+                "</objEntity>" + ls, out.toString());
     }
 
     private class EncoderDummyVisitor extends BaseConfigurationNodeVisitor<Object> {

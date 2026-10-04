@@ -17,46 +17,45 @@
   ~  specific language governing permissions and limitations
   ~  under the License.
   ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~-->
-<data-map xmlns="http://cayenne.apache.org/schema/14/modelMap"
+<dataMap xmlns="http://cayenne.apache.org/schema/14/modelMap"
           xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-          xsi:schemaLocation="http://cayenne.apache.org/schema/14/modelMap http://cayenne.apache.org/schema/14/modelMap.xsd"
-          project-version="14">
+          xsi:schemaLocation="http://cayenne.apache.org/schema/14/modelMap http://cayenne.apache.org/schema/14/modelMap.xsd">
 
-    <db-entity name="parent" schema="SCHEMA_01">
-        <db-attribute name="COL2" type="CHAR" length="25"/>
-        <db-attribute name="COL3" type="DECIMAL" length="10" scale="2"/>
-        <db-attribute name="COL4" type="VARCHAR" length="25"/>
-        <db-attribute name="COL5" type="DATE" length="10"/>
-        <db-attribute name="ID" type="INTEGER" isPrimaryKey="true" isMandatory="true" length="10"/>
-    </db-entity>
-    <db-entity name="CHILD" schema="SCHEMA_01">
-        <db-attribute name="col1" type="INTEGER"/>
-        <db-attribute name="col2" type="DECIMAL" length="10" scale="2"/>
-        <db-attribute name="COL4" type="VARCHAR" length="25"/>
-        <db-attribute name="COL5" type="DATE" length="10"/>
-        <db-attribute name="ID" type="INTEGER" isPrimaryKey="true" isMandatory="true" length="10"/>
-        <db-attribute name="parent_id" type="CHAR" length="25"/>
-    </db-entity>
-    <obj-entity name="Child" className="Child" dbEntityName="CHILD">
-        <obj-attribute name="col3" type="java.math.BigDecimal" db-attribute-path="COL3"/>
-        <obj-attribute name="col4" type="java.lang.String" db-attribute-path="COL4"/>
-        <obj-attribute name="col5" type="java.util.Date" db-attribute-path="COL5"/>
-        <obj-attribute name="parentId" type="java.lang.String" db-attribute-path="PARENT_ID"/>
-    </obj-entity>
-    <obj-entity name="Parent" className="Parent" dbEntityName="parent">
-        <obj-attribute name="col2" type="java.lang.String" db-attribute-path="COL2"/>
-        <obj-attribute name="col3" type="java.math.BigDecimal" db-attribute-path="COL3"/>
-        <obj-attribute name="col4" type="java.lang.String" db-attribute-path="COL4"/>
-        <obj-attribute name="col5" type="java.util.Date" db-attribute-path="COL5"/>
-    </obj-entity>
+    <dbEntity name="parent" schema="SCHEMA_01">
+        <dbAttribute name="COL2" type="CHAR" length="25"/>
+        <dbAttribute name="COL3" type="DECIMAL" length="10" scale="2"/>
+        <dbAttribute name="COL4" type="VARCHAR" length="25"/>
+        <dbAttribute name="COL5" type="DATE" length="10"/>
+        <dbAttribute name="ID" type="INTEGER" primaryKey="true" mandatory="true" length="10"/>
+    </dbEntity>
+    <dbEntity name="CHILD" schema="SCHEMA_01">
+        <dbAttribute name="col1" type="INTEGER"/>
+        <dbAttribute name="col2" type="DECIMAL" length="10" scale="2"/>
+        <dbAttribute name="COL4" type="VARCHAR" length="25"/>
+        <dbAttribute name="COL5" type="DATE" length="10"/>
+        <dbAttribute name="ID" type="INTEGER" primaryKey="true" mandatory="true" length="10"/>
+        <dbAttribute name="parent_id" type="CHAR" length="25"/>
+    </dbEntity>
+    <objEntity name="Child" className="Child" dbEntityName="CHILD">
+        <objAttribute name="col3" type="java.math.BigDecimal" dbAttributePath="COL3"/>
+        <objAttribute name="col4" type="java.lang.String" dbAttributePath="COL4"/>
+        <objAttribute name="col5" type="java.util.Date" dbAttributePath="COL5"/>
+        <objAttribute name="parentId" type="java.lang.String" dbAttributePath="PARENT_ID"/>
+    </objEntity>
+    <objEntity name="Parent" className="Parent" dbEntityName="parent">
+        <objAttribute name="col2" type="java.lang.String" dbAttributePath="COL2"/>
+        <objAttribute name="col3" type="java.math.BigDecimal" dbAttributePath="COL3"/>
+        <objAttribute name="col4" type="java.lang.String" dbAttributePath="COL4"/>
+        <objAttribute name="col5" type="java.util.Date" dbAttributePath="COL5"/>
+    </objEntity>
 
-    <db-relationship name="parent" source="CHILD" target="parent">
-        <db-attribute-pair source="parent_id" target="ID"/>
-    </db-relationship>
-    <db-relationship name="children" source="parent" target="CHILD" toMany="true">
-        <db-attribute-pair source="ID" target="parent_id"/>
-    </db-relationship>
+    <dbRelationship name="parent" source="CHILD" target="parent">
+        <dbAttributePair source="parent_id" target="ID"/>
+    </dbRelationship>
+    <dbRelationship name="children" source="parent" target="CHILD" toMany="true">
+        <dbAttributePair source="ID" target="parent_id"/>
+    </dbRelationship>
 
-    <obj-relationship name="parent" source="Child" target="Parent" deleteRule="Nullify" db-relationship-path="parent"/>
-    <obj-relationship name="children" source="Parent" target="Child" deleteRule="Deny" db-relationship-path="children"/>
-</data-map>
+    <objRelationship name="parent" source="Child" target="Parent" deleteRule="nullify" dbRelationshipPath="parent"/>
+    <objRelationship name="children" source="Parent" target="Child" deleteRule="deny" dbRelationshipPath="children"/>
+</dataMap>

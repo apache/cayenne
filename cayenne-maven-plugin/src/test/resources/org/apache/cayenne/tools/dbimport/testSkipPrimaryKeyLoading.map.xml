@@ -17,19 +17,18 @@
   specific language governing permissions and limitations
   under the License.
   -->
-<data-map xmlns="http://cayenne.apache.org/schema/14/modelMap"
+<dataMap xmlns="http://cayenne.apache.org/schema/14/modelMap"
 	 xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-	 xsi:schemaLocation="http://cayenne.apache.org/schema/14/modelMap http://cayenne.apache.org/schema/14/modelMap.xsd"
-	 project-version="14">
+	 xsi:schemaLocation="http://cayenne.apache.org/schema/14/modelMap http://cayenne.apache.org/schema/14/modelMap.xsd">
     <property name="defaultPackage" value="com.my.home"/>
-    <db-entity name="A" schema="APP">
-        <db-attribute name="ID" type="INTEGER" isPrimaryKey="true" isMandatory="true" length="10"/>
-    </db-entity>
-    <db-entity name="B" schema="APP">
-        <db-attribute name="ID" type="INTEGER" isPrimaryKey="true" isMandatory="true" length="10"/>
-    </db-entity>
-    <obj-entity name="NewName" className="NewName" dbEntityName="A">
-    </obj-entity>
-    <obj-entity name="B" className="B" dbEntityName="B">
-    </obj-entity>
-</data-map>
+    <dbEntity name="A" schema="APP">
+        <dbAttribute name="ID" type="INTEGER" primaryKey="true" mandatory="true" length="10"/>
+    </dbEntity>
+    <dbEntity name="B" schema="APP">
+        <dbAttribute name="ID" type="INTEGER" primaryKey="true" mandatory="true" length="10"/>
+    </dbEntity>
+    <objEntity name="NewName" className="NewName" dbEntityName="A">
+    </objEntity>
+    <objEntity name="B" className="B" dbEntityName="B">
+    </objEntity>
+</dataMap>

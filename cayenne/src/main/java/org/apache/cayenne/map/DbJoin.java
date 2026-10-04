@@ -96,7 +96,7 @@ public class DbJoin implements XMLSerializable {
      */
     @Override
     public void encodeAsXML(XMLEncoder encoder, ConfigurationNodeVisitor delegate) {
-        encoder.start("db-attribute-pair")
+        encoder.start("dbAttributePair")
                 .attribute("source", getSourceName())
                 .attribute("target", getTargetName())
                 .end();

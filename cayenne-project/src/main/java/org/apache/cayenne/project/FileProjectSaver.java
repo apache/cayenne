@@ -241,9 +241,9 @@ public class FileProjectSaver implements ProjectSaver {
     void saveToTempFile(SaveUnit unit, PrintWriter printWriter) {
         ConfigurationNodeVisitor<?> visitor;
         if (unit.delegate == null) {
-            visitor = new ConfigurationSaver(printWriter, getSupportedVersion(), delegate);
+            visitor = new ConfigurationSaver(printWriter, delegate);
         } else {
-            XMLEncoder encoder = new XMLEncoder(printWriter, "\t", getSupportedVersion());
+            XMLEncoder encoder = new XMLEncoder(printWriter, "\t");
             encoder.println("<?xml version=\"1.0\" encoding=\"utf-8\"?>");
             unit.delegate.setXMLEncoder(encoder);
             visitor = unit.delegate;

@@ -17,24 +17,23 @@
    specific language governing permissions and limitations
    under the License.
 -->
-<data-map xmlns="http://cayenne.apache.org/schema/14/modelMap"
+<dataMap xmlns="http://cayenne.apache.org/schema/14/modelMap"
 	 xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-	 xsi:schemaLocation="http://cayenne.apache.org/schema/14/modelMap https://cayenne.apache.org/schema/14/modelMap.xsd"
-	 project-version="14">
+	 xsi:schemaLocation="http://cayenne.apache.org/schema/14/modelMap https://cayenne.apache.org/schema/14/modelMap.xsd">
 	<property name="defaultPackage" value="org.apache.cayenne.testdo.json"/>
 	<property name="defaultSuperclass" value="org.apache.cayenne.GenericPersistentObject"/>
-	<db-entity name="JSON_OTHER">
-		<db-attribute name="DATA" type="OTHER" isMandatory="true"/>
-		<db-attribute name="ID" type="INTEGER" isPrimaryKey="true" isMandatory="true"/>
-	</db-entity>
-	<db-entity name="JSON_VARCHAR">
-		<db-attribute name="DATA" type="LONGNVARCHAR" isMandatory="true"/>
-		<db-attribute name="ID" type="INTEGER" isPrimaryKey="true" isMandatory="true"/>
-	</db-entity>
-	<obj-entity name="JsonOther" className="org.apache.cayenne.testdo.json.JsonOther" dbEntityName="JSON_OTHER">
-		<obj-attribute name="data" type="org.apache.cayenne.value.Json" db-attribute-path="DATA"/>
-	</obj-entity>
-	<obj-entity name="JsonVarchar" className="org.apache.cayenne.testdo.json.JsonVarchar" dbEntityName="JSON_VARCHAR">
-		<obj-attribute name="data" type="org.apache.cayenne.value.Json" db-attribute-path="DATA"/>
-	</obj-entity>
-</data-map>
+	<dbEntity name="JSON_OTHER">
+		<dbAttribute name="DATA" type="OTHER" mandatory="true"/>
+		<dbAttribute name="ID" type="INTEGER" primaryKey="true" mandatory="true"/>
+	</dbEntity>
+	<dbEntity name="JSON_VARCHAR">
+		<dbAttribute name="DATA" type="LONGNVARCHAR" mandatory="true"/>
+		<dbAttribute name="ID" type="INTEGER" primaryKey="true" mandatory="true"/>
+	</dbEntity>
+	<objEntity name="JsonOther" className="org.apache.cayenne.testdo.json.JsonOther" dbEntityName="JSON_OTHER">
+		<objAttribute name="data" type="org.apache.cayenne.value.Json" dbAttributePath="DATA"/>
+	</objEntity>
+	<objEntity name="JsonVarchar" className="org.apache.cayenne.testdo.json.JsonVarchar" dbEntityName="JSON_VARCHAR">
+		<objAttribute name="data" type="org.apache.cayenne.value.Json" dbAttributePath="DATA"/>
+	</objEntity>
+</dataMap>

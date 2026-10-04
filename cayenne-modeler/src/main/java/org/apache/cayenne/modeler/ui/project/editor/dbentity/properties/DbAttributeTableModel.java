@@ -372,7 +372,7 @@ public class DbAttributeTableModel extends CMTableModel<DbAttribute> {
         } else if (col == DB_ATTRIBUTE_MANDATORY) {
             return !attrib.isPrimaryKey();
         } else if (col == DB_ATTRIBUTE_AUTO_INCREMENT) {
-            // DbAttribute.encodeAsXML() only stores "isGenerated" for PKs, so don't let it be set elsewhere
+            // DbAttribute.encodeAsXML() only stores "generated" for PKs, so don't let it be set elsewhere
             return attrib.isPrimaryKey();
         }
         return true;

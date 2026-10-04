@@ -87,14 +87,14 @@ public class CallbackMap {
     }
 
     public void encodeCallbacksAsXML(XMLEncoder encoder) {
-        printMethods(getPostAdd(), "post-add", encoder);
-        printMethods(getPrePersist(), "pre-persist", encoder);
-        printMethods(getPostPersist(), "post-persist", encoder);
-        printMethods(getPreUpdate(), "pre-update", encoder);
-        printMethods(getPostUpdate(), "post-update", encoder);
-        printMethods(getPreRemove(), "pre-remove", encoder);
-        printMethods(getPostRemove(), "post-remove", encoder);
-        printMethods(getPostLoad(), "post-load", encoder);
+        printMethods(getPostAdd(), "postAdd", encoder);
+        printMethods(getPrePersist(), "prePersist", encoder);
+        printMethods(getPostPersist(), "postPersist", encoder);
+        printMethods(getPreUpdate(), "preUpdate", encoder);
+        printMethods(getPostUpdate(), "postUpdate", encoder);
+        printMethods(getPreRemove(), "preRemove", encoder);
+        printMethods(getPostRemove(), "postRemove", encoder);
+        printMethods(getPostLoad(), "postLoad", encoder);
     }
 
     private static void printMethods(
@@ -103,7 +103,7 @@ public class CallbackMap {
             XMLEncoder encoder) {
 
         for (String methodName : descriptor.getCallbackMethods()) {
-            encoder.start(stringCallbackName).attribute("method-name", methodName).end();
+            encoder.start(stringCallbackName).attribute("methodName", methodName).end();
         }
     }
 }

@@ -60,8 +60,8 @@ git -C <repo-dir> diff -- <path/to/datamap>.map.xml
 git -C <repo-dir> diff --cached -- <path/to/datamap>.map.xml
 ```
 
-From the diff, collect the added/modified `<obj-entity>`, `<obj-attribute>`, `<obj-relationship>`, and
-`<db-relationship>` lines — that added/changed set is your scope. Notes:
+From the diff, collect the added/modified `<objEntity>`, `<objAttribute>`, `<objRelationship>`, and
+`<dbRelationship>` lines — that added/changed set is your scope. Notes:
 
 - If `git diff` is empty but the file is tracked, there's nothing new to clean — say so and stop
   (unless the user asked for an entire-model pass).
@@ -109,7 +109,7 @@ metadata (FK column for to-one, pluralized target DbEntity for to-many). When an
 built on a DbRelationship, keep the two names **in sync** — rename both together, per direction.
 DbRelationships with no ObjRelationship (an ungenerated reverse direction, a skipped FK, a hop inside
 a flattened many-to-many) are cleaned the same way — don't skip them. Any rename must update every
-`db-relationship-path` segment that names it (see Step 4).
+`dbRelationshipPath` segment that names it (see Step 4).
 
 ## Step 3 — Present the rename plan
 
@@ -128,11 +128,11 @@ If there are many domain abbreviations to expand, ask the user for a glossary ra
 Edit the `*.map.xml`. For **every** rename, walk the matching checklist in
 `model-naming-rename-safety.md` and update all references in the same edit:
 
-- ObjEntity → `className`, every `obj-relationship` `source`/`target`, query `root-name`,
-  `result-entity`.
-- ObjRelationship → prefetch/expression paths (its `db-relationship-path` is unaffected).
-- ObjAttribute → qualifier/ordering paths (its `db-attribute-path` is unaffected).
-- DbRelationship → every `db-relationship-path` segment that names it, including inside dotted
+- ObjEntity → `className`, every `objRelationship` `source`/`target`, query `rootName`,
+  `resultEntity`.
+- ObjRelationship → prefetch/expression paths (its `dbRelationshipPath` is unaffected).
+- ObjAttribute → qualifier/ordering paths (its `dbAttributePath` is unaffected).
+- DbRelationship → every `dbRelationshipPath` segment that names it, including inside dotted
   flattened chains. This holds whether or not the DbRelationship backs an ObjRelationship — a
   standalone DbRelationship can still be named as a segment in another entity's flattened path.
 
@@ -141,7 +141,7 @@ order.
 
 ## Step 5 — Validate and hand off
 
-- Re-walk the cross-reference checklist: does every `source`/`target`, `root-name`, `db-relationship-path`
+- Re-walk the cross-reference checklist: does every `source`/`target`, `rootName`, `dbRelationshipPath`
   segment, and `className` still resolve?
 - Hand off to `cayenne-cgen` to (re)generate the Java classes with the final names. **Naming must
   happen before cgen** — if classes were already generated with the old names, point out the now-stale
@@ -157,11 +157,11 @@ order.
   break single words (`status`, `metadata`).
 - **Don't guess abbreviation expansions.** Ask for a glossary when a model is full of them.
 - **Don't rename an ObjEntity without updating `className`, every reference, and regenerating** — a
-  bare rename orphans the old class and dangles relationship `source`/`target` and query `root-name`.
-- **Don't rename a DbRelationship without fixing every `db-relationship-path` segment**, including
+  bare rename orphans the old class and dangles relationship `source`/`target` and query `rootName`.
+- **Don't rename a DbRelationship without fixing every `dbRelationshipPath` segment**, including
   flattened chains on other entities.
 - **Don't skip a DbRelationship just because it has no ObjRelationship.** Standalone DbRelationships
   are in scope — clean them on their own merits from their DB metadata, not by mirroring.
-- **Don't repoint `db-attribute-path` / `db-relationship-path` targets.** You rename the element; you
+- **Don't repoint `dbAttributePath` / `dbRelationshipPath` targets.** You rename the element; you
   never change what a path points to.
 - **Don't run cgen yourself.** Hand off to `cayenne-cgen`.

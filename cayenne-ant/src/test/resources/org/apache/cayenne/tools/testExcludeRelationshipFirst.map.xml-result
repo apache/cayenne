@@ -17,24 +17,23 @@
 	specific language governing permissions and limitations
 	under the License.
 -->
-<data-map xmlns="http://cayenne.apache.org/schema/14/modelMap"
+<dataMap xmlns="http://cayenne.apache.org/schema/14/modelMap"
           xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-          xsi:schemaLocation="http://cayenne.apache.org/schema/14/modelMap https://cayenne.apache.org/schema/14/modelMap.xsd"
-          project-version="14">
+          xsi:schemaLocation="http://cayenne.apache.org/schema/14/modelMap https://cayenne.apache.org/schema/14/modelMap.xsd">
     <property name="defaultSchema" value="SCHEMA_01"/>
 
-    <db-entity name="TEST1" schema="SCHEMA_01">
-        <db-attribute name="ID" type="INTEGER" isPrimaryKey="true" isMandatory="true" length="10"/>
-    </db-entity>
-    <db-entity name="TEST2" schema="SCHEMA_01">
-        <db-attribute name="ID" type="INTEGER" isPrimaryKey="true" isMandatory="true" length="10"/>
-        <db-attribute name="TEST1_ID" type="INTEGER" length="10"/>
-    </db-entity>
+    <dbEntity name="TEST1" schema="SCHEMA_01">
+        <dbAttribute name="ID" type="INTEGER" primaryKey="true" mandatory="true" length="10"/>
+    </dbEntity>
+    <dbEntity name="TEST2" schema="SCHEMA_01">
+        <dbAttribute name="ID" type="INTEGER" primaryKey="true" mandatory="true" length="10"/>
+        <dbAttribute name="TEST1_ID" type="INTEGER" length="10"/>
+    </dbEntity>
 
-    <obj-entity name="Test1" className="Test1" dbEntityName="TEST1"/>
-    <obj-entity name="Test2" className="Test2" dbEntityName="TEST2">
-    <obj-attribute name="test1Id" type="int" db-attribute-path="TEST1_ID"/>
-    </obj-entity>
+    <objEntity name="Test1" className="Test1" dbEntityName="TEST1"/>
+    <objEntity name="Test2" className="Test2" dbEntityName="TEST2">
+    <objAttribute name="test1Id" type="int" dbAttributePath="TEST1_ID"/>
+    </objEntity>
 
 
-</data-map>
+</dataMap>

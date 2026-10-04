@@ -26,7 +26,10 @@ import org.apache.cayenne.query.ObjectSelect;
 import org.apache.cayenne.query.Ordering;
 import org.apache.cayenne.query.PrefetchTreeNode;
 import org.apache.cayenne.query.SortOrder;
+import org.w3c.dom.Document;
 import org.w3c.dom.Element;
+import org.w3c.dom.NamedNodeMap;
+import org.w3c.dom.Node;
 import org.w3c.dom.NodeList;
 
 import javax.xml.xpath.XPath;
@@ -34,6 +37,7 @@ import javax.xml.xpath.XPathConstants;
 import javax.xml.xpath.XPathFactory;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Objects;
 
 /**
  * Upgrades projects to version 14
@@ -52,6 +56,8 @@ public final class UpgradeHandler_V14 implements UpgradeHandler {
         updateDomainSchemaAndVersion(upgradeUnit);
         updateDomainExtensionSchema(upgradeUnit, VALIDATION);
         removeEjbqlInspection(upgradeUnit);
+        removeVersionAttribute(upgradeUnit);
+        convertNamesToCamelCase(upgradeUnit);
     }
 
     @Override
@@ -63,6 +69,106 @@ public final class UpgradeHandler_V14 implements UpgradeHandler {
         convertSelectQueries(upgradeUnit);
         removeEjbqlQueries(upgradeUnit);
         convertQueryTags(upgradeUnit);
+        convertQueryRoots(upgradeUnit);
+        renameDbAttributeFlags(upgradeUnit);
+        convertDeleteRules(upgradeUnit);
+        removeVersionAttribute(upgradeUnit);
+        convertNamesToCamelCase(upgradeUnit);
+    }
+
+    /**
+     * Drops the "is" prefix of the boolean attributes of "db-attribute", e.g. "isMandatory" becomes "mandatory".
+     */
+    private void renameDbAttributeFlags(UpgradeContext upgradeUnit) {
+        String path = "/data-map/*[local-name()='db-entity']/*[local-name()='db-attribute']";
+        for (Element attribute : elements(upgradeUnit, path)) {
+            renameAttribute(attribute, "isMandatory", "mandatory");
+            renameAttribute(attribute, "isPrimaryKey", "primaryKey");
+            renameAttribute(attribute, "isGenerated", "generated");
+        }
+    }
+
+    private void renameAttribute(Element element, String name, String newName) {
+        if (element.hasAttribute(name)) {
+            element.setAttribute(newName, element.getAttribute(name));
+            element.removeAttribute(name);
+        }
+    }
+
+    /**
+     * Converts the delete rules of "obj-relationship" to lowercase, e.g. "Nullify" becomes "nullify".
+     */
+    private void convertDeleteRules(UpgradeContext upgradeUnit) {
+        String path = "/data-map/*[local-name()='obj-relationship'][@deleteRule]";
+        for (Element relationship : elements(upgradeUnit, path)) {
+            relationship.setAttribute("deleteRule", relationship.getAttribute("deleteRule").toLowerCase());
+        }
+    }
+
+    /**
+     * Removes the project version attribute, as the version is already a part of the schema namespace.
+     */
+    private void removeVersionAttribute(UpgradeContext upgradeUnit) {
+        upgradeUnit.getDocument().getDocumentElement().removeAttribute("project-version");
+    }
+
+    /**
+     * Renames the hyphenated tags and attributes to camelCase, e.g. "db-entity" becomes "dbEntity". The extensions,
+     * that have their own namespaces, are left alone.
+     */
+    private void convertNamesToCamelCase(UpgradeContext upgradeUnit) {
+        Element root = upgradeUnit.getDocument().getDocumentElement();
+        convertNamesToCamelCase(upgradeUnit.getDocument(), root, root.getNamespaceURI());
+    }
+
+    private void convertNamesToCamelCase(Document document, Element element, String namespace) {
+        if (!Objects.equals(namespace, element.getNamespaceURI())) {
+            return;
+        }
+
+        for (Element child : childElements(element)) {
+            convertNamesToCamelCase(document, child, namespace);
+        }
+
+        NamedNodeMap attributes = element.getAttributes();
+        List<Node> hyphenated = new ArrayList<>();
+        for (int i = 0; i < attributes.getLength(); i++) {
+            String name = attributes.item(i).getNodeName();
+            if (name.contains("-") && !name.contains(":")) {
+                hyphenated.add(attributes.item(i));
+            }
+        }
+        for (Node attribute : hyphenated) {
+            document.renameNode(attribute, null, camelCase(attribute.getNodeName()));
+        }
+
+        if (element.getNodeName().contains("-")) {
+            document.renameNode(element, element.getNamespaceURI(), camelCase(element.getNodeName()));
+        }
+    }
+
+    private static String camelCase(String name) {
+        StringBuilder camelCase = new StringBuilder(name.length());
+        boolean upper = false;
+        for (char c : name.toCharArray()) {
+            if (c == '-') {
+                upper = true;
+            } else {
+                camelCase.append(upper ? Character.toUpperCase(c) : c);
+                upper = false;
+            }
+        }
+        return camelCase.toString();
+    }
+
+    /**
+     * Converts the hyphenated types of the query roots to camelCase, e.g. "obj-entity" becomes "objEntity".
+     */
+    private void convertQueryRoots(UpgradeContext upgradeUnit) {
+        String path = "/data-map/*[local-name()='sql-query' or local-name()='procedure-query'][@root]";
+        for (Element query : elements(upgradeUnit, path)) {
+            query.setAttribute("root", camelCase(query.getAttribute("root")));
+        }
     }
 
     private void removeEjbqlInspection(UpgradeContext upgradeUnit) {

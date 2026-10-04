@@ -31,8 +31,8 @@ import org.xml.sax.SAXException;
  */
 public class DbRelationshipHandler extends NamespaceAwareNestedTagHandler {
 
-    private static final String DB_RELATIONSHIP_TAG = "db-relationship";
-    public static final String DB_ATTRIBUTE_PAIR_TAG = "db-attribute-pair";
+    private static final String DB_RELATIONSHIP_TAG = "dbRelationship";
+    public static final String DB_ATTRIBUTE_PAIR_TAG = "dbAttributePair";
 
     private DataMap map;
 

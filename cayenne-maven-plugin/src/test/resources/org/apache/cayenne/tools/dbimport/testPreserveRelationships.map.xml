@@ -17,28 +17,27 @@
   specific language governing permissions and limitations
   under the License.
   -->
-<data-map xmlns="http://cayenne.apache.org/schema/14/modelMap"
+<dataMap xmlns="http://cayenne.apache.org/schema/14/modelMap"
 	 xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-	 xsi:schemaLocation="http://cayenne.apache.org/schema/14/modelMap http://cayenne.apache.org/schema/14/modelMap.xsd"
-	 project-version="14">
-    <db-entity name="CHILD" schema="APP">
-        <db-attribute name="ID" type="INTEGER" isPrimaryKey="true" isMandatory="true" length="10"/>
-        <db-attribute name="PARENT_ID" type="INTEGER" length="10"/>
-    </db-entity>
-    <db-entity name="PARENT" schema="APP">
-        <db-attribute name="ID" type="INTEGER" isPrimaryKey="true" isMandatory="true" length="10"/>
-    </db-entity>
-    <obj-entity name="Child" className="Child" dbEntityName="CHILD">
-        <obj-attribute name="parentId" type="java.lang.Integer" db-attribute-path="PARENT_ID"/>
-    </obj-entity>
-    <obj-entity name="Parent" className="Parent" dbEntityName="PARENT">
-    </obj-entity>
-    <db-relationship name="toParent" source="CHILD" target="PARENT">
-        <db-attribute-pair source="PARENT_ID" target="ID"/>
-    </db-relationship>
-    <db-relationship name="toParent" source="PARENT" target="CHILD">
-        <db-attribute-pair source="ID" target="PARENT_ID"/>
-    </db-relationship>
-    <obj-relationship name="toParent" source="Child" target="Parent" deleteRule="Nullify" db-relationship-path="toParent"/>
-    <obj-relationship name="toParent" source="Parent" target="Child" deleteRule="Nullify" db-relationship-path="toParent"/>
-</data-map>
+	 xsi:schemaLocation="http://cayenne.apache.org/schema/14/modelMap http://cayenne.apache.org/schema/14/modelMap.xsd">
+    <dbEntity name="CHILD" schema="APP">
+        <dbAttribute name="ID" type="INTEGER" primaryKey="true" mandatory="true" length="10"/>
+        <dbAttribute name="PARENT_ID" type="INTEGER" length="10"/>
+    </dbEntity>
+    <dbEntity name="PARENT" schema="APP">
+        <dbAttribute name="ID" type="INTEGER" primaryKey="true" mandatory="true" length="10"/>
+    </dbEntity>
+    <objEntity name="Child" className="Child" dbEntityName="CHILD">
+        <objAttribute name="parentId" type="java.lang.Integer" dbAttributePath="PARENT_ID"/>
+    </objEntity>
+    <objEntity name="Parent" className="Parent" dbEntityName="PARENT">
+    </objEntity>
+    <dbRelationship name="toParent" source="CHILD" target="PARENT">
+        <dbAttributePair source="PARENT_ID" target="ID"/>
+    </dbRelationship>
+    <dbRelationship name="toParent" source="PARENT" target="CHILD">
+        <dbAttributePair source="ID" target="PARENT_ID"/>
+    </dbRelationship>
+    <objRelationship name="toParent" source="Child" target="Parent" deleteRule="nullify" dbRelationshipPath="toParent"/>
+    <objRelationship name="toParent" source="Parent" target="Child" deleteRule="nullify" dbRelationshipPath="toParent"/>
+</dataMap>

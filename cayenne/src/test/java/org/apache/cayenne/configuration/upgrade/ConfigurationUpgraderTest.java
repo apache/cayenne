@@ -32,9 +32,9 @@ import org.w3c.dom.Element;
 import java.util.List;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.mockito.Mockito.mock;
-import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.verifyNoInteractions;
 
 public class ConfigurationUpgraderTest {
@@ -51,7 +51,9 @@ public class ConfigurationUpgraderTest {
         "0,       INTERMEDIATE_UPGRADE_NEEDED",
         "3.2.1.0, INTERMEDIATE_UPGRADE_NEEDED",
         "5,       INTERMEDIATE_UPGRADE_NEEDED",
-        "6,       UPGRADE_NEEDED",
+        "6,       INTERMEDIATE_UPGRADE_NEEDED",
+        "8,       INTERMEDIATE_UPGRADE_NEEDED",
+        "9,       UPGRADE_NEEDED",
         "10,      UPGRADE_NEEDED",
         "11,      UPGRADE_NEEDED",
         "12,      UPGRADE_NEEDED",
@@ -66,14 +68,14 @@ public class ConfigurationUpgraderTest {
     @Test
     public void all() {
         List<String> versions = UpgradeHandler.all().stream().map(UpgradeHandler::getVersion).toList();
-        assertEquals(List.of("7", "8", "9", "10", "11", "12", "13", "14"), versions,
+        assertEquals(List.of("10", "11", "12", "13", "14"), versions,
                 "handlers must cover every version after the oldest supported one, in order");
         assertEquals(UpgradeHandler.CURRENT_VERSION, versions.getLast());
     }
 
     @Test
     public void handlersForVersion() {
-        assertEquals(8, upgrader.handlersForVersion(UpgradeHandler.MIN_SUPPORTED_VERSION).size());
+        assertEquals(5, upgrader.handlersForVersion(UpgradeHandler.MIN_SUPPORTED_VERSION).size());
         assertTrue(upgrader.handlersForVersion(UpgradeHandler.CURRENT_VERSION).isEmpty());
 
         List<String> versions = upgrader.handlersForVersion("9").stream().map(UpgradeHandler::getVersion).toList();
@@ -84,6 +86,10 @@ public class ConfigurationUpgraderTest {
     public void readVersion() {
         assertEquals("3.2.1.0", upgrader.readVersion(getResourceForVersion("3.2.1.0")));
         assertEquals("10", upgrader.readVersion(getResourceForVersion("10")));
+
+        // starting with version 14 there is no version attribute, and the version is a part of the namespace
+        assertEquals("14", upgrader.readVersion(getResourceForVersion("14")));
+        assertEquals("15", upgrader.readVersion(getResourceForVersion("15")));
         assertEquals("6", upgrader.readVersion(new URLResource(getClass().getResource("test-map-v6.map.xml"))));
     }
 
@@ -99,47 +105,36 @@ public class ConfigurationUpgraderTest {
 
     @Test
     public void upgradeProjectDom() {
-        UpgradeContext context = upgrader.upgradeProjectDom(getResourceForVersion("6"), "6");
+        UpgradeContext context = upgrader.upgradeProjectDom(getResourceForVersion("9"), "9");
 
         Element root = context.getDocument().getDocumentElement();
-        assertEquals("14", root.getAttribute("project-version"));
+        assertFalse(root.hasAttribute("project-version"));
         assertEquals("http://cayenne.apache.org/schema/14/domain", root.getAttribute("xmlns"));
         assertEquals(2, root.getElementsByTagName("map").getLength());
 
-        // the version 6 fixture has a DataNode, which version 13 removes without a replacement
+        // the version 9 fixture has a DataNode, which version 13 removes without a replacement
         assertEquals(0, root.getElementsByTagName("node").getLength());
         assertEquals(1, context.getChangesAffectingRuntime().size());
     }
 
     @Test
     public void upgradeDataMapDom() {
-        Resource resource = new URLResource(getClass().getResource("test-map-v8.map.xml"));
+        Resource resource = new URLResource(getClass().getResource("test-map-v9.map.xml"));
 
-        // starting at version 9 skips the version 9 handler, which drops the reverse engineering config
-        UpgradeContext from9 = upgrader.upgradeDataMapDom(resource, "9");
-        Element root = from9.getDocument().getDocumentElement();
-        assertEquals("14", root.getAttribute("project-version"));
+        UpgradeContext context = upgrader.upgradeDataMapDom(resource, "9");
+        Element root = context.getDocument().getDocumentElement();
+        assertEquals("dataMap", root.getNodeName());
+        assertFalse(root.hasAttribute("project-version"));
         assertEquals("http://cayenne.apache.org/schema/14/modelMap", root.getAttribute("xmlns"));
-        assertEquals(1, root.getElementsByTagName("reverse-engineering-config").getLength());
-        assertTrue(from9.getObsoleteFiles().isEmpty());
-
-        UpgradeContext from8 = upgrader.upgradeDataMapDom(resource, "8");
-        root = from8.getDocument().getDocumentElement();
-        assertEquals("14", root.getAttribute("project-version"));
-        assertEquals(0, root.getElementsByTagName("reverse-engineering-config").getLength());
-        assertEquals(List.of("reverseEngineering.xml"), from8.getObsoleteFiles());
     }
 
     @Test
     public void upgradeModel() {
         DataChannelDescriptor descriptor = mock(DataChannelDescriptor.class);
 
-        // only the version 7 handler has a model-level step
-        upgrader.upgradeModel("7", descriptor);
+        // none of the current handlers has a model-level step
+        upgrader.upgradeModel("9", descriptor);
         verifyNoInteractions(descriptor);
-
-        upgrader.upgradeModel("6", descriptor);
-        verify(descriptor).getDataMaps();
     }
 
     private Resource getResourceForVersion(String version) {

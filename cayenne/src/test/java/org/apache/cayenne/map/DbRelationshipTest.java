@@ -38,9 +38,9 @@ public class DbRelationshipTest {
         relationship.addJoin(new DbJoin(relationship));
 
         String ls = System.lineSeparator();
-        assertEquals("<db-relationship name=\"r1\" source=\"A\" target=\"B\">" + ls +
-                "<db-attribute-pair source=\"A_ID\" target=\"B_ID\"/>" + ls +
-                "</db-relationship>" + ls, encode(relationship));
+        assertEquals("<dbRelationship name=\"r1\" source=\"A\" target=\"B\">" + ls +
+                "<dbAttributePair source=\"A_ID\" target=\"B_ID\"/>" + ls +
+                "</dbRelationship>" + ls, encode(relationship));
     }
 
     @Test
@@ -51,9 +51,9 @@ public class DbRelationshipTest {
         relationship.addJoin(new DbJoin(relationship, "A_ID", null));
 
         String ls = System.lineSeparator();
-        assertEquals("<db-relationship name=\"r1\" source=\"A\" target=\"B\">" + ls +
-                "<db-attribute-pair source=\"A_ID\"/>" + ls +
-                "</db-relationship>" + ls, encode(relationship));
+        assertEquals("<dbRelationship name=\"r1\" source=\"A\" target=\"B\">" + ls +
+                "<dbAttributePair source=\"A_ID\"/>" + ls +
+                "</dbRelationship>" + ls, encode(relationship));
     }
 
     @Test
@@ -62,7 +62,7 @@ public class DbRelationshipTest {
         relationship.addJoin(new DbJoin(relationship));
 
         String ls = System.lineSeparator();
-        assertEquals("<db-relationship name=\"r1\" source=\"A\" target=\"B\"/>" + ls, encode(relationship));
+        assertEquals("<dbRelationship name=\"r1\" source=\"A\" target=\"B\"/>" + ls, encode(relationship));
     }
 
     private DbRelationship relationship() {

@@ -29,8 +29,8 @@ import org.xml.sax.SAXException;
  */
 public class EmbeddableAttributeHandler extends NamespaceAwareNestedTagHandler {
 
-    private static final String EMBEDDED_ATTRIBUTE_TAG = "embedded-attribute";
-    private static final String EMBEDDABLE_ATTRIBUTE_OVERRIDE_TAG = "embeddable-attribute-override";
+    private static final String EMBEDDED_ATTRIBUTE_TAG = "embeddedAttribute";
+    private static final String EMBEDDABLE_ATTRIBUTE_OVERRIDE_TAG = "embeddableAttributeOverride";
 
     private ObjEntity entity;
 
@@ -64,6 +64,6 @@ public class EmbeddableAttributeHandler extends NamespaceAwareNestedTagHandler {
 
     private void createEmbeddableAttributeOverride(Attributes attributes) {
         embeddedAttribute.addAttributeOverride(attributes.getValue("name"),
-                attributes.getValue("db-attribute-path"));
+                attributes.getValue("dbAttributePath"));
     }
 }

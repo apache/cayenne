@@ -42,6 +42,7 @@ CAY-3037 Switch ObjectSelect query format in XML to the parsable string
 CAY-3038 Remove EJBQLQuery
 CAY-3039 Refactor Expressions to be independent from the parser syntax
 CAY-3040 Descriptive XML tags for mapped queries
+CAY-3041 Unify XML style across XSDs
 
 Bug Fixes:
 

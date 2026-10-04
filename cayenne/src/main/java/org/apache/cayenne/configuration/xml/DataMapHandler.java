@@ -33,17 +33,17 @@ import org.xml.sax.SAXException;
 public class DataMapHandler extends NamespaceAwareNestedTagHandler {
 
     /* This constants must be in sync with dataMap.xsd schema */
-    private static final String DATA_MAP_TAG         = "data-map";
+    private static final String DATA_MAP_TAG         = "dataMap";
     private static final String PROPERTY_TAG         = "property";
-    private static final String DB_ENTITY_TAG        = "db-entity";
-    private static final String OBJ_ENTITY_TAG       = "obj-entity";
-    private static final String DB_RELATIONSHIP_TAG  = "db-relationship";
-    private static final String OBJ_RELATIONSHIP_TAG = "obj-relationship";
+    private static final String DB_ENTITY_TAG        = "dbEntity";
+    private static final String OBJ_ENTITY_TAG       = "objEntity";
+    private static final String DB_RELATIONSHIP_TAG  = "dbRelationship";
+    private static final String OBJ_RELATIONSHIP_TAG = "objRelationship";
     private static final String EMBEDDABLE_TAG       = "embeddable";
     private static final String PROCEDURE_TAG        = "procedure";
-    private static final String OBJECT_QUERY_TAG     = "object-query";
-    private static final String SQL_QUERY_TAG        = "sql-query";
-    private static final String PROCEDURE_QUERY_TAG  = "procedure-query";
+    private static final String OBJECT_QUERY_TAG     = "objectQuery";
+    private static final String SQL_QUERY_TAG        = "sqlQuery";
+    private static final String PROCEDURE_QUERY_TAG  = "procedureQuery";
 
     public static final String TRUE = "true";
 

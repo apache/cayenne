@@ -1,17 +1,16 @@
 <?xml version="1.0" encoding="utf-8"?>
-<data-map xmlns="http://cayenne.apache.org/schema/14/modelMap"
+<dataMap xmlns="http://cayenne.apache.org/schema/14/modelMap"
 	 xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-	 xsi:schemaLocation="http://cayenne.apache.org/schema/14/modelMap https://cayenne.apache.org/schema/14/modelMap.xsd"
-	 project-version="14">
+	 xsi:schemaLocation="http://cayenne.apache.org/schema/14/modelMap https://cayenne.apache.org/schema/14/modelMap.xsd">
 	<property name="quoteSqlIdentifiers" value="true"/>
 	<property name="defaultPackage" value="org.apache.cayenne.testdo.cay_2666"/>
-	<db-entity name="Cay2666">
-		<db-attribute name="ID" type="INTEGER" isPrimaryKey="true" isMandatory="true" length="10"/>
-		<db-attribute name="NAME$" type="VARCHAR" length="10"/>
-	</db-entity>
-	<obj-entity name="Cay2666" className="org.apache.cayenne.testdo.cay_2666.CAY2666" dbEntityName="Cay2666">
-		<obj-attribute name="name$" type="java.lang.String" db-attribute-path="NAME$"/>
-	</obj-entity>
+	<dbEntity name="Cay2666">
+		<dbAttribute name="ID" type="INTEGER" primaryKey="true" mandatory="true" length="10"/>
+		<dbAttribute name="NAME$" type="VARCHAR" length="10"/>
+	</dbEntity>
+	<objEntity name="Cay2666" className="org.apache.cayenne.testdo.cay_2666.CAY2666" dbEntityName="Cay2666">
+		<objAttribute name="name$" type="java.lang.String" dbAttributePath="NAME$"/>
+	</objEntity>
 	<dbImport xmlns="http://cayenne.apache.org/schema/14/dbimport">
 		<tableTypes>
 			<tableType>TABLE</tableType>
@@ -37,4 +36,4 @@
 		<createPropertyNames>false</createPropertyNames>
 		<createPKProperties>false</createPKProperties>
 	</cgen>
-</data-map>
+</dataMap>

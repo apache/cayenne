@@ -111,7 +111,7 @@ public class ObjEntity extends Entity<ObjEntity, ObjAttribute, ObjRelationship>
      */
     @Override
     public void encodeAsXML(XMLEncoder encoder, ConfigurationNodeVisitor delegate) {
-        encoder.start("obj-entity").attribute("name", getName());
+        encoder.start("objEntity").attribute("name", getName());
 
         // additionally validate that super entity exists
         if (getSuperEntityName() != null && getSuperEntity() != null) {
@@ -123,7 +123,7 @@ public class ObjEntity extends Entity<ObjEntity, ObjAttribute, ObjRelationship>
                 .attribute("readOnly", isReadOnly());
 
         if (getDeclaredLockType() == LOCK_TYPE_OPTIMISTIC) {
-            encoder.attribute("lock-type", "optimistic");
+            encoder.attribute("lockType", "optimistic");
         }
 
         if (getDbEntityName() != null && getDbEntity() != null) {
@@ -159,9 +159,9 @@ public class ObjEntity extends Entity<ObjEntity, ObjAttribute, ObjRelationship>
         encoder.nested(objAttributes, delegate);
 
         for (Map.Entry<String, CayennePath> override : attributeOverrides.entrySet()) {
-            encoder.start("attribute-override")
+            encoder.start("attributeOverride")
                     .attribute("name", override.getKey())
-                    .attribute("db-attribute-path", override.getValue().value())
+                    .attribute("dbAttributePath", override.getValue().value())
                     .end();
         }
 

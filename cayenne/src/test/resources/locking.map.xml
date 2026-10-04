@@ -1,51 +1,50 @@
 <?xml version="1.0" encoding="utf-8"?>
-<data-map xmlns="http://cayenne.apache.org/schema/14/modelMap"
+<dataMap xmlns="http://cayenne.apache.org/schema/14/modelMap"
 	 xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-	 xsi:schemaLocation="http://cayenne.apache.org/schema/14/modelMap https://cayenne.apache.org/schema/14/modelMap.xsd"
-	 project-version="14">
+	 xsi:schemaLocation="http://cayenne.apache.org/schema/14/modelMap https://cayenne.apache.org/schema/14/modelMap.xsd">
 	<property name="defaultPackage" value="org.apache.cayenne.testdo.locking"/>
-	<db-entity name="LOCKING_HELPER">
-		<db-attribute name="LOCKING_HELPER_ID" type="INTEGER" isPrimaryKey="true" isMandatory="true"/>
-		<db-attribute name="NAME" type="VARCHAR" length="100"/>
-		<db-attribute name="REL_LOCKING_TEST_ID" type="INTEGER"/>
-	</db-entity>
-	<db-entity name="REL_LOCKING_TEST">
-		<db-attribute name="NAME" type="VARCHAR" length="100"/>
-		<db-attribute name="REL_LOCKING_TEST_ID" type="INTEGER" isPrimaryKey="true" isMandatory="true"/>
-		<db-attribute name="SIMPLE_LOCKING_TEST_ID" type="INTEGER"/>
-	</db-entity>
-	<db-entity name="SIMPLE_LOCKING_TEST">
-		<db-attribute name="DESCRIPTION" type="VARCHAR" length="200"/>
-		<db-attribute name="INT_COLUMN_NOTNULL" type="INTEGER" isMandatory="true"/>
-		<db-attribute name="INT_COLUMN_NULL" type="INTEGER"/>
-		<db-attribute name="LOCKING_TEST_ID" type="INTEGER" isPrimaryKey="true" isMandatory="true"/>
-		<db-attribute name="NAME" type="VARCHAR" length="100"/>
-	</db-entity>
-	<obj-entity name="LockingHelper" className="org.apache.cayenne.testdo.locking.LockingHelper" dbEntityName="LOCKING_HELPER">
-		<obj-attribute name="name" type="java.lang.String" db-attribute-path="NAME"/>
-	</obj-entity>
-	<obj-entity name="RelLockingTestEntity" className="org.apache.cayenne.testdo.locking.RelLockingTestEntity" lock-type="optimistic" dbEntityName="REL_LOCKING_TEST">
-		<obj-attribute name="name" type="java.lang.String" db-attribute-path="NAME"/>
-	</obj-entity>
-	<obj-entity name="SimpleLockingTestEntity" className="org.apache.cayenne.testdo.locking.SimpleLockingTestEntity" lock-type="optimistic" dbEntityName="SIMPLE_LOCKING_TEST">
-		<obj-attribute name="description" type="java.lang.String" db-attribute-path="DESCRIPTION"/>
-		<obj-attribute name="intColumnNotnull" type="int" lock="true" db-attribute-path="INT_COLUMN_NOTNULL"/>
-		<obj-attribute name="intColumnNull" type="int" lock="true" db-attribute-path="INT_COLUMN_NULL"/>
-		<obj-attribute name="name" type="java.lang.String" lock="true" db-attribute-path="NAME"/>
-	</obj-entity>
-	<db-relationship name="toRelLockingTest" source="LOCKING_HELPER" target="REL_LOCKING_TEST">
-		<db-attribute-pair source="REL_LOCKING_TEST_ID" target="REL_LOCKING_TEST_ID"/>
-	</db-relationship>
-	<db-relationship name="lockingHelpers" source="REL_LOCKING_TEST" target="LOCKING_HELPER" toMany="true">
-		<db-attribute-pair source="REL_LOCKING_TEST_ID" target="REL_LOCKING_TEST_ID"/>
-	</db-relationship>
-	<db-relationship name="toSimpleLockingTest" source="REL_LOCKING_TEST" target="SIMPLE_LOCKING_TEST">
-		<db-attribute-pair source="SIMPLE_LOCKING_TEST_ID" target="LOCKING_TEST_ID"/>
-	</db-relationship>
-	<db-relationship name="relaLockingTests" source="SIMPLE_LOCKING_TEST" target="REL_LOCKING_TEST" toMany="true">
-		<db-attribute-pair source="LOCKING_TEST_ID" target="SIMPLE_LOCKING_TEST_ID"/>
-	</db-relationship>
-	<obj-relationship name="toRelLockingTest" source="LockingHelper" target="RelLockingTestEntity" db-relationship-path="toRelLockingTest"/>
-	<obj-relationship name="lockingHelpers" source="RelLockingTestEntity" target="LockingHelper" lock="true" db-relationship-path="lockingHelpers"/>
-	<obj-relationship name="toSimpleLockingTest" source="RelLockingTestEntity" target="SimpleLockingTestEntity" lock="true" db-relationship-path="toSimpleLockingTest"/>
-</data-map>
+	<dbEntity name="LOCKING_HELPER">
+		<dbAttribute name="LOCKING_HELPER_ID" type="INTEGER" primaryKey="true" mandatory="true"/>
+		<dbAttribute name="NAME" type="VARCHAR" length="100"/>
+		<dbAttribute name="REL_LOCKING_TEST_ID" type="INTEGER"/>
+	</dbEntity>
+	<dbEntity name="REL_LOCKING_TEST">
+		<dbAttribute name="NAME" type="VARCHAR" length="100"/>
+		<dbAttribute name="REL_LOCKING_TEST_ID" type="INTEGER" primaryKey="true" mandatory="true"/>
+		<dbAttribute name="SIMPLE_LOCKING_TEST_ID" type="INTEGER"/>
+	</dbEntity>
+	<dbEntity name="SIMPLE_LOCKING_TEST">
+		<dbAttribute name="DESCRIPTION" type="VARCHAR" length="200"/>
+		<dbAttribute name="INT_COLUMN_NOTNULL" type="INTEGER" mandatory="true"/>
+		<dbAttribute name="INT_COLUMN_NULL" type="INTEGER"/>
+		<dbAttribute name="LOCKING_TEST_ID" type="INTEGER" primaryKey="true" mandatory="true"/>
+		<dbAttribute name="NAME" type="VARCHAR" length="100"/>
+	</dbEntity>
+	<objEntity name="LockingHelper" className="org.apache.cayenne.testdo.locking.LockingHelper" dbEntityName="LOCKING_HELPER">
+		<objAttribute name="name" type="java.lang.String" dbAttributePath="NAME"/>
+	</objEntity>
+	<objEntity name="RelLockingTestEntity" className="org.apache.cayenne.testdo.locking.RelLockingTestEntity" lockType="optimistic" dbEntityName="REL_LOCKING_TEST">
+		<objAttribute name="name" type="java.lang.String" dbAttributePath="NAME"/>
+	</objEntity>
+	<objEntity name="SimpleLockingTestEntity" className="org.apache.cayenne.testdo.locking.SimpleLockingTestEntity" lockType="optimistic" dbEntityName="SIMPLE_LOCKING_TEST">
+		<objAttribute name="description" type="java.lang.String" dbAttributePath="DESCRIPTION"/>
+		<objAttribute name="intColumnNotnull" type="int" lock="true" dbAttributePath="INT_COLUMN_NOTNULL"/>
+		<objAttribute name="intColumnNull" type="int" lock="true" dbAttributePath="INT_COLUMN_NULL"/>
+		<objAttribute name="name" type="java.lang.String" lock="true" dbAttributePath="NAME"/>
+	</objEntity>
+	<dbRelationship name="toRelLockingTest" source="LOCKING_HELPER" target="REL_LOCKING_TEST">
+		<dbAttributePair source="REL_LOCKING_TEST_ID" target="REL_LOCKING_TEST_ID"/>
+	</dbRelationship>
+	<dbRelationship name="lockingHelpers" source="REL_LOCKING_TEST" target="LOCKING_HELPER" toMany="true">
+		<dbAttributePair source="REL_LOCKING_TEST_ID" target="REL_LOCKING_TEST_ID"/>
+	</dbRelationship>
+	<dbRelationship name="toSimpleLockingTest" source="REL_LOCKING_TEST" target="SIMPLE_LOCKING_TEST">
+		<dbAttributePair source="SIMPLE_LOCKING_TEST_ID" target="LOCKING_TEST_ID"/>
+	</dbRelationship>
+	<dbRelationship name="relaLockingTests" source="SIMPLE_LOCKING_TEST" target="REL_LOCKING_TEST" toMany="true">
+		<dbAttributePair source="LOCKING_TEST_ID" target="SIMPLE_LOCKING_TEST_ID"/>
+	</dbRelationship>
+	<objRelationship name="toRelLockingTest" source="LockingHelper" target="RelLockingTestEntity" dbRelationshipPath="toRelLockingTest"/>
+	<objRelationship name="lockingHelpers" source="RelLockingTestEntity" target="LockingHelper" lock="true" dbRelationshipPath="lockingHelpers"/>
+	<objRelationship name="toSimpleLockingTest" source="RelLockingTestEntity" target="SimpleLockingTestEntity" lock="true" dbRelationshipPath="toSimpleLockingTest"/>
+</dataMap>

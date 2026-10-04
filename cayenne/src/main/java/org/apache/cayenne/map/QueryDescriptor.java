@@ -38,12 +38,12 @@ public abstract class QueryDescriptor implements ConfigurationNode, XMLSerializa
     /**
      * @since 4.1
      */
-    public static final String OBJ_ENTITY_ROOT = "obj-entity";
+    public static final String OBJ_ENTITY_ROOT = "objEntity";
 
     /**
      * @since 4.1
      */
-    public static final String DB_ENTITY_ROOT = "db-entity";
+    public static final String DB_ENTITY_ROOT = "dbEntity";
 
     /**
      * @since 4.1
@@ -53,12 +53,12 @@ public abstract class QueryDescriptor implements ConfigurationNode, XMLSerializa
     /**
      * @since 4.1
      */
-    public static final String DATA_MAP_ROOT = "data-map";
+    public static final String DATA_MAP_ROOT = "dataMap";
 
     /**
      * @since 4.1
      */
-    public static final String JAVA_CLASS_ROOT = "java-class";
+    public static final String JAVA_CLASS_ROOT = "javaClass";
 
     protected String name;
     protected DataMap dataMap;
@@ -208,7 +208,7 @@ public abstract class QueryDescriptor implements ConfigurationNode, XMLSerializa
 
     void encodeCacheGroup(XMLEncoder encoder) {
         if (cacheGroup != null && !cacheGroup.isEmpty()) {
-            encoder.start("cache-group").cdata(cacheGroup, true).end();
+            encoder.start("cacheGroup").cdata(cacheGroup, true).end();
         }
     }
 }

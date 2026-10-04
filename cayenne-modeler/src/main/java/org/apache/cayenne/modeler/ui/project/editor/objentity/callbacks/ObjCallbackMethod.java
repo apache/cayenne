@@ -40,14 +40,14 @@ public class ObjCallbackMethod implements XMLSerializable {
 
 	private String encodeCallbackTypeForXML(CallbackType type) {
 		return switch (type.getType()) {
-			case POST_ADD -> "post-add";
-			case POST_LOAD -> "post-load";
-			case POST_PERSIST -> "post-persist";
-			case POST_REMOVE -> "post-remove";
-			case POST_UPDATE -> "post-update";
-			case PRE_PERSIST -> "pre-persist";
-			case PRE_REMOVE -> "pre-remove";
-			default -> "pre-update";
+			case POST_ADD -> "postAdd";
+			case POST_LOAD -> "postLoad";
+			case POST_PERSIST -> "postPersist";
+			case POST_REMOVE -> "postRemove";
+			case POST_UPDATE -> "postUpdate";
+			case PRE_PERSIST -> "prePersist";
+			case PRE_REMOVE -> "preRemove";
+			default -> "preUpdate";
 		};
 	}
 	

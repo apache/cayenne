@@ -36,7 +36,7 @@ final class DataChannelChildrenHandler extends NamespaceAwareNestedTagHandler {
 
     static final String OLD_MAP_TAG = "map";
     static final String PROPERTY_TAG = "property";
-    static final String DATA_MAP_TAG = "data-map";
+    static final String DATA_MAP_TAG = "dataMap";
     static final String DOMAIN_TAG = "domain";
 
 

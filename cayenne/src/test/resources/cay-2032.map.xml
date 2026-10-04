@@ -1,36 +1,35 @@
 <?xml version="1.0" encoding="utf-8"?>
-<data-map xmlns="http://cayenne.apache.org/schema/14/modelMap"
+<dataMap xmlns="http://cayenne.apache.org/schema/14/modelMap"
 	 xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-	 xsi:schemaLocation="http://cayenne.apache.org/schema/14/modelMap https://cayenne.apache.org/schema/14/modelMap.xsd"
-	 project-version="14">
+	 xsi:schemaLocation="http://cayenne.apache.org/schema/14/modelMap https://cayenne.apache.org/schema/14/modelMap.xsd">
 	<property name="defaultPackage" value="org.apache.cayenne.testdo.cay_2032"/>
-	<db-entity name="TEAM">
-		<db-attribute name="team_id" type="INTEGER" isPrimaryKey="true" isMandatory="true"/>
-	</db-entity>
-	<db-entity name="USERS">
-		<db-attribute name="name" type="BLOB" length="255"/>
-		<db-attribute name="user_id" type="INTEGER" isPrimaryKey="true" isMandatory="true"/>
-	</db-entity>
-	<db-entity name="USER_HAS_TEAM">
-		<db-attribute name="team_id" type="INTEGER" isPrimaryKey="true" isMandatory="true"/>
-		<db-attribute name="user_id" type="INTEGER" isPrimaryKey="true" isMandatory="true"/>
-	</db-entity>
-	<obj-entity name="Team" className="org.apache.cayenne.testdo.cay_2032.Team" dbEntityName="TEAM"/>
-	<obj-entity name="Users" className="org.apache.cayenne.testdo.cay_2032.Users" dbEntityName="USERS">
-		<obj-attribute name="name" type="byte[]" db-attribute-path="name"/>
-	</obj-entity>
-	<db-relationship name="userHasTeam" source="TEAM" target="USER_HAS_TEAM" toMany="true">
-		<db-attribute-pair source="team_id" target="team_id"/>
-	</db-relationship>
-	<db-relationship name="userHasTeam" source="USERS" target="USER_HAS_TEAM" toMany="true">
-		<db-attribute-pair source="user_id" target="user_id"/>
-	</db-relationship>
-	<db-relationship name="team" source="USER_HAS_TEAM" target="TEAM">
-		<db-attribute-pair source="team_id" target="team_id"/>
-	</db-relationship>
-	<db-relationship name="user" source="USER_HAS_TEAM" target="USERS">
-		<db-attribute-pair source="user_id" target="user_id"/>
-	</db-relationship>
-	<obj-relationship name="teamUsers" source="Team" target="Users" deleteRule="Deny" db-relationship-path="userHasTeam.user"/>
-	<obj-relationship name="userTeams" source="Users" target="Team" deleteRule="Deny" db-relationship-path="userHasTeam.team"/>
-</data-map>
+	<dbEntity name="TEAM">
+		<dbAttribute name="team_id" type="INTEGER" primaryKey="true" mandatory="true"/>
+	</dbEntity>
+	<dbEntity name="USERS">
+		<dbAttribute name="name" type="BLOB" length="255"/>
+		<dbAttribute name="user_id" type="INTEGER" primaryKey="true" mandatory="true"/>
+	</dbEntity>
+	<dbEntity name="USER_HAS_TEAM">
+		<dbAttribute name="team_id" type="INTEGER" primaryKey="true" mandatory="true"/>
+		<dbAttribute name="user_id" type="INTEGER" primaryKey="true" mandatory="true"/>
+	</dbEntity>
+	<objEntity name="Team" className="org.apache.cayenne.testdo.cay_2032.Team" dbEntityName="TEAM"/>
+	<objEntity name="Users" className="org.apache.cayenne.testdo.cay_2032.Users" dbEntityName="USERS">
+		<objAttribute name="name" type="byte[]" dbAttributePath="name"/>
+	</objEntity>
+	<dbRelationship name="userHasTeam" source="TEAM" target="USER_HAS_TEAM" toMany="true">
+		<dbAttributePair source="team_id" target="team_id"/>
+	</dbRelationship>
+	<dbRelationship name="userHasTeam" source="USERS" target="USER_HAS_TEAM" toMany="true">
+		<dbAttributePair source="user_id" target="user_id"/>
+	</dbRelationship>
+	<dbRelationship name="team" source="USER_HAS_TEAM" target="TEAM">
+		<dbAttributePair source="team_id" target="team_id"/>
+	</dbRelationship>
+	<dbRelationship name="user" source="USER_HAS_TEAM" target="USERS">
+		<dbAttributePair source="user_id" target="user_id"/>
+	</dbRelationship>
+	<objRelationship name="teamUsers" source="Team" target="Users" deleteRule="deny" dbRelationshipPath="userHasTeam.user"/>
+	<objRelationship name="userTeams" source="Users" target="Team" deleteRule="deny" dbRelationshipPath="userHasTeam.team"/>
+</dataMap>

@@ -29,10 +29,10 @@ import org.xml.sax.SAXException;
  */
 public class DbKeyGeneratorHandler extends NamespaceAwareNestedTagHandler {
 
-    private static final String DB_KEY_GENERATOR_TAG = "db-key-generator";
-    private static final String DB_GENERATOR_TYPE_TAG = "db-generator-type";
-    private static final String DB_GENERATOR_NAME_TAG = "db-generator-name";
-    private static final String DB_KEY_CACHE_SIZE_TAG = "db-key-cache-size";
+    private static final String DB_KEY_GENERATOR_TAG = "dbKeyGenerator";
+    private static final String DB_GENERATOR_TYPE_TAG = "dbGeneratorType";
+    private static final String DB_GENERATOR_NAME_TAG = "dbGeneratorName";
+    private static final String DB_KEY_CACHE_SIZE_TAG = "dbKeyCacheSize";
 
     DbEntity entity;
 

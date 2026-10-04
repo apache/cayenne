@@ -1,6 +1,5 @@
 <?xml version="1.0" encoding="utf-8"?>
-<domain xmlns="http://cayenne.apache.org/schema/14/domain"
-	 project-version="14">
+<domain xmlns="http://cayenne.apache.org/schema/14/domain">
 	<map name="testAdditionalMap"/>
 	<map name="testDomainMap"/>
 </domain>

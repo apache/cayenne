@@ -82,14 +82,14 @@ public class DbKeyGenerator implements CayenneMapEntry, XMLSerializable {
             return;
         }
 
-        encoder.start("db-key-generator")
-                .start("db-generator-type").cdata(getGeneratorType()).end();
+        encoder.start("dbKeyGenerator")
+                .start("dbGeneratorType").cdata(getGeneratorType()).end();
 
         if (getGeneratorName() != null) {
-            encoder.start("db-generator-name").cdata(getGeneratorName()).end();
+            encoder.start("dbGeneratorName").cdata(getGeneratorName()).end();
         }
         if (getKeyCacheSize() != null) {
-            encoder.start("db-key-cache-size").cdata(String.valueOf(getKeyCacheSize())).end();
+            encoder.start("dbKeyCacheSize").cdata(String.valueOf(getKeyCacheSize())).end();
         }
         encoder.end();
     }

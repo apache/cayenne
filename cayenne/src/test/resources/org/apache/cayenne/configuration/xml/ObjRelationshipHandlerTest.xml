@@ -17,4 +17,4 @@
   ~  under the License.
   ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~-->
 
-<obj-relationship name="artistArray" source="ArtGroup" target="Artist" collection-type="java.util.Map" map-key="artistName" deleteRule="Cascade" db-relationship-path="artistGroupArray" lock="true"/>
+<objRelationship name="artistArray" source="ArtGroup" target="Artist" collectionType="java.util.Map" mapKey="artistName" deleteRule="cascade" dbRelationshipPath="artistGroupArray" lock="true"/>

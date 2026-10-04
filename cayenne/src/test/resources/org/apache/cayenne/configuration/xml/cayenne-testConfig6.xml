@@ -17,4 +17,4 @@
   ~  specific language governing permissions and limitations
   ~  under the License.
   -->
-<domain project-version="15"/>
+<domain xmlns="http://cayenne.apache.org/schema/15/domain"/>

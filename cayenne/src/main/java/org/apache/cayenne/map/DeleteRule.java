@@ -25,7 +25,7 @@ package org.apache.cayenne.map;
  */
 public class DeleteRule {
     public static final int NO_ACTION = 0;
-    private static final String NO_ACTION_NAME = "No Action";
+    private static final String NO_ACTION_NAME = "no action";
     
     /** 
      * Remove the reference that the destination has to this source (if the 
@@ -33,18 +33,18 @@ public class DeleteRule {
      * object)
      */
     public static final int NULLIFY = 1;
-    private static final String NULLIFY_NAME = "Nullify";
+    private static final String NULLIFY_NAME = "nullify";
 
     /** Delete the destination object(s)
      */
     public static final int CASCADE = 2;
-    private static final String CASCADE_NAME = "Cascade";
+    private static final String CASCADE_NAME = "cascade";
 
     /** If the relationship has any objects (toOne or toMany), deny the delete.  
      * (Destination objects would therefore have to be deleted manually first)
      */
     public static final int DENY = 3;
-    private static final String DENY_NAME = "Deny";
+    private static final String DENY_NAME = "deny";
     
     /**
      * Default delete rule for one-to-many relationships. It is used when new rels are

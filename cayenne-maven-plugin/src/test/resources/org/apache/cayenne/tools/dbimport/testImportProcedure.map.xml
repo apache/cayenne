@@ -17,15 +17,14 @@
   ~  specific language governing permissions and limitations
   ~  under the License.
   ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~-->
-<data-map xmlns="http://cayenne.apache.org/schema/14/modelMap"
+<dataMap xmlns="http://cayenne.apache.org/schema/14/modelMap"
           xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-          xsi:schemaLocation="http://cayenne.apache.org/schema/14/modelMap https://cayenne.apache.org/schema/14/modelMap.xsd"
-          project-version="14">
-    <db-entity name="TABLE1" schema="SCHEMA_01">
-        <db-attribute name="ID" type="INTEGER" isPrimaryKey="true" isMandatory="true" length="10"/>
-        <db-attribute name="T1_NAME" type="VARCHAR" length="45"/>
-    </db-entity>
-    <obj-entity name="Table1" className="Table1" dbEntityName="TABLE1">
-        <obj-attribute name="t1Name" type="java.lang.String" db-attribute-path="T1_NAME"/>
-    </obj-entity>
-</data-map>
+          xsi:schemaLocation="http://cayenne.apache.org/schema/14/modelMap https://cayenne.apache.org/schema/14/modelMap.xsd">
+    <dbEntity name="TABLE1" schema="SCHEMA_01">
+        <dbAttribute name="ID" type="INTEGER" primaryKey="true" mandatory="true" length="10"/>
+        <dbAttribute name="T1_NAME" type="VARCHAR" length="45"/>
+    </dbEntity>
+    <objEntity name="Table1" className="Table1" dbEntityName="TABLE1">
+        <objAttribute name="t1Name" type="java.lang.String" dbAttributePath="T1_NAME"/>
+    </objEntity>
+</dataMap>

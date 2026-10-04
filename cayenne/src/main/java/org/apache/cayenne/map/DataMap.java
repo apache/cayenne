@@ -232,11 +232,10 @@ public class DataMap implements ConfigurationNode, XMLSerializable, MappingNames
 	 * @since 1.1
 	 */
 	public void encodeAsXML(XMLEncoder encoder, ConfigurationNodeVisitor delegate) {
-		encoder.start("data-map")
+		encoder.start("dataMap")
 				.attribute("xmlns", SCHEMA_XSD)
 				.attribute("xmlns:xsi", "http://www.w3.org/2001/XMLSchema-instance", true)
 				.attribute("xsi:schemaLocation", SCHEMA_XSD + " " + SCHEMA_XSD_LOCATION, true)
-				.projectVersion()
 				// properties
 				.property(DEFAULT_LOCK_TYPE_PROPERTY, defaultLockType)
 				.property(DEFAULT_PACKAGE_PROPERTY, defaultPackage)

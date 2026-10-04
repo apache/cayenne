@@ -165,7 +165,7 @@ public class SQLTemplateDescriptor extends QueryDescriptor {
 
     @Override
     public void encodeAsXML(XMLEncoder encoder, ConfigurationNodeVisitor delegate) {
-        encoder.start("sql-query").attribute("name", getName());
+        encoder.start("sqlQuery").attribute("name", getName());
 
         String rootString = null;
         String rootType = null;
@@ -191,14 +191,14 @@ public class SQLTemplateDescriptor extends QueryDescriptor {
         }
 
         if (rootType != null) {
-            encoder.attribute("root", rootType).attribute("root-name", rootString);
+            encoder.attribute("root", rootType).attribute("rootName", rootString);
         }
 
-        encoder.attribute("cache-strategy", cacheStrategy != QueryCacheStrategy.NO_CACHE ? cacheStrategy.name() : null)
-                .attribute("data-rows", fetchingDataRows)
-                .attribute("page-size", pageSize)
-                .attribute("statement-fetch-size", statementFetchSize)
-                .attribute("column-name-capitalization",
+        encoder.attribute("cacheStrategy", cacheStrategy != QueryCacheStrategy.NO_CACHE ? cacheStrategy.name() : null)
+                .attribute("dataRows", fetchingDataRows)
+                .attribute("pageSize", pageSize)
+                .attribute("statementFetchSize", statementFetchSize)
+                .attribute("columnNameCapitalization",
                         columnNamesCapitalization != null && columnNamesCapitalization != CapsStrategy.DEFAULT
                                 ? columnNamesCapitalization.name()
                                 : null);
@@ -218,7 +218,7 @@ public class SQLTemplateDescriptor extends QueryDescriptor {
                     String sql = value.trim();
                     if (sql.length() > 0) {
                         encoder.start("sql")
-                                .attribute("adapter-class", key)
+                                .attribute("adapterClass", key)
                                 .cdata(sql, true)
                                 .end();
                     }

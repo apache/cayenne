@@ -28,31 +28,30 @@
 <xs:schema targetNamespace="http://cayenne.apache.org/schema/14/modelMap"
 	xmlns:cay="http://cayenne.apache.org/schema/14/modelMap"
 	xmlns:xs="http://www.w3.org/2001/XMLSchema" elementFormDefault="qualified" version="14">
-	<xs:element name="data-map">
+	<xs:element name="dataMap">
 		<xs:complexType>
 			<xs:sequence>
 				<xs:element minOccurs="0" maxOccurs="unbounded" ref="cay:property"/>
 				<xs:element minOccurs="0" maxOccurs="unbounded" ref="cay:embeddable"/>
 				<xs:element minOccurs="0" maxOccurs="unbounded" ref="cay:procedure"/>
-				<xs:element minOccurs="0" maxOccurs="unbounded" ref="cay:db-entity"/>
-				<xs:element minOccurs="0" maxOccurs="unbounded" ref="cay:obj-entity"/>
-				<xs:element minOccurs="0" maxOccurs="unbounded" ref="cay:db-relationship"/>
-				<xs:element minOccurs="0" maxOccurs="unbounded" ref="cay:obj-relationship"/>
+				<xs:element minOccurs="0" maxOccurs="unbounded" ref="cay:dbEntity"/>
+				<xs:element minOccurs="0" maxOccurs="unbounded" ref="cay:objEntity"/>
+				<xs:element minOccurs="0" maxOccurs="unbounded" ref="cay:dbRelationship"/>
+				<xs:element minOccurs="0" maxOccurs="unbounded" ref="cay:objRelationship"/>
 				<xs:choice minOccurs="0" maxOccurs="unbounded">
-					<xs:element ref="cay:object-query"/>
-					<xs:element ref="cay:sql-query"/>
-					<xs:element ref="cay:procedure-query"/>
+					<xs:element ref="cay:objectQuery"/>
+					<xs:element ref="cay:sqlQuery"/>
+					<xs:element ref="cay:procedureQuery"/>
 				</xs:choice>
 				<xs:any minOccurs="0" maxOccurs="unbounded" namespace="##other" processContents="lax"/>
 			</xs:sequence>
-			<xs:attribute name="project-version" use="required" type="xs:string"/>
 		</xs:complexType>
 	</xs:element>
-	<xs:element name="db-entity">
+	<xs:element name="dbEntity">
 		<xs:complexType>
 			<xs:sequence>
-				<xs:element maxOccurs="unbounded" ref="cay:db-attribute"/>
-				<xs:element minOccurs="0" ref="cay:db-key-generator"/>
+				<xs:element maxOccurs="unbounded" ref="cay:dbAttribute"/>
+				<xs:element minOccurs="0" ref="cay:dbKeyGenerator"/>
 
 				<!-- Qualifier for DB Entity -->
 				<xs:element minOccurs="0" ref="cay:qualifier"/>
@@ -64,7 +63,7 @@
 			<xs:attribute name="catalog" type="xs:string"/>
 		</xs:complexType>
 	</xs:element>
-	<xs:element name="db-attribute">
+	<xs:element name="dbAttribute">
 		<xs:annotation>
 			<xs:documentation>A database column.</xs:documentation>
 		</xs:annotation>
@@ -72,13 +71,13 @@
 			<xs:sequence>
 				<xs:any minOccurs="0" maxOccurs="unbounded" namespace="##other" processContents="lax"/>
 			</xs:sequence>
-			<xs:attribute name="isMandatory" type="xs:boolean"/>
-			<xs:attribute name="isPrimaryKey" type="xs:boolean">
+			<xs:attribute name="mandatory" type="xs:boolean"/>
+			<xs:attribute name="primaryKey" type="xs:boolean">
 				<xs:annotation>
 					<xs:documentation>If true, the value of attribute is unique and used as a primary key identifier.</xs:documentation>
 				</xs:annotation>
 			</xs:attribute>
-			<xs:attribute name="isGenerated" type="xs:boolean"/>
+			<xs:attribute name="generated" type="xs:boolean"/>
 			<xs:attribute name="length" type="xs:integer"/>
 			<xs:attribute name="name" use="required" type="xs:string"/>
 			<xs:attribute name="scale" type="xs:integer"/>
@@ -86,26 +85,26 @@
 		</xs:complexType>
 	</xs:element>
 
-	<xs:element name="obj-entity">
+	<xs:element name="objEntity">
 		<xs:annotation>
 			<xs:documentation>A persistent Java class managed by Cayenne.</xs:documentation>
 		</xs:annotation>
 		<xs:complexType>
 			<xs:sequence>
 				<xs:element minOccurs="0" ref="cay:qualifier"/>
-				<xs:element minOccurs="0" maxOccurs="unbounded" ref="cay:embedded-attribute"/>
-				<xs:element minOccurs="0" maxOccurs="unbounded" ref="cay:obj-attribute"/>
-				<xs:element minOccurs="0" maxOccurs="unbounded" ref="cay:attribute-override"/>
+				<xs:element minOccurs="0" maxOccurs="unbounded" ref="cay:embeddedAttribute"/>
+				<xs:element minOccurs="0" maxOccurs="unbounded" ref="cay:objAttribute"/>
+				<xs:element minOccurs="0" maxOccurs="unbounded" ref="cay:attributeOverride"/>
 
 				<!--  Callbacks -->
-				<xs:element minOccurs="0" maxOccurs="unbounded" ref="cay:post-add"/>
-				<xs:element minOccurs="0" maxOccurs="unbounded" ref="cay:pre-persist"/>
-				<xs:element minOccurs="0" maxOccurs="unbounded" ref="cay:post-persist"/>
-				<xs:element minOccurs="0" maxOccurs="unbounded" ref="cay:pre-update"/>
-				<xs:element minOccurs="0" maxOccurs="unbounded" ref="cay:post-update"/>
-				<xs:element minOccurs="0" maxOccurs="unbounded" ref="cay:pre-remove"/>
-				<xs:element minOccurs="0" maxOccurs="unbounded" ref="cay:post-remove"/>
-				<xs:element minOccurs="0" maxOccurs="unbounded" ref="cay:post-load"/>
+				<xs:element minOccurs="0" maxOccurs="unbounded" ref="cay:postAdd"/>
+				<xs:element minOccurs="0" maxOccurs="unbounded" ref="cay:prePersist"/>
+				<xs:element minOccurs="0" maxOccurs="unbounded" ref="cay:postPersist"/>
+				<xs:element minOccurs="0" maxOccurs="unbounded" ref="cay:preUpdate"/>
+				<xs:element minOccurs="0" maxOccurs="unbounded" ref="cay:postUpdate"/>
+				<xs:element minOccurs="0" maxOccurs="unbounded" ref="cay:preRemove"/>
+				<xs:element minOccurs="0" maxOccurs="unbounded" ref="cay:postRemove"/>
+				<xs:element minOccurs="0" maxOccurs="unbounded" ref="cay:postLoad"/>
 
 				<xs:any minOccurs="0" maxOccurs="unbounded" namespace="##other" processContents="lax"/>
 			</xs:sequence>
@@ -113,7 +112,7 @@
 			<xs:attribute name="abstract" type="xs:boolean"/>
 			<xs:attribute name="readOnly" type="xs:boolean"/>
 			<xs:attribute name="dbEntityName" type="xs:string"/>
-			<xs:attribute name="lock-type" type="xs:string"/>
+			<xs:attribute name="lockType" type="xs:string"/>
 			<xs:attribute name="name" use="required" type="xs:string"/>
 			<xs:attribute name="superClassName" type="xs:string"/>
 			<xs:attribute name="superEntityName" type="xs:string"/>
@@ -122,12 +121,12 @@
 
 	<xs:element name="qualifier" type="xs:string"/>
 
-	<xs:element name="obj-attribute">
+	<xs:element name="objAttribute">
 		<xs:complexType>
 			<xs:sequence>
 				<xs:any minOccurs="0" maxOccurs="unbounded" namespace="##other" processContents="lax"/>
 			</xs:sequence>
-			<xs:attribute name="db-attribute-path" type="xs:string"/>
+			<xs:attribute name="dbAttributePath" type="xs:string"/>
 			<xs:attribute name="lock" type="xs:boolean"/>
 			<xs:attribute name="name" use="required" type="xs:string"/>
 			<xs:attribute name="type" use="required" type="xs:string"/>
@@ -135,19 +134,19 @@
 		</xs:complexType>
 	</xs:element>
 
-	<xs:element name="attribute-override">
+	<xs:element name="attributeOverride">
 		<xs:complexType>
-			<xs:attribute name="db-attribute-path" type="xs:string"/>
+			<xs:attribute name="dbAttributePath" type="xs:string"/>
 			<xs:attribute name="lock" type="xs:boolean"/>
 			<xs:attribute name="name" type="xs:string"/>
 			<xs:attribute name="type" type="xs:string"/>
 		</xs:complexType>
 	</xs:element>
 
-	<xs:element name="db-relationship">
+	<xs:element name="dbRelationship">
 		<xs:complexType>
 			<xs:sequence>
-				<xs:element minOccurs="1" maxOccurs="unbounded" ref="cay:db-attribute-pair"/>
+				<xs:element minOccurs="1" maxOccurs="unbounded" ref="cay:dbAttributePair"/>
 				<xs:any minOccurs="0" maxOccurs="unbounded" namespace="##other" processContents="lax"/>
 			</xs:sequence>
 			<xs:attribute name="name" use="required" type="xs:string"/>
@@ -157,98 +156,98 @@
 			<xs:attribute name="toMany" type="xs:boolean"/>
 		</xs:complexType>
 	</xs:element>
-	<xs:element name="db-attribute-pair">
+	<xs:element name="dbAttributePair">
 		<xs:complexType>
 			<xs:attribute name="source" use="required" type="xs:string"/>
 			<xs:attribute name="target" use="required" type="xs:string"/>
 		</xs:complexType>
 	</xs:element>
-	<xs:element name="obj-relationship">
+	<xs:element name="objRelationship">
 		<xs:complexType>
 			<xs:sequence>
 				<xs:any minOccurs="0" maxOccurs="unbounded" namespace="##other" processContents="lax"/>
 			</xs:sequence>
-			<xs:attribute name="db-relationship-path" use="required" type="xs:string"/>
+			<xs:attribute name="dbRelationshipPath" use="required" type="xs:string"/>
 			<xs:attribute name="deleteRule" type="xs:string"/>
 			<xs:attribute name="lock" type="xs:boolean"/>
 			<xs:attribute name="name" use="required" type="xs:string"/>
 			<xs:attribute name="source" use="required" type="xs:string"/>
 			<xs:attribute name="target" use="required" type="xs:string"/>
-			<xs:attribute name="collection-type" type="xs:string"/>
-			<xs:attribute name="map-key" type="xs:string"/>
+			<xs:attribute name="collectionType" type="xs:string"/>
+			<xs:attribute name="mapKey" type="xs:string"/>
 		</xs:complexType>
 	</xs:element>
 
-	<xs:element name="object-query">
+	<xs:element name="objectQuery">
 		<xs:annotation>
 			<xs:documentation>A named selecting query expressed in terms of object model using Cayenne QL.</xs:documentation>
 		</xs:annotation>
 		<xs:complexType>
 			<xs:sequence>
 				<xs:element minOccurs="0" ref="cay:ql"/>
-				<xs:element minOccurs="0" ref="cay:cache-group"/>
+				<xs:element minOccurs="0" ref="cay:cacheGroup"/>
 				<xs:any minOccurs="0" maxOccurs="unbounded" namespace="##other" processContents="lax"/>
 			</xs:sequence>
 			<xs:attribute name="name" use="required" type="xs:string"/>
-			<xs:attributeGroup ref="cay:query-settings"/>
+			<xs:attributeGroup ref="cay:querySettings"/>
 		</xs:complexType>
 	</xs:element>
 
-	<xs:element name="sql-query">
+	<xs:element name="sqlQuery">
 		<xs:annotation>
 			<xs:documentation>A named query expressed in SQL terms</xs:documentation>
 		</xs:annotation>
 		<xs:complexType>
 			<xs:sequence>
 				<xs:element minOccurs="0" maxOccurs="unbounded" ref="cay:sql"/>
-				<xs:element minOccurs="0" ref="cay:cache-group"/>
+				<xs:element minOccurs="0" ref="cay:cacheGroup"/>
 				<xs:element minOccurs="0" maxOccurs="unbounded" ref="cay:prefetch"/>
 				<xs:any minOccurs="0" maxOccurs="unbounded" namespace="##other" processContents="lax"/>
 			</xs:sequence>
 			<xs:attribute name="name" use="required" type="xs:string"/>
 			<xs:attribute name="root" type="xs:string"/>
-			<xs:attribute name="root-name" type="xs:string"/>
-			<xs:attributeGroup ref="cay:query-settings"/>
-			<xs:attribute name="column-name-capitalization" type="cay:column-name-capitalization"/>
+			<xs:attribute name="rootName" type="xs:string"/>
+			<xs:attributeGroup ref="cay:querySettings"/>
+			<xs:attribute name="columnNameCapitalization" type="cay:columnNameCapitalization"/>
 		</xs:complexType>
 	</xs:element>
 
-	<xs:element name="procedure-query">
+	<xs:element name="procedureQuery">
 		<xs:annotation>
 			<xs:documentation>A named query that calls a stored procedure.</xs:documentation>
 		</xs:annotation>
 		<xs:complexType>
 			<xs:sequence>
-				<xs:element minOccurs="0" ref="cay:cache-group"/>
+				<xs:element minOccurs="0" ref="cay:cacheGroup"/>
 				<xs:any minOccurs="0" maxOccurs="unbounded" namespace="##other" processContents="lax"/>
 			</xs:sequence>
 			<xs:attribute name="name" use="required" type="xs:string"/>
 			<xs:attribute name="root" type="xs:string"/>
-			<xs:attribute name="root-name" type="xs:string"/>
-			<xs:attribute name="result-entity" type="xs:string"/>
-			<xs:attributeGroup ref="cay:query-settings"/>
-			<xs:attribute name="fetch-limit" type="xs:nonNegativeInteger">
+			<xs:attribute name="rootName" type="xs:string"/>
+			<xs:attribute name="resultEntity" type="xs:string"/>
+			<xs:attributeGroup ref="cay:querySettings"/>
+			<xs:attribute name="fetchLimit" type="xs:nonNegativeInteger">
 				<xs:annotation>
 					<xs:documentation>A max number of rows fetched by a query.</xs:documentation>
 				</xs:annotation>
 			</xs:attribute>
-			<xs:attribute name="fetch-offset" type="xs:nonNegativeInteger">
+			<xs:attribute name="fetchOffset" type="xs:nonNegativeInteger">
 				<xs:annotation>
 					<xs:documentation>A number of rows skipped at the start of a query result.</xs:documentation>
 				</xs:annotation>
 			</xs:attribute>
-			<xs:attribute name="column-name-capitalization" type="cay:column-name-capitalization"/>
+			<xs:attribute name="columnNameCapitalization" type="cay:columnNameCapitalization"/>
 		</xs:complexType>
 	</xs:element>
 
-	<xs:element name="cache-group" type="xs:string">
+	<xs:element name="cacheGroup" type="xs:string">
 		<xs:annotation>
 			<xs:documentation>A name of the cache group of a query used for cache configuration and invalidation purposes.</xs:documentation>
 		</xs:annotation>
 	</xs:element>
 
-	<xs:attributeGroup name="query-settings">
-		<xs:attribute name="cache-strategy">
+	<xs:attributeGroup name="querySettings">
+		<xs:attribute name="cacheStrategy">
 			<xs:annotation>
 				<xs:documentation>An optional cache strategy of a query.</xs:documentation>
 			</xs:annotation>
@@ -262,24 +261,24 @@
 				</xs:restriction>
 			</xs:simpleType>
 		</xs:attribute>
-		<xs:attribute name="data-rows" type="xs:boolean">
+		<xs:attribute name="dataRows" type="xs:boolean">
 			<xs:annotation>
 				<xs:documentation>Defines whether a query fetches DataRows instead of persistent objects.</xs:documentation>
 			</xs:annotation>
 		</xs:attribute>
-		<xs:attribute name="page-size" type="xs:nonNegativeInteger">
+		<xs:attribute name="pageSize" type="xs:nonNegativeInteger">
 			<xs:annotation>
 				<xs:documentation>A page size of a query with a paginated result.</xs:documentation>
 			</xs:annotation>
 		</xs:attribute>
-		<xs:attribute name="statement-fetch-size" type="xs:nonNegativeInteger">
+		<xs:attribute name="statementFetchSize" type="xs:nonNegativeInteger">
 			<xs:annotation>
 				<xs:documentation>A fetch size of the JDBC statement of a query.</xs:documentation>
 			</xs:annotation>
 		</xs:attribute>
 	</xs:attributeGroup>
 
-	<xs:simpleType name="column-name-capitalization">
+	<xs:simpleType name="columnNameCapitalization">
 		<xs:annotation>
 			<xs:documentation>A capitalization of the column names in a query result.</xs:documentation>
 		</xs:annotation>
@@ -292,13 +291,13 @@
 
 	<xs:element name="ql" type="xs:string">
 		<xs:annotation>
-			<xs:documentation>The query String of an "object-query" in the syntax of ObjectSelect.parse(..).</xs:documentation>
+			<xs:documentation>The query String of an "objectQuery" in the syntax of ObjectSelect.parse(..).</xs:documentation>
 		</xs:annotation>
 	</xs:element>
 
 	<xs:element name="prefetch">
 		<xs:annotation>
-			<xs:documentation>A prefetch of a "sql-query" query.</xs:documentation>
+			<xs:documentation>A prefetch of a "sqlQuery" query.</xs:documentation>
 		</xs:annotation>
 		<xs:complexType>
 			<xs:simpleContent>
@@ -316,7 +315,7 @@
 		<xs:complexType>
 			<xs:simpleContent>
 				<xs:extension base="xs:string">
-					<xs:attribute name="adapter-class" type="xs:string"/>
+					<xs:attribute name="adapterClass" type="xs:string"/>
 				</xs:extension>
 			</xs:simpleContent>
 		</xs:complexType>
@@ -334,11 +333,11 @@
 	<xs:element name="embeddable">
 		<xs:complexType>
 			<xs:sequence>
-				<xs:element name="embeddable-attribute" minOccurs="0" maxOccurs="unbounded">
+				<xs:element name="embeddableAttribute" minOccurs="0" maxOccurs="unbounded">
 					<xs:complexType>
 						<xs:attribute name="name" use="required" type="xs:string"/>
 						<xs:attribute name="type" use="required" type="xs:string"/>
-						<xs:attribute name="db-attribute-name" use="required" type="xs:string"/>
+						<xs:attribute name="dbAttributeName" use="required" type="xs:string"/>
 					</xs:complexType>
 				</xs:element>
 				<xs:any minOccurs="0" maxOccurs="unbounded" namespace="##other" processContents="lax"/>
@@ -347,20 +346,20 @@
 		</xs:complexType>
 	</xs:element>
 
-	<xs:element name="embedded-attribute">
+	<xs:element name="embeddedAttribute">
 		<xs:complexType>
 			<xs:sequence>
 				<xs:element minOccurs="0" maxOccurs="unbounded"
-					ref="cay:embeddable-attribute-override"/>
+					ref="cay:embeddableAttributeOverride"/>
 			</xs:sequence>
 			<xs:attribute name="type" use="required" type="xs:string"/>
 			<xs:attribute name="name" use="required" type="xs:string"/>
 		</xs:complexType>
 	</xs:element>
 
-	<xs:element name="embeddable-attribute-override">
+	<xs:element name="embeddableAttributeOverride">
 		<xs:complexType>
-			<xs:attribute name="db-attribute-path" use="required" type="xs:string"/>
+			<xs:attribute name="dbAttributePath" use="required" type="xs:string"/>
 			<xs:attribute name="name" use="required" type="xs:string"/>
 		</xs:complexType>
 	</xs:element>
@@ -368,7 +367,7 @@
 	<xs:element name="procedure">
 		<xs:complexType>
 			<xs:sequence>
-				<xs:element minOccurs="0" maxOccurs="unbounded" name="procedure-parameter">
+				<xs:element minOccurs="0" maxOccurs="unbounded" name="procedureParameter">
 					<xs:complexType>
 						<xs:attribute name="name" use="required" type="xs:string"/>
 						<xs:attribute name="type" use="required" type="xs:string"/>
@@ -384,70 +383,70 @@
 			<xs:attribute name="returningValue" type="xs:boolean"/>
 		</xs:complexType>
 	</xs:element>
-	<xs:element name="pre-update">
+	<xs:element name="preUpdate">
 		<xs:complexType>
-			<xs:attribute name="method-name" use="required" type="xs:string"/>
+			<xs:attribute name="methodName" use="required" type="xs:string"/>
 		</xs:complexType>
 	</xs:element>
-	<xs:element name="post-persist">
+	<xs:element name="postPersist">
 		<xs:complexType>
-			<xs:attribute name="method-name" use="required" type="xs:string"/>
+			<xs:attribute name="methodName" use="required" type="xs:string"/>
 		</xs:complexType>
 	</xs:element>
-	<xs:element name="post-update">
+	<xs:element name="postUpdate">
 		<xs:complexType>
-			<xs:attribute name="method-name" use="required" type="xs:string"/>
+			<xs:attribute name="methodName" use="required" type="xs:string"/>
 		</xs:complexType>
 	</xs:element>
-	<xs:element name="post-add">
+	<xs:element name="postAdd">
 		<xs:complexType>
-			<xs:attribute name="method-name" use="required" type="xs:string"/>
+			<xs:attribute name="methodName" use="required" type="xs:string"/>
 		</xs:complexType>
 	</xs:element>
-	<xs:element name="pre-persist">
+	<xs:element name="prePersist">
 		<xs:complexType>
-			<xs:attribute name="method-name" use="required" type="xs:string"/>
+			<xs:attribute name="methodName" use="required" type="xs:string"/>
 		</xs:complexType>
 	</xs:element>
-	<xs:element name="post-remove">
+	<xs:element name="postRemove">
 		<xs:complexType>
-			<xs:attribute name="method-name" use="required" type="xs:string"/>
+			<xs:attribute name="methodName" use="required" type="xs:string"/>
 		</xs:complexType>
 	</xs:element>
-	<xs:element name="post-load">
+	<xs:element name="postLoad">
 		<xs:complexType>
-			<xs:attribute name="method-name" use="required" type="xs:string"/>
+			<xs:attribute name="methodName" use="required" type="xs:string"/>
 		</xs:complexType>
 	</xs:element>
-	<xs:element name="pre-remove">
+	<xs:element name="preRemove">
 		<xs:complexType>
-			<xs:attribute name="method-name" use="required" type="xs:string"/>
+			<xs:attribute name="methodName" use="required" type="xs:string"/>
 		</xs:complexType>
 	</xs:element>
 
-	<xs:element name="db-key-generator">
+	<xs:element name="dbKeyGenerator">
 		<xs:annotation>
-			<xs:documentation>Used to install the Automatic Sequence/Key Generation facility for db-entity. This feature is intended for use with simple (non-compound) integral primary keys.</xs:documentation>
+			<xs:documentation>Used to install the Automatic Sequence/Key Generation facility for dbEntity. This feature is intended for use with simple (non-compound) integral primary keys.</xs:documentation>
 		</xs:annotation>
 		<xs:complexType>
 			<xs:sequence>
-				<xs:element name="db-generator-type" type="xs:string">
+				<xs:element name="dbGeneratorType" type="xs:string">
 					<xs:annotation>
 						<xs:documentation>Specifies the Key Generation Method that will be employed
       'ORACLE'               - use Oracle's SEQUENCE
       'NAMED_SEQUENCE_TABLE' - use USER designated SEQUENCE TABLE. User specifies the name of a DBMS Table with the schema (sequence INT) which will be used to hold sequence values (not supported yet)</xs:documentation>
 					</xs:annotation>
 				</xs:element>
-				<xs:element minOccurs="0" name="db-generator-name" type="xs:string">
+				<xs:element minOccurs="0" name="dbGeneratorName" type="xs:string">
 					<xs:annotation>
-						<xs:documentation>For db-generator-type ORACLE this is the name of the ORACLE SEQUENCE to use. The SEQUENCE is assumed to already exist in the Database.
-If this is db-generator-type NAMED_SEQUENCE_TABLE Key Generation, this specifies the name of the SEQUENCE TABLE to use. The NAMED_SEQUENCE_TABLE is assumed to already exist in the database.</xs:documentation>
+						<xs:documentation>For dbGeneratorType ORACLE this is the name of the ORACLE SEQUENCE to use. The SEQUENCE is assumed to already exist in the Database.
+If this is dbGeneratorType NAMED_SEQUENCE_TABLE Key Generation, this specifies the name of the SEQUENCE TABLE to use. The NAMED_SEQUENCE_TABLE is assumed to already exist in the database.</xs:documentation>
 					</xs:annotation>
 				</xs:element>
-				<xs:element minOccurs="0" name="db-key-cache-size" type="xs:integer">
+				<xs:element minOccurs="0" name="dbKeyCacheSize" type="xs:integer">
 					<xs:annotation>
-						<xs:documentation>Size of key cache. For db-generator-type ORACLE , this value MUST match the Oracle SEQUENCE  INCREMENT value.  If there is a mismatch between this value and the Oracle SEQUENCE INCREMENT value, then there will likely be duplicate key problems.
-For db-generator-type NAMED_SEQUENCE_TABLE , this tells how many keys the Container will fetch in a single DBMS call.</xs:documentation>
+						<xs:documentation>Size of key cache. For dbGeneratorType ORACLE , this value MUST match the Oracle SEQUENCE  INCREMENT value.  If there is a mismatch between this value and the Oracle SEQUENCE INCREMENT value, then there will likely be duplicate key problems.
+For dbGeneratorType NAMED_SEQUENCE_TABLE , this tells how many keys the Container will fetch in a single DBMS call.</xs:documentation>
 					</xs:annotation>
 				</xs:element>
 			</xs:sequence>

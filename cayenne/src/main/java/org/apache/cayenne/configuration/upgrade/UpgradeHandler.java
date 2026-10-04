@@ -37,9 +37,6 @@ import java.util.List;
  * @since 4.1
  */
 public sealed interface UpgradeHandler permits
-        UpgradeHandler_V7,
-        UpgradeHandler_V8,
-        UpgradeHandler_V9,
         UpgradeHandler_V10,
         UpgradeHandler_V11,
         UpgradeHandler_V12,
@@ -54,9 +51,6 @@ public sealed interface UpgradeHandler permits
      */
     static List<UpgradeHandler> all() {
         return List.of(
-                new UpgradeHandler_V7(),
-                new UpgradeHandler_V8(),
-                new UpgradeHandler_V9(),
                 new UpgradeHandler_V10(),
                 new UpgradeHandler_V11(),
                 new UpgradeHandler_V12(),
@@ -77,10 +71,10 @@ public sealed interface UpgradeHandler permits
      *
      * @since 5.0
      */
-    String MIN_SUPPORTED_VERSION = "6";
+    String MIN_SUPPORTED_VERSION = "9";
 
     /**
-     * Version reported for projects that have no "project-version" attribute.
+     * Version reported for projects that whose version can not be determined.
      *
      * @since 5.0
      */
@@ -144,7 +138,7 @@ public sealed interface UpgradeHandler permits
         domain.setAttribute("xsi:schemaLocation", "http://cayenne.apache.org/schema/" + getVersion() + "/domain " +
                 "https://cayenne.apache.org/schema/" + getVersion() + "/domain.xsd");
         // update version
-        domain.setAttribute("project-version", getVersion());
+        updateLegacyVersion(domain);
     }
 
     /**
@@ -159,7 +153,15 @@ public sealed interface UpgradeHandler permits
         dataMap.setAttribute("xsi:schemaLocation", "http://cayenne.apache.org/schema/" + getVersion() + "/modelMap " +
                 "https://cayenne.apache.org/schema/" + getVersion() + "/modelMap.xsd");
         // update version
-        dataMap.setAttribute("project-version", getVersion());
+        updateLegacyVersion(dataMap);
+    }
+
+    private void updateLegacyVersion(Element root) {
+        // Starting with version 14 the project version is defined by the schema namespace alone. The version 14
+        // handler removes the "project-version" attribute, so the later handlers have nothing to update.
+        if (root.hasAttribute("project-version")) {
+            root.setAttribute("project-version", getVersion());
+        }
     }
 
     /**

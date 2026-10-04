@@ -1,6 +1,6 @@
 ---
 name: cayenne-modeling
-description: "Use this skill whenever the user wants to edit, inspect, or extend the Cayenne ORM model in a project — adding or modifying entities, attributes, relationships, embeddables, named queries, stored procedures, or DataNodes. Trigger on phrases like 'add an ObjEntity', 'add a DbEntity', 'add a relationship', 'expose this column as an attribute', 'create a new DataMap', 'add a named query', 'create an embeddable', 'add a stored procedure', 'change the attribute type', 'mark this column as nullable', 'rename this entity', or any mention of a Cayenne `*.map.xml` or `cayenne-*.xml` file. Also trigger when the user references modeling concepts (ObjEntity, DbEntity, ObjAttribute, DbAttribute, ObjRelationship, DbRelationship, Embeddable, dbEntityName, deleteRule, db-attribute-path, db-relationship-path, defaultPackage) in the context of a Cayenne-using app. This is the *primary* skill for a-la-carte ORM model manipulation — direct XML edits, not the Modeler GUI."
+description: "Use this skill whenever the user wants to edit, inspect, or extend the Cayenne ORM model in a project — adding or modifying entities, attributes, relationships, embeddables, named queries, stored procedures, or DataNodes. Trigger on phrases like 'add an ObjEntity', 'add a DbEntity', 'add a relationship', 'expose this column as an attribute', 'create a new DataMap', 'add a named query', 'create an embeddable', 'add a stored procedure', 'change the attribute type', 'mark this column as nullable', 'rename this entity', or any mention of a Cayenne `*.map.xml` or `cayenne-*.xml` file. Also trigger when the user references modeling concepts (ObjEntity, DbEntity, ObjAttribute, DbAttribute, ObjRelationship, DbRelationship, Embeddable, dbEntityName, deleteRule, dbAttributePath, dbRelationshipPath, defaultPackage) in the context of a Cayenne-using app. This is the *primary* skill for a-la-carte ORM model manipulation — direct XML edits, not the Modeler GUI."
 ---
 
 <!--
@@ -48,32 +48,32 @@ Apply the change following the schema in `datamap-schema.md` or `project-descrip
 
 ### Critical rules
 
-1. **Element order matters.** The DataMap schema requires this order inside `<data-map>`: `<property>`, `<procedure>`, `<embeddable>`, `<db-entity>`, `<obj-entity>`, `<db-relationship>`, `<obj-relationship>`, the queries (`<object-query>`, `<sql-query>`, `<procedure-query>`), `<cgen>`, `<dbImport>`. Insert at the right place — don't append blindly.
+1. **Element order matters.** The DataMap schema requires this order inside `<dataMap>`: `<property>`, `<procedure>`, `<embeddable>`, `<dbEntity>`, `<objEntity>`, `<dbRelationship>`, `<objRelationship>`, the queries (`<objectQuery>`, `<sqlQuery>`, `<procedureQuery>`), `<cgen>`, `<dbImport>`. Insert at the right place — don't append blindly.
 
 2. **Cross-link consistently.**
-   - An `<obj-entity>` references a `<db-entity>` by `dbEntityName="..."`. Make sure that DbEntity exists.
-   - An `<obj-attribute>` references a DbAttribute by `db-attribute-path="COLUMN_NAME"`. Make sure that column exists on the DbEntity (or on a related one if using a dotted path through a relationship).
-   - An `<obj-relationship>` requires a backing `<db-relationship>` (or chain of them) via `db-relationship-path`. Never add an ObjRelationship without the DB-layer counterpart.
-   - Most FKs need **two** `<db-relationship>` entries, one per direction. They are not auto-derived.
+   - An `<objEntity>` references a `<dbEntity>` by `dbEntityName="..."`. Make sure that DbEntity exists.
+   - An `<objAttribute>` references a DbAttribute by `dbAttributePath="COLUMN_NAME"`. Make sure that column exists on the DbEntity (or on a related one if using a dotted path through a relationship).
+   - An `<objRelationship>` requires a backing `<dbRelationship>` (or chain of them) via `dbRelationshipPath`. Never add an ObjRelationship without the DB-layer counterpart.
+   - Most FKs need **two** `<dbRelationship>` entries, one per direction. They are not auto-derived.
 
 3. **Use the right `type` on attributes.**
-   - `db-attribute type` — JDBC type names: `VARCHAR`, `INTEGER`, `BIGINT`, `DATE`, `TIMESTAMP`, `BOOLEAN`, `NUMERIC`, `BLOB`, `CLOB`, `VARBINARY`, etc. VARCHAR/CHAR/VARBINARY also need `length`. NUMERIC/DECIMAL also need `scale`.
-   - `obj-attribute type` — Java FQN: `java.lang.String`, `java.lang.Integer`, `java.util.Date`, `java.math.BigDecimal`, `byte[]`, etc. Use wrapper types (`Integer`, not `int`) for nullable columns.
+   - `dbAttribute type` — JDBC type names: `VARCHAR`, `INTEGER`, `BIGINT`, `DATE`, `TIMESTAMP`, `BOOLEAN`, `NUMERIC`, `BLOB`, `CLOB`, `VARBINARY`, etc. VARCHAR/CHAR/VARBINARY also need `length`. NUMERIC/DECIMAL also need `scale`.
+   - `objAttribute type` — Java FQN: `java.lang.String`, `java.lang.Integer`, `java.util.Date`, `java.math.BigDecimal`, `byte[]`, etc. Use wrapper types (`Integer`, not `int`) for nullable columns.
 
-4. **PK handling.** PK columns get `isPrimaryKey="true" isMandatory="true"` on the DbAttribute. They are normally **not** mirrored as ObjAttributes — Cayenne handles them implicitly. Map a PK as an ObjAttribute only if the user wants a "meaningful PK" (visible on the Java side).
+4. **PK handling.** PK columns get `primaryKey="true" mandatory="true"` on the DbAttribute. They are normally **not** mirrored as ObjAttributes — Cayenne handles them implicitly. Map a PK as an ObjAttribute only if the user wants a "meaningful PK" (visible on the Java side).
 
 5. **Preserve formatting.** Match the indentation and quote style of the file (the standard Cayenne style uses tabs and double quotes, but follow what's actually in the file you're editing).
 
-6. **Changing `defaultPackage` on a DataMap.** If the user asks to change the DataMap-level `defaultPackage` property, ask whether entity-level packages should be updated too. Otherwise, every existing `obj-entity` will keep its old package. Ask: "Do you also want me to update the `className` values on individual `<obj-entity>` elements that currently use the old package?" Update them only if the user confirms.
+6. **Changing `defaultPackage` on a DataMap.** If the user asks to change the DataMap-level `defaultPackage` property, ask whether entity-level packages should be updated too. Otherwise, every existing `objEntity` will keep its old package. Ask: "Do you also want me to update the `className` values on individual `<objEntity>` elements that currently use the old package?" Update them only if the user confirms.
 
 ## Step 3 — Validate the edit conceptually
 
 After writing the XML, mentally walk through:
 
-- Does every `obj-entity.dbEntityName` resolve to an existing `<db-entity>`?
-- Does every `obj-attribute.db-attribute-path` resolve to a column on the right DbEntity?
-- Does every `obj-relationship.db-relationship-path` resolve to a chain of existing `<db-relationship>` entries?
-- Are PK and FK columns marked `isMandatory="true"` where the DB enforces NOT NULL?
+- Does every `objEntity.dbEntityName` resolve to an existing `<dbEntity>`?
+- Does every `objAttribute.dbAttributePath` resolve to a column on the right DbEntity?
+- Does every `objRelationship.dbRelationshipPath` resolve to a chain of existing `<dbRelationship>` entries?
+- Are PK and FK columns marked `mandatory="true"` where the DB enforces NOT NULL?
 
 If anything fails, fix it before reporting done.
 
@@ -92,8 +92,8 @@ CayenneModeler **watches the project XML files** and automatically detects on-di
 ## Anti-patterns
 
 - **Don't hand-edit `_<Entity>.java` superclass files.** They are regenerated by cgen and your changes will be overwritten. Edit the user `<Entity>.java` subclass instead.
-- **Don't add an `obj-relationship` without a `db-relationship`.** Cayenne will validate-fail at runtime.
-- **Don't use primitive Java types (`int`, `long`, `boolean`) as `obj-attribute type` for nullable columns.** Primitives can't represent NULL. Use wrappers.
+- **Don't add an `objRelationship` without a `dbRelationship`.** Cayenne will validate-fail at runtime.
+- **Don't use primitive Java types (`int`, `long`, `boolean`) as `objAttribute type` for nullable columns.** Primitives can't represent NULL. Use wrappers.
 - **Don't reorder existing elements.** The schema requires the order documented above; reordering existing elements may also create noisy diffs.
 - **Don't run cgen yourself.** That's `cayenne-cgen`'s job — invoke that skill instead of calling the MCP tool directly here.
 - **Don't suggest `mvn cayenne:cdbimport` or any Maven/Gradle plugin goal.** Those are explicitly out of scope for this plugin.

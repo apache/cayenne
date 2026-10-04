@@ -1,50 +1,49 @@
 <?xml version="1.0" encoding="utf-8"?>
-<data-map xmlns="http://cayenne.apache.org/schema/14/modelMap"
+<dataMap xmlns="http://cayenne.apache.org/schema/14/modelMap"
 	 xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-	 xsi:schemaLocation="http://cayenne.apache.org/schema/14/modelMap https://cayenne.apache.org/schema/14/modelMap.xsd"
-	 project-version="14">
+	 xsi:schemaLocation="http://cayenne.apache.org/schema/14/modelMap https://cayenne.apache.org/schema/14/modelMap.xsd">
 	<property name="defaultPackage" value="org.apache.cayenne.testdo.lob"/>
 	<property name="defaultSuperclass" value="org.apache.cayenne.GenericPersistentObject"/>
-	<db-entity name="BLOB_TEST">
-		<db-attribute name="BLOB_COL" type="BLOB"/>
-		<db-attribute name="BLOB_TEST_ID" type="INTEGER" isPrimaryKey="true" isMandatory="true"/>
-	</db-entity>
-	<db-entity name="CLOB_TEST">
-		<db-attribute name="CLOB_COL" type="CLOB"/>
-		<db-attribute name="CLOB_TEST_ID" type="INTEGER" isPrimaryKey="true" isMandatory="true"/>
-	</db-entity>
-	<db-entity name="CLOB_TEST_RELATION">
-		<db-attribute name="CVALUE" type="INTEGER"/>
-		<db-attribute name="ID" type="INTEGER" isPrimaryKey="true" isMandatory="true"/>
-		<db-attribute name="ID_CLOB" type="INTEGER" isMandatory="true"/>
-	</db-entity>
-	<db-entity name="NCLOB_TEST">
-		<db-attribute name="NCLOB_COL" type="NCLOB"/>
-		<db-attribute name="NCLOB_TEST_ID" type="INTEGER" isPrimaryKey="true" isMandatory="true"/>
-	</db-entity>
-	<db-entity name="TEST">
-		<db-attribute name="TEST_ID" type="BIGINT" isPrimaryKey="true" isMandatory="true"/>
-		<db-attribute name="TEST_NAME" type="CHAR" isMandatory="true" length="254"/>
-	</db-entity>
-	<obj-entity name="BlobTestEntity" className="org.apache.cayenne.testdo.lob.BlobTestEntity" dbEntityName="BLOB_TEST">
-		<obj-attribute name="blobCol" type="byte[]" db-attribute-path="BLOB_COL"/>
-	</obj-entity>
-	<obj-entity name="ClobTestEntity" className="org.apache.cayenne.testdo.lob.ClobTestEntity" dbEntityName="CLOB_TEST">
-		<obj-attribute name="clobCol" type="java.lang.String" db-attribute-path="CLOB_COL"/>
-	</obj-entity>
-	<obj-entity name="ClobTestRelation" className="org.apache.cayenne.testdo.lob.ClobTestRelation" dbEntityName="CLOB_TEST_RELATION">
-		<obj-attribute name="id" type="java.lang.Integer" db-attribute-path="ID"/>
-		<obj-attribute name="value" type="java.lang.Integer" db-attribute-path="CVALUE"/>
-	</obj-entity>
-	<obj-entity name="NClobTestEntity" className="org.apache.cayenne.testdo.lob.NClobTestEntity" dbEntityName="NCLOB_TEST">
-		<obj-attribute name="nclobCol" type="java.lang.String" db-attribute-path="NCLOB_COL"/>
-	</obj-entity>
-	<db-relationship name="clob" source="CLOB_TEST" target="CLOB_TEST_RELATION" toMany="true">
-		<db-attribute-pair source="CLOB_TEST_ID" target="ID_CLOB"/>
-	</db-relationship>
-	<db-relationship name="CLOB_REL" source="CLOB_TEST_RELATION" target="CLOB_TEST">
-		<db-attribute-pair source="ID_CLOB" target="CLOB_TEST_ID"/>
-	</db-relationship>
-	<obj-relationship name="clobValue" source="ClobTestEntity" target="ClobTestRelation" db-relationship-path="clob"/>
-	<obj-relationship name="clobId" source="ClobTestRelation" target="ClobTestEntity" db-relationship-path="CLOB_REL"/>
-</data-map>
+	<dbEntity name="BLOB_TEST">
+		<dbAttribute name="BLOB_COL" type="BLOB"/>
+		<dbAttribute name="BLOB_TEST_ID" type="INTEGER" primaryKey="true" mandatory="true"/>
+	</dbEntity>
+	<dbEntity name="CLOB_TEST">
+		<dbAttribute name="CLOB_COL" type="CLOB"/>
+		<dbAttribute name="CLOB_TEST_ID" type="INTEGER" primaryKey="true" mandatory="true"/>
+	</dbEntity>
+	<dbEntity name="CLOB_TEST_RELATION">
+		<dbAttribute name="CVALUE" type="INTEGER"/>
+		<dbAttribute name="ID" type="INTEGER" primaryKey="true" mandatory="true"/>
+		<dbAttribute name="ID_CLOB" type="INTEGER" mandatory="true"/>
+	</dbEntity>
+	<dbEntity name="NCLOB_TEST">
+		<dbAttribute name="NCLOB_COL" type="NCLOB"/>
+		<dbAttribute name="NCLOB_TEST_ID" type="INTEGER" primaryKey="true" mandatory="true"/>
+	</dbEntity>
+	<dbEntity name="TEST">
+		<dbAttribute name="TEST_ID" type="BIGINT" primaryKey="true" mandatory="true"/>
+		<dbAttribute name="TEST_NAME" type="CHAR" mandatory="true" length="254"/>
+	</dbEntity>
+	<objEntity name="BlobTestEntity" className="org.apache.cayenne.testdo.lob.BlobTestEntity" dbEntityName="BLOB_TEST">
+		<objAttribute name="blobCol" type="byte[]" dbAttributePath="BLOB_COL"/>
+	</objEntity>
+	<objEntity name="ClobTestEntity" className="org.apache.cayenne.testdo.lob.ClobTestEntity" dbEntityName="CLOB_TEST">
+		<objAttribute name="clobCol" type="java.lang.String" dbAttributePath="CLOB_COL"/>
+	</objEntity>
+	<objEntity name="ClobTestRelation" className="org.apache.cayenne.testdo.lob.ClobTestRelation" dbEntityName="CLOB_TEST_RELATION">
+		<objAttribute name="id" type="java.lang.Integer" dbAttributePath="ID"/>
+		<objAttribute name="value" type="java.lang.Integer" dbAttributePath="CVALUE"/>
+	</objEntity>
+	<objEntity name="NClobTestEntity" className="org.apache.cayenne.testdo.lob.NClobTestEntity" dbEntityName="NCLOB_TEST">
+		<objAttribute name="nclobCol" type="java.lang.String" dbAttributePath="NCLOB_COL"/>
+	</objEntity>
+	<dbRelationship name="clob" source="CLOB_TEST" target="CLOB_TEST_RELATION" toMany="true">
+		<dbAttributePair source="CLOB_TEST_ID" target="ID_CLOB"/>
+	</dbRelationship>
+	<dbRelationship name="CLOB_REL" source="CLOB_TEST_RELATION" target="CLOB_TEST">
+		<dbAttributePair source="ID_CLOB" target="CLOB_TEST_ID"/>
+	</dbRelationship>
+	<objRelationship name="clobValue" source="ClobTestEntity" target="ClobTestRelation" dbRelationshipPath="clob"/>
+	<objRelationship name="clobId" source="ClobTestRelation" target="ClobTestEntity" dbRelationshipPath="CLOB_REL"/>
+</dataMap>

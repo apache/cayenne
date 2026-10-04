@@ -238,12 +238,12 @@ public class SelectQueryDescriptor extends QueryDescriptor {
     public void encodeAsXML(XMLEncoder encoder, ConfigurationNodeVisitor delegate) {
         // the root, qualifier, orderings, prefetches, limit, offset and distinct are all clauses of the query String,
         // the rest of the properties are stored separately
-        encoder.start("object-query")
+        encoder.start("objectQuery")
                 .attribute("name", getName())
-                .attribute("cache-strategy", cacheStrategy != QueryCacheStrategy.NO_CACHE ? cacheStrategy.name() : null)
-                .attribute("data-rows", fetchingDataRows)
-                .attribute("page-size", pageSize)
-                .attribute("statement-fetch-size", statementFetchSize);
+                .attribute("cacheStrategy", cacheStrategy != QueryCacheStrategy.NO_CACHE ? cacheStrategy.name() : null)
+                .attribute("dataRows", fetchingDataRows)
+                .attribute("pageSize", pageSize)
+                .attribute("statementFetchSize", statementFetchSize);
 
         String select = toQueryString();
         if (select != null) {

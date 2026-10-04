@@ -169,18 +169,17 @@ public class CgenRunMcpIT {
     private void writeFixture(String mapName, String pkg, Path destDir, boolean makePairs) throws IOException {
         Files.writeString(tempDir.resolve("cayenne-project.xml"), String.format("""
                 <?xml version="1.0" encoding="utf-8"?>
-                <domain xmlns="http://cayenne.apache.org/schema/14/domain" project-version="14">
+                <domain xmlns="http://cayenne.apache.org/schema/14/domain">
                     <map name="%s"/>
                 </domain>
                 """, mapName));
 
         Files.writeString(tempDir.resolve(mapName + ".map.xml"), String.format("""
                 <?xml version="1.0" encoding="utf-8"?>
-                <data-map xmlns="http://cayenne.apache.org/schema/14/modelMap"
-                          xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-                          project-version="14">
+                <dataMap xmlns="http://cayenne.apache.org/schema/14/modelMap"
+                          xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
                     <property name="defaultPackage" value="%s"/>
-                    <obj-entity name="Person" className="%s.Person"/>
+                    <objEntity name="Person" className="%s.Person"/>
                     <cgen xmlns="http://cayenne.apache.org/schema/14/cgen">
                         <destDir>%s</destDir>
                         <mode>entity</mode>
@@ -188,7 +187,7 @@ public class CgenRunMcpIT {
                         <usePkgPath>true</usePkgPath>
                         <overwrite>false</overwrite>
                     </cgen>
-                </data-map>
+                </dataMap>
                 """, pkg, pkg, destDir.toAbsolutePath(), makePairs));
     }
 }

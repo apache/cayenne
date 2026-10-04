@@ -1,80 +1,79 @@
 <?xml version="1.0" encoding="utf-8"?>
-<data-map xmlns="http://cayenne.apache.org/schema/14/modelMap"
+<dataMap xmlns="http://cayenne.apache.org/schema/14/modelMap"
 	 xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-	 xsi:schemaLocation="http://cayenne.apache.org/schema/14/modelMap https://cayenne.apache.org/schema/14/modelMap.xsd"
-	 project-version="14">
+	 xsi:schemaLocation="http://cayenne.apache.org/schema/14/modelMap https://cayenne.apache.org/schema/14/modelMap.xsd">
 	<property name="defaultPackage" value="org.apache.cayenne.testdo.inheritance_flat"/>
-	<db-entity name="GROUP_MEMBERS">
-		<db-attribute name="group_id" type="BIGINT" isMandatory="true"/>
-		<db-attribute name="id" type="BIGINT" isPrimaryKey="true" isMandatory="true"/>
-		<db-attribute name="role_id" type="BIGINT" isMandatory="true"/>
-	</db-entity>
-	<db-entity name="GROUP_PROPERTIES">
-		<db-attribute name="description" type="VARCHAR" length="100"/>
-		<db-attribute name="id" type="BIGINT" isPrimaryKey="true" isMandatory="true"/>
-	</db-entity>
-	<db-entity name="ROLES">
-		<db-attribute name="id" type="BIGINT" isPrimaryKey="true" isMandatory="true"/>
-		<db-attribute name="name" type="VARCHAR" isMandatory="true" length="32"/>
-		<db-attribute name="type" type="SMALLINT" isMandatory="true"/>
-	</db-entity>
-	<db-entity name="USER_PROPERTIES">
-		<db-attribute name="id" type="BIGINT" isPrimaryKey="true" isMandatory="true"/>
-		<db-attribute name="nickname" type="VARCHAR" length="32"/>
-	</db-entity>
-	<obj-entity name="Group" superEntityName="User" className="org.apache.cayenne.testdo.inheritance_flat.Group">
+	<dbEntity name="GROUP_MEMBERS">
+		<dbAttribute name="group_id" type="BIGINT" mandatory="true"/>
+		<dbAttribute name="id" type="BIGINT" primaryKey="true" mandatory="true"/>
+		<dbAttribute name="role_id" type="BIGINT" mandatory="true"/>
+	</dbEntity>
+	<dbEntity name="GROUP_PROPERTIES">
+		<dbAttribute name="description" type="VARCHAR" length="100"/>
+		<dbAttribute name="id" type="BIGINT" primaryKey="true" mandatory="true"/>
+	</dbEntity>
+	<dbEntity name="ROLES">
+		<dbAttribute name="id" type="BIGINT" primaryKey="true" mandatory="true"/>
+		<dbAttribute name="name" type="VARCHAR" mandatory="true" length="32"/>
+		<dbAttribute name="type" type="SMALLINT" mandatory="true"/>
+	</dbEntity>
+	<dbEntity name="USER_PROPERTIES">
+		<dbAttribute name="id" type="BIGINT" primaryKey="true" mandatory="true"/>
+		<dbAttribute name="nickname" type="VARCHAR" length="32"/>
+	</dbEntity>
+	<objEntity name="Group" superEntityName="User" className="org.apache.cayenne.testdo.inheritance_flat.Group">
 		<qualifier><![CDATA[type = 2]]></qualifier>
-	</obj-entity>
-	<obj-entity name="GroupProperties" className="org.apache.cayenne.testdo.inheritance_flat.GroupProperties" dbEntityName="GROUP_PROPERTIES">
-		<obj-attribute name="description" type="java.lang.String" db-attribute-path="description"/>
-		<obj-attribute name="id" type="java.lang.Long" db-attribute-path="id"/>
-	</obj-entity>
-	<obj-entity name="Role" className="org.apache.cayenne.testdo.inheritance_flat.Role" dbEntityName="ROLES">
+	</objEntity>
+	<objEntity name="GroupProperties" className="org.apache.cayenne.testdo.inheritance_flat.GroupProperties" dbEntityName="GROUP_PROPERTIES">
+		<objAttribute name="description" type="java.lang.String" dbAttributePath="description"/>
+		<objAttribute name="id" type="java.lang.Long" dbAttributePath="id"/>
+	</objEntity>
+	<objEntity name="Role" className="org.apache.cayenne.testdo.inheritance_flat.Role" dbEntityName="ROLES">
 		<qualifier><![CDATA[type = 0]]></qualifier>
-		<obj-attribute name="id" type="long" db-attribute-path="id"/>
-		<obj-attribute name="name" type="java.lang.String" lock="true" db-attribute-path="name"/>
-		<obj-attribute name="type" type="int" db-attribute-path="type"/>
-		<post-persist method-name="onPostPersist"/>
-		<post-update method-name="onPostUpdate"/>
-	</obj-entity>
-	<obj-entity name="User" superEntityName="Role" className="org.apache.cayenne.testdo.inheritance_flat.User">
+		<objAttribute name="id" type="long" dbAttributePath="id"/>
+		<objAttribute name="name" type="java.lang.String" lock="true" dbAttributePath="name"/>
+		<objAttribute name="type" type="int" dbAttributePath="type"/>
+		<postPersist methodName="onPostPersist"/>
+		<postUpdate methodName="onPostUpdate"/>
+	</objEntity>
+	<objEntity name="User" superEntityName="Role" className="org.apache.cayenne.testdo.inheritance_flat.User">
 		<qualifier><![CDATA[type = 1]]></qualifier>
-		<attribute-override name="id" db-attribute-path="id"/>
-		<attribute-override name="name" db-attribute-path="name"/>
-		<attribute-override name="type" db-attribute-path="type"/>
-	</obj-entity>
-	<obj-entity name="UserProperties" className="org.apache.cayenne.testdo.inheritance_flat.UserProperties" dbEntityName="USER_PROPERTIES">
-		<obj-attribute name="id" type="java.lang.Long" db-attribute-path="id"/>
-		<obj-attribute name="nickname" type="java.lang.String" db-attribute-path="nickname"/>
-	</obj-entity>
-	<db-relationship name="group" source="GROUP_MEMBERS" target="ROLES">
-		<db-attribute-pair source="group_id" target="id"/>
-	</db-relationship>
-	<db-relationship name="role" source="GROUP_MEMBERS" target="ROLES">
-		<db-attribute-pair source="role_id" target="id"/>
-	</db-relationship>
-	<db-relationship name="group" source="GROUP_PROPERTIES" target="ROLES">
-		<db-attribute-pair source="id" target="id"/>
-	</db-relationship>
-	<db-relationship name="group_members" source="ROLES" target="GROUP_MEMBERS" toMany="true">
-		<db-attribute-pair source="id" target="group_id"/>
-	</db-relationship>
-	<db-relationship name="group_properties" source="ROLES" target="GROUP_PROPERTIES" toDependentPK="true">
-		<db-attribute-pair source="id" target="id"/>
-	</db-relationship>
-	<db-relationship name="role_groups" source="ROLES" target="GROUP_MEMBERS" toMany="true">
-		<db-attribute-pair source="id" target="role_id"/>
-	</db-relationship>
-	<db-relationship name="user_properties" source="ROLES" target="USER_PROPERTIES" toDependentPK="true">
-		<db-attribute-pair source="id" target="id"/>
-	</db-relationship>
-	<db-relationship name="user" source="USER_PROPERTIES" target="ROLES">
-		<db-attribute-pair source="id" target="id"/>
-	</db-relationship>
-	<obj-relationship name="groupMembers" source="Group" target="Role" deleteRule="Nullify" db-relationship-path="group_members.role"/>
-	<obj-relationship name="groupProperties" source="Group" target="GroupProperties" deleteRule="Cascade" db-relationship-path="group_properties"/>
-	<obj-relationship name="group" source="GroupProperties" target="Group" deleteRule="Nullify" db-relationship-path="group"/>
-	<obj-relationship name="roleGroups" source="Role" target="Group" deleteRule="Nullify" db-relationship-path="role_groups.group"/>
-	<obj-relationship name="userProperties" source="User" target="UserProperties" deleteRule="Cascade" db-relationship-path="user_properties"/>
-	<obj-relationship name="user" source="UserProperties" target="User" deleteRule="Nullify" db-relationship-path="user"/>
-</data-map>
+		<attributeOverride name="id" dbAttributePath="id"/>
+		<attributeOverride name="name" dbAttributePath="name"/>
+		<attributeOverride name="type" dbAttributePath="type"/>
+	</objEntity>
+	<objEntity name="UserProperties" className="org.apache.cayenne.testdo.inheritance_flat.UserProperties" dbEntityName="USER_PROPERTIES">
+		<objAttribute name="id" type="java.lang.Long" dbAttributePath="id"/>
+		<objAttribute name="nickname" type="java.lang.String" dbAttributePath="nickname"/>
+	</objEntity>
+	<dbRelationship name="group" source="GROUP_MEMBERS" target="ROLES">
+		<dbAttributePair source="group_id" target="id"/>
+	</dbRelationship>
+	<dbRelationship name="role" source="GROUP_MEMBERS" target="ROLES">
+		<dbAttributePair source="role_id" target="id"/>
+	</dbRelationship>
+	<dbRelationship name="group" source="GROUP_PROPERTIES" target="ROLES">
+		<dbAttributePair source="id" target="id"/>
+	</dbRelationship>
+	<dbRelationship name="group_members" source="ROLES" target="GROUP_MEMBERS" toMany="true">
+		<dbAttributePair source="id" target="group_id"/>
+	</dbRelationship>
+	<dbRelationship name="group_properties" source="ROLES" target="GROUP_PROPERTIES" toDependentPK="true">
+		<dbAttributePair source="id" target="id"/>
+	</dbRelationship>
+	<dbRelationship name="role_groups" source="ROLES" target="GROUP_MEMBERS" toMany="true">
+		<dbAttributePair source="id" target="role_id"/>
+	</dbRelationship>
+	<dbRelationship name="user_properties" source="ROLES" target="USER_PROPERTIES" toDependentPK="true">
+		<dbAttributePair source="id" target="id"/>
+	</dbRelationship>
+	<dbRelationship name="user" source="USER_PROPERTIES" target="ROLES">
+		<dbAttributePair source="id" target="id"/>
+	</dbRelationship>
+	<objRelationship name="groupMembers" source="Group" target="Role" deleteRule="nullify" dbRelationshipPath="group_members.role"/>
+	<objRelationship name="groupProperties" source="Group" target="GroupProperties" deleteRule="cascade" dbRelationshipPath="group_properties"/>
+	<objRelationship name="group" source="GroupProperties" target="Group" deleteRule="nullify" dbRelationshipPath="group"/>
+	<objRelationship name="roleGroups" source="Role" target="Group" deleteRule="nullify" dbRelationshipPath="role_groups.group"/>
+	<objRelationship name="userProperties" source="User" target="UserProperties" deleteRule="cascade" dbRelationshipPath="user_properties"/>
+	<objRelationship name="user" source="UserProperties" target="User" deleteRule="nullify" dbRelationshipPath="user"/>
+</dataMap>

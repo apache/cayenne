@@ -49,7 +49,7 @@
         </xs:complexType>
     </xs:element>
 
-    <xs:simpleType name="db-type">
+    <xs:simpleType name="dbType">
         <xs:restriction base="xs:string">
             <xs:pattern value="[0-9a-zA-Z$_.]+"/>
         </xs:restriction>
@@ -57,7 +57,7 @@
 
     <xs:complexType name="tableTypes">
         <xs:sequence>
-            <xs:element name="tableType" type="dbi:db-type" maxOccurs="unbounded"/>
+            <xs:element name="tableType" type="dbi:dbType" maxOccurs="unbounded"/>
         </xs:sequence>
     </xs:complexType>
 
@@ -86,7 +86,7 @@
         <xs:complexContent>
             <xs:extension base="dbi:container">
                 <xs:sequence>
-                    <xs:element name="name" type="dbi:db-type"/>
+                    <xs:element name="name" type="dbi:dbType"/>
 
                     <xs:any minOccurs="0" maxOccurs="unbounded" namespace="##other" processContents="lax"/>
                 </xs:sequence>
@@ -98,7 +98,7 @@
         <xs:complexContent>
             <xs:extension base="dbi:container">
                 <xs:sequence>
-                    <xs:element name="name" type="dbi:db-type"/>
+                    <xs:element name="name" type="dbi:dbType"/>
                     <xs:element name="schema" type="dbi:schema" minOccurs="0" maxOccurs="unbounded"/>
 
                     <xs:any minOccurs="0" maxOccurs="unbounded" namespace="##other" processContents="lax"/>

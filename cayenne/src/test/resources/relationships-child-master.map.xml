@@ -1,27 +1,26 @@
 <?xml version="1.0" encoding="utf-8"?>
-<data-map xmlns="http://cayenne.apache.org/schema/14/modelMap"
+<dataMap xmlns="http://cayenne.apache.org/schema/14/modelMap"
 	 xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-	 xsi:schemaLocation="http://cayenne.apache.org/schema/14/modelMap https://cayenne.apache.org/schema/14/modelMap.xsd"
-	 project-version="14">
+	 xsi:schemaLocation="http://cayenne.apache.org/schema/14/modelMap https://cayenne.apache.org/schema/14/modelMap.xsd">
 	<property name="defaultPackage" value="org.apache.cayenne.testdo.relationships_child_master"/>
-	<db-entity name="CHILD">
-		<db-attribute name="ID" type="INTEGER" isPrimaryKey="true" isMandatory="true"/>
-		<db-attribute name="MASTER_ID" type="INTEGER"/>
-	</db-entity>
-	<db-entity name="MASTER">
-		<db-attribute name="ID" type="INTEGER" isPrimaryKey="true" isMandatory="true"/>
-		<db-attribute name="NAME" type="VARCHAR" length="100"/>
-	</db-entity>
-	<obj-entity name="Child" className="org.apache.cayenne.testdo.relationships_child_master.Child" dbEntityName="CHILD"/>
-	<obj-entity name="Master" className="org.apache.cayenne.testdo.relationships_child_master.Master" dbEntityName="MASTER">
-		<obj-attribute name="name" type="java.lang.String" db-attribute-path="NAME"/>
-	</obj-entity>
-	<db-relationship name="master" source="CHILD" target="MASTER">
-		<db-attribute-pair source="MASTER_ID" target="ID"/>
-	</db-relationship>
-	<db-relationship name="children" source="MASTER" target="CHILD" toMany="true">
-		<db-attribute-pair source="ID" target="MASTER_ID"/>
-	</db-relationship>
-	<obj-relationship name="master" source="Child" target="Master" deleteRule="Nullify" db-relationship-path="master"/>
-	<obj-relationship name="children" source="Master" target="Child" deleteRule="Deny" db-relationship-path="children"/>
-</data-map>
+	<dbEntity name="CHILD">
+		<dbAttribute name="ID" type="INTEGER" primaryKey="true" mandatory="true"/>
+		<dbAttribute name="MASTER_ID" type="INTEGER"/>
+	</dbEntity>
+	<dbEntity name="MASTER">
+		<dbAttribute name="ID" type="INTEGER" primaryKey="true" mandatory="true"/>
+		<dbAttribute name="NAME" type="VARCHAR" length="100"/>
+	</dbEntity>
+	<objEntity name="Child" className="org.apache.cayenne.testdo.relationships_child_master.Child" dbEntityName="CHILD"/>
+	<objEntity name="Master" className="org.apache.cayenne.testdo.relationships_child_master.Master" dbEntityName="MASTER">
+		<objAttribute name="name" type="java.lang.String" dbAttributePath="NAME"/>
+	</objEntity>
+	<dbRelationship name="master" source="CHILD" target="MASTER">
+		<dbAttributePair source="MASTER_ID" target="ID"/>
+	</dbRelationship>
+	<dbRelationship name="children" source="MASTER" target="CHILD" toMany="true">
+		<dbAttributePair source="ID" target="MASTER_ID"/>
+	</dbRelationship>
+	<objRelationship name="master" source="Child" target="Master" deleteRule="nullify" dbRelationshipPath="master"/>
+	<objRelationship name="children" source="Master" target="Child" deleteRule="deny" dbRelationshipPath="children"/>
+</dataMap>

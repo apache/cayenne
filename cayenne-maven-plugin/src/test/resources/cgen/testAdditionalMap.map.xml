@@ -1,18 +1,17 @@
 <?xml version="1.0" encoding="utf-8"?>
-<data-map xmlns="http://cayenne.apache.org/schema/14/modelMap"
+<dataMap xmlns="http://cayenne.apache.org/schema/14/modelMap"
 	 xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-	 xsi:schemaLocation="http://cayenne.apache.org/schema/14/modelMap http://cayenne.apache.org/schema/14/modelMap.xsd"
-	 project-version="14">
+	 xsi:schemaLocation="http://cayenne.apache.org/schema/14/modelMap http://cayenne.apache.org/schema/14/modelMap.xsd">
 	<property name="defaultPackage" value="pack"/>
-	<db-entity name="TestRelEntity">
-		<db-attribute name="ID" type="INTEGER" isPrimaryKey="true" isMandatory="true"/>
-		<db-attribute name="NAME" type="VARCHAR" length="200"/>
-	</db-entity>
-	<obj-entity name="TestRelEntity" className="pack.TestRelEntity" dbEntityName="TestRelEntity">
-		<obj-attribute name="name" type="java.lang.String" db-attribute-path="NAME"/>
-	</obj-entity>
-	<db-relationship name="additionalRel" source="TestRelEntity" target="TestEntity">
-		<db-attribute-pair source="ID" target="TestRelEntity_ID"/>
-	</db-relationship>
-	<obj-relationship name="additionalRel" source="TestRelEntity" target="TestEntity" deleteRule="Nullify" db-relationship-path="additionalRel"/>
-</data-map>
+	<dbEntity name="TestRelEntity">
+		<dbAttribute name="ID" type="INTEGER" primaryKey="true" mandatory="true"/>
+		<dbAttribute name="NAME" type="VARCHAR" length="200"/>
+	</dbEntity>
+	<objEntity name="TestRelEntity" className="pack.TestRelEntity" dbEntityName="TestRelEntity">
+		<objAttribute name="name" type="java.lang.String" dbAttributePath="NAME"/>
+	</objEntity>
+	<dbRelationship name="additionalRel" source="TestRelEntity" target="TestEntity">
+		<dbAttributePair source="ID" target="TestRelEntity_ID"/>
+	</dbRelationship>
+	<objRelationship name="additionalRel" source="TestRelEntity" target="TestEntity" deleteRule="nullify" dbRelationshipPath="additionalRel"/>
+</dataMap>

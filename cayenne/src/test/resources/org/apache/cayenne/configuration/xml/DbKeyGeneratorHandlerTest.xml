@@ -17,8 +17,8 @@
   ~  under the License.
   ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~-->
 
-<db-key-generator>
-    <db-generator-type>ORACLE</db-generator-type>
-    <db-generator-name>gallery_seq</db-generator-name>
-    <db-key-cache-size>20</db-key-cache-size>
-</db-key-generator>
+<dbKeyGenerator>
+    <dbGeneratorType>ORACLE</dbGeneratorType>
+    <dbGeneratorName>gallery_seq</dbGeneratorName>
+    <dbKeyCacheSize>20</dbKeyCacheSize>
+</dbKeyGenerator>

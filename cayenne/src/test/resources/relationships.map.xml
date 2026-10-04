@@ -1,99 +1,98 @@
 <?xml version="1.0" encoding="utf-8"?>
-<data-map xmlns="http://cayenne.apache.org/schema/14/modelMap"
+<dataMap xmlns="http://cayenne.apache.org/schema/14/modelMap"
 	 xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-	 xsi:schemaLocation="http://cayenne.apache.org/schema/14/modelMap https://cayenne.apache.org/schema/14/modelMap.xsd"
-	 project-version="14">
+	 xsi:schemaLocation="http://cayenne.apache.org/schema/14/modelMap https://cayenne.apache.org/schema/14/modelMap.xsd">
 	<property name="defaultPackage" value="org.apache.cayenne.testdo.relationships"/>
-	<db-entity name="CYCLE_E1">
-		<db-attribute name="e2_id" type="INTEGER"/>
-		<db-attribute name="id" type="INTEGER" isPrimaryKey="true" isGenerated="true" isMandatory="true"/>
-		<db-attribute name="text" type="VARCHAR" length="128"/>
-	</db-entity>
-	<db-entity name="CYCLE_E2">
-		<db-attribute name="e1_id" type="INTEGER"/>
-		<db-attribute name="id" type="INTEGER" isPrimaryKey="true" isGenerated="true" isMandatory="true"/>
-		<db-attribute name="text" type="VARCHAR" length="128"/>
-	</db-entity>
-	<db-entity name="FK_OF_DIFFERENT_TYPE">
-		<db-attribute name="ID" type="INTEGER" isPrimaryKey="true" isMandatory="true"/>
-		<db-attribute name="RELATIONSHIP_HELPER_FK" type="SMALLINT"/>
-	</db-entity>
-	<db-entity name="MEANINGFUL_FK">
-		<db-attribute name="MEANIGNFUL_FK_ID" type="INTEGER" isPrimaryKey="true" isMandatory="true"/>
-		<db-attribute name="RELATIONSHIP_HELPER_ID" type="INTEGER" isMandatory="true"/>
-	</db-entity>
-	<db-entity name="REFLEXIVE_AND_TO_ONE">
-		<db-attribute name="NAME" type="VARCHAR" length="100"/>
-		<db-attribute name="PARENT_ID" type="INTEGER"/>
-		<db-attribute name="REFLEXIVE_AND_TO_ONE_ID" type="INTEGER" isPrimaryKey="true" isMandatory="true"/>
-		<db-attribute name="RELATIONSHIP_HELPER_ID" type="INTEGER"/>
-	</db-entity>
-	<db-entity name="RELATIONSHIP_HELPER">
-		<db-attribute name="NAME" type="VARCHAR" length="100"/>
-		<db-attribute name="RELATIONSHIP_HELPER_ID" type="INTEGER" isPrimaryKey="true" isMandatory="true"/>
-	</db-entity>
-	<obj-entity name="CYCLE_E1" className="org.apache.cayenne.testdo.relationships.E1" dbEntityName="CYCLE_E1">
-		<obj-attribute name="text" type="java.lang.String" db-attribute-path="text"/>
-	</obj-entity>
-	<obj-entity name="CYCLE_E2" className="org.apache.cayenne.testdo.relationships.E2" dbEntityName="CYCLE_E2">
-		<obj-attribute name="text" type="java.lang.String" db-attribute-path="text"/>
-	</obj-entity>
-	<obj-entity name="FkOfDifferentType" className="org.apache.cayenne.testdo.relationships.FkOfDifferentType" dbEntityName="FK_OF_DIFFERENT_TYPE"/>
-	<obj-entity name="MeaningfulFK" className="org.apache.cayenne.testdo.relationships.MeaningfulFK" dbEntityName="MEANINGFUL_FK">
-		<obj-attribute name="relationshipHelperID" type="int" db-attribute-path="RELATIONSHIP_HELPER_ID"/>
-	</obj-entity>
-	<obj-entity name="ReflexiveAndToOne" className="org.apache.cayenne.testdo.relationships.ReflexiveAndToOne" dbEntityName="REFLEXIVE_AND_TO_ONE">
-		<obj-attribute name="name" type="java.lang.String" db-attribute-path="NAME"/>
-	</obj-entity>
-	<obj-entity name="RelationshipHelper" className="org.apache.cayenne.testdo.relationships.RelationshipHelper" dbEntityName="RELATIONSHIP_HELPER">
-		<obj-attribute name="name" type="java.lang.String" db-attribute-path="NAME"/>
-	</obj-entity>
-	<db-relationship name="e2" source="CYCLE_E1" target="CYCLE_E2">
-		<db-attribute-pair source="e2_id" target="id"/>
-	</db-relationship>
-	<db-relationship name="e2s" source="CYCLE_E1" target="CYCLE_E2" toMany="true">
-		<db-attribute-pair source="id" target="e1_id"/>
-	</db-relationship>
-	<db-relationship name="e1" source="CYCLE_E2" target="CYCLE_E1">
-		<db-attribute-pair source="e1_id" target="id"/>
-	</db-relationship>
-	<db-relationship name="e1s" source="CYCLE_E2" target="CYCLE_E1" toMany="true">
-		<db-attribute-pair source="id" target="e2_id"/>
-	</db-relationship>
-	<db-relationship name="relationshipHelper" source="FK_OF_DIFFERENT_TYPE" target="RELATIONSHIP_HELPER">
-		<db-attribute-pair source="RELATIONSHIP_HELPER_FK" target="RELATIONSHIP_HELPER_ID"/>
-	</db-relationship>
-	<db-relationship name="toRelationshipHelper" source="MEANINGFUL_FK" target="RELATIONSHIP_HELPER">
-		<db-attribute-pair source="RELATIONSHIP_HELPER_ID" target="RELATIONSHIP_HELPER_ID"/>
-	</db-relationship>
-	<db-relationship name="children" source="REFLEXIVE_AND_TO_ONE" target="REFLEXIVE_AND_TO_ONE" toMany="true">
-		<db-attribute-pair source="REFLEXIVE_AND_TO_ONE_ID" target="PARENT_ID"/>
-	</db-relationship>
-	<db-relationship name="toHelper" source="REFLEXIVE_AND_TO_ONE" target="RELATIONSHIP_HELPER">
-		<db-attribute-pair source="RELATIONSHIP_HELPER_ID" target="RELATIONSHIP_HELPER_ID"/>
-	</db-relationship>
-	<db-relationship name="toParent" source="REFLEXIVE_AND_TO_ONE" target="REFLEXIVE_AND_TO_ONE">
-		<db-attribute-pair source="PARENT_ID" target="REFLEXIVE_AND_TO_ONE_ID"/>
-	</db-relationship>
-	<db-relationship name="fksOfDifferentType" source="RELATIONSHIP_HELPER" target="FK_OF_DIFFERENT_TYPE" toMany="true">
-		<db-attribute-pair source="RELATIONSHIP_HELPER_ID" target="RELATIONSHIP_HELPER_FK"/>
-	</db-relationship>
-	<db-relationship name="meanigfulFKs" source="RELATIONSHIP_HELPER" target="MEANINGFUL_FK" toMany="true">
-		<db-attribute-pair source="RELATIONSHIP_HELPER_ID" target="RELATIONSHIP_HELPER_ID"/>
-	</db-relationship>
-	<db-relationship name="reflexiveAndToOneArray" source="RELATIONSHIP_HELPER" target="REFLEXIVE_AND_TO_ONE" toMany="true">
-		<db-attribute-pair source="RELATIONSHIP_HELPER_ID" target="RELATIONSHIP_HELPER_ID"/>
-	</db-relationship>
-	<obj-relationship name="e2" source="CYCLE_E1" target="CYCLE_E2" deleteRule="Nullify" db-relationship-path="e2"/>
-	<obj-relationship name="e2s" source="CYCLE_E1" target="CYCLE_E2" deleteRule="Deny" db-relationship-path="e2s"/>
-	<obj-relationship name="e1" source="CYCLE_E2" target="CYCLE_E1" deleteRule="Nullify" db-relationship-path="e1"/>
-	<obj-relationship name="e1s" source="CYCLE_E2" target="CYCLE_E1" deleteRule="Deny" db-relationship-path="e1s"/>
-	<obj-relationship name="relationshipHelper" source="FkOfDifferentType" target="RelationshipHelper" db-relationship-path="relationshipHelper"/>
-	<obj-relationship name="toRelationshipHelper" source="MeaningfulFK" target="RelationshipHelper" db-relationship-path="toRelationshipHelper"/>
-	<obj-relationship name="children" source="ReflexiveAndToOne" target="ReflexiveAndToOne" db-relationship-path="children"/>
-	<obj-relationship name="toHelper" source="ReflexiveAndToOne" target="RelationshipHelper" db-relationship-path="toHelper"/>
-	<obj-relationship name="toParent" source="ReflexiveAndToOne" target="ReflexiveAndToOne" db-relationship-path="toParent"/>
-	<obj-relationship name="fksOfDifferentType" source="RelationshipHelper" target="FkOfDifferentType" db-relationship-path="fksOfDifferentType"/>
-	<obj-relationship name="meanigfulFKs" source="RelationshipHelper" target="MeaningfulFK" db-relationship-path="meanigfulFKs"/>
-	<obj-relationship name="reflexiveAndToOneArray" source="RelationshipHelper" target="ReflexiveAndToOne" db-relationship-path="reflexiveAndToOneArray"/>
-</data-map>
+	<dbEntity name="CYCLE_E1">
+		<dbAttribute name="e2_id" type="INTEGER"/>
+		<dbAttribute name="id" type="INTEGER" primaryKey="true" generated="true" mandatory="true"/>
+		<dbAttribute name="text" type="VARCHAR" length="128"/>
+	</dbEntity>
+	<dbEntity name="CYCLE_E2">
+		<dbAttribute name="e1_id" type="INTEGER"/>
+		<dbAttribute name="id" type="INTEGER" primaryKey="true" generated="true" mandatory="true"/>
+		<dbAttribute name="text" type="VARCHAR" length="128"/>
+	</dbEntity>
+	<dbEntity name="FK_OF_DIFFERENT_TYPE">
+		<dbAttribute name="ID" type="INTEGER" primaryKey="true" mandatory="true"/>
+		<dbAttribute name="RELATIONSHIP_HELPER_FK" type="SMALLINT"/>
+	</dbEntity>
+	<dbEntity name="MEANINGFUL_FK">
+		<dbAttribute name="MEANIGNFUL_FK_ID" type="INTEGER" primaryKey="true" mandatory="true"/>
+		<dbAttribute name="RELATIONSHIP_HELPER_ID" type="INTEGER" mandatory="true"/>
+	</dbEntity>
+	<dbEntity name="REFLEXIVE_AND_TO_ONE">
+		<dbAttribute name="NAME" type="VARCHAR" length="100"/>
+		<dbAttribute name="PARENT_ID" type="INTEGER"/>
+		<dbAttribute name="REFLEXIVE_AND_TO_ONE_ID" type="INTEGER" primaryKey="true" mandatory="true"/>
+		<dbAttribute name="RELATIONSHIP_HELPER_ID" type="INTEGER"/>
+	</dbEntity>
+	<dbEntity name="RELATIONSHIP_HELPER">
+		<dbAttribute name="NAME" type="VARCHAR" length="100"/>
+		<dbAttribute name="RELATIONSHIP_HELPER_ID" type="INTEGER" primaryKey="true" mandatory="true"/>
+	</dbEntity>
+	<objEntity name="CYCLE_E1" className="org.apache.cayenne.testdo.relationships.E1" dbEntityName="CYCLE_E1">
+		<objAttribute name="text" type="java.lang.String" dbAttributePath="text"/>
+	</objEntity>
+	<objEntity name="CYCLE_E2" className="org.apache.cayenne.testdo.relationships.E2" dbEntityName="CYCLE_E2">
+		<objAttribute name="text" type="java.lang.String" dbAttributePath="text"/>
+	</objEntity>
+	<objEntity name="FkOfDifferentType" className="org.apache.cayenne.testdo.relationships.FkOfDifferentType" dbEntityName="FK_OF_DIFFERENT_TYPE"/>
+	<objEntity name="MeaningfulFK" className="org.apache.cayenne.testdo.relationships.MeaningfulFK" dbEntityName="MEANINGFUL_FK">
+		<objAttribute name="relationshipHelperID" type="int" dbAttributePath="RELATIONSHIP_HELPER_ID"/>
+	</objEntity>
+	<objEntity name="ReflexiveAndToOne" className="org.apache.cayenne.testdo.relationships.ReflexiveAndToOne" dbEntityName="REFLEXIVE_AND_TO_ONE">
+		<objAttribute name="name" type="java.lang.String" dbAttributePath="NAME"/>
+	</objEntity>
+	<objEntity name="RelationshipHelper" className="org.apache.cayenne.testdo.relationships.RelationshipHelper" dbEntityName="RELATIONSHIP_HELPER">
+		<objAttribute name="name" type="java.lang.String" dbAttributePath="NAME"/>
+	</objEntity>
+	<dbRelationship name="e2" source="CYCLE_E1" target="CYCLE_E2">
+		<dbAttributePair source="e2_id" target="id"/>
+	</dbRelationship>
+	<dbRelationship name="e2s" source="CYCLE_E1" target="CYCLE_E2" toMany="true">
+		<dbAttributePair source="id" target="e1_id"/>
+	</dbRelationship>
+	<dbRelationship name="e1" source="CYCLE_E2" target="CYCLE_E1">
+		<dbAttributePair source="e1_id" target="id"/>
+	</dbRelationship>
+	<dbRelationship name="e1s" source="CYCLE_E2" target="CYCLE_E1" toMany="true">
+		<dbAttributePair source="id" target="e2_id"/>
+	</dbRelationship>
+	<dbRelationship name="relationshipHelper" source="FK_OF_DIFFERENT_TYPE" target="RELATIONSHIP_HELPER">
+		<dbAttributePair source="RELATIONSHIP_HELPER_FK" target="RELATIONSHIP_HELPER_ID"/>
+	</dbRelationship>
+	<dbRelationship name="toRelationshipHelper" source="MEANINGFUL_FK" target="RELATIONSHIP_HELPER">
+		<dbAttributePair source="RELATIONSHIP_HELPER_ID" target="RELATIONSHIP_HELPER_ID"/>
+	</dbRelationship>
+	<dbRelationship name="children" source="REFLEXIVE_AND_TO_ONE" target="REFLEXIVE_AND_TO_ONE" toMany="true">
+		<dbAttributePair source="REFLEXIVE_AND_TO_ONE_ID" target="PARENT_ID"/>
+	</dbRelationship>
+	<dbRelationship name="toHelper" source="REFLEXIVE_AND_TO_ONE" target="RELATIONSHIP_HELPER">
+		<dbAttributePair source="RELATIONSHIP_HELPER_ID" target="RELATIONSHIP_HELPER_ID"/>
+	</dbRelationship>
+	<dbRelationship name="toParent" source="REFLEXIVE_AND_TO_ONE" target="REFLEXIVE_AND_TO_ONE">
+		<dbAttributePair source="PARENT_ID" target="REFLEXIVE_AND_TO_ONE_ID"/>
+	</dbRelationship>
+	<dbRelationship name="fksOfDifferentType" source="RELATIONSHIP_HELPER" target="FK_OF_DIFFERENT_TYPE" toMany="true">
+		<dbAttributePair source="RELATIONSHIP_HELPER_ID" target="RELATIONSHIP_HELPER_FK"/>
+	</dbRelationship>
+	<dbRelationship name="meanigfulFKs" source="RELATIONSHIP_HELPER" target="MEANINGFUL_FK" toMany="true">
+		<dbAttributePair source="RELATIONSHIP_HELPER_ID" target="RELATIONSHIP_HELPER_ID"/>
+	</dbRelationship>
+	<dbRelationship name="reflexiveAndToOneArray" source="RELATIONSHIP_HELPER" target="REFLEXIVE_AND_TO_ONE" toMany="true">
+		<dbAttributePair source="RELATIONSHIP_HELPER_ID" target="RELATIONSHIP_HELPER_ID"/>
+	</dbRelationship>
+	<objRelationship name="e2" source="CYCLE_E1" target="CYCLE_E2" deleteRule="nullify" dbRelationshipPath="e2"/>
+	<objRelationship name="e2s" source="CYCLE_E1" target="CYCLE_E2" deleteRule="deny" dbRelationshipPath="e2s"/>
+	<objRelationship name="e1" source="CYCLE_E2" target="CYCLE_E1" deleteRule="nullify" dbRelationshipPath="e1"/>
+	<objRelationship name="e1s" source="CYCLE_E2" target="CYCLE_E1" deleteRule="deny" dbRelationshipPath="e1s"/>
+	<objRelationship name="relationshipHelper" source="FkOfDifferentType" target="RelationshipHelper" dbRelationshipPath="relationshipHelper"/>
+	<objRelationship name="toRelationshipHelper" source="MeaningfulFK" target="RelationshipHelper" dbRelationshipPath="toRelationshipHelper"/>
+	<objRelationship name="children" source="ReflexiveAndToOne" target="ReflexiveAndToOne" dbRelationshipPath="children"/>
+	<objRelationship name="toHelper" source="ReflexiveAndToOne" target="RelationshipHelper" dbRelationshipPath="toHelper"/>
+	<objRelationship name="toParent" source="ReflexiveAndToOne" target="ReflexiveAndToOne" dbRelationshipPath="toParent"/>
+	<objRelationship name="fksOfDifferentType" source="RelationshipHelper" target="FkOfDifferentType" dbRelationshipPath="fksOfDifferentType"/>
+	<objRelationship name="meanigfulFKs" source="RelationshipHelper" target="MeaningfulFK" dbRelationshipPath="meanigfulFKs"/>
+	<objRelationship name="reflexiveAndToOneArray" source="RelationshipHelper" target="ReflexiveAndToOne" dbRelationshipPath="reflexiveAndToOneArray"/>
+</dataMap>

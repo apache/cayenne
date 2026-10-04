@@ -18,25 +18,24 @@
   ~  specific language governing permissions and limitations
   ~  under the License.
   ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~-->
-<data-map xmlns="http://cayenne.apache.org/schema/14/modelMap"
+<dataMap xmlns="http://cayenne.apache.org/schema/14/modelMap"
 	 xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-	 xsi:schemaLocation="http://cayenne.apache.org/schema/14/modelMap https://cayenne.apache.org/schema/14/modelMap.xsd"
-	 project-version="14">
-	<db-entity name="CHILD" schema="SCHEMA_01">
-		<db-attribute name="PAR" type="INTEGER" length="10"/>
-		<db-attribute name="id" type="INTEGER" length="10"/>
-	</db-entity>
-	<db-entity name="PARENT" schema="SCHEMA_01">
-		<db-attribute name="id" type="INTEGER" isPrimaryKey="true" isMandatory="true" length="10"/>
-	</db-entity>
-	<obj-entity name="Child" className="Child" dbEntityName="CHILD"/>
-	<obj-entity name="Parent" className="Parent" dbEntityName="PARENT"/>
-	<db-relationship name="par" source="CHILD" target="PARENT">
-		<db-attribute-pair source="PAR" target="id"/>
-	</db-relationship>
-	<db-relationship name="children" source="PARENT" target="CHILD" toMany="true">
-		<db-attribute-pair source="id" target="PAR"/>
-	</db-relationship>
-	<obj-relationship name="par1" source="Child" target="Parent" deleteRule="Nullify" db-relationship-path="par"/>
-	<obj-relationship name="children" source="Parent" target="Child" deleteRule="Deny" db-relationship-path="children"/>
-</data-map>
+	 xsi:schemaLocation="http://cayenne.apache.org/schema/14/modelMap https://cayenne.apache.org/schema/14/modelMap.xsd">
+	<dbEntity name="CHILD" schema="SCHEMA_01">
+		<dbAttribute name="PAR" type="INTEGER" length="10"/>
+		<dbAttribute name="id" type="INTEGER" length="10"/>
+	</dbEntity>
+	<dbEntity name="PARENT" schema="SCHEMA_01">
+		<dbAttribute name="id" type="INTEGER" primaryKey="true" mandatory="true" length="10"/>
+	</dbEntity>
+	<objEntity name="Child" className="Child" dbEntityName="CHILD"/>
+	<objEntity name="Parent" className="Parent" dbEntityName="PARENT"/>
+	<dbRelationship name="par" source="CHILD" target="PARENT">
+		<dbAttributePair source="PAR" target="id"/>
+	</dbRelationship>
+	<dbRelationship name="children" source="PARENT" target="CHILD" toMany="true">
+		<dbAttributePair source="id" target="PAR"/>
+	</dbRelationship>
+	<objRelationship name="par1" source="Child" target="Parent" deleteRule="nullify" dbRelationshipPath="par"/>
+	<objRelationship name="children" source="Parent" target="Child" deleteRule="deny" dbRelationshipPath="children"/>
+</dataMap>

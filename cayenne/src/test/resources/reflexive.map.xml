@@ -1,39 +1,38 @@
 <?xml version="1.0" encoding="utf-8"?>
-<data-map xmlns="http://cayenne.apache.org/schema/14/modelMap"
+<dataMap xmlns="http://cayenne.apache.org/schema/14/modelMap"
 	 xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-	 xsi:schemaLocation="http://cayenne.apache.org/schema/14/modelMap https://cayenne.apache.org/schema/14/modelMap.xsd"
-	 project-version="14">
+	 xsi:schemaLocation="http://cayenne.apache.org/schema/14/modelMap https://cayenne.apache.org/schema/14/modelMap.xsd">
 	<property name="defaultPackage" value="org.apache.cayenne.testdo.reflexive"/>
-	<db-entity name="OTHER">
-		<db-attribute name="ID" type="INTEGER" isPrimaryKey="true" isMandatory="true"/>
-		<db-attribute name="NAME" type="VARCHAR" isMandatory="true" length="200"/>
-	</db-entity>
-	<db-entity name="REFLEXIVE">
-		<db-attribute name="ID" type="INTEGER" isPrimaryKey="true" isMandatory="true"/>
-		<db-attribute name="NAME" type="VARCHAR" isMandatory="true" length="200"/>
-		<db-attribute name="OTHER_ID" type="INTEGER"/>
-		<db-attribute name="PARENT_ID" type="INTEGER"/>
-	</db-entity>
-	<obj-entity name="Other" className="org.apache.cayenne.testdo.reflexive.Other" dbEntityName="OTHER">
-		<obj-attribute name="name" type="java.lang.String" db-attribute-path="NAME"/>
-	</obj-entity>
-	<obj-entity name="Reflexive" className="org.apache.cayenne.testdo.reflexive.Reflexive" dbEntityName="REFLEXIVE">
-		<obj-attribute name="name" type="java.lang.String" db-attribute-path="NAME"/>
-	</obj-entity>
-	<db-relationship name="reflexives" source="OTHER" target="REFLEXIVE" toMany="true">
-		<db-attribute-pair source="ID" target="OTHER_ID"/>
-	</db-relationship>
-	<db-relationship name="children" source="REFLEXIVE" target="REFLEXIVE" toMany="true">
-		<db-attribute-pair source="ID" target="PARENT_ID"/>
-	</db-relationship>
-	<db-relationship name="toOther" source="REFLEXIVE" target="OTHER">
-		<db-attribute-pair source="OTHER_ID" target="ID"/>
-	</db-relationship>
-	<db-relationship name="toParent" source="REFLEXIVE" target="REFLEXIVE">
-		<db-attribute-pair source="PARENT_ID" target="ID"/>
-	</db-relationship>
-	<obj-relationship name="reflexives" source="Other" target="Reflexive" db-relationship-path="reflexives"/>
-	<obj-relationship name="children" source="Reflexive" target="Reflexive" db-relationship-path="children"/>
-	<obj-relationship name="toOther" source="Reflexive" target="Other" db-relationship-path="toOther"/>
-	<obj-relationship name="toParent" source="Reflexive" target="Reflexive" db-relationship-path="toParent"/>
-</data-map>
+	<dbEntity name="OTHER">
+		<dbAttribute name="ID" type="INTEGER" primaryKey="true" mandatory="true"/>
+		<dbAttribute name="NAME" type="VARCHAR" mandatory="true" length="200"/>
+	</dbEntity>
+	<dbEntity name="REFLEXIVE">
+		<dbAttribute name="ID" type="INTEGER" primaryKey="true" mandatory="true"/>
+		<dbAttribute name="NAME" type="VARCHAR" mandatory="true" length="200"/>
+		<dbAttribute name="OTHER_ID" type="INTEGER"/>
+		<dbAttribute name="PARENT_ID" type="INTEGER"/>
+	</dbEntity>
+	<objEntity name="Other" className="org.apache.cayenne.testdo.reflexive.Other" dbEntityName="OTHER">
+		<objAttribute name="name" type="java.lang.String" dbAttributePath="NAME"/>
+	</objEntity>
+	<objEntity name="Reflexive" className="org.apache.cayenne.testdo.reflexive.Reflexive" dbEntityName="REFLEXIVE">
+		<objAttribute name="name" type="java.lang.String" dbAttributePath="NAME"/>
+	</objEntity>
+	<dbRelationship name="reflexives" source="OTHER" target="REFLEXIVE" toMany="true">
+		<dbAttributePair source="ID" target="OTHER_ID"/>
+	</dbRelationship>
+	<dbRelationship name="children" source="REFLEXIVE" target="REFLEXIVE" toMany="true">
+		<dbAttributePair source="ID" target="PARENT_ID"/>
+	</dbRelationship>
+	<dbRelationship name="toOther" source="REFLEXIVE" target="OTHER">
+		<dbAttributePair source="OTHER_ID" target="ID"/>
+	</dbRelationship>
+	<dbRelationship name="toParent" source="REFLEXIVE" target="REFLEXIVE">
+		<dbAttributePair source="PARENT_ID" target="ID"/>
+	</dbRelationship>
+	<objRelationship name="reflexives" source="Other" target="Reflexive" dbRelationshipPath="reflexives"/>
+	<objRelationship name="children" source="Reflexive" target="Reflexive" dbRelationshipPath="children"/>
+	<objRelationship name="toOther" source="Reflexive" target="Other" dbRelationshipPath="toOther"/>
+	<objRelationship name="toParent" source="Reflexive" target="Reflexive" dbRelationshipPath="toParent"/>
+</dataMap>

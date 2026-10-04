@@ -38,13 +38,13 @@ import java.util.function.Supplier;
  */
 public class QueryDescriptorHandler extends NamespaceAwareNestedTagHandler {
 
-    private static final String OBJECT_QUERY_TAG = "object-query";
-    private static final String SQL_QUERY_TAG = "sql-query";
-    private static final String PROCEDURE_QUERY_TAG = "procedure-query";
+    private static final String OBJECT_QUERY_TAG = "objectQuery";
+    private static final String SQL_QUERY_TAG = "sqlQuery";
+    private static final String PROCEDURE_QUERY_TAG = "procedureQuery";
     private static final String QUERY_SQL_TAG = "sql";
     private static final String QUERY_QL_TAG = "ql";
     private static final String QUERY_PREFETCH_TAG = "prefetch";
-    private static final String QUERY_CACHE_GROUP_TAG = "cache-group";
+    private static final String QUERY_CACHE_GROUP_TAG = "cacheGroup";
 
     private DataMap map;
 
@@ -80,7 +80,7 @@ public class QueryDescriptorHandler extends NamespaceAwareNestedTagHandler {
                 return true;
 
             case QUERY_SQL_TAG:
-                this.sqlKey = attributes.getValue("adapter-class");
+                this.sqlKey = attributes.getValue("adapterClass");
                 return true;
 
             case QUERY_QL_TAG:
@@ -132,31 +132,31 @@ public class QueryDescriptorHandler extends NamespaceAwareNestedTagHandler {
 
         queryBuilder.setQueryType(type);
 
-        String rootName = attributes.getValue("root-name");
+        String rootName = attributes.getValue("rootName");
         queryBuilder.setRoot(map, attributes.getValue("root"), rootName);
 
         // TODO: Andrus, 2/13/2006 'result-type' is only used in ProcedureQuery
         // and is deprecated in 1.2
-        String resultEntity = attributes.getValue("result-entity");
+        String resultEntity = attributes.getValue("resultEntity");
         if (!Util.isEmptyString(resultEntity)) {
             queryBuilder.setResultEntity(resultEntity);
         }
 
-        String cacheStrategy = attributes.getValue("cache-strategy");
+        String cacheStrategy = attributes.getValue("cacheStrategy");
         if (cacheStrategy != null) {
             queryBuilder.setCacheStrategy(QueryCacheStrategy.safeValueOf(cacheStrategy));
         }
 
-        String columnNameCapitalization = attributes.getValue("column-name-capitalization");
+        String columnNameCapitalization = attributes.getValue("columnNameCapitalization");
         if (columnNameCapitalization != null) {
             queryBuilder.setColumnNameCapitalization(CapsStrategy.valueOf(columnNameCapitalization.toUpperCase()));
         }
 
-        queryBuilder.setFetchingDataRows(Boolean.parseBoolean(attributes.getValue("data-rows")));
-        queryBuilder.setFetchLimit(intAttribute(attributes, "fetch-limit"));
-        queryBuilder.setFetchOffset(intAttribute(attributes, "fetch-offset"));
-        queryBuilder.setPageSize(intAttribute(attributes, "page-size"));
-        queryBuilder.setStatementFetchSize(intAttribute(attributes, "statement-fetch-size"));
+        queryBuilder.setFetchingDataRows(Boolean.parseBoolean(attributes.getValue("dataRows")));
+        queryBuilder.setFetchLimit(intAttribute(attributes, "fetchLimit"));
+        queryBuilder.setFetchOffset(intAttribute(attributes, "fetchOffset"));
+        queryBuilder.setPageSize(intAttribute(attributes, "pageSize"));
+        queryBuilder.setStatementFetchSize(intAttribute(attributes, "statementFetchSize"));
 
         changed = true;
     }

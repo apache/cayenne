@@ -17,9 +17,9 @@
   ~  under the License.
   ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~-->
 
-<db-entity name="ARTGROUP" catalog="catalog" schema="schema">
-    <db-attribute name="GROUP_ID" type="INTEGER" isPrimaryKey="true" isMandatory="true" isGenerated="true"/>
-    <db-attribute name="NAME" type="VARCHAR" isMandatory="true" length="100"/>
-    <db-attribute name="PARENT_GROUP_ID" type="BIT" scale="10"/>
+<dbEntity name="ARTGROUP" catalog="catalog" schema="schema">
+    <dbAttribute name="GROUP_ID" type="INTEGER" primaryKey="true" mandatory="true" generated="true"/>
+    <dbAttribute name="NAME" type="VARCHAR" mandatory="true" length="100"/>
+    <dbAttribute name="PARENT_GROUP_ID" type="BIT" scale="10"/>
     <qualifier><![CDATA[name = "test"]]></qualifier>
-</db-entity>
+</dbEntity>

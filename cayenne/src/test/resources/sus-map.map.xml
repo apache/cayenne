@@ -1,16 +1,15 @@
 <?xml version="1.0" encoding="utf-8"?>
-<data-map xmlns="http://cayenne.apache.org/schema/14/modelMap"
+<dataMap xmlns="http://cayenne.apache.org/schema/14/modelMap"
 	 xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-	 xsi:schemaLocation="http://cayenne.apache.org/schema/14/modelMap https://cayenne.apache.org/schema/14/modelMap.xsd"
-	 project-version="14">
-	<db-entity name="SUS1">
-		<db-attribute name="id" type="INTEGER" isPrimaryKey="true" isMandatory="true"/>
-		<db-attribute name="strNoMandatory" type="VARCHAR" length="200"/>
-		<db-attribute name="testBoolean" type="BOOLEAN" isMandatory="true"/>
-		<db-attribute name="testChar" type="CHAR" isMandatory="true" length="200"/>
-		<db-attribute name="testString" type="VARCHAR" isMandatory="true" length="200"/>
-	</db-entity>
-	<db-entity name="SUS2">
-		<db-attribute name="id" type="INTEGER" isPrimaryKey="true" isMandatory="true"/>
-	</db-entity>
-</data-map>
+	 xsi:schemaLocation="http://cayenne.apache.org/schema/14/modelMap https://cayenne.apache.org/schema/14/modelMap.xsd">
+	<dbEntity name="SUS1">
+		<dbAttribute name="id" type="INTEGER" primaryKey="true" mandatory="true"/>
+		<dbAttribute name="strNoMandatory" type="VARCHAR" length="200"/>
+		<dbAttribute name="testBoolean" type="BOOLEAN" mandatory="true"/>
+		<dbAttribute name="testChar" type="CHAR" mandatory="true" length="200"/>
+		<dbAttribute name="testString" type="VARCHAR" mandatory="true" length="200"/>
+	</dbEntity>
+	<dbEntity name="SUS2">
+		<dbAttribute name="id" type="INTEGER" primaryKey="true" mandatory="true"/>
+	</dbEntity>
+</dataMap>

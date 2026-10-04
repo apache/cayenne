@@ -32,7 +32,7 @@ import org.xml.sax.SAXException;
  */
 public class ObjRelationshipHandler extends NamespaceAwareNestedTagHandler {
 
-    public static final String OBJ_RELATIONSHIP_TAG = "obj-relationship";
+    public static final String OBJ_RELATIONSHIP_TAG = "objRelationship";
 
     @Deprecated
     public static final String DB_RELATIONSHIP_REF_TAG = "db-relationship-ref";
@@ -98,9 +98,9 @@ public class ObjRelationshipHandler extends NamespaceAwareNestedTagHandler {
         objRelationship.setTargetEntityName(attributes.getValue("target"));
         objRelationship.setDeleteRule(DeleteRule.deleteRuleForName(attributes.getValue("deleteRule")));
         objRelationship.setUsedForLocking(DataMapHandler.TRUE.equalsIgnoreCase(attributes.getValue("lock")));
-        objRelationship.setDeferredDbRelationshipPath((attributes.getValue("db-relationship-path")));
-        objRelationship.setCollectionType(attributes.getValue("collection-type"));
-        objRelationship.setMapKey(attributes.getValue("map-key"));
+        objRelationship.setDeferredDbRelationshipPath((attributes.getValue("dbRelationshipPath")));
+        objRelationship.setCollectionType(attributes.getValue("collectionType"));
+        objRelationship.setMapKey(attributes.getValue("mapKey"));
         source.addRelationship(objRelationship);
     }
 

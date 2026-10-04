@@ -22,6 +22,7 @@ package org.apache.cayenne.configuration.xml;
 import java.util.Objects;
 
 import org.apache.cayenne.CayenneRuntimeException;
+import org.apache.cayenne.configuration.upgrade.ConfigurationUpgrader;
 import org.apache.cayenne.configuration.upgrade.UpgradeHandler;
 import org.xml.sax.Attributes;
 import org.xml.sax.SAXException;
@@ -44,7 +45,7 @@ public abstract class VersionAwareHandler extends NamespaceAwareNestedTagHandler
     @Override
     protected boolean processElement(String namespaceURI, String localName, Attributes attributes) throws SAXException {
         if(rootTag.equals(localName)) {
-            validateVersion(attributes);
+            validateVersion(namespaceURI, attributes);
             validateNamespace(namespaceURI);
         } else {
             throw new CayenneRuntimeException("Illegal XML root tag: %s, expected: %s", localName, rootTag);
@@ -56,8 +57,8 @@ public abstract class VersionAwareHandler extends NamespaceAwareNestedTagHandler
      * Checks that the document has the current project version, throwing {@link UnsupportedVersionException}
      * otherwise, so that the loader can upgrade the document in memory.
      */
-    protected void validateVersion(Attributes attributes) {
-        String version = attributes.getValue("project-version");
+    protected void validateVersion(String namespaceURI, Attributes attributes) {
+        String version = ConfigurationUpgrader.projectVersion(namespaceURI, attributes);
         if (!UpgradeHandler.CURRENT_VERSION.equals(version)) {
             throw new UnsupportedVersionException(version != null ? version : UpgradeHandler.UNKNOWN_VERSION);
         }

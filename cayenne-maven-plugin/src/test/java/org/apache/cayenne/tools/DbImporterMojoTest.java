@@ -231,7 +231,7 @@ public class DbImporterMojoTest {
     public void unFlattensManyToMany(
             @InjectMojo(goal = "cdbimport", pom = "src/test/resources/org/apache/cayenne/tools/dbimport/testUnFlattensManyToMany-pom.xml")
             DbImporterMojo mojo) throws Exception {
-        // TODO: this should be "xYs" : <db-relationship name="xIes"
+        // TODO: this should be "xYs" : <dbRelationship name="xIes"
         test(mojo, "testUnFlattensManyToMany");
     }
 

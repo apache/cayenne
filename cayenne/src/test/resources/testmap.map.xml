@@ -1,301 +1,300 @@
 <?xml version="1.0" encoding="utf-8"?>
-<data-map xmlns="http://cayenne.apache.org/schema/14/modelMap"
+<dataMap xmlns="http://cayenne.apache.org/schema/14/modelMap"
 	 xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-	 xsi:schemaLocation="http://cayenne.apache.org/schema/14/modelMap https://cayenne.apache.org/schema/14/modelMap.xsd"
-	 project-version="14">
+	 xsi:schemaLocation="http://cayenne.apache.org/schema/14/modelMap https://cayenne.apache.org/schema/14/modelMap.xsd">
 	<property name="defaultPackage" value="org.apache.cayenne.testdo.testmap"/>
 	<property name="defaultSuperclass" value="org.apache.cayenne.GenericPersistentObject"/>
 	<procedure name="cayenne_tst_out_proc">
-		<procedure-parameter name="in_param" type="INTEGER" direction="in"/>
-		<procedure-parameter name="out_param" type="INTEGER" direction="out"/>
+		<procedureParameter name="in_param" type="INTEGER" direction="in"/>
+		<procedureParameter name="out_param" type="INTEGER" direction="out"/>
 	</procedure>
 	<procedure name="cayenne_tst_select_proc">
-		<procedure-parameter name="aName" type="VARCHAR" length="254" direction="in"/>
-		<procedure-parameter name="paintingPrice" type="INTEGER" direction="in"/>
+		<procedureParameter name="aName" type="VARCHAR" length="254" direction="in"/>
+		<procedureParameter name="paintingPrice" type="INTEGER" direction="in"/>
 	</procedure>
 	<procedure name="cayenne_tst_upd_proc">
-		<procedure-parameter name="paintingPrice" type="INTEGER" direction="in"/>
+		<procedureParameter name="paintingPrice" type="INTEGER" direction="in"/>
 	</procedure>
 	<procedure name="cayenne_tst_upd_proc2"/>
-	<db-entity name="ARTGROUP">
-		<db-attribute name="GROUP_ID" type="INTEGER" isPrimaryKey="true" isMandatory="true"/>
-		<db-attribute name="NAME" type="VARCHAR" isMandatory="true" length="100"/>
-		<db-attribute name="PARENT_GROUP_ID" type="INTEGER"/>
-	</db-entity>
-	<db-entity name="ARTIST">
-		<db-attribute name="ARTIST_ID" type="BIGINT" isPrimaryKey="true" isMandatory="true"/>
-		<db-attribute name="ARTIST_NAME" type="CHAR" isMandatory="true" length="254"/>
-		<db-attribute name="DATE_OF_BIRTH" type="DATE"/>
-	</db-entity>
-	<db-entity name="ARTIST_CT">
-		<db-attribute name="ARTIST_ID" type="INTEGER" isPrimaryKey="true" isMandatory="true"/>
-		<db-attribute name="ARTIST_NAME" type="CHAR" isMandatory="true" length="254"/>
-		<db-attribute name="DATE_OF_BIRTH" type="DATE"/>
-	</db-entity>
-	<db-entity name="ARTIST_EXHIBIT">
-		<db-attribute name="ARTIST_ID" type="BIGINT" isPrimaryKey="true" isMandatory="true"/>
-		<db-attribute name="EXHIBIT_ID" type="INTEGER" isPrimaryKey="true" isMandatory="true"/>
-	</db-entity>
-	<db-entity name="ARTIST_GROUP">
-		<db-attribute name="ARTIST_ID" type="BIGINT" isPrimaryKey="true" isMandatory="true"/>
-		<db-attribute name="GROUP_ID" type="INTEGER" isPrimaryKey="true" isMandatory="true"/>
-	</db-entity>
-	<db-entity name="AWARD">
-		<db-attribute name="ARTIST_ID" type="BIGINT" isMandatory="true"/>
-		<db-attribute name="AWARD_ID" type="BIGINT" isPrimaryKey="true" isMandatory="true"/>
-		<db-attribute name="NAME" type="VARCHAR" length="255"/>
-	</db-entity>
-	<db-entity name="EXHIBIT">
-		<db-attribute name="CLOSING_DATE" type="TIMESTAMP" isMandatory="true"/>
-		<db-attribute name="EXHIBIT_ID" type="INTEGER" isPrimaryKey="true" isMandatory="true"/>
-		<db-attribute name="GALLERY_ID" type="INTEGER" isMandatory="true"/>
-		<db-attribute name="OPENING_DATE" type="TIMESTAMP" isMandatory="true"/>
-	</db-entity>
-	<db-entity name="GALLERY">
-		<db-attribute name="GALLERY_ID" type="INTEGER" isPrimaryKey="true" isMandatory="true"/>
-		<db-attribute name="GALLERY_NAME" type="VARCHAR" isMandatory="true" length="100"/>
-	</db-entity>
-	<db-entity name="GENERATED_COLUMN">
-		<db-attribute name="GENERATED_COLUMN" type="INTEGER" isPrimaryKey="true" isGenerated="true" isMandatory="true"/>
-		<db-attribute name="NAME" type="VARCHAR" length="250"/>
-	</db-entity>
-	<db-entity name="NULL_TEST">
-		<db-attribute name="ID" type="INTEGER" isPrimaryKey="true" isGenerated="true" isMandatory="true"/>
-		<db-attribute name="NAME" type="VARCHAR" length="100"/>
-	</db-entity>
-	<db-entity name="PAINTING">
-		<db-attribute name="ARTIST_ID" type="BIGINT"/>
-		<db-attribute name="ESTIMATED_PRICE" type="DECIMAL" length="10" scale="2"/>
-		<db-attribute name="GALLERY_ID" type="INTEGER"/>
-		<db-attribute name="PAINTING_DESCRIPTION" type="VARCHAR" length="255"/>
-		<db-attribute name="PAINTING_ID" type="INTEGER" isPrimaryKey="true" isMandatory="true"/>
-		<db-attribute name="PAINTING_TITLE" type="VARCHAR" isMandatory="true" length="255"/>
-	</db-entity>
-	<db-entity name="PAINTING1">
-		<db-attribute name="ARTIST_ID" type="BIGINT"/>
-		<db-attribute name="ESTIMATED_PRICE" type="DECIMAL" length="10" scale="2"/>
-		<db-attribute name="GALLERY_ID" type="INTEGER"/>
-		<db-attribute name="PAINTING_ID" type="INTEGER" isPrimaryKey="true" isMandatory="true"/>
-		<db-attribute name="PAINTING_TITLE" type="VARCHAR" isMandatory="true" length="255"/>
-	</db-entity>
-	<db-entity name="PAINTING_INFO">
-		<db-attribute name="IMAGE_BLOB" type="LONGVARBINARY"/>
-		<db-attribute name="PAINTING_ID" type="INTEGER" isPrimaryKey="true" isMandatory="true"/>
-		<db-attribute name="TEXT_REVIEW" type="LONGVARCHAR"/>
-	</db-entity>
-	<obj-entity name="ArtGroup" className="org.apache.cayenne.testdo.testmap.ArtGroup" dbEntityName="ARTGROUP">
-		<obj-attribute name="name" type="java.lang.String" db-attribute-path="NAME"/>
-	</obj-entity>
-	<obj-entity name="Artist" className="org.apache.cayenne.testdo.testmap.Artist" dbEntityName="ARTIST">
-		<obj-attribute name="artistName" type="java.lang.String" db-attribute-path="ARTIST_NAME"/>
-		<obj-attribute name="dateOfBirth" type="java.util.Date" db-attribute-path="DATE_OF_BIRTH"/>
+	<dbEntity name="ARTGROUP">
+		<dbAttribute name="GROUP_ID" type="INTEGER" primaryKey="true" mandatory="true"/>
+		<dbAttribute name="NAME" type="VARCHAR" mandatory="true" length="100"/>
+		<dbAttribute name="PARENT_GROUP_ID" type="INTEGER"/>
+	</dbEntity>
+	<dbEntity name="ARTIST">
+		<dbAttribute name="ARTIST_ID" type="BIGINT" primaryKey="true" mandatory="true"/>
+		<dbAttribute name="ARTIST_NAME" type="CHAR" mandatory="true" length="254"/>
+		<dbAttribute name="DATE_OF_BIRTH" type="DATE"/>
+	</dbEntity>
+	<dbEntity name="ARTIST_CT">
+		<dbAttribute name="ARTIST_ID" type="INTEGER" primaryKey="true" mandatory="true"/>
+		<dbAttribute name="ARTIST_NAME" type="CHAR" mandatory="true" length="254"/>
+		<dbAttribute name="DATE_OF_BIRTH" type="DATE"/>
+	</dbEntity>
+	<dbEntity name="ARTIST_EXHIBIT">
+		<dbAttribute name="ARTIST_ID" type="BIGINT" primaryKey="true" mandatory="true"/>
+		<dbAttribute name="EXHIBIT_ID" type="INTEGER" primaryKey="true" mandatory="true"/>
+	</dbEntity>
+	<dbEntity name="ARTIST_GROUP">
+		<dbAttribute name="ARTIST_ID" type="BIGINT" primaryKey="true" mandatory="true"/>
+		<dbAttribute name="GROUP_ID" type="INTEGER" primaryKey="true" mandatory="true"/>
+	</dbEntity>
+	<dbEntity name="AWARD">
+		<dbAttribute name="ARTIST_ID" type="BIGINT" mandatory="true"/>
+		<dbAttribute name="AWARD_ID" type="BIGINT" primaryKey="true" mandatory="true"/>
+		<dbAttribute name="NAME" type="VARCHAR" length="255"/>
+	</dbEntity>
+	<dbEntity name="EXHIBIT">
+		<dbAttribute name="CLOSING_DATE" type="TIMESTAMP" mandatory="true"/>
+		<dbAttribute name="EXHIBIT_ID" type="INTEGER" primaryKey="true" mandatory="true"/>
+		<dbAttribute name="GALLERY_ID" type="INTEGER" mandatory="true"/>
+		<dbAttribute name="OPENING_DATE" type="TIMESTAMP" mandatory="true"/>
+	</dbEntity>
+	<dbEntity name="GALLERY">
+		<dbAttribute name="GALLERY_ID" type="INTEGER" primaryKey="true" mandatory="true"/>
+		<dbAttribute name="GALLERY_NAME" type="VARCHAR" mandatory="true" length="100"/>
+	</dbEntity>
+	<dbEntity name="GENERATED_COLUMN">
+		<dbAttribute name="GENERATED_COLUMN" type="INTEGER" primaryKey="true" generated="true" mandatory="true"/>
+		<dbAttribute name="NAME" type="VARCHAR" length="250"/>
+	</dbEntity>
+	<dbEntity name="NULL_TEST">
+		<dbAttribute name="ID" type="INTEGER" primaryKey="true" generated="true" mandatory="true"/>
+		<dbAttribute name="NAME" type="VARCHAR" length="100"/>
+	</dbEntity>
+	<dbEntity name="PAINTING">
+		<dbAttribute name="ARTIST_ID" type="BIGINT"/>
+		<dbAttribute name="ESTIMATED_PRICE" type="DECIMAL" length="10" scale="2"/>
+		<dbAttribute name="GALLERY_ID" type="INTEGER"/>
+		<dbAttribute name="PAINTING_DESCRIPTION" type="VARCHAR" length="255"/>
+		<dbAttribute name="PAINTING_ID" type="INTEGER" primaryKey="true" mandatory="true"/>
+		<dbAttribute name="PAINTING_TITLE" type="VARCHAR" mandatory="true" length="255"/>
+	</dbEntity>
+	<dbEntity name="PAINTING1">
+		<dbAttribute name="ARTIST_ID" type="BIGINT"/>
+		<dbAttribute name="ESTIMATED_PRICE" type="DECIMAL" length="10" scale="2"/>
+		<dbAttribute name="GALLERY_ID" type="INTEGER"/>
+		<dbAttribute name="PAINTING_ID" type="INTEGER" primaryKey="true" mandatory="true"/>
+		<dbAttribute name="PAINTING_TITLE" type="VARCHAR" mandatory="true" length="255"/>
+	</dbEntity>
+	<dbEntity name="PAINTING_INFO">
+		<dbAttribute name="IMAGE_BLOB" type="LONGVARBINARY"/>
+		<dbAttribute name="PAINTING_ID" type="INTEGER" primaryKey="true" mandatory="true"/>
+		<dbAttribute name="TEXT_REVIEW" type="LONGVARCHAR"/>
+	</dbEntity>
+	<objEntity name="ArtGroup" className="org.apache.cayenne.testdo.testmap.ArtGroup" dbEntityName="ARTGROUP">
+		<objAttribute name="name" type="java.lang.String" dbAttributePath="NAME"/>
+	</objEntity>
+	<objEntity name="Artist" className="org.apache.cayenne.testdo.testmap.Artist" dbEntityName="ARTIST">
+		<objAttribute name="artistName" type="java.lang.String" dbAttributePath="ARTIST_NAME"/>
+		<objAttribute name="dateOfBirth" type="java.util.Date" dbAttributePath="DATE_OF_BIRTH"/>
 		<info:property xmlns:info="http://cayenne.apache.org/schema/14/info" name="comment" value="Example of a comment"/>
-	</obj-entity>
-	<obj-entity name="ArtistCallback" className="org.apache.cayenne.testdo.testmap.ArtistCallback" dbEntityName="ARTIST_CT">
-		<obj-attribute name="artistName" type="java.lang.String"/>
-		<obj-attribute name="dateOfBirth" type="java.util.Date"/>
-		<post-add method-name="prePersistEntityObjEntity"/>
-		<post-persist method-name="postPersistEntityObjEntity"/>
-		<pre-update method-name="preUpdateEntityObjEntity"/>
-		<post-update method-name="postUpdateEntityObjEntity"/>
-		<pre-remove method-name="preRemoveEntityObjEntity"/>
-		<post-remove method-name="postRemoveEntityObjEntity"/>
-		<post-load method-name="postLoadEntityObjEntity"/>
-	</obj-entity>
-	<obj-entity name="ArtistExhibit" className="org.apache.cayenne.testdo.testmap.ArtistExhibit" dbEntityName="ARTIST_EXHIBIT"/>
-	<obj-entity name="Award" className="org.apache.cayenne.testdo.testmap.Award" dbEntityName="AWARD" superClassName="org.apache.cayenne.GenericPersistentObject">
-		<obj-attribute name="name" type="java.lang.String" db-attribute-path="NAME"/>
-	</obj-entity>
-	<obj-entity name="CompoundPainting" className="org.apache.cayenne.testdo.testmap.CompoundPainting" dbEntityName="PAINTING">
-		<obj-attribute name="artistName" type="java.lang.String" db-attribute-path="toArtist.ARTIST_NAME"/>
-		<obj-attribute name="estimatedPrice" type="java.math.BigDecimal" db-attribute-path="ESTIMATED_PRICE"/>
-		<obj-attribute name="galleryName" type="java.lang.String" db-attribute-path="toGallery.GALLERY_NAME"/>
-		<obj-attribute name="paintingTitle" type="java.lang.String" db-attribute-path="PAINTING_TITLE"/>
-		<obj-attribute name="textReview" type="java.lang.String" db-attribute-path="toPaintingInfo.TEXT_REVIEW"/>
-	</obj-entity>
-	<obj-entity name="CompoundPaintingLongNames" className="org.apache.cayenne.testdo.testmap.CompoundPaintingLongNames" dbEntityName="PAINTING">
-		<obj-attribute name="artistLongName" type="java.lang.String" db-attribute-path="toArtist.ARTIST_NAME"/>
-		<obj-attribute name="estimatedPrice" type="java.math.BigDecimal" db-attribute-path="ESTIMATED_PRICE"/>
-		<obj-attribute name="galleryLongName" type="java.lang.String" db-attribute-path="toGallery.GALLERY_NAME"/>
-		<obj-attribute name="paintingDescription" type="java.lang.String" db-attribute-path="PAINTING_DESCRIPTION"/>
-		<obj-attribute name="paintingTitle" type="java.lang.String" db-attribute-path="PAINTING_TITLE"/>
-		<obj-attribute name="textLongReview" type="java.lang.String" db-attribute-path="toPaintingInfo.TEXT_REVIEW"/>
-	</obj-entity>
-	<obj-entity name="Exhibit" className="org.apache.cayenne.testdo.testmap.Exhibit" dbEntityName="EXHIBIT">
-		<obj-attribute name="closingDate" type="java.util.Date" db-attribute-path="CLOSING_DATE"/>
-		<obj-attribute name="openingDate" type="java.util.Date" db-attribute-path="OPENING_DATE"/>
-	</obj-entity>
-	<obj-entity name="Gallery" className="org.apache.cayenne.testdo.testmap.Gallery" dbEntityName="GALLERY">
-		<obj-attribute name="galleryName" type="java.lang.String" db-attribute-path="GALLERY_NAME"/>
-	</obj-entity>
-	<obj-entity name="MeaningfulGeneratedColumnTestEntity" className="org.apache.cayenne.testdo.testmap.MeaningfulGeneratedColumnTestEntity" dbEntityName="GENERATED_COLUMN">
-		<obj-attribute name="generatedColumn" type="java.lang.Integer" db-attribute-path="GENERATED_COLUMN"/>
-		<obj-attribute name="name" type="java.lang.String" db-attribute-path="NAME"/>
-	</obj-entity>
-	<obj-entity name="NullTestEntity" className="org.apache.cayenne.testdo.testmap.NullTestEntity" dbEntityName="NULL_TEST">
-		<obj-attribute name="name" type="java.lang.String" db-attribute-path="NAME"/>
-	</obj-entity>
-	<obj-entity name="Painting" className="org.apache.cayenne.testdo.testmap.Painting" dbEntityName="PAINTING" superClassName="org.apache.cayenne.testdo.testmap.ArtPersistentObject">
-		<obj-attribute name="estimatedPrice" type="java.math.BigDecimal" db-attribute-path="ESTIMATED_PRICE"/>
-		<obj-attribute name="paintingDescription" type="java.lang.String" db-attribute-path="PAINTING_DESCRIPTION"/>
-		<obj-attribute name="paintingTitle" type="java.lang.String" db-attribute-path="PAINTING_TITLE"/>
-	</obj-entity>
-	<obj-entity name="Painting1" className="org.apache.cayenne.testdo.testmap.Painting1" dbEntityName="PAINTING1">
-		<obj-attribute name="estimatedPrice" type="java.math.BigDecimal" db-attribute-path="ESTIMATED_PRICE"/>
-		<obj-attribute name="paintingTitle" type="java.lang.String" db-attribute-path="PAINTING_TITLE"/>
-	</obj-entity>
-	<obj-entity name="PaintingInfo" className="org.apache.cayenne.testdo.testmap.PaintingInfo" dbEntityName="PAINTING_INFO">
-		<obj-attribute name="imageBlob" type="byte[]" db-attribute-path="IMAGE_BLOB"/>
-		<obj-attribute name="textReview" type="java.lang.String" db-attribute-path="TEXT_REVIEW"/>
-	</obj-entity>
-	<obj-entity name="ROArtist" className="org.apache.cayenne.testdo.testmap.ROArtist" readOnly="true" dbEntityName="ARTIST">
-		<obj-attribute name="artistName" type="java.lang.String" db-attribute-path="ARTIST_NAME"/>
-		<obj-attribute name="dateOfBirth" type="java.sql.Date" db-attribute-path="DATE_OF_BIRTH"/>
-	</obj-entity>
-	<obj-entity name="ROPainting" className="org.apache.cayenne.testdo.testmap.ROPainting" readOnly="true" dbEntityName="PAINTING">
-		<obj-attribute name="estimatedPrice" type="java.math.BigDecimal" db-attribute-path="ESTIMATED_PRICE"/>
-		<obj-attribute name="paintingTitle" type="java.lang.String" db-attribute-path="PAINTING_TITLE"/>
-	</obj-entity>
-	<obj-entity name="RWCompoundPainting" className="org.apache.cayenne.testdo.testmap.RWCompoundPainting" dbEntityName="PAINTING">
-		<obj-attribute name="estimatedPrice" type="java.math.BigDecimal" db-attribute-path="ESTIMATED_PRICE"/>
-		<obj-attribute name="paintingTitle" type="java.lang.String" db-attribute-path="PAINTING_TITLE"/>
-		<obj-attribute name="textReview" type="java.lang.String" db-attribute-path="toPaintingInfo.TEXT_REVIEW"/>
-	</obj-entity>
-	<obj-entity name="SubPainting" className="org.apache.cayenne.testdo.testmap.SubPainting" dbEntityName="PAINTING">
-		<obj-attribute name="paintingTitle" type="java.lang.String" db-attribute-path="PAINTING_TITLE"/>
-	</obj-entity>
-	<db-relationship name="artistGroupArray" source="ARTGROUP" target="ARTIST_GROUP" toDependentPK="true" toMany="true">
-		<db-attribute-pair source="GROUP_ID" target="GROUP_ID"/>
-	</db-relationship>
-	<db-relationship name="toChildGroups" source="ARTGROUP" target="ARTGROUP" toMany="true">
-		<db-attribute-pair source="GROUP_ID" target="PARENT_GROUP_ID"/>
-	</db-relationship>
-	<db-relationship name="toParentGroup" source="ARTGROUP" target="ARTGROUP">
-		<db-attribute-pair source="PARENT_GROUP_ID" target="GROUP_ID"/>
-	</db-relationship>
-	<db-relationship name="artistAwardArray" source="ARTIST" target="AWARD" toMany="true">
-		<db-attribute-pair source="ARTIST_ID" target="ARTIST_ID"/>
-	</db-relationship>
-	<db-relationship name="artistExhibitArray" source="ARTIST" target="ARTIST_EXHIBIT" toDependentPK="true" toMany="true">
-		<db-attribute-pair source="ARTIST_ID" target="ARTIST_ID"/>
-	</db-relationship>
-	<db-relationship name="artistGroupArray" source="ARTIST" target="ARTIST_GROUP" toDependentPK="true" toMany="true">
-		<db-attribute-pair source="ARTIST_ID" target="ARTIST_ID"/>
-	</db-relationship>
-	<db-relationship name="paintingArray" source="ARTIST" target="PAINTING" toMany="true">
-		<db-attribute-pair source="ARTIST_ID" target="ARTIST_ID"/>
-	</db-relationship>
-	<db-relationship name="toArtist" source="ARTIST_EXHIBIT" target="ARTIST">
-		<db-attribute-pair source="ARTIST_ID" target="ARTIST_ID"/>
-	</db-relationship>
-	<db-relationship name="toExhibit" source="ARTIST_EXHIBIT" target="EXHIBIT">
-		<db-attribute-pair source="EXHIBIT_ID" target="EXHIBIT_ID"/>
-	</db-relationship>
-	<db-relationship name="toArtist" source="ARTIST_GROUP" target="ARTIST">
-		<db-attribute-pair source="ARTIST_ID" target="ARTIST_ID"/>
-	</db-relationship>
-	<db-relationship name="toGroup" source="ARTIST_GROUP" target="ARTGROUP">
-		<db-attribute-pair source="GROUP_ID" target="GROUP_ID"/>
-	</db-relationship>
-	<db-relationship name="toArtist" source="AWARD" target="ARTIST">
-		<db-attribute-pair source="ARTIST_ID" target="ARTIST_ID"/>
-	</db-relationship>
-	<db-relationship name="artistExhibitArray" source="EXHIBIT" target="ARTIST_EXHIBIT" toDependentPK="true" toMany="true">
-		<db-attribute-pair source="EXHIBIT_ID" target="EXHIBIT_ID"/>
-	</db-relationship>
-	<db-relationship name="toGallery" source="EXHIBIT" target="GALLERY">
-		<db-attribute-pair source="GALLERY_ID" target="GALLERY_ID"/>
-	</db-relationship>
-	<db-relationship name="exhibitArray" source="GALLERY" target="EXHIBIT" toMany="true">
-		<db-attribute-pair source="GALLERY_ID" target="GALLERY_ID"/>
-	</db-relationship>
-	<db-relationship name="paintingArray" source="GALLERY" target="PAINTING" toMany="true">
-		<db-attribute-pair source="GALLERY_ID" target="GALLERY_ID"/>
-	</db-relationship>
-	<db-relationship name="toArtist" source="PAINTING" target="ARTIST">
-		<db-attribute-pair source="ARTIST_ID" target="ARTIST_ID"/>
-	</db-relationship>
-	<db-relationship name="toGallery" source="PAINTING" target="GALLERY">
-		<db-attribute-pair source="GALLERY_ID" target="GALLERY_ID"/>
-	</db-relationship>
-	<db-relationship name="toPaintingInfo" source="PAINTING" target="PAINTING_INFO" toDependentPK="true">
-		<db-attribute-pair source="PAINTING_ID" target="PAINTING_ID"/>
-	</db-relationship>
-	<db-relationship name="toArtist" source="PAINTING1" target="ARTIST">
-		<db-attribute-pair source="ARTIST_ID" target="ARTIST_ID"/>
-	</db-relationship>
-	<db-relationship name="painting" source="PAINTING_INFO" target="PAINTING">
-		<db-attribute-pair source="PAINTING_ID" target="PAINTING_ID"/>
-	</db-relationship>
-	<obj-relationship name="artistArray" source="ArtGroup" target="Artist" deleteRule="Nullify" db-relationship-path="artistGroupArray.toArtist"/>
-	<obj-relationship name="childGroupsArray" source="ArtGroup" target="ArtGroup" deleteRule="Nullify" db-relationship-path="toChildGroups"/>
-	<obj-relationship name="toParentGroup" source="ArtGroup" target="ArtGroup" deleteRule="Nullify" db-relationship-path="toParentGroup"/>
-	<obj-relationship name="artistExhibitArray" source="Artist" target="ArtistExhibit" deleteRule="Cascade" db-relationship-path="artistExhibitArray"/>
-	<obj-relationship name="awardArray" source="Artist" target="Award" deleteRule="Deny" db-relationship-path="artistAwardArray"/>
-	<obj-relationship name="groupArray" source="Artist" target="ArtGroup" deleteRule="Cascade" db-relationship-path="artistGroupArray.toGroup"/>
-	<obj-relationship name="paintingArray" source="Artist" target="Painting" deleteRule="Cascade" db-relationship-path="paintingArray"/>
-	<obj-relationship name="toArtist" source="ArtistExhibit" target="Artist" deleteRule="Nullify" db-relationship-path="toArtist"/>
-	<obj-relationship name="toExhibit" source="ArtistExhibit" target="Exhibit" deleteRule="Nullify" db-relationship-path="toExhibit"/>
-	<obj-relationship name="toArtist" source="Award" target="Artist" deleteRule="Nullify" db-relationship-path="toArtist"/>
-	<obj-relationship name="toArtist" source="CompoundPainting" target="Artist" deleteRule="Nullify" db-relationship-path="toArtist"/>
-	<obj-relationship name="toGallery" source="CompoundPainting" target="Gallery" deleteRule="Nullify" db-relationship-path="toGallery"/>
-	<obj-relationship name="toPaintingInfo" source="CompoundPainting" target="PaintingInfo" deleteRule="Cascade" db-relationship-path="toPaintingInfo"/>
-	<obj-relationship name="toArtist" source="CompoundPaintingLongNames" target="Artist" deleteRule="Nullify" db-relationship-path="toArtist"/>
-	<obj-relationship name="toArtist1" source="CompoundPaintingLongNames" target="ROArtist" deleteRule="Nullify" db-relationship-path="toArtist"/>
-	<obj-relationship name="toGallery" source="CompoundPaintingLongNames" target="Gallery" deleteRule="Nullify" db-relationship-path="toGallery"/>
-	<obj-relationship name="toPaintingInfo" source="CompoundPaintingLongNames" target="PaintingInfo" deleteRule="Nullify" db-relationship-path="toPaintingInfo"/>
-	<obj-relationship name="artistExhibitArray" source="Exhibit" target="ArtistExhibit" deleteRule="Cascade" db-relationship-path="artistExhibitArray"/>
-	<obj-relationship name="toGallery" source="Exhibit" target="Gallery" deleteRule="Nullify" db-relationship-path="toGallery"/>
-	<obj-relationship name="exhibitArray" source="Gallery" target="Exhibit" deleteRule="Cascade" db-relationship-path="exhibitArray"/>
-	<obj-relationship name="paintingArray" source="Gallery" target="Painting" deleteRule="Deny" db-relationship-path="paintingArray"/>
-	<obj-relationship name="toArtist" source="Painting" target="Artist" deleteRule="Nullify" db-relationship-path="toArtist"/>
-	<obj-relationship name="toGallery" source="Painting" target="Gallery" deleteRule="Nullify" db-relationship-path="toGallery"/>
-	<obj-relationship name="toPaintingInfo" source="Painting" target="PaintingInfo" deleteRule="Cascade" db-relationship-path="toPaintingInfo"/>
-	<obj-relationship name="toArtist" source="Painting1" target="Artist" deleteRule="Nullify" db-relationship-path="toArtist"/>
-	<obj-relationship name="painting" source="PaintingInfo" target="Painting" deleteRule="Nullify" db-relationship-path="painting"/>
-	<obj-relationship name="paintingArray" source="ROArtist" target="Painting" deleteRule="Deny" db-relationship-path="paintingArray"/>
-	<obj-relationship name="toArtist" source="ROPainting" target="Artist" deleteRule="Nullify" db-relationship-path="toArtist"/>
-	<sql-query name="NonSelectingQuery" root="data-map" root-name="testmap" column-name-capitalization="UPPER">
+	</objEntity>
+	<objEntity name="ArtistCallback" className="org.apache.cayenne.testdo.testmap.ArtistCallback" dbEntityName="ARTIST_CT">
+		<objAttribute name="artistName" type="java.lang.String"/>
+		<objAttribute name="dateOfBirth" type="java.util.Date"/>
+		<postAdd methodName="prePersistEntityObjEntity"/>
+		<postPersist methodName="postPersistEntityObjEntity"/>
+		<preUpdate methodName="preUpdateEntityObjEntity"/>
+		<postUpdate methodName="postUpdateEntityObjEntity"/>
+		<preRemove methodName="preRemoveEntityObjEntity"/>
+		<postRemove methodName="postRemoveEntityObjEntity"/>
+		<postLoad methodName="postLoadEntityObjEntity"/>
+	</objEntity>
+	<objEntity name="ArtistExhibit" className="org.apache.cayenne.testdo.testmap.ArtistExhibit" dbEntityName="ARTIST_EXHIBIT"/>
+	<objEntity name="Award" className="org.apache.cayenne.testdo.testmap.Award" dbEntityName="AWARD" superClassName="org.apache.cayenne.GenericPersistentObject">
+		<objAttribute name="name" type="java.lang.String" dbAttributePath="NAME"/>
+	</objEntity>
+	<objEntity name="CompoundPainting" className="org.apache.cayenne.testdo.testmap.CompoundPainting" dbEntityName="PAINTING">
+		<objAttribute name="artistName" type="java.lang.String" dbAttributePath="toArtist.ARTIST_NAME"/>
+		<objAttribute name="estimatedPrice" type="java.math.BigDecimal" dbAttributePath="ESTIMATED_PRICE"/>
+		<objAttribute name="galleryName" type="java.lang.String" dbAttributePath="toGallery.GALLERY_NAME"/>
+		<objAttribute name="paintingTitle" type="java.lang.String" dbAttributePath="PAINTING_TITLE"/>
+		<objAttribute name="textReview" type="java.lang.String" dbAttributePath="toPaintingInfo.TEXT_REVIEW"/>
+	</objEntity>
+	<objEntity name="CompoundPaintingLongNames" className="org.apache.cayenne.testdo.testmap.CompoundPaintingLongNames" dbEntityName="PAINTING">
+		<objAttribute name="artistLongName" type="java.lang.String" dbAttributePath="toArtist.ARTIST_NAME"/>
+		<objAttribute name="estimatedPrice" type="java.math.BigDecimal" dbAttributePath="ESTIMATED_PRICE"/>
+		<objAttribute name="galleryLongName" type="java.lang.String" dbAttributePath="toGallery.GALLERY_NAME"/>
+		<objAttribute name="paintingDescription" type="java.lang.String" dbAttributePath="PAINTING_DESCRIPTION"/>
+		<objAttribute name="paintingTitle" type="java.lang.String" dbAttributePath="PAINTING_TITLE"/>
+		<objAttribute name="textLongReview" type="java.lang.String" dbAttributePath="toPaintingInfo.TEXT_REVIEW"/>
+	</objEntity>
+	<objEntity name="Exhibit" className="org.apache.cayenne.testdo.testmap.Exhibit" dbEntityName="EXHIBIT">
+		<objAttribute name="closingDate" type="java.util.Date" dbAttributePath="CLOSING_DATE"/>
+		<objAttribute name="openingDate" type="java.util.Date" dbAttributePath="OPENING_DATE"/>
+	</objEntity>
+	<objEntity name="Gallery" className="org.apache.cayenne.testdo.testmap.Gallery" dbEntityName="GALLERY">
+		<objAttribute name="galleryName" type="java.lang.String" dbAttributePath="GALLERY_NAME"/>
+	</objEntity>
+	<objEntity name="MeaningfulGeneratedColumnTestEntity" className="org.apache.cayenne.testdo.testmap.MeaningfulGeneratedColumnTestEntity" dbEntityName="GENERATED_COLUMN">
+		<objAttribute name="generatedColumn" type="java.lang.Integer" dbAttributePath="GENERATED_COLUMN"/>
+		<objAttribute name="name" type="java.lang.String" dbAttributePath="NAME"/>
+	</objEntity>
+	<objEntity name="NullTestEntity" className="org.apache.cayenne.testdo.testmap.NullTestEntity" dbEntityName="NULL_TEST">
+		<objAttribute name="name" type="java.lang.String" dbAttributePath="NAME"/>
+	</objEntity>
+	<objEntity name="Painting" className="org.apache.cayenne.testdo.testmap.Painting" dbEntityName="PAINTING" superClassName="org.apache.cayenne.testdo.testmap.ArtPersistentObject">
+		<objAttribute name="estimatedPrice" type="java.math.BigDecimal" dbAttributePath="ESTIMATED_PRICE"/>
+		<objAttribute name="paintingDescription" type="java.lang.String" dbAttributePath="PAINTING_DESCRIPTION"/>
+		<objAttribute name="paintingTitle" type="java.lang.String" dbAttributePath="PAINTING_TITLE"/>
+	</objEntity>
+	<objEntity name="Painting1" className="org.apache.cayenne.testdo.testmap.Painting1" dbEntityName="PAINTING1">
+		<objAttribute name="estimatedPrice" type="java.math.BigDecimal" dbAttributePath="ESTIMATED_PRICE"/>
+		<objAttribute name="paintingTitle" type="java.lang.String" dbAttributePath="PAINTING_TITLE"/>
+	</objEntity>
+	<objEntity name="PaintingInfo" className="org.apache.cayenne.testdo.testmap.PaintingInfo" dbEntityName="PAINTING_INFO">
+		<objAttribute name="imageBlob" type="byte[]" dbAttributePath="IMAGE_BLOB"/>
+		<objAttribute name="textReview" type="java.lang.String" dbAttributePath="TEXT_REVIEW"/>
+	</objEntity>
+	<objEntity name="ROArtist" className="org.apache.cayenne.testdo.testmap.ROArtist" readOnly="true" dbEntityName="ARTIST">
+		<objAttribute name="artistName" type="java.lang.String" dbAttributePath="ARTIST_NAME"/>
+		<objAttribute name="dateOfBirth" type="java.sql.Date" dbAttributePath="DATE_OF_BIRTH"/>
+	</objEntity>
+	<objEntity name="ROPainting" className="org.apache.cayenne.testdo.testmap.ROPainting" readOnly="true" dbEntityName="PAINTING">
+		<objAttribute name="estimatedPrice" type="java.math.BigDecimal" dbAttributePath="ESTIMATED_PRICE"/>
+		<objAttribute name="paintingTitle" type="java.lang.String" dbAttributePath="PAINTING_TITLE"/>
+	</objEntity>
+	<objEntity name="RWCompoundPainting" className="org.apache.cayenne.testdo.testmap.RWCompoundPainting" dbEntityName="PAINTING">
+		<objAttribute name="estimatedPrice" type="java.math.BigDecimal" dbAttributePath="ESTIMATED_PRICE"/>
+		<objAttribute name="paintingTitle" type="java.lang.String" dbAttributePath="PAINTING_TITLE"/>
+		<objAttribute name="textReview" type="java.lang.String" dbAttributePath="toPaintingInfo.TEXT_REVIEW"/>
+	</objEntity>
+	<objEntity name="SubPainting" className="org.apache.cayenne.testdo.testmap.SubPainting" dbEntityName="PAINTING">
+		<objAttribute name="paintingTitle" type="java.lang.String" dbAttributePath="PAINTING_TITLE"/>
+	</objEntity>
+	<dbRelationship name="artistGroupArray" source="ARTGROUP" target="ARTIST_GROUP" toDependentPK="true" toMany="true">
+		<dbAttributePair source="GROUP_ID" target="GROUP_ID"/>
+	</dbRelationship>
+	<dbRelationship name="toChildGroups" source="ARTGROUP" target="ARTGROUP" toMany="true">
+		<dbAttributePair source="GROUP_ID" target="PARENT_GROUP_ID"/>
+	</dbRelationship>
+	<dbRelationship name="toParentGroup" source="ARTGROUP" target="ARTGROUP">
+		<dbAttributePair source="PARENT_GROUP_ID" target="GROUP_ID"/>
+	</dbRelationship>
+	<dbRelationship name="artistAwardArray" source="ARTIST" target="AWARD" toMany="true">
+		<dbAttributePair source="ARTIST_ID" target="ARTIST_ID"/>
+	</dbRelationship>
+	<dbRelationship name="artistExhibitArray" source="ARTIST" target="ARTIST_EXHIBIT" toDependentPK="true" toMany="true">
+		<dbAttributePair source="ARTIST_ID" target="ARTIST_ID"/>
+	</dbRelationship>
+	<dbRelationship name="artistGroupArray" source="ARTIST" target="ARTIST_GROUP" toDependentPK="true" toMany="true">
+		<dbAttributePair source="ARTIST_ID" target="ARTIST_ID"/>
+	</dbRelationship>
+	<dbRelationship name="paintingArray" source="ARTIST" target="PAINTING" toMany="true">
+		<dbAttributePair source="ARTIST_ID" target="ARTIST_ID"/>
+	</dbRelationship>
+	<dbRelationship name="toArtist" source="ARTIST_EXHIBIT" target="ARTIST">
+		<dbAttributePair source="ARTIST_ID" target="ARTIST_ID"/>
+	</dbRelationship>
+	<dbRelationship name="toExhibit" source="ARTIST_EXHIBIT" target="EXHIBIT">
+		<dbAttributePair source="EXHIBIT_ID" target="EXHIBIT_ID"/>
+	</dbRelationship>
+	<dbRelationship name="toArtist" source="ARTIST_GROUP" target="ARTIST">
+		<dbAttributePair source="ARTIST_ID" target="ARTIST_ID"/>
+	</dbRelationship>
+	<dbRelationship name="toGroup" source="ARTIST_GROUP" target="ARTGROUP">
+		<dbAttributePair source="GROUP_ID" target="GROUP_ID"/>
+	</dbRelationship>
+	<dbRelationship name="toArtist" source="AWARD" target="ARTIST">
+		<dbAttributePair source="ARTIST_ID" target="ARTIST_ID"/>
+	</dbRelationship>
+	<dbRelationship name="artistExhibitArray" source="EXHIBIT" target="ARTIST_EXHIBIT" toDependentPK="true" toMany="true">
+		<dbAttributePair source="EXHIBIT_ID" target="EXHIBIT_ID"/>
+	</dbRelationship>
+	<dbRelationship name="toGallery" source="EXHIBIT" target="GALLERY">
+		<dbAttributePair source="GALLERY_ID" target="GALLERY_ID"/>
+	</dbRelationship>
+	<dbRelationship name="exhibitArray" source="GALLERY" target="EXHIBIT" toMany="true">
+		<dbAttributePair source="GALLERY_ID" target="GALLERY_ID"/>
+	</dbRelationship>
+	<dbRelationship name="paintingArray" source="GALLERY" target="PAINTING" toMany="true">
+		<dbAttributePair source="GALLERY_ID" target="GALLERY_ID"/>
+	</dbRelationship>
+	<dbRelationship name="toArtist" source="PAINTING" target="ARTIST">
+		<dbAttributePair source="ARTIST_ID" target="ARTIST_ID"/>
+	</dbRelationship>
+	<dbRelationship name="toGallery" source="PAINTING" target="GALLERY">
+		<dbAttributePair source="GALLERY_ID" target="GALLERY_ID"/>
+	</dbRelationship>
+	<dbRelationship name="toPaintingInfo" source="PAINTING" target="PAINTING_INFO" toDependentPK="true">
+		<dbAttributePair source="PAINTING_ID" target="PAINTING_ID"/>
+	</dbRelationship>
+	<dbRelationship name="toArtist" source="PAINTING1" target="ARTIST">
+		<dbAttributePair source="ARTIST_ID" target="ARTIST_ID"/>
+	</dbRelationship>
+	<dbRelationship name="painting" source="PAINTING_INFO" target="PAINTING">
+		<dbAttributePair source="PAINTING_ID" target="PAINTING_ID"/>
+	</dbRelationship>
+	<objRelationship name="artistArray" source="ArtGroup" target="Artist" deleteRule="nullify" dbRelationshipPath="artistGroupArray.toArtist"/>
+	<objRelationship name="childGroupsArray" source="ArtGroup" target="ArtGroup" deleteRule="nullify" dbRelationshipPath="toChildGroups"/>
+	<objRelationship name="toParentGroup" source="ArtGroup" target="ArtGroup" deleteRule="nullify" dbRelationshipPath="toParentGroup"/>
+	<objRelationship name="artistExhibitArray" source="Artist" target="ArtistExhibit" deleteRule="cascade" dbRelationshipPath="artistExhibitArray"/>
+	<objRelationship name="awardArray" source="Artist" target="Award" deleteRule="deny" dbRelationshipPath="artistAwardArray"/>
+	<objRelationship name="groupArray" source="Artist" target="ArtGroup" deleteRule="cascade" dbRelationshipPath="artistGroupArray.toGroup"/>
+	<objRelationship name="paintingArray" source="Artist" target="Painting" deleteRule="cascade" dbRelationshipPath="paintingArray"/>
+	<objRelationship name="toArtist" source="ArtistExhibit" target="Artist" deleteRule="nullify" dbRelationshipPath="toArtist"/>
+	<objRelationship name="toExhibit" source="ArtistExhibit" target="Exhibit" deleteRule="nullify" dbRelationshipPath="toExhibit"/>
+	<objRelationship name="toArtist" source="Award" target="Artist" deleteRule="nullify" dbRelationshipPath="toArtist"/>
+	<objRelationship name="toArtist" source="CompoundPainting" target="Artist" deleteRule="nullify" dbRelationshipPath="toArtist"/>
+	<objRelationship name="toGallery" source="CompoundPainting" target="Gallery" deleteRule="nullify" dbRelationshipPath="toGallery"/>
+	<objRelationship name="toPaintingInfo" source="CompoundPainting" target="PaintingInfo" deleteRule="cascade" dbRelationshipPath="toPaintingInfo"/>
+	<objRelationship name="toArtist" source="CompoundPaintingLongNames" target="Artist" deleteRule="nullify" dbRelationshipPath="toArtist"/>
+	<objRelationship name="toArtist1" source="CompoundPaintingLongNames" target="ROArtist" deleteRule="nullify" dbRelationshipPath="toArtist"/>
+	<objRelationship name="toGallery" source="CompoundPaintingLongNames" target="Gallery" deleteRule="nullify" dbRelationshipPath="toGallery"/>
+	<objRelationship name="toPaintingInfo" source="CompoundPaintingLongNames" target="PaintingInfo" deleteRule="nullify" dbRelationshipPath="toPaintingInfo"/>
+	<objRelationship name="artistExhibitArray" source="Exhibit" target="ArtistExhibit" deleteRule="cascade" dbRelationshipPath="artistExhibitArray"/>
+	<objRelationship name="toGallery" source="Exhibit" target="Gallery" deleteRule="nullify" dbRelationshipPath="toGallery"/>
+	<objRelationship name="exhibitArray" source="Gallery" target="Exhibit" deleteRule="cascade" dbRelationshipPath="exhibitArray"/>
+	<objRelationship name="paintingArray" source="Gallery" target="Painting" deleteRule="deny" dbRelationshipPath="paintingArray"/>
+	<objRelationship name="toArtist" source="Painting" target="Artist" deleteRule="nullify" dbRelationshipPath="toArtist"/>
+	<objRelationship name="toGallery" source="Painting" target="Gallery" deleteRule="nullify" dbRelationshipPath="toGallery"/>
+	<objRelationship name="toPaintingInfo" source="Painting" target="PaintingInfo" deleteRule="cascade" dbRelationshipPath="toPaintingInfo"/>
+	<objRelationship name="toArtist" source="Painting1" target="Artist" deleteRule="nullify" dbRelationshipPath="toArtist"/>
+	<objRelationship name="painting" source="PaintingInfo" target="Painting" deleteRule="nullify" dbRelationshipPath="painting"/>
+	<objRelationship name="paintingArray" source="ROArtist" target="Painting" deleteRule="deny" dbRelationshipPath="paintingArray"/>
+	<objRelationship name="toArtist" source="ROPainting" target="Artist" deleteRule="nullify" dbRelationshipPath="toArtist"/>
+	<sqlQuery name="NonSelectingQuery" root="dataMap" rootName="testmap" columnNameCapitalization="UPPER">
 		<sql><![CDATA[INSERT INTO PAINTING (PAINTING_ID, PAINTING_TITLE, ESTIMATED_PRICE)
 VALUES (512, 'No Painting Like This', 12.5)]]></sql>
-		<sql adapter-class="org.apache.cayenne.dba.db2.DB2Adapter"><![CDATA[INSERT INTO PAINTING (PAINTING_ID, PAINTING_TITLE, ESTIMATED_PRICE) VALUES (512, 'No Painting Like This', 12.5)]]></sql>
-	</sql-query>
-	<object-query name="ObjectQuery">
+		<sql adapterClass="org.apache.cayenne.dba.db2.DB2Adapter"><![CDATA[INSERT INTO PAINTING (PAINTING_ID, PAINTING_TITLE, ESTIMATED_PRICE) VALUES (512, 'No Painting Like This', 12.5)]]></sql>
+	</sqlQuery>
+	<objectQuery name="ObjectQuery">
 		<ql><![CDATA[from Painting where toArtist = $artist order by paintingTitle]]></ql>
-	</object-query>
-	<sql-query name="ParameterizedNonSelectingQuery" root="data-map" root-name="testmap">
+	</objectQuery>
+	<sqlQuery name="ParameterizedNonSelectingQuery" root="dataMap" rootName="testmap">
 		<sql><![CDATA[INSERT INTO PAINTING (PAINTING_ID, PAINTING_TITLE, ESTIMATED_PRICE)
 VALUES (#bind($id), #bind($title), #bind($price))]]></sql>
-		<sql adapter-class="org.apache.cayenne.dba.db2.DB2Adapter"><![CDATA[INSERT INTO PAINTING (PAINTING_ID, PAINTING_TITLE, ESTIMATED_PRICE) values (#bind($id), #bind($title), #bind($price))]]></sql>
-	</sql-query>
-	<object-query name="ParameterizedQueryWithLocalCache" cache-strategy="LOCAL_CACHE">
+		<sql adapterClass="org.apache.cayenne.dba.db2.DB2Adapter"><![CDATA[INSERT INTO PAINTING (PAINTING_ID, PAINTING_TITLE, ESTIMATED_PRICE) values (#bind($id), #bind($title), #bind($price))]]></sql>
+	</sqlQuery>
+	<objectQuery name="ParameterizedQueryWithLocalCache" cacheStrategy="LOCAL_CACHE">
 		<ql><![CDATA[from Artist where artistName like $name]]></ql>
-	</object-query>
-	<object-query name="ParameterizedQueryWithSharedCache" cache-strategy="SHARED_CACHE">
+	</objectQuery>
+	<objectQuery name="ParameterizedQueryWithSharedCache" cacheStrategy="SHARED_CACHE">
 		<ql><![CDATA[from Artist where artistName like $name]]></ql>
-	</object-query>
-	<procedure-query name="ProcedureQuery" root="procedure" root-name="cayenne_tst_select_proc" result-entity="Artist"/>
-	<object-query name="QueryWithLocalCache" cache-strategy="LOCAL_CACHE">
+	</objectQuery>
+	<procedureQuery name="ProcedureQuery" root="procedure" rootName="cayenne_tst_select_proc" resultEntity="Artist"/>
+	<objectQuery name="QueryWithLocalCache" cacheStrategy="LOCAL_CACHE">
 		<ql><![CDATA[from Artist]]></ql>
-	</object-query>
-	<object-query name="QueryWithOrdering">
+	</objectQuery>
+	<objectQuery name="QueryWithOrdering">
 		<ql><![CDATA[from Artist order by artistName desc insensitive, dateOfBirth]]></ql>
-	</object-query>
-	<object-query name="QueryWithPrefetch">
+	</objectQuery>
+	<objectQuery name="QueryWithPrefetch">
 		<ql><![CDATA[from Gallery prefetch paintingArray]]></ql>
-	</object-query>
-	<object-query name="QueryWithQualifier">
+	</objectQuery>
+	<objectQuery name="QueryWithQualifier">
 		<ql><![CDATA[from Artist where artistName = $param1]]></ql>
-	</object-query>
-	<object-query name="QueryWithSharedCache" cache-strategy="SHARED_CACHE">
+	</objectQuery>
+	<objectQuery name="QueryWithSharedCache" cacheStrategy="SHARED_CACHE">
 		<ql><![CDATA[from Artist]]></ql>
-	</object-query>
-	<sql-query name="SelectTestLower" root="data-map" root-name="testmap" data-rows="true" column-name-capitalization="LOWER">
+	</objectQuery>
+	<sqlQuery name="SelectTestLower" root="dataMap" rootName="testmap" dataRows="true" columnNameCapitalization="LOWER">
 		<sql><![CDATA[select * from ARTIST]]></sql>
-	</sql-query>
-	<sql-query name="SelectTestUpper" root="data-map" root-name="testmap" data-rows="true" column-name-capitalization="UPPER">
+	</sqlQuery>
+	<sqlQuery name="SelectTestUpper" root="dataMap" rootName="testmap" dataRows="true" columnNameCapitalization="UPPER">
 		<sql><![CDATA[select * from ARTIST]]></sql>
-	</sql-query>
+	</sqlQuery>
 	<cgen xmlns="http://cayenne.apache.org/schema/14/cgen">
 		<destDir>../java</destDir>
 		<mode>entity</mode>
@@ -312,4 +311,4 @@ VALUES (#bind($id), #bind($title), #bind($price))]]></sql>
 		<createPropertyNames>false</createPropertyNames>
 		<createPKProperties>true</createPKProperties>
 	</cgen>
-</data-map>
+</dataMap>

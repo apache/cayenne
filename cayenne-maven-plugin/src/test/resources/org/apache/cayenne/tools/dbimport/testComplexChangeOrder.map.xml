@@ -17,48 +17,47 @@
 	specific language governing permissions and limitations
 	under the License.
 -->
-<data-map xmlns="http://cayenne.apache.org/schema/14/modelMap"
+<dataMap xmlns="http://cayenne.apache.org/schema/14/modelMap"
           xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-          xsi:schemaLocation="http://cayenne.apache.org/schema/14/modelMap http://cayenne.apache.org/schema/14/modelMap.xsd"
-          project-version="14">
+          xsi:schemaLocation="http://cayenne.apache.org/schema/14/modelMap http://cayenne.apache.org/schema/14/modelMap.xsd">
     <property name="defaultSchema" value="SCHEMA_01"/>
 
 
-    <db-entity name="ADDRESS" schema="SCHEMA_01">
-        <db-attribute name="addressString" type="VARCHAR" length="250"/>
-        <db-attribute name="id" type="INTEGER" isPrimaryKey="true" isMandatory="true"/>
-    </db-entity>
-    <db-entity name="CHILD" schema="SCHEMA_01">
-        <db-attribute name="date" type="TIME"/>
-        <db-attribute name="id" type="INTEGER" length="10"/>
-        <db-attribute name="name" type="VARCHAR" length="30"/>
-        <db-attribute name="parent_id" type="INTEGER" length="10"/>
-    </db-entity>
-    <db-entity name="PARENT" schema="SCHEMA_01">
-        <db-attribute name="id" type="INTEGER" isPrimaryKey="true" isMandatory="true" length="10"/>
-    </db-entity>
+    <dbEntity name="ADDRESS" schema="SCHEMA_01">
+        <dbAttribute name="addressString" type="VARCHAR" length="250"/>
+        <dbAttribute name="id" type="INTEGER" primaryKey="true" mandatory="true"/>
+    </dbEntity>
+    <dbEntity name="CHILD" schema="SCHEMA_01">
+        <dbAttribute name="date" type="TIME"/>
+        <dbAttribute name="id" type="INTEGER" length="10"/>
+        <dbAttribute name="name" type="VARCHAR" length="30"/>
+        <dbAttribute name="parent_id" type="INTEGER" length="10"/>
+    </dbEntity>
+    <dbEntity name="PARENT" schema="SCHEMA_01">
+        <dbAttribute name="id" type="INTEGER" primaryKey="true" mandatory="true" length="10"/>
+    </dbEntity>
 
 
-    <obj-entity name="Address" className="Address" dbEntityName="ADDRESS">
-        <obj-attribute name="addrStr" type="java.lang.String" db-attribute-path="addressString"/>
-    </obj-entity>
-    <obj-entity name="Child" className="Child" dbEntityName="CHILD">
-        <obj-attribute name="id" type="java.lang.Integer" db-attribute-path="id"/>
-        <obj-attribute name="name" type="java.lang.String"/>
-    </obj-entity>
-    <obj-entity name="Parent" className="Parent" dbEntityName="PARENT">
-    </obj-entity>
+    <objEntity name="Address" className="Address" dbEntityName="ADDRESS">
+        <objAttribute name="addrStr" type="java.lang.String" dbAttributePath="addressString"/>
+    </objEntity>
+    <objEntity name="Child" className="Child" dbEntityName="CHILD">
+        <objAttribute name="id" type="java.lang.Integer" dbAttributePath="id"/>
+        <objAttribute name="name" type="java.lang.String"/>
+    </objEntity>
+    <objEntity name="Parent" className="Parent" dbEntityName="PARENT">
+    </objEntity>
 
 
-    <db-relationship name="parent" source="CHILD" target="PARENT">
-        <db-attribute-pair source="parent_id" target="id"/>
-    </db-relationship>
-    <db-relationship name="children" source="PARENT" target="CHILD" toMany="true">
-        <db-attribute-pair source="id" target="parent_id"/>
-    </db-relationship>
+    <dbRelationship name="parent" source="CHILD" target="PARENT">
+        <dbAttributePair source="parent_id" target="id"/>
+    </dbRelationship>
+    <dbRelationship name="children" source="PARENT" target="CHILD" toMany="true">
+        <dbAttributePair source="id" target="parent_id"/>
+    </dbRelationship>
 
 
-    <obj-relationship name="parent" source="Child" target="Parent" deleteRule="Nullify" db-relationship-path="parent"/>
-    <obj-relationship name="children" source="Parent" target="Child" deleteRule="Deny" db-relationship-path="children"/>
-</data-map>
+    <objRelationship name="parent" source="Child" target="Parent" deleteRule="nullify" dbRelationshipPath="parent"/>
+    <objRelationship name="children" source="Parent" target="Child" deleteRule="deny" dbRelationshipPath="children"/>
+</dataMap>
 

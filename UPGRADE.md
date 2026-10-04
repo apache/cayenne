@@ -398,6 +398,17 @@ List<Artist> withExpensivePaintings = ObjectSelect
 *  Per [CAY-3040](https://issues.apache.org/jira/browse/CAY-3040) a fetch limit or offset of a `SQLTemplate` stored in
   a DataMap is dropped by the upgrade to project version 14, and must be moved into the query SQL. A DataMap with such
   a query can not be upgraded in memory by the runtime; open the project in CayenneModeler to upgrade it.
+*  Per [CAY-3041](https://issues.apache.org/jira/browse/CAY-3041) all tags and attributes of the project XML use
+  camelCase, so the hyphenated names were renamed as a part of project version 14: e.g. `data-map` is now `dataMap`,
+  `db-entity` is `dbEntity` and `db-attribute-path` is `dbAttributePath`. The `project-version` attribute of the root
+  tags was removed, as the version is already a part of the schema namespace (e.g.
+  `http://cayenne.apache.org/schema/14/modelMap`). The boolean attributes of
+  `dbAttribute` lost the "is" prefix (`isMandatory` is now `mandatory`, etc.), and the delete rules are stored in
+  lowercase (`nullify`, `cascade`, `deny`). Projects are upgraded automatically. Any custom code or scripts that read
+  or generate the project XML must be updated.
+*  Per [CAY-3041](https://issues.apache.org/jira/browse/CAY-3041) the oldest project that can be upgraded is now of
+  version 9, i.e. the one created by Cayenne 4.0. The older projects (versions 6 to 8, created by Cayenne 3.1 or the
+  early 4.0 milestones) must first be upgraded with CayenneModeler 4.2 or older.
 
 ## Upgrading to 5.0-M3
 

@@ -33,12 +33,10 @@ import org.apache.cayenne.util.XMLSerializable;
 class ConfigurationSaver extends BaseConfigurationNodeVisitor<Void> {
 
     private PrintWriter printWriter;
-    private String version;
     private SaverDelegate delegate;
 
-    ConfigurationSaver(PrintWriter printWriter, String version, SaverDelegate delegate) {
+    ConfigurationSaver(PrintWriter printWriter, SaverDelegate delegate) {
         this.printWriter = printWriter;
-        this.version = version;
         this.delegate = delegate;
     }
 
@@ -55,7 +53,7 @@ class ConfigurationSaver extends BaseConfigurationNodeVisitor<Void> {
     }
 
     private void encodeNode(XMLSerializable node) {
-        XMLEncoder encoder = new XMLEncoder(printWriter, "\t", version);
+        XMLEncoder encoder = new XMLEncoder(printWriter, "\t");
         encoder.println("<?xml version=\"1.0\" encoding=\"utf-8\"?>");
         delegate.setXMLEncoder(encoder);
         node.encodeAsXML(encoder, delegate);

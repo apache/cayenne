@@ -35,7 +35,7 @@ public class DbRelationshipHandlerTest extends BaseHandlerTest {
         map.addDbEntity(entity);
         assertEquals(0, entity.getRelationships().size());
 
-        parse("db-relationship", new HandlerFactory() {
+        parse("dbRelationship", new HandlerFactory() {
             @Override
             public NamespaceAwareNestedTagHandler createHandler(NamespaceAwareNestedTagHandler parent) {
                 return new DbRelationshipHandler(parent, map);

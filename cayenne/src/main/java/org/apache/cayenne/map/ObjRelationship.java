@@ -114,7 +114,7 @@ public class ObjRelationship extends Relationship<ObjEntity, ObjAttribute, ObjRe
             return;
         }
 
-        encoder.start("obj-relationship")
+        encoder.start("objRelationship")
                 .attribute("name", getName())
                 .attribute("source", source.getName());
 
@@ -127,11 +127,11 @@ public class ObjRelationship extends Relationship<ObjEntity, ObjAttribute, ObjRe
         }
 
         if (getCollectionType() != null && !DEFAULT_COLLECTION_TYPE.equals(getCollectionType())) {
-            encoder.attribute("collection-type", getCollectionType());
+            encoder.attribute("collectionType", getCollectionType());
         }
 
         encoder.attribute("lock", isUsedForLocking())
-                .attribute("map-key", getMapKey());
+                .attribute("mapKey", getMapKey());
 
         String deleteRule = DeleteRule.deleteRuleName(getDeleteRule());
         if (deleteRule != null && getDeleteRule() != DeleteRule.NO_ACTION) {
@@ -140,7 +140,7 @@ public class ObjRelationship extends Relationship<ObjEntity, ObjAttribute, ObjRe
 
         // quietly get rid of invalid path... this is not the best way of doing
         // things, but it is consistent across map package
-        encoder.attribute("db-relationship-path", getValidRelationshipPath());
+        encoder.attribute("dbRelationshipPath", getValidRelationshipPath());
 
         delegate.visitObjRelationship(this);
         encoder.end();

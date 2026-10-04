@@ -132,7 +132,7 @@ public class ProcedureQueryDescriptor extends QueryDescriptor {
 
     @Override
     public void encodeAsXML(XMLEncoder encoder, ConfigurationNodeVisitor delegate) {
-        encoder.start("procedure-query")
+        encoder.start("procedureQuery")
                 .attribute("name", getName())
                 .attribute("root", QueryDescriptor.PROCEDURE_ROOT);
 
@@ -143,15 +143,15 @@ public class ProcedureQueryDescriptor extends QueryDescriptor {
             rootString = ((Procedure) root).getName();
         }
 
-        encoder.attribute("root-name", rootString)
-                .attribute("result-entity", resultEntityName)
-                .attribute("cache-strategy", cacheStrategy != QueryCacheStrategy.NO_CACHE ? cacheStrategy.name() : null)
-                .attribute("data-rows", fetchingDataRows)
-                .attribute("fetch-limit", fetchLimit)
-                .attribute("fetch-offset", fetchOffset)
-                .attribute("page-size", pageSize)
-                .attribute("statement-fetch-size", statementFetchSize)
-                .attribute("column-name-capitalization",
+        encoder.attribute("rootName", rootString)
+                .attribute("resultEntity", resultEntityName)
+                .attribute("cacheStrategy", cacheStrategy != QueryCacheStrategy.NO_CACHE ? cacheStrategy.name() : null)
+                .attribute("dataRows", fetchingDataRows)
+                .attribute("fetchLimit", fetchLimit)
+                .attribute("fetchOffset", fetchOffset)
+                .attribute("pageSize", pageSize)
+                .attribute("statementFetchSize", statementFetchSize)
+                .attribute("columnNameCapitalization",
                         columnNamesCapitalization != null && columnNamesCapitalization != CapsStrategy.DEFAULT
                                 ? columnNamesCapitalization.name()
                                 : null);

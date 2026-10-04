@@ -38,6 +38,8 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.net.URL;
 import java.util.List;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 /**
  * Upgrades project or DataMap XML resources created by older versions of Cayenne to the current project version.
@@ -47,6 +49,9 @@ import java.util.List;
 // TODO: unlike ProjectUpgrader, this one can only upgrade individual files, not the entire project file hierarchy.
 //   If the hierarchy changes (e.g. we merge map.xml in the main file), this upgrader will need to be redesigned
 public class ConfigurationUpgrader {
+
+    private static final Pattern VERSIONED_NAMESPACE =
+            Pattern.compile("http://cayenne\\.apache\\.org/schema/(\\d+)/\\w+");
 
     private final Provider<XMLReader> xmlReaderProvider;
     private final List<UpgradeHandler> handlers;
@@ -72,8 +77,25 @@ public class ConfigurationUpgrader {
     }
 
     /**
-     * Reads the "project-version" attribute of the root tag of a project or DataMap XML, without reading the rest
-     * of the document.
+     * Returns the version of a project or DataMap XML based on its root tag, or null if it can't be determined. The
+     * version is a part of the root namespace, e.g. "http://cayenne.apache.org/schema/14/modelMap". The documents
+     * older than version 14 may have no namespace, or a namespace with no project version in it, in which case the
+     * version is taken from their "project-version" attribute.
+     *
+     * @since 5.0
+     */
+    public static String projectVersion(String rootNamespace, Attributes rootAttributes) {
+        if (rootNamespace != null) {
+            Matcher matcher = VERSIONED_NAMESPACE.matcher(rootNamespace);
+            if (matcher.matches()) {
+                return matcher.group(1);
+            }
+        }
+        return rootAttributes.getValue("", "project-version");
+    }
+
+    /**
+     * Reads the version from the root tag of a project or DataMap XML, without reading the rest of the document.
      */
     public String readVersion(Resource resource) {
         RootTagHandler rootHandler = new RootTagHandler();
@@ -204,7 +226,7 @@ public class ConfigurationUpgrader {
         @Override
         public void startElement(String uri, String localName, String qName, Attributes attributes)
                 throws SAXException {
-            this.projectVersion = attributes.getValue("", "project-version");
+            this.projectVersion = projectVersion(uri, attributes);
 
             // bail right away - we are not interested in reading this to the end
             throw new SAXException("finished");

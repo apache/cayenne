@@ -90,8 +90,8 @@ public class ObjRelationshipIT {
 
         String lineBreak = System.getProperty("line.separator");
 
-        assertEquals("<obj-relationship name=\"X\" source=\"S\" target=\"T\" "
-                + "collection-type=\"java.util.Map\" map-key=\"bla\"/>" + lineBreak, buffer.getBuffer().toString());
+        assertEquals("<objRelationship name=\"X\" source=\"S\" target=\"T\" "
+                + "collectionType=\"java.util.Map\" mapKey=\"bla\"/>" + lineBreak, buffer.getBuffer().toString());
     }
 
     @Test

@@ -69,7 +69,7 @@ public class DbRelationship extends Relationship<DbEntity, DbAttribute, DbRelati
      * @since 1.1
      */
     public void encodeAsXML(XMLEncoder encoder, ConfigurationNodeVisitor delegate) {
-        encoder.start("db-relationship")
+        encoder.start("dbRelationship")
                 .attribute("name", getName())
                 .attribute("source", getSourceEntity().getName());
 
@@ -80,7 +80,7 @@ public class DbRelationship extends Relationship<DbEntity, DbAttribute, DbRelati
         encoder.attribute("toDependentPK", isToDependentPK() && isValidForDepPk());
         encoder.attribute("toMany", isToMany());
 
-        // skip empty joins that would otherwise be saved as useless "<db-attribute-pair/>" tags
+        // skip empty joins that would otherwise be saved as useless "<dbAttributePair/>" tags
         encoder.nested(getJoins().stream()
                 .filter(j -> j.getSourceName() != null || j.getTargetName() != null)
                 .toList(), delegate);

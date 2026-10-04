@@ -25,8 +25,8 @@ For every rename, walk the checklist for that element type. Element shapes are i
 
 ## Golden rules
 
-- **Rename the element, don't repoint it.** You change a `name`; you never touch the `db-attribute-path`
-  or `db-relationship-path` *targets* to point somewhere else. Those paths only change when the thing
+- **Rename the element, don't repoint it.** You change a `name`; you never touch the `dbAttributePath`
+  or `dbRelationshipPath` *targets* to point somewhere else. Those paths only change when the thing
   they point *to* was itself renamed (DbAttribute/DbRelationship), and then only the matching segment.
 - **Names are unique within their scope.** Within an ObjEntity, attributes and relationships share one
   namespace; within a DbEntity, likewise; ObjEntity names are unique within the DataMap; DbRelationship
@@ -41,11 +41,11 @@ For every rename, walk the checklist for that element type. Element shapes are i
 
 | Update | Where |
 |---|---|
-| `className` simple name | Same `<obj-entity>`. Keep it equal to the new `name` → the generated class is `Y`. Old `X.java` / `_X.java` become orphaned; regenerate and delete the stale pair. |
-| `source="X"` / `target="X"` | Every `<obj-relationship>` in the DataMap — on **any** entity, not just this one. |
-| `root-name="X"` | Every `<sql-query>` with `root="obj-entity"`. |
-| `from X` | The `<ql>` String of every `<object-query>` rooted in the entity. |
-| `result-entity="X"` | `<procedure-query>`. |
+| `className` simple name | Same `<objEntity>`. Keep it equal to the new `name` → the generated class is `Y`. Old `X.java` / `_X.java` become orphaned; regenerate and delete the stale pair. |
+| `source="X"` / `target="X"` | Every `<objRelationship>` in the DataMap — on **any** entity, not just this one. |
+| `rootName="X"` | Every `<sqlQuery>` with `root="objEntity"`. |
+| `from X` | The `<ql>` String of every `<objectQuery>` rooted in the entity. |
+| `resultEntity="X"` | `<procedureQuery>`. |
 | Java | `ObjectSelect.query(X.class)` tracks `className`, so updating `className` + regenerating covers it. Also fix string-based entity lookups (`context.newObject("X")`, `objectSelect("X")`). |
 
 The `dbEntityName` does **not** change — the DbEntity keeps its DB-derived name.
@@ -54,10 +54,10 @@ The `dbEntityName` does **not** change — the DbEntity keeps its DB-derived nam
 
 | Update | Where |
 |---|---|
-| query qualifiers / orderings | The `<ql>` Strings of `<object-query>` elements that reference the old property name. |
+| query qualifiers / orderings | The `<ql>` Strings of `<objectQuery>` elements that reference the old property name. |
 | Java | Generated getter/setter changes; fix `Expression`/`Property` paths and `ObjectSelect` column refs in user code. |
 
-`db-attribute-path` is **unaffected** — it names the DB column, which didn't change. Uniqueness is
+`dbAttributePath` is **unaffected** — it names the DB column, which didn't change. Uniqueness is
 within the owning ObjEntity (attrs + rels).
 
 ## Rename an ObjRelationship `name`
@@ -68,19 +68,19 @@ within the owning ObjEntity (attrs + rels).
 | qualifiers / orderings | Expression paths that step through the old relationship name. |
 | Java | Generated getter/setter changes; fix prefetch/expression paths in user code. |
 
-`db-relationship-path` is **unaffected** — it names DbRelationships, not this ObjRelationship's own
+`dbRelationshipPath` is **unaffected** — it names DbRelationships, not this ObjRelationship's own
 name. Uniqueness is within the owning ObjEntity.
 
 ## Rename a DbRelationship `name` (`a` → `b`)
 
 | Update | Where |
 |---|---|
-| `db-relationship-path` **segments** | Every `<obj-relationship>` whose `db-relationship-path` contains `a` — **including inside dotted flattened chains**. E.g. path `artistGroupArray.toArtist`, renaming `toArtist` → `b` gives `artistGroupArray.b`. These references can live on entities other than the DbRelationship's source. |
+| `dbRelationshipPath` **segments** | Every `<objRelationship>` whose `dbRelationshipPath` contains `a` — **including inside dotted flattened chains**. E.g. path `artistGroupArray.toArtist`, renaming `toArtist` → `b` gives `artistGroupArray.b`. These references can live on entities other than the DbRelationship's source. |
 
 No Java impact — DbRelationships are a DB-layer concept. Uniqueness is within the source DbEntity
 (attrs + rels). If the DbRelationship backs an ObjRelationship, keep the name mirrored with it per
 direction; if it is **standalone** (no ObjRelationship built on it — see `model-naming-conventions.md`),
-there is nothing to mirror, but the `db-relationship-path` update above still applies: a standalone
+there is nothing to mirror, but the `dbRelationshipPath` update above still applies: a standalone
 DbRelationship can appear as a segment in another entity's flattened path.
 
 ## Paired renames
@@ -97,5 +97,5 @@ ObjRelationship (Team→Game)                       homeGames  (mirrors db-rel h
 ```
 
 After renaming a DbRelationship, remember its name appears in the *other* direction's ObjRelationship
-`db-relationship-path` only when that path traverses it (flattened case) — a simple one-hop
-ObjRelationship's `db-relationship-path` is just its own backing DbRelationship's new name.
+`dbRelationshipPath` only when that path traverses it (flattened case) — a simple one-hop
+ObjRelationship's `dbRelationshipPath` is just its own backing DbRelationship's new name.

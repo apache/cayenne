@@ -31,7 +31,7 @@ public class DbKeyGeneratorHandlerTest extends BaseHandlerTest {
     public void parsing() throws Exception {
         final DbEntity dbEntity = new DbEntity("TEST");
 
-        parse("db-key-generator", new HandlerFactory() {
+        parse("dbKeyGenerator", new HandlerFactory() {
             @Override
             public NamespaceAwareNestedTagHandler createHandler(NamespaceAwareNestedTagHandler parent) {
                 return new DbKeyGeneratorHandler(parent, dbEntity);

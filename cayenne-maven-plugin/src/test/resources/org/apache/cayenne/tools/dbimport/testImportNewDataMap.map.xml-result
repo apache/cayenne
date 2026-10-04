@@ -17,21 +17,20 @@
 	specific language governing permissions and limitations
 	under the License.
 -->
-<data-map xmlns="http://cayenne.apache.org/schema/14/modelMap"
+<dataMap xmlns="http://cayenne.apache.org/schema/14/modelMap"
 	 xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-	 xsi:schemaLocation="http://cayenne.apache.org/schema/14/modelMap https://cayenne.apache.org/schema/14/modelMap.xsd"
-	 project-version="14">
-	<db-entity name="TEST_TABLE" schema="APP">
-		<db-attribute name="COL1" type="INTEGER" isPrimaryKey="true" isMandatory="true" length="10"/>
-		<db-attribute name="COL2" type="CHAR" length="25"/>
-		<db-attribute name="COL3" type="DECIMAL" length="10" scale="2"/>
-		<db-attribute name="COL4" type="VARCHAR" length="25"/>
-		<db-attribute name="COL5" type="DATE" length="10"/>
-	</db-entity>
-	<obj-entity name="TestTable" className="TestTable" dbEntityName="TEST_TABLE">
-		<obj-attribute name="col2" type="java.lang.String" db-attribute-path="COL2"/>
-		<obj-attribute name="col3" type="java.math.BigDecimal" db-attribute-path="COL3"/>
-		<obj-attribute name="col4" type="java.lang.String" db-attribute-path="COL4"/>
-		<obj-attribute name="col5" type="java.time.LocalDate" db-attribute-path="COL5"/>
-	</obj-entity>
-</data-map>
+	 xsi:schemaLocation="http://cayenne.apache.org/schema/14/modelMap https://cayenne.apache.org/schema/14/modelMap.xsd">
+	<dbEntity name="TEST_TABLE" schema="APP">
+		<dbAttribute name="COL1" type="INTEGER" primaryKey="true" mandatory="true" length="10"/>
+		<dbAttribute name="COL2" type="CHAR" length="25"/>
+		<dbAttribute name="COL3" type="DECIMAL" length="10" scale="2"/>
+		<dbAttribute name="COL4" type="VARCHAR" length="25"/>
+		<dbAttribute name="COL5" type="DATE" length="10"/>
+	</dbEntity>
+	<objEntity name="TestTable" className="TestTable" dbEntityName="TEST_TABLE">
+		<objAttribute name="col2" type="java.lang.String" dbAttributePath="COL2"/>
+		<objAttribute name="col3" type="java.math.BigDecimal" dbAttributePath="COL3"/>
+		<objAttribute name="col4" type="java.lang.String" dbAttributePath="COL4"/>
+		<objAttribute name="col5" type="java.time.LocalDate" dbAttributePath="COL5"/>
+	</objEntity>
+</dataMap>

@@ -30,7 +30,6 @@
                 <xs:element minOccurs="0" maxOccurs="unbounded" ref="cay:map"/>
                 <xs:any minOccurs="0" maxOccurs="unbounded" namespace="##other" processContents="lax"/>
             </xs:sequence>
-            <xs:attribute name="project-version" use="required" type="xs:string"/>
         </xs:complexType>
     </xs:element>
 

@@ -1,165 +1,164 @@
 <?xml version="1.0" encoding="utf-8"?>
-<data-map xmlns="http://cayenne.apache.org/schema/14/modelMap"
+<dataMap xmlns="http://cayenne.apache.org/schema/14/modelMap"
 	 xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-	 xsi:schemaLocation="http://cayenne.apache.org/schema/14/modelMap https://cayenne.apache.org/schema/14/modelMap.xsd"
-	 project-version="14">
+	 xsi:schemaLocation="http://cayenne.apache.org/schema/14/modelMap https://cayenne.apache.org/schema/14/modelMap.xsd">
 	<property name="defaultPackage" value="org.apache.cayenne.commitlog.db"/>
-	<db-entity name="AUDITABLE1">
-		<db-attribute name="CHAR_PROPERTY1" type="VARCHAR" length="200"/>
-		<db-attribute name="ID" type="INTEGER" isPrimaryKey="true" isMandatory="true"/>
-	</db-entity>
-	<db-entity name="AUDITABLE2">
-		<db-attribute name="CHAR_PROPERTY1" type="VARCHAR" length="200"/>
-		<db-attribute name="CHAR_PROPERTY2" type="VARCHAR" length="200"/>
-		<db-attribute name="ID" type="INTEGER" isPrimaryKey="true" isMandatory="true"/>
-	</db-entity>
-	<db-entity name="AUDITABLE3">
-		<db-attribute name="CHAR_PROPERTY1" type="VARCHAR" length="200"/>
-		<db-attribute name="CHAR_PROPERTY2" type="VARCHAR" length="200"/>
-		<db-attribute name="ID" type="INTEGER" isPrimaryKey="true" isMandatory="true"/>
-	</db-entity>
-	<db-entity name="AUDITABLE4">
-		<db-attribute name="AUDITABLE3_ID" type="INTEGER"/>
-		<db-attribute name="CHAR_PROPERTY1" type="VARCHAR" length="200"/>
-		<db-attribute name="CHAR_PROPERTY2" type="VARCHAR" length="200"/>
-		<db-attribute name="ID" type="INTEGER" isPrimaryKey="true" isMandatory="true"/>
-	</db-entity>
-	<db-entity name="AUDITABLE5">
-		<db-attribute name="CHAR_PROPERTY1" type="VARCHAR" length="200"/>
-		<db-attribute name="ID" type="INTEGER" isPrimaryKey="true" isMandatory="true"/>
-	</db-entity>
-	<db-entity name="AUDITABLE_CHILD1">
-		<db-attribute name="AUDITABLE1_ID" type="INTEGER"/>
-		<db-attribute name="CHAR_PROPERTY1" type="VARCHAR" length="200"/>
-		<db-attribute name="ID" type="INTEGER" isPrimaryKey="true" isMandatory="true"/>
-	</db-entity>
-	<db-entity name="AUDITABLE_CHILD1X">
-		<db-attribute name="AUDITABLE1_ID" type="INTEGER"/>
-		<db-attribute name="CHAR_PROPERTY1" type="VARCHAR" length="200"/>
-		<db-attribute name="ID" type="INTEGER" isPrimaryKey="true" isMandatory="true"/>
-	</db-entity>
-	<db-entity name="AUDITABLE_CHILD3">
-		<db-attribute name="AUDITABLE2_ID" type="INTEGER"/>
-		<db-attribute name="CHAR_PROPERTY1" type="VARCHAR" length="200"/>
-		<db-attribute name="CHAR_PROPERTY2" type="VARCHAR" length="200"/>
-		<db-attribute name="ID" type="INTEGER" isPrimaryKey="true" isMandatory="true"/>
-	</db-entity>
-	<db-entity name="AUDITABLE_CHILD5">
-		<db-attribute name="AUDITABLE5_ID" type="INTEGER"/>
-		<db-attribute name="CHAR_PROPERTY1" type="VARCHAR" length="200"/>
-		<db-attribute name="ID" type="INTEGER" isPrimaryKey="true" isMandatory="true"/>
-	</db-entity>
-	<db-entity name="AUDIT_LOG">
-		<db-attribute name="ID" type="INTEGER" isPrimaryKey="true" isMandatory="true"/>
-		<db-attribute name="LOG" type="CLOB"/>
-	</db-entity>
-	<db-entity name="E1">
-		<db-attribute name="ID" type="BIGINT" isPrimaryKey="true" isMandatory="true"/>
-	</db-entity>
-	<db-entity name="E2">
-		<db-attribute name="ID" type="BIGINT" isPrimaryKey="true" isMandatory="true"/>
-	</db-entity>
-	<db-entity name="E3">
-		<db-attribute name="ID" type="BIGINT" isPrimaryKey="true" isMandatory="true"/>
-	</db-entity>
-	<db-entity name="E34">
-		<db-attribute name="E3_ID" type="BIGINT" isPrimaryKey="true" isMandatory="true"/>
-		<db-attribute name="E4_ID" type="BIGINT" isPrimaryKey="true" isMandatory="true"/>
-	</db-entity>
-	<db-entity name="E4">
-		<db-attribute name="ID" type="BIGINT" isPrimaryKey="true" isMandatory="true"/>
-	</db-entity>
-	<obj-entity name="AuditLog" className="org.apache.cayenne.commitlog.db.AuditLog" dbEntityName="AUDIT_LOG">
-		<obj-attribute name="log" type="java.lang.String" db-attribute-path="LOG"/>
-	</obj-entity>
-	<obj-entity name="Auditable1" className="org.apache.cayenne.commitlog.db.Auditable1" dbEntityName="AUDITABLE1">
-		<obj-attribute name="charProperty1" type="java.lang.String" db-attribute-path="CHAR_PROPERTY1"/>
-	</obj-entity>
-	<obj-entity name="Auditable2" className="org.apache.cayenne.commitlog.db.Auditable2" dbEntityName="AUDITABLE2">
-		<obj-attribute name="charProperty1" type="java.lang.String" db-attribute-path="CHAR_PROPERTY1"/>
-		<obj-attribute name="charProperty2" type="java.lang.String" db-attribute-path="CHAR_PROPERTY2"/>
-	</obj-entity>
-	<obj-entity name="Auditable3" className="org.apache.cayenne.commitlog.db.Auditable3" dbEntityName="AUDITABLE3">
-		<obj-attribute name="charProperty1" type="java.lang.String" db-attribute-path="CHAR_PROPERTY1"/>
-		<obj-attribute name="charProperty2" type="java.lang.String" db-attribute-path="CHAR_PROPERTY2"/>
-	</obj-entity>
-	<obj-entity name="Auditable4" className="org.apache.cayenne.commitlog.db.Auditable4" dbEntityName="AUDITABLE4">
-		<obj-attribute name="charProperty1" type="java.lang.String" db-attribute-path="CHAR_PROPERTY1"/>
-		<obj-attribute name="charProperty2" type="java.lang.String" db-attribute-path="CHAR_PROPERTY2"/>
-	</obj-entity>
-	<obj-entity name="Auditable5" className="org.apache.cayenne.commitlog.db.Auditable5" dbEntityName="AUDITABLE5">
-		<obj-attribute name="charProperty1" type="java.lang.String" db-attribute-path="CHAR_PROPERTY1"/>
-	</obj-entity>
-	<obj-entity name="AuditableChild1" className="org.apache.cayenne.commitlog.db.AuditableChild1" dbEntityName="AUDITABLE_CHILD1">
-		<obj-attribute name="charProperty1" type="java.lang.String" db-attribute-path="CHAR_PROPERTY1"/>
-	</obj-entity>
-	<obj-entity name="AuditableChild1x" className="org.apache.cayenne.commitlog.db.AuditableChild1x" dbEntityName="AUDITABLE_CHILD1X">
-		<obj-attribute name="charProperty1" type="java.lang.String" db-attribute-path="CHAR_PROPERTY1"/>
-	</obj-entity>
-	<obj-entity name="AuditableChild3" className="org.apache.cayenne.commitlog.db.AuditableChild3" dbEntityName="AUDITABLE_CHILD3">
-		<obj-attribute name="charProperty1" type="java.lang.String" db-attribute-path="CHAR_PROPERTY1"/>
-		<obj-attribute name="charProperty2" type="java.lang.String" db-attribute-path="CHAR_PROPERTY2"/>
-	</obj-entity>
-	<obj-entity name="AuditableChild5" className="org.apache.cayenne.commitlog.db.AuditableChild5" dbEntityName="AUDITABLE_CHILD5">
-		<obj-attribute name="charProperty1" type="java.lang.String" db-attribute-path="CHAR_PROPERTY1"/>
-	</obj-entity>
-	<obj-entity name="E1" className="org.apache.cayenne.commitlog.db.E1" dbEntityName="E1"/>
-	<obj-entity name="E2" className="org.apache.cayenne.commitlog.db.E2" dbEntityName="E2"/>
-	<obj-entity name="E3" className="org.apache.cayenne.commitlog.db.E3" dbEntityName="E3"/>
-	<obj-entity name="E4" className="org.apache.cayenne.commitlog.db.E4" dbEntityName="E4"/>
-	<db-relationship name="children1" source="AUDITABLE1" target="AUDITABLE_CHILD1" toMany="true">
-		<db-attribute-pair source="ID" target="AUDITABLE1_ID"/>
-	</db-relationship>
-	<db-relationship name="children1x" source="AUDITABLE1" target="AUDITABLE_CHILD1X" toMany="true">
-		<db-attribute-pair source="ID" target="AUDITABLE1_ID"/>
-	</db-relationship>
-	<db-relationship name="children" source="AUDITABLE2" target="AUDITABLE_CHILD3" toMany="true">
-		<db-attribute-pair source="ID" target="AUDITABLE2_ID"/>
-	</db-relationship>
-	<db-relationship name="auditable4s" source="AUDITABLE3" target="AUDITABLE4" toMany="true">
-		<db-attribute-pair source="ID" target="AUDITABLE3_ID"/>
-	</db-relationship>
-	<db-relationship name="auditable3" source="AUDITABLE4" target="AUDITABLE3">
-		<db-attribute-pair source="AUDITABLE3_ID" target="ID"/>
-	</db-relationship>
-	<db-relationship name="children" source="AUDITABLE5" target="AUDITABLE_CHILD5" toMany="true">
-		<db-attribute-pair source="ID" target="AUDITABLE5_ID"/>
-	</db-relationship>
-	<db-relationship name="parent" source="AUDITABLE_CHILD1" target="AUDITABLE1">
-		<db-attribute-pair source="AUDITABLE1_ID" target="ID"/>
-	</db-relationship>
-	<db-relationship name="parent" source="AUDITABLE_CHILD1X" target="AUDITABLE1">
-		<db-attribute-pair source="AUDITABLE1_ID" target="ID"/>
-	</db-relationship>
-	<db-relationship name="parent" source="AUDITABLE_CHILD3" target="AUDITABLE2">
-		<db-attribute-pair source="AUDITABLE2_ID" target="ID"/>
-	</db-relationship>
-	<db-relationship name="parent" source="AUDITABLE_CHILD5" target="AUDITABLE5">
-		<db-attribute-pair source="AUDITABLE5_ID" target="ID"/>
-	</db-relationship>
-	<db-relationship name="e34s" source="E3" target="E34" toDependentPK="true" toMany="true">
-		<db-attribute-pair source="ID" target="E3_ID"/>
-	</db-relationship>
-	<db-relationship name="e3" source="E34" target="E3">
-		<db-attribute-pair source="E3_ID" target="ID"/>
-	</db-relationship>
-	<db-relationship name="e4" source="E34" target="E4">
-		<db-attribute-pair source="E4_ID" target="ID"/>
-	</db-relationship>
-	<db-relationship name="e34s" source="E4" target="E34" toDependentPK="true" toMany="true">
-		<db-attribute-pair source="ID" target="E4_ID"/>
-	</db-relationship>
-	<obj-relationship name="children1" source="Auditable1" target="AuditableChild1" deleteRule="Deny" db-relationship-path="children1"/>
-	<obj-relationship name="children" source="Auditable2" target="AuditableChild3" deleteRule="Deny" db-relationship-path="children"/>
-	<obj-relationship name="auditable4s" source="Auditable3" target="Auditable4" deleteRule="Deny" db-relationship-path="auditable4s"/>
-	<obj-relationship name="auditable3" source="Auditable4" target="Auditable3" deleteRule="Nullify" db-relationship-path="auditable3"/>
-	<obj-relationship name="children" source="Auditable5" target="AuditableChild5" deleteRule="Deny" db-relationship-path="children"/>
-	<obj-relationship name="parent" source="AuditableChild1" target="Auditable1" deleteRule="Nullify" db-relationship-path="parent"/>
-	<obj-relationship name="parent" source="AuditableChild1x" target="Auditable1" deleteRule="Nullify" db-relationship-path="parent"/>
-	<obj-relationship name="parent" source="AuditableChild3" target="Auditable2" deleteRule="Nullify" db-relationship-path="parent"/>
-	<obj-relationship name="parent" source="AuditableChild5" target="Auditable5" deleteRule="Nullify" db-relationship-path="parent"/>
-	<obj-relationship name="e4s" source="E3" target="E4" deleteRule="Deny" db-relationship-path="e34s.e4"/>
-	<obj-relationship name="e3s" source="E4" target="E3" deleteRule="Deny" db-relationship-path="e34s.e3"/>
+	<dbEntity name="AUDITABLE1">
+		<dbAttribute name="CHAR_PROPERTY1" type="VARCHAR" length="200"/>
+		<dbAttribute name="ID" type="INTEGER" primaryKey="true" mandatory="true"/>
+	</dbEntity>
+	<dbEntity name="AUDITABLE2">
+		<dbAttribute name="CHAR_PROPERTY1" type="VARCHAR" length="200"/>
+		<dbAttribute name="CHAR_PROPERTY2" type="VARCHAR" length="200"/>
+		<dbAttribute name="ID" type="INTEGER" primaryKey="true" mandatory="true"/>
+	</dbEntity>
+	<dbEntity name="AUDITABLE3">
+		<dbAttribute name="CHAR_PROPERTY1" type="VARCHAR" length="200"/>
+		<dbAttribute name="CHAR_PROPERTY2" type="VARCHAR" length="200"/>
+		<dbAttribute name="ID" type="INTEGER" primaryKey="true" mandatory="true"/>
+	</dbEntity>
+	<dbEntity name="AUDITABLE4">
+		<dbAttribute name="AUDITABLE3_ID" type="INTEGER"/>
+		<dbAttribute name="CHAR_PROPERTY1" type="VARCHAR" length="200"/>
+		<dbAttribute name="CHAR_PROPERTY2" type="VARCHAR" length="200"/>
+		<dbAttribute name="ID" type="INTEGER" primaryKey="true" mandatory="true"/>
+	</dbEntity>
+	<dbEntity name="AUDITABLE5">
+		<dbAttribute name="CHAR_PROPERTY1" type="VARCHAR" length="200"/>
+		<dbAttribute name="ID" type="INTEGER" primaryKey="true" mandatory="true"/>
+	</dbEntity>
+	<dbEntity name="AUDITABLE_CHILD1">
+		<dbAttribute name="AUDITABLE1_ID" type="INTEGER"/>
+		<dbAttribute name="CHAR_PROPERTY1" type="VARCHAR" length="200"/>
+		<dbAttribute name="ID" type="INTEGER" primaryKey="true" mandatory="true"/>
+	</dbEntity>
+	<dbEntity name="AUDITABLE_CHILD1X">
+		<dbAttribute name="AUDITABLE1_ID" type="INTEGER"/>
+		<dbAttribute name="CHAR_PROPERTY1" type="VARCHAR" length="200"/>
+		<dbAttribute name="ID" type="INTEGER" primaryKey="true" mandatory="true"/>
+	</dbEntity>
+	<dbEntity name="AUDITABLE_CHILD3">
+		<dbAttribute name="AUDITABLE2_ID" type="INTEGER"/>
+		<dbAttribute name="CHAR_PROPERTY1" type="VARCHAR" length="200"/>
+		<dbAttribute name="CHAR_PROPERTY2" type="VARCHAR" length="200"/>
+		<dbAttribute name="ID" type="INTEGER" primaryKey="true" mandatory="true"/>
+	</dbEntity>
+	<dbEntity name="AUDITABLE_CHILD5">
+		<dbAttribute name="AUDITABLE5_ID" type="INTEGER"/>
+		<dbAttribute name="CHAR_PROPERTY1" type="VARCHAR" length="200"/>
+		<dbAttribute name="ID" type="INTEGER" primaryKey="true" mandatory="true"/>
+	</dbEntity>
+	<dbEntity name="AUDIT_LOG">
+		<dbAttribute name="ID" type="INTEGER" primaryKey="true" mandatory="true"/>
+		<dbAttribute name="LOG" type="CLOB"/>
+	</dbEntity>
+	<dbEntity name="E1">
+		<dbAttribute name="ID" type="BIGINT" primaryKey="true" mandatory="true"/>
+	</dbEntity>
+	<dbEntity name="E2">
+		<dbAttribute name="ID" type="BIGINT" primaryKey="true" mandatory="true"/>
+	</dbEntity>
+	<dbEntity name="E3">
+		<dbAttribute name="ID" type="BIGINT" primaryKey="true" mandatory="true"/>
+	</dbEntity>
+	<dbEntity name="E34">
+		<dbAttribute name="E3_ID" type="BIGINT" primaryKey="true" mandatory="true"/>
+		<dbAttribute name="E4_ID" type="BIGINT" primaryKey="true" mandatory="true"/>
+	</dbEntity>
+	<dbEntity name="E4">
+		<dbAttribute name="ID" type="BIGINT" primaryKey="true" mandatory="true"/>
+	</dbEntity>
+	<objEntity name="AuditLog" className="org.apache.cayenne.commitlog.db.AuditLog" dbEntityName="AUDIT_LOG">
+		<objAttribute name="log" type="java.lang.String" dbAttributePath="LOG"/>
+	</objEntity>
+	<objEntity name="Auditable1" className="org.apache.cayenne.commitlog.db.Auditable1" dbEntityName="AUDITABLE1">
+		<objAttribute name="charProperty1" type="java.lang.String" dbAttributePath="CHAR_PROPERTY1"/>
+	</objEntity>
+	<objEntity name="Auditable2" className="org.apache.cayenne.commitlog.db.Auditable2" dbEntityName="AUDITABLE2">
+		<objAttribute name="charProperty1" type="java.lang.String" dbAttributePath="CHAR_PROPERTY1"/>
+		<objAttribute name="charProperty2" type="java.lang.String" dbAttributePath="CHAR_PROPERTY2"/>
+	</objEntity>
+	<objEntity name="Auditable3" className="org.apache.cayenne.commitlog.db.Auditable3" dbEntityName="AUDITABLE3">
+		<objAttribute name="charProperty1" type="java.lang.String" dbAttributePath="CHAR_PROPERTY1"/>
+		<objAttribute name="charProperty2" type="java.lang.String" dbAttributePath="CHAR_PROPERTY2"/>
+	</objEntity>
+	<objEntity name="Auditable4" className="org.apache.cayenne.commitlog.db.Auditable4" dbEntityName="AUDITABLE4">
+		<objAttribute name="charProperty1" type="java.lang.String" dbAttributePath="CHAR_PROPERTY1"/>
+		<objAttribute name="charProperty2" type="java.lang.String" dbAttributePath="CHAR_PROPERTY2"/>
+	</objEntity>
+	<objEntity name="Auditable5" className="org.apache.cayenne.commitlog.db.Auditable5" dbEntityName="AUDITABLE5">
+		<objAttribute name="charProperty1" type="java.lang.String" dbAttributePath="CHAR_PROPERTY1"/>
+	</objEntity>
+	<objEntity name="AuditableChild1" className="org.apache.cayenne.commitlog.db.AuditableChild1" dbEntityName="AUDITABLE_CHILD1">
+		<objAttribute name="charProperty1" type="java.lang.String" dbAttributePath="CHAR_PROPERTY1"/>
+	</objEntity>
+	<objEntity name="AuditableChild1x" className="org.apache.cayenne.commitlog.db.AuditableChild1x" dbEntityName="AUDITABLE_CHILD1X">
+		<objAttribute name="charProperty1" type="java.lang.String" dbAttributePath="CHAR_PROPERTY1"/>
+	</objEntity>
+	<objEntity name="AuditableChild3" className="org.apache.cayenne.commitlog.db.AuditableChild3" dbEntityName="AUDITABLE_CHILD3">
+		<objAttribute name="charProperty1" type="java.lang.String" dbAttributePath="CHAR_PROPERTY1"/>
+		<objAttribute name="charProperty2" type="java.lang.String" dbAttributePath="CHAR_PROPERTY2"/>
+	</objEntity>
+	<objEntity name="AuditableChild5" className="org.apache.cayenne.commitlog.db.AuditableChild5" dbEntityName="AUDITABLE_CHILD5">
+		<objAttribute name="charProperty1" type="java.lang.String" dbAttributePath="CHAR_PROPERTY1"/>
+	</objEntity>
+	<objEntity name="E1" className="org.apache.cayenne.commitlog.db.E1" dbEntityName="E1"/>
+	<objEntity name="E2" className="org.apache.cayenne.commitlog.db.E2" dbEntityName="E2"/>
+	<objEntity name="E3" className="org.apache.cayenne.commitlog.db.E3" dbEntityName="E3"/>
+	<objEntity name="E4" className="org.apache.cayenne.commitlog.db.E4" dbEntityName="E4"/>
+	<dbRelationship name="children1" source="AUDITABLE1" target="AUDITABLE_CHILD1" toMany="true">
+		<dbAttributePair source="ID" target="AUDITABLE1_ID"/>
+	</dbRelationship>
+	<dbRelationship name="children1x" source="AUDITABLE1" target="AUDITABLE_CHILD1X" toMany="true">
+		<dbAttributePair source="ID" target="AUDITABLE1_ID"/>
+	</dbRelationship>
+	<dbRelationship name="children" source="AUDITABLE2" target="AUDITABLE_CHILD3" toMany="true">
+		<dbAttributePair source="ID" target="AUDITABLE2_ID"/>
+	</dbRelationship>
+	<dbRelationship name="auditable4s" source="AUDITABLE3" target="AUDITABLE4" toMany="true">
+		<dbAttributePair source="ID" target="AUDITABLE3_ID"/>
+	</dbRelationship>
+	<dbRelationship name="auditable3" source="AUDITABLE4" target="AUDITABLE3">
+		<dbAttributePair source="AUDITABLE3_ID" target="ID"/>
+	</dbRelationship>
+	<dbRelationship name="children" source="AUDITABLE5" target="AUDITABLE_CHILD5" toMany="true">
+		<dbAttributePair source="ID" target="AUDITABLE5_ID"/>
+	</dbRelationship>
+	<dbRelationship name="parent" source="AUDITABLE_CHILD1" target="AUDITABLE1">
+		<dbAttributePair source="AUDITABLE1_ID" target="ID"/>
+	</dbRelationship>
+	<dbRelationship name="parent" source="AUDITABLE_CHILD1X" target="AUDITABLE1">
+		<dbAttributePair source="AUDITABLE1_ID" target="ID"/>
+	</dbRelationship>
+	<dbRelationship name="parent" source="AUDITABLE_CHILD3" target="AUDITABLE2">
+		<dbAttributePair source="AUDITABLE2_ID" target="ID"/>
+	</dbRelationship>
+	<dbRelationship name="parent" source="AUDITABLE_CHILD5" target="AUDITABLE5">
+		<dbAttributePair source="AUDITABLE5_ID" target="ID"/>
+	</dbRelationship>
+	<dbRelationship name="e34s" source="E3" target="E34" toDependentPK="true" toMany="true">
+		<dbAttributePair source="ID" target="E3_ID"/>
+	</dbRelationship>
+	<dbRelationship name="e3" source="E34" target="E3">
+		<dbAttributePair source="E3_ID" target="ID"/>
+	</dbRelationship>
+	<dbRelationship name="e4" source="E34" target="E4">
+		<dbAttributePair source="E4_ID" target="ID"/>
+	</dbRelationship>
+	<dbRelationship name="e34s" source="E4" target="E34" toDependentPK="true" toMany="true">
+		<dbAttributePair source="ID" target="E4_ID"/>
+	</dbRelationship>
+	<objRelationship name="children1" source="Auditable1" target="AuditableChild1" deleteRule="deny" dbRelationshipPath="children1"/>
+	<objRelationship name="children" source="Auditable2" target="AuditableChild3" deleteRule="deny" dbRelationshipPath="children"/>
+	<objRelationship name="auditable4s" source="Auditable3" target="Auditable4" deleteRule="deny" dbRelationshipPath="auditable4s"/>
+	<objRelationship name="auditable3" source="Auditable4" target="Auditable3" deleteRule="nullify" dbRelationshipPath="auditable3"/>
+	<objRelationship name="children" source="Auditable5" target="AuditableChild5" deleteRule="deny" dbRelationshipPath="children"/>
+	<objRelationship name="parent" source="AuditableChild1" target="Auditable1" deleteRule="nullify" dbRelationshipPath="parent"/>
+	<objRelationship name="parent" source="AuditableChild1x" target="Auditable1" deleteRule="nullify" dbRelationshipPath="parent"/>
+	<objRelationship name="parent" source="AuditableChild3" target="Auditable2" deleteRule="nullify" dbRelationshipPath="parent"/>
+	<objRelationship name="parent" source="AuditableChild5" target="Auditable5" deleteRule="nullify" dbRelationshipPath="parent"/>
+	<objRelationship name="e4s" source="E3" target="E4" deleteRule="deny" dbRelationshipPath="e34s.e4"/>
+	<objRelationship name="e3s" source="E4" target="E3" deleteRule="deny" dbRelationshipPath="e34s.e3"/>
 	<cgen xmlns="http://cayenne.apache.org/schema/14/cgen">
 		<destDir>../java</destDir>
 		<mode>entity</mode>
@@ -176,4 +175,4 @@
 		<createPropertyNames>false</createPropertyNames>
 		<createPKProperties>false</createPKProperties>
 	</cgen>
-</data-map>
+</dataMap>

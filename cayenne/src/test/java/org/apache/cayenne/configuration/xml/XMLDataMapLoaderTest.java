@@ -85,7 +85,7 @@ public class XMLDataMapLoaderTest {
 
     @Test
     public void loadOldVersionWithContent() {
-        // version 6, upgraded in memory
+        // version 9, upgraded in memory
         URL url = getClass().getResource("testConfigMap9.map.xml");
         DataMap map = loader.load(new URLResource(url));
         assertEquals("testConfigMap9", map.getName());

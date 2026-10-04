@@ -36,7 +36,7 @@ public class DbEntityHandlerTest extends BaseHandlerTest {
         final DataMap map = new DataMap();
         assertTrue(map.getDbEntities().isEmpty());
 
-        parse("db-entity", new HandlerFactory() {
+        parse("dbEntity", new HandlerFactory() {
             @Override
             public NamespaceAwareNestedTagHandler createHandler(NamespaceAwareNestedTagHandler parent) {
                 return new DbEntityHandler(parent, map);

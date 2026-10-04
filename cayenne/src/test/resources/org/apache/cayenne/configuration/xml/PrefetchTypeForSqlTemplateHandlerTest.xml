@@ -17,9 +17,9 @@
   ~  under the License.
   ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~-->
 
-<sql-query name="query" root="obj-entity" root-name="Artist" data-rows="false">
+<sqlQuery name="query" root="objEntity" rootName="Artist" dataRows="false">
     <sql><![CDATA[select * from Artist]]></sql>
     <prefetch type="joint"><![CDATA[paintings]]></prefetch>
     <prefetch type="disjoint"><![CDATA[paintings.artist]]></prefetch>
     <prefetch type="disjointById"><![CDATA[paintings.gallery]]></prefetch>
-</sql-query>
+</sqlQuery>
