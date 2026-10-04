@@ -20,7 +20,7 @@ package org.apache.cayenne.unit.telemetry;
 
 import org.apache.cayenne.access.DataNode;
 import org.apache.cayenne.access.OperationObserver;
-import org.apache.cayenne.configuration.runtime.DefaultDataNodeFactory;
+import org.apache.cayenne.access.DefaultDataNodeFactory;
 import org.apache.cayenne.query.Query;
 import org.junit.jupiter.api.Assertions;
 

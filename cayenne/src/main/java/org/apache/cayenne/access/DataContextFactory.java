@@ -16,17 +16,10 @@
  *  specific language governing permissions and limitations
  *  under the License.
  ****************************************************************/
-package org.apache.cayenne.configuration.runtime;
+package org.apache.cayenne.access;
 
-import org.apache.cayenne.ObjectId;
 import org.apache.cayenne.DataChannel;
 import org.apache.cayenne.ObjectContext;
-import org.apache.cayenne.access.DataContext;
-import org.apache.cayenne.access.DataContextChannel;
-import org.apache.cayenne.access.DataDomain;
-import org.apache.cayenne.access.DataRowStore;
-import org.apache.cayenne.access.DataRowStoreFactory;
-import org.apache.cayenne.access.ObjectMapRetainStrategy;
 import org.apache.cayenne.cache.NestedQueryCache;
 import org.apache.cayenne.cache.QueryCache;
 import org.apache.cayenne.configuration.ObjectContextFactory;

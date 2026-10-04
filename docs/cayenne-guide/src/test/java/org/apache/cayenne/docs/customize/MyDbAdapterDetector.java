@@ -18,7 +18,7 @@
  ****************************************************************/
 package org.apache.cayenne.docs.customize;
 
-import org.apache.cayenne.configuration.runtime.DbAdapterDetector;
+import org.apache.cayenne.dba.DbAdapterDetector;
 import org.apache.cayenne.dba.DbAdapter;
 
 import java.sql.DatabaseMetaData;

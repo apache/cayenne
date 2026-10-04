@@ -26,6 +26,7 @@ import org.apache.cayenne.DataChannelSyncFilterChain;
 import org.apache.cayenne.ObjectContext;
 import org.apache.cayenne.QueryResult;
 import org.apache.cayenne.access.DataDomain;
+import org.apache.cayenne.access.DataDomainProvider;
 import org.apache.cayenne.access.DataNode;
 import org.apache.cayenne.access.dbsync.SkipSchemaUpdateStrategy;
 import org.apache.cayenne.access.dbsync.ThrowOnPartialOrCreateSchemaStrategy;

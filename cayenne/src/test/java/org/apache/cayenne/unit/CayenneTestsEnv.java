@@ -24,7 +24,7 @@ import org.apache.cayenne.access.DataNode;
 import org.apache.cayenne.configuration.Constants;
 import org.apache.cayenne.configuration.DataSourceDescriptor;
 import org.apache.cayenne.CoreModule;
-import org.apache.cayenne.configuration.runtime.DataNodeFactory;
+import org.apache.cayenne.access.DataNodeFactory;
 import org.apache.cayenne.datasource.CayenneDataSource;
 import org.apache.cayenne.dba.DbAdapter;
 import org.apache.cayenne.dba.QuotingStrategy;
