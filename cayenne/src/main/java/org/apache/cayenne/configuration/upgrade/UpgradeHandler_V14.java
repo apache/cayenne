@@ -53,11 +53,12 @@ public final class UpgradeHandler_V14 implements UpgradeHandler {
 
     @Override
     public void processProjectDom(UpgradeContext upgradeUnit) {
-        updateDomainSchemaAndVersion(upgradeUnit);
+        updateProjectSchema(upgradeUnit);
         updateDomainExtensionSchema(upgradeUnit, VALIDATION);
         removeEjbqlInspection(upgradeUnit);
         removeVersionAttribute(upgradeUnit);
         convertNamesToCamelCase(upgradeUnit);
+        renameProjectRoot(upgradeUnit);
     }
 
     @Override
@@ -74,6 +75,25 @@ public final class UpgradeHandler_V14 implements UpgradeHandler {
         convertDeleteRules(upgradeUnit);
         removeVersionAttribute(upgradeUnit);
         convertNamesToCamelCase(upgradeUnit);
+    }
+
+    /**
+     * Switches the project to the version 14 schema, that is called "project" instead of "domain".
+     */
+    private void updateProjectSchema(UpgradeContext upgradeUnit) {
+        Element project = upgradeUnit.getDocument().getDocumentElement();
+        project.setAttribute("xmlns", "http://cayenne.apache.org/schema/14/project");
+        project.setAttribute("xmlns:xsi", "http://www.w3.org/2001/XMLSchema-instance");
+        project.setAttribute("xsi:schemaLocation", "http://cayenne.apache.org/schema/14/project "
+                + "https://cayenne.apache.org/schema/14/project.xsd");
+    }
+
+    /**
+     * Renames the root tag of the project from "domain" to "project".
+     */
+    private void renameProjectRoot(UpgradeContext upgradeUnit) {
+        Element root = upgradeUnit.getDocument().getDocumentElement();
+        upgradeUnit.getDocument().renameNode(root, root.getNamespaceURI(), "project");
     }
 
     /**

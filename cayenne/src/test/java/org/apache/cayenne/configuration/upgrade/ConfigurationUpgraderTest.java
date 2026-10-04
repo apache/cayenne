@@ -109,7 +109,7 @@ public class ConfigurationUpgraderTest {
 
         Element root = context.getDocument().getDocumentElement();
         assertFalse(root.hasAttribute("project-version"));
-        assertEquals("http://cayenne.apache.org/schema/14/domain", root.getAttribute("xmlns"));
+        assertEquals("http://cayenne.apache.org/schema/14/project", root.getAttribute("xmlns"));
         assertEquals(2, root.getElementsByTagName("map").getLength());
 
         // the version 9 fixture has a DataNode, which version 13 removes without a replacement

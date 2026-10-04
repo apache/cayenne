@@ -94,10 +94,10 @@ public class FileProjectSaverTest {
                 .parse(file);
 
         XPath xpath = XPathFactory.newInstance().newXPath();
-        assertEquals("", xpath.evaluate("/domain/@name", document));
+        assertEquals("", xpath.evaluate("/project/@name", document));
 
         NodeList maps = (NodeList) xpath.evaluate(
-                "/domain/map",
+                "/project/map",
                 document,
                 XPathConstants.NODESET);
         assertEquals(3, maps.getLength());

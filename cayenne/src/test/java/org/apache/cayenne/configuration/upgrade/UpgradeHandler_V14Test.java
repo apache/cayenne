@@ -54,10 +54,11 @@ public class UpgradeHandler_V14Test extends BaseUpgradeHandlerTest {
 
         Element root = document.getDocumentElement();
         assertFalse(root.hasAttribute("project-version"));
-        assertEquals("http://cayenne.apache.org/schema/14/domain", root.getAttribute("xmlns"));
+        assertEquals("project", root.getNodeName());
+        assertEquals("http://cayenne.apache.org/schema/14/project", root.getAttribute("xmlns"));
         assertNoHyphenatedNames(document);
 
-        List<Element> validation = elements(document, "/domain/*[local-name()='validation']");
+        List<Element> validation = elements(document, "/project/*[local-name()='validation']");
         assertEquals(1, validation.size());
         assertEquals("http://cayenne.apache.org/schema/14/validation", validation.get(0).getAttribute("xmlns"));
 

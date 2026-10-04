@@ -18,12 +18,12 @@
   ~  under the License.
   ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~-->
 
-<xs:schema targetNamespace="http://cayenne.apache.org/schema/14/domain"
+<xs:schema targetNamespace="http://cayenne.apache.org/schema/14/project"
            elementFormDefault="qualified" version="14"
            xmlns:xs="http://www.w3.org/2001/XMLSchema"
-           xmlns:cay="http://cayenne.apache.org/schema/14/domain">
+           xmlns:cay="http://cayenne.apache.org/schema/14/project">
 
-    <xs:element name="domain">
+    <xs:element name="project">
         <xs:complexType>
             <xs:sequence>
                 <xs:element minOccurs="0" maxOccurs="unbounded" ref="cay:property"/>

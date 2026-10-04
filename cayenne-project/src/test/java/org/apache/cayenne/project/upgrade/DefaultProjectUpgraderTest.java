@@ -116,7 +116,7 @@ public class DefaultProjectUpgraderTest {
         // files are rewritten in the current version, the obsolete graph file is deleted
         String project = Files.readString(projectFile.toPath());
         assertFalse(project.contains("project-version"), project);
-        assertTrue(project.contains("http://cayenne.apache.org/schema/14/domain"), project);
+        assertTrue(project.contains("http://cayenne.apache.org/schema/14/project"), project);
         assertFalse(project.contains("<node"), project);
         assertFalse(project.contains("include"), project);
 
@@ -139,7 +139,7 @@ public class DefaultProjectUpgraderTest {
         // the version is a part of the namespace starting with version 14, and an attribute before that
         String root = Integer.parseInt(version) < 14
                 ? "<domain project-version=\"" + version + "\"/>"
-                : "<domain xmlns=\"http://cayenne.apache.org/schema/" + version + "/domain\"/>";
+                : "<project xmlns=\"http://cayenne.apache.org/schema/" + version + "/project\"/>";
         Files.writeString(file.toPath(), root);
         return new URLResource(file.toURI().toURL());
     }

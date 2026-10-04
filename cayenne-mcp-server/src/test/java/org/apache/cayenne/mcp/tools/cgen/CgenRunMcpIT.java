@@ -169,9 +169,9 @@ public class CgenRunMcpIT {
     private void writeFixture(String mapName, String pkg, Path destDir, boolean makePairs) throws IOException {
         Files.writeString(tempDir.resolve("cayenne-project.xml"), String.format("""
                 <?xml version="1.0" encoding="utf-8"?>
-                <domain xmlns="http://cayenne.apache.org/schema/14/domain">
+                <project xmlns="http://cayenne.apache.org/schema/14/project">
                     <map name="%s"/>
-                </domain>
+                </project>
                 """, mapName));
 
         Files.writeString(tempDir.resolve(mapName + ".map.xml"), String.format("""

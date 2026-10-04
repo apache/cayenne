@@ -37,7 +37,7 @@ final class DataChannelChildrenHandler extends NamespaceAwareNestedTagHandler {
     static final String OLD_MAP_TAG = "map";
     static final String PROPERTY_TAG = "property";
     static final String DATA_MAP_TAG = "dataMap";
-    static final String DOMAIN_TAG = "domain";
+    static final String PROJECT_TAG = "project";
 
 
     private XMLDataChannelDescriptorLoader xmlDataChannelDescriptorLoader;
@@ -60,7 +60,7 @@ final class DataChannelChildrenHandler extends NamespaceAwareNestedTagHandler {
                 addMap(attributes);
                 return true;
 
-            case DOMAIN_TAG:
+            case PROJECT_TAG:
                 return true;
         }
 

@@ -137,7 +137,7 @@ public class DefaultProjectUpgrader implements ProjectUpgrader {
         List<Resource> resources = new ArrayList<>();
         try {
             XPath xpath = XPathFactory.newInstance().newXPath();
-            NodeList nodes = (NodeList) xpath.evaluate("/domain/map/@name", projectContext.getDocument(),
+            NodeList nodes = (NodeList) xpath.evaluate("/*/map/@name", projectContext.getDocument(),
                     XPathConstants.NODESET);
             for (int i = 0; i < nodes.getLength(); i++) {
                 Node mapNode = nodes.item(i);

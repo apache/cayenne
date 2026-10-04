@@ -126,7 +126,8 @@ public sealed interface UpgradeHandler permits
     }
 
     /**
-     * Upgrade Domain schema and version info
+     * Upgrade Domain schema and version info. Only applies to the versions before 14, where the project schema is
+     * called "domain".
      *
      * @param upgradeUnit for the datamap
      */

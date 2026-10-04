@@ -1,10 +1,10 @@
 <?xml version="1.0" encoding="utf-8"?>
-<domain xmlns="http://cayenne.apache.org/schema/14/domain"
+<project xmlns="http://cayenne.apache.org/schema/14/project"
         xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-        xsi:schemaLocation="http://cayenne.apache.org/schema/14/domain https://cayenne.apache.org/schema/14/domain.xsd">
+        xsi:schemaLocation="http://cayenne.apache.org/schema/14/project https://cayenne.apache.org/schema/14/project.xsd">
     <validation xmlns="http://cayenne.apache.org/schema/14/validation">
         <exclude>DATA_CHANNEL_NO_NAME</exclude>
         <exclude>DATA_MAP_NO_NAME</exclude>
         <exclude>DATA_MAP_NAME_DUPLICATE</exclude>
     </validation>
-</domain>
+</project>

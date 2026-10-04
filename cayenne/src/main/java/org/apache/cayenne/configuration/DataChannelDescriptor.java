@@ -40,8 +40,8 @@ public class DataChannelDescriptor implements ConfigurationNode, XMLSerializable
 	/**
 	 * The namespace in which the data map XML file will be created.
 	 */
-	public static final String SCHEMA_XSD = "http://cayenne.apache.org/schema/14/domain";
-	public static final String SCHEMA_XSD_LOCATION = "https://cayenne.apache.org/schema/14/domain.xsd";
+	public static final String SCHEMA_XSD = "http://cayenne.apache.org/schema/14/project";
+	public static final String SCHEMA_XSD_LOCATION = "https://cayenne.apache.org/schema/14/project.xsd";
 
 	protected String name;
 	protected Map<String, String> properties;
@@ -56,7 +56,7 @@ public class DataChannelDescriptor implements ConfigurationNode, XMLSerializable
 	@Override
 	public void encodeAsXML(XMLEncoder encoder, ConfigurationNodeVisitor<?> delegate) {
 
-		encoder.start("domain")
+		encoder.start("project")
 				.attribute("xmlns", SCHEMA_XSD)
 				.attribute("xmlns:xsi", "http://www.w3.org/2001/XMLSchema-instance", true)
 				.attribute("xsi:schemaLocation", SCHEMA_XSD + " " + SCHEMA_XSD_LOCATION, true);

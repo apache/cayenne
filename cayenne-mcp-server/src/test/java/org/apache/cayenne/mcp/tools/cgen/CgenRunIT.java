@@ -157,9 +157,9 @@ public class CgenRunIT {
         Files.createDirectories(resources);
         Files.writeString(resources.resolve("cayenne-project.xml"), """
                 <?xml version="1.0" encoding="utf-8"?>
-                <domain xmlns="http://cayenne.apache.org/schema/14/domain">
+                <project xmlns="http://cayenne.apache.org/schema/14/project">
                     <map name="DefaultMap"/>
-                </domain>
+                </project>
                 """);
         Files.writeString(mapFile, """
                 <?xml version="1.0" encoding="utf-8"?>
@@ -193,9 +193,9 @@ public class CgenRunIT {
         Path projectDescriptor = tempDir.resolve("cayenne-project.xml");
         Files.writeString(projectDescriptor, String.format("""
                 <?xml version="1.0" encoding="utf-8"?>
-                <domain xmlns="http://cayenne.apache.org/schema/14/domain">
+                <project xmlns="http://cayenne.apache.org/schema/14/project">
                     <map name="%s"/>
-                </domain>
+                </project>
                 """, mapName));
 
         // DataMap with one entity and embedded cgen config

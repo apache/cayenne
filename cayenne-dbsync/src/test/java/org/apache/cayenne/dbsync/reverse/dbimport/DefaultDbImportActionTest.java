@@ -374,10 +374,10 @@ public class DefaultDbImportActionTest {
         assertFalse(projectFile.exists());
 
         Files.write(projectFile.toPath(), ("<?xml version=\"1.0\" encoding=\"utf-8\"?>\n" +
-                "<domain xmlns=\"http://cayenne.apache.org/schema/14/domain\"\n" +
+                "<project xmlns=\"http://cayenne.apache.org/schema/14/project\"\n" +
                 "\t xmlns:xsi=\"http://www.w3.org/2001/XMLSchema-instance\"\n" +
-                "\t xsi:schemaLocation=\"http://cayenne.apache.org/schema/14/domain https://cayenne.apache.org/schema/14/domain.xsd\">\n" +
-                "</domain>").getBytes(StandardCharsets.UTF_8));
+                "\t xsi:schemaLocation=\"http://cayenne.apache.org/schema/14/project https://cayenne.apache.org/schema/14/project.xsd\">\n" +
+                "</project>").getBytes(StandardCharsets.UTF_8));
         assertTrue(projectFile.isFile());
 
         when(params.getCayenneProject()).thenReturn(projectFile);
@@ -418,11 +418,11 @@ public class DefaultDbImportActionTest {
         assertFalse(projectFile.exists());
 
         Files.write(projectFile.toPath(), ("<?xml version=\"1.0\" encoding=\"utf-8\"?>\n" +
-                "<domain xmlns=\"http://cayenne.apache.org/schema/14/domain\"\n" +
+                "<project xmlns=\"http://cayenne.apache.org/schema/14/project\"\n" +
                 "\t xmlns:xsi=\"http://www.w3.org/2001/XMLSchema-instance\"\n" +
-                "\t xsi:schemaLocation=\"http://cayenne.apache.org/schema/14/domain https://cayenne.apache.org/schema/14/domain.xsd\">\n" +
+                "\t xsi:schemaLocation=\"http://cayenne.apache.org/schema/14/project https://cayenne.apache.org/schema/14/project.xsd\">\n" +
                 "\t<map name=\"testSaveLoaded4\"/>\n" +
-                "</domain>").getBytes(StandardCharsets.UTF_8));
+                "</project>").getBytes(StandardCharsets.UTF_8));
         assertTrue(projectFile.isFile());
 
         when(params.getCayenneProject()).thenReturn(projectFile);

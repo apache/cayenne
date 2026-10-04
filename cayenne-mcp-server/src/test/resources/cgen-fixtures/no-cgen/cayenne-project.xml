@@ -1,4 +1,4 @@
 <?xml version="1.0" encoding="utf-8"?>
-<domain xmlns="http://cayenne.apache.org/schema/14/domain">
+<project xmlns="http://cayenne.apache.org/schema/14/project">
     <map name="TestMap"/>
-</domain>
+</project>
