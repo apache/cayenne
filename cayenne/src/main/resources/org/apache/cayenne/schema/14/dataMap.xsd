@@ -115,6 +115,7 @@
 			<xs:attribute name="length" type="xs:integer"/>
 			<xs:attribute name="name" use="required" type="xs:string"/>
 			<xs:attribute name="scale" type="xs:integer"/>
+			<xs:attribute name="attributePrecision" type="xs:integer"/>
 			<xs:attribute name="type" use="required" type="xs:string"/>
 		</xs:complexType>
 	</xs:element>
