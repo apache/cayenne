@@ -50,6 +50,7 @@ import org.apache.cayenne.query.QueryMetadataProxy;
 import org.apache.cayenne.query.QueryRouter;
 import org.apache.cayenne.query.ResultSegment;
 import org.apache.cayenne.query.ResultSegments;
+import org.apache.cayenne.query.ScalarResultSegment;
 import org.apache.cayenne.reflect.ClassDescriptor;
 import org.apache.cayenne.reflect.DefaultConstructor;
 import org.apache.cayenne.reflect.LifecycleCallbackRegistry;
@@ -351,33 +352,30 @@ class DataDomainQueryAction implements QueryRouter, OperationObserver {
     }
 
     private ObjectConversionStrategy<?, ?> getConverter() {
-        ObjectConversionStrategy<?, ?> converter;
+        ObjectConversionStrategy<?, ?> converter = getDefaultConverter();
+        Function<?, ?> mapper = metadata.getResultMapper();
+        return mapper != null ? new MapperConversionStrategy(mapper, converter) : converter;
+    }
 
+    private ObjectConversionStrategy<?, ?> getDefaultConverter() {
         if (metadata.isFetchingDataRows()) {
-            converter = new IdentityConversionStrategy();
-        } else {
-            ResultSegments rsMapping = metadata.getResultSegments();
-            if (rsMapping == null) {
-                converter = new SingleObjectConversionStrategy();
-            } else {
-                if (!rsMapping.array()) {
-                    if (rsMapping.segments().getFirst() instanceof EntityResultSegment) {
-                        converter = new SingleObjectConversionStrategy();
-                    } else if (rsMapping.segments().getFirst() instanceof EmbeddableResultSegment) {
-                        converter = new SingleEmbeddableConversionStrategy();
-                    } else {
-                        converter = new SingleScalarConversionStrategy();
-                    }
-                } else {
-                    converter = new MixedConversionStrategy();
-                }
-            }
+            return new IdentityConversionStrategy();
         }
 
-        if (metadata.getResultMapper() != null) {
-            converter = new MapperConversionStrategy(converter);
+        ResultSegments rsMapping = metadata.getResultSegments();
+        if (rsMapping == null) {
+            return new SingleObjectConversionStrategy();
         }
-        return converter;
+
+        if (rsMapping.array()) {
+            return new MixedConversionStrategy();
+        }
+
+        return switch (rsMapping.segments().getFirst()) {
+            case EntityResultSegment ignored -> new SingleObjectConversionStrategy();
+            case EmbeddableResultSegment ignored -> new SingleEmbeddableConversionStrategy();
+            case ScalarResultSegment ignored -> new SingleScalarConversionStrategy();
+        };
     }
 
     @Override
@@ -511,50 +509,50 @@ class DataDomainQueryAction implements QueryRouter, OperationObserver {
         return iteratorExclusiveConnection;
     }
 
-    abstract class ObjectConversionStrategy<T, R> {
+    abstract static class ObjectConversionStrategy<T, R> {
         abstract List<? extends R> convert(List<T> mainRows);
 
         abstract R convert(T t);
+    }
 
-        protected PrefetchProcessorNode toResultsTree(ClassDescriptor descriptor, PrefetchTreeNode prefetchTree,
-                                                      List<DataRow> normalizedRows) {
+    private PrefetchProcessorNode toResultsTree(ClassDescriptor descriptor, PrefetchTreeNode prefetchTree,
+                                                List<DataRow> normalizedRows) {
 
-            // take a shortcut when no prefetches exist...
-            if (prefetchTree == null) {
-                // When results come from cache (not a refresh operation), don't refresh objects 
-                // to avoid clobbering newer in-memory state
-                boolean refresh = metadata.isRefreshingObjects() && !shouldSkipRefresh();
-                return new ObjectResolver(context, descriptor, refresh)
-                        .synchronizedRootResultNodeFromDataRows(normalizedRows);
-            } else {
-                // When results come from cache (not a refresh operation), wrap metadata to prevent refreshing objects
-                QueryMetadata effectiveMetadata = shouldSkipRefresh() && metadata.isRefreshingObjects()
-                        ? nonRefreshingMetadata(metadata)
-                        : metadata;
-                return new HierarchicalObjectResolver(context, effectiveMetadata)
-                        .synchronizedRootResultNodeFromDataRows(prefetchTree, normalizedRows, prefetchResultsByPath);
+        // take a shortcut when no prefetches exist...
+        if (prefetchTree == null) {
+            // When results come from cache (not a refresh operation), don't refresh objects 
+            // to avoid clobbering newer in-memory state
+            boolean refresh = metadata.isRefreshingObjects() && !shouldSkipRefresh();
+            return new ObjectResolver(context, descriptor, refresh)
+                    .synchronizedRootResultNodeFromDataRows(normalizedRows);
+        } else {
+            // When results come from cache (not a refresh operation), wrap metadata to prevent refreshing objects
+            QueryMetadata effectiveMetadata = shouldSkipRefresh() && metadata.isRefreshingObjects()
+                    ? nonRefreshingMetadata(metadata)
+                    : metadata;
+            return new HierarchicalObjectResolver(context, effectiveMetadata)
+                    .synchronizedRootResultNodeFromDataRows(prefetchTree, normalizedRows, prefetchResultsByPath);
+        }
+    }
+
+    private boolean shouldSkipRefresh() {
+        // Skip refresh only for cache hits to prevent stale cached data from clobbering newer in-memory state
+        // For cache misses (including explicit refresh operations), cacheHit is false, so refresh happens normally
+        // Prefetch relationships are resolved independently via connectToParents(), so this doesn't affect prefetch behavior
+        return cacheHit;
+    }
+
+    private void performPostLoadCallbacks(PrefetchProcessorNode node, LifecycleCallbackRegistry callbackRegistry) {
+
+        if (node.hasChildren()) {
+            for (PrefetchTreeNode child : node.getChildren()) {
+                performPostLoadCallbacks((PrefetchProcessorNode) child, callbackRegistry);
             }
         }
 
-        private boolean shouldSkipRefresh() {
-            // Skip refresh only for cache hits to prevent stale cached data from clobbering newer in-memory state
-            // For cache misses (including explicit refresh operations), cacheHit is false, so refresh happens normally
-            // Prefetch relationships are resolved independently via connectToParents(), so this doesn't affect prefetch behavior
-            return cacheHit;
-        }
-
-        protected void performPostLoadCallbacks(PrefetchProcessorNode node, LifecycleCallbackRegistry callbackRegistry) {
-
-            if (node.hasChildren()) {
-                for (PrefetchTreeNode child : node.getChildren()) {
-                    performPostLoadCallbacks((PrefetchProcessorNode) child, callbackRegistry);
-                }
-            }
-
-            List<Persistent> objects = node.getObjects();
-            if (objects != null) {
-                callbackRegistry.performCallbacks(LifecycleEvent.POST_LOAD, objects);
-            }
+        List<Persistent> objects = node.getObjects();
+        if (objects != null) {
+            callbackRegistry.performCallbacks(LifecycleEvent.POST_LOAD, objects);
         }
     }
 
@@ -800,17 +798,15 @@ class DataDomainQueryAction implements QueryRouter, OperationObserver {
         }
     }
 
-    /**
-     * Conversion strategy that uses mapper function to map raw result
-     */
-    private class MapperConversionStrategy extends ObjectConversionStrategy<Object, Object> {
+    // Conversion strategy that uses mapper function to map raw result
+    private static class MapperConversionStrategy extends ObjectConversionStrategy<Object, Object> {
 
         private final Function<Object, ?> mapper;
         private final ObjectConversionStrategy<Object, Object> parentStrategy;
 
         @SuppressWarnings({"unchecked", "rawtypes"})
-        MapperConversionStrategy(ObjectConversionStrategy<?, ?> parentStrategy) {
-            this.mapper = (Function) metadata.getResultMapper();
+        MapperConversionStrategy(Function<?, ?> mapper, ObjectConversionStrategy<?, ?> parentStrategy) {
+            this.mapper = (Function) mapper;
             this.parentStrategy = (ObjectConversionStrategy) parentStrategy;
         }
 
