@@ -19,14 +19,11 @@
 
 package org.apache.cayenne.project.upgrade;
 
-import org.apache.cayenne.project.Project;
 import org.junit.jupiter.api.Test;
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;
 
 import static org.junit.jupiter.api.Assertions.*;
-import static org.mockito.Mockito.mock;
-import static org.mockito.Mockito.verifyNoInteractions;
 
 public class UpgradeHandler_V10Test extends BaseUpgradeHandlerTest {
 
@@ -36,7 +33,7 @@ public class UpgradeHandler_V10Test extends BaseUpgradeHandlerTest {
 
     @Test
     public void projectDomUpgrade() throws Exception {
-        Document document = processProjectDom("cayenne-project-v9.xml");
+        Document document = upgradeProjectDOM("cayenne-project-v9.xml");
 
         Element root = document.getDocumentElement();
         assertEquals("10", root.getAttribute("project-version"));
@@ -46,18 +43,11 @@ public class UpgradeHandler_V10Test extends BaseUpgradeHandlerTest {
 
     @Test
     public void dataMapDomUpgrade() throws Exception {
-        Document document = processDataMapDom("test-map-v9.map.xml");
+        Document document = upgradeDataMapDOM("test-map-v9.map.xml");
 
         Element root = document.getDocumentElement();
         assertEquals("10", root.getAttribute("project-version"));
         assertEquals("http://cayenne.apache.org/schema/10/modelMap", root.getAttribute("xmlns"));
         assertEquals(2, root.getElementsByTagName("db-attribute").getLength());
-    }
-
-    @Test
-    public void modelUpgrade() throws Exception {
-        Project project = mock(Project.class);
-        handler.processModel(project);
-        verifyNoInteractions(project);
     }
 }

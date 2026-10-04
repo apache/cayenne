@@ -20,7 +20,6 @@
 package org.apache.cayenne.project.upgrade;
 
 import org.apache.cayenne.ConfigurationException;
-import org.apache.cayenne.project.Project;
 import org.apache.cayenne.di.Inject;
 import org.apache.cayenne.di.Provider;
 import org.apache.cayenne.resource.Resource;
@@ -135,12 +134,12 @@ public class ProjectFileUpgrader {
 
     /**
      * Reads the project XML and upgrades its DOM from the given version. The referenced DataMaps are not touched,
-     * see {@link #upgradeDataMapDom(Resource, String)}.
+     * see {@link #upgradeDataMapDOM(Resource, String)}.
      */
-    public UpgradeContext upgradeProjectDom(Resource resource, String fromVersion) {
+    public UpgradeContext upgradeProjectDOM(Resource resource, String fromVersion) {
         UpgradeContext context = new UpgradeContext(resource, readDocument(resource.getURL()));
         for (UpgradeHandler handler : handlersForVersion(fromVersion)) {
-            handler.processProjectDom(context);
+            handler.upgradeProjectDOM(context);
         }
         return context;
     }
@@ -148,21 +147,12 @@ public class ProjectFileUpgrader {
     /**
      * Reads the DataMap XML and upgrades its DOM from the given version.
      */
-    public UpgradeContext upgradeDataMapDom(Resource resource, String fromVersion) {
+    public UpgradeContext upgradeDataMapDOM(Resource resource, String fromVersion) {
         UpgradeContext context = new UpgradeContext(resource, readDocument(resource.getURL()));
         for (UpgradeHandler handler : handlersForVersion(fromVersion)) {
-            handler.processDataMapDom(context);
+            handler.upgradeDataMapDOM(context);
         }
         return context;
-    }
-
-    /**
-     * Applies the model-level part of the upgrade from the given version to a descriptor loaded from the upgraded XML.
-     */
-    public void upgradeModel(String fromVersion, Project project) {
-        for (UpgradeHandler handler : handlersForVersion(fromVersion)) {
-            handler.processModel(project);
-        }
     }
 
     private static Document readDocument(URL url) {

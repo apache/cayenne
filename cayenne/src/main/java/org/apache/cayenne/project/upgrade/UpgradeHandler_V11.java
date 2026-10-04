@@ -50,11 +50,6 @@ public final class UpgradeHandler_V11 implements UpgradeHandler {
 
     private static final Logger LOGGER = LoggerFactory.getLogger(UpgradeHandler_V11.class);
 
-    /**
-     * root tag for the graph extension
-     */
-    private static final String GRAPH = "graph";
-
     private static final List<String> defaultTemplatePaths = List.of(
             "templates/v4_1/singleclass.vm",
             "templates/v4_1/superclass.vm",
@@ -72,24 +67,73 @@ public final class UpgradeHandler_V11 implements UpgradeHandler {
     }
 
     @Override
-    public void processProjectDom(UpgradeContext upgradeUnit) {
-        updateDomainSchemaAndVersion(upgradeUnit);
+    public void upgradeProjectDOM(UpgradeContext upgradeUnit) {
+        upgradeProjectSchemaAndVersion(upgradeUnit);
         updateDataNodeConnectionPool(upgradeUnit);
     }
 
     @Override
-    public void processDataMapDom(UpgradeContext upgradeUnit) {
-        updateDataMapSchemaAndVersion(upgradeUnit);
-        updateExtensionSchema(upgradeUnit, CGEN);
-        updateExtensionSchema(upgradeUnit, DB_IMPORT);
-        updateExtensionSchema(upgradeUnit, GRAPH);
-        updateInfoSchema(upgradeUnit);
+    public void upgradeDataMapDOM(UpgradeContext upgradeUnit) {
+        upgradeDataMapSchemaAndVersion(upgradeUnit);
+        upgradeExtensionSchema(upgradeUnit, "cgen");
+        upgradeExtensionSchema(upgradeUnit, "dbImport");
+        upgradeExtensionSchema(upgradeUnit, "graph");
+        upgradeInfoSchema(upgradeUnit);
 
         dropROPProperties(upgradeUnit);
         dropObjEntityClientInfo(upgradeUnit);
         upgradeGenericObjEntity(upgradeUnit);
         updateCgenConfig(upgradeUnit);
         updateDbImportConfig(upgradeUnit);
+    }
+
+    private void upgradeProjectSchemaAndVersion(UpgradeContext upgradeUnit) {
+        Element project = upgradeUnit.getDocument().getDocumentElement();
+        project.setAttribute("xmlns", "http://cayenne.apache.org/schema/11/domain");
+        project.setAttribute("xmlns:xsi", "http://www.w3.org/2001/XMLSchema-instance");
+        project.setAttribute("xsi:schemaLocation", "http://cayenne.apache.org/schema/11/domain "
+                + "https://cayenne.apache.org/schema/11/domain.xsd");
+        project.setAttribute("project-version", "11");
+    }
+
+    private void upgradeDataMapSchemaAndVersion(UpgradeContext upgradeUnit) {
+        Element dataMap = upgradeUnit.getDocument().getDocumentElement();
+        dataMap.setAttribute("xmlns", "http://cayenne.apache.org/schema/11/modelMap");
+        dataMap.setAttribute("xsi:schemaLocation", "http://cayenne.apache.org/schema/11/modelMap "
+                + "https://cayenne.apache.org/schema/11/modelMap.xsd");
+        dataMap.setAttribute("project-version", "11");
+    }
+
+    private void upgradeExtensionSchema(UpgradeContext upgradeUnit, String extension) {
+        XPath xpath = XPathFactory.newInstance().newXPath();
+        NodeList nodes;
+        try {
+            nodes = (NodeList) xpath.evaluate("/data-map/*[local-name()='" + extension + "']",
+                    upgradeUnit.getDocument(), XPathConstants.NODESET);
+        } catch (Exception e) {
+            return;
+        }
+        for (int j = 0; j < nodes.getLength(); j++) {
+            Element element = (Element) nodes.item(j);
+            element.setAttribute("xmlns", "http://cayenne.apache.org/schema/11/" + extension.toLowerCase());
+        }
+    }
+
+    private void upgradeInfoSchema(UpgradeContext upgradeUnit) {
+        XPath xpath = XPathFactory.newInstance().newXPath();
+        NodeList nodes;
+        try {
+            nodes = (NodeList) xpath.evaluate("//*[local-name()='property']",
+                    upgradeUnit.getDocument(), XPathConstants.NODESET);
+        } catch (Exception e) {
+            return;
+        }
+        for (int j = 0; j < nodes.getLength(); j++) {
+            Element element = (Element) nodes.item(j);
+            if (element.hasAttribute("xmlns:info")) {
+                element.setAttribute("xmlns:info", "http://cayenne.apache.org/schema/11/info");
+            }
+        }
     }
 
     private void dropROPProperties(UpgradeContext upgradeUnit) {
@@ -155,7 +199,7 @@ public final class UpgradeHandler_V11 implements UpgradeHandler {
         XPath xpath = XPathFactory.newInstance().newXPath();
         NodeList nodes;
         try {
-            nodes = (NodeList) xpath.evaluate("/data-map/*[local-name()='" + DB_IMPORT + "']/*[local-name()='usePrimitives']",
+            nodes = (NodeList) xpath.evaluate("/data-map/*[local-name()='dbImport']/*[local-name()='usePrimitives']",
                     upgradeUnit.getDocument(), XPathConstants.NODESET);
         } catch (Exception e) {
             return;
@@ -196,9 +240,9 @@ public final class UpgradeHandler_V11 implements UpgradeHandler {
         NodeList queryTemplates;
         NodeList querySuperTemplates;
         try {
-            queryTemplates = (NodeList) xpath.evaluate("/data-map/*[local-name()='" + CGEN + "']/*[local-name()='queryTemplate']",
+            queryTemplates = (NodeList) xpath.evaluate("/data-map/*[local-name()='cgen']/*[local-name()='queryTemplate']",
                     upgradeUnit.getDocument(), XPathConstants.NODESET);
-            querySuperTemplates = (NodeList) xpath.evaluate("/data-map/*[local-name()='" + CGEN + "']/*[local-name()='querySuperTemplate']",
+            querySuperTemplates = (NodeList) xpath.evaluate("/data-map/*[local-name()='cgen']/*[local-name()='querySuperTemplate']",
                     upgradeUnit.getDocument(), XPathConstants.NODESET);
         } catch (Exception e) {
             return;
@@ -219,7 +263,7 @@ public final class UpgradeHandler_V11 implements UpgradeHandler {
         XPath xpath = XPathFactory.newInstance().newXPath();
         NodeList nodes;
         try {
-            nodes = (NodeList) xpath.evaluate("/data-map/*[local-name()='" + CGEN + "']/*[local-name()='client']",
+            nodes = (NodeList) xpath.evaluate("/data-map/*[local-name()='cgen']/*[local-name()='client']",
                     upgradeUnit.getDocument(), XPathConstants.NODESET);
         } catch (Exception e) {
             return;
@@ -250,7 +294,7 @@ public final class UpgradeHandler_V11 implements UpgradeHandler {
         XPath xpath = XPathFactory.newInstance().newXPath();
         NodeList templates;
         try {
-            templates = (NodeList) xpath.evaluate("/data-map/*[local-name()='" + CGEN + "']/*[local-name()='" + nodeName + "']",
+            templates = (NodeList) xpath.evaluate("/data-map/*[local-name()='cgen']/*[local-name()='" + nodeName + "']",
                     upgradeUnit.getDocument(), XPathConstants.NODESET);
         } catch (Exception e) {
             return;

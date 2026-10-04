@@ -125,7 +125,7 @@ public class XMLDataMapLoader implements DataMapLoader {
                     configurationURL, version, UpgradeHandler.MIN_SUPPORTED_VERSION);
         }
 
-        UpgradeContext context = upgrader.upgradeDataMapDom(configurationResource, version);
+        UpgradeContext context = upgrader.upgradeDataMapDOM(configurationResource, version);
         if (!context.getChangesAffectingRuntime().isEmpty()) {
             throw new CayenneRuntimeException("""
                     Unable to upgrade DataMap from %s (project version %s) in memory, as the upgrade requires \

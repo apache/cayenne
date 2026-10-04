@@ -52,9 +52,9 @@ public final class UpgradeHandler_V14 implements UpgradeHandler {
     }
 
     @Override
-    public void processProjectDom(UpgradeContext upgradeUnit) {
+    public void upgradeProjectDOM(UpgradeContext upgradeUnit) {
         updateProjectSchema(upgradeUnit);
-        updateDomainExtensionSchema(upgradeUnit, VALIDATION);
+        upgradeDomainExtensionSchema(upgradeUnit, "validation");
         removeEjbqlInspection(upgradeUnit);
         renameProjectInspection(upgradeUnit);
         removeVersionAttribute(upgradeUnit);
@@ -64,11 +64,11 @@ public final class UpgradeHandler_V14 implements UpgradeHandler {
     }
 
     @Override
-    public void processDataMapDom(UpgradeContext upgradeUnit) {
+    public void upgradeDataMapDOM(UpgradeContext upgradeUnit) {
         updateDataMapSchema(upgradeUnit);
-        updateExtensionSchema(upgradeUnit, CGEN);
-        updateExtensionSchema(upgradeUnit, DB_IMPORT);
-        updateInfoSchema(upgradeUnit);
+        upgradeExtensionSchema(upgradeUnit, "cgen");
+        upgradeExtensionSchema(upgradeUnit, "dbImport");
+        upgradeInfoSchema(upgradeUnit);
         convertSelectQueries(upgradeUnit);
         removeEjbqlQueries(upgradeUnit);
         convertQueryTags(upgradeUnit);
@@ -78,6 +78,26 @@ public final class UpgradeHandler_V14 implements UpgradeHandler {
         convertDataMapProperties(upgradeUnit);
         removeVersionAttribute(upgradeUnit);
         convertNamesToCamelCase(upgradeUnit);
+    }
+
+    private void upgradeExtensionSchema(UpgradeContext upgradeUnit, String extension) {
+        for (Element element : elements(upgradeUnit, "/data-map/*[local-name()='" + extension + "']")) {
+            element.setAttribute("xmlns", "http://cayenne.apache.org/schema/14/" + extension.toLowerCase());
+        }
+    }
+
+    private void upgradeDomainExtensionSchema(UpgradeContext upgradeUnit, String extension) {
+        for (Element element : elements(upgradeUnit, "/domain/*[local-name()='" + extension + "']")) {
+            element.setAttribute("xmlns", "http://cayenne.apache.org/schema/14/" + extension.toLowerCase());
+        }
+    }
+
+    private void upgradeInfoSchema(UpgradeContext upgradeUnit) {
+        for (Element element : elements(upgradeUnit, "//*[local-name()='property']")) {
+            if (element.hasAttribute("xmlns:info")) {
+                element.setAttribute("xmlns:info", "http://cayenne.apache.org/schema/14/info");
+            }
+        }
     }
 
     /**

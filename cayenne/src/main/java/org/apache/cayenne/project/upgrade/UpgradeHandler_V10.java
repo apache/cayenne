@@ -19,6 +19,7 @@
 
 package org.apache.cayenne.project.upgrade;
 
+import org.w3c.dom.Element;
 
 /**
  * Upgrade handler for the project version "10" introduced by 4.1.M1 release.
@@ -36,13 +37,30 @@ public final class UpgradeHandler_V10 implements UpgradeHandler {
     }
 
     @Override
-    public void processProjectDom(UpgradeContext upgradeUnit) {
+    public void upgradeProjectDOM(UpgradeContext upgradeUnit) {
         // introduce xml namespace and schema for domain
-        updateDomainSchemaAndVersion(upgradeUnit);
+        upgradeProjectSchemaAndVersion(upgradeUnit);
     }
 
     @Override
-    public void processDataMapDom(UpgradeContext upgradeUnit) {
-        updateDataMapSchemaAndVersion(upgradeUnit);
+    public void upgradeDataMapDOM(UpgradeContext upgradeUnit) {
+        upgradeDataMapSchemaAndVersion(upgradeUnit);
+    }
+
+    private void upgradeProjectSchemaAndVersion(UpgradeContext upgradeUnit) {
+        Element project = upgradeUnit.getDocument().getDocumentElement();
+        project.setAttribute("xmlns", "http://cayenne.apache.org/schema/10/domain");
+        project.setAttribute("xmlns:xsi", "http://www.w3.org/2001/XMLSchema-instance");
+        project.setAttribute("xsi:schemaLocation", "http://cayenne.apache.org/schema/10/domain "
+                + "https://cayenne.apache.org/schema/10/domain.xsd");
+        project.setAttribute("project-version", "10");
+    }
+
+    private void upgradeDataMapSchemaAndVersion(UpgradeContext upgradeUnit) {
+        Element dataMap = upgradeUnit.getDocument().getDocumentElement();
+        dataMap.setAttribute("xmlns", "http://cayenne.apache.org/schema/10/modelMap");
+        dataMap.setAttribute("xsi:schemaLocation", "http://cayenne.apache.org/schema/10/modelMap "
+                + "https://cayenne.apache.org/schema/10/modelMap.xsd");
+        dataMap.setAttribute("project-version", "10");
     }
 }

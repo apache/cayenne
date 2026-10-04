@@ -44,18 +44,82 @@ public final class UpgradeHandler_V12 implements UpgradeHandler {
     }
 
     @Override
-    public void processProjectDom(UpgradeContext upgradeUnit) {
-        updateDomainSchemaAndVersion(upgradeUnit);
+    public void upgradeProjectDOM(UpgradeContext upgradeUnit) {
+        upgradeProjectSchemaAndVersion(upgradeUnit);
         removeGraphIncludes(upgradeUnit);
-        updateDomainExtensionSchema(upgradeUnit, VALIDATION);
+        upgradeDomainExtensionSchema(upgradeUnit, "validation");
     }
 
     @Override
-    public void processDataMapDom(UpgradeContext upgradeUnit) {
-        updateDataMapSchemaAndVersion(upgradeUnit);
-        updateExtensionSchema(upgradeUnit, CGEN);
-        updateExtensionSchema(upgradeUnit, DB_IMPORT);
-        updateInfoSchema(upgradeUnit);
+    public void upgradeDataMapDOM(UpgradeContext upgradeUnit) {
+        upgradeDataMapSchemaAndVersion(upgradeUnit);
+        upgradeExtensionSchema(upgradeUnit, "cgen");
+        upgradeExtensionSchema(upgradeUnit, "dbImport");
+        upgradeInfoSchema(upgradeUnit);
+    }
+
+    private void upgradeProjectSchemaAndVersion(UpgradeContext upgradeUnit) {
+        Element project = upgradeUnit.getDocument().getDocumentElement();
+        project.setAttribute("xmlns", "http://cayenne.apache.org/schema/12/domain");
+        project.setAttribute("xmlns:xsi", "http://www.w3.org/2001/XMLSchema-instance");
+        project.setAttribute("xsi:schemaLocation", "http://cayenne.apache.org/schema/12/domain "
+                + "https://cayenne.apache.org/schema/12/domain.xsd");
+        project.setAttribute("project-version", "12");
+    }
+
+    private void upgradeDataMapSchemaAndVersion(UpgradeContext upgradeUnit) {
+        Element dataMap = upgradeUnit.getDocument().getDocumentElement();
+        dataMap.setAttribute("xmlns", "http://cayenne.apache.org/schema/12/modelMap");
+        dataMap.setAttribute("xsi:schemaLocation", "http://cayenne.apache.org/schema/12/modelMap "
+                + "https://cayenne.apache.org/schema/12/modelMap.xsd");
+        dataMap.setAttribute("project-version", "12");
+    }
+
+    private void upgradeExtensionSchema(UpgradeContext upgradeUnit, String extension) {
+        XPath xpath = XPathFactory.newInstance().newXPath();
+        NodeList nodes;
+        try {
+            nodes = (NodeList) xpath.evaluate("/data-map/*[local-name()='" + extension + "']",
+                    upgradeUnit.getDocument(), XPathConstants.NODESET);
+        } catch (Exception e) {
+            return;
+        }
+        for (int j = 0; j < nodes.getLength(); j++) {
+            Element element = (Element) nodes.item(j);
+            element.setAttribute("xmlns", "http://cayenne.apache.org/schema/12/" + extension.toLowerCase());
+        }
+    }
+
+    private void upgradeDomainExtensionSchema(UpgradeContext upgradeUnit, String extension) {
+        XPath xpath = XPathFactory.newInstance().newXPath();
+        NodeList nodes;
+        try {
+            nodes = (NodeList) xpath.evaluate("/domain/*[local-name()='" + extension + "']",
+                    upgradeUnit.getDocument(), XPathConstants.NODESET);
+        } catch (Exception e) {
+            return;
+        }
+        for (int j = 0; j < nodes.getLength(); j++) {
+            Element element = (Element) nodes.item(j);
+            element.setAttribute("xmlns", "http://cayenne.apache.org/schema/12/" + extension.toLowerCase());
+        }
+    }
+
+    private void upgradeInfoSchema(UpgradeContext upgradeUnit) {
+        XPath xpath = XPathFactory.newInstance().newXPath();
+        NodeList nodes;
+        try {
+            nodes = (NodeList) xpath.evaluate("//*[local-name()='property']",
+                    upgradeUnit.getDocument(), XPathConstants.NODESET);
+        } catch (Exception e) {
+            return;
+        }
+        for (int j = 0; j < nodes.getLength(); j++) {
+            Element element = (Element) nodes.item(j);
+            if (element.hasAttribute("xmlns:info")) {
+                element.setAttribute("xmlns:info", "http://cayenne.apache.org/schema/12/info");
+            }
+        }
     }
 
     private void removeGraphIncludes(UpgradeContext upgradeUnit) {

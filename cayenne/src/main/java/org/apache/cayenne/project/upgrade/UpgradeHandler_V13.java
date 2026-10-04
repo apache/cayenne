@@ -42,19 +42,56 @@ public final class UpgradeHandler_V13 implements UpgradeHandler {
     }
 
     @Override
-    public void processProjectDom(UpgradeContext upgradeUnit) {
-        updateDomainSchemaAndVersion(upgradeUnit);
+    public void upgradeProjectDOM(UpgradeContext upgradeUnit) {
+        upgradeProjectSchemaAndVersion(upgradeUnit);
         removeDataNodes(upgradeUnit);
         removeDataNodeInspections(upgradeUnit);
-        updateDomainExtensionSchema(upgradeUnit, VALIDATION);
+        upgradeDomainExtensionSchema(upgradeUnit, "validation");
     }
 
     @Override
-    public void processDataMapDom(UpgradeContext upgradeUnit) {
-        updateDataMapSchemaAndVersion(upgradeUnit);
-        updateExtensionSchema(upgradeUnit, CGEN);
-        updateExtensionSchema(upgradeUnit, DB_IMPORT);
-        updateInfoSchema(upgradeUnit);
+    public void upgradeDataMapDOM(UpgradeContext upgradeUnit) {
+        upgradeDataMapSchemaAndVersion(upgradeUnit);
+        upgradeExtensionSchema(upgradeUnit, "cgen");
+        upgradeExtensionSchema(upgradeUnit, "dbImport");
+        upgradeInfoSchema(upgradeUnit);
+    }
+
+    private void upgradeProjectSchemaAndVersion(UpgradeContext upgradeUnit) {
+        Element project = upgradeUnit.getDocument().getDocumentElement();
+        project.setAttribute("xmlns", "http://cayenne.apache.org/schema/13/domain");
+        project.setAttribute("xmlns:xsi", "http://www.w3.org/2001/XMLSchema-instance");
+        project.setAttribute("xsi:schemaLocation", "http://cayenne.apache.org/schema/13/domain "
+                + "https://cayenne.apache.org/schema/13/domain.xsd");
+        project.setAttribute("project-version", "13");
+    }
+
+    private void upgradeDataMapSchemaAndVersion(UpgradeContext upgradeUnit) {
+        Element dataMap = upgradeUnit.getDocument().getDocumentElement();
+        dataMap.setAttribute("xmlns", "http://cayenne.apache.org/schema/13/modelMap");
+        dataMap.setAttribute("xsi:schemaLocation", "http://cayenne.apache.org/schema/13/modelMap "
+                + "https://cayenne.apache.org/schema/13/modelMap.xsd");
+        dataMap.setAttribute("project-version", "13");
+    }
+
+    private void upgradeExtensionSchema(UpgradeContext upgradeUnit, String extension) {
+        for (Element element : elements(upgradeUnit, "/data-map/*[local-name()='" + extension + "']")) {
+            element.setAttribute("xmlns", "http://cayenne.apache.org/schema/13/" + extension.toLowerCase());
+        }
+    }
+
+    private void upgradeDomainExtensionSchema(UpgradeContext upgradeUnit, String extension) {
+        for (Element element : elements(upgradeUnit, "/domain/*[local-name()='" + extension + "']")) {
+            element.setAttribute("xmlns", "http://cayenne.apache.org/schema/13/" + extension.toLowerCase());
+        }
+    }
+
+    private void upgradeInfoSchema(UpgradeContext upgradeUnit) {
+        for (Element element : elements(upgradeUnit, "//*[local-name()='property']")) {
+            if (element.hasAttribute("xmlns:info")) {
+                element.setAttribute("xmlns:info", "http://cayenne.apache.org/schema/13/info");
+            }
+        }
     }
 
     private void removeDataNodes(UpgradeContext upgradeUnit) {

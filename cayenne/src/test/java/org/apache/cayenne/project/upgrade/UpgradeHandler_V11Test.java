@@ -19,7 +19,6 @@
 
 package org.apache.cayenne.project.upgrade;
 
-import org.apache.cayenne.project.Project;
 import org.junit.jupiter.api.Test;
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;
@@ -30,8 +29,6 @@ import org.w3c.dom.NodeList;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.junit.jupiter.api.Assertions.fail;
-import static org.mockito.Mockito.mock;
-import static org.mockito.Mockito.verifyNoInteractions;
 
 public class UpgradeHandler_V11Test extends BaseUpgradeHandlerTest {
 
@@ -41,7 +38,7 @@ public class UpgradeHandler_V11Test extends BaseUpgradeHandlerTest {
 
     @Test
     public void projectDomUpgrade() throws Exception {
-        Document document = processProjectDom("cayenne-project-v10.xml");
+        Document document = upgradeProjectDOM("cayenne-project-v10.xml");
 
         Element root = document.getDocumentElement();
         assertEquals("11", root.getAttribute("project-version"));
@@ -57,7 +54,7 @@ public class UpgradeHandler_V11Test extends BaseUpgradeHandlerTest {
 
     @Test
     public void dataMapDomUpgrade() throws Exception {
-        Document document = processDataMapDom("test-map-v10.map.xml");
+        Document document = upgradeDataMapDOM("test-map-v10.map.xml");
 
         Element root = document.getDocumentElement();
         assertEquals("11", root.getAttribute("project-version"));
@@ -85,7 +82,7 @@ public class UpgradeHandler_V11Test extends BaseUpgradeHandlerTest {
 
     @Test
     public void cgenDomUpgrade() throws Exception {
-        Document document = processDataMapDom("test-map-v10.map.xml");
+        Document document = upgradeDataMapDOM("test-map-v10.map.xml");
         Element root = document.getDocumentElement();
 
         // check cgen config is updated
@@ -152,7 +149,7 @@ public class UpgradeHandler_V11Test extends BaseUpgradeHandlerTest {
 
     @Test
     public void dbImportDomUpgrade() throws Exception {
-        Document document = processDataMapDom("test-map-v10.map.xml");
+        Document document = upgradeDataMapDOM("test-map-v10.map.xml");
         Element root = document.getDocumentElement();
 
         // check cgen config is updated
@@ -183,13 +180,6 @@ public class UpgradeHandler_V11Test extends BaseUpgradeHandlerTest {
 
         assertTrue(defaultPackageSeen);
         assertEquals(1, elements);
-    }
-
-    @Test
-    public void modelUpgrade() {
-        Project project = mock(Project.class);
-        handler.processModel(project);
-        verifyNoInteractions(project);
     }
 
     private static final String TEST_TEMPLATE_CONTENT =

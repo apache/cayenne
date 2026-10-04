@@ -19,7 +19,6 @@
 
 package org.apache.cayenne.project.upgrade;
 
-import org.apache.cayenne.project.Project;
 import org.apache.cayenne.resource.URLResource;
 import org.junit.jupiter.api.Test;
 import org.w3c.dom.Document;
@@ -34,8 +33,6 @@ import java.util.List;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertTrue;
-import static org.mockito.Mockito.mock;
-import static org.mockito.Mockito.verifyNoInteractions;
 
 public class UpgradeHandler_V13Test extends BaseUpgradeHandlerTest {
 
@@ -49,7 +46,7 @@ public class UpgradeHandler_V13Test extends BaseUpgradeHandlerTest {
         String resource = "v13/cayenne-project1.xml";
         UpgradeContext unit = new UpgradeContext(new URLResource(getClass().getResource(resource)),
                 documentFromResource(resource));
-        handler.processProjectDom(unit);
+        handler.upgradeProjectDOM(unit);
         Document document = unit.getDocument();
 
         Element root = document.getDocumentElement();
@@ -89,7 +86,7 @@ public class UpgradeHandler_V13Test extends BaseUpgradeHandlerTest {
 
     @Test
     public void dataMapDomUpgrade() throws Exception {
-        Document document = processDataMapDom("v13/map1.map.xml");
+        Document document = upgradeDataMapDOM("v13/map1.map.xml");
 
         Element root = document.getDocumentElement();
         assertEquals("13", root.getAttribute("project-version"));
@@ -119,12 +116,5 @@ public class UpgradeHandler_V13Test extends BaseUpgradeHandlerTest {
             }
         }
         assertEquals(1, infoComments, "info:property comment must be preserved and namespace-bumped");
-    }
-
-    @Test
-    public void modelUpgrade() {
-        Project project = mock(Project.class);
-        handler.processModel(project);
-        verifyNoInteractions(project);
     }
 }

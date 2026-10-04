@@ -133,7 +133,7 @@ public class XMLProjectLoader implements ProjectLoader {
                     configurationURL, version, UpgradeHandler.MIN_SUPPORTED_VERSION);
         }
 
-        UpgradeContext context = upgrader.upgradeProjectDom(configurationResource, version);
+        UpgradeContext context = upgrader.upgradeProjectDOM(configurationResource, version);
         if (!context.getChangesAffectingRuntime().isEmpty()) {
             throw new ConfigurationException("""
                     Unable to upgrade configuration from %s (project version %s) in memory, as the upgrade requires \
@@ -146,15 +146,11 @@ public class XMLProjectLoader implements ProjectLoader {
                 Open the project in CayenneModeler to upgrade its XML permanently""",
                 configurationURL, version, UpgradeHandler.CURRENT_VERSION);
 
-        Project project;
         try {
-            project = parse(configurationResource,
+            return parse(configurationResource,
                     DocumentInputSource.of(context.getDocument(), configurationURL.toString()));
         } catch (Exception e) {
             throw new ConfigurationException("Error loading configuration from %s", e, configurationURL);
         }
-
-        upgrader.upgradeModel(version, project);
-        return project;
     }
 }

@@ -19,7 +19,6 @@
 
 package org.apache.cayenne.project.upgrade;
 
-import org.apache.cayenne.project.Project;
 import org.apache.cayenne.project.xml.XMLReaderProvider;
 import org.apache.cayenne.resource.Resource;
 import org.apache.cayenne.resource.URLResource;
@@ -34,8 +33,6 @@ import java.util.List;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertTrue;
-import static org.mockito.Mockito.mock;
-import static org.mockito.Mockito.verifyNoInteractions;
 
 public class ProjectFileUpgraderTest {
 
@@ -104,8 +101,8 @@ public class ProjectFileUpgraderTest {
     }
 
     @Test
-    public void upgradeProjectDom() {
-        UpgradeContext context = upgrader.upgradeProjectDom(getResourceForVersion("9"), "9");
+    public void upgradeProjectDOM() {
+        UpgradeContext context = upgrader.upgradeProjectDOM(getResourceForVersion("9"), "9");
 
         Element root = context.getDocument().getDocumentElement();
         assertFalse(root.hasAttribute("project-version"));
@@ -118,23 +115,14 @@ public class ProjectFileUpgraderTest {
     }
 
     @Test
-    public void upgradeDataMapDom() {
+    public void upgradeDataMapDOM() {
         Resource resource = new URLResource(getClass().getResource("test-map-v9.map.xml"));
 
-        UpgradeContext context = upgrader.upgradeDataMapDom(resource, "9");
+        UpgradeContext context = upgrader.upgradeDataMapDOM(resource, "9");
         Element root = context.getDocument().getDocumentElement();
         assertEquals("dataMap", root.getNodeName());
         assertFalse(root.hasAttribute("project-version"));
         assertEquals("http://cayenne.apache.org/schema/14/dataMap", root.getAttribute("xmlns"));
-    }
-
-    @Test
-    public void upgradeModel() {
-        Project project = mock(Project.class);
-
-        // none of the current handlers has a model-level step
-        upgrader.upgradeModel("9", project);
-        verifyNoInteractions(project);
     }
 
     private Resource getResourceForVersion(String version) {

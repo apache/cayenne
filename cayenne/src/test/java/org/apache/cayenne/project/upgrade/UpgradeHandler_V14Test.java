@@ -18,7 +18,6 @@
  ****************************************************************/
 package org.apache.cayenne.project.upgrade;
 
-import org.apache.cayenne.project.Project;
 import org.apache.cayenne.resource.URLResource;
 import org.junit.jupiter.api.Test;
 import org.w3c.dom.Document;
@@ -38,8 +37,6 @@ import java.util.Map;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertTrue;
-import static org.mockito.Mockito.mock;
-import static org.mockito.Mockito.verifyNoInteractions;
 
 public class UpgradeHandler_V14Test extends BaseUpgradeHandlerTest {
 
@@ -50,7 +47,7 @@ public class UpgradeHandler_V14Test extends BaseUpgradeHandlerTest {
 
     @Test
     public void projectDomUpgrade() throws Exception {
-        Document document = processProjectDom("v14/cayenne-project1.xml");
+        Document document = upgradeProjectDOM("v14/cayenne-project1.xml");
 
         Element root = document.getDocumentElement();
         assertFalse(root.hasAttribute("project-version"));
@@ -78,7 +75,7 @@ public class UpgradeHandler_V14Test extends BaseUpgradeHandlerTest {
         String resource = "v14/map1.map.xml";
         UpgradeContext unit = new UpgradeContext(new URLResource(getClass().getResource(resource)),
                 documentFromResource(resource));
-        handler.processDataMapDom(unit);
+        handler.upgradeDataMapDOM(unit);
         Document document = unit.getDocument();
 
         Element root = document.getDocumentElement();
@@ -177,13 +174,6 @@ public class UpgradeHandler_V14Test extends BaseUpgradeHandlerTest {
                 "columnNameCapitalization", "UPPER"), attributes(procedure));
 
         assertTrue(queries.stream().allMatch(q -> elements(q, "*[local-name()='property']").isEmpty()));
-    }
-
-    @Test
-    public void modelUpgrade() {
-        Project project = mock(Project.class);
-        handler.processModel(project);
-        verifyNoInteractions(project);
     }
 
     private void assertNoHyphenatedNames(Document document) {

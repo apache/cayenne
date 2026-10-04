@@ -19,14 +19,6 @@
 
 package org.apache.cayenne.project.upgrade;
 
-import org.apache.cayenne.project.Project;
-import org.w3c.dom.Element;
-import org.w3c.dom.NodeList;
-
-import javax.xml.xpath.XPath;
-import javax.xml.xpath.XPathConstants;
-import javax.xml.xpath.XPathExpressionException;
-import javax.xml.xpath.XPathFactory;
 import java.util.List;
 
 /**
@@ -80,28 +72,6 @@ public sealed interface UpgradeHandler permits
      */
     String UNKNOWN_VERSION = "0";
 
-
-    /**
-     * root tag for the cgen extension
-     *
-     * @since 5.0
-     */
-    String CGEN = "cgen";
-
-    /**
-     * root tag for the dbImport extension
-     *
-     * @since 5.0
-     */
-    String DB_IMPORT = "dbImport";
-
-    /**
-     * root tag for the validation extension
-     *
-     * @since 5.0
-     */
-    String VALIDATION = "validation";
-
     /**
      * @return target version for this handler
      */
@@ -110,126 +80,7 @@ public sealed interface UpgradeHandler permits
     /**
      * Process DOM for the project root file (e.g. cayenne-project.xml)
      */
-    void processProjectDom(UpgradeContext upgradeUnit);
+    void upgradeProjectDOM(UpgradeContext upgradeUnit);
 
-    /**
-     * Process DOM for the data map file (e.g. datamap.map.xml)
-     */
-    void processDataMapDom(UpgradeContext upgradeUnit);
-
-    /**
-     * This method should be avoided as much as possible, as
-     * using this method will make upgrade process not future proof and
-     * will require refactoring if model should change.
-     */
-    default void processModel(Project project) {
-    }
-
-    /**
-     * Upgrade Domain schema and version info. Only applies to the versions before 14, where the project schema is
-     * called "domain".
-     *
-     * @param upgradeUnit for the datamap
-     */
-    default void updateDomainSchemaAndVersion(UpgradeContext upgradeUnit) {
-        Element domain = upgradeUnit.getDocument().getDocumentElement();
-        // update schema
-        domain.setAttribute("xmlns", "http://cayenne.apache.org/schema/" + getVersion() + "/domain");
-        domain.setAttribute("xmlns:xsi", "http://www.w3.org/2001/XMLSchema-instance");
-        domain.setAttribute("xsi:schemaLocation", "http://cayenne.apache.org/schema/" + getVersion() + "/domain " +
-                "https://cayenne.apache.org/schema/" + getVersion() + "/domain.xsd");
-        // update version
-        updateLegacyVersion(domain);
-    }
-
-    /**
-     * Upgrade DataMap schema and version info. Only applies to the versions before 14, where the DataMap schema is
-     * called "modelMap".
-     *
-     * @param upgradeUnit for the datamap
-     */
-    default void updateDataMapSchemaAndVersion(UpgradeContext upgradeUnit) {
-        Element dataMap = upgradeUnit.getDocument().getDocumentElement();
-        // update schema
-        dataMap.setAttribute("xmlns", "http://cayenne.apache.org/schema/" + getVersion() + "/modelMap");
-        dataMap.setAttribute("xsi:schemaLocation", "http://cayenne.apache.org/schema/" + getVersion() + "/modelMap " +
-                "https://cayenne.apache.org/schema/" + getVersion() + "/modelMap.xsd");
-        // update version
-        updateLegacyVersion(dataMap);
-    }
-
-    private void updateLegacyVersion(Element root) {
-        // Starting with version 14 the project version is defined by the schema namespace alone. The version 14
-        // handler removes the "project-version" attribute, so the later handlers have nothing to update.
-        if (root.hasAttribute("project-version")) {
-            root.setAttribute("project-version", getVersion());
-        }
-    }
-
-    /**
-     * Update schema for the given extension in a datamap file (root element: data-map)
-     *
-     * @param upgradeUnit a unit to work with
-     * @param extension   name of the extension (cgen, dbImport, etc.)
-     */
-    default void updateExtensionSchema(UpgradeContext upgradeUnit, String extension) {
-        XPath xpath = XPathFactory.newInstance().newXPath();
-        NodeList nodes;
-        try {
-            nodes = (NodeList) xpath.evaluate("/data-map/*[local-name()='" + extension + "']",
-                    upgradeUnit.getDocument(), XPathConstants.NODESET);
-        } catch (XPathExpressionException e) {
-            return;
-        }
-        for (int j = 0; j < nodes.getLength(); j++) {
-            Element element = (Element) nodes.item(j);
-            element.setAttribute("xmlns", "http://cayenne.apache.org/schema/" + getVersion() + "/" + extension.toLowerCase());
-        }
-    }
-
-    /**
-     * Update schema for the given extension in a project file (root element: domain)
-     *
-     * @param upgradeUnit a unit to work with
-     * @param extension   name of the extension (e.g. validation)
-     * @since 5.0-M2
-     */
-    default void updateDomainExtensionSchema(UpgradeContext upgradeUnit, String extension) {
-        XPath xpath = XPathFactory.newInstance().newXPath();
-        NodeList nodes;
-        try {
-            nodes = (NodeList) xpath.evaluate("/domain/*[local-name()='" + extension + "']",
-                    upgradeUnit.getDocument(), XPathConstants.NODESET);
-        } catch (XPathExpressionException e) {
-            return;
-        }
-        for (int j = 0; j < nodes.getLength(); j++) {
-            Element element = (Element) nodes.item(j);
-            element.setAttribute("xmlns", "http://cayenne.apache.org/schema/" + getVersion() + "/" + extension.toLowerCase());
-        }
-    }
-
-    /**
-     * Update the version-stamped namespace on {@code info:property} elements
-     * (entity/attribute comments) in a datamap file.
-     *
-     * @param upgradeUnit a unit to work with
-     * @since 5.0
-     */
-    default void updateInfoSchema(UpgradeContext upgradeUnit) {
-        XPath xpath = XPathFactory.newInstance().newXPath();
-        NodeList nodes;
-        try {
-            nodes = (NodeList) xpath.evaluate("//*[local-name()='property']",
-                    upgradeUnit.getDocument(), XPathConstants.NODESET);
-        } catch (XPathExpressionException e) {
-            return;
-        }
-        for (int j = 0; j < nodes.getLength(); j++) {
-            Element element = (Element) nodes.item(j);
-            if (element.hasAttribute("xmlns:info")) {
-                element.setAttribute("xmlns:info", "http://cayenne.apache.org/schema/" + getVersion() + "/info");
-            }
-        }
-    }
+    void upgradeDataMapDOM(UpgradeContext upgradeUnit);
 }

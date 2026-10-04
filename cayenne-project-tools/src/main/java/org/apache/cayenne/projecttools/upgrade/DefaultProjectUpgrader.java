@@ -87,21 +87,20 @@ public class DefaultProjectUpgrader implements ProjectUpgrader {
         String version = upgrader.readVersion(resource);
 
         // upgrade and save DOM of the project and all its DataMaps
-        UpgradeContext projectContext = upgrader.upgradeProjectDom(resource, version);
+        UpgradeContext projectContext = upgrader.upgradeProjectDOM(resource, version);
         List<UpgradeContext> contexts = new ArrayList<>();
         contexts.add(projectContext);
         for (Resource dataMapResource : dataMapResources(projectContext)) {
-            contexts.add(upgrader.upgradeDataMapDom(dataMapResource, version));
+            contexts.add(upgrader.upgradeDataMapDOM(dataMapResource, version));
         }
         for (UpgradeContext context : contexts) {
             saveDocument(context);
             deleteObsoleteFiles(context);
         }
 
-        // load the model back from the upgraded XML, upgrade it and save once again via the project saver,
+        // load the model back from the upgraded XML and save once again via the project saver,
         // which normalizes the XML to minimize the final diff
         Project project = loadProject(resource);
-        upgrader.upgradeModel(version, project);
         projectSaver.save(project);
 
         return new PostUpgradeState(resource, collectPostUpgradeMessages(contexts));
