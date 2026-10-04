@@ -137,7 +137,7 @@ class DataContextDeleteAction {
                     && !relationship.isReadOnly();
 
             // first check for no action... bail out if no flattened processing is needed
-            if (relationship.getDeleteRule() == DeleteRule.NO_ACTION && !processFlattened) {
+            if (relationship.getDeleteRule() == null && !processFlattened) {
                 continue;
             }
 
@@ -172,9 +172,9 @@ class DataContextDeleteAction {
 
             // process remaining rules
             switch (relationship.getDeleteRule()) {
-                case DeleteRule.NO_ACTION -> { /* nothing to do */ }
-                case DeleteRule.NULLIFY -> nullifyRelationship(object, property, relatedObjects);
-                case DeleteRule.CASCADE -> {
+                case null -> { /* nothing to do */ }
+                case NULLIFY -> nullifyRelationship(object, property, relatedObjects);
+                case CASCADE -> {
                     for (Persistent relatedObject : relatedObjects) {
                         performDelete(relatedObject);
                     }

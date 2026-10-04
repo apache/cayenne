@@ -96,7 +96,10 @@ public class ObjRelationshipHandler extends NamespaceAwareNestedTagHandler {
         objRelationship = new ObjRelationship(name);
         objRelationship.setSourceEntity(source);
         objRelationship.setTargetEntityName(attributes.getValue("target"));
-        objRelationship.setDeleteRule(DeleteRule.deleteRuleForName(attributes.getValue("deleteRule")));
+        String deleteRule = attributes.getValue("deleteRule");
+        if (deleteRule != null) {
+            objRelationship.setDeleteRule(DeleteRule.valueOf(deleteRule.toUpperCase()));
+        }
         objRelationship.setUsedForLocking(DataMapHandler.TRUE.equalsIgnoreCase(attributes.getValue("lock")));
         objRelationship.setDeferredDbRelationshipPath((attributes.getValue("dbRelationshipPath")));
         objRelationship.setCollectionType(attributes.getValue("collectionType"));

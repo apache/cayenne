@@ -20,71 +20,37 @@
 package org.apache.cayenne.map;
 
 /**
- * Defines constants for the possible values of ObjRelationship delete rules.
- * 
+ * Defines what happens to the target objects of an ObjRelationship when the source object is deleted. A relationship
+ * with no delete rule takes no action on its target objects.
  */
-public class DeleteRule {
-    public static final int NO_ACTION = 0;
-    private static final String NO_ACTION_NAME = "no action";
-    
-    /** 
-     * Remove the reference that the destination has to this source (if the 
-     * inverse relationship is toOne, nullify, if toMany, remove the source 
-     * object)
-     */
-    public static final int NULLIFY = 1;
-    private static final String NULLIFY_NAME = "nullify";
-
-    /** Delete the destination object(s)
-     */
-    public static final int CASCADE = 2;
-    private static final String CASCADE_NAME = "cascade";
-
-    /** If the relationship has any objects (toOne or toMany), deny the delete.  
-     * (Destination objects would therefore have to be deleted manually first)
-     */
-    public static final int DENY = 3;
-    private static final String DENY_NAME = "deny";
-    
-    /**
-     * Default delete rule for one-to-many relationships. It is used when new rels are
-     * created via modeler, or when synchrozining Obj- and DbEntities
-     */
-    public static final int DEFAULT_DELETE_RULE_TO_MANY = DeleteRule.DENY;
-    
-    /**
-     * Default delete rule for many-to-one relationships. It is used when new rels are
-     * created via modeler, or when synchrozining Obj- and DbEntities
-     */
-    public static final int DEFAULT_DELETE_RULE_TO_ONE = DeleteRule.NULLIFY;
-
-    /** 
-     * Returns String label for a delete rule state. Used for save/load (xml),
-     * display in modeler etc. Must remain the same, or else great care taken
-     * with loading old maps.
-     */
-    public static String deleteRuleName(int deleteRule) {
-        return switch (deleteRule) {
-            case DeleteRule.NULLIFY -> NULLIFY_NAME;
-            case DeleteRule.CASCADE -> CASCADE_NAME;
-            case DeleteRule.DENY -> DENY_NAME;
-            default -> NO_ACTION_NAME;
-        };
-    }
+public enum DeleteRule {
 
     /**
-     * Translates a possible delete rule name (typically returned from
-     * deleteRuleName at some stage), into a deleteRule constant
+     * Remove the reference that the destination has to this source (if the inverse relationship is toOne, nullify,
+     * if toMany, remove the source object)
      */
-    public static int deleteRuleForName(String name) {
-        if (DENY_NAME.equals(name)) {
-            return DENY;
-        } else if (CASCADE_NAME.equals(name)) {
-            return CASCADE;
-        } else if (NULLIFY_NAME.equals(name)) {
-            return NULLIFY;
-        }
-        return NO_ACTION;
-    }
+    NULLIFY,
 
+    /**
+     * Delete the destination object(s)
+     */
+    CASCADE,
+
+    /**
+     * If the relationship has any objects (toOne or toMany), deny the delete. (Destination objects would therefore
+     * have to be deleted manually first)
+     */
+    DENY;
+
+    /**
+     * Default delete rule for one-to-many relationships. It is used when new rels are created via modeler, or when
+     * synchrozining Obj- and DbEntities
+     */
+    public static final DeleteRule DEFAULT_DELETE_RULE_TO_MANY = DENY;
+
+    /**
+     * Default delete rule for many-to-one relationships. It is used when new rels are created via modeler, or when
+     * synchrozining Obj- and DbEntities
+     */
+    public static final DeleteRule DEFAULT_DELETE_RULE_TO_ONE = NULLIFY;
 }

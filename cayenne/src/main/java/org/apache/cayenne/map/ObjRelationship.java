@@ -54,7 +54,7 @@ public class ObjRelationship extends Relationship<ObjEntity, ObjAttribute, ObjRe
 
     boolean readOnly;
 
-    protected int deleteRule = DeleteRule.NO_ACTION;
+    protected DeleteRule deleteRule;
     protected boolean usedForLocking;
 
     protected List<DbRelationship> dbRelationships = new ArrayList<>(2);
@@ -133,9 +133,8 @@ public class ObjRelationship extends Relationship<ObjEntity, ObjAttribute, ObjRe
         encoder.attribute("lock", isUsedForLocking())
                 .attribute("mapKey", getMapKey());
 
-        String deleteRule = DeleteRule.deleteRuleName(getDeleteRule());
-        if (deleteRule != null && getDeleteRule() != DeleteRule.NO_ACTION) {
-            encoder.attribute("deleteRule", deleteRule);
+        if (deleteRule != null) {
+            encoder.attribute("deleteRule", deleteRule.name().toLowerCase());
         }
 
         // quietly get rid of invalid path... this is not the best way of doing
@@ -440,32 +439,17 @@ public class ObjRelationship extends Relationship<ObjEntity, ObjAttribute, ObjRe
      * class, and specifies what should happen to the destination object when
      * the source object is deleted.
      * 
-     * @return int a constant from DeleteRule
      * @see #setDeleteRule
      */
-    public int getDeleteRule() {
+    public DeleteRule getDeleteRule() {
         return deleteRule;
     }
 
     /**
-     * Sets the delete rule of the relationship.
-     * 
-     * @param value
-     *            New delete rule. Must be one of the constants defined in
-     *            DeleteRule class.
-     * @see DeleteRule
-     * @throws IllegalArgumentException
-     *             if the value is not a valid delete rule.
+     * Sets the delete rule of the relationship. A null rule means that no action is taken on the target objects.
      */
-    public void setDeleteRule(int value) {
-        if ((value != DeleteRule.CASCADE) && (value != DeleteRule.DENY) && (value != DeleteRule.NULLIFY)
-                && (value != DeleteRule.NO_ACTION)) {
-
-            throw new IllegalArgumentException("Delete rule value " + value
-                    + " is not a constant from the DeleteRule class");
-        }
-
-        this.deleteRule = value;
+    public void setDeleteRule(DeleteRule deleteRule) {
+        this.deleteRule = deleteRule;
     }
 
     /**

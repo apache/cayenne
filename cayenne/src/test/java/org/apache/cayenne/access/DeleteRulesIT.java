@@ -91,7 +91,7 @@ public class DeleteRulesIT {
     @Test
     public void noActionFlattened() {
         // temporarily set delete rule to NOACTION...
-        int oldRule = changeDeleteRule(DeleteRule.NO_ACTION);
+        DeleteRule oldRule = changeDeleteRule(null);
 
         try {
             DeleteRuleFlatA a = env.context().newObject(DeleteRuleFlatA.class);
@@ -118,7 +118,7 @@ public class DeleteRulesIT {
     @Test
     public void noActionFlattenedNoReverse() {
         // temporarily set delete rule to NOACTION...
-        int oldRule = changeDeleteRule(DeleteRule.NO_ACTION);
+        DeleteRule oldRule = changeDeleteRule(null);
         ObjRelationship reverse = unsetReverse();
 
         try {
@@ -145,7 +145,7 @@ public class DeleteRulesIT {
     @Test
     public void cascadeFlattened() {
         // temporarily set delete rule to CASCADE...
-        int oldRule = changeDeleteRule(DeleteRule.CASCADE);
+        DeleteRule oldRule = changeDeleteRule(DeleteRule.CASCADE);
 
         try {
             DeleteRuleFlatA a = env.context().newObject(DeleteRuleFlatA.class);
@@ -170,7 +170,7 @@ public class DeleteRulesIT {
     @Test
     public void cascadeFlattenedNoReverse() {
         // temporarily set delete rule to CASCADE...
-        int oldRule = changeDeleteRule(DeleteRule.CASCADE);
+        DeleteRule oldRule = changeDeleteRule(DeleteRule.CASCADE);
         ObjRelationship reverse = unsetReverse();
 
         try {
@@ -196,7 +196,7 @@ public class DeleteRulesIT {
     @Test
     public void nullifyFlattened() {
         // temporarily set delete rule to NULLIFY...
-        int oldRule = changeDeleteRule(DeleteRule.NULLIFY);
+        DeleteRule oldRule = changeDeleteRule(DeleteRule.NULLIFY);
 
         try {
             DeleteRuleFlatA a = env.context().newObject(DeleteRuleFlatA.class);
@@ -221,7 +221,7 @@ public class DeleteRulesIT {
     @Test
     public void nullifyFlattenedNoReverse() {
         // temporarily set delete rule to NULLIFY...
-        int oldRule = changeDeleteRule(DeleteRule.NULLIFY);
+        DeleteRule oldRule = changeDeleteRule(DeleteRule.NULLIFY);
         ObjRelationship reverse = unsetReverse();
 
         try {
@@ -247,7 +247,7 @@ public class DeleteRulesIT {
     @Test
     public void denyFlattened() {
         // temporarily set delete rule to DENY...
-        int oldRule = changeDeleteRule(DeleteRule.DENY);
+        DeleteRule oldRule = changeDeleteRule(DeleteRule.DENY);
 
         try {
             DeleteRuleFlatA a = env.context().newObject(DeleteRuleFlatA.class);
@@ -265,7 +265,7 @@ public class DeleteRulesIT {
     @Test
     public void denyFlattenedNoReverse() {
         // temporarily set delete rule to DENY...
-        int oldRule = changeDeleteRule(DeleteRule.DENY);
+        DeleteRule oldRule = changeDeleteRule(DeleteRule.DENY);
         ObjRelationship reverse = unsetReverse();
 
         try {
@@ -282,11 +282,11 @@ public class DeleteRulesIT {
         }
     }
 
-    private int changeDeleteRule(int deleteRule) {
+    private DeleteRule changeDeleteRule(DeleteRule deleteRule) {
         ObjEntity entity = env.context().getEntityResolver().getObjEntity(DeleteRuleFlatA.class);
 
         ObjRelationship relationship = entity.getRelationship(DeleteRuleFlatA.FLAT_B.getName());
-        int oldRule = relationship.getDeleteRule();
+        DeleteRule oldRule = relationship.getDeleteRule();
         relationship.setDeleteRule(deleteRule);
         return oldRule;
     }

@@ -58,7 +58,9 @@ import java.awt.event.ActionEvent;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
 import java.awt.event.MouseMotionAdapter;
+import java.util.Arrays;
 import java.util.List;
+import java.util.stream.Stream;
 
 /**
  * Displays ObjRelationships for the edited ObjEntity.
@@ -67,12 +69,10 @@ public class ObjRelationshipPanel extends ProjectPanel implements ObjEntityDispl
 
     private static final ImageIcon INHERITANCE_ICON = IconFactory.buildIcon("icon-inheritance.png");
 
-    private static final Object[] DELETE_RULES = new Object[]{
-            DeleteRule.deleteRuleName(DeleteRule.NO_ACTION),
-            DeleteRule.deleteRuleName(DeleteRule.NULLIFY),
-            DeleteRule.deleteRuleName(DeleteRule.CASCADE),
-            DeleteRule.deleteRuleName(DeleteRule.DENY),
-    };
+    // an empty rule means no action
+    private static final String[] DELETE_RULES = Stream
+            .concat(Stream.of(""), Arrays.stream(DeleteRule.values()).map(r -> r.name().toLowerCase()))
+            .toArray(String[]::new);
 
     private final CMTable table;
     private final ObjEntityPropertiesView parentPanel;

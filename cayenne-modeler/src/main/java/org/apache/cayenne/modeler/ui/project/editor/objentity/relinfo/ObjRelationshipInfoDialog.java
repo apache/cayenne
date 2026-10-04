@@ -52,9 +52,11 @@ import javax.swing.tree.TreePath;
 import java.awt.*;
 import java.awt.event.ItemEvent;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Collection;
 import java.util.List;
 import java.util.Objects;
+import java.util.stream.Stream;
 
 /**
  * Modal "ObjRelationship inspector" — name, target entity, semantics, collection type,
@@ -69,12 +71,10 @@ public class ObjRelationshipInfoDialog extends ProjectDialog implements TreeSele
     private static final String COLLECTION_TYPE_COLLECTION = "java.util.Collection";
     private static final String DEFAULT_MAP_KEY = "ID (default)";
 
-    private static final String[] DELETE_RULES = new String[]{
-            DeleteRule.deleteRuleName(DeleteRule.NO_ACTION),
-            DeleteRule.deleteRuleName(DeleteRule.NULLIFY),
-            DeleteRule.deleteRuleName(DeleteRule.CASCADE),
-            DeleteRule.deleteRuleName(DeleteRule.DENY),
-    };
+    // an empty rule means no action
+    private static final String[] DELETE_RULES = Stream
+            .concat(Stream.of(""), Arrays.stream(DeleteRule.values()).map(r -> r.name().toLowerCase()))
+            .toArray(String[]::new);
 
     private final JLabel sourceEntityLabel;
     private final JComboBox<String> targetCombo;
@@ -235,7 +235,8 @@ public class ObjRelationshipInfoDialog extends ProjectDialog implements TreeSele
             targetCombo.setSelectedItem(objectTarget.getName());
         }
         usedForLocking.setSelected(relationship.isUsedForLocking());
-        deleteRule.setSelectedItem(DeleteRule.deleteRuleName(relationship.getDeleteRule()));
+        DeleteRule rule = relationship.getDeleteRule();
+        deleteRule.setSelectedItem(rule != null ? rule.name().toLowerCase() : "");
         comment.setText(ObjectInfo.getFromMetaData(app.getMetaData(), relationship, ObjectInfo.COMMENT));
 
         setSemantics();
@@ -364,8 +365,8 @@ public class ObjRelationshipInfoDialog extends ProjectDialog implements TreeSele
     }
 
     private void setDeleteRule() {
-        relationship.setDeleteRule(DeleteRule.deleteRuleForName(
-                String.valueOf(deleteRule.getSelectedItem())));
+        String rule = (String) deleteRule.getSelectedItem();
+        relationship.setDeleteRule(rule == null || rule.isEmpty() ? null : DeleteRule.valueOf(rule.toUpperCase()));
     }
 
     private void setUsedForLocking() {

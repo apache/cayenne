@@ -126,7 +126,7 @@ public class ObjRelationshipTableModel extends CMTableModel<ObjRelationship> {
             case REL_SEMANTICS:
                 return getSemantics(relationship);
             case REL_DELETE_RULE:
-                return DeleteRule.deleteRuleName(relationship.getDeleteRule());
+                return deleteRuleName(relationship);
             case REL_TARGET_PATH:
                 return relationship.getDbRelationshipPath();
             case REL_COMMENT:
@@ -198,7 +198,7 @@ public class ObjRelationshipTableModel extends CMTableModel<ObjRelationship> {
                 fireTableRowsUpdated(row, row);
                 break;
             case REL_DELETE_RULE:
-                relationship.setDeleteRule(DeleteRule.deleteRuleForName((String) value));
+                relationship.setDeleteRule(deleteRule((String) value));
                 fireTableCellUpdated(row, column);
                 break;
             case REL_LOCKING:
@@ -294,14 +294,29 @@ public class ObjRelationshipTableModel extends CMTableModel<ObjRelationship> {
                 case REL_SEMANTICS:
                     return compareColumnsData(getSemantics(o1), getSemantics(o2));
                 case REL_DELETE_RULE:
-                    return compareColumnsData(DeleteRule.deleteRuleName(o1.getDeleteRule()),
-                                    DeleteRule.deleteRuleName(o2.getDeleteRule()));
+                    return compareColumnsData(deleteRuleName(o1), deleteRuleName(o2));
                 case REL_TARGET_PATH:
                     return compareColumnsData(o1.getDbRelationshipPath().value(), o2.getDbRelationshipPath().value());
                 default:
                     return compareColumnsData("", "");
             }
         }
+    }
+
+    private static String deleteRuleName(ObjRelationship relationship) {
+        return relationship.getDeleteRule() != null ? relationship.getDeleteRule().name().toLowerCase() : "";
+    }
+
+    /**
+     * Returns a delete rule for the name, or null (no action) if the name is not that of any rule.
+     */
+    private static DeleteRule deleteRule(String name) {
+        for (DeleteRule rule : DeleteRule.values()) {
+            if (rule.name().equalsIgnoreCase(name)) {
+                return rule;
+            }
+        }
+        return null;
     }
 
     private static int compareColumnsData(String value1, String value2) {

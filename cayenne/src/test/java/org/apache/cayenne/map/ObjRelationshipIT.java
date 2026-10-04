@@ -446,12 +446,6 @@ public class ObjRelationshipIT {
     }
 
     @Test
-    public void badDeleteRuleValue() {
-        ObjRelationship relationship = new ObjRelationship();
-        assertThrows(IllegalArgumentException.class, () -> relationship.setDeleteRule(999));
-    }
-
-    @Test
     public void okDeleteRuleValue() {
         ObjRelationship relationship = new ObjRelationship();
         relationship.setDeleteRule(DeleteRule.CASCADE);
