@@ -72,15 +72,15 @@ public sealed interface UpgradeHandler permits
      */
     String UNKNOWN_VERSION = "0";
 
-    /**
-     * @return target version for this handler
-     */
     String getVersion();
 
     /**
-     * Process DOM for the project root file (e.g. cayenne-project.xml)
+     * @since 5.0
      */
-    void upgradeProjectDOM(UpgradeContext upgradeUnit);
+    void upgradeProjectDOM(UpgradeContext context);
 
-    void upgradeDataMapDOM(UpgradeContext upgradeUnit);
+    /**
+     * @since 5.0
+     */
+    void upgradeDataMapDOM(UpgradeContext context);
 }

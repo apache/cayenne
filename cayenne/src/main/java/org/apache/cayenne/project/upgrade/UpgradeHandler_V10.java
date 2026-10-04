@@ -37,14 +37,14 @@ public final class UpgradeHandler_V10 implements UpgradeHandler {
     }
 
     @Override
-    public void upgradeProjectDOM(UpgradeContext upgradeUnit) {
+    public void upgradeProjectDOM(UpgradeContext context) {
         // introduce xml namespace and schema for domain
-        upgradeProjectSchemaAndVersion(upgradeUnit);
+        upgradeProjectSchemaAndVersion(context);
     }
 
     @Override
-    public void upgradeDataMapDOM(UpgradeContext upgradeUnit) {
-        upgradeDataMapSchemaAndVersion(upgradeUnit);
+    public void upgradeDataMapDOM(UpgradeContext context) {
+        upgradeDataMapSchemaAndVersion(context);
     }
 
     private void upgradeProjectSchemaAndVersion(UpgradeContext upgradeUnit) {

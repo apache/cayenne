@@ -37,14 +37,14 @@ public class UpgradeContext {
 
     private static final Logger LOGGER = LoggerFactory.getLogger(UpgradeContext.class);
 
-    private final Resource resource;
+    private final Resource source;
     private final Document document;
     private final List<String> changeNotifications;
     private final List<String> changesAffectingRuntime;
     private final List<String> obsoleteFiles;
 
-    public UpgradeContext(Resource resource, Document document) {
-        this.resource = resource;
+    public UpgradeContext(Resource source, Document document) {
+        this.source = source;
         this.document = document;
         this.changeNotifications = new ArrayList<>();
         this.changesAffectingRuntime = new ArrayList<>();
@@ -56,30 +56,34 @@ public class UpgradeContext {
     }
 
     /**
-     * Returns the upgraded document to be loaded in runtime as is, without saving it or involving the user.
+     * Returns the upgraded document if the upgrade was lossless, i.e. made no changes that may affect runtime. Such a
+     * document can be loaded as is, without saving it or involving the user.
      *
-     * @throws ConfigurationException if the upgrade made changes that may affect runtime, and so requires the
-     *                                project to be upgraded in CayenneModeler
+     * @throws ConfigurationException if the upgrade was not lossless, and so requires the project to be upgraded in
+     *                                CayenneModeler
      * @since 5.0
      */
-    public Document getRuntimeDocument() {
+    public Document getDocumentIfLossless() {
         if (!changesAffectingRuntime.isEmpty()) {
             throw new ConfigurationException("""
                     Unable to upgrade configuration from %s in memory, as the upgrade requires manual changes. \
                     Open the project in CayenneModeler to upgrade it. %s""",
-                    resource.getURL(), String.join(" ", changesAffectingRuntime));
+                    source.getURL(), String.join(" ", changesAffectingRuntime));
         }
 
         LOGGER.warn("""
                 Configuration {} was created with an older version of Cayenne and was upgraded to project \
                 version {} in memory. Open the project in CayenneModeler to upgrade its XML permanently""",
-                resource.getURL(), UpgradeHandler.CURRENT_VERSION);
+                source.getURL(), UpgradeHandler.CURRENT_VERSION);
 
         return document;
     }
 
-    public Resource getResource() {
-        return resource;
+    /**
+     * @since 5.0
+     */
+    public Resource getSource() {
+        return source;
     }
 
     /**

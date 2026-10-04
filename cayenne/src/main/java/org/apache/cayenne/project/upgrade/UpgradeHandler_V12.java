@@ -44,18 +44,18 @@ public final class UpgradeHandler_V12 implements UpgradeHandler {
     }
 
     @Override
-    public void upgradeProjectDOM(UpgradeContext upgradeUnit) {
-        upgradeProjectSchemaAndVersion(upgradeUnit);
-        removeGraphIncludes(upgradeUnit);
-        upgradeDomainExtensionSchema(upgradeUnit, "validation");
+    public void upgradeProjectDOM(UpgradeContext context) {
+        upgradeProjectSchemaAndVersion(context);
+        removeGraphIncludes(context);
+        upgradeDomainExtensionSchema(context, "validation");
     }
 
     @Override
-    public void upgradeDataMapDOM(UpgradeContext upgradeUnit) {
-        upgradeDataMapSchemaAndVersion(upgradeUnit);
-        upgradeExtensionSchema(upgradeUnit, "cgen");
-        upgradeExtensionSchema(upgradeUnit, "dbImport");
-        upgradeInfoSchema(upgradeUnit);
+    public void upgradeDataMapDOM(UpgradeContext context) {
+        upgradeDataMapSchemaAndVersion(context);
+        upgradeExtensionSchema(context, "cgen");
+        upgradeExtensionSchema(context, "dbImport");
+        upgradeInfoSchema(context);
     }
 
     private void upgradeProjectSchemaAndVersion(UpgradeContext upgradeUnit) {

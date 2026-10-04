@@ -67,24 +67,24 @@ public final class UpgradeHandler_V11 implements UpgradeHandler {
     }
 
     @Override
-    public void upgradeProjectDOM(UpgradeContext upgradeUnit) {
-        upgradeProjectSchemaAndVersion(upgradeUnit);
-        updateDataNodeConnectionPool(upgradeUnit);
+    public void upgradeProjectDOM(UpgradeContext context) {
+        upgradeProjectSchemaAndVersion(context);
+        updateDataNodeConnectionPool(context);
     }
 
     @Override
-    public void upgradeDataMapDOM(UpgradeContext upgradeUnit) {
-        upgradeDataMapSchemaAndVersion(upgradeUnit);
-        upgradeExtensionSchema(upgradeUnit, "cgen");
-        upgradeExtensionSchema(upgradeUnit, "dbImport");
-        upgradeExtensionSchema(upgradeUnit, "graph");
-        upgradeInfoSchema(upgradeUnit);
+    public void upgradeDataMapDOM(UpgradeContext context) {
+        upgradeDataMapSchemaAndVersion(context);
+        upgradeExtensionSchema(context, "cgen");
+        upgradeExtensionSchema(context, "dbImport");
+        upgradeExtensionSchema(context, "graph");
+        upgradeInfoSchema(context);
 
-        dropROPProperties(upgradeUnit);
-        dropObjEntityClientInfo(upgradeUnit);
-        upgradeGenericObjEntity(upgradeUnit);
-        updateCgenConfig(upgradeUnit);
-        updateDbImportConfig(upgradeUnit);
+        dropROPProperties(context);
+        dropObjEntityClientInfo(context);
+        upgradeGenericObjEntity(context);
+        updateCgenConfig(context);
+        updateDbImportConfig(context);
     }
 
     private void upgradeProjectSchemaAndVersion(UpgradeContext upgradeUnit) {
@@ -302,7 +302,7 @@ public final class UpgradeHandler_V11 implements UpgradeHandler {
         for (int j = 0; j < templates.getLength(); j++) {
             Node node = templates.item(j).getFirstChild();
             if (node != null) {
-                String dataMapPath = upgradeUnit.getResource().getURL().getPath();
+                String dataMapPath = upgradeUnit.getSource().getURL().getPath();
                 node.setNodeValue(readTemplateFile(node.getNodeValue(), dataMapPath));
             }
         }

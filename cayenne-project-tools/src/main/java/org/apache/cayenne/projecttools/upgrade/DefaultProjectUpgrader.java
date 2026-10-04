@@ -138,7 +138,7 @@ public class DefaultProjectUpgrader implements ProjectUpgrader {
                     XPathConstants.NODESET);
             for (int i = 0; i < nodes.getLength(); i++) {
                 Node mapNode = nodes.item(i);
-                resources.add(projectContext.getResource().getRelativeResource(mapNode.getNodeValue() + ".map.xml"));
+                resources.add(projectContext.getSource().getRelativeResource(mapNode.getNodeValue() + ".map.xml"));
             }
         } catch (Exception ex) {
             LOGGER.warn("Can't get additional dataMap resources: ", ex);
@@ -147,7 +147,7 @@ public class DefaultProjectUpgrader implements ProjectUpgrader {
     }
 
     protected void deleteObsoleteFiles(UpgradeContext context) {
-        File directory = Util.toFile(context.getResource().getURL()).getParentFile();
+        File directory = Util.toFile(context.getSource().getURL()).getParentFile();
         for (String relativePath : context.getObsoleteFiles()) {
             File file = new File(directory, relativePath);
             try {
@@ -163,7 +163,7 @@ public class DefaultProjectUpgrader implements ProjectUpgrader {
     protected void saveDocument(UpgradeContext context) {
         try {
             Source input = new DOMSource(context.getDocument());
-            Result output = new StreamResult(Util.toFile(context.getResource().getURL()));
+            Result output = new StreamResult(Util.toFile(context.getSource().getURL()));
             Transformer transformer = TransformerFactory.newInstance().newTransformer();
             transformer.transform(input, output);
         } catch (Exception ex) {

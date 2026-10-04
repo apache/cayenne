@@ -95,7 +95,7 @@ public class XMLDataMapLoader implements DataMapLoader {
      * @since 5.0
      */
     protected DataMap upgradeAndLoad(Resource configurationResource, String version) {
-        Document upgraded = upgrader.upgradeDataMapDOM(configurationResource, version).getRuntimeDocument();
+        Document upgraded = upgrader.upgradeDataMapDOM(configurationResource, version).getDocumentIfLossless();
         URL configurationURL = configurationResource.getURL();
         try {
             return parse(configurationResource, DocumentInputSource.of(upgraded, configurationURL.toString()));

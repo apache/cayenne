@@ -109,7 +109,7 @@ public class XMLProjectLoader implements ProjectLoader {
      * @since 5.0
      */
     protected Project upgradeAndLoad(Resource configurationResource, String version) {
-        Document upgraded = upgrader.upgradeProjectDOM(configurationResource, version).getRuntimeDocument();
+        Document upgraded = upgrader.upgradeProjectDOM(configurationResource, version).getDocumentIfLossless();
         URL configurationURL = configurationResource.getURL();
         try {
             return parse(configurationResource, DocumentInputSource.of(upgraded, configurationURL.toString()));

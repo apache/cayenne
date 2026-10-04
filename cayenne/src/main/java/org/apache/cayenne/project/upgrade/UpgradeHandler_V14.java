@@ -52,32 +52,32 @@ public final class UpgradeHandler_V14 implements UpgradeHandler {
     }
 
     @Override
-    public void upgradeProjectDOM(UpgradeContext upgradeUnit) {
-        updateProjectSchema(upgradeUnit);
-        upgradeDomainExtensionSchema(upgradeUnit, "validation");
-        removeEjbqlInspection(upgradeUnit);
-        renameProjectInspection(upgradeUnit);
-        removeVersionAttribute(upgradeUnit);
-        convertProjectProperties(upgradeUnit);
-        convertNamesToCamelCase(upgradeUnit);
-        renameProjectRoot(upgradeUnit);
+    public void upgradeProjectDOM(UpgradeContext context) {
+        updateProjectSchema(context);
+        upgradeDomainExtensionSchema(context, "validation");
+        removeEjbqlInspection(context);
+        renameProjectInspection(context);
+        removeVersionAttribute(context);
+        convertProjectProperties(context);
+        convertNamesToCamelCase(context);
+        renameProjectRoot(context);
     }
 
     @Override
-    public void upgradeDataMapDOM(UpgradeContext upgradeUnit) {
-        updateDataMapSchema(upgradeUnit);
-        upgradeExtensionSchema(upgradeUnit, "cgen");
-        upgradeExtensionSchema(upgradeUnit, "dbImport");
-        upgradeInfoSchema(upgradeUnit);
-        convertSelectQueries(upgradeUnit);
-        removeEjbqlQueries(upgradeUnit);
-        convertQueryTags(upgradeUnit);
-        convertQueryRoots(upgradeUnit);
-        renameDbAttributeFlags(upgradeUnit);
-        convertDeleteRules(upgradeUnit);
-        convertDataMapProperties(upgradeUnit);
-        removeVersionAttribute(upgradeUnit);
-        convertNamesToCamelCase(upgradeUnit);
+    public void upgradeDataMapDOM(UpgradeContext context) {
+        updateDataMapSchema(context);
+        upgradeExtensionSchema(context, "cgen");
+        upgradeExtensionSchema(context, "dbImport");
+        upgradeInfoSchema(context);
+        convertSelectQueries(context);
+        removeEjbqlQueries(context);
+        convertQueryTags(context);
+        convertQueryRoots(context);
+        renameDbAttributeFlags(context);
+        convertDeleteRules(context);
+        convertDataMapProperties(context);
+        removeVersionAttribute(context);
+        convertNamesToCamelCase(context);
     }
 
     private void upgradeExtensionSchema(UpgradeContext upgradeUnit, String extension) {
