@@ -19,7 +19,6 @@
 
 package org.apache.cayenne.project.xml;
 
-import org.apache.cayenne.exp.path.CayennePath;
 import org.apache.cayenne.map.DataMap;
 import org.apache.cayenne.map.DeleteRule;
 import org.apache.cayenne.map.ObjEntity;
@@ -34,9 +33,6 @@ public class ObjRelationshipHandler extends NamespaceAwareNestedTagHandler {
 
     public static final String OBJ_RELATIONSHIP_TAG = "objRelationship";
 
-    @Deprecated
-    public static final String DB_RELATIONSHIP_REF_TAG = "db-relationship-ref";
-
     private DataMap map;
 
     private ObjRelationship objRelationship;
@@ -46,35 +42,15 @@ public class ObjRelationshipHandler extends NamespaceAwareNestedTagHandler {
         this.map = map;
     }
 
-    @SuppressWarnings("deprecation")
     @Override
     protected boolean processElement(String namespaceURI, String localName, Attributes attributes) throws SAXException {
         switch (localName) {
             case OBJ_RELATIONSHIP_TAG:
                 addObjRelationship(attributes);
                 return true;
-
-            case DB_RELATIONSHIP_REF_TAG:
-                addDbRelationshipRef(attributes);
-                return true;
         }
 
         return false;
-    }
-
-    /**
-     * <db-relationship-ref> tag deprecated
-     */
-    @Deprecated
-    private void addDbRelationshipRef(Attributes attributes) throws SAXException {
-        String name = attributes.getValue("name");
-        if (name == null) {
-            throw new SAXException("ObjRelationshipHandler::addDbRelationshipRef() - null DbRelationship name for "
-                    + objRelationship.getName());
-        }
-
-        CayennePath path = objRelationship.getDbRelationshipPath();
-        objRelationship.setDbRelationshipPath(path.dot(name));
     }
 
     private void addObjRelationship(Attributes attributes) throws SAXException {

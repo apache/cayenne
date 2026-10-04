@@ -112,12 +112,6 @@ public class DbEntityHandler extends NamespaceAwareNestedTagHandler {
             lastAttribute.setAttributePrecision(Integer.parseInt(precision));
         }
 
-        // this is an obsolete 1.2 'precision' attribute that really meant 'scale'
-        String pseudoPrecision = attributes.getValue("precision");
-        if (pseudoPrecision != null) {
-            lastAttribute.setScale(Integer.parseInt(pseudoPrecision));
-        }
-
         String scale = attributes.getValue("scale");
         if (scale != null) {
             lastAttribute.setScale(Integer.parseInt(scale));

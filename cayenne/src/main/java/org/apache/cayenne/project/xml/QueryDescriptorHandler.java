@@ -50,7 +50,6 @@ public class QueryDescriptorHandler extends NamespaceAwareNestedTagHandler {
 
     private QueryDescriptorLoader queryBuilder;
     private QueryDescriptor descriptor;
-    private boolean changed;
 
     private String sqlKey;
     private int semantics;
@@ -101,7 +100,6 @@ public class QueryDescriptorHandler extends NamespaceAwareNestedTagHandler {
 
             case QUERY_QL_TAG:
                 queryBuilder.setSelect(data);
-                changed = true;
                 break;
 
             case QUERY_PREFETCH_TAG:
@@ -110,7 +108,6 @@ public class QueryDescriptorHandler extends NamespaceAwareNestedTagHandler {
 
             case QUERY_CACHE_GROUP_TAG:
                 queryBuilder.setCacheGroup(data);
-                changed = true;
                 break;
         }
         return true;
@@ -157,8 +154,6 @@ public class QueryDescriptorHandler extends NamespaceAwareNestedTagHandler {
         queryBuilder.setFetchOffset(intAttribute(attributes, "fetchOffset"));
         queryBuilder.setPageSize(intAttribute(attributes, "pageSize"));
         queryBuilder.setStatementFetchSize(intAttribute(attributes, "statementFetchSize"));
-
-        changed = true;
     }
 
     private int intAttribute(Attributes attributes, String name) {
@@ -178,9 +173,8 @@ public class QueryDescriptorHandler extends NamespaceAwareNestedTagHandler {
         if(queryBuilder == null) {
             return null;
         }
-        if(descriptor == null || changed) {
+        if(descriptor == null) {
             descriptor = queryBuilder.buildQueryDescriptor();
-            changed = false;
         }
         return descriptor;
     }
