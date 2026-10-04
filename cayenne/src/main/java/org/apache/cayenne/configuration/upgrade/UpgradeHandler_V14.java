@@ -58,6 +58,7 @@ public final class UpgradeHandler_V14 implements UpgradeHandler {
         removeEjbqlInspection(upgradeUnit);
         renameProjectInspection(upgradeUnit);
         removeVersionAttribute(upgradeUnit);
+        convertProjectProperties(upgradeUnit);
         convertNamesToCamelCase(upgradeUnit);
         renameProjectRoot(upgradeUnit);
     }
@@ -74,6 +75,7 @@ public final class UpgradeHandler_V14 implements UpgradeHandler {
         convertQueryRoots(upgradeUnit);
         renameDbAttributeFlags(upgradeUnit);
         convertDeleteRules(upgradeUnit);
+        convertDataMapProperties(upgradeUnit);
         removeVersionAttribute(upgradeUnit);
         convertNamesToCamelCase(upgradeUnit);
     }
@@ -87,6 +89,61 @@ public final class UpgradeHandler_V14 implements UpgradeHandler {
         project.setAttribute("xmlns:xsi", "http://www.w3.org/2001/XMLSchema-instance");
         project.setAttribute("xsi:schemaLocation", "http://cayenne.apache.org/schema/14/project "
                 + "https://cayenne.apache.org/schema/14/project.xsd");
+    }
+
+    /**
+     * Replaces the generic "property" elements of the project with the attributes specific to each property. Both
+     * known properties are "true" by default, so an attribute is only needed for "false". Other properties were never
+     * used by Cayenne, and are dropped.
+     */
+    private void convertProjectProperties(UpgradeContext upgradeUnit) {
+        Element project = upgradeUnit.getDocument().getDocumentElement();
+        for (Element property : elements(upgradeUnit, "/*/*[name()='property']")) {
+            String attribute = switch (property.getAttribute("name")) {
+                case "cayenne.DataDomain.sharedCache" -> "sharedCache";
+                case "cayenne.DataDomain.validatingObjectsOnCommit" -> "validateOnCommit";
+                default -> null;
+            };
+
+            if (attribute != null && !"true".equals(property.getAttribute("value"))) {
+                project.setAttribute(attribute, "false");
+            }
+            project.removeChild(property);
+        }
+    }
+
+    /**
+     * Replaces the generic "property" elements of the DataMap with the attributes specific to each property. The
+     * properties not known to Cayenne are dropped. The "property" elements of the "info" extension are not affected.
+     */
+    private void convertDataMapProperties(UpgradeContext upgradeUnit) {
+        Element dataMap = upgradeUnit.getDocument().getDocumentElement();
+        for (Element property : elements(upgradeUnit, "/*/*[name()='property']")) {
+            String name = property.getAttribute("name");
+            String value = property.getAttribute("value");
+            switch (name) {
+                case "defaultPackage", "defaultCatalog", "defaultSchema", "defaultSuperclass" -> {
+                    if (!value.isEmpty()) {
+                        dataMap.setAttribute(name, value);
+                    }
+                }
+                // the lock type used to be saved as a number, that the loader did not understand
+                case "defaultLockType" -> {
+                    if (value.equals("optimistic") || value.equals("1")) {
+                        dataMap.setAttribute(name, "optimistic");
+                    }
+                }
+                case "quoteSqlIdentifiers" -> {
+                    if (value.equalsIgnoreCase("true")) {
+                        dataMap.setAttribute(name, "true");
+                    }
+                }
+                default -> {
+                    // not a known property
+                }
+            }
+            dataMap.removeChild(property);
+        }
     }
 
     /**

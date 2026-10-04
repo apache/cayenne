@@ -3,6 +3,9 @@
 	 xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
 	 xsi:schemaLocation="http://cayenne.apache.org/schema/13/domain https://cayenne.apache.org/schema/13/domain.xsd"
 	 project-version="13">
+	<property name="cayenne.DataDomain.validatingObjectsOnCommit" value="false"/>
+	<property name="cayenne.DataDomain.sharedCache" value="true"/>
+	<property name="cayenne.DataDomain.usingExternalTransactions" value="true"/>
 	<map name="map1"/>
 	<validation xmlns="http://cayenne.apache.org/schema/13/validation">
 		<exclude>DATA_CHANNEL_NO_NAME</exclude>

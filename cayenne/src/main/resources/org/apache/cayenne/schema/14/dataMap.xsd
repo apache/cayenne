@@ -31,7 +31,6 @@
 	<xs:element name="dataMap">
 		<xs:complexType>
 			<xs:sequence>
-				<xs:element minOccurs="0" maxOccurs="unbounded" ref="cay:property"/>
 				<xs:element minOccurs="0" maxOccurs="unbounded" ref="cay:embeddable"/>
 				<xs:element minOccurs="0" maxOccurs="unbounded" ref="cay:procedure"/>
 				<xs:element minOccurs="0" maxOccurs="unbounded" ref="cay:dbEntity"/>
@@ -45,6 +44,41 @@
 				</xs:choice>
 				<xs:any minOccurs="0" maxOccurs="unbounded" namespace="##other" processContents="lax"/>
 			</xs:sequence>
+			<xs:attribute name="defaultLockType">
+				<xs:annotation>
+					<xs:documentation>A lock type of the new ObjEntities created in the DataMap.</xs:documentation>
+				</xs:annotation>
+				<xs:simpleType>
+					<xs:restriction base="xs:string">
+						<xs:enumeration value="optimistic"/>
+					</xs:restriction>
+				</xs:simpleType>
+			</xs:attribute>
+			<xs:attribute name="defaultPackage" type="xs:string">
+				<xs:annotation>
+					<xs:documentation>A Java package of the classes of the new ObjEntities and Embeddables created in the DataMap.</xs:documentation>
+				</xs:annotation>
+			</xs:attribute>
+			<xs:attribute name="defaultCatalog" type="xs:string">
+				<xs:annotation>
+					<xs:documentation>A database catalog of the new DbEntities and Procedures created in the DataMap.</xs:documentation>
+				</xs:annotation>
+			</xs:attribute>
+			<xs:attribute name="defaultSchema" type="xs:string">
+				<xs:annotation>
+					<xs:documentation>A database schema of the new DbEntities and Procedures created in the DataMap.</xs:documentation>
+				</xs:annotation>
+			</xs:attribute>
+			<xs:attribute name="defaultSuperclass" type="xs:string">
+				<xs:annotation>
+					<xs:documentation>A Java superclass of the classes of the new ObjEntities created in the DataMap.</xs:documentation>
+				</xs:annotation>
+			</xs:attribute>
+			<xs:attribute name="quoteSqlIdentifiers" type="xs:boolean" default="false">
+				<xs:annotation>
+					<xs:documentation>Defines whether the names of the tables and columns of the DataMap are quoted in the generated SQL.</xs:documentation>
+				</xs:annotation>
+			</xs:attribute>
 		</xs:complexType>
 	</xs:element>
 	<xs:element name="dbEntity">
@@ -321,15 +355,6 @@
 		</xs:complexType>
 	</xs:element>
 
-	<xs:element name="property">
-		<xs:annotation>
-			<xs:documentation>A generic property of a DataMap.</xs:documentation>
-		</xs:annotation>
-		<xs:complexType>
-			<xs:attribute name="name" use="required" type="xs:string"/>
-			<xs:attribute name="value" use="required" type="xs:string"/>
-		</xs:complexType>
-	</xs:element>
 	<xs:element name="embeddable">
 		<xs:complexType>
 			<xs:sequence>

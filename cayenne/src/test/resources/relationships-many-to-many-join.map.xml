@@ -1,8 +1,8 @@
 <?xml version="1.0" encoding="utf-8"?>
 <dataMap xmlns="http://cayenne.apache.org/schema/14/dataMap"
 	 xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-	 xsi:schemaLocation="http://cayenne.apache.org/schema/14/dataMap https://cayenne.apache.org/schema/14/dataMap.xsd">
-	<property name="defaultPackage" value="org.apache.cayenne.testdo.relationships_many_to_many_join"/>
+	 xsi:schemaLocation="http://cayenne.apache.org/schema/14/dataMap https://cayenne.apache.org/schema/14/dataMap.xsd"
+	 defaultPackage="org.apache.cayenne.testdo.relationships_many_to_many_join">
 	<dbEntity name="X_AUTHOR">
 		<dbAttribute name="AUTHOR_ID" type="INTEGER" primaryKey="true" mandatory="true"/>
 		<dbAttribute name="AUTHOR_NAME" type="VARCHAR" mandatory="true" length="50"/>

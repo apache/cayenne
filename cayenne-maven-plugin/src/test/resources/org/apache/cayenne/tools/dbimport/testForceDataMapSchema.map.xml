@@ -19,7 +19,7 @@
 -->
 <dataMap xmlns="http://cayenne.apache.org/schema/14/dataMap"
           xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-          xsi:schemaLocation="http://cayenne.apache.org/schema/14/dataMap http://cayenne.apache.org/schema/14/dataMap.xsd">
-    <property name="defaultPackage" value="com.example.test"/>
-    <property name="defaultCatalog" value="XCATALOG"/>
+          xsi:schemaLocation="http://cayenne.apache.org/schema/14/dataMap http://cayenne.apache.org/schema/14/dataMap.xsd"
+	 defaultPackage="com.example.test"
+	 defaultCatalog="XCATALOG">
 </dataMap>

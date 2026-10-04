@@ -19,9 +19,8 @@
 -->
 <dataMap xmlns="http://cayenne.apache.org/schema/14/dataMap"
           xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-          xsi:schemaLocation="http://cayenne.apache.org/schema/14/dataMap http://cayenne.apache.org/schema/14/dataMap.xsd">
-
-    <property name="defaultPackage" value="org.example.cayenne.persistent"/>
+          xsi:schemaLocation="http://cayenne.apache.org/schema/14/dataMap http://cayenne.apache.org/schema/14/dataMap.xsd"
+          defaultPackage="org.example.cayenne.persistent">
     <dbEntity name="City">
         <dbAttribute name="id" type="INTEGER" primaryKey="true" mandatory="true"/>
         <dbAttribute name="name" type="VARCHAR" length="255"/>

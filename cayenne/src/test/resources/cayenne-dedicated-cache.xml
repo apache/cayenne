@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 <project xmlns="http://cayenne.apache.org/schema/14/project"
 	 xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-	 xsi:schemaLocation="http://cayenne.apache.org/schema/14/project https://cayenne.apache.org/schema/14/project.xsd">
-	<property name="cayenne.DataDomain.sharedCache" value="false"/>
+	 xsi:schemaLocation="http://cayenne.apache.org/schema/14/project https://cayenne.apache.org/schema/14/project.xsd"
+	 sharedCache="false">
 	<map name="multi-tier"/>
 </project>

@@ -61,7 +61,7 @@ When ambiguous, ask the user which project they mean. Cache the answer for the r
 | Change | File to edit |
 |---|---|
 | Add/remove an `ObjEntity`, `DbEntity`, attribute, relationship, embeddable, named query | DataMap (`*.map.xml`) |
-| Change a DataMap's `defaultPackage` or `defaultSuperclass` | DataMap (`*.map.xml`) — top-level `<property>` |
+| Change a DataMap's `defaultPackage` or `defaultSuperclass` | DataMap (`*.map.xml`) — attributes of `<dataMap>` |
 | Add/remove a DataMap from the project | Project descriptor (`cayenne-*.xml`) — `<map>` element |
 | Add/configure a DataNode (DB connection) | Project descriptor (`cayenne-*.xml`) — `<node>` element |
 | Embedded code-generation config (`<cgen>`) | DataMap (`*.map.xml`) |

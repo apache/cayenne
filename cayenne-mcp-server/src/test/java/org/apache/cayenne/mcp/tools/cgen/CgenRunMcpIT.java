@@ -177,8 +177,8 @@ public class CgenRunMcpIT {
         Files.writeString(tempDir.resolve(mapName + ".map.xml"), String.format("""
                 <?xml version="1.0" encoding="utf-8"?>
                 <dataMap xmlns="http://cayenne.apache.org/schema/14/dataMap"
-                          xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
-                    <property name="defaultPackage" value="%s"/>
+                          xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+                          defaultPackage="%s">
                     <objEntity name="Person" className="%s.Person"/>
                     <cgen xmlns="http://cayenne.apache.org/schema/14/cgen">
                         <destDir>%s</destDir>

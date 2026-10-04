@@ -32,8 +32,8 @@ import org.slf4j.LoggerFactory;
  * <ul>
  * <li>Merged project name is the same as the name of the last project on the merge
  * list.</li>
- * <li>Merged project properties are the same as the properties of the last project
- * on the merge list. I.e. properties are not merged to avoid invalid combinations and
+ * <li>Merged project settings are the same as the settings of the last project
+ * on the merge list. I.e. settings are not merged to avoid invalid combinations and
  * unexpected runtime behavior.</li>
  * <li>If there are two or more DataMaps with the same name, only one DataMap is placed in
  * the merged project, the rest are discarded. DataMap with highest index in the
@@ -64,7 +64,8 @@ public class DefaultProjectMerger implements ProjectMerger {
         // merge into a new project; do not alter source descriptors
         Project merged = new Project();
         merged.setName(projects[len - 1].getName());
-        merged.getProperties().putAll(projects[len - 1].getProperties());
+        merged.setSharedCacheEnabled(projects[len - 1].isSharedCacheEnabled());
+        merged.setValidatingObjectsOnCommit(projects[len - 1].isValidatingObjectsOnCommit());
 
         // iterate in reverse order to reduce add/remove operations
         for (int i = len - 1; i >= 0; i--) {

@@ -1,10 +1,10 @@
 <?xml version="1.0" encoding="utf-8"?>
 <dataMap xmlns="http://cayenne.apache.org/schema/14/dataMap"
 	 xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-	 xsi:schemaLocation="http://cayenne.apache.org/schema/14/dataMap http://cayenne.apache.org/schema/14/dataMap.xsd">
-	<property name="defaultPackage" value="org.apache.cayenne.testdo.testmap"/>
-	<property name="defaultCatalog" value="TEST_CATALOG"/>
-	<property name="defaultSuperclass" value="org.apache.cayenne.GenericPersistentObject"/>
+	 xsi:schemaLocation="http://cayenne.apache.org/schema/14/dataMap http://cayenne.apache.org/schema/14/dataMap.xsd"
+	 defaultPackage="org.apache.cayenne.testdo.testmap"
+	 defaultCatalog="TEST_CATALOG"
+	 defaultSuperclass="org.apache.cayenne.GenericPersistentObject">
 	<embeddable className="org.apache.cayenne.testdo.Embeddable">
 		<embeddableAttribute name="test" type="int" dbAttributeName="TEST"/>
 	</embeddable>

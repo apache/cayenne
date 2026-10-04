@@ -26,13 +26,11 @@ import org.apache.cayenne.util.XMLSerializable;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
-import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
 
 /**
  * A Cayenne mapping project, normally loaded from XML configuration. It is the root of the project nodes tree,
- * and contains DataMaps and the properties of a runtime DataChannel.
+ * and contains DataMaps and the settings of a runtime DataChannel.
  *
  * @since 5.0
  */
@@ -45,12 +43,14 @@ public class Project implements ProjectNode, XMLSerializable {
 	public static final String SCHEMA_XSD_LOCATION = "https://cayenne.apache.org/schema/14/project.xsd";
 
 	protected String name;
-	protected Map<String, String> properties;
+	protected boolean sharedCacheEnabled;
+	protected boolean validatingObjectsOnCommit;
 	protected Collection<DataMap> dataMaps;
 	protected Resource configurationSource;
 
 	public Project() {
-		properties = new HashMap<>();
+		sharedCacheEnabled = true;
+		validatingObjectsOnCommit = true;
 		dataMaps = new ArrayList<>(5);
 	}
 
@@ -60,16 +60,10 @@ public class Project implements ProjectNode, XMLSerializable {
 		encoder.start("project")
 				.attribute("xmlns", SCHEMA_XSD)
 				.attribute("xmlns:xsi", "http://www.w3.org/2001/XMLSchema-instance", true)
-				.attribute("xsi:schemaLocation", SCHEMA_XSD + " " + SCHEMA_XSD_LOCATION, true);
-
-		if (!properties.isEmpty()) {
-			List<String> keys = new ArrayList<>(properties.keySet());
-			Collections.sort(keys);
-
-			for (String key : keys) {
-				encoder.property(key, properties.get(key));
-			}
-		}
+				.attribute("xsi:schemaLocation", SCHEMA_XSD + " " + SCHEMA_XSD_LOCATION, true)
+				// both are true by default
+				.attribute("sharedCache", sharedCacheEnabled ? null : "false", true)
+				.attribute("validateOnCommit", validatingObjectsOnCommit ? null : "false", true);
 
 		if (!dataMaps.isEmpty()) {
 			List<DataMap> maps = new ArrayList<>(this.dataMaps);
@@ -97,8 +91,26 @@ public class Project implements ProjectNode, XMLSerializable {
 		this.name = name;
 	}
 
-	public Map<String, String> getProperties() {
-		return properties;
+	/**
+	 * Returns whether the object snapshots are cached in a cache shared between all ObjectContexts. True by default.
+	 */
+	public boolean isSharedCacheEnabled() {
+		return sharedCacheEnabled;
+	}
+
+	public void setSharedCacheEnabled(boolean sharedCacheEnabled) {
+		this.sharedCacheEnabled = sharedCacheEnabled;
+	}
+
+	/**
+	 * Returns whether the objects are validated before they are committed. True by default.
+	 */
+	public boolean isValidatingObjectsOnCommit() {
+		return validatingObjectsOnCommit;
+	}
+
+	public void setValidatingObjectsOnCommit(boolean validatingObjectsOnCommit) {
+		this.validatingObjectsOnCommit = validatingObjectsOnCommit;
 	}
 
 	public Collection<DataMap> getDataMaps() {

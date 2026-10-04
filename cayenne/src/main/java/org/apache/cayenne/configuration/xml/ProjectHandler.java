@@ -51,6 +51,13 @@ public final class ProjectHandler extends VersionAwareHandler {
         if ("domain".equals(localName)) {
             validateVersion(namespaceURI, attributes);
         }
+
+        // both settings are true by default
+        if (PROJECT_TAG.equals(localName)) {
+            project.setSharedCacheEnabled(!"false".equals(attributes.getValue("sharedCache")));
+            project.setValidatingObjectsOnCommit(!"false".equals(attributes.getValue("validateOnCommit")));
+        }
+
         return super.processElement(namespaceURI, localName, attributes);
     }
 

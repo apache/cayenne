@@ -1,9 +1,9 @@
 <?xml version="1.0" encoding="utf-8"?>
 <dataMap xmlns="http://cayenne.apache.org/schema/14/dataMap"
 	 xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-	 xsi:schemaLocation="http://cayenne.apache.org/schema/14/dataMap https://cayenne.apache.org/schema/14/dataMap.xsd">
-	<property name="quoteSqlIdentifiers" value="true"/>
-	<property name="defaultPackage" value="org.apache.cayenne.testdo.cay_2666"/>
+	 xsi:schemaLocation="http://cayenne.apache.org/schema/14/dataMap https://cayenne.apache.org/schema/14/dataMap.xsd"
+	 defaultPackage="org.apache.cayenne.testdo.cay_2666"
+	 quoteSqlIdentifiers="true">
 	<dbEntity name="Cay2666">
 		<dbAttribute name="ID" type="INTEGER" primaryKey="true" mandatory="true" length="10"/>
 		<dbAttribute name="NAME$" type="VARCHAR" length="10"/>

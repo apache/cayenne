@@ -1,9 +1,9 @@
 <?xml version="1.0" encoding="utf-8"?>
 <dataMap xmlns="http://cayenne.apache.org/schema/14/dataMap"
 	 xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-	 xsi:schemaLocation="http://cayenne.apache.org/schema/14/dataMap https://cayenne.apache.org/schema/14/dataMap.xsd">
-	<property name="defaultPackage" value="org.apache.cayenne.testdo.lob"/>
-	<property name="defaultSuperclass" value="org.apache.cayenne.GenericPersistentObject"/>
+	 xsi:schemaLocation="http://cayenne.apache.org/schema/14/dataMap https://cayenne.apache.org/schema/14/dataMap.xsd"
+	 defaultPackage="org.apache.cayenne.testdo.lob"
+	 defaultSuperclass="org.apache.cayenne.GenericPersistentObject">
 	<dbEntity name="BLOB_TEST">
 		<dbAttribute name="BLOB_COL" type="BLOB"/>
 		<dbAttribute name="BLOB_TEST_ID" type="INTEGER" primaryKey="true" mandatory="true"/>

@@ -1,8 +1,8 @@
 <?xml version="1.0" encoding="utf-8"?>
 <project xmlns="http://cayenne.apache.org/schema/14/project"
 	 xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-	 xsi:schemaLocation="http://cayenne.apache.org/schema/14/project https://cayenne.apache.org/schema/14/project.xsd">
-	<property name="cayenne.DataDomain.validatingObjectsOnCommit" value="false"/>
+	 xsi:schemaLocation="http://cayenne.apache.org/schema/14/project https://cayenne.apache.org/schema/14/project.xsd"
+	 validateOnCommit="false">
 	<map name="map-db1"/>
 	<map name="map-db2"/>
 </project>

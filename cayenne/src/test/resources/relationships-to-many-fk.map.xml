@@ -1,8 +1,8 @@
 <?xml version="1.0" encoding="utf-8"?>
 <dataMap xmlns="http://cayenne.apache.org/schema/14/dataMap"
 	 xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-	 xsi:schemaLocation="http://cayenne.apache.org/schema/14/dataMap https://cayenne.apache.org/schema/14/dataMap.xsd">
-	<property name="defaultPackage" value="org.apache.cayenne.testdo.relationships_to_many_fk"/>
+	 xsi:schemaLocation="http://cayenne.apache.org/schema/14/dataMap https://cayenne.apache.org/schema/14/dataMap.xsd"
+	 defaultPackage="org.apache.cayenne.testdo.relationships_to_many_fk">
 	<dbEntity name="TO_MANY_FKDEP">
 		<dbAttribute name="DEP_ID" type="INTEGER" primaryKey="true" mandatory="true"/>
 		<dbAttribute name="NAME" type="VARCHAR" length="200"/>

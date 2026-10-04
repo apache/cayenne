@@ -56,7 +56,6 @@ import org.slf4j.LoggerFactory;
 
 import java.util.Collection;
 import java.util.List;
-import java.util.Map;
 import java.util.Set;
 import java.util.stream.Collectors;
 
@@ -68,11 +67,6 @@ import java.util.stream.Collectors;
  * @since 3.1
  */
 public class DataDomainProvider implements Provider<DataDomain> {
-
-    public static final String SHARED_CACHE_ENABLED_PROPERTY = "cayenne.DataDomain.sharedCache";
-    public static final String SHARED_CACHE_ENABLED_DEFAULT = "true";
-    public static final String VALIDATING_OBJECTS_ON_COMMIT_PROPERTY = "cayenne.DataDomain.validatingObjectsOnCommit";
-    public static final String VALIDATING_OBJECTS_ON_COMMIT_DEFAULT = "true";
 
     private static final Logger LOGGER = LoggerFactory.getLogger(DataDomainProvider.class);
 
@@ -143,10 +137,6 @@ public class DataDomainProvider implements Provider<DataDomain> {
         EntityResolver entityResolver = createEntityResolver(project);
         EntitySorter entitySorter = entitySorterFactory.createEntitySorter(entityResolver);
 
-        Map<String, String> properties = project.getProperties();
-        boolean validatingOnCommit = "true".equals(
-                properties.getOrDefault(VALIDATING_OBJECTS_ON_COMMIT_PROPERTY, VALIDATING_OBJECTS_ON_COMMIT_DEFAULT));
-
         DataDomain domain = new DataDomain(
                 project.getName(),
                 transactionManager,
@@ -157,7 +147,7 @@ public class DataDomainProvider implements Provider<DataDomain> {
                 new NestedQueryCache(queryCache),
                 createSharedSnapshotCache(project),
                 runtimeProperties.getInt(Constants.MAX_ID_QUALIFIER_SIZE_PROPERTY, -1),
-                validatingOnCommit,
+                project.isValidatingObjectsOnCommit(),
                 entityResolver,
                 entitySorter
         );
@@ -227,10 +217,7 @@ public class DataDomainProvider implements Provider<DataDomain> {
      */
     protected DataRowStore createSharedSnapshotCache(Project project) {
 
-        String sharedCache = project.getProperties()
-                .getOrDefault(SHARED_CACHE_ENABLED_PROPERTY, SHARED_CACHE_ENABLED_DEFAULT);
-
-        return "true".equals(sharedCache)
+        return project.isSharedCacheEnabled()
                 ? injector.getInstance(DataRowStoreFactory.class).createDataRowStore(project.getName())
                 : null;
     }

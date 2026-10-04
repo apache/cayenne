@@ -36,13 +36,16 @@ Reference for editing Cayenne DataMap files directly.
 </dataMap>
 ```
 
-## DataMap properties
+## DataMap settings
 
-Top-level `<property>` children of `<dataMap>` configure DataMap-wide settings. The two used in practice:
+Optional attributes of `<dataMap>` configure DataMap-wide settings: `defaultPackage`, `defaultSuperclass`,
+`defaultCatalog`, `defaultSchema`, `defaultLockType` (`optimistic`) and `quoteSqlIdentifiers` (`true`). The two used in
+practice:
 
 ```xml
-<property name="defaultPackage" value="com.example.model"/>
-<property name="defaultSuperclass" value="org.apache.cayenne.GenericPersistentObject"/>
+<dataMap xmlns="http://cayenne.apache.org/schema/14/dataMap" ...
+         defaultPackage="com.example.model"
+         defaultSuperclass="org.apache.cayenne.GenericPersistentObject">
 ```
 
 - `defaultPackage` — Java package for generated classes when an `objEntity` `className` is a short name.
@@ -52,16 +55,15 @@ Top-level `<property>` children of `<dataMap>` configure DataMap-wide settings. 
 
 The schema enforces this order inside `<dataMap>`:
 
-1. `<property>` *
-2. `<procedure>` *
-3. `<embeddable>` *
-4. `<dbEntity>` *
-5. `<objEntity>` *
-6. `<dbRelationship>` *
-7. `<objRelationship>` *
-8. `<objectQuery>`, `<sqlQuery>`, `<procedureQuery>` * (in any mix)
-9. `<cgen>` ? (different namespace, embedded)
-10. `<dbImport>` ? (different namespace, embedded)
+1. `<procedure>` *
+2. `<embeddable>` *
+3. `<dbEntity>` *
+4. `<objEntity>` *
+5. `<dbRelationship>` *
+6. `<objRelationship>` *
+7. `<objectQuery>`, `<sqlQuery>`, `<procedureQuery>` * (in any mix)
+8. `<cgen>` ? (different namespace, embedded)
+9. `<dbImport>` ? (different namespace, embedded)
 
 When inserting elements by hand, respect this order or Cayenne's parser will reject the file.
 

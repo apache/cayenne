@@ -35,7 +35,6 @@ final class ProjectChildrenHandler extends NamespaceAwareNestedTagHandler {
     private static final Logger LOGGER = LoggerFactory.getLogger(XMLProjectLoader.class);
 
     static final String OLD_MAP_TAG = "map";
-    static final String PROPERTY_TAG = "property";
     static final String DATA_MAP_TAG = "dataMap";
     static final String PROJECT_TAG = "project";
 
@@ -52,10 +51,6 @@ final class ProjectChildrenHandler extends NamespaceAwareNestedTagHandler {
     @Override
     protected boolean processElement(String namespaceURI, String localName, Attributes attributes) {
         switch (localName) {
-            case PROPERTY_TAG:
-                addProperty(attributes);
-                return true;
-
             case OLD_MAP_TAG:
                 addMap(attributes);
                 return true;
@@ -75,14 +70,6 @@ final class ProjectChildrenHandler extends NamespaceAwareNestedTagHandler {
         }
 
         return super.createChildTagHandler(namespaceURI, localName, name, attributes);
-    }
-
-    private void addProperty(Attributes attributes) {
-        String key = attributes.getValue("name");
-        String value = attributes.getValue("value");
-        if (key != null && value != null) {
-            project.getProperties().put(key, value);
-        }
     }
 
     private void addMap(Attributes attributes) {

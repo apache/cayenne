@@ -48,7 +48,7 @@ Apply the change following the schema in `datamap-schema.md` or `project-descrip
 
 ### Critical rules
 
-1. **Element order matters.** The DataMap schema requires this order inside `<dataMap>`: `<property>`, `<procedure>`, `<embeddable>`, `<dbEntity>`, `<objEntity>`, `<dbRelationship>`, `<objRelationship>`, the queries (`<objectQuery>`, `<sqlQuery>`, `<procedureQuery>`), `<cgen>`, `<dbImport>`. Insert at the right place — don't append blindly.
+1. **Element order matters.** The DataMap schema requires this order inside `<dataMap>`: `<procedure>`, `<embeddable>`, `<dbEntity>`, `<objEntity>`, `<dbRelationship>`, `<objRelationship>`, the queries (`<objectQuery>`, `<sqlQuery>`, `<procedureQuery>`), `<cgen>`, `<dbImport>`. Insert at the right place — don't append blindly.
 
 2. **Cross-link consistently.**
    - An `<objEntity>` references a `<dbEntity>` by `dbEntityName="..."`. Make sure that DbEntity exists.
@@ -64,7 +64,7 @@ Apply the change following the schema in `datamap-schema.md` or `project-descrip
 
 5. **Preserve formatting.** Match the indentation and quote style of the file (the standard Cayenne style uses tabs and double quotes, but follow what's actually in the file you're editing).
 
-6. **Changing `defaultPackage` on a DataMap.** If the user asks to change the DataMap-level `defaultPackage` property, ask whether entity-level packages should be updated too. Otherwise, every existing `objEntity` will keep its old package. Ask: "Do you also want me to update the `className` values on individual `<objEntity>` elements that currently use the old package?" Update them only if the user confirms.
+6. **Changing `defaultPackage` on a DataMap.** If the user asks to change the DataMap-level `defaultPackage` attribute, ask whether entity-level packages should be updated too. Otherwise, every existing `objEntity` will keep its old package. Ask: "Do you also want me to update the `className` values on individual `<objEntity>` elements that currently use the old package?" Update them only if the user confirms.
 
 ## Step 3 — Validate the edit conceptually
 

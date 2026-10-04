@@ -58,6 +58,11 @@ public class UpgradeHandler_V14Test extends BaseUpgradeHandlerTest {
         assertEquals("http://cayenne.apache.org/schema/14/project", root.getAttribute("xmlns"));
         assertNoHyphenatedNames(document);
 
+        // the properties become attributes, unless they have the default value or are unknown
+        assertTrue(elements(document, "/project/*[local-name()='property']").isEmpty());
+        assertEquals("false", root.getAttribute("validateOnCommit"));
+        assertFalse(root.hasAttribute("sharedCache"));
+
         List<Element> validation = elements(document, "/project/*[local-name()='validation']");
         assertEquals(1, validation.size());
         assertEquals("http://cayenne.apache.org/schema/14/validation", validation.get(0).getAttribute("xmlns"));
@@ -86,6 +91,15 @@ public class UpgradeHandler_V14Test extends BaseUpgradeHandlerTest {
         assertEquals(2, elements(document, "/dataMap/dbEntity/dbAttribute").size());
         assertEquals(1, elements(document, "/dataMap/objEntity/objAttribute[@dbAttributePath='ARTIST_NAME']").size());
 
+        // the DataMap properties become attributes, unknown properties are dropped, the "info" properties are kept
+        assertTrue(elements(document, "/dataMap/*[name()='property']").isEmpty());
+        assertEquals("org.apache.cayenne.x", root.getAttribute("defaultPackage"));
+        assertEquals("optimistic", root.getAttribute("defaultLockType"));
+        assertEquals("true", root.getAttribute("quoteSqlIdentifiers"));
+        assertFalse(root.hasAttribute("clientSupported"));
+        assertFalse(root.hasAttribute("defaultSchema"));
+        assertEquals(1, elements(document, "/dataMap/*[name()='info:property'][@value='a map']").size());
+
         // the boolean attributes of "dbAttribute" lose the "is" prefix
         assertEquals(1, elements(document, "/dataMap/dbEntity/dbAttribute[@primaryKey='true'][@mandatory='true']").size());
         assertTrue(elements(document, "//*[@isPrimaryKey or @isMandatory or @isGenerated]").isEmpty());
@@ -100,8 +114,9 @@ public class UpgradeHandler_V14Test extends BaseUpgradeHandlerTest {
         List<Element> infoProperties = elements(document, "//*[local-name()='property']").stream()
                 .filter(p -> p.hasAttribute("xmlns:info"))
                 .toList();
-        assertEquals(1, infoProperties.size());
-        assertEquals("http://cayenne.apache.org/schema/14/info", infoProperties.get(0).getAttribute("xmlns:info"));
+        assertEquals(2, infoProperties.size());
+        infoProperties.forEach(p ->
+                assertEquals("http://cayenne.apache.org/schema/14/info", p.getAttribute("xmlns:info")));
 
         // the rootless query and the EJBQL queries are removed with a notification each, the rest are converted
         // to the elements specific to the query type

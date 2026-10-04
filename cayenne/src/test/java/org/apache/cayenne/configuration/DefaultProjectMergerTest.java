@@ -54,21 +54,19 @@ public class DefaultProjectMergerTest {
     }
 
     @Test
-    public void merged_Properties() {
+    public void merged_Settings() {
         Project d1 = new Project();
-        d1.getProperties().put("X", "1");
-        d1.getProperties().put("Y", "2");
+        d1.setSharedCacheEnabled(false);
 
         Project d2 = new Project();
-        d2.getProperties().put("X", "3");
-        d2.getProperties().put("Z", "4");
+        d2.setValidatingObjectsOnCommit(false);
 
         DefaultProjectMerger merger = new DefaultProjectMerger();
 
+        // the settings of the last project win
         Project merged = merger.merge(d1, d2);
-        assertEquals(2, merged.getProperties().size());
-        assertEquals("3", merged.getProperties().get("X"));
-        assertEquals("4", merged.getProperties().get("Z"));
+        assertTrue(merged.isSharedCacheEnabled());
+        assertFalse(merged.isValidatingObjectsOnCommit());
     }
 
     @Test

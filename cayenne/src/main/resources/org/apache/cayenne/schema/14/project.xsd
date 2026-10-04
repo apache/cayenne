@@ -26,20 +26,19 @@
     <xs:element name="project">
         <xs:complexType>
             <xs:sequence>
-                <xs:element minOccurs="0" maxOccurs="unbounded" ref="cay:property"/>
                 <xs:element minOccurs="0" maxOccurs="unbounded" ref="cay:map"/>
                 <xs:any minOccurs="0" maxOccurs="unbounded" namespace="##other" processContents="lax"/>
             </xs:sequence>
-        </xs:complexType>
-    </xs:element>
-
-    <xs:element name="property">
-        <xs:annotation>
-            <xs:documentation>A generic property used by other elements.</xs:documentation>
-        </xs:annotation>
-        <xs:complexType>
-            <xs:attribute name="name" use="required" type="xs:string"/>
-            <xs:attribute name="value" use="required" type="xs:string"/>
+            <xs:attribute name="sharedCache" type="xs:boolean" default="true">
+                <xs:annotation>
+                    <xs:documentation>Defines whether the object snapshots are cached in a cache shared between all ObjectContexts.</xs:documentation>
+                </xs:annotation>
+            </xs:attribute>
+            <xs:attribute name="validateOnCommit" type="xs:boolean" default="true">
+                <xs:annotation>
+                    <xs:documentation>Defines whether the objects are validated before they are committed.</xs:documentation>
+                </xs:annotation>
+            </xs:attribute>
         </xs:complexType>
     </xs:element>
 

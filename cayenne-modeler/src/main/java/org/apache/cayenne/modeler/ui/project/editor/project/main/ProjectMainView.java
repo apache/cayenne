@@ -23,7 +23,6 @@ import com.jgoodies.forms.builder.PanelBuilder;
 import com.jgoodies.forms.layout.CellConstraints;
 import com.jgoodies.forms.layout.FormLayout;
 import org.apache.cayenne.configuration.Project;
-import org.apache.cayenne.configuration.runtime.DataDomainProvider;
 import org.apache.cayenne.modeler.event.display.ProjectDisplayEvent;
 import org.apache.cayenne.modeler.event.display.ProjectDisplayListener;
 import org.apache.cayenne.modeler.event.model.ProjectEvent;
@@ -36,7 +35,6 @@ import org.apache.cayenne.validation.ValidationException;
 
 import javax.swing.*;
 import java.awt.*;
-import java.util.Map;
 import java.util.Objects;
 
 /**
@@ -95,71 +93,21 @@ public class ProjectMainView extends ProjectPanel implements ProjectDisplayListe
 
         // add item listener to checkboxes
         objectValidation.addItemListener(e -> {
-            String value = objectValidation.isSelected() ? "true" : "false";
-            setProjectProperty(
-                    DataDomainProvider.VALIDATING_OBJECTS_ON_COMMIT_PROPERTY,
-                    value,
-                    DataDomainProvider.VALIDATING_OBJECTS_ON_COMMIT_DEFAULT);
+            Project project = session.project();
+            if (project != null && project.isValidatingObjectsOnCommit() != objectValidation.isSelected()) {
+                project.setValidatingObjectsOnCommit(objectValidation.isSelected());
+                session.fireProjectEvent(ProjectEvent.ofChange(this, project));
+            }
         });
 
         sharedCache.addItemListener(e -> {
-            String value = sharedCache.isSelected() ? "true" : "false";
-            setProjectProperty(
-                    DataDomainProvider.SHARED_CACHE_ENABLED_PROPERTY,
-                    value,
-                    DataDomainProvider.SHARED_CACHE_ENABLED_DEFAULT);
+            Project project = session.project();
+            if (project != null && project.isSharedCacheEnabled() != sharedCache.isSelected()) {
+                project.setSharedCacheEnabled(sharedCache.isSelected());
+                session.fireProjectEvent(ProjectEvent.ofChange(this, project));
+            }
         });
 
-    }
-
-    /**
-     * Helper method that updates project properties. If a value equals to default, null
-     * value is used instead.
-     */
-    protected void setProjectProperty(String property, String value, String defaultValue) {
-
-        Project project = session
-                .project();
-
-        if (project == null) {
-            return;
-        }
-
-        // no empty strings
-        if ("".equals(value)) {
-            value = null;
-        }
-
-        // use NULL for defaults
-        if (value != null && value.equals(defaultValue)) {
-            value = null;
-        }
-
-        Map<String, String> properties = project.getProperties();
-        String oldValue = properties.get(property);
-        if (!Objects.equals(value, oldValue)) {
-            properties.put(property, value);
-
-            ProjectEvent e = ProjectEvent.ofChange(this, project);
-            session.fireProjectEvent(e);
-        }
-    }
-
-    public String getProjectProperty(String property, String defaultValue) {
-
-        Project project = session
-                .project();
-
-        if (project == null) {
-            return null;
-        }
-
-        String value = project.getProperties().get(property);
-        return value != null ? value : defaultValue;
-    }
-
-    public boolean getProjectBooleanProperty(String property, String defaultValue) {
-        return "true".equalsIgnoreCase(getProjectProperty(property, defaultValue));
     }
 
     /**
@@ -175,13 +123,8 @@ public class ProjectMainView extends ProjectPanel implements ProjectDisplayListe
         // extract values from the new project object
         name.setText(project.getName());
 
-        objectValidation.setSelected(getProjectBooleanProperty(
-                DataDomainProvider.VALIDATING_OBJECTS_ON_COMMIT_PROPERTY,
-                DataDomainProvider.VALIDATING_OBJECTS_ON_COMMIT_DEFAULT));
-
-        sharedCache.setSelected(getProjectBooleanProperty(
-                DataDomainProvider.SHARED_CACHE_ENABLED_PROPERTY,
-                DataDomainProvider.SHARED_CACHE_ENABLED_DEFAULT));
+        objectValidation.setSelected(project.isValidatingObjectsOnCommit());
+        sharedCache.setSelected(project.isSharedCacheEnabled());
     }
 
     void setProjectName(String newName) {

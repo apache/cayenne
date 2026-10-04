@@ -4,6 +4,10 @@
 	 xsi:schemaLocation="http://cayenne.apache.org/schema/13/modelMap https://cayenne.apache.org/schema/13/modelMap.xsd"
 	 project-version="13">
 	<property name="defaultPackage" value="org.apache.cayenne.x"/>
+	<property name="defaultLockType" value="1"/>
+	<property name="quoteSqlIdentifiers" value="true"/>
+	<property name="clientSupported" value="true"/>
+	<info:property xmlns:info="http://cayenne.apache.org/schema/13/info" name="comment" value="a map"/>
 	<db-entity name="ARTIST">
 		<db-attribute name="ARTIST_ID" type="INTEGER" isPrimaryKey="true" isMandatory="true"/>
 		<db-attribute name="ARTIST_NAME" type="VARCHAR" length="254"/>

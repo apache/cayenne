@@ -1,8 +1,8 @@
 <?xml version="1.0" encoding="utf-8"?>
 <dataMap xmlns="http://cayenne.apache.org/schema/14/dataMap"
 	 xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-	 xsi:schemaLocation="http://cayenne.apache.org/schema/14/dataMap http://cayenne.apache.org/schema/14/dataMap.xsd">
-	<property name="defaultPackage" value="org.apache.cayenne.testdo.embeddable"/>
+	 xsi:schemaLocation="http://cayenne.apache.org/schema/14/dataMap http://cayenne.apache.org/schema/14/dataMap.xsd"
+	 defaultPackage="org.apache.cayenne.testdo.embeddable">
 	<embeddable className="org.apache.cayenne.testdo.embeddable.Embeddable1">
 		<embeddableAttribute name="embedded10" type="java.lang.String" dbAttributeName="EMBEDDED10"/>
 		<embeddableAttribute name="embedded20" type="java.lang.String" dbAttributeName="EMBEDDED20"/>

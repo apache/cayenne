@@ -19,10 +19,8 @@
 
 package org.apache.cayenne.configuration.xml;
 
-import java.util.Map;
-import java.util.TreeMap;
-
 import org.apache.cayenne.map.DataMap;
+import org.apache.cayenne.map.ObjEntity;
 import org.xml.sax.Attributes;
 import org.xml.sax.ContentHandler;
 import org.xml.sax.SAXException;
@@ -34,7 +32,6 @@ public class DataMapHandler extends NamespaceAwareNestedTagHandler {
 
     /* This constants must be in sync with dataMap.xsd schema */
     private static final String DATA_MAP_TAG         = "dataMap";
-    private static final String PROPERTY_TAG         = "property";
     private static final String DB_ENTITY_TAG        = "dbEntity";
     private static final String OBJ_ENTITY_TAG       = "objEntity";
     private static final String DB_RELATIONSHIP_TAG  = "dbRelationship";
@@ -49,8 +46,6 @@ public class DataMapHandler extends NamespaceAwareNestedTagHandler {
 
     private DataMap dataMap;
 
-    private Map<String, Object> mapProperties;
-
     public DataMapHandler(NamespaceAwareNestedTagHandler parentHandler) {
         super(parentHandler);
     }
@@ -64,12 +59,16 @@ public class DataMapHandler extends NamespaceAwareNestedTagHandler {
     protected boolean processElement(String namespaceURI, String localName,
                                      Attributes attributes) throws SAXException {
         return switch (localName) {
-            case PROPERTY_TAG -> {
-                addProperty(attributes);
-                yield true;
-            }
             case DATA_MAP_TAG -> {
                 this.dataMap = new DataMap();
+                dataMap.setDefaultLockType("optimistic".equals(attributes.getValue("defaultLockType"))
+                        ? ObjEntity.LOCK_TYPE_OPTIMISTIC
+                        : ObjEntity.LOCK_TYPE_NONE);
+                dataMap.setDefaultPackage(attributes.getValue("defaultPackage"));
+                dataMap.setDefaultCatalog(attributes.getValue("defaultCatalog"));
+                dataMap.setDefaultSchema(attributes.getValue("defaultSchema"));
+                dataMap.setDefaultSuperclass(attributes.getValue("defaultSuperclass"));
+                dataMap.setQuotingSQLIdentifiers("true".equals(attributes.getValue("quoteSqlIdentifiers")));
                 yield true;
             }
             default -> false;
@@ -98,32 +97,7 @@ public class DataMapHandler extends NamespaceAwareNestedTagHandler {
 
     @Override
     protected void beforeScopeEnd() {
-        dataMap.initWithProperties(mapProperties);
         loaderContext.dataMapLoaded(dataMap);
-    }
-
-    private void addProperty(Attributes attributes) throws SAXException {
-        String name = attributes.getValue("name");
-        if (null == name) {
-            throw new SAXException("MapLoader::processStartDataMapProperty(), no property name.");
-        }
-
-        String value = attributes.getValue("value");
-        if (null == value) {
-            throw new SAXException("MapLoader::processStartDataMapProperty(), no property value.");
-        }
-
-        // special meaning for <property name="name" .../>
-        if("name".equals(name)) {
-            dataMap.setName(value);
-            return;
-        }
-
-        if (mapProperties == null) {
-            mapProperties = new TreeMap<>();
-        }
-
-        mapProperties.put(name, value);
     }
 
     public DataMap getDataMap() {
