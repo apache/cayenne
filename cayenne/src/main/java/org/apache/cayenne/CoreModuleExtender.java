@@ -17,10 +17,8 @@
  *  under the License.
  ****************************************************************/
 
-package org.apache.cayenne.configuration.runtime;
+package org.apache.cayenne;
 
-import org.apache.cayenne.DataChannelQueryFilter;
-import org.apache.cayenne.DataChannelSyncFilter;
 import org.apache.cayenne.access.flush.operation.DeleteDbRowOpFactory;
 import org.apache.cayenne.access.flush.operation.ConditionalSoftDeleteDbRowOpFactory;
 import org.apache.cayenne.access.types.ExtendedType;
@@ -31,6 +29,7 @@ import org.apache.cayenne.commitlog.CommitLogListener;
 import org.apache.cayenne.commitlog.meta.AnnotationCommitLogEntityFactory;
 import org.apache.cayenne.commitlog.meta.CommitLogEntityFactory;
 import org.apache.cayenne.configuration.Constants;
+import org.apache.cayenne.configuration.runtime.DbAdapterDetector;
 import org.apache.cayenne.di.Binder;
 import org.apache.cayenne.di.ListBuilder;
 import org.apache.cayenne.di.MapBuilder;

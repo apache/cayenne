@@ -23,7 +23,7 @@ import org.apache.cayenne.commitlog.db.AuditLog;
 import org.apache.cayenne.commitlog.db.Auditable2;
 import org.apache.cayenne.commitlog.model.ObjectChange;
 import org.apache.cayenne.commitlog.unit.AuditableRuntimeCase;
-import org.apache.cayenne.configuration.runtime.CoreModule;
+import org.apache.cayenne.CoreModule;
 import org.apache.cayenne.runtime.CayenneRuntimeBuilder;
 import org.apache.cayenne.tx.BaseTransaction;
 import org.junit.jupiter.api.BeforeEach;

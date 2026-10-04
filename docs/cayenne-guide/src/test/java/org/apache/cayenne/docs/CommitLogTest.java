@@ -21,7 +21,7 @@ package org.apache.cayenne.docs;
 import org.apache.cayenne.ObjectContext;
 import org.apache.cayenne.commitlog.CommitLogListener;
 import org.apache.cayenne.configuration.DataNodeDescriptor;
-import org.apache.cayenne.configuration.runtime.CoreModule;
+import org.apache.cayenne.CoreModule;
 import org.apache.cayenne.datasource.CayenneDataSource;
 import org.apache.cayenne.di.Binder;
 import org.apache.cayenne.di.Module;

@@ -16,10 +16,8 @@
  *  specific language governing permissions and limitations
  *  under the License.
  ****************************************************************/
-package org.apache.cayenne.configuration.runtime;
+package org.apache.cayenne;
 
-import org.apache.cayenne.DataChannelQueryFilter;
-import org.apache.cayenne.DataChannelSyncFilter;
 import org.apache.cayenne.access.DataDomain;
 import org.apache.cayenne.access.DataRowStoreFactory;
 import org.apache.cayenne.access.DefaultDataRowStoreFactory;
@@ -62,6 +60,11 @@ import org.apache.cayenne.configuration.DefaultProjectMerger;
 import org.apache.cayenne.configuration.DefaultRuntimeProperties;
 import org.apache.cayenne.configuration.ObjectContextFactory;
 import org.apache.cayenne.configuration.RuntimeProperties;
+import org.apache.cayenne.configuration.runtime.DataContextFactory;
+import org.apache.cayenne.configuration.runtime.DataDomainProvider;
+import org.apache.cayenne.configuration.runtime.DataNodeFactory;
+import org.apache.cayenne.configuration.runtime.DbAdapterDetector;
+import org.apache.cayenne.configuration.runtime.DefaultDataNodeFactory;
 import org.apache.cayenne.configuration.upgrade.ConfigurationUpgrader;
 import org.apache.cayenne.configuration.xml.ProjectMetaData;
 import org.apache.cayenne.configuration.xml.DefaultHandlerFactory;

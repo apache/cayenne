@@ -33,7 +33,7 @@ public interface Constants {
      * A DI container key for the Map&lt;String, String&gt; storing properties
      * used by built-in Cayenne service.
      *
-     * @see org.apache.cayenne.configuration.runtime.CoreModuleExtender#setProperty(String, Object)
+     * @see org.apache.cayenne.CoreModuleExtender#setProperty(String, Object)
      */
     String PROPERTIES_MAP = "cayenne.properties";
 
@@ -53,7 +53,7 @@ public interface Constants {
     /**
      * A DI container key for the List&lt;Object&gt; storing lifecycle events listeners.
      *
-     * @see org.apache.cayenne.configuration.runtime.CoreModuleExtender#addListener(Object)
+     * @see org.apache.cayenne.CoreModuleExtender#addListener(Object)
      */
     String DOMAIN_LISTENERS_LIST = "cayenne.domain_listeners";
 
@@ -79,7 +79,7 @@ public interface Constants {
      * A DI container key for the List&lt;ExtendedType&gt; storing default
      * adapter-agnostic ExtendedTypes.
      *
-     * @see org.apache.cayenne.configuration.runtime.CoreModuleExtender#addDefaultExtendedType(ExtendedType)
+     * @see org.apache.cayenne.CoreModuleExtender#addDefaultExtendedType(ExtendedType)
      */
     String DEFAULT_TYPES_LIST = "cayenne.default_types";
 
@@ -93,7 +93,7 @@ public interface Constants {
      * A DI container key for the List&lt;ExtendedType&gt; storing a
      * user-provided ExtendedTypes.
      *
-     * @see org.apache.cayenne.configuration.runtime.CoreModuleExtender#addUserExtendedType(ExtendedType)
+     * @see org.apache.cayenne.CoreModuleExtender#addUserExtendedType(ExtendedType)
      */
     String USER_TYPES_LIST = "cayenne.user_types";
 
@@ -107,7 +107,7 @@ public interface Constants {
      * A DI container key for the List&lt;ExtendedTypeFactory&gt; storing
      * default and user-provided ExtendedTypeFactories.
      *
-     * @see org.apache.cayenne.configuration.runtime.CoreModuleExtender#addExtendedTypeFactory(Class)
+     * @see org.apache.cayenne.CoreModuleExtender#addExtendedTypeFactory(Class)
      */
     String TYPE_FACTORIES_LIST = "cayenne.type_factories";
 
@@ -241,7 +241,7 @@ public interface Constants {
      *
      * @since 4.0
      * @deprecated since 5.0 this property is ignored. The slow-query threshold warning was removed as part of the
-     * compact SQL logger redesign (CAY-2912).
+     * compact SQL logger redesign
      */
     @Deprecated(since = "5.0")
     String QUERY_EXECUTION_TIME_LOGGING_THRESHOLD_PROPERTY = "cayenne.query_execution_time_logging_threshold";
@@ -257,7 +257,7 @@ public interface Constants {
     /**
      * Snapshot cache max size
      *
-     * @see org.apache.cayenne.configuration.runtime.CoreModuleExtender#snapshotCacheSize(int)
+     * @see org.apache.cayenne.CoreModuleExtender#snapshotCacheSize(int)
      * @since 4.0
      */
     String SNAPSHOT_CACHE_SIZE_PROPERTY = "cayenne.DataRowStore.snapshot.size";

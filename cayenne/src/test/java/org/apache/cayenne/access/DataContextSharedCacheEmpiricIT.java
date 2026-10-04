@@ -23,7 +23,7 @@ import java.util.HashMap;
 import java.util.List;
 
 import org.apache.cayenne.DataRow;
-import org.apache.cayenne.configuration.runtime.CoreModule;
+import org.apache.cayenne.CoreModule;
 import org.apache.cayenne.event.DefaultEventManager;
 import org.apache.cayenne.query.ObjectSelect;
 import org.apache.cayenne.runtime.CayenneRuntime;

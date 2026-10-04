@@ -40,7 +40,7 @@ import java.util.List;
  * }}</pre>
  *
  * @see DataChannelSyncFilter
- * @see org.apache.cayenne.configuration.runtime.CoreModuleExtender#addQueryFilter(DataChannelQueryFilter)
+ * @see CoreModuleExtender#addQueryFilter(DataChannelQueryFilter)
  *
  * @since 4.1
  */

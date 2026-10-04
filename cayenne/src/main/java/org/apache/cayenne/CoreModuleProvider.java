@@ -16,16 +16,34 @@
  *    specific language governing permissions and limitations
  *    under the License.
  */
-package org.apache.cayenne.configuration.runtime;
+package org.apache.cayenne;
 
+import org.apache.cayenne.di.Module;
 import org.apache.cayenne.runtime.CayenneRuntimeModuleProvider;
-import org.apache.cayenne.unit.ModuleProviderChecker;
-import org.junit.jupiter.api.Test;
 
-public class CoreModuleProviderTest {
+import java.util.Collection;
+import java.util.Collections;
 
-    @Test
-    public void providerPresent() {
-        ModuleProviderChecker.testProviderPresent(CoreModuleProvider.class, CayenneRuntimeModuleProvider.class);
+/**
+ * CoreModule auto-loading facility.
+ *
+ * @since 4.0 introduced
+ * @since 5.0 renamed from MainCayenneServerModuleProvider
+ */
+public class CoreModuleProvider implements CayenneRuntimeModuleProvider {
+
+    @Override
+    public Module module() {
+        return new CoreModule();
+    }
+
+    @Override
+    public Class<? extends Module> moduleType() {
+        return CoreModule.class;
+    }
+
+    @Override
+    public Collection<Class<? extends Module>> overrides() {
+        return Collections.emptyList();
     }
 }

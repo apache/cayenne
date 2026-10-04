@@ -18,7 +18,7 @@
  ****************************************************************/
 package org.apache.cayenne.jcache;
 
-import org.apache.cayenne.configuration.runtime.CoreModule;
+import org.apache.cayenne.CoreModule;
 import org.apache.cayenne.di.Binder;
 
 /**

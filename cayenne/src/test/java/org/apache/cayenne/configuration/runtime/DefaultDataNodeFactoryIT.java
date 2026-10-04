@@ -18,6 +18,7 @@
  ****************************************************************/
 package org.apache.cayenne.configuration.runtime;
 
+import org.apache.cayenne.CoreModule;
 import org.apache.cayenne.access.DataNode;
 import org.apache.cayenne.access.dbsync.CreateIfNoSchemaStrategy;
 import org.apache.cayenne.access.dbsync.SkipSchemaUpdateStrategy;

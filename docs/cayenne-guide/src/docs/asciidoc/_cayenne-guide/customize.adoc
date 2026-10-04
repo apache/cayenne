@@ -196,7 +196,7 @@ So it is easy to redefine a built-in service in Cayenne by rebinding desired imp
 To do that, first we need to know what those services to redefine are.
 While we describe some of them in the following sections, the best way to get a full list
 is to check the source code of the Cayenne version you are using and
-namely look in `org.apache.cayenne.configuration.runtime.CoreModule` - the main built-in module in Cayenne.
+namely look in `org.apache.cayenne.CoreModule` - the main built-in module in Cayenne.
 
 === Using custom data types
 

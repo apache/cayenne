@@ -18,6 +18,7 @@
  ****************************************************************/
 package org.apache.cayenne.configuration.runtime;
 
+import org.apache.cayenne.CoreModule;
 import org.apache.cayenne.DataChannelQueryFilter;
 import org.apache.cayenne.DataChannelQueryFilterChain;
 import org.apache.cayenne.DataChannelSyncFilter;

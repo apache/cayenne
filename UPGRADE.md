@@ -84,6 +84,9 @@ List<Artist> withExpensivePaintings = ObjectSelect
 
 ## Upgrading to 5.0-M4
 
+*  Per [CAY-2826](https://issues.apache.org/jira/browse/CAY-2826) `CoreModule` and `CoreModuleExtender` were moved from
+  `org.apache.cayenne.configuration.runtime` to the `org.apache.cayenne` package — fix your imports accordingly.
+
 *  Per [CAY-2875](https://issues.apache.org/jira/browse/CAY-2875) a `java.util.UUID` attribute now honors the JDBC
   type of the column it is mapped to, instead of always being converted to a 36-char string:
 

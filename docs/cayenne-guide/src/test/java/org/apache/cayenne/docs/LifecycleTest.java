@@ -18,7 +18,7 @@
  ****************************************************************/
 package org.apache.cayenne.docs;
 
-import org.apache.cayenne.configuration.runtime.CoreModule;
+import org.apache.cayenne.CoreModule;
 import org.apache.cayenne.docs.lifecycle.CommittedObjectCounter;
 import org.apache.cayenne.docs.lifecycle.Listener1;
 import org.apache.cayenne.docs.lifecycle.Listener2;

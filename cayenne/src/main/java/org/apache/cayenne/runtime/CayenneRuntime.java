@@ -99,7 +99,7 @@ public class CayenneRuntime {
 
     /**
      * Creates a runtime configuring it with a standard set of services
-     * contained in {@link org.apache.cayenne.configuration.runtime.CoreModule}. CoreModule is created with
+     * contained in {@link org.apache.cayenne.CoreModule}. CoreModule is created with
      * one or more 'configurationLocations'. An optional array of extra modules
      * may contain service overrides and/or user services.
      */
