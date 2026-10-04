@@ -17,9 +17,9 @@
 	specific language governing permissions and limitations
 	under the License.
 -->
-<dataMap xmlns="http://cayenne.apache.org/schema/14/modelMap"
+<dataMap xmlns="http://cayenne.apache.org/schema/14/dataMap"
           xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-          xsi:schemaLocation="http://cayenne.apache.org/schema/14/modelMap https://cayenne.apache.org/schema/14/modelMap.xsd">
+          xsi:schemaLocation="http://cayenne.apache.org/schema/14/dataMap https://cayenne.apache.org/schema/14/dataMap.xsd">
     <property name="defaultPackage" value="com.example.test"/>
     <property name="defaultCatalog" value="XCATALOG"/>
     <dbEntity name="CHILD" catalog="XCATALOG">

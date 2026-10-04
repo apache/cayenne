@@ -163,7 +163,7 @@ public class CgenRunIT {
                 """);
         Files.writeString(mapFile, """
                 <?xml version="1.0" encoding="utf-8"?>
-                <dataMap xmlns="http://cayenne.apache.org/schema/14/modelMap"
+                <dataMap xmlns="http://cayenne.apache.org/schema/14/dataMap"
                           xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
                     <property name="defaultPackage" value="com.example"/>
                     <objEntity name="Person" className="com.example.Person"/>
@@ -201,7 +201,7 @@ public class CgenRunIT {
         // DataMap with one entity and embedded cgen config
         Files.writeString(tempDir.resolve(mapName + ".map.xml"), String.format("""
                 <?xml version="1.0" encoding="utf-8"?>
-                <dataMap xmlns="http://cayenne.apache.org/schema/14/modelMap"
+                <dataMap xmlns="http://cayenne.apache.org/schema/14/dataMap"
                           xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
                     <property name="defaultPackage" value="%s"/>
                     <objEntity name="Person" className="%s.Person"/>

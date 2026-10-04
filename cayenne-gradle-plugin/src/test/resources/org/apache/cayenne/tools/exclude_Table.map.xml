@@ -17,9 +17,9 @@
 	specific language governing permissions and limitations
 	under the License.
 -->
-<dataMap xmlns="http://cayenne.apache.org/schema/14/modelMap"
+<dataMap xmlns="http://cayenne.apache.org/schema/14/dataMap"
           xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-          xsi:schemaLocation="http://cayenne.apache.org/schema/14/modelMap http://cayenne.apache.org/schema/14/modelMap.xsd">
+          xsi:schemaLocation="http://cayenne.apache.org/schema/14/dataMap http://cayenne.apache.org/schema/14/dataMap.xsd">
 
     <property name="defaultPackage" value="org.example.cayenne.persistent"/>
     <dbEntity name="City">

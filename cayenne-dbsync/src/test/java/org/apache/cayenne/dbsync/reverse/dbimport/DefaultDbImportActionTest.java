@@ -436,9 +436,9 @@ public class DefaultDbImportActionTest {
         assertFalse(dataMapFile.exists());
 
         Files.write(dataMapFile.toPath(), ("<?xml version=\"1.0\" encoding=\"utf-8\"?>\n" +
-                "<dataMap xmlns=\"http://cayenne.apache.org/schema/14/modelMap\"\n" +
+                "<dataMap xmlns=\"http://cayenne.apache.org/schema/14/dataMap\"\n" +
                 "\t xmlns:xsi=\"http://www.w3.org/2001/XMLSchema-instance\"\n" +
-                "\t xsi:schemaLocation=\"http://cayenne.apache.org/schema/14/modelMap https://cayenne.apache.org/schema/14/modelMap.xsd\">\n" +
+                "\t xsi:schemaLocation=\"http://cayenne.apache.org/schema/14/dataMap https://cayenne.apache.org/schema/14/dataMap.xsd\">\n" +
                 "\t<dbEntity name=\"test\">\n" +
                 "\t\t<dbAttribute name=\"test\" type=\"INT\"/>\n" +
                 "\t</dbEntity>\n" +

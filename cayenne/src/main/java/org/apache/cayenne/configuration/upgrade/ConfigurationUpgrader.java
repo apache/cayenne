@@ -78,7 +78,7 @@ public class ConfigurationUpgrader {
 
     /**
      * Returns the version of a project or DataMap XML based on its root tag, or null if it can't be determined. The
-     * version is a part of the root namespace, e.g. "http://cayenne.apache.org/schema/14/modelMap". The documents
+     * version is a part of the root namespace, e.g. "http://cayenne.apache.org/schema/14/dataMap". The documents
      * older than version 14 may have no namespace, or a namespace with no project version in it, in which case the
      * version is taken from their "project-version" attribute.
      *

@@ -25,8 +25,8 @@
 	are usually combined in one shared namespace, so the elements of the DataMap
 	may reference objects from other DataMaps.
 -->
-<xs:schema targetNamespace="http://cayenne.apache.org/schema/14/modelMap"
-	xmlns:cay="http://cayenne.apache.org/schema/14/modelMap"
+<xs:schema targetNamespace="http://cayenne.apache.org/schema/14/dataMap"
+	xmlns:cay="http://cayenne.apache.org/schema/14/dataMap"
 	xmlns:xs="http://www.w3.org/2001/XMLSchema" elementFormDefault="qualified" version="14">
 	<xs:element name="dataMap">
 		<xs:complexType>

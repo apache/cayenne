@@ -23,7 +23,7 @@ Reference for the embedded `<cgen>` block inside a DataMap that drives `mcp__cay
 ## XML shape (embedded in a DataMap)
 
 ```xml
-<dataMap xmlns="http://cayenne.apache.org/schema/14/modelMap" ...>
+<dataMap xmlns="http://cayenne.apache.org/schema/14/dataMap" ...>
     ...entities, relationships, etc...
 
     <cgen xmlns="http://cayenne.apache.org/schema/14/cgen">
@@ -41,7 +41,7 @@ Reference for the embedded `<cgen>` block inside a DataMap that drives `mcp__cay
 </dataMap>
 ```
 
-Note the **different namespace** for `<cgen>` (`http://cayenne.apache.org/schema/14/cgen`) — it is a separate schema embedded in the modelMap schema.
+Note the **different namespace** for `<cgen>` (`http://cayenne.apache.org/schema/14/cgen`) — it is a separate schema embedded in the dataMap schema.
 
 ## Field reference
 

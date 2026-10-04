@@ -62,7 +62,7 @@ public final class UpgradeHandler_V14 implements UpgradeHandler {
 
     @Override
     public void processDataMapDom(UpgradeContext upgradeUnit) {
-        updateDataMapSchemaAndVersion(upgradeUnit);
+        updateDataMapSchema(upgradeUnit);
         updateExtensionSchema(upgradeUnit, CGEN);
         updateExtensionSchema(upgradeUnit, DB_IMPORT);
         updateInfoSchema(upgradeUnit);
@@ -74,6 +74,16 @@ public final class UpgradeHandler_V14 implements UpgradeHandler {
         convertDeleteRules(upgradeUnit);
         removeVersionAttribute(upgradeUnit);
         convertNamesToCamelCase(upgradeUnit);
+    }
+
+    /**
+     * Switches the DataMap to the version 14 schema, that is called "dataMap" instead of "modelMap".
+     */
+    private void updateDataMapSchema(UpgradeContext upgradeUnit) {
+        Element dataMap = upgradeUnit.getDocument().getDocumentElement();
+        dataMap.setAttribute("xmlns", "http://cayenne.apache.org/schema/14/dataMap");
+        dataMap.setAttribute("xsi:schemaLocation", "http://cayenne.apache.org/schema/14/dataMap "
+                + "https://cayenne.apache.org/schema/14/dataMap.xsd");
     }
 
     /**

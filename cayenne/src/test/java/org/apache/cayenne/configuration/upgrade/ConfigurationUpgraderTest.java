@@ -125,7 +125,7 @@ public class ConfigurationUpgraderTest {
         Element root = context.getDocument().getDocumentElement();
         assertEquals("dataMap", root.getNodeName());
         assertFalse(root.hasAttribute("project-version"));
-        assertEquals("http://cayenne.apache.org/schema/14/modelMap", root.getAttribute("xmlns"));
+        assertEquals("http://cayenne.apache.org/schema/14/dataMap", root.getAttribute("xmlns"));
     }
 
     @Test

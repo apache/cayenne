@@ -142,7 +142,8 @@ public sealed interface UpgradeHandler permits
     }
 
     /**
-     * Upgrade DataMap schema and version info
+     * Upgrade DataMap schema and version info. Only applies to the versions before 14, where the DataMap schema is
+     * called "modelMap".
      *
      * @param upgradeUnit for the datamap
      */

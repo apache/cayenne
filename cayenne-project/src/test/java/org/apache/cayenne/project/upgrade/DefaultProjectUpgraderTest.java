@@ -122,7 +122,7 @@ public class DefaultProjectUpgraderTest {
 
         String map = Files.readString(mapFile.toPath());
         assertFalse(map.contains("project-version"), map);
-        assertTrue(map.contains("http://cayenne.apache.org/schema/14/modelMap"), map);
+        assertTrue(map.contains("http://cayenne.apache.org/schema/14/dataMap"), map);
 
         assertFalse(graphFile.exists(), "graph file must be deleted");
 

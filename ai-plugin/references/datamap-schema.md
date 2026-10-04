@@ -20,8 +20,8 @@
 
 Reference for editing Cayenne DataMap files directly.
 
-- **Namespace**: `http://cayenne.apache.org/schema/14/modelMap`
-- **XSD**: `http://cayenne.apache.org/schema/14/modelMap.xsd`
+- **Namespace**: `http://cayenne.apache.org/schema/14/dataMap`
+- **XSD**: `http://cayenne.apache.org/schema/14/dataMap.xsd`
 - **Project version**: `12` (Cayenne 5.0)
 - **Working example**: `cayenne-ant/src/test/resources/testmap.map.xml`
 
@@ -29,9 +29,9 @@ Reference for editing Cayenne DataMap files directly.
 
 ```xml
 <?xml version="1.0" encoding="utf-8"?>
-<dataMap xmlns="http://cayenne.apache.org/schema/14/modelMap"
+<dataMap xmlns="http://cayenne.apache.org/schema/14/dataMap"
           xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-          xsi:schemaLocation="http://cayenne.apache.org/schema/14/modelMap http://cayenne.apache.org/schema/14/modelMap.xsd">
+          xsi:schemaLocation="http://cayenne.apache.org/schema/14/dataMap http://cayenne.apache.org/schema/14/dataMap.xsd">
     ...
 </dataMap>
 ```

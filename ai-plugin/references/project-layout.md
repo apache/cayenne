@@ -25,7 +25,7 @@ How a Cayenne project lays out on disk and how to locate the relevant files in a
 A Cayenne project consists of two kinds of XML files:
 
 1. **Project descriptor** — one per project. File name pattern: `cayenne-*.xml` (e.g. `cayenne-mydb.xml`). Root element `<domain>` in namespace `http://cayenne.apache.org/schema/14/domain`. Lists DataMaps and DataNodes.
-2. **DataMap files** — one or more per project. File name pattern: `*.map.xml` (commonly `<name>.map.xml`, where `<name>` matches the `<map name="...">` reference in the project descriptor). Root element `<dataMap>` in namespace `http://cayenne.apache.org/schema/14/modelMap`. Contains entities, relationships, queries.
+2. **DataMap files** — one or more per project. File name pattern: `*.map.xml` (commonly `<name>.map.xml`, where `<name>` matches the `<map name="...">` reference in the project descriptor). Root element `<dataMap>` in namespace `http://cayenne.apache.org/schema/14/dataMap`. Contains entities, relationships, queries.
 
 The descriptor and its DataMaps live in the **same directory**. The descriptor references DataMaps by name only (no path), so they must be siblings on the classpath.
 

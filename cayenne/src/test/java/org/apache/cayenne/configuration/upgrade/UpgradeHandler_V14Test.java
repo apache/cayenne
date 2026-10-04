@@ -77,7 +77,7 @@ public class UpgradeHandler_V14Test extends BaseUpgradeHandlerTest {
 
         Element root = document.getDocumentElement();
         assertFalse(root.hasAttribute("project-version"));
-        assertEquals("http://cayenne.apache.org/schema/14/modelMap", root.getAttribute("xmlns"));
+        assertEquals("http://cayenne.apache.org/schema/14/dataMap", root.getAttribute("xmlns"));
 
         // all tags and attributes are renamed to camelCase
         assertEquals("dataMap", root.getNodeName());

@@ -402,7 +402,7 @@ List<Artist> withExpensivePaintings = ObjectSelect
   camelCase, so the hyphenated names were renamed as a part of project version 14: e.g. `data-map` is now `dataMap`,
   `db-entity` is `dbEntity` and `db-attribute-path` is `dbAttributePath`. The `project-version` attribute of the root
   tags was removed, as the version is already a part of the schema namespace (e.g.
-  `http://cayenne.apache.org/schema/14/modelMap`). The boolean attributes of
+  `http://cayenne.apache.org/schema/14/dataMap`). The boolean attributes of
   `dbAttribute` lost the "is" prefix (`isMandatory` is now `mandatory`, etc.), and the delete rules are stored in
   lowercase (`nullify`, `cascade`, `deny`). Projects are upgraded automatically. Any custom code or scripts that read
   or generate the project XML must be updated.
