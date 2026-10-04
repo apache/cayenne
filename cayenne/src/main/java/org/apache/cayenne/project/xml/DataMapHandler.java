@@ -44,12 +44,6 @@ public class DataMapHandler extends NamespaceAwareNestedTagHandler {
         this.configurationSource = configurationSource;
     }
 
-    public DataMapHandler(LoaderContext loaderContext) {
-        super(loaderContext);
-        setTargetNamespace(DataMap.SCHEMA_XSD);
-        this.configurationSource = null;
-    }
-
     @Override
     protected boolean processElement(String namespaceURI, String localName,
                                      Attributes attributes) throws SAXException {

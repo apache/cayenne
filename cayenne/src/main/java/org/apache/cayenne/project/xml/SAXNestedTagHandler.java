@@ -85,8 +85,8 @@ public class SAXNestedTagHandler extends DefaultHandler {
 
         return String.format("tag <%s> is unexpected at [%d,%d]. The following tags are allowed here: %s",
                 tagFound,
-                locator.getColumnNumber(),
                 locator.getLineNumber(),
+                locator.getColumnNumber(),
                 expected);
     }
 

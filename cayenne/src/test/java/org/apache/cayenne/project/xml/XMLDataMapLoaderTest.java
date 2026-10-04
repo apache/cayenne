@@ -119,6 +119,14 @@ public class XMLDataMapLoaderTest {
     }
 
     @Test
+    public void loadDbRelationshipWithUnknownSource() {
+        URL url = getClass().getResource("testConfigMap13.map.xml");
+        CayenneRuntimeException e = assertThrows(CayenneRuntimeException.class, () -> loader.load(new URLResource(url)));
+        assertTrue(e.getCause().getMessage().contains("unable to find source NO_SUCH_ENTITY"),
+                e.getCause().getMessage());
+    }
+
+    @Test
     public void loadNewerVersionConfig() {
         URL url = getClass().getResource("testConfigMap6.map.xml");
         CayenneRuntimeException e = assertThrows(CayenneRuntimeException.class, () -> loader.load(new URLResource(url)));

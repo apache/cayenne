@@ -21,8 +21,7 @@ package org.apache.cayenne.map;
 /**
  * @since 3.0
  */
-class AttributePathComponent<T extends Attribute, U extends Relationship> implements
-        PathComponent<T, U> {
+class AttributePathComponent<T extends Attribute, U extends Relationship> implements PathComponent<T, U> {
 
     private T attribute;
 

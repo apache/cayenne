@@ -72,7 +72,7 @@ public class DbRelationshipHandler extends NamespaceAwareNestedTagHandler {
 
         DbEntity source = map.getDbEntity(sourceName);
         if (source == null) {
-            return;
+            throw new SAXException("DbRelationshipHandler::createRelationship() - unable to find source " + sourceName);
         }
 
         dbRelationship = new DbRelationship(name);

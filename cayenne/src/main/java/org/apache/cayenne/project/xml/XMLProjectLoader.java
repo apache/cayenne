@@ -90,7 +90,6 @@ public class XMLProjectLoader implements ProjectLoader {
 
         XMLReader parser = xmlReaderProvider.get();
         LoaderContext loaderContext = new LoaderContext(parser, handlerFactory);
-        loaderContext.addDataMapListener(dataMap -> project.getDataMaps().add(dataMap));
 
         ProjectHandler rootHandler = new ProjectHandler(project, loaderContext, nameMapper, dataMapLoader);
         parser.setContentHandler(rootHandler);
