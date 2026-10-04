@@ -28,7 +28,6 @@ import org.apache.cayenne.commitlog.CommitLogFilter;
 import org.apache.cayenne.commitlog.CommitLogListener;
 import org.apache.cayenne.commitlog.meta.AnnotationCommitLogEntityFactory;
 import org.apache.cayenne.commitlog.meta.CommitLogEntityFactory;
-import org.apache.cayenne.project.Constants;
 import org.apache.cayenne.dba.DbAdapterDetector;
 import org.apache.cayenne.di.Binder;
 import org.apache.cayenne.di.ListBuilder;
@@ -90,7 +89,7 @@ public class CoreModuleExtender {
      * Configures the stack to synchronize data between ObjectContexts. This is false by default.
      */
     public CoreModuleExtender syncContexts() {
-        contributeProperties().put(Constants.CONTEXTS_SYNC_PROPERTY, "true");
+        contributeProperties().put(RuntimeProperties.CONTEXTS_SYNC_PROPERTY, "true");
         return this;
     }
 
@@ -98,7 +97,7 @@ public class CoreModuleExtender {
      * Sets transaction management to either external. By default, transactions are internally managed by Cayenne.
      */
     public CoreModuleExtender externalTransactions() {
-        contributeProperties().put(Constants.EXTERNAL_TX_PROPERTY, "true");
+        contributeProperties().put(RuntimeProperties.EXTERNAL_TX_PROPERTY, "true");
         return this;
     }
 
@@ -125,7 +124,7 @@ public class CoreModuleExtender {
      * @param size max size of snapshot cache
      */
     public CoreModuleExtender snapshotCacheSize(int size) {
-        contributeProperties().put(Constants.SNAPSHOT_CACHE_SIZE_PROPERTY, Integer.toString(size));
+        contributeProperties().put(RuntimeProperties.SNAPSHOT_CACHE_SIZE_PROPERTY, Integer.toString(size));
         return this;
     }
 
@@ -138,7 +137,7 @@ public class CoreModuleExtender {
      * @since 5.0
      */
     public CoreModuleExtender maxIdQualifierSize(int size) {
-        contributeProperties().put(Constants.MAX_ID_QUALIFIER_SIZE_PROPERTY, Integer.toString(size));
+        contributeProperties().put(RuntimeProperties.MAX_ID_QUALIFIER_SIZE_PROPERTY, Integer.toString(size));
         return this;
     }
 
@@ -391,14 +390,14 @@ public class CoreModuleExtender {
 
     private ListBuilder<String> contributeProjectLocations() {
         if (projectLocations == null) {
-            projectLocations = binder.bindList(String.class, Constants.PROJECT_LOCATIONS_LIST);
+            projectLocations = binder.bindList(String.class, CoreModule.PROJECT_LOCATIONS_LIST);
         }
         return projectLocations;
     }
 
     private MapBuilder<String> contributeProperties() {
         if (properties == null) {
-            properties = binder.bindMap(String.class, Constants.PROPERTIES_MAP);
+            properties = binder.bindMap(String.class, CoreModule.PROPERTIES_MAP);
         }
         return properties;
     }
@@ -419,7 +418,7 @@ public class CoreModuleExtender {
 
     private ListBuilder<Object> contributeListeners() {
         if (listeners == null) {
-            listeners = binder.bindList(Object.class, Constants.DOMAIN_LISTENERS_LIST);
+            listeners = binder.bindList(Object.class, CoreModule.DOMAIN_LISTENERS_LIST);
         }
         return listeners;
     }
@@ -427,7 +426,7 @@ public class CoreModuleExtender {
     private ListBuilder<DbAdapterDetector> contributeAdapterDetectors() {
         if (adapterDetectors == null) {
             adapterDetectors = binder.bindList(DbAdapterDetector.class,
-                                               Constants.ADAPTER_DETECTORS_LIST);
+                                               CoreModule.ADAPTER_DETECTORS_LIST);
         }
         return adapterDetectors;
     }
@@ -435,7 +434,7 @@ public class CoreModuleExtender {
     private ListBuilder<ExtendedType> contributeDefaultExtendedTypes() {
         if (defaultExtendedTypes == null) {
             defaultExtendedTypes = binder.bindList(ExtendedType.class,
-                                                   Constants.DEFAULT_TYPES_LIST);
+                                                   CoreModule.DEFAULT_TYPES_LIST);
         }
         return defaultExtendedTypes;
     }
@@ -443,7 +442,7 @@ public class CoreModuleExtender {
     private ListBuilder<ExtendedType> contributeUserExtendedTypes() {
         if (userExtendedTypes == null) {
             userExtendedTypes = binder.bindList(ExtendedType.class,
-                                                Constants.USER_TYPES_LIST);
+                                                CoreModule.USER_TYPES_LIST);
         }
         return userExtendedTypes;
     }
@@ -451,7 +450,7 @@ public class CoreModuleExtender {
     private ListBuilder<ExtendedTypeFactory> contributeExtendedTypeFactories() {
         if (extendedTypeFactories == null) {
             extendedTypeFactories = binder.bindList(ExtendedTypeFactory.class,
-                                                    Constants.TYPE_FACTORIES_LIST);
+                                                    CoreModule.TYPE_FACTORIES_LIST);
         }
         return extendedTypeFactories;
     }

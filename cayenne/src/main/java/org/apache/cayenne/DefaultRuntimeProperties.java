@@ -16,12 +16,12 @@
  *  specific language governing permissions and limitations
  *  under the License.
  ****************************************************************/
-package org.apache.cayenne.project;
+package org.apache.cayenne;
+
+import org.apache.cayenne.di.Inject;
 
 import java.util.HashMap;
 import java.util.Map;
-
-import org.apache.cayenne.di.Inject;
 
 /**
  * An implementation of {@link RuntimeProperties} that returns properties that
@@ -33,9 +33,9 @@ import org.apache.cayenne.di.Inject;
  */
 public class DefaultRuntimeProperties implements RuntimeProperties {
 
-    protected Map<String, String> properties;
+    protected final Map<String, String> properties;
 
-    public DefaultRuntimeProperties(@Inject(Constants.PROPERTIES_MAP) Map<String, String> properties) {
+    public DefaultRuntimeProperties(@Inject(CoreModule.PROPERTIES_MAP) Map<String, String> properties) {
         this.properties = properties;
     }
 

@@ -18,10 +18,10 @@
  ****************************************************************/
 package org.apache.cayenne.access;
 
+import org.apache.cayenne.RuntimeProperties;
 import org.apache.cayenne.CoreModule;
 import org.apache.cayenne.access.dbsync.CreateIfNoSchemaStrategy;
 import org.apache.cayenne.access.dbsync.SkipSchemaUpdateStrategy;
-import org.apache.cayenne.project.Constants;
 import org.apache.cayenne.project.DataNodeDescriptor;
 import org.apache.cayenne.datasource.ManagedPoolingDataSource;
 import org.apache.cayenne.dba.AutoAdapter;
@@ -94,12 +94,12 @@ public class DefaultDataNodeFactoryIT {
 
         // a dedicated DB, so that the assertions below can't be satisfied by the shared test DataSource
         DataNodeFactory factory = factory(b -> CoreModule.extend(b)
-                .setProperty(Constants.JDBC_URL_PROPERTY + ".channel.n1", PROPS_URL)
-                .setProperty(Constants.JDBC_DRIVER_PROPERTY + ".channel.n1", PROPS_DRIVER)
-                .setProperty(Constants.JDBC_USERNAME_PROPERTY + ".channel.n1", "sa")
-                .setProperty(Constants.JDBC_PASSWORD_PROPERTY + ".channel.n1", "")
-                .setProperty(Constants.JDBC_MIN_CONNECTIONS_PROPERTY + ".channel.n1", "1")
-                .setProperty(Constants.JDBC_MAX_CONNECTIONS_PROPERTY + ".channel.n1", "2"));
+                .setProperty(RuntimeProperties.JDBC_URL_PROPERTY + ".channel.n1", PROPS_URL)
+                .setProperty(RuntimeProperties.JDBC_DRIVER_PROPERTY + ".channel.n1", PROPS_DRIVER)
+                .setProperty(RuntimeProperties.JDBC_USERNAME_PROPERTY + ".channel.n1", "sa")
+                .setProperty(RuntimeProperties.JDBC_PASSWORD_PROPERTY + ".channel.n1", "")
+                .setProperty(RuntimeProperties.JDBC_MIN_CONNECTIONS_PROPERTY + ".channel.n1", "1")
+                .setProperty(RuntimeProperties.JDBC_MAX_CONNECTIONS_PROPERTY + ".channel.n1", "2"));
 
         // a descriptor with no DataSource of its own
         DataNode node = factory.createDataNode("channel", DataNodeDescriptor.of("n1").build());
@@ -120,11 +120,11 @@ public class DefaultDataNodeFactoryIT {
 
         // node properties are keyed by "channelName.nodeName", falling back to the unsuffixed shared ones
         DataNodeFactory factory = factory(b -> CoreModule.extend(b)
-                .setProperty(Constants.JDBC_URL_PROPERTY, SHARED_PROPS_URL)
-                .setProperty(Constants.JDBC_URL_PROPERTY + ".channel.n1", PROPS_URL)
-                .setProperty(Constants.JDBC_DRIVER_PROPERTY, PROPS_DRIVER)
-                .setProperty(Constants.JDBC_USERNAME_PROPERTY, "sa")
-                .setProperty(Constants.JDBC_PASSWORD_PROPERTY, ""));
+                .setProperty(RuntimeProperties.JDBC_URL_PROPERTY, SHARED_PROPS_URL)
+                .setProperty(RuntimeProperties.JDBC_URL_PROPERTY + ".channel.n1", PROPS_URL)
+                .setProperty(RuntimeProperties.JDBC_DRIVER_PROPERTY, PROPS_DRIVER)
+                .setProperty(RuntimeProperties.JDBC_USERNAME_PROPERTY, "sa")
+                .setProperty(RuntimeProperties.JDBC_PASSWORD_PROPERTY, ""));
 
         DataNode n1 = factory.createDataNode("channel", DataNodeDescriptor.of("n1").build());
         try (Connection c = n1.getDataSource().getConnection()) {

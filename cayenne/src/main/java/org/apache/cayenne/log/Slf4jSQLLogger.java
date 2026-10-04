@@ -20,8 +20,7 @@
 package org.apache.cayenne.log;
 
 import org.apache.cayenne.access.translator.TranslatedStatement;
-import org.apache.cayenne.project.Constants;
-import org.apache.cayenne.project.RuntimeProperties;
+import org.apache.cayenne.RuntimeProperties;
 import org.apache.cayenne.di.Inject;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -42,7 +41,7 @@ public class Slf4jSQLLogger implements SQLLogger {
     protected final int batchRowThreshold;
 
     public Slf4jSQLLogger(@Inject RuntimeProperties runtimeProperties) {
-        this.batchRowThreshold = runtimeProperties.getInt(Constants.JDBC_LOG_BATCH_ROW_THRESHOLD_PROPERTY, 20);
+        this.batchRowThreshold = runtimeProperties.getInt(RuntimeProperties.JDBC_LOG_BATCH_ROW_THRESHOLD_PROPERTY, 20);
     }
 
     @Override

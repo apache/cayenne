@@ -18,6 +18,7 @@
  ****************************************************************/
 package org.apache.cayenne.access;
 
+import org.apache.cayenne.CoreModule;
 import org.apache.cayenne.access.dbsync.SchemaUpdateStrategy;
 import org.apache.cayenne.access.dbsync.SkipSchemaUpdateStrategy;
 import org.apache.cayenne.access.jdbc.reader.RowReaderFactory;
@@ -25,9 +26,8 @@ import org.apache.cayenne.access.translator.BatchTranslator;
 import org.apache.cayenne.access.translator.ProcedureTranslator;
 import org.apache.cayenne.access.translator.SQLTemplateTranslator;
 import org.apache.cayenne.access.translator.SelectTranslator;
-import org.apache.cayenne.project.Constants;
 import org.apache.cayenne.project.DataNodeDescriptor;
-import org.apache.cayenne.project.RuntimeProperties;
+import org.apache.cayenne.RuntimeProperties;
 import org.apache.cayenne.datasource.CayenneDataSource;
 import org.apache.cayenne.dba.AutoAdapter;
 import org.apache.cayenne.dba.DbAdapter;
@@ -74,7 +74,7 @@ public class DefaultDataNodeFactory implements DataNodeFactory {
     @Inject
     protected SQLTemplateTranslator sqlTemplateTranslator;
 
-    @Inject(Constants.ADAPTER_DETECTORS_LIST)
+    @Inject(CoreModule.ADAPTER_DETECTORS_LIST)
     protected List<DbAdapterDetector> adapterDetectors;
 
     @Inject

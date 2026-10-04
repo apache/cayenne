@@ -18,7 +18,7 @@
  ****************************************************************/
 package org.apache.cayenne.docs;
 
-import org.apache.cayenne.project.Constants;
+import org.apache.cayenne.RuntimeProperties;
 import org.apache.cayenne.project.DataNodeDescriptor;
 import org.apache.cayenne.CoreModule;
 import org.apache.cayenne.datasource.CayenneDataSource;
@@ -54,7 +54,7 @@ public class StartingTest {
     public void externalTransactions() {
         // tag::externalTransactions[]
         Module extensions = binder ->
-                CoreModule.extend(binder).setProperty(Constants.EXTERNAL_TX_PROPERTY, "true");
+                CoreModule.extend(binder).setProperty(RuntimeProperties.EXTERNAL_TX_PROPERTY, "true");
 
         CayenneRuntime runtime = CayenneRuntime.of()
                 .addConfig("com/example/cayenne-project.xml")

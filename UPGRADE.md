@@ -93,9 +93,18 @@ List<Artist> withExpensivePaintings = ObjectSelect
   your imports accordingly.
 
 *  The `org.apache.cayenne.configuration` package of the core module and its `xml` and `upgrade` subpackages were
-  renamed to `org.apache.cayenne.project` (`Constants`, `Project`, `ProjectLoader`, `DataNodeDescriptor`,
-  `RuntimeProperties`, etc.) — fix your imports accordingly. The deprecated `ServerRuntime` stays in
-  `org.apache.cayenne.configuration.server`.
+  renamed to `org.apache.cayenne.project` (`Project`, `ProjectLoader`, `DataNodeDescriptor`, etc.) — fix your imports
+  accordingly. The deprecated `ServerRuntime` stays in `org.apache.cayenne.configuration.server`.
+
+*  `RuntimeProperties` and `DefaultRuntimeProperties` were moved from `org.apache.cayenne.configuration` to the
+  `org.apache.cayenne` package. The `org.apache.cayenne.configuration.Constants` interface is deprecated and only
+  keeps the constants it had in 4.2 as aliases of the new ones:
+  - The DI collection keys (`PROPERTIES_MAP`, `DEFAULT_TYPES_LIST`, `USER_TYPES_LIST`, `TYPE_FACTORIES_LIST`, etc.)
+    are now defined in `CoreModule`. E.g. a custom `DbAdapter` constructor should use
+    `@Inject(CoreModule.USER_TYPES_LIST)` instead of `@Inject(Constants.SERVER_USER_TYPES_LIST)`.
+  - The property names (`JDBC_URL_PROPERTY`, `EXTERNAL_TX_PROPERTY`, `QUERY_CACHE_SIZE_PROPERTY`, etc.) are now
+    defined in `RuntimeProperties`.
+  - The unused `RESOURCE_LOCATOR` key was removed.
 
 *  Per [CAY-2875](https://issues.apache.org/jira/browse/CAY-2875) a `java.util.UUID` attribute now honors the JDBC
   type of the column it is mapped to, instead of always being converted to a 36-char string:
@@ -442,7 +451,7 @@ List<Artist> withExpensivePaintings = ObjectSelect
   a custom `JdbcEventLogger` in a DI module, rebind `SqlLogger` instead.
 
   As part of this change the `cayenne.query_execution_time_logging_threshold` property no longer has any effect — the
-  slow-query threshold warning it controlled has been removed. The `Constants.QUERY_EXECUTION_TIME_LOGGING_THRESHOLD_PROPERTY`
+  slow-query threshold warning it controlled has been removed. The `RuntimeProperties.QUERY_EXECUTION_TIME_LOGGING_THRESHOLD_PROPERTY`
   constant is retained (deprecated) but ignored. A new `cayenne.jdbc.log.batch.threshold` property (default 3) controls how
   many batch rows are logged in full before the bindings are truncated to `[first]..N..[last]`.
 
@@ -534,7 +543,7 @@ solution may be changing to "joint" prefetches.
 below were removed in favor of a single full constructor that takes every collaborator and setting. Only DataNodes, 
 DataMaps, filters and listeners can still be added (and removed) after creation. Replacements for the removed setters:
   - `setName(String)` — the name comes from the project XML, and can be overridden with the
-    `cayenne.domain.name` property (`Constants.DOMAIN_NAME_PROPERTY`).
+    `cayenne.domain.name` property (`RuntimeProperties.DOMAIN_NAME_PROPERTY`).
   - `setEntityResolver(EntityResolver)` — keep using `addDataMap(..)` / `removeDataMap(..)` to change resolver contents.
   - `setEntitySorter(EntitySorter)` — the sorter is produced by the new `EntitySorterFactory` DI service. Bind your
     own `EntitySorterFactory` to replace it.
@@ -545,7 +554,7 @@ DataMaps, filters and listeners can still be added (and removed) after creation.
   - `setSharedCacheEnabled(boolean)` — use the "Shared Cache" checkbox in the Modeler.
   - `setValidatingObjectsOnCommit(boolean)` — use the "Object Validation" checkbox in the Modeler.
   - `setMaxIdQualifierSize(int)` — use the `cayenne.max_id_qualifier_size` property
-    (`Constants.MAX_ID_QUALIFIER_SIZE_PROPERTY`).
+    (`RuntimeProperties.MAX_ID_QUALIFIER_SIZE_PROPERTY`).
 
 * Per [CAY-2986](https://issues.apache.org/jira/browse/CAY-2986) cgen now runs unconditionally. Previously it compared
   the DataMap file mtime against the mtime of the generated classes and skipped generation when the classes looked

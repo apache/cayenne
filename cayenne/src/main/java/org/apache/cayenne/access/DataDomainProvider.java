@@ -18,6 +18,7 @@
  ****************************************************************/
 package org.apache.cayenne.access;
 
+import org.apache.cayenne.CoreModule;
 import org.apache.cayenne.DataChannel;
 import org.apache.cayenne.DataChannelQueryFilter;
 import org.apache.cayenne.DataChannelSyncFilter;
@@ -25,13 +26,12 @@ import org.apache.cayenne.access.flush.DataDomainFlushActionFactory;
 import org.apache.cayenne.access.types.ValueObjectTypeRegistry;
 import org.apache.cayenne.cache.NestedQueryCache;
 import org.apache.cayenne.cache.QueryCache;
-import org.apache.cayenne.project.Constants;
 import org.apache.cayenne.project.Project;
 import org.apache.cayenne.project.ProjectLoader;
 import org.apache.cayenne.project.ProjectMerger;
 import org.apache.cayenne.project.DataNodeDescriptor;
 import org.apache.cayenne.project.DataNodeDescriptors;
-import org.apache.cayenne.project.RuntimeProperties;
+import org.apache.cayenne.RuntimeProperties;
 import org.apache.cayenne.di.AdhocObjectFactory;
 import org.apache.cayenne.di.DIRuntimeException;
 import org.apache.cayenne.di.Inject;
@@ -87,10 +87,10 @@ public class DataDomainProvider implements Provider<DataDomain> {
     @Inject
     protected List<DataChannelSyncFilter> syncFilters;
 
-    @Inject(Constants.DOMAIN_LISTENERS_LIST)
+    @Inject(CoreModule.DOMAIN_LISTENERS_LIST)
     protected List<Object> listeners;
 
-    @Inject(Constants.PROJECT_LOCATIONS_LIST)
+    @Inject(CoreModule.PROJECT_LOCATIONS_LIST)
     protected List<String> locations;
 
     @Inject
@@ -142,7 +142,7 @@ public class DataDomainProvider implements Provider<DataDomain> {
                 eventManager,
                 new NestedQueryCache(queryCache),
                 createSharedSnapshotCache(project),
-                runtimeProperties.getInt(Constants.MAX_ID_QUALIFIER_SIZE_PROPERTY, -1),
+                runtimeProperties.getInt(RuntimeProperties.MAX_ID_QUALIFIER_SIZE_PROPERTY, -1),
                 project.isValidatingObjectsOnCommit(),
                 entityResolver,
                 entitySorter
@@ -241,7 +241,7 @@ public class DataDomainProvider implements Provider<DataDomain> {
     protected Project loadDescriptor() {
         Project project = locations.isEmpty() ? new Project() : loadDescriptorFromConfigs();
 
-        String nameOverride = runtimeProperties.get(Constants.DOMAIN_NAME_PROPERTY);
+        String nameOverride = runtimeProperties.get(RuntimeProperties.DOMAIN_NAME_PROPERTY);
         if (nameOverride != null) {
             project.setName(nameOverride);
         }

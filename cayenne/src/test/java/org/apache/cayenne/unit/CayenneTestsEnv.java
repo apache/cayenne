@@ -18,10 +18,10 @@
  ****************************************************************/
 package org.apache.cayenne.unit;
 
+import org.apache.cayenne.RuntimeProperties;
 import org.apache.cayenne.access.DataContext;
 import org.apache.cayenne.access.DataDomain;
 import org.apache.cayenne.access.DataNode;
-import org.apache.cayenne.project.Constants;
 import org.apache.cayenne.project.DataSourceDescriptor;
 import org.apache.cayenne.CoreModule;
 import org.apache.cayenne.access.DataNodeFactory;
@@ -153,7 +153,8 @@ public class CayenneTestsEnv implements BeforeEachCallback, AfterEachCallback {
     private CayenneRuntime buildRuntime() {
 
         List<Module> modules = new ArrayList<>();
-        modules.add(b -> CoreModule.extend(b).setProperty(Constants.OBJECT_RETAIN_STRATEGY_PROPERTY, retainStrategy));
+        modules.add(b -> CoreModule.extend(b)
+                .setProperty(RuntimeProperties.OBJECT_RETAIN_STRATEGY_PROPERTY, retainStrategy));
         modules.add(b -> b.bind(DataNodeFactory.class).to(TelemetricDataNodeFactory.class));
         Collections.addAll(modules, extraModules);
 

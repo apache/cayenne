@@ -20,8 +20,7 @@
 package org.apache.cayenne.access;
 
 import org.apache.cayenne.CayenneRuntimeException;
-import org.apache.cayenne.project.Constants;
-import org.apache.cayenne.project.RuntimeProperties;
+import org.apache.cayenne.RuntimeProperties;
 import org.apache.cayenne.di.DIRuntimeException;
 import org.apache.cayenne.di.Inject;
 import org.apache.cayenne.di.Provider;
@@ -39,7 +38,7 @@ import org.slf4j.LoggerFactory;
 public class DefaultDataRowStoreFactory implements DataRowStoreFactory {
 
     /**
-     * Default max size of a DataRowStore, used when {@link Constants#SNAPSHOT_CACHE_SIZE_PROPERTY} is not set.
+     * Default max size of a DataRowStore, used when {@link RuntimeProperties#SNAPSHOT_CACHE_SIZE_PROPERTY} is not set.
      *
      * @since 5.0
      */
@@ -64,8 +63,8 @@ public class DefaultDataRowStoreFactory implements DataRowStoreFactory {
     @Override
     public DataRowStore createDataRowStore(String name) throws DIRuntimeException {
 
-        int maxSize = properties.getInt(Constants.SNAPSHOT_CACHE_SIZE_PROPERTY, SNAPSHOT_CACHE_SIZE_DEFAULT);
-        LOGGER.debug("DataRowStore property {} = {}", Constants.SNAPSHOT_CACHE_SIZE_PROPERTY, maxSize);
+        int maxSize = properties.getInt(RuntimeProperties.SNAPSHOT_CACHE_SIZE_PROPERTY, SNAPSHOT_CACHE_SIZE_DEFAULT);
+        LOGGER.debug("DataRowStore property {} = {}", RuntimeProperties.SNAPSHOT_CACHE_SIZE_PROPERTY, maxSize);
 
         DataRowStore store = new DataRowStore(name, maxSize, eventManager);
         setUpEventBridge(store);

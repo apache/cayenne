@@ -26,7 +26,7 @@ import javax.cache.CacheManager;
 import javax.cache.Caching;
 import javax.cache.spi.CachingProvider;
 
-import org.apache.cayenne.project.RuntimeProperties;
+import org.apache.cayenne.RuntimeProperties;
 import org.apache.cayenne.di.DIRuntimeException;
 import org.apache.cayenne.di.Inject;
 import org.apache.cayenne.di.Provider;

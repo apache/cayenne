@@ -25,8 +25,7 @@ import org.apache.cayenne.access.jdbc.RSColumn;
 import org.apache.cayenne.access.translator.TranslatedBatch;
 import org.apache.cayenne.access.translator.TranslatedSelect;
 import org.apache.cayenne.access.translator.TranslatedStatement;
-import org.apache.cayenne.project.Constants;
-import org.apache.cayenne.project.RuntimeProperties;
+import org.apache.cayenne.RuntimeProperties;
 import org.apache.cayenne.map.DbAttribute;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -46,13 +45,13 @@ public class Slf4jSQLLoggerTest {
     @BeforeEach
     public void setUp() {
         RuntimeProperties props = mock(RuntimeProperties.class);
-        when(props.getInt(eq(Constants.JDBC_LOG_BATCH_ROW_THRESHOLD_PROPERTY), anyInt())).thenReturn(3);
+        when(props.getInt(eq(RuntimeProperties.JDBC_LOG_BATCH_ROW_THRESHOLD_PROPERTY), anyInt())).thenReturn(3);
         logger = new Slf4jSQLLogger(props);
     }
 
     private static Slf4jSQLLogger loggerWithThreshold(int threshold) {
         RuntimeProperties props = mock(RuntimeProperties.class);
-        when(props.getInt(eq(Constants.JDBC_LOG_BATCH_ROW_THRESHOLD_PROPERTY), anyInt())).thenReturn(threshold);
+        when(props.getInt(eq(RuntimeProperties.JDBC_LOG_BATCH_ROW_THRESHOLD_PROPERTY), anyInt())).thenReturn(threshold);
         return new Slf4jSQLLogger(props);
     }
 

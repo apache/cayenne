@@ -18,8 +18,7 @@
  ****************************************************************/
 package org.apache.cayenne.tx;
 
-import org.apache.cayenne.project.Constants;
-import org.apache.cayenne.project.RuntimeProperties;
+import org.apache.cayenne.RuntimeProperties;
 import org.apache.cayenne.di.Inject;
 import org.apache.cayenne.log.SQLLogger;
 
@@ -32,7 +31,7 @@ public class DefaultTransactionFactory implements TransactionFactory {
     protected SQLLogger sqlLogger;
 
     public DefaultTransactionFactory(@Inject RuntimeProperties properties, @Inject SQLLogger sqlLogger) {
-        this.externalTransactions = properties.getBoolean(Constants.EXTERNAL_TX_PROPERTY, false);
+        this.externalTransactions = properties.getBoolean(RuntimeProperties.EXTERNAL_TX_PROPERTY, false);
         this.sqlLogger = sqlLogger;
     }
 

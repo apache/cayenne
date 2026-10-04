@@ -18,7 +18,7 @@
  ****************************************************************/
 package org.apache.cayenne.docs.tuning;
 
-import org.apache.cayenne.project.Constants;
+import org.apache.cayenne.RuntimeProperties;
 import org.apache.cayenne.CoreModule;
 import org.apache.cayenne.di.Binder;
 import org.apache.cayenne.di.Module;
@@ -29,7 +29,7 @@ public class MyModule implements Module {
     @Override
     public void configure(Binder binder) {
         CoreModule.extend(binder)
-                .setProperty(Constants.CONTEXTS_SYNC_PROPERTY, "false");
+                .setProperty(RuntimeProperties.CONTEXTS_SYNC_PROPERTY, "false");
     }
 }
 // end::content[]

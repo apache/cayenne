@@ -23,8 +23,7 @@ import org.apache.cayenne.ObjectContext;
 import org.apache.cayenne.cache.NestedQueryCache;
 import org.apache.cayenne.cache.QueryCache;
 import org.apache.cayenne.project.ObjectContextFactory;
-import org.apache.cayenne.project.Constants;
-import org.apache.cayenne.project.RuntimeProperties;
+import org.apache.cayenne.RuntimeProperties;
 import org.apache.cayenne.di.Inject;
 
 /**
@@ -79,7 +78,7 @@ public class DataContextFactory implements ObjectContextFactory {
     }
 
     protected DataContext.Builder newBuilder(DataChannel parent) {
-        boolean sync = runtimeProperties.getBoolean(Constants.CONTEXTS_SYNC_PROPERTY, false);
+        boolean sync = runtimeProperties.getBoolean(RuntimeProperties.CONTEXTS_SYNC_PROPERTY, false);
         return DataContext.builder(parent)
                 .objectMap(retainStrategy.createObjectMap())
                 .syncWithSnapshotCache(sync)

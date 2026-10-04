@@ -18,7 +18,6 @@
  ****************************************************************/
 package org.apache.cayenne;
 
-import org.apache.cayenne.project.Constants;
 import org.apache.cayenne.project.DataNodeDescriptor;
 import org.apache.cayenne.project.DataNodeDescriptors;
 import org.apache.cayenne.datasource.CayenneDataSource;
@@ -290,7 +289,8 @@ public class CayenneRuntimeBuilder {
 
         if (nameOverride != null) {
             String finalNameOverride = nameOverride;
-            modules.add(b -> CoreModule.extend(b).setProperty(Constants.DOMAIN_NAME_PROPERTY, finalNameOverride));
+            modules.add(b -> CoreModule.extend(b)
+                    .setProperty(RuntimeProperties.DOMAIN_NAME_PROPERTY, finalNameOverride));
         }
 
         DataNodeDescriptor defaultNode = this.defaultNode != null ? this.defaultNode : defaultNodeFromConnectionInfo();

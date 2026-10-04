@@ -19,6 +19,7 @@
 
 package org.apache.cayenne.dba.h2;
 
+import org.apache.cayenne.CoreModule;
 import org.apache.cayenne.dba.NativeColumnType;
 import org.apache.cayenne.access.DataNode;
 import org.apache.cayenne.access.sqlbuilder.sqltree.SQLTreeProcessor;
@@ -27,8 +28,7 @@ import org.apache.cayenne.access.types.ExtendedTypeFactory;
 import org.apache.cayenne.access.types.ExtendedTypeMap;
 import org.apache.cayenne.access.types.JsonType;
 import org.apache.cayenne.access.types.ValueObjectTypeRegistry;
-import org.apache.cayenne.project.Constants;
-import org.apache.cayenne.project.RuntimeProperties;
+import org.apache.cayenne.RuntimeProperties;
 import org.apache.cayenne.dba.JdbcAdapter;
 import org.apache.cayenne.dba.PkGenerator;
 import org.apache.cayenne.di.Inject;
@@ -46,9 +46,9 @@ import java.util.List;
  */
 public class H2Adapter extends JdbcAdapter {
     public H2Adapter(@Inject RuntimeProperties runtimeProperties,
-            @Inject(Constants.DEFAULT_TYPES_LIST) List<ExtendedType> defaultExtendedTypes,
-            @Inject(Constants.USER_TYPES_LIST) List<ExtendedType> userExtendedTypes,
-            @Inject(Constants.TYPE_FACTORIES_LIST) List<ExtendedTypeFactory> extendedTypeFactories,
+            @Inject(CoreModule.DEFAULT_TYPES_LIST) List<ExtendedType> defaultExtendedTypes,
+            @Inject(CoreModule.USER_TYPES_LIST) List<ExtendedType> userExtendedTypes,
+            @Inject(CoreModule.TYPE_FACTORIES_LIST) List<ExtendedTypeFactory> extendedTypeFactories,
             @Inject ValueObjectTypeRegistry valueObjectTypeRegistry) {
         super(runtimeProperties, defaultExtendedTypes, userExtendedTypes, extendedTypeFactories, valueObjectTypeRegistry);
         setSupportsGeneratedKeys(true);

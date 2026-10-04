@@ -14,7 +14,7 @@
 
 == Appendix B. Service Collections
 
-Note that the collection keys below are defined as constants in `org.apache.cayenne.project.Constants` interface.
+Note that the collection keys below are defined as constants in `org.apache.cayenne.CoreModule`.
 
 [#serviceCollections.table.table-bordered]
 .Service Collection Keys Present in CayenneRuntime

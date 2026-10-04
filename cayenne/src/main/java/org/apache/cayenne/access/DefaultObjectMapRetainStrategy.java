@@ -24,8 +24,7 @@ import java.util.Map;
 
 import org.apache.cayenne.CayenneRuntimeException;
 import org.apache.cayenne.Persistent;
-import org.apache.cayenne.project.Constants;
-import org.apache.cayenne.project.RuntimeProperties;
+import org.apache.cayenne.RuntimeProperties;
 import org.apache.cayenne.di.Inject;
 import org.apache.cayenne.util.SoftValueMap;
 import org.apache.cayenne.util.WeakValueMap;
@@ -48,7 +47,7 @@ public class DefaultObjectMapRetainStrategy implements ObjectMapRetainStrategy {
     }
 
     public Map<ObjectId, Persistent> createObjectMap() {
-        String strategy = runtimeProperties.get(Constants.OBJECT_RETAIN_STRATEGY_PROPERTY);
+        String strategy = runtimeProperties.get(RuntimeProperties.OBJECT_RETAIN_STRATEGY_PROPERTY);
 
         if (strategy == null || WEAK_RETAIN_STRATEGY.equals(strategy)) {
             return new WeakValueMap<>();

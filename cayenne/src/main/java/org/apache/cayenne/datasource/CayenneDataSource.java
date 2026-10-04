@@ -18,8 +18,8 @@
  ****************************************************************/
 package org.apache.cayenne.datasource;
 
+import org.apache.cayenne.RuntimeProperties;
 import org.apache.cayenne.CayenneRuntimeException;
-import org.apache.cayenne.project.Constants;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -80,35 +80,35 @@ public class CayenneDataSource {
 
     private static Builder fromResolvedProperties(Map<String, String> props, String suffix) {
 
-        String url = prop(props, Constants.JDBC_URL_PROPERTY, suffix);
+        String url = prop(props, RuntimeProperties.JDBC_URL_PROPERTY, suffix);
         if (url == null) {
             throw new CayenneRuntimeException("Missing DataSource URL property '%s%s'",
-                    Constants.JDBC_URL_PROPERTY,
+                    RuntimeProperties.JDBC_URL_PROPERTY,
                     suffix);
         }
 
         Builder builder = new Builder(url)
-                .userName(prop(props, Constants.JDBC_USERNAME_PROPERTY, suffix))
-                .password(prop(props, Constants.JDBC_PASSWORD_PROPERTY, suffix));
+                .userName(prop(props, RuntimeProperties.JDBC_USERNAME_PROPERTY, suffix))
+                .password(prop(props, RuntimeProperties.JDBC_PASSWORD_PROPERTY, suffix));
 
-        String driverClassName = prop(props, Constants.JDBC_DRIVER_PROPERTY, suffix);
+        String driverClassName = prop(props, RuntimeProperties.JDBC_DRIVER_PROPERTY, suffix);
         if (driverClassName != null) {
             builder.driverClass(driverClassName);
         }
 
-        int minConnections = intProp(props, Constants.JDBC_MIN_CONNECTIONS_PROPERTY, suffix, -1);
-        int maxConnections = intProp(props, Constants.JDBC_MAX_CONNECTIONS_PROPERTY, suffix, -1);
+        int minConnections = intProp(props, RuntimeProperties.JDBC_MIN_CONNECTIONS_PROPERTY, suffix, -1);
+        int maxConnections = intProp(props, RuntimeProperties.JDBC_MAX_CONNECTIONS_PROPERTY, suffix, -1);
         if (minConnections >= 0 || maxConnections >= 0) {
             int min = minConnections >= 0 ? minConnections : 1;
             builder.pool(min, maxConnections >= 0 ? maxConnections : Math.max(min, 1));
         }
 
-        long maxQueueWaitTime = longProp(props, Constants.JDBC_MAX_QUEUE_WAIT_TIME, suffix, -1);
+        long maxQueueWaitTime = longProp(props, RuntimeProperties.JDBC_MAX_QUEUE_WAIT_TIME, suffix, -1);
         if (maxQueueWaitTime >= 0) {
             builder.maxQueueWaitTime(maxQueueWaitTime);
         }
 
-        String validationQuery = prop(props, Constants.JDBC_VALIDATION_QUERY_PROPERTY, suffix);
+        String validationQuery = prop(props, RuntimeProperties.JDBC_VALIDATION_QUERY_PROPERTY, suffix);
         if (validationQuery != null) {
             builder.validationQuery(validationQuery);
         }

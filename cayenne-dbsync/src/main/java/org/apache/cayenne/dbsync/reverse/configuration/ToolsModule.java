@@ -19,6 +19,7 @@
 
 package org.apache.cayenne.dbsync.reverse.configuration;
 
+import org.apache.cayenne.CoreModule;
 import org.apache.cayenne.access.flush.DataDomainFlushActionFactory;
 import org.apache.cayenne.access.flush.DefaultDataDomainFlushActionFactory;
 import org.apache.cayenne.access.flush.operation.DbRowOpSorter;
@@ -31,11 +32,10 @@ import org.apache.cayenne.access.translator.batch.InsertBatchTranslator;
 import org.apache.cayenne.access.translator.batch.UpdateBatchTranslator;
 import org.apache.cayenne.access.types.DefaultValueObjectTypeRegistry;
 import org.apache.cayenne.access.types.ValueObjectTypeRegistry;
-import org.apache.cayenne.project.Constants;
 import org.apache.cayenne.project.ProjectLoader;
 import org.apache.cayenne.project.DataMapLoader;
-import org.apache.cayenne.project.DefaultRuntimeProperties;
-import org.apache.cayenne.project.RuntimeProperties;
+import org.apache.cayenne.DefaultRuntimeProperties;
+import org.apache.cayenne.RuntimeProperties;
 import org.apache.cayenne.project.upgrade.ProjectFileUpgrader;
 import org.apache.cayenne.project.xml.ProjectMetaData;
 import org.apache.cayenne.project.xml.DefaultProjectMetaData;
@@ -119,7 +119,6 @@ public class ToolsModule implements Module {
         binder.bind(ClassLoaderManager.class).to(DefaultClassLoaderManager.class);
         binder.bind(AdhocObjectFactory.class).to(DefaultAdhocObjectFactory.class);
         binder.bind(ResourceLocator.class).to(ClassLoaderResourceLocator.class);
-        binder.bind(Key.get(ResourceLocator.class, Constants.RESOURCE_LOCATOR)).to(ClassLoaderResourceLocator.class);
 
         binder.bind(RuntimeProperties.class).to(DefaultRuntimeProperties.class);
         binder.bind(Key.get(BatchTranslator.class, BatchTranslator.INSERT)).to(InsertBatchTranslator.class);

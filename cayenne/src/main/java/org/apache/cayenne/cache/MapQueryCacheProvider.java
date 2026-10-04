@@ -19,8 +19,7 @@
 package org.apache.cayenne.cache;
 
 import org.apache.cayenne.ConfigurationException;
-import org.apache.cayenne.project.Constants;
-import org.apache.cayenne.project.RuntimeProperties;
+import org.apache.cayenne.RuntimeProperties;
 import org.apache.cayenne.di.Inject;
 import org.apache.cayenne.di.Provider;
 
@@ -38,7 +37,7 @@ public class MapQueryCacheProvider implements Provider<QueryCache> {
     public QueryCache get() throws ConfigurationException {
 
         int size = properties.getInt(
-                Constants.QUERY_CACHE_SIZE_PROPERTY,
+                RuntimeProperties.QUERY_CACHE_SIZE_PROPERTY,
                 MapQueryCache.DEFAULT_CACHE_SIZE);
         return new MapQueryCache(size);
     }

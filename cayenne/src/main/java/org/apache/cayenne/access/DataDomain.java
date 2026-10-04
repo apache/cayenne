@@ -19,6 +19,7 @@
 
 package org.apache.cayenne.access;
 
+import org.apache.cayenne.RuntimeProperties;
 import org.apache.cayenne.CayenneRuntimeException;
 import org.apache.cayenne.DataChannel;
 import org.apache.cayenne.DataChannelQueryFilter;
@@ -32,7 +33,6 @@ import org.apache.cayenne.QueryResult;
 import org.apache.cayenne.access.flush.DataDomainFlushAction;
 import org.apache.cayenne.access.flush.DataDomainFlushActionFactory;
 import org.apache.cayenne.cache.QueryCache;
-import org.apache.cayenne.project.Constants;
 import org.apache.cayenne.di.AdhocObjectFactory;
 import org.apache.cayenne.di.BeforeScopeEnd;
 import org.apache.cayenne.event.EventManager;
@@ -620,7 +620,7 @@ public class DataDomain implements DataChannel {
      * and DISJOINT_BY_ID prefetches and is intended to address database
      * limitations on the size of SQL statements as well as to cap memory use in
      * Cayenne when generating such queries. The default is 10000. It can be
-     * changed by setting the {@link Constants#MAX_ID_QUALIFIER_SIZE_PROPERTY} property.
+     * changed by setting the {@link RuntimeProperties#MAX_ID_QUALIFIER_SIZE_PROPERTY} property.
      *
      * @since 3.1
      */

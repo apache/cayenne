@@ -19,7 +19,7 @@
 
 package org.apache.cayenne.dbsync.reverse.configuration;
 
-import org.apache.cayenne.project.Constants;
+import org.apache.cayenne.CoreModule;
 import org.apache.cayenne.dba.DbAdapterDetector;
 import org.apache.cayenne.dba.AutoAdapter;
 import org.apache.cayenne.dba.DbAdapter;
@@ -40,7 +40,7 @@ public class DefaultDbAdapterFactory implements DbAdapterFactory {
 
     public DefaultDbAdapterFactory(
             @Inject AdhocObjectFactory objectFactory,
-            @Inject(Constants.ADAPTER_DETECTORS_LIST) List<DbAdapterDetector> detectors) {
+            @Inject(CoreModule.ADAPTER_DETECTORS_LIST) List<DbAdapterDetector> detectors) {
         this.objectFactory = objectFactory;
         this.detectors = Objects.requireNonNull(detectors, "Null detectors list");
     }

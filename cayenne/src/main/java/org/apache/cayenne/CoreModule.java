@@ -51,15 +51,12 @@ import org.apache.cayenne.commitlog.CommitLogFilter;
 import org.apache.cayenne.commitlog.meta.CommitLogEntityFactory;
 import org.apache.cayenne.commitlog.meta.IncludeAllCommitLogEntityFactory;
 import org.apache.cayenne.project.ConfigurationNameMapper;
-import org.apache.cayenne.project.Constants;
 import org.apache.cayenne.project.ProjectLoader;
 import org.apache.cayenne.project.ProjectMerger;
 import org.apache.cayenne.project.DataMapLoader;
 import org.apache.cayenne.project.DefaultConfigurationNameMapper;
 import org.apache.cayenne.project.DefaultProjectMerger;
-import org.apache.cayenne.project.DefaultRuntimeProperties;
 import org.apache.cayenne.project.ObjectContextFactory;
-import org.apache.cayenne.project.RuntimeProperties;
 import org.apache.cayenne.access.DataContextFactory;
 import org.apache.cayenne.access.DataDomainProvider;
 import org.apache.cayenne.access.DataNodeFactory;
@@ -124,6 +121,53 @@ import java.util.GregorianCalendar;
  */
 public class CoreModule implements Module {
 
+    /**
+     * A DI container key for the Map&lt;String, String&gt; storing properties used by built-in Cayenne service.
+     *
+     * @see CoreModuleExtender#setProperty(String, Object)
+     */
+    public static final String PROPERTIES_MAP = "cayenne.properties";
+
+    /**
+     * A DI container key for the List&lt;DbAdapterDetector&gt; that contains objects that can discover the type of
+     * current database and install the correct DbAdapter in runtime.
+     */
+    public static final String ADAPTER_DETECTORS_LIST = "cayenne.adapter_detectors";
+
+    /**
+     * A DI container key for the List&lt;Object&gt; storing lifecycle events listeners.
+     *
+     * @see CoreModuleExtender#addListener(Object)
+     */
+    public static final String DOMAIN_LISTENERS_LIST = "cayenne.domain_listeners";
+
+    /**
+     * A DI container key for the List&lt;String&gt; storing locations of the one of more project configuration files.
+     */
+    public static final String PROJECT_LOCATIONS_LIST = "cayenne.project_locations";
+
+    /**
+     * A DI container key for the List&lt;ExtendedType&gt; storing default adapter-agnostic ExtendedTypes.
+     *
+     * @see CoreModuleExtender#addDefaultExtendedType(ExtendedType)
+     */
+    public static final String DEFAULT_TYPES_LIST = "cayenne.default_types";
+
+    /**
+     * A DI container key for the List&lt;ExtendedType&gt; storing a user-provided ExtendedTypes.
+     *
+     * @see CoreModuleExtender#addUserExtendedType(ExtendedType)
+     */
+    public static final String USER_TYPES_LIST = "cayenne.user_types";
+
+    /**
+     * A DI container key for the List&lt;ExtendedTypeFactory&gt; storing default and user-provided
+     * ExtendedTypeFactories.
+     *
+     * @see CoreModuleExtender#addExtendedTypeFactory(Class)
+     */
+    public static final String TYPE_FACTORIES_LIST = "cayenne.type_factories";
+
     private static final int DEFAULT_MAX_ID_QUALIFIER_SIZE = 10000;
 
     /**
@@ -145,7 +189,7 @@ public class CoreModule implements Module {
      */
     @Deprecated(since = "5.0", forRemoval = true)
     public static void useExternalTransactions(Binder binder, boolean useExternal) {
-        extend(binder).setProperty(Constants.EXTERNAL_TX_PROPERTY, String.valueOf(useExternal));
+        extend(binder).setProperty(RuntimeProperties.EXTERNAL_TX_PROPERTY, String.valueOf(useExternal));
     }
 
     /**
@@ -171,7 +215,7 @@ public class CoreModule implements Module {
      */
     @Deprecated(since = "5.0", forRemoval = true)
     public static ListBuilder<String> contributeProjectLocations(Binder binder) {
-        return binder.bindList(String.class, Constants.PROJECT_LOCATIONS_LIST);
+        return binder.bindList(String.class, PROJECT_LOCATIONS_LIST);
     }
 
     /**
@@ -212,7 +256,7 @@ public class CoreModule implements Module {
      */
     @Deprecated(since = "5.0", forRemoval = true)
     public static ListBuilder<Object> contributeDomainListeners(Binder binder) {
-        return binder.bindList(Object.class, Constants.DOMAIN_LISTENERS_LIST);
+        return binder.bindList(Object.class, DOMAIN_LISTENERS_LIST);
     }
 
     /**
@@ -226,7 +270,7 @@ public class CoreModule implements Module {
      */
     @Deprecated(since = "5.0", forRemoval = true)
     public static ListBuilder<DbAdapterDetector> contributeAdapterDetectors(Binder binder) {
-        return binder.bindList(DbAdapterDetector.class, Constants.ADAPTER_DETECTORS_LIST);
+        return binder.bindList(DbAdapterDetector.class, ADAPTER_DETECTORS_LIST);
     }
 
     /**
@@ -240,7 +284,7 @@ public class CoreModule implements Module {
      */
     @Deprecated(since = "5.0", forRemoval = true)
     public static MapBuilder<String> contributeProperties(Binder binder) {
-        return binder.bindMap(String.class, Constants.PROPERTIES_MAP);
+        return binder.bindMap(String.class, PROPERTIES_MAP);
     }
 
     /**
@@ -254,7 +298,7 @@ public class CoreModule implements Module {
      */
     @Deprecated(since = "5.0", forRemoval = true)
     public static ListBuilder<ExtendedTypeFactory> contributeTypeFactories(Binder binder) {
-        return binder.bindList(ExtendedTypeFactory.class, Constants.TYPE_FACTORIES_LIST);
+        return binder.bindList(ExtendedTypeFactory.class, TYPE_FACTORIES_LIST);
     }
 
     /**
@@ -269,7 +313,7 @@ public class CoreModule implements Module {
      */
     @Deprecated(since = "5.0", forRemoval = true)
     public static ListBuilder<ExtendedType> contributeDefaultTypes(Binder binder) {
-        return binder.bindList(ExtendedType.class, Constants.DEFAULT_TYPES_LIST);
+        return binder.bindList(ExtendedType.class, DEFAULT_TYPES_LIST);
     }
 
     /**
@@ -284,7 +328,7 @@ public class CoreModule implements Module {
      */
     @Deprecated(since = "5.0", forRemoval = true)
     public static ListBuilder<ExtendedType> contributeUserTypes(Binder binder) {
-        return binder.bindList(ExtendedType.class, Constants.USER_TYPES_LIST);
+        return binder.bindList(ExtendedType.class, USER_TYPES_LIST);
     }
 
     /**
@@ -311,8 +355,8 @@ public class CoreModule implements Module {
         extend(binder).initAllExtensions()
 
                 // global stack properties
-                .setProperty(Constants.MAX_ID_QUALIFIER_SIZE_PROPERTY, DEFAULT_MAX_ID_QUALIFIER_SIZE)
-                .setProperty(Constants.CONTEXTS_SYNC_PROPERTY, "false")
+                .setProperty(RuntimeProperties.MAX_ID_QUALIFIER_SIZE_PROPERTY, DEFAULT_MAX_ID_QUALIFIER_SIZE)
+                .setProperty(RuntimeProperties.CONTEXTS_SYNC_PROPERTY, "false")
 
                 // known DbAdapter detectors in reverse order of popularity.
                 .addAdapterDetector(FirebirdSniffer.class)
@@ -396,7 +440,6 @@ public class CoreModule implements Module {
 
         // a locator of resources, such as XML descriptors
         binder.bind(ResourceLocator.class).to(ClassLoaderResourceLocator.class);
-        binder.bind(Key.get(ResourceLocator.class, Constants.RESOURCE_LOCATOR)).to(ClassLoaderResourceLocator.class);
 
         // a global properties object
         binder.bind(RuntimeProperties.class).to(DefaultRuntimeProperties.class);

@@ -19,8 +19,7 @@
 package org.apache.cayenne.event;
 
 import org.apache.cayenne.ConfigurationException;
-import org.apache.cayenne.project.Constants;
-import org.apache.cayenne.project.RuntimeProperties;
+import org.apache.cayenne.RuntimeProperties;
 import org.apache.cayenne.di.Inject;
 import org.apache.cayenne.di.Provider;
 
@@ -37,7 +36,7 @@ public class EventManagerProvider implements Provider<EventManager> {
 
     @Override
     public EventManager get() throws ConfigurationException {
-        boolean sync = properties.getBoolean(Constants.CONTEXTS_SYNC_PROPERTY, false);
+        boolean sync = properties.getBoolean(RuntimeProperties.CONTEXTS_SYNC_PROPERTY, false);
 
         return sync ? new DefaultEventManager() : new NoopEventManager();
     }

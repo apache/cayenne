@@ -19,6 +19,7 @@
 
 package org.apache.cayenne.dba;
 
+import org.apache.cayenne.CoreModule;
 import org.apache.cayenne.CayenneRuntimeException;
 import org.apache.cayenne.access.DataNode;
 import org.apache.cayenne.access.sqlbuilder.sqltree.SQLTreeProcessor;
@@ -33,8 +34,7 @@ import org.apache.cayenne.access.types.ExtendedTypeFactory;
 import org.apache.cayenne.access.types.ExtendedTypeMap;
 import org.apache.cayenne.access.types.ValueObjectTypeFactory;
 import org.apache.cayenne.access.types.ValueObjectTypeRegistry;
-import org.apache.cayenne.project.Constants;
-import org.apache.cayenne.project.RuntimeProperties;
+import org.apache.cayenne.RuntimeProperties;
 import org.apache.cayenne.di.Inject;
 import org.apache.cayenne.log.SQLLogger;
 import org.apache.cayenne.map.DataMap;
@@ -86,16 +86,16 @@ public class JdbcAdapter implements DbAdapter {
      * Creates new JdbcAdapter with a set of default parameters.
      */
     public JdbcAdapter(@Inject RuntimeProperties runtimeProperties,
-                       @Inject(Constants.DEFAULT_TYPES_LIST) List<ExtendedType> defaultExtendedTypes,
-                       @Inject(Constants.USER_TYPES_LIST) List<ExtendedType> userExtendedTypes,
-                       @Inject(Constants.TYPE_FACTORIES_LIST) List<ExtendedTypeFactory> extendedTypeFactories,
+                       @Inject(CoreModule.DEFAULT_TYPES_LIST) List<ExtendedType> defaultExtendedTypes,
+                       @Inject(CoreModule.USER_TYPES_LIST) List<ExtendedType> userExtendedTypes,
+                       @Inject(CoreModule.TYPE_FACTORIES_LIST) List<ExtendedTypeFactory> extendedTypeFactories,
                        @Inject ValueObjectTypeRegistry valueObjectTypeRegistry) {
 
         // init defaults
         this.defaultCharColumnLength = 255;
         this.setSupportsBatchUpdates(false);
         this.setSupportsUniqueConstraints(true);
-        this.caseInsensitiveCollations = runtimeProperties.getBoolean(Constants.CI_PROPERTY, false);
+        this.caseInsensitiveCollations = runtimeProperties.getBoolean(RuntimeProperties.CI_PROPERTY, false);
 
         this.quotingStrategy = createQuotingStrategy();
 
