@@ -56,7 +56,7 @@ import org.apache.cayenne.project.ProjectMerger;
 import org.apache.cayenne.project.DataMapLoader;
 import org.apache.cayenne.project.DefaultConfigurationNameMapper;
 import org.apache.cayenne.project.DefaultProjectMerger;
-import org.apache.cayenne.project.ObjectContextFactory;
+import org.apache.cayenne.access.ObjectContextFactory;
 import org.apache.cayenne.access.DataContextFactory;
 import org.apache.cayenne.access.DataDomainProvider;
 import org.apache.cayenne.access.DataNodeFactory;

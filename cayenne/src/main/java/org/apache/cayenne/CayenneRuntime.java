@@ -20,7 +20,7 @@ package org.apache.cayenne;
 
 import org.apache.cayenne.access.DataDomain;
 import org.apache.cayenne.access.DataNode;
-import org.apache.cayenne.project.ObjectContextFactory;
+import org.apache.cayenne.access.ObjectContextFactory;
 import org.apache.cayenne.di.BeforeScopeEnd;
 import org.apache.cayenne.di.DIBootstrap;
 import org.apache.cayenne.di.Injector;
